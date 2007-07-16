@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: IOExceptionWrapper.java,v 1.1 2004/04/09 16:34:10 mark Exp $
+ * $Id: IOExceptionWrapper.java,v 12.4 2006/08/31 18:14:09 bostic Exp $
  */
 
 package com.sleepycat.util;
@@ -27,7 +27,15 @@ public class IOExceptionWrapper
         this.e = e;
     }
 
+    /**
+     * @deprecated replaced by {@link #getCause}.
+     */
     public Throwable getDetail() {
+
+        return e;
+    }
+
+    public Throwable getCause() {
 
         return e;
     }

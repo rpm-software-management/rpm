@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep018.tcl,v 1.8 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep018.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	rep018
 # TEST	Replication with dbremove.
@@ -13,12 +13,23 @@
 # TEST	handle on the client.
 # TEST
 proc rep018 { method { niter 10 } { tnum "018" } args } {
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
+
 	set args [convert_args $method $args]
 	set logsets [create_logsets 2]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -59,7 +70,7 @@ proc rep018_sub { method niter tnum logset recargs largs } {
 	puts "\tRep$tnum.a: Create master and client, bring online."
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(M) "berkdb_env_noerr -create \
 	    -log_max 1000000 -home $masterdir \
 	    $m_txnargs $m_logargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
@@ -123,10 +134,10 @@ proc rep018_sub { method niter tnum logset recargs largs } {
 
 	puts "\tRep$tnum.f: Propagate changes to client.  Process should hang."
 	error_check_good timestamp_remove \
-	    [$marker put -auto_commit PARENTREMOVE [timestamp -r]] 0
+	    [$marker put PARENTREMOVE [timestamp -r]] 0
 	process_msgs "{$masterenv 1} {$clientenv 2}"
 	error_check_good timestamp_done \
-	    [$marker put -auto_commit PARENTDONE [timestamp -r]] 0
+	    [$marker put PARENTDONE [timestamp -r]] 0
 
 	watch_procs $pid 5
 

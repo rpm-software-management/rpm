@@ -62,8 +62,10 @@ import java.util.Comparator;
 	public Environment wrapper;
 
 	private LogRecordHandler app_dispatch_handler;
+	private EventHandler event_notify_handler;
 	private FeedbackHandler env_feedback_handler;
 	private ErrorHandler error_handler;
+	private String errpfx;
 	private MessageHandler message_handler;
 	private PanicHandler panic_handler;
 	private ReplicationTransport rep_transport_handler;
@@ -99,12 +101,23 @@ import java.util.Comparator;
 		}
 	}
 
-	private final int handle_app_dispatch(DatabaseEntry dbt, LogSequenceNumber lsn, int recops) {
-		return app_dispatch_handler.handleLogRecord(wrapper, dbt, lsn, RecoveryOperation.fromFlag(recops));
+	private final int handle_app_dispatch(DatabaseEntry dbt,
+	                                      LogSequenceNumber lsn,
+	                                      int recops) {
+		return app_dispatch_handler.handleLogRecord(wrapper, dbt, lsn,
+		    RecoveryOperation.fromFlag(recops));
 	}
 
 	public LogRecordHandler get_app_dispatch() {
 		return app_dispatch_handler;
+	}
+
+	private final int handle_event_notify(int event) {
+		return event_notify_handler.handleEvent(EventType.fromInt(event));
+	}
+
+	public EventHandler get_event_notify() {
+		return event_notify_handler;
 	}
 
 	private final void handle_env_feedback(int opcode, int percent) {
@@ -117,8 +130,16 @@ import java.util.Comparator;
 		return env_feedback_handler;
 	}
 
-	private final void handle_error(String errpfx, String msg) {
-		error_handler.error(wrapper, errpfx, msg);
+	public void set_errpfx(String errpfx) {
+		this.errpfx = errpfx;
+	}
+
+	public String get_errpfx() {
+		return errpfx;
+	}
+
+	private final void handle_error(String msg) {
+		error_handler.error(wrapper, this.errpfx, msg);
 	}
 
 	public ErrorHandler get_errcall() {
@@ -141,16 +162,22 @@ import java.util.Comparator;
 		return panic_handler;
 	}
 
-	private final int handle_rep_transport(DatabaseEntry control, DatabaseEntry rec,
-	    LogSequenceNumber lsn, int envid, int flags)
+	private final int handle_rep_transport(DatabaseEntry control,
+	                                       DatabaseEntry rec,
+	                                       LogSequenceNumber lsn,
+	                                       int envid, int flags)
 	    throws DatabaseException {
-		return rep_transport_handler.send(wrapper, control, rec, lsn, envid,
+		return rep_transport_handler.send(wrapper,
+		    control, rec, lsn, envid,
 		    (flags & DbConstants.DB_REP_NOBUFFER) != 0,
-                    (flags & DbConstants.DB_REP_PERMANENT) != 0);
+                    (flags & DbConstants.DB_REP_PERMANENT) != 0,
+                    (flags & DbConstants.DB_REP_ANYWHERE) != 0,
+                    (flags & DbConstants.DB_REP_REREQUEST) != 0);
 	}
-	
+
 	public void lock_vec(/*u_int32_t*/ int locker, int flags,
-	    LockRequest[] list, int offset, int count) throws DatabaseException {
+	                     LockRequest[] list, int offset, int count)
+	    throws DatabaseException {
 		db_javaJNI.DbEnv_lock_vec(swigCPtr, locker, flags, list,
 		    offset, count);
 	}
@@ -244,6 +271,10 @@ import java.util.Comparator;
 		dbenv = null;
 	}
 
+	public boolean getPrivateDbEnv() {
+		return private_dbenv;
+	}
+
 	public synchronized void close(int flags) throws DatabaseException {
 		try {
 			close0(flags);
@@ -251,7 +282,7 @@ import java.util.Comparator;
 			cleanup();
 		}
 	}
-	
+
 	public DbEnv get_env() throws DatabaseException {
 		return dbenv;
 	}
@@ -265,15 +296,16 @@ import java.util.Comparator;
 		return append_recno_handler;
 	}
 
-	private final int handle_bt_compare(DatabaseEntry dbt1, DatabaseEntry dbt2) {
-		return bt_compare_handler.compare(dbt1, dbt2);
+	private final int handle_bt_compare(byte[] arr1, byte[] arr2) {
+		return bt_compare_handler.compare(arr1, arr2);
 	}
 
 	public Comparator get_bt_compare() {
 		return bt_compare_handler;
 	}
 
-	private final int handle_bt_prefix(DatabaseEntry dbt1, DatabaseEntry dbt2) {
+	private final int handle_bt_prefix(DatabaseEntry dbt1,
+	                                   DatabaseEntry dbt2) {
 		return bt_prefix_handler.prefix(wrapper, dbt1, dbt2);
 	}
 
@@ -293,8 +325,8 @@ import java.util.Comparator;
 		return db_feedback_handler;
 	}
 
-	private final int handle_dup_compare(DatabaseEntry dbt1, DatabaseEntry dbt2) {
-		return dup_compare_handler.compare(dbt1, dbt2);
+	private final int handle_dup_compare(byte[] arr1, byte[] arr2) {
+		return dup_compare_handler.compare(arr1, arr2);
 	}
 
 	public Comparator get_dup_compare() {
@@ -309,7 +341,9 @@ import java.util.Comparator;
 		return h_hash_handler;
 	}
 
-	private final int handle_seckey_create(DatabaseEntry key, DatabaseEntry data, DatabaseEntry result)
+	private final int handle_seckey_create(DatabaseEntry key,
+	                                       DatabaseEntry data,
+	                                       DatabaseEntry result)
 	    throws DatabaseException {
 		return seckey_create_handler.createSecondaryKey(
 		    (SecondaryDatabase)wrapper, key, data, result) ?
@@ -357,14 +391,6 @@ import java.util.Comparator;
 		dbenv.set_errcall(db_errcall_fcn);
 	}
 
-	public MessageHandler get_msgcall() {
-		return dbenv.get_msgcall();
-	}
-
-	public void set_msgcall(MessageHandler db_msgcall_fcn) {
-		dbenv.set_msgcall(db_msgcall_fcn);
-	}
-
 	public java.io.OutputStream get_error_stream() {
 		return dbenv.get_error_stream();
 	}
@@ -373,12 +399,28 @@ import java.util.Comparator;
 		dbenv.set_error_stream(stream);
 	}
 
+	public void set_errpfx(String errpfx) {
+		dbenv.set_errpfx(errpfx);
+	}
+
+	public String get_errpfx() {
+		return dbenv.get_errpfx();
+	}
+
 	public java.io.OutputStream get_message_stream() {
 		return dbenv.get_message_stream();
 	}
 
 	public void set_message_stream(java.io.OutputStream stream) {
 		dbenv.set_message_stream(stream);
+	}
+
+	public MessageHandler get_msgcall() {
+		return dbenv.get_msgcall();
+	}
+
+	public void set_msgcall(MessageHandler db_msgcall_fcn) {
+		dbenv.set_msgcall(db_msgcall_fcn);
 	}
 
 	public void set_paniccall(PanicHandler db_panic_fcn)
@@ -498,31 +540,31 @@ import java.util.Comparator;
 JNIEXPORT jlong JNICALL
 Java_com_sleepycat_db_internal_db_1javaJNI_initDbEnvRef0(
     JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg2) {
-	DB_ENV *self = *(DB_ENV **)&jarg1;
+	DB_ENV *self = *(DB_ENV **)(void *)&jarg1;
 	jlong ret;
 	COMPQUIET(jcls, NULL);
 
 	DB_ENV_INTERNAL(self) = (void *)(*jenv)->NewGlobalRef(jenv, jarg2);
-	*(jobject *)&ret = (jobject)DB_ENV_INTERNAL(self);
+	*(jobject *)(void *)&ret = (jobject)DB_ENV_INTERNAL(self);
 	return (ret);
 }
 
 JNIEXPORT jlong JNICALL
 Java_com_sleepycat_db_internal_db_1javaJNI_initDbRef0(
     JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg2) {
-	DB *self = *(DB **)&jarg1;
+	DB *self = *(DB **)(void *)&jarg1;
 	jlong ret;
 	COMPQUIET(jcls, NULL);
 
 	DB_INTERNAL(self) = (void *)(*jenv)->NewGlobalRef(jenv, jarg2);
-	*(jobject *)&ret = (jobject)DB_INTERNAL(self);
+	*(jobject *)(void *)&ret = (jobject)DB_INTERNAL(self);
 	return (ret);
 }
 
 JNIEXPORT void JNICALL
 Java_com_sleepycat_db_internal_db_1javaJNI_deleteRef0(
     JNIEnv *jenv, jclass jcls, jlong jarg1) {
-	jobject jref = *(jobject *)&jarg1;
+	jobject jref = *(jobject *)(void *)&jarg1;
 	COMPQUIET(jcls, NULL);
 
 	if (jref != 0L)
@@ -532,14 +574,14 @@ Java_com_sleepycat_db_internal_db_1javaJNI_deleteRef0(
 JNIEXPORT jlong JNICALL
 Java_com_sleepycat_db_internal_db_1javaJNI_getDbEnv0(
     JNIEnv *jenv, jclass jcls, jlong jarg1) {
-	DB *self = *(DB **)&jarg1;
-	jlong env_cptr;
+	DB *self = *(DB **)(void *)&jarg1;
+	jlong ret;
 
 	COMPQUIET(jenv, NULL);
 	COMPQUIET(jcls, NULL);
 
-	*(DB_ENV **)&env_cptr = self->dbenv;
-	return (env_cptr);
+	*(DB_ENV **)(void *)&ret = self->dbenv;
+	return (ret);
 }
 
 JNIEXPORT jboolean JNICALL

@@ -1,25 +1,38 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep026.tcl,v 11.7 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep026.tcl,v 12.12 2006/09/13 21:51:23 carol Exp $
 #
 # TEST	rep026
 # TEST	Replication elections - simulate a crash after sending
 # TEST	a vote.
 
 proc rep026 { method args } {
+	source ./include.tcl
+
 	global mixed_mode_logging
 	set tnum "026"
-	# This test uses recovery, so mixed-mode testing isn't
-	# appropriate.
-	if { $mixed_mode_logging == 1 } {
-		puts "Rep$tnum: Skipping for mixed-mode logging."
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
 		return
+	}
+
+	# Run for btree only.
+	if { $checking_valid_methods } {
+		set test_methods { btree }
+		return $test_methods
 	}
 	if { [is_btree $method] == 0 } {
 		puts "Rep$tnum: Skipping for method $method."
+		return
+	}
+
+	# This test uses recovery, so mixed-mode testing isn't
+	# appropriate.
+	if { $mixed_mode_logging > 0 } {
+		puts "Rep$tnum: Skipping for mixed-mode logging."
 		return
 	}
 
@@ -40,10 +53,10 @@ proc rep026 { method args } {
 	}
 }
 
-proc rep026_sub { method nclients tnum logset args } {
+proc rep026_sub { method nclients tnum logset largs } {
 	source ./include.tcl
 	global errorInfo
-	global machids
+	global machids queuedbs
 	env_cleanup $testdir
 
 	set qdir $testdir/MSGQUEUEDIR
@@ -95,7 +108,7 @@ proc rep026_sub { method nclients tnum logset args } {
 	# Run a modified test001 in the master.
 	puts "\tRep$tnum.a: Running rep_test in replicated env."
 	set niter 10
-	eval rep_test $method $masterenv NULL $niter 0 0
+	eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
 	process_msgs $envlist
 	error_check_good masterenv_close [$masterenv close] 0
 	set envlist [lreplace $envlist 0 0]
@@ -175,8 +188,16 @@ proc rep026_sub { method nclients tnum logset args } {
 		# Have other clients SKIP the election messages and process
 		# only C's startup messages.  We'll do it by copying the files
 		# and emptying the originals.
+		set cwd [pwd]
 		foreach machid $machids {
-			file copy -force $qdir/repqueue$machid.db $qdir/save$machid.db
+			replready $machid to
+			cd $qdir
+			set msgdbs [glob -nocomplain ready.$machid.*]
+			foreach msgdb $msgdbs {
+				set savename [string replace $msgdb 0 5 save.]
+				file copy -force $msgdb $savename
+			}
+			cd $cwd
 			replclear $machid
 		}
 
@@ -243,8 +264,16 @@ proc rep026_sub { method nclients tnum logset args } {
 
 proc restore_messages { qdir } {
 	global machids
+	set cwd [pwd]
 	foreach machid $machids {
-		file copy -force $qdir/save$machid.db $qdir/repqueue$machid.db
+		replready $machid to
+		cd $qdir
+		set msgdbs [glob -nocomplain save.$machid.*]
+		foreach msgdb $msgdbs {
+			set rdyname [string replace $msgdb 0 4 ready.]
+			file copy -force $msgdb $rdyname
+		}
+		cd $cwd
 	}
 }
 

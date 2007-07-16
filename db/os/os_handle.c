@@ -1,21 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1998-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_handle.c,v 11.40 2004/08/19 17:59:22 sue Exp $
+ * $Id: os_handle.c,v 12.7 2006/08/24 14:46:17 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
-#endif
 
 #include "db_int.h"
 
@@ -47,7 +39,7 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 	/* If the application specified an interface, use it. */
 	if (DB_GLOBAL(j_open) != NULL) {
 		if ((fhp->fd = DB_GLOBAL(j_open)(name, flags, mode)) == -1) {
-			ret = __os_get_errno();
+			ret = __os_posix_err(__os_get_syserr());
 			goto err;
 		}
 		F_SET(fhp, DB_FH_OPENED);
@@ -124,16 +116,16 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 #if defined(HAVE_FCNTL_F_SETFD)
 			/* Deny file descriptor access to any child process. */
 			if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
-				ret = __os_get_errno();
-				__db_err(dbenv,
-				    "fcntl(F_SETFD): %s", strerror(ret));
+				ret = __os_get_syserr();
+				__db_syserr(dbenv, ret, "fcntl(F_SETFD)");
+				ret = __os_posix_err(ret);
 				goto err;
 			}
 #endif
 			break;
 		}
 
-		switch (ret = __os_get_errno()) {
+		switch (ret = __os_posix_err(__os_get_syserr())) {
 		case EMFILE:
 		case ENFILE:
 		case ENOSPC:
@@ -156,6 +148,7 @@ __os_openhandle(dbenv, name, flags, mode, fhpp)
 				--nrepeat;
 			break;
 		default:
+			/* Open is silent on error. */
 			break;
 		}
 	}
@@ -193,8 +186,10 @@ __os_closehandle(dbenv, fhp)
 		else
 			RETRY_CHK((close(fhp->fd)), ret);
 
-		if (ret != 0)
-			__db_err(dbenv, "close: %s", strerror(ret));
+		if (ret != 0) {
+			__db_syserr(dbenv, ret, "close");
+			ret = __os_posix_err(ret);
+		}
 
 		/* Unlink the file if we haven't already done so. */
 		if (F_ISSET(fhp, DB_FH_UNLINK)) {

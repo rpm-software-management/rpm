@@ -1,21 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_getlong.c,v 11.22 2004/10/28 14:43:26 bostic Exp $
+ * $Id: db_getlong.c,v 12.5 2006/08/24 14:45:11 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
-#endif
 
 #include "db_int.h"
 
@@ -45,7 +37,7 @@ __db_getlong(dbenv, progname, p, min, max, storep)
 			    "%s: %s: %s\n", progname, p, strerror(ERANGE));
 		else
 			dbenv->err(dbenv, ERANGE, "%s", p);
-		return (1);
+		return (ERANGE);
 	}
 	if (p[0] == '\0' || (end[0] != '\0' && end[0] != '\n')) {
 		if (dbenv == NULL)
@@ -53,7 +45,7 @@ __db_getlong(dbenv, progname, p, min, max, storep)
 			    "%s: %s: Invalid numeric argument\n", progname, p);
 		else
 			dbenv->errx(dbenv, "%s: Invalid numeric argument", p);
-		return (1);
+		return (EINVAL);
 	}
 	if (val < min) {
 		if (dbenv == NULL)
@@ -63,7 +55,7 @@ __db_getlong(dbenv, progname, p, min, max, storep)
 		else
 			dbenv->errx(dbenv,
 			    "%s: Less than minimum value (%ld)", p, min);
-		return (1);
+		return (ERANGE);
 	}
 	if (val > max) {
 		if (dbenv == NULL)
@@ -73,7 +65,7 @@ __db_getlong(dbenv, progname, p, min, max, storep)
 		else
 			dbenv->errx(dbenv,
 			    "%s: Greater than maximum value (%ld)", p, max);
-		return (1);
+		return (ERANGE);
 	}
 	*storep = val;
 	return (0);
@@ -104,7 +96,7 @@ __db_getulong(dbenv, progname, p, min, max, storep)
 			    "%s: %s: %s\n", progname, p, strerror(ERANGE));
 		else
 			dbenv->err(dbenv, ERANGE, "%s", p);
-		return (1);
+		return (ERANGE);
 	}
 	if (p[0] == '\0' || (end[0] != '\0' && end[0] != '\n')) {
 		if (dbenv == NULL)
@@ -112,7 +104,7 @@ __db_getulong(dbenv, progname, p, min, max, storep)
 			    "%s: %s: Invalid numeric argument\n", progname, p);
 		else
 			dbenv->errx(dbenv, "%s: Invalid numeric argument", p);
-		return (1);
+		return (EINVAL);
 	}
 	if (val < min) {
 		if (dbenv == NULL)
@@ -122,7 +114,7 @@ __db_getulong(dbenv, progname, p, min, max, storep)
 		else
 			dbenv->errx(dbenv,
 			    "%s: Less than minimum value (%lu)", p, min);
-		return (1);
+		return (ERANGE);
 	}
 
 	/*
@@ -139,7 +131,7 @@ __db_getulong(dbenv, progname, p, min, max, storep)
 		else
 			dbenv->errx(dbenv,
 			    "%s: Greater than maximum value (%lu)", p, max);
-		return (1);
+		return (ERANGE);
 	}
 	*storep = val;
 	return (0);

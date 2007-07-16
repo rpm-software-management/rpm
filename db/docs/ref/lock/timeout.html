@@ -1,5 +1,5 @@
-<!--$Id: timeout.so,v 1.8 2004/02/02 19:53:57 ubell Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: timeout.so,v 1.9 2005/12/02 17:27:49 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -19,7 +19,7 @@
 <p>Lock and transaction timeouts may be used in place of, or in addition
 to, regular deadlock detection.  If lock timeouts are set, lock requests
 will return <a href="../../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> from a lock call when it is
-detected that the locks timeouts has expired, that is, the lock request
+detected that the lock's timeout has expired, that is, the lock request
 has blocked, waiting, longer than the specified timeout.  If transaction
 timeouts are set, lock requests will return <a href="../../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a>
 from a lock call when it has been detected that the transaction has been
@@ -37,7 +37,7 @@ the timeout depends on how often deadlock detection is performed.  More
 specifically, transactions will continue to run after their timeout has
 expired if they do not block on a lock request after that time.
 A separate deadlock detection thread (or process) should always
-be used if the application depends on timeouts otherwise if
+be used if the application depends on timeouts; otherwise, if
 there are no new blocked lock requests a pending timeout will
 never trigger.</p>
 <p>If the database environment deadlock detector has been configured with
@@ -65,6 +65,6 @@ and the specific lock described will be timed out if it blocks longer
 than 4ms.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../lock/dead.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/deaddbg.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

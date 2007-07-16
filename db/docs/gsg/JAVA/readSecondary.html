@@ -55,7 +55,7 @@
          to a person's full name:
     </p>
       <a id="java_index6"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.LockMode;
@@ -68,9 +68,9 @@ try {
     // Omitting all database opens
     ...
 
-    String searchName = "John Doe";
+    String searchName = &quot;John Doe&quot;;
     DatabaseEntry searchKey = 
-        new DatabaseEntry(searchName.getBytes("UTF-8"));
+        new DatabaseEntry(searchName.getBytes(&quot;UTF-8&quot;));
     DatabaseEntry primaryKey = new DatabaseEntry();
     DatabaseEntry primaryData = new DatabaseEntry();
 

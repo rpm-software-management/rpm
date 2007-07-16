@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredList.java,v 1.4 2004/08/02 18:52:05 mjc Exp $
+ * $Id: StoredList.java,v 12.4 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -21,6 +21,7 @@ import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.OperationStatus;
+import com.sleepycat.util.keyrange.KeyRangeException;
 
 /**
  * A List view of a {@link Database}.
@@ -33,17 +34,6 @@ import com.sleepycat.db.OperationStatus;
  * methods (RECNO, QUEUE, and BTREE-RECNUM), stored Lists are most useful as
  * read-only collections where record numbers are not required to be
  * sequential.</p>
- *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
  *
  * <p>In addition to the standard List methods, this class provides the
  * following methods for stored lists only.  Note that the use of these methods
@@ -293,7 +283,7 @@ public class StoredList extends StoredCollection implements List {
 	Iterator i = null;
         boolean doAutoCommit = beginAutoCommit();
         try {
-            i = coll.iterator();
+            i = storedOrExternalIterator(coll);
             if (!i.hasNext()) {
                 return false;
             }
@@ -377,7 +367,7 @@ public class StoredList extends StoredCollection implements List {
         DataCursor cursor = null;
         try {
             cursor = new DataCursor(view, false);
-            OperationStatus status = cursor.find(value, findFirst);
+            OperationStatus status = cursor.findValue(value, findFirst);
             return (status == OperationStatus.SUCCESS)
                     ? (cursor.getCurrentRecordNumber() - baseIndex)
                     : (-1);
@@ -399,7 +389,10 @@ public class StoredList extends StoredCollection implements List {
      * The iterator will be read-only if the collection is read-only.
      * This method conforms to the {@link List#listIterator()} interface.
      *
-     * @return a {@link StoredIterator} for this collection.
+     * <p>For information on cursor stability and iterator block size, see
+     * {@link #iterator()}.</p>
+     *
+     * @return a {@link ListIterator} for this collection.
      *
      * @throws RuntimeExceptionWrapper if a {@link DatabaseException} is
      * thrown.
@@ -408,7 +401,7 @@ public class StoredList extends StoredCollection implements List {
      */
     public ListIterator listIterator() {
 
-        return iterator(isWriteAllowed());
+        return blockIterator();
     }
 
     /**
@@ -417,7 +410,10 @@ public class StoredList extends StoredCollection implements List {
      * The iterator will be read-only if the collection is read-only.
      * This method conforms to the {@link List#listIterator(int)} interface.
      *
-     * @return a {@link StoredIterator} for this collection.
+     * <p>For information on cursor stability and iterator block size, see
+     * {@link #iterator()}.</p>
+     *
+     * @return a {@link ListIterator} for this collection.
      *
      * @throws RuntimeExceptionWrapper if a {@link DatabaseException} is
      * thrown.
@@ -426,11 +422,10 @@ public class StoredList extends StoredCollection implements List {
      */
     public ListIterator listIterator(int index) {
 
-        StoredIterator i = iterator(isWriteAllowed());
+        BlockIterator i = blockIterator();
         if (i.moveToIndex(index)) {
             return i;
         } else {
-            i.close();
             throw new IndexOutOfBoundsException(String.valueOf(index));
         }
     }
@@ -538,11 +533,11 @@ public class StoredList extends StoredCollection implements List {
 
         if (!(other instanceof List)) return false;
         List otherList = (List) other;
-        ListIterator i1 = null;
+        StoredIterator i1 = null;
         ListIterator i2 = null;
         try {
-            i1 = listIterator();
-            i2 = otherList.listIterator();
+            i1 = storedIterator();
+            i2 = storedOrExternalListIterator(otherList);
             while (i1.hasNext()) {
                 if (!i2.hasNext()) return false;
                 if (i1.nextIndex() != i2.nextIndex()) return false;
@@ -557,8 +552,22 @@ public class StoredList extends StoredCollection implements List {
             if (i2.hasNext()) return false;
             return true;
         } finally {
-            StoredIterator.close(i1);
+            i1.close();
             StoredIterator.close(i2);
+        }
+    }
+
+    /**
+     * Returns a StoredIterator if the given collection is a StoredCollection,
+     * else returns a regular/external ListIterator.  The iterator returned
+     * should be closed with the static method StoredIterator.close(Iterator).
+     */
+    final ListIterator storedOrExternalListIterator(List list) {
+
+        if (list instanceof StoredCollection) {
+            return ((StoredCollection) list).storedIterator();
+        } else {
+            return list.listIterator();
         }
     }
 
@@ -570,10 +579,12 @@ public class StoredList extends StoredCollection implements List {
 	return super.hashCode();
     }
 
-    Object makeIteratorData(StoredIterator iterator, DataCursor cursor)
-        throws DatabaseException {
+    Object makeIteratorData(BaseIterator iterator,
+                            DatabaseEntry keyEntry,
+                            DatabaseEntry priKeyEntry,
+                            DatabaseEntry valueEntry) {
 
-        return cursor.getCurrentValue();
+        return view.makeValue(priKeyEntry, valueEntry);
     }
 
     boolean hasValues() {

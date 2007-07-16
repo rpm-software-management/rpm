@@ -1,5 +1,5 @@
-<!--$Id: memp_set_clear_len.so,v 10.16 2004/09/28 15:04:21 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_clear_len.so,v 10.18 2005/11/30 19:46:21 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -33,8 +33,8 @@ DB_MPOOLFILE-&gt;get_clear_len(DB_MPOOLFILE *mpf, u_int32_t *lenp);
 <p>The DB_MPOOLFILE-&gt;set_clear_len method sets the number of initial bytes in a
 page that should be set to nul when the page is created as a result of
 the <a href="../api_c/memp_fget.html#DB_MPOOL_CREATE">DB_MPOOL_CREATE</a> or <a href="../api_c/memp_fget.html#DB_MPOOL_NEW">DB_MPOOL_NEW</a> flags being
-specified to <a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a>.  If no value is specified, or <b>len</b>
-is 0, the entire page is cleared.</p>
+specified to <a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a>.  If no clear length is specified, the
+entire page is cleared when it is created.</p>
 <p>The DB_MPOOLFILE-&gt;set_clear_len method configures a file in the memory pool, not only
 operations performed using the specified <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle.</p>
 <p>The DB_MPOOLFILE-&gt;set_clear_len method may not be called after the <a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a> method is
@@ -56,9 +56,18 @@ the entire page being set to nul bytes.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DB_MPOOLFILE-&gt;get_clear_len</h3>
-<p>The DB_MPOOLFILE-&gt;get_clear_len method returns the .</p>
+<p>The DB_MPOOLFILE-&gt;get_clear_len method returns the bytes to be cleared.</p>
 <p>The DB_MPOOLFILE-&gt;get_clear_len method may be called at any time during the life of the
 application.</p>
+<p>The DB_MPOOLFILE-&gt;get_clear_len method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>lenp</b><dd>The DB_MPOOLFILE-&gt;get_clear_len method returns  the
+bytes to be cleared in <b>lenp</b>.
+</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a>
@@ -68,6 +77,6 @@ application.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

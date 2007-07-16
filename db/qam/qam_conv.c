@@ -1,17 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: qam_conv.c,v 11.17 2004/01/28 03:36:19 bostic Exp $
+ * $Id: qam_conv.c,v 12.4 2006/08/24 14:46:24 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"

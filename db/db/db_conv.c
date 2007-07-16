@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -36,16 +36,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_conv.c,v 11.45 2004/01/28 03:35:57 bostic Exp $
+ * $Id: db_conv.c,v 12.7 2006/08/24 14:45:15 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/crypto.h"
@@ -143,14 +137,14 @@ __db_pgin(dbenv, pg, pp, cookie)
 		if (F_ISSET(dbp, DB_AM_SWAP) && is_hmac == 0)
 			P_32_SWAP(chksum);
 		switch (ret = __db_check_chksum(
-		    dbenv, db_cipher, chksum, pp, sum_len, is_hmac)) {
+		    dbenv, NULL, db_cipher, chksum, pp, sum_len, is_hmac)) {
 		case 0:
 			break;
 		case -1:
 			if (DBENV_LOGGING(dbenv))
 				(void)__db_cksum_log(
 				    dbenv, NULL, &not_used, DB_FLUSH);
-			__db_err(dbenv,
+			__db_errx(dbenv,
 	    "checksum error: page %lu: catastrophic recovery required",
 			    (u_long)pg);
 			return (__db_panic(dbenv, DB_RUNRECOVERY));
@@ -159,11 +153,11 @@ __db_pgin(dbenv, pg, pp, cookie)
 		}
 	}
 	if (F_ISSET(dbp, DB_AM_ENCRYPT)) {
-		DB_ASSERT(db_cipher != NULL);
-		DB_ASSERT(F_ISSET(dbp, DB_AM_CHKSUM));
+		DB_ASSERT(dbenv, db_cipher != NULL);
+		DB_ASSERT(dbenv, F_ISSET(dbp, DB_AM_CHKSUM));
 
 		pg_off = P_OVERHEAD(dbp);
-		DB_ASSERT(db_cipher->adj_size(pg_off) == 0);
+		DB_ASSERT(dbenv, db_cipher->adj_size(pg_off) == 0);
 
 		switch (pagep->type) {
 		case P_HASHMETA:
@@ -283,11 +277,11 @@ __db_pgout(dbenv, pg, pp, cookie)
 	db_cipher = (DB_CIPHER *)dbenv->crypto_handle;
 	if (F_ISSET(dbp, DB_AM_ENCRYPT)) {
 
-		DB_ASSERT(db_cipher != NULL);
-		DB_ASSERT(F_ISSET(dbp, DB_AM_CHKSUM));
+		DB_ASSERT(dbenv, db_cipher != NULL);
+		DB_ASSERT(dbenv, F_ISSET(dbp, DB_AM_CHKSUM));
 
 		pg_off = P_OVERHEAD(dbp);
-		DB_ASSERT(db_cipher->adj_size(pg_off) == 0);
+		DB_ASSERT(dbenv, db_cipher->adj_size(pg_off) == 0);
 
 		key = db_cipher->mac_key;
 
@@ -332,7 +326,7 @@ __db_pgout(dbenv, pg, pp, cookie)
 			sum_len = pginfo->db_pagesize;
 			break;
 		}
-		__db_chksum(pp, sum_len, key, chksum);
+		__db_chksum(NULL, pp, sum_len, key, chksum);
 		if (F_ISSET(dbp, DB_AM_SWAP) && !F_ISSET(dbp, DB_AM_ENCRYPT))
 			 P_32_SWAP(chksum);
 	}

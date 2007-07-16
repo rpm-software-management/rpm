@@ -1,13 +1,13 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: lock002.tcl,v 11.21 2004/01/28 03:36:28 bostic Exp $
+# $Id: lock002.tcl,v 12.5 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	lock002
 # TEST	Exercise basic multi-process aspects of lock.
-proc lock002 { {maxlocks 1000} {conflicts {0 0 0 0 0 1 0 1 1} } } {
+proc lock002 { {conflicts {0 0 0 0 0 1 0 1 1} } } {
 	source ./include.tcl
 
 	puts "Lock002: Basic multi-process lock tests."
@@ -17,13 +17,13 @@ proc lock002 { {maxlocks 1000} {conflicts {0 0 0 0 0 1 0 1 1} } } {
 	set nmodes [isqrt [llength $conflicts]]
 
 	# Open the lock
-	mlock_open $maxlocks $nmodes $conflicts
+	mlock_open $nmodes $conflicts
 	mlock_wait
 }
 
 # Make sure that we can create a region; destroy it, attach to it,
 # detach from it, etc.
-proc mlock_open { maxl nmodes conflicts } {
+proc mlock_open { nmodes conflicts } {
 	source ./include.tcl
 	global lock_curid
 	global lock_maxid
@@ -32,9 +32,8 @@ proc mlock_open { maxl nmodes conflicts } {
 
 	# Open/Create region here.  Then close it and try to open from
 	# other test process.
-	set env_cmd [concat "berkdb_env -create -mode 0644 \
-	    -lock -lock_max $maxl -lock_conflict" \
-	    [list [list $nmodes $conflicts]] "-home $testdir"]
+	set env_cmd [concat "berkdb_env -create -mode 0644 -lock \
+	    -lock_conflict" [list [list $nmodes $conflicts]] "-home $testdir"]
 	set local_env [eval $env_cmd]
 	$local_env lock_id_set $lock_curid $lock_maxid
 	error_check_good env_open [is_valid_env $local_env] TRUE
@@ -62,9 +61,8 @@ proc mlock_open { maxl nmodes conflicts } {
 	error_check_good remote:lock_close $ret 0
 
 	# Try opening for create.  Will succeed because region exists.
-	set env_cmd [concat "berkdb_env -create -mode 0644 \
-	    -lock -lock_max $maxl -lock_conflict" \
-	    [list [list $nmodes $conflicts]] "-home $testdir"]
+	set env_cmd [concat "berkdb_env -create -mode 0644 -lock \
+	    -lock_conflict" [list [list $nmodes $conflicts]] "-home $testdir"]
 	set local_env [eval $env_cmd]
 	error_check_good remote:env_open [is_valid_env $local_env] TRUE
 
@@ -83,7 +81,7 @@ proc mlock_wait { } {
 	puts "\tLock002.b multi-process get/put wait test"
 
 	# Open region locally
-	set env_cmd "berkdb_env -lock -home $testdir"
+	set env_cmd "berkdb_env -home $testdir"
 	set local_env [eval $env_cmd]
 	error_check_good env_open [is_valid_env $local_env] TRUE
 
@@ -123,8 +121,8 @@ proc mlock_wait { } {
 	error_check_good remote:lock_get \
 	    [is_valid_lock $remote_lock $remote_env] TRUE
 
-	# Now make the other guy wait 5 second and then release his
-	# lock while we try to get a write lock on it
+	# Now make the other guy wait 5 seconds and then release his
+	# lock while we try to get a write lock on it.
 	set start [timestamp -r]
 
 	set ret [send_cmd $f1 "tclsleep 5"]

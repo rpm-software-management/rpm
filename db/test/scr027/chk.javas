@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.javas,v 1.6 2004/09/29 01:12:08 bostic Exp $
+# $Id: chk.javas,v 12.0 2004/11/17 03:44:56 bostic Exp $
 #
 # Check to make sure that the java code samples in the documents build.
 

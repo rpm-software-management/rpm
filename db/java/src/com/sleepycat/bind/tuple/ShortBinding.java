@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: ShortBinding.java,v 1.4 2004/08/02 18:52:04 mjc Exp $
+ * $Id: ShortBinding.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
@@ -39,13 +39,13 @@ public class ShortBinding extends TupleBinding {
     // javadoc is inherited
     public void objectToEntry(Object object, TupleOutput output) {
 
-        /* Do nothing.  Not called by objectToEntry(Object,DatabaseEntry). */
+        output.writeShort(((Number) object).shortValue());
     }
 
     // javadoc is inherited
-    public void objectToEntry(Object object, DatabaseEntry entry) {
+    protected TupleOutput getTupleOutput(Object object) {
 
-        shortToEntry(((Number) object).shortValue(), entry);
+        return sizedOutput();
     }
 
     /**
@@ -69,6 +69,15 @@ public class ShortBinding extends TupleBinding {
      */
     public static void shortToEntry(short val, DatabaseEntry entry) {
 
-        outputToEntry(newOutput(new byte[SHORT_SIZE]).writeShort(val), entry);
+        outputToEntry(sizedOutput().writeShort(val), entry);
+    }
+
+    /**
+     * Returns a tuple output object of the exact size needed, to avoid
+     * wasting space when a single primitive is output.
+     */
+    private static TupleOutput sizedOutput() {
+
+        return new TupleOutput(new byte[SHORT_SIZE]);
     }
 }

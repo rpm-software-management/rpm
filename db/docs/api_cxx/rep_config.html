@@ -1,0 +1,111 @@
+<!--$Id: rep_config.so,v 1.3 2006/07/14 23:08:59 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::rep_set_config</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::rep_set_config</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::rep_set_config(u_int32_t which, int onoff);
+<p>
+int
+DbEnv::rep_get_config(u_int32_t which, int *onoffp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::rep_set_config</h3>
+<p>The DbEnv::rep_set_config method method configures the Berkeley DB replication
+subsystem.</p>
+<p>The database environment's replication subsystem may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "rep_set_config", one or more whitespace
+characters, and the method <b>which</b> parameter as a string; for example,
+"rep_set_config REP_CONF_NOWAIT".
+Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.</p>
+<p>The DbEnv::rep_set_config method configures a database environment, not only operations
+performed using the specified <a href="../api_cxx/env_class.html">DbEnv</a> handle.</p>
+<p>The DbEnv::rep_set_config method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::rep_set_config method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>onoff</b><dd>If the <b>onoff</b> parameter is zero, the configuration flag is turned
+off.  Otherwise, it is turned on.
+<dt><b>which</b><dd>The <b>which</b> parameter must be set to one of the following values:
+<dl compact>
+<dt><a name="DB_REP_CONF_BULK">DB_REP_CONF_BULK</a><dd>The replication master sends groups of records to the clients in a
+single network transfer (defaults to off).
+<dt><a name="DB_REP_CONF_DELAYCLIENT">DB_REP_CONF_DELAYCLIENT</a><dd>The client should delay synchronizing to a newly declared master
+(defaults to off).  Clients configured in this way will remain
+unsynchronized until the application calls the <a href="../api_cxx/rep_sync.html">DbEnv::rep_sync</a> method.
+<dt><a name="DB_REP_CONF_NOAUTOINIT">DB_REP_CONF_NOAUTOINIT</a><dd>The replication master will not automatically re-initialize outdated
+clients (defaults to off).
+<p>The DB_REP_CONF_NOAUTOINIT flag is not supported by Replication
+Manager.</p>
+<dt><a name="DB_REP_CONF_NOWAIT">DB_REP_CONF_NOWAIT</a><dd>Berkeley DB method calls that would normally block while clients are in
+recovery will return errors immediately (defaults to off).
+</dl>
+</dl>
+<h3>Errors</h3>
+<p>The DbEnv::rep_set_config method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbEnv::rep_get_config</h3>
+<p>The DbEnv::rep_get_config method returns whether the specified <b>which</b>
+parameter is currently set or not.</p>
+<p>The DbEnv::rep_get_config method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::rep_get_config method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>which</b><dd>The <b>which</b> parameter is the message value for which configuration
+is being checked.
+<dt><b>onoffp</b><dd>The <b>onoffp</b> parameter references memory into which
+ the configuration of the specified <b>which</b> parameter is copied. If the returned <b>onoff</b> value is zero, the parameter is off;
+otherwise on.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

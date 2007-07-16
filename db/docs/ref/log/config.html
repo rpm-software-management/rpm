@@ -1,5 +1,5 @@
-<!--$Id: config.so,v 10.19 2003/10/18 19:16:03 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: config.so,v 10.20 2006/08/30 10:08:16 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -20,10 +20,10 @@
 logging subsystem's region, the size of the log files on disk and the
 size of the log buffer in memory.  The <a href="../../api_c/env_set_lg_regionmax.html">DB_ENV-&gt;set_lg_regionmax</a> method
 specifies the size of the logging subsystem's region, in bytes.  The
-logging subsystem's default size is 60KB.  This value may need to be
-increased if a large number of files are registered with the Berkeley DB log
-manager, for example, by opening a large number of Berkeley DB database files
-in a transactional application.</p>
+logging subsystem's default size is approximately 60KB.  This value may
+need to be increased if a large number of files are registered with the
+Berkeley DB log manager, for example, by opening a large number of Berkeley DB
+database files in a transactional application.</p>
 <p>The <a href="../../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a> method specifies the individual log file size for
 all the applications sharing the Berkeley DB environment.  Setting the log
 file size is largely a matter of convenience and a reflection of the
@@ -39,9 +39,9 @@ fills up or transaction commit forces the buffer to be written to disk.
 Larger buffer sizes can significantly increase throughput in the
 presence of long-running transactions, highly concurrent applications,
 or transactions producing large amounts of data.  By default, the buffer
-is 32KB.</p>
+is approximately 32KB.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../log/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../log/limits.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

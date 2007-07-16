@@ -1,6 +1,6 @@
 <!--$Id: db_err.so,v 1.3 2002/08/18 21:15:48 bostic Exp $-->
-<!--$Id: env_err.so,v 10.32 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_err.so,v 10.34 2006/04/27 20:17:47 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -34,8 +34,8 @@ DB-&gt;errx(DB *db, const char *fmt, ...);
 <p>The <a href="../api_c/env_err.html">DB_ENV-&gt;err</a>, <a href="../api_c/env_err.html">DB_ENV-&gt;errx</a>,  DB-&gt;err and
 DB-&gt;errx methods provide error-messaging functionality for
 applications written using the Berkeley DB library.</p>
-<p>The <a href="../api_c/env_err.html">DB_ENV-&gt;err</a> method constructs an error message consisting of the
-following elements:</p>
+<p>The DB-&gt;err and <a href="../api_c/env_err.html">DB_ENV-&gt;err</a> methods constructs an error message
+consisting of the following elements:</p>
 <blockquote><dl compact>
 <dt>An optional prefix string<dd>If no error callback function has been set using the
 <a href="../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a> method, any prefix string specified using the
@@ -49,6 +49,10 @@ are converted for output.
 <b>error</b> value, as returned by the <a href="../api_c/env_strerror.html">db_strerror</a> method.
 </dl>
 </blockquote>
+<p>The DB-&gt;errx and <a href="../api_c/env_err.html">DB_ENV-&gt;errx</a> methods are the same as the
+DB-&gt;err and <a href="../api_c/env_err.html">DB_ENV-&gt;err</a> methods, except they do not append the
+final separator characters and standard error string to the error
+message.</p>
 <p>This constructed error message is then handled as follows:</p>
 <blockquote><p>If an error callback function has been set (see <a href="../api_c/db_set_errcall.html">DB-&gt;set_errcall</a>
 and <a href="../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a>), that function is called with two
@@ -66,17 +70,6 @@ is written to stderr, the standard error output stream.</p></blockquote>
 string.
 <dt><b>fmt</b><dd>The <b>fmt</b> parameter is an optional printf-style message to display.
 </dl>
-<p>The <a href="../api_c/env_err.html">DB_ENV-&gt;errx</a> and DB-&gt;errx methods perform identically to the
-<a href="../api_c/env_err.html">DB_ENV-&gt;err</a> and DB-&gt;err methods, except that they do not append
-the final separator characters and standard error string to the error
-message.</p>
-<h3>Parameters</h3>
-<dl compact>
-<dt><b>error</b><dd>The <b>error</b> parameter is the error value for which the
-<a href="../api_c/env_err.html">DB_ENV-&gt;err</a>  and  DB-&gt;err methods will display a explanatory
-string.
-<dt><b>fmt</b><dd>The <b>fmt</b> parameter is an optional printf-style message to display.
-</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_c/db_class.html">DB</a>
@@ -86,6 +79,6 @@ string.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,5 +1,5 @@
-<!--$Id: dbis.so,v 10.9 2002/07/05 17:49:10 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: dbis.so,v 10.11 2006/09/19 16:21:42 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -19,19 +19,18 @@
 now to consider Berkeley DB in particular and see how it fits into the
 framework we have introduced. The key question is, what kinds of
 applications should use Berkeley DB?</p>
-<p>Berkeley DB is an open source embedded database library that provides
+<p>Berkeley DB is an Open Source embedded database library that provides
 scalable, high-performance, transaction-protected data management
-services to applications.  Berkeley DB provides a simple function-call API
-for data access and management.</p>
-<p>By "open source," we mean that Berkeley DB is distributed under a license that
+services to applications.  Berkeley DB provides a simple function-call API for
+data access and management.</p>
+<p>By "Open Source," we mean Berkeley DB is distributed under a license that
 conforms to the <a href="http://www.opensource.org/osd.html">Open
-Source Definition</a>. This license guarantees that Berkeley DB is freely
-available for use and redistribution in other open source products.
-<a href="http://www.sleepycat.com">Sleepycat Software</a> sells
-commercial licenses for redistribution in proprietary applications, but
-in all cases the complete source code for Berkeley DB is freely available for
-download and use.</p>
-<p>Berkeley DB is embedded because it links directly into the application.  It
+Source Definition</a>. This license guarantees Berkeley DB is freely available
+for use and redistribution in other Open Source applications.  Oracle
+Corporation sells commercial licenses allowing the redistribution of
+Berkeley DB in proprietary applications.  In all cases the complete source
+code for Berkeley DB is freely available for download and use.</p>
+<p>Berkeley DB is "embedded" because it links directly into the application.  It
 runs in the same address space as the application. As a result, no
 inter-process communication, either over the network or between
 processes on the same machine, is required for database operations.
@@ -42,14 +41,13 @@ multiple threads in a single process, can all use the database at the
 same time as each uses the Berkeley DB library. Low-level services like
 locking, transaction logging, shared buffer management, memory
 management, and so on are all handled transparently by the library.</p>
-<p>The library is extremely portable. It runs under almost all UNIX and
-Linux variants, Windows, and a number of embedded real-time operating
-systems. It runs on both 32-bit and 64-bit systems.
-It has been deployed on high-end
-Internet servers, desktop machines, and on palmtop computers, set-top
-boxes, in network switches, and elsewhere. Once Berkeley DB is linked into
-the application, the end user generally does not know that there's a
-database present at all.</p>
+<p>The Berkeley DB library is extremely portable. It runs under almost all UNIX
+and Linux variants, Windows, and a number of embedded real-time
+operating systems. It runs on both 32-bit and 64-bit systems.  It has
+been deployed on high-end Internet servers, desktop machines, and on
+palmtop computers, set-top boxes, in network switches, and elsewhere.
+Once Berkeley DB is linked into the application, the end user generally does
+not know that there's a database present at all.</p>
 <p>Berkeley DB is scalable in a number of respects. The database library itself
 is quite compact (under 300 kilobytes of text space on common
 architectures), but it can manage databases up to 256 terabytes in size.
@@ -155,6 +153,6 @@ increasingly important feature in a world using CGI scripts to deliver
 HTML.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../intro/terrain.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../intro/dbisnot.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

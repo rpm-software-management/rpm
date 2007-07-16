@@ -1,5 +1,5 @@
-<!--$Id: faq.so,v 10.30 2003/07/23 21:35:38 mjc Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.36 2006/04/24 14:21:33 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -29,14 +29,14 @@ click on db_load -&gt; Properties and change "Configuration Type" from
 fprintf (or some other standard C library function).</b>
 <p>You should be using the "Debug Multithreaded DLL" compiler option in
 your application when you link with the
-build_win32/Debug/libdb43d.lib library (this .lib file
-is actually a stub for libdb43d.DLL). To check this
+build_windows\Debug\libdb45d.lib library (this .lib file
+is actually a stub for libdb45d.DLL). To check this
 setting in Visual C++, choose the <i>Project/Settings</i> menu
 item and select <i>Code Generation</i> under the tab marked
 <i>C/C++</i>; and see the box marked <i>Use runtime
 library</i>.  This should be set to <i>Debug Multithreaded DLL</i>.
 If your application is linked against the static library,
-build_win32/Debug/libdb43sd.lib; then, you will want
+build_windows\Debug\libdb45sd.lib; then, you will want
 to set <i>Use runtime library</i> to <i>Debug Multithreaded</i>.</p>
 <p>Setting this option incorrectly can cause multiple versions of the
 standard libraries to be linked into your application (one on behalf
@@ -52,29 +52,15 @@ interoperation issues, and guarantees that the right runtime libraries
 are selected.  Note that because we do not use MFC facilities, the MFC
 library DLL is not marked as a dependency for libdb.dll, but the
 appropriate Microsoft C runtime is.</p>
-<p><li><b>How do I enable diagnostic mode on Windows?</b>
-<p>You will need to edit <b>build_win32/db_config.h</b> and change this line:
-<blockquote><pre>/* #undef HAVE_DIAGNOSTIC */</pre></blockquote>
-to this:
-<blockquote><pre>#define HAVE_DIAGNOSTIC 1</pre></blockquote></p>
-<p>Then add this line to the end of <b>build_win32/libdb.def</b>:
-<blockquote><pre>__db_assert     @123</pre></blockquote>
-Change the '123' above to the last entry in the file plus one.</p>
 <a name="4"><!--meow--></a>
 <p><li><b>How can I build Berkeley DB for <a href="http://www.mingw.org">MinGW</a>?</b>
 <p>Follow the instructions in <a href="../../ref/build_unix/intro.html">Building for UNIX/POSIX</a>, and specify the --enable-mingw option to the
 configuration script.  This configuration option currently only builds
 static versions of the library, it does not yet build a DLL version of
 the library.</p>
-<p><li><b>The test suite hangs under Windows.</b>
-<p>There are bugs in some versions of Tcl that may cause the test suite to
-hang on Windows (specifically, we've seen hangs on Windows/NT 4.0).  If
-you want to run the test suite against a Debug version of Berkeley DB, you
-need to build a Debug version of Tcl, which requires building Tcl from
-source.</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_win/notes.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

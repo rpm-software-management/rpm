@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sec001.tcl,v 11.12 2004/09/22 18:01:06 bostic Exp $
+# $Id: sec001.tcl,v 12.3 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	sec001
 # TEST	Test of security interface

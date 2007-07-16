@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2004
-# Sleepycat Software. All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: txn011.tcl,v 1.11 2004/07/26 20:27:49 carol Exp $
+# $Id: txn011.tcl,v 12.5 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	txn011
 # TEST	Test durable and non-durable txns.
@@ -18,144 +18,146 @@ proc txn011 { {ntxns 100} } {
 	source ./include.tcl
 	global util_path
 
-	puts "Txn011: Non-durable txns"
-	env_cleanup $testdir
+	foreach envtype { "" "-private" } {
+		puts "Txn011: Non-durable txns ($envtype)."
+		env_cleanup $testdir
 
-	puts "\tTxn011.a: Persistent env recovery with -log_inmemory"
-	set lbuf [expr 8 * [expr 1024 * 1024]]
-	set env_cmd "berkdb_env -create \
-	    -home $testdir -txn -log_inmemory -log_buffer $lbuf"
-	set ndenv [eval $env_cmd]
-	set db [berkdb_open -create -auto_commit \
-	    -btree -env $ndenv -notdurable test.db]
-	check_log_records $testdir
-	error_check_good db_close [$db close] 0
-	error_check_good ndenv_close [$ndenv close] 0
+		puts "\tTxn011.a: Persistent env recovery with -log_inmemory"
+		set lbuf [expr 8 * [expr 1024 * 1024]]
+		set env_cmd "berkdb_env -create \
+		    -home $testdir -txn -log_inmemory -log_buffer $lbuf"
+		set ndenv [eval $env_cmd $envtype]
+		set db [berkdb_open -create -auto_commit \
+		    -btree -env $ndenv -notdurable test.db]
+		check_log_records $testdir
+		error_check_good db_close [$db close] 0
+		error_check_good ndenv_close [$ndenv close] 0
 
-	# Run recovery with -e to retain environment.
-	set stat [catch {exec $util_path/db_recover -e -h $testdir} ret]
-	error_check_good db_printlog $stat 0
+		# Run recovery with -e to retain environment.
+		set stat [catch {exec $util_path/db_recover -e -h $testdir} ret]
+		error_check_good db_printlog $stat 0
 
-	# Rejoin env and make sure that the db is still there.
-	set ndenv [berkdb_env -home $testdir]
-	set db [berkdb_open -auto_commit -env $ndenv test.db]
-	error_check_good db_close [$db close] 0
-	error_check_good ndenv_close [$ndenv close] 0
-	env_cleanup $testdir
+		# Rejoin env and make sure that the db is still there.
+		set ndenv [berkdb_env -home $testdir]
+		set db [berkdb_open -auto_commit -env $ndenv test.db]
+		error_check_good db_close [$db close] 0
+		error_check_good ndenv_close [$ndenv close] 0
+		env_cleanup $testdir
 
-	# Start with a new env for the next test.
-	set ndenv [eval $env_cmd]
-	error_check_good env_open [is_valid_env $ndenv] TRUE
+		# Start with a new env for the next test.
+		set ndenv [eval $env_cmd]
+		error_check_good env_open [is_valid_env $ndenv] TRUE
 
-	# Open/create the database.
-	set testfile notdurable.db
-	set db [eval berkdb_open -create \
-	    -auto_commit -env $ndenv -notdurable -btree $testfile]
-	error_check_good dbopen [is_valid_db $db] TRUE
+		# Open/create the database.
+		set testfile notdurable.db
+		set db [eval berkdb_open -create \
+		    -auto_commit -env $ndenv -notdurable -btree $testfile]
+		error_check_good dbopen [is_valid_db $db] TRUE
 
-	puts "\tTxn011.b: Abort txns in in-memory logging env."
-	txn011_runtxns $ntxns $db $ndenv abort
-	# Make sure there is nothing in the db.
-	txn011_check_empty $db $ndenv
+		puts "\tTxn011.b: Abort txns in in-memory logging env."
+		txn011_runtxns $ntxns $db $ndenv abort
+		# Make sure there is nothing in the db.
+		txn011_check_empty $db $ndenv
 
-	puts "\tTxn011.c: Commit txns in in-memory logging env."
-	txn011_runtxns $ntxns $db $ndenv commit
+		puts "\tTxn011.c: Commit txns in in-memory logging env."
+		txn011_runtxns $ntxns $db $ndenv commit
 
-	# Make sure we haven't written any inappropriate log records
-	check_log_records $testdir
+		# Make sure we haven't written any inappropriate log records
+		check_log_records $testdir
 
-	# Clean up non-durable env tests.
-	error_check_good db_close [$db close] 0
-	error_check_good ndenv_close [$ndenv close] 0
-	env_cleanup $testdir
+		# Clean up non-durable env tests.
+		error_check_good db_close [$db close] 0
+		error_check_good ndenv_close [$ndenv close] 0
+		env_cleanup $testdir
 
-	puts "\tTxn011.d: Set up mixed durable/non-durable test."
-	# Open/create the mixed environment
-	set mixed_env_cmd "berkdb_env_noerr -create \
-		-home $testdir -txn -log_inmemory -log_buffer $lbuf"
-	set env [eval $mixed_env_cmd]
-	error_check_good env_open [is_valid_env $env] TRUE
-	check_log_records $testdir
+		puts "\tTxn011.d: Set up mixed durable/non-durable test."
+		# Open/create the mixed environment
+		set mixed_env_cmd "berkdb_env_noerr -create \
+			-home $testdir -txn -log_inmemory -log_buffer $lbuf"
+		set env [eval $mixed_env_cmd]
+		error_check_good env_open [is_valid_env $env] TRUE
+		check_log_records $testdir
 
-	# Open/create the non-durable database
-	set nondurfile nondurable.db
-	set ndb [berkdb_open_noerr -create\
-	    -auto_commit -env $env -btree -notdurable $nondurfile]
-	error_check_good dbopen [is_valid_db $ndb] TRUE
-	check_log_records $testdir
+		# Open/create the non-durable database
+		set nondurfile nondurable.db
+		set ndb [berkdb_open_noerr -create\
+		    -auto_commit -env $env -btree -notdurable $nondurfile]
+		error_check_good dbopen [is_valid_db $ndb] TRUE
+		check_log_records $testdir
 
-	puts "\tTxn011.e: Abort txns in non-durable db."
-	txn011_runtxns $ntxns $ndb $env abort
-	# Make sure there is nothing in the db.
-	txn011_check_empty $ndb $env
-	check_log_records $testdir
+		puts "\tTxn011.e: Abort txns in non-durable db."
+		txn011_runtxns $ntxns $ndb $env abort
+		# Make sure there is nothing in the db.
+		txn011_check_empty $ndb $env
+		check_log_records $testdir
 
-	puts "\tTxn011.f: Commit txns in non-durable db."
-	txn011_runtxns $ntxns $ndb $env commit
-	check_log_records $testdir
+		puts "\tTxn011.f: Commit txns in non-durable db."
+		txn011_runtxns $ntxns $ndb $env commit
+		check_log_records $testdir
 
-	# Open/create the durable database
-	set durfile durable.db
-	set ddb [eval berkdb_open_noerr \
-	   -create -auto_commit -env $env -btree $durfile]
-	error_check_good dbopen [is_valid_db $ddb] TRUE
+		# Open/create the durable database
+		set durfile durable.db
+		set ddb [eval berkdb_open_noerr \
+		   -create -auto_commit -env $env -btree $durfile]
+		error_check_good dbopen [is_valid_db $ddb] TRUE
 
-	# Try to get a not-durable handle on the durable db.
-	puts "\tTxn011.g: Try to get a not-durable handle on\
-	    a durable db."
-	set errormsg "Cannot open DURABLE and NOT DURABLE handles"
-	catch {berkdb_open_noerr \
-	    -auto_commit -env $env -notdurable $durfile} res
-	error_check_good handle_error1 [is_substr $res $errormsg] 1
-	error_check_good ddb_close [$ddb close] 0
-	catch {berkdb_open_noerr \
-	    -auto_commit -env $env -notdurable $durfile} res
-	error_check_good handle_error2 [is_substr $res $errormsg] 1
+		# Try to get a not-durable handle on the durable db.
+		puts "\tTxn011.g: Try to get a not-durable handle on\
+		    a durable db."
+		set errormsg "Cannot open DURABLE and NOT DURABLE handles"
+		catch {berkdb_open_noerr \
+		    -auto_commit -env $env -notdurable $durfile} res
+		error_check_good handle_error1 [is_substr $res $errormsg] 1
+		error_check_good ddb_close [$ddb close] 0
+		catch {berkdb_open_noerr \
+		    -auto_commit -env $env -notdurable $durfile} res
+		error_check_good handle_error2 [is_substr $res $errormsg] 1
 
-	# Now reopen as durable for the remainder of the test.
-	set ddb [berkdb_open_noerr \
-	    -auto_commit -env $env -btree $durfile]
-	error_check_good dbopen [is_valid_db $ddb] TRUE
+		# Now reopen as durable for the remainder of the test.
+		set ddb [berkdb_open_noerr \
+		    -auto_commit -env $env -btree $durfile]
+		error_check_good dbopen [is_valid_db $ddb] TRUE
 
-	puts "\tTxn011.h: Abort txns in durable db."
-	# Add items to db in several txns but abort every one.
-	txn011_runtxns $ntxns $ddb $env abort
-	# Make sure there is nothing in the db.
-	txn011_check_empty $ddb $env
+		puts "\tTxn011.h: Abort txns in durable db."
+		# Add items to db in several txns but abort every one.
+		txn011_runtxns $ntxns $ddb $env abort
+		# Make sure there is nothing in the db.
+		txn011_check_empty $ddb $env
 
-	puts "\tTxn011.i: Commit txns in durable db."
-	txn011_runtxns $ntxns $ddb $env commit
+		puts "\tTxn011.i: Commit txns in durable db."
+		txn011_runtxns $ntxns $ddb $env commit
 
-	puts "\tTxn011.j: Subdbs must all be durable or all not durable."
-	# Ask for -notdurable on durable db/subdb
-	set sdb1 [eval berkdb_open_noerr -create -auto_commit \
-	    -env $env -btree testfile1.db subdb1]
-	catch {set sdb2 [eval berkdb_open_noerr -create -auto_commit \
-	    -env $env -btree -notdurable testfile1.db subdb2]} res
-	error_check_good same_type_subdb1 [is_substr $res $errormsg] 1
-	error_check_good sdb1_close [$sdb1 close] 0
+		puts "\tTxn011.j: Subdbs must all be durable or all not durable."
+		# Ask for -notdurable on durable db/subdb
+		set sdb1 [eval berkdb_open_noerr -create -auto_commit \
+		    -env $env -btree testfile1.db subdb1]
+		catch {set sdb2 [eval berkdb_open_noerr -create -auto_commit \
+		    -env $env -btree -notdurable testfile1.db subdb2]} res
+		error_check_good same_type_subdb1 [is_substr $res $errormsg] 1
+		error_check_good sdb1_close [$sdb1 close] 0
 
-	# Ask for durable on notdurable db/subdb
-	set sdb3 [eval berkdb_open_noerr -create -auto_commit \
-	    -env $env -btree -notdurable testfile2.db subdb3]
-	catch {set sdb4 [eval berkdb_open_noerr -create -auto_commit \
-	    -env $env -btree testfile2.db subdb4]} res
-	error_check_good same_type_subdb2 [is_substr $res $errormsg] 1
-	error_check_good sdb3_close [$sdb3 close] 0
+		# Ask for durable on notdurable db/subdb
+		set sdb3 [eval berkdb_open_noerr -create -auto_commit \
+		    -env $env -btree -notdurable testfile2.db subdb3]
+		catch {set sdb4 [eval berkdb_open_noerr -create -auto_commit \
+		    -env $env -btree testfile2.db subdb4]} res
+		error_check_good same_type_subdb2 [is_substr $res $errormsg] 1
+		error_check_good sdb3_close [$sdb3 close] 0
 
-	puts "\tTxn011.k: Try to get a durable handle on a\
-	    not-durable db."
-	# Try to get a durable handle on a not-durable database,
-	# while open or on a new open.  Both should fail.
-	catch {berkdb_open_noerr -auto_commit -env $env $nondurfile} res
-	error_check_good handle_error [is_substr $res $errormsg] 1
-	error_check_good ndb_close [$ndb close] 0
-	catch {berkdb_open_noerr -auto_commit -env $env $nondurfile} res
-	error_check_good handle_error [is_substr $res $errormsg] 1
+		puts "\tTxn011.k: Try to get a durable handle on a\
+		    not-durable db."
+		# Try to get a durable handle on a not-durable database,
+		# while open or on a new open.  Both should fail.
+		catch {berkdb_open_noerr -auto_commit -env $env $nondurfile} res
+		error_check_good handle_error [is_substr $res $errormsg] 1
+		error_check_good ndb_close [$ndb close] 0
+		catch {berkdb_open_noerr -auto_commit -env $env $nondurfile} res
+		error_check_good handle_error [is_substr $res $errormsg] 1
 
-	# Clean up mixed env.
-	error_check_good ddb_close [$ddb close] 0
-	error_check_good env_close [$env close] 0
+		# Clean up mixed env.
+		error_check_good ddb_close [$ddb close] 0
+		error_check_good env_close [$env close] 0
+	}
 }
 
 proc txn011_runtxns { ntxns db env end } {

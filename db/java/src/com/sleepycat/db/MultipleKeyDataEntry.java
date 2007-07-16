@@ -1,11 +1,11 @@
 /*-
-* See the file LICENSE for redistribution information.
-*
-* Copyright (c) 2002-2004
-*	Sleepycat Software.  All rights reserved.
-*
-* $Id: MultipleKeyDataEntry.java,v 1.1 2004/04/06 20:43:40 mjc Exp $
-*/
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
+ *
+ * $Id: MultipleKeyDataEntry.java,v 12.4 2006/08/24 14:46:08 bostic Exp $
+ */
 
 package com.sleepycat.db;
 
@@ -27,8 +27,13 @@ public class MultipleKeyDataEntry extends MultipleEntry {
         super(data, offset, size);
     }
 
+    /**
+     * Return the bulk retrieval flag and reset the entry position so that the
+     * next set of key/data can be returned.
+     */
     /* package */
     int getMultiFlag() {
+        pos = 0;
         return DbConstants.DB_MULTIPLE_KEY;
     }
 

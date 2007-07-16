@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2003
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: SecondaryDeadlockTest.java,v 1.3 2004/08/02 18:53:08 mjc Exp $
+ * $Id: SecondaryDeadlockTest.java,v 12.5 2006/08/24 14:46:46 bostic Exp $
  */
 
 package com.sleepycat.collections.test;
@@ -12,6 +12,7 @@ package com.sleepycat.collections.test;
 import com.sleepycat.db.Database;
 import com.sleepycat.db.DeadlockException;
 import com.sleepycat.db.Environment;
+import com.sleepycat.db.TransactionConfig;
 import com.sleepycat.collections.StoredSortedMap;
 import com.sleepycat.collections.TransactionRunner;
 import com.sleepycat.collections.TransactionWorker;
@@ -33,8 +34,8 @@ public class SecondaryDeadlockTest extends TestCase {
 
     private static final Long N_ONE = new Long(1);
     private static final Long N_101 = new Long(101);
-    private static final int N_ITERS = 200;
-    private static final int MAX_RETRIES = 30;
+    private static final int N_ITERS = 20;
+    private static final int MAX_RETRIES = 1000;
 
     public static void main(String[] args)
         throws Exception {
@@ -61,6 +62,7 @@ public class SecondaryDeadlockTest extends TestCase {
     private Database index;
     private StoredSortedMap storeMap;
     private StoredSortedMap indexMap;
+    private Exception exception;
 
     public SecondaryDeadlockTest(String name) {
 
@@ -121,12 +123,21 @@ public class SecondaryDeadlockTest extends TestCase {
         runner.setMaxRetries(MAX_RETRIES);
 
         /*
+         * This test deadlocks a lot at degree 3 serialization.  In debugging
+         * this I discovered it was not due to phantom prevention per se but
+         * just to a change in timing.
+         */
+        TransactionConfig txnConfig = new TransactionConfig();
+        runner.setTransactionConfig(txnConfig);
+
+        /*
          * A thread to do put() and delete() via the primary, which will lock
          * the primary first then the secondary.  Uses transactions.
          */
         final Thread thread1 = new Thread(new Runnable() {
             public void run() {
                 try {
+                    /* The TransactionRunner performs retries. */
                     for (int i = 0; i < N_ITERS; i +=1 ) {
                         runner.run(new TransactionWorker() {
                             public void doWork() throws Exception {
@@ -141,10 +152,10 @@ public class SecondaryDeadlockTest extends TestCase {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    fail(e.toString());
+                    exception = e;
                 }
             }
-        });
+        }, "ThreadOne");
 
         /*
          * A thread to get() via the secondary, which will lock the secondary
@@ -165,18 +176,17 @@ public class SecondaryDeadlockTest extends TestCase {
                                 if (e instanceof DeadlockException) {
                                     continue; /* Retry on deadlock. */
                                 } else {
-                                    e.printStackTrace();
-                                    fail();
+                                    throw e;
                                 }
                             }
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    fail(e.toString());
+                    exception = e;
                 }
             }
-        });
+        }, "ThreadTwo");
 
         thread1.start();
         thread2.start();
@@ -189,5 +199,9 @@ public class SecondaryDeadlockTest extends TestCase {
         store = null;
         env.close();
         env = null;
+
+        if (exception != null) {
+            fail(exception.toString());
+        }
     }
 }

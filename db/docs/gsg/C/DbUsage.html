@@ -73,7 +73,7 @@
         </p>
         <p>
             Note that for the inventory data, we will store the data by
-            marshalling it into a buffer, described below.
+            marshaling it into a buffer, described below.
         </p>
         <a id="c_dbt10"></a>
         <pre class="programlisting">/* File: gettingstarted_common.h */
@@ -113,7 +113,7 @@
     </p>
         <a id="c_dbt11"></a>
         <pre class="programlisting">/* example_database_load.c */
-#include "gettingstarted_common.h"
+#include &quot;gettingstarted_common.h&quot;
                                                                                                                                 
                                                                                                                                 
 /* Forward declarations */
@@ -145,7 +145,7 @@ main(int argc, char *argv[])
     * identify the location of the flat-text data
     * input files.
     */
-    basename = "./";
+    basename = &quot;./&quot;;
 
     /* 
      * Parse the command line arguments here and determine 
@@ -164,29 +164,29 @@ main(int argc, char *argv[])
     /* Find our input files */
     size = strlen(basename) + strlen(INVENTORY_FILE) + 1;
     inventory_file = malloc(size);
-    snprintf(inventory_file, size, "%s%s", basename, INVENTORY_FILE);
+    snprintf(inventory_file, size, &quot;%s%s&quot;, basename, INVENTORY_FILE);
                                                                                                                                 
     size = strlen(basename) + strlen(VENDORS_FILE) + 1;
     vendor_file = malloc(size);
-    snprintf(vendor_file, size, "%s%s", basename, VENDORS_FILE);
+    snprintf(vendor_file, size, &quot;%s%s&quot;, basename, VENDORS_FILE);
                                                                                                                                 
     /* Open all databases */
-    ret = databases_setup(&amp;my_stock, "example_database_load", stderr);
+    ret = databases_setup(&amp;my_stock, &quot;example_database_load&quot;, stderr);
     if (ret != 0) {
-            fprintf(stderr, "Error opening databases\n");
+            fprintf(stderr, &quot;Error opening databases\n&quot;);
             databases_close(&amp;my_stock);
             return (ret);
     }
                                                                                                                                 
     ret = load_vendors_database(my_stock, vendor_file);
     if (!ret) {
-        fprintf(stderr, "Error loading vendors database.\n");
+        fprintf(stderr, &quot;Error loading vendors database.\n&quot;);
         databases_close(&amp;my_stock);
         return (ret);
     }
     ret = load_inventory_database(my_stock, inventory_file);
     if (!ret) {
-        fprintf(stderr, "Error loading inventory database.\n");
+        fprintf(stderr, &quot;Error loading inventory database.\n&quot;);
         databases_close(&amp;my_stock);
         return (ret);
     }
@@ -194,7 +194,7 @@ main(int argc, char *argv[])
     /* close our environment and databases */
     databases_close(&amp;my_stock);
                                                                                                                                 
-    printf("Done loading databases.\n");
+    printf(&quot;Done loading databases.\n&quot;);
     return (0);
 }</pre>
         <p>
@@ -233,9 +233,9 @@ load_vendors_database(STOCK_DBS my_stock, char *vendor_file)
     char buf[MAXLINE];
                                                                                                                                
     /* Open the vendor file for read access */
-    ifp = fopen(vendor_file, "r");
+    ifp = fopen(vendor_file, &quot;r&quot;);
     if (ifp == NULL) {
-        fprintf(stderr, "Error opening file '%s'\n", vendor_file);
+        fprintf(stderr, &quot;Error opening file '%s'\n&quot;, vendor_file);
         return(-1);
     }
                                                                                                                                
@@ -254,7 +254,7 @@ load_vendors_database(STOCK_DBS my_stock, char *vendor_file)
          * defensive code here.
          */
         sscanf(buf,
-          "%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]",
+          &quot;%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]&quot;,
           my_vendor.name, my_vendor.street,
           my_vendor.city, my_vendor.state,
           my_vendor.zipcode, my_vendor.phone_number,
@@ -362,9 +362,9 @@ load_inventory_database(STOCK_DBS my_stock, char *inventory_file)
     char vendor[MAXFIELD], sku[MAXFIELD];
 
     /* Load the inventory database */
-    ifp = fopen(inventory_file, "r");
+    ifp = fopen(inventory_file, &quot;r&quot;);
     if (ifp == NULL) {
-        fprintf(stderr, "Error opening file '%s'\n", inventory_file);
+        fprintf(stderr, &quot;Error opening file '%s'\n&quot;, inventory_file);
         return(-1);
     }
                                                                                                                                
@@ -382,7 +382,7 @@ load_inventory_database(STOCK_DBS my_stock, char *inventory_file)
          * program, there would be a lot more defensive code here.
          */
         sscanf(buf,
-          "%20[^#]#%20[^#]#%f#%i#%20[^#]#%20[^\n]",
+          &quot;%20[^#]#%20[^#]#%f#%i#%20[^#]#%20[^\n]&quot;,
           name, sku, &amp;price, &amp;quantity, category, vendor);
                                                                                                                                
         /*

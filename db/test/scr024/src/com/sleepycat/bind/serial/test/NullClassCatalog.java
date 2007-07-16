@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: NullClassCatalog.java,v 1.4 2004/09/22 18:01:06 bostic Exp $
+ * $Id: NullClassCatalog.java,v 12.4 2006/08/24 14:46:43 bostic Exp $
  */
 
 package com.sleepycat.bind.serial.test;

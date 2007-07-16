@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: log006.tcl,v 11.12 2004/09/22 18:01:05 bostic Exp $
+# $Id: log006.tcl,v 12.3 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	log006
 # TEST	Test log file auto-remove.

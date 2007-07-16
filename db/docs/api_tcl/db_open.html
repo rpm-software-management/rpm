@@ -1,6 +1,6 @@
-<!--$Id: db_open.so,v 11.33 2003/05/09 20:07:57 bostic Exp $-->
-<!--$Id: m4.tcl,v 11.27 2004/09/07 15:37:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_open.so,v 11.34 2004/12/16 19:13:04 bostic Exp $-->
+<!--$Id: m4.tcl,v 11.28 2004/12/16 19:13:05 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -59,9 +59,10 @@ db1).  It is through this Tcl command that the script accesses the
 database methods.</p>
 <p>The options are as follows:</p>
 <dl compact>
-<dt>-auto_commit<dd>Enclose the call within a transaction. If the call succeeds, changes
-made by the operation will be recoverable. If the call fails, the
-operation will have made no changes.
+<dt>-auto_commit<dd>Enclose the call within a transaction.  If the call succeeds, the open
+operation will be recoverable and all subsequent database modification
+operations based on this handle will be transactionally protected.  If
+the call fails, no database will have been created.
 <dt>-btree<dd>Open/create a database of type Btree.  The Btree format
 is a representation of a sorted, balanced tree structure.
 <dt>-hash<dd>Open/create a database of type Hash.  The Hash format is
@@ -284,10 +285,11 @@ implement this flag.  For this reason, it is only applicable to the
 physical file and cannot be used to discard databases within a file.
 <p>The <b>-truncate</b> argument cannot be transaction-protected, and it is
 an error to specify it in a transaction-protected environment.</p>
-<dt>-txn txnid<dd>If the operation is to be
-transaction-protected (other than by specifying the -auto_commit flag),
-the <b>txnid</b> parameter is a transaction handle returned from
-<i>env</i> <b>txn</b>.
+<dt>-txn txnid<dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<i>env</i> <b>txn</b>.  If no transaction handle is specified, but the
+-auto_commit flag is specified,
+the operation will be implicitly transaction protected.
 <dt>--<dd>Mark the end of the command arguments.
 <dt>file<dd>The name of a single physical file on disk that will be used to back the
 database.
@@ -308,6 +310,6 @@ file</a> for more information.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/api_tcl.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

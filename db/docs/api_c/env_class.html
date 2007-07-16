@@ -1,5 +1,5 @@
-<!--$Id: env_class.so,v 10.41 2004/08/18 02:33:48 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_class.so,v 10.45 2005/11/30 19:09:47 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -30,7 +30,7 @@ db_env_create(DB_ENV **dbenvp, u_int32_t flags);
 <p>The DB_ENV object is the handle for a Berkeley DB environment -- a
 collection including support for some or all of caching, locking,
 logging and transaction subsystems, as well as databases and log files.
-Methods off the DB_ENV handle are used to configure the
+Methods of the DB_ENV handle are used to configure the
 environment as well as to operate on subsystems and databases in the
 environment.</p>
 <p>DB_ENV handles are free-threaded if the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag
@@ -40,11 +40,11 @@ remains open that is using it as a reference (for example, <a href="../api_c/db_
 or <a href="../api_c/txn_class.html">DB_TXN</a>).  Once either the <a href="../api_c/env_close.html">DB_ENV-&gt;close</a> or
 <a href="../api_c/env_remove.html">DB_ENV-&gt;remove</a> methods are called, the handle may not be accessed again,
 regardless of the method's return.</p>
-<p>The db_env_create method creates a DB_ENV structure that is the
-handle for a Berkeley DB environment.  A pointer to this structure is returned
-in the memory to which <b>dbenvp</b> refers.  Calling the
-<a href="../api_c/env_close.html">DB_ENV-&gt;close</a> or <a href="../api_c/env_remove.html">DB_ENV-&gt;remove</a> methods will discard the returned
-handle.</p>
+<p>The db_env_create function creates a DB_ENV structure that
+is the handle for a Berkeley DB environment.  This function allocates memory
+for the structure, returning a pointer to the structure in the memory
+to which <b>dbenvp</b> refers.  To release the allocated memory and
+discard the handle, call the <a href="../api_c/env_close.html">DB_ENV-&gt;close</a> or <a href="../api_c/env_remove.html">DB_ENV-&gt;remove</a> methods.</p>
 <p>The DB_ENV handle contains a special field, "app_private", which
 is declared as type "void *".  This field is provided for the use of
 the application program.  It is initialized to NULL and is not further
@@ -74,6 +74,6 @@ DB_ENV
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

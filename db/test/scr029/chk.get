@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.get,v 1.1 2004/03/15 21:09:50 bostic Exp $
+# $Id: chk.get,v 12.0 2004/11/17 03:44:56 bostic Exp $
 #
 # Build a program that calls the getters.
 

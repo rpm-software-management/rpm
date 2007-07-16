@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993
@@ -32,14 +32,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: memmove.c,v 11.8 2004/01/28 03:35:52 bostic Exp $
+ * $Id: memmove.c,v 12.5 2006/08/24 14:45:10 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
+#include "db_int.h"
 
 /*
  * sizeof(word) MUST BE A POWER OF TWO
@@ -102,13 +100,13 @@ bcopy(src0, dst0, length)
 		/*
 		 * Copy forward.
 		 */
-		t = (int)src;	/* only need low bits */
-		if ((t | (int)dst) & wmask) {
+		t = (size_t)src;	/* only need low bits */
+		if ((t | (size_t)dst) & wmask) {
 			/*
 			 * Try to align operands.  This cannot be done
 			 * unless the low bits match.
 			 */
-			if ((t ^ (int)dst) & wmask || length < wsize)
+			if ((t ^ (size_t)dst) & wmask || length < wsize)
 				t = length;
 			else
 				t = wsize - (t & wmask);
@@ -130,9 +128,9 @@ bcopy(src0, dst0, length)
 		 */
 		src += length;
 		dst += length;
-		t = (int)src;
-		if ((t | (int)dst) & wmask) {
-			if ((t ^ (int)dst) & wmask || length <= wsize)
+		t = (size_t)src;
+		if ((t | (size_t)dst) & wmask) {
+			if ((t ^ (size_t)dst) & wmask || length <= wsize)
 				t = length;
 			else
 				t &= wmask;

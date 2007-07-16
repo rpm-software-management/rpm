@@ -1,15 +1,27 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep036.tcl,v 11.2 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep036.tcl,v 12.9 2006/09/15 14:48:14 carol Exp $
 #
 # TEST  	rep036
 # TEST	Multiple master processes writing to the database.
 # TEST	One process handles all message processing.
 
 proc rep036 { method { niter 200 } { tnum "036" } args } {
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Valid for btree only.
+	if { $checking_valid_methods } {
+		set test_methods { btree }
+		return $test_methods
+	}
 	if { [is_btree $method] == 0 } {
 		puts "Rep$tnum: Skipping for method $method."
 		return
@@ -53,11 +65,11 @@ proc rep036_sub { method niter tnum envargs logset args } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(M) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs -home $masterdir $m_logargs \
 	    -errpfx MASTER -errfile /dev/stderr -txn -rep_master \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(M) "berkdb_env_noerr -create -lock_max 2500 \
+#	set env_cmd(M) "berkdb_env_noerr -create \
 #	    -log_max 1000000 $envargs -home $masterdir $m_logargs \
 #	    -errpfx MASTER -errfile /dev/stderr -txn -rep_master \
 #	    -verbose {rep on} \
@@ -67,11 +79,11 @@ proc rep036_sub { method niter tnum envargs logset args } {
 
 	# Open a client
 	repladd 2
-	set env_cmd(C) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(C) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs -home $clientdir $c_logargs \
 	    -errfile /dev/stderr -errpfx CLIENT -txn -rep_client \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(C) "berkdb_env_noerr -create -lock_max 2500 \
+#	set env_cmd(C) "berkdb_env_noerr -create \
 #	    -log_max 1000000 $envargs -home $clientdir $c_logargs \
 #	    -errfile /dev/stderr -errpfx CLIENT -txn -rep_client \
 #	    -verbose {rep on} \
@@ -83,6 +95,11 @@ proc rep036_sub { method niter tnum envargs logset args } {
 	set envlist "{$env1 1} {$env2 2}"
 	process_msgs $envlist
 
+#	# Start up deadlock detector.
+#	# Commented out, as are two more sections below - see [#15049].
+#       set dpid [eval {exec $util_path/db_deadlock} \
+#	    -a o -v -t 2.0 -h $masterdir >& $testdir/dd.parent.out &]
+				    
 	# Set up master database.
 	set testfile "rep$tnum.db"
 	set omethod [convert_method $method]
@@ -123,6 +140,17 @@ proc rep036_sub { method niter tnum envargs logset args } {
 		set txn "-txn $t"
 		set ret [eval \
 			{$mdb put} $txn {$key [chop_data $method $string]}]
+
+#		# Writing to this database can deadlock.  If we do, let the
+#		# deadlock detector break the lock, wait a second, and try again.
+#		while { [catch {eval {$mdb put}\
+#		    $txn {$key [chop_data $method $string]}} ret] } {
+#			# Make sure the failure is a deadlock.
+#			error_check_good deadlock [is_substr $ret DB_LOCK_DEADLOCK] 1
+#			tclsleep 1
+#		}
+
+
 		error_check_good mdb_put $ret 0
 		error_check_good txn_commit [$t commit] 0
 
@@ -144,6 +172,9 @@ proc rep036_sub { method niter tnum envargs logset args } {
 	watch_procs $pidlist 1
 	process_msgs $envlist
 
+#	# We are done with the deadlock detector.
+#	error_check_good kill_deadlock_detector [tclkill $dpid] ""
+		
 	puts "\tRep$tnum.c: Verify logs and databases"
 	# Check that master and client logs and dbs are identical.
 	# Logs first ...

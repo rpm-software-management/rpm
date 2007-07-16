@@ -1,5 +1,5 @@
-<!--$Id: java.so,v 1.20 2004/09/28 14:13:09 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: java.so,v 1.21 2006/08/24 16:32:33 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -47,8 +47,8 @@ To determine what version virtual machine you are running, enter:</p>
 <p>at a command line and look for the version number.  If you need to
 deploy to a version 1.1 or 1.0 Java environment, it may be possible to
 do so by not including the classes in the com.sleepycat.bdb package
-in the Java build process (however, that workaround has not been
-tested by Sleepycat Software).</p>
+in the Java build process (however, that workaround has not been tested
+by us).</p>
 <p>A few inconsistent methods have been cleaned up (for example, Db.close
 now returns void; previously, it returned an int which was always zero).
 The synchronized attributed has been toggled on some methods -- this is
@@ -71,16 +71,16 @@ interfaces more uniform and predictable.  Specifically, DbEnvFeedback is now
 DbEnvFeedbackHandler, DbErrcall is DbErrorHandler and DbFeedback is
 DbFeedbackHandler.  In every case we have kept the older interfaces and the
 older registration methods so as to allow for backward compatibility in this
-release.  Expect them to be removed in future releases.
-</p>
-<p>As you upgrade to this release of Berkeley DB you will notice that we have added
-an entirely new layer inside the package com.sleepycat.bdb.  This was
-formerly the Greybird project by Mark Hayes.  Sleepycat and Mark worked
-together to incorporate his work.  We have done this in hopes of reducing
-the learning curve when using Berkeley DB in a Java project.  When you upgrade
-you should consider switching to this layer as over time the historical
-classes and the new bdb package classes will be more and more integrated
-providing a simple yet powerful interface from Java into the Berkeley DB library.</p>
+release.  Expect them to be removed in future releases.</p>
+<p>As you upgrade to this release of Berkeley DB you will notice that we have
+added an entirely new layer inside the package com.sleepycat.bdb.  This
+was formerly the Greybird project by Mark Hayes.  Sleepycat Software and
+Mark worked together to incorporate his work.  We have done this in
+hopes of reducing the learning curve when using Berkeley DB in a Java project.
+When you upgrade you should consider switching to this layer as over
+time the historical classes and the new bdb package classes will be more
+and more integrated providing a simple yet powerful interface from Java
+into the Berkeley DB library.</p>
 <p>Berkeley DB's Java API is now generated with <a href="http://www.swig.org">SWIG</a>.
 The new Java API is significantly faster for many operations.</p>
 <p>Some internal methods and constructors that were previously public have
@@ -91,6 +91,6 @@ collections style access layer (com.sleepycat.bdb) and the now relocated XA
 system (com.sleepycat.xa).</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.2/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.2/queue.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

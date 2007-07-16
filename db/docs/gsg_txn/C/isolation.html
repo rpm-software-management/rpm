@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Isolation</title>
+    <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
+    <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
+    <link rel="up" href="txnconcurrency.html" title="Chapter 4. Concurrency" />
+    <link rel="previous" href="lockingsubsystem.html" title="The Locking Subsystem" />
+    <link rel="next" href="txn_ccursor.html" title="Transactional Cursors and Concurrent Applications" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <th colspan="3" align="center">Isolation</th>
+        </tr>
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="lockingsubsystem.html">Prev</a> </td>
+          <th width="60%" align="center">Chapter 4. Concurrency</th>
+          <td width="20%" align="right"> <a accesskey="n" href="txn_ccursor.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="sect1" lang="en" xml:lang="en">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title" style="clear: both"><a id="isolation"></a>Isolation</h2>
+          </div>
+        </div>
+        <div></div>
+      </div>
+      <p>
+            Isolation guarantees are an important aspect of transactional
+            protection.  Transactions
+            ensure the data your transaction is working with will not be changed by some other transaction.
+            Moreover, the modifications made by a transaction will never be viewable outside of that transaction until
+            the changes have been committed.
+        </p>
+      <p>
+            That said, there are different degrees of isolation, and you can choose to relax your isolation
+            guarantees to one degree or another depending on your application's requirements. The primary reason why
+            you might want to do this is because of performance; the more isolation you ask your transactions to
+            provide, the more locking that your application must do. With more locking comes a greater chance of
+            blocking, which in turn causes your threads to pause while waiting for a lock. Therefore, by relaxing
+            your isolation guarantees, you can <span class="emphasis"><em>potentially</em></span> improve your application's throughput.
+            Whether you actually see any improvement depends, of course, on
+            the nature of your application's data and transactions.
+        </p>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="degreesofisolation"></a>Supported Degrees of Isolation</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+                DB supports the following levels of isolation:
+            </p>
+        <div class="informaltable">
+          <table border="1" width="80%">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Degree</th>
+                <th>ANSI Term</th>
+                <th>Definition</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>READ UNCOMMITTED</td>
+                <td>
+                    Uncommitted reads means that one transaction will never
+                    overwrite another transaction's dirty data.  Dirty data is
+                    data that a transaction has modified but not yet committed
+                    to the underlying data store. However, uncommitted reads allows a 
+                    transaction to see data dirtied by another
+                    transaction. In addition, a transaction may read data
+                    dirtied by another transaction, but which subsequently
+                    is aborted by that other transaction. In this latter
+                    case, the reading transaction may be reading data that
+                    never really existed in the database.
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>READ COMMITTED</td>
+                <td>
+                  <p>
+                    Committed read isolation means that degree 1 is observed, except that dirty data is never read. 
+                    </p>
+                  <p>
+                    In addition, this isolation level guarantees that data will never change so long as
+                    it is addressed by the cursor, but the data may change before the reading cursor is closed.
+                    In the case of a transaction, data at the current
+                    cursor position will not change, but once the cursor
+                    moves, the previous referenced data can change. This
+                    means that readers release read locks before the cursor
+                    is closed, and therefore, before the transaction
+                    completes. Note that this level of isolation causes the
+                    cursor to operate in exactly the same way as it does in
+                    the absence of a transaction.
+                    </p>
+                </td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>SERIALIZABLE</td>
+                <td>
+                  <p>
+                    Committed read is observed, plus the data read by a transaction, T,  
+                    will never be dirtied by another transaction before T completes.
+                    This means that both read and write locks are not
+                    released until the transaction completes.
+                    </p>
+                  <p>
+                        <span>
+                        In addition, 
+                        </span>
+
+                        
+                        
+                        no transactions will see phantoms.  Phantoms are records 
+                        returned as a result of a search, but which were not seen by 
+                        the same transaction when the identical
+                        search criteria was previously used.
+                    </p>
+                  <p>
+                        This is DB's default isolation guarantee.
+                    </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+
+    By default, DB transactions and transactional cursors offer 
+    <span>
+        serializable isolation. 
+    </span>
+    
+    
+    You can optionally reduce your isolation level by configuring DB to use
+    uncommitted read isolation. See 
+        <a href="isolation.html#dirtyreads">Reading Uncommitted Data</a> 
+     for more information.
+
+        You can also configure DB to use committed read isolation. See
+            <a href="isolation.html#readcommitted">Committed Reads</a>
+        for more information.
+        
+  </p>
+        <p>
+          Finally, in addition to DB's normal degrees of isolation, you
+          can also use <span class="emphasis"><em>snapshot isolation</em></span>. This allows
+          you to avoid the read locks that serializable isolation requires. See
+          <a href="isolation.html#snapshot_isolation">Using Snapshot Isolation</a>
+          for details.
+  </p>
+      </div>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="dirtyreads"></a>Reading Uncommitted Data</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+                You can configure your application to read data that has been modified but not yet
+                committed by another transaction; that is, dirty data.  When you do this, you 
+                may see a performance benefit by allowing your
+                application to not have to block waiting for write locks. On the other hand, the data that your
+                application is reading may change before the transaction has completed.
+            </p>
+        <p>
+                When used with transactions, uncommitted reads means that one transaction can see data
+                modified but not yet committed by another transaction. When
+                used with transactional cursors, uncommitted reads means
+                that any database reader can see data modified by the
+                cursor before the cursor's transaction has committed.
+            </p>
+        <p>
+                Because of this, uncommitted reads allow a transaction to read data
+                that may subsequently be aborted by another transaction. In
+                this case, the reading transaction will have read data that
+                never really existed in the database.
+            </p>
+        <p>
+                To configure your application to read uncommitted data:
+            </p>
+        <div class="orderedlist">
+          <ol type="1">
+            <li>
+              <p>
+                        Open your database such that it will allow uncommitted reads. You do this by
+                            <span>
+                                specifying <tt class="literal">DB_READ_UNCOMMITTED</tt> when you open your database.
+                            </span>
+                            
+                    </p>
+            </li>
+            <li>
+              <p>
+                            <span>
+                                Specify <tt class="literal">DB_READ_UNCOMMITTED</tt>
+                                when you create the transaction, 
+                                    <span>
+                                        open the cursor, or read a record from the database.
+                                    </span>
+                                    
+                            </span>
+                            
+
+                    </p>
+            </li>
+          </ol>
+        </div>
+        <p>
+                For example, the following opens the database such that it supports uncommitted reads, and then creates a
+                transaction that causes all reads performed within it to use uncommitted reads. Remember that simply opening
+                the database to support uncommitted reads is not enough; you must also declare your read operations to be
+                performed using uncommitted reads. 
+            </p>
+        <pre class="programlisting">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &quot;db.h&quot;
+
+int
+main(void)
+{
+    int ret, ret_c;
+    u_int32_t db_flags, env_flags;
+    DB *dbp;
+    DB_ENV *envp;
+    DB_TXN *txn;
+    const char *db_home_dir = &quot;/tmp/myEnvironment&quot;;
+    const char *file_name = &quot;mydb.db&quot;;
+    const char *keystr =&quot;thekey&quot;;
+    const char *datastr = &quot;thedata&quot;;
+    
+    dbp = NULL;
+    envp = NULL;
+
+    /* Open the environment */
+    ret = db_env_create(&amp;envp, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error creating environment handle: %s\n&quot;,
+            db_strerror(ret));
+        return (EXIT_FAILURE);
+    }
+                                                                                                                                  
+    env_flags = DB_CREATE     |  /* If the environment does not
+                                  * exist, create it. */
+                DB_INIT_LOCK  |  /* Initialize locking */
+                DB_INIT_LOG   |  /* Initialize logging */
+                DB_INIT_MPOOL |  /* Initialize the cache */
+                DB_THREAD     |  /* Free-thread the env handle. */
+                DB_INIT_TXN;     /* Initialize transactions */
+
+    ret = envp-&gt;open(envp, db_home_dir, env_flags, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error opening environment: %s\n&quot;,
+            db_strerror(ret));
+        goto err;
+    }
+
+    /* Initialize the DB handle */
+    ret = db_create(&amp;dbp, envp, 0);
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Database creation failed&quot;);
+        goto err;
+    }
+
+    db_flags = DB_CREATE |             /* Create the db if it does not 
+                                        * exist */
+               DB_AUTO_COMMIT |        /* Enable auto commit */
+               DB_READ_UNCOMMITTED;    /* Enable uncommitted reads */
+
+    ret = dbp-&gt;open(dbp,        /* Pointer to the database */
+                    NULL,       /* Txn pointer */
+                    file_name,  /* File name */
+                    NULL,       /* Logical db name */
+                    DB_BTREE,   /* Database type (using btree) */
+                    db_flags,   /* Open flags */
+                    0);         /* File mode. Using defaults */
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Database '%s' open failed&quot;,
+            file_name);
+        goto err;
+    }
+
+    /* Get the txn handle */
+    txn = NULL;
+    ret = envp-&gt;txn_begin(envp, NULL, &amp;txn, DB_READ_UNCOMMITTED);
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Transaction begin failed.&quot;);
+        goto err;
+    }
+
+    /*
+     * From here, you perform your database reads and writes as normal,
+     * committing and aborting the transactions as is necessary, and 
+     * testing for deadlock exceptions as normal (omitted for brevity). 
+     */
+
+     ...  </pre>
+      </div>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="readcommitted"></a>Committed Reads</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+                You can configure your transaction so that the data being
+                read by a transactional cursor is consistent so long as it
+                is being addressed by the cursor. However, once the cursor is done reading the 
+                    
+                    <span>
+                        record (that is, reading records from the page that it currently has locked),
+                    </span>
+                the cursor releases its lock on that
+                    
+                    <span>
+                        record or page.
+                    </span>
+                 This means that the data the cursor has read and released
+                 may change before the cursor's transaction has completed.
+              </p>
+        <p>
+                For example,
+                suppose you have two transactions, <tt class="literal">Ta</tt> and <tt class="literal">Tb</tt>. Suppose further that
+                <tt class="literal">Ta</tt> has a cursor that reads <tt class="literal">record R</tt>, but does not modify it. Normally,
+                <tt class="literal">Tb</tt> would then be unable to write <tt class="literal">record R</tt> because
+                <tt class="literal">Ta</tt> would be holding a read lock on it. But when you configure your transaction for
+                committed reads, <tt class="literal">Tb</tt> <span class="emphasis"><em>can</em></span> modify <tt class="literal">record
+                R</tt> before <tt class="literal">Ta</tt> completes, so long as the reading cursor is no longer
+                addressing the 
+                    
+                    <span>
+                        record or page.
+                    </span>
+             </p>
+        <p>
+                When you configure your application for this level of isolation, you may see better performance
+                throughput because there are fewer read locks being held by your transactions. 
+                Read committed isolation is most useful when you have a cursor that is reading and/or writing records in
+                a single direction, and that does not ever have to go back to re-read those same records. In this case,
+                you can allow DB to release read locks as it goes, rather than hold them for the life of the
+                transaction.
+             </p>
+        <p>
+                To configure your application to use committed reads, do one of the following:
+            </p>
+        <div class="itemizedlist">
+          <ul type="disc">
+            <li>
+              <p>
+                        Create your transaction such that it allows committed reads. You do this by
+                            <span>
+                                specifying <tt class="literal">DB_READ_COMMITTED</tt> when you open the transaction.
+                            </span>
+                            
+                    </p>
+            </li>
+            <li>
+              <p>
+                            <span>
+                                Specify <tt class="literal">DB_READ_COMMITTED</tt>
+                                when you open the cursor. 
+                            </span>
+                            
+                    </p>
+            </li>
+          </ul>
+        </div>
+        <p>
+                For example, the following creates a transaction that allows committed reads:
+            </p>
+        <pre class="programlisting">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &quot;db.h&quot;
+
+int
+main(void)
+{
+    int ret, ret_c;
+    u_int32_t db_flags, env_flags;
+    DB *dbp;
+    DB_ENV *envp;
+    DB_TXN *txn;
+    const char *db_home_dir = &quot;/tmp/myEnvironment&quot;;
+    const char *file_name = &quot;mydb.db&quot;;
+    
+    dbp = NULL;
+    envp = NULL;
+
+    /* Open the environment */
+    ret = db_env_create(&amp;envp, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error creating environment handle: %s\n&quot;,
+            db_strerror(ret));
+        return (EXIT_FAILURE);
+    }
+                                                                                                                                  
+    env_flags = DB_CREATE     |  /* If the environment does not
+                                  * exist, create it. */
+                DB_INIT_LOCK  |  /* Initialize locking */
+                DB_INIT_LOG   |  /* Initialize logging */
+                DB_INIT_MPOOL |  /* Initialize the cache */
+                DB_THREAD     |  /* Free-thread the env handle. */
+                DB_INIT_TXN;     /* Initialize transactions */
+
+    ret = envp-&gt;open(envp, db_home_dir, env_flags, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error opening environment: %s\n&quot;,
+            db_strerror(ret));
+        goto err;
+    }
+
+    /* Initialize the DB handle */
+    ret = db_create(&amp;dbp, envp, 0);
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Database creation failed&quot;);
+        goto err;
+    }
+
+    /*
+     * Notice that we do not have to specify any flags to the database to
+     * allow committed reads (this is as opposed to uncommitted reads
+     * where we DO have to specify a flag on the database open.
+     */
+    db_flags = DB_CREATE | DB_AUTO_COMMIT;
+    ret = dbp-&gt;open(dbp,        /* Pointer to the database */
+                    NULL,       /* Txn pointer */
+                    file_name,  /* File name */
+                    NULL,       /* Logical db name */
+                    DB_BTREE,   /* Database type (using btree) */
+                    db_flags,   /* Open flags */
+                    0);         /* File mode. Using defaults */
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Database '%s' open failed&quot;,
+            file_name);
+        goto err;
+    }
+
+    /* Get the txn handle */
+    txn = NULL;
+    /*
+     * Open the transaction and enable committed reads. All cursors open
+     * with this transaction handle will use read committed isolation.
+     */
+    ret = envp-&gt;txn_begin(envp, NULL, &amp;txn, DB_READ_COMMITTED);
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Transaction begin failed.&quot;);
+        goto err;
+    }
+
+    /*
+     * From here, you perform your database reads and writes as normal,
+     * committing and aborting the transactions as is necessary, and 
+     * testing for deadlock exceptions as normal (omitted for brevity). 
+     *
+     * Using transactional cursors with concurrent applications is 
+     * described in more detail in the following section.
+     */
+
+     ...  </pre>
+      </div>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="snapshot_isolation"></a>Using Snapshot Isolation</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+                    By default DB uses serializable isolation. An
+                    important side effect of this isolation level is that
+                    read operations obtain read locks on database pages,
+                    and then hold those locks until the read operation is
+                    completed. When you are using transactional cursors, this 
+                    means that read locks are held until the transaction commits or
+                    aborts. In that case, over time a transactional cursor
+                    can gradually block all other transactions from writing
+                    to the database.
+            </p>
+        <p>
+                    You can avoid this by using snapshot isolation.
+                    Snapshot isolation uses <span class="emphasis"><em>multiversion
+                    concurrency control</em></span> to guarantee
+                    repeatable reads. What this means is that every time a
+                    writer would take a read lock on a page, instead a copy of
+                    the page is made and the writer operations on that page
+                    copy. This frees other writers from blocking due to a
+                    read lock held on the page.
+            </p>
+        <div class="sect3" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h4 class="title"><a id="sisolation_cost"></a>Snapshot Isolation Cost</h4>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>
+                    Snapshot isolation does not come without a cost.
+                    Because pages are being duplicated before being
+                    operated upon, the cache will fill up faster. This
+                    means that you might need a larger cache in order to
+                    hold the entire working set in memory.
+            </p>
+          <p>
+                    If the cache becomes full of page copies before old
+                    copies can be discarded, additional I/O will occur as
+                    pages are written to temporary &quot;freezer&quot; files on disk.
+                    This can substantially reduce throughput, and should be
+                    avoided if possible by configuring a large cache and
+                    keeping snapshot isolation transactions short.
+            </p>
+          <p>
+                    You can estimate how large your cache should be by
+                    taking a checkpoint, followed by a call to the 
+                    <tt class="methodname">DB_ENV-&gt;log_archive()</tt>
+                    
+                    
+                    method. The amount of cache required is approximately
+                    double the size of the remaining log files (that is,
+                    the log files that cannot be archived).
+            </p>
+        </div>
+        <div class="sect3" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h4 class="title"><a id="sisolation_maxtxn"></a>Snapshot Isolation Transactional Requirements</h4>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>
+                    In addition to an increased cache size, you may also
+                    need to increase the maximum number of transactions
+                    that your application supports. (See 
+                    <a href="maxtxns.html"><p>
+            Most of the configuration activities that you need to perform
+            for your transactional DB application will involve the
+            locking and logging subsystems. See 
+            <a href="txnconcurrency.html"></a>Concurrency
+            and
+            <a href="filemanagement.html"></a>Managing DB Files
+            for details.
+        </p><p>
+            However, there are a couple of things that you can do to
+            configure your transaction subsystem directly. These things
+            are:
+        </p><div class="itemizedlist"><ul type="disc"><li><p>
+                    Configure the maximum number of simultaneous
+                    transactions needed by your application. 
+                    In general, you should not need to do this unless you
+                    use deeply nested transactions or you have many threads all
+                    of which have active transactions. In addition, you may
+                    need to a higher maximum number of transactions if you
+                    are using snapshot isolation. See
+                    <a href="isolation.html#sisolation_maxtxn"></a>Snapshot Isolation Transactional Requirements
+                    for details.
+                </p><p>
+                    By default, your application can support 20 active
+                    transactions. 
+                </p><p>
+                    You can set the maximum number of simultaneous
+                    transactions supported by your application using
+                    <span>
+                        the
+                        <tt class="methodname">DB_ENV-&gt;set_tx_max()</tt>
+                        
+                        method. Note that this method must be called
+                        before the environment has been opened.
+                    </span>
+                    
+                </p><p>
+                    If your application has exceeded this maximum value,
+                    then any attempt to begin a new transaction will fail.
+                </p><p>
+                    This value can also be set using the
+                    <tt class="literal">DB_CONFIG</tt> file's
+                    <tt class="literal">set_tx_max</tt> parameter. Remember that
+                    the <tt class="literal">DB_CONFIG</tt> must reside in your
+                    environment home directory.
+                </p></li><li><span>
+                  <p>
+                    <span>
+                    Configure the timeout value for your transactions. 
+                    </span>
+                    
+                    
+                    This value represents the longest period of time a
+                    transaction can be active. Note, however, that
+                    transaction timeouts are checked only when DB
+                    examines its lock tables for blocked locks
+                    (see <a href="blocking_deadlocks.html"></a>Locks, Blocks, and Deadlocks
+                    for more information). Therefore, a transaction's timeout can
+                    have expired, but the application will not be notified until DB 
+                    has a reason to examine its lock tables.
+                </p>
+                <p>
+                    Be aware that some transactions may be
+                    inappropriately timed out before the transaction has a
+                    chance to complete. You should therefore use this
+                    mechanism only if you know your application
+                    might have unacceptably long transactions and
+                    you want to make sure your application will
+                    not stall during their execution.
+                    (This might happen if, for example, your
+                    transaction blocks or requests too much
+                    data.)
+                </p>
+                <p>
+                    Note that by default transaction timeouts are set to 0 seconds, which means that they never time
+                    out.
+                </p>
+                <p>
+                    To set the maximum timeout value for your transactions,
+                    use  the
+                            <span><tt class="methodname">DB_ENV-&gt;set_timeout()</tt></span>
+                            
+                            
+                        method. This method configures the entire
+                        environment; not just the handle used to set the
+                        configuration. Further, this value may
+                        be set at any time during the application's
+                        lifetime. 
+                </p>
+                <p>
+                    This value can also be set using the
+                    <tt class="literal">DB_CONFIG</tt> file's
+                    <tt class="literal">set_txn_timeout</tt> parameter.
+                </p> 
+                
+</span></li></ul></div><p>
+            For example:
+        </p><pre class="programlisting">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &quot;db.h&quot;
+
+int
+main(void)
+{
+    int ret, ret_c;
+    u_int32_t db_flags, env_flags;
+    DB *dbp;
+    DB_ENV *envp;
+    DB_TXN *txn;
+    const char *db_home_dir = &quot;/tmp/myEnvironment&quot;;
+    const char *file_name = &quot;mydb.db&quot;;
+    
+    envp = NULL;
+
+    /* Open the environment */
+    ret = db_env_create(&amp;envp, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error creating environment handle: %s\n&quot;,
+            db_strerror(ret));
+        return (EXIT_FAILURE);
+    }
+                                                                                                                                  
+    env_flags = DB_CREATE     |  /* If the environment does not
+                                  * exist, create it. */
+                DB_INIT_LOCK  |  /* Initialize locking */
+                DB_INIT_LOG   |  /* Initialize logging */
+                DB_INIT_MPOOL |  /* Initialize the cache */
+                DB_THREAD     |  /* Free-thread the env handle. */
+                DB_INIT_TXN;     /* Initialize transactions */
+
+    /*
+     * Configure a maximum transaction timeout of 1 second.
+     */
+    ret = envp-&gt;set_timeout(envp, DB_SET_TXN_TIMEOUT, 1000000);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error setting txn timeout: %s\n&quot;,
+            db_strerror(ret));
+        goto err;
+    }
+
+    /*
+     * Configure 40 maximum transactions.
+     */
+    ret = envp-&gt;set_tx_max(envp, 40);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error setting max txns: %s\n&quot;,
+            db_strerror(ret));
+        goto err;
+    }
+
+    ret = envp-&gt;open(envp, db_home_dir, env_flags, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error opening environment: %s\n&quot;,
+            db_strerror(ret));
+        goto err;
+    }
+
+    /* 
+     * From here, you open your databases, proceed with your 
+     * database operations, and respond to deadlocks as 
+     * is normal (omitted for brevity).
+     */
+     ...  </pre></a>
+                    for details on how to set this.) 
+                    In the worst case scenario, you might need to configure your application for one
+                    more transaction for every page in the cache. This is
+                    because transactions are retained until the last page
+                    they created is evicted from the cache.
+            </p>
+        </div>
+        <div class="sect3" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h4 class="title"><a id="sisolation_whenuse"></a>When to Use Snapshot Isolation</h4>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>
+                           Snapshot isolation is best used when all or most
+                           of the following conditions are true:
+                   </p>
+          <div class="itemizedlist">
+            <ul type="disc">
+              <li>
+                <p>
+                                        You can have a large cache relative to your working data set size. 
+                                   </p>
+              </li>
+              <li>
+                <p>
+                                        You require repeatable reads. 
+                                   </p>
+              </li>
+              <li>
+                <p>
+                                        You will be using transactions that routinely work on
+                                        the entire database, or more commonly,
+                                        there is data in your database that will be very
+                                        frequently written by more than one transaction.
+                                   </p>
+              </li>
+              <li>
+                <p>
+                                           Read/write contention is
+                                           limiting your application's
+                                           throughput, or the application
+                                           is all or mostly read-only and
+                                           contention for the lock manager
+                                           mutex is limiting throughput.
+                                   </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="sect3" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h4 class="title"><a id="sisolation_howuse"></a>How to use Snapshot Isolation</h4>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>
+                           You use snapshot isolation by:
+                   </p>
+          <div class="itemizedlist">
+            <ul type="disc">
+              <li>
+                <p>
+                                           Opening the database with
+                                           multiversion support. You can
+                                           configure this either when you
+                                           open your environment or when
+                                           you open your database.
+                                           <span>
+                                            Use the
+                                           <tt class="literal">DB_MULTIVERSION</tt>
+                                           flag to configure this support.
+                                            </span>
+
+                                            
+                                   </p>
+              </li>
+              <li>
+                <p>
+                                           Configure your cursor or
+                                           transaction to use snapshot
+                                           isolation.
+                                   </p>
+                <p>
+                                           To do this, 
+                                           
+                                           <span>
+                                           pass the
+                                           <tt class="literal">DB_TXN_SNAPSHOT</tt> flag 
+                                           when you open the cursor or
+                                           create the transaction. If
+                                           configured for the transaction,
+                                           then this flag is not required
+                                           when the cursor is opened.
+                                            </span>
+
+                                            
+                                   </p>
+              </li>
+            </ul>
+          </div>
+          <p>
+                           The simplest way to take advantage of snapshot
+                           isolation is for queries: keep update
+                           transactions using full read/write locking and
+                           use snapshot isolation on read-only transactions or
+                           cursors. This should minimize blocking of
+                           snapshot isolation transactions and will avoid
+                           deadlock errors.
+                   </p>
+          <p>
+                           If the application has update transactions which
+                           read many items and only update a small set (for
+                           example, scanning until a desired record is
+                           found, then modifying it), throughput may be
+                           improved by running some updates at snapshot
+                           isolation as well.  But doing this means that
+                           you must manage deadlock errors.
+                           See 
+                           <a href="lockingsubsystem.html#deadlockresolve">Resolving Deadlocks</a>
+                           for details.
+                   </p>
+          <p>
+                           The following code fragment turns
+                           on snapshot isolation for a transaction:
+                   </p>
+          <pre class="programlisting">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#include &quot;db.h&quot;
+
+int
+main(void)
+{
+    int ret, ret_c;
+    u_int32_t db_flags, env_flags;
+    DB *dbp;
+    DB_ENV *envp;
+    const char *db_home_dir = &quot;/tmp/myEnvironment&quot;;
+    const char *file_name = &quot;mydb.db&quot;;
+    
+    dbp = NULL;
+    envp = NULL;
+
+    /* Open the environment */
+    ret = db_env_create(&amp;envp, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error creating environment handle: %s\n&quot;,
+            db_strerror(ret));
+        return (EXIT_FAILURE);
+    }
+                                                                                                                                  
+    env_flags = DB_CREATE |    /* Create the environment if it does 
+                                * not already exist. */
+                DB_INIT_TXN  | /* Initialize transactions */
+                DB_INIT_LOCK | /* Initialize locking. */
+                DB_INIT_LOG  | /* Initialize logging */
+                DB_INIT_MPOOL| /* Initialize the in-memory cache. */
+                <b class="userinput"><tt>DB_MULTIVERSION; /* Support snapshot isolation */</tt></b>
+
+    ret = envp-&gt;open(envp, db_home_dir, env_flags, 0);
+    if (ret != 0) {
+        fprintf(stderr, &quot;Error opening environment: %s\n&quot;,
+            db_strerror(ret));
+        goto err;
+    }
+
+    /* Initialize the DB handle */
+    ret = db_create(&amp;dbp, envp, 0);
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Database creation failed&quot;);
+        goto err;
+    }
+
+    /* 
+     * Nothing needs to be supplied here to support snapshot isolation. 
+     * The environment does, so its databases will too.
+     */
+    db_flags = DB_CREATE | DB_AUTO_COMMIT;
+    ret = dbp-&gt;open(dbp,        /* Pointer to the database */
+                    NULL,       /* Txn pointer */
+                    file_name,  /* File name */
+                    NULL,       /* Logical db name */
+                    DB_BTREE,   /* Database type (using btree) */
+                    db_flags,   /* Open flags */
+                    0);         /* File mode. Using defaults */
+    if (ret != 0) {
+        envp-&gt;err(envp, ret, &quot;Database '%s' open failed&quot;,
+            file_name);
+        goto err;
+    }
+
+
+    ....
+
+    ret = envp-&gt;txn_begin(envp, NULL, &amp;txn, <b class="userinput"><tt>DB_TXN_SNAPSHOT</tt></b>);
+
+    /* remainder of the program omitted for brevity */
+
+ </pre>
+        </div>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="lockingsubsystem.html">Prev</a> </td>
+          <td width="20%" align="center">
+            <a accesskey="u" href="txnconcurrency.html">Up</a>
+          </td>
+          <td width="40%" align="right"> <a accesskey="n" href="txn_ccursor.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top">The Locking Subsystem </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> Transactional Cursors and Concurrent Applications</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

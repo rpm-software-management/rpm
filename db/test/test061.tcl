@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test061.tcl,v 11.20 2004/01/28 03:36:31 bostic Exp $
+# $Id: test061.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test061
 # TEST	Test of txn abort and commit for in-memory databases.

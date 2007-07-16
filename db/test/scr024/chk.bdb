@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.bdb,v 1.8 2004/04/09 16:34:10 mark Exp $
+# $Id: chk.bdb,v 12.1 2006/09/12 00:37:26 alexg Exp $
 #
 # Run the collections/bind test suite.
 
@@ -24,6 +24,7 @@
 d=..
 REQUIRED_JARS=$JUNIT_JAR
 DB_JAR=$d/db.jar
+DB_LIB_DIR=$d/.libs
 export DB_JAR
 export REQUIRED_JARS
 
@@ -41,7 +42,8 @@ make clean
 
 c="com.sleepycat.collections.test.serial.StoredClassCatalogTestInit"
 echo "Running: $c"
-if java -cp testserial:$REQUIRED_JARS:$DB_JAR:./dbtest.jar $c ; then
+if java -Djava.library.path=$DB_LIB_DIR \
+    -cp testserial:$REQUIRED_JARS:$DB_JAR:./dbtest.jar $c ; then
         :
 else
     echo "FAIL: test program failed"
@@ -53,7 +55,8 @@ fi
 for f in `find classes -name "*Test.class"`; do
     c=`echo "$f" | sed -e 's/classes\///' -e 's/\.class//' -e 's/\//./g'`
     echo "Running: $c"
-    if java -cp $REQUIRED_JARS:$DB_JAR:./dbtest.jar $c ; then
+    if java -Djava.library.path=$DB_LIB_DIR \
+	    -cp $REQUIRED_JARS:$DB_JAR:./dbtest.jar $c ; then
             :
     else
         echo "FAIL: test program failed"

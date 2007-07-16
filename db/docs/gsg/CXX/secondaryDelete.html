@@ -43,10 +43,10 @@
         database and simply allow DB to manage the secondary modifications for you.
     </p>
       <p>
-        However, as a convenience, you can delete a 
+        However, as a convenience, you can delete 
             
             <span>secondary database</span>
-        record directly. Doing so causes the associated primary key/data pair to be deleted.
+        records directly. Doing so causes the associated primary key/data pair to be deleted.
         This in turn causes DB to delete all 
             
             <span>secondary database</span>
@@ -72,38 +72,12 @@
       <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
         <h3 class="title">Note</h3>
         <p>
+      
+      <span>
         You can delete a secondary database record using the previously
-        described mechanism only if:
-      </p>
-        <div class="itemizedlist">
-          <ul type="disc">
-            <li>
-              <p>
-                the 
-                    
-                    <span>secondary key extractor function</span>
-
-                 returns 
-                    
-                    <span><tt class="literal">0</tt></span> 
-                (see  <a href="keyCreator.html">Implementing Key 
-        
-        <span>Extractors</span>
-        </a> for information on this 
-                    
-                    <span>callback).</span>
-            </p>
-            </li>
-            <li>
-              <p>
-                the primary database is opened for write access.
-            </p>
-            </li>
-          </ul>
-        </div>
-        <p>
-         If either of these conditions are not met, then no delete operations can be performed on the secondary
-         database.
+        described mechanism
+      </span>
+      only if the primary database is opened for write access.
       </p>
       </div>
       <p>For example:</p>
@@ -118,7 +92,7 @@ Db my_index(NULL, 0);    // Secondary
 
 // Open the primary
 my_database.open(NULL,       // Transaction pointer
-                 "my_db.db", // On-disk file that holds the database.
+                 &quot;my_db.db&quot;, // On-disk file that holds the database.
                 NULL,        // Optional logical database name
                 DB_BTREE,    // Database access method
                 DB_CREATE,   // Open flags
@@ -130,7 +104,7 @@ my_index.set_flags(DB_DUPSORT);
 
 // Open the secondary
 my_index.open(NULL,              // Transaction pointer
-              "my_secondary.db", // On-disk file that holds the database.
+              &quot;my_secondary.db&quot;, // On-disk file that holds the database.
               NULL,              // Optional logical database name
               DB_BTREE,          // Database access method
               DB_CREATE,         // Open flags.
@@ -144,7 +118,7 @@ my_database.associate(NULL,          // Txn id
                       0);            // Flags 
 
 // Name to delete
-char *search_name = "John Doe";
+char *search_name = &quot;John Doe&quot;;
 
 // Get a search key
 Dbt key(search_name, strlen(search_name) + 1);

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sdbtest002.tcl,v 11.29 2004/01/28 03:36:30 bostic Exp $
+# $Id: sdbtest002.tcl,v 12.4 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	sdbtest002
 # TEST	Tests multiple access methods in one subdb access by multiple
@@ -91,11 +91,6 @@ proc sdbtest002 { {nentries 10000} } {
 		error_check_good db_open [is_valid_db $db] TRUE
 		dump_file $db $txn $t1 $checkfunc
 		error_check_good db_close [$db close] 0
-		#
-		# This is just so that t2 is there and empty
-		# since we are only appending below.
-		#
-		exec > $t2
 
 		# Now compare the keys to see if they match the dictionary (or ints)
 		if { [is_record_based $method] == 1 } {

@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,14 +39,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_compare.c,v 11.20 2004/02/21 15:54:44 bostic Exp $
+ * $Id: bt_compare.c,v 12.7 2006/08/24 14:44:44 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -56,12 +52,13 @@
  * __bam_cmp --
  *	Compare a key to a given record.
  *
- * PUBLIC: int __bam_cmp __P((DB *, const DBT *, PAGE *,
- * PUBLIC:    u_int32_t, int (*)(DB *, const DBT *, const DBT *), int *));
+ * PUBLIC: int __bam_cmp __P((DB *, DB_TXN *, const DBT *, PAGE *, u_int32_t,
+ * PUBLIC:    int (*)(DB *, const DBT *, const DBT *), int *));
  */
 int
-__bam_cmp(dbp, dbt, h, indx, func, cmpp)
+__bam_cmp(dbp, txn, dbt, h, indx, func, cmpp)
 	DB *dbp;
+	DB_TXN *txn;
 	const DBT *dbt;
 	PAGE *h;
 	u_int32_t indx;
@@ -82,9 +79,9 @@ __bam_cmp(dbp, dbt, h, indx, func, cmpp)
 	 * !!!
 	 * We do not clear the pg_dbt DBT even though it's likely to contain
 	 * random bits.  That should be okay, because the app's comparison
-	 * routine had better not be looking at fields other than data/size.
-	 * We don't clear it because we go through this path a lot and it's
-	 * expensive.
+	 * routine had better not be looking at fields other than data, size
+	 * and app_data.  We don't clear it because we go through this path a
+	 * lot and it's expensive.
 	 */
 	switch (TYPE(h)) {
 	case P_LBTREE:
@@ -94,6 +91,7 @@ __bam_cmp(dbp, dbt, h, indx, func, cmpp)
 		if (B_TYPE(bk->type) == B_OVERFLOW)
 			bo = (BOVERFLOW *)bk;
 		else {
+			pg_dbt.app_data = NULL;
 			pg_dbt.data = bk->data;
 			pg_dbt.size = bk->len;
 			*cmpp = func(dbp, dbt, &pg_dbt);
@@ -127,6 +125,7 @@ __bam_cmp(dbp, dbt, h, indx, func, cmpp)
 		if (B_TYPE(bi->type) == B_OVERFLOW)
 			bo = (BOVERFLOW *)(bi->data);
 		else {
+			pg_dbt.app_data = NULL;
 			pg_dbt.data = bi->data;
 			pg_dbt.size = bi->len;
 			*cmpp = func(dbp, dbt, &pg_dbt);
@@ -140,7 +139,7 @@ __bam_cmp(dbp, dbt, h, indx, func, cmpp)
 	/*
 	 * Overflow.
 	 */
-	return (__db_moff(dbp, dbt,
+	return (__db_moff(dbp, txn, dbt,
 	    bo->pgno, bo->tlen, func == __bam_defcmp ? NULL : func, cmpp));
 }
 

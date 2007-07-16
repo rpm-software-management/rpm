@@ -62,9 +62,9 @@ dnl
 dnl    AC_OUTPUT(Makefile)
 dnl
 dnl @author Stephane Bortzmeyer <bortzmeyer@pasteur.fr>
-dnl @version $Id: ac_prog_java.ac,v 1.2 2003/05/10 17:46:09 dda Exp $
+dnl @version $Id: ac_prog_java.ac,v 12.1 2006/08/24 14:45:36 bostic Exp $
 dnl
-dnl Note: Modified by dda@sleepycat.com to prefer java over kaffe. [#8059]
+dnl Note: Modified to prefer java over kaffe. [#8059]
 dnl
 AC_DEFUN([AC_PROG_JAVA],[
 AC_REQUIRE([AC_EXEEXT])dnl

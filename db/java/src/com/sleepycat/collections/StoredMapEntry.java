@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredMapEntry.java,v 1.1 2004/04/09 16:34:09 mark Exp $
+ * $Id: StoredMapEntry.java,v 12.4 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -14,14 +14,15 @@ package com.sleepycat.collections;
  */
 final class StoredMapEntry extends MapEntryParameter {
 
-    private StoredIterator iter;
+    private BaseIterator iter;
     private StoredCollection coll;
 
-    StoredMapEntry(Object key, Object value, StoredCollection coll,
-                   StoredIterator iter) {
+    StoredMapEntry(Object key,
+                   Object value,
+                   StoredCollection coll,
+                   BaseIterator iter) {
 
         super(key, value);
-        // Assert: coll, coll.keyBinding/valueBinding
         this.coll = coll;
         this.iter = iter;
     }
@@ -33,6 +34,9 @@ final class StoredMapEntry extends MapEntryParameter {
             oldValue = getValue();
             iter.set(newValue);
         } else {
+            if (coll.view.dupsAllowed) {
+                throw new IllegalStateException("May not insert duplicates");
+            }
             oldValue = coll.put(getKey(), newValue);
         }
         setValueInternal(newValue);

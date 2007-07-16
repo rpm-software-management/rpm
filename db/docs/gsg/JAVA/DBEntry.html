@@ -87,7 +87,7 @@
               </dt>
               <dt>
                 <span class="sect2">
-                  <a href="bindAPI.html#object2dbt">Serializeable Complex Objects</a>
+                  <a href="bindAPI.html#object2dbt">Serializable Complex Objects</a>
                 </span>
               </dt>
               <dt>
@@ -121,7 +121,10 @@
     Java primitive types to complex Java objects so long as that data can be
     represented as a Java <tt class="literal">byte</tt> array. Note that due to
     performance considerations, you should not use Java serialization to convert
-    a Java object to a <tt class="literal">byte</tt> array.
+    a Java object to a <tt class="literal">byte</tt> array. Instead, use the Bind APIs
+    to perform this conversion (see 
+    <a href="bindAPI.html">Using the BIND APIs</a> for more
+    information).
   </p>
       <p>
     This chapter describes how you can convert both Java primitives and Java
@@ -146,9 +149,12 @@
         
         &#8212; one for the key and another for the data. 
 
-        <span>The key and data information is stored in
+        <span>The key and data information are passed to-
+        and returned from DB using
         <tt class="classname">DatabaseEntry</tt> objects as <tt class="literal">byte</tt>
-        arrays.  Therefore, using <tt class="classname">DatabaseEntry</tt> instances
+        arrays. Using <tt class="classname">DatabaseEntry</tt>s allows DB to
+        change the underlying byte array as well as return multiple values (that
+        is, key and data).  Therefore, using <tt class="classname">DatabaseEntry</tt> instances
         is mostly an exercise in efficiently moving your keys and your data in
         and out of <tt class="literal">byte</tt> arrays.</span>
     </p>
@@ -158,18 +164,18 @@
         pair of <tt class="classname">DatabaseEntry</tt> objects:
     </p>
         <a id="java_dbt1"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseEntry;
 
 ...
 
-String aKey = "key";
-String aData = "data";
+String aKey = &quot;key&quot;;
+String aData = &quot;data&quot;;
 
 try {
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
-    DatabaseEntry theData = new DatabaseEntry(aData.getBytes("UTF-8"));
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry theData = new DatabaseEntry(aData.getBytes(&quot;UTF-8&quot;));
 } catch (Exception e) {
     // Exception handling goes here
 }
@@ -193,7 +199,7 @@ try {
         <tt class="classname">DatabaseEntry</tt> as follows:
     </p>
         <a id="java_dbt2"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseEntry;
 
@@ -210,8 +216,8 @@ import com.sleepycat.db.DatabaseEntry;
 byte[] myKey = theKey.getData();
 byte[] myData = theData.getData();
 
-String key = new String(myKey);
-String data = new String(myData); </pre>
+String key = new String(myKey, &quot;UTF-8&quot;);
+String data = new String(myData, &quot;UTF-8&quot;); </pre>
         <p>
         There are a large number of mechanisms that you can use to move data in
         and out of <tt class="literal">byte</tt> arrays. To help you with this

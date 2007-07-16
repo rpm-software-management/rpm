@@ -1,5 +1,5 @@
-<!--$Id: memp_sync.so,v 10.41 2004/08/13 03:38:58 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_sync.so,v 10.42 2004/11/12 02:55:19 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -51,14 +51,6 @@ a certain time have been written to disk.
 than the <b>lsn</b> parameter are written to disk.  If <b>lsn</b> is
 NULL, all modified pages in the pool are written to disk.</p>
 </dl>
-<h3>Errors</h3>
-<p>The DB_ENV-&gt;memp_sync method
-may fail and return one of the following non-zero errors:</p>
-<dl compact>
-<dt>EINVAL<dd>If the DB_ENV-&gt;memp_sync function was called without logging having been
-initialized in the environment; or if an
-invalid flag value or parameter was specified.
-</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>, <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a>
@@ -68,6 +60,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

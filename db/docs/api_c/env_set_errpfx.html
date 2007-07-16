@@ -1,5 +1,5 @@
-<!--$Id: env_set_errpfx.so,v 10.33 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_errpfx.so,v 10.34 2006/02/10 22:54:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -37,6 +37,9 @@ maintain a reference to it.  Although this allows applications to modify
 the error message prefix at any time (without repeatedly calling the
 interfaces), it means the memory must be maintained until the handle is
 closed.</p>
+<p>The DB_ENV-&gt;set_errpfx method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
 <p>The DB_ENV-&gt;set_errpfx method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
@@ -67,6 +70,6 @@ error prefix in <b>errpfxp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

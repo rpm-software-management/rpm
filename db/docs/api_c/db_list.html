@@ -1,5 +1,5 @@
 <!--$Id: db_list.so,v 1.1 2002/08/30 20:00:48 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -10,20 +10,19 @@
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Databases and Related Methods</h3>
-<!--$Id: m4.methods,v 1.7 2004/11/03 15:52:01 bostic Exp $-->
+<!--$Id: m4.methods,v 1.11 2006/08/25 16:40:00 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Database Operations</th><th>Description</th></tr>
 <!--Db::--><tr><td><a href="../api_c/db_class.html">db_create</a></td><td>Create a database handle</td></tr>
 <!--Db::associate--><tr><td><a href="../api_c/db_associate.html">DB-&gt;associate</a></td><td>Associate a secondary index</td></tr>
 <!--Db::close--><tr><td><a href="../api_c/db_close.html">DB-&gt;close</a></td><td>Close a database</td></tr>
-<!--Db::cursor--><tr><td><a href="../api_c/db_close.html">DB-&gt;close</a></td><td>Create a cursor</td></tr>
+<!--Db::compact--><tr><td><a href="../api_c/db_compact.html">DB-&gt;compact</a></td><td>Compact a database</td></tr>
+<!--Db::cursor--><tr><td><a href="../api_c/db_cursor.html">DB-&gt;cursor</a></td><td>Create a cursor</td></tr>
 <!--Db::del--><tr><td><a href="../api_c/db_del.html">DB-&gt;del</a></td><td>Delete items from a database</td></tr>
 <!--Db::err--><tr><td><a href="../api_c/db_err.html">DB-&gt;err</a>, <a href="../api_c/db_err.html">DB-&gt;errx</a></td><td>Error message</td></tr>
 <!--Db::fd--><tr><td><a href="../api_c/db_fd.html">DB-&gt;fd</a></td><td>Return a file descriptor from a database</td></tr>
 <!--Db::get--><tr><td><a href="../api_c/db_get.html">DB-&gt;get</a>, <a href="../api_c/db_get.html">DB-&gt;pget</a></td><td>Get items from a database</td></tr>
 <!--Db::get_byteswapped--><tr><td><a href="../api_c/db_get_byteswapped.html">DB-&gt;get_byteswapped</a></td><td>Return if the underlying database is in host order</td></tr>
-<!--Db::get_env--><tr><td><a href="../api_c/db_getenv.html">DB-&gt;get_env</a></td><td>Return database environment handle</td></tr>
-<!--Db::get_mpf--><tr><td><a href="../api_c/db_get_mpf.html">DB-&gt;mpf</a></td><td>Return underlying <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle</td></tr>
 <!--Db::get_type--><tr><td><a href="../api_c/db_get_type.html">DB-&gt;get_type</a></td><td>Return the database type</td></tr>
 <!--Db::join--><tr><td><a href="../api_c/db_join.html">DB-&gt;join</a></td><td>Perform a database join on cursors</td></tr>
 <!--Db::key_range--><tr><td><a href="../api_c/db_key_range.html">DB-&gt;key_range</a></td><td>Return estimate of key location</td></tr>
@@ -49,7 +48,6 @@
 <!--Db::set_flags--><tr><td><a href="../api_c/db_set_flags.html">DB-&gt;set_flags</a></td><td>General database configuration</td></tr>
 <!--Db::set_lorder--><tr><td><a href="../api_c/db_set_lorder.html">DB-&gt;set_lorder</a></td><td>Set the database byte order</td></tr>
 <!--Db::set_pagesize--><tr><td><a href="../api_c/db_set_pagesize.html">DB-&gt;set_pagesize</a></td><td>Set the underlying database page size</td></tr>
-<!--Db::set_paniccall--><tr><td><a href="../api_c/db_set_paniccall.html">DB-&gt;set_paniccall</a></td><td>Set panic callback</td></tr>
 <tr><th>Btree/Recno Configuration</th><th><br></th></tr>
 <!--Db::set_append_recno--><tr><td><a href="../api_c/db_set_append_recno.html">DB-&gt;set_append_recno</a></td><td>Set record append callback</td></tr>
 <!--Db::set_bt_compare--><tr><td><a href="../api_c/db_set_bt_compare.html">DB-&gt;set_bt_compare</a></td><td>Set a Btree comparison function</td></tr>
@@ -66,6 +64,6 @@
 <tr><th>Queue Configuration</th><th><br></th></tr>
 <!--Db::set_q_extentsize--><tr><td><a href="../api_c/db_set_q_extentsize.html">DB-&gt;set_q_extentsize</a></td><td>Set Queue database extent size</td></tr>
 </table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,25 +1,37 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep022.tcl,v 1.11 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep022.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  rep022
 # TEST	Replication elections - test election generation numbers
 # TEST	during simulated network partition.
 # TEST
 proc rep022 { method args } {
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
 	global rand_init
 	global mixed_mode_logging
 	set tnum "022"
 
-	if { $mixed_mode_logging == 1 } {
-		puts "Rep$tnum: Skipping for mixed-mode logging."
-		return
+	# Run for btree only.
+	if { $checking_valid_methods } {
+		set test_methods { btree }
+		return $test_methods
 	}
 	if { [is_btree $method] == 0 } {
 		puts "Rep$tnum: Skipping for method $method."
+		return
+	}
+
+	if { $mixed_mode_logging > 0 } {
+		puts "Rep$tnum: Skipping for mixed-mode logging."
 		return
 	}
 
@@ -38,7 +50,7 @@ proc rep022 { method args } {
 	}
 }
 
-proc rep022_sub { method nclients tnum logset args } {
+proc rep022_sub { method nclients tnum logset largs } {
 	source ./include.tcl
 	global errorInfo
 	env_cleanup $testdir
@@ -92,7 +104,7 @@ proc rep022_sub { method nclients tnum logset args } {
 	# Run a modified test001 in the master.
 	puts "\tRep$tnum.a: Running rep_test in replicated env."
 	set niter 10
-	eval rep_test $method $masterenv NULL $niter 0 0
+	eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
 	process_msgs $envlist
 	error_check_good masterenv_close [$masterenv close] 0
 	set envlist [lreplace $envlist 0 0]
@@ -159,6 +171,7 @@ proc rep022_sub { method nclients tnum logset args } {
 	while { $lastlsn4 < $lastlsn2 } {
         	error_check_good clientenv_close(4) [$clientenv(4) close] 0
 		set clientenv(4) [eval $env_cmd(4) -recover]
+		error_check_good flush [$clientenv(4) log_flush] 0
 		set origlist [lreplace $origlist 4 4 "$clientenv(4) 6"]
 		set logc [$clientenv(4) log_cursor]
 		error_check_good logc \
@@ -200,7 +213,7 @@ proc rep022_sub { method nclients tnum logset args } {
 	}
 
 	# Have client 4 (currently a master) run an operation.
-	eval rep_test $method $clientenv(4) NULL $niter 0 0
+	eval rep_test $method $clientenv(4) NULL $niter 0 0 0 0 $largs
 
 	# Check that clients 0 and 4 get DUPMASTER messages and
 	# restart them as clients.

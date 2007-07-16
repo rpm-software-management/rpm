@@ -36,7 +36,7 @@
       </div>
       <p>
         If you have two or more secondary databases associated with a primary
-        database, then you can retrieve primary records based on the union of 
+        database, then you can retrieve primary records based on the intersection of 
         multiple secondary entries. You do this using a
         
         <span>join cursor.</span>
@@ -56,7 +56,7 @@
         is fairly simple with a limited
         number of data members, few of which would be interesting from a query
         perspective. But suppose, instead, that we were storing 
-        information on something with many more queryable characteristics, such
+        information on something with many more characteristics that can be queried, such
         as an automobile. In that case, you may be storing information such as
         color, number of doors, fuel mileage, automobile type, number of
         passengers, make, model, and year, to name just a few.
@@ -141,7 +141,8 @@
             <li>
               <p>
                     Create an array of  cursors, and place in it each
-                    of the cursors that are participating in your join query.
+                    of the cursors that are participating in your join query. Note that this array must be null
+                    terminated.
                 </p>
             </li>
             <li>
@@ -191,13 +192,13 @@ DB *automotiveColorDB;
 DB *automotiveMakeDB;
 DB *automotiveTypeDB;
 DBC *color_curs, *make_curs, *type_curs, *join_curs;
-DBC *carray[3];
+DBC *carray[4];
 DBT key, data;
 int ret;
 
-char *the_color = "red";
-char *the_type = "minivan";
-char *the_make = "Toyota";
+char *the_color = &quot;red&quot;;
+char *the_type = &quot;minivan&quot;;
+char *the_make = &quot;Toyota&quot;;
 
 /* Database and secondary database opens omitted for brevity.
  * Assume a primary database handle:
@@ -256,6 +257,7 @@ if ((ret = type_curs-&gt;c_get(type_curs, &amp;key, &amp;data, DB_SET)) != 0)
 carray[0] = color_curs;
 carray[1] = make_curs;
 carray[2] = type_curs;
+carray[3] = NULL;
 
 /* Create the join */
 if ((ret = automotiveDB-&gt;join(automotiveDB, carray, &amp;join_curs, 0)) != 0)

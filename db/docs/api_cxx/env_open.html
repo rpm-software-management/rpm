@@ -1,5 +1,5 @@
-<!--$Id: env_open.so,v 10.98 2004/10/14 15:07:21 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_open.so,v 10.111 2006/08/02 17:39:47 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -40,7 +40,7 @@ or more of the features of Berkeley DB.</p>
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
-If DbEnv::open fails, the <a href="../api_cxx/env_close.html">DbEnv::close</a> method should be called
+If DbEnv::open fails, the <a href="../api_cxx/env_close.html">DbEnv::close</a> method must be called
 to discard the <a href="../api_cxx/env_class.html">DbEnv</a> handle.
 </p>
 <h3>Parameters</h3>
@@ -51,8 +51,9 @@ resolution in general, see <a href="../ref/env/naming.html">Berkeley DB File
 Naming</a>.  The environment variable <b>DB_HOME</b> may be used as
 the path of the database home, as described in
 <a href="../ref/env/naming.html">Berkeley DB File Naming</a>.
-<p>On Windows, the <b>db_home</b> argument will be interpreted as a UTF-8
-string, which is equivalent to ASCII for Latin characters.</p>
+<p>When using a Unicode build on Windows (the default), the <b>db_home</b>
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter specifies the subsystems that are initialized
 and how the application's environment affects Berkeley DB file naming, among
 other things.
@@ -60,11 +61,20 @@ The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'
 or more of the following values:
 <p>Because there are a large number of flags that can be specified, they
 have been grouped together by functionality.  The first group of flags
-indicates which of the Berkeley DB subsystems should be initialized:</p>
+indicates which of the Berkeley DB subsystems should be initialized.</p>
+<p>The choice of subsystems initialized for a Berkeley DB database environment
+is specified by the thread of control initially creating the
+environment.  Any subsequent thread of control joining the environment
+will automatically be configured to use the same subsystems as were
+created in the environment (unless the thread of control requests a
+subsystem not available in the environment, which will fail).
+Applications joining an environment, able to adapt to whatever
+subsystems have been configured in the environment, should open the
+environment without specifying any subsystem flags.  Applications
+joining an environment, requiring specific subsystems from their
+environments, should open the environment specifying those specific
+subsystem flags.</p>
 <dl compact>
-<dt><a name="DB_JOINENV">DB_JOINENV</a><dd>Join an existing environment.  This option allows applications to
-join an existing environment without knowing which Berkeley DB subsystems
-the environment supports.
 <dt><a name="DB_INIT_CDB">DB_INIT_CDB</a><dd>Initialize locking for the <a href="../ref/cam/intro.html">Berkeley DB Concurrent Data Store</a>
 product.  In this mode, Berkeley DB provides multiple reader/single writer
 access.  The only other subsystem that should be specified with the
@@ -96,11 +106,14 @@ DB_INIT_TXN flag implies the DB_INIT_LOG flag.
 the environment is initialized:</p>
 <dl compact>
 <dt><a name="DB_RECOVER">DB_RECOVER</a><dd>Run normal recovery on this environment before opening it for normal
-use.  If this flag is set, the DB_CREATE flag must also be set
-because the regions will be removed and re-created.
+use.  If this flag is set, the DB_CREATE and DB_INIT_TXN
+flags must also be set, because the regions will be removed and
+re-created, and transactions are required for application recovery.
 <dt><a name="DB_RECOVER_FATAL">DB_RECOVER_FATAL</a><dd>Run catastrophic recovery on this environment before opening it for
-normal use.  If this flag is set, the DB_CREATE flag must also
-be set because the regions will be removed and re-created.
+normal use.  If this flag is set, the DB_CREATE and
+DB_INIT_TXN flags must also be set, because the regions will be
+removed and re-created, and transactions are required for application
+recovery.
 </dl>
 <p>A standard part of the recovery process is to remove the existing Berkeley DB
 environment and create a new one in which to perform recovery.  If the
@@ -146,27 +159,45 @@ example, users with a user-ID of 0 on UNIX systems).
 <dt><a name="DB_CREATE">DB_CREATE</a><dd>Cause Berkeley DB subsystems to create any underlying files, as necessary.
 <dt><a name="DB_LOCKDOWN">DB_LOCKDOWN</a><dd>Lock shared Berkeley DB environment files and memory-mapped databases into
 memory.
-<dt><a name="DB_PRIVATE">DB_PRIVATE</a><dd>Specify that the environment will only be accessed by a single process
-(although that process may be multithreaded).  This flag has two effects
-on the Berkeley DB environment.  First, all underlying data structures are
-allocated from per-process memory instead of from shared memory that is
-potentially accessible to more than a single process.  Second, mutexes
-are only configured to work between threads.
+<dt><a name="DB_PRIVATE">DB_PRIVATE</a><dd>Allocate region memory from the heap instead of from memory backed by
+the filesystem or system shared memory.
+<p>This flag implies the environment will only be accessed by a single
+process (although that process may be multithreaded).  This flag has two
+effects on the Berkeley DB environment.  First, all underlying data structures
+are allocated from per-process memory instead of from shared memory that
+is accessible to more than a single process.  Second, mutexes are only
+configured to work between threads.</p>
 <p>This flag should not be specified if more than a single process is
 accessing the environment because it is likely to cause database
 corruption and unpredictable behavior.  For example, if both a server
-application and the Berkeley DB utility <a href="../utility/db_stat.html">db_stat</a> are expected to access
-the environment, the DB_PRIVATE flag should not be
-specified.</p>
-<dt><a name="DB_SYSTEM_MEM">DB_SYSTEM_MEM</a><dd>Allocate memory from system shared memory instead of from memory backed
-by the filesystem.  See <a href="../ref/env/region.html">Shared Memory
-Regions</a> for more information.
+application and Berkeley DB utilities (for example, <a href="../utility/db_archive.html">db_archive</a>,
+<a href="../utility/db_checkpoint.html">db_checkpoint</a> or <a href="../utility/db_stat.html">db_stat</a>) are expected to access the
+environment, the DB_PRIVATE flag should not be specified.</p>
+<p>See <a href="../ref/env/region.html">Shared Memory Regions</a> for more
+information.</p>
+<dt><a name="DB_REGISTER">DB_REGISTER</a><dd>Check to see if recovery needs to be performed before opening the
+database environment.  (For this check to be accurate, all processes
+using the environment must specify DB_REGISTER when opening the
+environment.)  If recovery needs to be performed for any reason
+(including the initial use of the DB_REGISTER flag), and
+DB_RECOVER is also specified, recovery will be performed and the
+open will proceed normally.  If recovery needs to be performed and
+DB_RECOVER is not specified, <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> will be
+returned.  If recovery does not need to be performed, the
+DB_RECOVER flag will be ignored.  See
+<a href="../ref/transapp/app.html">Architecting Transactional Data Store
+applications</a> for more information.
+<dt><a name="DB_SYSTEM_MEM">DB_SYSTEM_MEM</a><dd>Allocate region memory from system shared memory instead of from heap
+memory or memory backed by the filesystem.
+<p>See <a href="../ref/env/region.html">Shared Memory Regions</a> for more
+information.</p>
 <dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_cxx/env_class.html">DbEnv</a> handle returned by DbEnv::open to be
 <i>free-threaded</i>; that is, concurrently usable by multiple
 threads in the address space.  The DB_THREAD flag should be specified
-if the <a href="../api_cxx/env_class.html">DbEnv</a> handle will be concurrently used by multiple
-threads of control or if multiple DB handles, opened within the database
-environment, will be used concurrently.
+if the <a href="../api_cxx/env_class.html">DbEnv</a> handle will be concurrently used by more than one
+thread in the process, or if any <a href="../api_cxx/db_class.html">Db</a> handles opened in the scope
+of the <a href="../api_cxx/env_class.html">DbEnv</a> handle will be concurrently used by more than one
+thread in the process.
 </dl>
 <dt><b>mode</b><dd>On Windows systems, the mode parameter is ignored.
 <p>On UNIX systems or in IEEE/ANSI Std 1003.1 (POSIX) environments, files created by Berkeley DB
@@ -187,6 +218,10 @@ may fail and throw
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
 <dl compact>
+<dt>DB_RUNRECOVERY<dd>The DB_REGISTER flag was specified, a failure has occurred, and no
+recovery flag was specified.
+</dl>
+<dl compact>
 <dt>DB_VERSION_MISMATCH<dd>The version of the Berkeley DB library doesn't match the version that created
 the database environment.
 </dl>
@@ -201,8 +236,12 @@ An incorrectly formatted <b>NAME VALUE</b> entry or line was found; or if an
 invalid flag value or parameter was specified.
 </dl>
 <dl compact>
-<dt>ENOSPC<dd>HP-UX only: a previously created Berkeley DB environment for this process still
-exists.
+<dt>ENOSPC<dd>HP-UX only:
+Due to the constraints of the PA-RISC memory architecture, HP-UX does not
+allow a process to map a file into its address space multiple times.
+For this reason, each Berkeley DB environment may be opened only once by a
+process on HP-UX; that is, calls to DbEnv::open will fail if the
+specified Berkeley DB environment has been opened and not subsequently closed.
 </dl>
 <dl compact>
 <dt>ENOENT<dd>The file or directory does not exist.
@@ -236,6 +275,6 @@ open method flags in <b>flagsp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

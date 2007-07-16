@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test068.tcl,v 11.21 2004/05/13 18:51:43 mjc Exp $
+# $Id: test068.tcl,v 12.4 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test068
 # TEST	Test of DB_BEFORE and DB_AFTER with partial puts.
@@ -16,9 +16,17 @@ proc test068 { method args } {
 	global is_je_test
 
 	set tnum "068"
+	set orig_tdir $testdir
 
 	set args [convert_args $method $args]
 	set omethod [convert_method $method]
+
+	puts "Test$tnum:\
+	    $method ($args) Test of DB_BEFORE/DB_AFTER and partial puts."
+	if { [is_record_based $method] == 1 } {
+		puts "\tTest$tnum: skipping for method $method."
+		return
+	}
 
 	set txnenv 0
 	set eindex [lsearch -exact $args "-env"]
@@ -39,13 +47,6 @@ proc test068 { method args } {
 			set nkeys 100
 		}
 		set testdir [get_home $env]
-	}
-
-	puts "Test$tnum:\
-	    $method ($args) Test of DB_BEFORE/DB_AFTER and partial puts."
-	if { [is_record_based $method] == 1 } {
-	    puts "\tTest$tnum: skipping for method $method."
-	    return
 	}
 
 	# Create a list of $nkeys words to insert into db.
@@ -76,7 +77,6 @@ proc test068 { method args } {
 			continue
 		}
 
-		#
 		# Testdir might be reset in the loop by some proc sourcing
 		# include.tcl.  Reset it to the env's home here, before
 		# cleanup.
@@ -228,4 +228,5 @@ proc test068 { method args } {
 		}
 		error_check_good db_close [$db close] 0
 	}
+	set testdir $orig_tdir
 }

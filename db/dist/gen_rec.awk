@@ -2,10 +2,10 @@
 #
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: gen_rec.awk,v 11.110 2004/10/20 20:40:58 bostic Exp $
+# $Id: gen_rec.awk,v 12.22 2006/09/14 15:00:47 bostic Exp $
 #
 
 # This awk script generates all the log, print, and read routines for the DB
@@ -89,10 +89,6 @@ BEGIN {
 	# Write recovery template file headers
 	# This assumes we're doing DB recovery.
 	printf("#include \"db_config.h\"\n\n") > TFILE
-	printf("#ifndef NO_SYSTEM_INCLUDES\n") >> TFILE
-	printf("#include <sys/types.h>\n\n") >> TFILE
-	printf("#include <string.h>\n") >> TFILE
-	printf("#endif\n\n") >> TFILE
 	printf("#include \"db_int.h\"\n") >> TFILE
 	printf("#include \"dbinc/db_page.h\"\n") >> TFILE
 	printf("#include \"dbinc/%s.h\"\n", prefix) >> TFILE
@@ -106,7 +102,7 @@ BEGIN {
 		printf("%s ", $i) >> PFILE
 	printf("%s\n", $i) >> PFILE
 }
-/^[ 	]*(BEGIN|IGNORED|BEGIN_BUF)/ {
+/^[ 	]*(BEGIN|BEGIN_COMPAT|BEGIN_BUF)/ {
 	if (in_begin) {
 		print "Invalid format: missing END statement"
 		exit
@@ -115,19 +111,31 @@ BEGIN {
 	is_dbt = 0;
 	has_dbp = 0;
 	is_uint = 0;
+	#
+	# BEGIN_COMPAT does not need logging function or rec table entry.
+	#
 	need_log_function = ($1 == "BEGIN") || ($1 == "BEGIN_BUF");
-	not_buf = ($1 == "BEGIN") || ($1 == "IGNORED");
+	is_compat = ($1 == "BEGIN_COMPAT");
+	not_buf = ($1 == "BEGIN") || ($1 == "BEGIN_COMPAT");
 	if (not_buf)
 		buf_only = 0;
 	nvars = 0;
 
 	thisfunc = $2;
-	funcname = sprintf("%s_%s", prefix, $2);
+	version = $3;
 
 	if (not_buf)
-		rectype = $3;
+		rectype = $4;
 
+	logfunc = sprintf("%s_%s", prefix, $2);
+	logname[num_funcs] = logfunc;
+	if (is_compat) {
+		funcname = sprintf("%s_%s_%s", prefix, $2, version);
+	} else {
+		funcname = logfunc;
+	}
 	funcs[num_funcs] = funcname;
+	functable[num_funcs] = is_compat;
 	++num_funcs;
 }
 /^[ 	]*(DB|ARG|DBT|LOCKS|PGDBT|POINTER|TIME)/ {
@@ -172,7 +180,7 @@ BEGIN {
 
 	# Here are the required fields for every structure
 	if (not_buf) {
-		printf("\tu_int32_t type;\n\tDB_TXN *txnid;\n") >> HFILE
+		printf("\tu_int32_t type;\n\tDB_TXN *txnp;\n") >> HFILE
 		printf("\tDB_LSN prev_lsn;\n") >>HFILE
 	}
 
@@ -181,7 +189,7 @@ BEGIN {
 		t = types[i];
 		if (modes[i] == "POINTER") {
 			ndx = index(t, "*");
-			t = substr(types[i], 0, ndx - 2);
+			t = substr(types[i], 1, ndx - 2);
 		}
 		printf("\t%s\t%s;\n", t, vars[i]) >> HFILE
 	}
@@ -243,6 +251,8 @@ END {
 
 	printf("\tint ret;\n\n") >> PFILE;
 	for (i = 0; i < num_funcs; i++) {
+		if (functable[i] == 1)
+			continue;
 		printf("\tif ((ret = __db_add_recovery(dbenv, ") >> PFILE;
 		printf("dtabp, dtabsizep,\n") >> PFILE;
 		printf("\t    %s_print, DB_%s)) != 0)\n", \
@@ -278,6 +288,8 @@ END {
 	printf(" db_recops, void *));\n") >> CFILE;
 	printf("\tsize_t *dtabsizep;\n{\n\tint ret;\n\n") >> CFILE;
 	for (i = 0; i < num_funcs; i++) {
+		if (functable[i] == 1)
+			continue;
 		printf("\tif ((ret = __db_add_recovery(dbenv, ") >> CFILE;
 		printf("dtabp, dtabsizep,\n") >> CFILE;
 		printf("\t    %s_recover, DB_%s)) != 0)\n", \
@@ -292,7 +304,7 @@ function log_function()
 	# Write the log function; function prototype
 	pi = 1;
 	if (not_buf) {
-		p[pi++] = sprintf("int %s_log", funcname);
+		p[pi++] = sprintf("int %s_log", logfunc);
 		p[pi++] = " ";
 		if (has_dbp == 1) {
 			p[pi++] = "__P((DB *";
@@ -301,7 +313,7 @@ function log_function()
 		}
 		p[pi++] = ", DB_TXN *, DB_LSN *, u_int32_t";
 	} else {
-		p[pi++] = sprintf("int %s_buf", funcname);
+		p[pi++] = sprintf("int %s_buf", logfunc);
 		p[pi++] = " ";
 		p[pi++] = "__P((u_int8_t *, size_t, size_t *";
 	}
@@ -322,13 +334,13 @@ function log_function()
 
 	# Function declaration
 	if (not_buf && has_dbp == 1) {
-		printf("int\n%s_log(dbp, txnid, ret_lsnp, flags", \
-		    funcname) >> CFILE;
+		printf("int\n%s_log(dbp, txnp, ret_lsnp, flags", \
+		    logfunc) >> CFILE;
 	} else if (not_buf) {
-		printf("int\n%s_log(dbenv, txnid, ret_lsnp, flags", \
-		    funcname) >> CFILE;
+		printf("int\n%s_log(dbenv, txnp, ret_lsnp, flags", \
+		    logfunc) >> CFILE;
 	} else {
-		printf("int\n%s_buf(buf, max, lenp", funcname) >> CFILE;
+		printf("int\n%s_buf(buf, max, lenp", logfunc) >> CFILE;
 	}
 	for (i = 0; i < nvars; i++) {
 		if (modes[i] == "DB") {
@@ -352,7 +364,7 @@ function log_function()
 		} else {
 			printf("\tDB_ENV *dbenv;\n") >> CFILE;
 		}
-		printf("\tDB_TXN *txnid;\n\tDB_LSN *ret_lsnp;\n") >> CFILE;
+		printf("\tDB_TXN *txnp;\n\tDB_LSN *ret_lsnp;\n") >> CFILE;
 		printf("\tu_int32_t flags;\n") >> CFILE;
 	} else {
 		printf("\tu_int8_t *buf;\n") >> CFILE;
@@ -403,7 +415,7 @@ function log_function()
 			printf("\tdbenv = dbp->dbenv;\n") >> CFILE;
 		if (dbprivate)
 			printf("\tCOMPQUIET(lr, NULL);\n\n") >> CFILE;
-		printf("\trectype = DB_%s;\n", funcname) >> CFILE;
+		printf("\trectype = DB_%s;\n", logfunc) >> CFILE;
 		printf("\tnpad = 0;\n") >> CFILE;
 		printf("\trlsnp = ret_lsnp;\n\n") >> CFILE;
 	}
@@ -419,23 +431,25 @@ function log_function()
 				    >> CFILE;
 			} else {
 				printf(") {\n") >> CFILE;
-				printf("\t\tif (txnid == NULL)\n") >> CFILE;
+				printf("\t\tif (txnp == NULL)\n") >> CFILE;
 				printf("\t\t\treturn (0);\n") >> CFILE;
 			}
+			printf("\t\tif (txnp == NULL)\n") >> CFILE;
+			printf("\t\t\treturn (0);\n") >> CFILE;
 			printf("\t\tis_durable = 0;\n") >> CFILE;
 			printf("\t} else\n") >> CFILE;
 			printf("\t\tis_durable = 1;\n\n") >> CFILE;
 		}
-		printf("\tif (txnid == NULL) {\n") >> CFILE;
+		printf("\tif (txnp == NULL) {\n") >> CFILE;
 		printf("\t\ttxn_num = 0;\n") >> CFILE;
 		printf("\t\tlsnp = &null_lsn;\n") >> CFILE;
 		printf("\t\tnull_lsn.file = null_lsn.offset = 0;\n") >> CFILE;
 		printf("\t} else {\n") >> CFILE;
-		if (dbprivate && funcname != "__db_debug") {
+		if (dbprivate && logfunc != "__db_debug") {
 			printf(\
-    "\t\tif (TAILQ_FIRST(&txnid->kids) != NULL &&\n") >> CFILE;
+    "\t\tif (TAILQ_FIRST(&txnp->kids) != NULL &&\n") >> CFILE;
 			printf("\t\t    (ret = __txn_activekids(") >> CFILE;
-			printf("dbenv, rectype, txnid)) != 0)\n") >> CFILE;
+			printf("dbenv, rectype, txnp)) != 0)\n") >> CFILE;
 			printf("\t\t\treturn (ret);\n") >> CFILE;
 		}
 		printf("\t\t/*\n\t\t * We need to assign begin_lsn while ") \
@@ -445,11 +459,10 @@ function log_function()
 		printf("DbEnv->log_put call,\n\t\t * ") >> CFILE;
 		printf("so pass in the appropriate memory location to be ") \
 		    >> CFILE;
-		printf("filled\n\t\t * in by the log_put code.\n\t\t*/\n") \
+		printf("filled\n\t\t * in by the log_put code.\n\t\t */\n") \
 		    >> CFILE;
-		printf("\t\tDB_SET_BEGIN_LSNP(txnid, &rlsnp);\n") >> CFILE;
-		printf("\t\ttxn_num = txnid->txnid;\n") >> CFILE;
-		printf("\t\tlsnp = &txnid->last_lsn;\n") >> CFILE;
+		printf("\t\tDB_SET_TXN_LSNP(txnp, &rlsnp, &lsnp);\n") >> CFILE;
+		printf("\t\ttxn_num = txnp->txnid;\n") >> CFILE;
 		printf("\t}\n\n") >> CFILE;
 
 		# If we're logging a DB handle, make sure we have a log
@@ -471,7 +484,7 @@ function log_function()
 			printf("->adj_size(logrec.size);\n") >> CFILE;
 			printf("\t\tlogrec.size += npad;\n\t}\n\n") >> CFILE
 
-			printf("\tif (is_durable || txnid == NULL) {\n") \
+			printf("\tif (is_durable || txnp == NULL) {\n") \
 			    >> CFILE;
 			printf("\t\tif ((ret =\n\t\t    __os_malloc(dbenv, ") \
 			    >> CFILE;
@@ -576,10 +589,27 @@ function log_function()
 				    sizes[i]) >> CFILE;
 				printf("\t\treturn (ENOMEM);\n") >> CFILE;
 			}
-			printf("\tif (%s != NULL)\n", vars[i]) >> CFILE;
-			printf("\t\tmemcpy(bp, %s, %s);\n", vars[i], \
+			printf("\tif (%s != NULL)", vars[i]) >> CFILE;
+			if (not_buf && has_dbp && types[i] == "DB_LSN *") {
+				printf(" {\n\t\tif (txnp != NULL) {\n") \
+				    >> CFILE;
+				printf( \
+	"\t\t\tLOG *lp = dbenv->lg_handle->reginfo.primary;\n") >> CFILE;
+				printf( \
+	"\t\t\tif (LOG_COMPARE(%s, &lp->lsn) >= 0 && (ret =\n", vars[i]) \
+				    >> CFILE;
+				printf( \
+	"\t\t\t    __log_check_page_lsn(dbenv, dbp, %s) != 0))\n", vars[i]) \
+				    >> CFILE;
+				printf("\t\t\t\treturn (ret);\n") >> CFILE;
+				printf("\t\t}") >> CFILE;
+			}
+			printf("\n\t\tmemcpy(bp, %s, %s);\n", vars[i], \
 			    sizes[i]) >> CFILE;
-			printf("\telse\n") >> CFILE;
+			if (not_buf && has_dbp && types[i] == "DB_LSN *")
+				printf("\t} else\n") >> CFILE;
+			else
+				printf("\telse\n") >> CFILE;
 			printf("\t\tmemset(bp, 0, %s);\n", sizes[i]) >> CFILE;
 			printf("\tbp += %s;\n\n", sizes[i]) >> CFILE;
 		}
@@ -590,9 +620,9 @@ function log_function()
 	# rather than requiring assert.h.
 	if (not_buf) {
 		if (dbprivate) {
-			printf("\tDB_ASSERT((u_int32_t)") >> CFILE;
-			printf("(bp - (u_int8_t *)logrec.data) ") >> CFILE;
-			printf("<= logrec.size);\n\n") >> CFILE;
+			printf("\tDB_ASSERT(dbenv,\n") >> CFILE;
+			printf("\t    (u_int32_t)(bp - (u_int8_t *)") >> CFILE;
+			printf("logrec.data) <= logrec.size);\n\n") >> CFILE;
 			# Save the log record off in the txn's linked list,
 			# or do log call.
 			# We didn't call the crypto alignment function when
@@ -600,15 +630,15 @@ function log_function()
 			# the right header files to find the function), so
 			# we have to copy the log record to make sure the
 			# alignment is correct.
-			printf("\tif (is_durable || txnid == NULL) {\n") \
+			printf("\tif (is_durable || txnp == NULL) {\n") \
 			    >> CFILE;
 			# Output the log record and update the return LSN.
 			printf("\t\tif ((ret = __log_put(dbenv, rlsnp,") \
 			    >> CFILE;
 			printf("(DBT *)&logrec,\n") >> CFILE;
 			printf("\t\t    flags | DB_LOG_NOCOPY)) == 0") >> CFILE;
-			printf(" && txnid != NULL) {\n") >> CFILE;
-			printf("\t\t\ttxnid->last_lsn = *rlsnp;\n") >> CFILE;
+			printf(" && txnp != NULL) {\n") >> CFILE;
+			printf("\t\t\t*lsnp = *rlsnp;\n") >> CFILE;
 
 			printf("\t\t\tif (rlsnp != ret_lsnp)\n") >> CFILE;
 			printf("\t\t\t\t *ret_lsnp = *rlsnp;\n") >> CFILE;
@@ -637,8 +667,10 @@ function log_function()
 			printf("\t\tret = 0;\n") >> CFILE;
 			printf("#endif\n") >> CFILE;
 			# Add a ND record to the txn list.
-			printf("\t\tSTAILQ_INSERT_HEAD(&txnid") >> CFILE;
+			printf("\t\tSTAILQ_INSERT_HEAD(&txnp") >> CFILE;
 			printf("->logs, lr, links);\n") >> CFILE;
+			printf("\t\tF_SET((TXN_DETAIL *)") >> CFILE;
+			printf("txnp->td, TXN_DTL_INMEMORY);\n") >> CFILE;
 			# Update the return LSN.
 			printf("\t\tLSN_NOT_LOGGED(*ret_lsnp);\n") >> CFILE;
 			printf("\t}\n\n") >> CFILE;
@@ -646,10 +678,10 @@ function log_function()
 			printf("\tif ((ret = dbenv->log_put(dbenv, rlsnp,") >> CFILE;
 			printf(" (DBT *)&logrec,\n") >> CFILE;
 			printf("\t    flags | DB_LOG_NOCOPY)) == 0") >> CFILE;
-			printf(" && txnid != NULL) {\n") >> CFILE;
+			printf(" && txnp != NULL) {\n") >> CFILE;
 
                 	# Update the transactions last_lsn.
-			printf("\t\ttxnid->last_lsn = *rlsnp;\n") >> CFILE;
+			printf("\t\t*lsnp = *rlsnp;\n") >> CFILE;
 			printf("\t\tif (rlsnp != ret_lsnp)\n") >> CFILE;
 			printf("\t\t\t *ret_lsnp = *rlsnp;\n") >> CFILE;
 			printf("\t}\n") >> CFILE;
@@ -660,15 +692,14 @@ function log_function()
 		printf("#ifdef LOG_DIAGNOSTIC\n") >> CFILE
 		printf("\tif (ret != 0)\n") >> CFILE;
 		printf("\t\t(void)%s_print(dbenv,\n", funcname) >> CFILE;
-		printf("\t\t    (DBT *)&logrec, ret_lsnp, NULL, NULL);\n") \
-		    >> CFILE
-		printf("#endif\n\n") >> CFILE
+		printf("\t\t    (DBT *)&logrec, ret_lsnp, ") >> CFILE
+		printf("DB_TXN_PRINT, NULL);\n#endif\n\n") >> CFILE
 		# Free and return
 		if (dbprivate) {
 			printf("#ifdef DIAGNOSTIC\n") >> CFILE
 			write_free("\t", "logrec.data", CFILE)
 			printf("#else\n") >> CFILE
-			printf("\tif (is_durable || txnid == NULL)\n") >> CFILE;
+			printf("\tif (is_durable || txnp == NULL)\n") >> CFILE;
 			write_free("\t\t", "logrec.data", CFILE)
 			printf("#endif\n") >> CFILE
 		} else {
@@ -691,7 +722,7 @@ function db_handle_id_function(modes, n)
 			# that ID we're able to acquire an open handle
 			# at recovery time.
 			printf(\
-		    "\tDB_ASSERT(dbp->log_filename != NULL);\n") \
+		    "\tDB_ASSERT(dbenv, dbp->log_filename != NULL);\n") \
 			    >> CFILE;
 			printf("\tif (dbp->log_filename->id == ") \
 			    >> CFILE;
@@ -727,6 +758,7 @@ function print_function()
 		if (modes[i] == "TIME") {
 			printf("\tstruct tm *lt;\n") >> PFILE
 			printf("\ttime_t timeval;\n") >> PFILE
+			printf("\tchar time_buf[CTIME_BUFLEN];\n") >> PFILE
 			break;
 		}
 	for (i = 0; i < nvars; i ++)
@@ -738,7 +770,7 @@ function print_function()
 	printf("\tint ret;\n\n") >> PFILE;
 
 	# Get rid of complaints about unused parameters.
-	printf("\tnotused2 = DB_TXN_ABORT;\n\tnotused3 = NULL;\n\n") >> PFILE;
+	printf("\tnotused2 = DB_TXN_PRINT;\n\tnotused3 = NULL;\n\n") >> PFILE;
 
 	# Call read routine to initialize structure
 	printf("\tif ((ret = %s_read(dbenv, dbtp->data, &argp)) != 0)\n", \
@@ -746,18 +778,15 @@ function print_function()
 	printf("\t\treturn (ret);\n") >> PFILE;
 
 	# Print values in every record
-	printf("\t(void)printf(\n\t    \"[%%lu][%%lu]%s%%s: ",\
-	     funcname) >> PFILE;
-	printf("rec: %%lu txnid %%lx ") >> PFILE;
-	printf("prevlsn [%%lu][%%lu]\\n\",\n") >> PFILE;
-	printf("\t    (u_long)lsnp->file,\n") >> PFILE;
-	printf("\t    (u_long)lsnp->offset,\n") >> PFILE;
+	printf("\t(void)printf(\n    \"[%%lu][%%lu]%s%%s: ", funcname) >> PFILE;
+	printf("rec: %%lu txnp %%lx prevlsn [%%lu][%%lu]\\n\",\n") >> PFILE;
+	printf("\t    (u_long)lsnp->file, (u_long)lsnp->offset,\n") >> PFILE;
 	printf("\t    (argp->type & DB_debug_FLAG) ? \"_debug\" : \"\",\n") \
 	     >> PFILE;
 	printf("\t    (u_long)argp->type,\n") >> PFILE;
-	printf("\t    (u_long)argp->txnid->txnid,\n") >> PFILE;
-	printf("\t    (u_long)argp->prev_lsn.file,\n") >> PFILE;
-	printf("\t    (u_long)argp->prev_lsn.offset);\n") >> PFILE;
+	printf("\t    (u_long)argp->txnp->txnid,\n") >> PFILE;
+	printf("\t    (u_long)argp->prev_lsn.file, ") >> PFILE;
+	printf("(u_long)argp->prev_lsn.offset);\n") >> PFILE;
 
 	# Now print fields of argp
 	for (i = 0; i < nvars; i ++) {
@@ -794,7 +823,8 @@ function print_function()
 	    "%%%s (%%.24s, 20%%02lu%%02lu%%02lu%%02lu%%02lu.%%02lu)\\n\",\n", \
 			    formats[i]) >> PFILE;
 			printf("\t    (long)argp->%s, ", vars[i]) >> PFILE;
-			printf("ctime(&timeval),", vars[i]) >> PFILE;
+			printf("__db_ctime(&timeval, time_buf),", \
+			    vars[i]) >> PFILE;
 			printf("\n\t    (u_long)lt->tm_year - 100, ") >> PFILE;
 			printf("(u_long)lt->tm_mon+1,") >> PFILE;
 			printf("\n\t    (u_long)lt->tm_mday, ") >> PFILE;
@@ -874,20 +904,21 @@ function read_function()
 	}
 	write_malloc("\t", "argp", malloc_size, CFILE)
 
-	# Set up the pointers to the txnid.
+	# Set up the pointers to the DB_TXN *.
 	printf("\tbp = recbuf;\n") >> CFILE;
 
 	if (not_buf) {
-		printf("\targp->txnid = (DB_TXN *)&argp[1];\n\n") >> CFILE;
-
-		# First get the record type, prev_lsn, and txnid fields.
+		printf("\targp->txnp = (DB_TXN *)&argp[1];\n") >> CFILE;
+		printf("\tmemset(argp->txnp, 0, sizeof(DB_TXN));\n\n") \
+		    >> CFILE;
+		# First get the record type, prev_lsn, and txnp fields.
 
 		printf("\tmemcpy(&argp->type, bp, sizeof(argp->type));\n") \
 		    >> CFILE;
 		printf("\tbp += sizeof(argp->type);\n\n") >> CFILE;
-		printf("\tmemcpy(&argp->txnid->txnid,  bp, ") >> CFILE;
-		printf("sizeof(argp->txnid->txnid));\n") >> CFILE;
-		printf("\tbp += sizeof(argp->txnid->txnid);\n\n") >> CFILE;
+		printf("\tmemcpy(&argp->txnp->txnid, bp, ") >> CFILE;
+		printf("sizeof(argp->txnp->txnid));\n") >> CFILE;
+		printf("\tbp += sizeof(argp->txnp->txnid);\n\n") >> CFILE;
 		printf("\tmemcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));\n") \
 		    >> CFILE;
 		printf("\tbp += sizeof(DB_LSN);\n\n") >> CFILE;

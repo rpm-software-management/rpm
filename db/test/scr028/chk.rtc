@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.rtc,v 1.1 2003/12/11 21:30:41 bostic Exp $
+# $Id: chk.rtc,v 12.0 2004/11/17 03:44:56 bostic Exp $
 #
 # Build a program that calls the run-time API configuration functions.
 

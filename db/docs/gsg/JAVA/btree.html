@@ -305,7 +305,7 @@
             to support sorted duplicate records:
         </p>
           <a id="java_btree_dupsort"></a>
-          <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+          <pre class="programlisting">package db.GettingStarted;
 
 import java.io.FileNotFoundException;
 
@@ -328,12 +328,12 @@ try {
     myDbConfig.setSortedDuplicates(true);
 
    // Open the database
-   myDb = new Database("mydb.db", null, myDbConfig);
+   myDb = new Database(&quot;mydb.db&quot;, null, myDbConfig);
 } catch(DatabaseException dbe) {
-    System.err.println("MyDbs: " + dbe.toString());
+    System.err.println(&quot;MyDbs: &quot; + dbe.toString());
     System.exit(-1);
 } catch(FileNotFoundException fnfe) {
-    System.err.println("MyDbs: " + fnfe.toString());
+    System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
     System.exit(-1);
 } </pre>
         </div>
@@ -381,7 +381,7 @@ try {
                     do not sort well when viewed as byte strings. There are
                     several solutions to this problem, one being to provide a
                     custom comparison function. See
-                    <a href="http://www.sleepycat.com/docs/ref/am_misc/faq.html" target="_top">http://www.sleepycat.com/docs/ref/am_misc/faq.html</a> 
+                    <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/ref/am_misc/faq.html" target="_top">http://www.oracle.com/technology/documentation/berkeley-db/db/ref/am_misc/faq.html</a> 
                     for more information.
                 </p>
             </li>
@@ -464,7 +464,7 @@ try {
             following:
       </p>
           <a id="java_btree1"></a>
-          <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+          <pre class="programlisting">package db.GettingStarted;
 
 import java.util.Comparator;
 
@@ -486,7 +486,7 @@ public class MyDataComparator implements Comparator {
         To use this comparator:
     </p>
           <a id="java_btree2"></a>
-          <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+          <pre class="programlisting">package db.GettingStarted;
 
 import java.io.FileNotFoundException;
 import java.util.Comparator;
@@ -508,7 +508,7 @@ try {
 
     // Open the database that you will use to store your data
     myDbConfig.setSortedDuplicates(true);
-    myDatabase = new Database("myDb", null, myDbConfig);
+    myDatabase = new Database(&quot;myDb&quot;, null, myDbConfig);
 } catch (DatabaseException dbe) {
     // Exception handling goes here
 } catch (FileNotFoundException fnfe) {

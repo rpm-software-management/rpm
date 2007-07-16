@@ -1,9 +1,9 @@
 #!/bin/sh -
 #
-# $Id: chk.srcfiles,v 1.13 2004/10/07 19:16:43 bostic Exp $
+# $Id: chk.srcfiles,v 12.4 2006/01/02 14:59:32 bostic Exp $
 #
 # Check to make sure we haven't forgotten to add any files to the list
-# of source files Win32 uses to build its dsp files.
+# of source files Windows uses to build its dsp files.
 
 d=../..
 
@@ -20,6 +20,7 @@ sed -e '/^[ 	#]/d' \
     -e '/^db_server_clnt.c/d' \
     -e '/^db_server_svc.c/d' \
     -e '/^db_server_xdr.c/d' \
+    -e '/^examples_c\/csv\/csv_local.c/d' \
     -e '/^gen_db_server.c/d' \
     -e '/^$/d' < $f |
     awk '{print $1}' > $t1

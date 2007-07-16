@@ -93,18 +93,12 @@
             <dl>
               <dt>
                 <span class="sect2">
-                  <a href="coreindexusage.html#edlWIndexes">Secondary Databases with 
-                example_database_load
-                
-        </a>
+                  <a href="coreindexusage.html#edlWIndexes">Secondary Databases with example_database_load</a>
                 </span>
               </dt>
               <dt>
                 <span class="sect2">
-                  <a href="coreindexusage.html#edrWIndexes">Secondary Databases with 
-            example_database_read
-            
-        </a>
+                  <a href="coreindexusage.html#edrWIndexes">Secondary Databases with example_database_read</a>
                 </span>
               </dt>
             </dl>
@@ -257,9 +251,9 @@
      </p>
         <a id="c_index1"></a>
         <pre class="programlisting">#include &lt;db.h&gt;
-                                                                                                                                     
+
 ...
-                                                                                                                                     
+
 DB *dbp, *sdbp;    /* Primary and secondary DB handles */
 u_int32_t flags;   /* Primary database open flags */
 int ret;           /* Function return value */
@@ -290,7 +284,7 @@ flags = DB_CREATE;    /* If the database does not exist,
 /* open the primary database */
 ret = dbp-&gt;open(dbp,        /* DB structure pointer */
                 NULL,       /* Transaction pointer */
-                "my_db.db", /* On-disk file that holds the database. */
+                &quot;my_db.db&quot;, /* On-disk file that holds the database. */
                 NULL,       /* Optional logical database name */
                 DB_BTREE,   /* Database access method */
                 flags,      /* Open flags */
@@ -302,7 +296,7 @@ if (ret != 0) {
 /* open the secondary database */
 ret = sdbp-&gt;open(sdbp,          /* DB structure pointer */
                  NULL,          /* Transaction pointer */
-                 "my_secdb.db", /* On-disk file that holds the database. */
+                 &quot;my_secdb.db&quot;, /* On-disk file that holds the database. */
                  NULL,          /* Optional logical database name */
                  DB_BTREE,      /* Database access method */
                  flags,         /* Open flags */

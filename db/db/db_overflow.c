@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,20 +39,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_overflow.c,v 11.54 2004/03/28 17:17:50 bostic Exp $
+ * $Id: db_overflow.c,v 12.13 2006/08/24 14:45:16 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/db_am.h"
 #include "dbinc/mp.h"
 
@@ -69,12 +62,13 @@
  * __db_goff --
  *	Get an offpage item.
  *
- * PUBLIC: int __db_goff __P((DB *, DBT *,
+ * PUBLIC: int __db_goff __P((DB *, DB_TXN *, DBT *,
  * PUBLIC:     u_int32_t, db_pgno_t, void **, u_int32_t *));
  */
 int
-__db_goff(dbp, dbt, tlen, pgno, bpp, bpsz)
+__db_goff(dbp, txn, dbt, tlen, pgno, bpp, bpsz)
 	DB *dbp;
+	DB_TXN *txn;
 	DBT *dbt;
 	u_int32_t tlen;
 	db_pgno_t pgno;
@@ -111,6 +105,9 @@ __db_goff(dbp, dbt, tlen, pgno, bpp, bpsz)
 		needed = tlen;
 	}
 
+	if (F_ISSET(dbt, DB_DBT_USERCOPY))
+		goto skip_alloc;
+
 	/* Allocate any necessary memory. */
 	if (F_ISSET(dbt, DB_DBT_USERMEM)) {
 		if (needed > dbt->ulen) {
@@ -131,33 +128,42 @@ __db_goff(dbp, dbt, tlen, pgno, bpp, bpsz)
 	} else if (bpp != NULL)
 		dbt->data = *bpp;
 	else {
-		DB_ASSERT(
+		DB_ASSERT(dbenv,
 		    F_ISSET(dbt,
 		    DB_DBT_USERMEM | DB_DBT_MALLOC | DB_DBT_REALLOC) ||
 		    bpsz != NULL || bpp != NULL);
 		return (DB_BUFFER_SMALL);
 	}
 
+skip_alloc:
 	/*
 	 * Step through the linked list of pages, copying the data on each
 	 * one into the buffer.  Never copy more than the total data length.
 	 */
 	dbt->size = needed;
 	for (curoff = 0, p = dbt->data; pgno != PGNO_INVALID && needed > 0;) {
-		if ((ret = __memp_fget(mpf, &pgno, 0, &h)) != 0)
+		if ((ret = __memp_fget(mpf, &pgno, txn, 0, &h)) != 0)
 			return (ret);
+		DB_ASSERT(dbenv, TYPE(h) == P_OVERFLOW);
 
 		/* Check if we need any bytes from this page. */
 		if (curoff + OV_LEN(h) >= start) {
-			src = (u_int8_t *)h + P_OVERHEAD(dbp);
 			bytes = OV_LEN(h);
+			src = (u_int8_t *)h + P_OVERHEAD(dbp);
 			if (start > curoff) {
 				src += start - curoff;
 				bytes -= start - curoff;
 			}
 			if (bytes > needed)
 				bytes = needed;
-			memcpy(p, src, bytes);
+			if (F_ISSET(dbt, DB_DBT_USERCOPY)) {
+				if ((ret = dbenv->dbt_usercopy(dbt, curoff,
+				    src, bytes, DB_USERCOPY_SETDATA)) != 0) {
+					(void)__memp_fput(mpf, h, 0);
+					return (ret);
+				}
+			} else
+				memcpy(p, src, bytes);
 			p += bytes;
 			needed -= bytes;
 		}
@@ -228,8 +234,7 @@ __db_poff(dbc, dbt, pgnop)
 			    lastp == NULL ? &null_lsn : &LSN(lastp),
 			    &null_lsn)) != 0) {
 				if (lastp != NULL)
-					(void)__memp_fput(mpf,
-					    lastp, DB_MPOOL_DIRTY);
+					(void)__memp_fput(mpf, lastp, 0);
 				lastp = pagep;
 				break;
 			}
@@ -241,8 +246,6 @@ __db_poff(dbc, dbt, pgnop)
 			LSN(lastp) = new_lsn;
 		LSN(pagep) = new_lsn;
 
-		P_INIT(pagep, dbp->pgsize,
-		    PGNO(pagep), PGNO_INVALID, PGNO_INVALID, 0, P_OVERFLOW);
 		OV_LEN(pagep) = pagespace;
 		OV_REF(pagep) = 1;
 		memcpy((u_int8_t *)pagep + P_OVERHEAD(dbp), p, pagespace);
@@ -257,27 +260,26 @@ __db_poff(dbc, dbt, pgnop)
 		else {
 			lastp->next_pgno = PGNO(pagep);
 			pagep->prev_pgno = PGNO(lastp);
-			(void)__memp_fput(mpf, lastp, DB_MPOOL_DIRTY);
+			(void)__memp_fput(mpf, lastp, 0);
 		}
 		lastp = pagep;
 	}
 	if (lastp != NULL &&
-	    (t_ret = __memp_fput(mpf, lastp, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+	    (t_ret = __memp_fput(mpf, lastp, 0)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
 }
 
 /*
  * __db_ovref --
- *	Increment/decrement the reference count on an overflow page.
+ *	Decrement the reference count on an overflow page.
  *
- * PUBLIC: int __db_ovref __P((DBC *, db_pgno_t, int32_t));
+ * PUBLIC: int __db_ovref __P((DBC *, db_pgno_t));
  */
 int
-__db_ovref(dbc, pgno, adjust)
+__db_ovref(dbc, pgno)
 	DBC *dbc;
 	db_pgno_t pgno;
-	int32_t adjust;
 {
 	DB *dbp;
 	DB_MPOOLFILE *mpf;
@@ -287,21 +289,30 @@ __db_ovref(dbc, pgno, adjust)
 	dbp = dbc->dbp;
 	mpf = dbp->mpf;
 
-	if ((ret = __memp_fget(mpf, &pgno, 0, &h)) != 0)
-		return (__db_pgerr(dbp, pgno, ret));
+	if ((ret = __memp_fget(mpf, &pgno, dbc->txn, DB_MPOOL_DIRTY, &h)) != 0)
+		return (ret);
 
 	if (DBC_LOGGING(dbc)) {
 		if ((ret = __db_ovref_log(dbp,
-		    dbc->txn, &LSN(h), 0, h->pgno, adjust, &LSN(h))) != 0) {
+		    dbc->txn, &LSN(h), 0, h->pgno, -1, &LSN(h))) != 0) {
 			(void)__memp_fput(mpf, h, 0);
 			return (ret);
 		}
 	} else
 		LSN_NOT_LOGGED(LSN(h));
-	OV_REF(h) += adjust;
 
-	(void)__memp_fput(mpf, h, DB_MPOOL_DIRTY);
-	return (0);
+	/*
+	 * In BDB releases before 4.5, the overflow reference counts were
+	 * incremented when an overflow item was split onto an internal
+	 * page.  There was a lock race in that code, and rather than fix
+	 * the race, we changed BDB to copy overflow items when splitting
+	 * them onto internal pages.  The code to decrement reference
+	 * counts remains so databases already in the field continue to
+	 * work.
+	 */
+	--OV_REF(h);
+
+	return (__memp_fput(mpf, h, 0));
 }
 
 /*
@@ -326,17 +337,22 @@ __db_doff(dbc, pgno)
 	mpf = dbp->mpf;
 
 	do {
-		if ((ret = __memp_fget(mpf, &pgno, 0, &pagep)) != 0)
-			return (__db_pgerr(dbp, pgno, ret));
+		if ((ret = __memp_fget(mpf, &pgno, dbc->txn, 0, &pagep)) != 0)
+			return (ret);
 
-		DB_ASSERT(TYPE(pagep) == P_OVERFLOW);
+		DB_ASSERT(dbp->dbenv, TYPE(pagep) == P_OVERFLOW);
 		/*
 		 * If it's referenced by more than one key/data item,
 		 * decrement the reference count and return.
 		 */
 		if (OV_REF(pagep) > 1) {
 			(void)__memp_fput(mpf, pagep, 0);
-			return (__db_ovref(dbc, pgno, -1));
+			return (__db_ovref(dbc, pgno));
+		}
+
+		if ((ret = __memp_dirty(mpf, &pagep, dbc->txn, 0)) != 0) {
+			(void)__memp_fput(mpf, pagep, 0);
+			return (ret);
 		}
 
 		if (DBC_LOGGING(dbc)) {
@@ -372,12 +388,13 @@ __db_doff(dbc, pgno)
  * specified a comparison function.  In this case, we need to materialize
  * the entire object and call their comparison routine.
  *
- * PUBLIC: int __db_moff __P((DB *, const DBT *, db_pgno_t, u_int32_t,
+ * PUBLIC: int __db_moff __P((DB *, DB_TXN *, const DBT *, db_pgno_t, u_int32_t,
  * PUBLIC:     int (*)(DB *, const DBT *, const DBT *), int *));
  */
 int
-__db_moff(dbp, dbt, pgno, tlen, cmpfunc, cmpp)
+__db_moff(dbp, txn, dbt, pgno, tlen, cmpfunc, cmpp)
 	DB *dbp;
+	DB_TXN *txn;
 	const DBT *dbt;
 	db_pgno_t pgno;
 	u_int32_t tlen;
@@ -402,7 +419,7 @@ __db_moff(dbp, dbt, pgno, tlen, cmpfunc, cmpp)
 		buf = NULL;
 		bufsize = 0;
 
-		if ((ret = __db_goff(dbp,
+		if ((ret = __db_goff(dbp, txn,
 		    &local_dbt, tlen, pgno, &buf, &bufsize)) != 0)
 			return (ret);
 		/* Pass the key as the first argument */
@@ -414,7 +431,7 @@ __db_moff(dbp, dbt, pgno, tlen, cmpfunc, cmpp)
 	/* While there are both keys to compare. */
 	for (*cmpp = 0, p1 = dbt->data,
 	    key_left = dbt->size; key_left > 0 && pgno != PGNO_INVALID;) {
-		if ((ret = __memp_fget(mpf, &pgno, 0, &pagep)) != 0)
+		if ((ret = __memp_fget(mpf, &pgno, txn, 0, &pagep)) != 0)
 			return (ret);
 
 		cmp_bytes = OV_LEN(pagep) < key_left ? OV_LEN(pagep) : key_left;

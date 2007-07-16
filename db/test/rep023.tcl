@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep023.tcl,v 11.3 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep023.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	rep023
 # TEST	Replication using two master handles.
@@ -15,7 +15,17 @@
 # TEST	up properly.
 #
 proc rep023 { method { niter 10 } { tnum "023" } args } {
-	global is_hp_test
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
 
 	# We can't open two envs on HP-UX, so just skip the
 	# whole test since that is at the core of it.
@@ -23,13 +33,13 @@ proc rep023 { method { niter 10 } { tnum "023" } args } {
 		puts "Rep$tnum: Skipping for HP-UX."
 		return
 	}
+
 	set args [convert_args $method $args]
 	set logsets [create_logsets 2]
 
 	# Run the body of the test with and without recovery, and
 	# with and without -rep_start.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -47,7 +57,8 @@ proc rep023 { method { niter 10 } { tnum "023" } args } {
 				    Replication and openfiles."
 				puts "Rep$tnum: Master logs are [lindex $l 0]"
 				puts "Rep$tnum: Client logs are [lindex $l 1]"
-				rep023_sub $method $niter $tnum $l $r $startopt $args
+				rep023_sub $method \
+				    $niter $tnum $l $r $startopt $args
 			}
 		}
 	}
@@ -76,11 +87,9 @@ proc rep023_sub { method niter tnum logset recargs startopt largs } {
 
 	# Open 1st master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create $m_txnargs \
-	    $m_logargs -lock_max 2500 \
+	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create $m_txnargs \
-#	    $m_logargs -lock_max 2500 \
+#	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
 #	    -errpfx MASTER -verbose {rep on} \
 #	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv1 [eval $ma_envcmd $recargs -rep_master]
@@ -96,11 +105,9 @@ proc rep023_sub { method niter tnum logset recargs startopt largs } {
 
 	# Open a client.
 	repladd 2
-	set cl_envcmd "berkdb_env -create $c_txnargs \
-	    $c_logargs -lock_max 2500 \
+	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env -create $c_txnargs \
-#	    $c_logargs -lock_max 2500 \
+#	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
 #	    -errpfx CLIENT1 -verbose {rep on} \
 #	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
@@ -131,11 +138,11 @@ proc rep023_sub { method niter tnum logset recargs startopt largs } {
 	process_msgs $envlist
 
 	puts "\tRep$tnum.d: Run rep_test in 1st master; process messages."
-	eval rep_test $method $masterenv1 $db1 $niter 0 0
+	eval rep_test $method $masterenv1 $db1 $niter 0 0 0 0 $largs
 	process_msgs $envlist
 
 	puts "\tRep$tnum.e: Run rep_test in 2nd master; process messages."
-	eval rep_test $method $masterenv2 $db2 $niter 0 0
+	eval rep_test $method $masterenv2 $db2 $niter 0 0 0 0 $largs
 	process_msgs $envlist
 
 	# Contents of the two databases should match.
@@ -147,7 +154,7 @@ proc rep023_sub { method niter tnum logset recargs startopt largs } {
 	error_check_good master2_close [$masterenv2 close] 0
 
 	puts "\tRep$tnum.g: Run test in master again."
-	eval rep_test $method $masterenv1 $db1 $niter $niter 0
+	eval rep_test $method $masterenv1 $db1 $niter $niter 0 0 0 $largs
 	process_msgs $envlist
 
 	puts "\tRep$tnum.h: Closing"

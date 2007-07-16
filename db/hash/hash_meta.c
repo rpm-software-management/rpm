@@ -1,21 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: hash_meta.c,v 11.31 2004/09/22 03:46:22 bostic Exp $
+ * $Id: hash_meta.c,v 12.8 2006/08/24 14:46:05 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/hash.h"
 #include "dbinc/lock.h"
 #include "dbinc/mp.h"
@@ -44,8 +39,8 @@ __ham_get_meta(dbc)
 	     hashp->meta_pgno, DB_LOCK_READ, 0, &hcp->hlock)) != 0)
 		return (ret);
 
-	if ((ret = __memp_fget(mpf,
-	    &hashp->meta_pgno, DB_MPOOL_CREATE, &(hcp->hdr))) != 0)
+	if ((ret = __memp_fget(mpf, &hashp->meta_pgno, dbc->txn,
+	    DB_MPOOL_CREATE, &hcp->hdr)) != 0)
 		(void)__LPUT(dbc, hcp->hlock);
 
 	return (ret);
@@ -62,15 +57,16 @@ __ham_release_meta(dbc)
 {
 	DB_MPOOLFILE *mpf;
 	HASH_CURSOR *hcp;
+	int ret;
 
 	mpf = dbc->dbp->mpf;
 	hcp = (HASH_CURSOR *)dbc->internal;
 
-	if (hcp->hdr)
-		(void)__memp_fput(mpf, hcp->hdr,
-		    F_ISSET(hcp, H_DIRTY) ? DB_MPOOL_DIRTY : 0);
-	hcp->hdr = NULL;
-	F_CLR(hcp, H_DIRTY);
+	if (hcp->hdr != NULL) {
+		if ((ret = __memp_fput(mpf, hcp->hdr, 0)) != 0)
+			return (ret);
+		hcp->hdr = NULL;
+	}
 
 	return (__TLPUT(dbc, hcp->hlock));
 }
@@ -78,11 +74,12 @@ __ham_release_meta(dbc)
 /*
  * Mark the meta-data page dirty.
  *
- * PUBLIC: int __ham_dirty_meta __P((DBC *));
+ * PUBLIC: int __ham_dirty_meta __P((DBC *, u_int32_t));
  */
 int
-__ham_dirty_meta(dbc)
+__ham_dirty_meta(dbc, flags)
 	DBC *dbc;
+	u_int32_t flags;
 {
 	DB *dbp;
 	HASH *hashp;
@@ -93,12 +90,9 @@ __ham_dirty_meta(dbc)
 	hashp = dbp->h_internal;
 	hcp = (HASH_CURSOR *)dbc->internal;
 
-	ret = 0;
+	if ((ret = __db_lget(dbc, LCK_COUPLE,
+	     hashp->meta_pgno, DB_LOCK_WRITE, 0, &hcp->hlock)) != 0)
+		return (ret);
 
-	ret = __db_lget(dbc, LCK_COUPLE,
-	     hashp->meta_pgno, DB_LOCK_WRITE, 0, &hcp->hlock);
-
-	if (ret == 0)
-		F_SET(hcp, H_DIRTY);
-	return (ret);
+	return (__memp_dirty(dbp->mpf, &hcp->hdr, dbc->txn, flags));
 }

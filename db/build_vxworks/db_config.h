@@ -32,11 +32,29 @@
 /* Define to 1 if you want a version with run-time diagnostic checking. */
 /* #undef DIAGNOSTIC */
 
+/* Define to 1 if 64-bit types are available. */
+#define HAVE_64BIT_TYPES 1
+
+/* Define to 1 if you have the `abort' function. */
+#define HAVE_ABORT 1
+
+/* Define to 1 if you have the `atoi' function. */
+#define HAVE_ATOI 1
+
+/* Define to 1 if you have the `atol' function. */
+#define HAVE_ATOL 1
+
 /* Define to 1 if you have the `clock_gettime' function. */
 #define HAVE_CLOCK_GETTIME 1
 
 /* Define to 1 if Berkeley DB release includes strong cryptography. */
 #define HAVE_CRYPTO 1
+
+/* Define to 1 if you have the `ctime_r' function. */
+#define HAVE_CTIME_R 1
+
+/* Define to 1 if ctime_r takes a buffer length as a third argument. */
+#define HAVE_CTIME_R_3ARG 1
 
 /* Define to 1 if you have the `directio' function. */
 /* #undef HAVE_DIRECTIO */
@@ -51,6 +69,12 @@
 /* Define to 1 if you have EXIT_SUCCESS/EXIT_FAILURE #defines. */
 #define HAVE_EXIT_SUCCESS 1
 
+/* Define to 1 if you have the `fchmod' function. */
+/* #undef HAVE_FCHMOD */
+
+/* Define to 1 if you have the `fcntl' function. */
+/* #undef HAVE_FCNTL */
+
 /* Define to 1 if fcntl/F_SETFD denies child access to file descriptors. */
 /* #undef HAVE_FCNTL_F_SETFD */
 
@@ -61,10 +85,16 @@
 #define HAVE_FILESYSTEM_NOTZERO 1
 
 /* Define to 1 if you have the `ftruncate' function. */
-/* #undef HAVE_FTRUNCATE */
+#define HAVE_FTRUNCATE 1
+
+/* Define to 1 if you have the `getaddrinfo' function. */
+/* #undef HAVE_GETADDRINFO */
 
 /* Define to 1 if you have the `getcwd' function. */
 #define HAVE_GETCWD 1
+
+/* Define to 1 if you have the `getenv' function. */
+#define HAVE_GETENV 1
 
 /* Define to 1 if you have the `getopt' function. */
 /* #undef HAVE_GETOPT */
@@ -84,11 +114,17 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 /* #undef HAVE_INTTYPES_H */
 
-/* Define to 1 if you have the `nsl' library (-lnsl). */
-/* #undef HAVE_LIBNSL */
+/* Define to 1 if you have the `isalpha' function. */
+#define HAVE_ISALPHA 1
 
-/* Define to 1 if the system has the type `long long'. */
-/* #undef HAVE_LONG_LONG */
+/* Define to 1 if you have the `isdigit' function. */
+#define HAVE_ISDIGIT 1
+
+/* Define to 1 if you have the `isprint' function. */
+#define HAVE_ISPRINT 1
+
+/* Define to 1 if you have the `isspace' function. */
+#define HAVE_ISSPACE 1
 
 /* Define to 1 if you have the `memcmp' function. */
 #define HAVE_MEMCMP 1
@@ -107,6 +143,9 @@
 
 /* Define to 1 if you have the `mmap' function. */
 /* #undef HAVE_MMAP */
+
+/* Define to 1 if you have the `mprotect' function. */
+/* #undef HAVE_MPROTECT */
 
 /* Define to 1 if you have the `munlock' function. */
 /* #undef HAVE_MUNLOCK */
@@ -141,6 +180,9 @@
 
 /* Define to 1 to use the GCC compiler and IA64 assembly language mutexes. */
 /* #undef HAVE_MUTEX_IA64_GCC_ASSEMBLY */
+
+/* Define to 1 to use the GCC compiler and MIPS assembly language mutexes. */
+/* #undef HAVE_MUTEX_MIPS_GCC_ASSEMBLY */
 
 /* Define to 1 to use the msem_XXX mutexes on systems other than HP-UX. */
 /* #undef HAVE_MUTEX_MSEM_INIT */
@@ -183,9 +225,6 @@
 /* Define to 1 if mutexes hold system resources. */
 #define HAVE_MUTEX_SYSTEM_RESOURCES 1
 
-/* Define to 1 if fast mutexes are available. */
-#define HAVE_MUTEX_THREADS 1
-
 /* Define to 1 to configure mutexes intra-process only. */
 /* #undef HAVE_MUTEX_THREAD_ONLY */
 
@@ -210,6 +249,9 @@
 /* Define to 1 to use the GCC compiler and Windows mutexes. */
 /* #undef HAVE_MUTEX_WIN32_GCC */
 
+/* Define to 1 to use the GCC compiler and amd64 assembly language mutexes. */
+/* #undef HAVE_MUTEX_X86_64_GCC_ASSEMBLY */
+
 /* Define to 1 to use the GCC compiler and x86 assembly language mutexes. */
 /* #undef HAVE_MUTEX_X86_GCC_ASSEMBLY */
 
@@ -222,8 +264,17 @@
 /* Define to 1 if you have the `pread' function. */
 /* #undef HAVE_PREAD */
 
+/* Define to 1 if you have the `printf' function. */
+#define HAVE_PRINTF 1
+
 /* Define to 1 if you have the `pstat_getdynamic' function. */
 /* #undef HAVE_PSTAT_GETDYNAMIC */
+
+/* Define to 1 to configure Berkeley DB for POSIX pthread API. */
+/* #undef HAVE_PTHREAD_API */
+
+/* Define to 1 if you have the `pthread_yield' function. */
+#define HAVE_PTHREAD_YIELD 1
 
 /* Define to 1 if you have the `pwrite' function. */
 /* #undef HAVE_PWRITE */
@@ -243,6 +294,9 @@
 /* Define to 1 if building replication support. */
 #define HAVE_REPLICATION 1
 
+/* Define to 1 if building the Berkeley DB replication framework. */
+/* #undef HAVE_REPLICATION_THREADS */
+
 /* Define to 1 if building RPC client/server. */
 /* #undef HAVE_RPC */
 
@@ -252,17 +306,20 @@
 /* Define to 1 if you have the `select' function. */
 #define HAVE_SELECT 1
 
-/* Define to 1 if building sequence support. */
-/* #undef HAVE_SEQUENCE */
-
 /* Define to 1 if you have the `shmget' function. */
 /* #undef HAVE_SHMGET */
+
+/* Define to 1 if you have the `sigaction' function. */
+/* #undef HAVE_SIGACTION */
+
+/* Define to 1 if thread identifier type db_threadid_t is integral. */
+#define HAVE_SIMPLE_THREAD_TYPE 1
 
 /* Define to 1 if you have the `snprintf' function. */
 /* #undef HAVE_SNPRINTF */
 
-/* Define to 1 if you have the `srand' function. */
-#define HAVE_SRAND 1
+/* Define to 1 if you have the `stat' function. */
+#define HAVE_STAT 1
 
 /* Define to 1 if building statistics support. */
 #define HAVE_STATISTICS 1
@@ -276,17 +333,38 @@
 /* Define to 1 if you have the `strcasecmp' function. */
 /* #undef HAVE_STRCASECMP */
 
+/* Define to 1 if you have the `strcat' function. */
+#define HAVE_STRCAT 1
+
+/* Define to 1 if you have the `strchr' function. */
+#define HAVE_STRCHR 1
+
 /* Define to 1 if you have the `strdup' function. */
 /* #undef HAVE_STRDUP */
 
 /* Define to 1 if you have the `strerror' function. */
 #define HAVE_STRERROR 1
 
+/* Define to 1 if you have the `strftime' function. */
+#define HAVE_STRFTIME 1
+
 /* Define to 1 if you have the <strings.h> header file. */
 #define HAVE_STRINGS_H 1
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
+
+/* Define to 1 if you have the `strncat' function. */
+#define HAVE_STRNCAT 1
+
+/* Define to 1 if you have the `strncmp' function. */
+#define HAVE_STRNCMP 1
+
+/* Define to 1 if you have the `strrchr' function. */
+#define HAVE_STRRCHR 1
+
+/* Define to 1 if you have the `strsep' function. */
+/* #undef HAVE_STRSEP */
 
 /* Define to 1 if you have the `strtol' function. */
 #define HAVE_STRTOL 1
@@ -329,9 +407,6 @@
 /* Define to 1 if unlink of file with open file descriptors will fail. */
 #define HAVE_UNLINK_WITH_OPEN_FAILURE 1
 
-/* Define to 1 if the system has the type `unsigned long long'. */
-/* #undef HAVE_UNSIGNED_LONG_LONG */
-
 /* Define to 1 if building access method verification support. */
 #define HAVE_VERIFY 1
 
@@ -347,23 +422,20 @@
 /* Define to 1 if you have the `_fstati64' function. */
 /* #undef HAVE__FSTATI64 */
 
-/* Define to a value if using non-standard mutex alignment. */
-/* #undef MUTEX_ALIGN */
-
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "support@sleepycat.com"
+#define PACKAGE_BUGREPORT "Oracle Technology Network Berkeley DB forum"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "Berkeley DB"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Berkeley DB 4.3.27"
+#define PACKAGE_STRING "Berkeley DB 4.5.20"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "db-4.3.27"
+#define PACKAGE_TARNAME "db-4.5.20"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.3.27"
+#define PACKAGE_VERSION "4.5.20"
 
 /* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
 /* #undef STAT_MACROS_BROKEN */
@@ -386,58 +458,5 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
 
-/*
- * Exit success/failure macros.
- */
-#ifndef	HAVE_EXIT_SUCCESS
-#define	EXIT_FAILURE	1
-#define	EXIT_SUCCESS	0
-#endif
-
-/*
- * Don't step on the namespace.  Other libraries may have their own
- * implementations of these functions, we don't want to use their
- * implementations or force them to use ours based on the load order.
- */
-#ifndef	HAVE_GETCWD
-#define	getcwd		__db_Cgetcwd
-#endif
-#ifndef	HAVE_GETOPT
-#define	getopt		__db_Cgetopt
-#define	optarg		__db_Coptarg
-#define	opterr		__db_Copterr
-#define	optind		__db_Coptind
-#define	optopt		__db_Coptopt
-#endif
-#ifndef	HAVE_MEMCMP
-#define	memcmp		__db_Cmemcmp
-#endif
-#ifndef	HAVE_MEMCPY
-#define	memcpy		__db_Cmemcpy
-#endif
-#ifndef	HAVE_MEMMOVE
-#define	memmove		__db_Cmemmove
-#endif
-#ifndef	HAVE_RAISE
-#define	raise		__db_Craise
-#endif
-#ifndef	HAVE_SNPRINTF
-#define	snprintf	__db_Csnprintf
-#endif
-#ifndef	HAVE_STRCASECMP
-#define	strcasecmp	__db_Cstrcasecmp
-#define	strncasecmp	__db_Cstrncasecmp
-#endif
-#ifndef	HAVE_STRERROR
-#define	strerror	__db_Cstrerror
-#endif
-#ifndef	HAVE_VSNPRINTF
-#define	vsnprintf	__db_Cvsnprintf
-#endif
-
-/*
- * !!!
- * The following is not part of the automatic configuration setup, but
- * provides the information necessary to build Berkeley DB on VxWorks.
- */
+#include "clib_port.h"
 #include "vxWorks.h"

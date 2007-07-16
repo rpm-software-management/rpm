@@ -1,5 +1,5 @@
-<!--$Id: db_associate.so,v 10.37 2004/08/13 03:38:55 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_associate.so,v 10.43 2006/05/17 20:47:46 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -24,8 +24,8 @@
 <p>
 int
 DB-&gt;associate(DB *primary, DB_TXN *txnid, DB *secondary,
-    int (*callback)(DB *, const DBT *, const DBT *, DBT *),
-    u_int32_t flags);
+    int (*callback)(DB *secondary,
+    const DBT *key, const DBT *data, DBT *result), u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;associate</h3>
@@ -78,8 +78,12 @@ iterations and range queries will reflect only the corresponding subset
 of the database.  If this is not desirable, the application should
 ensure that the callback function is well-defined for all possible
 values and never returns DB_DONOTINDEX.</p>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
-the following value:
+<p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering Berkeley DB is not guaranteed to work correctly, and the results
+are undefined.</p>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
 <dt><a name="DB_CREATE">DB_CREATE</a><dd>If the secondary database is empty, walk through the primary and create
 an index to it in the empty secondary.  This operation is potentially
@@ -96,13 +100,17 @@ another thread of control, until the DB-&gt;associate call has
 returned successfully in the first thread.  If transactions are being
 used, Berkeley DB will perform appropriate locking and the application need
 not do any special operation ordering.</p>
-</dl>
-In addition, the following flag may be set by
-bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
-<dl compact>
-<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DB-&gt;associate call within a transaction.  If the call succeeds,
-changes made by the operation will be recoverable.  If the call fails,
-the operation will have made no changes.
+<dt><a name="DB_IMMUTABLE_KEY">DB_IMMUTABLE_KEY</a><dd>Specifies the secondary key is immutable.
+<p>This flag can be used to optimize updates when the secondary key in a
+primary record will never be changed after the primary record is
+inserted.  For immutable secondary keys, a best effort is made to avoid
+calling the secondary callback function when primary records are
+updated.  This optimization may reduce the overhead of update operations
+significantly if the callback function is expensive.</p>
+<p>Be sure to specify this flag only if the secondary key in the primary
+record is never changed.  If this rule is violated, the secondary index
+will become corrupted, that is, it will become out of sync with the
+primary.</p>
 </dl>
 <dt><b>primary</b><dd>The <b>primary</b> parameter should be a database handle for the primary
 database that is to be indexed.
@@ -116,10 +124,15 @@ with the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag it is saf
 of control after the DB-&gt;associate method has returned.  Note also
 that either secondary keys must be unique or the secondary database must
 be configured with support for duplicate data items.
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-(other than by specifying the DB_AUTO_COMMIT flag),
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+operation occurs in a transactional
+database,
+the operation will be implicitly transaction protected.  
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;associate method
@@ -127,6 +140,7 @@ may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
 </dl>
 <dl compact>
 <dt>EINVAL<dd>If the secondary database handle has already been associated with this or
@@ -143,6 +157,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

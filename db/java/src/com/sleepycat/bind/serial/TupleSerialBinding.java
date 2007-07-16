@@ -1,16 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleSerialBinding.java,v 1.2 2004/06/04 18:24:49 mark Exp $
+ * $Id: TupleSerialBinding.java,v 12.4 2006/08/31 18:14:05 bostic Exp $
  */
 
 package com.sleepycat.bind.serial;
 
 import com.sleepycat.bind.EntityBinding;
-import com.sleepycat.bind.tuple.TupleBinding;
+import com.sleepycat.bind.tuple.TupleBase;
 import com.sleepycat.bind.tuple.TupleInput;
 import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.db.DatabaseEntry;
@@ -31,7 +31,8 @@ import com.sleepycat.db.DatabaseEntry;
  *
  * @author Mark Hayes
  */
-public abstract class TupleSerialBinding implements EntityBinding {
+public abstract class TupleSerialBinding extends TupleBase
+    implements EntityBinding {
 
     protected SerialBinding dataBinding;
 
@@ -62,16 +63,16 @@ public abstract class TupleSerialBinding implements EntityBinding {
     // javadoc is inherited
     public Object entryToObject(DatabaseEntry key, DatabaseEntry data) {
 
-        return entryToObject(TupleBinding.entryToInput(key),
+        return entryToObject(entryToInput(key),
                              dataBinding.entryToObject(data));
     }
 
     // javadoc is inherited
     public void objectToKey(Object object, DatabaseEntry key) {
 
-        TupleOutput output = TupleBinding.newOutput();
+        TupleOutput output = getTupleOutput(object);
         objectToKey(object, output);
-        TupleBinding.outputToEntry(output, key);
+        outputToEntry(output, key);
     }
 
     // javadoc is inherited

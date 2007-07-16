@@ -80,7 +80,7 @@
       <p>The full implementation of <tt class="classname">ExampleDatabaseRead</tt>
     can be found in:
     </p>
-      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
       <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.
@@ -88,12 +88,12 @@
       <div class="example">
         <a id="EDR"></a>
         <p class="title">
-          <b>Example 4.1  ExampleDatabaseRead.java</b>
+          <b>Example 4.1 ExampleDatabaseRead.java</b>
         </p>
         <p>To begin, we import the necessary classes:</p>
         <a id="java_cursor10"></a>
         <pre class="programlisting">// file ExampleDatabaseRead.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,7 +113,7 @@ import com.sleepycat.db.OperationStatus;</pre>
         <a id="java_cursor11"></a>
         <pre class="programlisting">public class ExampleDatabaseRead {
 
-    private static String myDbsPath = "./";
+    private static String myDbsPath = &quot;./&quot;;
 
     // Encapsulates the database environment and databases.
     private static MyDbs myDbs = new MyDbs();
@@ -129,8 +129,8 @@ import com.sleepycat.db.OperationStatus;</pre>
       </p>
         <a id="java_cursor12"></a>
         <pre class="programlisting">   private static void usage() {
-        System.out.println("ExampleDatabaseRead [-h &lt;env directory&gt;]" +
-                           "[-s &lt;item to locate&gt;]");
+        System.out.println(&quot;ExampleDatabaseRead [-h &lt;env directory&gt;]&quot; +
+                           &quot;[-s &lt;item to locate&gt;]&quot;);
         System.exit(-1);
     }
 
@@ -139,12 +139,12 @@ import com.sleepycat.db.OperationStatus;</pre>
         try {
             edr.run(args);
         } catch (DatabaseException dbe) {
-            System.err.println("ExampleDatabaseRead: " + dbe.toString());
+            System.err.println(&quot;ExampleDatabaseRead: &quot; + dbe.toString());
             dbe.printStackTrace();
         } finally {
             myDbs.close();
         }
-        System.out.println("All done.");
+        System.out.println(&quot;All done.&quot;);
     }</pre>
         <p>In <tt class="methodname">ExampleDatabaseRead.run()</tt>, we call <tt class="methodname">MyDbs.setup()</tt> to
       open our databases. Then we create the bindings that we need for using our data objects with 
@@ -187,7 +187,7 @@ import com.sleepycat.db.OperationStatus;</pre>
                 displayInventoryRecord(foundKey, theInventory);
             }
         } catch (Exception e) {
-            System.err.println("Error on inventory cursor:");
+            System.err.println(&quot;Error on inventory cursor:&quot;);
             System.err.println(e.toString());
             e.printStackTrace();
         } finally {
@@ -206,40 +206,40 @@ import com.sleepycat.db.OperationStatus;</pre>
                                         Inventory theInventory)
         throws DatabaseException {
 
-        String theSKU = new String(theKey.getData());
-        System.out.println(theSKU + ":");
-        System.out.println("\t " + theInventory.getItemName());
-        System.out.println("\t " + theInventory.getCategory());
-        System.out.println("\t " + theInventory.getVendor());
-        System.out.println("\t\tNumber in stock: " +
+        String theSKU = new String(theKey.getData(), &quot;UTF-8&quot;);
+        System.out.println(theSKU + &quot;:&quot;);
+        System.out.println(&quot;\t &quot; + theInventory.getItemName());
+        System.out.println(&quot;\t &quot; + theInventory.getCategory());
+        System.out.println(&quot;\t &quot; + theInventory.getVendor());
+        System.out.println(&quot;\t\tNumber in stock: &quot; +
             theInventory.getVendorInventory());
-        System.out.println("\t\tPrice per unit:  " +
+        System.out.println(&quot;\t\tPrice per unit:  &quot; +
             theInventory.getVendorPrice());
-        System.out.println("\t\tContact: ");
+        System.out.println(&quot;\t\tContact: &quot;);
 
         DatabaseEntry searchKey = null;
         try {
             searchKey =
-                new DatabaseEntry(theInventory.getVendor().getBytes("UTF-8"));
+                new DatabaseEntry(theInventory.getVendor().getBytes(&quot;UTF-8&quot;));
         } catch (IOException willNeverOccur) {}
         DatabaseEntry foundVendor = new DatabaseEntry();
 
         if (myDbs.getVendorDB().get(null, searchKey, foundVendor,
                 LockMode.DEFAULT) != OperationStatus.SUCCESS) {
-            System.out.println("Could not find vendor: " +
-                theInventory.getVendor() + ".");
+            System.out.println(&quot;Could not find vendor: &quot; +
+                theInventory.getVendor() + &quot;.&quot;);
             System.exit(-1);
         } else {
             Vendor theVendor =
                 (Vendor)vendorBinding.entryToObject(foundVendor);
-            System.out.println("\t\t " + theVendor.getAddress());
-            System.out.println("\t\t " + theVendor.getCity() + ", " +
-                theVendor.getState() + " " + theVendor.getZipcode());
-            System.out.println("\t\t Business Phone: " +
+            System.out.println(&quot;\t\t &quot; + theVendor.getAddress());
+            System.out.println(&quot;\t\t &quot; + theVendor.getCity() + &quot;, &quot; +
+                theVendor.getState() + &quot; &quot; + theVendor.getZipcode());
+            System.out.println(&quot;\t\t Business Phone: &quot; +
                 theVendor.getBusinessPhoneNumber());
-            System.out.println("\t\t Sales Rep: " +
+            System.out.println(&quot;\t\t Sales Rep: &quot; +
                                 theVendor.getRepName());
-            System.out.println("\t\t            " +
+            System.out.println(&quot;\t\t            &quot; +
                 theVendor.getRepPhoneNumber());
        }
     }</pre>
@@ -248,7 +248,7 @@ import com.sleepycat.db.OperationStatus;</pre>
       document, this is relatively uninteresting. You can see how this is
       implemented by looking at:
       </p>
-        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
         <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.

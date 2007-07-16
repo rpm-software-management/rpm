@@ -42,10 +42,7 @@
     </p>
       <p>
         Note that when putting records to the database using a cursor, the
-        cursor is positioned at the record you inserted. Also, you can not
-        transactionally protect a put that is performed using a cursor; 
-        if you want to transactionall protect your database writes,
-        put recrods using the database handle directly.
+        cursor is positioned at the record you inserted. 
     </p>
       <p>
         You use 
@@ -139,11 +136,11 @@
 
 ...
 
-char *key1str = "My first string";
-char *data1str = "My first data";
-char *key2str = "A second string";
-char *data2str = "My second data";
-char *data3str = "My third data";
+char *key1str = &quot;My first string&quot;;
+char *data1str = &quot;My first data&quot;;
+char *key2str = &quot;A second string&quot;;
+char *data2str = &quot;My second data&quot;;
+char *data3str = &quot;My third data&quot;;
 
 
 Db my_database(NULL, 0);
@@ -164,11 +161,11 @@ try {
     my_database.cursor(NULL, &amp;cursorp, 0);
 
     // Assuming an empty database, this first put places
-    // "My first string"/"My first data" in the first 
+    // &quot;My first string&quot;/&quot;My first data&quot; in the first 
     // position in the database
     int ret = cursorp-&gt;put(&amp;key1, &amp;data1, DB_KEYFIRST); 
 
-    // This put places "A second string"/"My second data" in the
+    // This put places &quot;A second string&quot;/&quot;My second data&quot; in the
     // the database according to its key sorts against the key 
     // used for the currently existing database record. Most likely
     // this record would appear first in the database.
@@ -176,21 +173,21 @@ try {
             DB_KEYFIRST); /* Added according to sort order */
 
     // If duplicates are not allowed, the currently existing record that 
-    // uses "key2" is overwritten with the data provided on this put.
-    // That is, the record "A second string"/"My second data" becomes
-    // "A second string"/"My third data"
+    // uses &quot;key2&quot; is overwritten with the data provided on this put.
+    // That is, the record &quot;A second string&quot;/&quot;My second data&quot; becomes
+    // &quot;A second string&quot;/&quot;My third data&quot;
     // 
-    // If duplicates are allowed, then "My third data" is placed in the
-    // duplicates list according to how it sorts against "My second data".
+    // If duplicates are allowed, then &quot;My third data&quot; is placed in the
+    // duplicates list according to how it sorts against &quot;My second data&quot;.
     ret = cursorp-&gt;put(&amp;key2, &amp;data3, 
             DB_KEYFIRST); // If duplicates are not allowed, record 
                           // is overwritten with new data. Otherwise, 
                           // the record is added to the beginning of 
                           // the duplicates list.
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), "Error!");
+        my_database.err(e.get_errno(), &quot;Error!&quot;);
 } catch(std::exception &amp;e) {
-        my_database.errx("Error! %s", e.what());
+        my_database.errx(&quot;Error! %s&quot;, e.what());
 }
 
 // Cursors must be closed

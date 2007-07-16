@@ -9,10 +9,12 @@ BEGIN {
     }
 }
 
+use lib 't';
 use BerkeleyDB; 
-use t::util;
+use Test::More;
+use util(1);
 
-print "1..7\n";
+plan tests => 7;
 
 my $Dfile = "dbhash.tmp";
 my $Dfile2 = "dbhash2.tmp";
@@ -62,7 +64,7 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]" ;
-  ok(1, docat_del($redirect) eq <<'EOM') ;
+  is(docat_del($redirect), <<'EOM') ;
 Banana Exists
 
 orange -> orange
@@ -113,7 +115,7 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]" ;
-  ok(2, docat_del($redirect) eq <<'EOM') ;
+  is(docat_del($redirect), <<'EOM') ;
 Banana Exists
 
 orange -> orange
@@ -138,7 +140,7 @@ my $redirect = "xyzt" ;
     tie %h, 'BerkeleyDB::Btree', 
     		-Filename   => $filename, 
 	        -Flags      => DB_CREATE
-      or die "Cannot open $filename: $!\n" ;
+      or die "Cannot open $filename: $! $BerkeleyDB::Error\n" ;
 
     # Add a key/value pair to the file
     $h{'Wall'} = 'Larry' ;
@@ -160,7 +162,7 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]\n" ;
-  ok(3, docat_del($redirect) eq <<'EOM') ;
+  is(docat_del($redirect), <<'EOM') ;
 Smith
 Wall
 mouse
@@ -206,7 +208,7 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]\n" ;
-  ok(4, docat_del($redirect) eq <<'EOM') ;
+  is(docat_del($redirect), <<'EOM') ;
 mouse
 Smith
 Wall
@@ -256,7 +258,7 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]\n" ;
-  ok(5, docat_del($redirect) eq <<"EOM") ;
+  is(docat_del($redirect), <<"EOM") ;
 abc\x00 -> def\x00
 EOM
 
@@ -300,7 +302,7 @@ my $redirect = "xyzt" ;
 
   my $val = pack("i", 123) ;
   #print "[" . docat($redirect) . "]\n" ;
-  ok(6, docat_del($redirect) eq <<"EOM") ;
+  is(docat_del($redirect), <<"EOM") ;
 $val -> def
 EOM
 
@@ -390,7 +392,7 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]\n" ;
-  ok(7, docat_del($redirect) eq <<"EOM") ;
+  is(docat_del($redirect), <<"EOM") ;
 The array contains 5 entries
 popped black
 shifted white

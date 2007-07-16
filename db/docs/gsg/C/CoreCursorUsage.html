@@ -46,9 +46,7 @@
         can provide the item and show the vendor's contact information.
     </p>
       <p>
-        Specifically, the 
-            <tt class="classname">example_database_read</tt>
-            
+        Specifically, the <tt class="classname">example_database_read</tt>
         application does the following:
     </p>
       <div class="orderedlist">
@@ -56,9 +54,7 @@
           <li>
             <p>
             Opens the the inventory and vendor databases
-            that were created by our 
-                <tt class="classname">example_database_load</tt>
-                
+            that were created by our <tt class="classname">example_database_load</tt>
             application. See 
                 <a href="DbUsage.html#exampledbload">example_database_load</a> 
                  
@@ -113,7 +109,7 @@
         <a id="c_cursor10"></a>
         <pre class="programlisting">/* File: example_database_read.c */
 /* gettingstarted_common.h includes db.h for us */
-#include "gettingstarted_common.h"
+#include &quot;gettingstarted_common.h&quot;
 
 /* Forward declarations */
 char * show_inventory_item(void *);
@@ -153,9 +149,9 @@ main(int argc, char *argv[])
     set_db_filenames(&amp;my_stock);
                                                                                                                                 
     /* Open all databases */
-    ret = databases_setup(&amp;my_stock, "example_database_read", stderr);
+    ret = databases_setup(&amp;my_stock, &quot;example_database_read&quot;, stderr);
     if (ret != 0) {
-        fprintf(stderr, "Error opening databases\n");
+        fprintf(stderr, &quot;Error opening databases\n&quot;);
         databases_close(&amp;my_stock);
         return (ret);
     }
@@ -262,12 +258,12 @@ show_inventory_item(void *vBuf)
     vendor_name = buf + buf_pos;
                                                                                                                                   
     /* Display all this information */
-    printf("name: %s\n", name);
-    printf("\tSKU: %s\n", sku);
-    printf("\tCategory: %s\n", category);
-    printf("\tPrice: %.2f\n", price);
-    printf("\tQuantity: %i\n", quantity);
-    printf("\tVendor:\n");
+    printf(&quot;name: %s\n&quot;, name);
+    printf(&quot;\tSKU: %s\n&quot;, sku);
+    printf(&quot;\tCategory: %s\n&quot;, category);
+    printf(&quot;\tPrice: %.2f\n&quot;, price);
+    printf(&quot;\tQuantity: %i\n&quot;, quantity);
+    printf(&quot;\tVendor:\n&quot;);
                                                                                                                                   
     /* Return the vendor's name */
     return(vendor_name);
@@ -315,24 +311,24 @@ show_vendor_record(char *vendor_name, DB *vendor_dbp)
     /* Get the record */
     ret = vendor_dbp-&gt;get(vendor_dbp, 0, &amp;key, &amp;data, 0);
     if (ret != 0) {
-        vendor_dbp-&gt;err(vendor_dbp, ret, "Error searching for vendor: '%s'",
+        vendor_dbp-&gt;err(vendor_dbp, ret, &quot;Error searching for vendor: '%s'&quot;,
           vendor_name);
         return(ret);
     } else {
-        printf("\t\t%s\n", my_vendor.name);
-        printf("\t\t%s\n", my_vendor.street);
-        printf("\t\t%s, %s\n", my_vendor.city, my_vendor.state);
-        printf("\t\t%s\n\n", my_vendor.zipcode);
-        printf("\t\t%s\n\n", my_vendor.phone_number);
-        printf("\t\tContact: %s\n", my_vendor.sales_rep);
-        printf("\t\t%s\n", my_vendor.sales_rep_phone);
+        printf(&quot;\t\t%s\n&quot;, my_vendor.name);
+        printf(&quot;\t\t%s\n&quot;, my_vendor.street);
+        printf(&quot;\t\t%s, %s\n&quot;, my_vendor.city, my_vendor.state);
+        printf(&quot;\t\t%s\n\n&quot;, my_vendor.zipcode);
+        printf(&quot;\t\t%s\n\n&quot;, my_vendor.phone_number);
+        printf(&quot;\t\tContact: %s\n&quot;, my_vendor.sales_rep);
+        printf(&quot;\t\t%s\n&quot;, my_vendor.sales_rep_phone);
     }
     return(0);
 } </pre>
       </div>
       <p>
         That completes the implementation of
-        <tt class="classname">excxx_example_database_read()</tt>. In the next chapter, we
+        <tt class="classname">example_database_read()</tt>. In the next chapter, we
         will extend this application to make use of a secondary database so that
         we can query the inventory database for a specific inventory item.
     </p>

@@ -1,18 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_vrfy_stub.c,v 11.6 2004/06/14 15:23:32 bostic Exp $
+ * $Id: db_vrfy_stub.c,v 12.5 2006/08/24 14:45:16 bostic Exp $
  */
 
-#include "db_config.h"
-
 #ifndef HAVE_VERIFY
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
+#include "db_config.h"
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -35,7 +31,7 @@ static int
 __db_novrfy(dbenv)
 	DB_ENV *dbenv;
 {
-	__db_err(dbenv,
+	__db_errx(dbenv,
 	    "library build did not include support for database verification");
 	return (DB_OPNOTSUP);
 }

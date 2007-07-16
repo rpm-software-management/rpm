@@ -1,5 +1,5 @@
-<!--$Id: faq.so,v 10.23 2004/09/17 19:51:50 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.26 2005/10/20 16:10:15 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -33,17 +33,6 @@ order</a> for more information.</p>
 in a single physical file.</b>
 <p>This problem is usually the result of <a href="../../api_c/db_class.html">DB</a> handles not sharing an
 underlying database environment.  See <a href="../../ref/am/opensub.html">Opening multiple databases in a single file</a> for more information.</p>
-<a name="3"><!--meow--></a><a name="4"><!--meow--></a>
-<p><li><b>Is there any way to compact databases, or return unused
-database pages to the filesystem?</b>
-<p>When Berkeley DB database pages are emptied, they are made available for other
-uses, that is, new pages will not be allocated from the underlying
-filesystem as long as there are unused pages available.  However, the
-pages cannot be returned to the filesystem without dumping the database,
-removing the physical file, and reloading the database.  The one
-exception to this rule is Queue access method extent files.  Queue
-extent files are removed when they are emptied, and their pages returned
-to the underlying filesystem.</p>
 <p><li><b>I'm using integers as keys for a Btree database, and even
 though the key/data pairs are entered in sorted order, the page-fill
 factor is low.</b>
@@ -64,7 +53,7 @@ a little-endian system are:</p>
 <p>On a big-endian system, their byte patterns are:</p>
 <blockquote><pre>254	0 0 0 fe
 255	0 0 0 ff
-256	0 0 1 1
+256	0 0 1 0
 257	0 0 1 1</pre></blockquote>
 <p>and so, if you treat them as strings they sort nicely.  Which means, if
 you use steadily increasing integers as keys on a big-endian system
@@ -73,7 +62,7 @@ system Berkeley DB produces much less compact trees.  To avoid this problem,
 you may want to convert the keys to flat text or big-endian
 representations, or provide your own
 <a href="../../ref/am_conf/bt_compare.html">Btree comparison function.</a></p>
-<a name="5"><!--meow--></a>
+<a name="3"><!--meow--></a>
 <p><li><b>Is there any way to avoid double buffering in the Berkeley DB system?</b>
 <p>While you cannot avoid double buffering entirely, there are a few things
 you can do to address this issue:</p>
@@ -85,9 +74,10 @@ buffer cache to cover abnormal conditions.  Obviously, this is a
 trade-off, as Berkeley DB may not then perform as well as usual under abnormal
 conditions.</p>
 <p>Second, depending on the underlying operating system you're using, you
-may be able to alter the amount of physical memory devoted to the file
-buffer cache.  Running as the system super-user makes a difference for
-some UNIX or UNIX-like operating systems as well.</p>
+may be able to alter the amount of physical memory devoted to the
+system's file buffer cache.  Altering this type of resource
+configuration may require appropriate privileges, or even operating
+system reboots and/or rebuilds, on some systems.</p>
 <p>Third, changing the size of the Berkeley DB environment regions can change
 the amount of space the operating system makes available for the file
 buffer cache, and it's often worth considering exactly how the operating
@@ -126,6 +116,6 @@ data members or methods.</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/tune.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../java/conf.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

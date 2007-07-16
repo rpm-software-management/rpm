@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.include,v 1.4 2004/10/07 20:34:39 bostic Exp $
+# $Id: chk.include,v 12.2 2006/09/11 15:27:36 bostic Exp $
 #
 # Check for inclusion of files already included in db_int.h.
 
@@ -25,12 +25,17 @@ for i in `cat $t1`; do
 	(cd $d && egrep "^#include[	 ].*[<\"]$i[>\"]" */*.[ch])
 done |
 sed -e '/^build/d' \
+    -e '/^clib\/strtol.c/d' \
+    -e '/^clib\/strtoul.c/d' \
     -e '/^db_dump185/d' \
+    -e '/^dbinc\/mutex_int.h.*<sys\/mman.h>/d' \
     -e '/^examples_c/d' \
     -e '/^libdb_java.*errno.h/d' \
     -e '/^libdb_java.*java_util.h/d' \
+    -e '/^libdb_java\/db_java_wrap.c/d' \
     -e '/^mod_db4/d' \
     -e '/^mutex\/tm.c/d' \
+    -e '/^os\/os_map.c.*<sys\/mman.h>/d' \
     -e '/^perl/d' \
     -e '/^php_db4/d' \
     -e '/^test_/d' \

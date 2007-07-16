@@ -49,8 +49,7 @@
     <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put" target="_top">Map.put</a>
     
 	method is used to add objects. All standard Java methods for
-	modifying a collection may be used with the Sleepycat Java Collections
-	API.
+    modifying a collection may be used with the  Java Collections API.
 </p>
       <p>
     The <tt class="methodname">PopulateDatabase.doWork()</tt> method calls private methods
@@ -107,17 +106,17 @@ public class Sample
 <b class="userinput"><tt>        Map suppliers = views.getSupplierMap();
         if (suppliers.isEmpty())
         {
-            System.out.println("Adding Suppliers");
-            suppliers.put(new SupplierKey("S1"),
-                          new SupplierData("Smith", 20, "London"));
-            suppliers.put(new SupplierKey("S2"),
-                          new SupplierData("Jones", 10, "Paris"));
-            suppliers.put(new SupplierKey("S3"),
-                          new SupplierData("Blake", 30, "Paris"));
-            suppliers.put(new SupplierKey("S4"),
-                          new SupplierData("Clark", 20, "London"));
-            suppliers.put(new SupplierKey("S5"),
-                          new SupplierData("Adams", 30, "Athens"));
+            System.out.println(&quot;Adding Suppliers&quot;);
+            suppliers.put(new SupplierKey(&quot;S1&quot;),
+                          new SupplierData(&quot;Smith&quot;, 20, &quot;London&quot;));
+            suppliers.put(new SupplierKey(&quot;S2&quot;),
+                          new SupplierData(&quot;Jones&quot;, 10, &quot;Paris&quot;));
+            suppliers.put(new SupplierKey(&quot;S3&quot;),
+                          new SupplierData(&quot;Blake&quot;, 30, &quot;Paris&quot;));
+            suppliers.put(new SupplierKey(&quot;S4&quot;),
+                          new SupplierData(&quot;Clark&quot;, 20, &quot;London&quot;));
+            suppliers.put(new SupplierKey(&quot;S5&quot;),
+                          new SupplierData(&quot;Adams&quot;, 30, &quot;Athens&quot;));
         }</tt></b>
     }
 
@@ -126,31 +125,31 @@ public class Sample
 <b class="userinput"><tt>        Map parts = views.getPartMap();
         if (parts.isEmpty())
         {
-            System.out.println("Adding Parts");
-            parts.put(new PartKey("P1"),
-                      new PartData("Nut", "Red",
+            System.out.println(&quot;Adding Parts&quot;);
+            parts.put(new PartKey(&quot;P1&quot;),
+                      new PartData(&quot;Nut&quot;, &quot;Red&quot;,
                                     new Weight(12.0, Weight.GRAMS),
-                                    "London"));
-            parts.put(new PartKey("P2"),
-                      new PartData("Bolt", "Green",
+                                    &quot;London&quot;));
+            parts.put(new PartKey(&quot;P2&quot;),
+                      new PartData(&quot;Bolt&quot;, &quot;Green&quot;,
                                     new Weight(17.0, Weight.GRAMS),
-                                    "Paris"));
-            parts.put(new PartKey("P3"),
-                      new PartData("Screw", "Blue",
+                                    &quot;Paris&quot;));
+            parts.put(new PartKey(&quot;P3&quot;),
+                      new PartData(&quot;Screw&quot;, &quot;Blue&quot;,
                                     new Weight(17.0, Weight.GRAMS),
-                                    "Rome"));
-            parts.put(new PartKey("P4"),
-                      new PartData("Screw", "Red",
+                                    &quot;Rome&quot;));
+            parts.put(new PartKey(&quot;P4&quot;),
+                      new PartData(&quot;Screw&quot;, &quot;Red&quot;,
                                     new Weight(14.0, Weight.GRAMS),
-                                    "London"));
-            parts.put(new PartKey("P5"),
-                      new PartData("Cam", "Blue",
+                                    &quot;London&quot;));
+            parts.put(new PartKey(&quot;P5&quot;),
+                      new PartData(&quot;Cam&quot;, &quot;Blue&quot;,
                                     new Weight(12.0, Weight.GRAMS),
-                                    "Paris"));
-            parts.put(new PartKey("P6"),
-                      new PartData("Cog", "Red",
+                                    &quot;Paris&quot;));
+            parts.put(new PartKey(&quot;P6&quot;),
+                      new PartData(&quot;Cog&quot;, &quot;Red&quot;,
                                     new Weight(19.0, Weight.GRAMS),
-                                    "London"));
+                                    &quot;London&quot;));
         }</tt></b>
     }
 
@@ -159,30 +158,30 @@ public class Sample
 <b class="userinput"><tt>        Map shipments = views.getShipmentMap();
         if (shipments.isEmpty())
         {
-            System.out.println("Adding Shipments");
-            shipments.put(new ShipmentKey("P1", "S1"),
+            System.out.println(&quot;Adding Shipments&quot;);
+            shipments.put(new ShipmentKey(&quot;P1&quot;, &quot;S1&quot;),
                           new ShipmentData(300));
-            shipments.put(new ShipmentKey("P2", "S1"),
+            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S1&quot;),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey("P3", "S1"),
+            shipments.put(new ShipmentKey(&quot;P3&quot;, &quot;S1&quot;),
                           new ShipmentData(400));
-            shipments.put(new ShipmentKey("P4", "S1"),
+            shipments.put(new ShipmentKey(&quot;P4&quot;, &quot;S1&quot;),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey("P5", "S1"),
+            shipments.put(new ShipmentKey(&quot;P5&quot;, &quot;S1&quot;),
                           new ShipmentData(100));
-            shipments.put(new ShipmentKey("P6", "S1"),
+            shipments.put(new ShipmentKey(&quot;P6&quot;, &quot;S1&quot;),
                           new ShipmentData(100));
-            shipments.put(new ShipmentKey("P1", "S2"),
+            shipments.put(new ShipmentKey(&quot;P1&quot;, &quot;S2&quot;),
                           new ShipmentData(300));
-            shipments.put(new ShipmentKey("P2", "S2"),
+            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S2&quot;),
                           new ShipmentData(400));
-            shipments.put(new ShipmentKey("P2", "S3"),
+            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S3&quot;),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey("P2", "S4"),
+            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S4&quot;),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey("P4", "S4"),
+            shipments.put(new ShipmentKey(&quot;P4&quot;, &quot;S4&quot;),
                           new ShipmentData(300));
-            shipments.put(new ShipmentKey("P5", "S4"),
+            shipments.put(new ShipmentKey(&quot;P5&quot;, &quot;S4&quot;),
                           new ShipmentData(400));
         }</tt></b>
     } 

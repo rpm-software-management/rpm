@@ -1,45 +1,26 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_deadlock.c,v 11.45 2004/03/24 15:13:12 bostic Exp $
+ * $Id: db_deadlock.c,v 12.13 2006/08/26 09:23:00 bostic Exp $
  */
 
 #include "db_config.h"
 
+#include "db_int.h"
+
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
 #endif
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#if TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#endif
-
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#endif
-
-#include "db_int.h"
 
 int db_deadlock_main __P((int, char *[]));
 int db_deadlock_usage __P((void));
-int db_deadlock_version_check __P((const char *));
+int db_deadlock_version_check __P((void));
+
+const char *progname;
 
 int
 db_deadlock(args)
@@ -62,24 +43,28 @@ db_deadlock_main(argc, argv)
 {
 	extern char *optarg;
 	extern int optind, __db_getopt_reset;
-	const char *progname = "db_deadlock";
 	DB_ENV  *dbenv;
 	u_int32_t atype;
 	time_t now;
 	u_long secs, usecs;
 	int ch, exitval, ret, verbose;
-	char *home, *logfile, *str;
+	char *home, *logfile, *passwd, *str, time_buf[CTIME_BUFLEN];
 
-	if ((ret = db_deadlock_version_check(progname)) != 0)
+	if ((progname = strrchr(argv[0], '/')) == NULL)
+		progname = argv[0];
+	else
+		++progname;
+
+	if ((ret = db_deadlock_version_check()) != 0)
 		return (ret);
 
 	dbenv = NULL;
 	atype = DB_LOCK_DEFAULT;
-	home = logfile = NULL;
+	home = logfile = passwd = NULL;
 	secs = usecs = 0;
 	exitval = verbose = 0;
 	__db_getopt_reset = 1;
-	while ((ch = getopt(argc, argv, "a:h:L:t:Vvw")) != EOF)
+	while ((ch = getopt(argc, argv, "a:h:L:P:t:Vv")) != EOF)
 		switch (ch) {
 		case 'a':
 			switch (optarg[0]) {
@@ -117,6 +102,15 @@ db_deadlock_main(argc, argv)
 		case 'L':
 			logfile = optarg;
 			break;
+		case 'P':
+			passwd = strdup(optarg);
+			memset(optarg, 0, strlen(optarg));
+			if (passwd == NULL) {
+				fprintf(stderr, "%s: strdup: %s\n",
+				    progname, strerror(errno));
+				return (EXIT_FAILURE);
+			}
+			break;
 		case 't':
 			if ((str = strchr(optarg, '.')) != NULL) {
 				*str++ = '\0';
@@ -131,17 +125,11 @@ db_deadlock_main(argc, argv)
 				return (db_deadlock_usage());
 
 			break;
-
 		case 'V':
 			printf("%s\n", db_version(NULL, NULL, NULL));
 			return (EXIT_SUCCESS);
 		case 'v':
 			verbose = 1;
-			break;
-		case 'w':			/* Undocumented. */
-			/* Detect every 100ms (100000 us) when polling. */
-			secs = 0;
-			usecs = 100000;
 			break;
 		case '?':
 		default:
@@ -173,14 +161,19 @@ db_deadlock_main(argc, argv)
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
 
+	if (passwd != NULL && (ret = dbenv->set_encrypt(dbenv,
+	    passwd, DB_ENCRYPT_AES)) != 0) {
+		dbenv->err(dbenv, ret, "set_passwd");
+		goto shutdown;
+	}
+
 	if (verbose) {
 		(void)dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK, 1);
 		(void)dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR, 1);
 	}
 
 	/* An environment is required. */
-	if ((ret =
-	    dbenv->open(dbenv, home, DB_INIT_LOCK | DB_USE_ENVIRON, 0)) != 0) {
+	if ((ret = dbenv->open(dbenv, home, DB_USE_ENVIRON, 0)) != 0) {
 		dbenv->err(dbenv, ret, "open");
 		goto shutdown;
 	}
@@ -188,7 +181,8 @@ db_deadlock_main(argc, argv)
 	while (!__db_util_interrupted()) {
 		if (verbose) {
 			(void)time(&now);
-			dbenv->errx(dbenv, "running at %.24s", ctime(&now));
+			dbenv->errx(dbenv,
+			    "running at %.24s", __db_ctime(&now, time_buf));
 		}
 
 		if ((ret = dbenv->lock_detect(dbenv, 0, atype, NULL)) != 0) {
@@ -217,6 +211,9 @@ shutdown:	exitval = 1;
 		    "%s: dbenv->close: %s\n", progname, db_strerror(ret));
 	}
 
+	if (passwd != NULL)
+		free(passwd);
+
 	/* Resend any caught signal. */
 	__db_util_sigresend();
 
@@ -226,15 +223,14 @@ shutdown:	exitval = 1;
 int
 db_deadlock_usage()
 {
-	(void)fprintf(stderr, "%s\n\t%s\n",
-	    "usage: db_deadlock [-Vv]",
-	    "[-a e | m | n | o | W | w | y] [-h home] [-L file] [-t sec.usec]");
+	(void)fprintf(stderr,
+	    "usage: %s [-Vv] [-a e | m | n | o | W | w | y]\n\t%s\n", progname,
+	    "[-h home] [-L file] [-P password] [-t sec.usec]");
 	return (EXIT_FAILURE);
 }
 
 int
-db_deadlock_version_check(progname)
-	const char *progname;
+db_deadlock_version_check()
 {
 	int v_major, v_minor, v_patch;
 

@@ -87,6 +87,7 @@ public class Sample
 	sections. The <tt class="methodname">main</tt> method will create an instance of the
 	<tt class="classname">Sample</tt> class, and call its <tt class="methodname">run()</tt> and <tt class="methodname">close()</tt>
 	methods.
+    
 </p>
       <p>
     The following statements parse the program's command line
@@ -95,21 +96,21 @@ public class Sample
       <a id="cb_main"></a>
       <pre class="programlisting">    public static void main(String[] args)
     {
-<b class="userinput"><tt>        System.out.println("\nRunning sample: " + Sample.class);
-        String homeDir = "./tmp";
+<b class="userinput"><tt>        System.out.println(&quot;\nRunning sample: &quot; + Sample.class);
+        String homeDir = &quot;./tmp&quot;;
         for (int i = 0; i &lt; args.length; i += 1)
         {
             String arg = args[i];
-            if (args[i].equals("-h") &amp;&amp; i &lt; args.length - 1)
+            if (args[i].equals(&quot;-h&quot;) &amp;&amp; i &lt; args.length - 1)
             {
                 i += 1;
                 homeDir = args[i];
             }
             else
             {
-                System.err.println("Usage:\n java " + 
+                System.err.println(&quot;Usage:\n java &quot; + 
                                    Sample.class.getName() +
-                                  "\n  [-h &lt;home-directory&gt;]");
+                                  &quot;\n  [-h &lt;home-directory&gt;]&quot;);
                 System.exit(2);
             }
         }</tt></b>
@@ -143,6 +144,7 @@ public class Sample
     Of course, the command line arguments shown are only examples
 	and a real-life application may use different techniques for
 	configuring these options.
+    
 </p>
       <p>
     The following statements create an instance of the <tt class="classname">Sample</tt>
@@ -172,7 +174,7 @@ public class Sample
                 }
                 catch (Exception e)
                 {
-                    System.err.println("Exception during database close:");
+                    System.err.println(&quot;Exception during database close:&quot;);
                     e.printStackTrace();
                 }
             }

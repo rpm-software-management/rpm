@@ -1,5 +1,5 @@
-<!--$Id: db_get.so,v 10.84 2004/09/28 15:04:19 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_get.so,v 10.89 2006/09/13 14:30:52 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -96,16 +96,6 @@ of type Btree, and it must have been created with the DB_RECNUM flag.</p>
 In addition, the following flags may be set by
 bitwise inclusively <b>OR</b>'ing them into the <b>flags</b> parameter:
 <dl compact>
-<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DB-&gt;get call within a transaction.  If the call
-succeeds, changes made by the operation will be recoverable.  If the
-call fails, the operation will have made no changes.  This flag may only
-be specified with the DB_CONSUME and DB_CONSUME_WAIT
-flags.
-<dt><a name="DB_DEGREE_2">DB_DEGREE_2</a><dd>Perform the get operation with degree 2 isolation.
-The read is not repeatable.
-<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
-<a href="../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag was not specified when the underlying
-database was opened.
 <dt><a name="DB_MULTIPLE">DB_MULTIPLE</a><dd>Return multiple data items in the buffer to which the <b>data</b>
 parameter refers.
 <p>In the case of Btree or Hash databases, all of the data items associated
@@ -131,6 +121,12 @@ into secondary indices using the <a href="../api_c/db_associate.html">DB-&gt;ass
 <p>See
 <a href="../api_c/dbt_bulk.html#DB_MULTIPLE_INIT">DB_MULTIPLE_INIT</a>
 for more information.</p>
+<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Perform the get operation with degree 2 isolation.  The read is not
+repeatable.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Perform the get operation with degree 1 isolation, reading modified but
+not yet committed data.  Silently ignored if the
+<a href="../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
+database was opened.
 <dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
 Setting this flag can eliminate deadlock during a read-modify-write
 cycle by acquiring the write lock during the read part of the cycle so
@@ -143,13 +139,22 @@ transactions.</p>
 </dl>
 <dt><b>key</b><dd>The key <a href="../api_c/dbt_class.html">DBT</a> operated on.
 <dt><b>pkey</b><dd>The <b>pkey</b> parameter is the return key from the primary database.
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+operation occurs in a transactional
+database,
+the operation will be implicitly transaction protected.  
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;get method
 may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>DB_BUFFER_SMALL<dd>The requested item could not be returned due to undersized buffer.
+</dl>
 <dl compact>
 <dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
 a deadlock.
@@ -163,6 +168,7 @@ timers were configured and the lock could not be granted before the wait-time ex
 <dl compact>
 <dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
 </dl>
 <dl compact>
 <dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
@@ -176,9 +182,6 @@ the DB-&gt;pget method was called with a <a href="../api_c/db_class.html">DB</a>
 refer to a secondary index; or if an
 invalid flag value or parameter was specified.
 </dl>
-<dl compact>
-<dt>DB_BUFFER_SMALL<dd>The requested item could not be returned due to undersized buffer.
-</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_c/db_class.html">DB</a>
@@ -188,6 +191,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

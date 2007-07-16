@@ -1,20 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: cxx_mpool.cpp,v 11.28 2004/01/28 03:35:56 bostic Exp $
+ * $Id: cxx_mpool.cpp,v 12.5 2006/08/24 14:45:13 bostic Exp $
  */
 
 #include "db_config.h"
 
-#include <errno.h>
+#include "db_int.h"
 
 #include "db_cxx.h"
 #include "dbinc/cxx_int.h"
-
-#include "db_int.h"
 
 // Helper macros for simple methods that pass through to the
 // underlying C method. It may return an error or raise an exception.
@@ -84,8 +82,9 @@ int DbMpoolFile::close(u_int32_t flags)
 	return (ret);
 }
 
-DB_MPOOLFILE_METHOD(get, (db_pgno_t *pgnoaddr, u_int32_t flags, void *pagep),
-    (mpf, pgnoaddr, flags, pagep), DB_RETOK_MPGET)
+DB_MPOOLFILE_METHOD(get,
+    (db_pgno_t *pgnoaddr, DbTxn *txn, u_int32_t flags, void *pagep),
+    (mpf, pgnoaddr, unwrap(txn), flags, pagep), DB_RETOK_MPGET)
 DB_MPOOLFILE_METHOD(open,
     (const char *file, u_int32_t flags, int mode, size_t pagesize),
     (mpf, file, flags, mode, pagesize), DB_RETOK_STD)

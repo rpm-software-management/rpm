@@ -1,0 +1,31 @@
+<!--$Id: config.so,v 1.5 2006/09/15 19:34:26 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.5: --enable-pthread_self</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.5/collect.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/source.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.5: --enable-pthread_self</h3>
+<p>In previous releases, the --enable-pthread_self configuration option was
+used to force Berkeley DB to use the POSIX pthread pthread_self function to
+identify threads of control (even when Berkeley DB was configured for
+test-and-set mutexes).  In the 4.5 release, the --enable-pthread_self
+option has been replaced with the
+<a href="../../ref/build_unix/conf.html#--enable-pthread_api">--with-enable-pthread_api</a> option.  This option has the same effect as
+the previous option, but configures the Berkeley DB build for a POSIX pthread
+application in other ways (for example, configuring Berkeley DB to use the
+pthread_self function).</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.5/collect.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/source.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

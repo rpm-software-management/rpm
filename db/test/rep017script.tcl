@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep017script.tcl,v 11.4 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep017script.tcl,v 12.4 2006/08/24 14:46:37 bostic Exp $
 #
 # Rep017 script - concurrency with checkpoints.
 #
@@ -33,11 +33,6 @@ if { $argc != 2 } {
 set masterdir [ lindex $argv 0 ]
 set clientdir [ lindex $argv 1 ]
 
-# Join the queue env.  We assume the rep test convention of
-# placing the messages in $testdir/MSGQUEUEDIR.
-set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]
-error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
-
 #
 # We need to set up our own machids.
 # Add 1 for master env id, and 2 for the clientenv id.
@@ -48,8 +43,8 @@ repladd 2
 # Join the master env.
 set ma_cmd "berkdb_env_noerr -home $masterdir \
 	-txn -rep_master -rep_transport \[list 1 replsend\]"
-# set ma_cmd "berkdb_env_noerr -home $masterdir  \
-# 	-verbose {rep on} -errfile /dev/stderr  \
+#set ma_cmd "berkdb_env_noerr -home $masterdir  \
+#	-verbose {rep on} -errfile /dev/stderr  \
 # 	-txn -rep_master -rep_transport \[list 1 replsend\]"
 set masterenv [eval $ma_cmd]
 error_check_good script_menv_open [is_valid_env $masterenv] TRUE
@@ -59,9 +54,9 @@ puts "Master open"
 # Join the client env.
 set cl_cmd "berkdb_env_noerr -home $clientdir \
 	-txn -rep_client -rep_transport \[list 2 replsend\]"
-# set cl_cmd "berkdb_env_noerr -home $clientdir \
-# 	-verbose {rep on} -errfile /dev/stderr \
-# 	-txn -rep_client -rep_transport \[list 2 replsend\]"
+#set cl_cmd "berkdb_env_noerr -home $clientdir \
+#	-verbose {rep on} -errfile /dev/stderr \
+#	-txn -rep_client -rep_transport \[list 2 replsend\]"
 set clientenv [eval $cl_cmd]
 error_check_good script_cenv_open [is_valid_env $clientenv] TRUE
 

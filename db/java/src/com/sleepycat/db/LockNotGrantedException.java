@@ -1,11 +1,10 @@
-/*
- *  -
- *  See the file LICENSE for redistribution information.
+/*-
+ * See the file LICENSE for redistribution information.
  *
- *  Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- *  $Id: LockNotGrantedException.java,v 1.3 2004/11/05 00:50:55 mjc Exp $
+ * $Id: LockNotGrantedException.java,v 12.4 2006/08/24 14:46:08 bostic Exp $
  */
 package com.sleepycat.db;
 
@@ -20,7 +19,7 @@ public class LockNotGrantedException extends DeadlockException {
     private DatabaseEntry obj;
     private int op;
 
-    protected LockNotGrantedException(final String message,
+    /* package */ LockNotGrantedException(final String message,
                                       final int op,
                                       final int mode,
                                       final DatabaseEntry obj,

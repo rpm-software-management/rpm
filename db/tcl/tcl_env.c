@@ -1,24 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_env.c,v 11.121 2004/10/07 16:48:39 bostic Exp $
+ * $Id: tcl_env.c,v 12.29 2006/08/24 14:46:33 bostic Exp $
  */
 
 #include "db_config.h"
 
+#include "db_int.h"
 #ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <stdlib.h>
-#include <string.h>
 #include <tcl.h>
 #endif
-
-#include "db_int.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/lock.h"
 #include "dbinc/txn.h"
 #include "dbinc/tcl_db.h"
@@ -55,6 +49,8 @@ env_Cmd(clientData, interp, objc, objv)
 		"attributes",
 		"errfile",
 		"errpfx",
+		"event",
+		"id_reset",
 		"lock_detect",
 		"lock_id",
 		"lock_id_free",
@@ -71,18 +67,23 @@ env_Cmd(clientData, interp, objc, objv)
 		"log_get",
 		"log_put",
 		"log_stat",
+		"lsn_reset",
 		"mpool",
 		"mpool_stat",
 		"mpool_sync",
 		"mpool_trickle",
-		"mutex",
+		"rep_config",
 		"rep_elect",
 		"rep_flush",
+		"rep_get_config",
 		"rep_limit",
 		"rep_process_message",
 		"rep_request",
 		"rep_start",
 		"rep_stat",
+		"rep_sync",
+		"rep_transport",
+		"repmgr",
 		"rpcid",
 		"set_flags",
 		"test",
@@ -92,6 +93,7 @@ env_Cmd(clientData, interp, objc, objv)
 		"txn_timeout",
 		"verbose",
 #endif
+		"cdsgroup",
 		"close",
 		"dbremove",
 		"dbrename",
@@ -103,6 +105,7 @@ env_Cmd(clientData, interp, objc, objv)
 		"get_home",
 		"get_lg_bsize",
 		"get_lg_dir",
+		"get_lg_filemode",
 		"get_lg_max",
 		"get_lg_regionmax",
 		"get_lk_detect",
@@ -121,6 +124,7 @@ env_Cmd(clientData, interp, objc, objv)
 		"get_tx_max",
 		"get_tx_timestamp",
 		"get_verbose",
+		"set_data_dir",
 		"txn",
 		"txn_checkpoint",
 		NULL
@@ -130,6 +134,8 @@ env_Cmd(clientData, interp, objc, objv)
 		ENVATTR,
 		ENVERRFILE,
 		ENVERRPFX,
+		ENVEVENT,
+		ENVIDRESET,
 		ENVLKDETECT,
 		ENVLKID,
 		ENVLKFREEID,
@@ -146,18 +152,23 @@ env_Cmd(clientData, interp, objc, objv)
 		ENVLOGGET,
 		ENVLOGPUT,
 		ENVLOGSTAT,
+		ENVLSNRESET,
 		ENVMP,
 		ENVMPSTAT,
 		ENVMPSYNC,
 		ENVTRICKLE,
-		ENVMUTEX,
+		ENVREPCONFIG,
 		ENVREPELECT,
 		ENVREPFLUSH,
+		ENVREPGETCONFIG,
 		ENVREPLIMIT,
 		ENVREPPROCMESS,
 		ENVREPREQUEST,
 		ENVREPSTART,
 		ENVREPSTAT,
+		ENVREPSYNC,
+		ENVREPTRANSPORT,
+		ENVREPMGR,
 		ENVRPCID,
 		ENVSETFLAGS,
 		ENVTEST,
@@ -167,6 +178,7 @@ env_Cmd(clientData, interp, objc, objv)
 		ENVTXNTIMEOUT,
 		ENVVERB,
 #endif
+		ENVCDSGROUP,
 		ENVCLOSE,
 		ENVDBREMOVE,
 		ENVDBRENAME,
@@ -178,6 +190,7 @@ env_Cmd(clientData, interp, objc, objv)
 		ENVGETHOME,
 		ENVGETLGBSIZE,
 		ENVGETLGDIR,
+		ENVGETLGFILEMODE,
 		ENVGETLGMAX,
 		ENVGETLGREGIONMAX,
 		ENVGETLKDETECT,
@@ -196,12 +209,13 @@ env_Cmd(clientData, interp, objc, objv)
 		ENVGETTXMAX,
 		ENVGETTXTIMESTAMP,
 		ENVGETVERBOSE,
+		ENVSETDATADIR,
 		ENVTXN,
 		ENVTXNCKP
 	};
 	DBTCL_INFO *envip;
 	DB_ENV *dbenv;
-	Tcl_Obj *res, *myobjv[3];
+	Tcl_Obj *myobjv[3], *res;
 	char newname[MSG_SIZE];
 	int cmdindex, i, intvalue1, intvalue2, ncache, result, ret;
 	u_int32_t bytes, gbytes, value;
@@ -209,12 +223,14 @@ env_Cmd(clientData, interp, objc, objv)
 	long shm_key;
 	time_t timeval;
 	const char *strval, **dirs;
+	char *strarg;
 #ifdef CONFIG_TEST
 	DBTCL_INFO *logcip;
 	DB_LOGC *logc;
-	char *strarg;
+	Tcl_Obj **repobjv;
 	u_int32_t lockid;
 	long newval, otherval;
+	int repobjc;
 #endif
 
 	Tcl_ResetResult(interp);
@@ -246,6 +262,22 @@ env_Cmd(clientData, interp, objc, objv)
 	res = NULL;
 	switch ((enum envcmds)cmdindex) {
 #ifdef CONFIG_TEST
+	case ENVEVENT:
+		/*
+		 * Two args for this.  Error if different.
+		 */
+		if (objc != 3) {
+			Tcl_WrongNumArgs(interp, 2, objv, NULL);
+			return (TCL_ERROR);
+		}
+		result = tcl_EventNotify(interp, dbenv, objv[2], envip);
+		break;
+	case ENVIDRESET:
+		result = tcl_EnvIdReset(interp, objc, objv, dbenv);
+		break;
+	case ENVLSNRESET:
+		result = tcl_EnvLsnReset(interp, objc, objv, dbenv);
+		break;
 	case ENVLKDETECT:
 		result = tcl_LockDetect(interp, objc, objv, dbenv);
 		break;
@@ -367,11 +399,31 @@ env_Cmd(clientData, interp, objc, objv)
 	case ENVMP:
 		result = tcl_Mp(interp, objc, objv, dbenv, envip);
 		break;
+	case ENVREPCONFIG:
+		/*
+		 * Two args for this.  Error if different.
+		 */
+		if (objc != 3) {
+			Tcl_WrongNumArgs(interp, 2, objv, NULL);
+			return (TCL_ERROR);
+		}
+		result = tcl_RepConfig(interp, dbenv, objv[2]);
+		break;
 	case ENVREPELECT:
 		result = tcl_RepElect(interp, objc, objv, dbenv);
 		break;
 	case ENVREPFLUSH:
 		result = tcl_RepFlush(interp, objc, objv, dbenv);
+		break;
+	case ENVREPGETCONFIG:
+		/*
+		 * Two args for this.  Error if different.
+		 */
+		if (objc != 3) {
+			Tcl_WrongNumArgs(interp, 2, objv, NULL);
+			return (TCL_ERROR);
+		}
+		result = tcl_RepGetConfig(interp, dbenv, objv[2]);
 		break;
 	case ENVREPLIMIT:
 		result = tcl_RepLimit(interp, objc, objv, dbenv);
@@ -387,6 +439,23 @@ env_Cmd(clientData, interp, objc, objv)
 		break;
 	case ENVREPSTAT:
 		result = tcl_RepStat(interp, objc, objv, dbenv);
+		break;
+	case ENVREPSYNC:
+		result = tcl_RepSync(interp, objc, objv, dbenv);
+		break;
+	case ENVREPTRANSPORT:
+		if (objc != 3) {
+			Tcl_WrongNumArgs(interp, 2, objv, NULL);
+			return (TCL_ERROR);
+		}
+		result = Tcl_ListObjGetElements(interp, objv[2],
+		    &repobjc, &repobjv);
+		if (result == TCL_OK)
+			result = tcl_RepTransport(interp,
+			    repobjc, repobjv, dbenv, envip);
+		break;
+	case ENVREPMGR:
+		result = tcl_RepMgr(interp, objc, objv, dbenv);
 		break;
 	case ENVRPCID:
 		/*
@@ -426,9 +495,6 @@ env_Cmd(clientData, interp, objc, objv)
 		break;
 	case ENVTXNTIMEOUT:
 		result = tcl_TxnTimeout(interp, objc, objv, dbenv);
-		break;
-	case ENVMUTEX:
-		result = tcl_Mutex(interp, objc, objv, dbenv, envip);
 		break;
 	case ENVATTR:
 		result = tcl_EnvAttr(interp, objc, objv, dbenv);
@@ -480,6 +546,9 @@ env_Cmd(clientData, interp, objc, objv)
 		result = tcl_EnvVerbose(interp, dbenv, objv[2], objv[3]);
 		break;
 #endif
+	case ENVCDSGROUP:
+		result = tcl_CDSGroup(interp, objc, objv, dbenv, envip);
+		break;
 	case ENVCLOSE:
 		/*
 		 * No args for this.  Error if there are some.
@@ -581,6 +650,16 @@ env_Cmd(clientData, interp, objc, objv)
 		    "env get_lg_dir")) == TCL_OK)
 			res = NewStringObj(strval, strlen(strval));
 		break;
+	case ENVGETLGFILEMODE:
+		if (objc != 2) {
+			Tcl_WrongNumArgs(interp, 1, objv, NULL);
+			return (TCL_ERROR);
+		}
+		ret = dbenv->get_lg_filemode(dbenv, &intvalue1);
+		if ((result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
+		    "env get_lg_filemode")) == TCL_OK)
+			res = Tcl_NewLongObj((long)intvalue1);
+		break;
 	case ENVGETLGMAX:
 		if (objc != 2) {
 			Tcl_WrongNumArgs(interp, 1, objv, NULL);
@@ -675,9 +754,9 @@ env_Cmd(clientData, interp, objc, objv)
 			Tcl_WrongNumArgs(interp, 1, objv, NULL);
 			return (TCL_ERROR);
 		}
-		ret = dbenv->get_rep_limit(dbenv, &gbytes, &bytes);
+		ret = dbenv->rep_get_limit(dbenv, &gbytes, &bytes);
 		if ((result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
-		    "env get_rep_limit")) == TCL_OK) {
+		    "env rep_get_limit")) == TCL_OK) {
 			myobjv[0] = Tcl_NewLongObj((long)gbytes);
 			myobjv[1] = Tcl_NewLongObj((long)bytes);
 			res = Tcl_NewListObj(2, myobjv);
@@ -698,7 +777,7 @@ env_Cmd(clientData, interp, objc, objv)
 			Tcl_WrongNumArgs(interp, 1, objv, NULL);
 			return (TCL_ERROR);
 		}
-		ret = dbenv->get_tas_spins(dbenv, &value);
+		ret = dbenv->mutex_get_tas_spins(dbenv, &value);
 		if ((result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
 		    "env get_tas_spins")) == TCL_OK)
 			res = Tcl_NewLongObj((long)value);
@@ -739,6 +818,18 @@ env_Cmd(clientData, interp, objc, objv)
 	case ENVGETVERBOSE:
 		result = env_GetVerbose(interp, objc, objv, dbenv);
 		break;
+	case ENVSETDATADIR:
+		/*
+		 * One args for this.  Error if different.
+		 */
+		if (objc != 3) {
+			Tcl_WrongNumArgs(interp, 2, objv, "pfx");
+			return (TCL_ERROR);
+		}
+		strarg = Tcl_GetStringFromObj(objv[2], NULL);
+		ret = dbenv->set_data_dir(dbenv, strarg);
+		return (_ReturnSetup(interp, ret, DB_RETOK_STD(ret),
+		    "env set data dir"));
 	case ENVTXN:
 		result = tcl_Txn(interp, objc, objv, dbenv, envip);
 		break;
@@ -1040,7 +1131,6 @@ _EnvInfoDelete(interp, envip)
 			case I_ENV:
 			case I_LOCK:
 			case I_LOGC:
-			case I_MUTEX:
 			case I_NDBM:
 			case I_PG:
 			case I_SEQ:
@@ -1061,6 +1151,111 @@ _EnvInfoDelete(interp, envip)
 
 #ifdef CONFIG_TEST
 /*
+ * PUBLIC: int tcl_EnvIdReset __P((Tcl_Interp *, int, Tcl_Obj * CONST*,
+ * PUBLIC:    DB_ENV *));
+ *
+ * tcl_EnvIdReset --
+ *	Implements the ENV->fileid_reset command.
+ */
+int
+tcl_EnvIdReset(interp, objc, objv, dbenv)
+	Tcl_Interp *interp;		/* Interpreter */
+	int objc;			/* arg count */
+	Tcl_Obj * CONST* objv;		/* args */
+	DB_ENV *dbenv;			/* Database pointer */
+{
+	static const char *idwhich[] = {
+		"-encrypt",
+		NULL
+	};
+	enum idwhich {
+		IDENCRYPT
+	};
+	int enc, i, result, ret;
+	u_int32_t flags;
+	char *file;
+
+	result = TCL_OK;
+	flags = 0;
+	i = 2;
+	Tcl_SetResult(interp, "0", TCL_STATIC);
+	if (objc < 3) {
+		Tcl_WrongNumArgs(interp, 2, objv, "?-encrypt? filename");
+		return (TCL_ERROR);
+	} else if (objc > 3) {
+		/*
+		 * If there is an arg, make sure it is the right one.
+		 */
+		if (Tcl_GetIndexFromObj(interp, objv[2], idwhich, "option",
+		    TCL_EXACT, &enc) != TCL_OK)
+			return (IS_HELP(objv[2]));
+		switch ((enum idwhich)enc) {
+		case IDENCRYPT:
+			flags |= DB_ENCRYPT;
+			break;
+		}
+		i = 3;
+	}
+	file = Tcl_GetStringFromObj(objv[i], NULL);
+	ret = dbenv->fileid_reset(dbenv, file, flags);
+	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "fileid reset");
+	return (result);
+}
+
+/*
+ * PUBLIC: int tcl_EnvLsnReset __P((Tcl_Interp *, int, Tcl_Obj * CONST*,
+ * PUBLIC:    DB_ENV *));
+ *
+ * tcl_EnvLsnReset --
+ *	Implements the ENV->lsn_reset command.
+ */
+int
+tcl_EnvLsnReset(interp, objc, objv, dbenv)
+	Tcl_Interp *interp;		/* Interpreter */
+	int objc;			/* arg count */
+	Tcl_Obj * CONST* objv;		/* args */
+	DB_ENV *dbenv;			/* Database pointer */
+{
+	static const char *lsnwhich[] = {
+		"-encrypt",
+		NULL
+	};
+	enum lsnwhich {
+		IDENCRYPT
+	};
+	int enc, i, result, ret;
+	u_int32_t flags;
+	char *file;
+
+	result = TCL_OK;
+	flags = 0;
+	i = 2;
+	Tcl_SetResult(interp, "0", TCL_STATIC);
+	if (objc < 3) {
+		Tcl_WrongNumArgs(interp, 2, objv, "?-encrypt? filename");
+		return (TCL_ERROR);
+	} else if (objc > 3) {
+		/*
+		 * If there is an arg, make sure it is the right one.
+		 */
+		if (Tcl_GetIndexFromObj(interp, objv[2], lsnwhich, "option",
+		    TCL_EXACT, &enc) != TCL_OK)
+			return (IS_HELP(objv[2]));
+
+		switch ((enum lsnwhich)enc) {
+		case IDENCRYPT:
+			flags |= DB_ENCRYPT;
+			break;
+		}
+		i = 3;
+	}
+	file = Tcl_GetStringFromObj(objv[i], NULL);
+	ret = dbenv->lsn_reset(dbenv, file, flags);
+	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "lsn reset");
+	return (result);
+}
+
+/*
  * PUBLIC: int tcl_EnvVerbose __P((Tcl_Interp *, DB_ENV *, Tcl_Obj *,
  * PUBLIC:    Tcl_Obj *));
  *
@@ -1076,15 +1271,17 @@ tcl_EnvVerbose(interp, dbenv, which, onoff)
 	static const char *verbwhich[] = {
 		"deadlock",
 		"recovery",
+		"register",
 		"rep",
 		"wait",
 		NULL
 	};
 	enum verbwhich {
-		ENVVERB_DEAD,
-		ENVVERB_REC,
-		ENVVERB_REP,
-		ENVVERB_WAIT
+		ENVVERB_DEADLOCK,
+		ENVVERB_RECOVERY,
+		ENVVERB_REGISTER,
+		ENVVERB_REPLICATION,
+		ENVVERB_WAITSFOR
 	};
 	static const char *verbonoff[] = {
 		"off",
@@ -1103,16 +1300,19 @@ tcl_EnvVerbose(interp, dbenv, which, onoff)
 		return (IS_HELP(which));
 
 	switch ((enum verbwhich)optindex) {
-	case ENVVERB_DEAD:
+	case ENVVERB_DEADLOCK:
 		wh = DB_VERB_DEADLOCK;
 		break;
-	case ENVVERB_REC:
+	case ENVVERB_RECOVERY:
 		wh = DB_VERB_RECOVERY;
 		break;
-	case ENVVERB_REP:
+	case ENVVERB_REGISTER:
+		wh = DB_VERB_REGISTER;
+		break;
+	case ENVVERB_REPLICATION:
 		wh = DB_VERB_REPLICATION;
 		break;
-	case ENVVERB_WAIT:
+	case ENVVERB_WAITSFOR:
 		wh = DB_VERB_WAITSFOR;
 		break;
 	default:
@@ -1228,6 +1428,42 @@ err:
 }
 
 /*
+ * tcl_EventNotify --
+ *	Call DB_ENV->set_event_notify().
+ *
+ * PUBLIC: int tcl_EventNotify  __P((Tcl_Interp *, DB_ENV *, Tcl_Obj *,
+ * PUBLIC:    DBTCL_INFO *));
+ *
+ *	Note that this normally can/should be achieved as an argument to
+ * berkdb env, but we need to test changing the event function on
+ * the fly.
+ */
+int
+tcl_EventNotify(interp, dbenv, eobj, ip)
+	Tcl_Interp *interp;		/* Interpreter */
+	DB_ENV *dbenv;
+	Tcl_Obj *eobj;		/* The event proc */
+	DBTCL_INFO *ip;
+{
+	int ret;
+
+	/*
+	 * We don't need to crack the event procedure out now.
+	 */
+	/*
+	 * If we're replacing an existing event proc, decrement it now.
+	 */
+	if (ip->i_event != NULL)
+		Tcl_DecrRefCount(ip->i_event);
+	ip->i_event = eobj;
+	Tcl_IncrRefCount(ip->i_event);
+	_debug_check();
+	ret = dbenv->set_event_notify(dbenv, _EventFunc);
+	return (_ReturnSetup(interp, ret, DB_RETOK_STD(ret),
+	    "env event"));
+}
+
+/*
  * PUBLIC: int tcl_EnvSetFlags __P((Tcl_Interp *, DB_ENV *, Tcl_Obj *,
  * PUBLIC:    Tcl_Obj *));
  *
@@ -1248,6 +1484,7 @@ tcl_EnvSetFlags(interp, dbenv, which, onoff)
 		"-dsync_log",
 		"-log_inmemory",
 		"-log_remove",
+		"-multiversion",
 		"-nolock",
 		"-nommap",
 		"-nopanic",
@@ -1264,6 +1501,7 @@ tcl_EnvSetFlags(interp, dbenv, which, onoff)
 		ENVSF_DSYNCLOG,
 		ENVSF_LOG_INMEMORY,
 		ENVSF_LOG_REMOVE,
+		ENVSF_MULTIVERSION,
 		ENVSF_NOLOCK,
 		ENVSF_NOMMAP,
 		ENVSF_NOPANIC,
@@ -1307,6 +1545,9 @@ tcl_EnvSetFlags(interp, dbenv, which, onoff)
 	case ENVSF_LOG_REMOVE:
 		wh = DB_LOG_AUTOREMOVE;
 		break;
+	case ENVSF_MULTIVERSION:
+		wh = DB_MULTIVERSION;
+		break;
 	case ENVSF_NOLOCK:
 		wh = DB_NOLOCKING;
 		break;
@@ -1346,7 +1587,7 @@ tcl_EnvSetFlags(interp, dbenv, which, onoff)
 	}
 	ret = dbenv->set_flags(dbenv, wh, on);
 	return (_ReturnSetup(interp, ret, DB_RETOK_STD(ret),
-	    "env set verbose"));
+	    "env set flags"));
 }
 
 /*
@@ -1383,6 +1624,7 @@ tcl_EnvTest(interp, objc, objv, dbenv)
 		"postlogmeta",
 		"postopen",
 		"postsync",
+		"recycle",
 		"subdb_lock",
 		NULL
 	};
@@ -1397,6 +1639,7 @@ tcl_EnvTest(interp, objc, objv, dbenv)
 		ENVTEST_POSTLOGMETA,
 		ENVTEST_POSTOPEN,
 		ENVTEST_POSTSYNC,
+		ENVTEST_RECYCLE,
 		ENVTEST_SUBDB_LOCKS
 	};
 	int *loc, optindex, result, testval;
@@ -1446,11 +1689,11 @@ tcl_EnvTest(interp, objc, objv, dbenv)
 	}
 	switch ((enum envtestat)optindex) {
 	case ENVTEST_ELECTINIT:
-		DB_ASSERT(loc == &dbenv->test_abort);
+		DB_ASSERT(dbenv, loc == &dbenv->test_abort);
 		testval = DB_TEST_ELECTINIT;
 		break;
 	case ENVTEST_ELECTVOTE1:
-		DB_ASSERT(loc == &dbenv->test_abort);
+		DB_ASSERT(dbenv, loc == &dbenv->test_abort);
 		testval = DB_TEST_ELECTVOTE1;
 		break;
 	case ENVTEST_NONE:
@@ -1477,8 +1720,12 @@ tcl_EnvTest(interp, objc, objv, dbenv)
 	case ENVTEST_POSTSYNC:
 		testval = DB_TEST_POSTSYNC;
 		break;
+	case ENVTEST_RECYCLE:
+		DB_ASSERT(dbenv, loc == &dbenv->test_copy);
+		testval = DB_TEST_RECYCLE;
+		break;
 	case ENVTEST_SUBDB_LOCKS:
-		DB_ASSERT(loc == &dbenv->test_abort);
+		DB_ASSERT(dbenv, loc == &dbenv->test_abort);
 		testval = DB_TEST_SUBDB_LOCKS;
 		break;
 	default:
@@ -1594,6 +1841,8 @@ env_DbRemove(interp, objc, objv, dbenv)
 		 * arrays for the subdb.
 		 */
 		db = Tcl_GetStringFromObj(objv[i++], NULL);
+		if (strcmp(db, "") == 0)
+			db = NULL;
 		if (i != objc) {
 			subdbtmp =
 			    Tcl_GetByteArrayFromObj(objv[i++], &subdblen);
@@ -1723,6 +1972,8 @@ env_DbRename(interp, objc, objv, dbenv)
 		 * arrays for the subdb.
 		 */
 		db = Tcl_GetStringFromObj(objv[i++], NULL);
+		if (strcmp(db, "") == 0)
+			db = NULL;
 		if (i == objc - 2) {
 			subdbtmp =
 			    Tcl_GetByteArrayFromObj(objv[i++], &subdblen);
@@ -1788,6 +2039,7 @@ env_GetFlags(interp, objc, objv, dbenv)
 		{ DB_DSYNC_LOG, "-dsync_log" },
 		{ DB_LOG_AUTOREMOVE, "-log_remove" },
 		{ DB_LOG_INMEMORY, "-log_inmemory" },
+		{ DB_MULTIVERSION, "-multiversion" },
 		{ DB_NOLOCKING, "-nolock" },
 		{ DB_NOMMAP, "-nommap" },
 		{ DB_NOPANIC, "-nopanic" },
@@ -1845,20 +2097,21 @@ env_GetOpenFlag(interp, objc, objv, dbenv)
 		u_int32_t flag;
 		char *arg;
 	} open_flags[] = {
+		{ DB_CREATE, "-create" },
 		{ DB_INIT_CDB, "-cdb" },
 		{ DB_INIT_LOCK, "-lock" },
 		{ DB_INIT_LOG, "-log" },
 		{ DB_INIT_MPOOL, "-mpool" },
 		{ DB_INIT_TXN, "-txn" },
-		{ DB_RECOVER, "-recover" },
-		{ DB_RECOVER_FATAL, "-recover_fatal" },
-		{ DB_USE_ENVIRON, "-use_environ" },
-		{ DB_USE_ENVIRON_ROOT, "-use_environ_root" },
-		{ DB_CREATE, "-create" },
 		{ DB_LOCKDOWN, "-lockdown" },
 		{ DB_PRIVATE, "-private" },
+		{ DB_RECOVER, "-recover" },
+		{ DB_RECOVER_FATAL, "-recover_fatal" },
+		{ DB_REGISTER, "-register" },
 		{ DB_SYSTEM_MEM, "-system_mem" },
 		{ DB_THREAD, "-thread" },
+		{ DB_USE_ENVIRON, "-use_environ" },
+		{ DB_USE_ENVIRON_ROOT, "-use_environ_root" },
 		{ 0, NULL }
 	};
 
@@ -2058,6 +2311,7 @@ env_GetVerbose(interp, objc, objv, dbenv)
 	} verbose_flags[] = {
 		{ DB_VERB_DEADLOCK, "deadlock" },
 		{ DB_VERB_RECOVERY, "recovery" },
+		{ DB_VERB_REGISTER, "register" },
 		{ DB_VERB_REPLICATION, "rep" },
 		{ DB_VERB_WAITSFOR, "wait" },
 		{ 0, NULL }
@@ -2086,7 +2340,7 @@ env_GetVerbose(interp, objc, objv, dbenv)
 
 	ret = dbenv->get_verbose(dbenv, which, &onoff);
 err:	if ((result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
-	    "env get_timeout")) == 0) {
+	    "env get_verbose")) == 0) {
 		answer = onoff ? "on" : "off";
 		res = NewStringObj(answer, strlen(answer));
 		Tcl_SetObjResult(interp, res);

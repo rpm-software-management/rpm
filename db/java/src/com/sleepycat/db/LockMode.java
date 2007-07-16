@@ -1,11 +1,11 @@
 /*-
-* See the file LICENSE for redistribution information.
-*
-* Copyright (c) 2002-2004
-*	Sleepycat Software.  All rights reserved.
-*
-* $Id: LockMode.java,v 1.2 2004/04/09 15:08:38 mjc Exp $
-*/
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
+ *
+ * $Id: LockMode.java,v 12.4 2006/08/24 14:46:08 bostic Exp $
+ */
 
 package com.sleepycat.db;
 
@@ -22,12 +22,17 @@ public final class LockMode {
 
     public static final LockMode DEFAULT =
         new LockMode("DEFAULT", 0);
-    public static final LockMode DIRTY_READ =
-        new LockMode("DIRTY_READ", DbConstants.DB_DIRTY_READ);
-    public static final LockMode DEGREE_2 =
-        new LockMode("DEGREE_2", DbConstants.DB_DEGREE_2);
+    public static final LockMode READ_UNCOMMITTED =
+        new LockMode("READ_UNCOMMITTED", DbConstants.DB_READ_UNCOMMITTED);
+    public static final LockMode READ_COMMITTED =
+        new LockMode("READ_COMMITTED", DbConstants.DB_READ_COMMITTED);
     public static final LockMode RMW =
         new LockMode("RMW", DbConstants.DB_RMW);
+
+    /** @deprecated */
+    public static final LockMode DIRTY_READ = READ_UNCOMMITTED;
+    /** @deprecated */
+    public static final LockMode DEGREE_2 = READ_COMMITTED;
 
     public String toString() {
         return "LockMode." + lockModeName;

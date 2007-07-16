@@ -30,14 +30,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: strcasecmp.c,v 1.8 2004/01/28 03:35:52 bostic Exp $
+ * $Id: strcasecmp.c,v 12.1 2006/05/05 14:53:08 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <string.h>
-#endif
+#include "db_int.h"
 
 /*
  * This array is designed for mapping upper and lower case letter

@@ -61,7 +61,7 @@ try {
     ...
     // Create DatabaseEntry objects
     // searchKey is some String.
-    DatabaseEntry theKey = new DatabaseEntry(searchKey.getBytes("UTF-8"));
+    DatabaseEntry theKey = new DatabaseEntry(searchKey.getBytes(&quot;UTF-8&quot;));
     DatabaseEntry theData = new DatabaseEntry();
 
     // Open a cursor using a database handle
@@ -72,9 +72,9 @@ try {
                                                  LockMode.DEFAULT);
     
     // Replacement data
-    String replaceStr = "My replacement string";
+    String replaceStr = &quot;My replacement string&quot;;
     DatabaseEntry replacementData = 
-        new DatabaseEntry(replaceStr.getBytes("UTF-8"));
+        new DatabaseEntry(replaceStr.getBytes(&quot;UTF-8&quot;));
     cursor.putCurrent(replacementData);
 } catch (Exception e) {
     // Exception handling goes here

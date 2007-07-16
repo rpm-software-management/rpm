@@ -1,15 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleInput.java,v 1.4 2004/09/01 14:34:20 mark Exp $
+ * $Id: TupleInput.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
 
 import com.sleepycat.util.FastInputStream;
+import com.sleepycat.util.PackedInteger;
 import com.sleepycat.util.UtfOps;
 
 /**
@@ -45,11 +46,28 @@ import com.sleepycat.util.UtfOps;
  * character ordering.</li>
  * </ul>
  *
- * <p>Floats and doubles are stored in standard Java integer-bit representation
- * (IEEE 754). Non-negative numbers are correctly ordered by numeric value.
- * However, negative numbers are not correctly ordered; therefore, if you use
- * negative floating point numbers in a key, you'll need to implement and
- * configure a custom comparator to get correct numeric ordering.</p>
+ * <p>Floats and doubles are stored using two different representations: sorted
+ * representation and integer-bit (IEEE 754) representation.  If you use
+ * negative floating point numbers in a key, you should use sorted
+ * representation; alternatively you may use integer-bit representation but you
+ * will need to implement and configure a custom comparator to get correct
+ * numeric ordering for negative numbers.</p>
+ *
+ * <p>To use sorted representation use this set of methods:</p>
+ * <ul>
+ * <li>{@link TupleOutput#writeSortedFloat}</li>
+ * <li>{@link TupleInput#readSortedFloat}</li>
+ * <li>{@link TupleOutput#writeSortedDouble}</li>
+ * <li>{@link TupleInput#readSortedDouble}</li>
+ * </ul>
+ *
+ * <p>To use integer-bit representation use this set of methods:</p>
+ * <ul>
+ * <li>{@link TupleOutput#writeFloat}</li>
+ * <li>{@link TupleInput#readFloat}</li>
+ * <li>{@link TupleOutput#writeDouble}</li>
+ * <li>{@link TupleInput#readDouble}</li>
+ * </ul>
  *
  * @author Mark Hayes
  */
@@ -119,17 +137,17 @@ public class TupleInput extends FastInputStream {
     public final String readString()
         throws IndexOutOfBoundsException, IllegalArgumentException  {
 
-        byte[] buf = getBufferBytes();
-        int off = getBufferOffset();
+        byte[] myBuf = buf;
+        int myOff = off;
         if (available() >= 2 &&
-            buf[off] == TupleOutput.NULL_STRING_UTF_VALUE &&
-            buf[off + 1] == 0) {
+            myBuf[myOff] == TupleOutput.NULL_STRING_UTF_VALUE &&
+            myBuf[myOff + 1] == 0) {
             skip(2);
             return null;
         } else {
-            int byteLen = UtfOps.getZeroTerminatedByteLength(buf, off);
+            int byteLen = UtfOps.getZeroTerminatedByteLength(myBuf, myOff);
             skip(byteLen + 1);
-            return UtfOps.bytesToString(buf, off, byteLen);
+            return UtfOps.bytesToString(myBuf, myOff, byteLen);
         }
     }
 
@@ -142,7 +160,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final char readChar() throws IndexOutOfBoundsException {
+    public final char readChar()
+        throws IndexOutOfBoundsException {
 
         return (char) readUnsignedShort();
     }
@@ -157,7 +176,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final boolean readBoolean() throws IndexOutOfBoundsException {
+    public final boolean readBoolean()
+        throws IndexOutOfBoundsException {
 
         int c = readFast();
         if (c < 0) {
@@ -175,7 +195,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final byte readByte() throws IndexOutOfBoundsException {
+    public final byte readByte()
+        throws IndexOutOfBoundsException {
 
         return (byte) (readUnsignedByte() ^ 0x80);
     }
@@ -189,7 +210,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final short readShort() throws IndexOutOfBoundsException {
+    public final short readShort()
+        throws IndexOutOfBoundsException {
 
         return (short) (readUnsignedShort() ^ 0x8000);
     }
@@ -203,7 +225,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final int readInt() throws IndexOutOfBoundsException {
+    public final int readInt()
+        throws IndexOutOfBoundsException {
 
         return (int) (readUnsignedInt() ^ 0x80000000);
     }
@@ -217,7 +240,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final long readLong() throws IndexOutOfBoundsException {
+    public final long readLong()
+        throws IndexOutOfBoundsException {
 
         return readUnsignedLong() ^ 0x8000000000000000L;
     }
@@ -228,12 +252,19 @@ public class TupleInput extends FastInputStream {
      * <code>Float.intBitsToFloat</code> is used to convert the signed int
      * value.
      *
+     * <p><em>Note:</em> This method operations on byte array values that by
+     * default (without a custom comparator) do <em>not</em> sort correctly for
+     * negative values.  Only non-negative values are sorted correctly by
+     * default.  To sort all values correctly by default, use {@link
+     * #readSortedFloat}.</p>
+     *
      * @return the value read from the buffer.
      *
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final float readFloat() throws IndexOutOfBoundsException {
+    public final float readFloat()
+        throws IndexOutOfBoundsException {
 
         return Float.intBitsToFloat((int) readUnsignedInt());
     }
@@ -244,14 +275,77 @@ public class TupleInput extends FastInputStream {
      * <code>Double.longBitsToDouble</code> is used to convert the signed long
      * value.
      *
+     * <p><em>Note:</em> This method operations on byte array values that by
+     * default (without a custom comparator) do <em>not</em> sort correctly for
+     * negative values.  Only non-negative values are sorted correctly by
+     * default.  To sort all values correctly by default, use {@link
+     * #readSortedDouble}.</p>
+     *
      * @return the value read from the buffer.
      *
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final double readDouble() throws IndexOutOfBoundsException {
+    public final double readDouble()
+        throws IndexOutOfBoundsException {
 
         return Double.longBitsToDouble(readUnsignedLong());
+    }
+
+    /**
+     * Reads a signed float (four byte) value from the buffer, with support
+     * for correct default sorting of all values.
+     * Reads values that were written using {@link
+     * TupleOutput#writeSortedFloat}.
+     *
+     * <p><code>Float.intBitsToFloat</code> and the following bit
+     * manipulations are used to convert the stored representation to a signed
+     * float value.</p>
+     * <pre>
+     *  int val = ... // get stored bits
+     *  val ^= (val &lt; 0) ? 0x80000000 : 0xffffffff;
+     *  return Float.intBitsToFloat(val);
+     * </pre>
+     *
+     * @return the value read from the buffer.
+     *
+     * @throws IndexOutOfBoundsException if not enough bytes are available in
+     * the buffer.
+     */
+    public final float readSortedFloat()
+        throws IndexOutOfBoundsException {
+
+        int val = (int) readUnsignedInt();
+        val ^= (val < 0) ? 0x80000000 : 0xffffffff;
+        return Float.intBitsToFloat(val);
+    }
+
+    /**
+     * Reads a signed double (eight byte) value from the buffer, with support
+     * for correct default sorting of all values.
+     * Reads values that were written using {@link
+     * TupleOutput#writeSortedDouble}.
+     *
+     * <p><code>Float.longBitsToDouble</code> and the following bit
+     * manipulations are used to convert the stored representation to a signed
+     * double value.</p>
+     * <pre>
+     *  int val = ... // get stored bits
+        val ^= (val &lt; 0) ? 0x8000000000000000L : 0xffffffffffffffffL;
+        return Double.longBitsToDouble(val);
+     * </pre>
+     *
+     * @return the value read from the buffer.
+     *
+     * @throws IndexOutOfBoundsException if not enough bytes are available in
+     * the buffer.
+     */
+    public final double readSortedDouble()
+        throws IndexOutOfBoundsException {
+
+        long val = readUnsignedLong();
+        val ^= (val < 0) ? 0x8000000000000000L : 0xffffffffffffffffL;
+        return Double.longBitsToDouble(val);
     }
 
     /**
@@ -264,7 +358,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final int readUnsignedByte() throws IndexOutOfBoundsException {
+    public final int readUnsignedByte()
+        throws IndexOutOfBoundsException {
 
         int c = readFast();
         if (c < 0) {
@@ -283,7 +378,8 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final int readUnsignedShort() throws IndexOutOfBoundsException {
+    public final int readUnsignedShort()
+        throws IndexOutOfBoundsException {
 
         int c1 = readFast();
         int c2 = readFast();
@@ -305,14 +401,15 @@ public class TupleInput extends FastInputStream {
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
-    public final long readUnsignedInt() throws IndexOutOfBoundsException {
+    public final long readUnsignedInt()
+        throws IndexOutOfBoundsException {
 
         long c1 = readFast();
         long c2 = readFast();
         long c3 = readFast();
         long c4 = readFast();
         if ((c1 | c2 | c3 | c4) < 0) {
-             throw new IndexOutOfBoundsException();
+	    throw new IndexOutOfBoundsException();
         }
         return ((c1 << 24) | (c2 << 16) | (c3 << 8) | c4);
     }
@@ -321,7 +418,8 @@ public class TupleInput extends FastInputStream {
      * This method is private since an unsigned long cannot be treated as
      * such in Java, nor converted to a BigInteger of the same value.
      */
-    private final long readUnsignedLong() throws IndexOutOfBoundsException {
+    private final long readUnsignedLong()
+        throws IndexOutOfBoundsException {
 
         long c1 = readFast();
         long c2 = readFast();
@@ -396,8 +494,6 @@ public class TupleInput extends FastInputStream {
      * @param chars is the array to receive the data and whose length is used
      * to determine the number of bytes to be read.
      *
-     * @return the value read from the buffer.
-     *
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
      */
@@ -420,8 +516,6 @@ public class TupleInput extends FastInputStream {
      *
      * @param chars is the array to receive the data and whose length is used
      * to determine the number of characters to be read.
-     *
-     * @return the value read from the buffer.
      *
      * @throws IndexOutOfBoundsException if not enough bytes are available in
      * the buffer.
@@ -466,8 +560,6 @@ public class TupleInput extends FastInputStream {
      * @param chars is the array to receive the data and whose length is used
      * to determine the number of characters to be read.
      *
-     * @return the converted string.
-     *
      * @throws IndexOutOfBoundsException if no null terminating byte is found
      * in the buffer.
      *
@@ -476,7 +568,52 @@ public class TupleInput extends FastInputStream {
     public final void readString(char[] chars)
         throws IndexOutOfBoundsException, IllegalArgumentException  {
 
-        byte[] buf = getBufferBytes();
         off = UtfOps.bytesToChars(buf, off, chars, 0, chars.length, false);
+    }
+
+    /**
+     * Returns the byte length of a null-terminated UTF string in the data
+     * buffer, including the terminator.  Used with string values that were
+     * written using {@link TupleOutput#writeString(String)}.
+     *
+     * @throws IndexOutOfBoundsException if no null terminating byte is found
+     * in the buffer.
+     *
+     * @throws IllegalArgumentException malformed UTF data is encountered.
+     */
+    public final int getStringByteLength()
+        throws IndexOutOfBoundsException, IllegalArgumentException  {
+
+        if (available() >= 2 &&
+            buf[off] == TupleOutput.NULL_STRING_UTF_VALUE &&
+            buf[off + 1] == 0) {
+            return 2;
+        } else {
+            return UtfOps.getZeroTerminatedByteLength(buf, off) + 1;
+        }
+    }
+
+    /**
+     * Reads a packed integer.  Note that packed integers are not appropriate
+     * for sorted values (keys) unless a custom comparator is used.
+     *
+     * @see PackedInteger
+     */
+    public int readPackedInt() {
+
+        int len = PackedInteger.getReadIntLength(buf, off);
+        int val = PackedInteger.readInt(buf, off);
+
+        off += len;
+        return val;
+    }
+
+    /**
+     * Returns the byte length of a packed integer.
+     *
+     * @see PackedInteger
+     */
+    public int getPackedIntByteLength() {
+        return PackedInteger.getReadIntLength(buf, off);
     }
 }

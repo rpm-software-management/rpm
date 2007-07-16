@@ -1,0 +1,97 @@
+<!--$Id: rep_timeout.so,v 1.3 2006/06/30 23:05:16 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;rep_set_timeout</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;rep_set_timeout</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;rep_set_timeout(DB_ENV *env, int which, u_int32_t timeout);
+<p>
+int
+DB_ENV-&gt;rep_get_timeout(DB_ENV *env, int which, u_int32_t *timeoutp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;rep_set_timeout</h3>
+<p>The DB_ENV-&gt;rep_set_timeout method specifies a variety of replication timeout
+values.</p>
+<p>The DB_ENV-&gt;rep_set_timeout method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>The DB_ENV-&gt;rep_set_timeout method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;rep_set_timeout method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>which</b><dd>The <b>which</b> parameter must be set to one of the following values:
+<dl compact>
+<dt><a name="DB_REP_ACK_TIMEOUT">DB_REP_ACK_TIMEOUT</a><dd>Configure the amount of time the replication manager's transport
+function waits to collect enough acknowledgments from replication group
+clients, before giving up and returning a failure indication.  The
+default wait time is 1 second.
+<dt><a name="DB_REP_ELECTION_TIMEOUT">DB_REP_ELECTION_TIMEOUT</a><dd>The timeout period for an election.  The default timeout is 2 seconds.
+<dt><a name="DB_REP_ELECTION_RETRY">DB_REP_ELECTION_RETRY</a><dd>Configure the amount of time the replication manager will wait before
+retrying a failed election.  The default wait time is 10 seconds.
+<dt><a name="DB_REP_CONNECTION_RETRY">DB_REP_CONNECTION_RETRY</a><dd>Configure the amount of time the replication manager will wait before
+trying to re-establish a connection to another site after a communication
+failure.  The default wait time is 30 seconds.
+</dl>
+<dt><b>timeout</b><dd>The <b>timeout</b> parameter is the timeout value.  It must be specified
+as an unsigned 32-bit number of microseconds, limiting the maximum timeout
+to roughly 71 minutes.
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;rep_set_timeout method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;rep_get_timeout</h3>
+<p>The DB_ENV-&gt;rep_get_timeout method returns the timeout value for the specified
+<b>which</b> parameter.</p>
+<p>The DB_ENV-&gt;rep_get_timeout method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;rep_get_timeout method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>which</b><dd>The <b>which</b> parameter is the timeout value for which the value
+is being returned.
+<dt><b>timeoutp</b><dd>The <b>timeoutp</b> parameter references memory into which
+ the timeout value of the specified <b>which</b> parameter is copied. The returned <b>timeout</b> value is in microseconds.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

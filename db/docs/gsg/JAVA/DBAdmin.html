@@ -8,7 +8,7 @@
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
     <link rel="up" href="DB.html" title="Chapter 2. Databases" />
-    <link rel="previous" href="db_config.html" title="Database Properties" />
+    <link rel="previous" href="DBConfig.html" title="Database Properties" />
     <link rel="next" href="dbErrorReporting.html" title="Error Reporting Functions" />
   </head>
   <body>
@@ -18,7 +18,7 @@
           <th colspan="3" align="center">Administrative Methods</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="db_config.html">Prev</a> </td>
+          <td width="20%" align="left"><a accesskey="p" href="DBConfig.html">Prev</a> </td>
           <th width="60%" align="center">Chapter 2. Databases</th>
           <td width="20%" align="right"> <a accesskey="n" href="dbErrorReporting.html">Next</a></td>
         </tr>
@@ -35,7 +35,8 @@
         <div></div>
       </div>
       <p>
-        The <tt class="classname">Database</tt> class provides methods that are useful
+        Both the <tt class="classname">Environment</tt> and
+        <tt class="classname">Database</tt> classes provide methods that are useful
         for manipulating databases. These methods are:
     </p>
       <div class="itemizedlist">
@@ -47,24 +48,6 @@
             <p>Returns the database's name.</p>
             <a id="je_db3.1"></a>
             <pre class="programlisting">String dbName = myDatabase.getDatabaseName();</pre>
-          </li>
-          <li>
-            <p>
-              <tt class="methodname">Database.truncate()</tt>
-            </p>
-            <p>
-            Deletes every record in the database and optionally returns the
-            number of records that were deleted. Note that it is much less
-            expensive to truncate a database without counting the number of
-            records deleted than it is to truncate and count.
-        </p>
-            <a id="je_db5"></a>
-            <pre class="programlisting">int numDiscarded = 
-    myDatabase.truncate(null,
-                        true); // If true, then the number of
-                               // records deleted are counted.
-System.out.println("Discarded " + numDiscarded +
-                " records from database " + myDatabase.getDatabaseName()); </pre>
           </li>
           <li>
             <p>
@@ -84,15 +67,36 @@ System.out.println("Discarded " + numDiscarded +
 ...
 myDatabase.close();
 try {
-    myDatabase.rename("mydb.db",     // Database file to rename
+    myDatabase.rename(&quot;mydb.db&quot;,     // Database file to rename
                       null,          // Database to rename. Not used so
                                      // the entire file is renamed.
-                      "newdb.db",    // New name to use.
+                      &quot;newdb.db&quot;,    // New name to use.
                       null);         // DatabaseConfig object. 
                                      // None provided.
 } catch (FileNotFoundException fnfe) {
     // Exception handling goes here
 }</pre>
+          </li>
+          <li>
+            <p>
+              <tt class="methodname">Environment.truncateDatabase()</tt>
+            </p>
+            <p>
+            Deletes every record in the database and optionally returns the
+            number of records that were deleted. Note that it is much less
+            expensive to truncate a database without counting the number of
+            records deleted than it is to truncate and count.
+        </p>
+            <a id="je_db5"></a>
+            <pre class="programlisting">int numDiscarded = 
+    myEnv.truncate(null,                          // txn handle
+                   myDatabase.getDatabaseName(),  // database name
+                   true);                         // If true, then the 
+                                                  // number of records 
+                                                  // deleted are counted.
+System.out.println(&quot;Discarded &quot; + numDiscarded +
+                   &quot; records from database &quot; + 
+                   myDatabase.getDatabaseName()); </pre>
           </li>
         </ul>
       </div>
@@ -101,7 +105,7 @@ try {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="db_config.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="DBConfig.html">Prev</a> </td>
           <td width="20%" align="center">
             <a accesskey="u" href="DB.html">Up</a>
           </td>

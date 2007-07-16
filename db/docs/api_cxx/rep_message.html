@@ -1,5 +1,5 @@
-<!--$Id: rep_message.so,v 1.30 2004/08/13 03:39:02 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: rep_message.so,v 1.38 2006/06/24 00:33:22 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -29,6 +29,11 @@ DbEnv::rep_process_message(Dbt *control, Dbt *rec, int *envid, DbLsn *ret_lsnp)
 <h3>Description: DbEnv::rep_process_message</h3>
 <p>The DbEnv::rep_process_message method processes an incoming replication message sent
 by a member of the replication group to the local database environment.</p>
+<p>The DbEnv::rep_process_message method is not called by most replication
+applications.  It should only be called by applications implementing
+their own network transport layer, explicitly holding replication group
+elections and handling replication messages outside of the replication
+manager framework.</p>
 <p>For implementation reasons, all incoming replication messages must be
 processed using the same <a href="../api_cxx/env_class.html">DbEnv</a> handle.  It is not required that
 a single thread of control process all messages, only that all threads
@@ -49,13 +54,25 @@ will either return DB_REP_HOLDELECTION or
 throw an exception that encapsulates DB_REP_HOLDELECTION if an election is needed.
 The application should call for an election by calling <a href="../api_cxx/rep_elect.html">DbEnv::rep_elect</a>.
 </p>
+<dt><a name="DB_REP_IGNORE">DB_REP_IGNORE</a><dd>
+<p>The DbEnv::rep_process_message method will return DB_REP_IGNORE if this message cannot be processed.
+This is an indication that this message is irrelevant to the current
+replication state (for example, an old message
+from a previous generation arrives and is processed late).
+</p>
 <dt><a name="DB_REP_ISPERM">DB_REP_ISPERM</a><dd>
 <p>The DbEnv::rep_process_message method will return DB_REP_ISPERM if processing this message results in the processing of records
 that are permanent.
 The maximum LSN of the permanent records stored is returned.
 </p>
+<dt><a name="DB_REP_JOIN_FAILURE">DB_REP_JOIN_FAILURE</a><dd>
+<p>The DbEnv::rep_process_message method will return DB_REP_JOIN_FAILURE if a new master has been chosen but the client is unable to synchronize
+with the new master (possibly because the client has been configured
+with the <a href="../api_cxx/rep_config.html#DB_REP_CONF_NOAUTOINIT">DB_REP_CONF_NOAUTOINIT</a> flag to turn-off automatic
+internal initialization).
+</p>
 <dt><a name="DB_REP_NEWMASTER">DB_REP_NEWMASTER</a><dd>
-<p>The DbEnv::rep_process_message method will return DB_REP_NEWMASTER if a new master has been elected.
+<p>The DbEnv::rep_process_message method will return DB_REP_NEWMASTER if a new master has been chosen.
 The <b>envid</b> parameter contains the environment ID of the new
 master.  If the recipient of this error return has been made master, it
 is the application's responsibility to begin acting as the master
@@ -71,14 +88,9 @@ channel with this new environment.
 <dt><a name="DB_REP_NOTPERM">DB_REP_NOTPERM</a><dd>
 <p>The DbEnv::rep_process_message method will return DB_REP_NOTPERM if a message carrying a <a href="../api_cxx/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> flag was processed
 successfully, but was not written to disk.
-The LSN of this record is returned.
-The application should take whatever action is deemed necessary to
-retain its recoverability characteristics.
-</p>
-<dt><a name="DB_REP_STARTUPDONE">DB_REP_STARTUPDONE</a><dd>
-<p>The DbEnv::rep_process_message method will return DB_REP_STARTUPDONE if the system detects that a client completed startup synchronization.
-The client application knows that this client is now processing
-live log records received from the master.
+The LSN of this record is returned.  The application should take
+whatever action is deemed necessary to retain its recoverability
+characteristics.
 </p>
 </dl>
 <p>Unless otherwise specified, the DbEnv::rep_process_message method
@@ -97,7 +109,7 @@ corresponds to the environment that sent the message to be processed
 information).
 <dt><b>rec</b><dd>The <b>rec</b> parameter should reference a copy of the <b>rec</b>
 parameter specified by Berkeley DB on the sending environment.
-<dt><b>ret_lsn</b><dd>If DbEnv::rep_process_message method returns DB_REP_NOTPERM then the <b>ret_lsnp</b>
+<dt><b>ret_lsnp</b><dd>If DbEnv::rep_process_message method returns DB_REP_NOTPERM then the <b>ret_lsnp</b>
 parameter will contain the log sequence number of this permanent log
 message that could not be written to disk.  If DbEnv::rep_process_message method
 returns DB_REP_ISPERM then the <b>ret_lsnp</b> parameter will contain
@@ -114,6 +126,6 @@ cases the value of <b>ret_lsnp</b> is undefined.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

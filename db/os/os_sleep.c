@@ -1,42 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_sleep.c,v 11.23 2004/03/27 19:09:13 bostic Exp $
+ * $Id: os_sleep.c,v 12.9 2006/09/06 20:22:12 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
-#ifdef HAVE_VXWORKS
-#include <sys/times.h>
-#include <time.h>
-#include <selectLib.h>
-#else
-#if TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif /* HAVE_SYS_TIME_H */
-#endif /* TIME_WITH SYS_TIME */
-#endif /* HAVE_VXWORKS */
-
-#include <string.h>
-#include <unistd.h>
-#endif
-
+#define	__INCLUDE_SELECT_H	1
 #include "db_int.h"
 
 /*
@@ -66,6 +39,16 @@ __os_sleep(dbenv, secs, usecs)
 	 * It's important that we yield the processor here so that other
 	 * processes or threads are permitted to run.
 	 *
+	 * XXX
+	 * VxWorks doesn't yield the processor on select.  This isn't really
+	 * an infinite loop, even though __os_yield can call __os_sleep, and
+	 * we'll fix this when the tree isn't frozen. [#15037]
+	 */
+#ifdef HAVE_VXWORKS
+	__os_yield(dbenv);
+#endif
+
+	/*
 	 * Sheer raving paranoia -- don't select for 0 time.
 	 */
 	t.tv_sec = (long)secs;
@@ -81,7 +64,9 @@ __os_sleep(dbenv, secs, usecs)
 	 * we want the utility to see the signal and quit.  This assumes it's
 	 * always OK for DB to sleep for less time than originally scheduled.
 	 */
-	if (select(0, NULL, NULL, NULL, &t) == -1)
-		 if ((ret = __os_get_errno()) != EINTR)
-			__db_err(dbenv, "select: %s", strerror(ret));
+	if (select(0, NULL, NULL, NULL, &t) == -1) {
+		ret = __os_get_syserr();
+		if (__os_posix_err(ret) != EINTR)
+			__db_syserr(dbenv, ret, "select");
+	}
 }

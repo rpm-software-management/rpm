@@ -1,5 +1,5 @@
-<!--$Id: env_dbremove.so,v 10.48 2004/08/29 19:27:38 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_dbremove.so,v 10.49 2004/12/16 19:13:01 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -48,8 +48,9 @@ failure, and returns 0 on success.
 <dt><b>database</b><dd>The <b>database</b> parameter is the database to be removed.
 <dt><b>file</b><dd>The <b>file</b> parameter is the physical file which contains the
 database(s) to be removed.
-<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
-string, which is equivalent to ASCII for Latin characters.</p>
+<p>When using a Unicode build on Windows (the default), the <b>file</b>
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 the following value:
 <dl compact>
@@ -57,9 +58,14 @@ the following value:
 changes made by the operation will be recoverable.  If the call fails,
 the operation will have made no changes.
 </dl>
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+DB_AUTO_COMMIT flag is specified,
+the operation will be implicitly transaction protected.  
 </dl>
 <h3>Environment Variables</h3>
 <p>The 
@@ -98,6 +104,6 @@ throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exc
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

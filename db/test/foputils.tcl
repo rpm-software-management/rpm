@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: foputils.tcl,v 11.9 2004/09/22 18:01:05 bostic Exp $
+# $Id: foputils.tcl,v 12.5 2006/08/24 14:46:35 bostic Exp $
 #
 proc do_op {omethod op names txn env {largs ""}} {
 	switch -exact $op {
@@ -29,6 +29,25 @@ proc do_subdb_op {omethod op names txn env {largs ""}} {
 		rename { do_subdb_rename $names $txn $env }
 		remove { do_subdb_remove $names $txn $env }
 		noop { do_noop }
+		default { puts "FAIL: operation $op not recognized" }
+	}
+}
+
+proc do_inmem_op {omethod op names txn env {largs ""}} {
+	#
+	# The in-memory versions of do_op are different in
+	# that we don't need to pass in the filename, just
+	# the subdb names.
+	#
+	switch -exact $op {
+		delete { do_delete $names }
+		rename { do_inmem_rename $names $txn $env }
+		remove { do_inmem_remove $names $txn $env }
+		noop { do_noop }
+		open_create { do_inmem_create $omethod $names $txn $env $largs }
+		open { do_inmem_open $omethod $names $txn $env $largs }
+		open_excl { do_inmem_create_excl $omethod $names $txn $env $largs }
+		truncate { do_inmem_truncate $omethod $names $txn $env $largs }
 		default { puts "FAIL: operation $op not recognized" }
 	}
 }
@@ -82,6 +101,19 @@ proc do_subdb_rename {names txn env} {
 	}
 }
 
+proc do_inmem_rename {names txn env} {
+	# Pull db and subdb names out of $names
+	set filename ""
+	set oldsname [lindex $names 0]
+	set newsname [lindex $names 1]
+	if {[catch {eval $env dbrename -txn $txn {$filename} \
+	    $oldsname $newsname} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
 
 proc do_remove {names txn env} {
 	if {[catch {eval $env dbremove -txn $txn $names} result]} {
@@ -101,9 +133,26 @@ proc do_subdb_remove {names txn env} {
 	}
 }
 
+proc do_inmem_remove {names txn env} {
+	if {[catch {eval $env dbremove -txn $txn {""} $names} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
 proc do_create {omethod names txn env {largs ""}} {
 	if {[catch {eval berkdb_open -create $omethod $largs -env $env \
 	    -txn $txn $names} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
+proc do_inmem_create {omethod names txn env {largs ""}} {
+	if {[catch {eval berkdb_open -create $omethod $largs -env $env \
+	    -txn $txn "" $names} result]} {
 		return $result
 	} else {
 		return 0
@@ -119,9 +168,27 @@ proc do_open {omethod names txn env {largs ""}} {
 	}
 }
 
+proc do_inmem_open {omethod names txn env {largs ""}} {
+	if {[catch {eval berkdb_open $omethod $largs -env $env \
+	    -txn $txn {""} $names} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
 proc do_create_excl {omethod names txn env {largs ""}} {
 	if {[catch {eval berkdb_open -create -excl $omethod $largs -env $env \
 	    -txn $txn $names} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
+proc do_inmem_create_excl {omethod names txn env {largs ""}} {
+	if {[catch {eval berkdb_open -create -excl $omethod $largs -env $env \
+	    -txn $txn {""} $names} result]} {
 		return $result
 	} else {
 		return 0
@@ -133,6 +200,17 @@ proc do_truncate {omethod names txn env {largs ""}} {
 	# because testing of truncate is meaningful only in cases
 	# where the database already exists.
 	set db [eval {berkdb_open $omethod} $largs {-env $env -txn $txn $names}]
+	error_check_good db_open [is_valid_db $db] TRUE
+
+	if {[catch {$db truncate -txn $txn} result]} {
+		return $result
+	} else {
+		return 0
+	}
+}
+
+proc do_inmem_truncate {omethod names txn env {largs ""}} {
+	set db [eval {berkdb_open $omethod} $largs {-env $env -txn $txn "" $names}]
 	error_check_good db_open [is_valid_db $db] TRUE
 
 	if {[catch {$db truncate -txn $txn} result]} {

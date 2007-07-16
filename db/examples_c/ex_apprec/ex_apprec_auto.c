@@ -15,10 +15,10 @@
  * PUBLIC:     u_int32_t, const DBT *));
  */
 int
-ex_apprec_mkdir_log(dbenv, txnid, ret_lsnp, flags,
+ex_apprec_mkdir_log(dbenv, txnp, ret_lsnp, flags,
     dirname)
 	DB_ENV *dbenv;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN *ret_lsnp;
 	u_int32_t flags;
 	const DBT *dirname;
@@ -36,7 +36,7 @@ ex_apprec_mkdir_log(dbenv, txnid, ret_lsnp, flags,
 
 	ret = 0;
 
-	if (txnid == NULL) {
+	if (txnp == NULL) {
 		txn_num = 0;
 		lsnp = &null_lsn;
 		null_lsn.file = null_lsn.offset = 0;
@@ -46,10 +46,9 @@ ex_apprec_mkdir_log(dbenv, txnid, ret_lsnp, flags,
 		 * That assignment is done inside the DbEnv->log_put call,
 		 * so pass in the appropriate memory location to be filled
 		 * in by the log_put code.
-		*/
-		DB_SET_BEGIN_LSNP(txnid, &rlsnp);
-		txn_num = txnid->txnid;
-		lsnp = &txnid->last_lsn;
+		 */
+		DB_SET_TXN_LSNP(txnp, &rlsnp, &lsnp);
+		txn_num = txnp->txnid;
 	}
 
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
@@ -84,15 +83,15 @@ ex_apprec_mkdir_log(dbenv, txnid, ret_lsnp, flags,
 	}
 
 	if ((ret = dbenv->log_put(dbenv, rlsnp, (DBT *)&logrec,
-	    flags | DB_LOG_NOCOPY)) == 0 && txnid != NULL) {
-		txnid->last_lsn = *rlsnp;
+	    flags | DB_LOG_NOCOPY)) == 0 && txnp != NULL) {
+		*lsnp = *rlsnp;
 		if (rlsnp != ret_lsnp)
 			 *ret_lsnp = *rlsnp;
 	}
 #ifdef LOG_DIAGNOSTIC
 	if (ret != 0)
 		(void)ex_apprec_mkdir_print(dbenv,
-		    (DBT *)&logrec, ret_lsnp, NULL, NULL);
+		    (DBT *)&logrec, ret_lsnp, DB_TXN_PRINT, NULL);
 #endif
 
 	free(logrec.data);
@@ -117,13 +116,14 @@ ex_apprec_mkdir_read(dbenv, recbuf, argpp)
 	if ((argp = malloc(sizeof(ex_apprec_mkdir_args) + sizeof(DB_TXN))) == NULL)
 		return (ENOMEM);
 	bp = recbuf;
-	argp->txnid = (DB_TXN *)&argp[1];
+	argp->txnp = (DB_TXN *)&argp[1];
+	memset(argp->txnp, 0, sizeof(DB_TXN));
 
 	memcpy(&argp->type, bp, sizeof(argp->type));
 	bp += sizeof(argp->type);
 
-	memcpy(&argp->txnid->txnid,  bp, sizeof(argp->txnid->txnid));
-	bp += sizeof(argp->txnid->txnid);
+	memcpy(&argp->txnp->txnid, bp, sizeof(argp->txnp->txnid));
+	bp += sizeof(argp->txnp->txnid);
 
 	memcpy(&argp->prev_lsn, bp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);

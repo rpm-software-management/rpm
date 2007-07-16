@@ -1,0 +1,78 @@
+<!--$Id: txn_set_name.so,v 10.2 2005/05/17 04:01:01 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbTxn::set_name</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbTxn::set_name</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbTxn::set_name(const char *name);
+<p>
+int
+DbTxn::get_name(const char **namep);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbTxn::set_name</h3>
+<p>The DbTxn::set_name method associates the specified string with the
+transaction.  The string is returned by <a href="../api_cxx/txn_stat.html">DbEnv::txn_stat</a> and displayed
+by <a href="../api_cxx/txn_stat.html">DbEnv::txn_stat_print</a>.</p>
+<p>If the database environment has been configured for logging and the
+Berkeley DB library was configured with
+<a href="../ref/build_unix/conf.html#--enable-diagnostic">--enable-diagnostic</a>, a debugging log record is written including the
+transaction ID and the name.</p>
+<p>The DbTxn::set_name method may be called at any time during the life of the
+application.</p>
+<p>The DbTxn::set_name method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>name</b><dd>The <b>name</b> parameter is the string to associate with the
+transaction.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbTxn::get_name</h3>
+<p>The DbTxn::get_name method returns the string associated with the transaction.</p>
+<p>The DbTxn::get_name method may be called at any time during the life of the
+application.</p>
+<p>The DbTxn::get_name method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>namep</b><dd>The DbTxn::get_name method returns a reference to the
+string associated with the transaction in <b>namep</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/txn_class.html">DbTxn</a>
+<h3>See Also</h3>
+<a href="../api_cxx/txn_list.html">Transaction Subsystem and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

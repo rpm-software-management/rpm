@@ -1,5 +1,5 @@
-<!--$Id: region.so,v 10.30 2003/08/18 21:21:31 ubell Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: region.so,v 10.33 2005/06/11 12:32:49 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -15,17 +15,22 @@
 </td></tr></table>
 <p>
 <h3 align=center>Shared memory regions</h3>
-<p>Each of the Berkeley DB subsystems within an environment is described by one or
-more regions.  The regions contain all of the per-process and per-thread
-shared information, including mutexes, that comprise a Berkeley DB environment.
-These regions are created in one of three areas, depending on the flags
-specified to the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> function:</p>
+<p>Each of the Berkeley DB subsystems within an environment is described by one
+or more regions, or chunks of memory.  The regions contain all of the
+per-process and per-thread shared information (including mutexes), that
+comprise a Berkeley DB environment.  These regions are created in one of three
+types of memory, depending on the flags specified to the
+<a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method:</p>
 <ol>
-<p><li>If the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag is specified to <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a>,
+<p><li>If the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag is specified to the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method,
 regions are created in per-process heap memory; that is, memory returned
-by <b>malloc</b>(3).  In this case, the Berkeley DB environment may only
-be accessed by a single process, although that process may be
-multithreaded.
+by <b>malloc</b>(3).
+<p>This flag should not be specified if more than a single process is
+accessing the environment because it is likely to cause database
+corruption and unpredictable behavior.  For example, if both a server
+application and Berkeley DB utilities (for example, <a href="../../utility/db_archive.html">db_archive</a>,
+<a href="../../utility/db_checkpoint.html">db_checkpoint</a> or <a href="../../utility/db_stat.html">db_stat</a>) are expected to access the
+environment, the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag should not be specified.</p>
 <p><li>If the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag is specified to <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a>,
 shared regions are created in system memory rather than files.  This is
 an alternative mechanism for sharing the Berkeley DB environment among
@@ -47,7 +52,7 @@ information.</p>
 <p>On Windows platforms, the use of the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag is
 problematic because the operating system uses reference counting to
 clean up shared objects in the paging file automatically.  In addition,
-the default access permissions for shared objects are different to
+the default access permissions for shared objects are different from
 files, which may cause problems when an environment is accessed by
 multiple processes running as different users.  See
 <a href="../../ref/build_win/notes.html">Windows Notes</a> for more
@@ -70,6 +75,6 @@ shared memory that is being used by the environment.</p>
 displayed using the <b>-e</b> option to the <a href="../../utility/db_stat.html">db_stat</a> utility.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../env/naming.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/security.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,48 +1,24 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: log_method.c,v 11.50 2004/09/22 16:26:15 bostic Exp $
+ * $Id: log_method.c,v 12.10 2006/08/30 10:05:32 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#ifdef HAVE_RPC
-#include <rpc/rpc.h>
-#endif
-
-#include <stdlib.h>
-#include <string.h>
-#endif
-
-#ifdef HAVE_RPC
-#include "db_server.h"
-#endif
-
 #include "db_int.h"
 #include "dbinc/log.h"
-
-#ifdef HAVE_RPC
-#include "dbinc_auto/rpc_client_ext.h"
-#endif
-
-static int __log_get_lg_bsize __P((DB_ENV *, u_int32_t *));
-static int __log_get_lg_dir __P((DB_ENV *, const char **));
-static int __log_get_lg_max __P((DB_ENV *, u_int32_t *));
-static int __log_get_lg_regionmax __P((DB_ENV *, u_int32_t *));
 
 /*
  * __log_dbenv_create --
  *	Log specific initialization of the DB_ENV structure.
  *
- * PUBLIC: void __log_dbenv_create __P((DB_ENV *));
+ * PUBLIC: int __log_dbenv_create __P((DB_ENV *));
  */
-void
+int
 __log_dbenv_create(dbenv)
 	DB_ENV *dbenv;
 {
@@ -52,55 +28,29 @@ __log_dbenv_create(dbenv)
 	 * state or turn off mutex locking, and so we can neither check
 	 * the panic state or acquire a mutex in the DB_ENV create path.
 	 */
-
 	dbenv->lg_bsize = 0;
 	dbenv->lg_regionmax = LG_BASE_REGION_SIZE;
 
-#ifdef	HAVE_RPC
-	/*
-	 * If we have a client, overwrite what we just setup to
-	 * point to client functions.
-	 */
-	if (F_ISSET(dbenv, DB_ENV_RPCCLIENT)) {
-		dbenv->get_lg_bsize = __dbcl_get_lg_bsize;
-		dbenv->set_lg_bsize = __dbcl_set_lg_bsize;
-		dbenv->get_lg_dir = __dbcl_get_lg_dir;
-		dbenv->set_lg_dir = __dbcl_set_lg_dir;
-		dbenv->get_lg_max = __dbcl_get_lg_max;
-		dbenv->set_lg_max = __dbcl_set_lg_max;
-		dbenv->get_lg_regionmax = __dbcl_get_lg_regionmax;
-		dbenv->set_lg_regionmax = __dbcl_set_lg_regionmax;
-
-		dbenv->log_archive = __dbcl_log_archive;
-		dbenv->log_cursor = __dbcl_log_cursor;
-		dbenv->log_file = __dbcl_log_file;
-		dbenv->log_flush = __dbcl_log_flush;
-		dbenv->log_put = __dbcl_log_put;
-		dbenv->log_stat = __dbcl_log_stat;
-		dbenv->log_stat_print = NULL;
-	} else
-#endif
-	{
-		dbenv->get_lg_bsize = __log_get_lg_bsize;
-		dbenv->set_lg_bsize = __log_set_lg_bsize;
-		dbenv->get_lg_dir = __log_get_lg_dir;
-		dbenv->set_lg_dir = __log_set_lg_dir;
-		dbenv->get_lg_max = __log_get_lg_max;
-		dbenv->set_lg_max = __log_set_lg_max;
-		dbenv->get_lg_regionmax = __log_get_lg_regionmax;
-		dbenv->set_lg_regionmax = __log_set_lg_regionmax;
-
-		dbenv->log_archive = __log_archive_pp;
-		dbenv->log_cursor = __log_cursor_pp;
-		dbenv->log_file = __log_file_pp;
-		dbenv->log_flush = __log_flush_pp;
-		dbenv->log_put = __log_put_pp;
-		dbenv->log_stat = __log_stat_pp;
-		dbenv->log_stat_print = __log_stat_print_pp;
-	}
+	return (0);
 }
 
-static int
+/*
+ * __log_dbenv_destroy --
+ *	Log specific destruction of the DB_ENV structure.
+ *
+ * PUBLIC: void __log_dbenv_destroy __P((DB_ENV *));
+ */
+void
+__log_dbenv_destroy(dbenv)
+	DB_ENV *dbenv;
+{
+	COMPQUIET(dbenv, NULL);
+}
+
+/*
+ * PUBLIC: int __log_get_lg_bsize __P((DB_ENV *, u_int32_t *));
+ */
+int
 __log_get_lg_bsize(dbenv, lg_bsizep)
 	DB_ENV *dbenv;
 	u_int32_t *lg_bsizep;
@@ -110,8 +60,8 @@ __log_get_lg_bsize(dbenv, lg_bsizep)
 
 	if (LOGGING_ON(dbenv)) {
 		/* Cannot be set after open, no lock required to read. */
-		*lg_bsizep = ((LOG *)
-		    ((DB_LOG *)dbenv->lg_handle)->reginfo.primary)->buffer_size;
+		*lg_bsizep =
+		    ((LOG *)dbenv->lg_handle->reginfo.primary)->buffer_size;
 	} else
 		*lg_bsizep = dbenv->lg_bsize;
 	return (0);
@@ -134,7 +84,63 @@ __log_set_lg_bsize(dbenv, lg_bsize)
 	return (0);
 }
 
-static int
+/*
+ * PUBLIC: int __log_get_lg_filemode __P((DB_ENV *, int *));
+ */
+int
+__log_get_lg_filemode(dbenv, lg_modep)
+	DB_ENV *dbenv;
+	int *lg_modep;
+{
+	DB_LOG *dblp;
+
+	ENV_NOT_CONFIGURED(dbenv,
+	    dbenv->lg_handle, "DB_ENV->get_lg_filemode", DB_INIT_LOG);
+
+	if (LOGGING_ON(dbenv)) {
+		dblp = dbenv->lg_handle;
+		LOG_SYSTEM_LOCK(dbenv);
+		*lg_modep = ((LOG *)dblp->reginfo.primary)->filemode;
+		LOG_SYSTEM_UNLOCK(dbenv);
+	} else
+		*lg_modep = dbenv->lg_filemode;
+
+	return (0);
+}
+
+/*
+ * __log_set_lg_filemode --
+ *	DB_ENV->set_lg_filemode.
+ *
+ * PUBLIC: int __log_set_lg_filemode __P((DB_ENV *, int));
+ */
+int
+__log_set_lg_filemode(dbenv, lg_mode)
+	DB_ENV *dbenv;
+	int lg_mode;
+{
+	DB_LOG *dblp;
+	LOG *lp;
+
+	ENV_NOT_CONFIGURED(dbenv,
+	    dbenv->lg_handle, "DB_ENV->set_lg_filemode", DB_INIT_LOG);
+
+	if (LOGGING_ON(dbenv)) {
+		dblp = dbenv->lg_handle;
+		lp = dblp->reginfo.primary;
+		LOG_SYSTEM_LOCK(dbenv);
+		lp->filemode = lg_mode;
+		LOG_SYSTEM_UNLOCK(dbenv);
+	} else
+		dbenv->lg_filemode = lg_mode;
+
+	return (0);
+}
+
+/*
+ * PUBLIC: int __log_get_lg_max __P((DB_ENV *, u_int32_t *));
+ */
+int
 __log_get_lg_max(dbenv, lg_maxp)
 	DB_ENV *dbenv;
 	u_int32_t *lg_maxp;
@@ -146,9 +152,9 @@ __log_get_lg_max(dbenv, lg_maxp)
 
 	if (LOGGING_ON(dbenv)) {
 		dblp = dbenv->lg_handle;
-		R_LOCK(dbenv, &dblp->reginfo);
+		LOG_SYSTEM_LOCK(dbenv);
 		*lg_maxp = ((LOG *)dblp->reginfo.primary)->log_nsize;
-		R_UNLOCK(dbenv, &dblp->reginfo);
+		LOG_SYSTEM_UNLOCK(dbenv);
 	} else
 		*lg_maxp = dbenv->lg_size;
 
@@ -178,16 +184,19 @@ __log_set_lg_max(dbenv, lg_max)
 			return (ret);
 		dblp = dbenv->lg_handle;
 		lp = dblp->reginfo.primary;
-		R_LOCK(dbenv, &dblp->reginfo);
+		LOG_SYSTEM_LOCK(dbenv);
 		lp->log_nsize = lg_max;
-		R_UNLOCK(dbenv, &dblp->reginfo);
+		LOG_SYSTEM_UNLOCK(dbenv);
 	} else
 		dbenv->lg_size = lg_max;
 
 	return (0);
 }
 
-static int
+/*
+ * PUBLIC: int __log_get_lg_regionmax __P((DB_ENV *, u_int32_t *));
+ */
+int
 __log_get_lg_regionmax(dbenv, lg_regionmaxp)
 	DB_ENV *dbenv;
 	u_int32_t *lg_regionmaxp;
@@ -197,8 +206,8 @@ __log_get_lg_regionmax(dbenv, lg_regionmaxp)
 
 	if (LOGGING_ON(dbenv)) {
 		/* Cannot be set after open, no lock required to read. */
-		*lg_regionmaxp = ((LOG *)
-		    ((DB_LOG *)dbenv->lg_handle)->reginfo.primary)->regionmax;
+		*lg_regionmaxp =
+		    ((LOG *)dbenv->lg_handle->reginfo.primary)->regionmax;
 	} else
 		*lg_regionmaxp = dbenv->lg_regionmax;
 	return (0);
@@ -219,8 +228,8 @@ __log_set_lg_regionmax(dbenv, lg_regionmax)
 
 					/* Let's not be silly. */
 	if (lg_regionmax != 0 && lg_regionmax < LG_BASE_REGION_SIZE) {
-		__db_err(dbenv,
-		    "log file size must be >= %d", LG_BASE_REGION_SIZE);
+		__db_errx(dbenv,
+		    "log region size must be >= %d", LG_BASE_REGION_SIZE);
 		return (EINVAL);
 	}
 
@@ -228,7 +237,10 @@ __log_set_lg_regionmax(dbenv, lg_regionmax)
 	return (0);
 }
 
-static int
+/*
+ * PUBLIC: int __log_get_lg_dir __P((DB_ENV *, const char **));
+ */
+int
 __log_get_lg_dir(dbenv, dirp)
 	DB_ENV *dbenv;
 	const char **dirp;
@@ -327,7 +339,7 @@ __log_check_sizes(dbenv, lg_max, lg_bsize)
 	int inmem;
 
 	if (LOGGING_ON(dbenv)) {
-		lp = ((DB_LOG *)dbenv->lg_handle)->reginfo.primary;
+		lp = dbenv->lg_handle->reginfo.primary;
 		inmem = lp->db_log_inmemory;
 		lg_bsize = lp->buffer_size;
 	} else
@@ -340,7 +352,7 @@ __log_check_sizes(dbenv, lg_max, lg_bsize)
 			lg_max = LG_MAX_INMEM;
 
 		if (lg_bsize <= lg_max) {
-			__db_err(dbenv,
+			__db_errx(dbenv,
 		  "in-memory log buffer must be larger than the log file size");
 			return (EINVAL);
 		}

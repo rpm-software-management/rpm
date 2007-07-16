@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994
@@ -39,11 +39,15 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: hash.h,v 11.28 2004/01/28 03:36:02 bostic Exp $
+ * $Id: hash.h,v 12.5 2006/08/24 14:45:29 bostic Exp $
  */
 
 #ifndef	_DB_HASH_H_
 #define	_DB_HASH_H_
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /* Hash internal structure. */
 typedef struct hash_t {
@@ -78,13 +82,12 @@ typedef struct cursor_t {
 
 #define	H_CONTINUE	0x0001		/* Join--search strictly fwd for data */
 #define	H_DELETED	0x0002		/* Cursor item is deleted. */
-#define	H_DIRTY		0x0004		/* Meta-data page needs to be written */
-#define	H_DUPONLY	0x0008		/* Dups only; do not change key. */
-#define	H_EXPAND	0x0010		/* Table expanded. */
-#define	H_ISDUP		0x0020		/* Cursor is within duplicate set. */
-#define	H_NEXT_NODUP	0x0040		/* Get next non-dup entry. */
-#define	H_NOMORE	0x0080		/* No more entries in bucket. */
-#define	H_OK		0x0100		/* Request succeeded. */
+#define	H_DUPONLY	0x0004		/* Dups only; do not change key. */
+#define	H_EXPAND	0x0008		/* Table expanded. */
+#define	H_ISDUP		0x0010		/* Cursor is within duplicate set. */
+#define	H_NEXT_NODUP	0x0020		/* Get next non-dup entry. */
+#define	H_NOMORE	0x0040		/* No more entries in bucket. */
+#define	H_OK		0x0080		/* Request succeeded. */
 	u_int32_t	flags;
 } HASH_CURSOR;
 
@@ -140,6 +143,10 @@ typedef enum {
 	DB_HAM_DUP   = 5,
 	DB_HAM_SPLIT = 6
 } db_ham_mode;
+
+#if defined(__cplusplus)
+}
+#endif
 
 #include "dbinc_auto/hash_auto.h"
 #include "dbinc_auto/hash_ext.h"

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: fop005.tcl,v 11.6 2004/09/22 18:01:05 bostic Exp $
+# $Id: fop005.tcl,v 12.3 2006/08/24 14:46:35 bostic Exp $
 #
 # TEST	fop005
 # TEST	Test of DB->remove()

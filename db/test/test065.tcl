@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test065.tcl,v 11.22 2004/09/22 18:01:06 bostic Exp $
+# $Id: test065.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test065
 # TEST	Test of DB->stat, both -DB_FAST_STAT and row

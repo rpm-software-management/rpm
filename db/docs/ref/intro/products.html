@@ -1,10 +1,10 @@
-<!--$Id: products.so,v 10.17 2004/09/17 19:51:50 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: products.so,v 10.19 2006/08/24 16:32:30 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Sleepycat Software's Berkeley DB products</title>
+<title>Berkeley DB Reference Guide: The Berkeley DB products</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
@@ -15,13 +15,13 @@
 <td align=right><a href="../intro/where.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_conf/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h3 align=center>Sleepycat Software's Berkeley DB products</h3>
-<p>Sleepycat Software licenses four different products that use the Berkeley DB
+<h3 align=center>The Berkeley DB products</h3>
+<p>Oracle Corporation licenses four different products that use the Berkeley DB
 technology.  Each product offers a distinct level of database support.
 It is not possible to mix-and-match products, that is, each application
 or group of applications must use the same Berkeley DB product.</p>
 <p>All four products are included in the single Open Source distribution
-of Berkeley DB from Sleepycat Software, and building that distribution
+of Berkeley DB from Oracle Corporation, and building that distribution
 automatically builds all four products.  Each product adds new
 interfaces and services to the product that precedes it in the list.
 As a result, developers can download Berkeley DB and build an application that
@@ -29,18 +29,18 @@ does only single-user, read-only database access, and easily add support
 later for more users and more complex database access patterns.</p>
 <p>Users who distribute Berkeley DB must ensure that they are licensed for the
 Berkeley DB interfaces they use.  Information on licensing is available
-directly from Sleepycat Software.</p>
+from Oracle Corporation.</p>
 <h3>Berkeley DB Data Store</h3>
 <p>The Berkeley DB Data Store product is an embeddable, high-performance data store.  It
-supports multiple concurrent threads of control to read information
-managed by Berkeley DB.  When updates are required, only a single process may
-be using the database.  That process may be multithreaded, but only one
-thread of control should be allowed to update the database at any time.
-The Berkeley DB Data Store does no locking, and so provides no guarantees of correct
-behavior if more than one thread of control is updating the database at
-a time.  The Berkeley DB Data Store is intended for use in single-user or read-only
-applications that can guarantee that no more than one thread of control
-will ever update the database at any time.</p>
+supports multiple concurrent threads of control (including multiple
+processes and multiple threads of control within a process) reading
+information managed by Berkeley DB.  When updates are required, only a single
+thread of control may be using the database.  The Berkeley DB Data Store does no locking,
+and so provides no guarantees of correct behavior if more than one
+thread of control is updating the database at a time.  The Berkeley DB Data Store is
+intended for use in read-only applications or applications which can
+guarantee no more than one thread of control will ever update the
+database at a time.</p>
 <h3>Berkeley DB Concurrent Data Store</h3>
 <p>The Berkeley DB Concurrent Data Store product adds multiple-reader, single writer capabilities to
 the Berkeley DB Data Store product, supporting applications that need concurrent updates
@@ -65,6 +65,6 @@ the replicas takes over as the new master system, and distributes
 updates to the remaining replicas.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../intro/where.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_conf/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

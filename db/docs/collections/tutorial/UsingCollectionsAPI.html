@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     <title>
-        Using the Sleepycat Java Collections API
+        Using the  Java Collections API
     </title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
@@ -18,7 +18,7 @@
       <table width="100%" summary="Navigation header">
         <tr>
           <th colspan="3" align="center">
-        Using the Sleepycat Java Collections API
+        Using the  Java Collections API
     </th>
         </tr>
         <tr>
@@ -36,7 +36,7 @@
         <div>
           <div>
             <h2 class="title" style="clear: both"><a id="UsingCollectionsAPI"></a>
-        Using the Sleepycat Java Collections API
+        Using the  Java Collections API
     </h2>
           </div>
         </div>
@@ -86,7 +86,7 @@
         more stored collections, you are ready to access (read and write)
         stored data. For a transactional environment, a transaction must be
         started before accessing data, and must be committed or aborted
-        after access is complete. The Sleepycat Java Collections API provides several
+        after access is complete. The  Java Collections API provides several
         ways of managing transactions.
     </p>
         <p>
@@ -175,7 +175,7 @@
         environment.
     </p>
         <p>
-        The Sleepycat Java Collections API supports nested transactions. If
+        The  Java Collections API supports nested transactions. If
             <a href="../../java/com/sleepycat/collections/TransactionRunner.html#run(com.sleepycat.collections.TransactionWorker)" target="_top">TransactionRunner.run(com.sleepycat.collections.TransactionWorker)</a>
             
             or 
@@ -197,12 +197,12 @@
             is active.
     </p>
         <p>
-        The Sleepycat Java Collections API supports transaction auto-commit.
+        The  Java Collections API supports transaction auto-commit.
         If no transaction is active and a write operation is requested for
         a transactional database, auto-commit is used automatically.
     </p>
         <p>
-        The Sleepycat Java Collections API also supports transaction
+        The  Java Collections API also supports transaction
         dirty-read via the 
         <a href="../../java/com/sleepycat/collections/StoredCollections.html" target="_top">StoredCollections</a>
         
@@ -230,9 +230,9 @@
         <p>
         When a transaction is aborted (or rolled back) the application
         is responsible for discarding references to any data objects that
-        were modified during the transaction. Since the Sleepycat Java Collections
-        API treats data by value, not by reference, neither the data
-        objects nor the Sleepycat Java Collections API objects contain status
+        were modified during the transaction. Since the  Java Collections API
+        treats data by value, not by reference, neither the data
+        objects nor the  Java Collections API objects contain status
         information indicating whether the data objects are 1- in sync with
         the database, 2- dirty (contain changes that have not been written
         to the database), 3- stale (were read previously but have become
@@ -520,7 +520,7 @@
         <p>
         Please see
             <span class="html"><a href="../../ref/am_conf/intro.html" target="_top">Available Access Methods</a> in</span>
-        the <i class="citetitle">Berkeley DB Programmer's Reference Guide</i>
+            the <i class="citetitle">Berkeley DB Programmer's Reference Guide</i>
         for more information on access method configuration.
     </p>
       </div>
@@ -569,8 +569,7 @@
             <li>
               <p>
                 For secondary indices with duplicates, the duplicates must be
-                sorted. This restriction is imposed by the Sleepycat Java
-                Collections API.
+                sorted. This restriction is imposed by the  Java Collections API.
             </p>
             </li>
             <li>
@@ -593,7 +592,7 @@
             </li>
             <li>
               <p>
-                If reocrd number keys are renumbered, then standard List
+                If record number keys are renumbered, then standard List
                 add/remove behavior is supported but concurrency/performance is
                 reduced.
             </p>

@@ -1,14 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: log.h,v 11.90 2004/10/15 16:59:39 bostic Exp $
+ * $Id: log.h,v 12.24 2006/08/24 14:45:29 bostic Exp $
  */
 
-#ifndef _LOG_H_
-#define	_LOG_H_
+#ifndef _DB_LOG_H_
+#define	_DB_LOG_H_
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*******************************************************
  * DBREG:
@@ -32,6 +36,7 @@ struct __fname {
 	SH_TAILQ_ENTRY q;		/* File name queue. */
 
 	int32_t   id;			/* Logging file id. */
+	int32_t   old_id;		/* Saved logging file id. */
 	DBTYPE	  s_type;		/* Saved DB type. */
 
 	roff_t	  name_off;		/* Name offset. */
@@ -42,20 +47,23 @@ struct __fname {
 					 * Txn ID of the DB create, stored so
 					 * we can log it at register time.
 					 */
-	int	  is_durable;		/* Is this file durable or not. */
+#define	DB_FNAME_NOTLOGGED	0x01	/* Log of close failed. */
+#define	DB_FNAME_DURABLE	0x02	/* File is durable. */
+	u_int32_t flags;
 };
 
 /* File open/close register log record opcodes. */
 #define	DBREG_CHKPNT	1		/* Checkpoint: file name/id dump. */
 #define	DBREG_CLOSE	2		/* File close. */
 #define	DBREG_OPEN	3		/* File open. */
-#define	DBREG_RCLOSE	4		/* File close after recovery. */
+#define	DBREG_PREOPEN	4		/* Open in mpool only. */
+#define	DBREG_RCLOSE	5		/* File close after recovery. */
+#define	DBREG_REOPEN	6		/* Open for in-memory database. */
 
 /*******************************************************
  * LOG:
  *	The log subsystem information.
  *******************************************************/
-struct __db_log;	typedef struct __db_log DB_LOG;
 struct __hdr;		typedef struct __hdr HDR;
 struct __log;		typedef struct __log LOG;
 struct __log_persist;	typedef struct __log_persist LOGP;
@@ -66,39 +74,42 @@ struct __log_persist;	typedef struct __log_persist LOGP;
 
 #define	LG_MAX_DEFAULT		(10 * MEGABYTE)	/* 10 MB. */
 #define	LG_MAX_INMEM		(256 * 1024)	/* 256 KB. */
-#define	LG_BSIZE_DEFAULT	(32 * 1024)	/* 32 KB. */
 #define	LG_BSIZE_INMEM		(1 * MEGABYTE)	/* 1 MB. */
-#define	LG_BASE_REGION_SIZE	(60 * 1024)	/* 60 KB. */
+
+/*
+ * Allocate a few bytes under a power-of-two value.  BDB doesn't care if it's
+ * a power-of-two or not, and requesting slightly under a power-of-two allows
+ * stupid allocators to avoid wasting space.
+ */
+#define	LG_BASE_REGION_SIZE	(65000)		/* 64KB - 536B */
+#define	LG_BSIZE_DEFAULT	(32000)		/* 32 KB - 768B */
+#define	LG_CURSOR_BUF_SIZE	(32000)		/* 32KB - 768B */
 
 /*
  * DB_LOG
  *	Per-process log structure.
  */
 struct __db_log {
-/*
- * These fields need to be protected for multi-threaded support.
- *
- * !!!
- * As this structure is allocated in per-process memory, the mutex may need
- * to be stored elsewhere on architectures unable to support mutexes in heap
- * memory, e.g., HP/UX 9.
- */
-	DB_MUTEX  *mutexp;		/* Mutex for thread protection. */
+	/*
+	 * These fields need to be protected for multi-threaded support.
+	 */
+	db_mutex_t mtx_dbreg;		/* Mutex for thread protection. */
 
 	DB_ENTRY *dbentry;		/* Recovery file-id mapping. */
 #define	DB_GROW_SIZE	64
-	int32_t dbentry_cnt;		/* Entries.  Grows by DB_GROW_SIZE. */
+	int32_t	dbentry_cnt;		/* Entries.  Grows by DB_GROW_SIZE. */
 
-/*
- * These fields are always accessed while the region lock is held, so they do
- * not have to be protected by the thread lock as well.
- */
+	/*
+	 * These fields are only accessed when the region lock is held, so
+	 * they do not have to be protected by the thread lock as well.
+	 */
 	u_int32_t lfname;		/* Log file "name". */
 	DB_FH	 *lfhp;			/* Log file handle. */
+	time_t	  lf_timestamp;		/* Log file timestamp. */
 
 	u_int8_t *bufp;			/* Region buffer. */
 
-/* These fields are not protected. */
+	/* These fields are not thread protected. */
 	DB_ENV	 *dbenv;		/* Reference to error information. */
 	REGINFO	  reginfo;		/* Region information. */
 
@@ -123,6 +134,21 @@ struct __hdr {
 };
 
 /*
+ * LOG_HDR_SUM -- XOR in prev and len
+ *	This helps avoids the race misreading the log while it
+ * it is being updated.
+ */
+#define	LOG_HDR_SUM(crypto, hdr, sum) do {				\
+	if (crypto) {							\
+		((u_int32_t *)sum)[0] ^= ((HDR *)hdr)->prev;		\
+		((u_int32_t *)sum)[1] ^= ((HDR *)hdr)->len;		\
+	} else {							\
+		((u_int32_t *)sum)[0] ^=				\
+		     ((HDR *)hdr)->prev ^ ((HDR *)hdr)->len;		\
+	}								\
+} while (0)
+
+/*
  * We use HDR internally, and then when we write out, we write out
  * prev, len, and then a 4-byte checksum if normal operation or
  * a crypto-checksum and IV and original size if running in crypto
@@ -138,8 +164,16 @@ struct __log_persist {
 	u_int32_t version;		/* DB_LOGVERSION */
 
 	u_int32_t log_size;		/* Log file size. */
-	u_int32_t mode;			/* Log file mode. */
+	u_int32_t notused;		/* Historically the log file mode. */
 };
+
+/* Macros to lock/unlock the log region as a whole. */
+#define	LOG_SYSTEM_LOCK(dbenv)						\
+	MUTEX_LOCK(dbenv, ((LOG *)					\
+	    (dbenv)->lg_handle->reginfo.primary)->mtx_region)
+#define	LOG_SYSTEM_UNLOCK(dbenv)					\
+	MUTEX_UNLOCK(dbenv, ((LOG *)					\
+	    (dbenv)->lg_handle->reginfo.primary)->mtx_region)
 
 /*
  * LOG --
@@ -147,15 +181,11 @@ struct __log_persist {
  *	and describes the log.
  */
 struct __log {
-	/*
-	 * Due to alignment constraints on some architectures (e.g. HP-UX),
-	 * DB_MUTEXes must be the first element of shalloced structures,
-	 * and as a corollary there can be only one per structure.  Thus,
-	 * flush_mutex_off points to a mutex in a separately-allocated chunk.
-	 */
-	DB_MUTEX fq_mutex;		/* Mutex guarding file name list. */
+	db_mutex_t mtx_region;		/* Region mutex. */
 
-	LOGP	 persist;		/* Persistent information. */
+	db_mutex_t mtx_filelist;	/* Mutex guarding file name list. */
+
+	LOGP	persist;		/* Persistent information. */
 
 	SH_TAILQ_HEAD(__fq1) fq;	/* List of file names. */
 	int32_t	fid_max;		/* Max fid allocated. */
@@ -185,28 +215,34 @@ struct __log {
 					   file. */
 
 	/*
-	 * Due to alignment constraints on some architectures (e.g. HP-UX),
-	 * DB_MUTEXes must be the first element of shalloced structures,
-	 * and as a corollary there can be only one per structure.  Thus,
-	 * flush_mutex_off points to a mutex in a separately-allocated chunk.
-	 *
 	 * The s_lsn LSN is the last LSN that we know is on disk, not just
 	 * written, but synced.  This field is protected by the flush mutex
 	 * rather than by the region mutex.
 	 */
-	int	  in_flush;		/* Log flush in progress. */
-	roff_t	  flush_mutex_off;	/* Mutex guarding flushing. */
-	DB_LSN	  s_lsn;		/* LSN of the last sync. */
+	db_mutex_t mtx_flush;		/* Mutex guarding flushing. */
+	int	   in_flush;		/* Log flush in progress. */
+	DB_LSN	   s_lsn;		/* LSN of the last sync. */
 
 	DB_LOG_STAT stat;		/* Log statistics. */
 
 	/*
-	 * !!! - NOTE that the next 7 fields, waiting_lsn, verify_lsn,
-	 * max_wait_lsn, maxperm_lsn, wait_recs, rcvd_recs,
-	 * and ready_lsn are NOT protected
-	 * by the log region lock.  They are protected by db_rep->db_mutexp.
-	 * If you need access to both, you must acquire db_rep->db_mutexp
-	 * before acquiring the log region lock.
+	 * This timestamp is updated anytime someone unlinks log
+	 * files.  This can happen when calling __log_vtruncate
+	 * or replication internal init when it unlinks log files.
+	 *
+	 * The timestamp is used so that other processes that might
+	 * have file handles to log files know to close/reopen them
+	 * so they're not potentially writing to now-removed files.
+	 */
+	time_t	   timestamp;		/* Log trunc timestamp. */
+
+	/*
+	 * !!!
+	 * NOTE: the next 11 fields, waiting_lsn, verify_lsn, max_wait_lsn,
+	 * maxperm_lsn, wait_recs, rcvd_recs, ready_lsn and bulk_* are NOT
+	 * protected by the log region lock.  They are protected by
+	 * REP->mtx_clientdb.  If you need access to both, you must acquire
+	 * REP->mtx_clientdb before acquiring the log region lock.
 	 *
 	 * The waiting_lsn is used by the replication system.  It is the
 	 * first LSN that we are holding without putting in the log, because
@@ -235,6 +271,16 @@ struct __log {
 	 * header), rather than to 0.
 	 */
 	DB_LSN	  ready_lsn;
+	/*
+	 * The bulk_buf is used by replication for bulk transfer.  While this
+	 * is protected by REP->mtx_clientdb, this doesn't contend with the
+	 * above fields because the above are used by clients and the bulk
+	 * fields below are used by a master.
+	 */
+	roff_t	  bulk_buf;		/* Bulk transfer buffer in region. */
+	uintptr_t bulk_off;		/* Current offset into bulk buffer. */
+	u_int32_t bulk_len;		/* Length of buffer. */
+	u_int32_t bulk_flags;		/* Bulk buffer flags. */
 
 	/*
 	 * During initialization, the log system walks forward through the
@@ -252,6 +298,8 @@ struct __log {
 
 	u_int32_t log_size;		/* Log file's size. */
 	u_int32_t log_nsize;		/* Next log file's size. */
+
+	int	  filemode;		/* Log file permissions mode. */
 
 	/*
 	 * DB_LOG_AUTOREMOVE and DB_LOG_INMEMORY: not protected by a mutex,
@@ -272,12 +320,6 @@ struct __log {
 	 */
 	SH_TAILQ_HEAD(__logfile) logfiles;
 	SH_TAILQ_HEAD(__free_logfile) free_logfiles;
-
-#ifdef HAVE_MUTEX_SYSTEM_RESOURCES
-#define	LG_MAINT_SIZE	(sizeof(roff_t) * DB_MAX_HANDLES)
-
-	roff_t	  maint_off;		/* offset of region maintenance info */
-#endif
 };
 
 /*
@@ -285,7 +327,7 @@ struct __log {
  *	One of these is allocated for each transaction waiting to commit.
  */
 struct __db_commit {
-	DB_MUTEX	mutex;		/* Mutex for txn to wait on. */
+	db_mutex_t	mtx_txnwait;	/* Mutex for txn to wait on. */
 	DB_LSN		lsn;		/* LSN of commit record. */
 	SH_TAILQ_ENTRY	links;		/* Either on free or waiting list. */
 
@@ -309,16 +351,18 @@ struct __db_commit {
  */
 
 #ifdef HAVE_FTRUNCATE
-#define	CHECK_LSN(redo, cmp, lsn, prev)					\
+#define	CHECK_LSN(e, redo, cmp, lsn, prev)				\
 	if (DB_REDO(redo) && (cmp) < 0 &&				\
-	    !IS_NOT_LOGGED_LSN(*(lsn)) && !IS_ZERO_LSN(*(lsn))) {	\
-		ret = __db_check_lsn(dbenv, lsn, prev);			\
+	    ((!IS_NOT_LOGGED_LSN(*(lsn)) && !IS_ZERO_LSN(*(lsn))) ||	\
+	    IS_REP_CLIENT(e))) {					\
+		ret = __db_check_lsn(e, lsn, prev);			\
 		goto out;						\
 	}
 #else
-#define	CHECK_LSN(redo, cmp, lsn, prev)					\
-	if (DB_REDO(redo) && (cmp) < 0 && !IS_NOT_LOGGED_LSN(*(lsn))) {	\
-		ret = __db_check_lsn(dbenv, lsn, prev);			\
+#define	CHECK_LSN(e, redo, cmp, lsn, prev)				\
+	if (DB_REDO(redo) && (cmp) < 0 &&				\
+	    (!IS_NOT_LOGGED_LSN(*(lsn)) || IS_REP_CLIENT(e))) {		\
+		ret = __db_check_lsn(e, lsn, prev);			\
 		goto out;						\
 	}
 #endif
@@ -341,17 +385,19 @@ struct __db_filestart {
 /*
  * Internal macro to set pointer to the begin_lsn for generated
  * logging routines.  If begin_lsn is already set then do nothing.
+ * Return a pointer to the last lsn too.
  */
-#undef DB_SET_BEGIN_LSNP
-#define	DB_SET_BEGIN_LSNP(txn, rlsnp) do {				\
+#undef DB_SET_TXN_LSNP
+#define	DB_SET_TXN_LSNP(txn, blsnp, llsnp) do {				\
 	DB_LSN *__lsnp;							\
 	TXN_DETAIL *__td;						\
-	__td = R_ADDR(&(txn)->mgrp->reginfo, (txn)->off);		\
+	__td = (txn)->td;						\
+	*(llsnp) = &__td->last_lsn;					\
 	while (__td->parent != INVALID_ROFF)				\
 		__td = R_ADDR(&(txn)->mgrp->reginfo, __td->parent);	\
 	__lsnp = &__td->begin_lsn;					\
 	if (IS_ZERO_LSN(*__lsnp))					\
-		*(rlsnp) = __lsnp;					\
+		*(blsnp) = __lsnp;					\
 } while (0)
 
 /*
@@ -373,7 +419,11 @@ typedef enum {
 	DB_LV_OLD_UNREADABLE
 } logfile_validity;
 
+#if defined(__cplusplus)
+}
+#endif
+
 #include "dbinc_auto/dbreg_auto.h"
 #include "dbinc_auto/dbreg_ext.h"
 #include "dbinc_auto/log_ext.h"
-#endif /* !_LOG_H_ */
+#endif /* !_DB_LOG_H_ */

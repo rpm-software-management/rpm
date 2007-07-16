@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: testutils.tcl,v 11.198 2004/09/28 15:02:18 carol Exp $
+# $Id: testutils.tcl,v 12.26 2006/09/08 20:32:17 bostic Exp $
 #
 # Test system utilities
 #
@@ -199,7 +199,7 @@ proc open_and_dump_subfile {
 
 # Sequentially read a file and call checkfunc on each key/data pair.
 # Dump the keys out to the file specified by outfile.
-proc dump_file { db txn outfile checkfunc } {
+proc dump_file { db txn outfile {checkfunc NONE} } {
 	source ./include.tcl
 
 	dump_file_direction $db $txn $outfile $checkfunc "-first" "-next"
@@ -223,7 +223,9 @@ proc dump_file_walk { c outfile checkfunc start continue {flag ""} } {
 		set kd [lindex $d 0]
 		set k [lindex $kd 0]
 		set d2 [lindex $kd 1]
-		$checkfunc $k $d2
+		if { $checkfunc != "NONE" } {
+			$checkfunc $k $d2
+		}
 		puts $outf $k
 		# XXX: Geoff Mainland
 		# puts $outf "$k $d2"
@@ -706,9 +708,19 @@ proc watch_procs { pidlist {delay 30} {max 3600} {quiet 0} } {
 
 		set rlist {}
 		foreach i $l {
-			set r [ catch { exec $KILL -0 $i } result ]
+			set r [ catch { exec $KILL -0 $i } res ]
 			if { $r == 0 } {
 				lappend rlist $i
+			} else {
+				# It's OK if the process is already dead, but
+				# we want to know about other kinds of failures.
+				if { [is_substr $res "no such process"] == 0 &&
+				    [is_substr $res "No such process"] == 0 &&
+				    [is_substr $res\
+				    "process does not exist"] == 0 } {
+					puts "FAIL: Problem\
+					    reported killing process $i: $res"
+				}
 			}
 		}
 		if { [ llength $rlist] == 0 } {
@@ -728,6 +740,15 @@ proc watch_procs { pidlist {delay 30} {max 3600} {quiet 0} } {
 	if { $quiet == 0 } {
 		puts "All processes have exited."
 	}
+
+	#
+	# Once we are done, remove all old sentinel files.
+	#
+	set oldsent [glob -nocomplain $testdir/begin* $testdir/end*]
+	foreach f oldsent {
+		fileremove -f $f
+	}
+
 }
 
 # These routines are all used from within the dbscript.tcl tester.
@@ -1096,13 +1117,14 @@ proc filecheck { file txn } {
 
 proc cleanup { dir env { quiet 0 } } {
 	global gen_upgrade
+	global gen_dump
 	global is_qnx_test
 	global is_je_test
 	global old_encrypt
 	global passwd
 	source ./include.tcl
 
-	if { $gen_upgrade == 1 } {
+	if { $gen_upgrade == 1 || $gen_dump == 1 } {
 		save_upgrade_files $dir
 	}
 
@@ -1201,9 +1223,14 @@ proc cleanup { dir env { quiet 0 } } {
 		}
 		if {[llength $remfiles] > 0} {
 			#
-			# In the HFS file system there are cases where not 
-			# all files are removed on the first attempt.  If 
-			# it fails, try again a few times. 
+			# In the HFS file system there are cases where not
+			# all files are removed on the first attempt.  If
+			# it fails, try again a few times.
+			#
+			# This bug has been compensated for in Tcl with a fix
+			# checked into Tcl 8.4.  When Berkeley DB requires
+			# Tcl 8.5, we can remove this while loop and replace
+			# it with a simple 'fileremove -f $remfiles'.
 			#
 			set count 0
 			while { [catch {eval fileremove -f $remfiles}] == 1 \
@@ -1599,6 +1626,7 @@ proc op_recover_prep { op dir env_cmd dbfile gidf cmd } {
 	# active transaction.  Leave it alone so the close won't
 	# quietly abort it on us.
 	if { [is_substr $op "prepare"] != 1 } {
+		error_check_good log_flush [$env log_flush] 0
 		error_check_good envclose [$env close] 0
 	}
 	return
@@ -1803,7 +1831,11 @@ proc unpopulate { db txn num } {
 	return 0
 }
 
+# Flush logs for txn envs only.
 proc reset_env { env } {
+	if { [is_txnenv $env] } {
+		error_check_good log_flush [$env log_flush] 0
+	}
 	error_check_good env_close [$env close] 0
 }
 
@@ -2124,10 +2156,6 @@ proc is_valid_txn { txn env } {
 	return [is_valid_widget $txn $env.txn]
 }
 
-proc is_valid_mutex { m env } {
-	return [is_valid_widget $m $env.mutex]
-}
-
 proc is_valid_lock {l env} {
 	return [is_valid_widget $l $env.lock]
 }
@@ -2156,8 +2184,13 @@ proc send_cmd { fd cmd {sleep 2}} {
 }
 
 proc rcv_result { fd } {
+	global errorInfo
+
 	set r [gets $fd result]
-	error_check_bad remote_read $r -1
+	if { $r == -1 } {
+		puts "FAIL: gets returned -1 (EOF)"
+		puts "FAIL: errorInfo is $errorInfo"
+	}
 
 	return $result
 }
@@ -2217,13 +2250,17 @@ proc pad_data {method data} {
 	}
 }
 
+#
+# The make_fixed_length proc is used in special circumstances where we
+# absolutely need to send in data that is already padded out to the fixed
+# length with a known pad character.  Most tests should use chop_data and
+# pad_data, not this.
+#
 proc make_fixed_length {method data {pad 0}} {
 	global fixed_len
 
 	if {[is_fixed_length $method] == 1} {
-		if {[string length $data] > $fixed_len } {
-		    error_check_bad make_fixed_len:TOO_LONG 1 1
-		}
+		set data [chop_data $method $data]
 		while { [string length $data] < $fixed_len } {
 			set data [format $data%c $pad]
 		}
@@ -2890,14 +2927,24 @@ proc db_compare { olddb newdb olddbname newdbname } {
 	    { set odbt [$oc get -next] } {
 		set ndbt [$nc get -get_both \
 		    [lindex [lindex $odbt 0] 0] [lindex [lindex $odbt 0] 1]]
-		error_check_good db_compare($olddbname/$newdbname) $ndbt $odbt
+		if { [binary_compare $ndbt $odbt] == 1 } {
+			error_check_good oc_close [$oc close] 0
+			error_check_good nc_close [$nc close] 0
+#			puts "FAIL: $odbt does not match $ndbt"
+			return 1
+		}
 	}
 
 	for { set ndbt [$nc get -first] } { [llength $ndbt] > 0 } \
 	    { set ndbt [$nc get -next] } {
 		set odbt [$oc get -get_both \
 		    [lindex [lindex $ndbt 0] 0] [lindex [lindex $ndbt 0] 1]]
-		error_check_good db_compare_back($olddbname) $odbt $ndbt
+		if { [binary_compare $ndbt $odbt] == 1 } {
+			error_check_good oc_close [$oc close] 0
+			error_check_good nc_close [$nc close] 0
+#			puts "FAIL: $odbt does not match $ndbt"
+			return 1
+		}
 	}
 
 	error_check_good orig_cursor_close($olddbname) [$oc close] 0
@@ -2971,6 +3018,122 @@ proc dumploadtest { db } {
 
 	error_check_good orig_db_close($db) [$olddb close] 0
 	eval berkdb dbremove $dbarg $newdbname
+}
+
+# Test regular and aggressive salvage procedures for all databases
+# in a directory.
+proc salvagetest { dir { noredo 0 } { quiet 0 } } {
+	global util_path
+	global encrypt
+	global passwd
+
+	# If we're doing salvage testing between tests, don't do it
+	# twice without an intervening cleanup.
+	if { $noredo == 1 } {
+		if { [file exists $dir/NOREDO] == 1 } {
+			if { $quiet == 0 } {
+				puts "Skipping salvage testing."
+			}
+			return 0
+		}
+		set f [open $dir/NOREDO w]
+		close $f
+	}
+
+	if { [catch {glob $dir/*.db} dbs] != 0 } {
+		# No files matched
+		return 0
+	}
+
+	foreach db $dbs {
+		set dumpfile $db-dump
+		set sorteddump $db-dump-sorted
+		set salvagefile $db-salvage
+		set sortedsalvage $db-salvage-sorted
+		set aggsalvagefile $db-aggsalvage
+
+		set dbarg ""
+		set utilflag ""
+		if { $encrypt != 0 } {
+			set dbarg "-encryptany $passwd"
+			set utilflag "-P $passwd"
+		}
+
+		# Dump the database with salvage, with aggressive salvage,
+		# and without salvage.
+		#
+		set rval [catch {eval {exec $util_path/db_dump} $utilflag -r \
+		    -f $salvagefile $db} res]
+		error_check_good salvage($db:$res) $rval 0
+		filesort $salvagefile $sortedsalvage
+
+		# We can't avoid occasional verify failures in aggressive
+		# salvage.  Make sure it's the expected failure.
+		set rval [catch {eval {exec $util_path/db_dump} $utilflag -R \
+		    -f $aggsalvagefile $db} res]
+		if { $rval == 1 } {
+puts "res is $res"
+			error_check_good agg_failure \
+			    [is_substr $res "DB_VERIFY_BAD"] 1
+		} else {
+			error_check_good aggressive_salvage($db:$res) $rval 0
+		}
+
+		# Queue databases must be dumped with -k to display record
+		# numbers if we're not in salvage mode.
+		if { [isqueuedump $salvagefile] == 1 } {
+			append utilflag " -k "
+		}
+
+		# Discard db_pagesize lines from file dumped with ordinary
+		# db_dump -- they are omitted from a salvage dump.
+		set rval [catch {eval {exec $util_path/db_dump} $utilflag \
+		    -f $dumpfile $db} res]
+		error_check_good dump($db:$res) $rval 0
+		filesort $dumpfile $sorteddump
+		discardline $sorteddump TEMPFILE "db_pagesize="
+		file copy -force TEMPFILE $sorteddump
+
+		# A non-aggressively salvaged file should match db_dump.
+		error_check_good compare_dump_and_salvage \
+		    [filecmp $sorteddump $sortedsalvage] 0
+
+		puts "Salvage tests of $db succeeded."
+	}
+}
+
+# Reads infile, writes to outfile, discarding any line whose
+# beginning matches the given string.
+proc discardline { infile outfile discard } {
+	set fdin [open $infile r]
+	set fdout [open $outfile w]
+
+	while { [gets $fdin str] >= 0 } {
+		if { [string match $discard* $str] != 1 } {
+			puts $fdout $str
+		}
+	}
+	close $fdin
+	close $fdout
+}
+
+# Inspects dumped file for "type=" line.  Returns 1 if type=queue.
+proc isqueuedump { file } {
+	set fd [open $file r]
+
+	while { [gets $fd str] >= 0 } {
+		if { [string match type=* $str] == 1 } {
+			if { [string match "type=queue" $str] == 1 } {
+				close $fd
+				return 1
+			} else {
+				close $fd
+				return 0
+			}
+		}
+	}
+	puts "did not find type= line in dumped file"
+	close $fd
 }
 
 # Generate randomly ordered, guaranteed-unique four-character strings that can
@@ -3235,10 +3398,10 @@ proc get_file_list { {small 0} } {
 	}
 
 	# We don't want a huge number of files, but we do want a nice
-	# variety.  If there are more than 200 files, pick out a list
+	# variety.  If there are more than nfiles files, pick out a list
 	# by taking every other, or every third, or every nth file.
 	set filelist {}
-	set nfiles 200
+	set nfiles 500
 	if { [llength $templist] > $nfiles } {
 		set skip \
 		    [expr [llength $templist] / [expr [expr $nfiles / 3] * 2]]
@@ -3380,62 +3543,22 @@ proc big_endian { } {
 	}
 }
 
-# Search logs to find if we have debug records.
-proc log_has_debug_records { dir } {
-	source ./include.tcl
-	global encrypt
+# Check if this is a debug build.  Use 'string equal' so we
+# don't get fooled by debug_rop and debug_wop.
+proc is_debug { } {
 
-	set tmpfile $dir/printlog.out
-	set stat [catch \
-	    {exec $util_path/db_printlog -h $dir > $tmpfile} ret]
-	error_check_good db_printlog $stat 0
-
-	set f [open $tmpfile r]
-	while { [gets $f record] >= 0 } {
-		set r [regexp {\[[^\]]*\]\[[^\]]*\]([^\:]*)\:} $record whl name]
-		if { $r == 1 && [string match *_debug $name] != 1 } {
-			close $f
-			fileremove $tmpfile
+	set conf [berkdb getconfig]
+	foreach item $conf {
+		if { [string equal $item "debug"] } {
 			return 1
 		}
-	}
-	close $f
-	fileremove $tmpfile
-	return 0
-}
-
-# Set up a temporary database to check if this is a debug build.
-proc is_debug { } {
-	source ./include.tcl
-
-	set tempdir $testdir/temp
-	file mkdir $tempdir
-	set env [berkdb_env -create -log -home $testdir/temp]
-	error_check_good temp_env_open [is_valid_env $env] TRUE
-
-	set file temp.db
-	set db [berkdb_open -create -env $env -btree $file]
-	error_check_good temp_db_open [is_valid_db $db] TRUE
-
-	set key KEY
-	set data DATA
-	error_check_good temp_db_put [$db put $key $data] 0
-	set ret [$db get $key]
-	error_check_good get_key [lindex [lindex $ret 0] 0] $key
-	error_check_good get_data [lindex [lindex $ret 0] 1] $data
-	error_check_good temp_db_close [$db close] 0
-	error_check_good temp_db_remove [$env dbremove $file] 0
-	error_check_good temp_env_close [$env close] 0
-
-	if { [log_has_debug_records $tempdir] == 1 } {
-		return 1
 	}
 	return 0
 }
 
 proc adjust_logargs { logtype } {
 	if { $logtype == "in-memory" } {
-		set lbuf [expr 8 * [expr 1024 * 1024]]
+		set lbuf [expr 1 * [expr 1024 * 1024]]
 		set logargs " -log_inmemory -log_buffer $lbuf "
 	} elseif { $logtype == "on-disk" } {
 		set logargs ""
@@ -3456,3 +3579,58 @@ proc adjust_txnargs { logtype } {
 	return $txnargs
 }
 
+proc get_logfile { env where } {
+	# Open a log cursor.
+	set m_logc [$env log_cursor]
+	error_check_good m_logc [is_valid_logc $m_logc $env] TRUE
+
+	# Check that we're in the expected virtual log file.
+	if { $where == "first" } {
+		set rec [$m_logc get -first]
+	} else {
+		set rec [$m_logc get -last]
+	}
+	error_check_good cursor_close [$m_logc close] 0
+	set lsn [lindex $rec 0]
+	set log [lindex $lsn 0]
+	return $log
+}
+
+# Determine whether logs are in-mem or on-disk.
+# This requires the existence of logs to work correctly.
+proc check_log_location { env } {
+	if { [catch {get_logfile $env first} res] } {
+		puts "FAIL: env $env not configured for logging"
+	}
+	set inmemory 0
+	set flags [$env get_flags]
+	if { [is_substr $flags -log_inmemory] == 1 } {
+		set inmemory 1
+	}
+
+	set env_home [get_home $env]
+	set logfiles [glob -nocomplain $env_home/log.*]
+	if { $inmemory == 1 } {
+		error_check_good no_logs_on_disk [llength $logfiles] 0
+	} else {
+		error_check_bad logs_on_disk [llength $logfiles] 0
+	}
+}
+
+proc find_valid_methods { test } {
+	global checking_valid_methods
+	global valid_methods
+
+	# To find valid methods, call the test with checking_valid_methods
+	# on.  It doesn't matter what method we use for this call, so we
+	# arbitrarily pick btree.
+	#
+	set checking_valid_methods 1
+	set test_methods [$test btree]
+	set checking_valid_methods 0
+	if { $test_methods == "ALL" } {
+		return $valid_methods
+	} else {
+		return $test_methods
+	}
+}

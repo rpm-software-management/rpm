@@ -85,7 +85,7 @@ DB *dbp;
 /* Database open and subsequent operations omitted for clarity */
 
 dbp-&gt;remove(dbp,                   /* Database pointer */
-            "mydb.db",             /* Database file to remove */
+            &quot;mydb.db&quot;,             /* Database file to remove */
             NULL,                  /* Database to remove. This is
                                     * NULL so the entire file is
                                     * removed.  */
@@ -113,11 +113,11 @@ DB *dbp;
 /* Database open and subsequent operations omitted for clarity */
 
 dbp-&gt;rename(dbp,                    /* Database pointer */
-             "mydb.db",             /* Database file to rename */
+             &quot;mydb.db&quot;,             /* Database file to rename */
              NULL,                  /* Database to rename. This is
                                      * NULL so the entire file is
                                      * renamed.  */
-            "newdb.db",             /* New database file name */
+            &quot;newdb.db&quot;,             /* New database file name */
             0);                     /* Flags. None used. */</pre>
           </li>
         </ul>

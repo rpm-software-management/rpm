@@ -1,12 +1,12 @@
-                                     DB_File
+                                  DB_File
 
-                                  Version 1.810
+                               Version 1.814
 
-                                 7th August 2004
+                             11th November 2005
 
- 	Copyright (c) 1995-2004 Paul Marquess. All rights reserved. This
-	program is free software; you can redistribute it and/or modify
-	it under the same terms as Perl itself.
+     Copyright (c) 1995-2005 Paul Marquess. All rights reserved. This
+      program is free software; you can redistribute it and/or modify
+                  it under the same terms as Perl itself.
 
 
 IMPORTANT NOTICE
@@ -136,6 +136,8 @@ This symptom can imply:
               to the directories where libdb.a and db.h are installed.
 
 
+
+
 Undefined symbol db_version
 ---------------------------
 
@@ -155,12 +157,13 @@ when you run the test harness:
   BEGIN failed--compilation aborted at t/db-btree.t line 21.
   dubious Test returned status 2 (wstat 512, 0x200)
 
-This error usually happens when you have both version 1 and version
-2 of Berkeley DB installed on your system and DB_File attempts to
-build using the db.h for Berkeley DB version 2 and the version 1
-library. Unfortunately the two versions aren't compatible with each
-other. The undefined symbol error is actually caused because Berkeley
-DB version 1 doesn't have the symbol db_version.
+This error usually happens when you have two version of Berkeley DB
+installed on your system -- specifically, if you have both version 1 and
+a newer version (i.e. version 2 or better) of Berkeley DB installed. If
+DB_File is built using the db.h for the newer Berkeley DB and the version
+1 Berkeley DB library you will trigger this error. Unfortunately the two
+versions aren't compatible with each other. The undefined symbol error is
+caused because Berkeley DB version 1 doesn't have the symbol db_version.
 
 Solution: Setting the LIB & INCLUDE variables in config.in to point to the
           correct directories can sometimes be enough to fix this
@@ -301,7 +304,7 @@ The solution is either:
 Linux Notes
 -----------
 
-Newer versions of Linux (e.g. RedHat 6, SuSe 6) ship with a C library
+Some older versions of Linux (e.g. RedHat 6, SuSe 6) ship with a C library
 that has version 2.x of Berkeley DB linked into it. This makes it
 difficult to build this module with anything other than the version of
 Berkeley DB that shipped with your Linux release. If you do try to use
@@ -458,7 +461,7 @@ to compile properly on IRIX 5.3.
 AIX NOTES
 ---------
 
-I've had replrts of a build failure like this on AIX 5.2 using the
+I've had reports of a build failure like this on AIX 5.2 using the
 xlC compiler.
 
         rm -f blib/arch/auto/DB_File/DB_File.so

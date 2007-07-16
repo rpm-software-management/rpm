@@ -1,0 +1,88 @@
+<!--$Id: env_set_thread_id_string.so,v 10.1 2005/10/20 17:16:02 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::set_thread_id_string</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::set_thread_id_string</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::set_thread_id(char *(*thread_id_string)(DbEnv *dbenv,
+    pid_t pid, db_threadid_t tid, char *buf));
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::set_thread_id_string</h3>
+<p>Declare a function that formats a process ID and thread ID identifier
+pair for display into a caller-supplied buffer.  The function must
+return a reference to the caller-specified buffer.  The
+DbEnv::set_thread_id_string method supports the
+<a href="../api_cxx/env_set_thread_id.html">DbEnv::set_thread_id</a> method.</p>
+<p>The DbEnv::set_thread_id_string method configures operations performed using the specified
+<a href="../api_cxx/env_class.html">DbEnv</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DbEnv::set_thread_id_string method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::set_thread_id_string method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>thread_id_string</b><dd>The <b>thread_id_string</b> parameter is a function which returns a
+buffer in which is an identifier pair formatted for display.  The
+function takes four arguments:
+<dl compact>
+<dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment
+handle, allowing application access to the application-private fields
+of that object.
+<dt><b>pid</b><dd>The <b>pid</b> argument is a process ID.
+<dt><b>tid</b><dd>The <b>tid</b> argument is a thread ID.
+<dt><b>buf</b><dd><a name="2"><!--meow--></a>
+The <b>buf</b> argument is character array of at least
+DB_THREADID_STRLEN bytes in length, into which the identifier
+pair should be formatted.
+</dl>
+</dl>
+<p>If no <b>thread_id_string</b> function is specified, the default
+routine displays the identifier pair as "pid/tid", that is, the process
+ID represented as an unsigned integer value, a slash ('/') character,
+then the thread ID represented as an unsigned integer value.</p>
+<h3>Errors</h3>
+<p>The DbEnv::set_thread_id_string method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

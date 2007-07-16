@@ -1,6 +1,6 @@
 <!--$Id: db_rename.so,v 10.3 2002/08/18 21:15:51 bostic Exp $-->
-<!--$Id: env_dbrename.so,v 10.36 2004/08/29 19:27:38 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_dbrename.so,v 10.37 2004/12/16 19:13:01 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -59,8 +59,9 @@ and 0 on success.
 <dt><b>database</b><dd>The <b>database</b> parameter is the database to be renamed.
 <dt><b>file</b><dd>The <b>file</b> parameter is the physical file which contains the
 database(s) to be renamed.
-<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
-string, which is equivalent to ASCII for Latin characters.</p>
+<p>When using a Unicode build on Windows (the default), the <b>file</b>
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
 <dt><b>newname</b><dd>The <b>newname</b> parameter is the new name of the database or file.
 </dl>
@@ -90,6 +91,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

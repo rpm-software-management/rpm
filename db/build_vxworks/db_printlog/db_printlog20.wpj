@@ -134,13 +134,56 @@ PENTIUMgnu
 <BEGIN> CORE_INFO_VERSION
 2.0
 <END>
+<BEGIN> FILE_$(PRJ_DIR)/../../btree/btree_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../btree/btree_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../btree/btree_autop.c_objects
+btree_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../btree/btree_autop.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/crdel_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/crdel_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/crdel_autop.c_objects
+crdel_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/crdel_autop.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/db_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/db_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/db_autop.c_objects
+db_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../db/db_autop.c_tool
+C/C++ compiler
+<END>
 
 <BEGIN> FILE_db_printlog.c_dependDone
 FALSE
 <END>
 
 <BEGIN> FILE_db_printlog.c_dependencies
-
 <END>
 
 <BEGIN> FILE_db_printlog.c_objects
@@ -151,8 +194,107 @@ db_printlog.o
 C/C++ compiler
 <END>
 
+<BEGIN> FILE_$(PRJ_DIR)/../../dbreg/dbreg_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../dbreg/dbreg_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../dbreg/dbreg_autop.c_objects
+dbreg_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../dbreg/dbreg_autop.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../fileops/fileops_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../fileops/fileops_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../fileops/fileops_autop.c_objects
+fileops_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../fileops/fileops_autop.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../hash/hash_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../hash/hash_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../hash/hash_autop.c_objects
+hash_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../hash/hash_autop.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../qam/qam_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../qam/qam_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../qam/qam_autop.c_objects
+qam_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../qam/qam_autop.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../rep/rep_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../rep/rep_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../rep/rep_autop.c_objects
+rep_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../rep/rep_autop.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../txn/txn_autop.c_dependDone
+FALSE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../txn/txn_autop.c_dependencies
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../txn/txn_autop.c_objects
+txn_autop.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../../txn/txn_autop.c_tool
+C/C++ compiler
+<END>
+
 <BEGIN> PROJECT_FILES
-$(PRJ_DIR)/db_printlog.c
+$(PRJ_DIR)/../../btree/btree_autop.c \
+$(PRJ_DIR)/../../db/crdel_autop.c \
+$(PRJ_DIR)/../../db/db_autop.c \
+$(PRJ_DIR)/db_printlog.c \
+$(PRJ_DIR)/../../dbreg/dbreg_autop.c \
+$(PRJ_DIR)/../../fileops/fileops_autop.c \
+$(PRJ_DIR)/../../hash/hash_autop.c \
+$(PRJ_DIR)/../../qam/qam_autop.c \
+$(PRJ_DIR)/../../rep/rep_autop.c \
+$(PRJ_DIR)/../../txn/txn_autop.c
 <END>
 
 <BEGIN> userComments

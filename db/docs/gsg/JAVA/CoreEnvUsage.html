@@ -49,12 +49,15 @@
         created if it does not already exist.
     </p>
       <p>
+        You will also need to initialize the in-memory cache when you open your environment.
+    </p>
+      <p>
         For example, to 
             <span>create an environment handle and</span>
         open an environment:
     </p>
       <a id="java_env1"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.Environment;
@@ -66,10 +69,13 @@ import java.io.FileNotFoundException;
 ...
 
 Environment myEnv = null;
-File envHome = new File("/export1/testEnv");
+File envHome = new File(&quot;/export1/testEnv&quot;);
 try {
     EnvironmentConfig envConf = new EnvironmentConfig();
-    envConf.setAllowCreate(true);
+    envConf.setAllowCreate(true);         // If the environment does not
+                                          // exist, create it.
+    envConf.setInitializeCache(true);     // Initialize the in-memory
+                                          // cache.
 
     myEnv = new Environment(envHome, envConf);
 } catch (DatabaseException de) {
@@ -83,7 +89,7 @@ try {
         provide any sort of a path in the database's file name:
     </p>
       <a id="java_env2"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 <b class="userinput"><tt>import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseConfig;
@@ -99,8 +105,8 @@ import java.io.FileNotFoundException;
 
 Environment myEnv = null;
 Database myDb = null;
-File envHome = new File("/export1/testEnv");
-String dbFileName = new String("mydb.db");
+File envHome = new File(&quot;/export1/testEnv&quot;);
+String dbFileName = new String(&quot;mydb.db&quot;, &quot;UTF-8&quot;);
 
 try {
     EnvironmentConfig envConf = new EnvironmentConfig();

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: ex_sequence.c,v 1.3 2004/10/14 18:12:13 bostic Exp $
+ * $Id: ex_sequence.c,v 12.5 2006/08/24 14:45:42 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -40,6 +40,9 @@ main(argc, argv)
 	char ch;
 	const char *database, *progname = "ex_sequence";
 
+	dbp = NULL;
+	seq = NULL;
+
 	rflag = 0;
 	while ((ch = getopt(argc, argv, "r")) != EOF)
 		switch (ch) {
@@ -71,12 +74,12 @@ main(argc, argv)
 	if ((ret = dbp->open(dbp,
 	    NULL, database, NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
 		dbp->err(dbp, ret, "%s: open", database);
-		goto err1;
+		goto err;
 	}
 
 	if ((ret = db_sequence_create(&seq, dbp, 0)) != 0) {
 		dbp->err(dbp, ret, "db_sequence_create");
-		goto err1;
+		goto err;
 	}
 
 	memset(&key, 0, sizeof(DBT));
@@ -85,24 +88,29 @@ main(argc, argv)
 
 	if ((ret = seq->open(seq, NULL, &key, DB_CREATE)) != 0) {
 		dbp->err(dbp, ret, "%s: DB_SEQUENCE->open", SEQUENCE);
-		goto err2;
+		goto err;
 	}
 
 	for (i = 0; i < 10; i++) {
 		if ((ret = seq->get(seq, NULL, 1, &seqnum, 0)) != 0) {
 			dbp->err(dbp, ret, "DB_SEQUENCE->get");
-			goto err2;
+			goto err;
 		}
 
-		/* We don't have a portable way to print 64-bit numbers. */
-		printf("Got sequence number (%x, %x)\n",
-		    (int)(seqnum >> 32), (unsigned)seqnum);
+		/* There's no portable way to print 64-bit numbers. */
+#ifdef _WIN32
+		printf("Got sequence number %l64d\n", (int64_t)seqnum);
+#else
+		printf(
+		    "Got sequence number %llu\n", (unsigned long long)seqnum);
+#endif
 	}
 
 	/* Close everything down. */
 	if ((ret = seq->close(seq, 0)) != 0) {
+		seq = NULL;
 		dbp->err(dbp, ret, "DB_SEQUENCE->close");
-		goto err1;
+		goto err;
 	}
 	if ((ret = dbp->close(dbp, 0)) != 0) {
 		fprintf(stderr,
@@ -111,8 +119,10 @@ main(argc, argv)
 	}
 	return (EXIT_SUCCESS);
 
-err2:	(void)seq->close(seq, 0);
-err1:	(void)dbp->close(dbp, 0);
+err:	if (seq != NULL)
+		(void)seq->close(seq, 0);
+	if (dbp != NULL)
+		(void)dbp->close(dbp, 0);
 	return (EXIT_FAILURE);
 }
 

@@ -1,12 +1,12 @@
-                                   BerkeleyDB
+                                BerkeleyDB
 
-                                  Version 0.26
+                               Version 0.30
 
-                                 10th Oct 2004
+                              11th Sept 2006
 
-	Copyright (c) 1997-2004 Paul Marquess. All rights reserved. This
-	program is free software; you can redistribute it and/or modify
-	it under the same terms as Perl itself.
+     Copyright (c) 1997-2006 Paul Marquess. All rights reserved. This
+      program is free software; you can redistribute it and/or modify
+                  it under the same terms as Perl itself.
 
 
 DESCRIPTION
@@ -58,8 +58,11 @@ be relatively straightforward.
 
 Step 1 : If you are running Solaris 2.5, 2.7 or HP-UX 10 read either
          the Solaris Notes or HP-UX Notes sections below.
-	 If you are running Linux please read the Linux Notes section
+         If you are running Linux please read the Linux Notes section
          before proceeding.
+         If you are running FreeBSD read the FreeBSD Notes section
+         below.
+
 
 Step 2 : Edit the file config.in to suit you local installation.
          Instructions are given in the file.
@@ -561,6 +564,33 @@ following steps should do the trick:
         "libdb= libdb.a" to "libdb= libdb.sl".
 
   3: Build and install the Berkeley DB distribution as usual.
+
+
+FreeBSD Notes
+-------------
+
+On FreeBSD 4.x through 6.x, the default db.h is for version 1. The build
+will fail with an error similar to:
+
+BerkeleyDB.xs:74: #error db.h is from Berkeley DB 1.x - need at least
+Berkeley DB 2.6.4
+
+Later versions of Berkeley DB are usually installed from ports.
+The available versions can be found by running a find(1) command:
+
+    %  find /usr/local/include -name 'db.h'
+    /usr/local/include/db3/db.h
+    /usr/local/include/db4/db.h
+    /usr/local/include/db41/db.h
+    /usr/local/include/db42/db.h
+    /usr/local/include/db43/db.h
+
+The desired version of the library must be specified on the command line or
+via the config.in file. Make sure both values point to the same version:
+
+    INCLUDE = /usr/local/include/db43
+    LIB     = /usr/local/lib/db43
+
 
 
 

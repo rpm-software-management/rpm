@@ -1,30 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: rep_stat.c,v 1.155 2004/09/29 15:36:38 bostic Exp $
+ * $Id: rep_stat.c,v 12.16 2006/09/07 16:51:04 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#if TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#endif
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -48,17 +31,22 @@ __rep_stat_pp(dbenv, statp, flags)
 	DB_REP_STAT **statp;
 	u_int32_t flags;
 {
+	DB_THREAD_INFO *ip;
 	int ret;
 
 	PANIC_CHECK(dbenv);
-	ENV_REQUIRES_CONFIG(dbenv,
-	    dbenv->rep_handle, "DB_ENV->rep_stat", DB_INIT_REP);
+	ENV_REQUIRES_CONFIG_XX(
+	    dbenv, rep_handle, "DB_ENV->rep_stat", DB_INIT_REP);
 
 	if ((ret = __db_fchk(dbenv,
 	    "DB_ENV->rep_stat", flags, DB_STAT_CLEAR)) != 0)
 		return (ret);
 
-	return (__rep_stat(dbenv, statp, flags));
+	ENV_ENTER(dbenv, ip);
+	ret = __rep_stat(dbenv, statp, flags);
+	ENV_LEAVE(dbenv, ip);
+
+	return (ret);
 }
 
 /*
@@ -99,20 +87,19 @@ __rep_stat(dbenv, statp, flags)
 	memcpy(stats, &rep->stat, sizeof(*stats));
 
 	/* Copy out election stats. */
-	if (IN_ELECTION_TALLY(rep)) {
-		if (F_ISSET(rep, REP_F_EPHASE1))
-			stats->st_election_status = 1;
-		else if (F_ISSET(rep, REP_F_EPHASE2))
-			stats->st_election_status = 2;
+	if (F_ISSET(rep, REP_F_EPHASE1))
+		stats->st_election_status = 1;
+	else if (F_ISSET(rep, REP_F_EPHASE2))
+		stats->st_election_status = 2;
 
-		stats->st_election_nsites = rep->sites;
-		stats->st_election_cur_winner = rep->winner;
-		stats->st_election_priority = rep->w_priority;
-		stats->st_election_gen = rep->w_gen;
-		stats->st_election_lsn = rep->w_lsn;
-		stats->st_election_votes = rep->votes;
-		stats->st_election_tiebreaker = rep->w_tiebreaker;
-	}
+	stats->st_election_nsites = rep->sites;
+	stats->st_election_cur_winner = rep->winner;
+	stats->st_election_priority = rep->w_priority;
+	stats->st_election_gen = rep->w_gen;
+	stats->st_election_lsn = rep->w_lsn;
+	stats->st_election_votes = rep->votes;
+	stats->st_election_nvotes = rep->nvotes;
+	stats->st_election_tiebreaker = rep->w_tiebreaker;
 
 	/* Copy out other info that's protected by the rep mutex. */
 	stats->st_env_id = rep->eid;
@@ -141,7 +128,7 @@ __rep_stat(dbenv, statp, flags)
 	 * protected by the log region lock.
 	 */
 	if (dolock)
-		MUTEX_LOCK(dbenv, db_rep->db_mutexp);
+		MUTEX_LOCK(dbenv, rep->mtx_clientdb);
 	if (F_ISSET(rep, REP_F_CLIENT)) {
 		stats->st_next_lsn = lp->ready_lsn;
 		stats->st_waiting_lsn = lp->waiting_lsn;
@@ -155,7 +142,7 @@ __rep_stat(dbenv, statp, flags)
 		ZERO_LSN(stats->st_waiting_lsn);
 	}
 	if (dolock)
-		MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
+		MUTEX_UNLOCK(dbenv, rep->mtx_clientdb);
 
 	*statp = stats;
 	return (0);
@@ -172,17 +159,22 @@ __rep_stat_print_pp(dbenv, flags)
 	DB_ENV *dbenv;
 	u_int32_t flags;
 {
+	DB_THREAD_INFO *ip;
 	int ret;
 
 	PANIC_CHECK(dbenv);
-	ENV_REQUIRES_CONFIG(dbenv,
-	    dbenv->rep_handle, "DB_ENV->rep_stat_print", DB_INIT_REP);
+	ENV_REQUIRES_CONFIG_XX(
+	    dbenv, rep_handle, "DB_ENV->rep_stat_print", DB_INIT_REP);
 
 	if ((ret = __db_fchk(dbenv, "DB_ENV->rep_stat_print",
 	    flags, DB_STAT_ALL | DB_STAT_CLEAR)) != 0)
 		return (ret);
 
-	return (__rep_stat_print(dbenv, flags));
+	ENV_ENTER(dbenv, ip);
+	ret = __rep_stat_print(dbenv, flags);
+	ENV_LEAVE(dbenv, ip);
+
+	return (ret);
 }
 
 /*
@@ -328,9 +320,14 @@ __rep_print_stats(dbenv, flags)
 	__db_dl(dbenv,
 	    "Number of elections won", (u_long)sp->st_elections_won);
 
-	if (sp->st_election_status == 0)
+	if (sp->st_election_status == 0) {
 		__db_msg(dbenv, "No election in progress");
-	else {
+		if (sp->st_election_sec > 0 || sp->st_election_usec > 0)
+			__db_msg(dbenv,
+			    "%lu.%.6lu\tDuration of last election (seconds)",
+			    (u_long)sp->st_election_sec,
+			    (u_long)sp->st_election_usec);
+	} else {
 		__db_dl(dbenv, "Current election phase",
 		    (u_long)sp->st_election_status);
 		__db_dl(dbenv, "Election winner",
@@ -352,8 +349,28 @@ __rep_print_stats(dbenv, flags)
 		__db_dl(dbenv, "Votes received this election round",
 		    (u_long)sp->st_election_votes);
 	}
+	__db_dl(dbenv, "Number of bulk buffer sends triggered by full buffer",
+	    (u_long)sp->st_bulk_fills);
+	__db_dl(dbenv, "Number of single records exceeding bulk buffer size",
+	    (u_long)sp->st_bulk_overflows);
+	__db_dl(dbenv, "Number of records added to a bulk buffer",
+	    (u_long)sp->st_bulk_records);
+	__db_dl(dbenv, "Number of bulk buffers sent",
+	    (u_long)sp->st_bulk_transfers);
+	__db_dl(dbenv, "Number of re-request messages received",
+	    (u_long)sp->st_client_rerequests);
+	__db_dl(dbenv,
+	    "Number of request messages this client failed to process",
+	    (u_long)sp->st_client_svc_miss);
+	__db_dl(dbenv, "Number of request messages received by this client",
+	    (u_long)sp->st_client_svc_req);
 
 	__os_ufree(dbenv, sp);
+
+#ifdef HAVE_REPLICATION_THREADS
+	if ((ret = __repmgr_print_stats(dbenv)) != 0)
+		return (ret);
+#endif
 
 	return (0);
 }
@@ -392,6 +409,7 @@ __rep_print_all(dbenv, flags)
 	REGENV *renv;
 	REGINFO *infop;
 	REP *rep;
+	char time_buf[CTIME_BUFLEN];
 
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
@@ -400,10 +418,6 @@ __rep_print_all(dbenv, flags)
 
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 	__db_msg(dbenv, "DB_REP handle information:");
-	__db_print_mutex(dbenv, NULL,
-	    db_rep->rep_mutexp, "Replication region mutex", flags);
-	__db_print_mutex(dbenv, NULL,
-	    db_rep->db_mutexp, "Bookkeeping database mutex", flags);
 
 	if (db_rep->rep_db == NULL)
 		STAT_ISSET("Bookkeeping database", db_rep->rep_db);
@@ -414,7 +428,10 @@ __rep_print_all(dbenv, flags)
 
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 	__db_msg(dbenv, "REP handle information:");
-	__db_print_mutex(dbenv, NULL, &rep->mutex, "REP mutex", flags);
+	__mutex_print_debug_single(dbenv,
+	    "Replication region mutex", rep->mtx_region, flags);
+	__mutex_print_debug_single(dbenv,
+	    "Bookkeeping database mutex", rep->mtx_clientdb, flags);
 
 	STAT_LONG("Environment ID", rep->eid);
 	STAT_LONG("Master environment ID", rep->master_id);
@@ -432,12 +449,13 @@ __rep_print_all(dbenv, flags)
 
 	STAT_LONG("Thread is in rep_elect", rep->elect_th);
 	STAT_ULONG("Callers in rep_proc_msg", rep->msg_th);
-	STAT_LONG("Thread is in rep_start", rep->start_th);
+	STAT_LONG("Thread is in msg lockout", rep->lockout_th);
 	STAT_ULONG("Library handle count", rep->handle_cnt);
 	STAT_ULONG("Multi-step operation count", rep->op_cnt);
 	STAT_LONG("Running recovery", rep->in_recovery);
 	__db_msg(dbenv, "%.24s\tRecovery timestamp",
-	    renv->rep_timestamp == 0 ? "0" : ctime(&renv->rep_timestamp));
+	    renv->rep_timestamp == 0 ?
+	    "0" : __db_ctime(&renv->rep_timestamp, time_buf));
 
 	STAT_LONG("Sites heard from", rep->sites);
 	STAT_LONG("Current winner", rep->winner);
@@ -451,7 +469,7 @@ __rep_print_all(dbenv, flags)
 
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 	__db_msg(dbenv, "LOG replication information:");
-	MUTEX_LOCK(dbenv, db_rep->db_mutexp);
+	MUTEX_LOCK(dbenv, rep->mtx_clientdb);
 	dblp = dbenv->lg_handle;
 	lp = (LOG *)dblp->reginfo.primary;
 	STAT_LSN("First log record after a gap", &lp->waiting_lsn);
@@ -460,7 +478,7 @@ __rep_print_all(dbenv, flags)
 	STAT_ULONG("Records to wait before requesting", lp->wait_recs);
 	STAT_ULONG("Records received while waiting", lp->rcvd_recs);
 	STAT_LSN("Next LSN expected", &lp->ready_lsn);
-	MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
+	MUTEX_UNLOCK(dbenv, rep->mtx_clientdb);
 
 	return (0);
 }

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.stats,v 1.9 2004/11/08 14:49:42 bostic Exp $
+# $Id: chk.stats,v 12.2 2006/09/11 16:26:46 bostic Exp $
 #
 # Check to make sure all of the stat structure members are included in
 # all of the possible formats.
@@ -36,6 +36,7 @@ bt_metaflags
 hash_metaflags
 qs_metaflags
 qs_ndata
+st_hash_max_nowait
 END_OF_IGNORE
 
 # Check to make sure the elements of a structure from db.h appear in
@@ -67,6 +68,8 @@ inc	__db_mpool_fstat \
 	"$d/tcl/tcl_mp.c $d/mp/mp_stat.c $docs/memp/memp_stat.so"
 inc	__db_mpool_stat \
 	"$d/tcl/tcl_mp.c $d/mp/mp_stat.c $docs/memp/memp_stat.so"
+inc	__db_mutex_stat \
+	"$d/mutex/mut_stat.c $docs/mutex/mutex_stat.so"
 inc	"__db_qam_stat" \
 	"$d/tcl/tcl_db.c $d/qam/qam_stat.c $docs/db/db_stat.so"
 inc	__db_rep_stat \

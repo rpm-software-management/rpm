@@ -1,47 +1,41 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: client.c,v 1.60 2004/09/21 16:09:54 sue Exp $
+ * $Id: client.c,v 12.7 2006/08/24 14:46:27 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#ifdef HAVE_VXWORKS
-#include <rpcLib.h>
-#endif
-#include <rpc/rpc.h>
-
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#endif
-
-#include "db_server.h"
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc/db_am.h"
 #include "dbinc/txn.h"
+
+#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_VXWORKS
+#include <rpcLib.h>
+#else
+#include <rpc/rpc.h>
+#endif
+#endif
+#include "db_server.h"
 #include "dbinc_auto/rpc_client_ext.h"
 
 static int __dbcl_c_destroy __P((DBC *));
 static int __dbcl_txn_close __P((DB_ENV *));
 
 /*
- * __dbcl_envrpcserver --
+ * __dbcl_env_set_rpc_server --
  *	Initialize an environment's server.
  *
- * PUBLIC: int __dbcl_envrpcserver
+ * PUBLIC: int __dbcl_env_set_rpc_server
  * PUBLIC:     __P((DB_ENV *, void *, const char *, long, long, u_int32_t));
  */
 int
-__dbcl_envrpcserver(dbenv, clnt, host, tsec, ssec, flags)
+__dbcl_env_set_rpc_server(dbenv, clnt, host, tsec, ssec, flags)
 	DB_ENV *dbenv;
 	void *clnt;
 	const char *host;
@@ -55,12 +49,12 @@ __dbcl_envrpcserver(dbenv, clnt, host, tsec, ssec, flags)
 
 #ifdef HAVE_VXWORKS
 	if (rpcTaskInit() != 0) {
-		__db_err(dbenv, "Could not initialize VxWorks RPC");
+		__db_errx(dbenv, "Could not initialize VxWorks RPC");
 		return (ERROR);
 	}
 #endif
 	if (RPC_ON(dbenv)) {
-		__db_err(dbenv, "Already set an RPC handle");
+		__db_errx(dbenv, "Already set an RPC handle");
 		return (EINVAL);
 	}
 	/*
@@ -70,7 +64,7 @@ __dbcl_envrpcserver(dbenv, clnt, host, tsec, ssec, flags)
 	if (clnt == NULL) {
 		if ((cl = clnt_create((char *)host, DB_RPC_SERVERPROG,
 		    DB_RPC_SERVERVERS, "tcp")) == NULL) {
-			__db_err(dbenv, clnt_spcreateerror((char *)host));
+			__db_errx(dbenv, clnt_spcreateerror((char *)host));
 			return (DB_NOSERVER);
 		}
 		if (tsec != 0) {
@@ -94,8 +88,7 @@ __dbcl_envrpcserver(dbenv, clnt, host, tsec, ssec, flags)
  *	either don't call dbenv->open or close gets an error.
  *	We need to release the handle no matter what.
  *
- * PUBLIC: int __dbcl_env_close_wrap
- * PUBLIC:     __P((DB_ENV *, u_int32_t));
+ * PUBLIC: int __dbcl_env_close_wrap __P((DB_ENV *, u_int32_t));
  */
 int
 __dbcl_env_close_wrap(dbenv, flags)
@@ -130,11 +123,13 @@ __dbcl_env_open_wrap(dbenv, home, flags, mode)
 	int ret;
 
 	if (LF_ISSET(DB_THREAD)) {
-		__db_err(dbenv, "DB_THREAD not allowed on RPC clients");
+		__db_errx(dbenv, "DB_THREAD not allowed on RPC clients");
 		return (EINVAL);
 	}
-	if ((ret = __db_home(dbenv, home, flags)) != 0)
+
+	if ((ret = __env_config(dbenv, home, flags, mode)) != 0)
 		return (ret);
+
 	return (__dbcl_env_open(dbenv, dbenv->db_home, flags, mode));
 }
 
@@ -158,10 +153,6 @@ __dbcl_db_open_wrap(dbp, txnp, name, subdb, type, flags, mode)
 	u_int32_t flags;
 	int mode;
 {
-	if (LF_ISSET(DB_THREAD)) {
-		__db_err(dbp->dbenv, "DB_THREAD not allowed on RPC clients");
-		return (EINVAL);
-	}
 	return (__dbcl_db_open(dbp, txnp, name, subdb, type, flags, mode));
 }
 
@@ -338,12 +329,7 @@ __dbcl_txn_setup(dbenv, txn, parent, id)
 	if (parent != NULL)
 		TAILQ_INSERT_HEAD(&parent->kids, txn, klinks);
 
-	txn->abort = __dbcl_txn_abort;
-	txn->commit = __dbcl_txn_commit;
-	txn->discard = __dbcl_txn_discard;
-	txn->id = __txn_id;
-	txn->prepare = __dbcl_txn_prepare;
-	txn->set_timeout = __dbcl_txn_timeout;
+	__dbcl_txn_init(txn);
 
 	txn->flags = TXN_MALLOC;
 }
@@ -425,16 +411,17 @@ __dbcl_c_setup(cl_id, dbp, dbcp)
 			 */
 			tmpdbc.dbp = NULL;
 			tmpdbc.cl_id = cl_id;
-			(void)__dbcl_dbc_close(&tmpdbc);
+			(void)__dbcl_dbc_c_close(&tmpdbc);
 			return (ret);
 		}
-		dbc->c_close = __dbcl_dbc_close;
-		dbc->c_count = __dbcl_dbc_count;
-		dbc->c_del = __dbcl_dbc_del;
-		dbc->c_dup = __dbcl_dbc_dup;
-		dbc->c_get = __dbcl_dbc_get;
-		dbc->c_pget = __dbcl_dbc_pget;
-		dbc->c_put = __dbcl_dbc_put;
+
+		__dbcl_dbc_init(dbc);
+
+		/*
+		 * !!!
+		 * Set up the local destroy function -- we're not really
+		 * an access method, but it does what we need.
+		 */
 		dbc->c_am_destroy = __dbcl_c_destroy;
 	}
 	dbc->cl_id = cl_id;

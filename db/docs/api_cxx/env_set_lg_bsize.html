@@ -1,5 +1,5 @@
-<!--$Id: env_set_lg_bsize.so,v 10.35 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_lg_bsize.so,v 10.36 2006/08/30 10:04:48 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -32,11 +32,12 @@ DbEnv::get_lg_bsize(u_int32_t *lg_bsizep);
 <h3>Description: DbEnv::set_lg_bsize</h3>
 <p>Set the size of the in-memory log buffer, in bytes.</p>
 <p>When the logging subsystem is configured for on-disk logging, the
-default size of the in-memory log buffer is 32KB.  Log information is
-stored in-memory until the storage space fills up or transaction commit
-forces the information to be flushed to stable storage.  In the presence
-of long-running transactions or transactions producing large amounts of
-data, larger buffer sizes can increase throughput.</p>
+default size of the in-memory log buffer is approximately 32KB.  Log
+information is stored in-memory until the storage space fills up or
+transaction commit forces the information to be flushed to stable
+storage.  In the presence of long-running transactions or transactions
+producing large amounts of data, larger buffer sizes can increase
+throughput.</p>
 <p>When the logging subsystem is configured for in-memory logging, the
 default size of the in-memory log buffer is 1MB.  Log information is
 stored in-memory until the storage space fills up or transaction abort
@@ -49,10 +50,10 @@ should ensure the in-memory log buffer size is large enough that no
 transaction will ever span the entire buffer, and avoid a state where
 the in-memory buffer is full and no space can be freed because a
 transaction that started in the first log "file" is still active.</p>
-<p>The database environment's log buffer size may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_lg_bsize", one or more whitespace characters,
-and the size in bytes.
+<p>The database environment's log buffer size may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_lg_bsize", one or more whitespace
+characters, and the size in bytes.
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
 before that time.</p>
@@ -108,6 +109,6 @@ size of the log buffer, in bytes in <b>lg_bsizep</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

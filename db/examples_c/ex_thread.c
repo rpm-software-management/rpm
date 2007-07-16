@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: ex_thread.c,v 11.36 2004/01/28 03:36:03 bostic Exp $
+ * $Id: ex_thread.c,v 12.4 2006/08/24 14:45:42 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -187,8 +187,8 @@ main(argc, argv)
 
 	/* Create reader/writer threads. */
 	for (i = 0; i < nreaders + nwriters; ++i)
-		if ((ret =
-		    pthread_create(&tids[i], NULL, tstart, (void *)i)) != 0)
+		if ((ret = pthread_create(
+		    &tids[i], NULL, tstart, (void *)(uintptr_t)i)) != 0)
 			fatal("pthread_create", ret > 0 ? ret : errno, 1);
 
 	/* Create buffer pool trickle thread. */
@@ -474,7 +474,7 @@ tstart(arg)
 	pthread_t tid;
 	u_int id;
 
-	id = (u_int)arg + 1;
+	id = (uintptr_t)arg + 1;
 
 	tid = pthread_self();
 

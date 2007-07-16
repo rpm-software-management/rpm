@@ -1,27 +1,50 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: fop_rec.c,v 1.31 2004/09/22 03:45:25 bostic Exp $
+ * $Id: fop_rec.c,v 12.12 2006/08/24 14:46:03 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/fop.h"
 #include "dbinc/db_am.h"
 #include "dbinc/mp.h"
 #include "dbinc/txn.h"
+
+/*
+ * The transactional guarantees Berkeley DB provides for file
+ * system level operations (database physical file create, delete,
+ * rename) are based on our understanding of current file system
+ * semantics; a system that does not provide these semantics and
+ * guarantees could be in danger.
+ *
+ * First, as in standard database changes, fsync and fdatasync must
+ * work: when applied to the log file, the records written into the
+ * log must be transferred to stable storage.
+ *
+ * Second, it must not be possible for the log file to be removed
+ * without previous file system level operations being flushed to
+ * stable storage.  Berkeley DB applications write log records
+ * describing file system operations into the log, then perform the
+ * file system operation, then commit the enclosing transaction
+ * (which flushes the log file to stable storage).  Subsequently,
+ * a database environment checkpoint may make it possible for the
+ * application to remove the log file containing the record of the
+ * file system operation.  DB's transactional guarantees for file
+ * system operations require the log file removal not succeed until
+ * all previous filesystem operations have been flushed to stable
+ * storage.  In other words, the flush of the log file, or the
+ * removal of the log file, must block until all previous
+ * filesystem operations have been flushed to stable storage.  This
+ * semantic is not, as far as we know, required by any existing
+ * standards document, but we have never seen a filesystem where
+ * it does not apply.
+ */
 
 /*
  * __fop_create_recover --
@@ -56,7 +79,7 @@ __fop_create_recover(dbenv, dbtp, lsnp, op, info)
 		(void)__os_unlink(dbenv, real_name);
 	else if (DB_REDO(op)) {
 		if ((ret = __os_open(dbenv, real_name,
-		    DB_OSO_CREATE | DB_OSO_EXCL, argp->mode, &fhp)) == 0)
+		    DB_OSO_CREATE | DB_OSO_EXCL, (int)argp->mode, &fhp)) == 0)
 			(void)__os_closehandle(dbenv, fhp);
 		else
 			goto out;
@@ -101,7 +124,7 @@ __fop_remove_recover(dbenv, dbtp, lsnp, op, info)
 	/* Its ok if the file is not there. */
 	if (DB_REDO(op))
 		(void)__memp_nameop(dbenv,
-		    (u_int8_t *)argp->fid.data, NULL, real_name, NULL);
+		    (u_int8_t *)argp->fid.data, NULL, real_name, NULL, 0);
 
 	*lsnp = argp->prev_lsn;
 out:	if (real_name != NULL)
@@ -133,10 +156,10 @@ __fop_write_recover(dbenv, dbtp, lsnp, op, info)
 
 	ret = 0;
 	if (DB_UNDO(op))
-		DB_ASSERT(argp->flag != 0);
+		DB_ASSERT(dbenv, argp->flag != 0);
 	else if (DB_REDO(op))
 		ret = __fop_write(dbenv,
-		    argp->txnid, argp->name.data, argp->appname,
+		    argp->txnp, argp->name.data, (APPNAME)argp->appname,
 		    NULL, argp->pgsize, argp->pageno, argp->offset,
 		    argp->page.data, argp->page.size, argp->flag, 0);
 
@@ -209,14 +232,33 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 			goto done;
 		(void)__os_closehandle(dbenv, fhp);
 		fhp = NULL;
+		if (DB_REDO(op)) {
+			/*
+			 * Check to see if the target file exists.  If it
+			 * does and it does not have the proper id then
+			 * it is a later version.  We just remove the source
+			 * file since the state of the world is beyond this
+			 * point.
+			 */
+			if (__os_open(dbenv, real_new, 0, 0, &fhp) == 0 &&
+			    __fop_read_meta(dbenv, src, mbuf,
+			    DBMETASIZE, fhp, 1, NULL) == 0 &&
+			    __db_chk_meta(dbenv, NULL, meta, 1) == 0 &&
+			    memcmp(argp->fileid.data,
+			    meta->uid, DB_FILE_ID_LEN) != 0) {
+				(void)__memp_nameop(dbenv,
+				    fileid, NULL, real_old, NULL, 0);
+				goto done;
+			}
+		}
 	}
 
 	if (DB_UNDO(op))
 		(void)__memp_nameop(dbenv, fileid,
-		    (const char *)argp->oldname.data, real_new, real_old);
+		    (const char *)argp->oldname.data, real_new, real_old, 0);
 	if (DB_REDO(op))
 		(void)__memp_nameop(dbenv, fileid,
-		    (const char *)argp->newname.data, real_old, real_new);
+		    (const char *)argp->newname.data, real_old, real_new, 0);
 
 done:	*lsnp = argp->prev_lsn;
 out:	if (real_new != NULL)
@@ -327,7 +369,7 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 		if (cstat == TXN_COMMIT)
 			(void)__memp_nameop(dbenv,
 			    is_real ? argp->real_fid.data : argp->tmp_fid.data,
-			    NULL, real_name, NULL);
+			    NULL, real_name, NULL, 0);
 	}
 
 done:	*lsnp = argp->prev_lsn;

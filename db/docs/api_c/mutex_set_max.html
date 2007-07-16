@@ -1,0 +1,158 @@
+<!--$Id: mutex_set_max.so,v 10.3 2005/08/03 21:24:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;mutex_set_max</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;mutex_set_max</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;mutex_set_increment(DB_ENV *dbenv, u_int32_t increment);
+<p>
+int
+DB_ENV-&gt;mutex_get_increment(DB_ENV *dbenv, u_int32_t *incrementp);
+<p>
+int
+DB_ENV-&gt;mutex_set_max(DB_ENV *dbenv, u_int32_t max);
+<p>
+int
+DB_ENV-&gt;mutex_get_max(DB_ENV *dbenv, u_int32_t *maxp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;mutex_set_max</h3>
+<p>Configure the total number of mutexes to allocate.</p>
+<p>Berkeley DB allocates a default number of mutexes based on the initial
+configuration of the database environment.  That default calculation may
+be too small if the application has an unusual need for mutexes (for
+example, if the application opens an unexpectedly large number of
+databases) or too large (if the application is trying to minimize its
+memory footprint).  The DB_ENV-&gt;mutex_set_max method is used to specify an
+absolute number of mutexes to allocate.</p>
+<p>Calling the DB_ENV-&gt;mutex_set_max method discards any value previously
+set using the DB_ENV-&gt;mutex_set_increment method.</p>
+<p>The database environment's total number of mutexes may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "mutex_set_max", one or more whitespace
+characters, and the total number of mutexes.
+Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.</p>
+<p>The DB_ENV-&gt;mutex_set_max method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>The DB_ENV-&gt;mutex_set_max method may not be called after the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a> is called, the information specified to DB_ENV-&gt;mutex_set_max
+will be ignored.
+</p>
+<p>The DB_ENV-&gt;mutex_set_max method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>max</b><dd>The <b>max</b> parameter is the absolute number of mutexes to
+allocate.
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;mutex_set_max method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;mutex_get_max</h3>
+<p>The DB_ENV-&gt;mutex_get_max method returns the total number of mutexes allocated.</p>
+<p>The DB_ENV-&gt;mutex_get_max method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;mutex_get_max method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>maxp</b><dd>The DB_ENV-&gt;mutex_get_max method returns  the
+total number of mutexes allocated in <b>maxp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;mutex_set_increment</h3>
+<p>Configure the number of additional mutexes to allocate.</p>
+<p>Additionally, an application may want to allocate mutexes for its own
+use.  The DB_ENV-&gt;mutex_set_increment method is used to add a number of
+mutexes to the default allocation.</p>
+<p>Calling the DB_ENV-&gt;mutex_set_increment method discards any value previously
+set using the DB_ENV-&gt;mutex_set_max method.</p>
+<p>The database environment's number of additional mutexes may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "mutex_set_increment", one or more whitespace
+characters, and the number of additional mutexes.
+Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.</p>
+<p>The DB_ENV-&gt;mutex_set_increment method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>The DB_ENV-&gt;mutex_set_increment method may not be called after the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a> is called, the information specified to DB_ENV-&gt;mutex_set_increment
+will be ignored.
+</p>
+<p>The DB_ENV-&gt;mutex_set_increment method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>increment</b><dd>The <b>increment</b> parameter is the number of additional mutexes to
+allocate.
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;mutex_set_increment method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;mutex_get_increment</h3>
+<p>The DB_ENV-&gt;mutex_get_increment method returns the number of additional mutexes to allocate.</p>
+<p>The DB_ENV-&gt;mutex_get_increment method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;mutex_get_increment method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>incrementp</b><dd>The DB_ENV-&gt;mutex_get_increment method returns  the
+number of additional mutexes to allocate in <b>incrementp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

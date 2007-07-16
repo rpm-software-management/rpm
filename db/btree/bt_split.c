@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -36,27 +36,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_split.c,v 11.66 2004/10/01 13:00:21 bostic Exp $
+ * $Id: bt_split.c,v 12.16 2006/09/08 18:41:05 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/lock.h"
 #include "dbinc/mp.h"
 #include "dbinc/btree.h"
 
 static int __bam_broot __P((DBC *, PAGE *, PAGE *, PAGE *));
 static int __bam_page __P((DBC *, EPG *, EPG *));
-static int __bam_pinsert __P((DBC *, EPG *, PAGE *, PAGE *, int));
 static int __bam_psplit __P((DBC *, EPG *, PAGE *, PAGE *, db_indx_t *));
 static int __bam_root __P((DBC *, EPG *));
 static int __ram_root __P((DBC *, PAGE *, PAGE *, PAGE *));
@@ -114,9 +106,9 @@ __bam_split(dbc, arg, root_pgnop)
 		 */
 		if ((ret = (dbc->dbtype == DB_BTREE ?
 		    __bam_search(dbc, PGNO_INVALID,
-			arg, S_WRPAIR, level, NULL, &exact) :
+			arg, SR_WRPAIR, level, NULL, &exact) :
 		    __bam_rsearch(dbc,
-			(db_recno_t *)arg, S_WRPAIR, level, &exact))) != 0)
+			(db_recno_t *)arg, SR_WRPAIR, level, &exact))) != 0)
 			break;
 
 		if (root_pgnop != NULL)
@@ -192,11 +184,14 @@ __bam_root(dbc, cp)
 
 	/* Yeah, right. */
 	if (cp->page->level >= MAXBTREELEVEL) {
-		__db_err(dbp->dbenv,
+		__db_errx(dbp->dbenv,
 		    "Too many btree levels: %d", cp->page->level);
 		ret = ENOSPC;
 		goto err;
 	}
+
+	if ((ret = __memp_dirty(mpf, &cp->page, dbc->txn, 0)) != 0)
+		goto err;
 
 	/* Create new left and right pages for the split. */
 	if ((ret = __db_new(dbc, TYPE(cp->page), &lp)) != 0 ||
@@ -241,16 +236,13 @@ __bam_root(dbc, cp)
 	ret = __bam_ca_split(dbc, cp->page->pgno, lp->pgno, rp->pgno, split, 1);
 
 	/* Success or error: release pages and locks. */
-err:	if ((t_ret =
-	    __memp_fput(mpf, cp->page, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+err:	if ((t_ret = __memp_fput(mpf, cp->page, 0)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __TLPUT(dbc, cp->lock)) != 0 && ret == 0)
 		ret = t_ret;
-	if (lp != NULL &&
-	    (t_ret = __memp_fput(mpf, lp, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+	if (lp != NULL && (t_ret = __memp_fput(mpf, lp, 0)) != 0 && ret == 0)
 		ret = t_ret;
-	if (rp != NULL &&
-	    (t_ret = __memp_fput(mpf, rp, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+	if (rp != NULL && (t_ret = __memp_fput(mpf, rp, 0)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -338,7 +330,7 @@ __bam_page(dbc, pp, cp)
 	 * page can't hold the new keys, and has to be split in turn, in which
 	 * case we want to release all the locks we can.
 	 */
-	if ((ret = __bam_pinsert(dbc, pp, lp, rp, 1)) != 0)
+	if ((ret = __bam_pinsert(dbc, pp, lp, rp, BPI_SPACEONLY)) != 0)
 		goto err;
 
 	/*
@@ -349,14 +341,15 @@ __bam_page(dbc, pp, cp)
 	 * a page that's not in our direct ancestry.  Consider a cursor walking
 	 * backward through the leaf pages, that has our following page locked,
 	 * and is waiting on a lock for the page we're splitting.  In that case
-	 * we're going to deadlock here .  It's probably OK, stepping backward
+	 * we're going to deadlock here.  It's probably OK, stepping backward
 	 * through the tree isn't a common operation.
 	 */
 	if (ISLEAF(cp->page) && NEXT_PGNO(cp->page) != PGNO_INVALID) {
 		if ((ret = __db_lget(dbc,
 		    0, NEXT_PGNO(cp->page), DB_LOCK_WRITE, 0, &tplock)) != 0)
 			goto err;
-		if ((ret = __memp_fget(mpf, &NEXT_PGNO(cp->page), 0, &tp)) != 0)
+		if ((ret = __memp_fget(mpf, &NEXT_PGNO(cp->page),
+		    dbc->txn, DB_MPOOL_DIRTY, &tp)) != 0)
 			goto err;
 	}
 
@@ -387,8 +380,12 @@ __bam_page(dbc, pp, cp)
 	 */
 	PGNO(rp) = NEXT_PGNO(lp) = PGNO(alloc_rp);
 
+	if ((ret = __memp_dirty(mpf, &cp->page, dbc->txn, 0)) != 0)
+		goto err;
+
 	/* Actually update the parent page. */
-	if ((ret = __bam_pinsert(dbc, pp, lp, rp, 0)) != 0)
+	if ((ret = __memp_dirty(mpf, &pp->page, dbc->txn, 0)) != 0 ||
+	    (ret = __bam_pinsert(dbc, pp, lp, rp, 0)) != 0)
 		goto err;
 
 	bc = (BTREE_CURSOR *)dbc->internal;
@@ -458,24 +455,20 @@ __bam_page(dbc, pp, cp)
 	 * releasing locks on the pages that reference it.  We're finished
 	 * modifying the page so it's not really necessary, but it's neater.
 	 */
-	if ((t_ret =
-	    __memp_fput(mpf, alloc_rp, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+	if ((t_ret = __memp_fput(mpf, alloc_rp, 0)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __TLPUT(dbc, rplock)) != 0 && ret == 0)
 		ret = t_ret;
-	if ((t_ret =
-	    __memp_fput(mpf, pp->page, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+	if ((t_ret = __memp_fput(mpf, pp->page, 0)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __TLPUT(dbc, pp->lock)) != 0 && ret == 0)
 		ret = t_ret;
-	if ((t_ret =
-	    __memp_fput(mpf, cp->page, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+	if ((t_ret = __memp_fput(mpf, cp->page, 0)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __TLPUT(dbc, cp->lock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (tp != NULL) {
-		if ((t_ret =
-		    __memp_fput(mpf, tp, DB_MPOOL_DIRTY)) != 0 && ret == 0)
+		if ((t_ret = __memp_fput(mpf, tp, 0)) != 0 && ret == 0)
 			ret = t_ret;
 		if ((t_ret = __TLPUT(dbc, tplock)) != 0 && ret == 0)
 			ret = t_ret;
@@ -521,6 +514,7 @@ __bam_broot(dbc, rootp, lp, rp)
 {
 	BINTERNAL bi, *child_bi;
 	BKEYDATA *child_bk;
+	BOVERFLOW bo, *child_bo;
 	BTREE_CURSOR *cp;
 	DB *dbp;
 	DBT hdr, data;
@@ -539,9 +533,6 @@ __bam_broot(dbc, rootp, lp, rp)
 	P_INIT(rootp, dbp->pgsize,
 	    root_pgno, PGNO_INVALID, PGNO_INVALID, lp->level + 1, P_IBTREE);
 
-	memset(&data, 0, sizeof(data));
-	memset(&hdr, 0, sizeof(hdr));
-
 	/*
 	 * The btree comparison code guarantees that the left-most key on any
 	 * internal btree page is never used, so it doesn't need to be filled
@@ -549,14 +540,13 @@ __bam_broot(dbc, rootp, lp, rp)
 	 */
 	memset(&bi, 0, sizeof(bi));
 	bi.len = 0;
-	B_TSET(bi.type, B_KEYDATA, 0);
+	B_TSET(bi.type, B_KEYDATA);
 	bi.pgno = lp->pgno;
 	if (F_ISSET(cp, C_RECNUM)) {
 		bi.nrecs = __bam_total(dbp, lp);
 		RE_NREC_SET(rootp, bi.nrecs);
 	}
-	hdr.data = &bi;
-	hdr.size = SSZA(BINTERNAL, data);
+	DB_SET_DBT(hdr, &bi, SSZA(BINTERNAL, data));
 	if ((ret =
 	    __db_pitem(dbc, rootp, 0, BINTERNAL_SIZE(0), &hdr, NULL)) != 0)
 		return (ret);
@@ -565,27 +555,28 @@ __bam_broot(dbc, rootp, lp, rp)
 	case P_IBTREE:
 		/* Copy the first key of the child page onto the root page. */
 		child_bi = GET_BINTERNAL(dbp, rp, 0);
-
-		bi.len = child_bi->len;
-		B_TSET(bi.type, child_bi->type, 0);
-		bi.pgno = rp->pgno;
-		if (F_ISSET(cp, C_RECNUM)) {
-			bi.nrecs = __bam_total(dbp, rp);
-			RE_NREC_ADJ(rootp, bi.nrecs);
-		}
-		hdr.data = &bi;
-		hdr.size = SSZA(BINTERNAL, data);
-		data.data = child_bi->data;
-		data.size = child_bi->len;
-		if ((ret = __db_pitem(dbc, rootp, 1,
-		    BINTERNAL_SIZE(child_bi->len), &hdr, &data)) != 0)
-			return (ret);
-
-		/* Increment the overflow ref count. */
-		if (B_TYPE(child_bi->type) == B_OVERFLOW)
-			if ((ret = __db_ovref(dbc,
-			    ((BOVERFLOW *)(child_bi->data))->pgno, 1)) != 0)
+		switch (B_TYPE(child_bi->type)) {
+		case B_KEYDATA:
+			bi.len = child_bi->len;
+			B_TSET(bi.type, B_KEYDATA);
+			bi.pgno = rp->pgno;
+			if (F_ISSET(cp, C_RECNUM)) {
+				bi.nrecs = __bam_total(dbp, rp);
+				RE_NREC_ADJ(rootp, bi.nrecs);
+			}
+			DB_SET_DBT(hdr, &bi, SSZA(BINTERNAL, data));
+			DB_SET_DBT(data, child_bi->data, child_bi->len);
+			if ((ret = __db_pitem(dbc, rootp, 1,
+			    BINTERNAL_SIZE(child_bi->len), &hdr, &data)) != 0)
 				return (ret);
+			break;
+		case B_OVERFLOW:
+			child_bo = (BOVERFLOW *)child_bi->data;
+			goto do_overflow;
+		case B_DUPLICATE:
+		default:
+			goto pgfmt;
+		}
 		break;
 	case P_LDUP:
 	case P_LBTREE:
@@ -594,49 +585,55 @@ __bam_broot(dbc, rootp, lp, rp)
 		switch (B_TYPE(child_bk->type)) {
 		case B_KEYDATA:
 			bi.len = child_bk->len;
-			B_TSET(bi.type, child_bk->type, 0);
+			B_TSET(bi.type, B_KEYDATA);
 			bi.pgno = rp->pgno;
 			if (F_ISSET(cp, C_RECNUM)) {
 				bi.nrecs = __bam_total(dbp, rp);
 				RE_NREC_ADJ(rootp, bi.nrecs);
 			}
-			hdr.data = &bi;
-			hdr.size = SSZA(BINTERNAL, data);
-			data.data = child_bk->data;
-			data.size = child_bk->len;
+			DB_SET_DBT(hdr, &bi, SSZA(BINTERNAL, data));
+			DB_SET_DBT(data, child_bk->data, child_bk->len);
 			if ((ret = __db_pitem(dbc, rootp, 1,
 			    BINTERNAL_SIZE(child_bk->len), &hdr, &data)) != 0)
 				return (ret);
 			break;
-		case B_DUPLICATE:
 		case B_OVERFLOW:
+			/* Copy the overflow key. */
+			child_bo = (BOVERFLOW *)child_bk;
+do_overflow:		memset(&bo, 0, sizeof(bo));
+			bo.type = B_OVERFLOW;
+			bo.tlen = child_bo->tlen;
+			memset(&hdr, 0, sizeof(hdr));
+			if ((ret = __db_goff(dbp,
+			     dbc->txn, &hdr, child_bo->tlen,
+			     child_bo->pgno, &hdr.data, &hdr.size)) == 0)
+				ret = __db_poff(dbc, &hdr, &bo.pgno);
+
+			if (hdr.data != NULL)
+				__os_free(dbp->dbenv, hdr.data);
+			if (ret != 0)
+				return (ret);
+
 			bi.len = BOVERFLOW_SIZE;
-			B_TSET(bi.type, child_bk->type, 0);
+			B_TSET(bi.type, B_OVERFLOW);
 			bi.pgno = rp->pgno;
 			if (F_ISSET(cp, C_RECNUM)) {
 				bi.nrecs = __bam_total(dbp, rp);
 				RE_NREC_ADJ(rootp, bi.nrecs);
 			}
-			hdr.data = &bi;
-			hdr.size = SSZA(BINTERNAL, data);
-			data.data = child_bk;
-			data.size = BOVERFLOW_SIZE;
+			DB_SET_DBT(hdr, &bi, SSZA(BINTERNAL, data));
+			DB_SET_DBT(data, &bo, BOVERFLOW_SIZE);
 			if ((ret = __db_pitem(dbc, rootp, 1,
 			    BINTERNAL_SIZE(BOVERFLOW_SIZE), &hdr, &data)) != 0)
 				return (ret);
-
-			/* Increment the overflow ref count. */
-			if (B_TYPE(child_bk->type) == B_OVERFLOW)
-				if ((ret = __db_ovref(dbc,
-				    ((BOVERFLOW *)child_bk)->pgno, 1)) != 0)
-					return (ret);
 			break;
+		case B_DUPLICATE:
 		default:
-			return (__db_pgfmt(dbp->dbenv, rp->pgno));
+			goto pgfmt;
 		}
 		break;
 	default:
-		return (__db_pgfmt(dbp->dbenv, rp->pgno));
+pgfmt:		return (__db_pgfmt(dbp->dbenv, rp->pgno));
 	}
 	return (0);
 }
@@ -664,9 +661,7 @@ __ram_root(dbc, rootp, lp, rp)
 	    root_pgno, PGNO_INVALID, PGNO_INVALID, lp->level + 1, P_IRECNO);
 
 	/* Initialize the header. */
-	memset(&hdr, 0, sizeof(hdr));
-	hdr.data = &ri;
-	hdr.size = RINTERNAL_SIZE;
+	DB_SET_DBT(hdr, &ri, RINTERNAL_SIZE);
 
 	/* Insert the left and right keys, set the header information. */
 	ri.pgno = lp->pgno;
@@ -685,16 +680,19 @@ __ram_root(dbc, rootp, lp, rp)
 /*
  * __bam_pinsert --
  *	Insert a new key into a parent page, completing the split.
+ *
+ * PUBLIC: int __bam_pinsert __P((DBC *, EPG *, PAGE *, PAGE *, int));
  */
-static int
-__bam_pinsert(dbc, parent, lchild, rchild, space_check)
+int
+__bam_pinsert(dbc, parent, lchild, rchild, flags)
 	DBC *dbc;
 	EPG *parent;
 	PAGE *lchild, *rchild;
-	int space_check;
+	int flags;
 {
 	BINTERNAL bi, *child_bi;
 	BKEYDATA *child_bk, *tmp_bk;
+	BOVERFLOW bo, *child_bo;
 	BTREE *t;
 	BTREE_CURSOR *cp;
 	DB *dbp;
@@ -714,7 +712,7 @@ __bam_pinsert(dbc, parent, lchild, rchild, space_check)
 
 	/* If handling record numbers, count records split to the right page. */
 	nrecs = F_ISSET(cp, C_RECNUM) &&
-	    !space_check ? __bam_total(dbp, rchild) : 0;
+	    !LF_ISSET(BPI_SPACEONLY) ? __bam_total(dbp, rchild) : 0;
 
 	/*
 	 * Now we insert the new page's first key into the parent page, which
@@ -750,37 +748,41 @@ __bam_pinsert(dbc, parent, lchild, rchild, space_check)
 
 		if (P_FREESPACE(dbp, ppage) < nbytes)
 			return (DB_NEEDSPLIT);
-		if (space_check)
+		if (LF_ISSET(BPI_SPACEONLY))
 			return (0);
 
-		/* Add a new record for the right page. */
-		memset(&bi, 0, sizeof(bi));
-		bi.len = child_bi->len;
-		B_TSET(bi.type, child_bi->type, 0);
-		bi.pgno = rchild->pgno;
-		bi.nrecs = nrecs;
-		memset(&hdr, 0, sizeof(hdr));
-		hdr.data = &bi;
-		hdr.size = SSZA(BINTERNAL, data);
-		memset(&data, 0, sizeof(data));
-		data.data = child_bi->data;
-		data.size = child_bi->len;
-		if ((ret = __db_pitem(dbc, ppage, off,
-		    BINTERNAL_SIZE(child_bi->len), &hdr, &data)) != 0)
-			return (ret);
-
-		/* Increment the overflow ref count. */
-		if (B_TYPE(child_bi->type) == B_OVERFLOW)
-			if ((ret = __db_ovref(dbc,
-			    ((BOVERFLOW *)(child_bi->data))->pgno, 1)) != 0)
+		switch (B_TYPE(child_bi->type)) {
+		case B_KEYDATA:
+			/* Add a new record for the right page. */
+			memset(&bi, 0, sizeof(bi));
+			bi.len = child_bi->len;
+			B_TSET(bi.type, B_KEYDATA);
+			bi.pgno = rchild->pgno;
+			bi.nrecs = nrecs;
+			DB_SET_DBT(hdr, &bi, SSZA(BINTERNAL, data));
+			DB_SET_DBT(data, child_bi->data, child_bi->len);
+			if ((ret = __db_pitem(dbc, ppage, off,
+			    BINTERNAL_SIZE(child_bi->len), &hdr, &data)) != 0)
 				return (ret);
+			break;
+		case B_OVERFLOW:
+			child_bo = (BOVERFLOW *)child_bi->data;
+			goto do_overflow;
+		case B_DUPLICATE:
+		default:
+			goto pgfmt;
+		}
 		break;
 	case P_LDUP:
 	case P_LBTREE:
 		child_bk = GET_BKEYDATA(dbp, rchild, 0);
 		switch (B_TYPE(child_bk->type)) {
 		case B_KEYDATA:
+			nbytes = BINTERNAL_PSIZE(child_bk->len);
+			nksize = child_bk->len;
+
 			/*
+			 * Prefix compression:
 			 * We set t->bt_prefix to NULL if we have a comparison
 			 * callback but no prefix compression callback.  But,
 			 * if we're splitting in an off-page duplicates tree,
@@ -792,6 +794,14 @@ __bam_pinsert(dbc, parent, lchild, rchild, space_check)
 			 * as there's no way for an application to specify a
 			 * prefix compression callback that corresponds to its
 			 * comparison callback.
+			 *
+			 * No prefix compression if we don't have a compression
+			 * function, or the key we'd compress isn't a normal
+			 * key (for example, it references an overflow page).
+			 *
+			 * Generate a parent page key for the right child page
+			 * from a comparison of the last key on the left child
+			 * page and the first key on the right child page.
 			 */
 			if (F_ISSET(dbc, DBC_OPD)) {
 				if (dbp->dup_compare == __bam_defcmp)
@@ -800,81 +810,75 @@ __bam_pinsert(dbc, parent, lchild, rchild, space_check)
 					func = NULL;
 			} else
 				func = t->bt_prefix;
-
-			nbytes = BINTERNAL_PSIZE(child_bk->len);
-			nksize = child_bk->len;
 			if (func == NULL)
-				goto noprefix;
-			if (ppage->prev_pgno == PGNO_INVALID && off <= 1)
 				goto noprefix;
 			tmp_bk = GET_BKEYDATA(dbp, lchild, NUM_ENT(lchild) -
 			    (TYPE(lchild) == P_LDUP ? O_INDX : P_INDX));
 			if (B_TYPE(tmp_bk->type) != B_KEYDATA)
 				goto noprefix;
-			memset(&a, 0, sizeof(a));
-			a.size = tmp_bk->len;
-			a.data = tmp_bk->data;
-			memset(&b, 0, sizeof(b));
-			b.size = child_bk->len;
-			b.data = child_bk->data;
+			DB_SET_DBT(a, tmp_bk->data, tmp_bk->len);
+			DB_SET_DBT(b, child_bk->data, child_bk->len);
 			nksize = (u_int32_t)func(dbp, &a, &b);
 			if ((n = BINTERNAL_PSIZE(nksize)) < nbytes)
 				nbytes = n;
 			else
-noprefix:			nksize = child_bk->len;
+				nksize = child_bk->len;
 
-			if (P_FREESPACE(dbp, ppage) < nbytes)
+noprefix:		if (P_FREESPACE(dbp, ppage) < nbytes)
 				return (DB_NEEDSPLIT);
-			if (space_check)
+			if (LF_ISSET(BPI_SPACEONLY))
 				return (0);
 
 			memset(&bi, 0, sizeof(bi));
 			bi.len = nksize;
-			B_TSET(bi.type, child_bk->type, 0);
+			B_TSET(bi.type, B_KEYDATA);
 			bi.pgno = rchild->pgno;
 			bi.nrecs = nrecs;
-			memset(&hdr, 0, sizeof(hdr));
-			hdr.data = &bi;
-			hdr.size = SSZA(BINTERNAL, data);
-			memset(&data, 0, sizeof(data));
-			data.data = child_bk->data;
-			data.size = nksize;
+			DB_SET_DBT(hdr, &bi, SSZA(BINTERNAL, data));
+			DB_SET_DBT(data, child_bk->data, nksize);
 			if ((ret = __db_pitem(dbc, ppage, off,
 			    BINTERNAL_SIZE(nksize), &hdr, &data)) != 0)
 				return (ret);
 			break;
-		case B_DUPLICATE:
 		case B_OVERFLOW:
 			nbytes = BINTERNAL_PSIZE(BOVERFLOW_SIZE);
 
 			if (P_FREESPACE(dbp, ppage) < nbytes)
 				return (DB_NEEDSPLIT);
-			if (space_check)
+			if (LF_ISSET(BPI_SPACEONLY))
 				return (0);
+
+			/* Copy the overflow key. */
+			child_bo = (BOVERFLOW *)child_bk;
+do_overflow:		memset(&bo, 0, sizeof(bo));
+			bo.type = B_OVERFLOW;
+			bo.tlen = child_bo->tlen;
+			memset(&hdr, 0, sizeof(hdr));
+			if ((ret = __db_goff(dbp,
+			     dbc->txn, &hdr, child_bo->tlen,
+			     child_bo->pgno, &hdr.data, &hdr.size)) == 0)
+				ret = __db_poff(dbc, &hdr, &bo.pgno);
+
+			if (hdr.data != NULL)
+				__os_free(dbp->dbenv, hdr.data);
+			if (ret != 0)
+				return (ret);
 
 			memset(&bi, 0, sizeof(bi));
 			bi.len = BOVERFLOW_SIZE;
-			B_TSET(bi.type, child_bk->type, 0);
+			B_TSET(bi.type, B_OVERFLOW);
 			bi.pgno = rchild->pgno;
 			bi.nrecs = nrecs;
-			memset(&hdr, 0, sizeof(hdr));
-			hdr.data = &bi;
-			hdr.size = SSZA(BINTERNAL, data);
-			memset(&data, 0, sizeof(data));
-			data.data = child_bk;
-			data.size = BOVERFLOW_SIZE;
+			DB_SET_DBT(hdr, &bi, SSZA(BINTERNAL, data));
+			DB_SET_DBT(data, &bo, BOVERFLOW_SIZE);
 			if ((ret = __db_pitem(dbc, ppage, off,
 			    BINTERNAL_SIZE(BOVERFLOW_SIZE), &hdr, &data)) != 0)
 				return (ret);
 
-			/* Increment the overflow ref count. */
-			if (B_TYPE(child_bk->type) == B_OVERFLOW)
-				if ((ret = __db_ovref(dbc,
-				    ((BOVERFLOW *)child_bk)->pgno, 1)) != 0)
-					return (ret);
 			break;
+		case B_DUPLICATE:
 		default:
-			return (__db_pgfmt(dbp->dbenv, rchild->pgno));
+			goto pgfmt;
 		}
 		break;
 	case P_IRECNO:
@@ -883,13 +887,11 @@ noprefix:			nksize = child_bk->len;
 
 		if (P_FREESPACE(dbp, ppage) < nbytes)
 			return (DB_NEEDSPLIT);
-		if (space_check)
+		if (LF_ISSET(BPI_SPACEONLY))
 			return (0);
 
 		/* Add a new record for the right page. */
-		memset(&hdr, 0, sizeof(hdr));
-		hdr.data = &ri;
-		hdr.size = RINTERNAL_SIZE;
+		DB_SET_DBT(hdr, &ri, RINTERNAL_SIZE);
 		ri.pgno = rchild->pgno;
 		ri.nrecs = nrecs;
 		if ((ret = __db_pitem(dbc,
@@ -897,20 +899,20 @@ noprefix:			nksize = child_bk->len;
 			return (ret);
 		break;
 	default:
-		return (__db_pgfmt(dbp->dbenv, rchild->pgno));
+pgfmt:		return (__db_pgfmt(dbp->dbenv, rchild->pgno));
 	}
 
 	/*
 	 * If a Recno or Btree with record numbers AM page, or an off-page
 	 * duplicates tree, adjust the parent page's left page record count.
 	 */
-	if (F_ISSET(cp, C_RECNUM)) {
+	if (F_ISSET(cp, C_RECNUM) && !LF_ISSET(BPI_NORECNUM)) {
 		/* Log the change. */
 		if (DBC_LOGGING(dbc)) {
-		if ((ret = __bam_cadjust_log(dbp, dbc->txn,
-		    &LSN(ppage), 0, PGNO(ppage),
-		    &LSN(ppage), parent->indx, -(int32_t)nrecs, 0)) != 0)
-			return (ret);
+			if ((ret = __bam_cadjust_log(dbp, dbc->txn,
+			    &LSN(ppage), 0, PGNO(ppage), &LSN(ppage),
+			    parent->indx, -(int32_t)nrecs, 0)) != 0)
+				return (ret);
 		} else
 			LSN_NOT_LOGGED(LSN(ppage));
 
@@ -958,7 +960,7 @@ __bam_psplit(dbc, cp, lp, rp, splitret)
 	 * will point past the last element on the page.  But, in trees with
 	 * duplicates, the cursor may point to the last entry on the page --
 	 * in this case, the entry will also be the last element of a duplicate
-	 * set (the last because the search call specified the S_DUPLAST flag).
+	 * set (the last because the search call specified the SR_DUPLAST flag).
 	 * The only way to differentiate between an insert immediately before
 	 * the last item in a tree or an append after a duplicate set which is
 	 * also the last item in the tree is to call the comparison function.

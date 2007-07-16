@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleMarshalledBinding.java,v 1.3 2004/09/22 18:01:01 bostic Exp $
+ * $Id: TupleMarshalledBinding.java,v 12.4 2006/09/08 20:32:11 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;

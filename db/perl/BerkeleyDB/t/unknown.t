@@ -4,15 +4,9 @@
 
 use strict ;
 
-BEGIN {
-    unless(grep /blib/, @INC) {
-        chdir 't' if -d 't';
-        @INC = '../lib' if -d '../lib';
-    }
-}
-
+use lib 't' ;
 use BerkeleyDB; 
-use t::util ;
+use util ;
 
 print "1..41\n";
 
@@ -30,7 +24,7 @@ umask(0) ;
     ok 1, $@ =~ /unknown key value\(s\) Stupid/  ;
 
     eval ' $db = new BerkeleyDB::Unknown -Bad => 2, -Mode => 0345, -Stupid => 3; ' ;
-    ok 2, $@ =~ /unknown key value\(s\) (Bad |Stupid ){2}/  ;
+    ok 2, $@ =~ /unknown key value\(s\) (Bad,? |Stupid,? ){2}/  ;
 
     eval ' $db = new BerkeleyDB::Unknown -Env => 2 ' ;
     ok 3, $@ =~ /^Env not of type BerkeleyDB::Env/ ;

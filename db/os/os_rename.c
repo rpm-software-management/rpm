@@ -1,19 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_rename.c,v 11.17 2004/07/06 13:55:48 bostic Exp $
+ * $Id: os_rename.c,v 12.7 2006/08/24 14:46:18 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 
@@ -32,14 +26,19 @@ __os_rename(dbenv, old, new, silent)
 {
 	int ret;
 
-	RETRY_CHK((DB_GLOBAL(j_rename) != NULL ?
-	    DB_GLOBAL(j_rename)(old, new) : rename(old, new)), ret);
+	if (DB_GLOBAL(j_rename) != NULL)
+		ret = DB_GLOBAL(j_rename)(old, new);
+	else
+		RETRY_CHK((rename(old, new)), ret);
 
 	/*
 	 * If "silent" is not set, then errors are OK and we should not output
 	 * an error message.
 	 */
-	if (!silent && ret != 0)
-		__db_err(dbenv, "rename %s %s: %s", old, new, strerror(ret));
+	if (ret != 0) {
+		if (!silent)
+			__db_syserr(dbenv, ret, "rename %s %s", old, new);
+		ret = __os_posix_err(ret);
+	}
 	return (ret);
 }

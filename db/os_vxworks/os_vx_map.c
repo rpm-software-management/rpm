@@ -1,21 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1998-2006
+ *	Oracle Corporation.  All rights reserved.
  *
  * This code is derived from software contributed to Sleepycat Software by
  * Frederick G.M. Roeber of Netscape Communications Corp.
  *
- * $Id: os_vx_map.c,v 1.23 2004/01/28 03:36:19 bostic Exp $
+ * $Id: os_vx_map.c,v 12.6 2006/08/24 14:46:20 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <string.h>
-#endif
 
 #include "db_int.h"
 
@@ -59,8 +54,6 @@ static int __os_segdata_release __P((DB_ENV *, REGION *, int));
 /*
  * __os_r_sysattach --
  *	Create/join a shared memory region.
- *
- * PUBLIC: int __os_r_sysattach __P((DB_ENV *, REGINFO *, REGION *));
  */
 int
 __os_r_sysattach(dbenv, infop, rp)
@@ -85,7 +78,7 @@ __os_r_sysattach(dbenv, infop, rp)
 	 */
 	if (!F_ISSET(infop, REGION_CREATE)) {
 		if (ret != 0) {
-			__db_err(dbenv, "segment %s does not exist",
+			__db_errx(dbenv, "segment %s does not exist",
 			    infop->name);
 			ret = EAGAIN;
 		}
@@ -106,12 +99,12 @@ __os_r_sysattach(dbenv, infop, rp)
 		goto out;
 
 	if (dbenv->shm_key == INVALID_REGION_SEGID) {
-		__db_err(dbenv, "no base shared memory ID specified");
+		__db_errx(dbenv, "no base shared memory ID specified");
 		ret = EAGAIN;
 		goto out;
 	}
 	if (ret == 0 && __os_segdata_release(dbenv, rp, 1) != 0) {
-		__db_err(dbenv,
+		__db_errx(dbenv,
 		    "key: %ld: shared memory region already exists",
 		    dbenv->shm_key + (infop->id - 1));
 		ret = EAGAIN;
@@ -127,8 +120,6 @@ out:
 /*
  * __os_r_sysdetach --
  *	Detach from a shared region.
- *
- * PUBLIC: int __os_r_sysdetach __P((DB_ENV *, REGINFO *, int));
  */
 int
 __os_r_sysdetach(dbenv, infop, destroy)
@@ -148,9 +139,6 @@ __os_r_sysdetach(dbenv, infop, destroy)
 /*
  * __os_mapfile --
  *	Map in a shared memory file.
- *
- * PUBLIC: int __os_mapfile __P((DB_ENV *,
- * PUBLIC:    char *, DB_FH *, size_t, int, void **));
  */
 int
 __os_mapfile(dbenv, path, fhp, len, is_rdonly, addrp)
@@ -174,8 +162,6 @@ __os_mapfile(dbenv, path, fhp, len, is_rdonly, addrp)
 /*
  * __os_unmapfile --
  *	Unmap the shared memory file.
- *
- * PUBLIC: int __os_unmapfile __P((DB_ENV *, void *, size_t));
  */
 int
 __os_unmapfile(dbenv, addr, len)
@@ -202,7 +188,7 @@ __os_segdata_init(dbenv)
 	int ret;
 
 	if (__os_segdata != NULL) {
-		__db_err(dbenv, "shared memory segment already exists");
+		__db_errx(dbenv, "shared memory segment already exists");
 		return (EEXIST);
 	}
 
@@ -311,7 +297,7 @@ __os_segdata_new(dbenv, segidp)
 	int i, newsize, ret;
 
 	if (__os_segdata == NULL) {
-		__db_err(dbenv, "shared memory segment not initialized");
+		__db_errx(dbenv, "shared memory segment not initialized");
 		return (EAGAIN);
 	}
 
@@ -344,9 +330,6 @@ __os_segdata_new(dbenv, segidp)
  *	Finds a segment by its name and shm_key.
  *
  * Assumes it is called with the SEGDATA lock taken.
- *
- * PUBLIC: __os_segdata_find_byname
- * PUBLIC:     __P((DB_ENV *, const char *, REGINFO *, REGION *));
  */
 static int
 __os_segdata_find_byname(dbenv, name, infop, rp)
@@ -360,12 +343,12 @@ __os_segdata_find_byname(dbenv, name, infop, rp)
 	int i;
 
 	if (__os_segdata == NULL) {
-		__db_err(dbenv, "shared memory segment not initialized");
+		__db_errx(dbenv, "shared memory segment not initialized");
 		return (EAGAIN);
 	}
 
 	if (name == NULL) {
-		__db_err(dbenv, "no segment name given");
+		__db_errx(dbenv, "no segment name given");
 		return (EAGAIN);
 	}
 
@@ -379,7 +362,7 @@ __os_segdata_find_byname(dbenv, name, infop, rp)
 	else {
 		if (rp->segid >= __os_segdata_size ||
 		    rp->segid == INVALID_REGION_SEGID) {
-			__db_err(dbenv, "Invalid segment id given");
+			__db_errx(dbenv, "Invalid segment id given");
 			return (EAGAIN);
 		}
 		segid = __os_segdata[rp->segid].segid;
@@ -409,12 +392,12 @@ __os_segdata_release(dbenv, rp, is_locked)
 	os_segdata_t *p;
 
 	if (__os_segdata == NULL) {
-		__db_err(dbenv, "shared memory segment not initialized");
+		__db_errx(dbenv, "shared memory segment not initialized");
 		return (EAGAIN);
 	}
 
 	if (rp->segid < 0 || rp->segid >= __os_segdata_size) {
-		__db_err(dbenv, "segment id %ld out of range", rp->segid);
+		__db_errx(dbenv, "segment id %ld out of range", rp->segid);
 		return (EINVAL);
 	}
 

@@ -1,19 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: txn_recover.c,v 1.54 2004/10/15 16:59:44 bostic Exp $
+ * $Id: txn_recover.c,v 12.19 2006/08/24 14:46:53 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/txn.h"
@@ -23,40 +17,6 @@
 #include "dbinc_auto/db_auto.h"
 #include "dbinc_auto/crdel_auto.h"
 #include "dbinc_auto/db_ext.h"
-
-/*
- * __txn_continue
- *	Fill in the fields of the local transaction structure given
- *	the detail transaction structure.
- *
- * XXX
- * I'm not sure that we work correctly with nested txns.
- *
- * PUBLIC: void __txn_continue __P((DB_ENV *, DB_TXN *, TXN_DETAIL *, size_t));
- */
-void
-__txn_continue(env, txnp, td, off)
-	DB_ENV *env;
-	DB_TXN *txnp;
-	TXN_DETAIL *td;
-	size_t off;
-{
-	txnp->mgrp = env->tx_handle;
-	txnp->parent = NULL;
-	txnp->last_lsn = td->last_lsn;
-	txnp->txnid = td->txnid;
-	txnp->off = (roff_t)off;
-
-	txnp->abort = __txn_abort;
-	txnp->commit = __txn_commit;
-	txnp->discard = __txn_discard;
-	txnp->id = __txn_id;
-	txnp->prepare = __txn_prepare;
-
-	txnp->flags = 0;
-	if (F_ISSET(td, TXN_DTL_RESTORED))
-		F_SET(txnp, TXN_RESTORED);
-}
 
 /*
  * __txn_map_gid
@@ -73,23 +33,21 @@ __txn_map_gid(dbenv, gid, tdp, offp)
 	roff_t *offp;
 {
 	DB_TXNMGR *mgr;
-	DB_TXNREGION *tmr;
+	DB_TXNREGION *region;
 
 	mgr = dbenv->tx_handle;
-	tmr = mgr->reginfo.primary;
+	region = mgr->reginfo.primary;
 
 	/*
 	 * Search the internal active transaction table to find the
 	 * matching xid.  If this is a performance hit, then we
 	 * can create a hash table, but I doubt it's worth it.
 	 */
-	R_LOCK(dbenv, &mgr->reginfo);
-	for (*tdp = SH_TAILQ_FIRST(&tmr->active_txn, __txn_detail);
-	    *tdp != NULL;
-	    *tdp = SH_TAILQ_NEXT(*tdp, links, __txn_detail))
+	TXN_SYSTEM_LOCK(dbenv);
+	SH_TAILQ_FOREACH(*tdp, &region->active_txn, links, __txn_detail)
 		if (memcmp(gid, (*tdp)->xid, sizeof((*tdp)->xid)) == 0)
 			break;
-	R_UNLOCK(dbenv, &mgr->reginfo);
+	TXN_SYSTEM_UNLOCK(dbenv);
 
 	if (*tdp == NULL)
 		return (EINVAL);
@@ -112,25 +70,26 @@ __txn_recover_pp(dbenv, preplist, count, retp, flags)
 	long count, *retp;
 	u_int32_t flags;
 {
-	int rep_check, ret;
+	DB_THREAD_INFO *ip;
+	int ret;
 
 	PANIC_CHECK(dbenv);
 	ENV_REQUIRES_CONFIG(
 	    dbenv, dbenv->tx_handle, "txn_recover", DB_INIT_TXN);
 
-	if (F_ISSET((DB_TXNREGION *)
-	    ((DB_TXNMGR *)dbenv->tx_handle)->reginfo.primary,
+	if (F_ISSET((DB_TXNREGION *)dbenv->tx_handle->reginfo.primary,
 	    TXN_IN_RECOVERY)) {
-		__db_err(dbenv, "operation not permitted while in recovery");
+		__db_errx(dbenv, "operation not permitted while in recovery");
 		return (EINVAL);
 	}
 
-	rep_check = IS_ENV_REPLICATED(dbenv) ? 1 : 0;
-	if (rep_check)
-		__env_rep_enter(dbenv);
-	ret = __txn_recover(dbenv, preplist, count, retp, flags);
-	if (rep_check)
-		__env_db_rep_exit(dbenv);
+	if (flags != DB_FIRST && flags != DB_NEXT)
+		return (__db_ferr(dbenv, "DB_ENV->txn_recover", 0));
+
+	ENV_ENTER(dbenv, ip);
+	REPLICATION_WRAP(dbenv,
+	    (__txn_recover(dbenv, preplist, count, retp, flags)), ret);
+	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
@@ -181,7 +140,7 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 	DB_LSN min;
 	DB_PREPLIST *prepp;
 	DB_TXNMGR *mgr;
-	DB_TXNREGION *tmr;
+	DB_TXNREGION *region;
 	TXN_DETAIL *td;
 	XID *xidp;
 	long i;
@@ -204,7 +163,7 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 	 */
 
 	mgr = dbenv->tx_handle;
-	tmr = mgr->reginfo.primary;
+	region = mgr->reginfo.primary;
 
 	/*
 	 * During this pass we need to figure out if we are going to need
@@ -213,15 +172,11 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 	 * and the ones that we are collecting are restored (if they aren't
 	 * restored, then we never crashed; just the main server did).
 	 */
-	R_LOCK(dbenv, &mgr->reginfo);
+	TXN_SYSTEM_LOCK(dbenv);
 	if (flags == DB_FIRST) {
-		for (td = SH_TAILQ_FIRST(&tmr->active_txn, __txn_detail);
-		    td != NULL;
-		    td = SH_TAILQ_NEXT(td, links, __txn_detail)) {
+		SH_TAILQ_FOREACH(td, &region->active_txn, links, __txn_detail) {
 			if (F_ISSET(td, TXN_DTL_RESTORED))
 				nrestores++;
-			if (F_ISSET(td, TXN_DTL_COLLECTED))
-				open_files = 0;
 			F_CLR(td, TXN_DTL_COLLECTED);
 		}
 		mgr->n_discards = 0;
@@ -229,7 +184,7 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 		open_files = 0;
 
 	/* Now begin collecting active transactions. */
-	for (td = SH_TAILQ_FIRST(&tmr->active_txn, __txn_detail);
+	for (td = SH_TAILQ_FIRST(&region->active_txn, __txn_detail);
 	    td != NULL && *retp < count;
 	    td = SH_TAILQ_NEXT(td, links, __txn_detail)) {
 		if (td->status != TXN_PREPARED ||
@@ -252,41 +207,45 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 		if (txns != NULL) {
 			if ((ret = __os_calloc(dbenv,
 			    1, sizeof(DB_TXN), &prepp->txn)) != 0) {
-				R_UNLOCK(dbenv, &mgr->reginfo);
+				TXN_SYSTEM_UNLOCK(dbenv);
 				goto err;
 			}
-			__txn_continue(dbenv,
-			    prepp->txn, td, R_OFFSET(&mgr->reginfo, td));
+			__txn_continue(dbenv, prepp->txn, td);
 			F_SET(prepp->txn, TXN_MALLOC);
 			memcpy(prepp->gid, td->xid, sizeof(td->xid));
 			prepp++;
 		}
 
 		if (!IS_ZERO_LSN(td->begin_lsn) &&
-		    log_compare(&td->begin_lsn, &min) < 0)
+		    LOG_COMPARE(&td->begin_lsn, &min) < 0)
 			min = td->begin_lsn;
 
 		(*retp)++;
 		F_SET(td, TXN_DTL_COLLECTED);
+		if (IS_ENV_REPLICATED(dbenv) &&
+		    (ret = __op_rep_enter(dbenv)) != 0)
+			goto err;
 	}
-	R_UNLOCK(dbenv, &mgr->reginfo);
+	TXN_SYSTEM_UNLOCK(dbenv);
 
 	/*
 	 * Now link all the transactions into the transaction manager's list.
 	 */
 	if (txns != NULL) {
-		MUTEX_THREAD_LOCK(dbenv, mgr->mutexp);
+		MUTEX_LOCK(dbenv, mgr->mutex);
 		for (i = 0; i < *retp; i++)
 			TAILQ_INSERT_TAIL(&mgr->txn_chain, txns[i].txn, links);
-		MUTEX_THREAD_UNLOCK(dbenv, mgr->mutexp);
+		MUTEX_UNLOCK(dbenv, mgr->mutex);
 	}
 
 	if (open_files && nrestores && *retp != 0 && !IS_MAX_LSN(min)) {
-		F_SET((DB_LOG *)dbenv->lg_handle, DBLOG_RECOVER);
+		F_SET(dbenv->lg_handle, DBLOG_RECOVER);
 		ret = __txn_openfiles(dbenv, &min, 0);
-		F_CLR((DB_LOG *)dbenv->lg_handle, DBLOG_RECOVER);
+		F_CLR(dbenv->lg_handle, DBLOG_RECOVER);
 	}
-err:
+	return (0);
+
+err:	TXN_SYSTEM_UNLOCK(dbenv);
 	return (ret);
 }
 
@@ -305,9 +264,9 @@ __txn_openfiles(dbenv, min, force)
 	DBT data;
 	DB_LOGC *logc;
 	DB_LSN open_lsn;
+	DB_TXNHEAD *txninfo;
 	__txn_ckp_args *ckp_args;
 	int ret, t_ret;
-	void *txninfo;
 
 	/*
 	 * Figure out the last checkpoint before the smallest
@@ -322,11 +281,11 @@ __txn_openfiles(dbenv, min, force)
 		while (!IS_ZERO_LSN(open_lsn) && (ret =
 		    __log_c_get(logc, &open_lsn, &data, DB_SET)) == 0 &&
 		    (force ||
-		    (min != NULL && log_compare(min, &open_lsn) < 0))) {
+		    (min != NULL && LOG_COMPARE(min, &open_lsn) < 0))) {
 			/* Format the log record. */
 			if ((ret = __txn_ckp_read(dbenv,
 			    data.data, &ckp_args)) != 0) {
-				__db_err(dbenv,
+				__db_errx(dbenv,
 			    "Invalid checkpoint record at [%lu][%lu]",
 				    (u_long)open_lsn.file,
 				    (u_long)open_lsn.offset);
@@ -359,7 +318,7 @@ __txn_openfiles(dbenv, min, force)
 	 */
 	if ((ret == DB_NOTFOUND || IS_ZERO_LSN(open_lsn)) && (ret =
 	    __log_c_get(logc, &open_lsn, &data, DB_FIRST)) != 0) {
-		__db_err(dbenv, "No log records");
+		__db_errx(dbenv, "No log records");
 		goto err;
 	}
 

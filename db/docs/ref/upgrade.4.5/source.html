@@ -1,0 +1,37 @@
+<!--$Id: source.so,v 1.3 2006/09/13 16:43:03 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.5: Recno backing source files</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.5/config.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/applog.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.5: Recno backing source files</h3>
+<p>In previous releases of Berkeley DB, Recno access method backing source text
+files were opened using the ANSI C fopen function with the "r" and "w"
+modes.  This caused Windows systems to translate carriage-return and
+linefeed characters on input and output and could lead to database
+corruption.</p>
+<p>In the current release, Berkeley DB opens the backing source text files using
+the "rb" and "wb" modes, consequently carriage-return and linefeed
+characters will not be translated on Windows systems.</p>
+<p>Applications using the backing source text file feature on systems where
+the "r/w" and "rb/wb" modes differ should evaluate their application as part
+of upgrading to the 4.5 release.  There is the possibility that
+characters have been translated or stripped and the backing source file
+has been corrupted.  (Applications on other systems, for example,
+POSIX-like systems, should not require any changes related to this
+issue.)</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.5/config.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/applog.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

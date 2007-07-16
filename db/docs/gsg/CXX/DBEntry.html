@@ -131,7 +131,7 @@
 ...
 
 float money = 122.45;
-char *description = "Grocery bill.";
+char *description = &quot;Grocery bill.&quot;;
 
 Dbt key(&amp;money, sizeof(float));
 Dbt data(description, strlen(description)+1); </pre>
@@ -139,9 +139,7 @@ Dbt data(description, strlen(description)+1); </pre>
     Note that in the following example we do not allow DB to assign the
     memory for the retrieval of the money value. The reason why is that some
     systems may require float values to have a specific alignment, and the
-    memory as returned by 
-    
-    <tt class="methodname">Db</tt>
+    memory as returned by DB
     may not be properly aligned (the same problem may exist for structures
     on some systems). We tell DB to use our memory instead of its
     own by specifying the <tt class="literal">DB_DBT_USERMEM</tt> flag. Be aware that

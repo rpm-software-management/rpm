@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information
 #
-# Copyright (c) 2000-2004
-#       Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: logtrack.tcl,v 11.15 2004/04/14 16:08:42 carol Exp $
+# $Id: logtrack.tcl,v 12.4 2006/08/24 14:46:36 bostic Exp $
 #
 # logtrack.tcl:  A collection of routines, formerly implemented in Perl
 # as log.pl, to track which log record types the test suite hits.
@@ -111,6 +111,10 @@ proc logtrack_summary { } {
 	while { [llength [set dbt [$ec get -next]]] != 0 } {
 		set rec [lindex [lindex $dbt 0] 0]
 		if { [$seendb count $rec] == 0 && $one_test == "ALL" } {
+			if { $rec == "__db_pg_prepare" } {
+				puts "WARNING: log record type $rec can be\
+				    seen only on systems without FTRUNCATE."
+			}
 			puts "WARNING: log record type $rec: not tested"
 		}
 	}

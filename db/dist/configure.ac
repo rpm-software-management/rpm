@@ -1,9 +1,10 @@
-# $Id: configure.ac,v 11.221 2004/11/16 01:07:57 mjc Exp $
+# $Id: configure.ac,v 12.46 2006/09/19 00:33:58 bostic Exp $
 # Process this file with autoconf to produce a configure script.
 
 PACKAGE=db
-AC_INIT(Berkeley DB,
-	__EDIT_DB_VERSION__, support@sleepycat.com, db-__EDIT_DB_VERSION__)
+AC_INIT(Berkeley DB, __EDIT_DB_VERSION__,
+	[Oracle Technology Network Berkeley DB forum],
+	db-__EDIT_DB_VERSION__)
 AC_CONFIG_SRCDIR([../db/db.c])
 AC_CONFIG_HEADERS([db_config.h:config.hin])
 
@@ -15,8 +16,11 @@ AC_ARG_PROGRAM()
 AC_MSG_CHECKING(if building in the top-level or dist directories)
 if [ test -d db_archive -o -f configure.ac ] ; then
 	AC_MSG_RESULT(yes)
-	AC_MSG_ERROR(
-    [Berkeley DB should not be built in the top-level or dist directories.])
+	AC_MSG_ERROR([\
+Berkeley DB should not be built in the top-level or "dist" directories. \
+Change directory to the build_unix directory and run ../dist/configure \
+from there.])
+
 fi
 AC_MSG_RESULT(no)
 
@@ -43,6 +47,7 @@ AC_SUBST(INSTALL_TARGET)
 AC_SUBST(JAR)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(LDFLAGS)
+AC_SUBST(LIBCSO_LIBS)
 AC_SUBST(LIBJSO_LIBS)
 AC_SUBST(LIBS)
 AC_SUBST(LIBSO_LIBS)
@@ -64,9 +69,14 @@ AC_SUBST(REPLACEMENT_OBJS)
 AC_SUBST(RPC_CLIENT_OBJS)
 AC_SUBST(RPC_SERVER_H)
 AC_SUBST(SOFLAGS)
+AC_SUBST(SWIGCFLAGS)
 AC_SUBST(TEST_LIBS)
 AC_SUBST(db_int_def)
 AC_SUBST(o)
+
+# The Windows public header has two extra symbols we need to remove.
+AC_SUBST(platform_header)
+AC_SUBST(platform_footer)
 
 # Set the default installation location.
 AC_PREFIX_DEFAULT(/usr/local/BerkeleyDB.__EDIT_DB_VERSION_MAJOR__.__EDIT_DB_VERSION_MINOR__)
@@ -134,15 +144,15 @@ INSTALL_TARGET="library_install"
 # because the makefile CC may be set to use $(LIBTOOL).
 #
 # Don't override anything if it's already set from the environment.
-optimize_def="-O"
+optimize_debug="-O"
 case "$host_os" in
 aix4.3.*|aix5*)
-	optimize_def="-O2"
+	optimize_debug="-O2"
 	CC=${CC-"xlc_r"}
 	CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE"
 	LDFLAGS="$LDFLAGS -Wl,-brtl";;
 bsdi3*)	CC=${CC-"shlicc2"}
-	LIBS="$LIBS -lipc";;
+	LIBSO_LIBS="$LIBSO_LIBS -lipc";;
 cygwin*)
 	CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE -D_REENTRANT";;
 freebsd*)
@@ -151,50 +161,53 @@ freebsd*)
 gnu*|k*bsd*-gnu|linux*)
 	CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE -D_REENTRANT";;
 hpux*)	CPPFLAGS="$CPPFLAGS -D_REENTRANT";;
-irix*)	optimize_def="-O2"
+irix*)	optimize_debug="-O2"
 	CPPFLAGS="$CPPFLAGS -D_SGI_MP_SOURCE";;
 mpeix*)	CPPFLAGS="$CPPFLAGS -D_POSIX_SOURCE -D_SOCKET_SOURCE"
-	LIBS="$LIBS -lsocket -lsvipc";;
+	LIBSO_LIBS="$LIBSO_LIBS -lsocket -lsvipc";;
 osf*)	CPPFLAGS="$CPPFLAGS -pthread";;
 *qnx*)	AC_DEFINE(HAVE_QNX)
 	AH_TEMPLATE(HAVE_QNX, [Define to 1 if building on QNX.]);;
 solaris*)
-	CPPFLAGS="$CPPFLAGS -D_REENTRANT";;
+	CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_POSIX_PTHREAD_SEMANTICS ";;
 esac
 
-# Set CFLAGS/CXXFLAGS.  We MUST set the flags before we call autoconf
-# compiler configuration macros, because if we don't, they set CFLAGS
-# to no optimization and -g, which isn't what we want.
-CFLAGS=${CFLAGS-$optimize_def}
-CXXFLAGS=${CXXFLAGS-"$CFLAGS"}
-
-# If the user wants a debugging environment, add -g to the CFLAGS value.
-#
-# XXX
-# Some compilers can't mix optimizing and debug flags.  The only way to
-# handle this is to specify CFLAGS in the environment before configuring.
+# If the user wants a debugging environment, change any compiler optimization
+# flags to -g.  We used to add -g to the -O compiler flags, but compilers are
+# good enough at code re-organization that debugging with -O no longer works.
+# If you want to compile with a different set of flags, specify CFLAGS in the
+# environment before configuring.
 if test "$db_cv_debug" = "yes"; then
 	AC_DEFINE(DEBUG)
 	AH_TEMPLATE(DEBUG, [Define to 1 if you want a debugging version.])
 
-	CFLAGS="$CFLAGS -g"
-	CXXFLAGS="$CXXFLAGS -g"
-	db_cv_build_type=debug
-else
-	db_cv_build_type=release
+	optimize_debug="-g"
 fi
-AC_SUBST(db_cv_build_type)
+
+# Set CFLAGS/CXXFLAGS.  We MUST set the flags before we call autoconf
+# compiler configuration macros, because if we don't, they set CFLAGS
+# to no optimization and -g, which isn't what we want.
+CFLAGS=${CFLAGS-$optimize_debug}
+CXXFLAGS=${CXXFLAGS-"$CFLAGS"}
 
 # The default compiler is cc (NOT gcc), the default CFLAGS is as specified
 # above, NOT what is set by AC_PROG_CC, as it won't set optimization flags
 # for any compiler other than gcc.
 AC_PROG_CC(cc gcc)
 
-# Set specific per-compiler flags.
+# We know what compiler we're going to use, now.  Set per-compiler flags.
 if test "$GCC" = "yes"; then
-	# We want -O2 if we're using gcc.
+	# Use -O3 if we're using gcc, unless we're doing a small build, in
+	# which case we use -Os alone.  The code size for -O3 is quite a
+	# bit larger than -O2: a compromise is "-Os -finline-functions",
+	# it's smaller and explicitly inlining the functions helps Berkeley
+	# DB.
 	CFLAGS="$CFLAGS "
-	CFLAGS=`echo "$CFLAGS" | sed 's/-O /-O2 /g'`
+	if test "$db_cv_smallbuild" = "yes"; then
+		CFLAGS=`echo "$CFLAGS" | sed 's/-O /-Os /g'`
+	else
+		CFLAGS=`echo "$CFLAGS" | sed 's/-O /-O3 /g'`
+	fi
 else
 	case "$host_os" in
 	hpux11.0*)	;;
@@ -239,7 +252,7 @@ if test "$db_cv_cxx" = "yes"; then
 		case "$host_os" in
 		aix*)		AC_CHECK_TOOL(CCC, xlC_r)
 				LIBXSO_LIBS="-lC_r $LIBXSO_LIBS"
-				LIBS="-lC_r $LIBS";;
+				LIBSO_LIBS="-lC_r $LIBSO_LIBS";;
 		hpux*)		AC_CHECK_TOOL(CCC, aCC);;
 		irix*)		AC_CHECK_TOOL(CCC, CC);;
 		osf*)		AC_CHECK_TOOL(CCC, cxx);;
@@ -330,7 +343,7 @@ case "$host_os" in
     ;;
     *)
         LIBTSO_MODULE="-module"
-        LIBTSO_MODSUFFIX=@MODSUFFIX@
+        LIBTSO_MODSUFFIX=$MODSUFFIX
     ;;
 esac
 
@@ -393,6 +406,14 @@ if test "$db_cv_java" = "yes"; then
 		AC_MSG_ERROR([Java version 1.3 or higher required, got $JAVA_VERSION]) ;;
 	esac
 
+	# Because of the code that SWIG generates to cast between pointers and
+	# integers, we need to add the flag "-fno-strict-aliasing" to the gcc
+	# command line when compiling the JNI code.  This is documented in
+	# [#14953] and at http://www.swig.org/Doc1.3/Java.html
+	if test ${GCC} = "yes"; then
+		SWIGCFLAGS="-fno-strict-aliasing"
+	fi
+
 	for JNI_INCLUDE_DIR in $JNI_INCLUDE_DIRS
 	do
 		CPPFLAGS="$CPPFLAGS -I$JNI_INCLUDE_DIR"
@@ -406,7 +427,7 @@ fi
 
 # MinGW support.
 if test "$db_cv_mingw" = "yes"; then
-	OSDIR=os_win32
+	OSDIR=os_windows
 	PATH_SEPARATOR="\\\\/:"
 
 	AC_DEFINE(DB_WIN32)
@@ -433,58 +454,84 @@ if test "$db_cv_exit_defines" = "yes"; then
     [Define to 1 if you have EXIT_SUCCESS/EXIT_FAILURE #defines.])
 fi
 
+# Check for mutexes.
+# We do this first because it changes $LIBSO_LIBS.
+AM_DEFINE_MUTEXES
+
 # Test for various functions/libraries -- do tests that change library values
 # first.
 #
-# The Berkeley DB library calls fdatasync, and it's only available in -lrt on
-# Solaris.  See if we can find it either without additional libraries or in
-# -lrt.  If fdatasync is found in -lrt, add -lrt to the Java and Tcl shared
-# library link lines.
+# The yield function on Solaris is almost certainly pthread_yield (LWP threads
+# or POSIX pthreads), or thr_yield (UI threads).  There's an outside chance it
+# is sched_yield() though, only available in -lrt on Solaris.
+#
+# The Berkeley DB library calls fdatasync, only available in -lrt on Solaris.
+# See if we can find either without additional libraries or in -lrt.  If found
+# in -lrt and we haven't yet added -lrt,  add it to the shared library list.
 AC_SEARCH_LIBS(fdatasync, rt, [dnl
     if test "$ac_cv_search_fdatasync" != "none required" ; then
-        LIBJSO_LIBS="$LIBJSO_LIBS -lrt";
-        LIBSO_LIBS="$LIBSO_LIBS -lrt";
-        LIBTSO_LIBS="$LIBTSO_LIBS -lrt";
-    fi])
-
-# The test and example programs use the sched_yield function, taken from -lrt
-# on Solaris.
-AC_SEARCH_LIBS(sched_yield, rt)
-
-# !!!
-# We can't check for pthreads in the same way we did the test for sched_yield
-# because the Solaris C library includes pthread interfaces which are not
-# inter-process safe.  For that reason we always add -lpthread if we find a
-# pthread library.
-#
-# We can't depend on any specific call existing (pthread_create, for example),
-# as it may be #defined in an include file -- OSF/1 (Tru64) has this problem.
-AC_HAVE_LIBRARY(pthread, TEST_LIBS="$TEST_LIBS -lpthread")
+	LIBSO_LIBS="$LIBSO_LIBS -lrt";
+    fi], [dnl
+    AC_SEARCH_LIBS(sched_yield, rt, [dnl
+    if test "$ac_cv_search_sched_yield" != "none required" ; then
+	LIBSO_LIBS="$LIBSO_LIBS -lrt";
+    fi])])
 
 # !!!
 # We could be more exact about whether these libraries are needed, but don't
 # bother -- if they exist, we load them, it's only the test programs anyway.
 AC_HAVE_LIBRARY(m, TEST_LIBS="$TEST_LIBS -lm")
-AC_HAVE_LIBRARY(socket, TEST_LIBS="$TEST_LIBS -lsocket")
 AC_HAVE_LIBRARY(nsl, TEST_LIBS="$TEST_LIBS -lnsl")
+AC_HAVE_LIBRARY(pthread, TEST_LIBS="$TEST_LIBS -lpthread")
+AC_HAVE_LIBRARY(socket, TEST_LIBS="$TEST_LIBS -lsocket")
 
-# Check for mutexes.
-# We do this here because it changes $LIBS.
-AM_DEFINE_MUTEXES
+# Update LIBS so that the rest of our tests are run with the libraries we'll
+# load against.
+LIBS="$LIBSO_LIBS"
 
 # Checks for system functions for which we have replacements.
 #
-# XXX
 # The only portable getcwd call is getcwd(char *, size_t), where the
 # buffer is non-NULL -- Solaris can't handle a NULL buffer, and they
 # deleted getwd().
-AC_REPLACE_FUNCS(getcwd getopt memcmp memcpy memmove raise)
-AC_REPLACE_FUNCS(strcasecmp strdup strerror strtol strtoul)
+AC_REPLACE_FUNCS(\
+	abort atoi atol getcwd getenv getopt isalpha isdigit isprint isspace\
+	memcmp memcpy memmove printf raise rand strcasecmp strcat strchr\
+	strdup strerror strncat strncmp strrchr strsep strtol strtoul)
 
 # Check for system functions we optionally use.
-AC_CHECK_FUNCS(_fstati64 clock_gettime directio fdatasync ftruncate getrusage)
-AC_CHECK_FUNCS(gettimeofday getuid pstat_getdynamic rand sched_yield)
-AC_CHECK_FUNCS(select snprintf srand sysconf vsnprintf yield)
+AC_CHECK_FUNCS(\
+   _fstati64 clock_gettime directio fchmod fcntl fdatasync getaddrinfo\
+   getrusage gettimeofday getuid mprotect pstat_getdynamic pthread_yield\
+   sched_yield select sigaction snprintf stat strftime sysconf vsnprintf\
+   yield)
+
+# Replication can't run correctly if ftruncate isn't available.
+AC_CHECK_FUNCS(ftruncate)
+if test \
+    "$db_cv_build_replication" = "yes" -a "$ac_cv_func_ftruncate" = "no"; then
+	db_cv_build_replication=no
+	AC_MSG_WARN([replication requires ftruncate, replication disabled.])
+fi
+
+# ctime_r --
+#
+# There are two versions of ctime_r, one of which takes a buffer length as a
+# third argument, and one which only takes two arguments.  (There is also a
+# difference in return values, but we handle that in the code itself.)
+AC_CHECK_FUNCS(ctime_r)
+if test "$ac_cv_func_ctime_r" = "yes"; then
+AC_CACHE_CHECK([for 2 or 3 argument version of ctime_r], db_cv_ctime_r_3arg, [
+AC_TRY_LINK([
+#include <time.h>], [
+	ctime_r(NULL, NULL, 100);
+],  [db_cv_ctime_r_3arg="3-argument"], [db_cv_ctime_r_3arg="2-argument"])])
+fi
+if test "$db_cv_ctime_r_3arg" = "3-argument"; then
+	AC_DEFINE(HAVE_CTIME_R_3ARG)
+	AH_TEMPLATE(HAVE_CTIME_R_3ARG,
+	    [Define to 1 if ctime_r takes a buffer length as a third argument.])
+fi
 
 # Pread/pwrite.
 # HP-UX has pread/pwrite, but it doesn't work with largefile support.
@@ -640,6 +687,10 @@ if test "$db_cv_build_replication" = "yes"; then
 	AH_TEMPLATE(HAVE_REPLICATION,
 	    [Define to 1 if building replication support.])
 	ADDITIONAL_OBJS="$ADDITIONAL_OBJS \$(REP_OBJS)"
+
+	if test "$db_cv_build_replication_mgr" = "yes"; then
+		ADDITIONAL_OBJS="$ADDITIONAL_OBJS \$(REPMGR_OBJS)"
+	fi
 else
 	ADDITIONAL_OBJS="$ADDITIONAL_OBJS rep_stub${o}"
 fi
@@ -672,6 +723,12 @@ else
 	CRYPTO_OBJS="crypto_stub${o}"
 fi
 
+# If DIAGNOSTIC is defined, include the log print routines in the library
+# itself, various diagnostic modes use them.
+if test "$db_cv_diagnostic" = "yes"; then
+	ADDITIONAL_OBJS="$ADDITIONAL_OBJS \$(PRINT_OBJS)"
+fi
+
 # We need to add the additional object files into the Makefile with the correct
 # suffix.  We can't use $LTLIBOBJS itself, because that variable has $U encoded
 # in it for automake, and that's not what we want.  See SR #7227 for additional
@@ -693,6 +750,7 @@ AC_SUBST(LTLIBOBJS)
 CREATE_LIST="Makefile
     db_cxx.h:$srcdir/../dbinc/db_cxx.in
     db_int.h:$srcdir/../dbinc/db_int.in
+    clib_port.h:$srcdir/../dist/clib_port.h
     include.tcl:$srcdir/../test/include.tcl"
 
 # MinGW needs win_db.h.

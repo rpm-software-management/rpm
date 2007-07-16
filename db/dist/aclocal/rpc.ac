@@ -1,4 +1,4 @@
-# $Id: rpc.ac,v 11.9 2004/09/27 21:33:48 mjc Exp $
+# $Id: rpc.ac,v 12.1 2006/05/08 20:52:36 bostic Exp $
 
 # Try and configure RPC support.
 AC_DEFUN(AM_RPC_CONFIGURE, [
@@ -71,13 +71,7 @@ AC_DEFUN(AM_RPC_CONFIGURE, [
 	RPC_CLIENT_OBJS="\$(RPC_CLIENT_OBJS)"
 	ADDITIONAL_PROGS="berkeley_db_svc $ADDITIONAL_PROGS"
 
-	case "$host_os" in
-	hpux*)
-		AC_CHECK_FUNC(svc_run,,
-		    AC_CHECK_LIB(nsl, svc_run,
-		    LIBS="-lnsl $LIBS"; LIBTSO_LIBS="-lnsl $LIBTSO_LIBS";
-		    LIBJSO_LIBS="-lnsl $LIBJSO_LIBS"));;
-	solaris*)
-		AC_CHECK_FUNC(svc_run,, AC_CHECK_LIB(nsl, svc_run));;
-	esac
+	# Solaris and HPUX need the nsl library to build RPC.
+	AC_CHECK_FUNC(svc_run,,
+	    AC_HAVE_LIBRARY(nsl, LIBSO_LIBS="$LIBSO_LIBS -lnsl"))
 ])

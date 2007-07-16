@@ -327,7 +327,7 @@
 ...
 
 Db db(NULL, 0);
-const char *file_name = "myd.db";
+const char *file_name = &quot;myd.db&quot;;
 
 try {
     // Configure the database for sorted duplicates
@@ -341,9 +341,9 @@ try {
             DB_CREATE,  // Open flags
             0);         // File mode. Using defaults
 } catch(DbException &amp;e) {
-    db.err(e.get_errno(), "Database '%s' open failed.", file_name);
+    db.err(e.get_errno(), &quot;Database '%s' open failed.&quot;, file_name);
 } catch(std::exception &amp;e) {
-    db.errx("Error opening database: %s : %s\n", file_name, e.what());
+    db.errx(&quot;Error opening database: %s : %s\n&quot;, file_name, e.what());
 } 
 
 ...
@@ -351,9 +351,9 @@ try {
 try {
     db.close(0);
 } catch(DbException &amp;e) {
-    db.err(e.get_errno(), "Database '%s' close failed.", file_name);
+    db.err(e.get_errno(), &quot;Database '%s' close failed.&quot;, file_name);
 } catch(std::exception &amp;e) {
-    db.errx("Error closing database: %s : %s\n", file_name, e.what());
+    db.errx(&quot;Error closing database: %s : %s\n&quot;, file_name, e.what());
 } 
 
 </pre>
@@ -402,7 +402,7 @@ try {
                     do not sort well when viewed as byte strings. There are
                     several solutions to this problem, one being to provide a
                     custom comparison function. See
-                    <a href="http://www.sleepycat.com/docs/ref/am_misc/faq.html" target="_top">http://www.sleepycat.com/docs/ref/am_misc/faq.html</a> 
+                    <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/ref/am_misc/faq.html" target="_top">http://www.oracle.com/technology/documentation/berkeley-db/db/ref/am_misc/faq.html</a> 
                     for more information.
                 </p>
             </li>

@@ -1,11 +1,10 @@
-/*
- *  -
- *  See the file LICENSE for redistribution information.
+/*-
+ * See the file LICENSE for redistribution information.
  *
- *  Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- *  $Id: MemoryException.java,v 1.1 2004/04/06 20:43:40 mjc Exp $
+ * $Id: MemoryException.java,v 12.4 2006/08/24 14:46:08 bostic Exp $
  */
 package com.sleepycat.db;
 
@@ -15,7 +14,7 @@ public class MemoryException extends DatabaseException {
     private DatabaseEntry dbt = null;
     private String message;
 
-    protected MemoryException(final String s,
+    /* package */ MemoryException(final String s,
                               final DatabaseEntry dbt,
                               final int errno,
                               final DbEnv dbenv) {

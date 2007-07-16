@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sdb012.tcl,v 1.6 2004/01/28 03:36:29 bostic Exp $
+# $Id: sdb012.tcl,v 12.5 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	sdb012
 # TEST	Test subdbs with locking and transactions
@@ -50,6 +50,9 @@ proc sdb012 { method args } {
 	# aborted or committed.  It is not used and has no meaning
 	# in the removal case.  'auto' means use the -auto_commit flag
 	# to the operation, and 'abort' and 'commit' do the obvious.
+	# "-auto" is applied only to the creation of the subdbs, since
+	# it is done by default on database removes in transactional
+	# environments.
 	#
 	# First test locking w/o txns.  If any in tlist are 'none',
 	# all must be none.
@@ -67,9 +70,14 @@ proc sdb012 { method args } {
 				}
 			}
 			set tlet [lindex $testlet $count]
-			foreach r1 { none abort auto commit } {
-				foreach r2 { none abort auto commit } {
+			foreach r1 { none abort commit } {
+				foreach r2 { none abort commit } {
 					set tlist [list $t1 $t2 $r1 $r2]
+					set nnone [llength \
+					    [lsearch -all $tlist none]]
+					if { $nnone != 0 && $nnone != 4 } {
+						continue
+					}
 					sdb012_body $testdir $omethod $largs \
 					    $encargs $sdb$tlet $tlist
 				}
@@ -382,10 +390,9 @@ proc sdb012_body { testdir omethod largs encargs msg tlist } {
 	set r [eval $rop1]
 	error_check_good rop1 $r 0
 
-
 	# Verify removal of subdb2.  All DB handles are closed now.
 	# So we have two scenarios:
-	# 	1.  The removal of subdb2 above was successful and subdb2
+	#	1.  The removal of subdb2 above was successful and subdb2
 	#	    doesn't exist and we should fail that way.
 	#	2.  The removal of subdb2 above was aborted, and this
 	#	    removal should succeed.
@@ -401,7 +408,7 @@ proc sdb012_body { testdir omethod largs encargs msg tlist } {
 
 	# Verify removal of subdb1.  All DB handles are closed now.
 	# So we have two scenarios:
-	# 	1.  The removal of subdb1 above was successful and subdb1
+	#	1.  The removal of subdb1 above was successful and subdb1
 	#	    doesn't exist and we should fail that way.
 	#	2.  The removal of subdb1 above was aborted, and this
 	#	    removal should succeed.

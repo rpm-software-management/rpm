@@ -1,5 +1,5 @@
 <!--$Id: env_set_lk_max_locks.so,v 10.23 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -36,10 +36,10 @@ allocate for various lock-table data structures.  The default value is
 1000 locks. For specific information on configuring the size of the lock
 subsystem, see <a href="../ref/lock/max.html">Configuring locking:
 sizing the system</a>.</p>
-<p>The database environment's maximum number of locks may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_lk_max_locks", one or more whitespace characters,
-and the number of locks.
+<p>The database environment's maximum number of locks may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_lk_max_locks", one or more whitespace
+characters, and the number of locks.
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
 before that time.</p>
@@ -95,6 +95,6 @@ maximum number of locks in <b>lk_maxp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

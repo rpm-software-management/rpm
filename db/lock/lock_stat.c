@@ -1,33 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: lock_stat.c,v 11.64 2004/10/15 16:59:42 bostic Exp $
+ * $Id: lock_stat.c,v 12.17 2006/08/24 14:46:11 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <string.h>
-#if TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#endif
-
-#include <ctype.h>
-#endif
-
 #include "db_int.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/db_page.h"
 #include "dbinc/lock.h"
 #include "dbinc/log.h"
@@ -54,7 +36,8 @@ __lock_stat_pp(dbenv, statp, flags)
 	DB_LOCK_STAT **statp;
 	u_int32_t flags;
 {
-	int rep_check, ret;
+	DB_THREAD_INFO *ip;
+	int ret;
 
 	PANIC_CHECK(dbenv);
 	ENV_REQUIRES_CONFIG(dbenv,
@@ -64,12 +47,9 @@ __lock_stat_pp(dbenv, statp, flags)
 	    "DB_ENV->lock_stat", flags, DB_STAT_CLEAR)) != 0)
 		return (ret);
 
-	rep_check = IS_ENV_REPLICATED(dbenv) ? 1 : 0;
-	if (rep_check)
-		__env_rep_enter(dbenv);
-	ret = __lock_stat(dbenv, statp, flags);
-	if (rep_check)
-		__env_db_rep_exit(dbenv);
+	ENV_ENTER(dbenv, ip);
+	REPLICATION_WRAP(dbenv, (__lock_stat(dbenv, statp, flags)), ret);
+	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
@@ -95,20 +75,20 @@ __lock_stat(dbenv, statp, flags)
 		return (ret);
 
 	/* Copy out the global statistics. */
-	R_LOCK(dbenv, &lt->reginfo);
+	LOCK_SYSTEM_LOCK(dbenv);
 
 	region = lt->reginfo.primary;
 	memcpy(stats, &region->stat, sizeof(*stats));
 	stats->st_locktimeout = region->lk_timeout;
 	stats->st_txntimeout = region->tx_timeout;
 
-	stats->st_region_wait = lt->reginfo.rp->mutex.mutex_set_wait;
-	stats->st_region_nowait = lt->reginfo.rp->mutex.mutex_set_nowait;
+	__mutex_set_wait_info(dbenv, region->mtx_region,
+	    &stats->st_region_wait, &stats->st_region_nowait);
 	stats->st_regsize = lt->reginfo.rp->size;
 	if (LF_ISSET(DB_STAT_CLEAR)) {
 		tmp = region->stat;
 		memset(&region->stat, 0, sizeof(region->stat));
-		MUTEX_CLEAR(&lt->reginfo.rp->mutex);
+		__mutex_clear(dbenv, region->mtx_region);
 
 		region->stat.st_id = tmp.st_id;
 		region->stat.st_cur_maxid = tmp.st_cur_maxid;
@@ -124,7 +104,7 @@ __lock_stat(dbenv, statp, flags)
 		region->stat.st_nmodes = tmp.st_nmodes;
 	}
 
-	R_UNLOCK(dbenv, &lt->reginfo);
+	LOCK_SYSTEM_UNLOCK(dbenv);
 
 	*statp = stats;
 	return (0);
@@ -141,7 +121,8 @@ __lock_stat_print_pp(dbenv, flags)
 	DB_ENV *dbenv;
 	u_int32_t flags;
 {
-	int rep_check, ret;
+	DB_THREAD_INFO *ip;
+	int ret;
 
 	PANIC_CHECK(dbenv);
 	ENV_REQUIRES_CONFIG(dbenv,
@@ -154,12 +135,9 @@ __lock_stat_print_pp(dbenv, flags)
 	    flags, DB_STAT_CLEAR | DB_STAT_LOCK_FLAGS)) != 0)
 		return (ret);
 
-	rep_check = IS_ENV_REPLICATED(dbenv) ? 1 : 0;
-	if (rep_check)
-		__env_rep_enter(dbenv);
-	ret = __lock_stat_print(dbenv, flags);
-	if (rep_check)
-		__env_db_rep_exit(dbenv);
+	ENV_ENTER(dbenv, ip);
+	REPLICATION_WRAP(dbenv, (__lock_stat_print(dbenv, flags)), ret);
+	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
@@ -235,11 +213,15 @@ __lock_print_stats(dbenv, flags)
 	__db_dl(dbenv,
 	    "Total number of locks released", (u_long)sp->st_nreleases);
 	__db_dl(dbenv,
-  "Total number of lock requests failing because DB_LOCK_NOWAIT was set",
-	    (u_long)sp->st_nnowaits);
+	    "Total number of locks upgraded", (u_long)sp->st_nupgrade);
 	__db_dl(dbenv,
-  "Total number of locks not immediately available due to conflicts",
-	    (u_long)sp->st_nconflicts);
+	    "Total number of locks downgraded", (u_long)sp->st_ndowngrade);
+	__db_dl(dbenv,
+	  "Lock requests not available due to conflicts, for which we waited",
+	    (u_long)sp->st_lock_wait);
+	__db_dl(dbenv,
+  "Lock requests not available due to conflicts, for which we did not wait",
+	    (u_long)sp->st_lock_nowait);
 	__db_dl(dbenv, "Number of deadlocks", (u_long)sp->st_ndeadlocks);
 	__db_dl(dbenv, "Lock timeout value", (u_long)sp->st_locktimeout);
 	__db_dl(dbenv, "Number of locks that have timed out",
@@ -277,31 +259,38 @@ __lock_print_all(dbenv, flags)
 	DB_MSGBUF mb;
 	int i, j;
 	u_int32_t k;
-	char buf[64];
 
 	lt = dbenv->lk_handle;
 	lrp = lt->reginfo.primary;
 	DB_MSGBUF_INIT(&mb);
 
-	LOCKREGION(dbenv, lt);
+	LOCK_SYSTEM_LOCK(dbenv);
 
 	__db_print_reginfo(dbenv, &lt->reginfo, "Lock");
 
 	if (LF_ISSET(DB_STAT_ALL | DB_STAT_LOCK_PARAMS)) {
 		__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 		__db_msg(dbenv, "Lock region parameters:");
+		__mutex_print_debug_single(dbenv,
+		    "Lock region region mutex", lrp->mtx_region, flags);
 		STAT_ULONG("locker table size", lrp->locker_t_size);
 		STAT_ULONG("object table size", lrp->object_t_size);
 		STAT_ULONG("obj_off", lrp->obj_off);
-		STAT_ULONG("osynch_off", lrp->osynch_off);
 		STAT_ULONG("locker_off", lrp->locker_off);
-		STAT_ULONG("lsynch_off", lrp->lsynch_off);
 		STAT_ULONG("need_dd", lrp->need_dd);
-		if (LOCK_TIME_ISVALID(&lrp->next_timeout) &&
-		    strftime(buf, sizeof(buf), "%m-%d-%H:%M:%S",
-		    localtime((time_t*)&lrp->next_timeout.tv_sec)) != 0)
-			__db_msg(dbenv, "next_timeout: %s.%lu",
-			     buf, (u_long)lrp->next_timeout.tv_usec);
+		if (LOCK_TIME_ISVALID(&lrp->next_timeout)) {
+#ifdef HAVE_STRFTIME
+			time_t t = (time_t)lrp->next_timeout.tv_sec;
+			char tbuf[64];
+			if (strftime(tbuf, sizeof(tbuf),
+			    "%m-%d-%H:%M:%S", localtime(&t)) != 0)
+				__db_msg(dbenv, "next_timeout: %s.%lu",
+				     tbuf, (u_long)lrp->next_timeout.tv_usec);
+			else
+#endif
+				__db_msg(dbenv, "next_timeout: %lu",
+				     (u_long)lrp->next_timeout.tv_usec);
+		}
 	}
 
 	if (LF_ISSET(DB_STAT_ALL | DB_STAT_LOCK_CONF)) {
@@ -320,28 +309,23 @@ __lock_print_all(dbenv, flags)
 		__db_msg(dbenv, "Locks grouped by lockers:");
 		__lock_print_header(dbenv);
 		for (k = 0; k < lrp->locker_t_size; k++)
-			for (lip =
-			    SH_TAILQ_FIRST(&lt->locker_tab[k], __db_locker);
-			    lip != NULL;
-			    lip = SH_TAILQ_NEXT(lip, links, __db_locker)) {
+			SH_TAILQ_FOREACH(
+			    lip, &lt->locker_tab[k], links, __db_locker)
 				__lock_dump_locker(dbenv, &mb, lt, lip);
-			}
 	}
 
 	if (LF_ISSET(DB_STAT_ALL | DB_STAT_LOCK_OBJECTS)) {
 		__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 		__db_msg(dbenv, "Locks grouped by object:");
 		__lock_print_header(dbenv);
-		for (k = 0; k < lrp->object_t_size; k++) {
-			for (op = SH_TAILQ_FIRST(&lt->obj_tab[k], __db_lockobj);
-			    op != NULL;
-			    op = SH_TAILQ_NEXT(op, links, __db_lockobj)) {
+		for (k = 0; k < lrp->object_t_size; k++)
+			SH_TAILQ_FOREACH(
+			    op, &lt->obj_tab[k], links, __db_lockobj) {
 				__lock_dump_object(lt, &mb, op);
 				__db_msg(dbenv, "%s", "");
 			}
-		}
 	}
-	UNLOCKREGION(dbenv, lt);
+	LOCK_SYSTEM_UNLOCK(dbenv);
 
 	return (0);
 }
@@ -354,34 +338,45 @@ __lock_dump_locker(dbenv, mbp, lt, lip)
 	DB_LOCKER *lip;
 {
 	struct __db_lock *lp;
-	time_t s;
-	char buf[64];
+	char buf[DB_THREADID_STRLEN];
 
 	__db_msgadd(dbenv,
-	    mbp, "%8lx dd=%2ld locks held %-4d write locks %-4d",
-	    (u_long)lip->id, (long)lip->dd_id, lip->nlocks, lip->nwrites);
+	    mbp, "%8lx dd=%2ld locks held %-4d write locks %-4d pid/thread %s",
+	    (u_long)lip->id, (long)lip->dd_id, lip->nlocks, lip->nwrites,
+	    dbenv->thread_id_string(dbenv, lip->pid, lip->tid, buf));
 	__db_msgadd(
 	    dbenv, mbp, "%s", F_ISSET(lip, DB_LOCKER_DELETED) ? "(D)" : "   ");
 	if (LOCK_TIME_ISVALID(&lip->tx_expire)) {
-		s = (time_t)lip->tx_expire.tv_sec;
-		if (strftime(buf,
-		    sizeof(buf), "%m-%d-%H:%M:%S", localtime(&s)) != 0)
+#ifdef HAVE_STRFTIME
+		time_t t = (time_t)lip->tx_expire.tv_sec;
+		char tbuf[64];
+		if (strftime(tbuf, sizeof(tbuf),
+		    "%m-%d-%H:%M:%S", localtime(&t)) != 0)
 			__db_msgadd(dbenv, mbp, "expires %s.%lu",
-			    buf, (u_long)lip->tx_expire.tv_usec);
+			    tbuf, (u_long)lip->tx_expire.tv_usec);
+		else
+#endif
+			__db_msgadd(dbenv, mbp, "expires %lu",
+			    (u_long)lip->tx_expire.tv_usec);
 	}
 	if (F_ISSET(lip, DB_LOCKER_TIMEOUT))
 		__db_msgadd(dbenv, mbp, " lk timeout %u", lip->lk_timeout);
 	if (LOCK_TIME_ISVALID(&lip->lk_expire)) {
-		s = (time_t)lip->lk_expire.tv_sec;
-		if (strftime(buf,
-		    sizeof(buf), "%m-%d-%H:%M:%S", localtime(&s)) != 0)
+#ifdef HAVE_STRFTIME
+		time_t t = (time_t)lip->lk_expire.tv_sec;
+		char tbuf[64];
+		if (strftime(tbuf,
+		    sizeof(tbuf), "%m-%d-%H:%M:%S", localtime(&t)) != 0)
 			__db_msgadd(dbenv, mbp, " lk expires %s.%lu",
-			    buf, (u_long)lip->lk_expire.tv_usec);
+			    tbuf, (u_long)lip->lk_expire.tv_usec);
+		else
+#endif
+			__db_msgadd(dbenv, mbp, " lk expires %lu",
+			    (u_long)lip->lk_expire.tv_usec);
 	}
 	DB_MSGBUF_FLUSH(dbenv, mbp);
 
-	for (lp = SH_LIST_FIRST(&lip->heldby, __db_lock);
-	    lp != NULL; lp = SH_LIST_NEXT(lp, locker_links, __db_lock))
+	SH_LIST_FOREACH(lp, &lip->heldby, locker_links, __db_lock)
 		__lock_printlock(lt, mbp, lp, 1);
 }
 
@@ -393,15 +388,9 @@ __lock_dump_object(lt, mbp, op)
 {
 	struct __db_lock *lp;
 
-	for (lp =
-	    SH_TAILQ_FIRST(&op->holders, __db_lock);
-	    lp != NULL;
-	    lp = SH_TAILQ_NEXT(lp, links, __db_lock))
+	SH_TAILQ_FOREACH(lp, &op->holders, links, __db_lock)
 		__lock_printlock(lt, mbp, lp, 1);
-	for (lp =
-	    SH_TAILQ_FIRST(&op->waiters, __db_lock);
-	    lp != NULL;
-	    lp = SH_TAILQ_NEXT(lp, links, __db_lock))
+	SH_TAILQ_FOREACH(lp, &op->waiters, links, __db_lock)
 		__lock_printlock(lt, mbp, lp, 1);
 }
 
@@ -447,9 +436,6 @@ __lock_printlock(lt, mbp, lp, ispgno)
 	}
 
 	switch (lp->mode) {
-	case DB_LOCK_DIRTY:
-		mode = "DIRTY_READ";
-		break;
 	case DB_LOCK_IREAD:
 		mode = "IREAD";
 		break;
@@ -464,6 +450,9 @@ __lock_printlock(lt, mbp, lp, ispgno)
 		break;
 	case DB_LOCK_READ:
 		mode = "READ";
+		break;
+	case DB_LOCK_READ_UNCOMMITTED:
+		mode = "READ_UNCOMMITTED";
 		break;
 	case DB_LOCK_WRITE:
 		mode = "WRITE";
@@ -490,9 +479,6 @@ __lock_printlock(lt, mbp, lp, ispgno)
 		break;
 	case DB_LSTAT_HELD:
 		status = "HELD";
-		break;
-	case DB_LSTAT_NOTEXIST:
-		status = "NOTEXIST";
 		break;
 	case DB_LSTAT_PENDING:
 		status = "PENDING";

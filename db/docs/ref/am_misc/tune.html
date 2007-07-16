@@ -1,5 +1,5 @@
-<!--$Id: tune.so,v 10.9 2004/08/13 03:38:58 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: tune.so,v 10.10 2006/08/25 23:25:17 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -102,12 +102,12 @@ sleep wastes CPU and decreases the overall throughput of the system.</p>
 other references to that memory in every other CPU on the system.  Many
 modern snoopy cache architectures have slow shoot down characteristics.</p>
 <p>Fourth, schedulers don't care what application-specific mutexes a thread
-of control might hold when de-schedule a thread.  If a thread of control
-is descheduled while holding a shared data structure mutex, other threads
-of control will be blocked until the scheduler decides to run the blocking
-thread of control again.  The more threads of control that are running,
-the smaller their quanta of CPU time, and the more likely they will be
-descheduled while holding a Berkeley DB mutex.</p>
+of control might hold when de-scheduling a thread.  If a thread of
+control is descheduled while holding a shared data structure mutex,
+other threads of control will be blocked until the scheduler decides to
+run the blocking thread of control again.  The more threads of control
+that are running, the smaller their quanta of CPU time, and the more
+likely they will be descheduled while holding a Berkeley DB mutex.</p>
 <p>The results of adding new threads of control to an application, on the
 application's throughput, is application and hardware specific and
 almost entirely dependent on the application's data access pattern and
@@ -117,6 +117,6 @@ of control to to some small multiple of the number of CPUs is usually
 the right choice to make.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/diskspace.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

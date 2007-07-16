@@ -1,5 +1,5 @@
-<!--$Id: elect.so,v 1.20 2004/08/13 03:39:00 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: elect.so,v 1.23 2006/07/14 23:04:42 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -11,21 +11,22 @@
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/trans.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/mastersync.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Elections</h3>
-<p>It is the responsibility of the application to initiate elections.  It
-is never dangerous to hold an election, as the Berkeley DB election process
-ensures there is never more than a single master database environment.
-Clients should initiate an election whenever they lose contact with the
-master environment, whenever they see a return of
-<a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a> from the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method, or when, for
-whatever reason, they do not know who the master is.  It is not
-necessary for applications to immediately hold elections when they
-start, as any existing master will be discovered after calling
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.  If no master has been found after a short wait
-period, then the application should call for an election.</p>
+<p>When using the Base replication API, it is the responsibility of the
+application to initiate elections if desired.  It is never dangerous
+to hold an election, as the Berkeley DB election process ensures there is
+never more than a single master database environment.  Clients should
+initiate an election whenever they lose contact with the master
+environment, whenever they see a return of <a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a>
+from the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method, or when, for whatever reason, they do
+not know who the master is.  It is not necessary for applications to
+immediately hold elections when they start, as any existing master
+will be discovered after calling <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.  If no master has
+been found after a short wait period, then the application should call
+for an election.</p>
 <p>For a client to win an election, the replication group must currently
 have no master, and the client must have the most recent log records.
 In the case of clients having equivalent log records, the priority of
@@ -35,9 +36,9 @@ group members that must participate in an election for a winner to be
 declared.  We recommend at least ((N/2) + 1) members.  If fewer than the
 simple majority are specified, a warning will be given.</p>
 <p>If an application's policy for what site should win an election can be
-parameterized in terms the database environment's information (that is,
-the number of sites, available log records and a relative priority are
-all that matter), then Berkeley DB can handle all elections transparently.
+parameterized in terms of the database environment's information (that
+is, the number of sites, available log records and a relative priority
+are all that matter), then Berkeley DB can handle all elections transparently.
 However, there are cases where the application has more complete
 knowledge and needs to affect the outcome of elections.  For example,
 applications may choose to handle master selection, explicitly
@@ -107,8 +108,11 @@ and reconfigure itself as a client using the <a href="../../api_c/rep_start.html
 <li>Then, the current or preferred master should call for an election using
 the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/trans.html"><img src="../../images/next.gif" alt="Next"></a>
+<p>Replication Manager automatically conducts elections when necessary,
+based on configuration information supplied to the
+<a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a> method and the <a href="../../api_c/rep_nsites.html">DB_ENV-&gt;rep_set_nsites</a> method.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/mastersync.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

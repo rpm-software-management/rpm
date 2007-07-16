@@ -1,5 +1,5 @@
-<!--$Id: db_verify.so,v 10.29 2004/08/13 03:38:56 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_verify.so,v 10.30 2005/03/08 16:29:34 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -64,9 +64,10 @@ to be verified are found.
 the following value:
 <dl compact>
 <dt><a name="DB_SALVAGE">DB_SALVAGE</a><dd>Write the key/data pairs from all databases in the file to the file
-stream named in the <b>outfile</b> parameter.  The output format is the
-same as that specified for the <a href="../utility/db_dump.html">db_dump</a> utility, and can be used
-as input for the <a href="../utility/db_load.html">db_load</a> utility.
+stream named in the <b>outfile</b> parameter.  Key values are written
+for Btree, Hash and Queue databases, but not for Recno databases.
+<p>The output format is the same as that specified for the <a href="../utility/db_dump.html">db_dump</a>
+utility, and can be used as input for the <a href="../utility/db_load.html">db_load</a> utility.</p>
 <p>Because the key/data pairs are output in page order as opposed to the sort
 order used by <a href="../utility/db_dump.html">db_dump</a>, using Db::verify to dump key/data
 pairs normally produces less than optimal loads for Btree databases.</p>
@@ -143,6 +144,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

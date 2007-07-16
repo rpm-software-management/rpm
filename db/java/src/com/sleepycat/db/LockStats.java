@@ -3,15 +3,15 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 
 package com.sleepycat.db;
 
 public class LockStats {
     // no public constructor
-    protected LockStats() {}
+    /* package */ LockStats() {}
 
     private int st_id;
     public int getId() {
@@ -73,11 +73,6 @@ public class LockStats {
         return st_maxnobjects;
     }
 
-    private int st_nconflicts;
-    public int getNumConflicts() {
-        return st_nconflicts;
-    }
-
     private int st_nrequests;
     public int getNumRequests() {
         return st_nrequests;
@@ -88,9 +83,24 @@ public class LockStats {
         return st_nreleases;
     }
 
-    private int st_nnowaits;
-    public int getNumNowaits() {
-        return st_nnowaits;
+    private int st_nupgrade;
+    public int getNumUpgrade() {
+        return st_nupgrade;
+    }
+
+    private int st_ndowngrade;
+    public int getNumDowngrade() {
+        return st_ndowngrade;
+    }
+
+    private int st_lock_wait;
+    public int getLockWait() {
+        return st_lock_wait;
+    }
+
+    private int st_lock_nowait;
+    public int getLockNowait() {
+        return st_lock_nowait;
     }
 
     private int st_ndeadlocks;
@@ -147,10 +157,12 @@ public class LockStats {
             + "\n  st_maxnlockers=" + st_maxnlockers
             + "\n  st_nobjects=" + st_nobjects
             + "\n  st_maxnobjects=" + st_maxnobjects
-            + "\n  st_nconflicts=" + st_nconflicts
             + "\n  st_nrequests=" + st_nrequests
             + "\n  st_nreleases=" + st_nreleases
-            + "\n  st_nnowaits=" + st_nnowaits
+            + "\n  st_nupgrade=" + st_nupgrade
+            + "\n  st_ndowngrade=" + st_ndowngrade
+            + "\n  st_lock_wait=" + st_lock_wait
+            + "\n  st_lock_nowait=" + st_lock_nowait
             + "\n  st_ndeadlocks=" + st_ndeadlocks
             + "\n  st_locktimeout=" + st_locktimeout
             + "\n  st_nlocktimeouts=" + st_nlocktimeouts

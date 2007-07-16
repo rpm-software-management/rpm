@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: DbCompat.java,v 1.6 2004/11/05 01:08:31 mjc Exp $
+ * $Id: DbCompat.java,v 12.7 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.compat;
@@ -28,6 +28,7 @@ import com.sleepycat.db.SecondaryConfig;
 import com.sleepycat.db.SecondaryCursor;
 import com.sleepycat.db.SecondaryDatabase;
 import com.sleepycat.db.Transaction;
+import com.sleepycat.db.TransactionConfig;
 
 /**
  * A minimal set of DB-JE compatibility methods for internal use only.
@@ -49,7 +50,7 @@ public class DbCompat {
     public static final boolean RECNO_METHOD = true;
     public static final boolean QUEUE_METHOD = true;
     public static final boolean BTREE_RECNUM_METHOD = true;
-    public static final boolean OPTIONAL_DIRTY_READ = true;
+    public static final boolean OPTIONAL_READ_UNCOMMITTED = true;
     public static final boolean SECONDARIES = true;
 
     /* Methods used by the collections package. */
@@ -82,8 +83,8 @@ public class DbCompat {
         return dbConfig.getBtreeRecordNumbers();
     }
 
-    public static boolean getDirtyRead(DatabaseConfig dbConfig) {
-        return dbConfig.getDirtyRead();
+    public static boolean getReadUncommitted(DatabaseConfig dbConfig) {
+        return dbConfig.getReadUncommitted();
     }
 
     public static boolean getRenumbering(DatabaseConfig dbConfig) {
@@ -96,6 +97,19 @@ public class DbCompat {
 
     public static boolean getUnsortedDuplicates(DatabaseConfig dbConfig) {
         return dbConfig.getUnsortedDuplicates();
+    }
+
+    // XXX Remove this when DB and JE support CursorConfig.cloneConfig
+    public static CursorConfig cloneCursorConfig(CursorConfig config) {
+        CursorConfig newConfig = new CursorConfig();
+        newConfig.setReadCommitted(config.getReadCommitted());
+        newConfig.setReadUncommitted(config.getReadUncommitted());
+        newConfig.setWriteCursor(config.getWriteCursor());
+        return newConfig;
+    }
+
+    public static boolean getWriteCursor(CursorConfig config) {
+        return config.getWriteCursor();
     }
 
     public static void setWriteCursor(CursorConfig config, boolean val) {
@@ -139,12 +153,16 @@ public class DbCompat {
         return cursor.getSearchRecordNumber(key, pKey, data, lockMode);
     }
 
-    public static OperationStatus putAfter(Cursor cursor, DatabaseEntry key, DatabaseEntry data)
+    public static OperationStatus putAfter(Cursor cursor,
+                                           DatabaseEntry key,
+                                           DatabaseEntry data)
         throws DatabaseException {
         return cursor.putAfter(key, data);
     }
 
-    public static OperationStatus putBefore(Cursor cursor, DatabaseEntry key, DatabaseEntry data)
+    public static OperationStatus putBefore(Cursor cursor,
+                                            DatabaseEntry key,
+                                            DatabaseEntry data)
         throws DatabaseException {
         return cursor.putBefore(key, data);
     }
@@ -155,6 +173,11 @@ public class DbCompat {
                                          DatabaseEntry data)
         throws DatabaseException {
         return db.append(txn, key, data);
+    }
+
+    public static Transaction getThreadTransaction(Environment env)
+	throws DatabaseException {
+        return null;
     }
 
     /* Methods used by the collections tests. */
@@ -205,9 +228,9 @@ public class DbCompat {
         dbConfig.setBtreeRecordNumbers(val);
     }
 
-    public static void setDirtyRead(DatabaseConfig dbConfig,
-                                    boolean val) {
-        dbConfig.setDirtyRead(val);
+    public static void setReadUncommitted(DatabaseConfig dbConfig,
+                                          boolean val) {
+        dbConfig.setReadUncommitted(val);
     }
 
     public static void setRenumbering(DatabaseConfig dbConfig,

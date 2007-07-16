@@ -1,17 +1,17 @@
-<!--$Id: rep_limit.so,v 1.18 2004/09/28 15:04:22 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: rep_limit.so,v 1.22 2006/03/15 19:39:22 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DB_ENV-&gt;set_rep_limit</title>
+<title>Berkeley DB: DB_ENV-&gt;rep_set_limit</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td>
-<h3>DB_ENV-&gt;set_rep_limit</h3>
+<h3>DB_ENV-&gt;rep_set_limit</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
@@ -23,20 +23,22 @@
 #include &lt;db.h&gt;
 <p>
 int
-DB_ENV-&gt;set_rep_limit(DB_ENV *env, u_int32_t gbytes, u_int32_t bytes);
+DB_ENV-&gt;rep_set_limit(DB_ENV *env, u_int32_t gbytes, u_int32_t bytes);
 <p>
 int
-DB_ENV-&gt;get_rep_limit(DB_ENV *dbenv, u_int32_t *gbytesp, u_int32_t *bytesp);
+DB_ENV-&gt;rep_get_limit(DB_ENV *dbenv, u_int32_t *gbytesp, u_int32_t *bytesp);
 </pre></h3>
 <hr size=1 noshade>
-<h3>Description: DB_ENV-&gt;set_rep_limit</h3>
-<p>The DB_ENV-&gt;set_rep_limit method imposes a byte-count limit on the amount of data
-that will be transmitted from a site in a single call to <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.</p>
-<p>The DB_ENV-&gt;set_rep_limit method configures a database environment, not only operations
+<h3>Description: DB_ENV-&gt;rep_set_limit</h3>
+<p>The DB_ENV-&gt;rep_set_limit method sets a byte-count limit on the amount of data
+that will be transmitted from a site in response to a single message
+processed by the <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.  The limit is not a hard limit,
+and the record that exceeds the limit is the last record to be sent.</p>
+<p>The DB_ENV-&gt;rep_set_limit method configures a database environment, not only operations
 performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
-<p>The DB_ENV-&gt;set_rep_limit method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
-been called.</p>
-<p>The DB_ENV-&gt;set_rep_limit method
+<p>The DB_ENV-&gt;rep_set_limit method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;rep_set_limit method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
@@ -48,19 +50,19 @@ number of bytes that will be sent in a single call to <a href="../api_c/rep_mess
 number of bytes that will be sent in a single call to <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.
 </dl>
 <hr size=1 noshade>
-<h3>Description: dbenv_get_rep_limit</h3>
-<p>The DB_ENV-&gt;get_rep_limit method may be called at any time during the life of the
+<h3>Description: rep_get_limit</h3>
+<p>The DB_ENV-&gt;rep_get_limit method may be called at any time during the life of the
 application.</p>
-<p>The DB_ENV-&gt;get_rep_limit method
+<p>The DB_ENV-&gt;rep_get_limit method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>bytesp</b><dd>The <b>bytesp</b> parameter references memory into which
- the additional bytes of memory in the current transmit limit is copied.
+ the additional bytes of memory in the current transmit limit is copied. 
 <dt><b>gbytesp</b><dd>The <b>gbytesp</b> parameter references memory into which
- the gigabytes of memory in the in the current transmit limit is copied.
+ the gigabytes of memory in the in the current transmit limit is copied. 
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -71,6 +73,6 @@ and 0 on success.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

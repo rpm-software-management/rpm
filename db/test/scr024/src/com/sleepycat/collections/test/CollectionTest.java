@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: CollectionTest.java,v 1.3 2004/09/22 18:01:06 bostic Exp $
+ * $Id: CollectionTest.java,v 12.6 2006/08/24 14:46:46 bostic Exp $
  */
 
 package com.sleepycat.collections.test;
@@ -12,6 +12,7 @@ package com.sleepycat.collections.test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +29,6 @@ import junit.framework.TestSuite;
 
 import com.sleepycat.bind.EntityBinding;
 import com.sleepycat.bind.EntryBinding;
-import com.sleepycat.collections.CurrentTransaction;
 import com.sleepycat.collections.MapEntryParameter;
 import com.sleepycat.collections.StoredCollection;
 import com.sleepycat.collections.StoredCollections;
@@ -61,13 +61,22 @@ public class CollectionTest extends TestCase {
     private static final int HEAD = 2;
     private static final int TAIL = 3;
 
-    private static final int MAX_KEY = 6; // must be a multiple of 2
+    /*
+     * For long tests we permute testStoredIterator to test both StoredIterator
+     * and BlockIterator.  When testing BlockIterator, we permute the maxKey
+     * over the array values below.  BlockIterator's block size is 10.  So we
+     * test below the block size (6), at the block size (10), and above it (14
+     * and 22).
+     */
+    private static final int DEFAULT_MAX_KEY = 6;
+    private static final int[] MAX_KEYS = {6, 10, 14, 22};
 
+    private boolean testStoredIterator;
+    private int maxKey; /* Must be a multiple of 2. */
     private int beginKey = 1;
-    private int endKey = MAX_KEY;
+    private int endKey;
 
     private Environment env;
-    private CurrentTransaction currentTxn;
     private Database store;
     private Database index;
     private boolean isEntityBinding;
@@ -144,6 +153,41 @@ public class CollectionTest extends TestCase {
     static Test suite(String[] args)
         throws Exception {
 
+        if ("true".equals(System.getProperty("longtest"))) {
+            TestSuite suite = new TestSuite();
+
+            /* StoredIterator tests. */
+            permuteTests(args, suite, true, DEFAULT_MAX_KEY);
+
+            /* BlockIterator tests with different maxKey values. */
+            for (int i = 0; i < MAX_KEYS.length; i += 1) {
+                permuteTests(args, suite, false, MAX_KEYS[i]);
+            }
+
+            return suite;
+        } else {
+            return baseSuite(args);
+        }
+    }
+
+    private static void permuteTests(String[] args,
+                                     TestSuite suite,
+                                     boolean storedIter,
+                                     int maxKey)
+        throws Exception {
+
+        TestSuite baseTests = baseSuite(args);
+        Enumeration e = baseTests.tests();
+        while (e.hasMoreElements()) {
+            CollectionTest t = (CollectionTest) e.nextElement();
+            t.setParams(storedIter, maxKey);
+            suite.addTest(t);
+        }
+    }
+
+    private static TestSuite baseSuite(String[] args)
+        throws Exception {
+
         TestSuite suite = new TestSuite();
         for (int i = 0; i < TestEnv.ALL.length; i += 1) {
             for (int j = 0; j < TestStore.ALL.length; j += 1) {
@@ -154,7 +198,7 @@ public class CollectionTest extends TestCase {
                             TestEnv.ALL[i], TestStore.ALL[j],
                             entityBinding, false));
 
-                    if (TestEnv.ALL[i] == TestEnv.TXN) {
+                    if (TestEnv.ALL[i].isTxnMode()) {
                         addTest(args, suite, new CollectionTest(
                                 TestEnv.ALL[i], TestStore.ALL[j],
                                 entityBinding, true));
@@ -194,9 +238,25 @@ public class CollectionTest extends TestCase {
         valueBinding = testStore.getValueBinding();
         entityBinding = testStore.getEntityBinding();
 
+        setParams(false, DEFAULT_MAX_KEY);
+    }
+
+    private void setParams(boolean storedIter, int maxKey) {
+
+        this.testStoredIterator = storedIter;
+        this.maxKey = maxKey;
+        this.endKey = maxKey;
+
         testName = testEnv.getName() + '-' + testStore.getName() +
                     (isEntityBinding ? "-entity" : "-value") +
-                    (isAutoCommit ? "-autocommit" : "");
+                    (isAutoCommit ? "-autoCommit" : "") +
+                    (testStoredIterator ? "-storedIter" : "") +
+                    ((maxKey != DEFAULT_MAX_KEY) ? ("-maxKey-" + maxKey) : "");
+    }
+
+    public void tearDown()
+        throws Exception {
+
         setName(testName);
     }
 
@@ -206,14 +266,13 @@ public class CollectionTest extends TestCase {
         DbTestUtil.printTestName(DbTestUtil.qualifiedTestName(this));
         try {
             env = testEnv.open(testName);
-            currentTxn = CurrentTransaction.getInstance(env);
 
             // For testing auto-commit, use a normal (transactional) runner for
             // all reading and for writing via an iterator, and a do-nothing
             // runner for writing via collections; if auto-commit is tested,
             // the per-collection auto-commit property will be set elsewhere.
             //
-            TransactionRunner normalRunner = new TransactionRunner(env);
+            TransactionRunner normalRunner = newTransactionRunner(env);
             normalRunner.setAllowNestedTransactions(
                     DbCompat.NESTED_TRANSACTIONS);
             TransactionRunner nullRunner = new NullTransactionRunner(env);
@@ -267,7 +326,6 @@ public class CollectionTest extends TestCase {
             index = null;
             store = null;
             env = null;
-            currentTxn = null;
             readRunner = null;
             writeRunner = null;
             writeIterRunner = null;
@@ -286,7 +344,16 @@ public class CollectionTest extends TestCase {
         }
     }
 
-    void testCreation(StoredContainer cont)
+    /**
+     * Is overridden in XACollectionTest.
+     */
+    protected TransactionRunner newTransactionRunner(Environment env)
+        throws DatabaseException {
+
+        return new TransactionRunner(env);
+    }
+
+    void testCreation(StoredContainer cont, int expectSize)
         throws Exception {
 
         assertEquals(index != null, cont.isSecondary());
@@ -294,12 +361,8 @@ public class CollectionTest extends TestCase {
         assertEquals(testStore.areKeysRenumbered(), cont.areKeysRenumbered());
         assertEquals(testStore.areDuplicatesAllowed(),
                      cont.areDuplicatesAllowed());
-        assertEquals(testEnv == TestEnv.TXN, cont.isTransactional());
-        try {
-            cont.size();
-            fail();
-        }
-        catch (UnsupportedOperationException expected) {}
+        assertEquals(testEnv.isTxnMode(), cont.isTransactional());
+        assertEquals(expectSize, cont.size());
     }
 
     void testMapCreation(Map map)
@@ -372,9 +435,9 @@ public class CollectionTest extends TestCase {
             } catch (IllegalArgumentException expected) {}
         }
 
-        testCreation(map);
+        testCreation(map, 0);
         if (list != null) {
-            testCreation(list);
+            testCreation(list, 0);
             assertNotNull(smap);
         }
         testMapCreation(map);
@@ -455,12 +518,12 @@ public class CollectionTest extends TestCase {
             catch (IllegalArgumentException expected) {}
         }
 
-        testCreation(map);
-        testCreation((StoredContainer) map.values());
-        testCreation((StoredContainer) map.keySet());
-        testCreation((StoredContainer) map.entrySet());
+        testCreation(map, maxKey);
+        testCreation((StoredContainer) map.values(), maxKey);
+        testCreation((StoredContainer) map.keySet(), maxKey);
+        testCreation((StoredContainer) map.entrySet(), maxKey);
         if (list != null) {
-            testCreation(list);
+            testCreation(list, maxKey);
             assertNotNull(smap);
         }
         testMapCreation(map);
@@ -519,18 +582,18 @@ public class CollectionTest extends TestCase {
         if (smap != null) {
             readWriteRange(SUB,  1, 1);
             readWriteRange(HEAD, 1, 1);
-            readWriteRange(SUB,  1, MAX_KEY);
-            readWriteRange(HEAD, 1, MAX_KEY);
-            readWriteRange(TAIL, 1, MAX_KEY);
+            readWriteRange(SUB,  1, maxKey);
+            readWriteRange(HEAD, 1, maxKey);
+            readWriteRange(TAIL, 1, maxKey);
             readWriteRange(SUB,  1, 3);
             readWriteRange(HEAD, 1, 3);
             readWriteRange(SUB,  2, 2);
-            readWriteRange(SUB,  2, MAX_KEY);
-            readWriteRange(TAIL, 2, MAX_KEY);
-            readWriteRange(SUB,  MAX_KEY, MAX_KEY);
-            readWriteRange(TAIL, MAX_KEY, MAX_KEY);
-            readWriteRange(SUB,  MAX_KEY + 1, MAX_KEY + 1);
-            readWriteRange(TAIL, MAX_KEY + 1, MAX_KEY + 1);
+            readWriteRange(SUB,  2, maxKey);
+            readWriteRange(TAIL, 2, maxKey);
+            readWriteRange(SUB,  maxKey, maxKey);
+            readWriteRange(TAIL, maxKey, maxKey);
+            readWriteRange(SUB,  maxKey + 1, maxKey + 1);
+            readWriteRange(TAIL, maxKey + 1, maxKey + 1);
             readWriteRange(SUB,  0, 0);
             readWriteRange(HEAD, 0, 0);
         }
@@ -573,13 +636,22 @@ public class CollectionTest extends TestCase {
         }
     }
 
+    Iterator iterator(Collection storedCollection) {
+
+        if (testStoredIterator) {
+            return ((StoredCollection) storedCollection).storedIterator();
+        } else {
+            return storedCollection.iterator();
+        }
+    }
+
     void addAll()
         throws Exception {
 
         writeRunner.run(new TransactionWorker() {
             public void doWork() throws Exception {
                 assertTrue(imap.isEmpty());
-                Iterator iter = imap.entrySet().iterator();
+                Iterator iter = iterator(imap.entrySet());
                 try {
                     assertTrue(!iter.hasNext());
                 } finally {
@@ -681,7 +753,7 @@ public class CollectionTest extends TestCase {
                 updateIter(map.entrySet());
                 updateIter(map.values());
                 if (beginKey <= endKey) {
-                    ListIterator iter = (ListIterator) map.keySet().iterator();
+                    ListIterator iter = (ListIterator) iterator(map.keySet());
                     try {
                         assertNotNull(iter.next());
                         iter.set(makeKey(beginKey));
@@ -703,7 +775,7 @@ public class CollectionTest extends TestCase {
 
         writeIterRunner.run(new TransactionWorker() {
             public void doWork() throws Exception {
-                ListIterator iter = (ListIterator) coll.iterator();
+                ListIterator iter = (ListIterator) iterator(coll);
                 try {
                     for (int i = beginKey; i <= endKey; i += 1) {
                         assertTrue(iter.hasNext());
@@ -796,9 +868,9 @@ public class CollectionTest extends TestCase {
                 ListIterator iter = null;
                 try {
                     if (list != null) {
-                        iter = list.listIterator();
+                        iter = (ListIterator) iterator(list);
                     } else {
-                        iter = (ListIterator) map.values().iterator();
+                        iter = (ListIterator) iterator(map.values());
                     }
                     iteratorSetAndRemoveNotAllowed(iter);
 
@@ -934,7 +1006,7 @@ public class CollectionTest extends TestCase {
 
         writeIterRunner.run(new TransactionWorker() {
             public void doWork() throws Exception {
-                Iterator iter = map.keySet().iterator();
+                Iterator iter = iterator(map.keySet());
                 try {
                     for (int i = beginKey; i <= endKey; i += 1) {
                         assertTrue(iter.hasNext());
@@ -1127,7 +1199,6 @@ public class CollectionTest extends TestCase {
                 assertTrue(list.isEmpty());
                 for (int i = beginKey; i <= endKey; i += 1) {
                     int idx = i - beginKey;
-                    Object val = makeVal(i);
                     assertNull(list.get(idx));
                 }
             }
@@ -1139,7 +1210,7 @@ public class CollectionTest extends TestCase {
 
         writeIterRunner.run(new TransactionWorker() {
             public void doWork() throws Exception {
-                ListIterator i = list.listIterator();
+                ListIterator i = (ListIterator) iterator(list);
                 try {
                     assertTrue(!i.hasNext());
                     i.add(makeVal(3));
@@ -1191,7 +1262,7 @@ public class CollectionTest extends TestCase {
             public void doWork() throws Exception {
                 assertNull(imap.put(makeKey(1), makeVal(1)));
                 ListIterator i =
-                    (ListIterator) imap.duplicates(makeKey(1)).iterator();
+                    (ListIterator) iterator(imap.duplicates(makeKey(1)));
                 try {
                     if (imap.areDuplicatesOrdered()) {
                         i.add(makeVal(1, 4));
@@ -1266,7 +1337,7 @@ public class CollectionTest extends TestCase {
                 Set set = map.entrySet();
                 assertNotNull(set.toString());
                 assertEquals(beginKey > endKey, set.isEmpty());
-                Iterator iter = set.iterator();
+                Iterator iter = iterator(set);
                 try {
                     for (int i = beginKey; i <= endKey; i += 1) {
                         assertTrue(iter.hasNext());
@@ -1295,25 +1366,27 @@ public class CollectionTest extends TestCase {
                         assertEquals(makeVal(i), entry.getValue());
                     }
                 }
-                readIterator(set, set.iterator(), beginKey, endKey);
+                readIterator(set, iterator(set), beginKey, endKey);
                 if (smap != null) {
                     SortedSet sset = (SortedSet) set;
                     if (beginKey == 1 && endKey >= 1) {
-                        readIterator(sset, sset.subSet(mapEntry(1),
-                                                 mapEntry(2))
-                                                 .iterator(), 1, 1);
+                        readIterator(sset,
+                                     iterator(sset.subSet(mapEntry(1),
+                                                          mapEntry(2))),
+                                     1, 1);
                     }
                     if (beginKey <= 2 && endKey >= 2) {
-                        readIterator(sset, sset.subSet(mapEntry(2),
-                                                 mapEntry(3))
-                                                 .iterator(), 2, 2);
+                        readIterator(sset,
+                                     iterator(sset.subSet(mapEntry(2),
+                                                          mapEntry(3))),
+                                     2, 2);
                     }
                     if (beginKey <= endKey) {
-                        readIterator(sset, sset.subSet(
-                                            mapEntry(endKey),
-                                            mapEntry(endKey + 1))
-                                            .iterator(),
-                                            endKey, endKey);
+                        readIterator(sset,
+                                     iterator(sset.subSet
+                                                (mapEntry(endKey),
+                                                 mapEntry(endKey + 1))),
+                                     endKey, endKey);
                     }
                     if (isSubMap()) {
                         if (beginKey <= endKey) {
@@ -1333,15 +1406,15 @@ public class CollectionTest extends TestCase {
                             }
                         }
                     } else {
-                        readIterator(sset, sset.subSet(
-                                            mapEntry(endKey + 1),
-                                            mapEntry(endKey + 2))
-                                            .iterator(),
-                                            endKey, endKey - 1);
-                        readIterator(sset, sset.subSet(mapEntry(0),
-                                                 mapEntry(1))
-                                                 .iterator(),
-                                                 0, -1);
+                        readIterator(sset,
+                                     iterator(sset.subSet
+                                                (mapEntry(endKey + 1),
+                                                 mapEntry(endKey + 2))),
+                                     endKey, endKey - 1);
+                        readIterator(sset,
+                                     iterator(sset.subSet(mapEntry(0),
+                                                          mapEntry(1))),
+                                     0, -1);
                     }
                 }
 
@@ -1350,7 +1423,7 @@ public class CollectionTest extends TestCase {
                 set = map.keySet();
                 assertNotNull(set.toString());
                 assertEquals(beginKey > endKey, set.isEmpty());
-                iter = set.iterator();
+                iter = iterator(set);
                 try {
                     for (int i = beginKey; i <= endKey; i += 1) {
                         assertTrue(iter.hasNext());
@@ -1376,14 +1449,14 @@ public class CollectionTest extends TestCase {
                         assertEquals(makeKey(i), key);
                     }
                 }
-                readIterator(set, set.iterator(), beginKey, endKey);
+                readIterator(set, iterator(set), beginKey, endKey);
 
                 // values
 
                 Collection coll = map.values();
                 assertNotNull(coll.toString());
                 assertEquals(beginKey > endKey, coll.isEmpty());
-                iter = coll.iterator();
+                iter = iterator(coll);
                 try {
                     for (int i = beginKey; i <= endKey; i += 1) {
                         assertTrue(iter.hasNext());
@@ -1406,7 +1479,7 @@ public class CollectionTest extends TestCase {
                         assertEquals(makeVal(i), val);
                     }
                 }
-                readIterator(coll, coll.iterator(), beginKey, endKey);
+                readIterator(coll, iterator(coll), beginKey, endKey);
 
                 // list
 
@@ -1421,7 +1494,7 @@ public class CollectionTest extends TestCase {
                         assertEquals(idx, list.indexOf(val));
                         assertEquals(idx, list.lastIndexOf(val));
                     }
-                    ListIterator li = list.listIterator();
+                    ListIterator li = (ListIterator) iterator(list);
                     try {
                         for (int i = beginKey; i <= endKey; i += 1) {
                             int idx = i - beginKey;
@@ -1459,14 +1532,14 @@ public class CollectionTest extends TestCase {
                         assertNotNull(val);
                         assertEquals(makeVal(i), val);
                     }
-                    readIterator(list, list.iterator(), beginKey, endKey);
+                    readIterator(list, iterator(list), beginKey, endKey);
                 }
 
                 // first/last
 
                 if (smap != null) {
                     if (beginKey <= endKey &&
-                        beginKey >= 1 && beginKey <= MAX_KEY) {
+                        beginKey >= 1 && beginKey <= maxKey) {
                         assertEquals(makeKey(beginKey),
                                      smap.firstKey());
                         assertEquals(makeKey(beginKey),
@@ -1487,7 +1560,7 @@ public class CollectionTest extends TestCase {
                         }
                     }
                     if (beginKey <= endKey &&
-                        endKey >= 1 && endKey <= MAX_KEY) {
+                        endKey >= 1 && endKey <= maxKey) {
                         assertEquals(makeKey(endKey),
                                      smap.lastKey());
                         assertEquals(makeKey(endKey),
@@ -1550,7 +1623,7 @@ public class CollectionTest extends TestCase {
 
                 Set set = map.entrySet();
                 assertEquals(beginKey > endKey, set.isEmpty());
-                Iterator iter = set.iterator();
+                Iterator iter = iterator(set);
                 try {
                     for (int i = readBegin; i <= readEnd; i += readIncr) {
                         assertTrue(iter.hasNext());
@@ -1572,7 +1645,7 @@ public class CollectionTest extends TestCase {
 
                 set = map.keySet();
                 assertEquals(beginKey > endKey, set.isEmpty());
-                iter = set.iterator();
+                iter = iterator(set);
                 try {
                     for (int i = readBegin; i <= readEnd; i += readIncr) {
                         assertTrue(iter.hasNext());
@@ -1593,7 +1666,7 @@ public class CollectionTest extends TestCase {
 
                 Collection coll = map.values();
                 assertEquals(beginKey > endKey, coll.isEmpty());
-                iter = coll.iterator();
+                iter = iterator(coll);
                 try {
                     for (int i = readBegin; i <= readEnd; i += readIncr) {
                         assertTrue(iter.hasNext());
@@ -1615,7 +1688,7 @@ public class CollectionTest extends TestCase {
 
                 if (smap != null) {
                     if (readBegin <= readEnd &&
-                        readBegin >= 1 && readBegin <= MAX_KEY) {
+                        readBegin >= 1 && readBegin <= maxKey) {
                         assertEquals(makeKey(readBegin),
                                      smap.firstKey());
                         assertEquals(makeKey(readBegin),
@@ -1636,7 +1709,7 @@ public class CollectionTest extends TestCase {
                         }
                     }
                     if (readBegin <= readEnd &&
-                        readEnd >= 1 && readEnd <= MAX_KEY) {
+                        readEnd >= 1 && readEnd <= maxKey) {
                         assertEquals(makeKey(readEnd),
                                      smap.lastKey());
                         assertEquals(makeKey(readEnd),
@@ -1672,7 +1745,7 @@ public class CollectionTest extends TestCase {
                 int readIncr = 2;
 
                 assertEquals(beginKey > endKey, list.isEmpty());
-                ListIterator iter = list.listIterator();
+                ListIterator iter = (ListIterator) iterator(list);
                 try {
                     int idx = 0;
                     for (int i = readBegin; i <= readEnd; i += readIncr) {
@@ -1718,7 +1791,6 @@ public class CollectionTest extends TestCase {
                 }
             }
             // loop thru all and collect in array
-            StoredIterator si = (StoredIterator) iter;
             int[] values = new int[endValue - beginValue + 1];
             for (int i = beginValue; i <= endValue; i += 1) {
                 assertTrue(iter.hasNext());
@@ -1731,7 +1803,7 @@ public class CollectionTest extends TestCase {
                     assertEquals(idx, li.previousIndex());
                 }
                 values[i - beginValue] = value;
-                if (si.getCollection().isOrdered()) {
+                if (((StoredCollection) coll).isOrdered()) {
                     assertEquals(i, value);
                 } else {
                     assertTrue(value >= beginValue);
@@ -1809,7 +1881,7 @@ public class CollectionTest extends TestCase {
             public void doWork() throws Exception {
                 HashMap hmap = new HashMap();
                 for (int i = Math.max(1, beginKey);
-                         i <= Math.min(MAX_KEY, endKey);
+                         i <= Math.min(maxKey, endKey);
                          i += 1) {
                     hmap.put(makeKey(i), makeVal(i));
                 }
@@ -2057,7 +2129,7 @@ public class CollectionTest extends TestCase {
             smap = (StoredSortedMap) smap.tailMap(makeKey(rangeBegin));
             if (canMakeSubList) {
                 list = (StoredList) list.subList(listBegin,
-                                                 MAX_KEY + 1 - beginKey);
+                                                 maxKey + 1 - beginKey);
             }
             // check for equivalent ranges
             assertEquals(smap,
@@ -2079,7 +2151,7 @@ public class CollectionTest extends TestCase {
         }
         map = smap;
         beginKey = rangeBegin;
-        if (rangeBegin < 1 || rangeEnd > MAX_KEY) {
+        if (rangeBegin < 1 || rangeEnd > maxKey) {
             endKey = rangeBegin - 1; // force empty range for readAll()
         } else {
             endKey = rangeEnd;
@@ -2090,7 +2162,7 @@ public class CollectionTest extends TestCase {
 
         rangeType = NONE;
         beginKey = 1;
-        endKey = MAX_KEY;
+        endKey = maxKey;
         map = saveMap;
         smap = saveSMap;
         list = saveList;
@@ -2138,8 +2210,8 @@ public class CollectionTest extends TestCase {
                 fail();
             } catch (IllegalArgumentException e) { }
             try {
-                sset.subSet(makeKey(rangeEnd + 1),
-                            makeKey(rangeEnd + 2)).iterator();
+                iterator(sset.subSet(makeKey(rangeEnd + 1),
+                                     makeKey(rangeEnd + 2)));
                 fail();
             } catch (IllegalArgumentException e) { }
         }
@@ -2155,8 +2227,8 @@ public class CollectionTest extends TestCase {
             }
             catch (IllegalArgumentException e) { }
             try {
-                sset.subSet(makeKey(rangeBegin - 1),
-                            makeKey(rangeBegin)).iterator();
+                iterator(sset.subSet(makeKey(rangeBegin - 1),
+                                     makeKey(rangeBegin)));
                 fail();
             }
             catch (IllegalArgumentException e) { }
@@ -2175,8 +2247,8 @@ public class CollectionTest extends TestCase {
                 fail();
             } catch (IllegalArgumentException e) { }
             try {
-                sset.subSet(mapEntry(rangeEnd + 1),
-                            mapEntry(rangeEnd + 2)).iterator();
+                iterator(sset.subSet(mapEntry(rangeEnd + 1),
+                                     mapEntry(rangeEnd + 2)));
                 fail();
             } catch (IllegalArgumentException e) { }
         }
@@ -2191,8 +2263,8 @@ public class CollectionTest extends TestCase {
                 fail();
             } catch (IllegalArgumentException e) { }
             try {
-                sset.subSet(mapEntry(rangeBegin - 1),
-                            mapEntry(rangeBegin)).iterator();
+                iterator(sset.subSet(mapEntry(rangeBegin - 1),
+                                     mapEntry(rangeBegin)));
                 fail();
             }
             catch (IllegalArgumentException e) { }
@@ -2354,7 +2426,7 @@ public class CollectionTest extends TestCase {
                     writeIterRunner.run(new TransactionWorker() {
                         public void doWork() throws Exception {
                             Collection dups = map.duplicates(key);
-                            Iterator iter = dups.iterator();
+                            Iterator iter = iterator(dups);
                             assertEquals(values[0], iter.next());
                             assertTrue(!iter.hasNext());
                             try {
@@ -2415,7 +2487,7 @@ public class CollectionTest extends TestCase {
                     writeIterRunner.run(new TransactionWorker() {
                         public void doWork() throws Exception {
                             Collection dups = map.duplicates(key);
-                            Iterator iter = dups.iterator();
+                            Iterator iter = iterator(dups);
                             try {
                                 for (int j = 0; j < values.length; j += 1) {
                                     assertEquals(values[j], iter.next());
@@ -2485,7 +2557,7 @@ public class CollectionTest extends TestCase {
         // read with Map.duplicates().iterator()
         dups = map.duplicates(key);
         checkDupsSize(values.length, dups);
-        iter = dups.iterator();
+        iter = iterator(dups);
         try {
             for (int j = 0; j < values.length; j += 1) {
                 assertTrue(iter.hasNext());
@@ -2498,7 +2570,7 @@ public class CollectionTest extends TestCase {
         }
         // read with Map.values().iterator()
         Collection clone = ((StoredCollection) map.values()).toList();
-        iter = map.values().iterator();
+        iter = iterator(map.values());
         try {
             for (int j = beginKey; j < i; j += 1) {
                 Object val = iter.next();
@@ -2528,7 +2600,7 @@ public class CollectionTest extends TestCase {
         }
         // read with Map.entrySet().iterator()
         clone = ((StoredCollection) map.entrySet()).toList();
-        iter = map.entrySet().iterator();
+        iter = iterator(map.entrySet());
         try {
             for (int j = beginKey; j < i; j += 1) {
                 Map.Entry entry = (Map.Entry) iter.next();
@@ -2561,7 +2633,7 @@ public class CollectionTest extends TestCase {
         }
         // read with Map.keySet().iterator()
         clone = ((StoredCollection) map.keySet()).toList();
-        iter = map.keySet().iterator();
+        iter = iterator(map.keySet());
         try {
             for (int j = beginKey; j < i; j += 1) {
                 Object val = iter.next();
@@ -2599,7 +2671,7 @@ public class CollectionTest extends TestCase {
             dups.add(makeVal(beginKey));
             fail();
         } catch (UnsupportedOperationException expected) { }
-        ListIterator iter = (ListIterator) dups.iterator();
+        ListIterator iter = (ListIterator) iterator(dups);
         try {
             iter.add(makeVal(beginKey));
             fail();
@@ -2611,7 +2683,7 @@ public class CollectionTest extends TestCase {
 
     void listOperationsNotAllowed() {
 
-        ListIterator iter = (ListIterator) map.values().iterator();
+        ListIterator iter = (ListIterator) iterator(map.values());
         try {
             try {
                 iter.nextIndex();
@@ -2777,7 +2849,7 @@ public class CollectionTest extends TestCase {
 
         assertEquals(expected, coll.size());
         if (coll instanceof StoredCollection) {
-            StoredIterator i = ((StoredCollection) coll).iterator(false);
+            StoredIterator i = ((StoredCollection) coll).storedIterator(false);
             try {
                 int actual = 0;
                 if (i.hasNext()) {
@@ -2800,7 +2872,7 @@ public class CollectionTest extends TestCase {
     private int countElements(Collection coll) {
 
         int count = 0;
-        Iterator iter = coll.iterator();
+        Iterator iter = iterator(coll);
         try {
             while (iter.hasNext()) {
                 iter.next();

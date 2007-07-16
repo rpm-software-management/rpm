@@ -49,7 +49,7 @@
         Note that you can find the complete implementation of these functions
         in:
     </p>
-      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
       <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.  
@@ -62,7 +62,7 @@
         <p>
             To manage our database open and close activities, we encapsulate them
             in the <tt class="classname">MyDbs</tt> class. There are several good reasons
-            to do this, the mort important being that we can ensure our databases are
+            to do this, the most important being that we can ensure our databases are
             closed by putting that activity in the <tt class="classname">MyDbs</tt>
             class destructor.
         </p>
@@ -71,7 +71,7 @@
         </p>
         <a id="java_db12"></a>
         <pre class="programlisting">// File: MyDbs.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
 
 import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseConfig;
@@ -89,8 +89,8 @@ import java.io.FileNotFoundException; </pre>
     private Database vendorDb = null;
     private Database inventoryDb = null;
 
-    private String vendordb = "VendorDB.db";
-    private String inventorydb = "InventoryDB.db";
+    private String vendordb = &quot;VendorDB.db&quot;;
+    private String inventorydb = &quot;InventoryDB.db&quot;;
 
     // Our constructor does nothing
     public MyDbs() {} </pre>
@@ -107,24 +107,24 @@ import java.io.FileNotFoundException; </pre>
         DatabaseConfig myDbConfig = new DatabaseConfig();
 
         myDbConfig.setErrorStream(System.err);
-        myDbConfig.setErrorPrefix("MyDbs");
+        myDbConfig.setErrorPrefix(&quot;MyDbs&quot;);
         myDbConfig.setType(DatabaseType.BTREE);
         myDbConfig.setAllowCreate(true);
 
         // Now open, or create and open, our databases
         // Open the vendors and inventory databases
         try {
-            vendordb = databasesHome + "/" + vendordb;
+            vendordb = databasesHome + &quot;/&quot; + vendordb;
             vendorDb = new Database(vendordb,
                                     null,
                                     myDbConfig);
 
-            inventorydb = databasesHome + "/" + inventorydb;
+            inventorydb = databasesHome + &quot;/&quot; + inventorydb;
             inventoryDb = new Database(inventorydb,
                                         null,
                                         myDbConfig);
         } catch(FileNotFoundException fnfe) {
-            System.err.println("MyDbs: " + fnfe.toString());
+            System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
             System.exit(-1);
         }
     } </pre>
@@ -152,7 +152,7 @@ import java.io.FileNotFoundException; </pre>
                 inventoryDb.close();
             }
         } catch(DatabaseException dbe) {
-            System.err.println("Error closing MyDbs: " +
+            System.err.println(&quot;Error closing MyDbs: &quot; +
                                 dbe.toString());
             System.exit(-1);
         }

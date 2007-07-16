@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep018script.tcl,v 1.5 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep018script.tcl,v 12.5 2006/08/24 14:46:37 bostic Exp $
 #
 # Rep018 script - concurrency with checkpoints.
 #
@@ -33,10 +33,7 @@ set niter [ lindex $argv 1 ]
 set dbfile [ lindex $argv 2 ]
 set method [ lindex $argv 3 ]
 
-# Join the queue env.  We assume the rep test convention of
-# placing the messages in $testdir/MSGQUEUEDIR.
-set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]
-error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
+set is_repchild 1
 
 #
 # We need to set up our own machids.
@@ -67,14 +64,14 @@ error_check_good markerenv_open [is_valid_env $markerenv] TRUE
 set marker \
     [eval "berkdb_open -create -btree -auto_commit -env $markerenv marker.db"]
 error_check_good timestamp_ready \
-    [$marker put -auto_commit CHILDREADY [timestamp -r]] 0
+    [$marker put CHILDREADY [timestamp -r]] 0
 
 # Give the parent a chance to process messages and hang.
 tclsleep 30
 
 # Clean up the child so the parent can go forward.
 error_check_good timestamp_done \
-    [$marker put -auto_commit CHILDDONE [timestamp -r]] 0
+    [$marker put CHILDDONE [timestamp -r]] 0
 error_check_good client_db_close [$db close] 0
 
 # Check that the master is done.

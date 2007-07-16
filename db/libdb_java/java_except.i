@@ -62,7 +62,7 @@ static jthrowable __dbj_get_except(JNIEnv *jenv,
 
 	if (msg == NULL)
 		msg = db_strerror(err);
-	
+
 	jmsg = (*jenv)->NewStringUTF(jenv, msg);
 
 	switch (err) {
@@ -82,9 +82,34 @@ static jthrowable __dbj_get_except(JNIEnv *jenv,
 		return (jthrowable)(*jenv)->NewObject(jenv, memex_class,
 		    memex_construct, jmsg, obj, err, jdbenv);
 
+	case DB_REP_DUPMASTER:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    repdupmasterex_class, repdupmasterex_construct,
+		    jmsg, err, jdbenv);
+
 	case DB_REP_HANDLE_DEAD:
 		return (jthrowable)(*jenv)->NewObject(jenv,
 		    rephandledeadex_class, rephandledeadex_construct,
+		    jmsg, err, jdbenv);
+
+	case DB_REP_HOLDELECTION:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    repholdelectionex_class, repholdelectionex_construct,
+		    jmsg, err, jdbenv);
+
+	case DB_REP_JOIN_FAILURE:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    repjoinfailex_class, repjoinfailex_construct,
+		    jmsg, err, jdbenv);
+
+	case DB_REP_LOCKOUT:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    replockoutex_class, replockoutex_construct,
+		    jmsg, err, jdbenv);
+
+	case DB_REP_UNAVAIL:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    repunavailex_class, repunavailex_construct,
 		    jmsg, err, jdbenv);
 
 	case DB_RUNRECOVERY:
@@ -94,11 +119,15 @@ static jthrowable __dbj_get_except(JNIEnv *jenv,
 	case DB_LOCK_DEADLOCK:
 		return (jthrowable)(*jenv)->NewObject(jenv, deadex_class,
 		    deadex_construct, jmsg, err, jdbenv);
-	
+
 	case DB_LOCK_NOTGRANTED:
 		return (jthrowable)(*jenv)->NewObject(jenv, lockex_class,
-		    lockex_construct, jmsg, 0, 0, NULL, NULL, 0, jdbenv);
-	
+		    lockex_construct, jmsg, err, 0, NULL, NULL, 0, jdbenv);
+
+	case DB_VERSION_MISMATCH:
+		return (jthrowable)(*jenv)->NewObject(jenv, versionex_class,
+		    versionex_construct, jmsg, err, jdbenv);
+
 	default:
 		return (jthrowable)(*jenv)->NewObject(jenv, dbex_class,
 		    dbex_construct, jmsg, err, jdbenv);
@@ -119,17 +148,17 @@ static int __dbj_throw(JNIEnv *jenv,
 			 * exception.  We have to assume there is an exception
 			 * created by the JVM that is pending as a result
 			 * (e.g., OutOfMemoryError), but we don't want to lose
-			 * this error, so we just call __db_err here.
+			 * this error, so we just call __db_errx here.
 			 */
 			if (msg == NULL)
 				msg = db_strerror(err);
-	
-			 __db_err(NULL, "Couldn't create exception for: '%s'",
+
+			 __db_errx(NULL, "Couldn't create exception for: '%s'",
 			     msg);
 		} else
 			(*jenv)->Throw(jenv, t);
 	}
-	
+
 	return (err);
 }
 %}

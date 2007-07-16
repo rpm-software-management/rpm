@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: testone,v 1.5 2002/07/05 22:17:59 dda Exp $
+#	$Id: testone,v 12.0 2004/11/17 03:44:48 bostic Exp $
 #
 # Run just one C++ regression test, the single argument
 # is the basename of the test, e.g. TestRpcServer

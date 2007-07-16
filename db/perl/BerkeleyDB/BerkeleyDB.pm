@@ -2,7 +2,7 @@
 package BerkeleyDB;
 
 
-#     Copyright (c) 1997-2004 Paul Marquess. All rights reserved.
+#     Copyright (c) 1997-2006 Paul Marquess. All rights reserved.
 #     This program is free software; you can redistribute it and/or
 #     modify it under the same terms as Perl itself.
 #
@@ -17,7 +17,7 @@ use Carp;
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD
 		$use_XSLoader);
 
-$VERSION = '0.26';
+$VERSION = '0.30';
 
 require Exporter;
 #require DynaLoader;
@@ -51,6 +51,7 @@ BEGIN {
 	DB_ARCH_DATA
 	DB_ARCH_LOG
 	DB_ARCH_REMOVE
+	DB_ASSOC_IMMUTABLE_KEY
 	DB_AUTO_COMMIT
 	DB_BEFORE
 	DB_BTREE
@@ -66,6 +67,7 @@ BEGIN {
 	DB_CLIENT
 	DB_CL_WRITER
 	DB_COMMIT
+	DB_COMPACT_FLAGS
 	DB_CONSUME
 	DB_CONSUME_WAIT
 	DB_CREATE
@@ -137,6 +139,8 @@ BEGIN {
 	DB_FIXEDLEN
 	DB_FLUSH
 	DB_FORCE
+	DB_FREELIST_ONLY
+	DB_FREE_SPACE
 	DB_GETREC
 	DB_GET_BOTH
 	DB_GET_BOTHC
@@ -147,6 +151,7 @@ BEGIN {
 	DB_HASHMAGIC
 	DB_HASHOLDVER
 	DB_HASHVERSION
+	DB_IMMUTABLE_KEY
 	DB_INCOMPLETE
 	DB_INIT_CDB
 	DB_INIT_LOCK
@@ -239,6 +244,10 @@ BEGIN {
 	DB_MULTIPLE_KEY
 	DB_MUTEXDEBUG
 	DB_MUTEXLOCKS
+	DB_MUTEX_ALLOCATED
+	DB_MUTEX_LOGICAL_LOCK
+	DB_MUTEX_SELF_BLOCK
+	DB_MUTEX_THREAD
 	DB_NEEDSPLIT
 	DB_NEXT
 	DB_NEXT_DUP
@@ -293,6 +302,8 @@ BEGIN {
 	DB_QUEUE
 	DB_RDONLY
 	DB_RDWRMASTER
+	DB_READ_COMMITTED
+	DB_READ_UNCOMMITTED
 	DB_RECNO
 	DB_RECNUM
 	DB_RECORDCOUNT
@@ -303,16 +314,21 @@ BEGIN {
 	DB_REGION_INIT
 	DB_REGION_MAGIC
 	DB_REGION_NAME
+	DB_REGISTER
 	DB_REGISTERED
 	DB_RENAMEMAGIC
 	DB_RENUMBER
+	DB_REP_ANYWHERE
+	DB_REP_BULKOVF
 	DB_REP_CLIENT
 	DB_REP_CREATE
 	DB_REP_DUPMASTER
 	DB_REP_EGENCHG
 	DB_REP_HANDLE_DEAD
 	DB_REP_HOLDELECTION
+	DB_REP_IGNORE
 	DB_REP_ISPERM
+	DB_REP_LOCKOUT
 	DB_REP_LOGREADY
 	DB_REP_LOGSONLY
 	DB_REP_MASTER
@@ -323,6 +339,7 @@ BEGIN {
 	DB_REP_OUTDATED
 	DB_REP_PAGEDONE
 	DB_REP_PERMANENT
+	DB_REP_REREQUEST
 	DB_REP_STARTUPDONE
 	DB_REP_UNAVAIL
 	DB_REVSPLITOFF
@@ -333,12 +350,14 @@ BEGIN {
 	DB_RUNRECOVERY
 	DB_SALVAGE
 	DB_SECONDARY_BAD
+	DB_SEQUENCE_OLDVER
 	DB_SEQUENCE_VERSION
 	DB_SEQUENTIAL
 	DB_SEQ_DEC
 	DB_SEQ_INC
 	DB_SEQ_RANGE_SET
 	DB_SEQ_WRAP
+	DB_SEQ_WRAPPED
 	DB_SET
 	DB_SET_LOCK_TIMEOUT
 	DB_SET_RANGE
@@ -414,6 +433,7 @@ BEGIN {
 	DB_VERB_CHKPOINT
 	DB_VERB_DEADLOCK
 	DB_VERB_RECOVERY
+	DB_VERB_REGISTER
 	DB_VERB_REPLICATION
 	DB_VERB_WAITSFOR
 	DB_VERIFY
@@ -434,6 +454,10 @@ BEGIN {
 	DB_YIELDCPU
 	DB_debug_FLAG
 	DB_user_BEGIN
+	REP_CONF_AUTOINIT
+	REP_CONF_BULK
+	REP_CONF_DELAYCLIENT
+	REP_CONF_NOWAIT
 	);
 
 sub AUTOLOAD {
@@ -493,7 +517,7 @@ sub ParseParameters($@)
     
     if (@Bad) {
         my ($bad) = join(", ", @Bad) ;
-        croak "unknown key value(s) @Bad" ;
+        croak "unknown key value(s) $bad" ;
     }
 
     return \%got ;
@@ -566,6 +590,7 @@ sub db_remove
 			Subname		=> undef,
 			Flags		=> 0,
 			Env		=> undef,
+			Txn		=> undef,
 		      }, @_) ;
 
     croak("Must specify a filename")
@@ -586,6 +611,7 @@ sub db_rename
 			Newname		=> undef,
 			Flags		=> 0,
 			Env		=> undef,
+			Txn		=> undef,
 		      }, @_) ;
 
     croak("Env not of type BerkeleyDB::Env")
@@ -594,8 +620,8 @@ sub db_rename
     croak("Must specify a filename")
 	if ! defined $got->{Filename} ;
 
-    croak("Must specify a Subname")
-	if ! defined $got->{Subname} ;
+    #croak("Must specify a Subname")
+    #if ! defined $got->{Subname} ;
 
     croak("Must specify a Newname")
 	if ! defined $got->{Newname} ;

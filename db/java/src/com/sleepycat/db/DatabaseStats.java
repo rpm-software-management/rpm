@@ -1,15 +1,14 @@
-/*
- *  -
- *  See the file LICENSE for redistribution information.
+/*-
+ * See the file LICENSE for redistribution information.
  *
- *  Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- *  $Id: DatabaseStats.java,v 1.2 2004/09/28 19:30:37 mjc Exp $
+ * $Id: DatabaseStats.java,v 12.4 2006/08/24 14:46:07 bostic Exp $
  */
 package com.sleepycat.db;
 
 public abstract class DatabaseStats {
 	// no public constructor
-	protected DatabaseStats() {}
+	/* package */ DatabaseStats() {}
 }

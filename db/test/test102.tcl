@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test102.tcl,v 1.9 2004/02/05 02:25:24 mjc Exp $
+# $Id: test102.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test102
 # TEST	Bulk get test for record-based methods. [#2934]

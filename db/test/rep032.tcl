@@ -1,42 +1,56 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep032.tcl,v 1.3 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep032.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	rep032
 # TEST	Test of log gap processing.
 # TEST
-# TEST	One master, one clients.
+# TEST	One master, one client.
 # TEST	Run rep_test.
 # TEST	Run rep_test without sending messages to client.
 # TEST  Make sure client missing the messages catches up properly.
 #
 proc rep032 { method { niter 200 } { tnum "032" } args } {
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Valid for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
+
 	set args [convert_args $method $args]
 	set logsets [create_logsets 2]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
-		foreach l $logsets {
-			set logindex [lsearch -exact $l "in-memory"]
-			if { $r == "-recover" && $logindex != -1 } {
-				puts "Rep$tnum: Skipping\
-				    for in-memory logs with -recover."
-				continue
+	set opts { "" "bulk" }
+	foreach r $test_recopts {
+		foreach b $opts {
+			foreach l $logsets {
+				set logindex [lsearch -exact $l "in-memory"]
+				if { $r == "-recover" && $logindex != -1 } {
+					puts "Rep$tnum: Skipping\
+					    for in-memory logs with -recover."
+					continue
+				}
+				puts "Rep$tnum ($method $r $b $args):\
+				    Test of log gap processing."
+				puts "Rep$tnum: Master logs are [lindex $l 0]"
+				puts "Rep$tnum: Client logs are [lindex $l 1]"
+				rep032_sub $method $niter $tnum $l $r $b $args
 			}
-			puts "Rep$tnum ($method $r $args):\
-			    Test of log gap processing."
-			puts "Rep$tnum: Master logs are [lindex $l 0]"
-			puts "Rep$tnum: Client logs are [lindex $l 1]"
-			rep032_sub $method $niter $tnum $l $r $args
 		}
 	}
 }
 
-proc rep032_sub { method niter tnum logset recargs largs } {
+proc rep032_sub { method niter tnum logset recargs opts largs } {
 	global testdir
 	global util_path
 
@@ -69,6 +83,9 @@ proc rep032_sub { method niter tnum logset recargs largs } {
 #	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
+	if { $opts == "bulk" } {
+		error_check_good bulk [$masterenv rep_config {bulk on}] 0
+	}
 
 	# Open a client
 	repladd 2
@@ -80,13 +97,15 @@ proc rep032_sub { method niter tnum logset recargs largs } {
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
-	# Bring the clients online by processing the startup messages.
+	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
 
 	# Run rep_test in the master (and update client).
 	puts "\tRep$tnum.a: Running rep_test in replicated env."
-	eval rep_test $method $masterenv NULL $niter 0 0 0 $largs
+	set start 0
+	eval rep_test $method $masterenv NULL $niter $start $start 0 0 $largs
+	incr start $niter
 	process_msgs $envlist
 
 	puts "\tRep$tnum.b: Check client processed everything properly."
@@ -98,7 +117,8 @@ proc rep032_sub { method niter tnum logset recargs largs } {
 	# Run rep_test in the master (don't update client).
 	# First run with dropping all client messages via replclear.
 	puts "\tRep$tnum.c: Running rep_test dropping client msgs."
-	eval rep_test $method $masterenv NULL $niter 0 0 0 $largs
+	eval rep_test $method $masterenv NULL $niter $start $start 0 0 $largs
+	incr start $niter
 	replclear 2
 	process_msgs $envlist
 
@@ -107,7 +127,8 @@ proc rep032_sub { method niter tnum logset recargs largs } {
 	# request missing pieces.
 	#
 	puts "\tRep$tnum.d: Running rep_test again replicated."
-	eval rep_test $method $masterenv NULL $niter 0 0 0 $largs
+	eval rep_test $method $masterenv NULL $niter $start $start 0 0 $largs
+	incr start $niter
 	process_msgs $envlist
 
 	puts "\tRep$tnum.e: Check we re-requested and had a backlog."
@@ -117,26 +138,31 @@ proc rep032_sub { method niter tnum logset recargs largs } {
 	error_check_bad request $request 0
 
 	puts "\tRep$tnum.f: Verify logs and databases"
+	#
+	# If doing bulk testing, turn it off now so that it forces us
+	# to flush anything currently in the bulk buffer.  We need to
+	# do this because rep_test might have aborted a transaction on
+	# its last iteration and those log records would still be in
+	# the bulk buffer causing the log comparison to fail.
+	#
+	if { $opts == "bulk" } {
+		puts "\tRep$tnum.f.1: Turn off bulk transfers."
+		error_check_good bulk [$masterenv rep_config {bulk off}] 0
+		process_msgs $envlist 0 NONE err
+	}
+
 	# Check that master and client logs and dbs are identical.
-	# Logs first ...
-	set stat [catch {eval exec $util_path/db_printlog \
-	    -h $masterdir > $masterdir/prlog} result]
-	error_check_good stat_mprlog $stat 0
-	set stat [catch {eval exec $util_path/db_printlog \
-	    -h $clientdir > $clientdir/prlog} result]
-	error_check_good stat_cprlog $stat 0
-	error_check_good log_cmp \
-	    [filecmp $masterdir/prlog $clientdir/prlog] 0
+	rep_verify $masterdir $masterenv $clientdir $clientenv
 
-	# ... now the databases.
-	set dbname "test.db"
-	set db1 [eval {berkdb_open -env $masterenv} $largs {-rdonly $dbname}]
-	set db2 [eval {berkdb_open -env $clientenv} $largs {-rdonly $dbname}]
+        set bulkxfer [stat_field $masterenv rep_stat "Bulk buffer transfers"]
+	if { $opts == "bulk" } {
+		error_check_bad bulkxferon $bulkxfer 0
+	} else {
+		error_check_good bulkxferoff $bulkxfer 0
+	}
 
-	error_check_good comparedbs [db_compare \
-	    $db1 $db2 $masterdir/$dbname $clientdir/$dbname] 0
-	error_check_good db1_close [$db1 close] 0
-	error_check_good db2_close [$db2 close] 0
+	check_log_location $masterenv
+	check_log_location $clientenv
 
 	error_check_good masterenv_close [$masterenv close] 0
 	error_check_good clientenv_close [$clientenv close] 0

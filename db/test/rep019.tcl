@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2001-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep019.tcl,v 11.7 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep019.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  rep019
 # TEST	Replication and multiple clients at same LSN.
@@ -12,19 +12,29 @@
 # TEST  verify all client logs are identical.
 #
 proc rep019 { method { nclients 3 } { tnum "019" } args } {
-	global mixed_mode_logging
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
 
 	# This test needs to use recovery, so mixed-mode testing
 	# isn't appropriate.
-	if { $mixed_mode_logging == 1 } {
+	global mixed_mode_logging
+	if { $mixed_mode_logging > 0 } {
 		puts "Rep$tnum: Skipping for mixed-mode logging."
 		return
 	}
 	set args [convert_args $method $args]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		puts "Rep$tnum ($method $r):\
 		    Replication and $nclients recovered clients in sync."
 		rep019_sub $method $nclients $tnum $r $args
@@ -46,9 +56,9 @@ proc rep019_sub { method nclients tnum recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create -txn nosync -lock_max 2500 \
+	set ma_envcmd "berkdb_env -create -txn nosync \
 	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create $m_txnargs -lock_max 2500 \
+#	set ma_envcmd "berkdb_env -create $m_txnargs \
 #	    -errpfx MASTER -verbose {rep on} \
 #	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
 	set menv [eval $ma_envcmd $recargs]
@@ -60,10 +70,10 @@ proc rep019_sub { method nclients tnum recargs largs } {
 		set id($i) [expr 2 + $i]
 		repladd $id($i)
 		set cl_envcmd($i) "berkdb_env -create -txn nosync \
-		    -lock_max 2500 -home $clientdir($i) \
+		    -home $clientdir($i) \
 		    -rep_client -rep_transport \[list $id($i) replsend\]"
 #		set cl_envcmd($i) "berkdb_env -create -txn nosync \
-#		    -lock_max 2500 -home $clientdir($i) \
+#		    -home $clientdir($i) \
 #		    -errpfx CLIENT$i -verbose {rep on} \
 #		    -rep_client -rep_transport \[list $id($i) replsend\]"
 		set clenv($i) [eval $cl_envcmd($i) $recargs]
@@ -85,7 +95,7 @@ proc rep019_sub { method nclients tnum recargs largs } {
 
 	# Run a modified test001 in the master (and update clients).
 	puts "\tRep$tnum.a: Running test001 in replicated env."
-	eval rep_test $method $menv $masterdb $niter 0 0
+	eval rep_test $method $menv $masterdb $niter 0 0 0 0 $largs
 	process_msgs $envlist
 
 	error_check_good mdb_cl [$masterdb close] 0

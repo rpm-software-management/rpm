@@ -207,7 +207,7 @@ public class PartKey implements Serializable
     }
 
     public String toString() {
-        return "[PartKey: number=" + number + ']';
+        return &quot;[PartKey: number=&quot; + number + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -254,10 +254,10 @@ public class PartData implements Serializable
 
     public String toString()
     {
-        return "[PartData: name=" + name +
-               " color=" + color +
-               " weight=" + weight +
-               " city=" + city + ']';
+        return &quot;[PartData: name=&quot; + name +
+               &quot; color=&quot; + color +
+               &quot; weight=&quot; + weight +
+               &quot; city=&quot; + city + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -271,8 +271,8 @@ public class PartData implements Serializable
 
 public class Weight implements Serializable
 {
-    public final static String GRAMS = "grams";
-    public final static String OUNCES = "ounces";
+    public final static String GRAMS = &quot;grams&quot;;
+    public final static String OUNCES = &quot;ounces&quot;;
 
     private double amount;
     private String units;
@@ -295,7 +295,7 @@ public class Weight implements Serializable
 
     public String toString()
     {
-        return "[" + amount + ' ' + units + ']';
+        return &quot;[&quot; + amount + ' ' + units + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -321,7 +321,7 @@ public class SupplierKey implements Serializable
 
     public String toString()
     {
-        return "[SupplierKey: number=" + number + ']';
+        return &quot;[SupplierKey: number=&quot; + number + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -361,9 +361,9 @@ public class SupplierData implements Serializable
 
     public String toString()
     {
-        return "[SupplierData: name=" + name +
-               " status=" + status +
-               " city=" + city + ']';
+        return &quot;[SupplierData: name=&quot; + name +
+               &quot; status=&quot; + status +
+               &quot; city=&quot; + city + ']';
     }
 }</tt></b>
 	</pre>
@@ -397,8 +397,8 @@ public class ShipmentKey implements Serializable
 
     public String toString()
     {
-        return "[ShipmentKey: supplier=" + supplierNumber +
-                " part=" + partNumber + ']';
+        return &quot;[ShipmentKey: supplier=&quot; + supplierNumber +
+                &quot; part=&quot; + partNumber + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -427,7 +427,7 @@ public class ShipmentData implements Serializable
 
     public String toString()
     {
-        return "[ShipmentData: quantity=" + quantity + ']';
+        return &quot;[ShipmentData: quantity=&quot; + quantity + ']';
     }
 }</tt></b> </pre>
       </div>

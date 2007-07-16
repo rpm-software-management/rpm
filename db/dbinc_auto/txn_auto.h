@@ -2,20 +2,42 @@
 
 #ifndef	__txn_AUTO_H
 #define	__txn_AUTO_H
-#define	DB___txn_regop	10
-typedef struct ___txn_regop_args {
+#define	DB___txn_regop_42	10
+typedef struct ___txn_regop_42_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	u_int32_t	opcode;
 	int32_t	timestamp;
 	DBT	locks;
+} __txn_regop_42_args;
+
+#define	DB___txn_regop	10
+typedef struct ___txn_regop_args {
+	u_int32_t type;
+	DB_TXN *txnp;
+	DB_LSN prev_lsn;
+	u_int32_t	opcode;
+	int32_t	timestamp;
+	u_int32_t	envid;
+	DBT	locks;
 } __txn_regop_args;
+
+#define	DB___txn_ckp_42	11
+typedef struct ___txn_ckp_42_args {
+	u_int32_t type;
+	DB_TXN *txnp;
+	DB_LSN prev_lsn;
+	DB_LSN	ckp_lsn;
+	DB_LSN	last_ckp;
+	int32_t	timestamp;
+	u_int32_t	rep_gen;
+} __txn_ckp_42_args;
 
 #define	DB___txn_ckp	11
 typedef struct ___txn_ckp_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	DB_LSN	ckp_lsn;
 	DB_LSN	last_ckp;
@@ -27,7 +49,7 @@ typedef struct ___txn_ckp_args {
 #define	DB___txn_child	12
 typedef struct ___txn_child_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	u_int32_t	child;
 	DB_LSN	c_lsn;
@@ -36,7 +58,7 @@ typedef struct ___txn_child_args {
 #define	DB___txn_xa_regop	13
 typedef struct ___txn_xa_regop_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	u_int32_t	opcode;
 	DBT	xid;
@@ -50,7 +72,7 @@ typedef struct ___txn_xa_regop_args {
 #define	DB___txn_recycle	14
 typedef struct ___txn_recycle_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	u_int32_t	min;
 	u_int32_t	max;

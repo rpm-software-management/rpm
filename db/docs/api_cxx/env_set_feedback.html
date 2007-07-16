@@ -1,5 +1,5 @@
-<!--$Id: env_set_feedback.so,v 10.42 2004/09/07 15:37:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_feedback.so,v 10.43 2006/05/17 20:47:46 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -23,8 +23,7 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbEnv::set_feedback(
-    void (*db_feedback_fcn)(DbEnv *dbenv, int opcode, int percent));
+DbEnv::set_feedback(void (*db_feedback_fcn)(DbEnv *dbenv, int opcode, int percent));
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::set_feedback</h3>
@@ -60,6 +59,10 @@ parameter may take on any of the following values:
 <dt><b>percent</b><dd>The <b>percent</b> parameter is the percent of the operation that has
 been completed, specified as an integer value between 0 and 100.
 </dl>
+<p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering Berkeley DB is not guaranteed to work correctly, and the results
+are undefined.</p>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -70,6 +73,6 @@ been completed, specified as an integer value between 0 and 100.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

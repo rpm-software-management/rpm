@@ -1,5 +1,5 @@
-<!--$Id: db_stat.so,v 10.45 2004/07/14 15:41:04 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_stat.so,v 10.46 2006/08/04 11:56:09 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -23,9 +23,7 @@ db_stat [<b>-cEelmNrtVZ</b>] [<b>-C Aclop</b>] [<b>-h home</b>] [<b>-L A</b>] [<
 <p>The db_stat utility displays statistics for Berkeley DB environments.</p>
 <p>The options are as follows:</p>
 <dl compact>
-<dt><b>-C</b><dd>Display internal information about the locking subsystem.  (The output
-from this option is often both voluminous and meaningless, and is
-intended only for debugging.)
+<dt><b>-C</b><dd>Display detailed information about the locking subsystem.
 <dl compact>
 <dt>A<dd>Display all information.
 <dt>c<dd>Display lock conflict matrix.
@@ -39,10 +37,7 @@ intended only for debugging.)
 <p>If the database contains multiple databases and the <b>-s</b> flag is
 not specified, the statistics are for the internal database that describes
 the other databases the file contains, and not for the file as a whole.</p>
-<dt><b>-E</b><dd>Display internal information about the database environment, including
-all configured subsystems of the database environment.  (The
-output from this option is often both voluminous and meaningless, and
-is intended only for debugging.)
+<dt><b>-E</b><dd>Display detailed information about the database environment.
 <dt><b>-e</b><dd>Display information about the database environment, including
 all configured subsystems of the database environment.
 <dt><b>-f</b><dd>Display only those database statistics that can be
@@ -50,9 +45,7 @@ acquired without traversing the database.
 <dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
 <dt><b>-l</b><dd>Display logging subsystem statistics, as described in <a href="../api_c/log_stat.html">DB_ENV-&gt;log_stat</a>.
-<dt><b>-M</b><dd>Display internal information about the cache.  (The output from this
-option is often both voluminous and meaningless, and is intended only
-for debugging.)
+<dt><b>-M</b><dd>Display detailed information about the cache.
 <dl compact>
 <dt>A<dd>Display all information.
 <dt>h<dd>Display buffers within hash chains.
@@ -67,9 +60,7 @@ password strings as soon as possible, be aware there may be a window of
 vulnerability on systems where unprivileged users can see command-line
 arguments or where utilities are not able to overwrite the memory
 containing the command-line arguments.
-<dt><b>-R</b><dd>Display internal information about the replication subsystem.  (The
-output from this option is often both voluminous and meaningless, and
-is intended only for debugging.)
+<dt><b>-R</b><dd>Display detailed information about the replication subsystem.
 <dl compact>
 <dt>A<dd>Display all information.
 </dl>
@@ -104,6 +95,6 @@ DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

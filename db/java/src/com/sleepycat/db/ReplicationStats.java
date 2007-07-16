@@ -3,15 +3,15 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 
 package com.sleepycat.db;
 
 public class ReplicationStats {
     // no public constructor
-    protected ReplicationStats() {}
+    /* package */ ReplicationStats() {}
 
     private int st_status;
     public int getStatus() {
@@ -51,6 +51,41 @@ public class ReplicationStats {
     private int st_env_priority;
     public int getEnvPriority() {
         return st_env_priority;
+    }
+
+    private int st_bulk_fills;
+    public int getBulkFills() {
+        return st_bulk_fills;
+    }
+
+    private int st_bulk_overflows;
+    public int getBulkOverflows() {
+        return st_bulk_overflows;
+    }
+
+    private int st_bulk_records;
+    public int getBulkRecords() {
+        return st_bulk_records;
+    }
+
+    private int st_bulk_transfers;
+    public int getBulkTransfers() {
+        return st_bulk_transfers;
+    }
+
+    private int st_client_rerequests;
+    public int getClientRerequests() {
+        return st_client_rerequests;
+    }
+
+    private int st_client_svc_req;
+    public int getClientSvcReq() {
+        return st_client_svc_req;
+    }
+
+    private int st_client_svc_miss;
+    public int getClientSvcMiss() {
+        return st_client_svc_miss;
     }
 
     private int st_gen;
@@ -228,6 +263,16 @@ public class ReplicationStats {
         return st_election_votes;
     }
 
+    private int st_election_sec;
+    public int getElectionSec() {
+        return st_election_sec;
+    }
+
+    private int st_election_usec;
+    public int getElectionUsec() {
+        return st_election_usec;
+    }
+
     public String toString() {
         return "ReplicationStats:"
             + "\n  st_status=" + st_status
@@ -238,6 +283,13 @@ public class ReplicationStats {
             + "\n  st_dupmasters=" + st_dupmasters
             + "\n  st_env_id=" + st_env_id
             + "\n  st_env_priority=" + st_env_priority
+            + "\n  st_bulk_fills=" + st_bulk_fills
+            + "\n  st_bulk_overflows=" + st_bulk_overflows
+            + "\n  st_bulk_records=" + st_bulk_records
+            + "\n  st_bulk_transfers=" + st_bulk_transfers
+            + "\n  st_client_rerequests=" + st_client_rerequests
+            + "\n  st_client_svc_req=" + st_client_svc_req
+            + "\n  st_client_svc_miss=" + st_client_svc_miss
             + "\n  st_gen=" + st_gen
             + "\n  st_egen=" + st_egen
             + "\n  st_log_duplicated=" + st_log_duplicated
@@ -273,6 +325,8 @@ public class ReplicationStats {
             + "\n  st_election_status=" + st_election_status
             + "\n  st_election_tiebreaker=" + st_election_tiebreaker
             + "\n  st_election_votes=" + st_election_votes
+            + "\n  st_election_sec=" + st_election_sec
+            + "\n  st_election_usec=" + st_election_usec
             ;
     }
 }

@@ -60,9 +60,9 @@
       <pre class="programlisting">public class SampleDatabase
 {
     ...
-<b class="userinput"><tt>    private static final String SUPPLIER_STORE = "supplier_store";
-    private static final String PART_STORE = "part_store";
-    private static final String SHIPMENT_STORE = "shipment_store";</tt></b>
+<b class="userinput"><tt>    private static final String SUPPLIER_STORE = &quot;supplier_store&quot;;
+    private static final String PART_STORE = &quot;part_store&quot;;
+    private static final String SHIPMENT_STORE = &quot;shipment_store&quot;;</tt></b>
     ...
 <b class="userinput"><tt>    private Database supplierDb;
     private Database partDb;
@@ -91,8 +91,7 @@
         supplierDb = env.openDatabase(null, SUPPLIER_STORE, null, dbConfig);
         shipmentDb = env.openDatabase(null, SHIPMENT_STORE, null, dbConfig);</tt></b>
         ...
-    }
-	</pre>
+    } </pre>
       <p>
     The database configuration object that was used previously for
 	opening the catalog database is reused for opening the three
@@ -112,8 +111,7 @@
         shipmentDb.close();</tt></b>
         javaCatalog.close();
         env.close();
-    }
-	</pre>
+    } </pre>
       <p>
     All databases, including the catalog database, must be closed
 	before closing the environment.

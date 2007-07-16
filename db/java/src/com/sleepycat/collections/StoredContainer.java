@@ -1,14 +1,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredContainer.java,v 1.2 2004/06/02 20:59:38 mark Exp $
+ * $Id: StoredContainer.java,v 12.6 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.sleepycat.compat.DbCompat;
+import com.sleepycat.db.CursorConfig;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.OperationStatus;
 import com.sleepycat.util.RuntimeExceptionWrapper;
@@ -18,17 +23,6 @@ import com.sleepycat.util.RuntimeExceptionWrapper;
  * provides implementations of methods that are common to the {@link
  * java.util.Collection} and the {@link java.util.Map} interfaces, namely
  * {@link #clear}, {@link #isEmpty} and {@link #size}.
- *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
  *
  * <p>In addition, this class provides the following methods for stored
  * collections only.  Note that the use of these methods is not compatible with
@@ -40,8 +34,7 @@ import com.sleepycat.util.RuntimeExceptionWrapper;
  * <li>{@link #areDuplicatesAllowed()}</li>
  * <li>{@link #areDuplicatesOrdered()}</li>
  * <li>{@link #areKeysRenumbered()}</li>
- * <li>{@link #isDirtyReadAllowed()}</li>
- * <li>{@link #isDirtyRead()}</li>
+ * <li>{@link #getCursorConfig()}</li>
  * <li>{@link #isTransactional()}</li>
  * </ul>
  *
@@ -70,37 +63,50 @@ public abstract class StoredContainer implements Cloneable {
     }
 
     /**
-     * Returns whether dirty-read is allowed for this container.
-     * For the JE product, dirty-read is always allowed; for the DB product,
-     * dirty-read is allowed if it was configured for the underlying database
-     * for this container.
-     * Even when dirty-read is allowed it must specifically be enabled by
+     * Returns the cursor configuration that is used for all operations
+     * performed via this container.
+     * For example, if <code>CursorConfig.getReadUncommitted</code> returns
+     * true, data will be read that is modified but not committed.
+     * This method does not exist in the standard {@link java.util.Map} or
+     * {@link java.util.Collection} interfaces.
+     *
+     * @return the cursor configuration, or null if no configuration has been
+     * specified.
+     */
+    public final CursorConfig getCursorConfig() {
+
+        return DbCompat.cloneCursorConfig(view.cursorConfig);
+    }
+
+    /**
+     * Returns whether read-uncommitted is allowed for this container.
+     * For the JE product, read-uncommitted is always allowed; for the DB
+     * product, read-uncommitted is allowed if it was configured for the
+     * underlying database for this container.
+     * Even when read-uncommitted is allowed it must specifically be enabled by
      * calling one of the {@link StoredCollections} methods.
      * This method does not exist in the standard {@link java.util.Map} or
      * {@link java.util.Collection} interfaces.
      *
-     * @return whether dirty-read is allowed.
+     * @return whether read-uncommitted is allowed.
+     *
+     * @deprecated This method is deprecated with no replacement in this class.
+     * In the DB product, <code>DatabaseConfig.getReadUncommitted</code> may be
+     * called.
      */
     public final boolean isDirtyReadAllowed() {
 
-        return view.dirtyReadAllowed;
+        return view.readUncommittedAllowed;
     }
 
     /**
-     * Returns whether dirty-read is enabled for this container.
-     * If dirty-read is enabled, data will be read that is modified but not
-     * committed.
-     * Dirty-read is disabled by default.
-     * This method always returns false if {@link #isDirtyReadAllowed} returns
-     * false.
-     * This method does not exist in the standard {@link java.util.Map} or
-     * {@link java.util.Collection} interfaces.
-     *
-     * @return whether dirty-read is enabled.
+     * @deprecated This method has been replaced by {@link #getCursorConfig}.
+     * <code>CursorConfig.isReadUncommitted</code> may be called to determine
+     * whether dirty-read is enabled.
      */
     public final boolean isDirtyRead() {
 
-        return view.dirtyReadEnabled;
+        return view.cursorConfig.getReadUncommitted();
     }
 
     /**
@@ -120,17 +126,22 @@ public abstract class StoredContainer implements Cloneable {
     }
 
     /**
-     * Clones and enables dirty-read in the clone.
+     * Clones a container with a specified cursor configuration.
      */
-    final StoredContainer dirtyReadClone() {
+    final StoredContainer configuredClone(CursorConfig config) {
 
-        if (!isDirtyReadAllowed())
-            return this;
         try {
             StoredContainer cont = (StoredContainer) clone();
-            cont.view = cont.view.dirtyReadView(true);
+            cont.view = cont.view.configuredView(config);
+            cont.initAfterClone();
             return cont;
         } catch (CloneNotSupportedException willNeverOccur) { return null; }
+    }
+
+    /**
+     * Override this method to initialize view-dependent fields.
+     */
+    void initAfterClone() {
     }
 
     /**
@@ -138,6 +149,8 @@ public abstract class StoredContainer implements Cloneable {
      * Duplicates are optionally allowed for HASH and BTREE databases.
      * This method does not exist in the standard {@link java.util.Map} or
      * {@link java.util.Collection} interfaces.
+     *
+     * <p>Note that the JE product only supports BTREE databases.</p>
      *
      * @return whether duplicates are allowed.
      */
@@ -152,6 +165,9 @@ public abstract class StoredContainer implements Cloneable {
      * This method does not exist in the standard {@link java.util.Map} or
      * {@link java.util.Collection} interfaces.
      *
+     * <p>Note that the JE product only supports BTREE databases, and
+     * duplicates are always sorted.</p>
+     *
      * @return whether duplicates are ordered.
      */
     public final boolean areDuplicatesOrdered() {
@@ -165,6 +181,9 @@ public abstract class StoredContainer implements Cloneable {
      * This method does not exist in the standard {@link java.util.Map} or
      * {@link java.util.Collection} interfaces.
      *
+     * <p>Note that the JE product does not support RECNO databases, and
+     * therefore keys are never renumbered.</p>
+     *
      * @return whether keys are renumbered.
      */
     public final boolean areKeysRenumbered() {
@@ -177,6 +196,9 @@ public abstract class StoredContainer implements Cloneable {
      * Keys are ordered for BTREE, RECNO and QUEUE database.
      * This method does not exist in the standard {@link java.util.Map} or
      * {@link java.util.Collection} interfaces.
+     *
+     * <p>Note that the JE product only support BTREE databases, and
+     * therefore keys are always ordered.</p>
      *
      * @return whether keys are ordered.
      */
@@ -199,20 +221,21 @@ public abstract class StoredContainer implements Cloneable {
     }
 
     /**
-     * Always throws UnsupportedOperationException.  The size of a database
-     * cannot be obtained reliably or inexpensively.
-     * This method therefore violates the {@link java.util.Collection#size} and
-     * {@link java.util.Map#size} interfaces.
+     * Returns the number of records in the collection or map.
+     * This method conforms to the {@link java.util.Collection#size} and {@link
+     * java.util.Map#size} interfaces.
      *
-     * @return always throws an exception.
+     * <p>Note that if other threads are adding or removing records while this
+     * method is executing, the size returned may be incorrect.  This method
+     * does not lock the database.</p>
      *
-     * @throws UnsupportedOperationException unconditionally.
+     * <p>Also note that, for a large database, this method may be expensive.
+     * All non-duplicate records in the database are enumerated by this method,
+     * bringing them into memory if they are not already cached.</p>
+     *
+     * @throws RuntimeExceptionWrapper if a {@link DatabaseException} is thrown.
      */
-    public int size() {
-
-        throw new UnsupportedOperationException(
-            "collection size not available");
-    }
+    public abstract int size();
 
     /**
      * Returns true if this map or collection contains no mappings or elements.
@@ -302,7 +325,8 @@ public abstract class StoredContainer implements Cloneable {
                 if (oldVal != null && oldVal[0] == null) {
                     oldVal[0] = cursor.getCurrentValue();
                 }
-                status = cursor.getNextDup(true);
+                status = areDuplicatesAllowed() ?
+                    cursor.getNextDup(true): OperationStatus.NOTFOUND;
             }
             closeCursor(cursor);
             commitAutoCommit(doAutoCommit);
@@ -333,7 +357,7 @@ public abstract class StoredContainer implements Cloneable {
         boolean doAutoCommit = beginAutoCommit();
         try {
             cursor = new DataCursor(view, true);
-            OperationStatus status = cursor.find(value, true);
+            OperationStatus status = cursor.findValue(value, true);
             if (status == OperationStatus.SUCCESS) {
                 cursor.delete();
             }
@@ -351,12 +375,26 @@ public abstract class StoredContainer implements Cloneable {
         DataCursor cursor = null;
         try {
             cursor = new DataCursor(view, false);
-            OperationStatus status = cursor.find(value, true);
+            OperationStatus status = cursor.findValue(value, true);
             return (status == OperationStatus.SUCCESS);
         } catch (Exception e) {
             throw StoredContainer.convertException(e);
         } finally {
             closeCursor(cursor);
+        }
+    }
+
+    /**
+     * Returns a StoredIterator if the given collection is a StoredCollection,
+     * else returns a regular/external Iterator.  The iterator returned should
+     * be closed with the static method StoredIterator.close(Iterator).
+     */
+    final Iterator storedOrExternalIterator(Collection coll) {
+
+        if (coll instanceof StoredCollection) {
+            return ((StoredCollection) coll).storedIterator();
+        } else {
+            return coll.iterator();
         }
     }
 
@@ -374,9 +412,9 @@ public abstract class StoredContainer implements Cloneable {
     final boolean beginAutoCommit() {
 
         if (view.transactional) {
+            CurrentTransaction currentTxn = view.getCurrentTxn();
             try {
-                CurrentTransaction currentTxn = view.getCurrentTxn();
-                if (currentTxn.getTransaction() == null) {
+                if (currentTxn.isAutoCommitAllowed()) {
                     currentTxn.beginTransaction(null);
                     return true;
                 }
@@ -399,6 +437,7 @@ public abstract class StoredContainer implements Cloneable {
             try {
                 view.getCurrentTxn().abortTransaction();
             } catch (DatabaseException ignored) {
+		/* Klockwork - ok */
             }
         }
         return StoredContainer.convertException(e);

@@ -1,28 +1,20 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_compat.c,v 11.46 2004/10/07 16:48:39 bostic Exp $
+ * $Id: tcl_compat.c,v 12.4 2006/08/24 14:46:32 bostic Exp $
  */
 
 #include "db_config.h"
-
 #ifdef CONFIG_TEST
 
+#define	DB_DBM_HSEARCH	1
+#include "db_int.h"
 #ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
 #include <tcl.h>
 #endif
-
-#define	DB_DBM_HSEARCH 1
-
-#include "db_int.h"
 #include "dbinc/tcl_db.h"
 
 /*

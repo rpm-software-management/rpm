@@ -45,6 +45,19 @@ JAVA_TYPEMAP(_ctype, _jtype, jobject)
 %}
 %enddef
 
+JAVA_STAT_CLASS(DB_COMPACT *, com.sleepycat.db.CompactStats, compact)
+%typemap(freearg) DB_COMPACT * %{ __dbj_fill_compact(jenv, $input, $1); %}
+%typemap(in) DB_COMPACT * (DB_COMPACT compact) %{
+        memset(&compact, 0, sizeof (DB_COMPACT));
+        $1 = &compact;
+        $1->compact_fillpercent = (*jenv)->GetIntField(jenv, $input,
+            compact_compact_fillpercent_fid);
+        $1->compact_timeout = (*jenv)->GetIntField(jenv, $input,
+            compact_compact_timeout_fid);
+        $1->compact_pages = (*jenv)->GetIntField(jenv, $input,
+            compact_compact_pages_fid);
+%}
+
 JAVA_STAT_CLASS(DB_LOCK_STAT *, com.sleepycat.db.LockStats, lock_stat)
 JAVA_STAT_CLASS(DB_LOG_STAT *, com.sleepycat.db.LogStats, log_stat)
 JAVA_STAT_CLASS(DB_MPOOL_STAT *, com.sleepycat.db.CacheStats, mpool_stat)
@@ -52,11 +65,12 @@ JAVA_STAT_CLASS(DB_MPOOL_STAT *, com.sleepycat.db.CacheStats, mpool_stat)
 JAVA_TYPEMAP(DB_MPOOL_FSTAT **, com.sleepycat.db.CacheFileStats[], jobjectArray)
 %typemap(out) DB_MPOOL_FSTAT ** {
 	int i, len;
-	
+
 	len = 0;
 	while ($1[len] != NULL)
 		len++;
-	$result = (*jenv)->NewObjectArray(jenv, (jsize)len, mpool_fstat_class, 0);
+	$result = (*jenv)->NewObjectArray(jenv, (jsize)len,
+	    mpool_fstat_class, 0);
 	if ($result == NULL) {
 		__os_ufree(NULL, $1);
 		return $null;
@@ -74,6 +88,7 @@ JAVA_TYPEMAP(DB_MPOOL_FSTAT **, com.sleepycat.db.CacheFileStats[], jobjectArray)
 	__os_ufree(NULL, $1);
 }
 
+JAVA_STAT_CLASS(DB_MUTEX_STAT *, com.sleepycat.db.MutexStats, mutex_stat)
 JAVA_STAT_CLASS(DB_REP_STAT *, com.sleepycat.db.ReplicationStats, rep_stat)
 JAVA_STAT_CLASS(DB_SEQUENCE_STAT *, com.sleepycat.db.SequenceStats, seq_stat)
 JAVA_TYPEMAP(DB_TXN_STAT *, com.sleepycat.db.TransactionStats, jobject)
@@ -83,14 +98,15 @@ JAVA_TYPEMAP(DB_TXN_STAT *, com.sleepycat.db.TransactionStats, jobject)
 	$result = (*jenv)->NewObject(jenv, txn_stat_class, txn_stat_construct);
 	if ($result != NULL)
 		__dbj_fill_txn_stat(jenv, $result, $1);
-	
+
 	actives = (*jenv)->NewObjectArray(jenv, (jsize)$1->st_nactive,
 	    txn_active_class, 0);
 	if (actives == NULL) {
 		__os_ufree(NULL, $1);
 		return $null;
 	}
-	(*jenv)->SetObjectField(jenv, $result, txn_stat_st_txnarray_fid, actives);
+	(*jenv)->SetObjectField(jenv, $result,
+	    txn_stat_st_txnarray_fid, actives);
 	for (i = 0; i < $1->st_nactive; i++) {
 		jobject obj = (*jenv)->NewObject(jenv, txn_active_class,
 		    txn_active_construct);
@@ -112,12 +128,12 @@ JAVA_TYPEMAP(DB_TXN_STAT *, com.sleepycat.db.TransactionStats, jobject)
 		DB *db = (DB *)arg1;
 		DBTYPE dbtype;
 		int err;
-		
+
 		if ((err = db->get_type(db, &dbtype)) != 0) {
 			__dbj_throw(jenv, err, NULL, NULL, DB2JDBENV);
 			return $null;
 		}
-		
+
 		switch (dbtype) {
 			/* Btree and recno share the same stat structure */
 		case DB_BTREE:
@@ -152,7 +168,7 @@ JAVA_TYPEMAP(DB_TXN_STAT *, com.sleepycat.db.TransactionStats, jobject)
 			    " BTREE, HASH, QUEUE and RECNO", NULL, DB2JDBENV);
 			break;
 		}
-		
+
 		__os_ufree(db->dbenv, $1);
 	}
 %}

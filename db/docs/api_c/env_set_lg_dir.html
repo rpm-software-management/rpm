@@ -1,5 +1,5 @@
 <!--$Id: env_set_lg_dir.so,v 10.25 2004/09/28 15:04:21 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -38,10 +38,10 @@ environment home directory.   See <a href="../ref/env/naming.html">Berkeley DB F
 <p>For the greatest degree of recoverability from system or application
 failure, database files and log files should be located on separate
 physical devices.</p>
-<p>The database environment's logging directory may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_lg_dir", one or more whitespace characters,
-and the directory name.
+<p>The database environment's logging directory may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_lg_dir", one or more whitespace
+characters, and the directory name.
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
 before that time.</p>
@@ -61,8 +61,9 @@ and 0 on success.
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>dir</b><dd>The <b>dir</b> parameter is the directory used to store the logging files.
-<p>On Windows, the <b>dir</b> argument will be interpreted as a UTF-8
-string, which is equivalent to ASCII for Latin characters.</p>
+<p>When using a Unicode build on Windows (the default), the <b>dir</b>
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.</p>
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;set_lg_dir method
@@ -94,6 +95,6 @@ log directory in <b>dirp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

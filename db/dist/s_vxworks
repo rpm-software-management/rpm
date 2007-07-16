@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_vxworks,v 1.52 2004/10/15 18:28:21 bostic Exp $
+#	$Id: s_vxworks,v 12.13 2006/09/13 16:57:49 bostic Exp $
 #
 # Build the VxWorks files.
 
@@ -29,15 +29,17 @@ i\\
 #endif
 }
 /@inttypes_h_decl@/d
-/@stdint_h_decl@/d
 /@stddef_h_decl@/d
+/@stdint_h_decl@/d
+/@unistd_h_decl@/d
+/@thread_h_decl@/d
 s/@u_int8_decl@/typedef unsigned char u_int8_t;/
 /@int16_decl@/d
 s/@u_int16_decl@/typedef unsigned short u_int16_t;/
 /@int32_decl@/d
 s/@u_int32_decl@/typedef unsigned int u_int32_t;/
 s/@int64_decl@//
-s/@u_int64_decl@//
+s/@u_int64_decl@/typedef unsigned long long u_int64_t;/
 /@u_char_decl@/d
 /@u_short_decl@/d
 /@u_int_decl@/d
@@ -46,6 +48,8 @@ s/@u_int64_decl@//
 s/@uintmax_t_decl@/typedef unsigned long uintmax_t;/
 s/@uintptr_t_decl@/typedef unsigned long uintptr_t;/
 s/@db_seq_decl@/typedef int db_seq_t;/
+/@pid_t_decl@/d
+s/@db_threadid_t_decl@/typedef uintmax_t db_threadid_t;/
 s/@DB_VERSION_MAJOR@/$DB_VERSION_MAJOR/
 s/@DB_VERSION_MINOR@/$DB_VERSION_MINOR/
 s/@DB_VERSION_PATCH@/$DB_VERSION_PATCH/
@@ -54,11 +58,14 @@ s/@DB_VERSION_UNIQUE_NAME@//
 s/@DB_CONST@//
 s/@DB_PROTO1@/#undef __P/
 s/@DB_PROTO2@/#define	__P(protos)	protos/
+/@platform_header@/d
+/@platform_footer@/d
 ENDOFSEDTEXT
 (echo "$msgc" &&
     sed -f $s ../dbinc/db.in &&
     cat ../dbinc_auto/ext_prot.in) > $t
-`egrep '@.*@' $t` && {
+test `egrep '@.*@' $t` && {
+	egrep '@.*@' $t
 	echo 'Unexpanded autoconf variables found in VxWorks db.h.'
 	exit 1
 }
@@ -67,11 +74,14 @@ cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
 cat <<ENDOFSEDTEXT > $s
+s/@INT64_FMT@/#define	INT64_FMT	"%lld"/
+s/@UINT64_FMT@/#define	UINT64_FMT	"%llu"/
 s/@PATH_SEPARATOR@/\/\\\\\\\\/
 s/@db_int_def@//
 ENDOFSEDTEXT
 (echo "$msgc" && sed -f $s ../dbinc/db_int.in) > $t
-`egrep '@.*@' $t` && {
+test `egrep '@.*@' $t` && {
+	egrep '@.*@' $t
 	echo 'Unexpanded autoconf variables found in VxWorks db_int.h.'
 	exit 1
 }
@@ -79,6 +89,21 @@ f=../build_vxworks/db_int.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
+# Build the VxWorks db_config.h file.
+# We don't fail, but we complain if the vx_config.in file isn't up-to-date.
+check_config()
+{
+	egrep '^#undef' config.hin |
+	    awk '{print $2}' | sed '/^SIZEOF_/d' | sort > $s
+	(egrep '#undef' $1 | awk '{print $3}'
+	 egrep '^#define' $1 | awk '{print $2}') | sort > $t
+	cmp $s $t || {
+		echo "config.hin and $1 differ"
+		echo "<<< config.hin >>> $1"
+		diff $s $t
+	}
+}
+check_config vx_config.in
 f=../build_vxworks/db_config.h
 (echo "$msgc" && sed "s/__EDIT_DB_VERSION__/$DB_VERSION/" vx_config.in) > $t
 cmp $t $f > /dev/null 2>&1 ||
@@ -96,6 +121,10 @@ f=../build_vxworks/db_config_small.h
     vx_config.in) > $t
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+
+f=../build_vxworks/clib_port.h
+cmp clib_port.h $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp clib_port.h $f && chmod 444 $f)
 
 # Build a sed script that will change a "standard" DB utility into
 # VxWorks-compatible code.
@@ -163,8 +192,8 @@ ENDOFSEDTEXT
 	echo '#include <db_int.h>'
 }
 
-PROGRAM_LIST="db_archive db_checkpoint db_deadlock db_dump db_load \
-    db_printlog db_recover db_stat db_upgrade db_verify ex_access"
+PROGRAM_LIST="db_archive db_checkpoint db_deadlock db_dump db_hotbackup \
+    db_load db_printlog db_recover db_stat db_upgrade db_verify ex_access"
 
 # Build VxWorks versions of the utilities.
 for i in $PROGRAM_LIST; do
@@ -184,21 +213,80 @@ for i in $PROGRAM_LIST; do
 	    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 done
 
+# Output the build lines for a single utility.
+#	$1 == application name
+util_one()
+{
+	egrep "app=$1" srcfiles.in |
+	awk '{print $1}' |
+	sed 's/ex_access/dbdemo/' > $u
+
+	# Build a list of source files.
+	for i in `cat $u`; do
+		if test "$1" = "ex_access" -o "$1" = `basename $i .c`; then
+			i=`basename $i`
+		else
+			i="\$(PRJ_DIR)/../../$i"
+		fi
+		o="<BEGIN> FILE_$i"
+		
+		echo "${o}_dependDone"
+		echo "FALSE"
+		echo "<END>"
+		echo
+		echo "${o}_dependencies"
+		echo "<END>"
+		echo
+		echo "${o}_objects"
+		echo "`basename $i .c`.o"
+		echo "<END>"
+		echo
+		echo "${o}_tool"
+		echo "C/C++ compiler"
+		echo "<END>"
+		echo
+	done
+	echo "<BEGIN> PROJECT_FILES"
+	for i in `cat $u`; do
+		if test "$1" = "ex_access" -o "$1" = `basename $i .c`; then
+			i="`basename $i`"
+		else
+			i="../../$i"
+		fi
+		echo "\$(PRJ_DIR)/$i"
+	done |
+	sed -e '${' \
+	    -e 'p' \
+	    -e 'd' \
+	    -e '}' \
+	    -e 's/$/ \\/'
+	echo "<END>"
+	echo
+	echo "<BEGIN> userComments"
+	if test "$1" = "ex_access"; then
+		echo "dbdemo"
+	else
+		echo "$1"
+	fi
+	echo "<END>"
+}
+
 # Build VxWorks Tornado 2.0 project files for the utilities.
 for i in $PROGRAM_LIST; do
 	if [ $i = "ex_access" ]; then
 		target=dbdemo
-		dir=../examples_c
 	else
 		target=$i
-		dir=../$i
 	fi
 
-	sed "s/__DB_APPLICATION_NAME__/$target/g" < vx_2.0/wpj.in > $t
+	(sed -e "s/__DB_APPLICATION_NAME__/$target/g" < vx_2.0/wpj.in
+	    util_one $i) > $t
 	f=../build_vxworks/$target/${target}20.wpj
 	cmp $t $f > /dev/null 2>&1 ||
 	    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
-	sed "s/__DB_APPLICATION_NAME__/$target/g" < vx_2.2/wpj.in > $t
+
+	(sed -e "s/__DB_APPLICATION_NAME__/$target/g" < vx_2.2/wpj.in
+	    util_one $i) > $t
 	f=../build_vxworks/$target/${target}22.wpj
 	cmp $t $f > /dev/null 2>&1 ||
 	    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
@@ -291,4 +379,3 @@ for v in 0 2 ; do
 	cmp $u $f > /dev/null 2>&1 ||
 	    (echo "Building $f" && rm -f $f && cp $u $f && chmod 444 $f)
 done
-

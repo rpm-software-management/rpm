@@ -1,12 +1,10 @@
 /*-
- *  Copyright (c) 2004
- *  Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2004-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0.txt
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
- *  authors: Thies C. Arntzen <thies@php.net>
- *           Sterling Hughes <sterling@php.net>
- *           George Schlossnagle <george@omniti.com>
+ * authors: George Schlossnagle <george@omniti.com>
  */
 
 #ifndef PHP_DB4_H

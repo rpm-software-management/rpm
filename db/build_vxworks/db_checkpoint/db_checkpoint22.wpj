@@ -168,13 +168,11 @@ PENTIUM2gnu
 <BEGIN> CORE_INFO_VERSION
 2.2
 <END>
-
 <BEGIN> FILE_db_checkpoint.c_dependDone
 FALSE
 <END>
 
 <BEGIN> FILE_db_checkpoint.c_dependencies
-
 <END>
 
 <BEGIN> FILE_db_checkpoint.c_objects

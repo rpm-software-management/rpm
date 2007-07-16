@@ -1,19 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_upg_opd.c,v 11.21 2004/03/19 16:10:26 bostic Exp $
+ * $Id: db_upg_opd.c,v 12.7 2006/08/24 14:45:16 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -24,16 +18,16 @@ static int __db_build_ri __P((DB *, DB_FH *, PAGE *, PAGE *, u_int32_t, int *));
 static int __db_up_ovref __P((DB *, DB_FH *, db_pgno_t));
 
 #define	GET_PAGE(dbp, fhp, pgno, page) {				\
-	if ((ret = __os_seek(dbp->dbenv,				\
-	    fhp, (dbp)->pgsize, pgno, 0, 0, DB_OS_SEEK_SET)) != 0)	\
+	if ((ret = __os_seek(						\
+	    dbp->dbenv, fhp, pgno, (dbp)->pgsize, 0)) != 0)		\
 		goto err;						\
 	if ((ret = __os_read(dbp->dbenv,				\
 	    fhp, page, (dbp)->pgsize, &n)) != 0)			\
 		goto err;						\
 }
 #define	PUT_PAGE(dbp, fhp, pgno, page) {				\
-	if ((ret = __os_seek(dbp->dbenv,				\
-	    fhp, (dbp)->pgsize, pgno, 0, 0, DB_OS_SEEK_SET)) != 0)	\
+	if ((ret = __os_seek(						\
+	    dbp->dbenv, fhp, pgno, (dbp)->pgsize, 0)) != 0)		\
 		goto err;						\
 	if ((ret = __os_write(dbp->dbenv,				\
 	    fhp, page, (dbp)->pgsize, &n)) != 0)			\
@@ -224,7 +218,7 @@ __db_build_bi(dbp, fhp, ipage, page, indx, nomemp)
 		p = P_ENTRY(dbp, ipage, indx);
 
 		bi.len = child_bi->len;
-		B_TSET(bi.type, child_bi->type, 0);
+		B_TSET(bi.type, child_bi->type);
 		bi.pgno = PGNO(page);
 		bi.nrecs = __bam_total(dbp, page);
 		memcpy(p, &bi, SSZA(BINTERNAL, data));
@@ -251,7 +245,7 @@ __db_build_bi(dbp, fhp, ipage, page, indx, nomemp)
 			p = P_ENTRY(dbp, ipage, indx);
 
 			bi.len = child_bk->len;
-			B_TSET(bi.type, child_bk->type, 0);
+			B_TSET(bi.type, child_bk->type);
 			bi.pgno = PGNO(page);
 			bi.nrecs = __bam_total(dbp, page);
 			memcpy(p, &bi, SSZA(BINTERNAL, data));
@@ -269,7 +263,7 @@ __db_build_bi(dbp, fhp, ipage, page, indx, nomemp)
 			p = P_ENTRY(dbp, ipage, indx);
 
 			bi.len = BOVERFLOW_SIZE;
-			B_TSET(bi.type, child_bk->type, 0);
+			B_TSET(bi.type, child_bk->type);
 			bi.pgno = PGNO(page);
 			bi.nrecs = __bam_total(dbp, page);
 			memcpy(p, &bi, SSZA(BINTERNAL, data));

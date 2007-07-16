@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2001-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sijointest.tcl,v 11.7 2004/11/01 16:01:39 carol Exp $
+# $Id: sijointest.tcl,v 12.4 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	sijointest: Secondary index and join test.
 # TEST 	This used to be si005.tcl.
@@ -38,7 +38,7 @@ proc sijointest { methods {nentries 1000} args } {
 	set omethods [convert_methods $methods]
 
 	puts "Secondary index join test."
-	puts "sijoin  \{\[ list $pmethod $methods \]\} $nentries" 
+	puts "sijoin  \{\[ list $pmethod $methods \]\} $nentries"
 	env_cleanup $testdir
 
 	set pname "sijoin-primary.db"

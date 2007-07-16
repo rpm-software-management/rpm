@@ -1,5 +1,5 @@
-<!--$Id: notes.so,v 10.27 2004/01/28 00:03:04 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: notes.so,v 10.32 2006/09/15 18:54:47 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -17,6 +17,44 @@
 <p>
 <h3 align=center>Windows notes</h3>
 <ol>
+<p><li>Berkeley DB does not support the Windows/95 platform.
+<p><li>Berkeley DB does not support replication on the Windows/98 or Windows/ME
+platforms.
+<p><li>On Windows/98 and Windows/ME, files opened by multiple processes do not
+share data correctly.  For this reason, the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag
+is implied for any application not specifying the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a>
+flag, causing the system paging file to be used for sharing data.
+<p><li>On Windows/98 and Windows/ME, removing or renaming a file using the
+<a href="../../api_c/env_dbremove.html">DB_ENV-&gt;dbremove</a>, <a href="../../api_c/env_dbrename.html">DB_ENV-&gt;dbrename</a>, <a href="../../api_c/db_remove.html">DB-&gt;remove</a> or
+<a href="../../api_c/db_rename.html">DB-&gt;rename</a> methods may fail if another thread of control has the file
+open for any reason, including checkpointing or flushing pages from the
+underlying shared database environment cache.  There is no workaround
+for this problem other than re-attempting the operation after the other
+thread of control has closed its Berkeley DB handles.
+<p><li>On Windows, system paging file memory is freed on last close.  For this
+reason, multiple processes sharing a database environment created using
+the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag must arrange for at least one process to
+always have the environment open, or alternatively that any process
+joining the environment be prepared to re-create it.
+<p>If a system memory environment is closed by all processes, subsequent
+attempts to open it will return an error.  To successfully open a
+transactional environment in this state, recovery must be run by the
+next process to open the environment.  For non-transactional
+environments, applications should remove the existing environment and
+then create a new database environment.</p>
+<p><li>When using the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag, Berkeley DB shared regions are
+created without ACLs, which means that the regions are only accessible
+to a single user.  If wider sharing is appropriate (for example, both
+user applications and Windows/NT service applications need to access
+the Berkeley DB regions), the Berkeley DB code will need to be modified to create
+the shared regions with the correct ACLs.  Alternatively, by not
+specifying the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag, filesystem-backed regions
+will be created instead, and the permissions on those files may be
+directly specified through the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method.
+<p><li>Applications that operate on wide character strings can use the
+Windows function WideCharToMultiByte with the code page CP_UTF8 to
+convert paths to the form expected by Berkeley DB.  Internally, Berkeley DB calls
+MultiByteToWideChar on paths before calling Windows functions.
 <p><li>Various Berkeley DB methods take a <b>mode</b> argument, which is intended
 to specify the underlying file permissions for created files.  Berkeley DB
 currently ignores this argument on Windows systems.
@@ -29,45 +67,9 @@ with an obvious race.</p>
 <p>Practically speaking, however, these efforts would be largely meaningless
 on a FAT file system, which only has a "readable" and "writable" flag,
 applying to all users.</p>
-<p><li>On Windows, Berkeley DB supports internationalized filenames by treating all
-directory paths and filenames passed to Berkeley DB methods as UTF-8 strings.
-All paths are internally converted to wide character strings and passed
-to the wide character variants of Windows system calls.
-<p>This allows applications to create and open databases with names that
-cannot be represented with ASCII names while maintaining compatibility
-with applications that work purely with ASCII paths.</p>
-<p>Applications that operate on wide character strings can use the Windows
-function WideCharToMultiByte with the code page CP_UTF8 to convert paths
-to the form expected by Berkeley DB.  Internally, Berkeley DB calls MultiByteToWideChar
-on paths before calling Windows functions.</p>
-<p><li>On Windows/9X, files opened by multiple processes do not share data
-correctly.  For this reason, the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag is implied
-for any application that does not specify the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag,
-causing the system paging file to be used for sharing data.
-<p><li>On all Windows platforms, system paging file memory is freed on last
-close.  For this reason, multiple processes sharing a database
-environment created using the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag must arrange
-for at least one process to always have the environment open, or
-alternatively that any process joining the environment be prepared to
-re-create it.
-<p>If a system memory environment is closed by all processes, subsequent
-attempts to open it will return an error.  To successfully open a
-transactional environment in this state, recovery must be run by the
-next process to open the environment.  For non-transactional
-environments, applications must first remove the environment and then
-reopen with the <a href="../../api_c/env_open.html#DB_CREATE">DB_CREATE</a> flag.</p>
-<p><li>When using the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag, Berkeley DB shared regions are
-created without ACLs, which means that the regions are only accessible
-to a single user.  If wider sharing is appropriate (for example, both
-user applications and Windows/NT service applications need to access
-the Berkeley DB regions), the Berkeley DB code will need to be modified to create
-the shared regions with the correct ACLs.  Alternatively, by not
-specifying the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag, filesystem-backed regions
-will be created instead, and the permissions on those files may be
-directly specified through the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method.
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_win/test.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

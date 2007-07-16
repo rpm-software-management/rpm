@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sdbutils.tcl,v 11.16 2004/01/28 03:36:30 bostic Exp $
+# $Id: sdbutils.tcl,v 12.4 2006/08/24 14:46:39 bostic Exp $
 #
 proc build_all_subdb { dbname methods psize dups {nentries 100} {dbargs ""}} {
 	set nsubdbs [llength $dups]
@@ -34,17 +34,17 @@ proc subdb_build { name nkeys ndups dup_interval method psize subdb dbargs} {
 	}
 	# Create the database and open the dictionary
 	set oflags "-create -mode 0644 $omethod \
-	    -pagesize $psize $dbargs $name $subdb"
+	    -pagesize $psize $dbargs {$name} $subdb"
 	set db [eval {berkdb_open} $oflags]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	set did [open $dict]
 	set count 0
 	if { $ndups >= 0 } {
-		puts "\tBuilding $method $name $subdb. \
+		puts "\tBuilding $method {$name} $subdb. \
 	$nkeys keys with $ndups duplicates at interval of $dup_interval"
 	}
 	if { $ndups < 0 } {
-		puts "\tBuilding $method $name $subdb. \
+		puts "\tBuilding $method {$name} $subdb. \
 		    $nkeys unique keys of pagesize $psize"
 		#
 		# If ndups is < 0, we want unique keys in each subdb,
@@ -116,14 +116,14 @@ proc do_join_subdb { db primary subdbs key oargs } {
 	puts "\tJoining: $subdbs on $key"
 
 	# Open all the databases
-	set p [eval {berkdb_open -unknown} $oargs $db $primary]
+	set p [eval {berkdb_open -unknown} $oargs { $db } $primary]
 	error_check_good "primary open" [is_valid_db $p] TRUE
 
 	set dblist ""
 	set curslist ""
 
 	foreach i $subdbs {
-		set jdb [eval {berkdb_open -unknown} $oargs $db sub$i.db]
+		set jdb [eval {berkdb_open -unknown} $oargs { $db } sub$i.db]
 		error_check_good "sub$i.db open" [is_valid_db $jdb] TRUE
 
 		lappend jlist [list $jdb $key]

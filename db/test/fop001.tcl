@@ -1,20 +1,32 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: fop001.tcl,v 1.21 2004/09/22 18:01:04 bostic Exp $
+# $Id: fop001.tcl,v 12.6 2006/08/24 14:46:35 bostic Exp $
 #
 # TEST	fop001.tcl
 # TEST	Test file system operations, combined in a transaction. [#7363]
-proc fop001 { method args } {
+proc fop001 { method { inmem 0 } args } {
 	source ./include.tcl
 
 	set args [convert_args $method $args]
 	set omethod [convert_method $method]
 
-	puts "\nFop001: ($method)\
-	    Multiple file system ops in one transaction."
+	# The variable inmem determines whether the test is being
+	# run with regular named databases or named in-memory databases.
+	if { $inmem == 0 } {
+		set tnum "001"
+		set string "regular named databases"
+		set operator do_op
+	} else {
+		set tnum "007"
+		set string "in-memory named databases"
+		set operator do_inmem_op
+	}
+
+	puts "\nFop$tnum: ($method)\
+	    Two file system ops in one transaction for $string."
 
 	set exists {a b}
 	set noexist {foo bar}
@@ -57,7 +69,7 @@ proc fop001 { method args } {
 	# Comment this loop out to remove the list of cases.
 #	set i 1
 #	foreach case $cases {
-#		puts "\tFop001:$i: $case"
+#		puts "\tFop$tnum:$i: $case"
 #		incr i
 #	}
 
@@ -77,23 +89,33 @@ proc fop001 { method args } {
 		set names2 [lindex [lindex $case 1] 1]
 		set res2 [lindex [lindex $case 1] 2]
 
-		puts "\tFop001.$testid: $op1 ($names1), then $op2 ($names2)."
+		puts "\tFop$tnum.$testid: $op1 ($names1), then $op2 ($names2)."
 
 		# Create transactional environment.
 		set env [berkdb_env -create -home $testdir -txn]
 		error_check_good is_valid_env [is_valid_env $env] TRUE
 
-		# Create two databases
-		set dba [eval {berkdb_open \
-		    -create} $omethod $args -env $env -auto_commit a]
+		# Create two databases, dba and dbb.
+		if { $inmem == 0 } {
+			set dba [eval {berkdb_open -create} \
+			    $omethod $args -env $env -auto_commit a]
+		} else {
+			set dba [eval {berkdb_open -create} \
+			    $omethod $args -env $env -auto_commit { "" a }]
+		}
 		error_check_good dba_open [is_valid_db $dba] TRUE
-		error_check_good dba_put [$dba put -auto_commit 1 a] 0
+		error_check_good dba_put [$dba put 1 a] 0
 		error_check_good dba_close [$dba close] 0
 
-		set dbb [eval {berkdb_open \
-		    -create} $omethod $args -env $env -auto_commit b]
+		if { $inmem == 0 } {
+			set dbb [eval {berkdb_open -create} \
+			    $omethod $args -env $env -auto_commit b]
+		} else {
+			set dbb [eval {berkdb_open -create} \
+			    $omethod $args -env $env -auto_commit { "" b }]
+		}
 		error_check_good dbb_open [is_valid_db $dbb] TRUE
-		error_check_good dbb_put [$dbb put -auto_commit 1 b] 0
+		error_check_good dbb_put [$dbb put 1 b] 0
 		error_check_good dbb_close [$dbb close] 0
 
 		foreach end {abort commit} {
@@ -101,8 +123,8 @@ proc fop001 { method args } {
 			set txn [$env txn]
 
 			# Execute and check operation 1
-			set result1 [do_op $omethod $op1 $names1 $txn $env $args]
-			if {$res1 == 0} {
+			set result1 [$operator $omethod $op1 $names1 $txn $env $args]
+			if { $res1 == 0 } {
 				error_check_good op1_should_succeed $result1 $res1
 			} else {
 				set error [extract_error $result1]
@@ -110,8 +132,8 @@ proc fop001 { method args } {
 			}
 
 			# Execute and check operation 2
-			set result2 [do_op $omethod $op2 $names2 $txn $env $args]
-			if {$res2 == 0} {
+			set result2 [$operator $omethod $op2 $names2 $txn $env $args]
+			if { $res2 == 0 } {
 				error_check_good op2_should_succeed $result2 $res2
 			} else {
 				set error [extract_error $result2]
@@ -123,11 +145,18 @@ proc fop001 { method args } {
 
 			# If the txn was aborted, we still have the original two
 			# databases.
-			if {$end == "abort"} {
-				error_check_good a_exists \
-				    [file exists $testdir/a] 1
-				error_check_good b_exists \
-				    [file exists $testdir/b] 1
+			if { $end == "abort" } {
+				if { $inmem == 1 } {
+					error_check_good a_exists \
+					    [inmem_exists $testdir a] 1
+					error_check_good b_exists \
+					    [inmem_exists $testdir b] 1
+				} else {
+					error_check_good a_exists \
+					    [file exists $testdir/a] 1
+					error_check_good b_exists \
+					    [file exists $testdir/b] 1
+				}
 			}
 		}
 
@@ -146,4 +175,45 @@ proc fop001 { method args } {
 	}
 }
 
+# This is a real hack.  We need to figure out if an in-memory named
+# file exists.  In a perfect world we could use mpool stat.  Unfortunately,
+# mpool_stat returns files that have deadfile set and we need to not consider
+# those files to be meaningful.  So, we are parsing the output of db_stat -MA
+# (I told you this was a hack)  If we ever change the output, this is going
+# to break big time.  Here is what we assume:
+# A file is represented by: File #N name
+# The last field printed for a file is Flags
+# If the file is dead, deadfile will show up in the flags
+proc inmem_exists { dir filename } {
+      set infile 0
+      set islive 0
+      set name ""
+      set s [exec ./db_stat -MA -h $dir]
+      foreach i $s {
+              if { $i == "File" } {
+                      set infile 1
+                      set islive 1
+                      set name ""
+              } elseif { $i == "Flags" } {
+                      set infile 0
+                      if { $name != "" && $islive } {
+                              return 1
+                      }
+              } elseif { $infile != 0 } {
+                      incr infile
+              }
+
+              if { $islive && $i == "deadfile" } {
+                      set islive 0
+              }
+
+              if { $infile == 3 } {
+                      if { $i == $filename } {
+                              set name $filename
+                      }
+              }
+      }
+
+      return 0
+}
 

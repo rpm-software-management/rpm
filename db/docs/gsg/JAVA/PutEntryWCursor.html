@@ -42,10 +42,7 @@
     </p>
       <p>
         Note that when putting records to the database using a cursor, the
-        cursor is positioned at the record you inserted. Also, you can not
-        transactionally protect a put that is performed using a cursor; 
-        if you want to transactionall protect your database writes,
-        put recrods using the database handle directly.
+        cursor is positioned at the record you inserted. 
     </p>
       <div class="itemizedlist">
         <ul type="disc">
@@ -140,7 +137,7 @@
       </div>
       <p>For example:</p>
       <a id="java_cursor7"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
     
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.Database;
@@ -150,11 +147,11 @@ import com.sleepycat.db.OperationStatus;
 ...
   
 // Create the data to put into the database
-String key1str = "My first string";
-String data1str = "My first data";
-String key2str = "My second string";
-String data2str = "My second data";
-String data3str = "My third data";
+String key1str = &quot;My first string&quot;;
+String data1str = &quot;My first data&quot;;
+String key2str = &quot;My second string&quot;;
+String data2str = &quot;My second data&quot;;
+String data3str = &quot;My third data&quot;;
   
 Cursor cursor = null;
 Database myDatabase = null;
@@ -163,11 +160,11 @@ try {
     // Database open omitted for brevity
     ...
 
-    DatabaseEntry key1 = new DatabaseEntry(key1str.getBytes("UTF-8"));
-    DatabaseEntry data1 = new DatabaseEntry(data1str.getBytes("UTF-8"));
-    DatabaseEntry key2 = new DatabaseEntry(key2str.getBytes("UTF-8"));
-    DatabaseEntry data2 = new DatabaseEntry(data2str.getBytes("UTF-8"));
-    DatabaseEntry data3 = new DatabaseEntry(data3str.getBytes("UTF-8"));
+    DatabaseEntry key1 = new DatabaseEntry(key1str.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry data1 = new DatabaseEntry(data1str.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry key2 = new DatabaseEntry(key2str.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry data2 = new DatabaseEntry(data2str.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry data3 = new DatabaseEntry(data3str.getBytes(&quot;UTF-8&quot;));
 
     // Open a cursor using a database handle
     cursor = myDatabase.openCursor(null, null);

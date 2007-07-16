@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: TpcbExample.cpp,v 11.33 2004/01/28 03:36:05 bostic Exp $
+ * $Id: TpcbExample.cpp,v 12.5 2006/08/24 14:45:49 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -45,8 +45,7 @@ public:
 	// not fully initialized until the DbEnv::open() method
 	// is called.
 	//
-	TpcbExample(const char *home, int cachesize,
-		    int initializing, int flags);
+	TpcbExample(const char *home, int cachesize, int flags);
 
 private:
 	static const char FileName[];
@@ -208,8 +207,7 @@ main(int argc, char *argv[])
 		// Must be done in within a try block, unless you
 		// change the error model in the environment options.
 		//
-		TpcbExample app(home, mpool, iflag,
-				txn_no_sync ? DB_TXN_NOSYNC : 0);
+		TpcbExample app(home, mpool, txn_no_sync ? DB_TXN_NOSYNC : 0);
 
 		if (iflag) {
 			if (ntxns != 0)
@@ -248,8 +246,7 @@ usage()
 	return (EXIT_FAILURE);
 }
 
-TpcbExample::TpcbExample(const char *home, int cachesize,
-			 int initializing, int flags)
+TpcbExample::TpcbExample(const char *home, int cachesize, int flags)
 :	DbEnv(0)
 {
 	u_int32_t local_flags;
@@ -263,9 +260,8 @@ TpcbExample::TpcbExample(const char *home, int cachesize,
 		set_flags(DB_TXN_NOSYNC, 1);
 	flags &= ~(DB_TXN_NOSYNC);
 
-	local_flags = flags | DB_CREATE | DB_INIT_MPOOL;
-	if (!initializing)
-		local_flags |= DB_INIT_TXN | DB_INIT_LOCK | DB_INIT_LOG;
+	local_flags = flags | DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG |
+	    DB_INIT_MPOOL | DB_INIT_TXN;
 	open(home, local_flags, 0);
 }
 
@@ -290,7 +286,7 @@ TpcbExample::populate(int accounts, int branches, int history, int tellers)
 	dbp->set_h_nelem((unsigned int)accounts);
 
 	if ((err = dbp->open(NULL, "account", NULL, DB_HASH,
-			     DB_CREATE | DB_TRUNCATE, 0644)) != 0) {
+			     DB_CREATE, 0644)) != 0) {
 		DbException except("Account file create failed", err);
 		throw except;
 	}
@@ -319,7 +315,7 @@ TpcbExample::populate(int accounts, int branches, int history, int tellers)
 	dbp->set_pagesize(512);
 
 	if ((err = dbp->open(NULL, "branch", NULL, DB_HASH,
-			     DB_CREATE | DB_TRUNCATE, 0644)) != 0) {
+			     DB_CREATE, 0644)) != 0) {
 		DbException except("Branch file create failed", err);
 		throw except;
 	}
@@ -347,7 +343,7 @@ TpcbExample::populate(int accounts, int branches, int history, int tellers)
 	dbp->set_pagesize(512);
 
 	if ((err = dbp->open(NULL, "teller", NULL, DB_HASH,
-			     DB_CREATE | DB_TRUNCATE, 0644)) != 0) {
+			     DB_CREATE, 0644)) != 0) {
 		DbException except("Teller file create failed", err);
 		throw except;
 	}
@@ -368,7 +364,7 @@ TpcbExample::populate(int accounts, int branches, int history, int tellers)
 	dbp = new Db(this, 0);
 	dbp->set_re_len(HISTORY_LEN);
 	if ((err = dbp->open(NULL, "history", NULL, DB_RECNO,
-			     DB_CREATE | DB_TRUNCATE, 0644)) != 0) {
+			     DB_CREATE, 0644)) != 0) {
 		DbException except("Create of history file failed", err);
 		throw except;
 	}
@@ -473,9 +469,8 @@ void
 TpcbExample::run(int n, int accounts, int branches, int tellers)
 {
 	Db *adb, *bdb, *hdb, *tdb;
-	double gtps, itps;
-	int failed, ifailed, ret, txns;
-	time_t starttime, curtime, lasttime;
+	int failed, ret, txns;
+	time_t start_time, end_time;
 
 	//
 	// Open the database files.
@@ -510,39 +505,24 @@ TpcbExample::run(int n, int accounts, int branches, int tellers)
 		throw except;
 	}
 
-	txns = failed = ifailed = 0;
-	starttime = time(NULL);
-	lasttime = starttime;
-	while (n-- > 0) {
-		txns++;
-		ret = txn(adb, bdb, tdb, hdb, accounts, branches, tellers);
-		if (ret != 0) {
-			failed++;
-			ifailed++;
-		}
-		if (n % 5000 == 0) {
-			curtime = time(NULL);
-			gtps = (double)(txns - failed) / (curtime - starttime);
-			itps = (double)(5000 - ifailed) / (curtime - lasttime);
-
-			// We use printf because it provides much simpler
-			// formatting than iostreams.
-			//
-			printf("%d txns %d failed ", txns, failed);
-			printf("%6.2f TPS (gross) %6.2f TPS (interval)\n",
-			    gtps, itps);
-			lasttime = curtime;
-			ifailed = 0;
-		}
-	}
+	(void)time(&start_time);
+	for (txns = n, failed = 0; n-- > 0;)
+		if ((ret = txn(adb, bdb, tdb, hdb,
+		    accounts, branches, tellers)) != 0)
+			++failed;
+	(void)time(&end_time);
+	if (end_time == start_time)
+		++end_time;
+	// We use printf because it provides much simpler
+	// formatting than iostreams.
+	//
+	printf("%s: %d txns: %d failed, %.2f TPS\n", progname, txns, failed,
+	    (txns - failed) / (double)(end_time - start_time));
 
 	(void)adb->close(0);
 	(void)bdb->close(0);
 	(void)tdb->close(0);
 	(void)hdb->close(0);
-
-	cout << (long)txns << " transactions begun "
-	     << (long)failed << " failed\n";
 }
 
 //
@@ -567,9 +547,9 @@ TpcbExample::txn(Db *adb, Db *bdb, Db *tdb, Db *hdb,
 	Dbt k_dbt;
 	Dbt k_histdbt(&key, sizeof(key));
 
-	//
-	// XXX We could move a lot of this into the driver to make this
-	// faster.
+	// !!!
+	// This is sample code -- we could move a lot of this into the driver
+	// to make it faster.
 	//
 	account = random_id(ACCOUNT, accounts, branches, tellers);
 	branch = random_id(BRANCH, accounts, branches, tellers);
@@ -588,7 +568,12 @@ TpcbExample::txn(Db *adb, Db *bdb, Db *tdb, Db *hdb,
 	// Request 0 bytes since we're just positioning.
 	d_histdbt.set_flags(DB_DBT_PARTIAL);
 
-	// START TIMING
+	// START PER-TRANSACTION TIMING.
+	//
+	// Technically, TPCB requires a limit on response time, you only get
+	// to count transactions that complete within 2 seconds.  That's not
+	// an issue for this sample application -- regardless, here's where
+	// the transaction begins.
 	if (txn_begin(NULL, &t, 0) != 0)
 		goto err;
 
@@ -636,7 +621,7 @@ TpcbExample::txn(Db *adb, Db *bdb, Db *tdb, Db *hdb,
 	if (ret != 0)
 		goto err;
 
-	// END TIMING
+	// END PER-TRANSACTION TIMING.
 	return (0);
 
 err:

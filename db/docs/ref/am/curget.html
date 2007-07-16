@@ -1,5 +1,5 @@
 <!--$Id: curget.so,v 10.20 2003/10/18 19:15:52 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -89,6 +89,7 @@ display(database)
 		    "%s: db_create: %s\n", progname, db_strerror(ret));
 		return (1);
 	}
+	close_db = 1;
 <p>
 	/* Turn on additional error output. */
 	dbp-&gt;set_errfile(dbp, stderr);
@@ -106,6 +107,7 @@ display(database)
 		dbp-&gt;err(dbp, ret, "DB-&gt;cursor");
 		goto err;
 	}
+	close_dbc = 1;
 <p>
 	/* Initialize the key/data return pair. */
 	memset(&key, 0, sizeof(key));
@@ -130,6 +132,6 @@ err:	if (close_dbc && (ret = dbcp-&gt;c_close(dbcp)) != 0)
 }</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am/cursor.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/curput.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

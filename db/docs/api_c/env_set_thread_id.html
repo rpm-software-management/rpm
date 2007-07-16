@@ -1,0 +1,123 @@
+<!--$Id: env_set_thread_id.so,v 10.9 2006/08/24 16:32:23 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;set_thread_id</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;set_thread_id</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;set_thread_id(DB_ENV *dbenv,
+    void (*thread_id)(DB_ENV *dbenv, pid_t *pid, db_threadid_t *tid));
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_thread_id</h3>
+<p>Declare a function that returns a unique identifier pair for the current
+thread of control.  The DB_ENV-&gt;set_thread_id method supports the
+<a href="../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method.  For more information, see
+<a href="../ref/cam/app.html">Architecting Data Store and Concurrent
+Data Store applications</a>, and <a href="../ref/transapp/app.html">Architecting Transactional Data Store applications</a>.</p>
+<p>The DB_ENV-&gt;set_thread_id method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DB_ENV-&gt;set_thread_id method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;set_thread_id method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>thread_id</b><dd>The <b>thread_id</b> parameter is a function which returns a unique
+identifier pair for a thread of control in a Berkeley DB application.  The
+function takes three arguments:
+<dl compact>
+<dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment
+handle, allowing application access to the application-private fields
+of that object.
+<dt><b>pid</b><dd>The <b>pid</b> points to a memory location of type pid_t.  The
+process ID of the current thread of control may be returned in
+this memory location.
+<dt><b>tid</b><dd>The <b>tid</b> points to a memory location of type db_threadid_t.  The
+thread ID of the current thread of control may be returned in this
+memory location.
+</dl>
+</dl>
+<p>The standard system library calls to return process and thread IDs are
+often sufficient for this purpose (for example, getpid() and
+pthread_self() on POSIX systems or GetCurrentThreadID on Windows
+systems).  However, if the Berkeley DB application dynamically creates
+processes or threads, some care may be necessary in assigning unique
+IDs.  In most threading systems, process and thread IDs are available
+for re-use as soon as the process or thread exits.  If a new process or
+thread is created between the time of process or thread exit, and the
+<a href="../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method is run, it may be possible for
+<a href="../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> to not detect that a thread of control exited
+without properly releasing all Berkeley DB resources.</p>
+<p>It may be possible to handle this problem by inhibiting process or
+thread creation between thread of control exit and calling
+<a href="../api_c/env_failchk.html">DB_ENV-&gt;failchk</a>.  Alternatively, the <b>thread_id</b> function
+must be constructed to not re-use <b>pid</b>/<b>tid</b> pairs.  For
+example, in a single process application, the returned process ID might
+be used as an incremental counter, with the returned thread ID set to
+the actual thread ID.  Obviously, the <b>is_alive</b> function
+specified to the <a href="../api_c/env_set_isalive.html">DB_ENV-&gt;set_isalive</a> method must be compatible with any
+<b>thread_id</b> function specified to DB_ENV-&gt;set_thread_id.</p>
+<p>The db_threadid_t type is configured to be the same type as a standard
+thread identifier, in Berkeley DB configurations where this type is known (for
+example, systems supporting pthread_t or thread_t, or DWORD on Windows).
+If the Berkeley DB configuration process is unable to determine the type of a
+standard thread identifier, the db_thread_t type is set to uintmax_t (or
+the largest available unsigned integral type, on systems lacking the
+uintmax_t type).  Applications running on systems lacking a detectable
+standard thread type, and which are also using thread APIs where a
+thread identifier is not an integral value and so will not fit into the
+configured db_threadid_t type, must either translate between the
+db_threadid_t type and the thread identifier (mapping the thread
+identifier to a unique identifier of the appropriate size), or modify
+the Berkeley DB sources to use an appropriate db_threadid_t type.  Note: we
+do not currently know of any systems where this is necessary.  If your
+application has to solve this problem, please contact our support group
+and let us know.</p>
+<p>If no <b>thread_id</b> function is specified by the application, the
+Berkeley DB library will identify threads of control by using the taskIdSelf()
+call on VxWorks, the getpid() and GetCurrentThreadID() calls on Windows,
+the getpid() and pthread_self() calls when the Berkeley DB library has been
+configured for POSIX pthreads or Solaris LWP threads, the getpid() and
+thr_self() calls when the Berkeley DB library has been configured for UI
+threads, and otherwise getpid().</p>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;set_thread_id method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

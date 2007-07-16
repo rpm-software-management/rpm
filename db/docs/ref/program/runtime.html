@@ -1,5 +1,5 @@
-<!--$Id: runtime.so,v 10.35 2004/03/06 14:49:34 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: runtime.so,v 10.36 2006/06/08 13:04:29 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -15,11 +15,11 @@
 </td></tr></table>
 <p>
 <h3 align=center>Run-time configuration</h3>
-<p>It is possible to configure Berkeley DB at run-time so applications can
-redirect all Berkeley DB calls to underlying library or system call
-functionality.  For example, an application might want Berkeley DB to call
-debugging memory allocation routines rather than the standard C library
-interfaces.  The following interfaces support this functionality:</p>
+<p>It is possible for applications to configure Berkeley DB at run-time to
+redirect Berkeley DB library and system calls to alternate interfaces.  For
+example, an application might want Berkeley DB to call debugging memory
+allocation routines rather than the standard C library interfaces.  The
+following interfaces support this functionality:</p>
 <blockquote><pre><a href="../../api_c/set_func_close.html">db_env_set_func_close</a>
 <a href="../../api_c/set_func_dirfree.html">db_env_set_func_dirfree</a>
 <a href="../../api_c/set_func_dirlist.html">db_env_set_func_dirlist</a>
@@ -42,8 +42,8 @@ interfaces.  The following interfaces support this functionality:</p>
 <a href="../../api_c/set_func_unmap.html">db_env_set_func_unmap</a>
 <a href="../../api_c/set_func_write.html">db_env_set_func_write</a>
 <a href="../../api_c/set_func_yield.html">db_env_set_func_yield</a></pre></blockquote>
-<p>These interfaces are available only from the Berkeley DB C language API, and
-are not available from all of the operating systems Berkeley DB supports.</p>
+<p>These interfaces are available only on POSIX platforms and from the
+Berkeley DB C language API.</p>
 <p>A not-uncommon problem for applications is the new API in Solaris 2.6
 for manipulating large files.  Because this API was not part of Solaris
 2.5, it is difficult to create a single binary that takes advantage of
@@ -54,6 +54,6 @@ written using previous versions of the Berkeley DB APIs, and is only useful
 as an example.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/compatible.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

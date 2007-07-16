@@ -1,0 +1,83 @@
+<!--$Id: env_set_isalive.so,v 10.4 2006/01/27 16:13:48 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;set_isalive</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;set_isalive</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;set_isalive(DB_ENV *dbenv,
+    int (*is_alive)(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, u_int32_t flags));
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_isalive</h3>
+<p>Declare a function that returns if a thread of control (either a true
+thread or a process) is still running.  The DB_ENV-&gt;set_isalive method
+supports the <a href="../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method.  For more information, see
+<a href="../ref/cam/app.html">Architecting Data Store and Concurrent
+Data Store applications</a>, and <a href="../ref/transapp/app.html">Architecting Transactional Data Store applications</a>.</p>
+<p>The DB_ENV-&gt;set_isalive method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DB_ENV-&gt;set_isalive method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;set_isalive method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>is_alive</b><dd>The <b>is_alive</b> parameter is a function which returns non-zero if
+the thread of control, identified by the <b>pid</b> and <b>tid</b>
+arguments, is still running.  The function takes four arguments:
+<dl compact>
+<dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment
+handle, allowing application access to the application-private fields
+of that object.
+<dt><b>pid</b><dd>The <b>pid</b> parameter is a process ID returned by the function
+specified to the <a href="../api_c/env_set_thread_id.html">DB_ENV-&gt;set_thread_id</a> method.
+<dt><b>tid</b><dd>The <b>tid</b> parameter is a thread ID returned by the function
+specified to the <a href="../api_c/env_set_thread_id.html">DB_ENV-&gt;set_thread_id</a> method.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+the following value:
+<dl compact>
+<dt><a name="DB_MUTEX_PROCESS_ONLY">DB_MUTEX_PROCESS_ONLY</a><dd>Return only if the process is alive, the thread ID should be ignored.
+</dl>
+</dl>
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;set_isalive method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

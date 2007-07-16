@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep035.tcl,v 11.3 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep035.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  	rep035
 # TEST	Test sync-up recovery in replication.
@@ -19,8 +19,17 @@
 # TEST 	New master performs 1 operation, replicates and downgrades.
 
 proc rep035 { method { niter 100 } { tnum "035" } args } {
-	global passwd
-	global has_crypto
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Valid for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
 
 	set saved_args $args
 	set logsets [create_logsets 3]
@@ -36,10 +45,9 @@ proc rep035 { method { niter 100 } { tnum "035" } args } {
 	}
 }
 
-proc rep035_sub { method niter tnum envargs logset args } {
+proc rep035_sub { method niter tnum envargs logset largs } {
 	source ./include.tcl
 	global testdir
-	global encrypt
 
 	env_cleanup $testdir
 
@@ -68,11 +76,11 @@ proc rep035_sub { method niter tnum envargs logset args } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(M) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs -home $masterdir $m_logargs \
 	    -errpfx MASTER -errfile /dev/stderr $m_txnargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(M) "berkdb_env_noerr -create -lock_max 2500 \
+#	set env_cmd(M) "berkdb_env_noerr -create \
 #	    -log_max 1000000 $envargs -home $masterdir $m_logargs \
 #	    -errpfx MASTER -errfile /dev/stderr $m_txnargs -rep_master \
 #	    -verbose {rep on} \
@@ -82,11 +90,11 @@ proc rep035_sub { method niter tnum envargs logset args } {
 
 	# Open two clients
 	repladd 2
-	set env_cmd(C1) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(C1) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs -home $clientdir1 $c_logargs \
 	    -errfile /dev/stderr -errpfx CLIENT $c_txnargs -rep_client \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(C1) "berkdb_env_noerr -create -lock_max 2500 \
+#	set env_cmd(C1) "berkdb_env_noerr -create \
 #	    -log_max 1000000 $envargs -home $clientdir1 $c_logargs \
 #	    -errfile /dev/stderr -errpfx CLIENT $c_txnargs -rep_client \
 #	    -verbose {rep on} \
@@ -96,11 +104,11 @@ proc rep035_sub { method niter tnum envargs logset args } {
 
 	# Second client needs lock_detect flag.
 	repladd 3
-	set env_cmd(C2) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(C2) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs -home $clientdir2 $c2_logargs \
 	    -errpfx CLIENT2 -errfile /dev/stderr $c2_txnargs -rep_client \
 	    -lock_detect default -rep_transport \[list 3 replsend\]"
-#	set env_cmd(C2) "berkdb_env_noerr -create -lock_max 2500 \
+#	set env_cmd(C2) "berkdb_env_noerr -create \
 #	    -log_max 1000000 $envargs -home $clientdir2 $c2_logargs \
 #	    -errpfx CLIENT2 -errfile /dev/stderr $c2_txnargs -rep_client \
 #	    -verbose {rep on} \
@@ -175,13 +183,13 @@ proc rep035_sub { method niter tnum envargs logset args } {
 	for { set i 0 } { $i < $niter } { incr i } {
 
 		# Do a few ops
-		eval rep_test $method $masterenv $masterdb 2 $i $i
+		eval rep_test $method $masterenv $masterdb 2 $i $i 0 0 $largs
 		set envlist "{$masterenv $mid} {$clientenv $cid} {$env3 3}"
 		process_msgs $envlist
 
 		# Do one op on master and process messages and drop
 		# to clientenv to force sync-up recovery next time.
-		eval rep_test $method $masterenv $masterdb 1 $i $i
+		eval rep_test $method $masterenv $masterdb 1 $i $i 0 0 $largs
 		set envlist "{$masterenv $mid} {$env3 3}"
 		replclear $cid
 		process_msgs $envlist

@@ -73,9 +73,9 @@ try {
         // can never be reached. 
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), "Error!");
+        my_database.err(e.get_errno(), &quot;Error!&quot;);
 } catch(std::exception &amp;e) {
-        my_database.errx("Error! %s", e.what());
+        my_database.errx(&quot;Error! %s&quot;, e.what());
 }
 
 // Cursors must be closed
@@ -114,9 +114,9 @@ try {
         // can never be reached. 
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), "Error!");
+        my_database.err(e.get_errno(), &quot;Error!&quot;);
 } catch(std::exception &amp;e) {
-        my_database.errx("Error! %s", e.what());
+        my_database.errx(&quot;Error! %s&quot;, e.what());
 }
 
 // Cursors must be closed
@@ -209,7 +209,9 @@ my_database.close(0);</pre>
             that you provide for the database. If no 
                  
                 <span>comparison function</span> 
-            is provided, then the default lexicographical sorting is used.
+                is provided, then the default 
+                
+                lexicographical sorting is used.
           </p>
               <p>
             For example, suppose you have database records that use the
@@ -246,8 +248,9 @@ Arizona</pre>
             <tt class="literal">DB_GET_BOTH_RANGE</tt>
           </p>
               <p>
-            Moves the cursor to the first record in the database whose key is
-            greater than or equal to the specified key. If the database supports
+            Moves the cursor to the first record in the database whose key matches the specified
+            key and whose data is
+            greater than or equal to the specified data. If the database supports
             duplicate records, then on matching the key, the cursor is moved to
             the duplicate record with the smallest data that is greater than or
             equal to the specified data.
@@ -282,24 +285,19 @@ Arizona/Florence </pre>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Al</td>
-                      <td>Fl</td>
-                      <td>Alabama/Florence</td>
-                    </tr>
-                    <tr>
-                      <td>Ar</td>
-                      <td>Fl</td>
-                      <td>Arizona/Florence</td>
-                    </tr>
-                    <tr>
-                      <td>Al</td>
+                      <td>Alaska</td>
                       <td>Fa</td>
                       <td>Alaska/Fairbanks</td>
                     </tr>
                     <tr>
-                      <td>Al</td>
-                      <td>A</td>
-                      <td>Alabama/Athens</td>
+                      <td>Arizona</td>
+                      <td>Fl</td>
+                      <td>Arizona/Florence</td>
+                    </tr>
+                    <tr>
+                      <td>Alaska</td>
+                      <td>An</td>
+                      <td>Alaska/Anchorage</td>
                     </tr>
                   </tbody>
                 </table>
@@ -332,23 +330,24 @@ try {
     my_database.cursor(NULL, &amp;cursorp, 0);
 
     // Search criteria
-    char *search_key = "Al";
-    char *search_data = "Fa";
+    char *search_key = &quot;Alaska&quot;;
+    char *search_data = &quot;Fa&quot;;
 
     // Set up our DBTs
     Dbt key(search_key, strlen(search_key) + 1);
     Dbt data(search_data, strlen(search_data) + 1);
 
     // Position the cursor to the first record in the database whose
-    // key and data begin with the correct strings.
+    // key matches the search key and whose data begins with the search
+    // data.
     int ret = cursorp-&gt;get(&amp;key, &amp;data, DB_GET_BOTH_RANGE);
     if (!ret) {
         // Do something with the data
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), "Error!");
+        my_database.err(e.get_errno(), &quot;Error!&quot;);
 } catch(std::exception &amp;e) {
-        my_database.errx("Error! %s", e.what());
+        my_database.errx(&quot;Error! %s&quot;, e.what());
 }
 
 // Close the cursor
@@ -522,7 +521,7 @@ Arizona/Florence</pre>
 
 ...
 
-char *search_key = "Al";
+char *search_key = &quot;Al&quot;;
 
 Db my_database(NULL, 0);
 Dbc *cursorp;
@@ -541,14 +540,14 @@ try {
     // key and data begin with the correct strings.
     int ret = cursorp-&gt;get(&amp;key, &amp;data, DB_SET);
     while (ret != DB_NOTFOUND) {
-        std::cout &lt;&lt; "key: " &lt;&lt; (char *)key.get_data() 
-                  &lt;&lt; "data: " &lt;&lt; (char *)data.get_data()&lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;key: &quot; &lt;&lt; (char *)key.get_data() 
+                  &lt;&lt; &quot;data: &quot; &lt;&lt; (char *)data.get_data()&lt;&lt; std::endl;
         ret = cursorp-&gt;get(&amp;key, &amp;data, DB_NEXT_DUP);
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), "Error!");
+        my_database.err(e.get_errno(), &quot;Error!&quot;);
 } catch(std::exception &amp;e) {
-        my_database.errx("Error! %s", e.what());
+        my_database.errx(&quot;Error! %s&quot;, e.what());
 }
 
 // Close the cursor

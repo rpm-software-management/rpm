@@ -1,5 +1,5 @@
-<!--$Id: db_recover.so,v 10.27 2002/08/24 18:24:53 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_recover.so,v 10.28 2005/11/01 20:22:28 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -44,8 +44,8 @@ letters represents the following:
 <dl compact>
 <dt>CC<dd>The first two digits of the year (the century).
 <dt>YY<dd>The second two digits of the year.  If "YY" is specified, but "CC" is not,
-a value for "YY" between 69 and 99 results in a "YY" value of 19.  Otherwise,
-a "YY" value of 20 is used.
+a value for "YY" between 69 and 99 results in a "CC" value of 19.  Otherwise,
+a "CC" value of 20 is used.
 <dt>MM<dd>The month of the year, from 1 to 12.
 <dt>DD<dd>The day of the month, from 1 to 31.
 <dt>hh<dd>The hour of the day, from 0 to 23.
@@ -87,6 +87,6 @@ DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

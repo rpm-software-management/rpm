@@ -1,0 +1,113 @@
+<!--$Id: mutex_stat.so,v 10.2 2005/11/08 11:43:55 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;mutex_stat</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;mutex_stat</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;mutex_stat(DB_ENV *env, DB_MUTEX_STAT **statp, u_int32_t flags);
+<p>
+int
+DB_ENV-&gt;mutex_stat_print(DB_ENV *env, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;mutex_stat</h3>
+<p>The DB_ENV-&gt;mutex_stat method returns the mutex subsystem statistics.</p>
+<p>The DB_ENV-&gt;mutex_stat method creates a statistical structure of type
+DB_MUTEX_STAT and copies a pointer to it into a user-specified memory
+location.</p>
+<p>Statistical structures are stored in allocated memory.  If application-specific allocation
+routines have been declared (see <a href="../api_c/env_set_alloc.html">DB_ENV-&gt;set_alloc</a> for more
+information), they are used to allocate the memory; otherwise, the
+standard C library <b>malloc</b>(3) is used.  The caller is
+responsible for deallocating the memory.  To deallocate the memory, free
+the memory reference; references inside the returned memory need not be
+individually freed.</p>
+<p>The following DB_MUTEX_STAT fields will be filled in:</p>
+<dl compact>
+<dt>u_int32_t st_mutex_align;<dd>The mutex alignment, in bytes.
+<dt>u_int32_t st_mutex_tas_spins;<dd>The number of times test-and-set mutexes will spin without blocking.
+<dt>int st_mutex_cnt;<dd>The total number of mutexes configured.
+<dt>u_int32_t st_mutex_free;<dd>The number of mutexes currently available.
+<dt>u_int32_t st_mutex_inuse;<dd>The number of mutexes currently in use.
+<dt>u_int32_t st_mutex_inuse_max;<dd>The maximum number of mutexes ever in use.
+<dt>roff_t st_regsize;<dd>The size of the mutex region, in bytes.
+<dt>u_int32_t st_region_wait;<dd>The number of times that a thread of control was forced to wait before
+obtaining the mutex region mutex.
+<dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain
+the mutex region mutex without waiting.
+</dl>
+<p>The DB_ENV-&gt;mutex_stat method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+the following value:
+<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
+</dl>
+<dt><b>statp</b><dd>The <b>statp</b> parameter references memory into which
+a pointer to the allocated statistics structure is copied. 
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;mutex_stat method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;mutex_stat_print</h3>
+<p>The DB_ENV-&gt;mutex_stat_print method displays the
+mutex subsystem statistical information, as described for the DB_ENV-&gt;mutex_stat method.
+The information is printed to a specified output channel (see the
+<a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or passed to an
+application callback function (see the <a href="../api_c/env_set_msgcall.html">DB_ENV-&gt;set_msgcall</a> method for
+more information).</p>
+<p>The DB_ENV-&gt;mutex_stat_print method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
+been called.</p>
+<p>The DB_ENV-&gt;mutex_stat_print method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
+<dl compact>
+<dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
+</dl>
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

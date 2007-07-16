@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd008.tcl,v 1.30 2004/11/05 00:59:01 mjc Exp $
+# $Id: recd008.tcl,v 12.5 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	recd008
 # TEST	Test deeply nested transactions and many-child transactions.
@@ -51,11 +51,12 @@ proc recd008 { method {breadth 4} {depth 4} args} {
 	if { $txn_max < 20 } {
 		set txn_max 20
 	}
+
 	puts "\tRecd008.b: create environment for $txn_max transactions"
 
-	set lock_max 2500
-	set eflags "-mode 0644 -create -lock_max $lock_max -txn_max $txn_max \
-	    -txn -home $testdir"
+	set max_locks 2500
+	set eflags "-mode 0644 -create -lock_max_locks $max_locks \
+	    -lock_max_objects $max_locks -txn_max $txn_max -txn -home $testdir"
 	set env_cmd "berkdb_env $eflags"
 	set dbenv [eval $env_cmd]
 	error_check_good env_open [is_valid_env $dbenv] TRUE

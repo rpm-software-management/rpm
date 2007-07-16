@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2002-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep005.tcl,v 11.41 2004/10/15 15:41:56 sue Exp $
+# $Id: rep005.tcl,v 12.11 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  rep005
 # TEST	Replication election test with error handling.
@@ -14,6 +14,18 @@
 # TEST	locations in the election path.
 
 proc rep005 { method args } {
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Skip for all methods except btree.
+	if { $checking_valid_methods } {
+		set test_methods { btree }
+		return $test_methods
+	}
 	if { [is_btree $method] == 0 } {
 		puts "Rep005: Skipping for method $method."
 		return
@@ -103,9 +115,11 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 		lappend envlist "$clientenv($i) $envid"
 	}
 
+	# Process startup messages
+	process_msgs $envlist
 	# Run a modified test001 in the master.
 	puts "\tRep$tnum.a: Running test001 in replicated env."
-	eval rep_test $method $masterenv NULL $niter 0 0 0 $largs
+	eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
 
 	# Process all the messages and close the master.
 	process_msgs $envlist
@@ -126,7 +140,7 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 	# A full test can take a long time to run.  For normal testing
 	# pare it down a lot so that it runs in a shorter time.
 	#
-	set c0err { none electinit none none }
+	set c0err { none electinit none }
 	set c1err $c0err
 	set c2err $c0err
 	set numtests [expr [llength $c0err] * [llength $c1err] * \
@@ -159,7 +173,6 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 proc rep005_elect { ecmd celist qdir msg count \
     winner lsn_lose elist logset} {
 	global elect_timeout elect_serial
-	global is_windows_test
 	upvar $ecmd env_cmd
 	upvar $celist envlist
 	upvar $winner win

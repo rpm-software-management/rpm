@@ -1,5 +1,5 @@
-<!--$Id: qnx.so,v 11.10 2003/03/24 13:46:23 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: qnx.so,v 11.11 2005/12/20 15:24:38 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -21,6 +21,19 @@
 <p>Berkeley DB has been ported to the QNX Neutrino technology which is commonly
 referred to as QNX RTP (Real-Time Platform).  Berkeley DB has not been
 ported to earlier versions of QNX, such as QNX 4.25.</p>
+<p><li><b>Building Berkeley DB shared libraries fails.</b>
+<p>The <b>/bin/sh</b> utility distributed with some QNX releases drops
+core when running the GNU libtool script (which is used to build Berkeley DB
+shared libraries).  There are two workarounds for this problem: First,
+only build static libraries.  You can disable building shared libraries
+by specifying the <a name="--disable-shared">--disable-shared</a> configuration flag when
+configuring Berkeley DB.</p>
+<p>Second, build Berkeley DB using an alternate shell.  QNX distributions include
+an accessories disk with additional tools.  One of the included tools
+is the GNU bash shell, which is able to run the libtool script.  To
+build Berkeley DB using an alternate shell, move <b>/bin/sh</b> aside, link
+or copy the alternate shell into that location, configure, build and
+install Berkeley DB, and then replace the original shell utility.</p>
 <p><li><b>Are there any QNX filesystem issues?</b>
 <p>Berkeley DB generates temporary files for use in transactionally
 protected file system operations.  Due to the filename length limit of
@@ -72,6 +85,6 @@ should be used with caution on QNX.</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/osf1.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/sco.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

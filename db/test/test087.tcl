@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test087.tcl,v 11.19 2004/01/28 03:36:31 bostic Exp $
+# $Id: test087.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test087
 # TEST	Test of cursor stability when converting to and modifying

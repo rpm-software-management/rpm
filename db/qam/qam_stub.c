@@ -1,18 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: qam_stub.c,v 1.12 2004/06/14 15:23:33 bostic Exp $
+ * $Id: qam_stub.c,v 12.5 2006/08/24 14:46:24 bostic Exp $
  */
 
-#include "db_config.h"
-
 #ifndef	HAVE_QUEUE
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
+#include "db_config.h"
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -34,7 +30,7 @@ int
 __db_no_queue_am(dbenv)
 	DB_ENV *dbenv;
 {
-	__db_err(dbenv,
+	__db_errx(dbenv,
     "library build did not include support for the Queue access method");
 	return (DB_OPNOTSUP);
 }

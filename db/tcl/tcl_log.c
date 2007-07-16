@@ -1,26 +1,20 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_log.c,v 11.61 2004/04/05 20:18:32 bostic Exp $
+ * $Id: tcl_log.c,v 12.10 2006/08/24 14:46:33 bostic Exp $
  */
 
 #include "db_config.h"
 
+#include "db_int.h"
 #ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <stdlib.h>
-#include <string.h>
 #include <tcl.h>
 #endif
-
-#include "db_int.h"
 #include "dbinc/log.h"
 #include "dbinc/tcl_db.h"
-#include "dbinc/txn.h"
 
 #ifdef CONFIG_TEST
 static int tcl_LogcGet __P((Tcl_Interp *, int, Tcl_Obj * CONST*, DB_LOGC *));
@@ -382,6 +376,7 @@ tcl_LogStat(interp, objc, objv, envp)
 	MAKE_STAT_LIST("Log file mode", sp->st_mode);
 	MAKE_STAT_LIST("Log record cache size", sp->st_lg_bsize);
 	MAKE_STAT_LIST("Current log file size", sp->st_lg_size);
+	MAKE_STAT_LIST("Log file records written", sp->st_record);
 	MAKE_STAT_LIST("Mbytes written", sp->st_w_mbytes);
 	MAKE_STAT_LIST("Bytes written (over Mb)", sp->st_w_bytes);
 	MAKE_STAT_LIST("Mbytes written since checkpoint", sp->st_wc_mbytes);
@@ -390,7 +385,8 @@ tcl_LogStat(interp, objc, objv, envp)
 	MAKE_STAT_LIST("Times log written", sp->st_wcount);
 	MAKE_STAT_LIST("Times log written because cache filled up",
 	    sp->st_wcount_fill);
-	MAKE_STAT_LIST("Times log flushed", sp->st_scount);
+	MAKE_STAT_LIST("Times log read from disk", sp->st_rcount);
+	MAKE_STAT_LIST("Times log flushed to disk", sp->st_scount);
 	MAKE_STAT_LIST("Current log file number", sp->st_cur_file);
 	MAKE_STAT_LIST("Current log file offset", sp->st_cur_offset);
 	MAKE_STAT_LIST("On-disk log file number", sp->st_disk_file);
@@ -421,14 +417,18 @@ logc_Cmd(clientData, interp, objc, objv)
 	static const char *logccmds[] = {
 		"close",
 		"get",
+		"version",
 		NULL
 	};
 	enum logccmds {
 		LOGCCLOSE,
-		LOGCGET
+		LOGCGET,
+		LOGCVERSION
 	};
 	DB_LOGC *logc;
 	DBTCL_INFO *logcip;
+	Tcl_Obj *res;
+	u_int32_t version;
 	int cmdindex, result, ret;
 
 	Tcl_ResetResult(interp);
@@ -477,7 +477,24 @@ logc_Cmd(clientData, interp, objc, objv)
 	case LOGCGET:
 		result = tcl_LogcGet(interp, objc, objv, logc);
 		break;
+	case LOGCVERSION:
+		/*
+		 * No args for this.  Error if there are some.
+		 */
+		if (objc > 2) {
+			Tcl_WrongNumArgs(interp, 2, objv, NULL);
+			return (TCL_ERROR);
+		}
+		_debug_check();
+		ret = logc->version(logc, &version, 0);
+		if ((result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
+		    "logc version")) == TCL_OK) {
+			res = Tcl_NewIntObj((int)version);
+			Tcl_SetObjResult(interp, res);
+		}
+		break;
 	}
+
 	return (result);
 }
 

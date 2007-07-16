@@ -1,0 +1,73 @@
+<!--$Id: log_printf.so,v 1.1 2005/09/30 19:00:24 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::log_printf</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::log_printf</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::log_printf(DB_TXN *txnid, const char *fmt, ...);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::log_printf</h3>
+<p>The DbEnv::log_printf method appends an informational message to the Berkeley DB
+database environment log files.</p>
+<p>The DbEnv::log_printf method allows applications to include information in
+the database environment log files, for later review using the
+<a href="../utility/db_printlog.html">db_printlog</a> utility.  This method is intended for debugging and
+performance tuning.</p>
+<p>The DbEnv::log_printf method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>txnid</b><dd>If the logged message refers to an application-specified transaction,
+the <b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise NULL.
+<dt><b>fmt</b><dd>A format string that specifies how subsequent arguments (or arguments
+accessed via the variable-length argument facilities of stdarg(3)) are
+converted for output.  The format string may contain any formatting
+directives supported by the underlying C library vsnprintf(3)
+function.
+</dl>
+<h3>Errors</h3>
+<p>The DbEnv::log_printf method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/logc_class.html">DbLogc</a>, <a href="../api_cxx/lsn_class.html">DbLsn</a>
+<h3>See Also</h3>
+<a href="../api_cxx/log_list.html">Logging Subsystem and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

@@ -67,6 +67,19 @@ WriteMakefile(
 	);
 
 
+sub MY::libscan
+{
+    my $self = shift ;
+    my $path = shift ;
+
+    return undef
+        if $path =~ /(~|\.bak)$/ || 
+           $path =~ /^\..*\.swp$/ ;
+
+    return $path;    
+}
+
+    
 sub MY::postamble {
 	'
 $(NAME).pod:	$(NAME).pod.P t/examples.t.T t/examples3.t.T mkpod

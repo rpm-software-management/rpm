@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: KeyRangeTest.java,v 1.4 2004/09/22 18:01:06 bostic Exp $
+ * $Id: KeyRangeTest.java,v 12.5 2006/08/24 14:46:45 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -27,6 +27,8 @@ import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.Environment;
 import com.sleepycat.db.EnvironmentConfig;
 import com.sleepycat.db.OperationStatus;
+import com.sleepycat.util.keyrange.KeyRange;
+import com.sleepycat.util.keyrange.KeyRangeException;
 
 /**
  * @author Mark Hayes

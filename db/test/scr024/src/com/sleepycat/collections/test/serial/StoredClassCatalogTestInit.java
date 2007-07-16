@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredClassCatalogTestInit.java,v 1.1 2004/04/09 16:34:10 mark Exp $
+ * $Id: StoredClassCatalogTestInit.java,v 12.4 2006/08/31 18:14:14 bostic Exp $
  */
 package com.sleepycat.collections.test.serial;
 
@@ -86,10 +86,9 @@ public class StoredClassCatalogTestInit extends TestCase
 
         catalog = new StoredClassCatalog(openDb(CATALOG_FILE));
 
-        SerialBinding keyBinding = new SerialBinding(catalog,
-                                                  String.class);
-        SerialBinding valueBinding = new SerialBinding(catalog,
-                                                    TestSerial.class);
+        SerialBinding keyBinding = new SerialBinding(catalog, String.class);
+        SerialBinding valueBinding =
+	    new SerialBinding(catalog, TestSerial.class);
         store = openDb(STORE_FILE);
 
         map = new StoredMap(store, keyBinding, valueBinding, true);

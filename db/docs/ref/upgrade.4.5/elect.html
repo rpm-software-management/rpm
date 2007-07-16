@@ -1,0 +1,39 @@
+<!--$Id: elect.so,v 1.1 2006/03/15 19:39:19 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.5: DB_ENV-&gt;rep_elect</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.5/alive.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/rep_set.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.5: DB_ENV-&gt;rep_elect</h3>
+<p>Two of the historic arguments for the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method have been moved
+from the interface to separate methods in order to make them available
+within the new replication manager framework.</p>
+<p>The <b>priority</b> parameter should now be explicitly set using the
+<a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a> method.  To upgrade existing replication applications
+to the Berkeley DB 4.5 <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> interface, it may be simplest to
+insert a call to <a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a> immediately before the
+existing call to <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>.  Alternatively, it may make more
+sense to add a single call to <a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a> during database
+environment configuration.</p>
+<p>The <b>timeout</b> parameter should now be explicitly set using the
+<a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a> method.  To upgrade existing replication applications
+to the Berkeley DB 4.5 <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> interface, it may be simplest to
+insert a call to <a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a> immediately before the existing
+call to <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>.  Alternatively, it may make more sense to add
+a single call to <a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a> during database environment
+configuration.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.5/alive.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/rep_set.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

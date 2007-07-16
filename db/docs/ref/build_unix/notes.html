@@ -1,5 +1,5 @@
-<!--$Id: notes.so,v 10.52 2004/09/27 15:16:36 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: notes.so,v 10.54 2005/06/16 17:04:04 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -17,6 +17,13 @@
 <p>
 <h3 align=center>Architecture independent FAQ</h3>
 <ol>
+<p><li><b>I have gcc installed, but configure fails to find it.</b>
+<p>Berkeley DB defaults to using the native C compiler if none is specified.
+That is usually "cc", but some platforms require a different compiler
+to build multithreaded code.  To configure Berkeley DB to build with gcc, run
+configure as follows:</p>
+<blockquote><pre>env CC=gcc ../dist/configure ...</pre></blockquote>
+<hr size=1 noshade>
 <p><li><b>When compiling with gcc, I get unreferenced symbols; for example
 the following:
 <blockquote><pre>symbol __muldi3: referenced symbol not found
@@ -149,6 +156,6 @@ DB185LIB=-ldb185</pre></blockquote>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/test.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/aix.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

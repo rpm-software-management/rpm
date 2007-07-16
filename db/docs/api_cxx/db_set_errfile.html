@@ -1,6 +1,6 @@
 <!--$Id: db_set_errfile.so,v 10.10 2002/08/18 21:15:54 bostic Exp $-->
-<!--$Id: env_set_errfile.so,v 10.34 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_errfile.so,v 10.36 2006/02/10 22:54:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -55,6 +55,9 @@ as during application debugging.</p>
 <p>For <a href="../api_cxx/db_class.html">Db</a> handles opened inside of Berkeley DB environments, calling the
 Db::set_errfile method affects the entire environment and is equivalent to calling
 the <a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a> method.</p>
+<p>The Db::set_errfile method configures operations performed using the specified
+<a href="../api_cxx/db_class.html">Db</a> handle, not all operations performed on the underlying
+database.</p>
 <p>The Db::set_errfile method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
@@ -64,9 +67,19 @@ displaying additional Berkeley DB error information.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Db::get_errfile</h3>
-<p>The Db::get_errfile method returns the .</p>
+<p>The Db::get_errfile method returns the FILE *.</p>
 <p>The Db::get_errfile method may be called at any time during the life of the
 application.</p>
+<p>The Db::get_errfile method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>errfilep</b><dd>The Db::get_errfile method returns  the
+FILE * in <b>errfilep</b>.
+</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_cxx/db_class.html">Db</a>
@@ -76,6 +89,6 @@ application.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

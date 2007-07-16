@@ -1,10 +1,10 @@
 /*-
- *  Copyright (c) 2004
- *  Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2004-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0.txt
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
- *  authors: George Schlossnagle <george@omniti.com>
+ * authors: George Schlossnagle <george@omniti.com>
  */
 
 #ifdef HAVE_CONFIG_H
@@ -32,6 +32,10 @@ extern "C"
     #define my_db_env_create db_env_create
 #endif
 
+#if PHP_MAJOR_VERSION <= 4
+unsigned char second_arg_force_ref[] = { 2, BYREF_NONE, BYREF_FORCE };
+unsigned char third_arg_force_ref[] = { 3, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
+#endif
 extern int errno;
 
 /* True global resources - no need for thread safety here */
@@ -49,10 +53,12 @@ struct php_DB_TXN {
 struct php_DBC {
     DBC *dbc;
     struct php_DB_TXN *parent_txn;
+    struct php_DB *parent_db;
 };
 
 struct php_DB {
     DB *db;
+    struct my_llist *open_cursors;
     int autocommit;
 };
 
@@ -76,10 +82,10 @@ static void _free_php_dbc(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
     struct php_DBC *pdbc = (struct php_DBC *) rsrc->ptr;
 #ifndef HAVE_MOD_DB4
-    if(pdbc->dbc) pdbc->dbc->c_close(pdbc->dbc);
     pdbc->dbc = NULL;
 #endif
     if(pdbc) efree(pdbc);
+    rsrc->ptr = NULL;
 }
 
 static void _free_php_db(zend_rsrc_list_entry *rsrc TSRMLS_DC)
@@ -94,8 +100,8 @@ static void _free_php_db(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 
 static void _free_php_dbenv(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
-#ifndef HAVE_MOD_DB4
     struct php_DB_ENV *pdb = (struct php_DB_ENV *)rsrc->ptr;
+#ifndef HAVE_MOD_DB4
     DbEnv *dbe;
 	if(pdb->dbenv) {
 		dbe = DbEnv::get_DbEnv(pdb->dbenv);
@@ -204,6 +210,8 @@ ZEND_NAMED_FUNCTION(_wrap_db_txn_commit);
 ZEND_NAMED_FUNCTION(_wrap_db_txn_discard);
 ZEND_NAMED_FUNCTION(_wrap_db_txn_id);
 ZEND_NAMED_FUNCTION(_wrap_db_txn_set_timeout);
+ZEND_NAMED_FUNCTION(_wrap_db_txn_set_name);
+ZEND_NAMED_FUNCTION(_wrap_db_txn_get_name);
 ZEND_NAMED_FUNCTION(_wrap_new_DbTxn);
 
 static zend_function_entry DbTxn_functions[] = {
@@ -212,6 +220,8 @@ static zend_function_entry DbTxn_functions[] = {
         ZEND_NAMED_FE(discard, _wrap_db_txn_discard, NULL)
         ZEND_NAMED_FE(id, _wrap_db_txn_id, NULL)
         ZEND_NAMED_FE(set_timeout, _wrap_db_txn_set_timeout, NULL)
+        ZEND_NAMED_FE(set_name, _wrap_db_txn_set_name, NULL)
+        ZEND_NAMED_FE(get_name, _wrap_db_txn_get_name, NULL)
         ZEND_NAMED_FE(db4txn, _wrap_new_DbTxn, NULL)
         { NULL, NULL, NULL}
 };
@@ -233,14 +243,30 @@ ZEND_NAMED_FUNCTION(_wrap_dbc_get);
 ZEND_NAMED_FUNCTION(_wrap_dbc_put);
 ZEND_NAMED_FUNCTION(_wrap_dbc_pget);
 
+#ifdef ZEND_ENGINE_2
+ZEND_BEGIN_ARG_INFO(first_and_second_args_force_ref, 0)
+    ZEND_ARG_PASS_INFO(1)
+    ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
+
+ZEND_BEGIN_ARG_INFO(first_and_second_and_third_args_force_ref, 0)
+    ZEND_ARG_PASS_INFO(1)
+    ZEND_ARG_PASS_INFO(1)
+ZEND_END_ARG_INFO();
+
+#else
+static unsigned char first_and_second_args_force_ref[] = {2, BYREF_FORCE, BYREF_FORCE };
+static unsigned char first_and_second_and_third_args_force_ref[] = {3, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
+#endif
+
 static zend_function_entry Dbc_functions[] = {
         ZEND_NAMED_FE(close, _wrap_dbc_close, NULL)
         ZEND_NAMED_FE(count, _wrap_dbc_count, NULL)
         ZEND_NAMED_FE(del, _wrap_dbc_del, NULL)
         ZEND_NAMED_FE(dup, _wrap_dbc_dup, NULL)
-        ZEND_NAMED_FE(get, _wrap_dbc_get, NULL)
+        ZEND_NAMED_FE(get, _wrap_dbc_get, first_and_second_args_force_ref)
         ZEND_NAMED_FE(put, _wrap_dbc_put, NULL)
-        ZEND_NAMED_FE(pget, _wrap_dbc_pget, second_arg_force_ref)
+        ZEND_NAMED_FE(pget, _wrap_dbc_pget, first_and_second_and_third_args_force_ref)
         { NULL, NULL, NULL}
 };
 /* }}} */
@@ -367,10 +393,10 @@ PHP_MINIT_FUNCTION(db4)
     INIT_CLASS_ENTRY(_db_env_ce, "db4env", DbEnv_functions);
     db_env_ce = zend_register_internal_class(&_db_env_ce TSRMLS_CC);
 
-    le_db = zend_register_list_destructors_ex(_free_php_db, NULL, "Db4", module_number);    
-    le_dbenv = zend_register_list_destructors_ex(_free_php_dbenv, NULL, "Db4Env", module_number);   
     le_db_txn = zend_register_list_destructors_ex(_free_php_db_txn, NULL, "Db4Txn", module_number); 
     le_dbc = zend_register_list_destructors_ex(_free_php_dbc, NULL, "Db4Cursor", module_number);    
+    le_db = zend_register_list_destructors_ex(_free_php_db, NULL, "Db4", module_number);    
+    le_dbenv = zend_register_list_destructors_ex(_free_php_dbenv, NULL, "Db4Env", module_number);   
 
     REGISTER_LONG_CONSTANT("DB_VERSION_MAJOR", DB_VERSION_MAJOR, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_VERSION_MINOR", DB_VERSION_MINOR, CONST_CS | CONST_PERSISTENT);
@@ -391,6 +417,8 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_NOMMAP", DB_NOMMAP, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_RDONLY", DB_RDONLY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_RECOVER", DB_RECOVER, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("DB_MULTIVERSION", DB_MULTIVERSION, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("DB_TXN_SNAPSHOT", DB_TXN_SNAPSHOT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_THREAD", DB_THREAD, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_TRUNCATE", DB_TRUNCATE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_TXN_NOSYNC", DB_TXN_NOSYNC, CONST_CS | CONST_PERSISTENT);
@@ -398,10 +426,12 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_USE_ENVIRON", DB_USE_ENVIRON, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_USE_ENVIRON_ROOT", DB_USE_ENVIRON_ROOT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AUTO_COMMIT", DB_AUTO_COMMIT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_DIRTY_READ", DB_DIRTY_READ, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("DB_DIRTY_READ", DB_READ_UNCOMMITTED, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("DB_DEGREE_2", DB_READ_COMMITTED, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("DB_READ_COMMITTED", DB_READ_COMMITTED, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("DB_READ_UNCOMMITTED", DB_READ_UNCOMMITTED, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_NO_AUTO_COMMIT", DB_NO_AUTO_COMMIT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_RPCCLIENT", DB_RPCCLIENT, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_REP_CREATE", DB_REP_CREATE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_XA_CREATE", DB_XA_CREATE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_INIT_CDB", DB_INIT_CDB, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_INIT_LOCK", DB_INIT_LOCK, CONST_CS | CONST_PERSISTENT);
@@ -470,7 +500,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_LOCK_YOUNGEST", DB_LOCK_YOUNGEST, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOCK_NOWAIT", DB_LOCK_NOWAIT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOCK_RECORD", DB_LOCK_RECORD, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_LOCK_REMOVE", DB_LOCK_REMOVE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOCK_SET_TIMEOUT", DB_LOCK_SET_TIMEOUT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOCK_SWITCH", DB_LOCK_SWITCH, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOCK_UPGRADE", DB_LOCK_UPGRADE, CONST_CS | CONST_PERSISTENT);
@@ -489,18 +518,15 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_LOG_COMMIT", DB_LOG_COMMIT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOG_NOCOPY", DB_LOG_NOCOPY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOG_NOT_DURABLE", DB_LOG_NOT_DURABLE, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_LOG_PERM", DB_LOG_PERM, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOG_WRNOSYNC", DB_LOG_WRNOSYNC, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_user_BEGIN", DB_user_BEGIN, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_debug_FLAG", DB_debug_FLAG, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_LOGC_BUF_SIZE", DB_LOGC_BUF_SIZE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOG_DISK", DB_LOG_DISK, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOG_LOCKED", DB_LOG_LOCKED, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_LOG_SILENT_ERR", DB_LOG_SILENT_ERR, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_MPOOL_CREATE", DB_MPOOL_CREATE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_MPOOL_LAST", DB_MPOOL_LAST, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_MPOOL_NEW", DB_MPOOL_NEW, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_MPOOL_CLEAN", DB_MPOOL_CLEAN, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_MPOOL_DIRTY", DB_MPOOL_DIRTY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_MPOOL_DISCARD", DB_MPOOL_DISCARD, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_MPOOL_NOFILE", DB_MPOOL_NOFILE, CONST_CS | CONST_PERSISTENT);
@@ -524,7 +550,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_AFTER", DB_AFTER, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_APPEND", DB_APPEND, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_BEFORE", DB_BEFORE, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_CACHED_COUNTS", DB_CACHED_COUNTS, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_CONSUME", DB_CONSUME, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_CONSUME_WAIT", DB_CONSUME_WAIT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_CURRENT", DB_CURRENT, CONST_CS | CONST_PERSISTENT);
@@ -547,7 +572,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_POSITION", DB_POSITION, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_PREV", DB_PREV, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_PREV_NODUP", DB_PREV_NODUP, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_RECORDCOUNT", DB_RECORDCOUNT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_SET", DB_SET, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_SET_LOCK_TIMEOUT", DB_SET_LOCK_TIMEOUT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_SET_RANGE", DB_SET_RANGE, CONST_CS | CONST_PERSISTENT);
@@ -561,7 +585,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_MULTIPLE", DB_MULTIPLE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_MULTIPLE_KEY", DB_MULTIPLE_KEY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_RMW", DB_RMW, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_LOCK_DEADLOCK", DB_LOCK_DEADLOCK, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_DONOTINDEX", DB_DONOTINDEX, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_KEYEMPTY", DB_KEYEMPTY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_KEYEXIST", DB_KEYEXIST, CONST_CS | CONST_PERSISTENT);
@@ -586,7 +609,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_VERIFY_BAD", DB_VERIFY_BAD, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ALREADY_ABORTED", DB_ALREADY_ABORTED, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_DELETED", DB_DELETED, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_LOCK_NOTEXIST", DB_LOCK_NOTEXIST, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_NEEDSPLIT", DB_NEEDSPLIT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_SURPRISE_KID", DB_SURPRISE_KID, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_SWAPBYTES", DB_SWAPBYTES, CONST_CS | CONST_PERSISTENT);
@@ -605,7 +627,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_AM_CREATED_MSTR", DB_AM_CREATED_MSTR, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_DBM_ERROR", DB_AM_DBM_ERROR, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_DELIMITER", DB_AM_DELIMITER, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_AM_DIRTY", DB_AM_DIRTY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_DISCARD", DB_AM_DISCARD, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_DUP", DB_AM_DUP, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_DUPSORT", DB_AM_DUPSORT, CONST_CS | CONST_PERSISTENT);
@@ -621,7 +642,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_AM_RECNUM", DB_AM_RECNUM, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_RECOVER", DB_AM_RECOVER, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_RENUMBER", DB_AM_RENUMBER, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_AM_REPLICATION", DB_AM_REPLICATION, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_REVSPLITOFF", DB_AM_REVSPLITOFF, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_SECONDARY", DB_AM_SECONDARY, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_SNAPSHOT", DB_AM_SNAPSHOT, CONST_CS | CONST_PERSISTENT);
@@ -1090,6 +1110,46 @@ ZEND_NAMED_FUNCTION(_wrap_db_txn_set_timeout)
 }
 /* }}} */
 
+/* {{{ proto bool Db4Txn::set_name(string $name) 
+ */
+ZEND_NAMED_FUNCTION(_wrap_db_txn_set_name)
+{
+    DB_TXN *txn;
+    char *name;
+    int name_len;
+    int ret;
+
+    getDbTxnFromThis(txn);
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_len) == FAILURE)
+    {
+        return;
+    }
+    txn->set_name(txn, name);
+    RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool Db4Txn::get_name() 
+ */
+ZEND_NAMED_FUNCTION(_wrap_db_txn_get_name)
+{
+    DB_TXN *txn;
+    const char *name;
+    int ret;
+
+    getDbTxnFromThis(txn);
+    if(ZEND_NUM_ARGS())
+    {
+		WRONG_PARAM_COUNT;
+    }
+    if((ret = txn->get_name(txn, &name)) != 0) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", db_strerror(ret));
+        RETURN_FALSE;
+    }
+    RETURN_STRING((char *)name, 1);
+}
+/* }}} */
+
 /* {{{ private Db4Txn::Db4Txn()
  */
 ZEND_NAMED_FUNCTION(_wrap_new_DbTxn)
@@ -1191,7 +1251,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_close)
     int autocommit;
     getPhpDbFromThis(pdb);
 
-    if(ZEND_NUM_ARGS() TSRMLS_CC) {
+    if(ZEND_NUM_ARGS()) {
         WRONG_PARAM_COUNT;
     }
 	if(pdb && pdb->db) {
@@ -1584,7 +1644,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_cursor)
     DB *db;
     DB_TXN *txn = NULL;
     zval *txn_obj = NULL, *self;
-    DBC *cursor;
+    DBC *cursor = NULL;
     u_int32_t flags = 0;
     int ret, autocommit;
 
@@ -1604,7 +1664,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_cursor)
     }
     else {
         object_init_ex(return_value, dbc_ce);
-        setDbc(return_value, cursor, getPhpDbTxnFromObj(txn_obj TSRMLS_CC) TSRMLS_CC);
+        setDbc(return_value, cursor, txn_obj?getPhpDbTxnFromObj(txn_obj TSRMLS_CC):NULL TSRMLS_CC);
     }
         
 }
@@ -1693,73 +1753,79 @@ ZEND_NAMED_FUNCTION(_wrap_dbc_dup)
 }
 /* }}} */
 
-/* {{{ proto string Db4Cursor::get(string $key [, long $flags])
+/* {{{ proto string Db4Cursor::get(string &$key, string &$data [, long $flags])
  */
 ZEND_NAMED_FUNCTION(_wrap_dbc_get)
 {
     DBC *dbc;
     DBT key, value;
-    char *keyname;
-    int keylen;
-    u_int32_t flags = 0;
+    zval *zkey, *zvalue;
+    u_int32_t flags = DB_NEXT;
     zval *self;
     int ret;
     
     self = getThis();
     getDbcFromThis(dbc);
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &keyname, &keylen, &flags) == FAILURE) 
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z/z/|l", &zkey, &zvalue, &flags) == FAILURE) 
     {
         return;
     }
     memset(&key, 0, sizeof(DBT));
-    key.data = keyname;
-    key.size = keylen;
+	key.data = Z_STRVAL_P(zkey);
+	key.size = Z_STRLEN_P(zkey);
     memset(&value, 0, sizeof(DBT));
+	value.data = Z_STRVAL_P(zvalue);
+	value.size = Z_STRLEN_P(zvalue);
     if((ret = dbc->c_get(dbc, &key, &value, flags)) == 0) {
-        RETURN_STRINGL((char *)value.data, value.size, 1);
+		zval_dtor(zkey); ZVAL_STRINGL(zkey, (char *) key.data, key.size, 1);
+		zval_dtor(zvalue); ZVAL_STRINGL(zvalue, (char *) value.data, value.size, 1);
+		RETURN_LONG(0);
     } 
-    php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", db_strerror(ret));
-    add_property_string(self, "lastError", db_strerror(ret), 1);
-    RETURN_FALSE;
+	if(ret != DB_NOTFOUND) {
+    	php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", db_strerror(ret));
+    	add_property_string(self, "lastError", db_strerror(ret), 1);
+    }
+    RETURN_LONG(1);
 }
 /* }}} */
 
-/* {{{ proto string Db4Cursor::pget(string $key, string &$primary_key [, long flags])
+/* {{{ proto string Db4Cursor::pget(string &$key, string &$pkey, string &$data [, long $flags])
  */
 ZEND_NAMED_FUNCTION(_wrap_dbc_pget)
 {
     DBC *dbc;
     DBT key, pkey, value;
-    char *keyname;
-    int keylen;
-    u_int32_t flags = 0;
-    zval *self, *z_pkey;
+    zval *zkey, *zvalue, *zpkey;
+    u_int32_t flags = DB_NEXT;
+    zval *self;
     int ret;
     
     self = getThis();
     getDbcFromThis(dbc);
-    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|l", &keyname, &keylen, &z_pkey, &flags) == FAILURE) 
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z/z/z/|l", &zkey, &zpkey, &zvalue, &flags) == FAILURE) 
     {
         return;
     }
     memset(&key, 0, sizeof(DBT));
-    key.data = keyname;
-    key.size = keylen;
+	key.data = Z_STRVAL_P(zkey);
+	key.size = Z_STRLEN_P(zkey);
     memset(&pkey, 0, sizeof(DBT));
+	pkey.data = Z_STRVAL_P(zpkey);
+	pkey.size = Z_STRLEN_P(zpkey);
     memset(&value, 0, sizeof(DBT));
+	value.data = Z_STRVAL_P(zvalue);
+	value.size = Z_STRLEN_P(zvalue);
     if((ret = dbc->c_pget(dbc, &key, &pkey, &value, flags)) == 0) {
-        if(Z_STRLEN_P(z_pkey) == 0) {
-            Z_STRVAL_P(z_pkey) = (char *) emalloc(pkey.size);
-        } else {
-            Z_STRVAL_P(z_pkey) = (char *) erealloc(Z_STRVAL_P(z_pkey), pkey.size);
-        }
-        memcpy(Z_STRVAL_P(z_pkey), pkey.data, pkey.size);
-        Z_STRLEN_P(z_pkey) = pkey.size;
-        RETURN_STRINGL((char *)value.data, value.size, 1);
+		zval_dtor(zkey); ZVAL_STRINGL(zkey, (char *) key.data, key.size, 1);
+		zval_dtor(zpkey); ZVAL_STRINGL(zpkey, (char *) pkey.data, pkey.size, 1);
+		zval_dtor(zvalue); ZVAL_STRINGL(zvalue, (char *) value.data, value.size, 1);
+		RETURN_LONG(0);
     } 
-    php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", db_strerror(ret));
-    add_property_string(self, "lastError", db_strerror(ret), 1);
-    RETURN_FALSE;
+	if(ret != DB_NOTFOUND) {
+    	php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s", db_strerror(ret));
+    	add_property_string(self, "lastError", db_strerror(ret), 1);
+    }
+    RETURN_LONG(1);
 }
 /* }}} */
 
@@ -1805,6 +1871,7 @@ ZEND_NAMED_FUNCTION(_wrap_dbc_put)
 
 void php_db4_error(const DB_ENV *dp, const char *errpfx, const char *msg)
 {
+	TSRMLS_FETCH();
     php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s %s\n", errpfx, msg);
 }
 /* }}} */
@@ -1841,7 +1908,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_env_close)
     u_int32_t flags = 0;
     int ret;
     
-    pdb = php_db4_getPhpDbEnvFromObj(getThis());
+    pdb = php_db4_getPhpDbEnvFromObj(getThis() TSRMLS_CC);
     if(!pdb || !pdb->dbenv) { 
       RETURN_FALSE;
     }
@@ -2044,7 +2111,7 @@ ZEND_NAMED_FUNCTION(_wrap_db_env_txn_checkpoint)
 /*
  * Local variables:
  * tab-width: 4
- * c-basic-offset: 4
+  c-basic-offset: 4
  * End:
  * vim600: noet sw=4 ts=4 fdm=marker
  * vim<600: noet sw=4 ts=4

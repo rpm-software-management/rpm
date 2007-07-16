@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd009.tcl,v 1.20 2004/01/28 03:36:28 bostic Exp $
+# $Id: recd009.tcl,v 12.3 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	recd009
 # TEST	Verify record numbering across split/reverse splits and recovery.

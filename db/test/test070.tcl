@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test070.tcl,v 11.33 2004/02/17 16:29:07 dda Exp $
+# $Id: test070.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test070
 # TEST	Test of DB_CONSUME (Four consumers, 1000 items.)

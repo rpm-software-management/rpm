@@ -1,6 +1,6 @@
 <!--$Id: dbt_class.so,v 10.1 2002/08/24 18:22:30 bostic Exp $-->
-<!--$Id: dbt_cxx.so,v 10.69 2004/10/14 15:58:43 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: dbt_cxx.so,v 10.71 2005/04/01 01:53:16 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -189,7 +189,7 @@ information.</p>
 <h3>Description: Dbt::get_doff</h3>
 <p>Return the offset of the partial record, in bytes.</p>
 <hr size=1 noshade>
-<h3>Description: Dbt::set_object</h3>
+<h3>Description: Dbt::set_flags</h3>
 <p>Set the object flag value.</p>
 <h3>Parameters</h3>
 <dl compact>
@@ -220,8 +220,9 @@ DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
 that is at least <b>ulen</b> bytes in length.  If the length of the
 requested item is less than or equal to that number of bytes, the item
 is copied into the memory referred to by the <b>data</b> field.
-Otherwise, the <b>size</b> field is set to the length needed for the
-requested item, and the error DB_BUFFER_SMALL is returned.
+Otherwise, the <b>size</b> fields of both the key and data Dbt
+objects are set to the length needed for the requested item, and the
+error DB_BUFFER_SMALL is returned.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
 </dl>
@@ -271,12 +272,12 @@ bytes would be those specified by the put call.</p>
 </dl>
 </dl>
 <hr size=1 noshade>
-<h3>Description: Dbt::set_object</h3>
+<h3>Description: Dbt::get_flags</h3>
 <p>Return the object flag value.</p>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

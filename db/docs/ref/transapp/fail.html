@@ -1,0 +1,72 @@
+<!--$Id: fail.so,v 10.2 2005/10/19 21:10:31 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Handling failure in Transactional Data Store applications</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
+<td align=right><a href="../transapp/term.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/app.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Handling failure in Transactional Data Store applications</h3>
+<p>When building Transactional Data Store applications, there are design
+issues to consider whenever a thread of control with open Berkeley DB handles
+fails for any reason (where a thread of control may be either a true
+thread or a process).</p>
+<p>The first case is handling system failure: if the system fails, the
+database environment and the databases may be left in a corrupted state.
+In this case, recovery must be performed on the database environment
+before any further action is taken, in order to:</p>
+<p><ul type=disc>
+<li>recover the database environment resources,
+<li>release any locks or mutexes that may have been held to avoid starvation
+as the remaining threads of control convoy behind the held locks, and
+<li>resolve any partially completed operations that may have left a database
+in an inconsistent or corrupted state.
+</ul>
+<p>For details on performing recovery, see the <a href="recovery.html">Recovery
+procedures</a>.</p>
+<p>The second case is handling the failure of a thread of control.  There
+are resources maintained in database environments that may be left
+locked or corrupted if a thread of control exits unexpectedly.  These
+resources include data structure mutexes, logical database locks and
+unresolved transactions (that is, transactions which were never aborted
+or committed).  While Transactional Data Store applications can treat
+the failure of a thread of control in the same way as they do a system
+failure, they have an alternative choice, the <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method.</p>
+<p>The <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method will return <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> if the
+database environment is unusable as a result of the thread of control
+failure.  (If a data structure mutex or a database write lock is left
+held by thread of control failure, the application should not continue
+to use the database environment, as subsequent use of the environment
+is likely to result in threads of control convoying behind the held
+locks.)  The <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> call will release any database read
+locks that have been left held by the exit of a thread of control, and
+abort any unresolved transactions.  In this case, the application can
+continue to use the database environment.</p>
+<p>A Transactional Data Store application recovering from a thread of
+control failure should call <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a>, and, if it returns
+success, the application can continue.  If <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> returns
+<a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, the application should proceed as described for
+the case of system failure.</p>
+<p>It greatly simplifies matters that recovery may be performed regardless
+of whether recovery needs to be performed; that is, it is not an error
+to recover a database environment for which recovery is not strictly
+necessary.  For this reason, applications should not try to determine
+if the database environment was active when the application or system
+failed.  Instead, applications should run recovery any time the
+<a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method returns <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, or, if the
+application is not calling <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method, any time any thread
+of control accessing the database environment fails, as well as any time
+the system reboots.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/term.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/app.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

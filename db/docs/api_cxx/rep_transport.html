@@ -1,17 +1,17 @@
-<!--$Id: rep_transport.so,v 1.31 2004/08/13 03:39:02 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: rep_transport.so,v 1.35 2006/06/05 23:03:53 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DbEnv::set_rep_transport</title>
+<title>Berkeley DB: DbEnv::rep_set_transport</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td>
-<h3>DbEnv::set_rep_transport</h3>
+<h3>DbEnv::rep_set_transport</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
@@ -23,21 +23,26 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbEnv::set_rep_transport(int envid,
+DbEnv::rep_set_transport(int envid,
     int (*send)(DB_ENV *dbenv,
     const Dbt *control, const Dbt *rec, const DbLsn *lsnp,
     int envid, u_int32_t flags));
 </pre></h3>
 <hr size=1 noshade>
-<h3>Description: DbEnv::set_rep_transport</h3>
-<p>The DbEnv::set_rep_transport method initializes the communication infrastructure
+<h3>Description: DbEnv::rep_set_transport</h3>
+<p>The DbEnv::rep_set_transport method initializes the communication infrastructure
 for a database environment participating in a replicated application.</p>
-<p>The DbEnv::set_rep_transport method configures operations performed using the specified
+<p>The DbEnv::rep_set_transport method is not called by most replication
+applications.  It should only be called by applications implementing
+their own network transport layer, explicitly holding replication group
+elections and handling replication messages outside of the replication
+manager framework.</p>
+<p>The DbEnv::rep_set_transport method configures operations performed using the specified
 <a href="../api_cxx/env_class.html">DbEnv</a> handle, not all operations performed on the underlying
 database environment.</p>
-<p>The DbEnv::set_rep_transport method may be called at any time during the life of the
+<p>The DbEnv::rep_set_transport method may be called at any time during the life of the
 application.</p>
-<p>The DbEnv::set_rep_transport method
+<p>The DbEnv::rep_set_transport method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
@@ -45,7 +50,7 @@ failure, and returns 0 on success.
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>envid</b><dd>The <b>envid</b> parameter is the local environment's ID.  It must be
-a positive integer and uniquely identify this Berkeley DB database environment
+a non-negative integer and uniquely identify this Berkeley DB database environment
 (see <a href="../ref/rep/id.html">Replication environment IDs</a> for more
 information).
 <dt><b>send</b><dd>The <b>send</b> callback function is used to transmit data using the
@@ -74,6 +79,8 @@ cases, the sending site should not be asked to process the message.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
+<dt><a name="DB_REP_ANYWHERE">DB_REP_ANYWHERE</a><dd>The message is a client request that can be satisfied by another client
+as well as by the master.
 <dt><a name="DB_REP_NOBUFFER">DB_REP_NOBUFFER</a><dd>The record being sent should be transmitted immediately and not buffered
 or delayed.
 <dt><a name="DB_REP_PERMANENT">DB_REP_PERMANENT</a><dd>The record being sent is critical for maintaining database integrity
@@ -81,20 +88,25 @@ or delayed.
 application should take appropriate action to enforce the reliability
 guarantees it has chosen, such as waiting for acknowledgement from one
 or more clients.
+<dt><a name="DB_REP_REREQUEST">DB_REP_REREQUEST</a><dd>The message is a client request that has already been made and to which
+no response was received.
 </dl>
 </dl>
 <p>It may sometimes be useful to pass application-specific data to the
 <b>send</b> function; see <a href="../ref/env/faq.html">Environment
 FAQ</a> for a discussion on how to do this.</p>
-The <b>send</b> function should not call back down into Berkeley DB.  The
-<b>send</b> function must return 0 on success and non-zero on failure.
-If the <b>send</b> function fails, the message being sent is necessary
-to maintain database integrity, and the local log is not configured for
-synchronous flushing, the local log will be flushed; otherwise, any
-error from the <b>send</b> function will be ignored.
+<p>The <b>send</b> function must return 0 on success and non-zero on
+failure.  If the <b>send</b> function fails, the message being sent is
+necessary to maintain database integrity, and the local log is not
+configured for synchronous flushing, the local log will be flushed;
+otherwise, any error from the <b>send</b> function will be ignored.</p>
+<p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering Berkeley DB is not guaranteed to work correctly, and the results
+are undefined.</p>
 </dl>
 <h3>Errors</h3>
-<p>The DbEnv::set_rep_transport method
+<p>The DbEnv::rep_set_transport method
 may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
@@ -112,6 +124,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

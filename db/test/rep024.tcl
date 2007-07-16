@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep024.tcl,v 1.7 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep024.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  	rep024
 # TEST	Replication page allocation / verify test
@@ -13,8 +13,19 @@
 # TEST	and site 1 comes back up as a client.  Verify database.
 
 proc rep024 { method { niter 1000 } { tnum "024" } args } {
-	global fixed_len
 
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
+
+	global fixed_len
 	set orig_fixed_len $fixed_len
 	set fixed_len 448
 	set args [convert_args $method $args]
@@ -22,8 +33,7 @@ proc rep024 { method { niter 1000 } { tnum "024" } args } {
 
 	# Run all tests with and without recovery.
 	set envargs ""
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -71,11 +81,11 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(1) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(1) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs $recargs -home $masterdir \
 	    -errpfx MASTER -txn $m_logargs \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(1) "berkdb_env_noerr -create -lock_max 2500 \
+#	set env_cmd(1) "berkdb_env_noerr -create \
 #	    -log_max 1000000 $envargs $recargs -home $masterdir \
 #	    -verbose {rep on} -errfile /dev/stderr \
 #	    -errpfx MASTER -txn $m_logargs \
@@ -85,11 +95,11 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 
 	# Open a client
 	repladd 2
-	set env_cmd(2) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(2) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs $recargs -home $clientdir \
 	    -errpfx CLIENT -txn $c_logargs \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(2) "berkdb_env_noerr -create -lock_max 2500 \
+#	set env_cmd(2) "berkdb_env_noerr -create \
 #	    -log_max 1000000 $envargs $recargs -home $clientdir \
 #	    -verbose {rep on} -errfile /dev/stderr \
 #	    -errpfx CLIENT -txn $c_logargs \
@@ -118,7 +128,7 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 	set testfile "test$tnum.db"
 	set db [eval "berkdb_open -create $omethod -auto_commit \
 	    -pagesize $pagesize -env $masterenv $largs $testfile"]
-	eval rep_test $method $masterenv $db $niter 0 0
+	eval rep_test $method $masterenv $db $niter 0 0 0 0 $largs
 	process_msgs $envlist
 
 	# Close client.  Force a page allocation on the master.

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleTupleKeyCreator.java,v 1.4 2004/08/02 18:52:05 mjc Exp $
+ * $Id: TupleTupleKeyCreator.java,v 12.5 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
@@ -18,10 +18,15 @@ import com.sleepycat.db.SecondaryKeyCreator;
  * An abstract key creator that uses a tuple key and a tuple data entry. This
  * class takes care of converting the key and data entry to/from {@link
  * TupleInput} and {@link TupleOutput} objects.
+ * The following abstract method must be implemented by a concrete subclass
+ * to create the index key using these objects
+ * <ul>
+ * <li> {@link #createSecondaryKey(TupleInput,TupleInput,TupleOutput)} </li>
+ * </ul>
  *
  * @author Mark Hayes
  */
-public abstract class TupleTupleKeyCreator
+public abstract class TupleTupleKeyCreator extends TupleBase
     implements SecondaryKeyCreator {
 
     /**
@@ -37,12 +42,11 @@ public abstract class TupleTupleKeyCreator
                                       DatabaseEntry indexKeyEntry)
         throws DatabaseException {
 
-        TupleOutput output = TupleBinding.newOutput();
-        TupleInput primaryKeyInput =
-            TupleBinding.entryToInput(primaryKeyEntry);
-        TupleInput dataInput = TupleBinding.entryToInput(dataEntry);
+        TupleOutput output = getTupleOutput(null);
+        TupleInput primaryKeyInput = entryToInput(primaryKeyEntry);
+        TupleInput dataInput = entryToInput(dataEntry);
         if (createSecondaryKey(primaryKeyInput, dataInput, output)) {
-            TupleBinding.outputToEntry(output, indexKeyEntry);
+            outputToEntry(output, indexKeyEntry);
             return true;
         } else {
             return false;
@@ -54,10 +58,9 @@ public abstract class TupleTupleKeyCreator
                                      DatabaseEntry dataEntry)
         throws DatabaseException {
 
-        TupleOutput output = TupleBinding.newOutput();
-        if (nullifyForeignKey(TupleBinding.entryToInput(dataEntry),
-                              output)) {
-            TupleBinding.outputToEntry(output, dataEntry);
+        TupleOutput output = getTupleOutput(null);
+        if (nullifyForeignKey(entryToInput(dataEntry), output)) {
+            outputToEntry(output, dataEntry);
             return true;
         } else {
             return false;

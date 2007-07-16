@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: crypto_stub.c,v 1.4 2004/01/28 03:35:52 bostic Exp $
+ * $Id: crypto_stub.c,v 12.5 2006/08/24 14:45:10 bostic Exp $
  */
 
 #include "db_config.h"
@@ -32,14 +32,14 @@ __crypto_region_init(dbenv)
 
 	infop = dbenv->reginfo;
 	renv = infop->primary;
-	MUTEX_LOCK(dbenv, &renv->mutex);
+	MUTEX_LOCK(dbenv, renv->mtx_regenv);
 	ret = !(renv->cipher_off == INVALID_ROFF);
-	MUTEX_UNLOCK(dbenv, &renv->mutex);
+	MUTEX_UNLOCK(dbenv, renv->mtx_regenv);
 
 	if (ret == 0)
 		return (0);
 
-	__db_err(dbenv,
+	__db_errx(dbenv,
 "Encrypted environment: library build did not include cryptography support");
 	return (DB_OPNOTSUP);
 }

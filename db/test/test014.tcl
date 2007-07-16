@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test014.tcl,v 11.26 2004/01/28 03:36:30 bostic Exp $
+# $Id: test014.tcl,v 12.3 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	test014
 # TEST	Exercise partial puts on short data

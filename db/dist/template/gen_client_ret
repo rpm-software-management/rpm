@@ -1,11 +1,6 @@
 /* Do not edit: automatically built by gen_rpc.awk. */
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 #include "db_int.h"
 #include "dbinc/txn.h"
 
@@ -25,6 +20,30 @@ __dbcl_env_create_ret(dbenv, timeout, replyp)
 	if (replyp->status != 0)
 		return (replyp->status);
 	env = replyp->envcl_id;
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	return (replyp->status);
+}
+
+/*
+ * PUBLIC: int __dbcl_env_cdsgroup_begin_ret __P((DB_ENV *, DB_TXN **,
+ * PUBLIC:      __env_cdsgroup_begin_reply *));
+ */
+int
+__dbcl_env_cdsgroup_begin_ret(dbenv, txnpp, replyp)
+	DB_ENV * dbenv;
+	DB_TXN ** txnpp;
+	__env_cdsgroup_begin_reply *replyp;
+{
+	int ret;
+	long txnid;
+
+	if (replyp->status != 0)
+		return (replyp->status);
+	txnid = replyp->txnidcl_id;
 
 	/*
 	 * XXX Code goes here
@@ -83,36 +102,16 @@ __dbcl_env_remove_ret(dbenv, home, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_txn_abort_ret __P((DB_TXN *, __txn_abort_reply *));
+ * PUBLIC: int __dbcl_env_txn_begin_ret __P((DB_ENV *, DB_TXN *, DB_TXN **,
+ * PUBLIC:      u_int32_t, __env_txn_begin_reply *));
  */
 int
-__dbcl_txn_abort_ret(txnp, replyp)
-	DB_TXN * txnp;
-	__txn_abort_reply *replyp;
-{
-	int ret;
-
-	if (replyp->status != 0)
-		return (replyp->status);
-
-	/*
-	 * XXX Code goes here
-	 */
-
-	return (replyp->status);
-}
-
-/*
- * PUBLIC: int __dbcl_txn_begin_ret __P((DB_ENV *, DB_TXN *, DB_TXN **,
- * PUBLIC:      u_int32_t, __txn_begin_reply *));
- */
-int
-__dbcl_txn_begin_ret(dbenv, parent, txnpp, flags, replyp)
+__dbcl_env_txn_begin_ret(dbenv, parent, txnpp, flags, replyp)
 	DB_ENV * dbenv;
 	DB_TXN * parent;
 	DB_TXN ** txnpp;
 	u_int32_t flags;
-	__txn_begin_reply *replyp;
+	__env_txn_begin_reply *replyp;
 {
 	int ret;
 	long txnid;
@@ -129,61 +128,17 @@ __dbcl_txn_begin_ret(dbenv, parent, txnpp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_txn_commit_ret __P((DB_TXN *, u_int32_t,
- * PUBLIC:      __txn_commit_reply *));
+ * PUBLIC: int __dbcl_env_txn_recover_ret __P((DB_ENV *, DB_PREPLIST *, long,
+ * PUBLIC:      long *, u_int32_t, __env_txn_recover_reply *));
  */
 int
-__dbcl_txn_commit_ret(txnp, flags, replyp)
-	DB_TXN * txnp;
-	u_int32_t flags;
-	__txn_commit_reply *replyp;
-{
-	int ret;
-
-	if (replyp->status != 0)
-		return (replyp->status);
-
-	/*
-	 * XXX Code goes here
-	 */
-
-	return (replyp->status);
-}
-
-/*
- * PUBLIC: int __dbcl_txn_discard_ret __P((DB_TXN *, u_int32_t,
- * PUBLIC:      __txn_discard_reply *));
- */
-int
-__dbcl_txn_discard_ret(txnp, flags, replyp)
-	DB_TXN * txnp;
-	u_int32_t flags;
-	__txn_discard_reply *replyp;
-{
-	int ret;
-
-	if (replyp->status != 0)
-		return (replyp->status);
-
-	/*
-	 * XXX Code goes here
-	 */
-
-	return (replyp->status);
-}
-
-/*
- * PUBLIC: int __dbcl_txn_recover_ret __P((DB_ENV *, DB_PREPLIST *, long,
- * PUBLIC:      long *, u_int32_t, __txn_recover_reply *));
- */
-int
-__dbcl_txn_recover_ret(dbenv, preplist, count, retp, flags, replyp)
+__dbcl_env_txn_recover_ret(dbenv, preplist, count, retp, flags, replyp)
 	DB_ENV * dbenv;
 	DB_PREPLIST * preplist;
 	long count;
 	long * retp;
 	u_int32_t flags;
-	__txn_recover_reply *replyp;
+	__env_txn_recover_reply *replyp;
 {
 	int ret;
 	u_int32_t *__db_txn;
@@ -203,27 +158,6 @@ __dbcl_txn_recover_ret(dbenv, preplist, count, retp, flags, replyp)
 	 */
 
 	retcount = replyp->retcount;
-
-	/*
-	 * XXX Code goes here
-	 */
-
-	return (replyp->status);
-}
-
-/*
- * PUBLIC: int __dbcl_db_close_ret __P((DB *, u_int32_t, __db_close_reply *));
- */
-int
-__dbcl_db_close_ret(dbp, flags, replyp)
-	DB * dbp;
-	u_int32_t flags;
-	__db_close_reply *replyp;
-{
-	int ret;
-
-	if (replyp->status != 0)
-		return (replyp->status);
 
 	/*
 	 * XXX Code goes here
@@ -258,6 +192,53 @@ __dbcl_db_create_ret(dbp, dbenv, flags, replyp)
 }
 
 /*
+ * PUBLIC: int __dbcl_db_close_ret __P((DB *, u_int32_t, __db_close_reply *));
+ */
+int
+__dbcl_db_close_ret(dbp, flags, replyp)
+	DB * dbp;
+	u_int32_t flags;
+	__db_close_reply *replyp;
+{
+	int ret;
+
+	if (replyp->status != 0)
+		return (replyp->status);
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	return (replyp->status);
+}
+
+/*
+ * PUBLIC: int __dbcl_db_cursor_ret __P((DB *, DB_TXN *, DBC **, u_int32_t,
+ * PUBLIC:      __db_cursor_reply *));
+ */
+int
+__dbcl_db_cursor_ret(dbp, txnp, dbcpp, flags, replyp)
+	DB * dbp;
+	DB_TXN * txnp;
+	DBC ** dbcpp;
+	u_int32_t flags;
+	__db_cursor_reply *replyp;
+{
+	int ret;
+	long dbcid;
+
+	if (replyp->status != 0)
+		return (replyp->status);
+	dbcid = replyp->dbcidcl_id;
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	return (replyp->status);
+}
+
+/*
  * PUBLIC: int __dbcl_db_get_ret __P((DB *, DB_TXN *, DBT *, DBT *, u_int32_t,
  * PUBLIC:      __db_get_reply *));
  */
@@ -278,6 +259,32 @@ __dbcl_db_get_ret(dbp, txnp, key, data, flags, replyp)
 		return (replyp->status);
 	/* Handle replyp->keydata; */
 	/* Handle replyp->datadata; */
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	return (replyp->status);
+}
+
+/*
+ * PUBLIC: int __dbcl_db_join_ret __P((DB *, DBC **, DBC **, u_int32_t,
+ * PUBLIC:      __db_join_reply *));
+ */
+int
+__dbcl_db_join_ret(dbp, curs, dbcp, flags, replyp)
+	DB * dbp;
+	DBC ** curs;
+	DBC ** dbcp;
+	u_int32_t flags;
+	__db_join_reply *replyp;
+{
+	int ret;
+	long dbcid;
+
+	if (replyp->status != 0)
+		return (replyp->status);
+	dbcid = replyp->dbcidcl_id;
 
 	/*
 	 * XXX Code goes here
@@ -515,64 +522,12 @@ __dbcl_db_truncate_ret(dbp, txnp, countp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_db_cursor_ret __P((DB *, DB_TXN *, DBC **, u_int32_t,
- * PUBLIC:      __db_cursor_reply *));
+ * PUBLIC: int __dbcl_dbc_c_close_ret __P((DBC *, __dbc_c_close_reply *));
  */
 int
-__dbcl_db_cursor_ret(dbp, txnp, dbcpp, flags, replyp)
-	DB * dbp;
-	DB_TXN * txnp;
-	DBC ** dbcpp;
-	u_int32_t flags;
-	__db_cursor_reply *replyp;
-{
-	int ret;
-	long dbcid;
-
-	if (replyp->status != 0)
-		return (replyp->status);
-	dbcid = replyp->dbcidcl_id;
-
-	/*
-	 * XXX Code goes here
-	 */
-
-	return (replyp->status);
-}
-
-/*
- * PUBLIC: int __dbcl_db_join_ret __P((DB *, DBC **, DBC **, u_int32_t,
- * PUBLIC:      __db_join_reply *));
- */
-int
-__dbcl_db_join_ret(dbp, curs, dbcp, flags, replyp)
-	DB * dbp;
-	DBC ** curs;
-	DBC ** dbcp;
-	u_int32_t flags;
-	__db_join_reply *replyp;
-{
-	int ret;
-	long dbcid;
-
-	if (replyp->status != 0)
-		return (replyp->status);
-	dbcid = replyp->dbcidcl_id;
-
-	/*
-	 * XXX Code goes here
-	 */
-
-	return (replyp->status);
-}
-
-/*
- * PUBLIC: int __dbcl_dbc_close_ret __P((DBC *, __dbc_close_reply *));
- */
-int
-__dbcl_dbc_close_ret(dbc, replyp)
+__dbcl_dbc_c_close_ret(dbc, replyp)
 	DBC * dbc;
-	__dbc_close_reply *replyp;
+	__dbc_c_close_reply *replyp;
 {
 	int ret;
 
@@ -587,15 +542,15 @@ __dbcl_dbc_close_ret(dbc, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_count_ret __P((DBC *, db_recno_t *, u_int32_t,
- * PUBLIC:      __dbc_count_reply *));
+ * PUBLIC: int __dbcl_dbc_c_count_ret __P((DBC *, db_recno_t *, u_int32_t,
+ * PUBLIC:      __dbc_c_count_reply *));
  */
 int
-__dbcl_dbc_count_ret(dbc, countp, flags, replyp)
+__dbcl_dbc_c_count_ret(dbc, countp, flags, replyp)
 	DBC * dbc;
 	db_recno_t * countp;
 	u_int32_t flags;
-	__dbc_count_reply *replyp;
+	__dbc_c_count_reply *replyp;
 {
 	int ret;
 	db_recno_t dupcount;
@@ -612,15 +567,15 @@ __dbcl_dbc_count_ret(dbc, countp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_dup_ret __P((DBC *, DBC **, u_int32_t,
- * PUBLIC:      __dbc_dup_reply *));
+ * PUBLIC: int __dbcl_dbc_c_dup_ret __P((DBC *, DBC **, u_int32_t,
+ * PUBLIC:      __dbc_c_dup_reply *));
  */
 int
-__dbcl_dbc_dup_ret(dbc, dbcp, flags, replyp)
+__dbcl_dbc_c_dup_ret(dbc, dbcp, flags, replyp)
 	DBC * dbc;
 	DBC ** dbcp;
 	u_int32_t flags;
-	__dbc_dup_reply *replyp;
+	__dbc_c_dup_reply *replyp;
 {
 	int ret;
 	long dbcid;
@@ -637,16 +592,16 @@ __dbcl_dbc_dup_ret(dbc, dbcp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_get_ret __P((DBC *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_get_reply *));
+ * PUBLIC: int __dbcl_dbc_c_get_ret __P((DBC *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_c_get_reply *));
  */
 int
-__dbcl_dbc_get_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_c_get_ret(dbc, key, data, flags, replyp)
 	DBC * dbc;
 	DBT * key;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_get_reply *replyp;
+	__dbc_c_get_reply *replyp;
 {
 	int ret;
 	/* DBT key; */
@@ -665,17 +620,17 @@ __dbcl_dbc_get_ret(dbc, key, data, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_pget_reply *));
+ * PUBLIC: int __dbcl_dbc_c_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_c_pget_reply *));
  */
 int
-__dbcl_dbc_pget_ret(dbc, skey, pkey, data, flags, replyp)
+__dbcl_dbc_c_pget_ret(dbc, skey, pkey, data, flags, replyp)
 	DBC * dbc;
 	DBT * skey;
 	DBT * pkey;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_pget_reply *replyp;
+	__dbc_c_pget_reply *replyp;
 {
 	int ret;
 	/* DBT skey; */
@@ -696,16 +651,16 @@ __dbcl_dbc_pget_ret(dbc, skey, pkey, data, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_put_ret __P((DBC *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_put_reply *));
+ * PUBLIC: int __dbcl_dbc_c_put_ret __P((DBC *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_c_put_reply *));
  */
 int
-__dbcl_dbc_put_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_c_put_ret(dbc, key, data, flags, replyp)
 	DBC * dbc;
 	DBT * key;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_put_reply *replyp;
+	__dbc_c_put_reply *replyp;
 {
 	int ret;
 	/* DBT key; */
@@ -713,6 +668,70 @@ __dbcl_dbc_put_ret(dbc, key, data, flags, replyp)
 	if (replyp->status != 0)
 		return (replyp->status);
 	/* Handle replyp->keydata; */
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	return (replyp->status);
+}
+
+/*
+ * PUBLIC: int __dbcl_txn_abort_ret __P((DB_TXN *, __txn_abort_reply *));
+ */
+int
+__dbcl_txn_abort_ret(txnp, replyp)
+	DB_TXN * txnp;
+	__txn_abort_reply *replyp;
+{
+	int ret;
+
+	if (replyp->status != 0)
+		return (replyp->status);
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	return (replyp->status);
+}
+
+/*
+ * PUBLIC: int __dbcl_txn_commit_ret __P((DB_TXN *, u_int32_t,
+ * PUBLIC:      __txn_commit_reply *));
+ */
+int
+__dbcl_txn_commit_ret(txnp, flags, replyp)
+	DB_TXN * txnp;
+	u_int32_t flags;
+	__txn_commit_reply *replyp;
+{
+	int ret;
+
+	if (replyp->status != 0)
+		return (replyp->status);
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	return (replyp->status);
+}
+
+/*
+ * PUBLIC: int __dbcl_txn_discard_ret __P((DB_TXN *, u_int32_t,
+ * PUBLIC:      __txn_discard_reply *));
+ */
+int
+__dbcl_txn_discard_ret(txnp, flags, replyp)
+	DB_TXN * txnp;
+	u_int32_t flags;
+	__txn_discard_reply *replyp;
+{
+	int ret;
+
+	if (replyp->status != 0)
+		return (replyp->status);
 
 	/*
 	 * XXX Code goes here

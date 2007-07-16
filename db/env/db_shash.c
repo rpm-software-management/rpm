@@ -1,17 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_shash.c,v 11.9 2004/03/20 16:18:51 bostic Exp $
+ * $Id: db_shash.c,v 12.4 2006/08/24 14:45:38 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
 
 #include "db_int.h"
 

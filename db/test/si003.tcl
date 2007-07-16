@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2001-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: si003.tcl,v 1.12 2004/10/27 20:40:25 carol Exp $
+# $Id: si003.tcl,v 12.8 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	si003
 # TEST	si001 with secondaries created and closed mid-test
@@ -24,29 +24,57 @@ proc si003 { methods {nentries 200} {tnum "003"} args } {
 	set pargs [convert_args $pmethod $args]
 	set pomethod [convert_method $pmethod]
 
+	# Renumbering recno databases can't be used as primaries.
+	if { [is_rrecno $pmethod] == 1 } {
+		puts "Skipping si$tnum for method $pmethod"
+		return
+	}
+
 	# Method/args for all the secondaries.  If only one method
-	# was specified, assume the same method and a standard N
-	# secondaries.
+	# was specified, assume the same method (for btree or hash)
+	# and a standard number of secondaries.  If primary is not
+	# btree or hash, force secondaries to be one btree, one hash.
 	set methods [lrange $methods 1 end]
 	if { [llength $methods] == 0 } {
 		for { set i 0 } { $i < $nsecondaries } { incr i } {
-			lappend methods $pmethod
+			if { [is_btree $pmethod] || [is_hash $pmethod] } {
+				lappend methods $pmethod
+			} else {
+				if { [expr $i % 2] == 0 } {
+					lappend methods "-btree"
+				} else {
+					lappend methods "-hash"
+				}
+			}
 		}
 	}
 
 	set argses [convert_argses $methods $args]
 	set omethods [convert_methods $methods]
 
-	puts "si$tnum \{\[ list $pmethod $methods \]\} $nentries" 
-	env_cleanup $testdir
+	# If we are given an env, use it.  Otherwise, open one.
+	set eindex [lsearch -exact $args "-env"]
+	if { $eindex == -1 } {
+		env_cleanup $testdir
+		set env [berkdb_env -create -home $testdir]
+		error_check_good env_open [is_valid_env $env] TRUE
+	} else {
+		incr eindex
+		set env [lindex $args $eindex]
+		set envflags [$env get_open_flags]
+		if { [lsearch -exact $envflags "-thread"] != -1 &&\
+		    [is_queue $pmethod] == 1 } {
+			puts "Skipping si$tnum for threaded env with queue"
+			return
+		}
+		set testdir [get_home $env]
+	}
+
+	puts "si$tnum \{\[ list $pmethod $methods \]\} $nentries"
+	cleanup $testdir $env
 
 	set pname "primary$tnum.db"
 	set snamebase "secondary$tnum"
-
-	# Open an environment
-	# XXX if one is not supplied!
-	set env [eval {berkdb_env -create -home $testdir}]
-	error_check_good env_open [is_valid_env $env] TRUE
 
 	# Open the primary.
 	set pdb [eval {berkdb_open -create -env} $env $pomethod $pargs $pname]
@@ -144,5 +172,9 @@ proc si003 { methods {nentries 200} {tnum "003"} args } {
 		error_check_good secondary_close [$sdb close] 0
 	}
 	error_check_good primary_close [$pdb close] 0
-	error_check_good env_close [$env close] 0
+
+	# Close the env if it was created within this test.
+	if { $eindex == -1 } {
+		error_check_good env_close [$env close] 0
+	}
 }

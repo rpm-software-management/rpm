@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.vx_code,v 1.7 2004/09/16 17:21:11 bostic Exp $
+# $Id: chk.vx_code,v 12.1 2005/10/20 18:59:14 bostic Exp $
 #
 # Check to make sure the auto-generated utility code in the VxWorks build
 # directory compiles.
@@ -33,8 +33,19 @@ header()
  echo "{"
  echo "int i;") > t1.c
 
-for i in db_archive db_checkpoint db_deadlock db_dump db_load \
-    db_printlog db_recover db_stat db_upgrade db_verify dbdemo; do
+for i in \
+    db_archive \
+    db_checkpoint \
+    db_deadlock \
+    db_dump \
+    db_hotbackup \
+    db_load \
+    db_printlog \
+    db_recover \
+    db_stat \
+    db_upgrade \
+    db_verify \
+    dbdemo; do
 	echo "	compiling build_vxworks/$i"
 	(cat $d/build_vxworks/$i/$i.c; header $i) > t.c
 	if cc -Wall -I.. -I$d t.c $F ../libdb.a -o t; then

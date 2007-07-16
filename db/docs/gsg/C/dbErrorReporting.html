@@ -94,7 +94,7 @@
             </p>
             <p>
                 The error message consists of the prefix string
-                (as defined by <tt class="methodname">set_errprefix()</tt>), 
+                (as defined by <tt class="methodname">set_errpfx()</tt>), 
                 an optional <tt class="literal">printf</tt>-style formatted message, 
                 the error message, and a trailing newline.
             </p>
@@ -153,28 +153,28 @@ int ret;
  */
 ret = db_create(&amp;dbp, NULL, 0);
 if (ret != 0) {
-        fprintf(stderr, "%s: %s\n", "my_program",
+        fprintf(stderr, &quot;%s: %s\n&quot;, &quot;my_program&quot;,
           db_strerror(ret));
         return(ret);
 }
 
 /* Set up error handling for this database */
 dbp-&gt;set_errcall(dbp, my_error_handler);
-dbp-&gt;set_errpfx(dbp, "my_example_program"); </pre>
+dbp-&gt;set_errpfx(dbp, &quot;my_example_program&quot;); </pre>
       <p>
         And to issue an error message:
     </p>
       <a id="c_db10"></a>
       <pre class="programlisting">ret = dbp-&gt;open(dbp, 
                 NULL,
-                "mydb.db", 
+                &quot;mydb.db&quot;, 
                 NULL,
                 DB_BTREE,
                 DB_CREATE,
                 0);
 if (ret != 0) {
     dbp-&gt;err(dbp, ret,
-      "Database open failed: %s", "mydb.db");
+      &quot;Database open failed: %s&quot;, &quot;mydb.db&quot;);
     return(ret);
 }</pre>
       <span>

@@ -1,14 +1,14 @@
-<!--$Id: toc.html,v 10.271 2004/10/18 20:10:41 bostic Exp $-->
+<!--$Id: toc.html,v 10.286 2006/09/20 16:04:05 bostic Exp $-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide (Version: 4.3.27)</title>
+<title>Berkeley DB Reference Guide (Version: 4.5.20)</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
 </head>
 <body bgcolor=white>
 
 <center>
-<h2><b>Berkeley DB Reference Guide, Version 4.3.27</b></h2>
+<h2><b>Berkeley DB Reference Guide, Version 4.5.20</b></h2>
 </center>
 
 <ol>
@@ -22,7 +22,7 @@
     <li><a href="intro/what.html">What other services does Berkeley DB provide?</a>
     <li><a href="intro/distrib.html">What does the Berkeley DB distribution include?</a>
     <li><a href="intro/where.html">Where does Berkeley DB run?</a>
-    <li><a href="intro/products.html">Sleepycat Software's Berkeley DB products</a>
+    <li><a href="intro/products.html">The Berkeley DB products</a>
     </ol>
 <font size="+1"><li><a name="am_conf">Access Method Configuration</a></font>
     <ol>
@@ -131,6 +131,7 @@
 <font size="+1"><li><a name="cam">Berkeley DB Concurrent Data Store Applications</a></font>
     <ol>
     <li><a href="cam/intro.html">Berkeley DB Concurrent Data Store applications</a>
+    <li><a href="cam/fail.html">Handling failure in Data Store and Concurrent Data Store applications</a>
     <li><a href="cam/app.html">Architecting Data Store and Concurrent Data Store applications</a>
     </ol>
 <font size="+1"><li><a name="transapp">Berkeley DB Transactional Data Store Applications</a></font>
@@ -138,6 +139,7 @@
     <li><a href="transapp/intro.html">Berkeley DB Transactional Data Store applications</a>
     <li><a href="transapp/why.html">Why transactions?</a>
     <li><a href="transapp/term.html">Terminology</a>
+    <li><a href="transapp/fail.html">Handling failure in Transactional Data Store applications</a>
     <li><a href="transapp/app.html">Architecting Transactional Data Store applications</a>
     <li><a href="transapp/env_open.html">Opening the environment</a>
     <li><a href="transapp/data_open.html">Opening the databases</a>
@@ -160,21 +162,26 @@
     <li><a href="transapp/throughput.html">Transaction throughput</a>
     <li><a href="transapp/faq.html">Transaction FAQ</a>
     </ol>
-<font size="+1"><li><a name="transapp">Berkeley DB Replication</a></font>
+<font size="+1"><li><a name="rep">Berkeley DB Replication</a></font>
     <ol>
     <li><a href="rep/intro.html">Introduction</a>
     <li><a href="rep/id.html">Replication environment IDs</a>
     <li><a href="rep/pri.html">Replication environment priorities</a>
     <li><a href="rep/app.html">Building replicated applications</a>
+    <li><a href="rep/mgr_meth.html">Replication Manager methods</a>
+    <li><a href="rep/base_meth.html">Base replication API</a>
     <li><a href="rep/comm.html">Building the communications infrastructure</a>
     <li><a href="rep/newsite.html">Connecting to a new site</a>
     <li><a href="rep/elect.html">Elections</a>
+    <li><a href="rep/mastersync.html">Synchronizing with a master</a>
+    <li><a href="rep/init.html">Initializing a new site</a>
+    <li><a href="rep/bulk.html">Bulk transfer</a>
     <li><a href="rep/trans.html">Transactional guarantees</a>
     <li><a href="rep/partition.html">Network partitions</a>
     <li><a href="rep/faq.html">Replication FAQ</a>
-    <li><a href="rep/ex.html">Ex_repquote: a replication example</a>
-    <li><a href="rep/ex_comm.html">Ex_repquote: a TCP/IP based communication infrastructure</a>
-    <li><a href="rep/ex_rq.html">Ex_repquote: putting it all together</a>
+    <li><a href="rep/ex.html">Ex_rep: a replication example</a>
+    <li><a href="rep/ex_comm.html">Ex_rep_base: a TCP/IP based communication infrastructure</a>
+    <li><a href="rep/ex_rq.html">Ex_rep_base: putting it all together</a>
     </ol>
 <font size="+1"><li><a name="xa">Distributed Transactions</a></font>
     <ol>
@@ -199,9 +206,9 @@
     <li><a href="program/mt.html">Multithreaded applications</a>
     <li><a href="program/scope.html">Berkeley DB handles</a>
     <li><a href="program/namespace.html">Name spaces</a>
-    <li><a href="program/ram.html">Memory-only configurations</a>
+    <li><a href="program/ram.html">Memory-only or Flash configurations</a>
     <li><a href="program/cache.html">Disk drive caches</a>
-    <li><a href="program/copy.html">Copying databases</a>
+    <li><a href="program/copy.html">Copying or moving databases</a>
     <li><a href="program/compatible.html">Compatibility with historic UNIX interfaces</a>
     <li><a href="program/runtime.html">Run-time configuration</a>
     <li><a href="program/faq.html">Programmer notes FAQ</a>
@@ -250,7 +257,7 @@
     <li><a href="rpc/server.html">Server program</a>
     <li><a href="rpc/faq.html">RPC FAQ</a>
     </ol>
-<font size="+1"><li><a name="tcl">Tcl API</a></font>
+<font size="+1"><li><a name="tcl">Berkeley DB Extensions: Tcl</a></font>
     <ol>
     <li><a href="tcl/intro.html">Loading Berkeley DB with Tcl</a>
     <li><a href="tcl/using.html">Using Berkeley DB with Tcl</a>
@@ -307,10 +314,9 @@
 	<a href="build_unix/sunos.html">SunOS</a>,
 	<a href="build_unix/ultrix.html">Ultrix</a>
     </ol>
-<font size="+1"><li><a name="build_win">Building Berkeley DB for Win32 systems</a></font>
+<font size="+1"><li><a name="build_win">Building Berkeley DB for Windows systems</a></font>
     <ol>
-    <li><a href="build_win/intro.html">Building for Win32</a>
-    <li><a href="build_win/unicode.html">Unicode support</a>
+    <li><a href="build_win/intro.html">Building for Windows</a>
     <li><a href="build_win/small.html">Building a small memory footprint library</a>
     <li><a href="build_win/test.html">Running the test suite under Windows</a>
     <li><a href="build_win/notes.html">Windows notes</a>
@@ -318,7 +324,7 @@
     </ol>
 <font size="+1"><li><a name="build_vxworks">Building Berkeley DB for VxWorks systems</a></font>
     <ol>
-    <li><a href="build_vxworks/intro.html">Building for VxWorks 5.4</a>
+    <li><a href="build_vxworks/intro.html">Building for VxWorks 5.4 and 5.5</a>
     <li><a href="build_vxworks/notes.html">VxWorks notes</a>
     <li><a href="build_vxworks/faq.html">VxWorks FAQ</a>
     </ol>
@@ -345,6 +351,10 @@
 	    Upgrading Berkeley DB 4.1.X applications to Berkeley DB 4.2</a>
     <li><a href="upgrade.4.3/toc.html">
 	    Upgrading Berkeley DB 4.2.X applications to Berkeley DB 4.3</a>
+    <li><a href="upgrade.4.4/toc.html">
+	    Upgrading Berkeley DB 4.3.X applications to Berkeley DB 4.4</a>
+    <li><a href="upgrade.4.5/toc.html">
+	    Upgrading Berkeley DB 4.4.X applications to Berkeley DB 4.5</a>
     </ol>
 <font size="+1"><li><a name="test">Test Suite</a></font>
     <ol>

@@ -1,23 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_txn.c,v 11.70 2004/10/27 16:48:32 bostic Exp $
+ * $Id: tcl_txn.c,v 12.16 2006/09/11 14:53:42 bostic Exp $
  */
 
 #include "db_config.h"
 
+#include "db_int.h"
 #ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <stdlib.h>
-#include <string.h>
 #include <tcl.h>
 #endif
-
-#include "db_int.h"
 #include "dbinc/tcl_db.h"
 
 static int tcl_TxnCommit __P((Tcl_Interp *,
@@ -142,28 +137,32 @@ tcl_Txn(interp, objc, objv, envp, envip)
 {
 	static const char *txnopts[] = {
 #ifdef CONFIG_TEST
-		"-degree_2",
-		"-dirty",
 		"-lock_timeout",
+		"-read_committed",
+		"-read_uncommitted",
 		"-txn_timeout",
 #endif
 		"-nosync",
 		"-nowait",
 		"-parent",
+		"-snapshot",
 		"-sync",
+		"-wrnosync",
 		NULL
 	};
 	enum txnopts {
 #ifdef CONFIG_TEST
-		TXNDEGREE2,
-		TXNDIRTY,
-		TXN_LOCK_TIMEOUT,
-		TXN_TIMEOUT,
+		TXNLOCK_TIMEOUT,
+		TXNREAD_COMMITTED,
+		TXNREAD_UNCOMMITTED,
+		TXNTIMEOUT,
 #endif
 		TXNNOSYNC,
 		TXNNOWAIT,
 		TXNPARENT,
-		TXNSYNC
+		TXNSNAPSHOT,
+		TXNSYNC,
+		TXNWRNOSYNC
 	};
 	DBTCL_INFO *ip;
 	DB_TXN *parent;
@@ -196,35 +195,33 @@ tcl_Txn(interp, objc, objv, envp, envip)
 		i++;
 		switch ((enum txnopts)optindex) {
 #ifdef CONFIG_TEST
-		case TXNDEGREE2:
-			flag |= DB_DEGREE_2;
-			break;
-		case TXNDIRTY:
-			flag |= DB_DIRTY_READ;
-			break;
-		case TXN_LOCK_TIMEOUT:
+		case TXNLOCK_TIMEOUT:
 			lk_timeflag = DB_SET_LOCK_TIMEOUT;
-			goto getit;
-		case TXN_TIMEOUT:
+			goto get_timeout;
+		case TXNTIMEOUT:
 			tx_timeflag = DB_SET_TXN_TIMEOUT;
-getit:			if (i >= objc) {
+get_timeout:		if (i >= objc) {
 				Tcl_WrongNumArgs(interp, 2, objv,
 				    "?-txn_timestamp time?");
 				return (TCL_ERROR);
 			}
 			result = Tcl_GetLongFromObj(interp, objv[i++], (long *)
-			    ((enum txnopts)optindex == TXN_LOCK_TIMEOUT ?
+			    ((enum txnopts)optindex == TXNLOCK_TIMEOUT ?
 			    &lk_time : &tx_time));
 			if (result != TCL_OK)
 				return (TCL_ERROR);
 			break;
+		case TXNREAD_COMMITTED:
+			flag |= DB_READ_COMMITTED;
+			break;
+		case TXNREAD_UNCOMMITTED:
+			flag |= DB_READ_UNCOMMITTED;
+			break;
 #endif
 		case TXNNOSYNC:
-			FLAG_CHECK2(flag, DB_DIRTY_READ);
 			flag |= DB_TXN_NOSYNC;
 			break;
 		case TXNNOWAIT:
-			FLAG_CHECK2(flag, DB_DIRTY_READ);
 			flag |= DB_TXN_NOWAIT;
 			break;
 		case TXNPARENT:
@@ -244,9 +241,14 @@ getit:			if (i >= objc) {
 				return (TCL_ERROR);
 			}
 			break;
+		case TXNSNAPSHOT:
+			flag |= DB_TXN_SNAPSHOT;
+			break;
 		case TXNSYNC:
-			FLAG_CHECK2(flag, DB_DIRTY_READ);
 			flag |= DB_TXN_SYNC;
+			break;
+		case TXNWRNOSYNC:
+			flag |= DB_TXN_WRITE_NOSYNC;
 			break;
 		}
 	}
@@ -304,6 +306,63 @@ getit:			if (i >= objc) {
 }
 
 /*
+ * tcl_CDSGroup --
+ *
+ * PUBLIC: int tcl_CDSGroup __P((Tcl_Interp *, int,
+ * PUBLIC:    Tcl_Obj * CONST*, DB_ENV *, DBTCL_INFO *));
+ */
+int
+tcl_CDSGroup(interp, objc, objv, envp, envip)
+	Tcl_Interp *interp;		/* Interpreter */
+	int objc;			/* How many arguments? */
+	Tcl_Obj *CONST objv[];		/* The argument objects */
+	DB_ENV *envp;			/* Environment pointer */
+	DBTCL_INFO *envip;		/* Info pointer */
+{
+	DBTCL_INFO *ip;
+	DB_TXN *txn;
+	Tcl_Obj *res;
+	int result, ret;
+	char newname[MSG_SIZE];
+
+	if (objc != 2) {
+		Tcl_WrongNumArgs(interp, 1, objv, "env cdsgroup");
+		return (TCL_ERROR);
+	}
+
+	result = TCL_OK;
+	memset(newname, 0, MSG_SIZE);
+
+	snprintf(newname, sizeof(newname), "%s.txn%d",
+	    envip->i_name, envip->i_envtxnid);
+	ip = _NewInfo(interp, NULL, newname, I_TXN);
+	if (ip == NULL) {
+		Tcl_SetResult(interp, "Could not set up info",
+		    TCL_STATIC);
+		return (TCL_ERROR);
+	}
+	_debug_check();
+	ret = envp->cdsgroup_begin(envp, &txn);
+	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "cdsgroup");
+	if (result == TCL_ERROR)
+		_DeleteInfo(ip);
+	else {
+		/*
+		 * Success.  Set up return.  Set up new info
+		 * and command widget for this txn.
+		 */
+		envip->i_envtxnid++;
+		ip->i_parent = envip;
+		_SetInfoData(ip, txn);
+		(void)Tcl_CreateObjCommand(interp, newname,
+		    (Tcl_ObjCmdProc *)txn_Cmd, (ClientData)txn, NULL);
+		res = NewStringObj(newname, strlen(newname));
+		Tcl_SetObjResult(interp, res);
+	}
+	return (result);
+}
+
+/*
  * tcl_TxnStat --
  *
  * PUBLIC: int tcl_TxnStat __P((Tcl_Interp *, int,
@@ -350,18 +409,19 @@ tcl_TxnStat(interp, objc, objv, envp)
 	MAKE_STAT_LSN("LSN of last checkpoint", &sp->st_last_ckp);
 	MAKE_STAT_LIST("Time of last checkpoint", sp->st_time_ckp);
 	MAKE_STAT_LIST("Last txn ID allocated", sp->st_last_txnid);
-	MAKE_STAT_LIST("Max Txns", sp->st_maxtxns);
+	MAKE_STAT_LIST("Maximum txns", sp->st_maxtxns);
 	MAKE_STAT_LIST("Number aborted txns", sp->st_naborts);
-	MAKE_STAT_LIST("Number active txns", sp->st_nactive);
-	MAKE_STAT_LIST("Maximum  active txns", sp->st_maxnactive);
 	MAKE_STAT_LIST("Number txns begun", sp->st_nbegins);
 	MAKE_STAT_LIST("Number committed txns", sp->st_ncommits);
+	MAKE_STAT_LIST("Number active txns", sp->st_nactive);
+	MAKE_STAT_LIST("Number of snapshot txns", sp->st_nsnapshot);
 	MAKE_STAT_LIST("Number restored txns", sp->st_nrestores);
+	MAKE_STAT_LIST("Maximum active txns", sp->st_maxnactive);
+	MAKE_STAT_LIST("Maximum snapshot txns", sp->st_maxnsnapshot);
 	MAKE_STAT_LIST("Number of region lock waits", sp->st_region_wait);
 	MAKE_STAT_LIST("Number of region lock nowaits", sp->st_region_nowait);
 	for (i = 0, p = sp->st_txnarray; i < sp->st_nactive; i++, p++)
-		for (ip = LIST_FIRST(&__db_infohead); ip != NULL;
-		    ip = LIST_NEXT(ip, entries)) {
+		LIST_FOREACH(ip, &__db_infohead, entries) {
 			if (ip->i_type != I_TXN)
 				continue;
 			if (ip->i_type == I_TXN &&
@@ -428,18 +488,24 @@ txn_Cmd(clientData, interp, objc, objv)
 	static const char *txncmds[] = {
 #ifdef CONFIG_TEST
 		"discard",
+		"getname",
 		"id",
 		"prepare",
+		"setname",
 #endif
 		"abort",
 		"commit",
+		"getname",
+		"setname",
 		NULL
 	};
 	enum txncmds {
 #ifdef CONFIG_TEST
 		TXNDISCARD,
+		TXNGETNAME,
 		TXNID,
 		TXNPREPARE,
+		TXNSETNAME,
 #endif
 		TXNABORT,
 		TXNCOMMIT
@@ -449,7 +515,9 @@ txn_Cmd(clientData, interp, objc, objv)
 	Tcl_Obj *res;
 	int cmdindex, result, ret;
 #ifdef CONFIG_TEST
-	u_int8_t *gid;
+	u_int8_t *gid, garray[DB_XIDDATASIZE];
+	int length;
+	const char *name;
 #endif
 
 	Tcl_ResetResult(interp);
@@ -503,8 +571,9 @@ txn_Cmd(clientData, interp, objc, objv)
 			return (TCL_ERROR);
 		}
 		_debug_check();
-		gid = (u_int8_t *)Tcl_GetByteArrayFromObj(objv[2], NULL);
-		ret = txnp->prepare(txnp, gid);
+		gid = (u_int8_t *)Tcl_GetByteArrayFromObj(objv[2], &length);
+		memcpy(garray, gid, (size_t)length);
+		ret = txnp->prepare(txnp, garray);
 		/*
 		 * !!!
 		 * DB_TXN->prepare commits all outstanding children.  But it
@@ -515,6 +584,27 @@ txn_Cmd(clientData, interp, objc, objv)
 		_TxnInfoDelete(interp, txnip);
 		result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
 		    "txn prepare");
+		break;
+	case TXNGETNAME:
+		if (objc != 2) {
+			Tcl_WrongNumArgs(interp, 2, objv, NULL);
+			return (TCL_ERROR);
+		}
+		_debug_check();
+		ret = txnp->get_name(txnp, &name);
+		if ((result = _ReturnSetup(
+		    interp, ret, DB_RETOK_STD(ret), "txn getname")) == TCL_OK)
+			res = NewStringObj(name, strlen(name));
+		break;
+	case TXNSETNAME:
+		if (objc != 3) {
+			Tcl_WrongNumArgs(interp, 2, objv, "name");
+			return (TCL_ERROR);
+		}
+		_debug_check();
+		ret = txnp->set_name(txnp, Tcl_GetStringFromObj(objv[2], NULL));
+		result =
+		    _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "setname");
 		break;
 #endif
 	case TXNABORT:
@@ -557,11 +647,13 @@ tcl_TxnCommit(interp, objc, objv, txnp, txnip)
 	static const char *commitopt[] = {
 		"-nosync",
 		"-sync",
+		"-wrnosync",
 		NULL
 	};
 	enum commitopt {
+		COMNOSYNC,
 		COMSYNC,
-		COMNOSYNC
+		COMWRNOSYNC
 	};
 	u_int32_t flag;
 	int optindex, result, ret;
@@ -580,12 +672,13 @@ tcl_TxnCommit(interp, objc, objv, txnp, txnip)
 			return (IS_HELP(objv[2]));
 		switch ((enum commitopt)optindex) {
 		case COMSYNC:
-			FLAG_CHECK(flag);
 			flag = DB_TXN_SYNC;
 			break;
 		case COMNOSYNC:
-			FLAG_CHECK(flag);
 			flag = DB_TXN_NOSYNC;
+			break;
+		case COMWRNOSYNC:
+			flag = DB_TXN_WRITE_NOSYNC;
 			break;
 		}
 	}

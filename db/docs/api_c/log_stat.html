@@ -1,5 +1,5 @@
-<!--$Id: log_stat.so,v 10.53 2004/09/17 17:13:12 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: log_stat.so,v 10.57 2005/10/28 19:45:34 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -47,7 +47,8 @@ individually freed.</p>
 <dt>u_int32_t st_version;<dd>The version of the log file type.
 <dt>int st_mode;<dd>The mode of any created log files.
 <dt>u_int32_t st_lg_bsize;<dd>The in-memory log record cache size.
-<dt>u_int32_t st_lg_size;<dd>The current log file size.
+<dt>u_int32_t st_lg_size;<dd>The log file size.
+<dt>u_int32_t st_record;<dd>The number of records written to this log.
 <dt>u_int32_t st_w_mbytes;<dd>The number of megabytes written to this log.
 <dt>u_int32_t st_w_bytes;<dd>The number of bytes over and above <b>st_w_mbytes</b> written to this log.
 <dt>u_int32_t st_wc_mbytes;<dd>The number of megabytes written to this log since the last checkpoint.
@@ -56,6 +57,7 @@ since the last checkpoint.
 <dt>u_int32_t st_wcount;<dd>The number of times the log has been written to disk.
 <dt>u_int32_t st_wcount_fill;<dd>The number of times the log has been written to disk because the
 in-memory log record cache filled up.
+<dt>u_int32_t st_rcount;<dd>The number of times the log has been read from disk.
 <dt>u_int32_t st_scount;<dd>The number of times the log has been flushed to disk.
 <dt>u_int32_t st_cur_file;<dd>The current log file number.
 <dt>u_int32_t st_cur_offset;<dd>The byte offset in the current log file.
@@ -64,11 +66,11 @@ in-memory log record cache filled up.
 <dt>u_int32_t st_maxcommitperflush;<dd>The maximum number of commits contained in a single log flush.
 <dt>u_int32_t st_mincommitperflush;<dd>The minimum number of commits contained in a single log flush that
 contained a commit.
-<dt>roff_t st_regsize;<dd>The size of the region, in bytes.
+<dt>roff_t st_regsize;<dd>The size of the log region, in bytes.
 <dt>u_int32_t st_region_wait;<dd>The number of times that a thread of control was forced to wait before
-obtaining the region lock.
+obtaining the log region mutex.
 <dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain
-the region lock without waiting.
+the log region mutex without waiting.
 </dl>
 <p>The DB_ENV-&gt;log_stat method
 returns a non-zero error value on failure
@@ -82,7 +84,7 @@ the following value:
 <dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
 <dt><b>statp</b><dd>The <b>statp</b> parameter references memory into which
-a pointer to the allocated statistics structure is copied.
+a pointer to the allocated statistics structure is copied. 
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;log_stat method
@@ -93,7 +95,7 @@ invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;log_stat_print</h3>
-<p>The DB_ENV-&gt;log_stat_print method returns the
+<p>The DB_ENV-&gt;log_stat_print method displays the
 logging subsystem statistical information, as described for the DB_ENV-&gt;log_stat method.
 The information is printed to a specified output channel (see the
 <a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or passed to an
@@ -107,10 +109,11 @@ and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
-the following value:
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 </dl>
 </dl>
 <hr size=1 noshade>
@@ -122,6 +125,6 @@ the following value:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

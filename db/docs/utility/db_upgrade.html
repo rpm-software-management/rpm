@@ -1,5 +1,5 @@
-<!--$Id: db_upgrade.so,v 1.8 2002/08/24 18:24:54 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_upgrade.so,v 1.9 2004/12/01 13:55:41 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -16,7 +16,7 @@
 </tr></table>
 <hr size=1 noshade>
 <tt>
-<h3><pre>db_upgrade [<b>-NsV</b>] [<b>-h home</b>] [<b>-P password</b>] file ...</pre></h3>
+<h3><pre>db_upgrade [<b>-NsVv</b>] [<b>-h home</b>] [<b>-P password</b>] file ...</pre></h3>
 <h3>Description</h3>
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
 <p>The db_upgrade utility upgrades the Berkeley DB version of one or more
@@ -56,6 +56,7 @@ is correctly specified. Otherwise, the file cannot be upgraded using
 db_upgrade, and must be upgraded manually using the
 <a href="../utility/db_dump.html">db_dump</a> and <a href="../utility/db_load.html">db_load</a> utilities.</p>
 <dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-v</b><dd>Run in verbose mode, displaying a message for each successful upgrade.
 </dl>
 <p><b>It is important to realize that Berkeley DB database upgrades are done
 in place, and so are potentially destructive.</b> This means that if the
@@ -79,6 +80,6 @@ DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

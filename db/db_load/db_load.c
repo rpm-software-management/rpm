@@ -1,32 +1,22 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_load.c,v 11.100 2004/10/29 17:29:02 bostic Exp $
+ * $Id: db_load.c,v 12.18 2006/08/26 09:23:08 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef lint
-static const char copyright[] =
-    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
-#endif
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc/db_am.h"
+
+#ifndef lint
+static const char copyright[] =
+    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
+#endif
 
 typedef struct {			/* XXX: Globals. */
 	const char *progname;		/* Program name. */
@@ -42,7 +32,7 @@ typedef struct {			/* XXX: Globals. */
 	u_int32_t cache;		/* Env cache size. */
 } LDG;
 
-void	badend __P((DB_ENV *));
+int	badend __P((DB_ENV *));
 void	badnum __P((DB_ENV *));
 int	configure __P((DB_ENV *, DB *, char **, char **, int *));
 int	convprintable __P((DB_ENV *, char *, char **));
@@ -51,13 +41,14 @@ int	dbt_rdump __P((DB_ENV *, DBT *));
 int	dbt_rprint __P((DB_ENV *, DBT *));
 int	dbt_rrecno __P((DB_ENV *, DBT *, int));
 int	dbt_to_recno __P((DB_ENV *, DBT *, db_recno_t *));
-int	digitize __P((DB_ENV *, int, int *));
 int	env_create __P((DB_ENV **, LDG *));
 int	load __P((DB_ENV *, char *, DBTYPE, char **, u_int, LDG *, int *));
 int	main __P((int, char *[]));
 int	rheader __P((DB_ENV *, DB *, DBTYPE *, char **, int *, int *));
 int	usage __P((void));
-int	version_check __P((const char *));
+int	version_check __P((void));
+
+const char *progname;
 
 #define	G(f)	((LDG *)dbenv->app_private)->f
 
@@ -81,7 +72,15 @@ main(argc, argv)
 	int ch, existed, exitval, ret;
 	char **clist, **clp;
 
-	ldg.progname = "db_load";
+	if ((progname = strrchr(argv[0], '/')) == NULL)
+		progname = argv[0];
+	else
+		++progname;
+
+	if ((ret = version_check()) != 0)
+		return (ret);
+
+	ldg.progname = progname;
 	ldg.lineno = 0;
 	ldg.endodata = ldg.endofile = 0;
 	ldg.version = 1;
@@ -89,9 +88,6 @@ main(argc, argv)
 	ldg.hdrbuf = NULL;
 	ldg.home = NULL;
 	ldg.passwd = NULL;
-
-	if ((ret = version_check(ldg.progname)) != 0)
-		return (ret);
 
 	mode = NOTSET;
 	ldf = 0;
@@ -218,11 +214,11 @@ main(argc, argv)
 	switch (mode) {
 	case FILEID_RESET:
 		exitval = dbenv->fileid_reset(
-		    dbenv, argv[0], ldf & LDF_PASSWORD ? 1 : 0);
+		    dbenv, argv[0], ldf & LDF_PASSWORD ? DB_ENCRYPT : 0);
 		break;
 	case LSN_RESET:
 		exitval = dbenv->lsn_reset(
-		    dbenv, argv[0], ldf & LDF_PASSWORD ? 1 : 0);
+		    dbenv, argv[0], ldf & LDF_PASSWORD ? DB_ENCRYPT : 0);
 		break;
 	case NOTSET:
 	case STANDARD_LOAD:
@@ -401,7 +397,7 @@ retry_db:
 	/* Open the DB file. */
 	if ((ret = dbp->open(dbp, NULL, name, subdb, dbtype,
 	    DB_CREATE | (TXN_ON(dbenv) ? DB_AUTO_COMMIT : 0),
-	    __db_omode("rwrwrw"))) != 0) {
+	    __db_omode("rw-rw-rw-"))) != 0) {
 		dbp->err(dbp, ret, "DB->open: %s", name);
 		goto err;
 	}
@@ -529,7 +525,7 @@ retry:		if (txn != NULL)
 		}
 	}
 done:	rval = 0;
-	DB_ASSERT(ctxn == NULL);
+	DB_ASSERT(dbenv, ctxn == NULL);
 	if (txn != NULL && (ret = txn->commit(txn, 0)) != 0) {
 		txn = NULL;
 		goto err;
@@ -537,7 +533,7 @@ done:	rval = 0;
 
 	if (0) {
 err:		rval = 1;
-		DB_ASSERT(ctxn == NULL);
+		DB_ASSERT(dbenv, ctxn == NULL);
 		if (txn != NULL)
 			(void)txn->abort(txn);
 	}
@@ -652,23 +648,22 @@ err:	dbenv->err(dbenv, ret, "DB_ENV->open");
 			if ((ret = dbp->set_flags(dbp, flag)) != 0) {	\
 				dbp->err(dbp, ret, "%s: set_flags: %s",	\
 				    G(progname), name);			\
-				return (1);				\
+				goto err;				\
 			}						\
 			break;						\
 		case '0':						\
 			break;						\
 		default:						\
 			badnum(dbenv);					\
-			return (1);					\
+			goto err;					\
 		}							\
 		continue;						\
 	}
 #define	NUMBER(name, value, keyword, func, t)				\
 	if (strcmp(name, keyword) == 0) {				\
-		if (__db_getlong(dbenv,					\
-		    NULL, value, 1, LONG_MAX, &val) != 0)		\
-			return (1);					\
-		if ((ret = dbp->func(dbp, (t)val)) != 0)		\
+		if ((ret = __db_getlong(dbenv,				\
+		    NULL, value, 0, LONG_MAX, &val)) != 0 ||		\
+		    (ret = dbp->func(dbp, (t)val)) != 0)		\
 			goto nameerr;					\
 		continue;						\
 	}
@@ -678,6 +673,26 @@ err:	dbenv->err(dbenv, ret, "DB_ENV->open");
 			goto nameerr;					\
 		continue;						\
 	}
+
+/*
+ * The code to check a command-line or input header argument against a list
+ * of configuration options.  It's #defined because it's used in two places
+ * and the two places have gotten out of sync more than once.
+ */
+#define	CONFIGURATION_LIST_COMPARE					\
+	NUMBER(name, value, "bt_minkey", set_bt_minkey, u_int32_t);	\
+	  FLAG(name, value, "chksum", DB_CHKSUM);			\
+	NUMBER(name, value, "db_lorder", set_lorder, int);		\
+	NUMBER(name, value, "db_pagesize", set_pagesize, u_int32_t);	\
+	  FLAG(name, value, "duplicates", DB_DUP);			\
+	  FLAG(name, value, "dupsort", DB_DUPSORT);			\
+	NUMBER(name, value, "extentsize", set_q_extentsize, u_int32_t);	\
+	NUMBER(name, value, "h_ffactor", set_h_ffactor, u_int32_t);	\
+	NUMBER(name, value, "h_nelem", set_h_nelem, u_int32_t);		\
+	NUMBER(name, value, "re_len", set_re_len, u_int32_t);		\
+	STRING(name, value, "re_pad", set_re_pad);			\
+	  FLAG(name, value, "recnum", DB_RECNUM);			\
+	  FLAG(name, value, "renumber", DB_RENUMBER)
 
 /*
  * configure --
@@ -725,21 +740,7 @@ configure(dbenv, dbp, clp, subdbp, keysp)
 			continue;
 		}
 
-#ifdef notyet
-		NUMBER(name, value, "bt_maxkey", set_bt_maxkey, u_int32_t);
-#endif
-		NUMBER(name, value, "bt_minkey", set_bt_minkey, u_int32_t);
-		NUMBER(name, value, "db_lorder", set_lorder, int);
-		NUMBER(name, value, "db_pagesize", set_pagesize, u_int32_t);
-		FLAG(name, value, "chksum", DB_CHKSUM);
-		FLAG(name, value, "duplicates", DB_DUP);
-		FLAG(name, value, "dupsort", DB_DUPSORT);
-		NUMBER(name, value, "h_ffactor", set_h_ffactor, u_int32_t);
-		NUMBER(name, value, "h_nelem", set_h_nelem, u_int32_t);
-		NUMBER(name, value, "re_len", set_re_len, u_int32_t);
-		STRING(name, value, "re_pad", set_re_pad);
-		FLAG(name, value, "recnum", DB_RECNUM);
-		FLAG(name, value, "renumber", DB_RENUMBER);
+		CONFIGURATION_LIST_COMPARE;
 
 		dbp->errx(dbp,
 		    "unknown command-line configuration keyword \"%s\"", name);
@@ -749,7 +750,7 @@ configure(dbenv, dbp, clp, subdbp, keysp)
 
 nameerr:
 	dbp->err(dbp, ret, "%s: %s=%s", G(progname), name, value);
-	return (1);
+err:	return (1);
 }
 
 /*
@@ -771,7 +772,7 @@ rheader(dbenv, dbp, dbtypep, subdbp, checkprintp, keysp)
 
 	*dbtypep = DB_UNKNOWN;
 	*checkprintp = 0;
-	name = p = NULL;
+	name = NULL;
 
 	/*
 	 * We start with a smallish buffer;  most headers are small.
@@ -780,10 +781,8 @@ rheader(dbenv, dbp, dbtypep, subdbp, checkprintp, keysp)
 	buflen = 4096;
 	if (G(hdrbuf) == NULL) {
 		hdr = 0;
-		if ((buf = malloc(buflen)) == NULL) {
-memerr:			dbp->errx(dbp, "could not allocate buffer %d", buflen);
-			return (1);
-		}
+		if ((buf = malloc(buflen)) == NULL)
+			goto memerr;
 		G(hdrbuf) = buf;
 		G(origline) = G(lineno);
 	} else {
@@ -832,7 +831,6 @@ memerr:			dbp->errx(dbp, "could not allocate buffer %d", buflen);
 		start += linelen;
 
 		if (name != NULL) {
-			*p = '=';
 			free(name);
 			name = NULL;
 		}
@@ -916,22 +914,7 @@ memerr:			dbp->errx(dbp, "could not allocate buffer %d", buflen);
 			continue;
 		}
 
-#ifdef notyet
-		NUMBER(name, value, "bt_maxkey", set_bt_maxkey, u_int32_t);
-#endif
-		NUMBER(name, value, "bt_minkey", set_bt_minkey, u_int32_t);
-		NUMBER(name, value, "db_lorder", set_lorder, int);
-		NUMBER(name, value, "db_pagesize", set_pagesize, u_int32_t);
-		NUMBER(name, value, "extentsize", set_q_extentsize, u_int32_t);
-		FLAG(name, value, "chksum", DB_CHKSUM);
-		FLAG(name, value, "duplicates", DB_DUP);
-		FLAG(name, value, "dupsort", DB_DUPSORT);
-		NUMBER(name, value, "h_ffactor", set_h_ffactor, u_int32_t);
-		NUMBER(name, value, "h_nelem", set_h_nelem, u_int32_t);
-		NUMBER(name, value, "re_len", set_re_len, u_int32_t);
-		STRING(name, value, "re_pad", set_re_pad);
-		FLAG(name, value, "recnum", DB_RECNUM);
-		FLAG(name, value, "renumber", DB_RENUMBER);
+		CONFIGURATION_LIST_COMPARE;
 
 		dbp->errx(dbp,
 		    "unknown input-file header configuration keyword \"%s\"",
@@ -939,20 +922,68 @@ memerr:			dbp->errx(dbp, "could not allocate buffer %d", buflen);
 		goto err;
 	}
 	ret = 0;
+
 	if (0) {
 nameerr:	dbp->err(dbp, ret, "%s: %s=%s", G(progname), name, value);
-err:		ret = 1;
+		ret = 1;
 	}
 	if (0) {
 badfmt:		dbp->errx(dbp, "line %lu: unexpected format", G(lineno));
 		ret = 1;
 	}
-	if (name != NULL) {
-		if (p != NULL)
-			*p = '=';
-		free(name);
+	if (0) {
+memerr:		dbp->errx(dbp, "unable to allocate memory");
+err:		ret = 1;
 	}
+	if (name != NULL)
+		free(name);
 	return (ret);
+}
+
+/*
+ * Macro to convert a pair of hex bytes to a decimal value.
+ *
+ * !!!
+ * Note that this macro is side-effect safe.  This was done deliberately,
+ * callers depend on it.
+ */
+#define	DIGITIZE(store, v1, v2) {					\
+	char _v1, _v2;							\
+	_v1 = (v1);							\
+	_v2 = (v2);							\
+	if ((_v1) > 'f' || (_v2) > 'f')					\
+		return (badend(dbenv));					\
+	(store) =							\
+	((_v1) == '0' ? 0 :						\
+	((_v1) == '1' ? 1 :						\
+	((_v1) == '2' ? 2 :						\
+	((_v1) == '3' ? 3 :						\
+	((_v1) == '4' ? 4 :						\
+	((_v1) == '5' ? 5 :						\
+	((_v1) == '6' ? 6 :						\
+	((_v1) == '7' ? 7 :						\
+	((_v1) == '8' ? 8 :						\
+	((_v1) == '9' ? 9 :						\
+	((_v1) == 'a' ? 10 :						\
+	((_v1) == 'b' ? 11 :						\
+	((_v1) == 'c' ? 12 :						\
+	((_v1) == 'd' ? 13 :						\
+	((_v1) == 'e' ? 14 : 15))))))))))))))) << 4 |			\
+	((_v2) == '0' ? 0 :						\
+	((_v2) == '1' ? 1 :						\
+	((_v2) == '2' ? 2 :						\
+	((_v2) == '3' ? 3 :						\
+	((_v2) == '4' ? 4 :						\
+	((_v2) == '5' ? 5 :						\
+	((_v2) == '6' ? 6 :						\
+	((_v2) == '7' ? 7 :						\
+	((_v2) == '8' ? 8 :						\
+	((_v2) == '9' ? 9 :						\
+	((_v2) == 'a' ? 10 :						\
+	((_v2) == 'b' ? 11 :						\
+	((_v2) == 'c' ? 12 :						\
+	((_v2) == 'd' ? 13 :						\
+	((_v2) == 'e' ? 14 : 15)))))))))))))));				\
 }
 
 /*
@@ -973,8 +1004,7 @@ convprintable(dbenv, instr, outstrp)
 	DB_ENV *dbenv;
 	char *instr, **outstrp;
 {
-	char c, *outstr;
-	int e1, e2;
+	char *outstr;
 
 	/*
 	 * Just malloc a string big enough for the whole input string;
@@ -985,21 +1015,13 @@ convprintable(dbenv, instr, outstrp)
 
 	*outstrp = outstr;
 
-	e1 = e2 = 0;
 	for ( ; *instr != '\0'; instr++)
 		if (*instr == '\\') {
 			if (*++instr == '\\') {
 				*outstr++ = '\\';
 				continue;
 			}
-			c = digitize(dbenv, *instr, &e1) << 4;
-			c |= digitize(dbenv, *++instr, &e2);
-			if (e1 || e2) {
-				badend(dbenv);
-				return (EINVAL);
-			}
-
-			*outstr++ = c;
+			DIGITIZE(*outstr++, *instr, *++instr);
 		} else
 			*outstr++ = *instr;
 
@@ -1019,21 +1041,20 @@ dbt_rprint(dbenv, dbtp)
 {
 	u_int32_t len;
 	u_int8_t *p;
-	int c1, c2, e, escape, first;
+	int c1, c2, escape, first;
 	char buf[32];
 
 	++G(lineno);
 
 	first = 1;
-	e = escape = 0;
+	escape = 0;
 	for (p = dbtp->data, len = 0; (c1 = getchar()) != '\n';) {
 		if (c1 == EOF) {
 			if (len == 0) {
 				G(endofile) = G(endodata) = 1;
 				return (0);
 			}
-			badend(dbenv);
-			return (1);
+			return (badend(dbenv));
 		}
 		if (first) {
 			first = 0;
@@ -1042,10 +1063,8 @@ dbt_rprint(dbenv, dbtp)
 					buf[0] = c1;
 					if (fgets(buf + 1,
 					    sizeof(buf) - 1, stdin) == NULL ||
-					    strcmp(buf, "DATA=END\n") != 0) {
-						badend(dbenv);
-						return (1);
-					}
+					    strcmp(buf, "DATA=END\n") != 0)
+						return (badend(dbenv));
 					G(endodata) = 1;
 					return (0);
 				}
@@ -1054,14 +1073,9 @@ dbt_rprint(dbenv, dbtp)
 		}
 		if (escape) {
 			if (c1 != '\\') {
-				if ((c2 = getchar()) == EOF) {
-					badend(dbenv);
-					return (1);
-				}
-				c1 = digitize(dbenv,
-				    c1, &e) << 4 | digitize(dbenv, c2, &e);
-				if (e)
-					return (1);
+				if ((c2 = getchar()) == EOF)
+					return (badend(dbenv));
+				DIGITIZE(c1, c1, c2);
 			}
 			escape = 0;
 		} else
@@ -1097,21 +1111,19 @@ dbt_rdump(dbenv, dbtp)
 {
 	u_int32_t len;
 	u_int8_t *p;
-	int c1, c2, e, first;
+	int c1, c2, first;
 	char buf[32];
 
 	++G(lineno);
 
 	first = 1;
-	e = 0;
 	for (p = dbtp->data, len = 0; (c1 = getchar()) != '\n';) {
 		if (c1 == EOF) {
 			if (len == 0) {
 				G(endofile) = G(endodata) = 1;
 				return (0);
 			}
-			badend(dbenv);
-			return (1);
+			return (badend(dbenv));
 		}
 		if (first) {
 			first = 0;
@@ -1120,20 +1132,16 @@ dbt_rdump(dbenv, dbtp)
 					buf[0] = c1;
 					if (fgets(buf + 1,
 					    sizeof(buf) - 1, stdin) == NULL ||
-					    strcmp(buf, "DATA=END\n") != 0) {
-						badend(dbenv);
-						return (1);
-					}
+					    strcmp(buf, "DATA=END\n") != 0)
+						return (badend(dbenv));
 					G(endodata) = 1;
 					return (0);
 				}
 				continue;
 			}
 		}
-		if ((c2 = getchar()) == EOF) {
-			badend(dbenv);
-			return (1);
-		}
+		if ((c2 = getchar()) == EOF)
+			return (badend(dbenv));
 		if (len >= dbtp->ulen - 10) {
 			dbtp->ulen *= 2;
 			if ((dbtp->data =
@@ -1144,9 +1152,7 @@ dbt_rdump(dbenv, dbtp)
 			p = (u_int8_t *)dbtp->data + len;
 		}
 		++len;
-		*p++ = digitize(dbenv, c1, &e) << 4 | digitize(dbenv, c2, &e);
-		if (e)
-			return (1);
+		DIGITIZE(*p++, c1, c2);
 	}
 	dbtp->size = len;
 
@@ -1179,7 +1185,7 @@ dbt_rrecno(dbenv, dbtp, ishex)
 	}
 
 	if (buf[0] != ' ')
-		goto bad;
+		goto err;
 
 	/*
 	 * If we're expecting a hex key, do an in-place conversion
@@ -1195,22 +1201,22 @@ dbt_rrecno(dbenv, dbtp, ishex)
 			 * end-of-string conditions.
 			 */
 			if (*q++ != '3')
-				goto bad;
+				goto err;
 			if (*q == '\n' || *q == '\0')
-				goto bad;
+				goto err;
 			*p++ = *q++;
 		}
 		*p = '\0';
 	}
 
-	if (__db_getulong(dbenv, G(progname), buf + 1, 0, 0, &recno)) {
-bad:		badend(dbenv);
-		return (1);
-	}
+	if (__db_getulong(dbenv, G(progname), buf + 1, 0, 0, &recno))
+		goto err;
 
 	*((db_recno_t *)dbtp->data) = recno;
 	dbtp->size = sizeof(db_recno_t);
 	return (0);
+
+err:	return (badend(dbenv));
 }
 
 int
@@ -1225,42 +1231,6 @@ dbt_to_recno(dbenv, dbt, recnop)
 	buf[dbt->size] = '\0';
 
 	return (__db_getulong(dbenv, G(progname), buf, 0, 0, (u_long *)recnop));
-}
-
-/*
- * digitize --
- *	Convert a character to an integer.
- */
-int
-digitize(dbenv, c, errorp)
-	DB_ENV *dbenv;
-	int c, *errorp;
-{
-	switch (c) {			/* Don't depend on ASCII ordering. */
-	case '0': return (0);
-	case '1': return (1);
-	case '2': return (2);
-	case '3': return (3);
-	case '4': return (4);
-	case '5': return (5);
-	case '6': return (6);
-	case '7': return (7);
-	case '8': return (8);
-	case '9': return (9);
-	case 'a': return (10);
-	case 'b': return (11);
-	case 'c': return (12);
-	case 'd': return (13);
-	case 'e': return (14);
-	case 'f': return (15);
-	default:			/* Not possible. */
-		break;
-	}
-
-	dbenv->errx(dbenv, "unexpected hexadecimal value");
-	*errorp = 1;
-
-	return (0);
 }
 
 /*
@@ -1279,11 +1249,12 @@ badnum(dbenv)
  * badend --
  *	Display the bad end to input message.
  */
-void
+int
 badend(dbenv)
 	DB_ENV *dbenv;
 {
 	dbenv->errx(dbenv, "unexpected end of input data or key/data pair");
+	return (1);
 }
 
 /*
@@ -1293,17 +1264,16 @@ badend(dbenv)
 int
 usage()
 {
-	(void)fprintf(stderr, "%s\n\t%s\n",
-	    "usage: db_load [-nTV] [-c name=value] [-f file]",
+	(void)fprintf(stderr, "usage: %s %s\n\t%s\n", progname,
+	    "[-nTV] [-c name=value] [-f file]",
     "[-h home] [-P password] [-t btree | hash | recno | queue] db_file");
-	(void)fprintf(stderr, "%s\n",
-	    "usage: db_load -r lsn | fileid [-h home] [-P password] db_file");
+	(void)fprintf(stderr, "usage: %s %s\n",
+	    progname, "-r lsn | fileid [-h home] [-P password] db_file");
 	return (EXIT_FAILURE);
 }
 
 int
-version_check(progname)
-	const char *progname;
+version_check()
 {
 	int v_major, v_minor, v_patch;
 

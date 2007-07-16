@@ -42,6 +42,7 @@ int mod_db4_db_create(DB **dbp, DB_ENV *dbenv, u_int32_t flags);
 
 which takes identical arguments to db_create().
 
-Otherwise the API is completely consistent with the standard Sleepycat API.
+Otherwise the API is completely consistent with the standard Berkeley
+DB API.
 
 For installation instructions, see the INSTALL file.

@@ -1,5 +1,5 @@
-<!--$Id: port.so,v 10.3 2002/08/30 19:57:07 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: port.so,v 10.5 2006/08/24 16:32:28 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -65,8 +65,8 @@ Berkeley DB supports, and that code lives in the <b>os</b> directory of the
 distribution.  Where different code is required, the code is either
 conditionally compiled or an entirely different version is written. For
 example, VxWorks versions of some of these files can be found in the
-distribution directory os_vxworks, and Win32 versions can be found in
-os_win32.</p>
+distribution directory os_vxworks, and Windows versions can be found in
+os_windows.</p>
 <p>Historically, there are only two difficult questions to answer for each
 new port.  The first question is how to handle shared memory.  In order
 to write multiprocess database applications (not multithreaded, but
@@ -96,15 +96,14 @@ file created by that configuration, and modify it by hand to reflect
 the needs of the new architecture.  Unless you're already familiar with
 the GNU autoconf toolset, we don't recommend you take the time to
 integrate your changes back into the Berkeley DB autoconfiguration framework.
-Instead, send Sleepycat Software context diffs of your changes and any
-new source files you created, and we'll integrate the changes into our
-source tree.</p>
+Instead, send us context diffs of your changes and any new source files
+you created, and we'll integrate the changes into our source tree.</p>
 <p>Finally, we're happy to work with you on the port, or potentially, do
 the port ourselves, if that is of interest to you.  Regardless, if you
 have any porting questions, just let us know, and we will be happy to
 answer them.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../test/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../distrib/layout.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

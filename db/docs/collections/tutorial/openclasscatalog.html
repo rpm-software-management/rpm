@@ -72,7 +72,7 @@ import java.io.FileNotFoundException;
 public class SampleDatabase
 {
     private Environment env;
-<b class="userinput"><tt>    private static final String CLASS_CATALOG = "java_class_catalog";</tt></b>
+<b class="userinput"><tt>    private static final String CLASS_CATALOG = &quot;java_class_catalog&quot;;</tt></b>
     ...
 <b class="userinput"><tt>    private StoredClassCatalog javaCatalog;</tt></b>
     ...
@@ -80,7 +80,7 @@ public class SampleDatabase
       <p>
     While the class catalog is itself a database, it contains
 	metadata for other databases and is therefore treated specially by
-	the Sleepycat Java Collections API. The 
+	the  Java Collections API. The 
     <a href="../../java/com/sleepycat/bind/serial/StoredClassCatalog.html" target="_top">StoredClassCatalog</a>
     
 	class encapsulates the catalog store and implements this special
@@ -89,7 +89,7 @@ public class SampleDatabase
       <p>
     The following statements open the class catalog by creating a
 	<tt class="classname">Database</tt> and a <tt class="classname">StoredClassCatalog</tt> object. The catalog
-	database is created if it doesn't already exist.
+	database is created if it does not already exist.
 </p>
       <a id="cb_java_sampledatabase2"></a>
       <pre class="programlisting">    public SampleDatabase(String homeDirectory)
@@ -124,7 +124,7 @@ public class SampleDatabase
 </p>
       <p>
     <tt class="methodname">setAllowCreate()</tt> is set to true to specify
-	that the database will be created if it doesn't already exist. If
+	that the database will be created if it does not already exist. If
 	this parameter is not specified, an exception will be thrown if the
 	database does not already exist.
 </p>
@@ -142,7 +142,7 @@ public class SampleDatabase
 </p>
       <p>
    The second and third parameters of <tt class="methodname">openDatabase()</tt>
-   specify the filename and database (sub-file) name o fthe database. The
+   specify the filename and database (sub-file) name of the database. The
    database name is optional and is <tt class="literal">null</tt> in this example.
 </p>
       <p>

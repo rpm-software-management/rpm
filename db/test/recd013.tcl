@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd013.tcl,v 11.22 2004/09/20 17:06:15 sue Exp $
+# $Id: recd013.tcl,v 12.4 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	recd013
 # TEST	Test of cursor adjustment on child transaction aborts. [#2373]
@@ -275,6 +275,7 @@ proc recd013 { method { nitems 100 } args } {
 	puts "\tRecd$tnum.d: Clean up."
 	error_check_good txn_commit [$txn commit] 0
 	error_check_good db_close [$db close] 0
+	error_check_good log_flush [$env log_flush] 0
 	error_check_good env_close [$env close] 0
 	error_check_good verify_dir \
 	    [verify_dir $testdir "\t\tRecd$tnum.d.1: "] 0

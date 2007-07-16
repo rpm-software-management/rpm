@@ -1,20 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_stat.c,v 11.27 2004/07/06 13:55:48 bostic Exp $
+ * $Id: os_stat.c,v 12.9 2006/08/24 14:46:18 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 
@@ -22,15 +15,18 @@
  * __os_exists --
  *	Return if the file exists.
  *
- * PUBLIC: int __os_exists __P((const char *, int *));
+ * PUBLIC: int __os_exists __P((DB_ENV *, const char *, int *));
  */
 int
-__os_exists(path, isdirp)
+__os_exists(dbenv, path, isdirp)
+	DB_ENV *dbenv;
 	const char *path;
 	int *isdirp;
 {
 	struct stat sb;
 	int ret;
+
+	COMPQUIET(dbenv, NULL);
 
 	if (DB_GLOBAL(j_exists) != NULL)
 		return (DB_GLOBAL(j_exists)(path, isdirp));
@@ -41,7 +37,7 @@ __os_exists(path, isdirp)
 	RETRY_CHK((stat(path, &sb)), ret);
 #endif
 	if (ret != 0)
-		return (ret);
+		return (__os_posix_err(ret));
 
 #if !defined(S_ISDIR) || defined(STAT_MACROS_BROKEN)
 #undef	S_ISDIR
@@ -80,12 +76,12 @@ __os_ioinfo(dbenv, path, fhp, mbytesp, bytesp, iosizep)
 		    fhp->fd, mbytesp, bytesp, iosizep));
 
 	/* Check for illegal usage. */
-	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
+	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 	RETRY_CHK((fstat(fhp->fd, &sb)), ret);
 	if (ret != 0) {
-		__db_err(dbenv, "fstat: %s", strerror(ret));
-		return (ret);
+		__db_syserr(dbenv, ret, "fstat");
+		return (__os_posix_err(ret));
 	}
 
 	/* Return the size of the file. */
@@ -95,7 +91,7 @@ __os_ioinfo(dbenv, path, fhp, mbytesp, bytesp, iosizep)
 		*bytesp = (u_int32_t)(sb.st_size % MEGABYTE);
 
 	/*
-	 * Return the underlying filesystem blocksize, if available.
+	 * Return the underlying filesystem I/O size, if available.
 	 *
 	 * XXX
 	 * Check for a 0 size -- the HP MPE/iX architecture has st_blksize,

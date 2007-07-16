@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test051.tcl,v 11.25 2004/01/28 03:36:31 bostic Exp $
+# $Id: test051.tcl,v 12.5 2006/08/24 14:46:40 bostic Exp $
 #
 # TEST	test051
 # TEST	Fixed-length record Recno test.
@@ -20,7 +20,7 @@ proc test051 { method { args "" } } {
 	set args [convert_args $method $args]
 	set omethod [convert_method $method]
 
-	puts "Test051: Test of the fixed length records."
+	puts "Test051 ($method): Test of the fixed length records."
 	if { [is_fixed_length $method] != 1 } {
 		puts "Test051: skipping for method $method"
 		return
@@ -108,7 +108,7 @@ proc test051 { method { args "" } } {
 			if { $eindex == -1 } {
 				error_check_good "dbput:partial: dlen < size" \
 				    [is_substr \
-				    $errorInfo "Record length error"] 1
+				    $errorInfo "ecord length"] 1
 			} else {
 				error_check_good "dbput:partial: dlen < size" \
 				    [is_substr $errorCode "EINVAL"] 1
@@ -124,7 +124,7 @@ proc test051 { method { args "" } } {
 			if { $eindex == -1 } {
 				error_check_good "dbput:partial: dlen > size" \
 				    [is_substr \
-				    $errorInfo "Record length error"] 1
+				    $errorInfo "ecord length"] 1
 			} else {
 				error_check_good "dbput:partial: dlen < size" \
 				    [is_substr $errorCode "EINVAL"] 1

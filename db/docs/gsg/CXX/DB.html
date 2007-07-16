@@ -77,8 +77,7 @@
         </dl>
       </div>
       <p>In Berkeley DB, a database is a collection of <span class="emphasis"><em>records</em></span>. Records,
-  in turn, consist of two parts: key and data.  That is, records consist of
-  key/data pairings.
+  in turn, consist of key/data pairings.
   </p>
       <p>
 	Conceptually, you can think of a 
@@ -145,7 +144,7 @@ u_int32_t oFlags = DB_CREATE; // Open flags;
 try {
     // Open the database
     db.open(NULL,                // Transaction pointer 
-            "my_db.db",          // Database file name 
+            &quot;my_db.db&quot;,          // Database file name 
             NULL,                // Optional logical database name
             DB_BTREE,            // Database access method
             oFlags,              // Open flags

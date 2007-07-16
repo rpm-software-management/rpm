@@ -1,18 +1,17 @@
-/*
- *  -
- *  See the file LICENSE for redistribution information.
+/*-
+ * See the file LICENSE for redistribution information.
  *
- *  Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- *  $Id: ReplicationHandleDeadException.java,v 1.1 2004/09/23 17:56:39 mjc Exp $
+ * $Id: ReplicationHandleDeadException.java,v 12.4 2006/08/24 14:46:08 bostic Exp $
  */
 package com.sleepycat.db;
 
 import com.sleepycat.db.internal.DbEnv;
 
 public class ReplicationHandleDeadException extends DatabaseException {
-    protected ReplicationHandleDeadException(final String s,
+    /* package */ ReplicationHandleDeadException(final String s,
                                    final int errno,
                                    final DbEnv dbenv) {
         super(s, errno, dbenv);

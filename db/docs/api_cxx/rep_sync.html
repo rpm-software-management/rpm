@@ -1,0 +1,63 @@
+<!--$Id: rep_sync.so,v 1.9 2006/07/12 20:32:35 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::rep_sync</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::rep_sync</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::rep_sync(u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::rep_sync</h3>
+<p>The DbEnv::rep_sync method forces master synchronization to begin for this
+client.  This method is the other half of setting the
+<a href="../api_cxx/rep_config.html#DB_REP_CONF_DELAYCLIENT">DB_REP_CONF_DELAYCLIENT</a> flag via the <a href="../api_cxx/rep_config.html">DbEnv::rep_set_config</a> method.</p>
+<p>If an application has configured delayed master synchronization, the
+application must synchronize explicitly (otherwise the client will
+remain out-of-date and will ignore all database changes forwarded from
+the replication group master).  The DbEnv::rep_sync method may be called any
+time after the client application learns that the new master has been
+established, either by receiving a <a href="../api_cxx/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event
+notification, or from a <a href="../api_cxx/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a> return code from
+<a href="../api_cxx/rep_message.html">DbEnv::rep_process_message</a>.</p>
+<p>The DbEnv::rep_sync method may not be called before the <a href="../api_cxx/env_open.html">DbEnv::open</a> method has
+been called.</p>
+<p>The DbEnv::rep_sync method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

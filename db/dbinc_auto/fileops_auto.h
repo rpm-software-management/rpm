@@ -5,7 +5,7 @@
 #define	DB___fop_create	143
 typedef struct ___fop_create_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	DBT	name;
 	u_int32_t	appname;
@@ -15,7 +15,7 @@ typedef struct ___fop_create_args {
 #define	DB___fop_remove	144
 typedef struct ___fop_remove_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	DBT	name;
 	DBT	fid;
@@ -25,7 +25,7 @@ typedef struct ___fop_remove_args {
 #define	DB___fop_write	145
 typedef struct ___fop_write_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	DBT	name;
 	u_int32_t	appname;
@@ -39,7 +39,7 @@ typedef struct ___fop_write_args {
 #define	DB___fop_rename	146
 typedef struct ___fop_rename_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	DBT	oldname;
 	DBT	newname;
@@ -50,7 +50,7 @@ typedef struct ___fop_rename_args {
 #define	DB___fop_file_remove	141
 typedef struct ___fop_file_remove_args {
 	u_int32_t type;
-	DB_TXN *txnid;
+	DB_TXN *txnp;
 	DB_LSN prev_lsn;
 	DBT	real_fid;
 	DBT	tmp_fid;

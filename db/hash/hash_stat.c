@@ -1,23 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: hash_stat.c,v 11.66 2004/09/22 03:46:22 bostic Exp $
+ * $Id: hash_stat.c,v 12.10 2006/09/07 20:05:30 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/btree.h"
 #include "dbinc/hash.h"
 #include "dbinc/mp.h"
@@ -71,7 +64,7 @@ __ham_stat(dbc, spp, flags)
 	sp->hash_metaflags = hcp->hdr->dbmeta.flags;
 	sp->hash_ffactor = hcp->hdr->ffactor;
 
-	if (flags == DB_FAST_STAT || flags == DB_CACHED_COUNTS)
+	if (flags == DB_FAST_STAT)
 		goto done;
 
 	/* Walk the free list, counting pages. */
@@ -79,7 +72,7 @@ __ham_stat(dbc, spp, flags)
 	    pgno != PGNO_INVALID;) {
 		++sp->hash_free;
 
-		if ((ret = __memp_fget(mpf, &pgno, 0, &h)) != 0)
+		if ((ret = __memp_fget(mpf, &pgno, dbc->txn, 0, &h)) != 0)
 			goto err;
 
 		pgno = h->next_pgno;
@@ -94,7 +87,13 @@ __ham_stat(dbc, spp, flags)
 		goto err;
 
 	if (!F_ISSET(dbp, DB_AM_RDONLY)) {
-		if ((ret = __ham_dirty_meta(dbc)) != 0)
+		/*
+		 * A transaction is not required for DB->stat, so this update
+		 * can't safely make a copy of the meta page.  We have to
+		 * update in place.
+		 */
+		if ((ret = __ham_dirty_meta(dbc,
+		    (dbc->txn == NULL) ? DB_MPOOL_EDIT : 0)) != 0)
 			goto err;
 		hcp->hdr->dbmeta.key_count = sp->hash_nkeys;
 		hcp->hdr->dbmeta.record_count = sp->hash_ndata;
@@ -141,7 +140,7 @@ __ham_stat_print(dbc, flags)
 	dbp = dbc->dbp;
 	dbenv = dbp->dbenv;
 
-	if ((ret = __ham_stat(dbc, &sp, 0)) != 0)
+	if ((ret = __ham_stat(dbc, &sp, LF_ISSET(DB_FAST_STAT))) != 0)
 		return (ret);
 
 	if (LF_ISSET(DB_STAT_ALL)) {
@@ -309,7 +308,6 @@ __ham_print_cursor(dbc)
 	static const FN fn[] = {
 		{ H_CONTINUE,	"H_CONTINUE" },
 		{ H_DELETED,	"H_DELETED" },
-		{ H_DIRTY,	"H_DIRTY" },
 		{ H_DUPONLY,	"H_DUPONLY" },
 		{ H_EXPAND,	"H_EXPAND" },
 		{ H_ISDUP,	"H_ISDUP" },
@@ -418,7 +416,7 @@ __ham_traverse(dbc, mode, callback, cookie, look_past_max)
 		hcp->bucket = bucket;
 		hcp->pgno = pgno = BUCKET_TO_PAGE(hcp, bucket);
 		for (ret = __ham_get_cpage(dbc, mode); ret == 0;
-		    ret = __ham_next_cpage(dbc, pgno, 0)) {
+		    ret = __ham_next_cpage(dbc, pgno)) {
 
 			/*
 			 * If we are cleaning up pages past the max_bucket,
@@ -466,17 +464,17 @@ __ham_traverse(dbc, mode, callback, cookie, look_past_max)
 					memcpy(&opgno, HOFFPAGE_PGNO(hk),
 					    sizeof(db_pgno_t));
 					if ((ret = __db_traverse_big(dbp,
-					    opgno, callback, cookie)) != 0)
+					    opgno, dbc->txn,
+					    callback, cookie)) != 0)
 						goto err;
 					break;
 				case H_KEYDATA:
 				case H_DUPLICATE:
 					break;
 				default:
-					DB_ASSERT(0);
-					ret = EINVAL;
+					ret = __db_unknown_path(
+					    dbp->dbenv, "__ham_traverse");
 					goto err;
-
 				}
 			}
 

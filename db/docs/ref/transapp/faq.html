@@ -1,5 +1,5 @@
-<!--$Id: faq.so,v 10.8 2004/03/16 18:33:28 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.11 2006/05/09 19:46:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -67,14 +67,33 @@ database will first be referenced in the log.  If we copy the database
 first, then we can also know that any inconsistency in the database will
 be described in the log files, and so we know that we can fix everything
 up during recovery.</p>
+<p><li><b>My application has <a href="../../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> errors.  Is the
+normal, and what should I do?</b>
+<p>It is quite rare for a transactional application to be deadlock free.
+All applications should be prepared to handle deadlock returns, because
+even if the application is deadlock free when deployed, future changes
+to the application or the Berkeley DB implementation might introduce
+deadlocks.</p>
+<p>Practices which reduce the chance of deadlock include:
+<p><ul type=disc>
+<li>Not using cursors which move backwards through the database (<a href="../../api_c/dbc_get.html#DB_PREV">DB_PREV</a>),
+as backward scanning cursors can deadlock with page splits;
+<li>Configuring <a href="../../api_c/db_set_flags.html#DB_REVSPLITOFF">DB_REVSPLITOFF</a> to turn off reverse splits in
+applications which repeatedly delete and re-insert the same keys, to
+minimize the number of page splits as keys are re-inserted;
+<li>Not configuring <a href="../../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> as that flag requires write
+transactions upgrade their locks when aborted, which can lead to deadlock.
+Generally, <a href="../../api_c/db_cursor.html#DB_READ_COMMITTED">DB_READ_COMMITTED</a> or non-transactional read operations
+are less prone to deadlock than <a href="../../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a>.
+</ul></p>
 <p><li><b>How can I move a database from one transactional environment
 into another?</b>
 <p>Because database pages contain references to log records, databases
-cannot be simply moved into different database environments.  To move
-a database into a different environment, dump and reload the database
+cannot be simply moved into different database environments.  To move a
+database into a different environment, dump and reload the database
 before moving it.  If the database is too large to dump and reload, the
-database may be prepared in place using the <b>-l</b> argument to the
-<a href="../../utility/db_load.html">db_load</a> utility.</p>
+database may be prepared in place using the <a href="../../api_c/env_lsn_reset.html">DB_ENV-&gt;lsn_reset</a> method or
+the <b>-r</b> argument to the <a href="../../utility/db_load.html">db_load</a> utility.</p>
 <p><li><b>I'm seeing the error "log_flush: LSN past current end-of-log",
 what does that mean?</b>
 <p>The most common cause of this error is that a system administrator has
@@ -83,15 +102,15 @@ shut down your database environment as gracefully as possible, first
 flushing the database environment cache to disk, if that's possible.
 Then, dump and reload your databases.  If the database is too large to
 dump and reload, the database may be reset in place using the
-<b>-l</b> argument to the <a href="../../utility/db_load.html">db_load</a>
-utility.  However, if you reset the database in place, you should verify
-your databases before using them again.  (It is possible for the
-databases to be corrupted by running after all of the log files have
-been removed, and the longer the application runs, the worse it can
-get.)</p>
+<a href="../../api_c/env_lsn_reset.html">DB_ENV-&gt;lsn_reset</a> method or the <b>-r</b> argument to the
+<a href="../../utility/db_load.html">db_load</a> utility.  However, if you
+reset the database in place, you should verify your databases before
+using them again.  (It is possible for the databases to be corrupted by
+running after all of the log files have been removed, and the longer the
+application runs, the worse it can get.)</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/throughput.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

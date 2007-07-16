@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: BtRecExample.cpp,v 11.26 2004/09/17 22:00:28 mjc Exp $
+ * $Id: BtRecExample.cpp,v 12.3 2006/08/24 14:45:49 bostic Exp $
  */
 
 #include <sys/types.h>

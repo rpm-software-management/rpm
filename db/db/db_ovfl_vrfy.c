@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,19 +39,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_ovfl_vrfy.c,v 11.56 2004/01/28 03:35:57 bostic Exp $
+ * $Id: db_ovfl_vrfy.c,v 12.8 2006/09/07 20:05:26 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/db_am.h"
 #include "dbinc/db_verify.h"
 #include "dbinc/mp.h"
@@ -118,13 +112,15 @@ __db_vrfy_ovfl_structure(dbp, vdp, pgno, tlen, flags)
 	u_int32_t flags;
 {
 	DB *pgset;
+	DB_ENV *dbenv;
 	VRFY_PAGEINFO *pip;
 	db_pgno_t next, prev;
 	int isbad, ret, seen_cnt, t_ret;
 	u_int32_t refcount;
 
+	dbenv = dbp->dbenv;
 	pgset = vdp->pgset;
-	DB_ASSERT(pgset != NULL);
+	DB_ASSERT(dbenv, pgset != NULL);
 	isbad = 0;
 
 	/* This shouldn't happen, but just to be sure. */
@@ -142,7 +138,7 @@ __db_vrfy_ovfl_structure(dbp, vdp, pgno, tlen, flags)
 	refcount = pip->refcount;
 
 	if (pip->type != P_OVERFLOW) {
-		EPRINT((dbp->dbenv,
+		EPRINT((dbenv,
 		    "Page %lu: overflow page of invalid type %lu",
 		    (u_long)pgno, (u_long)pip->type));
 		ret = DB_VERIFY_BAD;
@@ -151,7 +147,7 @@ __db_vrfy_ovfl_structure(dbp, vdp, pgno, tlen, flags)
 
 	prev = pip->prev_pgno;
 	if (prev != PGNO_INVALID) {
-		EPRINT((dbp->dbenv,
+		EPRINT((dbenv,
 	    "Page %lu: first page in overflow chain has a prev_pgno %lu",
 		    (u_long)pgno, (u_long)prev));
 		isbad = 1;
@@ -170,7 +166,7 @@ __db_vrfy_ovfl_structure(dbp, vdp, pgno, tlen, flags)
 		if ((ret = __db_vrfy_pgset_get(pgset, pgno, &seen_cnt)) != 0)
 			goto err;
 		if ((u_int32_t)seen_cnt > refcount) {
-			EPRINT((dbp->dbenv,
+			EPRINT((dbenv,
 		"Page %lu: encountered too many times in overflow traversal",
 			    (u_long)pgno));
 			ret = DB_VERIFY_BAD;
@@ -205,7 +201,7 @@ __db_vrfy_ovfl_structure(dbp, vdp, pgno, tlen, flags)
 		 */
 		if (LF_ISSET(ST_OVFL_LEAF)) {
 			if (F_ISSET(pip, VRFY_OVFL_LEAFSEEN)) {
-				EPRINT((dbp->dbenv,
+				EPRINT((dbenv,
 		"Page %lu: overflow page linked twice from leaf or data page",
 				    (u_long)pgno));
 				ret = DB_VERIFY_BAD;
@@ -248,19 +244,18 @@ __db_vrfy_ovfl_structure(dbp, vdp, pgno, tlen, flags)
 		 * to be sure...
 		 */
 		if (!IS_VALID_PGNO(next)) {
-			DB_ASSERT(0);
-			EPRINT((dbp->dbenv,
+			EPRINT((dbenv,
 			    "Page %lu: bad next_pgno %lu on overflow page",
 			    (u_long)pgno, (u_long)next));
 			ret = DB_VERIFY_BAD;
 			goto err;
 		}
 
-		if ((ret = __db_vrfy_putpageinfo(dbp->dbenv, vdp, pip)) != 0 ||
+		if ((ret = __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0 ||
 		    (ret = __db_vrfy_getpageinfo(vdp, next, &pip)) != 0)
 			return (ret);
 		if (pip->prev_pgno != pgno) {
-			EPRINT((dbp->dbenv,
+			EPRINT((dbenv,
 		"Page %lu: bad prev_pgno %lu on overflow page (should be %lu)",
 			    (u_long)next, (u_long)pip->prev_pgno,
 			    (u_long)pgno));
@@ -276,13 +271,13 @@ __db_vrfy_ovfl_structure(dbp, vdp, pgno, tlen, flags)
 
 	if (tlen > 0) {
 		isbad = 1;
-		EPRINT((dbp->dbenv,
+		EPRINT((dbenv,
 		    "Page %lu: overflow item incomplete", (u_long)pgno));
 	}
 
 done:
 err:	if ((t_ret =
-	    __db_vrfy_putpageinfo(dbp->dbenv, vdp, pip)) != 0 && ret == 0)
+	    __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0 && ret == 0)
 		ret = t_ret;
 	return ((ret == 0 && isbad == 1) ? DB_VERIFY_BAD : ret);
 }
@@ -323,7 +318,7 @@ __db_safe_goff(dbp, vdp, pgno, dbt, buf, flags)
 		if ((ret = __db_salvage_markdone(vdp, pgno)) != 0)
 			break;
 
-		if ((ret = __memp_fget(mpf, &pgno, 0, &h)) != 0)
+		if ((ret = __memp_fget(mpf, &pgno, NULL, 0, &h)) != 0)
 			break;
 
 		/*

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sysscript.tcl,v 11.19 2004/01/28 03:36:30 bostic Exp $
+# $Id: sysscript.tcl,v 12.4 2006/09/06 05:13:30 alexg Exp $
 #
 # System integration test script.
 # This script runs a single process that tests the full functionality of
@@ -73,13 +73,13 @@ if {$err != 0} {
 # Now open the files
 for { set i 0 } { $i < $nfiles } { incr i } {
 	set file test044.$i.db
-	set db($i) [berkdb open -auto_commit -env $dbenv $method $file]
-	set err [catch {error_check_bad $mypid:dbopen $db($i) NULL} ret]
+	set db_set($i) [berkdb open -auto_commit -env $dbenv $method $file]
+	set err [catch {error_check_bad $mypid:dbopen $db_set($i) NULL} ret]
 	if {$err != 0} {
 		puts $ret
 		return
 	}
-	set err [catch {error_check_bad $mypid:dbopen [is_substr $db($i) \
+	set err [catch {error_check_bad $mypid:dbopen [is_substr $db_set($i) \
 	    error] 1} ret]
 	if {$err != 0} {
 		puts $ret
@@ -108,9 +108,9 @@ while { 1 } {
 
 	# Open cursors
 	for { set f 0 } {$f < $nfiles} {incr f} {
-		set cursors($f) [$db($f) cursor -txn $txn]
+		set cursors($f) [$db_set($f) cursor -txn $txn]
 		set err [catch {error_check_good $mypid:cursor_open \
-		    [is_substr $cursors($f) $db($f)] 1} ret]
+		    [is_substr $cursors($f) $db_set($f)] 1} ret]
 		if {$err != 0} {
 			puts $ret
 			return
@@ -121,8 +121,8 @@ while { 1 } {
 	# Check to see if key is already in database
 	set found 0
 	for { set i 0 } { $i < $nfiles } { incr i } {
-		set r [$db($i) get -txn $txn $k]
-		set r [$db($i) get -txn $txn $k]
+		set r [$db_set($i) get -txn $txn $k]
+		set r [$db_set($i) get -txn $txn $k]
 		if { $r == "-1" } {
 			for {set f 0 } {$f < $nfiles} {incr f} {
 				set err [catch {error_check_good \
@@ -163,7 +163,7 @@ while { 1 } {
 		}
 
 		foreach i $fset {
-			set r [$db($i) put -txn $txn $k $data]
+			set r [$db_set($i) put -txn $txn $k $data]
 			if {$r == "-1"} {
 				for {set f 0 } {$f < $nfiles} {incr f} {
 					set err [catch {error_check_good \
@@ -265,7 +265,7 @@ while { 1 } {
 
 # Close files
 for { set i 0 } { $i < $nfiles} { incr i } {
-	set r [$db($i) close]
+	set r [$db_set($i) close]
 	set err [catch {error_check_good $mypid:db_close:$i $r 0} ret]
 	if {$err != 0} {
 		puts $ret

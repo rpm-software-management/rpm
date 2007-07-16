@@ -1,5 +1,5 @@
-<!--$Id: env_set_verbose.so,v 10.48 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_verbose.so,v 10.52 2005/12/28 16:10:51 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -34,11 +34,11 @@ DbEnv::get_verbose(u_int32_t which, int *onoffp);
 and debugging messages in the Berkeley DB message output on and off.  To see
 the additional messages, verbose messages must also be configured for
 the application.  For more information on verbose messages, see the
-<a href="../api_cxx/db_set_errfile.html">Db::set_errfile</a> method.</p>
-<p>The database environment's messages may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_verbose", one or more whitespace characters,
-and the method <b>which</b> parameter as a string; for example,
+<a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> method.</p>
+<p>The database environment's messages may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_verbose", one or more whitespace
+characters, and the method <b>which</b> parameter as a string; for example,
 "set_verbose DB_VERB_RECOVERY".
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
@@ -61,8 +61,10 @@ messages are output.
 <dl compact>
 <dt><a name="DB_VERB_DEADLOCK">DB_VERB_DEADLOCK</a><dd>Display additional information when doing deadlock detection.
 <dt><a name="DB_VERB_RECOVERY">DB_VERB_RECOVERY</a><dd>Display additional information when performing recovery.
+<dt><a name="DB_VERB_REGISTER">DB_VERB_REGISTER</a><dd>Display additional information concerning support for the
+<a href="../api_cxx/env_open.html#DB_REGISTER">DB_REGISTER</a> flag to the <a href="../api_cxx/env_open.html">DbEnv::open</a> method.
 <dt><a name="DB_VERB_REPLICATION">DB_VERB_REPLICATION</a><dd>Display additional information when processing replication messages.
-<p>Note, to get complete replication logging when debugging replication
+<p>To get complete replication logging when debugging replication
 applications, you must also configure and build the Berkeley DB library with
 the <a href="../ref/build_unix/conf.html">--enable-diagnostic</a>
 configuration option as well as call the DbEnv::set_verbose method.</p>
@@ -80,12 +82,12 @@ the following non-zero errors:</p>
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
-<h3>Description: dbenv_get_verbose</h3>
-<p>The DbEnv::get_verbose method returns whether the specified <b>which</b>
+<h3>Description: <a href="../api_cxx/env_set_verbose.html">DbEnv::get_verbose</a></h3>
+<p>The <a href="../api_cxx/env_set_verbose.html">DbEnv::get_verbose</a> method returns whether the specified <b>which</b>
 parameter is currently set or not.</p>
-<p>The DbEnv::get_verbose method may be called at any time during the life of the
+<p>The <a href="../api_cxx/env_set_verbose.html">DbEnv::get_verbose</a> method may be called at any time during the life of the
 application.</p>
-<p>The DbEnv::get_verbose method
+<p>The <a href="../api_cxx/env_set_verbose.html">DbEnv::get_verbose</a> method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
@@ -95,7 +97,8 @@ failure, and returns 0 on success.
 <dt><b>which</b><dd>The <b>which</b> parameter is the message value for which configuration
 is being checked.
 <dt><b>onoffp</b><dd>The <b>onoffp</b> parameter references memory into which
- the configuration of the specified <b>which</b> parameter is copied.
+ the configuration of the specified <b>which</b> parameter is copied. If the returned <b>onoff</b> value is zero, the parameter is off;
+otherwise on.
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -106,6 +109,6 @@ is being checked.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

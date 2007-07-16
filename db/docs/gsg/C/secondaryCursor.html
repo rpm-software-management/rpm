@@ -103,7 +103,6 @@
         Then the following searches for a person's
         name in the secondary database, and deletes all secondary and primary
         records that use that name.
-        
     </p>
       <a id="c_index8"></a>
       <pre class="programlisting">#include &lt;db.h&gt;
@@ -114,7 +113,7 @@
 DB *sdbp;          /* Secondary DB handle */
 DBC *cursorp;      /* Cursor */
 DBT key, data;     /* DBTs used for the delete */
-char *search_name = "John Doe"; /* Name to delete */
+char *search_name = &quot;John Doe&quot;; /* Name to delete */
                                                                                                                                      
 /* Primary and secondary database opens omitted for brevity. */
 

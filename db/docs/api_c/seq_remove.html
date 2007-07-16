@@ -1,5 +1,5 @@
-<!--$Id: seq_remove.so,v 1.5 2004/08/18 02:34:52 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: seq_remove.so,v 1.6 2004/12/16 19:13:04 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -41,14 +41,19 @@ and 0 on success.
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
-<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>The remove
-will be enclosed in a transaction and will be recoverable.
-<dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>If a DB_AUTO_COMMIT
-triggers a transaction, do not synchronously flush the log.
+<dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>If the operation is implicitly transaction protected (the <b>txnid</b>
+argument is NULL but the operation occurs to a transactional database),
+do not synchronously flush the log when the transaction commits.
 </dl>
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+operation occurs in a transactional
+database,
+the operation will be implicitly transaction protected.  
 </dl>
 <h3>Errors</h3>
 <p>The DB_SEQUENCE-&gt;remove method
@@ -66,6 +71,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,16 +1,22 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: mp.h,v 11.61 2004/09/17 22:00:27 mjc Exp $
+ * $Id: mp.h,v 12.23 2006/09/07 15:11:26 mjc Exp $
  */
 
 #ifndef	_DB_MP_H_
 #define	_DB_MP_H_
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 struct __bh;		typedef struct __bh BH;
+struct __bh_frozen;	typedef struct __bh_frozen_p BH_FROZEN_PAGE;
+struct __bh_frozen_a;	typedef struct __bh_frozen_a BH_FROZEN_ALLOC;
 struct __db_mpool_hash; typedef struct __db_mpool_hash DB_MPOOL_HASH;
 struct __db_mpreg;	typedef struct __db_mpreg DB_MPREG;
 struct __mpool;		typedef struct __mpool MPOOL;
@@ -42,9 +48,14 @@ typedef enum {
  */
 struct __db_mpool {
 	/* These fields need to be protected for multi-threaded support. */
-	DB_MUTEX   *mutexp;		/* Structure thread lock. */
+	db_mutex_t mutex;		/* Thread mutex. */
 
-					/* List of pgin/pgout routines. */
+	/*
+	 * DB_MPREG structure for the DB pgin/pgout routines.
+	 *
+	 * Linked list of application-specified pgin/pgout routines.
+	 */
+	DB_MPREG *pg_inout;
 	LIST_HEAD(__db_mpregh, __db_mpreg) dbregq;
 
 					/* List of DB_MPOOLFILE's. */
@@ -85,7 +96,8 @@ struct __db_mpreg {
  *	more frequent than a random data page.
  */
 #define	NCACHE(mp, mf_offset, pgno)					\
-	(((pgno) ^ ((u_int32_t)(mf_offset) >> 3)) % ((MPOOL *)mp)->nreg)
+	(((MPOOL *)mp)->nreg == 1 ? 0 :					\
+	(((pgno) ^ ((u_int32_t)(mf_offset) >> 3)) % ((MPOOL *)mp)->nreg))
 
 /*
  * NBUCKET --
@@ -103,6 +115,34 @@ struct __db_mpreg {
 	(((pgno) ^ ((mf_offset) << 9)) % (mc)->htab_buckets)
 
 /*
+ * File hashing --
+ *	We hash each file to hash bucket based on its fileid
+ *	or, in the case of in memory files, its name.
+ */
+
+/* Number of file hash buckets, a small prime number */
+#define	MPOOL_FILE_BUCKETS	17
+
+#define	FHASH(id, len)	__ham_func5(NULL, id, (u_int32_t)(len))
+
+#define	FNBUCKET(id, len)						\
+	(FHASH(id, len) % MPOOL_FILE_BUCKETS)
+
+/* Macros to lock/unlock the mpool region as a whole. */
+#define	MPOOL_SYSTEM_LOCK(dbenv)					\
+	MUTEX_LOCK(dbenv, ((MPOOL *)					\
+	    (dbenv)->mp_handle->reginfo[0].primary)->mtx_region)
+#define	MPOOL_SYSTEM_UNLOCK(dbenv)					\
+	MUTEX_UNLOCK(dbenv, ((MPOOL *)					\
+	    (dbenv)->mp_handle->reginfo[0].primary)->mtx_region)
+
+/* Macros to lock/unlock a specific mpool region. */
+#define	MPOOL_REGION_LOCK(dbenv, infop)					\
+	MUTEX_LOCK(dbenv, ((MPOOL *)(infop)->primary)->mtx_region)
+#define	MPOOL_REGION_UNLOCK(dbenv, infop)				\
+	MUTEX_UNLOCK(dbenv, ((MPOOL *)(infop)->primary)->mtx_region)
+
+/*
  * MPOOL --
  *	Shared memory pool region.
  */
@@ -117,14 +157,13 @@ struct __mpool {
 	 * the first of these pieces/files describes the entire pool, the
 	 * second only describe a piece of the cache.
 	 */
+	db_mutex_t	mtx_region;	/* Region mutex. */
 
 	/*
 	 * The lsn field and list of underlying MPOOLFILEs are thread protected
 	 * by the region lock.
 	 */
 	DB_LSN	  lsn;			/* Maximum checkpoint LSN. */
-
-	SH_TAILQ_HEAD(__mpfq) mpfq;	/* List of MPOOLFILEs. */
 
 	/* Configuration information: protected by the region lock. */
 	size_t mp_mmapsize;		/* Maximum file size for mmap. */
@@ -140,10 +179,6 @@ struct __mpool {
 	u_int32_t nreg;			/* Number of underlying REGIONS. */
 	roff_t	  regids;		/* Array of underlying REGION Ids. */
 
-#ifdef HAVE_MUTEX_SYSTEM_RESOURCES
-	roff_t	  maint_off;		/* Maintenance information offset */
-#endif
-
 	/*
 	 * The following structure fields only describe the per-cache portion
 	 * of the region.
@@ -157,7 +192,9 @@ struct __mpool {
 	u_int32_t htab_buckets;	/* Number of hash table entries. */
 	roff_t	  htab;		/* Hash table offset. */
 	u_int32_t last_checked;	/* Last bucket checked for free. */
-	u_int32_t lru_count;		/* Counter for buffer LRU */
+	u_int32_t lru_count;	/* Counter for buffer LRU */
+
+	roff_t	  ftab;		/* Hash table of files. */
 
 	/*
 	 * The stat fields are generally not thread protected, and cannot be
@@ -173,26 +210,32 @@ struct __mpool {
 	 * if it changes.
 	 */
 	u_int32_t  put_counter;		/* Count of page put calls. */
+
+	/* Free frozen buffer headers, protected by the region lock. */
+	SH_TAILQ_HEAD(__free_frozen) free_frozen;
+
+	/* Allocated blocks of frozen buffer headers. */
+	SH_TAILQ_HEAD(__alloc_frozen) alloc_frozen;
 };
 
 struct __db_mpool_hash {
-	DB_MUTEX	hash_mutex;	/* Per-bucket mutex. */
+	db_mutex_t	mtx_hash;	/* Per-bucket mutex. */
+	db_mutex_t	mtx_io;		/* Buffer I/O mutex. */
 
 	DB_HASHTAB	hash_bucket;	/* Head of bucket. */
 
 	u_int32_t	hash_page_dirty;/* Count of dirty pages. */
 	u_int32_t	hash_priority;	/* Minimum priority of bucket buffer. */
 
-#ifdef	HPUX_MUTEX_PAD
-	/*
-	 * !!!
-	 * We allocate the mpool hash buckets as an array, which means that
-	 * they are not individually aligned.  This fails on one platform:
-	 * HPUX 10.20, where mutexes require 16 byte alignment.   This is a
-	 * grievous hack for that single platform.
-	 */
-	u_int8_t	pad[HPUX_MUTEX_PAD];
-#endif
+	u_int32_t	hash_io_wait;	/* Count of I/O waits. */
+	u_int32_t	hash_frozen;	/* Count of frozen buffers. */
+	u_int32_t	hash_thawed;	/* Count of thawed buffers. */
+	u_int32_t	hash_frozen_freed;/* Count of freed frozen buffers. */
+
+	DB_LSN		old_reader;	/* Oldest snapshot reader (cached). */
+
+#define	IO_WAITER	0x001		/* Thread is waiting on page. */
+	u_int32_t	flags;
 };
 
 /*
@@ -218,13 +261,32 @@ struct __db_mpool_hash {
  *	Shared DB_MPOOLFILE information.
  */
 struct __mpoolfile {
-	DB_MUTEX mutex;
+	db_mutex_t mutex;		/* MPOOLFILE mutex. */
 
 	/* Protected by MPOOLFILE mutex. */
 	u_int32_t mpf_cnt;		/* Ref count: DB_MPOOLFILEs. */
 	u_int32_t block_cnt;		/* Ref count: blocks in cache. */
+	db_pgno_t last_pgno;		/* Last page in the file. */
+	db_pgno_t last_flushed_pgno;	/* Last page flushed to disk. */
+	db_pgno_t orig_last_pgno;	/* Original last page in the file. */
+	db_pgno_t maxpgno;		/* Maximum page number. */
 
 	roff_t	  path_off;		/* File name location. */
+
+	/* Protected by hash bucket mutex. */
+	SH_TAILQ_ENTRY q;		/* List of MPOOLFILEs */
+
+	/*
+	 * The following are used for file compaction processing.
+	 * They are only used when a thread is in the process
+	 * of trying to move free pages to the end of the file.
+	 * Other threads may look here when freeing a page.
+	 * Protected by a lock on the metapage.
+	 */
+	u_int32_t free_ref;		/* Refcount to freelist. */
+	u_int32_t free_cnt;		/* Count of free pages. */
+	size_t	  free_size;		/* Allocated size of free list. */
+	roff_t	  free_list;		/* Offset to free list. */
 
 	/*
 	 * We normally don't lock the deadfile field when we read it since we
@@ -233,11 +295,7 @@ struct __mpoolfile {
 	 */
 	int32_t	  deadfile;		/* Dirty pages can be discarded. */
 
-	/* Protected by mpool cache 0 region lock. */
-	SH_TAILQ_ENTRY q;		/* List of MPOOLFILEs */
-	db_pgno_t last_pgno;		/* Last page in the file. */
-	db_pgno_t orig_last_pgno;	/* Original last page in the file. */
-	db_pgno_t maxpgno;		/* Maximum page number. */
+	u_int32_t bucket;		/* hash bucket for this file. */
 
 	/*
 	 * None of the following fields are thread protected.
@@ -276,6 +334,7 @@ struct __mpoolfile {
 	int32_t	  file_written;		/* File was written. */
 	int32_t	  no_backing_file;	/* Never open a backing file. */
 	int32_t	  unlink_on_close;	/* Unlink file on last close. */
+	int32_t	  multiversion;		/* Number of DB_MULTIVERSION handles. */
 
 	/*
 	 * We do not protect the statistics in "stat" because of the cost of
@@ -316,31 +375,38 @@ struct __mpoolfile {
  * Flags to __memp_bh_free.
  */
 #define	BH_FREE_FREEMEM		0x01
-#define	BH_FREE_UNLOCKED	0x02
+#define	BH_FREE_REUSE		0x02
+#define	BH_FREE_UNLOCKED	0x04
 
 /*
  * BH --
  *	Buffer header.
  */
 struct __bh {
-	DB_MUTEX	mutex;		/* Buffer thread/process lock. */
-
 	u_int16_t	ref;		/* Reference count. */
 	u_int16_t	ref_sync;	/* Sync wait-for reference count. */
 
 #define	BH_CALLPGIN	0x001		/* Convert the page before use. */
-#define	BH_DIRTY	0x002		/* Page was modified. */
-#define	BH_DIRTY_CREATE	0x004		/* Page created, must be written. */
+#define	BH_DIRTY	0x002		/* Page is modified. */
+#define	BH_DIRTY_CREATE	0x004		/* Page is modified. */
 #define	BH_DISCARD	0x008		/* Page is useless. */
-#define	BH_LOCKED	0x010		/* Page is locked (I/O in progress). */
-#define	BH_TRASH	0x020		/* Page is garbage. */
+#define	BH_FREED	0x010		/* Page was freed. */
+#define	BH_FROZEN	0x020		/* Frozen buffer: allocate & re-read. */
+#define	BH_LOCKED	0x040		/* Page is locked (I/O in progress). */
+#define	BH_TRASH	0x080		/* Page is garbage. */
 	u_int16_t	flags;
 
 	u_int32_t	priority;	/* LRU priority. */
 	SH_TAILQ_ENTRY	hq;		/* MPOOL hash bucket queue. */
 
-	db_pgno_t pgno;			/* Underlying MPOOLFILE page number. */
-	roff_t	  mf_offset;		/* Associated MPOOLFILE offset. */
+	db_pgno_t	pgno;		/* Underlying MPOOLFILE page number. */
+	roff_t		mf_offset;	/* Associated MPOOLFILE offset. */
+
+	roff_t		td_off;		/* MVCC: creating TXN_DETAIL offset. */
+	SH_CHAIN_ENTRY	vc;		/* MVCC: version chain. */
+#ifdef DIAG_MVCC
+	u_int16_t	align_off;	/* Alignment offset for diagnostics.*/
+#endif
 
 	/*
 	 * !!!
@@ -351,6 +417,118 @@ struct __bh {
 	 */
 	u_int8_t   buf[1];		/* Variable length data. */
 };
+
+/*
+ * BH_FROZEN_PAGE --
+ *	Data used to find a frozen buffer header.
+ */
+struct __bh_frozen_p {
+	BH header;
+	db_pgno_t	spgno;		/* Page number in freezer file. */
+};
+
+/*
+ * BH_FROZEN_ALLOC --
+ *	Frozen buffer headers are allocated a page at a time in general.  This
+ *	structure is allocated at the beginning of the page so that the
+ *	allocation chunks can be tracked and freed (for private environments).
+ */
+struct __bh_frozen_a {
+	SH_TAILQ_ENTRY links;
+};
+
+#define	MULTIVERSION(dbp)	((dbp)->mpf->mfp->multiversion)
+#define	IS_DIRTY(p)							\
+    F_ISSET((BH *)((u_int8_t *)(p) - SSZA(BH, buf)), BH_DIRTY)
+
+#define	BH_OWNER(dbenv, bhp)						\
+    ((TXN_DETAIL *)R_ADDR(&dbenv->tx_handle->reginfo, bhp->td_off))
+
+#define	BH_OWNED_BY(dbenv, bhp, txn)	((txn) != NULL &&		\
+    (bhp)->td_off != INVALID_ROFF &&					\
+    (txn)->td == BH_OWNER(dbenv, bhp))
+
+#define	BH_PRIORITY(bhp)						\
+    (SH_CHAIN_SINGLETON(bhp, vc) ? (bhp)->priority :			\
+     __memp_bh_priority(bhp))
+
+#define	VISIBLE_LSN(dbenv, bhp)						\
+    (&BH_OWNER(dbenv, bhp)->visible_lsn)
+
+#define	BH_OBSOLETE(bhp, old_lsn)	((SH_CHAIN_HASNEXT(bhp, vc) ?	\
+	LOG_COMPARE(&(old_lsn), VISIBLE_LSN(dbenv,			\
+	SH_CHAIN_NEXTP(bhp, vc, __bh))) :				\
+	(bhp->td_off == INVALID_ROFF ? 1 :				\
+	LOG_COMPARE(&(old_lsn), VISIBLE_LSN(dbenv, bhp)))) > 0)
+
+#define	MVCC_SKIP_CURADJ(dbc, pgno)					\
+    (dbc->txn != NULL && F_ISSET(dbc->txn, TXN_SNAPSHOT) &&		\
+    dbc->txn->td != NULL && __memp_skip_curadj(dbc, pgno))
+
+#if defined(DIAG_MVCC) && defined(HAVE_MPROTECT)
+#define	VM_PAGESIZE 4096
+#define	MVCC_BHSIZE(mfp, sz) do {					\
+	sz += VM_PAGESIZE + sizeof(BH);					\
+	if (mfp->stat.st_pagesize < VM_PAGESIZE)			\
+		sz += VM_PAGESIZE - mfp->stat.st_pagesize;		\
+} while (0)
+
+#define	MVCC_BHALIGN(mfp, p) do {					\
+	if (mfp != NULL) {						\
+		BH *__bhp;						\
+		void *__orig = (p);					\
+		p = ALIGNP_INC(p, VM_PAGESIZE);				\
+		if ((u_int8_t *)p < (u_int8_t *)__orig + sizeof(BH))	\
+			p = (u_int8_t *)p + VM_PAGESIZE;		\
+		__bhp = (BH *)((u_int8_t *)p - SSZA(BH, buf));		\
+		DB_ASSERT(dbenv,					\
+		    ((uintptr_t)__bhp->buf & (VM_PAGESIZE - 1)) == 0);	\
+		DB_ASSERT(dbenv,					\
+		    (u_int8_t *)__bhp >= (u_int8_t *)__orig);		\
+		DB_ASSERT(dbenv, (u_int8_t *)p + mfp->stat.st_pagesize <\
+		    (u_int8_t *)__orig + len);				\
+		__bhp->align_off =					\
+		    (u_int16_t)((u_int8_t *)__bhp - (u_int8_t *)__orig);\
+		p = __bhp;						\
+	}								\
+} while (0)
+
+#define	MVCC_BHUNALIGN(mfp, p) do {					\
+	if ((mfp) != NULL) {						\
+		BH *bhp = (BH *)(p);					\
+		(p) = ((u_int8_t *)bhp - bhp->align_off);		\
+	}								\
+} while (0)
+
+#ifdef linux
+#define	MVCC_MPROTECT(buf, sz, mode) do {				\
+	int __ret = mprotect((buf), (sz), (mode));			\
+	DB_ASSERT(dbenv, __ret == 0);					\
+} while (0)
+#else
+#define	MVCC_MPROTECT(buf, sz, mode) do {				\
+	if (!F_ISSET(dbenv, DB_ENV_PRIVATE | DB_ENV_SYSTEM_MEM)) {	\
+		int __ret = mprotect((buf), (sz), (mode));		\
+		DB_ASSERT(dbenv, __ret == 0);				\
+	}								\
+} while (0)
+#endif /* linux */
+
+#else /* defined(DIAG_MVCC) && defined(HAVE_MPROTECT) */
+#define	MVCC_BHSIZE(mfp, sz) do {} while (0)
+#define	MVCC_BHALIGN(mfp, p) do {} while (0)
+#define	MVCC_BHUNALIGN(mfp, p) do {} while (0)
+#define	MVCC_MPROTECT(buf, size, mode) do {} while (0)
+#endif
+
+/*
+ * Flags to __memp_ftruncate.
+ */
+#define	MP_TRUNC_RECOVER	0x01
+
+#if defined(__cplusplus)
+}
+#endif
 
 #include "dbinc_auto/mp_ext.h"
 #endif /* !_DB_MP_H_ */

@@ -1,5 +1,5 @@
 <!--$Id: memp_list.so,v 1.1 2002/08/30 20:01:28 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -10,19 +10,19 @@
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Memory Pools and Related Methods</h3>
-<!--$Id: m4.methods,v 1.7 2004/11/03 15:52:02 bostic Exp $-->
+<!--$Id: m4.methods,v 1.9 2006/08/25 16:40:01 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Memory Pools and Related Methods</th><th>Description</th></tr>
-<!--Db::mpf--><tr><td><a href="../api_cxx/db_get_mpf.html">Db::get_mpf</a></td><td>Return the database's memory pool handle</td></tr>
+<!--Db::mpf--><tr><td><a href="../api_cxx/db_get_mpf.html">Db::get_mpf</a></td><td>Return <a href="../api_cxx/db_class.html">Db</a>'s underlying <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle</td></tr>
 <!--DbEnv::memp_stat--><tr><td><a href="../api_cxx/memp_stat.html">DbEnv::memp_stat</a></td><td>Return memory pool statistics</td></tr>
 <!--DbEnv::memp_sync--><tr><td><a href="../api_cxx/memp_sync.html">DbEnv::memp_sync</a></td><td>Flush pages from a memory pool</td></tr>
 <!--DbEnv::memp_trickle--><tr><td><a href="../api_cxx/memp_trickle.html">DbEnv::memp_trickle</a></td><td>Trickle flush pages from a memory pool</td></tr>
 <!--DbMemoryException--><tr><td><a href="../api_cxx/memp_class.html">DbMemoryException</a></td><td>Insufficient memory exception</td></tr>
 <tr><th>Memory Pool Configuration</th><th><br></th></tr>
 <!--DbEnv::memp_register--><tr><td><a href="../api_cxx/memp_register.html">DbEnv::memp_register</a></td><td>Register input/output functions for a file in a memory pool</td></tr>
-<!--DbEnv::memp_set_max_openfd--><tr><td><a href="../api_cxx/memp_openfd.html">DbEnv::set_max_openfd</a></td><td>Set the maximum number of open file descriptors</td></tr>
-<!--DbEnv::memp_set_max_write--><tr><td><a href="../api_cxx/memp_maxwrite.html">DbEnv::set_max_write</a></td><td>Set the maximum number of sequential disk writes</td></tr>
 <!--DbEnv::set_cachesize--><tr><td><a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a></td><td>Set the environment cache size</td></tr>
+<!--DbEnv::set_mp_max_openfd--><tr><td><a href="../api_cxx/memp_openfd.html">DbEnv::set_mp_max_openfd</a></td><td>Set the maximum number of open file descriptors</td></tr>
+<!--DbEnv::set_mp_max_write--><tr><td><a href="../api_cxx/memp_maxwrite.html">DbEnv::set_mp_max_write</a></td><td>Set the maximum number of sequential disk writes</td></tr>
 <!--DbEnv::set_mp_mmapsize--><tr><td><a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a></td><td>Set maximum mapped-in database file size</td></tr>
 <tr><th>Memory Pool Files</th><th><br></th></tr>
 <!--DbEnv::memp_fcreate--><tr><td><a href="../api_cxx/memp_fcreate.html">DbEnv::memp_fcreate</a></td><td>Create a memory pool file handle</td></tr>
@@ -43,6 +43,6 @@
 <!--DbMpoolFile::set_pgcookie--><tr><td><a href="../api_cxx/memp_set_pgcookie.html">DbMpoolFile::set_pgcookie</a></td><td>Set file cookie for pgin/pgout</td></tr>
 <!--DbMpoolFile::set_priority--><tr><td><a href="../api_cxx/memp_set_priority.html">DbMpoolFile::set_priority</a></td><td>Set memory pool file priority</td></tr>
 </table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

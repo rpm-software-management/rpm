@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd021.tcl,v 1.2 2004/09/22 18:01:05 bostic Exp $
+# $Id: recd021.tcl,v 12.4 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	recd021
 # TEST	Test of failed opens in recovery.
@@ -54,8 +54,7 @@ proc recd021 { method args } {
 		# Checkpoint.
 		error_check_good txn_checkpoint [$env txn_checkpoint] 0
 		for { set i 1 } { $i <= $nentries } { incr i } {
-			error_check_good \
-			    dba_put [$db put -auto_commit $i data$i] 0
+			error_check_good dba_put [$db put $i data$i] 0
 		}
 		error_check_good dba_close [$db close] 0
 
@@ -154,12 +153,12 @@ proc recd021_testsubdb { method op nentries special trunc largs } {
 	# Checkpoint.
 	error_check_good txn_checkpoint [$env txn_checkpoint] 0
 	for { set i 1 } { $i <= $nentries } { incr i } {
-		error_check_good sdb1_put [$sdb1 put -auto_commit $i data$i] 0
+		error_check_good sdb1_put [$sdb1 put $i data$i] 0
 	}
 	set dumpfile dump.s1.$trunc
 	set ret [exec $util_path/db_dump -dar -f $dumpfile -h $testdir A.db]
 	for { set i 1 } { $i <= $nentries } { incr i } {
-		error_check_good sdb2_put [$sdb2 put -auto_commit $i data$i] 0
+		error_check_good sdb2_put [$sdb2 put $i data$i] 0
 	}
 	error_check_good sdb1_close [$sdb1 close] 0
 
@@ -207,7 +206,7 @@ proc recd021_testsubdb { method op nentries special trunc largs } {
 			for { set i [expr $nentries + 1] } \
 			    { $i <= [expr $nentries * 2]} { incr i } {
 				error_check_good sdb2_put \
-				    [$sdb2 put -auto_commit $i data$i] 0
+				    [$sdb2 put $i data$i] 0
 			}
 			error_check_good sdb2_close [$sdb2 close] 0
 			set dumpfile dump.s2.$trunc
@@ -222,7 +221,7 @@ proc recd021_testsubdb { method op nentries special trunc largs } {
 			error_check_good sdb3_open [is_valid_db $sdb3] TRUE
 			for { set i 1 } { $i <= $nentries } { incr i } {
 				error_check_good sdb3_put \
-				     [$sdb3 put -auto_commit $i data$i] 0
+				     [$sdb3 put $i data$i] 0
 			}
 			error_check_good sdb3_close [$sdb3 close] 0
 		}
@@ -237,7 +236,7 @@ proc recd021_testsubdb { method op nentries special trunc largs } {
 			error_check_good sdb4_open [is_valid_db $sdb4] TRUE
 			for { set i 1 } { $i <= $nentries } { incr i } {
 				error_check_good sdb4_put \
-				     [$sdb4 put -auto_commit $i data$i] 0
+				     [$sdb4 put $i data$i] 0
 			}
 			error_check_good sdb4_close [$sdb4 close] 0
 		}

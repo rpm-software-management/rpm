@@ -1,5 +1,5 @@
 <!--$Id: env_list.so,v 10.1 2002/08/30 20:00:50 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -10,16 +10,20 @@
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Database Environments and Related Methods</h3>
-<!--$Id: m4.methods,v 10.7 2004/11/03 15:52:01 bostic Exp $-->
+<!--$Id: m4.methods,v 10.17 2006/08/25 16:40:00 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Database Environment Operations</th><th>Description</th></tr>
 <!--DbEnv::--><tr><td><a href="../api_cxx/env_class.html">DbEnv</a></td><td>Create an environment handle</td></tr>
+<!--Db::get_env--><tr><td><a href="../api_cxx/db_getenv.html">Db::getenv</a></td><td>Return <a href="../api_cxx/db_class.html">Db</a>'s underlying <a href="../api_cxx/env_class.html">DbEnv</a> handle</td></tr>
 <!--DbEnv::close--><tr><td><a href="../api_cxx/env_close.html">DbEnv::close</a></td><td>Close an environment</td></tr>
 <!--DbEnv::dbremove--><tr><td><a href="../api_cxx/env_dbremove.html">DbEnv::dbremove</a></td><td>Remove a database</td></tr>
 <!--DbEnv::dbrename--><tr><td><a href="../api_cxx/env_dbrename.html">DbEnv::dbrename</a></td><td>Rename a database</td></tr>
 <!--DbEnv::err--><tr><td><a href="../api_cxx/env_err.html">DbEnv::err</a>, <a href="../api_cxx/env_err.html">DbEnv::errx</a></td><td>Error message</td></tr>
+<!--DbEnv::failchk--><tr><td><a href="../api_cxx/env_failchk.html">DbEnv::failchk</a></td><td>Check for thread failure</td></tr>
+<!--DbEnv::fileid_reset--><tr><td><a href="../api_cxx/env_fileid_reset.html">DbEnv::fileid_reset</a></td><td>Reset database file IDs</td></tr>
 <!--DbEnv::get_home--><tr><td><a href="../api_cxx/env_open.html">DbEnv::get_home</a></td><td>Return environment's home directory</td></tr>
-<!--DbEnv::get_open_flags--><tr><td><a href="../api_cxx/env_open.html">DbEnv::get_open_flags</a></td><td>Return the flags with which the environment was opened</td></tr>
+<!--DbEnv::get_open_flags--><tr><td><a href="../api_cxx/env_open.html">DbEnv::get_open_flags</a></td><td>Return flags with which the environment was opened</td></tr>
+<!--DbEnv::lsn_reset--><tr><td><a href="../api_cxx/env_lsn_reset.html">DbEnv::lsn_reset</a></td><td>Reset database file LSNs</td></tr>
 <!--DbEnv::open--><tr><td><a href="../api_cxx/env_open.html">DbEnv::open</a></td><td>Open an environment</td></tr>
 <!--DbEnv::remove--><tr><td><a href="../api_cxx/env_remove.html">DbEnv::remove</a></td><td>Remove an environment</td></tr>
 <!--DbEnv::stat_print--><tr><td><a href="../api_cxx/env_stat.html">DbEnv::stat_print</a></td><td>Environment statistics</td></tr>
@@ -35,16 +39,19 @@
 <!--DbEnv::set_errfile--><tr><td><a href="../api_cxx/env_set_errfile.html">DbEnv::set_errfile</a>, <a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a></td><td>Set error and informational message FILE</td></tr>
 <!--DbEnv::set_error_stream--><tr><td><a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a>, <a href="../api_cxx/env_set_msg_stream.html">DbEnv::set_message_stream</a></td><td>Set error and informational message output stream</td></tr>
 <!--DbEnv::set_errpfx--><tr><td><a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a></td><td>Set error message prefix</td></tr>
+<!--DbEnv::set_event_notify--><tr><td><a href="../api_cxx/env_event_notify.html">DbEnv::set_event_notify</a></td><td>Set event notification callback</td></tr>
 <!--DbEnv::set_feedback--><tr><td><a href="../api_cxx/env_set_feedback.html">DbEnv::set_feedback</a></td><td>Set feedback callback</td></tr>
 <!--DbEnv::set_flags--><tr><td><a href="../api_cxx/env_set_flags.html">DbEnv::set_flags</a></td><td>Environment configuration</td></tr>
-<!--DbEnv::set_paniccall--><tr><td><a href="../api_cxx/env_set_paniccall.html">DbEnv::set_paniccall</a></td><td>Set panic callback</td></tr>
+<!--DbEnv::set_isalive--><tr><td><a href="../api_cxx/env_set_isalive.html">DbEnv::set_isalive</a></td><td>Set thread is-alive callback</td></tr>
 <!--DbEnv::set_rpc_server--><tr><td><a href="../api_cxx/env_set_rpc_server.html">DbEnv::set_rpc_server</a></td><td>Establish an RPC server connection</td></tr>
 <!--DbEnv::set_shm_key--><tr><td><a href="../api_cxx/env_set_shm_key.html">DbEnv::set_shm_key</a></td><td>Set system memory shared segment ID</td></tr>
-<!--DbEnv::set_tas_spins--><tr><td><a href="../api_cxx/env_set_tas_spins.html">DbEnv::set_tas_spins</a></td><td>Set the number of test-and-set spins</td></tr>
+<!--DbEnv::set_thread_id--><tr><td><a href="../api_cxx/env_set_thread_id.html">DbEnv::set_thread_id</a></td><td>Set thread of control ID function</td></tr>
+<!--DbEnv::set_thread_count--><tr><td><a href="../api_cxx/env_set_thread_count.html">DbEnv::set_thread_count</a></td><td>Set approximate thread count</td></tr>
+<!--DbEnv::set_thread_id_string--><tr><td><a href="../api_cxx/env_set_thread_id_string.html">DbEnv::set_thread_id_string</a></td><td>Set thread of control ID format function</td></tr>
 <!--DbEnv::set_timeout--><tr><td><a href="../api_cxx/env_set_timeout.html">DbEnv::set_timeout</a></td><td>Set lock and transaction timeout</td></tr>
 <!--DbEnv::set_tmp_dir--><tr><td><a href="../api_cxx/env_set_tmp_dir.html">DbEnv::set_tmp_dir</a></td><td>Set the environment temporary file directory</td></tr>
 <!--DbEnv::set_verbose--><tr><td><a href="../api_cxx/env_set_verbose.html">DbEnv::set_verbose</a></td><td>Set verbose messages</td></tr>
 </table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

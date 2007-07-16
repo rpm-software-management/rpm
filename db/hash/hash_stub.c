@@ -1,18 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: hash_stub.c,v 1.10 2004/09/29 15:35:14 bostic Exp $
+ * $Id: hash_stub.c,v 12.8 2006/08/24 14:46:05 bostic Exp $
  */
 
-#include "db_config.h"
-
 #ifndef HAVE_HASH
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
+#include "db_config.h"
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -34,7 +30,7 @@ int
 __db_no_hash_am(dbenv)
 	DB_ENV *dbenv;
 {
-	__db_err(dbenv,
+	__db_errx(dbenv,
 	    "library build did not include support for the Hash access method");
 	return (DB_OPNOTSUP);
 }
@@ -185,6 +181,36 @@ __ham_metachk(dbp, name, hashm)
 	COMPQUIET(name, NULL);
 	COMPQUIET(hashm, NULL);
 	return (__db_no_hash_am(dbp->dbenv));
+}
+
+int
+__ham_metagroup_42_recover(dbenv, dbtp, lsnp, op, info)
+	DB_ENV *dbenv;
+	DBT *dbtp;
+	DB_LSN *lsnp;
+	db_recops op;
+	void *info;
+{
+	COMPQUIET(dbtp, NULL);
+	COMPQUIET(lsnp, NULL);
+	COMPQUIET(op, 0);
+	COMPQUIET(info, NULL);
+	return (__db_no_hash_am(dbenv));
+}
+
+int
+__ham_groupalloc_42_recover(dbenv, dbtp, lsnp, op, info)
+	DB_ENV *dbenv;
+	DBT *dbtp;
+	DB_LSN *lsnp;
+	db_recops op;
+	void *info;
+{
+	COMPQUIET(dbtp, NULL);
+	COMPQUIET(lsnp, NULL);
+	COMPQUIET(op, 0);
+	COMPQUIET(info, NULL);
+	return (__db_no_hash_am(dbenv));
 }
 
 int

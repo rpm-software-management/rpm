@@ -1,4 +1,9 @@
-/* File: gettingstarted_common.c */
+/*-
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2004-2006
+ *	Oracle Corporation.  All rights reserved.
+ */
 
 #include "gettingstarted_common.h"
 
@@ -38,7 +43,7 @@ get_item_name(DB *dbp, const DBT *pkey, const DBT *pdata, DBT *skey)
     /* Now set the secondary key's data to be the item name */
     memset(skey, 0, sizeof(DBT));
     skey->data = (u_int8_t *)pdata->data + offset;
-    skey->size = strlen(skey->data) + 1;
+    skey->size = (u_int32_t)strlen(skey->data) + 1;
 
     return (0);
 }

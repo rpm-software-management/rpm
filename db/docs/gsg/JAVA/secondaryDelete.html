@@ -43,10 +43,10 @@
         database and simply allow DB to manage the secondary modifications for you.
     </p>
       <p>
-        However, as a convenience, you can delete a 
+        However, as a convenience, you can delete 
             <tt class="classname">SecondaryDatabase</tt>
             
-        record directly. Doing so causes the associated primary key/data pair to be deleted.
+        records directly. Doing so causes the associated primary key/data pair to be deleted.
         This in turn causes DB to delete all 
             <tt class="classname">SecondaryDatabase</tt>
             
@@ -71,43 +71,17 @@
     </p>
       <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
         <h3 class="title">Note</h3>
-        <p><tt class="methodname">SecondaryDatabase.delete()</tt> causes the
-      previously describe delete operations to occur only if:
-      </p>
-        <div class="itemizedlist">
-          <ul type="disc">
-            <li>
-              <p>
-                the 
-                    <span><tt class="methodname">SecondaryKeyCreator.createSecondaryKey()</tt> method</span>
-                    
-
-                 returns 
-                    <tt class="literal">true</tt>
-                     
-                (see  <a href="keyCreator.html">Implementing Key 
-        <span>Creators</span>
-        
-        </a> for information on this 
-                    <span>interface and method).</span>
-                    
-            </p>
-            </li>
-            <li>
-              <p>
-                the primary database is opened for write access.
-            </p>
-            </li>
-          </ul>
-        </div>
         <p>
-         If either of these conditions are not met, then no delete operations can be performed on the secondary
-         database.
+      <span><tt class="methodname">SecondaryDatabase.delete()</tt> causes the
+      previously described delete operations to occur
+      </span>
+      
+      only if the primary database is opened for write access.
       </p>
       </div>
       <p>For example:</p>
       <a id="java_index7"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
@@ -120,11 +94,11 @@ try {
     // Omitting all database opens
     ...
 
-    String searchName = "John Doe";
+    String searchName = &quot;John Doe&quot;;
     DatabaseEntry searchKey = 
-        new DatabaseEntry(searchName.getBytes("UTF-8"));
+        new DatabaseEntry(searchName.getBytes(&quot;UTF-8&quot;));
 
-    // Delete the first secondary record that uses "John Doe" as
+    // Delete the first secondary record that uses &quot;John Doe&quot; as
     // a key. This causes the primary record referenced by this secondary
     // record to be deleted.
     OperationStatus retVal = mySecondaryDatabase.delete(null, searchKey);

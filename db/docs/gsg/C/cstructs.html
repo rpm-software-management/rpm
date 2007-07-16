@@ -62,8 +62,8 @@ typedef struct my_struct {
 DBT key, data;
 DB *my_database;
 MY_STRUCT user;
-char *fname = "David";
-char *sname = "Rider";
+char *fname = &quot;David&quot;;
+char *sname = &quot;Rider&quot;;
 
 /* Database open omitted for clarity */
 
@@ -119,8 +119,8 @@ data.flags = DB_DBT_USERMEM;
 
 my_database-&gt;get(my_database, NULL, &amp;key, &amp;data, 0);
 
-printf("Familiar name: %s\n", user.familiar_name);
-printf("Surname: %s\n", user.surname); </pre>
+printf(&quot;Familiar name: %s\n&quot;, user.familiar_name);
+printf(&quot;Surname: %s\n&quot;, user.surname); </pre>
       <p>
         Be aware that while this is the easiest way to manage structures stored
         in DB databases, this approach does suffer from causing your
@@ -161,7 +161,7 @@ printf("Surname: %s\n", user.surname); </pre>
         dynamically allocated memory. This is particularly
         true if you want to store character strings (or any kind of an array for
         that matter), and you want to avoid any overhead caused by
-        predesignating the size of the array. 
+        pre-designating the size of the array. 
     </p>
         <p>
        When storing structures 
@@ -204,11 +204,11 @@ DBT key, data;
 DB *my_database;
 MY_STRUCT user;
 int buffsize, bufflen;
-char fname[ ] = "Pete";
+char fname[ ] = &quot;Pete&quot;;
 char sname[10];
 char *databuff;
 
-strncpy(sname, "Oar", strlen("Oar")+1);
+strncpy(sname, &quot;Oar&quot;, strlen(&quot;Oar&quot;)+1);
 
 /* Database open omitted for clarity */
 

@@ -1,5 +1,5 @@
-<!--$Id: env_set_msg_stream.so,v 10.4 2004/08/13 03:38:57 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_msg_stream.so,v 10.5 2006/02/10 22:54:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -41,6 +41,11 @@ or the <a href="../api_cxx/env_set_msgcall.html">DbEnv::set_msgcall</a> and <a h
 capture the additional error information in a way that does not use
 either output streams or C library FILE *'s.  You should not mix these
 approaches.</p>
+<p>The DbEnv::set_message_stream method configures operations performed using the specified
+<a href="../api_cxx/env_class.html">DbEnv</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DbEnv::set_message_stream method may be called at any time during the life of the
+application.</p>
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>stream</b><dd>The <b>stream</b> parameter is the application-specified output stream to
@@ -55,6 +60,6 @@ be used for additional message information.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!--$Id: env_set_data_dir.so,v 10.28 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -41,10 +41,10 @@ path specified.</p>
 either by absolute paths or relative to the environment home directory.
 See <a href="../ref/env/naming.html">Berkeley DB File Naming</a> for more
 information.</p>
-<p>The database environment's data directories may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_data_dir", one or more whitespace characters,
-and the directory name.
+<p>The database environment's data directories may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_data_dir", one or more whitespace
+characters, and the directory name.
 </p>
 <p>The DbEnv::set_data_dir method configures operations performed using the specified
 <a href="../api_cxx/env_class.html">DbEnv</a> handle, not all operations performed on the underlying
@@ -64,8 +64,9 @@ failure, and returns 0 on success.
 <dl compact>
 <dt><b>dir</b><dd>The <b>dir</b> parameter is a directory to be used as a location for
 database files.
-<p>On Windows, the <b>dir</b> argument will be interpreted as a UTF-8
-string, which is equivalent to ASCII for Latin characters.</p>
+<p>When using a Unicode build on Windows (the default), the <b>dir</b>
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.</p>
 </dl>
 <h3>Errors</h3>
 <p>The DbEnv::set_data_dir method
@@ -101,6 +102,6 @@ NULL-terminated array of directories in <b>dirpp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

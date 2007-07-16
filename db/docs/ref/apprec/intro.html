@@ -1,5 +1,5 @@
-<!--$Id: intro.so,v 10.50 2004/04/16 19:02:01 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.52 2005/12/13 16:31:39 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -34,7 +34,8 @@ application to ensure that appropriate locks are acquired.  Before a
 write is performed, the application should acquire a write lock on the
 object by making an appropriate call to the lock manager,
 <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a>.  Then, the application should make a call to the log
-manager, <a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a>, to record enough information to redo the
+manager, via the automatically-generated log-writing function described
+as follows.  This record should contain enough information to redo the
 operation in case of failure after commit and to undo the operation in
 case of abort.</p>
 <p>When designing applications that will use the log subsystem, it is
@@ -75,6 +76,6 @@ usable on any system, not just POSIX systems.</p>
 in the Berkeley DB distribution, in the directory <b>examples_c/ex_apprec</b>.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../xa/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/def.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

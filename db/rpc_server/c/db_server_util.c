@@ -1,41 +1,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_server_util.c,v 1.72 2004/09/22 17:30:12 bostic Exp $
+ * $Id: db_server_util.c,v 12.9 2006/08/24 14:46:29 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#if TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#endif
-
-#include <rpc/rpc.h>
-
-#include <limits.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#endif
-
-#include "db_server.h"
-
 #include "db_int.h"
+#ifndef NO_SYSTEM_INCLUDES
+#include <rpc/rpc.h>
+#endif
+#include "db_server.h"
 #include "dbinc_auto/clib_ext.h"
 #include "dbinc/db_server_int.h"
 #include "dbinc_auto/common_ext.h"
@@ -232,9 +210,6 @@ __dbsrv_settimeout(ctp, to)
 		ctp->ct_timeout = to;
 }
 
-/*
- * PUBLIC: void __dbsrv_timeout __P((int));
- */
 void
 __dbsrv_timeout(force)
 	int force;
@@ -324,7 +299,7 @@ __dbsrv_timeout(force)
 		if (to < t || force) {
 			if (__dbsrv_verbose)
 				printf("Timing out env id %ld\n", ctp->ct_id);
-			(void)__dbenv_close_int(ctp->ct_id, 0, 1);
+			(void)__env_close_int(ctp->ct_id, 0, 1);
 			/*
 			 * If we timed out an env, we may have closed
 			 * all sorts of ctp's (maybe even all of them.
@@ -590,7 +565,7 @@ __db_close_int(id, flags)
 	ctp = get_tableent(id);
 	if (ctp == NULL)
 		return (DB_NOSERVER_ID);
-	DB_ASSERT(ctp->ct_type == CT_DB);
+	DB_ASSERT(ctp->ct_envp, ctp->ct_type == CT_DB);
 	if (__dbsrv_verbose && ctp->ct_refcount != 1)
 		printf("Deref'ing dbp id %ld, refcount %d\n",
 		    id, ctp->ct_refcount);
@@ -601,6 +576,10 @@ __db_close_int(id, flags)
 		printf("Closing dbp id %ld\n", id);
 
 	ret = dbp->close(dbp, flags);
+	if (ctp->ct_dbdp.db != NULL)
+		__os_free(NULL, ctp->ct_dbdp.db);
+	if (ctp->ct_dbdp.subdb != NULL)
+		__os_free(NULL, ctp->ct_dbdp.subdb);
 	__dbdel_ctp(ctp);
 	return (ret);
 }
@@ -643,10 +622,10 @@ __dbc_close_int(dbc_ctp)
 }
 
 /*
- * PUBLIC: int __dbenv_close_int __P((long, u_int32_t, int));
+ * PUBLIC: int __env_close_int __P((long, u_int32_t, int));
  */
 int
-__dbenv_close_int(id, flags, force)
+__env_close_int(id, flags, force)
 	long id;
 	u_int32_t flags;
 	int force;
@@ -659,7 +638,7 @@ __dbenv_close_int(id, flags, force)
 	ctp = get_tableent(id);
 	if (ctp == NULL)
 		return (DB_NOSERVER_ID);
-	DB_ASSERT(ctp->ct_type == CT_ENV);
+	DB_ASSERT(ctp->ct_envp, ctp->ct_type == CT_ENV);
 	if (__dbsrv_verbose && ctp->ct_refcount != 1)
 		printf("Deref'ing env id %ld, refcount %d\n",
 		    id, ctp->ct_refcount);

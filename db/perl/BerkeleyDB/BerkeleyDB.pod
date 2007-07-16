@@ -44,6 +44,7 @@ BerkeleyDB - Perl extension for Berkeley DB version 2, 3 or 4
   $status = $db->status() ;
   $boolean = $db->byteswapped() ;
   $status = $db->truncate($count) ;
+  $status = $db->compact($start, $stop, $c_data, $flags, $end);
 
   $bool = $env->cds_enabled();
   $bool = $db->cds_enabled();
@@ -71,6 +72,8 @@ BerkeleyDB - Perl extension for Berkeley DB version 2, 3 or 4
   $hash_ref = $env->txn_stat()
   $status = $env->setmutexlocks()
   $status = $env->set_flags()
+  $status = $env->set_timeout()
+  $status = $env->lsn_reset()
 
   $txn = $env->txn_begin() ;
   $db->Txn($txn);
@@ -80,6 +83,7 @@ BerkeleyDB - Perl extension for Berkeley DB version 2, 3 or 4
   $status = $txn->txn_abort()
   $status = $txn->txn_id()
   $status = $txn->txn_discard()
+  $status = $txn->set_timeout()
 
   $status = $env->set_lg_dir();
   $status = $env->set_lg_bsize();
@@ -393,6 +397,8 @@ This option requires Berkeley DB 4.2 or better.
 
 Use the C<-SharedMemKey> option when opening the environemt to set the
 base segment ID.
+
+=item $env->set_timeout($timeout, $flags)
 
 =item $env->status()
 
@@ -935,7 +941,7 @@ The code below is a simple example of using a btree database.
     tie %h, 'BerkeleyDB::Btree',
     		-Filename   => $filename,
 	        -Flags      => DB_CREATE
-      or die "Cannot open $filename: $!\n" ;
+      or die "Cannot open $filename: $! $BerkeleyDB::Error\n" ;
 
     # Add a key/value pair to the file
     $h{'Wall'} = 'Larry' ;
@@ -1435,6 +1441,46 @@ Returns the status of the last C<$db> method called.
 
 Truncates the datatabase and returns the number or records deleted
 in C<$count>.
+
+=head2  $status = $db->compact($start, $stop, $c_data, $flags, $end);
+
+Compacts the database C<$db>. 
+
+All the parameters are optional - if only want to make use of some of them,
+use C<undef> for those you don't want.  Trailing unusused parameters can be
+omitted. For example, if you only want to use the C<$c_data> parameter to
+set the C<compact_fillpercent>, write you code like this
+
+    my %hash;
+    $hash{compact_fillpercent} = 50;
+    $db->commit(undef, undef, \%hash);
+
+The parameters operate identically to the C equivalent of this method.
+The C<$c_data> needs a bit of explanation - it must be a hash reference.
+The values of the following keys can be set before calling C<compact> and
+will affect the operation of the compaction.
+
+=over 5
+=item * compact_fillpercent
+=item * compact_timeout
+    
+=back
+
+The following keys, along with associated values, will be created in the
+hash reference if the C<compact> operation was successful.
+
+=over 5
+
+=item * compact_deadlock
+=item * compact_levels
+=item * compact_pages_free
+=item * compact_pages_examine
+=item * compact_pages_truncated
+
+=back
+
+You need to be running Berkeley DB 4.4 or better if you wan to make use of
+C<compact>.
 
 =head1 CURSORS
 

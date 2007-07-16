@@ -1,96 +1,83 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_rename.c,v 11.216 2004/09/16 17:55:17 margo Exp $
+ * $Id: db_rename.c,v 12.20 2006/09/19 15:06:58 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/db_am.h"
 #include "dbinc/fop.h"
 #include "dbinc/lock.h"
 #include "dbinc/log.h"
 #include "dbinc/mp.h"
 
-static int __dbenv_dbrename __P((DB_ENV *,
-	       DB_TXN *, const char *, const char *, const char *, int));
 static int __db_subdb_rename __P((DB *,
 	       DB_TXN *, const char *, const char *, const char *));
 
 /*
- * __dbenv_dbrename_pp
+ * __env_dbrename_pp
  *	DB_ENV->dbrename pre/post processing.
  *
- * PUBLIC: int __dbenv_dbrename_pp __P((DB_ENV *, DB_TXN *,
+ * PUBLIC: int __env_dbrename_pp __P((DB_ENV *, DB_TXN *,
  * PUBLIC:     const char *, const char *, const char *, u_int32_t));
  */
 int
-__dbenv_dbrename_pp(dbenv, txn, name, subdb, newname, flags)
+__env_dbrename_pp(dbenv, txn, name, subdb, newname, flags)
 	DB_ENV *dbenv;
 	DB_TXN *txn;
 	const char *name, *subdb, *newname;
 	u_int32_t flags;
 {
-	int ret, txn_local;
+	DB *dbp;
+	DB_THREAD_INFO *ip;
+	int handle_check, ret, t_ret, txn_local;
+
+	dbp = NULL;
+	txn_local = 0;
 
 	PANIC_CHECK(dbenv);
 	ENV_ILLEGAL_BEFORE_OPEN(dbenv, "DB_ENV->dbrename");
 
-	/* Validate arguments. */
+	/*
+	 * The actual argument checking is simple, do it inline, outside of
+	 * the replication block.
+	 */
 	if ((ret = __db_fchk(dbenv, "DB->rename", flags, DB_AUTO_COMMIT)) != 0)
 		return (ret);
+
+	ENV_ENTER(dbenv, ip);
+
+	/* Check for replication block. */
+	handle_check = IS_ENV_REPLICATED(dbenv);
+	if (handle_check && (ret = __env_rep_enter(dbenv, 1)) != 0) {
+		handle_check = 0;
+		goto err;
+	}
 
 	/*
 	 * Create local transaction as necessary, check for consistent
 	 * transaction usage.
 	 */
-	if (IS_AUTO_COMMIT(dbenv, txn, flags)) {
+	if (IS_ENV_AUTO_COMMIT(dbenv, txn, flags)) {
 		if ((ret = __db_txn_auto_init(dbenv, &txn)) != 0)
-			return (ret);
+			goto err;
 		txn_local = 1;
-	} else {
-		if (txn != NULL && !TXN_ON(dbenv))
-			return (__db_not_txn_env(dbenv));
-		txn_local = 0;
-	}
+	} else
+		if (txn != NULL && !TXN_ON(dbenv) &&
+		    (!CDB_LOCKING(dbenv) || !F_ISSET(txn, TXN_CDSGROUP))) {
+			ret = __db_not_txn_env(dbenv);
+			goto err;
+		}
 
-	ret = __dbenv_dbrename(dbenv, txn, name, subdb, newname, txn_local);
-
-	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
-}
-
-/*
- * __dbenv_dbrename
- *	DB_ENV->dbrename.
- */
-static int
-__dbenv_dbrename(dbenv, txn, name, subdb, newname, txn_local)
-	DB_ENV *dbenv;
-	DB_TXN *txn;
-	const char *name, *subdb, *newname;
-	int txn_local;
-{
-	DB *dbp;
-	int handle_check, ret, t_ret;
+	LF_CLR(DB_AUTO_COMMIT);
 
 	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
-		return (ret);
-	if (txn != NULL)
-		F_SET(dbp, DB_AM_TXN);
-
-	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, 1, txn != NULL)) != 0)
 		goto err;
 
 	ret = __db_rename_int(dbp, txn, name, subdb, newname);
@@ -105,22 +92,36 @@ __dbenv_dbrename(dbenv, txn, name, subdb, newname, txn_local)
 		dbp->lid = DB_LOCK_INVALIDID;
 	} else if (txn != NULL) {
 		/*
-		 * We created this handle locally so we need to close it
-		 * and clean it up.  Unfortunately, it's holding transactional
-		 * locks that need to persist until the end of transaction.
-		 * If we invalidate the locker id (dbp->lid), then the close
-		 * won't free these locks prematurely.
+		 * We created this handle locally so we need to close it and
+		 * clean it up.  Unfortunately, it's holding transactional
+		 * or CDS group locks that need to persist until the end of
+		 * transaction.  If we invalidate the locker id (dbp->lid),
+		 * then the close won't free these locks prematurely.
 		 */
 		 dbp->lid = DB_LOCK_INVALIDID;
 	}
 
-	if (handle_check)
-		__env_db_rep_exit(dbenv);
-
-err:
-	if ((t_ret = __db_close(dbp, txn, DB_NOSYNC)) != 0 && ret == 0)
+err:	if (txn_local && (t_ret =
+	    __db_txn_auto_resolve(dbenv, txn, 0, ret)) != 0 && ret == 0)
 		ret = t_ret;
 
+	/*
+	 * We never opened this dbp for real, so don't include a transaction
+	 * handle, and use NOSYNC to avoid calling into mpool.
+	 *
+	 * !!!
+	 * Note we're reversing the order of operations: we started the txn and
+	 * then opened the DB handle; we're resolving the txn and then closing
+	 * closing the DB handle -- it's safer.
+	 */
+	if (dbp != NULL &&
+	    (t_ret = __db_close(dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
+		ret = t_ret;
+
+	if (handle_check && (t_ret = __env_db_rep_exit(dbenv)) != 0 && ret == 0)
+		ret = t_ret;
+
+	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
@@ -138,7 +139,8 @@ __db_rename_pp(dbp, name, subdb, newname, flags)
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
-	int handle_check, ret;
+	DB_THREAD_INFO *ip;
+	int handle_check, ret, t_ret;
 
 	dbenv = dbp->dbenv;
 	handle_check = 0;
@@ -155,20 +157,20 @@ __db_rename_pp(dbp, name, subdb, newname, flags)
 	 * a database -- we'll destroy the handle, and the application won't
 	 * ever be able to close the database.
 	 */
-	if (F_ISSET(dbp, DB_AM_OPEN_CALLED)) {
-		ret = __db_mi_open(dbenv, "DB->rename", 1);
-		goto err;
-	}
+	if (F_ISSET(dbp, DB_AM_OPEN_CALLED))
+		return (__db_mi_open(dbenv, "DB->rename", 1));
 
 	/* Validate arguments. */
 	if ((ret = __db_fchk(dbenv, "DB->rename", flags, 0)) != 0)
-		goto err;
+		return (ret);
 
 	/* Check for consistent transaction usage. */
 	if ((ret = __db_check_txn(dbp, NULL, DB_LOCK_INVALIDID, 0)) != 0)
-		goto err;
+		return (ret);
 
-	handle_check = IS_REPLICATED(dbenv, dbp);
+	ENV_ENTER(dbenv, ip);
+
+	handle_check = IS_ENV_REPLICATED(dbenv);
 	if (handle_check && (ret = __db_rep_enter(dbp, 1, 1, 0)) != 0) {
 		handle_check = 0;
 		goto err;
@@ -177,9 +179,9 @@ __db_rename_pp(dbp, name, subdb, newname, flags)
 	/* Rename the file. */
 	ret = __db_rename(dbp, NULL, name, subdb, newname);
 
-err:	if (handle_check)
-		__env_db_rep_exit(dbenv);
-
+	if (handle_check && (t_ret = __env_db_rep_exit(dbenv)) != 0 && ret == 0)
+		ret = t_ret;
+err:	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
@@ -222,26 +224,40 @@ __db_rename_int(dbp, txn, name, subdb, newname)
 {
 	DB_ENV *dbenv;
 	int ret;
-	char *real_name;
+	char *old, *real_name;
 
 	dbenv = dbp->dbenv;
 	real_name = NULL;
 
 	DB_TEST_RECOVERY(dbp, DB_TEST_PREDESTROY, ret, name);
 
-	if (subdb != NULL) {
+	if (name == NULL && subdb == NULL) {
+		__db_errx(dbenv, "Rename on temporary files invalid");
+		ret = EINVAL;
+		goto err;
+	}
+
+	if (name == NULL)
+		MAKE_INMEM(dbp);
+	else if (subdb != NULL) {
 		ret = __db_subdb_rename(dbp, txn, name, subdb, newname);
 		goto err;
 	}
 
 	/*
-	 * From here on down, this pertains to files.
+	 * From here on down, this pertains to files or in-memory databases.
 	 *
 	 * Find the real name of the file.
 	 */
-	if ((ret = __db_appname(dbenv,
-	    DB_APP_DATA, name, 0, NULL, &real_name)) != 0)
-		goto err;
+	if (F_ISSET(dbp, DB_AM_INMEM)) {
+		old = (char *)subdb;
+		real_name = (char *)subdb;
+	} else {
+		if ((ret = __db_appname(dbenv,
+		    DB_APP_DATA, name, 0, NULL, &real_name)) != 0)
+			goto err;
+		old = (char *)name;
+	}
 
 	if ((ret = __fop_remove_setup(dbp, txn, real_name, 0)) != 0)
 		goto err;
@@ -258,11 +274,11 @@ __db_rename_int(dbp, txn, name, subdb, newname)
 	 * create a temporary object as a placeholder.  This is all
 	 * taken care of in the fop layer.
 	 */
-	if (txn != NULL) {
-		if ((ret = __fop_dummy(dbp, txn, name, newname, 0)) != 0)
+	if (IS_REAL_TXN(txn)) {
+		if ((ret = __fop_dummy(dbp, txn, old, newname, 0)) != 0)
 			goto err;
 	} else {
-		if ((ret = __fop_dbrename(dbp, name, newname)) != 0)
+		if ((ret = __fop_dbrename(dbp, old, newname)) != 0)
 			goto err;
 	}
 
@@ -270,13 +286,13 @@ __db_rename_int(dbp, txn, name, subdb, newname)
 	 * I am pretty sure that we haven't gotten a dbreg id, so calling
 	 * dbreg_filelist_update is not necessary.
 	 */
-	DB_ASSERT(dbp->log_filename == NULL ||
+	DB_ASSERT(dbenv, dbp->log_filename == NULL ||
 	    dbp->log_filename->id == DB_LOGFILEID_INVALID);
 
 	DB_TEST_RECOVERY(dbp, DB_TEST_POSTDESTROY, ret, newname);
 
 DB_TEST_RECOVERY_LABEL
-err:	if (real_name != NULL)
+err:	if (!F_ISSET(dbp, DB_AM_INMEM) && real_name != NULL)
 		__os_free(dbenv, real_name);
 
 	return (ret);
@@ -320,7 +336,8 @@ __db_subdb_rename(dbp, txn, name, subdb, newname)
 	    MU_OPEN, NULL, 0)) != 0)
 		goto err;
 
-	if ((ret = __memp_fget(mdbp->mpf, &dbp->meta_pgno, 0, &meta)) != 0)
+	if ((ret = __memp_fget(mdbp->mpf, &dbp->meta_pgno,
+	    txn, 0, &meta)) != 0)
 		goto err;
 	memcpy(dbp->fileid, ((DBMETA *)meta)->uid, DB_FILE_ID_LEN);
 	if ((ret = __fop_lock_handle(dbenv,

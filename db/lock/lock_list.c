@@ -1,23 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: lock_list.c,v 11.146 2004/09/22 03:48:29 bostic Exp $
+ * $Id: lock_list.c,v 12.9 2006/08/24 14:46:11 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#include <stdlib.h>
-#endif
-
 #include "db_int.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/lock.h"
 #include "dbinc/log.h"
 
@@ -240,16 +232,30 @@ __lock_get_list(dbenv, locker, flags, lock_mode, list)
 	u_int16_t npgno, size;
 	u_int32_t i, nlocks;
 	int ret;
-	void *dp;
+	void *data, *dp;
 
 	if (list->size == 0)
 		return (0);
 	ret = 0;
+	data = NULL;
+
 	lt = dbenv->lk_handle;
 	dp = list->data;
 
+	/*
+	 * There is no assurance log records will be aligned.  If not, then
+	 * copy the data to an aligned region so the rest of the code does
+	 * not have to worry about it.
+	 */
+	if ((uintptr_t)dp != DB_ALIGN((uintptr_t)dp, sizeof(u_int32_t))) {
+		if ((ret = __os_malloc(dbenv, list->size, &data)) != 0)
+			return (ret);
+		memcpy(data, list->data, list->size);
+		dp = data;
+	}
+
 	GET_COUNT(dp, nlocks);
-	LOCKREGION(dbenv, dbenv->lk_handle);
+	LOCK_SYSTEM_LOCK(dbenv);
 
 	for (i = 0; i < nlocks; i++) {
 		GET_PCOUNT(dp, npgno);
@@ -271,8 +277,9 @@ __lock_get_list(dbenv, locker, flags, lock_mode, list)
 		lock->pgno = save_pgno;
 	}
 
-err:
-	UNLOCKREGION(dbenv, dbenv->lk_handle);
+err:	LOCK_SYSTEM_UNLOCK(dbenv);
+	if (data != NULL)
+		__os_free(dbenv, data);
 	return (ret);
 }
 

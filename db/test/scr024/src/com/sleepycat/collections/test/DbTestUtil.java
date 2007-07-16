@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: DbTestUtil.java,v 1.2 2004/06/02 21:00:59 mark Exp $
+ * $Id: DbTestUtil.java,v 12.4 2006/08/24 14:46:46 bostic Exp $
  */
 
 package com.sleepycat.collections.test;
@@ -30,8 +30,6 @@ public class DbTestUtil {
     static {
         DBCONFIG_CREATE.setAllowCreate(true);
     }
-
-    private static final String separator = ":::";
 
     private static final File TEST_DIR;
     static {

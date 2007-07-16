@@ -13,6 +13,10 @@ JAVA_TYPEMAP(u_int32_t, int, jint)
 JAVA_TYPEMAP(u_int32_t pagesize, long, jlong)
 JAVA_TYPEMAP(long, long, jlong)
 JAVA_TYPEMAP(db_seq_t, long, jlong)
+JAVA_TYPEMAP(pid_t, long, jlong)
+#ifndef SWIGJAVA
+JAVA_TYPEMAP(db_threadid_t, long, jlong)
+#endif
 JAVA_TYPEMAP(db_timeout_t, long, jlong)
 JAVA_TYPEMAP(size_t, long, jlong)
 JAVA_TYPEMAP(db_ret_t, void, void)
@@ -28,107 +32,68 @@ JAVA_TYPEMAP(DBT *, com.sleepycat.db.DatabaseEntry, jobject)
 
 %{
 typedef struct __dbt_locked {
+	JNIEnv *jenv;
+	jobject jdbt;
 	DBT dbt;
+	jobject jdata_nio;
 	jbyteArray jarr;
-	jbyte *orig_data;
 	jint offset;
 	int reuse;
 	u_int32_t orig_size;
 	jsize array_len;
 } DBT_LOCKED;
 
-static int __dbj_dbt_copyin(
-    JNIEnv *jenv, DBT_LOCKED *ldbt, DBT **dbtp, jobject jdbt, int allow_null)
-{
-	DBT *dbt;
+static int __dbj_dbt_memcopy(DBT *dbt, u_int32_t offset, void *buf, u_int32_t size, u_int32_t flags) {
+	DBT_LOCKED *ldbt = dbt->app_data;
+	JNIEnv *jenv = ldbt->jenv;
 
-	memset(ldbt, 0, sizeof (*ldbt));
-
-	if (jdbt == NULL) {
-		if (allow_null) {
-			*dbtp = NULL;
-			return (0);
-		} else {
-			return (__dbj_throw(jenv, EINVAL,
-			    "DatabaseEntry must not be null", NULL, NULL));
-		}
-	}
-	
-	dbt = &ldbt->dbt;
-	if (dbtp != NULL)
-		*dbtp = dbt;
-	
-	ldbt->jarr = (jbyteArray)(*jenv)->GetObjectField(jenv,
-	    jdbt, dbt_data_fid);
-	ldbt->offset = (*jenv)->GetIntField(jenv, jdbt, dbt_offset_fid);
-
-	dbt->size = (*jenv)->GetIntField(jenv, jdbt, dbt_size_fid);
-	ldbt->orig_size = dbt->size;
-	dbt->ulen = (*jenv)->GetIntField(jenv, jdbt, dbt_ulen_fid);
-	dbt->dlen = (*jenv)->GetIntField(jenv, jdbt, dbt_dlen_fid);
-	dbt->doff = (*jenv)->GetIntField(jenv, jdbt, dbt_doff_fid);
-	dbt->flags = (*jenv)->GetIntField(jenv, jdbt, dbt_flags_fid);
-
-	/*
-	 * We don't support DB_DBT_REALLOC - map anything that's not USERMEM to
-	 * MALLOC.
-	 */
-	if (!F_ISSET(dbt, DB_DBT_USERMEM)) {
-		ldbt->reuse = !F_ISSET(dbt, DB_DBT_MALLOC);
-		F_CLR(dbt, DB_DBT_REALLOC);
-		F_SET(dbt, DB_DBT_MALLOC);
-	}
-
-	/* Verify parameters before allocating or locking data. */
-	if ((jint)dbt->doff < 0)
-		return (__dbj_throw(jenv, EINVAL, "DatabaseEntry doff illegal",
-		    NULL, NULL));
-	
-	if (ldbt->jarr == NULL) {
-		/*
-		 * Some code makes the assumption that if a DBT's size or ulen
-		 * is non-zero, there is data to copy from dbt->data.  
-		 *
-		 * Clean up the dbt fields so we don't run into trouble.
-		 * (Note that doff, dlen, and flags all may contain
-		 * meaningful values.)
-		 */
-		ldbt->orig_data = dbt->data = NULL;
-		ldbt->array_len = ldbt->offset = dbt->size = dbt->ulen = 0;
+	if (size == 0)
 		return (0);
-	} else
-		ldbt->array_len = (*jenv)->GetArrayLength(jenv, ldbt->jarr);
-	
-	if (F_ISSET(dbt, DB_DBT_USERMEM)) {
-		if (ldbt->offset < 0)
-			return (__dbj_throw(jenv, EINVAL,
-			    "offset cannot be negative",
-			    NULL, NULL));
-		if (dbt->size > dbt->ulen)
-			return (__dbj_throw(jenv, EINVAL,
-			    "size must be less than or equal to ulen",
-			    NULL, NULL));
-		if ((jsize)(ldbt->offset + dbt->ulen) > ldbt->array_len)
-			return (__dbj_throw(jenv, EINVAL,
-			    "offset + ulen greater than array length",
-			    NULL, NULL));
-		if ((ldbt->orig_data = (*jenv)->GetByteArrayElements(jenv,
-		    ldbt->jarr, NULL)) == NULL)
-			return (EINVAL); /* an exception will be pending */
-		dbt->data = ldbt->orig_data + ldbt->offset;
-	} else {
-		if (__os_umalloc(NULL, dbt->size, &dbt->data) != 0)
-			return (ENOMEM);
-		ldbt->orig_data = dbt->data;
-		(*jenv)->GetByteArrayRegion(jenv,
-		    ldbt->jarr, ldbt->offset, dbt->size, dbt->data);
-		if ((*jenv)->ExceptionOccurred(jenv)) {
-			(void)__os_ufree(NULL, dbt->data);
+	else if (!F_ISSET(dbt, DB_DBT_USERCOPY)) {
+		/*
+		  * For simplicity, the Java API calls this function directly,
+		  * so it needs to work with regular DBTs.
+		  */
+		switch (flags) {
+		case DB_USERCOPY_GETDATA:
+			memcpy(buf, (u_int8_t *)dbt->data + offset, size);
+			return (0);
+		case DB_USERCOPY_SETDATA:
+			memcpy((u_int8_t *)dbt->data + offset, buf, size);
+			return (0);
+		default:
 			return (EINVAL);
 		}
 	}
 
-	return (0);
+	switch (flags) {
+	case DB_USERCOPY_GETDATA:
+		(*jenv)->GetByteArrayRegion(jenv, ldbt->jarr, ldbt->offset +
+					    offset, size, buf);
+		break;
+	case DB_USERCOPY_SETDATA:
+		/*
+		 * Check whether this is the first time through the callback by relying
+		 * on the offset being zero.
+		 */
+		if (offset == 0 && (!ldbt->reuse ||
+		    (jsize)(ldbt->offset + dbt->size) > ldbt->array_len)) {
+			if (ldbt->jarr != NULL)
+				(*jenv)->DeleteLocalRef(jenv, ldbt->jarr);
+			ldbt->jarr = (*jenv)->NewByteArray(jenv, (jsize)dbt->size);
+			if (ldbt->jarr == NULL)
+				return (ENOMEM);
+			(*jenv)->SetObjectField(jenv, ldbt->jdbt, dbt_data_fid, ldbt->jarr);
+			/* We've allocated a new array, start from the beginning. */
+			ldbt->offset = 0;
+		}
+		(*jenv)->SetByteArrayRegion(jenv, ldbt->jarr, ldbt->offset +
+					    offset, size, buf);
+		break;
+	default:
+		return (EINVAL);
+	}
+	return ((*jenv)->ExceptionOccurred(jenv) ? EINVAL : 0);
 }
 
 static void __dbj_dbt_copyout(
@@ -148,20 +113,129 @@ static void __dbj_dbt_copyout(
 		(*jenv)->DeleteLocalRef(jenv, newarr);
 }
 
+static int __dbj_dbt_copyin(
+    JNIEnv *jenv, DBT_LOCKED *ldbt, DBT **dbtp, jobject jdbt, int allow_null)
+{
+	DBT *dbt;
+	jlong capacity;
+
+	memset(ldbt, 0, sizeof (*ldbt));
+	ldbt->jenv = jenv;
+	ldbt->jdbt = jdbt;
+
+	if (jdbt == NULL) {
+		if (allow_null) {
+			*dbtp = NULL;
+			return (0);
+		} else {
+			return (__dbj_throw(jenv, EINVAL,
+			    "DatabaseEntry must not be null", NULL, NULL));
+		}
+	}
+
+	dbt = &ldbt->dbt;
+	if (dbtp != NULL)
+		*dbtp = dbt;
+
+	ldbt->jdata_nio = (*jenv)->GetObjectField(jenv, jdbt, dbt_data_nio_fid);
+	if (ldbt->jdata_nio != NULL)
+		F_SET(dbt, DB_DBT_USERMEM);
+	else
+		ldbt->jarr = (jbyteArray)(*jenv)->GetObjectField(jenv, jdbt, dbt_data_fid);
+	ldbt->offset = (*jenv)->GetIntField(jenv, jdbt, dbt_offset_fid);
+	dbt->size = (*jenv)->GetIntField(jenv, jdbt, dbt_size_fid);
+	ldbt->orig_size = dbt->size;
+	dbt->flags = (*jenv)->GetIntField(jenv, jdbt, dbt_flags_fid);
+
+	if (F_ISSET(dbt, DB_DBT_USERMEM))
+		dbt->ulen = (*jenv)->GetIntField(jenv, jdbt, dbt_ulen_fid);
+	if (F_ISSET(dbt, DB_DBT_PARTIAL)) {
+		dbt->dlen = (*jenv)->GetIntField(jenv, jdbt, dbt_dlen_fid);
+		dbt->doff = (*jenv)->GetIntField(jenv, jdbt, dbt_doff_fid);
+
+		if ((jint)dbt->doff < 0)
+			return (__dbj_throw(jenv, EINVAL, "DatabaseEntry doff illegal",
+			    NULL, NULL));
+	}
+
+	/*
+	 * We don't support DB_DBT_REALLOC - map anything that's not USERMEM to
+	 * MALLOC.
+	 */
+	if (!F_ISSET(dbt, DB_DBT_USERMEM)) {
+		ldbt->reuse = !F_ISSET(dbt, DB_DBT_MALLOC);
+		F_CLR(dbt, DB_DBT_MALLOC | DB_DBT_REALLOC);
+	}
+
+	/* Verify parameters before allocating or locking data. */
+	if (ldbt->jdata_nio != NULL) {
+		capacity = (*jenv)->GetDirectBufferCapacity(jenv,
+				ldbt->jdata_nio);
+		if (capacity > (jlong)UINT32_MAX)
+			return (__dbj_throw(jenv, EINVAL,
+			    "DirectBuffer may not be larger than 4GB",
+			    NULL, NULL));
+		ldbt->array_len = (u_int32_t)capacity;
+	} else if (ldbt->jarr == NULL) {
+		/*
+		 * Some code makes the assumption that if a DBT's size or ulen
+		 * is non-zero, there is data to copy from dbt->data.
+		 *
+		 * Clean up the dbt fields so we don't run into trouble.
+		 * (Note that doff, dlen, and flags all may contain
+		 * meaningful values.)
+		 */
+		dbt->data = NULL;
+		ldbt->array_len = ldbt->offset = dbt->size = dbt->ulen = 0;
+	} else
+		ldbt->array_len = (*jenv)->GetArrayLength(jenv, ldbt->jarr);
+
+	if (F_ISSET(dbt, DB_DBT_USERMEM)) {
+		if (ldbt->offset < 0)
+			return (__dbj_throw(jenv, EINVAL,
+			    "offset cannot be negative",
+			    NULL, NULL));
+		if (dbt->size > dbt->ulen)
+			return (__dbj_throw(jenv, EINVAL,
+			    "size must be less than or equal to ulen",
+			    NULL, NULL));
+		if ((jsize)(ldbt->offset + dbt->ulen) > ldbt->array_len)
+			return (__dbj_throw(jenv, EINVAL,
+			    "offset + ulen greater than array length",
+			    NULL, NULL));
+	}
+
+	if (ldbt->jdata_nio) {
+		dbt->data = (*jenv)->GetDirectBufferAddress(jenv,
+				ldbt->jdata_nio);
+		dbt->data = (u_int8_t *)dbt->data + ldbt->offset;
+	} else if (F_ISSET(dbt, DB_DBT_USERMEM)) {
+		if (ldbt->jarr != NULL &&
+		    (dbt->data = (*jenv)->GetByteArrayElements(jenv,
+		    ldbt->jarr, NULL)) == NULL)
+			return (EINVAL); /* an exception will be pending */
+		dbt->data = (u_int8_t *)dbt->data + ldbt->offset;
+	} else
+		F_SET(dbt, DB_DBT_USERCOPY);
+	dbt->app_data = ldbt;
+
+	return (0);
+}
+
 static void __dbj_dbt_release(
     JNIEnv *jenv, jobject jdbt, DBT *dbt, DBT_LOCKED *ldbt) {
 	jthrowable t;
 
 	if (dbt == NULL)
 		return;
-	
+
 	if (dbt->size != ldbt->orig_size)
 		(*jenv)->SetIntField(jenv, jdbt, dbt_size_fid, (jint)dbt->size);
-	    
+
 	if (F_ISSET(dbt, DB_DBT_USERMEM)) {
-                if (ldbt->jarr != NULL)
-		    (*jenv)->ReleaseByteArrayElements(jenv,
-		        ldbt->jarr, ldbt->orig_data, 0);
+		if (ldbt->jarr != NULL)
+			(*jenv)->ReleaseByteArrayElements(jenv, ldbt->jarr,
+			    (jbyte *)dbt->data - ldbt->offset, 0);
 
 		if (dbt->size > dbt->ulen &&
 		    (t = (*jenv)->ExceptionOccurred(jenv)) != NULL &&
@@ -174,58 +248,55 @@ static void __dbj_dbt_release(
 			 */
 			(*jenv)->Throw(jenv, t);
 		}
-	} else {
-		if (dbt->size > 0 && dbt->data != ldbt->orig_data) {
-			if (ldbt->reuse &&
-			    (jsize)(ldbt->offset + dbt->size) <= ldbt->array_len)
-				(*jenv)->SetByteArrayRegion(jenv,
-				    ldbt->jarr, ldbt->offset, (jsize)dbt->size,
-				    (jbyte *)dbt->data);
-			else
-				__dbj_dbt_copyout(jenv, dbt, NULL, jdbt);
-			(void)__os_ufree(NULL, dbt->data);
-		}
-
-		if (ldbt->orig_data != NULL)
-			(void)__os_ufree(NULL, ldbt->orig_data);
 	}
 }
 %}
 
 %typemap(in) DBT * (DBT_LOCKED ldbt) %{
 	if (__dbj_dbt_copyin(jenv, &ldbt, &$1, $input, 0) != 0) {
-		return $null;
+		return $null; /* An exception will be pending. */
 	}%}
 
-/* Special case for the cdata param in DbEnv.rep_start - it may be null */
-%typemap(in) DBT *cdata (DBT_LOCKED ldbt) %{
+/* Special cases for DBTs that may be null: DbEnv.rep_start and Db.compact */
+%typemap(in) DBT *data_or_null (DBT_LOCKED ldbt) %{
 	if (__dbj_dbt_copyin(jenv, &ldbt, &$1, $input, 1) != 0) {
-		return $null;
+		return $null; /* An exception will be pending. */
 	}%}
+
+%apply DBT *data_or_null {DBT *cdata, DBT *start, DBT *stop, DBT *end};
 
 %typemap(freearg) DBT * %{ __dbj_dbt_release(jenv, $input, $1, &ldbt$argnum); %}
-
 
 /* DbLsn handling */
 JAVA_TYPEMAP(DB_LSN *, com.sleepycat.db.LogSequenceNumber, jobject)
 
+%typemap(check) DB_LSN *lsn_or_null ""
+
 %typemap(check) DB_LSN * %{
-	if ($input == NULL) {
-		__dbj_throw(jenv, EINVAL, "LogSequenceNumber must not be null", NULL, NULL);
+	if ($1 == NULL) {
+		__dbj_throw(jenv, EINVAL, "null LogSequenceNumber", NULL, NULL);
 		return $null;
 	}
 %}
 
 %typemap(in) DB_LSN * (DB_LSN lsn) %{
-	/* XXX: TODO */
-	$1 = &lsn;
+	if ($input == NULL) {
+		$1 = NULL;
+	} else {
+		$1 = &lsn;
+		$1->file = (*jenv)->GetIntField(jenv, $input, dblsn_file_fid);
+		$1->offset = (*jenv)->GetIntField(jenv, $input,
+		    dblsn_offset_fid);
+	}
 %}
 
 %typemap(freearg) DB_LSN * %{
-	/* XXX: TODO */
-	/* -- __dbj_dbt_release(jenv, $input, $1, &lsn$argnum); */
+	if ($input != NULL) {
+		(*jenv)->SetIntField(jenv, $input, dblsn_file_fid, $1->file);
+		(*jenv)->SetIntField(jenv, $input,
+		    dblsn_offset_fid, $1->offset);
+	}
 %}
-
 
 /* Various typemaps */
 JAVA_TYPEMAP(time_t, long, jlong)
@@ -233,15 +304,6 @@ JAVA_TYPEMAP(time_t *, long, jlong)
 %typemap(in) time_t * (time_t time) %{
 	time = (time_t)$input;
 	$1 = &time;
-%}
-
-JAVA_TYPEMAP(void *client, DbClient, jobject)
-%typemap(check) void *client %{
-	if ($1 != NULL) {
-		__dbj_throw(jenv, EINVAL, "DbEnv.set_rpc_server client arg "
-		    "must be null; reserved for future use", NULL, JDBENV);
-		return $null;
-	}
 %}
 
 JAVA_TYPEMAP(DB_KEY_RANGE *, com.sleepycat.db.KeyRange, jobject)
@@ -257,7 +319,7 @@ JAVA_TYPEMAP(DB_KEY_RANGE *, com.sleepycat.db.KeyRange, jobject)
 JAVA_TYPEMAP(DBC **, Dbc[], jobjectArray)
 %typemap(in) DBC ** {
 	int i, count, err;
-	
+
 	count = (*jenv)->GetArrayLength(jenv, $input);
 	if ((err = __os_malloc(NULL, (count + 1) * sizeof(DBC *), &$1)) != 0) {
 		__dbj_throw(jenv, err, NULL, NULL, DB2JDBENV);
@@ -274,7 +336,7 @@ JAVA_TYPEMAP(DBC **, Dbc[], jobjectArray)
 		} else {
 			jlong jptr = (*jenv)->GetLongField(jenv, jobj,
 			    dbc_cptr_fid);
-			$1[i] = *(DBC **)&jptr;
+			$1[i] = *(DBC **)(void *)&jptr;
 		}
 	}
 	$1[count] = NULL;
@@ -288,7 +350,8 @@ JAVA_TYPEMAP(u_int8_t *gid, byte[], jbyteArray)
 %typemap(check) u_int8_t *gid %{
 	if ((*jenv)->GetArrayLength(jenv, $input) < DB_XIDDATASIZE) {
 		__dbj_throw(jenv, EINVAL,
-		    "DbTxn.prepare gid array must be >= 128 bytes", NULL, TXN2JDBENV);
+		    "DbTxn.prepare gid array must be >= 128 bytes", NULL,
+		    TXN2JDBENV);
 		return $null;
 	}
 %}
@@ -303,7 +366,7 @@ JAVA_TYPEMAP(u_int8_t *gid, byte[], jbyteArray)
 
 %define STRING_ARRAY_OUT
 	int i, len;
-	
+
 	len = 0;
 	while ($1[len] != NULL)
 		len++;
@@ -318,12 +381,12 @@ JAVA_TYPEMAP(u_int8_t *gid, byte[], jbyteArray)
 
 JAVA_TYPEMAP(char **, String[], jobjectArray)
 %typemap(out) const char ** {
-	if($1 != NULL) {
+	if ($1 != NULL) {
 		STRING_ARRAY_OUT
 	}
 }
 %typemap(out) char ** {
-	if($1 != NULL) {
+	if ($1 != NULL) {
 		STRING_ARRAY_OUT
 		__os_ufree(NULL, $1);
 	}
@@ -357,7 +420,7 @@ JAVA_TYPEMAP(struct __db_lk_conflicts, byte[][], jobjectArray)
 %typemap(out) struct __db_lk_conflicts {
 	int i;
 	jbyteArray bytes;
-	
+
 	$result = (*jenv)->NewObjectArray(jenv,
 	    (jsize)$1.lk_modes, bytearray_class, NULL);
 	if ($result == NULL)
@@ -423,10 +486,11 @@ JAVA_TYPEMAP(struct __db_out_stream, java.io.OutputStream, jobject)
 	$1.callback = __dbj_verify_callback;
 }
 
-JAVA_TYPEMAP(DB_PREPLIST *, com.sleepycat.db.PreparedTransaction[], jobjectArray)
+JAVA_TYPEMAP(DB_PREPLIST *, com.sleepycat.db.PreparedTransaction[],
+    jobjectArray)
 %typemap(out) DB_PREPLIST * {
 	int i, len;
-	
+
 	len = 0;
 	while ($1[len].txn != NULL)
 		len++;
@@ -457,15 +521,17 @@ JAVA_TYPEMAP(DB_LOCKREQ *, com.sleepycat.db.LockRequest[], jobjectArray)
 %native(DbEnv_lock_vec) void DbEnv_lock_vec(DB_ENV *dbenv, u_int32_t locker,
     u_int32_t flags, DB_LOCKREQ *list, int offset, int nlist);
 %{
-JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1vec
-    (JNIEnv *jenv, jclass jcls, jlong jdbenvp, jint locker,
-    jint flags, jobjectArray list, jint offset, jint count) {
+JNIEXPORT void JNICALL
+Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1vec(JNIEnv *jenv,
+    jclass jcls, jlong jdbenvp, jint locker, jint flags, jobjectArray list,
+    jint offset, jint count) {
 	DB_ENV *dbenv;
 	DB_LOCKREQ *lockreq;
 	DB_LOCKREQ *prereq;	/* preprocessed requests */
 	DB_LOCKREQ *failedreq;
 	DB_LOCK *lockp;
 	DBT_LOCKED *locked_dbts;
+	DBT *obj;
 	int err, alloc_err, i;
 	size_t bytesize, ldbtsize;
 	jobject jlockreq;
@@ -475,7 +541,7 @@ JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1v
 	int completed;
 
 	COMPQUIET(jcls, NULL);
-	dbenv = *(DB_ENV **)&jdbenvp;
+	dbenv = *(DB_ENV **)(void *)&jdbenvp;
 	jdbenv = (jobject)DB_ENV_INTERNAL(dbenv);
 
 	if (dbenv == NULL) {
@@ -529,8 +595,13 @@ JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1v
 			jobj = (*jenv)->GetObjectField(jenv, jlockreq,
 			    lockreq_obj_fid);
 			if ((err = __dbj_dbt_copyin(jenv,
-			    &locked_dbts[i], &prereq->obj, jobj, 0)) != 0)
+			    &locked_dbts[i], &obj, jobj, 0)) != 0 ||
+			    (err =
+			    __os_umalloc(dbenv, obj->size, &obj->data)) != 0 ||
+			    (err = __dbj_dbt_memcopy(obj, 0,
+				obj->data, obj->size, DB_USERCOPY_GETDATA)) != 0)
 				goto out2;
+			prereq->obj = obj;
 			break;
 		case DB_LOCK_PUT:
 			/* Needed: lock.  Ignored: mode, obj. */
@@ -540,10 +611,11 @@ JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1v
 			    (jlockp = (*jenv)->GetLongField(jenv, jlock,
 			    lock_cptr_fid)) == 0L) {
 				__dbj_throw(jenv, EINVAL,
-				    "LockRequest lock field is NULL", NULL, jdbenv);
+				    "LockRequest lock field is NULL", NULL,
+				    jdbenv);
 				goto out2;
 			}
-			lockp = *(DB_LOCK **)&jlockp;
+			lockp = *(DB_LOCK **)(void *)&jlockp;
 			prereq->lock = *lockp;
 			break;
 		case DB_LOCK_PUT_ALL:
@@ -555,8 +627,13 @@ JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1v
 			jobj = (*jenv)->GetObjectField(jenv, jlockreq,
 			    lockreq_obj_fid);
 			if ((err = __dbj_dbt_copyin(jenv,
-			    &locked_dbts[i], &prereq->obj, jobj, 0)) != 0)
+			    &locked_dbts[i], &obj, jobj, 0)) != 0 ||
+			    (err =
+			    __os_umalloc(dbenv, obj->size, &obj->data)) != 0 ||
+			    (err = __dbj_dbt_memcopy(obj, 0,
+				obj->data, obj->size, DB_USERCOPY_GETDATA)) != 0)
 				goto out2;
+			prereq->obj = obj;
 			break;
 		default:
 			__dbj_throw(jenv, EINVAL,
@@ -586,7 +663,7 @@ JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1v
 			    lockreq_lock_fid);
 			jlockp = (*jenv)->GetLongField(jenv, jlock,
 			    lock_cptr_fid);
-			lockp = *(DB_LOCK **)&jlockp;
+			lockp = *(DB_LOCK **)(void *)&jlockp;
 			__os_free(NULL, lockp);
 			(*jenv)->SetLongField(jenv, jlock, lock_cptr_fid,
 			    (jlong)0);
@@ -599,12 +676,13 @@ JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1v
 			 */
 			if ((alloc_err =
 			    __os_malloc(dbenv, sizeof(DB_LOCK), &lockp)) != 0) {
-				__dbj_throw(jenv, alloc_err, NULL, NULL, jdbenv);
+				__dbj_throw(jenv, alloc_err, NULL, NULL,
+				    jdbenv);
 				goto out2;
 			}
 
 			*lockp = lockreq[i].lock;
-			*(DB_LOCK **)&jlockp = lockp;
+			*(DB_LOCK **)(void *)&jlockp = lockp;
 
 			jlockreq = (*jenv)->GetObjectArrayElement(jenv,
 			    list, i + offset);
@@ -634,28 +712,56 @@ JNIEXPORT void JNICALL Java_com_sleepycat_db_internal_db_1javaJNI_DbEnv_1lock_1v
 	} else if (err != 0)
 		__dbj_throw(jenv, err, NULL, NULL, jdbenv);
 
-out2:	/* Free the dbts that we have locked */
-	for (i = 0 ; i < (prereq - lockreq); i++) {
-		if (((op = lockreq[i].op) == DB_LOCK_GET ||
-		    op == DB_LOCK_PUT_OBJ) &&
-		    locked_dbts[i].jarr != NULL)
-			(*jenv)->ReleaseByteArrayElements(jenv,
-			    locked_dbts[i].jarr, locked_dbts[i].orig_data, 0);
-	}
-	__os_free(dbenv, locked_dbts);
-out1:	__os_free(dbenv, lockreq);
+out2:	__os_free(dbenv, locked_dbts);
+out1:	for (i = 0, prereq = &lockreq[0]; i < count; i++, prereq++)
+		if ((prereq->op == DB_LOCK_GET || prereq->op == DB_LOCK_PUT) &&
+		    prereq->obj->data != NULL)
+			__os_ufree(dbenv, prereq->obj->data);
+	__os_free(dbenv, lockreq);
 out0:	return;
 }
 %}
 
 JAVA_TYPEMAP(int *envid, DbEnv.RepProcessMessage, jobject)
 %typemap(in) int *envid (int id) %{
-	id = (*jenv)->GetIntField(jenv, $input, rep_processmsg_envid);
+	id = (*jenv)->GetIntField(jenv, $input, rep_processmsg_envid_fid);
 	$1 = &id;
 %}
 
 %typemap(argout) int *envid %{
-	(*jenv)->SetIntField(jenv, $input, rep_processmsg_envid, *$1);
+	(*jenv)->SetIntField(jenv, $input, rep_processmsg_envid_fid, *$1);
 %}
+
+JAVA_TYPEMAP(struct __db_repmgr_sites,
+    com.sleepycat.db.ReplicationHostAddress[], jobjectArray)
+%typemap(out) struct __db_repmgr_sites
+{
+	int i, len;
+
+	len = $1.nsites;
+	$result = (*jenv)->NewObjectArray(jenv, (jsize)len, rephost_class,
+	    NULL);
+	if ($result == NULL)
+		return $null; /* an exception is pending */
+	for (i = 0; i < len; i++) {
+		jobject jrep_addr = (*jenv)->NewObject(jenv,
+		    rephost_class, rephost_construct);
+
+		(*jenv)->SetObjectField(jenv, jrep_addr, rephost_host_fid,
+		    (*jenv)->NewStringUTF(jenv, $1.sites[i].host));
+		(*jenv)->SetIntField(jenv, jrep_addr, rephost_port_fid,
+		    $1.sites[i].port);
+		(*jenv)->SetIntField(jenv, jrep_addr, rephost_eid_fid,
+		    $1.sites[i].eid);
+		(*jenv)->SetIntField(jenv, jrep_addr, rephost_status_fid,
+		    $1.sites[i].status);
+
+		if (jrep_addr == NULL)
+			return $null; /* An exception is pending */
+
+		(*jenv)->SetObjectArrayElement(jenv, $result, i, jrep_addr);
+	}
+	__os_ufree(NULL, $1.sites);
+}
 
 JAVA_TYPEMAP(void *, Object, jobject)

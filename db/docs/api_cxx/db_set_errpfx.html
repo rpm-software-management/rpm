@@ -1,6 +1,6 @@
 <!--$Id: db_set_errpfx.so,v 10.10 2002/08/18 21:15:55 bostic Exp $-->
-<!--$Id: env_set_errpfx.so,v 10.33 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_errpfx.so,v 10.34 2006/02/10 22:54:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -39,6 +39,9 @@ closed.</p>
 <p>For <a href="../api_cxx/db_class.html">Db</a> handles opened inside of Berkeley DB environments, calling the
 Db::set_errpfx method affects the entire environment and is equivalent to calling
 the <a href="../api_cxx/env_set_errpfx.html">DbEnv::set_errpfx</a> method.</p>
+<p>The Db::set_errpfx method configures operations performed using the specified
+<a href="../api_cxx/db_class.html">Db</a> handle, not all operations performed on the underlying
+database.</p>
 <p>The Db::set_errpfx method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
@@ -70,6 +73,6 @@ error prefix in <b>errpfxp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

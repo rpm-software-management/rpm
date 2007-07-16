@@ -1,42 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_server_cxxutil.cpp,v 1.17 2004/09/22 17:30:13 bostic Exp $
+ * $Id: db_server_cxxutil.cpp,v 12.6 2006/08/24 14:46:30 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#if TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else
-#include <time.h>
-#endif
-#endif
-
-#include <rpc/rpc.h>
-
-#include <limits.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#endif
-
-#include "db_server.h"
-
 #include "db_int.h"
 #include "db_cxx.h"
+#include "db_server.h"
 #include "dbinc_auto/clib_ext.h"
 
 extern "C" {
@@ -318,7 +293,7 @@ __dbsrv_timeout(int force)
 		if (to < t || force) {
 			if (__dbsrv_verbose)
 				printf("Timing out env id %ld\n", ctp->ct_id);
-			(void)__dbenv_close_int(ctp->ct_id, 0, 1);
+			(void)__env_close_int(ctp->ct_id, 0, 1);
 			/*
 			 * If we timed out an env, we may have closed
 			 * all sorts of ctp's (maybe even all of them.
@@ -544,7 +519,7 @@ __db_close_int(long id, u_int32_t flags)
 	ctp = get_tableent(id);
 	if (ctp == NULL)
 		return (DB_NOSERVER_ID);
-	DB_ASSERT(ctp->ct_type == CT_DB);
+	DB_ASSERT(NULL, ctp->ct_type == CT_DB);
 	if (__dbsrv_verbose && ctp->ct_refcount != 1)
 		printf("Deref'ing dbp id %ld, refcount %d\n",
 		    id, ctp->ct_refcount);
@@ -593,7 +568,7 @@ __dbc_close_int(ct_entry *dbc_ctp)
 }
 
 extern "C" int
-__dbenv_close_int(long id, u_int32_t flags, int force)
+__env_close_int(long id, u_int32_t flags, int force)
 {
 	DbEnv *dbenv;
 	int ret;
@@ -603,7 +578,7 @@ __dbenv_close_int(long id, u_int32_t flags, int force)
 	ctp = get_tableent(id);
 	if (ctp == NULL)
 		return (DB_NOSERVER_ID);
-	DB_ASSERT(ctp->ct_type == CT_ENV);
+	DB_ASSERT(NULL, ctp->ct_type == CT_ENV);
 	if (__dbsrv_verbose && ctp->ct_refcount != 1)
 		printf("Deref'ing env id %ld, refcount %d\n",
 		    id, ctp->ct_refcount);

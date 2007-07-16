@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test052.tcl,v 11.20 2004/09/20 17:06:16 sue Exp $
+# $Id: test052.tcl,v 12.3 2006/08/24 14:46:40 bostic Exp $
 #
 # TEST	test052
 # TEST	Renumbering record Recno test.

@@ -1,26 +1,21 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_truncate.c,v 11.201 2004/07/15 15:52:51 sue Exp $
+ * $Id: db_truncate.c,v 12.18 2006/08/24 14:45:16 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/log.h"
 #include "dbinc/btree.h"
 #include "dbinc/hash.h"
 #include "dbinc/qam.h"
+#include "dbinc/lock.h"
+#include "dbinc/log.h"
 #include "dbinc/txn.h"
 
 static int __db_cursor_check __P((DB *));
@@ -38,57 +33,85 @@ __db_truncate_pp(dbp, txn, countp, flags)
 	u_int32_t *countp, flags;
 {
 	DB_ENV *dbenv;
-	int handle_check, ret, txn_local;
+	DB_THREAD_INFO *ip;
+	int handle_check, ret, t_ret, txn_local;
 
 	dbenv = dbp->dbenv;
+	txn_local = 0;
+	handle_check = 0;
 
 	PANIC_CHECK(dbenv);
+	STRIP_AUTO_COMMIT(flags);
 
 	/* Check for invalid flags. */
 	if (F_ISSET(dbp, DB_AM_SECONDARY)) {
-		__db_err(dbenv,
-		    "DBP->truncate forbidden on secondary indices");
+		__db_errx(dbenv,
+		    "DB->truncate forbidden on secondary indices");
 		return (EINVAL);
 	}
-	if ((ret =
-	    __db_fchk(dbenv, "DB->truncate", flags, DB_AUTO_COMMIT)) != 0)
+	if ((ret = __db_fchk(dbenv, "DB->truncate", flags, 0)) != 0)
 		return (ret);
+
+	ENV_ENTER(dbenv, ip);
 
 	/*
 	 * Make sure there are no active cursors on this db.  Since we drop
 	 * pages we cannot really adjust cursors.
 	 */
 	if (__db_cursor_check(dbp) != 0) {
-		__db_err(dbenv,
+		__db_errx(dbenv,
 		     "DB->truncate not permitted with active cursors");
-		return (EINVAL);
+		goto err;
+	}
+
+#ifdef CONFIG_TEST
+	if (IS_REP_MASTER(dbenv))
+		DB_TEST_WAIT(dbenv, dbenv->test_check);
+#endif
+	/* Check for replication block. */
+	handle_check = IS_ENV_REPLICATED(dbenv);
+	if (handle_check &&
+	    (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0) {
+		handle_check = 0;
+		goto err;
+	}
+
+	/*
+	 * Check for changes to a read-only database.
+	 * This must be after the replication block so that we
+	 * cannot race master/client state changes.
+	 */
+	if (DB_IS_READONLY(dbp)) {
+		ret = __db_rdonly(dbenv, "DB->truncate");
+		goto err;
 	}
 
 	/*
 	 * Create local transaction as necessary, check for consistent
 	 * transaction usage.
 	 */
-	txn_local = 0;
-	if (IS_AUTO_COMMIT(dbenv, txn, flags)) {
-		if ((ret = __db_txn_auto_init(dbenv, &txn)) != 0)
+	if (IS_DB_AUTO_COMMIT(dbp, txn)) {
+		if ((ret = __txn_begin(dbenv, NULL, &txn, 0)) != 0)
 			goto err;
 		txn_local = 1;
-		LF_CLR(DB_AUTO_COMMIT);
-	} else if (txn != NULL && !TXN_ON(dbenv)) {
-		ret = __db_not_txn_env(dbenv);
-		return (ret);
 	}
 
-	handle_check = IS_REPLICATED(dbenv, dbp);
-	if (handle_check && (ret = __db_rep_enter(dbp, 1, 0, txn != NULL)) != 0)
+	/* Check for consistent transaction usage. */
+	if ((ret = __db_check_txn(dbp, txn, DB_LOCK_INVALIDID, 0)) != 0)
 		goto err;
 
 	ret = __db_truncate(dbp, txn, countp);
 
-	if (handle_check)
-		__env_db_rep_exit(dbenv);
+err:	if (txn_local &&
+	    (t_ret = __db_txn_auto_resolve(dbenv, txn, 0, ret)) && ret == 0)
+		ret = t_ret;
 
-err:	return (txn_local ? __db_txn_auto_resolve(dbenv, txn, 0, ret) : ret);
+	/* Release replication block. */
+	if (handle_check && (t_ret = __env_db_rep_exit(dbenv)) != 0 && ret == 0)
+		ret = t_ret;
+
+	ENV_LEAVE(dbenv, ip);
+	return (ret);
 }
 
 /*
@@ -119,8 +142,9 @@ __db_truncate(dbp, txn, countp)
 	 * processing to truncate so it will update the secondaries normally.
 	 */
 	if (dbp->type != DB_QUEUE && LIST_FIRST(&dbp->s_secondaries) != NULL) {
-		for (sdbp = __db_s_first(dbp);
-		    sdbp != NULL && ret == 0; ret = __db_s_next(&sdbp))
+		if ((ret = __db_s_first(dbp, &sdbp)) != 0)
+			return (ret);
+		for (; sdbp != NULL && ret == 0; ret = __db_s_next(&sdbp))
 			if ((ret = __db_truncate(sdbp, txn, &scount)) != 0)
 				break;
 		if (sdbp != NULL)
@@ -180,23 +204,22 @@ __db_cursor_check(dbp)
 
 	dbenv = dbp->dbenv;
 
-	MUTEX_THREAD_LOCK(dbenv, dbenv->dblist_mutexp);
-	for (found = 0, ldbp = __dblist_get(dbenv, dbp->adj_fileid);
+	MUTEX_LOCK(dbenv, dbenv->mtx_dblist);
+	FIND_FIRST_DB_MATCH(dbenv, dbp, ldbp);
+	for (found = 0;
 	    ldbp != NULL && ldbp->adj_fileid == dbp->adj_fileid;
-	    ldbp = LIST_NEXT(ldbp, dblistlinks)) {
-		MUTEX_THREAD_LOCK(dbenv, dbp->mutexp);
-		for (dbc = TAILQ_FIRST(&ldbp->active_queue);
-		    dbc != NULL; dbc = TAILQ_NEXT(dbc, links)) {
+	    ldbp = TAILQ_NEXT(ldbp, dblistlinks)) {
+		MUTEX_LOCK(dbenv, dbp->mutex);
+		TAILQ_FOREACH(dbc, &ldbp->active_queue, links)
 			if (IS_INITIALIZED(dbc)) {
 				found = 1;
 				break;
 			}
-		}
-		MUTEX_THREAD_UNLOCK(dbenv, dbp->mutexp);
+		MUTEX_UNLOCK(dbenv, dbp->mutex);
 		if (found == 1)
 			break;
 	}
-	MUTEX_THREAD_UNLOCK(dbenv, dbenv->dblist_mutexp);
+	MUTEX_UNLOCK(dbenv, dbenv->mtx_dblist);
 
 	return (found);
 }

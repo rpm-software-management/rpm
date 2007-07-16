@@ -1,0 +1,78 @@
+<!--$Id: env_lsn_reset.so,v 1.4 2005/12/13 16:48:01 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;lsn_reset</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;lsn_reset</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;lsn_reset(DB_ENV *dbenv, const char *file, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;lsn_reset</h3>
+<p>The DB_ENV-&gt;lsn_reset method allows database files to be moved from one
+transactional database environment to another.</p>
+<p>Database pages in transactional database environments contain references
+to the environment's log files (that is, log sequence numbers, or LSNs).
+Copying or moving a database file from one database environment to
+another, and then modifying it, can result in data corruption if the
+LSNs are not first cleared.</p>
+<p>Note that LSNs should be reset before moving or copying the database
+file into a new database environment, rather than moving or copying the
+database file and then resetting the LSNs.  Berkeley DB has consistency checks
+that may be triggered if an application calls DB_ENV-&gt;lsn_reset
+on a database in a new environment when the database LSNs still reflect
+the old environment.</p>
+<p>The DB_ENV-&gt;lsn_reset method modifies the physical file, in-place.
+Applications should not reset LSNs in files that are currently in use.</p>
+<p>The DB_ENV-&gt;lsn_reset method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;lsn_reset method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>file</b><dd>The name of the physical file in which the LSNs are to be cleared.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+the following value:
+<dl compact>
+<dt>DB_ENCRYPT<dd>The file contains encrypted databases.
+</dl>
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;lsn_reset method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

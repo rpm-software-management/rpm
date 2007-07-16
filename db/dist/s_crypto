@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_crypto,v 11.8 2003/11/24 22:41:26 bostic Exp $
+#	$Id: s_crypto,v 12.1 2005/12/01 03:24:24 bostic Exp $
 
 # Remove crypto from the DB source tree.
 
@@ -43,8 +43,8 @@ chmod 664 $f
  echo 'w' &&
  echo 'q') | ed $f
 
- sh ./s_win32
- sh ./s_win32_dsp
+ sh ./s_windows
+ sh ./s_windows_dsp
 
 # VxWorks
 f=vx_config.in

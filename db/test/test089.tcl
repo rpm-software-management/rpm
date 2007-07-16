@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test089.tcl,v 11.9 2004/01/28 03:36:32 bostic Exp $
+# $Id: test089.tcl,v 12.4 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test089
 # TEST	Concurrent Data Store test (CDB)
@@ -118,7 +118,7 @@ proc test089 { method {nentries 1000} args } {
 	    [$dbcw put -current [chop_data $method [reverse $datastr]]] 0
 	set reversed [$dup_dbcw get -current]
 	error_check_good check_with_dup [lindex [lindex $reversed 0] 1] \
-	    [chop_data $method [reverse $datastr]]
+	    [pad_data $method [reverse $datastr]]
 
 	# Write forward datastr with dup cursor and read with original.
 	error_check_good put_current_dup \

@@ -329,15 +329,15 @@
 DB *dbp;
 FILE *error_file_pointer;
 int ret;
-char *program_name = "my_prog";
-char *file_name = "mydb.db";
+char *program_name = &quot;my_prog&quot;;
+char *file_name = &quot;mydb.db&quot;;
 
 /* Variable assignments omitted for brevity */
 
 /* Initialize the DB handle */
 ret = db_create(&amp;dbp, NULL, 0);
 if (ret != 0) {
-    fprintf(error_file_pointer, "%s: %s\n", program_name,
+    fprintf(error_file_pointer, &quot;%s: %s\n&quot;, program_name,
         db_strerror(ret));
     return(ret);
 }
@@ -351,7 +351,7 @@ dbp-&gt;set_errpfx(dbp, program_name);
  */
 ret = dbp-&gt;set_flags(dbp, DB_DUPSORT);
 if (ret != 0) {
-    dbp-&gt;err(dbp, ret, "Attempt to set DUPSORT flag failed.");
+    dbp-&gt;err(dbp, ret, &quot;Attempt to set DUPSORT flag failed.&quot;);
     dbp-&gt;close(dbp, 0);
     return(ret);
 }
@@ -365,7 +365,7 @@ ret = dbp-&gt;open(dbp,        /* Pointer to the database */
                 DB_CREATE,  /* Open flags */
                 0);         /* File mode. Using defaults */
 if (ret != 0) {
-    dbp-&gt;err(dbp, ret, "Database '%s' open failed.", file_name);
+    dbp-&gt;err(dbp, ret, &quot;Database '%s' open failed.&quot;, file_name);
     dbp-&gt;close(dbp, 0);
     return(ret);
 } </pre>
@@ -414,7 +414,7 @@ if (ret != 0) {
                     do not sort well when viewed as byte strings. There are
                     several solutions to this problem, one being to provide a
                     custom comparison function. See
-                    <a href="http://www.sleepycat.com/docs/ref/am_misc/faq.html" target="_top">http://www.sleepycat.com/docs/ref/am_misc/faq.html</a> 
+                    <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/ref/am_misc/faq.html" target="_top">http://www.oracle.com/technology/documentation/berkeley-db/db/ref/am_misc/faq.html</a> 
                     for more information.
                 </p>
             </li>
@@ -537,7 +537,7 @@ int ret;
 /* Create a database */
 ret = db_create(&amp;dbp, NULL, 0);
 if (ret != 0) {
-        fprintf(stderr, "%s: %s\n", "my_program",
+        fprintf(stderr, &quot;%s: %s\n&quot;, &quot;my_program&quot;,
           db_strerror(ret));
         return(-1);
 }

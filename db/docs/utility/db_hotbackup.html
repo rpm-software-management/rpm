@@ -1,0 +1,129 @@
+<!--$Id: db_hotbackup.so,v 1.6 2006/03/08 17:34:24 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: db_hotbackup</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>db_hotbackup</h3>
+</td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>db_hotbackup [<b>-cDuVv</b>] [<b>-d data_dir ...</b>] [<b>-h home</b>] [<b>-l log_dir</b>] [<b>-P password</b>] <b>-b</b> backup_dir</pre></h3>
+<h3>Description</h3>
+<a name="2"><!--meow--></a>
+<p>The db_hotbackup utility creates "hot backup" or "hot failover"
+snapshots of Berkeley DB database environments.</p>
+<p>The db_hotbackup utility performs the following steps:</p>
+<ol>
+<p><li>If the <b>-c</b> option is specified, checkpoint the source home
+database environment, and remove any unnecessary log files.
+<p><li>If the target directory for the backup does not exist, it is created
+with mode read-write-execute for the owner.
+<p>If the target directory for the backup does exist and the <b>-u</b>
+option was specified, all log files in the target directory are removed;
+if the <b>-u</b> option was not specified, all files in the target
+directory are removed.</p>
+<p><li>If the <b>-u</b> option was not specified, copy application-specific
+files found in the database environment home directory, or any directory
+specified using the <b>-d</b> option, into the target directory for
+the backup.
+<p><li>Copy all log files found in the directory specified by the <b>-l</b>
+option (or in the database environment home directory, if no <b>-l</b>
+option was specified), into the target directory for the backup.
+<p><li>Perform catastrophic recovery in the target directory for the backup.
+<p><li>Remove any unnecessary log files from the target directory for the
+backup.
+</ol>
+<p>The db_hotbackup utility does not resolve pending transactions that
+are in the prepared state.  Applications that use <a href="../api_c/txn_prepare.html">DB_TXN-&gt;prepare</a>
+should specify <a href="../api_c/env_open.html#DB_RECOVER_FATAL">DB_RECOVER_FATAL</a> when opening the environment,
+and run <a href="../api_c/txn_recover.html">DB_ENV-&gt;txn_recover</a> to resolve any pending transactions, when
+failing over to the backup.</p>
+<p>The options are as follows:</p>
+<dl compact>
+<dt><b>-b</b><dd>Specify the target directory for the backup.
+<dt><b>-c</b><dd>Before performing the backup, checkpoint the source database environment
+and remove any log files that are no longer required in that environment.
+<b>To avoid making catastrophic failure impossible, log file removal
+must be integrated with log file archival.</b>
+<dt><b>-D</b><dd>Use the data directories listed in the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration
+file in the source directory.   This option has three effects:
+<ol>
+<p><li>First, if they do not already exist, the specified data directories will
+be created relative to the target directory (with mode read-write-execute
+owner).
+<p><li>Second, all files in the source data directories will be copied to the
+target data directories.  If the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> file specifies one
+or more absolute pathnames, files in those source directories will be
+copied to the top-level target directory.
+<p><li>Third, the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration file will be copied from the
+source directory to the target directory, and subsequently used for
+configuration if recovery is run in the target directory.
+</ol>
+<p>Care should be taken with the <b>-D</b> option and data directories
+which are named relative to the source directory but are not
+subdirectories (that is, the name includes the element "..")
+Specifically, the constructed target directory names must be meaningful
+and distinct from the source directory names, otherwise running recovery
+in the target directory might corrupt the source data files.</p>
+<p><b>It is an error to use absolute pathnames for data directories
+or the log directory in this mode, as the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a>
+configuration file copied into the target directory would then point at
+the source directories and running recovery would corrupt the source
+data files.</b></p>
+<dt><b>-d</b><dd>Specify one or more source directories that contain database files; if
+no source directories are specified, the source directory will be
+searched for database files.
+<b>As all database files are copied into a single backup directory, files
+named the same, stored in different source directories, would overwrite
+each other when copied into the backup directory.</b>
+<p>Please note the database environment recovery log references database
+files as they are named by the application program.  <b>If the
+application uses absolute or relative pathnames to name database files,
+(rather than filenames and the <a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> method or the
+<a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration file to specify filenames), running
+recovery in the target directory may not properly find the copies of
+the files or might even find the source files, potentially resulting in
+corruption.</b></p>
+<dt><b>-h</b><dd>Specify the source directory for the backup, that is, the database
+environment home directory.
+<dt><b>-l</b><dd>Specify a source directory that contains log files; if none is specified,
+the database environment home directory will be searched for log files.
+<dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
+password strings as soon as possible, be aware there may be a window of
+vulnerability on systems where unprivileged users can see command-line
+arguments or where utilities are not able to overwrite the memory
+containing the command-line arguments.
+<dt><b>-u</b><dd>Update a pre-existing hot backup snapshot by copying in new log files.
+If the <b>-u</b> option is specified, no databases will be copied
+into the target directory.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-v</b><dd>Run in verbose mode, listing operations as they are done.
+</dl>
+<p>The db_hotbackup utility uses a Berkeley DB environment (as described for the
+<b>-h</b> option, the environment variable <b>DB_HOME</b>, or
+because the utility was run in a directory containing a Berkeley DB
+environment).  In order to avoid environment corruption when using a
+Berkeley DB environment, db_hotbackup should always be given the chance to
+detach from the environment and exit gracefully.  To cause db_hotbackup
+to release all environment resources and exit cleanly, send it an
+interrupt signal (SIGINT).</p>
+<p>The db_hotbackup utility exits 0 on success, and &gt;0 if an error occurs.</p>
+<h3>Environment Variables</h3>
+<dl compact>
+<dt>DB_HOME<dd>If the <b>-h</b> option is not specified and the environment variable
+DB_HOME is set, it is used as the path of the database home, as described
+in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
+</dl>
+</tt>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

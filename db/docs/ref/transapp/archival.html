@@ -1,5 +1,5 @@
-<!--$Id: archival.so,v 10.54 2004/04/14 16:18:14 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: archival.so,v 10.56 2005/02/10 20:02:41 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -101,6 +101,8 @@ backup.</p>
 <p>After completing one of these two sets of steps, the database
 environment can be recovered from catastrophic failure (see
 <a href="recovery.html">Recovery procedures</a> for more information).</p>
+<p>For an example of a hot backup implementation in the Berkeley DB distribution,
+see the source code for the <a href="../../utility/db_hotbackup.html">db_hotbackup</a> utility.</p>
 <p>To update either a hot or cold backup so that recovery from catastrophic
 failure is possible to a new point in time, repeat step #2 under the
 hot backup instructions and archive <b>all</b> of the log files in the
@@ -155,6 +157,6 @@ log_archlist(DB_ENV *dbenv)
 }</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/checkpoint.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/logfile.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

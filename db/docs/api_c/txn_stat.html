@@ -1,5 +1,5 @@
-<!--$Id: txn_stat.so,v 10.61 2004/09/28 17:57:03 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: txn_stat.so,v 10.66 2006/08/22 14:28:22 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -49,26 +49,45 @@ since the Epoch, returned by the IEEE/ANSI Std 1003.1 (POSIX) <b>time</b> functi
 <dt>u_int32_t st_last_txnid;<dd>The last transaction ID allocated.
 <dt>u_int32_t st_maxtxns;<dd>The maximum number of active transactions configured.
 <dt>u_int32_t st_nactive;<dd>The number of transactions that are currently active.
+<dt>u_int32_t st_nsnapshot;<dd>The number of transactions on the snapshot list.  These are transactions
+which modified a database opened with <a href="../api_c/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a>,
+and which have committed or aborted, but the copies of pages they
+created are still in the cache.
 <dt>u_int32_t st_maxnactive;<dd>The maximum number of active transactions at any one time.
+<dt>u_int32_t st_maxnsnapshot;<dd>The maximum number of transactions on the snapshot list at any one time.
 <dt>u_int32_t st_nbegins;<dd>The number of transactions that have begun.
 <dt>u_int32_t st_naborts;<dd>The number of transactions that have aborted.
 <dt>u_int32_t st_ncommits;<dd>The number of transactions that have committed.
 <dt>u_int32_t st_nrestores;<dd>The number of transactions that have been restored.
-<dt>roff_t st_regsize;<dd>The size of the region, in bytes.
+<dt>roff_t st_regsize;<dd>The size of the transaction region, in bytes.
 <dt>u_int32_t st_region_wait;<dd>The number of times that a thread of control was forced to wait before
-obtaining the region lock.
+obtaining the transaction region mutex.
 <dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain
-the region lock without waiting.
+the transaction region mutex without waiting.
 <dt>DB_TXN_ACTIVE *st_txnarray;<dd>A pointer to an array of <b>st_nactive</b> DB_TXN_ACTIVE structures,
 describing the currently active transactions. The following fields of
 the DB_TXN_ACTIVE structure will be filled in:
 <dl compact>
 <dt>u_int32_t txnid;<dd>The transaction ID of the transaction.
 <dt>u_int32_t parentid;<dd>The transaction ID of the parent transaction (or 0, if no parent).
+<dt>pid_t pid;<dd>The process ID of the originator of the transaction.
+<dt>uintmax_t tid;<dd>The thread of control ID of the originator of the transaction.
 <dt>DbLsn lsn;<dd>The current log sequence number when the transaction was begun.
-<dt>u_int32_t xa_status;<dd>If the transaction is an XA transaction, the status of the transaction,
-otherwise 0.
-<dt>u_int8_t xid[DB_XIDDATASIZE];<dd>If the transaction is an XA transaction, the transaction's XA ID.
+<dt>DbLsn read_lsn;<dd>The log sequence number of reads for snapshot transactions.
+<dt>u_int32_t mvcc_ref;<dd>The number of buffer copies created by this transaction that remain in cache.
+<dt>u_int32_t status;<dd>One of the following list of constants: TXN_ABORTED, TXN_COMMITTED,
+TXN_PREPARED, TXN_RUNNING.
+<dt>u_int32_t xa_status;<dd>If the transaction is an XA transaction, the <b>xa_status</b> of the
+transaction will be one of the following list of constants:
+TXN_XA_ABORTED, TXN_XA_DEADLOCKED, TXN_XA_ENDED, TXN_XA_PREPARED,
+TXN_XA_STARTED, or TXN_XA_SUSPENDED.  Otherwise, the <b>xa_status</b>
+will be 0.
+<dt>u_int8_t xid[DB_XIDDATASIZE];<dd>If the transaction is an XA transaction, the transaction's XA ID.  If
+the transaction was prepared separately from the XA interfaces, the
+transaction's Global ID.  Otherwise, the <b>xid</b> contents are
+undefined.
+<dt>char name[];<dd>If a name was specified for the transaction, up to the first 50 bytes
+of that name, followed by a nul termination byte.
 </dl>
 </dl>
 <p>The DB_ENV-&gt;txn_stat method
@@ -83,7 +102,7 @@ the following value:
 <dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
 <dt><b>statp</b><dd>The <b>statp</b> parameter references memory into which
-a pointer to the allocated statistics structure is copied.
+a pointer to the allocated statistics structure is copied. 
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;txn_stat method
@@ -94,7 +113,7 @@ invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;txn_stat_print</h3>
-<p>The DB_ENV-&gt;txn_stat_print method returns the
+<p>The DB_ENV-&gt;txn_stat_print method displays the
 transaction subsystem statistical information, as described for the DB_ENV-&gt;txn_stat method.
 The information is printed to a specified output channel (see the
 <a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or passed to an
@@ -108,10 +127,11 @@ and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
-the following value:
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 </dl>
 </dl>
 <hr size=1 noshade>
@@ -123,6 +143,6 @@ the following value:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

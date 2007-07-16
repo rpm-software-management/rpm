@@ -1,53 +1,29 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_db.h,v 11.40 2004/09/22 03:40:20 bostic Exp $
+ * $Id: tcl_db.h,v 12.8 2006/08/24 14:45:30 bostic Exp $
  */
 
 #ifndef _DB_TCL_DB_H_
 #define	_DB_TCL_DB_H_
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #define	MSG_SIZE 100		/* Message size */
 
 enum INFOTYPE {
-    I_ENV, I_DB, I_DBC, I_TXN, I_MP,
-    I_PG, I_LOCK, I_LOGC, I_NDBM, I_MUTEX, I_SEQ};
+    I_ENV, I_DB, I_DBC, I_TXN, I_MP, I_PG, I_LOCK, I_LOGC, I_NDBM, I_SEQ};
 
 #define	MAX_ID		8	/* Maximum number of sub-id's we need */
 #define	DBTCL_PREP	64	/* Size of txn_recover preplist */
 
 #define	DBTCL_DBM	1
 #define	DBTCL_NDBM	2
-
-typedef struct _mutex_entry {
-	union {
-		struct {
-			DB_MUTEX	real_m;
-			int		real_val;
-		} r;
-		/*
-		 * This is here to make sure that each of the mutex structures
-		 * are 16-byte aligned, which is required on HP architectures.
-		 * The db_mutex_t structure might be >32 bytes itself, or the
-		 * real_val might push it over the 32 byte boundary.  The best
-		 * we can do is use a 48 byte boundary.
-		 */
-		char c[48];
-	} u;
-} _MUTEX_ENTRY;
-
-#define	m	u.r.real_m
-#define	val	u.r.real_val
-
-typedef struct _mutex_data {
-	DB_ENV		*env;
-	REGINFO		 reginfo;
-	_MUTEX_ENTRY	*marray;
-	size_t		 size;
-} _MUTEX_DATA;
 
 /*
  * Why use a home grown package over the Tcl_Hash functions?
@@ -83,15 +59,14 @@ typedef struct dbtcl_info {
 	char *i_name;
 	enum INFOTYPE i_type;
 	union infop {
-		DB_ENV *envp;
-		void *anyp;
 		DB *dbp;
 		DBC *dbcp;
-		DB_TXN *txnp;
-		DB_MPOOLFILE *mp;
+		DB_ENV *envp;
 		DB_LOCK *lock;
-		_MUTEX_DATA *mutex;
 		DB_LOGC *logc;
+		DB_MPOOLFILE *mp;
+		DB_TXN *txnp;
+		void *anyp;
 	} un;
 	union data {
 		int anydata;
@@ -101,6 +76,7 @@ typedef struct dbtcl_info {
 	union data2 {
 		int anydata;
 		int pagesz;
+		DB_COMPACT *c_data;
 	} und2;
 	DBT i_lockobj;
 	FILE *i_err;
@@ -109,6 +85,7 @@ typedef struct dbtcl_info {
 	/* Callbacks--Tcl_Objs containing proc names */
 	Tcl_Obj *i_btcompare;
 	Tcl_Obj *i_dupcompare;
+	Tcl_Obj *i_event;
 	Tcl_Obj *i_hashproc;
 	Tcl_Obj *i_rep_send;
 	Tcl_Obj *i_second_call;
@@ -128,7 +105,6 @@ typedef struct dbtcl_info {
 #define	i_txnp un.txnp
 #define	i_mp un.mp
 #define	i_lock un.lock
-#define	i_mutex un.mutex
 #define	i_logc un.logc
 
 #define	i_data und.anydata
@@ -136,12 +112,12 @@ typedef struct dbtcl_info {
 #define	i_locker und.lockid
 #define	i_data2 und2.anydata
 #define	i_pgsz und2.pagesz
+#define	i_cdata und2.c_data
 
 #define	i_envtxnid i_otherid[0]
 #define	i_envmpid i_otherid[1]
 #define	i_envlockid i_otherid[2]
-#define	i_envmutexid i_otherid[3]
-#define	i_envlogcid i_otherid[4]
+#define	i_envlogcid i_otherid[3]
 
 #define	i_mppgid  i_otherid[0]
 
@@ -265,6 +241,10 @@ extern DBTCL_GLOBAL __dbtcl_global;
  */
 #define	IS_HELP(s)						\
     (strcmp(Tcl_GetStringFromObj(s,NULL), "-?") == 0) ? TCL_OK : TCL_ERROR
+
+#if defined(__cplusplus)
+}
+#endif
 
 #include "dbinc_auto/tcl_ext.h"
 #endif /* !_DB_TCL_DB_H_ */

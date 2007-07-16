@@ -1,5 +1,5 @@
-<!--$Id: seq_open.so,v 1.7 2004/09/28 15:04:22 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: seq_open.so,v 1.9 2005/01/20 01:15:15 ubell Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -44,10 +44,6 @@ the persistent sequence data.
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
-<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the DbSequence::open call within a transaction.  If the call
-succeeds, the open operation will be recoverable.  If the
-<a href="../api_cxx/env_open.html#DB_CREATE">DB_CREATE</a> flag is specified and the call fails, no sequence will
-have been created.
 <dt><a name="DB_CREATE">DB_CREATE</a><dd>Create the sequence.  If the sequence does not already exist and the
 DB_CREATE flag is not specified, the DbSequence::open will fail.
 <dt><a name="DB_EXCL">DB_EXCL</a><dd>Return an error if the sequence already exists.  The <a href="../api_cxx/db_open.html#DB_EXCL">DB_EXCL</a>
@@ -55,13 +51,20 @@ flag is only meaningful when specified with the <a href="../api_cxx/env_open.htm
 flag.
 <dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_cxx/seq_class.html">DbSequence</a> handle returned by DbSequence::open to be
 <i>free-threaded</i>; that is, usable by multiple threads within a
-single address space.
+single address space.  Note that if multiple threads create multiple
+sequences using the same database handle that handle must have been
+opened specifying <a name="DB_THREAD">DB_THREAD</a>.
 </dl>
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-(other than by specifying the DB_AUTO_COMMIT flag),
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  Note that transactionally protected operations on a <a href="../api_cxx/seq_class.html">DbSequence</a>
-handle require the <a href="../api_cxx/seq_class.html">DbSequence</a> handle itself be transactionally
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+operation occurs in a transactional
+database,
+the operation will be implicitly transaction protected.  Transactionally protected operations on a <a href="../api_cxx/seq_class.html">DbSequence</a> handle
+require the <a href="../api_cxx/seq_class.html">DbSequence</a> handle itself be transactionally
 protected during its open if the open creates the sequence.
 </dl>
 <hr size=1 noshade>
@@ -70,7 +73,7 @@ protected during its open if the open creates the sequence.
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>dbp</b><dd>The <b>dbp</b> parameter references memory into which
-a pointer to the database handle is copied.
+a pointer to the database handle is copied. 
 </dl>
 <p>The DbSequence::get_dbp method may be called at any time during the life of the
 application.</p>
@@ -85,7 +88,7 @@ failure, and returns 0 on success.
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>key</b><dd>The <b>key</b> parameter references memory into which
-a pointer to the key data is copied.
+a pointer to the key data is copied. 
 </dl>
 <p>The DbSequence::get_key method may be called at any time during the life of the
 application.</p>
@@ -103,6 +106,6 @@ failure, and returns 0 on success.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

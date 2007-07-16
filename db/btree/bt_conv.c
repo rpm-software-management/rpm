@@ -1,17 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: bt_conv.c,v 11.15 2004/01/28 03:35:48 bostic Exp $
+ * $Id: bt_conv.c,v 12.5 2006/08/24 14:44:44 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -88,7 +84,7 @@ __bam_mswap(pg)
 
 	p = (u_int8_t *)pg + sizeof(DBMETA);
 
-	SWAP32(p);		/* maxkey */
+	p += sizeof(u_int32_t);	/* unused */
 	SWAP32(p);		/* minkey */
 	SWAP32(p);		/* re_len */
 	SWAP32(p);		/* re_pad */

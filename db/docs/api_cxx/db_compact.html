@@ -1,0 +1,146 @@
+<!--$Id: db_compact.so,v 1.6 2006/09/08 18:36:02 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: Db::compact</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>Db::compact</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+Db::compact(DbTxn *txnid,
+    Dbt *start, Dbt *stop, DB_COMPACT *c_data, u_int32_t flags, Dbt *end);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: Db::compact</h3>
+<p>The Db::compact method compacts Btree and Recno access method
+databases, and optionally returns unused Btree, Hash or Recno database
+pages to the underlying filesystem.</p>
+<p>The Db::compact method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the operation occurs in a transactional database, the
+operation will be implicitly transaction protected using multiple
+transactions.  These transactions will be periodically committed to
+avoid locking large sections of the tree.  Any deadlocks encountered
+cause the compaction operation to retried from the point of the last
+transaction commit.
+<dt><b>start</b><dd>If non-NULL, the <b>start</b> parameter is the starting point for
+compaction in a Btree or Recno database.  Compaction will start at the
+smallest key greater than or equal to the specified key.  If NULL,
+compaction will start at the beginning of the database.
+<dt><b>stop</b><dd>If non-NULL, the <b>stop</b> parameter is the stopping point for
+compaction in a Btree or Recno database.  Compaction will stop at the
+page with the smallest key greater than the specified key.  If NULL,
+compaction will stop at the end of the database.
+<dt><b>c_data</b><dd><p>If non-NULL, the <b>c_data</b> parameter contains additional compaction
+configuration parameters, and returns compaction operation statistics,
+in a structure of type DB_COMPACT.</p>
+<p>The following input configuration fields are available from the
+DB_COMPACT structure:</p>
+<dl compact>
+<dt>int compact_fillpercent;<dd>If non-zero, the goal for filling pages, specified as a percentage
+between 1 and 100.  Any page in a Btree or Recno databases not at or
+above this percentage full will be considered for compaction.  The
+default behavior is to consider every page for compaction, regardless
+of its page fill percentage.
+<dt>int compact_pages;<dd>If non-zero, the call will return after that number of pages have been
+freed.
+<dt>db_timeout_t compact_timeout;<dd>If non-zero, and no <b>txnid</b> parameter was specified, the lock
+timeout set for implicit transactions, in microseconds.
+</dl>
+<p>The following output statistics fields are available from the
+DB_COMPACT structure:</p>
+<dl compact>
+<dt>u_int32_t compact_deadlock;<dd>An output statistics parameter: if no <b>txnid</b> parameter was
+specified, the number of deadlocks which occurred.
+<dt>u_int32_t compact_pages_examine;<dd>An output statistics parameter: the number of database pages reviewed
+during the compaction phase.
+<dt>u_int32_t compact_pages_free;<dd>An output statistics parameter: the number of database pages freed during
+the compaction phase.
+<dt>u_int32_t compact_levels;<dd>An output statistics parameter: the number of levels removed from the
+Btree or Recno database during the compaction phase.
+<dt>u_int32_t compact_pages_truncated;<dd>An output statistics parameter: the number of database pages returned
+to the filesystem.
+</dl>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+one of the following values:
+<dl compact>
+<dt><a name="DB_FREELIST_ONLY">DB_FREELIST_ONLY</a><dd>Do no page compaction, only returning pages to the filesystem that are
+already free and at the end of the file.  This flag must be set if the
+database is a Hash access method database.
+<dt><a name="DB_FREE_SPACE">DB_FREE_SPACE</a><dd>Return pages to the filesystem when possible.
+If this flag is not specified, pages emptied as a result of compaction
+will be placed on the free list for re-use, but never returned to the
+filesystem.
+<p>Note that only pages at the end of a file can be returned to the
+filesystem.  Because of the one-pass nature of the compaction algorithm,
+any unemptied page near the end of the file inhibits returning pages to
+the file system.  A repeated call to the Db::compact method with a low
+<b>compact_fillpercent</b> may be used to return pages in this case.</p>
+</dl>
+<dt><b>end</b><dd>If non-NULL, the <b>end</b> parameter will be filled in with the
+database key marking the end of the compaction operation in a Btree or
+Recno database.  This is generally the first key of the page where the
+operation stopped.
+</dl>
+<h3>Errors</h3>
+<p>The Db::compact method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
+unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
+</dl>
+<dl compact>
+<dt>EACCES<dd>An attempt was made to modify a read-only database.
+</dl>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<p>If a transactional database environment operation was selected to
+resolve a deadlock, the Db::compact method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> or
+throw a <a href="../api_cxx/deadlock_class.html">DbDeadlockException</a> exception.</p>
+<p>If a Berkeley DB Concurrent Data Store database environment configured for lock timeouts was unable
+to grant a lock in the allowed time, the Db::compact method will fail and
+either return <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or
+throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.</p>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/db_class.html">Db</a>
+<h3>See Also</h3>
+<a href="../api_cxx/db_list.html">Databases and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

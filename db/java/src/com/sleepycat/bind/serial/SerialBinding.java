@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: SerialBinding.java,v 1.2 2004/06/04 18:24:49 mark Exp $
+ * $Id: SerialBinding.java,v 12.5 2006/08/31 18:14:05 bostic Exp $
  */
 
 package com.sleepycat.bind.serial;
@@ -26,9 +26,21 @@ import com.sleepycat.util.RuntimeExceptionWrapper;
  * <code>Class</code> must implement the <code>Serializable</code>
  * interface.</p>
  *
+ * <p>For key bindings, a tuple binding is usually a better choice than a
+ * serial binding.  A tuple binding gives a reasonable sort order, and works
+ * with comparators in all cases -- see below.</p>
+ *
+ * <p><em>WARNING:</em> SerialBinding should not be used with Berkeley DB Java
+ * Edition for key bindings, when a custom comparator is used.  In JE,
+ * comparators are instantiated and called internally at times when databases
+ * are not accessible.  Because serial bindings depend on the class catalog
+ * database, a serial binding cannot be used during these times.  An attempt
+ * to use a serial binding with a custom comparator will result in a
+ * NullPointerException during environment open or close.</p>
+ *
  * @author Mark Hayes
  */
-public class SerialBinding implements EntryBinding {
+public class SerialBinding extends SerialBase implements EntryBinding {
 
     private ClassCatalog classCatalog;
     private Class baseClass;
@@ -63,6 +75,28 @@ public class SerialBinding implements EntryBinding {
     }
 
     /**
+     * Returns the class loader to be used during deserialization, or null if
+     * a default class loader should be used.  The default implementation of
+     * this method returns null.
+     *
+     * <p>This method may be overriden to return a dynamically determined class
+     * loader.  For example,
+     * <code>Thread.currentThread().getContextClassLoader()</code> could be
+     * called to use the context class loader for the curren thread.  Or
+     * <code>getBaseClass().getClassLoader()</code> could be called to use the
+     * class loader for the base class, assuming that a base class has been
+     * specified.</p>
+     *
+     * <p>If this method returns null, a default class loader will be used as
+     * determined by the <code>java.io.ObjectInputStream.resolveClass</code>
+     * method.</p>
+     */
+    public ClassLoader getClassLoader() {
+
+        return null;
+    }
+
+    /**
      * Deserialize an object from an entry buffer.  May only be called for data
      * that was serialized using {@link #objectToEntry}, since the fixed
      * serialization header is assumed to not be included in the input data.
@@ -85,7 +119,8 @@ public class SerialBinding implements EntryBinding {
         try {
             SerialInput jin = new SerialInput(
                 new FastInputStream(bufWithHeader, 0, bufWithHeader.length),
-                classCatalog);
+                classCatalog,
+                getClassLoader());
             return jin.readObject();
         } catch (IOException e) {
             throw new RuntimeExceptionWrapper(e);
@@ -99,6 +134,10 @@ public class SerialBinding implements EntryBinding {
      * header is not included in the output data to save space, and therefore
      * to deserialize the data the complementary {@link #entryToObject} method
      * must be used.  {@link SerialOutput} is used to serialize the object.
+     *
+     * <p>Note that this method sets the DatabaseEntry offset property to a
+     * non-zero value and the size property to a value less than the length of
+     * the byte array.</p>
      *
      * @param object is the input deserialized object.
      *
@@ -115,7 +154,7 @@ public class SerialBinding implements EntryBinding {
                         ") not an instance of binding's base class (" +
                         baseClass + ')');
         }
-        FastOutputStream fo = new FastOutputStream();
+        FastOutputStream fo = getSerialOutput(object);
         try {
             SerialOutput jos = new SerialOutput(fo, classCatalog);
             jos.writeObject(object);

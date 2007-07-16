@@ -1,24 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: qam_open.c,v 11.68 2004/02/27 12:38:31 bostic Exp $
+ * $Id: qam_open.c,v 12.11 2006/08/24 14:46:24 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/crypto.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/db_swap.h"
 #include "dbinc/db_am.h"
 #include "dbinc/lock.h"
@@ -58,8 +51,14 @@ __qam_open(dbp, txn, name, base_pgno, mode, flags)
 	qmeta = NULL;
 
 	if (name == NULL && t->page_ext != 0) {
-		__db_err(dbenv,
+		__db_errx(dbenv,
 	"Extent size may not be specified for in-memory queue database");
+		return (EINVAL);
+	}
+
+	if (MULTIVERSION(dbp)) {
+		__db_errx(dbenv,
+		    "Multiversion queue databases are not supported");
 		return (EINVAL);
 	}
 
@@ -86,12 +85,12 @@ __qam_open(dbp, txn, name, base_pgno, mode, flags)
 	if ((ret =
 	    __db_lget(dbc, 0, base_pgno, DB_LOCK_READ, 0, &metalock)) != 0)
 		goto err;
-	if ((ret = __memp_fget(mpf, &base_pgno, 0, &qmeta)) != 0)
+	if ((ret = __memp_fget(mpf, &base_pgno, dbc->txn, 0, &qmeta)) != 0)
 		goto err;
 
 	/* If the magic number is incorrect, that's a fatal error. */
 	if (qmeta->dbmeta.magic != DB_QAMMAGIC) {
-		__db_err(dbenv, "%s: unexpected file type or format", name);
+		__db_errx(dbenv, "%s: unexpected file type or format", name);
 		ret = EINVAL;
 		goto err;
 	}
@@ -103,7 +102,7 @@ __qam_open(dbp, txn, name, base_pgno, mode, flags)
 		goto err;
 
 	if (mode == 0)
-		mode = __db_omode("rwrw--");
+		mode = __db_omode("rw-rw----");
 	t->mode = mode;
 	t->re_pad = qmeta->re_pad;
 	t->re_len = qmeta->re_len;
@@ -188,7 +187,7 @@ __qam_metachk(dbp, name, qmeta)
 	switch (vers) {
 	case 1:
 	case 2:
-		__db_err(dbenv,
+		__db_errx(dbenv,
 		    "%s: queue version %lu requires a version upgrade",
 		    name, (u_long)vers);
 		return (DB_OLD_VERSION);
@@ -196,7 +195,7 @@ __qam_metachk(dbp, name, qmeta)
 	case 4:
 		break;
 	default:
-		__db_err(dbenv,
+		__db_errx(dbenv,
 		    "%s: unsupported qam version: %lu", name, (u_long)vers);
 		return (EINVAL);
 	}
@@ -233,8 +232,10 @@ __qam_init_meta(dbp, meta)
 	DB *dbp;
 	QMETA *meta;
 {
+	DB_ENV *dbenv;
 	QUEUE *t;
 
+	dbenv = dbp->dbenv;
 	t = dbp->q_internal;
 
 	memset(meta, 0, sizeof(QMETA));
@@ -248,8 +249,8 @@ __qam_init_meta(dbp, meta)
 		FLD_SET(meta->dbmeta.metaflags, DBMETA_CHKSUM);
 	if (F_ISSET(dbp, DB_AM_ENCRYPT)) {
 		meta->dbmeta.encrypt_alg =
-		   ((DB_CIPHER *)dbp->dbenv->crypto_handle)->alg;
-		DB_ASSERT(meta->dbmeta.encrypt_alg != 0);
+		   ((DB_CIPHER *)dbenv->crypto_handle)->alg;
+		DB_ASSERT(dbenv, meta->dbmeta.encrypt_alg != 0);
 		meta->crypto_magic = meta->dbmeta.magic;
 	}
 	meta->dbmeta.type = P_QAMMETA;
@@ -264,7 +265,7 @@ __qam_init_meta(dbp, meta)
 
 	/* Verify that we can fit at least one record per page. */
 	if (QAM_RECNO_PER_PAGE(dbp) < 1) {
-		__db_err(dbp->dbenv,
+		__db_errx(dbenv,
 		    "Record size of %lu too large for page size of %lu",
 		    (u_long)t->re_len, (u_long)dbp->pgsize);
 		return (EINVAL);
@@ -308,11 +309,12 @@ __qam_new_file(dbp, txn, fhp, name)
 
 	/* Build meta-data page. */
 
-	if (name == NULL) {
+	if (F_ISSET(dbp, DB_AM_INMEM)) {
 		pgno = PGNO_BASE_MD;
-		ret = __memp_fget(mpf, &pgno, DB_MPOOL_CREATE, &meta);
+		ret = __memp_fget(mpf, &pgno, txn,
+		    DB_MPOOL_CREATE | DB_MPOOL_DIRTY, &meta);
 	} else {
-		ret = __os_calloc(dbp->dbenv, 1, dbp->pgsize, &buf);
+		ret = __os_calloc(dbenv, 1, dbp->pgsize, &buf);
 		meta = (QMETA *)buf;
 	}
 	if (ret != 0)
@@ -321,9 +323,12 @@ __qam_new_file(dbp, txn, fhp, name)
 	if ((ret = __qam_init_meta(dbp, meta)) != 0)
 		goto err;
 
-	if (name == NULL)
-		ret = __memp_fput(mpf, meta, DB_MPOOL_DIRTY);
-	else {
+	if (F_ISSET(dbp, DB_AM_INMEM)) {
+		if ((ret = __db_log_page(dbp,
+		    txn, &meta->dbmeta.lsn, pgno, (PAGE *)meta)) != 0)
+			goto err;
+		ret = __memp_fput(mpf, meta, 0);
+	} else {
 		pginfo.db_pagesize = dbp->pgsize;
 		pginfo.flags =
 		    F_ISSET(dbp, (DB_AM_CHKSUM | DB_AM_ENCRYPT | DB_AM_SWAP));

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredKeySet.java,v 1.3 2004/06/04 18:24:50 mark Exp $
+ * $Id: StoredKeySet.java,v 12.4 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -13,6 +13,7 @@ import java.util.Set;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.db.Database;
+import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.OperationStatus;
 
@@ -23,17 +24,6 @@ import com.sleepycat.db.OperationStatus;
  * even when duplicates are allowed.  Key set iterators are therefore
  * particularly useful for enumerating the unique keys of a store or index that
  * allows duplicates.
- *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
  *
  * @author Mark Hayes
  */
@@ -131,10 +121,12 @@ public class StoredKeySet extends StoredCollection implements Set {
         return false;
     }
 
-    Object makeIteratorData(StoredIterator iterator, DataCursor cursor)
-        throws DatabaseException {
+    Object makeIteratorData(BaseIterator iterator,
+                            DatabaseEntry keyEntry,
+                            DatabaseEntry priKeyEntry,
+                            DatabaseEntry valueEntry) {
 
-        return cursor.getCurrentKey();
+        return view.makeKey(keyEntry, priKeyEntry);
     }
 
     boolean iterateDuplicates() {

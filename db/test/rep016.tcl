@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2002-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep016.tcl,v 11.13 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep016.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  rep016
 # TEST	Replication election test with varying required nvotes.
@@ -14,8 +14,19 @@
 
 proc rep016 { method args } {
 	global errorInfo
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
 	set tnum "016"
 
+	# Skip for all methods except btree.
+	if { $checking_valid_methods } {
+		set test_methods { btree }
+		return $test_methods
+	}
 	if { [is_btree $method] == 0 } {
 		puts "Rep$tnum: Skipping for method $method."
 		return
@@ -25,8 +36,7 @@ proc rep016 { method args } {
 	set logsets [create_logsets [expr $nclients + 1]]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -46,7 +56,7 @@ proc rep016 { method args } {
 	}
 }
 
-proc rep016_sub { method nclients tnum logset recargs args } {
+proc rep016_sub { method nclients tnum logset recargs largs } {
 	source ./include.tcl
 	set niter 5
 
@@ -101,7 +111,7 @@ proc rep016_sub { method nclients tnum logset recargs args } {
 
 	# Run a modified test001 in the master.
 	puts "\tRep$tnum.a: Running rep_test in replicated env."
-	eval rep_test $method $masterenv NULL $niter 0 0
+	eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
 	process_msgs $envlist
 	error_check_good masterenv_close [$masterenv close] 0
 	set envlist [lreplace $envlist 0 0]
@@ -130,20 +140,26 @@ proc rep016_sub { method nclients tnum logset recargs args } {
 	error_check_good ret [is_substr $ret "may not be negative"] 1
 
 	#
-	# Check zero/negative nsites
+	# Setting nsites to 0 acts as a signal for rep_elect to use
+	# the configured nsites, but since we haven't set that yet,
+	# this should still fail.  TODO: need another test verifying
+	# the proper operation when we *have* configured nsites.
 	#
 	set nsites 0
 	set nvotes 2
 	set res [catch {$clientenv(0) rep_elect $nsites $nvotes $priority \
 	    $timeout} ret]
 	error_check_bad catch $res 0
-	error_check_good ret [is_substr $ret "must be greater than 0"] 1
+	error_check_good ret [is_substr $ret "is larger than nsites"] 1
 
+	#
+	# Check negative nsites
+	#
 	set nsites -1
 	set res [catch {$clientenv(0) rep_elect $nsites $nvotes $priority \
 	    $timeout} ret]
 	error_check_bad catch $res 0
-	error_check_good ret [is_substr $ret "must be greater than 0"] 1
+	error_check_good ret [is_substr $ret "nsites may not be negative"] 1
 
 	#
 	# Check nvotes > nsites.

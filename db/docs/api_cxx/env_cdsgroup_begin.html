@@ -1,0 +1,59 @@
+<!--$Id: env_cdsgroup_begin.so,v 1.2 2006/08/24 19:02:06 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::cdsgroup_begin</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::cdsgroup_begin</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::cdsgroup_begin(DbTxn **tid);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::cdsgroup_begin</h3>
+<p>The DbEnv::cdsgroup_begin method allocates a locker ID in an
+environment configured for Berkeley DB Concurrent Data Store applications.  It copies a pointer to
+a <a href="../api_cxx/txn_class.html">DbTxn</a> that uniquely identifies the locker ID into the memory
+to which <b>tid</b> refers.  Calling the <a href="../api_cxx/txn_commit.html">DbTxn::commit</a> method will
+discard the allocated locker ID.</p>
+<p>See <a href="../ref/cam/intro.html">Berkeley DB Concurrent Data Store applications</a> for more
+information about when this is required.</p>
+<p>The DbEnv::cdsgroup_begin method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::cdsgroup_begin method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Errors</h3>
+<p>If the maximum number of lockers has been reached, the DbEnv::cdsgroup_begin method will fail and
+either return ENOMEM or
+throw a DbMemoryException.</p>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/txn_class.html">DbTxn</a>
+<h3>See Also</h3>
+<a href="../api_cxx/txn_list.html">Transaction Subsystem and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

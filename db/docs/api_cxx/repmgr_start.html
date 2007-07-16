@@ -1,0 +1,97 @@
+<!--$Id: repmgr_start.so,v 1.3 2006/07/14 23:08:18 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::repmgr_start</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::repmgr_start</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::repmgr_start(int nthreads, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::repmgr_start</h3>
+<p>The DbEnv::repmgr_start method starts the replication manager.</p>
+<p>There are two ways to build Berkeley DB replication applications: the most
+common approach is to use the Berkeley DB library "replication manager"
+support, where the Berkeley DB library manages the replication group,
+including network transport, all replication message processing and
+acknowledgment, and group elections.  Applications using the replication
+manager support generally make the following calls:</p>
+<ol>
+<p><li>Call <a href="../api_cxx/repmgr_local_site.html">DbEnv::repmgr_set_local_site</a> to configure the local site in the
+replication group.
+<p><li>Call <a href="../api_cxx/repmgr_remote_site.html">DbEnv::repmgr_add_remote_site</a> to configure the remote site(s) in
+the replication group.
+<p><li>Call <a href="../api_cxx/repmgr_ack_policy.html">DbEnv::repmgr_set_ack_policy</a> to configure the message
+acknowledgment policy which provides the replication group's
+transactional needs.
+<p><li>Call <a href="../api_cxx/rep_priority.html">DbEnv::rep_set_priority</a> to configure the local site's election
+priority.
+<p><li>Call DbEnv::repmgr_start to start the replication application.
+</ol>
+<p>For more information on building replication manager applications,
+please see the "Replication Manager Getting Started Guide" included in
+the Berkeley DB documentation.</p>
+<p>Applications with special needs (for example, applications using network
+protocols not supported by the Berkeley DB replication manager), must perform
+additional configuration and call other Berkeley DB replication methods.  For
+more information on building advanced replication applications, please
+see the "Advanced Replication Applications Guide" included in the Berkeley DB
+documentation.</p>
+<p>The DbEnv::repmgr_start method may not be called before the <a href="../api_cxx/env_open.html">DbEnv::open</a> method has
+been called.</p>
+<p>The DbEnv::repmgr_start method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
+<dl compact>
+<dt><a name="DB_REP_MASTER">DB_REP_MASTER</a><dd>Start as a master site, and do not call for an election.  Note there
+must never be more than a single master in any replication group, and
+only one site at a time should ever be started with the
+DB_REP_MASTER flag specified.
+<dt><a name="DB_REP_CLIENT">DB_REP_CLIENT</a><dd>Start as a client site, and do not call for an election.
+<dt><a name="DB_REP_ELECTION">DB_REP_ELECTION</a><dd>Start as a client, and call for an election if no master is found.
+<dt><a name="DB_REP_FULL_ELECTION">DB_REP_FULL_ELECTION</a><dd>Start as a client, and call for an election if no master is found.
+<p>The <a href="../api_cxx/repmgr_start.html#DB_REP_FULL_ELECTION">DB_REP_FULL_ELECTION</a> flag configures a single special
+election on startup, where a master will only be confirmed if all
+members of the replication group vote.  Subsequent elections will revert
+to only requiring a simple majority to elect a new master.</p>
+</dl>
+<dt><b>nthreads</b><dd>Specify the number of threads of control created and dedicated to processing
+replication messages.  In addition to these message processing threads,
+the replication manager creates and manages a few of its own threads of
+control.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

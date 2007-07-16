@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: TestStore.java,v 1.2 2004/09/22 18:01:06 bostic Exp $
+ * $Id: TestStore.java,v 12.4 2006/08/24 14:46:47 bostic Exp $
  */
 
 package com.sleepycat.collections.test;
@@ -264,7 +264,7 @@ class TestStore {
             DbCompat.setRecordLength(config, 0);
         }
         config.setAllowCreate(true);
-        DbCompat.setDirtyRead(config, true);
+        DbCompat.setReadUncommitted(config, true);
         config.setTransactional(CurrentTransaction.getInstance(env) != null);
         if (primary != null) {
             return DbCompat.openSecondaryDatabase(env, null,

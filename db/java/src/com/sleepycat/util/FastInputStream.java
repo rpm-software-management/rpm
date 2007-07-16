@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: FastInputStream.java,v 1.2 2004/06/04 18:24:50 mark Exp $
+ * $Id: FastInputStream.java,v 12.5 2006/08/31 18:14:09 bostic Exp $
  */
 
 package com.sleepycat.util;
@@ -55,7 +55,7 @@ public class FastInputStream extends InputStream {
 
         buf = buffer;
         off = offset;
-        len = length;
+        len = offset + length;
     }
 
     // --- begin ByteArrayInputStream compatible methods ---
@@ -70,9 +70,9 @@ public class FastInputStream extends InputStream {
         return true;
     }
 
-    public void mark(int pos) {
+    public void mark(int readLimit) {
 
-        mark = pos;
+        mark = off;
     }
 
     public void reset() {
@@ -86,7 +86,7 @@ public class FastInputStream extends InputStream {
         if (myCount + off > len) {
             myCount = len - off;
         }
-        off += myCount;
+        skipFast(myCount);
         return myCount;
     }
 
@@ -106,6 +106,16 @@ public class FastInputStream extends InputStream {
     }
 
     // --- end ByteArrayInputStream compatible methods ---
+
+    /**
+     * Equivalent to <code>skip()<code> but takes an int parameter instead of a
+     * long, and does not check whether the count given is larger than the
+     * number of remaining bytes.
+     * @see #skip(long)
+     */
+    public final void skipFast(int count) {
+        off += count;
+    }
 
     /**
      * Equivalent to <code>read()<code> but does not throw
@@ -141,9 +151,8 @@ public class FastInputStream extends InputStream {
         if (length > avail) {
             length = avail;
         }
-        for (int i = 0; i < length; i++) {
-            toBuf[offset++] = buf[off++];
-        }
+        System.arraycopy(buf, off, toBuf, offset, length);
+        off += length;
         return length;
     }
 

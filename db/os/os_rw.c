@@ -1,62 +1,62 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_rw.c,v 11.39 2004/09/17 22:00:31 mjc Exp $
+ * $Id: os_rw.c,v 12.17 2006/08/24 14:46:18 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <string.h>
-#include <unistd.h>
-#endif
-
 #include "db_int.h"
-
-#ifdef HAVE_FILESYSTEM_NOTZERO
-static int __os_zerofill __P((DB_ENV *, DB_FH *));
-#endif
-static int __os_physwrite __P((DB_ENV *, DB_FH *, void *, size_t, size_t *));
 
 /*
  * __os_io --
  *	Do an I/O.
  *
- * PUBLIC: int __os_io __P((DB_ENV *,
- * PUBLIC:     int, DB_FH *, db_pgno_t, u_int32_t, u_int8_t *, size_t *));
+ * PUBLIC: int __os_io __P((DB_ENV *, int, DB_FH *, db_pgno_t,
+ * PUBLIC:     u_int32_t, u_int32_t, u_int32_t, u_int8_t *, size_t *));
  */
 int
-__os_io(dbenv, op, fhp, pgno, pagesize, buf, niop)
+__os_io(dbenv, op, fhp, pgno, pgsize, relative, io_len, buf, niop)
 	DB_ENV *dbenv;
 	int op;
 	DB_FH *fhp;
 	db_pgno_t pgno;
-	u_int32_t pagesize;
+	u_int32_t pgsize, relative, io_len;
 	u_int8_t *buf;
 	size_t *niop;
 {
 #if defined(HAVE_PREAD) && defined(HAVE_PWRITE)
+	off_t offset;
 	ssize_t nio;
 #endif
 	int ret;
 
-	/* Check for illegal usage. */
-	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
+	/*
+	 * Check for illegal usage.
+	 *
+	 * This routine is used in one of two ways: reading bytes from an
+	 * absolute offset and reading a specific database page.  All of
+	 * our absolute offsets are known to fit into a u_int32_t, while
+	 * our database pages might be at offsets larger than a u_int32_t.
+	 * We don't want to specify an absolute offset in our caller as we
+	 * aren't exactly sure what size an off_t might be.
+	 */
+	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
+	DB_ASSERT(dbenv, (pgno == 0 && pgsize == 0) || relative == 0);
 
 #if defined(HAVE_PREAD) && defined(HAVE_PWRITE)
+	if ((offset = relative) == 0)
+		offset = (off_t)pgno * pgsize;
 	switch (op) {
 	case DB_IO_READ:
 		if (DB_GLOBAL(j_read) != NULL)
 			goto slow;
-		nio = DB_GLOBAL(j_pread) != NULL ? DB_GLOBAL(j_pread)
-			(fhp->fd, buf, pagesize, (off_t)pgno * pagesize) :
-			pread(fhp->fd, buf, pagesize, (off_t)pgno * pagesize);
+		nio = DB_GLOBAL(j_pread) != NULL ?
+		    DB_GLOBAL(j_pread)(fhp->fd, buf, io_len, offset) :
+		    pread(fhp->fd, buf, io_len, offset);
 		break;
 	case DB_IO_WRITE:
 		if (DB_GLOBAL(j_write) != NULL)
@@ -65,37 +65,36 @@ __os_io(dbenv, op, fhp, pgno, pagesize, buf, niop)
 		if (__os_fs_notzero())
 			goto slow;
 #endif
-		nio = DB_GLOBAL(j_pwrite) != NULL ? DB_GLOBAL(j_pwrite)
-			(fhp->fd, buf, pagesize, (off_t)pgno * pagesize) :
-			pwrite(fhp->fd, buf, pagesize, (off_t)pgno * pagesize);
+		nio = DB_GLOBAL(j_pwrite) != NULL ?
+		    DB_GLOBAL(j_pwrite)(fhp->fd, buf, io_len, offset) :
+		    pwrite(fhp->fd, buf, io_len, offset);
 		break;
 	default:
 		return (EINVAL);
 	}
-	if (nio == (ssize_t)pagesize) {
-		*niop = pagesize;
+	if (nio == (ssize_t)io_len) {
+		*niop = io_len;
 		return (0);
 	}
 slow:
 #endif
-	MUTEX_THREAD_LOCK(dbenv, fhp->mutexp);
+	MUTEX_LOCK(dbenv, fhp->mtx_fh);
 
-	if ((ret = __os_seek(dbenv, fhp,
-	    pagesize, pgno, 0, 0, DB_OS_SEEK_SET)) != 0)
+	if ((ret = __os_seek(dbenv, fhp, pgno, pgsize, relative)) != 0)
 		goto err;
 	switch (op) {
 	case DB_IO_READ:
-		ret = __os_read(dbenv, fhp, buf, pagesize, niop);
+		ret = __os_read(dbenv, fhp, buf, io_len, niop);
 		break;
 	case DB_IO_WRITE:
-		ret = __os_write(dbenv, fhp, buf, pagesize, niop);
+		ret = __os_write(dbenv, fhp, buf, io_len, niop);
 		break;
 	default:
 		ret = EINVAL;
 		break;
 	}
 
-err:	MUTEX_THREAD_UNLOCK(dbenv, fhp->mutexp);
+err:	MUTEX_UNLOCK(dbenv, fhp->mtx_fh);
 
 	return (ret);
 
@@ -123,14 +122,15 @@ __os_read(dbenv, fhp, addr, len, nrp)
 	ret = 0;
 
 	/* Check for illegal usage. */
-	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
+	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 	if (DB_GLOBAL(j_read) != NULL) {
 		*nrp = len;
 		if (DB_GLOBAL(j_read)(fhp->fd, addr, len) != (ssize_t)len) {
-			ret = __os_get_errno();
-			__db_err(dbenv, "read: %#lx, %lu: %s",
-			    P_TO_ULONG(addr), (u_long)len, strerror(ret));
+			ret = __os_get_syserr();
+			__db_syserr(dbenv, ret, "read: %#lx, %lu",
+			    P_TO_ULONG(addr), (u_long)len);
+			ret = __os_posix_err(ret);
 		}
 		return (ret);
 	}
@@ -143,9 +143,11 @@ __os_read(dbenv, fhp, addr, len, nrp)
 			break;
 	}
 	*nrp = (size_t)(taddr - (u_int8_t *)addr);
-	if (ret != 0)
-		__db_err(dbenv, "read: %#lx, %lu: %s",
-		    P_TO_ULONG(taddr), (u_long)len - offset, strerror(ret));
+	if (ret != 0) {
+		__db_syserr(dbenv, ret, "read: %#lx, %lu",
+		    P_TO_ULONG(taddr), (u_long)len - offset);
+		ret = __os_posix_err(ret);
+	}
 	return (ret);
 }
 
@@ -164,7 +166,7 @@ __os_write(dbenv, fhp, addr, len, nwp)
 	size_t *nwp;
 {
 	/* Check for illegal usage. */
-	DB_ASSERT(F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
+	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 #ifdef HAVE_FILESYSTEM_NOTZERO
 	/* Zero-fill as necessary. */
@@ -180,8 +182,11 @@ __os_write(dbenv, fhp, addr, len, nwp)
 /*
  * __os_physwrite --
  *	Physical write to a file handle.
+ *
+ * PUBLIC: int __os_physwrite
+ * PUBLIC:     __P((DB_ENV *, DB_FH *, void *, size_t, size_t *));
  */
-static int
+int
 __os_physwrite(dbenv, fhp, addr, len, nwp)
 	DB_ENV *dbenv;
 	DB_FH *fhp;
@@ -201,18 +206,34 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 		struct stat sb;
 		off_t cur_off;
 
-		DB_ASSERT(fstat(fhp->fd, &sb) != -1 &&
+		DB_ASSERT(dbenv, fstat(fhp->fd, &sb) != -1 &&
 		    (cur_off = lseek(fhp->fd, (off_t)0, SEEK_CUR)) != -1 &&
 		    cur_off <= sb.st_size);
 	}
 #endif
 
+	/*
+	 * Make a last "panic" check.  Imagine a thread of control running in
+	 * Berkeley DB, going to sleep.  Another thread of control decides to
+	 * run recovery because the environment is broken.  The first thing
+	 * recovery does is panic the existing environment, but we only check
+	 * the panic flag when crossing the public API.  If the sleeping thread
+	 * wakes up and writes something, we could have two threads of control
+	 * writing the log files at the same time.  So, before writing, make a
+	 * last panic check.  Obviously, there's still a window, but it's very,
+	 * very small.
+	 */
+	PANIC_CHECK(dbenv);
+
 	if (DB_GLOBAL(j_write) != NULL) {
 		*nwp = len;
 		if (DB_GLOBAL(j_write)(fhp->fd, addr, len) != (ssize_t)len) {
-			ret = __os_get_errno();
-			__db_err(dbenv, "write: %#lx, %lu: %s",
-			    P_TO_ULONG(addr), (u_long)len, strerror(ret));
+			ret = __os_get_syserr();
+			__db_syserr(dbenv, ret, "write: %#lx, %lu",
+			    P_TO_ULONG(addr), (u_long)len);
+			ret = __os_posix_err(ret);
+
+			DB_EVENT(dbenv, DB_EVENT_WRITE_FAILED, NULL);
 		}
 		return (ret);
 	}
@@ -225,95 +246,12 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 			break;
 	}
 	*nwp = len;
-	if (ret != 0)
-		__db_err(dbenv, "write: %#lx, %lu: %s",
-		    P_TO_ULONG(taddr), (u_long)len - offset, strerror(ret));
+	if (ret != 0) {
+		__db_syserr(dbenv, ret, "write: %#lx, %lu",
+		    P_TO_ULONG(taddr), (u_long)len - offset);
+		ret = __os_posix_err(ret);
+
+		DB_EVENT(dbenv, DB_EVENT_WRITE_FAILED, NULL);
+	}
 	return (ret);
 }
-
-#ifdef HAVE_FILESYSTEM_NOTZERO
-/*
- * __os_zerofill --
- *	Zero out bytes in the file.
- *
- *	Pages allocated by writing pages past end-of-file are not zeroed,
- *	on some systems.  Recovery could theoretically be fooled by a page
- *	showing up that contained garbage.  In order to avoid this, we
- *	have to write the pages out to disk, and flush them.  The reason
- *	for the flush is because if we don't sync, the allocation of another
- *	page subsequent to this one might reach the disk first, and if we
- *	crashed at the right moment, leave us with this page as the one
- *	allocated by writing a page past it in the file.
- */
-static int
-__os_zerofill(dbenv, fhp)
-	DB_ENV *dbenv;
-	DB_FH *fhp;
-{
-	off_t stat_offset, write_offset;
-	size_t blen, nw;
-	u_int32_t bytes, mbytes;
-	int group_sync, need_free, ret;
-	u_int8_t buf[8 * 1024], *bp;
-
-	/* Calculate the byte offset of the next write. */
-	write_offset = (off_t)fhp->pgno * fhp->pgsize + fhp->offset;
-
-	/* Stat the file. */
-	if ((ret = __os_ioinfo(dbenv, NULL, fhp, &mbytes, &bytes, NULL)) != 0)
-		return (ret);
-	stat_offset = (off_t)mbytes * MEGABYTE + bytes;
-
-	/* Check if the file is large enough. */
-	if (stat_offset >= write_offset)
-		return (0);
-
-	/* Get a large buffer if we're writing lots of data. */
-#undef	ZF_LARGE_WRITE
-#define	ZF_LARGE_WRITE	(64 * 1024)
-	if (write_offset - stat_offset > ZF_LARGE_WRITE) {
-		if ((ret = __os_calloc(dbenv, 1, ZF_LARGE_WRITE, &bp)) != 0)
-			    return (ret);
-		blen = ZF_LARGE_WRITE;
-		need_free = 1;
-	} else {
-		bp = buf;
-		blen = sizeof(buf);
-		need_free = 0;
-		memset(buf, 0, sizeof(buf));
-	}
-
-	/* Seek to the current end of the file. */
-	if ((ret = __os_seek(
-	    dbenv, fhp, MEGABYTE, mbytes, bytes, 0, DB_OS_SEEK_SET)) != 0)
-		goto err;
-
-	/*
-	 * Hash is the only access method that allocates groups of pages.  Hash
-	 * uses the existence of the last page in a group to signify the entire
-	 * group is OK; so, write all the pages but the last one in the group,
-	 * flush them to disk, then write the last one to disk and flush it.
-	 */
-	for (group_sync = 0; stat_offset < write_offset; group_sync = 1) {
-		if (write_offset - stat_offset <= blen) {
-			blen = (size_t)(write_offset - stat_offset);
-			if (group_sync && (ret = __os_fsync(dbenv, fhp)) != 0)
-				goto err;
-		}
-		if ((ret = __os_physwrite(dbenv, fhp, bp, blen, &nw)) != 0)
-			goto err;
-		stat_offset += blen;
-	}
-	if ((ret = __os_fsync(dbenv, fhp)) != 0)
-		goto err;
-
-	/* Seek back to where we started. */
-	mbytes = (u_int32_t)(write_offset / MEGABYTE);
-	bytes = (u_int32_t)(write_offset % MEGABYTE);
-	ret = __os_seek(dbenv, fhp, MEGABYTE, mbytes, bytes, 0, DB_OS_SEEK_SET);
-
-err:	if (need_free)
-		__os_free(dbenv, bp);
-	return (ret);
-}
-#endif

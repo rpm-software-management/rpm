@@ -11,7 +11,7 @@
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
     <link rel="up" href="index.html" title="Berkeley DB Collections Tutorial" />
     <link rel="previous" href="Summary.html" title="Chapter 7. &#10;&#9;&#9;Summary&#10;&#9;" />
-    <link rel="next" href="UsingCollectionsAPI.html" title="&#10;        Using the Sleepycat Java Collections API&#10;    " />
+    <link rel="next" href="UsingCollectionsAPI.html" title="&#10;        Using the  Java Collections API&#10;    " />
   </head>
   <body>
     <div class="navheader">
@@ -57,7 +57,7 @@
           <li>
             <p>
                 <a href="UsingCollectionsAPI.html">
-        Using the Sleepycat Java Collections API
+        Using the  Java Collections API
     </a>
             </p>
           </li>
@@ -193,10 +193,10 @@
         As shown in the table above, the tuple format supports built-in ordering
         (without specifying a custom comparator), while the serial format does
         not. This means that when a specific key order is needed, tuples should
-        be used instead of serial data. Alternatively, a custom BTree comparator should be
+        be used instead of serial data. Alternatively, a custom Btree comparator should be
         specified using
         <tt class="methodname">DatabaseConfig.setBtreeComparator()</tt>. Note that
-        a custom BTree comparator will usually execute more slowly than the
+        a custom Btree comparator will usually execute more slowly than the
         default byte-by-byte comparison. This makes using tuples an attractive
         option, since they provide ordering along with optimal performance.
     </p>
@@ -250,7 +250,7 @@
                     
                 in other cases will create a database that is not portable
                 between platforms. When constructing the stored collection, 
-                the Sleepycat Java Collections API will throw an
+                the  Java Collections API will throw an
                     <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/IllegalArgumentException.html" target="_top">IllegalArgumentException</a>
                     
                 in such cases.
@@ -464,7 +464,7 @@
             <a accesskey="h" href="index.html">Home</a>
           </td>
           <td width="40%" align="right" valign="top"> 
-        Using the Sleepycat Java Collections API
+        Using the  Java Collections API
     </td>
         </tr>
       </table>

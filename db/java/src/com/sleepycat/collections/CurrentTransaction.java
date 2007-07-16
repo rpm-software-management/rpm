@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: CurrentTransaction.java,v 1.4 2004/09/22 18:01:02 bostic Exp $
+ * $Id: CurrentTransaction.java,v 12.7 2006/09/08 20:32:13 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -43,6 +43,7 @@ public class CurrentTransaction {
     private LockMode writeLockMode;
     private boolean cdbMode;
     private boolean txnMode;
+    private boolean lockingMode;
     private Environment env;
     private ThreadLocal localTrans = new ThreadLocal();
     private ThreadLocal localCdbCursors;
@@ -85,7 +86,8 @@ public class CurrentTransaction {
         try {
             EnvironmentConfig config = env.getConfig();
             txnMode = config.getTransactional();
-            if (txnMode || DbCompat.getInitializeLocking(config)) {
+            lockingMode = DbCompat.getInitializeLocking(config);
+            if (txnMode || lockingMode) {
                 writeLockMode = LockMode.RMW;
             } else {
                 writeLockMode = LockMode.DEFAULT;
@@ -97,6 +99,14 @@ public class CurrentTransaction {
         } catch (DatabaseException e) {
             throw new RuntimeExceptionWrapper(e);
         }
+    }
+
+    /**
+     * Returns whether environment is configured for locking.
+     */
+    final boolean isLockingMode() {
+
+        return lockingMode;
     }
 
     /**
@@ -142,6 +152,18 @@ public class CurrentTransaction {
 
         Trans trans = (Trans) localTrans.get();
         return (trans != null) ? trans.txn : null;
+    }
+
+    /**
+     * Returns whether auto-commit may be performed by the collections API.
+     * True is returned no collections API transaction is currently active, and
+     * no XA transaction is currently active.
+     */
+    boolean isAutoCommitAllowed()
+	throws DatabaseException {
+
+        return getTransaction() == null &&
+               DbCompat.getThreadTransaction(env) == null;
     }
 
     /**
@@ -244,13 +266,14 @@ public class CurrentTransaction {
     }
 
     /**
-     * Returns whether the current transaction is a dirtyRead transaction.
+     * Returns whether the current transaction is a readUncommitted
+     * transaction.
      */
-    final boolean isDirtyRead() {
+    final boolean isReadUncommitted() {
 
         Trans trans = (Trans) localTrans.get();
         if (trans != null && trans.config != null) {
-            return trans.config.getDirtyRead();
+            return trans.config.getReadUncommitted();
         } else {
             return false;
         }
@@ -279,7 +302,8 @@ public class CurrentTransaction {
      * Opens a cursor for a given database, dup'ing an existing CDB cursor if
      * one is open for the current thread.
      */
-    Cursor openCursor(Database db, boolean writeCursor, Transaction txn)
+    Cursor openCursor(Database db, CursorConfig cursorConfig,
+                      boolean writeCursor, Transaction txn)
         throws DatabaseException {
 
         if (cdbMode) {
@@ -295,8 +319,15 @@ public class CurrentTransaction {
                 cdbCursors = new CdbCursors();
                 cdbCursorsMap.put(db, cdbCursors);
             }
+
+            /*
+             * In CDB mode the cursorConfig specified by the user is ignored
+             * and only the writeCursor parameter is honored.  This is the only
+             * meaningful cursor attribute for CDB, and here we count on
+             * writeCursor flag being set correctly by the caller.
+             */
             List cursors;
-            CursorConfig config;
+            CursorConfig cdbConfig;
             if (writeCursor) {
                 if (cdbCursors.readCursors.size() > 0) {
 
@@ -310,23 +341,23 @@ public class CurrentTransaction {
                       "cannot open CDB write cursor when read cursor is open");
                 }
                 cursors = cdbCursors.writeCursors;
-                config = new CursorConfig();
-                DbCompat.setWriteCursor(config, true);
+                cdbConfig = new CursorConfig();
+                DbCompat.setWriteCursor(cdbConfig, true);
             } else {
                 cursors = cdbCursors.readCursors;
-                config = null;
+                cdbConfig = null;
             }
             Cursor cursor;
             if (cursors.size() > 0) {
                 Cursor other = ((Cursor) cursors.get(0));
                 cursor = other.dup(false);
             } else {
-                cursor = db.openCursor(null, config);
+                cursor = db.openCursor(null, cdbConfig);
             }
             cursors.add(cursor);
             return cursor;
         } else {
-            return db.openCursor(txn, null);
+            return db.openCursor(txn, cursorConfig);
         }
     }
 
@@ -411,13 +442,9 @@ public class CurrentTransaction {
             if (cdbCursorsMap != null) {
                 CdbCursors cdbCursors = (CdbCursors) cdbCursorsMap.get(db);
 
-		/*
-		 * FindBugs whines unnecessarily about a Null pointer
-		 * dereference here.
-		 */
                 if (cdbCursors != null &&
-                    cdbCursors.readCursors.size() > 0 ||
-                    cdbCursors.writeCursors.size() > 0) {
+                    (cdbCursors.readCursors.size() > 0 ||
+                     cdbCursors.writeCursors.size() > 0)) {
                     return true;
                 }
             }

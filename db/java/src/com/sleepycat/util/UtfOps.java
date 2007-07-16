@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: UtfOps.java,v 1.2 2004/06/04 18:24:51 mark Exp $
+ * $Id: UtfOps.java,v 12.3 2006/08/31 18:14:09 bostic Exp $
  */
 
 package com.sleepycat.util;

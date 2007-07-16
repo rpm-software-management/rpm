@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd020.tcl,v 11.3 2004/09/22 18:01:05 bostic Exp $
+# $Id: recd020.tcl,v 12.4 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	recd020
 # TEST	Test creation of intermediate directories -- an
@@ -51,6 +51,7 @@ proc recd020 { method args } {
 	}
 	error_check_good txn_commit [$txn commit] 0
 	error_check_good db_close [$db close] 0
+	error_check_good log_flush [$env log_flush] 0
 	error_check_good env_close [$env close] 0
 
 	puts "\tRecd$tnum.b: Remove intermediate directory."
@@ -75,6 +76,7 @@ proc recd020 { method args } {
 
 	# Clean up.
 	error_check_good db_close [$db close] 0
+	error_check_good log_flush [$env log_flush] 0
 	error_check_good env_close [$env close] 0
 
 }

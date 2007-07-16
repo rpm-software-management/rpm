@@ -51,8 +51,7 @@
 	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
 	
 	objects for each store. All standard Java methods for retrieving
-	objects from a collection may be used with the Sleepycat Java Collections
-	API.
+	objects from a collection may be used with the  Java Collections API.
 </p>
       <p>
     The <tt class="methodname">PrintDatabase.doWork()</tt> method calls
@@ -77,11 +76,11 @@ public class Sample
         public void doWork()
             throws Exception
         {
-<b class="userinput"><tt>            printEntries("Parts",
+<b class="userinput"><tt>            printEntries(&quot;Parts&quot;,
                           views.getPartEntrySet().iterator());
-            printEntries("Suppliers",
+            printEntries(&quot;Suppliers&quot;,
                           views.getSupplierEntrySet().iterator());
-            printEntries("Shipments",
+            printEntries(&quot;Shipments&quot;,
                           views.getShipmentEntrySet().iterator());</tt></b>
         }
     }
@@ -116,7 +115,7 @@ public class Sample
       <a id="cb_printentries"></a>
       <pre class="programlisting">    private void printEntries(String label, Iterator iterator)
     {
-<b class="userinput"><tt>        System.out.println("\n--- " + label + " ---");
+<b class="userinput"><tt>        System.out.println(&quot;\n--- &quot; + label + &quot; ---&quot;);
         try
         {
             while (iterator.hasNext())

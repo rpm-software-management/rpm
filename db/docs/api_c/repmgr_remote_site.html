@@ -1,0 +1,68 @@
+<!--$Id: repmgr_remote_site.so,v 1.5 2006/09/08 18:33:38 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;repmgr_add_remote_site</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;repmgr_add_remote_site</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;repmgr_add_remote_site(DB_ENV *env,
+    const char *host, u_int port, int *eidp, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;repmgr_add_remote_site</h3>
+<p>The DB_ENV-&gt;repmgr_add_remote_site method adds a new replication site to the
+replication manager's list of known sites.  It is not necessary for
+all sites in a replication group to know about all other sites in the
+group.</p>
+<p>The DB_ENV-&gt;repmgr_add_remote_site method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;repmgr_add_remote_site method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>eidp</b><dd>If <b>eidp</b> is non-NULL, the
+environment ID assigned to the remote site is
+returned in the memory location referenced by <b>eidp</b>.
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
+<dl compact>
+<dt><a name="DB_REPMGR_PEER">DB_REPMGR_PEER</a><dd>Specifying the DB_REPMGR_PEER flag configures client-to-client
+synchronization with the specified remote site.
+<p>Currently, the replication manager framework only supports a single client
+peer, and the last specified peer is used.</p>
+</dl>
+<dt><b>host</b><dd>The site's host identification string, generally a TCP/IP host name.
+<dt><b>port</b><dd>The port number on which the remote site is receiving.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

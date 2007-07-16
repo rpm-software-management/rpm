@@ -1,23 +1,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2004-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_seq.c,v 11.12 2004/10/25 18:02:56 bostic Exp $
+ * $Id: tcl_seq.c,v 12.6 2006/08/24 14:46:33 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifdef HAVE_SEQUENCE
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#include <tcl.h>
-#endif
+#ifdef HAVE_64BIT_TYPES
 
 #include "db_int.h"
+#ifndef NO_SYSTEM_INCLUDES
+#include <tcl.h>
+#endif
 #include "dbinc/tcl_db.h"
 #include "dbinc_auto/sequence_ext.h"
 
@@ -291,13 +287,11 @@ tcl_SeqGet(interp, objc, objv, seq)
 	DB_SEQUENCE *seq;		/* Sequence pointer */
 {
 	static const char *seqgetopts[] = {
-		"-auto_commit",
 		"-nosync",
 		"-txn",
 		NULL
 	};
 	enum seqgetopts {
-		SEQGET_AUTO_COMMIT,
 		SEQGET_NOSYNC,
 		SEQGET_TXN
 	};
@@ -336,9 +330,6 @@ tcl_SeqGet(interp, objc, objv, seq)
 		}
 		i++;
 		switch ((enum seqgetopts)optindex) {
-		case SEQGET_AUTO_COMMIT:
-			aflag |= DB_AUTO_COMMIT;
-			break;
 		case SEQGET_NOSYNC:
 			aflag |= DB_TXN_NOSYNC;
 			break;
@@ -394,13 +385,11 @@ tcl_SeqRemove(interp, objc, objv, seq, ip)
 	DBTCL_INFO *ip;			/* Info pointer */
 {
 	static const char *seqgetopts[] = {
-		"-auto_commit",
 		"-nosync",
 		"-txn",
 		NULL
 	};
 	enum seqgetopts {
-		SEQGET_AUTO_COMMIT,
 		SEQGET_NOSYNC,
 		SEQGET_TXN
 	};
@@ -439,9 +428,6 @@ tcl_SeqRemove(interp, objc, objv, seq, ip)
 		}
 		i++;
 		switch ((enum seqgetopts)optindex) {
-		case SEQGET_AUTO_COMMIT:
-			aflag |= DB_AUTO_COMMIT;
-			break;
 		case SEQGET_NOSYNC:
 			aflag |= DB_TXN_NOSYNC;
 			break;
@@ -523,4 +509,4 @@ tcl_SeqGetFlags(interp, objc, objv, seq)
 
 	return (result);
 }
-#endif /* HAVE_SEQUENCE */
+#endif /* HAVE_64BIT_TYPES */

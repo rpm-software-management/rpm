@@ -1,0 +1,92 @@
+<!--$Id: env_failchk.so,v 10.5 2006/05/26 20:40:50 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;failchk</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;failchk</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;dbenv_failchk(DB_ENV *dbenv, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;failchk</h3>
+<p>The DB_ENV-&gt;failchk method checks for threads of control (either a true
+thread or a process) that have exited while manipulating Berkeley DB library
+data structures, while holding a logical database lock, or with an
+unresolved transaction (that is, a transaction that was never aborted
+or committed).  For more information, see <a href="../ref/cam/app.html">Architecting Data Store and Concurrent Data Store applications</a>, and
+<a href="../ref/transapp/app.html">Architecting Transactional Data Store
+applications</a>.</p>
+<p>The DB_ENV-&gt;failchk method is based on the "thread_id" and "is_alive"
+functions specified to the <a href="../api_c/env_set_thread_id.html">DB_ENV-&gt;set_thread_id</a> method.  Applications
+calling the DB_ENV-&gt;failchk method must have already called the
+<a href="../api_c/env_set_isalive.html">DB_ENV-&gt;set_isalive</a> method, on the same <a href="../api_c/env_class.html">DB_ENV</a>, and must have
+configured their database environment using the
+<a href="../api_c/env_set_thread_count.html">DB_ENV-&gt;set_thread_count</a> method.</p>
+<p>If DB_ENV-&gt;failchk determines a thread of control exited while
+holding database read locks, it will release those locks.  If
+DB_ENV-&gt;failchk determines a thread of control exited with an
+unresolved transaction, the transaction will be aborted.  In either of
+these cases, DB_ENV-&gt;failchk will return 0 and the application may
+continue to use the database environment.</p>
+<p>In either of these cases, the DB_ENV-&gt;failchk method will also report
+the process and thread IDs associated with any released locks or
+aborted transactions.  The information is printed to a specified output
+channel (see the <a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or
+passed to an application callback function (see the
+<a href="../api_c/env_set_msgcall.html">DB_ENV-&gt;set_msgcall</a> method for more information).</p>
+<p>If DB_ENV-&gt;failchk determines a thread of control has exited such
+that database environment recovery is required, it will return
+<a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>.  In this case, the application should not
+continue to use the database environment.  For a further description as
+to the actions the application should take when this failure occurs, see
+<a href="../ref/cam/fail.html">Handling failure in Data Store and
+Concurrent Data Store applications</a>, and
+<a href="../ref/transapp/fail.html">Handling failure in Transactional
+Data Store applications</a>.</p>
+<p>The DB_ENV-&gt;failchk method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
+been called.</p>
+<p>The DB_ENV-&gt;failchk method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;failchk method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

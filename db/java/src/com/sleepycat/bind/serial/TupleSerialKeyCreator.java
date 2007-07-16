@@ -1,15 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleSerialKeyCreator.java,v 1.4 2004/08/02 18:52:04 mjc Exp $
+ * $Id: TupleSerialKeyCreator.java,v 12.4 2006/08/31 18:14:05 bostic Exp $
  */
 
 package com.sleepycat.bind.serial;
 
-import com.sleepycat.bind.tuple.TupleBinding;
+import com.sleepycat.bind.tuple.TupleBase;
 import com.sleepycat.bind.tuple.TupleInput;
 import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.db.DatabaseEntry;
@@ -30,7 +30,7 @@ import com.sleepycat.db.SecondaryKeyCreator;
  *
  * @author Mark Hayes
  */
-public abstract class TupleSerialKeyCreator
+public abstract class TupleSerialKeyCreator extends TupleBase
     implements SecondaryKeyCreator {
 
     protected SerialBinding dataBinding;
@@ -65,12 +65,11 @@ public abstract class TupleSerialKeyCreator
                                       DatabaseEntry indexKeyEntry)
         throws DatabaseException {
 
-        TupleOutput output = TupleBinding.newOutput();
-        TupleInput primaryKeyInput =
-            TupleBinding.entryToInput(primaryKeyEntry);
+        TupleOutput output = getTupleOutput(null);
+        TupleInput primaryKeyInput = entryToInput(primaryKeyEntry);
         Object dataInput = dataBinding.entryToObject(dataEntry);
         if (createSecondaryKey(primaryKeyInput, dataInput, output)) {
-            TupleBinding.outputToEntry(output, indexKeyEntry);
+            outputToEntry(output, indexKeyEntry);
             return true;
         } else {
             return false;

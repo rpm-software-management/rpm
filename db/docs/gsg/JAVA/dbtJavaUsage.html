@@ -44,7 +44,7 @@
         Again, remember that you can find the complete implementation for these functions
         in:
     </p>
-      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
       <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.
@@ -79,7 +79,7 @@
       </p>
         <a id="java_dbt16"></a>
         <pre class="programlisting">// File Inventory.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
 
 public class Inventory {
 
@@ -135,7 +135,7 @@ public class Inventory {
       </p>
         <a id="java_dbt17"></a>
         <pre class="programlisting">// File Vendor.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
 
 import java.io.Serializable;
 
@@ -184,8 +184,7 @@ public class Vendor implements Serializable {
 
     ...
     // Corresponding getter methods omitted for brevity.
-    // See examples/com/sleepycat/examples/je/gettingStarted/
-    //   examples/Vendor.java
+    // See examples/je/gettingStarted/Vendor.java
     // for a complete implementation of this class.
 
 } </pre>
@@ -202,7 +201,7 @@ public class Vendor implements Serializable {
         </p>
         <a id="java_dbt18"></a>
         <pre class="programlisting">// File InventoryBinding.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
 
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleInput;
@@ -320,7 +319,7 @@ public class InventoryBinding extends TupleBinding {
         </p>
         <a id="java_dbt19"></a>
         <pre class="programlisting">// File: MyDbs.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
                                                                                                                                   
 <b class="userinput"><tt>import com.sleepycat.bind.serial.StoredClassCatalog;</tt></b>
 
@@ -346,9 +345,9 @@ import java.io.FileNotFoundException; </pre>
     // Needed for object serialization
     private StoredClassCatalog classCatalog;</tt></b>
 
-    private String vendordb = "VendorDB.db";
-    private String inventorydb = "InventoryDB.db";
-    <b class="userinput"><tt>private String classcatalogdb = "ClassCatalogDB.db";</tt></b>
+    private String vendordb = &quot;VendorDB.db&quot;;
+    private String inventorydb = &quot;InventoryDB.db&quot;;
+    <b class="userinput"><tt>private String classcatalogdb = &quot;ClassCatalogDB.db&quot;;</tt></b>
 
     // Our constructor does nothing
     public MyDbs() {} </pre>
@@ -371,25 +370,25 @@ import java.io.FileNotFoundException; </pre>
         // Now open, or create and open, our databases
         // Open the vendors and inventory databases
         try {
-            vendordb = databasesHome + "/" + vendordb;
+            vendordb = databasesHome + &quot;/&quot; + vendordb;
             vendorDb = new Database(vendordb,
                                     null,
                                     myDbConfig);
 
-            inventorydb = databasesHome + "/" + inventorydb;
+            inventorydb = databasesHome + &quot;/&quot; + inventorydb;
             inventoryDb = new Database(inventorydb,
                                         null,
                                         myDbConfig);
 
             <b class="userinput"><tt>// Open the class catalog db. This is used to
             // optimize class serialization.
-            classcatalogdb = databasesHome + "/" + classcatalogdb;
+            classcatalogdb = databasesHome + &quot;/&quot; + classcatalogdb;
             classCatalogDb = new Database(classcatalogdb,
                                           null,
                                           myDbConfig); </tt></b>
 
         } catch(FileNotFoundException fnfe) {
-            System.err.println("MyDbs: " + fnfe.toString());
+            System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
             System.exit(-1);
         }
     } </pre>
@@ -435,7 +434,7 @@ import java.io.FileNotFoundException; </pre>
                 classCatalogDb.close();
             }</tt></b>
         } catch(DatabaseException dbe) {
-            System.err.println("Error closing MyDbs: " +
+            System.err.println(&quot;Error closing MyDbs: &quot; +
                                 dbe.toString());
             System.exit(-1);
         }
@@ -460,7 +459,7 @@ import java.io.FileNotFoundException; </pre>
         <p>First we need the usual series of import statements:</p>
         <a id="java_dbt24"></a>
         <pre class="programlisting">// File: ExampleDatabaseLoad.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
                                                                                                                                        
 import java.io.BufferedReader;
 import java.io.File;
@@ -469,6 +468,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
@@ -491,9 +491,9 @@ import com.sleepycat.db.DatabaseException; </pre>
         <a id="java_dbt25"></a>
         <pre class="programlisting">public class ExampleDatabaseLoad {
 
-    private static String myDbsPath = "./";
-    private static File inventoryFile = new File("./inventory.txt");
-    private static File vendorsFile = new File("./vendors.txt");
+    private static String myDbsPath = &quot;./&quot;;
+    private static File inventoryFile = new File(&quot;./inventory.txt&quot;);
+    private static File vendorsFile = new File(&quot;./vendors.txt&quot;);
 
     // DatabaseEntries used for loading records
     private static DatabaseEntry theKey = new DatabaseEntry();
@@ -517,8 +517,8 @@ import com.sleepycat.db.DatabaseException; </pre>
       handles for you.</p>
         <a id="java_dbt26"></a>
         <pre class="programlisting">    private static void usage() {
-        System.out.println("ExampleDatabaseLoad [-h &lt;database home&gt;]");
-        System.out.println("      [-s &lt;selections file&gt;] [-v &lt;vendors file&gt;]");
+        System.out.println(&quot;ExampleDatabaseLoad [-h &lt;database home&gt;]&quot;);
+        System.out.println(&quot;      [-s &lt;selections file&gt;] [-v &lt;vendors file&gt;]&quot;);
         System.exit(-1);
     }
 
@@ -527,15 +527,15 @@ import com.sleepycat.db.DatabaseException; </pre>
         try {
             edl.run(args);
         } catch (DatabaseException dbe) {
-            System.err.println("ExampleDatabaseLoad: " + dbe.toString());
+            System.err.println(&quot;ExampleDatabaseLoad: &quot; + dbe.toString());
             dbe.printStackTrace();
         } catch (Exception e) {
-            System.out.println("Exception: " + e.toString());
+            System.out.println(&quot;Exception: &quot; + e.toString());
             e.printStackTrace();
         } finally {
             myDbs.close();
         }
-        System.out.println("All done.");
+        System.out.println(&quot;All done.&quot;);
     } </pre>
         <p>Next we write the <tt class="methodname">ExampleDatabaseLoad.run()</tt>
       method. This method is responsible for initializing all objects. 
@@ -551,9 +551,9 @@ import com.sleepycat.db.DatabaseException; </pre>
 
         myDbs.setup(myDbsPath); // path to the environment home
 
-        System.out.println("loading vendors db.");
+        System.out.println(&quot;loading vendors db.&quot;);
         loadVendorsDb();
-        System.out.println("loading inventory db.");
+        System.out.println(&quot;loading inventory db.&quot;);
         loadInventoryDb();
     } </pre>
         <p>This next method loads the vendor database. This method
@@ -567,7 +567,7 @@ import com.sleepycat.db.DatabaseException; </pre>
         // and loads it into a list for us to work with. The integer
         // parameter represents the number of fields expected in the
         // file.
-        ArrayList vendors = loadFile(vendorsFile, 8);
+        List vendors = loadFile(vendorsFile, 8);
 
         // Now load the data into the database. The vendor's name is the
         // key, and the data is a Vendor class object.
@@ -592,7 +592,7 @@ import com.sleepycat.db.DatabaseException; </pre>
             // ASSUMES THE VENDOR'S NAME IS UNIQUE!
             String vendorName = theVendor.getVendorName();
             try {
-                theKey = new DatabaseEntry(vendorName.getBytes("UTF-8"));
+                theKey = new DatabaseEntry(vendorName.getBytes(&quot;UTF-8&quot;));
             } catch (IOException willNeverOccur) {}
 
             // Convert the Vendor object to a DatabaseEntry object
@@ -614,7 +614,7 @@ import com.sleepycat.db.DatabaseException; </pre>
         // and loads it into a list for us to work with. The integer
         // parameter represents the number of fields expected in the
         // file.
-        ArrayList inventoryArray = loadFile(inventoryFile, 6);
+        List inventoryArray = loadFile(inventoryFile, 6);
 
         // Now load the data into the database. The item's sku is the
         // key, and the data is an Inventory class object.
@@ -626,7 +626,7 @@ import com.sleepycat.db.DatabaseException; </pre>
             String[] sArray = (String[])inventoryArray.get(i);
             String sku = sArray[1];
             try {
-                theKey = new DatabaseEntry(sku.getBytes("UTF-8"));
+                theKey = new DatabaseEntry(sku.getBytes(&quot;UTF-8&quot;));
             } catch (IOException willNeverOccur) {}
 
             Inventory theInventory = new Inventory();
@@ -659,8 +659,8 @@ import com.sleepycat.db.DatabaseException; </pre>
         // Implementation omitted for brevity.
     }
 
-    private ArrayList loadFile(File theFile, int numFields) {
-        ArrayList records = new ArrayList();
+    private List loadFile(File theFile, int numFields) {
+        List records = new ArrayList();
         // Implementation omitted for brevity.
         return records;
     }
@@ -673,7 +673,7 @@ import com.sleepycat.db.DatabaseException; </pre>
         implemented by looking at <tt class="filename">ExampleDatabaseLoad.java</tt>
         in:
       </p>
-        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
         <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.

@@ -1,5 +1,5 @@
 <!--$Id: intro.so,v 10.25 2003/10/18 19:16:10 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -73,7 +73,7 @@ transaction subsystem.  It is the programmatic interface used by the
 <p>The transaction system is closed by a call to <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a>.</p>
 <p>Finally, the entire transaction system may be removed using the
 <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method.</p>
-<!--$Id: m4.methods,v 1.5 2004/11/03 15:52:02 bostic Exp $-->
+<!--$Id: m4.methods,v 1.6 2005/03/16 21:26:51 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Transaction Subsystem and Related Methods</th><th>Description</th></tr>
 <!--DbEnv::txn_checkpoint--><tr><td><a href="../../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a></td><td>Checkpoint the transaction subsystem</td></tr>
@@ -91,10 +91,11 @@ transaction subsystem.  It is the programmatic interface used by the
 <!--DbTxn::discard--><tr><td><a href="../../api_c/txn_discard.html">DB_TXN-&gt;discard</a></td><td>Discard a prepared but not resolved transaction handle</td></tr>
 <!--DbTxn::id--><tr><td><a href="../../api_c/txn_id.html">DB_TXN-&gt;id</a></td><td>Return a transaction's ID</td></tr>
 <!--DbTxn::prepare--><tr><td><a href="../../api_c/txn_prepare.html">DB_TXN-&gt;prepare</a></td><td>Prepare a transaction for commit</td></tr>
+<!--DbTxn::set_name--><tr><td><a href="../../api_c/txn_set_name.html">DB_TXN-&gt;set_name</a></td><td>Associate a string with a transaction</td></tr>
 <!--DbTxn::set_timeout--><tr><td><a href="../../api_c/txn_set_timeout.html">DB_TXN-&gt;set_timeout</a></td><td>Set transaction timeout</td></tr>
 </table>
 <table width="100%"><tr><td><br></td><td align=right><a href="../mp/config.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../txn/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

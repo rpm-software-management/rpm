@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredValueSet.java,v 1.3 2004/06/04 18:24:50 mark Exp $
+ * $Id: StoredValueSet.java,v 12.4 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -14,6 +14,7 @@ import java.util.Set;
 import com.sleepycat.bind.EntityBinding;
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.db.Database;
+import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.OperationStatus;
 
@@ -23,17 +24,6 @@ import com.sleepycat.db.OperationStatus;
  * Although this collection is a set it may contain duplicate values.  Only if
  * an entity value binding is used are all elements guaranteed to be unique.
  *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
- *
  * @author Mark Hayes
  */
 public class StoredValueSet extends StoredCollection implements Set {
@@ -41,8 +31,6 @@ public class StoredValueSet extends StoredCollection implements Set {
     /*
      * This class is also used internally for the set returned by duplicates().
      */
-
-    private boolean isSingleKey;
 
     /**
      * Creates a value set view of a {@link Database}.
@@ -99,12 +87,6 @@ public class StoredValueSet extends StoredCollection implements Set {
         super(valueSetView);
     }
 
-    StoredValueSet(DataView valueSetView, boolean isSingleKey) {
-
-        super(valueSetView);
-        this.isSingleKey = isSingleKey;
-    }
-
     /**
      * Adds the specified entity to this set if it is not already present
      * (optional operation).
@@ -126,7 +108,7 @@ public class StoredValueSet extends StoredCollection implements Set {
         if (view.isSecondary()) {
             throw new UnsupportedOperationException(
                 "add() not allowed with index");
-        } else if (isSingleKey) {
+        } else if (view.range.isSingleKey()) {
             /* entity is actually just a value in this case */
             if (!view.dupsAllowed) {
                 throw new UnsupportedOperationException("duplicates required");
@@ -185,32 +167,12 @@ public class StoredValueSet extends StoredCollection implements Set {
         return removeValue(value);
     }
 
-    // javadoc is inherited
-    public int size() {
+    Object makeIteratorData(BaseIterator iterator,
+                            DatabaseEntry keyEntry,
+                            DatabaseEntry priKeyEntry,
+                            DatabaseEntry valueEntry) {
 
-        if (!isSingleKey) {
-	    return super.size();
-	}
-        DataCursor cursor = null;
-        try {
-            cursor = new DataCursor(view, false);
-            OperationStatus status = cursor.getFirst(false);
-            if (status == OperationStatus.SUCCESS) {
-                return cursor.count();
-            } else {
-                return 0;
-            }
-        } catch (Exception e) {
-            throw StoredContainer.convertException(e);
-        } finally {
-            closeCursor(cursor);
-        }
-    }
-
-    Object makeIteratorData(StoredIterator iterator, DataCursor cursor)
-        throws DatabaseException {
-
-        return cursor.getCurrentValue();
+        return view.makeValue(priKeyEntry, valueEntry);
     }
 
     boolean hasValues() {

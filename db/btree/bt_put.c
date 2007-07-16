@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,26 +39,21 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_put.c,v 11.80 2004/10/29 17:33:25 ubell Exp $
+ * $Id: bt_put.c,v 12.21 2006/09/06 20:37:00 ubell Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/btree.h"
 #include "dbinc/mp.h"
 
 static int __bam_build
 	       __P((DBC *, u_int32_t, DBT *, PAGE *, u_int32_t, u_int32_t));
-static int __bam_dup_convert __P((DBC *, PAGE *, u_int32_t));
+static int __bam_dup_check __P((DBC *, u_int32_t,
+		PAGE *, u_int32_t, u_int32_t, db_indx_t *));
+static int __bam_dup_convert __P((DBC *, PAGE *, u_int32_t, u_int32_t));
 static int __bam_ovput
 	       __P((DBC *, u_int32_t, db_pgno_t, PAGE *, u_int32_t, DBT *));
 static u_int32_t
@@ -84,11 +79,13 @@ __bam_iitem(dbc, key, data, op, flags)
 	DBT bk_hdr, tdbt;
 	DB_MPOOLFILE *mpf;
 	PAGE *h;
-	db_indx_t indx;
-	u_int32_t data_size, have_bytes, need_bytes, needed;
-	int cmp, bigkey, bigdata, dupadjust, padrec, replace, ret, was_deleted;
+	db_indx_t cnt, indx;
+	u_int32_t data_size, have_bytes, need_bytes, needed, pages, pagespace;
+	int cmp, bigkey, bigdata, del, dupadjust;
+	int padrec, replace, ret, t_ret, was_deleted;
 
 	COMPQUIET(bk, NULL);
+	COMPQUIET(cnt, 0);
 
 	dbp = dbc->dbp;
 	dbenv = dbp->dbenv;
@@ -97,7 +94,7 @@ __bam_iitem(dbc, key, data, op, flags)
 	t = dbp->bt_internal;
 	h = cp->page;
 	indx = cp->indx;
-	dupadjust = replace = was_deleted = 0;
+	del = dupadjust = replace = was_deleted = 0;
 
 	/*
 	 * Fixed-length records with partial puts: it's an error to specify
@@ -149,12 +146,12 @@ __bam_iitem(dbc, key, data, op, flags)
 	 * we build the real record so that we're comparing the real items.
 	 */
 	if (op == DB_CURRENT && dbp->dup_compare != NULL) {
-		if ((ret = __bam_cmp(dbp, data, h,
+		if ((ret = __bam_cmp(dbp, dbc->txn, data, h,
 		    indx + (TYPE(h) == P_LBTREE ? O_INDX : 0),
 		    dbp->dup_compare, &cmp)) != 0)
 			return (ret);
 		if (cmp != 0) {
-			__db_err(dbenv,
+			__db_errx(dbenv,
 		"Existing data sorts differently from put data");
 			return (EINVAL);
 		}
@@ -217,12 +214,51 @@ __bam_iitem(dbc, key, data, op, flags)
 		return (__db_unknown_flag(dbenv, "DB->put", op));
 	}
 
-	/*
-	 * If there's not enough room, or the user has put a ceiling on the
-	 * number of keys permitted in the page, split the page.
-	 */
+	/* Split the page if there's not enough room. */
 	if (P_FREESPACE(dbp, h) < needed)
 		return (DB_NEEDSPLIT);
+
+	/*
+	 * Check to see if we will convert to off page duplicates -- if
+	 * so, we'll need a page.
+	 */
+	if (F_ISSET(dbp, DB_AM_DUP) &&
+	    TYPE(h) == P_LBTREE && op != DB_KEYFIRST &&
+	    P_FREESPACE(dbp, h) - needed <= dbp->pgsize / 2 &&
+	    __bam_dup_check(dbc, op, h, indx, needed, &cnt)) {
+		pages = 1;
+		dupadjust = 1;
+	} else
+		pages = 0;
+
+	/*
+	 * If we are not using transactions and there is a page limit
+	 * set on the file, then figure out if things will fit before
+	 * taking action.
+	 */
+	if (dbc->txn == NULL && mpf->mfp->maxpgno != 0) {
+		pagespace = P_MAXSPACE(dbp, dbp->pgsize);
+		if (bigdata)
+			pages += ((data_size - 1) / pagespace) + 1;
+		if (bigkey)
+			pages += ((key->size - 1) / pagespace) + 1;
+
+		if (pages > (mpf->mfp->maxpgno - mpf->mfp->last_pgno))
+			return (__db_space_err(dbp));
+	}
+
+	if ((ret = __memp_dirty(mpf, &h, dbc->txn, 0)) != 0)
+		return (ret);
+	if (cp->csp->page == cp->page)
+		cp->csp->page = h;
+	cp->page = h;
+
+	/*
+	 * Recalculate this pointer -- the page pointer (h) may have
+	 * changed during the update.
+	 */
+	bk = GET_BKEYDATA(dbp, h,
+	    indx + (TYPE(h) == P_LBTREE ? O_INDX : 0));
 
 	/*
 	 * The code breaks it up into five cases:
@@ -259,7 +295,6 @@ __bam_iitem(dbc, key, data, op, flags)
 				return (ret);
 
 			indx += 3;
-			dupadjust = 1;
 
 			cp->indx += 2;
 		} else {
@@ -276,7 +311,6 @@ __bam_iitem(dbc, key, data, op, flags)
 				return (ret);
 
 			++indx;
-			dupadjust = 1;
 		}
 		break;
 	case DB_CURRENT:
@@ -287,11 +321,11 @@ __bam_iitem(dbc, key, data, op, flags)
 		  * will try and remove the item because the cursor's delete
 		  * flag is set.
 		  */
-		(void)__bam_ca_delete(dbp, PGNO(h), indx, 0);
+		if ((ret = __bam_ca_delete(dbp, PGNO(h), indx, 0, NULL)) != 0)
+			return (ret);
 
 		if (TYPE(h) == P_LBTREE) {
 			++indx;
-			dupadjust = 1;
 		}
 
 		/*
@@ -316,6 +350,7 @@ __bam_iitem(dbc, key, data, op, flags)
 		if (bigdata || B_TYPE(bk->type) != B_KEYDATA) {
 			if ((ret = __bam_ditem(dbc, h, indx)) != 0)
 				return (ret);
+			del = 1;
 			break;
 		}
 
@@ -332,13 +367,12 @@ __bam_iitem(dbc, key, data, op, flags)
 		 * We do not have to handle deleted (BI_DELETED) records
 		 * in this case; the actual records should never be created.
 		 */
-		DB_ASSERT(!LF_ISSET(BI_DELETED));
-		if ((ret = __bam_ovput(dbc,
-		    B_OVERFLOW, PGNO_INVALID, h, indx, data)) != 0)
-			return (ret);
+		DB_ASSERT(dbenv, !LF_ISSET(BI_DELETED));
+		ret = __bam_ovput(dbc,
+		    B_OVERFLOW, PGNO_INVALID, h, indx, data);
 	} else {
 		if (LF_ISSET(BI_DELETED)) {
-			B_TSET(bk_tmp.type, B_KEYDATA, 1);
+			B_TSET_DELETED(bk_tmp.type, B_KEYDATA);
 			bk_tmp.len = data->size;
 			bk_hdr.data = &bk_tmp;
 			bk_hdr.size = SSZA(BKEYDATA, data);
@@ -349,11 +383,16 @@ __bam_iitem(dbc, key, data, op, flags)
 		else
 			ret = __db_pitem(dbc, h, indx,
 			    BKEYDATA_SIZE(data->size), NULL, data);
-		if (ret != 0)
-			return (ret);
 	}
-	if ((ret = __memp_fset(mpf, h, DB_MPOOL_DIRTY)) != 0)
+	if (ret != 0) {
+		if (del == 1 && (t_ret =
+		     __bam_ca_di(dbc, PGNO(h), indx + 1, -1)) != 0) {
+			__db_err(dbenv, t_ret,
+			    "cursor adjustment after delete failed");
+			return (__db_panic(dbenv, t_ret));
+		}
 		return (ret);
+	}
 
 	/*
 	 * Re-position the cursors if necessary and reset the current cursor
@@ -380,10 +419,9 @@ __bam_iitem(dbc, key, data, op, flags)
 	 * up at least 25% of the space on the page.  If it does, move it onto
 	 * its own page.
 	 */
-	if (dupadjust && P_FREESPACE(dbp, h) <= dbp->pgsize / 2) {
-		if ((ret = __bam_dup_convert(dbc, h, indx - O_INDX)) != 0)
-			return (ret);
-	}
+	if (dupadjust &&
+	    (ret = __bam_dup_convert(dbc, h, indx - O_INDX, cnt)) != 0)
+		return (ret);
 
 	/* If we've modified a recno file, set the flag. */
 	if (dbc->dbtype == DB_RECNO)
@@ -490,7 +528,7 @@ __bam_build(dbc, op, dbt, h, indx, nbytes)
 		bo = (BOVERFLOW *)bk;
 	} else {
 		bk = &tbk;
-		B_TSET(bk->type, B_KEYDATA, 0);
+		B_TSET(bk->type, B_KEYDATA);
 		bk->len = 0;
 	}
 	if (B_TYPE(bk->type) == B_OVERFLOW) {
@@ -499,7 +537,7 @@ __bam_build(dbc, op, dbt, h, indx, nbytes)
 		 * in the current record rather than allocate a separate copy.
 		 */
 		memset(&copy, 0, sizeof(copy));
-		if ((ret = __db_goff(dbp, &copy, bo->tlen,
+		if ((ret = __db_goff(dbp, dbc->txn, &copy, bo->tlen,
 		    bo->pgno, &rdata->data, &rdata->ulen)) != 0)
 			return (ret);
 
@@ -656,7 +694,7 @@ __bam_ritem(dbc, h, indx, data)
 
 	/* Copy the new item onto the page. */
 	bk = (BKEYDATA *)t;
-	B_TSET(bk->type, B_KEYDATA, 0);
+	B_TSET(bk->type, B_KEYDATA);
 	bk->len = data->size;
 	memcpy(bk->data, data->data, data->size);
 
@@ -664,26 +702,22 @@ __bam_ritem(dbc, h, indx, data)
 }
 
 /*
- * __bam_dup_convert --
+ * __bam_dup_check --
  *	Check to see if the duplicate set at indx should have its own page.
- *	If it should, create it.
  */
 static int
-__bam_dup_convert(dbc, h, indx)
+__bam_dup_check(dbc, op, h, indx, sz, cntp)
 	DBC *dbc;
+	u_int32_t op;
 	PAGE *h;
-	u_int32_t indx;
+	u_int32_t indx, sz;
+	db_indx_t *cntp;
 {
 	BKEYDATA *bk;
 	DB *dbp;
-	DBT hdr;
-	DB_MPOOLFILE *mpf;
-	PAGE *dp;
-	db_indx_t cnt, cpindx, dindx, first, *inp, sz;
-	int ret;
+	db_indx_t cnt, first, *inp;
 
 	dbp = dbc->dbp;
-	mpf = dbp->mpf;
 	inp = P_INP(dbp, h);
 
 	/*
@@ -695,11 +729,21 @@ __bam_dup_convert(dbc, h, indx)
 
 	/* Count the key once. */
 	bk = GET_BKEYDATA(dbp, h, indx);
-	sz = B_TYPE(bk->type) == B_KEYDATA ?
+	sz += B_TYPE(bk->type) == B_KEYDATA ?
 	    BKEYDATA_PSIZE(bk->len) : BOVERFLOW_PSIZE;
 
 	/* Sum up all the data items. */
-	for (cnt = 0, first = indx;
+	first = indx;
+
+	/*
+	 * Account for the record being inserted.  If we are replacing it,
+	 * don't count it twice.
+	 *
+	 * We execute the loop with first == indx to get the size of the
+	 * first record.
+	 */
+	cnt = op == DB_CURRENT ? 0 : 1;
+	for (first = indx;
 	    indx < NUM_ENT(h) && inp[first] == inp[indx];
 	    ++cnt, indx += P_INDX) {
 		bk = GET_BKEYDATA(dbp, h, indx + O_INDX);
@@ -726,6 +770,36 @@ __bam_dup_convert(dbc, h, indx)
 	if (sz < dbp->pgsize / 4)
 		return (0);
 
+	*cntp = cnt;
+	return (1);
+}
+
+/*
+ * __bam_dup_convert --
+ *	Move a set of duplicates off-page and into their own tree.
+ */
+static int
+__bam_dup_convert(dbc, h, indx, cnt)
+	DBC *dbc;
+	PAGE *h;
+	u_int32_t indx, cnt;
+{
+	BKEYDATA *bk;
+	DB *dbp;
+	DBT hdr;
+	DB_MPOOLFILE *mpf;
+	PAGE *dp;
+	db_indx_t cpindx, dindx, first, *inp;
+	int ret, t_ret;
+
+	dbp = dbc->dbp;
+	mpf = dbp->mpf;
+	inp = P_INP(dbp, h);
+
+	/* Move to the beginning of the dup set. */
+	while (indx > 0 && inp[indx] == inp[indx - P_INDX])
+		indx -= P_INDX;
+
 	/* Get a new page. */
 	if ((ret = __db_new(dbc,
 	    dbp->dup_compare == NULL ? P_LRECNO : P_LDUP, &dp)) != 0)
@@ -739,8 +813,8 @@ __bam_dup_convert(dbc, h, indx)
 	 * we're dealing with.
 	 */
 	memset(&hdr, 0, sizeof(hdr));
-	dindx = first;
-	indx = first;
+	first = indx;
+	dindx = indx;
 	cpindx = 0;
 	do {
 		/* Move cursors referencing the old entry to the new entry. */
@@ -797,13 +871,12 @@ __bam_dup_convert(dbc, h, indx)
 		goto err;
 
 	/* Adjust cursors for all the above movements. */
-	if ((ret = __bam_ca_di(dbc,
-	    PGNO(h), first + P_INDX, (int)(first + P_INDX - indx))) != 0)
-		goto err;
+	ret = __bam_ca_di(dbc,
+	    PGNO(h), first + P_INDX, (int)(first + P_INDX - indx));
 
-	return (__memp_fput(mpf, dp, DB_MPOOL_DIRTY));
+err:	if ((t_ret = __memp_fput(mpf, dp, 0)) != 0 && ret == 0)
+		ret = t_ret;
 
-err:	(void)__memp_fput(mpf, dp, 0);
 	return (ret);
 }
 
@@ -825,7 +898,7 @@ __bam_ovput(dbc, type, pgno, h, indx, item)
 	int ret;
 
 	UMRW_SET(bo.unused1);
-	B_TSET(bo.type, type, 0);
+	B_TSET(bo.type, type);
 	UMRW_SET(bo.unused2);
 
 	/*

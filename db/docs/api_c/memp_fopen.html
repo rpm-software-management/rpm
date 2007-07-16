@@ -1,5 +1,5 @@
-<!--$Id: memp_fopen.so,v 10.51 2004/08/13 03:38:58 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_fopen.so,v 10.53 2006/08/08 05:24:05 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -39,8 +39,9 @@ and 0 on success.
 <b>file</b> is NULL, a private temporary file is created that
 cannot be shared with any other process (although it may be shared with
 other threads of control in the same process).
-<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
-string, which is equivalent to ASCII for Latin characters.</p>
+<p>When using a Unicode build on Windows (the default), the <b>file</b>
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
@@ -50,6 +51,8 @@ fail.
 <a name="2"><!--meow--></a>
 <dt><a name="DB_DIRECT">DB_DIRECT</a><dd>If set and supported by the system, turn off system buffering of the
 file to avoid double caching.
+<dt><a name="DB_MULTIVERSION">DB_MULTIVERSION</a><dd>Open the file with support for <a href="../ref/transapp/read.html">multiversion concurrency control</a>.  Calls to <a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a> which
+dirty pages will cause copies to be made in the cache.
 <dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Always copy this file into the local cache instead of potentially mapping
 it into process memory (see the description of the
 <a href="../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a> method for further information).
@@ -98,6 +101,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

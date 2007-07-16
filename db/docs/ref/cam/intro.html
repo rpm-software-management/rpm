@@ -1,5 +1,5 @@
-<!--$Id: intro.so,v 10.29 2004/10/13 13:40:59 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.32 2006/08/24 17:47:28 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -12,7 +12,7 @@
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Concurrent Data Store Applications</dl></h3></td>
-<td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/app.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/fail.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Berkeley DB Concurrent Data Store applications</h3>
@@ -71,38 +71,51 @@ a write, either using the write cursor or directly using the
 are closed.  This is how the multiple-reader/single-writer semantic is
 enforced, and prevents reads from seeing an inconsistent database state
 that may be an intermediate stage of a write operation.</p>
+<p>By default, Berkeley DB Concurrent Data Store does locking on a per-database basis.  For this
+reason, using cursors to access multiple databases in different orders
+in different threads or processes, or leaving cursors open on one
+database while accessing another database, can cause an application to
+hang.  If this behavior is a requirement for the application, Berkeley DB
+should be configured to do locking on an environment-wide basis.  See
+the <a href="../../api_c/env_set_flags.html#DB_CDB_ALLDB">DB_CDB_ALLDB</a> flag of the <a href="../../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> function
+for more information.</p>
 <p>With these behaviors, Berkeley DB can guarantee deadlock-free concurrent
 database access, so that multiple threads of control are free to perform
 reads and writes without needing to handle synchronization themselves
-or having to run a deadlock detector.  Because Berkeley DB has no knowledge
-of which cursors belong to which threads, however, some care must be
-taken to ensure that applications do not inadvertently block themselves,
-causing the application to hang and be unable to proceed.  Some common
-mistakes include the following:</p>
+or having to run a deadlock detector.  Berkeley DB has no direct knowledge of
+which cursors belong to which threads, so some care must be taken to
+ensure that applications do not inadvertently block themselves, causing
+the application to hang and be unable to proceed.</p>
+<p>As a consequence of the Berkeley DB Concurrent Data Store locking model, the following sequences
+of operations will cause a thread to block itself indefinitely:</p>
 <ol>
 <p><li>Keeping a cursor open while issuing a <a href="../../api_c/db_put.html">DB-&gt;put</a> or <a href="../../api_c/db_del.html">DB-&gt;del</a>
 access method call.
-<p><li>Attempting to open a write cursor while a write cursor is already being
+<p><li>Attempting to open a write cursor while another cursor is already being
 held open by the same thread of control.  Note that it is correct
 operation for one thread of control to attempt to open a write cursor
 or to perform a non-cursor write (<a href="../../api_c/db_put.html">DB-&gt;put</a> or <a href="../../api_c/db_del.html">DB-&gt;del</a>)
-while a write cursor is already active in another thread.  It is only
-a problem if these things are done within a single thread of control --
+while a write cursor is already active in another thread.  It is only a
+problem if these things are done within a single thread of control --
 in which case that thread will block and never be able to release the
 lock that is blocking it.
-<p><li>Keeping a write cursor open for an extended period of time.
 <p><li>Not testing Berkeley DB error return codes (if any cursor operation returns
 an unexpected error, that cursor must still be closed).
-<p><li>By default, Berkeley DB Concurrent Data Store does locking on a per-database basis.  For this reason,
-using cursors to access multiple databases in different orders in different
-threads or processes, or leaving cursors open on one database while accessing
-another database, can cause an application to hang.  If this behavior
-is a requirement for the application, Berkeley DB should be configured to do
-locking on an environment-wide basis.  See the <a href="../../api_c/env_set_flags.html#DB_CDB_ALLDB">DB_CDB_ALLDB</a> flag
-of the <a href="../../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> function for more information.
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/app.html"><img src="../../images/next.gif" alt="Next"></a>
+<p>If the application needs to open multiple cursors in a single thread to
+perform an operation, it can indicate to Berkeley DB that the cursor locks
+should not block each other by creating a Berkeley DB Concurrent Data Store <b>group</b>, using
+<a href="../../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>.  This creates a locker ID that is shared by all
+cursors opened in the group.</p>
+<p>Berkeley DB Concurrent Data Store groups use a <a href="../../api_c/txn_class.html">DB_TXN</a> handle to indicate the shared locker
+ID to Berkeley DB calls, and call <a href="../../api_c/txn_commit.html">DB_TXN-&gt;commit</a> to end the group.  This
+is a convenient way to pass the locked ID to the calls where it is
+needed, but should not be confused with the real transactional semantics
+provided by Berkeley DB Transactional Data Store.  In particular, Berkeley DB Concurrent Data Store groups do not provide any
+abort or recovery facilities, and have no impact on durability of
+operations.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../env/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/fail.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

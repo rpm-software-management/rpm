@@ -1,5 +1,5 @@
-<!--$Id: db_open.so,v 10.106 2004/10/06 19:16:06 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_open.so,v 10.119 2006/09/13 14:30:52 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -56,7 +56,7 @@ repeatedly opening and closing the database for each new query.</p>
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
-If Db::open fails, the <a href="../api_cxx/db_close.html">Db::close</a> method should be called to
+If Db::open fails, the <a href="../api_cxx/db_close.html">Db::close</a> method must be called to
 discard the <a href="../api_cxx/db_class.html">Db</a> handle.
 </p>
 <h3>Parameters</h3>
@@ -71,40 +71,49 @@ in the same physical file, it is important to consider locking and
 memory cache issues; see <a href="../ref/am/opensub.html">Opening
 multiple databases in a single file</a> for more information.
 <p>In-memory databases never intended to be preserved on disk may be
-created by setting both the <b>file</b> and <b>database</b> parameters
-to NULL.  Note that in-memory databases can only ever be shared by
-sharing the single database handle that created them, in circumstances
-where doing so is safe.</p>
+created by setting the <b>file</b> parameter to NULL.  If the
+<b>database</b> parameter is also NULL, the database is strictly
+temporary and cannot be opened by any other thread of control, thus the
+database can only be accessed by sharing the single database handle that
+created it, in circumstances where doing so is safe.  If the
+<b>database</b> parameter is not set to NULL, the database can be opened
+by other threads of control and will be replicated to client sites in
+any replication group.</p>
 <dt><b>file</b><dd>The <b>file</b> parameter is used as the name of an underlying file that
-will be used to back the database.
+will be used to back the database; see <a href="../ref/env/naming.html">File naming</a> for more information.
 <p>In-memory databases never intended to be preserved on disk may be
-created by setting both the <b>file</b> and <b>database</b> parameters
-to NULL.  Note that in-memory databases can only ever be shared by
-sharing the single database handle that created them, in circumstances
-where doing so is safe.</p>
-<p>On Windows, the <b>file</b> argument will be interpreted as a UTF-8
-string, which is equivalent to ASCII for Latin characters.</p>
+created by setting the <b>file</b> parameter to NULL.</p>
+<p>When using a Unicode build on Windows (the default), the <b>file</b>
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
 <dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::open call within a transaction.  If the call
-succeeds, the open operation will be recoverable.  If the call fails,
-no database will have been created.
+succeeds, the open operation will be recoverable and all subsequent
+database modification operations based on this handle will be
+transactionally protected.  If the call fails, no database will have
+been created.
 <dt><a name="DB_CREATE">DB_CREATE</a><dd>Create the database.  If the database does not already exist and the
 DB_CREATE flag is not specified, the Db::open will fail.
-<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Support dirty reads; that is, read operations on the database may
-request the return of modified but not yet committed data.  This flag
-must be specified on all <a href="../api_cxx/db_class.html">Db</a> handles used to perform dirty reads
-or database updates, otherwise requests for dirty reads may not be
-honored and the read may block.
 <dt><a name="DB_EXCL">DB_EXCL</a><dd>Return an error if the database already exists.  The DB_EXCL
 flag is only meaningful when specified with the DB_CREATE
 flag.
+<dt><a name="DB_MULTIVERSION">DB_MULTIVERSION</a><dd>Open the database with support for <a href="../ref/transapp/read.html">multiversion concurrency control</a>.  This will cause updates to the
+database to follow a copy-on-write protocol, which is required to
+support snapshot isolation.  The DB_MULTIVERSION flag requires
+that the database be transactionally protected during its open and is
+not supported by the queue format.
 <dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>Do not map this database into process memory (see the
 <a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a> method for further information).
 <dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open the database for reading only.  Any attempt to modify items in the
 database will fail, regardless of the actual permissions of any
 underlying files.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Support read operations with degree 1 isolation.  Read operations on the
+database may request the return of modified but not yet committed data.
+This flag must be specified on all <a href="../api_cxx/db_class.html">Db</a> handles used to perform
+dirty reads or database updates, otherwise requests for dirty reads may
+not be honored and the read may block.
 <dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_cxx/db_class.html">Db</a> handle returned by Db::open to be
 <i>free-threaded</i>; that is, concurrently usable by multiple
 threads in the address space.
@@ -126,12 +135,18 @@ defaults, and is not further specified by Berkeley DB.  System shared memory
 segments created by the database open are created with mode <b>mode</b>, unmodified
 by the process' umask value.  If <b>mode</b> is 0, the database open will use a
 default mode of readable and writable by both owner and group.</p>
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-(other than by specifying the DB_AUTO_COMMIT flag),
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  Note that transactionally protected operations on a <a href="../api_cxx/db_class.html">Db</a> handle
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+DB_AUTO_COMMIT flag is specified,
+the operation will be implicitly transaction protected.  Note that transactionally protected operations on a <a href="../api_cxx/db_class.html">Db</a> handle
 requires the <a href="../api_cxx/db_class.html">Db</a> handle itself be transactionally protected
-during its open.
+during its open.  Also note that the transaction must be committed before
+the handle is closed; see <a href="../ref/program/scope.html">Berkeley DB
+handles</a> for more information.
 <dt><b>type</b><dd>The <b>type</b> parameter is of type DBTYPE, and must be set to one of
 <a name="DB_BTREE">DB_BTREE</a>, <a name="DB_HASH">DB_HASH</a>, <a name="DB_QUEUE">DB_QUEUE</a>,
 <a name="DB_RECNO">DB_RECNO</a>, or <a name="DB_UNKNOWN">DB_UNKNOWN</a>.  If <b>type</b> is
@@ -186,6 +201,7 @@ invalid flag value or parameter was specified.
 <dl compact>
 <dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
 </dl>
 <p>If a transactional database environment operation was selected to
 resolve a deadlock, the Db::open method will fail and
@@ -202,9 +218,9 @@ name.</p>
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>filenamep</b><dd>The <b>filenamep</b> parameter references memory into which
-a pointer to the current filename is copied.
+a pointer to the current filename is copied. 
 <dt><b>dbnamep</b><dd>The <b>dbnamep</b> parameter references memory into which
-a pointer to the current database name is copied.
+a pointer to the current database name is copied. 
 </dl>
 <p>The Db::get_database method may be called at any time during the life of the
 application.</p>
@@ -243,6 +259,6 @@ application.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: SequenceExample.cpp,v 1.1 2004/09/22 22:20:32 mjc Exp $
+ * $Id: SequenceExample.cpp,v 12.4 2006/08/24 14:45:49 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -118,7 +118,11 @@ void SequenceExample::run(bool removeExistingDatabase, const char *fileName)
 		for (int i = 0; i < 10; i++) {
 			db_seq_t seqnum;
 			seq.get(0, 1, &seqnum, 0);
-			cout << "Got sequence number: " << seqnum << "\n";
+
+			// We don't have a portable way to print 64-bit numbers.
+			cout << "Got sequence number (" <<
+			    (int)(seqnum >> 32) << ", " << (unsigned)seqnum <<
+			    ")\n";
 		}
 
 		seq.close(0);

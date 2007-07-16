@@ -1,0 +1,41 @@
+<!--$Id: autocommit.so,v 1.3 2005/02/10 20:02:42 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.4: DB_AUTO_COMMIT</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.4/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.4/isolation.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.4: DB_AUTO_COMMIT</h3>
+<p>In previous Berkeley DB releases, the <a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag was used in
+the C and C++ Berkeley DB APIs to wrap operations within a transaction without
+explicitly creating a transaction and passing the <a href="../../api_c/txn_class.html">DB_TXN</a> handle
+as part of the operation method call.  In the 4.4 release, the
+<a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag no longer needs to be explicitly specified.</p>
+<p>In the 4.4 release, specifying the <a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag to the
+<a href="../../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method causes all database modifications in that
+environment to be transactional; specifying <a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> to
+the <a href="../../api_c/db_open.html">DB-&gt;open</a> method causes all modifications to that database to be
+transactional; specifying <a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> to the
+<a href="../../api_c/env_dbremove.html">DB_ENV-&gt;dbremove</a> and <a href="../../api_c/env_dbrename.html">DB_ENV-&gt;dbrename</a> methods causes those
+specific operations to be transactional.</p>
+<p>No related application changes are required for this release, as the
+<a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag is ignored where it is no longer needed.
+However, application writers are encouraged to remove uses of the
+<a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag in places where it is no longer needed.</p>
+<p>Similar changes have been made to the Berkeley DB Tcl API.  These changes are
+not optional, and Tcl applications will need to remove the -auto_commit
+flag from methods where it is no longer needed.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.4/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.4/isolation.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

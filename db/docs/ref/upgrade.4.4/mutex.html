@@ -1,0 +1,32 @@
+<!--$Id: mutex.so,v 1.3 2005/11/08 02:45:20 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.4: mutexes</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.4/joinenv.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.4/clear.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.4: mutexes</h3>
+<p>The DB_ENV&gt;set_tas_spins and DB_ENV&gt;get_tas_spins methods have
+been renamed to <a href="../../api_c/mutex_set_tas_spins.html">DB_ENV-&gt;mutex_set_tas_spins</a> and
+<a href="../../api_c/mutex_set_tas_spins.html">DB_ENV-&gt;mutex_get_tas_spins</a> to match the new mutex support in the Berkeley DB
+4.4 release.  Applications calling the old methods should be updated to
+use the new method names.</p>
+<p>For backward compatibility, the string "set_tas_spins" is still supported
+in DB_CONFIG files.</p>
+<p>The --with-mutexalign=ALIGNMENT compile-time configuration option has
+been removed from Berkeley DB configuration.  Mutex alignment should now be
+configured at run-time, using the <a href="../../api_c/mutex_set_align.html">DB_ENV-&gt;mutex_set_align</a> method.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.4/joinenv.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.4/clear.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

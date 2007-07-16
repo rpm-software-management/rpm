@@ -2,6 +2,26 @@
 
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+MVCC and cursor adjustment.
+	Set up a -snapshot cursor and position it in the middle
+	of a database.
+	Write to the database, both before and after the cursor,
+	and verify that it stays on the same position.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+MVCC and databases that turn multi-version on and off.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Test basic functionality: a snapshot transaction started
+	before a regular transaction's put can't see the modification.
+	A snapshot transaction started after the put can see it.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Test what happens if a txn_ckp record falls into a
+	different log file than the DBREG_CKP records generated
+	by the same checkpoint.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 bigfile001
 	Create a database greater than 4 GB in size.  Close, verify.
 	Grow the database somewhat.  Close, reverify.  Lather, rinse,
@@ -125,6 +145,58 @@ env011
 	Run with region overwrite flag.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+env012
+	Test DB_REGISTER.
+
+	DB_REGISTER will fail on systems without fcntl.  If it
+	fails, make sure we got the expected DB_OPNOTSUP return.
+
+	Then, the real tests:
+	For each test, we start a process that opens an env with -register.
+
+	1. Verify that a 2nd process can enter the existing env with -register.
+
+	2. Kill the 1st process, and verify that the 2nd process can enter
+	with "-register -recover".
+
+	3. Kill the 1st process, and verify that the 2nd process cannot
+	enter with just "-register".
+
+	4. While the 1st process is still running, a 2nd process enters
+	with "-register".  Kill the 1st process.  Verify that a 3rd process
+	can enter with "-register -recover".  Verify that the 3rd process,
+	entering, causes process 2 to fail with the message DB_RUNRECOVERY.
+
+	5. We had a bug where recovery was always run with -register
+	if there were empty slots in the process registry file.  Verify
+	that recovery doesn't automatically run if there is an empty slot.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+env013
+	Test of basic functionality of fileid_reset.
+
+	Create a database in an env.  Copy it to a new file within
+	the same env.  Reset the file id and make sure it has changed.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+env014
+
+	Make sure that attempts to open an environment with
+	incompatible flags (e.g. replication without transactions)
+	fail with the appropriate messages.
+
+	A new thread of control joining an env automatically
+	initializes the same subsystems as the original env.
+	Make sure that the attempt to change subsystems when
+	joining an env fails with the appropriate messages.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+env015
+	Rename the underlying directory of an env, make sure everything
+	still works.  Test runs with regular named databases and with
+	in-memory named databases.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 fop001.tcl
 	Test file system operations, combined in a transaction. [#7363]
 
@@ -157,12 +229,22 @@ fop005
 	and relative paths, and with subdirectories.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-fop006.tcl
+fop006
 	Test file system operations in multiple simultaneous
 	transactions.  Start one transaction, do a file operation.
 	Start a second transaction, do a file operation.  Abort
 	or commit txn1, then abort or commit txn2, and check for
 	appropriate outcome.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+fop007
+	Test file system operations on named in-memory databases.
+	Combine two ops in one transaction.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+fop008
+	Test file system operations on named in-memory databases.
+	Combine two ops in one transaction.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 jointest
@@ -249,6 +331,19 @@ log006
 	Test setting via DB_CONFIG.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+log007
+	Test of in-memory logging bugs. [#11505]
+
+	Test db_printlog with in-memory logs.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+log009
+	Test of logging and getting log file version information.
+	Each time we cross a log file boundary verify we can
+	get the version via the log cursorlag.
+	Do this both forward and backward.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 memp001
 	Randomly updates pages.
 
@@ -266,16 +361,13 @@ memp004
 	Test that small read-only databases are mapped into memory.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-mutex001
-	Test basic mutex functionality
+plat001
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-mutex002
-	Test basic mutex synchronization
+	Test of portability of sequences.
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-mutex003
-	Generate a bunch of parallel testers that try to randomly obtain locks.
+	Create and dump a database containing sequences.  Save the dump.
+	This test is used in conjunction with the upgrade tests, which
+	will compare the saved dump to a locally created dump.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 recd001
@@ -405,6 +497,17 @@ recd021
 	Test for regular files and subdbs.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+recd022
+	Test that pages allocated by an aborted subtransaction
+	within an aborted prepared parent transaction are returned
+	to the free list after recovery.  This exercises
+	__db_pg_prepare in systems without FTRUNCATE.  [#7403]
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+recd023
+	Test recover of reverse split.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep001
 	Replication rename and forced-upgrade test.
 
@@ -521,6 +624,7 @@ rep013
 	Make additional changes to master, but not to the client.
 	Swap master and client.
 	Verify that the roll back on clients gives dead db handles.
+	Rerun the test, turning on client-to-client synchronization.
 	Swap and verify several times.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -622,6 +726,18 @@ rep024
 	and site 1 comes back up as a client.  Verify database.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep025
+	Test of DB_REP_JOIN_FAILURE.
+
+	One master, one client.
+	Generate several log files.
+	Remove old master log files.
+	Delete client files and restart client.
+	Put one more record to the master.  At the next
+	processing of messages, the client should get JOIN_FAILURE.
+	Recover with a hot failover.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep026
 	Replication elections - simulate a crash after sending
 	a vote.
@@ -658,7 +774,7 @@ rep030
 	Test of internal initialization multiple files and pagesizes.
 	Hold some databases open on master.
 
-	One master, one client.
+	One master, one client using a data_dir for internal init.
 	Generate several log files.
 	Remove old master log files.
 	Delete client files and restart client.
@@ -670,15 +786,16 @@ rep031
 
 	One master, one client.
 	Put one more record to the master.
-	Test that internal initialization block log_archive, rename, remove.
+	Test that internal initialization blocks:
+	log_archive, rename, remove, fileid_reset, lsn_reset.
 	Sleep 30+ seconds.
-	Test that we can now log_archive, rename, remove.
+	Test that blocked operations are now unblocked.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep032
 	Test of log gap processing.
 
-	One master, one clients.
+	One master, one client.
 	Run rep_test.
 	Run rep_test without sending messages to client.
 	Make sure client missing the messages catches up properly.
@@ -701,6 +818,7 @@ rep034
 	Close one client and change master to other client.
 	Reopen closed client - enter startup.
 	Run rep_test and we should see live messages and startup complete.
+	Run the test with/without client-to-client synchronization.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep035
@@ -731,6 +849,334 @@ rep037
 	Delete client files and restart client.
 	Put one more record to the master.
 	Verify page throttling occurred.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep038
+	Test of internal initialization and ongoing master updates.
+
+	One master, one client.
+	Generate several log files.
+	Remove old master log files.
+	Delete client files and restart client.
+	Put more records on master while initialization is in progress.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep039
+	Test of internal initialization and master changes.
+
+	One master, two clients.
+	Generate several log files. Remove old master log files.
+	Delete client files and restart client.
+	While initialization is happening, change masters.
+	Vary the number of times we process messages to make sure
+	we change masters at varying stages of the first internal
+	initialization.
+
+	Run for btree only because of the number of permutations.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep040
+	Test of racing rep_start and transactions.
+
+	One master, one client.
+	Have master in the middle of a transaction.
+	Call rep_start to make master a client.
+	Commit the transaction.
+	Call rep_start to make master the master again.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep041
+	Turn replication on and off at run-time.
+
+	Start a master with replication OFF (noop transport function).
+	Run rep_test to advance log files and archive.
+	Start up client; change master to working transport function.
+	Now replication is ON.
+	Do more ops, make sure client is up to date.
+	Close client, turn replication OFF on master, do more ops.
+	Repeat from point A.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep042
+	Concurrency with updates.
+
+	Verify racing role changes and updates don't result in
+	pages with LSN 0,1.  Set up an environment that is master.
+	Spawn child process that does a delete, but using the
+	$env check so that it sleeps in the middle of the call.
+	Master downgrades and then sleeps as a client so that
+	child will run.  Verify child does not succeed (should
+	get read-only error) due to role change in the middle of
+	its call.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep043
+
+	Constant writes during upgrade/downgrade.
+
+	Three envs take turns being master.  Each env
+	has a child process which does writes all the
+	time.  They will succeed when that env is master
+	and fail when it is not.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep044
+
+	Test rollbacks with open file ids.
+
+	We have one master with two handles and one client.
+	Each time through the main loop, we open a db, write
+	to the db, and close the db.  Each one of these actions
+	is propagated to the client, or a roll back is forced
+	by swapping masters.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep045
+
+	Replication with versions.
+
+	Mimic an application where a database is set up in the
+	background and then put into a replication group for use.
+	The "version database" identifies the current live
+	version, the database against which queries are made.
+	For example, the version database might say the current
+	version is 3, and queries would then be sent to db.3.
+	Version 4 is prepared for use while version 3 is in use.
+	When version 4 is complete, the version database is updated
+	to point to version 4 so queries can be directed there.
+
+	This test has a master and two clients.  One client swaps
+	roles with the master, and the other client runs constantly
+	in another process.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep046
+	Replication and basic bulk transfer.
+	Set bulk transfer replication option.
+	Run long txns on master and then commit.  Process on client
+	and verify contents.  Run a very long txn so that logging
+	must send the log.  Process and verify on client.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep047
+	Replication and log gap bulk transfers.
+	Set bulk transfer replication option.
+	Run test.  Start a new client (to test ALL_REQ and bulk).
+	Run small test again.  Clear messages for 1 client.
+	Run small test again to test LOG_REQ gap processing and bulk.
+	Process and verify on clients.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep048
+	Replication and log gap bulk transfers.
+	Have two master env handles.  Turn bulk on in
+	one (turns it on for both).  Turn it off in the other.
+	While toggling, send log records from both handles.
+	Process message and verify master and client match.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep049
+	Replication and delay syncing clients - basic test.
+
+	Open and start up a master and two clients.  Turn on delay sync
+	in the delayed client.  Change master, add data and process messages.
+	Verify delayed client does not match.  Make additional changes and
+	update the delayted client.  Verify all match.
+	Add in a fresh delayed client to test delay of ALL_REQ.
+	Process startup messages and verify freshc client has no database.
+	Sync and verify fresh client matches.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep050
+	Replication and delay syncing clients - change master test.
+
+	Open and start up master and 4 clients.  Turn on delay for 3 clients.
+	Switch masters, add data and verify delayed clients are out of date.
+	Make additional changes to master.  And change masters again.
+	Sync/update delayed client and verify.  The 4th client is a brand
+	new delayed client added in to test the non-verify path.
+
+	Then test two different things:
+	1. Swap master again while clients are still delayed.
+	2. Swap master again while sync is proceeding for one client.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep051
+	Test of compaction with replication.
+
+	Run rep_test in a replicated master environment.
+	Delete a large number of entries and compact with -freespace.
+	Propagate the changes to the client and make sure client and
+	master match.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep052
+	Test of replication with NOWAIT.
+
+	One master, one client.  After initializing
+	everything normally, close client and let the
+	master get ahead -- far enough that the master
+	no longer has the client's last log file.
+	Reopen the client and turn on NOWAIT.
+	Process a few messages to get the client into
+	recovery mode, and verify that lockout occurs
+	on a txn API call (txn_begin) and an env API call.
+	Process all the messages and verify that lockout
+	is over.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep053
+	Replication and basic client-to-client synchronization.
+
+	Open and start up master and 1 client.
+	Start up a second client later and verify it sync'ed from
+	the original client, not the master.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep054
+	Test of internal initialization where a far-behind
+	client takes over as master.
+
+	One master, two clients.
+	Run rep_test and process.
+	Close client 1.
+	Run rep_test, opening new databases, and processing
+	messages.  Archive as we go so that log files get removed.
+	Close master and reopen client 1 as master.  Process messages.
+	Verify that new master and client are in sync.
+	Run rep_test again, adding data to one of the new
+	named databases.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep055
+	Test of internal initialization and log archiving.
+
+	One master, one client.
+	Generate several log files.
+	Remove old master log files and generate several more.
+	Get list of archivable files from db_archive and restart client.
+	As client is in the middle of internal init, remove
+	the log files returned earlier by db_archive.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep056
+	Replication test with in-memory named databases.
+
+	Rep056 is just a driver to run rep001 with in-memory
+	named databases.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep057
+	Replication test of internal initialization with
+	in-memory named databases.
+
+	Rep057 is just a driver to run rep029 with in-memory
+	named databases.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep058
+
+	Replication with early databases
+
+	Mimic an application where they create a database before
+	calling rep_start, thus writing log records on a client
+	before it is a client.  Verify we cannot join repl group.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep059
+
+	Replication with multiple recycle records.
+
+	Mimic an application where a client has multiple recycle records
+	only in its log and then tries to synchronize.  This has been
+	a problem because there is real log, but no perm records to
+	match on.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep060
+	Test of normally running clients and internal initialization.
+	Have a client running normally, but slow/far behind the master.
+	Then the master checkpoints and archives, causing the client
+	to suddenly be thrown into internal init.  This test tests
+	that we clean up the old files/pages in mpool and dbreg.
+	Also test same thing but the app holding an open dbp as well.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep061
+	Test of internal initialization multiple files and pagesizes
+	with page gaps.
+
+	One master, one client.
+	Generate several log files.
+	Remove old master log files.
+	Delete client files and restart client.
+	Put one more record to the master.
+	Force some page messages to get dropped.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep062
+	Test of internal initialization where client has a different
+	kind of database than the master.
+
+	Create a master of one type, and let the client catch up.
+	Close the client.
+	Remove the database on the master, and create a new
+	database of the same name but a different type.
+	Run the master ahead far enough that internal initialization
+	will be required on the reopen of the client.
+	Reopen the client and verify.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep063
+	Replication election test with simulated different versions
+	for each site.  This tests that old sites with real priority
+	trump ELECTABLE sites with zero priority even with greater LSNs.
+	There is a special case in the code for testing that if the
+	priority is <= 10, we simulate mixed versions for elections.
+
+	Run a rep_test in a replicated master environment and close;
+	hold an election among a group of clients to make sure they select
+	the master with varying LSNs and priorities.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep064
+	Replication rename and forced-upgrade test.
+
+	The test verifies that the client correctly
+	(internally) closes files when upgrading to master.
+	It does this by having the master have a database
+	open, then crashing.  The client upgrades to master,
+	and attempts to remove the open database.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep065
+	Tests replication running with different versions.
+	This capability is introduced with 4.5.
+
+	Start a replication group of 1 master and N sites, all
+	running some historical version greater than or equal to 4.2.
+	Take down a client and bring it up again running 4.5.  Run
+	some upgrades, make sure everything works.
+
+	Each site runs the tcllib of its own version, but uses
+	the 4.5 tcl code (e.g. test.tcl).
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep066
+	Replication and dead log handles.
+
+	Run rep_test on master and a client.
+	Simulate client crashes (master continues) until log 2.
+	Open 2nd master env handle and put something in log and flush.
+	Downgrade master, restart client as master.
+	Run rep_test on newmaster until log 2.
+	New master writes log records, newclient processes records
+	and 2nd newclient env handle calls log_flush.
+	New master commits, newclient processes and should succeed.
+	Make sure 2nd handle detects the old log handle and doesn't
+	write to a stale handle (if it does, the processing of the
+	commit will fail).
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rpc001
@@ -860,14 +1306,17 @@ sdb006
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 sdb007
 	Tests page size difference errors between subdbs.
-	Test 3 different scenarios for page sizes.
-	1.  Create/open with a default page size, 2nd subdb create with
-	specified different one, should error.
-	2.  Create/open with specific page size, 2nd subdb create with
-	different one, should error.
-	3.  Create/open with specified page size, 2nd subdb create with
-	same specified size, should succeed.
-	(4th combo of using all defaults is a basic test, done elsewhere)
+	If the physical file already exists, we ignore pagesize specifications
+	on any subsequent -creates.
+
+	1.  Create/open a subdb with system default page size.
+	Create/open a second subdb specifying a different page size.
+	The create should succeed, but the pagesize of the new db
+	will be the system default page size.
+	2.  Create/open a subdb with a specified, non-default page size.
+	Create/open a second subdb specifying a different page size.
+	The create should succeed, but the pagesize of the new db
+	will be the specified page size from the first create.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 sdb008
@@ -893,6 +1342,73 @@ sdb012
 	Test subdbs with locking and transactions
 	Tests creating and removing subdbs while handles
 	are open works correctly, and in the face of txns.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb013
+	Tests in-memory subdatabases.
+	Create an in-memory subdb.  Test for persistence after
+	overflowing the cache.  Test for conflicts when we have
+	two in-memory files.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb014
+	Tests mixing in-memory named and in-memory unnamed dbs.
+	Create a regular in-memory db, add data.
+	Create a named in-memory db.
+	Try to create the same named in-memory db again (should fail).
+	Try to create a different named in-memory db (should succeed).
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb015
+	Tests basic in-memory named database functionality
+	Small keys, small data
+	Put/get per key
+
+	Use the first 10,000 entries from the dictionary.
+	Insert each with self as key and data; retrieve each.
+	After all are entered, retrieve all; compare output to original.
+	Close file, reopen, do retrieve and re-verify.
+	Then repeat using an environment.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb016
+	Creates many in-memory named dbs and puts a small amount of
+	data in each (many defaults to 100)
+
+	Use the first 100 entries from the dictionary as names.
+	Insert each with entry as name of subdatabase and a partial list
+	as key/data.  After all are entered, retrieve all; compare output
+	to original.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb017
+	Test DB->rename() for in-memory named databases.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb018
+	Tests join of in-memory named databases.
+
+	We'll test 2-way, 3-way, and 4-way joins and figure that if those work,
+	everything else does as well.  We'll create test databases called
+	sub1.db, sub2.db, sub3.db, and sub4.db.  The number on the database
+	describes the duplication -- duplicates are of the form 0, N, 2N, 3N,
+	...  where N is the number of the database.  Primary.db is the primary
+	database, and sub0.db is the database that has no matching duplicates.
+	All of these are within a single database.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb019
+	Tests in-memory subdatabases.
+	Create an in-memory subdb.  Test for persistence after
+	overflowing the cache.  Test for conflicts when we have
+	two in-memory files.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+sdb020
+	Tests in-memory subdatabases.
+	Create an in-memory subdb with one page size.  Close, and
+	open with a different page size: should fail.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 sdbtest001
@@ -943,7 +1459,7 @@ sec002
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 si001
-	Basic secondary index put/delete test
+	Secondary index put/delete with lorder test
 
 	Put data in primary db and check that pget on secondary
 	index finds the right entries.  Alter the primary in the
@@ -980,6 +1496,34 @@ si004
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 si005
 	Basic secondary index put/delete test with transactions
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+si006
+
+	Test -immutable_key interface.
+
+	DB_IMMUTABLE_KEY is an optimization to be used when a
+	secondary key will not be changed.  It does not prevent
+	a deliberate change to the secondary key, it just does not
+	propagate that change when it is made to the primary.
+	This test verifies that a change to the primary is propagated
+	to the secondary or not as specified by -immutable_key.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+si007
+	Secondary index put/delete with lorder test
+
+	This test is the same as si001 with the exception
+	that we create and populate the primary and THEN
+	create the secondaries and associate them with -create.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+si008
+	Secondary index put/delete with lorder test
+
+	This test is the same as si001 except that we
+	create the secondaries with different byte orders:
+	one native, one swapped.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 sijointest: Secondary index and join test.
@@ -1132,7 +1676,7 @@ test012
 test013
 	Partial put test
 	Overwrite entire records using partial puts.
-	Make surethat NOOVERWRITE flag works.
+	Make sure that NOOVERWRITE flag works.
 
 	1. Insert 10000 keys and retrieve them (equal key/data pairs).
 	2. Attempt to overwrite keys with NO_OVERWRITE set (expect error).
@@ -1719,7 +2263,7 @@ test092
 	Test of DB_DIRTY_READ [#3395]
 
 	We set up a database with nentries in it.  We then open the
-	database read-only twice.  One with dirty read and one without.
+	database read-only twice.  One with dirty reads and one without.
 	We open the database for writing and update some entries in it.
 	Then read those new entries via db->get (clean and dirty), and
 	via cursors (clean and dirty).
@@ -1822,15 +2366,14 @@ test106
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test107
-	Test of degree 2 isolation. [#8689]
+	Test of read-committed (degree 2 isolation). [#8689]
 
-	We set up a database.  Open a degree 2 transactional
-	cursor and a regular transactional cursor on it.
-	Position each cursor on one page, and do a put to
-	a different page.
+	We set up a database.  Open a read-committed transactional cursor and
+	a regular transactional cursor on it. Position each cursor on one page,
+	and do a put to a different page.
 
 	Make sure that:
-	- the put succeeds if we are using degree 2.
+	- the put succeeds if we are using degree 2 isolation.
 	- the put deadlocks within a regular transaction with
 	a regular cursor.
 
@@ -1839,6 +2382,111 @@ test107
 test109
 
 	Test of sequences.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test110
+	Partial get test with duplicates.
+
+	For hash and btree, create and populate a database
+	with dups. Randomly selecting offset and length,
+	retrieve data from each record and make sure we
+	get what we expect.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test111
+	Test database compaction.
+
+	Populate a database.  Remove a high proportion of entries.
+	Dump and save contents.  Compact the database, dump again,
+	and make sure we still have the same contents.
+	Add back some entries, delete more entries (this time by
+	cursor), dump, compact, and do the before/after check again.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test112
+	Test database compaction with a deep tree.
+
+	This is a lot like test111, but with a large number of
+	entries and a small page size to make the tree deep.
+	To make it simple we use numerical keys all the time.
+
+	Dump and save contents.  Compact the database, dump again,
+	and make sure we still have the same contents.
+	Add back some entries, delete more entries (this time by
+	cursor), dump, compact, and do the before/after check again.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test113
+	Test database compaction with duplicates.
+
+	This is essentially test111 with duplicates.
+	To make it simple we use numerical keys all the time.
+
+	Dump and save contents.  Compact the database, dump again,
+	and make sure we still have the same contents.
+	Add back some entries, delete more entries (this time by
+	cursor), dump, compact, and do the before/after check again.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test114
+	Test database compaction with overflows.
+
+	Populate a database.  Remove a high proportion of entries.
+	Dump and save contents.  Compact the database, dump again,
+	and make sure we still have the same contents.
+	Add back some entries, delete more entries (this time by
+	cursor), dump, compact, and do the before/after check again.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test115
+	Test database compaction with user-specified btree sort.
+
+	This is essentially test111 with the user-specified sort.
+	Populate a database.  Remove a high proportion of entries.
+	Dump and save contents.  Compact the database, dump again,
+	and make sure we still have the same contents.
+	Add back some entries, delete more entries (this time by
+	cursor), dump, compact, and do the before/after check again.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test116
+	Test of basic functionality of lsn_reset.
+
+	Create a database in an env.  Copy it to a new file within
+	the same env.  Reset the page LSNs.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test117
+	Test database compaction with requested fill percent.
+
+	Populate a database.  Remove a high proportion of entries.
+	Dump and save contents.  Compact the database, requesting
+	fill percentages starting at 10% and working our way up to
+	100.  On each cycle, make sure we still have the same contents.
+
+	Unlike the other compaction tests, this one does not
+	use -freespace.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test119
+	Test behavior when Berkeley DB returns DB_BUFFER_SMALL on a cursor.
+
+	If the user-supplied buffer is not large enough to contain
+	the returned value, DB returns BUFFER_SMALL.  If it does,
+	check that the cursor does not move -- if it moves, it will
+	skip items. [#13815]
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test120
+	Test of multi-version concurrency control.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test121
+	Tests of multi-version concurrency control.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+test122
+	Tests of multi-version concurrency control.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 txn001
@@ -1882,3 +2530,13 @@ txn011
 	Test that we can't get a durable handle on a ND
 	database, or vice versa.  Test that all subdb's
 	must be of the same type (D or ND).
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+txn012
+	Test txn->getname and txn->setname.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+txn013
+	Test of txns used in the wrong environment.
+	Set up two envs.  Start a txn in one env, and attempt to use it
+	in the other env.  Verify we get the appropriate error message.

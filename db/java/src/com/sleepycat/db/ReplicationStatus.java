@@ -1,11 +1,11 @@
 /*-
-* See the file LICENSE for redistribution information.
-*
-* Copyright (c) 2002-2004
-*	Sleepycat Software.  All rights reserved.
-*
-* $Id: ReplicationStatus.java,v 1.5 2004/08/17 20:04:42 mjc Exp $
-*/
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
+ *
+ * $Id: ReplicationStatus.java,v 12.6 2006/08/24 14:46:09 bostic Exp $
+ */
 
 package com.sleepycat.db;
 
@@ -44,12 +44,8 @@ public final class ReplicationStatus {
         return errCode == 0;
     }
 
-    public boolean isDupMaster() {
-        return errCode == DbConstants.DB_REP_DUPMASTER;
-    }
-
-    public boolean isHoldElection() {
-        return errCode == DbConstants.DB_REP_HOLDELECTION;
+    public boolean isIgnore() {
+        return errCode == DbConstants.DB_REP_IGNORE;
     }
 
     public boolean isPermanent() {
@@ -66,10 +62,6 @@ public final class ReplicationStatus {
 
     public boolean isNotPermanent() {
         return errCode == DbConstants.DB_REP_NOTPERM;
-    }
-
-    public boolean isStartupDone() {
-        return errCode == DbConstants.DB_REP_STARTUPDONE;
     }
 
     public DatabaseEntry getCData() {
@@ -96,10 +88,8 @@ public final class ReplicationStatus {
         switch(errCode) {
         case 0:
             return SUCCESS;
-        case DbConstants.DB_REP_DUPMASTER:
-            return DUPMASTER;
-        case DbConstants.DB_REP_HOLDELECTION:
-            return HOLDELECTION;
+        case DbConstants.DB_REP_IGNORE:
+            return IGNORE;
         case DbConstants.DB_REP_ISPERM:
             return new ReplicationStatus("ISPERM", errCode, cdata, envid, lsn);
         case DbConstants.DB_REP_NEWMASTER:
@@ -114,8 +104,6 @@ public final class ReplicationStatus {
         }
     }
 
-    private static final ReplicationStatus DUPMASTER =
-        new ReplicationStatus("DUPMASTER", DbConstants.DB_REP_DUPMASTER);
-    private static final ReplicationStatus HOLDELECTION =
-        new ReplicationStatus("HOLDELECTION", DbConstants.DB_REP_HOLDELECTION);
+    private static final ReplicationStatus IGNORE =
+        new ReplicationStatus("IGNORE", DbConstants.DB_REP_IGNORE);
 }

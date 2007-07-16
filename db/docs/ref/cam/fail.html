@@ -1,0 +1,84 @@
+<!--$Id: fail.so,v 10.2 2005/10/19 21:10:31 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Handling failure in Data Store and Concurrent Data Store applications</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Concurrent Data Store Applications</dl></h3></td>
+<td align=right><a href="../cam/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/app.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Handling failure in Data Store and Concurrent Data Store applications</h3>
+<p>When building Data Store and Concurrent Data Store applications, there
+are design issues to consider whenever a thread of control with open
+Berkeley DB handles fails for any reason (where a thread of control may be
+either a true thread or a process).</p>
+<p>The simplest case is handling system failure for any Data Store or
+Concurrent Data Store application.  In the case of system failure, it
+doesn't matter if the application has opened a database environment or
+is just using standalone databases: if the system fails, after the
+application has modified a database and has not subsequently flushed the
+database to stable storage (by calling either the <a href="../../api_c/db_close.html">DB-&gt;close</a>,
+<a href="../../api_c/db_sync.html">DB-&gt;sync</a> or <a href="../../api_c/memp_sync.html">DB_ENV-&gt;memp_sync</a> methods), the database may be left in a
+corrupted state.  In this case, before accessing the database again, the
+database should either be:</p>
+<p><ul type=disc>
+<li>removed and re-created,
+<li>removed and restored from the last known good backup, or
+<li>verified using the <a href="../../api_c/db_verify.html">DB-&gt;verify</a> method or <a href="../../utility/db_verify.html">db_verify</a> utility.  If
+the database does not verify cleanly, the contents may be salvaged using
+the <b>-R</b> and <b>-r</b> options of the <a href="../../utility/db_dump.html">db_dump</a>
+utility.
+</ul>
+<p>Applications where the potential for data loss is unacceptable should
+consider the Berkeley DB Transactional Data Store product, which offers standard transactional
+durability guarantees, including recoverability after failure.</p>
+<p>Additionally, system failure requires that any persistent database
+environment (that is, any database environment not created using the
+<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag), be removed.  Database environments may be
+removed using the <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method.  If the persistent database
+environment was backed by the filesystem (that is, the environment was
+not created using the <a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a> flag), the database
+environment may also be safely removed by deleting the environment's
+files with standard system utilities.</p>
+<p>The second case is application failure for a Data Store application,
+with or without a database environment, or application failure for a
+Concurrent Data Store application without a database environment: as in
+the case of system failure, if any thread of control fails, after the
+application has modified a database and has not subsequently flushed the
+database to stable storage, the database may be left in a corrupted
+state.  In this case, the database should be handled as described
+previously in the system failure case.</p>
+<p>The third case is application failure for a Concurrent Data Store
+application with a database environment.  There are resources maintained
+in database environments that may be left locked if a thread of control
+exits without first closing all open Berkeley DB handles.  Concurrent Data
+Store applications with database environments have an additional option
+for handling the unexpected exit of a thread of control, the
+<a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method.</p>
+<p>The <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method will return <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> if the
+database environment is unusable as a result of the thread of control
+failure.  (If a data structure mutex or a database write lock is left
+held by thread of control failure, the application should not continue
+to use the database environment, as subsequent use of the environment
+is likely to result in threads of control convoying behind the held
+locks.)  The <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> call will release any database read
+locks that have been left held by the exit of a thread of control.  In
+this case, the application can continue to use the database
+environment.</p>
+<p>A Concurrent Data Store application recovering from a thread of control
+failure should call <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a>, and, if it returns success,
+the application can continue.  If <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> returns
+<a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, the application should proceed as described for
+the case of system failure.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../cam/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/app.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

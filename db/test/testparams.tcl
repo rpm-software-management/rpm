@@ -1,42 +1,62 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: testparams.tcl,v 11.200 2004/10/12 16:22:14 sue Exp $
+# $Id: testparams.tcl,v 12.82 2006/09/08 20:32:18 bostic Exp $
 
+source ./include.tcl
+global is_freebsd_test
+global tcl_platform
+global rpc_tests
 global one_test
 global serial_tests
-set serial_tests {rep002 rep005}
+set serial_tests {rep002 rep005 rep016 rep020 rep022 rep026 rep031 rep063}
 
-set subs {bigfile dead env fop lock log memp mutex recd rep rpc rsrc\
+set subs {bigfile dead env fop lock log memp plat recd rep rpc rsrc\
 	sdb sdbtest sec si test txn}
 
 set test_names(bigfile)	[list bigfile001 bigfile002]
+set test_names(compact) [list test111 test112 test113 test114 test115 test117]
 set test_names(dead)    [list dead001 dead002 dead003 dead004 dead005 dead006 \
     dead007]
-set test_names(elect)	[list rep002 rep005 rep016 rep020 rep022]
+set test_names(elect)	[list rep002 rep005 rep016 rep020 rep022 rep026 rep063]
 set test_names(env)	[list env001 env002 env003 env004 env005 env006 \
-    env007 env008 env009 env010 env011]
-set test_names(fop)	[list fop001 fop002 fop003 fop004 fop005 fop006]
+    env007 env008 env009 env010 env011 env012 env013 env014 env015]
+set test_names(fop)	[list fop001 fop002 fop003 fop004 fop005 fop006 \
+    fop007 fop008]
+set test_names(init)	[list rep029 rep030 rep031 rep033 rep037 rep038 rep039\
+    rep055 rep060 rep061 rep062]
+set test_names(inmemdb)	[list fop007 fop008 rep056 rep057 sdb013 sdb014 \
+    sdb015 sdb016 sdb017 sdb018 sdb019 sdb020]
 set test_names(lock)    [list lock001 lock002 lock003 lock004 lock005 lock006]
-set test_names(log)     [list log001 log002 log003 log004 log005 log006]
+set test_names(log)     [list log001 log002 log003 log004 log005 log006 \
+    log007 log008 log009]
 set test_names(memp)	[list memp001 memp002 memp003 memp004]
-set test_names(mutex)	[list mutex001 mutex002 mutex003]
+set test_names(plat)	[list plat001]
 set test_names(recd)	[list recd001 recd002 recd003 recd004 recd005 recd006 \
     recd007 recd008 recd009 recd010 recd011 recd012 recd013 recd014 recd015 \
-    recd016 recd017 recd018 recd019 recd020 ]
+    recd016 recd017 recd018 recd019 recd020 recd022 recd023]
+#
+# XXX rep043 and rep044 are removed from the list for now.  There are
+# issues in dbreg that need to be fixed.  There is nothing wrong
+# with the tests themselves - they do legal operations.
+#
 set test_names(rep)	[list rep001 rep002 rep003 rep005 rep006 rep007 \
     rep008 rep009 rep010 rep011 rep012 rep013 rep014 rep015 rep016 rep017 \
-    rep018 rep019 rep020 rep021 rep022 rep023 rep024 rep026 rep027 rep028 \
-    rep029 rep030 rep031 rep032 rep033 rep034 rep035 rep036 rep037]
+    rep018 rep019 rep020 rep021 rep022 rep023 rep024 rep025 rep026 rep027 \
+    rep028 rep029 rep030 rep031 rep032 rep033 rep034 rep035 rep036 rep037 \
+    rep038 rep039 rep040 rep041 rep042 rep043 rep044 rep045 rep046 rep047 \
+    rep048 rep049 rep050 rep051 rep052 rep053 rep054 rep055 rep056 rep057 \
+    rep058 rep060 rep061 rep062 rep063 rep064 rep065 rep066]
 set test_names(rpc)	[list rpc001 rpc002 rpc003 rpc004 rpc005 rpc006]
 set test_names(rsrc)	[list rsrc001 rsrc002 rsrc003 rsrc004]
 set test_names(sdb)	[list sdb001 sdb002 sdb003 sdb004 sdb005 sdb006 \
-    sdb007 sdb008 sdb009 sdb010 sdb011 sdb012]
+    sdb007 sdb008 sdb009 sdb010 sdb011 sdb012 sdb013 sdb014 sdb015 sdb016 \
+    sdb017 sdb018 sdb019 sdb020 ]
 set test_names(sdbtest)	[list sdbtest001 sdbtest002]
 set test_names(sec)	[list sec001 sec002]
-set test_names(si)	[list si001 si002 si003 si004 si005]
+set test_names(si)	[list si001 si002 si003 si004 si005 si006 si007 si008]
 set test_names(test)	[list test001 test002 test003 test004 test005 \
     test006 test007 test008 test009 test010 test011 test012 test013 test014 \
     test015 test016 test017 test018 test019 test020 test021 test022 test023 \
@@ -49,13 +69,38 @@ set test_names(test)	[list test001 test002 test003 test004 test005 \
     test078 test079 test081 test082 test083 test084 test085 test086 \
     test087 test088 test089 test090 test091 test092 test093 test094 test095 \
     test096 test097 test098 test099 test100 test101 test102 test103 test107 \
-    test109 ]
+    test109 test110 test111 test112 test113 test114 test115 test116 test117 \
+    test119 test120 test121 test122]
 set test_names(txn)	[list txn001 txn002 txn003 txn004 txn005 txn006 \
-    txn007 txn008 txn009 txn010 txn011]
+    txn007 txn008 txn009 txn010 txn011 txn012 txn013]
 
 set rpc_tests(berkeley_db_svc) [concat $test_names(test) $test_names(sdb)]
 set rpc_tests(berkeley_db_cxxsvc) $test_names(test)
 set rpc_tests(berkeley_db_javasvc) $test_names(test)
+
+# FreeBSD, in version 5.4, has problems dealing with large messages
+# over RPC.  Exclude those tests.  We believe these problems are
+# resolved for later versions.  SR [#13542]
+set freebsd_skip_tests_for_rpc [list test003 test008 test009 test012 test017 \
+    test028 test081 test095 test102 test103 test119 sdb004 sdb011]
+set freebsd_5_4 0
+if { $is_freebsd_test } {
+	set version $tcl_platform(osVersion)
+	if { [is_substr $version "5.4"] } {
+		set freebsd_5_4 1
+	}
+}
+if { $freebsd_5_4 } {
+	foreach svc {berkeley_db_svc berkeley_db_cxxsvc berkeley_db_javasvc} {
+		foreach test $freebsd_skip_tests_for_rpc {
+			set idx [lsearch -exact $rpc_tests($svc) $test]
+			if { $idx >= 0 } {
+				set rpc_tests($svc)\
+				    [lreplace $rpc_tests($svc) $idx $idx]
+			}
+		}
+	}
+}
 
 # JE tests are a subset of regular RPC tests -- exclude these ones.
 # be fixable by modifying tests dealing with unsorted duplicates, second line
@@ -127,6 +172,8 @@ set parms(recd017) 0
 set parms(recd018) 10
 set parms(recd019) 50
 set parms(recd020) ""
+set parms(recd022) ""
+set parms(recd023) ""
 set parms(rep001) {1000 "001"}
 set parms(rep002) {10 3 "002"}
 set parms(rep003) "003"
@@ -150,6 +197,7 @@ set parms(rep021) {3 "021"}
 set parms(rep022) ""
 set parms(rep023) {10 "023"}
 set parms(rep024) {1000 "024"}
+set parms(rep025) {200 "025"}
 set parms(rep026) ""
 set parms(rep027) {1000 "027"}
 set parms(rep028) {100 "028"}
@@ -161,6 +209,34 @@ set parms(rep033) {200 "033"}
 set parms(rep034) {2 "034"}
 set parms(rep035) {100 "035"}
 set parms(rep036) {200 "036"}
+set parms(rep037) {1500 "037"}
+set parms(rep038) {200 "038"}
+set parms(rep039) {200 "039"}
+set parms(rep040) {200 "040"}
+set parms(rep041) {500 "041"}
+set parms(rep042) {10 "042"}
+set parms(rep043) {25 "043"}
+set parms(rep044) {"044"}
+set parms(rep045) {"045"}
+set parms(rep046) {200 "046"}
+set parms(rep047) {200 "047"}
+set parms(rep048) {3000 "048"}
+set parms(rep049) {10 "049"}
+set parms(rep050) {10 "050"}
+set parms(rep051) {5000 "051"}
+set parms(rep052) {200 "052"}
+set parms(rep053) {200 "053"}
+set parms(rep054) {200 "054"}
+set parms(rep055) {200 "055"}
+set parms(rep056) ""
+set parms(rep057) ""
+set parms(rep058) "058"
+set parms(rep060) {200 "060"}
+set parms(rep061) {500 "061"}
+set parms(rep062) "062"
+set parms(rep063) ""
+set parms(rep064) {10 "064"}
+set parms(rep065} {3}
 set parms(subdb001) ""
 set parms(subdb002) 10000
 set parms(subdb003) 1000
@@ -185,11 +261,22 @@ set parms(sdb009) ""
 set parms(sdb010) ""
 set parms(sdb011) {13 10}
 set parms(sdb012) ""
-set parms(si001) {200 1}
-set parms(si002) {200 2}
-set parms(si003) {200 3}
-set parms(si004) {200 4}
-set parms(si005) {200 5}
+set parms(sdb013) 10
+set parms(sdb014) ""
+set parms(sdb015) 1000
+set parms(sdb016) 100
+set parms(sdb017) ""
+set parms(sdb018) 100
+set parms(sdb019) 100
+set parms(sdb020) 10
+set parms(si001) {200 "001"}
+set parms(si002) {200 "002"}
+set parms(si003) {200 "003"}
+set parms(si004) {200 "004"}
+set parms(si005) {200 "005"}
+set parms(si006) {200 "006"}
+set parms(si007) {10 "007"}
+set parms(si008) {10 "008"}
 set parms(test001) {10000 0 0 "001"}
 set parms(test002) 10000
 set parms(test003) ""
@@ -293,6 +380,18 @@ set parms(test102) {1000 "102"}
 set parms(test103) {100 4294967250 "103"}
 set parms(test107) ""
 set parms(test109) {"109"}
+set parms(test110) {10000 3}
+set parms(test111) {10000 "111"}
+set parms(test112) {80000 "112"}
+set parms(test113) {10000 5 "113"}
+set parms(test114) {10000 "114"}
+set parms(test115) {10000 "115"}
+set parms(test116) {"116"}
+set parms(test117) {10000 "117"}
+set parms(test119) {"119"}
+set parms(test120) {"120"}
+set parms(test121) {"121"}
+set parms(test122) {"122"}
 
 # RPC server executables.  Each of these is tested (if it exists)
 # when running the RPC tests.
@@ -318,7 +417,7 @@ set shelltest_list {
 	{ scr013	chk.stats }
 	{ scr014	chk.err }
 	{ scr015	chk.cxxtests }
-	{ scr016	chk.javatests }
+	{ scr016	"-c exit 0" }
 	{ scr017	chk.db185 }
 	{ scr018	chk.comma }
 	{ scr019	chk.include }
@@ -333,4 +432,6 @@ set shelltest_list {
 	{ scr028	chk.rtc }
 	{ scr029	chk.get }
 	{ scr030	chk.build }
+	{ scr031	chk.xa }
+	{ scr032	chk.rpc }
 }

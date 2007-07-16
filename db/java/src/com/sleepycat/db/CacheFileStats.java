@@ -3,15 +3,15 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 
 package com.sleepycat.db;
 
 public class CacheFileStats {
     // no public constructor
-    protected CacheFileStats() {}
+    /* package */ CacheFileStats() {}
 
     private String file_name;
     public String getFileName() {

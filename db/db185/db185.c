@@ -1,27 +1,21 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db185.c,v 11.35 2004/03/24 20:37:35 bostic Exp $
+ * $Id: db185.c,v 12.7 2006/08/31 17:59:25 bostic Exp $
  */
 
 #include "db_config.h"
 
+#include "db_int.h"
+
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
+    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
 #endif
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <fcntl.h>
-#include <string.h>
-#endif
-
-#include "db_int.h"
 #include "db185_int.h"
 
 static int	db185_close __P((DB185 *));
@@ -89,12 +83,6 @@ __db185_open(file, oflags, mode, type, openinfo)
 				(void)dbp->set_bt_minkey(dbp, bi->minkeypage);
 			if (bi->psize != 0)
 				(void)dbp->set_pagesize(dbp, bi->psize);
-			/*
-			 * !!!
-			 * Comparisons and prefix calls work because the DBT
-			 * structures in 1.85 and 2.0 have the same initial
-			 * fields.
-			 */
 			if (bi->prefix != NULL) {
 				db185p->prefix = bi->prefix;
 				dbp->set_bt_prefix(dbp, db185_prefix);
@@ -156,7 +144,8 @@ __db185_open(file, oflags, mode, type, openinfo)
 		 * that in DB 2.0, so do that cast.
 		 */
 		if (file != NULL) {
-			if (oflags & O_CREAT && __os_exists(file, NULL) != 0)
+			if (oflags & O_CREAT &&
+			    __os_exists(NULL, file, NULL) != 0)
 				if (__os_openhandle(NULL, file,
 				    oflags, mode, &fhp) == 0)
 					(void)__os_closehandle(NULL, fhp);
@@ -546,7 +535,14 @@ db185_compare(dbp, a, b)
 	DB *dbp;
 	const DBT *a, *b;
 {
-	return (((DB185 *)dbp->api_internal)->compare(a, b));
+	DBT185 a185, b185;
+
+	a185.data = a->data;
+	a185.size = a->size;
+	b185.data = b->data;
+	b185.size = b->size;
+
+	return (((DB185 *)dbp->api_internal)->compare(&a185, &b185));
 }
 
 /*
@@ -558,7 +554,14 @@ db185_prefix(dbp, a, b)
 	DB *dbp;
 	const DBT *a, *b;
 {
-	return (((DB185 *)dbp->api_internal)->prefix(a, b));
+	DBT185 a185, b185;
+
+	a185.data = a->data;
+	a185.size = a->size;
+	b185.data = b->data;
+	b185.size = b->size;
+
+	return (((DB185 *)dbp->api_internal)->prefix(&a185, &b185));
 }
 
 /*

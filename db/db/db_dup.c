@@ -1,23 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_dup.c,v 11.39 2004/02/18 21:34:37 bostic Exp $
+ * $Id: db_dup.c,v 12.9 2006/08/24 14:45:15 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/mp.h"
 #include "dbinc/db_am.h"
 
@@ -40,6 +33,9 @@ __db_ditem(dbc, pagep, indx, nbytes)
 	u_int8_t *from;
 
 	dbp = dbc->dbp;
+	DB_ASSERT(dbp->dbenv, IS_DIRTY(pagep));
+	DB_ASSERT(dbp->dbenv, indx < NUM_ENT(pagep));
+
 	if (DBC_LOGGING(dbc)) {
 		ldbt.data = P_ENTRY(dbp, pagep, indx);
 		ldbt.size = nbytes;
@@ -66,7 +62,7 @@ __db_ditem(dbc, pagep, indx, nbytes)
 	 * memmove(3), the regions may overlap.
 	 */
 	from = (u_int8_t *)pagep + HOFFSET(pagep);
-	DB_ASSERT((int)inp[indx] - HOFFSET(pagep) >= 0);
+	DB_ASSERT(dbp->dbenv, inp[indx] >= HOFFSET(pagep));
 	memmove(from + nbytes, from, inp[indx] - HOFFSET(pagep));
 	HOFFSET(pagep) += nbytes;
 
@@ -108,8 +104,10 @@ __db_pitem(dbc, pagep, indx, nbytes, hdr, data)
 	u_int8_t *p;
 
 	dbp = dbc->dbp;
+	DB_ASSERT(dbp->dbenv, IS_DIRTY(pagep));
+
 	if (nbytes > P_FREESPACE(dbp, pagep)) {
-		DB_ASSERT(nbytes <= P_FREESPACE(dbp, pagep));
+		DB_ASSERT(dbp->dbenv, nbytes <= P_FREESPACE(dbp, pagep));
 		return (EINVAL);
 	}
 	/*
@@ -138,7 +136,7 @@ __db_pitem(dbc, pagep, indx, nbytes, hdr, data)
 		LSN_NOT_LOGGED(LSN(pagep));
 
 	if (hdr == NULL) {
-		B_TSET(bk.type, B_KEYDATA, 0);
+		B_TSET(bk.type, B_KEYDATA);
 		bk.len = data == NULL ? 0 : data->size;
 
 		thdr.data = &bk;

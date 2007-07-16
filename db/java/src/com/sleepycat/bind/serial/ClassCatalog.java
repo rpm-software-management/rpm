@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: ClassCatalog.java,v 1.3 2004/09/01 14:34:20 mark Exp $
+ * $Id: ClassCatalog.java,v 12.3 2006/08/31 18:14:05 bostic Exp $
  */
 
 package com.sleepycat.bind.serial;

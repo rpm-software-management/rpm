@@ -1,0 +1,32 @@
+<!--$Id: clear.so,v 1.2 2005/12/13 16:47:06 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.4: DB_MPOOLFILE-&gt;set_clear_len</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.4/mutex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.4/lockstat.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.4: DB_MPOOLFILE-&gt;set_clear_len</h3>
+<p>The meaning of a 0 "clear length" argument to the
+<a href="../../api_c/memp_set_clear_len.html">DB_MPOOLFILE-&gt;set_clear_len</a> method changed in the Berkeley DB 4.4 release.   In
+previous releases, specifying a length of 0 was equivalent to the
+default, and the entire created page was cleared.  Unfortunately, this
+left no way to specify that no part of the page needed to be cleared.
+In the 4.4 release, specifying a "clear length" argument of 0 means that
+no part of the page need be cleared.</p>
+<p>Applications specifying a 0 "clear length" argument to the
+<a href="../../api_c/memp_set_clear_len.html">DB_MPOOLFILE-&gt;set_clear_len</a> method should simply remove the call, as the
+default behavior is to clear the entire created page.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.4/mutex.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.4/lockstat.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

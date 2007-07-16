@@ -1,5 +1,5 @@
 /* ======================================================================
- * Copyright (c) 2000 Theo Schlossnagle
+ * Copyright (c) 2000,2006 Theo Schlossnagle
  * All rights reserved.
  * The following code was written by Theo Schlossnagle for use in the
  * Backhand project at The Center for Networking and Distributed Systems
@@ -7,7 +7,11 @@
  *
  * This is a skiplist implementation to be used for abstract structures
  * and is release under the LGPL license version 2.1 or later.  A copy
- * of this license can be found at http://www.gnu.org/copyleft/lesser.html
+ * of this license can be found file LGPL.
+ *
+ * Alternatively, this file may be licensed under the new BSD license.
+ * A copy of this license can be found file BSD.
+ *
  * ======================================================================
 */
 

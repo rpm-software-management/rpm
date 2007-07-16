@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: LogCursor.java,v 1.1 2004/04/06 20:43:40 mjc Exp $
+ * $Id: LogCursor.java,v 12.4 2006/08/24 14:46:08 bostic Exp $
  */
 
 package com.sleepycat.db;
@@ -13,9 +13,9 @@ import com.sleepycat.db.internal.DbConstants;
 import com.sleepycat.db.internal.DbLogc;
 
 public class LogCursor {
-    protected DbLogc logc;
+    /* package */ DbLogc logc;
 
-    protected LogCursor(final DbLogc logc) {
+    /* package */ LogCursor(final DbLogc logc) {
         this.logc = logc;
     }
 

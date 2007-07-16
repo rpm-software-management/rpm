@@ -17,8 +17,16 @@ set testdir ./TESTDIR
 global dict
 global util_path
 
+global is_freebsd_test
 global is_hp_test
+global is_linux_test
 global is_qnx_test
+global is_sunos_test
 global is_windows_test
+global is_windows9x_test
 
-set KILL "@db_cv_path_kill@"
+global valid_methods
+global checking_valid_methods
+global test_recopts
+
+set KILL "@KILL@"

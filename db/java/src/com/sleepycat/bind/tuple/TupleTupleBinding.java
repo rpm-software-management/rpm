@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleTupleBinding.java,v 1.2 2004/06/04 18:24:50 mark Exp $
+ * $Id: TupleTupleBinding.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
@@ -28,7 +28,8 @@ import com.sleepycat.db.DatabaseEntry;
  *
  * @author Mark Hayes
  */
-public abstract class TupleTupleBinding implements EntityBinding {
+public abstract class TupleTupleBinding extends TupleBase
+    implements EntityBinding {
 
     /**
      * Creates a tuple-tuple entity binding.
@@ -46,17 +47,17 @@ public abstract class TupleTupleBinding implements EntityBinding {
     // javadoc is inherited
     public void objectToKey(Object object, DatabaseEntry key) {
 
-        TupleOutput output = TupleBinding.newOutput();
+        TupleOutput output = getTupleOutput(object);
         objectToKey(object, output);
-        TupleBinding.outputToEntry(output, key);
+        outputToEntry(output, key);
     }
 
     // javadoc is inherited
     public void objectToData(Object object, DatabaseEntry data) {
 
-        TupleOutput output = TupleBinding.newOutput();
+        TupleOutput output = getTupleOutput(object);
         objectToData(object, output);
-        TupleBinding.outputToEntry(output, data);
+        outputToEntry(output, data);
     }
 
     // abstract methods

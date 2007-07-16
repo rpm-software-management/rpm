@@ -1,5 +1,5 @@
-<!--$Id: env_set_timeout.so,v 10.23 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_timeout.so,v 10.24 2005/05/20 15:07:45 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -32,8 +32,8 @@ DbEnv::get_timeout(db_timeout_t *timeoutp, u_int32_t flag);
 <h3>Description: DbEnv::set_timeout</h3>
 <p>The DbEnv::set_timeout method sets timeout values for locks or
 transactions in the database environment.</p>
-<p>Timeouts are checked whenever a thread of control blocks on a lock or
-when deadlock detection is performed.  (In the case of
+<p>All timeouts are checked whenever a thread of control blocks on a lock
+or when deadlock detection is performed.  (In the case of
 DB_SET_LOCK_TIMEOUT, the lock is one requested explicitly
 through the Lock subsystem interfaces.  In the case of
 DB_SET_TXN_TIMEOUT, the lock is one requested on behalf of a
@@ -59,18 +59,18 @@ failure, and returns 0 on success.
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
 <dl compact>
 <dt><a name="DB_SET_LOCK_TIMEOUT">DB_SET_LOCK_TIMEOUT</a><dd>Set the timeout value for locks in this database environment.
-<p>The database environment's lock timeout value may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_lock_timeout", one or more whitespace characters,
-and the lock timeout value.
+<p>The database environment's lock timeout value may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_lock_timeout", one or more whitespace
+characters, and the lock timeout value.
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
 before that time.</p>
 <dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Set the timeout value for transactions in this database environment.
-<p>The database environment's transaction timeout value may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_txn_timeout", one or more whitespace characters,
-and the transaction timeout value.
+<p>The database environment's transaction timeout value may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_txn_timeout", one or more whitespace
+characters, and the transaction timeout value.
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
 before that time.</p>
@@ -107,7 +107,7 @@ failure, and returns 0 on success.
 <dt><a name="DB_SET_TXN_TIMEOUT">DB_SET_TXN_TIMEOUT</a><dd>Return the timeout value for transactions in this database environment.
 </dl>
 <dt><b>timeoutp</b><dd>The <b>timeoutp</b> parameter references memory into which
- the timeout value of the specified <b>flag</b> parameter is copied.
+ the timeout value of the specified <b>flag</b> parameter is copied. 
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -118,6 +118,6 @@ failure, and returns 0 on success.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

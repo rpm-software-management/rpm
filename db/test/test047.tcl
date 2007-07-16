@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test047.tcl,v 11.22 2004/01/28 03:36:31 bostic Exp $
+# $Id: test047.tcl,v 12.3 2006/08/24 14:46:40 bostic Exp $
 #
 # TEST	test047
 # TEST	DBcursor->c_get get test with SET_RANGE option.

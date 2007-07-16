@@ -1,11 +1,11 @@
 /*-
-* See the file LICENSE for redistribution information.
-*
-* Copyright (c) 2002-2004
-*	Sleepycat Software.  All rights reserved.
-*
-* $Id: Transaction.java,v 1.2 2004/04/21 01:09:10 mjc Exp $
-*/
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
+ *
+ * $Id: Transaction.java,v 12.4 2006/08/24 14:46:09 bostic Exp $
+ */
 
 package com.sleepycat.db;
 
@@ -55,10 +55,22 @@ public class Transaction {
         return txn.id();
     }
 
+    public String getName()
+        throws DatabaseException {
+
+        return txn.get_name();
+    }
+
     public void prepare(final byte[] gid)
         throws DatabaseException {
 
         txn.prepare(gid);
+    }
+
+    public void setName(final String name)
+        throws DatabaseException {
+
+        txn.set_name(name);
     }
 
     public void setTxnTimeout(final long timeOut)

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StringBinding.java,v 1.4 2004/08/02 18:52:05 mjc Exp $
+ * $Id: StringBinding.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
@@ -37,13 +37,13 @@ public class StringBinding extends TupleBinding {
     // javadoc is inherited
     public void objectToEntry(Object object, TupleOutput output) {
 
-        /* Do nothing.  Not called by objectToEntry(Object,DatabaseEntry). */
+        output.writeString((String) object);
     }
 
     // javadoc is inherited
-    public void objectToEntry(Object object, DatabaseEntry entry) {
+    protected TupleOutput getTupleOutput(Object object) {
 
-        stringToEntry((String) object, entry);
+        return sizedOutput((String) object);
     }
 
     /**
@@ -67,10 +67,18 @@ public class StringBinding extends TupleBinding {
      */
     public static void stringToEntry(String val, DatabaseEntry entry) {
 
+        outputToEntry(sizedOutput(val).writeString(val), entry);
+    }
+
+    /**
+     * Returns a tuple output object of the exact size needed, to avoid
+     * wasting space when a single primitive is output.
+     */
+    private static TupleOutput sizedOutput(String val) {
+
 	int stringLength =
 	    (val == null) ? 1 : UtfOps.getByteLength(val.toCharArray());
 	stringLength++;           // null terminator
-        outputToEntry(newOutput(new byte[stringLength]).writeString(val),
-		      entry);
+        return new TupleOutput(new byte[stringLength]);
     }
 }

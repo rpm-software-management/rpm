@@ -1,5 +1,5 @@
-<!--$Id: common.so,v 10.27 2004/04/16 17:27:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: common.so,v 10.28 2005/06/16 17:45:07 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -108,8 +108,8 @@ handling</a> section of the Reference Guide for more information.</p>
 <p><li><b>A transactional database environment cannot be recovered or normal
 database operations fail with messages that "LSN" values are past
 the end of the log.</b>
-<p>The application may have removed all of its log files without also
-dumping and reloading all of its databases.  Log files should never be
+<p>The application may have removed all of its log files without resetting
+the database log sequence numbers (LSNs).  Log files should never be
 removed unless explicitly authorized by the <a href="../../utility/db_archive.html">db_archive</a> utility
 or the <a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a> method.  Note that those interfaces will never
 authorize removal of all existing log files.</p>
@@ -119,8 +119,8 @@ another transactional environment.  While it is possible to create
 databases in non-transactional environments (for example, when doing
 bulk database loads) and then move them into transactional environments,
 once a database has been used in a transactional environment, it cannot
-be moved to another environment without first being dumped and
-reloaded.</p>
+be moved to another environment without first resetting the database log
+sequence numbers.</p>
 <hr size=1 noshade>
 <p><li><b>A transactional application is seeing an inordinately high number of
 deadlocks.</b>
@@ -143,6 +143,6 @@ unrecoverable, and the databases must be dumped and reloaded.</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../debug/printlog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

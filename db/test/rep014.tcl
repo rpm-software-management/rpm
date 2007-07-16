@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2001-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep014.tcl,v 11.7 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep014.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	rep014
 # TEST	Replication and multiple replication handles.
@@ -11,7 +11,17 @@
 # TEST	make sure we get the right openfiles.
 #
 proc rep014 { method { niter 10 } { tnum "014" } args } {
-	global is_hp_test
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
 
 	# We can't open two envs on HP-UX, so just skip the
 	# whole test since that is at the core of it.
@@ -19,12 +29,12 @@ proc rep014 { method { niter 10 } { tnum "014" } args } {
 		puts "Rep$tnum: Skipping for HP-UX."
 		return
 	}
+
 	set args [convert_args $method $args]
 	set logsets [create_logsets 2]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -64,11 +74,9 @@ proc rep014_sub { method niter tnum logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create $m_txnargs \
-	    $m_logargs -lock_max 2500 \
+	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create $m_txnargs \
-#	    $m_logargs -lock_max 2500 \
+#	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
 #	    -errpfx MASTER -verbose {rep on} \
 #	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set env0 [eval $ma_envcmd $recargs -rep_master]
@@ -77,11 +85,9 @@ proc rep014_sub { method niter tnum logset recargs largs } {
 
 	# Open a client.
 	repladd 2
-	set cl_envcmd "berkdb_env -create $c_txnargs \
-	    $c_logargs -lock_max 2500 \
+	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env -create $c_txnargs \
-#	    $c_logargs -lock_max 2500 \
+#	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
 #	    -errpfx CLIENT1 -verbose {rep on} \
 #	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set env1 [eval $cl_envcmd $recargs]
@@ -104,7 +110,7 @@ proc rep014_sub { method niter tnum logset recargs largs } {
 
 	# Run a modified test001 in the master (and update clients).
 	puts "\tRep$tnum.a: Running test001 in replicated env."
-	eval rep_test $method $masterenv $masterdb $niter 0 0
+	eval rep_test $method $masterenv $masterdb $niter 0 0 0 0 $largs
 	process_msgs $envlist
 
 	puts "\tRep$tnum.b: Close and reopen client env."
@@ -115,7 +121,7 @@ proc rep014_sub { method niter tnum logset recargs largs } {
 
 	puts "\tRep$tnum.c: Run test in master again."
 	set start $niter
-	eval rep_test $method $masterenv $masterdb $niter $start 0
+	eval rep_test $method $masterenv $masterdb $niter $start 0 0 0 $largs
 	set envlist "{$env0 1} {$env1 2}"
 	process_msgs $envlist
 
@@ -127,7 +133,7 @@ proc rep014_sub { method niter tnum logset recargs largs } {
 	puts "\tRep$tnum.e: Run test in master again."
 	set start [expr $start + $niter]
 	error_check_good e1_pfx [$env1 errpfx CLIENT1] 0
-	eval rep_test $method $masterenv $masterdb $niter $start 0
+	eval rep_test $method $masterenv $masterdb $niter $start 0 0 0 $largs
 	process_msgs $envlist
 
 	puts "\tRep$tnum.f: Open env2, close env1, use env2."
@@ -141,7 +147,7 @@ proc rep014_sub { method niter tnum logset recargs largs } {
 	puts "\tRep$tnum.g: Run test in master again."
 	set start [expr $start + $niter]
 	error_check_good e1_pfx [$env2 errpfx CLIENT2] 0
-	eval rep_test $method $masterenv $masterdb $niter $start 0
+	eval rep_test $method $masterenv $masterdb $niter $start 0 0 0 $largs
 	set envlist "{$env0 1} {$env2 2}"
 	process_msgs $envlist
 

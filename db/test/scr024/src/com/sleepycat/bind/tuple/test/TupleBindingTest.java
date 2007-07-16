@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleBindingTest.java,v 1.4 2004/06/29 06:06:19 mark Exp $
+ * $Id: TupleBindingTest.java,v 12.5 2006/08/24 14:46:45 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple.test;
@@ -23,6 +23,8 @@ import com.sleepycat.bind.tuple.FloatBinding;
 import com.sleepycat.bind.tuple.IntegerBinding;
 import com.sleepycat.bind.tuple.LongBinding;
 import com.sleepycat.bind.tuple.ShortBinding;
+import com.sleepycat.bind.tuple.SortedDoubleBinding;
+import com.sleepycat.bind.tuple.SortedFloatBinding;
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleInput;
@@ -32,6 +34,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
 import com.sleepycat.bind.tuple.TupleTupleMarshalledBinding;
 import com.sleepycat.collections.test.DbTestUtil;
 import com.sleepycat.db.DatabaseEntry;
+import com.sleepycat.util.FastOutputStream;
 import com.sleepycat.util.ExceptionUnwrapper;
 
 /**
@@ -41,7 +44,6 @@ public class TupleBindingTest extends TestCase {
 
     private DatabaseEntry buffer;
     private DatabaseEntry keyBuffer;
-    private DatabaseEntry indexKeyBuffer;
 
     public static void main(String[] args)
         throws Exception {
@@ -73,7 +75,6 @@ public class TupleBindingTest extends TestCase {
         DbTestUtil.printTestName("TupleBindingTest." + getName());
         buffer = new DatabaseEntry();
         keyBuffer = new DatabaseEntry();
-        indexKeyBuffer = new DatabaseEntry();
     }
 
     public void tearDown() {
@@ -81,7 +82,6 @@ public class TupleBindingTest extends TestCase {
         /* Ensure that GC can cleanup. */
         buffer = null;
         keyBuffer = null;
-        indexKeyBuffer = null;
     }
 
     public void runTest()
@@ -94,37 +94,82 @@ public class TupleBindingTest extends TestCase {
         }
     }
 
-    private void primitiveBindingTest(Object val, int byteSize) {
+    private void primitiveBindingTest(Class primitiveCls, Class compareCls,
+                                      Object val, int byteSize) {
 
-        Class cls = val.getClass();
-        EntryBinding binding = TupleBinding.getPrimitiveBinding(cls);
+        TupleBinding binding = TupleBinding.getPrimitiveBinding(primitiveCls);
+
+        /* Test standard object binding. */
 
         binding.objectToEntry(val, buffer);
         assertEquals(byteSize, buffer.getSize());
 
         Object val2 = binding.entryToObject(buffer);
-        assertSame(cls, val2.getClass());
+        assertSame(compareCls, val2.getClass());
         assertEquals(val, val2);
 
-        Object valWithWrongCls = (cls == String.class)
+        Object valWithWrongCls = (primitiveCls == String.class)
                       ? ((Object) new Integer(0)) : ((Object) new String(""));
         try {
             binding.objectToEntry(valWithWrongCls, buffer);
         }
         catch (ClassCastException expected) {}
+
+        /* Test nested tuple binding. */
+
+        TupleOutput output = new TupleOutput();
+        output.writeString("abc");
+        binding.objectToEntry(val, output);
+        output.writeString("xyz");
+
+        TupleInput input = new TupleInput(output);
+        assertEquals("abc", input.readString());
+        Object val3 = binding.entryToObject(input);
+        assertEquals("xyz", input.readString());
+
+        assertEquals(0, input.available());
+        assertSame(compareCls, val3.getClass());
+        assertEquals(val, val3);
     }
 
     public void testPrimitiveBindings() {
 
-        primitiveBindingTest("abc", 4);
-        primitiveBindingTest(new Character('a'), 2);
-        primitiveBindingTest(new Boolean(true), 1);
-        primitiveBindingTest(new Byte((byte) 123), 1);
-        primitiveBindingTest(new Short((short) 123), 2);
-        primitiveBindingTest(new Integer(123), 4);
-        primitiveBindingTest(new Long(123), 8);
-        primitiveBindingTest(new Float(123.123), 4);
-        primitiveBindingTest(new Double(123.123), 8);
+        primitiveBindingTest(String.class, String.class,
+                             "abc", 4);
+
+        primitiveBindingTest(Character.class, Character.class,
+                             new Character('a'), 2);
+        primitiveBindingTest(Boolean.class, Boolean.class,
+                             new Boolean(true), 1);
+        primitiveBindingTest(Byte.class, Byte.class,
+                             new Byte((byte) 123), 1);
+        primitiveBindingTest(Short.class, Short.class,
+                             new Short((short) 123), 2);
+        primitiveBindingTest(Integer.class, Integer.class,
+                             new Integer(123), 4);
+        primitiveBindingTest(Long.class, Long.class,
+                             new Long(123), 8);
+        primitiveBindingTest(Float.class, Float.class,
+                             new Float(123.123), 4);
+        primitiveBindingTest(Double.class, Double.class,
+                             new Double(123.123), 8);
+
+        primitiveBindingTest(Character.TYPE, Character.class,
+                             new Character('a'), 2);
+        primitiveBindingTest(Boolean.TYPE, Boolean.class,
+                             new Boolean(true), 1);
+        primitiveBindingTest(Byte.TYPE, Byte.class,
+                             new Byte((byte) 123), 1);
+        primitiveBindingTest(Short.TYPE, Short.class,
+                             new Short((short) 123), 2);
+        primitiveBindingTest(Integer.TYPE, Integer.class,
+                             new Integer(123), 4);
+        primitiveBindingTest(Long.TYPE, Long.class,
+                             new Long(123), 8);
+        primitiveBindingTest(Float.TYPE, Float.class,
+                             new Float(123.123), 4);
+        primitiveBindingTest(Double.TYPE, Double.class,
+                             new Double(123.123), 8);
 
         DatabaseEntry entry = new DatabaseEntry();
 
@@ -194,6 +239,23 @@ public class TupleBindingTest extends TestCase {
 
         new DoubleBinding().objectToEntry(new Double(123.123), entry);
 	assertEquals(8, entry.getData().length);
+
+
+        SortedFloatBinding.floatToEntry((float) 123.123, entry);
+	assertEquals(4, entry.getData().length);
+        assertTrue(((float) 123.123) ==
+                   SortedFloatBinding.entryToFloat(entry));
+
+        new SortedFloatBinding().objectToEntry
+            (new Float((float) 123.123), entry);
+	assertEquals(4, entry.getData().length);
+
+        SortedDoubleBinding.doubleToEntry(123.123, entry);
+	assertEquals(8, entry.getData().length);
+        assertTrue(123.123 == SortedDoubleBinding.entryToDouble(entry));
+
+        new SortedDoubleBinding().objectToEntry(new Double(123.123), entry);
+	assertEquals(8, entry.getData().length);
     }
 
     public void testTupleInputBinding() {
@@ -250,5 +312,89 @@ public class TupleBindingTest extends TestCase {
         assertEquals("index1", val.getIndexKey1());
         assertEquals("index2", val.getIndexKey2());
     }
-}
 
+    public void testBufferSize() {
+
+        CaptureSizeBinding binding = new CaptureSizeBinding();
+
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertEquals(FastOutputStream.DEFAULT_INIT_SIZE, binding.bufSize);
+
+        binding.setTupleBufferSize(1000);
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertEquals(1000, binding.bufSize);
+    }
+
+    private class CaptureSizeBinding extends TupleBinding {
+
+        int bufSize;
+
+        CaptureSizeBinding() {
+            super();
+        }
+
+        public TupleOutput getTupleOutput(Object object) {
+            TupleOutput out = super.getTupleOutput(object);
+            bufSize = out.getBufferBytes().length;
+            return out;
+        }
+
+        public Object entryToObject(TupleInput input) {
+            return input.readString();
+        }
+
+        public void objectToEntry(Object object, TupleOutput output) {
+            assertEquals(bufSize, output.getBufferBytes().length);
+            output.writeString((String) object);
+        }
+    }
+
+    public void testBufferOverride() {
+
+        TupleOutput out = new TupleOutput(new byte[10]);
+        CachedOutputBinding binding = new CachedOutputBinding(out);
+
+        binding.used = false;
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertTrue(binding.used);
+
+        binding.used = false;
+        binding.objectToEntry("aaaaaaaaaaaaaaaaaaaaaa", buffer);
+        assertEquals("aaaaaaaaaaaaaaaaaaaaaa", binding.entryToObject(buffer));
+        assertTrue(binding.used);
+
+        binding.used = false;
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertTrue(binding.used);
+    }
+
+    private class CachedOutputBinding extends TupleBinding {
+
+        TupleOutput out;
+        boolean used;
+
+        CachedOutputBinding(TupleOutput out) {
+            super();
+            this.out = out;
+        }
+
+        public TupleOutput getTupleOutput(Object object) {
+            out.reset();
+            used = true;
+            return out;
+        }
+
+        public Object entryToObject(TupleInput input) {
+            return input.readString();
+        }
+
+        public void objectToEntry(Object object, TupleOutput output) {
+            assertSame(out, output);
+            output.writeString((String) object);
+        }
+    }
+}

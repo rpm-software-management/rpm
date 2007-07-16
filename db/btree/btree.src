@@ -1,22 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: btree.src,v 10.42 2004/06/17 17:35:12 bostic Exp $
+ * $Id: btree.src,v 12.7 2006/08/24 14:44:46 bostic Exp $
  */
 
 PREFIX	__bam
 DBPRIVATE
 
-INCLUDE #ifndef NO_SYSTEM_INCLUDES
-INCLUDE #include <sys/types.h>
-INCLUDE
-INCLUDE #include <ctype.h>
-INCLUDE #include <string.h>
-INCLUDE #endif
-INCLUDE
 INCLUDE #include "db_int.h"
 INCLUDE #include "dbinc/crypto.h"
 INCLUDE #include "dbinc/db_page.h"
@@ -41,7 +34,7 @@ INCLUDE
  * pg:		the split page's contents before the split.
  * opflags:	SPL_NRECS: if splitting a tree that maintains a record count.
  */
-BEGIN split		62
+BEGIN split		42	62
 DB	fileid		int32_t		ld
 ARG	left		db_pgno_t	lu
 POINTER	llsn		DB_LSN *	lu
@@ -65,7 +58,7 @@ END
  * rootent:	last entry on the root page.
  * rootlsn:	the root page's original lsn.
  */
-BEGIN rsplit		63
+BEGIN rsplit		42	63
 DB	fileid		int32_t		ld
 ARG	pgno		db_pgno_t	lu
 PGDBT	pgdbt		DBT		s
@@ -84,7 +77,7 @@ END
  * indx_copy:	the index to copy if inserting.
  * is_insert:	0 if a delete, 1 if an insert.
  */
-BEGIN adj		55
+BEGIN adj		42	55
 DB	fileid		int32_t		ld
 ARG	pgno		db_pgno_t	lu
 POINTER	lsn		DB_LSN *	lu
@@ -102,7 +95,7 @@ END
  * adjust:	the signed adjustment.
  * opflags:	CAD_UPDATEROOT: if root page count was adjusted.
  */
-BEGIN cadjust		56
+BEGIN cadjust		42	56
 DB	fileid		int32_t		ld
 ARG	pgno		db_pgno_t	lu
 POINTER	lsn		DB_LSN *	lu
@@ -118,7 +111,7 @@ END
  * lsn:		the page's original lsn.
  * indx:	the index to be deleted.
  */
-BEGIN cdel		57
+BEGIN cdel		42	57
 DB	fileid		int32_t		ld
 ARG	pgno		db_pgno_t	lu
 POINTER	lsn		DB_LSN *	lu
@@ -137,7 +130,7 @@ END
  * prefix:	the prefix of the replacement that matches the original.
  * suffix:	the suffix of the replacement that matches the original.
  */
-BEGIN repl		58
+BEGIN repl		42	58
 DB	fileid		int32_t		ld
 ARG	pgno		db_pgno_t	lu
 POINTER	lsn		DB_LSN *	lu
@@ -152,7 +145,7 @@ END
 /*
  * BTREE-root: log the assignment of a root btree page.
  */
-BEGIN root		59
+BEGIN root		42	59
 DB	fileid		int32_t		ld
 ARG	meta_pgno	db_pgno_t	lu
 ARG	root_pgno	db_pgno_t	lu
@@ -166,7 +159,7 @@ END
  *	signed index adjustment in one case.
  *	care should be taken if its size is changed.
  */
-BEGIN curadj		64
+BEGIN curadj		42	64
 /* Fileid of db affected. */
 DB	fileid		int32_t		ld
 /* Which adjustment. */
@@ -190,7 +183,7 @@ END
  *     renumbering recno trees.
  *     Should only be processed during DB_TXN_ABORT.
  */
-BEGIN rcuradj	65
+BEGIN rcuradj	42	65
 /* Fileid of db affected. */
 DB	fileid		int32_t		ld
 /* Which adjustment. */
@@ -207,10 +200,10 @@ END
  * BTREE-relink -- Handles relinking around a deleted leaf page.
  *
  */
-BEGIN relink		147
+BEGIN_COMPAT relink		43	147
 /* Fileid of db affected. */
 DB	fileid		int32_t		ld
-/* The page being changed. */
+/* The page being removed. */
 ARG	pgno		db_pgno_t	lu
 /* The page's original lsn. */
 POINTER	lsn		DB_LSN *	lu
@@ -222,4 +215,48 @@ POINTER	lsn_prev	DB_LSN *	lu
 ARG	next		db_pgno_t	lu
 /* The previous page's original lsn. */
 POINTER	lsn_next	DB_LSN *	lu
+END
+
+BEGIN relink		44	147
+/* Fileid of db affected. */
+DB	fileid		int32_t		ld
+/* The page being removed. */
+ARG	pgno		db_pgno_t	lu
+/* The new page number, if any. */
+ARG	new_pgno	db_pgno_t	lu
+/* The previous page. */
+ARG	prev		db_pgno_t	lu
+/* The previous page's original lsn. */
+POINTER	lsn_prev	DB_LSN *	lu
+/* The next page. */
+ARG	next		db_pgno_t	lu
+/* The previous page's original lsn. */
+POINTER	lsn_next	DB_LSN *	lu
+END
+
+/*
+ * BTREE-merge -- Handles merging of pages during a compaction.
+ */
+BEGIN merge		44	148
+DB	fileid		int32_t		ld
+ARG	pgno		db_pgno_t	lu
+POINTER	lsn		DB_LSN *	lu
+ARG	npgno		db_pgno_t	lu
+POINTER nlsn		DB_LSN *	lu
+DBT	hdr		DBT		s
+DBT	data		DBT		s
+DBT	ind		DBT		s
+END
+
+/*
+ * BTREE-pgno -- Handles replacing a page number in the record
+ * refernece on pgno by indx.
+ */
+BEGIN pgno		44	149
+DB	fileid		int32_t		ld
+ARG	pgno		db_pgno_t	lu
+POINTER	lsn		DB_LSN *	lu
+ARG	indx		u_int32_t	lu
+ARG	opgno		db_pgno_t	lu
+ARG	npgno		db_pgno_t	lu
 END

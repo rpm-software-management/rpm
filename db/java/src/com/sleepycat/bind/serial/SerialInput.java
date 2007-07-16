@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: SerialInput.java,v 1.2 2004/06/04 18:24:49 mark Exp $
+ * $Id: SerialInput.java,v 12.4 2006/08/31 18:14:05 bostic Exp $
  */
 
 package com.sleepycat.bind.serial;
@@ -35,6 +35,7 @@ import com.sleepycat.util.RuntimeExceptionWrapper;
 public class SerialInput extends ObjectInputStream {
 
     private ClassCatalog classCatalog;
+    private ClassLoader classLoader;
 
     /**
      * Creates a serial input stream.
@@ -48,12 +49,33 @@ public class SerialInput extends ObjectInputStream {
     public SerialInput(InputStream in, ClassCatalog classCatalog)
         throws IOException {
 
+        this(in, classCatalog, null);
+    }
+
+    /**
+     * Creates a serial input stream.
+     *
+     * @param in is the input stream from which compact serialized objects will
+     * be read.
+     *
+     * @param classCatalog is the catalog containing the class descriptions
+     * for the serialized objects.
+     *
+     * @param classLoader is the class loader to use, or null if a default
+     * class loader should be used.
+     */
+    public SerialInput(InputStream in,
+                       ClassCatalog classCatalog,
+                       ClassLoader classLoader)
+        throws IOException {
+
         super(in);
 
         this.classCatalog = classCatalog;
+        this.classLoader = classLoader;
     }
 
-    // javadoc is inherited
+    // javadoc is specified elsewhere
     protected ObjectStreamClass readClassDescriptor()
         throws IOException, ClassNotFoundException {
 
@@ -70,6 +92,21 @@ public class SerialInput extends ObjectInputStream {
              * call here, etc.
              */
             throw new RuntimeExceptionWrapper(e);
+        }
+    }
+
+    // javadoc is specified elsewhere
+    protected Class resolveClass(ObjectStreamClass desc)
+        throws IOException, ClassNotFoundException {
+
+        if (classLoader != null) {
+            try {
+                return Class.forName(desc.getName(), false, classLoader);
+            } catch (ClassNotFoundException e) {
+                return super.resolveClass(desc);
+            }
+        } else {
+            return super.resolveClass(desc);
         }
     }
 }

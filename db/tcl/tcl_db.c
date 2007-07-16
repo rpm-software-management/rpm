@@ -1,23 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_db.c,v 11.145 2004/10/07 16:48:39 bostic Exp $
+ * $Id: tcl_db.c,v 12.23 2006/08/24 14:46:32 bostic Exp $
  */
 
 #include "db_config.h"
 
+#include "db_int.h"
 #ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <stdlib.h>
-#include <string.h>
 #include <tcl.h>
 #endif
-
-#include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc/db_am.h"
 #include "dbinc/tcl_db.h"
@@ -37,6 +32,11 @@ static int	tcl_DbKeyRange __P((Tcl_Interp *, int, Tcl_Obj * CONST*, DB *));
 static int	tcl_DbPut __P((Tcl_Interp *, int, Tcl_Obj * CONST*, DB *));
 static int	tcl_DbStat __P((Tcl_Interp *, int, Tcl_Obj * CONST*, DB *));
 static int	tcl_DbTruncate __P((Tcl_Interp *, int, Tcl_Obj * CONST*, DB *));
+#ifdef CONFIG_TEST
+static int	tcl_DbCompact __P((Tcl_Interp *, int, Tcl_Obj * CONST*, DB *));
+static int	tcl_DbCompactStat __P((Tcl_Interp *,
+    int, Tcl_Obj * CONST*, DB *));
+#endif
 static int	tcl_DbCursor __P((Tcl_Interp *,
     int, Tcl_Obj * CONST*, DB *, DBC **));
 static int	tcl_DbJoin __P((Tcl_Interp *,
@@ -99,6 +99,8 @@ db_Cmd(clientData, interp, objc, objv)
 		"pget",
 		"rpcid",
 		"test",
+		"compact",
+		"compact_stat",
 #endif
 		"associate",
 		"close",
@@ -139,6 +141,8 @@ db_Cmd(clientData, interp, objc, objv)
 		DBPGET,
 		DBRPCID,
 		DBTEST,
+		DBCOMPACT,
+		DBCOMPACT_STAT,
 #endif
 		DBASSOCIATE,
 		DBCLOSE,
@@ -235,6 +239,15 @@ db_Cmd(clientData, interp, objc, objv)
 	case DBTEST:
 		result = tcl_EnvTest(interp, objc, objv, dbp->dbenv);
 		break;
+
+	case DBCOMPACT:
+		result = tcl_DbCompact(interp, objc, objv, dbp);
+		break;
+
+	case DBCOMPACT_STAT:
+		result = tcl_DbCompactStat(interp, objc, objv, dbp);
+		break;
+
 #endif
 	case DBASSOCIATE:
 		result = tcl_DbAssociate(interp, objc, objv, dbp);
@@ -539,8 +552,8 @@ tcl_DbStat(interp, objc, objv, dbp)
 {
 	static const char *dbstatopts[] = {
 #ifdef CONFIG_TEST
-		"-degree_2",
-		"-dirty",
+		"-read_committed",
+		"-read_uncommitted",
 #endif
 		"-faststat",
 		"-txn",
@@ -548,8 +561,8 @@ tcl_DbStat(interp, objc, objv, dbp)
 	};
 	enum dbstatopts {
 #ifdef CONFIG_TEST
-		DBCUR_DEGREE2,
-		DBCUR_DIRTY,
+		DBCUR_READ_COMMITTED,
+		DBCUR_READ_UNCOMMITTED,
 #endif
 		DBCUR_FASTSTAT,
 		DBCUR_TXN
@@ -579,11 +592,11 @@ tcl_DbStat(interp, objc, objv, dbp)
 		i++;
 		switch ((enum dbstatopts)optindex) {
 #ifdef CONFIG_TEST
-		case DBCUR_DEGREE2:
-			flag |= DB_DEGREE_2;
+		case DBCUR_READ_COMMITTED:
+			flag |= DB_READ_COMMITTED;
 			break;
-		case DBCUR_DIRTY:
-			flag |= DB_DIRTY_READ;
+		case DBCUR_READ_UNCOMMITTED:
+			flag |= DB_READ_UNCOMMITTED;
 			break;
 #endif
 		case DBCUR_FASTSTAT:
@@ -775,6 +788,8 @@ tcl_DbClose(interp, objc, objv, dbp, dbip)
 		if (endarg)
 			break;
 	}
+	if (dbip->i_cdata != NULL)
+		__os_free(dbp->dbenv, dbip->i_cdata);
 	_DbInfoDelete(interp, dbip);
 	_debug_check();
 
@@ -801,7 +816,6 @@ tcl_DbPut(interp, objc, objv, dbp)
 		"-nodupdata",
 #endif
 		"-append",
-		"-auto_commit",
 		"-nooverwrite",
 		"-partial",
 		"-txn",
@@ -812,7 +826,6 @@ tcl_DbPut(interp, objc, objv, dbp)
 		DBGET_NODUPDATA,
 #endif
 		DBPUT_APPEND,
-		DBPUT_AUTO_COMMIT,
 		DBPUT_NOOVER,
 		DBPUT_PART,
 		DBPUT_TXN
@@ -828,7 +841,7 @@ tcl_DbPut(interp, objc, objv, dbp)
 	void *dtmp, *ktmp;
 	db_recno_t recno;
 	u_int32_t flag;
-	int auto_commit, elemc, end, freekey, freedata;
+	int elemc, end, freekey, freedata;
 	int i, optindex, result, ret;
 	char *arg, msg[MSG_SIZE];
 
@@ -881,7 +894,6 @@ tcl_DbPut(interp, objc, objv, dbp)
 	 * defined above.
 	 */
 	i = 2;
-	auto_commit = 0;
 	while (i < end) {
 		if (Tcl_GetIndexFromObj(interp, objv[i],
 		    dbputopts, "option", TCL_EXACT, &optindex) != TCL_OK)
@@ -908,9 +920,6 @@ tcl_DbPut(interp, objc, objv, dbp)
 				Tcl_SetResult(interp, msg, TCL_VOLATILE);
 				result = TCL_ERROR;
 			}
-			break;
-		case DBPUT_AUTO_COMMIT:
-			auto_commit = 1;
 			break;
 		case DBPUT_APPEND:
 			FLAG_CHECK(flag);
@@ -986,8 +995,6 @@ tcl_DbPut(interp, objc, objv, dbp)
 		}
 		key.data = ktmp;
 	}
-	if (auto_commit)
-		flag |= DB_AUTO_COMMIT;
 	ret = _CopyObjBytes(interp, objv[objc-1], &dtmp, &data.size, &freedata);
 	if (ret != 0) {
 		result = _ReturnSetup(interp, ret,
@@ -1026,11 +1033,11 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 {
 	static const char *dbgetopts[] = {
 #ifdef CONFIG_TEST
-		"-degree2",
-		"-dirty",
+		"-data_buf_size",
 		"-multi",
+		"-read_committed",
+		"-read_uncommitted",
 #endif
-		"-auto_commit",
 		"-consume",
 		"-consume_wait",
 		"-get_both",
@@ -1044,11 +1051,11 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 	};
 	enum dbgetopts {
 #ifdef CONFIG_TEST
-		DBGET_DEGREE2,
-		DBGET_DIRTY,
+		DBGET_DATA_BUF_SIZE,
 		DBGET_MULTI,
+		DBGET_READ_COMMITTED,
+		DBGET_READ_UNCOMMITTED,
 #endif
-		DBGET_AUTO_COMMIT,
 		DBGET_CONSUME,
 		DBGET_CONSUME_WAIT,
 		DBGET_BOTH,
@@ -1065,24 +1072,25 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 	DB_TXN *txn;
 	Tcl_Obj **elemv, *retlist;
 	db_recno_t precno, recno;
-	u_int32_t aflag, flag, cflag, isdup, mflag, rmw;
+	u_int32_t flag, cflag, isdup, mflag, rmw;
 	int elemc, end, endarg, freekey, freedata, i;
 	int optindex, result, ret, useglob, useprecno, userecno;
 	char *arg, *pattern, *prefix, msg[MSG_SIZE];
 	void *dtmp, *ktmp;
 #ifdef CONFIG_TEST
-	int bufsize;
+	int bufsize, data_buf_size;
 #endif
 
 	result = TCL_OK;
 	freekey = freedata = 0;
-	aflag = cflag = endarg = flag = mflag = rmw = 0;
+	cflag = endarg = flag = mflag = rmw = 0;
 	useglob = userecno = 0;
 	txn = NULL;
 	pattern = prefix = NULL;
 	dtmp = ktmp = NULL;
 #ifdef CONFIG_TEST
 	COMPQUIET(bufsize, 0);
+	data_buf_size = 0;
 #endif
 
 	if (objc < 3) {
@@ -1118,23 +1126,28 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 		i++;
 		switch ((enum dbgetopts)optindex) {
 #ifdef CONFIG_TEST
-		case DBGET_DIRTY:
-			rmw |= DB_DIRTY_READ;
-			break;
-		case DBGET_DEGREE2:
-			rmw |= DB_DEGREE_2;
-			break;
-		case DBGET_MULTI:
-			mflag |= DB_MULTIPLE;
-			result = Tcl_GetIntFromObj(interp, objv[i], &bufsize);
+		case DBGET_DATA_BUF_SIZE:
+			result =
+			    Tcl_GetIntFromObj(interp, objv[i], &data_buf_size);
 			if (result != TCL_OK)
 				goto out;
 			i++;
 			break;
-#endif
-		case DBGET_AUTO_COMMIT:
-			aflag |= DB_AUTO_COMMIT;
+		case DBGET_MULTI:
+			mflag |= DB_MULTIPLE;
+			result =
+			    Tcl_GetIntFromObj(interp, objv[i], &bufsize);
+			if (result != TCL_OK)
+				goto out;
+			i++;
 			break;
+		case DBGET_READ_COMMITTED:
+			rmw |= DB_READ_COMMITTED;
+			break;
+		case DBGET_READ_UNCOMMITTED:
+			rmw |= DB_READ_UNCOMMITTED;
+			break;
+#endif
 		case DBGET_BOTH:
 			/*
 			 * Change 'end' and make sure we aren't already past
@@ -1276,6 +1289,22 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 		result = TCL_ERROR;
 		goto out;
 	}
+#ifdef	CONFIG_TEST
+	if (data_buf_size != 0 && flag == DB_GET_BOTH) {
+		Tcl_SetResult(interp,
+    "Only one of -data_buf_size or -get_both can be specified.\n",
+		    TCL_STATIC);
+		result = TCL_ERROR;
+		goto out;
+	}
+	if (data_buf_size != 0 && mflag != 0) {
+		Tcl_SetResult(interp,
+    "Only one of -data_buf_size or -multi can be specified.\n",
+		    TCL_STATIC);
+		result = TCL_ERROR;
+		goto out;
+	}
+#endif
 	if (useglob && flag == DB_GET_BOTH) {
 		Tcl_SetResult(interp,
 		    "Only one of -glob or -get_both can be specified.\n",
@@ -1309,8 +1338,23 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 	 * instead of a cursor operation.
 	 */
 	if (pattern == NULL && (isdup == 0 || mflag != 0 ||
+#ifdef	CONFIG_TEST
+	    data_buf_size != 0 ||
+#endif
 	    flag == DB_SET_RECNO || flag == DB_GET_BOTH ||
 	    flag == DB_CONSUME || flag == DB_CONSUME_WAIT)) {
+#ifdef	CONFIG_TEST
+		if (data_buf_size == 0) {
+			F_CLR(&save, DB_DBT_USERMEM);
+			F_SET(&save, DB_DBT_MALLOC);
+		} else {
+			(void)__os_malloc(
+			    NULL, (size_t)data_buf_size, &save.data);
+			save.ulen = (u_int32_t)data_buf_size;
+			F_CLR(&save, DB_DBT_MALLOC);
+			F_SET(&save, DB_DBT_USERMEM);
+		}
+#endif
 		if (flag == DB_GET_BOTH) {
 			if (userecno) {
 				result = _GetUInt32(interp,
@@ -1327,14 +1371,14 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 				 * the allocated key space in a tmp.
 				 */
 				ret = _CopyObjBytes(interp, objv[objc-2],
-				    &ktmp, &key.size, &freekey);
+				    &key.data, &key.size, &freekey);
 				if (ret != 0) {
 					result = _ReturnSetup(interp, ret,
 					    DB_RETOK_DBGET(ret), "db get");
 					goto out;
 				}
-				key.data = ktmp;
 			}
+			ktmp = key.data;
 			/*
 			 * Already checked args above.  Fill in key and save.
 			 * Save is used in the dbp->get call below to fill in
@@ -1378,14 +1422,14 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 				 * the allocated key space in a tmp.
 				 */
 				ret = _CopyObjBytes(interp, objv[objc-1],
-				    &ktmp, &key.size, &freekey);
+				    &key.data, &key.size, &freekey);
 				if (ret != 0) {
 					result = _ReturnSetup(interp, ret,
 					    DB_RETOK_DBGET(ret), "db get");
 					goto out;
 				}
-				key.data = ktmp;
 			}
+			ktmp = key.data;
 #ifdef CONFIG_TEST
 			if (mflag & DB_MULTIPLE) {
 				if ((ret = __os_malloc(dbp->dbenv,
@@ -1417,7 +1461,7 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 		} else {
 			_debug_check();
 			ret = dbp->get(dbp,
-			    txn, &key, &data, flag | aflag | rmw | mflag);
+			    txn, &key, &data, flag | rmw | mflag);
 		}
 		result = _ReturnSetup(interp, ret, DB_RETOK_DBGET(ret),
 		    "db get");
@@ -1487,15 +1531,15 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 		 * key pointers.  So, we need to store
 		 * the allocated key space in a tmp.
 		 */
-		ret = _CopyObjBytes(interp, objv[objc-1], &ktmp,
+		ret = _CopyObjBytes(interp, objv[objc-1], &key.data,
 		    &key.size, &freekey);
 		if (ret != 0) {
 			result = _ReturnSetup(interp, ret,
 			    DB_RETOK_DBGET(ret), "db get");
 			return (result);
 		}
-		key.data = ktmp;
 	}
+	ktmp = key.data;
 	ret = dbp->cursor(dbp, txn, &dbc, 0);
 	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "db cursor");
 	if (result == TCL_ERROR)
@@ -1634,13 +1678,11 @@ tcl_DbDelete(interp, objc, objv, dbp)
 	DB *dbp;			/* Database pointer */
 {
 	static const char *dbdelopts[] = {
-		"-auto_commit",
 		"-glob",
 		"-txn",
 		NULL
 	};
 	enum dbdelopts {
-		DBDEL_AUTO_COMMIT,
 		DBDEL_GLOB,
 		DBDEL_TXN
 	};
@@ -1656,7 +1698,6 @@ tcl_DbDelete(interp, objc, objv, dbp)
 
 	result = TCL_OK;
 	freekey = 0;
-	flag = 0;
 	pattern = prefix = NULL;
 	txn = NULL;
 	if (objc < 3) {
@@ -1667,17 +1708,17 @@ tcl_DbDelete(interp, objc, objv, dbp)
 	ktmp = NULL;
 	memset(&key, 0, sizeof(key));
 	/*
-	 * The first arg must be -auto_commit, -glob, -txn or a list of keys.
+	 * The first arg must be -glob, -txn or a list of keys.
 	 */
 	i = 2;
 	while (i < objc) {
 		if (Tcl_GetIndexFromObj(interp, objv[i], dbdelopts, "option",
 		    TCL_EXACT, &optindex) != TCL_OK) {
 			/*
-			 * If we don't have a -auto_commit, -glob or -txn,
-			 * then the remaining args must be exact keys.
-			 * Reset the result so we don't get an errant error
-			 * message if there is another error.
+			 * If we don't have a -glob or -txn, then the remaining
+			 * args must be exact keys.  Reset the result so we
+			 * don't get an errant error message if there is another
+			 * error.
 			 */
 			if (IS_HELP(objv[i]) == TCL_OK)
 				return (TCL_OK);
@@ -1703,9 +1744,6 @@ tcl_DbDelete(interp, objc, objv, dbp)
 				Tcl_SetResult(interp, msg, TCL_VOLATILE);
 				result = TCL_ERROR;
 			}
-			break;
-		case DBDEL_AUTO_COMMIT:
-			flag |= DB_AUTO_COMMIT;
 			break;
 		case DBDEL_GLOB:
 			/*
@@ -1741,8 +1779,6 @@ tcl_DbDelete(interp, objc, objv, dbp)
 	 *
 	 * If we have a pattern AND more keys to process, there is an error.
 	 * Either we have some number of exact keys, or we have a pattern.
-	 *
-	 * If we have a pattern and an auto commit flag, there is an error.
 	 */
 	if (pattern == NULL) {
 		if (i != (objc - 1)) {
@@ -1755,13 +1791,6 @@ tcl_DbDelete(interp, objc, objv, dbp)
 		if (i != objc) {
 			Tcl_WrongNumArgs(
 			    interp, 2, objv, "?args? -glob pattern | key");
-			result = TCL_ERROR;
-			goto out;
-		}
-		if (flag & DB_AUTO_COMMIT) {
-			Tcl_SetResult(interp,
-			    "Cannot use -auto_commit and patterns.\n",
-			    TCL_STATIC);
 			result = TCL_ERROR;
 			goto out;
 		}
@@ -1796,7 +1825,7 @@ tcl_DbDelete(interp, objc, objv, dbp)
 			key.data = ktmp;
 		}
 		_debug_check();
-		ret = dbp->del(dbp, txn, &key, flag);
+		ret = dbp->del(dbp, txn, &key, 0);
 		/*
 		 * If we have any error, set up return result and stop
 		 * processing keys.
@@ -1889,8 +1918,8 @@ tcl_DbCursor(interp, objc, objv, dbp, dbcp)
 {
 	static const char *dbcuropts[] = {
 #ifdef CONFIG_TEST
-		"-degree_2",
-		"-dirty",
+		"-read_committed",
+		"-read_uncommitted",
 		"-update",
 #endif
 		"-txn",
@@ -1898,8 +1927,8 @@ tcl_DbCursor(interp, objc, objv, dbp, dbcp)
 	};
 	enum dbcuropts {
 #ifdef CONFIG_TEST
-		DBCUR_DEGREE2,
-		DBCUR_DIRTY,
+		DBCUR_READ_COMMITTED,
+		DBCUR_READ_UNCOMMITTED,
 		DBCUR_UPDATE,
 #endif
 		DBCUR_TXN
@@ -1922,11 +1951,11 @@ tcl_DbCursor(interp, objc, objv, dbp, dbcp)
 		i++;
 		switch ((enum dbcuropts)optindex) {
 #ifdef CONFIG_TEST
-		case DBCUR_DEGREE2:
-			flag |= DB_DEGREE_2;
+		case DBCUR_READ_COMMITTED:
+			flag |= DB_READ_COMMITTED;
 			break;
-		case DBCUR_DIRTY:
-			flag |= DB_DIRTY_READ;
+		case DBCUR_READ_UNCOMMITTED:
+			flag |= DB_READ_UNCOMMITTED;
 			break;
 		case DBCUR_UPDATE:
 			flag |= DB_WRITECURSOR;
@@ -1974,14 +2003,14 @@ tcl_DbAssociate(interp, objc, objv, dbp)
 	DB *dbp;
 {
 	static const char *dbaopts[] = {
-		"-auto_commit",
 		"-create",
+		"-immutable_key",
 		"-txn",
 		NULL
 	};
 	enum dbaopts {
-		DBA_AUTO_COMMIT,
 		DBA_CREATE,
+		DBA_IMMUTABLE_KEY,
 		DBA_TXN
 	};
 	DB *sdbp;
@@ -2037,11 +2066,11 @@ tcl_DbAssociate(interp, objc, objv, dbp)
 		}
 		i++;
 		switch ((enum dbaopts)optindex) {
-		case DBA_AUTO_COMMIT:
-			flag |= DB_AUTO_COMMIT;
-			break;
 		case DBA_CREATE:
 			flag |= DB_CREATE;
+			break;
+		case DBA_IMMUTABLE_KEY:
+			flag |= DB_IMMUTABLE_KEY;
 			break;
 		case DBA_TXN:
 			if (i > (objc - 1)) {
@@ -2190,7 +2219,7 @@ tcl_second_call(dbp, pkey, data, skey)
 	Tcl_DecrRefCount(dobj);
 
 	if (result != TCL_OK) {
-		__db_err(dbp->dbenv,
+		__db_errx(dbp->dbenv,
 		    "Tcl callback function failed with code %d", result);
 		return (EINVAL);
 	}
@@ -2549,15 +2578,15 @@ tcl_DbGetOpenFlags(interp, objc, objv, dbp)
 		u_int32_t flag;
 		char *arg;
 	} open_flags[] = {
-		{ DB_AUTO_COMMIT, "-auto_commit" },
-		{ DB_CREATE, "-create" },
-		{ DB_DEGREE_2, "-degree_2" },
-		{ DB_DIRTY_READ, "-dirty" },
-		{ DB_EXCL, "-excl" },
-		{ DB_NOMMAP, "-nommap" },
-		{ DB_RDONLY, "-rdonly" },
-		{ DB_THREAD, "-thread" },
-		{ DB_TRUNCATE, "-truncate" },
+		{ DB_AUTO_COMMIT,	"-auto_commit" },
+		{ DB_CREATE,		"-create" },
+		{ DB_EXCL,		"-excl" },
+		{ DB_NOMMAP,		"-nommap" },
+		{ DB_RDONLY,		"-rdonly" },
+		{ DB_READ_COMMITTED,	"-read_committed" },
+		{ DB_READ_UNCOMMITTED,	"-read_uncommitted" },
+		{ DB_THREAD,		"-thread" },
+		{ DB_TRUNCATE,		"-truncate" },
 		{ 0, NULL }
 	};
 
@@ -2805,22 +2834,19 @@ tcl_DbTruncate(interp, objc, objv, dbp)
 	DB *dbp;			/* Database pointer */
 {
 	static const char *dbcuropts[] = {
-		"-auto_commit",
 		"-txn",
 		NULL
 	};
 	enum dbcuropts {
-		DBTRUNC_AUTO_COMMIT,
 		DBTRUNC_TXN
 	};
 	DB_TXN *txn;
 	Tcl_Obj *res;
-	u_int32_t count, flag;
+	u_int32_t count;
 	int i, optindex, result, ret;
 	char *arg, msg[MSG_SIZE];
 
 	txn = NULL;
-	flag = 0;
 	result = TCL_OK;
 
 	i = 2;
@@ -2832,9 +2858,6 @@ tcl_DbTruncate(interp, objc, objv, dbp)
 		}
 		i++;
 		switch ((enum dbcuropts)optindex) {
-		case DBTRUNC_AUTO_COMMIT:
-			flag |= DB_AUTO_COMMIT;
-			break;
 		case DBTRUNC_TXN:
 			if (i == objc) {
 				Tcl_WrongNumArgs(interp, 2, objv, "?-txn id?");
@@ -2858,7 +2881,7 @@ tcl_DbTruncate(interp, objc, objv, dbp)
 		goto out;
 
 	_debug_check();
-	ret = dbp->truncate(dbp, txn, &count, flag);
+	ret = dbp->truncate(dbp, txn, &count, 0);
 	if (ret != 0)
 		result = _ErrorSetup(interp, ret, "db truncate");
 
@@ -2869,3 +2892,280 @@ tcl_DbTruncate(interp, objc, objv, dbp)
 out:
 	return (result);
 }
+
+#ifdef CONFIG_TEST
+/*
+ * tcl_DbCompact --
+ */
+static int
+tcl_DbCompact(interp, objc, objv, dbp)
+	Tcl_Interp *interp;		/* Interpreter */
+	int objc;			/* How many arguments? */
+	Tcl_Obj *CONST objv[];		/* The argument objects */
+	DB *dbp;			/* Database pointer */
+{
+	static const char *dbcuropts[] = {
+		"-fillpercent",
+		"-freespace",
+		"-freeonly",
+		"-pages",
+		"-start",
+		"-stop",
+		"-timeout",
+		"-txn",
+		NULL
+	};
+	enum dbcuropts {
+		DBREORG_FILLFACTOR,
+		DBREORG_FREESPACE,
+		DBREORG_FREEONLY,
+		DBREORG_PAGES,
+		DBREORG_START,
+		DBREORG_STOP,
+		DBREORG_TIMEOUT,
+		DBREORG_TXN
+	};
+	DBTCL_INFO *ip;
+	DBT *key, end, start, stop;
+	DBTYPE type;
+	DB_TXN *txn;
+	Tcl_Obj *myobj, *retlist;
+	db_recno_t recno, srecno;
+	u_int32_t arg, fillfactor, flags, pages, timeout;
+	char *carg, msg[MSG_SIZE];
+	int freekey, i, optindex, result, ret;
+	void *kp;
+
+	flags = 0;
+	result = TCL_OK;
+	txn = NULL;
+	(void)dbp->get_type(dbp, &type);
+	memset(&start, 0, sizeof(start));
+	memset(&stop, 0, sizeof(stop));
+	memset(&end, 0, sizeof(end));
+	ip = (DBTCL_INFO *)dbp->api_internal;
+	fillfactor = pages = timeout = 0;
+
+	i = 2;
+	while (i < objc) {
+		if (Tcl_GetIndexFromObj(interp, objv[i], dbcuropts, "option",
+		    TCL_EXACT, &optindex) != TCL_OK) {
+			result = IS_HELP(objv[i]);
+			goto out;
+		}
+		i++;
+		switch ((enum dbcuropts)optindex) {
+		case DBREORG_FILLFACTOR:
+			if (i == objc) {
+				Tcl_WrongNumArgs(interp,
+				    2, objv, "?-fillfactor number?");
+				result = TCL_ERROR;
+				break;
+			}
+			result = _GetUInt32(interp, objv[i++], &arg);
+			if (result != TCL_OK)
+				goto out;
+			i++;
+			fillfactor = arg;
+			break;
+		case DBREORG_FREESPACE:
+			LF_SET(DB_FREE_SPACE);
+			break;
+
+		case DBREORG_FREEONLY:
+			LF_SET(DB_FREELIST_ONLY);
+			break;
+
+		case DBREORG_PAGES:
+			if (i == objc) {
+				Tcl_WrongNumArgs(interp,
+				    2, objv, "?-pages number?");
+				result = TCL_ERROR;
+				break;
+			}
+			result = _GetUInt32(interp, objv[i++], &arg);
+			if (result != TCL_OK)
+				goto out;
+			i++;
+			pages = arg;
+			break;
+		case DBREORG_TIMEOUT:
+			if (i == objc) {
+				Tcl_WrongNumArgs(interp,
+				    2, objv, "?-timeout number?");
+				result = TCL_ERROR;
+				break;
+			}
+			result = _GetUInt32(interp, objv[i++], &arg);
+			if (result != TCL_OK)
+				goto out;
+			i++;
+			timeout = arg;
+			break;
+
+		case DBREORG_START:
+		case DBREORG_STOP:
+			if (i == objc) {
+				Tcl_WrongNumArgs(interp, 1, objv,
+				    "?-args? -start/stop key");
+				result = TCL_ERROR;
+				goto out;
+			}
+			if ((enum dbcuropts)optindex == DBREORG_START) {
+				key = &start;
+				key->data = &recno;
+			} else {
+				key = &stop;
+				key->data = &srecno;
+			}
+			if (type == DB_RECNO || type == DB_QUEUE) {
+				result = _GetUInt32(
+				    interp, objv[i], key->data);
+				if (result == TCL_OK) {
+					key->size = sizeof(db_recno_t);
+				} else
+					goto out;
+			} else {
+				ret = _CopyObjBytes(interp, objv[i],
+				    &key->data, &key->size, &freekey);
+				if (ret != 0)
+					goto err;
+				if (freekey == 0) {
+					if ((ret = __os_malloc(NULL,
+					     key->size, &kp)) != 0)
+						goto err;
+
+					memcpy(kp, key->data, key->size);
+					key->data = kp;
+					key->ulen = key->size;
+				}
+			}
+			i++;
+			break;
+		case DBREORG_TXN:
+			if (i == objc) {
+				Tcl_WrongNumArgs(interp, 2, objv, "?-txn id?");
+				result = TCL_ERROR;
+				break;
+			}
+			carg = Tcl_GetStringFromObj(objv[i++], NULL);
+			txn = NAME_TO_TXN(carg);
+			if (txn == NULL) {
+				snprintf(msg, MSG_SIZE,
+				    "Compact: Invalid txn: %s\n", carg);
+				Tcl_SetResult(interp, msg, TCL_VOLATILE);
+				result = TCL_ERROR;
+			}
+		}
+		if (result != TCL_OK)
+			break;
+	}
+	if (result != TCL_OK)
+		goto out;
+
+	if (ip->i_cdata == NULL)
+		if ((ret = __os_calloc(dbp->dbenv,
+		    1, sizeof(DB_COMPACT), &ip->i_cdata)) != 0) {
+			Tcl_SetResult(interp,
+			    db_strerror(ret), TCL_STATIC);
+			goto out;
+		}
+
+	ip->i_cdata->compact_fillpercent = fillfactor;
+	ip->i_cdata->compact_timeout = timeout;
+	ip->i_cdata->compact_pages = pages;
+
+	_debug_check();
+	ret = dbp->compact(dbp, txn, &start, &stop, ip->i_cdata, flags, &end);
+	result = _ReturnSetup(interp, ret, DB_RETOK_DBCGET(ret), "dbp compact");
+	if (result == TCL_ERROR)
+		goto out;
+
+	retlist = Tcl_NewListObj(0, NULL);
+	if (ret != 0)
+		goto out;
+	if (type == DB_RECNO || type == DB_QUEUE) {
+		if (end.size == 0)
+			recno  = 0;
+		else
+			recno = *((db_recno_t *)end.data);
+		myobj = Tcl_NewWideIntObj((Tcl_WideInt)recno);
+	} else
+		myobj = Tcl_NewByteArrayObj(end.data, (int)end.size);
+	result = Tcl_ListObjAppendElement(interp, retlist, myobj);
+	if (result == TCL_OK)
+		Tcl_SetObjResult(interp, retlist);
+
+	if (0) {
+err:		result = _ReturnSetup(interp,
+		     ret, DB_RETOK_DBCGET(ret), "dbc compact");
+	}
+out:
+	if (start.data != NULL && start.data != &recno)
+		__os_free(NULL, start.data);
+	if (stop.data != NULL && stop.data != &srecno)
+		__os_free(NULL, stop.data);
+	if (end.data != NULL)
+		__os_free(NULL, end.data);
+
+	return (result);
+}
+
+/*
+ * tcl_DbCompactStat
+ */
+static int
+tcl_DbCompactStat(interp, objc, objv, dbp)
+	Tcl_Interp *interp;		/* Interpreter */
+	int objc;			/* How many arguments? */
+	Tcl_Obj *CONST objv[];		/* The argument objects */
+	DB *dbp;			/* Database pointer */
+{
+	DBTCL_INFO *ip;
+
+	COMPQUIET(objc, 0);
+	COMPQUIET(objv, NULL);
+
+	ip = (DBTCL_INFO *)dbp->api_internal;
+
+	return (tcl_CompactStat(interp, ip));
+}
+
+/*
+ * PUBLIC: int tcl_CompactStat __P((Tcl_Interp *, DBTCL_INFO *));
+ */
+int
+tcl_CompactStat(interp, ip)
+	Tcl_Interp *interp;		/* Interpreter */
+	DBTCL_INFO *ip;
+{
+	DB_COMPACT *rp;
+	Tcl_Obj *res;
+	int result;
+	char msg[MSG_SIZE];
+
+	result = TCL_OK;
+	rp = NULL;
+
+	_debug_check();
+	if ((rp = ip->i_cdata) == NULL) {
+		snprintf(msg, MSG_SIZE,
+		    "Compact stat: No stats available\n");
+		Tcl_SetResult(interp, msg, TCL_VOLATILE);
+		result = TCL_ERROR;
+		goto error;
+	}
+
+	res = Tcl_NewObj();
+
+	MAKE_STAT_LIST("Pages freed", rp->compact_pages_free);
+	MAKE_STAT_LIST("Pages truncated", rp->compact_pages_truncated);
+	MAKE_STAT_LIST("Pages examined", rp->compact_pages_examine);
+	MAKE_STAT_LIST("Levels removed", rp->compact_levels);
+	MAKE_STAT_LIST("Deadlocks encountered", rp->compact_deadlock);
+
+	Tcl_SetObjResult(interp, res);
+error:
+	return (result);
+}
+#endif

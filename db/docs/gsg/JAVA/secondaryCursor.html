@@ -96,10 +96,9 @@
         Then the following searches for a person's
         name in the secondary database, and deletes all secondary and primary
         records that use that name.
-        
     </p>
       <a id="java_index8"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.LockMode;
@@ -113,9 +112,9 @@ try {
     // Database opens omitted for brevity
     ...
 
-    String secondaryName = "John Doe";
+    String secondaryName = &quot;John Doe&quot;;
     DatabaseEntry secondaryKey = 
-        new DatabaseEntry(secondaryName.getBytes("UTF-8"));
+        new DatabaseEntry(secondaryName.getBytes(&quot;UTF-8&quot;));
 
     DatabaseEntry foundData = new DatabaseEntry();
 

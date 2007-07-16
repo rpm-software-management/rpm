@@ -1,5 +1,5 @@
-<!--$Id: comm.so,v 1.13 2004/06/28 14:48:07 sue Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: comm.so,v 1.18 2006/07/14 23:04:42 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -11,11 +11,14 @@
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
-<td align=right><a href="../rep/app.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../rep/base_meth.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Building the communications infrastructure</h3>
-<p>The replication support in an application is typically written with one
+<p>Replication Manager provides a built-in communications
+infrastructure.</p>
+<p>For applications that use the Base replication API, which must provide
+their own communications infrastructure, it is typically written with one
 or more threads of control looping on one or more communication
 channels, receiving and sending messages.  These threads accept messages
 from remote environments for the local database environment, and accept
@@ -23,10 +26,10 @@ messages from the local environment for remote environments.  Messages
 from remote environments are passed to the local database environment
 using the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.  Messages from the local environment are
 passed to the application for transmission using the callback function
-specified to the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method.</p>
+specified to the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a> method.</p>
 <p>Processes establish communication channels by calling the
-<a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method, regardless of whether they are running in client
-or server environments.  This method specifies the <b>send</b>
+<a href="../../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a> method, regardless of whether they are running in
+client or server environments.  This method specifies the <b>send</b>
 function, a callback function used by Berkeley DB for sending messages to
 other database environments in the replication group.  The <b>send</b>
 function takes an environment ID and two opaque data objects. It is the
@@ -40,15 +43,16 @@ each of the control and rec <a href="../../api_c/dbt_class.html">DBT</a>s passed
 function on the sending site be faithfully copied and delivered to the
 receiving site by means of a call to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> with
 corresponding arguments.  Messages that are broadcast (whether by
-broadcast media or when directed by setting the <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method's
-envid parameter DB_EID_BROADCAST), should not be processed by the
-message sender.  In all cases, the application's transport media or
-software must ensure that <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> is never called with a
-message intended for a different database environment or a broadcast
-message sent from the same environment on which <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> will
-be called.  The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method is free-threaded; it is safe to
-deliver any number of messages simultaneously, and from any arbitrary
-thread or process in the Berkeley DB environment.</p>
+broadcast media or when directed by setting the
+<a href="../../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a> method's envid parameter DB_EID_BROADCAST), should
+not be processed by the message sender.  In all cases, the application's
+transport media or software must ensure that <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> is
+never called with a message intended for a different database
+environment or a broadcast message sent from the same environment on
+which <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> will be called.  The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method is
+free-threaded; it is safe to deliver any number of messages
+simultaneously, and from any arbitrary thread or process in the Berkeley DB
+environment.</p>
 <p>There are a number of informational returns from the
 <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method:</p>
 <dl compact>
@@ -61,6 +65,11 @@ calling the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method
 <dt><a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_HOLDELECTION">DB_REP_HOLDELECTION</a>, it means
 that another database environment in the replication group has called
 for an election.  The application should call the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
+<dt><a href="../../api_c/rep_message.html#DB_REP_IGNORE">DB_REP_IGNORE</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_IGNORE">DB_REP_IGNORE</a>, it means that
+this message cannot be processed.
+This is normally an indication that this message
+is irrelevant to the current replication state, such as a message
+from an old generation that arrived late.
 <dt><a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_ISPERM">DB_REP_ISPERM</a>, it means a
 permanent record, perhaps a message previously returned as
 <a href="../../api_c/rep_message.html#DB_REP_NOTPERM">DB_REP_NOTPERM</a> was successfully
@@ -71,7 +80,7 @@ contains the maximum LSN of the permanent records written.
 a new master has been elected.  The call will also return the local
 environment's ID for that master.  If the ID of the master has changed,
 the application may need to reconfigure itself (for example, to redirect
-update queries to the new master rather then the old one).  If the new
+update queries to the new master rather than the old one).  If the new
 master is the local environment, then the application must call the
 <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and reconfigure the supporting Berkeley DB library as a
 replication master.
@@ -87,14 +96,9 @@ not yet arrived.  This operation will be written to disk when the
 missing messages arrive.  The <b>ret_lsnp</b> argument will contain
 the LSN of this record.  The application should take whatever action
 is deemed necessary to retain its recoverability characteristics.
-<dt><a href="../../api_c/rep_message.html#DB_REP_STARTUPDONE">DB_REP_STARTUPDONE</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_STARTUPDONE">DB_REP_STARTUPDONE</a>, it means that
-the client has completed its startup synchronization activities and is
-now processing live log messages from the master.  Live log messages
-are messages that the master is sending due to operations, as opposed
-to resending log messages due to a request for log records from the client.
 </dl>
-<table width="100%"><tr><td><br></td><td align=right><a href="../rep/app.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/base_meth.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

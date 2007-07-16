@@ -4,15 +4,9 @@
 
 use strict ;
 
-BEGIN {
-    unless(grep /blib/, @INC) {
-        chdir 't' if -d 't';
-        @INC = '../lib' if -d '../lib';
-    }
-}
-
+use lib 't' ;
 use BerkeleyDB; 
-use t::util ;
+use util ;
 
 print "1..52\n";
 

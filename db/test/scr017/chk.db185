@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.db185,v 1.3 2003/09/30 19:31:36 bostic Exp $
+# $Id: chk.db185,v 12.0 2004/11/17 03:44:50 bostic Exp $
 #
 # Check to make sure we can run DB 1.85 code.
 

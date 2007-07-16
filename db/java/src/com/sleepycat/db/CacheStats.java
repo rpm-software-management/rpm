@@ -3,15 +3,15 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 
 package com.sleepycat.db;
 
 public class CacheStats {
     // no public constructor
-    protected CacheStats() {}
+    /* package */ CacheStats() {}
 
     private int st_gbytes;
     public int getGbytes() {
@@ -143,6 +143,11 @@ public class CacheStats {
         return st_hash_wait;
     }
 
+    private int st_hash_max_nowait;
+    public int getHashMaxNowait() {
+        return st_hash_max_nowait;
+    }
+
     private int st_hash_max_wait;
     public int getHashMaxWait() {
         return st_hash_max_wait;
@@ -156,6 +161,21 @@ public class CacheStats {
     private int st_region_wait;
     public int getRegionWait() {
         return st_region_wait;
+    }
+
+    private int st_mvcc_frozen;
+    public int getMultiversionFrozen() {
+        return st_mvcc_frozen;
+    }
+
+    private int st_mvcc_thawed;
+    public int getMultiversionThawed() {
+        return st_mvcc_thawed;
+    }
+
+    private int st_mvcc_freed;
+    public int getMultiversionFreed() {
+        return st_mvcc_freed;
     }
 
     private int st_alloc;
@@ -181,6 +201,11 @@ public class CacheStats {
     private int st_alloc_max_pages;
     public int getAllocMaxPages() {
         return st_alloc_max_pages;
+    }
+
+    private int st_io_wait;
+    public int getIoWait() {
+        return st_io_wait;
     }
 
     public String toString() {
@@ -211,14 +236,19 @@ public class CacheStats {
             + "\n  st_hash_examined=" + st_hash_examined
             + "\n  st_hash_nowait=" + st_hash_nowait
             + "\n  st_hash_wait=" + st_hash_wait
+            + "\n  st_hash_max_nowait=" + st_hash_max_nowait
             + "\n  st_hash_max_wait=" + st_hash_max_wait
             + "\n  st_region_nowait=" + st_region_nowait
             + "\n  st_region_wait=" + st_region_wait
+            + "\n  st_mvcc_frozen=" + st_mvcc_frozen
+            + "\n  st_mvcc_thawed=" + st_mvcc_thawed
+            + "\n  st_mvcc_freed=" + st_mvcc_freed
             + "\n  st_alloc=" + st_alloc
             + "\n  st_alloc_buckets=" + st_alloc_buckets
             + "\n  st_alloc_max_buckets=" + st_alloc_max_buckets
             + "\n  st_alloc_pages=" + st_alloc_pages
             + "\n  st_alloc_max_pages=" + st_alloc_max_pages
+            + "\n  st_io_wait=" + st_io_wait
             ;
     }
 }

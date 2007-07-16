@@ -1,29 +1,20 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: qam_verify.c,v 1.51 2004/10/11 18:47:51 bostic Exp $
+ * $Id: qam_verify.c,v 12.9 2006/08/24 14:46:24 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc/db_verify.h"
 #include "dbinc/db_am.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/mp.h"
 #include "dbinc/qam.h"
-#include <stdlib.h>
-#include <string.h>
-
 /*
  * __qam_vrfy_meta --
  *	Verify the queue-specific part of a metadata page.
@@ -93,6 +84,8 @@ __qam_vrfy_meta(dbp, vdp, meta, pgno, flags)
 		 * it when handling extents.  It would get set up in open,
 		 * if we called open normally, but we don't.
 		 */
+		vdp->re_pad = meta->re_pad;
+		qp->re_pad = (int)meta->re_pad;
 		qp->re_len = vdp->re_len = meta->re_len;
 		qp->rec_page = vdp->rec_page = meta->rec_page;
 		qp->page_ext = vdp->page_ext = meta->page_ext;
@@ -165,7 +158,7 @@ __qam_vrfy_meta(dbp, vdp, meta, pgno, flags)
 		}
 	}
 	if (nextents > 0)
-		__db_err(dbenv,
+		__db_errx(dbenv,
 		     "Warning: %d extra extent files found", nextents);
 	vdp->nextents = nextents;
 	vdp->extents = extents;
@@ -344,7 +337,7 @@ begin:	for (; i <= stop; i++) {
 		 */
 		if (LF_ISSET(DB_SALVAGE) && (__db_salvage_isdone(vdp, i) != 0))
 			continue;
-		if ((t_ret = __qam_fget(dbp, &i, 0, &h)) != 0) {
+		if ((t_ret = __qam_fget(dbp, &i, NULL, 0, &h)) != 0) {
 			if (t_ret == ENOENT || t_ret == DB_PAGE_NOTFOUND) {
 				i += (pg_ext - ((i - 1) % pg_ext)) - 1;
 				continue;

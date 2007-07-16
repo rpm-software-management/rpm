@@ -1,17 +1,17 @@
-<!--$Id: memp_openfd.so,v 10.2 2004/09/28 15:04:21 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_openfd.so,v 10.3 2005/03/08 14:36:15 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DB_ENV-&gt;memp_set_max_openfd</title>
+<title>Berkeley DB: DB_ENV-&gt;set_mp_max_openfd</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td>
-<h3>DB_ENV-&gt;memp_set_max_openfd</h3>
+<h3>DB_ENV-&gt;set_mp_max_openfd</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
@@ -23,17 +23,17 @@
 #include &lt;db.h&gt;
 <p>
 int
-DB_ENV-&gt;memp_set_max_openfd(DB_ENV *env, int maxopenfd);
+DB_ENV-&gt;set_mp_max_openfd(DB_ENV *env, int maxopenfd);
 <p>
 int
-DB_ENV-&gt;memp_get_max_openfd(DB_ENV *env, int *maxopenfdp);
+DB_ENV-&gt;get_mp_max_openfd(DB_ENV *env, int *maxopenfdp);
 </pre></h3>
 <hr size=1 noshade>
-<h3>Description: DB_ENV-&gt;memp_set_max_openfd</h3>
-<p>The DB_ENV-&gt;memp_set_max_openfd method limits the number of file descriptors
+<h3>Description: DB_ENV-&gt;set_mp_max_openfd</h3>
+<p>The DB_ENV-&gt;set_mp_max_openfd method limits the number of file descriptors
 the library will open concurrently when flushing dirty pages from the
 cache.</p>
-<p>The DB_ENV-&gt;memp_set_max_openfd method
+<p>The DB_ENV-&gt;set_mp_max_openfd method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
@@ -43,24 +43,24 @@ and 0 on success.
 by the library when flushing dirty pages from the cache.
 </dl>
 <h3>Errors</h3>
-<p>The DB_ENV-&gt;memp_set_max_openfd method
+<p>The DB_ENV-&gt;set_mp_max_openfd method
 may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
-<h3>Description: DB_ENV-&gt;memp_get_max_openfd</h3>
-<p>The DB_ENV-&gt;memp_get_max_openfd method returns the maximum number of file descriptors open.</p>
-<p>The DB_ENV-&gt;memp_get_max_openfd method may be called at any time during the life of the
+<h3>Description: DB_ENV-&gt;get_mp_max_openfd</h3>
+<p>The DB_ENV-&gt;get_mp_max_openfd method returns the maximum number of file descriptors open.</p>
+<p>The DB_ENV-&gt;get_mp_max_openfd method may be called at any time during the life of the
 application.</p>
-<p>The DB_ENV-&gt;memp_get_max_openfd method
+<p>The DB_ENV-&gt;get_mp_max_openfd method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>maxopenfdp</b><dd>The DB_ENV-&gt;memp_get_max_openfd method returns  the
+<dt><b>maxopenfdp</b><dd>The DB_ENV-&gt;get_mp_max_openfd method returns  the
 maximum number of file descriptors open in <b>maxopenfdp</b>.
 </dl>
 <hr size=1 noshade>
@@ -72,6 +72,6 @@ maximum number of file descriptors open in <b>maxopenfdp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

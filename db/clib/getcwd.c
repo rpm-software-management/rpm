@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1989, 1991, 1993
@@ -32,15 +32,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: getcwd.c,v 11.15 2004/01/28 03:35:52 bostic Exp $
+ * $Id: getcwd.c,v 12.5 2006/08/24 14:45:09 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <sys/stat.h>
+#include "db_int.h"
 
+#ifndef NO_SYSTEM_INCLUDES
 #if HAVE_DIRENT_H
 # include <dirent.h>
 # define NAMLEN(dirent) strlen((dirent)->d_name)
@@ -57,14 +56,7 @@
 #  include <ndir.h>
 # endif
 #endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 #endif
-
-#include "db_int.h"
 
 #define	ISDOT(dp) \
 	(dp->d_name[0] == '.' && (dp->d_name[1] == '\0' || \

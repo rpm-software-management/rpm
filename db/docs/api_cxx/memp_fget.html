@@ -1,5 +1,5 @@
-<!--$Id: memp_fget.so,v 10.43 2004/08/13 03:38:58 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_fget.so,v 10.48 2006/09/13 14:30:54 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -23,7 +23,8 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbMpoolFile::get(db_pgno_t *pgnoaddr, u_int32_t flags, void **pagep);
+DbMpoolFile::get(db_pgno_t *pgnoaddr,
+    DbTxn *txnid, u_int32_t flags, void **pagep);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbMpoolFile::get</h3>
@@ -53,6 +54,15 @@ or more of the following values:
 <dt><a name="DB_MPOOL_CREATE">DB_MPOOL_CREATE</a><dd>If the specified page does not exist, create it.  In this case, the
 <a href="memp_register.html#pgin">pgin</a> method, if specified, is
 called.
+<dt><a name="DB_MPOOL_DIRTY">DB_MPOOL_DIRTY</a><dd>The page will be modified and must be written to the source file before
+being evicted from the pool.  For files open with the
+<a href="../api_cxx/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a> flag set, a new copy of the page will be made
+if this is the first time the specified transaction is modifying it.
+<dt><a name="DB_MPOOL_EDIT">DB_MPOOL_EDIT</a><dd>The page will be modified and must be written to the source file before
+being evicted from the pool.  No copy of the page will be made, regardless
+of the <a href="../api_cxx/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a> setting.  This flag is only intended for
+use in situations where a transaction handle is not available, such as during
+aborts or recovery.
 <dt><a name="DB_MPOOL_LAST">DB_MPOOL_LAST</a><dd>Return the last page of the source file, and copy its page number into
 the memory location to which <b>pgnoaddr</b> refers.
 <dt><a name="DB_MPOOL_NEW">DB_MPOOL_NEW</a><dd>Create a new page in the file, and copy its page number into the memory
@@ -63,7 +73,7 @@ location to which <b>pgnoaddr</b> refers.  In this case, the
 <p>The DB_MPOOL_CREATE, DB_MPOOL_LAST, and
 DB_MPOOL_NEW flags are mutually exclusive.</p>
 <dt><b>pagep</b><dd>The <b>pagep</b> parameter references memory into which
-a pointer to the returned page is copied.
+a pointer to the returned page is copied. 
 <dt><b>pgnoaddr</b><dd>If the <b>flags</b> parameter is set to DB_MPOOL_LAST or
 DB_MPOOL_NEW, the page number of the created page is copied
 into the memory location to which the <b>pgnoaddr</b> parameter
@@ -71,6 +81,13 @@ refers.  Otherwise, the <b>pgnoaddr</b> parameter is the page to
 create or retrieve.
 <p><b>Page numbers begin at 0; that is, the first page in the file is page
 number 0, not page number 1.</b></p>
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise NULL.  A transaction is
+required if the file is open for multiversion concurrency control by
+passing <a href="../api_cxx/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a> to <a href="../api_cxx/memp_fopen.html">DbMpoolFile::open</a> and the
+DB_MPOOL_DIRTY, DB_MPOOL_CREATE or
+DB_MPOOL_NEW flags were specified.  Otherwise it is ignored.
 </dl>
 <h3>Errors</h3>
 <p>The DbMpoolFile::get method
@@ -79,6 +96,10 @@ may fail and throw
 encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
 <dl compact>
+<dt>EACCES<dd>The DB_MPOOL_DIRTY or DB_MPOOL_EDIT flag was set and
+the source file was not opened for writing.
+</dl>
+<dl compact>
 <dt>EAGAIN<dd>The page reference count has overflowed.  (This should never happen
 unless there is a bug in the application.)
 </dl>
@@ -86,8 +107,12 @@ unless there is a bug in the application.)
 <dt>EINVAL<dd>If the DB_MPOOL_NEW flag was set, and the source file was not
 opened for writing;
 more than one of DB_MPOOL_CREATE, DB_MPOOL_LAST, and
-DB_MPOOL_NEW was set; or if an
+DB_MPOOL_NEW was set.; or if an
 invalid flag value or parameter was specified.
+</dl>
+<dl compact>
+<dt>DB_LOCK_DEADLOCK<dd>For transactions configured with <a href="../api_cxx/txn_begin.html#DB_TXN_SNAPSHOT">DB_TXN_SNAPSHOT</a>, the page has
+been modified since the transaction began.
 </dl>
 <p>If the cache is full, and no more pages will fit in the pool, the DbMpoolFile::get method will fail and
 either return ENOMEM or
@@ -101,6 +126,6 @@ throw a DbMemoryException.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

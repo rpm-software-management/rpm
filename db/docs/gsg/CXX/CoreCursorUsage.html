@@ -46,9 +46,7 @@
         can provide the item and show the vendor's contact information.
     </p>
       <p>
-        Specifically, the 
-            
-            <tt class="classname">excxx_example_database_read</tt>
+        Specifically, the <tt class="classname">example_database_read</tt>
         application does the following:
     </p>
       <div class="orderedlist">
@@ -56,12 +54,10 @@
           <li>
             <p>
             Opens the the inventory and vendor databases
-            that were created by our 
-                
-                <tt class="classname">excxx_example_database_load</tt>
+            that were created by our <tt class="classname">example_database_load</tt>
             application. See 
                  
-                <a href="DbCXXUsage.html#exampledbload-cxx">excxx_example_database_load</a> 
+                <a href="DbCXXUsage.html#exampledbload-cxx">example_database_load</a> 
             for information on how that
             application creates the databases and writes data to them.
          </p>
@@ -104,7 +100,7 @@
       <div class="example">
         <a id="CoreEIR-cxx"></a>
         <p class="title">
-          <b>Example 4.1 excxx_example_database_read</b>
+          <b>Example 4.1 example_database_read</b>
         </p>
         <p>
             To begin, we include the necessary header files and perform our
@@ -112,13 +108,13 @@
             function.
         </p>
         <a id="cxx_cursor10"></a>
-        <pre class="programlisting">// File: excxx_example_database_read.cpp
+        <pre class="programlisting">// File: example_database_read.cpp
 #include &lt;iostream&gt;
 #include &lt;fstream&gt;
 #include &lt;cstdlib&gt;
                                                                                                                                     
-#include "MyDb.hpp"
-#include "gettingStartedCommon.hpp"
+#include &quot;MyDb.hpp&quot;
+#include &quot;gettingStartedCommon.hpp&quot;
 
 // Forward declarations
 int show_all_records(MyDb &amp;inventoryDB, MyDb &amp;vendorDB);
@@ -134,11 +130,11 @@ int
 main (int argc, char *argv[])
 {
     // Initialize the path to the database files
-    std::string databaseHome("./");
+    std::string databaseHome(&quot;./&quot;);
 
     // Database names
-    std::string vDbName("vendordb.db");
-    std::string iDbName("inventorydb.db");
+    std::string vDbName(&quot;vendordb.db&quot;);
+    std::string iDbName(&quot;inventorydb.db&quot;);
 
     // Parse the command line arguments
     // Omitted for brevity
@@ -151,11 +147,11 @@ main (int argc, char *argv[])
 
         show_all_records(inventoryDB, vendorDB);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; "Error reading databases. " &lt;&lt; std::endl;
+        std::cerr &lt;&lt; &quot;Error reading databases. &quot; &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(e.get_errno());
     } catch(std::exception &amp;e) {
-        std::cerr &lt;&lt; "Error reading databases. " &lt;&lt; std::endl;
+        std::cerr &lt;&lt; &quot;Error reading databases. &quot; &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(-1);
     }
@@ -193,7 +189,7 @@ show_all_records(MyDb &amp;inventoryDB, MyDb &amp;vendorDB)
             show_vendor(vendorDB, inventoryItem.getVendor().c_str());
         }
     } catch(DbException &amp;e) {
-        inventoryDB.getDb().err(e.get_errno(), "Error in show_all_records");
+        inventoryDB.getDb().err(e.get_errno(), &quot;Error in show_all_records&quot;);
         cursorp-&gt;close();
         throw e;
     } catch(std::exception &amp;e) {
@@ -220,7 +216,7 @@ show_all_records(MyDb &amp;inventoryDB, MyDb &amp;vendorDB)
         <a id="cxx_cursor13"></a>
         <pre class="programlisting">// Shows a vendor record. Each vendor record is an instance of
 // a vendor structure. See loadVendorDB() in
-// excxx_example_database_load for how this structure was originally
+// example_database_load for how this structure was originally
 // put into the database.
 int
 show_vendor(MyDb &amp;vendorDB, const char *vendor)
@@ -245,17 +241,17 @@ show_vendor(MyDb &amp;vendorDB, const char *vendor)
 
         // Get the record
         vendorDB.getDb().get(NULL, &amp;key, &amp;data, 0);
-        std::cout &lt;&lt; "        " &lt;&lt; my_vendor.street &lt;&lt; "\n"
-                  &lt;&lt; "        " &lt;&lt; my_vendor.city &lt;&lt; ", "
-                  &lt;&lt; my_vendor.state &lt;&lt; "\n"
-                  &lt;&lt; "        " &lt;&lt; my_vendor.zipcode &lt;&lt; "\n"
-                  &lt;&lt; "        " &lt;&lt; my_vendor.phone_number &lt;&lt; "\n"
-                  &lt;&lt; "        Contact: " &lt;&lt; my_vendor.sales_rep &lt;&lt; "\n"
-                  &lt;&lt; "                 " &lt;&lt; my_vendor.sales_rep_phone
+        std::cout &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.street &lt;&lt; &quot;\n&quot;
+                  &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.city &lt;&lt; &quot;, &quot;
+                  &lt;&lt; my_vendor.state &lt;&lt; &quot;\n&quot;
+                  &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.zipcode &lt;&lt; &quot;\n&quot;
+                  &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.phone_number &lt;&lt; &quot;\n&quot;
+                  &lt;&lt; &quot;        Contact: &quot; &lt;&lt; my_vendor.sales_rep &lt;&lt; &quot;\n&quot;
+                  &lt;&lt; &quot;                 &quot; &lt;&lt; my_vendor.sales_rep_phone
                   &lt;&lt; std::endl;
 
     } catch(DbException &amp;e) {
-        vendorDB.getDb().err(e.get_errno(), "Error in show_vendor");
+        vendorDB.getDb().err(e.get_errno(), &quot;Error in show_vendor&quot;);
         throw e;
     } catch(std::exception &amp;e) {
         throw e;
@@ -265,7 +261,7 @@ show_vendor(MyDb &amp;vendorDB, const char *vendor)
       </div>
       <p>
         That completes the implementation of
-        <tt class="classname">excxx_example_database_read()</tt>. In the next chapter, we
+        <tt class="classname">example_database_read()</tt>. In the next chapter, we
         will extend this application to make use of a secondary database so that
         we can query the inventory database for a specific inventory item.
     </p>

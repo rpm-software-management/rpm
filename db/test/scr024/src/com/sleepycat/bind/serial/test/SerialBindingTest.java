@@ -1,13 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: SerialBindingTest.java,v 1.3 2004/06/04 18:26:00 mark Exp $
+ * $Id: SerialBindingTest.java,v 12.5 2006/08/24 14:46:43 bostic Exp $
  */
 
 package com.sleepycat.bind.serial.test;
+
+import java.io.Serializable;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -21,6 +23,7 @@ import com.sleepycat.bind.serial.TupleSerialMarshalledBinding;
 import com.sleepycat.collections.test.DbTestUtil;
 import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.util.ExceptionUnwrapper;
+import com.sleepycat.util.FastOutputStream;
 
 /**
  * @author Mark Hayes
@@ -30,7 +33,6 @@ public class SerialBindingTest extends TestCase {
     private ClassCatalog catalog;
     private DatabaseEntry buffer;
     private DatabaseEntry keyBuffer;
-    private DatabaseEntry indexKeyBuffer;
 
     public static void main(String[] args)
         throws Exception {
@@ -63,7 +65,6 @@ public class SerialBindingTest extends TestCase {
         catalog = new TestClassCatalog();
         buffer = new DatabaseEntry();
         keyBuffer = new DatabaseEntry();
-        indexKeyBuffer = new DatabaseEntry();
     }
 
     public void tearDown() {
@@ -72,7 +73,6 @@ public class SerialBindingTest extends TestCase {
         catalog = null;
         buffer = null;
         keyBuffer = null;
-        indexKeyBuffer = null;
     }
 
     public void runTest()
@@ -168,6 +168,77 @@ public class SerialBindingTest extends TestCase {
         assertEquals("index2", val.getIndexKey2());
     }
 
+    public void testBufferSize() {
+
+        CaptureSizeBinding binding =
+            new CaptureSizeBinding(catalog, String.class);
+
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertEquals(FastOutputStream.DEFAULT_INIT_SIZE, binding.bufSize);
+
+        binding.setSerialBufferSize(1000);
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertEquals(1000, binding.bufSize);
+    }
+
+    private static class CaptureSizeBinding extends SerialBinding {
+
+        int bufSize;
+
+        CaptureSizeBinding(ClassCatalog classCatalog, Class baseClass) {
+            super(classCatalog, baseClass);
+        }
+
+        public FastOutputStream getSerialOutput(Object object) {
+            FastOutputStream fos = super.getSerialOutput(object);
+            bufSize = fos.getBufferBytes().length;
+            return fos;
+        }
+    }
+
+    public void testBufferOverride() {
+
+        FastOutputStream out = new FastOutputStream(10);
+        CachedOutputBinding binding =
+            new CachedOutputBinding(catalog, String.class, out);
+
+        binding.used = false;
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertTrue(binding.used);
+
+        binding.used = false;
+        binding.objectToEntry("aaaaaaaaaaaaaaaaaaaaaa", buffer);
+        assertEquals("aaaaaaaaaaaaaaaaaaaaaa", binding.entryToObject(buffer));
+        assertTrue(binding.used);
+
+        binding.used = false;
+        binding.objectToEntry("x", buffer);
+        assertEquals("x", binding.entryToObject(buffer));
+        assertTrue(binding.used);
+    }
+
+    private static class CachedOutputBinding extends SerialBinding {
+
+        FastOutputStream out;
+        boolean used;
+
+        CachedOutputBinding(ClassCatalog classCatalog,
+                            Class baseClass,
+                            FastOutputStream out) {
+            super(classCatalog, baseClass);
+            this.out = out;
+        }
+
+        public FastOutputStream getSerialOutput(Object object) {
+            out.reset();
+            used = true;
+            return out;
+        }
+    }
+
     private static class MySerialSerialBinding extends SerialSerialBinding {
 
         private MySerialSerialBinding(SerialBinding keyBinding,
@@ -203,5 +274,55 @@ public class SerialBindingTest extends TestCase {
             }
         }
     }
-}
 
+    /**
+     * Tests that overriding SerialBinding.getClassLoader is possible.  This is
+     * a crude test because to create a truly working class loader is a large
+     * undertaking.
+     */
+    public void testClassloaderOverride()
+        throws Exception {
+
+        DatabaseEntry entry = new DatabaseEntry();
+
+        SerialBinding binding = new CustomLoaderBinding
+            (catalog, null, new FailureClassLoader());
+
+        try {
+            binding.objectToEntry(new MyClass(), entry);
+            binding.entryToObject(entry);
+            fail();
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().startsWith("expect failure"));
+        }
+    }
+
+    private static class CustomLoaderBinding extends SerialBinding {
+
+        private ClassLoader loader;
+
+        CustomLoaderBinding(ClassCatalog classCatalog,
+                            Class baseClass,
+                            ClassLoader loader) {
+
+            super(classCatalog, baseClass);
+            this.loader = loader;
+        }
+
+        public ClassLoader getClassLoader() {
+            return loader;
+        }
+    }
+
+    private static class FailureClassLoader extends ClassLoader {
+
+        public Class loadClass(String name)
+            throws ClassNotFoundException {
+
+            throw new RuntimeException("expect failure: " + name);
+        }
+    }
+
+    private static class MyClass implements Serializable {
+    }
+}

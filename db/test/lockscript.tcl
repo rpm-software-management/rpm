@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: lockscript.tcl,v 11.19 2004/01/28 03:36:28 bostic Exp $
+# $Id: lockscript.tcl,v 12.3 2006/08/24 14:46:36 bostic Exp $
 #
 # Random lock tester.
 # Usage: lockscript dir numiters numobjs sleepint degree readratio

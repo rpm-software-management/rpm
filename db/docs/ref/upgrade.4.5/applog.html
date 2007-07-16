@@ -1,0 +1,33 @@
+<!--$Id: applog.so,v 1.1 2006/09/13 16:43:03 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.5: Application-specific logging</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.5/source.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/disk.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.5: Application-specific logging</h3>
+<p>In previous releases of Berkeley DB, "BEGIN" lines in the XXX.src files used
+to build application-specific logging support only required a log record
+number.  In the 4.5 release, those lines require a Berkeley DB library version
+as well.  For example, the entry:</p>
+<blockquote><pre>BEGIN mdkir 10000</pre></blockquote>
+<p>must now be:</p>
+<blockquote><pre>BEGIN mdkir 44 10000</pre></blockquote>
+<p>that is, the version of the Berkeley DB release where the log record was
+introduced must be included.  The version is the major and minor numbers
+for the Berkeley DB library, with all punctuation removed.  For example, Berkeley DB
+version 4.2 should be 42, version 4.5 should be 45.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.5/source.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/disk.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

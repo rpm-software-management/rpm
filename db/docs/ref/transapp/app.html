@@ -1,5 +1,5 @@
-<!--$Id: app.so,v 10.11 2004/10/13 19:38:47 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: app.so,v 10.28 2006/02/28 16:30:53 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -11,119 +11,206 @@
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Transactional Data Store Applications</dl></h3></td>
-<td align=right><a href="../transapp/term.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/env_open.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../transapp/fail.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/env_open.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Architecting Transactional Data Store applications</h3>
-<p>When building transactionally protected applications, there are some
-special issues that must be considered.  The most important one is that
-if any thread of control exits for any reason while holding Berkeley DB
-resources, recovery must be performed to do the following:</p>
-<p><ul type=disc>
-<li>Recover the Berkeley DB resources.
-<li>Release any locks or mutexes that may have been held to avoid starvation
-as the remaining threads of control convoy behind the failed thread's
-locks.
-<li>Clean up any partially completed operations that may have left a
-database in an inconsistent or corrupted state.
-</ul>
-<p>The Berkeley DB library cannot determine whether recovery is required; the
-application must make that decision.  Furthermore, recovery must be
-single-threaded; that is, one thread of control or process must perform
-recovery before any other thread of control or process attempts to join
-the Berkeley DB environment.</p>
-<p>There are two approaches to handling this problem:</p>
-<dl compact>
-<dt>The hard way:<dd>An application can track its own state carefully enough that it knows
-when recovery needs to be performed.  Specifically, the rule to use is
-that recovery must be performed before using a Berkeley DB environment any
-time the threads of control previously using the Berkeley DB environment did
-not shut the environment down cleanly before exiting the environment
-for any reason (including application or system failure).
-<p>Requirements for shutting down the environment cleanly differ, depending
-on the type of environment created.  If the environment is public and
-persistent (that is, the <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag was not specified to
-the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method), recovery must be performed if any transaction
-was not committed or aborted, or <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a> method was not called
-for any open <a href="../../api_c/env_class.html">DB_ENV</a> handle.</p>
-<p>If the environment is private and temporary (that is, the
-<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag was specified to the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method),
-recovery must be performed if any transaction was not committed or
-aborted, or <a href="../../api_c/env_close.html">DB_ENV-&gt;close</a> method was not called for any open
-<a href="../../api_c/env_class.html">DB_ENV</a> handle.  In addition, at least one transaction checkpoint
-must be performed after all existing transactions have been committed
-or aborted.</p>
-<dt>The easy way:<dd>It greatly simplifies matters that recovery may be performed regardless
-of whether recovery strictly needs to be performed; that is, it is not
-an error to run recovery on a database for which no recovery is
-necessary.  Because of this fact, it is almost invariably simpler to
-ignore the previous rules about shutting an application down cleanly,
-and simply run recovery each time a thread of control accessing a
-database environment fails for any reason, as well as before accessing
-any database environment after system reboot.
-</dl>
-<p>There are two common ways to build transactionally protected Berkeley DB
-applications.  The most common way is as a single, usually
-multithreaded, process.  This architecture is simplest because it
-requires no monitoring of other threads of control.  When the
-application starts, it opens and potentially creates the environment,
-runs recovery (whether it was needed or not), and then opens its
-databases.  From then on, the application can create new threads of
-control as it chooses.  All threads of control share the open Berkeley DB
-<a href="../../api_c/env_class.html">DB_ENV</a> and <a href="../../api_c/db_class.html">DB</a> handles.  In this model, databases are
-rarely opened or closed when more than a single thread of control is
-running; that is, they are opened when only a single thread is running,
-and closed after all threads but one have exited.  The last thread of
-control to exit closes the databases and the environment.</p>
-<p>An alternative way to build Berkeley DB applications is as a set of
-cooperating processes, which may or may not be multithreaded.  This
-architecture is more complicated.</p>
-<p>First, this architecture requires that the order in which threads of
-control are created and subsequently access the Berkeley DB environment be
-controlled because recovery must be single-threaded.  The first thread
-of control to access the environment must run recovery, and no other
-thread should attempt to access the environment until recovery is
-complete.  (Note that this ordering requirement does not apply to
-environment creation without recovery.  If multiple threads attempt to
-create a Berkeley DB environment, only one will perform the creation and the
-others will join the already existing environment.)</p>
-<p>Second, this architecture requires that threads of control be monitored.
-If any thread of control that owns Berkeley DB resources exits without first
-cleanly discarding those resources, recovery is usually necessary.
-Before running recovery, all threads using the Berkeley DB environment must
-relinquish all of their Berkeley DB resources (it does not matter if they do
-so gracefully or because they are forced to exit).  Then, recovery can
-be run and the threads of control continued or restarted.</p>
-<p>We have found that the safest way to structure groups of cooperating
-processes is to first create a single process (often a shell script)
-that opens/creates the Berkeley DB environment and runs recovery, and that
-then creates the processes or threads that will actually perform work.
-The initial thread has no further responsibilities other than to monitor
-the threads of control it has created, to ensure that none of them
-unexpectedly exits.  If one exits, the initial process then forces all
-of the threads of control using the Berkeley DB environment to exit, runs
-recovery, and restarts the working threads of control.</p>
-<p>If it is not practical to have a single parent for the processes sharing
-a Berkeley DB environment, each process sharing the environment should log
-their connection to and exit from the environment in a way that allows
-a monitoring process to detect if a thread of control might have
-acquired Berkeley DB resources and never released them.  In this model, an
-initial "watcher" process opens/creates the Berkeley DB environment and runs
-recovery, and then creates a sentinel file.  Any other process wanting
-to use the Berkeley DB environment checks for the sentinel file; if the
-sentinel file exists, the other process registers its process ID with
-the watcher and joins the database environment.  When the other process
-finishes with the environment, it unregisters its process ID with the
-watcher.  The watcher periodically checks to ensure that no process has
-failed while using the environment.  If a process does fail while using
-the environment, the watcher removes the sentinel file, kills all
-processes currently using the environment, runs recovery, and re-creates
-the sentinel file.</p>
-<p>Obviously, it is important that the monitoring process in either case
-be as simple and well-tested as possible because there is no recourse
-if it fails.</p>
-<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/term.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/env_open.html"><img src="../../images/next.gif" alt="Next"></a>
+<p>When building Transactional Data Store applications, the architecture
+decisions involve application startup (running recovery) and handling
+system or application failure.  For details on performing recovery,
+see the <a href="recovery.html">Recovery procedures</a>.</p>
+<p>Recovery in a database environment is a single-threaded procedure, that
+is, one thread of control or process must complete database environment
+recovery before any other thread of control or process operates in the
+Berkeley DB environment.  It may simplify matters that Berkeley DB serializes
+recovery and creation of a new database environment.</p>
+<p>Performing recovery first marks any existing database environment as
+"failed" and then removes it, causing threads of control running in the
+database environment to fail and return to the application.  This
+feature allows applications to recover environments without concern for
+threads of control that might still be running in the removed
+environment.  The subsequent re-creation of the database environment is
+serialized, so multiple threads of control attempting to create a
+database environment will serialize behind a single creating thread.</p>
+<p>One consideration in removing (as part of recovering) a database
+environment which may be in use by another thread, is the type of mutex
+being used by the Berkeley DB library.  In the case of database environment
+failure when using test-and-set mutexes, threads of control waiting on
+a mutex when the environment is marked "failed" will quickly notice the
+failure and will return an error from the Berkeley DB API.  In the case of
+environment failure when using blocking mutexes, where the underlying
+system mutex implementation does not unblock mutex waiters after the
+thread of control holding the mutex dies, threads waiting on a mutex
+when an environment is recovered might hang forever.  Applications
+blocked on events (for example, an application blocked on a network
+socket, or a GUI event) may also fail to notice environment recovery
+within a reasonable amount of time.  Systems with such mutex
+implementations are rare, but do exist; applications on such systems
+should use an application architecture where the thread recovering the
+database environment can explicitly terminate any process using the
+failed environment, or configure Berkeley DB for test-and-set mutexes, or
+incorporate some form of long-running timer or watchdog process to wake
+or kill blocked processes should they block for too long.</p>
+<p>Regardless, it makes little sense for multiple threads of control to
+simultaneously attempt recovery of a database environment, since the
+last one to run will remove all database environments created by the
+threads of control that ran before it.  However, for some applications,
+it may make sense for applications to have a single thread of control
+that performs recovery and then removes the database environment, after
+which the application launches a number of processes, any of which will
+create the database environment and continue forward.</p>
+<p>There are three common ways to architect Berkeley DB Transactional Data Store
+applications.  The one chosen is usually based on whether or not the
+application is comprised of a single process or group of processes
+descended from a single process (for example, a server started when the
+system first boots), or if the application is comprised of unrelated
+processes (for example, processes started by web connections or users
+logged into the system).</p>
+<ol>
+<p><li>The first way to architect Transactional Data Store applications is as
+a single process (the process may or may not be multithreaded.)
+<p>When this process starts, it runs recovery on the database environment
+and then opens its databases.  The application can subsequently create
+new threads of control as it chooses.  Those threads of control can
+either share already open Berkeley DB <a href="../../api_c/env_class.html">DB_ENV</a> and <a href="../../api_c/db_class.html">DB</a> handles,
+or create their own.  In this architecture, databases are rarely opened
+or closed when more than a single thread of control is running; that is,
+they are opened when only a single thread is running, and closed after
+all threads but one have exited.  The last thread of control to exit
+closes the databases and the database environment.</p>
+<p>This architecture is simplest to implement because thread serialization
+is easy and failure detection does not require monitoring multiple
+processes.</p>
+<p>If the application's thread model allows processes to continue after
+thread failure, the <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method can be used to determine if
+the database environment is usable after thread failure.  If the
+application does not call <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a>, or
+<a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> returns <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, the application
+must behave as if there has been a system failure, performing recovery
+and re-creating the database environment.  Once these actions have been
+taken, other threads of control can continue (as long as all existing
+Berkeley DB handles are first discarded), or restarted.</p>
+<p><li>The second way to architect Transactional Data Store applications is as
+a group of related processes (the processes may or may not be
+multithreaded).
+<p>This architecture requires the order in which threads of control are
+created be controlled to serialize database environment recovery.</p>
+<p>In addition, this architecture requires that threads of control be
+monitored.  If any thread of control exits with open Berkeley DB handles, the
+application may call the <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method to detect lost mutexes
+and locks and determine if the application can continue.  If the
+application does not call <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a>, or
+<a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> returns that the database environment can no
+longer be used, the application must behave as if there has been a
+system failure, performing recovery and creating a new database
+environment.  Once these actions have been taken, other threads of
+control can be continued (as long as all existing Berkeley DB handles are
+first discarded), or restarted.</p>
+<p>The easiest way to structure groups of related processes is to first
+create a single "watcher" process (often a script) that starts when the
+system first boots, runs recovery on the database environment and then
+creates the processes or threads that will actually perform work.  The
+initial thread has no further responsibilities other than to wait on the
+threads of control it has started, to ensure none of them unexpectedly
+exit.  If a thread of control exits, the watcher process optionally
+calls the <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method.  If the application does not call
+<a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> or if <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> returns that the
+environment can no longer be used, the watcher kills all of the threads
+of control using the failed environment, runs recovery, and starts new
+threads of control to perform work.</p>
+<p><li>The third way to architect Transactional Data Store applications is as
+a group of unrelated processes (the processes may or may not be
+multithreaded).   This is the most difficult architecture to implement
+because of the level of difficulty in some systems of finding and
+monitoring unrelated processes.
+<p>One solution is to log a thread of control ID when a new Berkeley DB handle
+is opened.  For example, an initial "watcher" process could run recovery
+on the database environment and then create a sentinel file.  Any
+"worker" process wanting to use the environment would check for the
+sentinel file.  If the sentinel file does not exist, the worker would
+fail or wait for the sentinel file to be created.  Once the sentinel
+file exists, the worker would register its process ID with the watcher
+(via shared memory, IPC or some other registry mechanism), and then the
+worker would open its <a href="../../api_c/env_class.html">DB_ENV</a> handles and proceed.  When the
+worker finishes using the environment, it would unregister its process
+ID with the watcher.  The watcher periodically checks to ensure that no
+worker has failed while using the environment.  If a worker fails while
+using the environment, the watcher removes the sentinel file, kills all
+of the workers currently using the environment, runs recovery on the
+environment, and finally creates a new sentinel file.</p>
+<p>The weakness of this approach is that, on some systems, it is difficult
+to determine if an unrelated process is still running.  For example,
+POSIX systems generally disallow sending signals to unrelated processes.
+The trick to monitoring unrelated processes is to find a system resource
+held by the process that will be modified if the process dies.  On POSIX
+systems, flock- or fcntl-style locking will work, as will LockFile on
+Windows systems.  Other systems may have to use other process-related
+information such as file reference counts or modification times.  In the
+worst case, threads of control can be required to periodically
+re-register with the watcher process: if the watcher has not heard from
+a thread of control in a specified period of time, the watcher will take
+action, recovering the environment.</p>
+<p>The Berkeley DB library includes one built-in implementation of this approach,
+the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method's <a href="../../api_c/env_open.html#DB_REGISTER">DB_REGISTER</a> flag:</p>
+<p>If the <a href="../../api_c/env_open.html#DB_REGISTER">DB_REGISTER</a> flag is set, each process opening the
+database environment first checks to see if recovery needs to be
+performed.  If recovery needs to be performed for any reason (including
+the initial creation of the database environment), and
+<a href="../../api_c/env_open.html#DB_RECOVER">DB_RECOVER</a> is also specified, recovery will be performed and
+then the open will proceed normally.  If recovery needs to be performed
+and <a href="../../api_c/env_open.html#DB_RECOVER">DB_RECOVER</a> is not specified, <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> will be
+returned.  If recovery does not need to be performed, <a href="../../api_c/env_open.html#DB_RECOVER">DB_RECOVER</a>
+will be ignored.</p>
+<p>There are two additional requirements for the <a href="../../api_c/env_open.html#DB_REGISTER">DB_REGISTER</a>
+architecture to work: First, all applications using the database
+environment must specify the <a href="../../api_c/env_open.html#DB_REGISTER">DB_REGISTER</a> flag when opening the
+environment.  However, there is no additional requirement the
+application choose a single process to recover the environment, as the
+first process to open the database environment will know to perform
+recovery.  Second, there can only be a single <a href="../../api_c/env_class.html">DB_ENV</a> handle per
+database environment in each process.  As the <a href="../../api_c/env_open.html#DB_REGISTER">DB_REGISTER</a>
+locking is per-process, not per-thread, multiple <a href="../../api_c/env_class.html">DB_ENV</a> handles
+in a single environment could race with each other, potentially causing
+data corruption.</p>
+<p>A second solution for groups of unrelated processes is also based on a
+"watcher process".  This solution is intended for systems where it is
+not practical to monitor the processes sharing a database environment,
+but it is possible to monitor the environment to detect if a thread of
+control has failed holding open Berkeley DB handles.  This would be done by
+having a "watcher" process periodically call the <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method.
+If <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> returns that the environment can no longer be
+used, the watcher would then take action, recovering the environment.</p>
+<p>The weakness of this approach is that all threads of control using the
+environment must specify an "ID" function and an "is-alive" function
+using the <a href="../../api_c/env_set_thread_id.html">DB_ENV-&gt;set_thread_id</a> method.  (In other words, the Berkeley DB
+library must be able to assign a unique ID to each thread of control,
+and additionally determine if the thread of control is still running.
+It can be difficult to portably provide that information in applications
+using a variety of different programming languages and running on a
+variety of different platforms.)</p>
+<p>The two described approaches are different, and should not be combined.
+Applications might use either the <a href="../../api_c/env_open.html#DB_REGISTER">DB_REGISTER</a> approach or the
+<a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> approach, but not both together in the same
+application.  For example, a POSIX application written as a library
+underneath a wide variety of interfaces and differing APIs might choose
+the <a href="../../api_c/env_open.html#DB_REGISTER">DB_REGISTER</a> approach for a few reasons: first, it does not
+require making periodic calls to the <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> method; second,
+when implementing in a variety of languages, is may be more difficult
+to specify unique IDs for each thread of control;  third, it may be more
+difficult determine if a thread of control is still running, as any
+particular thread of control is likely to lack sufficient permissions
+to signal other processes.  Alternatively, an application with a
+dedicated watcher process, running with appropriate permissions, might
+choose the <a href="../../api_c/env_failchk.html">DB_ENV-&gt;failchk</a> approach as supporting higher overall
+throughput and reliability, as that approach allows the application to
+abort unresolved transactions and continue forward without having to
+recover the database environment.</p>
+</ol>
+<p>Obviously, when implementing a process to monitor other threads of
+control, it is important the watcher process' code be as simple and
+well-tested as possible, because the application may hang if it fails.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../transapp/fail.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/env_open.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,16 +1,17 @@
 /*-
-* See the file LICENSE for redistribution information.
-*
-* Copyright (c) 2002-2004
-*	Sleepycat Software.  All rights reserved.
-*
-* $Id: EnvironmentConfig.java,v 1.15 2004/11/05 00:50:54 mjc Exp $
-*/
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
+ *
+ * $Id: EnvironmentConfig.java,v 12.21 2006/09/08 20:32:14 bostic Exp $
+ */
 
 package com.sleepycat.db;
 
 import com.sleepycat.db.internal.DbConstants;
 import com.sleepycat.db.internal.DbEnv;
+import com.sleepycat.db.ReplicationHostAddress;
 
 public class EnvironmentConfig implements Cloneable {
     /*
@@ -30,8 +31,9 @@ public class EnvironmentConfig implements Cloneable {
     private long cacheSize = 0L;
     private java.util.Vector dataDirs = new java.util.Vector();
     private int envid = 0;
-    private java.io.OutputStream errorStream = null;
     private String errorPrefix = null;
+    private java.io.OutputStream errorStream = null;
+    private java.io.OutputStream messageStream = null;
     private byte[][] lockConflicts = null;
     private LockDetectMode lockDetectMode = LockDetectMode.NONE;
     private int maxLocks = 0;
@@ -39,22 +41,36 @@ public class EnvironmentConfig implements Cloneable {
     private int maxLockObjects = 0;
     private int maxLogFileSize = 0;
     private int logBufferSize = 0;
-    private java.io.OutputStream messageStream = null;
     private java.io.File logDirectory = null;
+    private int logFileMode = 0;
     private int logRegionSize = 0;
+    private int maxMutexes = 0;
+    private int maxOpenFiles = 0;
+    private int maxWrite = 0;
+    private int maxWriteSleep = 0;
+    private int mutexAlignment = 0;
+    private int mutexIncrement = 0;
+    private int mutexTestAndSetSpins = 0;
     private long mmapSize = 0L;
     private String password = null;
     private long replicationLimit = 0L;
+    private int replicationNSites = 0;
+    private int replicationPriority = 0;
+    private int replicationRequestMin = 0;
+    private int replicationRequestMax = 0;
     private String rpcServer = null;
     private long rpcClientTimeout = 0L;
     private long rpcServerTimeout = 0L;
     private long segmentId = 0L;
-    private int testAndSetSpins = 0;
     private long lockTimeout = 0L;
     private int txnMaxActive = 0;
     private long txnTimeout = 0L;
     private java.util.Date txnTimestamp = null;
-    private String temporaryDirectory = null;
+    private java.io.File temporaryDirectory = null;
+    private ReplicationManagerAckPolicy repmgrAckPolicy =
+        ReplicationManagerAckPolicy.ALL;
+    private ReplicationHostAddress repmgrLocalSiteAddr = null;
+    private java.util.Vector repmgrRemoteSites = new java.util.Vector();
 
     /* Open flags */
     private boolean allowCreate = false;
@@ -66,7 +82,7 @@ public class EnvironmentConfig implements Cloneable {
     private boolean joinEnvironment = false;
     private boolean lockDown = false;
     private boolean isPrivate = false;
-    private boolean readOnly = false;
+    private boolean register = false;
     private boolean runRecovery = false;
     private boolean runFatalRecovery = false;
     private boolean systemMemory = false;
@@ -79,22 +95,26 @@ public class EnvironmentConfig implements Cloneable {
     private boolean cdbLockAllDatabases = false;
     private boolean directDatabaseIO = false;
     private boolean directLogIO = false;
+    private boolean dsyncDatabases = false;
     private boolean dsyncLog = false;
     private boolean initializeRegions = false;
     private boolean logAutoRemove = false;
     private boolean logInMemory = false;
+    private boolean multiversion = false;
     private boolean noLocking = false;
     private boolean noMMap = false;
     private boolean noPanic = false;
     private boolean overwrite = false;
     private boolean txnNoSync = false;
     private boolean txnNotDurable = false;
+    private boolean txnSnapshot = false;
     private boolean txnWriteNoSync = false;
     private boolean yieldCPU = false;
 
     /* Verbose Flags */
     private boolean verboseDeadlock = false;
     private boolean verboseRecovery = false;
+    private boolean verboseRegister = false;
     private boolean verboseReplication = false;
     private boolean verboseWaitsFor = false;
 
@@ -102,6 +122,7 @@ public class EnvironmentConfig implements Cloneable {
     private ErrorHandler errorHandler = null;
     private FeedbackHandler feedbackHandler = null;
     private LogRecordHandler logRecordHandler = null;
+    private EventHandler eventHandler = null;
     private MessageHandler messageHandler = null;
     private PanicHandler panicHandler = null;
     private ReplicationTransport replicationTransport = null;
@@ -141,12 +162,17 @@ public class EnvironmentConfig implements Cloneable {
         return cdbLockAllDatabases;
     }
 
-    public void addDataDir(final String dataDir) {
+    public void addDataDir(final java.io.File dataDir) {
         this.dataDirs.add(dataDir);
     }
 
-    public String[] getDataDirs() {
-        final String[] dirs = new String[dataDirs.size()];
+    /* @deprecated */
+    public void addDataDir(final String dataDir) {
+        this.addDataDir(new java.io.File(dataDir));
+    }
+
+    public java.io.File[] getDataDirs() {
+        final java.io.File[] dirs = new java.io.File[dataDirs.size()];
         dataDirs.copyInto(dirs);
         return dirs;
     }
@@ -165,6 +191,14 @@ public class EnvironmentConfig implements Cloneable {
 
     public boolean getDirectLogIO() {
         return directLogIO;
+    }
+
+    public void setDsyncDatabases(final boolean dsyncDatabases) {
+        this.dsyncDatabases = dsyncDatabases;
+    }
+
+    public boolean getDsyncDatabases() {
+        return dsyncDatabases;
     }
 
     public void setDsyncLog(final boolean dsyncLog) {
@@ -327,6 +361,42 @@ public class EnvironmentConfig implements Cloneable {
         return logRecordHandler;
     }
 
+    public void setEventHandler(final EventHandler eventHandler) {
+        this.eventHandler = eventHandler;
+    }
+
+    public EventHandler getEventHandler() {
+        return eventHandler;
+    }
+
+    public void setReplicationManagerAckPolicy(
+        final ReplicationManagerAckPolicy repmgrAckPolicy)
+    {
+        this.repmgrAckPolicy = repmgrAckPolicy;
+    }
+
+    public ReplicationManagerAckPolicy getReplicationManagerAckPolicy()
+    {
+        return repmgrAckPolicy;
+    }
+
+    public void setReplicationManagerLocalSite(
+        final ReplicationHostAddress repmgrLocalSiteAddr)
+    {
+        this.repmgrLocalSiteAddr = repmgrLocalSiteAddr;
+    }
+
+    public ReplicationHostAddress getReplicationManagerLocalSite()
+    {
+        return repmgrLocalSiteAddr;
+    }
+
+    public void replicationManagerAddRemoteSite(
+        final ReplicationHostAddress repmgrRemoteAddr)
+    {
+        this.repmgrRemoteSites.add(repmgrRemoteAddr);
+    }
+
     public void setMaxLocks(final int maxLocks) {
         this.maxLocks = maxLocks;
     }
@@ -375,12 +445,41 @@ public class EnvironmentConfig implements Cloneable {
         return logDirectory;
     }
 
+    public void setLogFileMode(final int logFileMode) {
+        this.logFileMode = logFileMode;
+    }
+
+    public int getLogFileMode() {
+        return logFileMode;
+    }
+
     public void setLogRegionSize(final int logRegionSize) {
         this.logRegionSize = logRegionSize;
     }
 
     public int getLogRegionSize() {
         return logRegionSize;
+    }
+
+    public void setMaxOpenFiles(final int maxOpenFiles) {
+        this.maxOpenFiles = maxOpenFiles;
+    }
+
+    public int getMaxOpenFiles() {
+        return maxOpenFiles;
+    }
+
+    public void setMaxWrite(final int maxWrite, final int maxWriteSleep) {
+        this.maxWrite = maxWrite;
+        this.maxWriteSleep = maxWriteSleep;
+    }
+
+    public int getMaxWrite() {
+        return maxWrite;
+    }
+
+    public int getMaxWriteSleep() {
+        return maxWriteSleep;
     }
 
     public void setMessageHandler(final MessageHandler messageHandler) {
@@ -413,6 +512,14 @@ public class EnvironmentConfig implements Cloneable {
 
     public long getMode() {
         return mode;
+    }
+
+    public void setMultiversion(final boolean multiversion) {
+        this.multiversion = multiversion;
+    }
+
+    public boolean getMultiversion() {
+        return multiversion;
     }
 
     public void setNoLocking(final boolean noLocking) {
@@ -463,20 +570,28 @@ public class EnvironmentConfig implements Cloneable {
         return isPrivate;
     }
 
-    public boolean getReadOnly() {
-        return readOnly;
-    }
-
-    public void setReadOnly(final boolean readOnly) {
-        this.readOnly = readOnly;
-    }
-
     public void setReplicationLimit(final long replicationLimit) {
         this.replicationLimit = replicationLimit;
     }
 
     public long getReplicationLimit() {
         return replicationLimit;
+    }
+
+    public void setReplicationRequestMin(final int replicationRequestMin) {
+        this.replicationRequestMin = replicationRequestMin;
+    }
+
+    public int getReplicationRequestMin() {
+        return replicationRequestMin;
+    }
+
+    public void setReplicationRequestMax(final int replicationRequestMax) {
+        this.replicationRequestMax = replicationRequestMax;
+    }
+
+    public int getReplicationRequestMax() {
+        return replicationRequestMax;
     }
 
     public void setReplicationTransport(final int envid,
@@ -488,6 +603,14 @@ public class EnvironmentConfig implements Cloneable {
 
     public ReplicationTransport getReplicationTransport() {
         return replicationTransport;
+    }
+
+    public void setRegister(final boolean register) {
+        this.register = register;
+    }
+
+    public boolean getRegister() {
+        return register;
     }
 
     public void setRunFatalRecovery(final boolean runFatalRecovery) {
@@ -533,20 +656,75 @@ public class EnvironmentConfig implements Cloneable {
         return segmentId;
     }
 
-    public void setTemporaryDirectory(final String temporaryDirectory) {
+    public void setTemporaryDirectory(final java.io.File temporaryDirectory) {
         this.temporaryDirectory = temporaryDirectory;
     }
 
-    public String getTemporaryDirectory() {
+    /* @deprecated */
+    public void setTemporaryDirectory(final String temporaryDirectory) {
+        this.setTemporaryDirectory(new java.io.File(temporaryDirectory));
+    }
+
+    public java.io.File getTemporaryDirectory() {
         return temporaryDirectory;
     }
 
-    public void setTestAndSetSpins(final int testAndSetSpins) {
-        this.testAndSetSpins = testAndSetSpins;
+    public void setMutexAlignment(final int mutexAlignment) {
+        this.mutexAlignment = mutexAlignment;
     }
 
+    public int getMutexAlignment() {
+        return mutexAlignment;
+    }
+
+    public void setMutexIncrement(final int mutexIncrement) {
+        this.mutexIncrement = mutexIncrement;
+    }
+
+    public int getMutexIncrement() {
+        return mutexIncrement;
+    }
+
+    public void setMaxMutexes(final int maxMutexes) {
+        this.maxMutexes = maxMutexes;
+    }
+
+    public int getMaxMutexes() {
+        return maxMutexes;
+    }
+
+    public void setMutexTestAndSetSpins(final int mutexTestAndSetSpins) {
+        this.mutexTestAndSetSpins = mutexTestAndSetSpins;
+    }
+
+    public int getMutexTestAndSetSpins() {
+        return mutexTestAndSetSpins;
+    }
+
+    public void setReplicationNumSites(final int replicationNSites) {
+        this.replicationNSites = replicationNSites;
+    }
+
+    public int getReplicationNumSites() {
+        return replicationNSites;
+    }
+
+    public void setReplicationPriority(final int replicationPriority) {
+        this.replicationPriority = replicationPriority;
+    }
+
+    public int getReplicationPriority() {
+        return replicationPriority;
+    }
+
+    /* @deprecated Renamed setMutexTestAndSetSpins */
+    public void setTestAndSetSpins(final int mutexTestAndSetSpins) {
+        setMutexTestAndSetSpins(mutexTestAndSetSpins);
+    }
+
+    /* @deprecated Renamed getMutexTestAndSetSpins */
     public int getTestAndSetSpins() {
-        return testAndSetSpins;
+        return getMutexTestAndSetSpins();
     }
 
     public void setThreaded(final boolean threaded) {
@@ -579,6 +757,14 @@ public class EnvironmentConfig implements Cloneable {
 
     public boolean getTxnNotDurable() {
         return txnNotDurable;
+    }
+
+    public void setTxnSnapshot(final boolean txnSnapshot) {
+        this.txnSnapshot = txnSnapshot;
+    }
+
+    public boolean getTxnSnapshot() {
+        return txnSnapshot;
     }
 
     public void setTxnMaxActive(final int txnMaxActive) {
@@ -645,6 +831,14 @@ public class EnvironmentConfig implements Cloneable {
         return verboseRecovery;
     }
 
+    public void setVerboseRegister(final boolean verboseRegister) {
+        this.verboseRegister = verboseRegister;
+    }
+
+    public boolean getVerboseRegister() {
+        return verboseRegister;
+    }
+
     public void setVerboseReplication(final boolean verboseReplication) {
         this.verboseReplication = verboseReplication;
     }
@@ -700,7 +894,7 @@ public class EnvironmentConfig implements Cloneable {
         openFlags |= joinEnvironment ? DbConstants.DB_JOINENV : 0;
         openFlags |= lockDown ? DbConstants.DB_LOCKDOWN : 0;
         openFlags |= isPrivate ? DbConstants.DB_PRIVATE : 0;
-        openFlags |= readOnly ? DbConstants.DB_RDONLY : 0;
+        openFlags |= register ? DbConstants.DB_REGISTER : 0;
         openFlags |= runRecovery ? DbConstants.DB_RECOVER : 0;
         openFlags |= runFatalRecovery ? DbConstants.DB_RECOVER_FATAL : 0;
         openFlags |= systemMemory ? DbConstants.DB_SYSTEM_MEM : 0;
@@ -756,8 +950,8 @@ public class EnvironmentConfig implements Cloneable {
         if (rpcServer != oldConfig.rpcServer ||
             rpcClientTimeout != oldConfig.rpcClientTimeout ||
             rpcServerTimeout != oldConfig.rpcServerTimeout)
-            dbenv.set_rpc_server(null, rpcServer,
-                rpcClientTimeout, rpcServerTimeout, 0);
+            dbenv.set_rpc_server(rpcServer,
+		rpcClientTimeout, rpcServerTimeout, 0);
 
         // We always set DB_TIME_NOTGRANTED in the Java API, because
         // LockNotGrantedException extends DeadlockException, so there's no
@@ -780,6 +974,11 @@ public class EnvironmentConfig implements Cloneable {
         if (!directLogIO && oldConfig.directLogIO)
             offFlags |= DbConstants.DB_DIRECT_LOG;
 
+        if (dsyncDatabases && !oldConfig.dsyncDatabases)
+            onFlags |= DbConstants.DB_DSYNC_DB;
+        if (!dsyncDatabases && oldConfig.dsyncDatabases)
+            offFlags |= DbConstants.DB_DSYNC_DB;
+
         if (dsyncLog && !oldConfig.dsyncLog)
             onFlags |= DbConstants.DB_DSYNC_LOG;
         if (!dsyncLog && oldConfig.dsyncLog)
@@ -799,6 +998,11 @@ public class EnvironmentConfig implements Cloneable {
             onFlags |= DbConstants.DB_LOG_INMEMORY;
         if (!logInMemory && oldConfig.logInMemory)
             offFlags |= DbConstants.DB_LOG_INMEMORY;
+
+        if (multiversion && !oldConfig.multiversion)
+            onFlags |= DbConstants.DB_MULTIVERSION;
+        if (!multiversion && oldConfig.multiversion)
+            offFlags |= DbConstants.DB_MULTIVERSION;
 
         if (noLocking && !oldConfig.noLocking)
             onFlags |= DbConstants.DB_NOLOCKING;
@@ -830,6 +1034,11 @@ public class EnvironmentConfig implements Cloneable {
         if (!txnNotDurable && oldConfig.txnNotDurable)
             offFlags |= DbConstants.DB_TXN_NOT_DURABLE;
 
+        if (txnSnapshot && !oldConfig.txnSnapshot)
+            onFlags |= DbConstants.DB_TXN_SNAPSHOT;
+        if (!txnSnapshot && oldConfig.txnSnapshot)
+            offFlags |= DbConstants.DB_TXN_SNAPSHOT;
+
         if (txnWriteNoSync && !oldConfig.txnWriteNoSync)
             onFlags |= DbConstants.DB_TXN_WRITE_NOSYNC;
         if (!txnWriteNoSync && oldConfig.txnWriteNoSync)
@@ -846,45 +1055,44 @@ public class EnvironmentConfig implements Cloneable {
             dbenv.set_flags(offFlags, false);
 
         /* Verbose flags */
-        onFlags = 0;
-        offFlags = 0;
-
         if (verboseDeadlock && !oldConfig.verboseDeadlock)
-            onFlags |= DbConstants.DB_VERB_DEADLOCK;
+            dbenv.set_verbose(DbConstants.DB_VERB_DEADLOCK, true);
         if (!verboseDeadlock && oldConfig.verboseDeadlock)
-            offFlags |= DbConstants.DB_VERB_DEADLOCK;
+            dbenv.set_verbose(DbConstants.DB_VERB_DEADLOCK, false);
 
         if (verboseRecovery && !oldConfig.verboseRecovery)
-            onFlags |= DbConstants.DB_VERB_RECOVERY;
+            dbenv.set_verbose(DbConstants.DB_VERB_RECOVERY, true);
         if (!verboseRecovery && oldConfig.verboseRecovery)
-            offFlags |= DbConstants.DB_VERB_RECOVERY;
+            dbenv.set_verbose(DbConstants.DB_VERB_RECOVERY, false);
+
+        if (verboseRegister && !oldConfig.verboseRegister)
+            dbenv.set_verbose(DbConstants.DB_VERB_REGISTER, true);
+        if (!verboseRegister && oldConfig.verboseRegister)
+            dbenv.set_verbose(DbConstants.DB_VERB_REGISTER, false);
 
         if (verboseReplication && !oldConfig.verboseReplication)
-            onFlags |= DbConstants.DB_VERB_REPLICATION;
+            dbenv.set_verbose(DbConstants.DB_VERB_REPLICATION, true);
         if (!verboseReplication && oldConfig.verboseReplication)
-            offFlags |= DbConstants.DB_VERB_REPLICATION;
+            dbenv.set_verbose(DbConstants.DB_VERB_REPLICATION, false);
 
         if (verboseWaitsFor && !oldConfig.verboseWaitsFor)
-            onFlags |= DbConstants.DB_VERB_WAITSFOR;
+            dbenv.set_verbose(DbConstants.DB_VERB_WAITSFOR, true);
         if (!verboseWaitsFor && oldConfig.verboseWaitsFor)
-            offFlags |= DbConstants.DB_VERB_WAITSFOR;
-
-        if (onFlags != 0)
-            dbenv.set_verbose(onFlags, true);
-        if (offFlags != 0)
-            dbenv.set_verbose(offFlags, false);
+            dbenv.set_verbose(DbConstants.DB_VERB_WAITSFOR, false);
 
         /* Callbacks */
         if (feedbackHandler != oldConfig.feedbackHandler)
             dbenv.set_feedback(feedbackHandler);
         if (logRecordHandler != oldConfig.logRecordHandler)
             dbenv.set_app_dispatch(logRecordHandler);
+        if (eventHandler != oldConfig.eventHandler)
+            dbenv.set_event_notify(eventHandler);
         if (messageHandler != oldConfig.messageHandler)
             dbenv.set_msgcall(messageHandler);
         if (panicHandler != oldConfig.panicHandler)
             dbenv.set_paniccall(panicHandler);
         if (replicationTransport != oldConfig.replicationTransport)
-            dbenv.set_rep_transport(envid, replicationTransport);
+            dbenv.rep_set_transport(envid, replicationTransport);
 
         /* Other settings */
         if (cacheSize != oldConfig.cacheSize ||
@@ -892,9 +1100,9 @@ public class EnvironmentConfig implements Cloneable {
             dbenv.set_cachesize(cacheSize, cacheCount);
         for (final java.util.Enumeration e = dataDirs.elements();
             e.hasMoreElements();) {
-            final String dir = (String)e.nextElement();
+            final java.io.File dir = (java.io.File)e.nextElement();
             if (!oldConfig.dataDirs.contains(dir))
-                dbenv.set_data_dir(dir);
+                dbenv.set_data_dir(dir.toString());
         }
         if (!lockConflictsEqual(lockConflicts, oldConfig.lockConflicts))
             dbenv.set_lk_conflicts(lockConflicts);
@@ -913,8 +1121,15 @@ public class EnvironmentConfig implements Cloneable {
         if (logDirectory != oldConfig.logDirectory && logDirectory != null &&
             !logDirectory.equals(oldConfig.logDirectory))
             dbenv.set_lg_dir(logDirectory.toString());
+        if (logFileMode != oldConfig.logFileMode)
+            dbenv.set_lg_filemode(logFileMode);
         if (logRegionSize != oldConfig.logRegionSize)
             dbenv.set_lg_regionmax(logRegionSize);
+        if (maxOpenFiles != oldConfig.maxOpenFiles)
+            dbenv.set_mp_max_openfd(maxOpenFiles);
+        if (maxWrite != oldConfig.maxWrite ||
+            maxWriteSleep != oldConfig.maxWriteSleep)
+            dbenv.set_mp_max_write(maxWrite, maxWriteSleep);
         if (messageStream != oldConfig.messageStream)
             dbenv.set_message_stream(messageStream);
         if (mmapSize != oldConfig.mmapSize)
@@ -922,11 +1137,24 @@ public class EnvironmentConfig implements Cloneable {
         if (password != null)
             dbenv.set_encrypt(password, DbConstants.DB_ENCRYPT_AES);
         if (replicationLimit != oldConfig.replicationLimit)
-            dbenv.set_rep_limit(replicationLimit);
+            dbenv.rep_set_limit(replicationLimit);
+        if (replicationRequestMin != oldConfig.replicationRequestMin ||
+            replicationRequestMax != oldConfig.replicationRequestMax)
+            dbenv.set_rep_request(replicationRequestMin, replicationRequestMax);
         if (segmentId != oldConfig.segmentId)
             dbenv.set_shm_key(segmentId);
-        if (testAndSetSpins != oldConfig.testAndSetSpins)
-            dbenv.set_tas_spins(testAndSetSpins);
+        if (mutexAlignment != oldConfig.mutexAlignment)
+            dbenv.mutex_set_align(mutexAlignment);
+        if (mutexIncrement != oldConfig.mutexIncrement)
+            dbenv.mutex_set_increment(mutexIncrement);
+        if (maxMutexes != oldConfig.maxMutexes)
+            dbenv.mutex_set_max(maxMutexes);
+        if (mutexTestAndSetSpins != oldConfig.mutexTestAndSetSpins)
+            dbenv.mutex_set_tas_spins(mutexTestAndSetSpins);
+        if (replicationNSites != oldConfig.replicationNSites)
+            dbenv.rep_set_nsites(replicationNSites);
+        if (replicationPriority != oldConfig.replicationPriority)
+            dbenv.rep_set_priority(replicationPriority);
         if (lockTimeout != oldConfig.lockTimeout)
             dbenv.set_timeout(lockTimeout, DbConstants.DB_SET_LOCK_TIMEOUT);
         if (txnMaxActive != oldConfig.txnMaxActive)
@@ -939,7 +1167,21 @@ public class EnvironmentConfig implements Cloneable {
         if (temporaryDirectory != oldConfig.temporaryDirectory &&
             temporaryDirectory != null &&
             !temporaryDirectory.equals(oldConfig.temporaryDirectory))
-            dbenv.set_tmp_dir(temporaryDirectory);
+            dbenv.set_tmp_dir(temporaryDirectory.toString());
+        if (repmgrAckPolicy != oldConfig.repmgrAckPolicy)
+            dbenv.repmgr_set_ack_policy(repmgrAckPolicy.getId());
+        if (repmgrLocalSiteAddr != oldConfig.repmgrLocalSiteAddr) {
+            dbenv.repmgr_set_local_site(
+                repmgrLocalSiteAddr.host, repmgrLocalSiteAddr.port, 0);
+        }
+        for (java.util.Enumeration elems = repmgrRemoteSites.elements();
+            elems.hasMoreElements();)
+        {
+            ReplicationHostAddress nextAddr =
+                (ReplicationHostAddress)elems.nextElement();
+            dbenv.repmgr_add_remote_site(nextAddr.host, nextAddr.port,
+                nextAddr.isPeer ? DbConstants.DB_REPMGR_PEER : 0);
+        }
     }
 
     /* package */
@@ -957,7 +1199,7 @@ public class EnvironmentConfig implements Cloneable {
         joinEnvironment = ((openFlags & DbConstants.DB_JOINENV) != 0);
         lockDown = ((openFlags & DbConstants.DB_LOCKDOWN) != 0);
         isPrivate = ((openFlags & DbConstants.DB_PRIVATE) != 0);
-        readOnly = ((openFlags & DbConstants.DB_RDONLY) != 0);
+        register = ((openFlags & DbConstants.DB_REGISTER) != 0);
         runRecovery = ((openFlags & DbConstants.DB_RECOVER) != 0);
         runFatalRecovery = ((openFlags & DbConstants.DB_RECOVER_FATAL) != 0);
         systemMemory = ((openFlags & DbConstants.DB_SYSTEM_MEM) != 0);
@@ -972,22 +1214,26 @@ public class EnvironmentConfig implements Cloneable {
         cdbLockAllDatabases = ((envFlags & DbConstants.DB_CDB_ALLDB) != 0);
         directDatabaseIO = ((envFlags & DbConstants.DB_DIRECT_DB) != 0);
         directLogIO = ((envFlags & DbConstants.DB_DIRECT_LOG) != 0);
+        dsyncDatabases = ((envFlags & DbConstants.DB_DSYNC_DB) != 0);
         dsyncLog = ((envFlags & DbConstants.DB_DSYNC_LOG) != 0);
         initializeRegions = ((envFlags & DbConstants.DB_REGION_INIT) != 0);
         logAutoRemove = ((envFlags & DbConstants.DB_LOG_AUTOREMOVE) != 0);
         logInMemory = ((envFlags & DbConstants.DB_LOG_INMEMORY) != 0);
+        multiversion = ((envFlags & DbConstants.DB_MULTIVERSION) != 0);
         noLocking = ((envFlags & DbConstants.DB_NOLOCKING) != 0);
         noMMap = ((envFlags & DbConstants.DB_NOMMAP) != 0);
         noPanic = ((envFlags & DbConstants.DB_NOPANIC) != 0);
         overwrite = ((envFlags & DbConstants.DB_OVERWRITE) != 0);
         txnNoSync = ((envFlags & DbConstants.DB_TXN_NOSYNC) != 0);
         txnNotDurable = ((envFlags & DbConstants.DB_TXN_NOT_DURABLE) != 0);
+        txnSnapshot = ((envFlags & DbConstants.DB_TXN_SNAPSHOT) != 0);
         txnWriteNoSync = ((envFlags & DbConstants.DB_TXN_WRITE_NOSYNC) != 0);
         yieldCPU = ((envFlags & DbConstants.DB_YIELDCPU) != 0);
 
         /* Verbose flags */
         verboseDeadlock = dbenv.get_verbose(DbConstants.DB_VERB_DEADLOCK);
         verboseRecovery = dbenv.get_verbose(DbConstants.DB_VERB_RECOVERY);
+        verboseRegister = dbenv.get_verbose(DbConstants.DB_VERB_REGISTER);
         verboseReplication = dbenv.get_verbose(DbConstants.DB_VERB_REPLICATION);
         verboseWaitsFor = dbenv.get_verbose(DbConstants.DB_VERB_WAITSFOR);
 
@@ -995,6 +1241,7 @@ public class EnvironmentConfig implements Cloneable {
         errorHandler = dbenv.get_errcall();
         feedbackHandler = dbenv.get_feedback();
         logRecordHandler = dbenv.get_app_dispatch();
+        eventHandler = dbenv.get_event_notify();
         messageHandler = dbenv.get_msgcall();
         panicHandler = dbenv.get_paniccall();
         // XXX: replicationTransport and envid aren't available?
@@ -1004,6 +1251,9 @@ public class EnvironmentConfig implements Cloneable {
             cacheSize = dbenv.get_cachesize();
             cacheCount = dbenv.get_cachesize_ncache();
             mmapSize = dbenv.get_mp_mmapsize();
+            maxOpenFiles = dbenv.get_mp_max_openfd();
+            maxWrite = dbenv.get_mp_max_write();
+            maxWriteSleep = dbenv.get_mp_max_write_sleep();
         }
 
         String[] dataDirArray = dbenv.get_data_dirs();
@@ -1012,7 +1262,7 @@ public class EnvironmentConfig implements Cloneable {
         dataDirs = new java.util.Vector(dataDirArray.length);
         dataDirs.setSize(dataDirArray.length);
         for (int i = 0; i < dataDirArray.length; i++)
-            dataDirs.set(i, dataDirArray[i]);
+            dataDirs.set(i, new java.io.File(dataDirArray[i]));
 
         errorPrefix = dbenv.get_errpfx();
         errorStream = dbenv.get_error_stream();
@@ -1039,6 +1289,7 @@ public class EnvironmentConfig implements Cloneable {
             logBufferSize = dbenv.get_lg_bsize();
             logDirectory = (dbenv.get_lg_dir() == null) ? null :
                 new java.io.File(dbenv.get_lg_dir());
+            logFileMode = dbenv.get_lg_filemode();
             logRegionSize = dbenv.get_lg_regionmax();
         } else {
             maxLogFileSize = 0;
@@ -1052,9 +1303,12 @@ public class EnvironmentConfig implements Cloneable {
         password = (dbenv.get_encrypt_flags() == 0) ? null : "";
 
         if (initializeReplication) {
-            replicationLimit = dbenv.get_rep_limit();
+            replicationLimit = dbenv.rep_get_limit();
+            // XXX: no way to find out replicationRequest{Min,Max}
         } else {
             replicationLimit = 0L;
+            replicationRequestMin = 0;
+            replicationRequestMax = 0;
         }
 
         // XXX: no way to find RPC server?
@@ -1063,7 +1317,12 @@ public class EnvironmentConfig implements Cloneable {
         rpcServerTimeout = 0;
 
         segmentId = dbenv.get_shm_key();
-        testAndSetSpins = dbenv.get_tas_spins();
+        mutexAlignment = dbenv.mutex_get_align();
+        mutexIncrement = dbenv.mutex_get_increment();
+        maxMutexes = dbenv.mutex_get_max();
+        mutexTestAndSetSpins = dbenv.mutex_get_tas_spins();
+        replicationNSites = dbenv.rep_get_nsites();
+        replicationPriority = dbenv.rep_get_priority();
         if (transactional) {
             txnMaxActive = dbenv.get_tx_max();
             final long txnTimestampSeconds = dbenv.get_tx_timestamp();
@@ -1075,6 +1334,6 @@ public class EnvironmentConfig implements Cloneable {
             txnMaxActive = 0;
             txnTimestamp = null;
         }
-        temporaryDirectory = dbenv.get_tmp_dir();
+        temporaryDirectory = new java.io.File(dbenv.get_tmp_dir());
     }
 }

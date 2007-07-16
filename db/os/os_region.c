@@ -1,19 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_region.c,v 11.21 2004/06/10 17:20:57 bostic Exp $
+ * $Id: os_region.c,v 12.9 2006/08/24 14:46:18 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 
@@ -31,13 +25,24 @@ __os_r_attach(dbenv, infop, rp)
 {
 	int ret;
 
-	/* Round off the requested size for the underlying VM. */
+	/*
+	 * All regions are created on 8K boundaries out of sheer paranoia,
+	 * so we don't make some underlying VM unhappy. Make sure we don't
+	 * overflow or underflow.
+	 */
+#define	OS_VMPAGESIZE		(8 * 1024)
+#define	OS_VMROUNDOFF(i) {						\
+	if ((i) <							\
+	    (UINT32_MAX - OS_VMPAGESIZE) + 1 || (i) < OS_VMPAGESIZE)	\
+		(i) += OS_VMPAGESIZE - 1;				\
+	(i) -= (i) % OS_VMPAGESIZE;					\
+}
 	OS_VMROUNDOFF(rp->size);
 
 #ifdef DB_REGIONSIZE_MAX
 	/* Some architectures have hard limits on the maximum region size. */
 	if (rp->size > DB_REGIONSIZE_MAX) {
-		__db_err(dbenv, "region size %lu is too large; maximum is %lu",
+		__db_errx(dbenv, "region size %lu is too large; maximum is %lu",
 		    (u_long)rp->size, (u_long)DB_REGIONSIZE_MAX);
 		return (EINVAL);
 	}
@@ -52,7 +57,7 @@ __os_r_attach(dbenv, infop, rp)
 	 * I don't know of any architectures (yet!) where malloc is a problem.
 	 */
 	if (F_ISSET(dbenv, DB_ENV_PRIVATE)) {
-#if defined(MUTEX_NO_MALLOC_LOCKS)
+#if defined(HAVE_MUTEX_HPPA_MSEM_INIT)
 		/*
 		 * !!!
 		 * There exist spinlocks that don't work in malloc memory, e.g.,
@@ -61,19 +66,15 @@ __os_r_attach(dbenv, infop, rp)
 		 * be threaded.
 		 */
 		if (F_ISSET(dbenv, DB_ENV_THREAD)) {
-			__db_err(dbenv, "%s",
+			__db_errx(dbenv, "%s",
     "architecture does not support locks inside process-local (malloc) memory");
-			__db_err(dbenv, "%s",
+			__db_errx(dbenv, "%s",
     "application may not specify both DB_PRIVATE and DB_THREAD");
 			return (EINVAL);
 		}
 #endif
-		/*
-		 * Pad out the allocation, we're going to align it to mutex
-		 * alignment.
-		 */
-		if ((ret = __os_malloc(dbenv,
-		    sizeof(REGENV) + (MUTEX_ALIGN - 1), &infop->addr)) != 0)
+		if ((ret = __os_malloc(
+		    dbenv, sizeof(REGENV), &infop->addr)) != 0)
 			return (ret);
 
 		infop->max_alloc = rp->size;
@@ -97,12 +98,12 @@ __os_r_attach(dbenv, infop, rp)
 	 * the original values for restoration when the region is discarded.
 	 */
 	infop->addr_orig = infop->addr;
-	infop->addr = ALIGNP_INC(infop->addr_orig, MUTEX_ALIGN);
+	infop->addr = ALIGNP_INC(infop->addr_orig, sizeof(size_t));
 
 	rp->size_orig = rp->size;
 	if (infop->addr != infop->addr_orig)
-		rp->size -=
-		    (u_int8_t *)infop->addr - (u_int8_t *)infop->addr_orig;
+		rp->size -= (roff_t)
+		    ((u_int8_t *)infop->addr - (u_int8_t *)infop->addr_orig);
 
 	return (0);
 }

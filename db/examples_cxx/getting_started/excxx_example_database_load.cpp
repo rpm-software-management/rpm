@@ -9,7 +9,7 @@
 #ifdef _WIN32
 extern "C" {
   extern int getopt(int, char * const *, const char *);
-  extern int optind;
+  extern char *optarg;
 }
 #else
 #include <unistd.h>
@@ -40,7 +40,6 @@ main (int argc, char *argv[])
 {
 
    char ch, lastChar;
-   extern char *optarg;
 
    // Initialize the path to the database files
    std::string basename("./");
@@ -112,10 +111,10 @@ main (int argc, char *argv[])
 
 // Used to locate the first pound sign (a field delimiter)
 // in the input string.
-int
+size_t
 getNextPound(std::string &theString, std::string &substring)
 {
-    int pos = theString.find("#");
+    size_t pos = theString.find("#");
     substring.assign(theString, 0, pos);
     theString.assign(theString, pos + 1, theString.size());
     return (pos);
@@ -127,7 +126,7 @@ loadInventoryDB(MyDb &inventoryDB, std::string &inventoryFile)
 {
     InventoryData inventoryData;
     std::string substring;
-    int nextPound;
+    size_t nextPound;
 
     std::ifstream inFile(inventoryFile.c_str(), std::ios::in);
     if ( !inFile )
@@ -165,12 +164,12 @@ loadInventoryDB(MyDb &inventoryDB, std::string &inventoryFile)
             inventoryData.setVendor(substring);
 
             void *buff = (void *)inventoryData.getSKU().c_str();
-            int size = inventoryData.getSKU().size()+1;
-            Dbt key(buff, size);
+            size_t size = inventoryData.getSKU().size()+1;
+            Dbt key(buff, (u_int32_t)size);
 
             buff = inventoryData.getBuffer();
             size = inventoryData.getBufferSize();
-            Dbt data(buff, size);
+            Dbt data(buff, (u_int32_t)size);
 
             inventoryDB.getDb().put(NULL, &key, &data, 0);
         }
@@ -211,7 +210,7 @@ loadVendorDB(MyDb &vendorDB, std::string &vendorFile)
           my_vendor.zipcode, my_vendor.phone_number,
           my_vendor.sales_rep, my_vendor.sales_rep_phone);
 
-        Dbt key(my_vendor.name, strlen(my_vendor.name) + 1);
+        Dbt key(my_vendor.name, (u_int32_t)strlen(my_vendor.name) + 1);
         Dbt data(&my_vendor, sizeof(VENDOR));
 
         vendorDB.getDb().put(NULL, &key, &data, 0);

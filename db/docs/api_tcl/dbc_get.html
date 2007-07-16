@@ -1,6 +1,6 @@
-<!--$Id: dbc_get.so,v 11.21 2002/08/18 21:17:28 bostic Exp $-->
-<!--$Id: m4.tcl,v 11.27 2004/09/07 15:37:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: dbc_get.so,v 11.22 2004/12/02 18:21:08 bostic Exp $-->
+<!--$Id: m4.tcl,v 11.28 2004/12/16 19:13:05 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -75,7 +75,7 @@ explicitly created by the application, or were created and later deleted.</p>
 identical to <b>-first</b>.
 <p>Otherwise, the cursor is moved to the next key/data pair of the database,
 and that pair is returned. In the presence of duplicate key values, the
-value of the key may not change. </p>
+value of the key may not change.</p>
 <p>If the database is a Queue or Recno database, <i>dbc</i> <b>get</b> using the
 <b>-next</b> option will skip any keys that exist but were never
 explicitly created by the application, or were created and later deleted.</p>
@@ -110,7 +110,7 @@ position in the database, <i>dbc</i> <b>get</b> will return an empty list.</p>
 <dt>-set<dd>Move the cursor to the specified key/data pair of the database, and return
 the datum associated with the given key.
 <p>In the presence of duplicate key values, <i>dbc</i> <b>get</b> will return the
-first data item for the given key. </p>
+first data item for the given key.</p>
 <p>If the database is a Queue or Recno database and the requested key exists,
 but was never explicitly created by the application or was later deleted,
 <i>dbc</i> <b>get</b> will return an empty list.</p>
@@ -163,6 +163,6 @@ exist an empty list is returned.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/api_tcl.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

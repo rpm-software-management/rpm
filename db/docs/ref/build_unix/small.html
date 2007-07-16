@@ -1,5 +1,5 @@
-<!--$Id: small.so,v 10.5 2004/01/28 17:48:54 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: small.so,v 10.9 2006/08/24 16:32:26 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -48,14 +48,16 @@ library dramatically and are only useful when debugging applications:</p>
 By default Berkeley DB will build both shared and static libraries.  To build
 only a static library, configure Berkeley DB with the
 <a href="../../ref/build_unix/conf.html">--disable-shared</a> option.</p>
-<p>While the size of the Berkeley DB library will vary depending on your
-compiler, system, and configuration options, the minimum size is
-expected to be around 350KB, and the maximum size to be around 600KB.</p>
+<p>The size of the Berkeley DB library varies a lot depending on the compiler,
+machine architecture, and configuration options.  As an estimate,
+production Berkeley DB libraries built with current GNU gcc compilers have
+footprints in the range of 400KB to 790KB on 32-bit x86 architectures,
+and in the range of 490KB to 920KB on 64-bit x86 architectures.</p>
 <p>For assistance in further reducing the size of the Berkeley DB library, or in
-building small memory footprint libraries on other systems, please contact
-Sleepycat Software support.</p>
+building small memory footprint libraries on other systems, please
+contact Berkeley DB support.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/conf.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/flags.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

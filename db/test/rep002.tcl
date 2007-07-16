@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2002-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep002.tcl,v 11.37 2004/09/22 18:01:05 bostic Exp $
+# $Id: rep002.tcl,v 12.10 2006/09/13 16:51:39 carol Exp $
 #
 # TEST  	rep002
 # TEST	Basic replication election test.
@@ -15,6 +15,22 @@
 
 proc rep002 { method { niter 10 } { nclients 3 } { tnum "002" } args } {
 
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Skip for record-based methods.
+	if { $checking_valid_methods } {
+		set test_methods {}
+		foreach method $valid_methods {
+			if { [is_record_based $method] != 1 } {
+				lappend test_methods $method
+			}
+		}
+		return $test_methods
+	}
 	if { [is_record_based $method] == 1 } {
 		puts "Rep002: Skipping for method $method."
 		return
@@ -23,8 +39,7 @@ proc rep002 { method { niter 10 } { nclients 3 } { tnum "002" } args } {
 	set logsets [create_logsets [expr $nclients + 1]]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -45,7 +60,6 @@ proc rep002 { method { niter 10 } { nclients 3 } { tnum "002" } args } {
 proc rep002_sub { method niter nclients tnum logset recargs largs } {
 	source ./include.tcl
 	global elect_timeout elect_serial
-	global is_windows_test
 	set elect_timeout 5000000
 
 	env_cleanup $testdir
@@ -135,8 +149,12 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 	# We want to verify that the master declares the election
 	# over by fiat, even if everyone uses a lower priority than 20.
 	# Loop and process all messages, keeping track of which
-	# sites got a HOLDELECTION and checking that the returned newmaster,
-	# if any, is 1 (the master's replication ID).
+	# sites got a HOLDELECTION and checking that the master i.d. is
+	# unchanged after the election.
+
+	set origmasterid [stat_field $masterenv rep_stat "Master"] 
+	set origgeneration [stat_field $masterenv rep_stat "Generation number"]
+
 	set got_hold_elect(M) 0
 	for { set i 0 } { $i < $nclients } { incr i } {
 		set got_hold_elect($i) 0
@@ -151,10 +169,8 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 	while { 1 } {
 		set nproced 0
 		set he 0
-		set nm 0
-		set nm2 0
 
-		incr nproced [replprocessqueue $masterenv 1 0 he nm]
+		incr nproced [replprocessqueue $masterenv 1 0 he]
 
 		if { $he == 1 } {
 			incr elect_serial
@@ -163,21 +179,12 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 			    0 $elect_timeout]
 			set got_hold_elect(M) 1
 		}
-		if { $nm != 0 } {
-			error_check_good newmaster_is_master $nm 1
-			set got_master $nm
-		}
-		if { $nm2 != 0 } {
-			error_check_good newmaster_is_master $nm2 1
-			set got_master $nm2
-		}
 
 		for { set i 0 } { $i < $nclients } { incr i } {
 			set he 0
 			set envid [expr $i + 2]
 			incr nproced \
-			    [replprocessqueue $clientenv($i) $envid 0 he nm]
-			set child_done [check_election $elect_pipe($i) nm2]
+			    [replprocessqueue $clientenv($i) $envid 0 he]
 			if { $he == 1 } {
 				# error_check_bad client(0)_in_elect $i 0
 				if { $elect_pipe($i) != "INVALID" } {
@@ -191,21 +198,16 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 				    $elect_timeout]
 				set got_hold_elect($i) 1
 			}
-			if { $nm != 0 } {
-				error_check_good newmaster_is_master $nm 1
-				set got_master $nm
-			}
-			if { $nm2 != 0 } {
-				error_check_good newmaster_is_master $nm2 1
-				set got_master $nm2
-			}
 		}
 
 		if { $nproced == 0 } {
 			break
 		}
 	}
-	error_check_good got_master $got_master 1
+	set masterid [stat_field $masterenv rep_stat "Master"] 
+	set generation [stat_field $masterenv rep_stat "Generation number"]
+	error_check_good master_unchanged $origmasterid $masterid
+	error_check_good gen_unchanged $origgeneration $generation
 	cleanup_elections
 
 	# We need multiple clients to proceed from here.
@@ -313,11 +315,4 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 	}
 
 	replclose $testdir/MSGQUEUEDIR
-
-	# If we're on Windows, we need to forcibly remove some of the
-	# files created when the alternate winner won.
-	if { $is_windows_test == 1 } {
-		set filelist [glob -nocomplain $testdir/CLIENTDIR.$altwin/*]
-		fileremove -f $filelist
-	}
 }

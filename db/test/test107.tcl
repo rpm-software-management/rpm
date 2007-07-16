@@ -1,26 +1,26 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test107.tcl,v 11.14 2004/09/22 18:01:06 bostic Exp $
+# $Id: test107.tcl,v 12.6 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test107
-# TEST	Test of degree 2 isolation. [#8689]
+# TEST	Test of read-committed (degree 2 isolation). [#8689]
 # TEST
-# TEST	We set up a database.  Open a degree 2 transactional
-# TEST	cursor and a regular transactional cursor on it.
-# TEST	Position each cursor on one page, and do a put to
-# TEST	a different page.
+# TEST	We set up a database.  Open a read-committed transactional cursor and
+# TEST	a regular transactional cursor on it. Position each cursor on one page,
+# TEST	and do a put to a different page.
 # TEST
 # TEST	Make sure that:
-# TEST	- the put succeeds if we are using degree 2.
+# TEST	- the put succeeds if we are using degree 2 isolation.
 # TEST	- the put deadlocks within a regular transaction with
 # TEST 	a regular cursor.
 # TEST
 proc test107 { method args } {
 	source ./include.tcl
 	global fixed_len
+	global passwd
 	set tnum "107"
 
 	# If we are using an env, then skip this test.  It needs its own.
@@ -41,7 +41,11 @@ proc test107 { method args } {
 	set fixed_len [expr $data_size - [expr $data_size / 8]]
 	set args [convert_args $method $args]
 	set encargs ""
+	set ddargs ""
 	set args [split_encargs $args encargs]
+	if { $encargs != "" } {
+		set ddargs " -P $passwd "
+	}
 	set omethod [convert_method $method]
 
 	puts "Test$tnum: Degree 2 Isolation Test ($method $args)"
@@ -79,8 +83,8 @@ proc test107 { method args } {
 
 	puts "\tTest$tnum.b: Start deadlock detector."
 	# Start up a deadlock detector so we can break self-deadlocks.
-	set dpid [exec $util_path/db_deadlock -v -ae -t 1.0 \
-	    -h $testdir >& $testdir/dd.out &]
+	set dpid [eval {exec $util_path/db_deadlock} -v -ae -t 1.0 \
+	    -h $testdir $ddargs >& $testdir/dd.out &]
 
 	puts "\tTest$tnum.c: Open txns and cursors."
 	# We can get degree 2 isolation with either a degree 2
@@ -95,14 +99,14 @@ proc test107 { method args } {
 	#
 	set t [$env txn]
 	error_check_good reg_txn_begin [is_valid_txn $t $env] TRUE
-	set t2 [$env txn -degree_2]
+	set t2 [$env txn -read_committed]
 	error_check_good deg2_txn_begin [is_valid_txn $t2 $env] TRUE
 
-	set c2t [$db cursor -txn $t -degree_2]
+	set c2t [$db cursor -txn $t -read_committed]
 	error_check_good valid_c2t [is_valid_cursor $c2t $db] TRUE
 	set ct2 [$db cursor -txn $t2]
 	error_check_good valid_ct2 [is_valid_cursor $ct2 $db] TRUE
-	set c2t2 [$db cursor -txn $t2 -degree_2]
+	set c2t2 [$db cursor -txn $t2 -read_committed]
 	error_check_good valid_c2t2 [is_valid_cursor $c2t2 $db] TRUE
 	set ct [$db cursor -txn $t]
 	error_check_good valid_ct [is_valid_cursor $ct $db] TRUE
@@ -120,7 +124,7 @@ proc test107 { method args } {
 	# around to killing the deadlock detector and cleaning up
 	# even if the test fails.
 	#
-	puts "\tTest$tnum.d: Test for degree 2 isolation."
+	puts "\tTest$tnum.d: Test for read-committed (degree 2 isolation)."
 	set status [catch {
 		foreach cursor $curslist {
 			set retfirst [$cursor get -first]
@@ -128,7 +132,7 @@ proc test107 { method args } {
 			set ret [$cursor get -set $offpagekey]
 			error_check_good cursor_off_page \
 			    [lindex [lindex $ret 0] 0] $offpagekey
-			if { [catch {eval {$db put} -auto_commit \
+			if { [catch {eval {$db put} \
 			    $firstkey [chop_data $method $newdata]} res]} {
 				error_check_good error_is_deadlock \
 				    [is_substr $res DB_LOCK_DEADLOCK] 1
@@ -146,10 +150,10 @@ proc test107 { method args } {
 		puts $res
 	}
 
-	# Smoke test for db_stat -txn -degree_2.
-	puts "\tTest$tnum.e: Smoke test for db_stat -txn -degree_2"
-	if { [catch {set statret [$db stat -txn $t -degree_2]} res] } {
-		puts "FAIL: db_stat -txn -degree_2 returned $res"
+	# Smoke test for db_stat -txn -read_committed.
+	puts "\tTest$tnum.e: Smoke test for db_stat -txn -read_committed"
+	if { [catch {set statret [$db stat -txn $t -read_committed]} res] } {
+		puts "FAIL: db_stat -txn -read_committed returned $res"
 	}
 
 	# End deadlock detection and clean up handles

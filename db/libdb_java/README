@@ -1,5 +1,5 @@
 Berkeley DB's Java API
-$Id: README,v 11.2 2003/03/06 00:42:16 mjc Exp $
+$Id: README,v 12.2 2006/08/24 14:46:10 bostic Exp $
 
 Berkeley DB's Java API is now generated with SWIG
 (http://www.swig.org).  This document describes how SWIG is used -
@@ -15,7 +15,7 @@ various languages (mainly scripting languages) including Java.
 By default, SWIG creates an API in the target language that exactly
 replicates the native API (for example, each pointer type in the API
 is wrapped as a distinct type in the language).  Although this
-simplifies the wrapper layer (type translation in trivial), it usually
+simplifies the wrapper layer (type translation is trivial), it usually
 doesn't result in natural API in the target language.
 
 A further constraint for Berkeley DB's Java API was backwards
@@ -73,7 +73,7 @@ SWIG directives are added to the input.  In particular:
   which includes the method signature and a call to the method.
 
   * SWIG's automatically generated function names happen to collide
-    with Sleepycat's naming convention.  For example, in a SWIG class
+    with Berkeley DB's naming convention.  For example, in a SWIG class
     called __db, a method called "open" would result in a wrapper
     function called "__db_open", which already exists in DB.  This is
     another reason why making these static functions is important.

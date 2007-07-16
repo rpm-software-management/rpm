@@ -1,21 +1,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: cxx_dbc.cpp,v 11.59 2004/01/28 03:35:56 bostic Exp $
+ * $Id: cxx_dbc.cpp,v 12.5 2006/08/24 14:45:13 bostic Exp $
  */
 
 #include "db_config.h"
 
-#include <errno.h>
-#include <string.h>
+#include "db_int.h"
 
 #include "db_cxx.h"
 #include "dbinc/cxx_int.h"
 
-#include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc_auto/db_auto.h"
 #include "dbinc_auto/crdel_auto.h"
@@ -80,10 +78,10 @@ int Dbc::get(Dbt* key, Dbt *data, u_int32_t _flags)
 	ret = dbc->c_get(dbc, key, data, _flags);
 
 	if (!DB_RETOK_DBCGET(ret)) {
-		if (ret == ENOMEM && DB_OVERFLOWED_DBT(key))
+		if (ret == DB_BUFFER_SMALL && DB_OVERFLOWED_DBT(key))
 			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
 				"Dbc::get", key, ON_ERROR_UNKNOWN);
-		else if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
+		else if (ret == DB_BUFFER_SMALL && DB_OVERFLOWED_DBT(data))
 			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
 				"Dbc::get", data, ON_ERROR_UNKNOWN);
 		else
@@ -103,10 +101,10 @@ int Dbc::pget(Dbt* key, Dbt *pkey, Dbt *data, u_int32_t _flags)
 
 	/* Logic is the same as for Dbc::get - reusing macro. */
 	if (!DB_RETOK_DBCGET(ret)) {
-		if (ret == ENOMEM && DB_OVERFLOWED_DBT(key))
+		if (ret == DB_BUFFER_SMALL && DB_OVERFLOWED_DBT(key))
 			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
 				"Dbc::pget", key, ON_ERROR_UNKNOWN);
-		else if (ret == ENOMEM && DB_OVERFLOWED_DBT(data))
+		else if (ret == DB_BUFFER_SMALL && DB_OVERFLOWED_DBT(data))
 			DB_ERROR_DBT(DbEnv::get_DbEnv(dbc->dbp->dbenv),
 				"Dbc::pget", data, ON_ERROR_UNKNOWN);
 		else

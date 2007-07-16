@@ -1,5 +1,5 @@
 # Code to load up the tests in to the Queue database
-# $Id: parallel.tcl,v 11.46 2004/09/22 18:01:05 bostic Exp $
+# $Id: parallel.tcl,v 12.5 2006/07/28 14:00:25 carol Exp $
 proc load_queue { file  {dbdir RUNQUEUE} nitems } {
 	global serial_tests
 	global num_serial
@@ -148,7 +148,7 @@ proc run_parallel { nprocs {list run_all} {nitems ALL} } {
 			close $f
 		} res]
 	}
-	watch_procs $pidlist 300 360000
+	watch_procs $pidlist 300 1000000
 
 	set failed 0
 	for { set i 0 } { $i <= $nprocs } { incr i } {
@@ -209,16 +209,17 @@ proc run_queue { i rundir queuedir {qtype parallel} {nitems 0} } {
 			set o [open $builddir/ALL.OUT.$i a]
 			puts $o "\nExecuting record $num ([timestamp -w]):\n"
 			set tdir "TESTDIR.$i"
-			regsub {TESTDIR} $cmd $tdir cmd
+			regsub -all {TESTDIR} $cmd $tdir cmd
 			puts $o $cmd
 			close $o
 			if { [expr {$num % 10} == 0] && $nitems != 0 } {
 				puts -nonewline \
 				    "Starting test $num of $nitems $qtype items.  "
 				set now [timestamp -r]
-				set elapsed [expr $now - $starttime]
-				set esttotal [expr $nitems * $elapsed / $num]
-				set remaining [expr $esttotal - $elapsed]
+				set elapsed_secs [expr $now - $starttime]
+				set secs_per_test [expr $elapsed_secs / $num]
+				set esttotal [expr $nitems * $secs_per_test]
+				set remaining [expr $esttotal - $elapsed_secs]
 				if { $remaining < 3600 } {
 					puts "\tRough guess: less than 1\
 					    hour left."
@@ -327,6 +328,7 @@ proc mkparalleldirs { nprocs basename queuedir } {
 
 proc run_ptest { nprocs test args } {
 	global parms
+	global valid_methods
 	set basename ./PARALLEL_TESTDIR
 	set queuedir NULL
 	source ./include.tcl
@@ -334,8 +336,7 @@ proc run_ptest { nprocs test args } {
 	mkparalleldirs $nprocs $basename $queuedir
 
 	if { [info exists parms($test)] } {
-		foreach method \
-		    "hash queue queueext recno rbtree frecno rrecno btree" {
+		foreach method $valid_methods {
 			if { [eval exec_ptest $nprocs $basename \
 			    $test $method $args] != 0 } {
 				break

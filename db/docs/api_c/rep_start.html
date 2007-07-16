@@ -1,5 +1,5 @@
-<!--$Id: rep_start.so,v 1.16 2004/08/13 03:39:02 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: rep_start.so,v 1.17 2006/03/15 19:39:22 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -28,26 +28,31 @@ DB_ENV-&gt;rep_start(DB_ENV *env, DBT *cdata, u_int32_t flags);
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;rep_start</h3>
 <p>The DB_ENV-&gt;rep_start method configures the database environment as a client
-or master in a group of replicated database environments.  Replication
-master environments are the only database environments where replicated
-databases may be modified.  Replication client environments are
-read-only as long as they are clients.  Replication client environments
-may be upgraded to be replication master environments in the case that
-the current master fails or there is no master present.</p>
+or master in a group of replicated database environments.</p>
+<p>The DB_ENV-&gt;rep_start method is not called by most replication
+applications.  It should only be called by applications implementing
+their own network transport layer, explicitly holding replication group
+elections and handling replication messages outside of the replication
+manager framework.</p>
+<p>Replication master environments are the only database environments where
+replicated databases may be modified.  Replication client environments
+are read-only as long as they are clients.  Replication client
+environments may be upgraded to be replication master environments in
+the case that the current master fails or there is no master present.</p>
 <p>The enclosing database environment must already have been opened by
 calling the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method and must already have been configured
-to send replication messages by calling the <a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> method.</p>
+to send replication messages by calling the <a href="../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a> method.</p>
 <p>The DB_ENV-&gt;rep_start method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>cdata</b><dd>The <b>cdata</b> parameter is an opaque data item that is sent over
-the communication infrastructure when the client or master comes online
-(see <a href="../ref/rep/newsite.html">Connecting to a new site</a> for
-more information).  If no such information is useful, <b>cdata</b>
-should be NULL.
+<dt><b>cdata</b><dd>The <b>cdata</b> parameter is an opaque data item that is sent over the
+communication infrastructure when the client comes online (see
+<a href="../ref/rep/newsite.html">Connecting to a new site</a> for more
+information).  If no such information is useful, <b>cdata</b> should
+be NULL.
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
 <dl compact>
 <dt><a name="DB_REP_CLIENT">DB_REP_CLIENT</a><dd>Configure the environment as a replication client.
@@ -59,7 +64,7 @@ should be NULL.
 may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>EINVAL<dd>If the database environment was not already configured to communicate with
-a replication group by a call to <a href="../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a>;
+a replication group by a call to <a href="../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a>;
 the database environment was not already opened; or if an
 invalid flag value or parameter was specified.
 </dl>
@@ -72,6 +77,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

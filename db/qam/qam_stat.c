@@ -1,24 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: qam_stat.c,v 11.47 2004/09/22 16:29:47 bostic Exp $
+ * $Id: qam_stat.c,v 12.8 2006/08/24 14:46:24 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <ctype.h>
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/db_am.h"
 #include "dbinc/lock.h"
 #include "dbinc/mp.h"
@@ -70,10 +62,10 @@ __qam_stat(dbc, spp, flags)
 	/* Determine the last page of the database. */
 	if ((ret = __db_lget(dbc, 0, t->q_meta, DB_LOCK_READ, 0, &lock)) != 0)
 		goto err;
-	if ((ret = __memp_fget(mpf, &t->q_meta, 0, &meta)) != 0)
+	if ((ret = __memp_fget(mpf, &t->q_meta, dbc->txn, 0, &meta)) != 0)
 		goto err;
 
-	if (flags == DB_FAST_STAT || flags == DB_CACHED_COUNTS) {
+	if (flags == DB_FAST_STAT) {
 		sp->qs_nkeys = meta->dbmeta.key_count;
 		sp->qs_ndata = meta->dbmeta.record_count;
 		goto meta_only;
@@ -102,7 +94,7 @@ begin:
 		if ((ret =
 		    __db_lget(dbc, 0, pgno, DB_LOCK_READ, 0, &lock)) != 0)
 			goto err;
-		ret = __qam_fget(dbp, &pgno, 0, &h);
+		ret = __qam_fget(dbp, &pgno, dbc->txn, 0, &h);
 		if (ret == ENOENT) {
 			pgno += pg_ext - 1;
 			continue;
@@ -153,7 +145,8 @@ begin:
 	    0, t->q_meta, F_ISSET(dbp, DB_AM_RDONLY) ?
 	    DB_LOCK_READ : DB_LOCK_WRITE, 0, &lock)) != 0)
 		goto err;
-	if ((ret = __memp_fget(mpf, &t->q_meta, 0, &meta)) != 0)
+	if ((ret = __memp_fget(mpf, &t->q_meta, dbc->txn,
+	    F_ISSET(dbp, DB_AM_RDONLY) ? 0 : DB_MPOOL_DIRTY, &meta)) != 0)
 		goto err;
 
 	if (!F_ISSET(dbp, DB_AM_RDONLY))
@@ -174,8 +167,7 @@ meta_only:
 	sp->qs_cur_recno = meta->cur_recno;
 
 	/* Discard the meta-data page. */
-	ret = __memp_fput(mpf,
-	    meta, F_ISSET(dbp, DB_AM_RDONLY) ? 0 : DB_MPOOL_DIRTY);
+	ret = __memp_fput(mpf, meta, 0);
 	if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (ret != 0)
@@ -213,7 +205,7 @@ __qam_stat_print(dbc, flags)
 	dbp = dbc->dbp;
 	dbenv = dbp->dbenv;
 
-	if ((ret = __qam_stat(dbc, &sp, 0)) != 0)
+	if ((ret = __qam_stat(dbc, &sp, LF_ISSET(DB_FAST_STAT))) != 0)
 		return (ret);
 
 	if (LF_ISSET(DB_STAT_ALL)) {

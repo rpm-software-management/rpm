@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: env004.tcl,v 11.22 2004/04/23 15:40:12 sue Exp $
+# $Id: env004.tcl,v 12.3 2006/08/24 14:46:35 bostic Exp $
 #
 # TEST	env004
 # TEST	Test multiple data directories.  Do a bunch of different opens

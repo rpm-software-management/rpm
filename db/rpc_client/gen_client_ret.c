@@ -1,28 +1,23 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: gen_client_ret.c,v 1.69 2004/09/22 16:29:51 bostic Exp $
+ * $Id: gen_client_ret.c,v 12.7 2006/09/08 19:27:46 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <rpc/rpc.h>
-
-#include <string.h>
-#endif
-
-#include "db_server.h"
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc/db_am.h"
 #include "dbinc/txn.h"
+
+#ifndef NO_SYSTEM_INCLUDES
+#include <rpc/rpc.h>
+#endif
+#include "db_server.h"
 #include "dbinc_auto/rpc_client_ext.h"
 
 #define	FREE_IF_CHANGED(dbtp, orig)	do {				\
@@ -129,15 +124,15 @@ __dbcl_txn_abort_ret(txnp, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_txn_begin_ret __P((DB_ENV *,
- * PUBLIC:     DB_TXN *, DB_TXN **, u_int32_t, __txn_begin_reply *));
+ * PUBLIC: int __dbcl_env_txn_begin_ret __P((DB_ENV *,
+ * PUBLIC:     DB_TXN *, DB_TXN **, u_int32_t, __env_txn_begin_reply *));
  */
 int
-__dbcl_txn_begin_ret(envp, parent, txnpp, flags, replyp)
+__dbcl_env_txn_begin_ret(envp, parent, txnpp, flags, replyp)
 	DB_ENV *envp;
 	DB_TXN *parent, **txnpp;
 	u_int32_t flags;
-	__txn_begin_reply *replyp;
+	__env_txn_begin_reply *replyp;
 {
 	DB_TXN *txn;
 	int ret;
@@ -156,6 +151,35 @@ __dbcl_txn_begin_ret(envp, parent, txnpp, flags, replyp)
 	 * machines, we could overflow.  Ignore for now.
 	 */
 	__dbcl_txn_setup(envp, txn, parent, (u_int32_t)replyp->txnidcl_id);
+	*txnpp = txn;
+	return (replyp->status);
+}
+
+/*
+ * PUBLIC: int __dbcl_env_cdsgroup_begin_ret __P((DB_ENV *,
+ * PUBLIC:     DB_TXN **, __env_cdsgroup_begin_reply *));
+ */
+int
+__dbcl_env_cdsgroup_begin_ret(envp, txnpp, replyp)
+	DB_ENV *envp;
+	DB_TXN **txnpp;
+	__env_cdsgroup_begin_reply *replyp;
+{
+	DB_TXN *txn;
+	int ret;
+
+	if (replyp->status != 0)
+		return (replyp->status);
+
+	if ((ret = __os_calloc(envp, 1, sizeof(DB_TXN), &txn)) != 0)
+		return (ret);
+	/*
+	 * !!!
+	 * Cast the txnidcl_id to 32-bits.  We don't want to change the
+	 * size of the txn structure.  But if we're running on 64-bit
+	 * machines, we could overflow.  Ignore for now.
+	 */
+	__dbcl_txn_setup(envp, txn, NULL, (u_int32_t)replyp->txnidcl_id);
 	*txnpp = txn;
 	return (replyp->status);
 }
@@ -193,17 +217,17 @@ __dbcl_txn_discard_ret(txnp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_txn_recover_ret __P((DB_ENV *, DB_PREPLIST *, long,
- * PUBLIC:      long *, u_int32_t, __txn_recover_reply *));
+ * PUBLIC: int __dbcl_env_txn_recover_ret __P((DB_ENV *, DB_PREPLIST *, long,
+ * PUBLIC:      long *, u_int32_t, __env_txn_recover_reply *));
  */
 int
-__dbcl_txn_recover_ret(dbenv, preplist, count, retp, flags, replyp)
+__dbcl_env_txn_recover_ret(dbenv, preplist, count, retp, flags, replyp)
 	DB_ENV * dbenv;
 	DB_PREPLIST * preplist;
 	long count;
 	long * retp;
 	u_int32_t flags;
-	__txn_recover_reply *replyp;
+	__env_txn_recover_reply *replyp;
 {
 	DB_PREPLIST *prep;
 	DB_TXN *txnarray, *txn;
@@ -634,27 +658,27 @@ __dbcl_db_join_ret(dbp, curs, dbcp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_close_ret __P((DBC *, __dbc_close_reply *));
+ * PUBLIC: int __dbcl_dbc_c_close_ret __P((DBC *, __dbc_c_close_reply *));
  */
 int
-__dbcl_dbc_close_ret(dbc, replyp)
+__dbcl_dbc_c_close_ret(dbc, replyp)
 	DBC *dbc;
-	__dbc_close_reply *replyp;
+	__dbc_c_close_reply *replyp;
 {
 	__dbcl_c_refresh(dbc);
 	return (replyp->status);
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_count_ret
- * PUBLIC:     __P((DBC *, db_recno_t *, u_int32_t, __dbc_count_reply *));
+ * PUBLIC: int __dbcl_dbc_c_count_ret
+ * PUBLIC:     __P((DBC *, db_recno_t *, u_int32_t, __dbc_c_count_reply *));
  */
 int
-__dbcl_dbc_count_ret(dbc, countp, flags, replyp)
+__dbcl_dbc_c_count_ret(dbc, countp, flags, replyp)
 	DBC *dbc;
 	db_recno_t *countp;
 	u_int32_t flags;
-	__dbc_count_reply *replyp;
+	__dbc_c_count_reply *replyp;
 {
 	COMPQUIET(dbc, NULL);
 	COMPQUIET(flags, 0);
@@ -667,14 +691,14 @@ __dbcl_dbc_count_ret(dbc, countp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_dup_ret
- * PUBLIC:     __P((DBC *, DBC **, u_int32_t, __dbc_dup_reply *));
+ * PUBLIC: int __dbcl_dbc_c_dup_ret
+ * PUBLIC:     __P((DBC *, DBC **, u_int32_t, __dbc_c_dup_reply *));
  */
 int
-__dbcl_dbc_dup_ret(dbc, dbcp, flags, replyp)
+__dbcl_dbc_c_dup_ret(dbc, dbcp, flags, replyp)
 	DBC *dbc, **dbcp;
 	u_int32_t flags;
-	__dbc_dup_reply *replyp;
+	__dbc_c_dup_reply *replyp;
 {
 	COMPQUIET(flags, 0);
 
@@ -685,15 +709,15 @@ __dbcl_dbc_dup_ret(dbc, dbcp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_get_ret
- * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_get_reply *));
+ * PUBLIC: int __dbcl_dbc_c_get_ret
+ * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_c_get_reply *));
  */
 int
-__dbcl_dbc_get_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_c_get_ret(dbc, key, data, flags, replyp)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
-	__dbc_get_reply *replyp;
+	__dbc_c_get_reply *replyp;
 {
 	DB_ENV *dbenv;
 	int ret;
@@ -726,17 +750,17 @@ __dbcl_dbc_get_ret(dbc, key, data, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_pget_reply *));
+ * PUBLIC: int __dbcl_dbc_c_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_c_pget_reply *));
  */
 int
-__dbcl_dbc_pget_ret(dbc, skey, pkey, data, flags, replyp)
+__dbcl_dbc_c_pget_ret(dbc, skey, pkey, data, flags, replyp)
 	DBC * dbc;
 	DBT * skey;
 	DBT * pkey;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_pget_reply *replyp;
+	__dbc_c_pget_reply *replyp;
 {
 	DB_ENV *dbenv;
 	int ret;
@@ -778,15 +802,15 @@ err:		FREE_IF_CHANGED(skey, oldskey);
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_put_ret
- * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_put_reply *));
+ * PUBLIC: int __dbcl_dbc_c_put_ret
+ * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_c_put_reply *));
  */
 int
-__dbcl_dbc_put_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_c_put_ret(dbc, key, data, flags, replyp)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
-	__dbc_put_reply *replyp;
+	__dbc_c_put_reply *replyp;
 {
 	COMPQUIET(data, NULL);
 

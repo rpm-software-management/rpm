@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sdb010.tcl,v 11.19 2004/10/18 17:34:17 carol Exp $
+# $Id: sdb010.tcl,v 12.4 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	sdb010
 # TEST	Test DB->remove() method and DB->truncate() for subdbs
@@ -27,7 +27,7 @@ proc sdb010 { method args } {
 	#
 	# If we are not given an env, create one.
 	if { $eindex == -1 } {
-		set env [berkdb_env -create -home $testdir -mode 0644] 
+		set env [berkdb_env -create -home $testdir -mode 0644]
 		error_check_good env_open [is_valid_env $env] TRUE
 	} else {
 		incr eindex

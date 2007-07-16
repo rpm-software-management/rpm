@@ -97,28 +97,28 @@ public class Sample
         public void doWork()
             throws Exception
         {
-            printEntries("Parts",
+            printEntries(&quot;Parts&quot;,
                           views.getPartEntrySet().iterator());
-            printEntries("Suppliers",
+            printEntries(&quot;Suppliers&quot;,
                           views.getSupplierEntrySet().iterator());
-<b class="userinput"><tt>            printValues("Suppliers for City Paris",
+<b class="userinput"><tt>            printValues(&quot;Suppliers for City Paris&quot;,
                          views.getSupplierByCityMap().duplicates(
-                                            "Paris").iterator());</tt></b>
-            printEntries("Shipments",
+                                            &quot;Paris&quot;).iterator());</tt></b>
+            printEntries(&quot;Shipments&quot;,
                           views.getShipmentEntrySet().iterator());
-<b class="userinput"><tt>            printValues("Shipments for Part P1",
+<b class="userinput"><tt>            printValues(&quot;Shipments for Part P1&quot;,
                          views.getShipmentByPartMap().duplicates(
-                                            new PartKey("P1")).iterator());
-            printValues("Shipments for Supplier S1",
+                                            new PartKey(&quot;P1&quot;)).iterator());
+            printValues(&quot;Shipments for Supplier S1&quot;,
                          views.getShipmentBySupplierMap().duplicates(
                                             new
-                                            SupplierKey("S1")).iterator());</tt></b>
+                                            SupplierKey(&quot;S1&quot;)).iterator());</tt></b>
         }
     }
 
 <b class="userinput"><tt>    private void printValues(String label, Iterator iterator)
     {
-        System.out.println("\n--- " + label + " ---");
+        System.out.println(&quot;\n--- &quot; + label + &quot; ---&quot;);
         try
         {
             while (iterator.hasNext())

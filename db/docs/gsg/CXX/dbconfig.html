@@ -108,8 +108,7 @@
     applications use BTree. For this reason, where configuration issues are
     dependent on the type of access method in use, this chapter will focus on
     BTree only. For configuration descriptions surrounding the other access
-    methods, see the <i class="citetitle">Berkeley DB Programmer's Tutorial and Reference
-    Guide</i>.
+    methods, see the <i class="citetitle">Berkeley DB Programmer's Reference Guide</i>.
   </p>
       <div class="sect1" lang="en" xml:lang="en">
         <div class="titlepage">
@@ -276,8 +275,8 @@
                 <tt class="methodname">DbEnv::lock_stat()</tt>
                 <tt class="methodname">Environment.getLockStats()</tt>
             method, or use the <tt class="literal">db_stat</tt> command line utility.
-            The number of locks that could not be obtained due to conflicts is
-            held in the lock statistic's <tt class="literal">st_nconflicts</tt> field.
+            The number of unavailable locks that your application waited for is
+            held in the lock statistic's <tt class="literal">st_lock_wait</tt> field.
                 
         </p>
         </div>
@@ -341,7 +340,7 @@
                 filesystem's block size causes DB to write pages in block
                 size increments. As a result, it is possible for a partial page
                 to be written as the result of a transactional commit. For more
-                information, see <a href="http://www.sleepycat.com/docs/ref/transapp/reclimit.html" target="_top">http://www.sleepycat.com/docs/ref/transapp/reclimit.html</a>.
+                information, see <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/ref/transapp/reclimit.html" target="_top">http://www.oracle.com/technology/documentation/berkeley-db/db/ref/transapp/reclimit.html</a>.
             </p>
           </div>
         </div>

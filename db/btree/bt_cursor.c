@@ -1,23 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: bt_cursor.c,v 11.190 2004/09/22 21:46:32 ubell Exp $
+ * $Id: bt_cursor.c,v 12.23 2006/09/14 23:55:24 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/btree.h"
 #include "dbinc/lock.h"
 #include "dbinc/mp.h"
@@ -26,10 +19,8 @@ static int  __bam_bulk __P((DBC *, DBT *, u_int32_t));
 static int  __bam_c_close __P((DBC *, db_pgno_t, int *));
 static int  __bam_c_del __P((DBC *));
 static int  __bam_c_destroy __P((DBC *));
-static int  __bam_c_first __P((DBC *));
 static int  __bam_c_get __P((DBC *, DBT *, DBT *, u_int32_t, db_pgno_t *));
 static int  __bam_c_getstack __P((DBC *));
-static int  __bam_c_last __P((DBC *));
 static int  __bam_c_next __P((DBC *, int, int));
 static int  __bam_c_physdel __P((DBC *));
 static int  __bam_c_prev __P((DBC *));
@@ -55,7 +46,7 @@ static int  __bam_isopd __P((DBC *, db_pgno_t *));
  * the held interior page so we use ACQUIRE_COUPLE.
  */
 #undef	ACQUIRE
-#define	ACQUIRE(dbc, mode, lpgno, lock, fpgno, pagep, ret) do {		\
+#define	ACQUIRE(dbc, mode, lpgno, lock, fpgno, pagep, flags, ret) do {	\
 	DB_MPOOLFILE *__mpf = (dbc)->dbp->mpf;				\
 	if ((pagep) != NULL) {						\
 		ret = __memp_fput(__mpf, pagep, 0);			\
@@ -63,50 +54,20 @@ static int  __bam_isopd __P((DBC *, db_pgno_t *));
 	} else								\
 		ret = 0;						\
 	if ((ret) == 0 && STD_LOCKING(dbc))				\
-		ret = __db_lget(dbc, LCK_COUPLE, lpgno, mode, 0, &(lock));\
+		ret = __db_lget(					\
+		    dbc, LCK_COUPLE, lpgno, mode, flags, &(lock));	\
 	if ((ret) == 0)							\
-		ret = __memp_fget(__mpf, &(fpgno), 0, &(pagep));	\
-} while (0)
-
-#undef	ACQUIRE_COUPLE
-#define	ACQUIRE_COUPLE(dbc, mode, lpgno, lock, fpgno, pagep, ret) do {	\
-	DB_MPOOLFILE *__mpf = (dbc)->dbp->mpf;				\
-	if ((pagep) != NULL) {						\
-		ret = __memp_fput(__mpf, pagep, 0);			\
-		pagep = NULL;						\
-	} else								\
-		ret = 0;						\
-	if ((ret) == 0 && STD_LOCKING(dbc))				\
-		ret = __db_lget(dbc,					\
-		    LCK_COUPLE_ALWAYS, lpgno, mode, 0, &(lock));	\
-	if ((ret) == 0)							\
-		ret = __memp_fget(__mpf, &(fpgno), 0, &(pagep));	\
+		ret = __memp_fget(__mpf, &(fpgno), (dbc)->txn,		\
+		    0, &(pagep));					\
 } while (0)
 
 /* Acquire a new page/lock for a cursor. */
 #undef	ACQUIRE_CUR
-#define	ACQUIRE_CUR(dbc, mode, p, ret) do {				\
+#define	ACQUIRE_CUR(dbc, mode, p, flags, ret) do {			\
 	BTREE_CURSOR *__cp = (BTREE_CURSOR *)(dbc)->internal;		\
 	if (p != __cp->pgno)						\
 		__cp->pgno = PGNO_INVALID;				\
-	ACQUIRE(dbc, mode, p, __cp->lock, p, __cp->page, ret);		\
-	if ((ret) == 0) {						\
-		__cp->pgno = p;						\
-		__cp->lock_mode = (mode);				\
-	}								\
-} while (0)
-
-/*
- * Acquire a new page/lock for a cursor and release the previous.
- * This is typically used when descending a tree and we do not
- * want to hold the interior nodes locked.
- */
-#undef	ACQUIRE_CUR_COUPLE
-#define	ACQUIRE_CUR_COUPLE(dbc, mode, p, ret) do {			\
-	BTREE_CURSOR *__cp = (BTREE_CURSOR *)(dbc)->internal;		\
-	if (p != __cp->pgno)						\
-		__cp->pgno = PGNO_INVALID;				\
-	ACQUIRE_COUPLE(dbc, mode, p, __cp->lock, p, __cp->page, ret);	\
+	ACQUIRE(dbc, mode, p, __cp->lock, p, __cp->page, flags, ret);	\
 	if ((ret) == 0) {						\
 		__cp->pgno = p;						\
 		__cp->lock_mode = (mode);				\
@@ -196,11 +157,11 @@ __bam_c_init(dbc, dbtype)
 
 	/* Allocate/initialize the internal structure. */
 	if (dbc->internal == NULL && (ret =
-	    __os_malloc(dbenv, sizeof(BTREE_CURSOR), &dbc->internal)) != 0)
+	    __os_calloc(dbenv, 1, sizeof(BTREE_CURSOR), &dbc->internal)) != 0)
 		return (ret);
 
 	/* Initialize methods. */
-	dbc->c_close = __db_c_close;
+	dbc->c_close = __db_c_close_pp;
 	dbc->c_count = __db_c_count_pp;
 	dbc->c_del = __db_c_del_pp;
 	dbc->c_dup = __db_c_dup_pp;
@@ -257,8 +218,11 @@ __bam_c_refresh(dbc)
 	LOCK_INIT(cp->lock);
 	cp->lock_mode = DB_LOCK_NG;
 
-	cp->sp = cp->csp = cp->stack;
-	cp->esp = cp->stack + sizeof(cp->stack) / sizeof(cp->stack[0]);
+	if (cp->sp == NULL) {
+		cp->sp = cp->stack;
+		cp->esp = cp->stack + sizeof(cp->stack) / sizeof(cp->stack[0]);
+	}
+	BT_STK_CLR(cp);
 
 	/*
 	 * The btree leaf page data structures require that two key/data pairs
@@ -308,7 +272,7 @@ __bam_c_close(dbc, root_pgno, rmroot)
 	DBC *dbc_opd, *dbc_c;
 	DB_MPOOLFILE *mpf;
 	PAGE *h;
-	int cdb_lock, ret;
+	int cdb_lock, count, ret;
 
 	dbp = dbc->dbp;
 	mpf = dbp->mpf;
@@ -378,22 +342,28 @@ __bam_c_close(dbc, root_pgno, rmroot)
 		dbc_c = dbc;
 		switch (dbc->dbtype) {
 		case DB_BTREE:				/* Case #1, #3. */
-			if (__bam_ca_delete(dbp, cp->pgno, cp->indx, 1) == 0)
+			if ((ret = __bam_ca_delete(
+			    dbp, cp->pgno, cp->indx, 1, &count)) != 0)
+				goto err;
+			if (count == 0)
 				goto lock;
 			goto done;
 		case DB_RECNO:
 			if (!F_ISSET(dbc, DBC_OPD))	/* Case #1. */
 				goto done;
 							/* Case #3. */
-			if (__ram_ca_delete(dbp, cp->root) == 0)
+			if ((ret = __ram_ca_delete(dbp, cp->root, &count)) != 0)
+				goto err;
+			if (count == 0)
 				goto lock;
 			goto done;
 		case DB_HASH:
 		case DB_QUEUE:
 		case DB_UNKNOWN:
 		default:
-			return (__db_unknown_type(dbp->dbenv,
-				"__bam_c_close", dbc->dbtype));
+			ret = __db_unknown_type(dbp->dbenv,
+				"__bam_c_close", dbc->dbtype);
+			goto err;
 		}
 	}
 
@@ -405,7 +375,7 @@ __bam_c_close(dbc, root_pgno, rmroot)
 		 * We will not have been provided a root page number.  Acquire
 		 * one from the primary database.
 		 */
-		if ((ret = __memp_fget(mpf, &cp->pgno, 0, &h)) != 0)
+		if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn, 0, &h)) != 0)
 			goto err;
 		root_pgno = GET_BOVERFLOW(dbp, h, cp->indx + O_INDX)->pgno;
 		if ((ret = __memp_fput(mpf, h, 0)) != 0)
@@ -414,20 +384,26 @@ __bam_c_close(dbc, root_pgno, rmroot)
 		dbc_c = dbc_opd;
 		switch (dbc_opd->dbtype) {
 		case DB_BTREE:
-			if (__bam_ca_delete(
-			    dbp, cp_opd->pgno, cp_opd->indx, 1) == 0)
+			if ((ret = __bam_ca_delete(
+			    dbp, cp_opd->pgno, cp_opd->indx, 1, &count)) != 0)
+				goto err;
+			if (count == 0)
 				goto lock;
 			goto done;
 		case DB_RECNO:
-			if (__ram_ca_delete(dbp, cp_opd->root) == 0)
+			if ((ret =
+			    __ram_ca_delete(dbp, cp_opd->root, &count)) != 0)
+				goto err;
+			if (count == 0)
 				goto lock;
 			goto done;
 		case DB_HASH:
 		case DB_QUEUE:
 		case DB_UNKNOWN:
 		default:
-			return (__db_unknown_type(
-			   dbp->dbenv, "__bam_c_close", dbc->dbtype));
+			ret = __db_unknown_type(
+			   dbp->dbenv, "__bam_c_close", dbc->dbtype);
+			goto err;
 		}
 	}
 	goto done;
@@ -508,7 +484,8 @@ delete:	/*
 	 * Delete the on-page physical item referenced by the cursor.
 	 */
 	if (dbc_c->dbtype == DB_BTREE) {
-		if ((ret = __memp_fget(mpf, &cp_c->pgno, 0, &cp_c->page)) != 0)
+		if ((ret = __memp_fget(mpf, &cp_c->pgno, dbc->txn,
+		    DB_MPOOL_DIRTY, &cp_c->page)) != 0)
 			goto err;
 		if ((ret = __bam_c_physdel(dbc_c)) != 0)
 			goto err;
@@ -530,7 +507,7 @@ delete:	/*
 	 * in that case.  So, if the off-page duplicate tree is empty at this
 	 * point, we want to remove it.
 	 */
-	if ((ret = __memp_fget(mpf, &root_pgno, 0, &h)) != 0)
+	if ((ret = __memp_fget(mpf, &root_pgno, dbc->txn, 0, &h)) != 0)
 		goto err;
 	if (NUM_ENT(h) == 0) {
 		DISCARD_CUR(dbc_c, ret);
@@ -557,7 +534,8 @@ delete:	/*
 	 * the primary page.
 	 */
 	if (dbc_opd != NULL) {
-		if ((ret = __memp_fget(mpf, &cp->pgno, 0, &cp->page)) != 0)
+		if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn,
+		    DB_MPOOL_DIRTY, &cp->page)) != 0)
 			goto err;
 		if ((ret = __bam_c_physdel(dbc)) != 0)
 			goto err;
@@ -588,8 +566,14 @@ static int
 __bam_c_destroy(dbc)
 	DBC *dbc;
 {
+	BTREE_CURSOR *cp;
+
+	cp = (BTREE_CURSOR *)dbc->internal;
+
 	/* Discard the structures. */
-	__os_free(dbc->dbp->dbenv, dbc->internal);
+	if (cp->sp != cp->stack)
+		__os_free(dbc->dbp->dbenv, cp->sp);
+	__os_free(dbc->dbp->dbenv, cp);
 
 	return (0);
 }
@@ -625,7 +609,8 @@ __bam_c_count(dbc, recnop)
 		/*
 		 * On-page duplicates, get the page and count.
 		 */
-		if ((ret = __memp_fget(mpf, &cp->pgno, 0, &cp->page)) != 0)
+		if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn,
+		    0, &cp->page)) != 0)
 			return (ret);
 
 		/*
@@ -649,8 +634,8 @@ __bam_c_count(dbc, recnop)
 		 * Off-page duplicates tree, get the root page of the off-page
 		 * duplicate tree.
 		 */
-		if ((ret = __memp_fget(
-		    mpf, &cp->opd->internal->root, 0, &cp->page)) != 0)
+		if ((ret = __memp_fget(mpf, &cp->opd->internal->root,
+		    dbc->txn, 0, &cp->page)) != 0)
 			return (ret);
 
 		/*
@@ -693,7 +678,7 @@ __bam_c_del(dbc)
 	BTREE_CURSOR *cp;
 	DB *dbp;
 	DB_MPOOLFILE *mpf;
-	int ret, t_ret;
+	int count, ret, t_ret;
 
 	dbp = dbc->dbp;
 	mpf = dbp->mpf;
@@ -707,7 +692,7 @@ __bam_c_del(dbc)
 	/*
 	 * This code is always called with a page lock but no page.
 	 */
-	DB_ASSERT(cp->page == NULL);
+	DB_ASSERT(dbp->dbenv, cp->page == NULL);
 
 	/*
 	 * We don't physically delete the record until the cursor moves, so
@@ -723,10 +708,14 @@ __bam_c_del(dbc)
 			goto err;
 		cp->page = cp->csp->page;
 	} else {
-		ACQUIRE_CUR(dbc, DB_LOCK_WRITE, cp->pgno, ret);
+		ACQUIRE_CUR(dbc, DB_LOCK_WRITE, cp->pgno, 0, ret);
 		if (ret != 0)
 			goto err;
 	}
+
+	/* Mark the page dirty. */
+	if ((ret = __memp_dirty(mpf, &cp->page, dbc->txn, 0)) != 0)
+		goto err;
 
 	/* Log the change. */
 	if (DBC_LOGGING(dbc)) {
@@ -742,14 +731,12 @@ __bam_c_del(dbc)
 	else
 		B_DSET(GET_BKEYDATA(dbp, cp->page, cp->indx)->type);
 
-	/* Mark the page dirty. */
-	ret = __memp_fset(mpf, cp->page, DB_MPOOL_DIRTY);
-
 err:	/*
 	 * If we've been successful so far and the tree has record numbers,
 	 * adjust the record counts.  Either way, release acquired page(s).
 	 */
 	if (F_ISSET(cp, C_RECNUM)) {
+		cp->csp->page = cp->page;
 		if (ret == 0)
 			ret = __bam_adjust(dbc, -1);
 		(void)__bam_stkrel(dbc, 0);
@@ -760,9 +747,12 @@ err:	/*
 
 	cp->page = NULL;
 
-	/* Update the cursors last, after all chance of failure is past. */
+	/*
+	 * Update the cursors last, after all chance of recoverable failure
+	 * is past.
+	 */
 	if (ret == 0)
-		(void)__bam_ca_delete(dbp, cp->pgno, cp->indx, 1);
+		ret = __bam_ca_delete(dbp, cp->pgno, cp->indx, 1, &count);
 
 	return (ret);
 }
@@ -779,21 +769,9 @@ __bam_c_dup(orig_dbc, new_dbc)
 	DBC *orig_dbc, *new_dbc;
 {
 	BTREE_CURSOR *orig, *new;
-	int ret;
 
 	orig = (BTREE_CURSOR *)orig_dbc->internal;
 	new = (BTREE_CURSOR *)new_dbc->internal;
-
-	/*
-	 * If we're holding a lock we need to acquire a copy of it, unless
-	 * we're in a transaction.  We don't need to copy any lock we're
-	 * holding inside a transaction because all the locks are retained
-	 * until the transaction commits or aborts.
-	 */
-	if (orig_dbc->txn == NULL && LOCK_ISSET(orig->lock))
-		if ((ret = __db_lget(new_dbc,
-		    0, new->pgno, new->lock_mode, 0, &new->lock)) != 0)
-			return (ret);
 
 	new->ovflsize = orig->ovflsize;
 	new->recno = orig->recno;
@@ -841,12 +819,14 @@ __bam_c_get(dbc, key, data, flags, pgnop)
 		 * write lock, but upgrading to a write lock has no better
 		 * chance of succeeding now instead of later, so don't try.
 		 */
-		if ((ret = __memp_fget(mpf, &cp->pgno, 0, &cp->page)) != 0)
+		if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn,
+		    0, &cp->page)) != 0)
 			goto err;
 		break;
 	case DB_FIRST:
 		newopd = 1;
-		if ((ret = __bam_c_first(dbc)) != 0)
+		if ((ret = __bam_c_search(dbc,
+		     PGNO_INVALID, NULL, flags, &exact)) != 0)
 			goto err;
 		break;
 	case DB_GET_BOTH:
@@ -910,13 +890,15 @@ __bam_c_get(dbc, key, data, flags, pgnop)
 		break;
 	case DB_LAST:
 		newopd = 1;
-		if ((ret = __bam_c_last(dbc)) != 0)
+		if ((ret = __bam_c_search(dbc,
+		     PGNO_INVALID, NULL, flags, &exact)) != 0)
 			goto err;
 		break;
 	case DB_NEXT:
 		newopd = 1;
 		if (cp->pgno == PGNO_INVALID) {
-			if ((ret = __bam_c_first(dbc)) != 0)
+			if ((ret = __bam_c_search(dbc,
+			     PGNO_INVALID, NULL, DB_FIRST, &exact)) != 0)
 				goto err;
 		} else
 			if ((ret = __bam_c_next(dbc, 1, 0)) != 0)
@@ -933,7 +915,8 @@ __bam_c_get(dbc, key, data, flags, pgnop)
 	case DB_NEXT_NODUP:
 		newopd = 1;
 		if (cp->pgno == PGNO_INVALID) {
-			if ((ret = __bam_c_first(dbc)) != 0)
+			if ((ret = __bam_c_search(dbc,
+			     PGNO_INVALID, NULL, DB_FIRST, &exact)) != 0)
 				goto err;
 		} else
 			do {
@@ -944,7 +927,8 @@ __bam_c_get(dbc, key, data, flags, pgnop)
 	case DB_PREV:
 		newopd = 1;
 		if (cp->pgno == PGNO_INVALID) {
-			if ((ret = __bam_c_last(dbc)) != 0)
+			if ((ret = __bam_c_search(dbc,
+			     PGNO_INVALID, NULL, DB_LAST, &exact)) != 0)
 				goto err;
 		} else
 			if ((ret = __bam_c_prev(dbc)) != 0)
@@ -953,7 +937,8 @@ __bam_c_get(dbc, key, data, flags, pgnop)
 	case DB_PREV_NODUP:
 		newopd = 1;
 		if (cp->pgno == PGNO_INVALID) {
-			if ((ret = __bam_c_last(dbc)) != 0)
+			if ((ret = __bam_c_search(dbc,
+			     PGNO_INVALID, NULL, DB_LAST, &exact)) != 0)
 				goto err;
 		} else
 			do {
@@ -995,17 +980,6 @@ __bam_c_get(dbc, key, data, flags, pgnop)
 	 */
 	if (newopd && pgnop != NULL)
 		(void)__bam_isopd(dbc, pgnop);
-
-	/*
-	 * Don't return the key, it was passed to us (this is true even if the
-	 * application defines a compare function returning equality for more
-	 * than one key value, since in that case which actual value we store
-	 * in the database is undefined -- and particularly true in the case of
-	 * duplicates where we only store one key value).
-	 */
-	if (flags == DB_GET_BOTH ||
-	    flags == DB_GET_BOTH_RANGE || flags == DB_SET)
-		F_SET(key, DB_DBT_ISSET);
 
 err:	/*
 	 * Regardless of whether we were successful or not, if the cursor
@@ -1411,7 +1385,8 @@ __bam_bulk_overflow(dbc, len, pgno, dp)
 	F_SET(&dbt, DB_DBT_USERMEM);
 	dbt.ulen = len;
 	dbt.data = (void *)dp;
-	return (__db_goff(dbc->dbp, &dbt, len, pgno, NULL, NULL));
+	return (__db_goff(dbc->dbp,
+	    dbc->txn, &dbt, len, pgno, NULL, NULL));
 }
 
 /*
@@ -1627,7 +1602,7 @@ __bam_getbothc(dbc, data)
 	 * write lock, but upgrading to a write lock has no better
 	 * chance of succeeding now instead of later, so don't try.
 	 */
-	if ((ret = __memp_fget(mpf, &cp->pgno, 0, &cp->page)) != 0)
+	if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn, 0, &cp->page)) != 0)
 		return (ret);
 
 	/*
@@ -1640,7 +1615,8 @@ __bam_getbothc(dbc, data)
 		 * Check to make sure the desired item comes strictly after
 		 * the current position;  if it doesn't, return DB_NOTFOUND.
 		 */
-		if ((ret = __bam_cmp(dbp, data, cp->page, cp->indx,
+		if ((ret = __bam_cmp(dbp, dbc->txn,
+		    data, cp->page, cp->indx,
 		    dbp->dup_compare == NULL ? __bam_defcmp : dbp->dup_compare,
 		    &cmp)) != 0)
 			return (ret);
@@ -1708,7 +1684,7 @@ __bam_getboth_finddatum(dbc, data, flags)
 	if (dbp->dup_compare == NULL) {
 		for (;; cp->indx += P_INDX) {
 			if (!IS_CUR_DELETED(dbc) &&
-			    (ret = __bam_cmp(dbp, data, cp->page,
+			    (ret = __bam_cmp(dbp, dbc->txn, data, cp->page,
 			    cp->indx + O_INDX, __bam_defcmp, &cmp)) != 0)
 				return (ret);
 			if (cmp == 0)
@@ -1733,7 +1709,7 @@ __bam_getboth_finddatum(dbc, data, flags)
 		if (!IS_DUPLICATE(dbc, cp->indx, top))
 			break;
 	if (base == (top - P_INDX)) {
-		if  ((ret = __bam_cmp(dbp, data,
+		if  ((ret = __bam_cmp(dbp, dbc->txn, data,
 		    cp->page, cp->indx + O_INDX, dbp->dup_compare, &cmp)) != 0)
 			return (ret);
 		return (cmp == 0 ||
@@ -1742,7 +1718,7 @@ __bam_getboth_finddatum(dbc, data, flags)
 
 	for (lim = (top - base) / (db_indx_t)P_INDX; lim != 0; lim >>= 1) {
 		cp->indx = base + ((lim >> 1) * P_INDX);
-		if ((ret = __bam_cmp(dbp, data, cp->page,
+		if ((ret = __bam_cmp(dbp, dbc->txn, data, cp->page,
 		    cp->indx + O_INDX, dbp->dup_compare, &cmp)) != 0)
 			return (ret);
 		if (cmp == 0) {
@@ -1818,12 +1794,14 @@ split:	ret = stack = 0;
 		ACQUIRE_WRITE_LOCK(dbc, ret);
 		if (ret != 0)
 			goto err;
-		if ((ret = __memp_fget(mpf, &cp->pgno, 0, &cp->page)) != 0)
+		if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn,
+		    0, &cp->page)) != 0)
 			goto err;
 		break;
 	case DB_KEYFIRST:
 	case DB_KEYLAST:
 	case DB_NODUPDATA:
+	case DB_NOOVERWRITE:
 		own = 0;
 		/*
 		 * Searching off-page, sorted duplicate tree: do a tree search
@@ -1875,12 +1853,22 @@ split:	ret = stack = 0;
 		if (!exact) {
 			iiop = DB_KEYFIRST;
 			break;
+
+		/*
+		 * Check for NOOVERWRITE.  It is possible that there
+		 * is a key with an empty duplicate page attached.
+		 */
+		} else if (flags == DB_NOOVERWRITE && !IS_CUR_DELETED(dbc)) {
+			if (pgnop != NULL && __bam_isopd(dbc, pgnop))
+				ret = __bam_opd_exists(dbc, *pgnop);
+			else
+				ret = DB_KEYEXIST;
+			if (ret != 0)
+				goto err;
 		}
 
 		/*
 		 * If duplicates aren't supported, replace the current item.
-		 * (If implementing the DB->put function, our caller already
-		 * checked the DB_NOOVERWRITE flag.)
 		 */
 		if (!F_ISSET(dbp, DB_AM_DUP)) {
 			iiop = DB_CURRENT;
@@ -1916,7 +1904,7 @@ split:	ret = stack = 0;
 		 * on-page duplicates.  Walk the list to find the right slot.
 		 */
 		for (;; cp->indx += P_INDX) {
-			if ((ret = __bam_cmp(dbp, data, cp->page,
+			if ((ret = __bam_cmp(dbp, dbc->txn, data, cp->page,
 			    cp->indx + O_INDX, dbp->dup_compare, &cmp)) != 0)
 				goto err;
 			if (cmp < 0) {
@@ -1958,8 +1946,8 @@ split:	ret = stack = 0;
 		if (flags == DB_AFTER ||
 		    flags == DB_BEFORE || flags == DB_CURRENT) {
 			memset(&dbt, 0, sizeof(DBT));
-			if ((ret = __db_ret(dbp, cp->page, 0, &dbt,
-			    &dbc->my_rkey.data, &dbc->my_rkey.ulen)) != 0)
+			if ((ret = __db_ret(dbp, dbc->txn, cp->page, 0,
+			    &dbt, &dbc->my_rkey.data, &dbc->my_rkey.ulen)) != 0)
 				goto err;
 			arg = &dbt;
 		} else
@@ -2084,10 +2072,10 @@ __bam_c_rget(dbc, data)
 	 * Get a copy of the key.
 	 * Release the page, making sure we don't release it twice.
 	 */
-	if ((ret = __memp_fget(mpf, &cp->pgno, 0, &cp->page)) != 0)
+	if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn, 0, &cp->page)) != 0)
 		return (ret);
 	memset(&dbt, 0, sizeof(DBT));
-	if ((ret = __db_ret(dbp, cp->page,
+	if ((ret = __db_ret(dbp, dbc->txn, cp->page,
 	    cp->indx, &dbt, &dbc->my_rkey.data, &dbc->my_rkey.ulen)) != 0)
 		goto err;
 	ret = __memp_fput(mpf, cp->page, 0);
@@ -2096,7 +2084,7 @@ __bam_c_rget(dbc, data)
 		return (ret);
 
 	if ((ret = __bam_search(dbc, PGNO_INVALID, &dbt,
-	    F_ISSET(dbc, DBC_RMW) ? S_FIND_WR : S_FIND,
+	    F_ISSET(dbc, DBC_RMW) ? SR_FIND_WR : SR_FIND,
 	    1, &recno, &exact)) != 0)
 		goto err;
 
@@ -2137,99 +2125,6 @@ __bam_c_writelock(dbc)
 }
 
 /*
- * __bam_c_first --
- *	Return the first record.
- */
-static int
-__bam_c_first(dbc)
-	DBC *dbc;
-{
-	BTREE_CURSOR *cp;
-	db_pgno_t pgno;
-	int ret;
-
-	cp = (BTREE_CURSOR *)dbc->internal;
-	ret = 0;
-
-	/* Walk down the left-hand side of the tree. */
-	for (pgno = cp->root;;) {
-		ACQUIRE_CUR_COUPLE(dbc, DB_LOCK_READ, pgno, ret);
-		if (ret != 0)
-			return (ret);
-
-		/* If we find a leaf page, we're done. */
-		if (ISLEAF(cp->page))
-			break;
-
-		pgno = GET_BINTERNAL(dbc->dbp, cp->page, 0)->pgno;
-	}
-
-	/* If we want a write lock instead of a read lock, get it now. */
-	if (F_ISSET(dbc, DBC_RMW)) {
-		ACQUIRE_WRITE_LOCK(dbc, ret);
-		if (ret != 0)
-			return (ret);
-	}
-
-	cp->indx = 0;
-
-	/* If on an empty page or a deleted record, move to the next one. */
-	if (NUM_ENT(cp->page) == 0 || IS_CUR_DELETED(dbc))
-		if ((ret = __bam_c_next(dbc, 0, 0)) != 0)
-			return (ret);
-
-	return (0);
-}
-
-/*
- * __bam_c_last --
- *	Return the last record.
- */
-static int
-__bam_c_last(dbc)
-	DBC *dbc;
-{
-	BTREE_CURSOR *cp;
-	db_pgno_t pgno;
-	int ret;
-
-	cp = (BTREE_CURSOR *)dbc->internal;
-	ret = 0;
-
-	/* Walk down the right-hand side of the tree. */
-	for (pgno = cp->root;;) {
-		ACQUIRE_CUR_COUPLE(dbc, DB_LOCK_READ, pgno, ret);
-		if (ret != 0)
-			return (ret);
-
-		/* If we find a leaf page, we're done. */
-		if (ISLEAF(cp->page))
-			break;
-
-		pgno = GET_BINTERNAL(dbc->dbp, cp->page,
-		    NUM_ENT(cp->page) - O_INDX)->pgno;
-	}
-
-	/* If we want a write lock instead of a read lock, get it now. */
-	if (F_ISSET(dbc, DBC_RMW)) {
-		ACQUIRE_WRITE_LOCK(dbc, ret);
-		if (ret != 0)
-			return (ret);
-	}
-
-	cp->indx = NUM_ENT(cp->page) == 0 ? 0 :
-	    NUM_ENT(cp->page) -
-	    (TYPE(cp->page) == P_LBTREE ? P_INDX : O_INDX);
-
-	/* If on an empty page or a deleted record, move to the previous one. */
-	if (NUM_ENT(cp->page) == 0 || IS_CUR_DELETED(dbc))
-		if ((ret = __bam_c_prev(dbc)) != 0)
-			return (ret);
-
-	return (0);
-}
-
-/*
  * __bam_c_next --
  *	Move to the next record.
  */
@@ -2263,7 +2158,7 @@ __bam_c_next(dbc, initial_move, deleted_okay)
 		    F_ISSET(dbc, DBC_RMW) ? DB_LOCK_WRITE : DB_LOCK_READ;
 	}
 	if (cp->page == NULL) {
-		ACQUIRE_CUR(dbc, lock_mode, cp->pgno, ret);
+		ACQUIRE_CUR(dbc, lock_mode, cp->pgno, 0, ret);
 		if (ret != 0)
 			return (ret);
 	}
@@ -2284,7 +2179,7 @@ __bam_c_next(dbc, initial_move, deleted_okay)
 			    = NEXT_PGNO(cp->page)) == PGNO_INVALID)
 				return (DB_NOTFOUND);
 
-			ACQUIRE_CUR(dbc, lock_mode, pgno, ret);
+			ACQUIRE_CUR(dbc, lock_mode, pgno, 0, ret);
 			if (ret != 0)
 				return (ret);
 			cp->indx = 0;
@@ -2332,7 +2227,7 @@ __bam_c_prev(dbc)
 		    F_ISSET(dbc, DBC_RMW) ? DB_LOCK_WRITE : DB_LOCK_READ;
 	}
 	if (cp->page == NULL) {
-		ACQUIRE_CUR(dbc, lock_mode, cp->pgno, ret);
+		ACQUIRE_CUR(dbc, lock_mode, cp->pgno, 0, ret);
 		if (ret != 0)
 			return (ret);
 	}
@@ -2344,7 +2239,7 @@ __bam_c_prev(dbc)
 			    PREV_PGNO(cp->page)) == PGNO_INVALID)
 				return (DB_NOTFOUND);
 
-			ACQUIRE_CUR(dbc, lock_mode, pgno, ret);
+			ACQUIRE_CUR(dbc, lock_mode, pgno, 0, ret);
 			if (ret != 0)
 				return (ret);
 
@@ -2398,30 +2293,39 @@ __bam_c_search(dbc, root_pgno, key, flags, exactp)
 		return (ret);
 
 	switch (flags) {
+	case DB_FIRST:
+		sflags = (F_ISSET(dbc, DBC_RMW) ? SR_WRITE : SR_READ) | SR_MIN;
+		goto search;
+	case DB_LAST:
+		sflags = (F_ISSET(dbc, DBC_RMW) ? SR_WRITE : SR_READ) | SR_MAX;
+		goto search;
 	case DB_SET_RECNO:
 		if ((ret = __ram_getno(dbc, key, &recno, 0)) != 0)
 			return (ret);
-		sflags = (F_ISSET(dbc, DBC_RMW) ? S_FIND_WR : S_FIND) | S_EXACT;
+		sflags =
+		    (F_ISSET(dbc, DBC_RMW) ?  SR_FIND_WR : SR_FIND) | SR_EXACT;
 		if ((ret = __bam_rsearch(dbc, &recno, sflags, 1, exactp)) != 0)
 			return (ret);
 		break;
 	case DB_SET:
 	case DB_GET_BOTH:
-		sflags = (F_ISSET(dbc, DBC_RMW) ? S_FIND_WR : S_FIND) | S_EXACT;
+		sflags =
+		    (F_ISSET(dbc, DBC_RMW) ? SR_FIND_WR : SR_FIND) | SR_EXACT;
 		goto search;
 	case DB_GET_BOTH_RANGE:
-		sflags = (F_ISSET(dbc, DBC_RMW) ? S_FIND_WR : S_FIND);
+		sflags = (F_ISSET(dbc, DBC_RMW) ? SR_FIND_WR : SR_FIND);
 		goto search;
 	case DB_SET_RANGE:
 		sflags =
-		    (F_ISSET(dbc, DBC_RMW) ? S_WRITE : S_READ) | S_DUPFIRST;
+		    (F_ISSET(dbc, DBC_RMW) ? SR_WRITE : SR_READ) | SR_DUPFIRST;
 		goto search;
 	case DB_KEYFIRST:
-		sflags = S_KEYFIRST;
+	case DB_NOOVERWRITE:
+		sflags = SR_KEYFIRST;
 		goto fast_search;
 	case DB_KEYLAST:
 	case DB_NODUPDATA:
-		sflags = S_KEYLAST;
+		sflags = SR_KEYLAST;
 fast_search:	/*
 		 * If the application has a history of inserting into the first
 		 * or last pages of the database, we check those pages first to
@@ -2452,12 +2356,15 @@ fast_search:	/*
 		 *
 		 * The page may not exist: if a transaction created the page
 		 * and then aborted, the page might have been truncated from
-		 * the end of the file.
+		 * the end of the file.  We don't want to wait on the lock.
+		 * The page may not even be relevant to this search.
 		 */
 		h = NULL;
-		ACQUIRE_CUR(dbc, DB_LOCK_WRITE, bt_lpgno, ret);
+		ACQUIRE_CUR(dbc, DB_LOCK_WRITE, bt_lpgno, DB_LOCK_NOWAIT, ret);
 		if (ret != 0) {
-			if (ret == DB_PAGE_NOTFOUND)
+			if (ret == DB_LOCK_DEADLOCK ||
+			    ret == DB_LOCK_NOTGRANTED ||
+			    ret == DB_PAGE_NOTFOUND)
 				ret = 0;
 			goto fast_miss;
 		}
@@ -2474,7 +2381,7 @@ fast_search:	/*
 
 		/* Verify that this page cannot have moved to another db. */
 		if (F_ISSET(dbp, DB_AM_SUBDB) &&
-		    log_compare(&t->bt_llsn, &LSN(h)) != 0)
+		    LOG_COMPARE(&t->bt_llsn, &LSN(h)) != 0)
 			goto fast_miss;
 		/*
 		 * What we do here is test to see if we're at the beginning or
@@ -2486,9 +2393,9 @@ fast_search:	/*
 		 */
 		if (h->next_pgno == PGNO_INVALID) {
 			indx = NUM_ENT(h) - P_INDX;
-			if ((ret = __bam_cmp(dbp,
+			if ((ret = __bam_cmp(dbp, dbc->txn,
 			    key, h, indx, t->bt_compare, &cmp)) != 0)
-				return (ret);
+				goto fast_miss;
 
 			if (cmp < 0)
 				goto try_begin;
@@ -2514,9 +2421,9 @@ fast_search:	/*
 		}
 try_begin:	if (h->prev_pgno == PGNO_INVALID) {
 			indx = 0;
-			if ((ret = __bam_cmp(dbp,
+			if ((ret = __bam_cmp(dbp, dbc->txn,
 			    key, h, indx, t->bt_compare, &cmp)) != 0)
-				return (ret);
+				goto fast_miss;
 
 			if (cmp > 0)
 				goto fast_miss;
@@ -2575,13 +2482,22 @@ search:		if ((ret = __bam_search(dbc, root_pgno,
 	default:
 		return (__db_unknown_flag(dbp->dbenv, "__bam_c_search", flags));
 	}
-
 	/* Initialize the cursor from the stack. */
 	cp->page = cp->csp->page;
 	cp->pgno = cp->csp->page->pgno;
 	cp->indx = cp->csp->indx;
 	cp->lock = cp->csp->lock;
 	cp->lock_mode = cp->csp->lock_mode;
+
+	/* If on an empty page or a deleted record, move to the next one. */
+	if (flags == DB_FIRST &&
+	    (NUM_ENT(cp->page) == 0 || IS_CUR_DELETED(dbc)))
+		if ((ret = __bam_c_next(dbc, 0, 0)) != 0)
+			return (ret);
+	if (flags == DB_LAST &&
+	    (NUM_ENT(cp->page) == 0 || IS_CUR_DELETED(dbc)))
+		if ((ret = __bam_c_prev(dbc)) != 0)
+			return (ret);
 
 	return (0);
 }
@@ -2597,15 +2513,10 @@ __bam_c_physdel(dbc)
 	BTREE_CURSOR *cp;
 	DB *dbp;
 	DBT key;
-	DB_LOCK lock;
-	DB_MPOOLFILE *mpf;
-	PAGE *h;
-	db_pgno_t pgno;
-	int delete_page, empty_page, exact, level, ret;
+	int delete_page, empty_page, exact, ret;
 
 	dbp = dbc->dbp;
 	memset(&key, 0, sizeof(DBT));
-	mpf = dbp->mpf;
 	cp = (BTREE_CURSOR *)dbc->internal;
 	delete_page = empty_page = ret = 0;
 
@@ -2641,10 +2552,11 @@ __bam_c_physdel(dbc)
 	 * to temporarily hold this key.  We shouldn't own any returned-data
 	 * memory of interest--if we do, we're in trouble anyway.
 	 */
-	if (delete_page)
-		if ((ret = __db_ret(dbp, cp->page,
+	if (delete_page) {
+		if ((ret = __db_ret(dbp, dbc->txn, cp->page,
 		    0, &key, &dbc->my_rkey.data, &dbc->my_rkey.ulen)) != 0)
 			return (ret);
+	}
 
 	/*
 	 * Delete the items.  If page isn't empty, we adjust the cursors.
@@ -2661,6 +2573,8 @@ __bam_c_physdel(dbc)
 	 * Delete the key item first, otherwise the on-page duplicate checks
 	 * in __bam_ditem() won't work!
 	 */
+	if ((ret = __memp_dirty(dbp->mpf, &cp->page, dbc->txn, 0)) != 0)
+		return (ret);
 	if (TYPE(cp->page) == P_LBTREE) {
 		if ((ret = __bam_ditem(dbc, cp->page, cp->indx)) != 0)
 			return (ret);
@@ -2679,95 +2593,19 @@ __bam_c_physdel(dbc)
 		if ((ret = __bam_ca_di(dbc, PGNO(cp->page), cp->indx, -1)) != 0)
 			return (ret);
 
+	/*
+	 * Need to downgrade write locks here or non-txn locks will get stuck.
+	 */
+	if (F_ISSET(dbc->dbp, DB_AM_READ_UNCOMMITTED)) {
+		if ((ret = __TLPUT(dbc, cp->lock)) != 0)
+			return (ret);
+		cp->lock_mode = DB_LOCK_WWRITE;
+	}
 	/* If we're not going to try and delete the page, we're done. */
 	if (!delete_page)
 		return (0);
 
-	/*
-	 * Call __bam_search to reacquire the empty leaf page, but this time
-	 * get both the leaf page and it's parent, locked.  Jump back up the
-	 * tree, until we have the top pair of pages that we want to delete.
-	 * Once we have the top page that we want to delete locked, lock the
-	 * underlying pages and check to make sure they're still empty.  If
-	 * they are, delete them.
-	 */
-	for (level = LEAFLEVEL;; ++level) {
-		/* Acquire a page and its parent, locked. */
-		if ((ret = __bam_search(dbc, PGNO_INVALID,
-		    &key, S_WRPAIR, level, NULL, &exact)) != 0)
-			return (ret);
-
-		/*
-		 * If we reach the root or the parent page isn't going to be
-		 * empty when we delete one record, stop.
-		 */
-		h = cp->csp[-1].page;
-		if (h->pgno == cp->root || NUM_ENT(h) != 1)
-			break;
-
-		/* Discard the stack, retaining no locks. */
-		(void)__bam_stkrel(dbc, STK_NOLOCK);
-	}
-
-	/*
-	 * Move the stack pointer one after the last entry, we may be about
-	 * to push more items onto the page stack.
-	 */
-	++cp->csp;
-
-	/*
-	 * cp->csp[-2].page is now the parent page, which we may or may not be
-	 * going to delete, and cp->csp[-1].page is the first page we know we
-	 * are going to delete.  Walk down the chain of pages, acquiring pages
-	 * until we've acquired a leaf page.  Generally, this shouldn't happen;
-	 * we should only see a single internal page with one item and a single
-	 * leaf page with no items.  The scenario where we could see something
-	 * else is if reverse splits were turned off for awhile and then turned
-	 * back on.  That could result in all sorts of strangeness, e.g., empty
-	 * pages in the tree, trees that looked like linked lists, and so on.
-	 *
-	 * !!!
-	 * Sheer paranoia: if we find any pages that aren't going to be emptied
-	 * by the delete, someone else added an item while we were walking the
-	 * tree, and we discontinue the delete.  Shouldn't be possible, but we
-	 * check regardless.
-	 */
-	for (h = cp->csp[-1].page;;) {
-		if (ISLEAF(h)) {
-			if (NUM_ENT(h) != 0)
-				break;
-			break;
-		} else
-			if (NUM_ENT(h) != 1)
-				break;
-
-		/*
-		 * Get the next page, write lock it and push it onto the stack.
-		 * We know it's index 0, because it can only have one element.
-		 */
-		switch (TYPE(h)) {
-		case P_IBTREE:
-			pgno = GET_BINTERNAL(dbp, h, 0)->pgno;
-			break;
-		case P_IRECNO:
-			pgno = GET_RINTERNAL(dbp, h, 0)->pgno;
-			break;
-		default:
-			return (__db_pgfmt(dbp->dbenv, PGNO(h)));
-		}
-
-		if ((ret =
-		    __db_lget(dbc, 0, pgno, DB_LOCK_WRITE, 0, &lock)) != 0)
-			break;
-		if ((ret = __memp_fget(mpf, &pgno, 0, &h)) != 0)
-			break;
-		BT_STK_PUSH(dbp->dbenv, cp, h, 0, lock, DB_LOCK_WRITE, ret);
-		if (ret != 0)
-			break;
-	}
-
-	/* Adjust the cursor stack to reference the last page on the stack. */
-	BT_STK_POP(cp);
+	ret = __bam_search(dbc, PGNO_INVALID, &key, SR_DEL, 0, NULL, &exact);
 
 	/*
 	 * If everything worked, delete the stack, otherwise, release the
@@ -2776,7 +2614,7 @@ __bam_c_physdel(dbc)
 	if (ret == 0)
 		DISCARD_CUR(dbc, ret);
 	if (ret == 0)
-		ret = __bam_dpages(dbc, cp->sp);
+		ret = __bam_dpages(dbc, 1, 0);
 	else
 		(void)__bam_stkrel(dbc, 0);
 
@@ -2807,19 +2645,19 @@ __bam_c_getstack(dbc)
 	 * routine has to already hold a read lock on the page, so there
 	 * is no additional lock to acquire.
 	 */
-	if ((ret = __memp_fget(mpf, &cp->pgno, 0, &h)) != 0)
+	if ((ret = __memp_fget(mpf, &cp->pgno, dbc->txn, 0, &h)) != 0)
 		return (ret);
 
 	/* Get a copy of a key from the page. */
 	memset(&dbt, 0, sizeof(DBT));
-	if ((ret = __db_ret(dbp,
+	if ((ret = __db_ret(dbp, dbc->txn,
 	    h, 0, &dbt, &dbc->my_rkey.data, &dbc->my_rkey.ulen)) != 0)
 		goto err;
 
 	/* Get a write-locked stack for the page. */
 	exact = 0;
 	ret = __bam_search(dbc, PGNO_INVALID,
-	    &dbt, S_KEYFIRST, 1, NULL, &exact);
+	    &dbt, SR_KEYFIRST, 1, NULL, &exact);
 
 err:	/* Discard the key and the page. */
 	if ((t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
@@ -2850,4 +2688,35 @@ __bam_isopd(dbc, pgnop)
 		return (1);
 	}
 	return (0);
+}
+
+/*
+ * __bam_opd_exists --
+ *	Return if the current position has any data.
+ * PUBLIC: int  __bam_opd_exists __P((DBC *, db_pgno_t));
+ */
+int
+__bam_opd_exists(dbc, pgno)
+	DBC *dbc;
+	db_pgno_t pgno;
+{
+	PAGE *h;
+	int ret;
+
+	if ((ret = __memp_fget(dbc->dbp->mpf, &pgno, dbc->txn, 0, &h)) != 0)
+		return (ret);
+
+	/*
+	 * We always collapse OPD trees so we only need to check
+	 * the number of entries on the root.  If there is a non-empty
+	 * tree then there will be duplicates.
+	 */
+	if (NUM_ENT(h) == 0)
+		ret = 0;
+	else
+		ret = DB_KEYEXIST;
+
+	(void)__memp_fput(dbc->dbp->mpf, h, 0);
+
+	return (ret);
 }

@@ -1,0 +1,77 @@
+<!--$Id: repmgr_site_list.so,v 1.7 2006/09/11 16:57:54 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::repmgr_site_list</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::repmgr_site_list</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::repmgr_site_list(u_int *countp, DB_REPMGR_SITE **listp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::repmgr_site_list</h3>
+<p>The DbEnv::repmgr_site_list method returns the status of the sites currently
+known by the replication manager.</p>
+<p>The DbEnv::repmgr_site_list method creates a statistical structure of type
+DB_REPMGR_SITE and copies a pointer to it into a user-specified memory
+location.</p>
+<p>Statistical structures are stored in allocated memory.  If application-specific allocation
+routines have been declared (see <a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a> for more
+information), they are used to allocate the memory; otherwise, the
+standard C library <b>malloc</b>(3) is used.  The caller is
+responsible for deallocating the memory.  To deallocate the memory, free
+the memory reference; references inside the returned memory need not be
+individually freed.</p>
+<p>The following DB_REPMGR_SITE fields will be filled in:</p>
+<dl compact>
+<dt>int eid;<dd>Environment ID assigned by the replication manager.
+This is the same value that is passed to the application's
+event notification function for the <a href="../api_cxx/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event.
+<dt>char host[];<dd>Nul-terminated host name.
+<dt>u_int port;<dd>TCP/IP port number.
+<dt>u_int32_t status;<dd>One of the following list of constants: <a name="DB_REPMGR_CONNECTED">DB_REPMGR_CONNECTED</a>,
+<a name="DB_REPMGR_DISCONNECTED">DB_REPMGR_DISCONNECTED</a>.
+</dl>
+<p>The DbEnv::repmgr_site_list method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::repmgr_site_list method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>countp</b><dd>A count of the returned structures will be stored into the memory
+referenced by <b>countp</b>.
+<dt><b>listp</b><dd>A reference to an array of structures will be stored into the memory
+referenced by <b>listp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

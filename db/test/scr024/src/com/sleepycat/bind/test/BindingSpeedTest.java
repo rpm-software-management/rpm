@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: BindingSpeedTest.java,v 1.4 2004/08/02 18:53:08 mjc Exp $
+ * $Id: BindingSpeedTest.java,v 12.5 2006/09/12 00:37:27 alexg Exp $
  */
 
 package com.sleepycat.bind.test;
@@ -18,6 +18,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import javax.xml.parsers.SAXParserFactory;
 
@@ -47,6 +49,8 @@ public class BindingSpeedTest extends TestCase {
     static final String JAVA_EXTERNALIZABLE = "java-externalizable".intern();
     static final String XML_SAX = "xml-sax".intern();
     static final String TUPLE = "tuple".intern();
+    static final String REFLECT_METHOD = "reflectMethod".intern();
+    static final String REFLECT_FIELD = "reflectField".intern();
 
     static final int RUN_COUNT = 1000;
     static final boolean VERBOSE = false;
@@ -72,6 +76,8 @@ public class BindingSpeedTest extends TestCase {
         suite.addTest(new BindingSpeedTest(JAVA_EXTERNALIZABLE));
         suite.addTest(new BindingSpeedTest(XML_SAX));
         suite.addTest(new BindingSpeedTest(TUPLE));
+        suite.addTest(new BindingSpeedTest(REFLECT_METHOD));
+        suite.addTest(new BindingSpeedTest(REFLECT_FIELD));
         return suite;
     }
 
@@ -81,6 +87,9 @@ public class BindingSpeedTest extends TestCase {
     private TestClassCatalog jtc;
     private byte[] buf;
     private XMLReader parser;
+    private Method[] getters;
+    private Method[] setters;
+    private Field[] fields;
 
     public BindingSpeedTest(String name) {
 
@@ -94,6 +103,8 @@ public class BindingSpeedTest extends TestCase {
         DbTestUtil.printTestName(getName());
 
         boolean isTuple = false;
+        boolean isReflectMethod = false;
+        boolean isReflectField = false;
         boolean isXmlSax = false;
         boolean isSerial = false;
         boolean isShared = false;
@@ -101,6 +112,10 @@ public class BindingSpeedTest extends TestCase {
 
         if (command == TUPLE) {
             isTuple = true;
+        } else if (command == REFLECT_METHOD) {
+            isReflectMethod = true;
+        } else if (command == REFLECT_FIELD) {
+            isReflectField = true;
         } else if (command == XML_SAX) {
             isXmlSax = true;
         } else if (command == JAVA_UNSHARED) {
@@ -120,6 +135,10 @@ public class BindingSpeedTest extends TestCase {
 
         if (isTuple) {
             initTuple();
+        } else if (isReflectMethod) {
+            initReflectMethod();
+        } else if (isReflectField) {
+            initReflectField();
         } else if (isXmlSax) {
             initXmlSax();
         } else if (isSerial) {
@@ -137,6 +156,10 @@ public class BindingSpeedTest extends TestCase {
 
             if (isTuple) {
                 size = runTuple();
+            } else if (isReflectMethod) {
+                size = runReflectMethod();
+            } else if (isReflectField) {
+                size = runReflectField();
             } else if (isXmlSax) {
                 size = runXmlSax();
             } else if (isSerial) {
@@ -159,6 +182,10 @@ public class BindingSpeedTest extends TestCase {
         for (int i = 0; i < RUN_COUNT; i += 1) {
             if (isTuple) {
                 size = runTuple();
+            } else if (isReflectMethod) {
+                size = runReflectMethod();
+            } else if (isReflectField) {
+                size = runReflectField();
             } else if (isXmlSax) {
                 size = runXmlSax();
             } else if (isSerial) {
@@ -270,6 +297,91 @@ public class BindingSpeedTest extends TestCase {
         return to.getBufferLength();
     }
 
+    void initReflectMethod()
+        throws Exception {
+
+        initTuple();
+
+        Class cls = Data.class;
+
+        getters = new Method[5];
+        getters[0] = cls.getMethod("getField1", new Class[0]);
+        getters[1] = cls.getMethod("getField2", new Class[0]);
+        getters[2] = cls.getMethod("getField3", new Class[0]);
+        getters[3] = cls.getMethod("getField4", new Class[0]);
+        getters[4] = cls.getMethod("getField5", new Class[0]);
+
+        setters = new Method[5];
+        setters[0] = cls.getMethod("setField1", new Class[] {String.class});
+        setters[1] = cls.getMethod("setField2", new Class[] {String.class});
+        setters[2] = cls.getMethod("setField3", new Class[] {Integer.TYPE});
+        setters[3] = cls.getMethod("setField4", new Class[] {Integer.TYPE});
+        setters[4] = cls.getMethod("setField5", new Class[] {String.class});
+    }
+
+    int runReflectMethod()
+        throws Exception {
+
+        to.reset();
+        Data data = new Data();
+        to.writeString((String) getters[0].invoke(data, (Object[])null));
+        to.writeString((String) getters[1].invoke(data, (Object[])null));
+        to.writeInt(((Integer) getters[2].invoke(data, (Object[])null)).intValue());
+        to.writeInt(((Integer) getters[3].invoke(data, (Object[])null)).intValue());
+        to.writeString((String) getters[4].invoke(data, (Object[])null));
+
+        TupleInput ti = new TupleInput(
+                          to.getBufferBytes(), to.getBufferOffset(),
+                          to.getBufferLength());
+        data = new Data();
+        setters[0].invoke(data, new Object[] {ti.readString()});
+        setters[1].invoke(data, new Object[] {ti.readString()});
+        setters[2].invoke(data, new Object[] {new Integer(ti.readInt())});
+        setters[3].invoke(data, new Object[] {new Integer(ti.readInt())});
+        setters[4].invoke(data, new Object[] {ti.readString()});
+
+        return to.getBufferLength();
+    }
+
+    void initReflectField()
+        throws Exception {
+
+        initTuple();
+
+        Class cls = Data.class;
+
+        fields = new Field[5];
+        fields[0] = cls.getField("field1");
+        fields[1] = cls.getField("field2");
+        fields[2] = cls.getField("field3");
+        fields[3] = cls.getField("field4");
+        fields[4] = cls.getField("field5");
+    }
+
+    int runReflectField()
+        throws Exception {
+
+        to.reset();
+        Data data = new Data();
+        to.writeString((String) fields[0].get(data));
+        to.writeString((String) fields[1].get(data));
+        to.writeInt(((Integer) fields[2].get(data)).intValue());
+        to.writeInt(((Integer) fields[3].get(data)).intValue());
+        to.writeString((String) fields[4].get(data));
+
+        TupleInput ti = new TupleInput(
+                          to.getBufferBytes(), to.getBufferOffset(),
+                          to.getBufferLength());
+        data = new Data();
+        fields[0].set(data, ti.readString());
+        fields[1].set(data, ti.readString());
+        fields[2].set(data, new Integer(ti.readInt()));
+        fields[3].set(data, new Integer(ti.readInt()));
+        fields[4].set(data, ti.readString());
+
+        return to.getBufferLength();
+    }
+
     void initXmlSax()
         throws Exception {
 
@@ -325,11 +437,23 @@ public class BindingSpeedTest extends TestCase {
 
     static class Data implements Serializable {
 
-        String field1 = "field1";
-        String field2 = "field2";
-        int field3 = 333;
-        int field4 = 444;
-        String field5 = "field5";
+        public String field1 = "field1";
+        public String field2 = "field2";
+        public int field3 = 333;
+        public int field4 = 444;
+        public String field5 = "field5";
+
+        public String getField1() { return field1; }
+        public String getField2() { return field2; }
+        public int getField3() { return field3; }
+        public int getField4() { return field4; }
+        public String getField5() { return field5; }
+
+        public void setField1(String v) { field1 = v; }
+        public void setField2(String v) { field2 = v; }
+        public void setField3(int v) { field3 = v; }
+        public void setField4(int v) { field4 = v; }
+        public void setField5(String v) { field5 = v; }
 
         void readTuple(TupleInput _input) {
 

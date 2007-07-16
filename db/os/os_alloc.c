@@ -1,20 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_alloc.c,v 11.41 2004/07/06 21:06:36 mjc Exp $
+ * $Id: os_alloc.c,v 12.8 2006/08/24 14:46:17 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <stdlib.h>
-#include <string.h>
-#endif
 
 #include "db_int.h"
 
@@ -46,9 +39,11 @@ union __db_allocinfo {
 
 /*
  * __os_umalloc --
- *	A malloc(3) function that will use, in order of preference,
- *	the allocation function specified to the DB handle, the DB_ENV
- *	handle, or __os_malloc.
+ *	Allocate memory to be used by the application.
+ *
+ *	Use, in order of preference, the allocation function specified to the
+ *	DB_ENV handle, the allocation function specified as a replacement for
+ *	the library malloc, or the library malloc().
  *
  * PUBLIC: int __os_umalloc __P((DB_ENV *, size_t, void *));
  */
@@ -77,15 +72,15 @@ __os_umalloc(dbenv, size, storep)
 				ret = ENOMEM;
 				__os_set_errno(ENOMEM);
 			}
-			__db_err(dbenv,
-			    "malloc: %s: %lu", strerror(ret), (u_long)size);
+			__db_err(dbenv, ret, "malloc: %lu", (u_long)size);
 			return (ret);
 		}
 		return (0);
 	}
 
 	if ((*(void **)storep = dbenv->db_malloc(size)) == NULL) {
-		__db_err(dbenv, "User-specified malloc function returned NULL");
+		__db_errx(dbenv,
+		    "user-specified malloc function returned NULL");
 		return (ENOMEM);
 	}
 
@@ -94,7 +89,9 @@ __os_umalloc(dbenv, size, storep)
 
 /*
  * __os_urealloc --
- *	realloc(3) counterpart to __os_umalloc.
+ *	Allocate memory to be used by the application.
+ *
+ *	A realloc(3) counterpart to __os_umalloc's malloc(3).
  *
  * PUBLIC: int __os_urealloc __P((DB_ENV *, size_t, void *));
  */
@@ -129,15 +126,14 @@ __os_urealloc(dbenv, size, storep)
 				ret = ENOMEM;
 				__os_set_errno(ENOMEM);
 			}
-			__db_err(dbenv,
-			    "realloc: %s: %lu", strerror(ret), (u_long)size);
+			__db_err(dbenv, ret, "realloc: %lu", (u_long)size);
 			return (ret);
 		}
 		return (0);
 	}
 
 	if ((*(void **)storep = dbenv->db_realloc(ptr, size)) == NULL) {
-		__db_err(dbenv,
+		__db_errx(dbenv,
 		    "User-specified realloc function returned NULL");
 		return (ENOMEM);
 	}
@@ -147,7 +143,9 @@ __os_urealloc(dbenv, size, storep)
 
 /*
  * __os_ufree --
- *	free(3) counterpart to __os_umalloc.
+ *	Free memory used by the application.
+ *
+ *	A free(3) counterpart to __os_umalloc's malloc(3).
  *
  * PUBLIC: void __os_ufree __P((DB_ENV *, void *));
  */
@@ -258,8 +256,7 @@ __os_malloc(dbenv, size, storep)
 			ret = ENOMEM;
 			__os_set_errno(ENOMEM);
 		}
-		__db_err(dbenv,
-		    "malloc: %s: %lu", strerror(ret), (u_long)size);
+		__db_err(dbenv, ret, "malloc: %lu", (u_long)size);
 		return (ret);
 	}
 
@@ -313,6 +310,14 @@ __os_realloc(dbenv, size, storep)
 
 	/* Back up to the real beginning */
 	ptr = &((union __db_allocinfo *)ptr)[-1];
+
+	{
+		size_t s;
+
+		s = ((union __db_allocinfo *)ptr)->size;
+		if (((u_int8_t *)ptr)[s - 1] != CLEAR_BYTE)
+			 __os_guard(dbenv);
+	}
 #endif
 
 	/*
@@ -334,8 +339,7 @@ __os_realloc(dbenv, size, storep)
 			ret = ENOMEM;
 			__os_set_errno(ENOMEM);
 		}
-		__db_err(dbenv,
-		    "realloc: %s: %lu", strerror(ret), (u_long)size);
+		__db_err(dbenv, ret, "realloc: %lu", (u_long)size);
 		return (ret);
 	}
 #ifdef DIAGNOSTIC
@@ -396,7 +400,7 @@ static void
 __os_guard(dbenv)
 	DB_ENV *dbenv;
 {
-	__db_err(dbenv, "Guard byte incorrect during free");
+	__db_errx(dbenv, "Guard byte incorrect during free");
 	abort();
 	/* NOTREACHED */
 }

@@ -108,7 +108,7 @@
             </p>
             <p>
                 The error message consists of the prefix string
-                (as defined by <tt class="methodname">set_errprefix()</tt>), 
+                (as defined by <tt class="methodname">set_errpfx()</tt>), 
                 an optional <tt class="literal">printf</tt>-style formatted message, 
                 the error message, and a trailing newline.
             </p>
@@ -157,13 +157,13 @@ my_error_handler(const char *error_prefix, char *msg)
 ...
 
 Db db(NULL, 0);
-std::string dbFileName("my_db.db");
+std::string dbFileName(&quot;my_db.db&quot;);
 
 try
 {
     // Set up error handling for this database
     db.set_errcall(my_error_handler);
-    db.set_errpfx("my_example_program"); </pre>
+    db.set_errpfx(&quot;my_example_program&quot;); </pre>
       <p>
         And to issue an error message:
     </p>
@@ -174,14 +174,14 @@ try
     // Must catch both DbException and std::exception
     catch(DbException &amp;e)
     {
-        db.err(e.get_errno(), "Database open failed %s", 
+        db.err(e.get_errno(), &quot;Database open failed %s&quot;, 
             dbFileName.c_str());
         throw e;
     }
     catch(std::exception &amp;e)
     {
         // No DB error number available, so use errx
-        db.errx("Error opening database: %s", e.what());
+        db.errx(&quot;Error opening database: %s&quot;, e.what());
         throw e;
     } </pre>
       <span>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredSortedKeySet.java,v 1.2 2004/06/02 20:59:39 mark Exp $
+ * $Id: StoredSortedKeySet.java,v 12.5 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -22,17 +22,6 @@ import com.sleepycat.db.Database;
  * even when duplicates are allowed.  Key set iterators are therefore
  * particularly useful for enumerating the unique keys of a store or index that
  * allows duplicates.
- *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
  *
  * <p>In addition to the standard SortedSet methods, this class provides the
  * following methods for stored sorted sets only.  Note that the use of these
@@ -123,6 +112,9 @@ public class StoredSortedKeySet extends StoredKeySet implements SortedSet {
      * strictly less than toKey.
      * This method conforms to the {@link SortedSet#headSet} interface.
      *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
+     *
      * @param toKey is the upper bound.
      *
      * @return the subset.
@@ -139,6 +131,9 @@ public class StoredSortedKeySet extends StoredKeySet implements SortedSet {
      * Returns a view of the portion of this sorted set whose elements are
      * strictly less than toKey, optionally including toKey.
      * This method does not exist in the standard {@link SortedSet} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @param toKey is the upper bound.
      *
@@ -159,6 +154,9 @@ public class StoredSortedKeySet extends StoredKeySet implements SortedSet {
      * greater than or equal to fromKey.
      * This method conforms to the {@link SortedSet#tailSet} interface.
      *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
+     *
      * @param fromKey is the lower bound.
      *
      * @return the subset.
@@ -175,6 +173,9 @@ public class StoredSortedKeySet extends StoredKeySet implements SortedSet {
      * Returns a view of the portion of this sorted set whose elements are
      * strictly greater than fromKey, optionally including fromKey.
      * This method does not exist in the standard {@link SortedSet} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @param fromKey is the lower bound.
      *
@@ -195,6 +196,9 @@ public class StoredSortedKeySet extends StoredKeySet implements SortedSet {
      * from fromKey, inclusive, to toKey, exclusive.
      * This method conforms to the {@link SortedSet#subSet} interface.
      *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
+     *
      * @param fromKey is the lower bound.
      *
      * @param toKey is the upper bound.
@@ -214,6 +218,9 @@ public class StoredSortedKeySet extends StoredKeySet implements SortedSet {
      * strictly greater than fromKey and strictly less than toKey,
      * optionally including fromKey and toKey.
      * This method does not exist in the standard {@link SortedSet} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @param fromKey is the lower bound.
      *

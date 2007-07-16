@@ -259,6 +259,13 @@
             </li>
           </ul>
         </div>
+        <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Note</h3>
+          <p>
+        Primary databases <span class="emphasis"><em>must not</em></span> support duplicate records. 
+        Secondary records point to primary records using the primary key, so that key must be unique.
+        </p>
+        </div>
         <p>So to open (create) a secondary database, you:</p>
         <div class="orderedlist">
           <ol type="1">
@@ -283,7 +290,7 @@
         </div>
         <p>For example:</p>
         <a id="java_index1"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.db.Database;
@@ -311,7 +318,7 @@ mySecConfig.setSortedDuplicates(true);
 Database myDb = null;
 SecondaryDatabase mySecDb = null;
 try {
-    String dbName = "myPrimaryDatabase";
+    String dbName = &quot;myPrimaryDatabase&quot;;
 
     myDb = new Database(dbName, null, myDbConfig);
 
@@ -328,7 +335,7 @@ try {
     mySecConfig.setKeyCreator(keyCreator);
 
     // Perform the actual open
-    String secDbName = "mySecondaryDatabase";
+    String secDbName = &quot;mySecondaryDatabase&quot;;
     mySecDb = new SecondaryDatabase(secDbName, null, myDb, mySecConfig); 
 } catch (DatabaseException de) {
     // Exception handling goes here ...

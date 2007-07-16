@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: ex_apprec.src,v 1.5 2004/01/28 03:36:03 bostic Exp $
+ * $Id: ex_apprec.src,v 12.4 2006/09/13 16:22:27 sue Exp $
  */
 
 PREFIX	ex_apprec
@@ -36,6 +36,6 @@ INCLUDE #include "ex_apprec.h"
  *
  * dirname:	relative or absolute pathname of the directory to be created
  */
-BEGIN mkdir	10000
+BEGIN mkdir	42	10000
 DBT	dirname		DBT		s
 END

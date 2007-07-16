@@ -1,58 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: lock_util.c,v 11.12 2004/09/22 03:48:29 bostic Exp $
+ * $Id: lock_util.c,v 12.7 2006/08/24 14:46:11 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/hash.h"
 #include "dbinc/lock.h"
-
-/*
- * __lock_cmp --
- *	This function is used to compare a DBT that is about to be entered
- *	into a hash table with an object already in the hash table.  Note
- *	that it just returns true on equal and 0 on not-equal.  Therefore
- *	this function cannot be used as a sort function; its purpose is to
- *	be used as a hash comparison function.
- *
- * PUBLIC: int __lock_cmp __P((const DBT *, DB_LOCKOBJ *));
- */
-int
-__lock_cmp(dbt, lock_obj)
-	const DBT *dbt;
-	DB_LOCKOBJ *lock_obj;
-{
-	void *obj_data;
-
-	obj_data = SH_DBT_PTR(&lock_obj->lockobj);
-	return (dbt->size == lock_obj->lockobj.size &&
-		memcmp(dbt->data, obj_data, dbt->size) == 0);
-}
-
-/*
- * PUBLIC: int __lock_locker_cmp __P((u_int32_t, DB_LOCKER *));
- */
-int
-__lock_locker_cmp(locker, sh_locker)
-	u_int32_t locker;
-	DB_LOCKER *sh_locker;
-{
-	return (locker == sh_locker->id);
-}
 
 /*
  * The next two functions are the hash functions used to store objects in the
@@ -121,21 +81,6 @@ __lock_lhash(lock_obj)
 }
 
 /*
- * __lock_locker_hash --
- *	Hash function for entering lockers into the locker hash table.
- *	Since these are simply 32-bit unsigned integers, just return
- *	the locker value.
- *
- * PUBLIC: u_int32_t __lock_locker_hash __P((u_int32_t));
- */
-u_int32_t
-__lock_locker_hash(locker)
-	u_int32_t locker;
-{
-	return (locker);
-}
-
-/*
  * __lock_nomem --
  *	Report a lack of some resource.
  *
@@ -146,6 +91,6 @@ __lock_nomem(dbenv, res)
 	DB_ENV *dbenv;
 	const char *res;
 {
-	__db_err(dbenv, "Lock table is out of available %s", res);
+	__db_errx(dbenv, "Lock table is out of available %s", res);
 	return (ENOMEM);
 }

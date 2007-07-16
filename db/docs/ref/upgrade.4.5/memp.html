@@ -1,0 +1,29 @@
+<!--$Id: memp.so,v 1.2 2006/09/11 23:31:27 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.5: Memory Pool API</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.5/rep_event.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/paniccall.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.5: Memory Pool API</h3>
+<p>The <a href="../../api_c/memp_fget.html#DB_MPOOL_DIRTY">DB_MPOOL_DIRTY</a> flag is now specified to the
+<a href="../../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a> method instead of <a href="../../api_c/memp_fput.html">DB_MPOOLFILE-&gt;put</a> or <a href="../../api_c/memp_fset.html">DB_MPOOLFILE-&gt;set</a>.
+In addition, a new transaction handle parameter has been added to
+<a href="../../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a> for use with multiversion concurrency control.</p>
+<p>The DB_MPOOL_CLEAN flag is no longer supported.</p>
+<p>Applications which use the memory pool API directly should update to
+the new API in order to use 4.5.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.5/rep_event.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/paniccall.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

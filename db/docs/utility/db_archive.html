@@ -1,5 +1,5 @@
-<!--$Id: db_archive.so,v 10.28 2002/11/13 21:49:24 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_archive.so,v 10.29 2006/06/12 14:03:57 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -53,8 +53,7 @@ ignore them.  When <a href="../utility/db_recover.html">db_recover</a> is run, a
 log refers that are not present during recovery are assumed to have been
 deleted and will not be recovered.</p>
 <dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
-<dt><b>-v</b><dd>Run in verbose mode, listing the checkpoints in the log files as they
-are reviewed.
+<dt><b>-v</b><dd>Run in verbose mode.
 </dl>
 <p>Log cursor handles (returned by the <a href="../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a> method) may have open
 file descriptors for log files in the database environment.  Also, the
@@ -90,6 +89,6 @@ DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

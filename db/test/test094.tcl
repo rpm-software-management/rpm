@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test094.tcl,v 11.21 2004/06/29 14:26:17 carol Exp $
+# $Id: test094.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test094
 # TEST	Test using set_dup_compare.

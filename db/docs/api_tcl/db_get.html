@@ -1,6 +1,6 @@
-<!--$Id: db_get.so,v 11.19 2002/11/14 21:07:39 bostic Exp $-->
-<!--$Id: m4.tcl,v 11.27 2004/09/07 15:37:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_get.so,v 11.20 2004/12/16 19:13:04 bostic Exp $-->
+<!--$Id: m4.tcl,v 11.28 2004/12/16 19:13:05 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -21,7 +21,6 @@
 <hr size=1 noshade>
 <tt>
 <h3><pre>db get
-	[-auto_commit]
 	[-consume]
 	[-consume_wait]
 	[-glob]
@@ -44,10 +43,6 @@ duplicate items.  Duplicates are sorted by insert order except where this
 order has been overridden by cursor operations.</p>
 <p>The options are as follows:</p>
 <dl compact>
-<dt>-auto_commit<dd>Enclose the call within a transaction. If the call succeeds, changes
-made by the operation will be recoverable. If the call fails, the
-operation will have made no changes.  This option may only be specified
-with the <b>-consume</b> or <b>-consume_wait</b> flags.
 <dt>-consume<dd>Return the record number and data from the available record closest to
 the head of the queue, and delete the record. The cursor will be
 positioned on the deleted record.  A record is available if it is not
@@ -86,10 +81,12 @@ result in deadlock.
 interface calls in nontransactional environments, the <b>-rmw</b>
 argument to the <i>db</i> <b>get</b> call is only meaningful in the presence
 of transactions.</p>
-<dt>-txn txnid<dd>If the operation is to be
-transaction-protected,
-the <b>txnid</b> parameter is a transaction handle returned from
-<i>env</i> <b>txn</b>.
+<dt>-txn txnid<dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<i>env</i> <b>txn</b>.  If no transaction handle is specified, but the
+operation occurs in a transactional
+database,
+the operation will be implicitly transaction protected.
 </dl>
 <p>If the underlying database is a Queue or Recno database, the given key
 will be interpreted by Tcl as an integer.  For all other database types,
@@ -102,6 +99,6 @@ is thrown.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_tcl/api_tcl.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

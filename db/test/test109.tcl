@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test109.tcl,v 1.6 2004/09/22 18:01:06 bostic Exp $
+# $Id: test109.tcl,v 12.9 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test109
 # TEST
@@ -14,6 +14,27 @@ proc test109 { method {tnum "109"} args } {
 	global fixed_len
 	global errorCode
 
+	set eindex [lsearch -exact $args "-env"]
+	set txnenv 0
+	set rpcenv 0
+	set sargs " -thread "
+	if { $eindex == -1 } {
+		set env NULL
+	} else {
+		incr eindex
+		set env [lindex $args $eindex]
+		set txnenv [is_txnenv $env]
+		set rpcenv [is_rpcenv $env]
+		if { $rpcenv == 1 } {
+			puts "Test$tnum: skipping for RPC"
+			return
+		}
+		if { $txnenv == 1 } {
+			append args " -auto_commit "
+		}
+		set testdir [get_home $env]
+	}
+
 	# Fixed_len must be increased from the default to
 	# accommodate fixed-record length methods.
 	set orig_fixed_len $fixed_len
@@ -21,22 +42,6 @@ proc test109 { method {tnum "109"} args } {
 	set args [convert_args $method $args]
 	set omethod [convert_method $method]
 	error_check_good random_seed [berkdb srand $rand_init] 0
-
-	set eindex [lsearch -exact $args "-env"]
-	set txnenv 0
-	set seqargs ""
-	if { $eindex == -1 } {
-		set env NULL
-	} else {
-		incr eindex
-		set env [lindex $args $eindex]
-		set txnenv [is_txnenv $env]
-		if { $txnenv == 1 } {
-			append args " -auto_commit "
-			append seqargs " -auto_commit "
-		}
-		set testdir [get_home $env]
-	}
 
 	# Test with in-memory dbs, regular dbs, and subdbs.
 	foreach filetype { subdb regular in-memory } {
@@ -78,14 +83,14 @@ proc test109 { method {tnum "109"} args } {
 
 		puts "\tTest$tnum.a: Max must be greater than min."
 		set errorCode NONE
-		catch {set seq [eval berkdb sequence -create \
-		    $seqargs -init 0 -min 100 -max 0 $db $key]} res
+		catch {set seq [eval {berkdb sequence} -create $sargs \
+		    -init 0 -min 100 -max 0 $db $key]} res
 		error_check_good max>min [is_substr $errorCode EINVAL] 1
 
 		puts "\tTest$tnum.b: Init can't be out of the min-max range."
 		set errorCode NONE
-		catch {set seq [eval berkdb sequence -create \
-			$seqargs -init 101 -min 0 -max 100 $db $key]} res
+		catch {set seq [eval {berkdb sequence} -create $sargs \
+			-init 101 -min 0 -max 100 $db $key]} res
 		error_check_good init [is_substr $errorCode EINVAL] 1
 
 		# Test increment and decrement.
@@ -93,7 +98,7 @@ proc test109 { method {tnum "109"} args } {
 		set max 100
 		foreach { init inc } { $min -inc $max -dec } {
 			puts "\tTest$tnum.c: Test for overflow error with $inc."
-			test_sequence $db $key $min $max $init $inc $seqargs
+			test_sequence $env $db $key $min $max $init $inc
 		}
 
 		# Test cachesize without wrap.  Make sure to test both
@@ -107,8 +112,8 @@ proc test109 { method {tnum "109"} args } {
 			foreach inc { -inc -dec } {
 				puts "\tTest$tnum.d:\
 				    -cachesize $csize, $inc, no wrap."
-				test_sequence $db $key \
-				    $min $max $init $inc $seqargs $csize
+				test_sequence $env $db $key \
+				    $min $max $init $inc $csize
 			}
 		}
 		error_check_good db_close [$db close] 0
@@ -126,8 +131,8 @@ proc test109 { method {tnum "109"} args } {
 		set csize 1
 		foreach { init inc } { $min -inc $max -dec } {
 			puts "\tTest$tnum.e: Test wrapping with $inc."
-			test_sequence $db $key \
-			    $min $max $init $inc $seqargs $csize $wrap
+			test_sequence $env $db $key \
+			    $min $max $init $inc $csize $wrap
 		}
 
 		# Test cachesize with wrap.
@@ -137,16 +142,16 @@ proc test109 { method {tnum "109"} args } {
 		set wrap "-wrap"
 		foreach csize $cachesizes {
 			puts "\tTest$tnum.f: Test -cachesize $csize with wrap."
-			test_sequence $db $key \
-			    $min $max $init $inc $seqargs $csize $wrap
+			test_sequence $env $db $key \
+			    $min $max $init $inc $csize $wrap
 		}
 
 		# Test multiple handles on the same sequence.
 		foreach csize $cachesizes {
 			puts "\tTest$tnum.g:\
 			    Test multiple handles (-cachesize $csize) with wrap."
-			test_sequence $db $key \
-			    $min $max $init $inc $seqargs $csize $wrap 1
+			test_sequence $env $db $key \
+			    $min $max $init $inc $csize $wrap 1
 		}
 		error_check_good db_close [$db close] 0
 	}
@@ -154,10 +159,18 @@ proc test109 { method {tnum "109"} args } {
 	return
 }
 
-proc test_sequence { db key min max init \
-    {inc "-inc"} {seqargs ""} {csize 1} {wrap "" } {second_handle 0} } {
+proc test_sequence { env db key min max init \
+    {inc "-inc"} {csize 1} {wrap "" } {second_handle 0} } {
 	global rand_init
 	global errorCode
+
+	set txn ""
+	set txnenv 0
+	if { $env != "NULL" } {
+		set txnenv [is_txnenv $env]
+	}
+
+	set sargs " -thread "
 
 	# The variable "skip" is the cachesize with a direction.
 	set skip $csize
@@ -189,12 +202,20 @@ proc test_sequence { db key min max init \
 	set hitspercycle [expr $n / $csize]
 
 	# Create the sequence.
-	set seq [eval {berkdb sequence} -create -cachesize $csize $seqargs \
-	    $wrap -init $init -min $min -max $max $inc $db $key]
+	if { $txnenv == 1 } {
+		set t [$env txn]
+		error_check_good txn [is_valid_txn $t $env] TRUE
+		set txn "-txn $t"
+	}
+	set seq [eval {berkdb sequence} -create $sargs -cachesize $csize \
+	    $wrap -init $init -min $min -max $max $txn $inc $db $key]
 	error_check_good is_valid_seq [is_valid_seq $seq] TRUE
 	if { $second_handle == 1 } {
-		set seq2 [eval {berkdb sequence} -create $seqargs $db $key]
+		set seq2 [eval {berkdb sequence} -create $sargs $txn $db $key]
 		error_check_good is_valid_seq2 [is_valid_seq $seq2] TRUE
+	}
+	if { $txnenv == 1 } {
+		error_check_good txn_commit [$t commit] 0
 	}
 
 	# Exercise get options.
@@ -258,17 +279,18 @@ proc test_sequence { db key min max init \
 
 		# Get return value.  If we've got a second handle, choose
 		# randomly which handle does the seq get.
-		set syncarg ""
-		if { $seqargs != "" } {
+		if { $env != "NULL" && [is_txnenv $env] } {
 			set syncarg " -nosync "
+		} else {
+			set syncarg ""
 		}
 		set errorCode NONE
 		if { $second_handle == 0 } {
-			catch {eval {$seq get} $seqargs $syncarg $csize} res
+			catch {eval {$seq get} $syncarg $csize} res
 		} elseif { [berkdb random_int 0 1] == 0 } {
-			catch {eval {$seq get} $seqargs $syncarg $csize} res
+			catch {eval {$seq get} $syncarg $csize} res
 		} else {
-			catch {eval {$seq2 get} $seqargs $syncarg $csize} res
+			catch {eval {$seq2 get} $syncarg $csize} res
 		}
 
 		# Compare expected to actual value.
@@ -284,5 +306,13 @@ proc test_sequence { db key min max init \
 	if { $second_handle == 1 } {
 		error_check_good seq2_close [$seq2 close] 0
 	}
-	error_check_good seq_remove [eval {$seq remove} $seqargs] 0
+	if { $txnenv == 1 } {
+		set t [$env txn]
+		error_check_good txn [is_valid_txn $t $env] TRUE
+		set txn "-txn $t"
+	}
+	error_check_good seq_remove [eval {$seq remove} $txn] 0
+	if { $txnenv == 1 } {
+		error_check_good txn_commit [$t commit] 0
+	}
 }

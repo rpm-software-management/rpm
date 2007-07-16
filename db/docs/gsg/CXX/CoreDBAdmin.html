@@ -84,7 +84,7 @@ Db db(NULL, 0);
 
 // Database open and subsequent operations omitted for clarity
 
-db.remove("mydb.db",             // Database file to remove 
+db.remove(&quot;mydb.db&quot;,             // Database file to remove 
           NULL,                  // Database to remove. This is
                                  // NULL so the entire file is
                                  // removed.  
@@ -111,11 +111,11 @@ Db db(NULL, 0);
 
 // Database open and subsequent operations omitted for clarity
 
-db.rename("mydb.db",             // Database file to rename
+db.rename(&quot;mydb.db&quot;,             // Database file to rename
           NULL,                  // Database to rename. This is
                                  // NULL so the entire file is
                                  // renamed. 
-         "newdb.db",             // New database file name
+         &quot;newdb.db&quot;,             // New database file name
          0);                     // Flags. None used.</pre>
           </li>
         </ul>

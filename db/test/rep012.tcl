@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2001-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep012.tcl,v 11.14 2004/10/18 14:46:35 carol Exp $
+# $Id: rep012.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	rep012
 # TEST	Replication and dead DB handles.
@@ -14,12 +14,23 @@
 # TEST	Downgrade the master and upgrade the client with open db handles.
 # TEST	Verify that the roll back on clients gives dead db handles.
 proc rep012 { method { niter 10 } { tnum "012" } args } {
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
+
 	set args [convert_args $method $args]
 	set logsets [create_logsets 3]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -69,11 +80,10 @@ proc rep012_sub { method niter tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -lock_max 2500 \
-	    -errpfx ENV0 \
+	    $m_logargs -errpfx ENV0 \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
 #	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -lock_max 2500 \
+#	    $m_logargs \
 #	    -errpfx ENV0 -verbose {rep on} -errfile /dev/stderr \
 #	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set env0 [eval $ma_envcmd $recargs -rep_master]
@@ -83,11 +93,10 @@ proc rep012_sub { method niter tnum logset recargs largs } {
 	# Open two clients
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -lock_max 2500 \
-	    -errpfx ENV1 \
+	    $c_logargs -errpfx ENV1 \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
 #	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -lock_max 2500 \
+#	    $c_logargs \
 #	    -errpfx ENV1 -verbose {rep on} -errfile /dev/stderr \
 #	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set env1 [eval $cl_envcmd $recargs -rep_client]
@@ -96,11 +105,10 @@ proc rep012_sub { method niter tnum logset recargs largs } {
 
 	repladd 3
 	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs \
-	    $c2_logargs -lock_max 2500 \
-	    -errpfx ENV2 \
+	    $c2_logargs -errpfx ENV2 \
 	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
 #	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs \
-#	    $c2_logargs -lock_max 2500 \
+#	    $c2_logargs \
 #	    -errpfx ENV2 -verbose {rep on} -errfile /dev/stderr \
 #	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
 	set cl2env [eval $cl2_envcmd $recargs -rep_client]
@@ -122,13 +130,13 @@ proc rep012_sub { method niter tnum logset recargs largs } {
 		set mpdb [eval {berkdb_open_noerr -env $env0 -auto_commit \
 		    -create -mode 0644} $largs $omethod $pname]
 		error_check_good dbopen [is_valid_db $mpdb] TRUE
-	
+
 		# Open the secondary
 		# Open a 2nd handle to the same secondary
 		set msdb [eval {berkdb_open_noerr -env $env0 -auto_commit \
 		    -create -mode 0644} $largs $omethod $sname]
 		error_check_good dbopen [is_valid_db $msdb] TRUE
-		error_check_good associate [$mpdb associate -auto_commit \
+		error_check_good associate [$mpdb associate \
 		    [callback_n 0] $msdb] 0
 	}
 
@@ -146,7 +154,7 @@ proc rep012_sub { method niter tnum logset recargs largs } {
 
 	# Run a modified test001 in the master (and update clients).
 	puts "\tRep$tnum.a.0: Running rep_test in replicated env."
-	eval rep_test $method $masterenv $masterdb $niter 0 0
+	eval rep_test $method $masterenv $masterdb $niter 0 0 0 0 $largs
 	process_msgs $envlist
 
 	if { $do_secondary } {
@@ -162,7 +170,8 @@ proc rep012_sub { method niter tnum logset recargs largs } {
 	}
 	set nstart $niter
 	puts "\tRep$tnum.c: Run test in master and client 2 only"
-	eval rep_test $method $masterenv $masterdb $niter $nstart $nstart
+	eval rep_test\
+	    $method $masterenv $masterdb $niter $nstart $nstart 0 0 $largs
 
 	# Ignore messages for $env1.
 	set envlist "{$env0 1} {$cl2env 3}"
@@ -240,7 +249,7 @@ proc rep012_sec {method pdb niter keysp datap} {
 		set keys($n) $key
 		set data($n) [pad_data $method $datum]
 
-		set ret [$pdb put -auto_commit $key [chop_data $method $datum]]
+		set ret [$pdb put $key [chop_data $method $datum]]
 		error_check_good put($n) $ret 0
 	}
 	close $did

@@ -1,20 +1,21 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredEntrySet.java,v 1.3 2004/06/04 18:24:50 mark Exp $
+ * $Id: StoredEntrySet.java,v 12.4 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.OperationStatus;
+import com.sleepycat.util.RuntimeExceptionWrapper;
 
 /**
  * The Set returned by Map.entrySet().  This class may not be instantiated
@@ -24,17 +25,6 @@ import com.sleepycat.db.OperationStatus;
  * <p>The {@link java.util.Map.Entry#setValue} method of the Map.Entry objects
  * that are returned by this class and its iterators behaves just as the {@link
  * StoredIterator#set} method does.</p>
- *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
  *
  * @author Mark Hayes
  */
@@ -94,7 +84,7 @@ public class StoredEntrySet extends StoredCollection implements Set {
         try {
             cursor = new DataCursor(view, true);
             OperationStatus status =
-                cursor.getSearchBoth(entry.getKey(), entry.getValue(), true);
+                cursor.findBoth(entry.getKey(), entry.getValue(), true);
             if (status == OperationStatus.SUCCESS) {
                 cursor.delete();
             }
@@ -129,7 +119,7 @@ public class StoredEntrySet extends StoredCollection implements Set {
         try {
             cursor = new DataCursor(view, false);
             OperationStatus status =
-                cursor.getSearchBoth(entry.getKey(), entry.getValue(), false);
+                cursor.findBoth(entry.getKey(), entry.getValue(), false);
             return (status == OperationStatus.SUCCESS);
         } catch (Exception e) {
             throw StoredContainer.convertException(e);
@@ -142,7 +132,7 @@ public class StoredEntrySet extends StoredCollection implements Set {
     public String toString() {
 	StringBuffer buf = new StringBuffer();
 	buf.append("[");
-	Iterator i = iterator();
+	StoredIterator i = storedIterator();
         try {
             while (i.hasNext()) {
                 Map.Entry entry = (Map.Entry) i.next();
@@ -157,15 +147,17 @@ public class StoredEntrySet extends StoredCollection implements Set {
             return buf.toString();
         }
         finally {
-            StoredIterator.close(i);
+            i.close();
         }
     }
 
-    Object makeIteratorData(StoredIterator iterator, DataCursor cursor)
-        throws DatabaseException {
+    Object makeIteratorData(BaseIterator iterator,
+                            DatabaseEntry keyEntry,
+                            DatabaseEntry priKeyEntry,
+                            DatabaseEntry valueEntry) {
 
-        return new StoredMapEntry(cursor.getCurrentKey(),
-                                  cursor.getCurrentValue(),
+        return new StoredMapEntry(view.makeKey(keyEntry, priKeyEntry),
+                                  view.makeValue(priKeyEntry, valueEntry),
                                   this, iterator);
     }
 

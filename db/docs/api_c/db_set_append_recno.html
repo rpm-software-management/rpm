@@ -1,5 +1,5 @@
-<!--$Id: db_set_append_recno.so,v 1.23 2004/08/13 03:38:56 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_set_append_recno.so,v 1.24 2006/05/17 20:47:46 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -59,6 +59,10 @@ DB_DBT_APPMALLOC, which indicates that Berkeley DB should free the
 memory when it is done with it.</p>
 <p>The callback function must return 0 on success and <b>errno</b> or
 a value outside of the Berkeley DB error name space on failure.</p>
+<p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering Berkeley DB is not guaranteed to work correctly, and the results
+are undefined.</p>
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;set_append_recno method
@@ -76,6 +80,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

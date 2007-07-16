@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_recover,v 1.17 2004/06/17 17:35:19 bostic Exp $
+#	$Id: s_recover,v 12.1 2006/05/24 16:24:24 sue Exp $
 #
 # Build the automatically generated logging/recovery files.
 
@@ -23,11 +23,11 @@ for i in $DIR; do
 		# so it's okay to just take the first.
 		grep '^PREFIX' $f | sed q
 		egrep '^BEGIN[	 ]|^IGNORED[	 ]|^DEPRECATED[	 ]' $f |
-		    awk '{print $1 "\t" $2 "\t" $3}'
+		    awk '{print $1 "\t" $2 "\t" $3 "\t" $4}'
 	done
 done > $loglist
 grep -v '^PREFIX' $loglist |
-    awk '{print $2 "\t" $3}' | sort -n -k 2 | uniq -d -f 1 > $tmp
+    awk '{print $2 "\t" $3 "\t" $4}' | sort -n -k 3 | uniq -d -f 1 > $tmp
 [ -s $tmp ] && {
 	echo "DUPLICATE LOG VALUES:"
 	cat $tmp

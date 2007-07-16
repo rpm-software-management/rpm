@@ -1,15 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleOutput.java,v 1.4 2004/09/01 14:34:20 mark Exp $
+ * $Id: TupleOutput.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
 
 import com.sleepycat.util.FastOutputStream;
+import com.sleepycat.util.PackedInteger;
 import com.sleepycat.util.UtfOps;
 
 /**
@@ -45,11 +46,28 @@ import com.sleepycat.util.UtfOps;
  * character ordering.</li>
  * </ul>
  *
- * <p>Floats and doubles are stored in standard Java integer-bit representation
- * (IEEE 754). Non-negative numbers are correctly ordered by numeric value.
- * However, negative numbers are not correctly ordered; therefore, if you use
- * negative floating point numbers in a key, you'll need to implement and
- * configure a custom comparator to get correct numeric ordering.</p>
+ * <p>Floats and doubles are stored using two different representations: sorted
+ * representation and integer-bit (IEEE 754) representation.  If you use
+ * negative floating point numbers in a key, you should use sorted
+ * representation; alternatively you may use integer-bit representation but you
+ * will need to implement and configure a custom comparator to get correct
+ * numeric ordering for negative numbers.</p>
+ *
+ * <p>To use sorted representation use this set of methods:</p>
+ * <ul>
+ * <li>{@link TupleOutput#writeSortedFloat}</li>
+ * <li>{@link TupleInput#readSortedFloat}</li>
+ * <li>{@link TupleOutput#writeSortedDouble}</li>
+ * <li>{@link TupleInput#readSortedDouble}</li>
+ * </ul>
+ *
+ * <p>To use integer-bit representation use this set of methods:</p>
+ * <ul>
+ * <li>{@link TupleOutput#writeFloat}</li>
+ * <li>{@link TupleInput#readFloat}</li>
+ * <li>{@link TupleOutput#writeDouble}</li>
+ * <li>{@link TupleInput#readDouble}</li>
+ * </ul>
  *
  * @author Mark Hayes
  */
@@ -235,6 +253,12 @@ public class TupleOutput extends FastOutputStream {
      * <code>Float.floatToIntBits</code> is used to convert the signed float
      * value.
      *
+     * <p><em>Note:</em> This method produces byte array values that by default
+     * (without a custom comparator) do <em>not</em> sort correctly for
+     * negative values.  Only non-negative values are sorted correctly by
+     * default.  To sort all values correctly by default, use {@link
+     * #writeSortedFloat}.</p>
+     *
      * @param val is the value to write to the buffer.
      *
      * @return this tuple output object.
@@ -251,6 +275,12 @@ public class TupleOutput extends FastOutputStream {
      * <code>Double.doubleToLongBits</code> is used to convert the signed
      * double value.
      *
+     * <p><em>Note:</em> This method produces byte array values that by default
+     * (without a custom comparator) do <em>not</em> sort correctly for
+     * negative values.  Only non-negative values are sorted correctly by
+     * default.  To sort all values correctly by default, use {@link
+     * #writeSortedDouble}.</p>
+     *
      * @param val is the value to write to the buffer.
      *
      * @return this tuple output object.
@@ -258,6 +288,56 @@ public class TupleOutput extends FastOutputStream {
     public final TupleOutput writeDouble(double val) {
 
         writeUnsignedLong(Double.doubleToLongBits(val));
+        return this;
+    }
+
+    /**
+     * Writes a signed float (four byte) value to the buffer, with support for
+     * correct default sorting of all values.
+     * Writes values that can be read using {@link TupleInput#readSortedFloat}.
+     *
+     * <p><code>Float.floatToIntBits</code> and the following bit manipulations
+     * are used to convert the signed float value to a representation that is
+     * sorted correctly by default.</p>
+     * <pre>
+     *  int intVal = Float.floatToIntBits(val);
+     *  intVal ^= (intVal &lt; 0) ? 0xffffffff : 0x80000000;
+     * </pre>
+     *
+     * @param val is the value to write to the buffer.
+     *
+     * @return this tuple output object.
+     */
+    public final TupleOutput writeSortedFloat(float val) {
+
+        int intVal = Float.floatToIntBits(val);
+        intVal ^= (intVal < 0) ? 0xffffffff : 0x80000000;
+        writeUnsignedInt(intVal);
+        return this;
+    }
+
+    /**
+     * Writes a signed double (eight byte) value to the buffer, with support
+     * for correct default sorting of all values.
+     * Writes values that can be read using {@link TupleInput#readSortedDouble}.
+     *
+     * <p><code>Float.doubleToLongBits</code> and the following bit
+     * manipulations are used to convert the signed double value to a
+     * representation that is sorted correctly by default.</p>
+     * <pre>
+     *  long longVal = Double.doubleToLongBits(val);
+     *  longVal ^= (longVal &lt; 0) ? 0xffffffffffffffffL : 0x8000000000000000L;
+     * </pre>
+     *
+     * @param val is the value to write to the buffer.
+     *
+     * @return this tuple output object.
+     */
+    public final TupleOutput writeSortedDouble(double val) {
+
+        long longVal = Double.doubleToLongBits(val);
+        longVal ^= (longVal < 0) ? 0xffffffffffffffffL : 0x8000000000000000L;
+        writeUnsignedLong(longVal);
         return this;
     }
 
@@ -394,5 +474,21 @@ public class TupleOutput extends FastOutputStream {
         writeFast((byte) (val >>> 8));
         writeFast((byte) val);
         return this;
+    }
+
+    /**
+     * Writes a packed integer.  Note that packed integers are not appropriate
+     * for sorted values (keys) unless a custom comparator is used.
+     *
+     * @see PackedInteger
+     */
+    public void writePackedInt(int val) {
+
+        makeSpace(PackedInteger.MAX_LENGTH);
+
+        int oldLen = getBufferLength();
+        int newLen = PackedInteger.writeInt(getBufferBytes(), oldLen, val);
+
+        addSize(newLen - oldLen);
     }
 }

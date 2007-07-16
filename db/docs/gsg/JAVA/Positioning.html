@@ -45,7 +45,7 @@
         For example:
      </p>
       <a id="java_cursor3"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseEntry;
@@ -81,13 +81,13 @@ try {
         // DatabaseEntry held a byte array representation of some other data
         // type (such as a complex object) then this operation would look 
         // considerably different.
-        String keyString = new String(foundKey.getData());
-        String dataString = new String(foundData.getData());
-        System.out.println("Key | Data : " + keyString + " | " + 
-                       dataString + "");
+        String keyString = new String(foundKey.getData(), &quot;UTF-8&quot;);
+        String dataString = new String(foundData.getData(), &quot;UTF-8&quot;);
+        System.out.println(&quot;Key | Data : &quot; + keyString + &quot; | &quot; + 
+                       dataString + &quot;&quot;);
     }
 } catch (DatabaseException de) {
-    System.err.println("Error accessing database." + de);
+    System.err.println(&quot;Error accessing database.&quot; + de);
 } finally {
     // Cursors must be closed.
     cursor.close();
@@ -99,7 +99,7 @@ try {
     the database. For example:
     </p>
       <a id="java_cursor4"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
     
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.Database;
@@ -128,12 +128,12 @@ try {
     while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
         OperationStatus.SUCCESS) {
 
-        String theKey = new String(foundKey.getData());
-        String theData = new String(foundData.getData());
-        System.out.println("Key | Data : " +  theKey + " | " + theData + "");
+        String theKey = new String(foundKey.getData(), &quot;UTF-8&quot;);
+        String theData = new String(foundData.getData(), &quot;UTF-8&quot;);
+        System.out.println(&quot;Key | Data : &quot; +  theKey + &quot; | &quot; + theData + &quot;&quot;);
     }
 } catch (DatabaseException de) {
-    System.err.println("Error accessing database." + de);
+    System.err.println(&quot;Error accessing database.&quot; + de);
 } finally {
     // Cursors must be closed.
     cursor.close();
@@ -201,7 +201,9 @@ try {
             that you provide for the database. If no 
                 <span>comparator</span> 
                  
-            is provided, then the default lexicographical sorting is used.
+                is provided, then the default 
+                
+                lexicographical sorting is used.
           </p>
               <p>
             For example, suppose you have database records that use the
@@ -238,8 +240,9 @@ Arizona</pre>
             
           </p>
               <p>
-            Moves the cursor to the first record in the database whose key is
-            greater than or equal to the specified key. If the database supports
+            Moves the cursor to the first record in the database whose key matches the specified
+            key and whose data is
+            greater than or equal to the specified data. If the database supports
             duplicate records, then on matching the key, the cursor is moved to
             the duplicate record with the smallest data that is greater than or
             equal to the specified data.
@@ -274,24 +277,19 @@ Arizona/Florence </pre>
                   </thead>
                   <tbody>
                     <tr>
-                      <td>Al</td>
-                      <td>Fl</td>
-                      <td>Alabama/Florence</td>
-                    </tr>
-                    <tr>
-                      <td>Ar</td>
-                      <td>Fl</td>
-                      <td>Arizona/Florence</td>
-                    </tr>
-                    <tr>
-                      <td>Al</td>
+                      <td>Alaska</td>
                       <td>Fa</td>
                       <td>Alaska/Fairbanks</td>
                     </tr>
                     <tr>
-                      <td>Al</td>
-                      <td>A</td>
-                      <td>Alabama/Athens</td>
+                      <td>Arizona</td>
+                      <td>Fl</td>
+                      <td>Arizona/Florence</td>
+                    </tr>
+                    <tr>
+                      <td>Alaska</td>
+                      <td>An</td>
+                      <td>Alaska/Anchorage</td>
                     </tr>
                   </tbody>
                 </table>
@@ -309,7 +307,7 @@ Arizona/Florence </pre>
         
       </p>
         <a id="java_cursor5"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.Database;
@@ -321,8 +319,8 @@ import com.sleepycat.db.OperationStatus;
 ...
   
 // For this example, hard code the search key and data
-String searchKey = "Al";
-String searchData = "Fa";
+String searchKey = &quot;Alaska&quot;;
+String searchData = &quot;Fa&quot;;
 
 Cursor cursor = null;
 Database myDatabase = null;
@@ -335,9 +333,9 @@ try {
     cursor = myDatabase.openCursor(null, null);
 
     DatabaseEntry theKey = 
-         new DatabaseEntry(searchKey.getBytes("UTF-8"));
+         new DatabaseEntry(searchKey.getBytes(&quot;UTF-8&quot;));
     DatabaseEntry theData = 
-         new DatabaseEntry(searchData.getBytes("UTF-8"));
+         new DatabaseEntry(searchData.getBytes(&quot;UTF-8&quot;));
 
     // Open a cursor using a database handle
     cursor = myDatabase.openCursor(null, null);
@@ -345,21 +343,21 @@ try {
     // Perform the search
     OperationStatus retVal = cursor.getSearchBothRange(theKey, theData, 
                                                        LockMode.DEFAULT);
-    // NOTFOUND is returned if a record cannot be found whose key begins 
-    // with the search key AND whose data begins with the search data.
+    // NOTFOUND is returned if a record cannot be found whose key 
+    // matches the search key AND whose data begins with the search data.
     if (retVal == OperationStatus.NOTFOUND) {
-        System.out.println(searchKey + "/" + searchData + 
-                           " not matched in database " + 
+        System.out.println(searchKey + &quot;/&quot; + searchData + 
+                           &quot; not matched in database &quot; + 
                            myDatabase.getDatabaseName());
     } else {
         // Upon completing a search, the key and data DatabaseEntry 
         // parameters for getSearchBothRange() are populated with the 
         // key/data values of the found record.
-        String foundKey = new String(theKey.getData());
-        String foundData = new String(theData.getData());
-        System.out.println("Found record " + foundKey + "/" + foundData + 
-                           "for search key/data: " + searchKey + 
-                           "/" + searchData);
+        String foundKey = new String(theKey.getData(), &quot;UTF-8&quot;);
+        String foundData = new String(theData.getData(), &quot;UTF-8&quot;);
+        System.out.println(&quot;Found record &quot; + foundKey + &quot;/&quot; + foundData + 
+                           &quot;for search key/data: &quot; + searchKey + 
+                           &quot;/&quot; + searchData);
     }
 
 } catch (Exception e) {
@@ -525,7 +523,7 @@ Arizona/Florence</pre>
         only String objects for the keys and data.</span>
       </p>
         <a id="java_cursor6"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
       
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.Database;
@@ -545,7 +543,7 @@ try {
 
     // Create DatabaseEntry objects
     // searchKey is some String.
-    DatabaseEntry theKey = new DatabaseEntry(searchKey.getBytes("UTF-8"));
+    DatabaseEntry theKey = new DatabaseEntry(searchKey.getBytes(&quot;UTF-8&quot;));
     DatabaseEntry theData = new DatabaseEntry();
 
     // Open a cursor using a database handle
@@ -560,10 +558,10 @@ try {
     // print the duplicates.
     if (cursor.count() &gt; 1) {
         while (retVal == OperationStatus.SUCCESS) {
-            String keyString = new String(theKey.getData());
-            String dataString = new String(theData.getData());
-            System.out.println("Key | Data : " +  keyString + " | " + 
-                               dataString + "");
+            String keyString = new String(theKey.getData(), &quot;UTF-8&quot;);
+            String dataString = new String(theData.getData(), &quot;UTF-8&quot;);
+            System.out.println(&quot;Key | Data : &quot; +  keyString + &quot; | &quot; + 
+                               dataString + &quot;&quot;);
    
             retVal = cursor.getNextDup(theKey, theData, LockMode.DEFAULT);
         }

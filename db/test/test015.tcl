@@ -1,15 +1,16 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test015.tcl,v 11.29 2004/01/28 03:36:30 bostic Exp $
+# $Id: test015.tcl,v 12.4 2006/08/24 14:46:40 bostic Exp $
 #
 # TEST	test015
 # TEST	Partial put test
 # TEST		Partial put test where the key does not initially exist.
 proc test015 { method {nentries 7500} { start 0 } args } {
 	global fixed_len testdir
+	set orig_tdir $testdir
 
 	set low_range 50
 	set mid_range 100
@@ -50,10 +51,10 @@ proc test015 { method {nentries 7500} { start 0 } args } {
 			set env [lindex $args $eindex]
 			set testdir [get_home $env]
 		}
-puts "Verifying testdir $testdir"
 
 		error_check_good verify [verify_dir $testdir "\tTest015.e: "] 0
 	}
+	set testdir $orig_tdir
 }
 
 proc test015_init { } {
@@ -71,6 +72,7 @@ proc test015_body { method off_low off_hi rcount {nentries 10000} args } {
 	set args [convert_args $method $args]
 	set omethod [convert_method $method]
 
+	set orig_tdir $testdir
 	set checkfunc test015.check
 
 	if { [is_fixed_length $method] && \
@@ -248,6 +250,7 @@ proc test015_body { method off_low off_hi rcount {nentries 10000} args } {
 	    [filecmp $t3 $t2] 0
 
 	unset dvals
+	set testdir $orig_tdir
 }
 
 # Check function for test015; keys and data are identical

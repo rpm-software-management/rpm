@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredClassCatalog.java,v 1.4 2004/09/01 14:34:20 mark Exp $
+ * $Id: StoredClassCatalog.java,v 12.4 2006/08/31 18:14:05 bostic Exp $
  */
 
 package com.sleepycat.bind.serial;
@@ -106,13 +106,19 @@ public class StoredClassCatalog implements ClassCatalog {
         classMap = new HashMap();
         formatMap = new HashMap();
 
-        /*
-         * To avoid phantoms, use putNoOverwrite to ensure that there is always
-         * a class ID record.
-         */
-        if (!dbConfig.getReadOnly()) {
-            DatabaseEntry key = new DatabaseEntry(LAST_CLASS_ID_KEY);
-            DatabaseEntry data = new DatabaseEntry(new byte[1]); // zero ID
+        DatabaseEntry key = new DatabaseEntry(LAST_CLASS_ID_KEY);
+        DatabaseEntry data = new DatabaseEntry();
+        if (dbConfig.getReadOnly()) {
+            /* Check that the class ID record exists. */
+            OperationStatus status = db.get(null, key, data, null);
+            if (status != OperationStatus.SUCCESS) {
+                throw new IllegalStateException
+                    ("A read-only catalog database may not be empty");
+            }
+        } else {
+            /* Add the initial class ID record if it doesn't exist.  */
+            data.setData(new byte[1]); // zero ID
+            /* Use putNoOverwrite to avoid phantoms. */
             db.putNoOverwrite(null, key, data);
         }
     }
@@ -149,8 +155,8 @@ public class StoredClassCatalog implements ClassCatalog {
      * DatabaseEntry object for the data, so the bytes of the class format can
      * be examined afterwards.
      */
-    private synchronized ObjectStreamClass getClassFormat(byte[] classID,
-                                                          DatabaseEntry data)
+    private ObjectStreamClass getClassFormat(byte[] classID,
+					     DatabaseEntry data)
         throws DatabaseException, ClassNotFoundException {
 
         /* First check the map and, if found, add class info to the map. */
@@ -200,7 +206,7 @@ public class StoredClassCatalog implements ClassCatalog {
      * loader; if they are different, a new class ID is assigned for the
      * current format.
      */
-    private synchronized ClassInfo getClassInfo(ObjectStreamClass classFormat)
+    private ClassInfo getClassInfo(ObjectStreamClass classFormat)
         throws DatabaseException, ClassNotFoundException {
 
         /*
@@ -264,10 +270,10 @@ public class StoredClassCatalog implements ClassCatalog {
      * record with the new ID also.  The ClassInfo passed as an argument is the
      * one to be updated.
      */
-    private synchronized ClassInfo putClassInfo(ClassInfo classInfo,
-                                                String className,
-                                                DatabaseEntry classKey,
-                                                ObjectStreamClass classFormat)
+    private ClassInfo putClassInfo(ClassInfo classInfo,
+				   String className,
+				   DatabaseEntry classKey,
+				   ObjectStreamClass classFormat)
         throws DatabaseException, ClassNotFoundException {
 
         /* An intent-to-write cursor is needed for CDB. */
@@ -422,6 +428,11 @@ public class StoredClassCatalog implements ClassCatalog {
         } catch (IOException e) { return false; }
     }
 
+    /*
+     * We can return the same byte[] for 0 length arrays.
+     */
+    private static byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
+
     private static byte[] getBytes(DatabaseEntry dbt) {
         byte[] b = dbt.getData();
         if (b == null) {
@@ -430,9 +441,14 @@ public class StoredClassCatalog implements ClassCatalog {
         if (dbt.getOffset() == 0 && b.length == dbt.getSize()) {
             return b;
         }
-        byte[] t = new byte[dbt.getSize()];
-        System.arraycopy(b, dbt.getOffset(), t, 0, t.length);
-        return t;
+	int len = dbt.getSize();
+	if (len == 0) {
+	    return ZERO_LENGTH_BYTE_ARRAY;
+	} else {
+	    byte[] t = new byte[len];
+	    System.arraycopy(b, dbt.getOffset(), t, 0, t.length);
+	    return t;
+	}
     }
 
     private static byte[] getObjectBytes(Object o)

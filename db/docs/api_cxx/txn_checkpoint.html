@@ -1,5 +1,5 @@
-<!--$Id: txn_checkpoint.so,v 10.48 2004/08/13 03:39:03 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: txn_checkpoint.so,v 10.49 2005/03/02 22:57:15 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -27,8 +27,10 @@ DbEnv::txn_checkpoint(u_int32_t kbyte, u_int32_t min, u_int32_t flags) const;
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::txn_checkpoint</h3>
-<p>The DbEnv::txn_checkpoint method flushes the underlying memory pool, writes
-a checkpoint record to the log, and then flushes the log.</p>
+<p>If there has been any logging activity in the database environment since
+the last checkpoint, the DbEnv::txn_checkpoint method flushes the underlying
+memory pool, writes a checkpoint record to the log, and then flushes the
+log.</p>
 <p>The DbEnv::txn_checkpoint method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
@@ -67,6 +69,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

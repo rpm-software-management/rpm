@@ -1,6 +1,6 @@
 <!--$Id: db_set_msgcall.so,v 10.1 2004/04/16 19:01:56 bostic Exp $-->
-<!--$Id: env_set_msgcall.so,v 10.5 2004/09/07 15:37:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_msgcall.so,v 10.7 2006/05/17 20:47:46 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -23,8 +23,7 @@
 <h3><pre>
 #include &lt;db_cxx.h&gt;
 <p>
-void Db::set_msgcall(
-    void (*db_msgcall_fcn)(const DbEnv *dbenv, char *msg));
+void Db::set_msgcall(void (*db_msgcall_fcn)(const DbEnv *dbenv, char *msg));
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: Db::set_msgcall</h3>
@@ -45,6 +44,9 @@ to display the messages via a C library FILE *.</p>
 <p>For <a href="../api_cxx/db_class.html">Db</a> handles opened inside of Berkeley DB environments, calling the
 Db::set_msgcall method affects the entire environment and is equivalent to calling
 the DbEnv::set_msgcall method.</p>
+<p>The Db::set_msgcall method configures operations performed using the specified
+<a href="../api_cxx/db_class.html">Db</a> handle, not all operations performed on the underlying
+database.</p>
 <p>The Db::set_msgcall method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
@@ -55,6 +57,10 @@ reporting function.  The function takes two parameters:
 <dt><b>dbenv</b><dd>The <b>dbenv</b> parameter is the enclosing database environment.
 <dt><b>msg</b><dd>The <b>msg</b> parameter is the message string.
 </dl>
+<p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering Berkeley DB is not guaranteed to work correctly, and the results
+are undefined.</p>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -65,6 +71,6 @@ reporting function.  The function takes two parameters:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

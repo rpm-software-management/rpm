@@ -72,13 +72,13 @@
         <p>In our key creator class, we make use of a custom tuple binding
         called <tt class="classname">InventoryBinding</tt>. This class is described in <a href="dbtJavaUsage.html#InventoryJavaBinding">InventoryBinding.java</a>.</p>
         <p>You can find <tt class="filename">InventoryBinding.java</tt> in: </p>
-        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
         <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.
     </p>
         <a id="java_index11"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
@@ -104,18 +104,13 @@ public class ItemNameKeyCreator implements SecondaryKeyCreator {
         DatabaseEntry resultEntry) // set the key data on this.
         throws DatabaseException {
 
-        if (dataEntry == null) {
-            throw new DatabaseException("Missing primary record data " +
-                "in key creator.");
-        }
-
         try {
             // Convert dataEntry to an Inventory object
             Inventory inventoryItem = 
                 (Inventory) theBinding.entryToObject(dataEntry);
             // Get the item name and use that as the key
             String theItem = inventoryItem.getItemName();
-            resultEntry.setData(theItem.getBytes("UTF-8"));
+            resultEntry.setData(theItem.getBytes(&quot;UTF-8&quot;));
         } catch (IOException willNeverOccur) {}
 
         return true;
@@ -154,7 +149,7 @@ public class ItemNameKeyCreator implements SecondaryKeyCreator {
         </p>
           <a id="java_index12"></a>
           <pre class="programlisting">// File MyDbs.java
-package com.sleepycat.examples.db.GettingStarted;
+package db.GettingStarted;
                                                                                                                                        
 import java.io.FileNotFoundException;
                                                                                                                                        
@@ -175,10 +170,10 @@ public class MyDbs {
     private Database classCatalogDb = null;
     <b class="userinput"><tt>private SecondaryDatabase itemNameIndexDb = null;</tt></b>
 
-    private String vendordb = "VendorDB.db";
-    private String inventorydb = "InventoryDB.db";
-    private String classcatalogdb = "ClassCatalogDB.db";
-    <b class="userinput"><tt>private String itemnameindexdb = "ItemNameIndexDB.db";</tt></b>
+    private String vendordb = &quot;VendorDB.db&quot;;
+    private String inventorydb = &quot;InventoryDB.db&quot;;
+    private String classcatalogdb = &quot;ClassCatalogDB.db&quot;;
+    <b class="userinput"><tt>private String itemnameindexdb = &quot;ItemNameIndexDB.db&quot;;</tt></b>
 
     // Needed for object serialization
     private StoredClassCatalog classCatalog;
@@ -202,8 +197,8 @@ public class MyDbs {
 
         myDbConfig.setErrorStream(System.err);
         <b class="userinput"><tt>mySecConfig.setErrorStream(System.err);</tt></b>
-        myDbConfig.setErrorPrefix("MyDbs");
-        <b class="userinput"><tt>mySecConfig.setErrorPrefix("MyDbs");</tt></b>
+        myDbConfig.setErrorPrefix(&quot;MyDbs&quot;);
+        <b class="userinput"><tt>mySecConfig.setErrorPrefix(&quot;MyDbs&quot;);</tt></b>
         myDbConfig.setType(DatabaseType.BTREE);
         <b class="userinput"><tt>mySecConfig.setType(DatabaseType.BTREE);</tt></b>
         myDbConfig.setAllowCreate(true);
@@ -212,24 +207,24 @@ public class MyDbs {
         // Now open, or create and open, our databases
         // Open the vendors and inventory databases
         try {
-            vendordb = databasesHome + "/" + vendordb;
+            vendordb = databasesHome + &quot;/&quot; + vendordb;
             vendorDb = new Database(vendordb,
                                     null,
                                     myDbConfig);
 
-            inventorydb = databasesHome + "/" + inventorydb;
+            inventorydb = databasesHome + &quot;/&quot; + inventorydb;
             inventoryDb = new Database(inventorydb,
                                         null,
                                         myDbConfig);
 
             // Open the class catalog db. This is used to
             // optimize class serialization.
-            classcatalogdb = databasesHome + "/" + classcatalogdb;
+            classcatalogdb = databasesHome + &quot;/&quot; + classcatalogdb;
             classCatalogDb = new Database(classcatalogdb,
                                           null,
                                           myDbConfig);
         } catch(FileNotFoundException fnfe) {
-            System.err.println("MyDbs: " + fnfe.toString());
+            System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
             System.exit(-1);
         }
 
@@ -257,13 +252,13 @@ public class MyDbs {
         mySecConfig.setKeyCreator(keyCreator);
         // Now open it
         try {
-            itemnameindexdb = databasesHome + "/" + itemnameindexdb;
+            itemnameindexdb = databasesHome + &quot;/&quot; + itemnameindexdb;
             itemNameIndexDb = new SecondaryDatabase(itemnameindexdb,
                                                     null,
                                                     inventoryDb,
                                                     mySecConfig);
         } catch(FileNotFoundException fnfe) {
-            System.err.println("MyDbs: " + fnfe.toString());
+            System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
             System.exit(-1);
         }</tt></b>
     }
@@ -300,7 +295,7 @@ public class MyDbs {
             }
 
         } catch(DatabaseException dbe) {
-            System.err.println("Error closing MyDbs: " +
+            System.err.println(&quot;Error closing MyDbs: &quot; +
                                 dbe.toString());
             System.exit(-1);
         }
@@ -309,7 +304,7 @@ public class MyDbs {
           <p>That completes our update to <tt class="classname">MyDbs</tt>. You
         can find the complete class implementation in:
         </p>
-          <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+          <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
           <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.
@@ -348,7 +343,7 @@ public class MyDbs {
         to seek to the item name key and then display all matching records.
       </p>
         <p>Remember that you can find <tt class="filename">ExampleDatabaseRead.java</tt> in: </p>
-        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+        <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
         <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.
@@ -362,7 +357,7 @@ public class MyDbs {
             First we need to import an additional class in order to use the secondary cursor:
         </p>
           <a id="java_index16"></a>
-          <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+          <pre class="programlisting">package db.GettingStarted;
 
 import java.io.IOException;
 
@@ -379,7 +374,7 @@ import com.sleepycat.db.OperationStatus;
           <a id="java_index17"></a>
           <pre class="programlisting">    public class ExampleDatabaseRead {
 
-    private static String myDbsPath = "./";
+    private static String myDbsPath = &quot;./&quot;;
 
     // Encapsulates the database environment and databases.
     private static MyDbs myDbs = new MyDbs();
@@ -426,7 +421,7 @@ import com.sleepycat.db.OperationStatus;
             // searchKey is the key that we want to find in the
             // secondary db.
             DatabaseEntry searchKey =
-                new DatabaseEntry(locateItem.getBytes("UTF-8"));
+                new DatabaseEntry(locateItem.getBytes(&quot;UTF-8&quot;));
 
             // foundKey and foundData are populated from the primary
             // entry that is associated with the secondary db key.
@@ -452,7 +447,7 @@ import com.sleepycat.db.OperationStatus;
                     foundData, LockMode.DEFAULT);
             }
         } catch (Exception e) {
-            System.err.println("Error on inventory secondary cursor:");
+            System.err.println(&quot;Error on inventory secondary cursor:&quot;);
             System.err.println(e.toString());
             e.printStackTrace();
         } finally {
@@ -467,7 +462,7 @@ import com.sleepycat.db.OperationStatus;
         line switch. To see how this is done, see
         <tt class="filename">ExampleDatabaseRead.java</tt> in:
         </p>
-          <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/com/sleepycat/examples/db/GettingStarted</pre>
+          <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/db/GettingStarted</pre>
           <p>
         where <tt class="literal"><span class="emphasis"><em>DB_INSTALL</em></span></tt> is the location where you
         placed your DB distribution.

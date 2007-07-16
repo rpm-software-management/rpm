@@ -1,5 +1,5 @@
 <!--$Id: memp_fset.so,v 10.30 2004/08/13 03:38:58 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -40,14 +40,9 @@ address previously returned by <a href="../api_c/memp_fget.html">DB_MPOOLFILE-&g
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
-<dt><a name="DB_MPOOL_CLEAN">DB_MPOOL_CLEAN</a><dd>Clear any previously set modification information (that is, don't bother
-writing the page back to the source file).
-<dt><a name="DB_MPOOL_DIRTY">DB_MPOOL_DIRTY</a><dd>The page has been modified and must be written to the source file before
-being evicted from the pool.
 <dt><a name="DB_MPOOL_DISCARD">DB_MPOOL_DISCARD</a><dd>The page is unlikely to be useful in the near future, and should be
 discarded before other pages in the pool.
 </dl>
-<p>The DB_MPOOL_CLEAN and DB_MPOOL_DIRTY flags are mutually exclusive.</p>
 </dl>
 <h3>Errors</h3>
 <p>The DB_MPOOLFILE-&gt;set method
@@ -65,6 +60,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

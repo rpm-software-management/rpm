@@ -1,11 +1,11 @@
 /*-
-* See the file LICENSE for redistribution information.
-*
-* Copyright (c) 2002-2004
-*	Sleepycat Software.  All rights reserved.
-*
-* $Id: Cursor.java,v 1.6 2004/11/05 01:08:31 mjc Exp $
-*/
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
+ *
+ * $Id: Cursor.java,v 12.5 2006/08/24 14:46:07 bostic Exp $
+ */
 
 package com.sleepycat.db;
 
@@ -14,17 +14,20 @@ import com.sleepycat.db.internal.Dbc;
 
 public class Cursor {
     /* package */ Dbc dbc;
-    protected Database database;
-    protected CursorConfig config;
+    /* package */ Database database;
+    /* package */ CursorConfig config;
 
-    protected Cursor() {
+    // Constructor needed by Java RPC server
+    protected Cursor(final Database database, final CursorConfig config) {
+        this.database = database;
+        this.config = config;
     }
 
     Cursor(final Database database, final Dbc dbc, final CursorConfig config)
         throws DatabaseException {
 
-        this.dbc = dbc;
         this.database = database;
+        this.dbc = dbc;
         this.config = config;
     }
 

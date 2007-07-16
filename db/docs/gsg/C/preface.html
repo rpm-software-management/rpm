@@ -44,20 +44,29 @@
               <a href="preface.html#conventions">Conventions Used in this Book</a>
             </span>
           </dt>
+          <dd>
+            <dl>
+              <dt>
+                <span class="sect2">
+                  <a href="preface.html#moreinfo">For More Information</a>
+                </span>
+              </dt>
+            </dl>
+          </dd>
         </dl>
       </div>
       <p>
         Welcome to Berkeley DB (DB).  This document introduces 
             
-            <span>DB, version 4.3.  </span>
+            <span>DB, version 4.5.  </span>
         It is intended 
 		to provide a rapid introduction to the DB API set and related concepts. The goal of this document is 
 		to provide you with an efficient mechanism
         with which you can evaluate DB against your project's technical requirements. As such, this document is
         intended for   
 		<span>C</span> developers and senior software architects who are 
-		looking for an in-process data management solution. No prior experience with Sleepycat technologies is 
-		expected or required.
+		looking for an in-process data management solution. No prior
+        experience with Berkeley DB is expected or required.
      </p>
       <div class="sect1" lang="en" xml:lang="en">
         <div class="titlepage">
@@ -73,12 +82,12 @@
     </p>
         <p>
         Structure names are represented in <tt class="classname">monospaced font</tt>, as are <tt class="methodname">method
-        names</tt>. For example: "<tt class="methodname">DB-&gt;open()</tt> is a method
-		on a <tt class="classname">DB</tt> handle."
+        names</tt>. For example: &quot;<tt class="methodname">DB-&gt;open()</tt> is a method
+		on a <tt class="classname">DB</tt> handle.&quot;
     </p>
         <p>
-        Variable or non-literal text is presented in <span class="emphasis"><em>italics</em></span>. For example: "Go to your
-        <span class="emphasis"><em>DB_INSTALL</em></span> directory."
+        Variable or non-literal text is presented in <span class="emphasis"><em>italics</em></span>. For example: &quot;Go to your
+        <span class="emphasis"><em>DB_INSTALL</em></span> directory.&quot;
     </p>
         <p>
         Program examples are displayed in a <tt class="classname">monospaced font</tt> on a shaded background.
@@ -112,6 +121,61 @@ typedef struct stock_dbs {
             Finally, notes of interest are represented using a note block such
             as this.
         </p>
+        </div>
+        <div class="sect2" lang="en" xml:lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="moreinfo"></a>For More Information</h3>
+              </div>
+            </div>
+            <div></div>
+          </div>
+          <p>
+            Beyond this manual, you may also find the following sources of information useful when building a
+            DB application:
+        </p>
+          <div class="itemizedlist">
+            <ul type="disc">
+              <li>
+                <p>
+                    
+
+                    <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/gsg_txn/C/index.html" target="_top">
+                        Getting Started with Transaction Processing for C
+                    </a>
+                    
+                    
+                </p>
+              </li>
+              <li>
+                <p>
+                        <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/gsg_db_rep/C/index.html" target="_top">
+                                Berkeley DB Getting Started with Replicated Applications for C
+                        </a>
+                        
+                        
+                </p>
+              </li>
+              <li>
+                <p>
+                    <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/ref/toc.html" target="_top">
+                        Berkeley DB Programmer's Reference Guide
+                    </a>
+                </p>
+              </li>
+              <li>
+                <p>
+                    <a href="http://www.oracle.com/technology/documentation/berkeley-db/db/api_c/frame.html" target="_top">
+                        Berkeley DB C API
+                    </a>
+                    
+                    
+                    
+                </p>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

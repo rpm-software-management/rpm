@@ -1,18 +1,22 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1998-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: xa.h,v 11.7 2004/01/28 03:36:02 bostic Exp $
+ * $Id: xa.h,v 12.4 2006/08/24 14:45:30 bostic Exp $
  */
 /*
  * Start of xa.h header
  *
  * Define a symbol to prevent multiple inclusions of this header file
  */
-#ifndef	XA_H
-#define	XA_H
+#ifndef	_DB_XA_H_
+#define	_DB_XA_H_
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*
  * Transaction branch identification: XID and NULLXID:
@@ -173,7 +177,8 @@ struct xa_switch_t {
 #define	XAER_DUPID	-8		/* the XID already exists */
 #define	XAER_OUTSIDE	-9		/* resource manager doing work outside
 					transaction */
-#endif /* ifndef XA_H */
-/*
- * End of xa.h header
- */
+
+#if defined(__cplusplus)
+}
+#endif
+#endif /* !_DB_XA_H_ */

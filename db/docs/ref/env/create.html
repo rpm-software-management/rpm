@@ -1,5 +1,5 @@
-<!--$Id: create.so,v 10.29 2002/06/24 14:50:40 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: create.so,v 10.30 2005/09/23 16:22:42 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -36,15 +36,14 @@ options fall into four broad categories:</p>
 <dt>Subsystem Initialization:<dd>These flags indicate which Berkeley DB subsystems will be initialized for the
 environment, and what operations will happen automatically when
 databases are accessed within the environment.  The flags include
-<a href="../../api_c/env_open.html#DB_JOINENV">DB_JOINENV</a>, <a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a>, <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a>,
-<a href="../../api_c/env_open.html#DB_INIT_LOG">DB_INIT_LOG</a>, <a href="../../api_c/env_open.html#DB_INIT_MPOOL">DB_INIT_MPOOL</a>, and <a href="../../api_c/env_open.html#DB_INIT_TXN">DB_INIT_TXN</a>.
-The <a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a> flag does initialization for Berkeley DB Concurrent Data Store
-applications.  (See <a href="../../ref/cam/intro.html">Building Berkeley DB Concurrent Data Store
-applications</a> for more information.)  The rest of the flags initialize
-a single subsystem; that is, when <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a> is specified,
-applications reading and writing databases opened in this environment
-will be using locking to ensure that they do not overwrite each other's
-changes.
+<a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a>, <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a>, <a href="../../api_c/env_open.html#DB_INIT_LOG">DB_INIT_LOG</a>,
+<a href="../../api_c/env_open.html#DB_INIT_MPOOL">DB_INIT_MPOOL</a>, and <a href="../../api_c/env_open.html#DB_INIT_TXN">DB_INIT_TXN</a>.  The <a href="../../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a>
+flag does initialization for Berkeley DB Concurrent Data Store applications.  (See
+<a href="../../ref/cam/intro.html">Building Berkeley DB Concurrent Data Store applications</a> for more
+information.)  The rest of the flags initialize a single subsystem; that
+is, when <a href="../../api_c/env_open.html#DB_INIT_LOCK">DB_INIT_LOCK</a> is specified, applications reading and
+writing databases opened in this environment will be using locking to
+ensure that they do not overwrite each other's changes.
 <dt>Recovery options:<dd>These flags, which include <a href="../../api_c/env_open.html#DB_RECOVER">DB_RECOVER</a> and
 <a href="../../api_c/env_open.html#DB_RECOVER_FATAL">DB_RECOVER_FATAL</a>, indicate what recovery is to be performed on
 the environment before it is opened for normal use.
@@ -125,6 +124,6 @@ err:	(void)dbenv-&gt;close(dbenv, 0);
 }</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../env/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/open.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -4,14 +4,15 @@
 #define	__rep_AUTO_H
 typedef struct ___rep_update_args {
 	DB_LSN	first_lsn;
-	int	num_files;
+	u_int32_t	first_vers;
+	u_int32_t	num_files;
 } __rep_update_args;
 
 typedef struct ___rep_fileinfo_args {
-	size_t	pgsize;
+	u_int32_t	pgsize;
 	db_pgno_t	pgno;
 	db_pgno_t	max_pgno;
-	int	filenum;
+	u_int32_t	filenum;
 	int32_t	id;
 	u_int32_t	type;
 	u_int32_t	flags;

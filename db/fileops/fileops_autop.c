@@ -2,17 +2,9 @@
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <ctype.h>
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/crypto.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_dispatch.h"
 #include "dbinc/db_am.h"
 #include "dbinc/log.h"
 #include "dbinc/txn.h"
@@ -35,20 +27,18 @@ __fop_create_print(dbenv, dbtp, lsnp, notused2, notused3)
 	int ch;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __fop_create_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__fop_create%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__fop_create%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\tname: ");
 	for (i = 0; i < argp->name.size; i++) {
 		ch = ((u_int8_t *)argp->name.data)[i];
@@ -79,20 +69,18 @@ __fop_remove_print(dbenv, dbtp, lsnp, notused2, notused3)
 	int ch;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __fop_remove_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__fop_remove%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__fop_remove%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\tname: ");
 	for (i = 0; i < argp->name.size; i++) {
 		ch = ((u_int8_t *)argp->name.data)[i];
@@ -128,20 +116,18 @@ __fop_write_print(dbenv, dbtp, lsnp, notused2, notused3)
 	int ch;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __fop_write_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__fop_write%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__fop_write%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\tname: ");
 	for (i = 0; i < argp->name.size; i++) {
 		ch = ((u_int8_t *)argp->name.data)[i];
@@ -181,20 +167,18 @@ __fop_rename_print(dbenv, dbtp, lsnp, notused2, notused3)
 	int ch;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __fop_rename_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__fop_rename%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__fop_rename%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\toldname: ");
 	for (i = 0; i < argp->oldname.size; i++) {
 		ch = ((u_int8_t *)argp->oldname.data)[i];
@@ -236,20 +220,18 @@ __fop_file_remove_print(dbenv, dbtp, lsnp, notused2, notused3)
 	int ch;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __fop_file_remove_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__fop_file_remove%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__fop_file_remove%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\treal_fid: ");
 	for (i = 0; i < argp->real_fid.size; i++) {
 		ch = ((u_int8_t *)argp->real_fid.data)[i];

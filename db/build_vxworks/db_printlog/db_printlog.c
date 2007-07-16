@@ -1,28 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_printlog.c,v 11.64 2004/06/17 17:35:17 bostic Exp $
+ * $Id: db_printlog.c,v 12.20 2006/08/26 09:23:10 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef lint
-static const char copyright[] =
-    "Copyright (c) 1996-2004\nSleepycat Software Inc.  All rights reserved.\n";
-#endif
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -33,12 +18,27 @@ static const char copyright[] =
 #include "dbinc/qam.h"
 #include "dbinc/txn.h"
 
-int db_printlog_lsn_arg __P((const char *, char *, DB_LSN *));
+#ifndef lint
+static const char copyright[] =
+    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
+#endif
+
+int db_printlog_env_init_print __P((DB_ENV *, u_int32_t,
+    int (***)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *), size_t *));
+int db_printlog_env_init_print_42 __P((DB_ENV *,
+    int (***)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *), size_t *));
+int db_printlog_env_init_print_43 __P((DB_ENV *,
+    int (***)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *), size_t *));
+int db_printlog_env_init_print_45 __P((DB_ENV *,
+    int (***)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *), size_t *));
+int db_printlog_lsn_arg __P((char *, DB_LSN *));
 int db_printlog_main __P((int, char *[]));
 int db_printlog_open_rep_db __P((DB_ENV *, DB **, DBC **));
 int db_printlog_print_app_record __P((DB_ENV *, DBT *, DB_LSN *, db_recops));
 int db_printlog_usage __P((void));
-int db_printlog_version_check __P((const char *));
+int db_printlog_version_check __P((void));
+
+const char *progname;
 
 int
 db_printlog(args)
@@ -61,20 +61,24 @@ db_printlog_main(argc, argv)
 {
 	extern char *optarg;
 	extern int optind, __db_getopt_reset;
-	const char *progname = "db_printlog";
 	DB *dbp;
 	DBC *dbc;
 	DBT data, keydbt;
 	DB_ENV	*dbenv;
 	DB_LOGC *logc;
-	DB_LSN key, start, stop;
+	DB_LSN key, start, stop, verslsn;
 	size_t dtabsize;
-	u_int32_t logcflag;
+	u_int32_t logcflag, newversion, version;
 	int ch, cmp, exitval, nflag, rflag, ret, repflag;
 	int (**dtab) __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
 	char *home, *passwd;
 
-	if ((ret = db_printlog_version_check(progname)) != 0)
+	if ((progname = strrchr(argv[0], '/')) == NULL)
+		progname = argv[0];
+	else
+		++progname;
+
+	if ((ret = db_printlog_version_check()) != 0)
 		return (ret);
 
 	dbp = NULL;
@@ -92,11 +96,13 @@ db_printlog_main(argc, argv)
 	while ((ch = getopt(argc, argv, "b:e:h:NP:rRV")) != EOF)
 		switch (ch) {
 		case 'b':
-			if (db_printlog_lsn_arg(progname, optarg, &start))
+			/* Don't use getsubopt(3), not all systems have it. */
+			if (db_printlog_lsn_arg(optarg, &start))
 				return (db_printlog_usage());
 			break;
 		case 'e':
-			if (db_printlog_lsn_arg(progname, optarg, &stop))
+			/* Don't use getsubopt(3), not all systems have it. */
+			if (db_printlog_lsn_arg(optarg, &stop))
 				return (db_printlog_usage());
 			break;
 		case 'h':
@@ -192,29 +198,11 @@ db_printlog_main(argc, argv)
 			dbenv->err(dbenv, ret, "DB_ENV->open");
 			goto shutdown;
 		}
-	} else if ((ret = dbenv->open(dbenv, home,
-	    DB_JOINENV | DB_USE_ENVIRON, 0)) != 0 &&
+	} else if ((ret = dbenv->open(dbenv, home, DB_USE_ENVIRON, 0)) != 0 &&
 	    (ret == DB_VERSION_MISMATCH ||
 	    (ret = dbenv->open(dbenv, home,
 	    DB_CREATE | DB_INIT_LOG | DB_PRIVATE | DB_USE_ENVIRON, 0)) != 0)) {
 		dbenv->err(dbenv, ret, "DB_ENV->open");
-		goto shutdown;
-	}
-
-	/* Initialize print callbacks. */
-	if ((ret = __bam_init_print(dbenv, &dtab, &dtabsize)) != 0 ||
-	    (ret = __crdel_init_print(dbenv, &dtab, &dtabsize)) != 0 ||
-	    (ret = __db_init_print(dbenv, &dtab, &dtabsize)) != 0 ||
-	    (ret = __dbreg_init_print(dbenv, &dtab, &dtabsize)) != 0 ||
-	    (ret = __fop_init_print(dbenv, &dtab, &dtabsize)) != 0 ||
-#ifdef HAVE_HASH
-	    (ret = __ham_init_print(dbenv, &dtab, &dtabsize)) != 0 ||
-#endif
-#ifdef HAVE_QUEUE
-	    (ret = __qam_init_print(dbenv, &dtab, &dtabsize)) != 0 ||
-#endif
-	    (ret = __txn_init_print(dbenv, &dtab, &dtabsize)) != 0) {
-		dbenv->err(dbenv, ret, "callback: initialization");
 		goto shutdown;
 	}
 
@@ -236,6 +224,24 @@ db_printlog_main(argc, argv)
 	}
 	memset(&data, 0, sizeof(data));
 
+	/*
+	 * If we're using the repflag, we're immediately initializing
+	 * the print table.  Use the current version.  If we're printing
+	 * the log then initialize version to 0 so that we get the
+	 * correct version right away.
+	 */
+	if (repflag)
+		version = DB_LOGVERSION;
+	else
+		version = 0;
+	ZERO_LSN(verslsn);
+
+	/* Initialize print callbacks if repflag. */
+	if (repflag &&
+	    (ret = db_printlog_env_init_print(dbenv, version, &dtab, &dtabsize)) != 0) {
+		dbenv->err(dbenv, ret, "callback: initialization");
+		goto shutdown;
+	}
 	for (; !__db_util_interrupted(); logcflag = rflag ? DB_PREV : DB_NEXT) {
 		if (repflag) {
 			ret = dbc->c_get(dbc, &keydbt, &data, logcflag);
@@ -247,7 +253,7 @@ db_printlog_main(argc, argv)
 			if (ret == DB_NOTFOUND)
 				break;
 			dbenv->err(dbenv,
-			    ret, repflag ? "DB_LOGC->get" : "DBC->get");
+			    ret, repflag ? "DBC->get" : "DB_LOGC->get");
 			goto shutdown;
 		}
 
@@ -255,9 +261,29 @@ db_printlog_main(argc, argv)
 		 * We may have reached the end of the range we're displaying.
 		 */
 		if (!IS_ZERO_LSN(stop)) {
-			cmp = log_compare(&key, &stop);
+			cmp = LOG_COMPARE(&key, &stop);
 			if ((rflag && cmp < 0) || (!rflag && cmp > 0))
 				break;
+		}
+		if (!repflag && key.file != verslsn.file) {
+			/*
+			 * If our log file changed, we need to see if the
+			 * version of the log file changed as well.
+			 * If it changed, reset the print table.
+			 */
+			if ((ret = logc->version(logc, &newversion, 0)) != 0) {
+				dbenv->err(dbenv, ret, "DB_LOGC->version");
+				goto shutdown;
+			}
+			if (version != newversion) {
+				version = newversion;
+				if ((ret = db_printlog_env_init_print(dbenv, version,
+				    &dtab, &dtabsize)) != 0) {
+					dbenv->err(dbenv, ret,
+					    "callback: initialization");
+					goto shutdown;
+				}
+			}
 		}
 
 		ret = __db_dispatch(dbenv,
@@ -309,17 +335,154 @@ shutdown:	exitval = 1;
 	return (exitval == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
+/*
+ * env_init_print --
+ */
+int
+db_printlog_env_init_print(dbenv, version, dtabp, dtabsizep)
+	DB_ENV *dbenv;
+	u_int32_t version;
+	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t *dtabsizep;
+{
+	int ret;
+
+	/*
+	 * We need to prime the print table with the current print
+	 * functions.  Then we overwrite only specific entries based on
+	 * each previous version we support.
+	 */
+	if ((ret = db_printlog_env_init_print_45(dbenv, dtabp, dtabsizep)) != 0)
+		return (ret);
+
+	switch (version) {
+	/*
+	 * There are no log record/recovery differences between
+	 * 4.4 and 4.5.  The log version changed due to checksum.
+	 */
+	case DB_LOGVERSION_45:
+	case DB_LOGVERSION_44:
+		ret = 0;
+		break;
+	case DB_LOGVERSION_43:
+		ret = db_printlog_env_init_print_43(dbenv, dtabp, dtabsizep);
+		break;
+	case DB_LOGVERSION_42:
+		ret = db_printlog_env_init_print_42(dbenv, dtabp, dtabsizep);
+		break;
+	default:
+		__db_errx(dbenv, "Unknown version %lu", (u_long)version);
+		ret = EINVAL;
+		break;
+	}
+	return (ret);
+}
+
+int
+db_printlog_env_init_print_42(dbenv, dtabp, dtabsizep)
+	DB_ENV *dbenv;
+	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t *dtabsizep;
+{
+	int ret;
+
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __db_relink_42_print, DB___db_relink_42)) != 0)
+		goto err;
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __db_pg_alloc_42_print, DB___db_pg_alloc_42)) != 0)
+		goto err;
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __db_pg_free_42_print, DB___db_pg_free_42)) != 0)
+		goto err;
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __db_pg_freedata_42_print, DB___db_pg_freedata_42)) != 0)
+		goto err;
+#if HAVE_HASH
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __ham_metagroup_42_print, DB___ham_metagroup_42)) != 0)
+		goto err;
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __ham_groupalloc_42_print, DB___ham_groupalloc_42)) != 0)
+		goto err;
+#endif
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __txn_ckp_42_print, DB___txn_ckp_42)) != 0)
+		goto err;
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __txn_regop_42_print, DB___txn_regop_42)) != 0)
+		goto err;
+err:
+	return (ret);
+}
+
+int
+db_printlog_env_init_print_43(dbenv, dtabp, dtabsizep)
+	DB_ENV *dbenv;
+	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t *dtabsizep;
+{
+	int ret;
+
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __bam_relink_43_print, DB___bam_relink_43)) != 0)
+		goto err;
+	/*
+	 * We want to use the 4.2-based txn_regop record.
+	 */
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __txn_regop_42_print, DB___txn_regop_42)) != 0)
+		goto err;
+err:
+	return (ret);
+}
+
+/*
+ * env_init_print_45 --
+ *
+ */
+int
+db_printlog_env_init_print_45(dbenv, dtabp, dtabsizep)
+	DB_ENV *dbenv;
+	int (***dtabp)__P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+	size_t *dtabsizep;
+{
+	int ret;
+
+	if ((ret = __bam_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+	if ((ret = __crdel_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+	if ((ret = __db_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+	if ((ret = __dbreg_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+	if ((ret = __fop_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+#ifdef HAVE_HASH
+	if ((ret = __ham_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+#endif
+#ifdef HAVE_QUEUE
+	if ((ret = __qam_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+#endif
+	if ((ret = __txn_init_print(dbenv, dtabp, dtabsizep)) != 0)
+		goto err;
+err:
+	return (ret);
+}
+
 int
 db_printlog_usage()
 {
-	fprintf(stderr, "usage: db_printlog %s\n",
+	fprintf(stderr, "usage: %s %s\n", progname,
 	    "[-NrV] [-b file/offset] [-e file/offset] [-h home] [-P password]");
 	return (EXIT_FAILURE);
 }
 
 int
-db_printlog_version_check(progname)
-	const char *progname;
+db_printlog_version_check()
 {
 	int v_major, v_minor, v_patch;
 
@@ -346,7 +509,7 @@ db_printlog_print_app_record(dbenv, dbt, lsnp, op)
 	int ch;
 	u_int32_t i, rectype;
 
-	DB_ASSERT(op == DB_TXN_PRINT);
+	DB_ASSERT(dbenv, op == DB_TXN_PRINT);
 
 	COMPQUIET(dbenv, NULL);
 	COMPQUIET(op, DB_TXN_PRINT);
@@ -393,7 +556,7 @@ db_printlog_open_rep_db(dbenv, dbpp, dbcp)
 
 	dbp = *dbpp;
 	if ((ret =
-	    dbp->open(dbp, NULL, "__db.rep.db", NULL, DB_BTREE, 0, 0)) != 0) {
+	    dbp->open(dbp, NULL, REPDBNAME, NULL, DB_BTREE, 0, 0)) != 0) {
 		dbenv->err(dbenv, ret, "DB->open");
 		goto err;
 	}
@@ -415,31 +578,24 @@ err:	if (*dbpp != NULL)
  *	Parse a LSN argument.
  */
 int
-db_printlog_lsn_arg(progname, optarg, lsnp)
-	const char *progname;
-	char *optarg;
+db_printlog_lsn_arg(arg, lsnp)
+	char *arg;
 	DB_LSN *lsnp;
 {
-	char *p;
 	u_long uval;
+	char *p;
 
 	/*
 	 * Expected format is: lsn.file/lsn.offset.
-	 *
-	 * Don't use getsubopt(3), some systems don't have it.
 	 */
-	if ((p = strchr(optarg, '/')) == NULL)
+	if ((p = strchr(arg, '/')) == NULL)
 		return (1);
 	*p = '\0';
 
-	if (__db_getulong(NULL, progname, optarg, 0, 0, &uval))
-		return (1);
-	if (uval > UINT32_MAX)
+	if (__db_getulong(NULL, progname, arg, 0, UINT32_MAX, &uval))
 		return (1);
 	lsnp->file = uval;
-	if (__db_getulong(NULL, progname, p + 1, 0, 0, &uval))
-		return (1);
-	if (uval > UINT32_MAX)
+	if (__db_getulong(NULL, progname, p + 1, 0, UINT32_MAX, &uval))
 		return (1);
 	lsnp->offset = uval;
 	return (0);

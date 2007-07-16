@@ -81,12 +81,12 @@ public class Sample
 <b class="userinput"><tt>        Set suppliers = views.getSupplierSet();
         if (suppliers.isEmpty())
         {
-            System.out.println("Adding Suppliers");
-            suppliers.add(new Supplier("S1", "Smith", 20, "London"));
-            suppliers.add(new Supplier("S2", "Jones", 10, "Paris"));
-            suppliers.add(new Supplier("S3", "Blake", 30, "Paris"));
-            suppliers.add(new Supplier("S4", "Clark", 20, "London"));
-            suppliers.add(new Supplier("S5", "Adams", 30, "Athens"));
+            System.out.println(&quot;Adding Suppliers&quot;);
+            suppliers.add(new Supplier(&quot;S1&quot;, &quot;Smith&quot;, 20, &quot;London&quot;));
+            suppliers.add(new Supplier(&quot;S2&quot;, &quot;Jones&quot;, 10, &quot;Paris&quot;));
+            suppliers.add(new Supplier(&quot;S3&quot;, &quot;Blake&quot;, 30, &quot;Paris&quot;));
+            suppliers.add(new Supplier(&quot;S4&quot;, &quot;Clark&quot;, 20, &quot;London&quot;));
+            suppliers.add(new Supplier(&quot;S5&quot;, &quot;Adams&quot;, 30, &quot;Athens&quot;));
         }</tt></b>
     }
 
@@ -95,19 +95,19 @@ public class Sample
 <b class="userinput"><tt>        Set parts = views.getPartSet();
         if (parts.isEmpty())
         {
-            System.out.println("Adding Parts");
-            parts.add(new Part("P1", "Nut", "Red",
-                      new Weight(12.0, Weight.GRAMS), "London"));
-            parts.add(new Part("P2", "Bolt", "Green",
-                      new Weight(17.0, Weight.GRAMS), "Paris"));
-            parts.add(new Part("P3", "Screw", "Blue",
-                      new Weight(17.0, Weight.GRAMS), "Rome"));
-            parts.add(new Part("P4", "Screw", "Red",
-                      new Weight(14.0, Weight.GRAMS), "London"));
-            parts.add(new Part("P5", "Cam", "Blue",
-                      new Weight(12.0, Weight.GRAMS), "Paris"));
-            parts.add(new Part("P6", "Cog", "Red",
-                      new Weight(19.0, Weight.GRAMS), "London"));
+            System.out.println(&quot;Adding Parts&quot;);
+            parts.add(new Part(&quot;P1&quot;, &quot;Nut&quot;, &quot;Red&quot;,
+                      new Weight(12.0, Weight.GRAMS), &quot;London&quot;));
+            parts.add(new Part(&quot;P2&quot;, &quot;Bolt&quot;, &quot;Green&quot;,
+                      new Weight(17.0, Weight.GRAMS), &quot;Paris&quot;));
+            parts.add(new Part(&quot;P3&quot;, &quot;Screw&quot;, &quot;Blue&quot;,
+                      new Weight(17.0, Weight.GRAMS), &quot;Rome&quot;));
+            parts.add(new Part(&quot;P4&quot;, &quot;Screw&quot;, &quot;Red&quot;,
+                      new Weight(14.0, Weight.GRAMS), &quot;London&quot;));
+            parts.add(new Part(&quot;P5&quot;, &quot;Cam&quot;, &quot;Blue&quot;,
+                      new Weight(12.0, Weight.GRAMS), &quot;Paris&quot;));
+            parts.add(new Part(&quot;P6&quot;, &quot;Cog&quot;, &quot;Red&quot;,
+                      new Weight(19.0, Weight.GRAMS), &quot;London&quot;));
         }</tt></b>
     }
 
@@ -116,19 +116,19 @@ public class Sample
 <b class="userinput"><tt>        Set shipments = views.getShipmentSet();
         if (shipments.isEmpty())
         {
-            System.out.println("Adding Shipments");
-            shipments.add(new Shipment("P1", "S1", 300));
-            shipments.add(new Shipment("P2", "S1", 200));
-            shipments.add(new Shipment("P3", "S1", 400));
-            shipments.add(new Shipment("P4", "S1", 200));
-            shipments.add(new Shipment("P5", "S1", 100));
-            shipments.add(new Shipment("P6", "S1", 100));
-            shipments.add(new Shipment("P1", "S2", 300));
-            shipments.add(new Shipment("P2", "S2", 400));
-            shipments.add(new Shipment("P2", "S3", 200));
-            shipments.add(new Shipment("P2", "S4", 200));
-            shipments.add(new Shipment("P4", "S4", 300));
-            shipments.add(new Shipment("P5", "S4", 400));
+            System.out.println(&quot;Adding Shipments&quot;);
+            shipments.add(new Shipment(&quot;P1&quot;, &quot;S1&quot;, 300));
+            shipments.add(new Shipment(&quot;P2&quot;, &quot;S1&quot;, 200));
+            shipments.add(new Shipment(&quot;P3&quot;, &quot;S1&quot;, 400));
+            shipments.add(new Shipment(&quot;P4&quot;, &quot;S1&quot;, 200));
+            shipments.add(new Shipment(&quot;P5&quot;, &quot;S1&quot;, 100));
+            shipments.add(new Shipment(&quot;P6&quot;, &quot;S1&quot;, 100));
+            shipments.add(new Shipment(&quot;P1&quot;, &quot;S2&quot;, 300));
+            shipments.add(new Shipment(&quot;P2&quot;, &quot;S2&quot;, 400));
+            shipments.add(new Shipment(&quot;P2&quot;, &quot;S3&quot;, 200));
+            shipments.add(new Shipment(&quot;P2&quot;, &quot;S4&quot;, 200));
+            shipments.add(new Shipment(&quot;P4&quot;, &quot;S4&quot;, 300));
+            shipments.add(new Shipment(&quot;P5&quot;, &quot;S4&quot;, 400));
         }</tt></b>
     } </pre>
       <p>
@@ -154,21 +154,21 @@ public class Sample
         public void doWork()
             throws Exception
         {
-<b class="userinput"><tt>            printValues("Parts",
+<b class="userinput"><tt>            printValues(&quot;Parts&quot;,
                          views.getPartSet().iterator());
-            printValues("Suppliers",
+            printValues(&quot;Suppliers&quot;,
                          views.getSupplierSet().iterator());</tt></b>
-            printValues("Suppliers for City Paris",
+            printValues(&quot;Suppliers for City Paris&quot;,
                          views.getSupplierByCityMap().duplicates(
-                                            "Paris").iterator());
-<b class="userinput"><tt>            printValues("Shipments",
+                                            &quot;Paris&quot;).iterator());
+<b class="userinput"><tt>            printValues(&quot;Shipments&quot;,
                          views.getShipmentSet().iterator());</tt></b>
-            printValues("Shipments for Part P1",
+            printValues(&quot;Shipments for Part P1&quot;,
                          views.getShipmentByPartMap().duplicates(
-                                            new PartKey("P1")).iterator());
-            printValues("Shipments for Supplier S1",
+                                            new PartKey(&quot;P1&quot;)).iterator());
+            printValues(&quot;Shipments for Supplier S1&quot;,
                          views.getShipmentBySupplierMap().duplicates(
-                                            new SupplierKey("S1")).iterator());
+                                            new SupplierKey(&quot;S1&quot;)).iterator());
         }
     }
     ...

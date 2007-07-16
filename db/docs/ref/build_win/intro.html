@@ -1,10 +1,10 @@
-<!--"@(#)intro.so	10.26 (Sleepycat) 11/18/99"-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: intro.so,v 10.79 2006/01/27 20:01:45 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Building for Win32</title>
+<title>Berkeley DB Reference Guide: Building for Windows</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
@@ -12,156 +12,191 @@
 <a name="2"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for Windows systems</dl></h3></td>
-<td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/unicode.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/small.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h3 align=center>Building for Win32</h3>
-<p>The <b>build_win32</b> directory in the Berkeley DB distribution contains
+<h3 align=center>Building for Windows</h3>
+<p>This page contains general instructions on building Berkeley DB for
+specific windows platforms using specific compilers. The
+<a href="../../ref/build_win/faq.html">Windows FAQ</a> also
+contains helpful information.</p>
+<p>The <b>build_windows</b> directory in the Berkeley DB distribution contains
 project files for Microsoft Visual C++:</p>
 <table border=1 align=center>
 <tr><th>Project File</th><th>Description</th></tr>
 <tr>    <td align=center>Berkeley_DB.dsw</td>    <td align=center>Visual C++ 6.0 workspace</td>    </tr>
 <tr>    <td align=center>*.dsp</td>    <td align=center>Visual C++ 6.0 projects</td>    </tr>
 </table>
-<p>These project files can be used to build Berkeley DB for any Win32 platform:
-Windows/XP, Windows/2000, Windows/NT, Windows/98 and Windows/95.</p>
-<p>The <b>build_win64</b> directory contains project files for Microsoft
-Visual C++ to target Windows on 64-bit CPUs:</p>
-<h3>Building Berkeley DB with Visual C++ .NET for Win32</h3>
+<p>These project files can be used to build Berkeley DB for the following platforms:
+Windows NT/2K/XP/2003, Windows 98/ME and 64-bit Windows XP/2003.</p>
+<h3>Building Berkeley DB for Windows NT/2K/XP/2003</h3>
+<h4>Visual C++ .NET 2005</h4>
+<ol>
+<p><li>Choose <i>File -&gt; Open -&gt; Project/Solution...</i>.
+In the <b>build_windows</b>, select <b>Berkeley_DB</b> and click
+Open.
+<p><li>You will be prompted to convert the project files to current Visual C++
+format.  Select "Yes to All".
+<p><li>Choose the project configuration from the drop-down menu on the tool
+bar (usually Debug or Release for Win32).
+<p><li>To build, right-click on the build_all target and select Build.
+</ol>
+<h4>Visual C++ .NET or Visual C++ .NET 2003</h4>
+<p>This is very similar to the building with Visual Studio 2005, but some
+menu options have been rearranged:</p>
 <ol>
 <p><li>Choose <i>File -&gt; Open Solution</i>.  Look in the
-<b>build_win32</b> directory for compatible workspace files, select
+<b>build_windows</b> directory for compatible workspace files, select
 <b>Berkeley_DB.dsw</b>, and press Open.
-<p><li>You will be prompted to convert the project files to Visual C++ 7.0
-project format.  Select "Yes to All".
-<p><li>Set your include directories.  Choose <i>Tools -&gt; Options
--&gt; Projects -&gt; VC++ Directories</i>.  Under the "Show
-directories for" pulldown, select "Include files".  Add the full
-pathnames for the <b>build_win32</b> subdirectory of Berkeley DB.
-Then click OK.
+<p><li>You will be prompted to convert the project files to current Visual C++
+format.  Select "Yes to All".
 <p><li>Choose the project configuration from the drop-down menu on the .NET
-tool bar (Debug, Release, Debug Static or Release Static).
-<p><li>To build, right-click on build_all and select Build.  The results of
-your build will be placed in a subdirectory of <b>build_win32</b>
-named after the configuration you chose (for examples,
-<b>build_win32/Release</b> or <b>build_win32/Debug</b>).
+tool bar (Debug or Release).
+<p><li>To build, right-click on build_all and select Build.
 </ol>
-<h3>Building Berkeley DB with Visual C++ 6.0 for Win32</h3>
+<h4>Visual C++ 6.0</h4>
 <ol>
 <p><li>Choose <i>File -&gt; Open Workspace</i>.  Look in the
-<b>build_win32</b> directory for Workspaces, select
+<b>build_windows</b> directory for Workspaces, select
 <b>Berkeley_DB.dsw</b>, and press Open.
-<p><li>Set your include directories.  <i>Choose Tools -&gt; Options
--&gt; Directories</i>.  Under the "Show directories for" pulldown,
-select "Include files".  Add the full pathnames for the
-<b>build_win32</b> subdirectory of Berkeley DB.  Then click OK.
 <p><li>Choose the desired project configuration by going to <i>Build
 -&gt; Set Active Configuration</i> and select the appropriate option
-to the build_all project (Debug, Release, Debug Static or Release
-Static).  Then click OK.
-<p><li>To build, select <i>Build -&gt; Build build_all.exe</i>.  The
-results of your build will be placed in a subdirectory of
-<b>build_win32</b> named after the configuration you chose (for
-examples, <b>build_win32/Release</b> or
-<b>build_win32/Debug</b>).
+to the build_all project (Debug or Release).  Then click OK.
+<p><li>To build, press F7.
 </ol>
-<p>When building your application, you should normally use compile
-options "Debug Multithreaded DLL" and link against
-<b>build_win32/Debug/libdb43d.lib</b>.  If you
-want to link against a static (non-DLL) version of the library, use
-the "Debug Multithreaded" compile options and link against
-<b>build_win32/Debug_static/libdb43sd.lib</b>.
-You can also build using a release version of the libraries and tools,
+<h4>Build results</h4>
+<p>The results of your build will be placed in a subdirectory of
+<b>build_windows</b> named after the configuration you chose (for
+examples, <b>build_windows\Release</b> or
+<b>build_windows\Debug</b>).</p>
+<p>When building your application during development, you should normally
+use compile options "Debug Multithreaded DLL" and link against
+<b>build_windows\Debug\libdb45d.lib</b>.  You can
+also build using a release version of the Berkeley DB libraries and tools,
 which will be placed in
-<b>build_win32/Release/libdb43.lib</b>.  The
-static version will be in
-<b>build_win32/Release_static/libdb43s.lib</b>.
-You will also need to add the <b>build_win32</b> directory to the
-list of include directories of your application's project.</p>
-<p>Each release of Berkeley DB is built and tested with this procedure using
-Microsoft Visual C++ 6.0, Standard Version and Microsoft Visual C++
-.NET, Standard Version.</p>
+<b>build_windows\Release\libdb45.lib</b>.  When
+linking against the release build, you should compile your code with
+the "Release Multithreaded DLL" compile option.  You will also need to
+add the <b>build_windows</b> directory to the list of include
+directories of your application's project, or copy the Berkeley DB include
+files to another location.</p>
+<h3>Building Berkeley DB for Windows 98/ME</h3>
+<p>By default on Windows, Berkeley DB supports internationalized filenames by
+treating all directory paths and filenames passed to Berkeley DB methods as
+UTF-8 encoded strings.  All paths are internally converted to wide
+character strings and passed to the wide character variants of Windows
+system calls.</p>
+<p>This allows applications to create and open databases with names that
+cannot be represented with ASCII names while maintaining compatibility
+with applications that work purely with ASCII paths.</p>
+<p>Windows 98 and ME do not support Unicode paths directly.  To build for
+those versions of Windows, either follow the above instructions,
+choosing the "Debug ASCII" or "Release ASCII" build targets, or follow
+the instructions at
+<a href="http://www.microsoft.com/globaldev/handson/dev/mslu_announce.mspx">Microsoft's web site</a>.</p>
+<p>The ASCII builds will also work on Windows NT/2K/XP and 2003, but will
+not translate paths to wide character strings.</p>
 <h3>Building Berkeley DB for 64-bit Windows</h3>
-<p>You can follow the same steps on either the Itanium itself or to
-cross-compile on an x86 box.</p>
+<p>The following procedure can be used on either to build natively on a
+64-bit system or to cross-compile from a 32-bit system.</p>
+<h4>x64 build with Visual Studio 2005</h4>
+<ol>
+<p><li>Choose <i>File -&gt; Open -&gt; Project/Solution...</i>.
+In the <b>build_windows</b>, select <b>Berkeley_DB</b> and click
+Open.
+<p><li>You will be prompted to convert the project files to current Visual C++
+format.  Select "Yes to All".
+<p><li>Choose the project configuration from the drop-down menu on the tool
+bar ("Debug AMD64", "Release AMD64").  Change the CPU type from
+Win32 to x64.
+<p><li>Right-click on the build_all target and select Build.
+</ol>
+<h4>64-bit build with Visual Studio .NET 2003 or earlier</h4>
 <p>You will need latest Platform SDK from Microsoft, available from
 <a href="http://www.microsoft.com/msdownload/platformsdk/sdkupdate/">Microsoft's web site</a>.  You only need the "Core SDK" from there.</p>
 <p>Once that is installed, you should have an entry in your Start Menu
 called <i>Microsoft Platform SDK (date) -&gt; Open Build
-Environment Window -&gt; Windows Server 2003 64-bit Build Environment
--&gt; Set Win Svr 2003 Build Env (Debug)</i>.  Selecting that will open
-a command window with the environment set up for Itanium development.</p>
-<p>Then, in the <b>build_win64</b> directory in the Berkeley DB distribution,
-run:
-<blockquote><pre>msdev /useenv BerkeleyDB.dsw /make "build_all - Debug"</pre></blockquote>
-You should now have Itanium binaries in the "Debug" directory.</p>
+Environment Window -&gt; Windows Server 2003 64-bit Build
+Environment -&gt; Set Win Svr 2003 x64 Build Env (Debug)</i>.
+Selecting that will open a command window with the environment set up
+for 64-bit Windows development targeting AMD64-compatible CPUs.</p>
+<p>Depending on how your computer is configured, you may need to run the
+<b>vcvars32.bat</b> or script to set up the environment to build
+from the command line with Visual Studio.</p>
+<p>Then, in the <b>build_windows</b> directory in the Berkeley DB
+distribution, run this for Visual Studio .NET:
+<blockquote><pre>devenv Berkeley_DB.dsw</pre></blockquote>
+Choose "Yes To All" in the dialog box that appears, then close Visual
+Studio, then run:
+<blockquote><pre>devenv Berkeley_DB.sln /build "Debug AMD64" /project "build_all" /useenv</pre></blockquote>
+For Visual Studio 6, just run this instead:
+<blockquote><pre>msdev Berkeley_DB.dsw /make "build_all - Debug AMD64" /useenv</pre></blockquote>
+You should now have AMD64 binaries in the "Debug_AMD64" directory.</p>
 <p>To build a release, open the "Retail" window instead of the "Debug"
-window, and run:
-<blockquote><pre>msdev /useenv BerkeleyDB.dsw /make "build_all - Release"</pre></blockquote>
-There may be some warnings during build, but we don't believe any of
-them are real bugs.</p>
+window, and change Debug to Release in the above commands.  To build
+for Itanium, change AMD64 and x64 to IA64.</p>
 <h3>Building Berkeley DB with Cygwin</h3>
 <p>To build Berkeley DB with Cygwin, follow the instructions in
 <a href="../../ref/build_unix/intro.html">Building for UNIX</a>.</p>
 <h3>Building the C++ API</h3>
-<p>C++ support is built automatically on Win32.</p>
+<p>C++ support is built automatically on Windows.</p>
 <h3>Building the Java API</h3>
 <p>Java support is not built automatically.  The following instructions
 assume that you have installed the Sun Java Development Kit in
-<b>d:/java</b>.  Of course, if you installed elsewhere or have
+<b>d:\java</b>.  Of course, if you installed elsewhere or have
 different Java software, you will need to adjust the pathnames
 accordingly.</p>
-<h4>Building Java with Visual C++ .NET</h4>
+<h4>Building Java with Visual C++ .NET or above</h4>
 <ol>
 <p><li>Set your include directories.  Choose <i>Tools -&gt; Options
 -&gt; Projects -&gt; VC++ Directories</i>.  Under the "Show
-directories for" pulldown, select "Include files".  Add the full
-pathnames for the <b>java/include</b> and
-<b>java/include/win32</b> directories.  Then click OK.  These are
+directories for" pull-down, select "Include files".  Add the full
+pathnames for the <b>d:\java\include</b> and
+<b>d:\java\include\win32</b> directories.  Then click OK.  These are
 the directories needed when including jni.h.
 <p><li>Set the executable files directories.  Choose <i>Tools -&gt;
 Options -&gt; Projects -&gt; VC++ Directories</i>.  Under the "Show
-directories for" pulldown, select "Executable files".  Add the full
-pathname for the <b>java/bin</b> directory, then click OK.  This is
+directories for" pull-down, select "Executable files".  Add the full
+pathname for the <b>d:\java\bin</b> directory, then click OK.  This is
 the directory needed to find javac.
 <p><li>Set the build type to Release or Debug in the drop-down on the .NET
 tool bar.
 <p><li>To build, right-click on db_java and select Build.  This builds the
 Java support library for Berkeley DB and compiles all the java files,
 placing the resulting <b>db.jar</b> and <b>dbexamples.jar</b>
-files in the <b>build_win32/Release</b> or
-<b>build_win32/Debug</b> subdirectory of Berkeley DB.
+files in the <b>build_windows\Release</b> or
+<b>build_windows\Debug</b> subdirectory of Berkeley DB.
 </ol>
 <h4>Building Java with Visual C++ 6.0</h4>
 <ol>
 <p><li>Set the include directories.  Choose <i>Tools -&gt; Options
--&gt; Directories</i>.  Under the "Show directories for" pulldown,
+-&gt; Directories</i>.  Under the "Show directories for" pull-down,
 select "Include files".  Add the full pathnames for the
-<b>java/include</b> and <b>java/include/win32</b> directories.
+<b>d:\java\include</b> and <b>d:\java\include\win32</b> directories.
 These are the directories needed when including <b>jni.h</b>.
 <p><li>Set the executable files directories.  Choose <i>Tools -&gt;
 Options -&gt; Directories</i>.  Under the "Show directories for"
-pulldown, select "Executable files".  Add the full pathname for the
-<b>java/bin</b> directory.  This is the directory needed to find
+pull-down, select "Executable files".  Add the full pathname for the
+<b>d:\java\bin</b> directory.  This is the directory needed to find
 javac.
 <p><li>Go to <i>Build -&gt; Set Active Configuration</i> and select
 either the Debug or Release version of the db_java project.  Then
 press OK.
 <p><li>To build, select <i>Build -&gt; Build
-libdb_java43.dll</i>.  This builds the Java support
+libdb_java45.dll</i>.  This builds the Java support
 library for Berkeley DB and compiles all the java files, placing the
 resulting <b>db.jar</b> and <b>dbexamples.jar</b> files in the
-<b>build_win32/Release</b> or <b>build_win32/Debug</b>
+<b>build_windows\Release</b> or <b>build_windows\Debug</b>
 subdirectory of Berkeley DB.
 </ol>
 <p>To run Java code, set your environment variable <b>CLASSPATH</b>
 to include the full pathname of these jar files, and your environment
-variable <b>PATH</b> to include the <b>build_win32/Release</b>
+variable <b>PATH</b> to include the <b>build_windows\Release</b>
 subdirectory.  On Windows, remember that files or directories in the
 <b>CLASSPATH</b> and <b>PATH</b> variables must be separated
 by semicolons (unlike UNIX).  Then, try running the following command
 as a test:</p>
-<blockquote><pre>java com.sleepycat.examples.db.AccessExample</pre></blockquote>
+<blockquote><pre>java db.AccessExample</pre></blockquote>
 <p>If you want to run Java code using a Debug build, substitute 'Debug'
 for 'Release' in the instructions above.  Make sure you use the Debug
 JAR file with the Debug DLL and the Release JAR with the Release
@@ -171,7 +206,7 @@ DLL.</p>
 <a href="../../ref/tcl/intro.html">Loading Berkeley DB with Tcl</a> for
 information on sites from which you can download Tcl and which Tcl
 versions are compatible with Berkeley DB.  These notes assume that Tcl is
-installed as <b>d:/tcl</b>, but you can change that if you want.</p>
+installed as <b>d:\tcl</b>, but you can change that if you want.</p>
 <p>The Tcl library must be built as the same build type as the Berkeley DB
 library (both Release or both Debug).  We found that the binary
 release of Tcl can be used with the Release configuration of Berkeley DB,
@@ -180,17 +215,17 @@ configuration.  Before building Tcl, you will need to modify its
 makefile to make sure that you are building a debug version, including
 thread support.  This is because the set of DLLs linked into the Tcl
 executable must match the corresponding set of DLLs used by Berkeley DB.</p>
-<h4>Building Tcl with Visual C++ .NET</h4>
+<h4>Building Tcl with Visual C++ .NET or above</h4>
 <ol>
 <p><li>Set the include directories.  Choose <i>Tools -&gt; Options
 -&gt; Projects -&gt; VC++ Directories</i>.  Under the "Show
-directories for" pulldown, select "Include files".  Add the full
-pathname for <b>tcl/include</b>, then click OK.  This is the
+directories for" pull-down, select "Include files".  Add the full
+pathname for <b>d:\tcl\include</b>, then click OK.  This is the
 directory that contains <b>tcl.h</b>.
 <p><li>Set the library files directory.  Choose <i>Tools -&gt;
 Options -&gt; Projects -&gt; VC++ Directories</i>.  Under the "Show
-directories for" pulldown, select "Library files".  Add the full
-pathname for the <b>tcl/lib</b> directory, then click OK.  This is
+directories for" pull-down, select "Library files".  Add the full
+pathname for the <b>d:\tcl\lib</b> directory, then click OK.  This is
 the directory needed to find
 <b>tcl84g.lib</b> (or whatever the
 library is named in your distribution).
@@ -198,8 +233,8 @@ library is named in your distribution).
 tool bar.
 <p><li>To build, right-click on db_tcl and select Build.  This builds the Tcl
 support library for Berkeley DB, placing the result into
-<b>build_win32/Debug/libdb_tcl4M4MINORd.dll</b> or
-<b>build_win32/Release/libdb_tcl43.dll</b>.
+<b>build_windows\Debug\libdb_tcl45d.dll</b> or
+<b>build_windows\Release\libdb_tcl45.dll</b>.
 </ol>
 <p>If you use a version different from Tcl 8.4.x you will
 need to change the name of the Tcl library used in the build (for
@@ -212,24 +247,24 @@ version you are using.</p>
 <h4>Building Tcl with Visual C++ 6.0</h4>
 <ol>
 <p><li>Set the include directories.  Choose <i>Tools -&gt; Options
--&gt; Directories</i>.  Under the "Show directories for" pulldown,
+-&gt; Directories</i>.  Under the "Show directories for" pull-down,
 select "Include files".  Add the full pathname for
-<b>tcl/include</b>, then click OK.  This is the directory that
+<b>d:\tcl\include</b>, then click OK.  This is the directory that
 contains <b>tcl.h</b>.
 <p><li>Set the library files directory.  Choose <i>Tools -&gt;
 Options -&gt; Directories</i>.  Under the "Show directories for"
-pulldown, select "Library files".  Add the full pathname for the
-<b>tcl/lib</b> directory, then click OK.  This is the directory
+pull-down, select "Library files".  Add the full pathname for the
+<b>d:\tcl\lib</b> directory, then click OK.  This is the directory
 needed to find <b>tcl84g.lib</b> (or
 whatever the library is named in your distribution).
 <p><li>Go to <i>Build -&gt; Set Active Configuration</i> and select
 either the Debug or Release version of the db_tcl project.  Then press
 OK.
 <p><li>To build, select <i>Build -&gt; Build
-libdb_tcl43.dll</i>.  This builds the Tcl support
+libdb_tcl45.dll</i>.  This builds the Tcl support
 library for Berkeley DB, placing the result into
-<b>build_win32/Debug/libdb_tcl4M4MINORd.dll</b> or
-<b>build_win32/Release/libdb_tcl43.dll</b>.
+<b>build_windows\Debug\libdb_tcl45d.dll</b> or
+<b>build_windows\Release\libdb_tcl45.dll</b>.
 </ol>
 <p>If you use a version different from Tcl 8.4.x you will
 need to change the name of the Tcl library used in the build (for
@@ -242,8 +277,8 @@ you are using.</p>
 <h3>Distributing DLLs</h3>
 <p>When distributing applications linked against the DLL (not static)
 version of the library, the DLL files you need will be found in the
-<b>build_win32/Release</b> subdirectory, or
-<b>build_win32/Debug</b> if you distribute a debug version.  You may
+<b>build_windows\Release</b> subdirectory, or
+<b>build_windows\Debug</b> if you distribute a debug version.  You may
 also need to redistribute DLL files needed for the compiler's runtime.
 For Visual C++ 6.0, these files are <b>msvcrt.dll</b> and
 <b>msvcp60.dll</b> if you built with a Release configuration, or
@@ -253,8 +288,8 @@ installed in the same directory that will contain your installed Berkeley DB
 DLLs.  This directory may need to be added to your System PATH
 environment variable.  Check your compiler's license and documentation
 for specifics on redistributing runtime DLLs.</p>
-<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/unicode.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/ultrix.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_win/small.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

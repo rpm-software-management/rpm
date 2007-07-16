@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,10 +39,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: btree.h,v 11.50 2004/07/22 21:52:57 bostic Exp $
+ * $Id: btree.h,v 12.12 2006/08/24 14:45:27 bostic Exp $
  */
 #ifndef	_DB_BTREE_H_
 #define	_DB_BTREE_H_
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /* Forward structure declarations. */
 struct __btree;		typedef struct __btree BTREE;
@@ -74,6 +78,7 @@ struct __recno;		typedef struct __recno RECNO;
 /* Flags for __bam_stkrel(). */
 #define	STK_CLRDBC	0x01		/* Clear dbc->page reference. */
 #define	STK_NOLOCK	0x02		/* Don't retain locks. */
+#define	STK_PGONLY	0x04
 
 /* Flags for __ram_ca(). These get logged, so make the values explicit. */
 typedef enum {
@@ -97,30 +102,36 @@ typedef enum {
  * to return deleted entries.  To simplify both the mnemonic representation
  * and the code that checks for various cases, we construct a set of bitmasks.
  */
-#define	S_READ		0x00001		/* Read locks. */
-#define	S_WRITE		0x00002		/* Write locks. */
+#define	SR_READ		0x00001		/* Read locks. */
+#define	SR_WRITE	0x00002		/* Write locks. */
 
-#define	S_APPEND	0x00040		/* Append to the tree. */
-#define	S_DELNO		0x00080		/* Don't return deleted items. */
-#define	S_DUPFIRST	0x00100		/* Return first duplicate. */
-#define	S_DUPLAST	0x00200		/* Return last duplicate. */
-#define	S_EXACT		0x00400		/* Exact items only. */
-#define	S_PARENT	0x00800		/* Lock page pair. */
-#define	S_STACK		0x01000		/* Need a complete stack. */
-#define	S_PAST_EOF	0x02000		/* If doing insert search (or keyfirst
+#define	SR_APPEND	0x00040		/* Append to the tree. */
+#define	SR_DELNO	0x00080		/* Don't return deleted items. */
+#define	SR_DUPFIRST	0x00100		/* Return first duplicate. */
+#define	SR_DUPLAST	0x00200		/* Return last duplicate. */
+#define	SR_EXACT	0x00400		/* Exact items only. */
+#define	SR_PARENT	0x00800		/* Lock page pair. */
+#define	SR_STACK	0x01000		/* Need a complete stack. */
+#define	SR_PAST_EOF	0x02000		/* If doing insert search (or keyfirst
 					 * or keylast operations), or a split
 					 * on behalf of an insert, it's okay to
 					 * return an entry one past end-of-page.
 					 */
-#define	S_STK_ONLY	0x04000		/* Just return info in the stack */
+#define	SR_STK_ONLY	0x04000		/* Just return info in the stack */
+#define	SR_MAX		0x08000		/* Get the right most key */
+#define	SR_MIN		0x10000		/* Get the left most key */
+#define	SR_NEXT		0x20000		/* Get the page after this key */
+#define	SR_DEL		0x40000		/* Get the tree to delete this key. */
+#define	SR_START	0x80000		/* Level to start stack. */
 
-#define	S_DELETE	(S_WRITE | S_DUPFIRST | S_DELNO | S_EXACT | S_STACK)
-#define	S_FIND		(S_READ | S_DUPFIRST | S_DELNO)
-#define	S_FIND_WR	(S_WRITE | S_DUPFIRST | S_DELNO)
-#define	S_INSERT	(S_WRITE | S_DUPLAST | S_PAST_EOF | S_STACK)
-#define	S_KEYFIRST	(S_WRITE | S_DUPFIRST | S_PAST_EOF | S_STACK)
-#define	S_KEYLAST	(S_WRITE | S_DUPLAST | S_PAST_EOF | S_STACK)
-#define	S_WRPAIR	(S_WRITE | S_DUPLAST | S_PAST_EOF | S_PARENT)
+#define	SR_DELETE							\
+	(SR_WRITE | SR_DUPFIRST | SR_DELNO | SR_EXACT | SR_STACK)
+#define	SR_FIND		(SR_READ | SR_DUPFIRST | SR_DELNO)
+#define	SR_FIND_WR	(SR_WRITE | SR_DUPFIRST | SR_DELNO)
+#define	SR_INSERT	(SR_WRITE | SR_DUPLAST | SR_PAST_EOF | SR_STACK)
+#define	SR_KEYFIRST	(SR_WRITE | SR_DUPFIRST | SR_PAST_EOF | SR_STACK)
+#define	SR_KEYLAST	(SR_WRITE | SR_DUPLAST | SR_PAST_EOF | SR_STACK)
+#define	SR_WRPAIR	(SR_WRITE | SR_DUPLAST | SR_PAST_EOF | SR_PARENT)
 
 /*
  * Various routines pass around page references.  A page reference is
@@ -153,7 +164,7 @@ struct __epg {
 	if ((ret = ((c)->csp == (c)->esp ?				\
 	    __bam_stkgrow(dbenv, c) : 0)) == 0) {			\
 		(c)->csp->page = pagep;					\
-		(c)->csp->indx = page_indx;				\
+		(c)->csp->indx = (page_indx);				\
 		(c)->csp->entries = NUM_ENT(pagep);			\
 		(c)->csp->lock = l;					\
 		(c)->csp->lock_mode = mode;				\
@@ -166,10 +177,10 @@ struct __epg {
 } while (0)
 
 #define	BT_STK_NUM(dbenv, c, pagep, page_indx, ret) do {		\
-	if ((ret =							\
-	    (c)->csp == (c)->esp ? __bam_stkgrow(dbenv, c) : 0) == 0) {	\
+	if ((ret = ((c)->csp ==						\
+	    (c)->esp ? __bam_stkgrow(dbenv, c) : 0)) == 0) {		\
 		(c)->csp->page = NULL;					\
-		(c)->csp->indx = page_indx;				\
+		(c)->csp->indx = (page_indx);				\
 		(c)->csp->entries = NUM_ENT(pagep);			\
 		LOCK_INIT((c)->csp->lock);				\
 		(c)->csp->lock_mode = DB_LOCK_NG;			\
@@ -259,7 +270,6 @@ struct __btree {			/* Btree access method. */
 	db_pgno_t bt_meta;		/* Database meta-data page. */
 	db_pgno_t bt_root;		/* Database root page. */
 
-	u_int32_t bt_maxkey;		/* Maximum keys per page. */
 	u_int32_t bt_minkey;		/* Minimum keys per page. */
 
 					/* Btree comparison function. */
@@ -301,6 +311,7 @@ struct __btree {			/* Btree access method. */
 	FILE		*re_fp;		/* Source file handle. */
 	int		 re_eof;	/* Backing source file EOF reached. */
 	db_recno_t	 re_last;	/* Last record number read. */
+
 };
 
 /*
@@ -314,6 +325,16 @@ typedef enum {
 	DB_CA_RSPLIT	= 3,
 	DB_CA_SPLIT	= 4
 } db_ca_mode;
+
+/*
+ * Flags for __bam_pinsert.
+ */
+#define	BPI_SPACEONLY	0x01		/* Only check for space to update. */
+#define	BPI_NORECNUM	0x02		/* Not update the recnum on the left. */
+
+#if defined(__cplusplus)
+}
+#endif
 
 #include "dbinc_auto/btree_auto.h"
 #include "dbinc_auto/btree_ext.h"

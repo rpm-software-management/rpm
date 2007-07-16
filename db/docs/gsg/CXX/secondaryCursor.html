@@ -103,7 +103,6 @@
         Then the following searches for a person's
         name in the secondary database, and deletes all secondary and primary
         records that use that name.
-        
     </p>
       <a id="cxx_index8"></a>
       <pre class="programlisting">#include &lt;db_cxx.h&gt;
@@ -120,7 +119,7 @@ my_index.cursor(NULL, &amp;cursorp, 0);
 
 
 // Name to delete
-char *search_name = "John Doe"; 
+char *search_name = &quot;John Doe&quot;; 
 
 // Instantiate Dbts as normal
 Dbt key(search_name, strlen(search_name) + 1);

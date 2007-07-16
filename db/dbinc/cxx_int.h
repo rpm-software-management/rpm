@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: cxx_int.h,v 11.25 2004/09/22 22:20:31 mjc Exp $
+ * $Id: cxx_int.h,v 12.4 2006/08/24 14:45:27 bostic Exp $
  */
 
-#ifndef _CXX_INT_H_
-#define	_CXX_INT_H_
+#ifndef _DB_CXX_INT_H_
+#define	_DB_CXX_INT_H_
 
 // private data structures known to the implementation only
 
@@ -27,7 +27,6 @@
 // for a wrapper class that has an underlying pointer representation.
 //
 #define	WRAPPED_CLASS(_WRAPPER_CLASS, _IMP_CLASS, _WRAPPED_TYPE)           \
-									   \
 	class _IMP_CLASS {};                                               \
 									   \
 	inline _WRAPPED_TYPE *unwrap(_WRAPPER_CLASS *val)                  \
@@ -74,4 +73,4 @@ WRAPPED_CLASS(DbTxn, DbTxnImp, DB_TXN)
 /* values for Db::flags_ */
 #define	DB_CXX_PRIVATE_ENV      0x00000001
 
-#endif /* !_CXX_INT_H_ */
+#endif /* !_DB_CXX_INT_H_ */

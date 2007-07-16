@@ -1,27 +1,22 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_oflags.c,v 11.14 2004/07/09 18:39:10 mjc Exp $
+ * $Id: os_oflags.c,v 12.6 2006/08/24 14:46:18 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <sys/stat.h>
+#include "db_int.h"
 
+#ifndef NO_SYSTEM_INCLUDES
 #ifdef HAVE_SHMGET
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #endif
-
-#include <fcntl.h>
 #endif
-
-#include "db_int.h"
 
 /*
  * __db_oflags --
@@ -70,17 +65,26 @@ __db_oflags(oflags)
 #ifndef	S_IWUSR
 #define	S_IWUSR	S_IWRITE	/* W for owner */
 #endif
+#ifndef	S_IXUSR
+#define	S_IXUSR	0		/* X for owner */
+#endif
 #ifndef	S_IRGRP
 #define	S_IRGRP	0		/* R for group */
 #endif
 #ifndef	S_IWGRP
 #define	S_IWGRP	0		/* W for group */
 #endif
+#ifndef	S_IXGRP
+#define	S_IXGRP	0		/* X for group */
+#endif
 #ifndef	S_IROTH
 #define	S_IROTH	0		/* R for other */
 #endif
 #ifndef	S_IWOTH
 #define	S_IWOTH	0		/* W for other */
+#endif
+#ifndef	S_IXOTH
+#define	S_IXOTH	0		/* X for other */
 #endif
 #else
 #ifndef	S_IRUSR
@@ -89,17 +93,26 @@ __db_oflags(oflags)
 #ifndef	S_IWUSR
 #define	S_IWUSR	0000200		/* W for owner */
 #endif
+#ifndef	S_IXUSR
+#define	S_IXUSR	0000100		/* X for owner */
+#endif
 #ifndef	S_IRGRP
 #define	S_IRGRP	0000040		/* R for group */
 #endif
 #ifndef	S_IWGRP
 #define	S_IWGRP	0000020		/* W for group */
 #endif
+#ifndef	S_IXGRP
+#define	S_IXGRP	0000010		/* X for group */
+#endif
 #ifndef	S_IROTH
 #define	S_IROTH	0000004		/* R for other */
 #endif
 #ifndef	S_IWOTH
 #define	S_IWOTH	0000002		/* W for other */
+#endif
+#ifndef	S_IXOTH
+#define	S_IXOTH	0000001		/* X for other */
 #endif
 #endif /* DB_WIN32 */
 
@@ -119,56 +132,19 @@ __db_omode(perm)
 		mode |= S_IRUSR;
 	if (perm[1] == 'w')
 		mode |= S_IWUSR;
-	if (perm[2] == 'r')
+	if (perm[2] == 'x')
+		mode |= S_IXUSR;
+	if (perm[3] == 'r')
 		mode |= S_IRGRP;
-	if (perm[3] == 'w')
+	if (perm[4] == 'w')
 		mode |= S_IWGRP;
-	if (perm[4] == 'r')
+	if (perm[5] == 'x')
+		mode |= S_IXGRP;
+	if (perm[6] == 'r')
 		mode |= S_IROTH;
-	if (perm[5] == 'w')
+	if (perm[7] == 'w')
 		mode |= S_IWOTH;
+	if (perm[8] == 'x')
+		mode |= S_IXOTH;
 	return (mode);
 }
-
-#ifdef HAVE_SHMGET
-
-#ifndef SHM_R
-#define	SHM_R	0400
-#endif
-#ifndef SHM_W
-#define	SHM_W	0200
-#endif
-
-/*
- * __db_shm_mode --
- *	Map the DbEnv::open method file mode permissions to shmget call
- *	permissions.
- *
- * PUBLIC: int __db_shm_mode __P((DB_ENV *));
- */
-int
-__db_shm_mode(dbenv)
-	DB_ENV *dbenv;
-{
-	int mode;
-
-	/* Default to r/w owner, r/w group. */
-	if (dbenv->db_mode == 0)
-		return (SHM_R | SHM_W | SHM_R >> 3 | SHM_W >> 3);
-
-	mode = 0;
-	if (dbenv->db_mode & S_IRUSR)
-		mode |= SHM_R;
-	if (dbenv->db_mode & S_IWUSR)
-		mode |= SHM_W;
-	if (dbenv->db_mode & S_IRGRP)
-		mode |= SHM_R >> 3;
-	if (dbenv->db_mode & S_IWGRP)
-		mode |= SHM_W >> 3;
-	if (dbenv->db_mode & S_IROTH)
-		mode |= SHM_R >> 6;
-	if (dbenv->db_mode & S_IWOTH)
-		mode |= SHM_W >> 6;
-	return (mode);
-}
-#endif

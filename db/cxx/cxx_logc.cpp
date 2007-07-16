@@ -1,21 +1,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: cxx_logc.cpp,v 11.13 2004/02/05 02:25:12 mjc Exp $
+ * $Id: cxx_logc.cpp,v 12.4 2006/08/24 14:45:13 bostic Exp $
  */
 
 #include "db_config.h"
 
-#include <errno.h>
-#include <string.h>
+#include "db_int.h"
 
 #include "db_cxx.h"
 #include "dbinc/cxx_int.h"
 
-#include "db_int.h"
 #include "dbinc/db_page.h"
 #include "dbinc_auto/db_auto.h"
 #include "dbinc_auto/crdel_auto.h"

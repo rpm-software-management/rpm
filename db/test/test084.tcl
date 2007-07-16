@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test084.tcl,v 11.15 2004/01/28 03:36:31 bostic Exp $
+# $Id: test084.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test084
 # TEST	Basic sanity test (test001) with large (64K) pages.

@@ -1,5 +1,5 @@
-<!--$Id: partition.so,v 1.1 2001/10/25 20:05:34 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: partition.so,v 1.6 2006/08/25 12:56:00 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -56,17 +56,25 @@ of a bad network partition.  As long as a master is able to contact at
 least half of the sites in the replication group, it is impossible for
 there to be two masters.  If the master can no longer contact a
 sufficient number of systems, it should reconfigure itself as a client,
-and hold an election.</p>
+and hold an election.  Replication Manager does not currently
+implement such a feature, so this technique is only available to
+applications which use the Base replication API.</p>
 <p>There is another tool applications can use to minimize the damage in
-the case of a network partition.  By specifying a <b>nsites</b>
+the case of a network partition.  By specifying an <b>nsites</b>
 argument to <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> that is larger than the actual number of
 database environments in the replication group, applications can keep
-systems from declaring themselves the master unless they can talk to at
+systems from declaring themselves the master unless they can talk to
 a large percentage of the sites in the system.  For example, if there
 are 20 database environments in the replication group, and an argument
 of 30 is specified to the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method, then a system will have
 to be able to talk to at least 16 of the sites to declare itself the
 master.</p>
+<p>Replication Manager uses the value of <b>nsites</b> (configured by
+the <a href="../../api_c/rep_nsites.html">DB_ENV-&gt;rep_set_nsites</a> method) for elections as well as in calculating how
+many acknowledgements to wait for when sending a
+<a href="../../api_c/rep_transport.html#DB_REP_PERMANENT">DB_REP_PERMANENT</a> message.  So this technique may be useful here
+as well, unless the application uses the <a href="../../api_c/repmgr_ack_policy.html#DB_REPMGR_ACKS_ALL">DB_REPMGR_ACKS_ALL</a> or
+<a href="../../api_c/repmgr_ack_policy.html#DB_REPMGR_ACKS_ALL_PEERS">DB_REPMGR_ACKS_ALL_PEERS</a> acknowledgement policies.</p>
 <p>Specifying a <b>nsites</b> argument to <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> that is
 smaller than the actual number of database environments in the
 replication group has its uses as well.  For example, consider a
@@ -76,8 +84,14 @@ the master.  A reasonable alternative would be to specify a
 <b>nsites</b> argument of 2 to one of the systems and a <b>nsites</b>
 argument of 1 to the other.  That way, one of the systems could win
 elections even when partitioned, while the other one could not.  This
-would allow at one of the systems to continue accepting write queries
-after the partition.</p>
+would allow one of the systems to continue accepting write
+queries after the partition.</p>
+<p>In a 2-site group, Replication Manager reacts to the loss of
+communication with the master by assuming the master has crashed: the
+surviving client simply declares itself to be master.  Thus it avoids
+the problem of the survivor never being able to get enough votes to
+prevail.  But it does leave the group vulnerable to the risk of
+multiple masters, if both sites are running but cannot communicate.</p>
 <p>These scenarios stress the importance of good network infrastructure in
 Berkeley DB replicated environments.  When replicating database environments
 over sufficiently lossy networking, the best solution may well be to
@@ -85,6 +99,6 @@ pick a single master, and only hold elections when human intervention
 has determined the selected master is unable to recover at all.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/trans.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

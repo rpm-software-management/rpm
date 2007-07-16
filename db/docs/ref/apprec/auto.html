@@ -1,5 +1,5 @@
-<!--$Id: auto.so,v 10.3 2002/03/15 16:19:10 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: auto.so,v 10.4 2006/09/13 16:21:43 sue Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -38,6 +38,7 @@ cd ../../dist
 awk -f gen_rec.awk \
     -v source_file=$E/ex_apprec_auto.c \
     -v header_file=$E/ex_apprec_auto.h \
+    -v print_file=$E/ex_apprec_autop.c \
     -v template_file=$E/ex_apprec_template &lt; $E/ex_apprec.src</pre></blockquote>
 <p>For each log record description found in the XXX.src file, the following
 structure declarations and #defines will be created in the file
@@ -154,6 +155,6 @@ initialization part of the standalone <a href="../../utility/db_printlog.html">d
 so that utility can be used to display application-specific log records.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../apprec/def.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

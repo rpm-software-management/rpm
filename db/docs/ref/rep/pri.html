@@ -1,5 +1,5 @@
-<!--$Id: pri.so,v 1.6 2003/04/04 18:27:19 sue Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: pri.so,v 1.7 2006/07/14 23:04:42 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -18,8 +18,10 @@
 <p>Each database environment included in a replication group must have
 a priority, which specifies a relative ordering among the different
 environments in a replication group.  This ordering is a factor in
-determining which environment will be selected as a new master in
-case the existing master fails.</p>
+determining which environment will be selected as a new master in case
+the existing master fails.  Both Replication Manager applications and
+applications which use the Base replication API should specify
+environment priorities.</p>
 <p>Priorities must be a non-negative integer, but do not need to be unique
 throughout the replication group.  A priority of 0 means the system can
 never become a master, regardless.  Otherwise, larger valued priorities
@@ -34,6 +36,6 @@ the client priority.  If both sites have the same number of log
 records and the same priority, one is selected at random.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/id.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/app.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: wrap.tcl,v 11.8 2004/01/28 03:36:33 bostic Exp $
+# $Id: wrap.tcl,v 12.4 2006/08/24 14:46:41 bostic Exp $
 #
 # Sentinel file wrapper for multi-process tests.  This is designed to avoid a
 # set of nasty bugs, primarily on Windows, where pid reuse causes watch_procs
@@ -21,7 +21,14 @@ if { $argc < 3 } {
 
 set script [lindex $argv 0]
 set logfile [lindex $argv 1]
-set args [lrange $argv 2 end]
+set skip [lindex $argv 2]
+set args [lrange $argv 3 end]
+#
+# Account in args for SKIP command, or not.
+#
+if { $skip != "SKIP" } {
+	set args [lrange $argv 2 end]
+}
 
 # Create a sentinel file to mark our creation and signal that watch_procs
 # should look for us.
@@ -40,7 +47,16 @@ set childsentinel $testdir/begin.$childpid
 set f [open $childsentinel w]
 close $f
 
-puts $t "source $test_path/test.tcl"
+#
+# For the upgrade tests where a current release tclsh is starting up
+# a tclsh in an older release, we cannot tell it to source the current
+# test.tcl because new things may not exist in the old release.  So,
+# we need to skip that and the script we're running in the old
+# release will have to take care of itself.
+#
+if { $skip != "SKIP" } {
+	puts $t "source $test_path/test.tcl"
+}
 puts $t "set script $script"
 
 # Set up argv for the subprocess, since the args aren't passed in as true
@@ -48,9 +64,11 @@ puts $t "set script $script"
 puts $t "set argc [llength $args]"
 puts $t "set argv [list $args]"
 
-puts $t {set ret [catch { source $test_path/$script } result]}
+set scr $test_path/$script
+puts $t "set scr $scr"
+puts $t {set ret [catch { source $scr } result]}
 puts $t {if { [string length $result] > 0 } { puts $result }}
-puts $t {error_check_good "$test_path/$script run: pid [pid]" $ret 0}
+puts $t {error_check_good "$scr run: pid [pid]" $ret 0}
 
 # Close the pipe.  This will flush the above commands and actually run the
 # test, and will also return an error a la exec if anything bad happens

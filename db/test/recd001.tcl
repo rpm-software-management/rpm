@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd001.tcl,v 11.43 2004/01/28 03:36:28 bostic Exp $
+# $Id: recd001.tcl,v 12.4 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	recd001
 # TEST	Per-operation recovery tests for non-duplicate, non-split
@@ -49,6 +49,14 @@ proc recd001 { method {select 0} args} {
 	set testfile2 recd001-2.db
 
 	set flags "-create -txn -home $testdir"
+
+	# For queue databases, we end up locking all records from one
+	# to the end of the queue, which depends on the default pagesize.
+	# Assume that page sizes default to 16KB or less, then we need 4K
+	# locks.
+	if { [is_record_based $method] == 1 } {
+		set flags "$flags -lock_max_locks 5000 -lock_max_objects 5000"
+	}
 
 	puts "\tRecd001.a.0: creating environment"
 	set env_cmd "berkdb_env $flags"

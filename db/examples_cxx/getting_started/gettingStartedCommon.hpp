@@ -96,7 +96,7 @@ public:
      * Returns the size of the buffer. Used for storing
      * the buffer in a database.
      */
-    inline int getBufferSize() { return (bufLen_); }
+    inline size_t getBufferSize() { return (bufLen_); }
 
     /* Utility function used to show the contents of this class */
     void
@@ -118,7 +118,7 @@ private:
     void
     packString(char *buffer, std::string &theString)
     {
-        int string_size = theString.size() + 1;
+        size_t string_size = theString.size() + 1;
         memcpy(buffer+bufLen_, theString.c_str(), string_size);
         bufLen_ += string_size;
     }
@@ -127,7 +127,7 @@ private:
     std::string category_, name_, vendor_, sku_;
     double price_;
     long quantity_;
-    int bufLen_;
+    size_t bufLen_;
     char databuf_[500];
 
 };
@@ -155,26 +155,32 @@ class Dbt;
 int
 get_item_name(Db *dbp, const Dbt *pkey, const Dbt *pdata, Dbt *skey)
 {
-    InventoryData id(pdata->get_data());
-    const char *itemname = id.getName().c_str();
+    /*
+     * First, obtain the buffer location where we placed the item's name. In
+     * this example, the item's name is located in the primary data. It is the
+     * first string in the buffer after the price (a double) and the quantity
+     * (a long).
+     */
+    u_int32_t offset = sizeof(double) + sizeof(long);
+    char *itemname = (char *)pdata->get_data() + offset;
 
     // unused
     (void)pkey;
 
-    // If these don't match, then there was a problem with
-    // the buffer contained in pdata, or there's a programming
-    // error in how the buffer is marshalled/unmarshalled.
-    // This should never happen!
-    if ((u_int32_t)id.getBufferSize() != pdata->get_size()) {
+    /*
+     * If the offset is beyond the end of the data, then there was a problem
+     * with the buffer contained in pdata, or there's a programming error in
+     * how the buffer is marshalled/unmarshalled.  This should never happen!
+     */
+    if (offset > pdata->get_size()) {
         dbp->errx("get_item_name: buffer sizes do not match!");
-        // When we return non-zero, the index record is not
-        // added/updated.
+        // When we return non-zero, the index record is not added/updated.
         return (-1);
     }
 
     /* Now set the secondary key's data to be the item name */
-    skey->set_data((void *)itemname);
-    skey->set_size(strlen(itemname) + 1);
+    skey->set_data(itemname);
+    skey->set_size((u_int32_t)strlen(itemname) + 1);
 
     return (0);
 };

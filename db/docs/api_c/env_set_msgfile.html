@@ -1,5 +1,5 @@
-<!--$Id: env_set_msgfile.so,v 10.5 2004/09/28 15:04:20 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_msgfile.so,v 10.7 2006/02/10 22:54:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -42,6 +42,9 @@ character.</p>
 <p>Alternatively, you can use the <a href="../api_c/env_set_msgcall.html">DB_ENV-&gt;set_msgcall</a> or
 <a href="../api_c/db_set_msgcall.html">DB-&gt;set_msgcall</a> methods to capture the additional error information
 in a way that does not use C library FILE *'s.</p>
+<p>The DB_ENV-&gt;set_msgfile method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
 <p>The DB_ENV-&gt;set_msgfile method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
@@ -51,9 +54,18 @@ displaying messages.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;get_msgfile</h3>
-<p>The DB_ENV-&gt;get_msgfile method returns the .</p>
+<p>The DB_ENV-&gt;get_msgfile method returns the FILE *.</p>
 <p>The DB_ENV-&gt;get_msgfile method may be called at any time during the life of the
 application.</p>
+<p>The DB_ENV-&gt;get_msgfile method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>msgfilep</b><dd>The DB_ENV-&gt;get_msgfile method returns  the
+FILE * in <b>msgfilep</b>.
+</dl>
 <hr size=1 noshade>
 <h3>Class</h3>
 <a href="../api_c/env_class.html">DB_ENV</a>
@@ -63,6 +75,6 @@ application.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

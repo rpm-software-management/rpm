@@ -1,5 +1,5 @@
-<!--$Id: memp_set_flags.so,v 1.17 2004/09/28 15:04:21 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_set_flags.so,v 1.18 2005/09/17 16:30:18 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -47,9 +47,13 @@ of the following values:
 <dt><a name="DB_MPOOL_NOFILE">DB_MPOOL_NOFILE</a><dd>If set, no backing temporary file will be opened for in-memory
 databases, even if they expand to fill the entire cache.  Attempts to
 create new file pages after the cache has been filled will fail.
+<p>The DB_MPOOL_NOFILE flag configures a file in the memory pool, not only
+operations performed using the specified <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle.</p>
 <p>The DB_MPOOL_NOFILE flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
 <dt><a name="DB_MPOOL_UNLINK">DB_MPOOL_UNLINK</a><dd>If set, remove the file when the last reference to it is closed.
+<p>The DB_MPOOL_NOFILE flag configures a file in the memory pool, not only
+operations performed using the specified <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle.</p>
 <p>The DB_MPOOL_UNLINK flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
 </dl>
@@ -81,6 +85,6 @@ flags in <b>flagsp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

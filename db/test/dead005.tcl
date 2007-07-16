@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: dead005.tcl,v 11.15 2004/03/17 15:17:17 bostic Exp $
+# $Id: dead005.tcl,v 12.4 2006/08/24 14:46:35 bostic Exp $
 #
 # Deadlock Test 5.
 # Test out the minlocks, maxlocks, and minwrites options
@@ -26,8 +26,8 @@ proc dead005 { { procs "4 6 10" } \
 			minwrites { set to w }
 		}
 		foreach n $procs {
-			set dpid [exec $util_path/db_deadlock -vw -h $testdir \
-			    -a $to >& $testdir/dd.out &]
+			set dpid [exec $util_path/db_deadlock -v -t 0.100000 \
+			    -h $testdir -a $to >& $testdir/dd.out &]
 			sentinel_init
 			set pidlist ""
 

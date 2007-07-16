@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: env002.tcl,v 11.17 2004/01/28 03:36:27 bostic Exp $
+# $Id: env002.tcl,v 12.3 2006/08/24 14:46:35 bostic Exp $
 #
 # TEST	env002
 # TEST	Test of DB_LOG_DIR and env name resolution.

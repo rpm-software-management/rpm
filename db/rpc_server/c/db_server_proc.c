@@ -1,35 +1,29 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_server_proc.c,v 1.106 2004/09/22 17:30:12 bostic Exp $
+ * $Id: db_server_proc.c,v 12.14 2006/09/19 13:39:44 mjc Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <rpc/rpc.h>
-
-#include <string.h>
-#endif
-
-#include "db_server.h"
-
 #include "db_int.h"
+#ifndef NO_SYSTEM_INCLUDES
+#include <rpc/rpc.h>
+#endif
+#include "db_server.h"
 #include "dbinc/db_server_int.h"
 #include "dbinc_auto/rpc_server_ext.h"
 
 /*
- * PUBLIC: void __env_get_cachesize_proc __P((long,
+ * PUBLIC: void __env_get_cachesize_proc __P((u_int,
  * PUBLIC:      __env_get_cachesize_reply *));
  */
 void
 __env_get_cachesize_proc(dbenvcl_id, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	__env_get_cachesize_reply *replyp;
 {
 	DB_ENV *dbenv;
@@ -43,16 +37,16 @@ __env_get_cachesize_proc(dbenvcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __env_cachesize_proc __P((long, u_int32_t, u_int32_t,
- * PUBLIC:      u_int32_t, __env_cachesize_reply *));
+ * PUBLIC: void __env_set_cachesize_proc __P((u_int, u_int32_t, u_int32_t,
+ * PUBLIC:      u_int32_t, __env_set_cachesize_reply *));
  */
 void
-__env_cachesize_proc(dbenvcl_id, gbytes, bytes, ncache, replyp)
-	long dbenvcl_id;
+__env_set_cachesize_proc(dbenvcl_id, gbytes, bytes, ncache, replyp)
+	u_int dbenvcl_id;
 	u_int32_t gbytes;
 	u_int32_t bytes;
 	u_int32_t ncache;
-	__env_cachesize_reply *replyp;
+	__env_set_cachesize_reply *replyp;
 {
 	DB_ENV *dbenv;
 	ct_entry *dbenv_ctp;
@@ -68,18 +62,55 @@ __env_cachesize_proc(dbenvcl_id, gbytes, bytes, ncache, replyp)
 }
 
 /*
- * PUBLIC: void __env_close_proc __P((long, u_int32_t, __env_close_reply *));
+ * PUBLIC: void __env_cdsgroup_begin_proc __P((u_int,
+ * PUBLIC:      __env_cdsgroup_begin_reply *));
+ */
+void
+__env_cdsgroup_begin_proc(dbenvcl_id, replyp)
+	u_int dbenvcl_id;
+	__env_cdsgroup_begin_reply *replyp;
+{
+	DB_ENV *dbenv;
+	DB_TXN *txnp;
+	ct_entry *ctp, *dbenv_ctp;
+	int ret;
+
+	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
+	dbenv = (DB_ENV *)dbenv_ctp->ct_anyp;
+
+	ctp = new_ct_ent(&replyp->status);
+	if (ctp == NULL)
+		return;
+
+	ret = dbenv->cdsgroup_begin(dbenv, &txnp);
+	if (ret == 0) {
+		ctp->ct_txnp = txnp;
+		ctp->ct_type = CT_TXN;
+		ctp->ct_parent = NULL;
+		ctp->ct_envparent = dbenv_ctp;
+		replyp->txnidcl_id = ctp->ct_id;
+		__dbsrv_settimeout(ctp, dbenv_ctp->ct_timeout);
+		__dbsrv_active(ctp);
+	} else
+		__dbclear_ctp(ctp);
+
+	replyp->status = ret;
+	return;
+}
+
+/*
+ * PUBLIC: void __env_close_proc __P((u_int, u_int32_t, __env_close_reply *));
  */
 void
 __env_close_proc(dbenvcl_id, flags, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	u_int32_t flags;
 	__env_close_reply *replyp;
 {
 	ct_entry *dbenv_ctp;
 
 	ACTIVATE_CTP(dbenv_ctp, dbenvcl_id, CT_ENV);
-	replyp->status = __dbenv_close_int(dbenvcl_id, flags, 0);
+	replyp->status = __env_close_int(dbenvcl_id, flags, 0);
 	return;
 }
 
@@ -114,13 +145,13 @@ __env_create_proc(timeout, replyp)
 }
 
 /*
- * PUBLIC: void __env_dbremove_proc __P((long, long, char *, char *, u_int32_t,
- * PUBLIC:      __env_dbremove_reply *));
+ * PUBLIC: void __env_dbremove_proc __P((u_int, u_int, char *, char *,
+ * PUBLIC:	u_int32_t, __env_dbremove_reply *));
  */
 void
 __env_dbremove_proc(dbenvcl_id, txnpcl_id, name, subdb, flags, replyp)
-	long dbenvcl_id;
-	long txnpcl_id;
+	u_int dbenvcl_id;
+	u_int txnpcl_id;
 	char *name;
 	char *subdb;
 	u_int32_t flags;
@@ -148,13 +179,13 @@ __env_dbremove_proc(dbenvcl_id, txnpcl_id, name, subdb, flags, replyp)
 }
 
 /*
- * PUBLIC: void __env_dbrename_proc __P((long, long, char *, char *, char *,
+ * PUBLIC: void __env_dbrename_proc __P((u_int, u_int, char *, char *, char *,
  * PUBLIC:      u_int32_t, __env_dbrename_reply *));
  */
 void
 __env_dbrename_proc(dbenvcl_id, txnpcl_id, name, subdb, newname, flags, replyp)
-	long dbenvcl_id;
-	long txnpcl_id;
+	u_int dbenvcl_id;
+	u_int txnpcl_id;
 	char *name;
 	char *subdb;
 	char *newname;
@@ -183,12 +214,12 @@ __env_dbrename_proc(dbenvcl_id, txnpcl_id, name, subdb, newname, flags, replyp)
 }
 
 /*
- * PUBLIC: void __env_get_encrypt_flags_proc __P((long,
+ * PUBLIC: void __env_get_encrypt_flags_proc __P((u_int,
  * PUBLIC:      __env_get_encrypt_flags_reply *));
  */
 void
 __env_get_encrypt_flags_proc(dbenvcl_id, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	__env_get_encrypt_flags_reply *replyp;
 {
 	DB_ENV *dbenv;
@@ -201,15 +232,15 @@ __env_get_encrypt_flags_proc(dbenvcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __env_encrypt_proc __P((long, char *, u_int32_t,
- * PUBLIC:      __env_encrypt_reply *));
+ * PUBLIC: void __env_set_encrypt_proc __P((u_int, char *, u_int32_t,
+ * PUBLIC:      __env_set_encrypt_reply *));
  */
 void
-__env_encrypt_proc(dbenvcl_id, passwd, flags, replyp)
-	long dbenvcl_id;
+__env_set_encrypt_proc(dbenvcl_id, passwd, flags, replyp)
+	u_int dbenvcl_id;
 	char *passwd;
 	u_int32_t flags;
-	__env_encrypt_reply *replyp;
+	__env_set_encrypt_reply *replyp;
 {
 	int ret;
 	DB_ENV * dbenv;
@@ -225,11 +256,11 @@ __env_encrypt_proc(dbenvcl_id, passwd, flags, replyp)
 }
 
 /*
- * PUBLIC: void __env_get_flags_proc __P((long, __env_get_flags_reply *));
+ * PUBLIC: void __env_get_flags_proc __P((u_int, __env_get_flags_reply *));
  */
 void
 __env_get_flags_proc(dbenvcl_id, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	__env_get_flags_reply *replyp;
 {
 	DB_ENV *dbenv;
@@ -242,15 +273,15 @@ __env_get_flags_proc(dbenvcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __env_flags_proc __P((long, u_int32_t, u_int32_t,
- * PUBLIC:      __env_flags_reply *));
+ * PUBLIC: void __env_set_flags_proc __P((u_int, u_int32_t, u_int32_t,
+ * PUBLIC:      __env_set_flags_reply *));
  */
 void
-__env_flags_proc(dbenvcl_id, flags, onoff, replyp)
-	long dbenvcl_id;
+__env_set_flags_proc(dbenvcl_id, flags, onoff, replyp)
+	u_int dbenvcl_id;
 	u_int32_t flags;
 	u_int32_t onoff;
-	__env_flags_reply *replyp;
+	__env_set_flags_reply *replyp;
 {
 	DB_ENV *dbenv;
 	ct_entry *dbenv_ctp;
@@ -270,11 +301,11 @@ __env_flags_proc(dbenvcl_id, flags, onoff, replyp)
 }
 
 /*
- * PUBLIC: void __env_get_home_proc __P((long, __env_get_home_reply *));
+ * PUBLIC: void __env_get_home_proc __P((u_int, __env_get_home_reply *));
  */
 void
 __env_get_home_proc(dbenvcl_id, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	__env_get_home_reply *replyp;
 {
 	DB_ENV *dbenv;
@@ -288,12 +319,12 @@ __env_get_home_proc(dbenvcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __env_get_open_flags_proc __P((long,
+ * PUBLIC: void __env_get_open_flags_proc __P((u_int,
  * PUBLIC:      __env_get_open_flags_reply *));
  */
 void
 __env_get_open_flags_proc(dbenvcl_id, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	__env_get_open_flags_reply *replyp;
 {
 	DB_ENV *dbenv;
@@ -306,12 +337,12 @@ __env_get_open_flags_proc(dbenvcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __env_open_proc __P((long, char *, u_int32_t, u_int32_t,
+ * PUBLIC: void __env_open_proc __P((u_int, char *, u_int32_t, u_int32_t,
  * PUBLIC:      __env_open_reply *));
  */
 void
 __env_open_proc(dbenvcl_id, home, flags, mode, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	char *home;
 	u_int32_t flags;
 	u_int32_t mode;
@@ -361,7 +392,7 @@ __env_open_proc(dbenvcl_id, home, flags, mode, replyp)
 		if (__dbsrv_verbose)
 			printf("Sharing env ID %ld\n", new_ctp->ct_id);
 		replyp->envcl_id = new_ctp->ct_id;
-		ret = __dbenv_close_int(dbenvcl_id, 0, 0);
+		ret = __env_close_int(dbenvcl_id, 0, 0);
 	} else {
 		ret = dbenv->open(dbenv, fullhome->home, newflags, mode);
 		dbenv_ctp->ct_envdp.home = fullhome;
@@ -372,12 +403,12 @@ out:	replyp->status = ret;
 }
 
 /*
- * PUBLIC: void __env_remove_proc __P((long, char *, u_int32_t,
+ * PUBLIC: void __env_remove_proc __P((u_int, char *, u_int32_t,
  * PUBLIC:      __env_remove_reply *));
  */
 void
 __env_remove_proc(dbenvcl_id, home, flags, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	char *home;
 	u_int32_t flags;
 	__env_remove_reply *replyp;
@@ -403,11 +434,11 @@ __env_remove_proc(dbenvcl_id, home, flags, replyp)
 }
 
 /*
- * PUBLIC: void __txn_abort_proc __P((long, __txn_abort_reply *));
+ * PUBLIC: void __txn_abort_proc __P((u_int, __txn_abort_reply *));
  */
 void
 __txn_abort_proc(txnpcl_id, replyp)
-	long txnpcl_id;
+	u_int txnpcl_id;
 	__txn_abort_reply *replyp;
 {
 	DB_TXN *txnp;
@@ -424,15 +455,15 @@ __txn_abort_proc(txnpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __txn_begin_proc __P((long, long, u_int32_t,
- * PUBLIC:      __txn_begin_reply *));
+ * PUBLIC: void __env_txn_begin_proc __P((u_int, u_int, u_int32_t,
+ * PUBLIC:      __env_txn_begin_reply *));
  */
 void
-__txn_begin_proc(dbenvcl_id, parentcl_id, flags, replyp)
-	long dbenvcl_id;
-	long parentcl_id;
+__env_txn_begin_proc(dbenvcl_id, parentcl_id, flags, replyp)
+	u_int dbenvcl_id;
+	u_int parentcl_id;
 	u_int32_t flags;
-	__txn_begin_reply *replyp;
+	__env_txn_begin_reply *replyp;
 {
 	DB_ENV *dbenv;
 	DB_TXN *parent, *txnp;
@@ -475,12 +506,12 @@ __txn_begin_proc(dbenvcl_id, parentcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __txn_commit_proc __P((long, u_int32_t,
+ * PUBLIC: void __txn_commit_proc __P((u_int, u_int32_t,
  * PUBLIC:      __txn_commit_reply *));
  */
 void
 __txn_commit_proc(txnpcl_id, flags, replyp)
-	long txnpcl_id;
+	u_int txnpcl_id;
 	u_int32_t flags;
 	__txn_commit_reply *replyp;
 {
@@ -499,12 +530,12 @@ __txn_commit_proc(txnpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __txn_discard_proc __P((long, u_int32_t,
+ * PUBLIC: void __txn_discard_proc __P((u_int, u_int32_t,
  * PUBLIC:      __txn_discard_reply *));
  */
 void
 __txn_discard_proc(txnpcl_id, flags, replyp)
-	long txnpcl_id;
+	u_int txnpcl_id;
 	u_int32_t flags;
 	__txn_discard_reply *replyp;
 {
@@ -523,12 +554,12 @@ __txn_discard_proc(txnpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __txn_prepare_proc __P((long, u_int8_t *,
+ * PUBLIC: void __txn_prepare_proc __P((u_int, u_int8_t *,
  * PUBLIC:      __txn_prepare_reply *));
  */
 void
 __txn_prepare_proc(txnpcl_id, gid, replyp)
-	long txnpcl_id;
+	u_int txnpcl_id;
 	u_int8_t *gid;
 	__txn_prepare_reply *replyp;
 {
@@ -545,15 +576,15 @@ __txn_prepare_proc(txnpcl_id, gid, replyp)
 }
 
 /*
- * PUBLIC: void __txn_recover_proc __P((long, u_int32_t, u_int32_t,
- * PUBLIC:      __txn_recover_reply *, int *));
+ * PUBLIC: void __env_txn_recover_proc __P((u_int, u_int32_t, u_int32_t,
+ * PUBLIC:      __env_txn_recover_reply *, int *));
  */
 void
-__txn_recover_proc(dbenvcl_id, count, flags, replyp, freep)
-	long dbenvcl_id;
+__env_txn_recover_proc(dbenvcl_id, count, flags, replyp, freep)
+	u_int dbenvcl_id;
 	u_int32_t count;
 	u_int32_t flags;
-	__txn_recover_reply *replyp;
+	__env_txn_recover_reply *replyp;
 	int * freep;
 {
 	DB_ENV *dbenv;
@@ -658,37 +689,14 @@ out2:
 }
 
 /*
- * PUBLIC: void __db_bt_maxkey_proc __P((long, u_int32_t,
- * PUBLIC:      __db_bt_maxkey_reply *));
- */
-void
-__db_bt_maxkey_proc(dbpcl_id, maxkey, replyp)
-	long dbpcl_id;
-	u_int32_t maxkey;
-	__db_bt_maxkey_reply *replyp;
-{
-	DB *dbp;
-	ct_entry *dbp_ctp;
-	int ret;
-
-	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
-	dbp = (DB *)dbp_ctp->ct_anyp;
-
-	ret = dbp->set_bt_maxkey(dbp, maxkey);
-
-	replyp->status = ret;
-	return;
-}
-
-/*
- * PUBLIC: void __db_associate_proc __P((long, long, long, u_int32_t,
+ * PUBLIC: void __db_associate_proc __P((u_int, u_int, u_int, u_int32_t,
  * PUBLIC:      __db_associate_reply *));
  */
 void
 __db_associate_proc(dbpcl_id, txnpcl_id, sdbpcl_id, flags, replyp)
-	long dbpcl_id;
-	long txnpcl_id;
-	long sdbpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
+	u_int sdbpcl_id;
 	u_int32_t flags;
 	__db_associate_reply *replyp;
 {
@@ -727,12 +735,12 @@ __db_associate_proc(dbpcl_id, txnpcl_id, sdbpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_bt_minkey_proc __P((long,
+ * PUBLIC: void __db_get_bt_minkey_proc __P((u_int,
  * PUBLIC:      __db_get_bt_minkey_reply *));
  */
 void
 __db_get_bt_minkey_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_bt_minkey_reply *replyp;
 {
 	DB *dbp;
@@ -745,14 +753,14 @@ __db_get_bt_minkey_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_bt_minkey_proc __P((long, u_int32_t,
- * PUBLIC:      __db_bt_minkey_reply *));
+ * PUBLIC: void __db_set_bt_minkey_proc __P((u_int, u_int32_t,
+ * PUBLIC:      __db_set_bt_minkey_reply *));
  */
 void
-__db_bt_minkey_proc(dbpcl_id, minkey, replyp)
-	long dbpcl_id;
+__db_set_bt_minkey_proc(dbpcl_id, minkey, replyp)
+	u_int dbpcl_id;
 	u_int32_t minkey;
-	__db_bt_minkey_reply *replyp;
+	__db_set_bt_minkey_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -768,11 +776,11 @@ __db_bt_minkey_proc(dbpcl_id, minkey, replyp)
 }
 
 /*
- * PUBLIC: void __db_close_proc __P((long, u_int32_t, __db_close_reply *));
+ * PUBLIC: void __db_close_proc __P((u_int, u_int32_t, __db_close_reply *));
  */
 void
 __db_close_proc(dbpcl_id, flags, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	u_int32_t flags;
 	__db_close_reply *replyp;
 {
@@ -784,11 +792,11 @@ __db_close_proc(dbpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_create_proc __P((long, u_int32_t, __db_create_reply *));
+ * PUBLIC: void __db_create_proc __P((u_int, u_int32_t, __db_create_reply *));
  */
 void
 __db_create_proc(dbenvcl_id, flags, replyp)
-	long dbenvcl_id;
+	u_int dbenvcl_id;
 	u_int32_t flags;
 	__db_create_reply *replyp;
 {
@@ -807,7 +815,7 @@ __db_create_proc(dbenvcl_id, flags, replyp)
 	 * We actually require env's for databases.  The client should
 	 * have caught it, but just in case.
 	 */
-	DB_ASSERT(dbenv != NULL);
+	DB_ASSERT(dbenv, dbenv != NULL);
 	if ((ret = db_create(&dbp, dbenv, flags)) == 0) {
 		dbp_ctp->ct_dbp = dbp;
 		dbp_ctp->ct_type = CT_DB;
@@ -821,14 +829,15 @@ __db_create_proc(dbenvcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_del_proc __P((long, long, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:      u_int32_t, void *, u_int32_t, u_int32_t, __db_del_reply *));
+ * PUBLIC: void __db_del_proc __P((u_int, u_int, u_int32_t, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, void *, u_int32_t, u_int32_t,
+ * PUBLIC:	__db_del_reply *));
  */
 void
 __db_del_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
     keydata, keysize, flags, replyp)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t keydlen;
 	u_int32_t keydoff;
 	u_int32_t keyulen;
@@ -869,12 +878,12 @@ __db_del_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 }
 
 /*
- * PUBLIC: void __db_get_encrypt_flags_proc __P((long,
+ * PUBLIC: void __db_get_encrypt_flags_proc __P((u_int,
  * PUBLIC:      __db_get_encrypt_flags_reply *));
  */
 void
 __db_get_encrypt_flags_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_encrypt_flags_reply *replyp;
 {
 	DB *dbp;
@@ -887,15 +896,15 @@ __db_get_encrypt_flags_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_encrypt_proc __P((long, char *, u_int32_t,
- * PUBLIC:      __db_encrypt_reply *));
+ * PUBLIC: void __db_set_encrypt_proc __P((u_int, char *, u_int32_t,
+ * PUBLIC:      __db_set_encrypt_reply *));
  */
 void
-__db_encrypt_proc(dbpcl_id, passwd, flags, replyp)
-	long dbpcl_id;
+__db_set_encrypt_proc(dbpcl_id, passwd, flags, replyp)
+	u_int dbpcl_id;
 	char *passwd;
 	u_int32_t flags;
-	__db_encrypt_reply *replyp;
+	__db_set_encrypt_reply *replyp;
 {
 	int ret;
 	DB * dbp;
@@ -910,13 +919,13 @@ __db_encrypt_proc(dbpcl_id, passwd, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_extentsize_proc __P((long,
- * PUBLIC:      __db_get_extentsize_reply *));
+ * PUBLIC: void __db_get_q_extentsize_proc __P((u_int,
+ * PUBLIC:      __db_get_q_extentsize_reply *));
  */
 void
-__db_get_extentsize_proc(dbpcl_id, replyp)
-	long dbpcl_id;
-	__db_get_extentsize_reply *replyp;
+__db_get_q_extentsize_proc(dbpcl_id, replyp)
+	u_int dbpcl_id;
+	__db_get_q_extentsize_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -928,14 +937,14 @@ __db_get_extentsize_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_extentsize_proc __P((long, u_int32_t,
- * PUBLIC:      __db_extentsize_reply *));
+ * PUBLIC: void __db_set_q_extentsize_proc __P((u_int, u_int32_t,
+ * PUBLIC:      __db_set_q_extentsize_reply *));
  */
 void
-__db_extentsize_proc(dbpcl_id, extentsize, replyp)
-	long dbpcl_id;
+__db_set_q_extentsize_proc(dbpcl_id, extentsize, replyp)
+	u_int dbpcl_id;
 	u_int32_t extentsize;
-	__db_extentsize_reply *replyp;
+	__db_set_q_extentsize_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -951,11 +960,11 @@ __db_extentsize_proc(dbpcl_id, extentsize, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_flags_proc __P((long, __db_get_flags_reply *));
+ * PUBLIC: void __db_get_flags_proc __P((u_int, __db_get_flags_reply *));
  */
 void
 __db_get_flags_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_flags_reply *replyp;
 {
 	DB *dbp;
@@ -968,13 +977,14 @@ __db_get_flags_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_flags_proc __P((long, u_int32_t, __db_flags_reply *));
+ * PUBLIC: void __db_set_flags_proc
+ * PUBLIC:     __P((u_int, u_int32_t, __db_set_flags_reply *));
  */
 void
-__db_flags_proc(dbpcl_id, flags, replyp)
-	long dbpcl_id;
+__db_set_flags_proc(dbpcl_id, flags, replyp)
+	u_int dbpcl_id;
 	u_int32_t flags;
-	__db_flags_reply *replyp;
+	__db_set_flags_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -991,17 +1001,17 @@ __db_flags_proc(dbpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_proc __P((long, long, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __db_get_reply *,
- * PUBLIC:     int *));
+ * PUBLIC: void __db_get_proc __P((u_int, u_int, u_int32_t, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, void *, u_int32_t, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, u_int32_t, void *, u_int32_t,
+ * PUBLIC:	u_int32_t, __db_get_reply *, int *));
  */
 void
 __db_get_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
     keydata, keysize, datadlen, datadoff, dataulen, dataflags, datadata,
     datasize, flags, replyp, freep)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t keydlen;
 	u_int32_t keydoff;
 	u_int32_t keyulen;
@@ -1022,7 +1032,7 @@ __db_get_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 	DBT key, data;
 	DB_TXN *txnp;
 	ct_entry *dbp_ctp, *txnp_ctp;
-	int key_alloc, bulk_alloc, ret;
+	int ret;
 
 	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
 	dbp = (DB *)dbp_ctp->ct_anyp;
@@ -1032,8 +1042,9 @@ __db_get_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 	} else
 		txnp = NULL;
 
+	replyp->keydata.keydata_val = NULL;
+	replyp->datadata.datadata_val = NULL;
 	*freep = 0;
-	bulk_alloc = 0;
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
@@ -1064,7 +1075,6 @@ __db_get_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 			    data.ulen, &data.data);
 			if (ret != 0)
 				goto err;
-			bulk_alloc = 1;
 		}
 		data.flags |= DB_DBT_USERMEM;
 	} else
@@ -1090,16 +1100,11 @@ __db_get_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 		/*
 		 * Key
 		 */
-		key_alloc = 0;
 		if (key.data == keydata) {
 			ret = __os_umalloc(dbp->dbenv,
 			    key.size, &replyp->keydata.keydata_val);
-			if (ret != 0) {
-				__os_ufree(dbp->dbenv, key.data);
-				__os_ufree(dbp->dbenv, data.data);
+			if (ret != 0)
 				goto err;
-			}
-			key_alloc = 1;
 			memcpy(replyp->keydata.keydata_val, key.data, key.size);
 		} else
 			replyp->keydata.keydata_val = key.data;
@@ -1112,39 +1117,37 @@ __db_get_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 		if (data.data == datadata) {
 			ret = __os_umalloc(dbp->dbenv,
 			     data.size, &replyp->datadata.datadata_val);
-			if (ret != 0) {
-				__os_ufree(dbp->dbenv, key.data);
-				__os_ufree(dbp->dbenv, data.data);
-				if (key_alloc)
-					__os_ufree(dbp->dbenv,
-					    replyp->keydata.keydata_val);
+			if (ret != 0)
 				goto err;
-			}
 			memcpy(replyp->datadata.datadata_val, data.data,
 			    data.size);
 		} else
 			replyp->datadata.datadata_val = data.data;
 		replyp->datadata.datadata_len = data.size;
 	} else {
-err:		replyp->keydata.keydata_val = NULL;
+err:		FREE_IF_CHANGED(dbp->dbenv, key.data, keydata);
+		FREE_IF_CHANGED(dbp->dbenv, data.data, datadata);
+		FREE_IF_CHANGED(dbp->dbenv,
+		    replyp->keydata.keydata_val, key.data);
+		FREE_IF_CHANGED(dbp->dbenv,
+		    replyp->datadata.datadata_val, data.data);
+		replyp->keydata.keydata_val = NULL;
 		replyp->keydata.keydata_len = 0;
 		replyp->datadata.datadata_val = NULL;
 		replyp->datadata.datadata_len = 0;
 		*freep = 0;
-		if (bulk_alloc)
-			__os_ufree(dbp->dbenv, data.data);
 	}
 	replyp->status = ret;
 	return;
 }
 
 /*
- * PUBLIC: void __db_get_h_ffactor_proc __P((long,
+ * PUBLIC: void __db_get_h_ffactor_proc __P((u_int,
  * PUBLIC:      __db_get_h_ffactor_reply *));
  */
 void
 __db_get_h_ffactor_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_h_ffactor_reply *replyp;
 {
 	DB *dbp;
@@ -1157,14 +1160,14 @@ __db_get_h_ffactor_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_h_ffactor_proc __P((long, u_int32_t,
- * PUBLIC:      __db_h_ffactor_reply *));
+ * PUBLIC: void __db_set_h_ffactor_proc __P((u_int, u_int32_t,
+ * PUBLIC:      __db_set_h_ffactor_reply *));
  */
 void
-__db_h_ffactor_proc(dbpcl_id, ffactor, replyp)
-	long dbpcl_id;
+__db_set_h_ffactor_proc(dbpcl_id, ffactor, replyp)
+	u_int dbpcl_id;
 	u_int32_t ffactor;
-	__db_h_ffactor_reply *replyp;
+	__db_set_h_ffactor_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1180,11 +1183,11 @@ __db_h_ffactor_proc(dbpcl_id, ffactor, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_h_nelem_proc __P((long, __db_get_h_nelem_reply *));
+ * PUBLIC: void __db_get_h_nelem_proc __P((u_int, __db_get_h_nelem_reply *));
  */
 void
 __db_get_h_nelem_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_h_nelem_reply *replyp;
 {
 	DB *dbp;
@@ -1197,14 +1200,14 @@ __db_get_h_nelem_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_h_nelem_proc __P((long, u_int32_t,
- * PUBLIC:      __db_h_nelem_reply *));
+ * PUBLIC: void __db_set_h_nelem_proc __P((u_int, u_int32_t,
+ * PUBLIC:      __db_set_h_nelem_reply *));
  */
 void
-__db_h_nelem_proc(dbpcl_id, nelem, replyp)
-	long dbpcl_id;
+__db_set_h_nelem_proc(dbpcl_id, nelem, replyp)
+	u_int dbpcl_id;
 	u_int32_t nelem;
-	__db_h_nelem_reply *replyp;
+	__db_set_h_nelem_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1220,15 +1223,15 @@ __db_h_nelem_proc(dbpcl_id, nelem, replyp)
 }
 
 /*
- * PUBLIC: void __db_key_range_proc __P((long, long, u_int32_t, u_int32_t,
+ * PUBLIC: void __db_key_range_proc __P((u_int, u_int, u_int32_t, u_int32_t,
  * PUBLIC:     u_int32_t, u_int32_t, void *, u_int32_t, u_int32_t,
  * PUBLIC:     __db_key_range_reply *));
  */
 void
 __db_key_range_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen,
     keyflags, keydata, keysize, flags, replyp)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t keydlen;
 	u_int32_t keydoff;
 	u_int32_t keyulen;
@@ -1272,11 +1275,11 @@ __db_key_range_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen,
 }
 
 /*
- * PUBLIC: void __db_get_lorder_proc __P((long, __db_get_lorder_reply *));
+ * PUBLIC: void __db_get_lorder_proc __P((u_int, __db_get_lorder_reply *));
  */
 void
 __db_get_lorder_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_lorder_reply *replyp;
 {
 	DB *dbp;
@@ -1289,13 +1292,14 @@ __db_get_lorder_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_lorder_proc __P((long, u_int32_t, __db_lorder_reply *));
+ * PUBLIC: void __db_set_lorder_proc
+ * PUBLIC:     __P((u_int, u_int32_t, __db_set_lorder_reply *));
  */
 void
-__db_lorder_proc(dbpcl_id, lorder, replyp)
-	long dbpcl_id;
+__db_set_lorder_proc(dbpcl_id, lorder, replyp)
+	u_int dbpcl_id;
 	u_int32_t lorder;
-	__db_lorder_reply *replyp;
+	__db_set_lorder_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1311,12 +1315,12 @@ __db_lorder_proc(dbpcl_id, lorder, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_name_proc __P((long, __db_get_name_reply *));
+ * PUBLIC: void __db_get_dbname_proc __P((u_int, __db_get_dbname_reply *));
  */
 void
-__db_get_name_proc(dbpcl_id, replyp)
-	long dbpcl_id;
-	__db_get_name_reply *replyp;
+__db_get_dbname_proc(dbpcl_id, replyp)
+	u_int dbpcl_id;
+	__db_get_dbname_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1329,12 +1333,12 @@ __db_get_name_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_open_flags_proc __P((long,
+ * PUBLIC: void __db_get_open_flags_proc __P((u_int,
  * PUBLIC:      __db_get_open_flags_reply *));
  */
 void
 __db_get_open_flags_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_open_flags_reply *replyp;
 {
 	DB *dbp;
@@ -1347,13 +1351,13 @@ __db_get_open_flags_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_open_proc __P((long, long, char *, char *, u_int32_t,
+ * PUBLIC: void __db_open_proc __P((u_int, u_int, char *, char *, u_int32_t,
  * PUBLIC:      u_int32_t, u_int32_t, __db_open_reply *));
  */
 void
 __db_open_proc(dbpcl_id, txnpcl_id, name, subdb, type, flags, mode, replyp)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	char *name;
 	char *subdb;
 	u_int32_t type;
@@ -1429,11 +1433,11 @@ out:
 }
 
 /*
- * PUBLIC: void __db_get_pagesize_proc __P((long, __db_get_pagesize_reply *));
+ * PUBLIC: void __db_get_pagesize_proc __P((u_int, __db_get_pagesize_reply *));
  */
 void
 __db_get_pagesize_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_pagesize_reply *replyp;
 {
 	DB *dbp;
@@ -1446,14 +1450,14 @@ __db_get_pagesize_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_pagesize_proc __P((long, u_int32_t,
- * PUBLIC:      __db_pagesize_reply *));
+ * PUBLIC: void __db_set_pagesize_proc __P((u_int, u_int32_t,
+ * PUBLIC:      __db_set_pagesize_reply *));
  */
 void
-__db_pagesize_proc(dbpcl_id, pagesize, replyp)
-	long dbpcl_id;
+__db_set_pagesize_proc(dbpcl_id, pagesize, replyp)
+	u_int dbpcl_id;
 	u_int32_t pagesize;
-	__db_pagesize_reply *replyp;
+	__db_set_pagesize_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1469,19 +1473,19 @@ __db_pagesize_proc(dbpcl_id, pagesize, replyp)
 }
 
 /*
- * PUBLIC: void __db_pget_proc __P((long, long, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __db_pget_reply *,
- * PUBLIC:     int *));
+ * PUBLIC: void __db_pget_proc __P((u_int, u_int, u_int32_t, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, void *, u_int32_t, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, u_int32_t, void *, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, u_int32_t, u_int32_t, void *,
+ * PUBLIC:	u_int32_t, u_int32_t, __db_pget_reply *, int *));
  */
 void
 __db_pget_proc(dbpcl_id, txnpcl_id, skeydlen, skeydoff, skeyulen,
     skeyflags, skeydata, skeysize, pkeydlen, pkeydoff, pkeyulen, pkeyflags,
     pkeydata, pkeysize, datadlen, datadoff, dataulen, dataflags, datadata,
     datasize, flags, replyp, freep)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t skeydlen;
 	u_int32_t skeydoff;
 	u_int32_t skeyulen;
@@ -1508,7 +1512,7 @@ __db_pget_proc(dbpcl_id, txnpcl_id, skeydlen, skeydoff, skeyulen,
 	DBT skey, pkey, data;
 	DB_TXN *txnp;
 	ct_entry *dbp_ctp, *txnp_ctp;
-	int key_alloc, ret;
+	int ret;
 
 	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
 	dbp = (DB *)dbp_ctp->ct_anyp;
@@ -1518,6 +1522,9 @@ __db_pget_proc(dbpcl_id, txnpcl_id, skeydlen, skeydoff, skeyulen,
 	} else
 		txnp = NULL;
 
+	replyp->skeydata.skeydata_val = NULL;
+	replyp->pkeydata.pkeydata_val = NULL;
+	replyp->datadata.datadata_val = NULL;
 	*freep = 0;
 	memset(&skey, 0, sizeof(skey));
 	memset(&pkey, 0, sizeof(pkey));
@@ -1572,17 +1579,11 @@ __db_pget_proc(dbpcl_id, txnpcl_id, skeydlen, skeydoff, skeyulen,
 		/*
 		 * Key
 		 */
-		key_alloc = 0;
 		if (skey.data == skeydata) {
 			ret = __os_umalloc(dbp->dbenv,
 			    skey.size, &replyp->skeydata.skeydata_val);
-			if (ret != 0) {
-				__os_ufree(dbp->dbenv, skey.data);
-				__os_ufree(dbp->dbenv, pkey.data);
-				__os_ufree(dbp->dbenv, data.data);
+			if (ret != 0)
 				goto err;
-			}
-			key_alloc = 1;
 			memcpy(replyp->skeydata.skeydata_val, skey.data,
 			    skey.size);
 		} else
@@ -1596,22 +1597,14 @@ __db_pget_proc(dbpcl_id, txnpcl_id, skeydlen, skeydoff, skeyulen,
 		if (pkey.data == pkeydata) {
 			ret = __os_umalloc(dbp->dbenv,
 			     pkey.size, &replyp->pkeydata.pkeydata_val);
-			if (ret != 0) {
-				__os_ufree(dbp->dbenv, skey.data);
-				__os_ufree(dbp->dbenv, pkey.data);
-				__os_ufree(dbp->dbenv, data.data);
-				if (key_alloc)
-					__os_ufree(dbp->dbenv,
-					    replyp->skeydata.skeydata_val);
+			if (ret != 0)
 				goto err;
-			}
 			/*
 			 * We can set it to 2, because they cannot send the
 			 * pkey over without sending the skey over too.
 			 * So if they did send a pkey, they must have sent
 			 * the skey as well.
 			 */
-			key_alloc = 2;
 			memcpy(replyp->pkeydata.pkeydata_val, pkey.data,
 			    pkey.size);
 		} else
@@ -1624,30 +1617,24 @@ __db_pget_proc(dbpcl_id, txnpcl_id, skeydlen, skeydoff, skeyulen,
 		if (data.data == datadata) {
 			ret = __os_umalloc(dbp->dbenv,
 			     data.size, &replyp->datadata.datadata_val);
-			if (ret != 0) {
-				__os_ufree(dbp->dbenv, skey.data);
-				__os_ufree(dbp->dbenv, pkey.data);
-				__os_ufree(dbp->dbenv, data.data);
-				/*
-				 * If key_alloc is 1, just skey needs to be
-				 * freed, if key_alloc is 2, both skey and pkey
-				 * need to be freed.
-				 */
-				if (key_alloc--)
-					__os_ufree(dbp->dbenv,
-					    replyp->skeydata.skeydata_val);
-				if (key_alloc)
-					__os_ufree(dbp->dbenv,
-					    replyp->pkeydata.pkeydata_val);
+			if (ret != 0)
 				goto err;
-			}
 			memcpy(replyp->datadata.datadata_val, data.data,
 			    data.size);
 		} else
 			replyp->datadata.datadata_val = data.data;
 		replyp->datadata.datadata_len = data.size;
 	} else {
-err:		replyp->skeydata.skeydata_val = NULL;
+err:		FREE_IF_CHANGED(dbp->dbenv, skey.data, skeydata);
+		FREE_IF_CHANGED(dbp->dbenv, pkey.data, pkeydata);
+		FREE_IF_CHANGED(dbp->dbenv, data.data, datadata);
+		FREE_IF_CHANGED(dbp->dbenv,
+		    replyp->skeydata.skeydata_val, skey.data);
+		FREE_IF_CHANGED(dbp->dbenv,
+		    replyp->pkeydata.pkeydata_val, pkey.data);
+		FREE_IF_CHANGED(dbp->dbenv,
+		    replyp->datadata.datadata_val, data.data);
+		replyp->skeydata.skeydata_val = NULL;
 		replyp->skeydata.skeydata_len = 0;
 		replyp->pkeydata.pkeydata_val = NULL;
 		replyp->pkeydata.pkeydata_len = 0;
@@ -1660,17 +1647,17 @@ err:		replyp->skeydata.skeydata_val = NULL;
 }
 
 /*
- * PUBLIC: void __db_put_proc __P((long, long, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __db_put_reply *,
- * PUBLIC:     int *));
+ * PUBLIC: void __db_put_proc __P((u_int, u_int, u_int32_t, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, void *, u_int32_t, u_int32_t,
+ * PUBLIC:	u_int32_t, u_int32_t, u_int32_t, void *, u_int32_t,
+ * PUBLIC:	u_int32_t, __db_put_reply *, int *));
  */
 void
 __db_put_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
     keydata, keysize, datadlen, datadoff, dataulen, dataflags, datadata,
     datasize, flags, replyp, freep)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t keydlen;
 	u_int32_t keydoff;
 	u_int32_t keyulen;
@@ -1701,6 +1688,7 @@ __db_put_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 	} else
 		txnp = NULL;
 
+	replyp->keydata.keydata_val = NULL;
 	*freep = 0;
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
@@ -1747,17 +1735,18 @@ __db_put_proc(dbpcl_id, txnpcl_id, keydlen, keydoff, keyulen, keyflags,
 		if (key.data == keydata) {
 			ret = __os_umalloc(dbp->dbenv,
 			    key.size, &replyp->keydata.keydata_val);
-			if (ret != 0) {
-				__os_ufree(dbp->dbenv, key.data);
+			if (ret != 0)
 				goto err;
-			}
 			memcpy(replyp->keydata.keydata_val, key.data, key.size);
 		} else
 			replyp->keydata.keydata_val = key.data;
 
 		replyp->keydata.keydata_len = key.size;
 	} else {
-err:		replyp->keydata.keydata_val = NULL;
+err:		FREE_IF_CHANGED(dbp->dbenv, key.data, keydata);
+		FREE_IF_CHANGED(dbp->dbenv,
+		    replyp->keydata.keydata_val, key.data);
+		replyp->keydata.keydata_val = NULL;
 		replyp->keydata.keydata_len = 0;
 		*freep = 0;
 	}
@@ -1766,11 +1755,11 @@ err:		replyp->keydata.keydata_val = NULL;
 }
 
 /*
- * PUBLIC: void __db_get_re_delim_proc __P((long, __db_get_re_delim_reply *));
+ * PUBLIC: void __db_get_re_delim_proc __P((u_int, __db_get_re_delim_reply *));
  */
 void
 __db_get_re_delim_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_re_delim_reply *replyp;
 {
 	DB *dbp;
@@ -1783,14 +1772,14 @@ __db_get_re_delim_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_re_delim_proc __P((long, u_int32_t,
- * PUBLIC:      __db_re_delim_reply *));
+ * PUBLIC: void __db_set_re_delim_proc __P((u_int, u_int32_t,
+ * PUBLIC:      __db_set_re_delim_reply *));
  */
 void
-__db_re_delim_proc(dbpcl_id, delim, replyp)
-	long dbpcl_id;
+__db_set_re_delim_proc(dbpcl_id, delim, replyp)
+	u_int dbpcl_id;
 	u_int32_t delim;
-	__db_re_delim_reply *replyp;
+	__db_set_re_delim_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1806,11 +1795,11 @@ __db_re_delim_proc(dbpcl_id, delim, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_re_len_proc __P((long, __db_get_re_len_reply *));
+ * PUBLIC: void __db_get_re_len_proc __P((u_int, __db_get_re_len_reply *));
  */
 void
 __db_get_re_len_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_re_len_reply *replyp;
 {
 	DB *dbp;
@@ -1823,13 +1812,14 @@ __db_get_re_len_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_re_len_proc __P((long, u_int32_t, __db_re_len_reply *));
+ * PUBLIC: void __db_set_re_len_proc
+ * PUBLIC:     __P((u_int, u_int32_t, __db_set_re_len_reply *));
  */
 void
-__db_re_len_proc(dbpcl_id, len, replyp)
-	long dbpcl_id;
+__db_set_re_len_proc(dbpcl_id, len, replyp)
+	u_int dbpcl_id;
 	u_int32_t len;
-	__db_re_len_reply *replyp;
+	__db_set_re_len_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1845,11 +1835,11 @@ __db_re_len_proc(dbpcl_id, len, replyp)
 }
 
 /*
- * PUBLIC: void __db_get_re_pad_proc __P((long, __db_get_re_pad_reply *));
+ * PUBLIC: void __db_get_re_pad_proc __P((u_int, __db_get_re_pad_reply *));
  */
 void
 __db_get_re_pad_proc(dbpcl_id, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	__db_get_re_pad_reply *replyp;
 {
 	DB *dbp;
@@ -1862,13 +1852,14 @@ __db_get_re_pad_proc(dbpcl_id, replyp)
 }
 
 /*
- * PUBLIC: void __db_re_pad_proc __P((long, u_int32_t, __db_re_pad_reply *));
+ * PUBLIC: void __db_set_re_pad_proc
+ * PUBLIC:     __P((u_int, u_int32_t, __db_set_re_pad_reply *));
  */
 void
-__db_re_pad_proc(dbpcl_id, pad, replyp)
-	long dbpcl_id;
+__db_set_re_pad_proc(dbpcl_id, pad, replyp)
+	u_int dbpcl_id;
 	u_int32_t pad;
-	__db_re_pad_reply *replyp;
+	__db_set_re_pad_reply *replyp;
 {
 	DB *dbp;
 	ct_entry *dbp_ctp;
@@ -1884,12 +1875,12 @@ __db_re_pad_proc(dbpcl_id, pad, replyp)
 }
 
 /*
- * PUBLIC: void __db_remove_proc __P((long, char *, char *, u_int32_t,
+ * PUBLIC: void __db_remove_proc __P((u_int, char *, char *, u_int32_t,
  * PUBLIC:      __db_remove_reply *));
  */
 void
 __db_remove_proc(dbpcl_id, name, subdb, flags, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	char *name;
 	char *subdb;
 	u_int32_t flags;
@@ -1910,12 +1901,12 @@ __db_remove_proc(dbpcl_id, name, subdb, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_rename_proc __P((long, char *, char *, char *, u_int32_t,
+ * PUBLIC: void __db_rename_proc __P((u_int, char *, char *, char *, u_int32_t,
  * PUBLIC:      __db_rename_reply *));
  */
 void
 __db_rename_proc(dbpcl_id, name, subdb, newname, flags, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	char *name;
 	char *subdb;
 	char *newname;
@@ -1937,13 +1928,13 @@ __db_rename_proc(dbpcl_id, name, subdb, newname, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_stat_proc __P((long, long, u_int32_t, __db_stat_reply *,
+ * PUBLIC: void __db_stat_proc __P((u_int, u_int, u_int32_t, __db_stat_reply *,
  * PUBLIC:      int *));
  */
 void
 __db_stat_proc(dbpcl_id, txnpcl_id, flags, replyp, freep)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t flags;
 	__db_stat_reply *replyp;
 	int * freep;
@@ -2002,11 +1993,11 @@ out:
 }
 
 /*
- * PUBLIC: void __db_sync_proc __P((long, u_int32_t, __db_sync_reply *));
+ * PUBLIC: void __db_sync_proc __P((u_int, u_int32_t, __db_sync_reply *));
  */
 void
 __db_sync_proc(dbpcl_id, flags, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	u_int32_t flags;
 	__db_sync_reply *replyp;
 {
@@ -2024,13 +2015,13 @@ __db_sync_proc(dbpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_truncate_proc __P((long, long, u_int32_t,
+ * PUBLIC: void __db_truncate_proc __P((u_int, u_int, u_int32_t,
  * PUBLIC:      __db_truncate_reply *));
  */
 void
 __db_truncate_proc(dbpcl_id, txnpcl_id, flags, replyp)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t flags;
 	__db_truncate_reply *replyp;
 {
@@ -2056,13 +2047,13 @@ __db_truncate_proc(dbpcl_id, txnpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_cursor_proc __P((long, long, u_int32_t,
+ * PUBLIC: void __db_cursor_proc __P((u_int, u_int, u_int32_t,
  * PUBLIC:      __db_cursor_reply *));
  */
 void
 __db_cursor_proc(dbpcl_id, txnpcl_id, flags, replyp)
-	long dbpcl_id;
-	long txnpcl_id;
+	u_int dbpcl_id;
+	u_int txnpcl_id;
 	u_int32_t flags;
 	__db_cursor_reply *replyp;
 {
@@ -2102,17 +2093,18 @@ __db_cursor_proc(dbpcl_id, txnpcl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __db_join_proc __P((long, u_int32_t *, u_int32_t, u_int32_t,
+ * PUBLIC: void __db_join_proc __P((u_int, u_int32_t *, u_int32_t, u_int32_t,
  * PUBLIC:      __db_join_reply *));
  */
 void
 __db_join_proc(dbpcl_id, curs, curslen, flags, replyp)
-	long dbpcl_id;
+	u_int dbpcl_id;
 	u_int32_t * curs;
 	u_int32_t curslen;
 	u_int32_t flags;
 	__db_join_reply *replyp;
 {
+	DB_ENV *dbenv;
 	DB *dbp;
 	DBC **jcurs, **c;
 	DBC *dbc;
@@ -2123,14 +2115,15 @@ __db_join_proc(dbpcl_id, curs, curslen, flags, replyp)
 
 	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
 	dbp = (DB *)dbp_ctp->ct_anyp;
+	dbenv = dbp->dbenv;
 
 	dbc_ctp = new_ct_ent(&replyp->status);
 	if (dbc_ctp == NULL)
 		return;
 
 	size = (curslen + 1) * sizeof(DBC *);
-	if ((ret = __os_calloc(dbp->dbenv,
-	    curslen + 1, sizeof(DBC *), &jcurs)) != 0) {
+	if ((ret = __os_calloc(
+	    dbenv, curslen + 1, sizeof(DBC *), &jcurs)) != 0) {
 		replyp->status = ret;
 		__dbclear_ctp(dbc_ctp);
 		return;
@@ -2141,7 +2134,7 @@ __db_join_proc(dbpcl_id, curs, curslen, flags, replyp)
 	 * the same transaction, so just check the first.
 	 */
 	ctp = get_tableent(*curs);
-	DB_ASSERT(ctp->ct_type == CT_CURSOR);
+	DB_ASSERT(dbenv, ctp->ct_type == CT_CURSOR);
 	/*
 	 * If we are using a transaction, set the join activity timer
 	 * to point to the parent transaction.
@@ -2164,7 +2157,7 @@ __db_join_proc(dbpcl_id, curs, curslen, flags, replyp)
 		 * we know they are part of a join list and we can distinguish
 		 * them and later restore them when the join cursor is closed.
 		 */
-		DB_ASSERT(ctp->ct_type == CT_CURSOR);
+		DB_ASSERT(dbenv, ctp->ct_type == CT_CURSOR);
 		ctp->ct_type |= CT_JOIN;
 		ctp->ct_origp = ctp->ct_activep;
 		/*
@@ -2199,18 +2192,18 @@ __db_join_proc(dbpcl_id, curs, curslen, flags, replyp)
 	}
 
 	replyp->status = ret;
-out:
-	__os_free(dbp->dbenv, jcurs);
+
+out:	__os_free(dbenv, jcurs);
 	return;
 }
 
 /*
- * PUBLIC: void __dbc_close_proc __P((long, __dbc_close_reply *));
+ * PUBLIC: void __dbc_c_close_proc __P((u_int, __dbc_c_close_reply *));
  */
 void
-__dbc_close_proc(dbccl_id, replyp)
-	long dbccl_id;
-	__dbc_close_reply *replyp;
+__dbc_c_close_proc(dbccl_id, replyp)
+	u_int dbccl_id;
+	__dbc_c_close_reply *replyp;
 {
 	ct_entry *dbc_ctp;
 
@@ -2220,13 +2213,14 @@ __dbc_close_proc(dbccl_id, replyp)
 }
 
 /*
- * PUBLIC: void __dbc_count_proc __P((long, u_int32_t, __dbc_count_reply *));
+ * PUBLIC: void __dbc_c_count_proc
+ * PUBLIC:     __P((u_int, u_int32_t, __dbc_c_count_reply *));
  */
 void
-__dbc_count_proc(dbccl_id, flags, replyp)
-	long dbccl_id;
+__dbc_c_count_proc(dbccl_id, flags, replyp)
+	u_int dbccl_id;
 	u_int32_t flags;
-	__dbc_count_reply *replyp;
+	__dbc_c_count_reply *replyp;
 {
 	DBC *dbc;
 	ct_entry *dbc_ctp;
@@ -2244,13 +2238,13 @@ __dbc_count_proc(dbccl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __dbc_del_proc __P((long, u_int32_t, __dbc_del_reply *));
+ * PUBLIC: void __dbc_c_del_proc __P((u_int, u_int32_t, __dbc_c_del_reply *));
  */
 void
-__dbc_del_proc(dbccl_id, flags, replyp)
-	long dbccl_id;
+__dbc_c_del_proc(dbccl_id, flags, replyp)
+	u_int dbccl_id;
 	u_int32_t flags;
-	__dbc_del_reply *replyp;
+	__dbc_c_del_reply *replyp;
 {
 	DBC *dbc;
 	ct_entry *dbc_ctp;
@@ -2266,13 +2260,13 @@ __dbc_del_proc(dbccl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __dbc_dup_proc __P((long, u_int32_t, __dbc_dup_reply *));
+ * PUBLIC: void __dbc_c_dup_proc __P((u_int, u_int32_t, __dbc_c_dup_reply *));
  */
 void
-__dbc_dup_proc(dbccl_id, flags, replyp)
-	long dbccl_id;
+__dbc_c_dup_proc(dbccl_id, flags, replyp)
+	u_int dbccl_id;
 	u_int32_t flags;
-	__dbc_dup_reply *replyp;
+	__dbc_c_dup_reply *replyp;
 {
 	DBC *dbc, *newdbc;
 	ct_entry *dbc_ctp, *new_ctp;
@@ -2306,16 +2300,16 @@ __dbc_dup_proc(dbccl_id, flags, replyp)
 }
 
 /*
- * PUBLIC: void __dbc_get_proc __P((long, u_int32_t, u_int32_t, u_int32_t,
+ * PUBLIC: void __dbc_c_get_proc __P((u_int, u_int32_t, u_int32_t, u_int32_t,
  * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __dbc_get_reply *,
+ * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __dbc_c_get_reply *,
  * PUBLIC:     int *));
  */
 void
-__dbc_get_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
+__dbc_c_get_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
     keysize, datadlen, datadoff, dataulen, dataflags, datadata, datasize,
     flags, replyp, freep)
-	long dbccl_id;
+	u_int dbccl_id;
 	u_int32_t keydlen;
 	u_int32_t keydoff;
 	u_int32_t keyulen;
@@ -2329,21 +2323,22 @@ __dbc_get_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
 	void *datadata;
 	u_int32_t datasize;
 	u_int32_t flags;
-	__dbc_get_reply *replyp;
+	__dbc_c_get_reply *replyp;
 	int * freep;
 {
 	DBC *dbc;
 	DBT key, data;
 	DB_ENV *dbenv;
 	ct_entry *dbc_ctp;
-	int key_alloc, bulk_alloc, ret;
+	int ret;
 
 	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
 	dbc = (DBC *)dbc_ctp->ct_anyp;
 	dbenv = dbc->dbp->dbenv;
 
+	replyp->keydata.keydata_val = NULL;
+	replyp->datadata.datadata_val = NULL;
 	*freep = 0;
-	bulk_alloc = 0;
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
@@ -2351,30 +2346,37 @@ __dbc_get_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
 	key.dlen = keydlen;
 	key.ulen = keyulen;
 	key.doff = keydoff;
-	/*
-	 * Ignore memory related flags on server.
-	 */
-	key.flags = DB_DBT_MALLOC;
+	key.size = keysize;
+	if (keyflags & DB_DBT_USERMEM) {
+		if ((ret = __os_umalloc(dbenv, key.ulen, &key.data)) != 0)
+			goto err;
+		if (keydata != 0)
+			memcpy(key.data, keydata,
+			    (key.size < key.ulen) ? key.size : key.ulen);
+		key.flags = DB_DBT_USERMEM;
+	} else {
+		key.data = keydata;
+		key.flags = DB_DBT_MALLOC;
+	}
 	if (keyflags & DB_DBT_PARTIAL)
 		key.flags |= DB_DBT_PARTIAL;
-	key.size = keysize;
-	key.data = keydata;
 
 	data.dlen = datadlen;
 	data.ulen = dataulen;
 	data.doff = datadoff;
 	data.size = datasize;
-	data.data = datadata;
-	if (flags & DB_MULTIPLE || flags & DB_MULTIPLE_KEY) {
-		if (data.data == 0) {
-			ret = __os_umalloc(dbenv, data.ulen, &data.data);
-			if (ret != 0)
-				goto err;
-			bulk_alloc = 1;
-		}
-		data.flags |= DB_DBT_USERMEM;
-	} else
-		data.flags |= DB_DBT_MALLOC;
+	if (flags & (DB_MULTIPLE | DB_MULTIPLE_KEY) ||
+	    dataflags & DB_DBT_USERMEM) {
+		if ((ret = __os_umalloc(dbenv, data.ulen, &data.data)) != 0)
+			goto err;
+		if (datadata != 0)
+			memcpy(data.data, datadata,
+			    (data.size < data.ulen) ? data.size : data.ulen);
+		data.flags = DB_DBT_USERMEM;
+	} else {
+		data.data = datadata;
+		data.flags = DB_DBT_MALLOC;
+	}
 	if (dataflags & DB_DBT_PARTIAL)
 		data.flags |= DB_DBT_PARTIAL;
 
@@ -2397,16 +2399,11 @@ __dbc_get_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
 		/*
 		 * Key
 		 */
-		key_alloc = 0;
 		if (key.data == keydata) {
 			ret = __os_umalloc(dbenv, key.size,
 			    &replyp->keydata.keydata_val);
-			if (ret != 0) {
-				__os_ufree(dbenv, key.data);
-				__os_ufree(dbenv, data.data);
+			if (ret != 0)
 				goto err;
-			}
-			key_alloc = 1;
 			memcpy(replyp->keydata.keydata_val, key.data, key.size);
 		} else
 			replyp->keydata.keydata_val = key.data;
@@ -2419,45 +2416,43 @@ __dbc_get_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
 		if (data.data == datadata) {
 			ret = __os_umalloc(dbenv, data.size,
 			    &replyp->datadata.datadata_val);
-			if (ret != 0) {
-				__os_ufree(dbenv, key.data);
-				__os_ufree(dbenv, data.data);
-				if (key_alloc)
-					__os_ufree(
-					    dbenv, replyp->keydata.keydata_val);
+			if (ret != 0)
 				goto err;
-			}
 			memcpy(replyp->datadata.datadata_val, data.data,
 			    data.size);
 		} else
 			replyp->datadata.datadata_val = data.data;
 		replyp->datadata.datadata_len = data.size;
 	} else {
-err:		replyp->keydata.keydata_val = NULL;
+err:		FREE_IF_CHANGED(dbenv, key.data, keydata);
+		FREE_IF_CHANGED(dbenv, data.data, datadata);
+		FREE_IF_CHANGED(dbenv,
+		    replyp->keydata.keydata_val, key.data);
+		FREE_IF_CHANGED(dbenv,
+		    replyp->datadata.datadata_val, data.data);
+		replyp->keydata.keydata_val = NULL;
 		replyp->keydata.keydata_len = 0;
 		replyp->datadata.datadata_val = NULL;
 		replyp->datadata.datadata_len = 0;
 		*freep = 0;
-		if (bulk_alloc)
-			__os_ufree(dbenv, data.data);
 	}
 	replyp->status = ret;
 	return;
 }
 
 /*
- * PUBLIC: void __dbc_pget_proc __P((long, u_int32_t, u_int32_t, u_int32_t,
+ * PUBLIC: void __dbc_c_pget_proc __P((u_int, u_int32_t, u_int32_t, u_int32_t,
  * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
  * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __dbc_pget_reply *,
+ * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __dbc_c_pget_reply *,
  * PUBLIC:     int *));
  */
 void
-__dbc_pget_proc(dbccl_id, skeydlen, skeydoff, skeyulen, skeyflags,
+__dbc_c_pget_proc(dbccl_id, skeydlen, skeydoff, skeyulen, skeyflags,
     skeydata, skeysize, pkeydlen, pkeydoff, pkeyulen, pkeyflags, pkeydata,
     pkeysize, datadlen, datadoff, dataulen, dataflags, datadata, datasize,
     flags, replyp, freep)
-	long dbccl_id;
+	u_int dbccl_id;
 	u_int32_t skeydlen;
 	u_int32_t skeydoff;
 	u_int32_t skeyulen;
@@ -2477,19 +2472,22 @@ __dbc_pget_proc(dbccl_id, skeydlen, skeydoff, skeyulen, skeyflags,
 	void *datadata;
 	u_int32_t datasize;
 	u_int32_t flags;
-	__dbc_pget_reply *replyp;
+	__dbc_c_pget_reply *replyp;
 	int * freep;
 {
 	DBC *dbc;
 	DBT skey, pkey, data;
 	DB_ENV *dbenv;
 	ct_entry *dbc_ctp;
-	int key_alloc, ret;
+	int ret;
 
 	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
 	dbc = (DBC *)dbc_ctp->ct_anyp;
 	dbenv = dbc->dbp->dbenv;
 
+	replyp->skeydata.skeydata_val = NULL;
+	replyp->pkeydata.pkeydata_val = NULL;
+	replyp->datadata.datadata_val = NULL;
 	*freep = 0;
 	memset(&skey, 0, sizeof(skey));
 	memset(&pkey, 0, sizeof(pkey));
@@ -2544,17 +2542,11 @@ __dbc_pget_proc(dbccl_id, skeydlen, skeydoff, skeyulen, skeyflags,
 		/*
 		 * Key
 		 */
-		key_alloc = 0;
 		if (skey.data == skeydata) {
 			ret = __os_umalloc(dbenv,
 			    skey.size, &replyp->skeydata.skeydata_val);
-			if (ret != 0) {
-				__os_ufree(dbenv, skey.data);
-				__os_ufree(dbenv, pkey.data);
-				__os_ufree(dbenv, data.data);
+			if (ret != 0)
 				goto err;
-			}
-			key_alloc = 1;
 			memcpy(replyp->skeydata.skeydata_val, skey.data,
 			    skey.size);
 		} else
@@ -2567,22 +2559,14 @@ __dbc_pget_proc(dbccl_id, skeydlen, skeydoff, skeyulen, skeyflags,
 		if (pkey.data == pkeydata) {
 			ret = __os_umalloc(dbenv,
 			     pkey.size, &replyp->pkeydata.pkeydata_val);
-			if (ret != 0) {
-				__os_ufree(dbenv, skey.data);
-				__os_ufree(dbenv, pkey.data);
-				__os_ufree(dbenv, data.data);
-				if (key_alloc)
-					__os_ufree(dbenv,
-					    replyp->skeydata.skeydata_val);
+			if (ret != 0)
 				goto err;
-			}
 			/*
 			 * We can set it to 2, because they cannot send the
 			 * pkey over without sending the skey over too.
 			 * So if they did send a pkey, they must have sent
 			 * the skey as well.
 			 */
-			key_alloc = 2;
 			memcpy(replyp->pkeydata.pkeydata_val, pkey.data,
 			    pkey.size);
 		} else
@@ -2595,30 +2579,24 @@ __dbc_pget_proc(dbccl_id, skeydlen, skeydoff, skeyulen, skeyflags,
 		if (data.data == datadata) {
 			ret = __os_umalloc(dbenv,
 			     data.size, &replyp->datadata.datadata_val);
-			if (ret != 0) {
-				__os_ufree(dbenv, skey.data);
-				__os_ufree(dbenv, pkey.data);
-				__os_ufree(dbenv, data.data);
-				/*
-				 * If key_alloc is 1, just skey needs to be
-				 * freed, if key_alloc is 2, both skey and pkey
-				 * need to be freed.
-				 */
-				if (key_alloc--)
-					__os_ufree(dbenv,
-					    replyp->skeydata.skeydata_val);
-				if (key_alloc)
-					__os_ufree(dbenv,
-					    replyp->pkeydata.pkeydata_val);
+			if (ret != 0)
 				goto err;
-			}
 			memcpy(replyp->datadata.datadata_val, data.data,
 			    data.size);
 		} else
 			replyp->datadata.datadata_val = data.data;
 		replyp->datadata.datadata_len = data.size;
 	} else {
-err:		replyp->skeydata.skeydata_val = NULL;
+err:		FREE_IF_CHANGED(dbenv, skey.data, skeydata);
+		FREE_IF_CHANGED(dbenv, pkey.data, pkeydata);
+		FREE_IF_CHANGED(dbenv, data.data, datadata);
+		FREE_IF_CHANGED(dbenv,
+		    replyp->skeydata.skeydata_val, skey.data);
+		FREE_IF_CHANGED(dbenv,
+		    replyp->pkeydata.pkeydata_val, pkey.data);
+		FREE_IF_CHANGED(dbenv,
+		    replyp->datadata.datadata_val, data.data);
+		replyp->skeydata.skeydata_val = NULL;
 		replyp->skeydata.skeydata_len = 0;
 		replyp->pkeydata.pkeydata_val = NULL;
 		replyp->pkeydata.pkeydata_len = 0;
@@ -2631,16 +2609,16 @@ err:		replyp->skeydata.skeydata_val = NULL;
 }
 
 /*
- * PUBLIC: void __dbc_put_proc __P((long, u_int32_t, u_int32_t, u_int32_t,
+ * PUBLIC: void __dbc_c_put_proc __P((u_int, u_int32_t, u_int32_t, u_int32_t,
  * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t, u_int32_t,
- * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __dbc_put_reply *,
+ * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, __dbc_c_put_reply *,
  * PUBLIC:     int *));
  */
 void
-__dbc_put_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
+__dbc_c_put_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
     keysize, datadlen, datadoff, dataulen, dataflags, datadata, datasize,
     flags, replyp, freep)
-	long dbccl_id;
+	u_int dbccl_id;
 	u_int32_t keydlen;
 	u_int32_t keydoff;
 	u_int32_t keyulen;
@@ -2654,7 +2632,7 @@ __dbc_put_proc(dbccl_id, keydlen, keydoff, keyulen, keyflags, keydata,
 	void *datadata;
 	u_int32_t datasize;
 	u_int32_t flags;
-	__dbc_put_reply *replyp;
+	__dbc_c_put_reply *replyp;
 	int * freep;
 {
 	DB *dbp;

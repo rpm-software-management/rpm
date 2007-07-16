@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2000-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd011.tcl,v 11.26 2004/01/28 03:36:28 bostic Exp $
+# $Id: recd011.tcl,v 12.3 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	recd011
 # TEST	Verify that recovery to a specific timestamp works.

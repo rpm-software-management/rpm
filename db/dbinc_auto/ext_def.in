@@ -57,6 +57,6 @@
 #define	__db_hsearch __db_hsearch@DB_VERSION_UNIQUE_NAME@
 #define	__db_hdestroy __db_hdestroy@DB_VERSION_UNIQUE_NAME@
 #endif
-#define db_xa_switch db_xa_switch@DB_VERSION_UNIQUE_NAME@
+#define	db_xa_switch db_xa_switch@DB_VERSION_UNIQUE_NAME@
 
 #endif /* !_DB_EXT_DEF_IN_ */

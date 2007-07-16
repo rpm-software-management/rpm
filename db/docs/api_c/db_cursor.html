@@ -1,5 +1,5 @@
-<!--$Id: db_cursor.so,v 10.47 2004/08/13 03:38:55 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_cursor.so,v 10.53 2006/08/08 05:24:02 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -28,7 +28,9 @@ DB-&gt;cursor(DB *db,
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB-&gt;cursor</h3>
-The DB-&gt;cursor method returns a created database cursor.
+<p>The DB-&gt;cursor method returns a created database cursor.</p>
+<p>Cursors may span threads, but only serially, that is, the application
+must serialize access to the cursor handle.</p>
 <p>The DB-&gt;cursor method
 returns a non-zero error value on failure
 and 0 on success.
@@ -36,27 +38,38 @@ and 0 on success.
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>cursorp</b><dd>The <b>cursorp</b> parameter references memory into which
-a pointer to the allocated cursor is copied.
+a pointer to the allocated cursor is copied. 
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
-<dt><a name="DB_DEGREE_2">DB_DEGREE_2</a><dd>This cursor will have degree 2 isolation.  This ensures the stability
-of the current data item read by this cursor but permits data read
-by this cursor to be modified or deleted prior to the commit of
-the transaction for this cursor.
-<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>All read operations performed by the cursor may return modified but not
-yet committed data.  Silently ignored if the <a href="../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag
-was not specified when the underlying database was opened.
+<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>This cursor will have degree 2 isolation.  This ensures the stability
+of the current data item read by this cursor but permits data read by
+this cursor to be modified or deleted prior to the commit of the
+transaction for this cursor.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>This cursor will have degree 1 isolation.  Read operations performed by
+the cursor may return modified but not yet committed data.  Silently
+ignored if the <a href="../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when
+the underlying database was opened.
 <dt><a name="DB_WRITECURSOR">DB_WRITECURSOR</a><dd>Specify that the cursor will be used to update the database.  The
 underlying database environment must have been opened using the
 <a href="../api_c/env_open.html#DB_INIT_CDB">DB_INIT_CDB</a> flag.
+<dt><a name="DB_TXN_SNAPSHOT">DB_TXN_SNAPSHOT</a><dd>Specify that the cursor operate with read-only
+<a href="../ref/transapp/read.html">snapshot isolation</a>.  For databases
+with the <a href="../api_c/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a> flag set, data values will be read as
+they are when the cursor is opened, without taking read locks.  This
+flag implicitly begins a transaction that is committed when the cursor
+is closed.  Silently ignored if <a href="../api_c/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a> not set on the
+underlying database or if a transaction is supplied in the <b>txnid</b>
+parameter.
 </dl>
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  To transaction-protect cursor operations, cursors must be opened and
-closed within the context of a transaction, and the <b>txnid</b>
-parameter specifies the transaction context in which the cursor may be
-used.
+<dt><b>txnid</b><dd>Cursor operations are not automatically transaction-protected, even if
+the <a href="../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag is specified to the
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> or <a href="../api_c/db_open.html">DB-&gt;open</a> methods.  If cursor operations are
+to be transaction-protected, the <b>txnid</b> parameter must be a
+transaction handle returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; otherwise, NULL.  To
+transaction-protect cursor operations, cursors must be opened and closed
+within the context of a transaction, and the <b>txnid</b> parameter
+specifies the transaction context in which the cursor may be used.
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;cursor method
@@ -64,6 +77,7 @@ may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
 </dl>
 <dl compact>
 <dt>EINVAL<dd>An
@@ -78,6 +92,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,15 +1,15 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test092.tcl,v 11.18 2004/09/22 18:01:06 bostic Exp $
+# $Id: test092.tcl,v 12.4 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test092
 # TEST	Test of DB_DIRTY_READ [#3395]
 # TEST
 # TEST	We set up a database with nentries in it.  We then open the
-# TEST	database read-only twice.  One with dirty read and one without.
+# TEST	database read-only twice.  One with dirty reads and one without.
 # TEST	We open the database for writing and update some entries in it.
 # TEST	Then read those new entries via db->get (clean and dirty), and
 # TEST	via cursors (clean and dirty).
@@ -86,9 +86,9 @@ proc test092 { method {nentries 1000} args } {
 	set t [$env txn]
 	error_check_good txnbegin [is_valid_txn $t $env] TRUE
 
-	set tdr [$env txn -dirty]
+	set tdr [$env txn -read_uncommitted]
 	error_check_good txnbegin:dr [is_valid_txn $tdr $env] TRUE
-	set dbtxn [eval {berkdb_open -auto_commit -env $env -dirty \
+	set dbtxn [eval {berkdb_open -auto_commit -env $env -read_uncommitted \
 	    -mode 0644 $omethod} {$testfile}]
 	error_check_good dbopen:dbtxn [is_valid_db $dbtxn] TRUE
 
@@ -96,7 +96,7 @@ proc test092 { method {nentries 1000} args } {
 	    -rdonly -mode 0644 $omethod} {$testfile}]
 	error_check_good dbopen:dbcl [is_valid_db $dbcl] TRUE
 
-	set dbdr [eval {berkdb_open -auto_commit -env $env -dirty \
+	set dbdr [eval {berkdb_open -auto_commit -env $env -read_uncommitted \
 	    -rdonly -mode 0644 $omethod} {$testfile}]
 	error_check_good dbopen:dbdr [is_valid_db $dbdr] TRUE
 
@@ -106,13 +106,14 @@ proc test092 { method {nentries 1000} args } {
 	set dbcdr0 [$dbdr cursor]
 	error_check_good dbcurs:dbdr0 [is_valid_cursor $dbcdr0 $dbdr] TRUE
 
-	set dbcdr1 [$dbdr cursor -dirty]
+	set dbcdr1 [$dbdr cursor -read_uncommitted]
 	error_check_good dbcurs:dbdr1 [is_valid_cursor $dbcdr1 $dbdr] TRUE
 
-	# Test that $db stat can use -dirty flag.
-	puts "\tTest092.c: Smoke test for db_stat -txn -dirty"
-	if { [catch {set statret [$dbcl stat -txn $t -dirty]} res] } {
-		puts "FAIL: db_stat -txn -dirty returned $res"
+	# Test that $db stat can use -read_uncommitted flag.
+	puts "\tTest092.c: Smoke test for db_stat -txn -read_uncommitted"
+	if { [catch \
+	    {set statret [$dbcl stat -txn $t -read_uncommitted]} res] } {
+		puts "FAIL: db_stat -txn -read_uncommitted returned $res"
 	}
 
 	#
@@ -152,7 +153,7 @@ proc test092 { method {nentries 1000} args } {
 		set ret [eval {$dbcl get -txn $tdr} $gflags {$key}]
 		error_check_good dbdr2:get $ret $drret
 
-		set ret [eval {$dbdr get -dirty} $gflags {$key}]
+		set ret [eval {$dbdr get -read_uncommitted} $gflags {$key}]
 		error_check_good dbdr1:get $ret $drret
 
 		set ret [eval {$dbdr get -txn $tdr} $gflags {$key}]
@@ -165,10 +166,11 @@ proc test092 { method {nentries 1000} args } {
 	puts "\tTest092.e: Check dirty data using dirty txn and clean db/cursor"
 	dump_file_walk $dbccl $t1 $checkfunc "-first" "-next"
 
-	puts "\tTest092.f: Check dirty data using -dirty cget flag"
-	dump_file_walk $dbcdr0 $t2 $checkfunc "-first" "-next" "-dirty"
+	puts "\tTest092.f: Check dirty data using -read_uncommitted cget flag"
+	dump_file_walk \
+	    $dbcdr0 $t2 $checkfunc "-first" "-next" "-read_uncommitted"
 
-	puts "\tTest092.g: Check dirty data using -dirty cursor"
+	puts "\tTest092.g: Check dirty data using -read_uncommitted cursor"
 	dump_file_walk $dbcdr1 $t3 $checkfunc "-first" "-next"
 
 	#
@@ -191,7 +193,7 @@ proc test092 { method {nentries 1000} args } {
 	set dbcdr0 [$dbdr cursor]
 	error_check_good dbcurs:dbdr0 [is_valid_cursor $dbcdr0 $dbdr] TRUE
 
-	set dbcdr1 [$dbdr cursor -dirty]
+	set dbcdr1 [$dbdr cursor -read_uncommitted]
 	error_check_good dbcurs:dbdr1 [is_valid_cursor $dbcdr1 $dbdr] TRUE
 
 	if { [is_record_based $method] == 1 } {
@@ -199,13 +201,14 @@ proc test092 { method {nentries 1000} args } {
 	} else {
 		set checkfunc test092cl.check
 	}
-	puts "\tTest092.i: Check clean data using -dirty cget flag"
+	puts "\tTest092.i: Check clean data using -read_uncommitted cget flag"
 	dump_file_walk $dbccl $t1 $checkfunc "-first" "-next"
 
-	puts "\tTest092.j: Check clean data using -dirty cget flag"
-	dump_file_walk $dbcdr0 $t2 $checkfunc "-first" "-next" "-dirty"
+	puts "\tTest092.j: Check clean data using -read_uncommitted cget flag"
+	dump_file_walk \
+	    $dbcdr0 $t2 $checkfunc "-first" "-next" "-read_uncommitted"
 
-	puts "\tTest092.k: Check clean data using -dirty cursor"
+	puts "\tTest092.k: Check clean data using -read_uncommitted cursor"
 	dump_file_walk $dbcdr1 $t3 $checkfunc "-first" "-next"
 
 	# Clean up our handles

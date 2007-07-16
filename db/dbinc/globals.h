@@ -1,11 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: globals.h,v 11.9 2004/09/17 22:00:27 mjc Exp $
+ * $Id: globals.h,v 12.4 2006/08/24 14:45:29 bostic Exp $
  */
+
+#ifndef _DB_GLOBALS_H_
+#define	_DB_GLOBALS_H_
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /*******************************************************
  * Global variables.
@@ -90,3 +97,8 @@ extern	DB_GLOBALS	__db_global_values;
 #endif
 
 #define	DB_GLOBAL(v)	__db_global_values.v
+
+#if defined(__cplusplus)
+}
+#endif
+#endif /* !_DB_GLOBALS_H_ */

@@ -1,19 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: db_upg.c,v 11.35 2004/03/24 20:37:35 bostic Exp $
+ * $Id: db_upg.c,v 12.8 2006/08/24 14:45:16 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -41,6 +35,7 @@ static int (* const func_31_list[P_PAGETYPE_MAX])
 
 static int __db_page_pass __P((DB *, char *, u_int32_t, int (* const [])
 	       (DB *, char *, u_int32_t, DB_FH *, PAGE *, int *), DB_FH *));
+static int __db_set_lastpgno __P((DB *, char *, DB_FH *));
 
 /*
  * __db_upgrade_pp --
@@ -100,7 +95,7 @@ __db_upgrade(dbp, fname, flags)
 
 	/* Open the file. */
 	if ((ret = __os_open(dbenv, real_name, 0, 0, &fhp)) != 0) {
-		__db_err(dbenv, "%s: %s", real_name, db_strerror(ret));
+		__db_err(dbenv, ret, "%s", real_name);
 		return (ret);
 	}
 
@@ -126,8 +121,7 @@ __db_upgrade(dbp, fname, flags)
 			if ((ret =
 			    __bam_30_btreemeta(dbp, real_name, mbuf)) != 0)
 				goto err;
-			if ((ret = __os_seek(dbenv,
-			    fhp, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
+			if ((ret = __os_seek(dbenv, fhp, 0, 0, 0)) != 0)
 				goto err;
 			if ((ret = __os_write(dbenv, fhp, mbuf, 256, &n)) != 0)
 				goto err;
@@ -144,10 +138,14 @@ __db_upgrade(dbp, fname, flags)
 				goto err;
 			/* FALLTHROUGH */
 		case 8:
+			if ((ret =
+			     __db_set_lastpgno(dbp, real_name, fhp)) != 0)
+				goto err;
+			/* FALLTHROUGH */
 		case 9:
 			break;
 		default:
-			__db_err(dbenv, "%s: unsupported btree version: %lu",
+			__db_errx(dbenv, "%s: unsupported btree version: %lu",
 			    real_name, (u_long)((DBMETA *)mbuf)->version);
 			ret = DB_OLD_VERSION;
 			goto err;
@@ -164,8 +162,7 @@ __db_upgrade(dbp, fname, flags)
 			if ((ret =
 			    __ham_30_hashmeta(dbp, real_name, mbuf)) != 0)
 				goto err;
-			if ((ret = __os_seek(dbenv,
-			    fhp, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
+			if ((ret = __os_seek(dbenv, fhp, 0, 0, 0)) != 0)
 				goto err;
 			if ((ret = __os_write(dbenv, fhp, mbuf, 256, &n)) != 0)
 				goto err;
@@ -201,10 +198,14 @@ __db_upgrade(dbp, fname, flags)
 				goto err;
 			/* FALLTHROUGH */
 		case 7:
+			if ((ret =
+			     __db_set_lastpgno(dbp, real_name, fhp)) != 0)
+				goto err;
+			/* FALLTHROUGH */
 		case 8:
 			break;
 		default:
-			__db_err(dbenv, "%s: unsupported hash version: %lu",
+			__db_errx(dbenv, "%s: unsupported hash version: %lu",
 			    real_name, (u_long)((DBMETA *)mbuf)->version);
 			ret = DB_OLD_VERSION;
 			goto err;
@@ -224,8 +225,7 @@ __db_upgrade(dbp, fname, flags)
 		case 2:
 			if ((ret = __qam_32_qammeta(dbp, real_name, mbuf)) != 0)
 				return (ret);
-			if ((ret = __os_seek(dbenv,
-			    fhp, 0, 0, 0, 0, DB_OS_SEEK_SET)) != 0)
+			if ((ret = __os_seek(dbenv, fhp, 0, 0, 0)) != 0)
 				goto err;
 			if ((ret = __os_write(dbenv, fhp, mbuf, 256, &n)) != 0)
 				goto err;
@@ -234,7 +234,7 @@ __db_upgrade(dbp, fname, flags)
 		case 4:
 			break;
 		default:
-			__db_err(dbenv, "%s: unsupported queue version: %lu",
+			__db_errx(dbenv, "%s: unsupported queue version: %lu",
 			    real_name, (u_long)((DBMETA *)mbuf)->version);
 			ret = DB_OLD_VERSION;
 			goto err;
@@ -246,12 +246,12 @@ __db_upgrade(dbp, fname, flags)
 		case DB_BTREEMAGIC:
 		case DB_HASHMAGIC:
 		case DB_QAMMAGIC:
-			__db_err(dbenv,
+			__db_errx(dbenv,
 		"%s: DB->upgrade only supported on native byte-order systems",
 			    real_name);
 			break;
 		default:
-			__db_err(dbenv,
+			__db_errx(dbenv,
 			    "%s: unrecognized file type", real_name);
 			break;
 		}
@@ -307,8 +307,7 @@ __db_page_pass(dbp, real_name, flags, fl, fhp)
 		if (dbp->db_feedback != NULL)
 			dbp->db_feedback(
 			    dbp, DB_UPGRADE, (int)((i * 100)/pgno_last));
-		if ((ret = __os_seek(dbenv,
-		    fhp, dbp->pgsize, i, 0, 0, DB_OS_SEEK_SET)) != 0)
+		if ((ret = __os_seek(dbenv, fhp, i, dbp->pgsize, 0)) != 0)
 			break;
 		if ((ret = __os_read(dbenv, fhp, page, dbp->pgsize, &n)) != 0)
 			break;
@@ -317,8 +316,8 @@ __db_page_pass(dbp, real_name, flags, fl, fhp)
 		    (dbp, real_name, flags, fhp, page, &dirty)) != 0)
 			break;
 		if (dirty) {
-			if ((ret = __os_seek(dbenv,
-			    fhp, dbp->pgsize, i, 0, 0, DB_OS_SEEK_SET)) != 0)
+			if ((ret =
+			    __os_seek(dbenv, fhp, i, dbp->pgsize, 0)) != 0)
 				break;
 			if ((ret = __os_write(dbenv,
 			    fhp, page, dbp->pgsize, &n)) != 0)
@@ -352,13 +351,13 @@ __db_lastpgno(dbp, real_name, fhp, pgno_lastp)
 
 	if ((ret = __os_ioinfo(dbenv,
 	    real_name, fhp, &mbytes, &bytes, NULL)) != 0) {
-		__db_err(dbenv, "%s: %s", real_name, db_strerror(ret));
+		__db_err(dbenv, ret, "%s", real_name);
 		return (ret);
 	}
 
 	/* Page sizes have to be a power-of-two. */
 	if (bytes % dbp->pgsize != 0) {
-		__db_err(dbenv,
+		__db_errx(dbenv,
 		    "%s: file size not a multiple of the pagesize", real_name);
 		return (EINVAL);
 	}
@@ -366,5 +365,38 @@ __db_lastpgno(dbp, real_name, fhp, pgno_lastp)
 	pgno_last += bytes / dbp->pgsize;
 
 	*pgno_lastp = pgno_last;
+	return (0);
+}
+
+/*
+ * __db_set_lastpgno --
+ *	Update the meta->last_pgno field.
+ *
+ * Code assumes that we do not have checksums/crypto on the page.
+ */
+static int
+__db_set_lastpgno(dbp, real_name, fhp)
+	DB *dbp;
+	char *real_name;
+	DB_FH *fhp;
+{
+	DB_ENV *dbenv;
+	DBMETA meta;
+	int ret;
+	size_t n;
+
+	dbenv = dbp->dbenv;
+	if ((ret = __os_seek(dbenv, fhp, 0, 0, 0)) != 0)
+		return (ret);
+	if ((ret = __os_read(dbenv, fhp, &meta, sizeof(meta), &n)) != 0)
+		return (ret);
+	dbp->pgsize = meta.pagesize;
+	if ((ret = __db_lastpgno(dbp, real_name, fhp, &meta.last_pgno)) != 0)
+		return (ret);
+	if ((ret = __os_seek(dbenv, fhp, 0, 0, 0)) != 0)
+		return (ret);
+	if ((ret = __os_write(dbenv, fhp, &meta, sizeof(meta), &n)) != 0)
+		return (ret);
+
 	return (0);
 }

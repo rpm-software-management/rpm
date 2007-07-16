@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>Developing a Sleepycat Collections Application</title>
+    <title>Developing a DB Collections Application</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
@@ -15,7 +15,7 @@
     <div class="navheader">
       <table width="100%" summary="Navigation header">
         <tr>
-          <th colspan="3" align="center">Developing a Sleepycat Collections Application</th>
+          <th colspan="3" align="center">Developing a DB Collections Application</th>
         </tr>
         <tr>
           <td width="20%" align="left"><a accesskey="p" href="intro.html">Prev</a> </td>
@@ -31,14 +31,14 @@
       <div class="titlepage">
         <div>
           <div>
-            <h2 class="title" style="clear: both"><a id="developing"></a>Developing a Sleepycat Collections Application</h2>
+            <h2 class="title" style="clear: both"><a id="developing"></a>Developing a DB Collections Application</h2>
           </div>
         </div>
         <div></div>
       </div>
       <p>
         There are several important choices to make when developing an
-        application using the Sleepycat Java Collections API.
+        application using the  Java Collections API.
     </p>
       <div class="orderedlist">
         <ol type="1">
@@ -52,7 +52,7 @@
                 Environments: Data Store, Concurrent Data Store, or
                 Transactional Data Store. For details on creating and
                 configuring the environment, see the 
-                <i class="citetitle">Berkeley DB Programmer's Reference Guide.</i>
+                <i class="citetitle">Berkeley DB Programmer's Reference Guide</i>
             </p>
           </li>
           <li>
@@ -74,7 +74,7 @@
                 depends on several factors such as whether you need ordered
                 keys, unique keys, record number access, and so forth. For more
                 information on access methods, see the
-                <i class="citetitle">Berkeley DB Programmer's Reference Guide.</i>
+                <i class="citetitle">Berkeley DB Programmer's Reference Guide</i>.
             </p>
           </li>
           <li>
@@ -173,18 +173,18 @@
         It is sometimes desirable to use a Java class that encapsulates
         both a data key and a data value. For example, a Part object might
         contain both the part number (key) and the part name (value). Using
-        the Sleepycat Java Collections API this type of object is called an
-        "entity". An entity binding is used to translate between the Java
+        the  Java Collections API this type of object is called an
+        &quot;entity&quot;. An entity binding is used to translate between the Java
         object and the stored data key and value. Entity bindings may be
         used with all Collection types.
     </p>
       <p>
-        Please be aware that the provided Sleepycat Java Collections API collection classes
+        Please be aware that the provided  Java Collections API collection classes
         do not conform completely to the interface contracts
         defined in the <tt class="literal">java.util</tt> package. For example, all
         iterators must be explicitly closed and the <tt class="methodname">size()</tt>
-        method is not available. The differences between the Sleepycat Java
-        Collections API collections and the standard Java collections are
+        method is not available. The differences between the  Java Collections API
+        collections and the standard Java collections are
         documented in 
         <a href="UsingStoredCollections.html#StoredVersusStandardCollections">
             Stored Collections Versus Standard Java Collections

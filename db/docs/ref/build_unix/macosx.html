@@ -1,5 +1,5 @@
-<!--$Id: macosx.so,v 11.12 2004/10/18 20:10:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: macosx.so,v 11.14 2005/10/21 20:16:41 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -25,9 +25,42 @@ to 10.3 (or your current version of OS X), and reconfigure and rebuild
 Berkeley DB from scratch.  See the OS X ld(1) and dyld(1) man pages for information
 about how OS X handles symbol namespaces, as well as undefined and
 multiply-defined symbols.</p>
+<p><li><b>When trying to use system-backed shared memory on OS X I see
+failures about "too many open files".</b>
+<p>The default number of shared memory segments on OS X is too low.  To fix
+this problem, edit the file /etc/rc, changing the kern.sysv.shmmax and
+kern.sysv.shmseg values as follows:</p>
+<blockquote><pre>*** /etc/rc.orig        Fri Dec 19 09:34:09 2003
+--- /etc/rc     Fri Dec 19 09:33:53 2003
+***************
+*** 84,93 ****
+   # System tuning
+   sysctl -w kern.maxvnodes=$(echo $(sysctl -n hw.physmem) '33554432 /
+512 * 1024 +p'|dc)
+! sysctl -w kern.sysv.shmmax=4194304
+   sysctl -w kern.sysv.shmmin=1
+   sysctl -w kern.sysv.shmmni=32
+! sysctl -w kern.sysv.shmseg=8
+   sysctl -w kern.sysv.shmall=1024
+   if [ -f /etc/sysctl-macosxserver.conf ]; then
+         awk '{ if (!-1 && -1) print $1 }' &lt;
+/etc/sysctl-macosxserver.conf | while read
+--- 84,93 ----
+   # System tuning
+   sysctl -w kern.maxvnodes=$(echo $(sysctl -n hw.physmem) '33554432 /
+512 * 1024 +p'|dc)
+! sysctl -w kern.sysv.shmmax=134217728
+   sysctl -w kern.sysv.shmmin=1
+   sysctl -w kern.sysv.shmmni=32
+! sysctl -w kern.sysv.shmseg=32
+   sysctl -w kern.sysv.shmall=1024
+   if [ -f /etc/sysctl-macosxserver.conf ]; then
+         awk '{ if (!-1 && -1) print $1 }' &lt;
+/etc/sysctl-macosxserver.conf | while read</pre></blockquote>
+<p>and then reboot the system.</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/linux.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/osf1.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

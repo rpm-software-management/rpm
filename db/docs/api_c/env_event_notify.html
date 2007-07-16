@@ -1,0 +1,93 @@
+<!--$Id: env_event_notify.so,v 10.9 2006/06/27 22:49:29 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;set_event_notify</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;set_event_notify</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;set_event_notify(DB_ENV *dbenv,
+    void (*db_event_fcn)(DB_ENV *dbenv, u_int32_t event, void *event_info));
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_event_notify</h3>
+<p>The DB_ENV-&gt;set_event_notify method configures a callback function which
+is called to notify the process of specific Berkeley DB events.</p>
+<p>The DB_ENV-&gt;set_event_notify method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
+<p>The DB_ENV-&gt;set_event_notify method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;set_event_notify method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>db_event_fcn</b><dd>The <b>db_event_fcn</b> parameter is the application's event
+notification function.  The function takes three parameters:
+<dl compact>
+<dt>dbenv<dd>The <b>dbenv</b> parameter is the enclosing database environment handle.
+<dt>event<dd>The <b>event</b> parameter is one of the following values:
+<dl compact>
+<dt><a name="DB_EVENT_PANIC">DB_EVENT_PANIC</a><dd>Errors can occur in the Berkeley DB library where the only solution is to shut
+down the application and run recovery (for example, if Berkeley DB is unable
+to allocate heap memory).  In such cases, the Berkeley DB methods will
+return <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>.
+It is often easier to simply exit the application when such errors occur
+rather than gracefully return up the stack.
+<p>When <b>event</b> is set to DB_EVENT_PANIC, the database
+environment has failed.  All threads of control in the database
+environment should exit the environment, and recovery should be run.</p>
+<dt><a name="DB_EVENT_REP_CLIENT">DB_EVENT_REP_CLIENT</a><dd>The local site is now a replication client.
+<dt><a name="DB_EVENT_REP_MASTER">DB_EVENT_REP_MASTER</a><dd>The local site is now the master site of its replication group.  It is
+the application's responsibility to begin acting as the master environment.
+<dt><a name="DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a><dd>The replication group of which this site is a member has just established a
+new master; the local site is not the new master.  The
+<b>event_info</b> parameter points to an integer containing the
+environment ID of the new master.
+<p>The DB_EVENT_REP_NEWMASTER event is provided only to applications using
+the replication manager support.</p>
+<dt><a name="DB_EVENT_REP_STARTUPDONE">DB_EVENT_REP_STARTUPDONE</a><dd>The client has completed startup synchronization and is now processing
+live log records received from the master.
+<dt><a name="DB_EVENT_WRITE_FAILED">DB_EVENT_WRITE_FAILED</a><dd>A Berkeley DB write to stable storage failed.
+</dl>
+<p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering Berkeley DB is not guaranteed to work correctly, and the results
+are undefined.</p>
+<dt>event_info<dd>The <b>event_info</b> parameter may reference memory which contains
+additional information describing an event.  By default,
+<b>event_info</b> is NULL; specific events may pass non-NULL values,
+in which case the event will also describe the memory's structure.
+</dl>
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

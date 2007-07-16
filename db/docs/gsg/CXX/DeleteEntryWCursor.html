@@ -54,7 +54,7 @@
 
 ...
 
-char *key1str = "My first string";
+char *key1str = &quot;My first string&quot;;
 Db my_database(NULL, 0);
 Dbc *cursorp;
 
@@ -76,9 +76,9 @@ try {
     }
 
 } catch(DbException &amp;e) {
-    my_database.err(e.get_errno(), "Error!");
+    my_database.err(e.get_errno(), &quot;Error!&quot;);
 } catch(std::exception &amp;e) {
-    my_database.errx("Error! %s", e.what());
+    my_database.errx(&quot;Error! %s&quot;, e.what());
 }
 
 // Cursors must be closed

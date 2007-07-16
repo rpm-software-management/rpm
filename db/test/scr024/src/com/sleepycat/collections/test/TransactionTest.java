@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: TransactionTest.java,v 1.2 2004/09/22 18:01:06 bostic Exp $
+ * $Id: TransactionTest.java,v 12.7 2006/08/24 14:46:47 bostic Exp $
  */
 
 package com.sleepycat.collections.test;
@@ -26,8 +26,10 @@ import com.sleepycat.collections.StoredSortedMap;
 import com.sleepycat.collections.TransactionRunner;
 import com.sleepycat.collections.TransactionWorker;
 import com.sleepycat.compat.DbCompat;
+import com.sleepycat.db.CursorConfig;
 import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseConfig;
+import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.Environment;
 import com.sleepycat.db.Transaction;
 import com.sleepycat.db.TransactionConfig;
@@ -144,23 +146,43 @@ public class TransactionTest extends TestCase {
         currentTxn.abortTransaction();
         assertNull(currentTxn.getTransaction());
 
-        // dirty-read property should be inherited
+        // read-uncommitted property should be inherited
 
-        assertTrue(!map.isDirtyRead());
-        assertTrue(!((StoredContainer) map.values()).isDirtyRead());
-        assertTrue(!((StoredContainer) map.keySet()).isDirtyRead());
-        assertTrue(!((StoredContainer) map.entrySet()).isDirtyRead());
+        assertTrue(!isReadUncommitted(map));
+        assertTrue(!isReadUncommitted(map.values()));
+        assertTrue(!isReadUncommitted(map.keySet()));
+        assertTrue(!isReadUncommitted(map.entrySet()));
 
-        StoredSortedMap other =
-            (StoredSortedMap) StoredCollections.dirtyReadMap(map);
-        assertTrue(other.isDirtyRead());
-        assertTrue(((StoredContainer) other.values()).isDirtyRead());
-        assertTrue(((StoredContainer) other.keySet()).isDirtyRead());
-        assertTrue(((StoredContainer) other.entrySet()).isDirtyRead());
-        assertTrue(!map.isDirtyRead());
-        assertTrue(!((StoredContainer) map.values()).isDirtyRead());
-        assertTrue(!((StoredContainer) map.keySet()).isDirtyRead());
-        assertTrue(!((StoredContainer) map.entrySet()).isDirtyRead());
+        StoredSortedMap other = (StoredSortedMap)
+            StoredCollections.configuredMap
+                (map, CursorConfig.READ_UNCOMMITTED);
+        assertTrue(isReadUncommitted(other));
+        assertTrue(isReadUncommitted(other.values()));
+        assertTrue(isReadUncommitted(other.keySet()));
+        assertTrue(isReadUncommitted(other.entrySet()));
+        assertTrue(!isReadUncommitted(map));
+        assertTrue(!isReadUncommitted(map.values()));
+        assertTrue(!isReadUncommitted(map.keySet()));
+        assertTrue(!isReadUncommitted(map.entrySet()));
+
+        // read-committed property should be inherited
+
+        assertTrue(!isReadCommitted(map));
+        assertTrue(!isReadCommitted(map.values()));
+        assertTrue(!isReadCommitted(map.keySet()));
+        assertTrue(!isReadCommitted(map.entrySet()));
+
+        other = (StoredSortedMap)
+            StoredCollections.configuredMap
+                (map, CursorConfig.READ_COMMITTED);
+        assertTrue(isReadCommitted(other));
+        assertTrue(isReadCommitted(other.values()));
+        assertTrue(isReadCommitted(other.keySet()));
+        assertTrue(isReadCommitted(other.entrySet()));
+        assertTrue(!isReadCommitted(map));
+        assertTrue(!isReadCommitted(map.values()));
+        assertTrue(!isReadCommitted(map.keySet()));
+        assertTrue(!isReadCommitted(map.entrySet()));
     }
 
     public void testTransactional()
@@ -409,66 +431,161 @@ public class TransactionTest extends TestCase {
         assertNull(currentTxn.getTransaction());
     }
 
-    public void testDirtyReadCollection()
+    public void testReadCommittedCollection()
         throws Exception {
 
-        StoredSortedMap dirtyMap =
-            (StoredSortedMap) StoredCollections.dirtyReadSortedMap(map);
+        StoredSortedMap degree2Map = (StoredSortedMap)
+            StoredCollections.configuredSortedMap
+                (map, CursorConfig.READ_COMMITTED);
 
-        // original map is not dirty-read
-        assertTrue(map.isDirtyReadAllowed());
-        assertTrue(!map.isDirtyRead());
+        // original map is not read-committed
+        assertTrue(!isReadCommitted(map));
 
-        // all dirty-read containers are dirty-read
-        checkDirtyReadProperty(dirtyMap);
-        checkDirtyReadProperty(StoredCollections.dirtyReadMap(map));
-        checkDirtyReadProperty(StoredCollections.dirtyReadCollection(
-                                map.values()));
-        checkDirtyReadProperty(StoredCollections.dirtyReadSet(
-                                map.keySet()));
-        checkDirtyReadProperty(StoredCollections.dirtyReadSortedSet(
-                                (SortedSet) map.keySet()));
+        // all read-committed containers are read-uncommitted
+        assertTrue(isReadCommitted(degree2Map));
+        assertTrue(isReadCommitted
+            (StoredCollections.configuredMap
+                (map, CursorConfig.READ_COMMITTED)));
+        assertTrue(isReadCommitted
+            (StoredCollections.configuredCollection
+                (map.values(), CursorConfig.READ_COMMITTED)));
+        assertTrue(isReadCommitted
+            (StoredCollections.configuredSet
+                (map.keySet(), CursorConfig.READ_COMMITTED)));
+        assertTrue(isReadCommitted
+            (StoredCollections.configuredSortedSet
+                ((SortedSet) map.keySet(),
+                 CursorConfig.READ_COMMITTED)));
 
         if (DbCompat.RECNO_METHOD) {
-            // create a list just so we can call dirtyReadList()
+            // create a list just so we can call configuredList()
             Database listStore = TestStore.RECNO_RENUM.open(env, null);
             List list = new StoredList(listStore, TestStore.VALUE_BINDING,
                                        true);
-            checkDirtyReadProperty(StoredCollections.dirtyReadList(list));
+            assertTrue(isReadCommitted
+                (StoredCollections.configuredList
+                    (list, CursorConfig.READ_COMMITTED)));
             listStore.close();
         }
 
-        doDirtyRead(dirtyMap);
+        map.put(ONE, ONE);
+        doReadCommitted(degree2Map, null);
     }
 
-    private void checkDirtyReadProperty(Object container) {
-
-        assertTrue(((StoredContainer) container).isDirtyReadAllowed());
-        assertTrue(((StoredContainer) container).isDirtyRead());
+    private static boolean isReadCommitted(Object container) {
+        StoredContainer storedContainer = (StoredContainer) container;
+        /* We can't use getReadCommitted until is is added to DB core. */
+        return storedContainer.getCursorConfig() != null &&
+               storedContainer.getCursorConfig().getReadCommitted();
     }
 
-    public void testDirtyReadTransaction()
+    public void testReadCommittedTransaction()
         throws Exception {
 
-        TransactionRunner runner = new TransactionRunner(env);
         TransactionConfig config = new TransactionConfig();
-        config.setDirtyRead(true);
-        runner.setTransactionConfig(config);
+        config.setReadCommitted(true);
+        doReadCommitted(map, config);
+    }
+
+    private void doReadCommitted(final StoredSortedMap degree2Map,
+                                 TransactionConfig txnConfig)
+        throws Exception {
+
+        map.put(ONE, ONE);
+        TransactionRunner runner = new TransactionRunner(env);
+        runner.setTransactionConfig(txnConfig);
         assertNull(currentTxn.getTransaction());
         runner.run(new TransactionWorker() {
             public void doWork() throws Exception {
                 assertNotNull(currentTxn.getTransaction());
-                doDirtyRead(map);
+
+                /* Do a read-committed get(), the lock is not retained. */
+                assertEquals(ONE, degree2Map.get(ONE));
+
+                /*
+                 * If we were not using read-committed, the following write of
+                 * key ONE with an auto-commit transaction would self-deadlock
+                 * since two transactions in the same thread would be
+                 * attempting to lock the same key, one for write and one for
+                 * read.  This test passes if we do not deadlock.
+                 */
+                DatabaseEntry key = new DatabaseEntry();
+                DatabaseEntry value = new DatabaseEntry();
+                testStore.getKeyBinding().objectToEntry(ONE, key);
+                testStore.getValueBinding().objectToEntry(TWO, value);
+                store.put(null, key, value);
             }
         });
         assertNull(currentTxn.getTransaction());
     }
 
-    private synchronized void doDirtyRead(StoredSortedMap dirtyMap)
+    public void testReadUncommittedCollection()
+        throws Exception {
+
+        StoredSortedMap dirtyMap = (StoredSortedMap)
+            StoredCollections.configuredSortedMap
+                (map, CursorConfig.READ_UNCOMMITTED);
+
+        // original map is not read-uncommitted
+        assertTrue(!isReadUncommitted(map));
+
+        // all read-uncommitted containers are read-uncommitted
+        assertTrue(isReadUncommitted(dirtyMap));
+        assertTrue(isReadUncommitted
+            (StoredCollections.configuredMap
+                (map, CursorConfig.READ_UNCOMMITTED)));
+        assertTrue(isReadUncommitted
+            (StoredCollections.configuredCollection
+                (map.values(), CursorConfig.READ_UNCOMMITTED)));
+        assertTrue(isReadUncommitted
+            (StoredCollections.configuredSet
+                (map.keySet(), CursorConfig.READ_UNCOMMITTED)));
+        assertTrue(isReadUncommitted
+            (StoredCollections.configuredSortedSet
+                ((SortedSet) map.keySet(), CursorConfig.READ_UNCOMMITTED)));
+
+        if (DbCompat.RECNO_METHOD) {
+            // create a list just so we can call configuredList()
+            Database listStore = TestStore.RECNO_RENUM.open(env, null);
+            List list = new StoredList(listStore, TestStore.VALUE_BINDING,
+                                       true);
+            assertTrue(isReadUncommitted
+                (StoredCollections.configuredList
+                    (list, CursorConfig.READ_UNCOMMITTED)));
+            listStore.close();
+        }
+
+        doReadUncommitted(dirtyMap);
+    }
+
+    private static boolean isReadUncommitted(Object container) {
+        StoredContainer storedContainer = (StoredContainer) container;
+        return storedContainer.getCursorConfig() != null &&
+               storedContainer.getCursorConfig().getReadUncommitted();
+    }
+
+    public void testReadUncommittedTransaction()
+        throws Exception {
+
+        TransactionRunner runner = new TransactionRunner(env);
+        TransactionConfig config = new TransactionConfig();
+        config.setReadUncommitted(true);
+        runner.setTransactionConfig(config);
+        assertNull(currentTxn.getTransaction());
+        runner.run(new TransactionWorker() {
+            public void doWork() throws Exception {
+                assertNotNull(currentTxn.getTransaction());
+                doReadUncommitted(map);
+            }
+        });
+        assertNull(currentTxn.getTransaction());
+    }
+
+    private synchronized void doReadUncommitted(StoredSortedMap dirtyMap)
         throws Exception {
 
         // start thread one
-        DirtyReadThreadOne t1 = new DirtyReadThreadOne(env, this);
+        ReadUncommittedThreadOne t1 = new ReadUncommittedThreadOne(env, this);
         t1.start();
         wait();
 
@@ -485,7 +602,7 @@ public class TransactionTest extends TestCase {
         assertTrue(dirtyMap.isEmpty());
 
         // start thread two
-        DirtyReadThreadTwo t2 = new DirtyReadThreadTwo(env, this);
+        ReadUncommittedThreadTwo t2 = new ReadUncommittedThreadTwo(env, this);
         t2.start();
         wait();
 
@@ -502,16 +619,15 @@ public class TransactionTest extends TestCase {
         assertTrue(!dirtyMap.isEmpty());
     }
 
-    private static class DirtyReadThreadOne extends Thread {
+    private static class ReadUncommittedThreadOne extends Thread {
 
-        private Environment env;
         private CurrentTransaction currentTxn;
         private TransactionTest parent;
         private StoredSortedMap map;
 
-        private DirtyReadThreadOne(Environment env, TransactionTest parent) {
+        private ReadUncommittedThreadOne(Environment env,
+                                         TransactionTest parent) {
 
-            this.env = env;
             this.currentTxn = CurrentTransaction.getInstance(env);
             this.parent = parent;
             this.map = parent.map;
@@ -542,14 +658,15 @@ public class TransactionTest extends TestCase {
         }
     }
 
-    private static class DirtyReadThreadTwo extends Thread {
+    private static class ReadUncommittedThreadTwo extends Thread {
 
         private Environment env;
         private CurrentTransaction currentTxn;
         private TransactionTest parent;
         private StoredSortedMap map;
 
-        private DirtyReadThreadTwo(Environment env, TransactionTest parent) {
+        private ReadUncommittedThreadTwo(Environment env,
+                                         TransactionTest parent) {
 
             this.env = env;
             this.currentTxn = CurrentTransaction.getInstance(env);

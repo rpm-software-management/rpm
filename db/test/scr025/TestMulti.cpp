@@ -190,10 +190,11 @@ void test3()
 	db.close(0);
 }
 
-void main()
+int main()
 {
 	test1();
 	test2();
 	test3();
+	return (0);
 }
 

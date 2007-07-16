@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.method,v 1.4 2004/10/07 20:42:10 bostic Exp $
+# $Id: chk.method,v 12.3 2006/09/11 15:28:06 bostic Exp $
 #
 # Check that DB doesn't call DB or DB_ENV methods internally.
 
@@ -26,11 +26,13 @@ m=`grep '(\*[a-z][_a-z]*)' $d/dbinc/db.in |
        -e '/c_am_writelock/d' \
        -e '/db_append_recno/d' \
        -e '/db_errcall/d' \
+       -e '/db_event_func/d' \
        -e '/db_feedback/d' \
        -e '/db_free/d' \
        -e '/db_malloc/d' \
        -e '/db_paniccall/d' \
        -e '/db_realloc/d' \
+       -e '/dbt_usercopy/d' \
        -e '/dup_compare/d' \
        -e '/s_callback/d' |
    sort -u`
@@ -53,6 +55,7 @@ sed \
     -e '/^db_deadlock\//d' \
     -e '/^db_dump185\//d' \
     -e '/^db_dump\//d' \
+    -e '/^db_hotbackup\//d' \
     -e '/^db_load\//d' \
     -e '/^db_printlog\//d' \
     -e '/^db_recover\//d' \
@@ -66,11 +69,13 @@ sed \
     -e '/^hsearch\//d' \
     -e '/^libdb_java\//d' \
     -e '/^mod_db4\//d' \
+    -e '/^mutex\/tm.c:/d' \
     -e '/^php_db4\//d' \
     -e '/^tcl\//d' \
     -e '/^test\//d' \
     -e '/^test_perf\//d' \
     -e '/^test_purify\//d' \
+    -e '/^test_rep\//d' \
     -e '/^test_server\//d' \
     -e '/^test_thread\//d' \
     -e '/^test_vxworks\//d' \
@@ -81,7 +86,10 @@ sed \
     -e '/db_iface.c:.*(txn->commit(txn, nosync ? DB_TXN_NOSYNC : 0));/d' \
     -e '/db_iface.c:.*if ((t_ret = txn->abort(txn)) != 0)/d' \
     -e '/db_iface.c:.*return (dbenv->txn_begin(dbenv, NULL, txnidp, 0));/d' \
-    -e '/rep_util.c:.*ret = dbenv->rep_send(dbenv, &cdbt, dbtp, &cntrl.lsn,/d' \
+    -e '/dbenv->is_alive(/d' \
+    -e '/dbenv->thread_id(/d' \
+    -e '/dbenv->thread_id_string(/d' \
+    -e '/rep_util.c:.*ret = dbenv->rep_send(/d' \
 >$t
 
 test -s $t && {

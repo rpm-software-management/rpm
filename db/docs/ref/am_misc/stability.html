@@ -1,5 +1,5 @@
-<!--$Id: stability.so,v 10.29 2004/01/12 05:33:23 ubell Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: stability.so,v 10.30 2005/02/10 20:02:34 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -40,10 +40,9 @@ appear in the first call but would be seen by the second call.  For
 readers not enclosed in transactions, all access method calls provide
 degree 2 isolation, that is, reads are not repeatable.  A transaction
 may be declared to run with degree 2 isolation by specifying the
-<a href="../../api_c/db_cursor.html#DB_DEGREE_2">DB_DEGREE_2</a> flag.  Finally, Berkeley DB
-provides degree 1 isolation when the <a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag is
-specified; that is, reads may see data modified in transactions which
-have not yet committed.</p>
+<a href="../../api_c/db_cursor.html#DB_READ_COMMITTED">DB_READ_COMMITTED</a> flag.  Finally, Berkeley DB provides degree 1 isolation
+when the <a href="../../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag is specified; that is, reads
+may see data modified in transactions which have not yet committed.</p>
 <p>For all access methods, a cursor scan of the database performed within
 the context of a transaction is guaranteed to return each key/data pair
 once and only once, except in the following case.  If, while performing
@@ -52,6 +51,6 @@ the scan inserts a new pair into the database, it is possible that
 duplicate key/data pairs will be returned.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_misc/error.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_misc/dbsizes.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

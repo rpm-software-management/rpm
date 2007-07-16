@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: TestSimpleAccess.cpp,v 1.7 2004/01/28 03:36:33 bostic Exp $
+ * $Id: TestSimpleAccess.cpp,v 12.3 2006/08/24 14:46:43 bostic Exp $
  */
 
 /*

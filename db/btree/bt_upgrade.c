@@ -1,18 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: bt_upgrade.c,v 11.30 2004/01/28 03:35:49 bostic Exp $
+ * $Id: bt_upgrade.c,v 12.4 2006/08/24 14:44:45 bostic Exp $
  */
+
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.proto,v 1.10 2003/12/08 19:28:26 bostic Exp $
+# $Id: chk.proto,v 12.0 2004/11/17 03:44:44 bostic Exp $
 #
 # Check to make sure that prototypes are actually needed.
 

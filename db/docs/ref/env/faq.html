@@ -1,5 +1,5 @@
-<!--$Id: faq.so,v 10.5 2002/02/04 17:52:37 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: faq.so,v 10.6 2006/05/01 15:32:01 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -19,21 +19,12 @@
 <ol>
 <p><li><b>I'm using multiple processes to access an Berkeley DB database
 environment; is there any way to ensure that two processes don't run
-recovery at the same time, or that all processes have exited the
-database environment so that recovery can be run?</b>
-<p>It's the responsibility of the processes (and/or threads of control)
-using a Berkeley DB environment to ensure recovery is never performed if there
-are other processes running recovery or using an existing database
-environment.  It would be great if Berkeley DB could solve this, but it
-requires a way to single-thread execution on a system, and there's
-rarely anything Berkeley DB can use for that purpose -- let alone a portable
-method.</p>
-<p>Most application suites solve this problem by writing a tiny watch
-program that recovers the database environment and then runs the
-processes that actually use the database environment to perform work.
-The watcher program then monitors the working processes, and if any of
-them exit badly for any reason, the watcher kills any remaining
-processes and restarts the cycle.</p>
+transactional recovery at the same time, or that all processes have
+exited the database environment so that recovery can be run?</b>
+<p>See <a href="../../ref/transapp/fail.html">Handling failure in
+Transactional Data Store applications</a> and
+<a href="../../ref/transapp/app.html">Architecting Transactional Data Store
+applications</a> for a full discussion of this topic.</p>
 <p><li><b>How can I associate application information with a <a href="../../api_c/db_class.html">DB</a>
 or <a href="../../api_c/env_class.html">DB_ENV</a> handle?</b>
 <p>In the C API, the <a href="../../api_c/db_class.html">DB</a> and <a href="../../api_c/env_class.html">DB_ENV</a> structures each contain
@@ -55,6 +46,6 @@ data members or methods.</p>
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../env/remote.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../cam/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

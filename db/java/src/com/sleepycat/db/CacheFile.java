@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: CacheFile.java,v 1.3 2004/09/23 17:56:39 mjc Exp $
+ * $Id: CacheFile.java,v 12.3 2006/08/24 14:46:07 bostic Exp $
  */
 
 package com.sleepycat.db;

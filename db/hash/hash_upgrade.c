@@ -1,19 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: hash_upgrade.c,v 11.35 2004/04/06 12:38:08 bostic Exp $
+ * $Id: hash_upgrade.c,v 12.6 2006/08/24 14:46:05 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
@@ -155,8 +149,8 @@ __ham_30_sizefix(dbp, fhp, realname, metabuf)
 	 * a zeroed page where last_desired would go.
 	 */
 	if (last_desired > last_actual) {
-		if ((ret = __os_seek(dbenv,
-		    fhp, pagesize, last_desired, 0, 0, DB_OS_SEEK_SET)) != 0)
+		if ((ret = __os_seek(
+		    dbenv, fhp, last_desired, pagesize, 0)) != 0)
 			return (ret);
 		if ((ret = __os_write(dbenv, fhp, buf, pagesize, &nw)) != 0)
 			return (ret);

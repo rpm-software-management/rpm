@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleFormatTest.java,v 1.3 2004/06/04 18:26:00 mark Exp $
+ * $Id: TupleFormatTest.java,v 12.5 2006/08/24 14:46:45 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple.test;
@@ -59,7 +59,7 @@ public class TupleFormatTest extends TestCase {
 
         DbTestUtil.printTestName("TupleFormatTest." + getName());
         buffer = new DatabaseEntry();
-        out = TupleBinding.newOutput();
+        out = new TupleOutput();
     }
 
     public void tearDown() {
@@ -752,5 +752,121 @@ public class TupleFormatTest extends TestCase {
         assertEquals(-1, in.readDouble(), 0);
         assertEquals(0, in.available(), 0);
     }
-}
 
+    private void sortedFloatTest(double val) {
+
+        out.reset();
+        out.writeSortedFloat((float) val);
+        assertEquals(4, out.size());
+        copyOutputToInput();
+        if (Double.isNaN(val)) {
+            assertTrue(Float.isNaN(in.readSortedFloat()));
+        } else {
+            assertEquals((float) val, in.readSortedFloat(), 0);
+        }
+    }
+
+    public void testSortedFloat() {
+
+        sortedFloatTest(0);
+        sortedFloatTest(1);
+        sortedFloatTest(-1);
+        sortedFloatTest(1.0);
+        sortedFloatTest(0.1);
+        sortedFloatTest(-1.0);
+        sortedFloatTest(-0.1);
+        sortedFloatTest(Float.NaN);
+        sortedFloatTest(Float.NEGATIVE_INFINITY);
+        sortedFloatTest(Float.POSITIVE_INFINITY);
+        sortedFloatTest(Short.MAX_VALUE);
+        sortedFloatTest(Short.MIN_VALUE);
+        sortedFloatTest(Integer.MAX_VALUE);
+        sortedFloatTest(Integer.MIN_VALUE);
+        sortedFloatTest(Long.MAX_VALUE);
+        sortedFloatTest(Long.MIN_VALUE);
+        sortedFloatTest(Float.MAX_VALUE);
+        sortedFloatTest(Float.MAX_VALUE + 1);
+        sortedFloatTest(Float.MIN_VALUE + 1);
+        sortedFloatTest(Float.MIN_VALUE);
+        sortedFloatTest(Float.MIN_VALUE - 1);
+        sortedFloatTest(0x7F);
+        sortedFloatTest(0xFF);
+        sortedFloatTest(0x7FFF);
+        sortedFloatTest(0xFFFF);
+        sortedFloatTest(0x7FFFFFFF);
+        sortedFloatTest(0xFFFFFFFF);
+        sortedFloatTest(0x7FFFFFFFFFFFFFFFL);
+        sortedFloatTest(0xFFFFFFFFFFFFFFFFL);
+
+        out.reset();
+        out.writeSortedFloat(0);
+        out.writeSortedFloat(1);
+        out.writeSortedFloat(-1);
+        assertEquals(3 * 4, out.size());
+        copyOutputToInput();
+        assertEquals(0, in.readSortedFloat(), 0);
+        assertEquals(1, in.readSortedFloat(), 0);
+        assertEquals(-1, in.readSortedFloat(), 0);
+        assertEquals(0, in.available(), 0);
+    }
+
+    private void sortedDoubleTest(double val) {
+
+        out.reset();
+        out.writeSortedDouble((double) val);
+        assertEquals(8, out.size());
+        copyOutputToInput();
+        if (Double.isNaN(val)) {
+            assertTrue(Double.isNaN(in.readSortedDouble()));
+        } else {
+            assertEquals((double) val, in.readSortedDouble(), 0);
+        }
+    }
+
+    public void testSortedDouble() {
+
+        sortedDoubleTest(0);
+        sortedDoubleTest(1);
+        sortedDoubleTest(-1);
+        sortedDoubleTest(1.0);
+        sortedDoubleTest(0.1);
+        sortedDoubleTest(-1.0);
+        sortedDoubleTest(-0.1);
+        sortedDoubleTest(Double.NaN);
+        sortedDoubleTest(Double.NEGATIVE_INFINITY);
+        sortedDoubleTest(Double.POSITIVE_INFINITY);
+        sortedDoubleTest(Short.MAX_VALUE);
+        sortedDoubleTest(Short.MIN_VALUE);
+        sortedDoubleTest(Integer.MAX_VALUE);
+        sortedDoubleTest(Integer.MIN_VALUE);
+        sortedDoubleTest(Long.MAX_VALUE);
+        sortedDoubleTest(Long.MIN_VALUE);
+        sortedDoubleTest(Float.MAX_VALUE);
+        sortedDoubleTest(Float.MIN_VALUE);
+        sortedDoubleTest(Double.MAX_VALUE - 1);
+        sortedDoubleTest(Double.MAX_VALUE);
+        sortedDoubleTest(Double.MAX_VALUE + 1);
+        sortedDoubleTest(Double.MIN_VALUE + 1);
+        sortedDoubleTest(Double.MIN_VALUE);
+        sortedDoubleTest(Double.MIN_VALUE - 1);
+        sortedDoubleTest(0x7F);
+        sortedDoubleTest(0xFF);
+        sortedDoubleTest(0x7FFF);
+        sortedDoubleTest(0xFFFF);
+        sortedDoubleTest(0x7FFFFFFF);
+        sortedDoubleTest(0xFFFFFFFF);
+        sortedDoubleTest(0x7FFFFFFFFFFFFFFFL);
+        sortedDoubleTest(0xFFFFFFFFFFFFFFFFL);
+
+        out.reset();
+        out.writeSortedDouble(0);
+        out.writeSortedDouble(1);
+        out.writeSortedDouble(-1);
+        assertEquals(3 * 8, out.size());
+        copyOutputToInput();
+        assertEquals(0, in.readSortedDouble(), 0);
+        assertEquals(1, in.readSortedDouble(), 0);
+        assertEquals(-1, in.readSortedDouble(), 0);
+        assertEquals(0, in.available(), 0);
+    }
+}

@@ -1,5 +1,5 @@
-<!--$Id: tune.so,v 11.21 2004/08/13 03:39:00 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: tune.so,v 11.24 2006/08/08 05:24:09 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -30,43 +30,44 @@ when using the Btree access method than when using either the Hash or
 Recno access methods.
 <dt>record numbers<dd>Using record numbers outside of the Queue access method will often slow
 down concurrent applications as they limit the degree of concurrency
-available in the database.
-Using the Recno access method, or the Btree access
-method with retrieval by record number configured can slow applications
-down.
+available in the database.  Using the Recno access method, or the Btree
+access method with retrieval by record number configured can slow
+applications down.
 <dt>Btree database size<dd>When using the Btree access method, applications supporting concurrent
 access may see excessive numbers of deadlocks in small databases.  There
 are two different approaches to resolving this problem.  First, as the
 Btree access method uses page-level locking, decreasing the database
 page size can result in fewer lock conflicts.  Second, in the case of
 databases that are cyclically growing and shrinking, turning off reverse
-splits can leave the database with enough pages that there will be fewer
-lock conflicts.
-<dt>transactionally protected read operations<dd>Most applications do not need repeatable reads.  Performing all read
-operations outside of transactions can often significantly increase
-application throughput.  In addition, limiting the lifetime of
-non-transactional cursors will reduce the length of times locks are
-held, thereby improving concurrency.
+splits (with <a href="../../api_c/db_set_flags.html#DB_REVSPLITOFF">DB_REVSPLITOFF</a>) can leave the database with enough
+pages that there will be fewer lock conflicts.
+<dt>read locks<dd>Performing all read operations outside of transactions or at
+<a href="../../ref/transapp/read.html">snapshot isolation</a> can often
+significantly increase application throughput.  In addition, limiting
+the lifetime of non-transactional cursors will reduce the length of
+times locks are held, thereby improving concurrency.
 <dt><a href="../../api_c/env_set_flags.html#DB_DIRECT_DB">DB_DIRECT_DB</a>, <a href="../../api_c/env_set_flags.html#DB_DIRECT_LOG">DB_DIRECT_LOG</a><dd>Consider using the <a href="../../api_c/env_set_flags.html#DB_DIRECT_DB">DB_DIRECT_DB</a> and <a href="../../api_c/env_set_flags.html#DB_DIRECT_LOG">DB_DIRECT_LOG</a> flags.
 On some systems, avoiding caching in the operating system can improve
 write throughput and allow the creation of larger Berkeley DB caches.
-<dt><a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a>, <a href="../../api_c/db_cursor.html#DB_DEGREE_2">DB_DEGREE_2</a><dd>Consider decreasing the level of isolation of transaction using the
-<a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> or <a href="../../api_c/db_cursor.html#DB_DEGREE_2">DB_DEGREE_2</a> flags for transactions or cursors
-or the <a href="../../api_c/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag on individual read operations.
-Degree 2 isolation will release read
-locks on cursors as soon as the data page is nolonger referenced.
-This will tend to block write operations for shorter periods for
-applications that do not need to have repeatable reads for
-cursor operations.
-The dirty read flag allows read operations to
+<dt><a href="../../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a>, <a href="../../api_c/db_cursor.html#DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Consider decreasing the level of isolation of transaction using the
+<a href="../../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> or <a href="../../api_c/db_cursor.html#DB_READ_COMMITTED">DB_READ_COMMITTED</a> flags for
+transactions or cursors or the <a href="../../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag on
+individual read operations.  The <a href="../../api_c/db_cursor.html#DB_READ_COMMITTED">DB_READ_COMMITTED</a> flag will
+release read locks on cursors as soon as the data page is nolonger
+referenced.  This is also called <i>degree 2 isolation</i>.  This
+will tend to block write operations for shorter periods for applications
+that do not need to have repeatable reads for cursor operations.
+<p>The <a href="../../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag will allow read operations to
 potentially return data which has been modified but not yet committed,
 and can significantly increase application throughput in applications
 that do not require data be guaranteed to be permanent in the database.
-<dt><a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a><dd>Consider using the <a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a> flag to immediate acquire write locks
-when reading data items that will subsequently be modified.  Although
-this flag may increase contention (because write locks are held longer
-than they would otherwise be), it may decrease the number of deadlocks
-that occur.
+This is also called <i>degree 1 isolation</i>, or <i>dirty
+reads</i>.</p>
+<dt><a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a><dd>If there are many deadlocks, consider using the <a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a> flag to
+immediate acquire write locks when reading data items that will
+subsequently be modified.  Although this flag may increase contention
+(because write locks are held longer than they would otherwise be), it
+may decrease the number of deadlocks that occur.
 <dt><a href="../../api_c/env_set_flags.html#DB_TXN_WRITE_NOSYNC">DB_TXN_WRITE_NOSYNC</a>, <a href="../../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>By default, transactional commit in Berkeley DB implies durability, that is,
 all committed operations will be present in the database after recovery
 from any application or system failure.  For applications not requiring
@@ -101,14 +102,13 @@ configuring with the
 <a href="../../ref/build_unix/conf.html#--with-mutex">--with-mutex</a>
 argument and selecting a different mutex implementation than the one
 selected by Berkeley DB.  When a test-and-set spin mutex implementation is
-selected, it is often useful to tune the number of spins made before
+selected, it may be useful to tune the number of spins made before
 yielding the processor and sleeping.  For more information, see the
-<a href="../../api_c/env_set_tas_spins.html">DB_ENV-&gt;set_tas_spins</a> method.</p>
+<a href="../../api_c/mutex_set_tas_spins.html">DB_ENV-&gt;mutex_set_tas_spins</a> method.</p>
 <p>Finally, Berkeley DB may put multiple mutexes on individual cache lines.  When
 tuning Berkeley DB for large multiprocessor systems, it may be useful to tune
 mutex alignment using the
-<a href="../../ref/build_unix/conf.html#--with-mutexalign">--with-mutexalign</a>
-configuration argument.</p>
+<a href="../../api_c/mutex_set_align.html">DB_ENV-&gt;mutex_set_align</a> method.</p>
 <dt><a href="../../ref/build_unix/conf.html#--enable-posixmutexes">--enable-posixmutexes</a><dd>By default, the Berkeley DB library will only select the POSIX pthread mutex
 implementation if it supports mutexes shared between multiple processes.
 If your application does not share its database environment between
@@ -137,6 +137,6 @@ the overall throughput of the application.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/reclimit.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/throughput.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

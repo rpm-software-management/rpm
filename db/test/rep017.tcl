@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep017.tcl,v 11.6 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep017.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	rep017
 # TEST	Concurrency with checkpoints.
@@ -16,12 +16,23 @@
 # TEST          	A subsequent checkpoint gets NOTPERM
 # TEST          	After checkpoint completes, next txn returns PERM
 proc rep017 { method { niter 10 } { tnum "017" } args } {
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
+
 	set args [convert_args $method $args]
 	set logsets [create_logsets 2]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -42,6 +53,7 @@ proc rep017 { method { niter 10 } { tnum "017" } args } {
 proc rep017_sub { method niter tnum logset recargs largs } {
 	source ./include.tcl
 	global perm_response_list
+	global is_repchild
 
 	env_cleanup $testdir
 	set omethod [convert_method $method]
@@ -65,11 +77,11 @@ proc rep017_sub { method niter tnum logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_cmd "berkdb_env_noerr -create -lock_max 2500 \
+	set ma_cmd "berkdb_env_noerr -create \
 	    -log_max 1000000 $m_txnargs $m_logargs \
 	    -home $masterdir -rep_master \
 	    -rep_transport \[list 1 replsend\]"
-#	set ma_cmd "berkdb_env_noerr -create -lock_max 2500 \
+#	set ma_cmd "berkdb_env_noerr -create \
 #	    -log_max 1000000 $m_txnargs $m_logargs \
 #	    -verbose {rep on} -errfile /dev/stderr \
 #	    -home $masterdir -rep_master -rep_transport \
@@ -122,7 +134,12 @@ proc rep017_sub { method niter tnum logset recargs largs } {
 	# for now.  It's run in the background so the parent can
 	# test for whether we're checkpointing at the same time.
 	#
+	# Since the child is processing messages, we want to
+	# set is_repchild here so that any messages we generate
+	# will be seen by the child process.
+	#
 	puts "\tRep$tnum.c: Fork child process on client."
+	set is_repchild 1
 	set pid [exec $tclsh_path $test_path/wrap.tcl \
 	    rep017script.tcl $testdir/repscript.log \
 	    $masterdir $clientdir &]
@@ -188,6 +205,7 @@ proc rep017_sub { method niter tnum logset recargs largs } {
 	puts "\tRep$tnum.f: Waiting for child ..."
 	# Watch until the checkpoint is done.
 	watch_procs $pid 5
+	set is_repchild 0
 
 	# Verify that the checkpoint is now complete on the client and
 	# that all later messages have been applied.

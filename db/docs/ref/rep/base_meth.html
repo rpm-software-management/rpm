@@ -1,0 +1,61 @@
+<!--$Id: base_meth.so,v 1.2 2006/08/24 17:58:53 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Base replication API</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../rep/mgr_meth.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/comm.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Base replication API</h3>
+<p>Applications which use the Base replication API use the following
+Berkeley DB methods.</p>
+<dl compact>
+<dt><a href="../../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a><dd>The <a href="../../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a> method configures the replication system's
+communications infrastructure.
+<dt><a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a><dd>The <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method configures (or reconfigures) an existing database
+environment to be a replication master or client.
+<dt><a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a><dd>The <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method is used to process incoming messages from other
+environments in the replication group.  For clients, it is responsible
+for accepting log records and updating the local databases based on
+messages from the master.  For both the master and the clients, it is
+responsible for handling administrative functions (for example, the
+protocol for dealing with lost messages), and permitting new clients to
+join an active replication group.  This method should only be called
+after the environment has been configured as a replication master or
+client via <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a>.
+<dt><a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a><dd>The <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method causes the replication group to elect a new
+master; it is called whenever contact with the master is lost and the
+application wants the remaining sites to select a new master.
+<dt><a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a><dd>The <a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a> method configures the local site's priority for
+the purpose of elections.
+<dt><a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a><dd>Note that of all the various timeouts this method can set, only
+<a href="../../api_c/rep_timeout.html#DB_REP_ELECTION_TIMEOUT">DB_REP_ELECTION_TIMEOUT</a> is relevant for applications which use
+the Base replication API.  The others are used only by Replication
+Manager.
+<dt><a href="../../api_c/rep_limit.html">DB_ENV-&gt;rep_set_limit</a><dd>The <a href="../../api_c/rep_limit.html">DB_ENV-&gt;rep_set_limit</a> method imposes an upper bound on the amount of data
+that will be sent in response to a single call to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>.
+During client recovery, that is, when a replica site is trying to
+synchronize with the master, clients may ask the master for a large
+number of log records.  If it is going to harm an application for the
+master message loop to remain busy for an extended period transmitting
+records to the replica, then the application will want to use
+<a href="../../api_c/rep_limit.html">DB_ENV-&gt;rep_set_limit</a> to limit the amount of data the master will send
+before relinquishing control and accepting other messages.
+</dl>
+<p>In addition to the methods previously described, applications which use
+the Base replication API may also call the following methods, as needed:
+<a href="../../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a>, <a href="../../api_c/rep_stat.html">DB_ENV-&gt;rep_stat</a>, <a href="../../api_c/rep_sync.html">DB_ENV-&gt;rep_sync</a>,
+<a href="../../api_c/rep_config.html">DB_ENV-&gt;rep_set_config</a>.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/mgr_meth.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/comm.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

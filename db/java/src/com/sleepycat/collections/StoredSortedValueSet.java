@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredSortedValueSet.java,v 1.2 2004/06/02 20:59:39 mark Exp $
+ * $Id: StoredSortedValueSet.java,v 12.5 2006/08/31 18:14:08 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -20,17 +20,6 @@ import com.sleepycat.db.Database;
  * directly if a Map is not needed.
  * Although this collection is a set it may contain duplicate values.  Only if
  * an entity value binding is used are all elements guaranteed to be unique.
- *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
  *
  * <p>In addition to the standard SortedSet methods, this class provides the
  * following methods for stored sorted value sets only.  Note that the use of
@@ -136,6 +125,9 @@ public class StoredSortedValueSet extends StoredValueSet implements SortedSet {
      * strictly less than toValue.
      * This method conforms to the {@link SortedSet#headSet} interface.
      *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
+     *
      * @param toValue the upper bound.
      *
      * @return the subset.
@@ -152,6 +144,9 @@ public class StoredSortedValueSet extends StoredValueSet implements SortedSet {
      * Returns a view of the portion of this sorted set whose elements are
      * strictly less than toValue, optionally including toValue.
      * This method does not exist in the standard {@link SortedSet} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @param toValue is the upper bound.
      *
@@ -172,6 +167,9 @@ public class StoredSortedValueSet extends StoredValueSet implements SortedSet {
      * greater than or equal to fromValue.
      * This method conforms to the {@link SortedSet#tailSet} interface.
      *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
+     *
      * @param fromValue is the lower bound.
      *
      * @return the subset.
@@ -188,6 +186,9 @@ public class StoredSortedValueSet extends StoredValueSet implements SortedSet {
      * Returns a view of the portion of this sorted set whose elements are
      * strictly greater than fromValue, optionally including fromValue.
      * This method does not exist in the standard {@link SortedSet} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @param fromValue is the lower bound.
      *
@@ -208,6 +209,9 @@ public class StoredSortedValueSet extends StoredValueSet implements SortedSet {
      * from fromValue, inclusive, to toValue, exclusive.
      * This method conforms to the {@link SortedSet#subSet} interface.
      *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
+     *
      * @param fromValue is the lower bound.
      *
      * @param toValue is the upper bound.
@@ -227,6 +231,9 @@ public class StoredSortedValueSet extends StoredValueSet implements SortedSet {
      * strictly greater than fromValue and strictly less than toValue,
      * optionally including fromValue and toValue.
      * This method does not exist in the standard {@link SortedSet} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @param fromValue is the lower bound.
      *

@@ -1,5 +1,5 @@
-<!--$Id: db_put.so,v 10.54 2004/08/13 03:38:55 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_put.so,v 10.59 2006/09/13 14:30:52 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -71,20 +71,20 @@ supports duplicates.
 database.
 </p>
 </dl>
-In addition, the following flag may be set by
-bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
-<dl compact>
-<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>Enclose the Db::put call within a transaction.  If the call succeeds,
-changes made by the operation will be recoverable.  If the call fails,
-the operation will have made no changes.
-</dl>
 <dt><b>data</b><dd>The data <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
 <dt><b>key</b><dd>The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-(other than by specifying the DB_AUTO_COMMIT flag),
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+operation occurs in a transactional
+database,
+the operation will be implicitly transaction protected.  
 </dl>
+<a name="2"><!--meow--></a>
+<a name="3"><!--meow--></a>
 <h3>Errors</h3>
 <p>The Db::put method
 may fail and throw
@@ -97,6 +97,7 @@ the following non-zero errors:</p>
 <dl compact>
 <dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
 </dl>
 <dl compact>
 <dt>EINVAL<dd>If a record number of 0 was specified;
@@ -126,6 +127,6 @@ throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exc
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

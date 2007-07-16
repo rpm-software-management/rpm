@@ -1,5 +1,5 @@
-<!--$Id: max.so,v 10.10 2004/10/18 19:35:11 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: max.so,v 10.11 2006/01/05 16:51:59 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -28,13 +28,14 @@ can be simultaneously requested in the system.  The maximum number of
 lockers is the number of lockers that can simultaneously request locks
 in the system.  The maximum number of lock objects is the number of
 objects that can simultaneously be locked in the system.  Selecting
-appropriate values requires an understanding of your application and
-its databases.  If the values are too small, requests for locks in an
+appropriate values requires an understanding of your application and its
+databases.  If the values are too small, requests for locks in an
 application will fail.  If the values are too large, the locking
 subsystem will consume more resources than is necessary.  It is better
 to err in the direction of allocating too many locks, lockers, and
 objects because increasing the number of locks does not require large
-amounts of additional resources.</p>
+amounts of additional resources.   The default values are 1000 of
+each type of object.</p>
 <p>When configuring a Berkeley DB Concurrent Data Store application, the number of lock objects needed
 is two per open database (one for the database lock, and one for the
 cursor lock when the <a href="../../api_c/env_set_flags.html#DB_CDB_ALLDB">DB_CDB_ALLDB</a> option is not specified).  The
@@ -98,6 +99,6 @@ applications are unlikely to actually need that many locks.  Reviewing
 the Lock subsystem statistics is the best way to determine this value.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../lock/config.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/stdmode.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

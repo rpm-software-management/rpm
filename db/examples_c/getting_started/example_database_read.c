@@ -1,6 +1,9 @@
-/* File: example_database_read.c */
-
-/* We assume an ANSI-compatible compiler */
+/*-
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2004-2006
+ *	Oracle Corporation.  All rights reserved.
+ */
 
 #include "gettingstarted_common.h"
 
@@ -142,7 +145,7 @@ show_records(STOCK_DBS *my_stock, char *itemname)
      * record that we want to examine.
      */
     key.data = itemname;
-    key.size = (strlen(itemname) + 1) * sizeof(char);
+    key.size = (u_int32_t)strlen(itemname) + 1;
 
     /*
      * Position our cursor to the first record in the secondary
@@ -190,7 +193,8 @@ char *
 show_inventory_item(void *vBuf)
 {
     float price;
-    int buf_pos, quantity;
+    int quantity;
+    size_t buf_pos;
     char *category, *name, *sku, *vendor_name;
     char *buf = (char *)vBuf;
 
@@ -240,7 +244,7 @@ show_vendor_record(char *vendor_name, DB *vendor_dbp)
 
     /* Set the search key to the vendor's name */
     key.data = vendor_name;
-    key.size = strlen(vendor_name) + 1;
+    key.size = (u_int32_t)strlen(vendor_name) + 1;
 
     /*
      * Make sure we use the memory we set aside for the VENDOR

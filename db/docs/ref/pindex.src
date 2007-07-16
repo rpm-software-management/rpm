@@ -3,6 +3,7 @@ __APIREL__/utility/db_archive.html__OCT__2 utility to @archive log files
 __APIREL__/utility/db_checkpoint.html__OCT__2 utility to take @checkpoints
 __APIREL__/utility/db_deadlock.html__OCT__2 utility to detect @deadlocks
 __APIREL__/utility/db_dump.html__OCT__2 utility to @dump databases as text files
+__APIREL__/utility/db_hotbackup.html__OCT__2 utility to hot @backup database environments
 __APIREL__/utility/db_load.html__OCT__2 utility to @load text files into databases
 __APIREL__/utility/db_printlog.html__OCT__2 utility to display @log files as text
 __APIREL__/utility/db_recover.html__OCT__2 utility to @recover database environments

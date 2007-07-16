@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredMap.java,v 1.4 2004/09/22 18:01:03 bostic Exp $
+ * $Id: StoredMap.java,v 12.7 2006/09/08 20:32:13 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -18,27 +18,18 @@ import java.util.Set;
 import com.sleepycat.bind.EntityBinding;
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.db.Database;
+import com.sleepycat.util.keyrange.KeyRangeException;
 
 /**
  * A Map view of a {@link Database}.
- *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
  *
  * <p>In addition to the standard Map methods, this class provides the
  * following methods for stored maps only.  Note that the use of these methods
  * is not compatible with the standard Java collections interface.</p>
  * <ul>
- * <li>{@link #duplicates(Object)}</li>
- * <li>{@link #append(Object)}</li>
+ * <li>{@link #duplicates}</li>
+ * <li>{@link #duplicatesMap}</li>
+ * <li>{@link #append}</li>
  * </ul>
  *
  * @author Mark Hayes
@@ -46,11 +37,8 @@ import com.sleepycat.db.Database;
 public class StoredMap extends StoredContainer implements Map {
 
     private StoredKeySet keySet;
-    private boolean keySetInitialized = false;
     private StoredEntrySet entrySet;
-    private boolean entrySetInitialized = false;
     private StoredValueSet valueSet;
-    private boolean valueSetInitialized = false;
 
     /**
      * Creates a map view of a {@link Database}.
@@ -77,6 +65,7 @@ public class StoredMap extends StoredContainer implements Map {
 
         super(new DataView(database, keyBinding, valueBinding, null,
                            writeAllowed, null));
+        initView();
     }
 
     /**
@@ -106,21 +95,7 @@ public class StoredMap extends StoredContainer implements Map {
 
         super(new DataView(database, keyBinding, valueBinding, null,
                            true, keyAssigner));
-    }
-
-    protected Object clone()
-        throws CloneNotSupportedException {
-
-        // cached collections must be cleared and recreated with the new view
-        // of the map to inherit the new view's properties
-        StoredMap other = (StoredMap) super.clone();
-        other.keySet = null;
-	other.keySetInitialized = false;
-        other.entrySet = null;
-	other.entrySetInitialized = false;
-        other.valueSet = null;
-	other.valueSetInitialized = false;
-        return other;
+        initView();
     }
 
     /**
@@ -148,6 +123,7 @@ public class StoredMap extends StoredContainer implements Map {
 
         super(new DataView(database, keyBinding, null, valueEntityBinding,
                            writeAllowed, null));
+        initView();
     }
 
     /**
@@ -177,11 +153,54 @@ public class StoredMap extends StoredContainer implements Map {
 
         super(new DataView(database, keyBinding, null, valueEntityBinding,
                            true, keyAssigner));
+        initView();
     }
 
     StoredMap(DataView view) {
 
         super(view);
+        initView();
+    }
+
+    /**
+     * Override this method to initialize view-dependent fields.
+     */
+    void initAfterClone() {
+        initView();
+    }
+
+    /**
+     * The keySet, entrySet and valueSet are created during Map construction
+     * rather than lazily when requested (as done with the java.util.Map
+     * implementations).  This is done to avoid synchronization every time they
+     * are requested.  Since they are requested often but a StoredMap is
+     * created infrequently, this gives the best performance.  The additional
+     * views are small objects and are cheap to construct.
+     */
+    private void initView() {
+
+        /* entrySet */
+        if (isOrdered()) {
+            entrySet = new StoredSortedEntrySet(view);
+        } else {
+            entrySet = new StoredEntrySet(view);
+        }
+
+        /* keySet */
+        DataView newView = view.keySetView();
+        if (isOrdered()) {
+            keySet = new StoredSortedKeySet(newView);
+        } else {
+            keySet = new StoredKeySet(newView);
+        }
+
+        /* valueSet */
+        newView = view.valueSetView();
+        if (isOrdered() && newView.canDeriveKeyFromValue()) {
+            valueSet = new StoredSortedValueSet(newView);
+        } else {
+            valueSet = new StoredValueSet(newView);
+        }
     }
 
     /**
@@ -237,6 +256,10 @@ public class StoredMap extends StoredContainer implements Map {
      * or RECNO database and the next available record number is assigned as
      * the key.  This method does not exist in the standard {@link Map}
      * interface.
+     *
+     * <p>Note that for the JE product, QUEUE and RECNO databases are not
+     * supported, and therefore a PrimaryKeyAssigner must be associated with
+     * the map in order to call this method.</p>
      *
      * @param value the value to be appended.
      *
@@ -322,17 +345,18 @@ public class StoredMap extends StoredContainer implements Map {
     public void putAll(Map map) {
 
         boolean doAutoCommit = beginAutoCommit();
-        Iterator entries = null;
+        Iterator i = null;
         try {
-            entries = map.entrySet().iterator();
-            while (entries.hasNext()) {
-                Map.Entry entry = (Map.Entry) entries.next();
+            Collection coll = map.entrySet();
+            i = storedOrExternalIterator(coll);
+            while (i.hasNext()) {
+                Map.Entry entry = (Map.Entry) i.next();
                 put(entry.getKey(), entry.getValue());
             }
-            StoredIterator.close(entries);
+            StoredIterator.close(i);
             commitAutoCommit(doAutoCommit);
         } catch (Exception e) {
-            StoredIterator.close(entries);
+            StoredIterator.close(i);
             throw handleException(e, doAutoCommit);
         }
     }
@@ -342,6 +366,9 @@ public class StoredMap extends StoredContainer implements Map {
      * java.util.SortedSet} is returned if the map is ordered.  The returned
      * collection will be read-only if the map is read-only.  This method
      * conforms to the {@link Map#keySet()} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @return a {@link StoredKeySet} or a {@link StoredSortedKeySet} for this
      * map.
@@ -354,19 +381,6 @@ public class StoredMap extends StoredContainer implements Map {
      */
     public Set keySet() {
 
-        if (!keySetInitialized) {
-            synchronized (this) {
-                if (!keySetInitialized) {
-                    DataView newView = view.keySetView();
-                    if (isOrdered()) {
-                        keySet = new StoredSortedKeySet(newView);
-                    } else {
-                        keySet = new StoredKeySet(newView);
-                    }
-		    keySetInitialized = true;
-                }
-            }
-        }
         return keySet;
     }
 
@@ -375,6 +389,9 @@ public class StoredMap extends StoredContainer implements Map {
      * java.util.SortedSet} is returned if the map is ordered.  The returned
      * collection will be read-only if the map is read-only.  This method
      * conforms to the {@link Map#entrySet()} interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @return a {@link StoredEntrySet} or a {@link StoredSortedEntrySet} for
      * this map.
@@ -387,18 +404,6 @@ public class StoredMap extends StoredContainer implements Map {
      */
     public Set entrySet() {
 
-        if (!entrySetInitialized) {
-            synchronized (this) {
-                if (!entrySetInitialized) {
-                    if (isOrdered()) {
-                        entrySet = new StoredSortedEntrySet(view);
-                    } else {
-                        entrySet = new StoredEntrySet(view);
-                    }
-		    entrySetInitialized = true;
-                }
-            }
-        }
         return entrySet;
     }
 
@@ -407,8 +412,11 @@ public class StoredMap extends StoredContainer implements Map {
      * java.util.SortedSet} is returned if the map is ordered and the
      * value/entity binding can be used to derive the map's key from its
      * value/entity object.  The returned collection will be read-only if the
-     * map is read-only.  This method conforms to the {@link Map#entrySet()}
+     * map is read-only.  This method conforms to the {@link Map#values()}
      * interface.
+     *
+     * <p>Note that the return value is a StoredCollection and must be treated
+     * as such; for example, its iterators must be explicitly closed.</p>
      *
      * @return a {@link StoredValueSet} or a {@link StoredSortedValueSet} for
      * this map.
@@ -421,19 +429,6 @@ public class StoredMap extends StoredContainer implements Map {
      */
     public Collection values() {
 
-	if (!valueSetInitialized) {
-            synchronized (this) {
-                if (!valueSetInitialized) {
-                    DataView newView = view.valueSetView();
-                    if (isOrdered() && newView.canDeriveKeyFromValue()) {
-                        valueSet = new StoredSortedValueSet(newView);
-                    } else {
-                        valueSet = new StoredValueSet(newView);
-                    }
-		    valueSetInitialized = true;
-                }
-            }
-        }
         return valueSet;
     }
 
@@ -459,9 +454,44 @@ public class StoredMap extends StoredContainer implements Map {
 
         try {
             DataView newView = view.valueSetView(key);
-            return new StoredValueSet(newView, true);
+            return new StoredValueSet(newView);
         } catch (KeyRangeException e) {
             return Collections.EMPTY_SET;
+        } catch (Exception e) {
+            throw StoredContainer.convertException(e);
+        }
+    }
+
+    /**
+     * Returns a new map from primary key to value for the subset of records
+     * having a given secondary key (duplicates).  This method does not exist
+     * in the standard {@link Map} interface.
+     *
+     * <p>If no mapping for the given key is present, an empty collection is
+     * returned.  If duplicates are not allowed, at most a single value will be
+     * in the collection returned.  If duplicates are allowed, the returned
+     * collection's add() method may be used to add values for the given
+     * key.</p>
+     *
+     * @param secondaryKey is the secondary key for which duplicates values
+     * will be represented by the returned map.
+     *
+     * @param primaryKeyBinding is the binding used for keys in the returned
+     * map.
+     *
+     * @throws RuntimeExceptionWrapper if a {@link
+     * com.sleepycat.db.DatabaseException} is thrown.
+     */
+    public Map duplicatesMap(Object secondaryKey,
+                             EntryBinding primaryKeyBinding) {
+        try {
+            DataView newView =
+                view.duplicatesView(secondaryKey, primaryKeyBinding);
+            if (isOrdered()) {
+                return new StoredSortedMap(newView);
+            } else {
+                return new StoredMap(newView);
+            }
         } catch (Exception e) {
             throw StoredContainer.convertException(e);
         }
@@ -491,6 +521,11 @@ public class StoredMap extends StoredContainer implements Map {
      */
     public int hashCode() {
 	return super.hashCode();
+    }
+
+    // Inherit javadoc
+    public int size() {
+        return values().size();
     }
 
     /**

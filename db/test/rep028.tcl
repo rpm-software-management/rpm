@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep028.tcl,v 11.4 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep028.tcl,v 12.11 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  	rep028
 # TEST	Replication and non-rep env handles. (Also see rep006.)
@@ -15,15 +15,26 @@
 # TEST	in the non-rep env writes log records.
 #
 proc rep028 { method { niter 100 } { tnum "028" } args } {
-	global is_hp_test
+
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for btree only.
+	if { $checking_valid_methods } {
+		set test_methods { btree }
+		return $test_methods
+	}
+	if { [is_btree $method] == 0 } {
+		puts "\tRep$tnum: Skipping for method $method."
+		return
+	}
 
 	# Skip test for HP-UX because we can't open an env twice.
 	if { $is_hp_test == 1 } {
 		puts "\tRep$tnum: Skipping for HP-UX."
-		return
-	}
-	if { [is_btree $method] == 0 } {
-		puts "\tRep$tnum: Skipping for method $method."
 		return
 	}
 
@@ -31,9 +42,8 @@ proc rep028 { method { niter 100 } { tnum "028" } args } {
 	set logsets [create_logsets 2]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
 	set clopts { "create" "open" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -81,11 +91,11 @@ proc rep028_sub { method niter tnum logset recargs clargs largs } {
 	# Open a master.
 	puts "\tRep$tnum.a: Open replicated envs and non-replicated client env."
 	repladd 1
-	set env_cmd(M) "berkdb_env -create -lock_max 2500 \
+	set env_cmd(M) "berkdb_env_noerr -create \
 	    -log_max 1000000 -home $masterdir \
 	    $m_txnargs $m_logargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(M) "berkdb_env -create -lock_max 2500 \
+#	set env_cmd(M) "berkdb_env_noerr -create \
 #	    -log_max 1000000 -home $masterdir \
 #	    $m_txnargs $m_logargs -rep_master \
 #	     -verbose {rep on} -errpfx MASTER \
@@ -95,11 +105,11 @@ proc rep028_sub { method niter tnum logset recargs clargs largs } {
 
 	# Open a client
 	repladd 2
-	set env_cmd(C) "berkdb_env -create $c_txnargs \
-	    $c_logargs -lock_max 2500 -home $clientdir \
+	set env_cmd(C) "berkdb_env_noerr -create $c_txnargs \
+	    $c_logargs -home $clientdir \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(C) "berkdb_env -create $c_txnargs \
-#	    $c_logargs -lock_max 2500 -home $clientdir \
+#	set env_cmd(C) "berkdb_env_noerr -create $c_txnargs \
+#	    $c_logargs -home $clientdir \
 #	     -verbose {rep on} -errpfx CLIENT \
 #	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
@@ -137,34 +147,26 @@ proc rep028_sub { method niter tnum logset recargs clargs largs } {
 	puts "\tRep$tnum.$let: Declare env as rep client"
 	error_check_good client [$clientenv rep_start -client] 0
 
-
 	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
-	process_msgs $envlist
+	process_msgs $envlist 0 NONE err
+	#
+	# In the create case, we'll detect the non-rep log records and
+	# determine this client was never part of the replication group.
+	#
+	if { $clargs == "create" } {
+		error_check_good dead [is_substr $err \
+		    "was never part"] 1
+		error_check_good close [$nonrepdb close] 0
+	}
 
 	# Open the same db through the master handle.  Put data
 	# and process messages.
 	set db [eval berkdb_open \
 	    -create $omethod -env $masterenv -auto_commit $dbname]
 	error_check_good db_open [is_valid_db $db] TRUE
-	eval rep_test $method $masterenv $db $niter 0 0
+	eval rep_test $method $masterenv $db $niter 0 0 0 0 $largs
 	process_msgs $envlist
-
-	if { $clargs == "create" } {
-		# Run db stat on non-rep handle.
-		puts "\tRep$tnum.$nextlet: Check dead handle."
-                set stat [catch {$nonrepdb stat} ret]
-		error_check_good stat $stat 1
-		error_check_good dead [is_substr $ret \
-		    DB_REP_HANDLE_DEAD] 1
-		error_check_good close [$nonrepdb close] 0
-		set nonrepdb [eval berkdb_open \
-		    -create $omethod -env $nonrepenv $dbname]
-		error_check_good nonrepdb_open [is_valid_db $nonrepdb] TRUE
-                set stat [catch {$nonrepdb stat} ret]
-		error_check_good stat $stat 0
-		error_check_good close [$nonrepdb close] 0
-	}
 
 	#
 	# If we're the open case, we want to just read the existing
@@ -182,7 +184,7 @@ proc rep028_sub { method niter tnum logset recargs clargs largs } {
 		# some more on the client to notice the end of log
 		# is now in an unexpected place.
 		#
-		eval rep_test $method $masterenv $db $niter 0 0
+		eval rep_test $method $masterenv $db $niter 0 0 0 0 $largs
 		process_msgs $envlist
 		error_check_good close [$nonrepdb close] 0
 

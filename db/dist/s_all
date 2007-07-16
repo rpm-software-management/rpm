@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_all,v 1.11 2002/10/30 15:26:36 bostic Exp $
+#	$Id: s_all,v 12.2 2005/12/01 03:24:24 bostic Exp $
 
 sh s_perm		# permissions.
 sh s_symlink		# symbolic links.
@@ -13,8 +13,8 @@ sh s_recover		# logging/recovery files.
 sh s_rpc		# RPC files.
 sh s_include		# standard include files.
 
-sh s_win32		# Win32 include files.
-sh s_win32_dsp		# Win32 build environment.
+sh s_windows		# Windows include files.
+sh s_windows_dsp	# Windows build environment.
 sh s_vxworks		# VxWorks include files.
 sh s_java		# Java support.
 sh s_test		# Test suite support.

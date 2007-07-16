@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.cxxtests,v 1.8 2004/09/28 19:58:42 mjc Exp $
+# $Id: chk.cxxtests,v 12.0 2004/11/17 03:44:48 bostic Exp $
 #
 # Check to make sure that regression tests for C++ run.
 

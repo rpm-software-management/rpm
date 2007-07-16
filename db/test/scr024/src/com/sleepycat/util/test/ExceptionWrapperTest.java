@@ -1,15 +1,17 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: ExceptionWrapperTest.java,v 1.1 2004/04/09 16:34:10 mark Exp $
+ * $Id: ExceptionWrapperTest.java,v 12.4 2006/08/24 14:46:47 bostic Exp $
  */
 
 package com.sleepycat.util.test;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -106,5 +108,38 @@ public class ExceptionWrapperTest extends TestCase {
             assertEquals("msg", t.getMessage());
         }
     }
-}
 
+    /**
+     * Generates a stack trace for a nested exception and checks the output
+     * for the nested exception.
+     */
+    public void testStackTrace() {
+
+        /* Nested stack traces are not avilable in Java 1.3. */
+        String version = System.getProperty("java.version");
+        if (version.startsWith("1.3.")) {
+            return;
+        }
+
+        Exception ex = new Exception("some exception");
+        String causedBy = "Caused by: java.lang.Exception: some exception";
+
+        try {
+            throw new RuntimeExceptionWrapper(ex);
+        } catch (RuntimeException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String s = sw.toString();
+            assertTrue(s.indexOf(causedBy) != -1);
+        }
+
+        try {
+            throw new IOExceptionWrapper(ex);
+        } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String s = sw.toString();
+            assertTrue(s.indexOf(causedBy) != -1);
+        }
+    }
+}

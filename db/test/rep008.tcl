@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2001-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep008.tcl,v 1.11 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep008.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST	rep008
 # TEST	Replication, back up and synchronizing
@@ -15,22 +15,35 @@
 # TEST	Clean the master.
 # TEST	Reopen the master and client.
 proc rep008 { method { niter 10 } { tnum "008" } args } {
-	global mixed_mode_logging
 
-	if { $mixed_mode_logging == 1 } {
-		puts "Rep$tnum: Skipping for mixed-mode logging."
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
 		return
+	}
+
+	# Run for btree only.
+	if { $checking_valid_methods } {
+		set test_methods { btree }
+		return $test_methods
 	}
 	if { [is_btree $method] == 0 } {
 		puts "Rep$tnum: Skipping for method $method."
 		return
 	}
 
+	# This test depends on copying logs, so can't be run with
+	# in-memory logging.
+	global mixed_mode_logging
+	if { $mixed_mode_logging > 0 } {
+		puts "Rep$tnum: Skipping for mixed-mode logging."
+		return
+	}
+
 	set args [convert_args $method $args]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		puts "Rep$tnum ($method $r):\
 		    Replication backup and synchronizing."
 		rep008_sub $method $niter $tnum $r $args
@@ -53,9 +66,9 @@ proc rep008_sub { method niter tnum recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env_noerr -create -txn nosync -lock_max 2500 \
+	set ma_envcmd "berkdb_env_noerr -create -txn nosync \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create -txn nosync -lock_max 2500 \
+#	set ma_envcmd "berkdb_env_noerr -create -txn nosync \
 #	    -verbose {rep on} -errpfx MASTER \
 #	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
@@ -63,9 +76,9 @@ proc rep008_sub { method niter tnum recargs largs } {
 
 	# Open a client
 	repladd 2
-	set cl_envcmd "berkdb_env_noerr -create -txn nosync -lock_max 2500 \
+	set cl_envcmd "berkdb_env_noerr -create -txn nosync \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create -txn nosync -lock_max 2500 \
+#	set cl_envcmd "berkdb_env_noerr -create -txn nosync \
 #	    -verbose {rep on} -errpfx CLIENT \
 #	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]

@@ -1,5 +1,5 @@
-<!--$Id: db_fd.so,v 10.30 2003/10/31 15:17:43 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_fd.so,v 10.31 2005/06/14 14:06:57 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -32,9 +32,7 @@ of the underlying database.  A file descriptor referring to the same
 file will be returned to all processes that call <a href="../api_cxx/db_open.html">Db::open</a> with
 the same <b>file</b> parameter.</p>
 <p>This file descriptor may be safely used as a parameter to the
-<b>fcntl</b>(2) and <b>flock</b>(2) locking functions.  The file
-descriptor is not necessarily associated with any of the underlying
-files actually used by the access method.</p>
+<b>fcntl</b>(2) and <b>flock</b>(2) locking functions.</p>
 <p>The Db::fd method only supports a coarse-grained form of locking.
 Applications should instead use the Berkeley DB lock manager where possible.</p>
 <p>The Db::fd method
@@ -45,7 +43,7 @@ failure, and returns 0 on success.
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>fdp</b><dd>The <b>fdp</b> parameter references memory into which
- the current file descriptor is copied.
+ the current file descriptor is copied. 
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -56,6 +54,6 @@ failure, and returns 0 on success.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

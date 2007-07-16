@@ -72,8 +72,8 @@
    </p>
       <p>
         One thing to remember when implementing this method is that you will
-        need a way to extract the necessary information from the data
-        <tt class="classname">DatabaseEntry</tt> and/or the key
+        need a way to extract the necessary information from the data's
+        <tt class="classname">DatabaseEntry</tt> and/or the key's
         <tt class="classname">DatabaseEntry</tt> that are provided on calls to this
         method. If you are using complex objects, then you are probably using the
         Bind APIs to perform this conversion. The easiest thing to do is to
@@ -83,7 +83,7 @@
         The Bind APIs are introduced in <a href="bindAPI.html">Using the BIND APIs</a>.
     </p>
       <p>
-        Also, <tt class="methodname">SecondaryKeyCreator.createSecondaryKey()</tt> returns a
+        <tt class="methodname">SecondaryKeyCreator.createSecondaryKey()</tt> returns a
         boolean. A return value of <tt class="literal">false</tt> indicates that 
         no secondary key exists, and therefore no record should be added to the secondary database for that primary record.
         If a record already exists in the secondary database, it is deleted.
@@ -93,7 +93,7 @@
         for its record data:
     </p>
       <a id="java_index3"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 public class PersonData {
     private String userID;
@@ -133,7 +133,7 @@ public class PersonData {
         Then in this case you might create a key creator as follows:
     </p>
       <a id="java_index4"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.db.SecondaryKeyCreator;
@@ -156,25 +156,19 @@ public class FullNameKeyCreator implements SecondaryKeyCreator {
                                       DatabaseEntry dataEntry,
                                       DatabaseEntry resultEntry) {
 
-        // If the dataEntry parameter is null, then we can
-        // not create the key
-        if (dataEntry == null) {
-            return false;
-        } else {           // Create the key
-            try {
-                PersonData pd = 
-                    (PersonData) theBinding.entryToObject(dataEntry);
-                String fullName = pd.getFamiliarName() + " " + 
+        try {
+            PersonData pd = 
+                (PersonData) theBinding.entryToObject(dataEntry);
+                String fullName = pd.getFamiliarName() + &quot; &quot; + 
                     pd.getSurname();
-                resultEntry.setData(fullName.getBytes("UTF-8"));
-            } catch (IOException willNeverOccur) {}
-        }
+                resultEntry.setData(fullName.getBytes(&quot;UTF-8&quot;));
+        } catch (IOException willNeverOccur) {}
         return true;
     }
 } </pre>
       <p>Finally, you use this key creator as follows:</p>
       <a id="java_index5"></a>
-      <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+      <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.tuple.TupleBinding;
 
@@ -201,7 +195,7 @@ try {
     mySecConfig.setType(DatabaseType.BTREE);
 
     //Perform the actual open
-    String secDbName = "mySecondaryDatabase";
+    String secDbName = &quot;mySecondaryDatabase&quot;;
     mySecDb = new SecondaryDatabase(secDbName, null, myDb, mySecConfig);
 } catch (DatabaseException de) {
     // Exception handling goes here

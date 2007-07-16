@@ -1,56 +1,20 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_open.c,v 11.60 2004/09/24 00:43:19 bostic Exp $
+ * $Id: os_open.c,v 12.18 2006/08/24 14:46:18 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#ifdef HAVE_SYS_FCNTL_H
-#include <sys/fcntl.h>
-#endif
-
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
-#endif
-
 #include "db_int.h"
 
-static int __os_intermediate_dir __P((DB_ENV *, const char *));
-static int __os_mkdir __P((DB_ENV *, const char *));
 #ifdef HAVE_QNX
-static int __os_region_open __P((DB_ENV *, const char *, int, int, DB_FH **));
+static int __os_qnx_region_open
+	       __P((DB_ENV *, const char *, int, int, DB_FH **));
 #endif
-
-/*
- * __os_have_direct --
- *	Check to see if we support direct I/O.
- *
- * PUBLIC: int __os_have_direct __P((void));
- */
-int
-__os_have_direct()
-{
-	int ret;
-
-	ret = 0;
-
-#ifdef HAVE_O_DIRECT
-	ret = 1;
-#endif
-#if defined(HAVE_DIRECTIO) && defined(DIRECTIO_ON)
-	ret = 1;
-#endif
-	return (ret);
-}
 
 /*
  * __os_open --
@@ -94,9 +58,9 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	oflags = 0;
 
 #define	OKFLAGS								\
-	(DB_OSO_CREATE | DB_OSO_DIRECT | DB_OSO_DSYNC | DB_OSO_EXCL |	\
-	 DB_OSO_LOG | DB_OSO_RDONLY | DB_OSO_REGION | DB_OSO_SEQ |	\
-	 DB_OSO_TEMP | DB_OSO_TRUNC)
+	(DB_OSO_ABSMODE | DB_OSO_CREATE | DB_OSO_DIRECT | DB_OSO_DSYNC |\
+	DB_OSO_EXCL | DB_OSO_RDONLY | DB_OSO_REGION | DB_OSO_SEQ |	\
+	DB_OSO_TEMP | DB_OSO_TRUNC)
 	if ((ret = __db_fchk(dbenv, "__os_open", flags, OKFLAGS)) != 0)
 		return (ret);
 
@@ -126,7 +90,7 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 		oflags |= O_DIRECT;
 #endif
 #ifdef O_DSYNC
-	if (LF_ISSET(DB_OSO_LOG) && LF_ISSET(DB_OSO_DSYNC))
+	if (LF_ISSET(DB_OSO_DSYNC))
 		oflags |= O_DSYNC;
 #endif
 
@@ -144,7 +108,7 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	 */
 	if (dbenv != NULL &&
 	    dbenv->dir_mode != 0 && LF_ISSET(DB_OSO_CREATE) &&
-	    (ret = __os_intermediate_dir(dbenv, name)) != 0)
+	    (ret = __db_mkpath(dbenv, name)) != 0)
 		return (ret);
 
 #ifdef HAVE_QNX
@@ -155,8 +119,25 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	if ((ret = __os_openhandle(dbenv, name, oflags, mode, &fhp)) != 0)
 		return (ret);
 
+#ifdef HAVE_FCHMOD
+	/*
+	 * If the code using Berkeley DB is a library, that code may not be able
+	 * to control the application's umask value.  Allow applications to set
+	 * absolute file modes.  We can't fix the race between file creation and
+	 * the fchmod call -- we can't modify the process' umask here since the
+	 * process may be multi-threaded and the umask value is per-process, not
+	 * per-thread.
+	 */
+	if (LF_ISSET(DB_OSO_CREATE) && LF_ISSET(DB_OSO_ABSMODE))
+		(void)fchmod(fhp->fd, mode);
+#endif
+
 #ifdef O_DSYNC
-	if (LF_ISSET(DB_OSO_LOG) && LF_ISSET(DB_OSO_DSYNC))
+	/*
+	 * If we can configure the file descriptor to flush on write, the
+	 * file descriptor does not need to be explicitly sync'd.
+	 */
+	if (LF_ISSET(DB_OSO_DSYNC))
 		F_SET(fhp, DB_FH_NOSYNC);
 #endif
 
@@ -226,20 +207,20 @@ __os_qnx_region_open(dbenv, name, oflags, mode, fhpp)
 	 * anymore.  Other callers of this will convert themselves.
 	 */
 	fhp->fd = shm_open(newname, oflags, mode);
+	if (fhp->fd == -1)
+		ret = __os_posix_err(__os_get_syserr());
 	__os_free(dbenv, newname);
-
-	if (fhp->fd == -1) {
-		ret = __os_get_errno();
+	if (fhp->fd == -1)
 		goto err;
-	}
 
 	F_SET(fhp, DB_FH_OPENED);
 
 #ifdef HAVE_FCNTL_F_SETFD
 	/* Deny file descriptor access to any child process. */
 	if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
-		ret = __os_get_errno();
-		__db_err(dbenv, "fcntl(F_SETFD): %s", strerror(ret));
+		ret = __os_get_syserr();
+		__db_syserr(dbenv, ret, "fcntl(F_SETFD)");
+		ret = __os_posix_err(ret);
 		goto err;
 	}
 #endif
@@ -327,86 +308,3 @@ __os_shmname(dbenv, name, newnamep)
 	return (0);
 }
 #endif
-
-/*
- * __os_intermediate_dir --
- *	Create intermediate directories.
- */
-static int
-__os_intermediate_dir(dbenv, name)
-	DB_ENV *dbenv;
-	const char *name;
-{
-	size_t len;
-	int ret;
-	char savech, *p, *t, buf[128];
-
-	ret = 0;
-
-	/*
-	 * Get a copy so we can modify the string.
-	 *
-	 * Allocate memory if temporary space is too small.
-	 */
-	if ((len = strlen(name)) > sizeof(buf) - 1) {
-		if ((ret = __os_umalloc(dbenv, len, &t)) != 0)
-			return (ret);
-	} else
-		t = buf;
-	(void)strcpy(t, name);
-
-	/*
-	 * Cycle through the path, creating intermediate directories.
-	 *
-	 * Skip the first byte if it's a path separator, it's the start of an
-	 * absolute pathname.
-	 */
-	if (PATH_SEPARATOR[1] == '\0') {
-		for (p = t + 1; p[0] != '\0'; ++p)
-			if (p[0] == PATH_SEPARATOR[0]) {
-				savech = *p;
-				*p = '\0';
-				if (__os_exists(t, NULL) &&
-				    (ret = __os_mkdir(dbenv, t)) != 0)
-					break;
-				*p = savech;
-			}
-	} else
-		for (p = t + 1; p[0] != '\0'; ++p)
-			if (strchr(PATH_SEPARATOR, p[0]) != NULL) {
-				savech = *p;
-				*p = '\0';
-				if (__os_exists(t, NULL) &&
-				    (ret = __os_mkdir(dbenv, t)) != 0)
-					break;
-				*p = savech;
-			}
-	if (t != buf)
-		__os_free(dbenv, t);
-	return (ret);
-}
-
-/*
- * __os_mkdir --
- *	Create a directory.
- */
-static int
-__os_mkdir(dbenv, name)
-	DB_ENV *dbenv;
-	const char *name;
-{
-	int ret;
-
-	/* Make the directory, with paranoid permissions. */
-#ifdef HAVE_VXWORKS
-	RETRY_CHK((mkdir((char *)name)), ret);
-#else
-	RETRY_CHK((mkdir(name, 0600)), ret);
-	if (ret != 0)
-		return (ret);
-
-	/* Set the absolute permissions. */
-	RETRY_CHK((chmod(name, dbenv->dir_mode)), ret);
-#endif
-	return (ret);
-}

@@ -1,5 +1,5 @@
 <!--$Id-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -31,10 +31,10 @@ DB_ENV-&gt;get_flags(DB_ENV *dbenv, u_int32_t *flagsp);
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;set_flags</h3>
 <p>Configure a database environment.</p>
-<p>The database environment's flag values may also be set using the environment's
-<b>DB_CONFIG</b> file.  The syntax of the entry in that file is a
-single line with the string "set_flags", one or more whitespace characters,
-and the method flag parameter as a string; for example, "set_flags
+<p>The database environment's flag values may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_flags", one or more whitespace
+characters, and the method flag parameter as a string; for example, "set_flags
 DB_TXN_NOSYNC".
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
@@ -48,11 +48,9 @@ and 0 on success.
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set by bitwise inclusively <b>OR</b>'ing together one or more
 of the following values:
 <dl compact>
-<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>If set, operations for which no explicit transaction handle was
-specified, and which modify databases in the database environment, will
-be automatically enclosed within a transaction.  If the call succeeds,
-changes made by the operation will be recoverable.  If the call fails,
-the operation will have made no changes.
+<dt><a name="DB_AUTO_COMMIT">DB_AUTO_COMMIT</a><dd>If set, <a href="../api_c/db_class.html">DB</a> handle operations for which no explicit transaction
+handle was specified, and which modify databases in the database
+environment, will be automatically enclosed within a transaction.
 <p>Calling DB_ENV-&gt;set_flags with the <a href="../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag only affects
 the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
 within the scope of that handle).
@@ -97,15 +95,37 @@ file.</p>
 <p>The DB_DIRECT_LOG flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
 <a name="5"><!--meow--></a>
+<dt><a name="DB_DSYNC_DB">DB_DSYNC_DB</a><dd>Configure Berkeley DB to flush database writes to the backing disk before
+returning from the write system call, rather than flushing database
+writes explicitly in a separate system call, as necessary.  This is only
+available on some systems (for example, systems supporting the
+IEEE/ANSI Std 1003.1 (POSIX) standard O_DSYNC flag, or systems supporting the Windows
+FILE_FLAG_WRITE_THROUGH flag).  This flag may result in inaccurate file
+modification times and other file-level information for Berkeley DB database
+files.  This flag will almost certainly result in a performance decrease
+on most systems.  This flag is only applicable to certain filesysystem
+(for example, the Veritas VxFS filesystem), where the filesystem's
+support for trickling writes back to stable storage behaves badly (or
+more likely, has been misconfigured).
+<p>Calling DB_ENV-&gt;set_flags with the DB_DSYNC_DB flag only affects
+the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
+within the scope of that handle).
+For consistent behavior across the environment, all <a href="../api_c/env_class.html">DB_ENV</a>
+handles opened in the environment must either set the DB_DSYNC_DB flag
+or the flag should be specified in the <b>DB_CONFIG</b> configuration
+file.</p>
+<p>The DB_DSYNC_DB flag may be used to configure Berkeley DB at any time during
+the life of the application.</p>
+<a name="6"><!--meow--></a>
 <dt><a name="DB_DSYNC_LOG">DB_DSYNC_LOG</a><dd>Configure Berkeley DB to flush log writes to the backing disk before returning
 from the write system call, rather than flushing log writes explicitly
-in a separate system call.  This is only available on some systems (for
-example, systems supporting the IEEE/ANSI Std 1003.1 (POSIX) standard O_DSYNC flag,
-or systems supporting the Win32 FILE_FLAG_WRITE_THROUGH flag).  This
-configuration may result in inaccurate file modification times and other
-file-level information for Berkeley DB log files.  This configuration may
-offer a performance increase on some systems and a performance decrease
-on others.
+in a separate system call, as necessary.  This is only available on some
+systems (for example, systems supporting the IEEE/ANSI Std 1003.1 (POSIX) standard
+O_DSYNC flag, or systems supporting the Windows FILE_FLAG_WRITE_THROUGH
+flag).  This flag may result in inaccurate file modification times and
+other file-level information for Berkeley DB log files.  This flag may offer
+a performance increase on some systems and a performance decrease on
+others.
 <p>Calling DB_ENV-&gt;set_flags with the DB_DSYNC_LOG flag only affects
 the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
 within the scope of that handle).
@@ -115,7 +135,7 @@ or the flag should be specified in the <b>DB_CONFIG</b> configuration
 file.</p>
 <p>The DB_DSYNC_LOG flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="6"><!--meow--></a>
+<a name="7"><!--meow--></a>
 <dt><a name="DB_LOG_AUTOREMOVE">DB_LOG_AUTOREMOVE</a><dd>If set, Berkeley DB will automatically remove log files that are no longer
 needed.  Automatic log file removal is likely to make catastrophic
 recovery impossible.
@@ -124,7 +144,7 @@ database environment, including all threads of control accessing the
 database environment.</p>
 <p>The DB_LOG_AUTOREMOVE flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="7"><!--meow--></a>
+<a name="8"><!--meow--></a>
 <dt><a name="DB_LOG_INMEMORY">DB_LOG_INMEMORY</a><dd>If set, maintain transaction logs in memory rather than on disk.  This
 means that transactions exhibit the ACI (atomicity, consistency, and
 isolation) properties, but not D (durability); that is, database
@@ -145,7 +165,7 @@ database environment, including all threads of control accessing the
 database environment.</p>
 <p>The DB_LOG_INMEMORY flag may be used to configure Berkeley DB only before the
 <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is called.</p>
-<a name="8"><!--meow--></a>
+<a name="9"><!--meow--></a>
 <dt><a name="DB_NOLOCKING">DB_NOLOCKING</a><dd>If set, Berkeley DB will grant all requested mutual exclusion mutexes and
 database locks without regard for their actual availability.  This
 functionality should never be used for purposes other than debugging.
@@ -155,7 +175,20 @@ within the scope of that handle).
 </p>
 <p>The DB_NOLOCKING flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="9"><!--meow--></a>
+<dt><a name="DB_MULTIVERSION">DB_MULTIVERSION</a><dd>If set, all databases in the environment will be opened as if
+DB_MULTIVERSION is passed to <a href="../api_c/db_open.html">DB-&gt;open</a>.  This flag will
+be ignored for queue databases for which DB_MULTIVERSION is not
+supported.
+<p>Calling DB_ENV-&gt;set_flags with the DB_MULTIVERSION flag only affects
+the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
+within the scope of that handle).
+For consistent behavior across the environment, all <a href="../api_c/env_class.html">DB_ENV</a>
+handles opened in the environment must either set the DB_MULTIVERSION flag
+or the flag should be specified in the <b>DB_CONFIG</b> configuration
+file.</p>
+<p>The DB_MULTIVERSION flag may be used to configure Berkeley DB at any time during
+the life of the application.</p>
+<a name="10"><!--meow--></a>
 <dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>If set, Berkeley DB will copy read-only database files into the local cache
 instead of potentially mapping them into process memory (see the
 description of the <a href="../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a> method for further
@@ -169,7 +202,7 @@ or the flag should be specified in the <b>DB_CONFIG</b> configuration
 file.</p>
 <p>The DB_NOMMAP flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="10"><!--meow--></a>
+<a name="11"><!--meow--></a>
 <dt><a name="DB_NOPANIC">DB_NOPANIC</a><dd>If set, Berkeley DB will ignore any panic state in the database environment.
 (Database environments in a panic state normally refuse all attempts to
 call Berkeley DB functions, returning <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>.) This
@@ -192,7 +225,7 @@ within the scope of that handle).
 </p>
 <p>The DB_OVERWRITE flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="11"><!--meow--></a>
+<a name="12"><!--meow--></a>
 <dt><a name="DB_PANIC_ENVIRONMENT">DB_PANIC_ENVIRONMENT</a><dd>If set, Berkeley DB will set the panic state for the database environment.
 (Database environments in a panic state normally refuse all attempts to
 call Berkeley DB functions, returning <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>.) This flag may
@@ -204,7 +237,7 @@ database environment, including all threads of control accessing the
 database environment.</p>
 <p>The DB_PANIC_ENVIRONMENT flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="12"><!--meow--></a>
+<a name="13"><!--meow--></a>
 <dt><a name="DB_REGION_INIT">DB_REGION_INIT</a><dd>In some applications, the expense of page-faulting the underlying shared
 memory regions can affect performance.  (For example, if the page-fault
 occurs while holding a lock, other lock requests can convoy, and overall
@@ -237,7 +270,7 @@ or the flag should be specified in the <b>DB_CONFIG</b> configuration
 file.</p>
 <p>The <a href="../api_c/env_set_flags.html#DB_TIME_NOTGRANTED">DB_TIME_NOTGRANTED</a> flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="13"><!--meow--></a>
+<a name="14"><!--meow--></a>
 <dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>If set, Berkeley DB will not write or synchronously flush the log on transaction
 commit.
 This means that transactions exhibit the ACI (atomicity, consistency,
@@ -256,7 +289,20 @@ handles opened in the environment must either set the DB_TXN_NOSYNC flag
 or the flag should be specified in the <b>DB_CONFIG</b> configuration
 file.</p> <p>The DB_TXN_NOSYNC flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="14"><!--meow--></a>
+<dt><a name="DB_TXN_SNAPSHOT">DB_TXN_SNAPSHOT</a><dd>If set, all transactions in the environment will be started as if
+DB_TXN_SNAPSHOT were passed to <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>, and all
+non-transactional cursors will be opened as if DB_TXN_SNAPSHOT
+were passed to <a href="../api_c/db_cursor.html">DB-&gt;cursor</a>.
+<p>Calling DB_ENV-&gt;set_flags with the DB_TXN_SNAPSHOT flag only affects
+the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
+within the scope of that handle).
+For consistent behavior across the environment, all <a href="../api_c/env_class.html">DB_ENV</a>
+handles opened in the environment must either set the DB_TXN_SNAPSHOT flag
+or the flag should be specified in the <b>DB_CONFIG</b> configuration
+file.</p>
+<p>The DB_TXN_SNAPSHOT flag may be used to configure Berkeley DB at any time during
+the life of the application.</p>
+<a name="15"><!--meow--></a>
 <dt><a name="DB_TXN_WRITE_NOSYNC">DB_TXN_WRITE_NOSYNC</a><dd>If set, Berkeley DB will write, but will not synchronously flush, the log on
 transaction commit.
 This means that transactions exhibit the ACI (atomicity, consistency,
@@ -275,7 +321,7 @@ or the flag should be specified in the <b>DB_CONFIG</b> configuration
 file.</p>
 <p>The DB_TXN_WRITE_NOSYNC flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
-<a name="15"><!--meow--></a>
+<a name="16"><!--meow--></a>
 <dt><a name="DB_YIELDCPU">DB_YIELDCPU</a><dd>If set, Berkeley DB will yield the processor immediately after each page or
 mutex acquisition.  This functionality should never be used for purposes
 other than stress testing.
@@ -322,6 +368,6 @@ configuration flags in <b>flagsp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!--$Id: env_stat.so,v 10.5 2004/08/13 03:38:57 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -27,7 +27,7 @@ DB_ENV-&gt;stat_print(DB_ENV *dbenv, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;stat_print</h3>
-<p>The DB_ENV-&gt;stat_print method returns the
+<p>The DB_ENV-&gt;stat_print method displays the
 default statistical information.
 The information is printed to a specified output channel (see the
 <a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or passed to an
@@ -41,14 +41,11 @@ and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
-the following value:
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
-</dl>
-In addition, the following flag may be set by
-bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
-<dl compact>
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 <dt><a name="DB_STAT_SUBSYSTEM">DB_STAT_SUBSYSTEM</a><dd>Display information for all configured subsystems.
 </dl>
 </dl>
@@ -61,6 +58,6 @@ bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

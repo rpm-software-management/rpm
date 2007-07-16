@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rpc001.tcl,v 11.41 2004/06/01 19:55:25 carol Exp $
+# $Id: rpc001.tcl,v 12.4 2006/08/24 14:46:38 bostic Exp $
 #
 # TEST	rpc001
 # TEST	Test RPC server timeouts for cursor, txn and env handles.
@@ -310,21 +310,21 @@ proc rpc_timeoutjoin {env msg sleeptime use_txn} {
 	foreach kd $fruit {
 		set k [lindex $kd 0]
 		set d [lindex $kd 1]
-		set ret [eval {$fdb put} $txnflag {$k $d}]
+		set ret [eval {$fdb put} {$k $d}]
 		error_check_good fruit_put $ret 0
 	}
 	error_check_good sync [$fdb sync] 0
 	foreach kd $price {
 		set k [lindex $kd 0]
 		set d [lindex $kd 1]
-		set ret [eval {$pdb put} $txnflag {$k $d}]
+		set ret [eval {$pdb put} {$k $d}]
 		error_check_good price_put $ret 0
 	}
 	error_check_good sync [$pdb sync] 0
 	foreach kd $dessert {
 		set k [lindex $kd 0]
 		set d [lindex $kd 1]
-		set ret [eval {$ddb put} $txnflag {$k $d}]
+		set ret [eval {$ddb put} {$k $d}]
 		error_check_good dessert_put $ret 0
 	}
 	error_check_good sync [$ddb sync] 0

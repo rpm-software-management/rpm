@@ -1,31 +1,31 @@
 /*
- * __PREF_FUNC_recover --
+ * PREF_FUNC_recover --
  *	Recovery function for FUNC.
  *
- * PUBLIC: int __PREF_FUNC_recover
+ * PUBLIC: int PREF_FUNC_recover
  * PUBLIC:   __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
  */
 int
-__PREF_FUNC_recover(dbenv, dbtp, lsnp, op, info)
+PREF_FUNC_recover(dbenv, dbtp, lsnp, op, info)
 	DB_ENV *dbenv;
 	DBT *dbtp;
 	DB_LSN *lsnp;
 	db_recops op;
 	void *info;
 {
-	__PREF_FUNC_args *argp;
+	PREF_FUNC_args *argp;
 	DB *file_dbp;
 	DBC *dbc;
 	DB_MPOOLFILE *mpf;
 	PAGE *pagep;
 	int cmp_n, cmp_p, modified, ret;
 
-	REC_PRINT(__PREF_FUNC_print);
-	REC_INTRO(__PREF_FUNC_read);
+	REC_PRINT(PREF_FUNC_print);
+	REC_INTRO(PREF_FUNC_read, 1);
 
-	if ((ret = memp_fget(mpf, &argp->pgno, 0, &pagep)) != 0)
+	if ((ret = mpf->get(mpf, &argp->pgno, 0, &pagep)) != 0)
 		if (DB_REDO(op)) {
-			if ((ret = memp_fget(mpf,
+			if ((ret = mpf->get(mpf,
 			    &argp->pgno, DB_MPOOL_CREATE, &pagep)) != 0)
 				goto out;
 		} else {
@@ -51,7 +51,7 @@ __PREF_FUNC_recover(dbenv, dbtp, lsnp, op, info)
 		/* Need to undo update described. */
 		modified = 1;
 	}
-	if (ret = memp_fput(mpf, pagep, modified ? DB_MPOOL_DIRTY : 0))
+	if (ret = mpf->put(mpf, pagep, modified ? DB_MPOOL_DIRTY : 0))
 		goto out;
 
 	*lsnp = argp->prev_lsn;

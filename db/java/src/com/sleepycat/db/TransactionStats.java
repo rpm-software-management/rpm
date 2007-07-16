@@ -3,8 +3,8 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -14,10 +14,10 @@ import com.sleepycat.db.internal.DbUtil;
 public class TransactionStats
 {
     // no public constructor
-    protected TransactionStats() {}
+    /* package */ TransactionStats() {}
 
     public static class Active {        // no public constructor
-        protected Active() {}
+        /* package */ Active() {}
 
         private int txnid;
         public int getTxnId() {
@@ -29,9 +29,29 @@ public class TransactionStats
             return parentid;
         }
 
+        private int pid;
+        public int getPid() {
+            return pid;
+        }
+
         private LogSequenceNumber lsn;
         public LogSequenceNumber getLsn() {
             return lsn;
+        }
+
+        private LogSequenceNumber read_lsn;
+        public LogSequenceNumber getReadLsn() {
+            return read_lsn;
+        }
+
+        private int mvcc_ref;
+        public int getMultiversionRef() {
+            return mvcc_ref;
+        }
+
+        private int status;
+        public int getStatus() {
+            return status;
         }
 
         private int xa_status;
@@ -44,13 +64,23 @@ public class TransactionStats
             return xid;
         }
 
+        private String name;
+        public String getName() {
+            return name;
+        }
+
         public String toString() {
             return "Active:"
                 + "\n      txnid=" + txnid
                 + "\n      parentid=" + parentid
+                + "\n      pid=" + pid
                 + "\n      lsn=" + lsn
+                + "\n      read_lsn=" + read_lsn
+                + "\n      mvcc_ref=" + mvcc_ref
+                + "\n      status=" + status
                 + "\n      xa_status=" + xa_status
                 + "\n      xid=" + DbUtil.byteArrayToString(xid)
+                + "\n      name=" + name
                 ;
         }
     };
@@ -95,6 +125,11 @@ public class TransactionStats
         return st_nactive;
     }
 
+    private int st_nsnapshot;
+    public int getNumSnapshot() {
+        return st_nsnapshot;
+    }
+
     private int st_nrestores;
     public int getNumRestores() {
         return st_nrestores;
@@ -103,6 +138,11 @@ public class TransactionStats
     private int st_maxnactive;
     public int getMaxNactive() {
         return st_maxnactive;
+    }
+
+    private int st_maxnsnapshot;
+    public int getMaxNsnapshot() {
+        return st_maxnsnapshot;
     }
 
     private Active[] st_txnarray;
@@ -135,8 +175,10 @@ public class TransactionStats
             + "\n  st_nbegins=" + st_nbegins
             + "\n  st_ncommits=" + st_ncommits
             + "\n  st_nactive=" + st_nactive
+            + "\n  st_nsnapshot=" + st_nsnapshot
             + "\n  st_nrestores=" + st_nrestores
             + "\n  st_maxnactive=" + st_maxnactive
+            + "\n  st_maxnsnapshot=" + st_maxnsnapshot
             + "\n  st_txnarray=" + DbUtil.objectArrayToString(st_txnarray, "st_txnarray")
             + "\n  st_region_wait=" + st_region_wait
             + "\n  st_region_nowait=" + st_region_nowait

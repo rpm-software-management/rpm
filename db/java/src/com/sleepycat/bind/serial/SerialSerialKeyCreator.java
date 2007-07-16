@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: SerialSerialKeyCreator.java,v 1.4 2004/08/02 18:52:04 mjc Exp $
+ * $Id: SerialSerialKeyCreator.java,v 12.3 2006/08/31 18:14:05 bostic Exp $
  */
 
 package com.sleepycat.bind.serial;

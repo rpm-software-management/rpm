@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep010.tcl,v 11.10 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep010.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
 #
 # TEST  rep010
 # TEST	Replication and ISPERM
@@ -16,12 +16,22 @@
 # TEST	with ISPERM is found in the log.
 proc rep010 { method { niter 100 } { tnum "010" } args } {
 
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
+
+	# Run for all access methods.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
+
 	set args [convert_args $method $args]
 	set logsets [create_logsets 2]
 
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -67,10 +77,15 @@ proc rep010_sub { method niter tnum logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env_noerr -create -lock_max 2500 \
+	set env_cmd(M) "berkdb_env_noerr -create \
 	    -log_max 1000000 $m_logargs \
 	    -home $masterdir $m_txnargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
+#	set env_cmd(M) "berkdb_env_noerr -create \
+#	    -log_max 1000000 $m_logargs \
+#	    -errpfx MASTER -errfile /dev/stderr -verbose {rep on} \
+#	    -home $masterdir $m_txnargs -rep_master \
+#	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
@@ -79,6 +94,10 @@ proc rep010_sub { method niter tnum logset recargs largs } {
 	set env_cmd(C) "berkdb_env_noerr -create -home $clientdir \
 	    $c_txnargs $c_logargs -rep_client \
 	    -rep_transport \[list 2 replsend\]"
+#	set env_cmd(C) "berkdb_env_noerr -create -home $clientdir \
+#	    $c_txnargs $c_logargs -rep_client \
+#	    -errpfx CLIENT -errfile /dev/stderr -verbose {rep on} \
+#	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 

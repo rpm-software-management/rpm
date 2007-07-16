@@ -1,5 +1,5 @@
-<!--$Id: txn_begin.so,v 10.72 2004/08/18 02:31:21 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: txn_begin.so,v 10.78 2006/09/13 14:30:57 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -35,7 +35,7 @@ handle.</p>
 <p><b>Note: Transactions may only span threads if they do so serially;
 that is, each transaction must be active in only a single thread
 of control at a time.  This restriction holds for parents of nested
-transactions as well; not two children may be concurrently active in
+transactions as well; no two children may be concurrently active in
 more than one thread of control at any one time.</b></p>
 <p><b>Note: Cursors may not span transactions; that is, each cursor must be
 opened and closed within a single transaction.</b></p>
@@ -53,13 +53,14 @@ failure, and returns 0 on success.
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
 or more of the following values:
 <dl compact>
-<dt><a name="DB_DEGREE_2">DB_DEGREE_2</a><dd>This transaction will have degree 2 isolation.  This provides for cursor
+<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>This transaction will have degree 2 isolation.  This provides for cursor
 stability but not repeatable reads.  Data items which have been
 previously read by this transaction may be deleted or modified by other
 transactions before this transaction completes.
-<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>All read operations performed by the transaction may read modified but
-not yet committed data.  Silently ignored if the <a href="../api_cxx/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a>
-flag was not specified when the underlying database was opened.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>This transaction will have degree 1 isolation.  Read operations
+performed by the transaction may read modified but not yet committed
+data.  Silently ignored if the <a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not
+specified when the underlying database was opened.
 <dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>Do not synchronously flush the log when this transaction commits or
 prepares. This means the transaction will exhibit the ACI (atomicity,
 consistency, and isolation) properties, but not D (durability); that is,
@@ -72,6 +73,14 @@ overrides that setting.</p>
 of this transaction, cause the operation to
 return DB_LOCK_DEADLOCK or throw a <a href="../api_cxx/deadlock_class.html">DbDeadlockException</a>
 immediately instead of blocking on the lock.
+<dt><a name="DB_TXN_SNAPSHOT">DB_TXN_SNAPSHOT</a><dd>This transaction will execute with <a href="../ref/transapp/read.html">snapshot isolation</a>.  For databases with the <a href="../api_cxx/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a>
+flag set, data values will be read as they are when the transaction
+begins, without taking read locks.  Silently ignored for operations on
+databases with <a href="../api_cxx/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a> not set on the underlying
+database (read locks are acquired).
+<p>The error <a name="DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> will be returned from update
+operations if a snapshot transaction attempts to update data
+which was modified after the snapshot transaction read it.</p>
 <dt><a name="DB_TXN_SYNC">DB_TXN_SYNC</a><dd>Synchronously flush the log when this transaction commits or prepares.
 This means the transaction will exhibit all of the ACID (atomicity,
 consistency, isolation, and durability) properties.
@@ -100,6 +109,6 @@ throw a DbMemoryException.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

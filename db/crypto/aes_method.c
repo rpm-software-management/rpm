@@ -1,20 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
  *
  * Some parts of this code originally written by Adam Stubblefield,
  * -- astubble@rice.edu.
  *
- * $Id: aes_method.c,v 1.20 2004/09/17 22:00:25 mjc Exp $
+ * $Id: aes_method.c,v 12.5 2006/08/24 14:45:12 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <string.h>
-#endif
 
 #include "db_int.h"
 #include "dbinc/crypto.h"
@@ -268,6 +264,6 @@ __aes_err(dbenv, err)
 		errstr = "AES error unrecognized";
 		break;
 	}
-	__db_err(dbenv, errstr);
+	__db_errx(dbenv, errstr);
 	return;
 }

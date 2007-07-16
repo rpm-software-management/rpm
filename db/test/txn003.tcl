@@ -1,11 +1,10 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: txn003.tcl,v 11.43 2004/01/28 03:36:33 bostic Exp $
+# $Id: txn003.tcl,v 12.5 2006/08/24 14:46:41 bostic Exp $
 #
-
 # TEST	txn003
 # TEST	Test abort/commit/prepare of txns with outstanding child txns.
 proc txn003 { {tnum "003"} } {
@@ -41,7 +40,7 @@ proc txn003 { {tnum "003"} } {
 	set newdata this_is_new_data
 	set newdata2 some_other_new_data
 
-	error_check_good db_put [$db put -auto_commit $key $origdata] 0
+	error_check_good db_put [$db put $key $origdata] 0
 	error_check_good dbclose [$db close] 0
 
 	set db [eval {berkdb_open} $oflags]
@@ -124,13 +123,6 @@ proc txn003 { {tnum "003"} } {
 		error_check_good env_close [$env close] 0
 	}
 
-	# We can't do the attempted child discard on Windows
-	# because it will leave open files that can't be removed.
-	# Skip the remainder of the test for Windows.
-	if { $is_windows_test == 1 } {
-		puts "Skipping remainder of test for Windows"
-		return
-	}
 	puts "\tTxn$tnum.g: Attempt child prepare"
 	set env [eval $env_cmd]
 	error_check_good dbenv [is_valid_env $env] TRUE

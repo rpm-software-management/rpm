@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: TestEnv.java,v 1.3 2004/06/30 01:08:22 mark Exp $
+ * $Id: TestEnv.java,v 12.4 2006/08/24 14:46:47 bostic Exp $
  */
 
 package com.sleepycat.collections.test;
@@ -66,7 +66,7 @@ public class TestEnv {
     private String name;
     private EnvironmentConfig config;
 
-    private TestEnv(String name, EnvironmentConfig config) {
+    TestEnv(String name, EnvironmentConfig config) {
 
         this.name = name;
         this.config = config;
@@ -100,6 +100,15 @@ public class TestEnv {
         /* OLDEST deadlock detection on DB matches the use of timeouts on JE.*/
         DbCompat.setLockDetectModeOldest(config);
         File dir = getDirectory(testName, create);
+        return newEnvironment(dir, config);
+    }
+
+    /**
+     * Is overridden in XACollectionTest.
+     */
+    protected Environment newEnvironment(File dir, EnvironmentConfig config)
+        throws DatabaseException, IOException {
+
         return new Environment(dir, config);
     }
 

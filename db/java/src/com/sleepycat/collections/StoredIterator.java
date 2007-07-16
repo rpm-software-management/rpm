@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredIterator.java,v 1.5 2004/09/22 18:01:03 bostic Exp $
+ * $Id: StoredIterator.java,v 12.5 2006/09/08 20:32:13 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.OperationStatus;
+import com.sleepycat.util.RuntimeExceptionWrapper;
 
 /**
  * The Iterator returned by all stored collections.
@@ -41,6 +42,7 @@ import com.sleepycat.db.OperationStatus;
  * <ul>
  * <li>{@link #close()}</li>
  * <li>{@link #close(Iterator)}</li>
+ * <li>{@link #count()}</li>
  * <li>{@link #getCollection}</li>
  * <li>{@link #setReadModifyWrite}</li>
  * <li>{@link #isReadModifyWrite}</li>
@@ -48,7 +50,7 @@ import com.sleepycat.db.OperationStatus;
  *
  * @author Mark Hayes
  */
-public class StoredIterator implements ListIterator, Cloneable {
+public class StoredIterator implements BaseIterator, Cloneable {
 
     /**
      * Closes the given iterator using {@link #close()} if it is a {@link
@@ -79,7 +81,6 @@ public class StoredIterator implements ListIterator, Cloneable {
     private boolean writeAllowed;
     private boolean setAndRemoveAllowed;
     private Object currentData;
-    private final boolean recNumAccess;
 
     StoredIterator(StoredCollection coll, boolean writeAllowed,
                    DataCursor joinCursor) {
@@ -90,30 +91,14 @@ public class StoredIterator implements ListIterator, Cloneable {
                 this.cursor = new DataCursor(coll.view, writeAllowed);
             else
                 this.cursor = joinCursor;
-            this.recNumAccess = cursor.hasRecNumAccess();
             reset();
         } catch (Exception e) {
             try {
                 /* Ensure that the cursor is closed.  [#10516] */
                 close();
-            } catch (Exception ignored) {}
-            throw StoredContainer.convertException(e);
-        }
-    }
-
-    /**
-     * Clones this iterator preserving its current position.
-     *
-     * @return a new {@link StoredIterator} having the same position as this
-     * iterator.
-     */
-    protected Object clone() {
-
-        try {
-            StoredIterator o = (StoredIterator) super.clone();
-            o.cursor = cursor.cloneCursor();
-            return o;
-        } catch (Exception e) {
+            } catch (Exception ignored) {
+		/* Klockwork - ok */
+	    }
             throw StoredContainer.convertException(e);
         }
     }
@@ -170,8 +155,7 @@ public class StoredIterator implements ListIterator, Cloneable {
                 }
             }
             return (toNext == 0);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw StoredContainer.convertException(e);
         }
     }
@@ -290,7 +274,7 @@ public class StoredIterator implements ListIterator, Cloneable {
      */
     public int nextIndex() {
 
-        if (!recNumAccess) {
+        if (!coll.view.recNumAccess) {
             throw new UnsupportedOperationException(
                 "Record number access not supported");
         }
@@ -319,14 +303,14 @@ public class StoredIterator implements ListIterator, Cloneable {
      */
     public int previousIndex() {
 
-        if (!recNumAccess) {
+        if (!coll.view.recNumAccess) {
             throw new UnsupportedOperationException(
                 "Record number access not supported");
         }
         try {
             return hasPrevious() ? (cursor.getCurrentRecordNumber() -
                                     coll.getIndexOffset())
-                                 : -1;
+                                 : (-1);
         } catch (Exception e) {
             throw StoredContainer.convertException(e);
         }
@@ -370,6 +354,10 @@ public class StoredIterator implements ListIterator, Cloneable {
      * that when the collection is a list and the RECNO-RENUMBER access method
      * is not used, list indices will not be renumbered.
      *
+     * <p>Note that for the JE product, RECNO-RENUMBER databases are not
+     * supported, and therefore list indices are never renumbered by this
+     * method.</p>
+     *
      * @throws UnsupportedOperationException if the collection is a sublist, or
      * if the collection is read-only.
      *
@@ -397,6 +385,10 @@ public class StoredIterator implements ListIterator, Cloneable {
      * If duplicates are unsorted, the new value will be inserted in the same
      * manner as list elements.
      * If duplicates are sorted, the new value will be inserted in sort order.
+     *
+     * <p>Note that for the JE product, RECNO-RENUMBER databases are not
+     * supported, and therefore this method may only be used to add
+     * duplicates.</p>
      *
      * @param value the new value.
      *
@@ -497,6 +489,8 @@ public class StoredIterator implements ListIterator, Cloneable {
      * Returns the number of elements having the same key value as the key
      * value of the element last returned by next() or previous().  If no
      * duplicates are allowed, 1 is always returned.
+     * This method does not exist in the standard {@link Iterator} or {@link
+     * ListIterator} interfaces.
      *
      * @return the number of duplicates.
      *
@@ -549,12 +543,25 @@ public class StoredIterator implements ListIterator, Cloneable {
         return coll;
     }
 
-    final boolean isCurrentData(Object currentData) {
+    // --- begin BaseIterator methods ---
+
+    public final ListIterator dup() {
+
+        try {
+            StoredIterator o = (StoredIterator) super.clone();
+            o.cursor = cursor.cloneCursor();
+            return o;
+        } catch (Exception e) {
+            throw StoredContainer.convertException(e);
+        }
+    }
+
+    public final boolean isCurrentData(Object currentData) {
 
         return (this.currentData == currentData);
     }
 
-    final boolean moveToIndex(int index) {
+    public final boolean moveToIndex(int index) {
 
         try {
             OperationStatus status =
@@ -565,6 +572,8 @@ public class StoredIterator implements ListIterator, Cloneable {
             throw StoredContainer.convertException(e);
         }
     }
+
+    // --- end BaseIterator methods ---
 
     private void moveToCurrent()
         throws DatabaseException {

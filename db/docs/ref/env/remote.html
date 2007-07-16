@@ -1,10 +1,10 @@
-<!--$Id: remote.so,v 11.10 2003/05/15 15:05:32 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: remote.so,v 11.12 2005/06/24 05:04:09 mjc Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Remote filesystem</title>
+<title>Berkeley DB Reference Guide: Remote filesystems</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
@@ -15,40 +15,51 @@
 <td align=right><a href="../env/encrypt.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h3 align=center>Remote filesystem</h3>
-<p>When regions are backed by the filesystem, it is a common error to attempt
-to create Berkeley DB environments backed by remote filesystems such as the
-Network File System (NFS) or the Andrew File System (AFS).  Remote
-filesystems rarely support mapping files into process memory, and even
-more rarely support correct semantics for mutexes after the attempt
-succeeds.  For this reason, we strongly recommend that the database
-environment directory reside in a local filesystem.</p>
-<p>For remote filesystems that do allow system files to be mapped into
-process memory, home directories accessed via remote filesystems cannot
-be used simultaneously from multiple clients.  None of the commercial
-remote filesystems available today implement coherent, distributed
-shared memory for remote-mounted files.  As a result, different machines
-will see different versions of these shared regions, and the system
-behavior is undefined.</p>
+<h3 align=center>Remote filesystems</h3>
+<p>When Berkeley DB database environment shared memory regions are backed by the
+filesystem, it is a common application error to create database
+environments backed by remote filesystems such as the Network File
+System (NFS), Windows network shares (SMB/CIFS) or the Andrew File
+System (AFS).  Remote filesystems rarely support mapping files into
+process memory, and even more rarely support correct semantics for
+mutexes if the mapping succeeds.  For this reason, we recommend database
+environment directories be created in a local filesystem.</p>
+<p>For remote filesystems that do allow remote files to be mapped into
+process memory, database environment directories accessed via remote
+filesystems cannot be used simultaneously from multiple clients (that
+is, from multiple computers).  No commercial remote filesystem of which
+we're aware supports coherent, distributed shared memory for
+remote-mounted files.  As a result, different machines will see
+different versions of these shared region files, and the behavior is
+undefined.</p>
 <p>Databases, log files, and temporary files may be placed on remote
-filesystems, <b>as long as the remote filesystem fully supports
-standard POSIX filesystem semantics</b> (although the application may
-incur a performance penalty for doing so).  Obviously, NFS-mounted
-databases cannot be accessed from more than one Berkeley DB environment at a
-time (and therefore from more than one system), because no Berkeley DB
-database may be accessed from more than one Berkeley DB environment at a
-time.</p>
+filesystems, as long as the remote filesystem fully supports standard
+POSIX filesystem semantics (although the application may incur a
+performance penalty for doing so).  Further, read-only databases on
+remote filesystems can be accessed from multiple systems simultaneously.
+However, it is difficult (or impossible) for modifiable databases on
+remote filesystems to be accessed from multiple systems simultaneously.
+The reason is the Berkeley DB library caches modified database pages, and when
+those modified pages are written to the backing file is not entirely
+under application control.  If two systems were to write database pages
+to the remote filesystem at the same time, database corruption could
+result.  If a system were to write a database page back to the remote
+filesystem at the same time as another system read a page, a core dump
+in the reader could result.</p>
 <dl compact>
-<dt>FreeBSD note:<dd>Some FreeBSD releases are known to return ENOLCK from fsync and close
+<dt>FreeBSD note:<dd>Some historic FreeBSD releases will return ENOLCK from fsync and close
 calls on NFS-mounted filesystems, even though the call has succeeded.
-The Berkeley DB code should be modified to ignore ENOLCK errors, or no Berkeley DB
-files should be placed on NFS-mounted filesystems on these systems.
-<dt>Linux note:<dd>Some Linux releases are known to not support complete semantics for the
+To support Berkeley DB on these releases, the Berkeley DB code should be modified
+to ignore ENOLCK errors, or no Berkeley DB files should be placed on
+NFS-mounted filesystems on these systems.  Note that current FreeBSD
+releases do not suffer from this problem.
+<dt>Linux note:<dd>Some historic Linux releases do not support complete semantics for the
 POSIX fsync call on NFS-mounted filesystems.  No Berkeley DB files should be
-placed on NFS-mounted filesystems on these systems.
+placed on NFS-mounted filesystems on these systems.  Note that current
+Linux releases do not suffer from this problem.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../env/encrypt.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../env/faq.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

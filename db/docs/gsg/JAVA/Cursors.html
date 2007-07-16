@@ -117,7 +117,7 @@
 	</p>
         <p>For example:</p>
         <a id="java_cursor1"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
     
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.CursorConfig;
@@ -131,7 +131,7 @@ Database myDatabase = null;
 Cursor myCursor = null;
 
 try {
-    myDatabase = new Database("myDB", null, null);
+    myDatabase = new Database(&quot;myDB&quot;, null, null);
 
     myCursor = myDatabase.openCursor(null, null);
 } catch (FileNotFoundException fnfe) {
@@ -142,12 +142,13 @@ try {
         <p>
         To close the cursor, call the <tt class="methodname">Cursor.close()</tt>
         method. Note that if you close a database that has cursors open in it,
-        then it will complain and close any open cursors for you. For best results, close your cursors from within a 
+        then it will throw an exception and close any open cursors for you. 
+        For best results, close your cursors from within a 
         <tt class="literal">finally</tt> block.
         
     </p>
         <a id="java_cursor2"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
     
 import com.sleepycat.db.Cursor;
 import com.sleepycat.db.Database;
@@ -166,7 +167,7 @@ try {
             myDatabase.close();
         }
     } catch(DatabaseException dbe) {
-        System.err.println("Error in close: " + dbe.toString());
+        System.err.println(&quot;Error in close: &quot; + dbe.toString());
     }
 } </pre>
       </div>

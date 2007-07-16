@@ -1,0 +1,99 @@
+<!--$Id: mutex_set_align.so,v 10.1 2005/07/20 16:34:00 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::mutex_set_align</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::mutex_set_align</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::mutex_set_align(u_int32_t align);
+<p>
+int
+DbEnv::mutex_get_align(u_int32_t *alignp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::mutex_set_align</h3>
+<p>Set the mutex alignment, in bytes.</p>
+<p>It is sometimes advantageous to align mutexes on specific byte
+boundaries in order to minimize cache line collisions.   The
+DbEnv::mutex_set_align method specifies an alignment for mutexes allocated
+by Berkeley DB.</p>
+<p>The database environment's mutex alignment may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "mutex_set_align", one or more whitespace
+characters, and the mutex alignment in bytes.
+Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.</p>
+<p>The DbEnv::mutex_set_align method configures a database environment, not only operations
+performed using the specified <a href="../api_cxx/env_class.html">DbEnv</a> handle.</p>
+<p>The DbEnv::mutex_set_align method may not be called after the <a href="../api_cxx/env_open.html">DbEnv::open</a> method is
+called.
+If the database environment already exists when
+<a href="../api_cxx/env_open.html">DbEnv::open</a> is called, the information specified to DbEnv::mutex_set_align
+will be ignored.
+</p>
+<p>The DbEnv::mutex_set_align method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>align</b><dd>The <b>align</b> parameter is the mutex alignment, in bytes.  The mutex
+alignment must be a power-of-two.
+</dl>
+<h3>Errors</h3>
+<p>The DbEnv::mutex_set_align method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbEnv::mutex_get_align</h3>
+<p>The DbEnv::mutex_get_align method returns the mutex alignment, in bytes.</p>
+<p>The DbEnv::mutex_get_align method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::mutex_get_align method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>alignp</b><dd>The DbEnv::mutex_get_align method returns  the
+mutex alignment, in bytes in <b>alignp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

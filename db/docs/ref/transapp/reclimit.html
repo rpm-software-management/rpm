@@ -1,5 +1,5 @@
-<!--$Id: reclimit.so,v 11.30 2003/11/20 15:14:04 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: reclimit.so,v 11.32 2005/06/16 17:13:55 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -42,7 +42,7 @@ underlying stable storage hardware.
 when writing its files.  This means that Berkeley DB can fail if the underlying
 filesystem fails in some unrecoverable way.  Otherwise, the interface
 requirements here are simple: The system call that Berkeley DB uses to flush
-data to disk (normally <b>fsync</b>(2)), must guarantee that all the
+data to disk (normally fsync or fdatasync), must guarantee that all the
 information necessary for a file's recoverability has been written to
 stable storage before it returns to Berkeley DB, and that no possible
 application or system crash can cause that file to be unrecoverable.</p>
@@ -145,6 +145,6 @@ incorrect data to the disk).  However, configuring the database for
 checksums will ensure that any such corruption is detected.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/filesys.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/tune.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

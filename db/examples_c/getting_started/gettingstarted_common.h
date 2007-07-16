@@ -1,10 +1,10 @@
-/***************************************************************************
-                          gettingstarted_common.h  -  description
-                             -------------------
-    begin                : Sun Feb 22 2004
-    copyright            : (C) 2004 Sleepycat Software
-    email                : support@sleepycat.com
- ***************************************************************************/
+/*-
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2004-2006
+ *	Oracle Corporation.  All rights reserved.
+ */
+
 #include <db.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,22 +12,23 @@
 
 #ifdef _WIN32
 extern int getopt(int, char * const *, const char *);
+extern char *optarg;
+#define snprintf _snprintf
 #else
 #include <unistd.h>
 #endif
 
-
-#define DEFAULT_HOMEDIR "./"
-#define INVENTORY_FILE "inventory.txt"
-#define VENDORS_FILE "vendors.txt"
-#define INVENTORYDB "inventoryDB.db"
-#define ITEMNAMEDB "itemnameDB.db"
-#define MAXDATABUF 1024
-#define MAXFIELD 20
-#define MAXLINE 150
-#define PRIMARY_DB 0
-#define SECONDARY_DB 1
-#define VENDORDB "vendorDB.db"
+#define DEFAULT_HOMEDIR	"./"
+#define INVENTORY_FILE	"inventory.txt"
+#define VENDORS_FILE	"vendors.txt"
+#define INVENTORYDB	"inventoryDB.db"
+#define ITEMNAMEDB	"itemnameDB.db"
+#define MAXDATABUF	1024
+#define MAXFIELD	20
+#define MAXLINE		150
+#define PRIMARY_DB	0
+#define SECONDARY_DB	1
+#define VENDORDB	"vendorDB.db"
 
 typedef struct stock_dbs {
     DB *inventory_dbp; /* Database containing inventory information */
@@ -52,10 +53,8 @@ typedef struct vendor {
 } VENDOR;
 
 /* Function prototypes */
-int databases_setup(STOCK_DBS *, const char *, FILE *);
-int databases_close(STOCK_DBS *);
-void initialize_stockdbs(STOCK_DBS *);
-int open_database(DB **, const char *, const char *,
-    FILE *, int);
-void set_db_filenames(STOCK_DBS *my_stock);
-
+int	databases_close(STOCK_DBS *);
+int	databases_setup(STOCK_DBS *, const char *, FILE *);
+void	initialize_stockdbs(STOCK_DBS *);
+int	open_database(DB **, const char *, const char *, FILE *, int);
+void	set_db_filenames(STOCK_DBS *my_stock);

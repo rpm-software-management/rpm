@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Transaction Example</title>
+    <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
+    <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
+    <link rel="up" href="wrapup.html" title="Chapter 6. Summary and Examples" />
+    <link rel="previous" href="wrapup.html" title="Chapter 6. Summary and Examples" />
+    <link rel="next" href="inmem_txnexample_java.html" title="In-Memory Transaction Example" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <th colspan="3" align="center">Transaction Example</th>
+        </tr>
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="wrapup.html">Prev</a> </td>
+          <th width="60%" align="center">Chapter 6. Summary and Examples</th>
+          <td width="20%" align="right"> <a accesskey="n" href="inmem_txnexample_java.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="sect1" lang="en" xml:lang="en">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title" style="clear: both"><a id="txnexample_java"></a>Transaction Example</h2>
+          </div>
+        </div>
+        <div></div>
+      </div>
+      <p>
+        The following Java code provides a fully functional example of a
+        multi-threaded transactional DB application. 
+        The example opens an environment and database, and then creates 5
+        threads, each of which writes 500 records to the database. The keys
+        used for these writes are pre-determined strings, while the data is
+        a class that contains randomly generated data. This means that the actual 
+        data is arbitrary and therefore uninteresting; we picked it only 
+        because it requires minimum code to implement and therefore will 
+        stay out of the way of the main points of this example.
+    </p>
+      <p>
+        Each thread writes 10 records under a single transaction
+        before committing and writing another 10 (this is repeated 50
+        times). At the end of each transaction, but before committing, each
+        thread calls a function that uses a cursor to read every record in
+        the database. We do this in order to make some points about
+        database reads in a transactional environment.
+    </p>
+      <p>
+        Of course, each writer thread performs deadlock detection as
+        described in this manual. In addition, normal recovery is performed
+        when the environment is opened.
+    </p>
+      <p>
+        To implement this example, we need three classes:    
+    </p>
+      <div class="itemizedlist">
+        <ul type="disc">
+          <li>
+            <p>
+                <tt class="literal">TxnGuide.java</tt>
+            </p>
+            <p>
+                This is the main class for the application. It performs
+                environment and database management, spawns threads, and
+                creates the data that is placed in the database.  See <a href="txnexample_java.html#txnguideexample">TxnGuide.java</a> for implementation details.
+            </p>
+          </li>
+          <li>
+            <p>
+                <tt class="literal">DBWriter.java</tt>
+            </p>
+            <p>
+                This class extends <tt class="literal">java.lang.Thread</tt>, and
+                as such it is our thread implementation.  It is responsible
+                for actually reading and writing to the database. It also
+                performs all of our transaction management.  See <a href="txnexample_java.html#dbwriter">DBWriter.java</a> for
+                implementation details.
+            </p>
+          </li>
+          <li>
+            <p>
+                <tt class="literal">PayloadData.java</tt>
+            </p>
+            <p>
+                This is a data class used to encapsulate several data
+                fields. It is fairly uninteresting, except that the usage
+                of a class means that we have to use the bind APIs to
+                serialize it for storage in the database.  See <a href="txnexample_java.html#payloaddata">PayloadData.java</a> for
+                implementation details.
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="txnguideexample"></a>TxnGuide.java</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+            The main class in our example application is used to open and
+            close our environment and database. It also spawns all the
+            threads that we need. We start with the normal series
+            of Java package and import statements, followed by our class
+            declaration:
+        </p>
+        <pre class="programlisting">// File TxnGuide.java
+
+package db.txn;
+
+import com.sleepycat.bind.serial.StoredClassCatalog;
+
+import com.sleepycat.db.Database;
+import com.sleepycat.db.DatabaseConfig;
+import com.sleepycat.db.DatabaseException;
+import com.sleepycat.db.DatabaseType;
+import com.sleepycat.db.LockDetectMode;
+
+import com.sleepycat.db.Environment;
+import com.sleepycat.db.EnvironmentConfig;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+
+public class TxnGuide { </pre>
+        <p>
+    Next we declare our class' private data members. Mostly these are used
+    for constants such as the name of the database that we are opening and
+    the number of threads that we are spawning. However, we also declare
+    our environment and database handles here.
+</p>
+        <pre class="programlisting">    private static String myEnvPath = &quot;./&quot;;
+    private static String dbName = &quot;mydb.db&quot;;
+    private static String cdbName = &quot;myclassdb.db&quot;;
+
+    // DB handles
+    private static Database myDb = null;
+    private static Database myClassDb = null;
+    private static Environment myEnv = null;
+
+    private static final int NUMTHREADS = 5; </pre>
+        <p>
+    Next, we implement our <tt class="function">usage()</tt> method. This
+    application optionally accepts a single command line argument which is
+    used to identify the environment home directory.
+</p>
+        <pre class="programlisting">    private static void usage() {
+        System.out.println(&quot;TxnGuide [-h &lt;env directory&gt;]&quot;);
+        System.exit(-1);
+    } </pre>
+        <p>
+    Now we implement our <tt class="function">main()</tt> method. This method
+    simply calls the methods to parse the command line arguments and open
+    the environment and database. It also creates the stored class catalog
+    that we use for serializing the data that we want to store in our
+    database. Finally, it creates and then joins the database writer
+    threads.
+</p>
+        <pre class="programlisting">    public static void main(String args[]) {
+        try {
+            // Parse the arguments list
+            parseArgs(args);
+            // Open the environment and databases
+            openEnv();
+            // Get our class catalog (used to serialize objects)
+            StoredClassCatalog classCatalog =
+                new StoredClassCatalog(myClassDb);
+
+            // Start the threads
+            DBWriter[] threadArray;
+            threadArray = new DBWriter[NUMTHREADS];
+            for (int i = 0; i &lt; NUMTHREADS; i++) {
+                threadArray[i] = new DBWriter(myEnv, myDb, classCatalog);
+                threadArray[i].start();
+            }
+
+            // Join the threads. That is, wait for each thread to 
+            // complete before exiting the application.
+            for (int i = 0; i &lt; NUMTHREADS; i++) {
+                threadArray[i].join();
+            }
+        } catch (Exception e) {
+            System.err.println(&quot;TxnGuide: &quot; + e.toString());
+            e.printStackTrace();
+        } finally {
+            closeEnv();
+        }
+        System.out.println(&quot;All done.&quot;);
+    } </pre>
+        <p>
+    Next we implement <tt class="function">openEnv()</tt>. This method is used
+    to open the environment and then a database in that environment. Along
+    the way, we make sure that every handle is free-threaded, and that the
+    transactional subsystem is correctly initialized. Because this is a
+    concurrent application, we also declare how we want deadlock detection
+    to be performed. In this case, we use DB's internal block detector
+    to determine whether a deadlock has occurred when a thread attempts to
+    acquire a lock. We also indicate that we want the deadlocked thread
+    with the <span class="emphasis"><em>youngest</em></span> lock to receive deadlock
+    notification.
+</p>
+        <p>
+    Notice that we also cause normal recovery to be run when we open the
+    environment. This is the standard and recommended thing to do whenever
+    you start up a transactional application.
+</p>
+        <p>
+    For the database open, notice that we open the database such that it
+    supports duplicate records.  This is required purely by the data that
+    we are writing to the database, and it is only necessary if you run the
+    application more than once without first deleting the environment. 
+</p>
+        <p>
+    Finally, notice that we open the database such that it supports
+    uncommitted reads. We do this so that some cursor activity later in
+    this example can read uncommitted data.  If we did not do this, then
+    our <tt class="methodname">countRecords()</tt> method described later in
+    this example would cause our thread to self-deadlock. This is because
+    the cursor could not be opened to support uncommitted reads (that flag
+    on the cursor open would, in fact, be silently ignored).
+</p>
+        <pre class="programlisting">    private static void openEnv() throws DatabaseException {
+        System.out.println(&quot;opening env&quot;);
+
+        // Set up the environment.
+        EnvironmentConfig myEnvConfig = new EnvironmentConfig();
+        myEnvConfig.setAllowCreate(true);
+        myEnvConfig.setInitializeCache(true);
+        myEnvConfig.setInitializeLocking(true);
+        myEnvConfig.setInitializeLogging(true);
+        myEnvConfig.setRunRecovery(true);
+        myEnvConfig.setTransactional(true);
+        // EnvironmentConfig.setThreaded(true) is the default behavior 
+        // in Java, so we do not have to do anything to cause the
+        // environment handle to be free-threaded.
+
+        // Indicate that we want db to internally perform deadlock 
+        // detection. Also indicate that the transaction that has
+        // performed the least amount of write activity to
+        // receive the deadlock notification, if any.
+        myEnvConfig.setLockDetectMode(LockDetectMode.MINWRITE);
+
+        // Set up the database
+        DatabaseConfig myDbConfig = new DatabaseConfig();
+        myDbConfig.setType(DatabaseType.BTREE);
+        myDbConfig.setAllowCreate(true);
+        myDbConfig.setTransactional(true);
+        myDbConfig.setSortedDuplicates(true);
+        myDbConfig.setReadUncomitted(true);
+        // no DatabaseConfig.setThreaded() method available.
+        // db handles in java are free-threaded so long as the
+        // env is also free-threaded.
+
+        try {
+            // Open the environment
+            myEnv = new Environment(new File(myEnvPath),    // Env home
+                                    myEnvConfig);
+
+            // Open the database. Do not provide a txn handle. This open
+            // is auto committed because DatabaseConfig.setTransactional()
+            // is true.
+            myDb = myEnv.openDatabase(null,     // txn handle
+                                      dbName,   // Database file name
+                                      null,     // Database name
+                                      myDbConfig);
+
+            // Used by the bind API for serializing objects 
+            // Class database must not support duplicates
+            myDbConfig.setSortedDuplicates(false);
+            myClassDb = myEnv.openDatabase(null,     // txn handle
+                                           cdbName,  // Database file name
+                                           null,     // Database name,
+                                           myDbConfig);
+        } catch (FileNotFoundException fnfe) {
+            System.err.println(&quot;openEnv: &quot; + fnfe.toString());
+            System.exit(-1);
+        }
+    } </pre>
+        <p>
+    Finally, we implement the methods used to close our environment and
+    databases, parse the command line arguments, and provide our class
+    constructor. This is fairly standard code and it is mostly
+    uninteresting from the perspective of this manual. We include it here
+    purely for the purpose of completeness.
+</p>
+        <pre class="programlisting">    private static void closeEnv() {
+        System.out.println(&quot;Closing env and databases&quot;);
+        if (myDb != null ) {
+            try {
+                myDb.close();
+            } catch (DatabaseException e) {
+                System.err.println(&quot;closeEnv: myDb: &quot; +
+                    e.toString());
+                e.printStackTrace();
+            }
+        }
+
+        if (myClassDb != null ) {
+            try {
+                myClassDb.close();
+            } catch (DatabaseException e) {
+                System.err.println(&quot;closeEnv: myClassDb: &quot; +
+                    e.toString());
+                e.printStackTrace();
+            }
+        }
+
+        if (myEnv != null ) {
+            try {
+                myEnv.close();
+            } catch (DatabaseException e) {
+                System.err.println(&quot;closeEnv: &quot; + e.toString());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private TxnGuide() {}
+
+    private static void parseArgs(String args[]) {
+        for(int i = 0; i &lt; args.length; ++i) {
+            if (args[i].startsWith(&quot;-&quot;)) {
+                switch(args[i].charAt(1)) {
+                    case 'h':
+                        myEnvPath = new String(args[++i]);
+                        break;
+                    default:
+                        usage();
+                }
+            }
+        }
+    }
+} </pre>
+      </div>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="payloaddata"></a>PayloadData.java</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+    Before we show the implementation of the database writer thread, we
+    need to show the class that we will be placing into the database. This
+    class is fairly minimal. It simply allows you to store and retrieve an
+    <tt class="literal">int</tt>, a <tt class="literal">String</tt>, and a
+    <tt class="literal">double</tt>. We will be using the DB bind API from
+    within the writer thread to serialize instances of this class and place
+    them into our database.
+</p>
+        <pre class="programlisting">package db.txn;
+
+import java.io.Serializable;
+
+public class PayloadData implements Serializable {
+    private int oID;
+    private String threadName;
+    private double doubleData;
+
+    PayloadData(int id, String name, double data) {
+        oID = id;
+        threadName = name;
+        doubleData = data;
+    }
+
+    public double getDoubleData() { return doubleData; }
+    public int getID() { return oID; }
+    public String getThreadName() { return threadName; }
+} </pre>
+      </div>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="dbwriter"></a>DBWriter.java</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+            <tt class="literal">DBWriter.java</tt> provides the implementation
+            for our database writer thread. It is responsible for: 
+        </p>
+        <div class="itemizedlist">
+          <ul type="disc">
+            <li>
+              <p>
+                    All transaction management.
+                </p>
+            </li>
+            <li>
+              <p>
+                    Responding to deadlock exceptions.
+                </p>
+            </li>
+            <li>
+              <p>
+                    Providing data to be stored into the database.
+                </p>
+            </li>
+            <li>
+              <p>
+                    Serializing and then writing the data to the database.
+                </p>
+            </li>
+          </ul>
+        </div>
+        <p>
+                In order to show off some of the ACID properties provided
+                by DB's transactional support,
+                <tt class="literal">DBWriter.java</tt> does some things in a less
+                efficient way than you would probably decide to use in a
+                true production application. First, it groups 10 database
+                writes together in a single transaction when you could just
+                as easily perform one write for each transaction. If you
+                did this, you could use auto commit for the individual
+                database writes, which means your code would be slightly
+                simpler and you would run a <span class="emphasis"><em>much</em></span>
+                smaller chance of encountering blocked and deadlocked
+                operations. However, by doing things this way, we are able
+                to show transactional atomicity, as well as deadlock
+                handling.
+            </p>
+        <p>
+                At the end of each transaction,
+                <tt class="literal">DBWriter.java</tt> runs a cursor over the
+                entire database by way of counting the number of records
+                currently existing in the database. There are better ways
+                to discover this information, but in this case we want to
+                make some points regarding cursors, transactional
+                applications, and deadlocking (we get into this in more
+                detail later in this section).
+            </p>
+        <p>
+                To begin, we provide the usual package and import statements, and we declare our class:
+            </p>
+        <pre class="programlisting">package db.txn;
+
+import com.sleepycat.bind.EntryBinding;
+import com.sleepycat.bind.serial.StoredClassCatalog;
+import com.sleepycat.bind.serial.SerialBinding;
+import com.sleepycat.bind.tuple.StringBinding;
+
+import com.sleepycat.db.Cursor;
+import com.sleepycat.db.CursorConfig;
+import com.sleepycat.db.Database;
+import com.sleepycat.db.DatabaseEntry;
+import com.sleepycat.db.DatabaseException;
+import com.sleepycat.db.DeadlockException;
+import com.sleepycat.db.Environment;
+import com.sleepycat.db.LockMode;
+import com.sleepycat.db.OperationStatus;
+import com.sleepycat.db.Transaction;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Random;
+
+public class DBWriter extends Thread
+{ </pre>
+        <p>
+    Next we declare our private data members. Notice that we get handles
+    for the environment and the database. We also obtain a handle for an
+    <tt class="classname">EntryBinding</tt>. We will use this to serialize
+    <tt class="classname">PayloadData</tt> class instances (see <a href="txnexample_java.html#payloaddata">PayloadData.java</a>) for storage in
+    the database.  The random number generator that we instantiate is used
+    to generate unique data for storage in the database.  The
+    <tt class="literal">MAX_RETRY</tt> variable is used to define how many times
+    we will retry a transaction in the face of a deadlock. And, finally,
+    <tt class="literal">keys</tt> is a <tt class="classname">String</tt> array that
+    holds the keys used for our database entries.
+</p>
+        <pre class="programlisting">    private Database myDb = null;
+    private Environment myEnv = null;
+    private EntryBinding dataBinding = null;
+    private Random generator = new Random();
+
+
+    private static final int MAX_RETRY = 20;
+
+    private static String[] keys = {&quot;key 1&quot;, &quot;key 2&quot;, &quot;key 3&quot;,
+                                    &quot;key 4&quot;, &quot;key 5&quot;, &quot;key 6&quot;,
+                                    &quot;key 7&quot;, &quot;key 8&quot;, &quot;key 9&quot;,
+                                    &quot;key 10&quot;}; </pre>
+        <p>
+        Next we implement our class constructor. The most interesting thing
+        we do here is instantiate a serial binding for serializing
+        <tt class="classname">PayloadData</tt> instances.
+    </p>
+        <pre class="programlisting">    // Constructor. Get our DB handles from here
+    DBWriter(Environment env, Database db, StoredClassCatalog scc)
+        throws DatabaseException {
+        myDb = db;
+        myEnv = env;
+        dataBinding = new SerialBinding(scc, PayloadData.class);
+    } </pre>
+        <p>
+    Now we implement our thread's <tt class="methodname">run()</tt> method.
+    This is the method that is run when <tt class="classname">DBWriter</tt>
+    threads are started in the main program (see <a href="txnexample_java.html#txnguideexample">TxnGuide.java</a>).
+</p>
+        <pre class="programlisting">    // Thread method that writes a series of records
+    // to the database using transaction protection.
+    // Deadlock handling is demonstrated here.
+    public void run () { </pre>
+        <p>
+    The first thing we do is get a <tt class="literal">null</tt> transaction
+    handle before going into our main loop. We also begin the top transaction loop here that causes our application to
+    perform 50 transactions.
+</p>
+        <pre class="programlisting">        Transaction txn = null;
+
+        // Perform 50 transactions
+        for (int i=0; i&lt;50; i++) { </pre>
+        <p>
+    Next we declare a <tt class="literal">retry</tt> variable. This is used to
+    determine whether a deadlock should result in our retrying the
+    operation. We also declare a  <tt class="literal">retry_count</tt> variable
+    that is used to make sure we do not retry a transaction forever in the
+    unlikely event that the thread is unable to ever get a necessary lock.
+    (The only thing that might cause this is if some other thread dies
+    while holding an important lock. This is the only code that we have to
+    guard against that because the simplicity of this application makes it
+    highly unlikely that it will ever occur.)
+</p>
+        <pre class="programlisting">           boolean retry = true;
+           int retry_count = 0;
+           // while loop is used for deadlock retries
+           while (retry) { </pre>
+        <p>
+    Now we go into the <tt class="literal">try</tt> block that we use for
+    deadlock detection. We also begin our transaction here.
+</p>
+        <pre class="programlisting">                // try block used for deadlock detection and
+                // general db exception handling
+                try {
+
+                    // Get a transaction
+                    txn = myEnv.beginTransaction(null, null); </pre>
+        <p>
+        Now we write 10 records under the transaction that we have just begun. 
+        By combining multiple writes together under a single transaction,
+        we increase the likelihood that a deadlock will occur. Normally,
+        you want to reduce the potential for a deadlock and in this case
+        the way to do that is to perform a single write per transaction. In
+        other words, we <span class="emphasis"><em>should</em></span> be using auto commit to
+        write to our database for this workload.
+    </p>
+        <p>
+        However, we want to show deadlock handling and by performing
+        multiple writes per transaction we can actually observe deadlocks
+        occurring. We also want to underscore the idea that you can
+        combing multiple database operations together in a single atomic
+        unit of work. So for our example, we do the (slightly) wrong thing.
+    </p>
+        <p>
+    Further, notice that we store our key into a
+    <tt class="classname">DatabaseEntry</tt> using
+    <tt class="classname">com.sleepycat.bind.tuple.StringBinding</tt> to
+    perform the serialization. Also, when we instantiate the
+    <tt class="classname">PayloadData</tt> object, we call
+    <tt class="methodname">getName()</tt> which gives us the string
+    representation of this thread's name, as well as
+    <tt class="methodname">Random.nextDouble()</tt> which gives us a random
+    double value. This latter value is used so as to avoid duplicate
+    records in the database.
+</p>
+        <pre class="programlisting">
+                    // Write 10 records to the db
+                    // for each transaction
+                    for (int j = 0; j &lt; 10; j++) {
+                        // Get the key
+                        DatabaseEntry key = new DatabaseEntry();
+                        StringBinding.stringToEntry(keys[j], key);
+
+                        // Get the data
+                        PayloadData pd = new PayloadData(i+j, getName(),
+                            generator.nextDouble());
+                        DatabaseEntry data = new DatabaseEntry();
+                        dataBinding.objectToEntry(pd, data);
+
+                        // Do the put
+                        myDb.put(txn, key, data);
+                    } </pre>
+        <p>
+        Having completed the inner database write loop, we could simply
+        commit the transaction and continue on to the next block of 10
+        writes. However, we want to first illustrate a few points about
+        transactional processing so instead we call our
+        <tt class="function">countRecords()</tt> method before calling the transaction
+        commit. <tt class="function">countRecords()</tt> uses a cursor to read every
+        record in the database and return a count of the number of records
+        that it found. 
+    </p>
+        <p>
+        Because 
+        <tt class="function">countRecords()</tt> 
+        reads every record in the database, if used incorrectly the thread
+        will self-deadlock.  The writer thread has just written 500 records
+        to the database, but because the transaction used for that write
+        has not yet been committed, each of those 500 records are still
+        locked by the thread's transaction. If we then simply run a
+        non-transactional cursor over the database from within the same
+        thread that has locked those 500 records, the cursor will
+        block when it tries to read one of those transactional
+        protected records. The thread immediately stops operation at that
+        point while the cursor waits for the read lock it has
+        requested.  Because that read lock will never be released (the thread
+        can never make any forward progress), this represents a
+        self-deadlock for the thread.
+    </p>
+        <p>
+        There are three ways to prevent this self-deadlock:
+    </p>
+        <div class="orderedlist">
+          <ol type="1">
+            <li>
+              <p>
+                We can move the call to
+                <tt class="function">countRecords()</tt> to a point after the
+                thread's transaction has committed. 
+            </p>
+            </li>
+            <li>
+              <p>
+                We can allow <tt class="function">countRecords()</tt> to
+                operate under the same transaction as all of the writes
+                were performed.
+            </p>
+            </li>
+            <li>
+              <p>
+                We can reduce our isolation guarantee for the application
+                by allowing uncommitted reads.
+            </p>
+            </li>
+          </ol>
+        </div>
+        <p>
+        For this example, we choose to use option 3 (uncommitted reads) to avoid
+        the deadlock. This means that we have to open our database such
+        that it supports uncommitted reads, and we have to open our cursor handle
+        so that it knows to perform uncommitted reads.
+    </p>
+        <p>
+        Note that in <a href="inmem_txnexample_java.html">In-Memory Transaction Example</a>, 
+        we simply perform the cursor operation using the same transaction 
+        as is used for the thread's writes. 
+    </p>
+        <pre class="programlisting">                    // commit
+                    System.out.println(getName() + &quot; : committing txn : &quot; 
+                        + i);
+
+                    // Using uncommitted reads to avoid the deadlock, so null
+                    // is passed for the transaction here.
+                    System.out.println(getName() + &quot; : Found &quot; +
+                        countRecords(null) + &quot; records in the database.&quot;); </pre>
+        <p>
+    Having performed this somewhat inelegant counting of the records in the
+    database, we can now commit the transaction.
+</p>
+        <pre class="programlisting">                    try {
+                        txn.commit();
+                        txn = null;
+                    } catch (DatabaseException e) {
+                        System.err.println(&quot;Error on txn commit: &quot; +
+                            e.toString());
+                    }
+                    retry = false; </pre>
+        <p>
+    If all goes well with the commit, we are done and we can move on to the
+    next batch of 10 records to add to the database. However, in the event
+    of an error, we must handle our exceptions correctly. The first of
+    these is a deadlock exception. In the event of a deadlock, we want to
+    abort and retry the transaction, provided that we have not already
+    exceeded our retry limit for this transaction.
+</p>
+        <pre class="programlisting">                } catch (DeadlockException de) {
+                    System.out.println(&quot;################# &quot; + getName() +
+                        &quot; : caught deadlock&quot;);
+                    // retry if necessary
+                    if (retry_count &lt; MAX_RETRY) {
+                        System.err.println(getName() +
+                            &quot; : Retrying operation.&quot;);
+                        retry = true;
+                        retry_count++;
+                    } else {
+                        System.err.println(getName() +
+                            &quot; : out of retries. Giving up.&quot;);
+                        retry = false;
+                    } </pre>
+        <p>
+    In the event of a standard, non-specific database exception, we simply
+    log the exception and then give up (the transaction is not retried).
+</p>
+        <pre class="programlisting">                } catch (DatabaseException e) {
+                    // abort and don't retry
+                    retry = false;
+                    System.err.println(getName() +
+                        &quot; : caught exception: &quot; + e.toString());
+                    System.err.println(getName() +
+                        &quot; : errno: &quot; + e.getErrno());
+                    e.printStackTrace();  </pre>
+        <p>
+    And, finally, we always abort the transaction if the transaction handle
+    is not null. Note that immediately after committing our transaction, we
+    set the transaction handle to null to guard against aborting a
+    transaction that has already been committed.
+</p>
+        <pre class="programlisting">                } finally {
+                    if (txn != null) {
+                        try {
+                            txn.abort();
+                        } catch (Exception e) {
+                            System.err.println(&quot;Error aborting txn: &quot; +
+                                e.toString());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    } </pre>
+        <p>
+    The final piece of our <tt class="classname">DBWriter</tt> class is the
+    <tt class="methodname">countRecords()</tt> implementation. Notice how in
+    this example we open the cursor such that it performs uncommitted
+    reads:
+</p>
+        <pre class="programlisting">    // A method that counts every record in the database.
+
+    // Note that this method exists only for illustrative purposes.
+    // A more straight-forward way to count the number of records in
+    // a database is to use the Database.getStats() method.
+    private int countRecords(Transaction txn)  throws DatabaseException {
+        DatabaseEntry key = new DatabaseEntry();
+        DatabaseEntry data = new DatabaseEntry();
+        int count = 0;
+        Cursor cursor = null;
+
+        try {
+            // Get the cursor
+            CursorConfig cc = new CursorConfig();
+            cc.setReadUncomitted(true);
+            cursor = myDb.openCursor(txn, cc);
+            while (cursor.getNext(key, data, LockMode.DEFAULT) ==
+                    OperationStatus.SUCCESS) {
+
+                    count++;
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return count;
+
+    }
+} </pre>
+      </div>
+      <p>
+    This completes our transactional example. If you would like to
+    experiment with this code, you can find the example in the following
+    location in your DB distribution:
+</p>
+      <pre class="programlisting"><span class="emphasis"><em>DB_INSTALL</em></span>/examples_java/src/db/txn</pre>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="wrapup.html">Prev</a> </td>
+          <td width="20%" align="center">
+            <a accesskey="u" href="wrapup.html">Up</a>
+          </td>
+          <td width="40%" align="right"> <a accesskey="n" href="inmem_txnexample_java.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top">Chapter 6. Summary and Examples </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> In-Memory Transaction Example</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

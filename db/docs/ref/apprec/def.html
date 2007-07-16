@@ -1,5 +1,5 @@
-<!--$Id: def.so,v 10.3 2002/03/06 20:49:57 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: def.so,v 10.5 2006/09/15 20:28:48 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -44,9 +44,12 @@ INCLUDE
 INCLUDE #include "ex_apprec.h"</pre></blockquote>
 <p>The rest of the XXX.src file consists of log record descriptions.  Each
 log record description begins with the line:</p>
-<blockquote><pre>BEGIN <i>RECORD_NAME</i> <i>RECORD_NUMBER</i></pre></blockquote>
+<blockquote><pre>BEGIN <i>RECORD_NAME</i> <i>DB_VERSION_NUMBER</i> <i>RECORD_NUMBER</i></pre></blockquote>
 <p>and ends with the line:</p>
 <blockquote><pre>END</pre></blockquote>
+<p>The <i>DB_VERSION_NUMBER</i> variable should be replaced with the
+current major and minor version of Berkeley DB, with all punctuation removed.
+For example, Berkeley DB version 4.2 should be 42, version 4.5 should be 45.</p>
 <p>The <i>RECORD_NAME</i> variable should be replaced with a record
 name for this log record.  The <i>RECORD_NUMBER</i> variable should
 be replaced with a record number.</p>
@@ -91,6 +94,6 @@ file btree/btree.src contains the definitions for the log records
 supported by the Berkeley DB Btree access method.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../apprec/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../apprec/auto.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

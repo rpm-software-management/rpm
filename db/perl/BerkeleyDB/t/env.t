@@ -1,23 +1,16 @@
 #!./perl -w
 
-# ID: 1.2, 7/17/97
-
 use strict ;
 
-BEGIN {
-    unless(grep /blib/, @INC) {
-        chdir 't' if -d 't';
-        @INC = '../lib' if -d '../lib';
-    }
-}
 
+use lib 't' ;
 
 BEGIN {
     $ENV{LC_ALL} = 'de_DE@euro';
 }
 
 use BerkeleyDB; 
-use t::util ;
+use util ;
 
 print "1..53\n";
 
@@ -46,7 +39,7 @@ my $version_major  = 0;
     ok 7, $@ =~ /unknown key value\(s\) Stupid/  ;
 
     eval ' $env = new BerkeleyDB::Env( -Bad => 2, -Home => "/tmp", -Stupid => 3) ; ' ;
-    ok 8, $@ =~ /unknown key value\(s\) (Bad |Stupid ){2}/  ;
+    ok 8, $@ =~ /unknown key value\(s\) (Bad,? |Stupid,? ){2}/  ;
 
     eval ' $env = new BerkeleyDB::Env (-Config => {"fred" => " "} ) ; ' ;
     ok 9, !$env ;
@@ -126,6 +119,21 @@ my $version_major  = 0;
     undef $env ;
 }
 
+sub chkMsg
+{
+    my $prefix = shift || '';
+
+    $prefix = "$prefix: " if $prefix;
+
+    my $ErrMsg = join "|", map { "$prefix$_" }
+                        'illegal flag specified to (db_open|DB->open)',
+                       'DB_AUTO_COMMIT may not be specified in non-transactional environment';
+    
+    return 1 if $BerkeleyDB::Error =~ /^$ErrMsg/ ;
+    warn "# $BerkeleyDB::Error\n" ;
+    return 0;
+}
+
 {
     # -ErrFile with a filename
     my $errfile = "./errfile" ;
@@ -140,7 +148,10 @@ my $version_major  = 0;
 			     -Flags    => -1;
     ok 26, !$db ;
 
-    ok 27, $BerkeleyDB::Error =~ /^illegal flag specified to (db_open|DB->open)/;
+    my $ErrMsg = join "'", 'illegal flag specified to (db_open|DB->open)',
+                           'DB_AUTO_COMMIT may not be specified in non-transactional environment';
+    
+    ok 27, chkMsg();
     ok 28, -e $errfile ;
     my $contents = docat($errfile) ;
     chomp $contents ;
@@ -165,7 +176,7 @@ my $version_major  = 0;
 			     -Flags    => -1;
     ok 32, !$db ;
 
-    ok 33, $BerkeleyDB::Error =~ /^illegal flag specified to (db_open|DB->open)/;
+    ok 33, chkMsg();
     ok 34, -e $errfile ;
     my $contents = docat($errfile) ;
     chomp $contents ;
@@ -189,7 +200,7 @@ my $version_major  = 0;
 			     -Flags    => -1;
     ok 38, !$db ;
 
-    ok 39, $BerkeleyDB::Error =~ /^PREFIX: illegal flag specified to (db_open|DB->open)/;
+    ok 39, chkMsg('PREFIX');
     ok 40, -e $errfile ;
     my $contents = docat($errfile) ;
     chomp $contents ;
@@ -203,7 +214,7 @@ my $version_major  = 0;
 			     -Env      => $env,
 			     -Flags    => -1;
     ok 43, !$db ;
-    ok 44, $BerkeleyDB::Error =~ /^NEW ONE: illegal flag specified to (db_open|DB->open)/;
+    ok 44, chkMsg('NEW ONE');
     $contents = docat($errfile) ;
     chomp $contents ;
     ok 45, $contents =~ /$BerkeleyDB::Error$/ ;

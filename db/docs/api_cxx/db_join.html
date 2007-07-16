@@ -1,5 +1,5 @@
-<!--$Id: db_join.so,v 10.56 2004/08/13 03:38:55 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_join.so,v 10.57 2005/02/10 20:02:28 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -51,8 +51,8 @@ The data parameter is left unchanged.
 In addition, the following flag may be set by
 bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
 <dl compact>
-<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Read modified but not yet committed data.  Silently ignored if the
-<a href="../api_cxx/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag was not specified when the underlying
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Read modified but not yet committed data.  Silently ignored if the
+<a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
 database was opened.
 <dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
 Setting this flag can eliminate deadlock during a read-modify-write
@@ -111,6 +111,7 @@ the following non-zero errors:</p>
 <dl compact>
 <dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
 </dl>
 <dl compact>
 <dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
@@ -129,6 +130,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

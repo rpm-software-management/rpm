@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: ex_lock.c,v 11.21 2004/09/17 22:00:28 mjc Exp $
+ * $Id: ex_lock.c,v 12.3 2006/08/24 14:45:42 bostic Exp $
  */
 
 #include <sys/types.h>

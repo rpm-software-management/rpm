@@ -93,18 +93,12 @@
             <dl>
               <dt>
                 <span class="sect2">
-                  <a href="coreindexusage.html#edlWIndexes">Secondary Databases with 
-                
-                excxx_example_database_load
-        </a>
+                  <a href="coreindexusage.html#edlWIndexes">Secondary Databases with example_database_load</a>
                 </span>
               </dt>
               <dt>
                 <span class="sect2">
-                  <a href="coreindexusage.html#edrWIndexes">Secondary Databases with 
-            
-            excxx_example_database_read
-        </a>
+                  <a href="coreindexusage.html#edrWIndexes">Secondary Databases with example_database_read</a>
                 </span>
               </dt>
             </dl>
@@ -259,25 +253,25 @@
         <pre class="programlisting">#include &lt;db_cxx.h&gt;
 
 ...
-                                                                                                                                     
+
 Db my_database(NULL, 0); // Primary
 Db my_index(NULL, 0);    // Secondary
 
 // Open the primary
 my_database.open(NULL,       // Transaction pointer
-                 "my_db.db", // On-disk file that holds the database.
+                 &quot;my_db.db&quot;, // On-disk file that holds the database.
                 NULL,        // Optional logical database name
                 DB_BTREE,    // Database access method
                 DB_CREATE,   // Open flags
                 0);          // File mode (using defaults)
 
 // Setup the secondary to use sorted duplicates.
-// This is often desireable for secondary databases.
+// This is often desirable for secondary databases.
 my_index.set_flags(DB_DUPSORT);
 
 // Open the secondary
 my_index.open(NULL,              // Transaction pointer
-              "my_secondary.db", // On-disk file that holds the database.
+              &quot;my_secondary.db&quot;, // On-disk file that holds the database.
               NULL,              // Optional logical database name
               DB_BTREE,          // Database access method
               DB_CREATE,         // Open flags.

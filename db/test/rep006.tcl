@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2003-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep006.tcl,v 11.15 2004/09/22 18:01:05 bostic Exp $
+# $Id: rep006.tcl,v 12.11 2006/09/08 20:32:18 bostic Exp $
 #
 # TEST  rep006
 # TEST	Replication and non-rep env handles.
@@ -15,11 +15,20 @@
 
 proc rep006 { method { niter 1000 } { tnum "006" } args } {
 
+	source ./include.tcl
+	if { $is_windows9x_test == 1 } {
+		puts "Skipping replication test on Win 9x platform."
+		return
+	}
 	set logsets [create_logsets 2]
 
+	# All access methods are allowed.
+	if { $checking_valid_methods } {
+		return "ALL"
+	}
+
 	# Run the body of the test with and without recovery.
-	set recopts { "" "-recover" }
-	foreach r $recopts {
+	foreach r $test_recopts {
 		foreach l $logsets {
 			set logindex [lsearch -exact $l "in-memory"]
 			if { $r == "-recover" && $logindex != -1 } {
@@ -69,17 +78,20 @@ proc rep006_sub { method niter tnum logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env -create -lock_max 2500 -log_max 1000000 \
-	    -home $masterdir $m_txnargs $m_logargs \
-	    -rep_master -rep_transport \
+	set max_locks 2500
+	set env_cmd(M) "berkdb_env -create -log_max 1000000 \
+	    -lock_max_objects $max_locks -lock_max_locks $max_locks \
+	    -home $masterdir \
+	    $m_txnargs $m_logargs -rep_master -rep_transport \
 	    \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
-	set env_cmd(C) "berkdb_env -create $c_txnargs \
-	    $c_logargs -lock_max 2500 -home $clientdir \
+	set env_cmd(C) "berkdb_env -create $c_txnargs $c_logargs \
+	    -lock_max_objects $max_locks -lock_max_locks $max_locks \
+	    -home $clientdir \
 	    -rep_client -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
@@ -102,15 +114,34 @@ proc rep006_sub { method niter tnum logset recargs largs } {
 	open_and_dump_file test$tnum.db $clientenv $t1 \
 	    $checkfunc dump_file_direction "-first" "-next"
 
-	puts "\tRep$tnum.c: Verifying non-master db_checkpoint."
-	set stat [catch {exec $util_path/db_checkpoint -h $masterdir -1} ret]
-	error_check_good open_err $stat 1
-	error_check_good open_err1 [is_substr $ret "attempting to modify"] 1
+	# Determine whether this build is configured with --enable-debug_rop
+	# or --enable-debug_wop; we'll need to skip portions of the test if so.
+	set conf [berkdb getconfig]
+	set debug_rop_wop 0
+	if { [is_substr $conf "debug_rop"] == 1 \
+	    || [is_substr $conf "debug_wop"] == 1 } {
+		set debug_rop_wop 1
+	}
 
-	# We have to skip this bit for HP-UX because we can't
-	# open an env twice.
+	# Skip if configured with --enable-debug_rop or --enable-debug_wop,
+	# because the checkpoint won't fail in those cases.
+	if { $debug_rop_wop == 1 } {
+		puts "\tRep$tnum.c: Skipping for debug_rop/debug_wop."
+	} else {
+		puts "\tRep$tnum.c: Verifying non-master db_checkpoint."
+		set stat \
+		    [catch {exec $util_path/db_checkpoint -h $masterdir -1} ret]
+		error_check_good open_err $stat 1
+		error_check_good \
+		    open_err1 [is_substr $ret "attempting to modify"] 1
+	}
+
+	# We have to skip this bit for HP-UX because we can't open an env
+	# twice, and for debug_rop/debug_wop because the open won't fail.
 	if { $is_hp_test == 1 } {
 		puts "\tRep$tnum.d: Skipping for HP-UX."
+	} elseif { $debug_rop_wop == 1 } {
+		puts "\tRep$tnum.d: Skipping for debug_rop/debug_wop."
 	} else {
 		puts "\tRep$tnum.d: Verifying non-master access."
 

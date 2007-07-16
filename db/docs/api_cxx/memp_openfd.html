@@ -1,17 +1,17 @@
-<!--$Id: memp_openfd.so,v 10.2 2004/09/28 15:04:21 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_openfd.so,v 10.3 2005/03/08 14:36:15 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DbEnv::set_max_openfd</title>
+<title>Berkeley DB: DbEnv::set_mp_max_openfd</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td>
-<h3>DbEnv::set_max_openfd</h3>
+<h3>DbEnv::set_mp_max_openfd</h3>
 </td>
 <td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
@@ -23,17 +23,17 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbEnv::memp_set_max_openfd(int maxopenfd);
+DbEnv::set_mp_max_openfd(int maxopenfd);
 <p>
 int
-DbEnv::memp_get_max_openfd(int *maxopenfdp);
+DbEnv::get_mp_max_openfd(int *maxopenfdp);
 </pre></h3>
 <hr size=1 noshade>
-<h3>Description: DbEnv::set_max_openfd</h3>
-<p>The DbEnv::set_max_openfd method limits the number of file descriptors
+<h3>Description: DbEnv::set_mp_max_openfd</h3>
+<p>The DbEnv::set_mp_max_openfd method limits the number of file descriptors
 the library will open concurrently when flushing dirty pages from the
 cache.</p>
-<p>The DbEnv::set_max_openfd method
+<p>The DbEnv::set_mp_max_openfd method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
@@ -44,7 +44,7 @@ failure, and returns 0 on success.
 by the library when flushing dirty pages from the cache.
 </dl>
 <h3>Errors</h3>
-<p>The DbEnv::set_max_openfd method
+<p>The DbEnv::set_mp_max_openfd method
 may fail and throw
 <a href="../api_cxx/except_class.html">DbException</a>,
 encapsulating one of the following non-zero errors, or return one of
@@ -54,18 +54,18 @@ the following non-zero errors:</p>
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
-<h3>Description: DbEnv::get_max_openfd</h3>
-<p>The DbEnv::get_max_openfd method returns the maximum number of file descriptors open.</p>
-<p>The DbEnv::get_max_openfd method may be called at any time during the life of the
+<h3>Description: DbEnv::get_mp_max_openfd</h3>
+<p>The DbEnv::get_mp_max_openfd method returns the maximum number of file descriptors open.</p>
+<p>The DbEnv::get_mp_max_openfd method may be called at any time during the life of the
 application.</p>
-<p>The DbEnv::get_max_openfd method
+<p>The DbEnv::get_mp_max_openfd method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>maxopenfdp</b><dd>The DbEnv::get_max_openfd method returns  the
+<dt><b>maxopenfdp</b><dd>The DbEnv::get_mp_max_openfd method returns  the
 maximum number of file descriptors open in <b>maxopenfdp</b>.
 </dl>
 <hr size=1 noshade>
@@ -77,6 +77,6 @@ maximum number of file descriptors open in <b>maxopenfdp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

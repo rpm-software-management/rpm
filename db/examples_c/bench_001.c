@@ -1,8 +1,10 @@
 /*-
- * Copyright (c) 2001-2004
- *	Sleepycat Software.  All rights reserved.
+ * See the file LICENSE for redistribution information.
  *
- * $Id: bench_001.c,v 1.17 2004/09/22 03:44:28 bostic Exp $
+ * Copyright (c) 2001-2006
+ *	Oracle Corporation.  All rights reserved.
+ *
+ * $Id: bench_001.c,v 12.5 2006/08/24 14:45:41 bostic Exp $
  */
 
 /*
@@ -29,19 +31,25 @@
  *	    -o bench_001 -O2 bench_001.c /usr/local/BerkeleyDB/lib/libdb.so
  */
 #include <sys/types.h>
-
 #include <sys/time.h>
+
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef _WIN32
+extern int getopt(int, char * const *, const char *);
+#else
 #include <unistd.h>
+#endif
 
 #include <db.h>
 
 #define	DATABASE	"bench_001.db"
 
-DB_ENV *db_init(char *, char *, int, int);
-int	fill(DB_ENV *, DB *, int, int, int, int);
-int	get(DB *,int, int, int, int, int, int *);
+int	compare_int(DB *, const DBT *, const DBT *);
+DB_ENV *db_init(char *, char *, u_int, int);
+int	fill(DB_ENV *, DB *, int, u_int, int, int);
+int	get(DB *, int, u_int, int, int, int, int *);
 int	main(int, char *[]);
 void	usage(void);
 
@@ -54,10 +62,12 @@ const char
 DB_ENV *
 db_init(home, prefix, cachesize, txn)
 	char *home, *prefix;
-	int cachesize, txn;
+	u_int cachesize;
+	int txn;
 {
 	DB_ENV *dbenv;
-	int flags, ret;
+	u_int32_t flags;
+	int ret;
 
 	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 		dbenv->err(dbenv, ret, "db_env_create");
@@ -86,14 +96,21 @@ db_init(home, prefix, cachesize, txn)
 int
 get(dbp, txn, datalen, num, dups, iter, countp)
 	DB *dbp;
-	int txn, datalen, num, dups, iter, *countp;
+	u_int datalen;
+	int txn, num, dups, iter, *countp;
 {
 	DBC *dbcp;
 	DBT key, data;
+	DB_ENV *dbenv;
 	DB_TXN *txnp;
-	u_int32_t len, klen;
-	int count, flags, i, j, ret;
+	u_int32_t flags, len, klen;
+	int count, i, j, ret;
 	void *pointer, *dp, *kp;
+
+	dbenv = dbp->dbenv;
+
+	klen = 0;				/* Lint. */
+	klen = klen;
 
 	memset(&key, 0, sizeof(key));
 	key.data = &j;
@@ -102,6 +119,7 @@ get(dbp, txn, datalen, num, dups, iter, countp)
 	data.flags = DB_DBT_USERMEM;
 	data.data = malloc(datalen*1024*1024);
 	data.ulen = data.size = datalen*1024*1024;
+
 	count = 0;
 	flags = DB_SET;
 	if (!dups)
@@ -111,17 +129,15 @@ get(dbp, txn, datalen, num, dups, iter, countp)
 	for (i = 0; i < iter; i++) {
 		txnp = NULL;
 		if (txn)
-			dbp->dbenv->txn_begin(dbp->dbenv, NULL, &txnp, 0);
-		dbp->cursor(dbp, txnp, &dbcp, 0);
+			if ((ret =
+			    dbenv->txn_begin(dbenv, NULL, &txnp, 0)) != 0)
+				goto err;
+		if ((ret = dbp->cursor(dbp, txnp, &dbcp, 0)) != 0)
+			goto err;
 
 		j = random() % num;
-		switch (ret = dbcp->c_get(dbcp, &key, &data, flags)) {
-		case 0:
-			break;
-		default:
-			dbp->err(dbcp->dbp, ret, "DBC->c_get");
-			return (ret);
-		}
+		if ((ret = dbcp->c_get(dbcp, &key, &data, flags)) != 0)
+			goto err;
 		DB_MULTIPLE_INIT(pointer, &data);
 		if (dups)
 			while (pointer != NULL) {
@@ -136,13 +152,18 @@ get(dbp, txn, datalen, num, dups, iter, countp)
 				if (kp != NULL)
 					count++;
 			}
-		dbcp->c_close(dbcp);
+		if ((ret = dbcp->c_close(dbcp)) != 0)
+			goto err;
 		if (txn)
-			txnp->commit(txnp, 0);
+			if ((ret = txnp->commit(txnp, 0)) != 0)
+				goto err;
 	}
 
 	*countp = count;
 	return (0);
+
+err:	dbp->err(dbp, ret, "get");
+	return (ret);
 }
 
 /*
@@ -156,7 +177,8 @@ int
 fill(dbenv, dbp, txn, datalen, num, dups)
 	DB_ENV *dbenv;
 	DB *dbp;
-	int txn, datalen, num, dups;
+	u_int datalen;
+	int txn, num, dups;
 {
 	DBT key, data;
 	DB_TXN *txnp;
@@ -165,6 +187,7 @@ fill(dbenv, dbp, txn, datalen, num, dups)
 		char str[1];
 	} *data_val;
 	int count, i, ret;
+
 	/*
 	 * Insert records into the database, where the key is the user
 	 * input and the data is the user input in reverse order.
@@ -176,7 +199,7 @@ fill(dbenv, dbp, txn, datalen, num, dups)
 	memset(&data, 0, sizeof(DBT));
 	key.data = &i;
 	key.size = sizeof(i);
-	data.data = data_val = (struct data *) malloc(datalen);
+	data.data = data_val = malloc(datalen);
 	memcpy(data_val->str, "0123456789012345678901234567890123456789",
 	    datalen - sizeof(data_val->id));
 	data.size = datalen;
@@ -196,8 +219,7 @@ fill(dbenv, dbp, txn, datalen, num, dups)
 		}
 		data_val->id = 0;
 		do {
-			switch (ret =
-			    dbp->put(dbp, txnp, &key, &data, 0)) {
+			switch (ret = dbp->put(dbp, txnp, &key, &data, 0)) {
 			case 0:
 				count++;
 				break;
@@ -230,7 +252,8 @@ main(argc, argv)
 	DB_TXN *txnp;
 	struct timeval start_time, end_time;
 	double secs;
-	int cache, ch, count, datalen, dups, env, init, iter, num, pagesize;
+	u_int cache, datalen, pagesize;
+	int ch, count, dups, env, init, iter, num;
 	int ret, rflag, txn;
 
 	txnp = NULL;
@@ -245,7 +268,7 @@ main(argc, argv)
 	while ((ch = getopt(argc, argv, "c:d:EIi:l:n:p:RT")) != EOF)
 		switch (ch) {
 		case 'c':
-			cache = atoi(optarg);
+			cache = (u_int)atoi(optarg);
 			break;
 		case 'd':
 			dups = atoi(optarg);
@@ -260,13 +283,13 @@ main(argc, argv)
 			iter = atoi(optarg);
 			break;
 		case 'l':
-			datalen = atoi(optarg);
+			datalen = (u_int)atoi(optarg);
 			break;
 		case 'n':
 			num = atoi(optarg);
 			break;
 		case 'p':
-			pagesize = atoi(optarg);
+			pagesize = (u_int)atoi(optarg);
 			break;
 		case 'R':
 			rflag = 1;
@@ -284,7 +307,7 @@ main(argc, argv)
 	/* Remove the previous database. */
 	if (!rflag) {
 		if (env)
-			system("rm -rf BENCH_001; mkdir BENCH_001");
+			(void)system("rm -rf BENCH_001; mkdir BENCH_001");
 		else
 			(void)unlink(DATABASE);
 	}
@@ -303,55 +326,59 @@ main(argc, argv)
 	}
 	dbp->set_errfile(dbp, stderr);
 	dbp->set_errpfx(dbp, progname);
+	if ((ret = dbp->set_bt_compare(dbp, compare_int)) != 0) {
+		dbp->err(dbp, ret, "set_bt_compare");
+		goto err;
+	}
 	if ((ret = dbp->set_pagesize(dbp, pagesize)) != 0) {
 		dbp->err(dbp, ret, "set_pagesize");
-		goto err1;
+		goto err;
 	}
 	if (dups && (ret = dbp->set_flags(dbp, DB_DUP)) != 0) {
 		dbp->err(dbp, ret, "set_flags");
-		goto err1;
+		goto err;
 	}
 
 	if (env == 0 && (ret = dbp->set_cachesize(dbp, 0, cache, 0)) != 0) {
 		dbp->err(dbp, ret, "set_cachesize");
-		goto err1;
+		goto err;
 	}
 
 	if ((ret = dbp->set_flags(dbp, DB_DUP)) != 0) {
 		dbp->err(dbp, ret, "set_flags");
-		goto err1;
+		goto err;
 	}
 
 	if (txn != 0)
 		if ((ret = dbenv->txn_begin(dbenv, NULL, &txnp, 0)) != 0)
-			goto err1;
+			goto err;
 
 	if ((ret = dbp->open(
 	    dbp, txnp, DATABASE, NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
 		dbp->err(dbp, ret, "%s: open", DATABASE);
 		if (txnp != NULL)
 			(void)txnp->abort(txnp);
-		goto err1;
+		goto err;
 	}
 
 	if (txnp != NULL)
 		ret = txnp->commit(txnp, 0);
 	txnp = NULL;
 	if (ret != 0)
-		goto err1;
+		goto err;
 
 	if (rflag) {
 		/* If no environment, fill the cache. */
 		if (!env && (ret =
 		    get(dbp, txn, datalen, num, dups, iter, &count)) != 0)
-			goto err1;
+			goto err;
 
 		/* Time the get loop. */
-		gettimeofday(&start_time, NULL);
+		(void)gettimeofday(&start_time, NULL);
 		if ((ret =
 		    get(dbp, txn, datalen, num, dups, iter, &count)) != 0)
-			goto err1;
-		gettimeofday(&end_time, NULL);
+			goto err;
+		(void)gettimeofday(&end_time, NULL);
 		secs =
 		    (((double)end_time.tv_sec * 1000000 + end_time.tv_usec) -
 		    ((double)start_time.tv_sec * 1000000 + start_time.tv_usec))
@@ -361,7 +388,7 @@ main(argc, argv)
 		printf("%.0f records/second\n", (double)count / secs);
 
 	} else if ((ret = fill(dbenv, dbp, txn, datalen, num, dups)) != 0)
-		goto err1;
+		goto err;
 
 	/* Close everything down. */
 	if ((ret = dbp->close(dbp, rflag ? DB_NOSYNC : 0)) != 0) {
@@ -371,8 +398,28 @@ main(argc, argv)
 	}
 	return (ret);
 
-err1:	(void)dbp->close(dbp, 0);
+err:	(void)dbp->close(dbp, 0);
 	return (1);
+}
+
+int
+compare_int(dbp, a, b)
+	DB *dbp;
+	const DBT *a, *b;
+{
+	int ai, bi;
+
+	dbp = dbp;				/* Lint. */
+
+	/*
+	 * Returns:
+	 *	< 0 if a < b
+	 *	= 0 if a = b
+	 *	> 0 if a > b
+	 */
+	memcpy(&ai, a->data, sizeof(int));
+	memcpy(&bi, b->data, sizeof(int));
+	return (ai - bi);
 }
 
 void

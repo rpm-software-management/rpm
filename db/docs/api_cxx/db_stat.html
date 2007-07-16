@@ -1,5 +1,5 @@
-<!--$Id: db_stat.so,v 10.88 2004/10/29 18:42:52 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_stat.so,v 10.89 2005/02/10 20:02:28 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -39,21 +39,28 @@ copied into the memory location to which it refers.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
 one of the following values:
 <dl compact>
-<dt><a name="DB_DEGREE_2">DB_DEGREE_2</a><dd>Database items read during this operation will have degree 2 isolation.
-This ensures the stability of the data items read during the stat
-operation but permits that data to be modified or deleted by other
-transactions prior to the commit of the specified transaction.
-<dt><a name="DB_DIRTY_READ">DB_DIRTY_READ</a><dd>Database items read during this operation may include modified but not
-yet committed data.  Silently ignored if the <a href="../api_cxx/db_open.html#DB_DIRTY_READ">DB_DIRTY_READ</a> flag
-was not specified when the underlying database was opened.
 <dt><a name="DB_FAST_STAT">DB_FAST_STAT</a><dd>Return only the values which do not require traversal of the database.
 Among other things, this flag makes it possible for applications to
 request key and record counts without incurring the performance penalty
 of traversing the entire database.
+<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Database items read during this operation will have degree 2 isolation.
+This ensures the stability of the data items read during the stat
+operation but permits that data to be modified or deleted by other
+transactions prior to the commit of the specified transaction.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Database items read during this operation will have degree 1 isolation,
+including modified but not yet committed data.  Silently ignored if the
+<a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
+database was opened.
 </dl>
-<dt><b>txnid</b><dd>If the operation is to be transaction-protected,
-the <b>txnid</b> parameter is a transaction handle returned from
-<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; otherwise, NULL.  
+<dt><b>txnid</b><dd>If the operation is part of an application-specified
+transaction, the <b>txnid</b> parameter is a transaction handle
+returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
+group, the <b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+specified, but the
+operation occurs in a transactional
+database,
+the operation will be implicitly transaction protected.  
 </dl>
 <p>Statistical structures are stored in allocated memory.  If application-specific allocation
 routines have been declared (see <a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a> for more
@@ -199,6 +206,7 @@ the following non-zero errors:</p>
 <dl compact>
 <dt>DB_REP_HANDLE_DEAD<dd>The database handle has been invalidated because a replication election
 unrolled a committed transaction.
+<dt>DB_REP_LOCKOUT<dd>The operation was blocked by client/master synchronization.
 </dl>
 <dl compact>
 <dt>EINVAL<dd>An
@@ -206,7 +214,7 @@ invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
 <h3>Description: Db::stat_print</h3>
-<p>The Db::stat_print method returns the
+<p>The Db::stat_print method displays the
 database statistical information, as described for the Db::stat method.
 The information is printed to a specified output channel (see the
 <a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> method for more information), or passed to an
@@ -221,10 +229,15 @@ failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
-the following value:
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
+<dt><a name="DB_FAST_STAT">DB_FAST_STAT</a><dd>Return only the values which do not require traversal of the database.
+Among other things, this flag makes it possible for applications to
+request key and record counts without incurring the performance penalty
+of traversing the entire database.
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 </dl>
 </dl>
 <hr size=1 noshade>
@@ -236,6 +249,6 @@ the following value:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

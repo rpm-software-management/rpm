@@ -1,4 +1,4 @@
-# $Id: README,v 11.6 2004/09/23 17:49:25 mjc Exp $
+# $Id: README,v 12.1 2006/07/07 23:36:14 alanb Exp $
 
 getting_started/
 		Examples from the Getting Started Guide
@@ -19,9 +19,9 @@ ex_lock.c	Locking.
 
 ex_mpool.c	Shared memory buffer pools.
 
-ex_repquote/	Replication.  This creates a toy stock quote server
+ex_rep/		Replication.  This creates a toy stock quote server
 		with DB's single-master, multiple-client replication,
-		with communication over TCP.
+		with communication over TCP.  See ex_rep/README.
 
 ex_sequence.c	Sequences.
 

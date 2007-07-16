@@ -2,8 +2,8 @@
 
 // Open a new Db4Env
 $dbenv = new Db4Env();
-$dbenv->set_data_dir("/var/lib/dbhome");
-$dbenv->open("/var/lib/dbhome/test");
+$dbenv->set_data_dir("/var/tmp/dbhome");
+$dbenv->open("/var/tmp/dbhome");
 
 // Open a database in $dbenv.  Note that even though
 // we pass null in as the transaction, db4 forces this

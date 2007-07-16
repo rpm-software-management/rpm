@@ -1,6 +1,6 @@
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
 # http://www.apache.org/licenses/LICENSE-2.0.txt
 #
@@ -22,7 +22,7 @@ AC_ARG_WITH(cxxflags,
         [  --with-cxxflags           Specify additional flags to pass to compiler],
         [
                 if test "x$withval" != "xno" ; then
-                        CXXFLAGS="$CXXFLAGS $withval"
+                        CXXFLAGS="$withval $CXXFLAGS"
                 fi
         ]       
 )
@@ -31,7 +31,7 @@ AC_ARG_WITH(ldflags,
         [  --with-ldflags          Specify additional flags to pass to linker],
         [
                 if test "x$withval" != "xno" ; then
-                        LDFLAGS="$LDFLAGS $withval"
+                        LDFLAGS="$withval $LDFLAGS"
                 fi
         ]       
 )
@@ -40,7 +40,7 @@ AC_ARG_WITH(libs,
         [  --with-libs             Specify additional libraries],
         [
                 if test "x$withval" != "xno" ; then
-                        LIBS="$LIBS $withval"
+                        LIBS="$withval $LIBS"
                 fi
         ]       
 )
@@ -49,8 +49,8 @@ AC_ARG_WITH(mm,
         [  --with-mm             Specify additional libraries],
         [
                 if test "x$withval" != "xno" ; then
-                        LIBS="$LIBS -L$withval/lib"
-                        CPPFLAGS="$CPPFLAGS -I$withval/include"
+                        LIBS="-L$withval/lib $LIBS"
+                        CPPFLAGS="-I$withval/include $CPPFLAGS"
                 fi
         ]       
 
@@ -60,8 +60,8 @@ AC_ARG_WITH(db4,
         [  --with-db4             Specify additional libraries],
         [
                 if test "x$withval" != "xno" ; then
-                        LIBS="$LIBS -L$withval/lib"
-                        CPPFLAGS="$CPPFLAGS -I$withval/include"
+                        LIBS="-L$withval/lib $LIBS"
+                        CPPFLAGS="-I$withval/include $CPPFLAGS"
                 fi
         ]       
 

@@ -38,8 +38,12 @@
     and out of Java byte arrays for storage in a database can be a nontrivial
     operation. To help you with this problem, DB provides the Bind APIs. 
     While these APIs are described in detail in the
-    <i class="citetitle">Sleepycat Java Collections Tutorial</i> (see
-    <a href="http://www.sleepycat.com/docs/ref/toc.html" target="_top">http://www.sleepycat.com/docs/ref/toc.html</a>),
+    
+
+    <span>
+    <i class="citetitle">Berkeley DB Collections Tutorial</i>,
+    </span>
+
     this section provides a brief introduction to using the Bind APIs with:</p>
       <div class="itemizedlist">
         <ul type="disc">
@@ -52,14 +56,14 @@
           <li>
             <p>Complex objects that implement Java serialization.</p>
             <p>Use this if you are storing objects that implement
-        <tt class="classname">Serializable</tt> and if you do not want to sort on
-        this information.</p>
+            <tt class="classname">Serializable</tt> and if you do not need to sort them.
+        </p>
           </li>
           <li>
             <p>Non-serialized complex objects.</p>
             <p>If you are storing objects that do not implement serialization,
         you can create your own custom tuple bindings. Note that you should
-        use custom tuple bindings even if your objects are serializeable if
+        use custom tuple bindings even if your objects are serializable if
         you want to sort on that data.</p>
           </li>
         </ul>
@@ -132,7 +136,7 @@
             <li>
               <p>Create an <tt class="classname">EntryBinding</tt> object.</p>
               <p>When you do this, you use <tt class="classname">TupleBinding.getPrimitiveBinding()</tt>
-          to return the binding that you use for the conversion.</p>
+          to return an appropriate binding for the conversion.</p>
             </li>
             <li>
               <p>Use the <tt class="classname">EntryBinding</tt> object to place
@@ -143,7 +147,7 @@
         <p>Once the data is stored in the DatabaseEntry, you can put it to
       the database in whatever manner you wish. For example:</p>
         <a id="java_dbt6"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.tuple.TupleBinding;
@@ -157,8 +161,8 @@ Database myDatabase = null;
 
 // Need a key for the put.
 try {
-    String aKey = "myLong";
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));    
+    String aKey = &quot;myLong&quot;;
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));    
 
     // Now build the DatabaseEntry using a TupleBinding
     Long myLong = new Long(123456789l);
@@ -174,7 +178,7 @@ try {
         <p>Retrieval from the <tt class="classname">DatabaseEntry</tt> object is
       performed in much the same way:</p>
         <a id="java_dbt7"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
       
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.tuple.TupleBinding;
@@ -190,8 +194,8 @@ Database myDatabase = null;
 
 try {
     // Need a key for the get
-    String aKey = "myLong";
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
+    String aKey = &quot;myLong&quot;;
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
     
     // Need a DatabaseEntry to hold the associated data.
     DatabaseEntry theData = new DatabaseEntry();
@@ -208,11 +212,11 @@ try {
         // Use the binding to convert the byte array contained in theData
         // to a Long type.
         Long theLong = (Long) myBinding.entryToObject(theData);
-        retKey = new String(theKey.getData());
-        System.out.println("For key: '" + retKey + "' found Long: '" + 
-                            theLong + "'.");
+        retKey = new String(theKey.getData(), &quot;UTF-8&quot;);
+        System.out.println(&quot;For key: '&quot; + retKey + &quot;' found Long: '&quot; + 
+                            theLong + &quot;'.&quot;);
     } else {
-        System.out.println("No record found for key '" + retKey + "'.");
+        System.out.println(&quot;No record found for key '&quot; + retKey + &quot;'.&quot;);
     }
 } catch (Exception e) {
     // Exception handling goes here
@@ -222,7 +226,7 @@ try {
         <div class="titlepage">
           <div>
             <div>
-              <h3 class="title"><a id="object2dbt"></a>Serializeable Complex Objects</h3>
+              <h3 class="title"><a id="object2dbt"></a>Serializable Complex Objects</h3>
             </div>
           </div>
           <div></div>
@@ -241,7 +245,7 @@ try {
       DB database, you must convert them to and from a <tt class="literal">byte</tt> array.
       The first instinct for many Java programmers is to do this using Java
       serialization. While this is functionally a correct solution, the result
-      is poor performance because this causes the class information
+      is poor space-performance because this causes the class information
       to be stored on every such database record. This information can be quite large
       and it is redundant &#8212; the class information does not vary for serialized objects of the same type.
       </p>
@@ -256,7 +260,7 @@ try {
       object information to be saved off to a unique <tt class="classname">Database</tt>
       dedicated for that purpose. This means that you do not have to duplicate
       that information on each record in the <tt class="classname">Database</tt>
-      that your application is using to store it's information.</p>
+      that your application is using to store its information.</p>
         <p>
         Note that when you use the Bind APIs to perform serialization, you still
         receive all the benefits of serialization. You can still use arbitrarily
@@ -281,12 +285,13 @@ try {
           <div class="itemizedlist">
             <ul type="disc">
               <li>
-                <p>If you need to sort based on the objects your are storing. 
-        The sort order is meaningless for the byte arrays that you
-        obtain through serialization. Consequently, you should not use serialization for keys if you
-        care about their sort order. You should
-        also not use serialization for record data if your
-        <tt class="classname">Database</tt> supports duplicate records and you care about sort order.
+                <p>
+                If you need to sort based on the objects your are storing. 
+                The sort order is meaningless for the byte arrays that you
+                obtain through serialization. Consequently, you should not use serialization for keys if you
+                care about their sort order. You should
+                also not use serialization for record data if your
+                <tt class="classname">Database</tt> supports duplicate records and you care about sort order.
         </p>
               </li>
               <li>
@@ -317,13 +322,14 @@ try {
             </div>
             <div></div>
           </div>
-          <p>To serialize and store a serializeable complex object using the
+          <p>To store a serializable complex object using the
         Bind APIs:</p>
           <div class="orderedlist">
             <ol type="1">
               <li>
-                <p>Implement the class whose instances that you want to store.
-            Note that this class must implement <tt class="classname">java.io.Serializable</tt>.
+                <p>
+                Implement java.io.Serializable in the class whose instances that
+                you want to store.
             </p>
               </li>
               <li>
@@ -353,7 +359,7 @@ try {
             looks something like this:
         </p>
           <a id="java_dbt8"></a>
-          <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;    
+          <pre class="programlisting">package db.GettingStarted;    
 
 import java.io.Serializable;
 
@@ -394,7 +400,7 @@ public class MyData implements Serializable {
 }</pre>
           <p>You can then store instances of this class as follows:</p>
           <a id="java_dbt9"></a>
-          <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+          <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.StoredClassCatalog;
@@ -406,13 +412,13 @@ import com.sleepycat.db.DatabaseType;
 ...
 
 // The key data.
-String aKey = "myData";
+String aKey = &quot;myData&quot;;
 
 // The data data
 MyData data2Store = new MyData();
 data2Store.setLong(123456789l);
 data2Store.setDouble(1234.9876543);
-data2Store.setDescription("A test instance of this class");
+data2Store.setDescription(&quot;A test instance of this class&quot;);
 
 try {
     // Open the database that you will use to store your data
@@ -420,13 +426,13 @@ try {
     myDbConfig.setAllowCreate(true);
     myDbConfig.setSortedDuplicates(true);
     myDbConfig.setType(DatabaseType.BTREE);
-    Database myDatabase = new Database("myDb", null, myDbConfig);
+    Database myDatabase = new Database(&quot;myDb&quot;, null, myDbConfig);
 
     // Open the database that you use to store your class information.
     // The db used to store class information does not require duplicates
     // support.
     myDbConfig.setSortedDuplicates(false);
-    Database myClassDb = new Database("classDb", null, myDbConfig); 
+    Database myClassDb = new Database(&quot;classDb&quot;, null, myDbConfig); 
 
     // Instantiate the class catalog
     StoredClassCatalog classCatalog = new StoredClassCatalog(myClassDb);
@@ -436,7 +442,7 @@ try {
                                                  MyData.class);
 
     // Create the DatabaseEntry for the key
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
 
     // Create the DatabaseEntry for the data. Use the EntryBinding object
     // that was just created to populate the DatabaseEntry
@@ -465,7 +471,7 @@ try {
         <tt class="classname">DatabaseEntry</tt> using the Bind APIs in much the
         same way as is described above. For example:</p>
           <a id="java_dbt10"></a>
-          <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+          <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.StoredClassCatalog;
@@ -479,17 +485,17 @@ import com.sleepycat.db.LockMode;
 ...
 
 // The key data.
-String aKey = "myData";
+String aKey = &quot;myData&quot;;
 
 try {
     // Open the database that stores your data
     DatabaseConfig myDbConfig = new DatabaseConfig();
     myDbConfig.setAllowCreate(false);
     myDbConfig.setType(DatabaseType.BTREE);
-    Database myDatabase = new Database("myDb", null, myDbConfig);
+    Database myDatabase = new Database(&quot;myDb&quot;, null, myDbConfig);
 
     // Open the database that stores your class information.
-    Database myClassDb = new Database("classDb", null, myDbConfig); 
+    Database myClassDb = new Database(&quot;classDb&quot;, null, myDbConfig); 
 
     // Instantiate the class catalog
     StoredClassCatalog classCatalog = new StoredClassCatalog(myClassDb);
@@ -499,7 +505,7 @@ try {
                                                  MyData.class);
 
     // Create DatabaseEntry objects for the key and data
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
     DatabaseEntry theData = new DatabaseEntry();
 
     // Do the get as normal
@@ -536,18 +542,18 @@ try {
       </p>
         <p>
         For information on using serialization to store complex objects, see
-        <a href="bindAPI.html#object2dbt">Serializeable Complex Objects</a>.
+        <a href="bindAPI.html#object2dbt">Serializable Complex Objects</a>.
       </p>
         <p>To store complex objects using a custom tuple binding:</p>
         <div class="orderedlist">
           <ol type="1">
             <li>
               <p>Implement the class whose instances that you want to store.
-          Note that you do not have to implement serialization.</p>
+          Note that you do not have to implement the Serializable interface.</p>
             </li>
             <li>
-              <p>Implement the <tt class="classname">com.sleepycat.bind.tuple.TupleBinding</tt>
-          interface.</p>
+              <p>Write a tuple binding using the <tt class="classname">com.sleepycat.bind.tuple.TupleBinding</tt>
+          class.</p>
             </li>
             <li>
               <p>Open (create) your database. Unlike serialization, you only
@@ -569,7 +575,7 @@ try {
         following class:
       </p>
         <a id="java_dbt11"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 public class MyData2 {
     private long longData;
@@ -579,7 +585,7 @@ public class MyData2 {
     public MyData2() {
         longData = 0;
         doubleData = new Double(0.0);
-        description = "";
+        description = &quot;&quot;;
     }
 
     public void setLong(long data) {
@@ -651,7 +657,7 @@ public class MyData2 {
         </div>
         <p>For example:</p>
         <a id="java_dbt12"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleInput;
@@ -706,7 +712,7 @@ public class MyTupleBinding extends TupleBinding {
         </div>
         <p>For example:</p>
         <a id="java_dbt13"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.db.DatabaseEntry;
@@ -718,7 +724,7 @@ TupleBinding keyBinding = new MyTupleBinding();
 MyData2 theKeyData = new MyData2();
 theKeyData.setLong(123456789l);
 theKeyData.setDouble(new Double(12345.6789));
-theKeyData.setString("My key data");
+theKeyData.setString(&quot;My key data&quot;);
 
 DatabaseEntry myKey = new DatabaseEntry();
 

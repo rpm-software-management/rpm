@@ -1,0 +1,77 @@
+<!--$Id: rep_nsites.so,v 1.2 2006/06/23 01:28:47 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;rep_set_nsites</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;rep_set_nsites</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;rep_set_nsites(DB_ENV *env, int nsites);
+<p>
+int
+DB_ENV-&gt;rep_get_nsites(DB_ENV *env, int *nsitesp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;rep_set_nsites</h3>
+<p>The DB_ENV-&gt;rep_set_nsites method specifies the total number of sites
+in a replication group.</p>
+<p>The DB_ENV-&gt;rep_set_nsites method is typically called by applications which
+use the Berkeley DB library "replication manager" support.  (However, see
+also the <a href="../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> man page, the description of the <b>nsites</b>
+parameter.)</p>
+<p>The DB_ENV-&gt;rep_set_nsites method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>The DB_ENV-&gt;rep_set_nsites method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;rep_set_nsites method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>nsites</b><dd>A positive integer specifying the total number of sites in the replication
+group.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;rep_get_nsites</h3>
+<p>The DB_ENV-&gt;rep_get_nsites method returns the total number of sites in the replication group.</p>
+<p>The DB_ENV-&gt;rep_get_nsites method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;rep_get_nsites method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>nsitesp</b><dd>The DB_ENV-&gt;rep_get_nsites method returns  the
+total number of sites in the replication group in <b>nsitesp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

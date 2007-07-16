@@ -51,6 +51,9 @@
         created if it does not already exist.
     </p>
       <p>
+        You will also need to initialize the in-memory cache when you open your environment.
+    </p>
+      <p>
         For example, to 
             <span>create an environment handle and</span>
         open an environment:
@@ -70,20 +73,21 @@ int ret;                  /* function return value */
 */
 ret = db_env_create(&amp;myEnv, 0);
 if (ret != 0) {
-    fprintf(stderr, "Error creating env handle: %s\n", db_strerror(ret));
+    fprintf(stderr, &quot;Error creating env handle: %s\n&quot;, db_strerror(ret));
     return -1;
 }
 
 /* Open the environment. */
-env_flags = DB_CREATE;   /* If the environment does not exist,
-                          * create it. */
+env_flags = DB_CREATE |    /* If the environment does not exist,
+                            * create it. */
+            DB_INIT_MPOOL; /* Initialize the in-memory cache. */
 
 ret = myEnv-&gt;open(myEnv,   /* DB_ENV ptr */
-  "/export1/testEnv",      /* env home directory */
+  &quot;/export1/testEnv&quot;,      /* env home directory */
   env_flags,               /* Open flags */
   0);                      /* File mode (default) */
 if (ret != 0) {
-    fprintf(stderr, "Environment open failed: %s", db_strerror(ret));
+    fprintf(stderr, &quot;Environment open failed: %s&quot;, db_strerror(ret));
     return -1;
 } </pre>
       <p>
@@ -108,7 +112,7 @@ db_flags = DB_CREATE;    /* If the database does not exist,
 /* open the database */
 ret = dbp-&gt;open(dbp,        /* DB structure pointer */
                 NULL,       /* Transaction pointer */
-                "my_db.db", /* On-disk file that holds the database. */
+                &quot;my_db.db&quot;, /* On-disk file that holds the database. */
                 NULL,       /* Optional logical database name */
                 DB_BTREE,   /* Database access method */
                 db_flags,   /* Open flags */

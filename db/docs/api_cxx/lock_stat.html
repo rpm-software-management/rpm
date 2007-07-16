@@ -1,5 +1,5 @@
-<!--$Id: lock_stat.so,v 10.62 2004/09/17 17:13:12 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: lock_stat.so,v 10.65 2005/07/20 16:26:38 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -57,9 +57,12 @@ individually freed.</p>
 <dt>u_int32_t st_maxnobjects;<dd>The maximum number of lock objects at any one time.
 <dt>u_int32_t st_nrequests;<dd>The total number of locks requested.
 <dt>u_int32_t st_nreleases;<dd>The total number of locks released.
-<dt>u_int32_t st_nnowaits;<dd>The total number of lock requests failing because
-<a href="../api_cxx/lock_vec.html#DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a> was set.
-<dt>u_int32_t st_nconflicts;<dd>The total number of locks not immediately available due to conflicts.
+<dt>u_int32_t st_nupgrade;<dd>The total number of locks upgraded.
+<dt>u_int32_t st_ndowngrade;<dd>The total number of locks downgraded.
+<dt>u_int32_t st_lock_wait;<dd>The number of lock requests not immediately available due to conflicts,
+for which the thread of control waited.
+<dt>u_int32_t st_lock_nowait;<dd>The number of lock requests not immediately available due to conflicts,
+for which the thread of control did not wait.
 <dt>u_int32_t st_ndeadlocks;<dd>The number of deadlocks.
 <dt>u_int32_t st_locktimeout;<dd>Lock timeout value.
 <dt>u_int32_t st_nlocktimeouts;<dd>The number of lock requests that have timed out.
@@ -69,9 +72,9 @@ component of <b>st_ndeadlocks</b>, the total number of deadlocks
 detected.
 <dt>roff_t st_regsize;<dd>The size of the lock region, in bytes.
 <dt>u_int32_t st_region_wait;<dd>The number of times that a thread of control was forced to wait before
-obtaining the region lock.
+obtaining the lock region mutex.
 <dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain
-the region lock without waiting.
+the lock region mutex without waiting.
 </dl>
 <p>The DbEnv::lock_stat method
 either returns a non-zero error value
@@ -86,7 +89,7 @@ the following value:
 <dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
 <dt><b>statp</b><dd>The <b>statp</b> parameter references memory into which
-a pointer to the allocated statistics structure is copied.
+a pointer to the allocated statistics structure is copied. 
 </dl>
 <h3>Errors</h3>
 <p>The DbEnv::lock_stat method
@@ -130,6 +133,6 @@ of the following values:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

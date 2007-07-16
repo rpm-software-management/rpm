@@ -1,5 +1,5 @@
-<!--$Id: put.so,v 1.16 2003/11/05 19:05:10 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: put.so,v 1.20 2006/04/24 17:26:33 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -127,12 +127,14 @@ operations (that is, any call to a function underlying the handles
 returned by <a href="../../api_c/db_open.html">DB-&gt;open</a> and <a href="../../api_c/db_cursor.html">DB-&gt;cursor</a>) are usually
 performed on behalf of a unique locker.  Transactions can be used to
 perform multiple calls on behalf of the same locker within a single
-thread of control.  For example, consider the case in which a cursor
-scan locates a record and then accesses some other item in the database,
-based on that record.  If these operations are done using the handle's
-default locker IDs, they may conflict.  If the locks are obtained on
-behalf of a transaction, using the transaction's locker ID instead of
-the handle's locker ID, the operations will not conflict.</p>
+thread of control.  For example, consider the case in which an
+application uses a cursor scan to locate a record and then the
+application accesses another other item in the database, based on the
+key returned by the cursor, without first closing the cursor.  If these
+operations are done using default locker IDs, they may conflict.  If the
+locks are obtained on behalf of a transaction, using the transaction's
+locker ID instead of the database handle's locker ID, the operations
+will not conflict.</p>
 <p>There is a new error return in this function that you may not have seen
 before.  In transactional (not Concurrent Data Store) applications
 supporting both readers and writers, or just multiple writers, Berkeley DB
@@ -174,30 +176,29 @@ Applications must immediately call <a href="../../api_c/txn_abort.html">DB_TXN-&
 occur, as it is not possible to proceed otherwise.  The only
 unrecoverable error is <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>, which indicates that the
 system must stop and recovery must be run.</p>
-<p>It is possible to simplify the above code in the case of a transaction
-comprised entirely of a single database put or delete operation.  The
-<a href="../../api_c/db_put.html">DB-&gt;put</a> and <a href="../../api_c/db_del.html">DB-&gt;del</a> method (and other) calls support the
-<a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag that allows applications to implicitly wrap
-the operation in a transaction.  For example, with the
-<a href="../../api_c/env_set_flags.html#DB_AUTO_COMMIT">DB_AUTO_COMMIT</a> flag, the above code could be more simply written
-as:</p>
-<blockquote><pre><b>	for (fail = 0; fail++ &lt;= MAXIMUM_RETRY && (ret =
-	    db-&gt;put(db, NULL, &key, &data, DB_AUTO_COMMIT)) == DB_LOCK_DEADLOCK;)
+<p>The above code can be simplified in the case of a transaction comprised
+entirely of a single database put or delete operation, as operations
+occurring in transactional databases are implicitly transaction
+protected.  For example, in a transactional database, the above code
+could be more simply written as:</p>
+<blockquote><pre><b>	for (fail = 0; fail++ &lt;= MAXIMUM_RETRY &&
+	    (ret = db-&gt;put(db, NULL, &key, &data, 0)) == DB_LOCK_DEADLOCK;)
 		;
 	return (ret == 0 ? 0 : 1);</b></pre></blockquote>
+<p>and the underlying transaction would be automatically handled by Berkeley DB.</p>
 <p>Programmers should not attempt to enumerate all possible error returns
 in their software.  Instead, they should explicitly handle expected
 returns and default to aborting the transaction for the rest.  It is
 entirely the choice of the programmer whether to check for
 <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> explicitly or not -- attempting new Berkeley DB
 operations after <a href="../../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a> is returned does not worsen the
-situation.  Alternatively, using the <a href="../../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a> method to
+situation.  Alternatively, using the <a href="../../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a> method to
 handle an unrecoverable error and simply doing some number of
 abort-and-retry cycles for any unexpected Berkeley DB or system error in the
 mainline code often results in the simplest and cleanest application
 code.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../transapp/data_open.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../transapp/atomicity.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

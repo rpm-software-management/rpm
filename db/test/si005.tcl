@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2001-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: si005.tcl,v 11.11 2004/10/27 20:40:25 carol Exp $
+# $Id: si005.tcl,v 12.8 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	si005
 # TEST	Basic secondary index put/delete test with transactions
@@ -16,13 +16,28 @@ proc si005 { methods {nentries 200} {tnum "005"} args } {
 	set pargs [convert_args $pmethod $args]
 	set pomethod [convert_method $pmethod]
 
+	# Renumbering recno databases can't be used as primaries.
+	if { [is_rrecno $pmethod] == 1 } {
+		puts "Skipping si$tnum for method $pmethod"
+		return
+	}
+
 	# Method/args for all the secondaries.  If only one method
-	# was specified, assume the same method and a standard N
-	# secondaries.
+	# was specified, assume the same method (for btree or hash)
+	# and a standard number of secondaries.  If primary is not
+	# btree or hash, force secondaries to be one btree, one hash.
 	set methods [lrange $methods 1 end]
 	if { [llength $methods] == 0 } {
 		for { set i 0 } { $i < $nsecondaries } { incr i } {
-			lappend methods $pmethod
+			if { [is_btree $pmethod] || [is_hash $pmethod] } {
+				lappend methods $pmethod
+			} else {
+				if { [expr $i % 2] == 0 } {
+					lappend methods "-btree"
+				} else {
+					lappend methods "-hash"
+				}
+			}
 		}
 	}
 
@@ -35,17 +50,33 @@ proc si005 { methods {nentries 200} {tnum "005"} args } {
 	set argses [convert_argses $methods $args]
 	set omethods [convert_methods $methods]
 
-	puts "si$tnum \{\[ list $pmethod $methods \]\} $nentries" 
+	# If we are given an env, use it.  Otherwise, open one.
+	set eindex [lsearch -exact $args "-env"]
+	set txnenv 0
+	if { $eindex == -1 } {
+		env_cleanup $testdir
+		set env [berkdb_env -create -home $testdir -txn]
+		error_check_good env_open [is_valid_env $env] TRUE
+	} else {
+		incr eindex
+		set env [lindex $args $eindex]
+		set txnenv [is_txnenv $env]
+		if { $txnenv == 1 } {
+			append pargs " -auto_commit "
+			append argses " -auto_commit "
+		} else {
+			puts "Skipping si$tnum for non-transactional env."
+			return
+		}
+		set testdir [get_home $env]
+	}
+
+	cleanup $testdir $env
+	puts "si$tnum \{\[ list $pmethod $methods \]\} $nentries"
 	puts "\twith transactions"
-	env_cleanup $testdir
 
 	set pname "primary$tnum.db"
 	set snamebase "secondary$tnum"
-
-	# Open an environment
-	# XXX if one is not supplied!
-	set env [berkdb_env -create -home $testdir -txn]
-	error_check_good env_open [is_valid_env $env] TRUE
 
 	# Open the primary.
 	set pdb [eval {berkdb_open -create -auto_commit -env} $env $pomethod \
@@ -60,7 +91,7 @@ proc si005 { methods {nentries 200} {tnum "005"} args } {
 		error_check_good second_open($i) [is_valid_db $sdb] TRUE
 
 		error_check_good db_associate($i) \
-		    [$pdb associate -auto_commit [callback_n $i] $sdb] 0
+		    [$pdb associate [callback_n $i] $sdb] 0
 		lappend sdbs $sdb
 	}
 
@@ -131,5 +162,10 @@ proc si005 { methods {nentries 200} {tnum "005"} args } {
 	foreach sdb $sdbs {
 		error_check_good secondary_close [$sdb close] 0
 	}
-	error_check_good env_close [$env close] 0
+
+	# Close the env if it was created within this test.
+	if { $eindex == -1 } {
+		error_check_good env_close [$env close] 0
+	}
+	return
 }

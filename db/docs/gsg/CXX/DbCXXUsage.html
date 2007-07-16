@@ -94,7 +94,7 @@ typedef struct vendor {
             In order to manage our actual inventory data, we create a class that
             encapsulates the data that we want to store for each inventory
             record. Beyond simple data encapsulation, this class is also capable
-            of marshalling the inventory data into a single contiguous buffer
+            of marshaling the inventory data into a single contiguous buffer
             for the purposes of storing in that data in a DB database.
         </p>
         <p>
@@ -226,12 +226,12 @@ public:
         <pre class="programlisting">     // Utility function used to show the contents of this class
     void
     show() {
-        std::cout &lt;&lt; "\nName:         " &lt;&lt; name_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; "    SKU:        " &lt;&lt; sku_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; "    Price:      " &lt;&lt; price_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; "    Quantity:   " &lt;&lt; quantity_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; "    Category:   " &lt;&lt; category_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; "    Vendor:     " &lt;&lt; vendor_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;\nName:         &quot; &lt;&lt; name_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;    SKU:        &quot; &lt;&lt; sku_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;    Price:      &quot; &lt;&lt; price_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;    Quantity:   &quot; &lt;&lt; quantity_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;    Category:   &quot; &lt;&lt; category_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;    Vendor:     &quot; &lt;&lt; vendor_ &lt;&lt; std::endl;
     } </pre>
         <p>
         Finally, we provide a private method that is used to help us pack data
@@ -261,7 +261,7 @@ public:
       <div class="example">
         <a id="exampledbload-cxx"></a>
         <p class="title">
-          <b>Example 3.3 excxx_example_database_load</b>
+          <b>Example 3.3 example_database_load</b>
         </p>
         <p>
             Our initial sample application loads database information from
@@ -278,13 +278,13 @@ public:
         We begin with the normal include directives and forward declarations:
     </p>
         <a id="cxx_dbt16"></a>
-        <pre class="programlisting">// File: excxx_example_database_load.cpp
+        <pre class="programlisting">// File: example_database_load.cpp
 #include &lt;iostream&gt;
 #include &lt;fstream&gt;
 #include &lt;cstdlib&gt;
                                                                                                                                     
-#include "MyDb.hpp"
-#include "gettingStartedCommon.hpp" 
+#include &quot;MyDb.hpp&quot;
+#include &quot;gettingStartedCommon.hpp&quot; 
 
 // Forward declarations
 void loadVendorDB(MyDb&amp;, std::string&amp;);
@@ -302,12 +302,12 @@ int
 main(int argc, char *argv[])
 {
     // Initialize the path to the database files
-    std::string basename("./");
-    std::string databaseHome("./");
+    std::string basename(&quot;./&quot;);
+    std::string databaseHome(&quot;./&quot;);
                                                                                                                                     
     // Database names
-    std::string vDbName("vendordb.db");
-    std::string iDbName("inventorydb.db");
+    std::string vDbName(&quot;vendordb.db&quot;);
+    std::string iDbName(&quot;inventorydb.db&quot;);
 
     // Parse the command line arguments here and determine 
     // the location of the flat text files containing the 
@@ -315,8 +315,8 @@ main(int argc, char *argv[])
 
     //  Identify the full name for our input files, which should
     //  also include some path information.
-    std::string inventoryFile = basename + "inventory.txt";
-    std::string vendorFile = basename + "vendors.txt";
+    std::string inventoryFile = basename + &quot;inventory.txt&quot;;
+    std::string vendorFile = basename + &quot;vendors.txt&quot;;
                                                                                                                                     
     try
     {
@@ -330,11 +330,11 @@ main(int argc, char *argv[])
         // Load the inventory database
         loadInventoryDB(inventoryDB, inventoryFile);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; "Error loading databases. " &lt;&lt; std::endl;
+        std::cerr &lt;&lt; &quot;Error loading databases. &quot; &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(e.get_errno());
     } catch(std::exception &amp;e) {
-        std::cerr &lt;&lt; "Error loading databases. " &lt;&lt; std::endl;
+        std::cerr &lt;&lt; &quot;Error loading databases. &quot; &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(-1);
     }
@@ -374,8 +374,8 @@ loadVendorDB(MyDb &amp;vendorDB, std::string &amp;vendorFile)
     std::ifstream inFile(vendorFile.c_str(), std::ios::in);
     if ( !inFile )
     {
-        std::cerr &lt;&lt; "Could not open file '" &lt;&lt; vendorFile
-                  &lt;&lt; "'. Giving up." &lt;&lt; std::endl;
+        std::cerr &lt;&lt; &quot;Could not open file '&quot; &lt;&lt; vendorFile
+                  &lt;&lt; &quot;'. Giving up.&quot; &lt;&lt; std::endl;
         throw std::exception();
     }
                                                                                                                                     
@@ -391,7 +391,7 @@ loadVendorDB(MyDb &amp;vendorDB, std::string &amp;vendorFile)
         // In a real program, there would be a lot more
         // defensive code here.
         sscanf(stringBuf.c_str(),
-          "%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]",
+          &quot;%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]&quot;,
           my_vendor.name, my_vendor.street,
           my_vendor.city, my_vendor.state,
           my_vendor.zipcode, my_vendor.phone_number,
@@ -438,7 +438,7 @@ loadVendorDB(MyDb &amp;vendorDB, std::string &amp;vendorFile)
 int
 getNextPound(std::string &amp;theString, std::string &amp;substring)
 {
-    int pos = theString.find("#");
+    int pos = theString.find(&quot;#&quot;);
     substring.assign(theString, 0, pos);
     theString.assign(theString, pos + 1, theString.size());
     return (pos);
@@ -456,8 +456,8 @@ loadInventoryDB(MyDb &amp;inventoryDB, std::string &amp;inventoryFile)
     std::ifstream inFile(inventoryFile.c_str(), std::ios::in);
     if (!inFile)
     {
-        std::cerr &lt;&lt; "Could not open file '" &lt;&lt; inventoryFile
-                  &lt;&lt; "'. Giving up." &lt;&lt; std::endl;
+        std::cerr &lt;&lt; &quot;Could not open file '&quot; &lt;&lt; inventoryFile
+                  &lt;&lt; &quot;'. Giving up.&quot; &lt;&lt; std::endl;
         throw std::exception();
     }
                                                                                                                                     

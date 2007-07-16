@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_dir.c,v 11.17 2004/04/26 18:48:19 bostic Exp $
+ * $Id: os_dir.c,v 12.8 2006/08/24 14:46:17 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
+#include "db_int.h"
 
 #if HAVE_DIRENT_H
 # include <dirent.h>
@@ -29,10 +28,6 @@
 # endif
 #endif
 
-#endif
-
-#include "db_int.h"
-
 /*
  * __os_dirlist --
  *	Return a list of the files in a directory.
@@ -48,8 +43,9 @@ __os_dirlist(dbenv, dir, namesp, cntp)
 {
 	struct dirent *dp;
 	DIR *dirp;
+	struct stat sb;
 	int arraysz, cnt, ret;
-	char **names;
+	char **names, buf[DB_MAXPATHLEN];
 
 	if (DB_GLOBAL(j_dirlist) != NULL)
 		return (DB_GLOBAL(j_dirlist)(dir, namesp, cntp));
@@ -61,15 +57,32 @@ __os_dirlist(dbenv, dir, namesp, cntp)
 #endif
 		return (__os_get_errno());
 	names = NULL;
-	for (arraysz = cnt = 0; (dp = readdir(dirp)) != NULL; ++cnt) {
+	for (arraysz = cnt = 0; (dp = readdir(dirp)) != NULL;) {
+		snprintf(buf, sizeof(buf), "%s/%s", dir, dp->d_name);
+
+		/*
+		 * We're only interested in regular files, skip the rest.
+		 * Other parts of Berkeley DB depend on this, for example,
+		 * the db_hotbackup utility doesn't want to try and copy
+		 * directories.
+		 */
+		RETRY_CHK(stat(buf, &sb), ret);
+		if (ret != 0) {
+			ret = __os_posix_err(ret);
+			goto err;
+		}
+		if (!S_ISREG(sb.st_mode))
+			continue;
+
 		if (cnt >= arraysz) {
 			arraysz += 100;
 			if ((ret = __os_realloc(dbenv,
 			    (u_int)arraysz * sizeof(names[0]), &names)) != 0)
-				goto nomem;
+				goto err;
 		}
 		if ((ret = __os_strdup(dbenv, dp->d_name, &names[cnt])) != 0)
-			goto nomem;
+			goto err;
+		cnt++;
 	}
 	(void)closedir(dirp);
 
@@ -77,7 +90,7 @@ __os_dirlist(dbenv, dir, namesp, cntp)
 	*cntp = cnt;
 	return (0);
 
-nomem:	if (names != NULL)
+err:	if (names != NULL)
 		__os_dirfree(dbenv, names, cnt);
 	if (dirp != NULL)
 		(void)closedir(dirp);

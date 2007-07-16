@@ -1,4 +1,4 @@
-<!--Copyright 1999-2004 by Sleepycat Software, Inc.-->
+<!--Copyright 1999-2006 by Oracle Corporation.-->
 <!--All rights reserved.-->
 <HTML>
 <HEAD>
@@ -100,51 +100,5 @@ deletion process.</LI>
 call in deletion</LI>
 </UL>
 
-<HR WIDTH="100%">
-<BR><B>> &lt;env> mutex <I>mode nitems</I></B>
-<P>This command creates a mutex region for testing.&nbsp; It sets the mode
-of the region to <B><I>mode</I></B> and sets up for <B><I>nitems</I></B>
-number of mutex entries.&nbsp; After we successfully get a handle to a
-mutex we create a command of the form <B><I>$env.mutexX</I></B>, where
-X is an integer starting at&nbsp; 0 (e.g. <B>$env.mutex0, $env.mutex1,
-</B>etc).&nbsp;&nbsp;
-We use the <I>Tcl_CreateObjCommand()&nbsp;</I> to create the top level
-mutex function.&nbsp; It is through this handle that the user can access
-all of the commands described below.&nbsp; Internally, the mutex handle
-is sent as the <I>ClientData</I> portion of the new command set so that
-all future mutex calls access the appropriate handle.
-<P>
-<HR WIDTH="100%"><B>> &lt;mutex> close</B>
-<P>This command closes the mutex and renders the handle invalid.&nbsp;&nbsp;
-This command directly translates to the __db_r_detach function call.&nbsp;
-It returns either a 0 (for success),&nbsp; or it throws a Tcl error with
-a system message.
-<P>Additionally, since the handle is no longer valid, we will call <I>Tcl_DeleteCommand()
-</I>so
-that further uses of the handle will be dealt with properly by Tcl itself.&nbsp;
-<HR WIDTH="100%"><B>> &lt;mutex> get <I>id</I></B>
-<P>This command locks the mutex identified by <B><I>id</I></B>.&nbsp; It
-returns either a 0 (for success),&nbsp; or it throws a Tcl error with a
-system message.
-<BR>
-<HR WIDTH="100%"><B>> &lt;mutex> release <I>id</I></B>
-<P>This command releases the mutex identified by <B><I>id</I></B>.&nbsp;
-It returns either a 0 (for success),&nbsp; or it throws a Tcl error with
-a system message.
-<BR>
-<HR WIDTH="100%"><B>> &lt;mutex> getval <I>id</I></B>
-<P>This command gets the value stored for the mutex identified by <B><I>id</I></B>.&nbsp;
-It returns either the value,&nbsp; or it throws a Tcl error with a system
-message.
-<BR>
-<HR WIDTH="100%"><B>> &lt;mutex> setval <I>id val</I></B>
-<P>This command sets the value stored for the mutex identified by <B><I>id
-</I></B>to
-<B><I>val</I></B>.&nbsp;
-It returns either a 0 (for success),&nbsp; or it throws a Tcl error with
-a system message.
-<BR>
-<HR WIDTH="100%">
-<BR>&nbsp;
 </BODY>
 </HTML>

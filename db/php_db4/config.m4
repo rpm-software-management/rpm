@@ -1,11 +1,11 @@
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
 # http://www.apache.org/licenses/LICENSE-2.0.txt
 #
 
-dnl $Id: config.m4,v 12.2 2004/12/21 16:59:21 george Exp $
+dnl $Id: config.m4,v 12.6 2006/08/24 14:46:22 bostic Exp $
 dnl config.m4 for extension db4
 
 dnl Comments in this file start with the string 'dnl'.
@@ -20,7 +20,7 @@ PHP_ARG_WITH(mod_db4, whether to link against mod_db4,
 
 if test "$PHP_DB4" != "no"; then
   if test "$PHP_DB4" != "no"; then
-    for i in $PHP_DB4 /usr/local/BerkeleyDB.4.2 /usr/local/BerkeleyDB.4.1 /usr/local/BerkeleyDB.4.0 /usr/local /usr; do
+    for i in $PHP_DB4 /usr/local/BerkeleyDB.4.4 /usr/local /usr; do
       if test -f "$i/db4/db.h"; then
         THIS_PREFIX=$i
         INC_DIR=$i/db4
@@ -71,6 +71,7 @@ if test "$PHP_DB4" != "no"; then
   fi
   EXTRA_CXXFLAGS="-g -DHAVE_CONFIG_H -O2 -Wall"
   PHP_REQUIRE_CXX()
+  PHP_ADD_LIBRARY(stdc++, 1, DB4_SHARED_LIBADD)
   PHP_NEW_EXTENSION(db4, db4.cpp, $ext_shared)
   PHP_ADD_MAKEFILE_FRAGMENT
   PHP_SUBST(DB4_SHARED_LIBADD)

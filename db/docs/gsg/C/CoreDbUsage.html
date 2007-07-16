@@ -101,7 +101,7 @@ void set_db_filenames(STOCK_DBS *my_stock); </pre>
         </p>
         <a id="c_db12"></a>
         <pre class="programlisting">/* File: gettingstarted_common.c */
-#include "gettingstarted_common.h"
+#include &quot;gettingstarted_common.h&quot;
 
 /* Initializes the STOCK_DBS struct.*/
 void
@@ -124,13 +124,13 @@ set_db_filenames(STOCK_DBS *my_stock)
     /* Create the Inventory DB file name */
     size = strlen(my_stock-&gt;db_home_dir) + strlen(INVENTORYDB) + 1;
     my_stock-&gt;inventory_db_name = malloc(size);
-    snprintf(my_stock-&gt;inventory_db_name, size, "%s%s",
+    snprintf(my_stock-&gt;inventory_db_name, size, &quot;%s%s&quot;,
       my_stock-&gt;db_home_dir, INVENTORYDB);
 
     /* Create the Vendor DB file name */
     size = strlen(my_stock-&gt;db_home_dir) + strlen(VENDORDB) + 1;
     my_stock-&gt;vendor_db_name = malloc(size);
-    snprintf(my_stock-&gt;vendor_db_name, size, "%s%s",
+    snprintf(my_stock-&gt;vendor_db_name, size, &quot;%s%s&quot;,
       my_stock-&gt;db_home_dir, VENDORDB);
 } </pre>
       </div>
@@ -163,7 +163,7 @@ open_database(DB **dbpp,       /* The DB handle that we are opening */
     /* Initialize the DB handle */
     ret = db_create(&amp;dbp, NULL, 0);
     if (ret != 0) {
-        fprintf(error_file_pointer, "%s: %s\n", program_name,
+        fprintf(error_file_pointer, &quot;%s: %s\n&quot;, program_name,
                 db_strerror(ret));
         return(ret);
     }
@@ -187,7 +187,7 @@ open_database(DB **dbpp,       /* The DB handle that we are opening */
                     open_flags, /* Open flags */
                     0);         /* File mode. Using defaults */
     if (ret != 0) {
-        dbp-&gt;err(dbp, ret, "Database '%s' open failed.", file_name);
+        dbp-&gt;err(dbp, ret, &quot;Database '%s' open failed.&quot;, file_name);
         return(ret);
     }
                                                                                                                                
@@ -234,7 +234,7 @@ databases_setup(STOCK_DBS *my_stock, const char *program_name,
          */
         return (ret);
 
-    printf("databases opened successfully\n");
+    printf(&quot;databases opened successfully\n&quot;);
     return (0);
 }</pre>
       </div>
@@ -260,18 +260,18 @@ databases_close(STOCK_DBS *my_stock)
     if (my_stock-&gt;inventory_dbp != NULL) {
         ret = my_stock-&gt;inventory_dbp-&gt;close(my_stock-&gt;inventory_dbp, 0);
         if (ret != 0)
-            fprintf(stderr, "Inventory database close failed: %s\n",
+            fprintf(stderr, &quot;Inventory database close failed: %s\n&quot;,
               db_strerror(ret));
     }
 
     if (my_stock-&gt;vendor_dbp != NULL) {
         ret = my_stock-&gt;vendor_dbp-&gt;close(my_stock-&gt;vendor_dbp, 0);
         if (ret != 0)
-            fprintf(stderr, "Vendor database close failed: %s\n",
+            fprintf(stderr, &quot;Vendor database close failed: %s\n&quot;,
               db_strerror(ret));
     }
 
-    printf("databases closed.\n");
+    printf(&quot;databases closed.\n&quot;);
     return (0);
 } </pre>
       </div>

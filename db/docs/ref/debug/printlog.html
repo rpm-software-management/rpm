@@ -1,5 +1,5 @@
-<!--$Id: printlog.so,v 10.46 2004/08/17 19:07:19 ubell Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: printlog.so,v 10.48 2005/10/22 13:02:06 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -57,12 +57,17 @@ system was configured with <a href="../../ref/build_unix/conf.html#--enable-diag
 <tr><td>bam_cadjust</td><td>Keeps track of record counts in a Btree or Recno database.</td></tr>
 <tr><td>bam_cdel</td><td>Used to mark a record on a page as deleted.</td></tr>
 <tr><td>bam_curadj</td><td>Used to adjust a cursor location when a nearby record changes in a Btree database.</td></tr>
+<tr><td>bam_merge</td><td>Used to merge two Btree database pages during compaction.</td></tr>
+<tr><td>bam_pgno</td><td>Used to replace a page number in a Btree record.</td></tr>
 <tr><td>bam_rcuradj</td><td>Used to adjust a cursor location when a nearby record changes in a Recno database.</td></tr>
 <tr><td>bam_relink</td><td>Fix leaf page prev/next chain when a page is removed.</td></tr>
 <tr><td>bam_repl</td><td>Describes a replace operation on a record.</td></tr>
 <tr><td>bam_root</td><td>Describes an assignment of a root page.</td></tr>
 <tr><td>bam_rsplit</td><td>Describes a reverse page split.</td></tr>
 <tr><td>bam_split</td><td>Describes a page split.</td></tr>
+<tr><td>crdel_inmem_create</td><td>Record the creation of an in-memory named database.</td></tr>
+<tr><td>crdel_inmem_remove</td><td>Record the removal of an in-memory named database.</td></tr>
+<tr><td>crdel_inmem_rename</td><td>Record the rename of an in-memory named database.</td></tr>
 <tr><td>crdel_metasub</td><td>Describes the creation of a metadata page for a subdatabase.</td></tr>
 <tr><td>db_addrem</td><td>Add or remove an item from a page of duplicates.</td></tr>
 <tr><td>db_big</td><td>Add an item to an overflow page (<i>overflow pages</i> contain items too large to place on the main page)</td></tr>
@@ -76,6 +81,7 @@ system was configured with <a href="../../ref/build_unix/conf.html#--enable-diag
 <tr><td>db_pg_init</td><td>Indicates we reinitialized a page during a truncate.</td></tr>
 <tr><td>db_pg_new</td><td>Indicates that a page was allocated and put on the free list.</td></tr>
 <tr><td>db_pg_prepare</td><td>Indicates a new page was allocated during a child transaction of a prepared transaction.</td></tr>
+<tr><td>db_pg_sort</td><td>Sort the free page list and free pages at the end of the file.</td></tr>
 <tr><td>dbreg_register</td><td>Records an open of a file (mapping the filename to a log-id that is used in subsequent log operations).</td></tr>
 <tr><td>fop_create</td><td>Create a file in the file system.</td></tr>
 <tr><td>fop_file_remove</td><td>Remove a name in the file system.</td></tr>
@@ -160,6 +166,6 @@ extract:</p>
 <blockquote><pre>awk -f range.awk START_FILE=sf START_OFFSET=so END_FILE=ef END_OFFSET=eo log_output</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../debug/runtime.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../debug/common.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

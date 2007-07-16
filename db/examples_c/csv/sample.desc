@@ -1,0 +1,10 @@
+# $Id: sample.desc,v 1.3 2005/04/03 20:03:17 bostic Exp $
+
+version 1 {
+	LastName	string
+	FirstName	string
+	BirthDate
+	Color		string index
+	Fruit		string index
+	Age		ulong index
+}

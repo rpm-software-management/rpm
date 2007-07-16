@@ -1,10 +1,10 @@
-<!--$Id: ex.so,v 1.5 2003/02/06 03:19:11 mjc Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: ex.so,v 1.7 2006/07/21 16:31:12 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Ex_repquote: a replication example</title>
+<title>Berkeley DB Reference Guide: Ex_rep: a replication example</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
@@ -14,22 +14,29 @@
 <td align=right><a href="../rep/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex_comm.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h3 align=center>Ex_repquote: a replication example</h3>
-<p>Ex_repquote, found in the <b>examples_c/ex_repquote</b> subdirectory
+<h3 align=center>Ex_rep: a replication example</h3>
+<p>Ex_rep, found in the <b>examples_c/ex_rep</b> subdirectory
 of the Berkeley DB distribution, is a simple but complete demonstration of a
 replicated application.  The application is a mock stock ticker.  The
-master accepts a stock symbol and an integer value as input, stores this
-information into a replicated database; the clients display the contents
-of the database every few seconds.</p>
-<p>The ex_repquote application's communication infrastructure is based on
-TCP/IP sockets, and uses POSIX 1003.1 style networking/socket support.
-As a result, it is not as portable as the Berkeley DB library itself.  The
-Makefile created by the standard UNIX configuration will build the
-ex_repquote application on most platforms.  Enter "make ex_repquote" to
-attempt to build it.</p>
-<p>The synopsis for ex_repquote is as follows:</p>
-<pre>ex_repquote [<b>-MC</b>] [<b>-h home</b>] [<b>-m host:port</b>] [<b>-o host:port</b>] [<b>-n sites</b>] [<b>-p priority</b>]</pre>
-<p>The options to ex_repquote are as follows:</p>
+master accepts a stock symbol and an numerical value as input, and
+stores this information into a replicated database; either master or
+clients can display the contents of the database, given an empty input
+line.</p>
+<p>There are two versions of the application: ex_rep_mgr uses Replication
+Manager, while ex_rep_base uses the Base replication API.  This is
+intended to demonstrate that, while the basic function of the
+application is the same in either case, the replication support
+infrastructure differs markedly.</p>
+<p>The communication infrastructure demonstrated with ex_rep_base has the
+same dependencies on system networking and threading support as does
+the Replication Manager (see the <a href="../../ref/rep/intro.html">Introduction</a>).  The Makefile created by the standard UNIX
+configuration will build the ex_rep examples on most platforms.  Enter
+"make ex_rep_mgr" and/or "make ex_rep_base" to attempt to build
+them.</p>
+<p>The synopsis for both programs is as follows:</p>
+<pre>ex_rep_xxx [<b>-MC</b>] [<b>-h home</b>] [<b>-m host:port</b>] [<b>-o host:port</b>] [<b>-n sites</b>] [<b>-p priority</b>]</pre>
+<p>where "ex_rep_xxx" is either "ex_rep_mgr" or "ex_rep_base".</p>
+<p>The options, to either version of the program, are as follows:</p>
 <dl compact>
 <dt><b>-M</b><dd>Configure this process as a master.
 <dt><b>-C</b><dd>Configure this process as a client.
@@ -45,13 +52,13 @@ group.
 <dt><b>-p</b><dd>Set the election priority.  See <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> for more
 information.
 </dl>
-<p>A typical ex_repquote session begins with a command such as the
+<p>A typical ex_rep session begins with a command such as the
 following, to start a master:</p>
-<blockquote><pre>ex_repquote -M -p 100 -n 4 -h DIR1 -m localhost:6000</pre></blockquote>
+<blockquote><pre>ex_rep_mgr -M -p 100 -n 4 -h DIR1 -m localhost:6000</pre></blockquote>
 <p>and several clients:</p>
-<blockquote><pre>ex_repquote -C -p 50 -n 4 -h DIR2 -m localhost:6001 -o localhost:6000
-ex_repquote -C -p 10 -n 4 -h DIR3 -m localhost:6002 -o localhost:6000
-ex_repquote -C -p  0 -n 4 -h DIR4 -m localhost:6003 -o localhost:6000</pre></blockquote>
+<blockquote><pre>ex_rep_mgr -C -p 50 -n 4 -h DIR2 -m localhost:6001 -o localhost:6000
+ex_rep_mgr -C -p 10 -n 4 -h DIR3 -m localhost:6002 -o localhost:6000
+ex_rep_mgr -C -p  0 -n 4 -h DIR4 -m localhost:6003 -o localhost:6000</pre></blockquote>
 <p>In this example, the client with home directory DIR4 can never become
 a master (its priority is 0).  Both of the other clients can become
 masters, but the one with home directory DIR2 is preferred.  Priorities
@@ -60,6 +67,6 @@ having particular clients take over as master in the case that the
 master fails.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/ex_comm.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

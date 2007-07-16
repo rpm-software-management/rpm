@@ -1,5 +1,5 @@
-<!--$Id: memp_stat.so,v 10.63 2004/09/28 18:18:30 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: memp_stat.so,v 10.67 2006/09/11 16:56:44 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -52,6 +52,10 @@ The following DB_MPOOL_STAT fields will be filled in:</p>
 <dt>size_t st_bytes;<dd>Bytes of cache (total cache size is st_gbytes + st_bytes).
 <dt>u_int32_t st_ncache;<dd>Number of caches.
 <dt>roff_t st_regsize;<dd>Individual cache size, in bytes.
+<dt>size_t st_mmapsize;<dd>Maximum memory-mapped file size.
+<dt>int st_maxopenfd;<dd>Maximum open file descriptors.
+<dt>int st_maxwrite;<dd>Maximum sequential buffer writes.
+<dt>int st_maxwrite_sleep;<dd>Sleep after writing maximum sequential buffers.
 <dt>u_int32_t st_map;<dd>Requested pages mapped into the process' address space (there is no
 available information about whether or not this request caused disk I/O,
 although examining the application page fault rate may be helpful).
@@ -68,27 +72,30 @@ although examining the application page fault rate may be helpful).
 <dt>u_int32_t st_page_dirty;<dd>Dirty pages currently in the cache.
 <dt>u_int32_t st_hash_buckets;<dd>Number of hash buckets in buffer hash table.
 <dt>u_int32_t st_hash_searches;<dd>Total number of buffer hash table lookups.
-<dt>u_int32_t st_hash_longest;<dd>The longest chain ever encountered in buffer hash table lookups.
+<dt>u_int32_t st_hash_longest;<dd>Longest chain ever encountered in buffer hash table lookups.
 <dt>u_int32_t st_hash_examined;<dd>Total number of hash elements traversed during hash table lookups.
-<dt>u_int32_t st_hash_nowait;<dd>The number of times that a thread of control was able to obtain a hash
+<dt>u_int32_t st_hash_nowait;<dd>Number of times that a thread of control was able to obtain a hash
 bucket lock without waiting.
-<dt>u_int32_t st_hash_wait;<dd>The number of times that a thread of control was forced to wait before
+<dt>u_int32_t st_hash_wait;<dd>Number of times that a thread of control was forced to wait before
 obtaining a hash bucket lock.
-<dt>u_int32_t st_hash_max_wait;<dd>The maximum number of times any hash bucket lock was waited for by a
+<dt>u_int32_t st_hash_max_nowait;<dd>The number of times a thread of control was able to obtain the hash
+bucket lock without waiting on the bucket which had the maximum number
+of times that a thread of control needed to wait.
+<dt>u_int32_t st_hash_max_wait;<dd>Maximum number of times any hash bucket lock was waited for by a
 thread of control.
-<dt>u_int32_t st_region_wait;<dd>The number of times that a thread of control was forced to wait before
-obtaining a region lock.
-<dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain a region
-lock without waiting.
+<dt>u_int32_t st_region_wait;<dd>Number of times that a thread of control was forced to wait before
+obtaining a cache region mutex.
+<dt>u_int32_t st_region_nowait;<dd>Number of times that a thread of control was able to obtain a cache
+region mutex without waiting.
+<dt>u_int32_t st_mvcc_frozen;<dd>Number of buffers frozen.
+<dt>u_int32_t st_mvcc_thawed;<dd>Number of buffers thawed.
+<dt>u_int32_t st_mvcc_freed;<dd>Number of frozen buffers freed.
 <dt>u_int32_t st_alloc;<dd>Number of page allocations.
 <dt>u_int32_t st_alloc_buckets;<dd>Number of hash buckets checked during allocation.
 <dt>u_int32_t st_alloc_max_buckets;<dd>Maximum number of hash buckets checked during an allocation.
 <dt>u_int32_t st_alloc_pages;<dd>Number of pages checked during allocation.
 <dt>u_int32_t st_alloc_max_pages;<dd>Maximum number of pages checked during an allocation.
-<dt>u_int32_t st_mmapsize;<dd>Maximum memory-mapped file size.
-<dt>u_int32_t st_maxopenfd;<dd>Maximum open file descriptors.
-<dt>u_int32_t st_maxwrite;<dd>Maximum sequential buffer writes.
-<dt>u_int32_t st_maxwrite_sleep;<dd>Sleep after writing maximum sequential buffers.
+<dt>u_int32_t st_io_wait;<dd>Number of operations blocked waiting for I/O to complete.
 </dl>
 The <b>flags</b> parameter must be set to 0 or
 the following value:
@@ -125,9 +132,9 @@ the following value:
 <dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
 <dt><b>fsp</b><dd>The <b>fsp</b> parameter references memory into which
-a pointer to the allocated per-file statistics structures is copied.
+a pointer to the allocated per-file statistics structures is copied. 
 <dt><b>gsp</b><dd>The <b>gsp</b> parameter references memory into which
-a pointer to the allocated global statistics structure is copied.
+a pointer to the allocated global statistics structure is copied. 
 </dl>
 <h3>Errors</h3>
 <p>The DB_ENV-&gt;memp_stat method
@@ -164,6 +171,6 @@ of the following values:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: MarshalledObject.java,v 1.2 2004/06/04 18:26:00 mark Exp $
+ * $Id: MarshalledObject.java,v 12.4 2006/08/24 14:46:43 bostic Exp $
  */
 
 package com.sleepycat.bind.serial.test;
@@ -125,4 +125,3 @@ public class MarshalledObject
         }
     }
 }
-

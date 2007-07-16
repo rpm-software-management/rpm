@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sdb002.tcl,v 11.41 2004/04/05 17:49:26 carol Exp $
+# $Id: sdb002.tcl,v 12.3 2006/08/24 14:46:38 bostic Exp $
 #
 # TEST	sdb002
 # TEST	Tests basic subdb functionality

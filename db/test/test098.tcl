@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2002-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test098.tcl,v 1.7 2004/01/28 03:36:32 bostic Exp $
+# $Id: test098.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test098
 # TEST	Test of DB_GET_RECNO and secondary indices.  Open a primary and

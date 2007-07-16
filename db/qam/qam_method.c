@@ -1,21 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: qam_method.c,v 11.84 2004/10/14 18:09:32 bostic Exp $
+ * $Id: qam_method.c,v 12.8 2006/08/24 14:46:24 bostic Exp $
  */
 
 #include "db_config.h"
 
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/db_page.h"
-#include "dbinc/db_shash.h"
 #include "dbinc/db_am.h"
 #include "dbinc/lock.h"
 #include "dbinc/mp.h"
@@ -130,7 +125,7 @@ __qam_set_extentsize(dbp, extentsize)
 	DB_ILLEGAL_AFTER_OPEN(dbp, "DB->set_extentsize");
 
 	if (extentsize < 1) {
-		__db_err(dbp->dbenv, "Extent size must be at least 1");
+		__db_errx(dbp->dbenv, "Extent size must be at least 1");
 		return (EINVAL);
 	}
 
@@ -163,7 +158,7 @@ __queue_pageinfo(dbp, firstp, lastp, emptyp, prpage, flags)
 
 	/* Find out the page number of the last page in the database. */
 	i = PGNO_BASE_MD;
-	if ((ret = __memp_fget(mpf, &i, 0, &meta)) != 0)
+	if ((ret = __memp_fget(mpf, &i, NULL, 0, &meta)) != 0)
 		return (ret);
 
 	first = QAM_RECNO_PAGE(dbp, meta->first_recno);
@@ -222,7 +217,7 @@ __db_prqueue(dbp, flags)
 	/* Dump each page. */
 begin:
 	for (; i <= stop; ++i) {
-		if ((ret = __qam_fget(dbp, &i, 0, &h)) != 0) {
+		if ((ret = __qam_fget(dbp, &i, NULL, 0, &h)) != 0) {
 			pg_ext = ((QUEUE *)dbp->q_internal)->page_ext;
 			if (pg_ext == 0) {
 				if (ret == DB_PAGE_NOTFOUND && first == last)
@@ -302,8 +297,8 @@ __qam_rr(dbp, txn, name, subdb, newname, op)
 
 	PANIC_CHECK(dbenv);
 
-	if (subdb != NULL) {
-		__db_err(dbenv,
+	if (subdb != NULL && name != NULL) {
+		__db_errx(dbenv,
 		    "Queue does not support multiple databases per file");
 		return (EINVAL);
 	}

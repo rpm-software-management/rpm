@@ -24,6 +24,7 @@ t/db-3.0.t
 t/db-3.1.t
 t/db-3.2.t
 t/db-3.3.t
+t/db-4.4.t
 t/destroy.t
 t/encrypt.t
 t/env.t
@@ -43,6 +44,8 @@ t/subdb.t
 t/txn.t
 t/unknown.t
 t/util.pm
+t/Test/More.pm
+t/Test/Builder.pm
 Todo
 typemap
 patches/5.004

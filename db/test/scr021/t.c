@@ -3,7 +3,8 @@
 #include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
-#include <strings.h>
+#include <stdlib.h>
+#include <string.h>
 
 void
 chk(f, str)

@@ -3,15 +3,15 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 
 package com.sleepycat.db;
 
 public class HashStats extends DatabaseStats {
     // no public constructor
-    protected HashStats() {}
+    /* package */ HashStats() {}
 
     private int hash_magic;
     public int getMagic() {

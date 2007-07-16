@@ -1,5 +1,5 @@
-<!--$Id: process.so,v 1.11 2003/11/26 14:31:29 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: process.so,v 1.14 2006/06/27 22:49:29 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -92,14 +92,20 @@ files need upgrading but the databases do not, the application may be
 installed in the field using the following steps:</p>
 <ol>
 <p><li>Shut down the old version of the application.
-<li>Run recovery on the database environment using the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method
-or the <a href="../../utility/db_recover.html">db_recover</a> utility.
-<li>Remove any Berkeley DB environment using the <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method or an
-appropriate system utility.
+<li>Still using the old version of Berkeley DB, run recovery on the database
+environment using the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method or the <a href="../../utility/db_recover.html">db_recover</a>
+utility.
+<li>If you used the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method to run recovery, make sure that the
+Berkeley DB environment is removed using the <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method or an
+appropriate system utility. 
 <li>Archive the database environment for catastrophic recovery.  See
 <a href="../../ref/transapp/archival.html">Archival procedures</a> for more
 information.
 <li>Recompile and install the new version of the application.
+<li>Force a checkpoint using the <a href="../../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a> method or the
+<a href="../../utility/db_checkpoint.html">db_checkpoint</a> utility. If you use the <a href="../../utility/db_checkpoint.html">db_checkpoint</a>
+utility, make sure to use the new version of the utility; that is, the
+version that came with the release of Berkeley DB to which you are upgrading.
 <li>Restart the application.
 </ol>
 <p>Otherwise, if the application has a Berkeley DB transactional environment and
@@ -107,10 +113,12 @@ the databases need upgrading, the application may be installed in the
 field using the following steps:</p>
 <ol>
 <p><li>Shut down the old version of the application.
-<li>Run recovery on the database environment using the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method
-or the <a href="../../utility/db_recover.html">db_recover</a> utility.
-<li>Remove any Berkeley DB environment using the <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method or an
-appropriate system utility.
+<li>Still using the old version of Berkeley DB, run recovery on the database
+environment using the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method or the <a href="../../utility/db_recover.html">db_recover</a>
+utility.
+<li>If you used the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method to run recovery, make sure that the
+Berkeley DB environment is removed using the <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method or an
+appropriate system utility. 
 <li>Archive the database environment for catastrophic recovery.  See
 <a href="../../ref/transapp/archival.html">Archival procedures</a> for more
 information.
@@ -127,6 +135,10 @@ use it as the basis of that catastrophic recovery.  If you do not make
 this second archive, you have to use the archive you made in step 4 as
 the basis of your recovery, and you have to do a full upgrade on it
 before you can apply log files created after the upgrade to it.
+<li>Force a checkpoint using the <a href="../../api_c/txn_checkpoint.html">DB_ENV-&gt;txn_checkpoint</a> method or the
+<a href="../../utility/db_checkpoint.html">db_checkpoint</a> utility. If you use the <a href="../../utility/db_checkpoint.html">db_checkpoint</a>
+utility, make sure to use the new version of the utility; that is, the
+version that came with the release of Berkeley DB to which you are upgrading.
 <li>Restart the application.
 </ol>
 <p>Finally, upgrading a Berkeley DB replication group requires a few additional
@@ -146,6 +158,6 @@ and then re-add all of the clients to the replication group using the
 standard replication procedures for new sites.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../upgrade/version.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.2.0/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

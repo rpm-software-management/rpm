@@ -1,5 +1,5 @@
-<!--$Id: errorret.so,v 10.47 2004/10/14 13:32:14 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: errorret.so,v 10.49 2006/08/25 18:22:01 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -74,8 +74,10 @@ DB_LOCK_DEADLOCK.  Whenever a Berkeley DB function returns
 DB_LOCK_DEADLOCK, the enclosing transaction should be aborted.</p>
 <p>Any Berkeley DB function that attempts to acquire locks can potentially return
 DB_LOCK_DEADLOCK.  Practically speaking, the safest way to deal
-with applications that can deadlock is to handle a
-DB_LOCK_DEADLOCK return from any Berkeley DB access method call.</p>
+with applications that can deadlock is to anticipate a
+DB_LOCK_DEADLOCK return from any <a href="../../api_c/db_class.html">DB</a> or <a href="../../api_c/dbc_class.html">DBC</a>
+handle method call, or any <a href="../../api_c/env_class.html">DB_ENV</a> handle method call that
+references a database, including the database's backing physical file.</p>
 <h3><a name="DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a></h3>
 <p>If a lock is requested from the <a href="../../api_c/lock_get.html">DB_ENV-&gt;lock_get</a> or <a href="../../api_c/lock_vec.html">DB_ENV-&gt;lock_vec</a> methods
 with the <a href="../../api_c/lock_vec.html#DB_LOCK_NOWAIT">DB_LOCK_NOWAIT</a> flag specified, the method will return
@@ -97,18 +99,15 @@ DB_RUNRECOVERY is returned. This error can be returned by any
 Berkeley DB interface.  Once DB_RUNRECOVERY is returned by any
 interface, it will be returned from all subsequent Berkeley DB calls made by
 any threads of control participating in the environment.</p>
-<p>Optionally, applications may also specify a fatal-error callback function
-using the <a href="../../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a> method.  This callback function will be
-called with two arguments: a reference to the <a href="../../api_c/env_class.html">DB_ENV</a> structure
-associated with the environment and the <b>errno</b> value
-associated with the underlying error that caused the problem.</p>
-<p>Applications can handle such fatal errors in one of two ways: by checking
-for DB_RUNRECOVERY as part of their normal Berkeley DB error return
-checking, similarly to DB_LOCK_DEADLOCK or any other error, or
-by simply exiting the application when the callback function is called
-in applications that have no cleanup processing of their own.</p>
+<p>Applications can handle such fatal errors in one of two ways: first, by
+checking for DB_RUNRECOVERY as part of their normal Berkeley DB error
+return checking, similarly to DB_LOCK_DEADLOCK or any other
+error.  Alternatively, applications can specify a fatal-error callback
+function using the <a href="../../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a> method.  Applications with
+no cleanup processing of their own should simply exit from the callback
+function.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/appsignals.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/environ.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

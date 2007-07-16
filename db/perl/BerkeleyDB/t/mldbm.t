@@ -14,9 +14,12 @@ BEGIN
 	print "1..0 # Skip: Data::Dumper is not installed on this system.\n";
 	exit 0 ;
     }
-    if ($Data::Dumper::VERSION < 2.08) {
-	print "1..0 # Skip: Data::Dumper 2.08 or better required (found $Data::Dumper::VERSION).\n";
-	exit 0 ;
+    {
+        local ($^W) = 0 ;
+        if ($Data::Dumper::VERSION < 2.08) {
+            print "1..0 # Skip: Data::Dumper 2.08 or better required (found $Data::Dumper::VERSION).\n";
+        exit 0 ;
+    }
     }
     eval { require MLDBM ; };
     if ($@) {
@@ -25,7 +28,8 @@ BEGIN
     }
 }
 
-use t::util ;
+use lib 't' ;
+use util ;
 
 print "1..12\n";
 

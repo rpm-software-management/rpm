@@ -1,23 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1999-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: tcl_mp.c,v 11.58 2004/10/07 16:48:39 bostic Exp $
+ * $Id: tcl_mp.c,v 12.7 2006/09/11 14:53:42 bostic Exp $
  */
 
 #include "db_config.h"
 
+#include "db_int.h"
 #ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <stdlib.h>
-#include <string.h>
 #include <tcl.h>
 #endif
-
-#include "db_int.h"
 #include "dbinc/tcl_db.h"
 
 /*
@@ -160,6 +155,7 @@ tcl_Mp(interp, objc, objv, envp, envip)
 	static const char *mpopts[] = {
 		"-create",
 		"-mode",
+		"-multiversion",
 		"-nommap",
 		"-pagesize",
 		"-rdonly",
@@ -168,6 +164,7 @@ tcl_Mp(interp, objc, objv, envp, envip)
 	enum mpopts {
 		MPCREATE,
 		MPMODE,
+		MPMULTIVERSION,
 		MPNOMMAP,
 		MPPAGE,
 		MPRDONLY
@@ -203,6 +200,24 @@ tcl_Mp(interp, objc, objv, envp, envip)
 		case MPCREATE:
 			flag |= DB_CREATE;
 			break;
+		case MPMODE:
+			if (i >= objc) {
+				Tcl_WrongNumArgs(interp, 2, objv,
+				    "?-mode mode?");
+				result = TCL_ERROR;
+				break;
+			}
+			/*
+			 * Don't need to check result here because
+			 * if TCL_ERROR, the error message is already
+			 * set up, and we'll bail out below.  If ok,
+			 * the mode is set and we go on.
+			 */
+			result = Tcl_GetIntFromObj(interp, objv[i++], &mode);
+			break;
+		case MPMULTIVERSION:
+			flag |= DB_MULTIVERSION;
+			break;
 		case MPNOMMAP:
 			flag |= DB_NOMMAP;
 			break;
@@ -223,21 +238,6 @@ tcl_Mp(interp, objc, objv, envp, envip)
 			break;
 		case MPRDONLY:
 			flag |= DB_RDONLY;
-			break;
-		case MPMODE:
-			if (i >= objc) {
-				Tcl_WrongNumArgs(interp, 2, objv,
-				    "?-mode mode?");
-				result = TCL_ERROR;
-				break;
-			}
-			/*
-			 * Don't need to check result here because
-			 * if TCL_ERROR, the error message is already
-			 * set up, and we'll bail out below.  If ok,
-			 * the mode is set and we go on.
-			 */
-			result = Tcl_GetIntFromObj(interp, objv[i++], &mode);
 			break;
 		}
 		if (result != TCL_OK)
@@ -374,6 +374,9 @@ tcl_MpStat(interp, objc, objv, envp)
 	    sp->st_hash_max_wait);
 	MAKE_STAT_LIST("Number of region lock nowaits", sp->st_region_nowait);
 	MAKE_STAT_LIST("Number of region lock waits", sp->st_region_wait);
+	MAKE_STAT_LIST("Buffers frozen", sp->st_mvcc_frozen);
+	MAKE_STAT_LIST("Buffers thawed", sp->st_mvcc_thawed);
+	MAKE_STAT_LIST("Frozen buffers freed", sp->st_mvcc_freed);
 	MAKE_STAT_LIST("Page allocations", sp->st_alloc);
 	MAKE_STAT_LIST("Buckets examined during allocation",
 	    sp->st_alloc_buckets);
@@ -382,6 +385,7 @@ tcl_MpStat(interp, objc, objv, envp)
 	MAKE_STAT_LIST("Pages examined during allocation", sp->st_alloc_pages);
 	MAKE_STAT_LIST("Maximum pages examined during allocation",
 	    sp->st_alloc_max_pages);
+	MAKE_STAT_LIST("Threads waiting on buffer I/O", sp->st_io_wait);
 
 	/*
 	 * Save global stat list as res1.  The MAKE_STAT_LIST
@@ -587,24 +591,30 @@ tcl_MpGet(interp, objc, objv, mp, mpip)
 {
 	static const char *mpget[] = {
 		"-create",
+		"-dirty",
 		"-last",
 		"-new",
+		"-txn",
 		NULL
 	};
 	enum mpget {
 		MPGET_CREATE,
+		MPGET_DIRTY,
 		MPGET_LAST,
-		MPGET_NEW
+		MPGET_NEW,
+		MPGET_TXN
 	};
 
 	DBTCL_INFO *ip;
 	Tcl_Obj *res;
+	DB_TXN *txn;
 	db_pgno_t pgno;
 	u_int32_t flag;
 	int i, ipgno, optindex, result, ret;
-	char newname[MSG_SIZE];
+	char *arg, msg[MSG_SIZE], newname[MSG_SIZE];
 	void *page;
 
+	txn = NULL;
 	result = TCL_OK;
 	memset(newname, 0, MSG_SIZE);
 	i = 2;
@@ -627,11 +637,29 @@ tcl_MpGet(interp, objc, objv, mp, mpip)
 		case MPGET_CREATE:
 			flag |= DB_MPOOL_CREATE;
 			break;
+		case MPGET_DIRTY:
+			flag |= DB_MPOOL_DIRTY;
+			break;
 		case MPGET_LAST:
 			flag |= DB_MPOOL_LAST;
 			break;
 		case MPGET_NEW:
 			flag |= DB_MPOOL_NEW;
+			break;
+		case MPGET_TXN:
+			if (i == objc) {
+				Tcl_WrongNumArgs(interp, 2, objv, "?-txn id?");
+				result = TCL_ERROR;
+				break;
+			}
+			arg = Tcl_GetStringFromObj(objv[i++], NULL);
+			txn = NAME_TO_TXN(arg);
+			if (txn == NULL) {
+				snprintf(msg, MSG_SIZE,
+				    "mpool get: Invalid txn: %s\n", arg);
+				Tcl_SetResult(interp, msg, TCL_VOLATILE);
+				result = TCL_ERROR;
+			}
 			break;
 		}
 		if (result != TCL_OK)
@@ -662,7 +690,7 @@ tcl_MpGet(interp, objc, objv, mp, mpip)
 	}
 	_debug_check();
 	pgno = (db_pgno_t)ipgno;
-	ret = mp->get(mp, &pgno, flag, &page);
+	ret = mp->get(mp, &pgno, NULL, flag, &page);
 	result = _ReturnSetup(interp, ret, DB_RETOK_MPGET(ret), "mpool get");
 	if (result == TCL_ERROR)
 		_DeleteInfo(ip);
@@ -789,14 +817,10 @@ tcl_Pg(interp, objc, objv, page, mp, pgip, putop)
 	int putop;			/* Operation */
 {
 	static const char *pgopt[] = {
-		"-clean",
-		"-dirty",
 		"-discard",
 		NULL
 	};
 	enum pgopt {
-		PGCLEAN,
-		PGDIRTY,
 		PGDISCARD
 	};
 	u_int32_t flag;
@@ -811,12 +835,6 @@ tcl_Pg(interp, objc, objv, page, mp, pgip, putop)
 			return (IS_HELP(objv[i]));
 		i++;
 		switch ((enum pgopt)optindex) {
-		case PGCLEAN:
-			flag |= DB_MPOOL_CLEAN;
-			break;
-		case PGDIRTY:
-			flag |= DB_MPOOL_DIRTY;
-			break;
 		case PGDISCARD:
 			flag |= DB_MPOOL_DISCARD;
 			break;

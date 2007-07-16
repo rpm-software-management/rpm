@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: StoredCollection.java,v 1.4 2004/08/02 18:52:05 mjc Exp $
+ * $Id: StoredCollection.java,v 12.6 2006/09/08 20:32:13 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sleepycat.db.CursorConfig;
+import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.JoinConfig;
 import com.sleepycat.db.OperationStatus;
@@ -26,22 +28,14 @@ import com.sleepycat.db.OperationStatus;
  * and {@link #remove}, are provided by concrete classes that extend this
  * class.
  *
- * <p><em>Note that this class does not conform to the standard Java
- * collections interface in the following ways:</em></p>
- * <ul>
- * <li>The {@link #size} method always throws
- * <code>UnsupportedOperationException</code> because, for performance reasons,
- * databases do not maintain their total record count.</li>
- * <li>All iterators must be explicitly closed using {@link
- * StoredIterator#close()} or {@link StoredIterator#close(java.util.Iterator)}
- * to release the underlying database cursor resources.</li>
- * </ul>
- *
  * <p>In addition, this class provides the following methods for stored
  * collections only.  Note that the use of these methods is not compatible with
  * the standard Java collections interface.</p>
  * <ul>
- * <li>{@link #iterator(boolean)}</li>
+ * <li>{@link #getIteratorBlockSize}</li>
+ * <li>{@link #setIteratorBlockSize}</li>
+ * <li>{@link #storedIterator()}</li>
+ * <li>{@link #storedIterator(boolean)}</li>
  * <li>{@link #join}</li>
  * <li>{@link #toList()}</li>
  * </ul>
@@ -51,9 +45,44 @@ import com.sleepycat.db.OperationStatus;
 public abstract class StoredCollection extends StoredContainer
     implements Collection {
 
+    /**
+     * The default number of records read at one time by iterators.
+     * @see #setIteratorBlockSize
+     */
+    public static final int DEFAULT_ITERATOR_BLOCK_SIZE = 10;
+
+    private int iteratorBlockSize = DEFAULT_ITERATOR_BLOCK_SIZE;
+
     StoredCollection(DataView view) {
 
         super(view);
+    }
+
+    /**
+     * Returns the number of records read at one time by iterators returned by
+     * the {@link #iterator} method.  By default this value is {@link
+     * #DEFAULT_ITERATOR_BLOCK_SIZE}.
+     */
+    public int getIteratorBlockSize() {
+
+        return iteratorBlockSize;
+    }
+
+    /**
+     * Changes the number of records read at one time by iterators returned by
+     * the {@link #iterator} method.  By default this value is {@link
+     * #DEFAULT_ITERATOR_BLOCK_SIZE}.
+     *
+     * @throws IllegalArgumentException if the blockSize is less than two.
+     */
+    public void setIteratorBlockSize(int blockSize) {
+
+        if (blockSize < 2) {
+            throw new IllegalArgumentException
+                ("blockSize is less than two: " + blockSize);
+        }
+
+        iteratorBlockSize = blockSize;
     }
 
     final boolean add(Object key, Object value) {
@@ -73,27 +102,64 @@ public abstract class StoredCollection extends StoredContainer
         }
     }
 
+    BlockIterator blockIterator() {
+        return new BlockIterator(this, isWriteAllowed(), iteratorBlockSize);
+    }
+
     /**
      * Returns an iterator over the elements in this collection.
      * The iterator will be read-only if the collection is read-only.
      * This method conforms to the {@link Collection#iterator} interface.
      *
-     * @return a {@link StoredIterator} for this collection.
+     * <p>The iterator returned by this method does not keep a database cursor
+     * open and therefore it does not need to be closed.  It reads blocks of
+     * records as needed, opening and closing a cursor to read each block of
+     * records.  The number of records per block is 10 by default and can be
+     * changed with {@link #setIteratorBlockSize}.</p>
      *
-     * @throws RuntimeExceptionWrapper if a {@link DatabaseException} is
-     * thrown.
+     * <p>Because this iterator does not keep a cursor open, if it is used
+     * without transactions, the iterator does not have <em>cursor
+     * stability</em> characteristics.  In other words, the record at the
+     * current iterator position can be changed or deleted by another thread.
+     * To prevent this from happening, call this method within a transaction or
+     * use the {@link #storedIterator()} method instead.</p>
+     *
+     * @return a standard {@link Iterator} for this collection.
      *
      * @see #isWriteAllowed
      */
     public Iterator iterator() {
+        return blockIterator();
+    }
 
-        return iterator(isWriteAllowed());
+    /**
+     * Returns an iterator over the elements in this collection.
+     * The iterator will be read-only if the collection is read-only.
+     * This method does not exist in the standard {@link Collection} interface.
+     *
+     * <p><strong>Warning:</strong> The iterator returned must be explicitly
+     * closed using {@link StoredIterator#close()} or {@link
+     * StoredIterator#close(java.util.Iterator)} to release the underlying
+     * database cursor resources.</p>
+     *
+     * @return a {@link StoredIterator} for this collection.
+     *
+     * @see #isWriteAllowed
+     */
+    public StoredIterator storedIterator() {
+
+        return storedIterator(isWriteAllowed());
     }
 
     /**
      * Returns a read or read-write iterator over the elements in this
      * collection.
      * This method does not exist in the standard {@link Collection} interface.
+     *
+     * <p><strong>Warning:</strong> The iterator returned must be explicitly
+     * closed using {@link StoredIterator#close()} or {@link
+     * StoredIterator#close(java.util.Iterator)} to release the underlying
+     * database cursor resources.</p>
      *
      * @param writeAllowed is true to open a read-write iterator or false to
      * open a read-only iterator.  If the collection is read-only the iterator
@@ -109,7 +175,7 @@ public abstract class StoredCollection extends StoredContainer
      *
      * @see #isWriteAllowed
      */
-    public StoredIterator iterator(boolean writeAllowed) {
+    public StoredIterator storedIterator(boolean writeAllowed) {
 
         try {
             return new StoredIterator(this, writeAllowed && isWriteAllowed(),
@@ -117,6 +183,17 @@ public abstract class StoredCollection extends StoredContainer
         } catch (Exception e) {
             throw StoredContainer.convertException(e);
         }
+    }
+
+    /**
+     * @deprecated Please use {@link #storedIterator()} or {@link
+     * #storedIterator(boolean)} instead.  Because the iterator returned must
+     * be closed, the method name {@code iterator} is confusing since standard
+     * Java iterators do not need to be closed.
+     */
+    public StoredIterator iterator(boolean writeAllowed) {
+
+        return storedIterator(writeAllowed);
     }
 
     /**
@@ -129,13 +206,13 @@ public abstract class StoredCollection extends StoredContainer
     public Object[] toArray() {
 
         ArrayList list = new ArrayList();
-        Iterator i = iterator();
+        StoredIterator i = storedIterator();
         try {
             while (i.hasNext()) {
                 list.add(i.next());
             }
         } finally {
-            StoredIterator.close(i);
+            i.close();
         }
         return list.toArray();
     }
@@ -152,7 +229,7 @@ public abstract class StoredCollection extends StoredContainer
     public Object[] toArray(Object[] a) {
 
         int j = 0;
-        Iterator i = iterator();
+        StoredIterator i = storedIterator();
         try {
             while (j < a.length && i.hasNext()) {
                 a[j++] = i.next();
@@ -167,7 +244,7 @@ public abstract class StoredCollection extends StoredContainer
                 a = list.toArray(a);
             }
         } finally {
-            StoredIterator.close(i);
+            i.close();
         }
         return a;
     }
@@ -181,7 +258,7 @@ public abstract class StoredCollection extends StoredContainer
      * thrown.
      */
     public boolean containsAll(Collection coll) {
-	Iterator i = coll.iterator();
+	Iterator i = storedOrExternalIterator(coll);
         try {
             while (i.hasNext()) {
                 if (!contains(i.next())) {
@@ -212,7 +289,7 @@ public abstract class StoredCollection extends StoredContainer
 	Iterator i = null;
         boolean doAutoCommit = beginAutoCommit();
         try {
-            i = coll.iterator();
+            i = storedOrExternalIterator(coll);
             boolean changed = false;
             while (i.hasNext()) {
                 if (add(i.next())) {
@@ -259,22 +336,24 @@ public abstract class StoredCollection extends StoredContainer
     }
 
     private boolean removeAll(Collection coll, boolean ifExistsInColl) {
-	Iterator i = null;
+	StoredIterator i = null;
         boolean doAutoCommit = beginAutoCommit();
         try {
             boolean changed = false;
-            i = iterator();
+            i = storedIterator();
             while (i.hasNext()) {
                 if (ifExistsInColl == coll.contains(i.next())) {
                     i.remove();
                     changed = true;
                 }
             }
-            StoredIterator.close(i);
+            i.close();
             commitAutoCommit(doAutoCommit);
             return changed;
         } catch (Exception e) {
-            StoredIterator.close(i);
+            if (i != null) {
+                i.close();
+            }
             throw handleException(e, doAutoCommit);
         }
     }
@@ -292,7 +371,7 @@ public abstract class StoredCollection extends StoredContainer
 
         if (other instanceof Collection) {
             Collection otherColl = StoredCollection.copyCollection(other);
-            Iterator i = iterator();
+            StoredIterator i = storedIterator();
             try {
                 while (i.hasNext()) {
                     if (!otherColl.remove(i.next())) {
@@ -301,7 +380,7 @@ public abstract class StoredCollection extends StoredContainer
                 }
                 return otherColl.isEmpty();
             } finally {
-                StoredIterator.close(i);
+                i.close();
             }
         } else {
             return false;
@@ -329,19 +408,18 @@ public abstract class StoredCollection extends StoredContainer
     public List toList() {
 
         ArrayList list = new ArrayList();
-        Iterator i = iterator();
+        StoredIterator i = storedIterator();
         try {
             while (i.hasNext()) list.add(i.next());
             return list;
         } finally {
-            StoredIterator.close(i);
+            i.close();
         }
     }
 
     /**
      * Converts the collection to a string representation for debugging.
-     * WARNING: All elements will be converted to strings and returned and
-     * therefore the returned string may be very large.
+     * WARNING: The returned string may be very large.
      *
      * @return the string representation.
      *
@@ -351,7 +429,7 @@ public abstract class StoredCollection extends StoredContainer
     public String toString() {
 	StringBuffer buf = new StringBuffer();
 	buf.append("[");
-	Iterator i = iterator();
+	StoredIterator i = storedIterator();
         try {
             while (i.hasNext()) {
                 if (buf.length() > 1) buf.append(',');
@@ -360,14 +438,46 @@ public abstract class StoredCollection extends StoredContainer
             buf.append(']');
             return buf.toString();
         } finally {
-            StoredIterator.close(i);
+            i.close();
         }
+    }
+
+    // Inherit javadoc
+    public int size() {
+
+        int count = 0;
+        boolean countDups = iterateDuplicates();
+        CursorConfig cursorConfig = view.currentTxn.isLockingMode() ?
+            CursorConfig.READ_UNCOMMITTED : null;
+        DataCursor cursor = null;
+        try {
+            cursor = new DataCursor(view, false, cursorConfig);
+            OperationStatus status = cursor.getFirst(false);
+            while (status == OperationStatus.SUCCESS) {
+                if (countDups) {
+                    count += cursor.count();
+                } else {
+                    count += 1;
+                }
+                status = cursor.getNextNoDup(false);
+            }
+        } catch (Exception e) {
+            throw StoredContainer.convertException(e);
+        } finally {
+            closeCursor(cursor);
+        }
+        return count;
     }
 
     /**
      * Returns an iterator representing an equality join of the indices and
      * index key values specified.
      * This method does not exist in the standard {@link Collection} interface.
+     *
+     * <p><strong>Warning:</strong> The iterator returned must be explicitly
+     * closed using {@link StoredIterator#close()} or {@link
+     * StoredIterator#close(java.util.Iterator)} to release the underlying
+     * database cursor resources.</p>
      *
      * <p>The returned iterator supports only the two methods: hasNext() and
      * next().  All other methods will throw UnsupportedOperationException.</p>
@@ -425,9 +535,18 @@ public abstract class StoredCollection extends StoredContainer
         }
     }
 
-    abstract Object makeIteratorData(StoredIterator iterator,
-                                     DataCursor cursor)
-        throws DatabaseException;
+    Object makeIteratorData(BaseIterator iterator, DataCursor cursor) {
+
+        return makeIteratorData(iterator,
+                                cursor.getKeyThang(),
+                                cursor.getPrimaryKeyThang(),
+                                cursor.getValueThang());
+    }
+
+    abstract Object makeIteratorData(BaseIterator iterator,
+                                     DatabaseEntry keyEntry,
+                                     DatabaseEntry priKeyEntry,
+                                     DatabaseEntry valueEntry);
 
     abstract boolean hasValues();
 

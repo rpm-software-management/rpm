@@ -1,5 +1,5 @@
-<!--$Id: db_checkpoint.so,v 10.26 2002/08/24 18:24:51 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: db_checkpoint.so,v 10.27 2005/12/05 20:48:10 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -25,8 +25,13 @@ database log, and periodically calls <a href="../api_c/txn_checkpoint.html">DB_E
 it.</p>
 <p>The options are as follows:</p>
 <dl compact>
-<dt><b>-1</b><dd>Checkpoint the log once, regardless of whether or not there has been
-activity since the last checkpoint and then exit.
+<dt><b>-1</b><dd>Force a single checkpoint of the log (regardless of whether or not there
+has been activity since the last checkpoint), and then exit.
+<p>
+When the <b>-1</b> flag is specified, the db_checkpoint
+utility will checkpoint the log even if unable to find an existing
+database environment.  This functionality is useful when upgrading
+database environments from one version of Berkeley DB to another.</p>
 <dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
 <dt><b>-k</b><dd>Checkpoint the database at least as often as every <b>kbytes</b> of log
@@ -71,6 +76,6 @@ DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

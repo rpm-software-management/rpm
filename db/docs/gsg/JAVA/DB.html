@@ -51,7 +51,7 @@
           </dt>
           <dt>
             <span class="sect1">
-              <a href="db_config.html">Database Properties</a>
+              <a href="DBConfig.html">Database Properties</a>
             </span>
           </dt>
           <dt>
@@ -77,8 +77,7 @@
         </dl>
       </div>
       <p>In Berkeley DB, a database is a collection of <span class="emphasis"><em>records</em></span>. Records,
-  in turn, consist of two parts: key and data.  That is, records consist of
-  key/data pairings.
+  in turn, consist of key/data pairings.
   </p>
       <p>
 	Conceptually, you can think of a 
@@ -125,14 +124,14 @@
     </p>
         <p>
 		Note that by default, DB does not create databases if they do not already exist. 
-		To override this behavior, set the <a href="db_config.html" title="Database Properties">creation property</a> to true.
+		To override this behavior, set the <a href="DBConfig.html" title="Database Properties">creation property</a> to true.
 	</p>
         <p>
         The following code fragment illustrates a database open:
         
     </p>
         <a id="java_db1"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.Database;
@@ -149,7 +148,7 @@ try {
     // Open the database. Create it if it does not already exist.
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setAllowCreate(true);
-    myDatabase = new Database ("sampleDatabase.db",
+    myDatabase = new Database (&quot;sampleDatabase.db&quot;,
                                null, 
                                dbConfig); 
 } catch (DatabaseException dbe) {

@@ -10,7 +10,7 @@
 #ifdef _WIN32
 extern "C" {
   extern int getopt(int, char * const *, const char *);
-  extern int optind;
+  extern char *optarg;
 }
 #else
 #include <unistd.h>
@@ -38,7 +38,6 @@ main (int argc, char *argv[])
 {
 
    char ch, lastChar;
-   extern char *optarg;
 
    // Initialize the path to the database files
    std::string databaseHome("./");
@@ -114,7 +113,7 @@ show_item(MyDb &itemnameSDB, MyDb &vendorDB, std::string &itemName)
         // Get the search key. This is the name on the inventory
         // record that we want to examine.
         std::cout << "Looking for " << itemName << std::endl;
-        Dbt key((void *)itemName.c_str(), itemName.length() + 1);
+        Dbt key((void *)itemName.c_str(), (u_int32_t)itemName.length() + 1);
         Dbt data;
 
         // Position the cursor to the first record in the secondary
@@ -196,7 +195,7 @@ show_vendor(MyDb &vendorDB, const char *vendor)
         // Set the search key to the vendor's name
         // vendor is explicitly cast to char * to stop a compiler
         // complaint.
-        Dbt key((char *)vendor, strlen(vendor) + 1);
+        Dbt key((char *)vendor, (u_int32_t)strlen(vendor) + 1);
 
         // Make sure we use the memory we set aside for the VENDOR
         // structure rather than the memory that DB allocates.

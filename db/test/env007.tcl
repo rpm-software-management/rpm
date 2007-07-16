@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: env007.tcl,v 11.41 2004/09/22 18:01:04 bostic Exp $
+# $Id: env007.tcl,v 12.13 2006/09/12 18:19:08 carol Exp $
 #
 # TEST	env007
 # TEST	Test DB_CONFIG config file options for berkdb env.
@@ -16,6 +16,7 @@
 # TEST	really env testing, but there's no better place to put it.
 proc env007 { } {
 	global errorInfo
+	global errorCode
 	global passwd
 	global has_crypto
 	source ./include.tcl
@@ -41,7 +42,7 @@ proc env007 { } {
 	set rlist {
 	{ " -txn_max " "set_tx_max" "19" "31"
 	    "Env007.a1: Txn Max" "txn_stat"
-	    "Max Txns" "0" "get_tx_max" }
+	    "Maximum txns" "0" "get_tx_max" }
 	{ " -lock_max_locks " "set_lk_max_locks" "17" "29"
 	    "Env007.a2: Lock Max" "lock_stat"
 	    "Maximum locks" "0" "get_lk_max_locks" }
@@ -93,10 +94,14 @@ proc env007 { } {
 	{ " -txn_timeout " "set_txn_timeout" "100" "120"
 	    "Env007.a15: Txn timeout" "lock_stat"
 	    "Transaction timeout value" "0" "get_timeout txn" }
+	{ " -log_filemode " "set_lg_filemode" "417" "637"
+	    "Env007.a16: Log FileMode" "log_stat"
+	    "Log file mode" "0" "get_lg_filemode" }
 	}
 
 	set e "berkdb_env_noerr -create -mode 0644 -home $testdir -txn "
 	set qnxexclude {set_cachesize}
+
 	foreach item $rlist {
 		set envarg [lindex $item 0]
 		set configarg [lindex $item 1]
@@ -144,7 +149,8 @@ proc env007 { } {
 		if { $statcmd != "" } {
 			set statconfigval [lindex $configval $index]
 			if { $statstr == "Region size" } {
-				set statconfigval [expr $statconfigval + $lbufsize]
+				set statconfigval \
+				    [expr $statconfigval + $lbufsize]
 			}
 			env007_check $env $statcmd $statstr $statconfigval
 		}
@@ -215,6 +221,7 @@ proc env007 { } {
 	{ "set_txn_timeout" "50" "get_timeout txn" "50" }
 	{ "set_verbose" "db_verb_deadlock" "get_verbose deadlock" "on" }
 	{ "set_verbose" "db_verb_recovery" "get_verbose recovery" "on" }
+	{ "set_verbose" "db_verb_register" "get_verbose register" "on" }
 	{ "set_verbose" "db_verb_replication" "get_verbose rep" "on" }
 	{ "set_verbose" "db_verb_waitsfor" "get_verbose wait" "on" }
 	}
@@ -222,6 +229,7 @@ proc env007 { } {
 	env_cleanup $testdir
 	set e "berkdb_env_noerr -create -mode 0644 -home $testdir -txn"
 	set directlist {db_direct_db db_direct_log}
+
 	foreach item $cfglist {
 		env_cleanup $testdir
 		set configarg [lindex $item 0]
@@ -265,6 +273,7 @@ proc env007 { } {
 	{ "-txn" "" "-txn" "get_open_flags" }
 	{ "-recover" "-txn" "-recover" "get_open_flags" }
 	{ "-recover_fatal" "-txn" "-recover_fatal" "get_open_flags" }
+	{ "-register" "-txn -recover" "-register" "get_open_flags" }
 	{ "-use_environ" "" "-use_environ" "get_open_flags" }
 	{ "-use_environ_root" "" "-use_environ_root" "get_open_flags" }
 	{ "" "" "-create" "get_open_flags" }
@@ -274,13 +283,14 @@ proc env007 { } {
 	}
 
 	if { $has_crypto == 1 } {
-		lappend envopenlist \
-		    { "-encryptaes" "$passwd" "-encryptaes" "get_encrypt_flags" }
+		lappend envopenlist {
+		    "-encryptaes" "$passwd" "-encryptaes" "get_encrypt_flags" }
 	}
 
-	set e "berkdb_env -create -mode 0644 -home $testdir"
+	set e "berkdb_env_noerr -create -mode 0644 -home $testdir"
 	set qnxexclude {-system_mem}
 	foreach item $envopenlist {
+		env_cleanup $testdir
 		set envarg [lindex $item 0]
 		set envval [lindex $item 1]
 		set retval [lindex $item 2]
@@ -291,29 +301,48 @@ proc env007 { } {
 			puts "\t\tEnv007: Skipping $envarg for QNX"
 			continue
 		}
-		env_cleanup $testdir
+
+		puts "\t\tEnv007.c: $envarg $retval"
+
 		# Set up env
-		set env [eval $e $envarg $envval]
-		error_check_good envopen [is_valid_env $env] TRUE
+		set ret [catch {eval $e $envarg $envval} env]
 
-		# Check that getter retrieves expected retval.
-		set get_retval [eval $env $getter]
-		if { [is_substr $get_retval $retval] != 1 } {
-			puts "FAIL: $retval\
-			    should be a substring of $get_retval"
-			continue
-		}
-		error_check_good envclose [$env close] 0
+		if { $ret != 0 } {
+			# If the env open failed, it may be because we're on a
+			# platform such as HP-UX 10 that won't support mutexes
+			# in shmget memory.  Verify that the return value was
+			# EINVAL or EOPNOTSUPP and bail gracefully.
+			error_check_good \
+			    is_shm_test [is_substr $envarg -system_mem] 1
+			error_check_good returned_error [expr \
+			    [is_substr $errorCode EINVAL] || \
+			    [is_substr $errorCode EOPNOTSUPP]] 1
+			puts "Warning: platform\
+			    does not support mutexes in shmget memory."
+			puts "Skipping shared memory mpool test."
+		} else {
+			error_check_good env_open [is_valid_env $env] TRUE
 
-		# The -encryptany flag can only be tested on an existing
-		# environment that supports encryption, so do it here.
-		if { $has_crypto == 1 } {
-			if { $envarg == "-encryptaes" } {
-				set env [eval berkdb_env -home $testdir\
-				    -encryptany $passwd]
-				error_check_good get_encryptany \
-				    [eval $env get_encrypt_flags] "-encryptaes"
-				error_check_good env_close [$env close] 0
+			# Check that getter retrieves expected retval.
+			set get_retval [eval $env $getter]
+			if { [is_substr $get_retval $retval] != 1 } {
+				puts "FAIL: $retval\
+				    should be a substring of $get_retval"
+				continue
+			}
+			error_check_good envclose [$env close] 0
+
+			# The -encryptany flag can only be tested on an existing
+			# environment that supports encryption, so do it here.
+			if { $has_crypto == 1 } {
+				if { $envarg == "-encryptaes" } {
+					set env [eval berkdb_env -home $testdir\
+					    -encryptany $passwd]
+					error_check_good get_encryptany \
+					    [eval $env get_encrypt_flags] \
+					    "-encryptaes"
+					error_check_good envclose [$env close] 0
+				}
 			}
 		}
 	}
@@ -405,7 +434,6 @@ proc env007 { } {
 	{ "set_lk_detect" "db_xxx" }
 	{ "set_lk_detect" "1" }
 	{ "set_lk_detect" "db_lock_youngest x" }
-	{ "set_lk_max" "db_xxx" }
 	{ "set_lk_max_locks" "db_xxx" }
 	{ "set_lk_max_lockers" "db_xxx" }
 	{ "set_lk_max_objects" "db_xxx" }
@@ -432,8 +460,7 @@ proc env007 { } {
 		#  verify using just config file
 		set stat [catch {eval $e} ret]
 		error_check_good envopen $stat 1
-		error_check_good error [is_substr $errorInfo \
-		    "incorrect arguments for name-value pair"] 1
+		error_check_good error [is_substr $errorCode EINVAL] 1
 	}
 
 	puts "\tEnv007.g: Config name error set_xxx"
@@ -452,7 +479,6 @@ proc env007 { } {
 	#	1.  Value specified to flag
 	#	2.  Specific method, if needed
 	# 	3.  Arg used in getter
-
 	set olist {
 	{ "-minkey" "4" " -btree " "get_bt_minkey" }
 	{ "-cachesize" "0 1048576 1" "" "get_cachesize" }
@@ -468,7 +494,7 @@ proc env007 { } {
 	{ "" "-renumber" "-recno" "get_flags" }
 	{ "" "-snapshot" "-recno" "get_flags" }
 	{ "" "-create" "" "get_open_flags" }
-	{ "" "-create -dirty" "" "get_open_flags" }
+	{ "" "-create -read_uncommitted" "" "get_open_flags" }
 	{ "" "-create -excl" "" "get_open_flags" }
 	{ "" "-create -nommap" "" "get_open_flags" }
 	{ "" "-create -thread" "" "get_open_flags" }
@@ -483,7 +509,7 @@ proc env007 { } {
 	{ "-source" "include.tcl" "-recno" "get_re_source" }
 	}
 
-	set o "berkdb_open -create -mode 0644"
+	set o "berkdb_open_noerr -create -mode 0644"
 	foreach item $olist {
 		cleanup $testdir NULL
 		set flag [lindex $item 0]
@@ -494,34 +520,52 @@ proc env007 { } {
 		}
 		set getter [lindex $item 3]
 
+		puts "\t\tEnv007.h: $flag $flagval"
+
 		# Check that open is successful with the flag.
 		# The option -cachesize requires grouping for $flagval.
 		if { $flag == "-cachesize" } {
-			set db [eval $o $method $flag {$flagval}\
-			    $testdir/a.db]
+			set ret [catch {eval $o $method $flag {$flagval}\
+			    $testdir/a.db} db]
 		} else {
-			set db [eval $o $method $flag $flagval\
-			    $testdir/a.db]
+			set ret [catch {eval $o $method $flag $flagval\
+			    $testdir/a.db} db]
 		}
-		error_check_good dbopen:0 [is_valid_db $db] TRUE
+		if { $ret != 0 } {
+			# If the open failed, it may be because we're on a
+			# platform such as HP-UX 10 that won't support
+			# locks in process-local memory.
+			# Verify that the return value was EOPNOTSUPP
+			# and bail gracefully.
+			error_check_good \
+			    is_thread_test [is_substr $flagval -thread] 1
+			error_check_good returned_error [expr \
+			    [is_substr $errorCode EINVAL] || \
+			    [is_substr $errorCode EOPNOTSUPP]] 1
+			puts "Warning: platform does not support\
+			    locks inside process-local memory."
+			puts "Skipping test of -thread flag."
+		} else {
+			error_check_good dbopen:0 [is_valid_db $db] TRUE
 
-		# Check that getter retrieves the correct value.
-		# Cachesizes under 500MB are adjusted upward to
-		# about 25% so just make sure we're in the right
-		# ballpark, between 1.2 and 1.3 of the original value.
-		if { $flag == "-cachesize" } {
-			set retval [eval $db $getter]
-			set retbytes [lindex $retval 1]
-			set setbytes [lindex $flagval 1]
-			error_check_good cachesize_low\
-			    [expr $retbytes > [expr $setbytes * 6 / 5]] 1
-			error_check_good cachesize_high\
-			    [expr $retbytes < [expr $setbytes * 13 / 10]] 1
-		} else {
-			error_check_good get_flagval \
-			    [eval $db $getter] $flagval
+			# Check that getter retrieves the correct value.
+			# Cachesizes under 500MB are adjusted upward to
+			# about 25% so just make sure we're in the right
+			# ballpark, between 1.2 and 1.3 of the original value.
+			if { $flag == "-cachesize" } {
+				set retval [eval $db $getter]
+				set retbytes [lindex $retval 1]
+				set setbytes [lindex $flagval 1]
+				error_check_good cachesize_low [expr\
+				    $retbytes > [expr $setbytes * 6 / 5]] 1
+				error_check_good cachesize_high [expr\
+				    $retbytes < [expr $setbytes * 13 / 10]] 1
+			} else {
+				error_check_good get_flagval \
+				    [eval $db $getter] $flagval
+			}
+			error_check_good dbclose:0 [$db close] 0
 		}
-		error_check_good dbclose:0 [$db close] 0
 	}
 
 	puts "\tEnv007.i: Test berkdb_open -rdonly."

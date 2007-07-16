@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.nl,v 1.7 2003/09/30 19:16:42 bostic Exp $
+# $Id: chk.nl,v 12.0 2004/11/17 03:44:43 bostic Exp $
 #
 # Check to make sure that there are no trailing newlines in __db_err calls.
 

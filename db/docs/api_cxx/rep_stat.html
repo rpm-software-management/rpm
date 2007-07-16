@@ -1,5 +1,5 @@
-<!--$Id: rep_stat.so,v 10.32 2004/08/13 03:39:02 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: rep_stat.so,v 10.39 2005/11/11 19:00:31 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -43,19 +43,45 @@ the memory reference; references inside the returned memory need not be
 individually freed.</p>
 <p>The following DB_REP_STAT fields will be filled in:</p>
 <dl compact>
-<dt>u_int32_t st_status;<dd>The current replication mode.  Set to <a href="../api_cxx/rep_start.html#DB_REP_MASTER">DB_REP_MASTER</a> if the
-environment is a replication master, <a href="../api_cxx/rep_start.html#DB_REP_CLIENT">DB_REP_CLIENT</a> if the
-environment is a replication client, or 0 if replication is not
-configured.
-<dt>DB_LSN st_next_lsn;<dd>In replication environments configured as masters, the next LSN expected.
-In replication environments configured as clients, the next LSN to be used.
-<dt>DB_LSN st_waiting_lsn;<dd>The LSN of the first log record we have after missing log records
-being waited for, or 0 if no log records are currently missing.
+<dt>u_int32_t st_bulk_fills;<dd>The number of times the bulk buffer filled up, forcing the buffer content
+to be sent.
+<dt>u_int32_t st_bulk_overflows;<dd>The number of times a record was bigger than the entire bulk buffer,
+and therefore had to be sent as a singleton.
+<dt>u_int32_t st_bulk_records;<dd>The number of records added to a bulk buffer.
+<dt>u_int32_t st_bulk_transfers;<dd>The number of bulk buffers transferred (via a call to the
+application's <b>send</b> function).
+<dt>u_int32_t st_client_rerequests;<dd>The number of times this client site received a "re-request" message,
+indicating that a request it previously sent to another client could
+not be serviced by that client.  (Compare to
+<b>st_client_svc_miss</b>.)
+<dt>u_int32_t st_client_svc_miss;<dd>The number of "request" type messages received by this client that
+could not be processed, forcing the originating requester to try sending
+the request to the master (or another client).
+<dt>u_int32_t st_client_svc_req;<dd>The number of "request" type messages received by this client.
+("Request" messages are usually sent from a client to the master, but a
+message marked with the <a href="../api_cxx/rep_transport.html#DB_REP_ANYWHERE">DB_REP_ANYWHERE</a> flag in the invocation
+of the application's <b>send</b> function may be sent to another client
+instead.)
 <dt>u_int32_t st_dupmasters;<dd>The number of duplicate master conditions detected.
+<dt>u_int32_t st_egen;<dd>The current election generation number.
+<dt>u_int32_t st_election_cur_winner;<dd>The election winner.
+<dt>u_int32_t st_election_gen;<dd>The election generation number.
+<dt>DB_LSN st_election_lsn;<dd>The maximum LSN of election winner.
+<dt>u_int32_t st_election_nsites;<dd>The number sites responding to this site during the last election.
+<dt>u_int32_t st_election_nvotes;<dd>The number of votes required in the last election.
+<dt>u_int32_t st_election_priority;<dd>The election priority.
+<dt>u_int32_t st_election_sec;<dd>The number of seconds the last election took (the total election time
+is <b>st_election_sec</b> plus <b>st_election_usec</b>).
+<dt>u_int32_t st_election_status;<dd>The current election phase (0 if no election is in progress).
+<dt>u_int32_t st_election_tiebreaker;<dd>The election tiebreaker value.
+<dt>u_int32_t st_election_usec;<dd>The number of microseconds the last election took (the total election
+time is <b>st_election_sec</b> plus <b>st_election_usec</b>).
+<dt>u_int32_t st_election_votes;<dd>The number of votes received in the last election.
+<dt>u_int32_t st_elections;<dd>The number of elections held.
+<dt>u_int32_t st_elections_won;<dd>The number of elections won.
 <dt>u_int32_t st_env_id;<dd>The current environment ID.
 <dt>u_int32_t st_env_priority;<dd>The current environment priority.
 <dt>u_int32_t st_gen;<dd>The current generation number.
-<dt>u_int32_t st_egen;<dd>The current election generation number.
 <dt>u_int32_t st_log_duplicated;<dd>The number of duplicate log records received.
 <dt>u_int32_t st_log_queued;<dd>The number of log records currently queued.
 <dt>u_int32_t st_log_queued_max;<dd>The maximum number of log records ever queued at once.
@@ -70,31 +96,28 @@ being waited for, or 0 if no log records are currently missing.
 <dt>u_int32_t st_msgs_send_failures;<dd>The number of failed message sends.
 <dt>u_int32_t st_msgs_sent;<dd>The number of messages sent.
 <dt>u_int32_t st_newsites;<dd>The number of new site messages received.
-<dt>int st_nsites;<dd>The number of sites believed to be in the replication group.
-<dt>u_int32_t st_outdated;<dd>The number of outdated conditions detected.
+<dt>DB_LSN st_next_lsn;<dd>In replication environments configured as masters, the next LSN expected.
+In replication environments configured as clients, the next LSN to be used.
 <dt>u_int32_t st_next_pg;<dd>The next page number we expect to receive.
-<dt>u_int32_t st_waiting_pg;<dd>The page number of the first page we have after missing pages
-being waited for, or 0 if no pages are currently missing.
+<dt>int st_nsites;<dd>The number of sites used in the last election.
+<dt>u_int32_t st_nthrottles;<dd>Transmission limited. This indicates the number of times that data
+transmission was stopped to limit the amount of data sent in response
+to a single call to <a href="../api_cxx/rep_message.html">DbEnv::rep_process_message</a>.
+<dt>u_int32_t st_outdated;<dd>The number of outdated conditions detected.
 <dt>u_int32_t st_pg_duplicated;<dd>The number of duplicate pages received.
 <dt>u_int32_t st_pg_records;<dd>The number of pages received and stored.
 <dt>u_int32_t st_pg_requested;<dd>The number of pages missed and requested from the master.
 <dt>u_int32_t st_startup_complete;<dd>The client site has completed its startup procedures and is now
 handling live records from the master.
+<dt>u_int32_t st_status;<dd>The current replication mode.  Set to <a href="../api_cxx/repmgr_start.html#DB_REP_MASTER">DB_REP_MASTER</a> if the
+environment is a replication master, <a href="../api_cxx/repmgr_start.html#DB_REP_CLIENT">DB_REP_CLIENT</a> if the
+environment is a replication client, or 0 if replication is not
+configured.
 <dt>u_int32_t st_txns_applied;<dd>The number of transactions applied.
-<dt>u_int32_t st_elections;<dd>The number of elections held.
-<dt>u_int32_t st_elections_won;<dd>The number of elections won.
-<dt>u_int32_t st_election_status;<dd>The current election phase (0 if no election is in progress).
-<dt>u_int32_t st_election_cur_winner;<dd>The election winner.
-<dt>u_int32_t st_election_gen;<dd>The election generation number.
-<dt>DB_LSN st_election_lsn;<dd>The maximum LSN of election winner.
-<dt>u_int32_t st_election_nsites;<dd>The number sites expected to participate in elections.
-<dt>u_int32_t st_election_nvotes;<dd>The number of votes required to complete the election.
-<dt>u_int32_t st_nthrottles;<dd>Transmission limited. This indicates the number of times that data
-transmission was stopped to limit the amount of data sent in response
-to a single call to <a href="../api_cxx/rep_message.html">DbEnv::rep_process_message</a>.
-<dt>u_int32_t st_election_priority;<dd>The election priority.
-<dt>u_int32_t st_election_tiebreaker;<dd>The election tiebreaker value.
-<dt>u_int32_t st_election_votes;<dd>The votes received this election round.
+<dt>DB_LSN st_waiting_lsn;<dd>The LSN of the first log record we have after missing log records
+being waited for, or 0 if no log records are currently missing.
+<dt>u_int32_t st_waiting_pg;<dd>The page number of the first page we have after missing pages
+being waited for, or 0 if no pages are currently missing.
 </dl>
 <p>The DbEnv::rep_stat method
 either returns a non-zero error value
@@ -109,7 +132,7 @@ the following value:
 <dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
 </dl>
 <dt><b>statp</b><dd>The <b>statp</b> parameter references memory into which
-a pointer to the allocated statistics structure is copied.
+a pointer to the allocated statistics structure is copied. 
 </dl>
 <h3>Errors</h3>
 <p>The DbEnv::rep_stat method
@@ -123,7 +146,7 @@ invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DbEnv::rep_stat_print</h3>
-<p>The DbEnv::rep_stat_print method returns the
+<p>The DbEnv::rep_stat_print method displays the
 replication subsystem statistical information, as described for the DbEnv::rep_stat method.
 The information is printed to a specified output channel (see the
 <a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> method for more information), or passed to an
@@ -138,10 +161,11 @@ failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
-the following value:
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 </dl>
 </dl>
 <hr size=1 noshade>
@@ -153,6 +177,6 @@ the following value:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

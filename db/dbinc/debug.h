@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1998-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: debug.h,v 11.44 2004/09/24 00:43:18 bostic Exp $
+ * $Id: debug.h,v 12.8 2006/08/24 14:45:29 bostic Exp $
  */
 
 #ifndef _DB_DEBUG_H_
@@ -33,10 +33,11 @@ extern "C" {
  *
  * Use __STDC__ rather than STDC_HEADERS, the #e construct is ANSI C specific.
  */
-#if defined(__STDC__) && defined(DIAGNOSTIC)
-#define	DB_ASSERT(e)	((e) ? (void)0 : __db_assert(#e, __FILE__, __LINE__))
+#if defined(DIAGNOSTIC) && defined(__STDC__)
+#define	DB_ASSERT(env, e)						\
+	((e) ? (void)0 : __db_assert(env, #e, __FILE__, __LINE__))
 #else
-#define	DB_ASSERT(e)
+#define	DB_ASSERT(env, e)
 #endif
 
 /*
@@ -45,9 +46,10 @@ extern "C" {
  * Unused, or not-used-yet variable.  We need to write and then read the
  * variable, some compilers are too bloody clever by half.
  */
-#define	COMPQUIET(n, v)							\
-	(n) = (v);							\
-	(n) = (n)
+#define	COMPQUIET(n, v)	do {					        \
+	(n) = (v);						        \
+	(n) = (n);						        \
+} while (0)
 
 /*
  * Purify and other run-time tools complain about uninitialized reads/writes
@@ -59,6 +61,17 @@ extern "C" {
 #else
 #define	UMRW_SET(v)
 #endif
+
+/*
+ * Errors are in one of two areas: a Berkeley DB error, or a system-level
+ * error.  We use db_strerror to translate the former and __os_strerror to
+ * translate the latter.
+ */
+typedef enum {
+	DB_ERROR_NOT_SET=0,
+	DB_ERROR_SET=1,
+	DB_ERROR_SYSTEM=2
+} db_error_set_t;
 
 /*
  * Message handling.  Use a macro instead of a function because va_list
@@ -209,6 +222,13 @@ extern "C" {
 		(flags) |= DB_LOCK_NOWAIT;				\
 } while (0)
 
+#define	DB_ENV_TEST_RECYCLE(env, ret) do {				\
+	if ((env)->test_copy == DB_TEST_RECYCLE) {			\
+		ret = 0;						\
+		goto db_tr_err;						\
+	}								\
+} while (0)
+
 #define	DB_ENV_TEST_RECOVERY(env, val, ret, name) do {			\
 	int __ret;							\
 	PANIC_CHECK((env));						\
@@ -247,15 +267,16 @@ extern "C" {
 
 #define	DB_TEST_RECOVERY_LABEL	db_tr_err:
 
-#define	DB_TEST_CHECKPOINT(env, val)					\
-	if ((val) != 0)							\
+#define	DB_TEST_WAIT(env, val)					\
+	if ((val) != 0)						\
 		__os_sleep((env), (u_long)(val), 0)
 #else
+#define	DB_ENV_TEST_RECYCLE(env, ret);
 #define	DB_TEST_SUBLOCKS(env, flags)
 #define	DB_ENV_TEST_RECOVERY(env, val, ret, name)
 #define	DB_TEST_RECOVERY(dbp, val, ret, name)
 #define	DB_TEST_RECOVERY_LABEL
-#define	DB_TEST_CHECKPOINT(env, val)
+#define	DB_TEST_WAIT(env, val)
 #endif
 
 #if defined(__cplusplus)

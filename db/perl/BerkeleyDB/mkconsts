@@ -668,7 +668,7 @@ use constant IGNORE => 'ignore' ;
 	TXN_RESTORED               => IGNORE,
 
 	#########
-	# 4.3.12
+	# 4.3.21
 	#########
 
 	DBC_DEGREE_2               => IGNORE,
@@ -707,6 +707,49 @@ use constant IGNORE => 'ignore' ;
 	TXN_DEADLOCK               => IGNORE,
 	TXN_DEGREE_2               => IGNORE,
 
+	#########
+	# 4.3.28
+	#########
+
+	DB_SEQUENCE_OLDVER         => DEFINE,
+
+	#########
+	# 4.4.9
+	#########
+
+	DBC_READ_COMMITTED         => IGNORE,
+	DBC_READ_UNCOMMITTED       => IGNORE,
+	DB_AM_READ_UNCOMMITTED     => IGNORE,
+	DB_ASSOC_IMMUTABLE_KEY     => DEFINE,
+	DB_COMPACT_FLAGS           => DEFINE,
+	DB_FREELIST_ONLY           => DEFINE,
+	DB_FREE_SPACE              => DEFINE,
+	DB_IMMUTABLE_KEY           => DEFINE,
+	DB_MUTEX_ALLOCATED         => DEFINE,
+	DB_MUTEX_LOGICAL_LOCK      => DEFINE,
+	DB_MUTEX_SELF_BLOCK        => DEFINE,
+	DB_MUTEX_THREAD            => DEFINE,
+	DB_READ_COMMITTED          => DEFINE,
+	DB_READ_UNCOMMITTED        => DEFINE,
+	DB_REGISTER                => DEFINE,
+	DB_REP_ANYWHERE            => DEFINE,
+	DB_REP_BULKOVF             => DEFINE,
+	DB_REP_IGNORE              => DEFINE,
+	DB_REP_LOCKOUT             => DEFINE,
+	DB_REP_REREQUEST           => DEFINE,
+	DB_SEQ_WRAPPED             => DEFINE,
+	DB_VERB_REGISTER           => DEFINE,
+	REP_CONF_AUTOINIT          => DEFINE,
+	REP_CONF_BULK              => DEFINE,
+	REP_CONF_DELAYCLIENT       => DEFINE,
+	REP_CONF_NOWAIT            => DEFINE,
+	TXN_READ_COMMITTED         => IGNORE,
+	TXN_READ_UNCOMMITTED       => IGNORE,
+	TXN_SYNC_FLAGS             => IGNORE,
+	TXN_WRITE_NOSYNC           => IGNORE,
+
+	# enum db_lockmode_t
+	DB_LOCK_READ_UNCOMMITTED   => IGNORE, # 4.4.9
 	) ;
 
 sub enum_Macro

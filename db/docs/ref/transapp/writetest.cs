@@ -1,7 +1,7 @@
 /*
  * writetest --
  *
- * $Id: writetest.cs,v 10.7 2003/02/27 19:08:37 bostic Exp $
+ * $Id: writetest.cs,v 10.8 2005/09/13 18:15:36 bostic Exp $
  */
 #include <sys/types.h>
 #include <sys/time.h>
@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void usage __P((void));
+void usage(void);
 
 int
 main(argc, argv)

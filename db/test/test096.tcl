@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: test096.tcl,v 11.26 2004/06/10 17:21:20 carol Exp $
+# $Id: test096.tcl,v 12.7 2006/08/24 14:46:41 bostic Exp $
 #
 # TEST	test096
 # TEST	Db->truncate test.
@@ -19,6 +19,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	global alphabet
 	source ./include.tcl
 
+	set orig_tdir $testdir
 	set orig_fixed_len $fixed_len
 	set args [convert_args $method $args]
 	set encargs ""
@@ -56,7 +57,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 		# using txns, we need at least 1 lock per record for queue.
 		set lockmax [expr $nentries * 2]
 		set env [eval {berkdb_env -create -home $testdir \
-		    -lock_max $lockmax -txn} $encargs]
+		    -lock_max_locks $lockmax -lock_max_objects $lockmax -txn} $encargs]
 		error_check_good env_create [is_valid_env $env] TRUE
 		set closeenv 1
 	}
@@ -75,7 +76,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	    -env $env $omethod -mode 0644} $args $testfile]
 	error_check_good db_open [is_valid_db $dbtr] TRUE
 
-	set ret [$dbtr truncate -auto_commit]
+	set ret [$dbtr truncate]
 	error_check_good dbtrunc $ret $nentries
 	error_check_good db_close [$dbtr close] 0
 
@@ -134,7 +135,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 
 		set noverflows 100
 		for { set i 1 } { $i <= $noverflows } { incr i } {
-			set ret [eval {$db put} -auto_commit \
+			set ret [eval {$db put} \
 			    $i [chop_data $method "$i$data"]]
 		}
 
@@ -258,7 +259,7 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 
 	for { set i 1 } { $i <= $noverflows } { incr i } {
 		for { set j 0 } { $j < $ndups } { incr j } {
-			set ret [eval {$db put} -auto_commit \
+			set ret [eval {$db put} \
 			    $i [chop_data $method "$i.$j$data"]]
 		}
 	}
@@ -277,11 +278,10 @@ proc test096 { method {pagesize 512} {nentries 1000} {ndups 19} args} {
 	if { $closeenv == 1 } {
 		error_check_good envclose [$env close] 0
 	}
+	set testdir $orig_tdir
 }
 
 proc t96_populate {db method env nentries {ndups 1}} {
-	global datastr
-	global pad_datastr
 	source ./include.tcl
 
 	set did [open $dict]
@@ -293,7 +293,6 @@ proc t96_populate {db method env nentries {ndups 1}} {
 	if { [is_record_based $method] == 1 } {
 		append gflags "-recno"
 	}
-	set pad_datastr [pad_data $method $datastr]
 	while { [gets $did str] != -1 && $count < $nentries } {
 		if { [is_record_based $method] == 1 } {
 			set key [expr $count + 1]

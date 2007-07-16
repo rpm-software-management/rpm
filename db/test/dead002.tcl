@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: dead002.tcl,v 11.30 2004/07/07 17:05:55 carol Exp $
+# $Id: dead002.tcl,v 12.4 2006/08/24 14:46:34 bostic Exp $
 #
 # TEST	dead002
 # TEST	Same test as dead001, but use "detect on every collision" instead
@@ -37,10 +37,9 @@ proc dead002 { { procs "2 4 10" } {tests "ring clump" } \
 			for { set i 0 } { $i < $n } { incr i } {
 				set locker [$env lock_id]
 				puts "$tclsh_path $test_path/wrap.tcl \
-				    $testdir/dead$tnum.log.$i \
-				    ddscript.tcl $testdir $t $locker $i $n"
-				set p [exec $tclsh_path \
-					$test_path/wrap.tcl \
+				    ddscript.tcl $testdir/dead$tnum.log.$i \
+				    $testdir $t $locker $i $n"
+				set p [exec $tclsh_path $test_path/wrap.tcl \
 					ddscript.tcl $testdir/dead$tnum.log.$i \
 					$testdir $t $locker $i $n &]
 				lappend pidlist $p

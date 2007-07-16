@@ -1,23 +1,26 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: sdb007.tcl,v 11.25 2004/09/22 18:01:06 bostic Exp $
+# $Id: sdb007.tcl,v 12.5 2006/08/24 14:46:39 bostic Exp $
 #
 # TEST	sdb007
 # TEST	Tests page size difference errors between subdbs.
-# TEST  Test 3 different scenarios for page sizes.
-# TEST 	1.  Create/open with a default page size, 2nd subdb create with
-# TEST      specified different one, should error.
-# TEST  2.  Create/open with specific page size, 2nd subdb create with
-# TEST      different one, should error.
-# TEST  3.  Create/open with specified page size, 2nd subdb create with
-# TEST      same specified size, should succeed.
-# TEST  (4th combo of using all defaults is a basic test, done elsewhere)
+# TEST	If the physical file already exists, we ignore pagesize specifications
+# TEST	on any subsequent -creates.
+# TEST
+# TEST 	1.  Create/open a subdb with system default page size.
+# TEST	    Create/open a second subdb specifying a different page size.
+# TEST	    The create should succeed, but the pagesize of the new db
+# TEST	    will be the system default page size.
+# TEST 	2.  Create/open a subdb with a specified, non-default page size.
+# TEST	    Create/open a second subdb specifying a different page size.
+# TEST	    The create should succeed, but the pagesize of the new db
+# TEST	    will be the specified page size from the first create.
+
 proc sdb007 { method args } {
 	source ./include.tcl
-	global is_envmethod
 
 	set db2args [convert_args -btree $args]
 	set args [convert_args $method $args]
@@ -64,78 +67,43 @@ proc sdb007 { method args } {
 
 	puts "\tSubdb007.a.0: create subdb with default page size"
 	set db [eval {berkdb_open -create -mode 0644} \
-	    $args {$omethod $testfile $sub1}]
+	    $args $envargs {$omethod $testfile $sub1}]
 	error_check_good subdb [is_valid_db $db] TRUE
-	#
-	# Figure out what the default page size is so that we can
-	# guarantee we create it with a different value.
-	set statret [$db stat]
-	set pgsz 0
-	foreach pair $statret {
-		set fld [lindex $pair 0]
-		if { [string compare $fld {Page size}] == 0 } {
-			set pgsz [lindex $pair 1]
-		}
-	}
+
+	# Figure out what the default page size is so that we can send
+	# a different value to the next -create call.
+	set default_psize [stat_field $db stat "Page size"]
 	error_check_good dbclose [$db close] 0
 
-	if { $pgsz == 512 } {
-		set pgsz2 2048
+	if { $default_psize == 512 } {
+		set psize 2048
 	} else {
-		set pgsz2 512
+		set psize 512
 	}
 
-	puts "\tSubdb007.a.1: create 2nd subdb with specified page size"
-	set stat [catch {eval {berkdb_open_noerr -create -btree} \
-	    $db2args {-pagesize $pgsz2 $testfile $sub2}} ret]
-	error_check_good subdb:pgsz $stat 1
-	# We'll get a different error if running in an env,
-	# because the env won't have been opened with noerr.
-	# Skip the test for what the error is, just getting the
-	# error is enough.
-	if { $is_envmethod == 0 } {
-		error_check_good subdb:fail [is_substr $ret \
-		    "Different pagesize specified"] 1
-	}
+	puts "\tSubdb007.a.1: Create 2nd subdb with different specified page size"
+	set db2 [eval {berkdb_open -create -btree} \
+	    $db2args $envargs {-pagesize $psize $testfile $sub2}]
+	error_check_good db2_create [is_valid_db $db2] TRUE
+
+	set actual_psize [stat_field $db2 stat "Page size"]
+	error_check_good check_pagesize [expr $actual_psize == $default_psize] 1
+	error_check_good db2close [$db2 close] 0
 
 	set ret [eval {berkdb dbremove} $envargs {$testfile}]
 
-	puts "\tSubdb007.b.0: create subdb with specified page size"
+	puts "\tSubdb007.b.0: Create subdb with specified page size"
 	set db [eval {berkdb_open -create -mode 0644} \
-	    $args {-pagesize $pgsz2 $omethod $testfile $sub1}]
-	error_check_good subdb [is_valid_db $db] TRUE
-	set statret [$db stat]
-	set newpgsz 0
-	foreach pair $statret {
-		set fld [lindex $pair 0]
-		if { [string compare $fld {Page size}] == 0 } {
-			set newpgsz [lindex $pair 1]
-		}
-	}
-	error_check_good pgsize $pgsz2 $newpgsz
-	error_check_good dbclose [$db close] 0
-
-	puts "\tSubdb007.b.1: create 2nd subdb with different page size"
-	set stat [catch {eval {berkdb_open_noerr -create -btree} \
-	    $db2args {-pagesize $pgsz $testfile $sub2}} ret]
-	error_check_good subdb:pgsz $stat 1
-	if { $is_envmethod == 0 } {
-		error_check_good subdb:fail [is_substr $ret \
-		    "Different pagesize specified"] 1
-	}
-
-	set ret [eval {berkdb dbremove} $envargs {$testfile}]
-
-	puts "\tSubdb007.c.0: create subdb with specified page size"
-	set db [eval {berkdb_open -create -mode 0644} \
-	    $args {-pagesize $pgsz2 $omethod $testfile $sub1}]
+	    $args $envargs {-pagesize $psize $omethod $testfile $sub1}]
 	error_check_good subdb [is_valid_db $db] TRUE
 	error_check_good dbclose [$db close] 0
 
-	puts "\tSubdb007.c.1: create 2nd subdb with same specified page size"
-	set db [eval {berkdb_open -create -mode 0644} \
-	    $args {-pagesize $pgsz2 $omethod $testfile $sub2}]
-	error_check_good subdb [is_valid_db $db] TRUE
-	error_check_good dbclose [$db close] 0
-
+	puts "\tSubdb007.b.1: Create 2nd subdb with different specified page size"
+	set newpsize [expr $psize * 2]
+	set db2 [eval {berkdb_open -create -mode 0644} $args \
+	    $envargs {-pagesize $newpsize $omethod $testfile $sub2}]
+	error_check_good subdb [is_valid_db $db2] TRUE
+	set actual_psize [stat_field $db2 stat "Page size"]
+	error_check_good check_pagesize [expr $actual_psize == $psize] 1
+	error_check_good db2close [$db2 close] 0
 }

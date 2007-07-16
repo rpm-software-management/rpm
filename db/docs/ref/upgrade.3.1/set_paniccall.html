@@ -1,5 +1,5 @@
-<!--$Id: set_paniccall.so,v 1.5 2001/05/15 14:44:17 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: set_paniccall.so,v 1.6 2006/04/24 17:26:34 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -15,14 +15,14 @@
 </td></tr></table>
 <p>
 <h3 align=center>Release 3.1: DB_ENV-&gt;set_paniccall, DB-&gt;set_paniccall</h3>
-<p>Starting with the 3.1 release of Berkeley DB, the <a href="../../api_c/env_set_paniccall.html">DB_ENV-&gt;set_paniccall</a>
-and <a href="../../api_c/db_set_paniccall.html">DB-&gt;set_paniccall</a> methods may return an error value, that is, they
-are no longer declared as returning no value, instead they return an int
-or throw an exception as appropriate when an error occurs.</p>
+<p>Starting with the 3.1 release of Berkeley DB, the DB_ENV-&gt;set_paniccall
+and DB-&gt;set_paniccall methods may return an error value, that is,
+they are no longer declared as returning no value, instead they return
+an int or throw an exception as appropriate when an error occurs.</p>
 <p>If your application calls these functions, you may want to check for a
 possible error on return.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.3.1/set_feedback.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.3.1/put.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

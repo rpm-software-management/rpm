@@ -1,0 +1,34 @@
+<!--$Id: paniccall.so,v 1.4 2006/09/15 19:35:29 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.5: DB_ENV-&gt;set_paniccall</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.5/memp.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/pagesize.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.5: DB_ENV-&gt;set_paniccall</h3>
+<p>In previous Berkeley DB releases, the DB_ENV-&gt;set_paniccall and
+DB-&gt;set_paniccall methods were used to register a callback
+function, called if the database environment failed.  In the 4.5
+release, this functionality has been replaced by a general-purpose event
+notification callback function, set with the
+<a href="../../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a> method.  Applications should be updated to
+replace DB_ENV-&gt;set_paniccall and DB-&gt;set_paniccall calls with
+a call to <a href="../../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a>.  This also requires the
+callback function itself change, as the callback signatures are
+different.</p>
+<p>The DB_ENV-&gt;set_paniccall and DB-&gt;set_paniccall calls are
+expected to be removed in a future release of Berkeley DB.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.5/memp.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.5/pagesize.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

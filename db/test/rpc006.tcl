@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
 # Copyright (c) 1996-2006
-#	Sleepycat Software.  All rights reserved.
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rpc006.tcl,v 11.1 2004/05/06 14:25:15 sue Exp $
+# $Id: rpc006.tcl,v 12.3 2006/08/24 14:46:38 bostic Exp $
 #
 # TEST	rpc006
 # TEST	Test RPC server and multiple operations to server.

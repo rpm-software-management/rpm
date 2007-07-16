@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: BooleanBinding.java,v 1.5 2004/08/13 15:16:44 mjc Exp $
+ * $Id: BooleanBinding.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
@@ -39,13 +39,13 @@ public class BooleanBinding extends TupleBinding {
     // javadoc is inherited
     public void objectToEntry(Object object, TupleOutput output) {
 
-        /* Do nothing.  Not called by objectToEntry(Object,DatabaseEntry). */
+        output.writeBoolean(((Boolean) object).booleanValue());
     }
 
     // javadoc is inherited
-    public void objectToEntry(Object object, DatabaseEntry entry) {
+    protected TupleOutput getTupleOutput(Object object) {
 
-        booleanToEntry(((Boolean) object).booleanValue(), entry);
+        return sizedOutput();
     }
 
     /**
@@ -69,7 +69,15 @@ public class BooleanBinding extends TupleBinding {
      */
     public static void booleanToEntry(boolean val, DatabaseEntry entry) {
 
-        outputToEntry(newOutput(new byte[BOOLEAN_SIZE]).writeBoolean(val),
-		      entry);
+        outputToEntry(sizedOutput().writeBoolean(val), entry);
+    }
+
+    /**
+     * Returns a tuple output object of the exact size needed, to avoid
+     * wasting space when a single primitive is output.
+     */
+    private static TupleOutput sizedOutput() {
+
+        return new TupleOutput(new byte[BOOLEAN_SIZE]);
     }
 }

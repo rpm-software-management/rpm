@@ -3,15 +3,15 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2002-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 
 package com.sleepycat.db;
 
 public class LogStats {
     // no public constructor
-    protected LogStats() {}
+    /* package */ LogStats() {}
 
     private int st_magic;
     public int getMagic() {
@@ -36,6 +36,11 @@ public class LogStats {
     private int st_lg_size;
     public int getLgSize() {
         return st_lg_size;
+    }
+
+    private int st_record;
+    public int getRecord() {
+        return st_record;
     }
 
     private int st_w_bytes;
@@ -66,6 +71,11 @@ public class LogStats {
     private int st_wcount_fill;
     public int getWCountFill() {
         return st_wcount_fill;
+    }
+
+    private int st_rcount;
+    public int getRCount() {
+        return st_rcount;
     }
 
     private int st_scount;
@@ -125,12 +135,14 @@ public class LogStats {
             + "\n  st_mode=" + st_mode
             + "\n  st_lg_bsize=" + st_lg_bsize
             + "\n  st_lg_size=" + st_lg_size
+            + "\n  st_record=" + st_record
             + "\n  st_w_bytes=" + st_w_bytes
             + "\n  st_w_mbytes=" + st_w_mbytes
             + "\n  st_wc_bytes=" + st_wc_bytes
             + "\n  st_wc_mbytes=" + st_wc_mbytes
             + "\n  st_wcount=" + st_wcount
             + "\n  st_wcount_fill=" + st_wcount_fill
+            + "\n  st_rcount=" + st_rcount
             + "\n  st_scount=" + st_scount
             + "\n  st_region_wait=" + st_region_wait
             + "\n  st_region_nowait=" + st_region_nowait

@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1996-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: recd002.tcl,v 11.32 2004/01/28 03:36:28 bostic Exp $
+# $Id: recd002.tcl,v 12.5 2006/08/24 14:46:36 bostic Exp $
 #
 # TEST	recd002
 # TEST	Split recovery tests.  For every known split log message, makes sure
@@ -35,8 +35,7 @@ proc recd002 { method {select 0} args} {
 	env_cleanup $testdir
 	set testfile recd002.db
 	set testfile2 recd002-2.db
-	set eflags \
-	    "-create -txn -lock_max 2000 -home $testdir"
+	set eflags "-create -txn -lock_max_locks 2000 -home $testdir"
 
 	puts "\tRecd002.a: creating environment"
 	set env_cmd "berkdb_env $eflags"

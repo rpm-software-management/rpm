@@ -3,13 +3,6 @@
 #include "db_config.h"
 
 #ifdef HAVE_QUEUE
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <ctype.h>
-#include <string.h>
-#endif
-
 #include "db_int.h"
 #include "dbinc/crypto.h"
 #include "dbinc/db_page.h"
@@ -34,20 +27,18 @@ __qam_incfirst_print(dbenv, dbtp, lsnp, notused2, notused3)
 	__qam_incfirst_args *argp;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __qam_incfirst_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__qam_incfirst%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__qam_incfirst%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\tfileid: %ld\n", (long)argp->fileid);
 	(void)printf("\trecno: %lu\n", (u_long)argp->recno);
 	(void)printf("\tmeta_pgno: %lu\n", (u_long)argp->meta_pgno);
@@ -71,20 +62,18 @@ __qam_mvptr_print(dbenv, dbtp, lsnp, notused2, notused3)
 	__qam_mvptr_args *argp;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __qam_mvptr_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__qam_mvptr%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__qam_mvptr%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\topcode: %lu\n", (u_long)argp->opcode);
 	(void)printf("\tfileid: %ld\n", (long)argp->fileid);
 	(void)printf("\told_first: %lu\n", (u_long)argp->old_first);
@@ -114,20 +103,18 @@ __qam_del_print(dbenv, dbtp, lsnp, notused2, notused3)
 	__qam_del_args *argp;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __qam_del_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__qam_del%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__qam_del%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\tfileid: %ld\n", (long)argp->fileid);
 	(void)printf("\tlsn: [%lu][%lu]\n",
 	    (u_long)argp->lsn.file, (u_long)argp->lsn.offset);
@@ -156,20 +143,18 @@ __qam_add_print(dbenv, dbtp, lsnp, notused2, notused3)
 	int ch;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __qam_add_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__qam_add%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__qam_add%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\tfileid: %ld\n", (long)argp->fileid);
 	(void)printf("\tlsn: [%lu][%lu]\n",
 	    (u_long)argp->lsn.file, (u_long)argp->lsn.offset);
@@ -211,20 +196,18 @@ __qam_delext_print(dbenv, dbtp, lsnp, notused2, notused3)
 	int ch;
 	int ret;
 
-	notused2 = DB_TXN_ABORT;
+	notused2 = DB_TXN_PRINT;
 	notused3 = NULL;
 
 	if ((ret = __qam_delext_read(dbenv, dbtp->data, &argp)) != 0)
 		return (ret);
 	(void)printf(
-	    "[%lu][%lu]__qam_delext%s: rec: %lu txnid %lx prevlsn [%lu][%lu]\n",
-	    (u_long)lsnp->file,
-	    (u_long)lsnp->offset,
+    "[%lu][%lu]__qam_delext%s: rec: %lu txnp %lx prevlsn [%lu][%lu]\n",
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
 	    (argp->type & DB_debug_FLAG) ? "_debug" : "",
 	    (u_long)argp->type,
-	    (u_long)argp->txnid->txnid,
-	    (u_long)argp->prev_lsn.file,
-	    (u_long)argp->prev_lsn.offset);
+	    (u_long)argp->txnp->txnid,
+	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
 	(void)printf("\tfileid: %ld\n", (long)argp->fileid);
 	(void)printf("\tlsn: [%lu][%lu]\n",
 	    (u_long)argp->lsn.file, (u_long)argp->lsn.offset);

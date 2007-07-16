@@ -1,5 +1,5 @@
-<!--$Id: rep_elect.so,v 1.21 2004/09/07 15:37:41 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: rep_elect.so,v 1.24 2006/06/23 01:28:47 alanb Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -23,50 +23,80 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbEnv::rep_elect(int nsites, int nvotes,
-    int priority, u_int32_t timeout, int *envid, u_int32_t flags);
+DbEnv::rep_elect(int nsites, int nvotes, int *envid, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::rep_elect</h3>
 <p>The DbEnv::rep_elect method holds an election for the master of a replication
 group.</p>
+<p>The DbEnv::rep_elect method is not called by most replication
+applications.  It should only be called by applications implementing
+their own network transport layer, explicitly holding replication group
+elections and handling replication messages outside of the replication
+manager framework.</p>
 <p>If the election is successful, the new master's ID may be the ID of the
-previous master, or the ID of the current environment.  The application
-is responsible for adjusting its usage of the other environments in the
-replication group, including directing all database updates to the newly
-selected master, in accordance with the results of this election.</p>
+previous master, or the ID of the current replication site.  The
+application is responsible for adjusting its relationship to the other
+database environments in the replication group, including directing all
+database updates to the newly selected master, in accordance with the
+results of this election.</p>
 <p>The thread of control that calls the DbEnv::rep_elect method must not be the
 thread of control that processes incoming messages; processing the
 incoming messages is necessary to successfully complete an election.</p>
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>envid</b><dd>The <b>envid</b> parameter references memory into which
- the newly elected master's ID is copied.
-<dt><b>nsites</b><dd>The <b>nsites</b> parameter indicates the number of environments that
-the application believes are in the replication group.  This number is
-used by Berkeley DB to avoid having two masters active simultaneously, even
-in the case of a network partition.  During an election, a new master
-cannot be elected unless more than half of <b>nsites</b> agree on the
-new master.  Thus, in the face of a network partition, the side of the
-partition with more than half the environments will elect a new master
-and continue, while the environments communicating with fewer than half
-the other environments will fail to find a new master.
-<dt><b>nvotes</b><dd>The <b>nvotes</b> parameter indicates the number of votes required by
-the application to successfully elect a new master.  It must be a
-positive integer, no greater than <b>nsites</b>, or 0 if the election
-should use a simple majority of the <b>nsites</b> value as the
-requirement.  A warning is given if half or fewer votes are required to
-win an election as that can potentially lead to multiple masters in the
-face of a network partition.
-<dt><b>priority</b><dd>The <b>priority</b> parameter is the priority of this environment.  It
-must be a positive integer, or 0 if this environment is not permitted
-to become a master (see <a href="../ref/rep/pri.html">Replication
-environment priorities</a> for more information).
-<dt><b>timeout</b><dd>The <b>timeout</b> parameter specifies a timeout period for an election.
-If the election has not completed after <b>timeout</b> microseconds, the
-election will fail.
+ the newly elected master's ID is copied. 
+<dt><b>nsites</b><dd>The <b>nsites</b> parameter specifies the number of replication sites
+expected to participate in the election.  Once the current site has
+election information from that many sites, it will short-circuit the
+election and immediately cast its vote for a new master. The
+<b>nsites</b> parameter must be a positive integer, no less than
+<b>nvotes</b>, or 0 if the election should use the value previously set
+using the <a href="../api_cxx/rep_nsites.html">DbEnv::rep_set_nsites</a> method.
+<dt><b>nvotes</b><dd>The <b>nvotes</b> parameter specifies the minimum number of replication
+sites from which the current site must have election information, before
+the current site will cast a vote for a new master.  The <b>nvotes</b>
+parameter must be a positive integer and no greater than <b>nsites</b>,
+or 0 if the election should use the value ((<b>nsites</b> / 2) + 1) as
+the <b>nvotes</b> argument.
 <dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
 </dl>
+<p>Elections are done in two parts: first, replication sites collect
+information from the other replication sites they know about, and
+second, replication sites cast their votes for a new master.  The second
+phase is triggered by one of two things: either the replication site
+gets election information from <b>nsites</b> sites, or the election
+<b>timeout</b> expires.  Once the second phase is triggered, the
+replication site will cast a vote for the new master of its choice if,
+and only if, the site has election information from at least
+<b>nvotes</b> sites.  If a site receives <b>nvotes</b> votes for it
+to become the new master, then it will become the new master.</p>
+<p>We recommend <b>nvotes</b> be set to at least:</p>
+<blockquote><pre>(sites participating in the election / 2) + 1</pre></blockquote>
+<p>to ensure there are never more than two masters active at the same time
+even in the case of a network partition.  When a network partitions, the
+side of the partition with more than half the environments will elect a
+new master and continue, while the environments communicating with fewer
+than half of the environments will fail to find a new master, as no site
+can get <b>nvotes</b> votes.</p>
+<p>We recommend <b>nsites</b> be set to:</p>
+<blockquote><pre>number of sites in the replication group - 1</pre></blockquote>
+<p>when choosing a new master after a current master fails.  This allows
+the group to reach a consensus without having to wait for the timeout
+to expire.</p>
+<p>When choosing a master from among a group of client
+sites all restarting at the same time, it makes more sense to set
+<b>nsites</b> to the total number of sites in the group, since there is no
+known missing site.  Furthermore, in order to ensure the best choice
+from among sites that may take longer to boot than the local site,
+setting <b>nvotes</b> also to this same total number of sites will
+guarantee that every site in the group is considered.  (See the
+<a href="../ref/rep/elect.html">Elections</a>
+section in the Berkeley DB Reference Guide for more information.)</p>
+<p>Setting <b>nsites</b> to lower values can increase the speed of an
+election, but can also result in election failure, and is usually not
+recommended.</p>
 <a name="2"><!--meow--></a>
 <h3>Errors</h3>
 <p>The DbEnv::rep_elect method
@@ -76,7 +106,8 @@ encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
 <dl compact>
 <dt>DB_REP_UNAVAIL<dd>The replication group was unable to elect a master, or was unable to
-complete the election in the specified <b>timeout</b> period.
+complete the election in the election timeout period (see
+<a href="../api_cxx/rep_timeout.html">DbEnv::rep_set_timeout</a> method for more information).
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -87,6 +118,6 @@ complete the election in the specified <b>timeout</b> period.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

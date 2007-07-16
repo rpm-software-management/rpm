@@ -1,20 +1,13 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1997-2006
+ *	Oracle Corporation.  All rights reserved.
  *
- * $Id: os_unlink.c,v 11.28 2004/07/06 13:55:48 bostic Exp $
+ * $Id: os_unlink.c,v 12.8 2006/08/24 14:46:18 bostic Exp $
  */
 
 #include "db_config.h"
-
-#ifndef NO_SYSTEM_INCLUDES
-#include <sys/types.h>
-
-#include <string.h>
-#include <unistd.h>
-#endif
 
 #include "db_int.h"
 
@@ -37,10 +30,9 @@ __os_region_unlink(dbenv, path)
 		goto err;
 
 	if ((ret = shm_unlink(newname)) != 0) {
-		ret = __os_get_errno();
-		if (ret != ENOENT)
-			__db_err(dbenv, "shm_unlink: %s: %s",
-			    newname, strerror(ret));
+		ret = __os_get_syserr();
+		if (__os_posix_err(ret) != ENOENT)
+			__db_syserr(dbenv, ret, "shm_unlink: %s", newname);
 	}
 err:
 	if (newname != NULL)
@@ -48,7 +40,7 @@ err:
 	return (ret);
 #else
 	if (F_ISSET(dbenv, DB_ENV_OVERWRITE))
-		(void)__db_overwrite(dbenv, path);
+		(void)__db_file_multi_write(dbenv, path);
 
 	return (__os_unlink(dbenv, path));
 #endif
@@ -65,7 +57,7 @@ __os_unlink(dbenv, path)
 	DB_ENV *dbenv;
 	const char *path;
 {
-	int ret;
+	int ret, t_ret;
 
 	if (DB_GLOBAL(j_unlink) != NULL)
 		ret = DB_GLOBAL(j_unlink)(path);
@@ -90,8 +82,12 @@ __os_unlink(dbenv, path)
 	 * are expecting not to be there.  Reporting errors in these cases
 	 * is annoying.
 	 */
-	if (ret != 0 && ret != ENOENT)
-		__db_err(dbenv, "unlink: %s: %s", path, strerror(ret));
+	if (ret != 0) {
+		t_ret = __os_posix_err(ret);
+		if (t_ret != ENOENT)
+			__db_syserr(dbenv, ret, "unlink: %s", path);
+		ret = t_ret;
+	}
 
 	return (ret);
 }

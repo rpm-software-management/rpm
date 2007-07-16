@@ -127,7 +127,7 @@
 
 ...
 
-char *description = "Grocery bill.";
+char *description = &quot;Grocery bill.&quot;;
 float money = 122.45;
 
 Db my_database(NULL, 0);
@@ -138,7 +138,7 @@ Dbt data(description, strlen(description) + 1);
 
 int ret = my_database.put(NULL, &amp;key, &amp;data, DB_NOOVERWRITE);
 if (ret == DB_KEYEXIST) {
-    my_database.err(ret, "Put failed because key %f already exists", money);
+    my_database.err(ret, &quot;Put failed because key %f already exists&quot;, money);
 }</pre>
       </div>
       <div class="sect2" lang="en" xml:lang="en">
@@ -192,7 +192,7 @@ if (ret == DB_KEYEXIST) {
 ...
 
 float money;
-char *description;
+char *description[DESCRIPTION_SIZE + 1];
 
 Db my_database(NULL, 0);
 // Database open omitted for clarity 
@@ -200,16 +200,17 @@ Db my_database(NULL, 0);
 money = 122.45;
 
 Dbt key, data;
-// Use our own memory to retrieve the float.
-// For data alignment purposes.
+
 key.set_data(&amp;money);
 key.set_ulen(sizeof(float));
-key.set_flags(DB_DBT_USERMEM);
+
+data.set_data(&amp;description);
+data.set_ulen(DESCRIPTION_SIZE + 1);
+data.set_flags(DB_DBT_USERMEM);
 
 my_database.get(NULL, &amp;key, &amp;data, 0);
 
-// Money is set into the memory that we supplied.
-description = (char *)data.get_data();</pre>
+// Description is set into the memory that we supplied.  </pre>
         <p>
         Note that in this example, the 
             <tt class="literal">data.size</tt>
@@ -269,7 +270,7 @@ my_database.del(NULL, &amp;key, 0);</pre>
         <p>
             When you perform a database modification, your modification is made
             in the in-memory cache.  This means that your data modifications
-            are not necessarily written to disk, and so your data may not appear
+            are not necessarily flushed to disk, and so your data may not appear
             in the database after an application restart.
         </p>
         <p>
@@ -281,17 +282,19 @@ my_database.del(NULL, &amp;key, 0);</pre>
             experience database corruption.
         </p>
         <p>
-            Therefore, if you care about whether your data persists across
-            application runs,  and to guard against the rare possibility of
+            Therefore, if you care if your data is durable across system
+            failures, and to guard against the rare possibility of
             database corruption, you should use transactions to protect your
             database modifications. Every time you commit a transaction, DB
             ensures that the data will not be lost due to application or 
-            system failure.
-            
-            <span>
-                For information on transactions, see the <i class="citetitle">Berkeley DB
-                Programmer's Tutorial and Reference Guide</i>.  
-            </span>
+            system failure.  Transaction usage is described in the
+                
+
+                
+
+                <span>
+                <i class="citetitle">Berkeley DB Getting Started with Transaction Processing</i> guide.
+                </span>
         </p>
         <p>
             If you do not want to use transactions, then the assumption is that
@@ -307,7 +310,8 @@ my_database.del(NULL, &amp;key, 0);</pre>
                 
                 
                 <span>call <tt class="methodname">Db::sync()</tt>.</span>
-            Syncs cause the entire contents of your in-memory cache to be written to disk. As
+            Syncs cause any dirty entries in the in-memory cache and the
+            operating system's file cache to be written to disk. As
             such, they are quite expensive and you should use them sparingly.
         </p>
         <p>

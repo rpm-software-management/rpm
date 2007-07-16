@@ -1,5 +1,5 @@
 /*
- * $Id: mt19937db.c,v 1.12 2004/06/14 16:54:27 mjc Exp $
+ * $Id: mt19937db.c,v 12.4 2006/09/08 20:32:02 bostic Exp $
  */
 #include "db_config.h"
 
@@ -33,14 +33,14 @@
 /* ACM Transactions on Modeling and Computer Simulation,           */
 /* Vol. 8, No. 1, January 1998, pp 3--30.                          */
 
-/* Period parameters */  
+/* Period parameters */
 #define N 624
 #define M 397
 #define MATRIX_A 0x9908b0df   /* constant vector a */
 #define UPPER_MASK 0x80000000 /* most significant w-r bits */
 #define LOWER_MASK 0x7fffffff /* least significant r bits */
 
-/* Tempering parameters */   
+/* Tempering parameters */
 #define TEMPERING_MASK_B 0x9d2c5680
 #define TEMPERING_MASK_C 0xefc60000
 #define TEMPERING_SHIFT_U(y)  (y >> 11)
@@ -69,7 +69,7 @@ __db_generate_iv(dbenv, iv)
 
 	ret = 0;
 	n = DB_IV_BYTES / sizeof(u_int32_t);
-	MUTEX_THREAD_LOCK(dbenv, dbenv->mt_mutexp);
+	MUTEX_LOCK(dbenv, dbenv->mtx_mt);
 	if (dbenv->mt == NULL) {
 		if ((ret = __os_calloc(dbenv, 1, N*sizeof(unsigned long),
 		    &dbenv->mt)) != 0)
@@ -77,30 +77,29 @@ __db_generate_iv(dbenv, iv)
 		/* mti==N+1 means mt[N] is not initialized */
 		dbenv->mti = N + 1;
 	}
-	for (i = 0; i < n; i++)
-{
+	for (i = 0; i < n; i++) {
 		/*
 		 * We do not allow 0.  If we get one just try again.
 		 */
 		do {
 			iv[i] = (u_int32_t)__db_genrand(dbenv);
 		} while (iv[i] == 0);
-}
+	}
 
-	MUTEX_THREAD_UNLOCK(dbenv, dbenv->mt_mutexp);
+	MUTEX_UNLOCK(dbenv, dbenv->mtx_mt);
 	return (0);
 }
 
 /* Initializing the array with a seed */
 static void
 __db_sgenrand(seed, mt, mtip)
-	unsigned long seed;	
+	unsigned long seed;
 	unsigned long mt[];
 	int *mtip;
 {
     int i;
 
-    DB_ASSERT(seed != 0);
+    DB_ASSERT(NULL, seed != 0);
     for (i=0;i<N;i++) {
          mt[i] = seed & 0xffff0000;
          seed = 69069 * seed + 1;
@@ -116,28 +115,28 @@ __db_sgenrand(seed, mt, mtip)
 /* This function allows to choose any of 2^19937-1 ones.             */
 /* Essential bits in "seed_array[]" is following 19937 bits:         */
 /*  (seed_array[0]&UPPER_MASK), seed_array[1], ..., seed_array[N-1]. */
-/* (seed_array[0]&LOWER_MASK) is discarded.                          */ 
+/* (seed_array[0]&LOWER_MASK) is discarded.                          */
 /* Theoretically,                                                    */
 /*  (seed_array[0]&UPPER_MASK), seed_array[1], ..., seed_array[N-1]  */
 /* can take any values except all zeros.                             */
 static void
 __db_lsgenrand(seed_array, mt, mtip)
-    unsigned long seed_array[]; 
-    unsigned long mt[]; 
+    unsigned long seed_array[];
+    unsigned long mt[];
     int *mtip;
     /* the length of seed_array[] must be at least N */
 {
     int i;
 
-    for (i=0;i<N;i++) 
+    for (i=0;i<N;i++)
       mt[i] = seed_array[i];
     *mtip=N;
 }
 #endif
 
-static unsigned long 
+static unsigned long
 __db_genrand(dbenv)
-	DB_ENV *dbenv;
+    DB_ENV *dbenv;
 {
     unsigned long y;
     static unsigned long mag01[2]={0x0, MATRIX_A};
@@ -145,7 +144,7 @@ __db_genrand(dbenv)
     u_int32_t secs, seed, usecs;
 
     /*
-     * We are called with the mt_mutexp locked
+     * We are called with DB_ENV->mtx_mt locked.
      */
     if (dbenv->mti >= N) { /* generate N words at one time */
         int kk;
@@ -157,10 +156,10 @@ __db_genrand(dbenv)
 		 */
 		do {
 			__os_clock(dbenv, &secs, &usecs);
-			__db_chksum((u_int8_t *)&secs, sizeof(secs), NULL,
+			__db_chksum(NULL, (u_int8_t *)&secs, sizeof(secs), NULL,
 			    (u_int8_t *)&seed);
 		} while (seed == 0);
-        	__db_sgenrand((long)seed, dbenv->mt, &dbenv->mti); 
+        	__db_sgenrand((long)seed, dbenv->mt, &dbenv->mti);
 	}
 
         for (kk=0;kk<N-M;kk++) {
@@ -176,12 +175,12 @@ __db_genrand(dbenv)
 
         dbenv->mti = 0;
     }
-  
+
     y = dbenv->mt[dbenv->mti++];
     y ^= TEMPERING_SHIFT_U(y);
     y ^= TEMPERING_SHIFT_S(y) & TEMPERING_MASK_B;
     y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;
     y ^= TEMPERING_SHIFT_L(y);
 
-    return y; 
+    return y;
 }

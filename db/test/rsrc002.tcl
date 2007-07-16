@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 1999-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rsrc002.tcl,v 11.16 2004/01/28 03:36:29 bostic Exp $
+# $Id: rsrc002.tcl,v 12.3 2006/08/24 14:46:38 bostic Exp $
 #
 # TEST	rsrc002
 # TEST	Recno backing file test #2: test of set_re_delim.  Specify a backing

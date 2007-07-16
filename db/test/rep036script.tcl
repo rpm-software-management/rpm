@@ -1,9 +1,9 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004
-#	Sleepycat Software.  All rights reserved.
+# Copyright (c) 2004-2006
+#	Oracle Corporation.  All rights reserved.
 #
-# $Id: rep036script.tcl,v 11.2 2004/09/22 18:01:06 bostic Exp $
+# $Id: rep036script.tcl,v 12.5 2006/09/15 14:48:14 carol Exp $
 #
 # Rep036 script - create additional writers in master env.
 #
@@ -30,13 +30,15 @@ set writerid [ lindex $argv 1 ]
 set nentries [ lindex $argv 2 ]
 set method [ lindex $argv 3 ]
 
-# Join the queue env.  We assume the rep test convention of
-# placing the messages in $testdir/MSGQUEUEDIR.
-set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]
-error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
+set is_repchild 1
 # We need to set up our own machid.
 repladd 1
 repladd 2
+
+# Start up deadlock detector.
+# Commented out - see #15049.
+#set dpid [eval {exec $util_path/db_deadlock} \
+#    -a o -v -t 2.0 -h $masterdir >& $testdir/dd.writer.$writerid.out &]
 
 # Join the master env.
 set envid 1
@@ -78,6 +80,17 @@ while { $count < $nentries } {
 	set t [$masterenv txn]
 	error_check_good txn [is_valid_txn $t $masterenv] TRUE
 	set txn "-txn $t"
+
+# 	If using deadlock detection, uncomment this and comment the
+#	following put statement. 
+#	# Writing to this database can deadlock.  If we do, let the
+#	# deadlock detector break the lock, wait a second, and try again.
+#	while { [catch {eval {$mdb put}\
+#	    $txn {$key [chop_data $method $str]}} ret] } {
+#		error_check_good deadlock [is_substr $ret DB_LOCK_DEADLOCK] 1
+#		tclsleep 1
+#	}
+									    
 	set ret [eval \
 	    {$mdb put} $txn {$key [chop_data $method $str]}]
 	error_check_good put $ret 0
@@ -94,6 +107,8 @@ while { $count < $nentries } {
 close $did
 
 # Clean up.
+# Uncomment following line if using deadlock detector.
+#error_check_good kill_deadlock_detector [tclkill $dpid] ""
 error_check_good mdb_close [$mdb close] 0
 error_check_good masterenv_close [$masterenv close] 0
 replclose $testdir/MSGQUEUEDIR

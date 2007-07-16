@@ -1,8 +1,8 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2004
- *	Sleepycat Software.  All rights reserved.
+ * Copyright (c) 1996-2006
+ *	Oracle Corporation.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994
@@ -32,11 +32,59 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_swap.h,v 11.11 2004/01/28 03:36:02 bostic Exp $
+ * $Id: db_swap.h,v 12.6 2006/08/24 14:45:29 bostic Exp $
  */
 
 #ifndef _DB_SWAP_H_
 #define	_DB_SWAP_H_
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/*
+ * Little endian <==> big endian 64-bit swap macros.
+ *	M_64_SWAP	swap a memory location
+ *	P_64_COPY	copy potentially unaligned 4 byte quantities
+ *	P_64_SWAP	swap a referenced memory location
+ */
+#undef	M_64_SWAP
+#define	M_64_SWAP(a) {							\
+	u_int64_t _tmp;							\
+	_tmp = (u_int64_t)a;						\
+	((u_int8_t *)&a)[0] = ((u_int8_t *)&_tmp)[7];			\
+	((u_int8_t *)&a)[1] = ((u_int8_t *)&_tmp)[6];			\
+	((u_int8_t *)&a)[2] = ((u_int8_t *)&_tmp)[5];			\
+	((u_int8_t *)&a)[3] = ((u_int8_t *)&_tmp)[4];			\
+	((u_int8_t *)&a)[4] = ((u_int8_t *)&_tmp)[3];			\
+	((u_int8_t *)&a)[5] = ((u_int8_t *)&_tmp)[2];			\
+	((u_int8_t *)&a)[6] = ((u_int8_t *)&_tmp)[1];			\
+	((u_int8_t *)&a)[7] = ((u_int8_t *)&_tmp)[0];			\
+}
+#undef	P_64_COPY
+#define	P_64_COPY(a, b) {						\
+	((u_int8_t *)b)[0] = ((u_int8_t *)a)[0];			\
+	((u_int8_t *)b)[1] = ((u_int8_t *)a)[1];			\
+	((u_int8_t *)b)[2] = ((u_int8_t *)a)[2];			\
+	((u_int8_t *)b)[3] = ((u_int8_t *)a)[3];			\
+	((u_int8_t *)b)[4] = ((u_int8_t *)a)[4];			\
+	((u_int8_t *)b)[5] = ((u_int8_t *)a)[5];			\
+	((u_int8_t *)b)[6] = ((u_int8_t *)a)[6];			\
+	((u_int8_t *)b)[7] = ((u_int8_t *)a)[7];			\
+}
+#undef	P_64_SWAP
+#define	P_64_SWAP(a) {							\
+	u_int64_t _tmp;							\
+	P_64_COPY(a, &_tmp);						\
+	((u_int8_t *)a)[0] = ((u_int8_t *)&_tmp)[7];			\
+	((u_int8_t *)a)[1] = ((u_int8_t *)&_tmp)[6];			\
+	((u_int8_t *)a)[2] = ((u_int8_t *)&_tmp)[5];			\
+	((u_int8_t *)a)[3] = ((u_int8_t *)&_tmp)[4];			\
+	((u_int8_t *)a)[4] = ((u_int8_t *)&_tmp)[3];			\
+	((u_int8_t *)a)[5] = ((u_int8_t *)&_tmp)[2];			\
+	((u_int8_t *)a)[6] = ((u_int8_t *)&_tmp)[1];			\
+	((u_int8_t *)a)[7] = ((u_int8_t *)&_tmp)[0];			\
+}
 
 /*
  * Little endian <==> big endian 32-bit swap macros.
@@ -47,7 +95,7 @@
 #undef	M_32_SWAP
 #define	M_32_SWAP(a) {							\
 	u_int32_t _tmp;							\
-	_tmp = a;							\
+	_tmp = (u_int32_t)a;						\
 	((u_int8_t *)&a)[0] = ((u_int8_t *)&_tmp)[3];			\
 	((u_int8_t *)&a)[1] = ((u_int8_t *)&_tmp)[2];			\
 	((u_int8_t *)&a)[2] = ((u_int8_t *)&_tmp)[1];			\
@@ -123,4 +171,7 @@
 		P_32_SWAP(p);						\
 } while (0)
 
+#if defined(__cplusplus)
+}
+#endif
 #endif /* !_DB_SWAP_H_ */

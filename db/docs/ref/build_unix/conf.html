@@ -1,5 +1,5 @@
-<!--$Id: conf.so,v 10.59 2004/01/28 17:48:54 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: conf.so,v 10.63 2006/04/07 21:08:34 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -108,11 +108,21 @@ not have inter-process support will only allow the creation of private
 database environments, that is, environments where the
 <a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a> flag is specified to the <a href="../../api_c/env_open.html">DB_ENV-&gt;open</a> method.</p>
 <p>Specifying the --enable-posixmutexes configuration argument may require
-that Berkeley DB be linked with the -lpthread library.</p>
+that applications and Berkeley DB be linked with the -lpthread library.</p>
+<dt><a name="--enable-pthread_api">--enable-pthread_api</a><dd>To configure Berkeley DB for a POSIX pthreads application (with the exception
+that POSIX pthread mutexes may not be selected as the underlying mutex
+implementation for the build), enter --enable-pthread_api as an argument
+to configure.  The build will include the Berkeley DB replication manager
+interfaces and will use the POSIX standard pthread_self and
+pthread_yield functions to identify threads of control and yield the
+processor.  The --enable-pthread_api argument requires POSIX pthread
+support already be installed on your system.
+<p>Specifying the --enable-pthread_api configuration argument may require
+that applications and Berkeley DB be linked with the -lpthread library.</p>
 <a name="11"><!--meow--></a>
 <dt><a name="--enable-rpc">--enable-rpc</a><dd>To build the Berkeley DB RPC client code and server utility, enter --enable-rpc
 as an argument to configure.  The --enable-rpc argument requires that RPC
-libraries already be installed on your system.
+support already be installed on your system.
 <a name="12"><!--meow--></a>
 <dt><a name="--enable-smallbuild">--enable-smallbuild</a><dd>To build a small memory footprint version of the Berkeley DB library, enter
 --enable-smallbuild as an argument to configure.  The
@@ -146,7 +156,7 @@ there are multiple mutex implementations available and the UI mutex
 implementation is not the preferred one (for example, on Solaris where
 the LWP mutexes are used by default).</p>
 <p>Specifying the --enable-uimutexes configuration argument may require
-that Berkeley DB be linked with the -lthread library.</p>
+that applications and Berkeley DB be linked with the -lthread library.</p>
 <dt><a name="--enable-umrw">--enable-umrw</a><dd>Rational Software's Purify product and other run-time tools complain
 about uninitialized reads/writes of structure fields whose only purpose
 is padding, as well as when heap memory that was never initialized is
@@ -161,16 +171,6 @@ rarely necessary and should be done only when the default configuration
 selects the wrong mutex implementation.  A list of available mutex
 implementations can be found in the distribution file
 <b>dist/aclocal/mutex.ac</b>.
-<dt><a name="--with-mutexalign=ALIGNMENT">--with-mutexalign=ALIGNMENT</a><dd>To force Berkeley DB to use a specific mutex byte alignment, configure with
---with-mutexalignment=ALIGNMENT.  For example, --with-mutexalignment=64
-will configure Berkeley DB to align mutexes at 64-byte alignments, ensuring
-no two mutexes use the same cache line on machines with 64-byte cache
-alignment.  This is only useful when performance tuning Berkeley DB for large
-multiprocessor systems.
-<dt><a name="--with-rpm=ARCHIVE">--with-rpm=ARCHIVE</a><dd>To build Berkeley DB as an RPM software package, configure with --with-rpm=ARCHIVE,
-where ARCHIVE is the path of gzipped tar archive Berkeley DB distribution file.
-This configuration argument will create an RPM specification file from
-which the RPM software package can be built, using the "make" command.
 <dt><a name="--with-tcl=DIR">--with-tcl=DIR</a><dd>To build the Berkeley DB Tcl API, enter --with-tcl=DIR, replacing DIR with
 the directory in which the Tcl tclConfig.sh file may be found.  See
 <a href="../../ref/tcl/intro.html">Loading Berkeley DB with Tcl</a> for information
@@ -187,6 +187,6 @@ multiple versions of Berkeley DB</a> for more information.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/small.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

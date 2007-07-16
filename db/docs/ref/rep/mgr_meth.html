@@ -1,0 +1,72 @@
+<!--$Id: mgr_meth.so,v 1.8 2006/09/08 18:33:38 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Replication Manager methods</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../rep/app.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/base_meth.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Replication Manager methods</h3>
+<p>Applications which use the Replication Manager support generally call
+the following Berkeley DB methods.  The general pattern is to call various
+methods to configure Replication Manager, and then start it by calling
+<a href="../../api_c/repmgr_start.html">DB_ENV-&gt;repmgr_start</a>.  Once this initialization is complete, the
+application rarely needs to call any of these methods.  (A prime
+example of an exception to this rule would be the <a href="../../api_c/rep_sync.html">DB_ENV-&gt;rep_sync</a> method,
+if the application is doing <a href="../../ref/rep/mastersync.html">delayed synchronization</a>.)</p>
+<dl compact>
+<dt><a href="../../api_c/repmgr_local_site.html">DB_ENV-&gt;repmgr_set_local_site</a><dd>The <a href="../../api_c/repmgr_local_site.html">DB_ENV-&gt;repmgr_set_local_site</a> method configures the TCP/IP address of
+the local site, by specifying the port number on which it is to listen
+for incoming connection requests.  This method must be called exactly
+once before calling <a href="../../api_c/repmgr_start.html">DB_ENV-&gt;repmgr_start</a>.
+<dt><a href="../../api_c/repmgr_remote_site.html">DB_ENV-&gt;repmgr_add_remote_site</a><dd>The <a href="../../api_c/repmgr_remote_site.html">DB_ENV-&gt;repmgr_add_remote_site</a> method adds a remote site to the list of
+sites initially known by the local site.  The remote site is specified
+in terms of a TCP/IP network address: host name and port number.  This
+method may be called as many times as necessary to configure all known
+remote sites.  Note that it is usually not necessary for each site in
+the replication group initially to know about all other sites in the
+group.  Sites can discover each other dynamically, as described in
+<a href="../../ref/rep/newsite.html">Connecting to a new site</a>.
+<dt><a href="../../api_c/repmgr_ack_policy.html">DB_ENV-&gt;repmgr_set_ack_policy</a><dd>The <a href="../../api_c/repmgr_ack_policy.html">DB_ENV-&gt;repmgr_set_ack_policy</a> method configures the acknowledgement
+policy to be used in the replication group, in other words, the
+behavior of the master with respect to acknowledgements for
+"permanent" messages, which implements the application's requirements
+for <a href="../../ref/rep/trans.html">transactional guarantees</a>.  The
+current implementation requires all sites in the replication group
+configure the same acknowledgement policy.
+<dt><a href="../../api_c/rep_nsites.html">DB_ENV-&gt;rep_set_nsites</a><dd>The <a href="../../api_c/rep_nsites.html">DB_ENV-&gt;rep_set_nsites</a> method tells Replication Manager the total number
+of sites in the replication group.  This is usually necessary for
+proper operation of elections, and for counting message
+acknowledgements (depending on the acknowledgement policy).
+<dt><a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a><dd>The <a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a> method configures the local site's priority for
+the purpose of elections.
+<dt><a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a><dd>This method optionally configures various timeout values.  Otherwise
+default timeout values as specified in <a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a> are
+used.
+<dt><a href="../../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a><dd>Once configured and started, Replication Manager does virtually all of
+its work in the background, usually without the need for any direct
+communication with the application.  However, occasionally events
+occur which the application may be interested in knowing about.  The
+application can request notification of these events by calling the
+<a href="../../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a> method.
+<dt><a href="../../api_c/repmgr_start.html">DB_ENV-&gt;repmgr_start</a><dd>The <a href="../../api_c/repmgr_start.html">DB_ENV-&gt;repmgr_start</a> method starts the replication system.  It opens the
+listening TCP/IP socket and creates all the background processing
+threads that will be needed.
+</dl>
+<p>In addition to the methods previously described, Replication Manager
+applications may also call the following methods, as needed:
+<a href="../../api_c/rep_config.html">DB_ENV-&gt;rep_set_config</a>, <a href="../../api_c/rep_limit.html">DB_ENV-&gt;rep_set_limit</a>, <a href="../../api_c/rep_sync.html">DB_ENV-&gt;rep_sync</a>,
+<a href="../../api_c/rep_stat.html">DB_ENV-&gt;rep_stat</a>.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/app.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/base_meth.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

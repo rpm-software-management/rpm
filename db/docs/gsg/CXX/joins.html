@@ -36,7 +36,7 @@
       </div>
       <p>
         If you have two or more secondary databases associated with a primary
-        database, then you can retrieve primary records based on the union of 
+        database, then you can retrieve primary records based on the intersection of 
         multiple secondary entries. You do this using a
         
         <span>join cursor.</span>
@@ -56,7 +56,7 @@
         is fairly simple with a limited
         number of data members, few of which would be interesting from a query
         perspective. But suppose, instead, that we were storing 
-        information on something with many more queryable characteristics, such
+        information on something with many more characteristics that can be queried, such
         as an automobile. In that case, you may be storing information such as
         color, number of doors, fuel mileage, automobile type, number of
         passengers, make, model, and year, to name just a few.
@@ -139,7 +139,8 @@
             <li>
               <p>
                     Create an array of  cursors, and place in it each
-                    of the cursors that are participating in your join query.
+                    of the cursors that are participating in your join query. Note that this array must be null
+                    terminated.
                 </p>
             </li>
             <li>
@@ -206,7 +207,7 @@ Db automotiveTypeDB(NULL, 0);
 // Position the cursors
 Dbc *color_curs;
 automotiveColorDB.cursor(NULL, &amp;color_curs, 0);
-char *the_color = "red";
+char *the_color = &quot;red&quot;;
 Dbt key(the_color, strlen(the_color) + 1);
 Dbt data;
 if ((ret = color_curs-&gt;get(&amp;key, &amp;data, DB_SET)) != 0) {
@@ -215,7 +216,7 @@ if ((ret = color_curs-&gt;get(&amp;key, &amp;data, DB_SET)) != 0) {
 
 Dbc *make_curs;
 automotiveMakeDB.cursor(NULL, &amp;make_curs, 0);
-char *the_make = "Toyota";
+char *the_make = &quot;Toyota&quot;;
 key.set_data(the_make);
 key.set_size(strlen(the_make) + 1);
 if ((ret = make_curs-&gt;get(&amp;key, &amp;data, DB_SET)) != 0) {
@@ -224,7 +225,7 @@ if ((ret = make_curs-&gt;get(&amp;key, &amp;data, DB_SET)) != 0) {
 
 Dbc *type_curs; 
 automotiveTypeDB.cursor(NULL, &amp;type_curs, 0);
-char *the_type = "minivan";
+char *the_type = &quot;minivan&quot;;
 key.set_data(the_type);
 key.set_size(strlen(the_type) + 1);
 if ((ret = type_curs-&gt;get(&amp;key, &amp;data, DB_SET)) != 0) {
@@ -232,10 +233,11 @@ if ((ret = type_curs-&gt;get(&amp;key, &amp;data, DB_SET)) != 0) {
 }
 
 // Set up the cursor array
-Dbc *carray[3];
+Dbc *carray[4];
 carray[0] = color_curs;
 carray[1] = make_curs;
 carray[2] = type_curs;
+carray[3] = NULL;
 
 // Create the join
 Dbc *join_curs;

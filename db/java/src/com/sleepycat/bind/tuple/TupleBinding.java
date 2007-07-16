@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TupleBinding.java,v 1.4 2004/06/29 06:06:36 mark Exp $
+ * $Id: TupleBinding.java,v 12.5 2006/08/31 18:14:06 bostic Exp $
  */
 
 package com.sleepycat.bind.tuple;
@@ -30,23 +30,36 @@ import com.sleepycat.db.DatabaseEntry;
  *
  * <p>For key or data entries which are Java primitive classes (String,
  * Integer, etc) {@link #getPrimitiveBinding} may be used to return a builtin
- * tuple binding.  A custom tuple binding for these types is not needed.</p>
+ * tuple binding.  A custom tuple binding for these types is not needed.
+ * <em>Note:</em> {@link #getPrimitiveBinding} returns bindings that do not
+ * sort negative floating point numbers correctly by default.  See {@link
+ * SortedFloatBinding} and {@link SortedDoubleBinding} for details.</p>
+ *
+ * <p>When a tuple binding is used as a key binding, it produces key values
+ * with a reasonable default sort order.  For more information on the default
+ * sort order, see {@link com.sleepycat.bind.tuple.TupleOutput}.</p>
  *
  * @author Mark Hayes
  */
-public abstract class TupleBinding implements EntryBinding {
+public abstract class TupleBinding extends TupleBase implements EntryBinding {
 
     private static final Map primitives = new HashMap();
     static {
-        primitives.put(String.class, new StringBinding());
-        primitives.put(Character.class, new CharacterBinding());
-        primitives.put(Boolean.class, new BooleanBinding());
-        primitives.put(Byte.class, new ByteBinding());
-        primitives.put(Short.class, new ShortBinding());
-        primitives.put(Integer.class, new IntegerBinding());
-        primitives.put(Long.class, new LongBinding());
-        primitives.put(Float.class, new FloatBinding());
-        primitives.put(Double.class, new DoubleBinding());
+        addPrimitive(String.class, String.class, new StringBinding());
+        addPrimitive(Character.class, Character.TYPE, new CharacterBinding());
+        addPrimitive(Boolean.class, Boolean.TYPE, new BooleanBinding());
+        addPrimitive(Byte.class, Byte.TYPE, new ByteBinding());
+        addPrimitive(Short.class, Short.TYPE, new ShortBinding());
+        addPrimitive(Integer.class, Integer.TYPE, new IntegerBinding());
+        addPrimitive(Long.class, Long.TYPE, new LongBinding());
+        addPrimitive(Float.class, Float.TYPE, new FloatBinding());
+        addPrimitive(Double.class, Double.TYPE, new DoubleBinding());
+    }
+
+    private static void addPrimitive(Class cls1, Class cls2,
+                                     TupleBinding binding) {
+        primitives.put(cls1, binding);
+        primitives.put(cls2, binding);
     }
 
     /**
@@ -64,73 +77,9 @@ public abstract class TupleBinding implements EntryBinding {
     // javadoc is inherited
     public void objectToEntry(Object object, DatabaseEntry entry) {
 
-        TupleOutput output = newOutput();
+        TupleOutput output = getTupleOutput(object);
         objectToEntry(object, output);
         outputToEntry(output, entry);
-    }
-
-    /**
-     * Utility method for use by bindings to create a tuple output object.
-     *
-     * @return a new tuple output object.
-     */
-    public static TupleOutput newOutput() {
-
-        return new TupleOutput();
-    }
-
-    /**
-     * Utility method for use by bindings to create a tuple output object
-     * with a specific starting size.
-     *
-     * @return a new tuple output object.
-     */
-    public static TupleOutput newOutput(byte[] buffer) {
-
-        return new TupleOutput(buffer);
-    }
-
-    /**
-     * Utility method to set the data in a entry buffer to the data in a tuple
-     * output object.
-     *
-     * @param output is the source tuple output object.
-     *
-     * @param entry is the destination entry buffer.
-     */
-    public static void outputToEntry(TupleOutput output, DatabaseEntry entry) {
-
-        entry.setData(output.getBufferBytes(), output.getBufferOffset(),
-                      output.getBufferLength());
-    }
-
-    /**
-     * Utility method to set the data in a entry buffer to the data in a tuple
-     * input object.
-     *
-     * @param input is the source tuple input object.
-     *
-     * @param entry is the destination entry buffer.
-     */
-    public static void inputToEntry(TupleInput input, DatabaseEntry entry) {
-
-        entry.setData(input.getBufferBytes(), input.getBufferOffset(),
-                      input.getBufferLength());
-    }
-
-    /**
-     * Utility method to create a new tuple input object for reading the data
-     * from a given buffer.  If an existing input is reused, it is reset before
-     * returning it.
-     *
-     * @param entry is the source entry buffer.
-     *
-     * @return the new tuple input object.
-     */
-    public static TupleInput entryToInput(DatabaseEntry entry) {
-
-        return new TupleInput(entry.getData(), entry.getOffset(),
-                              entry.getSize());
     }
 
     /**
@@ -166,6 +115,11 @@ public abstract class TupleBinding implements EntryBinding {
      * <li><code>Float</code></li>
      * <li><code>Double</code></li>
      * </ul>
+     *
+     * <p><em>Note:</em> {@link #getPrimitiveBinding} returns bindings that do
+     * not sort negative floating point numbers correctly by default.  See
+     * {@link SortedFloatBinding} and {@link SortedDoubleBinding} for
+     * details.</p>
      *
      * @param cls is the primitive Java class.
      *

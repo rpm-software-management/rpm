@@ -1,13 +1,16 @@
-/* File: example_database_load.c */
-
-/* We assume an ANSI-compatible compiler */
+/*-
+ * See the file LICENSE for redistribution information.
+ *
+ * Copyright (c) 2004-2006
+ *	Oracle Corporation.  All rights reserved.
+ */
 
 #include "gettingstarted_common.h"
 
 /* Forward declarations */
 int usage(void);
 int load_vendors_database(STOCK_DBS, char *);
-int pack_string(char *, char *, int);
+size_t pack_string(char *, char *, size_t);
 int load_inventory_database(STOCK_DBS, char *);
 
 int
@@ -30,9 +33,9 @@ int
 main(int argc, char *argv[])
 {
     STOCK_DBS my_stock;
-    int ch, ret, size;
+    int ch, ret;
+    size_t size;
     char *basename, *inventory_file, *vendor_file;
-    extern char *optarg;
 
     /* Initialize the STOCK_DBS struct */
     initialize_stockdbs(&my_stock);
@@ -143,7 +146,7 @@ load_vendors_database(STOCK_DBS my_stock, char *vendor_file)
 
         /* Set up the database record's key */
         key.data = my_vendor.name;
-        key.size = (strlen(my_vendor.name) + 1) * sizeof(char);
+        key.size = (u_int32_t)strlen(my_vendor.name) + 1;
 
         /* Set up the database record's data */
         data.data = &my_vendor;
@@ -172,10 +175,10 @@ load_vendors_database(STOCK_DBS my_stock, char *vendor_file)
  * appropriate location. Used to ensure that all our strings
  * are contained in a single contiguous chunk of memory.
  */
-int
-pack_string(char *buffer, char *string, int start_pos)
+size_t
+pack_string(char *buffer, char *string, size_t start_pos)
 {
-    int string_size;
+    size_t string_size;
 
     string_size = strlen(string) + 1;
     memcpy(buffer+start_pos, string, string_size);
@@ -197,7 +200,7 @@ load_inventory_database(STOCK_DBS my_stock, char *inventory_file)
     DBT key, data;
     char buf[MAXLINE];
     char databuf[MAXDATABUF];
-    int bufLen, dataLen;
+    size_t bufLen, dataLen;
     FILE *ifp;
 
     /*
@@ -255,11 +258,11 @@ load_inventory_database(STOCK_DBS my_stock, char *inventory_file)
 
         /* The key is the item's SKU */
         key.data = sku;
-        key.size = strlen(sku) + 1;
+        key.size = (u_int32_t)strlen(sku) + 1;
 
         /* The data is the information that we packed into databuf. */
         data.data = databuf;
-        data.size = bufLen;
+        data.size = (u_int32_t)bufLen;
 
         /* Put the data into the database */
         my_stock.vendor_dbp->put(my_stock.inventory_dbp, 0, &key, &data, 0);

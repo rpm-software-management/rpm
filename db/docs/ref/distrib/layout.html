@@ -1,5 +1,5 @@
-<!--$Id: layout.so,v 10.39 2004/10/05 16:44:33 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: layout.so,v 10.45 2006/07/12 18:54:37 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -18,12 +18,12 @@
 <h3 align=center>Source code layout</h3>
 <table border=1 align=center>
 <tr><th>Directory</th><th>Description</th></tr>
-<tr><td>LICENSE</td><td>Berkeley DB Copyright</td></tr>
+<tr><td>LICENSE</td><td>Berkeley DB License</td></tr>
 <tr><td>btree</td><td>Btree access method source code</td></tr>
+<tr><td>build_brew</td><td>BREW build directory</td></tr>
 <tr><td>build_unix</td><td>UNIX build directory</td></tr>
 <tr><td>build_vxworks</td><td>VxWorks build directory.</td></tr>
-<tr><td>build_win32</td><td>Windows 32-bit build directory.</td></tr>
-<tr><td>build_win64</td><td>Windows 64-bit build directory.</td></tr>
+<tr><td>build_windows</td><td>Windows build directory.</td></tr>
 <tr><td>clib</td><td>C library replacement functions</td></tr>
 <tr><td>common</td><td>Common Berkeley DB functions</td></tr>
 <tr><td>crypto</td><td>Cryptographic support</td></tr>
@@ -35,6 +35,7 @@
 <tr><td>db_deadlock</td><td>The db_deadlock utility</td></tr>
 <tr><td>db_dump</td><td>The db_dump utility</td></tr>
 <tr><td>db_dump185</td><td>The db_dump185 utility</td></tr>
+<tr><td>db_hotbackup</td><td>The db_hotbackup utility</td></tr>
 <tr><td>db_load</td><td>The db_load utility</td></tr>
 <tr><td>db_printlog</td><td>The db_printlog debugging utility</td></tr>
 <tr><td>db_recover</td><td>The db_recover utility</td></tr>
@@ -63,12 +64,14 @@
 <tr><td>mp</td><td>Shared memory buffer pool</td></tr>
 <tr><td>mutex</td><td>Mutexes</td></tr>
 <tr><td>os</td><td>POSIX 1003.1 operating-system specific functionality</td></tr>
+<tr><td>os_brew</td><td>BREW operating-system specific functionality</td></tr>
 <tr><td>os_vxworks</td><td>VxWorks operating-system specific functionality</td></tr>
-<tr><td>os_win32</td><td>Windows operating-system specific functionality</td></tr>
+<tr><td>os_windows</td><td>Windows operating-system specific functionality</td></tr>
 <tr><td>perl</td><td>DB_File and BerkeleyDB Perl modules</td></tr>
 <tr><td>php_db4</td><td>PHP module support</td></tr>
 <tr><td>qam</td><td>Queue access method source code</td></tr>
 <tr><td>rep</td><td>Replication source code</td></tr>
+<tr><td>repmgr</td><td>Replication Manager Framework source code</td></tr>
 <tr><td>rpc_client</td><td>RPC client support</td></tr>
 <tr><td>rpc_server</td><td>RPC server utility</td></tr>
 <tr><td>sequence</td><td>Sequence source code</td></tr>
@@ -79,6 +82,6 @@
 </table>
 <table width="100%"><tr><td><br></td><td align=right><a href="../distrib/port.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../refs/refs.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1><a href="../../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

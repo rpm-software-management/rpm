@@ -1,0 +1,118 @@
+<!--$Id: mastersync.so,v 1.11 2006/08/24 17:59:56 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Synchronizing with a master</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Berkeley DB Replication</dl></h3></td>
+<td align=right><a href="../rep/elect.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Synchronizing with a master</h3>
+<p>When a client detects a new replication group master, the client must
+synchronize with the new master before the client can process new
+database changes.  Synchronizing is a heavyweight operation which can
+place a burden on both the client and the master.  There are several
+controls an application can use to reduce the synchronization burden.</p>
+<h3>Delaying client synchronization</h3>
+<p>When a replication group has a new master, either as specified by the
+application or as a result of winning an election, all clients in the
+replication group must synchronize with the new master.  This can
+strain the resources of the new master since a large number of clients
+may be attempting to communicate with and transfer records from the
+master.  Client applications wanting to delay client synchronization
+should call the <a href="../../api_c/rep_config.html">DB_ENV-&gt;rep_set_config</a> method with the
+<a href="../../api_c/rep_config.html#DB_REP_CONF_DELAYCLIENT">DB_REP_CONF_DELAYCLIENT</a> flag.  The application will be
+notified of the establishment of the new master as usual, but the
+client will not proceed to synchronize with the new master.</p>
+<p>Replication Manager notifies applications of a new master via the
+<a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event.  Applications using the Base
+replication API learn of a new master when the
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a>.</p>
+<p>Client applications choosing to delay synchronization in this manner are
+responsible for synchronizing the client environment at some future time
+using the <a href="../../api_c/rep_sync.html">DB_ENV-&gt;rep_sync</a> method.</p>
+<h3>Client-to-client synchronization</h3>
+<p>Instead of synchronizing with the new master, it is sometimes possible
+for a client to synchronize with another client.  Berkeley DB initiates
+synchronization at the client by sending a request message via the
+transport call-back function of the communication infrastructure.  The
+message is destined for the master site, but is also marked with a
+<a href="../../api_c/rep_transport.html#DB_REP_ANYWHERE">DB_REP_ANYWHERE</a> flag.  The application may choose to send such
+a request to another client, or to ignore the flag, sending it to its
+indicated destination.</p>
+<p>Furthermore, when the other client receives such a request it may be
+unable to satisfy it.  In this case it will reply to the requesting
+client, telling it that it is unable to provide the requested
+information.  The requesting client will then re-issue the request.
+Additionally, if the original request never reaches the other client,
+the requesting client will again re-issue the request.  In either of
+these cases the message will be marked with the <a href="../../api_c/rep_transport.html#DB_REP_REREQUEST">DB_REP_REREQUEST</a>
+flag.  The application may continue trying find another client to
+service the request, or it may give up and simply send it to the master
+(that is, the environment ID explicitly specified to the transport
+function).</p>
+<p>Applications written to the Base replication API have complete freedom
+in choosing where to send these <a href="../../api_c/rep_transport.html#DB_REP_ANYWHERE">DB_REP_ANYWHERE</a> requests, and
+in deciding how to handle <a href="../../api_c/rep_transport.html#DB_REP_REREQUEST">DB_REP_REREQUEST</a>.</p>
+<p>Replication Manager allows an application to designate one remote site
+(called its "peer") to receive client-to-client requests, via the
+flags parameter to the <a href="../../api_c/repmgr_remote_site.html">DB_ENV-&gt;repmgr_add_remote_site</a> method.  Replication
+Manager will always first try to send requests marked with the
+<a href="../../api_c/rep_transport.html#DB_REP_ANYWHERE">DB_REP_ANYWHERE</a> flag to its peer, if available.  However, it
+will always send a <a href="../../api_c/rep_transport.html#DB_REP_REREQUEST">DB_REP_REREQUEST</a> to the master site.</p>
+<p>The delayed synchronization and client-to-client synchronization
+features allow applications to do load balancing within replication
+groups.  For example, consider a replication group with 5 sites, A, B,
+C, D and E.  Site E just crashed, and site A was elected master.  Sites
+C and D have been configured for delayed synchronization.  When site B
+is notified that site A is a new master, it immediately synchronizes.
+When B finishes synchronizing with the master, the application calls the
+<a href="../../api_c/rep_sync.html">DB_ENV-&gt;rep_sync</a> method on sites C and D to cause them to synchronize as well.
+Sites C and D (and E, when it has finished rebooting) can send their
+requests to site B, and B then bears the brunt of the work and
+network traffic for synchronization, making master site A available to
+handle the normal application load and any write requests paused by
+the election.</p>
+<h3>Blocked client operations</h3>
+<p>Clients in the process of synchronizing with the master block access to
+Berkeley DB operations.  By default, most Berkeley DB methods will block until
+client synchronization is complete, and then the method call proceeds.</p>
+<p>Client applications which cannot wait and would prefer an immediate
+error return instead of blocking, should call the
+<a href="../../api_c/rep_config.html">DB_ENV-&gt;rep_set_config</a> method with the <a href="../../api_c/rep_config.html#DB_REP_CONF_NOWAIT">DB_REP_CONF_NOWAIT</a> flag.  This
+configuration causes <a href="../../api_c/db_class.html">DB</a> method calls to immediately return a
+<a href="../../api_c/db_put.html#DB_REP_LOCKOUT">DB_REP_LOCKOUT</a> error instead of blocking, if the client is
+currently synchronizing with the master.</p>
+<h3>Clients too far out-of-date to synchronize</h3>
+<p>Clients attempting to synchronize with the master may discover that
+synchronization is not possible because the client and master have been
+out of contact for too long.  By default, the master and client
+automatically detect this state and perform an internal initialization
+of the client.  Because internal initialization requires transfer of
+entire databases to the client, it can take a relatively long period of
+time and may require database handles to be reopened in the client
+applications.</p>
+<p>Client applications which cannot wait and would prefer to postpone
+internal initialization until a more convenient time, or would prefer
+to do a hot backup instead of performing internal initialization, should
+call the <a href="../../api_c/rep_config.html">DB_ENV-&gt;rep_set_config</a> method with the <a href="../../api_c/rep_config.html#DB_REP_CONF_NOAUTOINIT">DB_REP_CONF_NOAUTOINIT</a>
+flag.  This configuration flag causes Berkeley DB to return
+<a href="../../api_c/rep_message.html#DB_REP_JOIN_FAILURE">DB_REP_JOIN_FAILURE</a> to the application instead of performing
+internal initialization.</p>
+<p>Client applications choosing to delay synchronization in this manner are
+responsible for synchronizing the client with the master at some future
+time.  This can be accomplished by turning off the
+<a href="../../api_c/rep_config.html#DB_REP_CONF_NOAUTOINIT">DB_REP_CONF_NOAUTOINIT</a> flag and calling the <a href="../../api_c/rep_sync.html">DB_ENV-&gt;rep_sync</a> method,
+or by performing a hot backup.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../rep/elect.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/init.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+</body>
+</html>

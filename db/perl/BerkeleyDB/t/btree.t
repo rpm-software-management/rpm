@@ -1,18 +1,10 @@
 #!./perl -w
 
-# ID: %I%, %G%   
-
 use strict ;
 
-BEGIN {
-    unless(grep /blib/, @INC) {
-        chdir 't' if -d 't';
-        @INC = '../lib' if -d '../lib';
-    }
-}
-
+use lib 't';
 use BerkeleyDB; 
-use t::util ;
+use util ;
 
 print "1..244\n";
 
@@ -32,7 +24,8 @@ umask(0) ;
     ok 1, $@ =~ /unknown key value\(s\) Stupid/  ;
 
     eval ' $db = new BerkeleyDB::Btree -Bad => 2, -Mode => 0345, -Stupid => 3; ' ;
-    ok 2, $@ =~ /unknown key value\(s\) (Bad |Stupid ){2}/  ;
+    ok 2, $@ =~ /unknown key value\(s\) (Bad,? |Stupid,? ){2}/  
+        or print "# $@" ;
 
     eval ' $db = new BerkeleyDB::Btree -Env => 2 ' ;
     ok 3, $@ =~ /^Env not of type BerkeleyDB::Env/ ;
@@ -127,7 +120,7 @@ umask(0) ;
     my ($k, $v) ;
     ok 33, my $db = new BerkeleyDB::Btree -Filename => $Dfile, 
 				     -Flags    => DB_CREATE ;
-print "[$db] [$!] $BerkeleyDB::Error\n" ;				     
+#print "[$db] [$!] $BerkeleyDB::Error\n" ;				     
 
     # create some data
     my %data =  (

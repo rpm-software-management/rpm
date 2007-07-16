@@ -6,12 +6,13 @@
 extern "C" {
 #endif
 
-int __qam_position __P((DBC *, db_recno_t *, qam_position_mode, int *));
+int __qam_position __P((DBC *, db_recno_t *, db_lockmode_t, u_int32_t, int *));
 int __qam_pitem __P((DBC *,  QPAGE *, u_int32_t, db_recno_t, DBT *));
 int __qam_append __P((DBC *, DBT *, DBT *));
 int __qam_c_dup __P((DBC *, DBC *));
 int __qam_c_init __P((DBC *));
 int __qam_truncate __P((DBC *, u_int32_t *));
+int __qam_delete __P((DBC *,  DBT *));
 int __qam_incfirst_log __P((DB *, DB_TXN *, DB_LSN *, u_int32_t, db_recno_t, db_pgno_t));
 int __qam_incfirst_read __P((DB_ENV *, void *, __qam_incfirst_args **));
 int __qam_mvptr_log __P((DB *, DB_TXN *, DB_LSN *, u_int32_t, u_int32_t, db_recno_t, db_recno_t, db_recno_t, db_recno_t, DB_LSN *, db_pgno_t));
@@ -31,7 +32,7 @@ int __qam_delext_print __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
 int __qam_init_print __P((DB_ENV *, int (***)(DB_ENV *, DBT *, DB_LSN *, db_recops, void *), size_t *));
 int __qam_mswap __P((PAGE *));
 int __qam_pgin_out __P((DB_ENV *, db_pgno_t, void *, DBT *));
-int __qam_fprobe __P((DB *, db_pgno_t, void *, qam_probe_mode, u_int32_t));
+int __qam_fprobe __P((DB *, db_pgno_t, DB_TXN *, void *, qam_probe_mode, u_int32_t));
 int __qam_fclose __P((DB *, db_pgno_t));
 int __qam_fremove __P((DB *, db_pgno_t));
 int __qam_sync __P((DB *));

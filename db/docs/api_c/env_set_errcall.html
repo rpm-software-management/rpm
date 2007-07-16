@@ -1,5 +1,5 @@
-<!--$Id: env_set_errcall.so,v 10.37 2004/10/12 20:00:47 bostic Exp $-->
-<!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
+<!--$Id: env_set_errcall.so,v 10.39 2006/05/17 20:47:46 bostic Exp $-->
+<!--Copyright 1997-2006 by Oracle Corporation-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
@@ -45,6 +45,9 @@ a C library FILE *.</p>
 <p>This error-logging enhancement does not slow performance or significantly
 increase application size, and may be run during normal operation as well
 as during application debugging.</p>
+<p>The DB_ENV-&gt;set_errcall method configures operations performed using the specified
+<a href="../api_c/env_class.html">DB_ENV</a> handle, not all operations performed on the underlying
+database environment.</p>
 <p>The DB_ENV-&gt;set_errcall method may be called at any time during the life of the
 application.</p>
 <h3>Parameters</h3>
@@ -57,6 +60,10 @@ reporting function.  The function takes three parameters:
 <a href="../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a> or <a href="../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a>).
 <dt><b>msg</b><dd>The <b>msg</b> parameter is the error message string.
 </dl>
+<p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering Berkeley DB is not guaranteed to work correctly, and the results
+are undefined.</p>
 </dl>
 <hr size=1 noshade>
 <h3>Class</h3>
@@ -67,6 +74,6 @@ reporting function.  The function takes three parameters:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
 </body>
 </html>

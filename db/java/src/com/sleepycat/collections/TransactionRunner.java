@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2004
- *      Sleepycat Software.  All rights reserved.
+ * Copyright (c) 2000-2006
+ *      Oracle Corporation.  All rights reserved.
  *
- * $Id: TransactionRunner.java,v 1.2 2004/09/22 18:01:03 bostic Exp $
+ * $Id: TransactionRunner.java,v 12.6 2006/09/08 20:32:13 bostic Exp $
  */
 
 package com.sleepycat.collections;
@@ -19,7 +19,56 @@ import com.sleepycat.util.ExceptionUnwrapper;
 
 /**
  * Starts a transaction, calls {@link TransactionWorker#doWork}, and handles
- * transaction retry and exceptions.
+ * transaction retry and exceptions.  To perform a transaction, the user
+ * implements the {@link TransactionWorker} interface and passes an instance of
+ * that class to the {@link #run} method.
+ *
+ * <p>A single TransactionRunner instance may be used by any number of threads
+ * for any number of transactions.</p>
+ *
+ * <p>The behavior of the run() method depends on whether the environment is
+ * transactional, whether nested transactions are enabled, and whether a
+ * transaction is already active.</p>
+ *
+ * <ul>
+ * <li>When the run() method is called in a transactional environment and no
+ * transaction is active for the current thread, a new transaction is started
+ * before calling doWork().  If DeadlockException is thrown by doWork(), the
+ * transaction will be aborted and the process will be repeated up to the
+ * maximum number of retries.  If another exception is thrown by doWork() or
+ * the maximum number of retries has occurred, the transaction will be aborted
+ * and the exception will be rethrown by the run() method.  If no exception is
+ * thrown by doWork(), the transaction will be committed.  The run() method
+ * will not attempt to commit or abort a transaction if it has already been
+ * committed or aborted by doWork().</li>
+ *
+ * <li>When the run() method is called and a transaction is active for the
+ * current thread, and nested transactions are enabled, a nested transaction is
+ * started before calling doWork().  The transaction that is active when
+ * calling the run() method will become the parent of the nested transaction.
+ * The nested transaction will be committed or aborted by the run() method
+ * following the same rules described above.  Note that nested transactions may
+ * not be enabled for the JE product, since JE does not support nested
+ * transactions.</li>
+ *
+ * <li>When the run() method is called in a non-transactional environment, the
+ * doWork() method is called without starting a transaction.  The run() method
+ * will return without committing or aborting a transaction, and any exceptions
+ * thrown by the doWork() method will be thrown by the run() method.</li>
+ *
+ * <li>When the run() method is called and a transaction is active for the
+ * current thread and nested transactions are not enabled (the default) the
+ * same rules as above apply. All the operations performed by the doWork()
+ * method will be part of the currently active transaction.</li>
+ * </ul>
+ *
+ * <p>In a transactional environment, the rules described above support nested
+ * calls to the run() method and guarantee that the outermost call will cause
+ * the transaction to be committed or aborted.  This is true whether or not
+ * nested transactions are supported or enabled.  Note that nested transactions
+ * are provided as an optimization for improving concurrency but do not change
+ * the meaning of the outermost transaction.  Nested transactions are not
+ * currently supported by the JE product.</p>
  *
  * @author Mark Hayes
  */
@@ -93,6 +142,9 @@ public class TransactionRunner {
      * <code>run()</code> is called when a transaction is already active for
      * the current thread.
      * By default this property is false.
+     *
+     * <p>Note that this method always returns false in the JE product, since
+     * nested transactions are not supported by JE.</p>
      */
     public boolean getAllowNestedTransactions() {
 
@@ -104,6 +156,9 @@ public class TransactionRunner {
      * <code>run()</code> is called when a transaction is already active for
      * the current thread.
      * Calling this method does not impact transactions already running.
+     *
+     * <p>Note that true may not be passed to this method in the JE product,
+     * since nested transactions are not supported by JE.</p>
      */
     public void setAllowNestedTransactions(boolean allowNestedTxn) {
 
@@ -146,20 +201,10 @@ public class TransactionRunner {
 
     /**
      * Calls the {@link TransactionWorker#doWork} method and, for transactional
-     * environments, begins and ends a transaction.  If the environment given
+     * environments, may begin and end a transaction.  If the environment given
      * is non-transactional, a transaction will not be used but the doWork()
-     * method will still be called.
-     *
-     * <p> In a transactional environment, a new transaction is started before
-     * calling doWork().  This will start a nested transaction if one is
-     * already active.  If DeadlockException is thrown by doWork(), the
-     * transaction will be aborted and the process will be repeated up to the
-     * maximum number of retries specified.  If another exception is thrown by
-     * doWork() or the maximum number of retries has occurred, the transaction
-     * will be aborted and the exception will be rethrown by this method.  If
-     * no exception is thrown by doWork(), the transaction will be committed.
-     * This method will not attempt to commit or abort a transaction if it has
-     * already been committed or aborted by doWork(). </p>
+     * method will still be called.  See the class description for more
+     * information.
      *
      * @throws DeadlockException when it is thrown by doWork() and the
      * maximum number of retries has occurred.  The transaction will have been
@@ -175,6 +220,7 @@ public class TransactionRunner {
 
         if (currentTxn != null &&
             (allowNestedTxn || currentTxn.getTransaction() == null)) {
+
             /*
              * Transactional and (not nested or nested txns allowed).
              */
@@ -187,27 +233,34 @@ public class TransactionRunner {
                         currentTxn.commitTransaction();
                     }
                     return;
-                } catch (Exception e) {
-                    e = ExceptionUnwrapper.unwrap(e);
+                } catch (Throwable e) {
+                    e = ExceptionUnwrapper.unwrapAny(e);
                     if (txn != null && txn == currentTxn.getTransaction()) {
                         try {
                             currentTxn.abortTransaction();
-                        } catch (Exception e2) {
+                        } catch (Throwable e2) {
+
                             /*
                              * XXX We should really throw a 3rd exception that
                              * wraps both e and e2, to give the user a complete
                              * set of error information.
                              */
                             e2.printStackTrace();
-                            throw e;
+                            /* Force the original exception to be thrown. */
+                            i = maxRetries + 1;
                         }
                     }
                     if (i >= maxRetries || !(e instanceof DeadlockException)) {
-                        throw e;
+                        if (e instanceof Exception) {
+                            throw (Exception) e;
+                        } else {
+                            throw (Error) e;
+                        }
                     }
                 }
             }
         } else {
+
             /*
              * Non-transactional or (nested and no nested txns allowed).
              */

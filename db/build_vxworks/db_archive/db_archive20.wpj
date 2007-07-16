@@ -134,13 +134,11 @@ PENTIUMgnu
 <BEGIN> CORE_INFO_VERSION
 2.0
 <END>
-
 <BEGIN> FILE_db_archive.c_dependDone
 FALSE
 <END>
 
 <BEGIN> FILE_db_archive.c_dependencies
-
 <END>
 
 <BEGIN> FILE_db_archive.c_objects

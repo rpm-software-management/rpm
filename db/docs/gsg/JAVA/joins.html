@@ -36,7 +36,7 @@
       </div>
       <p>
         If you have two or more secondary databases associated with a primary
-        database, then you can retrieve primary records based on the union of 
+        database, then you can retrieve primary records based on the intersection of 
         multiple secondary entries. You do this using a
         <span><tt class="classname">JoinCursor</tt>.</span>
         
@@ -56,7 +56,7 @@
         is fairly simple with a limited
         number of data members, few of which would be interesting from a query
         perspective. But suppose, instead, that we were storing 
-        information on something with many more queryable characteristics, such
+        information on something with many more characteristics that can be queried, such
         as an automobile. In that case, you may be storing information such as
         color, number of doors, fuel mileage, automobile type, number of
         passengers, make, model, and year, to name just a few.
@@ -145,7 +145,8 @@
             <li>
               <p>
                     Create an array of <span>secondary</span> cursors, and place in it each
-                    of the cursors that are participating in your join query.
+                    of the cursors that are participating in your join query. Note that this array must be null
+                    terminated.
                 </p>
             </li>
             <li>
@@ -185,7 +186,7 @@
             
         </p>
         <a id="java_index9"></a>
-        <pre class="programlisting">package com.sleepycat.examples.db.GettingStarted;
+        <pre class="programlisting">package db.GettingStarted;
 
 import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseEntry;
@@ -211,9 +212,9 @@ SecondaryDatabase automotiveTypeDB = null;
 SecondaryDatabase automotiveMakeDB = null;
 
 // Query strings:
-String theColor = "red";
-String theType = "minivan";
-String theMake = "Toyota";
+String theColor = &quot;red&quot;;
+String theType = &quot;minivan&quot;;
+String theMake = &quot;Toyota&quot;;
 
 // Secondary cursors used for the query:
 SecondaryCursor colorSecCursor = null;
@@ -232,9 +233,9 @@ DatabaseEntry foundData = new DatabaseEntry();
 
 try {
     // Database entries used for the query:
-    DatabaseEntry color = new DatabaseEntry(theColor.getBytes("UTF-8"));
-    DatabaseEntry type = new DatabaseEntry(theType.getBytes("UTF-8"));
-    DatabaseEntry make = new DatabaseEntry(theMake.getBytes("UTF-8"));
+    DatabaseEntry color = new DatabaseEntry(theColor.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry type = new DatabaseEntry(theType.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry make = new DatabaseEntry(theMake.getBytes(&quot;UTF-8&quot;));
 
     colorSecCursor = automotiveColorDB.openSecondaryCursor(null, null); 
     typeSecCursor = automotiveTypeDB.openSecondaryCursor(null, null); 
@@ -257,7 +258,8 @@ try {
         // positioned cursors
         SecondaryCursor[] cursorArray = {colorSecCursor,
                                          typeSecCursor, 
-                                         makeSecCursor};
+                                         makeSecCursor,
+                                         null};
 
         // Create the join cursor
         joinCursor = automotiveDB.join(cursorArray, null);
@@ -325,7 +327,7 @@ try {
 					scenario.
 				</p>
               <p>
-					Default value is <tt class="literal">false</tt> (automatic cursor sorting is performed).
+					The default value is <tt class="literal">false</tt> (automatic cursor sorting is performed).
 				</p>
               <p>
                     For example:
