@@ -223,7 +223,8 @@ typedef enum rpmTagType_e {
     RPM_STRING_TYPE		=  6,
     RPM_BIN_TYPE		=  7,
     RPM_STRING_ARRAY_TYPE	=  8,
-    RPM_I18NSTRING_TYPE		=  9
+    RPM_I18NSTRING_TYPE		=  9,
+    RPM_MASK_TYPE               =  0x0000ffff
 #define	RPM_MAX_TYPE		9
 } rpmTagType;
 
