@@ -4,11 +4,11 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS README.amiga INSTALL \
+EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure installplatform platform* \
 	po/*.in po/*.po po/rpm.pot \
-	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
+	rpm.magic rpmpopt-$(VERSION) rpmqv.c 
 
 SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ lua rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ tools scripts doc .
 
