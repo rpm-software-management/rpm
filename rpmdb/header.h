@@ -131,6 +131,31 @@ struct headerTagTableEntry_s {
     int type;			/*!< Tag type. */
 };
 
+/**
+ */
+typedef /*@abstract@*/ struct headerTagIndices_s * headerTagIndices;
+struct headerTagIndices_s {
+    int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
+                int (*cmp) (const void * avp, const void * bvp))
+        /*@ modifies *ipp, *np */;	/*!< load sorted tag index. */
+/*@relnull@*/
+    headerTagTableEntry * byName;	/*!< header tags sorted by name. */
+    int byNameSize;			/*!< no. of entries. */
+    int (*byNameCmp) (const void * avp, const void * bvp)
+        /*@*/;				/*!< compare entries by name. */
+    int (*tagValue) (const char * name)
+	/*@*/;				/* return value from name. */
+/*@relnull@*/
+    headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
+    int byValueSize;			/*!< no. of entries. */
+    int (*byValueCmp) (const void * avp, const void * bvp)
+        /*@*/;				/*!< compare entries by value. */
+    const char * (*tagName) (int value)
+	/*@*/;				/* Return name from value. */
+    int (*tagType) (int value)
+	/*@*/;				/* Return type from value. */
+};
+
 /** \ingroup header
  */
 enum headerSprintfExtensionType {

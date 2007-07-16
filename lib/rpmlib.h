@@ -202,6 +202,9 @@ extern const struct headerTagTableEntry_s * rpmTagTable;
 extern const int rpmTagTableSize;
 /*@=redecl@*/
 
+/*@unchecked@*/
+extern headerTagIndices rpmTags;
+
 /**
  * Table of query format extensions.
  * @note Chains to headerDefaultFormats[].
@@ -1099,30 +1102,42 @@ void rpmShowRpmlibProvides(FILE * fp)
 /*@}*/
 
 /**
- * Return  tag data type from value.
- * @param tag		tag value
- * @return		tag data type, RPM_NULL_TYPE on not found.
- */
-int tagType(int tag)
-	/*@*/;
-
-/**
  * Return tag name from value.
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
 /*@-redecl@*/
-/*@observer@*/ extern const char * tagName(int tag)
-	/*@*/;
+/*@unused@*/ static inline /*@observer@*/
+const char * tagName(int tag)
+	/*@*/
+{
+    return ((*rpmTags->tagName)(tag));
+}
 /*@=redecl@*/
+
+/**
+ * Return tag data type from value.
+ * @param tag		tag value
+ * @return		tag data type, RPM_NULL_TYPE on not found.
+ */
+/*@unused@*/ static inline
+int tagType(int tag)
+	/*@*/
+{
+    return ((*rpmTags->tagType)(tag));
+}
 
 /**
  * Return tag value from name.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found
  */
+/*@unused@*/ static inline
 int tagValue(const char * tagstr)
-	/*@*/;
+	/*@*/
+{
+    return ((*rpmTags->tagValue)(tagstr));
+}
 
 #define	RPMLEAD_BINARY 0
 #define	RPMLEAD_SOURCE 1
