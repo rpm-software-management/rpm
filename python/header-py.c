@@ -392,7 +392,7 @@ long tagNumFromPyObject (PyObject *item)
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	/*@*/
 {
-    int type, count, i, tag = -1;
+    int tagtype, type, count, i, tag = -1;
     void * data;
     PyObject * o, * metao;
     char ** stringArray;
@@ -446,45 +446,10 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
     }
 
-    switch (tag) {
-    case RPMTAG_OLDFILENAMES:
-    case RPMTAG_FILESIZES:
-    case RPMTAG_FILESTATES:
-    case RPMTAG_FILEMODES:
-    case RPMTAG_FILEUIDS:
-    case RPMTAG_FILEGIDS:
-    case RPMTAG_FILERDEVS:
-    case RPMTAG_FILEMTIMES:
-    case RPMTAG_FILEMD5S:
-    case RPMTAG_FILELINKTOS:
-    case RPMTAG_FILEFLAGS:
-    case RPMTAG_ROOT:
-    case RPMTAG_FILEUSERNAME:
-    case RPMTAG_FILEGROUPNAME:
-    case RPMTAG_REQUIRENAME:
-    case RPMTAG_REQUIREFLAGS:
-    case RPMTAG_REQUIREVERSION:
-    case RPMTAG_PROVIDENAME:
-    case RPMTAG_PROVIDEFLAGS:
-    case RPMTAG_PROVIDEVERSION:
-    case RPMTAG_OBSOLETENAME:
-    case RPMTAG_OBSOLETEFLAGS:
-    case RPMTAG_OBSOLETEVERSION:
-    case RPMTAG_CONFLICTNAME:
-    case RPMTAG_CONFLICTFLAGS:
-    case RPMTAG_CONFLICTVERSION:
-    case RPMTAG_CHANGELOGTIME:
-    case RPMTAG_FILEVERIFYFLAGS:
-	forceArray = 1;
-	break;
-    case RPMTAG_SUMMARY:
-    case RPMTAG_GROUP:
-    case RPMTAG_DESCRIPTION:
-	freeData = 1;
-	break;
-    default:
-        break;
-    }
+    tagtype = tagType(tag); 
+    type = tagtype & RPM_MASK_TYPE;
+    forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
+    freeData = (tagtype & RPM_MASK_TYPE) == RPM_I18NSTRING_TYPE;
 
     switch (type) {
     case RPM_BIN_TYPE:
@@ -548,6 +513,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	break;
 
     case RPM_STRING_TYPE:
+    case RPM_I18NSTRING_TYPE:
 	if (count != 1 || forceArray) {
 	    stringArray = data;
 
