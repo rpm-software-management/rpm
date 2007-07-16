@@ -247,6 +247,19 @@ typedef enum rpmSubTagType_e {
 } rpmSubTagType;
 /*@=enummemuse =typeuse @*/
 
+/** \ingroup header
+ *  * Identify how to return the header data type.
+ *   */
+/*@-enummemuse -typeuse @*/
+typedef enum rpmTagReturnType_e {
+    RPM_ANY_RETURN_TYPE         = 0,
+    RPM_SCALAR_RETURN_TYPE      = 0x00010000,
+    RPM_ARRAY_RETURN_TYPE       = 0x00020000,
+    RPM_MAPPING_RETURN_TYPE     = 0x00040000,
+    RPM_MASK_RETURN_TYPE        = 0xffff0000
+} rpmTagReturnType;
+/*@=enummemuse =typeuse @*/
+
 /**
  * Header private tags.
  * @note General use tags should start at 1000 (RPM's tag space starts there).
