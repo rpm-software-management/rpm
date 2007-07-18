@@ -447,7 +447,10 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     }
 
     tagtype = tagType(tag); 
+#if NOTYET
+    /* this blows up with header extension types */
     type = tagtype & RPM_MASK_TYPE;
+#endif
     forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
     freeData = (tagtype & RPM_MASK_TYPE) == RPM_I18NSTRING_TYPE;
 
