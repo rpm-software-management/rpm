@@ -229,6 +229,16 @@ static PyMethodDef rpmModuleMethods[] = {
     { NULL }
 } ;
 
+/*
+* Force clean up of open iterators and dbs on exit.
+* This ends up calling exit() while we're already exiting but exit
+* handlers will only get called once so it wont loop.
+*/
+static void rpm_exithook(void)
+{
+   rpmdbCheckTerminate(1);
+}
+
 /**
  */
 static char rpm__doc__[] =
@@ -265,6 +275,13 @@ void init_rpm(void)
 
     m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
+	return;
+
+    /* 
+     * treat error to register rpm cleanup hook as fatal, tracebacks
+     * can and will leave stale locks around if we can't clean up
+     */
+    if (Py_AtExit(rpm_exithook) == -1)
 	return;
 
     rpmReadConfigFiles(NULL, NULL);
