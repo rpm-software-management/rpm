@@ -700,14 +700,14 @@ static rpmdb rpmdbRock;
 /*@unchecked@*/ /*@exposed@*/ /*@null@*/
 static rpmdbMatchIterator rpmmiRock;
 
-int rpmdbCheckSignals(void)
+int rpmdbCheckTerminate(int terminate)
 	/*@globals rpmdbRock, rpmmiRock @*/
 	/*@modifies rpmdbRock, rpmmiRock @*/
 {
     sigset_t newMask, oldMask;
-    static int terminate = 0;
+    static int terminating = 0;
 
-    if (terminate) return 0;
+    if (terminating) return 0;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
@@ -716,10 +716,11 @@ int rpmdbCheckSignals(void)
      || sigismember(&rpmsqCaught, SIGQUIT)
      || sigismember(&rpmsqCaught, SIGHUP)
      || sigismember(&rpmsqCaught, SIGTERM)
-     || sigismember(&rpmsqCaught, SIGPIPE))
-	terminate = 1;
+     || sigismember(&rpmsqCaught, SIGPIPE)
+     || terminate)
+	terminating = 1;
 
-    if (terminate) {
+    if (terminating) {
 	rpmdb db;
 	rpmdbMatchIterator mi;
 
@@ -745,6 +746,11 @@ int rpmdbCheckSignals(void)
 	exit(EXIT_FAILURE);
     }
     return sigprocmask(SIG_SETMASK, &oldMask, NULL);
+}
+
+int rpmdbCheckSignals(void)
+{
+    return rpmdbCheckTerminate(0);
 }
 
 /**
