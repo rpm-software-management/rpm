@@ -7,6 +7,7 @@
 #include <rpmio_internal.h>
 #include <rpmcli.h>	/* XXX for rpmCheckSig */
 #include <rpmdb.h>
+#include <rpmsq.h>
 
 #include "legacy.h"
 #include "misc.h"
@@ -56,6 +57,50 @@ static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
 
     return Py_BuildValue("i", score);
 }
+
+/**
+ *  */
+static PyObject * signalsCaught(PyObject * self, PyObject * check)
+{
+    PyObject *caught, *o;
+    Py_ssize_t llen;
+    int signum, i;
+    sigset_t newMask, oldMask;
+
+    if (!PyList_Check(check)) {
+	PyErr_SetString(PyExc_TypeError, "list expected");
+	return NULL;
+    }
+
+    llen = PyList_Size(check);
+    caught = PyList_New(0);
+
+    /* block signals while checking for them */
+    (void) sigfillset(&newMask);
+    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
+
+    for (i = 0; i < llen; i++) {
+	o = PyList_GetItem(check, i);
+	signum = PyInt_AsLong(o);
+	if (sigismember(&rpmsqCaught, signum)) {
+	    PyList_Append(caught, o);
+	}
+    }
+    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
+
+    return caught;
+}
+
+/**
+ *  */
+static PyObject * checkSignals(PyObject * self, PyObject * args)
+{
+    if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
+    rpmdbCheckSignals();
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 
 /**
  */
@@ -145,6 +190,11 @@ static PyMethodDef rpmModuleMethods[] = {
 
     { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
 	NULL },
+
+    { "signalsCaught", (PyCFunction) signalsCaught, METH_O, 
+	NULL },
+    { "checkSignals", (PyCFunction) checkSignals, METH_VARARGS,
+        NULL },
 
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS|METH_KEYWORDS,
 	NULL },
