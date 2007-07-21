@@ -144,11 +144,12 @@ sub process_file {
     #ExtUtils/Install.pm:$VERSION = substr q$Revision: 1.9 $, 10;
     #CGI/Apache.pm:$VERSION = (qw$Revision: 1.9 $)[1];
     #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
+    #General.pm:$Config::General::VERSION = 2.33;
     # 
     # or with the new "our" pragma you could (read will) see:
     #
     #    our $VERSION = '1.00'
-    if (($package) && (m/^\s*(our\s+)?\$VERSION\s*=\s+/)) {
+    if (($package) && (m/^\s*(our\s+)?\$(\Q$package\E::)?VERSION\s*=\s+/)) {
 
       # first see if the version string contains the string
       # '$Revision' this often causes bizzare strings and is the most
