@@ -707,7 +707,7 @@ int rpmdbCheckTerminate(int terminate)
     sigset_t newMask, oldMask;
     static int terminating = 0;
 
-    if (terminating) return 0;
+    if (terminating) return 1;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
@@ -724,10 +724,6 @@ int rpmdbCheckTerminate(int terminate)
 	rpmdb db;
 	rpmdbMatchIterator mi;
 
-/*@-abstract@*/ /* sigset_t is abstract type */
-	rpmMessage(RPMMESS_DEBUG, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
-/*@=abstract@*/
-
 /*@-branchstate@*/
 	while ((mi = rpmmiRock) != NULL) {
 /*@i@*/	    rpmmiRock = mi->mi_next;
@@ -743,14 +739,20 @@ int rpmdbCheckTerminate(int terminate)
 	    (void) rpmdbClose(db);
 	}
 /*@=newreftrans@*/
-	exit(EXIT_FAILURE);
     }
-    return sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    sigprocmask(SIG_SETMASK, &oldMask, NULL);
+    return terminating;
 }
 
 int rpmdbCheckSignals(void)
 {
-    return rpmdbCheckTerminate(0);
+    if (rpmdbCheckTerminate(0)) {
+/*@-abstract@*/ /* sigset_t is abstract type */
+	rpmMessage(RPMMESS_DEBUG, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
+	exit(EXIT_FAILURE);
+/*@=abstract@*/
+    }
+    return 0;
 }
 
 /**
