@@ -231,8 +231,6 @@ static PyMethodDef rpmModuleMethods[] = {
 
 /*
 * Force clean up of open iterators and dbs on exit.
-* This ends up calling exit() while we're already exiting but exit
-* handlers will only get called once so it wont loop.
 */
 static void rpm_exithook(void)
 {
