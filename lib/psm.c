@@ -454,11 +454,17 @@ static /*@observer@*/ const char * const tag2sln(int tag)
 	/*@*/
 {
     switch (tag) {
-    case RPMTAG_PREIN:		return "%pre";
-    case RPMTAG_POSTIN:		return "%post";
-    case RPMTAG_PREUN:		return "%preun";
-    case RPMTAG_POSTUN:		return "%postun";
-    case RPMTAG_VERIFYSCRIPT:	return "%verify";
+    case RPMTAG_PRETRANS:       return "%pretrans";
+    case RPMTAG_TRIGGERPREIN:   return "%triggerprein";
+    case RPMTAG_PREIN:          return "%pre";
+    case RPMTAG_POSTIN:         return "%post";
+    case RPMTAG_TRIGGERIN:      return "%triggerin";
+    case RPMTAG_TRIGGERUN:      return "%triggerun";
+    case RPMTAG_PREUN:          return "%preun";
+    case RPMTAG_POSTUN:         return "%postun";
+    case RPMTAG_POSTTRANS:      return "%posttrans";
+    case RPMTAG_TRIGGERPOSTUN:  return "%triggerpostun";
+    case RPMTAG_VERIFYSCRIPT:   return "%verify";
     }
     return "%unknownscript";
 }
