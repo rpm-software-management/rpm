@@ -116,6 +116,7 @@
 	- new debugedit option for recomputing build ID
 	- fix including exported headers from C++
 	- fix ordering with --nodeps
+	- include symlinks in find-lang search (rhbz#246729)
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
