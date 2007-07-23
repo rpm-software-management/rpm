@@ -1072,13 +1072,12 @@ static int compareFileListRecs(const void * ap, const void * bp)	/*@*/
 static int isDoc(FileList fl, const char * fileName)	/*@*/
 {
     int x = fl->docDirCount;
-    char docdir[PATH_MAX], *d;
+    size_t k, l;
 
+    k = strlen(fileName);
     while (x--) {
-	d = stpcpy(docdir, fl->docDirs[x]);
-	if (*(d-1) != '/') 
-	   d = stpcpy(d, "/");
-	if (strncmp(fileName, docdir, strlen(docdir)) == 0) 
+	l = strlen(fl->docDirs[x]);
+	if (l < k && strncmp(fileName, fl->docDirs[x], l) == 0 && fileName[l] == '/')
 	    return 1;
     }
     return 0;
