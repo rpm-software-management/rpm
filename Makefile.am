@@ -243,5 +243,6 @@ cscope:
 
 cref: ctags cscope
 
+.PHONY: ChangeLog
 ChangeLog:
 	hg log -v > ChangeLog
