@@ -110,9 +110,7 @@ lint:
 		`make -s sources -C build` \
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \
-		`make -s sources -C rpmio` \
-		`make -s sources -C beecrypt` \
-		`make -s sources -C file/src`
+		`make -s sources -C rpmio` 
 
 CVSTAG = r$(subst .,-,$(VERSION))
 

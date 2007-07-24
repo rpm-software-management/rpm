@@ -38,13 +38,9 @@ fi
 
 # XXX add missing config.rpath, kludgery around what's apparently 
 # gettext related stuff...
-for d in . file; do
+for d in . ; do
     touch $d/config.rpath
 done
-
-if [ -d file ]; then
-    (echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
-fi
 
 echo "--- rpm"
 $libtoolize --copy --force

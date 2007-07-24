@@ -28,7 +28,7 @@ staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 noinst_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps rpmfile
+pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps
 MAGIC	= $(pkgbindir)/magic
 
 bin_PROGRAMS =	rpmgraph
@@ -49,15 +49,6 @@ rpmcache_SOURCES =	rpmcache.c
 rpmdeps_SOURCES =	rpmdeps.c
 #rpmdeps_LDFLAGS =	$(staticLDFLAGS)
 rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
-
-rpmfile.c: $(top_srcdir)/file/src/file.c
-	rm -f $@
-	ln -s $< $@
-
-rpmfile_SOURCES =	rpmfile.c
-rpmfile_CFLAGS =	-DMAGIC='"$(MAGIC)"' $(INCLUDES)
-rpmfile_LDADD =		$(top_builddir)/rpmio/librpmio.la
-#rpmfile_LDFLAGS =	$(staticLDFLAGS)
 
 rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	$(staticLDFLAGS)

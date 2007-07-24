@@ -523,25 +523,20 @@ AC_SUBST(WITH_NEON_INCLUDE)
 AC_SUBST(WITH_NEON_LIB)
 
 #=================
-# Check for magic library. Prefer internal, otherwise external.
+# Check for magic library.
 WITH_MAGIC_SUBDIR=
 WITH_MAGIC_INCLUDE=
 WITH_MAGIC_LIB=
 
-if test -d file ; then
-  WITH_RPMFILE=rpmfile
-  WITH_MAGIC_SUBDIR=file
-  WITH_MAGIC_INCLUDE="-I\${top_srcdir}/${WITH_MAGIC_SUBDIR}/src"
-  WITH_MAGIC_LIB="\${top_builddir}/${WITH_MAGIC_SUBDIR}/src/libmagic.la"
-else
-  WITH_RPMFILE=
-  AC_CHECK_HEADER([magic.h], [
+AC_CHECK_HEADER([magic.h], [
     AC_CHECK_LIB(magic, magic_open, [
       WITH_MAGIC_SUBDIR=
       WITH_MAGIC_INCLUDE=
       WITH_MAGIC_LIB="-lmagic"
     ])
-  ])
+])
+if test -z "${WITH_MAGIC_LIB}" ; then
+   AC_MSG_ERROR([rpm requires libmagic]) 
 fi
 
 AC_SUBST(WITH_RPMFILE)
@@ -1291,7 +1286,7 @@ AC_SUBST(RPM)
 
 AC_SUBST(OBJDUMP)
 
-AC_CONFIG_SUBDIRS(file db3)
+AC_CONFIG_SUBDIRS(db3)
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
