@@ -505,7 +505,7 @@ AC_CHECK_HEADER([neon/ne_session.h], [
     AC_CHECK_LIB(neon, ne_send_request_chunk, [
 	AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1, [Define to 1 if you have ne_send_request_chunk() in libneon.])
     ])
-    WITH_NEON_INCLUDE="-I${includedir}/neon"
+    WITH_NEON_INCLUDE=
     WITH_NEON_LIB="-lneon"
   ])
 ],[
