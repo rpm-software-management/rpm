@@ -36,14 +36,8 @@ if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
     export CPPFLAGS="-I${myprefix}/include"
 fi
 
-# XXX add missing config.rpath, kludgery around what's apparently 
-# gettext related stuff...
-for d in . ; do
-    touch $d/config.rpath
-done
-
-echo "--- rpm"
-$libtoolize --copy --force
+libtoolize --copy --force
+autopoint --force
 aclocal
 autoheader
 automake -a -c
