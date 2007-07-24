@@ -7,18 +7,16 @@ Janitorial work:
 - audit and clean up user visible strings
 - clean up the build process (auto*-stuff, compiler warnings)
 - audit int_32 vs uint_32 etc sanity in the interfaces
-- fix toplevel "make distcheck"
 - have "make check" do something useful (use James' test-harness?)
 - use mkstemp() instead of mktemp() everywhere
 - refactor those 800+ line monster functions into something more digestable
-- split popt to separate project
-- update gettext
-- update internal bdb (stale lock detection etc)
-- remove internal file/libmagic?
 - review, update included README, INSTALL etc docs
 - uninternationalize RPMMESS_DEBUG strings to ease translator work
 - macroize hardcoded directories like docDirs 
 - get rid of static "1024 entries is enough for everybody" buffers
+
+General:
+- bdb related improvements like add stale lock detection etc
 
 API:
 - proper separation of exported and private headers to clean up the API
