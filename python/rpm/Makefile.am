@@ -4,8 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER = @WITH_PYTHON_VERSION@
 
-pylibdir = ${prefix}/lib@MARK64@/python@WITH_PYTHON_VERSION@
-pyincdir = $(prefix)/include/python@WITH_PYTHON_VERSION@
+pylibdir = $(prefix)/@WITH_PYTHON_LIB@
+pyincdir = $(prefix)/@WITH_PYTHON_INCLUDE@
 
 EXTRA_DIST = \
 	__init__.py
