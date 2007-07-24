@@ -5,9 +5,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
-	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
+	autodeps autogen.sh \
 	config.site db db3/configure installplatform platform* \
-	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c 
 
 SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ lua rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ tools scripts doc .
@@ -185,6 +184,15 @@ install-data-local:
 	esac
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
+# XXX to appease distcheck we need to remove "stuff" here...
+uninstall-local:
+	@rm -rf $(DESTDIR)/$(pkglibdir)/*-*
+	
+distclean-local:
+	@rm -rf Doxytags apidocs 
+	@rm -f stamp-h.in db3/*.orig db3/db3lobjs
+	@rm -f ChangeLog rpmpopt-$(VERSION)
+
 .PHONY:	setperms
 setperms:
 	@for f in $(rpmbin_PROGRAMS) ; do\
@@ -244,3 +252,5 @@ cref: ctags cscope
 .PHONY: ChangeLog
 ChangeLog:
 	hg log -v > ChangeLog
+
+ACLOCAL_AMFLAGS = -I m4

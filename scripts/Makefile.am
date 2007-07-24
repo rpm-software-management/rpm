@@ -14,14 +14,16 @@ EXTRA_DIST = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
-	libtool.*.sh pkgconfig.*.sh \
+	libtool.prov.sh libtool.req.sh pkgconfig.prov.sh pkgconfig.req.sh \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
-	macros.perl* macros.python* \
-	macros.php* find-*.php find-php-* mono-find*
+	macros.perl.in macros.python.in \
+	macros.php.in find-requires.php find-provides.php \
+	find-php-provides find-php-requires \
+	mono-find-requires mono-find-provides
 
 installprefix = $(DESTDIR)
 
