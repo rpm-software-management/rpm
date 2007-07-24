@@ -263,7 +263,6 @@ AC_MSG_CHECKING(old version of patch)
 
 AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
 AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
-AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
@@ -846,83 +845,33 @@ AC_LIBOBJ(fnmatch)
 dnl
 dnl Auto-detect which python bindings should be built.
 dnl
-withval=auto
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
-WITH_PYTHON_VERSION=$withval
-if test $withval = auto ; then
-
-AC_MSG_CHECKING(for python 2.5)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <python2.5/Python.h>
-main() {
-  exit(strncmp("2.5", PY_VERSION, 3));
-} ]])],[withval=yes],[withval=no],[withval=yes])
-  AC_MSG_RESULT($withval)
-  if test $withval = yes ; then
-    WITH_PYTHON_VERSION="2.5"
-  else
-
-  AC_MSG_CHECKING(for python 2.4)
-  AC_RUN_IFELSE([AC_LANG_SOURCE([[
-  #include <python2.4/Python.h>
-  main() {
-    exit(strncmp("2.4", PY_VERSION, 3));
-  } ]])],[withval=yes],[withval=no],[withval=yes])
-    AC_MSG_RESULT($withval)
-    if test $withval = yes ; then
-      WITH_PYTHON_VERSION="2.4"
-    else
-    
-    AC_MSG_CHECKING(for python 2.3)
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-    #include <python2.3/Python.h>
-    main() {
-      exit(strncmp("2.3", PY_VERSION, 3));
-    } ]])],[withval=yes],[withval=no],[withval=yes])
-      AC_MSG_RESULT($withval)
-      if test $withval = yes ; then
-        WITH_PYTHON_VERSION="2.3"
-      else
-    
-        AC_MSG_CHECKING(for python 2.2)
-        AC_RUN_IFELSE([AC_LANG_SOURCE([[
-      #include <python2.2/Python.h>
-      main() {
-        exit(strncmp("2.2", PY_VERSION, 3));
-      } ]])],[withval=yes],[withval=no],[withval=yes])
-        AC_MSG_RESULT($withval)
-        if test $withval = yes ; then
-          WITH_PYTHON_VERSION="2.2"
-        else
-    
-          AC_MSG_CHECKING(for python 1.5.2)
-          AC_RUN_IFELSE([AC_LANG_SOURCE([[
-      #include <python1.5/Python.h>
-      main() {
-        exit(strcmp("1.5.2", PY_VERSION));
-      } ]])],[withval=yes],[withval=no],[withval=yes])
-          AC_MSG_RESULT($withval)
-          if test $withval = yes ; then
-            WITH_PYTHON_VERSION="1.5"
-          fi
-        fi
-      fi
-    fi
-  fi
-fi
-
-if test "$WITH_PYTHON_VERSION" != no ; then
-  WITH_PYTHON_SUBDIR=python
-  WITH_PYTHON_SUBPACKAGE=1
+if test "{$withval}" = "no"; then
+  pythonbin=""
+elif test "${withval}" = "yes"; then
+  pythonbin="python"
 else
+  pythonbin="python$withval"
+fi
+AC_PATH_PROG(__PYTHON, "${pythonbin}")
+
+if test -z "${__PYTHON}"; then
+  WITH_PYTHON_INCLUDE=
+  WITH_PYTHON_LIB=
   WITH_PYTHON_SUBDIR=
   WITH_PYTHON_SUBPACKAGE=0
+else
+  WITH_PYTHON_INCLUDE=`${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_inc()'`
+  WITH_PYTHON_LIB=`${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_lib(1)'` 
+  WITH_PYTHON_SUBDIR=python
+  WITH_PYTHON_SUBPACKAGE=1
 fi
 
 AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_SUBPACKAGE)
-AC_SUBST(WITH_PYTHON_VERSION)
+AC_SUBST(WITH_PYTHON_INCLUDE)
+AC_SUBST(WITH_PYTHON_LIB)
 
 AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
 dnl

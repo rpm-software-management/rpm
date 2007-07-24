@@ -4,8 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-pylibdir = ${prefix}/lib@MARK64@/python@WITH_PYTHON_VERSION@
-pyincdir = $(prefix)/include/python@WITH_PYTHON_VERSION@
+pylibdir = @WITH_PYTHON_LIB@
+pyincdir = @WITH_PYTHON_INCLUDE@
 
 SUBDIRS = rpm
 
@@ -20,6 +20,7 @@ INCLUDES = -I. \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
+	-I$(top_srcdir)/ \
 	-I$(pyincdir) \
 	@INCPATH@
 
