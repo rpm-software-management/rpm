@@ -46,7 +46,7 @@ librpm_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
-	@INTLLIBS@
+	@LIBINTL@
 
 getdate.c: getdate.y
 	@echo expect 10 shift/reduce conflicts

@@ -6,9 +6,6 @@ AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE([foreign tar-ustar])
 
-dnl Set of available languages.
-ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr zh_TW"
-
 AC_AIX
 AC_MINIX
 
@@ -621,7 +618,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
 	;;
   esac
 
-AM_GNU_GETTEXT_VERSION([0.11.2])
+AM_GNU_GETTEXT_VERSION([0.16.1])
 AM_GNU_GETTEXT([external])
 
 dnl Checks for header files we can live without.
@@ -1239,10 +1236,10 @@ AC_CONFIG_SUBDIRS(db3)
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
-	scripts/Makefile scripts/brp-redhat
+	po/Makefile.in scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
 	tools/Makefile
-	misc/Makefile po/Makefile.in
+	misc/Makefile 
 	doc/Makefile
 	doc/manual/Makefile
 	doc/fr/Makefile
