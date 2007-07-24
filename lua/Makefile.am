@@ -23,6 +23,7 @@ luac_luac_CFLAGS = -DLUA_OPNAMES
 liblua_la_CFLAGS = -DUSE_DLOPEN -DWITH_POSIX
 liblua_la_LIBADD = -lm -ldl
 liblua_la_SOURCES = \
+		local/linit.h \
 		local/linit.c \
 		local/linit.lch \
 		local/lposix.h \
