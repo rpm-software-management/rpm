@@ -19,7 +19,7 @@ INCLUDES = -I. \
 LIBS =
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmbuild.h rpmfc.h rpmfile.h rpmspec.h
+pkginc_HEADERS = rpmbuild.h rpmfc.h rpmspec.h
 noinst_HEADERS = buildio.h
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
@@ -37,13 +37,8 @@ librpmbuild_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_LIBELF_LIB@
 
-rpmfile.h:
-	@ln -sf $(top_builddir)/file/src/file.h $@
-
-files.c rpmfc.c: rpmfile.h
-
 clean-local:
-	rm -f *.o rpmfile.h # .created $(FILELOBJS)
+	rm -f *.o 
 
 #BUILT_SOURCES = rpmbuild.lcd
 
