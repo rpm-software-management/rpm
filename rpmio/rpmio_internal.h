@@ -10,28 +10,28 @@
 #include <rpmurl.h>
 
 #if HAVE_BEECRYPT_API_H
-#include <api.h>
+#include <beecrypt/api.h>
 #else
-#include <beecrypt.api.h>
+#include <beecrypt/beecrypt.api.h>
 #endif
 
 #include <rpmpgp.h>
 #include <rpmsw.h>
 
 /* Drag in the beecrypt includes. */
-#include <beecrypt.h>
-#include <base64.h>
-#include <dsa.h>
-#include <endianness.h>
-#include <md5.h>
-#include <mp.h>
-#include <rsa.h>
-#include <rsapk.h>
-#include <sha1.h>
+#include <beecrypt/beecrypt.h>
+#include <beecrypt/base64.h>
+#include <beecrypt/dsa.h>
+#include <beecrypt/endianness.h>
+#include <beecrypt/md5.h>
+#include <beecrypt/mp.h>
+#include <beecrypt/rsa.h>
+#include <beecrypt/rsapk.h>
+#include <beecrypt/sha1.h>
 #if HAVE_BEECRYPT_API_H
-#include <sha256.h>
-#include <sha384.h>
-#include <sha512.h>
+#include <beecrypt/sha256.h>
+#include <beecrypt/sha384.h>
+#include <beecrypt/sha512.h>
 #endif
 
 /** \ingroup rpmio
