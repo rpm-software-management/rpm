@@ -7,9 +7,9 @@ LINT = splint
 pylibdir = @WITH_PYTHON_LIB@
 pyincdir = @WITH_PYTHON_INCLUDE@
 
-SUBDIRS = rpm
+SUBDIRS = 
 
-EXTRA_DIST = system.h rpmdebug-py.c
+EXTRA_DIST = system.h rpmdebug-py.c rpm/__init__.py
 
 INCLUDES = -I. \
 	-I$(top_srcdir)/build \
@@ -39,8 +39,9 @@ mylibs= \
 
 LDADD =
 
-rpmdir = $(prefix)/$(pylibdir)/site-packages/rpm
-rpm_LTLIBRARIES = _rpmmodule.la
+pyrpmdir = $(pylibdir)/rpm
+pyrpm_LTLIBRARIES = _rpmmodule.la
+pyrpm_SCRIPTS = rpm/__init__.py
 
 _rpmmodule_la_LDFLAGS = $(mylibs) $(LIBS) -module -avoid-version
 _rpmmodule_la_LIBADD =  @WITH_BEECRYPT_LIB@
