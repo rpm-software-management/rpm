@@ -1234,7 +1234,7 @@ AC_SUBST(OBJDUMP)
 
 AC_CONFIG_SUBDIRS(db3)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc rpmpopt
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python

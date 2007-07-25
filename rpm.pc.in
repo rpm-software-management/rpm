@@ -1,0 +1,15 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+rpmhome=@RPMCONFIGDIR@
+
+Name: RPM
+Description: RPM Package Manager
+Version: @VERSION@
+URL: http://rpm.org
+# Requires: 
+# Conflicts:
+Cflags: -I${includedir}/rpm
+Libs: -L${libdir} -lrpmbuild -lrpm -lrpmdb -lrpmio -lrpmmisc
+Libs.private: -lpopt -lmagic -lbeecrypt -lrt -lpthread -lselinux

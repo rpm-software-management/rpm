@@ -11,6 +11,9 @@ EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 
 SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ lua rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ tools scripts doc .
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = rpm.pc
+
 INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
