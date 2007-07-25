@@ -1,5 +1,5 @@
 AC_PREREQ(2.59)
-AC_INIT(rpm, 4.4.2.1-rc2, rpm-maint@lists.rpm.org)
+AC_INIT(rpm, 4.4.90, rpm-maint@lists.rpm.org)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
@@ -1122,13 +1122,6 @@ else
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
-dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
-MARK64=
-case "${target_cpu}" in
-x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	MARK64=64 ;;
-esac
-AC_SUBST(MARK64)
-
 dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
@@ -1186,7 +1179,12 @@ AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
 	[Full path to rpm locale directory (usually /usr/share/locale)])
 AC_SUBST(LOCALEDIR)
 LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
+dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
+case "${target_cpu}" in
+x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	LIBDIR="${LIBIR}64" ;;
+esac
 AC_SUBST(LIBDIR)
+
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
@@ -1249,7 +1247,6 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc rpmpopt
 	doc/ru/Makefile
 	doc/sk/Makefile
 	python/Makefile
-	python/rpm/Makefile
  	lua/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	

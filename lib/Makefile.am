@@ -31,7 +31,7 @@ LIBS =
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c depends.c formats.c fs.c fsm.c getdate.c \

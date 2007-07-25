@@ -28,7 +28,7 @@ BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddi
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c rpmdav.c \

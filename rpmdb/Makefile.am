@@ -44,7 +44,7 @@ libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 # XXX grrr, RPM_BUILD_ROOT prevents build pollution if/when -lrpm different
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c \

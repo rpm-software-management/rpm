@@ -24,7 +24,7 @@ noinst_HEADERS = buildio.h
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
-usrlibdir = $(libdir)@MARK64@
+usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
 	build.c expression.c files.c misc.c names.c pack.c \
