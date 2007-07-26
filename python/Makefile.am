@@ -39,7 +39,7 @@ mylibs= \
 
 LDADD =
 
-pyrpmdir = $(pylibdir)/rpm
+pyrpmdir = `${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_lib(1, prefix="@prefix@")'`/rpm
 pyrpm_LTLIBRARIES = _rpmmodule.la
 pyrpm_SCRIPTS = rpm/__init__.py
 
