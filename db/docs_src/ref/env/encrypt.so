@@ -1,0 +1,97 @@
+m4_comment([$Id: encrypt.so,v 11.13 2007/03/27 14:20:56 sue Exp $])
+
+m4_ref_title(Environment, Encryption, @encryption, env/security, env/remote)
+
+m4_p([dnl
+m4_db optionally supports encryption using the Rijndael/AES (also known
+as the Advanced Encryption Standard and Federal Information Processing
+Standard (FIPS) 197) algorithm for encryption or decryption.  The
+algorithm is configured to use a 128-bit key.  m4_db uses a 16-byte
+initialization vector generated using the Mersenne Twister.  All
+encrypted information is additionally checksummed using the SHA1 Secure
+Hash Algorithm, using a 160-bit message digest.])
+
+m4_p([dnl
+The encryption support provided with m4_db is intended to protect
+applications from an attacker obtaining physical access to the media on
+which a m4_db database is stored, or an attacker compromising a system
+on which m4_db is running but who is unable to read system or process
+memory on that system.
+m4_bold([dnl
+The encryption support provided with m4_db will not protect applications
+from attackers able to read system memory on the system where m4_db is
+running.])])
+
+m4_p([dnl
+Encryption is not the default for created databases, even in database
+environments configured for encryption.  In addition to configuring for
+encryption by calling the m4_ref(dbenv_set_encrypt) or
+m4_refT(dbh_set_encrypt)s, applications must specify the
+m4_ref(DB_ENCRYPT) flag before creating the database in order for the
+database to be encrypted.  Further, databases cannot be converted to an
+encrypted format after they have been created without dumping and
+re-creating them.  Finally, encrypted databases cannot be read
+on systems with a different endianness than the system that created
+the encrypted database.])
+
+m4_p([dnl
+Each encrypted database environment (including all its encrypted
+databases) is encrypted using a single password and a single algorithm.
+Applications wanting to provide a finer granularity of database access
+must either use multiple database environments or implement additional
+access controls outside of m4_db.])
+
+m4_p([dnl
+The only encrypted parts of a database environment are its databases
+and its log files. Specifically, the m4_link(M4RELDIR/ref/env/region,
+[shared memory regions]) supporting the database environment are not
+encrypted.  For this reason, it may be possible for an attacker to read
+some or all of an encrypted database by reading the on-disk files that
+back these shared memory regions.  To prevent such attacks, applications
+may want to use in-memory filesystem support (on systems that support
+it), or the m4_ref(DB_PRIVATE) or m4_ref(DB_SYSTEM_MEM) flags to the
+m4_refT(dbenv_open), to place the shared memory regions in memory that
+is never written to a disk.  As some systems page system memory to a
+backing disk, it is important to consider the specific operating system
+running on the machine as well.  Finally, when backing database
+environment shared regions with the filesystem, m4_db can be configured
+to overwrite the shared regions before removing them by specifying the
+m4_ref(DB_OVERWRITE) flag.  This option is only effective in the
+presence of fixed-block filesystems, journaling or logging filesystems
+will require operating system support and probably modification of the
+m4_db sources.])
+
+m4_p([dnl
+While all user data is encrypted, parts of the databases and log files
+in an encrypted environment are maintained in an unencrypted state.
+Specifically, log record headers are not encrypted, only the actual log
+records.  Additionally, database internal page header fields are not
+encrypted.  These page header fields includes information such as the
+page's m4_ref(DbLsn), number, and position in the database's sort
+order.])
+
+m4_p([dnl
+Log records distributed by a replication master to replicated clients are
+transmitted to the clients in unencrypted form.  If encryption is
+desired in a replicated application, the use of a secure transport
+is strongly suggested.])
+
+m4_p([dnl
+We gratefully acknowledge:])
+
+m4_bulletbegin
+m4_bullet([dnl
+Vincent Rijmen, Antoon Bosselaers and Paulo Barreto for writing the
+Rijndael/AES code used in m4_db.])
+m4_bullet([dnl
+Steve Reid and James H. Brown for writing the SHA1 checksum code used
+in m4_db.])
+m4_bullet([dnl
+Makoto Matsumoto and Takuji Nishimura for writing the Mersenne Twister
+code used in m4_db.])
+m4_bullet([dnl
+Adam Stubblefield for integrating the Rijndael/AES, SHA1 checksum and
+Mersenne Twister code into m4_db.])
+m4_bulletend
+
+m4_page_footer

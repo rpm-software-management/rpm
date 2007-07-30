@@ -1,6 +1,5 @@
-<!--$Id: memp_fput.so,v 10.33 2006/09/11 23:31:27 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: memp_fput.so,v 10.34 2006/11/30 19:06:50 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -23,33 +22,39 @@
 #include &lt;db.h&gt;
 <p>
 int
-DB_MPOOLFILE-&gt;put(DB_MPOOLFILE *mpf, void *pgaddr, u_int32_t flags);
+DB_MPOOLFILE-&gt;put(DB_MPOOLFILE *mpf,
+    void *pgaddr, DB_CACHE_PRIORITY priority, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_MPOOLFILE-&gt;put</h3>
-<p>The DB_MPOOLFILE-&gt;put method returns a page to the cache.</p>
+<p>The DB_MPOOLFILE-&gt;put method returns a reference to a page in the cache,
+setting the priority of the page as specified by the <b>priority</b>
+parameter.</p>
 <p>The DB_MPOOLFILE-&gt;put method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>pgaddr</b><dd>The <b>pgaddr</b> parameter is the address of the page to be
-returned to the cache.  The <b>pgaddr</b> parameter must be an
-address previously returned by <a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a>.
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
-or more of the following values:
+<dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
+<dt><b>pgaddr</b><dd>The <b>pgaddr</b> parameter is the address of the page to be returned
+to the cache.  The <b>pgaddr</b> parameter must be a value previously
+returned by the <a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a> method.
+<dt><b>priority</b><dd>Set the page's <b>priority</b> as follows:
 <dl compact>
-<dt><a name="DB_MPOOL_DISCARD">DB_MPOOL_DISCARD</a><dd>The page is unlikely to be useful in the near future, and should be
-discarded before other pages in the pool.
+<dt><a name="DB_PRIORITY_UNCHANGED">DB_PRIORITY_UNCHANGED</a><dd>The priority is unchanged.
+<dt><a name="DB_PRIORITY_VERY_LOW">DB_PRIORITY_VERY_LOW</a><dd>The lowest priority: pages are the most likely to be discarded.
+<dt><a name="DB_PRIORITY_LOW">DB_PRIORITY_LOW</a><dd>The next lowest priority.
+<dt><a name="DB_PRIORITY_DEFAULT">DB_PRIORITY_DEFAULT</a><dd>The default priority.
+<dt><a name="DB_PRIORITY_HIGH">DB_PRIORITY_HIGH</a><dd>The next highest priority.
+<dt><a name="DB_PRIORITY_VERY_HIGH">DB_PRIORITY_VERY_HIGH</a><dd>The highest priority: pages are the least likely to be discarded.
 </dl>
 </dl>
 <h3>Errors</h3>
 <p>The DB_MPOOLFILE-&gt;put method
 may fail and return one of the following non-zero errors:</p>
 <dl compact>
-<dt>EINVAL<dd>If the <b>pgaddr</b> parameter does not refer to a page returned by
-<a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a>; or if an
+<dt>EINVAL<dd>An
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -61,6 +66,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

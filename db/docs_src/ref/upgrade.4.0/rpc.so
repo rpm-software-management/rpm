@@ -1,0 +1,14 @@
+m4_comment([$Id: rpc.so,v 1.7 2004/08/13 03:39:01 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: DB_ENV-__GT__set_server,,
+    upgrade.4.0/env, upgrade.4.0/set_lk_max)
+
+m4_p([dnl
+The DB_ENV-__GT__set_server method has been replaced with the
+m4_refT(dbenv_set_rpc_server).  The DB_ENV-__GT__set_server method can
+be easily converted to the m4_refT(dbenv_set_rpc_server) by changing the
+name, and specifying a NULL for the added argument, second in the
+argument list.])
+
+m4_page_footer

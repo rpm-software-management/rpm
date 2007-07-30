@@ -1,0 +1,79 @@
+m4_comment([$Id: pagesize.so,v 10.22 2002/02/11 14:55:53 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Selecting a page size,
+    selecting a @page size,
+    am_conf/logrec, am_conf/cachesize)
+
+m4_p([dnl
+The size of the pages used in the underlying database can be specified by
+calling the m4_refT(dbh_set_pagesize).  The minimum page size is 512 bytes
+and the maximum page size is 64K bytes, and must be a power of two.  If
+no page size is specified by the application, a page size is selected
+based on the underlying filesystem I/O block size.  (A page size selected
+in this way has a lower limit of 512 bytes and an upper limit of 16K
+bytes.)])
+
+m4_p([dnl
+There are several issues to consider when selecting a pagesize: overflow
+record sizes, locking, I/O efficiency, and recoverability.])
+
+m4_p([dnl
+First, the page size implicitly sets the size of an overflow record.
+Overflow records are key or data items that are too large to fit on a
+normal database page because of their size, and are therefore stored in
+overflow pages.  Overflow pages are pages that exist outside of the normal
+database structure.  For this reason, there is often a significant
+performance penalty associated with retrieving or modifying overflow
+records.  Selecting a page size that is too small, and which forces the
+creation of large numbers of overflow pages, can seriously impact the
+performance of an application.])
+
+m4_p([dnl
+Second, in the Btree, Hash and Recno access methods, the finest-grained
+lock that m4_db acquires is for a page.  (The Queue access method
+generally acquires record-level locks rather than page-level locks.)
+Selecting a page size that is too large, and which causes threads or
+processes to wait because other threads of control are accessing or
+modifying records on the same page, can impact the performance of your
+application.])
+
+m4_p([dnl
+Third, the page size specifies the granularity of I/O from the database
+to the operating system.  m4_db will give a page-sized unit of bytes to
+the operating system to be scheduled for reading/writing from/to the
+disk.  For many operating systems, there is an internal m4_bold(block
+size) which is used as the granularity of I/O from the operating system
+to the disk.  Generally, it will be more efficient for m4_db to write
+filesystem-sized blocks to the operating system and for the operating
+system to write those same blocks to the disk.])
+
+m4_p([dnl
+Selecting a database page size smaller than the filesystem block size
+may cause the operating system to coalesce or otherwise manipulate m4_db
+pages and can impact the performance of your application.  When the page
+size is smaller than the filesystem block size and a page written by
+m4_db is not found in the operating system's cache, the operating system
+may be forced to read a block from the disk, copy the page into the
+block it read, and then write out the block to disk, rather than simply
+writing the page to disk.  Additionally, as the operating system is
+reading more data into its buffer cache than is strictly necessary to
+satisfy each m4_db request for a page, the operating system buffer cache
+may be wasting memory.])
+
+m4_p([dnl
+Alternatively, selecting a page size larger than the filesystem block
+size may cause the operating system to read more data than necessary.
+On some systems, reading filesystem blocks sequentially may cause the
+operating system to begin performing read-ahead.  If requesting a single
+database page implies reading enough filesystem blocks to satisfy the
+operating system's criteria for read-ahead, the operating system may do
+more I/O than is required.])
+
+m4_p([dnl
+Fourth, when using the m4_tam product, the page size may affect the errors
+from which your database can recover  See
+m4_link(M4RELDIR/ref/transapp/reclimit, [m4_db Recoverability]) for more
+information.])
+
+m4_page_footer

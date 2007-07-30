@@ -789,6 +789,24 @@ db_log2.o
 C/C++ compiler
 <END>
 
+<BEGIN> FILE_$(PRJ_DIR)/../common/db_shash.c_dependDone
+TRUE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../common/db_shash.c_dependencies
+$(PRJ_DIR)/db_config.h \
+	$(PRJ_DIR)/db_int.h \
+	$(PRJ_DIR)/db.h
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../common/db_shash.c_objects
+db_shash.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../common/db_shash.c_tool
+C/C++ compiler
+<END>
+
 <BEGIN> FILE_$(PRJ_DIR)/../common/mkpath.c_dependDone
 TRUE
 <END>
@@ -1491,39 +1509,21 @@ dbreg_util.o
 C/C++ compiler
 <END>
 
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_salloc.c_dependDone
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_alloc.c_dependDone
 TRUE
 <END>
 
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_salloc.c_dependencies
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_alloc.c_dependencies
 $(PRJ_DIR)/db_config.h \
 	$(PRJ_DIR)/db_int.h \
 	$(PRJ_DIR)/db.h
 <END>
 
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_salloc.c_objects
-db_salloc.o
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_alloc.c_objects
+env_alloc.o
 <END>
 
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_salloc.c_tool
-C/C++ compiler
-<END>
-
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_shash.c_dependDone
-TRUE
-<END>
-
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_shash.c_dependencies
-$(PRJ_DIR)/db_config.h \
-	$(PRJ_DIR)/db_int.h \
-	$(PRJ_DIR)/db.h
-<END>
-
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_shash.c_objects
-db_shash.o
-<END>
-
-<BEGIN> FILE_$(PRJ_DIR)/../env/db_shash.c_tool
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_alloc.c_tool
 C/C++ compiler
 <END>
 
@@ -1581,6 +1581,24 @@ env_file.o
 C/C++ compiler
 <END>
 
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_globals.c_dependDone
+TRUE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_globals.c_dependencies
+$(PRJ_DIR)/db_config.h \
+	$(PRJ_DIR)/db_int.h \
+	$(PRJ_DIR)/db.h
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_globals.c_objects
+env_globals.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_globals.c_tool
+C/C++ compiler
+<END>
+
 <BEGIN> FILE_$(PRJ_DIR)/../env/env_method.c_dependDone
 TRUE
 <END>
@@ -1596,6 +1614,24 @@ env_method.o
 <END>
 
 <BEGIN> FILE_$(PRJ_DIR)/../env/env_method.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_name.c_dependDone
+TRUE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_name.c_dependencies
+$(PRJ_DIR)/db_config.h \
+	$(PRJ_DIR)/db_int.h \
+	$(PRJ_DIR)/db.h
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_name.c_objects
+env_name.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../env/env_name.c_tool
 C/C++ compiler
 <END>
 
@@ -2355,6 +2391,24 @@ mp_register.o
 C/C++ compiler
 <END>
 
+<BEGIN> FILE_$(PRJ_DIR)/../mp/mp_resize.c_dependDone
+TRUE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../mp/mp_resize.c_dependencies
+$(PRJ_DIR)/db_config.h \
+	$(PRJ_DIR)/db_int.h \
+	$(PRJ_DIR)/db.h
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../mp/mp_resize.c_objects
+mp_resize.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../mp/mp_resize.c_tool
+C/C++ compiler
+<END>
+
 <BEGIN> FILE_$(PRJ_DIR)/../mp/mp_stat.c_dependDone
 TRUE
 <END>
@@ -2514,6 +2568,24 @@ mut_tas.o
 <END>
 
 <BEGIN> FILE_$(PRJ_DIR)/../mutex/mut_tas.c_tool
+C/C++ compiler
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../os/os_abort.c_dependDone
+TRUE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../os/os_abort.c_dependencies
+$(PRJ_DIR)/db_config.h \
+	$(PRJ_DIR)/db_int.h \
+	$(PRJ_DIR)/db.h
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../os/os_abort.c_objects
+os_abort.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../os/os_abort.c_tool
 C/C++ compiler
 <END>
 
@@ -3129,6 +3201,24 @@ rep_stub.o
 C/C++ compiler
 <END>
 
+<BEGIN> FILE_$(PRJ_DIR)/../repmgr/repmgr_stub.c_dependDone
+TRUE
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../repmgr/repmgr_stub.c_dependencies
+$(PRJ_DIR)/db_config.h \
+	$(PRJ_DIR)/db_int.h \
+	$(PRJ_DIR)/db.h
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../repmgr/repmgr_stub.c_objects
+repmgr_stub.o
+<END>
+
+<BEGIN> FILE_$(PRJ_DIR)/../repmgr/repmgr_stub.c_tool
+C/C++ compiler
+<END>
+
 <BEGIN> FILE_$(PRJ_DIR)/../txn/txn.c_dependDone
 TRUE
 <END>
@@ -3394,6 +3484,7 @@ $(PRJ_DIR)/../btree/bt_compact.c \
 	$(PRJ_DIR)/../common/db_getlong.c \
 	$(PRJ_DIR)/../common/db_idspace.c \
 	$(PRJ_DIR)/../common/db_log2.c \
+	$(PRJ_DIR)/../common/db_shash.c \
 	$(PRJ_DIR)/../common/mkpath.c \
 	$(PRJ_DIR)/../common/util_arg.c \
 	$(PRJ_DIR)/../common/util_cache.c \
@@ -3433,12 +3524,13 @@ $(PRJ_DIR)/../btree/bt_compact.c \
 	$(PRJ_DIR)/../dbreg/dbreg_rec.c \
 	$(PRJ_DIR)/../dbreg/dbreg_stat.c \
 	$(PRJ_DIR)/../dbreg/dbreg_util.c \
-	$(PRJ_DIR)/../env/db_salloc.c \
-	$(PRJ_DIR)/../env/db_shash.c \
+	$(PRJ_DIR)/../env/env_alloc.c \
 	$(PRJ_DIR)/../env/env_config.c \
 	$(PRJ_DIR)/../env/env_failchk.c \
 	$(PRJ_DIR)/../env/env_file.c \
+	$(PRJ_DIR)/../env/env_globals.c \
 	$(PRJ_DIR)/../env/env_method.c \
+	$(PRJ_DIR)/../env/env_name.c \
 	$(PRJ_DIR)/../env/env_open.c \
 	$(PRJ_DIR)/../env/env_recover.c \
 	$(PRJ_DIR)/../env/env_region.c \
@@ -3481,6 +3573,7 @@ $(PRJ_DIR)/../btree/bt_compact.c \
 	$(PRJ_DIR)/../mp/mp_mvcc.c \
 	$(PRJ_DIR)/../mp/mp_region.c \
 	$(PRJ_DIR)/../mp/mp_register.c \
+	$(PRJ_DIR)/../mp/mp_resize.c \
 	$(PRJ_DIR)/../mp/mp_stat.c \
 	$(PRJ_DIR)/../mp/mp_sync.c \
 	$(PRJ_DIR)/../mp/mp_trickle.c \
@@ -3490,6 +3583,7 @@ $(PRJ_DIR)/../btree/bt_compact.c \
 	$(PRJ_DIR)/../mutex/mut_region.c \
 	$(PRJ_DIR)/../mutex/mut_stat.c \
 	$(PRJ_DIR)/../mutex/mut_tas.c \
+	$(PRJ_DIR)/../os/os_abort.c \
 	$(PRJ_DIR)/../os/os_alloc.c \
 	$(PRJ_DIR)/../os/os_clock.c \
 	$(PRJ_DIR)/../os/os_dir.c \
@@ -3524,6 +3618,7 @@ $(PRJ_DIR)/../btree/bt_compact.c \
 	$(PRJ_DIR)/../os_vxworks/os_vx_rpath.c \
 	$(PRJ_DIR)/../qam/qam_stub.c \
 	$(PRJ_DIR)/../rep/rep_stub.c \
+	$(PRJ_DIR)/../repmgr/repmgr_stub.c \
 	$(PRJ_DIR)/../txn/txn.c \
 	$(PRJ_DIR)/../txn/txn_auto.c \
 	$(PRJ_DIR)/../txn/txn_chkpt.c \

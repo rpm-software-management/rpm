@@ -1,6 +1,5 @@
 <!--$Id: db_put.so,v 10.59 2006/09/13 14:30:52 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -73,15 +72,16 @@ database.
 </dl>
 <dt><b>data</b><dd>The data <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
 <dt><b>key</b><dd>The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
-<dt><b>txnid</b><dd>If the operation is part of an application-specified
-transaction, the <b>txnid</b> parameter is a transaction handle
-returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
-group, the <b>txnid</b> parameter is a handle returned from
-<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.
+If no transaction handle is
 specified, but the
 operation occurs in a transactional
 database,
-the operation will be implicitly transaction protected.  
+the operation will be implicitly transaction protected.
 </dl>
 <a name="2"><!--meow--></a>
 <a name="3"><!--meow--></a>
@@ -127,6 +127,6 @@ throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exc
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

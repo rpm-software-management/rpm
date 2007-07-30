@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>Chapter 5. Managing DB Files</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ChapterÂ 5.Â Managing DB Files</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
@@ -15,12 +15,12 @@
     <div class="navheader">
       <table width="100%" summary="Navigation header">
         <tr>
-          <th colspan="3" align="center">Chapter 5. Managing DB Files</th>
+          <th colspan="3" align="center">ChapterÂ 5.Â Managing DB Files</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="reversesplit.html">Prev</a> </td>
-          <th width="60%" align="center"> </th>
-          <td width="20%" align="right"> <a accesskey="n" href="backuprestore.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="reversesplit.html">Prev</a>Â </td>
+          <th width="60%" align="center">Â </th>
+          <td width="20%" align="right">Â <a accesskey="n" href="backuprestore.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -29,7 +29,7 @@
       <div class="titlepage">
         <div>
           <div>
-            <h2 class="title"><a id="filemanagement"></a>Chapter 5. Managing DB Files</h2>
+            <h2 class="title"><a id="filemanagement"></a>ChapterÂ 5.Â Managing DB Files</h2>
           </div>
         </div>
         <div></div>
@@ -302,7 +302,7 @@
             For example, to run a checkpoint from a separate thread of control:
         </p>
         <pre class="programlisting">#include &lt;pthread.h&gt;
-#include &quot;db_cxx.h&quot;
+#include "db_cxx.h"
 
 ...
                                                                                                                                   
@@ -318,7 +318,7 @@ int main(void)
                           DB_THREAD     |  // Free-thread the env handle
                           DB_INIT_TXN;     // Initialize transactions
                                                                                                                                   
-    std::string envHome(&quot;/export1/testEnv&quot;);
+    std::string envHome("/export1/testEnv");
     DbEnv myEnv(0);
 
     try {
@@ -331,7 +331,7 @@ int main(void)
         if ((ret = pthread_create( 
             &amp;ptid, NULL, checkpoint_thread, (void *)&amp;myEnv)) != 0) { 
                 fprintf(stderr, 
-                    &quot;txnapp: failed spawning checkpoint thread: %s\n&quot;, 
+                    "txnapp: failed spawning checkpoint thread: %s\n", 
                     strerror(errno)); 
                 myEnv.close(0);
                 exit (1); 
@@ -352,7 +352,7 @@ checkpoint_thread(void *arg) {
         try {
             dbenv-&gt;txn_checkpoint(0, 0, 0));
         } catch(DbException &amp;e) {
-            dbenv-&gt;err(e.get_errno(), &quot;checkpoint thread&quot;); 
+            dbenv-&gt;err(e.get_errno(), "checkpoint thread"); 
             exit (e.get_errno()); 
         }
     }
@@ -365,18 +365,18 @@ checkpoint_thread(void *arg) {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="reversesplit.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="reversesplit.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="index.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="backuprestore.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="backuprestore.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Reverse BTree Splits </td>
+          <td width="40%" align="left" valign="top">Reverse BTree SplitsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Backup Procedures</td>
+          <td width="40%" align="right" valign="top">Â Backup Procedures</td>
         </tr>
       </table>
     </div>

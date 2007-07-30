@@ -1,0 +1,12 @@
+m4_comment([$Id: stat.so,v 11.4 2003/10/18 19:16:14 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: DB-__GT__stat,,
+    upgrade.3.0/join, upgrade.3.0/close)
+
+m4_p([dnl
+The m4_arg(bt_flags) field returned from the m4_refT(dbh_stat) for Btree
+and Recno databases has been removed, and this information is no longer
+available.])
+
+m4_page_footer

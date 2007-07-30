@@ -46,4 +46,6 @@ public class DbLogc {
     return db_javaJNI.DbLogc_get(swigCPtr, lsn, data, flags);
   }
 
+  public int version(int flags) throws com.sleepycat.db.DatabaseException { return db_javaJNI.DbLogc_version(swigCPtr, flags); }
+
 }

@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: dead002.tcl,v 12.4 2006/08/24 14:46:34 bostic Exp $
+# $Id: dead002.tcl,v 12.6 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	dead002
 # TEST	Same test as dead001, but use "detect on every collision" instead

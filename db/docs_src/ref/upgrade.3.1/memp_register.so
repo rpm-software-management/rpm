@@ -1,0 +1,18 @@
+m4_comment([$Id: memp_register.so,v 1.5 2003/10/18 19:16:15 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: memp_register,,
+    upgrade.3.1/log_register, upgrade.3.1/txn_check)
+
+m4_p([dnl
+An additional argument has been added to the m4_arg(pgin) and
+m4_arg(pgout) functions provided to the memp_register function.
+The application should be searched for any occurrences of
+memp_register.  For each one, if m4_arg(pgin) or m4_arg(pgout)
+functions are specified, the m4_arg(pgin) and m4_arg(pgout) functions
+should be modified to take an initial argument of a m4_arg(DB_ENV *).
+This argument is intended to support better error reporting for
+applications, and may be entirely ignored by the m4_arg(pgin) and
+m4_arg(pgout) functions themselves.])
+
+m4_page_footer

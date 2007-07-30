@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep055.tcl,v 1.8 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep055.tcl,v 1.14 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep055
 # TEST	Test of internal initialization and log archiving.
@@ -61,6 +60,12 @@ proc rep055_sub { method niter tnum recargs opts largs } {
 	global testdir
 	global passwd
 	global util_path
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -80,31 +85,29 @@ proc rep055_sub { method niter tnum recargs opts largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env_noerr -create -txn nosync \
-	    -log_buffer $log_buf -log_max $log_max \
+	set ma_envcmd "berkdb_env_noerr -create -txn nosync $verbargs \
+	    -log_buffer $log_buf -log_max $log_max -errpfx MASTER \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create -txn nosync \
-#	    -log_buffer $log_buf -log_max $log_max \
-#	    -verbose {rep on} -errpfx MASTER \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
+	$masterenv rep_limit 0 0
 
 	# Open a client
 	repladd 2
-	set cl_envcmd "berkdb_env_noerr -create -txn nosync \
-	    -log_buffer $log_buf -log_max $log_max \
+	set cl_envcmd "berkdb_env_noerr -create -txn nosync $verbargs \
+	    -log_buffer $log_buf -log_max $log_max -errpfx CLIENT \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create -txn nosync \
-#	    -log_buffer $log_buf -log_max $log_max \
-#	    -verbose {rep on} -errpfx CLIENT \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
+	$clientenv rep_limit 0 0
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init, so that we can do a
+	# log_archive in a moment.
+	#
+	$masterenv test force noarchive_timeout
 
 	# Run rep_test in the master (and update client).
 	puts "\tRep$tnum.a: Running rep_test in replicated env."
@@ -164,6 +167,7 @@ proc rep055_sub { method niter tnum recargs opts largs } {
 	}
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
+	$clientenv rep_limit 0 0
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	#
 	# Process messages once to get partially through internal init.

@@ -1,0 +1,70 @@
+m4_comment([$Id: db_checkpoint.so,v 10.28 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_checkpoint)
+
+m4_util_header(db_checkpoint, [dnl
+db_checkpoint m4_utilarg(1Vv) m4_utilarg([h home])
+    m4_utilarg([k kbytes]) m4_utilarg([L file]) m4_utilarg([P password]) m4_utilarg([p min])])
+m4_idefz(utility to take @checkpoints)
+
+m4_p([dnl
+The m4_ref(db_checkpoint) utility is a daemon process that monitors the
+database log, and periodically calls m4_ref(txn_checkpoint) to checkpoint
+it.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+m4_tagopt(1, [dnl
+Force a single checkpoint of the log (regardless of whether or not there
+has been activity since the last checkpoint), and then exit.
+m4_p([
+When the m4_option(1) flag is specified, the m4_ref(db_checkpoint)
+utility will checkpoint the log even if unable to find an existing
+database environment.  This functionality is useful when upgrading
+database environments from one version of m4_db to another.])])
+
+m4_hflag
+
+m4_tagopt(k, [dnl
+Checkpoint the database at least as often as every m4_arg(kbytes) of log
+file are written.])
+
+m4_Lflag(db_checkpoint)
+
+m4_Pflag
+
+m4_tagopt(p, [dnl
+Checkpoint the database at least every m4_arg(min) minutes if there has
+been any activity since the last checkpoint.])
+
+m4_Vflag
+
+m4_tagopt(v, [dnl
+Write the time of each checkpoint attempt to the standard output.])
+
+m4_tagend
+
+m4_p([dnl
+At least one of the m4_option(1), m4_option(k), and m4_option(p) options
+must be specified.])
+
+m4_detach(db_checkpoint, uses)
+
+m4_p([dnl
+The m4_ref(db_checkpoint) utility does not attempt to create the m4_db
+shared memory regions if they do not already exist.  The application
+that creates the region should be started first, and once the region is
+created, the m4_ref(db_checkpoint) utility should be started.])
+
+m4_underfunc(txn_checkpoint, txn_checkpoint, db_checkpoint)
+
+m4_utilexit(db_checkpoint)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_checkpoint)
+
+m4_page_footer

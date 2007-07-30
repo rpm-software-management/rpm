@@ -1,0 +1,13 @@
+m4_comment([$Id: intro.so,v 1.4 2004/09/28 14:13:08 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.3: introduction,,
+    upgrade.3.2/disk, upgrade.3.3/rpc)
+
+m4_p([dnl
+The following pages describe how to upgrade applications coded against
+the m4_db 3.2 release interfaces to the m4_db 3.3 release interfaces.
+This information does not describe how to upgrade m4_db 1.85 release
+applications.])
+
+m4_page_footer

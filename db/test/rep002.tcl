@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2002,2007 Oracle.  All rights reserved.
 #
-# $Id: rep002.tcl,v 12.10 2006/09/13 16:51:39 carol Exp $
+# $Id: rep002.tcl,v 12.16 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  	rep002
 # TEST	Basic replication election test.
@@ -60,7 +59,14 @@ proc rep002 { method { niter 10 } { nclients 3 } { tnum "002" } args } {
 proc rep002_sub { method niter nclients tnum logset recargs largs } {
 	source ./include.tcl
 	global elect_timeout elect_serial
-	set elect_timeout 5000000
+	set elect_timeout(default) 5000000
+
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -84,32 +90,23 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
-	    -home $masterdir $m_logargs -errpfx MASTER \
+	    -event rep_event \
+	    -home $masterdir $m_logargs -errpfx MASTER $verbargs \
 	    $m_txnargs -rep_master -rep_transport \[list 1 replsend\]"
-#	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
-#	    -home $masterdir $m_logargs -errpfx MASTER -errfile /dev/stderr \
-#	    -verbose {rep on} $m_txnargs -rep_master \
-#	    -rep_transport \[list 1 replsend\]"
 	# In an election test, the -recovery arg must not go
 	# in the env_cmd string because that is going to be
 	# passed to a child process.
 	set masterenv [eval $env_cmd(M) $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open the clients.
 	for { set i 0 } { $i < $nclients } { incr i } {
 		set envid [expr $i + 2]
 		repladd $envid
 		set env_cmd($i) "berkdb_env_noerr -create -home $clientdir($i) \
+		    -event rep_event \
 		    $c_logargs($i) $c_txnargs($i) -rep_client -errpfx CLIENT$i \
-		    -rep_transport \[list $envid replsend\]"
-#		set env_cmd($i) "berkdb_env_noerr -create -home $clientdir($i) \
-#		    $c_logargs($i) -verbose {rep on} -errfile /dev/stderr \
-#		    $c_txnargs($i) -rep_client -errpfx CLIENT$i \
-#		    -rep_transport \[list $envid replsend\]"
+		    $verbargs -rep_transport \[list $envid replsend\]"
 		set clientenv($i) [eval $env_cmd($i) $recargs]
-		error_check_good \
-		    client_env($i) [is_valid_env $clientenv($i)] TRUE
 	}
 
 	# Loop, processing first the master's messages, then the client's,
@@ -152,7 +149,7 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 	# sites got a HOLDELECTION and checking that the master i.d. is
 	# unchanged after the election.
 
-	set origmasterid [stat_field $masterenv rep_stat "Master"] 
+	set origmasterid [stat_field $masterenv rep_stat "Master"]
 	set origgeneration [stat_field $masterenv rep_stat "Generation number"]
 
 	set got_hold_elect(M) 0
@@ -160,8 +157,8 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 		set got_hold_elect($i) 0
 		set elect_pipe($i) INVALID
 	}
-	set elect_pipe(0) [start_election C0 \
-	    $qdir $env_cmd(0) [expr $nclients + 1] $nclients 20 $elect_timeout]
+	set elect_pipe(0) [start_election C0 $qdir $env_cmd(0) \
+	    [expr $nclients + 1] $nclients 20 $elect_timeout(default)]
 
 	tclsleep 2
 
@@ -176,7 +173,7 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 			incr elect_serial
 			set elect_pipe(M) [start_election CM $qdir \
 			    $env_cmd(M) [expr $nclients + 1] $nclients \
-			    0 $elect_timeout]
+			    0 $elect_timeout(default)]
 			set got_hold_elect(M) 1
 		}
 
@@ -195,7 +192,7 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 				set elect_pipe($i) [start_election $pfx $qdir \
 			    	    $env_cmd($i) [expr $nclients + 1] \
 				    $nclients 0 \
-				    $elect_timeout]
+				    $elect_timeout(default)]
 				set got_hold_elect($i) 1
 			}
 		}
@@ -204,7 +201,7 @@ proc rep002_sub { method niter nclients tnum logset recargs largs } {
 			break
 		}
 	}
-	set masterid [stat_field $masterenv rep_stat "Master"] 
+	set masterid [stat_field $masterenv rep_stat "Master"]
 	set generation [stat_field $masterenv rep_stat "Generation number"]
 	error_check_good master_unchanged $origmasterid $masterid
 	error_check_good gen_unchanged $origgeneration $generation

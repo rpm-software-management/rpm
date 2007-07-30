@@ -1,0 +1,42 @@
+m4_comment([$Id: linux.so,v 11.19 2004/10/18 20:10:41 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    Linux, @Linux, build_unix/irix, build_unix/macosx)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't compile and run multithreaded applications.])
+
+m4_p([dnl
+Special compile-time flags are required when compiling threaded
+applications on Linux.  If you are compiling a threaded application, you
+must compile with the _REENTRANT flag:])
+
+m4_indent([cc -D_REENTRANT ...])
+
+m4_p([dnl
+The m4_db library will automatically build with the correct options.])])
+
+m4_nlist([dnl
+m4_bold([I see database corruption when accessing databases.])
+
+m4_p([dnl
+Some Linux filesystems do not support POSIX filesystem semantics.
+Specifically, ext2 and early releases of ReiserFS, and ext3 in some
+configurations, do not support "ordered data mode" and may insert random
+data into database or log files when systems crash.  m4_db files should
+not be placed on a filesystem that does not support, or is not
+configured to support, POSIX semantics.])])
+
+m4_nlist([dnl
+m4_bold([What scheduler should I use?])
+
+m4_p([dnl
+In some Linux kernels you can select schedulers, and the default is the
+"anticipatory" scheduler.  We recommend not using the "anticipatory"
+scheduler for transaction processing workloads.])])
+
+m4_nlistend
+
+m4_page_footer

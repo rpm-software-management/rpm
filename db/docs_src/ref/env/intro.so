@@ -1,0 +1,44 @@
+m4_comment([$Id: intro.so,v 10.32 2003/04/15 16:48:42 bostic Exp $])
+
+m4_ref_title(Environment, Database environment introduction,
+    introduction to database @environments, arch/utilities, env/create)
+
+m4_p([dnl
+A m4_db environment is an encapsulation of one or more databases, log
+files and region files.  Region files are the shared memory areas that
+contain information about the database environment such as memory pool
+cache pages.  Only databases are byte-order independent and only
+database files can be moved between machines of different byte orders.
+Log files can be moved between machines of the same byte order.  Region
+files are usually unique to a specific machine and potentially to a
+specific operating system release.])
+
+m4_p([dnl
+The simplest way to administer a m4_db application environment is to
+create a single m4_bold(home) directory that stores the files for the
+applications that will share the environment.  The environment home
+directory must be created before any m4_db applications are run.  m4_db
+itself never creates the environment home directory.  The environment can
+then be identified by the name of that directory.])
+
+m4_p([dnl
+An environment may be shared by any number of processes, as well as by
+any number of threads within those processes.  It is possible for an
+environment to include resources from other directories on the system,
+and applications often choose to distribute resources to other
+directories or disks for performance or other reasons.  However, by
+default, the databases, shared regions (the locking, logging, memory
+pool, and transaction shared memory areas) and log files will be stored
+in a single directory hierarchy.])
+
+m4_p([dnl
+It is important to realize that all applications sharing a database
+environment implicitly trust each other.  They have access to each
+other's data as it resides in the shared regions, and they will share
+resources such as buffer space and locks.  At the same time, any
+applications using the same databases m4_bold(must) share an environment
+if consistency is to be maintained between them.])
+
+include(env/m4.methods)
+
+m4_page_footer

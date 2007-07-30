@@ -1,0 +1,47 @@
+m4_comment([$Id: txn_prepare.so,v 10.35 2004/08/13 03:39:03 bostic Exp $])
+
+define(M4PAGELOCAL, [txn_prepare, DB_XIDDATASIZE])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_prepare),
+ifelse(M4API, C_API, [dnl
+int
+DB_TXN-__GT__prepare(DB_TXN *tid, u_int8_t gid__LB__DB_XIDDATASIZE__RB__);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbTxn::prepare(u_int8_t gid__LB__DB_XIDDATASIZE__RB__);
+]))
+
+m4_idefz(DB_XIDDATASIZE)
+m4_p([dnl
+The m4_refT(txn_prepare) initiates the beginning of a two-phase commit.])
+
+m4_p([dnl
+In a distributed transaction environment, m4_db can be used as a local
+transaction manager.  In this case, the distributed transaction manager
+must send m4_italic(prepare) messages to each local manager.  The local
+manager must then issue a m4_ref(txn_prepare) and await its successful
+return before responding to the distributed transaction manager.  Only
+after the distributed transaction manager receives successful responses
+from all of its m4_italic(prepare) messages should it issue any
+m4_italic(commit) messages.])
+
+m4_p([dnl
+In the case of nested transactions, preparing the parent causes all
+unresolved children of the parent transaction to be committed.  Child
+transactions should never be explicitly prepared.  Their fate will be
+resolved along with their parent's during global recovery.])
+
+m4_return(txn_prepare, std)
+
+m4_parambegin
+m4_param(gid, [dnl
+The m4_arg(gid) parameter specifies the global transaction ID by which this
+transaction will be known.  This global transaction ID will be returned
+in calls to m4_ref(txn_recover), telling the application which global
+transactions must be resolved.])
+m4_paramend
+
+m4_seealso(DbTxn)
+m4_page_footer

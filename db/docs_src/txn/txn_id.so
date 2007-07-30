@@ -1,0 +1,23 @@
+m4_comment([$Id: txn_id.so,v 10.21 2004/08/13 03:39:03 bostic Exp $])
+
+define(M4PAGELOCAL, txn_id)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_id),
+ifelse(M4API, C_API, [dnl
+u_int32_t
+DB_TXN-__GT__id(DB_TXN *tid);
+])
+ifelse(M4API, CXX_API, [dnl
+u_int32_t
+DbTxn::id();
+]))
+
+m4_p([dnl
+The m4_refT(txn_id) returns the unique transaction id associated with the
+specified transaction.  Locking calls made on behalf of this transaction
+should use the value returned from m4_ref(txn_id) as the locker parameter
+to the m4_ref(lock_get) or m4_ref(lock_vec) calls.])
+
+m4_seealso(DbTxn)
+m4_page_footer

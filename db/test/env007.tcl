@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: env007.tcl,v 12.13 2006/09/12 18:19:08 carol Exp $
+# $Id: env007.tcl,v 12.16 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	env007
 # TEST	Test DB_CONFIG config file options for berkdb env.
@@ -220,6 +219,8 @@ proc env007 { } {
 	{ "set_tx_max" "31" "get_tx_max" "31" }
 	{ "set_txn_timeout" "50" "get_timeout txn" "50" }
 	{ "set_verbose" "db_verb_deadlock" "get_verbose deadlock" "on" }
+	{ "set_verbose" "db_verb_fileops" "get_verbose fileops" "on" }
+	{ "set_verbose" "db_verb_fileops_all" "get_verbose fileops_all" "on" }
 	{ "set_verbose" "db_verb_recovery" "get_verbose recovery" "on" }
 	{ "set_verbose" "db_verb_register" "get_verbose register" "on" }
 	{ "set_verbose" "db_verb_replication" "get_verbose rep" "on" }

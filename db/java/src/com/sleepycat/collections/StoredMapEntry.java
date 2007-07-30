@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: StoredMapEntry.java,v 12.4 2006/08/31 18:14:08 bostic Exp $
+ * $Id: StoredMapEntry.java,v 12.6 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;

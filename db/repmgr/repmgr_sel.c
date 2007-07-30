@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2006,2007 Oracle.  All rights reserved.
  *
- * $Id: repmgr_sel.c,v 1.25 2006/09/19 14:14:11 mjc Exp $
+ * $Id: repmgr_sel.c,v 1.36 2007/06/11 18:29:34 alanb Exp $
  */
 
 #include "db_config.h"
@@ -13,9 +12,10 @@
 #include "db_int.h"
 
 static int __repmgr_connect __P((DB_ENV*, socket_t *, REPMGR_SITE *));
-static int record_ack __P((DB_ENV *, REPMGR_SITE *, DB_REPMGR_ACK *));
 static int dispatch_phase_completion __P((DB_ENV *, REPMGR_CONNECTION *));
 static int notify_handshake __P((DB_ENV *, REPMGR_CONNECTION *));
+static int record_ack __P((DB_ENV *, REPMGR_SITE *, DB_REPMGR_ACK *));
+static int __repmgr_try_one __P((DB_ENV *, u_int));
 
 /*
  * PUBLIC: void *__repmgr_select_thread __P((void *));
@@ -36,6 +36,10 @@ __repmgr_select_thread(args)
 
 /*
  * PUBLIC: int __repmgr_accept __P((DB_ENV *));
+ *
+ * !!!
+ * Only ever called in the select() thread, since we may call
+ * __repmgr_bust_connection(..., TRUE).
  */
 int
 __repmgr_accept(dbenv)
@@ -49,9 +53,6 @@ __repmgr_accept(dbenv)
 	int ret;
 #ifdef DB_WIN32
 	WSAEVENT event_obj;
-#endif
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
 #endif
 
 	db_rep = dbenv->rep_handle;
@@ -85,7 +86,7 @@ __repmgr_accept(dbenv)
 		case EOPNOTSUPP:
 		case ENETUNREACH:
 #endif
-			RPRINT(dbenv, (dbenv, &mb,
+			RPRINT(dbenv, (dbenv,
 			    "accept error %d considered innocuous", ret));
 			return (0);
 		default:
@@ -93,7 +94,7 @@ __repmgr_accept(dbenv)
 			return (ret);
 		}
 	}
-	RPRINT(dbenv, (dbenv, &mb, "accepted a new connection"));
+	RPRINT(dbenv, (dbenv, "accepted a new connection"));
 
 	if ((ret = __repmgr_set_nonblocking(s)) != 0) {
 		__db_err(dbenv, ret, "can't set nonblock after accept");
@@ -153,18 +154,16 @@ __repmgr_retry_connections(dbenv)
 {
 	DB_REP *db_rep;
 	REPMGR_RETRY *retry;
-	repmgr_netaddr_t *addr;
-	repmgr_timeval_t now;
-	ADDRINFO *list;
+	db_timespec now;
 	u_int eid;
 	int ret;
 
 	db_rep = dbenv->rep_handle;
-	__os_clock(dbenv, &now.tv_sec, &now.tv_usec);
+	__os_gettime(dbenv, &now);
 
 	while (!TAILQ_EMPTY(&db_rep->retries)) {
 		retry = TAILQ_FIRST(&db_rep->retries);
-		if (__repmgr_timeval_cmp(&retry->time, &now) > 0)
+		if (timespeccmp(&retry->time, &now, >=))
 			break;	/* since items are in time order */
 
 		TAILQ_REMOVE(&db_rep->retries, retry, entries);
@@ -172,32 +171,7 @@ __repmgr_retry_connections(dbenv)
 		eid = retry->eid;
 		__os_free(dbenv, retry);
 
-		/*
-		 * If have never yet successfully resolved this site's host
-		 * name, try to do so now.
-		 *
-		 * (Throughout all the rest of repmgr, we almost never do any
-		 * sort of blocking operation in the select thread.  This is the
-		 * sole exception to that rule.  Fortunately, it should rarely
-		 * happen.  It only happens for a site that we only learned
-		 * about because it connected to us: not only were we not
-		 * configured to know about it, but we also never got a NEWSITE
-		 * message about it.  And even then only after the connection
-		 * fails and we want to retry it from this end.)
-		 */
-		addr = &SITE_FROM_EID(eid)->net_addr;
-		if (ADDR_LIST_FIRST(addr) == NULL) {
-			if (__repmgr_getaddr(dbenv,
-			    addr->host, addr->port, 0, &list) == 0) {
-				addr->address_list = list;
-				(void)ADDR_LIST_FIRST(addr);
-			} else if ((ret = __repmgr_schedule_connection_attempt(
-			    dbenv, eid, FALSE)) != 0)
-				return (ret);
-			else
-				continue;
-		}
-		if ((ret = __repmgr_connect_site(dbenv, eid)) != 0)
+		if ((ret = __repmgr_try_one(dbenv, eid)) != 0)
 			return (ret);
 	}
 	return (0);
@@ -218,18 +192,71 @@ __repmgr_first_try_connections(dbenv)
 	int ret;
 
 	db_rep = dbenv->rep_handle;
-	for (eid=0; eid<db_rep->site_cnt; eid++) {
-		ADDR_LIST_FIRST(&SITE_FROM_EID(eid)->net_addr);
-		if ((ret = __repmgr_connect_site(dbenv, eid)) != 0)
+	for (eid=0; eid<db_rep->site_cnt; eid++)
+		if ((ret = __repmgr_try_one(dbenv, eid)) != 0)
+			return (ret);
+	return (0);
+}
+
+/*
+ * Makes a best-effort attempt to connect to the indicated site.  Returns a
+ * non-zero error indication only for disastrous failures.  For re-tryable
+ * errors, we will have scheduled another attempt, and that can be considered
+ * success enough.
+ */
+static int
+__repmgr_try_one(dbenv, eid)
+	DB_ENV *dbenv;
+	u_int eid;
+{
+	DB_REP *db_rep;
+	ADDRINFO *list;
+	repmgr_netaddr_t *addr;
+	int ret;
+
+	db_rep = dbenv->rep_handle;
+
+	/*
+	 * If have never yet successfully resolved this site's host name, try to
+	 * do so now.
+	 *
+	 * Throughout all the rest of repmgr, we almost never do any sort of
+	 * blocking operation in the select thread.  This is the sole exception
+	 * to that rule.  Fortunately, it should rarely happen:
+	 *
+	 * - for a site that we only learned about because it connected to us:
+	 *   not only were we not configured to know about it, but we also never
+	 *   got a NEWSITE message about it.  And even then only if the
+	 *   connection fails and we want to retry it from this end;
+	 *
+	 * - if the name look-up system (e.g., DNS) is not working (let's hope
+	 *   it's temporary), or the host name is not found.
+	 */
+	addr = &SITE_FROM_EID(eid)->net_addr;
+	if (ADDR_LIST_FIRST(addr) == NULL) {
+		if ((ret = __repmgr_getaddr(
+		    dbenv, addr->host, addr->port, 0, &list)) == 0) {
+			addr->address_list = list;
+			(void)ADDR_LIST_FIRST(addr);
+		} else if (ret == DB_REP_UNAVAIL)
+			return (__repmgr_schedule_connection_attempt(
+			    dbenv, eid, FALSE));
+		else
 			return (ret);
 	}
-	return (0);
+
+	/* Here, when we have a valid address. */
+	return (__repmgr_connect_site(dbenv, eid));
 }
 
 /*
  * Tries to establish a connection with the site indicated by the given eid,
  * starting with the "current" element of its address list and trying as many
  * addresses as necessary until the list is exhausted.
+ *
+ * !!!
+ * Only ever called in the select() thread, since we may call
+ * __repmgr_bust_connection(..., TRUE).
  *
  * PUBLIC: int __repmgr_connect_site __P((DB_ENV *, u_int eid));
  */
@@ -267,6 +294,7 @@ __repmgr_connect_site(dbenv, eid)
 #endif
 		break;
 	default:
+		STAT(db_rep->region->mstat.st_connect_fail++);
 		return (
 		    __repmgr_schedule_connection_attempt(dbenv, eid, FALSE));
 	}
@@ -329,9 +357,6 @@ __repmgr_connect(dbenv, socket_result, site)
 	char *why;
 	int ret;
 	SITE_STRING_BUFFER buffer;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	/*
 	 * Lint doesn't know about DB_ASSERT, so it can't tell that this
@@ -361,7 +386,7 @@ __repmgr_connect(dbenv, socket_result, site)
 
 		if (ret == 0 || ret == INPROGRESS) {
 			*socket_result = s;
-			RPRINT(dbenv, (dbenv, &mb,
+			RPRINT(dbenv, (dbenv,
 			    "init connection to %s with result %d",
 			    __repmgr_format_site_loc(site, buffer), ret));
 			return (ret);
@@ -392,6 +417,8 @@ __repmgr_send_handshake(dbenv, conn)
 	DB_REPMGR_HANDSHAKE buffer;
 	DBT cntrl, rec;
 
+	DB_ASSERT(dbenv, !F_ISSET(conn, CONN_CONNECTING | CONN_DEFUNCT));
+
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
 	my_addr = &db_rep->my_addr;
@@ -403,7 +430,6 @@ __repmgr_send_handshake(dbenv, conn)
 	DB_ASSERT(dbenv, sizeof(u_int32_t) >= sizeof(int));
 
 	buffer.version = DB_REPMGR_VERSION;
-	/* TODO: using network byte order is pointless if we only do it here. */
 	buffer.priority = htonl((u_int32_t)rep->priority);
 	buffer.port = my_addr->port;
 	cntrl.data = &buffer;
@@ -449,6 +475,8 @@ __repmgr_read_from_site(dbenv, conn)
 				    conn->eid, buffer);
 				__db_err(dbenv, ret,
 				    "can't read from %s", buffer);
+				STAT(dbenv->rep_handle->
+				    region->mstat.st_connection_drop++);
 				return (DB_REP_UNAVAIL);
 			}
 		}
@@ -461,6 +489,8 @@ __repmgr_read_from_site(dbenv, conn)
 			(void)__repmgr_format_eid_loc(dbenv->rep_handle,
 			    conn->eid, buffer);
 			__db_errx(dbenv, "EOF on connection from %s", buffer);
+			STAT(dbenv->rep_handle->
+			    region->mstat.st_connection_drop++);
 			return (DB_REP_UNAVAIL);
 		}
 	}
@@ -489,9 +519,6 @@ dispatch_phase_completion(dbenv, conn)
 	char *host;
 	u_int port;
 	int ret, eid;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	db_rep = dbenv->rep_handle;
 	switch (conn->reading_phase) {
@@ -519,10 +546,6 @@ dispatch_phase_completion(dbenv, conn)
 			 * data areas that it points to.  Start by calculating
 			 * the total memory needed, rounding up for the start of
 			 * each DBT, to ensure possible alignment requirements.
-			 */
-			/*
-			 * TODO: Keith says we don't need to mess with this: put
-			 * the burden on base replication code.
 			 */
 			memsize = (size_t)
 			    DB_ALIGN(sizeof(REPMGR_MESSAGE), MEM_ALIGN);
@@ -567,14 +590,6 @@ dispatch_phase_completion(dbenv, conn)
 			conn->input.repmgr_msg.cntrl.size = control_size;
 			conn->input.repmgr_msg.rec.size = rec_size;
 
-			/*
-			 * TODO: consider allocating space for ack's just once
-			 * (lazily?), or even providing static space for it in
-			 * the conn structure itself, thus avoiding a bit of
-			 * thrashing in the memory pool.  If we do that, then of
-			 * course we must get rid of the corresponding call to
-			 * free(), below.
-			 */
 			dbt = &conn->input.repmgr_msg.cntrl;
 			dbt->size = control_size;
 			if ((ret = __os_malloc(dbenv, control_size,
@@ -643,7 +658,7 @@ dispatch_phase_completion(dbenv, conn)
 			host = conn->input.repmgr_msg.rec.data;
 			host[conn->input.repmgr_msg.rec.size-1] = '\0';
 
-			RPRINT(dbenv, (dbenv, &mb,
+			RPRINT(dbenv, (dbenv,
 				   "got handshake %s:%u, pri %lu", host, port,
 				   (u_long)ntohl(handshake->priority)));
 
@@ -655,7 +670,7 @@ dispatch_phase_completion(dbenv, conn)
 				 * priority.
 				 */
 				site = SITE_FROM_EID(conn->eid);
-				RPRINT(dbenv, (dbenv, &mb,
+				RPRINT(dbenv, (dbenv,
 				    "handshake from connection to %s:%lu",
 				    site->net_addr.host,
 				    (u_long)site->net_addr.port));
@@ -664,7 +679,7 @@ dispatch_phase_completion(dbenv, conn)
 				    __repmgr_find_site(dbenv, host, port))) {
 					site = SITE_FROM_EID(eid);
 					if (site->state == SITE_IDLE) {
-						RPRINT(dbenv, (dbenv, &mb,
+						RPRINT(dbenv, (dbenv,
 					"handshake from previously idle site"));
 						retry = site->ref.retry;
 						TAILQ_REMOVE(&db_rep->retries,
@@ -685,7 +700,7 @@ dispatch_phase_completion(dbenv, conn)
 						return (DB_REP_UNAVAIL);
 					}
 				} else {
-					RPRINT(dbenv, (dbenv, &mb,
+					RPRINT(dbenv, (dbenv,
 					  "handshake introduces unknown site"));
 					if ((ret = __repmgr_pack_netaddr(
 					    dbenv, host, port, NULL,
@@ -752,9 +767,6 @@ notify_handshake(dbenv, conn)
 	REPMGR_CONNECTION *conn;
 {
 	DB_REP *db_rep;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	COMPQUIET(conn, NULL);
 
@@ -764,12 +776,11 @@ notify_handshake(dbenv, conn)
 	 * getting in touch with another site might finally provide sufficient
 	 * connectivity to find out.  But just do this once, because otherwise
 	 * we get messages while the subsequent rep_start operations are going
-	 * on, and rep tosses them in that case.  (TODO: this may need further
-	 * refinement.)
+	 * on, and rep tosses them in that case.
 	 */
 	if (db_rep->master_eid == DB_EID_INVALID && !db_rep->done_one) {
 		db_rep->done_one = TRUE;
-		RPRINT(dbenv, (dbenv, &mb,
+		RPRINT(dbenv, (dbenv,
 		    "handshake with no known master to wake election thread"));
 		return (__repmgr_init_election(dbenv, ELECT_REPSTART));
 	}
@@ -783,37 +794,24 @@ record_ack(dbenv, site, ack)
 	DB_REPMGR_ACK *ack;
 {
 	DB_REP *db_rep;
-	int ret;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
 	SITE_STRING_BUFFER buffer;
-#endif
+	int ret;
 
 	db_rep = dbenv->rep_handle;
 
 	/* Ignore stale acks. */
 	if (ack->generation < db_rep->generation) {
-		RPRINT(dbenv, (dbenv, &mb,
+		RPRINT(dbenv, (dbenv,
 		    "ignoring stale ack (%lu<%lu), from %s",
 		     (u_long)ack->generation, (u_long)db_rep->generation,
 		     __repmgr_format_site_loc(site, buffer)));
 		return (0);
 	}
-	RPRINT(dbenv, (dbenv, &mb,
+	RPRINT(dbenv, (dbenv,
 	    "got ack [%lu][%lu](%lu) from %s", (u_long)ack->lsn.file,
 	    (u_long)ack->lsn.offset, (u_long)ack->generation,
 	    __repmgr_format_site_loc(site, buffer)));
 
-	/*
-	 * TODO: what about future ones?  Ideally, you'd like to wake up any
-	 * waiting send() threads and have them return DB_REP_OUTDATED or
-	 * something.  But a mechanism to do that would be messy, and it almost
-	 * seems not worth it, since (1) this almost can't happen; and (2) if we
-	 * just ignore it, eventually the send() calls will time out (or not),
-	 * and as long as we don't mistakenly ack something.  The only advantage
-	 * to doing something is more timely failure notification to the
-	 * application, in (what I think is) an extremely rare situation.
-	 */
 	if (ack->generation == db_rep->generation &&
 	    log_compare(&ack->lsn, &site->max_ack) == 1) {
 		memcpy(&site->max_ack, &ack->lsn, sizeof(DB_LSN));
@@ -844,6 +842,8 @@ __repmgr_write_some(dbenv, conn)
 				return (0);
 			else {
 				__db_err(dbenv, ret, "writing data");
+				STAT(dbenv->rep_handle->
+				    region->mstat.st_connection_drop++);
 				return (DB_REP_UNAVAIL);
 			}
 		}

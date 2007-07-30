@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: tcl_db_pkg.c,v 12.36 2006/09/08 19:22:21 bostic Exp $
+ * $Id: tcl_db_pkg.c,v 12.51 2007/07/09 17:38:45 bostic Exp $
  */
 
 #include "db_config.h"
@@ -14,7 +13,7 @@
 #endif
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <tcl.h>
 #endif
 #include "dbinc/db_page.h"
@@ -417,6 +416,7 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 		"-region_init",
 		"-rep",
 		"-rep_client",
+		"-rep_lease",
 		"-rep_master",
 		"-rep_transport",
 		"-server",
@@ -425,12 +425,14 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 		"-snapshot",
 		"-thread",
 		"-time_notgranted",
+		"-txn_nowait",
 		"-txn_timeout",
 		"-txn_timestamp",
 		"-verbose",
 		"-wrnosync",
 #endif
 		"-cachesize",
+		"-cache_max",
 		"-create",
 		"-data_dir",
 		"-encryptaes",
@@ -489,6 +491,7 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 		ENV_REGION_INIT,
 		ENV_REP,
 		ENV_REP_CLIENT,
+		ENV_REP_LEASE,
 		ENV_REP_MASTER,
 		ENV_REP_TRANSPORT,
 		ENV_SERVER,
@@ -497,12 +500,14 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 		ENV_SNAPSHOT,
 		ENV_THREAD,
 		ENV_TIME_NOTGRANTED,
+		ENV_TXN_NOWAIT,
 		ENV_TXN_TIMEOUT,
 		ENV_TXN_TIME,
 		ENV_VERBOSE,
 		ENV_WRNOSYNC,
 #endif
 		ENV_CACHESIZE,
+		ENV_CACHE_MAX,
 		ENV_CREATE,
 		ENV_DATA_DIR,
 		ENV_ENCRYPT_AES,
@@ -814,6 +819,9 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 				    DB_RETOK_STD(ret), "lock_max");
 			}
 			break;
+		case ENV_TXN_NOWAIT:
+			FLD_SET(set_flags, DB_TXN_NOWAIT);
+			break;
 		case ENV_TXN_TIME:
 		case ENV_TXN_TIMEOUT:
 		case ENV_LOCK_TIMEOUT:
@@ -959,7 +967,8 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 			if (result != TCL_OK)
 				break;
 			_debug_check();
-			ret = (*env)->set_mp_max_write(*env, intarg, intarg2);
+			ret = (*env)->set_mp_max_write(
+			    *env, intarg, (db_timeout_t)intarg2);
 			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
 			    "set_mp_max_write");
 			break;
@@ -1020,6 +1029,23 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 		case ENV_REP_MASTER:
 			rep_flags = DB_REP_MASTER;
 			FLD_SET(open_flags, DB_INIT_REP);
+			break;
+		case ENV_REP_LEASE:
+			if (i >= objc) {
+				Tcl_WrongNumArgs(interp, 2, objv,
+				    "-rep_lease {nsites timeout clockskew}");
+				result = TCL_ERROR;
+				break;
+			}
+			result = Tcl_ListObjGetElements(interp, objv[i],
+			    &myobjc, &myobjv);
+			if (result == TCL_OK)
+				i++;
+			else
+				break;
+			result = tcl_RepLease(interp, myobjc, myobjv, *env);
+			if (result == TCL_OK)
+				FLD_SET(open_flags, DB_INIT_REP);
 			break;
 		case ENV_REP_TRANSPORT:
 			if (i >= objc) {
@@ -1189,6 +1215,30 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 			    ncaches);
 			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
 			    "set_cachesize");
+			break;
+		case ENV_CACHE_MAX:
+			result = Tcl_ListObjGetElements(interp, objv[i],
+			    &myobjc, &myobjv);
+			if (result == TCL_OK)
+				i++;
+			else
+				break;
+			if (myobjc != 2) {
+				Tcl_WrongNumArgs(interp, 2, objv,
+				    "?-cache_max {gbytes bytes}?");
+				result = TCL_ERROR;
+				break;
+			}
+			result = _GetUInt32(interp, myobjv[0], &gbytes);
+			if (result != TCL_OK)
+				break;
+			result = _GetUInt32(interp, myobjv[1], &bytes);
+			if (result != TCL_OK)
+				break;
+			_debug_check();
+			ret = (*env)->set_cache_max(*env, gbytes, bytes);
+			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
+			    "set_cache_max");
 			break;
 		case ENV_SHM_KEY:
 			if (i >= objc) {
@@ -1379,6 +1429,7 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 #ifdef CONFIG_TEST
 		"-btcompare",
 		"-dupcompare",
+		"-hashcompare",
 		"-hashproc",
 		"-lorder",
 		"-minkey",
@@ -1432,6 +1483,7 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 #ifdef CONFIG_TEST
 		TCL_DB_BTCOMPARE,
 		TCL_DB_DUPCOMPARE,
+		TCL_DB_HASHCOMPARE,
 		TCL_DB_HASHPROC,
 		TCL_DB_LORDER,
 		TCL_DB_MINKEY,
@@ -1562,15 +1614,13 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 	(*dbp)->api_internal = ip;
 
 	/*
-	 * XXX Remove restriction when err stuff is not tied to env.
+	 * XXX
+	 * Remove restriction if error handling not tied to env.
 	 *
-	 * The DB->set_err* functions actually overwrite in the
-	 * environment.  So, if we are explicitly using an env,
-	 * don't overwrite what we have already set up.  If we are
-	 * not using one, then we set up since we get a private
-	 * default env.
+	 * The DB->set_err* functions overwrite the environment.  So, if
+	 * we are using an env, don't overwrite it; if not using an env,
+	 * then configure error handling.
 	 */
-	/* XXX  - remove this conditional if/when err is not tied to env */
 	if (envp == NULL) {
 		(*dbp)->set_errpfx((*dbp), ip->i_name);
 		(*dbp)->set_errcall((*dbp), _ErrorFunc);
@@ -1619,8 +1669,8 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 			 * Tcl's object refcounting will--I hope--take care
 			 * of the memory management here.
 			 */
-			ip->i_btcompare = objv[i++];
-			Tcl_IncrRefCount(ip->i_btcompare);
+			ip->i_compare = objv[i++];
+			Tcl_IncrRefCount(ip->i_compare);
 			_debug_check();
 			ret = (*dbp)->set_bt_compare(*dbp, tcl_bt_compare);
 			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
@@ -1644,6 +1694,28 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 			ret = (*dbp)->set_dup_compare(*dbp, tcl_dup_compare);
 			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
 			    "set_dup_compare");
+			break;
+		case TCL_DB_HASHCOMPARE:
+			if (i >= objc) {
+				Tcl_WrongNumArgs(interp, 2, objv,
+				    "-hashcompare compareproc");
+				result = TCL_ERROR;
+				break;
+			}
+
+			/*
+			 * Store the object containing the procedure name.
+			 * We don't need to crack it out now--we'll want
+			 * to bundle it up to pass into Tcl_EvalObjv anyway.
+			 * Tcl's object refcounting will--I hope--take care
+			 * of the memory management here.
+			 */
+			ip->i_compare = objv[i++];
+			Tcl_IncrRefCount(ip->i_compare);
+			_debug_check();
+			ret = (*dbp)->set_h_compare(*dbp, tcl_bt_compare);
+			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
+			    "set_h_compare");
 			break;
 		case TCL_DB_HASHPROC:
 			if (i >= objc) {
@@ -2595,6 +2667,17 @@ bdb_DbRemove(interp, objc, objv)
 			goto error;
 		}
 
+		/*
+		 * XXX
+		 * Remove restriction if error handling not tied to env.
+		 *
+		 * The DB->set_err* functions overwrite the environment.  So, if
+		 * we are using an env, don't overwrite it; if not using an env,
+		 * then configure error handling.
+		 */
+		dbp->set_errpfx(dbp, "DbRemove");
+		dbp->set_errcall(dbp, _ErrorFunc);
+
 		if (passwd != NULL) {
 			ret = dbp->set_encrypt(dbp, passwd, enc_flag);
 			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
@@ -2815,6 +2898,17 @@ bdb_DbRename(interp, objc, objv)
 			    "db_create");
 			goto error;
 		}
+		/*
+		 * XXX
+		 * Remove restriction if error handling not tied to env.
+		 *
+		 * The DB->set_err* functions overwrite the environment.  So, if
+		 * we are using an env, don't overwrite it; if not using an env,
+		 * then configure error handling.
+		 */
+		dbp->set_errpfx(dbp, "DbRename");
+		dbp->set_errcall(dbp, _ErrorFunc);
+
 		if (passwd != NULL) {
 			ret = dbp->set_encrypt(dbp, passwd, enc_flag);
 			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
@@ -2865,6 +2959,8 @@ bdb_DbVerify(interp, objc, objv)
 		"-env",
 		"-errfile",
 		"-errpfx",
+		"-noorderchk",
+		"-orderchkonly",
 		"-unref",
 		"--",
 		NULL
@@ -2876,6 +2972,8 @@ bdb_DbVerify(interp, objc, objv)
 		TCL_DBVRFY_ENV,
 		TCL_DBVRFY_ERRFILE,
 		TCL_DBVRFY_ERRPFX,
+		TCL_DBVRFY_NOORDERCHK,
+		TCL_DBVRFY_ORDERCHKONLY,
 		TCL_DBVRFY_UNREF,
 		TCL_DBVRFY_ENDARG
 	};
@@ -2883,14 +2981,15 @@ bdb_DbVerify(interp, objc, objv)
 	DB *dbp;
 	FILE *errf;
 	u_int32_t enc_flag, flags, set_flags;
-	int endarg, i, optindex, result, ret;
-	char *arg, *db, *errpfx, *passwd;
+	int endarg, i, optindex, result, ret, subdblen;
+	char *arg, *db, *errpfx, *passwd, *subdb;
+	u_char *subdbtmp;
 
 	envp = NULL;
 	dbp = NULL;
 	passwd = NULL;
 	result = TCL_OK;
-	db = errpfx = NULL;
+	db = errpfx = subdb = NULL;
 	errf = NULL;
 	flags = endarg = 0;
 	enc_flag = set_flags = 0;
@@ -2994,6 +3093,12 @@ bdb_DbVerify(interp, objc, objv)
 				break;
 			}
 			break;
+		case TCL_DBVRFY_NOORDERCHK:
+			flags |= DB_NOORDERCHK;
+			break;
+		case TCL_DBVRFY_ORDERCHKONLY:
+			flags |= DB_ORDERCHKONLY;
+			break;
 		case TCL_DBVRFY_UNREF:
 			flags |= DB_UNREF;
 			break;
@@ -3015,9 +3120,32 @@ bdb_DbVerify(interp, objc, objv)
 	/*
 	 * The remaining arg is the db filename.
 	 */
-	if (i == (objc - 1))
+	/*
+	 * Any args we have left, (better be 1 or 2 left) are
+	 * file names.  If there is 1, a db name, if 2 a db and subdb name.
+	 */
+	if (i != objc) {
+		/*
+		 * Dbs must be NULL terminated file names, but subdbs can
+		 * be anything.  Use Strings for the db name and byte
+		 * arrays for the subdb.
+		 */
 		db = Tcl_GetStringFromObj(objv[i++], NULL);
-	else {
+		if (strcmp(db, "") == 0)
+			db = NULL;
+		if (i != objc) {
+			subdbtmp =
+			    Tcl_GetByteArrayFromObj(objv[i++], &subdblen);
+			if ((ret = __os_malloc(envp,
+			   (size_t)subdblen + 1, &subdb)) != 0) {
+				Tcl_SetResult(interp, db_strerror(ret),
+				    TCL_STATIC);
+				return (0);
+			}
+			memcpy(subdb, subdbtmp, (size_t)subdblen);
+			subdb[subdblen] = '\0';
+		}
+	} else {
 		Tcl_WrongNumArgs(interp, 2, objv, "?args? filename");
 		result = TCL_ERROR;
 		goto error;
@@ -3048,7 +3176,7 @@ bdb_DbVerify(interp, objc, objv)
 	/*
 	 * The verify method is a destructor, NULL out the dbp.
 	 */
-	ret = dbp->verify(dbp, db, NULL, NULL, flags);
+	ret = dbp->verify(dbp, db, subdb, NULL, flags);
 	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "db verify");
 	dbp = NULL;
 error:
@@ -3256,11 +3384,11 @@ bdb_MsgType(interp, objc, objv)
 	static const char *msgnames[] = {
 		"no_type", "alive", "alive_req", "all_req",
 		"bulk_log", "bulk_page",
-		"dupmaster", "file", "file_fail", "file_req", "log",
-		"log_more", "log_req", "master_req", "newclient",
+		"dupmaster", "file", "file_fail", "file_req", "lease_grant",
+		"log", "log_more", "log_req", "master_req", "newclient",
 		"newfile", "newmaster", "newsite", "page",
 		"page_fail", "page_more", "page_req",
-		"rerequest", "update", "update_req",
+		"rerequest", "startsync", "update", "update_req",
 		"verify", "verify_fail", "verify_req",
 		"vote1", "vote2", NULL
 	};
@@ -3381,6 +3509,18 @@ bdb_DbUpgrade(interp, objc, objv)
 		goto error;
 	}
 
+	/*
+	 * XXX
+	 * Remove restriction if error handling not tied to env.
+	 *
+	 * The DB->set_err* functions overwrite the environment.  So, if
+	 * we are using an env, don't overwrite it; if not using an env,
+	 * then configure error handling.
+	 */
+	if (envp == NULL) {
+		dbp->set_errpfx(dbp, "DbUpgrade");
+		dbp->set_errcall(dbp, _ErrorFunc);
+	}
 	ret = dbp->upgrade(dbp, db, flags);
 	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "db upgrade");
 error:
@@ -3401,7 +3541,7 @@ tcl_bt_compare(dbp, dbta, dbtb)
 	const DBT *dbta, *dbtb;
 {
 	return (tcl_compare_callback(dbp, dbta, dbtb,
-	    ((DBTCL_INFO *)dbp->api_internal)->i_btcompare, "bt_compare"));
+	    ((DBTCL_INFO *)dbp->api_internal)->i_compare, "bt_compare"));
 }
 
 static int
@@ -3417,7 +3557,7 @@ tcl_dup_compare(dbp, dbta, dbtb)
  * tcl_compare_callback --
  *	Tcl callback for set_bt_compare and set_dup_compare. What this
  * function does is stuff the data fields of the two DBTs into Tcl ByteArray
- * objects, then call the procedure stored in ip->i_btcompare on the two
+ * objects, then call the procedure stored in ip->i_compare on the two
  * objects.  Then we return that procedure's result as the comparison.
  */
 static int
@@ -3612,7 +3752,8 @@ tcl_rep_send(dbenv, control, rec, lsnp, eid, flags)
 		 * this error should only happen if the Tcl callback is
 		 * somehow invalid, which is a fatal scripting bug.
 		 */
-err:		__db_errx(dbenv, "Tcl rep_send failure");
+err:		__db_errx(dbenv, "Tcl rep_send failure: %s",
+		    Tcl_GetStringResult(interp));
 		return (EINVAL);
 	}
 

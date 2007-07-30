@@ -1,0 +1,152 @@
+m4_comment([$Id: txn_stat.so,v 10.67 2007/06/22 16:57:17 bostic Exp $])
+
+define(M4PAGELOCAL, [txn_stat, txn_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__txn_stat(DB_ENV *env, DB_TXN_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__txn_stat_print(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::txn_stat(DB_TXN_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DbEnv::txn_stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(txn_stat) returns the transaction subsystem statistics.])
+
+m4_p([dnl
+The m4_refT(txn_stat) creates a statistical structure of type
+DB_TXN_STAT and copies a pointer to it into a user-specified memory
+location.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+The following DB_TXN_STAT fields will be filled in:])
+
+m4_tagbegin
+m4_field(DbLsn, st_last_ckp,
+[The LSN of the last checkpoint.])
+
+m4_field(time_t, st_time_ckp,
+[The time the last completed checkpoint finished (as the number of seconds
+since the Epoch, returned by the m4_posix1_name m4_arg(time) function).])
+
+m4_field(u_int32_t, st_last_txnid,
+[The last transaction ID allocated.])
+
+m4_field(u_int32_t, st_maxtxns,
+[The maximum number of active transactions configured.])
+
+m4_field(u_int32_t, st_nactive,
+[The number of transactions that are currently active.])
+
+m4_field(u_int32_t, st_nsnapshot,
+[The number of transactions on the snapshot list.  These are transactions
+which modified a database opened with m4_ref(DB_MULTIVERSION),
+and which have committed or aborted, but the copies of pages they
+created are still in the cache.])
+
+m4_field(u_int32_t, st_maxnactive,
+[The maximum number of active transactions at any one time.])
+
+m4_field(u_int32_t, st_maxnsnapshot,
+[The maximum number of transactions on the snapshot list at any one time.])
+
+m4_field(u_int32_t, st_nbegins,
+[The number of transactions that have begun.])
+
+m4_field(u_int32_t, st_naborts,
+[The number of transactions that have aborted.])
+
+m4_field(u_int32_t, st_ncommits,
+[The number of transactions that have committed.])
+
+m4_field(u_int32_t, st_nrestores,
+[The number of transactions that have been restored.])
+
+m4_field(roff_t, st_regsize,
+[The size of the transaction region, in bytes.])
+
+m4_field(u_int32_t, st_region_wait,
+[The number of times that a thread of control was forced to wait before
+obtaining the transaction region mutex.])
+
+m4_field(u_int32_t, st_region_nowait,
+[The number of times that a thread of control was able to obtain
+the transaction region mutex without waiting.])
+
+m4_field(DB_TXN_ACTIVE, *st_txnarray, [dnl
+A pointer to an array of m4_arg(st_nactive) DB_TXN_ACTIVE structures,
+describing the currently active transactions. The following fields of
+the DB_TXN_ACTIVE structure will be filled in:])
+
+m4_tagbegin
+m4_field(u_int32_t, txnid,
+[The transaction ID of the transaction.])
+
+m4_field(u_int32_t, parentid,
+[The transaction ID of the parent transaction (or 0, if no parent).])
+
+m4_field(pid_t, pid,
+[The process ID of the originator of the transaction.])
+
+m4_field(uintmax_t, tid,
+[The thread of control ID of the originator of the transaction.])
+
+m4_field(DbLsn, lsn,
+[The current log sequence number when the transaction was begun.])
+
+m4_field(DbLsn, read_lsn,
+[The log sequence number of reads for snapshot transactions.])
+
+m4_field(u_int32_t, mvcc_ref,
+[The number of buffer copies created by this transaction that remain in cache.])
+
+m4_field(u_int32_t, status, [dnl
+One of the following list of constants: TXN_ABORTED, TXN_COMMITTED,
+TXN_PREPARED, TXN_RUNNING.])
+
+m4_field(u_int32_t, xa_status, [dnl
+If the transaction is an XA transaction, the m4_arg(xa_status) of the
+transaction will be one of the following list of constants:
+TXN_XA_ABORTED, TXN_XA_DEADLOCKED, TXN_XA_ENDED, TXN_XA_PREPARED,
+TXN_XA_STARTED, or TXN_XA_SUSPENDED.  Otherwise, the m4_arg(xa_status)
+will be 0.])
+
+m4_field(u_int8_t, xid__LB__DB_XIDDATASIZE__RB__, [dnl
+If the transaction is an XA transaction, the transaction's XA ID.  If
+the transaction was prepared separately from the XA interfaces, the
+transaction's Global ID.  Otherwise, the m4_arg(xid) contents are
+undefined.])
+
+m4_field(char, name__LB____RB__,
+[If a name was specified for the transaction, up to the first 50 bytes
+of that name, followed by a nul termination byte.])
+m4_tagend
+
+m4_tagend
+
+m4_when_after_envopen(txn_stat)
+
+m4_return(txn_stat, std)
+
+m4_parambegin
+m4_param(flags, m4_stat_flags)
+m4_param_co(statp, allocated statistics structure, REF)
+m4_paramend
+
+m4_err(txn_stat, einval)
+
+m4_stat_print(txn_stat_print, transaction subsystem, txn_stat)
+
+m4_seealso(DbTxn)
+m4_page_footer

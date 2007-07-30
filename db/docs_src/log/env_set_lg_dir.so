@@ -1,0 +1,57 @@
+m4_comment([$Id: env_set_lg_dir.so,v 10.25 2004/09/28 15:04:21 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lg_dir, dbenv_get_lg_dir])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lg_dir),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lg_dir(DB_ENV *dbenv, const char *dir);
+m4_blank
+int
+DB_ENV-__GT__get_lg_dir(DB_ENV *dbenv, const char **dirp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lg_dir(const char *dir);
+m4_blank
+int
+DbEnv::get_lg_dir(const char **dirp);
+]))
+
+m4_p([dnl
+The path of a directory to be used as the location of logging files.
+Log files created by the Log Manager subsystem will be created in this
+directory.])
+
+m4_p([dnl
+If no logging directory is specified, log files are created in the
+environment home directory.   See m4_link(M4RELDIR/ref/env/naming,
+[m4_db File Naming]) for more information.])
+
+m4_p([dnl
+For the greatest degree of recoverability from system or application
+failure, database files and log files should be located on separate
+physical devices.])
+
+m4_env_config(dbenv_set_lg_dir,
+[logging directory], set_lg_dir, [the directory name])
+
+m4_scope_dbenv(dbenv_set_lg_dir)
+
+m4_when_envopen(dbenv_set_lg_dir, corrupt)
+
+m4_return(dbenv_set_lg_dir, std)
+
+m4_parambegin
+m4_param_utf8(dir, [dnl
+The m4_arg(dir) parameter is the directory used to store the logging files.])
+m4_paramend
+
+m4_err(dbenv_set_lg_dir,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_lg_dir, log directory,, dirp, reference)
+
+m4_seealso(DbLog)
+m4_page_footer

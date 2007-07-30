@@ -1,0 +1,48 @@
+m4_comment([$Id: mutex_alloc.so,v 10.2 2006/01/27 16:13:49 bostic Exp $])
+
+define(M4PAGELOCAL, [mutex_alloc, DB_MUTEX_SELF_BLOCK])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(mutex_alloc),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__mutex_alloc(DB_ENV *dbenv, u_int32_t flags, db_mutex_t *mutexp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::mutex_alloc(u_int32_t flags, db_mutex_t *mutexp);
+]))
+
+m4_p([dnl
+The m4_refT(mutex_alloc) allocates a mutex and returns a reference to
+it into the memory specified by m4_arg(mutexp).])
+
+m4_when_after_envopen(mutex_alloc)
+
+m4_return(mutex_alloc, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_tag(m4_idef(DB_MUTEX_PROCESS_ONLY), [dnl
+The mutex is associated with a single process.  The m4_refT(dbenv_failchk)
+will release mutexes held by any process which has exited.])
+m4_tag(m4_idef(DB_MUTEX_SELF_BLOCK), [dnl
+The mutex must be self-blocking.  That is, if a thread of control locks
+the mutex and then attempts to lock the mutex again, the thread of
+control will block until another thread of control releases the original
+lock on the mutex, allowing the original thread of control to lock the
+mutex the second time.  Attempting to re-acquire a mutex for which the
+m4_ref(DB_MUTEX_SELF_BLOCK) flag was not specified will result in
+undefined behavior.])
+m4_tagend])
+
+m4_param_co(mutexp, mutex reference)
+
+m4_paramend
+
+m4_err(mutex_alloc, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

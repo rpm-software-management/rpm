@@ -1,0 +1,3 @@
+m4_comment([$Id: dbt_class.so,v 10.1 2002/08/24 18:22:30 bostic Exp $])
+
+include(ifelse(M4API, C_API, db/dbt_c.so, db/dbt_cxx.so))

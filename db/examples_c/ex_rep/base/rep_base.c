@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: rep_base.c,v 12.15 2006/09/08 20:32:06 bostic Exp $
+ * $Id: rep_base.c,v 12.20 2007/05/17 17:29:27 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -16,7 +15,6 @@
 #include <db.h>
 
 #include "rep_base.h"
-#include "../common/rep_common.h"
 
 /*
  * Process globals (we could put these in the machtab I suppose).
@@ -24,6 +22,8 @@
 int master_eid;
 char *myaddr;
 unsigned short myport;
+
+static void event_callback __P((DB_ENV *, u_int32_t, void *));
 
 int
 main(argc, argv)
@@ -52,7 +52,8 @@ main(argc, argv)
 
 	master_eid = DB_EID_INVALID;
 
-	my_app_data.is_master = 0; /* assume I start out as client */
+	my_app_data.elected = 0;
+	my_app_data.shared_data.is_master = 0; /* assume start out as client */
 	dbenv = NULL;
 	whoami = UNKNOWN;
 	machtab = NULL;
@@ -60,11 +61,12 @@ main(argc, argv)
 	maxsites = nsites = ret = totalsites = 0;
 	priority = 100;
 	home = "TESTDIR";
-	progname = "ex_rep_adv";
+	progname = "ex_rep_base";
 
 	if ((ret = create_env(progname, &dbenv)) != 0)
 		goto err;
 	dbenv->app_private = &my_app_data;
+	(void)dbenv->set_event_notify(dbenv, event_callback);
 
 	while ((ch = getopt(argc, argv, "Ch:Mm:n:o:p:v")) != EOF)
 		switch (ch) {
@@ -141,7 +143,6 @@ main(argc, argv)
 		usage(progname);
 
 	dbenv->rep_set_priority(dbenv, priority);
-
 
 #ifdef _WIN32
 	/* Initialize the Windows sockets DLL. */
@@ -227,18 +228,33 @@ main(argc, argv)
 		/* Sleep to give ourselves time to find a master. */
 		sleep(5);
 	}
-	if ((ret = doloop(dbenv, &my_app_data)) != 0) {
+	if ((ret = doloop(dbenv, &my_app_data.shared_data)) != 0) {
 		dbenv->err(dbenv, ret, "Main loop failed");
 		goto err;
 	}
 
 	/* Wait on the connection threads. */
-	if (thread_join(all_thr, &astatus) || thread_join(conn_thr, &cstatus))
+	if (thread_join(all_thr, &astatus) || thread_join(conn_thr, &cstatus)) {
 		ret = -1;
-	if (ret == 0 &&
-	    ((uintptr_t)astatus != EXIT_SUCCESS ||
-	    (uintptr_t)cstatus != EXIT_SUCCESS))
+		goto err;
+	}
+	if ((uintptr_t)astatus != EXIT_SUCCESS ||
+	    (uintptr_t)cstatus != EXIT_SUCCESS) {
 		ret = -1;
+		goto err;
+	}
+
+	/*
+	 * We have used the DB_TXN_NOSYNC environment flag for improved
+	 * performance without the usual sacrifice of transactional durability,
+	 * as discussed in the "Transactional guarantees" page of the Reference
+	 * Guide: if one replication site crashes, we can expect the data to
+	 * exist at another site.  However, in case we shut down all sites
+	 * gracefully, we push out the end of the log here so that the most
+	 * recent transactions don't mysteriously disappear.
+	 */
+	if ((ret = dbenv->log_flush(dbenv, NULL)) != 0)
+		dbenv->err(dbenv, ret, "log_flush");
 
 err:	if (machtab != NULL)
 		free(machtab);
@@ -249,4 +265,40 @@ err:	if (machtab != NULL)
 	(void)WSACleanup();
 #endif
 	return (ret);
+}
+
+static void
+event_callback(dbenv, which, info)
+	DB_ENV *dbenv;
+	u_int32_t which;
+	void *info;
+{
+	APP_DATA *app = dbenv->app_private;
+	SHARED_DATA *shared = &app->shared_data;
+
+	switch (which) {
+	case DB_EVENT_REP_CLIENT:
+		shared->is_master = 0;
+		break;
+
+	case DB_EVENT_REP_ELECTED:
+		app->elected = 1;
+		master_eid = SELF_EID;
+		break;
+
+	case DB_EVENT_REP_MASTER:
+		shared->is_master = 1;
+		break;
+
+	case DB_EVENT_REP_NEWMASTER:
+		master_eid = *(int*)info;
+		break;
+
+	case DB_EVENT_REP_STARTUPDONE:
+		/* I don't care about this, for now. */
+		break;
+
+	default:
+		dbenv->errx(dbenv, "ignoring event %d", which);
+	}
 }

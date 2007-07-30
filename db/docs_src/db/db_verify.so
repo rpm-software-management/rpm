@@ -1,0 +1,142 @@
+m4_comment([$Id: db_verify.so,v 10.30 2005/03/08 16:29:34 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbh_verify, DB_AGGRESSIVE, DB_NOORDERCHK, DB_ORDERCHKONLY,
+	DB_PRINTABLE, DB_SALVAGE, DB_VERIFY_BAD])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_verify),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__verify(DB *db, const char *file,
+    const char *database, FILE *outfile, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::verify(const char *file,
+    const char *database, ostream *outfile, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_verify) verifies the integrity of all databases in the
+file specified by the m4_arg(file) parameter, and optionally outputs the
+databases' key/data pairs to the file stream specified by the
+m4_arg(outfile) parameter.])
+
+m4_p([m4_bold([dnl
+The m4_refT(dbh_verify) does not perform any locking, even in m4_db
+environments that are configured with a locking subsystem.  As such, it
+should only be used on files that are not being modified by another
+thread of control.])])
+
+m4_when_dbopen(dbh_verify)
+
+m4_destructor(Db, dbh_verify)
+
+m4_underfunc(dbh_verify, dbh_verify, db_verify)
+
+m4_idefz(DB_VERIFY_BAD)
+m4_return(dbh_verify, specific, DB_VERIFY_BAD, [if a database is
+corrupted.  When the m4_ref(DB_SALVAGE) flag is specified, the
+m4_ref(DB_VERIFY_BAD) return means that all key/data pairs in the file
+may not have been successfully output], prev)
+
+m4_parambegin
+m4_param(database, [dnl
+The m4_arg(database) parameter is the database in m4_arg(file) on which
+the database checks for btree and duplicate sort order and for hashing
+are to be performed.  See the m4_ref(DB_ORDERCHKONLY) flag for more
+information.
+m4_p([dnl
+The database parameter must be set to NULL except when the
+m4_ref(DB_ORDERCHKONLY) flag is set.])])
+
+m4_param(file, [dnl
+The m4_arg(file) parameter is the physical file in which the databases
+to be verified are found.])
+
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_SALVAGE), [dnl
+Write the key/data pairs from all databases in the file to the file
+stream named in the m4_arg(outfile) parameter.  Key values are written
+for Btree, Hash and Queue databases, but not for Recno databases.
+m4_p([dnl
+The output format is the same as that specified for the m4_ref(db_dump)
+utility, and can be used as input for the m4_ref(db_load) utility.])
+m4_p([dnl
+Because the key/data pairs are output in page order as opposed to the sort
+order used by m4_ref(db_dump), using m4_ref(dbh_verify) to dump key/data
+pairs normally produces less than optimal loads for Btree databases.])])
+m4_tagend
+
+m4_p([dnl
+In addition, the following flags may be set by m4_or them into the
+m4_arg(flags) parameter:])
+
+m4_tagbegin
+m4_tag(m4_idef(DB_AGGRESSIVE), [dnl
+Output m4_bold(all) the key/data pairs in the file that can be found.
+By default, m4_ref(dbh_verify) does not assume corruption.  For example,
+if a key/data pair on a page is marked as deleted, it is not then written
+to the output file.  When m4_ref(DB_AGGRESSIVE) is specified, corruption
+is assumed, and any key/data pair that can be found is written.  In this
+case, key/data pairs that are corrupted or have been deleted may appear
+in the output (even if the file being salvaged is in no way corrupt), and
+the output will almost certainly require editing before being loaded into
+a database.])
+
+m4_tag(m4_idef(DB_PRINTABLE), [dnl
+When using the m4_ref(DB_SALVAGE) flag, if characters in either the key
+or data items are printing characters (as defined by m4_manref(isprint,
+3)), use printing characters to represent them.  This flag permits users
+to use standard text editors and tools to modify the contents of
+databases or selectively remove data from salvager output.
+m4_p([dnl
+Note: different systems may have different notions about what characters
+are considered m4_italic(printing characters), and databases dumped in
+this manner may be less portable to external systems.])])
+
+m4_tag(m4_idef(DB_NOORDERCHK), [dnl
+Skip the database checks for btree and duplicate sort order and for
+hashing.
+m4_p([dnl
+The m4_refT(dbh_verify) normally verifies that btree keys and duplicate
+items are correctly sorted, and hash keys are correctly hashed.  If the
+file being verified contains multiple databases using differing sorting
+or hashing algorithms, some of them must necessarily fail database
+verification because only one sort order or hash function can be
+specified before m4_ref(dbh_verify) is called.  To verify files with
+multiple databases having differing sorting orders or hashing functions,
+first perform verification of the file as a whole by using the
+m4_ref(DB_NOORDERCHK) flag, and then individually verify the sort order
+and hashing function for each database in the file using the
+m4_ref(DB_ORDERCHKONLY) flag.])])
+
+m4_tag(m4_idef(DB_ORDERCHKONLY), [dnl
+Perform the database checks for btree and duplicate sort order and for
+hashing, skipped by m4_ref(DB_NOORDERCHK).
+m4_p([dnl
+When this flag is specified, a m4_arg(database) parameter should also be
+specified, indicating the database in the physical file which is to be
+checked.  This flag is only safe to use on databases that have already
+successfully been verified using m4_ref(dbh_verify) with the
+m4_ref(DB_NOORDERCHK) flag set.])])
+m4_tagend])
+
+m4_param(outfile, [dnl
+The m4_arg(outfile) parameter is an optional file stream to which the
+databases' key/data pairs are written.])
+
+m4_paramend
+
+m4_header([Environment Variables])
+m4_data_location(dbh_verify, 1)
+
+m4_err(dbh_verify, filenotfound,
+einval, [m4_ref(dbh_verify) was called after m4_ref(dbh_open)])
+
+m4_seealso(Db)
+m4_page_footer

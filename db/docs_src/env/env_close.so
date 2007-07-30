@@ -1,0 +1,72 @@
+m4_comment([$Id: env_close.so,v 10.38 2004/08/13 03:38:56 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_close)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_close),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__close(DB_ENV *dbenv, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+DbEnv::close(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_close) closes the m4_db environment, freeing any
+allocated resources and closing any underlying subsystems.])
+
+m4_p([dnl
+The m4_ref(DbEnv) handle should not be closed while any other handle
+that refers to it is not yet closed; for example, database environment
+handles must not be closed while database handles remain open, or
+transactions in the environment have not yet been committed or aborted.
+Specifically, this includes m4_ref(Db), m4_ref(Dbc), m4_ref(DbTxn),
+m4_ref(DbLogc) and m4_ref(DbMpoolFile) handles.])
+
+m4_p([dnl
+Where the environment was initialized with the m4_ref(DB_INIT_LOCK)
+flag, calling m4_ref(dbenv_close) does not release any locks still held
+by the closing process, providing functionality for long-lived locks.
+Processes that want to have all their locks released can do so by
+issuing the appropriate m4_ref(lock_vec) call.])
+
+m4_p([dnl
+Where the environment was initialized with the m4_ref(DB_INIT_MPOOL)
+flag, calling m4_ref(dbenv_close) implies calls to m4_ref(memp_fclose) for
+any remaining open files in the memory pool that were returned to this
+process by calls to m4_ref(memp_fopen).  It does not imply a call to
+m4_ref(memp_fsync) for those files.])
+
+m4_p([dnl
+Where the environment was initialized with the m4_ref(DB_INIT_TXN) flag,
+calling m4_ref(dbenv_close) aborts any unresolved transactions.
+Applications should not depend on this behavior for transactions
+involving m4_db databases; all such transactions should be explicitly
+resolved.  The problem with depending on this semantic is that aborting
+an unresolved transaction involving database operations requires a
+database handle.  Because the database handles should have been closed before
+calling m4_ref(dbenv_close), it will not be possible to abort the
+transaction, and recovery will have to be run on the m4_db environment
+before further operations are done.])
+
+m4_p([dnl
+Where log cursors were created using the m4_refT(log_cursor), calling
+m4_ref(dbenv_close) does not imply closing those cursors.])
+
+m4_p([dnl
+In multithreaded applications, only a single thread may call
+m4_ref(dbenv_close).])
+
+m4_p([dnl
+After m4_ref(dbenv_close) has been called, regardless of its return, the
+m4_db environment handle may not be accessed again.])
+
+m4_return(dbenv_close, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_seealso(DbEnv)
+m4_page_footer

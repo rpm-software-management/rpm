@@ -1,0 +1,76 @@
+m4_comment([$Id: memp_set_fileid.so,v 10.14 2005/04/14 13:08:06 sue Exp $])
+
+define(M4PAGELOCAL, [memp_set_fileid, memp_get_fileid])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_fileid),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__set_fileid(DB_MPOOLFILE *mpf, u_int8_t *fileid);
+m4_blank
+int
+DB_MPOOLFILE-__GT__get_fileid(DB_MPOOLFILE *mpf, u_int8_t *fileid);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::set(u_int8_t *fileid);
+m4_blank
+int DbMpoolFile::get_fileid(u_int8_t *fileid);
+]))
+
+m4_p([dnl
+The m4_refT(memp_set_fileid) specifies a unique identifier for the file.
+(The shared memory buffer pool functions must be able to uniquely
+identify files in order that multiple processes wanting to share a file
+will correctly identify it in the pool.)])
+
+m4_p([dnl
+On most UNIX/POSIX systems, the m4_arg(fileid) field will not need to
+be set, and the memory pool functions will use the file's device and
+inode numbers for this purpose.  On Windows systems, the memory pool
+functions use the values returned by GetFileInformationByHandle() by
+default -- these values are known to be constant between processes and
+over reboot in the case of NTFS (in which they are the NTFS MFT
+indices).])
+
+m4_p([dnl
+On other filesystems (for example, FAT or NFS), these default values
+are not necessarily unique between processes or across system reboots.
+m4_bold([Applications wanting to maintain a shared memory buffer pool
+between processes or across system reboots, in which the pool contains
+pages from files stored on such filesystems, must specify a unique file
+identifier using the m4_refT(memp_set_fileid), and each process opening
+the file must provide the same unique identifier.])])
+
+m4_p([dnl
+This call should not be necessary for most applications.  Specifically,
+it is not necessary if the memory pool is not shared between processes
+and is reinstantiated after each system reboot, if the application is
+using the m4_db access methods instead of calling the pool functions
+explicitly, or if the files in the memory pool are stored on filesystems
+in which the default values as described previously are invariant
+between process and across system reboots.])
+
+m4_scope_mpf(memp_set_fileid)
+
+m4_when_mpfopen(memp_set_fileid)
+
+m4_return(memp_set_fileid, std)
+
+m4_parambegin
+m4_param(fileid, [dnl
+The m4_arg(fileid) parameter is the unique identifier for the file.
+Unique file identifiers must be a DB_FILE_ID_LEN length array of bytes.])
+m4_paramend
+
+m4_pf_description(m4_ref(memp_get_fileid))
+m4_p([dnl
+The m4_refT(memp_get_fileid) copies the file's identifier into the
+memory location referenced by m4_arg(fileid).])
+
+m4_return(memp_get_fileid, std)
+
+m4_when_any(memp_get_fileid)
+
+m4_seealso(DbMpool)
+m4_page_footer

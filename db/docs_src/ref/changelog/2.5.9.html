@@ -1,0 +1,644 @@
+<!--"$Id: 2.5.9.html,v 1.4 2007/05/17 18:17:18 bostic Exp $ (Sleepycat) $Date: 2007/05/17 18:17:18 $"-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 2.5.9 Change Log</title>
+<meta name="description" content="DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 2.5.9 Change Log</h3>
+
+<h3>Interface Additions in Berkeley DB 2.5.9:</h3>
+
+<ol>
+
+<p><li>
+A new flag is available in this release for the Berkeley DB cursor
+key/data retrieval interface: <b>DB_NEXT_DUP</b>.  This flag causes the
+DBcursor-&gt;c_get routine to return the next duplicate in a list of
+duplicates, and DB_NOTFOUND if there are no additional duplicates to
+return.
+
+<p><li>
+A new flag is available in this release for the Berkeley DB cursor
+key/data retrieval interfaces: <b>DB_GET_BOTH</b>.  This flag causes the
+DB-&gt;get and DBcursor-&gt;c_get routines to return success only if <b>both</b>
+the specified key and data items match the entry in the database.
+
+<p><li>
+A new flag is available in this release for the Berkeley DB key/data
+retrieval interfaces: <b>DB_RMW</b>.  This flag causes the DB-&gt;get and
+DBcursor-&gt;c_get routines to acquire write locks instead of read locks when
+doing the retrieval.  Setting this flag may decrease the likelihood of
+deadlock during a read-modify-write cycle by immediately acquiring the
+write lock during the read part of the cycle, so that another thread of
+control acquiring a read lock for the same item, in its own
+read-modify-write cycle, will not result in deadlock.
+
+<p><li>
+A new flag is available in this release: <b>DB_DUPSORT</b>.  This flag
+causes duplicate records to be maintained in sorted order.  By default,
+the sort order is the same default lexical sort used by the Btree access
+method.  A new field, in the DB_INFO structure passed to the db_open
+routine, is available in this release as well: <b>dup_compare</b>.  This
+field is a sort function that is optionally used to sort duplicate data
+items.  It is intended to allow applications to maintain duplicates in a
+non-standard sort order.
+
+<p><li>
+A new interface is available in this release, <b>DB-&gt;join</b>.  This
+interface takes a set of Berkeley DB cursors as arguments, and returns a
+specialized Berkeley DB cursor whose get function performs a database join
+on the records referenced by the set of cursors.
+
+<p><li>
+A new field is available in this release, set in the Berkeley DB structure
+returned by db_open, <b>DB-&gt;byteswapped</b>.  This field is set if the
+underlying database was not in the native host byte order, and can be used
+by the application to determine if its stored data will require host-order
+cleanups before use.
+
+<p><li>
+The dbmclose() interface has been added to the Berkeley DB dbm/ndbm
+compatibility interface, for application compatibility with the Sun
+Microsystems Solaris and other dbm/ndbm interfaces.
+
+</ol>
+
+<h3>Interface Changes in Berkeley DB 2.5.9:</h3>
+
+<ol>
+
+<p><li>
+Previous Berkeley DB releases have been inconsistent with respect to which
+<b>DBT structure</b> flags may be specified to which Berkeley DB
+interfaces.  For example, calling DB-&gt;put with the DB_DBT_MALLOC flag
+specified makes no sense, and DB has been inconsistent historically as to
+whether this was treated as an error or simply ignored.
+<p>
+As of this release, inappropriate flags in the DBT structure will simply
+be ignored.  This is intended to make it easy to, for example, retrieve
+a key/data pair and then use the data DBT as the key DBT for another
+database without having to reinitialize the flags in the DBT.
+<p>
+Previous Berkeley DB releases also required that threaded applications
+always set the DB_DBT_MALLOC or DB_DBT_USERMEM flags in DBT structures
+when retrieving key/data items.  As of this release, specifying
+DB_DBT_MALLOC or DB_DBT_USERMEM is only required when using the non-cursor
+DB interfaces (for example, DB-&gt;get).  When using cursor interfaces
+(for example, DBcursor-&gt;c_get), the flags are not required, as memory
+in which the key/data items are returned is allocated and maintained on
+a per-cursor basis.
+
+<p><li>
+Berkeley DB log files are now named <b>log.XXXXXXXXXX</b> instead of
+<b>log.XXXXX</b>, in order to ensure that applications do not run out of
+log filename space.
+<p><font color=red>
+This change is transparent to applications, but may NOT be transparent to
+local shell scripts and utilities.
+</font>
+
+<p><li>
+Previous Berkeley DB releases returned statistics for the Btree databases
+that were only valid for the lifetime of the handle with which they were
+requested, that is, these statistics as returned for a particular Berkeley
+DB handle would only reflect database operations done by that Berkeley DB
+handle and any cursors associated with it.
+<p>
+The following statistics have been removed from the returned Btree
+statistical information:  <b>bt_freed</b>, <b>bt_pfxsaved</b>,
+<b>bt_split</b>, <b>bt_rootsplit</b>, <b>bt_fastsplit</b>,
+<b>bt_added</b>, <b>bt_deleted</b>, <b>bt_get</b>, <b>bt_cache_hit</b>,
+<b>bt_cache_miss</b>.  If any of these are sufficiently useful to
+application writers that they should be put back into the system, please
+let us know.
+<p><font color=red>
+This change is NOT transparent to applications.
+</font>
+
+<p><li>
+Previous Berkeley DB releases did not support embedded white space in
+Berkeley DB environment configuration strings.  As of this release,
+configuration NAME/VALUE strings are still separated by one or more
+whitespace characters (which are discarded), but the VALUE string may
+contain embedded whitespace characters and is terminated by trailing
+whitespace characters and a newline character, both of which are also
+discarded.  In addition, empty lines and lines whose first character is
+a whitespace or hash (<b>#</b>) character, in the Berkeley DB
+configuration, file are discarded.
+<p><font color=red>
+This change is potentially NOT transparent to applications.
+</font>
+
+<p><li>
+The DB_REGION_INIT flag to the db_value_set interface has been enhanced
+to write a byte to each page in the region.  This allows applications
+to use DB_REGION_INIT to ensure that there is sufficient disk space for
+the backing region file.
+
+</ol>
+
+<h3>Berkeley DB Environment failures:</h3>
+<blockquote>
+<p>
+There exists a class of errors that Berkeley DB considers fatal to an
+entire Berkeley DB environment.  An example of this type of error is a
+log write failure due to the disk being out of free space.  The only way
+to recover from these failures is for the application to exit, run
+recovery of the Berkeley DB environment, and re-enter DB.  (It is not
+strictly necessary that the application exit, although that is the only
+way to recover system resources, for example, file descriptors and
+memory, currently allocated by Berkeley DB.)
+<p>
+In previous Berkeley DB releases, the only way an application could
+determine that a fatal error had occurred was to monitor Berkeley DB
+function return values, looking for unexpected ones, such as ENOSPC, or
+EPERM (which has historically been returned by Berkeley DB to indicate a
+potential underlying database corruption).
+<p>
+As of this release, we have added a new error return value, DB_RUNRECOVERY.
+ This error can be returned by <b>any</b> Berkeley DB interface.  If a
+fatal error occurs, DB_RUNRECOVERY will then be returned from all
+subsequent DB calls made by any threads or processes participating in the
+DB environment.
+<p>
+The EPERM error return no longer has a special meaning in Berkeley DB.
+<p>
+Optionally, applications may also specify a fatal-error callback function
+by setting the <b>db_paniccall</b> field of the DB_ENV structure before
+initializing the environment with db_appinit (DbEnv::appinit).  This
+callback function will be called with two arguments: the DB_ENV structure
+associated with the environment and the errno value associated with the
+underlying error that caused the problem.
+<p>
+Applications can handle fatal errors in one of two ways: by checking for
+DB_RUNRECOVERY as part of their normal Berkeley DB error return checking,
+or, in applications that have no cleanup processing of their own, by
+simply exiting the application when the callback function is called.
+<p>
+We would be very interested in any comments that you'd care to make on
+this interface change, in particular, any comments on the sufficiency
+of the interface for your Berkeley DB application.
+<p><font color=red>
+This change is NOT transparent to applications.
+</font>
+</blockquote>
+
+<h3>Documentation Changes:</h3>
+
+<ol>
+
+<p><li>
+The Berkeley DB documentation has been completely reworked.  It is no
+longer available in flat text, UNIX roff or PostScript formats, but is
+now <b>only available in HTML format</b>.  To use the Berkeley DB
+documentation, point your browser to the Berkeley DB distribution or
+installation directory <b>db-2.5.9/docs/index.html</b>.  This release
+also includes the beginnings of the Berkeley DB Reference Guide, as well
+as the manual pages.
+
+</ol>
+
+<h3>B+tree Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Cursor delete operations were not necessarily being undone after deadlock,
+potentially leading to incorrect data.
+
+<p><li>
+Deleted, off-page duplicate items could be recovered incorrectly,
+potentially leading to incorrect data.
+
+<p><li>
+Log records could be written outside of a transaction under some
+circumstances, potentially corrupting the log so that recovery would fail.
+
+<p><li>
+Completely emptying large trees could cause corruption of the database
+root page during the final reverse split.
+
+<p><li>
+Failure during page split could leave cursors referencing incorrect data.
+
+<p><li>
+Retrieving records based on logical record number could return incorrect
+data if logically adjacent records had previously been deleted.
+
+<p><li>
+The Btree access method is more aggressive in this release about
+discarding locks within transactions that are not needed for correctness.
+This change significantly decreases the probability of deadlock for some
+applications.
+
+</ol>
+
+<h3>Hash Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Storing duplicate data items using the DB_CURRENT flag could result in
+incorrect data.
+
+<p><li>
+Cursors and their locks did not always return unchanged on operation
+failure.
+
+<p><li>
+Entering a sufficient number of duplicate data items into the database
+could result in incorrect cursor positioning and/or a corrupted database.
+
+</ol>
+
+<h3>Recno Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+The logical record number returned from DB_APPEND calls was stored into
+library memory instead of into the user-specified memory.
+
+<p><li>
+The memory in which the backing source filename was stored could be freed
+multiple times, potentially leading to application core dump.
+
+</ol>
+
+<h3>General Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Incorrectly treated setting the database cachesize in the presence of a
+Berkeley DB environment to be an error, even if the environment didn't
+not initialize a shared memory buffer pool.
+
+<p><li>
+Using the DBcursor-&gt;c_get interface with the DB_KEYFIRST or DB_KEYLAST
+flags to insert a new key into the database would fail.
+
+<p><li>
+In previous Berkeley DB releases each cursor operation (when not part of
+a transaction) potentially used a different locker ID, making it possible
+for cursor operations to lock against themselves.  In the 2.5.9 release,
+the cursor locker ID is maintained for the life of the cursor, instead.
+
+<p><li>
+The optional user-specified transaction recovery function was not being
+called during Berkeley DB recovery, and when using the db_printlog
+utility.
+
+<p><li>
+Pages of duplicate data items were incorrectly split and logged/recovered,
+potentially leading to database corruption.
+
+<p><li>
+During recovery, deleted database files could cause recovery to fail.
+
+</ol>
+
+<h3>C++ API Changes and Bug Fixes</h3>
+
+<ol>
+
+<p><li>
+A DbEnv::version method has been added to allow access to major, minor
+and patch numbers for the current version.
+
+<p><li>
+The DbEnv class has been cleaned up so that inappropriate get and set
+methods have been removed:
+<p>
+<blockquote>
+DbEnv::get_data_cnt<br>
+DbEnv::get_data_dir<br>
+DbEnv::get_data_next<br>
+DbEnv::get_flags<br>
+DbEnv::get_home<br>
+DbEnv::get_log_dir<br>
+DbEnv::get_tmp_dir<br>
+DbEnv::set_data_cnt<br>
+DbEnv::set_data_dir<br>
+DbEnv::set_data_next<br>
+DbEnv::set_flags<br>
+DbEnv::set_home<br>
+DbEnv::set_log_dir<br>
+DbEnv::set_tmp_dir<br>
+</blockquote>
+<p>
+These methods are unneeded because the constructor with arguments,
+or the appinit() method, can be used to set this information.
+<p>
+<blockquote>
+DbEnv::get_errcall<br>
+DbEnv::get_errfile<br>
+DbEnv::get_error_model<br>
+DbEnv::get_error_stream<br>
+DbEnv::get_errpfx<br>
+DbEnv::get_lg_max<br>
+DbEnv::get_lk_conflicts<br>
+DbEnv::get_lk_detect<br>
+DbEnv::get_lk_max<br>
+DbEnv::get_lk_modes<br>
+DbEnv::get_lorder<br>
+DbEnv::get_mp_mmapsize<br>
+DbEnv::get_mp_size<br>
+DbEnv::get_tx_max<br>
+DbEnv::get_tx_recover<br>
+DbEnv::get_verbose<br>
+</blockquote>
+<p>
+These get methods accessed information that was never set by Berkeley DB.
+
+<p><li>
+Remaining DbEnv::set_* methods may throw an exception if they are called
+after the environment has been initialized (either via appinit or the
+constructor with arguments).
+
+<p><li>
+The DbInfo class has been reworked so that inappropriate get methods
+have been removed.  These get methods accessed information that was
+never set by Berkeley DB.
+<p>
+<blockquote>
+DbInfo::get_bt_compare<br>
+DbInfo::get_bt_maxkey<br>
+DbInfo::get_bt_minkey<br>
+DbInfo::get_bt_prefix<br>
+DbInfo::get_cachesize<br>
+DbInfo::get_flags<br>
+DbInfo::get_h_ffactor<br>
+DbInfo::get_h_hash<br>
+DbInfo::get_h_nelem<br>
+DbInfo::get_lorder<br>
+DbInfo::get_malloc<br>
+DbInfo::get_pagesize<br>
+DbInfo::get_re_delim<br>
+DbInfo::get_re_len<br>
+DbInfo::get_re_pad<br>
+DbInfo::get_re_source<br>
+</blockquote>
+<p>
+Methods to get and set underlying lock identifiers in a DbLock have
+been removed, as lock identifiers should be completely opaque to the
+application.
+
+</ol>
+
+<h3>Java API Changes and Bug Fixes</h3>
+
+<ol>
+
+<p><li>
+The DB_SET_RANGE flag did not correctly return data items.
+
+<p><li>
+Db.stat() is now declared to return an Object.  The object returned is of
+type DbBtreeStat if the file was created using Db.DB_BTREE.  In the
+future, this will return other types, for example, DbHashStat.
+<p>
+The DbBtreeStat, DbLockStat, DbMpoolFStat, DbMpoolStat and DbTxnStat classes
+have been changed to allow direct access to their data members.  DbLogStat
+is a new class.
+
+<p><li>
+The DbEnv class has been reworked and all inappropriate get and set
+methods have been removed:
+<p>
+<blockquote>
+DbEnv.get_data_cnt<br>
+DbEnv.get_data_next<br>
+DbEnv.get_flags<br>
+DbEnv.get_home<br>
+DbEnv.get_log_dir<br>
+DbEnv.get_tmp_dir<br>
+DbEnv.set_data_cnt<br>
+DbEnv.set_data_next<br>
+DbEnv.set_flags<br>
+DbEnv.set_home<br>
+DbEnv.set_log_dir<br>
+DbEnv.set_tmp_dir<br>
+</blockquote>
+<p>
+These methods are unneeded because the constructor with arguments, or the
+appinit() method, can be used to set this information.
+
+<p>
+<blockquote>
+DbEnv.get_errcall<br>
+DbEnv.get_errpfx<br>
+DbEnv.get_lg_max<br>
+DbEnv.get_lk_conflicts<br>
+DbEnv.get_lk_detect<br>
+DbEnv.get_lk_max<br>
+DbEnv.get_lk_modes<br>
+DbEnv.get_lorder<br>
+DbEnv.get_mp_mmapsize<br>
+DbEnv.get_mp_size<br>
+DbEnv.get_tx_max<br>
+DbEnv.get_verbose<br>
+</blockquote>
+<p>
+These get methods used to access information that was never set by
+Berkeley DB.
+<p>
+The DbEnv.get_java_version_string method has been removed, and the Java
+part of Berkeley DB no longer maintains its own version information.
+
+<p><li>
+Remaining DbEnv.set_* methods may throw a DbException if they are called
+after the environment has been initialized (either via appinit or the
+constructor with arguments).
+
+<p><li>
+The DbInfo class has been reworked so that inappropriate get methods
+have been removed.  These get methods used to access information that
+was never set by Berkeley DB.
+<p>
+<blockquote>
+DbInfo.get_bt_maxkey<br>
+DbInfo.get_bt_minkey<br>
+DbInfo.get_cachesize<br>
+DbInfo.get_flags<br>
+DbInfo.get_h_ffactor<br>
+DbInfo.get_h_hash<br>
+DbInfo.get_h_nelem<br>
+DbInfo.get_lorder<br>
+DbInfo.get_pagesize<br>
+DbInfo.get_re_delim<br>
+DbInfo.get_re_len<br>
+DbInfo.get_re_pad<br>
+DbInfo.get_re_source<br>
+</blockquote>
+
+<p><li>
+Methods to get and set underlying lock identifiers in a DbLock have
+been removed, as lock identifiers should be completely opaque to the
+application.
+
+<p><li>
+The DbRunRecoveryException class has been added as a subclass of
+DbException.  A DbRunRecoveryException object will be thrown when a
+fatal error occurs in Berkeley DB, requiring recovery to be performed.
+
+</ol>
+
+<h3>Shared Memory Buffer Pool Subsystem Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+It was possible for threads opening and closing databases in a fairly full
+buffer cache to free memory that was still in use, resulting in
+application failure.
+
+<p><li>
+If the memp_trickle() interface was unable to find a single buffer to
+flush in the entire buffer list, it would return with the shared memory
+region mutex locked.
+
+<p><li>
+Opening underlying files of certain sizes in the buffer pool would
+incorrectly fail.
+
+</ol>
+
+<h3>Locking Subsystem Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+If the a locker being forced to wait does not currently hold any locks,
+the deadlock detector is no longer run.
+
+</ol>
+
+<h3>Logging Subsystem Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+If the first log get call after database recovery used the DB_NEXT flag,
+it would fail.
+
+<p><li>
+If databases were opened multiple times without intervening closes,
+recovery could fail.
+
+<p><li>
+A memory leak in the log_archive interface has been fixed.
+
+</ol>
+
+<h3>Additional Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Windows/NT: using shared anonymous memory did not work correctly between
+processes sharing the database.
+
+<p><li>
+Utilities: Signal handling and Berkeley DB region exit was incorrect.
+Among other issues, the db_load utility could exit holding a region mutex.
+
+<p><li>
+Dbm/Ndbm: System error values were not always being correctly returned.
+
+</ol>
+
+<h3>System Porting and Build Procedure Changes:</h3>
+
+<ol>
+
+<p><li>
+A alpha-release port to VMS has been added to the Berkeley DB
+distribution.  The port has not yet run the Berkeley DB test
+suite, but there are no known problems.
+
+<p><li>
+Berkeley DB now uses the pstat_getdynamic(2) interface on Hewlett-Packard
+HP/UX systems to detect the presence of multiple processors.
+
+<p><li>
+For performance reasons, the Berkeley DB release now uses the Sun
+Microsystems Solaris pread(2) and pwrite(2) UNIX interfaces, if they
+are available.
+
+<p><li>
+Berkeley DB now compiles with the -D_THREAD_SAFE C preprocessor flag
+and loads with the libc_r.a C library by default on FreeBSD systems.
+
+<p><li>
+For portability reasons, shared memory segments allocated using the UNIX
+shmget(2) function are now allocated as IPC_PRIVATE. (Apparently, marking
+them as IPC_PRIVATE does not affect that they are available to other
+processes.)
+
+<p><li>
+The standard UNIX install for the Berkeley DB library now installs
+Berkeley DB into its own hierarchy instead of into separate local
+directories.  By default, the install locations are:
+<p>
+<table border=1>
+<tr> 
+        <th>Location</th>
+        <th>Contents</th>
+</tr><tr>
+        <td>/usr/local/BerkeleyDB/bin</td>
+        <td>binaries</td>
+</tr><tr>
+        <td>/usr/local/BerkeleyDB/include</td>
+        <td>include files</td>
+</tr><tr>
+        <td>/usr/local/BerkeleyDB/lib</td>
+        <td>libraries</td>
+</tr><tr>
+        <td>/usr/local/BerkeleyDB/docs</td>
+        <td>HTML documentation</td>
+</tr>
+</table>
+
+<p><li>
+For portability reasons, the standard UNIX Berkeley DB library archive is
+built with the <b>-cr</b> options in this release, instead of the
+<b>-cq</b> options as done previously.
+
+<p><li>
+The standard UNIX Berkeley DB configuration will now automatically detect
+and use gcc if no compiler named cc is found.
+
+<p><li>
+When the C pre-processor DIAGNOSTIC value is #defined, memory is
+overwritten with a 0xdb pattern instead of a 0xff pattern.
+
+</ol>
+
+<h3>Additional Changes: db_dump</h3>
+
+<ol>
+
+<p><li>
+The db_dump utility has a new option, <b>-N</b>.  This option allows
+db_dump to be run without acquiring any shared region mutexes.  This
+option is intended for debugging use only.
+
+<p><li>
+The db_dump utility now allows a Berkeley DB environment directory to be
+specified (the <b>-h</b> option) at the same time as the "debugging
+output" option (the <b>-d</b> option).
+
+<p><li>
+The db_dump utility now uses the shared memory buffer pool region if a
+Berkeley DB environment directory is specified, which allows users to see
+the current state of the database instead of only the database state that
+has already been flushed to disk.
+
+</ol>
+
+</body>
+</html>

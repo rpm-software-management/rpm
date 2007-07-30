@@ -2,7 +2,7 @@
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <rpc/rpc.h>
 #endif
 #include "db_server.h"
@@ -10,7 +10,7 @@
 #include "dbinc_auto/rpc_server_ext.h"
 
 __env_create_reply *
-__db_env_create_4005__SVCSUFFIX__(msg, req)
+__db_env_create_4006__SVCSUFFIX__(msg, req)
 	__env_create_msg *msg;
 	struct svc_req *req;
 {
@@ -24,7 +24,7 @@ __db_env_create_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_cdsgroup_begin_reply *
-__db_env_cdsgroup_begin_4005__SVCSUFFIX__(msg, req)
+__db_env_cdsgroup_begin_4006__SVCSUFFIX__(msg, req)
 	__env_cdsgroup_begin_msg *msg;
 	struct svc_req *req;
 {
@@ -38,7 +38,7 @@ __db_env_cdsgroup_begin_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_close_reply *
-__db_env_close_4005__SVCSUFFIX__(msg, req)
+__db_env_close_4006__SVCSUFFIX__(msg, req)
 	__env_close_msg *msg;
 	struct svc_req *req;
 {
@@ -53,7 +53,7 @@ __db_env_close_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_dbremove_reply *
-__db_env_dbremove_4005__SVCSUFFIX__(msg, req)
+__db_env_dbremove_4006__SVCSUFFIX__(msg, req)
 	__env_dbremove_msg *msg;
 	struct svc_req *req;
 {
@@ -71,7 +71,7 @@ __db_env_dbremove_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_dbrename_reply *
-__db_env_dbrename_4005__SVCSUFFIX__(msg, req)
+__db_env_dbrename_4006__SVCSUFFIX__(msg, req)
 	__env_dbrename_msg *msg;
 	struct svc_req *req;
 {
@@ -90,7 +90,7 @@ __db_env_dbrename_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_get_cachesize_reply *
-__db_env_get_cachesize_4005__SVCSUFFIX__(msg, req)
+__db_env_get_cachesize_4006__SVCSUFFIX__(msg, req)
 	__env_get_cachesize_msg *msg;
 	struct svc_req *req;
 {
@@ -104,7 +104,7 @@ __db_env_get_cachesize_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_get_encrypt_flags_reply *
-__db_env_get_encrypt_flags_4005__SVCSUFFIX__(msg, req)
+__db_env_get_encrypt_flags_4006__SVCSUFFIX__(msg, req)
 	__env_get_encrypt_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -118,7 +118,7 @@ __db_env_get_encrypt_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_get_flags_reply *
-__db_env_get_flags_4005__SVCSUFFIX__(msg, req)
+__db_env_get_flags_4006__SVCSUFFIX__(msg, req)
 	__env_get_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -132,7 +132,7 @@ __db_env_get_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_get_home_reply *
-__db_env_get_home_4005__SVCSUFFIX__(msg, req)
+__db_env_get_home_4006__SVCSUFFIX__(msg, req)
 	__env_get_home_msg *msg;
 	struct svc_req *req;
 {
@@ -146,7 +146,7 @@ __db_env_get_home_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_get_open_flags_reply *
-__db_env_get_open_flags_4005__SVCSUFFIX__(msg, req)
+__db_env_get_open_flags_4006__SVCSUFFIX__(msg, req)
 	__env_get_open_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -160,7 +160,7 @@ __db_env_get_open_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_open_reply *
-__db_env_open_4005__SVCSUFFIX__(msg, req)
+__db_env_open_4006__SVCSUFFIX__(msg, req)
 	__env_open_msg *msg;
 	struct svc_req *req;
 {
@@ -177,7 +177,7 @@ __db_env_open_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_remove_reply *
-__db_env_remove_4005__SVCSUFFIX__(msg, req)
+__db_env_remove_4006__SVCSUFFIX__(msg, req)
 	__env_remove_msg *msg;
 	struct svc_req *req;
 {
@@ -193,7 +193,7 @@ __db_env_remove_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_set_cachesize_reply *
-__db_env_set_cachesize_4005__SVCSUFFIX__(msg, req)
+__db_env_set_cachesize_4006__SVCSUFFIX__(msg, req)
 	__env_set_cachesize_msg *msg;
 	struct svc_req *req;
 {
@@ -210,7 +210,7 @@ __db_env_set_cachesize_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_set_encrypt_reply *
-__db_env_set_encrypt_4005__SVCSUFFIX__(msg, req)
+__db_env_set_encrypt_4006__SVCSUFFIX__(msg, req)
 	__env_set_encrypt_msg *msg;
 	struct svc_req *req;
 {
@@ -226,7 +226,7 @@ __db_env_set_encrypt_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_set_flags_reply *
-__db_env_set_flags_4005__SVCSUFFIX__(msg, req)
+__db_env_set_flags_4006__SVCSUFFIX__(msg, req)
 	__env_set_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -242,7 +242,7 @@ __db_env_set_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_txn_begin_reply *
-__db_env_txn_begin_4005__SVCSUFFIX__(msg, req)
+__db_env_txn_begin_4006__SVCSUFFIX__(msg, req)
 	__env_txn_begin_msg *msg;
 	struct svc_req *req;
 {
@@ -258,7 +258,7 @@ __db_env_txn_begin_4005__SVCSUFFIX__(msg, req)
 }
 
 __env_txn_recover_reply *
-__db_env_txn_recover_4005__SVCSUFFIX__(msg, req)
+__db_env_txn_recover_4006__SVCSUFFIX__(msg, req)
 	__env_txn_recover_msg *msg;
 	struct svc_req *req;
 {
@@ -283,7 +283,7 @@ __db_env_txn_recover_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_create_reply *
-__db_db_create_4005__SVCSUFFIX__(msg, req)
+__db_db_create_4006__SVCSUFFIX__(msg, req)
 	__db_create_msg *msg;
 	struct svc_req *req;
 {
@@ -298,7 +298,7 @@ __db_db_create_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_associate_reply *
-__db_db_associate_4005__SVCSUFFIX__(msg, req)
+__db_db_associate_4006__SVCSUFFIX__(msg, req)
 	__db_associate_msg *msg;
 	struct svc_req *req;
 {
@@ -315,7 +315,7 @@ __db_db_associate_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_close_reply *
-__db_db_close_4005__SVCSUFFIX__(msg, req)
+__db_db_close_4006__SVCSUFFIX__(msg, req)
 	__db_close_msg *msg;
 	struct svc_req *req;
 {
@@ -330,7 +330,7 @@ __db_db_close_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_cursor_reply *
-__db_db_cursor_4005__SVCSUFFIX__(msg, req)
+__db_db_cursor_4006__SVCSUFFIX__(msg, req)
 	__db_cursor_msg *msg;
 	struct svc_req *req;
 {
@@ -346,7 +346,7 @@ __db_db_cursor_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_del_reply *
-__db_db_del_4005__SVCSUFFIX__(msg, req)
+__db_db_del_4006__SVCSUFFIX__(msg, req)
 	__db_del_msg *msg;
 	struct svc_req *req;
 {
@@ -368,7 +368,7 @@ __db_db_del_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_reply *
-__db_db_get_4005__SVCSUFFIX__(msg, req)
+__db_db_get_4006__SVCSUFFIX__(msg, req)
 	__db_get_msg *msg;
 	struct svc_req *req;
 {
@@ -405,7 +405,7 @@ __db_db_get_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_bt_minkey_reply *
-__db_db_get_bt_minkey_4005__SVCSUFFIX__(msg, req)
+__db_db_get_bt_minkey_4006__SVCSUFFIX__(msg, req)
 	__db_get_bt_minkey_msg *msg;
 	struct svc_req *req;
 {
@@ -419,7 +419,7 @@ __db_db_get_bt_minkey_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_dbname_reply *
-__db_db_get_dbname_4005__SVCSUFFIX__(msg, req)
+__db_db_get_dbname_4006__SVCSUFFIX__(msg, req)
 	__db_get_dbname_msg *msg;
 	struct svc_req *req;
 {
@@ -433,7 +433,7 @@ __db_db_get_dbname_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_encrypt_flags_reply *
-__db_db_get_encrypt_flags_4005__SVCSUFFIX__(msg, req)
+__db_db_get_encrypt_flags_4006__SVCSUFFIX__(msg, req)
 	__db_get_encrypt_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -447,7 +447,7 @@ __db_db_get_encrypt_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_flags_reply *
-__db_db_get_flags_4005__SVCSUFFIX__(msg, req)
+__db_db_get_flags_4006__SVCSUFFIX__(msg, req)
 	__db_get_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -461,7 +461,7 @@ __db_db_get_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_h_ffactor_reply *
-__db_db_get_h_ffactor_4005__SVCSUFFIX__(msg, req)
+__db_db_get_h_ffactor_4006__SVCSUFFIX__(msg, req)
 	__db_get_h_ffactor_msg *msg;
 	struct svc_req *req;
 {
@@ -475,7 +475,7 @@ __db_db_get_h_ffactor_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_h_nelem_reply *
-__db_db_get_h_nelem_4005__SVCSUFFIX__(msg, req)
+__db_db_get_h_nelem_4006__SVCSUFFIX__(msg, req)
 	__db_get_h_nelem_msg *msg;
 	struct svc_req *req;
 {
@@ -489,7 +489,7 @@ __db_db_get_h_nelem_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_lorder_reply *
-__db_db_get_lorder_4005__SVCSUFFIX__(msg, req)
+__db_db_get_lorder_4006__SVCSUFFIX__(msg, req)
 	__db_get_lorder_msg *msg;
 	struct svc_req *req;
 {
@@ -503,7 +503,7 @@ __db_db_get_lorder_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_open_flags_reply *
-__db_db_get_open_flags_4005__SVCSUFFIX__(msg, req)
+__db_db_get_open_flags_4006__SVCSUFFIX__(msg, req)
 	__db_get_open_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -517,7 +517,7 @@ __db_db_get_open_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_pagesize_reply *
-__db_db_get_pagesize_4005__SVCSUFFIX__(msg, req)
+__db_db_get_pagesize_4006__SVCSUFFIX__(msg, req)
 	__db_get_pagesize_msg *msg;
 	struct svc_req *req;
 {
@@ -530,8 +530,22 @@ __db_db_get_pagesize_4005__SVCSUFFIX__(msg, req)
 	return (&reply);
 }
 
+__db_get_priority_reply *
+__db_db_get_priority_4006__SVCSUFFIX__(msg, req)
+	__db_get_priority_msg *msg;
+	struct svc_req *req;
+{
+	static __db_get_priority_reply reply; /* must be static */
+	COMPQUIET(req, NULL);
+
+	__db_get_priority_proc(msg->dbpcl_id,
+	    &reply);
+
+	return (&reply);
+}
+
 __db_get_q_extentsize_reply *
-__db_db_get_q_extentsize_4005__SVCSUFFIX__(msg, req)
+__db_db_get_q_extentsize_4006__SVCSUFFIX__(msg, req)
 	__db_get_q_extentsize_msg *msg;
 	struct svc_req *req;
 {
@@ -545,7 +559,7 @@ __db_db_get_q_extentsize_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_re_delim_reply *
-__db_db_get_re_delim_4005__SVCSUFFIX__(msg, req)
+__db_db_get_re_delim_4006__SVCSUFFIX__(msg, req)
 	__db_get_re_delim_msg *msg;
 	struct svc_req *req;
 {
@@ -559,7 +573,7 @@ __db_db_get_re_delim_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_re_len_reply *
-__db_db_get_re_len_4005__SVCSUFFIX__(msg, req)
+__db_db_get_re_len_4006__SVCSUFFIX__(msg, req)
 	__db_get_re_len_msg *msg;
 	struct svc_req *req;
 {
@@ -573,7 +587,7 @@ __db_db_get_re_len_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_get_re_pad_reply *
-__db_db_get_re_pad_4005__SVCSUFFIX__(msg, req)
+__db_db_get_re_pad_4006__SVCSUFFIX__(msg, req)
 	__db_get_re_pad_msg *msg;
 	struct svc_req *req;
 {
@@ -587,7 +601,7 @@ __db_db_get_re_pad_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_join_reply *
-__db_db_join_4005__SVCSUFFIX__(msg, req)
+__db_db_join_4006__SVCSUFFIX__(msg, req)
 	__db_join_msg *msg;
 	struct svc_req *req;
 {
@@ -604,7 +618,7 @@ __db_db_join_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_key_range_reply *
-__db_db_key_range_4005__SVCSUFFIX__(msg, req)
+__db_db_key_range_4006__SVCSUFFIX__(msg, req)
 	__db_key_range_msg *msg;
 	struct svc_req *req;
 {
@@ -626,7 +640,7 @@ __db_db_key_range_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_open_reply *
-__db_db_open_4005__SVCSUFFIX__(msg, req)
+__db_db_open_4006__SVCSUFFIX__(msg, req)
 	__db_open_msg *msg;
 	struct svc_req *req;
 {
@@ -646,7 +660,7 @@ __db_db_open_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_pget_reply *
-__db_db_pget_4005__SVCSUFFIX__(msg, req)
+__db_db_pget_4006__SVCSUFFIX__(msg, req)
 	__db_pget_msg *msg;
 	struct svc_req *req;
 {
@@ -690,7 +704,7 @@ __db_db_pget_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_put_reply *
-__db_db_put_4005__SVCSUFFIX__(msg, req)
+__db_db_put_4006__SVCSUFFIX__(msg, req)
 	__db_put_msg *msg;
 	struct svc_req *req;
 {
@@ -726,7 +740,7 @@ __db_db_put_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_remove_reply *
-__db_db_remove_4005__SVCSUFFIX__(msg, req)
+__db_db_remove_4006__SVCSUFFIX__(msg, req)
 	__db_remove_msg *msg;
 	struct svc_req *req;
 {
@@ -743,7 +757,7 @@ __db_db_remove_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_rename_reply *
-__db_db_rename_4005__SVCSUFFIX__(msg, req)
+__db_db_rename_4006__SVCSUFFIX__(msg, req)
 	__db_rename_msg *msg;
 	struct svc_req *req;
 {
@@ -761,7 +775,7 @@ __db_db_rename_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_bt_minkey_reply *
-__db_db_set_bt_minkey_4005__SVCSUFFIX__(msg, req)
+__db_db_set_bt_minkey_4006__SVCSUFFIX__(msg, req)
 	__db_set_bt_minkey_msg *msg;
 	struct svc_req *req;
 {
@@ -776,7 +790,7 @@ __db_db_set_bt_minkey_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_encrypt_reply *
-__db_db_set_encrypt_4005__SVCSUFFIX__(msg, req)
+__db_db_set_encrypt_4006__SVCSUFFIX__(msg, req)
 	__db_set_encrypt_msg *msg;
 	struct svc_req *req;
 {
@@ -792,7 +806,7 @@ __db_db_set_encrypt_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_flags_reply *
-__db_db_set_flags_4005__SVCSUFFIX__(msg, req)
+__db_db_set_flags_4006__SVCSUFFIX__(msg, req)
 	__db_set_flags_msg *msg;
 	struct svc_req *req;
 {
@@ -807,7 +821,7 @@ __db_db_set_flags_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_h_ffactor_reply *
-__db_db_set_h_ffactor_4005__SVCSUFFIX__(msg, req)
+__db_db_set_h_ffactor_4006__SVCSUFFIX__(msg, req)
 	__db_set_h_ffactor_msg *msg;
 	struct svc_req *req;
 {
@@ -822,7 +836,7 @@ __db_db_set_h_ffactor_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_h_nelem_reply *
-__db_db_set_h_nelem_4005__SVCSUFFIX__(msg, req)
+__db_db_set_h_nelem_4006__SVCSUFFIX__(msg, req)
 	__db_set_h_nelem_msg *msg;
 	struct svc_req *req;
 {
@@ -837,7 +851,7 @@ __db_db_set_h_nelem_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_lorder_reply *
-__db_db_set_lorder_4005__SVCSUFFIX__(msg, req)
+__db_db_set_lorder_4006__SVCSUFFIX__(msg, req)
 	__db_set_lorder_msg *msg;
 	struct svc_req *req;
 {
@@ -852,7 +866,7 @@ __db_db_set_lorder_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_pagesize_reply *
-__db_db_set_pagesize_4005__SVCSUFFIX__(msg, req)
+__db_db_set_pagesize_4006__SVCSUFFIX__(msg, req)
 	__db_set_pagesize_msg *msg;
 	struct svc_req *req;
 {
@@ -866,8 +880,23 @@ __db_db_set_pagesize_4005__SVCSUFFIX__(msg, req)
 	return (&reply);
 }
 
+__db_set_priority_reply *
+__db_db_set_priority_4006__SVCSUFFIX__(msg, req)
+	__db_set_priority_msg *msg;
+	struct svc_req *req;
+{
+	static __db_set_priority_reply reply; /* must be static */
+	COMPQUIET(req, NULL);
+
+	__db_set_priority_proc(msg->dbpcl_id,
+	    msg->priority,
+	    &reply);
+
+	return (&reply);
+}
+
 __db_set_q_extentsize_reply *
-__db_db_set_q_extentsize_4005__SVCSUFFIX__(msg, req)
+__db_db_set_q_extentsize_4006__SVCSUFFIX__(msg, req)
 	__db_set_q_extentsize_msg *msg;
 	struct svc_req *req;
 {
@@ -882,7 +911,7 @@ __db_db_set_q_extentsize_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_re_delim_reply *
-__db_db_set_re_delim_4005__SVCSUFFIX__(msg, req)
+__db_db_set_re_delim_4006__SVCSUFFIX__(msg, req)
 	__db_set_re_delim_msg *msg;
 	struct svc_req *req;
 {
@@ -897,7 +926,7 @@ __db_db_set_re_delim_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_re_len_reply *
-__db_db_set_re_len_4005__SVCSUFFIX__(msg, req)
+__db_db_set_re_len_4006__SVCSUFFIX__(msg, req)
 	__db_set_re_len_msg *msg;
 	struct svc_req *req;
 {
@@ -912,7 +941,7 @@ __db_db_set_re_len_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_set_re_pad_reply *
-__db_db_set_re_pad_4005__SVCSUFFIX__(msg, req)
+__db_db_set_re_pad_4006__SVCSUFFIX__(msg, req)
 	__db_set_re_pad_msg *msg;
 	struct svc_req *req;
 {
@@ -927,7 +956,7 @@ __db_db_set_re_pad_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_stat_reply *
-__db_db_stat_4005__SVCSUFFIX__(msg, req)
+__db_db_stat_4006__SVCSUFFIX__(msg, req)
 	__db_stat_msg *msg;
 	struct svc_req *req;
 {
@@ -951,7 +980,7 @@ __db_db_stat_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_sync_reply *
-__db_db_sync_4005__SVCSUFFIX__(msg, req)
+__db_db_sync_4006__SVCSUFFIX__(msg, req)
 	__db_sync_msg *msg;
 	struct svc_req *req;
 {
@@ -966,7 +995,7 @@ __db_db_sync_4005__SVCSUFFIX__(msg, req)
 }
 
 __db_truncate_reply *
-__db_db_truncate_4005__SVCSUFFIX__(msg, req)
+__db_db_truncate_4006__SVCSUFFIX__(msg, req)
 	__db_truncate_msg *msg;
 	struct svc_req *req;
 {
@@ -981,83 +1010,83 @@ __db_db_truncate_4005__SVCSUFFIX__(msg, req)
 	return (&reply);
 }
 
-__dbc_c_close_reply *
-__db_dbc_c_close_4005__SVCSUFFIX__(msg, req)
-	__dbc_c_close_msg *msg;
+__dbc_close_reply *
+__db_dbc_close_4006__SVCSUFFIX__(msg, req)
+	__dbc_close_msg *msg;
 	struct svc_req *req;
 {
-	static __dbc_c_close_reply reply; /* must be static */
+	static __dbc_close_reply reply; /* must be static */
 	COMPQUIET(req, NULL);
 
-	__dbc_c_close_proc(msg->dbccl_id,
+	__dbc_close_proc(msg->dbccl_id,
 	    &reply);
 
 	return (&reply);
 }
 
-__dbc_c_count_reply *
-__db_dbc_c_count_4005__SVCSUFFIX__(msg, req)
-	__dbc_c_count_msg *msg;
+__dbc_count_reply *
+__db_dbc_count_4006__SVCSUFFIX__(msg, req)
+	__dbc_count_msg *msg;
 	struct svc_req *req;
 {
-	static __dbc_c_count_reply reply; /* must be static */
+	static __dbc_count_reply reply; /* must be static */
 	COMPQUIET(req, NULL);
 
-	__dbc_c_count_proc(msg->dbccl_id,
+	__dbc_count_proc(msg->dbccl_id,
 	    msg->flags,
 	    &reply);
 
 	return (&reply);
 }
 
-__dbc_c_del_reply *
-__db_dbc_c_del_4005__SVCSUFFIX__(msg, req)
-	__dbc_c_del_msg *msg;
+__dbc_del_reply *
+__db_dbc_del_4006__SVCSUFFIX__(msg, req)
+	__dbc_del_msg *msg;
 	struct svc_req *req;
 {
-	static __dbc_c_del_reply reply; /* must be static */
+	static __dbc_del_reply reply; /* must be static */
 	COMPQUIET(req, NULL);
 
-	__dbc_c_del_proc(msg->dbccl_id,
+	__dbc_del_proc(msg->dbccl_id,
 	    msg->flags,
 	    &reply);
 
 	return (&reply);
 }
 
-__dbc_c_dup_reply *
-__db_dbc_c_dup_4005__SVCSUFFIX__(msg, req)
-	__dbc_c_dup_msg *msg;
+__dbc_dup_reply *
+__db_dbc_dup_4006__SVCSUFFIX__(msg, req)
+	__dbc_dup_msg *msg;
 	struct svc_req *req;
 {
-	static __dbc_c_dup_reply reply; /* must be static */
+	static __dbc_dup_reply reply; /* must be static */
 	COMPQUIET(req, NULL);
 
-	__dbc_c_dup_proc(msg->dbccl_id,
+	__dbc_dup_proc(msg->dbccl_id,
 	    msg->flags,
 	    &reply);
 
 	return (&reply);
 }
 
-__dbc_c_get_reply *
-__db_dbc_c_get_4005__SVCSUFFIX__(msg, req)
-	__dbc_c_get_msg *msg;
+__dbc_get_reply *
+__db_dbc_get_4006__SVCSUFFIX__(msg, req)
+	__dbc_get_msg *msg;
 	struct svc_req *req;
 {
-	static __dbc_c_get_reply reply; /* must be static */
-	static int __dbc_c_get_free = 0; /* must be static */
+	static __dbc_get_reply reply; /* must be static */
+	static int __dbc_get_free = 0; /* must be static */
 
 	COMPQUIET(req, NULL);
-	if (__dbc_c_get_free)
-		xdr_free((xdrproc_t)xdr___dbc_c_get_reply, (void *)&reply);
-	__dbc_c_get_free = 0;
+	if (__dbc_get_free)
+		xdr_free((xdrproc_t)xdr___dbc_get_reply, (void *)&reply);
+	__dbc_get_free = 0;
 
 	/* Reinitialize allocated fields */
 	reply.keydata.keydata_val = NULL;
 	reply.datadata.datadata_val = NULL;
 
-	__dbc_c_get_proc(msg->dbccl_id,
+	__dbc_get_proc(msg->dbccl_id,
 	    msg->keydlen,
 	    msg->keydoff,
 	    msg->keyulen,
@@ -1072,29 +1101,43 @@ __db_dbc_c_get_4005__SVCSUFFIX__(msg, req)
 	    msg->datadata.datadata_len,
 	    msg->flags,
 	    &reply,
-	    &__dbc_c_get_free);
+	    &__dbc_get_free);
 	return (&reply);
 }
 
-__dbc_c_pget_reply *
-__db_dbc_c_pget_4005__SVCSUFFIX__(msg, req)
-	__dbc_c_pget_msg *msg;
+__dbc_get_priority_reply *
+__db_dbc_get_priority_4006__SVCSUFFIX__(msg, req)
+	__dbc_get_priority_msg *msg;
 	struct svc_req *req;
 {
-	static __dbc_c_pget_reply reply; /* must be static */
-	static int __dbc_c_pget_free = 0; /* must be static */
+	static __dbc_get_priority_reply reply; /* must be static */
+	COMPQUIET(req, NULL);
+
+	__dbc_get_priority_proc(msg->dbccl_id,
+	    &reply);
+
+	return (&reply);
+}
+
+__dbc_pget_reply *
+__db_dbc_pget_4006__SVCSUFFIX__(msg, req)
+	__dbc_pget_msg *msg;
+	struct svc_req *req;
+{
+	static __dbc_pget_reply reply; /* must be static */
+	static int __dbc_pget_free = 0; /* must be static */
 
 	COMPQUIET(req, NULL);
-	if (__dbc_c_pget_free)
-		xdr_free((xdrproc_t)xdr___dbc_c_pget_reply, (void *)&reply);
-	__dbc_c_pget_free = 0;
+	if (__dbc_pget_free)
+		xdr_free((xdrproc_t)xdr___dbc_pget_reply, (void *)&reply);
+	__dbc_pget_free = 0;
 
 	/* Reinitialize allocated fields */
 	reply.skeydata.skeydata_val = NULL;
 	reply.pkeydata.pkeydata_val = NULL;
 	reply.datadata.datadata_val = NULL;
 
-	__dbc_c_pget_proc(msg->dbccl_id,
+	__dbc_pget_proc(msg->dbccl_id,
 	    msg->skeydlen,
 	    msg->skeydoff,
 	    msg->skeyulen,
@@ -1115,27 +1158,27 @@ __db_dbc_c_pget_4005__SVCSUFFIX__(msg, req)
 	    msg->datadata.datadata_len,
 	    msg->flags,
 	    &reply,
-	    &__dbc_c_pget_free);
+	    &__dbc_pget_free);
 	return (&reply);
 }
 
-__dbc_c_put_reply *
-__db_dbc_c_put_4005__SVCSUFFIX__(msg, req)
-	__dbc_c_put_msg *msg;
+__dbc_put_reply *
+__db_dbc_put_4006__SVCSUFFIX__(msg, req)
+	__dbc_put_msg *msg;
 	struct svc_req *req;
 {
-	static __dbc_c_put_reply reply; /* must be static */
-	static int __dbc_c_put_free = 0; /* must be static */
+	static __dbc_put_reply reply; /* must be static */
+	static int __dbc_put_free = 0; /* must be static */
 
 	COMPQUIET(req, NULL);
-	if (__dbc_c_put_free)
-		xdr_free((xdrproc_t)xdr___dbc_c_put_reply, (void *)&reply);
-	__dbc_c_put_free = 0;
+	if (__dbc_put_free)
+		xdr_free((xdrproc_t)xdr___dbc_put_reply, (void *)&reply);
+	__dbc_put_free = 0;
 
 	/* Reinitialize allocated fields */
 	reply.keydata.keydata_val = NULL;
 
-	__dbc_c_put_proc(msg->dbccl_id,
+	__dbc_put_proc(msg->dbccl_id,
 	    msg->keydlen,
 	    msg->keydoff,
 	    msg->keyulen,
@@ -1150,12 +1193,27 @@ __db_dbc_c_put_4005__SVCSUFFIX__(msg, req)
 	    msg->datadata.datadata_len,
 	    msg->flags,
 	    &reply,
-	    &__dbc_c_put_free);
+	    &__dbc_put_free);
+	return (&reply);
+}
+
+__dbc_set_priority_reply *
+__db_dbc_set_priority_4006__SVCSUFFIX__(msg, req)
+	__dbc_set_priority_msg *msg;
+	struct svc_req *req;
+{
+	static __dbc_set_priority_reply reply; /* must be static */
+	COMPQUIET(req, NULL);
+
+	__dbc_set_priority_proc(msg->dbccl_id,
+	    msg->priority,
+	    &reply);
+
 	return (&reply);
 }
 
 __txn_abort_reply *
-__db_txn_abort_4005__SVCSUFFIX__(msg, req)
+__db_txn_abort_4006__SVCSUFFIX__(msg, req)
 	__txn_abort_msg *msg;
 	struct svc_req *req;
 {
@@ -1169,7 +1227,7 @@ __db_txn_abort_4005__SVCSUFFIX__(msg, req)
 }
 
 __txn_commit_reply *
-__db_txn_commit_4005__SVCSUFFIX__(msg, req)
+__db_txn_commit_4006__SVCSUFFIX__(msg, req)
 	__txn_commit_msg *msg;
 	struct svc_req *req;
 {
@@ -1184,7 +1242,7 @@ __db_txn_commit_4005__SVCSUFFIX__(msg, req)
 }
 
 __txn_discard_reply *
-__db_txn_discard_4005__SVCSUFFIX__(msg, req)
+__db_txn_discard_4006__SVCSUFFIX__(msg, req)
 	__txn_discard_msg *msg;
 	struct svc_req *req;
 {
@@ -1199,7 +1257,7 @@ __db_txn_discard_4005__SVCSUFFIX__(msg, req)
 }
 
 __txn_prepare_reply *
-__db_txn_prepare_4005__SVCSUFFIX__(msg, req)
+__db_txn_prepare_4006__SVCSUFFIX__(msg, req)
 	__txn_prepare_msg *msg;
 	struct svc_req *req;
 {

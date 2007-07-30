@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_fsync.c,v 12.7 2006/08/24 14:46:21 bostic Exp $
+ * $Id: os_fsync.c,v 12.10 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -28,6 +27,9 @@ __os_fsync(dbenv, fhp)
 	 */
 	if (F_ISSET(fhp, DB_FH_NOSYNC))
 		return (0);
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: flush %s", fhp->name);
 
 	RETRY_CHK((!FlushFileBuffers(fhp->handle)), ret);
 	if (ret != 0) {

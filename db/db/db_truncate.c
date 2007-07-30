@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: db_truncate.c,v 12.18 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_truncate.c,v 12.22 2007/05/17 15:14:57 bostic Exp $
  */
 
 #include "db_config.h"
@@ -144,11 +143,11 @@ __db_truncate(dbp, txn, countp)
 	if (dbp->type != DB_QUEUE && LIST_FIRST(&dbp->s_secondaries) != NULL) {
 		if ((ret = __db_s_first(dbp, &sdbp)) != 0)
 			return (ret);
-		for (; sdbp != NULL && ret == 0; ret = __db_s_next(&sdbp))
+		for (; sdbp != NULL && ret == 0; ret = __db_s_next(&sdbp, txn))
 			if ((ret = __db_truncate(sdbp, txn, &scount)) != 0)
 				break;
 		if (sdbp != NULL)
-			(void)__db_s_done(sdbp);
+			(void)__db_s_done(sdbp, txn);
 		if (ret != 0)
 			return (ret);
 	}
@@ -179,7 +178,7 @@ __db_truncate(dbp, txn, countp)
 	}
 
 	/* Discard the cursor. */
-	if (dbc != NULL && (t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+	if (dbc != NULL && (t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	DB_TEST_RECOVERY(dbp, DB_TEST_POSTDESTROY, ret, NULL);

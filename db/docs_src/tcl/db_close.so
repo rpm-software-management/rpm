@@ -1,0 +1,50 @@
+m4_comment([$Id: db_close.so,v 11.15 2002/08/18 21:17:23 bostic Exp $])
+
+define(M4PAGELOCAL, )
+include(tcl/m4.tcl)
+
+m4_tcl_header(db close, m4_tcl_db_close, [dnl
+db close
+	m4_tcl_arg([-nosync])
+])
+
+m4_p([dnl
+The m4_tcl_db_close command flushes any cached database information to
+disk, closes any open cursors, frees any allocated resources, and closes
+any underlying files.  Because key/data pairs are cached in memory, failing
+to sync the file with the m4_tcl_db_close or m4_tcl_db_sync command may
+result in inconsistent or lost information.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag(-nosync, [dnl
+Do not flush cached information to disk.
+m4_p([dnl
+The -nosync flag is a dangerous option. It should only be set if the
+application is doing logging (with transactions) so that the database is
+recoverable after a system or application crash, or if the database is
+always generated from scratch after any system or application crash.])
+m4_p([dnl
+It is important to understand that flushing cached information to disk
+only minimizes the window of opportunity for corrupted data.  Although
+unlikely, it is possible for database corruption to happen if a system or
+application crash occurs while writing data to the database. To ensure
+that database corruption never occurs, applications must either use
+transactions and logging with automatic recovery, use logging and
+application-specific recovery, or edit a copy of the database; and after
+all applications using the database have successfully called
+m4_tcl_db_close, atomically replace the original database with the
+updated copy.])])
+
+m4_tagend
+
+m4_p([dnl
+After m4_tcl_db_close has been called, regardless of its return, the DB
+handle may not be accessed again.])
+
+m4_tcl_ret_standard(m4_tcl_db_close)
+
+m4_page_footer

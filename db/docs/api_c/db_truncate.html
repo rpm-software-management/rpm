@@ -1,6 +1,5 @@
 <!--$Id: db_truncate.so,v 1.29 2006/09/13 14:30:52 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -46,15 +45,16 @@ and 0 on success.
 <dt><b>countp</b><dd>The <b>countp</b> parameter references memory into which
  the number of records discarded from the database is copied. 
 <dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
-<dt><b>txnid</b><dd>If the operation is part of an application-specified
-transaction, the <b>txnid</b> parameter is a transaction handle
-returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
-group, the <b>txnid</b> parameter is a handle returned from
-<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.
+If no transaction handle is
 specified, but the
 operation occurs in a transactional
 database,
-the operation will be implicitly transaction protected.  
+the operation will be implicitly transaction protected.
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;truncate method
@@ -78,6 +78,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

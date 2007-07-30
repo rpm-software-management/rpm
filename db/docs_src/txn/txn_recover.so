@@ -1,0 +1,86 @@
+m4_comment([$Id: txn_recover.so,v 10.28 2007/05/30 17:24:41 margo Exp $])
+
+define(M4PAGELOCAL, txn_recover)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_recover),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__txn_recover(DB_ENV *dbenv, DB_PREPLIST preplist__LB____RB__,
+    long count, long *retp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::txn_recover(DB_PREPLIST preplist__LB____RB__,
+    long count, long *retp, u_int32_t flags);
+]))
+
+m4_p([dnl
+Database environment recovery restores transactions that were prepared,
+but not yet resolved at the time of the system shut down or crash, to
+their state prior to the shut down or crash, including any locks
+previously held.  The m4_refT(txn_recover) returns a list of those
+prepared transactions.])
+
+m4_p([dnl
+The m4_refT(txn_recover) should only be called after the environment has
+been recovered.])
+
+m4_p([dnl
+Multiple threads of control may call m4_ref(txn_recover), but only one
+thread of control may resolve each returned transaction, that is, only
+one thread of control may call m4_ref(txn_commit) or m4_ref(txn_abort)
+on each returned transaction.  Callers of m4_ref(txn_recover) must call
+m4_ref(txn_discard) to discard each transaction they do not resolve.])
+
+m4_p([dnl
+On return from m4_ref(txn_recover), the m4_arg(preplist) parameter will
+be filled in with a list of transactions that must be resolved by the
+application (committed, aborted or discarded).  The m4_arg(preplist)
+parameter is a structure of type DB_PREPLIST; the following DB_PREPLIST
+fields will be filled in:])
+
+m4_tagbegin
+
+m4_field(DB_TXN *, txn,
+[The transaction handle for the transaction.])
+
+m4_field(u_int8_t, gid__LB__DB_XIDDATASIZE__RB__,
+[The global transaction ID for the transaction.  The global transaction
+ID is the one specified when the transaction was prepared.  The
+application is responsible for ensuring uniqueness among global
+transaction IDs.])
+
+m4_tagend
+
+m4_return(txn_recover, std)
+
+m4_parambegin
+m4_param(count, [dnl
+The m4_arg(count) parameter specifies the number of available entries
+in the passed-in m4_arg(preplist) array.  The m4_arg(retp) parameter
+returns the number of entries m4_ref(txn_recover) has filled in, in the
+array.])
+
+m4_param(flags, [dnl
+m4_sf_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_FIRST), [dnl
+Begin returning a list of prepared, but not yet resolved transactions.
+Specifying this flag begins a new pass over all prepared, but not yet
+completed transactions, regardless of whether they have already been returned
+in previous calls to m4_ref(txn_recover).
+Calls to m4_ref(txn_recover) from different threads of control should not
+be intermixed in the same environment.])
+
+m4_tag(m4_idef(DB_NEXT), [dnl
+Continue returning a list of prepared, but not yet resolved transactions,
+starting where the last call to m4_ref(txn_recover) left off.])
+m4_tagend])
+
+m4_param_co(preplist, list of transactions to be resolved by the application)
+m4_paramend
+
+m4_seealso(DbTxn)
+m4_page_footer

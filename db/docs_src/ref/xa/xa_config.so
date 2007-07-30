@@ -1,0 +1,107 @@
+m4_comment([$Id: xa_config.so,v 10.23 2003/06/27 17:38:24 bostic Exp $])
+
+m4_ref_title(Distributed Transactions,
+    Configuring m4_db with the Tuxedo System,
+    configuring m4_db with the @Tuxedo System,
+    xa/xa_intro, xa/faq)
+
+m4_p([dnl
+This information assumes that you have already installed the m4_db
+library.])
+
+m4_p([dnl
+First, you must update the resource manager file in Tuxedo.  For the
+purposes of this discussion, assume that the Tuxedo home directory is in])
+
+m4_indent([/home/tuxedo])
+
+In that case, the resource manager file will be located in
+
+m4_indent([/home/tuxedo/udataobj/RM])
+
+Edit the resource manager file, adding the line
+
+m4_indent([dnl
+BERKELEY-DB:db_xa_switch:-L${DB_INSTALL}/lib -ldb m4_backslash([])
+	-lsocket -ldl -lm])
+
+m4_p([dnl
+where ${DB_INSTALLHOME} is the directory into which you installed the m4_db
+library.])
+
+m4_p([dnl
+m4_bold([Note that the previous load options are for a Sun Microsystems
+Solaris 5.6 Sparc installation of Tuxedo, and may not be correct for
+your system.])])
+
+m4_p([dnl
+Next, you must build the transaction manager server.  To do this, use the
+Tuxedo m4_manref(buildtms, 1) utility.  The buildtms utility will create
+the Berkeley-DB resource manager in the directory from which it was run.
+The parameters to buildtms should be])
+
+m4_indent([buildtms [-v] -o DBRM -r BERKELEY-DB])
+
+m4_p([dnl
+This will create an executable transaction manager server, DBRM, which is
+called by Tuxedo to process begins, commits, and aborts.])
+
+m4_p([dnl
+Finally, you must make sure that your TUXCONFIG environment variable
+identifies an ubbconfig file that properly identifies your resource
+managers.  In the GROUPS section of the ubb file, you should identify the
+group's LMID and GRPNO, as well as the transaction manager server name
+"TMSNAME=DBRM."  You must also specify the OPENINFO parameter, setting it
+equal to the string])
+
+m4_indent([rm_name:dir])
+
+m4_p([dnl
+where rm_name is the resource name specified in the RM file (that is,
+BERKELEY-DB) and dir is the directory for the m4_db home environment
+(see m4_ref(dbenv_open) for a discussion of m4_db environments).])
+
+m4_p([dnl
+Because Tuxedo resource manager startup accepts only a single string
+for configuration, any environment customization that might have been
+done via the config parameter to m4_ref(dbenv_open) must instead be done
+by placing a m4_ref(DB_CONFIG) file in the m4_db environment directory.
+See m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]) for further
+information.])
+
+m4_p([dnl
+Consider the following configuration.  We have built a transaction
+manager server, as described previously.  We want the m4_db environment
+to be m4_path([/home/dbhome]), our database files to be maintained in
+m4_path([/home/datafiles]), our log files to be maintained in
+m4_path([/home/log]), and we want a duplexed server.])
+
+m4_p([dnl
+The GROUPS section of the ubb file might look like the following])
+
+m4_indent([dnl
+group_tm LMID=myname GRPNO=1 TMSNAME=DBRM TMSCOUNT=2 m4_backslash([])
+	OPENINFO="BERKELEY-DB:/home/dbhome"])
+
+m4_p([dnl
+There would be a m4_ref(DB_CONFIG) configuration file in the directory
+m4_path([/home/dbhome]) that contained the following two lines:])
+
+m4_indent([dnl
+set_data_dir	/home/datafiles
+set_lg_dir	/home/log])
+
+m4_p([dnl
+Finally, the ubb file must be translated into a binary version using
+Tuxedo's m4_manref(tmloadcf, 1) utility, and then the pathname of that
+binary file must be specified as your TUXCONFIG environment variable.])
+
+m4_p([dnl
+At this point, your system is properly initialized to use the m4_db
+resource manager.])
+
+m4_p([dnl
+See m4_ref(dbh_create) for further information on accessing data files
+using XA.])
+
+m4_page_footer

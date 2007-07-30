@@ -1,0 +1,13 @@
+m4_comment([$Id: curdel.so,v 10.15 2003/10/18 19:15:52 bostic Exp $])
+
+m4_ref_title(Access Methods, Deleting records with a cursor,
+    [@deleting records with a cursor, deleting records with a @cursor],
+    am/curput, am/curdup)
+
+m4_p([dnl
+The m4_refT(dbc_del) deletes records from the database using a cursor.
+The m4_refT(dbc_del) deletes the record to which the cursor currently
+refers.  In all cases, the cursor position is unchanged after a
+delete.])
+
+m4_page_footer

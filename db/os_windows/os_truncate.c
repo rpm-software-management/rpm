@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2004-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2004,2007 Oracle.  All rights reserved.
  *
- * $Id: os_truncate.c,v 12.12 2006/09/05 15:30:18 mjc Exp $
+ * $Id: os_truncate.c,v 12.15 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -35,6 +34,11 @@ __os_truncate(dbenv, fhp, pgno, pgsize)
 
 	ret = 0;
 	offset = (off_t)pgsize * pgno;
+
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv,
+		    "fileops: truncate %s to %lu", fhp->name, (u_long)offset);
 
 #ifdef HAVE_FILESYSTEM_NOTZERO
 	/*

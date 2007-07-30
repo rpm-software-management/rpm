@@ -1,0 +1,57 @@
+m4_comment([$Id: env_lsn_reset.so,v 1.4 2005/12/13 16:48:01 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_lsn_reset])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_lsn_reset),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lsn_reset(DB_ENV *dbenv, const char *file, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lsn_reset(const char *file, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_lsn_reset) allows database files to be moved from one
+transactional database environment to another.])
+
+m4_p([dnl
+Database pages in transactional database environments contain references
+to the environment's log files (that is, log sequence numbers, or LSNs).
+Copying or moving a database file from one database environment to
+another, and then modifying it, can result in data corruption if the
+LSNs are not first cleared.])
+
+m4_p([dnl
+Note that LSNs should be reset before moving or copying the database
+file into a new database environment, rather than moving or copying the
+database file and then resetting the LSNs.  m4_db has consistency checks
+that may be triggered if an application calls m4_ref(dbenv_lsn_reset)
+on a database in a new environment when the database LSNs still reflect
+the old environment.])
+
+m4_p([dnl
+The m4_refT(dbenv_lsn_reset) modifies the physical file, in-place.
+Applications should not reset LSNs in files that are currently in use.])
+
+m4_when_any(dbenv_lsn_reset)
+
+m4_return(dbenv_lsn_reset, std)
+
+m4_parambegin
+m4_param(file, [dnl
+The name of the physical file in which the LSNs are to be cleared.])
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_tag(DB_ENCRYPT, [dnl
+The file contains encrypted databases.])
+m4_tagend])
+m4_paramend
+
+m4_err(dbenv_lsn_reset, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

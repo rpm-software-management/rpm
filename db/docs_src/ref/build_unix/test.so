@@ -1,0 +1,64 @@
+m4_comment([$Id: test.so,v 10.32 2003/11/08 19:17:43 bostic Exp $])
+
+ifdef([__m4_product_name],, [define(__m4_product_name, m4_db)])
+ifelse(__m4_product_name, m4_db, [dnl
+define(__m4_prev_link, build_unix/shlib)
+define(__m4_next_link, build_unix/notes)],[dnl
+define(__m4_prev_link, xml_unix/shlib)
+define(__m4_next_link, xml_unix/notes)])
+
+m4_ref_title(Building __m4_product_name for UNIX/POSIX systems,
+    Running the test suite under UNIX,
+    running the @test suite under UNIX, __m4_prev_link, __m4_next_link)
+
+m4_p([dnl
+The __m4_product_name test suite is built if you specify
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --enable-test, --enable-test)
+as an argument when configuring __m4_product_name.  The test suite also
+requires that you configure and build the Tcl interface to the
+library.])
+
+m4_p([dnl
+Before running the tests for the first time, you may need to edit the
+m4_path(include.tcl) file in your build directory.  The
+__m4_product_name configuration assumes that you intend to use the
+version of the tclsh utility included in the Tcl installation with which
+__m4_product_name was configured to run the test suite, and further
+assumes that the test suite will be run with the libraries prebuilt in
+the __m4_product_name build directory.  If either of these assumptions
+are incorrect, you will need to edit the m4_path(include.tcl) file and
+change the following line to correctly specify the full path to the
+version of tclsh with which you are going to run the test suite:])
+
+m4_indent([set tclsh_path ...])
+
+m4_p([dnl
+You may also need to change the following line to correctly specify the
+path from the directory where you are running the test suite to the
+location of the __m4_product_name Tcl library you built:])
+
+m4_indent([set test_path ...])
+
+m4_p([dnl
+It may not be necessary that this be a full path if you have configured
+your system's shared library mechanisms to search the directory where
+you built or installed the Tcl library.])
+
+m4_p([dnl
+All __m4_product_name tests are run from within m4_bold(tclsh).  After
+starting tclsh, you must source the file m4_path(test.tcl) in the test
+directory.  For example, if you built in the m4_path(build_unix)
+directory of the distribution, this would be done using the following
+command:])
+
+m4_indent([% source ../test/test.tcl])
+
+m4_p([dnl
+If no errors occur, you should get a "%" prompt.])
+
+m4_p([dnl
+You are now ready to run tests in the test suite; see
+m4_link(M4RELDIR/ref/test/run, Running the test suite) for more
+information.])
+
+m4_page_footer

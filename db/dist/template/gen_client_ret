@@ -522,12 +522,12 @@ __dbcl_db_truncate_ret(dbp, txnp, countp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_close_ret __P((DBC *, __dbc_c_close_reply *));
+ * PUBLIC: int __dbcl_dbc_close_ret __P((DBC *, __dbc_close_reply *));
  */
 int
-__dbcl_dbc_c_close_ret(dbc, replyp)
+__dbcl_dbc_close_ret(dbc, replyp)
 	DBC * dbc;
-	__dbc_c_close_reply *replyp;
+	__dbc_close_reply *replyp;
 {
 	int ret;
 
@@ -542,15 +542,15 @@ __dbcl_dbc_c_close_ret(dbc, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_count_ret __P((DBC *, db_recno_t *, u_int32_t,
- * PUBLIC:      __dbc_c_count_reply *));
+ * PUBLIC: int __dbcl_dbc_count_ret __P((DBC *, db_recno_t *, u_int32_t,
+ * PUBLIC:      __dbc_count_reply *));
  */
 int
-__dbcl_dbc_c_count_ret(dbc, countp, flags, replyp)
+__dbcl_dbc_count_ret(dbc, countp, flags, replyp)
 	DBC * dbc;
 	db_recno_t * countp;
 	u_int32_t flags;
-	__dbc_c_count_reply *replyp;
+	__dbc_count_reply *replyp;
 {
 	int ret;
 	db_recno_t dupcount;
@@ -567,15 +567,15 @@ __dbcl_dbc_c_count_ret(dbc, countp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_dup_ret __P((DBC *, DBC **, u_int32_t,
- * PUBLIC:      __dbc_c_dup_reply *));
+ * PUBLIC: int __dbcl_dbc_dup_ret __P((DBC *, DBC **, u_int32_t,
+ * PUBLIC:      __dbc_dup_reply *));
  */
 int
-__dbcl_dbc_c_dup_ret(dbc, dbcp, flags, replyp)
+__dbcl_dbc_dup_ret(dbc, dbcp, flags, replyp)
 	DBC * dbc;
 	DBC ** dbcp;
 	u_int32_t flags;
-	__dbc_c_dup_reply *replyp;
+	__dbc_dup_reply *replyp;
 {
 	int ret;
 	long dbcid;
@@ -592,16 +592,16 @@ __dbcl_dbc_c_dup_ret(dbc, dbcp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_get_ret __P((DBC *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_c_get_reply *));
+ * PUBLIC: int __dbcl_dbc_get_ret __P((DBC *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_get_reply *));
  */
 int
-__dbcl_dbc_c_get_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_get_ret(dbc, key, data, flags, replyp)
 	DBC * dbc;
 	DBT * key;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_c_get_reply *replyp;
+	__dbc_get_reply *replyp;
 {
 	int ret;
 	/* DBT key; */
@@ -620,17 +620,17 @@ __dbcl_dbc_c_get_ret(dbc, key, data, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_c_pget_reply *));
+ * PUBLIC: int __dbcl_dbc_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_pget_reply *));
  */
 int
-__dbcl_dbc_c_pget_ret(dbc, skey, pkey, data, flags, replyp)
+__dbcl_dbc_pget_ret(dbc, skey, pkey, data, flags, replyp)
 	DBC * dbc;
 	DBT * skey;
 	DBT * pkey;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_c_pget_reply *replyp;
+	__dbc_pget_reply *replyp;
 {
 	int ret;
 	/* DBT skey; */
@@ -651,16 +651,16 @@ __dbcl_dbc_c_pget_ret(dbc, skey, pkey, data, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_put_ret __P((DBC *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_c_put_reply *));
+ * PUBLIC: int __dbcl_dbc_put_ret __P((DBC *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_put_reply *));
  */
 int
-__dbcl_dbc_c_put_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_put_ret(dbc, key, data, flags, replyp)
 	DBC * dbc;
 	DBT * key;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_c_put_reply *replyp;
+	__dbc_put_reply *replyp;
 {
 	int ret;
 	/* DBT key; */

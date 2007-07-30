@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep013.tcl,v 12.11 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep013.tcl,v 12.16 2007/05/25 18:30:16 alanb Exp $
 #
 # TEST	rep013
 # TEST	Replication and swapping master/clients with open dbs.
@@ -55,6 +54,12 @@ proc rep013 { method { niter 10 } { tnum "013" } args } {
 proc rep013_sub { method niter tnum logset recargs anyopt largs } {
 	global testdir
 	global anywhere
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 	set orig_tdir $testdir
@@ -92,40 +97,25 @@ proc rep013_sub { method niter tnum logset recargs anyopt largs } {
 	# Open a master.
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -errpfx ENV1 \
+	    $m_logargs -errpfx ENV1 $verbargs \
 	    -cachesize {0 4194304 3} \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -cachesize {0 4194304 3} \
-#	    -errpfx ENV1 -verbose {rep on} -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set env1 [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $env1] TRUE
 
 	# Open two clients
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -errpfx ENV2 \
+	    $c_logargs -errpfx ENV2 $verbargs \
 	    -cachesize {0 2097152 2} \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -cachesize {0 2097152 2} \
-#	    -errpfx ENV2 -verbose {rep on} -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set env2 [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $env2] TRUE
 
 	repladd 3
 	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs \
-	    $c2_logargs -errpfx ENV3 \
+	    $c2_logargs -errpfx ENV3 $verbargs \
 	    -cachesize {0 1048576 1} \
 	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
-#	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs \
-#	    $c2_logargs -cachesize {0 1048576 1} \
-#	    -errpfx ENV3 -verbose {rep on} -errfile /dev/stderr \
-#	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
 	set cl2env [eval $cl2_envcmd $recargs -rep_client]
-	error_check_good client2_env [is_valid_env $cl2env] TRUE
 
 	set testfile "test$tnum.db"
 
@@ -246,17 +236,14 @@ proc rep013_sub { method niter tnum logset recargs anyopt largs } {
 	}
 	puts "\tRep$tnum.e: Check message handling of client."
 	set req3 [stat_field $cl2env rep_stat "Client service requests"]
-	set miss3 [stat_field $cl2env rep_stat "Client service req misses"]
 	set rereq1 [stat_field $env1 rep_stat "Client rerequests"]
 	set rereq2 [stat_field $env2 rep_stat "Client rerequests"]
 	if { $anyopt == "anywhere" } {
 		error_check_bad req $req3 0
-		error_check_bad miss $miss3 0
 		error_check_bad rereq1 $rereq1 0
 		error_check_bad rereq2 $rereq2 0
 	} else {
 		error_check_good req $req3 0
-		error_check_good miss $miss3 0
 		error_check_good rereq1 $rereq1 0
 		error_check_good rereq2 $rereq2 0
 	}

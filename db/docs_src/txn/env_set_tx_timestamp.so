@@ -1,0 +1,55 @@
+m4_comment([$Id: env_set_tx_timestamp.so,v 10.29 2004/09/28 15:04:23 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_tx_timestamp, dbenv_get_tx_timestamp])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_tx_timestamp),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_tx_timestamp(DB_ENV *dbenv, time_t *timestamp);
+m4_blank
+int
+DB_ENV-__GT__get_tx_timestamp(DB_ENV *dbenv, time_t *timestampp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_tx_timestamp(time_t *timestamp);
+m4_blank
+int
+DbEnv::get_tx_timestamp(time_t *timestampp);
+]))
+
+m4_p([dnl
+Recover to the time specified by m4_arg(timestamp) rather than to the
+most current possible date.])
+
+m4_p([dnl
+Once a database environment has been upgraded to a new version of m4_db
+involving a log format change (see m4_link(M4RELDIR/ref/upgrade/process,
+[Upgrading m4_db installations])), it is no longer possible to recover
+to a specific time before that upgrade.])
+
+m4_scope_dbenv(dbenv_set_tx_timestamp)
+
+m4_when_envopen(dbenv_set_tx_timestamp)
+
+m4_return(dbenv_set_tx_timestamp, std)
+
+m4_parambegin
+m4_param(timestamp, [dnl
+The m4_arg(timestamp) parameter references the memory location where the
+recovery timestamp is located.
+m4_p([dnl
+The m4_arg(timestamp) parameter should be the number of seconds since 0
+hours, 0 minutes, 0 seconds, January 1, 1970, Coordinated Universal
+Time; that is, the Epoch.])])
+m4_paramend
+
+m4_err(dbenv_set_tx_timestamp, einval,
+[it is not possible to recover to the specified time using the log files
+currently present in the environment])
+
+m4_pf_getter(dbenv_get_tx_timestamp, recovery timestamp,, timestampp)
+
+m4_seealso(DbTxn)
+m4_page_footer

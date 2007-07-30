@@ -13,15 +13,15 @@ PREF_FUNC_recover(dbenv, dbtp, lsnp, op, info)
 	db_recops op;
 	void *info;
 {
-	PREF_FUNC_args *argp;
+	PREF_DUP_args *argp;
 	DB *file_dbp;
 	DBC *dbc;
 	DB_MPOOLFILE *mpf;
 	PAGE *pagep;
 	int cmp_n, cmp_p, modified, ret;
 
-	REC_PRINT(PREF_FUNC_print);
-	REC_INTRO(PREF_FUNC_read, 1);
+	REC_PRINT(PREF_DUP_print);
+	REC_INTRO(PREF_DUP_read, 1);
 
 	if ((ret = mpf->get(mpf, &argp->pgno, 0, &pagep)) != 0)
 		if (DB_REDO(op)) {

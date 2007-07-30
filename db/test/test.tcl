@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: test.tcl,v 12.30 2006/08/24 14:46:39 bostic Exp $
+# $Id: test.tcl,v 12.42 2007/06/28 14:26:02 bostic Exp $
 
 source ./include.tcl
 
@@ -64,6 +63,12 @@ set is_envmethod 0
 global is_repchild
 set is_repchild 0
 
+# Set when we want to use replication test messaging that cannot
+# share an env -- for example, because the replication processes
+# are not all from the same BDB version.
+global noenv_messaging
+set noenv_messaging 0
+
 # For testing locker id wrap around.
 global lock_curid
 global lock_maxid
@@ -88,6 +93,12 @@ global checking_valid_methods
 set checking_valid_methods 0
 global valid_methods
 set valid_methods { btree rbtree queue queueext recno frecno rrecno hash }
+
+# The variable test_recopts controls whether we open envs in
+# replication tests with the -recover flag.   The default is
+# to test with and without the flag, but to run a meaningful
+# subset of rep tests more quickly, rep_subset will randomly
+# pick one or the other.
 global test_recopts
 set test_recopts { "-recover" "" }
 
@@ -120,8 +131,8 @@ source $test_path/testparams.tcl
 # Try to open an encrypted database.  If it fails, this release
 # doesn't support encryption, and encryption tests should be skipped.
 set has_crypto 1
-set stat [catch {set db \
-    [eval {berkdb open -create -btree -encryptaes test_passwd} ] } result ]
+set stat [catch {set db [eval {berkdb_open_noerr \
+    -create -btree -encryptaes test_passwd} ] } result ]
 if { $stat != 0 } {
 	# Make sure it's the right error for a non-crypto release.
 	error_check_good non_crypto_release \
@@ -199,6 +210,7 @@ proc run_std { { testname ALL } args } {
 	set test_list {
 	{"environment"		"env"}
 	{"archive"		"archive"}
+	{"backup"		"backup"}
 	{"file operations"	"fop"}
 	{"locking"		"lock"}
 	{"logging"		"log"}
@@ -362,8 +374,10 @@ proc check_output { file } {
 		^100.*|
 		^eval\s.*|
 		^exec\s.*|
+		^fileops:\s.*|
 		^jointest.*$|
 		^r\sarchive\s*|
+		^r\sbackup\s*|
 		^r\sdbm\s*|
 		^r\shsearch\s*|
 		^r\sndbm\s*|
@@ -373,6 +387,7 @@ proc check_output { file } {
 		^run_rpcmethod:\s.*|
 		^run_secenv:\s.*|
 		^All\sprocesses\shave\sexited.$|
+		^Backuptest\s.*|
 		^Beginning\scycle\s\d$|
 		^Byteorder:.*|
 		^Child\sruns\scomplete\.\s\sParent\smodifies\sdata\.$|
@@ -398,6 +413,7 @@ proc check_output { file } {
 		^\t*About\sto\srun\srecovery\s.*complete$|
 		^\t*Add\sa\sthird\sversion\s.*|
 		^\t*Archive[:\.].*|
+		^\t*Backuptest.*|
 		^\t*Bigfile[0-9][0-9][0-9].*|
 		^\t*Building\s.*|
 		^\t*closing\ssecondaries\.$|
@@ -473,13 +489,6 @@ proc r { args } {
 
 	source ./include.tcl
 
-	# The variable test_recopts controls whether we open envs in
-	# replication tests with the -recover flag.   The default is
-	# to test with and without the flag, but to run a meaningful
-	# subset of rep tests more quickly, rep_subset will randomly
-	# pick one or the other.
-	set test_recopts { " -recover" "" }
-
 	set exflgs [eval extractflags $args]
 	set args [lindex $exflgs 0]
 	set flags [lindex $exflgs 1]
@@ -523,6 +532,7 @@ proc r { args } {
 				}
 			}
 			archive -
+			backup -
 			dbm -
 			hsearch -
 			ndbm -
@@ -649,6 +659,7 @@ proc r { args } {
 						verify_dir $testdir "" 1
 					}
 				}
+				set test_recopts { "-recover" "" }
 			}
 			rep_complete {
 				set tindex [lsearch $test_names(rep) $starttest]
@@ -713,8 +724,8 @@ proc r { args } {
 
 					}
 					set rpc_svc $old_rpc_src
-					}
 				}
+			}
 			sec {
 				# Skip secure mode tests if release
 				# does not support encryption.
@@ -1111,7 +1122,7 @@ proc run_secenv { method test {largs ""} } {
 	set stat [catch {
 		check_handles
 		set env [eval {berkdb_env -create -mode 0644 -home $testdir \
-		    -encryptaes $passwd -cachesize {0 2097152 1}}]
+		    -encryptaes $passwd -cachesize {0 4194304 1}}]
 		error_check_good env_open [is_valid_env $env] TRUE
 		append largs " -env $env "
 
@@ -1329,7 +1340,7 @@ proc run_envmethod { method test {display 0} {run 1} {outfile stdout} \
 	set envargs ""
 
 	# Enlarge the cache by default - some compaction tests need it.
-	set cacheargs "-cachesize {0 2097152 1}"
+	set cacheargs "-cachesize {0 4194304 1}"
 	env_cleanup $testdir
 
 	if { $display == 1 } {

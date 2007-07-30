@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: log.h,v 12.24 2006/08/24 14:45:29 bostic Exp $
+ * $Id: log.h,v 12.31 2007/06/13 18:21:31 ubell Exp $
  */
 
 #ifndef _DB_LOG_H_
@@ -47,8 +46,15 @@ struct __fname {
 					 * Txn ID of the DB create, stored so
 					 * we can log it at register time.
 					 */
-#define	DB_FNAME_NOTLOGGED	0x01	/* Log of close failed. */
+	db_mutex_t mutex;		/* mutex from db handle. */
+	u_int32_t txn_ref;		/* number of txn referencing. */
+
+#define	DB_FNAME_CLOSED		0x01	/* DBP was closed. */
 #define	DB_FNAME_DURABLE	0x02	/* File is durable. */
+#define	DB_FNAME_INMEM		0x04	/* File is in memory. */
+#define	DB_FNAME_NOTLOGGED	0x08	/* Log of close failed. */
+#define	DB_FNAME_RECOVER	0x10	/* File was opened by recovery code. */
+#define	DB_FNAME_RESTORED	0x20	/* File may be in restored txn. */
 	u_int32_t flags;
 };
 
@@ -113,9 +119,10 @@ struct __db_log {
 	DB_ENV	 *dbenv;		/* Reference to error information. */
 	REGINFO	  reginfo;		/* Region information. */
 
-#define	DBLOG_RECOVER		0x01	/* We are in recovery. */
-#define	DBLOG_FORCE_OPEN	0x02	/* Force the DB open even if it appears
+#define	DBLOG_FORCE_OPEN	0x01	/* Force the DB open even if it appears
 					 * to be deleted. */
+#define	DBLOG_OPENFILES		0x02	/* Prepared files need to be open. */
+#define	DBLOG_RECOVER		0x04	/* We are in recovery. */
 	u_int32_t flags;
 };
 
@@ -238,10 +245,10 @@ struct __log {
 
 	/*
 	 * !!!
-	 * NOTE: the next 11 fields, waiting_lsn, verify_lsn, max_wait_lsn,
-	 * maxperm_lsn, wait_recs, rcvd_recs, ready_lsn and bulk_* are NOT
-	 * protected by the log region lock.  They are protected by
-	 * REP->mtx_clientdb.  If you need access to both, you must acquire
+	 * NOTE: the next 12 fields, waiting_lsn, verify_lsn, max_wait_lsn,
+	 * max_perm_lsn, max_lease_ts, wait_recs, rcvd_recs, ready_lsn and
+	 * bulk_* are NOT protected by the log region lock.  They are protected
+	 * by REP->mtx_clientdb.  If you need access to both, you must acquire
 	 * REP->mtx_clientdb before acquiring the log region lock.
 	 *
 	 * The waiting_lsn is used by the replication system.  It is the
@@ -261,6 +268,7 @@ struct __log {
 	DB_LSN	  verify_lsn;		/* LSN we are waiting to verify. */
 	DB_LSN	  max_wait_lsn;		/* Maximum LSN requested. */
 	DB_LSN	  max_perm_lsn;		/* Maximum PERMANENT LSN processed. */
+	db_timespec max_lease_ts;	/* Maximum Lease timestamp seen. */
 	u_int32_t wait_recs;		/* Records to wait before requesting. */
 	u_int32_t rcvd_recs;		/* Records received while waiting. */
 	/*

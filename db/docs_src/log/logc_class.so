@@ -1,0 +1,22 @@
+m4_comment([$Id: logc_class.so,v 1.8 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, DbLogc)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbLogc),
+ifelse(M4API, C_API, [dnl
+typedef struct __db_log_cursor DB_LOGC;
+])
+ifelse(M4API, CXX_API, [dnl
+class DbLogc { ... };
+]))
+
+m4_p([dnl
+The m4_ref(DbLogc) object is the handle for a cursor into the log files,
+supporting sequential access to the records stored in log files.  The
+handle is not free-threaded.  Once the m4_refT(logc_close) is called,
+the handle may not be accessed again, regardless of that method's
+return.])
+
+m4_seealso(DbLog)
+m4_page_footer

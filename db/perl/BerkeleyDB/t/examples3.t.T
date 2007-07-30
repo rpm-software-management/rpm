@@ -79,13 +79,13 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]" ;
-  is(docat_del($redirect), <<'EOM') ;
+  is(docat_del_sort($redirect), <<'EOM') ;
+green -> apple
+green -> banana
 orange -> orange
-yellow -> banana
 red -> apple
 red -> tomato
-green -> banana
-green -> apple
+yellow -> banana
 EOM
 
 }
@@ -129,13 +129,13 @@ my $redirect = "xyzt" ;
  }
 
   #print "[" . docat($redirect) . "]" ;
-  is(docat_del($redirect), <<'EOM') ;
-orange -> orange
-yellow -> banana
-red -> apple
-red -> tomato
+  is(docat_del_sort($redirect), <<'EOM') ;
 green -> apple
 green -> banana
+orange -> orange
+red -> apple
+red -> tomato
+yellow -> banana
 EOM
 
 }

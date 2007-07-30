@@ -1,0 +1,51 @@
+m4_comment([$Id: env_set_lk_max_lockers.so,v 1.23 2004/09/28 15:04:20 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lk_max_lockers, dbenv_get_lk_max_lockers])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lk_max_lockers),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lk_max_lockers(DB_ENV *dbenv, u_int32_t max);
+m4_blank
+int
+DB_ENV-__GT__get_lk_max_lockers(DB_ENV *dbenv, u_int32_t *lk_maxp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lk_max_lockers(u_int32_t max);
+m4_blank
+int
+DbEnv::get_lk_max_lockers(u_int32_t *, lk_maxp);
+]))
+
+m4_p([dnl
+Set the maximum number of locking entities supported by the m4_db
+environment.  This value is used by m4_ref(dbenv_open) to estimate how
+much space to allocate for various lock-table data structures.  The
+default value is 1000 lockers.  For specific information on configuring
+the size of the lock subsystem, see m4_link(M4RELDIR/ref/lock/max,
+Configuring locking: sizing the system).])
+
+m4_env_config(dbenv_set_lk_max_lockers,
+[maximum number of lockers], set_lk_max_lockers, [the number of lockers])
+
+m4_scope_env(dbenv_set_lk_max_lockers)
+
+m4_when_envopen(dbenv_set_lk_max_lockers, ignored)
+
+m4_return(dbenv_set_lk_max_lockers, std)
+
+m4_parambegin
+m4_param(max, [dnl
+The m4_arg(max) parameter is the maximum number simultaneous locking
+entities supported by the m4_db environment.])
+m4_paramend
+
+m4_err(dbenv_set_lk_max_lockers,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_lk_max_lockers, maximum number of lockers,, lk_maxp)
+
+m4_seealso(DbLock)
+m4_page_footer

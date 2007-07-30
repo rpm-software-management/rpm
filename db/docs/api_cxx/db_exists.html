@@ -1,0 +1,82 @@
+<!--$Id: db_exists.so,v 1.1 2007/07/12 18:27:42 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: Db::exists</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>Db::exists</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+Db::exists(DbTxn *txnid, Dbt *key, u_int32_t flags);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: Db::exists</h3>
+<p>The Db::exists method returns if the specified key appears in the
+database.</p>
+<p>The Db::exists method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if the specified key is not in the database.
+The Db::exists method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if the database is a Queue or Recno database and
+the specified key exists, but was never explicitly created by the
+application or was later deleted.
+Unless otherwise specified, the Db::exists method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or
+one of the following values:
+In addition, the following flags may be set by
+bitwise inclusively <b>OR</b>'ing them into the <b>flags</b> parameter:
+<dl compact>
+<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Configure a transactional read operation to have degree 2 isolation (the
+read is not repeatable).
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Configure a transactional read operation to have degree 1 isolation,
+reading modified but not yet committed data.  Silently ignored if the
+<a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
+database was opened.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the read, if
+locking is configured.  Setting this flag can eliminate deadlock during
+a read-modify-write cycle by acquiring the write lock during the read
+part of the cycle so that another thread of control acquiring a read
+lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
+<p>Because the Db::exists method will not hold locks across
+Berkeley DB calls in non-transactional operations, the <a href="../api_cxx/dbc_get.html#DB_RMW">DB_RMW</a> flag to
+the Db::exists call is meaningful only in the presence of
+transactions.</p>
+</dl>
+<dt><b>key</b><dd>The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/db_class.html">Db</a>
+<h3>See Also</h3>
+<a href="../api_cxx/db_list.html">Databases and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

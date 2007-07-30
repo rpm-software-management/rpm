@@ -1,7 +1,6 @@
 <!--$Id: db_set_cachesize.so,v 10.21 2002/08/18 21:15:53 bostic Exp $-->
-<!--$Id: env_set_cachesize.so,v 10.50 2005/01/10 07:18:43 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: env_set_cachesize.so,v 10.51 2007/07/06 00:22:52 mjc Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -48,8 +47,9 @@ allocated contiguously on some architectures.  For example, some
 releases of Solaris limit the amount of memory that may be allocated
 contiguously by a process.  If <b>ncache</b> is 0 or 1, the cache will
 be allocated contiguously in memory.  If it is greater than 1, the cache
-will be broken up into <b>ncache</b> equally sized, separate pieces of
-memory.</p>
+will be split across <b>ncache</b> separate regions, where the
+<b>region size</b> is equal to the initial cache size divided by
+<b>ncache</b>.</p>
 <p>Because databases opened within Berkeley DB environments use the cache
 specified to the environment, it is an error to attempt to set a cache
 in a database created within an environment.</p>
@@ -74,10 +74,8 @@ encapsulating one of the following non-zero errors, or return one of
 the following non-zero errors:</p>
 <dl compact>
 <dt>EINVAL<dd>If the specified cache size was impossibly small;
-called in a database environment;
 the method was called after
-<a href="../api_cxx/db_open.html">Db::open</a>
-was called; or if an
+<a href="../api_cxx/db_open.html">Db::open</a> was called; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -109,6 +107,6 @@ failure, and returns 0 on success.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

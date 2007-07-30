@@ -1,0 +1,23 @@
+m4_comment([$Id: set_func_rename.so,v 10.16 2003/09/25 15:28:08 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_rename)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_rename),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_rename(int (*func_rename)(const char *from, const char *to));
+]))
+
+m4_posix_func(rename)
+
+m4_scope_process(dbenv_set_func_rename)
+
+m4_when_init(dbenv_set_func_rename)
+
+m4_return(dbenv_set_func_rename, std)
+
+m4_param_replace(func_rename)
+
+m4_rtc_seealso
+m4_page_footer

@@ -1,0 +1,52 @@
+dnl $Id: m4.seealso,v 10.81 2004/11/03 17:40:06 bostic Exp $
+
+dnl ###################################################################
+dnl DbEnv
+dnl ###################################################################
+define(m4_seealso, [dnl
+m4_hl
+m4_header(Class)
+ifelse($1, DbEnv, [dnl
+m4_ref(DbEnv)
+m4_header(See Also)
+m4_link(_m4_api/env_list, [Database Environments and Related Methods])],
+$1, Db, [dnl
+m4_ref(Db)
+m4_header(See Also)
+m4_link(_m4_api/db_list, [Databases and Related Methods])],
+$1, Dbc, [dnl
+m4_ref(Dbc)
+m4_header(See Also)
+m4_link(_m4_api/dbc_list, [Database Cursors and Related Methods])],
+$1, DbLock, [dnl
+m4_ref(DbEnv), m4_ref(DbLock)
+m4_header(See Also)
+m4_link(_m4_api/lock_list, [Locking Subsystem and Related Methods])],
+$1, DbLog, [dnl
+m4_ref(DbEnv), m4_ref(DbLogc), m4_ref(DbLsn)
+m4_header(See Also)
+m4_link(_m4_api/log_list, [Logging Subsystem and Related Methods])],
+$1, DbMpool, [dnl
+m4_ref(DbEnv), m4_ref(DbMpoolFile)
+m4_header(See Also)
+m4_link(_m4_api/memp_list, [Memory Pools and Related Methods])],
+$1, DbSequence, [dnl
+m4_ref(DbSequence)
+m4_header(See Also)
+m4_link(_m4_api/seq_list, [Sequences and Related Methods])],
+$1, Replication, [dnl
+m4_ref(DbEnv)
+m4_header(See Also)
+m4_link(_m4_api/rep_list, [Replication and Related Methods])],
+$1, DbTxn, [dnl
+m4_ref(DbEnv), m4_ref(DbTxn)
+m4_header(See Also)
+m4_link(_m4_api/txn_list, [Transaction Subsystem and Related Methods])])])
+
+dnl ###################################################################
+dnl Run-time configuration
+dnl ###################################################################
+define(m4_rtc_seealso, [dnl
+pushdef([M4PAGELOCAL],)
+m4_header(See Also)
+m4_link(M4RELDIR/ref/program/runtime, [Run-time configuration])])

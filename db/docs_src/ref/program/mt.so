@@ -1,0 +1,92 @@
+m4_comment([$Id: mt.so,v 10.48 2005/07/20 16:34:05 bostic Exp $])
+
+m4_ref_title(Programmer Notes,
+    Multithreaded applications,
+    building @threaded applications,
+    program/environ, program/scope)
+
+m4_p([dnl
+m4_db fully supports multithreaded applications.  The m4_db library is
+not itself multithreaded, and was deliberately architected to not use
+threads internally because of the portability problems that would
+introduce.  Database environment and database object handles returned
+from m4_db library functions are free-threaded.  No other object handles
+returned from the m4_db library are free-threaded.  The following rules
+should be observed when using threads to access the m4_db library:])
+
+m4_nlistbegin
+m4_nlist([dnl
+The m4_ref(DB_THREAD) flag must be specified to the m4_ref(dbenv_open)
+and m4_refT(dbh_open)s if the m4_db handles returned by those interfaces
+will be used in the context of more than one thread.  Setting the
+m4_ref(DB_THREAD) flag inconsistently may result in database corruption.
+
+m4_p([dnl
+Threading is assumed in the Java API, so no special flags are required;
+and m4_db functions will always behave as if the m4_ref(DB_THREAD) flag
+was specified.])
+
+m4_p([dnl
+Only a single thread may call the m4_ref(dbenv_close) or m4_refT(dbh_close)s
+for a returned environment or database handle.])
+
+m4_p([dnl
+No other m4_db handles are free-threaded.])])
+
+m4_nlist([dnl
+When using the non-cursor m4_db calls to retrieve key/data items (for
+example, m4_ref(dbh_get)), the memory to which the pointer stored into
+the Dbt refers is valid only until the next call using the m4_ref(Db)
+handle returned by m4_ref(dbh_open).  This includes m4_bold(any) use of
+the returned m4_ref(Db) handle, including by another thread within the
+process.
+
+m4_p([dnl
+For this reason, if the m4_ref(DB_THREAD) handle was specified to the
+m4_refT(dbh_open), either m4_ref(DB_DBT_MALLOC), m4_ref(DB_DBT_REALLOC),
+or m4_ref(DB_DBT_USERMEM) must be specified in the m4_ref(Dbt) when
+performing any non-cursor key or data retrieval.])])
+
+m4_nlist([dnl
+Cursors may not span transactions.  Each cursor must be
+allocated and deallocated within the same transaction.
+
+m4_p([dnl
+Transactions and cursors may span threads, but only serially, that is,
+the application must serialize access to the m4_ref(DbTxn) and
+m4_ref(Dbc) handles.  In the case of nested transactions, since all
+child transactions are part of the same parent transaction, they must observe
+the same constraints.  That is, children may execute in different threads
+only if each child executes serially.])])
+
+m4_nlist([dnl
+User-level synchronization mutexes must have been implemented for the
+compiler/architecture combination.  Attempting to specify the DB_THREAD
+flag will fail if fast mutexes are not available.
+
+m4_p([dnl
+If blocking mutexes are available (for example POSIX pthreads), they
+will be used.  Otherwise, the m4_db library will make a system call to
+pause for some amount of time when it is necessary to wait on a lock.
+This may not be optimal, especially in a thread-only environment, in
+which it is usually more efficient to explicitly yield the processor to
+another thread.])
+
+m4_p([dnl
+It is possible to specify a yield function on an per-application basis.
+See m4_ref(dbenv_set_func_yield) for more information.])
+
+m4_p([dnl
+It is possible to specify the number of attempts that will be made to
+acquire the mutex before waiting.  See m4_ref(mutex_set_tas_spins) for
+more information.])])
+
+m4_nlistend
+
+m4_p([dnl
+When creating multiple databases in a single physical file, multithreaded
+programs may have additional requirements.  For more information, see
+m4_link(M4RELDIR/ref/am/opensub, [Opening multiple databases in a single
+file].)])
+
+m4_page_footer

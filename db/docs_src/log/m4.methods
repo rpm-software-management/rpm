@@ -1,0 +1,28 @@
+m4_comment([$Id: m4.methods,v 1.6 2005/09/30 19:00:24 bostic Exp $])
+
+m4_table_begin(, _center)
+
+m4_table_header(Logging Subsystem and Related Methods, Description)
+m4_comment([DbLsn])m4_table_element(m4_ref(DbLsn), Log Sequence Numbers)
+m4_comment([log_compare])m4_table_element(m4_ref(log_compare), Compare two Log Sequence Numbers)
+m4_comment([DbEnv::log_archive])m4_table_element(m4_ref(log_archive), List log and database files)
+m4_comment([DbEnv::log_file])m4_table_element(m4_ref(log_file), Map Log Sequence Numbers to log files)
+m4_comment([DbEnv::log_flush])m4_table_element(m4_ref(log_flush), Flush log records)
+m4_comment([DbEnv::log_printf])m4_table_element(m4_ref(log_printf), Append informational message to the log)
+m4_comment([DbEnv::log_put])m4_table_element(m4_ref(log_put), Write a log record)
+m4_comment([DbEnv::log_stat])m4_table_element(m4_ref(log_stat), Return log subsystem statistics)
+
+m4_table_header(Logging Subsystem Cursors, _empty)
+m4_comment([DbLogc::])ifelse(M4API, CXX_API, [m4_table_element(m4_ref(DbLogc), Log Cursor Object)])
+m4_comment([DbLogc::])m4_table_element(m4_ref(log_cursor), Create a log cursor handle)
+m4_comment([DbLogc::close])m4_table_element(m4_ref(logc_close), Close a log cursor)
+m4_comment([DbLogc::get])m4_table_element(m4_ref(logc_get), Retrieve a log record)
+
+m4_table_header(Logging Subsystem Configuration, _empty)
+m4_comment([DbEnv::set_lg_bsize])m4_table_element(m4_ref(dbenv_set_lg_bsize), Set log buffer size)
+m4_comment([DbEnv::set_lg_dir])m4_table_element(m4_ref(dbenv_set_lg_dir), Set the environment logging directory)
+m4_comment([DbEnv::set_lg_filemode])m4_table_element(m4_ref(dbenv_set_lg_filemode), Set log file mode)
+m4_comment([DbEnv::set_lg_max])m4_table_element(m4_ref(dbenv_set_lg_max), Set log file size)
+m4_comment([DbEnv::set_lg_regionmax])m4_table_element(m4_ref(dbenv_set_lg_regionmax), Set logging region size)
+
+m4_table_end

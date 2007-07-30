@@ -1,0 +1,246 @@
+<!--$Id: 4.0.14.html,v 1.5 2007/05/17 18:17:18 bostic Exp $-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 4.0.14 Change Log</title>
+<meta name="description" content="Berkeley DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 4.0.14 Change Log</h3>
+
+<h3>Major New Features:</h3>
+<ol>
+
+<li>Group commit. [#42]
+<li>Single-master replication. [#44]
+<li>Support for VxWorks AE; Vxworks support certified by WindRiver Systems
+Inc. [#4401]
+
+</ol>
+
+<h3>General Environment Changes:</h3>
+<ol>
+
+<li>The db_env_set_pageyield interface has been replaced by a new flag
+(DB_YIELDCPU) for the DB_ENV-&gt;set_flags interface.
+<li>The db_env_set_panicstate interface has been replaced by a new flag
+(DB_PANIC_STATE) for the DB_ENV-&gt;set_flags interface.
+<li>The db_env_set_region_init interface has been replaced by a new flag
+(DB_REGION_INIT) for the DB_ENV-&gt;set_flags interface.
+<li>The db_env_set_tas_spins interface has been replaced by the
+DB_ENV-&gt;set_tas_spins method.
+<li>The DB_ENV-&gt;set_mutexlocks interface has been replaced by a new
+flag (DB_NOLOCKING) for the DB_ENV-&gt;set_flags interface.
+<li>Fix a bug where input values from the DB_CONFIG file could overflow.
+<li>The C API lock, log, memory pool and transaction interfaces have
+been converted to method based interfaces; see the Upgrade documentation
+for specific details. [#920]
+<li>Fix a bug in which some DB_ENV configuration information could be lost
+by a failed DB_ENV-&gt;open command. [#4608]
+<li>Fix a bug where Berkeley DB could fail if the application
+attempted to allocate new database pages while the system was
+unable to write new log file buffers. [#4928]
+
+</ol>
+<h3>General Access Method Changes:</h3>
+<ol>
+
+<li>Add a new flag (DB_GET_BOTH_RANGE) that adds support for range
+searches within sorted duplicate data sets. [#3378]
+<li>Fix a bug in which the DB-&gt;get or DB-&gt;pget methods, when used with
+secondary indices, could incorrectly leave an internally-created
+database cursor open. [#4465]
+<li>The DB-&gt;set_alloc method can no longer be called when the
+database is part of a database environment. [#4599]
+
+</ol>
+<h3>Btree Access Method Changes:</h3>
+<ol>
+
+<li>Fix a bug where a lock could be leaked when a thread calling DB-&gt;stat
+on a Btree database was selected to resolve a deadlock.  [#4509]
+
+</ol>
+<h3>Hash Access Method Changes:</h3>
+<ol>
+
+<li>Fix a bug where bulk return using the MULTIPLE_KEY flag on a
+Hash database would only return entries from a single bucket. [#4313]
+
+</ol>
+<h3>Queue Access Method Changes:</h3>
+<ol>
+
+<li>Delete extent files whenever the leading record is deleted, instead
+of only when a DB_CONSUME operation was performed. [#4307]
+
+</ol>
+<h3>Recno Access Method Changes:</h3>
+<ol>
+<li>Fix a bug where the delete of a record in a Recno database
+could leak a lock in non-transactional applications. [#4351]
+<li>Fix a bug where the DB_THREAD flag combined with a backing
+source file could cause an infinite loop. [#4581]
+
+</ol>
+<h3>C++ API Changes:</h3>
+
+<blockquote>None.</blockquote>
+
+<h3>Java API Changes:</h3>
+<ol>
+
+<li>
+Added implementation of DbEnv.lock_vec for Java. [#4094]
+Added some minimal protection so that the same Java Dbt
+cannot be used twice in the same API call, this will
+often catch multithreading programming errors with Dbts. [#4094]
+<li>
+Fix a bug in which a Db.put call with the Db.DB_APPEND would fail
+to correctly return the newly put record's record number. [#4527]
+<li>Fixed problems occurring in multithreaded java apps that use
+callbacks. [#4467]
+</ol>
+<h3>Tcl API Changes:</h3>
+<ol>
+
+<li>Fix a bug in which large integers could be handled incorrectly
+by the Tcl interface on 64-bit machines. [#4371]
+
+</ol>
+<h3>RPC Client/Server Changes:</h3>
+<ol>
+
+<li>The DB_ENV-&gt;set_server interface has been removed.
+
+
+</ol>
+<h3>XA Resource Manager Changes:</h3>
+
+<blockquote>None.</blockquote>
+
+<h3>Locking Subsystem Changes:</h3>
+<ol>
+
+<li>The C++ (Java) API DbLock::put (DbLock.put) method has been changed
+to be a method off the DbEnv handle rather than the DbLock handle.
+<li>Locker IDs may now wrap-around. [#864]
+<li>Explicitly allocated locker IDs must now be freed. [#864]
+<li>Add per-environment, per-lock and per-transaction interfaces to
+support timeout based lock requests and "deadlock" detection.  [#1855]
+<li>Add support for interrupting a waiting locker. [#1976]
+<li>Implemented DbEnv.lock_vec for Java. [#4094]
+
+</ol>
+<h3>Logging Subsystem Changes:</h3>
+<ol>
+
+<li>Fix a bug where the size of a log file could not be set to
+the default value.  [#4567]
+<li>Fix a bug where specifying a non-default log file size could
+cause other processes to be unable to join the environment and
+read its log files. [#4567]
+<li>Fix a bug where Berkeley DB could keep open file descriptors
+to log files returned by the DB_ENV-&gt;log_archive method (or the
+db_archive utility), making it impossible to move or remove them
+on Windows systems. [#3969]
+<li>Replace the log_get interface with a cursor into the
+log file.  [#0043]
+
+</ol>
+<h3>Memory Pool Subsystem Changes:</h3>
+<ol>
+
+<li>Add the DB_ODDFILESIZE flag to the DB_MPOOLFILE-&gt;open method
+supporting files not a multiple of the underlying page size in length.
+<li>Convert memp_XXX functional interfaces to a set of methods, either
+base methods off the DB_ENV handle or methods off of a DB_MPOOLFILE
+handle. [#920]
+<li>Add the DB_ODDFILESIZE flag to the DB_MPOOLFILE-&gt;open method
+supporting files not a multiple of the underlying page size in length.
+<li>Fix a bug where threads of control could deadlock opening a
+database environment with multiple memory pool caches. [#4696]
+<li>Fix a bug where the space needed for per-file memory
+pool statistics was incorrectly calculated. [#4772]
+</ol>
+<h3>Transaction Subsystem Changes:</h3>
+<ol>
+
+<li>Transaction IDs may now wrap-around. [#864]
+<li>Release read locks before performing logging operations at commit. [#4219]
+
+</ol>
+<h3>Utility Changes:</h3>
+<ol>
+
+<li> Fix a bug in which the db_dump utility would incorrectly attach to
+transaction, locking, or logging regions when salvaging, and thus
+could not be used to salvage databases in environments where these
+regions were present. [#4305]
+<li>Fix a bug in which the DB salvager could produce incorrectly
+formatted output for certain classes of corrupt database. [#4305]
+<li>Fix a bug in which the DB salvager could incorrectly salvage
+files containing multiple databases. [#4305]
+<li>Fix a bug where unprintable characters in subdatabase names could
+cause a dump of a database that could not then be loaded. [#4688]
+<li>Increase the size of the cache created by the db_stat and db_verify
+utilities to avoid failure on large databases.  [#4688] [#4787]
+<li>Fix a bug in which a database verification performed with the
+DB_ORDERCHKONLY flag could fail incorrectly. [#4757]
+<li>Fix a bug which caused db_stat to display incorrect information about
+GB size caches.  [#4812]
+</ol>
+<h3>Database or Log File On-Disk Format Changes:</h3>
+<ol>
+
+<li>The on-disk log format changed.
+
+</ol>
+<h3>Configuration, Documentation, Portability and Build Changes:</h3>
+<ol>
+
+<li>Fix a bug where Win9X systems region names could collide.
+<li>Fix a bug where configuring Berkeley DB to build the C++ API
+without also configuring for a shared library build would fail
+to build the C++ library.  [#4343]
+<li>Change Berkeley DB installation to not strip binaries if
+--enable-debug was specified as a configuration option. [#4318]
+<li>Add the -pthread flag to AIX, FreeBSD and OSF/1 library loads. [#4350]
+<li>Fix a bug where the Berkeley DB 1.85 compatibility API
+failed to load in the 3.3.11 release. [#4368]
+<li>Port the Berkeley DB utility programs to the VxWorks environment. [#4378]
+<li>Made change to configuration so that dynamic libraries link
+correctly when C++ is used on AIX. [#4381]
+<li> Fix a variety of problems that prevented the Berkeley DB source tree
+from building on systems without ANSI C compiler support (for example,
+SunOS 4.X). [#4398]
+<li>Added missing DbMultiple*Iterator Java files to Makefile.in. [#4404]
+<li>Fix a bug that could prevent the db_dump185 utility from dumping
+Berkeley DB version 1.86 hash databases. [#4418]
+<li>Reduce the number of calls setting the errno value, to
+improve performance on Windows/NT in MT environments.  [#4432]
+<li>Fix for Darwin (and probably some other) OS's that were getting
+'yes' or other garbage in generated makefiles in place of
+a shared library name. [#4453]
+<li>C++: Remove inlining for constructor of tmpString internal class.
+This fixes warnings on Solaris profiling builds. [#4473]
+<li>DB now restarts system calls that are interrupted by signals. [#4480]
+<li>Fixed warnings for compiling Java native code on Solaris and OSF/1. [#4571]
+<li>Added better configuration for Java on Tru64 (OSF/1), Solaris,
+Mac OS/X, BSD/OS. [#3778]
+<li> Java files are now built as jar files.  Berkeley DB classes are put
+into db.jar (which is an installed file on UNIX) and examples are put
+into dbexamples.jar.  The classes directory is now a subdirectory of
+the build directory, rather than in java/classes. [#4575]
+<li>Support Cygwin installation process. [#4611]
+<li>Correct the Java secondary_key_create method signature. [#4777]
+<li>Export additional Berkeley DB interfaces on Windows to
+support application-specific logging and recovery. [#4827]
+<li>Always complain when using version 2.96 of the gcc compiler. [#4878]
+<li>Add compile and load-time flags to configure for threads on
+UnixWare and OpenUNIX. [#4552] [#4950]
+</ol>
+
+</body>
+</html>

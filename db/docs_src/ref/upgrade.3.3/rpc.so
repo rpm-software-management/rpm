@@ -1,0 +1,16 @@
+m4_comment([$Id: rpc.so,v 1.5 2004/08/13 03:39:00 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.3: DB_ENV-__GT__set_server,,
+    upgrade.3.3/intro, upgrade.3.3/gettype)
+
+m4_p([dnl
+The DB_ENV-__GT__set_server method has been deprecated and replaced
+with the m4_refT(dbenv_set_rpc_server).  The DB_ENV-__GT__set_server
+method will be removed in a future release, and so applications using
+it should convert.  The DB_ENV-__GT__set_server method can be easily
+converted to the m4_refT(dbenv_set_rpc_server) by changing the name,
+and specifying a NULL for the added argument, second in the argument
+list.])
+
+m4_page_footer

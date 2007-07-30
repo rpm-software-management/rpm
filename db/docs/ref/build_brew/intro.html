@@ -1,0 +1,108 @@
+<!--$Id: intro.so,v 1.7 2007/07/10 16:54:16 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building for BREW</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for BREW</dl></h3></td>
+<td align=right><a href="../debug/printlog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_s60/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Building for BREW</h3>
+<p>This page has general instructions for building the Berkeley DB library
+and applets for the BREW platform.</p>
+<h3>Building Berkeley DB for the BREW simulator</h3>
+<p>The <b>build_brew</b> directory in the Berkeley DB distribution contains
+project files for Microsoft Visual C++:</p>
+<table border=1 align=center>
+<tr><th>Project File</th><th>Description</th></tr>
+<tr>    <td align=left>bdb_brew.dsw</td>    <td align=left>Visual C++ 6.0 workspace</td>    </tr>
+<tr>    <td align=left>bdb_brew.dsp</td>    <td align=left>Visual C++ 6.0 project</td>    </tr>
+</table>
+<p>The project file can be used to build the Berkeley DB library for the BREW
+platform. Both BREW SDK versions 2 and 3 are supported.  By default, the
+build is for BREW SDK version 2.</p>
+<p>The steps for building the Berkeley DB library for the BREW Simulator are as
+follows:</p>
+<ol>
+<p><li>Install the BREW SDK and BREW SDK Tools.
+<p><li>To build for BREW SDK version 3, edit the Berkeley DB source distribution file
+<b>build_brew/db_config.h</b> file and <b>remove</b> the line
+"#define HAVE_BREW_SDK2".  No changes are required to build for BREW SDK
+version 2.
+<p><li>Select <i>File -&gt; Open Workspace</i>.  Look in the build_brew
+directory for Workspaces, select <i>bdb_brew.dsw</i>, and select
+<i>Open</i>.
+<p><li>The BREW SDK creates an environment entry "BREWDIR" after the SDK
+installation. Confirm the entry exists, and if not, create an
+environment entry which points to the BREW SDK's root directory.
+<p><li>For the BREW platform, only the project "bdb_brew" is available.  Set
+the bdb_brew project as the active project and select the appropriate
+option for the build_all project (Debug or Release). Then select
+<i>OK</i>.
+<p><li>To build, press F7.
+</ol>
+<p>The build results are placed in a subdirectory of build_brew named after
+the selected configuration (for example, <b>build_brew\Release</b> or
+<b>build_brew\Debug</b>).</p>
+<p>When building the application during development, you should normally
+use compile options "Debug Multithreaded DLL" and link against
+<b>build_brew\Debug\bdb_brew.lib</b>. You can also build using a
+release version of the Berkeley DB libraries and tools, which will be placed
+in <b>build_brew\Release\bdb_brew.lib</b>. When linking against the
+release build, you should compile your code with the "Release
+Multithreaded DLL" compile option. You will also need to add the
+<b>build_brew</b> directory to the list of include directories of your
+application's project, or copy the Berkeley DB include files to another
+location.</p>
+<h3>Building a BREW applet with Berkeley DB library</h3>
+<p>Building a Berkeley DB application in the BREW environment is similar to
+building in a Windows environment.  Ensure that <b>db.h</b> is in the
+build include path and <b>bdb_brew.lib</b> is in the build library
+path (alternatively, you can add project dependencies to the
+<b>bdb_brew</b> project).</p>
+<p>BREW applets require a few minor additions:</p>
+<ol>
+<p><li>The <b>BDBApp</b> structure must be extended -- the extended
+definition of BDBApp is found in the include file <b>db.h</b>.
+<p><li>Before any Berkeley DB operations are performed, the applet must call the "int
+brew_bdb_begin(void)" function.  This function returns 0 on success, and
+non-zero on failure.
+<p><li>After the last Berkeley DB operation is performed, the applet must call the
+"void brew_bdb_end(void)" function.  Note that the brew_bdb_end function
+cannot be called in the applet "cleanup" function.  If that is a
+requirement, use the following code instead:
+<blockquote><pre>BDBApp *pMe=(BDBApp *)po;
+if (pMe-&gt;db_global_values != NULL)
+	FREE(pMe-&gt;db_global_values);</pre></blockquote>
+</ol>
+<h3>Building a BREW applet for the physical device</h3>
+<p>The binaries linked with the Berkeley DB library for the BREW simulator are
+not target files that can run on the physical device.  In order to build
+for the physical device, an ARM compiler is needed: the recommended ARM
+compiler is ARM Developer Suite 1.2.</p>
+<p>The steps for building a BREW applet for the physical device are as
+follows:</p>
+<ol>
+<p><li>Set the target BREW Applet project as the active project.
+<p><li>Select "Generate ARM Make file" in the BREW tool bar for VC6, and a make
+file will be generated (if this step does not work, confirm your ADS was
+correctly installed).
+<p><li>The Berkeley DB library must then be manually added to this make file.  See the
+<b>build_brew\bdbread.mak</b> file in the Berkeley DB distribution for an
+example.
+<p><li>Select <i>Tools -&gt; BREW Application 'Make'</i> to build.
+</ol>
+<p>The target .mod file will be created in the build directory, and this
+is the file which should be uploaded to the physical device.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../debug/printlog.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_s60/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

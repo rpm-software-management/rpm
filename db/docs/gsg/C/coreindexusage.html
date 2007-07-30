@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Secondary Database Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="indexes.html" title="Chapter 5. Secondary Databases" />
+    <link rel="up" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
     <link rel="previous" href="joins.html" title="Database Joins" />
-    <link rel="next" href="dbconfig.html" title="Chapter 6. Database Configuration" />
+    <link rel="next" href="dbconfig.html" title="ChapterÂ 6.Â Database Configuration" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Secondary Database Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="joins.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Secondary Databases</th>
-          <td width="20%" align="right"> <a accesskey="n" href="dbconfig.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="joins.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Secondary Databases</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="dbconfig.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -175,7 +175,7 @@ void set_db_filenames(STOCK_DBS *my_stock);
         </p>
         <a id="c_index11"></a>
         <pre class="programlisting">/* file: gettingstarted_common.c */
-#include &quot;gettingstarted_common.h&quot;
+#include "gettingstarted_common.h"
                                                                                                                                   
 <b class="userinput"><tt>/*
  * Used to extract an inventory item's name from an
@@ -219,7 +219,6 @@ get_item_name(DB *dbp, const DBT *pkey, const DBT *pdata, DBT *skey)
         new secondary databases that our application will now use.
         These functions were originally introduced in 
         <a href="CoreDbUsage.html#stock-db-functions">The stock_db Utility Functions</a>.
-        
     </p>
         <a id="c_index11.1"></a>
         <pre class="programlisting">
@@ -246,19 +245,19 @@ set_db_filenames(STOCK_DBS *my_stock)
     /* Create the Inventory DB file name */
     size = strlen(my_stock-&gt;db_home_dir) + strlen(INVENTORYDB) + 1;
     my_stock-&gt;inventory_db_name = malloc(size);
-    snprintf(my_stock-&gt;inventory_db_name, size, &quot;%s%s&quot;,
+    snprintf(my_stock-&gt;inventory_db_name, size, "%s%s",
       my_stock-&gt;db_home_dir, INVENTORYDB);
     
     /* Create the Vendor DB file name */
     size = strlen(my_stock-&gt;db_home_dir) + strlen(VENDORDB) + 1;
     my_stock-&gt;vendor_db_name = malloc(size);
-    snprintf(my_stock-&gt;vendor_db_name, size, &quot;%s%s&quot;,
+    snprintf(my_stock-&gt;vendor_db_name, size, "%s%s",
       my_stock-&gt;db_home_dir, VENDORDB);
 
     <b class="userinput"><tt>/* Create the itemname DB file name */
     size = strlen(my_stock-&gt;db_home_dir) + strlen(ITEMNAMEDB) + 1;
     my_stock-&gt;itemname_db_name = malloc(size);
-    snprintf(my_stock-&gt;itemname_db_name, size, &quot;%s%s&quot;,
+    snprintf(my_stock-&gt;itemname_db_name, size, "%s%s",
       my_stock-&gt;db_home_dir, ITEMNAMEDB);</tt></b>
 } </pre>
         <p>
@@ -298,7 +297,7 @@ open_database(DB **dbpp,       /* The DB handle that we are opening */
     /* Initialize the DB handle */
     ret = db_create(&amp;dbp, NULL, 0);
     if (ret != 0) {
-        fprintf(error_file_pointer, &quot;%s: %s\n&quot;, program_name,
+        fprintf(error_file_pointer, "%s: %s\n", program_name,
                 db_strerror(ret));
         return (ret);
     }
@@ -317,7 +316,7 @@ open_database(DB **dbpp,       /* The DB handle that we are opening */
     if (is_secondary) {
         ret = dbp-&gt;set_flags(dbp, DB_DUPSORT);
         if (ret != 0) {
-            dbp-&gt;err(dbp, ret, &quot;Attempt to set DUPSORT flag failed.&quot;,
+            dbp-&gt;err(dbp, ret, "Attempt to set DUPSORT flag failed.",
               file_name);
             return (ret);
         }
@@ -335,7 +334,7 @@ open_database(DB **dbpp,       /* The DB handle that we are opening */
                     open_flags, /* Open flags */
                     0);         /* File mode. Using defaults */
     if (ret != 0) {
-        dbp-&gt;err(dbp, ret, &quot;Database '%s' open failed.&quot;, file_name);
+        dbp-&gt;err(dbp, ret, "Database '%s' open failed.", file_name);
         return (ret);
     }
 
@@ -416,7 +415,7 @@ databases_setup(STOCK_DBS *my_stock, const char *program_name,
        0);                         /* Flags */
      </tt></b>
 
-    printf(&quot;databases opened successfully\n&quot;);
+    printf("databases opened successfully\n");
     return (0);
 }</pre>
         <p>
@@ -441,25 +440,25 @@ databases_close(STOCK_DBS *my_stock)
     <b class="userinput"><tt>if (my_stock-&gt;itemname_sdbp != NULL) {
         ret = my_stock-&gt;itemname_sdbp-&gt;close(my_stock-&gt;itemname_sdbp, 0);
         if (ret != 0)
-            fprintf(stderr, &quot;Itemname database close failed: %s\n&quot;,
+            fprintf(stderr, "Itemname database close failed: %s\n",
               db_strerror(ret));
     }</tt></b>
 
     if (my_stock-&gt;inventory_dbp != NULL) {
         ret = my_stock-&gt;inventory_dbp-&gt;close(my_stock-&gt;inventory_dbp, 0);
         if (ret != 0)
-            fprintf(stderr, &quot;Inventory database close failed: %s\n&quot;,
+            fprintf(stderr, "Inventory database close failed: %s\n",
               db_strerror(ret));
     }
 
     if (my_stock-&gt;vendor_dbp != NULL) {
         ret = my_stock-&gt;vendor_dbp-&gt;close(my_stock-&gt;vendor_dbp, 0);
         if (ret != 0)
-            fprintf(stderr, &quot;Vendor database close failed: %s\n&quot;,
+            fprintf(stderr, "Vendor database close failed: %s\n",
               db_strerror(ret));
     }
 
-    printf(&quot;databases closed.\n&quot;);
+    printf("databases closed.\n");
     return (0);
 } </pre>
         <p>
@@ -508,7 +507,7 @@ databases_close(STOCK_DBS *my_stock)
         <a id="c_index15"></a>
         <pre class="programlisting">/* File: example_database_read.c */
 /* gettingstarted_common.h includes db.h for us */
-#include &quot;gettingstarted_common.h&quot;
+#include "gettingstarted_common.h"
                                                                                                                                   
 /* Forward declarations */
 char * show_inventory_item(void *);
@@ -557,9 +556,9 @@ main(int argc, char *argv[])
     set_db_filenames(&amp;my_stock);
                                                                                                                                          
     /* Open all databases */
-    ret = databases_setup(&amp;my_stock, &quot;example_database_read&quot;, stderr);
+    ret = databases_setup(&amp;my_stock, "example_database_read", stderr);
     if (ret != 0) {
-        fprintf(stderr, &quot;Error opening databases\n&quot;);
+        fprintf(stderr, "Error opening databases\n");
         databases_close(&amp;my_stock);
         return (ret);
     }</pre>
@@ -640,7 +639,7 @@ show_records(STOCK_DBS *my_stock, char *itemname)
      * database that has the appropriate key.
      */
     exit_value = 0;
-    ret = itemname_cursorp-&gt;c_get(itemname_cursorp, &amp;key, &amp;data, DB_SET);
+    ret = itemname_cursorp-&gt;get(itemname_cursorp, &amp;key, &amp;data, DB_SET);
     if (!ret) {
         do {
             /*
@@ -658,14 +657,14 @@ show_records(STOCK_DBS *my_stock, char *itemname)
              * the next duplicate records and show them all. This is done
              * because an inventory item's name is not a unique value.
              */
-        } while(itemname_cursorp-&gt;c_get(itemname_cursorp, &amp;key, &amp;data,
+        } while(itemname_cursorp-&gt;get(itemname_cursorp, &amp;key, &amp;data,
             DB_NEXT_DUP) == 0);
     } else {
-        printf(&quot;No records found for '%s'\n&quot;, itemname);
+        printf("No records found for '%s'\n", itemname);
     }
                                                                                                                                   
     /* Close the cursor */
-    itemname_cursorp-&gt;c_close(itemname_cursorp);
+    itemname_cursorp-&gt;close(itemname_cursorp);
                                                                                                                                   
     return (exit_value);
 } </pre>
@@ -675,25 +674,25 @@ show_records(STOCK_DBS *my_stock, char *itemname)
         can now search for and show all inventory items that match a particular
         name. For example:
     </p>
-        <pre class="programlisting">    example_inventory_read -i &quot;Zulu Nut&quot;</pre>
+        <pre class="programlisting">    example_inventory_read -i "Zulu Nut"</pre>
       </div>
     </div>
     <div class="navfooter">
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="joins.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="joins.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="indexes.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="dbconfig.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="dbconfig.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Database Joins </td>
+          <td width="40%" align="left" valign="top">Database JoinsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 6. Database Configuration</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 6.Â Database Configuration</td>
         </tr>
       </table>
     </div>

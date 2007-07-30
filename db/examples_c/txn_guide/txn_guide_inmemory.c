@@ -374,7 +374,7 @@ count_records(DB *dbp, DB_TXN *txn)
     memset(&key, 0, sizeof(DBT));
     memset(&value, 0, sizeof(DBT));
     do {
-	ret = cursorp->c_get(cursorp, &key, &value, DB_NEXT);
+	ret = cursorp->get(cursorp, &key, &value, DB_NEXT);
 	switch (ret) {
 	    case 0:
 		count++;
@@ -390,7 +390,7 @@ count_records(DB *dbp, DB_TXN *txn)
 
 cursor_err:
     if (cursorp != NULL) {
-	ret = cursorp->c_close(cursorp);
+	ret = cursorp->close(cursorp);
 	if (ret != 0) {
 	    dbp->err(dbp, ret,
 		"count_records: cursor close failed.");

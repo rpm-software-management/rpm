@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Deleting Records Using Cursors</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="up" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
     <link rel="previous" href="PutEntryWCursor.html" title="Putting Records Using Cursors" />
     <link rel="next" href="ReplacingEntryWCursor.html" title="Replacing Records Using Cursors" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Deleting Records Using Cursors</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="PutEntryWCursor.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Using Cursors</th>
-          <td width="20%" align="right"> <a accesskey="n" href="ReplacingEntryWCursor.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="PutEntryWCursor.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Using Cursors</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="ReplacingEntryWCursor.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -54,7 +54,7 @@
 
 ...
 
-char *key1str = &quot;My first string&quot;;
+char *key1str = "My first string";
 Db my_database(NULL, 0);
 Dbc *cursorp;
 
@@ -76,9 +76,9 @@ try {
     }
 
 } catch(DbException &amp;e) {
-    my_database.err(e.get_errno(), &quot;Error!&quot;);
+    my_database.err(e.get_errno(), "Error!");
 } catch(std::exception &amp;e) {
-    my_database.errx(&quot;Error! %s&quot;, e.what());
+    my_database.errx("Error! %s", e.what());
 }
 
 // Cursors must be closed
@@ -91,18 +91,18 @@ my_database.close(0);</pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="PutEntryWCursor.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="PutEntryWCursor.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="Cursors.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="ReplacingEntryWCursor.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="ReplacingEntryWCursor.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Putting Records Using Cursors </td>
+          <td width="40%" align="left" valign="top">Putting Records Using CursorsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Replacing Records Using Cursors</td>
+          <td width="40%" align="right" valign="top">Â Replacing Records Using Cursors</td>
         </tr>
       </table>
     </div>

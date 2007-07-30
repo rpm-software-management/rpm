@@ -1,0 +1,24 @@
+m4_comment([$Id: log.so,v 1.2 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: Logging,,
+    upgrade.4.3/verb, upgrade.4.3/fileopen)
+
+m4_p([dnl
+In previous releases, the m4_refT(dbenv_set_flags) flag
+DB_TXN_NOT_DURABLE specified that transactions for the entire database
+environment were not durable.  However, it was not possible to set this
+flag in environments that were part of replication groups, and physical
+log files were still created.  The 4.3 release adds support for true
+in-memory logging for both replication and non-replicated sites.])
+
+m4_p([dnl
+Existing applications setting the DB_TXN_NOT_DURABLE flag for database
+environments should be upgraded to set the m4_ref(DB_LOG_INMEMORY) flag
+instead.])
+
+m4_p([dnl
+In previous releases, log buffer sizes were restricted to be less than
+or equal to the log file size; this restriction is no longer required.])
+
+m4_page_footer

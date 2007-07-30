@@ -1,0 +1,15 @@
+m4_comment([$Id: exc_package.so,v 10.1 2004/08/27 13:49:28 bostic Exp $])
+
+m4_page_title([Exceptions])
+
+m4_table_begin(, _center)
+m4_table_header(Exceptions, Description)
+
+m4_table_element(m4_ref(DbDeadlockException), Exception Class for deadlocks)
+m4_table_element(m4_ref(DbException), Exception Class for m4_db Activity)
+m4_table_element(m4_ref(DbLockNotGrantedException), Exception Class for lock request failures)
+m4_table_element(m4_ref(DbMemoryException), Exception Class for insufficient memory)
+m4_table_element(m4_ref(DbRunRecoveryException), Exception Class for failures requiring recovery)
+
+m4_table_end
+m4_page_footer

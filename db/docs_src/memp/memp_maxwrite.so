@@ -1,0 +1,58 @@
+m4_comment([$Id: memp_maxwrite.so,v 10.5 2006/11/29 21:37:17 bostic Exp $])
+
+define(M4PAGELOCAL, [memp_get_max_write, memp_set_max_write])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_max_write),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_mp_max_write(DB_ENV *env, int maxwrite, db_timeout_t maxwrite_sleep);
+m4_blank
+int
+DB_ENV-__GT__get_mp_max_write(DB_ENV *env, int *maxwritep, db_timeout_t *maxwrite_sleepp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_mp_max_write(int maxwrite, db_timeout_t maxwrite_sleep);
+m4_blank
+int
+DbEnv::get_mp_max_write(int *maxwritep, db_timeout_t *maxwrite_sleepp);
+]))
+
+m4_p([dnl
+The m4_refT(memp_set_max_write) limits the number of sequential write
+operations scheduled by the library when flushing dirty pages from the
+cache.])
+
+m4_return(memp_set_max_write, std)
+
+m4_parambegin
+m4_param(maxwrite, [dnl
+The maximum number of sequential write operations scheduled by the
+library when flushing dirty pages from the cache, or 0 if there is
+no limitation on the number of sequential write operations.])
+m4_param(maxwrite_sleep, [dnl
+The number of microseconds the thread of control should pause before
+scheduling further write operations.  It must be specified as an
+unsigned 32-bit number of microseconds, limiting the maximum pause to
+roughly 71 minutes.])
+m4_paramend
+
+m4_err(memp_set_max_write, einval)
+
+m4_pf_description(m4_ref(memp_get_max_write))
+m4_p([dnl
+The m4_refT(memp_get_max_write) returns the current maximum number of
+sequential write operations and microseconds to pause.])
+
+m4_when_any(memp_get_max_write)
+
+m4_return(memp_get_max_write, std)
+
+m4_parambegin
+m4_param_co(maxwritep, maximum number of sequential write operations)
+m4_param_co(maxwrite_sleepp, microseconds to pause before scheduling further write operations)
+m4_paramend
+
+m4_seealso(DbMpool)
+m4_page_footer

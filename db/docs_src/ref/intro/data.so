@@ -1,0 +1,48 @@
+m4_comment([$Id: data.so,v 10.2 2006/08/25 23:24:38 bostic Exp $])
+
+m4_ref_title(Introduction, An introduction to data management,,, intro/terrain)
+
+m4_p([dnl
+Cheap, powerful computing and networking have created countless new
+applications that could not have existed a decade ago. The advent of the
+World-Wide Web, and its influence in driving the Internet into homes and
+businesses, is one obvious example. Equally important, though, is the
+[shift] from large, general-purpose desktop and server computers toward
+smaller, special-purpose devices with built-in processing and
+communications services.])
+
+m4_p([dnl
+As computer hardware has spread into virtually every corner of our
+lives, of course, software has followed. Software developers today are
+building applications not just for conventional desktop and server
+environments, but also for handheld computers, home appliances,
+networking hardware, cars and trucks, factory floor automation systems,
+and more.])
+
+m4_p([dnl
+While these operating environments are diverse, the problems that
+software engineers must solve in them are often strikingly similar. Most
+systems must deal with the outside world, whether that means
+communicating with users or controlling machinery. As a result, most
+need some sort of I/O system. Even a simple, single-function system
+generally needs to handle multiple tasks, and so needs some kind of
+operating system to schedule and manage control threads. Also, many
+computer systems must store and retrieve data to track history, record
+configuration settings, or manage access.])
+
+m4_p([dnl
+Data management can be very simple. In some cases, just recording
+configuration in a flat text file is enough. More often, though,
+programs need to store and search a large amount of data, or
+structurally complex data. Database management systems are tools that
+programmers can use to do this work quickly and efficiently using
+off-the-shelf software.])
+
+m4_p([dnl
+Of course, database management systems have been around for a long time.
+Data storage is a problem dating back to the earliest days of computing.
+Software developers can choose from hundreds of good,
+commercially-available database systems. The problem is selecting the
+one that best solves the problems that their applications face.])
+
+m4_page_footer

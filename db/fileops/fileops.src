@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: fileops.src,v 12.6 2006/08/24 14:46:03 bostic Exp $
+ * $Id: fileops.src,v 12.10 2007/05/17 18:17:19 bostic Exp $
  */
 
 PREFIX	__fop
@@ -73,13 +72,22 @@ END
  * be interpreted via calls to __db_appname.  The fileid is the 20-byte
  * DB fileid of the file being renamed.  We need to check it on recovery
  * so that we don't inadvertently overwrite good files.
+ *
+ * There are two variants of this log record: one that must be both done
+ * and undone and one that is not undone (used for renaming tmp files, see
+ * SR #15119)
+ *
+ * These two record types use the same structure, read, and print functions,
+ * but have different recovery functions.
  */
 BEGIN rename	42	146
+DUPLICATE rename_noundo	46	150
 DBT	oldname		DBT		s
 DBT	newname		DBT		s
 DBT	fileid		DBT		s
 ARG	appname		u_int32_t	lu
 END
+
 
 /*
  * File removal record.  This is a DB-level log record that indicates

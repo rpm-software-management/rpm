@@ -1,0 +1,45 @@
+m4_comment([$Id: lockng.so,v 1.6 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: DB_LOCK_NOTGRANTED,,
+    upgrade.4.2/verify, upgrade.4.2/repinit)
+
+m4_p([dnl
+In previous releases, configuring lock or transaction timeout values or
+calling the m4_refT(txn_begin) with the m4_ref(DB_TXN_NOWAIT) flag
+caused database operation methods to return m4_ref(DB_LOCK_NOTGRANTED),
+or throw a m4_refcxx(DbLockNotGrantedException) exception.  This
+required applications to unnecessarily handle multiple errors or
+exception types.])
+
+m4_p([dnl
+In the m4_db 4.2 release, with one exception, database operations will
+no longer return m4_ref(DB_LOCK_NOTGRANTED) or throw a
+m4_refcxx(DbLockNotGrantedException) exception.  Instead, database
+operations will return m4_ref(DB_LOCK_DEADLOCK) or throw a
+m4_refcxx(DbDeadlockException) exception.  This change should require
+no application changes, as applications must already be dealing with the
+possible m4_ref(DB_LOCK_DEADLOCK) error return or
+m4_refcxx(DbDeadlockException) exception from database operations.])
+
+m4_p([dnl
+The one exception to this rule is the m4_ref(dbh_get) method using the
+m4_ref(DB_CONSUME_WAIT) flag to consume records from a Queue.  If lock
+or transaction timeouts are set, this method and flag combination may
+return m4_ref(DB_LOCK_NOTGRANTED) or throw a
+m4_refcxx(DbLockNotGrantedException) exception.])
+
+m4_p([dnl
+Applications wanting to distinguish between true deadlocks and timeouts
+can configure database operation methods to return
+m4_ref(DB_LOCK_NOTGRANTED) or throw a
+m4_refcxx(DbLockNotGrantedException) exception using the
+m4_ref(DB_TIME_NOTGRANTED) flag.])
+
+m4_p([dnl
+The m4_ref(lock_get) and  m4_refT(lock_vec)s will continue to return
+m4_ref(DB_LOCK_NOTGRANTED), or throw a
+m4_refcxx(DbLockNotGrantedException) exception as they have previously
+done.])
+
+m4_page_footer

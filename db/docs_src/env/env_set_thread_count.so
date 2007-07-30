@@ -1,0 +1,65 @@
+m4_comment([$Id: env_set_thread_count.so,v 10.3 2007/04/02 16:08:13 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_thread_count, dbenv_get_thread_count])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_thread_count),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_thread_count(DB_ENV *dbenv, u_int32_t count);
+m4_blank
+int
+DB_ENV-__GT__get_thread_count(DB_ENV *dbenv, u_int32_t *countp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_thread_count(u_int32_t count);
+m4_blank
+int
+DbEnv::get_thread_count(u_int32_t *countp);
+]))
+
+m4_p([dnl
+Declare an approximate number of threads in the database environment.
+The m4_refT(dbenv_set_thread_count) must be called prior to opening the
+database environment if the m4_refT(dbenv_failchk) will be used.  The
+m4_refT(dbenv_set_thread_count) does not set the maximum number of
+threads but is used to determine memory sizing and the thread control
+block reclamation policy.])
+
+m4_p([dnl
+If a process has not configured an m4_arg(is_alive) function from the
+m4_refT(dbenv_set_isalive), and then attempts to join a database
+environment configured for failure checking with the
+m4_ref(dbenv_failchk), m4_ref(dbenv_set_thread_id),
+m4_ref(dbenv_set_isalive) and m4_refT(dbenv_set_thread_count)s, the
+program may be unable to allocate a thread control block and fail to
+join the environment.
+m4_bold([This is true of the standalone m4_db utility programs.])
+To avoid problems when using the standalone m4_db utility programs with
+environments configured for failure checking, incorporate the utility's
+functionality directly in the application, or call the
+m4_refT(dbenv_failchk) before running the utility.])
+
+m4_env_config(dbenv_set_thread_count,
+    [thread count], set_thread_count, [the thread count])
+
+m4_scope_dbenv(dbenv_set_thread_count)
+
+m4_when_envopen(dbenv_set_thread_count)
+
+m4_return(dbenv_set_thread_count, std)
+
+m4_parambegin
+m4_param(count, [dnl
+The m4_arg(count) parameter is an approximate thread count for the
+database environment.])
+m4_paramend
+
+m4_err(dbenv_set_thread_count,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_thread_count, thread count,, countp)
+
+m4_seealso(DbEnv)
+m4_page_footer

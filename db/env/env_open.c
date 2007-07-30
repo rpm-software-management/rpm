@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: env_open.c,v 12.71 2006/08/24 14:45:39 bostic Exp $
+ * $Id: env_open.c,v 12.98 2007/06/08 17:34:55 bostic Exp $
  */
 
 #include "db_config.h"
@@ -18,8 +17,8 @@
 #include "dbinc/mp.h"
 #include "dbinc/txn.h"
 
-static int __db_tmp_open __P((DB_ENV *, u_int32_t, char *, DB_FH **));
 static int __env_refresh __P((DB_ENV *, u_int32_t, int));
+static int __file_handle_cleanup __P((DB_ENV *));
 
 /*
  * db_version --
@@ -179,7 +178,7 @@ __env_open(dbenv, db_home, flags, mode)
 	DB_THREAD_INFO *ip;
 	REGINFO *infop;
 	u_int32_t init_flags, orig_flags;
-	int register_recovery, rep_check, ret, t_ret;
+	int create_ok, register_recovery, rep_check, ret, t_ret;
 
 	ip = NULL;
 	register_recovery = rep_check = 0;
@@ -227,19 +226,23 @@ __env_open(dbenv, db_home, flags, mode)
 	 * want to remove files left over for any reason, from any session.
 	 */
 	if (LF_ISSET(DB_RECOVER | DB_RECOVER_FATAL))
-		if ((ret = __db_e_remove(dbenv, DB_FORCE)) != 0 ||
+#ifdef HAVE_REPLICATION
+		if ((ret = __rep_reset_init(dbenv)) != 0 ||
+		    (ret = __env_remove_env(dbenv)) != 0 ||
+#else
+		if ((ret = __env_remove_env(dbenv)) != 0 ||
+#endif
 		    (ret = __env_refresh(dbenv, orig_flags, 0)) != 0)
 			goto err;
 
 	/* Convert the DB_ENV->open flags to internal flags. */
-	if (LF_ISSET(DB_CREATE))
-		F_SET(dbenv, DB_ENV_CREATE);
+	create_ok = LF_ISSET(DB_CREATE) ? 1 : 0;
 	if (LF_ISSET(DB_LOCKDOWN))
 		F_SET(dbenv, DB_ENV_LOCKDOWN);
 	if (LF_ISSET(DB_PRIVATE))
 		F_SET(dbenv, DB_ENV_PRIVATE);
 	if (LF_ISSET(DB_RECOVER_FATAL))
-		F_SET(dbenv, DB_ENV_FATAL);
+		F_SET(dbenv, DB_ENV_RECOVER_FATAL);
 	if (LF_ISSET(DB_SYSTEM_MEM))
 		F_SET(dbenv, DB_ENV_SYSTEM_MEM);
 	if (LF_ISSET(DB_THREAD))
@@ -278,11 +281,11 @@ __env_open(dbenv, db_home, flags, mode)
 		FLD_SET(init_flags, DB_INITENV_REP);
 	if (LF_ISSET(DB_INIT_TXN))
 		FLD_SET(init_flags, DB_INITENV_TXN);
-	if ((ret = __db_e_attach(dbenv, &init_flags)) != 0)
+	if ((ret = __env_attach(dbenv, &init_flags, create_ok, 1)) != 0)
 		goto err;
 
 	/*
-	 * __db_e_attach will return the saved init_flags field, which contains
+	 * __env_attach will return the saved init_flags field, which contains
 	 * the DB_INIT_* flags used when the environment was created.
 	 *
 	 * We may be joining an environment -- reset our flags to match the
@@ -325,18 +328,41 @@ __env_open(dbenv, db_home, flags, mode)
 	F_SET(dbenv, DB_ENV_OPEN_CALLED);
 
 	/*
+	 * Initialize thread tracking and enter the API.
+	 */
+	infop = dbenv->reginfo;
+	if ((ret = __env_thread_init(
+	    dbenv, F_ISSET(infop, REGION_CREATE) ? 1 : 0)) != 0)
+		goto err;
+
+	ENV_ENTER(dbenv, ip);
+
+	/*
 	 * Initialize the subsystems.
-	 *
+	 */
+#ifdef HAVE_MUTEX_SUPPORT
+	/*
 	 * Initialize the mutex regions first.  There's no ordering requirement,
 	 * but it's simpler to get this in place so we don't have to keep track
 	 * of mutexes for later allocation, once the mutex region is created we
 	 * can go ahead and do the allocation for real.
 	 */
-	if ((ret = __mutex_open(dbenv)) != 0)
+	if ((ret = __mutex_open(dbenv, create_ok)) != 0)
+		goto err;
+#endif
+	/*
+	 * We can now acquire/create mutexes: increment the region's reference
+	 * count.
+	 */
+	if ((ret = __env_ref_increment(dbenv)) != 0)
 		goto err;
 
-	/* __mutex_open creates the thread info region, enter it now. */
-	ENV_ENTER(dbenv, ip);
+	/*
+	 * Initialize the handle's mutex.
+	 */
+	if ((ret = __mutex_alloc(dbenv,
+	    MTX_ENV_HANDLE, DB_MUTEX_PROCESS_ONLY, &dbenv->mtx_env)) != 0)
+		goto err;
 
 	/*
 	 * Initialize the replication area next, so that we can lock out this
@@ -349,12 +375,39 @@ __env_open(dbenv, db_home, flags, mode)
 	if (rep_check && (ret = __env_rep_enter(dbenv, 0)) != 0)
 		goto err;
 
-	if (LF_ISSET(DB_INIT_MPOOL))
-		if ((ret = __memp_open(dbenv)) != 0)
+	if (LF_ISSET(DB_INIT_MPOOL)) {
+		if ((ret = __memp_open(dbenv, create_ok)) != 0)
 			goto err;
+
+		/*
+		 * BDB does do cache I/O during recovery and when starting up
+		 * replication.  If creating a new environment, then suppress
+		 * any application max-write configuration.
+		 */
+		if (create_ok)
+			(void)__memp_set_config(
+			    dbenv, DB_MEMP_SUPPRESS_WRITE, 1);
+
+		/*
+		 * Initialize the DB list and its mutex.  If the mpool is
+		 * not initialized, we can't ever open a DB handle, which
+		 * is why this code lives here.
+		 */
+		TAILQ_INIT(&dbenv->dblist);
+		if ((ret = __mutex_alloc(dbenv, MTX_ENV_DBLIST,
+		    DB_MUTEX_PROCESS_ONLY, &dbenv->mtx_dblist)) != 0)
+			goto err;
+
+		/* Register DB's pgin/pgout functions.  */
+		if ((ret = __memp_register(
+		    dbenv, DB_FTYPE_SET, __db_pgin, __db_pgout)) != 0)
+			goto err;
+	}
+
 	/*
 	 * Initialize the ciphering area prior to any running of recovery so
-	 * that we can initialize the keys, etc. before recovery.
+	 * that we can initialize the keys, etc. before recovery, including
+	 * the MT mutex.
 	 *
 	 * !!!
 	 * This must be after the mpool init, but before the log initialization
@@ -362,6 +415,9 @@ __env_open(dbenv, db_home, flags, mode)
 	 */
 	if (LF_ISSET(DB_INIT_MPOOL | DB_INIT_LOG | DB_INIT_TXN) &&
 	    (ret = __crypto_region_init(dbenv)) != 0)
+		goto err;
+	if ((ret = __mutex_alloc(dbenv, MTX_TWISTER,
+	    DB_MUTEX_PROCESS_ONLY, &dbenv->mtx_mt)) != 0)
 		goto err;
 
 	/*
@@ -371,14 +427,14 @@ __env_open(dbenv, db_home, flags, mode)
 	 * atomicity guarantees, but not necessarily need concurrency.
 	 */
 	if (LF_ISSET(DB_INIT_LOG | DB_INIT_TXN))
-		if ((ret = __log_open(dbenv)) != 0)
+		if ((ret = __log_open(dbenv, create_ok)) != 0)
 			goto err;
 	if (LF_ISSET(DB_INIT_LOCK))
-		if ((ret = __lock_open(dbenv)) != 0)
+		if ((ret = __lock_open(dbenv, create_ok)) != 0)
 			goto err;
 
 	if (LF_ISSET(DB_INIT_TXN)) {
-		if ((ret = __txn_open(dbenv)) != 0)
+		if ((ret = __txn_open(dbenv, create_ok)) != 0)
 			goto err;
 
 		/*
@@ -386,36 +442,6 @@ __env_open(dbenv, db_home, flags, mode)
 		 * the function tables.
 		 */
 		if ((ret = __env_init_rec(dbenv, DB_LOGVERSION)) != 0)
-			goto err;
-	}
-
-	/*
-	 * Initialize the DB list, and its mutex as necessary.  If the env
-	 * handle isn't free-threaded we don't need a mutex because there
-	 * will never be more than a single DB handle on the list.  If the
-	 * mpool wasn't initialized, then we can't ever open a DB handle.
-	 *
-	 * We also need to initialize the MT mutex as necessary, so do them
-	 * both.
-	 *
-	 * !!!
-	 * This must come after the __memp_open call above because if we are
-	 * recording mutexes for system resources, we will do it in the mpool
-	 * region for environments and db handles.  So, the mpool region must
-	 * already be initialized.
-	 */
-	TAILQ_INIT(&dbenv->dblist);
-	if (LF_ISSET(DB_INIT_MPOOL)) {
-		if ((ret = __mutex_alloc(dbenv, MTX_ENV_DBLIST,
-		    DB_MUTEX_PROCESS_ONLY, &dbenv->mtx_dblist)) != 0)
-			goto err;
-		if ((ret = __mutex_alloc(dbenv, MTX_TWISTER,
-		    DB_MUTEX_PROCESS_ONLY, &dbenv->mtx_mt)) != 0)
-			goto err;
-
-		/* Register DB's pgin/pgout functions.  */
-		if ((ret = __memp_register(
-		    dbenv, DB_FTYPE_SET, __db_pgin, __db_pgout)) != 0)
 			goto err;
 	}
 
@@ -435,7 +461,6 @@ __env_open(dbenv, db_home, flags, mode)
 	 * transaction ID and logs the reset if that's appropriate, so we
 	 * don't need to do anything here in the recover case.
 	 */
-	infop = dbenv->reginfo;
 	if (TXN_ON(dbenv) &&
 	    !F_ISSET(dbenv, DB_ENV_LOG_INMEMORY) &&
 	    F_ISSET(infop, REGION_CREATE) &&
@@ -444,15 +469,19 @@ __env_open(dbenv, db_home, flags, mode)
 		goto err;
 
 	/* The database environment is ready for business. */
-	if ((ret = __db_e_golive(dbenv)) != 0)
+	if ((ret = __env_turn_on(dbenv)) != 0)
 		goto err;
 
 	if (rep_check)
 		ret = __env_db_rep_exit(dbenv);
 
-err:	ENV_LEAVE(dbenv, ip);
+	/* Turn any application-specific max-write configuration back on. */
+	if (LF_ISSET(DB_INIT_MPOOL))
+		(void)__memp_set_config(dbenv, DB_MEMP_SUPPRESS_WRITE, 0);
 
-	if (ret != 0) {
+err:	if (ret == 0)
+		ENV_LEAVE(dbenv, ip);
+	else {
 		/*
 		 * If we fail after creating the regions, panic and remove them.
 		 *
@@ -466,7 +495,7 @@ err:	ENV_LEAVE(dbenv, ip);
 
 			/* Refresh the DB_ENV so can use it to call remove. */
 			(void)__env_refresh(dbenv, orig_flags, rep_check);
-			(void)__db_e_remove(dbenv, DB_FORCE);
+			(void)__env_remove_env(dbenv);
 			(void)__env_refresh(dbenv, orig_flags, 0);
 		} else
 			(void)__env_refresh(dbenv, orig_flags, rep_check);
@@ -516,7 +545,14 @@ __env_remove(dbenv, db_home, flags)
 	if ((ret = __env_config(dbenv, db_home, flags, 0)) != 0)
 		return (ret);
 
-	ret = __db_e_remove(dbenv, flags);
+	/*
+	 * Turn the environment off -- if the environment is corrupted, this
+	 * could fail.  Ignore any error if we're forcing the question.
+	 */
+	if ((ret = __env_turn_off(dbenv, flags)) != 0 && !LF_ISSET(DB_FORCE))
+		return (ret);
+
+	ret = __env_remove_env(dbenv);
 
 	if ((t_ret = __env_close(dbenv, 0)) != 0 && ret == 0)
 		ret = t_ret;
@@ -596,7 +632,16 @@ __env_close_pp(dbenv, flags)
 
 	ret = 0;
 
-	PANIC_CHECK(dbenv);
+	if (PANIC_ISSET(dbenv)) {
+		/* Close all underlying file handles. */
+		(void)__file_handle_cleanup(dbenv);
+
+		/* Close all underlying threads and sockets. */
+		if (IS_ENV_REPLICATED(dbenv))
+			(void)__repmgr_close(dbenv);
+
+		PANIC_CHECK(dbenv);
+	}
 
 	ENV_ENTER(dbenv, ip);
 	/*
@@ -647,15 +692,14 @@ __env_close(dbenv, rep_check)
 	ret = 0;
 
 	/*
-	 * Before checking the reference count, we have to see if we were in
-	 * the middle of restoring transactions and need to close the open
-	 * files.
+	 * Check to see if we were in the middle of restoring transactions and
+	 * need to close the open files.
 	 */
 	if (TXN_ON(dbenv) && (t_ret = __txn_preclose(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
 
 #ifdef HAVE_REPLICATION
-	if ((t_ret = __rep_close(dbenv)) != 0 && ret == 0)
+	if ((t_ret = __rep_env_close(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
 #endif
 
@@ -671,14 +715,19 @@ __env_close(dbenv, rep_check)
 	 * Crypto comes last, because higher level close functions need
 	 * cryptography.
 	 */
-	if ((t_ret = __crypto_dbenv_close(dbenv)) != 0 && ret == 0)
+	if ((t_ret = __crypto_env_close(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
 #endif
+
 	/* If we're registered, clean up. */
 	if (dbenv->registry != NULL) {
 		(void)__envreg_unregister(dbenv, 0);
 		dbenv->registry = NULL;
 	}
+
+	/* Check we've closed all underlying file handles. */
+	if ((t_ret = __file_handle_cleanup(dbenv)) != 0 && ret == 0)
+		ret = t_ret;
 
 	/* Release any string-based configuration parameters we've copied. */
 	if (dbenv->db_log_dir != NULL)
@@ -736,11 +785,11 @@ __env_refresh(dbenv, orig_flags, rep_check)
 	 * __env_close.
 	 */
 	if (TXN_ON(dbenv) &&
-	    (t_ret = __txn_dbenv_refresh(dbenv)) != 0 && ret == 0)
+	    (t_ret = __txn_env_refresh(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
 
 	if (LOGGING_ON(dbenv) &&
-	    (t_ret = __log_dbenv_refresh(dbenv)) != 0 && ret == 0)
+	    (t_ret = __log_env_refresh(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/*
@@ -750,24 +799,26 @@ __env_refresh(dbenv, orig_flags, rep_check)
 	if (LOCKING_ON(dbenv)) {
 		if (!F_ISSET(dbenv, DB_ENV_THREAD) &&
 		    dbenv->env_lref != NULL && (t_ret = __lock_id_free(dbenv,
-		    ((DB_LOCKER *)dbenv->env_lref)->id)) != 0 && ret == 0)
+		    (DB_LOCKER *)dbenv->env_lref)) != 0 && ret == 0)
 			ret = t_ret;
 		dbenv->env_lref = NULL;
 
-		if ((t_ret = __lock_dbenv_refresh(dbenv)) != 0 && ret == 0)
+		if ((t_ret = __lock_env_refresh(dbenv)) != 0 && ret == 0)
 			ret = t_ret;
 	}
+
+	/* Discard the DB_ENV handle mutex. */
+	if ((t_ret = __mutex_free(dbenv, &dbenv->mtx_env)) != 0 && ret == 0)
+		ret = t_ret;
 
 	/*
 	 * Discard DB list and its mutex.
 	 * Discard the MT mutex.
 	 *
 	 * !!!
-	 * This must be done before we close the mpool region because we
-	 * may have allocated the DB handle mutex in the mpool region.
-	 * It must be done *after* we close the log region, though, because
-	 * we close databases and try to acquire the mutex when we close
-	 * log file handles.  Ick.
+	 * This must be done after we close the log region, because we close
+	 * database handles and so acquire this mutex when we close log file
+	 * handles.
 	 */
 	if (dbenv->db_ref != 0) {
 		__db_errx(dbenv,
@@ -781,7 +832,6 @@ __env_refresh(dbenv, orig_flags, rep_check)
 			ret = EINVAL;
 	}
 	TAILQ_INIT(&dbenv->dblist);
-
 	if ((t_ret = __mutex_free(dbenv, &dbenv->mtx_dblist)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __mutex_free(dbenv, &dbenv->mtx_mt)) != 0 && ret == 0)
@@ -797,11 +847,17 @@ __env_refresh(dbenv, orig_flags, rep_check)
 		 * If it's a private environment, flush the contents to disk.
 		 * Recovery would have put everything back together, but it's
 		 * faster and cleaner to flush instead.
+		 *
+		 * Ignore application max-write configuration, we're shutting
+		 * down.
 		 */
 		if (F_ISSET(dbenv, DB_ENV_PRIVATE) &&
-		    (t_ret = __memp_sync(dbenv, NULL)) != 0 && ret == 0)
+		    (t_ret = __memp_sync_int(dbenv, NULL, 0,
+		    DB_SYNC_CACHE | DB_SYNC_SUPPRESS_WRITE, NULL, NULL)) != 0 &&
+		    ret == 0)
 			ret = t_ret;
-		if ((t_ret = __memp_dbenv_refresh(dbenv)) != 0 && ret == 0)
+
+		if ((t_ret = __memp_env_refresh(dbenv)) != 0 && ret == 0)
 			ret = t_ret;
 	}
 
@@ -820,12 +876,22 @@ __env_refresh(dbenv, orig_flags, rep_check)
 		ret = t_ret;
 
 	/*
-	 * Detach from the region.
+	 * Refresh the replication region.
 	 *
 	 * Must come after we call __env_db_rep_exit above.
 	 */
-	if (REP_ON(dbenv))
-		__rep_dbenv_refresh(dbenv);
+	if (REP_ON(dbenv) &&
+	    (t_ret = __rep_env_refresh(dbenv)) != 0 && ret == 0)
+		ret = t_ret;
+
+#ifdef HAVE_CRYPTO
+	/*
+	 * Crypto comes last, because higher level close functions need
+	 * cryptography.
+	 */
+	if ((t_ret = __crypto_env_refresh(dbenv)) != 0 && ret == 0)
+		ret = t_ret;
+#endif
 
 	/*
 	 * Mark the thread as out of the env before we get rid of the handles
@@ -835,17 +901,48 @@ __env_refresh(dbenv, orig_flags, rep_check)
 	    (t_ret = __env_set_state(dbenv, &ip, THREAD_OUT)) != 0 && ret == 0)
 		ret = t_ret;
 
-	if (MUTEX_ON(dbenv) &&
-	    (t_ret = __mutex_dbenv_refresh(dbenv)) != 0 && ret == 0)
+	/*
+	 * We are about to detach from the mutex region.  This is the last
+	 * chance we have to acquire/destroy a mutex -- acquire/destroy the
+	 * mutex and release our reference.
+	 *
+	 * !!!
+	 * There are two DbEnv methods that care about environment reference
+	 * counts: DbEnv.close and DbEnv.remove.  The DbEnv.close method is
+	 * not a problem because it only decrements the reference count and
+	 * no actual resources are discarded -- lots of threads of control
+	 * can call DbEnv.close at the same time, and regardless of racing
+	 * on the reference count mutex, we wouldn't have a problem.  Since
+	 * the DbEnv.remove method actually discards resources, we can have
+	 * a problem.
+	 *
+	 * If we decrement the reference count to 0 here, go to sleep, and
+	 * the DbEnv.remove method is called, by the time we run again, the
+	 * underlying shared regions could have been removed.  That's fine,
+	 * except we might actually need the regions to resolve outstanding
+	 * operations in the various subsystems, and if we don't have hard
+	 * OS references to the regions, we could get screwed.  Of course,
+	 * we should have hard OS references to everything we need, but just
+	 * in case, we put off decrementing the reference count as long as
+	 * possible.
+	 */
+	if ((t_ret = __env_ref_decrement(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
 
-	if (dbenv->reginfo != NULL) {
-		if ((t_ret = __db_e_detach(dbenv, 0)) != 0 && ret == 0)
-			ret = t_ret;
+#ifdef HAVE_MUTEX_SUPPORT
+	if (MUTEX_ON(dbenv) &&
+	    (t_ret = __mutex_env_refresh(dbenv)) != 0 && ret == 0)
+		ret = t_ret;
+#endif
+
+	if (dbenv->reginfo != NULL && (t_ret = __env_detach(
+	    dbenv, F_ISSET(dbenv, DB_ENV_PRIVATE) ? 1 : 0)) != 0 && ret == 0) {
+		ret = t_ret;
+
 		/*
 		 * !!!
 		 * Don't free dbenv->reginfo or set the reference to NULL,
-		 * that was done by __db_e_detach().
+		 * that was done by __env_detach().
 		 */
 	}
 
@@ -865,25 +962,26 @@ __env_refresh(dbenv, orig_flags, rep_check)
 	return (ret);
 }
 
-#define	DB_ADDSTR(add) {						\
-	/*								\
-	 * The string might be NULL or zero-length, and the p[-1]	\
-	 * might indirect to before the beginning of our buffer.	\
-	 */								\
-	if ((add) != NULL && (add)[0] != '\0') {			\
-		/* If leading slash, start over. */			\
-		if (__os_abspath(add)) {				\
-			p = str;					\
-			slash = 0;					\
-		}							\
-		/* Append to the current string. */			\
-		len = strlen(add);					\
-		if (slash)						\
-			*p++ = PATH_SEPARATOR[0];			\
-		memcpy(p, add, len);					\
-		p += len;						\
-		slash = strchr(PATH_SEPARATOR, p[-1]) == NULL;		\
-	}								\
+/*
+ * __file_handle_cleanup --
+ *	Close any underlying open file handles so we don't leak system
+ *	resources.
+ */
+static int
+__file_handle_cleanup(dbenv)
+	DB_ENV *dbenv;
+{
+	DB_FH *fhp;
+
+	if (TAILQ_FIRST(&dbenv->fdlist) == NULL)
+		return (0);
+
+	__db_errx(dbenv, "File handles still open at environment close");
+	while ((fhp = TAILQ_FIRST(&dbenv->fdlist)) != NULL) {
+		__db_errx(dbenv, "Open file handle: %s", fhp->name);
+		(void)__os_closehandle(dbenv, fhp);
+	}
+	return (EINVAL);
 }
 
 /*
@@ -901,232 +999,4 @@ __env_get_open_flags(dbenv, flagsp)
 
 	*flagsp = dbenv->open_flags;
 	return (0);
-}
-
-/*
- * __db_appname --
- *	Given an optional DB environment, directory and file name and type
- *	of call, build a path based on the DB_ENV->open rules, and return
- *	it in allocated space.
- *
- * PUBLIC: int __db_appname __P((DB_ENV *, APPNAME,
- * PUBLIC:    const char *, u_int32_t, DB_FH **, char **));
- */
-int
-__db_appname(dbenv, appname, file, tmp_oflags, fhpp, namep)
-	DB_ENV *dbenv;
-	APPNAME appname;
-	const char *file;
-	u_int32_t tmp_oflags;
-	DB_FH **fhpp;
-	char **namep;
-{
-	enum { TRY_NOTSET, TRY_DATA_DIR, TRY_ENV_HOME, TRY_CREATE } try_state;
-	size_t len, str_len;
-	int data_entry, ret, slash, tmp_create;
-	const char *a, *b;
-	char *p, *str;
-
-	try_state = TRY_NOTSET;
-	a = b = NULL;
-	data_entry = 0;
-	tmp_create = 0;
-
-	/*
-	 * We don't return a name when creating temporary files, just a file
-	 * handle.  Default to an error now.
-	 */
-	if (fhpp != NULL)
-		*fhpp = NULL;
-	if (namep != NULL)
-		*namep = NULL;
-
-	/*
-	 * Absolute path names are never modified.  If the file is an absolute
-	 * path, we're done.
-	 */
-	if (file != NULL && __os_abspath(file))
-		return (__os_strdup(dbenv, file, namep));
-
-	/* Everything else is relative to the environment home. */
-	if (dbenv != NULL)
-		a = dbenv->db_home;
-
-retry:	/*
-	 * DB_APP_NONE:
-	 *      DB_HOME/file
-	 * DB_APP_DATA:
-	 *      DB_HOME/DB_DATA_DIR/file
-	 * DB_APP_LOG:
-	 *      DB_HOME/DB_LOG_DIR/file
-	 * DB_APP_TMP:
-	 *      DB_HOME/DB_TMP_DIR/<create>
-	 */
-	switch (appname) {
-	case DB_APP_NONE:
-		break;
-	case DB_APP_DATA:
-		if (dbenv == NULL || dbenv->db_data_dir == NULL) {
-			try_state = TRY_CREATE;
-			break;
-		}
-
-		/*
-		 * First, step through the data_dir entries, if any, looking
-		 * for the file.
-		 */
-		if ((b = dbenv->db_data_dir[data_entry]) != NULL) {
-			++data_entry;
-			try_state = TRY_DATA_DIR;
-			break;
-		}
-
-		/* Second, look in the environment home directory. */
-		if (try_state != TRY_ENV_HOME) {
-			try_state = TRY_ENV_HOME;
-			break;
-		}
-
-		/* Third, try creation in the first data_dir entry. */
-		try_state = TRY_CREATE;
-		b = dbenv->db_data_dir[0];
-		break;
-	case DB_APP_LOG:
-		if (dbenv != NULL)
-			b = dbenv->db_log_dir;
-		break;
-	case DB_APP_TMP:
-		if (dbenv != NULL)
-			b = dbenv->db_tmp_dir;
-		tmp_create = 1;
-		break;
-	}
-
-	len =
-	    (a == NULL ? 0 : strlen(a) + 1) +
-	    (b == NULL ? 0 : strlen(b) + 1) +
-	    (file == NULL ? 0 : strlen(file) + 1);
-
-	/*
-	 * Allocate space to hold the current path information, as well as any
-	 * temporary space that we're going to need to create a temporary file
-	 * name.
-	 */
-#define	DB_TRAIL	"BDBXXXXX"
-	str_len = len + sizeof(DB_TRAIL) + 10;
-	if ((ret = __os_malloc(dbenv, str_len, &str)) != 0)
-		return (ret);
-
-	slash = 0;
-	p = str;
-	DB_ADDSTR(a);
-	DB_ADDSTR(b);
-	DB_ADDSTR(file);
-	*p = '\0';
-
-	/*
-	 * If we're opening a data file, see if it exists.  If it does,
-	 * return it, otherwise, try and find another one to open.
-	 */
-	if (appname == DB_APP_DATA &&
-	    __os_exists(dbenv, str, NULL) != 0 && try_state != TRY_CREATE) {
-		__os_free(dbenv, str);
-		b = NULL;
-		goto retry;
-	}
-
-	/* Create the file if so requested. */
-	if (tmp_create &&
-	    (ret = __db_tmp_open(dbenv, tmp_oflags, str, fhpp)) != 0) {
-		__os_free(dbenv, str);
-		return (ret);
-	}
-
-	if (namep == NULL)
-		__os_free(dbenv, str);
-	else
-		*namep = str;
-	return (0);
-}
-
-/*
- * __db_tmp_open --
- *	Create a temporary file.
- */
-static int
-__db_tmp_open(dbenv, tmp_oflags, path, fhpp)
-	DB_ENV *dbenv;
-	u_int32_t tmp_oflags;
-	char *path;
-	DB_FH **fhpp;
-{
-	pid_t pid;
-	int filenum, i, isdir, ret;
-	char *firstx, *trv;
-
-	/*
-	 * Check the target directory; if you have six X's and it doesn't
-	 * exist, this runs for a *very* long time.
-	 */
-	if ((ret = __os_exists(dbenv, path, &isdir)) != 0) {
-		__db_err(dbenv, ret, "%s", path);
-		return (ret);
-	}
-	if (!isdir) {
-		__db_err(dbenv, EINVAL, "%s", path);
-		return (EINVAL);
-	}
-
-	/* Build the path. */
-	(void)strncat(path, PATH_SEPARATOR, 1);
-	(void)strcat(path, DB_TRAIL);
-
-	/* Replace the X's with the process ID (in decimal). */
-	__os_id(dbenv, &pid, NULL);
-	for (trv = path + strlen(path); *--trv == 'X'; pid /= 10)
-		*trv = '0' + (u_char)(pid % 10);
-	firstx = trv + 1;
-
-	/* Loop, trying to open a file. */
-	for (filenum = 1;; filenum++) {
-		if ((ret = __os_open(dbenv, path,
-		    tmp_oflags | DB_OSO_CREATE | DB_OSO_EXCL | DB_OSO_TEMP,
-		    __db_omode(OWNER_RW), fhpp)) == 0)
-			return (0);
-
-		/*
-		 * !!!:
-		 * If we don't get an EEXIST error, then there's something
-		 * seriously wrong.  Unfortunately, if the implementation
-		 * doesn't return EEXIST for O_CREAT and O_EXCL regardless
-		 * of other possible errors, we've lost.
-		 */
-		if (ret != EEXIST) {
-			__db_err(dbenv, ret, "temporary open: %s", path);
-			return (ret);
-		}
-
-		/*
-		 * Generate temporary file names in a backwards-compatible way.
-		 * If pid == 12345, the result is:
-		 *   <path>/DB12345 (tried above, the first time through).
-		 *   <path>/DBa2345 ...  <path>/DBz2345
-		 *   <path>/DBaa345 ...  <path>/DBaz345
-		 *   <path>/DBba345, and so on.
-		 *
-		 * XXX
-		 * This algorithm is O(n**2) -- that is, creating 100 temporary
-		 * files requires 5,000 opens, creating 1000 files requires
-		 * 500,000.  If applications open a lot of temporary files, we
-		 * could improve performance by switching to timestamp-based
-		 * file names.
-		 */
-		for (i = filenum, trv = firstx; i > 0; i = (i - 1) / 26)
-			if (*trv++ == '\0')
-				return (EINVAL);
-
-		for (i = filenum; i > 0; i = (i - 1) / 26)
-			*--trv = 'a' + ((i - 1) % 26);
-	}
-	/* NOTREACHED */
 }

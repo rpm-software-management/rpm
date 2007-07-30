@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: os_fid.c,v 12.11 2006/08/24 14:46:17 bostic Exp $
+ * $Id: os_fid.c,v 12.17 2007/05/17 17:18:02 bostic Exp $
  */
 
 #include "db_config.h"
@@ -34,13 +33,13 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 	int ret;
 
 	/*
-	 * The structure of a fileid on a POSIX/UNIX system is: ino(4) dev(4)
-	 * time(4) pid(4) extra(4).
+	 * The structure of a fileid on a POSIX/UNIX system is:
+	 *
+	 *	ino[4] dev[4] unique-ID[4] serial-counter[4] empty[4].
 	 *
 	 * For real files, which have a backing inode and device, the first
-	 * 16 bytes are filled in and the extra bytes are left 0.  For
-	 * temporary files, the inode and device fields are left blank and
-	 * the extra four bytes are filled in with a random value.
+	 * 8 bytes are filled in and the following bytes are left 0.  For
+	 * temporary files, the following 12 bytes are filled in.
 	 *
 	 * Clear the buffer.
 	 */
@@ -89,13 +88,17 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 	for (p = (u_int8_t *)&tmp, i = sizeof(u_int32_t); i > 0; --i)
 		*fidp++ = *p++;
 #else
-	 /* Use the file name. */
-	 (void)strncpy(fidp, fname, DB_FILE_ID_LEN);
+	 /*
+	  * Use the file name.
+	  *
+	  * XXX
+	  * Cast the first argument, the BREW ARM compiler is unhappy if
+	  * we don't.
+	  */
+	 (void)strncpy((char *)fidp, fname, DB_FILE_ID_LEN);
 #endif /* HAVE_STAT */
 
 	if (unique_okay) {
-		static u_int32_t fid_serial = 0;
-
 		/* Add in 32-bits of (hopefully) unique number. */
 		__os_unique_id(dbenv, &tmp);
 		for (p = (u_int8_t *)&tmp, i = sizeof(u_int32_t); i > 0; --i)
@@ -120,14 +123,14 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 		 * 32-bit platforms, and has few interesting properties in
 		 * base 2.
 		 */
-		if (fid_serial == 0) {
-			dbenv->thread_id(dbenv, &pid, NULL);
-			fid_serial = (u_int32_t)pid;
+		if (DB_GLOBAL(fid_serial) == 0) {
+			__os_id(dbenv, &pid, NULL);
+			DB_GLOBAL(fid_serial) = (u_int32_t)pid;
 		} else
-			fid_serial += 100000;
+			DB_GLOBAL(fid_serial) += 100000;
 
-		for (p =
-		    (u_int8_t *)&fid_serial, i = sizeof(u_int32_t); i > 0; --i)
+		for (p = (u_int8_t *)
+		    &DB_GLOBAL(fid_serial), i = sizeof(u_int32_t); i > 0; --i)
 			*fidp++ = *p++;
 	}
 

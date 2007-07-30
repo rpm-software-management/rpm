@@ -1,0 +1,116 @@
+m4_comment([$Id: db_join.so,v 10.58 2007/05/31 18:52:36 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_join, DB_JOIN_NOSORT, DB_SECONDARY_BAD])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_join),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__join(DB *primary,
+    DBC **curslist, DBC **dbcp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::join(Dbc **curslist, Dbc **dbcp, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_join) creates a specialized join cursor for use in
+performing equality or natural joins on secondary indices.  For
+information on how to organize your data to use this functionality, see
+m4_link(M4RELDIR/ref/am/join, [Equality join]).])
+
+m4_p([dnl
+The m4_refT(dbh_join) method is called using the m4_ref(Db) handle of
+the primary database.])
+
+m4_p([dnl
+The join cursor supports only the m4_ref(dbc_get) and m4_arg(dbc_close)
+cursor functions:])
+
+m4_tagbegin
+m4_tag(m4_ref(dbc_get), [dnl
+Iterates over the values associated with the keys to which each item in
+m4_arg(curslist) was initialized.  Any data value that appears in all
+items specified by the m4_arg(curslist) parameter is then used as a key
+into the m4_arg(primary), and the key/data pair found in the
+m4_arg(primary) is returned.
+
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_JOIN_ITEM), [dnl
+Do not use the data value found in all the cursors as a lookup key for
+the m4_arg(primary), but simply return it in the key parameter instead.
+The data parameter is left unchanged.])
+m4_tagend
+
+m4_sf_or_add(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_READ_UNCOMMITTED), [dnl
+Configure a transactional join operation to have degree 1 isolation,
+reading modified but not yet committed data.  Silently ignored if the
+m4_ref(DB_READ_UNCOMMITTED) flag was not specified when the underlying
+database was opened.])
+
+m4_rmw_flag()
+m4_tagend])
+
+m4_tag(m4_ref(dbc_close), [dnl
+Close the returned cursor and release all resources.  (Closing the cursors
+in m4_arg(curslist) is the responsibility of the caller.)])
+m4_tagend
+
+m4_return(dbh_join, std)
+
+m4_parambegin
+m4_param(curslist, [dnl
+The m4_arg(curslist) parameter contains a NULL terminated array of cursors.
+Each cursor must have been initialized to refer to the key on which the
+underlying database should be joined.  Typically, this initialization is done
+by a m4_ref(dbc_get) call with the m4_ref(DB_SET) flag specified.  Once the
+cursors have been passed as part of a m4_arg(curslist), they should not
+be accessed or modified until the newly created join cursor has been closed,
+or else inconsistent results may be returned.
+m4_p([dnl
+Joined values are retrieved by doing a sequential iteration over the first
+cursor in the m4_arg(curslist) parameter, and a nested iteration over each
+secondary cursor in the order they are specified in the m4_arg(curslist)
+parameter.  This requires database traversals to search for the current
+datum in all the cursors after the first.  For this reason, the best join
+performance normally results from sorting the cursors from the one that
+refers to the least number of data items to the one that refers to the
+most.  By default, m4_ref(dbh_join) does this sort on behalf of its caller.])
+m4_p([dnl
+For the returned join cursor to be used in a transaction-protected manner,
+the cursors listed in m4_arg(curslist) must have been created within the
+context of the same transaction.])])
+
+m4_param(dbcp, [dnl
+The newly created join cursor is returned in the memory location to
+which m4_arg(dbcp) refers.])
+
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_JOIN_NOSORT), [dnl
+Do not sort the cursors based on the number of data items to which they
+refer.  If the data are structured so that cursors with many data items
+also share many common elements, higher performance will result from
+listing those cursors before cursors with fewer data items; that is, a
+sort order other than the default.  The m4_ref(DB_JOIN_NOSORT) flag
+permits applications to perform join optimization prior to calling
+m4_ref(dbh_join).])
+
+m4_tagend])
+m4_paramend
+
+m4_err(dbh_join, repinval, secondary_bad, einval,
+[cursor methods other than  m4_ref(dbc_get) or m4_ref(dbc_close) were
+called])
+
+m4_seealso(Db)
+m4_page_footer

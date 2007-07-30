@@ -1,0 +1,18 @@
+m4_comment([$Id: collect.so,v 1.1 2006/06/05 17:32:22 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: Collections API,,
+    upgrade.4.5/pagesize, upgrade.4.5/config)
+
+m4_p([dnl
+The changes to the Collections API are compatible with prior releases,
+with one exception: the Iterator object returned by the
+StoredCollection.iterator() method can no longer be explicitly cast to
+StoredIterator because a different implementation class is now used for
+iterators. If you depend on the StoredIterator class, you must now call
+StoredCollection.storedIterator() instead. Note the
+StoredIterator.close(Iterator) static method is compatible with the new
+iterator implementation, so no changes are necessary if you are using
+that method to close iterators.])
+
+m4_page_footer

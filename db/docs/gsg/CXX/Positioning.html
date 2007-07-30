@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Getting Records Using the Cursor</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="Cursors.html" title="Chapter 4. Using Cursors" />
-    <link rel="previous" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="up" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
+    <link rel="previous" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
     <link rel="next" href="PutEntryWCursor.html" title="Putting Records Using Cursors" />
   </head>
   <body>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Getting Records Using the Cursor</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="Cursors.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Using Cursors</th>
-          <td width="20%" align="right"> <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="Cursors.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Using Cursors</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -73,9 +73,9 @@ try {
         // can never be reached. 
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), &quot;Error!&quot;);
+        my_database.err(e.get_errno(), "Error!");
 } catch(std::exception &amp;e) {
-        my_database.errx(&quot;Error! %s&quot;, e.what());
+        my_database.errx("Error! %s", e.what());
 }
 
 // Cursors must be closed
@@ -114,9 +114,9 @@ try {
         // can never be reached. 
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), &quot;Error!&quot;);
+        my_database.err(e.get_errno(), "Error!");
 } catch(std::exception &amp;e) {
-        my_database.errx(&quot;Error! %s&quot;, e.what());
+        my_database.errx("Error! %s", e.what());
 }
 
 // Cursors must be closed
@@ -196,7 +196,7 @@ my_database.close(0);</pre>
               <p>
             <span>Identical to 
                 <tt class="literal">DB_SET</tt>
-                <tt class="methodname">Cursor.getSearchKey()</tt>
+                
             unless you are using the BTree access. In this case, the cursor
             moves</span>
             
@@ -330,8 +330,8 @@ try {
     my_database.cursor(NULL, &amp;cursorp, 0);
 
     // Search criteria
-    char *search_key = &quot;Alaska&quot;;
-    char *search_data = &quot;Fa&quot;;
+    char *search_key = "Alaska";
+    char *search_data = "Fa";
 
     // Set up our DBTs
     Dbt key(search_key, strlen(search_key) + 1);
@@ -345,9 +345,9 @@ try {
         // Do something with the data
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), &quot;Error!&quot;);
+        my_database.err(e.get_errno(), "Error!");
 } catch(std::exception &amp;e) {
-        my_database.errx(&quot;Error! %s&quot;, e.what());
+        my_database.errx("Error! %s", e.what());
 }
 
 // Close the cursor
@@ -453,7 +453,7 @@ Arizona/Florence</pre>
           and you then call 
                  
                 <span>
-                     
+                         
                     <tt class="methodname">Dbc::get()</tt> 
                     with <tt class="literal">DB_PREV_NODUP</tt>,
                 </span> 
@@ -521,7 +521,7 @@ Arizona/Florence</pre>
 
 ...
 
-char *search_key = &quot;Al&quot;;
+char *search_key = "Al";
 
 Db my_database(NULL, 0);
 Dbc *cursorp;
@@ -540,14 +540,14 @@ try {
     // key and data begin with the correct strings.
     int ret = cursorp-&gt;get(&amp;key, &amp;data, DB_SET);
     while (ret != DB_NOTFOUND) {
-        std::cout &lt;&lt; &quot;key: &quot; &lt;&lt; (char *)key.get_data() 
-                  &lt;&lt; &quot;data: &quot; &lt;&lt; (char *)data.get_data()&lt;&lt; std::endl;
+        std::cout &lt;&lt; "key: " &lt;&lt; (char *)key.get_data() 
+                  &lt;&lt; "data: " &lt;&lt; (char *)data.get_data()&lt;&lt; std::endl;
         ret = cursorp-&gt;get(&amp;key, &amp;data, DB_NEXT_DUP);
     }
 } catch(DbException &amp;e) {
-        my_database.err(e.get_errno(), &quot;Error!&quot;);
+        my_database.err(e.get_errno(), "Error!");
 } catch(std::exception &amp;e) {
-        my_database.errx(&quot;Error! %s&quot;, e.what());
+        my_database.errx("Error! %s", e.what());
 }
 
 // Close the cursor
@@ -562,18 +562,18 @@ my_database.close(0); </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="Cursors.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="Cursors.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="Cursors.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 4. Using Cursors </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 4.Â Using CursorsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Putting Records Using Cursors</td>
+          <td width="40%" align="right" valign="top">Â Putting Records Using Cursors</td>
         </tr>
       </table>
     </div>

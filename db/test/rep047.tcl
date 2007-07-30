@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep047.tcl,v 12.11 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep047.tcl,v 12.16 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  rep047
 # TEST	Replication and log gap bulk transfers.
@@ -54,6 +53,12 @@ proc rep047_sub { method niter tnum logset recargs largs } {
 	global testdir
 	global util_path
 	global overflowword1 overflowword2
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	set overflowword1 "0"
 	set overflowword2 "0"
@@ -85,28 +90,24 @@ proc rep047_sub { method niter tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
-	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
-#	    -errpfx MASTER -verbose {rep on} \
-#	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
+	    $verbargs -errpfx MASTER -home $masterdir \
+	    -rep_master -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
+	# Open two clients.
 	repladd 2
 	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
-	    -home $clientdir -rep_client -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
-#	    -home $clientdir -errpfx CLIENT -verbose {rep on} \
-#	    -rep_client -rep_transport \[list 2 replsend\]"
+	    $verbargs -errpfx CLIENT -home $clientdir \
+	    -rep_client -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	repladd 3
 	set cl2_envcmd "berkdb_env -create $c2_txnargs $c2_logargs \
-	    -home $clientdir2 -rep_client -rep_transport \[list 3 replsend\]"
-#	set cl2_envcmd "berkdb_env -create $c2_txnargs $c2_logargs \
-#	    -home $clientdir2 -errpfx CLIENT2 -verbose {rep on} \
-#	    -rep_client -rep_transport \[list 3 replsend\]"
+	    $verbargs -errpfx CLIENT2 -home $clientdir2 \
+	    -rep_client -rep_transport \[list 3 replsend\]"
+
 	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
@@ -116,7 +117,7 @@ proc rep047_sub { method niter tnum logset recargs largs } {
 	puts "\tRep$tnum.a: Create and open master database"
 	set testfile "test.db"
 	set omethod [convert_method $method]
-	set masterdb [eval {berkdb_open_noerr -env $masterenv -auto_commit \
+	set masterdb [eval {berkdb_open -env $masterenv -auto_commit \
 	    -create -mode 0644} $largs $omethod $testfile]
 	error_check_good dbopen [is_valid_db $masterdb] TRUE
 
@@ -129,6 +130,14 @@ proc rep047_sub { method niter tnum logset recargs largs } {
 	rep_test_bulk $method $masterenv $masterdb $niter 0 0 0
 	process_msgs $envlist
 	rep_verify $masterdir $masterenv $clientdir $clientenv
+
+	# Clean up after rep_verify: remove the temporary "prlog" file.  Now
+	# that a newly joining client uses internal init, when the master scans
+	# its directory for database files it complains about prlog not looking
+	# like a proper db.  This is harmless, but it does put a distracting
+	# error message into the test output.
+	#
+	file delete $masterdir/prlog
 
 	puts "\tRep$tnum.c: Bring new client online"
 	replclear 3
@@ -171,6 +180,13 @@ proc rep047_sub { method niter tnum logset recargs largs } {
 	set start $skip
 	rep_test_bulk $method $masterenv $masterdb $niter $start $skip 0
 	set envlist "{$masterenv 1} {$clientenv 2} {$clientenv2 3}"
+
+	# Since we're relying on the client to detect a gap and request missing
+	# records, reset gap parameters to their defaults.  Otherwise,
+	# "wait_recs" is still set at its maximum "high" value, due to this
+	# client having been through an internal init.
+	#
+	$clientenv2 rep_request 4 128
 	process_msgs $envlist
 	#
 	# We know we added 2*$niter items to the database so there should be

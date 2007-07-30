@@ -1,0 +1,61 @@
+m4_comment([$Id: env_set_tx_max.so,v 10.47 2006/06/19 22:25:31 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_tx_max, dbenv_get_tx_max])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_tx_max),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_tx_max(DB_ENV *dbenv, u_int32_t max);
+m4_blank
+int
+DB_ENV-__GT__get_tx_max(DB_ENV *dbenv, u_int32_t *tx_maxp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_tx_max(u_int32_t max);
+m4_blank
+int
+DbEnv::get_tx_max(u_int32_t *tx_maxp);
+]))
+
+m4_p([dnl
+Configure the m4_db database environment to support at least m4_arg(max)
+active transactions.  This value bounds the size of the memory allocated
+for transactions.  Child transactions are counted as active until they
+either commit or abort.])
+
+m4_p([dnl
+Transactions that update multiversion databases are not freed until the
+last page version that the transaction created is flushed from cache.
+This means that applications using multi-version concurrency control may
+need a transaction for each page in cache, in the extreme case.])
+
+m4_p([dnl
+When all of the memory available in the database environment for
+transactions is in use, calls to m4_ref(txn_begin) will fail (until some
+active transactions complete).  If this interface is never called, the
+database environment is configured to support at least 100 active
+transactions.])
+
+m4_env_config(dbenv_set_tx_max, [number of active transactions],
+set_tx_max, [the number of transactions])
+
+m4_scope_env(dbenv_set_tx_max)
+m4_when_envopen(dbenv_set_tx_max, ignored)
+m4_return(dbenv_set_tx_max, std)
+
+m4_parambegin
+m4_param(max, [dnl
+The m4_arg(max) parameter configures the minimum number of
+simultaneously active transactions supported by m4_db database
+environment.])
+m4_paramend
+
+m4_err(dbenv_set_tx_max,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_tx_max, number of active transactions,, tx_maxp)
+
+m4_seealso(DbTxn)
+m4_page_footer

@@ -1,0 +1,57 @@
+m4_comment([$Id: intro.so,v 10.24 2006/11/13 18:05:01 bostic Exp $])
+
+m4_ref_title(Debugging Applications,
+    Introduction to debugging,
+    introduction to @debugging, install/multiple, debug/compile)
+
+m4_p([dnl
+Because m4_db is an embedded library, debugging applications that use
+m4_db is both harder and easier than debugging a separate server.
+Debugging can be harder because when a problem arises, it is not always
+readily apparent whether the problem is in the application, is in the
+database library, or is a result of an unexpected interaction between
+the two.  Debugging can be easier because it is easier to track down a
+problem when you can review a stack trace rather than deciphering
+interprocess communication messages.  This chapter is intended to assist
+you with debugging applications and reporting bugs to us so that we can
+provide you with the correct answer or fix as quickly as possible.])
+
+m4_p([dnl
+When you encounter a problem, there are a few general actions you can
+take:])
+
+m4_tagbegin
+m4_tag([Review the m4_db error output:], [m4_p([dnl
+If an error output mechanism has been configured in the m4_db
+environment, additional run-time error messages are made available to
+the applications.  If you are not using an environment, it is well worth
+modifying your application to create one so that you can get more
+detailed error messages.  See m4_link(runtime, Run-time error
+information) for more information on configuring m4_db to output these
+error messages.])])
+
+m4_tag([Review m4_ref(dbenv_set_verbose):], [m4_p([dnl
+Check the list of flags for the m4_ref(dbenv_set_verbose) function, and
+see if any of them will produce additional information that might help
+understand the problem.])])
+
+m4_tag([Add run-time diagnostics:], [m4_p([dnl
+You can configure and build m4_db to perform run-time diagnostics.  (By
+default, these checks are not done because they can seriously impact
+performance.)  See m4_link(compile, Compile-time configuration) for more
+information.])])
+
+m4_tag([Apply all available patches:], [m4_p([dnl
+Before reporting a problem in m4_db, please upgrade to the latest m4_db
+release, if possible, or at least make sure you have applied any updates
+available for your release from the
+m4_linkweb(http://www.oracle.com/technology/software/products/berkeley-db/db/index.html, m4_db web site).])])
+
+m4_tag([Run the test suite:], [m4_p([dnl
+If you see repeated failures or failures of simple test cases, run the
+m4_db test suite to determine whether the distribution of m4_db you are
+using was built and configured correctly.])])
+
+m4_tagend
+
+m4_page_footer

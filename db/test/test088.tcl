@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: test088.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
+# $Id: test088.tcl,v 12.5 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test088
 # TEST	Test of cursor stability across btree splits with very

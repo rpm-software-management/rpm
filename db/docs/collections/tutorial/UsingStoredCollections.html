@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
         Using Stored Collections
     </title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
-    <link rel="up" href="collectionOverview.html" title="Appendix A. &#10;        API Notes and Details&#10;    " />
-    <link rel="previous" href="UsingCollectionsAPI.html" title="&#10;        Using the  Java Collections API&#10;    " />
+    <link rel="up" href="collectionOverview.html" title="AppendixÂ A.Â &#10;        API Notes and Details&#10;    " />
+    <link rel="previous" href="UsingCollectionsAPI.html" title="&#10;        Using the DB Java Collections API&#10;    " />
     <link rel="next" href="SerializedObjectStorage.html" title="&#10;        Serialized Object Storage&#10;    " />
   </head>
   <body>
@@ -22,11 +22,11 @@
     </th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="UsingCollectionsAPI.html">Prev</a> </td>
-          <th width="60%" align="center">Appendix A. 
+          <td width="20%" align="left"><a accesskey="p" href="UsingCollectionsAPI.html">Prev</a>Â </td>
+          <th width="60%" align="center">AppendixÂ A.Â 
         API Notes and Details
     </th>
-          <td width="20%" align="right"> <a accesskey="n" href="SerializedObjectStorage.html">Next</a></td>
+          <td width="20%" align="right">Â <a accesskey="n" href="SerializedObjectStorage.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -74,10 +74,10 @@
         described below.
         <span>
             Most of these restrictions have to do with 
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html" target="_top">List</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html" target="_top">List</a>
                 
             interfaces; for 
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html" target="_top">Map</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html" target="_top">Map</a>
                 
             interfaces, most all access modes are fully supported since the
             Berkeley DB model is map-like.
@@ -87,10 +87,10 @@
           <ul type="disc">
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
                  
                 and 
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html" target="_top">SortedMap</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedMap.html" target="_top">SortedMap</a>
                 
 
                 interfaces may only be used if keys are ordered. This means ordered keys are required for creating a
@@ -104,21 +104,21 @@
             <li>
               <p>
                 All iterators for stored collections implement the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html" target="_top">ListIterator</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html" target="_top">ListIterator</a>
                 
                 interface as well as the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Iterator.html" target="_top">Iterator</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Iterator.html" target="_top">Iterator</a>
                 
                 interface.
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#hasPrevious()" target="_top">ListIterator.hasPrevious()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#hasPrevious()" target="_top">ListIterator.hasPrevious()</a>
                 
                 and
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#previous()" target="_top">ListIterator.previous()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#previous()" target="_top">ListIterator.previous()</a>
                 
                 work in all cases.
                 <span>
                     However, the following 
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html" target="_top">ListIterator</a>
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html" target="_top">ListIterator</a>
                         
                     method behavior is dependent on the access method.
                 </span>
@@ -127,20 +127,20 @@
                 <ul type="circle">
                   <li>
                     <p>
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#nextIndex()" target="_top">ListIterator.nextIndex()</a>
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#nextIndex()" target="_top">ListIterator.nextIndex()</a>
                         
                        and 
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#previousIndex()" target="_top">ListIterator.previousIndex()</a>
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#previousIndex()" target="_top">ListIterator.previousIndex()</a>
                         
                        only work when record number keys are used, and throw
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
                         
                        otherwise.
                     </p>
                   </li>
                   <li>
                     <p>
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
                         
                         inserts before the current position and renumbers following keys if the RECNO-RENUMBER
                         access method is used.
@@ -154,17 +154,17 @@
                       <ul type="disc">
                         <li>
                           <p>
-                                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
+                                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
                                 
                                 throws
-                                <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
+                                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
                                 
                                 if duplicates are not allowed.
                             </p>
                         </li>
                         <li>
                           <p>
-                                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
+                                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
                                 
                                 inserts a duplicate before the current position
                                 if duplicates are unsorted.
@@ -172,7 +172,7 @@
                         </li>
                         <li>
                           <p>
-                                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
+                                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
                                 
                                 inserts a duplicate in sorted order if
                                 duplicates are sorted.
@@ -183,10 +183,10 @@
                   </li>
                   <li>
                     <p>
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#set()" target="_top">ListIterator.set()</a>
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#set()" target="_top">ListIterator.set()</a>
                         
                     throws
-                    <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
+                    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
                     
                     if sorted duplicates are configured, since updating with sorted duplicates would change the
                     iterator position.
@@ -197,10 +197,10 @@
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html#setValue()" target="_top">Map.Entry.setValue()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html#setValue()" target="_top">Map.Entry.setValue()</a>
                 
                 throws
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
                 
                 if duplicates are sorted.
             </p>
@@ -209,7 +209,7 @@
               <p>
                 Only the access methods that use a record number key may be used
                 with a 
-                    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html" target="_top">List</a>
+                    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html" target="_top">List</a>
                     <tt class="classname">List</tt>
                 view.
             </p>
@@ -217,7 +217,7 @@
             <li>
               <p>
                 To create a stored List that supports the 
-                    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()" target="_top">List.add()</a> 
+                    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#add()" target="_top">List.add()</a> 
                     <tt class="methodname">List.add()</tt> 
                 method, only the RECNO-RENUMBER access method may be used.
             </p>
@@ -225,7 +225,7 @@
             <li>
               <p>
                 For List access methods that do not support 
-                    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()" target="_top">List.add()</a> 
+                    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#add()" target="_top">List.add()</a> 
                     <tt class="methodname">List.add()</tt> 
                 (RECNO, QUEUE, and BTREE-RECNUM):
             </p>
@@ -233,21 +233,21 @@
                 <ul type="circle">
                   <li>
                     <p>
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()" target="_top">List.add()</a> 
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#add()" target="_top">List.add()</a> 
                         <tt class="methodname">List.add()</tt> 
                        and 
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a> 
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a> 
                         <tt class="methodname">ListIterator.add()</tt> 
                        always throw
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a> .
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a> .
                     </p>
                   </li>
                   <li>
                     <p>
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#remove()" target="_top">List.remove()</a> 
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#remove()" target="_top">List.remove()</a> 
                         <tt class="methodname">List.remove()</tt> 
                        and 
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#remove()" target="_top">ListIterator.remove()</a> 
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#remove()" target="_top">ListIterator.remove()</a> 
                         <tt class="methodname">ListIterator.remove()</tt> 
                        do not cause list indices to be renumbered. However, iterators will skip
                        the removed values.
@@ -264,7 +264,7 @@
             <li>
               <p>
                 When duplicates are allowed the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html" target="_top">Collection</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html" target="_top">Collection</a>
                 
                 interfaces are modified in several ways as described in the next
                 section.
@@ -298,24 +298,24 @@
           <ul type="disc">
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#entrySet()" target="_top">Map.entrySet()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#entrySet()" target="_top">Map.entrySet()</a>
                 
                 may contain multiple
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
                 
                 objects with the same key.
             </p>
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#keySet()" target="_top">Map.keySet()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#keySet()" target="_top">Map.keySet()</a>
                 
                 always contains unique keys, it does not contain duplicates.
             </p>
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values()" target="_top">Map.values()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#values()" target="_top">Map.values()</a>
                 
                 contains all values including the values
                 associated with duplicate keys.
@@ -323,7 +323,7 @@
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put()" target="_top">Map.put()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#put()" target="_top">Map.put()</a>
                 
                 appends a duplicate if the key already exists rather than replacing
                 the existing value, and always returns null.
@@ -331,14 +331,14 @@
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#remove()" target="_top">Map.remove()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#remove()" target="_top">Map.remove()</a>
                 
                 removes all duplicates for the specified key.
             </p>
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#get()" target="_top">Map.get()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#get()" target="_top">Map.get()</a>
                 
                 returns the first duplicate for the specified key.
             </p>
@@ -348,7 +348,7 @@
                 <a href="../../java/com/sleepycat/collections/StoredMap.html#duplicates(java.lang.Object)" target="_top">StoredMap.duplicates()</a>
                 
                 is an additional method for returning the values for a given key as a
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html" target="_top">Collection</a>.
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html" target="_top">Collection</a>.
             </p>
             </li>
           </ul>
@@ -360,22 +360,8 @@
           <ul type="disc">
             <li>
               <p>
-                All iterators for stored collections must be explicitly closed with
-                <a href="../../java/com/sleepycat/collections/StoredIterator.html#close(java.util.Iterator)" target="_top">StoredIterator.close()</a>.
-                The static method
-                <a href="../../java/com/sleepycat/collections/StoredIterator.html#close(java.util.Iterator)" target="_top">StoredIterator.close()</a>
-                
-                allows calling close
-                for all iterators without harm to iterators that are not from
-                stored collections, and also avoids casting. If a stored iterator
-                is not closed, unpredictable behavior including process death may
-                result.
-            </p>
-            </li>
-            <li>
-              <p>
                 Collection.size() and Map.size() always throws
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>.
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>.
                 This is because the number of
                 records in a database cannot be determined reliably or
                 cheaply.
@@ -409,16 +395,16 @@
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Comparator.html" target="_top">Comparator</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Comparator.html" target="_top">Comparator</a>
                 
                 objects cannot be used and the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#comparator()" target="_top">SortedMap.comparator()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedMap.html#comparator()" target="_top">SortedMap.comparator()</a>
                 
                 and
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html#comparator()" target="_top">SortedSet.comparator()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedSet.html#comparator()" target="_top">SortedSet.comparator()</a>
                 
                 methods always return null. The
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/Comparable.html" target="_top">Comparable</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Comparable.html" target="_top">Comparable</a>
                 
                 interface is not supported. However, Comparators that operate on
                 byte arrays may be specified using
@@ -431,7 +417,7 @@
             <li>
               <p>
                 The
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/Object.html#equals()" target="_top">Object.equals()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html#equals()" target="_top">Object.equals()</a>
                 
                 method is not used to determine whether a key
                 or value is contained in a collection, to locate a value by key,
@@ -462,7 +448,7 @@
         <p>
         The following characteristics of stored collections are
         extensions of the definitions in the 
-        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/package-summary.html" target="_top">java.util</a>
+        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/package-summary.html" target="_top">java.util</a>
         
         package. These differences do not violate the Java
         collections interface contract.
@@ -480,7 +466,7 @@
                 Locking is handled by the Berkeley DB
                 environment. To access a collection from multiple threads, creation
                 of synchronized collections using the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collections.html" target="_top">Collections</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collections.html" target="_top">Collections</a>
                 
                 class is not necessary 
                     <span>
@@ -494,7 +480,7 @@
                 All stored collections may be read-only if desired by passing
                 false for the writeAllowed parameter of their constructor. Creation
                 of immutable collections using the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collections.html" target="_top">Collections</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collections.html" target="_top">Collections</a>
                 
                 class is not necessary.
             </p>
@@ -504,48 +490,48 @@
                 A stored collection is partially read-only if a secondary
                 index is used. Specifically, values may be removed but may not be
                 added or updated. The following methods will throw
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>
                 
                 when an index is used:
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html#add()" target="_top">Collection.add()</a>,
-                <span><a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#set()" target="_top">List.set()</a>,</span>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#set()" target="_top">ListIterator.set()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html#add()" target="_top">Collection.add()</a>,
+                <span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#set()" target="_top">List.set()</a>,</span>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#set()" target="_top">ListIterator.set()</a>
                 
                 and
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html#setValue()" target="_top">Map.Entry.setValue()</a>.
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html#setValue()" target="_top">Map.Entry.setValue()</a>.
             </p>
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#entrySet()" target="_top">SortedMap.entrySet()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedMap.html#entrySet()" target="_top">SortedMap.entrySet()</a>
                 
                 and
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#keySet()" target="_top">SortedMap.keySet()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedMap.html#keySet()" target="_top">SortedMap.keySet()</a>
                 
                 return a
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>,
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>,
                 not just a
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html" target="_top">Set</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Set.html" target="_top">Set</a>
                 
                 as specified in Java collections interface. This allows using the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
                 
                 methods on the returned collection.
             </p>
             </li>
             <li>
               <p>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html#values()" target="_top">SortedMap.values()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedMap.html#values()" target="_top">SortedMap.values()</a>
                 
                 returns a
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>,
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>,
                 not just a
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html" target="_top">Collection</a>,
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html" target="_top">Collection</a>,
                 whenever the keys of the map can be derived from the values using
                 an entity binding. Note that the sorted set returned is not really
                 a set if duplicates are allowed, since it is technically a
                 collection; however, the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
                 
                 methods (for example, subSet()), can still be used.
             </p>
@@ -553,10 +539,10 @@
             <li>
               <p>
                 For
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedSet.html" target="_top">SortedSet</a>
                 
                 and
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/SortedMap.html" target="_top">SortedMap</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/SortedMap.html" target="_top">SortedMap</a>
                 
                 views, additional subSet() and subMap() methods are provided that
                 allow control over whether keys are treated as inclusive or
@@ -588,16 +574,16 @@
             <li>
               <p>
                 All iterators for stored collections implement the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html" target="_top">ListIterator</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html" target="_top">ListIterator</a>
                 
                 interface as well as the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Iterator.html" target="_top">Iterator</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Iterator.html" target="_top">Iterator</a>
                 
                 interface. This is to allow use of the
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#hasPrevious()" target="_top">ListIterator.hasPrevious()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#hasPrevious()" target="_top">ListIterator.hasPrevious()</a>
                 
                 and
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#previous()" target="_top">ListIterator.previous()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#previous()" target="_top">ListIterator.previous()</a>
                 
                 methods, which work for all collections
                 since Berkeley DB provides bidirectional cursors.
@@ -610,7 +596,7 @@
                 
                 method that allows creating
                 a read-only iterator for a writable collection. For the standard
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html#iterator()" target="_top">Collection.iterator()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html#iterator()" target="_top">Collection.iterator()</a>
                 
                 method, the iterator is read-only only
                 when the collection is read-only. 
@@ -633,18 +619,18 @@
                 When an entity binding is used, updating (setting) a value is
                 not allowed if the key in the entity is not equal to the original
                 key. For example, calling
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put()" target="_top">Map.put()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#put()" target="_top">Map.put()</a>
                 
                 is not allowed when the key parameter is not equal to the key of
                 the entity parameter.
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put()" target="_top">Map.put()</a>,
-                <span><a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#set()" target="_top">List.set()</a>,</span>
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#set()" target="_top">ListIterator.set()</a>,
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#put()" target="_top">Map.put()</a>,
+                <span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#set()" target="_top">List.set()</a>,</span>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#set()" target="_top">ListIterator.set()</a>,
                 and
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html#setValue()" target="_top">Map.Entry.setValue()</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html#setValue()" target="_top">Map.Entry.setValue()</a>
                 
                 will throw
-                <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/IllegalArgumentException.html" target="_top">IllegalArgumentException</a>
+                <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/IllegalArgumentException.html" target="_top">IllegalArgumentException</a>
                 
                 in this situation.
             </p>
@@ -655,13 +641,13 @@
                 sublists. This is simply an unimplemented feature and may be
                 changed in the future. Currently for sublists the following
                 methods throw 
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>:
-                    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#add()" target="_top">List.add()</a><tt class="methodname">List.add()</tt>,
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/List.html#remove()" target="_top">List.remove()</a><tt class="methodname">List.remove()</tt>, 
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/UnsupportedOperationException.html" target="_top">UnsupportedOperationException</a>:
+                    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#add()" target="_top">List.add()</a><tt class="methodname">List.add()</tt>,
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/List.html#remove()" target="_top">List.remove()</a><tt class="methodname">List.remove()</tt>, 
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#add()" target="_top">ListIterator.add()</a>
                         
                 and 
-                        <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/ListIterator.html#remove()" target="_top">ListIterator.remove()</a><tt class="methodname">ListIterator.remove()</tt>. 
+                        <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/ListIterator.html#remove()" target="_top">ListIterator.remove()</a><tt class="methodname">ListIterator.remove()</tt>. 
             </p>
             </li>
             <li>
@@ -781,20 +767,20 @@
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="UsingCollectionsAPI.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="UsingCollectionsAPI.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="collectionOverview.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="SerializedObjectStorage.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="SerializedObjectStorage.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
-        Using the  Java Collections API
-     </td>
+        Using the DB Java Collections API
+    Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> 
+          <td width="40%" align="right" valign="top">Â 
         Serialized Object Storage
     </td>
         </tr>

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: bt_stat.c,v 12.12 2006/08/24 14:44:45 bostic Exp $
+ * $Id: bt_stat.c,v 12.17 2007/06/01 16:30:27 bostic Exp $
  */
 
 #include "db_config.h"
@@ -77,7 +76,7 @@ __bam_stat(dbc, spp, flags)
 			goto err;
 
 		pgno = h->next_pgno;
-		if ((ret = __memp_fput(mpf, h, 0)) != 0)
+		if ((ret = __memp_fput(mpf, h, dbc->priority)) != 0)
 			goto err;
 		h = NULL;
 	}
@@ -93,7 +92,7 @@ __bam_stat(dbc, spp, flags)
 	sp->bt_levels = h->level;
 
 	/* Discard the root page. */
-	ret = __memp_fput(mpf, h, 0);
+	ret = __memp_fput(mpf, h, dbc->priority);
 	h = NULL;
 	if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 		ret = t_ret;
@@ -113,7 +112,7 @@ __bam_stat(dbc, spp, flags)
 	    (!MULTIVERSION(dbp) || dbc->txn != NULL);
 meta_only:
 	if (t->bt_meta != PGNO_BASE_MD || write_meta) {
-		ret = __memp_fput(mpf, meta, 0);
+		ret = __memp_fput(mpf, meta, dbc->priority);
 		meta = NULL;
 		if ((t_ret = __LPUT(dbc, metalock)) != 0 && ret == 0)
 			ret = t_ret;
@@ -151,6 +150,16 @@ meta_only:
 	sp->bt_minkey = meta->minkey;
 	sp->bt_re_len = meta->re_len;
 	sp->bt_re_pad = meta->re_pad;
+	/*
+	 * Don't take the page number from the meta-data page -- that value is
+	 * only maintained in the primary database, we may have been called on
+	 * a subdatabase.  (Yes, I read the primary database meta-data page
+	 * earlier in this function, but I'm asking the underlying cache so the
+	 * code for the Hash and Btree methods is the same.)
+	 */ 
+	if ((ret = __memp_get_last_pgno(dbp->mpf, &pgno)) != 0)
+		goto err;
+	sp->bt_pagecnt = pgno + 1;
 	sp->bt_pagesize = meta->dbmeta.pagesize;
 	sp->bt_magic = meta->dbmeta.magic;
 	sp->bt_version = meta->dbmeta.version;
@@ -165,14 +174,15 @@ meta_only:
 err:	/* Discard the second page. */
 	if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 		ret = t_ret;
-	if (h != NULL && (t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+	if (h != NULL &&
+	     (t_ret = __memp_fput(mpf, h, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/* Discard the metadata page. */
 	if ((t_ret = __LPUT(dbc, metalock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (meta != NULL &&
-	    (t_ret = __memp_fput(mpf, meta, 0)) != 0 && ret == 0)
+	    (t_ret = __memp_fput(mpf, meta, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	if (ret != 0 && sp != NULL) {
@@ -454,6 +464,7 @@ __bam_stat_print(dbc, flags)
 }
 #endif
 
+#ifndef HAVE_BREW
 /*
  * __bam_key_range --
  *	Return proportion of keys relative to given key.  The numbers are
@@ -483,6 +494,7 @@ __bam_key_range(dbc, dbt, kp, flags)
 	kp->less = kp->greater = 0.0;
 
 	factor = 1.0;
+
 	/* Correct the leaf page. */
 	cp->csp->entries /= 2;
 	cp->csp->indx /= 2;
@@ -524,6 +536,7 @@ __bam_key_range(dbc, dbt, kp, flags)
 
 	return (0);
 }
+#endif
 
 /*
  * __bam_traverse --
@@ -625,7 +638,8 @@ __bam_traverse(dbc, mode, root_pgno, callback, cookie)
 
 	ret = callback(dbp, h, cookie, &already_put);
 
-err:	if (!already_put && (t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+err:	if (!already_put &&
+	     (t_ret = __memp_fput(mpf, h, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __TLPUT(dbc, lock)) != 0 && ret == 0)
 		ret = t_ret;

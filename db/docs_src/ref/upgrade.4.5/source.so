@@ -1,0 +1,28 @@
+m4_comment([$Id: source.so,v 1.4 2006/11/13 18:05:05 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: Recno backing text source files,,
+    upgrade.4.5/config, upgrade.4.5/applog)
+
+m4_p([dnl
+In previous releases of m4_db, Recno access method backing source text
+files were opened using the ANSI C fopen function with the "r" and "w"
+modes.  This caused Windows systems to translate carriage-return and
+linefeed characters on input and output and could lead to database
+corruption.])
+
+m4_p([dnl
+In the current release, m4_db opens the backing source text files using
+the "rb" and "wb" modes, consequently carriage-return and linefeed
+characters will not be translated on Windows systems.])
+
+m4_p([dnl
+Applications using the backing source text file feature on systems where
+the "r/w" and "rb/wb" modes differ should evaluate their application as part
+of upgrading to the 4.5 release.  There is the possibility that
+characters have been translated or stripped and the backing source file
+has been corrupted.  (Applications on other systems, for example,
+POSIX-like systems, should not require any changes related to this
+issue.)])
+
+m4_page_footer

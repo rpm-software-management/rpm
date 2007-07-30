@@ -1,0 +1,34 @@
+m4_comment([$Id: log_compare.so,v 10.22 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, log_compare)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_compare),
+ifelse(M4API, C_API, [dnl
+int
+log_compare(const DB_LSN *lsn0, const DB_LSN *lsn1);
+])
+ifelse(M4API, CXX_API, [dnl
+static int
+DbEnv::log_compare(const DbLsn *lsn0, const DbLsn *lsn1);
+]))
+
+m4_p([dnl
+The m4_refT(log_compare) allows the caller to compare two
+ifelse(M4API, C_API, [DB_LSN structures,], [m4_ref(DbLsn) objects,])
+returning 0 if they are equal, 1 if m4_arg(lsn0) is greater than
+m4_arg(lsn1), and -1 if m4_arg(lsn0) is less than m4_arg(lsn1).])
+
+m4_parambegin
+m4_param(lsn0, [dnl
+The m4_arg(lsn0) parameter is one of the
+ifelse(M4API, C_API, [DB_LSN structures], [m4_ref(DbLsn) objects])
+to be compared.])
+m4_param(lsn1, [dnl
+The m4_arg(lsn1) parameter is one of the
+ifelse(M4API, C_API, [DB_LSN structures], [m4_ref(DbLsn) objects])
+to be compared.])
+m4_paramend
+
+m4_seealso(DbLog)
+m4_page_footer

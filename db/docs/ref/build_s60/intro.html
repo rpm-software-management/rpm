@@ -1,0 +1,68 @@
+<!--$Id: intro.so,v 1.7 2007/07/07 14:34:54 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building for S60</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for S60</dl></h3></td>
+<td align=right><a href="../build_brew/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Building for S60</h3>
+<p>This page has general instructions for building the Berkeley DB library and
+applications for the S60 platform.</p>
+<p>Building Berkeley DB for S60 requires S60 SDK version 3 or above with
+Symbian V9.1 or above; the 3rd Edition FP1 SDK is recommended.</p>
+<p>The NOKIA OpenC plugin should be installed on both emulator and device.</p>
+<p>CodeWarrior IDE for S60 V3.1 is recommended.</p>
+<h3>Building Berkeley DB for the S60 Emulator</h3>
+<p>The <b>build_s60</b> directory in the Berkeley DB distribution contains
+a <b>bdb_s60.mmp</b> project file, which can be imported to
+CodeWarrior or Carbide, etc.  This project file can be used to build the
+Berkeley DB library for the S60 platform.</p>
+<p>The steps for building the Berkeley DB library for the S60 emulator are
+as follows:</p>
+<ol>
+<p><li>Install the S60 SDK and OpenC library.
+<p><li>In CodeWarrior, select <i>File -&gt; Import project from .mmp file</i>.
+<p><li>Select an SDK to use with this project: <i>nokia -&gt;S60 S60_3rd_FP1</i>.
+<p><li>Click to browse for MMP file selection.  Look in the
+<b>build_s60</b> directory for Workspaces and select
+<i>bdb_s60.mmp</i>.
+<p><li>Click Next.
+<p><li>Click Finish.
+<p><li>Select build target to WINSCW UDEB, to build, press F7.
+</ol>
+<p>The build will create the file <b>bdb_s60.lib</b>, which is
+installed into <b>$EPOCROOT/epoc32/ release/winscw/udeb</b>, which can
+be linked by Berkeley DB applications for the emulator.</p>
+<h3>Building Berkeley DB Library for the Device</h3>
+<ol>
+<p><li>Install the CSL Arm tool chain.
+<p><li>From <b>$EPOCROOT/epoc32/release/armv5/lib</b>, add OpenC library
+libpthread.dso to the GCCE library(libc.dso already added).
+<p><li>Since Berkeley DB uses old-style function definitions, it will not be accepted
+by the default compiler:arm-none-symbianelf-g++.exe.  Change the
+compiler to arm-none-symbianelf-gcc.exe and specify the "-x c" option
+there.
+<p><li>Select build target to GCCE UREL, to build, press F7.
+</ol>
+<p>The build will create the file <b>bdb_s60.lib</b>, which is
+installed into <b>$EPOCROOT/epoc32/ release/armv5/urel</b>, which can
+be linked by Berkeley DB applications for device.</p>
+<h3>Building a S60 application with the Berkeley DB library</h3>
+<p>Building a Berkeley DB application in the S60 environment is similar
+to building in a Windows environment.  Ensure the include file
+<b>build_s60/db.h</b> is in the build include path and the created
+<b>bdb_s60.lib</b> is in the build library path.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_brew/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

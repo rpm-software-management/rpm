@@ -1,0 +1,39 @@
+m4_comment([$Id: faq.so,v 10.3 2002/12/10 23:41:42 mjc Exp $])
+
+m4_ref_title(Programmer Notes,
+    Programmer notes FAQ,, program/runtime, lock/intro)
+
+m4_nlistbegin
+
+m4_idefz(task/thread @priority)
+m4_nlist([dnl
+m4_bold([What priorities should threads/tasks executing m4_db functions
+be given?])
+
+m4_p([dnl
+Tasks executing m4_db functions should have the same, or roughly
+equivalent, system priorities.  For example, it can be dangerous to give
+tasks of control performing checkpoints a lower priority than tasks of
+control doing database lookups, and starvation can sometimes result.])])
+
+m4_nlist([dnl
+m4_bold([Why isn't the C++ API exception safe?])
+
+m4_p([dnl
+The m4_db C++ API is a thin wrapper around the C API that maps most
+return values to exceptions, and gives the C++ handles the same
+lifecycles as their C counterparts.  One consequence is that if an
+exception occurs while a cursor or transaction handle is open, the
+application must explicitly close the cursor or abort the transaction.])
+
+m4_p([dnl
+Applications can be simplified and bugs avoided by creating wrapper
+classes around m4_ref(Dbc) and m4_ref(DbTxn) that call the appropriate
+cleanup method in the wrapper's destructor.  By creating an instance
+of the wrappers on the stack, C++ scoping rules will ensure that the
+destructor is called before exception handling unrolls the block that
+contains the wrapper object.])])
+
+m4_nlistend
+
+m4_page_footer

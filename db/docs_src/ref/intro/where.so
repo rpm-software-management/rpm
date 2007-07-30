@@ -1,0 +1,39 @@
+m4_comment([$Id: where.so,v 10.32 2003/05/26 16:04:06 bostic Exp $])
+
+m4_ref_title(Introduction,
+    Where does m4_db run?,, intro/distrib, intro/products)
+
+m4_p([dnl
+m4_db requires only underlying m4_posix1_name system calls and can be
+ported easily to new architectures by adding stub routines to connect
+the native system interfaces to the m4_db POSIX-style system calls.
+See m4_link(M4RELDIR/ref/distrib/port, Porting m4_db to new
+architectures) for more information.])
+
+m4_p([dnl
+m4_db will autoconfigure and run on almost any modern UNIX, POSIX or
+Linux systems, and on most historical UNIX platforms.  m4_db will
+autoconfigure and run on almost any GNU gcc toolchain-based embedded
+platform, including Cygwin, OpenLinux and others.  See
+m4_link(M4RELDIR/ref/build_unix/intro, Building for UNIX systems) for
+more information.])
+
+m4_p([dnl
+The m4_db distribution includes support for QNX Neutrino.  See
+m4_link(M4RELDIR/ref/build_unix/intro, Building for UNIX systems) for
+more information.])
+
+m4_p([dnl
+The m4_db distribution includes support for VxWorks, via a workspace
+and project files for Tornado 2.0.  See
+m4_link(M4RELDIR/ref/build_vxworks/intro, Building for VxWorks) for more
+information.])
+
+m4_p([dnl
+The m4_db distribution includes support for Windows/95, Windows/98,
+Windows/NT, Windows/2000 and Windows/XP, via the Microsoft Visual C++
+6.0 and .NET development environments.  See
+m4_link(M4RELDIR/ref/build_win/intro, Building for Windows systems)
+for more information.])
+
+m4_page_footer

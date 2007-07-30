@@ -1,13 +1,12 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2006,2007 Oracle.  All rights reserved.
 #
-# $Id: test122.tcl,v 1.3 2006/08/24 14:46:41 bostic Exp $
+# $Id: test122.tcl,v 1.6 2007/05/24 18:20:47 carol Exp $
 #
 # TEST	test122
 # TEST	Tests of multi-version concurrency control.
-#
+# TEST
 # TEST	MVCC and databases that turn multi-version on and off.
 
 proc test122 { method {tnum "122"} args } {

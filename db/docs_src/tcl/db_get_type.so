@@ -1,0 +1,16 @@
+m4_comment([$Id: db_get_type.so,v 11.11 2002/08/18 21:17:25 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db get_type, m4_tcl_db_get_type, [dnl
+db get_type
+])
+
+m4_p([dnl
+The m4_tcl_db_get_type command returns the underlying database type,
+returning one of "btree", "hash", "queue" or "recno".])
+
+m4_tcl_ret_error
+
+m4_page_footer

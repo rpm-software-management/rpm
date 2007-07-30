@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
 		Implementing the Main Program
 	</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
-    <link rel="up" href="BasicProgram.html" title="Chapter 2. &#10;&#9;&#9;The Basic Program&#10;&#9;" />
+    <link rel="up" href="BasicProgram.html" title="ChapterÂ 2.Â &#10;&#9;&#9;The Basic Program&#10;&#9;" />
     <link rel="previous" href="createbindingscollections.html" title="&#10;&#9;&#9;Creating Bindings and Collections&#10;&#9;" />
     <link rel="next" href="usingtransactions.html" title="&#10;&#9;&#9;Using Transactions&#10;&#9;" />
   </head>
@@ -22,11 +22,11 @@
 	</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="createbindingscollections.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. 
+          <td width="20%" align="left"><a accesskey="p" href="createbindingscollections.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â 
 		The Basic Program
 	</th>
-          <td width="20%" align="right"> <a accesskey="n" href="usingtransactions.html">Next</a></td>
+          <td width="20%" align="right">Â <a accesskey="n" href="usingtransactions.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -96,21 +96,21 @@ public class Sample
       <a id="cb_main"></a>
       <pre class="programlisting">    public static void main(String[] args)
     {
-<b class="userinput"><tt>        System.out.println(&quot;\nRunning sample: &quot; + Sample.class);
-        String homeDir = &quot;./tmp&quot;;
+<b class="userinput"><tt>        System.out.println("\nRunning sample: " + Sample.class);
+        String homeDir = "./tmp";
         for (int i = 0; i &lt; args.length; i += 1)
         {
             String arg = args[i];
-            if (args[i].equals(&quot;-h&quot;) &amp;&amp; i &lt; args.length - 1)
+            if (args[i].equals("-h") &amp;&amp; i &lt; args.length - 1)
             {
                 i += 1;
                 homeDir = args[i];
             }
             else
             {
-                System.err.println(&quot;Usage:\n java &quot; + 
+                System.err.println("Usage:\n java " + 
                                    Sample.class.getName() +
-                                  &quot;\n  [-h &lt;home-directory&gt;]&quot;);
+                                  "\n  [-h &lt;home-directory&gt;]");
                 System.exit(2);
             }
         }</tt></b>
@@ -128,7 +128,7 @@ public class Sample
 	to configure their database environment home directory.
 </p>
       <p>
-    The default for the home directory is <tt class="filename">./tmp</tt> &#8212; the tmp
+    The default for the home directory is <tt class="filename">./tmp</tt> â€” the tmp
 	subdirectory of the current directory where the sample is run. The
 	home directory must exist before running the sample. To re-create
 	the sample database from scratch, delete all files in the home
@@ -174,7 +174,7 @@ public class Sample
                 }
                 catch (Exception e)
                 {
-                    System.err.println(&quot;Exception during database close:&quot;);
+                    System.err.println("Exception during database close:");
                     e.printStackTrace();
                 }
             }
@@ -230,20 +230,20 @@ public class Sample
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="createbindingscollections.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="createbindingscollections.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="BasicProgram.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="usingtransactions.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="usingtransactions.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
 		Creating Bindings and Collections
-	 </td>
+	Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> 
+          <td width="40%" align="right" valign="top">Â 
 		Using Transactions
 	</td>
         </tr>

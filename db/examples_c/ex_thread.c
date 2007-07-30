@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: ex_thread.c,v 12.4 2006/08/24 14:45:42 bostic Exp $
+ * $Id: ex_thread.c,v 12.7 2007/06/13 12:31:31 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -442,10 +441,8 @@ db_init(home)
 		    "%s: db_env_create: %s\n", progname, db_strerror(ret));
 		return (EXIT_FAILURE);
 	}
-	if (punish) {
+	if (punish)
 		(void)dbenv->set_flags(dbenv, DB_YIELDCPU, 1);
-		(void)db_env_set_func_yield(sched_yield);
-	}
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);

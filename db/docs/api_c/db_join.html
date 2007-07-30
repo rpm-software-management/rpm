@@ -1,6 +1,5 @@
-<!--$Id: db_join.so,v 10.57 2005/02/10 20:02:28 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_join.so,v 10.58 2007/05/31 18:52:36 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -34,10 +33,10 @@ information on how to organize your data to use this functionality, see
 <a href="../ref/am/join.html">Equality join</a>.</p>
 <p>The DB-&gt;join method method is called using the <a href="../api_c/db_class.html">DB</a> handle of
 the primary database.</p>
-<p>The join cursor supports only the <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> and <b>dbc_close</b>
+<p>The join cursor supports only the <a href="../api_c/dbc_get.html">DBcursor-&gt;get</a> and <b>dbc_close</b>
 cursor functions:</p>
 <dl compact>
-<dt><a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a><dd>Iterates over the values associated with the keys to which each item in
+<dt><a href="../api_c/dbc_get.html">DBcursor-&gt;get</a><dd>Iterates over the values associated with the keys to which each item in
 <b>curslist</b> was initialized.  Any data value that appears in all
 items specified by the <b>curslist</b> parameter is then used as a key
 into the <b>primary</b>, and the key/data pair found in the
@@ -52,16 +51,18 @@ The data parameter is left unchanged.
 In addition, the following flag may be set by
 bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
 <dl compact>
-<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Read modified but not yet committed data.  Silently ignored if the
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Configure a transactional join operation to have degree 1 isolation,
+reading modified but not yet committed data.  Silently ignored if the
 <a href="../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
 database was opened.
-<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
-Setting this flag can eliminate deadlock during a read-modify-write
-cycle by acquiring the write lock during the read part of the cycle so
-that another thread of control acquiring a read lock for the same item,
-in its own read-modify-write cycle, will not result in deadlock.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the read, if
+locking is configured.  Setting this flag can eliminate deadlock during
+a read-modify-write cycle by acquiring the write lock during the read
+part of the cycle so that another thread of control acquiring a read
+lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
 </dl>
-<dt><a href="../api_c/dbc_close.html">DBcursor-&gt;c_close</a><dd>Close the returned cursor and release all resources.  (Closing the cursors
+<dt><a href="../api_c/dbc_close.html">DBcursor-&gt;close</a><dd>Close the returned cursor and release all resources.  (Closing the cursors
 in <b>curslist</b> is the responsibility of the caller.)
 </dl>
 <p>The DB-&gt;join method
@@ -73,7 +74,7 @@ and 0 on success.
 <dt><b>curslist</b><dd>The <b>curslist</b> parameter contains a NULL terminated array of cursors.
 Each cursor must have been initialized to refer to the key on which the
 underlying database should be joined.  Typically, this initialization is done
-by a <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> call with the <a href="../api_c/dbc_get.html#DB_SET">DB_SET</a> flag specified.  Once the
+by a <a href="../api_c/dbc_get.html">DBcursor-&gt;get</a> call with the <a href="../api_c/dbc_get.html#DB_SET">DB_SET</a> flag specified.  Once the
 cursors have been passed as part of a <b>curslist</b>, they should not
 be accessed or modified until the newly created join cursor has been closed,
 or else inconsistent results may be returned.
@@ -114,7 +115,7 @@ unrolled a committed transaction.
 <dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
 </dl>
 <dl compact>
-<dt>EINVAL<dd>If cursor methods other than  <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> or <a href="../api_c/dbc_close.html">DBcursor-&gt;c_close</a> were
+<dt>EINVAL<dd>If cursor methods other than  <a href="../api_c/dbc_get.html">DBcursor-&gt;get</a> or <a href="../api_c/dbc_close.html">DBcursor-&gt;close</a> were
 called; or if an
 invalid flag value or parameter was specified.
 </dl>
@@ -127,6 +128,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

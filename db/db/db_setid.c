@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: db_setid.c,v 12.16 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_setid.c,v 12.26 2007/05/26 00:13:14 ubell Exp $
  */
 
 #include "db_config.h"
@@ -74,11 +73,12 @@ __env_fileid_reset(dbenv, name, encrypted)
 	DBT key, data;
 	DB_FH *fhp;
 	DB_MPOOLFILE *mpf;
+	DB_PGINFO cookie;
 	db_pgno_t pgno;
 	int t_ret, ret;
 	size_t n;
 	char *real_name;
-	u_int8_t fileid[DB_FILE_ID_LEN], mbuf[256];
+	u_int8_t fileid[DB_FILE_ID_LEN], mbuf[DBMETASIZE];
 	void *pagep;
 
 	dbp = NULL;
@@ -100,24 +100,45 @@ __env_fileid_reset(dbenv, name, encrypted)
 	 * cache, which means if we open this file through the cache before
 	 * updating the file ID on page 0, we might connect to the file from
 	 * which the copy was made.
-	 *
-	 * !!!
-	 * This code depends on page 0 of the file not being encrypted.
 	 */
-	if ((ret = __os_open(dbenv, real_name, 0, 0, &fhp)) != 0)
+	if ((ret = __os_open(dbenv, real_name, 0, 0, 0, &fhp)) != 0) {
+		__db_err(dbenv, ret, "%s", real_name);
 		goto err;
+	}
 	if ((ret = __os_read(dbenv, fhp, mbuf, sizeof(mbuf), &n)) != 0)
 		goto err;
+
 	if (n != sizeof(mbuf)) {
 		ret = EINVAL;
 		__db_errx(dbenv,
 		    "%s: unexpected file type or format", real_name);
 		goto err;
 	}
+
+	/*
+	 * Create the DB object.
+	 */
+	if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
+		goto err;
+
+	/* If configured with a password, the databases are encrypted. */
+	if (encrypted && (ret = __db_set_flags(dbp, DB_ENCRYPT)) != 0)
+		goto err;
+
+	if ((ret = __db_meta_setup(dbenv,
+	    dbp, real_name, (DBMETA *)mbuf, 0, DB_CHK_META)) != 0)
+		goto err;
 	memcpy(((DBMETA *)mbuf)->uid, fileid, DB_FILE_ID_LEN);
+	cookie.db_pagesize = sizeof(mbuf);
+	cookie.flags = dbp->flags;
+	cookie.type = dbp->type;
+	key.data = &cookie;
+
+	if ((ret = __db_pgout(dbenv, 0, mbuf, &key)) != 0)
+		goto err;
 	if ((ret = __os_seek(dbenv, fhp, 0, 0, 0)) != 0)
 		goto err;
-	if ((ret = __os_write(dbenv, fhp, mbuf, 256, &n)) != 0)
+	if ((ret = __os_write(dbenv, fhp, mbuf, sizeof(mbuf), &n)) != 0)
 		goto err;
 	if ((ret = __os_fsync(dbenv, fhp)) != 0)
 		goto err;
@@ -128,15 +149,7 @@ __env_fileid_reset(dbenv, name, encrypted)
 	 * the file in the cache, and update the file IDs for subdatabases.
 	 * (No existing code, as far as I know, actually uses the file ID of
 	 * a subdatabase, but it's cleaner to get them all.)
-	 *
-	 * Create the DB object.
 	 */
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
-		goto err;
-
-	/* If configured with a password, the databases are encrypted. */
-	if (encrypted && (ret = __db_set_flags(dbp, DB_ENCRYPT)) != 0)
-		goto err;
 
 	/*
 	 * Open the DB file.
@@ -163,7 +176,7 @@ __env_fileid_reset(dbenv, name, encrypted)
 	memset(&data, 0, sizeof(data));
 	if ((ret = __db_cursor(dbp, NULL, &dbcp, 0)) != 0)
 		goto err;
-	while ((ret = __db_c_get(dbcp, &key, &data, DB_NEXT)) == 0) {
+	while ((ret = __dbc_get(dbcp, &key, &data, DB_NEXT)) == 0) {
 		/*
 		 * XXX
 		 * We're handling actual data, not on-page meta-data, so it
@@ -176,13 +189,13 @@ __env_fileid_reset(dbenv, name, encrypted)
 		    DB_MPOOL_DIRTY, &pagep)) != 0)
 			goto err;
 		memcpy(((DBMETA *)pagep)->uid, fileid, DB_FILE_ID_LEN);
-		if ((ret = __memp_fput(mpf, pagep, 0)) != 0)
+		if ((ret = __memp_fput(mpf, pagep, dbcp->priority)) != 0)
 			goto err;
 	}
 	if (ret == DB_NOTFOUND)
 		ret = 0;
 
-err:	if (dbcp != NULL && (t_ret = __db_c_close(dbcp)) != 0 && ret == 0)
+err:	if (dbcp != NULL && (t_ret = __dbc_close(dbcp)) != 0 && ret == 0)
 		ret = t_ret;
 	if (dbp != NULL && (t_ret = __db_close(dbp, NULL, 0)) != 0 && ret == 0)
 		ret = t_ret;

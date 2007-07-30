@@ -1,0 +1,62 @@
+m4_comment([$Id: memp_set_maxsize.so,v 1.15 2005/09/17 16:30:18 bostic Exp $])
+
+define(M4PAGELOCAL, [memp_set_maxsize, memp_get_maxsize])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_maxsize),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__set_maxsize(DB_MPOOLFILE *mpf,
+    u_int32_t gbytes, u_int32_t bytes);
+m4_blank
+int
+DB_MPOOLFILE-__GT__get_maxsize(DB_MPOOLFILE *mpf,
+    u_int32_t *gbytesp, u_int32_t *bytesp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::set_maxsize(u_int32_t gbytes, u_int32_t bytes);
+m4_blank
+int
+DbMpoolFile::get_maxsize(u_int32_t *gbytesp, u_int32_t *bytesp);
+]))
+
+m4_p([dnl
+Set the maximum size for the file to be m4_arg(gbytes) gigabytes plus
+m4_arg(bytes).  Attempts to allocate new pages in the file after the
+limit has been reached will fail.])
+
+m4_p([dnl
+To set the maximum file size for a particular database, call the
+m4_refT(memp_set_maxsize) using the m4_ref(DbMpoolFile) handle stored
+in the m4_arg(mpf) field of the m4_ref(Db) handle.  Attempts to insert
+new items into the database after the limit has been reached may fail.])
+
+m4_scope_mpf(memp_set_maxsize)
+
+m4_when_any(memp_set_maxsize)
+
+m4_return(memp_set_maxsize, std)
+
+m4_parambegin
+m4_param(bytes, [dnl
+The maximum size of the file is set to m4_arg(gbytes) gigabytes plus
+m4_arg(bytes).])
+m4_param(gbytes, [dnl
+The maximum size of the file is set to m4_arg(gbytes) gigabytes plus
+m4_arg(bytes).])
+m4_paramend
+
+m4_pf_description(m4_ref(memp_get_maxsize))
+
+m4_return(memp_get_maxsize, std)
+
+m4_when_any(memp_get_maxsize)
+
+m4_parambegin
+m4_param_co(bytesp, additional bytes of memory in the maximum file size)
+m4_param_co(gbytesp, gigabytes of memory in the maximum file size)
+m4_paramend
+
+m4_seealso(DbMpool)
+m4_page_footer

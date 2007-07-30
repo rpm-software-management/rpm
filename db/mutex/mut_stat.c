@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mut_stat.c,v 12.17 2006/08/24 14:46:16 bostic Exp $
+ * $Id: mut_stat.c,v 12.26 2007/05/17 17:18:01 bostic Exp $
  */
 
 #include "db_config.h"
@@ -19,14 +18,40 @@ static int __mutex_print_all __P((DB_ENV *, u_int32_t));
 static const char *__mutex_print_id __P((int));
 static int __mutex_print_stats __P((DB_ENV *, u_int32_t));
 static void __mutex_print_summary __P((DB_ENV *));
+static int __mutex_stat __P((DB_ENV *, DB_MUTEX_STAT **, u_int32_t));
+
+/*
+ * __mutex_stat_pp --
+ *	DB_ENV->mutex_stat pre/post processing.
+ *
+ * PUBLIC: int __mutex_stat_pp __P((DB_ENV *, DB_MUTEX_STAT **, u_int32_t));
+ */
+int
+__mutex_stat_pp(dbenv, statp, flags)
+	DB_ENV *dbenv;
+	DB_MUTEX_STAT **statp;
+	u_int32_t flags;
+{
+	DB_THREAD_INFO *ip;
+	int ret;
+
+	PANIC_CHECK(dbenv);
+
+	if ((ret = __db_fchk(dbenv,
+	    "DB_ENV->mutex_stat", flags, DB_STAT_CLEAR)) != 0)
+		return (ret);
+
+	ENV_ENTER(dbenv, ip);
+	REPLICATION_WRAP(dbenv, (__mutex_stat(dbenv, statp, flags)), ret);
+	ENV_LEAVE(dbenv, ip);
+	return (ret);
+}
 
 /*
  * __mutex_stat --
  *	DB_ENV->mutex_stat.
- *
- * PUBLIC: int __mutex_stat __P((DB_ENV *, DB_MUTEX_STAT **, u_int32_t));
  */
-int
+static int
 __mutex_stat(dbenv, statp, flags)
 	DB_ENV *dbenv;
 	DB_MUTEX_STAT **statp;
@@ -38,10 +63,6 @@ __mutex_stat(dbenv, statp, flags)
 	int ret;
 
 	PANIC_CHECK(dbenv);
-
-	if ((ret = __db_fchk(dbenv,
-	    "DB_ENV->mutex_stat", flags, DB_STAT_CLEAR)) != 0)
-		return (ret);
 
 	*statp = NULL;
 	mtxmgr = dbenv->mutex_handle;
@@ -70,6 +91,32 @@ __mutex_stat(dbenv, statp, flags)
 }
 
 /*
+ * __mutex_stat_print_pp --
+ *	DB_ENV->mutex_stat_print pre/post processing.
+ *
+ * PUBLIC: int __mutex_stat_print_pp __P((DB_ENV *, u_int32_t));
+ */
+int
+__mutex_stat_print_pp(dbenv, flags)
+	DB_ENV *dbenv;
+	u_int32_t flags;
+{
+	DB_THREAD_INFO *ip;
+	int ret;
+
+	PANIC_CHECK(dbenv);
+
+	if ((ret = __db_fchk(dbenv, "DB_ENV->mutex_stat_print",
+	    flags, DB_STAT_ALL | DB_STAT_CLEAR)) != 0)
+		return (ret);
+
+	ENV_ENTER(dbenv, ip);
+	REPLICATION_WRAP(dbenv, (__mutex_stat_print(dbenv, flags)), ret);
+	ENV_LEAVE(dbenv, ip);
+	return (ret);
+}
+
+/*
  * __mutex_stat_print
  *	DB_ENV->mutex_stat_print method.
  *
@@ -83,14 +130,8 @@ __mutex_stat_print(dbenv, flags)
 	u_int32_t orig_flags;
 	int ret;
 
-	PANIC_CHECK(dbenv);
-
-	if ((ret = __db_fchk(dbenv, "DB_ENV->mutex_stat_print",
-	    flags, DB_STAT_ALL | DB_STAT_CLEAR)) != 0)
-		return (ret);
-
 	orig_flags = flags;
-	LF_CLR(DB_STAT_CLEAR);
+	LF_CLR(DB_STAT_CLEAR | DB_STAT_SUBSYSTEM);
 	if (flags == 0 || LF_ISSET(DB_STAT_ALL)) {
 		ret = __mutex_print_stats(dbenv, orig_flags);
 		__mutex_print_summary(dbenv);
@@ -149,10 +190,6 @@ __mutex_print_stats(dbenv, flags)
 	u_int32_t flags;
 {
 	DB_MUTEX_STAT *sp;
-	DB_MUTEXMGR *mtxmgr;
-	DB_MUTEXREGION *mtxregion;
-	REGINFO *infop;
-	THREAD_INFO *thread;
 	int ret;
 
 	if ((ret = __mutex_stat(dbenv, &sp, LF_ISSET(DB_STAT_CLEAR))) != 0)
@@ -175,20 +212,6 @@ __mutex_print_stats(dbenv, flags)
 	STAT_ULONG("Mutex maximum in-use count", sp->st_mutex_inuse_max);
 
 	__os_ufree(dbenv, sp);
-
-	/*
-	 * Dump out the info we have on thread tracking, we do it here only
-	 * because we share the region.
-	 */
-	if (dbenv->thr_hashtab != NULL) {
-		mtxmgr = dbenv->mutex_handle;
-		mtxregion = mtxmgr->reginfo.primary;
-		infop = &mtxmgr->reginfo;
-		thread = R_ADDR(infop, mtxregion->thread_off);
-		STAT_ULONG("Thread blocks allocated", thread->thr_count);
-		STAT_ULONG("Thread allocation threshold", thread->thr_max);
-		STAT_ULONG("Thread hash buckets", thread->thr_nbucket);
-	}
 
 	return (0);
 }
@@ -222,7 +245,7 @@ __mutex_print_all(dbenv, flags)
 	mtxmgr = dbenv->mutex_handle;
 	mtxregion = mtxmgr->reginfo.primary;
 
-	__db_print_reginfo(dbenv, &mtxmgr->reginfo, "Mutex");
+	__db_print_reginfo(dbenv, &mtxmgr->reginfo, "Mutex", flags);
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 
 	__db_msg(dbenv, "DB_MUTEXREGION structure:");
@@ -282,6 +305,8 @@ __mutex_print_debug_single(dbenv, tag, mutex, flags)
 	DB_MSGBUF_INIT(&mb);
 	mbp = &mb;
 
+	if (LF_ISSET(DB_STAT_SUBSYSTEM))
+		LF_CLR(DB_STAT_CLEAR);
 	__db_msgadd(dbenv, mbp, "%lu\t%s ", (u_long)mutex, tag);
 	__mutex_print_debug_stats(dbenv, mbp, mutex, flags);
 	DB_MSGBUF_FLUSH(dbenv, mbp);
@@ -427,7 +452,7 @@ __mutex_clear(dbenv, mutex)
 #else /* !HAVE_STATISTICS */
 
 int
-__mutex_stat(dbenv, statp, flags)
+__mutex_stat_pp(dbenv, statp, flags)
 	DB_ENV *dbenv;
 	DB_MUTEX_STAT **statp;
 	u_int32_t flags;
@@ -439,7 +464,7 @@ __mutex_stat(dbenv, statp, flags)
 }
 
 int
-__mutex_stat_print(dbenv, flags)
+__mutex_stat_print_pp(dbenv, flags)
 	DB_ENV *dbenv;
 	u_int32_t flags;
 {

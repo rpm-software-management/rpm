@@ -1,6 +1,5 @@
 <!--$Id: second.so,v 10.12 2004/09/15 19:40:07 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -149,8 +148,8 @@ skey.size = 15;
 if ((ret = sdbp-&gt;del(sdbp, txn, &skey, 0)) != 0)
 	handle_error(ret);</pre></blockquote>
 <p>Gets on a secondary automatically return the primary datum.  If
-<a href="../../api_c/db_get.html">DB-&gt;pget</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_pget</a> is used in lieu of <a href="../../api_c/db_get.html">DB-&gt;get</a>
-or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a>, the primary key is returned as well.  Thus, the
+<a href="../../api_c/db_get.html">DB-&gt;pget</a> or <a href="../../api_c/dbc_get.html">DBcursor-&gt;pget</a> is used in lieu of <a href="../../api_c/db_get.html">DB-&gt;get</a>
+or <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a>, the primary key is returned as well.  Thus, the
 equivalent of:</p>
 <blockquote><pre>SELECT * from lname WHERE (lastname = "Churchill      ");</pre></blockquote>
 <p>would be:</p>
@@ -173,11 +172,11 @@ argument to the <a href="../../api_c/db_associate.html">DB-&gt;associate</a> met
 alternate interfaces to the primary database.  All updates to the
 primary will be automatically reflected in each secondary index that has
 been associated with it.  All get operations using the <a href="../../api_c/db_get.html">DB-&gt;get</a>
-or <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods on the secondary index return the primary datum
+or <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> methods on the secondary index return the primary datum
 associated with the specified (or otherwise current, in the case of
 cursor operations) secondary key.  The <a href="../../api_c/db_get.html">DB-&gt;pget</a> and
-<a href="../../api_c/dbc_get.html">DBcursor-&gt;c_pget</a> methods also become usable; these behave just like
-<a href="../../api_c/db_get.html">DB-&gt;get</a> and <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a>, but return the primary key in
+<a href="../../api_c/dbc_get.html">DBcursor-&gt;pget</a> methods also become usable; these behave just like
+<a href="../../api_c/db_get.html">DB-&gt;get</a> and <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a>, but return the primary key in
 addition to the primary datum, for those applications that need it as
 well.</p>
 <p>Cursor get operations on a secondary index perform as expected; although
@@ -189,7 +188,7 @@ function or other structure of the secondary database.</p>
 database and all relevant secondaries, including the current one.</p>
 <p>Put operations of any kind are forbidden on secondary indices, as there
 is no way to specify a primary key for a newly put item.  Instead, the
-application should use the <a href="../../api_c/dbc_put.html">DBcursor-&gt;c_put</a> or <a href="../../api_c/db_put.html">DB-&gt;put</a> methods
+application should use the <a href="../../api_c/dbc_put.html">DBcursor-&gt;put</a> or <a href="../../api_c/db_put.html">DB-&gt;put</a> methods
 on the primary database.</p>
 <p>Any number of secondary indices may be associated with a given primary
 database, up to limitations on available memory and the number of open
@@ -214,6 +213,6 @@ a new database handle and the <a href="../../api_c/db_remove.html">DB-&gt;remove
 secondary database handles associated with it.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am/close.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/cursor.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

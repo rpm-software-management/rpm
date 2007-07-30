@@ -1,0 +1,62 @@
+m4_comment([$Id: env_set_cache_max.so,v 1.2 2007/07/07 14:40:15 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_cache_max, dbenv_get_cache_max])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_cache_max),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_cache_max(DB_ENV *dbenv, u_int32_t gbytes, u_int32_t bytes);
+m4_blank
+int
+DB_ENV-__GT__get_cache_max(DB_ENV *dbenv, u_int32_t *gbytesp, u_int32_t *bytesp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_cache_max(u_int32_t gbytes, u_int32_t bytes);
+m4_blank
+int
+DbEnv::get_cache_max(u_int32_t *gbytesp, u_int32_t *bytesp);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_set_cache_max) sets the maximum cache size, in bytes.
+The specified size is rounded to the nearest multiple of the cache
+region size, which is the initial cache size divided by the number of
+regions specified to the m4_refT(dbenv_set_cachesize).  If no value is
+specified, it defaults to the initial cache size.])
+
+m4_env_config(dbenv_set_cache_max,
+[maximum cache size], set_cache_max, [the size in bytes])
+
+m4_scope_env(dbenv_set_cache_max)
+
+m4_when_any(dbenv_set_cache_max)
+
+m4_return(dbenv_set_cache_max, std)
+
+m4_parambegin
+m4_param(mp_mmapsize, [dnl
+The m4_arg(mp_mmapsize) parameter is the maximum file size, in bytes,
+for a file to be mapped into the process address space.])
+m4_paramend
+
+m4_err(dbenv_set_cache_max,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_description(m4_ref(dbenv_get_cache_max))
+
+m4_p([dnl
+The m4_refT(dbenv_get_cache_max) returns the maximum size of the cache.])
+
+m4_when_any(dbenv_get_cache_max)
+
+m4_return(dbenv_get_cache_max, std)
+
+m4_parambegin
+m4_param_co(bytesp, additional bytes of memory in the cache)
+m4_param_co(gbytesp, gigabytes of memory in the cache)
+m4_paramend
+
+m4_seealso(DbEnv, DbMpool)
+m4_page_footer

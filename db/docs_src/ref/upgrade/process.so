@@ -1,0 +1,186 @@
+m4_comment([$Id: process.so,v 1.15 2006/10/09 16:51:34 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db installations,,
+    upgrade/version, changelog/toc)
+
+m4_p([dnl
+The following information describes the general process of upgrading
+m4_db installations.  There are four areas to be considered when
+upgrading m4_db applications and database environments: the application
+API, the database environment's region files, the underlying database
+formats, and, in the case of transactional database environments, the
+log files.  The upgrade procedures required depend on whether or not
+the release is a major or minor release (in which either the major or
+minor number of the version changed), or a patch release (in which only
+the patch number in the version changed).  m4_db major and minor
+releases may optionally include changes in all four areas, that is, the
+application API, region files, database formats, and log files may not
+be backward-compatible with previous releases.])
+
+m4_p([dnl
+Each m4_db major or minor release has information in this chapter of
+the Reference Guide, describing how to upgrade to the new release.  The
+section describes any API changes made in the release.  Application
+maintainers should review the API changes and update their applications
+as necessary before recompiling with the new release.  In addition, each
+section includes a page specifying whether the log file format or
+database formats changed in non-backward-compatible ways as part of the
+release.  Because there are several underlying m4_db database formats,
+and they do not all necessarily change in the same release, changes to
+a database format in a release may not affect any particular
+application.  Further, database and log file formats may have changed
+but be entirely backward-compatible, in which case no upgrade will be
+necessary.])
+
+m4_p([dnl
+A m4_db patch release will never modify the API, regions, log files, or
+database formats in incompatible ways, and so applications need only be
+relinked (or, in the case of a shared library, pointed at the new
+version of the shared library) to upgrade to a new release.  Note that
+internal m4_db interfaces may change at any time and in any release
+(including patch releases) without warning.  This means the library must
+be entirely recompiled and reinstalled when upgrading to new releases
+of the library because there is no guarantee that modules from one
+version of the library will interact correctly with modules from another
+release.  We recommend using the same compiler release when building
+patch releases as was used to build the original release; in the default
+configuration, the m4_db library shares data structures from underlying
+shared memory between threads of control, and should the compiler
+re-order fields or otherwise change those data structures between the
+two builds, errors may result.])
+
+m4_p([If the release is a patch release, do the following:])
+
+m4_nlistbegin
+m4_nlist([Shut down the old version of the application.])
+m4_nlistns([dnl
+Install the new version of the application by relinking or installing
+a new version of the m4_db shared library.])
+m4_nlistns([Restart the application.])
+m4_nlistend
+
+m4_p([dnl
+Otherwise, if the application m4_bold(does not) have a m4_db
+transactional environment, the application may be installed in the field
+using the following steps:])
+
+m4_nlistbegin
+m4_nlist([Shut down the old version of the application.])
+m4_nlistns([dnl
+Remove any m4_db environment using the m4_refT(dbenv_remove) or an
+appropriate system utility.])
+m4_nlistns([Recompile and install the new version of the application.])
+m4_nlistns([dnl
+If necessary, upgrade the application's databases.  See
+m4_link(M4RELDIR/ref/am/upgrade, Upgrading databases) for more
+information.])
+m4_nlistns([Restart the application.])
+m4_nlistend
+
+m4_p([dnl
+Otherwise, if the application has a m4_db transactional environment,
+but neither the log file nor database formats need upgrading, the
+application may be installed in the field using the following steps:])
+
+m4_nlistbegin
+m4_nlist([Shut down the old version of the application.])
+m4_nlistns([dnl
+Run recovery on the database environment using the m4_refT(dbenv_open)
+or the m4_ref(db_recover) utility.])
+m4_nlistns([dnl
+Remove any m4_db environment using the m4_refT(dbenv_remove) or an
+appropriate system utility.])
+m4_nlistns([Recompile and install the new version of the application.])
+m4_nlistns([Restart the application.])
+m4_nlistend
+
+m4_p([dnl
+If the application has a m4_db transactional environment, and the log
+files need upgrading but the databases do not, the application may be
+installed in the field using the following steps:])
+
+m4_nlistbegin
+m4_nlist([Shut down the old version of the application.])
+m4_nlistns([dnl
+Still using the old version of m4_db, run recovery on the database
+environment using the m4_refT(dbenv_open) or the m4_ref(db_recover)
+utility.])
+m4_nlistns([dnl
+If you used the m4_refT(dbenv_open) to run recovery, make sure that the
+m4_db environment is removed using the m4_refT(dbenv_remove) or an
+appropriate system utility. ])
+m4_nlistns([dnl
+Archive the database environment for catastrophic recovery.  See
+m4_link(M4RELDIR/ref/transapp/archival, Archival procedures) for more
+information.])
+m4_nlistns([Recompile and install the new version of the application.])
+m4_nlistns([Force a checkpoint using the m4_refT(txn_checkpoint) or the
+m4_ref(db_checkpoint) utility. If you use the m4_ref(db_checkpoint)
+utility, make sure to use the new version of the utility; that is, the
+version that came with the release of m4_db to which you are upgrading.])
+m4_nlistns([Restart the application.])
+m4_nlistend
+
+m4_p([dnl
+Otherwise, if the application has a m4_db transactional environment and
+the databases need upgrading, the application may be installed in the
+field using the following steps:])
+
+m4_nlistbegin
+m4_nlist([Shut down the old version of the application.])
+m4_nlistns([dnl
+Still using the old version of m4_db, run recovery on the database
+environment using the m4_refT(dbenv_open) or the m4_ref(db_recover)
+utility.])
+m4_nlistns([dnl
+If you used the m4_refT(dbenv_open) to run recovery, make sure that the
+m4_db environment is removed using the m4_refT(dbenv_remove) or an
+appropriate system utility. ])
+m4_nlistns([dnl
+Archive the database environment for catastrophic recovery.  See
+m4_link(M4RELDIR/ref/transapp/archival, Archival procedures) for more
+information.])
+m4_nlistns([Recompile and install the new version of the application.])
+m4_nlistns([dnl
+Upgrade the application's databases.  See
+m4_link(M4RELDIR/ref/am/upgrade, Upgrading databases) for more
+information.])
+m4_nlistns([dnl
+Archive the database for catastrophic recovery again (using different
+media than before, of course).  Note: This archival is not strictly
+necessary.  However, if you have to perform catastrophic recovery after
+restarting the application, that recovery must be done based on the
+last archive you have made.  If you make this second archive, you can
+use it as the basis of that catastrophic recovery.  If you do not make
+this second archive, you have to use the archive you made in step 4 as
+the basis of your recovery, and you have to do a full upgrade on it
+before you can apply log files created after the upgrade to it.])
+m4_nlistns([Force a checkpoint using the m4_refT(txn_checkpoint) or the
+m4_ref(db_checkpoint) utility. If you use the m4_ref(db_checkpoint)
+utility, make sure to use the new version of the utility; that is, the
+version that came with the release of m4_db to which you are upgrading.])
+m4_nlistns([Restart the application.])
+m4_nlistend
+
+m4_p([dnl
+Finally, upgrading a m4_db replication group requires a few additional
+steps.  To upgrade a replication group, you must:])
+
+m4_nlistbegin
+m4_nlist([Bring all clients up to date with the master (that is, all
+clients must be brought up to the most current log record as measured
+by the master's log sequence number (LSN)).])
+m4_nlistns([Perform the upgrade procedures described previously on each
+of the individual database environments that are part of the replication
+group.])
+m4_nlistns([Restart the replication group.])
+m4_nlistend
+
+m4_p([dnl
+Alternatively, it may be simpler to discard the contents of all of the
+client database environments, upgrade the master database environment,
+and then re-add all of the clients to the replication group using the
+standard replication procedures for new sites.])
+
+m4_page_footer

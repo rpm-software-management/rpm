@@ -1,0 +1,166 @@
+m4_comment([$Id: join.so,v 10.31 2004/01/21 20:39:56 bostic Exp $])
+
+m4_ref_title(Access Methods, Equality Join,
+    [@equality join, equality @join, @natural join], am/curdup, am/count)
+
+m4_p([dnl
+m4_db supports "equality" (also known as "natural"), joins on secondary
+indices.  An equality join is a method of retrieving data from a primary
+database using criteria stored in a set of secondary indices.  It
+requires the data be organized as a primary database which contains the
+primary key and primary data field, and a set of secondary indices.
+Each of the secondary indices is indexed by a different secondary key,
+and, for each key in a secondary index, there is a set of duplicate data
+items that match the primary keys in the primary database.])
+
+m4_p([dnl
+For example, let's assume the need for an application that will return
+the names of stores in which one can buy fruit of a given color.  We
+would first construct a primary database that lists types of fruit as
+the key item, and the store where you can buy them as the data item:])
+
+m4_indentv([dnl
+m4_table_begin
+m4_table_header(Primary key:, Primary data:)
+m4_table_element(_left, apple, Convenience Store)
+m4_table_element(_left, blueberry, Farmer's Market)
+m4_table_element(_left, peach, Shopway)
+m4_table_element(_left, pear, Farmer's Market)
+m4_table_element(_left, raspberry, Shopway)
+m4_table_element(_left, strawberry, Farmer's Market)
+m4_table_end])
+
+m4_p([dnl
+We would then create a secondary index with the key m4_bold(color), and,
+as the data items, the names of fruits of different colors.])
+
+m4_indentv([dnl
+m4_table_begin
+m4_table_header(Secondary key:, Secondary data:)
+m4_table_element(_left, blue, blueberry)
+m4_table_element(_left, red, apple)
+m4_table_element(_left, red, raspberry)
+m4_table_element(_left, red, strawberry)
+m4_table_element(_left, yellow, peach)
+m4_table_element(_left, yellow, pear)
+m4_table_end])
+
+m4_p([dnl
+This secondary index would allow an application to look up a color, and
+then use the data items to look up the stores where the colored fruit
+could be purchased.  For example, by first looking up m4_bold(blue),
+the data item m4_bold(blueberry) could be used as the lookup key in the
+primary database, returning m4_bold(Farmer's Market).])
+
+m4_p([dnl
+Your data must be organized in the following manner in order to use the
+m4_refT(dbh_join):])
+
+m4_nlistbegin
+m4_nlist([dnl
+The actual data should be stored in the database represented by the
+m4_ref(Db) object used to invoke this method.  Generally, this
+m4_ref(Db) object is called the m4_italic(primary).])
+
+m4_nlist([dnl
+Secondary indices should be stored in separate databases, whose keys
+are the values of the secondary indices and whose data items are the
+primary keys corresponding to the records having the designated
+secondary key value.  It is acceptable (and expected) that there may be
+duplicate entries in the secondary indices.
+
+m4_p([dnl
+These duplicate entries should be sorted for performance reasons, although
+it is not required.  For more information see the m4_ref(DB_DUPSORT) flag
+to the m4_refT(dbh_set_flags).])])
+m4_nlistend
+
+m4_p([dnl
+What the m4_refT(dbh_join) does is review a list of secondary keys, and,
+when it finds a data item that appears as a data item for all of the
+secondary keys, it uses that data item as a lookup into the primary
+database, and returns the associated data item.])
+
+m4_p([dnl
+If there were another secondary index that had as its key the m4_bold(cost)
+of the fruit, a similar lookup could be done on stores where inexpensive
+fruit could be purchased:])
+
+m4_indentv([dnl
+m4_table_begin
+m4_table_header(Secondary key:, Secondary data:)
+m4_table_element(_left, expensive, blueberry)
+m4_table_element(_left, expensive, peach)
+m4_table_element(_left, expensive, pear)
+m4_table_element(_left, expensive, strawberry)
+m4_table_element(_left, inexpensive, apple)
+m4_table_element(_left, inexpensive, pear)
+m4_table_element(_left, inexpensive, raspberry)
+m4_table_end])
+
+m4_p([dnl
+The m4_refT(dbh_join) provides equality join functionality.  While not
+strictly cursor functionality, in that it is not a method off a cursor
+handle, it is more closely related to the cursor operations than to the
+standard m4_ref(Db) operations.])
+
+m4_p([dnl
+It is also possible to do lookups based on multiple criteria in a single
+operation.  For example, it is possible to look up fruits that are both
+red and expensive in a single operation.  If the same fruit appeared as
+a data item in both the color and expense indices, then that fruit name
+would be used as the key for retrieval from the primary index, and would
+then return the store where expensive, red fruit could be purchased.])
+
+m4_section(Example)
+
+m4_p([dnl
+Consider the following three databases:])
+
+m4_tagbegin
+m4_tag(personnel, [dnl
+m4_bulletbegin
+m4_bullet([key = SSN])
+m4_bullet([data = record containing name, address, phone number, job title])
+m4_bulletend])
+
+m4_tag(lastname, [dnl
+m4_bulletbegin
+m4_bullet([key = lastname])
+m4_bullet([data = SSN])
+m4_bulletend])
+
+m4_tag(jobs, [dnl
+m4_bulletbegin
+m4_bullet([key = job title])
+m4_bullet([data = SSN])
+m4_bulletend])
+m4_tagend
+
+m4_p([dnl
+Consider the following query:])
+
+m4_indent([dnl
+Return the personnel records of all people named smith with the job
+title manager.])
+
+m4_p([dnl
+This query finds are all the records in the primary database (personnel)
+for whom the criteria m4_bold([lastname=smith and job title=manager]) is
+true.])
+
+m4_p([dnl
+Assume that all databases have been properly opened and have the
+handles:  pers_db, name_db, job_db.  We also assume that we have an
+active transaction to which the handle txn refers.])
+
+include(ref/am/join.cs)
+
+m4_p([dnl
+The name cursor is positioned at the beginning of the duplicate list
+for m4_bold([smith]) and the job cursor is placed at the beginning of
+the duplicate list for m4_bold([manager]).  The join cursor is returned
+from the join method.  This code then loops over the join cursor getting
+the personnel records of each one until there are no more.])
+
+m4_page_footer

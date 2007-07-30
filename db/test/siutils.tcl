@@ -1,9 +1,8 @@
 #See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: siutils.tcl,v 12.3 2006/08/24 14:46:39 bostic Exp $
+# $Id: siutils.tcl,v 12.6 2007/05/17 15:15:56 bostic Exp $
 #
 # Secondary index utilities.  This file used to be known as
 # sindex.tcl.
@@ -36,17 +35,28 @@ proc callback_n { n } {
 		4 { return _s_reverseconcat }
 		5 { return _s_truncdata }
 		6 { return _s_constant }
+		7 { return _s_twokeys }
+		8 { return _s_variablekeys }
 	}
 	return _s_noop
 }
 
+proc _s_noop { a b } { return $b }
 proc _s_reversedata { a b } { return [reverse $b] }
 proc _s_truncdata { a b } { return [string range $b 1 end] }
 proc _s_concatkeydata { a b } { return $a$b }
 proc _s_concatdatakey { a b } { return $b$a }
 proc _s_reverseconcat { a b } { return [reverse $a$b] }
-proc _s_constant { a b } { return "constant data" }
-proc _s_noop { a b } { return $b }
+proc _s_constant { a b } { return "constant-data" }
+proc _s_twokeys { a b } { return [list 1 2] }
+proc _s_variablekeys { a b } {
+	set rlen [string length $b]
+	set result {}
+	for {set i 0} {$i < $rlen} {incr i} {
+		lappend $result $i
+	}
+	return $result
+}
 
 # Should the check_secondary routines print lots of output?
 set verbose_check_secondaries 0
@@ -77,7 +87,7 @@ proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} \
 		puts "\t\t$pref.1: Each key/data pair is in the primary"
 	}
 	for { set i 0 } { $i < $nentries } { incr i } {
-		if { [string compare $errp NONE] == 0 } {
+		if { [string equal $errp NONE] } {
 			error_check_good pdb_get($i) [$pdb get $keys($i)] \
 			    [list [list $keys($i) $data($i)]]
 		} else {
@@ -99,74 +109,85 @@ proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} \
 			    Each skey/key/data tuple is in secondary #$j"
 		}
 		set sdb [lindex $sdbs $j]
+		set nskeys 0
 		for { set i 0 } { $i < $nentries } { incr i } {
-			set skey [[callback_n $j] $keys($i) $data($i)]
-			# Check with pget on the secondary.
-			set stat [catch {$sdb pget -get_both \
-			    $skey $keys($i)} ret]
-			if { [string compare $errs NONE] == 0 } {
-				error_check_good stat $stat 0
-				error_check_good sdb($j)_pget($i) $ret \
-				    [list [list $skey $keys($i) $data($i)]]
-			} else {
-				if { $stat == 1 } {
-					set errors $ret
-				} else {
-					error_check_good sdb($j)_pget($i) $ret \
-					    [list [list $skey $keys($i) $data($i)]]
-				}
+			set skeys [[callback_n $j] $keys($i) $data($i)]
+			if { [llength $skeys] == 0 } {
+				set skeys [list $skeys]
 			}
-			# Check again with get on the secondary.
-			# Since get_both is not an allowed option
-			# with get on a secondary handle, we can't
-			# get an exact match on callback method 6,
-			# and can't guarantee an exact match on
-			# method 5.  We just make sure that one of
-			# the returned key/data pairs is the right one.
-			if { $j == 5 || $j == 6 } {
-				error_check_good sdb($j)_get($i) \
-				    [is_substr [$sdb get $skey] \
-				    [list [list $skey $data($i)]]] 1
-			} else {
-				set stat [catch {$sdb get $skey} ret]
-				if { [string compare $errs NONE] == 0 } {
-					error_check_good sdb($j)_get($i) \
-					    $ret \
-					    [list [list $skey $data($i)]]
+			foreach skey $skeys {
+				incr nskeys
+				# Check with pget on the secondary.
+				set stat [catch {$sdb pget -get_both \
+				    $skey $keys($i)} ret]
+				if { [string equal $errs NONE] } {
+					error_check_good stat $stat 0
+					error_check_good sdb($j)_pget($i) $ret \
+					    [list [list \
+					    $skey $keys($i) $data($i)]]
 				} else {
 					if { $stat == 1 } {
-						set errorsg $ret
-						break
+						set errors $ret
 					} else {
-						error_check_good sdb($j)_get($i) \
-						    $ret \
-						    [list [list $skey $data($i)]]
+						error_check_good \
+						    sdb($j)_pget($i) $ret \
+						    [list [list \
+						    $skey $keys($i) $data($i)]]
 					}
 				}
-			}
-			#
-			# We couldn't break above because we need to execute
-			# the errorsg error as well.
-			#
-			if { $errors != 0 } {
-				break
+				# Check again with get on the secondary.  Since
+				# get_both is not an allowed option with get on
+				# a secondary handle, we can't guarantee an
+				# exact match on method 5 and over.  We just
+				# make sure that one of the returned key/data
+				# pairs is the right one.
+				if { $j >= 5 } {
+					error_check_good sdb($j)_get($i) \
+					    [is_substr [$sdb get $skey] \
+					    [list [list $skey $data($i)]]] 1
+				} else {
+					set stat [catch {$sdb get $skey} ret]
+					if { [string equal $errs NONE] } {
+						error_check_good \
+						    sdb($j)_get($i) $ret \
+						    [list [list \
+						    $skey $data($i)]]
+					} else {
+						if { $stat == 1 } {
+							set errorsg $ret
+							break
+						} else {
+							error_check_good \
+							    sdb($j)_get($i) \
+							    $ret [list [list \
+							    $skey $data($i)]]
+						}
+					}
+				}
+				#
+				# We couldn't break above because we need to
+				# execute the errorsg error as well.
+				#
+				if { $errors != 0 } {
+					break
+				}
 			}
 		}
 		if { $errors != 0 || $errorsg != 0 } {
 			break
 		}
 
-		# Make sure this secondary contains only $nentries
+		# Make sure this secondary contains only $nskeys
 		# items.
 		if { $verbose_check_secondaries } {
-			puts "\t\t$pref.3: Secondary #$j has $nentries items"
+			puts "\t\t$pref.3: Secondary #$j has $nskeys items"
 		}
 		set dbc [$sdb cursor]
 		error_check_good dbc($i) \
 		    [is_valid_cursor $dbc $sdb] TRUE
 		for { set k 0 } { [llength [$dbc get -next]] > 0 } \
 		    { incr k } { }
-		error_check_good numitems($i) $k $nentries
+		error_check_good numitems($i) $k $nskeys
 		error_check_good dbc($i)_close [$dbc close] 0
 	}
 	if { $errorp != 0 || $errors != 0 || $errorsg != 0 } {
@@ -209,12 +230,13 @@ proc cursor_check_secondaries { pdb sdbs nentries { pref "Check" } } {
 		for { set j 0 } { $j < [llength $sdbs] } { incr j } {
 			set sdb [lindex $sdbs $j]
 			# Check with pget.
-			set sdbt [$sdb pget -get_both \
-			    [[callback_n $j] $pkey $pdata] $pkey]
+			foreach skey [[callback_n $j] $pkey $pdata] {
+			set sdbt [$sdb pget -get_both $skey $pkey]
 			error_check_good pkey($pkey,$j) \
 			    [lindex [lindex $sdbt 0] 1] $pkey
 			error_check_good pdata($pdata,$j) \
 			    [lindex [lindex $sdbt 0] 2] $pdata
+			}
 		}
 	}
 	error_check_good ccs_pdbc_close [$pdbc close] 0
@@ -228,30 +250,24 @@ proc cursor_check_secondaries { pdb sdbs nentries { pref "Check" } } {
 		set sdb [lindex $sdbs $j]
 		set sdbc [$sdb cursor]
 		error_check_good ccs_sdbc($j) [is_valid_cursor $sdbc $sdb] TRUE
-		set i 0
 		for { set dbt [$sdbc pget -first] } { [llength $dbt] > 0 } \
 		    { set dbt [$sdbc pget -next] } {
-			incr i
 			set pkey [lindex [lindex $dbt 0] 1]
 			set pdata [lindex [lindex $dbt 0] 2]
 			error_check_good pdb_get($pkey/$pdata,$j) \
 			    [$pdb get -get_both $pkey $pdata] \
 			    [list [list $pkey $pdata]]
 		}
-		error_check_good secondary($j)_has_nentries $i $nentries
 
 		# To exercise pget -last/pget -prev, we do it backwards too.
-		set i 0
 		for { set dbt [$sdbc pget -last] } { [llength $dbt] > 0 } \
 		    { set dbt [$sdbc pget -prev] } {
-			incr i
 			set pkey [lindex [lindex $dbt 0] 1]
 			set pdata [lindex [lindex $dbt 0] 2]
 			error_check_good pdb_get_bkwds($pkey/$pdata,$j) \
 			    [$pdb get -get_both $pkey $pdata] \
 			    [list [list $pkey $pdata]]
 		}
-		error_check_good secondary($j)_has_nentries_bkwds $i $nentries
 
 		error_check_good ccs_sdbc_close($j) [$sdbc close] 0
 	}

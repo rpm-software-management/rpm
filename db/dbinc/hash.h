@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: hash.h,v 12.5 2006/08/24 14:45:29 bostic Exp $
+ * $Id: hash.h,v 12.11 2007/05/17 17:22:36 bostic Exp $
  */
 
 #ifndef	_DB_HASH_H_
@@ -54,8 +53,9 @@ typedef struct hash_t {
 	db_pgno_t meta_pgno;	/* Page number of the meta data page. */
 	u_int32_t h_ffactor;	/* Fill factor. */
 	u_int32_t h_nelem;	/* Number of elements. */
-				/* Hash function. */
+				/* Hash and compare functions. */
 	u_int32_t (*h_hash) __P((DB *, const void *, u_int32_t));
+	int (*h_compare) __P((DB *, const DBT *, const DBT *));
 } HASH;
 
 /* Cursor structure definitions. */
@@ -78,6 +78,7 @@ typedef struct cursor_t {
 	db_indx_t	dup_tlen;	/* Total length of duplicate entry. */
 	u_int32_t	seek_size;	/* Number of bytes we need for add. */
 	db_pgno_t	seek_found_page;/* Page on which we can insert. */
+	db_indx_t	seek_found_indx;/* Insert position for item. */
 	u_int32_t	order;		/* Relative order among deleted curs. */
 
 #define	H_CONTINUE	0x0001		/* Join--search strictly fwd for data */
@@ -134,6 +135,18 @@ typedef struct cursor_t {
 #define	HASH_UNUSED2	0x70
 #define	SPLITOLD	0x80
 #define	SPLITNEW	0x90
+#define	SORTPAGE	0x100
+
+/* Flags to control behavior of __ham_del_pair */
+#define	HAM_DEL_NO_CURSOR	0x01 /* Don't do any cursor adjustment */
+#define	HAM_DEL_NO_RECLAIM	0x02 /* Don't reclaim empty pages */
+
+typedef enum {
+	DB_HAM_CURADJ_DEL = 1,
+	DB_HAM_CURADJ_ADD = 2,
+	DB_HAM_CURADJ_ADDMOD = 3,
+	DB_HAM_CURADJ_DELMOD = 4
+} db_ham_curadj;
 
 typedef enum {
 	DB_HAM_CHGPG = 1,

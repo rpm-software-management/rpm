@@ -2,19 +2,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_int.in,v 12.41 2006/09/19 15:06:59 bostic Exp $
+ * $Id: db_int.in,v 12.58 2007/05/30 14:06:39 bostic Exp $
  */
 
 #ifndef _DB_INT_H_
 #define	_DB_INT_H_
 
 /*******************************************************
- * Berkeley DB includes.
+ * Berkeley DB ANSI/POSIX include files.
  *******************************************************/
-#ifndef NO_SYSTEM_INCLUDES
+#include "vxWorks.h"
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <sys/types.h>
 #ifdef DIAG_MVCC
 #include <sys/mman.h>
@@ -48,7 +48,9 @@
 #endif
 
 #if defined(__INCLUDE_NETWORKING)
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
@@ -70,9 +72,36 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#if defined(__INCLUDE_DIRECTORY)
+#if HAVE_DIRENT_H
+# include <dirent.h>
+# define NAMLEN(dirent) strlen((dirent)->d_name)
+#else
+# define dirent direct
+# define NAMLEN(dirent) (dirent)->d_namlen
+# if HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif
+# if HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif
+# if HAVE_NDIR_H
+#  include <ndir.h>
+# endif
+#endif
+#endif /* __INCLUDE_DIRECTORY_READ */
+
+#endif /* !HAVE_SYSTEM_INCLUDE_FILES */
+#include "clib_port.h"
+#include "db.h"
+
+#ifdef DB_WIN32
+#include "dbinc/win_db.h"
 #endif
 
 #include "db.h"
+#include "clib_port.h"
 
 #include "dbinc/queue.h"
 #include "dbinc/shqueue.h"
@@ -84,41 +113,6 @@ extern "C" {
 /*******************************************************
  * General purpose constants and macros.
  *******************************************************/
-#ifndef	UINT16_MAX
-#define	UINT16_MAX	65535		/* Maximum 16-bit unsigned. */
-#endif
-#ifndef	UINT32_MAX
-#ifdef __STDC__
-#define	UINT32_MAX	4294967295U	/* Maximum 32-bit unsigned. */
-#else
-#define	UINT32_MAX	0xffffffff	/* Maximum 32-bit unsigned. */
-#endif
-#endif
-
-#if defined(HAVE_64BIT_TYPES)
-#undef	INT64_MAX
-#undef	INT64_MIN
-#undef	UINT64_MAX
-
-#ifdef	DB_WIN32
-#define	INT64_MAX	_I64_MAX
-#define	INT64_MIN	_I64_MIN
-#define	UINT64_MAX	_UI64_MAX
-#else
-/*
- * Override the system's 64-bit min/max constants.  AIX's 32-bit compiler can
- * handle 64-bit values, but the system's constants don't include the LL/ULL
- * suffix, and so can't be compiled using the 32-bit compiler.
- */
-#define	INT64_MAX	9223372036854775807LL
-#define	INT64_MIN	(-INT64_MAX-1)
-#define	UINT64_MAX	18446744073709551615ULL
-#endif	/* DB_WIN32 */
-
-#define	INT64_FMT	"%lld"
-#define	UINT64_FMT	"%llu"
-#endif	/* HAVE_64BIT_TYPES */
-
 #undef	FALSE
 #define	FALSE		0
 #undef	TRUE
@@ -127,8 +121,13 @@ extern "C" {
 #define	MEGABYTE	1048576
 #define	GIGABYTE	1073741824
 
-#define	MS_PER_SEC	1000		/* Milliseconds in a second. */
-#define	USEC_PER_MS	1000		/* Microseconds in a millisecond. */
+#define	NS_PER_MS	1000000		/* Nanoseconds in a millisecond */
+#define	NS_PER_US	1000		/* Nanoseconds in a microsecond */
+#define	NS_PER_SEC	1000000000	/* Nanoseconds in a second */
+#define	US_PER_MS	1000		/* Microseconds in a millisecond */
+#define	US_PER_SEC	1000000		/* Microseconds in a second */
+#define	MS_PER_NS	1000000		/* Milliseconds in a nanosecond */
+#define	MS_PER_SEC	1000		/* Milliseconds in a second */
 
 #define	RECNO_OOB	0		/* Illegal record number. */
 
@@ -159,11 +158,6 @@ extern "C" {
 #undef	ALIGNP_INC
 #define	ALIGNP_INC(p, bound)						\
 	(void *)(((uintptr_t)(p) + (bound) - 1) & ~(((uintptr_t)(bound)) - 1))
-
-/* Decrement a pointer to a specific boundary. */
-#undef	ALIGNP_DEC
-#define	ALIGNP_DEC(p, bound)						\
-	(void *)((uintptr_t)(p) & ~(((uintptr_t)(bound)) - 1))
 
 /*
  * Print an address as a u_long (a u_long is the largest type we can print
@@ -232,6 +226,17 @@ typedef struct __fn {
 #define	DB_PCT_PG(v, total, pgsize)					\
 	((int)((total) == 0 ? 0 :					\
 	    100 - ((double)(v) * 100) / (((double)total) * (pgsize))))
+
+/*
+ * Statistics update shared memory and so are expensive -- don't update the
+ * values unless we're going to display the results.
+ */
+#undef	STAT
+#ifdef	HAVE_STATISTICS
+#define	STAT(x)	x
+#else
+#define	STAT(x)
+#endif
 
 /*
  * Structure used for callback message aggregation.
@@ -313,6 +318,7 @@ typedef struct __db_msgbuf {
 #define	DB_RETOK_DBDEL(ret)	DB_RETOK_DBCDEL(ret)
 #define	DB_RETOK_DBGET(ret)	DB_RETOK_DBCGET(ret)
 #define	DB_RETOK_DBPUT(ret)	((ret) == 0 || (ret) == DB_KEYEXIST)
+#define	DB_RETOK_EXISTS(ret)	DB_RETOK_DBCGET(ret)
 #define	DB_RETOK_LGGET(ret)	((ret) == 0 || (ret) == DB_NOTFOUND)
 #define	DB_RETOK_MPGET(ret)	((ret) == 0 || (ret) == DB_PAGE_NOTFOUND)
 #define	DB_RETOK_REPPMSG(ret)	((ret) == 0 || \
@@ -437,7 +443,7 @@ typedef enum {
 #ifdef DIAGNOSTIC
 #define	ENV_LEAVE(dbenv, ip) do {					\
 	if ((ip) != NULL) {						\
-		DB_ASSERT(dbenv, ip->dbth_state == THREAD_ACTIVE);	\
+		DB_ASSERT(dbenv, (ip)->dbth_state == THREAD_ACTIVE);	\
 		(ip)->dbth_state = THREAD_OUT;				\
 	}								\
 } while (0)
@@ -648,7 +654,6 @@ typedef struct __dbpginfo {
     ((lsn0)->offset != (lsn1)->offset ?					\
     ((lsn0)->offset < (lsn1)->offset ? -1 : 1) : 0))
 
-
 /*******************************************************
  * Txn.
  *******************************************************/
@@ -715,6 +720,7 @@ typedef SH_TAILQ_HEAD(__hash_head) DB_HASHTAB;
 
 
 #include "dbinc/globals.h"
+#include "dbinc/clock.h"
 #include "dbinc/debug.h"
 #include "dbinc/region.h"
 #include "dbinc_auto/env_ext.h"
@@ -745,7 +751,7 @@ typedef SH_TAILQ_HEAD(__hash_head) DB_HASHTAB;
  * Test if we need to log a change.  By default, we don't log operations without
  * associated transactions, unless DIAGNOSTIC, DEBUG_ROP or DEBUG_WOP are on.
  * This is because we want to get log records for read/write operations, and, if
- * we trying to debug something, more information is always better.
+ * we are trying to debug something, more information is always better.
  *
  * The DBC_RECOVER flag is set when we're in abort, as well as during recovery;
  * thus DBC_LOGGING may be false for a particular dbc even when DBENV_LOGGING
@@ -755,7 +761,7 @@ typedef SH_TAILQ_HEAD(__hash_head) DB_HASHTAB;
  * in the log headers, which IS_RECOVERING (and thus DBENV_LOGGING) rely on, and
  * because DBC_RECOVER should be set anytime IS_RECOVERING would be true.
  *
- * If we're not in recovery (master - doing an abort a client applying
+ * If we're not in recovery (master - doing an abort or a client applying
  * a txn), then a client's only path through here is on an internal
  * operation, and a master's only path through here is a transactional
  * operation.  Detect if either is not the case.

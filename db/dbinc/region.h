@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1998,2007 Oracle.  All rights reserved.
  *
- * $Id: region.h,v 12.9 2006/08/24 14:45:30 bostic Exp $
+ * $Id: region.h,v 12.14 2007/05/17 15:15:05 bostic Exp $
  */
 
 #ifndef _DB_REGION_H_
@@ -176,14 +175,15 @@ typedef struct __db_reg_env {
 
 	/*
 	 * The mtx_regenv mutex protects the environment reference count and
-	 * memory allocation from the primary shared region (the crypto and
-	 * replication implementations allocate memory from the primary shared
-	 * region).  The rest of the fields are initialized at creation time,
-	 * and so don't need mutex protection.  The flags, op_timestamp and
-	 * rep_timestamp fields are used by replication only and are
-	 * protected * by the replication mutex.  The rep_timestamp is
-	 * is not protected when it is used in recovery as that is already
-	 * single threaded.
+	 * memory allocation from the primary shared region (the crypto, thread
+	 * control block and replication implementations allocate memory from
+	 * the primary shared region).
+	 *
+	 * The rest of the fields are initialized at creation time, and don't
+	 * need mutex protection.  The flags, op_timestamp and rep_timestamp
+	 * fields are used by replication only and are protected by the
+	 * replication mutex.  The rep_timestamp is is not protected when it
+	 * is used in recovery as that is already single threaded.
 	 */
 	db_mutex_t mtx_regenv;		/* Refcnt, region allocation mutex. */
 	u_int32_t  refcnt;		/* References to the environment. */
@@ -192,6 +192,8 @@ typedef struct __db_reg_env {
 	roff_t	  region_off;		/* Offset of region array */
 
 	roff_t	  cipher_off;		/* Offset of cipher area */
+
+	roff_t	  thread_off;		/* Offset of the thread area. */
 
 	roff_t	  rep_off;		/* Offset of the replication area. */
 #define	DB_REGENV_REPLOCKED	0x0001	/* Env locked for rep backup. */
@@ -223,12 +225,12 @@ typedef struct __db_region {
 /*
  * Per-process/per-attachment information about a single region.
  */
-struct __db_reginfo_t {		/* __db_r_attach IN parameters. */
+struct __db_reginfo_t {		/* __env_region_attach IN parameters. */
 	DB_ENV	   *dbenv;		/* Enclosing environment. */
 	reg_type_t  type;		/* Region type. */
 	u_int32_t   id;			/* Region id. */
 
-				/* __db_r_attach OUT parameters. */
+				/* env_region_attach OUT parameters. */
 	REGION	   *rp;			/* Shared region. */
 
 	char	   *name;		/* Region file name. */
@@ -261,11 +263,17 @@ struct __db_reginfo_t {		/* __db_r_attach IN parameters. */
 	(F_ISSET((reginfop)->dbenv, DB_ENV_PRIVATE) ? (roff_t)(p) :	\
 	(roff_t)((u_int8_t *)(p) - (u_int8_t *)(reginfop)->addr))
 
-/* PANIC_CHECK:	Check to see if the DB environment is dead. */
-#define	PANIC_CHECK(dbenv)						\
-	if ((dbenv)->reginfo != NULL && ((REGENV *)			\
+/*
+ * PANIC_ISSET, PANIC_CHECK:
+ *	Check to see if the DB environment is dead.
+ */
+#define	PANIC_ISSET(dbenv)						\
+	((dbenv)->reginfo != NULL && ((REGENV *)			\
 	    ((REGINFO *)(dbenv)->reginfo)->primary)->panic != 0 &&	\
-	    !F_ISSET((dbenv), DB_ENV_NOPANIC))				\
+	    !F_ISSET((dbenv), DB_ENV_NOPANIC))
+
+#define	PANIC_CHECK(dbenv)						\
+	if (PANIC_ISSET(dbenv))						\
 		return (__db_panic_msg(dbenv));
 
 #if defined(__cplusplus)

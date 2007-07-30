@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: dbreg.c,v 12.20 2006/08/24 14:45:31 bostic Exp $
+ * $Id: dbreg.c,v 12.28 2007/06/13 18:59:35 bostic Exp $
  */
 
 #include "db_config.h"
@@ -15,7 +14,7 @@
 #include "dbinc/txn.h"
 #include "dbinc/db_am.h"
 
-static int __dbreg_push_id __P((DB_ENV *, DB *, int32_t));
+static int __dbreg_push_id __P((DB_ENV *, int32_t));
 static int __dbreg_pop_id __P((DB_ENV *, int32_t *));
 static int __dbreg_pluck_id __P((DB_ENV *, int32_t));
 
@@ -109,12 +108,12 @@ __dbreg_setup(dbp, name, create_txnid)
 
 	/* Allocate an FNAME and, if necessary, a buffer for the name itself. */
 	LOG_SYSTEM_LOCK(dbenv);
-	if ((ret = __db_shalloc(infop, sizeof(FNAME), 0, &fnp)) != 0)
+	if ((ret = __env_alloc(infop, sizeof(FNAME), &fnp)) != 0)
 		goto err;
 	memset(fnp, 0, sizeof(FNAME));
 	if (name != NULL) {
 		len = strlen(name) + 1;
-		if ((ret = __db_shalloc(infop, len, 0, &namep)) != 0)
+		if ((ret = __env_alloc(infop, len, &namep)) != 0)
 			goto err;
 		fnp->name_off = R_OFFSET(infop, namep);
 		memcpy(namep, name, len);
@@ -133,6 +132,13 @@ __dbreg_setup(dbp, name, create_txnid)
 	fnp->meta_pgno = dbp->meta_pgno;
 	fnp->create_txnid = create_txnid;
 
+	if (F_ISSET(dbp, DB_AM_INMEM))
+		F_SET(fnp, DB_FNAME_INMEM);
+	if (F_ISSET(dbp, DB_AM_RECOVER))
+		F_SET(fnp, DB_FNAME_RECOVER);
+	fnp->txn_ref = 1;
+	fnp->mutex = dbp->mutex;
+
 	dbp->log_filename = fnp;
 
 	return (0);
@@ -147,7 +153,8 @@ err:	LOG_SYSTEM_UNLOCK(dbenv);
 
 /*
  * __dbreg_teardown --
- *	Destroy a DB handle's FNAME struct.
+ *	Destroy a DB handle's FNAME struct.  This is only called when closing
+ * the DB.
  *
  * PUBLIC: int __dbreg_teardown __P((DB *));
  */
@@ -155,34 +162,54 @@ int
 __dbreg_teardown(dbp)
 	DB *dbp;
 {
-	DB_ENV *dbenv;
-	DB_LOG *dblp;
-	REGINFO *infop;
-	FNAME *fnp;
-
-	dbenv = dbp->dbenv;
-	dblp = dbenv->lg_handle;
-	infop = &dblp->reginfo;
-	fnp = dbp->log_filename;
+	int ret;
 
 	/*
 	 * We may not have an FNAME if we were never opened.  This is not an
 	 * error.
 	 */
-	if (fnp == NULL || F_ISSET(fnp, DB_FNAME_NOTLOGGED))
+	if (dbp->log_filename == NULL)
 		return (0);
 
+	ret = __dbreg_teardown_int(dbp->dbenv, dbp->log_filename);
+
+	/* We freed the copy of the mutex from the FNAME. */
+	dbp->log_filename = NULL;
+	dbp->mutex = MUTEX_INVALID;
+
+	return (ret);
+}
+
+/*
+ * __dbreg_teardown_int --
+ *	Destroy an FNAME struct.
+ *
+ * PUBLIC: int __dbreg_teardown_int __P((DB_ENV *, FNAME *));
+ */
+int
+__dbreg_teardown_int(dbenv, fnp)
+	DB_ENV *dbenv;
+	FNAME *fnp;
+{
+	DB_LOG *dblp;
+	REGINFO *infop;
+	int ret;
+
+	if (F_ISSET(fnp, DB_FNAME_NOTLOGGED))
+		return (0);
+	dblp = dbenv->lg_handle;
+	infop = &dblp->reginfo;
+
 	DB_ASSERT(dbenv, fnp->id == DB_LOGFILEID_INVALID);
+	ret = __mutex_free(dbenv, &fnp->mutex);
 
 	LOG_SYSTEM_LOCK(dbenv);
 	if (fnp->name_off != INVALID_ROFF)
-		__db_shalloc_free(infop, R_ADDR(infop, fnp->name_off));
-	__db_shalloc_free(infop, fnp);
+		__env_alloc_free(infop, R_ADDR(infop, fnp->name_off));
+	__env_alloc_free(infop, fnp);
 	LOG_SYSTEM_UNLOCK(dbenv);
 
-	dbp->log_filename = NULL;
-
-	return (0);
+	return (ret);
 }
 
 /*
@@ -411,16 +438,47 @@ __dbreg_revoke_id(dbp, have_lock, force_id)
 	int32_t force_id;
 {
 	DB_ENV *dbenv;
-	DB_LOG *dblp;
+	DB_REP *db_rep;
+	int push;
+
+	dbenv = dbp->dbenv;
+
+	/*
+	 * If we are not in recovery but the file was opened for a recovery
+	 * operation, then this process aborted a transaction for another
+	 * process and the id may still be in use, so don't reuse this id.
+	 * If our fid generation in replication has changed, this fid
+	 * should not be reused
+	 */
+	db_rep = dbenv->rep_handle;
+	push = (!F_ISSET(dbp, DB_AM_RECOVER) || IS_RECOVERING(dbenv)) &&
+	    (!REP_ON(dbenv) || ((REP *)db_rep->region)->gen == dbp->fid_gen);
+
+	return (__dbreg_revoke_id_int(dbp->dbenv,
+	      dbp->log_filename, have_lock, push, force_id));
+}
+/*
+ * __dbreg_revoke_id_int --
+ *	Revoke a log, in preparation for closing it, but without logging
+ *	the close.
+ *
+ * PUBLIC: int __dbreg_revoke_id_int
+ * PUBLIC:     __P((DB_ENV *, FNAME *, int, int, int32_t));
+ */
+int
+__dbreg_revoke_id_int(dbenv, fnp, have_lock, push, force_id)
+	DB_ENV *dbenv;
 	FNAME *fnp;
+	int have_lock, push;
+	int32_t force_id;
+{
+	DB_LOG *dblp;
 	LOG *lp;
 	int32_t id;
 	int ret;
 
-	dbenv = dbp->dbenv;
 	dblp = dbenv->lg_handle;
 	lp = dblp->reginfo.primary;
-	fnp = dbp->log_filename;
 	ret = 0;
 
 	/* If we lack an ID, this is a null-op. */
@@ -450,19 +508,14 @@ __dbreg_revoke_id(dbp, have_lock, force_id)
 	SH_TAILQ_REMOVE(&lp->fq, fnp, q, __fname);
 
 	/*
-	 * Remove this id from the dbentry table and push it onto the
+	 * This FNAME may be for a DBP which is already closed.  Its ID may
+	 * still be in use by an aborting transaction.  If not,
+	 * remove this id from the dbentry table and push it onto the
 	 * free list.
 	 */
-	if ((ret = __dbreg_rem_dbentry(dblp, id)) == 0) {
-		/*
-		 * If we are not in recovery but the file was opened
-		 * for a recovery operation, then this process aborted
-		 * a transaction for another process and the id may
-		 * still be in use, so don't reuse this id.
-		 */
-		if (!F_ISSET(dbp, DB_AM_RECOVER) || IS_RECOVERING(dbenv))
-			ret = __dbreg_push_id(dbenv, dbp, id);
-	}
+	if (!F_ISSET(fnp, DB_FNAME_CLOSED) &&
+	    (ret = __dbreg_rem_dbentry(dblp, id)) == 0 && push)
+		ret = __dbreg_push_id(dbenv, id);
 
 	if (!have_lock)
 		MUTEX_UNLOCK(dbenv, lp->mtx_filelist);
@@ -472,7 +525,7 @@ __dbreg_revoke_id(dbp, have_lock, force_id)
 /*
  * __dbreg_close_id --
  *	Take a dbreg id away from a dbp that we're closing, and log
- * the unregistry.
+ * the unregistry if the refcount goes to 0.
  *
  * PUBLIC: int __dbreg_close_id __P((DB *, DB_TXN *, u_int32_t));
  */
@@ -486,7 +539,7 @@ __dbreg_close_id(dbp, txn, op)
 	DB_LOG *dblp;
 	FNAME *fnp;
 	LOG *lp;
-	int ret;
+	int ret, t_ret;
 
 	dbenv = dbp->dbenv;
 	dblp = dbenv->lg_handle;
@@ -500,6 +553,37 @@ __dbreg_close_id(dbp, txn, op)
 	if (fnp->id == DB_LOGFILEID_INVALID)
 		return (__dbreg_revoke_id(dbp, 0, DB_LOGFILEID_INVALID));
 
+	/*
+	 * If we are the last reference to this db then we need to log it
+	 * as closed.  Otherwise the last transaction will do the logging.
+	 * Remove the DBP from the db entry table since it can nolonger
+	 * be used.  If we abort it will have to be reopened.
+	 */
+	ret = 0;
+	DB_ASSERT(dbenv, fnp->txn_ref > 0);
+	if (fnp->txn_ref > 1) {
+		MUTEX_LOCK(dbenv, dbp->mutex);
+		if (fnp->txn_ref > 1) {
+			fnp->txn_ref--;
+			if (!F_ISSET(fnp, DB_FNAME_CLOSED) &&
+			    (t_ret = __dbreg_rem_dbentry(
+			    dbenv->lg_handle, fnp->id)) != 0 && ret == 0)
+				ret = t_ret;
+
+			/*
+			 * The DB handle has been closed in the logging system.
+			 * Transactions may still have a ref to this name.
+			 * Mark it so that if recovery reopens the file id
+			 * the transaction will not close the wrong handle.
+			 */
+			F_SET(fnp, DB_FNAME_CLOSED);
+			MUTEX_UNLOCK(dbenv, dbp->mutex);
+			/* The mutex now lives only in the FNAME. */
+			dbp->mutex = MUTEX_INVALID;
+			dbp->log_filename = NULL;
+			goto no_log;
+		}
+	}
 	MUTEX_LOCK(dbenv, lp->mtx_filelist);
 
 	if ((ret = __dbreg_log_close(dbenv, fnp, txn, op)) != 0)
@@ -507,9 +591,58 @@ __dbreg_close_id(dbp, txn, op)
 	ret = __dbreg_revoke_id(dbp, 1, DB_LOGFILEID_INVALID);
 
 err:	MUTEX_UNLOCK(dbenv, lp->mtx_filelist);
+
+	if ((t_ret = __dbreg_teardown(dbp)) != 0 && ret == 0)
+		ret = t_ret;
+no_log:
 	return (ret);
 }
+/*
+ * __dbreg_close_id_int --
+ *	Close down a dbreg id and log the unregistry.  This is called only
+ * when a transaction has the last ref to the fname.
+ *
+ * PUBLIC: int __dbreg_close_id_int __P((DB_ENV *, FNAME *, u_int32_t, int));
+ */
+int
+__dbreg_close_id_int(dbenv, fnp, op, locked)
+	DB_ENV *dbenv;
+	FNAME *fnp;
+	u_int32_t op;
+	int locked;
+{
+	DB_LOG *dblp;
+	LOG *lp;
+	int ret, t_ret;
 
+	DB_ASSERT(dbenv, fnp->txn_ref == 1);
+	dblp = dbenv->lg_handle;
+	lp = dblp->reginfo.primary;
+
+	if (fnp->id == DB_LOGFILEID_INVALID)
+		return (__dbreg_revoke_id_int(dbenv,
+		     fnp, locked, 1, DB_LOGFILEID_INVALID));
+
+	if (F_ISSET(fnp, DB_FNAME_RECOVER))
+		return (__dbreg_close_file(dbenv, fnp));
+	/*
+	 * If log_close fails then it will mark the name DB_FNAME_NOTLOGGED
+	 * and the id must persist.
+	 */
+	if (!locked)
+		MUTEX_LOCK(dbenv, lp->mtx_filelist);
+	if ((ret = __dbreg_log_close(dbenv, fnp, NULL, op)) != 0)
+		goto err;
+
+	ret = __dbreg_revoke_id_int(dbenv, fnp, 1, 1, DB_LOGFILEID_INVALID);
+
+err:	if (!locked)
+		MUTEX_UNLOCK(dbenv, lp->mtx_filelist);
+
+	if ((t_ret = __dbreg_teardown_int(dbenv, fnp)) != 0 && ret == 0)
+		ret = t_ret;
+	return (ret);
+}
 /*
  * __dbreg_log_close --
  *
@@ -580,13 +713,11 @@ __dbreg_log_close(dbenv, fnp, txn, op)
  * is already locked.
  */
 static int
-__dbreg_push_id(dbenv, dbp, id)
+__dbreg_push_id(dbenv, id)
 	DB_ENV *dbenv;
-	DB *dbp;
 	int32_t id;
 {
 	DB_LOG *dblp;
-	DB_REP *db_rep;
 	LOG *lp;
 	REGINFO *infop;
 	int32_t *stack, *newstack;
@@ -595,20 +726,18 @@ __dbreg_push_id(dbenv, dbp, id)
 	dblp = dbenv->lg_handle;
 	infop = &dblp->reginfo;
 	lp = infop->primary;
-	db_rep = dbenv->rep_handle;
 
-	/*
-	 * If our fid generation in replication has changed, this fid should
-	 * not be pushed back onto the stack.
-	 */
-	if (REP_ON(dbenv) && ((REP *)db_rep->region)->gen != dbp->fid_gen)
+	if (id == lp->fid_max - 1) {
+		lp->fid_max--;
 		return (0);
+	}
+
 	/* Check if we have room on the stack. */
 	if (lp->free_fid_stack == INVALID_ROFF ||
 	    lp->free_fids_alloced <= lp->free_fids + 1) {
 		LOG_SYSTEM_LOCK(dbenv);
-		if ((ret = __db_shalloc(infop,
-		    (lp->free_fids_alloced + 20) * sizeof(u_int32_t), 0,
+		if ((ret = __env_alloc(infop,
+		    (lp->free_fids_alloced + 20) * sizeof(u_int32_t),
 		    &newstack)) != 0) {
 			LOG_SYSTEM_UNLOCK(dbenv);
 			return (ret);
@@ -618,7 +747,7 @@ __dbreg_push_id(dbenv, dbp, id)
 			stack = R_ADDR(infop, lp->free_fid_stack);
 			memcpy(newstack, stack,
 			    lp->free_fids_alloced * sizeof(u_int32_t));
-			__db_shalloc_free(infop, stack);
+			__env_alloc_free(infop, stack);
 		}
 		lp->free_fid_stack = R_OFFSET(infop, newstack);
 		lp->free_fids_alloced += 20;
@@ -673,6 +802,9 @@ __dbreg_pluck_id(dbenv, id)
 
 	dblp = dbenv->lg_handle;
 	lp = dblp->reginfo.primary;
+
+	if (id >= lp->fid_max)
+		return (0);
 
 	/* Do we have anything to look at? */
 	if (lp->free_fid_stack != INVALID_ROFF) {

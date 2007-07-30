@@ -1,7 +1,6 @@
 <!--$Id: db_set_errfile.so,v 10.10 2002/08/18 21:15:54 bostic Exp $-->
-<!--$Id: env_set_errfile.so,v 10.36 2006/02/10 22:54:59 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: env_set_errfile.so,v 10.37 2006/10/26 15:33:59 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -32,9 +31,9 @@ DB-&gt;get_errfile(DB *db, FILE **errfilep);
 <hr size=1 noshade>
 <h3>Description: DB-&gt;set_errfile</h3>
 When an error occurs in the Berkeley DB library, a Berkeley DB error or an error
-return value is returned by the interface.  In some cases, however,
-the <b>errno</b> value may be insufficient to completely describe
-the cause of the error especially during initial application debugging.
+return value is returned by the interface.  In some cases, however, the
+return value may be insufficient to completely describe the cause of the
+error especially during initial application debugging.
 <p>The <a href="../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> and DB-&gt;set_errfile methods are used to
 enhance the mechanism for reporting error messages to the application
 by setting a C library FILE * to be used for displaying additional Berkeley DB
@@ -44,7 +43,18 @@ an additional error message to the specified file reference.</p>
 ("<b>:</b>") (if a prefix string was previously specified using
 <a href="../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a> or <a href="../api_c/env_set_errpfx.html">DB_ENV-&gt;set_errpfx</a>), an error string, and
 a trailing &lt;newline&gt; character.</p>
-<p>Setting <b>errfile</b> to NULL unconfigures the interface.</p>
+<p>The default configuration when applications first create <a href="../api_c/db_class.html">DB</a> or
+<a href="../api_c/env_class.html">DB_ENV</a> handles is as if the <a href="../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> or
+DB-&gt;set_errfile methods were called with the standard error output
+(stderr) specified as the FILE * argument.  Applications wanting no
+output at all can turn off this default configuration by calling the
+<a href="../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> or DB-&gt;set_errfile methods with NULL as the
+FILE * argument.  Additionally, explicitly configuring the error output
+channel using any of the <a href="../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a>,
+DB-&gt;set_errfile, <a href="../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a>,
+<a href="../api_c/db_set_errcall.html">DB-&gt;set_errcall</a>, <a href="../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a> or
+<a href="../api_cxx/db_set_error_stream.html">Db::set_error_stream</a> methods will also turn off this default output
+for the application.</p>
 <p>This error logging enhancement does not slow performance or significantly
 increase application size, and may be run during normal operation as well
 as during application debugging.</p>
@@ -84,6 +94,6 @@ FILE * in <b>errfilep</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,48 @@
+m4_comment([$Id: curput.so,v 10.18 2003/10/18 19:15:52 bostic Exp $])
+
+m4_ref_title(Access Methods, Storing records with a cursor,
+    [@storing records with a cursor, storing records with a @cursor],
+    am/curget, am/curdel)
+
+m4_p([dnl
+The m4_refT(dbc_put) stores records into the database using a cursor.  In
+general, m4_ref(dbc_put) takes a key and inserts the associated data
+into the database, at a location controlled by a specified flag.])
+
+m4_p([dnl
+There are several flags that you can set to customize storage:])
+
+m4_tagbegin
+
+m4_tag([m4_ref(DB_AFTER)], [dnl
+Create a new record, immediately after the record to which the cursor
+refers.])
+
+m4_tag([m4_ref(DB_BEFORE)], [dnl
+Create a new record, immediately before the record to which the cursor
+refers.])
+
+m4_tag([m4_ref(DB_CURRENT)], [dnl
+Replace the data part of the record to which the cursor refers.])
+
+m4_tag([m4_ref(DB_KEYFIRST)], [dnl
+Create a new record as the first of the duplicate records for the
+supplied key.])
+
+m4_tag([m4_ref(DB_KEYLAST)], [dnl
+Create a new record, as the last of the duplicate records for the supplied
+key.])
+
+m4_tagend
+
+m4_p([dnl
+In all cases, the cursor is repositioned by a m4_ref(dbc_put) operation
+to point to the newly inserted key/data pair in the database.])
+
+m4_p([dnl
+The following is a code example showing a cursor storing two data items
+in a database that supports duplicate data items:])
+
+include(ref/am/curput.cs)
+
+m4_page_footer

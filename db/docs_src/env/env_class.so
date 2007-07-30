@@ -1,0 +1,123 @@
+m4_comment([$Id: env_class.so,v 10.45 2005/11/30 19:09:47 bostic Exp $])
+
+define(M4PAGELOCAL, [DbEnv, dbenv_create, DB_RPCCLIENT, DB_CXX_NO_EXCEPTIONS])
+include(m4/m4.seealso)
+
+ifelse(M4API, C_API, [dnl
+m4_pf_header(m4_ref(dbenv_create), [dnl
+int
+db_env_create(DB_ENV **dbenvp, u_int32_t flags);
+])])
+ifelse(M4API, CXX_API, [dnl
+m4_pf_header(m4_ref(DbEnv), [dnl
+class DbEnv {
+public:
+	DbEnv(u_int32 flags);
+	~DbEnv();
+m4_blank
+	DB_ENV *DbEnv::get_DB_ENV();
+	const DB_ENV *DbEnv::get_const_DB_ENV() const;
+	static DbEnv *DbEnv::get_DbEnv(DB_ENV *dbenv);
+	static const DbEnv *DbEnv::get_const_DbEnv(const DB_ENV *dbenv);
+	...
+};])])
+
+define(m4_rpcclient, [dnl
+m4_tag(m4_idef(DB_RPCCLIENT),
+[Create a client environment to connect to a server.])
+m4_p([dnl
+The m4_ref(DB_RPCCLIENT) flag indicates to the system that this environment
+is remote on a server.  The use of this flag causes the environment
+methods to use functions that call a server instead of local functions.
+Prior to making any environment or database method calls, the application
+must call the m4_ref(dbenv_set_rpc_server) function to establish the
+connection to the server.])])
+
+m4_p([dnl
+The m4_ref(DbEnv) object is the handle for a m4_db environment -- a
+collection including support for some or all of caching, locking,
+logging and transaction subsystems, as well as databases and log files.
+Methods of the m4_ref(DbEnv) handle are used to configure the
+environment as well as to operate on subsystems and databases in the
+environment.])
+
+m4_p([dnl
+m4_ref(DbEnv) handles are free-threaded if the m4_ref(DB_THREAD) flag
+is specified to the m4_refT(dbenv_open) when the environment is opened.
+The m4_ref(DbEnv) handle should not be closed while any other handle
+remains open that is using it as a reference (for example, m4_ref(Db)
+or m4_ref(DbTxn)).  Once either the m4_ref(dbenv_close) or
+m4_refT(dbenv_remove)s are called, the handle may not be accessed again,
+regardless of the method's return.])
+
+ifelse(M4API, C_API, [dnl
+m4_p([dnl
+The m4_ref(dbenv_create) function creates a m4_ref(DbEnv) structure that
+is the handle for a m4_db environment.  This function allocates memory
+for the structure, returning a pointer to the structure in the memory
+to which m4_arg(dbenvp) refers.  To release the allocated memory and
+discard the handle, call the m4_ref(dbenv_close) or m4_refT(dbenv_remove)s.])
+
+m4_p([dnl
+The m4_ref(DbEnv) handle contains a special field, "app_private", which
+is declared as type "void *".  This field is provided for the use of
+the application program.  It is initialized to NULL and is not further
+used by m4_db in any way.])
+
+m4_return(dbenv_create, std)
+
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_rpcclient
+m4_tagend
+
+m4_err(dbenv_create)],[dnl
+m4_p([dnl
+The constructor creates the m4_ref(DbEnv) object.  The constructor
+allocates memory internally; calling the m4_ref(dbenv_close) or
+m4_refT(dbenv_remove)s will free that memory.])
+
+m4_p([dnl
+The following m4_arg(flags) value may be specified:])
+
+m4_tagbegin
+
+ifelse(M4API, CXX_API, [dnl
+m4_tag(m4_idef(DB_CXX_NO_EXCEPTIONS), [dnl
+The m4_db C++ API supports two different error behaviors.  By default,
+whenever an error occurs, an exception is thrown that encapsulates the
+error information.  This generally allows for cleaner logic for
+transaction processing because a try block can surround a single
+transaction.  However, if m4_ref(DB_CXX_NO_EXCEPTIONS) is specified,
+exceptions are not thrown; instead, each individual function returns an
+error code.])])
+
+m4_rpcclient
+
+m4_tagend
+
+ifelse(M4API, CXX_API, [dnl
+m4_p([dnl
+Each m4_ref(DbEnv) object has an associated m4_refc(DbEnv) structure,
+which is used by the underlying implementation of m4_db and its
+C-language API.  The DbEnv::get_DB_ENV method returns a pointer to this
+struct.  Given a const m4_ref(DbEnv) object, DbEnv::get_const_DB_ENV
+returns a const pointer to the same struct.])
+
+m4_p([dnl
+Given a m4_refc(DbEnv) struct, the DbEnv::get_DbEnv method returns the
+corresponding m4_ref(DbEnv) object, if there is one.  If the
+m4_refc(DbEnv) object was not associated with a m4_ref(DbEnv) (that is,
+it was not returned from a call to DbEnv::get_DB_ENV), then the result
+of DbEnv::get_DbEnv is undefined.  Given a const m4_refc(DbEnv) struct,
+DbEnv::get_const_Db_Env returns the associated const m4_ref(DbEnv)
+object, if there is one.])
+
+m4_p([dnl
+These methods may be useful for m4_db applications including  both C
+and C++ language software.  It should not be necessary to use these
+calls in a purely C++ application.])])])
+
+m4_seealso(DbEnv)
+m4_page_footer

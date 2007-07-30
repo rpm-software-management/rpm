@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: env_file.c,v 12.12 2006/08/24 14:45:39 bostic Exp $
+ * $Id: env_file.c,v 12.15 2007/05/17 15:15:11 bostic Exp $
  */
 
 #include "db_config.h"
@@ -68,7 +67,7 @@ __db_file_multi_write(dbenv, path)
 	u_int32_t mbytes, bytes;
 	int ret;
 
-	if ((ret = __os_open(dbenv, path, DB_OSO_REGION, 0, &fhp)) == 0 &&
+	if ((ret = __os_open(dbenv, path, 0, DB_OSO_REGION, 0, &fhp)) == 0 &&
 	    (ret = __os_ioinfo(dbenv, path, fhp, &mbytes, &bytes, NULL)) == 0) {
 		/*
 		 * !!!

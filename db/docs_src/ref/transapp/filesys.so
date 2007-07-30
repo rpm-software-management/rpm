@@ -1,0 +1,64 @@
+m4_comment([$Id: filesys.so,v 10.35 2002/02/05 18:34:09 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Recovery and filesystem operations,
+    recovery and @filesystem operations,
+    transapp/hotfail, transapp/reclimit)
+
+m4_p([dnl
+The m4_db API supports creating, removing and renaming files.  Creating
+files is supported by the m4_refT(dbh_open).  Removing files is
+supported by the m4_ref(dbenv_dbremove) and m4_refT(dbh_remove)s.
+Renaming files is supported by the m4_ref(dbenv_dbrename) and
+m4_refT(dbh_rename)s.  (There are two methods for removing and renaming
+files because one of the methods is transactionally protected and one
+is not.)])
+
+m4_p([dnl
+m4_db does not permit specifying the m4_ref(DB_TRUNCATE) flag when
+opening a file in a transaction-protected environment.  This is an
+implicit file deletion, but one that does not always require the same
+operating system file permissions as deleting and creating a file do.])
+
+m4_p([dnl
+If you have changed the name of a file or deleted it outside of the
+m4_db library (for example, you explicitly removed a file using your
+normal operating system utilities), then it is possible that recovery
+will not be able to find a database to which the log refers.  In this
+case, m4_ref(db_recover) will produce a warning message, saying it was
+unable to locate a file it expected to find.  This message is only a
+warning because the file may have been subsequently deleted as part of
+normal database operations before the failure occurred, so is not
+necessarily a problem.])
+
+m4_p([dnl
+Generally, any filesystem operations that are performed outside the
+m4_db interface should be performed at the same time as making a
+snapshot of the database.  To perform filesystem operations correctly,
+do the following:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Cleanly shut down database operations.
+m4_p([dnl
+To shut down database operations cleanly, all applications accessing
+the database environment must be shut down and a transaction checkpoint
+must be taken.  If the applications are not implemented so they can be
+shut down gracefully (that is, closing all references to the database
+environment), recovery must be performed after all applications have
+been killed to ensure that the underlying databases are consistent on
+disk.])])
+m4_nlist([dnl
+Perform the filesystem operations; for example, remove or rename one or
+more files.])
+m4_nlist([Make an archival snapshot of the database.
+m4_p([dnl
+Although this step is not strictly necessary, it is strongly
+recommended.  If this step is not performed, recovery from catastrophic
+failure will require that recovery first be performed up to the time of
+the filesystem operations, the filesystem operations be redone, and then
+recovery be performed from the filesystem operations forward.])])
+m4_nlist([Restart the database applications.])
+m4_nlistend
+
+m4_page_footer

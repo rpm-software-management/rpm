@@ -1,5 +1,16 @@
 Revision history for Perl extension BerkeleyDB.
 
+0.32  10th July 2007 
+
+        * Updates to support Berkeley DB 4.6
+
+        * Remove all global static data from BerkeleyDB.xs. 
+
+0.31  15th Oct 2006 
+
+        * Fixed DB_GET_BOTH. Tnanks to Thomas Drugeon for spotting the typo
+          in typemap and supplying a regression test for this fix.
+
 0.30  11th Sept 2006 
 
         * Fixed queue test harness for Berkeley DB 4.5 compliance

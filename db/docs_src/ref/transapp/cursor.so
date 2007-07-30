@@ -1,0 +1,24 @@
+m4_comment([$Id: cursor.so,v 1.12 2004/03/05 21:47:36 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Transactional cursors,, transapp/read, transapp/nested)
+
+m4_p([dnl
+m4_db cursors may be used inside a transaction, exactly as any other
+m4_ref(Db) method.  The enclosing transaction ID must be specified when
+the cursor is created, but it does not then need to be further specified
+on operations performed using the cursor.  One important point to
+remember is that a cursor m4_bold([must be closed]) before the enclosing
+transaction is committed or aborted.])
+
+m4_p([dnl
+The following code fragment uses a cursor to store a new key in the cats
+database with four associated data items.  The key is a name.  The data
+items are a company name and a list of the breeds of cat owned.  Each
+of the data entries is stored as a duplicate data item.  In this
+example, transactions are necessary to ensure that either all or none
+of the data items appear in case of system or application failure.])
+
+include(ref/transapp/cursor.cs)
+
+m4_page_footer

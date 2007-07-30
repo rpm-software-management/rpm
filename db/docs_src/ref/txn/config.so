@@ -1,0 +1,30 @@
+m4_comment([$Id: config.so,v 10.19 2002/07/22 05:11:58 bostic Exp $])
+
+m4_ref_title(Transaction Subsystem,
+    Configuring transactions, @transaction configuration, txn/intro, txn/limits)
+
+m4_p([dnl
+The application may change the number of simultaneous outstanding
+transactions supported by the m4_db environment by calling the
+m4_refT(dbenv_set_tx_max).  This will also set the size of the
+underlying transaction subsystem's region.  When the number of
+outstanding transactions is reached, additional calls to
+m4_ref(txn_begin) will fail until some active transactions complete.])
+
+m4_p([dnl
+There is an additional parameter used in configuring transactions; the
+m4_ref(DB_TXN_NOSYNC) flag.  Setting the m4_ref(DB_TXN_NOSYNC) flag to
+m4_ref(dbenv_set_flags) when opening a transaction region changes the
+behavior of transactions to not write or synchronously flush the log
+during transaction commit.])
+
+m4_p([dnl
+This change may significantly increase application transactional
+throughput.  However, it means that although transactions will continue
+to exhibit the ACI (atomicity, consistency, and isolation) properties,
+they will not have D (durability).  Database integrity will be
+maintained, but it is possible that some number of the most recently
+committed transactions may be undone during recovery instead of being
+redone.])
+
+m4_page_footer

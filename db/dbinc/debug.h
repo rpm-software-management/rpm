@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1998,2007 Oracle.  All rights reserved.
  *
- * $Id: debug.h,v 12.8 2006/08/24 14:45:29 bostic Exp $
+ * $Id: debug.h,v 12.12 2007/05/17 15:15:05 bostic Exp $
  */
 
 #ifndef _DB_DEBUG_H_
@@ -80,101 +79,98 @@ typedef enum {
  * original routine that took the variadic list of arguments.
  */
 #if defined(STDC_HEADERS) || defined(__cplusplus)
-#define	DB_REAL_ERR(env, error, error_set, default_stream, fmt) {	\
-	va_list ap;							\
+#define	DB_REAL_ERR(env, error, error_set, app_call, fmt) {		\
+	va_list __ap;							\
 									\
 	/* Call the application's callback function, if specified. */	\
-	va_start(ap, fmt);						\
+	va_start(__ap, fmt);						\
 	if ((env) != NULL && (env)->db_errcall != NULL)			\
-		__db_errcall(env, error, error_set, fmt, ap);		\
-	va_end(ap);							\
-									\
-	/* Write to the application's file descriptor, if specified. */\
-	va_start(ap, fmt);						\
-	if ((env) != NULL && (env)->db_errfile != NULL)			\
-		__db_errfile(env, error, error_set, fmt, ap);		\
-	va_end(ap);							\
+		__db_errcall(env, error, error_set, fmt, __ap);		\
+	va_end(__ap);							\
 									\
 	/*								\
-	 * If we have a default and we didn't do either of the above,	\
-	 * write to the default.					\
+	 * If the application specified a file descriptor, write to it.	\
+	 * If we wrote to neither the application's callback routine or	\
+	 * its file descriptor, and it's an application error message	\
+	 * using {DbEnv,Db}.{err,errx} or the application has never	\
+	 * configured an output channel, default by writing to stderr.	\
 	 */								\
-	va_start(ap, fmt);						\
-	if ((default_stream) && ((env) == NULL ||			\
-	    ((env)->db_errcall == NULL && (env)->db_errfile == NULL)))	\
-		__db_errfile(env, error, error_set, fmt, ap);		\
-	va_end(ap);							\
+	va_start(__ap, fmt);						\
+	if ((env) == NULL ||						\
+	    (env)->db_errfile != NULL ||				\
+	    ((env)->db_errcall == NULL &&				\
+	    ((app_call) || F_ISSET((env), DB_ENV_NO_OUTPUT_SET))))	\
+		__db_errfile(env, error, error_set, fmt, __ap);		\
+	va_end(__ap);							\
 }
 #else
-#define	DB_REAL_ERR(env, error, error_set, default_stream, fmt) {	\
-	va_list ap;							\
+#define	DB_REAL_ERR(env, error, error_set, fmt) {			\
+	va_list __ap;							\
 									\
 	/* Call the application's callback function, if specified. */	\
-	va_start(ap);							\
+	va_start(__ap);							\
 	if ((env) != NULL && (env)->db_errcall != NULL)			\
-		__db_errcall(env, error, error_set, fmt, ap);		\
-	va_end(ap);							\
-									\
-	/* Write to the application's file descriptor, if specified. */\
-	va_start(ap);							\
-	if ((env) != NULL && (env)->db_errfile != NULL)			\
-		__db_errfile(env, error, error_set, fmt, ap);		\
-	va_end(ap);							\
+		__db_errcall(env, error, error_set, fmt, __ap);		\
+	va_end(__ap);							\
 									\
 	/*								\
-	 * If we have a default and we didn't do either of the above,	\
-	 * write to the default.					\
+	 * If the application specified a file descriptor, write to it.	\
+	 * If we wrote to neither the application's callback routine or	\
+	 * its file descriptor, and it's an application error message	\
+	 * using {DbEnv,Db}.{err,errx} or the application has never	\
+	 * configured an output channel, default by writing to stderr.	\
 	 */								\
-	va_start(ap);							\
-	if ((default_stream) && ((env) == NULL ||			\
-	    ((env)->db_errcall == NULL && (env)->db_errfile == NULL)))	\
-		__db_errfile(env, error, error_set, fmt, ap);		\
-	va_end(ap);							\
+	va_start(__ap);							\
+	if ((env) == NULL ||						\
+	    (env)->db_errfile != NULL ||				\
+	    ((env)->db_errcall == NULL &&				\
+	    ((app_call) || F_ISSET((env), DB_ENV_NO_OUTPUT_SET))))	\
+	va_end(__ap);							\
 }
 #endif
 #if defined(STDC_HEADERS) || defined(__cplusplus)
 #define	DB_REAL_MSG(env, fmt) {						\
-	va_list ap;							\
+	va_list __ap;							\
 									\
 	/* Call the application's callback function, if specified. */	\
-	va_start(ap, fmt);						\
+	va_start(__ap, fmt);						\
 	if ((env) != NULL && (env)->db_msgcall != NULL)			\
-		__db_msgcall(env, fmt, ap);				\
-	va_end(ap);							\
+		__db_msgcall(env, fmt, __ap);				\
+	va_end(__ap);							\
 									\
 	/*								\
-	 * If the application specified a file descriptor, or we wrote	\
-	 * to neither the application's callback routine or to its file	\
-	 * descriptor, write to stdout.					\
+	 * If the application specified a file descriptor, write to it.	\
+	 * If we wrote to neither the application's callback routine or	\
+	 * its file descriptor, write to stdout.			\
 	 */								\
-	va_start(ap, fmt);						\
+	va_start(__ap, fmt);						\
 	if ((env) == NULL ||						\
 	    (env)->db_msgfile != NULL || (env)->db_msgcall == NULL) {	\
-		__db_msgfile(env, fmt, ap);				\
+		__db_msgfile(env, fmt, __ap);				\
 	}								\
-	va_end(ap);							\
+	va_end(__ap);							\
 }
 #else
 #define	DB_REAL_MSG(env, fmt) {						\
-	va_list ap;							\
+	va_list __ap;							\
 									\
 	/* Call the application's callback function, if specified. */	\
-	va_start(ap);							\
+	va_start(__ap);							\
 	if ((env) != NULL && (env)->db_msgcall != NULL)			\
-		__db_msgcall(env, fmt, ap);				\
-	va_end(ap);							\
+		__db_msgcall(env, fmt, __ap);				\
+	va_end(__ap);							\
 									\
 	/*								\
-	 * If the application specified a file descriptor, or we wrote	\
-	 * to neither the application's callback routine or to its file	\
-	 * descriptor, write to stdout.					\
+	 * If the application specified a file descriptor, write to it.	\
+	 * If we wrote to neither the application's callback routine or	\
+	 * its file descriptor, write to stdout.			\
 	 */								\
-	va_start(ap);							\
+	va_start(__ap);							\
 	if ((env) == NULL ||						\
 	    (env)->db_msgfile != NULL || (env)->db_msgcall == NULL) {	\
-		__db_msgfile(env, fmt, ap);				\
+		__db_msgfile(env, fmt, __ap);				\
 	}								\
-	va_end(ap);							\
+	va_end(__ap);							\
 }
 #endif
 

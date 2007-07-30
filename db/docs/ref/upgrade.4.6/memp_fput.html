@@ -1,0 +1,28 @@
+<!--$Id: memp_fput.so,v 1.1 2006/11/30 19:06:51 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.6: DB_MPOOLFILE-&gt;put</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.6/cursor.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/memp_fset.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.6: DB_MPOOLFILE-&gt;put</h3>
+<p>The <a href="../../api_c/memp_fput.html">DB_MPOOLFILE-&gt;put</a> method takes a new parameter in the Berkeley DB 4.6 release, a
+page priority.  This parameter allows applications to specify the page's
+priority when returning the page to the cache.</p>
+<p>Applications calling the <a href="../../api_c/memp_fput.html">DB_MPOOLFILE-&gt;put</a> method can upgrade by adding a
+<a href="../../api_c/memp_fput.html#DB_PRIORITY_UNCHANGED">DB_PRIORITY_UNCHANGED</a> parameter to their calls to the
+<a href="../../api_c/memp_fput.html">DB_MPOOLFILE-&gt;put</a> method.  This will result in no change in the application's
+behavior.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.6/cursor.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/memp_fset.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

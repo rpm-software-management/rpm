@@ -1,0 +1,78 @@
+m4_comment([$Id: format.so,v 10.16 2001/03/13 20:39:47 bostic Exp $])
+
+m4_ref_title(Dumping and Reloading,
+    Dump output formats,, dumpload/utility, dumpload/text)
+
+m4_p([dnl
+There are two output formats used by m4_ref(db_dump) and m4_ref(db_dump185).])
+
+m4_p([dnl
+In both output formats, the first few lines of the output contain header
+information describing the underlying access method, filesystem page size,
+and other bookkeeping information.])
+
+m4_p([dnl
+The header information starts with a single line, VERSION=N, where N is
+the version number of the dump output format.])
+
+m4_p([dnl
+The header information is then output in name=value pairs, where name may
+be any of the keywords listed in the m4_ref(db_load) manual page, and
+value will be its value.  Although this header information can be manually
+edited before the database is reloaded, there is rarely any reason to do
+so because all of this information can also be specified or overridden by
+command-line arguments to m4_ref(db_load).])
+
+m4_p([dnl
+The header information ends with single line HEADER=END.])
+
+m4_p([dnl
+Following the header information are the key/data pairs from the
+database.  If the database being dumped is a Btree or Hash database, or
+if the m4_bold(-k) option was specified, the output will be paired lines
+of text where the first line of the pair is the key item, and the second
+line of the pair is its corresponding data item.  If the database being
+dumped is a Queue or Recno database, and the m4_bold(-k) option was not
+specified, the output will be lines of text where each line is the next
+data item for the database.  Each of these lines is preceded by a single
+space.])
+
+m4_p([dnl
+If the m4_option(p) option to m4_ref(db_dump) or m4_ref(db_dump185) was
+specified, the key/data lines will consist of single characters
+representing any characters from the database that are m4_italic([printing
+characters]) and backslash (m4_bold(m4_backslash([]))) escaped characters
+for any that were not.  Backslash characters appearing in the output mean
+one of two things: if the backslash character precedes another backslash
+character, it means that a literal backslash character occurred in the
+key or data item.  If the backslash character precedes any other
+character, the next two characters must be interpreted as hexadecimal
+specification of a single character; for example, m4_bold([m4_backslash()0a])
+is a newline character in the ASCII character set.])
+
+m4_p([dnl
+Although some care should be exercised, it is perfectly reasonable to use
+standard text editors and tools to edit databases dumped using the
+m4_option(p) option before reloading them using the m4_ref(db_load)
+utility.])
+
+m4_p([dnl
+Note that the definition of a printing character may vary from system to
+system, so database representations created using the m4_option(p)
+option may be less portable than those created without it.])
+
+m4_p([dnl
+If the m4_option(p) option to m4_ref(db_dump) or m4_ref(db_dump185) is
+not specified, each output line will consist of paired hexadecimal values;
+for example, the line m4_bold(726f6f74) is the string m4_bold(root) in
+the ASCII character set.])
+
+m4_p([dnl
+In all output formats, the key and data items are ended by a single line
+DATA=END.])
+
+m4_p([dnl
+Where multiple databases have been dumped from a file, the overall output
+will repeat; that is, a new set of headers and a new set of data items.])
+
+m4_page_footer

@@ -1,13 +1,12 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
  * Some parts of this code originally written by Adam Stubblefield,
  * -- astubble@rice.edu.
  *
- * $Id: hmac.c,v 12.9 2006/09/09 14:28:23 bostic Exp $
+ * $Id: hmac.c,v 12.11 2007/05/17 15:15:39 bostic Exp $
  */
 
 #include "db_config.h"

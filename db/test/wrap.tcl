@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2000,2007 Oracle.  All rights reserved.
 #
-# $Id: wrap.tcl,v 12.4 2006/08/24 14:46:41 bostic Exp $
+# $Id: wrap.tcl,v 12.7 2007/07/03 13:59:39 carol Exp $
 #
 # Sentinel file wrapper for multi-process tests.  This is designed to avoid a
 # set of nasty bugs, primarily on Windows, where pid reuse causes watch_procs
@@ -68,7 +67,7 @@ set scr $test_path/$script
 puts $t "set scr $scr"
 puts $t {set ret [catch { source $scr } result]}
 puts $t {if { [string length $result] > 0 } { puts $result }}
-puts $t {error_check_good "$scr run: pid [pid]" $ret 0}
+puts $t {error_check_good "$scr run: $result: pid [pid]" $ret 0}
 
 # Close the pipe.  This will flush the above commands and actually run the
 # test, and will also return an error a la exec if anything bad happens

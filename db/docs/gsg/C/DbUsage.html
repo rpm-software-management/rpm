@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Database Usage Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="DBEntry.html" title="Chapter 3. Database Records" />
+    <link rel="up" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
     <link rel="previous" href="cstructs.html" title="Using C Structures with DB" />
-    <link rel="next" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="next" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Database Usage Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="cstructs.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. Database Records</th>
-          <td width="20%" align="right"> <a accesskey="n" href="Cursors.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="cstructs.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â Database Records</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="Cursors.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -113,7 +113,7 @@
     </p>
         <a id="c_dbt11"></a>
         <pre class="programlisting">/* example_database_load.c */
-#include &quot;gettingstarted_common.h&quot;
+#include "gettingstarted_common.h"
                                                                                                                                 
                                                                                                                                 
 /* Forward declarations */
@@ -145,7 +145,7 @@ main(int argc, char *argv[])
     * identify the location of the flat-text data
     * input files.
     */
-    basename = &quot;./&quot;;
+    basename = "./";
 
     /* 
      * Parse the command line arguments here and determine 
@@ -164,29 +164,29 @@ main(int argc, char *argv[])
     /* Find our input files */
     size = strlen(basename) + strlen(INVENTORY_FILE) + 1;
     inventory_file = malloc(size);
-    snprintf(inventory_file, size, &quot;%s%s&quot;, basename, INVENTORY_FILE);
+    snprintf(inventory_file, size, "%s%s", basename, INVENTORY_FILE);
                                                                                                                                 
     size = strlen(basename) + strlen(VENDORS_FILE) + 1;
     vendor_file = malloc(size);
-    snprintf(vendor_file, size, &quot;%s%s&quot;, basename, VENDORS_FILE);
+    snprintf(vendor_file, size, "%s%s", basename, VENDORS_FILE);
                                                                                                                                 
     /* Open all databases */
-    ret = databases_setup(&amp;my_stock, &quot;example_database_load&quot;, stderr);
+    ret = databases_setup(&amp;my_stock, "example_database_load", stderr);
     if (ret != 0) {
-            fprintf(stderr, &quot;Error opening databases\n&quot;);
+            fprintf(stderr, "Error opening databases\n");
             databases_close(&amp;my_stock);
             return (ret);
     }
                                                                                                                                 
     ret = load_vendors_database(my_stock, vendor_file);
     if (!ret) {
-        fprintf(stderr, &quot;Error loading vendors database.\n&quot;);
+        fprintf(stderr, "Error loading vendors database.\n");
         databases_close(&amp;my_stock);
         return (ret);
     }
     ret = load_inventory_database(my_stock, inventory_file);
     if (!ret) {
-        fprintf(stderr, &quot;Error loading inventory database.\n&quot;);
+        fprintf(stderr, "Error loading inventory database.\n");
         databases_close(&amp;my_stock);
         return (ret);
     }
@@ -194,7 +194,7 @@ main(int argc, char *argv[])
     /* close our environment and databases */
     databases_close(&amp;my_stock);
                                                                                                                                 
-    printf(&quot;Done loading databases.\n&quot;);
+    printf("Done loading databases.\n");
     return (0);
 }</pre>
         <p>
@@ -233,9 +233,9 @@ load_vendors_database(STOCK_DBS my_stock, char *vendor_file)
     char buf[MAXLINE];
                                                                                                                                
     /* Open the vendor file for read access */
-    ifp = fopen(vendor_file, &quot;r&quot;);
+    ifp = fopen(vendor_file, "r");
     if (ifp == NULL) {
-        fprintf(stderr, &quot;Error opening file '%s'\n&quot;, vendor_file);
+        fprintf(stderr, "Error opening file '%s'\n", vendor_file);
         return(-1);
     }
                                                                                                                                
@@ -254,7 +254,7 @@ load_vendors_database(STOCK_DBS my_stock, char *vendor_file)
          * defensive code here.
          */
         sscanf(buf,
-          &quot;%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]&quot;,
+          "%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]",
           my_vendor.name, my_vendor.street,
           my_vendor.city, my_vendor.state,
           my_vendor.zipcode, my_vendor.phone_number,
@@ -362,9 +362,9 @@ load_inventory_database(STOCK_DBS my_stock, char *inventory_file)
     char vendor[MAXFIELD], sku[MAXFIELD];
 
     /* Load the inventory database */
-    ifp = fopen(inventory_file, &quot;r&quot;);
+    ifp = fopen(inventory_file, "r");
     if (ifp == NULL) {
-        fprintf(stderr, &quot;Error opening file '%s'\n&quot;, inventory_file);
+        fprintf(stderr, "Error opening file '%s'\n", inventory_file);
         return(-1);
     }
                                                                                                                                
@@ -382,7 +382,7 @@ load_inventory_database(STOCK_DBS my_stock, char *inventory_file)
          * program, there would be a lot more defensive code here.
          */
         sscanf(buf,
-          &quot;%20[^#]#%20[^#]#%f#%i#%20[^#]#%20[^\n]&quot;,
+          "%20[^#]#%20[^#]#%f#%i#%20[^#]#%20[^\n]",
           name, sku, &amp;price, &amp;quantity, category, vendor);
                                                                                                                                
         /*
@@ -459,18 +459,18 @@ load_inventory_database(STOCK_DBS my_stock, char *inventory_file)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="cstructs.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="cstructs.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="DBEntry.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="Cursors.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="Cursors.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Using C Structures with DB </td>
+          <td width="40%" align="left" valign="top">Using C Structures with DBÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 4. Using Cursors</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 4.Â Using Cursors</td>
         </tr>
       </table>
     </div>

@@ -1,0 +1,19 @@
+m4_comment([$Id: alive.so,v 1.2 2006/03/15 19:39:19 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: DB-__GT__set_isalive,,
+    upgrade.4.5/deprecate, upgrade.4.5/elect)
+
+m4_p([dnl
+In previous releases, the function specified to the
+m4_refT(dbenv_set_isalive) did not take a flags parameter.  In the m4_db
+4.5 release, an additional flags argument has been added:
+m4_ref(DB_MUTEX_PROCESS_ONLY).])
+
+m4_p([dnl
+Applications configuring an is-alive function should add a flags
+argument to the function, and change the function to ignore any thread
+ID and return the status of just the process, when the
+m4_ref(DB_MUTEX_PROCESS_ONLY) flag is specified.])
+
+m4_page_footer

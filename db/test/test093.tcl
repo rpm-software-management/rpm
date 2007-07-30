@@ -1,34 +1,39 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: test093.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
+# $Id: test093.tcl,v 12.8 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	test093
-# TEST	Test using set_bt_compare.
+# TEST	Test set_bt_compare (btree key comparison function) and
+# TEST	set_h_compare (hash key comparison function).
 # TEST
-# TEST	Use the first 10,000 entries from the dictionary.
-# TEST	Insert each with self as key and data; retrieve each.
-# TEST	After all are entered, retrieve all; compare output to original.
-# TEST	Close file, reopen, do retrieve and re-verify.
+# TEST	Open a database with a comparison function specified,
+# TEST	populate, and close, saving a list with that key order as
+# TEST	we do so.  Reopen and read in the keys, saving in another
+# TEST	list; the keys should be in the order specified by the
+# TEST	comparison function.  Sort the original saved list of keys
+# TEST	using the comparison function, and verify that it matches
+# TEST	the keys as read out of the database.
+
 proc test093 { method {nentries 10000} {tnum "093"} args} {
 	source ./include.tcl
-	global btvals
-	global btvalsck
-	global errorInfo
 
 	set dbargs [convert_args $method $args]
 	set omethod [convert_method $method]
 
-	if { [is_btree $method] != 1 } {
+	if { [is_btree $method] == 1 } {
+		set compflag -btcompare
+	} elseif { [is_hash $method] == 1 } {
+		set compflag -hashcompare
+	} else {
 		puts "Test$tnum: skipping for method $method."
 		return
 	}
+
 	set txnenv 0
 	set eindex [lsearch -exact $dbargs "-env"]
 	if { $eindex != -1 } {
-		set testfile test$tnum.db
 		incr eindex
 		set env [lindex $dbargs $eindex]
 		set rpcenv [is_rpcenv $env]
@@ -45,43 +50,38 @@ proc test093 { method {nentries 10000} {tnum "093"} args} {
 		}
 		set testdir [get_home $env]
 		cleanup $testdir $env
+	} else {
+		set env NULL
 	}
-	puts "Test$tnum: $method ($args) $nentries using btcompare"
 
+	puts "Test$tnum: $method ($args) $nentries entries using $compflag"
 
-	test093_run $omethod $dbargs $nentries $tnum test093_cmp1 test093_sort1
+	test093_run $omethod $dbargs $nentries $tnum \
+	    $compflag test093_cmp1 test093_sort1
 	test093_runbig $omethod $dbargs $nentries $tnum \
-	    test093_cmp1 test093_sort1
-	test093_run $omethod $dbargs $nentries $tnum test093_cmp2 test093_sort2
-	#
+	    $compflag test093_cmp1 test093_sort1
+	test093_run $omethod $dbargs $nentries $tnum \
+	    $compflag test093_cmp2 test093_sort2
+
 	# Don't bother running the second, really slow, comparison
 	# function on test093_runbig (file contents).
 
 	# Clean up so verification doesn't fail.  (There's currently
 	# no way to specify a comparison function to berkdb dbverify.)
-	# If we are using an env, then testfile should just be the db name.
-	# Otherwise it is the test directory and the name.
-	set eindex [lsearch -exact $dbargs "-env"]
-	if { $eindex == -1 } {
-		set env NULL
-	} else {
-		incr eindex
-		set env [lindex $dbargs $eindex]
+	if { $env != "NULL" } {
 		set testdir [get_home $env]
 	}
 	cleanup $testdir $env
 }
 
-proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
+proc test093_run { method dbargs nentries tnum compflag cmpfunc sortfunc } {
 	source ./include.tcl
 	global btvals
 	global btvalsck
 
-	# Create the database and open the dictionary
-	set eindex [lsearch -exact $dbargs "-env"]
-	#
 	# If we are using an env, then testfile should just be the db name.
 	# Otherwise it is the test directory and the name.
+	set eindex [lsearch -exact $dbargs "-env"]
 	set txnenv 0
 	if { $eindex == -1 } {
 		set testfile $testdir/test$tnum.db
@@ -95,7 +95,7 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 	}
 	cleanup $testdir $env
 
-	set db [eval {berkdb_open -btcompare $cmpfunc \
+	set db [eval {berkdb_open $compflag $cmpfunc \
 	     -create -mode 0644} $method $dbargs $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	set did [open $dict]
@@ -103,12 +103,14 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 	set t1 $testdir/t1
 	set t2 $testdir/t2
 	set t3 $testdir/t3
-	set pflags ""
-	set gflags ""
 	set txn ""
+
+	# Use btvals to save the order of the keys as they are
+	# written to the database.  The btvalsck variable will contain
+	# the values as sorted by the comparison function.
 	set btvals {}
 	set btvalsck {}
-	set checkfunc test093_check
+
 	puts "\tTest$tnum.a: put/get loop"
 	# Here is the loop where we put and get each key/data pair
 	set count 0
@@ -121,7 +123,7 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 			set txn "-txn $t"
 		}
 		set ret [eval \
-		    {$db put} $txn $pflags {$key [chop_data $method $str]}]
+		    {$db put} $txn {$key [chop_data $method $str]}]
 		error_check_good put $ret 0
 		if { $txnenv == 1 } {
 			error_check_good txn [$t commit] 0
@@ -129,13 +131,14 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 
 		lappend btvals $key
 
-		set ret [eval {$db get} $gflags {$key}]
+		set ret [eval {$db get $key}]
 		error_check_good \
 		    get $ret [list [list $key [pad_data $method $str]]]
 
 		incr count
 	}
 	close $did
+
 	# Now we will get each key from the DB and compare the results
 	# to the original.
 	puts "\tTest$tnum.b: dump file"
@@ -144,14 +147,13 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 		error_check_good txn [is_valid_txn $t $env] TRUE
 		set txn "-txn $t"
 	}
-	dump_file $db $txn $t1 $checkfunc
+	dump_file $db $txn $t1 test093_check
 	if { $txnenv == 1 } {
 		error_check_good txn [$t commit] 0
 	}
 	error_check_good db_close [$db close] 0
 
 	# Now compare the keys to see if they match the dictionary (or ints)
-	set q q
 	filehead $nentries $dict $t2
 	filesort $t2 $t3
 	file rename -force $t3 $t2
@@ -166,7 +168,7 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 	# need to have the correct comparison func set.  Then
 	# call dump_file_direction directly.
 	set btvalsck {}
-	set db [eval {berkdb_open -btcompare $cmpfunc -rdonly} \
+	set db [eval {berkdb_open $compflag $cmpfunc -rdonly} \
 	     $dbargs $method $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	if { $txnenv == 1 } {
@@ -174,13 +176,16 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 		error_check_good txn [is_valid_txn $t $env] TRUE
 		set txn "-txn $t"
 	}
-	dump_file_direction $db $txn $t1 $checkfunc "-first" "-next"
+	dump_file_direction $db $txn $t1 test093_check "-first" "-next"
 	if { $txnenv == 1 } {
 		error_check_good txn [$t commit] 0
 	}
 	error_check_good db_close [$db close] 0
 
-	#
+	if { [is_hash $method] == 1 } {
+		return
+	}
+
 	# We need to sort btvals according to the comparison function.
 	# Once that is done, btvalsck and btvals should be the same.
 	puts "\tTest$tnum.d: check file order"
@@ -194,7 +199,7 @@ proc test093_run { method dbargs nentries tnum cmpfunc sortfunc } {
 	}
 }
 
-proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
+proc test093_runbig { method dbargs nentries tnum compflag cmpfunc sortfunc } {
 	source ./include.tcl
 	global btvals
 	global btvalsck
@@ -217,7 +222,7 @@ proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
 	}
 	cleanup $testdir $env
 
-	set db [eval {berkdb_open -btcompare $cmpfunc \
+	set db [eval {berkdb_open $compflag $cmpfunc \
 	     -create -mode 0644} $method $dbargs $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
@@ -226,12 +231,9 @@ proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
 	set t3 $testdir/t3
 	set t4 $testdir/t4
 	set t5 $testdir/t5
-	set pflags ""
-	set gflags ""
 	set txn ""
 	set btvals {}
 	set btvalsck {}
-	set checkfunc test093_checkbig
 	puts "\tTest$tnum.e:\
 	    big key put/get loop key=filecontents data=filename"
 
@@ -257,7 +259,7 @@ proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
 			error_check_good txn [is_valid_txn $t $env] TRUE
 			set txn "-txn $t"
 		}
-		set ret [eval {$db put} $txn $pflags {$key \
+		set ret [eval {$db put} $txn {$key \
 		    [chop_data $method $f]}]
 		error_check_good put_file $ret 0
 		if { $txnenv == 1 } {
@@ -269,7 +271,7 @@ proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
 		# Should really catch errors
 		set fid [open $t4 w]
 		fconfigure $fid -translation binary
-		if [catch {eval {$db get} $gflags {$key}} data] {
+		if [catch {eval {$db get} {$key}} data] {
 			puts -nonewline $fid $data
 		} else {
 			# Data looks like {{key data}}
@@ -291,7 +293,7 @@ proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
 		error_check_good txn [is_valid_txn $t $env] TRUE
 		set txn "-txn $t"
 	}
-	dump_file $db $txn $t1 $checkfunc
+	dump_file $db $txn $t1 test093_checkbig
 	if { $txnenv == 1 } {
 		error_check_good txn [$t commit] 0
 	}
@@ -304,7 +306,7 @@ proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
 	# call dump_file_direction directly.
 
 	set btvalsck {}
-	set db [eval {berkdb_open -btcompare $cmpfunc -rdonly} \
+	set db [eval {berkdb_open $compflag $cmpfunc -rdonly} \
 	     $dbargs $method $testfile]
 	error_check_good dbopen [is_valid_db $db] TRUE
 	if { $txnenv == 1 } {
@@ -312,13 +314,16 @@ proc test093_runbig { method dbargs nentries tnum cmpfunc sortfunc } {
 		error_check_good txn [is_valid_txn $t $env] TRUE
 		set txn "-txn $t"
 	}
-	dump_file_direction $db $txn $t1 $checkfunc "-first" "-next"
+	dump_file_direction $db $txn $t1 test093_checkbig "-first" "-next"
 	if { $txnenv == 1 } {
 		error_check_good txn [$t commit] 0
 	}
 	error_check_good db_close [$db close] 0
 
-	#
+	if { [is_hash $method] == 1 } {
+		return
+	}
+
 	# We need to sort btvals according to the comparison function.
 	# Once that is done, btvalsck and btvals should be the same.
 	puts "\tTest$tnum.h: check file order"

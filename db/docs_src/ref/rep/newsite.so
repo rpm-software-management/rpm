@@ -1,0 +1,44 @@
+m4_comment([$Id: newsite.so,v 1.7 2006/08/24 17:58:53 bostic Exp $])
+
+m4_ref_title(m4_db Replication,
+    Connecting to a new site,, rep/comm, rep/elect)
+
+m4_p([dnl
+To add a new site to the replication group all that is needed
+is for the client member to join.  m4_db will perform an
+internal initialization from the master to the client automatically
+and will run recovery on the client to bring it up to date
+with the master.])
+
+m4_p([dnl
+For applications that use the Base replication API, connecting to a
+new site in the replication group happens whenever the
+m4_refT(rep_message) returns m4_ref(DB_REP_NEWSITE).  The application
+should assign the new site a local environment ID number, and all future
+messages from the site passed to m4_ref(rep_message) should include that
+environment ID number.  It is possible, of course, for the application
+to be aware of a new site before the return of m4_ref(rep_message) (for
+example, applications using connection-oriented protocols are likely to
+detect new sites immediately, while applications using broadcast
+protocols may not).])
+
+m4_p([dnl
+Regardless, in applications supporting the dynamic addition of database
+environments to replication groups, environments joining an existing
+replication group may need to provide contact information.  (For
+example, in an application using TCP/IP sockets, a DNS name or IP
+address might be a reasonable value to provide.)  This can be done using
+the m4_arg(cdata) parameter to the m4_refT(rep_start).  The information
+referenced by m4_arg(cdata) is wrapped in the initial contact message
+sent by the new environment, and is provided to the existing members of
+the group using the m4_arg(rec) parameter returned by m4_ref(rep_message).
+If no additional information was provided for m4_db to forward to the
+existing members of the group, the m4_arg(data) field of the m4_arg(rec)
+parameter passed to the m4_refT(rep_message) will be NULL after
+m4_ref(rep_message) returns m4_ref(DB_REP_NEWSITE).])
+
+m4_p([dnl
+Replication Manager automatically distributes contact information using
+the mechanisms previously described.])
+
+m4_page_footer

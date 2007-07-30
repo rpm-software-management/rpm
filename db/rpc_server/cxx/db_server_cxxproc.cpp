@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: db_server_cxxproc.cpp,v 12.12 2006/08/24 14:46:29 bostic Exp $
+ * $Id: db_server_cxxproc.cpp,v 12.18 2007/06/28 14:01:21 bostic Exp $
  */
 
 #include "db_config.h"
@@ -315,7 +314,8 @@ __env_open_proc(
 	if (__dbsrv_verbose) {
 		dbenv->set_errfile(stderr);
 		dbenv->set_errpfx(fullhome->home);
-	}
+	} else
+		dbenv->set_errfile(NULL);
 
 	/*
 	 * Mask off flags we ignore
@@ -1261,6 +1261,40 @@ __db_set_pagesize_proc(
 }
 
 extern "C" void
+__db_get_priority_proc(
+	u_int dbpcl_id,
+	__db_get_priority_reply *replyp)
+{
+	Db *dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (Db *)dbp_ctp->ct_anyp;
+
+	replyp->status =
+	    dbp->get_priority((DB_CACHE_PRIORITY *)&replyp->priority);
+}
+
+extern "C" void
+__db_set_priority_proc(
+	u_int dbpcl_id,
+	u_int32_t priority,
+	__db_set_priority_reply *replyp)
+{
+	Db *dbp;
+	ct_entry *dbp_ctp;
+	int ret;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (Db *)dbp_ctp->ct_anyp;
+
+	ret = dbp->set_priority((DB_CACHE_PRIORITY)priority);
+
+	replyp->status = ret;
+	return;
+}
+
+extern "C" void
 __db_pget_proc(
 	u_int dbpcl_id,
 	u_int txnpcl_id,
@@ -1894,9 +1928,9 @@ out:
 }
 
 extern "C" void
-__dbc_c_close_proc(
+__dbc_close_proc(
 	u_int dbccl_id,
-	__dbc_c_close_reply *replyp)
+	__dbc_close_reply *replyp)
 {
 	ct_entry *dbc_ctp;
 
@@ -1906,10 +1940,10 @@ __dbc_c_close_proc(
 }
 
 extern "C" void
-__dbc_c_count_proc(
+__dbc_count_proc(
 	u_int dbccl_id,
 	u_int32_t flags,
-	__dbc_c_count_reply *replyp)
+	__dbc_count_reply *replyp)
 {
 	Dbc *dbc;
 	ct_entry *dbc_ctp;
@@ -1927,10 +1961,10 @@ __dbc_c_count_proc(
 }
 
 extern "C" void
-__dbc_c_del_proc(
+__dbc_del_proc(
 	u_int dbccl_id,
 	u_int32_t flags,
-	__dbc_c_del_reply *replyp)
+	__dbc_del_reply *replyp)
 {
 	Dbc *dbc;
 	ct_entry *dbc_ctp;
@@ -1946,10 +1980,10 @@ __dbc_c_del_proc(
 }
 
 extern "C" void
-__dbc_c_dup_proc(
+__dbc_dup_proc(
 	u_int dbccl_id,
 	u_int32_t flags,
-	__dbc_c_dup_reply *replyp)
+	__dbc_dup_reply *replyp)
 {
 	Dbc *dbc, *newdbc;
 	ct_entry *dbc_ctp, *new_ctp;
@@ -1983,7 +2017,7 @@ __dbc_c_dup_proc(
 }
 
 extern "C" void
-__dbc_c_get_proc(
+__dbc_get_proc(
 	u_int dbccl_id,
 	u_int32_t keydlen,
 	u_int32_t keydoff,
@@ -1998,7 +2032,7 @@ __dbc_c_get_proc(
 	void *datadata,
 	u_int32_t datasize,
 	u_int32_t flags,
-	__dbc_c_get_reply *replyp,
+	__dbc_get_reply *replyp,
 	int * freep)
 {
 	Dbc *dbc;
@@ -2104,7 +2138,7 @@ err:		FREE_IF_CHANGED(dbenv->get_DB_ENV(),
 }
 
 extern "C" void
-__dbc_c_pget_proc(
+__dbc_pget_proc(
 	u_int dbccl_id,
 	u_int32_t skeydlen,
 	u_int32_t skeydoff,
@@ -2125,7 +2159,7 @@ __dbc_c_pget_proc(
 	void *datadata,
 	u_int32_t datasize,
 	u_int32_t flags,
-	__dbc_c_pget_reply *replyp,
+	__dbc_pget_reply *replyp,
 	int * freep)
 {
 	Dbc *dbc;
@@ -2246,7 +2280,7 @@ err:		FREE_IF_CHANGED(dbenv->get_DB_ENV(),
 }
 
 extern "C" void
-__dbc_c_put_proc(
+__dbc_put_proc(
 	u_int dbccl_id,
 	u_int32_t keydlen,
 	u_int32_t keydoff,
@@ -2261,7 +2295,7 @@ __dbc_c_put_proc(
 	void *datadata,
 	u_int32_t datasize,
 	u_int32_t flags,
-	__dbc_c_put_reply *replyp,
+	__dbc_put_reply *replyp,
 	int * freep)
 {
 	Db *dbp;
@@ -2307,6 +2341,40 @@ __dbc_c_put_proc(
 			replyp->keydata.keydata_len = key.get_size();
 		}
 	}
+	replyp->status = ret;
+	return;
+}
+
+extern "C" void
+__dbc_get_priority_proc(
+	u_int dbccl_id,
+	__dbc_get_priority_reply *replyp)
+{
+	Dbc *dbc;
+	ct_entry *dbc_ctp;
+
+	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
+	dbc = (Dbc *)dbc_ctp->ct_anyp;
+
+	replyp->status =
+	    dbc->get_priority((DB_CACHE_PRIORITY *)&replyp->priority);
+}
+
+extern "C" void
+__dbc_set_priority_proc(
+	u_int dbccl_id,
+	u_int32_t priority,
+	__dbc_set_priority_reply *replyp)
+{
+	Dbc *dbc;
+	ct_entry *dbc_ctp;
+	int ret;
+
+	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
+	dbc = (Dbc *)dbc_ctp->ct_anyp;
+
+	ret = dbc->set_priority((DB_CACHE_PRIORITY)priority);
+
 	replyp->status = ret;
 	return;
 }

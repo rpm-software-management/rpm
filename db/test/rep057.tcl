@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: rep057.tcl,v 1.6 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep057.tcl,v 1.8 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST  rep057
 # TEST	Replication test of internal initialization with

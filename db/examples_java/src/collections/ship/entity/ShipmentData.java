@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: ShipmentData.java,v 12.4 2006/08/24 14:45:55 bostic Exp $
+ * $Id: ShipmentData.java,v 12.6 2007/05/17 15:15:33 bostic Exp $
  */
 
 package collections.ship.entity;

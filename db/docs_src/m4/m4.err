@@ -1,0 +1,238 @@
+dnl $Id: m4.err,v 10.145 2006/09/13 14:30:52 mjc Exp $
+dnl
+dnl ###################################################################
+dnl m4_err_mem_insufficient --
+dnl	Inline error for insufficient memory to return a key/data pair.
+dnl ###################################################################
+define(m4_err_mem_insufficient, [dnl
+ifelse(M4EXCEPT, except_only,
+[and a m4_ref(DbMemoryException) is thrown],
+[and the error DB_BUFFER_SMALL is returned])])
+dnl ###################################################################
+dnl General errors:
+dnl
+dnl There are 3 cases: the C API, which just returns errors, the C++ API
+dnl which either throws exceptions or returns errors, and the XML API which
+dnl just throws exceptions.
+dnl
+dnl	#1: API name
+dnl	#2: Variadic list of errors.
+dnl
+dnl Some errors are well-known, and can either throw an exception or be
+dnl a normal return: buffersmall, deadlock, filenotfound, memory.  In this
+dnl case, we immediately output the error for C, and save up the output for
+dnl C++, because we list exceptions after the laundry list of error returns.
+dnl
+dnl If the error isn't well-known, it's expected to be in pairs: the error
+dnl followed by the string associated with it.
+dnl ###################################################################
+define(m4_err, [dnl
+define([__m4_errapi], [m4_refT($1)])
+define([__m4_errneedheader], yes)
+m4_header(Errors)
+__m4_errloop(shift($@))
+undivert(1)])
+define(m4_errstr, [dnl
+define([__m4_errapi], [$1])
+define([__m4_errneedheader], yes)
+m4_header(Errors)
+__m4_errloop(shift($@))
+undivert(1)])
+dnl
+dnl ###################################################################
+dnl __m4_errheader
+dnl	If we need header text, output it, but only once.
+dnl ###################################################################
+define(__m4_errheader, [ifelse(__m4_errneedheader, yes, [m4_p([dnl
+The __m4_errapi
+ifelse(M4EXCEPT, except_return,
+[may fail and throw
+ifelse(M4PRODUCT, XML, m4_ref(XmlException)[,], m4_ref(DbException)[,])
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:],
+M4EXCEPT, except_only,
+[may fail and throw
+ifelse(M4PRODUCT, XML, m4_ref(XmlException)[,], m4_ref(DbException)[,])
+encapsulating one of the following non-zero errors:],
+[may fail and return one of the following non-zero errors:])])
+define([__m4_errneedheader], no)])])
+dnl
+dnl ###################################################################
+dnl __m4_errloop
+dnl	Helper macro: loop through exception list.
+dnl ###################################################################
+define(__m4_errloop, [dnl
+ifelse([$1],,,
+dnl ###################################################################
+dnl Buffer Small
+dnl	Requires subsequent argument which is the reason for the failure.
+dnl ###################################################################
+[$1], buffersmall, [dnl
+ifelse(M4EXCEPT, return_only, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(DB_BUFFER_SMALL, [The [$2].])
+m4_tagend],[dnl
+divert(1)
+m4_p([If the [$2], the __m4_errapi will fail and
+ifelse(M4EXCEPT, except_return, [either return DB_BUFFER_SMALL or])
+throw a m4_ref(DbMemoryException) exception.])
+divert(0)])
+__m4_errloop(shift(shift($@)))],
+dnl ###################################################################
+dnl Deadlock.
+dnl ###################################################################
+[$1], deadlock, [dnl
+ifelse(M4EXCEPT, return_only, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(DB_LOCK_DEADLOCK, [dnl
+A transactional database environment operation was selected to resolve
+a deadlock.])
+m4_tag(DB_LOCK_NOTGRANTED, [dnl
+A m4_cam database environment configured for lock timeouts was unable
+to grant a lock in the allowed time.])
+m4_tagend],[dnl
+divert(1)
+m4_p([If a transactional database environment operation was selected to
+resolve a deadlock, the __m4_errapi will fail and
+ifelse(M4EXCEPT, except_return, [either return m4_ref(DB_LOCK_DEADLOCK) or])
+throw a m4_ref(DbDeadlockException) exception.])
+m4_p([If a m4_cam database environment configured for lock timeouts was unable
+to grant a lock in the allowed time, the __m4_errapi will fail and
+ifelse(M4EXCEPT, except_return, [either return m4_ref(DB_LOCK_NOTGRANTED) or])
+throw a m4_ref(DbLockNotGrantedException) exception.])
+divert(0)])
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl Filenotfound
+dnl ###################################################################
+[$1], filenotfound, [dnl
+m4_tagbegin
+m4_tag(ENOENT, [The file or directory does not exist.])
+m4_tagend
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl LockNotGranted
+dnl ###################################################################
+[$1], locknotgranted, [dnl
+ifelse(M4EXCEPT, return_only, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(DB_LOCK_NOTGRANTED, [dnl
+The $2 lock could not be granted before the wait-time expired.])
+m4_tagend],[dnl
+divert(1)
+m4_p([If the $2 lock could not be granted before the wait-time expired,
+the __m4_errapi will fail and
+ifelse(M4EXCEPT, except_return, [either return DB_LOCK_NOTGRANTED or])
+throw a m4_ref(DbLockNotGrantedException) exception.])
+divert(0)])
+__m4_errloop(shift(shift($@)))],
+dnl ###################################################################
+dnl Memory
+dnl	Requires subsequent argument which is the reason for the failure.
+dnl ###################################################################
+[$1], memory, [dnl
+ifelse(M4EXCEPT, return_only, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(ENOMEM, [The [$2].])
+m4_tagend],[dnl
+divert(1)
+m4_p([If the [$2], the __m4_errapi will fail and
+ifelse(M4EXCEPT, except_return, [either return ENOMEM or])
+throw a DbMemoryException.])
+divert(0)])
+__m4_errloop(shift(shift($@)))],
+dnl ###################################################################
+dnl XML: generic underlying error from the core DB.
+dnl ###################################################################
+[$1], dberr, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(DATABASE_ERROR, [dnl
+An error occurred in an underlying m4_db database.  The
+m4_refT(xmlexception_getdberror) will return the error code for the
+error.])
+m4_tagend
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl EACCESS because the database is read-only.
+dnl ###################################################################
+[$1], readonly, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(EACCES, [An attempt was made to modify a read-only database.])
+m4_tagend
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl EAGAIN because the region is unavailable.
+dnl ###################################################################
+[$1], regionagain, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(EAGAIN, [dnl
+The shared memory region was locked and (repeatedly) unavailable.])
+m4_tagend
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl EINVAL
+dnl	Requires subsequent argument which is empty or a list of may be
+dnl	additional reasons.
+dnl ###################################################################
+[$1], einval, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(EINVAL, [dnl
+ifelse([$2],, An, If [$2]; or if an)
+invalid flag value or parameter was specified.])
+m4_tagend
+__m4_errloop(shift(shift($@)))],
+dnl ###################################################################
+dnl DB_REP_HANDLE_DEAD -- replication rolled back a commit record.
+dnl ###################################################################
+[$1], repinval, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(DB_REP_HANDLE_DEAD, [dnl
+The database handle has been invalidated because a replication election
+unrolled a committed transaction.])
+m4_tag(DB_REP_LOCKOUT, [dnl
+The operation was blocked by client/master synchronization.])
+m4_tagend
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl EPERM because write operation with read-only CDB cursor.
+dnl ###################################################################
+[$1], cdbperm, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(EPERM  , [dnl
+Write attempted on read-only cursor when the m4_ref(DB_INIT_CDB) flag was
+specified to m4_ref(dbenv_open).])
+m4_tagend
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl Bad secondary.
+dnl ###################################################################
+[$1], secondary_bad, [dnl
+__m4_errheader
+m4_tagbegin
+m4_tag(DB_SECONDARY_BAD, [dnl
+A secondary index references a nonexistent primary key.])
+m4_tagend
+__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl Empty entry (to support ifelse() constructs).
+dnl ###################################################################
+[$1], empty, [__m4_errloop(shift($@))],
+dnl ###################################################################
+dnl Everything else.
+dnl ###################################################################
+[dnl
+__m4_errheader
+m4_tagbegin
+m4_tag([$1], [$2])
+m4_tagend
+__m4_errloop(shift(shift($@)))])])

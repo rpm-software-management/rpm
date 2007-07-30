@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: rpc.src,v 12.20 2006/09/11 15:52:44 bostic Exp $
+# $Id: rpc.src,v 12.30 2007/06/22 17:50:28 bostic Exp $
 #
 # Syntax:
 # BEGIN	function_name  {CODE | LINKONLY | RETCODE}
@@ -97,6 +96,7 @@ ARET	INT	u_int32_t	gbytes
 ARET	INT	u_int32_t	bytes
 ARET	INT	int		ncache
 END
+NOFUNC	env_get_cache_max	DB_ENV *, u_int32_t *, u_int32_t *
 NOFUNC	env_get_data_dirs	DB_ENV *, const char ***
 BEGIN	env_get_encrypt_flags	CODE
 ARG	ID	DB_ENV *	dbenv
@@ -123,7 +123,7 @@ NOFUNC	env_get_lk_max_lockers	DB_ENV *, u_int32_t *
 NOFUNC	env_get_lk_max_locks	DB_ENV *, u_int32_t *
 NOFUNC	env_get_lk_max_objects	DB_ENV *, u_int32_t *
 NOFUNC	env_get_mp_max_openfd	DB_ENV *, int *
-NOFUNC	env_get_mp_max_write	DB_ENV *, int *, int *
+NOFUNC	env_get_mp_max_write	DB_ENV *, int *, db_timeout_t *
 NOFUNC	env_get_mp_mmapsize	DB_ENV *, size_t *
 LOCAL	env_get_msgfile
 BEGIN	env_get_open_flags	CODE
@@ -131,6 +131,7 @@ ARG	ID	DB_ENV *	dbenv
 ARET	INT	u_int32_t	flags
 END
 NOFUNC	env_get_shm_key		DB_ENV *, long *
+NOFUNC	env_get_thread_count	DB_ENV *, u_int32_t *
 NOFUNC	env_get_timeout		DB_ENV *, db_timeout_t *, u_int32_t
 NOFUNC	env_get_tmp_dir		DB_ENV *, const char **
 NOFUNC	env_get_tx_max		DB_ENV *, u_int32_t *
@@ -186,15 +187,16 @@ ARG	ID	DB_ENV *	dbenv
 ARG	STRING	const char *	home
 ARG	INT	u_int32_t	flags
 END
-NOFUNC	env_rep_elect		DB_ENV *, int, int, int *, u_int32_t
+NOFUNC	env_rep_elect		DB_ENV *, int, int, u_int32_t
 NOFUNC	env_rep_flush		DB_ENV *
 NOFUNC	env_rep_get_config	DB_ENV *, u_int32_t, int *
 NOFUNC	env_rep_get_limit	DB_ENV *, u_int32_t *, u_int32_t *
 NOFUNC	env_rep_get_nsites	DB_ENV *, int *
 NOFUNC	env_rep_get_priority	DB_ENV *, int *
 NOFUNC	env_rep_get_timeout	DB_ENV *, int, db_timeout_t *
-NOFUNC	env_rep_process_message	DB_ENV *, DBT *, DBT *, int *, DB_LSN *
+NOFUNC	env_rep_process_message	DB_ENV *, DBT *, DBT *, int, DB_LSN *
 NOFUNC	env_rep_set_config	DB_ENV *, u_int32_t, int
+NOFUNC	env_rep_set_lease	DB_ENV *, u_int32_t, u_int32_t
 NOFUNC	env_rep_set_limit	DB_ENV *, u_int32_t, u_int32_t
 NOFUNC	env_rep_set_nsites	DB_ENV *, int
 NOFUNC	env_rep_set_priority	DB_ENV *, int
@@ -210,6 +212,8 @@ NOFUNC	env_repmgr_set_ack_policy	DB_ENV *, int
 NOFUNC	env_repmgr_set_local_site	DB_ENV *, const char *, u_int, u_int32_t
 NOFUNC	env_repmgr_site_list	DB_ENV *, u_int *, DB_REPMGR_SITE **
 NOFUNC	env_repmgr_start	DB_ENV *, int, u_int32_t
+NOFUNC	env_repmgr_stat		DB_ENV *, DB_REPMGR_STAT **, u_int32_t
+NOFUNC	env_repmgr_stat_print	DB_ENV *, u_int32_t
 NOFUNC	env_set_alloc		DB_ENV *, void *(*)(size_t), void *(*)(void *, size_t), void (*)(void *)
 NOFUNC	env_set_app_dispatch	DB_ENV *, int (*)(DB_ENV *, DBT *, DB_LSN *, db_recops)
 BEGIN	env_set_cachesize	CODE
@@ -218,6 +222,7 @@ ARG	INT	u_int32_t	gbytes
 ARG	INT	u_int32_t	bytes
 ARG	INT	int		ncache
 END
+NOFUNC	env_set_cache_max	DB_ENV *, u_int32_t, u_int32_t
 NOFUNC	env_set_data_dir	DB_ENV *, const char *
 BEGIN	env_set_encrypt		CODE
 ARG	ID	DB_ENV *	dbenv
@@ -247,7 +252,7 @@ NOFUNC	env_set_lk_max_lockers	DB_ENV *, u_int32_t
 NOFUNC	env_set_lk_max_locks	DB_ENV *, u_int32_t
 NOFUNC	env_set_lk_max_objects	DB_ENV *, u_int32_t
 NOFUNC	env_set_mp_max_openfd	DB_ENV *, int
-NOFUNC	env_set_mp_max_write	DB_ENV *, int, int
+NOFUNC	env_set_mp_max_write	DB_ENV *, int, db_timeout_t
 NOFUNC	env_set_mp_mmapsize	DB_ENV *, size_t
 LOCAL	env_set_msgcall
 LOCAL	env_set_msgfile
@@ -327,6 +332,7 @@ ARG	INT	u_int32_t	flags
 END
 LOCAL	db_err
 LOCAL	db_errx
+LOCAL	db_exists
 NOFUNC	db_fd			DB *, int *
 BEGIN	db_get			RETCODE
 ARG	ID	DB *		dbp
@@ -373,6 +379,7 @@ ARET	INT	int		lorder
 END
 NOFUNC	db_get_mpf		DB *
 LOCAL	db_get_msgfile
+LOCAL	db_get_multiple
 BEGIN	db_get_open_flags	CODE
 ARG	ID	DB *		dbp
 ARET	INT	u_int32_t	flags
@@ -380,6 +387,10 @@ END
 BEGIN	db_get_pagesize		CODE
 ARG	ID	DB *		dbp
 ARET	INT	u_int32_t	pagesize
+END
+BEGIN	db_get_priority		CODE
+ARG	ID	DB *		dbp
+ARET	INT	DB_CACHE_PRIORITY	priority
 END
 BEGIN	db_get_q_extentsize	CODE
 ARG	ID	DB *		dbp
@@ -484,6 +495,7 @@ BEGIN	db_set_flags		CODE
 ARG	ID	DB *		dbp
 ARG	INT	u_int32_t	flags
 END
+NOFUNC	db_set_h_compare	DB *, int (*)(DB *, const DBT *, const DBT *)
 BEGIN	db_set_h_ffactor	CODE
 ARG	ID	DB *		dbp
 ARG	INT	u_int32_t	ffactor
@@ -504,6 +516,10 @@ ARG	ID	DB *		dbp
 ARG	INT	u_int32_t	pagesize
 END
 NOFUNC	db_set_paniccall	DB *, void (*)(DB_ENV *, int)
+BEGIN	db_set_priority		CODE
+ARG	ID	DB *		dbp
+ARG	INT	DB_CACHE_PRIORITY	priority
+END
 BEGIN	db_set_q_extentsize	CODE
 ARG	ID	DB *		dbp
 ARG	INT	u_int32_t	extentsize
@@ -546,26 +562,26 @@ NOFUNC	db_verify		DB *, const char *, const char *, FILE *, u_int32_t
 ######################################################
 # DBC handle methods.
 ######################################################
-BEGIN	dbc_c_close		RETCODE
+BEGIN	dbc_close		RETCODE
 ARG	ID	DBC *		dbc
 END
-BEGIN	dbc_c_count		RETCODE
+BEGIN	dbc_count		RETCODE
 ARG	ID	DBC *		dbc
 ARG	IGNORE	db_recno_t *	countp
 ARG	INT	u_int32_t	flags
 RET	INT	db_recno_t	dupcount
 END
-BEGIN	dbc_c_del		CODE
+BEGIN	dbc_del			CODE
 ARG	ID	DBC *		dbc
 ARG	INT	u_int32_t	flags
 END
-BEGIN	dbc_c_dup		RETCODE
+BEGIN	dbc_dup			RETCODE
 ARG	ID	DBC *		dbc
 ARG	IGNORE	DBC **		dbcp
 ARG	INT	u_int32_t	flags
 RET	ID	long		dbcid
 END
-BEGIN	dbc_c_get		RETCODE
+BEGIN	dbc_get			RETCODE
 ARG	ID	DBC *		dbc
 ARG	DBT	DBT *		key
 ARG	DBT	DBT *		data
@@ -573,7 +589,11 @@ ARG	INT	u_int32_t	flags
 RET	DBT	DBT *		key
 RET	DBT	DBT *		data
 END
-BEGIN	dbc_c_pget		RETCODE
+BEGIN	dbc_get_priority	CODE
+ARG	ID	DBC *		dbc
+ARET	INT	DB_CACHE_PRIORITY	priority
+END
+BEGIN	dbc_pget		RETCODE
 ARG	ID	DBC *		dbc
 ARG	DBT	DBT *		skey
 ARG	DBT	DBT *		pkey
@@ -583,12 +603,16 @@ RET	DBT	DBT *		skey
 RET	DBT	DBT *		pkey
 RET	DBT	DBT *		data
 END
-BEGIN	dbc_c_put		RETCODE
+BEGIN	dbc_put			RETCODE
 ARG	ID	DBC *		dbc
 ARG	DBT	DBT *		key
 ARG	DBT	DBT *		data
 ARG	INT	u_int32_t	flags
 RET	DBT	DBT *		key
+END
+BEGIN	dbc_set_priority	CODE
+ARG	ID	DBC *		dbc
+ARG	INT	DB_CACHE_PRIORITY	priority
 END
 
 ######################################################

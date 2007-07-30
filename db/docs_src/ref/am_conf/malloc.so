@@ -1,0 +1,21 @@
+m4_comment([$Id: malloc.so,v 10.20 2001/04/03 16:27:58 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Non-local memory allocation,, am_conf/dup, am_conf/bt_compare)
+
+m4_p([dnl
+m4_db allocates memory for returning key/data pairs and statistical
+information which becomes the responsibility of the application.
+There are also interfaces where an application will allocate memory
+which becomes the responsibility of m4_db.])
+
+m4_p([dnl
+On systems in which there may be multiple library versions of the
+standard allocation routines (notably Windows NT), transferring memory
+between the library and the application will fail because the m4_db
+library allocates memory from a different heap than the application
+uses to free it, or vice versa.  To avoid this problem, the
+m4_ref(dbenv_set_alloc) and m4_refT(dbh_set_alloc)s can be used to
+give m4_db references to the application's allocation routines.])
+
+m4_page_footer

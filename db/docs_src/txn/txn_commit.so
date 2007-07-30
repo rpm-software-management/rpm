@@ -1,0 +1,72 @@
+m4_comment([$Id: txn_commit.so,v 10.49 2004/08/13 03:39:03 bostic Exp $])
+
+define(M4PAGELOCAL, txn_commit)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_commit),
+ifelse(M4API, C_API, [dnl
+int
+DB_TXN-__GT__commit(DB_TXN *tid, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbTxn::commit(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(txn_commit) ends the transaction.])
+
+m4_p([dnl
+In the case of nested transactions, if the transaction is a parent
+transaction, committing the parent transaction causes all unresolved
+children of the parent to be committed.  In the case of nested
+transactions, if the transaction is a child transaction, its locks are
+not released, but are acquired by its parent.  Although the commit of the
+child transaction will succeed, the actual resolution of the child
+transaction is postponed until the parent transaction is committed or
+aborted; that is, if its parent transaction commits, it will be
+committed; and if its parent transaction aborts, it will be aborted.])
+
+m4_p([dnl
+All cursors opened within the transaction must be closed before the
+transaction is committed.])
+
+m4_p([dnl
+After m4_ref(txn_commit) has been called, regardless of its return, the
+m4_ref(DbTxn) handle may not be accessed again.  If m4_ref(txn_commit)
+encounters an error, the transaction and all child transactions of the
+transaction are aborted.])
+
+m4_return(txn_commit, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(1)
+m4_tagbegin
+
+m4_tag(m4_idef(DB_TXN_NOSYNC), [dnl
+Do not synchronously flush the log.  This means the transaction will
+exhibit the ACI (atomicity, consistency, and isolation) properties, but
+not D (durability); that is, database integrity will be maintained, but
+it is possible that this transaction may be undone during recovery.
+m4_p([dnl
+This behavior may be set for a m4_db environment using the
+m4_refT(dbenv_set_flags) or for a single transaction using the
+m4_refT(txn_begin).  Any value specified to this method overrides
+both of those settings.])])
+
+m4_tag(m4_idef(DB_TXN_SYNC), [dnl
+Synchronously flush the log.  This means the transaction will exhibit
+all of the ACID (atomicity, consistency, isolation, and durability)
+properties.
+m4_p([dnl
+This behavior is the default for m4_db environments unless the
+m4_ref(DB_TXN_NOSYNC) flag was specified to the
+m4_refT(dbenv_set_flags).  This behavior may also be set for a single
+transaction using the m4_refT(txn_begin).  Any value specified to this
+method overrides both of those settings.])])
+m4_tagend])
+m4_paramend
+
+m4_seealso(DbTxn)
+m4_page_footer

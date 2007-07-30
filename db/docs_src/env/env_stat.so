@@ -1,0 +1,19 @@
+m4_comment([$Id: env_stat.so,v 10.5 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_stat_print)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_stat_print),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__stat_print(DB_ENV *dbenv, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::stat_print(u_int32_t flags);
+]))
+
+m4_stat_print(dbenv_stat_print,,, no)
+
+m4_seealso(DbEnv)
+m4_page_footer

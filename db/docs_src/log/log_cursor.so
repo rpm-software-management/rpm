@@ -1,0 +1,29 @@
+m4_comment([$Id: log_cursor.so,v 10.12 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, log_cursor)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_cursor),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__log_cursor(DB_ENV *dbenv, DB_LOGC **cursorp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::log_cursor(DbLogc **cursorp, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(log_cursor) returns a created log cursor.])
+
+m4_return(log_cursor, std)
+
+m4_parambegin
+m4_param_co(cursorp, created log cursor, REF)
+m4_unusedflags
+m4_paramend
+
+m4_err(log_cursor, einval)
+
+m4_seealso(DbLog)
+m4_page_footer

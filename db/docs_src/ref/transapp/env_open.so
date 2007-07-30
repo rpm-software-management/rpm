@@ -1,0 +1,78 @@
+m4_comment([$Id: env_open.so,v 1.4 2002/06/24 14:51:07 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Opening the environment,, transapp/app, transapp/data_open)
+
+m4_p([dnl
+Creating transaction-protected applications using the m4_db library is
+quite easy.  Applications first use m4_ref(dbenv_open) to initialize
+the database environment.  Transaction-protected applications normally
+require all four m4_db subsystems, so the m4_ref(DB_INIT_MPOOL),
+m4_ref(DB_INIT_LOCK), m4_ref(DB_INIT_LOG), and m4_ref(DB_INIT_TXN) flags
+should be specified.])
+
+m4_p([dnl
+Once the application has called m4_ref(dbenv_open), it opens its
+databases within the environment.  Once the databases are opened, the
+application makes changes to the databases inside of transactions.  Each
+set of changes that entails a unit of work should be surrounded by the
+appropriate m4_ref(txn_begin), m4_ref(txn_commit), and m4_ref(txn_abort)
+calls.  The m4_db access methods will make the appropriate calls into
+the Lock, Log and Memory Pool subsystems in order to guarantee
+transaction semantics.  When the application is ready to exit, all
+outstanding transactions should have been committed or aborted.])
+
+m4_p([dnl
+Databases accessed by a transaction must not be closed during the
+transaction.  Once all outstanding transactions are finished, all open
+m4_db files should be closed.  When the m4_db database files have been
+closed, the environment should be closed by calling
+m4_ref(dbenv_close).])
+
+m4_p([dnl
+The following code fragment creates the database environment directory
+then opens the environment, running recovery.  Our m4_ref(DbEnv)
+database environment handle is declared to be free-threaded using the
+m4_ref(DB_THREAD) flag, and so may be used by any number of threads that
+we may subsequently create.])
+
+include(ref/transapp/env_open.cs)
+
+m4_p([dnl
+After running this initial program, we can use the m4_ref(db_stat)
+utility to display the contents of the environment directory:])
+
+m4_indent([dnl
+prompt__GT__ db_stat -e -h TXNAPP
+3.2.1   Environment version.
+120897  Magic number.
+0       Panic value.
+1       References.
+6       Locks granted without waiting.
+0       Locks granted after waiting.
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Mpool Region: 4.
+264KB   Size (270336 bytes).
+-1      Segment ID.
+1       Locks granted without waiting.
+0       Locks granted after waiting.
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Log Region: 3.
+96KB    Size (98304 bytes).
+-1      Segment ID.
+3       Locks granted without waiting.
+0       Locks granted after waiting.
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Lock Region: 2.
+240KB   Size (245760 bytes).
+-1      Segment ID.
+1       Locks granted without waiting.
+0       Locks granted after waiting.
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Txn Region: 5.
+8KB     Size (8192 bytes).
+-1      Segment ID.
+1       Locks granted without waiting.
+0       Locks granted after waiting.])
+
+m4_page_footer

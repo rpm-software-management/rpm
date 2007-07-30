@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: log_method.c,v 12.10 2006/08/30 10:05:32 bostic Exp $
+ * $Id: log_method.c,v 12.13 2007/05/17 15:15:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -13,13 +12,13 @@
 #include "dbinc/log.h"
 
 /*
- * __log_dbenv_create --
+ * __log_env_create --
  *	Log specific initialization of the DB_ENV structure.
  *
- * PUBLIC: int __log_dbenv_create __P((DB_ENV *));
+ * PUBLIC: int __log_env_create __P((DB_ENV *));
  */
 int
-__log_dbenv_create(dbenv)
+__log_env_create(dbenv)
 	DB_ENV *dbenv;
 {
 	/*
@@ -35,13 +34,13 @@ __log_dbenv_create(dbenv)
 }
 
 /*
- * __log_dbenv_destroy --
+ * __log_env_destroy --
  *	Log specific destruction of the DB_ENV structure.
  *
- * PUBLIC: void __log_dbenv_destroy __P((DB_ENV *));
+ * PUBLIC: void __log_env_destroy __P((DB_ENV *));
  */
 void
-__log_dbenv_destroy(dbenv)
+__log_env_destroy(dbenv)
 	DB_ENV *dbenv;
 {
 	COMPQUIET(dbenv, NULL);

@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep009.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep009.tcl,v 12.15 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  rep009
 # TEST	Replication and DUPMASTERs
@@ -52,6 +51,12 @@ proc rep009 { method { niter 10 } { tnum "009" } args } {
 
 proc rep009_sub { method niter tnum clean logset recargs largs } {
 	global testdir
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -79,32 +84,24 @@ proc rep009_sub { method niter tnum clean logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
-	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create $m_txnargs $m_logargs \
-#	    -verbose {rep on} -errpfx MASTER -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
+	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $m_logargs \
+	    -home $masterdir $verbargs -errpfx MASTER \
+	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
-	# Open a client
+	# Open a client.
 	repladd 2
-	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
-	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env -create $c_txnargs $c_logargs \
-#	    -verbose {rep on} -errpfx CLIENT -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
+	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $c_logargs \
+	    -home $clientdir $verbargs -errpfx CLIENT1 \
+	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
+	# Open a second client.
 	repladd 3
-	set cl2_envcmd "berkdb_env -create $c2_txnargs $c2_logargs \
-	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
-#	set cl2_envcmd "berkdb_env -create $c2_txnargs $c2_logargs \
-#	    -home $clientdir2 -rep_transport \[list 3 replsend\] \
-#	    -verbose {rep on} -errpfx CLIENT2 -errfile /dev/stderr"
+	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs $c2_logargs \
+	    -home $clientdir2 $verbargs -errpfx CLIENT2 \
+	    -rep_transport \[list 3 replsend\]"
 	set cl2env [eval $cl2_envcmd $recargs -rep_client]
-	error_check_good client2_env [is_valid_env $cl2env] TRUE
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2} {$cl2env 3}"
@@ -134,9 +131,12 @@ proc rep009_sub { method niter tnum clean logset recargs largs } {
 	while { 1 } {
 		set nproced 0
 
-		incr nproced [replprocessqueue $masterenv 1 0 he nm dup1 err1]
-		incr nproced [replprocessqueue $clientenv 2 0 he nm dup2 err2]
-		incr nproced [replprocessqueue $cl2env 3 0 he nm dup3 err3]
+		incr nproced [replprocessqueue \
+		    $masterenv 1 0 NONE dup1 err1]
+		incr nproced [replprocessqueue \
+		    $clientenv 2 0 NONE dup2 err2]
+		incr nproced [replprocessqueue \
+		    $cl2env 3 0 NONE dup3 err3]
 		if { $dup1 != 0 } {
 			set seen_dup(1) 1
 			error_check_good downgrade1 \

@@ -1,0 +1,82 @@
+m4_comment([$Id: apis.so,v 10.29 2003/10/18 19:15:57 bostic Exp $])
+
+m4_ref_title(Architecture,
+    Programmatic APIs,
+    programmatic @APIs,
+    arch/progmodel, arch/script)
+
+m4_p([dnl
+The m4_db subsystems can be accessed through interfaces from multiple
+languages.  Applications can use m4_db via C, C++ or Java, as well as a
+variety of scripting languages such as Perl, Python, Ruby or Tcl.
+Environments can be shared among applications written by using any of
+these interfaces.  For example, you might have a local server written
+in C or C++, a script for an administrator written in Perl or Tcl, and
+a Web-based user interface written in Java -- all sharing a single
+database environment.])
+
+m4_section(C)
+m4_p([dnl
+The m4_db library is written entirely in ANSI C.  C applications use a
+single include file:])
+
+m4_indent([m4_include(db.h)])
+
+m4_section(C++)
+m4_p([dnl
+The C++ classes provide a thin wrapper around the C API, with the major
+advantages being improved encapsulation and an optional exception
+mechanism for errors.  C++ applications use a single include file:])
+
+m4_indent([m4_include(db_cxx.h)])
+
+m4_p([dnl
+The classes and methods are named in a fashion that directly corresponds
+to structures and functions in the C interface.  Likewise, arguments to
+methods appear in the same order as the C interface, except to remove the
+explicit m4_bold(this) pointer.  The #defines used for flags are identical
+between the C and C++ interfaces.])
+
+m4_p([dnl
+As a rule, each C++ object has exactly one structure from the underlying
+C API associated with it.  The C structure is allocated with each
+constructor call and deallocated with each destructor call.  Thus, the
+rules the user needs to follow in allocating and deallocating structures
+are the same between the C and C++ interfaces.])
+
+m4_p([dnl
+To ensure portability to many platforms, both new and old, m4_db makes
+as few assumptions as possible about the C++ compiler and library.  For
+example, it does not expect STL, templates, or namespaces to be
+available.  The newest C++ feature used is exceptions, which are used
+liberally to transmit error information.  Even the use of exceptions
+can be disabled at runtime.])
+
+m4_section(Java)
+m4_p([dnl
+The Java classes provide a layer around the C API that is almost identical
+to the C++ layer.  The classes and methods are, for the most part
+identical to the C++ layer.  m4_db constants and #defines are represented as
+"static final int" values.  Error conditions are communicated as Java
+exceptions.])
+
+m4_p([dnl
+As in C++, each Java object has exactly one structure from the underlying
+C API associated with it.  The Java structure is allocated with each
+constructor or open call, but is deallocated only by the Java garbage
+collector.  Because the timing of garbage collection is not predictable,
+applications should take care to do a close when finished with any object
+that has a close method.])
+
+m4_section([Dbm/Ndbm, Hsearch])
+m4_p([dnl
+m4_db supports the standard UNIX m4_ref(dbm), m4_ref(ndbm), and
+m4_ref(hsearch) interfaces.  After including a new header file and
+recompiling, programs will run orders of magnitude faster, and
+underlying databases can grow as large as necessary.  Also, historic
+m4_ref(dbm) and m4_ref(ndbm) applications can fail once some number of
+entries are inserted into the database, in which the number depends on
+the effectiveness of the internal hashing function on the particular
+data set.  This is not a problem with m4_db.])
+
+m4_page_footer

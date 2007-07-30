@@ -1,0 +1,67 @@
+m4_comment([$Id: notes.so,v 1.20 2004/10/08 17:16:54 sue Exp $])
+
+m4_ref_title(Building m4_db for VxWorks systems,
+    VxWorks notes, @VxWorks notes, build_vxworks/intro, build_vxworks/faq)
+
+m4_p([dnl
+m4_db currently disallows the DB_TRUNC flag to m4_ref(dbh_open).  The
+operations that this flag represents are not fully supported under
+VxWorks.])
+
+m4_p([dnl
+The m4_ref(dbh_sync) function is implemented using an ioctl call into
+the file system driver with the FIOSYNC command.  Most, but not all file
+system drivers support this call.  m4_db requires the use of a file
+system supporting FIOSYNC.])
+
+m4_section([Building and Running the Demo Program])
+m4_p([dnl
+The demo program should be built in a manner very similar to
+building m4_db.  If you want different or additional BSP
+build specifications you should add them by following the
+directions indicated in m4_link(M4RELDIR/ref/build_vxworks/intro, Building
+with Tornado 2.0 or Tornado 2.2).])
+
+m4_p([dnl
+The demo program can be downloaded and run by calling the entry function
+m4_bold(dbdemo) with the pathname of a database to use.  The demo
+program will ask for some input keys.  It creates a database and adds
+those keys into the database, using the reverse of the key as the data
+value.  When complete you can either enter EOF (control-D) or
+m4_bold(quit) and the demo program will display all of the key/data
+items in the database.])
+
+m4_section([Building and Running the Utility Programs])
+m4_p([dnl
+The m4_db  m4_link(M4RELDIR/utility/index, utility programs)
+can be downloaded and run by calling the
+function equivalent to the utility's name.  The utility functions take
+a string containing all the supported arguments.  The program will then
+decompose that string into a traditional argc/argv used internally.
+For example, to execute m4_ref(db_stat) on a database within an
+environment you would execute the following from the windsh prompt.
+Obviously you would change the pathname and database name to reflect
+your system.])
+
+m4_indent([-__GT__ db_stat "-h /tmp/myenvhome -d mydatabase.db"])
+
+m4_section([Notes for VxWorks 5.4/5.5])
+m4_p([dnl
+The memory on VxWorks is always resident and fully shared among all
+tasks running on the target.  For this reason, the m4_ref(DB_SYSTEM_MEM)
+flag is implied for any application that does not specify the
+m4_ref(DB_PRIVATE) flag.  Additionally, applications must use a segment
+ID to ensure that different applications do not overwrite each other's
+database environments.  See the m4_refT(dbenv_set_shm_key) for more
+information.  Also, the m4_ref(DB_LOCKDOWN) flag has no effect.])
+
+m4_p([dnl
+A default small footprint build is provided.  This default provides
+equivalent to the m4_arg(--enable-smallbuild) configuration option
+described in m4_link(M4RELDIR/ref/build_unix/small, Building a
+small memory footprint library).  In order to build the small
+footprint, you should move m4_path([db_config.h]) aside and copy
+m4_path([db_config_small.h]) to m4_path([db_config.h]).  Then open up
+the appropriate small workspace file via Tornado and build as usual.])
+
+m4_page_footer

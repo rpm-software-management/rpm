@@ -1,0 +1,12 @@
+m4_comment([$Id: lock_stat.so,v 11.5 2003/10/18 19:16:13 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: lock_stat,,
+    upgrade.3.0/lock_detect, upgrade.3.0/log_register)
+
+m4_p([dnl
+The m4_arg(st_magic), m4_arg(st_version), m4_arg(st_numobjs) and
+m4_arg(st_refcnt) fields returned from the lock_stat function
+have been removed, and this information is no longer available.])
+
+m4_page_footer

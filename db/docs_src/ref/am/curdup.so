@@ -1,0 +1,22 @@
+m4_comment([$Id: curdup.so,v 11.6 2001/03/01 15:57:49 bostic Exp $])
+
+m4_ref_title(Access Methods, Duplicating a cursor,
+    [@duplicating a cursor, duplicating a @cursor], am/curdel, am/join)
+
+m4_p([dnl
+Once a cursor has been initialized (for example, by a call to
+m4_ref(dbc_get)), it can be thought of as identifying a particular
+location in a database.  The m4_refT(dbc_dup) permits an application to
+create a new cursor that has the same locking and transactional
+information as the cursor from which it is copied, and which optionally
+refers to the same position in the database.])
+
+m4_p([dnl
+In order to maintain a cursor position when an application is using
+locking, locks are maintained on behalf of the cursor until the cursor is
+closed.  In cases when an application is using locking without
+transactions, cursor duplication is often required to avoid
+self-deadlocks.  For further details, refer to
+m4_link(M4RELDIR/ref/lock/am_conv, Access method locking conventions).])
+
+m4_page_footer

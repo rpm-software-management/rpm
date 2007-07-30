@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1988, 1993
@@ -32,7 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: strerror.c,v 12.7 2006/08/24 14:45:10 bostic Exp $
+ * $Id: strerror.c,v 12.13 2007/05/17 16:57:46 bostic Exp $
  */
 
 /*
@@ -74,124 +73,6 @@
 
 #include "db_int.h"
 
-static const char *__db_errlist[] = {
-	"Undefined error: 0",			/*  0 - ENOERROR */
-	"Operation not permitted",		/*  1 - EPERM */
-	"No such file or directory",		/*  2 - ENOENT */
-	"No such process",			/*  3 - ESRCH */
-	"Interrupted system call",		/*  4 - EINTR */
-	"Input/output error",			/*  5 - EIO */
-	"Device not configured",		/*  6 - ENXIO */
-	"Argument list too long",		/*  7 - E2BIG */
-	"Exec format error",			/*  8 - ENOEXEC */
-	"Bad file descriptor",			/*  9 - EBADF */
-	"No child processes",			/* 10 - ECHILD */
-	"Resource deadlock avoided",		/* 11 - EDEADLK */
-	"Cannot allocate memory",		/* 12 - ENOMEM */
-	"Permission denied",			/* 13 - EACCES */
-	"Bad address",				/* 14 - EFAULT */
-	"Block device required",		/* 15 - ENOTBLK */
-	"Device busy",				/* 16 - EBUSY */
-	"File exists",				/* 17 - EEXIST */
-	"Cross-device link",			/* 18 - EXDEV */
-	"Operation not supported by device",	/* 19 - ENODEV */
-	"Not a directory",			/* 20 - ENOTDIR */
-	"Is a directory",			/* 21 - EISDIR */
-	"Invalid argument",			/* 22 - EINVAL */
-	"Too many open files in system",	/* 23 - ENFILE */
-	"Too many open files",			/* 24 - EMFILE */
-	"Inappropriate ioctl for device",	/* 25 - ENOTTY */
-	"Text file busy",			/* 26 - ETXTBSY */
-	"File too large",			/* 27 - EFBIG */
-	"No space left on device",		/* 28 - ENOSPC */
-	"Illegal seek",				/* 29 - ESPIPE */
-	"Read-only file system",		/* 30 - EROFS */
-	"Too many links",			/* 31 - EMLINK */
-	"Broken pipe",				/* 32 - EPIPE */
-
-/* math software */
-	"Numerical argument out of domain",	/* 33 - EDOM */
-	"Result too large",			/* 34 - ERANGE */
-
-/* non-blocking and interrupt i/o */
-	"Resource temporarily unavailable",	/* 35 - EAGAIN */
-						/* 35 - EWOULDBLOCK */
-	"Operation now in progress",		/* 36 - EINPROGRESS */
-	"Operation already in progress",	/* 37 - EALREADY */
-
-/* ipc/network software -- argument errors */
-	"Socket operation on non-socket",	/* 38 - ENOTSOCK */
-	"Destination address required",		/* 39 - EDESTADDRREQ */
-	"Message too long",			/* 40 - EMSGSIZE */
-	"Protocol wrong type for socket",	/* 41 - EPROTOTYPE */
-	"Protocol not available",		/* 42 - ENOPROTOOPT */
-	"Protocol not supported",		/* 43 - EPROTONOSUPPORT */
-	"Socket type not supported",		/* 44 - ESOCKTNOSUPPORT */
-	"Operation not supported",		/* 45 - EOPNOTSUPP */
-	"Protocol family not supported",	/* 46 - EPFNOSUPPORT */
-						/* 47 - EAFNOSUPPORT */
-	"Address family not supported by protocol family",
-	"Address already in use",		/* 48 - EADDRINUSE */
-	"Can't assign requested address",	/* 49 - EADDRNOTAVAIL */
-
-/* ipc/network software -- operational errors */
-	"Network is down",			/* 50 - ENETDOWN */
-	"Network is unreachable",		/* 51 - ENETUNREACH */
-	"Network dropped connection on reset",	/* 52 - ENETRESET */
-	"Software caused connection abort",	/* 53 - ECONNABORTED */
-	"Connection reset by peer",		/* 54 - ECONNRESET */
-	"No buffer space available",		/* 55 - ENOBUFS */
-	"Socket is already connected",		/* 56 - EISCONN */
-	"Socket is not connected",		/* 57 - ENOTCONN */
-	"Can't send after socket shutdown",	/* 58 - ESHUTDOWN */
-	"Too many references: can't splice",	/* 59 - ETOOMANYREFS */
-	"Operation timed out",			/* 60 - ETIMEDOUT */
-	"Connection refused",			/* 61 - ECONNREFUSED */
-
-	"Too many levels of symbolic links",	/* 62 - ELOOP */
-	"File name too long",			/* 63 - ENAMETOOLONG */
-
-/* should be rearranged */
-	"Host is down",				/* 64 - EHOSTDOWN */
-	"No route to host",			/* 65 - EHOSTUNREACH */
-	"Directory not empty",			/* 66 - ENOTEMPTY */
-
-/* quotas & mush */
-	"Too many processes",			/* 67 - EPROCLIM */
-	"Too many users",			/* 68 - EUSERS */
-	"Disc quota exceeded",			/* 69 - EDQUOT */
-
-/* Network File System */
-	"Stale NFS file handle",		/* 70 - ESTALE */
-	"Too many levels of remote in path",	/* 71 - EREMOTE */
-	"RPC struct is bad",			/* 72 - EBADRPC */
-	"RPC version wrong",			/* 73 - ERPCMISMATCH */
-	"RPC prog. not avail",			/* 74 - EPROGUNAVAIL */
-	"Program version wrong",		/* 75 - EPROGMISMATCH */
-	"Bad procedure for program",		/* 76 - EPROCUNAVAIL */
-
-	"No locks available",			/* 77 - ENOLCK */
-	"Function not implemented",		/* 78 - ENOSYS */
-	"Inappropriate file type or format",	/* 79 - EFTYPE */
-	"Authentication error",			/* 80 - EAUTH */
-	"Need authenticator",			/* 81 - ENEEDAUTH */
-	"Identifier removed",			/* 82 - EIDRM */
-	"No message of desired type",		/* 83 - ENOMSG */
-	"Value too large to be stored in data type", /* 84 - EOVERFLOW */
-	"Operation canceled",			/* 85 - ECANCELED */
-	"Illegal byte sequence",		/* 86 - EILSEQ */
-	"Attribute not found",			/* 87 - ENOATTR */
-
-/* General */
-	"Programming error",			/* 88 - EDOOFUS */
-
-	"Bad message",				/* 89 - EBADMSG */
-	"Multihop attempted",			/* 90 - EMULTIHOP */
-	"Link has been severed",		/* 91 - ENOLINK */
-	"Protocol error",			/* 92 - EPROTO */
-};
-static int __db_nerr = sizeof(__db_errlist) / sizeof(__db_errlist[0]);
-
 /*
  * __db_strerror --
  *	Return the string associated with an errno.
@@ -204,8 +85,141 @@ char *
 strerror(num)
 	int num;
 {
-	if (num >= 0 && num < __db_nerr)
-		return ((char *)__db_errlist[num]);
+#define	ERRSTR(v, s) do {						\
+	if (num == (v))							\
+		return (s);						\
+} while (0)
+	ERRSTR(0, "Undefined error: 0");
+	ERRSTR(EPERM, "Operation not permitted");
+	ERRSTR(ENOENT, "No such file or directory");
+	ERRSTR(ESRCH, "No such process");
+	ERRSTR(EINTR, "Interrupted system call");
+	ERRSTR(EIO, "Input/output error");
+	ERRSTR(ENXIO, "Device not configured");
+	ERRSTR(E2BIG, "Argument list too long");
+	ERRSTR(ENOEXEC, "Exec format error");
+	ERRSTR(EBADF, "Bad file descriptor");
+	ERRSTR(ECHILD, "No child processes");
+	ERRSTR(EDEADLK, "Resource deadlock avoided");
+	ERRSTR(ENOMEM, "Cannot allocate memory");
+	ERRSTR(EACCES, "Permission denied");
+	ERRSTR(EFAULT, "Bad address");
+	ERRSTR(ENOTBLK, "Block device required");
+	ERRSTR(EBUSY, "Device busy");
+	ERRSTR(EEXIST, "File exists");
+	ERRSTR(EXDEV, "Cross-device link");
+	ERRSTR(ENODEV, "Operation not supported by device");
+	ERRSTR(ENOTDIR, "Not a directory");
+	ERRSTR(EISDIR, "Is a directory");
+	ERRSTR(EINVAL, "Invalid argument");
+	ERRSTR(ENFILE, "Too many open files in system");
+	ERRSTR(EMFILE, "Too many open files");
+	ERRSTR(ENOTTY, "Inappropriate ioctl for device");
+	ERRSTR(ETXTBSY, "Text file busy");
+	ERRSTR(EFBIG, "File too large");
+	ERRSTR(ENOSPC, "No space left on device");
+	ERRSTR(ESPIPE, "Illegal seek");
+	ERRSTR(EROFS, "Read-only file system");
+	ERRSTR(EMLINK, "Too many links");
+	ERRSTR(EPIPE, "Broken pipe");
+
+/* math software */
+	ERRSTR(EDOM, "Numerical argument out of domain");
+	ERRSTR(ERANGE, "Result too large");
+
+/* non-blocking and interrupt i/o */
+	ERRSTR(EAGAIN, "Resource temporarily unavailable");
+	ERRSTR(EWOULDBLOCK, "Resource temporarily unavailable");
+	ERRSTR(EINPROGRESS, "Operation now in progress");
+	ERRSTR(EALREADY, "Operation already in progress");
+
+/* ipc/network software -- argument errors */
+	ERRSTR(ENOTSOCK, "Socket operation on non-socket");
+	ERRSTR(EDESTADDRREQ, "Destination address required");
+	ERRSTR(EMSGSIZE, "Message too long");
+	ERRSTR(EPROTOTYPE, "Protocol wrong type for socket");
+	ERRSTR(ENOPROTOOPT, "Protocol not available");
+	ERRSTR(EPROTONOSUPPORT, "Protocol not supported");
+	ERRSTR(ESOCKTNOSUPPORT, "Socket type not supported");
+	ERRSTR(EOPNOTSUPP, "Operation not supported");
+	ERRSTR(EPFNOSUPPORT, "Protocol family not supported");
+	ERRSTR(EAFNOSUPPORT, "Address family not supported by protocol family");
+	ERRSTR(EADDRINUSE, "Address already in use");
+	ERRSTR(EADDRNOTAVAIL, "Can't assign requested address");
+
+/* ipc/network software -- operational errors */
+	ERRSTR(ENETDOWN, "Network is down");
+	ERRSTR(ENETUNREACH, "Network is unreachable");
+	ERRSTR(ENETRESET, "Network dropped connection on reset");
+	ERRSTR(ECONNABORTED, "Software caused connection abort");
+	ERRSTR(ECONNRESET, "Connection reset by peer");
+	ERRSTR(ENOBUFS, "No buffer space available");
+	ERRSTR(EISCONN, "Socket is already connected");
+	ERRSTR(ENOTCONN, "Socket is not connected");
+	ERRSTR(ESHUTDOWN, "Can't send after socket shutdown");
+	ERRSTR(ETOOMANYREFS, "Too many references: can't splice");
+	ERRSTR(ETIMEDOUT, "Operation timed out");
+	ERRSTR(ECONNREFUSED, "Connection refused");
+
+	ERRSTR(ELOOP, "Too many levels of symbolic links");
+	ERRSTR(ENAMETOOLONG, "File name too long");
+
+/* should be rearranged */
+	ERRSTR(EHOSTDOWN, "Host is down");
+	ERRSTR(EHOSTUNREACH, "No route to host");
+	ERRSTR(ENOTEMPTY, "Directory not empty");
+
+/* quotas & mush */
+	ERRSTR(EPROCLIM, "Too many processes");
+	ERRSTR(EUSERS, "Too many users");
+	ERRSTR(EDQUOT, "Disc quota exceeded");
+
+/* Network File System */
+	ERRSTR(ESTALE, "Stale NFS file handle");
+	ERRSTR(EREMOTE, "Too many levels of remote in path");
+	ERRSTR(EBADRPC, "RPC struct is bad");
+	ERRSTR(ERPCMISMATCH, "RPC version wrong");
+	ERRSTR(EPROGUNAVAIL, "RPC prog. not avail");
+	ERRSTR(EPROGMISMATCH, "Program version wrong");
+	ERRSTR(EPROCUNAVAIL, "Bad procedure for program");
+
+	ERRSTR(ENOLCK, "No locks available");
+	ERRSTR(ENOSYS, "Function not implemented");
+	ERRSTR(EFTYPE, "Inappropriate file type or format");
+#ifdef EAUTH
+	ERRSTR(EAUTH, "Authentication error");
+#endif
+#ifdef ENEEDAUTH
+	ERRSTR(ENEEDAUTH, "Need authenticator");
+#endif
+	ERRSTR(EIDRM, "Identifier removed");
+	ERRSTR(ENOMSG, "No message of desired type");
+#ifdef EOVERFLOW
+	ERRSTR(EOVERFLOW, "Value too large to be stored in data type");
+#endif
+	ERRSTR(ECANCELED, "Operation canceled");
+	ERRSTR(EILSEQ, "Illegal byte sequence");
+#ifdef ENOATTR
+	ERRSTR(ENOATTR, "Attribute not found");
+#endif
+
+/* General */
+#ifdef EDOOFUS
+	ERRSTR(EDOOFUS, "Programming error");
+#endif
+
+#ifdef EBADMSG
+	ERRSTR(EBADMSG, "Bad message");
+#endif
+#ifdef EMULTIHOP
+	ERRSTR(EMULTIHOP, "Multihop attempted");
+#endif
+#ifdef ENOLINK
+	ERRSTR(ENOLINK, "Link has been severed");
+#endif
+#ifdef EPROTO
+	ERRSTR(EPROTO, "Protocol error");
+#endif
 
 	return (__db_unknown_error(num));
 }

@@ -1,0 +1,39 @@
+m4_comment([$Id: set_func_dirlist.so,v 10.19 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_dirlist)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_dirlist),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_dirlist(
+    int (*func_dirlist)(const char *dir, char ***namesp, int *cntp));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to read through a directory and
+create a list of files that the directory contains.])
+
+m4_scope_process(dbenv_set_func_dirlist)
+
+m4_when_init(dbenv_set_func_dirlist)
+
+m4_return(dbenv_set_func_dirlist, std)
+
+m4_parambegin
+m4_param(func_dirlist, [dnl
+The m4_arg(func_dirlist) parameter is the function which reads through
+a directory and returns a list of the files it contains.
+m4_p([dnl
+The m4_arg(dir) parameter to this function is the name of the directory
+to be searched.])
+m4_p([dnl
+The function must return a pointer to an array of nul-terminated file
+names into the memory location to which the m4_arg(namesp) parameter
+refers, and a count of the number of elements in the array into the
+memory location to which m4_arg(cntp) refers.])])
+m4_ret_internal(func_dirlist)
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

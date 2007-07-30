@@ -1,0 +1,68 @@
+m4_comment([$Id: txn_commit.so,v 11.20 2004/12/02 18:21:08 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(txn commit, m4_tcl_txn_commit, [dnl
+txn commit
+	m4_tcl_arg([-nosync])
+	m4_tcl_arg([-sync])
+])
+
+m4_p([dnl
+The m4_tcl_txn_commit command ends the transaction.])
+
+m4_p([dnl
+In the case of nested transactions, if the transaction is a parent
+transaction with unresolved (neither committed or aborted) child
+transactions, the child transactions are aborted and the commit of the
+parent will succeed.])
+
+m4_p([dnl
+In the case of nested transactions, if the transaction is a child
+transaction, its locks are not released, but are acquired by its parent.
+Although the commit of the child transaction will succeed, the actual
+resolution of the child transaction is postponed until the parent
+transaction is committed or aborted; that is, if its parent transaction
+commits, it will be committed, and if its parent transaction aborts, it
+will be aborted.])
+
+m4_p([dnl
+If the m4_arg(-nosync) option is not specified, a commit log record is
+written and flushed to disk, as are all previously written log records.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-nosync], [dnl
+Do not synchronously flush the log. This means the transaction will
+exhibit the ACI (atomicity, consistency, and isolation) properties, but
+not D (durability); that is, database integrity will be maintained, but
+it is possible that this transaction may be undone during recovery
+instead of being redone.
+m4_p([dnl
+This behavior may be set for an entire m4_db environment as part of
+the m4_tcl_env_open call.])])
+
+m4_tag([-sync], [dnl
+Synchronously flush the log. This means the transaction will exhibit
+all of the ACID (atomicity, consistency, isolation and durability)
+properties.
+m4_p([dnl
+This behavior is the default for m4_db environments unless the
+m4_arg(-nosync) option was specified to the m4_tcl_env_open or
+m4_tcl_txn calls.])])
+
+m4_tagend
+
+m4_p([dnl
+After m4_tcl_txn_commit has been called, regardless of its return, the
+m4_arg(txn) handle may not be accessed again.  If m4_tcl_txn_commit
+encounters an error, this transaction and all child transactions of this
+transaction are aborted.])
+
+m4_tcl_ret_standard(m4_tcl_txn_commit)
+
+m4_page_footer

@@ -1,13 +1,13 @@
 #!/bin/sh -
 #
-# $Id: chk.stats,v 12.2 2006/09/11 16:26:46 bostic Exp $
+# $Id: chk.stats,v 12.3 2007/04/20 18:29:00 bostic Exp $
 #
 # Check to make sure all of the stat structure members are included in
 # all of the possible formats.
 
 # Top-level directory.
 d=../..
-docs=../../../db_docs
+docs=$d/docs_src
 
 # Path names are from a top-level directory.
 [ -f $d/README ] || {

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: os_clock.c,v 12.6 2006/08/24 14:46:21 bostic Exp $
+ * $Id: os_clock.c,v 12.11 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -12,19 +11,26 @@
 #include "db_int.h"
 
 /*
- * __os_clock --
- *	Return the current time-of-day clock in seconds and microseconds.
+ * __os_gettime --
+ *	Return the current time-of-day clock in seconds and nanoseconds.
  */
 void
-__os_clock(dbenv, secsp, usecsp)
+__os_gettime(dbenv, tp)
 	DB_ENV *dbenv;
-	u_int32_t *secsp, *usecsp;	/* Seconds and microseconds. */
+	db_timespec *tp;
 {
+#ifdef DB_WINCE
+	DWORD ticks;
+
+	ticks = GetTickCount();
+
+	tp->tv_sec = (u_int32_t)(ticks / 1000);
+	tp->tv_nsec = (u_int32_t)((ticks % 1000) * MS_PER_NS);
+#else
 	struct _timeb now;
 
 	_ftime(&now);
-	if (secsp != NULL)
-		*secsp = (u_int32_t)now.time;
-	if (usecsp != NULL)
-		*usecsp = now.millitm * 1000;
+	tp->tv_sec = now.time;
+	tp->tv_nsec = now.millitm * MS_PER_NS;
+#endif
 }

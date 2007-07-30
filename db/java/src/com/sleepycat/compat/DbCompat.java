@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: DbCompat.java,v 12.7 2006/08/31 18:14:08 bostic Exp $
+ * $Id: DbCompat.java,v 12.10 2007/05/17 15:15:41 bostic Exp $
  */
 
 package com.sleepycat.compat;
@@ -52,6 +51,8 @@ public class DbCompat {
     public static final boolean BTREE_RECNUM_METHOD = true;
     public static final boolean OPTIONAL_READ_UNCOMMITTED = true;
     public static final boolean SECONDARIES = true;
+    public static boolean TRANSACTION_RUNNER_PRINT_STACK_TRACES = true;
+    public static final boolean DATABASE_COUNT = false;
 
     /* Methods used by the collections package. */
 
@@ -127,6 +128,12 @@ public class DbCompat {
     public static String getDatabaseFile(Database db)
         throws DatabaseException {
         return db.getDatabaseFile();
+    }
+
+    public static long getDatabaseCount(Database db)
+        throws DatabaseException {
+
+        throw new UnsupportedOperationException();
     }
 
     public static OperationStatus getCurrentRecordNumber(Cursor cursor,

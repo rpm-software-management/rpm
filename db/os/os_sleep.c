@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_sleep.c,v 12.9 2006/09/06 20:22:12 bostic Exp $
+ * $Id: os_sleep.c,v 12.14 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -27,7 +26,7 @@ __os_sleep(dbenv, secs, usecs)
 	int ret;
 
 	/* Don't require that the values be normalized. */
-	for (; usecs >= 1000000; usecs -= 1000000)
+	for (; usecs >= US_PER_SEC; usecs -= US_PER_SEC)
 		++secs;
 
 	if (DB_GLOBAL(j_sleep) != NULL) {
@@ -36,8 +35,8 @@ __os_sleep(dbenv, secs, usecs)
 	}
 
 	/*
-	 * It's important that we yield the processor here so that other
-	 * processes or threads are permitted to run.
+	 * It's important we yield the processor here so other processes or
+	 * threads can run.
 	 *
 	 * XXX
 	 * VxWorks doesn't yield the processor on select.  This isn't really
@@ -49,7 +48,8 @@ __os_sleep(dbenv, secs, usecs)
 #endif
 
 	/*
-	 * Sheer raving paranoia -- don't select for 0 time.
+	 * Sheer raving paranoia -- don't select for 0 time, in case some
+	 * implementation doesn't yield the processor in that case.
 	 */
 	t.tv_sec = (long)secs;
 	if (secs == 0 && usecs == 0)

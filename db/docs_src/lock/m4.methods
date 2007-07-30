@@ -1,0 +1,26 @@
+m4_comment([$Id: m4.methods,v 1.6 2006/08/08 05:15:56 mjc Exp $])
+
+m4_table_begin(, _center)
+
+m4_table_header(Locking Subsystem and Related Methods, Description)
+m4_comment([DbDeadlockException])ifelse(M4API, CXX_API, [m4_table_element(m4_ref(DbDeadlockException), Deadlock exception)])
+m4_comment([DbEnv::lock_detect])m4_table_element(m4_ref(lock_detect), Perform deadlock detection)
+m4_comment([DbEnv::lock_get])m4_table_element(m4_ref(lock_get), Acquire a lock)
+m4_comment([DbEnv::lock_id])m4_table_element(m4_ref(lock_id), Acquire a locker ID)
+m4_comment([DbEnv::lock_id_free])m4_table_element(m4_ref(lock_id_free), Release a locker ID)
+m4_comment([DbEnv::lock_put])m4_table_element(m4_ref(lock_put), Release a lock)
+m4_comment([DbEnv::lock_stat])m4_table_element(m4_ref(lock_stat), Return lock subsystem statistics)
+m4_comment([DbEnv::lock_vec])m4_table_element(m4_ref(lock_vec), Acquire/release locks)
+m4_comment([DbEnv::cdsgroup_begin])m4_table_element(m4_ref(cdsgroup_begin), Get a locker ID in m4_cam)
+m4_comment([DbLockNotGrantedException])ifelse(M4API, CXX_API, [m4_table_element(m4_ref(DbLockNotGrantedException), Lock-not-granted exception)])
+m4_comment([DbLock])ifelse(M4API, CXX_API, [m4_table_element(m4_ref(DbLock), Lock object)])
+
+m4_table_header(Locking Subsystem Configuration, _empty)
+m4_comment([DbEnv::set_lk_conflicts])m4_table_element(m4_ref(dbenv_set_lk_conflicts), Set lock conflicts matrix)
+m4_comment([DbEnv::set_lk_max_detect])m4_table_element(m4_ref(dbenv_set_lk_detect), Set automatic deadlock detection)
+m4_comment([DbEnv::set_lk_max_lockers])m4_table_element(m4_ref(dbenv_set_lk_max_lockers), Set maximum number of lockers)
+m4_comment([DbEnv::set_lk_max_locks])m4_table_element(m4_ref(dbenv_set_lk_max_locks), Set maximum number of locks)
+m4_comment([DbEnv::set_lk_max_objects])m4_table_element(m4_ref(dbenv_set_lk_max_objects), Set maximum number of lock objects)
+m4_comment([DbEnv::set_timeout])m4_table_element(m4_ref(dbenv_set_timeout), Set lock and transaction timeout)
+
+m4_table_end

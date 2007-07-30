@@ -1,0 +1,89 @@
+m4_comment([$Id: db_recover.so,v 10.30 2006/10/12 22:09:38 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_recover)
+
+m4_util_header(db_recover, [dnl
+db_recover m4_utilarg(cefVv) m4_utilarg([h home]) m4_utilarg([P password]) m4_utilarg([t __LB____LB__CC__RB__YY__RB__MMDDhhmm__LB__.SS__RB____RB__])])
+m4_idefz(utility to @recover database environments)
+
+m4_p([dnl
+The m4_ref(db_recover) utility must be run after an unexpected application,
+m4_db, or system failure to restore the database to a consistent state.
+All committed transactions are guaranteed to appear after m4_ref(db_recover)
+has run, and all uncommitted transactions will be completely undone.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+
+m4_tagopt(c, [Perform catastrophic recovery instead of normal recovery.])
+
+m4_tagopt(e, [Retain the environment after running recovery.  This option
+will rarely be used unless a DB_CONFIG file is present in the home
+directory.  If a DB_CONFIG file is not present, then the regions will be
+created with default parameter values.])
+
+m4_tagopt(f, [Display a message on the standard output showing the
+percent of recovery completed.])
+
+m4_hflag
+
+m4_Pflag
+
+m4_tagopt(t, [dnl
+Recover to the time specified rather than to the most current possible
+date.  The timestamp argument should be in the form
+__LB____LB__CC__RB__YY__RB__MMDDhhmm__LB__.SS__RB__ where each pair of
+letters represents the following:])
+m4_tagbegin
+m4_tag(CC, [The first two digits of the year (the century).])
+m4_tagns(YY, [dnl
+The second two digits of the year.  If "YY" is specified, but "CC" is not,
+a value for "YY" between 69 and 99 results in a "CC" value of 19.  Otherwise,
+a "CC" value of 20 is used.])
+m4_tagns(MM, [The month of the year, from 1 to 12.])
+m4_tagns(DD, [The day of the month, from 1 to 31.])
+m4_tagns(hh, [The hour of the day, from 0 to 23.])
+m4_tagns(mm, [The minute of the hour, from 0 to 59.])
+m4_tagns(SS, [The second of the minute, from 0 to 61.])
+m4_tagend
+m4_p([dnl
+If the "CC" and "YY" letter pairs are not specified, the values default
+to the current year.  If the "SS" letter pair is not specified, the value
+defaults to 0.])
+
+m4_Vflag
+
+m4_tagopt(v, [Run in verbose mode.])
+
+m4_tagend
+
+m4_p([dnl
+In the case of catastrophic recovery, an archival copy -- or
+m4_italic(snapshot) -- of all database files must be restored along with
+all of the log files written since the database file snapshot was made.
+(If disk space is a problem, log files may be referenced by symbolic
+links).  For further information on creating a database snapshot, see
+m4_link(M4RELDIR/ref/transapp/archival, [Archival Procedures]).  For
+further information on performing recovery, see
+m4_link(M4RELDIR/ref/transapp/recovery, [Recovery Procedures]).])
+
+m4_p([dnl
+If the failure was not catastrophic, the files present on the system at the
+time of failure are sufficient to perform recovery.])
+
+m4_p([dnl
+If log files are missing, m4_ref(db_recover) will identify the missing
+log file(s) and fail, in which case the missing log files need to be
+restored and recovery performed again.])
+
+m4_detach(db_recover, uses)
+
+m4_utilexit(db_recover)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_recover)
+
+m4_page_footer

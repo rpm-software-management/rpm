@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep066.tcl,v 12.4 2006/09/08 20:32:18 bostic Exp $
+# $Id: rep066.tcl,v 12.10 2007/05/24 20:20:42 alanb Exp $
 #
 # TEST	rep066
 # TEST	Replication and dead log handles.
@@ -56,6 +55,12 @@ proc rep066 { method { niter 10 } { tnum "066" } args } {
 
 proc rep066_sub { method niter tnum logset recargs largs } {
 	global testdir
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -71,10 +76,7 @@ proc rep066_sub { method niter tnum logset recargs largs } {
 	# four times the size of the in-memory log buffer.
 	set pagesize 4096
 	append largs " -pagesize $pagesize "
-	set log_buf [expr $pagesize * 2]
-	set log_max [expr $log_buf * 4]
-	set m_logargs " -log_buffer $log_buf "
-	set c_logargs " -log_buffer $log_buf "
+	set log_max [expr $pagesize * 8]
 
 	set m_logtype [lindex $logset 0]
 	set c_logtype [lindex $logset 1]
@@ -90,29 +92,18 @@ proc rep066_sub { method niter tnum logset recargs largs } {
 	# Later we'll open a 2nd handle to this env.
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -errpfx ENV0 -log_max $log_max \
+	    $m_logargs -errpfx ENV0 -log_max $log_max $verbargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -log_max $log_max \
-#	    -errpfx ENV0 -verbose {rep on} -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set env0 [eval $ma_envcmd $recargs -rep_master]
 	set masterenv $env0
-	error_check_good master_env [is_valid_env $env0] TRUE
 
 	# Open a client.
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -errpfx ENV1 -log_max $log_max \
+	    $c_logargs -errpfx ENV1 -log_max $log_max $verbargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -log_max $log_max \
-#	    -errpfx ENV1 -verbose {rep on} -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set env1 [eval $cl_envcmd $recargs -rep_client]
 	set clientenv $env1
-	error_check_good client_env [is_valid_env $env1] TRUE
-
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$env0 1} {$env1 2}"
@@ -149,8 +140,8 @@ proc rep066_sub { method niter tnum logset recargs largs } {
 	set omethod [convert_method $method]
 	set txn [$masterenv txn]
 	error_check_good txn [is_valid_txn $txn $masterenv] TRUE
-	set db [eval {berkdb_open_noerr -env $masterenv -txn $txn \
-	    -create -mode 0644} $largs $omethod $testfile2]
+	set db [eval {berkdb_open_noerr -env $masterenv -errpfx MASTER \
+	    -txn $txn -create -mode 0644} $largs $omethod $testfile2]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
 	# Flush on the 2nd handle
@@ -158,6 +149,12 @@ proc rep066_sub { method niter tnum logset recargs largs } {
 	error_check_good flush [$2ndenv log_flush] 0
 	set lf2 [stat_field $2ndenv log_stat "Times log flushed to disk"]
 	error_check_bad log_flush $lf $lf2
+
+	# The detection of dead log handle is based on a 1-second resolution
+	# timestamp comparison.  Now that we've established the threatening
+	# source of the dead handle in $2ndenv, wait a moment to make sure that
+	# the fresh handle that we're about to create gets a later timestamp.
+	tclsleep 1
 
 	# Resolve the txn and close the database
 	error_check_good commit [$txn commit] 0
@@ -202,8 +199,8 @@ proc rep066_sub { method niter tnum logset recargs largs } {
 	puts "\tRep$tnum.f: Create some log records."
 	set txn [$masterenv txn]
 	error_check_good txn [is_valid_txn $txn $masterenv] TRUE
-	set db [eval {berkdb_open_noerr -env $masterenv -txn $txn \
-	    -create -mode 0644} $largs $omethod $testfile2]
+	set db [eval {berkdb_open_noerr -env $masterenv -errpfx MASTER \
+	    -txn $txn -create -mode 0644} $largs $omethod $testfile2]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
 	process_msgs $envlist

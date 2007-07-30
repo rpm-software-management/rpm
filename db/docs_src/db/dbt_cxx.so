@@ -1,0 +1,341 @@
+m4_comment([$Id: dbt_cxx.so,v 10.72 2007/02/27 00:41:24 mjc Exp $])
+
+define(M4PAGELOCAL,
+    [Dbt, DB_BUFFER_SMALL, DB_DBT_APPMALLOC, DB_DBT_MALLOC,
+    DB_DBT_REALLOC, DB_DBT_USERMEM, DB_DBT_PARTIAL,
+    DB_DBT_APPMALLOC, DB_DBT_MULTIPLE,
+    dbt_get_data, dbt_get_dlen, dbt_get_doff, dbt_get_flags,
+    dbt_get_offset, dbt_get_recno_key_data, dbt_get_size, dbt_get_ulen,
+    dbt_set_data, dbt_set_dlen, dbt_set_doff, dbt_set_flags,
+    dbt_set_offset, dbt_set_recno_key_data, dbt_set_size, dbt_set_ulen])
+
+m4_pf_header(m4_ref(Dbt), [dnl
+class Dbt {
+public:
+	Dbt(void *data, size_t size);
+	Dbt();
+	Dbt(const Dbt &);
+	Dbt &operator = (const Dbt &);
+	~Dbt();
+m4_blank
+	void *get_data() const;
+	void set_data(void *);
+m4_blank
+	u_int32_t get_size() const;
+	void set_size(u_int32_t);
+m4_blank
+	u_int32_t get_ulen() const;
+	void set_ulen(u_int32_t);
+m4_blank
+	u_int32_t get_dlen() const;
+	void set_dlen(u_int32_t);
+m4_blank
+	u_int32_t get_doff() const;
+	void set_doff(u_int32_t);
+m4_blank
+	u_int32_t get_flags() const;
+	void set_flags(u_int32_t);
+m4_blank
+	DBT *Dbt::get_DBT();
+	const DBT *Dbt::get_const_DBT() const;
+	static Dbt *Dbt::get_Dbt(DBT *dbt);
+	static const Dbt *Dbt::get_const_Dbt(const DBT *dbt);
+};])
+
+m4_p([dnl
+This information describes the specific details of the m4_ref(Dbt) class,
+used to encode keys and data items in a database.])
+
+m4_idefz(key/data pairs)
+m4_section([Key/Data Pairs])
+m4_p([dnl
+Storage and retrieval for the m4_ref(Db) access methods are based on
+key/data pairs.  Both key and data items are represented by m4_ref(Dbt)
+objects.  Key and data byte strings may refer to strings of zero length
+up to strings of essentially unlimited length.  See
+m4_link(M4RELDIR/ref/am_misc/dbsizes, [Database limits]) for more
+information.])
+
+m4_p([dnl
+The m4_ref(Dbt) class provides simple access to an underlying data
+structure, whose elements can be examined or changed using the usual
+m4_bold(set) or m4_bold(get) methods.  m4_ref(Dbt) can be subclassed,
+providing a way to associate with it additional data or references to
+other structures.])
+
+m4_p([dnl
+The constructors set all elements of the underlying structure to zero.
+The constructor with two parameters has the effect of setting all elements
+to zero except for the m4_arg(data) and m4_arg(size) elements.])
+
+m4_p([dnl
+In the case in which the m4_arg(flags) structure element is set to 0, when
+the application is providing m4_db a key or data item to store into the
+database, m4_db expects the m4_arg(data) object to point to a byte
+string of m4_arg(size) bytes.  When returning a key/data item to the
+application, m4_db will store into the m4_arg(data) object a pointer to
+a byte string of m4_arg(size) bytes, and the memory to which the pointer
+refers will be allocated and managed by m4_db.])
+
+m4_p([dnl
+Access to m4_ref(Dbt) objects is not re-entrant.  In particular, if
+multiple threads simultaneously access the same m4_ref(Dbt) object using
+m4_ref(Db) API calls, the results are undefined, and may result in a
+crash.  One easy way to avoid problems is to use m4_ref(Dbt) objects
+that are constructed as stack variables.])
+
+m4_p([dnl
+Each m4_ref(Dbt) object has an associated DBT struct, which is used by
+the underlying implementation of m4_db and its C-language API.  The
+Dbt::get_DBT method returns a pointer to this struct.  Given a const
+m4_ref(Dbt) object, Dbt::get_const_DBT returns a const pointer to the
+same struct.])
+
+m4_p([dnl
+Given a DBT struct, the Dbt::get_Dbt method returns the corresponding
+m4_ref(Dbt) object, if there is one.  If the DBT object was not
+associated with a m4_ref(Dbt) (that is, it was not returned from a call
+to Dbt::get_DBT), then the result of Dbt::get_Dbt is undefined.  Given
+a const DBT struct, Dbt::get_const_Dbt returns the associated const
+m4_ref(Dbt) object, if there is one.])
+
+m4_p([dnl
+These methods may be useful for m4_db applications including  both C
+and C++ language software.  It should not be necessary to use these
+calls in a purely C++ application.])
+
+m4_pf_description(m4_ref(dbt_set_data))
+m4_p([dnl
+Set the data array.])
+m4_parambegin
+m4_param(data, [dnl
+The m4_arg(data) parameter is an array of bytes to be used to set the
+content for the m4_ref(Dbt).])
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_data))
+m4_p([dnl
+Return the data array.])
+
+m4_pf_description(m4_ref(dbt_set_recno_key_data))
+m4_p([dnl
+Initialize the data array from a logical record number.  Recno database
+records are ordered by integer keys starting at 1.  When the
+m4_refT(dbt_set_recno_key_data) is called, the data, size and offset
+fields in the m4_ref(Dbt) are implicitly set to hold a byte array
+representation of the integer key.])
+m4_parambegin
+m4_param(recno, [dnl
+The m4_arg(recno) parameter logical record number used to initialize the
+data array.])
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_recno_key_data))
+m4_p([dnl
+Return an object from the data array, expecting that data to be a
+logical record number.])
+
+m4_pf_description(m4_ref(dbt_set_offset))
+m4_p([dnl
+Set the byte offset into the data array.])
+m4_p([dnl
+The number of bytes offset into the m4_arg(data) array determine the
+portion of the array actually used.  This element is accessed using
+m4_ref(dbt_get_offset) and m4_ref(dbt_set_offset).])
+m4_parambegin
+m4_param(offset, [dnl
+The m4_arg(offset) parameter is the byte offset into the data array.])
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_offset))
+m4_p([dnl
+Return the byte offset into the data array.])
+
+m4_pf_description(m4_ref(dbt_set_size))
+m4_p([dnl
+Set the byte size of the data array.])
+m4_parambegin
+m4_param(size, [dnl
+The m4_arg(size) parameter is the size of the data array in bytes.])
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_size))
+m4_p([dnl
+Return the data array size.])
+
+m4_pf_description(m4_ref(dbt_set_ulen))
+m4_p([dnl
+Set the byte size of the user-specified buffer.])
+m4_p([dnl
+Note that applications can determine the length of a record by setting
+the m4_arg(ulen) to 0 and checking the return value found in m4_arg(size).
+See the m4_ref(DB_DBT_USERMEM) flag for more information.])
+m4_parambegin
+m4_param(ulen, [dnl
+The m4_arg(ulen) parameter the size of the data array in bytes.])
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_ulen))
+m4_p([dnl
+Return the length in bytes of the user-specified buffer.])
+
+m4_pf_description(m4_ref(dbt_set_dlen))
+m4_p([dnl
+Set the byte length of the partial record being read or written by the
+application, in bytes.  See the m4_ref(DB_DBT_PARTIAL) flag for more
+information.])
+m4_parambegin
+m4_param(dlen, [dnl
+The m4_arg(dlen) parameter is the length of the partial record in bytes.])
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_dlen))
+m4_p([dnl
+Return the length of the partial record, in bytes.])
+
+m4_pf_description(m4_ref(dbt_set_doff))
+m4_p([dnl
+Set the offset of the partial record being read or written by the
+application, in bytes.  See the m4_ref(DB_DBT_PARTIAL) flag for more
+information.])
+m4_parambegin
+m4_param(doff, [dnl
+The m4_arg(doff) parameter is the offset of the partial record.])
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_doff))
+m4_p([dnl
+Return the offset of the partial record, in bytes.])
+
+m4_pf_description(m4_ref(dbt_set_flags))
+m4_p([dnl
+Set the object flag value.])
+m4_parambegin
+m4_param(flags, [dnl
+The m4_arg(flags) parameter is m4_ref(Dbt) flag value.])
+m4_sf_or_may
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_DBT_MALLOC), [dnl
+When this flag is set, m4_db will allocate memory for the returned key
+or data item (using m4_manref(malloc, 3) or the user-specified malloc
+method), and return a pointer to it in the m4_arg(data) field of the key
+or data m4_ref(Dbt) object.  Because any allocated memory becomes the
+responsibility of the calling application, the caller must determine
+whether memory was allocated using the returned value of the
+m4_arg(data) field.
+m4_p([dnl
+It is an error to specify more than one of m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC), and m4_ref(DB_DBT_USERMEM).])])
+
+m4_tag(m4_idef(DB_DBT_REALLOC), [dnl
+When this flag is set m4_db will allocate memory for the returned key
+or data item (using m4_manref(realloc, 3) or the user-specified realloc
+method), and return a pointer to it in the m4_arg(data) field of the key
+or data m4_ref(Dbt) object.  Because any allocated memory becomes the
+responsibility of the calling application, the caller must determine
+whether memory was allocated using the returned value of the
+m4_arg(data) field.
+m4_p([dnl
+It is an error to specify more than one of m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC), and m4_ref(DB_DBT_USERMEM).])])
+
+m4_idefz(DB_BUFFER_SMALL)
+m4_tag(m4_idef(DB_DBT_USERMEM), [dnl
+The m4_arg(data) field of the key or data object must refer to memory
+that is at least m4_arg(ulen) bytes in length.  If the length of the
+requested item is less than or equal to that number of bytes, the item
+is copied into the memory referred to by the m4_arg(data) field.
+Otherwise, the m4_arg(size) fields of both the key and data m4_ref(Dbt)
+objects are set to the length needed for the requested item, and the
+error m4_ref(DB_BUFFER_SMALL) is returned.
+m4_p([dnl
+It is an error to specify more than one of m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC), and m4_ref(DB_DBT_USERMEM).])])
+
+m4_tagend
+
+m4_p([dnl
+If m4_ref(DB_DBT_MALLOC) or m4_ref(DB_DBT_REALLOC) is specified, m4_db
+allocates a properly sized byte array to contain the data.  This can be
+convenient if you know little about the nature of the data, specifically
+the size of data in the database.  However, if your application makes
+repeated calls to retrieve keys or data, you may notice increased garbage
+collection due to this allocation.  If you know the maximum size of data
+you are retrieving, you might decrease the memory burden and speed your
+application by allocating your own byte array and using
+m4_ref(DB_DBT_USERMEM).  Even if you don't know the maximum size, you can
+use this option and reallocate your array whenever your retrieval API call
+returns an m4_ref(DB_BUFFER_SMALL) error or throws an exception
+encapsulating an m4_ref(DB_BUFFER_SMALL).])
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_DBT_PARTIAL), [dnl
+Do partial retrieval or storage of an item.  If the calling application
+is doing a get, the m4_arg(dlen) bytes starting m4_arg(doff) bytes from
+the beginning of the retrieved data record are returned as if they
+comprised the entire record.  If any or all of the specified bytes do
+not exist in the record, the get is successful, and any existing bytes
+are returned.
+m4_p([dnl
+For example, if the data portion of a retrieved record was 100 bytes,
+and a partial retrieval was done using a m4_ref(Dbt) having a m4_arg(dlen)
+field of 20 and a m4_arg(doff) field of 85, the get call would succeed,
+the m4_arg(data) field would refer to the last 15 bytes of the record,
+and the m4_arg(size) field would be set to 15.])
+m4_p([dnl
+If the calling application is doing a put, the m4_arg(dlen) bytes starting
+m4_arg(doff) bytes from the beginning of the specified key's data record
+are replaced by the data specified by the m4_arg(data) and m4_arg(size)
+objects.
+If m4_arg(dlen) is smaller than m4_arg(size), the record will grow; if
+m4_arg(dlen) is larger than m4_arg(size), the record will shrink.
+If the specified bytes do not exist, the record will be extended using nul
+bytes as necessary, and the put call will succeed.])
+m4_p([dnl
+It is an error to attempt a partial put using the m4_ref(dbh_put)
+method in a database that supports duplicate records.
+Partial puts in databases supporting duplicate records must be done
+using a m4_ref(Dbc) method.])
+m4_p([dnl
+It is an error to attempt a partial put with differing m4_arg(dlen) and
+m4_arg(size) values in Queue or Recno databases with fixed-length records.])
+m4_p([dnl
+For example, if the data portion of a retrieved record was 100 bytes,
+and a partial put was done using a m4_ref(Dbt) having a m4_arg(dlen)
+field of 20, a m4_arg(doff) field of 85, and a m4_arg(size) field of 30,
+the resulting record would be 115 bytes in length, where the last 30
+bytes would be those specified by the put call.])])
+
+m4_tag(m4_idef(DB_DBT_APPMALLOC), [dnl
+After an application-supplied callback routine passed to either
+m4_ref(dbh_associate) or m4_ref(dbh_set_append_recno) is executed, the
+m4_arg(data) field of a m4_ref(Dbt) may refer to memory allocated with
+m4_manref(malloc, 3) or m4_manref(realloc, 3).  In that case, the
+callback sets the m4_ref(DB_DBT_APPMALLOC) flag in the m4_ref(Dbt) so
+that m4_db will call m4_manref(free, 3) to deallocate the memory when it
+is no longer required.])
+
+m4_tag(m4_idef(DB_DBT_MULTIPLE), [dnl
+Set in a secondary key creation callback routine passed to
+m4_ref(dbh_associate) to indicate that multiple secondary keys should be
+associated with the given primary key/data pair.  If set, the
+m4_arg(size) field indicates the number of secondary keys and the
+m4_arg(data) field refers to an array of that number of m4_ref(Dbt)
+structures.
+m4_p([dnl
+The m4_ref(DB_DBT_APPMALLOC) flag may be set on any of the m4_ref(Dbt)
+structures to indicate that their m4_arg(data) field needs to be
+freed.])])
+
+m4_tagend
+
+m4_paramend
+
+m4_pf_description(m4_ref(dbt_get_flags))
+m4_p([dnl
+Return the object flag value.])
+
+m4_page_footer

@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_search.c,v 12.24 2006/08/24 14:44:45 bostic Exp $
+ * $Id: bt_search.c,v 12.30 2007/05/17 17:17:40 bostic Exp $
  */
 
 #include "db_config.h"
@@ -114,7 +113,7 @@ try_again:
 	    (LF_ISSET(SR_START) && slevel == LEVEL(h)))) {
 		if (!STD_LOCKING(dbc))
 			goto no_relock;
-		ret = __memp_fput(mpf, h, 0);
+		ret = __memp_fput(mpf, h, dbc->priority);
 		if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 			ret = t_ret;
 		if (ret != 0)
@@ -132,7 +131,7 @@ try_again:
 		    (LF_ISSET(SR_WRITE) && LEVEL(h) == LEAFLEVEL) ||
 		    (LF_ISSET(SR_START) && slevel == LEVEL(h)))) {
 			/* Someone else split the root, start over. */
-			ret = __memp_fput(mpf, h, 0);
+			ret = __memp_fput(mpf, h, dbc->priority);
 			if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 				ret = t_ret;
 			if (ret != 0)
@@ -236,9 +235,8 @@ __bam_search(dbc, root_pgno, key, flags, slevel, recnop, exactp)
 		 * page, they're an index per page item.  If we find an exact
 		 * match on a leaf page, we're done.
 		 */
-		for (base = 0,
-		    lim = NUM_ENT(h) / (db_indx_t)adjust; lim != 0; lim >>= 1) {
-			indx = base + ((lim >> 1) * adjust);
+		DB_BINARY_SEARCH_FOR(base, lim, h, adjust) {
+			DB_BINARY_SEARCH_INCR(indx, base, lim, adjust);
 			if ((ret = __bam_cmp(dbp, dbc->txn, key,
 			     h, indx, func, &cmp)) != 0)
 				goto err;
@@ -252,10 +250,9 @@ __bam_search(dbc, root_pgno, key, flags, slevel, recnop, exactp)
 				}
 				goto next;
 			}
-			if (cmp > 0) {
-				base = indx + adjust;
-				--lim;
-			}
+			if (cmp > 0)
+				DB_BINARY_SEARCH_SHIFT_BASE(indx, base,
+				    lim, adjust);
 		}
 
 		/*
@@ -280,8 +277,8 @@ __bam_search(dbc, root_pgno, key, flags, slevel, recnop, exactp)
 				if ((t_ret =
 				    __LPUT(dbc, lock)) != 0 && ret == 0)
 					ret = t_ret;
-				if ((t_ret =
-				    __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+				if ((t_ret = __memp_fput(mpf,
+				     h, dbc->priority)) != 0 && ret == 0)
 					ret = t_ret;
 				return (ret);
 			}
@@ -302,7 +299,8 @@ get_next:			/*
 				 */
 				if ((ret = __LPUT(dbc, lock)) != 0)
 					goto err;
-				if ((ret = __memp_fput(mpf, h, 0)) != 0)
+				if ((ret =
+				    __memp_fput(mpf, h, dbc->priority)) != 0)
 					goto err;
 				h = NULL;
 				LF_SET(SR_MIN);
@@ -367,13 +365,13 @@ next:		if (recnop != NULL)
 				if ((t_ret =
 				    __LPUT(dbc, lock)) != 0 && ret == 0)
 					ret = t_ret;
-				if ((t_ret =
-				    __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+				if ((t_ret = __memp_fput(mpf,
+				    h, dbc->priority)) != 0 && ret == 0)
 					ret = t_ret;
 				return (ret);
 			}
 			BT_STK_NUMPUSH(dbenv, cp, h, indx, ret);
-			(void)__memp_fput(mpf, h, 0);
+			(void)__memp_fput(mpf, h, dbc->priority);
 			h = NULL;
 			if ((ret = __db_lget(dbc,
 			    LCK_COUPLE_ALWAYS, pg, lock_mode, 0, &lock)) != 0) {
@@ -439,7 +437,8 @@ next:		if (recnop != NULL)
 			 * edge, then drop the subtree.
 			 */
 			if (!LF_ISSET(SR_DEL | SR_NEXT)) {
-				if ((ret = __memp_fput(mpf, h, 0)) != 0)
+				if ((ret =
+				    __memp_fput(mpf, h, dbc->priority)) != 0)
 					goto err;
 				goto lock_next;
 			}
@@ -579,7 +578,8 @@ found:	*exactp = 1;
 		BT_STK_NUM(dbenv, cp, h, indx, ret);
 		if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 			ret = t_ret;
-		if ((t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+		if ((t_ret =
+		     __memp_fput(mpf, h, dbc->priority)) != 0 && ret == 0)
 			ret = t_ret;
 	} else {
 		if (LF_ISSET(SR_DEL) && cp->csp == cp->sp)
@@ -591,7 +591,8 @@ found:	*exactp = 1;
 
 	return (0);
 
-err:	if (h != NULL && (t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+err:	if (h != NULL && (t_ret =
+	    __memp_fput(mpf, h, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/* Keep any not-found page locked for serializability. */
@@ -637,8 +638,8 @@ __bam_stkrel(dbc, flags)
 				cp->page = NULL;
 				LOCK_INIT(cp->lock);
 			}
-			if ((t_ret =
-			    __memp_fput(mpf, epg->page, 0)) != 0 && ret == 0)
+			if ((t_ret = __memp_fput(mpf,
+			     epg->page, dbc->priority)) != 0 && ret == 0)
 				ret = t_ret;
 			/*
 			 * XXX

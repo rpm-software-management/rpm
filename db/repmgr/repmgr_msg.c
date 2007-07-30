@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2005,2007 Oracle.  All rights reserved.
  *
- * $Id: repmgr_msg.c,v 1.23 2006/09/11 15:15:20 bostic Exp $
+ * $Id: repmgr_msg.c,v 1.36 2007/06/11 18:29:34 alanb Exp $
  */
 
 #include "db_config.h"
@@ -40,14 +39,11 @@ message_loop(dbenv)
 {
 	REPMGR_MESSAGE *msg;
 	int ret;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	while ((ret = __repmgr_queue_get(dbenv, &msg)) == 0) {
 		while ((ret = process_message(dbenv, &msg->control, &msg->rec,
 		    msg->originating_eid)) == DB_LOCK_DEADLOCK)
-			RPRINT(dbenv, (dbenv, &mb, "repmgr deadlock retry"));
+			RPRINT(dbenv, (dbenv, "repmgr deadlock retry"));
 
 		__os_free(dbenv, msg);
 		if (ret != 0)
@@ -68,9 +64,6 @@ process_message(dbenv, control, rec, eid)
 	DB_LSN permlsn;
 	int ret;
 	u_int32_t generation;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	db_rep = dbenv->rep_handle;
 
@@ -81,35 +74,19 @@ process_message(dbenv, control, rec, eid)
 	generation = db_rep->generation;
 
 	switch (ret =
-	    __rep_process_message(dbenv, control, rec, &eid, &permlsn)) {
-	case DB_REP_NEWSITE:
-		return (handle_newsite(dbenv, rec));
-
-	case DB_REP_NEWMASTER:
-		db_rep->found_master = TRUE;
-		/* Check if it's us. */
-		if ((db_rep->master_eid = eid) == SELF_EID) {
-			if ((ret = __repmgr_become_master(dbenv)) != 0)
-				return (ret);
-		} else {
-			/*
-			 * Since we have no further need for 'eid' throughout
-			 * the remainder of this function, it's (relatively)
-			 * safe to pass its address directly to the
-			 * application.  If that were not the case, we could
-			 * instead copy it into a scratch variable.
-			 */
-			RPRINT(dbenv,
-			    (dbenv, &mb, "firing NEWMASTER (%d) event", eid));
-			DB_EVENT(dbenv, DB_EVENT_REP_NEWMASTER, &eid);
-			if ((ret = __repmgr_stash_generation(dbenv)) != 0)
-				return (ret);
+	    __rep_process_message(dbenv, control, rec, eid, &permlsn)) {
+	case 0:
+		if (db_rep->takeover_pending) {
+			db_rep->takeover_pending = FALSE;
+			return (__repmgr_become_master(dbenv));
 		}
 		break;
 
+	case DB_REP_NEWSITE:
+		return (handle_newsite(dbenv, rec));
+
 	case DB_REP_HOLDELECTION:
 		LOCK_MUTEX(db_rep->mutex);
-		db_rep->master_eid = DB_EID_INVALID;
 		ret = __repmgr_init_election(dbenv, ELECT_ELECTION);
 		UNLOCK_MUTEX(db_rep->mutex);
 		if (ret != 0)
@@ -117,9 +94,10 @@ process_message(dbenv, control, rec, eid)
 		break;
 
 	case DB_REP_DUPMASTER:
+		if ((ret = __repmgr_repstart(dbenv, DB_REP_CLIENT)) != 0)
+			return (ret);
 		LOCK_MUTEX(db_rep->mutex);
-		db_rep->master_eid = DB_EID_INVALID;
-		ret = __repmgr_init_election(dbenv, ELECT_REPSTART);
+		ret = __repmgr_init_election(dbenv, ELECT_ELECTION);
 		UNLOCK_MUTEX(db_rep->mutex);
 		if (ret != 0)
 			return (ret);
@@ -142,9 +120,9 @@ process_message(dbenv, control, rec, eid)
 
 	case DB_REP_NOTPERM: /* FALLTHROUGH */
 	case DB_REP_IGNORE: /* FALLTHROUGH */
-	case DB_LOCK_DEADLOCK: /* FALLTHROUGH */
-	case 0:
+	case DB_LOCK_DEADLOCK:
 		break;
+
 	default:
 		__db_err(dbenv, ret, "DB_ENV->rep_process_message");
 		return (ret);
@@ -153,7 +131,62 @@ process_message(dbenv, control, rec, eid)
 }
 
 /*
+ * Handle replication-related events.  Returns only 0 or DB_EVENT_NOT_HANDLED;
+ * no other error returns are tolerated.
+ *
+ * PUBLIC: int __repmgr_handle_event __P((DB_ENV *, u_int32_t, void *));
+ */
+int
+__repmgr_handle_event(dbenv, event, info)
+	DB_ENV *dbenv;
+	u_int32_t event;
+	void *info;
+{
+	DB_REP *db_rep;
+
+	db_rep = dbenv->rep_handle;
+
+	if (db_rep->selector == NULL) {
+		/* Repmgr is not in use, so all events go to application. */
+		return (DB_EVENT_NOT_HANDLED);
+	}
+
+	switch (event) {
+	case DB_EVENT_REP_ELECTED:
+		DB_ASSERT(dbenv, info == NULL);
+
+		db_rep->found_master = TRUE;
+		db_rep->takeover_pending = TRUE;
+
+		/*
+		 * The application doesn't really need to see this, because the
+		 * purpose of this event is to tell the winning site that it
+		 * should call rep_start(MASTER), and in repmgr we do that
+		 * automatically.  Still, they could conceivably be curious, and
+		 * it doesn't hurt anything to let them know.
+		 */
+		break;
+	case DB_EVENT_REP_NEWMASTER:
+		DB_ASSERT(dbenv, info != NULL);
+
+		db_rep->found_master = TRUE;
+		db_rep->master_eid = *(int *)info;
+		__repmgr_stash_generation(dbenv);
+
+		/* Application still needs to see this. */
+		break;
+	default:
+		break;
+	}
+	return (DB_EVENT_NOT_HANDLED);
+}
+
+/*
  * Acknowledges a message.
+ *
+ * !!!
+ * Note that this cannot be called from the select() thread, in case we call
+ * __repmgr_bust_connection(..., FALSE).
  */
 static int
 ack_message(dbenv, generation, lsn)
@@ -167,9 +200,6 @@ ack_message(dbenv, generation, lsn)
 	DB_REPMGR_ACK ack;
 	DBT control2, rec2;
 	int ret;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	db_rep = dbenv->rep_handle;
 	/*
@@ -179,7 +209,7 @@ ack_message(dbenv, generation, lsn)
 	 */
 	if (!IS_VALID_EID(db_rep->master_eid) ||
 	    db_rep->master_eid == SELF_EID) {
-		RPRINT(dbenv, (dbenv, &mb,
+		RPRINT(dbenv, (dbenv,
 		    "dropping ack with master %d", db_rep->master_eid));
 		return (0);
 	}
@@ -217,15 +247,12 @@ handle_newsite(dbenv, rec)
 	ADDRINFO *ai;
 	DB_REP *db_rep;
 	REPMGR_SITE *site;
+	SITE_STRING_BUFFER buffer;
 	repmgr_netaddr_t *addr;
 	size_t hlen;
 	u_int16_t port;
 	int ret;
 	char *host;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-	SITE_STRING_BUFFER buffer;
-#endif
 
 	db_rep = dbenv->rep_handle;
 	/*
@@ -251,57 +278,40 @@ handle_newsite(dbenv, rec)
 	/* It's me, do nothing. */
 	if (strcmp(host, db_rep->my_addr.host) == 0 &&
 	    port == db_rep->my_addr.port) {
-		RPRINT(dbenv, (dbenv, &mb, "repmgr ignores own NEWSITE info"));
+		RPRINT(dbenv, (dbenv, "repmgr ignores own NEWSITE info"));
 		return (0);
 	}
 
 	LOCK_MUTEX(db_rep->mutex);
 	if ((ret = __repmgr_add_site(dbenv, host, port, &site)) == EEXIST) {
-		RPRINT(dbenv, (dbenv, &mb,
+		RPRINT(dbenv, (dbenv,
 		    "NEWSITE info from %s was already known",
 		    __repmgr_format_site_loc(site, buffer)));
-		/*
-		 * TODO: test this.  Is this really how it works?  When
-		 * a site comes back on-line, do we really get NEWSITE?
-		 * Or is that return code reserved for only the first
-		 * time a site joins a group?
-		 */
-
-		/*
-		 * TODO: it seems like it might be a good idea to move
-		 * this site's retry up to the beginning of the queue,
-		 * and try it now, on the theory that if it's
-		 * generating a NEWSITE, it might have woken up.  Does
-		 * that pose a problem for my assumption of time-ordered
-		 * retry list?  I guess not, if we can reorder items.
-		 */
-
 		/*
 		 * In case we already know about this site only because it
 		 * first connected to us, we may not yet have had a chance to
 		 * look up its addresses.  Even though we don't need them just
 		 * now, this is an advantageous opportunity to get them since we
-		 * can do so away from the critical select thread.
+		 * can do so away from the critical select thread.  Give up only
+		 * for a disastrous failure.
 		 */
 		addr = &site->net_addr;
-		if (addr->address_list == NULL &&
-		    __repmgr_getaddr(dbenv,
-		    addr->host, addr->port, 0, &ai) == 0)
-			addr->address_list = ai;
+		if (addr->address_list == NULL) {
+			if ((ret = __repmgr_getaddr(dbenv,
+			    addr->host, addr->port, 0, &ai)) == 0)
+				addr->address_list = ai;
+			else if (ret != DB_REP_UNAVAIL)
+				goto unlock;
+		}
 
 		ret = 0;
-		if (site->state == SITE_IDLE) {
-			/*
-			 * TODO: yank the retry object up to the front
-			 * of the queue, after marking it as due now
-			 */
-		} else
+		if (site->state == SITE_CONNECTED)
 			goto unlock; /* Nothing to do. */
 	} else {
-		RPRINT(dbenv, (dbenv, &mb, "NEWSITE info added %s",
-		    __repmgr_format_site_loc(site, buffer)));
 		if (ret != 0)
 			goto unlock;
+		RPRINT(dbenv, (dbenv, "NEWSITE info added %s",
+		    __repmgr_format_site_loc(site, buffer)));
 	}
 
 	/*
@@ -315,19 +325,17 @@ unlock: UNLOCK_MUTEX(db_rep->mutex);
 }
 
 /*
- * PUBLIC: int __repmgr_stash_generation __P((DB_ENV *));
+ * PUBLIC: void __repmgr_stash_generation __P((DB_ENV *));
  */
-int
+void
 __repmgr_stash_generation(dbenv)
 	DB_ENV *dbenv;
 {
-	DB_REP_STAT *statp;
-	int ret;
+	DB_REP *db_rep;
+	REP *rep;
 
-	if ((ret = __rep_stat_pp(dbenv, &statp, 0)) != 0)
-		return (ret);
-	dbenv->rep_handle->generation = statp->st_gen;
+	db_rep = dbenv->rep_handle;
+	rep = db_rep->region;
 
-	__os_ufree(dbenv, statp);
-	return (0);
+	db_rep->generation = rep->gen;
 }

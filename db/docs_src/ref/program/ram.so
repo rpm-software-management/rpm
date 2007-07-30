@@ -1,0 +1,139 @@
+m4_comment([$Id: ram.so,v 10.10 2006/09/19 15:42:31 bostic Exp $])
+
+m4_ref_title(Programmer Notes,
+    Memory-only or Flash configurations,
+    Flash memory configurations, program/namespace, program/cache)
+
+m4_p([dnl
+m4_db supports a variety of memory-based configurations for systems
+where filesystem space is either limited in availability or entirely
+replaced by some combination of memory and Flash.  In addition, m4_db
+can be configured to minimize writes to the filesystem when the
+filesystem is backed by Flash memory.])
+
+m4_p([dnl
+There are three parts of the m4_db database environment normally written
+to the filesystem: the database environment region files, the database
+files and the database environment log files.  Each of these items can
+be configured to live in memory rather than in the filesystem:])
+
+m4_tagbegin
+
+m4_tag([The database environment region files:], [dnl
+Each of the m4_db subsystems in a database environment is described by
+one or more regions, or chunks of memory. The regions contain all of the
+per-process and per-thread shared information (including mutexes), that
+comprise a m4_db environment.  By default, these regions are backed by
+the filesystem.  In situations where filesystem backed regions aren't
+optimal, applications can create memory-only database environments in
+two different types of memory: either in the application's heap memory
+or in system shared memory.
+
+m4_p([dnl
+To create the database environment in heap memory, specify the
+m4_ref(DB_PRIVATE) flag to the m4_refT(dbenv_open).  Note that database
+environments created in heap memory are only accessible to the threads
+of a single process, however.])
+
+m4_p([dnl
+To create the database environment in system shared memory, specify the
+m4_ref(DB_SYSTEM_MEM) flag to the m4_refT(dbenv_open).  Database
+environments created in system memory are accessible to multiple
+processes, but note that database environments created in system shared
+memory do create a small (roughly 8 byte) file in the filesystem, read
+by the processes to identify which system shared memory segments to
+use.])
+
+m4_p([dnl
+For more information, see m4_link(M4RELDIR/ref/env/region, [Shared
+memory regions]).])])
+
+m4_tag([The database files:], [dnl
+By default, databases are periodically flushed from the m4_db memory
+cache to backing physical files in the filesystem.  To keep databases
+from being written to backing physical files, pass the
+m4_ref(DB_MPOOL_NOFILE) flag to the m4_refT(memp_set_flags).  This flag
+implies the application's databases must fit entirely in the m4_db
+cache, of course.  To avoid a database file growing to consume the
+entire cache, applications can limit the size of individual databases
+in the cache by calling the m4_refT(memp_set_maxsize).])
+
+m4_tag([The database environment log files:], [dnl
+If a database environment is not intended to be transactionally
+recoverable after application or system failure (that is, if it will not
+exhibit the transactional attribute of "durability"), applications
+should not configure the database environment for logging or
+transactions, in which case no log files will be created.  If the
+database environment is intended to be durable, log files must either
+be written to stable storage and recovered after application or system
+failure, or they must be replicated to other systems.
+
+m4_p([dnl
+In applications running on systems without any form of stable storage,
+durability must be accomplished through replication.  In this case,
+database environments should be configured to maintain database logs in
+memory, rather than in the filesystem, by specifying the
+m4_ref(DB_LOG_INMEMORY) flag to the m4_refT(dbenv_set_flags).])])
+
+m4_tagend
+
+m4_p([dnl
+In systems where the filesystem is backed by Flash memory, the number
+of times the Flash memory is written may be a concern.  Each of the
+three parts of the m4_db database environment normally written to the
+filesystem can be configured to minimize the number of times the
+filesystem is written:])
+
+m4_tagbegin
+
+m4_tag([The database environment region files:], [dnl
+On a Flash-based filesystem, the database environment should be placed
+in heap or system memory, as described previously.])
+
+m4_tag([The database files:], [dnl
+The m4_db library maintains a cache of database pages.  The database
+pages are only written to backing physical files when the application
+checkpoints the database environment with the m4_refT(txn_checkpoint),
+when database handles are closed with the m4_refT(dbh_close), or when
+the application explicitly flushes the cache with the m4_ref(dbh_sync)
+or m4_refT(memp_sync)s.
+
+m4_p([dnl
+To avoid unnecessary writes of Flash memory due to checkpoints,
+applications should decrease the frequency of their checkpoints.  This
+is especially important in applications which repeatedly modify a
+specific database page, as repeatedly writing a database page to the
+backing physical file will repeatedly update the same blocks of the
+filesystem.])
+
+m4_p([dnl
+To avoid unnecessary writes of the filesystem due to closing a database
+handle, applications should specify the m4_ref(DB_NOSYNC) flag to the
+m4_refT(dbh_close).])
+
+m4_p([dnl
+To avoid unnecessary writes of the filesystem due to flushing the cache,
+applications should not explicitly flush the cache under normal
+conditions -- flushing the cache is rarely if ever needed in a
+normally-running application.])])
+
+m4_tag([The database environment log files:], [dnl
+The m4_db log files do not repeatedly overwrite the same blocks of the
+filesystem as the m4_db log files are not implemented as a circular
+buffer and log files are not re-used.  For this reason, the m4_db log
+files should not cause any difficulties for Flash memory configurations.
+
+m4_p([dnl
+However, as m4_db does not write log records in filesystem block sized
+pieces, it is probable that sequential transaction commits (each of
+which flush the log file to the backing filesystem), will write a block
+of Flash memory twice, as the last log record from the first commit will
+write the same block of Flash memory as the first log record from the
+second commit.  Applications not requiring absolute durability should
+specify the m4_ref(DB_TXN_WRITE_NOSYNC) or m4_ref(DB_TXN_NOSYNC) flags
+to the m4_refT(dbenv_set_flags) to avoid this overwrite of a block of
+Flash memory.])])
+
+m4_tagend
+
+m4_page_footer

@@ -1,6 +1,5 @@
-<!--$Id: db_get.so,v 10.89 2006/09/13 14:30:52 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_get.so,v 10.90 2007/05/31 18:52:36 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -121,17 +120,18 @@ into secondary indices using the <a href="../api_cxx/db_associate.html">Db::asso
 <p>See
 <a href="../api_cxx/dbt_bulk_class.html">DbMultipleDataIterator</a>
 for more information.</p>
-<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Perform the get operation with degree 2 isolation.  The read is not
-repeatable.
-<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Perform the get operation with degree 1 isolation, reading modified but
-not yet committed data.  Silently ignored if the
+<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Configure a transactional get operation to have degree 2 isolation (the
+read is not repeatable).
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Configure a transactional get operation to have degree 1 isolation,
+reading modified but not yet committed data.  Silently ignored if the
 <a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
 database was opened.
-<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
-Setting this flag can eliminate deadlock during a read-modify-write
-cycle by acquiring the write lock during the read part of the cycle so
-that another thread of control acquiring a read lock for the same item,
-in its own read-modify-write cycle, will not result in deadlock.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the read, if
+locking is configured.  Setting this flag can eliminate deadlock during
+a read-modify-write cycle by acquiring the write lock during the read
+part of the cycle so that another thread of control acquiring a read
+lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
 <p>Because the Db::get method will not hold locks across
 Berkeley DB calls in non-transactional operations, the <a href="../api_cxx/dbc_get.html#DB_RMW">DB_RMW</a> flag
 to the Db::get call is meaningful only in the presence of
@@ -139,15 +139,16 @@ transactions.</p>
 </dl>
 <dt><b>key</b><dd>The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
 <dt><b>pkey</b><dd>The <b>pkey</b> parameter is the return key from the primary database.
-<dt><b>txnid</b><dd>If the operation is part of an application-specified
-transaction, the <b>txnid</b> parameter is a transaction handle
-returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
-group, the <b>txnid</b> parameter is a handle returned from
-<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.
+If no transaction handle is
 specified, but the
 operation occurs in a transactional
 database,
-the operation will be implicitly transaction protected.  
+the operation will be implicitly transaction protected.
 </dl>
 <h3>Errors</h3>
 <p>The Db::get method
@@ -197,6 +198,6 @@ throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exc
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

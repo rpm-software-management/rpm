@@ -1,0 +1,15 @@
+m4_comment([$Id: notfound.so,v 1.4 2004/08/15 03:22:57 bostic Exp $])
+
+define(BDB_LOC, ..)
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.2: Java java.io.FileNotFoundException,,
+    upgrade.3.2/handle, upgrade.3.2/db_dump)
+
+m4_p([dnl
+The Java DbEnv.remove, Db.remove and Db.rename methods now throw
+java.io.FileNotFoundException in the case where the named file does not
+exist.  Applications should be modified to catch this exception where
+appropriate.])
+
+m4_page_footer

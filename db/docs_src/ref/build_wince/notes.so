@@ -1,0 +1,29 @@
+m4_comment([$Id: notes.so,v 1.2 2007/06/04 14:55:40 bostic Exp $])
+
+m4_ref_title(Building m4_db for Windows CE systems,
+    Windows CE notes, @Windows CE notes, build_wince/intro, build_wince/faq)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+The C++ API is not supported on Windows CE. The file stream and
+exception handling functionality provided by the m4_db C++ API are not
+supported by Windows CE.  It is possible to build a C++ application
+against the m4_db C API.])
+
+m4_nlist([dnl
+We do not currently ship workspace/project files for Windows CE that are
+compatible with Visual Studio 2005.
+
+You should be able to manually create project files by duplicating the
+structure in the eMbedded Visual C++ 4.0 projects.])
+
+m4_nlist([dnl
+The Java API is not currently supported on Windows CE.])
+
+m4_nlist([dnl
+Tcl support is not currently supported on Windows CE.])
+
+m4_nlistend
+
+m4_page_footer

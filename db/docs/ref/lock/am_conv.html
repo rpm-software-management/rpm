@@ -1,6 +1,5 @@
 <!--$Id: am_conv.so,v 10.24 2003/04/02 16:15:32 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -42,9 +41,9 @@ lock object with a length different from the values used by Berkeley DB.</p>
 <p>All the access methods other than Queue use standard read/write locks
 in a simple multiple-reader/single writer page-locking scheme.  An
 operation that returns data (for example, <a href="../../api_c/db_get.html">DB-&gt;get</a> or
-<a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a>) obtains a read lock on all the pages accessed while
+<a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a>) obtains a read lock on all the pages accessed while
 locating the requested record.   When an update operation is requested
-(for example, <a href="../../api_c/db_put.html">DB-&gt;put</a> or <a href="../../api_c/dbc_del.html">DBcursor-&gt;c_del</a>), the page containing
+(for example, <a href="../../api_c/db_put.html">DB-&gt;put</a> or <a href="../../api_c/dbc_del.html">DBcursor-&gt;del</a>), the page containing
 the updated (or new) data is write-locked.  As read-modify-write cycles
 are quite common and are deadlock-prone under normal circumstances, the
 Berkeley DB interfaces allow the application to specify the <a href="../../api_c/dbc_get.html#DB_RMW">DB_RMW</a>
@@ -105,7 +104,7 @@ First, they may be performed within a transaction, in which case all
 operations lock on behalf of the designated transaction.  Second, they
 may be performed using a local <a href="../../api_c/db_class.html">DB</a> handle, although, as
 <a href="../../api_c/db_open.html">DB-&gt;open</a> operations are relatively slow, this may not be a good
-idea.  Finally, the <a href="../../api_c/dbc_dup.html">DBcursor-&gt;c_dup</a> function duplicates a cursor, using
+idea.  Finally, the <a href="../../api_c/dbc_dup.html">DBcursor-&gt;dup</a> function duplicates a cursor, using
 the same locker ID as the originating cursor.  There is no way to
 achieve this duplication functionality through the <a href="../../api_c/db_class.html">DB</a> handle
 calls, but any <a href="../../api_c/db_class.html">DB</a> call can be implemented by one or more calls
@@ -119,6 +118,6 @@ span threads of control, so the library knows that two cursors in the same
 transaction cannot modify the database concurrently.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../lock/cam_conv.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../lock/nondb.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

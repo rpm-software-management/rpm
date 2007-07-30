@@ -1,0 +1,121 @@
+m4_comment([$Id: app.so,v 1.31 2007/05/17 18:17:18 bostic Exp $])
+
+m4_ref_title(m4_db Replication,
+    Building replicated applications,, rep/pri, rep/mgr_meth)
+
+m4_p([dnl
+The simplest way to build a replicated m4_db application is to first
+build (and debug!) the transactional version of the same application.
+Then, add a thin replication layer: application initialization must be
+changed and the application's communication infrastructure must be
+added.])
+
+m4_p([dnl
+The application initialization changes are relatively simple.
+Replication Manager provides a communication infrastructure, but
+in order to use the Base replication API you must provide your own.])
+
+m4_p([dnl
+For implementation reasons, all replicated databases must reside in
+the data directories set from m4_ref(dbenv_set_data_dir) (or in the
+default environment home directory, if not using
+m4_ref(dbenv_set_data_dir)), rather than in a subdirectory below the
+specified directory.  Care must be taken in applications using
+relative pathnames and changing working directories after opening the
+environment.  In such applications the replication initialization code
+may not be able to locate the databases, and applications that change
+their working directories may need to use absolute pathnames.])
+
+m4_p([dnl
+During application initialization, the application performs three
+additional tasks: first, it must specify the m4_ref(DB_INIT_REP) flag
+when opening its database environment; second, it must provide m4_db
+information about its communications infrastructure; and third, it must
+start the m4_db replication system.  Generally, a replicated application
+will do normal m4_db recovery and configuration, exactly like any other
+transactional application.])
+
+m4_p([dnl
+Replication Manager applications configure the built-in communications
+infrastructure by calling the m4_refT(repmgr_set_local_site)
+once and the m4_refT(repmgr_add_remote_site) zero or more
+times.  Once the environment has been opened, the application starts
+the replication system by calling the m4_refT(repmgr_start).])
+
+m4_p([dnl
+If using the Base replication API, the application calls the
+m4_refT(rep_set_transport) to configure the entry point to its own
+communications infrastructure, and then it calls the
+m4_refT(rep_start) to join or create the replication group.])
+
+m4_p([dnl
+When starting the replication system, an application has two choices:
+it may choose the group master site explicitly, or alternatively it
+may configure all group members as clients and then call for an
+election, letting the clients select the master from among
+themselves.  Either is correct, and the choice is entirely up to the
+application.])
+
+m4_p([dnl
+For an application that uses the Base replication API, the result of
+calling m4_ref(rep_start) is usually the discovery of a master, or the
+declaration of the local environment as the master.  If a master has
+not been discovered after a reasonable amount of time, the application
+should call m4_ref(rep_elect) to call for an election.])
+
+m4_p([dnl
+Replication Manager applications have these same two choices.  But
+they configure their start-up behavior simply by setting the flags
+parameter to the m4_refT(repmgr_start).])
+
+m4_p([dnl
+Consider the case of multiple processes or multiple environment handles
+that modify databases in the replicated environment.  All modifications
+must be done on the master environment.  The first process to join or
+create the master environment must call both the
+m4_refT(rep_set_transport) and the m4_refT(rep_start).  Subsequent
+replication processes must at least call the m4_refT(rep_set_transport).
+Those processes may call the m4_refT(rep_start) (as long as they use the
+same master or client argument).  If multiple processes are modifying
+the master environment there must be a unified communication
+infrastructure such that messages arriving at clients have a single
+master ID.  Additionally the application must be structured so that all
+incoming messages are able to be processed by a single m4_ref(DbEnv)
+handle.])
+
+m4_p([dnl
+Note that not all processes running in replicated environments need to
+call m4_ref(rep_set_transport) or m4_ref(rep_start).  Read-only
+processes running in a master environment do not need to be configured
+for replication in any way.  Processes running in a client environment
+are read-only by definition, and so do not need to be configured for
+replication either (although, in the case of clients that may become
+masters, it is usually simplest to configure for replication on process
+startup rather than trying to reconfigure when the client becomes a
+master).  Obviously, at least one thread of control on each client must
+be configured for replication as messages must be passed between the
+master and the client.])
+
+m4_p([dnl
+Any site in a replication group may have its own private
+transactional databases in the environment as well.  A site may
+create a local database by using the m4_ref(DB_TXN_NOT_DURABLE)
+flag to the m4_ref(dbh_set_flags).  The application
+must never create a private database with the same name
+as a database replicated across the entire environment
+as data corruption can result.])
+
+m4_p([dnl
+For implementation reasons, all incoming replication messages must be
+processed using the same m4_ref(DbEnv) handle.  It is not required that
+a single thread of control process all messages, only that all threads
+of control processing messages use the same handle.])
+
+m4_p([dnl
+No additional calls are required to shut down a database environment
+participating in a replication group.  The application should shut down
+the environment in the usual manner, by calling the m4_refT(dbenv_close).
+For Replication Manager applications, this also terminates all network
+connections and background processing threads.])
+
+m4_page_footer

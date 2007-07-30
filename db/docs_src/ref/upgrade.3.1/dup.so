@@ -1,0 +1,21 @@
+m4_comment([$Id: dup.so,v 1.1 2000/05/31 18:53:28 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: identical duplicate data items,,
+    upgrade.3.1/put, upgrade.3.1/btstat)
+
+m4_p([dnl
+In previous releases of m4_db, it was not an error to store identical
+duplicate data items, or, for those that just like the way it sounds,
+duplicate duplicates.  However, there were implementation bugs where
+storing duplicate duplicates could cause database corruption.])
+
+m4_p([dnl
+In this release, applications may store identical duplicate data items
+as long as the data items are unsorted.  It is an error to attempt to
+store identical duplicate data items when duplicates are being stored
+in a sorted order. This restriction is expected to be lifted in a future
+release.  See m4_link(M4RELDIR/ref/am_conf/dup, Duplicate data items)
+for more information.])
+
+m4_page_footer

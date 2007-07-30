@@ -1,0 +1,20 @@
+m4_comment([$Id: toc.so,v 1.7 2007/05/04 12:37:15 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 4.5 applications to m4_db 4.6,
+    Upgrading to release 4.6,,)
+
+m4_nlistbegin
+m4_nlistns([m4_link(intro, [Release 4.6: introduction])])
+m4_nlistns([m4_link(cursor, [Release 4.6: C API cursor handle method names])])
+m4_nlistns([m4_link(memp_fput, [Release 4.6: DB_MPOOLFILE-__GT__put])])
+m4_nlistns([m4_link(memp_fset, [Release 4.6: DB_MPOOLFILE-__GT__set])])
+m4_nlistns([m4_link(event, [Release 4.6: replication events])])
+m4_nlistns([m4_link(full_election, [Release 4.6: DB_REP_FULL_ELECTION])])
+m4_nlistns([m4_link(verbose, [Release 4.6: verbose output])])
+m4_nlistns([m4_link(verb, [Release 4.6: DB_VERB_REPLICATION])])
+m4_nlistns([m4_link(win, [Release 4.6: Windows 9X])])
+m4_nlistns([m4_link(disk, [Release 4.6: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

@@ -1,0 +1,13 @@
+m4_comment([$Id: sysmem.so,v 1.4 2003/10/18 19:16:16 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: DB_SYSTEM_MEM,,
+    upgrade.3.1/btstat, upgrade.3.1/log_register)
+
+m4_p([dnl
+Using the m4_ref(DB_SYSTEM_MEM) option on UNIX systems now requires the
+specification of a base system memory segment ID, using the
+m4_refT(dbenv_set_shm_key).  Any valid segment ID may be specified, for
+example, one returned by the UNIX m4_manref(ftok, 3) function.])
+
+m4_page_footer

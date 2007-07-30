@@ -1,0 +1,21 @@
+m4_comment([$Id: dbc_del.so,v 11.13 2002/08/18 21:17:28 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db del, m4_tcl_dbc_del, [dnl
+dbc del
+])
+
+m4_p([dnl
+The m4_tcl_dbc_del command deletes the key/data pair to which the cursor
+currently refers.])
+
+m4_p([dnl
+The cursor position is unchanged after a delete, and subsequent calls to
+cursor commands expecting the cursor to refer to an existing key will
+fail.])
+
+m4_tcl_ret_standard(m4_tcl_dbc_del)
+
+m4_page_footer

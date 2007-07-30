@@ -1,0 +1,12 @@
+m4_comment([$Id: hash_nelem.so,v 1.2 2002/08/26 23:05:29 mjc Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 4.1: DB-__GT__stat.hash_nelem],,
+    upgrade.4.1/memp_sync, upgrade.4.1/java)
+
+m4_p([dnl
+The m4_arg(hash_nelem) field of the m4_ref(dbh_stat) method for Hash
+databases has been removed from the 4.1 release, this information is no
+longer available to applications.])
+
+m4_page_footer

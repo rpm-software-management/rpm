@@ -1,0 +1,149 @@
+m4_comment([$Id: fop.so,v 1.8 2004/08/13 03:39:01 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+[Release 4.1: DB-__GT__associate, DB-__GT__open, DB-__GT__remove, DB-__GT__rename],,
+    upgrade.4.1/excl, upgrade.4.1/log_register)
+
+m4_p([dnl
+Historic releases of m4_db transaction-protected the m4_ref(dbh_open),
+m4_ref(dbh_remove) and m4_refT(dbh_rename)s, but did it in an implicit
+way, that is, applications did not specify the m4_ref(DbTxn) handles
+associated with the operations.  This approach had a number of problems,
+the most significant of which was there was no way to group operations
+that included database creation, removal or rename.  For example,
+applications wanting to maintain a list of the databases in an
+environment in a well-known database had no way to update the well-known
+database and create a database within a single transaction, and so there
+was no way to guarantee the list of databases was correct for the
+environment after system or application failure. Another example might
+be the creation of both a primary database and a database intended to
+serve as a secondary index, where again there was no way to group the
+creation of both databases in a single atomic operation.])
+
+m4_p([dnl
+In the 4.1 release of m4_db, this is no longer the case.  The
+m4_ref(dbh_open) and m4_refT(dbh_associate)s now take a m4_ref(DbTxn)
+handle returned by m4_ref(txn_begin) as an optional argument.  New
+m4_ref(dbenv_dbremove) and m4_refT(dbenv_dbrename)s taking a
+m4_ref(DbTxn) handle as an optional argument have been added.])
+
+m4_p([dnl
+To upgrade, applications must add a m4_ref(DbTxn) parameter in the
+appropriate location for the m4_refT(dbh_open) calls, and the
+m4_refT(dbh_associate) calls (in both cases, the second argument for
+the C API, the first for the C++ or Java APIs).])
+
+m4_p([dnl
+Applications wanting to transaction-protect their m4_ref(dbh_open) and
+m4_ref(dbh_associate) method calls can add a NULL m4_ref(DbTxn)
+argument and specify the m4_ref(DB_AUTO_COMMIT) flag to the two calls,
+which wraps the operation in an internal m4_db transaction.
+Applications wanting to transaction-protect the remove and rename
+operations must rewrite their calls to the m4_ref(dbh_remove) and
+m4_refT(dbh_rename)s to be, instead, calls to the new
+m4_ref(dbenv_dbremove) and m4_refT(dbenv_dbrename)s.  Applications not
+wanting to transaction-protect any of the operations can add a NULL
+argument to their m4_ref(dbh_open) and m4_refT(dbh_associate) calls and
+require no further changes.])
+
+m4_p([dnl
+For example, an application currently opening and closing a database as
+follows:])
+
+m4_indent([dnl
+DB *dbp;
+DB_ENV *dbenv;
+int ret;
+m4_blank
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+m4_blank
+if ((ret = dbp-__GT__open(dbp, "file", NULL, DB_BTREE, DB_CREATE, 0664)) != 0) {
+	(void)dbp-__GT__close(dbp);
+	goto err_handler;
+}])
+
+m4_p([dnl
+could transaction-protect the m4_ref(dbh_open) call as follows:])
+
+m4_indent([dnl
+DB *dbp;
+DB_ENV *dbenv;
+int ret;
+m4_blank
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+m4_blank
+if ((ret = dbp-__GT__open(dbp,
+    NULL, "file", NULL, DB_BTREE, DB_CREATE | DB_AUTO_COMMIT, 0664)) != 0) {
+	(void)dbp-__GT__close(dbp);
+	goto err_handler;
+}])
+
+m4_p([dnl
+An application currently removing a database as follows:])
+
+m4_indent([dnl
+DB *dbp;
+DB_ENV *dbenv;
+int ret;
+m4_blank
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+m4_blank
+if ((ret = dbp-__GT__remove(dbp, "file", NULL, 0)) != 0)
+	goto err_handler;])
+
+m4_p([dnl
+could transaction-protect the database removal as follows:])
+
+m4_indent([dnl
+DB *dbp;
+DB_ENV *dbenv;
+int ret;
+m4_blank
+if ((ret =
+    dbenv-__GT__dbremove(dbenv, NULL, "file", NULL, DB_AUTO_COMMIT)) != 0)
+	goto err_handler;])
+
+m4_p([dnl
+An application currently renaming a database as follows:])
+
+m4_indent([dnl
+DB *dbp;
+DB_ENV *dbenv;
+int ret;
+m4_blank
+if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	goto err_handler;
+m4_blank
+if ((ret = dbp-__GT__rename(dbp, "file", NULL, "newname", 0)) != 0)
+	goto err_handler;])
+
+m4_p([dnl
+could transaction-protect the database renaming as follows:])
+
+m4_indent([dnl
+DB *dbp;
+DB_ENV *dbenv;
+int ret;
+m4_blank
+if ((ret = dbenv-__GT__dbrename(
+    dbenv, NULL, "file", NULL, "newname", DB_AUTO_COMMIT)) != 0)
+	goto err_handler;])
+
+m4_p([dnl
+These examples are the simplest possible translation, and will result in
+behavior matching that of previous releases.  For further discussion on
+how to transaction-protect m4_refT(dbh_open) calls, see
+m4_link(M4RELDIR/ref/transapp/data_open, Opening the databases).])
+
+m4_p([dnl
+m4_ref(Db) handles that will later be used for transaction-protected
+operations must be opened within a transaction.  Specifying a
+transaction handle to operations using handles not opened within a
+transaction will return an error.  Similarly, not specifying a
+transaction handle to operations using handles that were opened within
+a transaction will also return an error.])
+
+m4_page_footer

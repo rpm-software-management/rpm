@@ -1,0 +1,4 @@
+m4_comment([$Id: db_set_cachesize.so,v 10.21 2002/08/18 21:15:53 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_cachesize)
+include(env/env_set_cachesize.so)

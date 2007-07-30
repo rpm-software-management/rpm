@@ -1,0 +1,29 @@
+m4_comment([$Id: db_truncate.so,v 11.6 2004/12/16 19:13:05 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db truncate, m4_tcl_db_truncate, [dnl
+db truncate
+	m4_tcl_arg([-txn txnid])
+])
+
+m4_p([dnl
+Empties the database, discarding all records it contains.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tcl_txnopt
+
+m4_tagend
+
+m4_p([dnl
+The m4_tcl_db_truncate command returns the number of records discarded
+from the database on success.])
+
+m4_tcl_ret_error(m4_tcl_db_truncate)
+
+m4_page_footer

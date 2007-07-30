@@ -1,0 +1,54 @@
+m4_comment([$Id: env_remove.so,v 11.17 2002/08/18 21:17:29 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(berkdb envremove, m4_tcl_env_remove, [dnl
+berkdb envremove
+	m4_tcl_arg([-data_dir directory])
+	m4_tcl_arg([-force])
+	m4_tcl_arg([-home directory])
+	m4_tcl_arg([-log_dir directory])
+	m4_tcl_arg([-tmp_dir directory])
+	m4_tcl_arg([-use_environ])
+	m4_tcl_arg([-use_environ_root])
+])
+
+m4_p([dnl
+Remove a m4_db environment.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+m4_tag([-data_dir dirname], [dnl
+Specify the environment's data directory, as described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tag([-force], [dnl
+If there are processes that have called m4_tcl_env_open without calling
+m4_tcl_env_close (that is, there are processes currently using the
+environment), m4_tcl_env_remove will fail without further action, unless
+the m4_arg(-force) flag is set, in which case m4_tcl_env_remove will
+attempt to remove the environment regardless of any processes still
+using it.])
+
+m4_tag([-home directory], [dnl
+The m4_arg(-home) argument is described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tag([-log_dir dirname], [dnl
+Specify the environment's log directory, as described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tag([-tmp_dir dirname], [dnl
+Specify the environment's tmp directory, as described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tcl_environ
+
+m4_tagend
+
+m4_tcl_ret_standard(m4_tcl_env_remove)
+
+m4_page_footer

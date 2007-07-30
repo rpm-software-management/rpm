@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: rep043script.tcl,v 1.8 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep043script.tcl,v 1.15 2007/07/09 19:34:35 carol Exp $
 #
 # Rep043 script - constant writes to an env which may be
 # either a master or a client, or changing between the
@@ -26,14 +25,18 @@ set dir [ lindex $argv 0 ]
 set writerid [ lindex $argv 1 ]
 set nentries 50
 
-set is_repchild 1
+# Join the queue env.  We assume the rep test convention of
+# placing the messages in $testdir/MSGQUEUEDIR.
+set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]
+error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
 
 # We need to set up our own machids.
 set envid [expr $writerid + 1]
 repladd $envid
 set name "WRITER.$writerid"
 
-# Pause to make sure the database exists before we try to join.
+# Pause a bit to give the master a chance to create the database 
+# before we try to join.
 tclsleep 3
 
 # Join the env.
@@ -47,10 +50,15 @@ set env_cmd "berkdb_env_noerr -home $dir -lock_detect default \
 set dbenv [eval $env_cmd]
 error_check_good script_env_open [is_valid_env $dbenv] TRUE
 
-# Open database.
+# Open database.  It's still possible under heavy load that the 
+# master hasn't created the database, so pause even longer if it's 
+# not there.
 set testfile "rep043.db"
-set db [eval {berkdb_open_noerr} -errpfx $name -errfile /dev/stderr \
-    -env $dbenv -auto_commit $testfile]
+while {[catch {berkdb_open_noerr -errpfx $name -errfile /dev/stderr\
+    -env $dbenv -auto_commit $testfile} db]} {
+	puts "Could not open handle $db, sleeping 1 second."
+	tclsleep 1
+}
 error_check_good dbopen [is_valid_db $db] TRUE
 
 # Communicate with parent in marker file.
@@ -94,8 +102,11 @@ puts "res is $res, abort"
 puts "Close - dead handle."
 			error_check_good db_close [$db close] 0
 puts "Getting new handle"
-			set db [eval {berkdb_open_noerr} \
-			    -env $dbenv -auto_commit $testfile]
+			while {[catch {berkdb_open_noerr -env $dbenv\
+			    -auto_commit $testfile} db]} {
+				puts "Could not open handle: $db"
+				tclsleep 1
+			}
 			error_check_good db_open [is_valid_db $db] TRUE
 		}
 

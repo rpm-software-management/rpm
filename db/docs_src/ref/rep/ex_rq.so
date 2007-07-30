@@ -1,0 +1,58 @@
+m4_comment([$Id: ex_rq.so,v 1.7 2006/08/24 18:01:51 bostic Exp $])
+
+m4_ref_title(m4_db Replication,
+    Ex_rep_base: putting it all together,, rep/ex_comm, xa/intro)
+
+m4_p([dnl
+Beyond simply initializing a replicated environment, an application
+that uses the Base replication API must set up its communication
+infrastructure, and then make sure that incoming messages are received
+and processed.])
+
+m4_p([dnl
+To initialize replication, ex_rep_base creates a m4_db environment and
+calls m4_ref(rep_set_transport) to establish a send function.  (See
+the main function in m4_path(ex_rep/base/rep_base.c), including its
+calls to the create_env and env_init functions in
+m4_path(ex_rep/common/rep_common.c).)])
+
+m4_p([dnl
+ex_rep_base opens a listening socket for incoming connections and opens
+an outgoing connection to every machine that it knows about (that is,
+all the sites listed in the m4_option(o) command line argument).
+Applications can structure the details of this in different ways, but
+ex_rep_base creates a user-level thread to listen on its socket, plus
+a thread to loop and handle messages on each socket, in addition to the
+threads needed to manage the user interface, update the database on the
+master, and read from the database on the client (in other words, in
+addition to the normal functionality of any database application).])
+
+m4_p([dnl
+Once the initial threads have all been started and the communications
+infrastructure is initialized, the application signals that it is ready
+for replication and joins a replication group by calling
+m4_ref(rep_start).  (Again, see the main function in
+m4_path(ex_rep/base/rep_base.c).)])
+
+m4_p([dnl
+Note the use of the optional second argument to m4_ref(rep_start) in
+the client initialization code.  The argument "local" is a piece of
+data, opaque to m4_db, that will be broadcast to each member of a
+replication group; it allows new clients to join a replication group,
+without knowing the location of all its members;  the new client will
+be contacted by the members it does not know about, who will receive
+the new client's contact information that was specified in "myaddr."
+See m4_link(M4RELDIR/ref/rep/newsite, Connecting to a new site) for more
+information.])
+
+m4_p([dnl
+The final piece of a replicated application is the code that loops,
+receives, and processes messages from a given remote environment.
+ex_rep_base runs one of these loops in a parallel thread for each
+socket connection (see the hm_loop function in
+m4_path(ex_rep/base/rep_msg.c)).  Other applications may want to queue
+messages somehow and process them asynchronously, or select() on a
+number of sockets and either look up the correct environment ID for each
+or encapsulate the ID in the communications protocol.])
+
+m4_page_footer

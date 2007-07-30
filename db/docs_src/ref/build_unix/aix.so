@@ -1,0 +1,104 @@
+m4_comment([$Id: aix.so,v 11.27 2005/04/06 01:45:22 mjc Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    AIX, @AIX, build_unix/notes, build_unix/freebsd)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't compile and run multithreaded applications.])
+
+m4_p([dnl
+Special compile-time flags are required when compiling threaded
+applications on AIX.  If you are compiling a threaded application, you
+must compile with the _THREAD_SAFE flag and load with specific
+libraries; for example, "-lc_r".  Specifying the compiler name with a
+trailing "_r" usually performs the right actions for the system.])
+
+m4_indent([dnl
+xlc_r ...
+cc -D_THREAD_SAFE -lc_r ...])
+
+m4_p([dnl
+The m4_db library will automatically build with the correct options.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I can't run using the m4_ref(DB_SYSTEM_MEM) option to
+m4_ref(dbenv_open).])
+
+m4_p([dnl
+AIX 4.1 allows applications to map only 10 system shared memory
+segments.  In AIX 4.3, this has been raised to 256K segments, but only
+if you set the environment variable "export EXTSHM=ON".])])
+
+m4_hl
+m4_nlist([m4_bold([dnl
+On AIX 4.3.2 (or before) I see duplicate symbol warnings when
+building the C++ shared library and when linking applications.])
+
+m4_p([dnl
+We are aware of some duplicate symbol warnings with this platform,
+but they do not appear to affect the correct operation of applications.])])
+
+m4_hl
+m4_nlist([m4_bold([dnl
+On AIX 4.3.3 I see undefined symbols for DbEnv::set_error_stream,
+Db::set_error_stream or DbEnv::verify when linking C++ applications.
+(These undefined symbols also appear when building the m4_db C++ example
+applications).])
+
+m4_p([dnl
+By default, m4_db is built with _LARGE_FILES set to 1 to support the
+creation of "large" database files.  However, this also affects how
+standard classes, like iostream, are named internally.  When building
+your application, use a "-D_LARGE_FILES=1" compilation option, or insert
+"[#define _LARGE_FILES 1]" before any [#include] statements.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I can't create database files larger than 1GB on AIX.])
+
+m4_p([dnl
+If you're running on AIX 4.1 or earlier, try changing the source code
+for m4_path(os/os_open.c) to always specify the m4_bold(O_LARGEFILE)
+flag to the m4_manref(open, 2) system call, and recompile m4_db from
+scratch.])
+
+m4_p([dnl
+Also, the documentation for the IBM Visual Age compiler states that it
+does not not support the 64-bit filesystem APIs necessary for creating
+large files; the ibmcxx product must be used instead.  We have not heard
+whether the GNU gcc compiler supports the 64-bit APIs or not.])
+
+m4_p([dnl
+Finally, to create large files under AIX, the filesystem has to be
+configured to support large files and the system wide user hard-limit
+for file sizes has to be greater than 1GB.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I see errors about "open64" when building m4_db applications.])
+
+m4_p([dnl
+System include files (most commonly fcntl.h) in some releases of AIX,
+HP-UX and Solaris redefine "open" when large-file support is enabled for
+applications.  This causes problems when compiling applications because
+"open" is a method in the m4_db APIs.  To work around this problem:
+m4_nlistbegin
+m4_nlist([dnl
+Avoid including the problematical system include files in source code
+files which also include m4_db include files and call into the m4_db
+API.])
+m4_nlistns([dnl
+Before building m4_db, modify the generated include file db.h to itself
+include the problematical system include files.])
+m4_nlistns([dnl
+Turn off m4_db large-file support by specifying the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --disable-largefile,
+--disable-largefile) configuration option and rebuilding.])
+m4_nlistend])])
+
+m4_nlistend
+
+m4_page_footer

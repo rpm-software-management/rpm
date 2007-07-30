@@ -1,0 +1,185 @@
+m4_comment([$Id: db_associate.so,v 10.46 2007/03/19 19:45:47 bostic Exp $])
+
+define(M4PAGELOCAL,
+    [dbh_associate, DB_DBT_APPMALLOC, DB_DBT_MULTIPLE, DB_DONOTINDEX,
+    DB_IMMUTABLE_KEY])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_associate),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__associate(DB *primary, DB_TXN *txnid, DB *secondary,
+    int (*callback)(DB *secondary,
+    const DBT *key, const DBT *data, DBT *result), u_int32_t flags);])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::associate(DbTxn *txnid, Db *secondary,
+    int (*callback)(Db *secondary,
+    const Dbt *key, const Dbt *data, Dbt *result), u_int32_t flags);])
+)
+
+m4_p([dnl
+The m4_ref(dbh_associate) function is used to declare one database a
+secondary index for a primary database.  After a secondary database has
+been "associated" with a primary database, all updates to the primary
+will be automatically reflected in the secondary and all reads from the
+secondary will return corresponding data from the primary.  Note that
+as primary keys must be unique for secondary indices to work, the
+primary database must be configured without support for duplicate data
+items.  See m4_link(M4RELDIR/ref/am/second, [Secondary indices]) for
+more information.])
+
+m4_return(dbh_associate, std)
+
+m4_parambegin
+m4_param(callback, [dnl
+The m4_arg(callback) parameter is a callback function that creates the
+set of secondary keys corresponding to a given primary key and data
+pair.
+m4_p([dnl
+The callback parameter may be NULL if both the primary and secondary
+database handles were opened with the m4_ref(DB_RDONLY) flag.])
+
+m4_p([dnl
+The callback takes four arguments:])
+m4_tagbegin
+m4_tag(m4_arg(secondary), [dnl
+The m4_arg(secondary) parameter is the database handle for the secondary.])
+m4_tag(m4_arg(key), [dnl
+The m4_arg(key) parameter is a m4_ref(Dbt) referencing the primary key.])
+m4_tag(m4_arg(data), [dnl
+The m4_arg(data) parameter is a m4_ref(Dbt) referencing the primary data
+item.])
+m4_tag(m4_arg(result), [dnl
+The m4_arg(result) parameter is a zeroed m4_ref(Dbt) in which the callback
+function should fill in m4_arg(data) and m4_arg(size) fields that describe
+the secondary key or keys.])
+m4_tagend
+
+m4_p([dnl
+The callback optionally returns some special values:])
+m4_tagbegin
+m4_tag(m4_idef(DB_DBT_APPMALLOC), [dnl
+If the callback function needs to allocate memory for the m4_arg(result)
+data field (rather than simply pointing into the primary key or datum),
+m4_ref(DB_DBT_APPMALLOC) should be set in the m4_arg(flags) field of the
+m4_arg(result) m4_ref(Dbt), which indicates that m4_db should free the
+memory when it is done with it.])
+
+m4_tag(m4_idef(DB_DBT_MULTIPLE), [dnl
+To return multiple secondary keys, m4_ref(DB_DBT_MULTIPLE) should be set
+in the m4_arg(flags) field of the m4_arg(result) m4_ref(Dbt), which
+indicates m4_db should treat the m4_arg(size) field as the number of
+secondary keys (zero or more), and the m4_arg(data) field as a pointer
+to an array of that number of m4_ref(Dbt)s describing the set of
+secondary keys.
+m4_p([dnl
+m4_bold([When multiple secondary keys are returned, keys may not be repeated]).
+In other words, there must be no repeated record numbers in the array
+for Recno and Queue databases, and keys must not compare equally using
+the secondary database's comparison function for Btree and Hash
+databases.  If keys are repeated, operations may fail and the secondary
+may become inconsistent with the primary.])
+m4_p([dnl
+The m4_ref(DB_DBT_APPMALLOC) flag may be set for any m4_ref(Dbt) in the
+array of returned m4_ref(Dbt)'s to indicate that m4_db should free the
+memory referenced by that particular m4_ref(Dbt)'s data field when it
+is done with it.])
+m4_p([dnl
+The m4_ref(DB_DBT_APPMALLOC) flag may be combined with
+m4_ref(DB_DBT_MULTIPLE) in the m4_arg(result) m4_ref(Dbt)'s m4_arg(flag)
+field to indicate that m4_db should free the array once it is done with
+all of the returned keys.])])
+
+m4_tag(m4_idef(DB_DONOTINDEX), [dnl
+If any key/data pair in the primary yields a null secondary key and
+should be left out of the secondary index, the callback function may
+optionally return m4_ref(DB_DONOTINDEX).  Otherwise, the callback
+function should return 0 in case of success or an error outside of the
+m4_db name space in case of failure; the error code will be returned
+from the m4_db call that initiated the callback.
+m4_p([dnl
+If the callback function returns m4_ref(DB_DONOTINDEX) for any key/data
+pairs in the primary database, the secondary index will not contain any
+reference to those key/data pairs, and such operations as cursor
+iterations and range queries will reflect only the corresponding subset
+of the database.  If this is not desirable, the application should
+ensure that the callback function is well-defined for all possible
+values and never returns m4_ref(DB_DONOTINDEX).])
+m4_p([dnl
+Returning m4_ref(DB_DONOTINDEX) is equivalent to setting
+m4_ref(DB_DBT_MULTIPLE) on the m4_arg(result) m4_ref(Dbt) and setting
+the m4_arg(size) field to zero.])])
+m4_tagend
+
+m4_not_reentrant])
+
+m4_param(flags, [dnl
+m4_sf_or_may
+m4_tagbegin
+m4_tag(m4_idef(DB_CREATE), [dnl
+If the secondary database is empty, walk through the primary and create
+an index to it in the empty secondary.  This operation is potentially
+very expensive.
+m4_p([dnl
+If the secondary database has been opened in an environment configured
+with transactions, each put necessary for its creation will be done in
+the context of a transaction created for the purpose.])
+m4_p([dnl
+Care should be taken not to use a newly-populated secondary database in
+another thread of control until the m4_ref(dbh_associate) call has
+returned successfully in the first thread.])
+m4_p([dnl
+If transactions are not being used, care should be taken not to modify
+a primary database being used to populate a secondary database, in
+another thread of control, until the m4_ref(dbh_associate) call has
+returned successfully in the first thread.  If transactions are being
+used, m4_db will perform appropriate locking and the application need
+not do any special operation ordering.])])
+
+m4_tag(m4_idef(DB_IMMUTABLE_KEY), [dnl
+Specifies the secondary key is immutable.
+m4_p([dnl
+This flag can be used to optimize updates when the secondary key in a
+primary record will never be changed after the primary record is
+inserted.  For immutable secondary keys, a best effort is made to avoid
+calling the secondary callback function when primary records are
+updated.  This optimization may reduce the overhead of update operations
+significantly if the callback function is expensive.])
+m4_p([dnl
+Be sure to specify this flag only if the secondary key in the primary
+record is never changed.  If this rule is violated, the secondary index
+will become corrupted, that is, it will become out of sync with the
+primary.])])
+m4_tagend])
+
+m4_param(primary, [dnl
+ifelse(M4API, C_API, [dnl
+The m4_arg(primary) parameter should be a database handle for the primary
+database that is to be indexed.],[dnl
+The associate method called should be a method of a database handle for
+the primary database that is to be indexed.])])
+
+m4_param(secondary, [dnl
+The m4_arg(secondary) parameter should be an open database handle of
+either a newly created and empty database that is to be used to store
+a secondary index, or of a database that was previously associated with
+the same primary and contains a secondary index.  Note that it is not
+safe to associate as a secondary database a handle that is in use by
+another thread of control or has open cursors.  If the handle was opened
+with the m4_ref(DB_THREAD) flag it is safe to use it in multiple threads
+of control after the m4_refT(dbh_associate) has returned.  Note also
+that either secondary keys must be unique or the secondary database must
+be configured with support for duplicate data items.])
+
+m4_param_txn(dbh_associate)
+
+m4_paramend
+
+m4_err(dbh_associate, repinval, einval,
+[the secondary database handle has already been associated with this or
+another database handle; the secondary database handle is not open; the
+primary database has been configured to allow duplicates])
+
+m4_seealso(Db)
+m4_page_footer

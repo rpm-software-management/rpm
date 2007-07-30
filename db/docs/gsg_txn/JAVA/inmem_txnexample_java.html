@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>In-Memory Transaction Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="wrapup.html" title="Chapter 6. Summary and Examples" />
+    <link rel="up" href="wrapup.html" title="ChapterÂ 6.Â Summary and Examples" />
     <link rel="previous" href="txnexample_java.html" title="Transaction Example" />
   </head>
   <body>
@@ -17,9 +17,9 @@
           <th colspan="3" align="center">In-Memory Transaction Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="txnexample_java.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 6. Summary and Examples</th>
-          <td width="20%" align="right"> </td>
+          <td width="20%" align="left"><a accesskey="p" href="txnexample_java.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 6.Â Summary and Examples</th>
+          <td width="20%" align="right">Â </td>
         </tr>
       </table>
       <hr />
@@ -54,7 +54,7 @@
             <p>
                 Refrain from specifying a home directory when you open your
                 environment. The exception to this is if you are using the
-                <tt class="literal">DB_CONFIG</tt> configuration file &#8212; in
+                <tt class="literal">DB_CONFIG</tt> configuration file â€” in
                 that case you must identify the environment's home
                 directory so that the configuration file can be found.
             </p>
@@ -112,7 +112,7 @@
     </p>
       <p>
         To begin, we simplify the beginning of the class a bit. We eliminate some variables that the example no longer
-        needs &#8212; specifically variables having to do with the location of the environment and the names of the
+        needs â€” specifically variables having to do with the location of the environment and the names of the
         database files. 
         We can also remove our <tt class="function">usage()</tt> method because we no
         longer require any command line arguments. 
@@ -170,12 +170,12 @@ import java.io.FileNotFoundException;
                 threadArray[i].join();
             }
         } catch (Exception e) {
-            System.err.println(&quot;<b class="userinput"><tt>TxnGuideInMemory</tt></b>: &quot; + e.toString());
+            System.err.println("<b class="userinput"><tt>TxnGuideInMemory</tt></b>: " + e.toString());
             e.printStackTrace();
         } finally {
             closeEnv();
         }
-        System.out.println(&quot;All done.&quot;);
+        System.out.println("All done.");
     } </pre>
       <p>
         Next we open our environment as always. However, in doing so we:
@@ -203,7 +203,7 @@ import java.io.FileNotFoundException;
         </ul>
       </div>
       <pre class="programlisting">    private static void openEnv() throws DatabaseException {
-        System.out.println(&quot;opening env&quot;);
+        System.out.println("opening env");
 
         // Set up the environment.
         EnvironmentConfig myEnvConfig = new EnvironmentConfig();
@@ -288,7 +288,7 @@ import java.io.FileNotFoundException;
                                            null,     // Database name,
                                            myDbConfig);
         } catch (FileNotFoundException fnfe) {
-            System.err.println(&quot;openEnv: &quot; + fnfe.toString());
+            System.err.println("openEnv: " + fnfe.toString());
             System.exit(-1);
         }
     } </pre>
@@ -298,12 +298,12 @@ import java.io.FileNotFoundException;
     method from the application, because we no longer need it.
   </p>
       <pre class="programlisting">    private static void closeEnv() {
-        System.out.println(&quot;Closing env&quot;);
+        System.out.println("Closing env");
         if (myDb != null ) {
             try {
                 myDb.close();
             } catch (DatabaseException e) {
-                System.err.println(&quot;closeEnv: myDb: &quot; +
+                System.err.println("closeEnv: myDb: " +
                     e.toString());
                 e.printStackTrace();
             }
@@ -313,7 +313,7 @@ import java.io.FileNotFoundException;
             try {
                 myClassDb.close();
             } catch (DatabaseException e) {
-                System.err.println(&quot;closeEnv: myClassDb: &quot; +
+                System.err.println("closeEnv: myClassDb: " +
                     e.toString());
                 e.printStackTrace();
             }
@@ -323,7 +323,7 @@ import java.io.FileNotFoundException;
             try {
                 myEnv.close();
             } catch (DatabaseException e) {
-                System.err.println(&quot;closeEnv: &quot; + e.toString());
+                System.err.println("closeEnv: " + e.toString());
                 e.printStackTrace();
             }
         }
@@ -378,10 +378,10 @@ public class DBWriter extends Thread
 
     private static final int MAX_RETRY = 20;
 
-    private static String[] keys = {&quot;key 1&quot;, &quot;key 2&quot;, &quot;key 3&quot;,
-                                    &quot;key 4&quot;, &quot;key 5&quot;, &quot;key 6&quot;,
-                                    &quot;key 7&quot;, &quot;key 8&quot;, &quot;key 9&quot;,
-                                    &quot;key 10&quot;};
+    private static String[] keys = {"key 1", "key 2", "key 3",
+                                    "key 4", "key 5", "key 6",
+                                    "key 7", "key 8", "key 9",
+                                    "key 10"};
 
 
     // Constructor. Get our DB handles from here
@@ -431,40 +431,40 @@ public class DBWriter extends Thread
 
                     // commit
                     System.out.println(getName() + 
-                        &quot; : committing txn : &quot; + i);
+                        " : committing txn : " + i);
 
-                    System.out.println(getName() + &quot; : Found &quot; +
-                        countRecords(<b class="userinput"><tt>txn</tt></b>) + &quot; records in the database.&quot;);
+                    System.out.println(getName() + " : Found " +
+                        countRecords(<b class="userinput"><tt>txn</tt></b>) + " records in the database.");
                     try {
                         txn.commit();
                         txn = null;
                     } catch (DatabaseException e) {
-                        System.err.println(&quot;Error on txn commit: &quot; +
+                        System.err.println("Error on txn commit: " +
                             e.toString());
                     }
                     retry = false;
 
                 } catch (DeadlockException de) {
-                    System.out.println(&quot;################# &quot; + getName() +
-                        &quot; : caught deadlock&quot;);
+                    System.out.println("################# " + getName() +
+                        " : caught deadlock");
                     // retry if necessary
                     if (retry_count &lt; MAX_RETRY) {
                         System.err.println(getName() +
-                            &quot; : Retrying operation.&quot;);
+                            " : Retrying operation.");
                         retry = true;
                         retry_count++;
                     } else {
                         System.err.println(getName() +
-                            &quot; : out of retries. Giving up.&quot;);
+                            " : out of retries. Giving up.");
                         retry = false;
                     }
                 } catch (DatabaseException e) {
                     // abort and don't retry
                     retry = false;
                     System.err.println(getName() +
-                        &quot; : caught exception: &quot; + e.toString());
+                        " : caught exception: " + e.toString());
                     System.err.println(getName() +
-                        &quot; : errno: &quot; + e.getErrno());
+                        " : errno: " + e.getErrno());
                     e.printStackTrace();
                 } finally {
                     if (txn != null) {
@@ -472,7 +472,7 @@ public class DBWriter extends Thread
                             txn.abort();
                         } catch (Exception e) {
                             System.err.println(
-                                &quot;Error aborting transaction: &quot; + 
+                                "Error aborting transaction: " + 
                                 e.toString());
                             e.printStackTrace();
                         }
@@ -542,18 +542,18 @@ public class DBWriter extends Thread
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="txnexample_java.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="txnexample_java.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="wrapup.html">Up</a>
           </td>
-          <td width="40%" align="right"> </td>
+          <td width="40%" align="right">Â </td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Transaction Example </td>
+          <td width="40%" align="left" valign="top">Transaction ExampleÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> </td>
+          <td width="40%" align="right" valign="top">Â </td>
         </tr>
       </table>
     </div>

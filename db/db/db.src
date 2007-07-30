@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db.src,v 12.6 2006/08/24 14:45:15 bostic Exp $
+ * $Id: db.src,v 12.9 2007/05/17 15:14:56 bostic Exp $
  */
 
 PREFIX	__db
@@ -139,8 +138,9 @@ END
 /*
  * pg_alloc: used to record allocating a new page.
  *
- * meta_lsn:	the meta-data page's original lsn.
- * meta_pgno	the meta-data page number.
+ * meta_lsn:	the original lsn of the page reference by meta_pgno.
+ * meta_pgno	the page pointing at the allocated page in the free list.
+ *			If the list is unsorted this is the metadata page.
  * page_lsn:	the allocated page's original lsn.
  * pgno:	the page allocated.
  * ptype:	the type of the page allocated.
@@ -170,6 +170,9 @@ END
 
 /*
  * pg_free: used to record freeing a page.
+ *	If we are maintaining a sorted free list (during compact) meta_pgno
+ * will be non-zero and refer to the page that preceeds the one we are freeing
+ * in the free list.  Meta_lsn will then be the lsn of that page.
  *
  * pgno:	the page being freed.
  * meta_lsn:	the meta-data page's original lsn.

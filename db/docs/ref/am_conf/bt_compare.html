@@ -1,6 +1,5 @@
 <!--$Id: bt_compare.so,v 10.25 2004/03/05 21:39:33 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -81,12 +80,12 @@ must also return that key A is less than key C.</p>
 in some applications, which implies that partial keys may be specified
 to the Berkeley DB interfaces.  When partial keys are specified to Berkeley DB,
 interfaces which retrieve data items based on a user-specified key (for
-example, <a href="../../api_c/db_get.html">DB-&gt;get</a> and <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> with the <a href="../../api_c/dbc_get.html#DB_SET">DB_SET</a>
+example, <a href="../../api_c/db_get.html">DB-&gt;get</a> and <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> with the <a href="../../api_c/dbc_get.html#DB_SET">DB_SET</a>
 flag), will not modify the user-specified key by returning the actual
 key stored in the database.  The actual key can be retrieved by calling
-the <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method with the <a href="../../api_c/dbc_get.html#DB_CURRENT">DB_CURRENT</a> flag.</p>
+the <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> method with the <a href="../../api_c/dbc_get.html#DB_CURRENT">DB_CURRENT</a> flag.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_conf/malloc.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_conf/bt_prefix.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

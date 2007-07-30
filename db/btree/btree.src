@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: btree.src,v 12.7 2006/08/24 14:44:46 bostic Exp $
+ * $Id: btree.src,v 12.11 2007/06/01 17:35:16 sue Exp $
  */
 
 PREFIX	__bam
@@ -193,7 +192,7 @@ ARG	root		db_pgno_t	ld
 /* Recno of the adjustment. */
 ARG	recno		db_recno_t	ld
 /* Order number of the adjustment. */
-ARG	order		u_int32_t	ld
+ARG	order		u_int32_t	lu
 END
 
 /*
@@ -250,7 +249,7 @@ END
 
 /*
  * BTREE-pgno -- Handles replacing a page number in the record
- * refernece on pgno by indx.
+ * reference on pgno by indx.
  */
 BEGIN pgno		44	149
 DB	fileid		int32_t		ld

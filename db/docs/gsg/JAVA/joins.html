@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Database Joins</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="indexes.html" title="Chapter 5. Secondary Databases" />
+    <link rel="up" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
     <link rel="previous" href="secondaryCursor.html" title="&#10;        Using Secondary Cursors&#10;        &#10;    " />
     <link rel="next" href="javaindexusage.html" title="Secondary Database Example" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Database Joins</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Secondary Databases</th>
-          <td width="20%" align="right"> <a accesskey="n" href="javaindexusage.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Secondary Databases</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="javaindexusage.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -104,7 +104,6 @@
         using a 
             <span><tt class="classname">JoinCursor</tt> class instance.</span>
             
-    
     </p>
       <div class="sect2" lang="en" xml:lang="en">
         <div class="titlepage">
@@ -183,7 +182,6 @@
         </div>
         <p>
             For example:
-            
         </p>
         <a id="java_index9"></a>
         <pre class="programlisting">package db.GettingStarted;
@@ -212,9 +210,9 @@ SecondaryDatabase automotiveTypeDB = null;
 SecondaryDatabase automotiveMakeDB = null;
 
 // Query strings:
-String theColor = &quot;red&quot;;
-String theType = &quot;minivan&quot;;
-String theMake = &quot;Toyota&quot;;
+String theColor = "red";
+String theType = "minivan";
+String theMake = "Toyota";
 
 // Secondary cursors used for the query:
 SecondaryCursor colorSecCursor = null;
@@ -233,9 +231,9 @@ DatabaseEntry foundData = new DatabaseEntry();
 
 try {
     // Database entries used for the query:
-    DatabaseEntry color = new DatabaseEntry(theColor.getBytes(&quot;UTF-8&quot;));
-    DatabaseEntry type = new DatabaseEntry(theType.getBytes(&quot;UTF-8&quot;));
-    DatabaseEntry make = new DatabaseEntry(theMake.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry color = new DatabaseEntry(theColor.getBytes("UTF-8"));
+    DatabaseEntry type = new DatabaseEntry(theType.getBytes("UTF-8"));
+    DatabaseEntry make = new DatabaseEntry(theMake.getBytes("UTF-8"));
 
     colorSecCursor = automotiveColorDB.openSecondaryCursor(null, null); 
     typeSecCursor = automotiveTypeDB.openSecondaryCursor(null, null); 
@@ -346,21 +344,21 @@ JoinCursor joinCursor = myDb.join(cursorArray, config); </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="indexes.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="javaindexusage.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="javaindexusage.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
         Using Secondary Cursors
         
-     </td>
+    Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Secondary Database Example</td>
+          <td width="40%" align="right" valign="top">Â Secondary Database Example</td>
         </tr>
       </table>
     </div>

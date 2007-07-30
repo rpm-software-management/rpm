@@ -1,0 +1,54 @@
+m4_comment([$Id: db_set_pagesize.so,v 10.40 2005/12/16 01:19:35 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_pagesize, dbh_get_pagesize])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_pagesize),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_pagesize(DB *db, u_int32_t pagesize);
+m4_blank
+int
+DB-__GT__get_pagesize(DB *db, u_int32_t *pagesizep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_pagesize(u_int32_t pagesize);
+m4_blank
+int
+Db::get_pagesize(u_int32_t *pagesizep);
+]))
+
+m4_p([dnl
+Set the size of the pages used to hold items in the database, in bytes.
+The minimum page size is 512 bytes, the maximum page size is 64K bytes,
+and the page size must be a power-of-two.  If the page size is not
+explicitly set, one is selected based on the underlying filesystem I/O
+block size.  The automatically selected size has a lower limit of 512
+bytes and an upper limit of 16K bytes.])
+
+m4_p([dnl
+For information on tuning the m4_db page size, see
+m4_link(M4RELDIR/ref/am_conf/pagesize, [Selecting a page size]).])
+
+m4_scope_db(dbh_set_pagesize)
+
+m4_when_dbopen(dbh_set_pagesize, ignored)
+If creating additional databases in a single physical file, information
+specified to m4_ref(dbh_set_pagesize) will be ignored and the page size
+of the existing databases will be used.
+
+m4_return(dbh_set_pagesize, std)
+
+m4_parambegin
+m4_param(pagesize, [dnl
+The m4_arg(pagesize) parameter sets the database page size.])
+m4_paramend
+
+m4_err(dbh_set_pagesize,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_pagesize, page size,, pagesizep)
+
+m4_seealso(Db)
+m4_page_footer

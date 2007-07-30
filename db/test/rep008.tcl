@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep008.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep008.tcl,v 12.15 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep008
 # TEST	Replication, back up and synchronizing
@@ -53,6 +52,12 @@ proc rep008 { method { niter 10 } { tnum "008" } args } {
 proc rep008_sub { method niter tnum recargs largs } {
 	global testdir
 	global util_path
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -66,23 +71,17 @@ proc rep008_sub { method niter tnum recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env_noerr -create -txn nosync \
-	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create -txn nosync \
-#	    -verbose {rep on} -errpfx MASTER \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
+	set ma_envcmd "berkdb_env_noerr -create -txn nosync $verbargs \
+	    -home $masterdir -errpfx MASTER \
+	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
-	set cl_envcmd "berkdb_env_noerr -create -txn nosync \
-	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create -txn nosync \
-#	    -verbose {rep on} -errpfx CLIENT \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
+	set cl_envcmd "berkdb_env_noerr -create -txn nosync $verbargs \
+	    -home $clientdir -errpfx CLIENT \
+	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
@@ -114,13 +113,12 @@ proc rep008_sub { method niter tnum recargs largs } {
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
-	#
 	# Process the messages to get them out of the db.
 	#
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist 0 NONE err
 	error_check_bad err $err 0
-	error_check_good errchk [is_substr $err "Client was never part"] 1
+	error_check_good errchk [is_substr $err "DB_REP_JOIN_FAILURE"] 1
 
 	error_check_good masterenv_close [$masterenv close] 0
 	error_check_good clientenv_close [$clientenv close] 0

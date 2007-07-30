@@ -1,0 +1,165 @@
+m4_comment([$Id: dbt_bulk_class.so,v 1.15 2004/08/13 03:38:56 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[DbMultipleDataIterator, DbMultipleKeyDataIterator,
+	DbMultipleRecnoDataIterator])
+include(m4/m4.seealso)
+
+m4_pf_header(Bulk Retrieval API,
+ifelse(M4API, C_API, [dnl
+])
+ifelse(M4API, CXX_API, [dnl
+class DbMultipleDataIterator
+{
+public:
+	DbMultipleDataIterator(const Dbt &dbt);
+m4_blank
+	bool next(Dbt &data);
+};
+m4_blank
+class DbMultipleKeyDataIterator
+{
+public:
+	DbMultipleKeyDataIterator(const Dbt &dbt);
+m4_blank
+	bool next(Dbt &key, Dbt &data);
+};
+m4_blank
+class DbMultipleRecnoDataIterator
+{
+public:
+	DbMultipleRecnoDataIterator(const Dbt &dbt);
+m4_blank
+	bool next(db_recno_t &key, Dbt &data);
+};
+]))
+
+m4_p([dnl
+If either of the m4_ref(DB_MULTIPLE) or m4_ref(DB_MULTIPLE_KEY) flags
+were specified to the m4_ref(dbh_get) or m4_refT(dbc_get), the data
+m4_ref(Dbt) returned by those interfaces will refer to a buffer that
+is filled with data.  Access to that data is through the following
+classes.])
+
+m4_p([dnl
+All instances of the bulk retrieval classes may be used only once, and
+to traverse the bulk retrieval buffer in the forward direction only.
+However, they are nondestructive, so multiple iterators can be
+instantiated and used on the same returned data m4_ref(Dbt).])
+
+m4_pf_description(DbMultipleIterator)
+m4_p([dnl
+The m4_ref(DbMultipleIterator) is a shared package-private base class
+for the three types of bulk-return Iterator; it should never be
+instantiated directly, but it handles the functionality shared by its
+subclasses.])
+
+m4_pf_description(DbMultipleDataIterator)
+m4_p([dnl
+The m4_ref(DbMultipleDataIterator) class is used to iterate through data
+returned using the m4_ref(DB_MULTIPLE) flag from a database belonging
+to any access method.])
+
+m4_p([dnl
+The constructor takes the data m4_ref(Dbt) returned by the call to
+m4_ref(dbh_get) or m4_ref(dbc_get) that used the m4_ref(DB_MULTIPLE)
+flag.])
+m4_parambegin
+m4_param(dbt, [dnl
+The m4_arg(dbt) parameter is a data m4_ref(Dbt) returned by the call to
+m4_ref(dbh_get) or m4_ref(dbc_get) that used the m4_ref(DB_MULTIPLE)
+flag.])
+m4_paramend
+
+m4_pf_description(DbMultipleDataIterator.next)
+m4_p([dnl
+The DbMultipleDataIterator.next method takes a m4_ref(Dbt) that will be
+filled in with a reference to a buffer, a size, and an offset that
+together yield the next data item in the original bulk retrieval buffer.])
+m4_p([dnl
+The DbMultipleDataIterator.next method returns false if no more data are
+available, and true otherwise.])
+m4_parambegin
+m4_param(data, [dnl
+The m4_arg(data) parameter is a m4_ref(Dbt) that will be filled in with
+a reference to a buffer, a size, and an offset that together yield the
+next data item in the original bulk retrieval buffer.])
+m4_paramend
+
+m4_pf_description(DbMultipleKeyDataIterator)
+m4_p([dnl
+The m4_ref(DbMultipleKeyDataIterator) class is used to iterate through
+data returned using the m4_ref(DB_MULTIPLE_KEY) flag from a database
+belonging to the Btree or Hash access methods.])
+
+m4_p([dnl
+The constructor takes the data m4_ref(Dbt) returned by the call to
+m4_ref(dbh_get) or m4_ref(dbc_get) that used the m4_ref(DB_MULTIPLE_KEY)
+flag.])
+m4_parambegin
+m4_param(dbt, [dnl
+The m4_arg(dbt) parameter is a data m4_ref(Dbt) returned by the call to
+m4_ref(dbh_get) or m4_ref(dbc_get) that used the m4_ref(DB_MULTIPLE_KEY)
+flag.])
+m4_paramend
+
+m4_pf_description(DbMultipleKeyDataIterator.next)
+m4_p([dnl
+The DbMultipleKeyDataIterator.next method takes two m4_ref(Dbt)s, one
+for a key and one for a data item, that will each be filled in with a
+reference to a buffer, a size, and an offset that together yield the
+next key and data item in the original bulk retrieval buffer.  The
+DbMultipleKeyDataIterator.next method returns false if no more data are
+available, and true otherwise.])
+m4_p([dnl
+The DbMultipleKeyDataIterator.next method returns false if no more data
+are available, and true otherwise.])
+m4_parambegin
+m4_param(key, [dnl
+The m4_arg(key) parameter will be filled in with a reference to a buffer,
+a size, and an offset that yields the next key item in the original bulk
+retrieval buffer.])
+m4_param(data, [dnl
+The m4_arg(data) parameter will be filled in with a reference to a buffer,
+a size, and an offset that yields the next data item in the original bulk
+retrieval buffer.])
+m4_paramend
+
+m4_pf_description(DbMultipleRecnoDataIterator)
+m4_p([dnl
+This class is used to iterate through data returned using the
+m4_ref(DB_MULTIPLE_KEY) flag from a database belonging to the Recno or
+Queue access methods.])
+
+m4_p([dnl
+The constructor takes the data m4_ref(Dbt) returned by the call to
+m4_ref(dbh_get) or m4_ref(dbc_get) that used the m4_ref(DB_MULTIPLE_KEY)
+flag.])
+m4_parambegin
+m4_param(dbt, [dnl
+The m4_arg(dbt) parameter is a data m4_ref(Dbt) returned by the call to
+m4_ref(dbh_get) or m4_ref(dbc_get) that used the m4_ref(DB_MULTIPLE_KEY)
+flag.])
+m4_paramend
+
+m4_pf_description(DbMultipleRecnoDataIterator.next)
+ifelse(M4API, CXX_API, [dnl
+The DbMultipleRecnoDataIterator.next method takes a m4_arg(db_recno_t)
+for the key and a m4_ref(Dbt) for a data item, which will be filled in
+with a pointer to a buffer and a size.  Together they yield the next key
+and data item in the original bulk retrieval buffer.])
+m4_p([dnl
+The DbMultipleRecnoDataIterator.next method returns false if no more
+data are available, and true otherwise.])
+m4_parambegin
+m4_param(key, [dnl
+The m4_arg(key) parameter will be filled in with a reference to a
+buffer, a size, and an offset that yields the next key item in the
+original bulk retrieval buffer.])
+m4_param(data, [dnl
+The m4_arg(data) parameter will be filled in with a reference to a
+buffer, a size, and an offset that yields the next data item in the
+original bulk retrieval buffer.])
+m4_paramend
+
+m4_page_footer

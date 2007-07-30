@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep060.tcl,v 12.7 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep060.tcl,v 12.13 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep060
 # TEST	Test of normally running clients and internal initialization.
@@ -21,7 +20,8 @@ proc rep060 { method { niter 200 } { tnum "060" } args } {
 	if { $checking_valid_methods } {
 		set test_methods {}
 		foreach method $valid_methods {
-			if { [is_btree $method] == 1 || [is_queue $method] == 1 } {
+			if { [is_btree $method] == 1 || \
+			    [is_queue $method] == 1 } {
 				lappend test_methods $method
 			}
 		}
@@ -71,6 +71,12 @@ proc rep060 { method { niter 200 } { tnum "060" } args } {
 
 proc rep060_sub { method niter tnum logset recargs opt largs } {
 	source ./include.tcl
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -87,11 +93,7 @@ proc rep060_sub { method niter tnum logset recargs opt largs } {
 	# four times the size of the in-memory log buffer.
 	set pagesize 4096
 	append largs " -pagesize $pagesize "
-	set log_buf [expr $pagesize * 2]
-	set log_max [expr $log_buf * 4]
-
-	set m_logargs " -log_buffer $log_buf"
-	set c_logargs " -log_buffer $log_buf"
+	set log_max [expr $pagesize * 4]
 
 	set m_logtype [lindex $logset 0]
 	set c_logtype [lindex $logset 1]
@@ -105,14 +107,26 @@ proc rep060_sub { method niter tnum logset recargs opt largs } {
 	# Open a master.
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -log_max $log_max \
+	    $m_logargs -log_max $log_max -errpfx MASTER $verbargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -log_max $log_max \
-#	    -verbose {rep on} -errpfx MASTER \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
+
+	# Open a client
+	puts "\tRep$tnum.a: Open client."
+	repladd 2
+	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
+	    $c_logargs -log_max $log_max -errpfx CLIENT $verbargs \
+	    -home $clientdir -rep_transport \[list 2 replsend\]"
+	set clientenv [eval $cl_envcmd $recargs -rep_client]
+
+	# Bring the client online by processing the startup messages.
+	set envlist "{$masterenv 1} {$clientenv 2}"
+	process_msgs $envlist
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init.
+	#
+	$masterenv test force noarchive_timeout
 
 	# Set a low limit so that there are lots of reps between
 	# master and client.  This allows greater control over
@@ -130,11 +144,12 @@ proc rep060_sub { method niter tnum logset recargs opt largs } {
 	    -create -mode 0644} $largs $omethod $dbname]
 	error_check_good dbopen [is_valid_db $db] TRUE
 
-	# Put some data into the database
-	puts "\tRep$tnum.a: Run rep_test in master env."
+	# Put some data into the database, running the master up past
+	# log file 10, discarding messages to the client so that it will
+	# be forced to request them as a gap.
+	#
+	puts "\tRep$tnum.c: Run rep_test in master env."
 	set start 0
-	eval rep_test $method $masterenv $db $niter $start $start 0 0 $largs
-	incr start $niter
 
 	set stop 0
 	set endlog 10
@@ -143,6 +158,7 @@ proc rep060_sub { method niter tnum logset recargs opt largs } {
 		eval rep_test $method \
 		    $masterenv $db $niter $start $start 0 0 $largs
 		incr start $niter
+		replclear 2
 
 		if { $m_logtype != "in-memory" } {
 			set res \
@@ -155,21 +171,13 @@ proc rep060_sub { method niter tnum logset recargs opt largs } {
 		}
 	}
 
-	# Open a client
-	puts "\tRep$tnum.c: Open client."
-	repladd 2
-	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -log_max $log_max \
-	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -log_max $log_max \
-#	    -verbose {rep on} -errpfx CLIENT -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
-	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
+	# Do one more set of txns at the master, replicating log records
+	# normally, to give the client a chance to notice how many messages
+	# it is missing.
+	#
+	eval rep_test $method $masterenv $db $niter $start $start 0 0 $largs
+	incr start $niter
 
-	# Bring the client online by processing the startup messages.
-	set envlist "{$masterenv 1} {$clientenv 2}"
 	set stop 0
 	set client_endlog 5
 	set last_client_log 0

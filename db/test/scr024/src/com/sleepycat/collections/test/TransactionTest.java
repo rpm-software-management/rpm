@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: TransactionTest.java,v 12.7 2006/08/24 14:46:47 bostic Exp $
+ * $Id: TransactionTest.java,v 12.9 2007/05/04 00:28:29 mark Exp $
  */
 
 package com.sleepycat.collections.test;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
@@ -30,7 +30,9 @@ import com.sleepycat.db.CursorConfig;
 import com.sleepycat.db.Database;
 import com.sleepycat.db.DatabaseConfig;
 import com.sleepycat.db.DatabaseEntry;
+import com.sleepycat.db.DatabaseException;
 import com.sleepycat.db.Environment;
+import com.sleepycat.db.EnvironmentConfig;
 import com.sleepycat.db.Transaction;
 import com.sleepycat.db.TransactionConfig;
 import com.sleepycat.util.RuntimeExceptionWrapper;
@@ -200,7 +202,7 @@ public class TransactionTest extends TestCase {
         DatabaseConfig dbConfig = new DatabaseConfig();
         DbCompat.setTypeBtree(dbConfig);
         dbConfig.setAllowCreate(true);
-        Database db = DbCompat.openDatabase(env, null,
+        Database db = DbCompat.openDatabase(env, null, 
                                             dbName(1), null,
                                             dbConfig);
         map = new StoredSortedMap(db, testStore.getKeyBinding(),
@@ -214,7 +216,7 @@ public class TransactionTest extends TestCase {
         //
         dbConfig.setTransactional(true);
         currentTxn.beginTransaction(null);
-        db = DbCompat.openDatabase(env, currentTxn.getTransaction(),
+        db = DbCompat.openDatabase(env, currentTxn.getTransaction(), 
                                    dbName(2), null, dbConfig);
         currentTxn.commitTransaction();
         map = new StoredSortedMap(db, testStore.getKeyBinding(),
@@ -580,6 +582,7 @@ public class TransactionTest extends TestCase {
         });
         assertNull(currentTxn.getTransaction());
     }
+
 
     private synchronized void doReadUncommitted(StoredSortedMap dirtyMap)
         throws Exception {

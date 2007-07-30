@@ -1,0 +1,19 @@
+m4_comment([$Id: dbt_package.so,v 10.2 2004/08/29 14:00:03 bostic Exp $])
+
+m4_page_title([DBT and Bulk Get Operations])
+
+m4_table_begin(, _center)
+m4_table_header(DBT and Bulk Get Operations, Description)
+
+m4_table_element(m4_ref(Dbt), Key/data pairs)
+ifelse(M4API, C_API, [dnl
+m4_table_element(m4_ref(DB_MULTIPLE_INIT), Initialize bulk get retrieval)
+m4_table_element(m4_ref(DB_MULTIPLE_NEXT), Next bulk get retrieval)
+m4_table_element(m4_ref(DB_MULTIPLE_KEY_NEXT), Next bulk get retrieval)
+m4_table_element(m4_ref(DB_MULTIPLE_RECNO_NEXT), Next bulk get retrieval)],[dnl
+m4_table_element(m4_ref(DbMultipleDataIterator), Next bulk get retrieval)
+m4_table_element(m4_ref(DbMultipleKeyDataIterator), Next bulk get retrieval)
+m4_table_element(m4_ref(DbMultipleRecnoDataIterator), Next bulk get retrieval)])
+
+m4_table_end
+m4_page_footer

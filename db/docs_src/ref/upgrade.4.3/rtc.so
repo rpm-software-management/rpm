@@ -1,0 +1,12 @@
+m4_comment([$Id: rtc.so,v 1.2 2004/09/28 14:13:10 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: Run-time configuration,,
+    upgrade.4.3/repl, upgrade.4.3/disk)
+
+m4_p([dnl
+The signatures of the m4_ref(dbenv_set_func_ftruncate) and
+m4_ref(dbenv_set_func_seek) functions have been simplified to take a byte
+offset in one parameter rather than a page size and a page number.])
+
+m4_page_footer

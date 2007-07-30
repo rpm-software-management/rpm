@@ -1,0 +1,173 @@
+m4_comment([$Id: lock_vec.so,v 10.69 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[lock_vec, DB_LOCK_GET, DB_LOCK_GET_TIMEOUT, DB_LOCK_PUT,
+	DB_LOCK_IREAD, DB_LOCK_PUT_ALL, DB_LOCK_PUT_OBJ,
+	DB_LOCK_TIMEOUT, DB_LOCK_READ, DB_LOCK_WRITE, DB_LOCK_IWRITE,
+	DB_LOCK_IREAD, DB_LOCK_IWR])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(lock_vec),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lock_vec(DB_ENV *env, u_int32_t locker, u_int32_t flags,
+    DB_LOCKREQ list__LB____RB__, int nlist, DB_LOCKREQ **elistp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lock_vec(u_int32_t locker, u_int32_t flags,
+    DB_LOCKREQ list__LB____RB__, int nlist, DB_LOCKREQ **elistp);
+]))
+
+m4_p([dnl
+The m4_refT(lock_vec) atomically obtains and releases one or more locks
+from the lock table.  The m4_refT(lock_vec) is intended to support
+acquisition or trading of multiple locks under one lock table semaphore,
+as is needed for lock coupling or in multigranularity locking for lock
+escalation.])
+
+m4_p([dnl
+If any of the requested locks cannot be acquired, or any of the locks to
+be released cannot be released, the operations before the failing
+operation are guaranteed to have completed successfully, and
+m4_ref(lock_vec) returns a non-zero value.  In addition, if
+m4_arg(elistp) is not NULL, it is set to point to the DB_LOCKREQ entry
+that was being processed when the error occurred.])
+
+m4_return(lock_vec, prev)
+
+m4_parambegin
+m4_param(elistp, [dnl
+If an error occurs, and the m4_arg(elistp) parameter is non-NULL, it
+is set to point to the DB_LOCKREQ entry that was being processed when
+the error occurred.])
+
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_LOCK_NOWAIT), [dnl
+If a lock cannot be granted because the requested lock conflicts with
+an existing lock,
+ifelse(M4API, C_API, [dnl
+return DB_LOCK_NOTGRANTED immediately instead of waiting
+for the lock to become available.  In this case, if non-NULL,
+m4_arg(elistp) identifies the request that was not granted.])
+ifelse(M4API, CXX_API, [dnl
+return DB_LOCK_NOTGRANTED or throw a
+m4_ref(DbLockNotGrantedException) immediately instead of waiting for
+the lock to become available.  In this case, if non-NULL,
+m4_arg(elistp) identifies the request that was not granted, or, if an
+exception is thrown, the index of the request that was not granted can
+be found by calling DbLockNotGrantedException.get_index.])])
+m4_tagend])
+
+m4_param(locker, [dnl
+The m4_arg(locker) parameter is an unsigned 32-bit integer quantity.  It
+represents the entity requesting or releasing the lock.])
+
+m4_param(list, [dnl
+The m4_arg(list) array provided to m4_ref(lock_vec) is typedef'd as
+DB_LOCKREQ.
+m4_p([dnl
+To ensure compatibility with future releases of m4_db, all
+fields of the DB_LOCKREQ structure that are not explicitly set should
+be initialized to 0 before the first time the structure is used.  Do
+this by declaring the structure external or static, or by calling
+m4_manref(memset, 3).])
+m4_p([dnl
+A DB_LOCKREQ structure has at least the following fields:])
+
+m4_tagbegin
+m4_tag([lockop_t m4_idef(op);], [dnl
+The operation to be performed, which must be set to one of the
+following values:])
+
+m4_tagbegin
+m4_tag(m4_idef(DB_LOCK_GET), [dnl
+Get the lock defined by the values of the m4_arg(mode) and m4_arg(obj)
+structure fields, for the specified m4_arg(locker).  Upon return from
+m4_ref(lock_vec), if the m4_arg(lock) field is non-NULL, a reference
+to the acquired lock is stored there.  (This reference is invalidated
+by any call to m4_ref(lock_vec) or m4_ref(lock_put) that releases the
+lock.)])
+
+m4_tag(m4_idef(DB_LOCK_GET_TIMEOUT), [dnl
+Identical to m4_ref(DB_LOCK_GET) except that the value in the m4_arg(timeout)
+structure field overrides any previously specified timeout value for
+this lock.  A value of 0 turns off any previously specified timeout.])
+
+m4_tag(m4_idef(DB_LOCK_PUT), [dnl
+The lock to which the m4_arg(lock) structure field refers is released.
+The m4_arg(locker) parameter, and m4_arg(mode) and m4_arg(obj) fields
+are ignored.])
+
+m4_tag(m4_idef(DB_LOCK_PUT_ALL), [dnl
+All locks held by the specified m4_arg(locker) are released.  The
+m4_arg(lock), m4_arg(mode), and m4_arg(obj) structure fields are
+ignored.  Locks acquired in operations performed by the current call to
+m4_ref(lock_vec) which appear before the DB_LOCK_PUT_ALL
+operation are released; those acquired in operations appearing after
+the DB_LOCK_PUT_ALL operation are not released.])
+
+m4_tag(m4_idef(DB_LOCK_PUT_OBJ), [dnl
+All locks held on m4_arg(obj) are released.  The m4_arg(locker)
+parameter and the m4_arg(lock) and m4_arg(mode) structure fields are
+ignored.  Locks acquired in operations performed by the current call to
+m4_ref(lock_vec) that appear before the DB_LOCK_PUT_OBJ
+operation are released; those acquired in operations appearing after the
+DB_LOCK_PUT_OBJ operation are not released.])
+
+m4_tag(m4_idef(DB_LOCK_TIMEOUT), [dnl
+Cause the specified m4_arg(locker) to timeout immediately.  If the
+database environment has not configured automatic deadlock detection,
+the transaction will timeout the next time deadlock detection is
+performed.  As transactions acquire locks on behalf of a single locker
+ID, timing out the locker ID associated with a transaction will time
+out the transaction itself.])
+
+m4_tagend
+
+m4_tag([DB_LOCK m4_idef(lock);],
+[A lock reference.])
+
+m4_tag([const lockmode_t m4_idef(mode);], [dnl
+The lock mode, used as an index into the environment's lock conflict matrix.
+When using the default lock conflict matrix, m4_arg(mode) must be set to one
+of the following values:
+m4_tagbegin
+m4_tagns(m4_idef(DB_LOCK_READ), [read (shared)])
+m4_tagns(m4_idef(DB_LOCK_WRITE), [write (exclusive)])
+m4_tagns(m4_idef(DB_LOCK_IWRITE), [intention to write (shared)])
+m4_tagns(m4_idef(DB_LOCK_IREAD), [intention to read (shared)])
+m4_tagns(m4_idef(DB_LOCK_IWR), [intention to read and write (shared)])
+m4_tagend
+m4_p([dnl
+See m4_ref(dbenv_set_lk_conflicts) and m4_link(M4RELDIR/ref/lock/stdmode,
+[Standard Lock Modes]) for more information on the lock conflict matrix.])])
+
+m4_tag([const ifelse(M4API, C_API, DBT, Dbt) m4_idef(obj);], [dnl
+An untyped byte string that specifies the object to be locked or
+released.  Applications using the locking subsystem directly while also
+doing locking via the m4_db access methods must take care not to
+inadvertently lock objects that happen to be equal to the unique file
+IDs used to lock files.  See m4_link(M4RELDIR/ref/lock/am_conv, [Access
+method locking conventions]) for more information.])
+
+m4_tag([u_int32_t timeout;], [dnl
+The lock timeout value.])
+m4_tagend])
+
+m4_param(nlist, [dnl
+The m4_arg(nlist) parameter specifies the number of elements in the
+m4_arg(list) array.])
+
+m4_paramend
+
+m4_err(lock_vec, deadlock, locknotgranted,
+[m4_ref(DB_LOCK_NOWAIT) flag or lock timers were configured and the],
+einval,,
+memory, [maximum number of locks has been reached])
+
+m4_seealso(DbLock)
+m4_page_footer

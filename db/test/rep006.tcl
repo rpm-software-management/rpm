@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: rep006.tcl,v 12.11 2006/09/08 20:32:18 bostic Exp $
+# $Id: rep006.tcl,v 12.15 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  rep006
 # TEST	Replication and non-rep env handles.
@@ -49,6 +48,12 @@ proc rep006_sub { method niter tnum logset recargs largs } {
 	source ./include.tcl
 	global testdir
 	global is_hp_test
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -79,22 +84,20 @@ proc rep006_sub { method niter tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set max_locks 2500
-	set env_cmd(M) "berkdb_env -create -log_max 1000000 \
+	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
 	    -lock_max_objects $max_locks -lock_max_locks $max_locks \
-	    -home $masterdir \
+	    -home $masterdir -errpfx MASTER $verbargs \
 	    $m_txnargs $m_logargs -rep_master -rep_transport \
 	    \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
-	set env_cmd(C) "berkdb_env -create $c_txnargs $c_logargs \
+	set env_cmd(C) "berkdb_env_noerr -create $c_txnargs $c_logargs \
 	    -lock_max_objects $max_locks -lock_max_locks $max_locks \
-	    -home $clientdir \
+	    -home $clientdir -errpfx CLIENT $verbargs \
 	    -rep_client -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
@@ -102,7 +105,7 @@ proc rep006_sub { method niter tnum logset recargs largs } {
 
 	# Run a modified test001 in the master (and update client).
 	puts "\tRep$tnum.a: Running test001 in replicated env."
-	eval test001 $method $niter 0 0 $tnum -env $masterenv $largs
+	eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
 	process_msgs $envlist
 
 	# Verify the database in the client dir.
@@ -111,7 +114,7 @@ proc rep006_sub { method niter tnum logset recargs largs } {
 	set t1 $testdir/t1
 	set t2 $testdir/t2
 	set t3 $testdir/t3
-	open_and_dump_file test$tnum.db $clientenv $t1 \
+	open_and_dump_file test.db $clientenv $t1 \
 	    $checkfunc dump_file_direction "-first" "-next"
 
 	# Determine whether this build is configured with --enable-debug_rop
@@ -145,15 +148,15 @@ proc rep006_sub { method niter tnum logset recargs largs } {
 	} else {
 		puts "\tRep$tnum.d: Verifying non-master access."
 
-		set rdenv \
-		    [eval {berkdb_env_noerr -home $masterdir}]
+		set rdenv [eval {berkdb_env_noerr} \
+		    -home $masterdir $verbargs]
 		error_check_good rdenv [is_valid_env $rdenv] TRUE
 		#
 		# Open the db read/write which will cause it to try to
 		# write out a log record, which should fail.
 		#
 		set stat \
-		    [catch {berkdb_open_noerr -env $rdenv test$tnum.db} ret]
+		    [catch {berkdb_open_noerr -env $rdenv test.db} ret]
 		error_check_good open_err $stat 1
 		error_check_good \
 		    open_err1 [is_substr $ret "attempting to modify"] 1

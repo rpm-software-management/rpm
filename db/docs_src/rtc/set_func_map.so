@@ -1,0 +1,50 @@
+m4_comment([$Id: set_func_map.so,v 10.20 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_map)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_map),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_map(int (*func_map)(char *path,
+    size_t len, int is_region, int is_rdonly, void **addr));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to map a file into memory and to
+create shared memory regions (which may or may not be backed by files).])
+
+m4_scope_process(dbenv_set_func_map)
+
+m4_when_init(dbenv_set_func_map)
+
+m4_return(dbenv_set_func_map, std)
+
+m4_parambegin
+m4_param(func_map, [dnl
+The m4_arg(func_map) parameter is the function which maps a file into
+memory and creates shared memory regions.
+m4_p([dnl
+The m4_arg(path) parameter is the name of a file.])
+m4_p([dnl
+The m4_arg(is_region) parameter will be zero if the intention is to map
+a file into shared memory.  In this case, the m4_arg(map) function must
+map the first m4_arg(len) bytes of the file into memory and return a
+pointer to the mapped location into the memory location to which the
+parameter m4_arg(addr) refers.  The m4_arg(is_rdonly) parameter will be
+non-zero if the file is considered read-only by the caller.])
+m4_p([dnl
+The m4_arg(is_region) parameter will be non-zero if the memory is
+intended to be used as a shared memory region for synchronization
+between m4_db threads/processes.  In this case, the returned memory may
+be of any kind (for example, anonymous memory), but must be able to
+support semaphores.  In this case, the m4_arg(path) parameter may be
+ignored (although future m4_arg(map) calls using the same m4_arg(path)
+must return the same memory), and the m4_arg(is_rdonly) parameter will
+always be zero.])
+m4_ret_internal(func_map)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer
+

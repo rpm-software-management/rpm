@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_stat.c,v 12.9 2006/08/24 14:46:18 bostic Exp $
+ * $Id: os_stat.c,v 12.12 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -27,6 +26,10 @@ __os_exists(dbenv, path, isdirp)
 	int ret;
 
 	COMPQUIET(dbenv, NULL);
+
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: stat %s", path);
 
 	if (DB_GLOBAL(j_exists) != NULL)
 		return (DB_GLOBAL(j_exists)(path, isdirp));
@@ -75,7 +78,6 @@ __os_ioinfo(dbenv, path, fhp, mbytesp, bytesp, iosizep)
 		return (DB_GLOBAL(j_ioinfo)(path,
 		    fhp->fd, mbytesp, bytesp, iosizep));
 
-	/* Check for illegal usage. */
 	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 	RETRY_CHK((fstat(fhp->fd, &sb)), ret);

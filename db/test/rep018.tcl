@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: rep018.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep018.tcl,v 12.14 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep018
 # TEST	Replication with dbremove.
@@ -47,6 +46,13 @@ proc rep018 { method { niter 10 } { tnum "018" } args } {
 
 proc rep018_sub { method niter tnum logset recargs largs } {
 	source ./include.tcl
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	env_cleanup $testdir
 	set omethod [convert_method $method]
 
@@ -71,22 +77,26 @@ proc rep018_sub { method niter tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set env_cmd(M) "berkdb_env_noerr -create \
-	    -log_max 1000000 -home $masterdir \
-	    $m_txnargs $m_logargs -rep_master \
+	    -log_max 1000000 -home $masterdir $verbargs \
+	    $m_txnargs $m_logargs -rep_master -errpfx MASTER \
 	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set env_cmd(C) "berkdb_env_noerr -create -home $clientdir \
-	    $c_txnargs $c_logargs -rep_client \
+	    $c_txnargs $c_logargs -rep_client $verbargs -errpfx CLIENT \
 	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the client online.
 	process_msgs "{$masterenv 1} {$clientenv 2}"
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init, so that we can do a
+	# db_remove in a moment.
+	#
+	$masterenv test force noarchive_timeout
 
 	puts "\tRep$tnum.b: Open database on master, propagate to client."
 	set dbname rep$tnum.db
@@ -166,5 +176,4 @@ proc rep018_sub { method niter tnum logset recargs largs } {
 		puts "FAIL: error message in rep018 log file: $str"
 	}
 }
-
 

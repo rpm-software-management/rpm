@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep052.tcl,v 12.9 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep052.tcl,v 12.16 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep052
 # TEST	Test of replication with NOWAIT.
@@ -70,6 +69,12 @@ proc rep052 { method { niter 200 } { tnum "052" } args } {
 proc rep052_sub { method niter tnum envargs logset recargs largs } {
 	global testdir
 	global util_path
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -86,10 +91,7 @@ proc rep052_sub { method niter tnum envargs logset recargs largs } {
 	# four times the size of the in-memory log buffer.
 	set pagesize 4096
 	append largs " -pagesize $pagesize "
-	set log_buf [expr $pagesize * 2]
-	set log_max [expr $log_buf * 4]
-	set m_logargs " -log_buffer $log_buf"
-	set c_logargs " -log_buffer $log_buf"
+	set log_max [expr $pagesize * 8]
 
 	set m_logtype [lindex $logset 0]
 	set c_logtype [lindex $logset 1]
@@ -102,31 +104,29 @@ proc rep052_sub { method niter tnum envargs logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -log_max $log_max $envargs \
+	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $verbargs \
+	    $m_logargs -log_max $log_max $envargs -errpfx MASTER \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -log_max $log_max $envargs \
-#	    -verbose {rep on} -errpfx MASTER \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
+	$masterenv rep_limit 0 0
 
 	# Open a client
 	repladd 2
-	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -log_max $log_max $envargs \
+	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $verbargs \
+	    $c_logargs -log_max $log_max $envargs -errpfx CLIENT \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -log_max $log_max $envargs \
-#	    -verbose {rep on} -errpfx CLIENT \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
+	$clientenv rep_limit 0 0
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init, so that we can do a
+	# log_archive in a moment.
+	#
+	$masterenv test force noarchive_timeout
 
 	# Run rep_test in the master (and update client).
 	puts "\tRep$tnum.a: Running rep_test in replicated env."
@@ -172,6 +172,7 @@ proc rep052_sub { method niter tnum envargs logset recargs largs } {
 	env_cleanup $clientdir
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
+	$clientenv rep_limit 0 0
 	set envlist "{$masterenv 1} {$clientenv 2}"
 
 	# Turn on nowait.
@@ -179,24 +180,23 @@ proc rep052_sub { method niter tnum envargs logset recargs largs } {
 
 	# Process messages a few times, just enough to get client
 	# into lockout/recovery mode, but not enough to complete recovery.
-	set iter 4
+	set iter 3
 	for { set i 0 } { $i < $iter } { incr i } {
 		set nproced [proc_msgs_once $envlist NONE err]
 	}
 
 	puts "\tRep$tnum.f: Verify we are locked out of txn API calls."
 	if { [catch { set txn [$clientenv txn] } res] } {
-		error_check_good txn_lockout [is_substr $res "locked out"] 1
+		error_check_good txn_lockout [is_substr $res "DB_REP_LOCKOUT"] 1
 	} else {
-		error_check_good txn_no_lockout [$txn commit] 0
-		puts "FAIL: Not locked out of txn API calls: $res"
+		error "FAIL:[timestamp] Not locked out of txn API calls."
 	}
 
 	puts "\tRep$tnum.g: Verify we are locked out of env API calls."
 	if { [catch { set stat [$clientenv lock_stat] } res] } {
-		error_check_good env_lockout [is_substr $res "locked out"] 1
+		error_check_good env_lockout [is_substr $res "DB_REP_LOCKOUT"] 1
 	} else {
-		puts "FAIL: Not locked out of env API calls: $res"
+		error "FAIL:[timestamp] Not locked out of env API calls."
 	}
 
 	# Now catch up and make sure we're not locked out anymore.

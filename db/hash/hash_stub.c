@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: hash_stub.c,v 12.8 2006/08/24 14:46:05 bostic Exp $
+ * $Id: hash_stub.c,v 12.12 2007/05/17 15:15:38 bostic Exp $
  */
 
 #ifndef HAVE_HASH
@@ -94,7 +93,41 @@ __ham_31_hashmeta(dbp, real_name, flags, fhp, h, dirtyp)
 }
 
 int
-__ham_c_count(dbc, recnop)
+__ham_46_hash(dbp, real_name, flags, fhp, h, dirtyp)
+	DB *dbp;
+	char *real_name;
+	u_int32_t flags;
+	DB_FH *fhp;
+	PAGE *h;
+	int *dirtyp;
+{
+	COMPQUIET(real_name, NULL);
+	COMPQUIET(flags, 0);
+	COMPQUIET(fhp, NULL);
+	COMPQUIET(h, NULL);
+	COMPQUIET(dirtyp, NULL);
+	return (__db_no_hash_am(dbp->dbenv));
+}
+
+int
+__ham_46_hashmeta(dbp, real_name, flags, fhp, h, dirtyp)
+	DB *dbp;
+	char *real_name;
+	u_int32_t flags;
+	DB_FH *fhp;
+	PAGE *h;
+	int *dirtyp;
+{
+	COMPQUIET(real_name, NULL);
+	COMPQUIET(flags, 0);
+	COMPQUIET(fhp, NULL);
+	COMPQUIET(h, NULL);
+	COMPQUIET(dirtyp, NULL);
+	return (__db_no_hash_am(dbp->dbenv));
+}
+
+int
+__hamc_count(dbc, recnop)
 	DBC *dbc;
 	db_recno_t *recnop;
 {
@@ -103,7 +136,7 @@ __ham_c_count(dbc, recnop)
 }
 
 int
-__ham_c_dup(orig_dbc, new_dbc)
+__hamc_dup(orig_dbc, new_dbc)
 	DBC *orig_dbc, *new_dbc;
 {
 	COMPQUIET(new_dbc, NULL);
@@ -111,7 +144,7 @@ __ham_c_dup(orig_dbc, new_dbc)
 }
 
 int
-__ham_c_init(dbc)
+__hamc_init(dbc)
 	DBC *dbc;
 {
 	return (__db_no_hash_am(dbc->dbp->dbenv));

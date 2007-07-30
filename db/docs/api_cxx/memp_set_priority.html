@@ -1,6 +1,5 @@
-<!--$Id: memp_set_priority.so,v 10.23 2005/08/12 17:05:52 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: memp_set_priority.so,v 10.25 2007/05/22 18:06:06 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -30,15 +29,18 @@ DbMpoolFile::get_priority(DB_CACHE_PRIORITY *priorityp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbMpoolFile::set_priority</h3>
-<p>Set the cache priority for pages from the specified file.  The priority
-of a page biases the replacement algorithm to be more or less likely to
-discard a page when space is needed in the buffer pool.  The bias is
-temporary, and pages will eventually be discarded if they are not
-referenced again.  The DbMpoolFile::set_priority method is only advisory, and
-does not guarantee pages will be treated in a specific way.</p>
+<!--$Id: dbc_set_priority.so,v 1.3 2007/05/22 18:06:05 bostic Exp $-->
+<p>Set the cache priority for pages referenced by the
+<a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
+handle.</p>
+<p>The priority of a page biases the replacement algorithm to be more or
+less likely to discard a page when space is needed in the buffer pool.
+The bias is temporary, and pages will eventually be discarded if they
+are not referenced again.  The DbMpoolFile::set_priority method is only advisory, and does
+not guarantee pages will be treated in a specific way.</p>
 <p>To set the priority for the pages belonging to a particular database,
-call the DbMpoolFile::set_priority method using the <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
-handle returned by calling the <a href="../api_cxx/db_get_mpf.html">Db::get_mpf</a> method.</p>
+call the DbMpoolFile::set_priority method using the <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle
+returned by the <a href="../api_cxx/db_get_mpf.html">Db::get_mpf</a> method.</p>
 <p>The DbMpoolFile::set_priority method configures a file in the memory pool, not only
 operations performed using the specified <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle.</p>
 <p>The DbMpoolFile::set_priority method may be called at any time during the life of the
@@ -62,28 +64,22 @@ values:
 </dl>
 <hr size=1 noshade>
 <h3>Description: DbMpoolFile::get_priority</h3>
-<p>The DbMpoolFile::get_priority method returns the cache priority.</p>
+<p>The DbMpoolFile::get_priority method returns the cache priority for the file referenced by the <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a> handle.</p>
 <p>The DbMpoolFile::get_priority method may be called at any time during the life of the
 application.</p>
 <p>The DbMpoolFile::get_priority method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
-failure, and returns 0 on success.
-</p>
-<h3>Parameters</h3>
-<dl compact>
-<dt><b>priorityp</b><dd>The DbMpoolFile::get_priority method returns  the
-cache priority in <b>priorityp</b>.
-</dl>
+failure
 <hr size=1 noshade>
 <h3>Class</h3>
-<a href="../api_cxx/db_class.html">Db</a>
+<a href="../api_cxx/env_class.html">DbEnv</a>, <a href="../api_cxx/mempfile_class.html">DbMpoolFile</a>
 <h3>See Also</h3>
-<a href="../api_cxx/db_list.html">Databases and Related Methods</a>
+<a href="../api_cxx/memp_list.html">Memory Pools and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

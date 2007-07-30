@@ -1,0 +1,194 @@
+#!/bin/sh
+#
+# Script to build the web-version of the Berkeley DB documentation.
+#
+# $Id: build,v 1.103 2007/07/06 16:44:46 bostic Exp $
+
+# The build script must be run from the document source directory.
+MSG="build: build script must be run from the document source directory."
+egrep "^MSG=\"$MSG\"" build > /dev/null 2>&1 || {
+	echo "$MSG"
+	exit 1
+}
+
+# Save the absolute path of the Berkeley DB document source directory.
+DOCS_SRC=`pwd`
+export DOCS_SRC
+
+# Save the absolute path of the Berkeley DB source directory.
+BDB_SRC=`dirname $DOCS_SRC`
+export BDB_SRC
+
+# Save the absolute path of the target Berkeley DB documents directory.
+TARGET=$BDB_SRC/docs
+export TARGET
+
+# splash:
+#	splash page.
+splash()
+{
+	rm -f $TARGET/index.html
+	sed -e "s/DB_RELEASE_DATE/$DB_RELEASE_DATE/" \
+	    -e "s/DB_VERSION_MAJOR/$DB_VERSION_MAJOR/" \
+	    -e "s/DB_VERSION_MINOR/$DB_VERSION_MINOR/" \
+	    -e "s/DB_VERSION_PATCH/$DB_VERSION_PATCH/" \
+	    < index_db.html > $TARGET/index.html
+}
+
+# api_index:
+#	Build a sorted list of all methods.
+api_index()
+{
+	t=/tmp/__build.$$
+	cat <<END_OF_HEADER > $t
+m4_comment([DO NOT EDIT: automatically built by build script.])
+m4_page_title([m4_db: ifelse(M4API, C_API, C, C++) Handle Methods (version M4MAJOR.M4MINOR.M4PATCH)])
+m4_table_begin(, _center)
+m4_table_header(ifelse(M4API, C_API, C, C++) Handle Methods, Description)
+END_OF_HEADER
+
+	d="db dbc env lock log memp mutex rep seq txn"
+	for i in $d; do
+		egrep m4_table_element $i/m4.methods
+	done | sort -u >> $t
+	cat <<END_OF_FOOTER >> $t
+m4_table_end
+m4_page_footer
+END_OF_FOOTER
+	f=env/api_core.so
+	cmp $t $f > /dev/null 2>&1 || (echo "Building $f" && cp $t $f)
+}
+
+# reftoc:
+#	Berkeley DB Reference Guide table of contents.
+reftoc()
+{
+	rm -f $TARGET/ref/toc.html
+	sed -e "s/__EDIT_PRODUCT/Berkeley DB/" \
+	    -e "s/__EDIT_VERSION_MAJOR/$DB_VERSION_MAJOR/" \
+	    -e "s/__EDIT_VERSION_MINOR/$DB_VERSION_MINOR/" \
+	    -e "s/__EDIT_VERSION_PATCH/$DB_VERSION_PATCH/" \
+	    -e "s/__EDIT_RELEASE_DATE/$DB_RELEASE_DATE/" \
+	    < ref/toc.html > $TARGET/ref/toc.html
+}
+
+# build:
+#	Build the Berkeley DB documents.
+#
+#	$1: Directory to build.
+#	$2: API
+#	$3: Depth in tree
+#	$4: Source Directory
+build()
+{
+	f=$TARGET/$1
+	[ -d $f ] || mkdir -p $f
+
+	# Copy documents.
+	# Check for COPY in the Makefile first, some make programs have their
+	# own values for the "COPY" variable if it's not already set.
+	if egrep COPY $4/Makefile > /dev/null 2>&1; then
+		(cat $4/Makefile &&
+		 echo &&
+		 cat $DOCS_SRC/support/copy) > $f/Makefile
+		(cd $f && make BUILDDIR=$1 copy || exit 1)
+	fi
+
+	# Build documents.
+	(cat $DOCS_SRC/support/suffix &&
+	 echo &&
+	 echo "VPATH=\$(DOCS_SRC)/$4" &&
+	 echo &&
+	 cat $4/Makefile &&
+	 case $2 in
+	 C_API)
+		 echo 'all: $(COMMON) $(C)';;
+	 CXX_API)
+		 echo 'all: $(COMMON) $(CXX)';;
+	 NOAPI|UTILITY)
+		echo 'all: $(BUILD)';;
+	 esac) > $f/Makefile
+	(cd $f &&
+	 make ABSDIR=`pwd` \
+	      API=$2 \
+	      BUILDDIR=$1 \
+	      RELDIR=$3 || exit 1)
+
+	rm -f $f/Makefile
+}
+
+# run
+#	Run any single command.
+run()
+{
+	case "$1" in
+	c)
+		for i in $APILIST; do
+			build api_c C_API .. $i
+		done;;
+	check)
+		shift
+		sh $DOCS_SRC/support/check $TARGET $*;;
+	clean)
+		(cd $TARGET && rm -rf api_c api_cxx \
+		    api_tcl images index.html java license ref utility);;
+	cxx)
+		for i in $APILIST; do
+			build api_cxx CXX_API .. $i
+		done;;
+	index)
+		sh $DOCS_SRC/support/Xindex;;
+	ref)
+		[ -d $TARGET/ref ] || mkdir $TARGET/ref
+		reftoc
+		for i in $REFLIST; do
+			build ref/$i C_API ../.. ref/$i
+		done;;
+	tcl)
+		build api_tcl TCL_API .. tcl;;
+	util*)
+		build utility UTILITY .. utility;;
+	*)
+		echo "build: unknown command $1"
+		exit 1;;
+	esac
+}
+
+# Source the RELEASE file to get major/minor numbers.
+. $BDB_SRC/dist/RELEASE
+
+PRODUCT="CORE"
+export DB_RELEASE_DATE
+export DB_VERSION_MAJOR
+export DB_VERSION_MINOR
+export DB_VERSION_PATCH
+version="$DB_VERSION_MAJOR.$DB_VERSION_MINOR.$DB_VERSION_PATCH"
+
+APILIST="api db db_except dbc dbt env exc historic lock log memp mutex
+rep rtc seq txn"
+REFLIST="am am_conf am_misc apprec arch build_brew build_s60 build_unix
+build_vxworks build_win build_wince cam changelog debug distrib dumpload
+env ext install intro java lock log mp program refs rep rpc sequence tcl
+test transapp txn upgrade upgrade.2.0 upgrade.3.0 upgrade.3.1
+upgrade.3.2 upgrade.3.3 upgrade.4.0 upgrade.4.1 upgrade.4.2 upgrade.4.3
+upgrade.4.4 upgrade.4.5 upgrade.4.6 xa"
+
+if [ $# = 0 ]; then
+	echo "Building Berkeley DB documentation ..."
+
+	[ -d $TARGET ] || mkdir $TARGET
+
+	splash
+	api_index
+
+	build images NOAPI .. images
+	build license NOAPI .. license
+	run c
+	run cxx
+	run ref
+	run tcl
+	run utility
+	run index
+else
+	run $*
+fi

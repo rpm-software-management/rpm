@@ -1,0 +1,13 @@
+m4_comment([$Id: deadlock.so,v 1.1 2001/09/07 16:55:56 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: db_deadlock,,
+    upgrade.4.0/intro, upgrade.4.0/lock)
+
+m4_p([dnl
+The m4_option(w) option to the m4_ref(db_deadlock) utility has been
+deprecated.  Applications can get the functionality of the m4_option(w)
+option by using the m4_option(t) option with an argument of
+m4_arg(.100000).])
+
+m4_page_footer

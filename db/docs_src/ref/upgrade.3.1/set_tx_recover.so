@@ -1,0 +1,27 @@
+m4_comment([$Id: set_tx_recover.so,v 1.12 2002/02/23 20:05:28 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: DB_ENV-__GT__set_tx_recover,,
+    upgrade.3.1/config, upgrade.3.1/set_feedback)
+
+m4_p([dnl
+The redo parameter of the function passed to DB_ENV-__GT__set_tx_recover
+used to be an integer set to any one of a number of #defined values.  In
+the 3.1 release of m4_db, the redo parameter has been replaced by the op
+parameter which is an enumerated type of type db_recops.])
+
+m4_p([dnl
+If your application calls DB_ENV-__GT__set_tx_recover, then find the
+function referred to by the call.  Replace the flag values in that
+function as follows:])
+
+m4_table_begin(, _center)
+m4_table_header(Previous flag, m4_db 3.1 version flag)
+m4_table_element(TXN_BACKWARD_ROLL, DB_TXN_BACKWARD_ROLL)
+m4_table_element(TXN_FORWARD_ROLL, DB_TXN_FORWARD_ROLL)
+m4_table_element(TXN_OPENFILES, DB_TXN_OPENFILES)
+m4_table_element(TXN_REDO, DB_TXN_FORWARD_ROLL)
+m4_table_element(TXN_UNDO, DB_TXN_ABORT)
+m4_table_end
+
+m4_page_footer

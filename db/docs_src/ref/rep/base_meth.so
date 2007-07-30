@@ -1,0 +1,69 @@
+m4_comment([$Id: base_meth.so,v 1.3 2007/03/21 23:48:54 alanb Exp $])
+
+m4_ref_title(m4_db Replication,
+    Base replication API,, rep/mgr_meth, rep/comm)
+
+m4_p([dnl
+Applications which use the Base replication API use the following
+m4_db methods.])
+
+m4_tagbegin
+
+m4_tag(m4_ref(rep_set_transport), [dnl
+The m4_refT(rep_set_transport) configures the replication system's
+communications infrastructure.])
+
+m4_tag(m4_ref(rep_start), [dnl
+The m4_refT(rep_start) configures (or reconfigures) an existing database
+environment to be a replication master or client.])
+
+m4_tag(m4_ref(rep_message), [dnl
+The m4_refT(rep_message) is used to process incoming messages from other
+environments in the replication group.  For clients, it is responsible
+for accepting log records and updating the local databases based on
+messages from the master.  For both the master and the clients, it is
+responsible for handling administrative functions (for example, the
+protocol for dealing with lost messages), and permitting new clients to
+join an active replication group.  This method should only be called
+after the environment has been configured as a replication master or
+client via m4_ref(rep_start).])
+
+m4_tag(m4_ref(rep_elect), [dnl
+The m4_refT(rep_elect) causes the replication group to elect a new
+master; it is called whenever contact with the master is lost and the
+application wants the remaining sites to select a new master.])
+
+m4_tag(m4_ref(dbenv_set_event_notify), [dnl
+The m4_refT(dbenv_set_event_notify) is needed for applications to
+discover important replication-related events, such as the result of
+an election and appointment of a new master.])
+
+m4_tag(m4_ref(rep_set_priority), [dnl
+The m4_refT(rep_set_priority) configures the local site's priority for
+the purpose of elections.])
+
+m4_tag(m4_ref(rep_set_timeout), [dnl
+Note that of all the various timeouts this method can set, only
+m4_ref(DB_REP_ELECTION_TIMEOUT) is relevant for applications which use
+the Base replication API.  The others are used only by Replication
+Manager.])
+
+m4_tag(m4_ref(rep_set_limit), [dnl
+The m4_refT(rep_set_limit) imposes an upper bound on the amount of data
+that will be sent in response to a single call to m4_ref(rep_message).
+During client recovery, that is, when a replica site is trying to
+synchronize with the master, clients may ask the master for a large
+number of log records.  If it is going to harm an application for the
+master message loop to remain busy for an extended period transmitting
+records to the replica, then the application will want to use
+m4_ref(rep_set_limit) to limit the amount of data the master will send
+before relinquishing control and accepting other messages.])
+
+m4_tagend
+
+m4_p([dnl
+In addition to the methods previously described, applications which use
+the Base replication API may also call the following methods, as needed:
+m4_ref(rep_stat), m4_ref(rep_sync), m4_ref(rep_set_config).])
+
+m4_page_footer

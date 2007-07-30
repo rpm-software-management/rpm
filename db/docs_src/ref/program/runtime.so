@@ -1,0 +1,51 @@
+m4_comment([$Id: runtime.so,v 10.36 2006/06/08 13:04:29 bostic Exp $])
+
+m4_ref_title(Programmer Notes,
+    Run-time configuration,, program/compatible, program/faq)
+
+m4_p([dnl
+It is possible for applications to configure m4_db at run-time to
+redirect m4_db library and system calls to alternate interfaces.  For
+example, an application might want m4_db to call debugging memory
+allocation routines rather than the standard C library interfaces.  The
+following interfaces support this functionality:])
+
+m4_indent([dnl
+m4_ref(dbenv_set_func_close)
+m4_ref(dbenv_set_func_dirfree)
+m4_ref(dbenv_set_func_dirlist)
+m4_ref(dbenv_set_func_exists)
+m4_ref(dbenv_set_func_free)
+m4_ref(dbenv_set_func_fsync)
+m4_ref(dbenv_set_func_ftruncate)
+m4_ref(dbenv_set_func_ioinfo)
+m4_ref(dbenv_set_func_malloc)
+m4_ref(dbenv_set_func_map)
+m4_ref(dbenv_set_func_open)
+m4_ref(dbenv_set_func_pread)
+m4_ref(dbenv_set_func_pwrite)
+m4_ref(dbenv_set_func_read)
+m4_ref(dbenv_set_func_realloc)
+m4_ref(dbenv_set_func_rename)
+m4_ref(dbenv_set_func_seek)
+m4_ref(dbenv_set_func_sleep)
+m4_ref(dbenv_set_func_unlink)
+m4_ref(dbenv_set_func_unmap)
+m4_ref(dbenv_set_func_write)
+m4_ref(dbenv_set_func_yield)])
+
+m4_p([dnl
+These interfaces are available only on POSIX platforms and from the
+m4_db C language API.])
+
+m4_p([dnl
+A not-uncommon problem for applications is the new API in Solaris 2.6
+for manipulating large files.  Because this API was not part of Solaris
+2.5, it is difficult to create a single binary that takes advantage of
+the large file functionality in Solaris 2.6, but still runs on Solaris
+2.5.  m4_linkweb(solaris.txt, [Example code]) that supports this is
+included in the m4_db distribution, however, the example code was
+written using previous versions of the m4_db APIs, and is only useful
+as an example.])
+
+m4_page_footer

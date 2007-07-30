@@ -1,0 +1,20 @@
+m4_comment([$Id: db_get_mpf.so,v 1.8 2005/07/20 16:22:18 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_get_mpf)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_get_mpf),
+ifelse(M4API, C_API, [dnl
+DB_MPOOLFILE *
+DB-__GT__get_mpf(DB *db);
+])
+ifelse(M4API, CXX_API, [dnl
+DbMpoolFile *
+Db::get_mpf();
+]))
+
+m4_getter(dbh_get_mpf,
+[handle for the cache file underlying the database])
+
+m4_seealso(Db)
+m4_page_footer

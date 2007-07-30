@@ -1,0 +1,34 @@
+<!--$Id: notes.so,v 1.2 2007/06/04 14:55:40 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Windows CE notes</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for Windows CE systems</dl></h3></td>
+<td align=right><a href="../build_wince/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_wince/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Windows CE notes</h3>
+<ol>
+<p><li>The C++ API is not supported on Windows CE. The file stream and
+exception handling functionality provided by the Berkeley DB C++ API are not
+supported by Windows CE.  It is possible to build a C++ application
+against the Berkeley DB C API.
+<p><li>We do not currently ship workspace/project files for Windows CE that are
+compatible with Visual Studio 2005.
+You should be able to manually create project files by duplicating the
+structure in the eMbedded Visual C++ 4.0 projects.
+<p><li>The Java API is not currently supported on Windows CE.
+<p><li>Tcl support is not currently supported on Windows CE.
+</ol>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_wince/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_wince/faq.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

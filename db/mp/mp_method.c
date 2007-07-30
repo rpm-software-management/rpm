@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mp_method.c,v 12.36 2006/09/15 18:54:13 margo Exp $
+ * $Id: mp_method.c,v 12.50 2007/06/01 18:32:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -15,13 +14,13 @@
 #include "dbinc/hash.h"
 
 /*
- * __memp_dbenv_create --
+ * __memp_env_create --
  *	Mpool specific creation of the DB_ENV structure.
  *
- * PUBLIC: int __memp_dbenv_create __P((DB_ENV *));
+ * PUBLIC: int __memp_env_create __P((DB_ENV *));
  */
 int
-__memp_dbenv_create(dbenv)
+__memp_env_create(dbenv)
 	DB_ENV *dbenv;
 {
 	/*
@@ -37,7 +36,7 @@ __memp_dbenv_create(dbenv)
 	 * Solaris needs 24 and 52 bytes for the same structures.  The minimum
 	 * number of hash buckets is 37.  These contain a mutex also.
 	 */
-	dbenv->mp_bytes =
+	dbenv->mp_bytes = dbenv->mp_max_bytes =
 	    32 * ((8 * 1024) + sizeof(BH)) + 37 * sizeof(DB_MPOOL_HASH);
 	dbenv->mp_ncache = 1;
 
@@ -45,13 +44,13 @@ __memp_dbenv_create(dbenv)
 }
 
 /*
- * __memp_dbenv_destroy --
+ * __memp_env_destroy --
  *	Mpool specific destruction of the DB_ENV structure.
  *
- * PUBLIC: void __memp_dbenv_destroy __P((DB_ENV *));
+ * PUBLIC: void __memp_env_destroy __P((DB_ENV *));
  */
 void
-__memp_dbenv_destroy(dbenv)
+__memp_env_destroy(dbenv)
 	DB_ENV *dbenv;
 {
 	COMPQUIET(dbenv, NULL);
@@ -109,8 +108,6 @@ __memp_set_cachesize(dbenv, gbytes, bytes, arg_ncache)
 {
 	u_int ncache;
 
-	ENV_ILLEGAL_AFTER_OPEN(dbenv, "DB_ENV->set_cachesize");
-
 	/* Normalize the cache count. */
 	ncache = arg_ncache <= 0 ? 1 : (u_int)arg_ncache;
 
@@ -133,18 +130,18 @@ __memp_set_cachesize(dbenv, gbytes, bytes, arg_ncache)
 	 * wrapping in the calculation of the number of hash buckets.  See
 	 * __memp_open for details.
 	 */
-	if (sizeof(roff_t) <= 4) {
-		if (gbytes / ncache >= 4) {
+	if (!F_ISSET(dbenv, DB_ENV_OPEN_CALLED)) {
+		if (sizeof(roff_t) <= 4 && gbytes / ncache >= 4) {
 			__db_errx(dbenv,
 			    "individual cache size too large: maximum is 4GB");
 			return (EINVAL);
 		}
-	} else
 		if (gbytes / ncache > 10000) {
 			__db_errx(dbenv,
 			    "individual cache size too large: maximum is 10TB");
 			return (EINVAL);
 		}
+	}
 
 	/*
 	 * If the application requested less than 500Mb, increase the cachesize
@@ -164,10 +161,83 @@ __memp_set_cachesize(dbenv, gbytes, bytes, arg_ncache)
 			bytes = ncache * DB_CACHESIZE_MIN;
 	}
 
+	if (F_ISSET(dbenv, DB_ENV_OPEN_CALLED))
+		return (__memp_resize(dbenv->mp_handle, gbytes, bytes));
+
 	dbenv->mp_gbytes = gbytes;
 	dbenv->mp_bytes = bytes;
 	dbenv->mp_ncache = ncache;
 
+	return (0);
+}
+
+/*
+ * __memp_set_config --
+ *	Set the cache subsystem configuration.
+ *
+ * PUBLIC: int __memp_set_config __P((DB_ENV *, u_int32_t, int));
+ */
+int
+__memp_set_config(dbenv, which, on)
+	DB_ENV *dbenv;
+	u_int32_t which;
+	int on;
+{
+	DB_MPOOL *dbmp;
+	MPOOL *mp;
+
+	ENV_NOT_CONFIGURED(dbenv,
+	    dbenv->mp_handle, "DB_ENV->memp_set_config", DB_INIT_MPOOL);
+
+	switch (which) {
+	case DB_MEMP_SUPPRESS_WRITE:
+	case DB_MEMP_SYNC_INTERRUPT:
+		if (MPOOL_ON(dbenv)) {
+			dbmp = dbenv->mp_handle;
+			mp = dbmp->reginfo[0].primary;
+			if (on)
+				FLD_SET(mp->config_flags, which);
+			else
+				FLD_CLR(mp->config_flags, which);
+		}
+		break;
+	default:
+		return (EINVAL);
+	}
+	return (0);
+}
+
+/*
+ * __memp_get_config --
+ *	Return the cache subsystem configuration.
+ *
+ * PUBLIC: int __memp_get_config __P((DB_ENV *, u_int32_t, int *));
+ */
+int
+__memp_get_config(dbenv, which, onp)
+	DB_ENV *dbenv;
+	u_int32_t which;
+	int *onp;
+{
+	DB_MPOOL *dbmp;
+	MPOOL *mp;
+
+	ENV_REQUIRES_CONFIG(dbenv,
+	    dbenv->mp_handle, "DB_ENV->memp_get_config", DB_INIT_MPOOL);
+
+	switch (which) {
+	case DB_MEMP_SUPPRESS_WRITE:
+	case DB_MEMP_SYNC_INTERRUPT:
+		if (MPOOL_ON(dbenv)) {
+			dbmp = dbenv->mp_handle;
+			mp = dbmp->reginfo[0].primary;
+			*onp = FLD_ISSET(mp->config_flags, which) ? 1 : 0;
+		} else
+			*onp = 0;
+		break;
+	default:
+		return (EINVAL);
+	}
 	return (0);
 }
 
@@ -224,12 +294,13 @@ __memp_set_mp_max_openfd(dbenv, maxopenfd)
 }
 
 /*
- * PUBLIC: int __memp_get_mp_max_write __P((DB_ENV *, int *, int *));
+ * PUBLIC: int __memp_get_mp_max_write __P((DB_ENV *, int *, db_timeout_t *));
  */
 int
 __memp_get_mp_max_write(dbenv, maxwritep, maxwrite_sleepp)
 	DB_ENV *dbenv;
-	int *maxwritep, *maxwrite_sleepp;
+	int *maxwritep;
+	db_timeout_t *maxwrite_sleepp;
 {
 	DB_MPOOL *dbmp;
 	MPOOL *mp;
@@ -255,12 +326,13 @@ __memp_get_mp_max_write(dbenv, maxwritep, maxwrite_sleepp)
  * __memp_set_mp_max_write --
  *	Set the maximum continuous I/O count.
  *
- * PUBLIC: int __memp_set_mp_max_write __P((DB_ENV *, int, int));
+ * PUBLIC: int __memp_set_mp_max_write __P((DB_ENV *, int, db_timeout_t));
  */
 int
 __memp_set_mp_max_write(dbenv, maxwrite, maxwrite_sleep)
 	DB_ENV *dbenv;
-	int maxwrite, maxwrite_sleep;
+	int maxwrite;
+	db_timeout_t maxwrite_sleep;
 {
 	DB_MPOOL *dbmp;
 	MPOOL *mp;
@@ -366,9 +438,13 @@ __memp_nameop(dbenv, fileid, newname, fullold, fullnew, inmem)
 #define	op_is_remove	(newname == NULL)
 
 	COMPQUIET(bucket, 0);
+	COMPQUIET(hp, NULL);
+	COMPQUIET(newname_off, 0);
+	COMPQUIET(nlen, 0);
 
 	dbmp = NULL;
 	mfp = NULL;
+	nhp = NULL;
 	p = NULL;
 	locked = ret = 0;
 
@@ -378,63 +454,61 @@ __memp_nameop(dbenv, fileid, newname, fullold, fullnew, inmem)
 	dbmp = dbenv->mp_handle;
 	mp = dbmp->reginfo[0].primary;
 	hp = R_ADDR(dbmp->reginfo, mp->ftab);
-	nhp = NULL;
+
+	if (!op_is_remove) {
+		nlen = strlen(newname);
+		if ((ret = __memp_alloc(dbmp, dbmp->reginfo,
+		    NULL,  nlen + 1, &newname_off, &p)) != 0)
+			return (ret);
+		memcpy(p, newname, nlen + 1);
+	}
 
 	/*
 	 * Remove or rename a file that the mpool might know about.  We assume
 	 * that the fop layer has the file locked for exclusive access, so we
 	 * don't worry about locking except for the mpool mutexes.  Checkpoint
 	 * can happen at any time, independent of file locking, so we have to
-	 * do the actual unlink or rename system call to avoid any race.
+	 * do the actual unlink or rename system call while holding
+	 * all affected buckets locked.
 	 *
-	 * If this is a rename, allocate first, because we can't recursively
-	 * grab the region lock.  If this is a memory file
-	 * then on a rename, we need to make sure that the new name does
-	 * not exist.
+	 * If this is a rename and this is a memory file then we need
+	 * to make sure that the new name does not exist.  Since we
+	 * are locking two buckets lock them in ascending order.
 	 */
-	hp = R_ADDR(dbmp->reginfo, mp->ftab);
-	if (op_is_remove) {
-		COMPQUIET(newname_off, INVALID_ROFF);
-	} else {
-		nlen = strlen(newname);
-		if ((ret = __memp_alloc(dbmp, dbmp->reginfo,
-		    NULL,  nlen + 1, &newname_off, &p)) != 0)
-			return (ret);
-		memcpy(p, newname, nlen + 1);
-		MPOOL_SYSTEM_LOCK(dbenv);
-		locked = 1;
-		if (inmem) {
-			bucket = FNBUCKET(newname, nlen);
-			nhp = hp + bucket;
-			MUTEX_LOCK(dbenv, nhp->mtx_hash);
-			SH_TAILQ_FOREACH(mfp, &nhp->hash_bucket, q, __mpoolfile)
-				if (!mfp->deadfile &&
-				    mfp->no_backing_file && strcmp(newname,
-				    R_ADDR(dbmp->reginfo, mfp->path_off)) == 0)
-					break;
-			MUTEX_UNLOCK(dbenv, nhp->mtx_hash);
-			if (mfp != NULL) {
-				ret = EEXIST;
-				goto err;
-			}
-		}
-	}
-
-	if (locked == 0)
-		MPOOL_SYSTEM_LOCK(dbenv);
-	locked = 1;
-
 	if (inmem) {
 		DB_ASSERT(dbenv, fullold != NULL);
 		hp += FNBUCKET(fullold, strlen(fullold));
+		if (!op_is_remove) {
+			bucket = FNBUCKET(newname, nlen);
+			nhp = R_ADDR(dbmp->reginfo, mp->ftab);
+			nhp += bucket;
+		}
 	} else
 		hp += FNBUCKET(fileid, DB_FILE_ID_LEN);
 
+	if (nhp != NULL && nhp < hp)
+		MUTEX_LOCK(dbenv, nhp->mtx_hash);
+	MUTEX_LOCK(dbenv, hp->mtx_hash);
+	if (nhp != NULL && nhp > hp)
+		MUTEX_LOCK(dbenv, nhp->mtx_hash);
+	locked = 1;
+
+	if (!op_is_remove && inmem) {
+		SH_TAILQ_FOREACH(mfp, &nhp->hash_bucket, q, __mpoolfile)
+			if (!mfp->deadfile &&
+			    mfp->no_backing_file && strcmp(newname,
+			    R_ADDR(dbmp->reginfo, mfp->path_off)) == 0)
+				break;
+		if (mfp != NULL) {
+			ret = EEXIST;
+			goto err;
+		}
+	}
+
 	/*
 	 * Find the file -- if mpool doesn't know about this file, that may
-	 * not be an error -- if the file is not a memory-only file and it
+	 * not be an error.
 	 */
-	MUTEX_LOCK(dbenv, hp->mtx_hash);
 	SH_TAILQ_FOREACH(mfp, &hp->hash_bucket, q, __mpoolfile) {
 		/* Ignore non-active files. */
 		if (mfp->deadfile || F_ISSET(mfp, MP_TEMP))
@@ -447,17 +521,21 @@ __memp_nameop(dbenv, fileid, newname, fullold, fullnew, inmem)
 
 		break;
 	}
-	MUTEX_UNLOCK(dbenv, hp->mtx_hash);
-	if (mfp == NULL)
+
+	if (mfp == NULL) {
+		if (inmem) {
+			ret = ENOENT;
+			goto err;
+		}
 		goto fsop;
+	}
 
 	if (op_is_remove) {
 		MUTEX_LOCK(dbenv, mfp->mutex);
 		/*
-		 * In-memory dbs have an artificially incremented
-		 * ref count so that they do not ever get reclaimed
-		 * as long as they exist.  Since we are now deleting
-		 * the database, we need to dec that count.
+		 * In-memory dbs have an artificially incremented ref count so
+		 * they do not get reclaimed as long as they exist.  Since we
+		 * are now deleting the database, we need to dec that count.
 		 */
 		if (mfp->no_backing_file)
 			mfp->mpf_cnt--;
@@ -465,31 +543,22 @@ __memp_nameop(dbenv, fileid, newname, fullold, fullnew, inmem)
 		MUTEX_UNLOCK(dbenv, mfp->mutex);
 	} else {
 		/*
-		 * Else, it's a rename.  We've allocated memory
-		 * for the new name.  Swap it with the old one.
+		 * Else, it's a rename.  We've allocated memory for the new
+		 * name.  Swap it with the old one.  If it's in memory we
+		 * need to move it the right bucket.
 		 */
 		p = R_ADDR(dbmp->reginfo, mfp->path_off);
 		mfp->path_off = newname_off;
 
-		/* If its in memory we need to move it the right bucket. */
-		if (inmem) {
+		if (inmem && hp != nhp) {
 			DB_ASSERT(dbenv, nhp != NULL);
-			MUTEX_LOCK(dbenv, hp->mtx_hash);
 			SH_TAILQ_REMOVE(&hp->hash_bucket, mfp, q, __mpoolfile);
-			MUTEX_UNLOCK(dbenv, hp->mtx_hash);
 			mfp->bucket = bucket;
-			MUTEX_LOCK(dbenv, nhp->mtx_hash);
 			SH_TAILQ_INSERT_TAIL(&nhp->hash_bucket, mfp, q);
-			MUTEX_UNLOCK(dbenv, nhp->mtx_hash);
 		}
 	}
 
-fsop:	if (mfp == NULL && inmem) {
-		ret = ENOENT;
-		goto err;
-	}
-
-	/*
+fsop:	/*
 	 * If this is a real file, then mfp could be NULL, because
 	 * mpool isn't turned on, and we still need to do the file ops.
 	 */
@@ -504,12 +573,14 @@ fsop:	if (mfp == NULL && inmem) {
 				ret = 0;
 		} else {
 			/*
-			 * Defensive only, fullname should never be
+			 * Defensive only, fullnew should never be
 			 * NULL.
 			 */
 			DB_ASSERT(dbenv, fullnew != NULL);
-			if (fullnew == NULL)
-				return (EINVAL);
+			if (fullnew == NULL) {
+				ret = EINVAL;
+				goto err;
+			}
 			ret = __os_rename(dbenv, fullold, fullnew, 1);
 		}
 	}
@@ -518,8 +589,12 @@ fsop:	if (mfp == NULL && inmem) {
 err:	if (p != NULL)
 		__memp_free(&dbmp->reginfo[0], NULL, p);
 
-	if (locked == 1)
-		MPOOL_SYSTEM_UNLOCK(dbenv);
+	/* If we have buckets locked, unlock them when done moving files. */
+	if (locked == 1) {
+		MUTEX_UNLOCK(dbenv, hp->mtx_hash);
+		if (nhp != NULL && nhp != hp)
+			MUTEX_UNLOCK(dbenv, nhp->mtx_hash);
+	}
 	return (ret);
 }
 

@@ -1,0 +1,69 @@
+m4_comment([$Id: products.so,v 10.20 2006/12/05 19:12:12 bostic Exp $])
+
+m4_ref_title(Introduction,
+    The m4_db products,
+    m4_db @products,
+    intro/where, am_conf/intro)
+
+m4_p([dnl
+Oracle licenses four different products that use the m4_db technology.
+Each product offers a distinct level of database support.  It is not
+possible to mix-and-match products, that is, each application or group
+of applications must use the same m4_db product.])
+
+m4_p([dnl
+All four products are included in the single Open Source distribution
+of m4_db from Oracle, and building that distribution automatically
+builds all four products.  Each product adds new interfaces and services
+to the product that precedes it in the list.  As a result, developers
+can download m4_db and build an application that does only single-user,
+read-only database access, and easily add support later for more users
+and more complex database access patterns.])
+
+m4_p([dnl
+Users who distribute m4_db must ensure that they are licensed for the
+m4_db interfaces they use.  Information on licensing is available from
+Oracle.])
+
+m4_section(m4_am)
+m4_p([dnl
+The m4_am product is an embeddable, high-performance data store.  It
+supports multiple concurrent threads of control (including multiple
+processes and multiple threads of control within a process) reading
+information managed by m4_db.  When updates are required, only a single
+thread of control may be using the database.  The m4_am does no locking,
+and so provides no guarantees of correct behavior if more than one
+thread of control is updating the database at a time.  The m4_am is
+intended for use in read-only applications or applications which can
+guarantee no more than one thread of control will ever update the
+database at a time.])
+
+m4_section(m4_cam)
+m4_p([dnl
+The m4_cam product adds multiple-reader, single writer capabilities to
+the m4_am product, supporting applications that need concurrent updates
+and do not want to implement their own locking protocols.  m4_cam is
+intended for applications that require occasional write access to a
+database that is largely used for reading.])
+
+m4_section(m4_tam)
+m4_p([dnl
+The m4_tam product adds full transactional support and recoverability
+to the m4_am product.  m4_tam is intended for applications that require
+industrial-strength database services, including excellent performance
+under high-concurrency workloads with a mixture of readers and writers,
+the ability to commit or roll back multiple changes to the database at
+a single instant, and the guarantee that even in the event of a
+catastrophic system or hardware failure, any committed database changes
+will be preserved.])
+
+m4_section(m4_ha)
+m4_p([dnl
+The m4_ha product support for data replication.  A single master system
+handles all updates, and distributes them to as many replicas as the
+application requires. All replicas can handle read requests during
+normal processing. If the master system fails for any reason, one of
+the replicas takes over as the new master system, and distributes
+updates to the remaining replicas.])
+
+m4_page_footer

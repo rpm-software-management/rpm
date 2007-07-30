@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: env_stat.c,v 12.36 2006/09/08 19:25:15 bostic Exp $
+ * $Id: env_stat.c,v 12.49 2007/05/17 17:17:59 bostic Exp $
  */
 
 #include "db_config.h"
@@ -20,7 +19,7 @@
 #ifdef HAVE_STATISTICS
 static int   __env_print_all __P((DB_ENV *, u_int32_t));
 static int   __env_print_stats __P((DB_ENV *, u_int32_t));
-static int   __env_print_threads __P((DB_ENV *));
+static int   __env_print_thread __P((DB_ENV *));
 static int   __env_stat_print __P((DB_ENV *, u_int32_t));
 static char *__env_thread_state_print __P((DB_THREAD_STATE));
 static const char *
@@ -76,14 +75,11 @@ __env_stat_print(dbenv, flags)
 	    (ret = __env_print_all(dbenv, flags)) != 0)
 		return (ret);
 
-	if ((ret = __env_print_threads(dbenv)) != 0)
+	if ((ret = __env_print_thread(dbenv)) != 0)
 		return (ret);
 
 	if (!LF_ISSET(DB_STAT_SUBSYSTEM))
 		return (0);
-
-	/* The subsystems don't know anything about DB_STAT_SUBSYSTEM. */
-	LF_CLR(DB_STAT_SUBSYSTEM);
 
 	if (LOGGING_ON(dbenv)) {
 		__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
@@ -119,11 +115,18 @@ __env_stat_print(dbenv, flags)
 			return (ret);
 	}
 
+#ifdef HAVE_MUTEX_SUPPORT
+	/*
+	 * Dump the mutexes last.  If DB_STAT_CLEAR is set this will
+	 * clear out the mutex counters and we want to see them in
+	 * the context of the other subsystems first.
+	 */
 	if (MUTEX_ON(dbenv)) {
 		__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 		if ((ret = __mutex_stat_print(dbenv, flags)) != 0)
 			return (ret);
 	}
+#endif
 
 	return (0);
 }
@@ -153,6 +156,13 @@ __env_print_stats(dbenv, flags)
 	STAT_LONG("Panic value", renv->panic);
 	__db_msg(dbenv, "%d.%d.%d\tEnvironment version",
 	    renv->majver, renv->minver, renv->patchver);
+	STAT_LONG("Btree version", DB_BTREEVERSION);
+	STAT_LONG("Hash version", DB_HASHVERSION);
+	STAT_LONG("Lock version", DB_LOCKVERSION);
+	STAT_LONG("Log version", DB_LOGVERSION);
+	STAT_LONG("Queue version", DB_QAMVERSION);
+	STAT_LONG("Sequence version", DB_SEQUENCE_VERSION);
+	STAT_LONG("Txn version", DB_TXNVERSION);
 	__db_msg(dbenv,
 	    "%.24s\tCreation time", __db_ctime(&renv->timestamp, time_buf));
 	STAT_HEX("Environment ID", renv->envid);
@@ -177,13 +187,12 @@ __env_print_all(dbenv, flags)
 		{ DB_ENV_AUTO_COMMIT,		"DB_ENV_AUTO_COMMIT" },
 		{ DB_ENV_CDB,			"DB_ENV_CDB" },
 		{ DB_ENV_CDB_ALLDB,		"DB_ENV_CDB_ALLDB" },
-		{ DB_ENV_CREATE,		"DB_ENV_CREATE" },
 		{ DB_ENV_DBLOCAL,		"DB_ENV_DBLOCAL" },
 		{ DB_ENV_DIRECT_DB,		"DB_ENV_DIRECT_DB" },
 		{ DB_ENV_DIRECT_LOG,		"DB_ENV_DIRECT_LOG" },
 		{ DB_ENV_DSYNC_DB,		"DB_ENV_DSYNC_DB" },
 		{ DB_ENV_DSYNC_LOG,		"DB_ENV_DSYNC_LOG" },
-		{ DB_ENV_FATAL,			"DB_ENV_FATAL" },
+		{ DB_ENV_RECOVER_FATAL,		"DB_ENV_RECOVER_FATAL" },
 		{ DB_ENV_LOCKDOWN,		"DB_ENV_LOCKDOWN" },
 		{ DB_ENV_LOG_AUTOREMOVE,	"DB_ENV_LOG_AUTOREMOVE" },
 		{ DB_ENV_LOG_INMEMORY,		"DB_ENV_LOG_INMEMORY" },
@@ -200,6 +209,7 @@ __env_print_all(dbenv, flags)
 		{ DB_ENV_THREAD,		"DB_ENV_THREAD" },
 		{ DB_ENV_TIME_NOTGRANTED,	"DB_ENV_TIME_NOTGRANTED" },
 		{ DB_ENV_TXN_NOSYNC,		"DB_ENV_TXN_NOSYNC" },
+		{ DB_ENV_TXN_NOWAIT,		"DB_ENV_TXN_NOWAIT" },
 		{ DB_ENV_TXN_WRITE_NOSYNC,	"DB_ENV_TXN_WRITE_NOSYNC" },
 		{ DB_ENV_YIELDCPU,		"DB_ENV_YIELDCPU" },
 		{ 0,				NULL }
@@ -229,6 +239,8 @@ __env_print_all(dbenv, flags)
 	};
 	static const FN vfn[] = {
 		{ DB_VERB_DEADLOCK,		"DB_VERB_DEADLOCK" },
+		{ DB_VERB_FILEOPS,		"DB_VERB_FILEOPS" },
+		{ DB_VERB_FILEOPS_ALL,		"DB_VERB_FILEOPS_ALL" },
 		{ DB_VERB_RECOVERY,		"DB_VERB_RECOVERY" },
 		{ DB_VERB_REGISTER,		"DB_VERB_REGISTER" },
 		{ DB_VERB_REPLICATION,		"DB_VERB_REPLICATION" },
@@ -311,6 +323,8 @@ __env_print_all(dbenv, flags)
 	STAT_LONG("DB reference count", dbenv->db_ref);
 	STAT_LONG("Shared memory key", dbenv->shm_key);
 	__mutex_print_debug_single(
+	    dbenv, "DB_ENV handle mutex", dbenv->mtx_env, flags);
+	__mutex_print_debug_single(
 	    dbenv, "DB handle mutex", dbenv->mtx_dblist, flags);
 
 	STAT_ISSET("api1 internal", dbenv->api1_internal);
@@ -338,23 +352,38 @@ __env_thread_state_print(state)
 	default:
 		return ("unknown");
 	}
+	/* NOTREACHED */
 }
 
 /*
- * __env_print_threads --
- *	Display the current active threads
- *
+ * __env_print_thread --
+ *	Display the thread block state.
  */
 static int
-__env_print_threads(dbenv)
+__env_print_thread(dbenv)
 	DB_ENV *dbenv;
 {
 	DB_HASHTAB *htab;
 	DB_THREAD_INFO *ip;
+	REGENV *renv;
+	REGINFO *infop;
+	THREAD_INFO *thread;
 	u_int32_t i;
 	char buf[DB_THREADID_STRLEN];
 
-	htab = (DB_HASHTAB *)dbenv->thr_hashtab;
+	/* The thread table may not be configured. */
+	if ((htab = (DB_HASHTAB *)dbenv->thr_hashtab) == NULL)
+		return (0);
+
+	/* Dump out the info we have on thread tracking. */
+	infop = dbenv->reginfo;
+	renv = infop->primary;
+	thread = R_ADDR(infop, renv->thread_off);
+	STAT_ULONG("Thread blocks allocated", thread->thr_count);
+	STAT_ULONG("Thread allocation threshold", thread->thr_max);
+	STAT_ULONG("Thread hash buckets", thread->thr_nbucket);
+
+	/* Dump out the info we have on active threads. */
 	__db_msg(dbenv, "Thread status blocks:");
 	for (i = 0; i < dbenv->thr_nbucket; i++)
 		SH_TAILQ_FOREACH(ip, &htab[i], dbth_links, __db_thread_info) {
@@ -553,13 +582,15 @@ __db_dlbytes(dbenv, msg, gbytes, mbytes, bytes)
  * __db_print_reginfo --
  *	Print out underlying shared region information.
  *
- * PUBLIC: void __db_print_reginfo __P((DB_ENV *, REGINFO *, const char *));
+ * PUBLIC: void __db_print_reginfo
+ * PUBLIC:     __P((DB_ENV *, REGINFO *, const char *, u_int32_t));
  */
 void
-__db_print_reginfo(dbenv, infop, s)
+__db_print_reginfo(dbenv, infop, s, flags)
 	DB_ENV *dbenv;
 	REGINFO *infop;
 	const char *s;
+	u_int32_t flags;
 {
 	static const FN fn[] = {
 		{ REGION_CREATE,	"REGION_CREATE" },
@@ -578,6 +609,7 @@ __db_print_reginfo(dbenv, infop, s)
 	STAT_POINTER("Region primary address", infop->primary);
 	STAT_ULONG("Region maximum allocation", infop->max_alloc);
 	STAT_ULONG("Region allocated", infop->allocated);
+	__env_alloc_print(infop, flags);
 
 	__db_prflags(dbenv, NULL, infop->flags, fn, NULL, "\tRegion flags");
 }

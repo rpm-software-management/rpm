@@ -1,0 +1,22 @@
+m4_comment([$Id: h_ffactor.so,v 10.12 2001/04/18 13:44:53 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Page fill factor,
+    page @fill factor,
+    am_conf/bt_recnum, am_conf/h_hash)
+
+m4_p([dnl
+The density, or page fill factor, is an approximation of the number of
+keys allowed to accumulate in any one bucket, determining when the hash
+table grows or shrinks.  If you know the average sizes of the keys and
+data in your data set, setting the fill factor can enhance performance.
+A reasonable rule to use to compute fill factor is:])
+
+m4_indent([(pagesize - 32) / (average_key_size + average_data_size + 8)])
+
+m4_p([dnl
+The desired density within the hash table can be specified by calling
+the m4_refT(dbh_set_h_ffactor).  If no density is specified, one will
+be selected dynamically as pages are filled.])
+
+m4_page_footer

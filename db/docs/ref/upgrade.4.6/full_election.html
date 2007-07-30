@@ -1,0 +1,29 @@
+<!--$Id: full_election.so,v 1.3 2007/05/04 12:37:15 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.6: DB_REP_FULL_ELECTION</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.6/event.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/verbose.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.6: DB_REP_FULL_ELECTION</h3>
+<p>The DB_REP_FULL_ELECTION flag historically specified to the
+<a href="../../api_c/repmgr_start.html">DB_ENV-&gt;repmgr_start</a> method has been removed from the 4.6 release.</p>
+<p>In the Berkeley DB 4.6 release, a simpler and more flexible implementation of
+this functionality is available.  Applications needing to configure the
+first election of a replication group differently from subsequent
+elections should use the <a href="../../api_c/rep_timeout.html#DB_REP_FULL_ELECTION_TIMEOUT">DB_REP_FULL_ELECTION_TIMEOUT</a> flag to
+the <a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a> method to specify a different timeout for the
+first election.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.6/event.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/verbose.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

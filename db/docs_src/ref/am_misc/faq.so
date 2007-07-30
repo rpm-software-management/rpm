@@ -1,0 +1,158 @@
+m4_comment([$Id: faq.so,v 10.26 2005/10/20 16:10:15 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Access method FAQ, @access method FAQ, am_misc/tune, java/conf)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([Is a m4_db database the same as a "table"?])
+
+m4_p([dnl
+Yes; "tables" are databases, "rows" are key/data pairs, and "columns"
+are application-encapsulated fields within a data item (to which m4_db
+does not directly provide access).])])
+
+m4_nlist([dnl
+m4_bold([I'm getting an error return in my application, but I can't
+figure out what the library is complaining about.])
+
+m4_p([dnl
+See m4_ref(dbenv_set_errcall), m4_ref(dbenv_set_errfile) and
+m4_ref(dbh_set_errfile) for ways to get additional information about
+error returns from m4_db.])])
+
+m4_nlist([dnl
+m4_bold([Are m4_db databases portable between architectures?])
+
+m4_p([dnl
+Yes.  See m4_link(M4RELDIR/ref/am_conf/byteorder, [Selecting a byte
+order]) for more information.])])
+
+m4_nlist([dnl
+m4_bold([I'm seeing database corruption when creating multiple databases
+in a single physical file.])
+
+m4_p([dnl
+This problem is usually the result of m4_ref(Db) handles not sharing an
+underlying database environment.  See m4_link(M4RELDIR/ref/am/opensub,
+[Opening multiple databases in a single file]) for more information.])])
+
+m4_nlist([dnl
+m4_bold([I'm using integers as keys for a Btree database, and even
+though the key/data pairs are entered in sorted order, the page-fill
+factor is low.])
+
+m4_p([dnl
+This is usually the result of using integer keys on little-endian
+architectures such as the x86.  m4_db sorts keys as byte strings, and
+little-endian integers don't sort well when viewed as byte strings.
+For example, take the numbers 254 through 257.  Their byte patterns on
+a little-endian system are:])
+
+m4_indent([dnl
+254	fe 0 0 0
+255	ff 0 0 0
+256	 0 1 0 0
+257	 1 1 0 0])
+
+m4_p([dnl
+If you treat them as strings, then they sort badly:])
+
+m4_indent([dnl
+256
+257
+254
+255])
+
+m4_p([dnl
+On a big-endian system, their byte patterns are:])
+
+m4_indent([dnl
+254	0 0 0 fe
+255	0 0 0 ff
+256	0 0 1 0
+257	0 0 1 1])
+
+m4_p([dnl
+and so, if you treat them as strings they sort nicely.  Which means, if
+you use steadily increasing integers as keys on a big-endian system
+m4_db behaves well and you get compact trees, but on a little-endian
+system m4_db produces much less compact trees.  To avoid this problem,
+you may want to convert the keys to flat text or big-endian
+representations, or provide your own
+m4_link(M4RELDIR/ref/am_conf/bt_compare, [Btree comparison function.])])])
+
+m4_idefz(double buffering)
+m4_nlist([dnl
+m4_bold([Is there any way to avoid double buffering in the m4_db system?])
+
+m4_p([dnl
+While you cannot avoid double buffering entirely, there are a few things
+you can do to address this issue:])
+m4_p([dnl
+First, the m4_db cache size can be explicitly set.  Rather than allocate
+additional space in the m4_db cache to cover unexpectedly heavy load or
+large table sizes, double buffering may suggest you size the cache to
+function well under normal conditions, and then depend on the file
+buffer cache to cover abnormal conditions.  Obviously, this is a
+trade-off, as m4_db may not then perform as well as usual under abnormal
+conditions.])
+m4_p([dnl
+Second, depending on the underlying operating system you're using, you
+may be able to alter the amount of physical memory devoted to the
+system's file buffer cache.  Altering this type of resource
+configuration may require appropriate privileges, or even operating
+system reboots and/or rebuilds, on some systems.])
+
+m4_p([dnl
+Third, changing the size of the m4_db environment regions can change
+the amount of space the operating system makes available for the file
+buffer cache, and it's often worth considering exactly how the operating
+system is dividing up its available memory.  Further, moving the m4_db
+database environment regions from filesystem backed memory into system
+memory (or heap memory), can often make additional system memory
+available for the file buffer cache, especially on systems without a
+unified buffer cache and VM system.])
+m4_p([dnl
+Finally, for operating systems that allow buffering to be turned off,
+specifying the m4_ref(DB_DIRECT_DB) and m4_ref(DB_DIRECT_LOG) flags
+will attempt to do so.])])
+
+m4_nlist([dnl
+m4_bold([I'm seeing database corruption when I run out of disk space.])
+
+m4_p([dnl
+m4_db can continue to run when when out-of-disk-space errors occur, but
+it requires the application to be transaction protected.  Applications
+which do not enclose update operations in transactions cannot recover
+from out-of-disk-space errors, and the result of running out of disk
+space may be database corruption.])])
+
+m4_nlist([dnl
+m4_bold([How can I associate application information with a m4_ref(Db)
+or m4_ref(DbEnv) handle?])
+
+m4_p([dnl
+In the C API, the m4_ref(Db) and m4_ref(DbEnv) structures each contain
+an "app_private" field intended to be used to reference
+application-specific information.  See the m4_ref(dbh_create) and
+m4_ref(dbenv_create) documentation for more information.])
+
+m4_p([dnl
+In the C++ or Java APIs, the easiest way to associate
+application-specific data with a handle is to subclass the m4_refcxx(Db)
+or m4_refcxx(DbEnv), for example subclassing m4_refcxx(Db) to get MyDb.
+Objects of type MyDb will still have the m4_db API methods available on
+them, and you can put any extra data or methods you want into the MyDb
+class.  If you are using "callback" APIs that take m4_refcxx(Db) or
+m4_refcxx(DbEnv) arguments (for example, m4_refcxx(dbh_set_bt_compare))
+these will always be called with the m4_refcxx(Db) or m4_refcxx(DbEnv)
+objects you create.  So if you always use MyDb objects, you will be able
+to take the first argument to the callback function and cast it to a
+MyDb (in C++, cast it to (MyDb*)).  That will allow you to access your
+data members or methods.])])
+
+m4_nlistend
+
+m4_page_footer

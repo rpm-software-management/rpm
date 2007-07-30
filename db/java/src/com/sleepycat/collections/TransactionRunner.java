@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: TransactionRunner.java,v 12.6 2006/09/08 20:32:13 bostic Exp $
+ * $Id: TransactionRunner.java,v 12.8 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;
@@ -77,7 +76,6 @@ public class TransactionRunner {
     /** The default maximum number of retries. */
     public static final int DEFAULT_MAX_RETRIES = 10;
 
-    private Environment env;
     private CurrentTransaction currentTxn;
     private int maxRetries;
     private TransactionConfig config;
@@ -109,10 +107,10 @@ public class TransactionRunner {
      * configuration.  The configuration object is not cloned, and
      * any modifications to it will impact subsequent transactions.
      */
-    public TransactionRunner(Environment env, int maxRetries,
+    public TransactionRunner(Environment env,
+			     int maxRetries,
                              TransactionConfig config) {
 
-        this.env = env;
         this.currentTxn = CurrentTransaction.getInstance(env);
         this.maxRetries = maxRetries;
         this.config = config;
@@ -172,7 +170,7 @@ public class TransactionRunner {
     /**
      * Returns the transaction configuration used for calling
      * {@link Environment#beginTransaction}.
-     *
+     * 
      * <p>If this property is null, the default configuration is used.  The
      * configuration object is not cloned, and any modifications to it will
      * impact subsequent transactions.</p>
@@ -187,7 +185,7 @@ public class TransactionRunner {
     /**
      * Changes the transaction configuration used for calling
      * {@link Environment#beginTransaction}.
-     *
+     * 
      * <p>If this property is null, the default configuration is used.  The
      * configuration object is not cloned, and any modifications to it will
      * impact subsequent transactions.</p>
@@ -245,7 +243,9 @@ public class TransactionRunner {
                              * wraps both e and e2, to give the user a complete
                              * set of error information.
                              */
-                            e2.printStackTrace();
+			    if (DbCompat.TRANSACTION_RUNNER_PRINT_STACK_TRACES) {
+				e2.printStackTrace();
+			    }
                             /* Force the original exception to be thrown. */
                             i = maxRetries + 1;
                         }

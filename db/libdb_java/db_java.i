@@ -71,6 +71,7 @@ import java.util.Comparator;
 	private ReplicationTransport rep_transport_handler;
 	private java.io.OutputStream error_stream;
 	private java.io.OutputStream message_stream;
+	private ThreadLocal errMsg;
 
 	public static class RepProcessMessage {
 		public int envid;
@@ -82,6 +83,7 @@ import java.util.Comparator;
 	 */
 	void initialize() {
 		dbenv_ref = db_java.initDbEnvRef0(this, this);
+		errMsg = new ThreadLocal();
 		/* Start with System.err as the default error stream. */
 		set_error_stream(System.err);
 		set_message_stream(System.out);
@@ -102,8 +104,8 @@ import java.util.Comparator;
 	}
 
 	private final int handle_app_dispatch(DatabaseEntry dbt,
-	                                      LogSequenceNumber lsn,
-	                                      int recops) {
+					      LogSequenceNumber lsn,
+					      int recops) {
 		return app_dispatch_handler.handleLogRecord(wrapper, dbt, lsn,
 		    RecoveryOperation.fromFlag(recops));
 	}
@@ -112,8 +114,36 @@ import java.util.Comparator;
 		return app_dispatch_handler;
 	}
 
-	private final int handle_event_notify(int event) {
-		return event_notify_handler.handleEvent(EventType.fromInt(event));
+	private final void handle_panic_event_notify() {
+		event_notify_handler.handlePanicEvent();
+	}
+
+	private final void handle_rep_client_event_notify() {
+		event_notify_handler.handleRepClientEvent();
+	}
+
+	private final void handle_rep_elected_event_notify() {
+		event_notify_handler.handleRepElectedEvent();
+	}
+
+	private final void handle_rep_master_event_notify() {
+		event_notify_handler.handleRepMasterEvent();
+	}
+
+	private final void handle_rep_new_master_event_notify(int envid) {
+		event_notify_handler.handleRepNewMasterEvent(envid);
+	}
+
+	private final void handle_rep_perm_failed_event_notify() {
+		event_notify_handler.handleRepPermFailedEvent();
+	}
+
+	private final void handle_rep_startup_done_event_notify() {
+		event_notify_handler.handleRepStartupDoneEvent();
+	}
+
+	private final void handle_write_failed_event_notify(int errno) {
+		event_notify_handler.handleWriteFailedEvent(errno);
 	}
 
 	public EventHandler get_event_notify() {
@@ -139,7 +169,27 @@ import java.util.Comparator;
 	}
 
 	private final void handle_error(String msg) {
+		StringBuffer tbuf = (StringBuffer) errMsg.get();
+		/*
+		 * Populate the errMsg ThreadLocal on demand, since the
+		 * callback can be made from different threads.
+		 */
+		if (tbuf == null) {
+			tbuf = new StringBuffer();
+			errMsg.set(tbuf);
+		}
+		tbuf.append(msg);
 		error_handler.error(wrapper, this.errpfx, msg);
+	}
+
+	private final String get_err_msg(String orig_msg) {
+		String ret = null;
+		StringBuffer tbuf = (StringBuffer) errMsg.get();
+		if (tbuf != null) {
+			ret = tbuf.toString();
+			tbuf.delete(0, tbuf.length());
+		}
+		return orig_msg + ": " + ret;
 	}
 
 	public ErrorHandler get_errcall() {
@@ -163,20 +213,20 @@ import java.util.Comparator;
 	}
 
 	private final int handle_rep_transport(DatabaseEntry control,
-	                                       DatabaseEntry rec,
-	                                       LogSequenceNumber lsn,
-	                                       int envid, int flags)
+					       DatabaseEntry rec,
+					       LogSequenceNumber lsn,
+					       int envid, int flags)
 	    throws DatabaseException {
 		return rep_transport_handler.send(wrapper,
 		    control, rec, lsn, envid,
 		    (flags & DbConstants.DB_REP_NOBUFFER) != 0,
-                    (flags & DbConstants.DB_REP_PERMANENT) != 0,
-                    (flags & DbConstants.DB_REP_ANYWHERE) != 0,
-                    (flags & DbConstants.DB_REP_REREQUEST) != 0);
+		    (flags & DbConstants.DB_REP_PERMANENT) != 0,
+		    (flags & DbConstants.DB_REP_ANYWHERE) != 0,
+		    (flags & DbConstants.DB_REP_REREQUEST) != 0);
 	}
 
 	public void lock_vec(/*u_int32_t*/ int locker, int flags,
-	                     LockRequest[] list, int offset, int count)
+			     LockRequest[] list, int offset, int count)
 	    throws DatabaseException {
 		db_javaJNI.DbEnv_lock_vec(swigCPtr, locker, flags, list,
 		    offset, count);
@@ -208,7 +258,6 @@ import java.util.Comparator;
 	public java.io.OutputStream get_error_stream() {
 		return error_stream;
 	}
-
 
 	public void set_message_stream(java.io.OutputStream stream) {
 		message_stream = stream;
@@ -248,8 +297,10 @@ import java.util.Comparator;
 	private BtreePrefixCalculator bt_prefix_handler;
 	private Comparator dup_compare_handler;
 	private FeedbackHandler db_feedback_handler;
+	private Comparator h_compare_handler;
 	private Hasher h_hash_handler;
 	private SecondaryKeyCreator seckey_create_handler;
+	private SecondaryMultiKeyCreator secmultikey_create_handler;
 
 	/* Called by the Db constructor */
 	private void initialize(DbEnv dbenv) {
@@ -305,7 +356,7 @@ import java.util.Comparator;
 	}
 
 	private final int handle_bt_prefix(DatabaseEntry dbt1,
-	                                   DatabaseEntry dbt2) {
+					   DatabaseEntry dbt2) {
 		return bt_prefix_handler.prefix(wrapper, dbt1, dbt2);
 	}
 
@@ -325,6 +376,14 @@ import java.util.Comparator;
 		return db_feedback_handler;
 	}
 
+	private final int handle_h_compare(byte[] arr1, byte[] arr2) {
+		return h_compare_handler.compare(arr1, arr2);
+	}
+
+	public Comparator get_h_compare() {
+		return h_compare_handler;
+	}
+
 	private final int handle_dup_compare(byte[] arr1, byte[] arr2) {
 		return dup_compare_handler.compare(arr1, arr2);
 	}
@@ -341,17 +400,41 @@ import java.util.Comparator;
 		return h_hash_handler;
 	}
 
-	private final int handle_seckey_create(DatabaseEntry key,
-	                                       DatabaseEntry data,
-	                                       DatabaseEntry result)
+	private final DatabaseEntry[] handle_seckey_create(
+					       DatabaseEntry key,
+					       DatabaseEntry data)
 	    throws DatabaseException {
-		return seckey_create_handler.createSecondaryKey(
-		    (SecondaryDatabase)wrapper, key, data, result) ?
-			0 : DbConstants.DB_DONOTINDEX;
+
+		if (secmultikey_create_handler != null) {
+			java.util.HashSet keySet = new java.util.HashSet();
+			secmultikey_create_handler.createSecondaryKeys(
+			    (SecondaryDatabase)wrapper, key, data, keySet);
+			if (!keySet.isEmpty())
+				return (DatabaseEntry[])keySet.toArray(
+				    new DatabaseEntry[keySet.size()]);
+		} else {
+			DatabaseEntry result = new DatabaseEntry();
+			if (seckey_create_handler.createSecondaryKey(
+			    (SecondaryDatabase)wrapper, key, data, result)) {
+				DatabaseEntry[] results = { result };
+				return results;
+			}
+		}
+
+		return null;
 	}
 
 	public SecondaryKeyCreator get_seckey_create() {
 		return seckey_create_handler;
+	}
+
+	public SecondaryMultiKeyCreator get_secmultikey_create() {
+		return secmultikey_create_handler;
+	}
+
+	public void get_secmultikey_create(
+	    SecondaryMultiKeyCreator secmultikey_create_handler) {
+		this.secmultikey_create_handler = secmultikey_create_handler;
 	}
 
 	public synchronized void remove(String file, String database, int flags)

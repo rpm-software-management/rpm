@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: CurrentTransaction.java,v 12.7 2006/09/08 20:32:13 bostic Exp $
+ * $Id: CurrentTransaction.java,v 12.9 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -72,10 +72,14 @@ public class CurrentTransaction {
      */
     static CurrentTransaction getInstanceInternal(Environment env) {
         synchronized (envMap) {
-            CurrentTransaction myEnv = (CurrentTransaction) envMap.get(env);
+            CurrentTransaction myEnv = null;
+            WeakReference myEnvRef = (WeakReference) envMap.get(env);
+            if (myEnvRef != null) {
+                myEnv = (CurrentTransaction) myEnvRef.get();
+            }
             if (myEnv == null) {
                 myEnv = new CurrentTransaction(env);
-                envMap.put(env, myEnv);
+                envMap.put(env, new WeakReference(myEnv));
             }
             return myEnv;
         }
@@ -156,8 +160,8 @@ public class CurrentTransaction {
 
     /**
      * Returns whether auto-commit may be performed by the collections API.
-     * True is returned no collections API transaction is currently active, and
-     * no XA transaction is currently active.
+     * True is returned if no collections API transaction is currently active,
+     * and no XA transaction is currently active.
      */
     boolean isAutoCommitAllowed()
 	throws DatabaseException {
@@ -330,7 +334,7 @@ public class CurrentTransaction {
             CursorConfig cdbConfig;
             if (writeCursor) {
                 if (cdbCursors.readCursors.size() > 0) {
-
+                    
                     /*
                      * Although CDB allows opening a write cursor when a read
                      * cursor is open, a self-deadlock will occur if a write is

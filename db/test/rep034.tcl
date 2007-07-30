@@ -1,19 +1,19 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep034.tcl,v 12.13 2006/09/08 20:32:18 bostic Exp $
+# $Id: rep034.tcl,v 12.22 2007/06/21 16:32:24 alanb Exp $
 #
 # TEST	rep034
-# TEST	Test of client startup synchronization.
+# TEST	Test of STARTUPDONE notification.
 # TEST
-# TEST	One master, two clients.
-# TEST	Run rep_test.
-# TEST	Close one client and change master to other client.
-# TEST	Reopen closed client - enter startup.
-# TEST	Run rep_test and we should see live messages and startup complete.
-# TEST	Run the test with/without client-to-client synchronization.
+# TEST	STARTUPDONE can now be recognized without the need for new "live" log
+# TEST  records from the master (under favorable conditions).  The response to
+# TEST  the ALL_REQ at the end of synchronization includes an end-of-log marker
+# TEST  that now triggers it.  However, the message containing that end marker
+# TEST  could get lost, so live log records still serve as a back-up mechanism.
+# TEST  The end marker may also be set under c2c sync, but only if the serving
+# TEST  client has itself achieved STARTUPDONE.
 #
 proc rep034 { method { niter 2 } { tnum "034" } args } {
 
@@ -30,40 +30,31 @@ proc rep034 { method { niter 2 } { tnum "034" } args } {
 
 	set args [convert_args $method $args]
 	set logsets [create_logsets 3]
-
-	# Run the body of the test with and without recovery.
-	#
-	# Test a couple sets of options.  Getting 'startup' from the stat
-	# or return value is unrelated to servicing requests from anywhere
-	# or from the master.  List them together to make the test shorter.
-	# We don't need to test every combination.
-	#
-	set opts { {stat anywhere} {ret from_master} }
-	foreach r $test_recopts {
-		foreach l $logsets {
-			set logindex [lsearch -exact $l "in-memory"]
-			if { $r == "-recover" && $logindex != -1 } {
-				puts "Rep$tnum: Skipping\
-				    for in-memory logs with -recover."
-				continue
-			}
-			foreach s $opts {
-				puts "Rep$tnum ($method $r $s $args):\
-				    Test of startup synchronization detection."
-				puts "Rep$tnum: Master logs are [lindex $l 0]"
-				puts "Rep$tnum: Client 0 logs are [lindex $l 1]"
-				puts "Rep$tnum: Client 1 logs are [lindex $l 2]"
-				rep034_sub $method $niter $tnum $l $r $s $args
-			}
-		}
+	foreach l $logsets {
+		puts "Rep$tnum ($method $args):\
+		    Test of startup synchronization detection."
+		puts "Rep$tnum: Master logs are [lindex $l 0]"
+		puts "Rep$tnum: Client 0 logs are [lindex $l 1]"
+		puts "Rep$tnum: Client 1 logs are [lindex $l 2]"
+		rep034_sub $method $niter $tnum $l $args
 	}
 }
 
-proc rep034_sub { method niter tnum logset recargs opts largs } {
+# This test manages on its own the decision of whether or not to open an
+# environment with recovery.  (It varies throughout the test.)  Therefore there
+# is no need to run it twice (as we often do with a loop in the main proc).
+# 
+proc rep034_sub { method niter tnum logset largs } {
 	global anywhere
 	global testdir
-	global util_path
 	global startup_done
+	global rep_verbose
+	global rep034_got_allreq
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -90,158 +81,243 @@ proc rep034_sub { method niter tnum logset recargs opts largs } {
 	set c_txnargs [adjust_txnargs $c_logtype]
 	set c2_txnargs [adjust_txnargs $c2_logtype]
 
-	set stup [lindex $opts 0]
-	set anyopt [lindex $opts 1]
-        if { $anyopt == "anywhere" } {
-		set anywhere 1
-	} else {
-		set anywhere 0
-	}
+	# In first part of test master serves requests.
+	# 
+	set anywhere 0
 
-	# Open a master.
+	# Create a master; add some data.
+	# 
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $m_logargs \
-	    -event rep_startup_event \
-	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $m_logargs \
-#	    -verbose {rep on} -errpfx MASTER \
-#	    -event rep_startup_event \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
-	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
+	    -event rep_event $verbargs -errpfx MASTER \
+	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
+	set masterenv [eval $ma_envcmd]
+	puts "\tRep$tnum.a: Create master; add some data."
+	eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
 
-	# Open a client
+	# Bring up a new client, and see that it can get STARTUPDONE with no new
+	# live transactions at the master.
+	# 
+	puts "\tRep$tnum.b: Bring up client; check STARTUPDONE."
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $c_logargs \
-	    -event rep_startup_event \
-	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $c_logargs \
-#	    -event rep_startup_event \
-#	    -verbose {rep on} -errpfx CLIENT \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
-	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
-
-	# Open a client
-	repladd 3
-	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs $c2_logargs \
-	    -event rep_startup_event \
-	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
-#	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs $c2_logargs \
-#	    -event rep_startup_event \
-#	    -verbose {rep on} -errpfx CLIENT2 \
-#	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
-	set client2env [eval $cl2_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $client2env] TRUE
-
-	# Bring the clients online by processing the startup messages.
-	set envlist "{$masterenv 1} {$clientenv 2} {$client2env 3}"
+	    -event rep_event $verbargs -errpfx CLIENT \
+	    -home $clientdir -rep_client -rep_transport \[list 2 replsend\]"
+	set clientenv [eval $cl_envcmd]
+	set envlist "{$masterenv 1} {$clientenv 2}"
+	set startup_done 0
 	process_msgs $envlist
 
-	# Run rep_test in the master (and update client).
-	puts "\tRep$tnum.a: Running rep_test in replicated env."
+	error_check_good done_without_live_txns \
+	    [stat_field $clientenv rep_stat "Startup complete"] 1
+
+	# Test that the event got fired as well.  In the rest of the test things
+	# get a little complex (what with having two clients), so only check the
+	# event part here.  The important point is the various ways that
+	# STARTUPDONE can be computed, so testing the event firing mechanism
+	# just this once is enough.
+	#
+	error_check_good done_event_too $startup_done 1
+
+	#
+	# Bring up another client.  Do additional new txns at master, ensure
+	# that STARTUPDONE is not triggered at NEWMASTER LSN.
+	# 
+	puts "\tRep$tnum.c: Another client; no STARTUPDONE at NEWMASTER LSN."
+	set newmaster_lsn [stat_field $masterenv rep_stat "Next LSN expected"]
+	repladd 3
+	#
+	# !!! Please note that we're giving client2 a special customized version
+	# of the replication transport call-back function.
+	#
+	set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs $c2_logargs \
+	    -event rep_event $verbargs -errpfx CLIENT2 \
+	    -home $clientdir2 -rep_client -rep_transport \[list 3 rep034_send\]"
+	set client2env [eval $cl2_envcmd]
+
+	set envlist "{$masterenv 1} {$clientenv 2} {$client2env 3}"
+	set verified false
+	for {set i 0} {$i < 10} {incr i} {
+		proc_msgs_once $envlist
+		set client2lsn \
+		    [stat_field $client2env rep_stat "Next LSN expected"]
+
+		# Get to the point where we've gone past where the master's LSN
+		# was at NEWMASTER time, and make sure we haven't yet gotten
+		# STARTUPDONE.  Ten loop iterations should be plenty.
+		# 
+		if {[$client2env log_compare $client2lsn $newmaster_lsn] > 0} {
+			if {![stat_field \
+			    $client2env rep_stat "Startup complete"]} {
+				set verified true
+			}
+			break;
+		}
+		eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
+	}
+	error_check_good no_newmaster_trigger $verified true
+
+	process_msgs $envlist
+	error_check_good done_during_live_txns \
+	    [stat_field $client2env rep_stat "Startup complete"] 1
+
+	#
+	# From here on out we use client-to-client sync.
+	# 
+	set anywhere 1
+
+	# Here we rely on recovery at client 1.  If that client is running with
+	# in-memory logs, forgo the remainder of the test.
+	#
+	if {$c_logtype eq "in-mem"} {
+		puts "\tRep$tnum.d: Skip rest of test for in-memory logging."
+		$masterenv close
+		$clientenv close
+		$client2env close
+		replclose $testdir/MSGQUEUEDIR
+		return
+	}
+
+	# Shut down client 1.  Bring it back, with recovery.  Verify that it can
+	# get STARTUPDONE by syncing to other client, even with no new master
+	# txns.
+	# 
+	puts "\tRep$tnum.d: Verify STARTUPDONE using c2c sync."
+	$clientenv close
+	set clientenv [eval $cl_envcmd -recover]
+	set envlist "{$masterenv 1} {$clientenv 2} {$client2env 3}"
+
+	# Clear counters at client2, so that we can check "Client service
+	# requests" in a moment.
+	# 
+	$client2env rep_stat -clear
+	process_msgs $envlist
+	error_check_good done_via_c2c \
+	    [stat_field $clientenv rep_stat "Startup complete"] 1
+	#
+	# Make sure our request was served by client2.  This isn't a test of c2c
+	# sync per se, but if this fails it indicates that we're not really
+	# testing what we thought we were testing.
+	# 
+	error_check_bad c2c_served_by_master \
+	    [stat_field $client2env rep_stat "Client service requests"] 0
+
+	# Verify that we don't get STARTUPDONE if we are using c2c sync to
+	# another client, and the serving client has not itself reached
+	# STARTUPDONE, because that suggests that the serving client could be
+	# way far behind.   But that we can still eventually get STARTUPDONE, as
+	# a fall-back, once the master starts generating new txns again.
+	#
+	# To do so, we'll need to restart both clients.  Start with the client
+	# that will serve the request.  Turn off "anywhere" process for a moment
+	# so that we can get this client set up without having the other one
+	# running.
+	#
+	# Now it's client 2 that needs recovery.  Forgo the rest of the test if
+	# it is logging in memory.  (We could get this far in mixed mode, with
+	# client 1 logging on disk.)
+	# 
+	if {$c2_logtype eq "in-mem"} {
+		puts "\tRep$tnum.e: Skip rest of test for in-memory logging."
+		$masterenv close
+		$clientenv close
+		$client2env close
+		replclose $testdir/MSGQUEUEDIR
+		return
+	}
+	puts "\tRep$tnum.e: Check no STARTUPDONE when c2c server is behind."
+	$clientenv close
+	$client2env close
+	
+	set anywhere 0
+	set client2env [eval $cl2_envcmd -recover]
+	set envlist "{$masterenv 1} {$client2env 3}"
+	
+	# We want client2 to get partway through initialization, but once it
+	# sends the ALL_REQ to the master, we want to cut things off there.
+	# Recall that we gave client2 a special "wrapper" version of the
+	# replication transport call-back function: that function will set a
+	# flag when it sees an ALL_REQ message go by.
+	# 
+	set rep034_got_allreq false
+	while { !$rep034_got_allreq } {
+		proc_msgs_once $envlist
+	}
+
+	#
+	# To make sure we're doing a valid test, verify that we really did
+	# succeed in getting the serving client into the state we intended.
+	# 
+	error_check_good serve_from_notstarted \
+	    [stat_field $client2env rep_stat "Startup complete"] 0
+
+	# Start up the client to be tested.  Make sure it doesn't get
+	# STARTUPDONE (yet).  Again, the checking of service request stats is
+	# just for test debugging, to make sure we have a valid test.
+	#
+	# To add insult to injury, not only do we not get STARTUPDONE from the
+	# "behind" client, we also don't even get all the log records we need
+	# (because we didn't allow client2's ALL_REQ to get to the master).
+	# And no mechanism to let us know that.  The only resolution is to wait
+	# for gap detection to rerequest (which would then go to the master).
+	# So, set a small rep_request upper bound, so that it doesn't take a ton
+	# of new live txns to reach the trigger.
+	# 
+	set anywhere 1
+	$client2env rep_stat -clear
+	replclear 2
+	set clientenv [eval $cl_envcmd -recover]
+	$clientenv rep_request 4 4
+	set envlist "{$masterenv 1} {$clientenv 2} {$client2env 3}"
+
+	while {[rep034_proc_msgs_once $masterenv $clientenv $client2env] > 0} {}
+
+	error_check_good not_from_undone_c2c_client \
+	    [stat_field $clientenv rep_stat "Startup complete"] 0
+
+	error_check_bad c2c_served_by_master \
+	    [stat_field $client2env rep_stat "Client service requests"] 0
+
+	# Verify that we nevertheless *do* get STARTUPDONE after the master
+	# starts generating new txns again.
+	# 
+	puts "\tRep$tnum.f: Check STARTUPDONE via fall-back to live txns."
 	eval rep_test $method $masterenv NULL $niter 0 0 0 0 $largs
 	process_msgs $envlist
+	error_check_good fallback_live_txns \
+	    [stat_field $clientenv rep_stat "Startup complete"] 1
 
-        puts "\tRep$tnum.b: Close client and run with new master."
-	error_check_good client_close [$clientenv close] 0
-	set envlist "{$masterenv 1} {$client2env 3}"
-
-	error_check_good master_downgr [$masterenv rep_start -client] 0
-	error_check_good cl2_upgr [$client2env rep_start -master] 0
-	#
-	# Just so that we don't get confused who is master/client.
-	#
-	set newmaster $client2env
-	set newclient $masterenv
-	process_msgs $envlist
-
-	# Run rep_test in the master (don't update client).
-	# Run with dropping all client messages via replclear.
-	eval rep_test $method $newmaster NULL $niter 0 0 0 0 $largs
-	process_msgs $envlist
-	replclear 2
-
-	puts "\tRep$tnum.c: Restart client"
-	set startup_done 0
-	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
-
-	#
-	# Record the number of rerequests now because they can
-	# happen during initial processing or later.
-	#
-	if { $anyopt == "anywhere" } {
-		set clrereq1 [stat_field $clientenv rep_stat \
-		    "Client rerequests"]
-		set nclrereq1 [stat_field $newclient rep_stat \
-		    "Client rerequests"]
-	}
-	set envlist "{$newclient 1} {$clientenv 2} {$newmaster 3}"
-	process_msgs $envlist
-
-	puts "\tRep$tnum.d: Verify client in startup mode"
-	set start [stat_field $clientenv rep_stat "Startup complete"]
-	error_check_good start_incomplete $start 0
-
-	puts "\tRep$tnum.e: Generate live message"
-	eval rep_test $method $newmaster NULL $niter 0 0 0 0 $largs
-	process_msgs $envlist
-
-	#
-	# If we're running with 'anywhere' request servicing, then we
-	# need to run several more iterations.  When the new master took over
-	# the old master requested from the down client and its request
-	# got erased via the replclear.  We need to generate enough
-	# new message now that the 2nd client is online again for the
-	# newclient to make its request again.
-	#
-	if { $anyopt == "anywhere" } {
-		puts "\tRep$tnum.e.1: Generate messages for rerequest"
-		set niter 50
-		eval rep_test $method $newmaster NULL $niter 0 0 0 0 $largs
-		process_msgs $envlist
-		set clrereq2 [stat_field $clientenv rep_stat \
-		    "Client rerequests"]
-		set nclrereq2 [stat_field $newclient rep_stat \
-		    "Client rerequests"]
-		#
-		# Verify that we had a rerequest.  The before/after
-		# values should not be the same.
-		#
-		error_check_bad clrereq $clrereq1 $clrereq2
-		error_check_bad nclrereq $nclrereq1 $nclrereq2
-		puts "\tRep$tnum.e.2: Generate live messages again"
-		set niter 5
-		eval rep_test $method $newmaster NULL $niter 0 0 0 0 $largs
-		process_msgs $envlist
-	}
-
-	if { $stup == "stat" } {
-		puts "\tRep$tnum.f: Verify client completed startup via stat"
-		set start [stat_field $clientenv rep_stat "Startup complete"]
-		error_check_good start_complete $start 1
-	} else {
-		puts "\tRep$tnum.f: Verify client completed startup via event"
-		error_check_good start_complete $startup_done 1
-	}
-
-	puts "\tRep$tnum.g: Check message handling of client."
-	#
-	# The newclient would have made requests of clientenv while it
-	# was down and then after it was up.  Therefore, clientenv's
-	# stats should show that it received the request.
-	#
-	set req3 [stat_field $clientenv rep_stat "Client service requests"]
-	if { $anyopt == "anywhere" } {
-		error_check_bad req.bad $req3 0
-	} else {
-		error_check_good req $req3 0
-	}
-
-	error_check_good masterenv_close [$newclient close] 0
-	error_check_good clientenv_close [$clientenv close] 0
-	error_check_good client2env_close [$newmaster close] 0
+	$masterenv close
+	$clientenv close
+	$client2env close
 	replclose $testdir/MSGQUEUEDIR
 	set anywhere 0
+}
+
+# Do a round of message processing, but juggle things such that client2 can
+# never receive a message from the master.
+#
+# Assumes the usual "{$masterenv 1} {$clientenv 2} {$client2env 3}" structure.
+# 
+proc rep034_proc_msgs_once { masterenv clientenv client2env } {
+	set nproced [proc_msgs_once "{$masterenv 1}" NONE err]
+	error_check_good pmonce_1 $err 0
+	replclear 3
+	
+	incr nproced [proc_msgs_once "{$clientenv 2} {$client2env 3}" NONE err]
+	error_check_good pmonce_2 $err 0
+
+	return $nproced
+}
+
+# Wrapper for replsend.  Mostly just a pass-through to the real replsend, except
+# we watch for an ALL_REQ, and just set a flag when we see it.
+# 
+proc rep034_send { control rec fromid toid flags lsn } {
+	global rep034_got_allreq
+
+	if {[berkdb msgtype $control] eq "all_req"} {
+		set rep034_got_allreq true
+	}
+	return [replsend $control $rec $fromid $toid $flags $lsn]
 }

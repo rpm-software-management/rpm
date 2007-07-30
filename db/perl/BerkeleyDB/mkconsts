@@ -714,7 +714,7 @@ use constant IGNORE => 'ignore' ;
 	DB_SEQUENCE_OLDVER         => DEFINE,
 
 	#########
-	# 4.4.9
+	# 4.4.16
 	#########
 
 	DBC_READ_COMMITTED         => IGNORE,
@@ -722,10 +722,13 @@ use constant IGNORE => 'ignore' ;
 	DB_AM_READ_UNCOMMITTED     => IGNORE,
 	DB_ASSOC_IMMUTABLE_KEY     => DEFINE,
 	DB_COMPACT_FLAGS           => DEFINE,
+	DB_DSYNC_DB                => DEFINE,
+	DB_ENV_DSYNC_DB            => DEFINE,
 	DB_FREELIST_ONLY           => DEFINE,
 	DB_FREE_SPACE              => DEFINE,
 	DB_IMMUTABLE_KEY           => DEFINE,
 	DB_MUTEX_ALLOCATED         => DEFINE,
+	DB_MUTEX_LOCKED            => DEFINE,
 	DB_MUTEX_LOGICAL_LOCK      => DEFINE,
 	DB_MUTEX_SELF_BLOCK        => DEFINE,
 	DB_MUTEX_THREAD            => DEFINE,
@@ -734,22 +737,107 @@ use constant IGNORE => 'ignore' ;
 	DB_REGISTER                => DEFINE,
 	DB_REP_ANYWHERE            => DEFINE,
 	DB_REP_BULKOVF             => DEFINE,
+	DB_REP_CONF_BULK           => DEFINE,
+	DB_REP_CONF_DELAYCLIENT    => DEFINE,
+	DB_REP_CONF_NOAUTOINIT     => DEFINE,
+	DB_REP_CONF_NOWAIT         => DEFINE,
 	DB_REP_IGNORE              => DEFINE,
+	DB_REP_JOIN_FAILURE        => DEFINE,
 	DB_REP_LOCKOUT             => DEFINE,
 	DB_REP_REREQUEST           => DEFINE,
 	DB_SEQ_WRAPPED             => DEFINE,
+	DB_THREADID_STRLEN         => DEFINE,
 	DB_VERB_REGISTER           => DEFINE,
-	REP_CONF_AUTOINIT          => DEFINE,
-	REP_CONF_BULK              => DEFINE,
-	REP_CONF_DELAYCLIENT       => DEFINE,
-	REP_CONF_NOWAIT            => DEFINE,
 	TXN_READ_COMMITTED         => IGNORE,
 	TXN_READ_UNCOMMITTED       => IGNORE,
 	TXN_SYNC_FLAGS             => IGNORE,
 	TXN_WRITE_NOSYNC           => IGNORE,
 
 	# enum db_lockmode_t
-	DB_LOCK_READ_UNCOMMITTED   => IGNORE, # 4.4.9
+	DB_LOCK_READ_UNCOMMITTED   => IGNORE, # 4.4.16
+
+	#########
+	# 4.5.20
+	#########
+
+	DBC_DONTLOCK               => IGNORE,
+	DB_DBT_USERCOPY            => IGNORE,
+	DB_ENV_MULTIVERSION        => DEFINE,
+	DB_ENV_TXN_SNAPSHOT        => DEFINE,
+	DB_EVENT_NO_SUCH_EVENT     => DEFINE,
+	DB_EVENT_PANIC             => DEFINE,
+	DB_EVENT_REP_CLIENT        => DEFINE,
+	DB_EVENT_REP_MASTER        => DEFINE,
+	DB_EVENT_REP_NEWMASTER     => DEFINE,
+	DB_EVENT_REP_STARTUPDONE   => DEFINE,
+	DB_EVENT_WRITE_FAILED      => DEFINE,
+	DB_MPOOL_EDIT              => DEFINE,
+	DB_MULTIVERSION            => DEFINE,
+	DB_MUTEX_PROCESS_ONLY      => DEFINE,
+	DB_REPMGR_ACKS_ALL         => DEFINE,
+	DB_REPMGR_ACKS_ALL_PEERS   => DEFINE,
+	DB_REPMGR_ACKS_NONE        => DEFINE,
+	DB_REPMGR_ACKS_ONE         => DEFINE,
+	DB_REPMGR_ACKS_ONE_PEER    => DEFINE,
+	DB_REPMGR_ACKS_QUORUM      => DEFINE,
+	DB_REPMGR_CONNECTED        => DEFINE,
+	DB_REPMGR_DISCONNECTED     => DEFINE,
+	DB_REPMGR_PEER             => DEFINE,
+	DB_REP_ACK_TIMEOUT         => DEFINE,
+	DB_REP_CONNECTION_RETRY    => DEFINE,
+	DB_REP_ELECTION            => DEFINE,
+	DB_REP_ELECTION_RETRY      => DEFINE,
+	DB_REP_ELECTION_TIMEOUT    => DEFINE,
+	DB_REP_FULL_ELECTION       => DEFINE,
+	DB_STAT_NOERROR            => DEFINE,
+	DB_TEST_RECYCLE            => DEFINE,
+	DB_TXN_SNAPSHOT            => DEFINE,
+	DB_USERCOPY_GETDATA        => DEFINE,
+	DB_USERCOPY_SETDATA        => DEFINE,
+	MP_MULTIVERSION            => IGNORE,
+	TXN_ABORTED                => IGNORE,
+	TXN_CDSGROUP               => IGNORE,
+	TXN_COMMITTED              => IGNORE,
+	TXN_PREPARED               => IGNORE,
+	TXN_PRIVATE                => IGNORE,
+	TXN_RUNNING                => IGNORE,
+	TXN_SNAPSHOT               => IGNORE,
+	TXN_XA_ABORTED             => IGNORE,
+	TXN_XA_DEADLOCKED          => IGNORE,
+	TXN_XA_ENDED               => IGNORE,
+	TXN_XA_PREPARED            => IGNORE,
+	TXN_XA_STARTED             => IGNORE,
+	TXN_XA_SUSPENDED           => IGNORE,
+
+	#########
+	# 4.6.11
+	#########
+
+	DB_CKP_INTERNAL            => DEFINE,
+	DB_DBT_MULTIPLE            => IGNORE,
+	DB_ENV_NO_OUTPUT_SET       => DEFINE,
+	DB_ENV_RECOVER_FATAL       => DEFINE,
+	DB_ENV_REF_COUNTED         => DEFINE,
+	DB_ENV_TXN_NOWAIT          => DEFINE,
+	DB_EVENT_NOT_HANDLED       => DEFINE,
+	DB_EVENT_REP_ELECTED       => DEFINE,
+	DB_EVENT_REP_PERM_FAILED   => DEFINE,
+	DB_IGNORE_LEASE            => DEFINE,
+	DB_PREV_DUP                => DEFINE,
+	DB_REPFLAGS_MASK           => DEFINE,
+	DB_REP_CHECKPOINT_DELAY    => DEFINE,
+	DB_REP_DEFAULT_PRIORITY    => DEFINE,
+	DB_REP_FULL_ELECTION_TIMEOUT => DEFINE,
+	DB_REP_LEASE_EXPIRED       => DEFINE,
+	DB_REP_LEASE_TIMEOUT       => DEFINE,
+	DB_SPARE_FLAG              => DEFINE,
+	DB_TXN_WAIT                => DEFINE,
+	DB_VERB_FILEOPS            => DEFINE,
+	DB_VERB_FILEOPS_ALL        => DEFINE,
+
+	# enum DB_CACHE_PRIORITY
+	DB_PRIORITY_UNCHANGED      => '4.6.11',
+
 	) ;
 
 sub enum_Macro

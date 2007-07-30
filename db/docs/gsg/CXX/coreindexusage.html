@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Secondary Database Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="indexes.html" title="Chapter 5. Secondary Databases" />
+    <link rel="up" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
     <link rel="previous" href="joins.html" title="Database Joins" />
-    <link rel="next" href="dbconfig.html" title="Chapter 6. Database Configuration" />
+    <link rel="next" href="dbconfig.html" title="ChapterÂ 6.Â Database Configuration" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Secondary Database Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="joins.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Secondary Databases</th>
-          <td width="20%" align="right"> <a accesskey="n" href="dbconfig.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="joins.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Secondary Databases</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="dbconfig.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -149,7 +149,7 @@ get_item_name(Db *dbp, const Dbt *pkey, const Dbt *pdata, Dbt *skey)
     // programming error in how the buffer is marshalled/unmarshalled.
     // This should never happen!
     if ((u_int32_t)id.getBufferSize() != pdata-&gt;get_size()) {
-        dbp-&gt;errx(&quot;get_item_name: buffer sizes do not match!&quot;);
+        dbp-&gt;errx("get_item_name: buffer sizes do not match!");
         // When we return non-zero, the index record is not
         // added/updated.
         return (-1);
@@ -213,7 +213,7 @@ private:
     </p>
         <a id="cxx_index12"></a>
         <pre class="programlisting">// File: MyDb.cpp
-#include &quot;MyDb.hpp&quot;
+#include "MyDb.hpp"
 
 // Class constructor. Requires a path to the location
 // where the database is located, and a database name
@@ -241,12 +241,12 @@ MyDb::MyDb(std::string &amp;path, std::string &amp;dbName,
     // need to catch them both.
     catch(DbException &amp;e)
     {
-        std::cerr &lt;&lt; &quot;Error opening database: &quot; &lt;&lt; dbFileName_ &lt;&lt; &quot;\n&quot;;
+        std::cerr &lt;&lt; "Error opening database: " &lt;&lt; dbFileName_ &lt;&lt; "\n";
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
     }
     catch(std::exception &amp;e)
     {
-        std::cerr &lt;&lt; &quot;Error opening database: &quot; &lt;&lt; dbFileName_ &lt;&lt; &quot;\n&quot;;
+        std::cerr &lt;&lt; "Error opening database: " &lt;&lt; dbFileName_ &lt;&lt; "\n";
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
     }
 } </pre>
@@ -269,13 +269,13 @@ int
 main(int argc, char *argv[])
 {
     // Initialize the path to the database files
-    std::string basename(&quot;./&quot;);
-    std::string databaseHome(&quot;./&quot;);
+    std::string basename("./");
+    std::string databaseHome("./");
                                                                                                                                          
     // Database names
-    std::string vDbName(&quot;vendordb.db&quot;);
-    std::string iDbName(&quot;inventorydb.db&quot;);
-    <b class="userinput"><tt>std::string itemSDbName(&quot;itemname.sdb&quot;);</tt></b>
+    std::string vDbName("vendordb.db");
+    std::string iDbName("inventorydb.db");
+    <b class="userinput"><tt>std::string itemSDbName("itemname.sdb");</tt></b>
                                                                                                                                          
     // Parse the command line arguments here and determine
     // the location of the flat text files containing the
@@ -283,8 +283,8 @@ main(int argc, char *argv[])
                                                                                                                                          
     //  Identify the full name for our input files, which should
     //  also include some path information.
-    std::string inventoryFile = basename + &quot;inventory.txt&quot;;
-    std::string vendorFile = basename + &quot;vendors.txt&quot;;
+    std::string inventoryFile = basename + "inventory.txt";
+    std::string vendorFile = basename + "vendors.txt";
                                                                                                                                          
     try
     {
@@ -305,11 +305,11 @@ main(int argc, char *argv[])
         // Load the inventory database
         loadInventoryDB(inventoryDB, inventoryFile);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error loading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error loading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(e.get_errno());
     } catch(std::exception &amp;e) {
-        std::cerr &lt;&lt; &quot;Error loading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error loading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(-1);
     }
@@ -372,8 +372,8 @@ main(int argc, char *argv[])
 #include &lt;fstream&gt;
 #include &lt;cstdlib&gt;
                                                                                                                                          
-#include &quot;MyDb.hpp&quot;
-#include &quot;gettingStartedCommon.hpp&quot;
+#include "MyDb.hpp"
+#include "gettingStartedCommon.hpp"
                                                                                                                                          
 // Forward declarations
 int show_all_records(MyDb &amp;inventoryDB, MyDb &amp;vendorDB);
@@ -397,13 +397,13 @@ int
 main (int argc, char *argv[])
 {
     // Initialize the path to the database files
-    std::string databaseHome(&quot;./&quot;);
+    std::string databaseHome("./");
     <b class="userinput"><tt>std::string itemName;</tt></b>
                                                                                                                                          
     // Database names
-    std::string vDbName(&quot;vendordb.db&quot;);
-    std::string iDbName(&quot;inventorydb.db&quot;);
-    <b class="userinput"><tt>std::string itemSDbName(&quot;itemname.sdb&quot;);</tt></b>
+    std::string vDbName("vendordb.db");
+    std::string iDbName("inventorydb.db");
+    <b class="userinput"><tt>std::string itemSDbName("itemname.sdb");</tt></b>
                                                                                                                                          
     // Parse the command line arguments
     // Omitted for brevity
@@ -428,11 +428,11 @@ main (int argc, char *argv[])
             show_item(itemnameSDB, vendorDB, itemName);
         }</tt></b>
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error reading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error reading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(e.get_errno());
     } catch(std::exception &amp;e) {
-        std::cerr &lt;&lt; &quot;Error reading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error reading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(-1);
     }
@@ -477,7 +477,7 @@ show_item(MyDb &amp;itemnameSDB, MyDb &amp;vendorDB, std::string &amp;itemName)
                                                                                                                                     
         // Get the search key. This is the name on the inventory
         // record that we want to examine.
-        std::cout &lt;&lt; &quot;Looking for &quot; &lt;&lt; itemName &lt;&lt; std::endl;
+        std::cout &lt;&lt; "Looking for " &lt;&lt; itemName &lt;&lt; std::endl;
         Dbt key((void *)itemName.c_str(), itemName.length() + 1);
         Dbt data;
                                                                                                                                     
@@ -493,15 +493,15 @@ show_item(MyDb &amp;itemnameSDB, MyDb &amp;vendorDB, std::string &amp;itemName)
                                                                                                                                     
             } while(cursorp-&gt;get(&amp;key, &amp;data, DB_NEXT_DUP) == 0);
         } else {
-            std::cerr &lt;&lt; &quot;No records found for '&quot; &lt;&lt; itemName
-                      &lt;&lt; &quot;'&quot; &lt;&lt; std::endl;
+            std::cerr &lt;&lt; "No records found for '" &lt;&lt; itemName
+                      &lt;&lt; "'" &lt;&lt; std::endl;
         }
     } catch(DbException &amp;e) {
-        itemnameSDB.getDb().err(e.get_errno(), &quot;Error in show_item&quot;);
+        itemnameSDB.getDb().err(e.get_errno(), "Error in show_item");
         cursorp-&gt;close();
         throw e;
     } catch(std::exception &amp;e) {
-        itemnameSDB.getDb().errx(&quot;Error in show_item: %s&quot;, e.what());
+        itemnameSDB.getDb().errx("Error in show_item: %s", e.what());
         cursorp-&gt;close();
         throw e;
     }
@@ -517,25 +517,25 @@ show_item(MyDb &amp;itemnameSDB, MyDb &amp;vendorDB, std::string &amp;itemName)
         can now search for and show all inventory items that match a particular
         name. For example:
     </p>
-        <pre class="programlisting">    example_inventory_read -i &quot;Zulu Nut&quot;</pre>
+        <pre class="programlisting">    example_inventory_read -i "Zulu Nut"</pre>
       </div>
     </div>
     <div class="navfooter">
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="joins.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="joins.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="indexes.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="dbconfig.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="dbconfig.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Database Joins </td>
+          <td width="40%" align="left" valign="top">Database JoinsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 6. Database Configuration</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 6.Â Database Configuration</td>
         </tr>
       </table>
     </div>

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_upg_opd.c,v 12.7 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_upg_opd.c,v 12.9 2007/05/17 15:14:57 bostic Exp $
  */
 
 #include "db_config.h"

@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Adding the Replication Framework to
                     simple_txn
                     
@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
-    <link rel="previous" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
+    <link rel="up" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
+    <link rel="previous" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
     <link rel="next" href="fwrkpermmessage.html" title="Permanent Message Handling" />
   </head>
   <body>
@@ -24,9 +24,9 @@
             </th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="repapp.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. The DB Replication Framework</th>
-          <td width="20%" align="right"> <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="repapp.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â The DB Replication Framework</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -120,9 +120,9 @@ extern int getopt(int, char * const *, const char *);
 #endif
 
 #define CACHESIZE   (10 * 1024 * 1024)
-#define DATABASE    &quot;quote.db&quot;
+#define DATABASE    "quote.db"
 
-const char *progname = <b class="userinput"><tt>&quot;rep_mgr&quot;;</tt></b>
+const char *progname = <b class="userinput"><tt>"rep_mgr";</tt></b>
 
 int create_env(const char *, DB_ENV **);
 int env_init(DB_ENV *, const char *);
@@ -169,19 +169,19 @@ int print_stocks(DBC *); </pre>
 static void
 usage()
 {
-    fprintf(stderr, &quot;usage: %s &quot;, progname);
-    fprintf(stderr, &quot;[-h home] <b class="userinput"><tt>-m host:port [-o host:port]</tt></b>\n&quot;);
-    <b class="userinput"><tt>fprintf(stderr, &quot;\t\t[-p priority]\n&quot;);</tt></b>
-    fprintf(stderr, &quot;where:\n&quot;);
-    fprintf(stderr, &quot;\t-h identifies the environment home directory\n&quot;);
-    <b class="userinput"><tt>fprintf(stderr, &quot;\t-o identifies another site participating in &quot;); 
-    fprintf(stderr, &quot;this replication group\n&quot;);
-    fprintf(stderr, &quot;\t-m identifies the host and port used by this &quot;);
-    fprintf(stderr, &quot;site (required).\n&quot;);
-    fprintf(stderr, &quot;\t-n identifies the number of sites in this &quot;);
-    fprintf(stderr, &quot;replication group (required).\n&quot;);
-    fprintf(stderr, &quot;\t-p identifies the election priority used by &quot;);
-    fprintf(stderr, &quot;this replica.\n&quot;);</tt></b>
+    fprintf(stderr, "usage: %s ", progname);
+    fprintf(stderr, "[-h home] <b class="userinput"><tt>-m host:port [-o host:port]</tt></b>\n");
+    <b class="userinput"><tt>fprintf(stderr, "\t\t[-p priority]\n");</tt></b>
+    fprintf(stderr, "where:\n");
+    fprintf(stderr, "\t-h identifies the environment home directory\n");
+    <b class="userinput"><tt>fprintf(stderr, "\t-o identifies another site participating in "); 
+    fprintf(stderr, "this replication group\n");
+    fprintf(stderr, "\t-m identifies the host and port used by this ");
+    fprintf(stderr, "site (required).\n");
+    fprintf(stderr, "\t-n identifies the number of sites in this ");
+    fprintf(stderr, "replication group (required).\n");
+    fprintf(stderr, "\t-p identifies the election priority used by ");
+    fprintf(stderr, "this replica.\n");</tt></b>
     exit(EXIT_FAILURE);
 } </pre>
       <p>
@@ -229,37 +229,37 @@ main(int argc, char *argv[])
         configure the application's election priority if necessary.
 </p>
       <pre class="programlisting">    /* Collect the command line options */
-    while ((ch = getopt(argc, argv, &quot;h:<b class="userinput"><tt>m:o:p:</tt></b>&quot;)) != EOF)
+    while ((ch = getopt(argc, argv, "h:<b class="userinput"><tt>m:o:p:</tt></b>")) != EOF)
         switch (ch) {
         case 'h':
             home = optarg;
             break;
         <b class="userinput"><tt>/* Set the host and port used by this environment */
         case 'm':
-            host = strtok(optarg, &quot;:&quot;);
-            if ((portstr = strtok(NULL, &quot;:&quot;)) == NULL) {
-                fprintf(stderr, &quot;Bad host specification.\n&quot;);
+            host = strtok(optarg, ":");
+            if ((portstr = strtok(NULL, ":")) == NULL) {
+                fprintf(stderr, "Bad host specification.\n");
                 goto err;
             }
             port = (unsigned short)atoi(portstr);
             if (dbenv-&gt;repmgr_set_local_site(dbenv, host, port, 0) != 0) {
                 fprintf(stderr,
-                    &quot;Could not set local address %s.\n&quot;, host);
+                    "Could not set local address %s.\n", host);
                 goto err;
             }
             local_is_set = 1;
             break;
         /* Identify another site in the replication group */
         case 'o':
-            host = strtok(optarg, &quot;:&quot;);
-            if ((portstr = strtok(NULL, &quot;:&quot;)) == NULL) {
-                fprintf(stderr, &quot;Bad host specification.\n&quot;);
+            host = strtok(optarg, ":");
+            if ((portstr = strtok(NULL, ":")) == NULL) {
+                fprintf(stderr, "Bad host specification.\n");
                 goto err;
             }
             port = (unsigned short)atoi(portstr);
             if (dbenv-&gt;repmgr_add_remote_site(dbenv, host, port, 0) != 0) {
                 fprintf(stderr,
-                    &quot;Could not add site %s.\n&quot;, host);
+                    "Could not add site %s.\n", host);
                 goto err;
             }
             break;
@@ -267,7 +267,7 @@ main(int argc, char *argv[])
         case 'n':
             totalsites = atoi(optarg);
             if ((ret = dbenv-&gt;rep_set_nsites(dbenv, totalsites)) != 0)
-                dbenv-&gt;err(dbenv, ret, &quot;set_nsites&quot;);
+                dbenv-&gt;err(dbenv, ret, "set_nsites");
             break;
         /* Set this replica's election priority */
         case 'p':
@@ -298,7 +298,7 @@ main(int argc, char *argv[])
         goto err; </tt></b>
 
     if ((ret = doloop(dbenv)) != 0) {
-        dbenv-&gt;err(dbenv, ret, &quot;Application failed&quot;);
+        dbenv-&gt;err(dbenv, ret, "Application failed");
         goto err;
     }
 
@@ -349,7 +349,7 @@ env_init(DB_ENV *dbenv, const char *home)
             DB_THREAD |</tt></b>
             DB_RECOVER;
     if ((ret = dbenv-&gt;open(dbenv, home, flags, 0)) != 0)
-        dbenv-&gt;err(dbenv, ret, &quot;can't open environment&quot;);
+        dbenv-&gt;err(dbenv, ret, "can't open environment");
     return (ret);
 }</pre>
       <p>
@@ -364,18 +364,18 @@ env_init(DB_ENV *dbenv, const char *home)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="repapp.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="repapp.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="repapp.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 3. The DB Replication Framework </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 3.Â The DB Replication FrameworkÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Permanent Message Handling</td>
+          <td width="40%" align="right" valign="top">Â Permanent Message Handling</td>
         </tr>
       </table>
     </div>

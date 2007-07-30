@@ -1,0 +1,39 @@
+m4_comment([$Id: jump_set.so,v 11.6 2000/03/18 21:43:20 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: db_jump_set,, upgrade.3.0/eacces, upgrade.3.0/value_set)
+
+m4_p([dnl
+The db_jump_set interface has been removed from the m4_db 3.0 release,
+replaced by method calls on the m4_ref(DbEnv) handle.])
+
+m4_p([dnl
+The following table lists the db_jump_set arguments previously used by
+applications and the methods that should now be used instead.])
+
+m4_table_begin(, _center)
+m4_table_header(db_jump_set argument, m4_db 3.X method)
+m4_table_element(DB_FUNC_CLOSE, m4_ref(dbenv_set_func_close))
+m4_table_element(DB_FUNC_DIRFREE, m4_ref(dbenv_set_func_dirfree))
+m4_table_element(DB_FUNC_DIRLIST, m4_ref(dbenv_set_func_dirlist))
+m4_table_element(DB_FUNC_EXISTS, m4_ref(dbenv_set_func_exists))
+m4_table_element(DB_FUNC_FREE, m4_ref(dbenv_set_func_free))
+m4_table_element(DB_FUNC_FSYNC, m4_ref(dbenv_set_func_fsync))
+m4_table_element(DB_FUNC_IOINFO, m4_ref(dbenv_set_func_ioinfo))
+m4_table_element(DB_FUNC_MALLOC, m4_ref(dbenv_set_func_malloc))
+m4_table_element(DB_FUNC_MAP, m4_ref(dbenv_set_func_map))
+m4_table_element(DB_FUNC_OPEN, m4_ref(dbenv_set_func_open))
+m4_table_element(DB_FUNC_READ, m4_ref(dbenv_set_func_read))
+m4_table_element(DB_FUNC_REALLOC, m4_ref(dbenv_set_func_realloc))
+m4_table_element(DB_FUNC_RUNLINK,
+[The DB_FUNC_RUNLINK functionality has been removed from the m4_db
+3.0 release, and should be removed from the application.])
+m4_table_element(DB_FUNC_SEEK, m4_ref(dbenv_set_func_seek))
+m4_table_element(DB_FUNC_SLEEP, m4_ref(dbenv_set_func_sleep))
+m4_table_element(DB_FUNC_UNLINK, m4_ref(dbenv_set_func_unlink))
+m4_table_element(DB_FUNC_UNMAP, m4_ref(dbenv_set_func_unmap))
+m4_table_element(DB_FUNC_WRITE, m4_ref(dbenv_set_func_write))
+m4_table_element(DB_FUNC_YIELD, m4_ref(dbenv_set_func_yield))
+m4_table_end
+
+m4_page_footer

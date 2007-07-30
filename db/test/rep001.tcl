@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep001.tcl,v 12.11 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep001.tcl,v 12.17 2007/06/19 02:50:40 mjc Exp $
 #
 # TEST  rep001
 # TEST	Replication rename and forced-upgrade test.
@@ -85,6 +84,12 @@ proc rep001_sub { method niter tnum envargs logset recargs inmem largs } {
 	source ./include.tcl
 	global testdir
 	global encrypt
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -99,6 +104,9 @@ proc rep001_sub { method niter tnum envargs logset recargs inmem largs } {
 	set m_logtype [lindex $logset 0]
 	set c_logtype [lindex $logset 1]
 
+	set verify_subset \
+	    [expr { $m_logtype == "in-memory" || $c_logtype == "in-memory" }]
+
 	# In-memory logs require a large log buffer, and cannot
 	# be used with -txn nosync.  Adjust the args for master
 	# and client.
@@ -110,36 +118,28 @@ proc rep001_sub { method niter tnum envargs logset recargs inmem largs } {
 	# Open a master.
 	repladd 1
 	set env_cmd(M) "berkdb_env_noerr -create \
-	    -log_max 1000000 $envargs $m_logargs $recargs \
+	    -log_max 1000000 $envargs $m_logargs $recargs $verbargs \
 	    -home $masterdir -errpfx MASTER $m_txnargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(M) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $envargs $m_logargs $recargs \
-#	    -home $masterdir \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -errpfx MASTER $m_txnargs -rep_master \
-#	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M)]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set env_cmd(C) "berkdb_env_noerr -create \
-	    -log_max 1000000 $envargs $c_logargs $recargs \
+	    -log_max 1000000 $envargs $c_logargs $recargs $verbargs \
 	    -home $clientdir -errpfx CLIENT $c_txnargs -rep_client \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(C) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $envargs $c_logargs $recargs \
-#	    -home $clientdir \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -errpfx CLIENT $c_txnargs -rep_client \
-#	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C)]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init, so that we can do a
+	# db_remove in a moment.
+	#
+	$masterenv test force noarchive_timeout
 
 	# Run rep_test in the master (and update client).
 	puts "\tRep$tnum.a:\
@@ -154,7 +154,7 @@ proc rep001_sub { method niter tnum envargs logset recargs inmem largs } {
 		set dbname "test.db"
 	}
 
-	rep_verify $masterdir $masterenv $clientdir $clientenv 0 1 1 $dbname
+	rep_verify $masterdir $masterenv $clientdir $clientenv $verify_subset 1 1 $dbname
 
 	# Remove the file (and update client).
 	puts "\tRep$tnum.c: Remove the file on the master and close master."
@@ -176,10 +176,9 @@ proc rep001_sub { method niter tnum envargs logset recargs inmem largs } {
 	puts "\tRep$tnum.f: Reopen old master as client and catch up."
 	# Throttle master so it can't send everything at once
 	$newmasterenv rep_limit 0 [expr 64 * 1024]
-	set newclientenv [eval {berkdb_env -create -recover} \
-	    $envargs -txn nosync \
+	set newclientenv [eval {berkdb_env_noerr -create -recover} \
+	    $envargs -txn nosync -errpfx NEWCLIENT \
 	    {-home $masterdir -rep_client -rep_transport [list 1 replsend]}]
-	error_check_good newclient_env [is_valid_env $newclientenv] TRUE
 	set envlist "{$newclientenv 1} {$newmasterenv 2}"
 	process_msgs $envlist
 
@@ -201,7 +200,8 @@ proc rep001_sub { method niter tnum envargs logset recargs inmem largs } {
 	# Verify the database in the client dir.
 	puts "\tRep$tnum.h: Verifying new client database contents."
 
-	rep_verify $masterdir $newmasterenv $clientdir $newclientenv 0 1 1 $dbname
+	rep_verify \
+	    $masterdir $newmasterenv $clientdir $newclientenv $verify_subset 1 1 $dbname
 
 	error_check_good newmasterenv_close [$newmasterenv close] 0
 	error_check_good newclientenv_close [$newclientenv close] 0

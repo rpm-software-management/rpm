@@ -1,0 +1,20 @@
+m4_comment([$Id: db_getenv.so,v 10.9 2005/07/20 16:22:49 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_getenv)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_getenv),
+ifelse(M4API, C_API, [dnl
+DB_ENV *
+DB-__GT__get_env(DB *db);
+])
+ifelse(M4API, CXX_API, [dnl
+DbEnv *
+Db::get_env();
+]))
+
+m4_getter(dbh_getenv,
+[handle for the database environment underlying the database])
+
+m4_seealso(Db)
+m4_page_footer

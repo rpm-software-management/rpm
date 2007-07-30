@@ -1,0 +1,198 @@
+<!--"$Id: 2.4.14.html,v 1.3 2007/05/17 18:17:18 bostic Exp $ (Sleepycat) $Date: 2007/05/17 18:17:18 $"-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 2.4.14 Change Log</title>
+<meta name="description" content="DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 2.4.14 Change Log</h3>
+
+<h3>Interface Changes Introduced in DB 2.4.14:</h3>
+<ol>
+
+<p><li>
+Enhance the
+db_load(1)
+utility so that the default behavior is to add data to existing databases
+(rather than to always create the database), and to correctly perform
+locking for databases running in Berkeley DB environments.  This allows
+the use of
+db_load(1)
+to add key/data pairs to existing, active databases.
+<p>
+Add a <b>-n</b> option to the
+db_load(1)
+This option causes
+db_load(1)
+to refuse to overwrite already existing key/data pairs in databases.
+
+<p><li>
+Enhance the
+db_stat(1)
+utility to display additional information about the shared memory buffer
+pool and lock regions.  The new options are <b>-C[Acflmo]</b> for the
+lock region, and <b>-M[Ahlm]</b> for the shared memory buffer pool region.
+This information is normally intended only for Berkeley DB performance
+tuning.
+
+<p>
+Add a <b>-N</b> option to the
+db_stat(1)
+This option keeps
+db_stat(1)
+from acquiring region locks when reading shared regions, which allows
+db_stat(1)
+to be used to display information about regions where applications have
+crashed while holding region locks.
+
+<p>
+Add region reference counts and sizes to all
+db_stat(1)
+region displays.
+
+<p><li>
+Add a new flag, <b>DB_MUTEXLOCKS</b> to the
+db_value_set(1)
+interface.  This flag causes requests for mutual exclusion mutexes to
+be immediately granted without test.  This flag is only intended for
+debugging purposes.
+
+</ol>
+<h3>B+tree Access Method Bug Fixes:</h3>
+<ol>
+
+<p><li>
+Fix bug in the B+tree access method where additional cursors could be
+incorrectly updated when key/data pairs were added or deleted.
+
+<p><li>
+Fix bug where an aborted transaction during a B+tree split could cause
+pages to be left pinned.
+
+<p><li>
+Fix possible core dump when freeing the (cursor referenced) last item
+in the last page in a duplicate chain.
+
+<p><li>
+Fix possible core dump when deleting overflow items from duplicate pages.
+
+<p><li>
+Fix bug where duplicate page splits could result in database corruption
+(common to both B+tree and Hash Access Methods).
+
+</ol>
+<h3>Hash Access Method Bug Fixes:</h3>
+<ol>
+
+<p><li>
+Fix bug where Hash access method recovery did not always correctly recover
+key/data pair addition or deletion.
+
+<p><li>
+Fix bug where deleting a key in a Hash access method database could cause
+a cursor sequentially walking the database to skip records.
+
+<p><li>
+Fix bug where duplicate page splits could result in database corruption
+(common to both B+tree and Hash Access Methods).
+
+</ol>
+<h3>Shared Memory Buffer Pool Bug Fixes:</h3>
+<ol>
+
+<p><li>
+Fix bug where a DB thread handle could be left locked if a read-only file
+descriptor could not be upgraded to read-write during a buffer pool sync
+to disk.
+
+</ol>
+<h3>Common Shared Region Support Bug Fixes:</h3>
+<ol>
+
+<p><li>
+Fix bug where private shared memory pool regions could not be created on
+architectures without spinlock mutex support.
+
+<p><li>
+Fix possible file descriptor leak on HP/UX architecture (reports #150,
+#158).
+
+<p><li>
+Fix a variety of inconsistencies where, after a failed attempt to open
+shared regions, the code recovery paths were incorrect.
+
+</ol>
+<h3>Additional Bug Fixes:</h3>
+<ol>
+
+<p><li>
+Fix possible core dump in
+lock_open(1)
+when it was called without first creating a Berkeley DB database environment.
+
+</ol>
+<h3>Test Suite, Example Program and Build Procedure Bug Fixes and Changes:</h3>
+<ol>
+
+<p><li>
+Fix build procedures for a number of architectures: affected systems
+include VC++ 5.0 and various releases of SunOS, AIX, OSF/1, FreeBSD
+and Linux (reports #145, #156).
+
+<p><li>
+Fix the Berkeley DB test suite to correctly identify Windows systems
+in all cases (the previous method failed for some releases of the
+Tcl scripting language).
+
+<p><li>
+Fix the <b>ex_thread</b> example program to correctly set the buffer
+cache size.
+
+<p><li>
+Fix the Berkeley DB test suite to ignore errors where System V shared
+memory interfaces (shmget(2)) have not been configured correctly.
+
+<p><li>
+Add support for the BSD/OS 4.0 release.
+
+<p><li>
+Add support for the SCO OpenServer Release 5 (3.2.2).  (The test suite
+has not yet run successfully on this architecture, although we currently
+believe that the problems are in the test suite, and not in the Berkeley
+DB library itself.)
+
+<p><li>
+Change configuration to ignore the FreeBSD shmget(2) interfaces when
+ftok(3) is not available from the C library.
+
+<p><li>
+Change configuration to fail on the Nextstep architecture.  (Previously,
+Berkeley DB would configure successfully, but then not build on Nextstep.)
+
+</ol>
+<h3>Additional Changes:</h3>
+<ol>
+
+<p><li>
+Return EINVAL if the DB_RECOVER or DB_RECOVER_FATAL flags were specified to
+db_appinit(3) without also specifying the DB_INIT_TXN flag.
+
+<p><li>
+Removed "Additional Change" #7 from the Berkeley DB 2.4.10 release:
+<p>
+<blockquote>
+The mutex locking code has been enhanced to no longer attempt full
+test-and-set instructions unless there is a strong probability of
+acquiring the mutex. This makes spinning on the mutex significantly
+less expensive.
+</blockquote>
+<p>
+Full test-and-set instructions are necessary on some architectures, and
+it this change actually decreased performance in some cases.
+
+</ol>
+
+</body>
+</html>

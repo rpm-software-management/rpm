@@ -1,0 +1,15 @@
+m4_comment([$Id: logalloc.so,v 1.2 2006/08/24 16:32:32 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: log file pre-allocation,, upgrade.3.1/tmp, upgrade.3.1/disk)
+
+m4_p([This change only affects Win/32 applications.])
+
+m4_p([dnl
+On Win/32 platforms m4_db no longer pre-allocates log files.  The problem
+was a noticeable performance spike as each log file was created.  To turn
+this feature back on, search for the flag DB_OSO_LOG in the source file
+m4_path(log/log_put.c) and make the change described there, or contact
+us for assistance.])
+
+m4_page_footer

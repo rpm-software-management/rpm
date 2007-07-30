@@ -1,0 +1,40 @@
+m4_comment([$Id: upgrade.so,v 10.17 2001/03/10 19:05:22 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Database upgrade, @upgrading databases, am/truncate, am/verify)
+
+m4_p([dnl
+When upgrading to a new release of m4_db, it may be necessary to upgrade
+the on-disk format of already-created database files.  m4_bold([m4_db
+database upgrades are done in place, and so are potentially
+destructive.])  This means that if the system crashes during the upgrade
+procedure, or if the upgrade procedure runs out of disk space, the
+databases may be left in an inconsistent and unrecoverable state.  To
+guard against failure, the procedures outlined in
+m4_link(M4RELDIR/ref/upgrade/process, Upgrading m4_db installations)
+should be carefully followed.  If you are not performing catastrophic
+archival as part of your application upgrade process, you should at
+least copy your database to archival media, verify that your archival
+media is error-free and readable, and that copies of your backups are
+stored offsite!])
+
+m4_p([dnl
+The actual database upgrade is done using the m4_ref(dbh_upgrade)
+method, or by dumping the database using the old version of the m4_db
+software and reloading it using the current version.])
+
+m4_p([dnl
+After an upgrade, m4_db applications must be recompiled to use the new
+m4_db library before they can access an upgraded database.
+m4_bold([There is no guarantee that applications compiled against
+previous releases of m4_db will work correctly with an upgraded database
+format.  Nor is there any guarantee that applications compiled against
+newer releases of m4_db will work correctly with the previous database
+format.]) We do guarantee that any archived database may be upgraded
+using a current m4_db software release and the m4_ref(dbh_upgrade)
+method, and there is no need to step-wise upgrade the database using
+intermediate releases of m4_db.  Sites should consider archiving
+appropriate copies of their application or application sources if they
+may need to access archived databases without first upgrading them.])
+
+m4_page_footer

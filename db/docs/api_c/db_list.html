@@ -1,6 +1,5 @@
 <!--$Id: db_list.so,v 1.1 2002/08/30 20:00:48 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -10,7 +9,7 @@
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Databases and Related Methods</h3>
-<!--$Id: m4.methods,v 1.11 2006/08/25 16:40:00 bostic Exp $-->
+<!--$Id: m4.methods,v 1.14 2007/07/12 18:27:42 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Database Operations</th><th>Description</th></tr>
 <!--Db::--><tr><td><a href="../api_c/db_class.html">db_create</a></td><td>Create a database handle</td></tr>
@@ -20,6 +19,7 @@
 <!--Db::cursor--><tr><td><a href="../api_c/db_cursor.html">DB-&gt;cursor</a></td><td>Create a cursor</td></tr>
 <!--Db::del--><tr><td><a href="../api_c/db_del.html">DB-&gt;del</a></td><td>Delete items from a database</td></tr>
 <!--Db::err--><tr><td><a href="../api_c/db_err.html">DB-&gt;err</a>, <a href="../api_c/db_err.html">DB-&gt;errx</a></td><td>Error message</td></tr>
+<!--Db::exists--><tr><td><a href="../api_c/db_exists.html">DB-&gt;exists</a></td><td>Return if an item appears in a database</td></tr>
 <!--Db::fd--><tr><td><a href="../api_c/db_fd.html">DB-&gt;fd</a></td><td>Return a file descriptor from a database</td></tr>
 <!--Db::get--><tr><td><a href="../api_c/db_get.html">DB-&gt;get</a>, <a href="../api_c/db_get.html">DB-&gt;pget</a></td><td>Get items from a database</td></tr>
 <!--Db::get_byteswapped--><tr><td><a href="../api_c/db_get_byteswapped.html">DB-&gt;get_byteswapped</a></td><td>Return if the underlying database is in host order</td></tr>
@@ -30,6 +30,7 @@
 <!--Db::put--><tr><td><a href="../api_c/db_put.html">DB-&gt;put</a></td><td>Store items into a database</td></tr>
 <!--Db::remove--><tr><td><a href="../api_c/db_remove.html">DB-&gt;remove</a></td><td>Remove a database</td></tr>
 <!--Db::rename--><tr><td><a href="../api_c/db_rename.html">DB-&gt;rename</a></td><td>Rename a database</td></tr>
+<!--Db::set_priority--><tr><td><a href="../api_c/db_set_priority.html">DB-&gt;set_priority</a></td><td>Set cache page priority</td></tr>
 <!--Db::stat--><tr><td><a href="../api_c/db_stat.html">DB-&gt;stat</a>, <a href="../api_c/db_stat.html">DB-&gt;stat_print</a></td><td>Database statistics</td></tr>
 <!--Db::sync--><tr><td><a href="../api_c/db_sync.html">DB-&gt;sync</a></td><td>Flush a database to stable storage</td></tr>
 <!--Db::truncate--><tr><td><a href="../api_c/db_truncate.html">DB-&gt;truncate</a></td><td>Empty a database</td></tr>
@@ -58,12 +59,13 @@
 <!--Db::set_re_pad--><tr><td><a href="../api_c/db_set_re_pad.html">DB-&gt;set_re_pad</a></td><td>Set the fixed-length record pad byte</td></tr>
 <!--Db::set_re_source--><tr><td><a href="../api_c/db_set_re_source.html">DB-&gt;set_re_source</a></td><td>Set the backing Recno text file</td></tr>
 <tr><th>Hash Configuration</th><th><br></th></tr>
+<!--Db::set_h_compare--><tr><td><a href="../api_c/db_set_h_compare.html">DB-&gt;set_h_compare</a></td><td>Set a Hash comparison function</td></tr>
 <!--Db::set_h_ffactor--><tr><td><a href="../api_c/db_set_h_ffactor.html">DB-&gt;set_h_ffactor</a></td><td>Set the Hash table density</td></tr>
 <!--Db::set_h_hash--><tr><td><a href="../api_c/db_set_h_hash.html">DB-&gt;set_h_hash</a></td><td>Set a hashing function</td></tr>
 <!--Db::set_h_nelem--><tr><td><a href="../api_c/db_set_h_nelem.html">DB-&gt;set_h_nelem</a></td><td>Set the Hash table size</td></tr>
 <tr><th>Queue Configuration</th><th><br></th></tr>
 <!--Db::set_q_extentsize--><tr><td><a href="../api_c/db_set_q_extentsize.html">DB-&gt;set_q_extentsize</a></td><td>Set Queue database extent size</td></tr>
 </table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

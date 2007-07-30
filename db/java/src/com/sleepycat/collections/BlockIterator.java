@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: BlockIterator.java,v 12.3 2006/09/08 20:32:13 bostic Exp $
+ * $Id: BlockIterator.java,v 12.5 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;
@@ -265,7 +264,7 @@ class BlockIterator implements BaseIterator {
     }
 
     /**
-     * Moves the cursor to the key/data at the given slot, and returns false
+     * Moves the cursor to the key/data at the given slot, and returns false 
      * if the reposition (search) fails.
      */
     private boolean moveCursor(int i, DataCursor cursor)
@@ -398,7 +397,7 @@ class BlockIterator implements BaseIterator {
             int last = keys.length - 1;
             int next = nextIndex;
             boolean found = false;
-
+        
             /* Reposition to the last known key/data pair. */
             int repos = cursor.repositionRange
                 (keys[next], priKeys[next], values[next], false);
@@ -518,18 +517,20 @@ class BlockIterator implements BaseIterator {
             throw new UnsupportedOperationException();
         }
         DataCursor cursor = null;
+        boolean doAutoCommit = coll.beginAutoCommit();
         try {
             cursor = new DataCursor(coll.view, writeAllowed);
             if (moveCursor(dataIndex, cursor)) {
                 cursor.putCurrent(value);
                 setSlot(dataIndex, cursor);
+                coll.closeCursor(cursor);
+                coll.commitAutoCommit(doAutoCommit);
             } else {
                 throw new IllegalStateException();
             }
-        } catch (DatabaseException e) {
-            throw StoredContainer.convertException(e);
-        } finally {
-            closeCursor(cursor);
+        } catch (Exception e) {
+            coll.closeCursor(cursor);
+            throw coll.handleException(e, doAutoCommit);
         }
     }
 
@@ -539,19 +540,21 @@ class BlockIterator implements BaseIterator {
             throw new IllegalStateException();
         }
         DataCursor cursor = null;
+        boolean doAutoCommit = coll.beginAutoCommit();
         try {
             cursor = new DataCursor(coll.view, writeAllowed);
             if (moveCursor(dataIndex, cursor)) {
                 cursor.delete();
                 deleteSlot(dataIndex);
                 dataObject = null;
+                coll.closeCursor(cursor);
+                coll.commitAutoCommit(doAutoCommit);
             } else {
                 throw new IllegalStateException();
             }
-        } catch (DatabaseException e) {
-            throw StoredContainer.convertException(e);
-        } finally {
-            closeCursor(cursor);
+        } catch (Exception e) {
+            coll.closeCursor(cursor);
+            throw coll.handleException(e, doAutoCommit);
         }
     }
 
@@ -566,6 +569,7 @@ class BlockIterator implements BaseIterator {
         coll.checkIterAddAllowed();
         OperationStatus status = OperationStatus.SUCCESS;
         DataCursor cursor = null;
+        boolean doAutoCommit = coll.beginAutoCommit();
         try {
             if (coll.view.keysRenumbered || !coll.areDuplicatesOrdered()) {
 
@@ -593,7 +597,7 @@ class BlockIterator implements BaseIterator {
                         cursor = new DataCursor(coll.view, writeAllowed);
                         cursor.useRangeKey();
                         status = cursor.putNoDupData(null, value, null, true);
-                        cursor.close();
+                        coll.closeCursor(cursor);
                         cursor = null;
                     } else {
                         throw new IllegalStateException
@@ -622,7 +626,7 @@ class BlockIterator implements BaseIterator {
                     if (!moveCursor(insertIndex, cursor)) {
                         throw new IllegalStateException();
                     }
-
+                    
                     /*
                      * For a recno-renumber database or a database with
                      * unsorted duplicates, insert before the iterator 'next'
@@ -681,10 +685,12 @@ class BlockIterator implements BaseIterator {
 
             /* Prevent subsequent set() or remove() call. */
             dataObject = null;
-        } catch (DatabaseException e) {
-            throw StoredContainer.convertException(e);
-        } finally {
-            closeCursor(cursor);
+
+            coll.closeCursor(cursor);
+            coll.commitAutoCommit(doAutoCommit);
+        } catch (Exception e) {
+            coll.closeCursor(cursor);
+            throw coll.handleException(e, doAutoCommit);
         }
     }
 

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>Chapter 4. Replica versus Master Processes</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ChapterÂ 4.Â Replica versus Master Processes</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
@@ -15,12 +15,12 @@
     <div class="navheader">
       <table width="100%" summary="Navigation header">
         <tr>
-          <th colspan="3" align="center">Chapter 4. Replica versus Master Processes</th>
+          <th colspan="3" align="center">ChapterÂ 4.Â Replica versus Master Processes</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="fmwrkconnectretry.html">Prev</a> </td>
-          <th width="60%" align="center"> </th>
-          <td width="20%" align="right"> <a accesskey="n" href="processingloop.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="fmwrkconnectretry.html">Prev</a>Â </td>
+          <th width="60%" align="center">Â </th>
+          <td width="20%" align="right">Â <a accesskey="n" href="processingloop.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -29,7 +29,7 @@
       <div class="titlepage">
         <div>
           <div>
-            <h2 class="title"><a id="fwrkmasterreplica"></a>Chapter 4. Replica versus Master Processes</h2>
+            <h2 class="title"><a id="fwrkmasterreplica"></a>ChapterÂ 4.Â Replica versus Master Processes</h2>
           </div>
         </div>
         <div></div>
@@ -218,7 +218,7 @@ isMaster = false;
 // we must identify the class that is the event handler. In this
 // example, we are performing this from within the class that 
 // implements com.sleepycat.db.EventHandler so we identify
-// &quot;this&quot; class as the event handler
+// "this" class as the event handler
 envConfig.setEventHandler(this); </pre>
         <p>
         That done, we still need to implement the <tt class="methodname">handleEvent</tt>
@@ -234,7 +234,7 @@ envConfig.setEventHandler(this); </pre>
         else if (event == EventType.REP_NEW_MASTER) {
             // ignored for now.
         } else {
-            System.err.println(&quot;Unknown event callback received.\n&quot;);
+            System.err.println("Unknown event callback received.\n");
             ret = 1;
         }
         return ret;
@@ -251,18 +251,18 @@ envConfig.setEventHandler(this); </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="fmwrkconnectretry.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="fmwrkconnectretry.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="index.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="processingloop.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="processingloop.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Managing Connection Retries </td>
+          <td width="40%" align="left" valign="top">Managing Connection RetriesÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Processing Loop</td>
+          <td width="40%" align="right" valign="top">Â Processing Loop</td>
         </tr>
       </table>
     </div>

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: PackedIntegerTest.java,v 1.2 2006/08/24 14:46:47 bostic Exp $
+ * $Id: PackedIntegerTest.java,v 1.4 2007/05/04 00:28:30 mark Exp $
  */
 
 package com.sleepycat.util.test;
@@ -15,10 +14,14 @@ import junit.framework.TestCase;
 
 public class PackedIntegerTest extends TestCase
 {
-    static final int V119 = 119;
-    static final int BYTE_MAX = 0xFF;
-    static final int SHORT_MAX = 0xFFFF;
-    static final int THREE_MAX = 0xFFFFFF;
+    static final long V119 = 119L;
+    static final long MAX_1 = 0xFFL;
+    static final long MAX_2 = 0xFFFFL;
+    static final long MAX_3 = 0xFFFFFFL;
+    static final long MAX_4 = 0xFFFFFFFFL;
+    static final long MAX_5 = 0xFFFFFFFFFFL;
+    static final long MAX_6 = 0xFFFFFFFFFFFFL;
+    static final long MAX_7 = 0xFFFFFFFFFFFFFFL;
 
     public static void main(String[] args)
         throws Exception {
@@ -45,28 +48,70 @@ public class PackedIntegerTest extends TestCase
 
     public void runTest() {
 
-        testRange(-V119, V119, 1);
+        /* Packed int tests. */
 
-        testRange(-BYTE_MAX - V119, -1 - V119, 2);
-        testRange(1 + V119, BYTE_MAX + V119, 2);
+        testIntRange(-V119, V119, 1);
 
-        testRange(-SHORT_MAX - V119, -SHORT_MAX + 99, 3);
-        testRange(-BYTE_MAX - V119 - 99, -BYTE_MAX - V119 - 1, 3);
-        testRange(BYTE_MAX + V119 + 1, BYTE_MAX + V119 + 99, 3);
-        testRange(SHORT_MAX - 99, SHORT_MAX + V119, 3);
+        testIntRange(-MAX_1 - V119, -1 - V119, 2);
+        testIntRange(1 + V119, MAX_1 + V119, 2);
 
-        testRange(-THREE_MAX - V119, -THREE_MAX + 99, 4);
-        testRange(-SHORT_MAX - V119 - 99, -SHORT_MAX - V119 - 1, 4);
-        testRange(SHORT_MAX + V119 + 1, SHORT_MAX + V119 + 99, 4);
-        testRange(THREE_MAX - 99, THREE_MAX + V119, 4);
+        testIntRange(-MAX_2 - V119, -MAX_2 + 99, 3);
+        testIntRange(-MAX_1 - V119 - 99, -MAX_1 - V119 - 1, 3);
+        testIntRange(MAX_1 + V119 + 1, MAX_1 + V119 + 99, 3);
+        testIntRange(MAX_2 - 99, MAX_2 + V119, 3);
 
-        testRange(Integer.MIN_VALUE, Integer.MIN_VALUE + 99, 5);
-        testRange(Integer.MAX_VALUE - 99, Integer.MAX_VALUE, 5);
+        testIntRange(-MAX_3 - V119, -MAX_3 + 99, 4);
+        testIntRange(-MAX_2 - V119 - 99, -MAX_2 - V119 - 1, 4);
+        testIntRange(MAX_2 + V119 + 1, MAX_2 + V119 + 99, 4);
+        testIntRange(MAX_3 - 99, MAX_3 + V119, 4);
+
+        testIntRange(Integer.MIN_VALUE, Integer.MIN_VALUE + 99, 5);
+        testIntRange(Integer.MAX_VALUE - 99, Integer.MAX_VALUE, 5);
+
+        /* Packed long tests. */
+
+        testLongRange(-V119, V119, 1);
+
+        testLongRange(-MAX_1 - V119, -1 - V119, 2);
+        testLongRange(1 + V119, MAX_1 + V119, 2);
+
+        testLongRange(-MAX_2 - V119, -MAX_2 + 99, 3);
+        testLongRange(-MAX_1 - V119 - 99, -MAX_1 - V119 - 1, 3);
+        testLongRange(MAX_1 + V119 + 1, MAX_1 + V119 + 99, 3);
+        testLongRange(MAX_2 - 99, MAX_2 + V119, 3);
+
+        testLongRange(-MAX_3 - V119, -MAX_3 + 99, 4);
+        testLongRange(-MAX_2 - V119 - 99, -MAX_2 - V119 - 1, 4);
+        testLongRange(MAX_2 + V119 + 1, MAX_2 + V119 + 99, 4);
+        testLongRange(MAX_3 - 99, MAX_3 + V119, 4);
+
+        testLongRange(-MAX_4 - V119, -MAX_4 + 99, 5);
+        testLongRange(-MAX_3 - V119 - 99, -MAX_3 - V119 - 1, 5);
+        testLongRange(MAX_3 + V119 + 1, MAX_3 + V119 + 99, 5);
+        testLongRange(MAX_4 - 99, MAX_4 + V119, 5);
+
+        testLongRange(-MAX_5 - V119, -MAX_5 + 99, 6);
+        testLongRange(-MAX_4 - V119 - 99, -MAX_4 - V119 - 1, 6);
+        testLongRange(MAX_4 + V119 + 1, MAX_4 + V119 + 99, 6);
+        testLongRange(MAX_5 - 99, MAX_5 + V119, 6);
+
+        testLongRange(-MAX_6 - V119, -MAX_6 + 99, 7);
+        testLongRange(-MAX_5 - V119 - 99, -MAX_5 - V119 - 1, 7);
+        testLongRange(MAX_5 + V119 + 1, MAX_5 + V119 + 99, 7);
+        testLongRange(MAX_6 - 99, MAX_6 + V119, 7);
+
+        testLongRange(-MAX_7 - V119, -MAX_7 + 99, 8);
+        testLongRange(-MAX_6 - V119 - 99, -MAX_6 - V119 - 1, 8);
+        testLongRange(MAX_6 + V119 + 1, MAX_6 + V119 + 99, 8);
+        testLongRange(MAX_7 - 99, MAX_7 + V119, 8);
+
+        testLongRange(Long.MIN_VALUE, Long.MIN_VALUE + 99, 9);
+        testLongRange(Long.MAX_VALUE - 99, Long.MAX_VALUE - 1, 9);
     }
 
-    private void testRange(long firstValue,
-                           long lastValue,
-                           int bytesExpected) {
+    private void testIntRange(long firstValue,
+                              long lastValue,
+                              int bytesExpected) {
 
         byte[] buf = new byte[1000];
         int off = 0;
@@ -97,6 +142,46 @@ public class PackedIntegerTest extends TestCase
                      " bytesExpected=" + bytesExpected);
             }
             int value = PackedInteger.readInt(buf, off);
+            if (value != i) {
+                fail("input of value=" + i + " but got=" + value);
+            }
+            off += bytes;
+        }
+    }
+
+    private void testLongRange(long firstValue,
+                               long lastValue,
+                               int bytesExpected) {
+
+        byte[] buf = new byte[2000];
+        int off = 0;
+
+        for (long longI = firstValue; longI <= lastValue; longI += 1) {
+            long i = longI;
+            int before = off;
+            off = PackedInteger.writeLong(buf, off, i);
+            int bytes = off - before;
+            if (bytes != bytesExpected) {
+                fail("output of value=" + i + " bytes=" + bytes +
+                     " bytesExpected=" + bytesExpected);
+            }
+            bytes = PackedInteger.getWriteLongLength(i);
+            if (bytes != bytesExpected) {
+                fail("count of value=" + i + " bytes=" + bytes +
+                     " bytesExpected=" + bytesExpected);
+            }
+        }
+
+        off = 0;
+
+        for (long longI = firstValue; longI <= lastValue; longI += 1) {
+            long i = longI;
+            int bytes = PackedInteger.getReadLongLength(buf, off);
+            if (bytes != bytesExpected) {
+                fail("count of value=" + i + " bytes=" + bytes +
+                     " bytesExpected=" + bytesExpected);
+            }
+            long value = PackedInteger.readLong(buf, off);
             if (value != i) {
                 fail("input of value=" + i + " but got=" + value);
             }

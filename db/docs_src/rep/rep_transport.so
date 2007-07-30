@@ -1,0 +1,113 @@
+m4_comment([$Id: rep_transport.so,v 1.35 2006/06/05 23:03:53 alanb Exp $])
+
+define(M4PAGELOCAL,
+    [rep_set_transport, DB_REP_ANYWHERE, DB_REP_NOBUFFER, DB_REP_PERMANENT,
+    DB_REP_REREQUEST, DB_EID_BROADCAST])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_set_transport),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_set_transport(DB_ENV *env, int envid,
+    int (*send)(DB_ENV *dbenv,
+    const DBT *control, const DBT *rec, const DB_LSN *lsnp,
+    int envid, u_int32_t flags));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_set_transport(int envid,
+    int (*send)(DB_ENV *dbenv,
+    const Dbt *control, const Dbt *rec, const DbLsn *lsnp,
+    int envid, u_int32_t flags));
+]))
+
+m4_p([dnl
+The m4_refT(rep_set_transport) initializes the communication infrastructure
+for a database environment participating in a replicated application.])
+
+m4_repl_lower(rep_set_transport)
+
+m4_scope_dbenv(rep_set_transport)
+
+m4_when_any(rep_set_transport)
+
+m4_return(rep_set_transport, std)
+
+m4_parambegin
+m4_param(envid, [dnl
+The m4_arg(envid) parameter is the local environment's ID.  It must be
+a non-negative integer and uniquely identify this m4_db database environment
+(see m4_link(M4RELDIR/ref/rep/id, Replication environment IDs) for more
+information).])
+
+m4_param(send, [dnl
+The m4_arg(send) callback function is used to transmit data using the
+replication application's communication infrastructure.  The parameters
+to m4_arg(send) are as follows:
+
+m4_tagbegin
+m4_tag(m4_arg(dbenv), [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment handle.])
+m4_tag(m4_arg(control), [dnl
+The m4_arg(control) parameter is the first of the two data elements to be
+transmitted by the m4_arg(send) function.])
+m4_tag(m4_arg(rec), [dnl
+The m4_arg(rec) parameter is the second of the two data elements to be
+transmitted by the m4_arg(send) function.])
+m4_tag(m4_arg(lsnp), [dnl
+If the type of message to be sent has an LSN associated with it, then
+the m4_arg(lsnp) parameter contains the LSN of the record being sent.
+This LSN can be used to determine that certain records have been
+processed successfully by clients.])
+m4_tag(m4_arg(envid), [dnl
+The m4_arg(envid) parameter is a positive integer identifier that
+specifies the replication environment to which the message should be
+sent (see m4_link(M4RELDIR/ref/rep/id, Replication environment IDs) for
+more information).
+m4_idefz(DB_EID_BROADCAST)
+m4_p([dnl
+The special identifier m4_ref(DB_EID_BROADCAST) indicates that a message
+should be broadcast to every environment in the replication group.  The
+application may use a true broadcast protocol or may send the message
+in sequence to each machine with which it is in communication.  In both
+cases, the sending site should not be asked to process the message.])])
+m4_tag(m4_arg(flags), [m4_sf_or_may
+m4_tagbegin
+m4_tag(m4_idef(DB_REP_ANYWHERE), [dnl
+The message is a client request that can be satisfied by another client
+as well as by the master.])
+m4_tag(m4_idef(DB_REP_NOBUFFER), [dnl
+The record being sent should be transmitted immediately and not buffered
+or delayed.])
+m4_tag(m4_idef(DB_REP_PERMANENT), [dnl
+The record being sent is critical for maintaining database integrity
+(for example, the message includes a transaction commit).  The
+application should take appropriate action to enforce the reliability
+guarantees it has chosen, such as waiting for acknowledgement from one
+or more clients.])
+m4_tag(m4_idef(DB_REP_REREQUEST), [dnl
+The message is a client request that has already been made and to which
+no response was received.])
+m4_tagend])
+m4_tagend
+
+m4_p([dnl
+It may sometimes be useful to pass application-specific data to the
+m4_arg(send) function; see m4_link(M4RELDIR/ref/env/faq, Environment
+FAQ) for a discussion on how to do this.])
+
+m4_p([dnl
+The m4_arg(send) function must return 0 on success and non-zero on
+failure.  If the m4_arg(send) function fails, the message being sent is
+necessary to maintain database integrity, and the local log is not
+configured for synchronous flushing, the local log will be flushed;
+otherwise, any error from the m4_arg(send) function will be ignored.])
+
+m4_not_reentrant])
+
+m4_paramend
+
+m4_err(rep_set_transport, einval)
+
+m4_seealso(Replication)
+m4_page_footer

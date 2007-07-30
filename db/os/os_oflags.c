@@ -1,21 +1,46 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_oflags.c,v 12.6 2006/08/24 14:46:18 bostic Exp $
+ * $Id: os_oflags.c,v 12.10 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
 
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #ifdef HAVE_SHMGET
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #endif
+#endif
+
+/*
+ * Ensure that POSIX defined codes are available.
+ */
+#ifndef O_CREAT
+#define	O_CREAT  0x0200
+#endif
+#ifndef O_TRUNC
+#define	O_TRUNC  0x0400
+#endif
+#ifndef O_RDONLY
+#define	O_RDONLY 0x0000
+#endif
+#ifndef O_RDWR
+#define	O_RDWR   0x0002
+#endif
+#ifndef O_WRONLY
+#define	O_WRONLY 0x0001
+#endif
+
+#ifndef S_IREAD
+#define	S_IREAD  0000400
+#endif
+#ifndef S_IWRITE
+#define	S_IWRITE 0000200
 #endif
 
 /*

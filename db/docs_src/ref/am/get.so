@@ -1,0 +1,36 @@
+m4_comment([$Id: get.so,v 10.18 2003/10/18 19:15:52 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Retrieving records, @retrieving records, am/opensub, am/put)
+
+m4_p([dnl
+The m4_refT(dbh_get) retrieves records from the database.  In general,
+m4_ref(dbh_get) takes a key and returns the associated data from the
+database.])
+
+m4_p([dnl
+There are a few flags that you can set to customize retrieval:])
+
+m4_tagbegin
+m4_tag([m4_ref(DB_GET_BOTH)], [dnl
+Search for a matching key and data item, that is, only return success
+if both the key and the data items match those stored in the database.])
+
+m4_tag([m4_ref(DB_RMW)], [dnl
+Read-modify-write: acquire write locks instead of read locks during
+retrieval. This can enhance performance in threaded applications by
+reducing the chance of deadlock.])
+
+m4_tag([m4_ref(DB_SET_RECNO)], [dnl
+If the underlying database is a Btree, and was configured so that it
+is possible to search it by logical record number, retrieve a specific
+record.])
+
+m4_tagend
+
+m4_p([dnl
+If the database has been configured to support duplicate records,
+m4_ref(dbh_get) will always return the first data item in the duplicate
+set.])
+
+m4_page_footer

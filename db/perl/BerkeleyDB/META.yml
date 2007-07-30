@@ -1,10 +1,13 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         BerkeleyDB
-version:      0.30
-version_from: BerkeleyDB.pm
-installdirs:  site
-requires:
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
+--- #YAML:1.0
+name:                BerkeleyDB
+version:             0.32
+abstract:            Perl extension for Berkeley DB version 2, 3 or 4
+license:             perl
+generated_by:        ExtUtils::MakeMaker version 6.34
+distribution_type:   module
+requires:     
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
+    version: 1.2
+author:
+    - Paul Marquess <pmqs@cpan.org>

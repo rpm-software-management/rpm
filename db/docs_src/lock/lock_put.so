@@ -1,0 +1,29 @@
+m4_comment([$Id: lock_put.so,v 10.37 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, lock_put)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(lock_put),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lock_put(DB_ENV *env, DB_LOCK *lock);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lock_put(DbLock *lock);
+]))
+
+m4_p([dnl
+The m4_refT(lock_put) releases m4_arg(lock).])
+
+m4_return(lock_put, std)
+
+m4_parambegin
+m4_param(lock, [dnl
+The m4_arg(lock) parameter is the lock to be released.])
+m4_paramend
+
+m4_err(lock_put, einval)
+
+m4_seealso(DbLock)
+m4_page_footer

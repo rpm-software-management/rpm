@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: Database.java,v 12.5 2006/08/24 14:46:07 bostic Exp $
+ * $Id: Database.java,v 12.8 2007/05/17 15:15:41 bostic Exp $
  */
 
 package com.sleepycat.db;
@@ -164,6 +163,15 @@ public class Database {
 
         return OperationStatus.fromInt(
             db.del((txn == null) ? null : txn.txn, key,
+                ((txn == null) ? autoCommitFlag : 0)));
+    }
+
+    public OperationStatus exists(final Transaction txn,
+                               final DatabaseEntry key)
+        throws DatabaseException {
+
+        return OperationStatus.fromInt(
+            db.exists((txn == null) ? null : txn.txn, key,
                 ((txn == null) ? autoCommitFlag : 0)));
     }
 

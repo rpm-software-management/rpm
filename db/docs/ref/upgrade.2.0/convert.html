@@ -1,6 +1,5 @@
 <!--$Id: convert.so,v 11.6 2000/03/18 21:43:19 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -45,7 +44,7 @@ the creation of an extra object (the DBC object), which is then used to
 access the database.
 <p>Specifically, the partial key match and range search functionality of the
 R_CURSOR flag in DB-&gt;seq has been replaced by the
-<a href="../../api_c/dbc_get.html#DB_SET_RANGE">DB_SET_RANGE</a> flag in <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a>.</p>
+<a href="../../api_c/dbc_get.html#DB_SET_RANGE">DB_SET_RANGE</a> flag in <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a>.</p>
 <p><li>In version 2 of the Berkeley DB library, additions or deletions into Recno
 (fixed and variable-length record) databases no longer automatically
 logically renumber all records after the add/delete point, by default.
@@ -70,6 +69,6 @@ additional functionality supplied by Berkeley DB version 2, as it is likely to
 result in enhanced application performance.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.2.0/system.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.2.0/disk.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

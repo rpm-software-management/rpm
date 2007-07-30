@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: recd022.tcl,v 12.6 2006/08/24 14:46:37 bostic Exp $
+# $Id: recd022.tcl,v 12.9 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	recd022
 # TEST	Test that pages allocated by an aborted subtransaction
@@ -105,7 +104,7 @@ proc recd022 { method args} {
 
 	# Recover, then abort the recovered parent txn
 	puts "\tRecd022.h: recover, then abort parent"
-	set env1 [berkdb env -create -recover -home $testdir -txn]
+	set env1 [berkdb_env -create -recover -home $testdir -txn]
 	set txnlist [$env1 txn_recover]
 	set aborttxn [lindex [lindex $txnlist 0] 0]
 	error_check_good parent_abort [$aborttxn abort] 0

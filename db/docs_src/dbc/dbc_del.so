@@ -1,0 +1,42 @@
+m4_comment([$Id: dbc_del.so,v 10.47 2006/10/24 13:26:50 bostic Exp $])
+
+define(M4PAGELOCAL, [dbc_del, DB_SECONDARY_BAD])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbc_del),
+ifelse(M4API, C_API, [dnl
+int
+DBcursor-__GT__del(DBC *DBcursor, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Dbc::del(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbc_del) deletes the key/data pair to which the cursor
+refers.])
+
+m4_p([dnl
+When called on a cursor opened on a database that has been made into a
+secondary index using the m4_refT(dbh_associate), the m4_refT(dbh_del)
+deletes the key/data pair from the primary database and all secondary
+indices.])
+
+m4_p([dnl
+The cursor position is unchanged after a delete, and subsequent calls to
+cursor functions expecting the cursor to refer to an existing key will
+fail.])
+
+m4_return(dbc_del,
+specific, DB_KEYEMPTY, [if the element has already been deleted], prev)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_err(dbc_del, deadlock, repinval, secondary_bad, readonly,
+einval, [the cursor has not been initialized], cdbperm)
+
+m4_seealso(Dbc)
+m4_page_footer

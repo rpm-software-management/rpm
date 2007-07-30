@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: cxx_seq.cpp,v 12.6 2006/08/24 14:45:13 bostic Exp $
+ * $Id: cxx_seq.cpp,v 12.9 2007/05/17 17:23:26 bostic Exp $
  */
 
 #include "db_config.h"
@@ -97,7 +96,7 @@ Db *DbSequence::get_db()
 Dbt *DbSequence::get_key()
 {
 	DB_SEQUENCE *seq = unwrap(this);
-	memset(&key_, 0, sizeof (DBT));
+	memset(&key_, 0, sizeof(DBT));
 	(void)seq->get_key(seq, &key_);
 	return Dbt::get_Dbt(&key_);
 }

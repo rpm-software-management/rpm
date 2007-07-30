@@ -1,0 +1,24 @@
+m4_comment([$Id: set_func_write.so,v 10.14 2003/09/25 15:28:09 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_write)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_write),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_write(
+    ssize_t (*func_write)(int fd, const void *buffer, size_t nbytes));
+]))
+
+m4_posix_func(write)
+
+m4_scope_process(dbenv_set_func_write)
+
+m4_when_init(dbenv_set_func_write)
+
+m4_return(dbenv_set_func_write, std)
+
+m4_param_replace(func_write)
+
+m4_rtc_seealso
+m4_page_footer

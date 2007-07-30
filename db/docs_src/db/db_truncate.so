@@ -1,0 +1,46 @@
+m4_comment([$Id: db_truncate.so,v 1.29 2006/09/13 14:30:52 mjc Exp $])
+
+define(M4PAGELOCAL, dbh_truncate)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_truncate),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__truncate(DB *db,
+    DB_TXN *txnid, u_int32_t *countp, u_int32_t flags);
+], M4API, CXX_API, [dnl
+int
+Db::truncate(DbTxn *txnid, u_int32_t *countp, u_int32_t flags);
+], [dnl
+public int truncate(DbTxn txnid, int flags)
+    throws DbException;
+]))
+
+m4_p([dnl
+The m4_refT(dbh_truncate) empties the database, discarding all records
+it contains.  The number of records discarded from the database is
+returned in m4_arg(countp).])
+
+m4_p([dnl
+When called on a database configured with secondary indices using the
+m4_refT(dbh_associate), the m4_refT(dbh_truncate) truncates the primary
+database and all secondary indices.  A count of the records discarded
+from the primary database is returned.])
+
+m4_p([dnl
+It is an error to call the m4_refT(dbh_truncate) on a database with open
+cursors.])
+
+m4_return(dbh_truncate, std)
+
+m4_parambegin
+m4_param_co(countp, number of records discarded from the database)
+m4_unusedflags
+m4_param_txn(dbh_truncate)
+m4_paramend
+
+m4_err(dbh_truncate, deadlock,
+einval, [there are open cursors in the database])
+
+m4_seealso(Db)
+m4_page_footer

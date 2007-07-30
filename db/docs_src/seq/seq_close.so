@@ -1,0 +1,31 @@
+m4_comment([$Id: seq_close.so,v 1.2 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, seq_close)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_close),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__close(DB_SEQUENCE *seq, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::close(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(seq_close) closes the sequence handle.  Any unused cached
+values are lost.])
+
+m4_destructor(DbSequence, seq_close)
+
+m4_return(seq_close, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_err(seq_close, einval)
+
+m4_seealso(DbSequence)
+m4_page_footer

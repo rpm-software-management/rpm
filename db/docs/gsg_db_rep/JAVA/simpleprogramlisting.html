@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Program Listing</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="txnapp.html" title="Chapter 2. Transactional Application" />
-    <link rel="previous" href="txnapp.html" title="Chapter 2. Transactional Application" />
-    <link rel="next" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
+    <link rel="up" href="txnapp.html" title="ChapterÂ 2.Â Transactional Application" />
+    <link rel="previous" href="txnapp.html" title="ChapterÂ 2.Â Transactional Application" />
+    <link rel="next" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Program Listing</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="txnapp.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. Transactional Application</th>
-          <td width="20%" align="right"> <a accesskey="n" href="repapp.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="txnapp.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â Transactional Application</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="repapp.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -103,7 +103,7 @@
 public class RepConfig
 {
     // Constant values used in the RepQuote application.
-    public static final String progname = &quot;SimpleTxn&quot;;
+    public static final String progname = "SimpleTxn";
     public static final int CACHESIZE = 10 * 1024 * 1024;
 
     // member variables containing configuration information
@@ -112,7 +112,7 @@ public class RepConfig
 
     public RepConfig()
     {
-        home = &quot;TESTDIR&quot;;
+        home = "TESTDIR";
     }
 
     public java.io.File getHome()
@@ -182,10 +182,10 @@ public class SimpleTxn
 </p>
         <pre class="programlisting">    public static void usage()
     {
-        System.err.println(&quot;usage: &quot; + repConfig.progname);
-        System.err.println(&quot;[-h home]&quot;);
+        System.err.println("usage: " + repConfig.progname);
+        System.err.println("[-h home]");
 
-        System.err.println(&quot;\t -h home directory\n&quot;);
+        System.err.println("\t -h home directory\n");
 
         System.exit(1);
     }  </pre>
@@ -218,12 +218,12 @@ public class SimpleTxn
         // Extract the command line parameters
         for (int i = 0; i &lt; argv.length; i++)
         {
-            if (argv[i].compareTo(&quot;-h&quot;) == 0) {
+            if (argv[i].compareTo("-h") == 0) {
                 // home - a string arg.
                 i++;
                 config.home = argv[i];
             } else {
-                System.err.println(&quot;Unrecognized option: &quot; + argv[i]);
+                System.err.println("Unrecognized option: " + argv[i]);
                 usage();
             }
         }  </pre>
@@ -256,8 +256,8 @@ public class SimpleTxn
     </p>
         <pre class="programlisting">            runner.terminate();
         } catch (DatabaseException dbe) {
-            System.err.println(&quot;Caught an exception during &quot; +
-                &quot;initialization or processing: &quot; + dbe.toString());
+            System.err.println("Caught an exception during " +
+                "initialization or processing: " + dbe.toString());
             if (runner != null)
                 runner.terminate();
         }
@@ -308,9 +308,9 @@ public class SimpleTxn
         try {
             dbenv = new Environment(repConfig.getHome(), envConfig);
         } catch(FileNotFoundException e) {
-            System.err.println(&quot;FileNotFound exception: &quot; + e.toString());
+            System.err.println("FileNotFound exception: " + e.toString());
             System.err.println(
-                &quot;Ensure that the environment directory is pre-created.&quot;);
+                "Ensure that the environment directory is pre-created.");
             ret = 1;
         }
 
@@ -376,7 +376,7 @@ public class SimpleTxn
                                         null,               // db name
                                         dbconf);
                } catch (FileNotFoundException fnfe) {
-                 System.err.println(&quot;File not found exception&quot; + fnfe.toString());
+                 System.err.println("File not found exception" + fnfe.toString());
                 // Get here only if the environment home directory
                 // somehow does not exist.
                }
@@ -407,16 +407,16 @@ public class SimpleTxn
                 new BufferedReader(new InputStreamReader(System.in));
 
             // listen for input, and add it to the database.
-            System.out.print(&quot;QUOTESERVER&gt; &quot;);
+            System.out.print("QUOTESERVER&gt; ");
             System.out.flush();
             String nextline = null;
             try {
                 nextline = stdin.readLine();
             } catch (IOException ioe) {
-                System.err.println(&quot;Unable to get data from stdin&quot;);
+                System.err.println("Unable to get data from stdin");
                 break;
             }
-            String[] words = nextline.split(&quot;\\s&quot;);
+            String[] words = nextline.split("\\s");
 
             // A blank line causes the DB to be dumped to stdout.
             if (words.length == 0 ||
@@ -424,19 +424,19 @@ public class SimpleTxn
                 try {
                     printStocks(db);
                 } catch (DatabaseException e) {
-                    System.err.println(&quot;Got db exception reading &quot; +
-                        &quot;DB: &quot; + e.toString());
+                    System.err.println("Got db exception reading " +
+                        "DB: " + e.toString());
                     break;
                 }
                 continue;
             }
 
             if (words.length == 1 &amp;&amp;
-                (words[0].compareToIgnoreCase(&quot;quit&quot;) == 0 ||
-                words[0].compareToIgnoreCase(&quot;exit&quot;) == 0)) {
+                (words[0].compareToIgnoreCase("quit") == 0 ||
+                words[0].compareToIgnoreCase("exit") == 0)) {
                 break;
             } else if (words.length != 2) {
-                System.err.println(&quot;Format: TICKER VALUE&quot;);
+                System.err.println("Format: TICKER VALUE");
                 continue;
             }  </pre>
         <p>
@@ -444,9 +444,9 @@ public class SimpleTxn
                 classes that we will use to write the new information to the database.
             </p>
         <pre class="programlisting">            DatabaseEntry key =
-                    new DatabaseEntry(words[0].getBytes(&quot;UTF-8&quot;));
+                    new DatabaseEntry(words[0].getBytes("UTF-8"));
             DatabaseEntry data =
-                    new DatabaseEntry(words[1].getBytes(&quot;UTF-8&quot;));  </pre>
+                    new DatabaseEntry(words[1].getBytes("UTF-8"));  </pre>
         <p>
                 Having done that, we can write the new information to the
                 database. Remember that because a transaction handle is not
@@ -462,7 +462,7 @@ public class SimpleTxn
                 Also, the database is not configured for duplicate records, so
                 the data portion of a record is overwritten if the provided
                 key already exists in the database. However, in this case
-                DB returns <tt class="methodname">OperationStatus.KEYEXIST</tt> &#8212; which
+                DB returns <tt class="methodname">OperationStatus.KEYEXIST</tt> â€” which
                 we ignore.
             </p>
         <pre class="programlisting">            db.put(null, key, data);  </pre>
@@ -520,8 +520,8 @@ public class SimpleTxn
     {
         Cursor dbc = db.openCursor(null, null);
 
-        System.out.println(&quot;\tSymbol\tPrice&quot;);
-        System.out.println(&quot;\t======\t=====&quot;);
+        System.out.println("\tSymbol\tPrice");
+        System.out.println("\t======\t=====");
 
         DatabaseEntry key = new DatabaseEntry();
         DatabaseEntry data = new DatabaseEntry();
@@ -533,7 +533,7 @@ public class SimpleTxn
                 (key.getData(), key.getOffset(), key.getSize());
             String datastr = new String
                 (data.getData(), data.getOffset(), data.getSize());
-            System.out.println(&quot;\t&quot;+keystr+&quot;\t&quot;+datastr);
+            System.out.println("\t"+keystr+"\t"+datastr);
 
         }
         dbc.close();
@@ -545,18 +545,18 @@ public class SimpleTxn
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="txnapp.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="txnapp.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="txnapp.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="repapp.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="repapp.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 2. Transactional Application </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 2.Â Transactional ApplicationÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 3. The DB Replication Framework</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 3.Â The DB Replication Framework</td>
         </tr>
       </table>
     </div>

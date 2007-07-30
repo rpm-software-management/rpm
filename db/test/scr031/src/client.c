@@ -83,7 +83,7 @@ main(int argc, char* argv[])
 		printf("%s: tpinit() OK\n", progname);
 
 	/* Allocate init buffer */
-	if((initBuf = (TPINIT *)tpalloc("TPINIT", NULL, TPINITNEED(0))) == 0)
+	if ((initBuf = (TPINIT *)tpalloc("TPINIT", NULL, TPINITNEED(0))) == 0)
 		goto tuxedo_err;
 	if (verbose)
 		printf("%s: tpalloc(\"TPINIT\") OK\n", progname);

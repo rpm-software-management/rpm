@@ -1,0 +1,46 @@
+m4_comment([$Id: checkpoint.so,v 10.22 2003/12/09 18:57:46 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Checkpoints,
+    checkpoints in @transaction protected applications,
+    transapp/deadlock, transapp/archival)
+
+m4_p([dnl
+The second component of the infrastructure is performing checkpoints of
+the log files.  Performing checkpoints is necessary for two reasons.])
+
+m4_p([dnl
+First, you may be able to remove m4_db log files from your database
+environment after a checkpoint.  Change records are written into the log
+files when databases are modified, but the actual changes to the
+database are not necessarily written to disk.  When a checkpoint is
+performed, changes to the database are written into the backing database
+file.  Once the database pages are written, log files can be archived
+and removed from the database environment because they will never be
+needed for anything other than catastrophic failure.  (Log files which
+are involved in active transactions may not be removed, and there must
+always be at least one log file in the database environment.)])
+
+m4_p([dnl
+The second reason to perform checkpoints is because checkpoint frequency
+is inversely proportional to the amount of time it takes to run database
+recovery after a system or application failure.  This is because
+recovery after failure has to redo or undo changes only since the last
+checkpoint, as changes before the checkpoint have all been flushed to
+the databases.])
+
+m4_p([dnl
+m4_db provides a separate utility, m4_ref(db_checkpoint), which can be
+used to perform checkpoints.  Alternatively, applications can write
+their own checkpoint utility using the underlying m4_ref(txn_checkpoint)
+function.  The following code fragment checkpoints the database
+environment every 60 seconds:])
+
+include(ref/transapp/checkpoint.cs)
+
+m4_p([dnl
+Because checkpoints can be quite expensive, choosing how often to
+perform a checkpoint is a common tuning parameter for m4_db
+applications.])
+
+m4_page_footer

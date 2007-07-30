@@ -1,0 +1,20 @@
+m4_comment([$Id: faq.so,v 1.3 2004/10/05 16:44:35 bostic Exp $])
+
+m4_ref_title(RPC Client/Server, RPC FAQ, @RPC FAQ, rpc/server, tcl/intro)
+
+m4_nlistbegin
+
+m4_nlist([m4_bold([dnl
+I get the m4_ref(DB_NOSERVER) error back from a
+m4_ref(dbenv_set_rpc_server) call that is using the default client
+timeout value.])])
+
+m4_p([dnl
+Some systems have a default RPC client timeout value that is too small,
+and the client times out the request before the server has a chance to
+process and reply.  If you get this error, try explicitly setting the
+client timeout value.])
+
+m4_nlistend
+
+m4_page_footer

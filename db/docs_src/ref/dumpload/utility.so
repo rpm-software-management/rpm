@@ -1,0 +1,43 @@
+m4_comment([$Id: utility.so,v 10.18 2004/10/05 16:44:33 bostic Exp $])
+
+m4_ref_title(Dumping and Reloading,
+    The db_dump and db_load utilities,
+    dumping/loading @text to/from databases,
+    ext/php, dumpload/format)
+
+m4_p([dnl
+There are three utilities used for dumping and loading m4_db
+databases: m4_ref(db_dump), m4_ref(db_dump185), and m4_ref(db_load).])
+
+m4_p([dnl
+The m4_ref(db_dump) and m4_ref(db_dump185) utilities dump m4_db
+databases into a flat-text representation of the data that can be read
+by m4_ref(db_load).  The only difference between them is that
+m4_ref(db_dump) reads m4_db version 2 and greater database formats,
+whereas m4_ref(db_dump185) reads m4_db version 1.85 and 1.86 database
+formats.])
+
+m4_p([dnl
+The m4_ref(db_load) utility reads either the output format used
+by the dump utilities or (optionally) a flat-text representation
+created using other tools, and stores it into a m4_db database.])
+
+m4_p([dnl
+Dumping and reloading Hash databases that use user-defined hash functions
+will result in new databases that use the default hash function. Although
+using the default hash function may not be optimal for the new database,
+it will continue to work correctly.])
+
+m4_p([dnl
+Dumping and reloading Btree databases that use user-defined prefix or
+comparison functions will result in new databases that use the default
+prefix and comparison functions. In this case, it is quite likely that
+applications will be unable to retrieve records, and it is possible that
+the load process itself will fail.])
+
+m4_p([dnl
+The only available workaround for either Hash or Btree databases is to
+modify the sources for the m4_ref(db_load) utility to load the database
+using the correct hash, prefix, and comparison functions.])
+
+m4_page_footer

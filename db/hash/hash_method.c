@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: hash_method.c,v 12.4 2006/08/24 14:46:05 bostic Exp $
+ * $Id: hash_method.c,v 12.7 2007/05/17 15:15:38 bostic Exp $
  */
 
 #include "db_config.h"
@@ -40,10 +39,12 @@ __ham_db_create(dbp)
 	hashp->h_nelem = 0;			/* Defaults. */
 	hashp->h_ffactor = 0;
 	hashp->h_hash = NULL;
+	hashp->h_compare = NULL;
 
 	dbp->get_h_ffactor = __ham_get_h_ffactor;
 	dbp->set_h_ffactor = __ham_set_h_ffactor;
 	dbp->set_h_hash = __ham_set_h_hash;
+	dbp->set_h_compare = __ham_set_h_compare;
 	dbp->get_h_nelem = __ham_get_h_nelem;
 	dbp->set_h_nelem = __ham_set_h_nelem;
 
@@ -116,6 +117,30 @@ __ham_set_h_hash(dbp, func)
 
 	hashp = dbp->h_internal;
 	hashp->h_hash = func;
+	return (0);
+}
+
+/*
+ * __ham_set_h_compare --
+ *	Set the comparison function.
+ *
+ * PUBLIC: int __ham_set_h_compare
+ * PUBLIC:         __P((DB *, int (*)(DB *, const DBT *, const DBT *)));
+ */
+int
+__ham_set_h_compare(dbp, func)
+	DB *dbp;
+	int (*func) __P((DB *, const DBT *, const DBT *));
+{
+	HASH *t;
+
+	DB_ILLEGAL_AFTER_OPEN(dbp, "DB->set_h_compare");
+	DB_ILLEGAL_METHOD(dbp, DB_OK_HASH);
+
+	t = dbp->h_internal;
+
+	t->h_compare = func;
+
 	return (0);
 }
 

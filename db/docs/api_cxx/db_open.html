@@ -1,6 +1,5 @@
-<!--$Id: db_open.so,v 10.119 2006/09/13 14:30:52 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_open.so,v 10.122 2007/05/31 18:52:36 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -28,6 +27,9 @@ Db::open(DbTxn *txnid, const char *file,
 <p>
 int
 Db::get_dbname(const char **filenamep, const char **dbnamep);
+<p>
+int
+Db::get_multiple()
 <p>
 int
 Db::get_open_flags(u_int32_t *flagsp);
@@ -109,11 +111,11 @@ not supported by the queue format.
 <dt><a name="DB_RDONLY">DB_RDONLY</a><dd>Open the database for reading only.  Any attempt to modify items in the
 database will fail, regardless of the actual permissions of any
 underlying files.
-<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Support read operations with degree 1 isolation.  Read operations on the
-database may request the return of modified but not yet committed data.
-This flag must be specified on all <a href="../api_cxx/db_class.html">Db</a> handles used to perform
-dirty reads or database updates, otherwise requests for dirty reads may
-not be honored and the read may block.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Support transactional read operations with degree 1 isolation.  Read
+operations on the database may request the return of modified but not
+yet committed data.  This flag must be specified on all <a href="../api_cxx/db_class.html">Db</a>
+handles used to perform dirty reads or database updates, otherwise
+requests for dirty reads may not be honored and the read may block.
 <dt><a name="DB_THREAD">DB_THREAD</a><dd>Cause the <a href="../api_cxx/db_class.html">Db</a> handle returned by Db::open to be
 <i>free-threaded</i>; that is, concurrently usable by multiple
 threads in the address space.
@@ -135,14 +137,16 @@ defaults, and is not further specified by Berkeley DB.  System shared memory
 segments created by the database open are created with mode <b>mode</b>, unmodified
 by the process' umask value.  If <b>mode</b> is 0, the database open will use a
 default mode of readable and writable by both owner and group.</p>
-<dt><b>txnid</b><dd>If the operation is part of an application-specified
-transaction, the <b>txnid</b> parameter is a transaction handle
-returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
-group, the <b>txnid</b> parameter is a handle returned from
-<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.
+If no transaction handle is
 specified, but the
 DB_AUTO_COMMIT flag is specified,
-the operation will be implicitly transaction protected.  Note that transactionally protected operations on a <a href="../api_cxx/db_class.html">Db</a> handle
+the operation will be implicitly transaction protected.
+Note that transactionally protected operations on a <a href="../api_cxx/db_class.html">Db</a> handle
 requires the <a href="../api_cxx/db_class.html">Db</a> handle itself be transactionally protected
 during its open.  Also note that the transaction must be committed before
 the handle is closed; see <a href="../ref/program/scope.html">Berkeley DB
@@ -212,8 +216,8 @@ to grant a lock in the allowed time, the Db::open method will fail and
 either return <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> or
 throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exception.</p>
 <hr size=1 noshade>
-<h3>Description: Db::get_database</h3>
-<p>The Db::get_database method returns the current filename and database
+<h3>Description: Db::get_dbname</h3>
+<p>The Db::get_dbname method returns the current filename and database
 name.</p>
 <h3>Parameters</h3>
 <dl compact>
@@ -222,13 +226,23 @@ a pointer to the current filename is copied.
 <dt><b>dbnamep</b><dd>The <b>dbnamep</b> parameter references memory into which
 a pointer to the current database name is copied. 
 </dl>
-<p>The Db::get_database method may be called at any time during the life of the
+<p>The Db::get_dbname method may be called at any time during the life of the
 application.</p>
-<p>The Db::get_database method
+<p>The Db::get_dbname method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
 failure, and returns 0 on success.
 </p>
+<hr size=1 noshade>
+<h3>Description: <a href="../api_cxx/db_open.html">Db::get_multiple</a></h3>
+<p>The <a href="../api_cxx/db_open.html">Db::get_multiple</a> method returns non-zero if the <a href="../api_cxx/db_class.html">Db</a> handle
+references a physical file supporting multiple databases.</p>
+<p>In this case, the <a href="../api_cxx/db_class.html">Db</a> handle is a handle on a database whose key
+values are the names of the databases stored in the physical file and
+whose data values are opaque objects.  No keys or data values may be
+modified or stored using the database handle.</p>
+<p>The <a href="../api_cxx/db_open.html">Db::get_multiple</a> method may not be called before the Db::open method has been
+called.</p>
 <hr size=1 noshade>
 <h3>Description: Db::get_open_flags</h3>
 <p>The Db::get_open_flags method returns the current open method flags.</p>
@@ -259,6 +273,6 @@ application.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_symlink,v 12.5 2006/09/13 17:51:34 bostic Exp $
+#	$Id: s_symlink,v 12.9 2007/07/06 16:29:16 bostic Exp $
 
 echo 'Creating Berkeley DB source tree symbolic links...'
 
@@ -19,6 +19,7 @@ build db/tags ../dist/tags
 build db185/tags ../dist/tags
 build db_archive/tags ../dist/tags
 build db_checkpoint/tags ../dist/tags
+build db_codegen/tags ../dist/tags
 build db_deadlock/tags ../dist/tags
 build db_dump/tags ../dist/tags
 build db_dump185/tags ../dist/tags
@@ -47,6 +48,8 @@ build mp/tags ../dist/tags
 build mutex/tags ../dist/tags
 build os/tags ../dist/tags
 build os_brew/tags ../dist/tags
+build os_qnx/tags ../dist/tags
+build os_s60/tags ../dist/tags
 build os_vxworks/tags ../dist/tags
 build os_windows/tags ../dist/tags
 build qam/tags ../dist/tags

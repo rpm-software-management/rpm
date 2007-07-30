@@ -1,0 +1,17 @@
+m4_comment([$Id: java.so,v 1.5 2004/08/15 03:22:57 bostic Exp $])
+
+define(BDB_LOC, ..)
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.1: Java exceptions,,
+    upgrade.4.1/hash_nelem, upgrade.4.1/cxx)
+
+m4_p([dnl
+The Java DbEnv constructor is now marked with "throws DbException".
+This means applications must construct DbEnv objects in a context where
+DbException throwables are handled (either in a try/catch block or in a
+method that propagates the exception up the stack).  Note that previous
+versions of the m4_db Java API could throw this exception from the
+constructor but it was not marked.])
+
+m4_page_footer

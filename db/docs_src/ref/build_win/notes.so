@@ -1,0 +1,79 @@
+m4_comment([$Id: notes.so,v 10.32 2006/09/15 18:54:47 bostic Exp $])
+
+m4_ref_title(Building m4_db for Windows systems,
+    Windows notes, @Windows notes, build_win/test, build_win/faq)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_db does not support the Windows/95 platform.])
+
+m4_nlist([dnl
+m4_db does not support replication on the Windows/98 or Windows/ME
+platforms.])
+
+m4_nlist([dnl
+On Windows/98 and Windows/ME, files opened by multiple processes do not
+share data correctly.  For this reason, the m4_ref(DB_SYSTEM_MEM) flag
+is implied for any application not specifying the m4_ref(DB_PRIVATE)
+flag, causing the system paging file to be used for sharing data.])
+
+m4_nlist([dnl
+On Windows/98 and Windows/ME, removing or renaming a file using the
+m4_ref(dbenv_dbremove), m4_ref(dbenv_dbrename), m4_ref(dbh_remove) or
+m4_refT(dbh_rename)s may fail if another thread of control has the file
+open for any reason, including checkpointing or flushing pages from the
+underlying shared database environment cache.  There is no workaround
+for this problem other than re-attempting the operation after the other
+thread of control has closed its m4_db handles.])
+
+m4_nlist([dnl
+On Windows, system paging file memory is freed on last close.  For this
+reason, multiple processes sharing a database environment created using
+the m4_ref(DB_SYSTEM_MEM) flag must arrange for at least one process to
+always have the environment open, or alternatively that any process
+joining the environment be prepared to re-create it.])
+m4_p([dnl
+If a system memory environment is closed by all processes, subsequent
+attempts to open it will return an error.  To successfully open a
+transactional environment in this state, recovery must be run by the
+next process to open the environment.  For non-transactional
+environments, applications should remove the existing environment and
+then create a new database environment.])
+
+m4_nlist([dnl
+When using the m4_ref(DB_SYSTEM_MEM) flag, m4_db shared regions are
+created without ACLs, which means that the regions are only accessible
+to a single user.  If wider sharing is appropriate (for example, both
+user applications and Windows/NT service applications need to access
+the m4_db regions), the m4_db code will need to be modified to create
+the shared regions with the correct ACLs.  Alternatively, by not
+specifying the m4_ref(DB_SYSTEM_MEM) flag, filesystem-backed regions
+will be created instead, and the permissions on those files may be
+directly specified through the m4_refT(dbenv_open).])
+
+m4_nlist([dnl
+Applications that operate on wide character strings can use the
+Windows function WideCharToMultiByte with the code page CP_UTF8 to
+convert paths to the form expected by m4_db.  Internally, m4_db calls
+MultiByteToWideChar on paths before calling Windows functions.])
+
+m4_nlist([dnl
+Various m4_db methods take a m4_arg(mode) argument, which is intended
+to specify the underlying file permissions for created files.  m4_db
+currently ignores this argument on Windows systems.
+m4_p([dnl
+It would be possible to construct a set of security attributes to pass to
+m4_arg(CreateFile) that accurately represents the mode.  In the worst
+case, this would involve looking up user and all group names, and creating
+an entry for each.  Alternatively, we could call the m4_arg(_chmod)
+(partial emulation) function after file creation, although this leaves us
+with an obvious race.])
+m4_p([dnl
+Practically speaking, however, these efforts would be largely meaningless
+on a FAT file system, which only has a "readable" and "writable" flag,
+applying to all users.])])
+
+m4_nlistend
+
+m4_page_footer

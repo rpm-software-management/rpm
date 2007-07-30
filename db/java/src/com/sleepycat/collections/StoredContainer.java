@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: StoredContainer.java,v 12.6 2006/08/31 18:14:08 bostic Exp $
+ * $Id: StoredContainer.java,v 12.8 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;
@@ -221,17 +220,10 @@ public abstract class StoredContainer implements Cloneable {
     }
 
     /**
-     * Returns the number of records in the collection or map.
-     * This method conforms to the {@link java.util.Collection#size} and {@link
-     * java.util.Map#size} interfaces.
+     * Returns a non-transactional count of the records in the collection or
+     * map.  This method conforms to the {@link java.util.Collection#size} and
+     * {@link java.util.Map#size} interfaces.
      *
-     * <p>Note that if other threads are adding or removing records while this
-     * method is executing, the size returned may be incorrect.  This method
-     * does not lock the database.</p>
-     *
-     * <p>Also note that, for a large database, this method may be expensive.
-     * All non-duplicate records in the database are enumerated by this method,
-     * bringing them into memory if they are not already cached.</p>
      *
      * @throws RuntimeExceptionWrapper if a {@link DatabaseException} is thrown.
      */

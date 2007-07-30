@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: cxx_mpool.cpp,v 12.5 2006/08/24 14:45:13 bostic Exp $
+ * $Id: cxx_mpool.cpp,v 12.10 2007/06/28 13:02:50 mjc Exp $
  */
 
 #include "db_config.h"
@@ -88,10 +87,9 @@ DB_MPOOLFILE_METHOD(get,
 DB_MPOOLFILE_METHOD(open,
     (const char *file, u_int32_t flags, int mode, size_t pagesize),
     (mpf, file, flags, mode, pagesize), DB_RETOK_STD)
-DB_MPOOLFILE_METHOD(put, (void *pgaddr, u_int32_t flags),
-    (mpf, pgaddr, flags), DB_RETOK_STD)
-DB_MPOOLFILE_METHOD(set, (void *pgaddr, u_int32_t flags),
-    (mpf, pgaddr, flags), DB_RETOK_STD)
+DB_MPOOLFILE_METHOD(put,
+    (void *pgaddr, DB_CACHE_PRIORITY priority, u_int32_t flags),
+    (mpf, pgaddr, priority, flags), DB_RETOK_STD)
 DB_MPOOLFILE_METHOD(get_clear_len, (u_int32_t *lenp),
     (mpf, lenp), DB_RETOK_STD)
 DB_MPOOLFILE_METHOD(set_clear_len, (u_int32_t len),
@@ -108,6 +106,8 @@ DB_MPOOLFILE_METHOD(get_ftype, (int *ftypep),
     (mpf, ftypep), DB_RETOK_STD)
 DB_MPOOLFILE_METHOD(set_ftype, (int ftype),
     (mpf, ftype), DB_RETOK_STD)
+DB_MPOOLFILE_METHOD(get_last_pgno, (db_pgno_t *pgnop),
+    (mpf, pgnop), DB_RETOK_STD)
 DB_MPOOLFILE_METHOD(get_lsn_offset, (int32_t *offsetp),
     (mpf, offsetp), DB_RETOK_STD)
 DB_MPOOLFILE_METHOD(set_lsn_offset, (int32_t offset),

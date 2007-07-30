@@ -1,6 +1,5 @@
 <!--$Id: renumber.so,v 10.26 2003/10/18 19:15:55 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -63,7 +62,7 @@ last record in the database, will implicitly create records 26 and 27
 as well as 28.  All first, last, next and previous cursor operations
 will automatically skip over these implicitly created records.  So, if
 record number 5 is the only record the application has created,
-implicitly creating records 1 through 4, the <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method with the
+implicitly creating records 1 through 4, the <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> method with the
 <a href="../../api_c/dbc_get.html#DB_FIRST">DB_FIRST</a> flag will return record number 5, not record number 1.
 Attempts to explicitly retrieve implicitly created records by their
 record number will result in a special error return,
@@ -76,6 +75,6 @@ record by its record number will also result in the <a href="../../ref/program/e
 return.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_conf/re_source.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/ops.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

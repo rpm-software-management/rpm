@@ -1,0 +1,31 @@
+m4_comment([$Id: db_get_join.so,v 11.18 2002/08/18 21:17:25 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db get_join, m4_tcl_db_get_join, [dnl
+db get_join
+	m4_tcl_arg([-txn txnid])
+	{m4_italic(db) key}
+	{m4_italic(db) key}
+	...
+])
+
+m4_p([dnl
+The m4_tcl_db_get_join command performs the cursor operations required to
+join the specified keys and returns a list of joined {key data} pairs.
+See m4_link(M4RELDIR/ref/am/join, Equality join) for more information on
+the underlying requirements for joining.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tcl_txnopt
+
+m4_tagend
+
+m4_tcl_ret_error
+
+m4_page_footer

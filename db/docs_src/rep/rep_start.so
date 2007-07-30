@@ -1,0 +1,61 @@
+m4_comment([$Id: rep_start.so,v 1.17 2006/03/15 19:39:22 bostic Exp $])
+
+define(M4PAGELOCAL, [rep_start, DB_REP_CLIENT, DB_REP_MASTER])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_start),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_start(DB_ENV *env, DBT *cdata, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_start(Dbt *cdata, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(rep_start) configures the database environment as a client
+or master in a group of replicated database environments.])
+
+m4_repl_lower(rep_start)
+
+m4_p([dnl
+Replication master environments are the only database environments where
+replicated databases may be modified.  Replication client environments
+are read-only as long as they are clients.  Replication client
+environments may be upgraded to be replication master environments in
+the case that the current master fails or there is no master present.])
+
+m4_p([dnl
+The enclosing database environment must already have been opened by
+calling the m4_refT(dbenv_open) and must already have been configured
+to send replication messages by calling the m4_refT(rep_set_transport).])
+
+m4_return(rep_start, std)
+
+m4_parambegin
+m4_param(cdata, [dnl
+The m4_arg(cdata) parameter is an opaque data item that is sent over the
+communication infrastructure when the client comes online (see
+m4_link(M4RELDIR/ref/rep/newsite, Connecting to a new site) for more
+information).  If no such information is useful, m4_arg(cdata) should
+be NULL.])
+
+m4_param(flags, [dnl
+m4_sf_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_REP_CLIENT), [dnl
+Configure the environment as a replication client.])
+m4_tag(m4_idef(DB_REP_MASTER), [dnl
+Configure the environment as a replication master.])
+m4_tagend])
+m4_paramend
+
+m4_err(rep_start, einval,
+[the database environment was not already configured to communicate with
+a replication group by a call to m4_ref([rep_set_transport]);
+the database environment was not already opened])
+
+m4_seealso(Replication)
+m4_page_footer

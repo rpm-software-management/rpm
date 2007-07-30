@@ -1,0 +1,42 @@
+m4_comment([$Id: db_del.so,v 10.49 2006/09/13 14:30:52 mjc Exp $])
+
+define(M4PAGELOCAL, [dbh_del, DB_SECONDARY_BAD])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_del),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__del(DB *db, DB_TXN *txnid, DBT *key, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::del(DbTxn *txnid, Dbt *key, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_del) removes key/data pairs from the database.  The
+key/data pair associated with the specified m4_arg(key) is discarded from
+the database.  In the presence of duplicate key values, all records
+associated with the designated key will be discarded.])
+
+m4_p([dnl
+When called on a database that has been made into a secondary index
+using the m4_refT(dbh_associate), the m4_refT(dbh_del) deletes the
+key/data pair from the primary database and all secondary indices.])
+
+m4_return(dbh_del,
+specific, DB_NOTFOUND, [if the specified key is not in the database],
+specific, DB_KEYEMPTY, [if the database is a Queue or Recno database and
+the specified key exists, but was never explicitly created by the
+application or was later deleted], prev)
+
+m4_parambegin
+m4_unusedflags
+m4_param_key
+m4_param_txn(dbh_del)
+m4_paramend
+
+m4_err(dbh_del, deadlock, repinval, secondary_bad, readonly, einval)
+
+m4_seealso(Db)
+m4_page_footer

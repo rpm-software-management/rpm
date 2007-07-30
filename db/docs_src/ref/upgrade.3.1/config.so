@@ -1,0 +1,24 @@
+m4_comment([$Id: config.so,v 1.4 2001/05/15 14:44:16 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 3.1: DB_ENV-__GT__open, DB_ENV-__GT__remove],,
+    upgrade.3.1/intro, upgrade.3.1/set_tx_recover)
+
+m4_p([dnl
+In the m4_db 3.1 release, the m4_arg(config) argument to the
+m4_ref(dbenv_open), m4_ref(dbenv_remove) methods has been removed,
+replaced by additional methods on the m4_ref(DbEnv) handle.  If your
+application calls m4_ref(dbenv_open) or m4_ref(dbenv_remove) with a NULL
+m4_arg(config) argument, find those functions and remove the config
+argument from the call.  If your application has non-NULL m4_arg(config)
+argument, the strings values in that argument are replaced with calls to
+m4_ref(DbEnv) methods as follows:])
+
+m4_table_begin(, _center)
+m4_table_header(Previous config string, m4_db 3.1 version method)
+m4_table_element(DB_DATA_DIR, m4_ref(dbenv_set_data_dir))
+m4_table_element(DB_LOG_DIR, m4_ref(dbenv_set_lg_dir))
+m4_table_element(DB_TMP_DIR, m4_ref(dbenv_set_tmp_dir))
+m4_table_end
+
+m4_page_footer

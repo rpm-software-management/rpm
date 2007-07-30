@@ -1,0 +1,51 @@
+<!--$Id: 4.4.20.html,v 1.5 2007/05/17 18:17:18 bostic Exp $-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 4.4.20 Change Log</title>
+<meta name="description" content="Berkeley DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 4.4.20 Change Log</h3>
+
+<h3>Changes since Berkeley DB 4.4.16:</h3>
+<ol>
+
+<li>Add support for Visual Studio 2005. [#13521]
+<li>Fix a bug with in-memory transaction logs when files wrapped around
+the buffer. [#13589]
+<li>Fix a bug where we needed to close replications open files during
+replication initialization. [#13623]
+<li>Fix a bug which could leave locks in the environment if database
+compaction was run in a transactional environment on a non-transactional
+database.  This might have also have triggered deadlocks if the database
+was opened transactionally. [#13680]
+<li>Fix a bug where setting the DB_REGISTER flag could result in
+unnecessarily running recovery, or corruption of the registry file on
+Windows systems. [#13789]
+<li>Fix a bug in Database.compact that could cause JVM crashes or
+NullPointerException.  [#13791]
+<li>Fix a bug that would cause a trap if an environment was opened
+specifying DB_REGISTER and the environment directory could not be found.
+[#13793]
+<li>Fix a buffer overflow bug when displaying process and thread IDs in
+the Berkeley DB statistics output. [#13796]
+<li>Fix a bug where if there is insufficient memory for a database key
+in a DBT configured to return a key value into user-specified memory,
+the cursor is moved forward to the next entry in the database, which can
+cause applications to skip key/data pairs. [#13815]
+<li>Fix a bug that could cause the loss of an update to a QUEUE database
+in a hot backup. [#13823]
+<li>Fix a bug where retrieval from a secondary index could result in a
+core dump. [#13843]
+<li>Fix a bug that could cause part of the free list to become unlinked
+if a btree compaction was rolled back due to a transaction abort.
+[#13891]
+<li>Fix a bug with in-memory logging that could cause a race condition
+to corrupt the logs. [#13919]
+
+</ol>
+
+</body>
+</html>

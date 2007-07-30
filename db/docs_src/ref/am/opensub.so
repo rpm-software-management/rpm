@@ -1,0 +1,90 @@
+m4_comment([$Id: opensub.so,v 10.20 2007/05/17 18:31:55 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Opening multiple databases in a single file,, am/open, am/get)
+
+m4_p([dnl
+Applications may create multiple databases within a single physical
+file.  This is useful when the databases are both numerous and
+reasonably small, in order to avoid creating a large number of
+underlying files, or when it is desirable to include secondary index
+databases in the same file as the primary index database.  Putting
+multiple databases in a single physical file is an administrative
+convenience and unlikely to affect database performance.])
+
+m4_p([dnl
+To open or create a file that will include more than a single database,
+specify a database name when calling the m4_ref(dbh_open) method.])
+
+m4_p([dnl
+Physical files do not need to be comprised of a single type of database,
+and databases in a file may be of any mixture of types, except for Queue
+databases.  Queue databases must be created one per file and cannot
+share a file with any other database type.  There is no limit on the
+number of databases that may be created in a single file other than the
+standard m4_db file size and disk space limitations.])
+
+m4_p([dnl
+It is an error to attempt to open a second database in a file that was
+not initially created using a database name, that is, the file must
+initially be specified as capable of containing multiple databases for a
+second database to be created in it.])
+
+m4_p([dnl
+It is not an error to open a file that contains multiple databases
+without specifying a database name, however the database type should be
+specified as DB_UNKNOWN and the database must be opened read-only.  The
+handle that is returned from such a call is a handle on a database whose
+key values are the names of the databases stored in the database file
+and whose data values are opaque objects.  No keys or data values may be
+modified or stored using this database handle.])
+
+m4_section([Configuring databases sharing a file])
+
+m4_p([dnl
+There are four pieces of configuration information which must be
+specified consistently for all databases in a file, rather than
+differing on a per-database basis.  They are: byte order, checksum and
+encryption behavior, and page size.  When creating additional databases
+in a file, any of these configuration values specified must be
+consistent with the existing databases in the file or an error will be
+returned.])
+
+m4_section([Caching databases sharing a file])
+
+m4_p([dnl
+When storing multiple databases in a single physical file rather than
+in separate files, if any of the databases in a file is opened for
+update, all of the databases in the file must share a memory pool.  In
+other words, they must be opened in the same database environment.  This
+is so per-physical-file information common between the two databases is
+updated correctly.])
+
+m4_section([Locking in databases based on sharing a file])
+
+m4_p([dnl
+If databases are in separate files (and access to each separate database
+is single-threaded), there is no reason to perform any locking of any
+kind, and the two databases may be read and written simultaneously.
+Further, there would be no requirement to create a shared database
+environment in which to open those two databases.])
+
+m4_p([dnl
+However, since multiple databases in a file exist in a single physical
+file, opening two databases in the same file simultaneously requires
+locking be enabled, unless all of the databases are read-only.  As the
+locks for the two databases can only conflict during page allocation,
+this additional locking is unlikely to affect performance.  The
+exception is when m4_cam is configured; a single lock is used for all
+databases in the file when m4_cam is configured, and a write to one
+database will block all accesses to all databases.])
+
+m4_p([dnl
+In summary, programmers writing applications that open multiple
+databases in a single file will almost certainly need to create a shared
+database environment in the application as well.  For more information
+on database environments, see m4_link(M4RELDIR/ref/env/intro, [Database
+environment introduction.])])
+
+
+m4_page_footer

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: bt_curadj.c,v 12.11 2006/08/24 14:44:44 bostic Exp $
+ * $Id: bt_curadj.c,v 12.14 2007/05/17 15:14:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -229,11 +228,11 @@ __bam_opd_cursor(dbp, dbc, first, tpgno, ti)
 	 * If duplicates aren't sorted, we've just created a Recno tree.
 	 *
 	 * Note that in order to get here at all, there shouldn't be
-	 * an old off-page dup cursor--to augment the checking db_c_newopd
+	 * an old off-page dup cursor--to augment the checking dbc_newopd
 	 * will do, assert this.
 	 */
 	DB_ASSERT(dbp->dbenv, orig_cp->opd == NULL);
-	if ((ret = __db_c_newopd(dbc, tpgno, orig_cp->opd, &dbc_nopd)) != 0)
+	if ((ret = __dbc_newopd(dbc, tpgno, orig_cp->opd, &dbc_nopd)) != 0)
 		return (ret);
 
 	cp = (BTREE_CURSOR *)dbc_nopd->internal;
@@ -391,7 +390,7 @@ loop:		MUTEX_LOCK(dbenv, dbp->mutex);
 			    MVCC_SKIP_CURADJ(dbc, fpgno))
 				continue;
 			MUTEX_UNLOCK(dbenv, dbp->mutex);
-			if ((ret = __db_c_close(orig_cp->opd)) != 0)
+			if ((ret = __dbc_close(orig_cp->opd)) != 0)
 				goto err;
 			orig_cp->opd = NULL;
 			orig_cp->indx = fi;

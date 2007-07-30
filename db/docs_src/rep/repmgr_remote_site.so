@@ -1,0 +1,48 @@
+m4_comment([$Id: repmgr_remote_site.so,v 1.5 2006/09/08 18:33:38 bostic Exp $])
+
+define(M4PAGELOCAL, [repmgr_add_remote_site, DB_REPMGR_PEER])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(repmgr_add_remote_site),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__repmgr_add_remote_site(DB_ENV *env,
+    const char *host, u_int port, int *eidp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::repmgr_add_remote_site(
+    const char *host, u_int port, int *eidp, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(repmgr_add_remote_site) adds a new replication site to the
+replication manager's list of known sites.  It is not necessary for
+all sites in a replication group to know about all other sites in the
+group.])
+
+m4_when_any(repmgr_add_remote_site)
+m4_return(repmgr_add_remote_site, std)
+
+m4_parambegin
+m4_param(eidp, [dnl
+If m4_arg(eidp) is non-NULL, the
+environment ID assigned to the remote site is
+returned in the memory location referenced by m4_arg(eidp).])
+m4_tag(m4_arg(flags), [m4_sf_or_may
+m4_tagbegin
+m4_tag(m4_idef(DB_REPMGR_PEER), [dnl
+Specifying the m4_ref(DB_REPMGR_PEER) flag configures client-to-client
+synchronization with the specified remote site.
+m4_p([dnl
+Currently, the replication manager framework only supports a single client
+peer, and the last specified peer is used.])])
+m4_tagend])
+m4_param(host, [dnl
+The site's host identification string, generally a TCP/IP host name.])
+m4_param(port, [dnl
+The port number on which the remote site is receiving.])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
 		Retrieving Items by Index Key
 	</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
-    <link rel="up" href="UsingSecondaries.html" title="Chapter 3. &#10;&#9;&#9;Using Secondary Indices&#10;&#9;" />
+    <link rel="up" href="UsingSecondaries.html" title="ChapterÂ 3.Â &#10;&#9;&#9;Using Secondary Indices&#10;&#9;" />
     <link rel="previous" href="indexedcollections.html" title="&#10;&#9;&#9;Creating Indexed Collections&#10;&#9;" />
-    <link rel="next" href="Entity.html" title="Chapter 4. &#10;        Using Entity Classes&#9;&#10;&#9;" />
+    <link rel="next" href="Entity.html" title="ChapterÂ 4.Â &#10;        Using Entity Classes&#9;&#10;&#9;" />
   </head>
   <body>
     <div class="navheader">
@@ -22,11 +22,11 @@
 	</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="indexedcollections.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. 
+          <td width="20%" align="left"><a accesskey="p" href="indexedcollections.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â 
 		Using Secondary Indices
 	</th>
-          <td width="20%" align="right"> <a accesskey="n" href="Entity.html">Next</a></td>
+          <td width="20%" align="right">Â <a accesskey="n" href="Entity.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -65,7 +65,7 @@
 </p>
       <p>
     Using the standard Java collections API, the 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#get" target="_top">Map.get</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#get" target="_top">Map.get</a>
     
 	method for a stored collection with duplicate keys will return only
 	the first value for a given key. To obtain all values for a given
@@ -73,7 +73,7 @@
     <a href="../../java/com/sleepycat/collections/StoredMap.html#duplicates(java.lang.Object)" target="_top">StoredMap.duplicates</a>
     
 	method may be called. This returns a 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html" target="_top">Collection</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html" target="_top">Collection</a>
     
 	of values for the given key. If duplicate keys are not allowed, the
 	returned collection will have at most one value. If the key is not
@@ -84,8 +84,7 @@
 	specific index keys that are present in the database.
 </p>
       <a id="index_sampleviewsprintdatabase"></a>
-      <pre class="programlisting">import com.sleepycat.collections.StoredIterator;
-import java.util.Iterator;
+      <pre class="programlisting">import java.util.Iterator;
 ...
 public class Sample
 {
@@ -97,40 +96,33 @@ public class Sample
         public void doWork()
             throws Exception
         {
-            printEntries(&quot;Parts&quot;,
+            printEntries("Parts",
                           views.getPartEntrySet().iterator());
-            printEntries(&quot;Suppliers&quot;,
+            printEntries("Suppliers",
                           views.getSupplierEntrySet().iterator());
-<b class="userinput"><tt>            printValues(&quot;Suppliers for City Paris&quot;,
+<b class="userinput"><tt>            printValues("Suppliers for City Paris",
                          views.getSupplierByCityMap().duplicates(
-                                            &quot;Paris&quot;).iterator());</tt></b>
-            printEntries(&quot;Shipments&quot;,
+                                            "Paris").iterator());</tt></b>
+            printEntries("Shipments",
                           views.getShipmentEntrySet().iterator());
-<b class="userinput"><tt>            printValues(&quot;Shipments for Part P1&quot;,
+<b class="userinput"><tt>            printValues("Shipments for Part P1",
                          views.getShipmentByPartMap().duplicates(
-                                            new PartKey(&quot;P1&quot;)).iterator());
-            printValues(&quot;Shipments for Supplier S1&quot;,
+                                            new PartKey("P1")).iterator());
+            printValues("Shipments for Supplier S1",
                          views.getShipmentBySupplierMap().duplicates(
                                             new
-                                            SupplierKey(&quot;S1&quot;)).iterator());</tt></b>
+                                            SupplierKey("S1")).iterator());</tt></b>
         }
     }
 
 <b class="userinput"><tt>    private void printValues(String label, Iterator iterator)
     {
-        System.out.println(&quot;\n--- &quot; + label + &quot; ---&quot;);
-        try
+        System.out.println("\n--- " + label + " ---");
+        while (iterator.hasNext())
         {
-            while (iterator.hasNext())
-            {
                 System.out.println(iterator.next().toString());
-            }
         }
-        finally
-        {
-            StoredIterator.close(iterator);
-        }
-    }</tt></b>
+     } </tt></b>
     ...
 } </pre>
       <p>
@@ -139,10 +131,10 @@ public class Sample
     
 	method is called passing the desired key. The returned value is a
 	standard Java 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html" target="_top">Collection</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html" target="_top">Collection</a>
     
 	containing the values for the specified key. A standard Java
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Iterator.html" target="_top">Iterator</a>
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Iterator.html" target="_top">Iterator</a>
 	
 	is then obtained for this collection and all values returned by
 	that iterator are printed.
@@ -150,9 +142,9 @@ public class Sample
       <p>
     Another technique for retrieving duplicates is to use the
 	collection returned by 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#entrySet" target="_top">Map.entrySet</a>.
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#entrySet" target="_top">Map.entrySet</a>.
 	When duplicate keys are present, a 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
     
 	object will be present in this collection for each duplicate. This
 	collection can then be iterated or a subset can be created from it,
@@ -168,22 +160,22 @@ public class Sample
       <p>
     While not shown in the example program, it is also possible to
 	create a store with duplicate keys in the same way as an index with
-	duplicate keys &#8212; by calling
+	duplicate keys â€” by calling
 	<tt class="methodname">DatabaseConfig.setSortedDuplicates()</tt> method. In that case,
 	calling 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put" target="_top">Map.put</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#put" target="_top">Map.put</a>
     
 	will add duplicate keys. To remove all duplicate keys, call
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#remove" target="_top">Map.remove</a>.
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#remove" target="_top">Map.remove</a>.
 	To remove a specific duplicate key, call 
 	<a href="../../java/com/sleepycat/collections/StoredMap.html#duplicates(java.lang.Object)" target="_top">StoredMap.duplicates</a>
 	
 	and then call 
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html#remove" target="_top">Collection.remove</a>
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html#remove" target="_top">Collection.remove</a>
 	
 	using the returned collection. Duplicate
 	values may also be added to this collection using 
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html#add" target="_top"> Collection.add</a>.
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html#add" target="_top"> Collection.add</a>.
 </p>
       <p>
     The output of the example program is shown below.
@@ -264,20 +256,20 @@ ShipmentData: quantity=100</tt></b> </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="indexedcollections.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="indexedcollections.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="UsingSecondaries.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="Entity.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="Entity.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
 		Creating Indexed Collections
-	 </td>
+	Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 4. 
+          <td width="40%" align="right" valign="top">Â ChapterÂ 4.Â 
         Using Entity Classes	
 	</td>
         </tr>

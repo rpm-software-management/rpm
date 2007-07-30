@@ -1,0 +1,51 @@
+m4_comment([$Id: multiple.so,v 10.4 2004/06/10 16:39:28 bostic Exp $])
+
+m4_ref_title(System Installation Notes,
+    Building with multiple versions of m4_db,, install/file, debug/intro)
+
+m4_p([dnl
+In some cases it may be necessary to build applications which include
+multiple versions of m4_db.  Examples include applications which include
+software from other vendors, or applications running on a system where
+the system C library itself uses m4_db.  In such cases, the two versions
+of m4_db may be incompatible, that is, they may have different external
+and internal interfaces, and may even have different underlying database
+formats.])
+
+m4_p([dnl
+To create a m4_db library whose symbols won't collide with other m4_db
+libraries (or other application or library modules, for that matter),
+configure m4_db using the m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--with-uniquename=NAME, --with-uniquename=NAME) configuration option,
+and then build m4_db as usual.  (Note that
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --with-uniquename=NAME,
+--with-uniquename) only affects the m4_db C language library build;
+loading multiple versions of the C++ or Java APIs will require
+additional work.)  The modified symbol names are hidden from the
+application in the m4_db header files, that is, there is no need for
+the application to be aware that it is using a special library build as
+long as it includes the appropriate m4_db header file.])
+
+m4_p([dnl
+If "NAME" is not specified when configuring with
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --with-uniquename=NAME,
+--with-uniquename), a default value built from the major and minor
+numbers of the m4_db release will be used.  It is rarely necessary to
+specify NAME; using the major and minor release numbers will ensure that
+only one copy of the library will be loaded into the application unless
+two distinct versions really are necessary.])
+
+m4_p([dnl
+When distributing any library software that uses m4_db, or any software
+which will be recompiled by users for their systems, we recommend two
+things: First, include the m4_db release as part of your release.  This
+will insulate your software from potential m4_db API changes as well as
+simplifying your coding because you will only have to code to a single
+version of the m4_db API instead of adapting at compile time to whatever
+version of m4_db happens to be installed on the target system.  Second,
+use m4_linkpage(M4RELDIR/ref/build_unix/conf, --with-uniquename=NAME,
+--with-uniquename) when configuring m4_db, because that will insure that
+you do not unexpectedly collide with other application code or a library
+already installed on the target system.])
+
+m4_page_footer

@@ -1,0 +1,223 @@
+m4_comment([$Id: notes.so,v 10.54 2005/06/16 17:04:04 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    Architecture independent FAQ,
+    [@building for UNIX FAQ, building for @UNIX FAQ],
+    build_unix/test, build_unix/aix)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I have gcc installed, but configure fails to find it.])
+
+m4_p([dnl
+m4_db defaults to using the native C compiler if none is specified.
+That is usually "cc", but some platforms require a different compiler
+to build multithreaded code.  To configure m4_db to build with gcc, run
+configure as follows:])
+
+m4_indent([dnl
+env CC=gcc ../dist/configure ...])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([When compiling with gcc, I get unreferenced symbols; for example
+the following:
+m4_indent([dnl
+symbol __muldi3: referenced symbol not found
+symbol __cmpdi2: referenced symbol not found])])
+
+m4_p([dnl
+m4_db often uses 64-bit integral types on systems supporting large
+files, and gcc performs operations on those types by calling library
+functions.  These unreferenced symbol errors are usually caused by
+linking an application by calling "ld" rather than by calling "gcc":
+gcc will link in libgcc.a and will resolve the symbols.  If that does
+not help, another possible workaround is to reconfigure m4_db using the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --disable-largefile,
+--disable-largefile) configuration option and then rebuild.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([My C++ program traps during a failure in a DB call on my
+gcc-based system.])
+
+m4_p([dnl
+We believe there are some severe bugs in the implementation of
+exceptions for some gcc compilers.  Exceptions require some interaction
+between compiler, assembler, and runtime libraries.  We're not sure
+exactly what is at fault, but one failing combination is gcc 2.7.2.3
+running on SuSE Linux 6.0.  The problem on this system can be seen with
+a rather simple test case of an exception thrown from a shared library
+and caught in the main program.])
+
+m4_p([dnl
+A variation of this problem seems to occur on AIX, although we believe it
+does not necessarily involve shared libraries on that platform.])
+
+m4_p([dnl
+If you see a trap that occurs when an exception might be thrown by the
+m4_db runtime, we suggest that you use static libraries instead of
+shared libraries.  See the documentation for configuration.  If this
+doesn't work and you have a choice of compilers, try using a more recent
+gcc- or a non-gcc based compiler to build m4_db.])
+
+m4_p([dnl
+Finally, you can disable the use of exceptions in the C++ runtime for
+m4_db by using the m4_refcxx(DB_CXX_NO_EXCEPTIONS) flag with the
+m4_refcxx(DbEnv) or m4_refcxx(Db) constructors.  When this flag is on,
+all C++ methods fail by returning an error code rather than throwing an
+exception.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I get unexpected results and database corruption when running
+threaded programs.])
+
+m4_p([dnl
+m4_bold([I get error messages that mutex (for example, pthread_mutex_XXX or
+mutex_XXX) functions are undefined when linking applications with m4_db.])])
+
+m4_p([dnl
+On some architectures, the m4_db library uses the ISO POSIX standard
+pthreads and UNIX International (UI) threads interfaces for underlying
+mutex support; for example, Solaris and HP-UX.  You can specify
+compilers or compiler flags, or link with the appropriate thread library
+when loading your application to resolve the undefined references:])
+
+m4_indent([dnl
+cc ... -lpthread ...
+cc ... -lthread ...
+xlc_r ...
+cc ... -mt ...])
+
+m4_p([dnl
+See the appropriate architecture-specific Reference Guide pages for more
+information.])
+
+m4_p([dnl
+On systems where more than one type of mutex is available, it may be
+necessary for applications to use the same threads package from which
+m4_db draws its mutexes.  For example, if m4_db was built to use the
+POSIX pthreads mutex calls for mutex support, the application may need
+to be written to use the POSIX pthreads interfaces for its threading
+model.  This is only conjecture at this time, and although we know of
+no systems that actually have this requirement, it's not unlikely that
+some exist.])
+
+m4_p([dnl
+In a few cases, m4_db can be configured to use specific underlying mutex
+interfaces.  You can use the m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--enable-posixmutexes, --enable-posixmutexes) and
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --enable-uimutexes,
+--enable-uimutexes) configuration options to specify the POSIX and Unix
+International (UI) threads packages.  This should not, however, be
+necessary in most cases.])
+
+m4_p([dnl
+In some cases, it is vitally important to make sure that you load the
+correct library.  For example, on Solaris systems, there are POSIX
+pthread interfaces in the C library, so applications can link m4_db
+using only C library and not see any undefined symbols.  However, the
+C library POSIX pthread mutex support is insufficient for m4_db, and
+m4_db cannot detect that fact.  Similar errors can arise when
+applications (for example, tclsh) use dlopen to dynamically load m4_db
+as a library.])
+
+m4_p([dnl
+If you are seeing problems in this area after you confirm that you're
+linking with the correct libraries, there are two other things you can
+try.  First, if your platform supports interlibrary dependencies, we
+recommend that you change the m4_db Makefile to specify the appropriate
+threads library when creating the m4_db shared library, as an
+interlibrary dependency.  Second, if your application is using dlopen
+to dynamically load m4_db, specify the appropriate thread library on
+the link line when you load the application itself.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I get core dumps when running programs that fork children.])
+
+m4_p([dnl
+m4_db handles should not be shared across process forks, each forked
+child should acquire its own m4_db handles.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I get reports of uninitialized memory reads and writes when
+running software analysis tools (for example, Rational Software Corp.'s
+Purify tool).])
+
+m4_p([dnl
+For performance reasons, m4_db does not write the unused portions of
+database pages or fill in unused structure fields.  To turn off these
+errors when running software analysis tools, build with the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --enable-umrw, --enable-umrw)
+configuration option.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([m4_db programs or the test suite fail unexpectedly.])
+
+m4_p([dnl
+The m4_db architecture does not support placing the shared memory
+regions on remote filesystems -- for example, the Network File System
+(NFS) or the Andrew File System (AFS).  For this reason, the shared
+memory regions (normally located in the database home directory) must
+reside on a local filesystem.  See m4_link(M4RELDIR/ref/env/region,
+Shared Memory Regions) for more information.])
+
+m4_p([dnl
+With respect to running the test suite, always check to make sure that
+TESTDIR is not on a remote mounted filesystem.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([The m4_ref(db_dump185) utility fails to build.])
+
+m4_p([dnl
+The m4_ref(db_dump185) utility is the utility that supports the
+conversion of m4_db 1.85 and earlier databases to current database
+formats.  If the build errors look something like the following, it
+means the db.h include file being loaded is not a m4_db 1.85 version
+include file:])
+
+m4_indent([dnl
+db_dump185.c: In function `main':
+db_dump185.c:210: warning: assignment makes pointer from integer without a cast
+db_dump185.c:212: warning: assignment makes pointer from integer without a cast
+db_dump185.c:227: structure has no member named `seq'
+db_dump185.c:227: `R_NEXT' undeclared (first use in this function)])
+
+m4_p([dnl
+If the build errors look something like the following, it means that
+the m4_db 1.85 code was not found in the standard libraries:])
+
+m4_indent([dnl
+cc -o db_dump185 db_dump185.o
+ld:
+Unresolved:
+dbopen])
+
+m4_p([dnl
+To build m4_ref(db_dump185), the m4_db version 1.85 code must already
+been built and available on the system.  If the m4_db 1.85 header file
+is not found in a standard place, or if the library is not part of the
+standard libraries used for loading, you will need to edit your
+Makefile, and change the following lines:])
+
+m4_indent([dnl
+DB185INC=
+DB185LIB=])
+
+m4_p([dnl
+So that the system m4_db 1.85 header file and library are found; for
+example:])
+
+m4_indent([dnl
+DB185INC=/usr/local/include
+DB185LIB=-ldb185])])
+
+m4_nlistend
+
+m4_page_footer

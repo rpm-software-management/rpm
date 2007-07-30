@@ -1,0 +1,133 @@
+m4_comment([$Id: db_dump.so,v 10.34 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_dump)
+
+m4_util_header(db_dump, [dnl
+db_dump m4_utilarg(klNpRrV) m4_utilarg([d ahr])
+	m4_utilarg([f output]) m4_utilarg([h home]) m4_utilarg([P password]) m4_utilarg([s database]) file
+db_dump185 m4_utilarg(p) m4_utilarg([f output]) file])
+m4_idefz(utility to @dump databases as text files)
+
+m4_p([dnl
+The m4_ref(db_dump) utility reads the database file m4_arg(file) and
+writes it to the standard output using a portable flat-text format
+understood by the m4_ref(db_load) utility.  The m4_arg(file) argument
+must be a file produced using the m4_db library functions.])
+
+m4_p([dnl
+The m4_ref(db_dump185) utility is similar to the m4_ref(db_dump) utility,
+except that it reads databases in the format used by m4_db versions 1.85
+and 1.86.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+
+m4_tagopt(d, [dnl
+Dump the specified database in a format helpful for debugging the m4_db
+library routines.
+m4_tagbegin
+m4_tag(a, [Display all information.])
+m4_tagns(h, [Display only page headers.])
+m4_tagns(r, [Do not display the free-list or pages on the free list.  This
+mode is used by the recovery tests.])
+m4_tagend
+m4_p([m4_bold([dnl
+The output format of the m4_option(d) option is not standard and may change,
+without notice, between releases of the m4_db library.])])])
+
+m4_tagopt(f, [dnl
+Write to the specified m4_arg(file) instead of to the standard output.])
+
+m4_hflag
+
+m4_tagopt(k, [Dump record numbers from Queue and Recno databases as keys.])
+
+m4_tagopt(l, [List the databases stored in the file.])
+
+m4_Nflag
+
+m4_Pflag
+
+m4_tagopt(p, [dnl
+If characters in either the key or data items are printing characters (as
+defined by m4_manref(isprint, 3)), use printing characters in m4_arg(file)
+to represent them.  This option permits users to use standard text editors
+and tools to modify the contents of databases.
+
+m4_p([dnl
+Note: different systems may have different notions about what characters
+are considered m4_italic(printing characters), and databases dumped in
+this manner may be less portable to external systems.])])
+
+m4_tagopt(R, [dnl
+Aggressively salvage data from a possibly corrupt file.  The m4_option(R)
+flag differs from the m4_option(r) option in that it will return all
+possible data from the file at the risk of also returning already deleted
+or otherwise nonsensical items.  Data dumped in this fashion will almost
+certainly have to be edited by hand or other means before the data is
+ready for reload into another database])
+
+m4_tagopt(r, [dnl
+Salvage data from a possibly corrupt file.  When used on a uncorrupted
+database, this option should return equivalent data to a normal dump, but
+most likely in a different order.])
+
+m4_tagopt(s, [dnl
+Specify a single database to dump.  If no database is specified, all
+databases in the database file are dumped.])
+
+m4_Vflag
+
+m4_tagend
+
+m4_p([dnl
+Dumping and reloading Hash databases that use user-defined hash
+functions will result in new databases that use the default hash
+function.  Although using the default hash function may not be optimal
+for the new database, it will continue to work correctly.])
+
+m4_p([dnl
+Dumping and reloading Btree databases that use user-defined prefix or
+comparison functions will result in new databases that use the default
+prefix and comparison functions.
+m4_bold([dnl
+In this case, it is quite likely that the database will be damaged
+beyond repair permitting neither record storage or retrieval.])])
+
+m4_p([dnl
+The only available workaround for either case is to modify the sources
+for the m4_ref(db_load) utility to load the database using the correct
+hash, prefix, and comparison functions.])
+
+m4_p([dnl
+The m4_ref(db_dump185) utility may not be available on your system
+because it is not always built when the m4_db libraries and utilities
+are installed.  If you are unable to find it, see your system
+administrator for further information.])
+
+m4_p([dnl
+The m4_ref(db_dump) and m4_ref(db_dump185) utility output formats are
+documented in the m4_link(M4RELDIR/ref/dumpload/format, [Dump Output
+Formats]) section of the m4_db Reference Guide.])
+
+m4_detach(db_dump, may be used with)
+
+m4_p([dnl
+Even when using a m4_db database environment, the m4_ref(db_dump)
+utility does not use any kind of database locking if it is invoked with
+the m4_bold(-d), m4_bold(-R), or m4_bold(-r) arguments.   If used with
+one of these arguments, the m4_ref(db_dump) utility may only be safely
+run on databases that are not being modified by any other process;
+otherwise, the output may be corrupt.])
+
+m4_utilexit(db_dump)
+
+m4_utilexit(db_dump185)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_dump)
+
+m4_page_footer

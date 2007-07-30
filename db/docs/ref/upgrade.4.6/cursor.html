@@ -1,0 +1,35 @@
+<!--$Id: cursor.so,v 1.4 2006/11/30 21:19:37 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.6: C API cursor handle method names</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.6/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/memp_fput.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.6: C API cursor handle method names</h3>
+<p>In the Berkeley DB 4.6 release, the C API <a href="../../api_c/dbc_class.html">DBC</a> handle methods have been
+renamed for consistency with the C++ and Java APIs.  The change is the
+removal of the leading "c_" from the names, as follows:</p>
+<dl compact>
+<dt>DBC-&gt;c_close<dd>Renamed DBC-&gt;close
+<dt>DBC-&gt;c_count<dd>Renamed DBC-&gt;count
+<dt>DBC-&gt;c_del<dd>Renamed DBC-&gt;del
+<dt>DBC-&gt;c_dup<dd>Renamed DBC-&gt;dup
+<dt>DBC-&gt;c_get<dd>Renamed DBC-&gt;get
+<dt>DBC-&gt;c_pget<dd>Renamed DBC-&gt;pget
+<dt>DBC-&gt;c_put<dd>Renamed DBC-&gt;put
+</dl>
+<p>The old <a href="../../api_c/dbc_class.html">DBC</a> method names are deprecated but will continue for
+work for some number of future releases.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.6/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/memp_fput.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

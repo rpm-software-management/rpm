@@ -1,0 +1,21 @@
+m4_comment([$Id: faq.so,v 1.2 2007/06/04 14:55:40 bostic Exp $])
+
+m4_ref_title(Building m4_db for Windows CE systems,
+    Windows CE FAQ,
+    [@building for Windows CE FAQ, building for @Windows CE FAQ],
+    build_wince/notes, build_vxworks/intro)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([dnl
+Why can't I use the Berkeley_DB workspace in Visual Studio 2005?])
+
+m4_p([dnl
+The automatic workspace upgrade tool included with Visual Studio 2005
+is not compatible with the eMbedded Visual Studio 4.0 project files
+distributed with m4_db.])])
+
+m4_nlistend
+
+m4_page_footer

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: bench_001.c,v 12.5 2006/08/24 14:45:41 bostic Exp $
+ * $Id: bench_001.c,v 12.8 2007/05/17 15:15:12 bostic Exp $
  */
 
 /*
@@ -136,7 +135,7 @@ get(dbp, txn, datalen, num, dups, iter, countp)
 			goto err;
 
 		j = random() % num;
-		if ((ret = dbcp->c_get(dbcp, &key, &data, flags)) != 0)
+		if ((ret = dbcp->get(dbcp, &key, &data, flags)) != 0)
 			goto err;
 		DB_MULTIPLE_INIT(pointer, &data);
 		if (dups)
@@ -152,7 +151,7 @@ get(dbp, txn, datalen, num, dups, iter, countp)
 				if (kp != NULL)
 					count++;
 			}
-		if ((ret = dbcp->c_close(dbcp)) != 0)
+		if ((ret = dbcp->close(dbcp)) != 0)
 			goto err;
 		if (txn)
 			if ((ret = txnp->commit(txnp, 0)) != 0)

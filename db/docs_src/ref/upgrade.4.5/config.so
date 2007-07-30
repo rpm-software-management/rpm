@@ -1,0 +1,19 @@
+m4_comment([$Id: config.so,v 1.5 2006/09/15 19:34:26 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: --enable-pthread_self,,
+    upgrade.4.5/collect, upgrade.4.5/source)
+
+m4_p([dnl
+In previous releases, the --enable-pthread_self configuration option was
+used to force m4_db to use the POSIX pthread pthread_self function to
+identify threads of control (even when m4_db was configured for
+test-and-set mutexes).  In the 4.5 release, the --enable-pthread_self
+option has been replaced with the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --enable-pthread_api,
+--with-enable-pthread_api) option.  This option has the same effect as
+the previous option, but configures the m4_db build for a POSIX pthread
+application in other ways (for example, configuring m4_db to use the
+pthread_self function).])
+
+m4_page_footer

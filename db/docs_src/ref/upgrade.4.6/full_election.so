@@ -1,0 +1,19 @@
+m4_comment([$Id: full_election.so,v 1.3 2007/05/04 12:37:15 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: DB_REP_FULL_ELECTION,,
+    upgrade.4.6/event, upgrade.4.6/verbose)
+
+m4_p([dnl
+The DB_REP_FULL_ELECTION flag historically specified to the
+m4_refT(repmgr_start) has been removed from the 4.6 release.])
+
+m4_p([dnl
+In the m4_db 4.6 release, a simpler and more flexible implementation of
+this functionality is available.  Applications needing to configure the
+first election of a replication group differently from subsequent
+elections should use the m4_ref(DB_REP_FULL_ELECTION_TIMEOUT) flag to
+the m4_refT(rep_set_timeout) to specify a different timeout for the
+first election.])
+
+m4_page_footer

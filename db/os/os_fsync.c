@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_fsync.c,v 12.9 2006/08/24 14:46:17 bostic Exp $
+ * $Id: os_fsync.c,v 12.13 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -61,7 +60,6 @@ __os_fsync(dbenv, fhp)
 {
 	int ret;
 
-	/* Check for illegal usage. */
 	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 	/*
@@ -71,16 +69,26 @@ __os_fsync(dbenv, fhp)
 	if (F_ISSET(fhp, DB_FH_NOSYNC))
 		return (0);
 
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: flush %s", fhp->name);
+
 	if (DB_GLOBAL(j_fsync) != NULL)
 		ret = DB_GLOBAL(j_fsync)(fhp->fd);
-	else
+	else {
 #if defined(F_FULLFSYNC)
 		RETRY_CHK((fcntl(fhp->fd, F_FULLFSYNC, 0)), ret);
+		/*
+		 * On OS X, F_FULLSYNC only works on HFS+, so we need to fall
+		 * back to regular fsync on other filesystems.
+		 */
+		if (ret == ENOTSUP)
+			RETRY_CHK((fsync(fhp->fd)), ret);
 #elif defined(HAVE_FDATASYNC)
 		RETRY_CHK((fdatasync(fhp->fd)), ret);
 #else
 		RETRY_CHK((fsync(fhp->fd)), ret);
 #endif
+	}
 
 	if (ret != 0) {
 		__db_syserr(dbenv, ret, "fsync");

@@ -1,0 +1,176 @@
+m4_comment([$Id: dbt_c.so,v 10.52 2007/02/27 00:41:24 mjc Exp $])
+
+define(M4PAGELOCAL,
+    [Dbt, DB_BUFFER_SMALL,
+    DB_DBT_MALLOC, DB_DBT_PARTIAL, DB_DBT_REALLOC, DB_DBT_USERMEM])
+
+m4_page_header(DBT, [DBT: Key/Data Pairs], yes)
+
+m4_idefz(key/data pairs)
+m4_p([dnl
+Storage and retrieval for the m4_db access methods are based on key/data
+pairs.  Both key and data items are represented by the DBT data
+structure.  (The name m4_italic(DBT) is a mnemonic for m4_italic(data
+base thang), and was used because no one could think of a reasonable
+name that wasn't already in use somewhere else.) Key and data byte
+strings may refer to strings of zero length up to strings of
+essentially unlimited length.  See m4_link(M4RELDIR/ref/am_misc/dbsizes,
+[Database limits]) for more information.])
+
+m4_indent([dnl
+typedef struct {
+	void *data;
+	u_int32_t size;
+	u_int32_t ulen;
+	u_int32_t dlen;
+	u_int32_t doff;
+	u_int32_t flags;
+} DBT;])
+
+m4_p([dnl
+In order to ensure compatibility with future releases of m4_db, all
+fields of the DBT structure that are not explicitly set should be
+initialized to nul bytes before the first time the structure is used.
+Do this by declaring the structure external or static, or by calling
+the C library routine m4_manref(bzero, 3) or m4_manref(memset, 3).])
+
+m4_p([dnl
+By default, the m4_arg(flags) structure element is expected to be set
+to 0.  In this default case, when the application is providing m4_db a
+key or data item to store into the database, m4_db expects the
+m4_arg(data) structure element to point to a byte string of m4_arg(size)
+bytes.  When returning a key/data item to the application, m4_db will
+store into the m4_arg(data) structure element a pointer to a byte string
+of m4_arg(size) bytes, and the memory to which the pointer refers will be
+allocated and managed by m4_db.])
+
+m4_p([The elements of the DBT structure are defined as follows:])
+
+m4_tagbegin
+
+m4_tag([void *m4_idef(data);], [A pointer to a byte string.])
+m4_tag([u_int32_t m4_idef(size);], [The length of m4_arg(data), in bytes.])
+m4_tag([u_int32_t m4_idef(ulen);], [dnl
+The size of the user's buffer (to which m4_arg(data) refers), in bytes.
+This location is not written by the m4_db functions.
+m4_p([dnl
+Note that applications can determine the length of a record by setting
+the m4_arg(ulen) field to 0 and checking the return value in the
+m4_arg(size) field.  See the DB_DBT_USERMEM flag for more information.])])
+
+m4_tag([u_int32_t m4_idef(dlen);], [dnl
+The length of the partial record being read or written by the application,
+in bytes.  See the DB_DBT_PARTIAL flag for more information.])
+
+m4_tag([u_int32_t m4_idef(doff);], [dnl
+The offset of the partial record being read or written by the application,
+in bytes.  See the DB_DBT_PARTIAL flag for more information.])
+
+m4_tag([u_int32_t flags;], [dnl
+m4_sf_or_may
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_DBT_MALLOC), [dnl
+When this flag is set, m4_db will allocate memory for the returned key
+or data item (using m4_manref(malloc, 3), or the user-specified malloc
+function), and return a pointer to it in the m4_arg(data) field of the
+key or data DBT structure.  Because any allocated memory becomes the
+responsibility of the calling application, the caller must determine
+whether memory was allocated using the returned value of the
+m4_arg(data) field.
+m4_p([dnl
+It is an error to specify more than one of m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC), and m4_ref(DB_DBT_USERMEM).])])
+
+m4_tag(m4_idef(DB_DBT_REALLOC), [dnl
+When this flag is set m4_db will allocate memory for the returned key
+or data item (using m4_manref(realloc, 3), or the user-specified realloc
+function), and return a pointer to it in the m4_arg(data) field of the
+key or data DBT structure.  Because any allocated memory becomes the
+responsibility of the calling application, the caller must determine
+whether memory was allocated using the returned value of the
+m4_arg(data) field.
+m4_p([dnl
+The difference between m4_ref(DB_DBT_MALLOC) and m4_ref(DB_DBT_REALLOC)
+is that the latter will call m4_manref(realloc, 3) instead of
+m4_manref(malloc, 3), so the allocated memory will be grown as necessary
+instead of the application doing repeated free/malloc calls.])
+m4_p([dnl
+It is an error to specify more than one of m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC), and m4_ref(DB_DBT_USERMEM).])])
+
+m4_idefz(DB_BUFFER_SMALL)
+m4_tag(m4_idef(DB_DBT_USERMEM), [dnl
+The m4_arg(data) field of the key or data structure must refer to
+memory that is at least m4_arg(ulen) bytes in length.  If the length of
+the requested item is less than or equal to that number of bytes, the
+item is copied into the memory to which the m4_arg(data) field refers.
+Otherwise, the m4_arg(size) field is set to the length needed for the
+requested item, and the error m4_ref(DB_BUFFER_SMALL) is returned.
+m4_p([dnl
+It is an error to specify more than one of m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC), and m4_ref(DB_DBT_USERMEM).])])
+
+m4_tag(m4_idef(DB_DBT_PARTIAL), [dnl
+Do partial retrieval or storage of an item.  If the calling application
+is doing a get, the m4_arg(dlen) bytes starting m4_arg(doff) bytes from
+the beginning of the retrieved data record are returned as if they
+comprised the entire record.  If any or all of the specified bytes do
+not exist in the record, the get is successful, and any existing bytes
+are returned.
+m4_p([dnl
+For example, if the data portion of a retrieved record was 100 bytes,
+and a partial retrieval was done using a DBT having a m4_arg(dlen)
+field of 20 and a m4_arg(doff) field of 85, the get call would succeed,
+the m4_arg(data) field would refer to the last 15 bytes of the record,
+and the m4_arg(size) field would be set to 15.])
+m4_p([dnl
+If the calling application is doing a put, the m4_arg(dlen) bytes
+starting m4_arg(doff) bytes from the beginning of the specified key's
+data record are replaced by the data specified by the m4_arg(data) and
+m4_arg(size) structure elements.  If m4_arg(dlen) is smaller than
+m4_arg(size), the record will grow; if m4_arg(dlen) is larger than
+m4_arg(size), the record will shrink.  If the specified bytes do not
+exist, the record will be extended using nul bytes as necessary, and
+the put call will succeed.])
+m4_p([dnl
+It is an error to attempt a partial put using the m4_ref(dbh_put) function
+in a database that supports duplicate records.
+Partial puts in databases supporting duplicate records must be done
+using a m4_ref(dbc_put) function.])
+m4_p([dnl
+It is an error to attempt a partial put with differing m4_arg(dlen) and
+m4_arg(size) values in Queue or Recno databases with fixed-length records.])
+m4_p([dnl
+For example, if the data portion of a retrieved record was 100 bytes,
+and a partial put was done using a DBT having a m4_arg(dlen) field of 20,
+a m4_arg(doff) field of 85, and a m4_arg(size) field of 30, the resulting
+record would be 115 bytes in length, where the last 30 bytes would be
+those specified by the put call.])])
+
+m4_tag(m4_idef(DB_DBT_APPMALLOC), [dnl
+After an application-supplied callback routine passed to either
+m4_ref(dbh_associate) or m4_ref(dbh_set_append_recno) is executed, the
+m4_arg(data) field of a m4_ref(Dbt) may refer to memory allocated with
+m4_manref(malloc, 3) or m4_manref(realloc, 3).  In that case, the
+callback sets the m4_ref(DB_DBT_APPMALLOC) flag in the m4_ref(Dbt) so
+that m4_db will call m4_manref(free, 3) to deallocate the memory when it
+is no longer required.])
+
+m4_tag(m4_idef(DB_DBT_MULTIPLE), [dnl
+Set in a secondary key creation callback routine passed to
+m4_ref(dbh_associate) to indicate that multiple secondary keys should be
+associated with the given primary key/data pair.  If set, the
+m4_arg(size) field indicates the number of secondary keys and the
+m4_arg(data) field refers to an array of that number of m4_ref(Dbt)
+structures.
+m4_p([dnl
+The m4_ref(DB_DBT_APPMALLOC) flag may be set on any of the m4_ref(Dbt)
+structures to indicate that their m4_arg(data) field needs to be
+freed.])])
+
+m4_tagend])
+m4_tagend
+
+m4_page_footer

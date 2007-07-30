@@ -1,0 +1,44 @@
+m4_comment([$Id: intro.so,v 10.7 2006/11/13 18:05:06 bostic Exp $])
+
+m4_ref_title(Distributed Transactions,
+    Introduction to distributed transactions,
+    [Distributed Transactions, Resource Manager], rep/ex_rq, xa/build)
+
+m4_p([dnl
+m4_db provides support for distributed transactions using a two-phase
+commit protocol via its m4_ref(txn_prepare) and m4_ref(txn_recover)
+interfaces.  The m4_refT(txn_prepare) performs the first phase of a
+two-phase commit, flushing the log to disk, and associating a global
+transaction ID with the underlying m4_db transaction.  This global
+transaction ID should be used by the global transaction manager to
+identify the m4_db transaction, and will be returned by the
+m4_refT(txn_recover) when it is called during recovery.])
+
+m4_p([dnl
+Distributed transactions are necessary whenever an application wants to
+transaction-protect data in multiple m4_db environments, even if those
+environments are on the same machine.  However, m4_db does not perform
+distributed deadlock detection, therefore it is the responsibility of
+the application to ensure that accesses in different environments cannot
+deadlock (this can be accomplished through careful ordering of
+operations to the multiple environments), or by using the
+m4_ref(DB_LOCK_NOWAIT) option and eventually abort transactions that
+have been waiting "too long" (where "too long" is determined by an
+application-specific timeout).])
+
+m4_p([dnl
+In order to use the two-phase commit feature of m4_db, an application
+must either implement its own global transaction manager or use an
+XA-compliant transaction manager (as m4_db can act as an XA-compliant
+resource manager).])
+
+m4_p([dnl
+When using distributed transactions, there is no way to perform
+hot backups of multiple environments and guarantee that the backups
+are global-transaction-consistent across these multiple environments.
+If backups are desired, then all write transactions should be suspended;
+that is, active write transactions must be allowed to complete and no
+new write transactions should be begun.  Once there are no active write
+transactions, the logs may be copied for backup purposes and the backup
+will be consistent across the multiple environments.])
+m4_page_footer

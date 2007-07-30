@@ -1,0 +1,140 @@
+m4_comment([$Id: dbc_put.so,v 10.63 2007/05/03 15:20:37 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbc_put, DB_AFTER, DB_BEFORE, DB_CURRENT, DB_KEYFIRST,
+	DB_KEYLAST, DB_NODUPDATA])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbc_put),
+ifelse(M4API, C_API, [dnl
+int
+DBcursor-__GT__put(DBC *DBcursor, DBT *key, DBT *data, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Dbc::put(Dbt *key, Dbt *data, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbc_put) stores key/data pairs into the database.])
+
+m4_return(dbc_put, prev)
+
+m4_p([dnl
+If m4_ref(dbc_put) fails for any reason, the state of the cursor will be
+unchanged.  If m4_ref(dbc_put) succeeds and an item is inserted into the
+database, the cursor is always positioned to refer to the newly inserted
+item.])
+
+m4_parambegin
+m4_param_data
+m4_param(flags, [dnl
+m4_sf_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_AFTER), [dnl
+In the case of the Btree and Hash access methods, insert the data
+element as a duplicate element of the key to which the cursor refers.
+The new element appears immediately after the current cursor position.
+It is an error to specify m4_ref(DB_AFTER) if the underlying Btree or
+Hash database is not configured for unsorted duplicate data items.  The
+m4_arg(key) parameter is ignored.
+m4_p([dnl
+In the case of the Recno access method, it is an error to specify
+m4_ref(DB_AFTER) if the underlying Recno database was not created with
+the m4_ref(DB_RENUMBER) flag.  If the m4_ref(DB_RENUMBER) flag was
+specified, a new key is created, all records after the inserted item
+are automatically renumbered, and the key of the new record is returned
+in the structure to which the m4_arg(key) parameter refers.  The initial
+value of the m4_arg(key) parameter is ignored.  See m4_ref(dbh_open)
+for more information.])
+m4_p([dnl
+The m4_ref(DB_AFTER) flag may not be specified to the Queue access method.])
+m4_return(dbc_put,
+specific, DB_NOTFOUND,
+[if the current cursor record has already been deleted and the
+underlying access method is Hash])])
+
+m4_tag(m4_idef(DB_BEFORE), [dnl
+In the case of the Btree and Hash access methods, insert the data
+element as a duplicate element of the key to which the cursor refers.
+The new element appears immediately before the current cursor position.
+It is an error to specify m4_ref(DB_AFTER) if the underlying Btree or
+Hash database is not configured for unsorted duplicate data items.  The
+m4_arg(key) parameter is ignored.
+m4_p([dnl
+In the case of the Recno access method, it is an error to specify
+m4_ref(DB_BEFORE) if the underlying Recno database was not created with
+the m4_ref(DB_RENUMBER) flag.  If the m4_ref(DB_RENUMBER) flag was
+specified, a new key is created, the current record and all records
+after it are automatically renumbered, and the key of the new record is
+returned in the structure to which the m4_arg(key) parameter refers.
+The initial value of the m4_arg(key) parameter is ignored.  See
+m4_ref(dbh_open) for more information.])
+m4_p([dnl
+The m4_ref(DB_BEFORE) flag may not be specified to the Queue access method.])
+m4_return(dbc_put,
+specific, DB_NOTFOUND,
+[if the current cursor record has already been deleted and the underlying
+access method is Hash])])
+
+m4_tag(m4_idef(DB_CURRENT), [dnl
+Overwrite the data of the key/data pair to which the cursor refers with
+the specified data item.  The m4_arg(key) parameter is ignored.
+m4_return(dbc_put,
+specific, DB_NOTFOUND,
+[if the current cursor record has already been deleted])])
+
+m4_tag(m4_idef(DB_KEYFIRST), [dnl
+Insert the specified key/data pair into the database.
+m4_p([dnl
+If the underlying database supports duplicate data items, and if the
+key already exists in the database and a duplicate sort function has
+been specified, the inserted data item is added in its sorted location.
+If the key already exists in the database and no duplicate sort function
+has been specified, the inserted data item is added as the first of the
+data items for that key.])])
+
+m4_tag(m4_idef(DB_KEYLAST), [dnl
+Insert the specified key/data pair into the database.
+m4_p([dnl
+If the underlying database supports duplicate data items, and if the
+key already exists in the database and a duplicate sort function has
+been specified, the inserted data item is added in its sorted location.
+If the key already exists in the database, and no duplicate sort
+function has been specified, the inserted data item is added as the last
+of the data items for that key.])])
+
+m4_tag(m4_idef(DB_NODUPDATA), [dnl
+In the case of the Btree and Hash access methods, insert the specified
+key/data pair into the database, unless a key/data pair comparing
+equally to it already exists in the database.  If a matching key/data
+pair already exists in the database, m4_ref(DB_KEYEXIST) is returned.
+The DB_NODUPDATA flag may only be specified if the underlying
+database has been configured to support sorted duplicate data items.
+m4_p([dnl
+The DB_NODUPDATA flag may not be specified to the Queue or Recno
+access methods.])])
+
+m4_tagend])
+
+m4_param_key
+m4_paramend
+
+m4_err(dbc_put, deadlock, readonly, repinval, einval,
+[the m4_ref(DB_AFTER), m4_ref(DB_BEFORE) or m4_ref(DB_CURRENT) flags
+were specified and the cursor has not been initialized;
+the m4_ref(DB_AFTER) or m4_ref(DB_BEFORE) flags were specified and a
+duplicate sort function has been specified;
+the m4_ref(DB_CURRENT) flag was specified, a duplicate sort function has
+been specified, and the data item of the referenced key/data pair does
+not compare equally to the m4_arg(data) parameter;
+the m4_ref(DB_AFTER) or m4_ref(DB_BEFORE) flags were specified, and the
+underlying access method is Queue;
+an attempt was made to add a record to a fixed-length database that was too
+large to fit;
+an attempt was made to add a record to a secondary index],
+cdbperm)
+
+m4_seealso(Dbc)
+m4_page_footer

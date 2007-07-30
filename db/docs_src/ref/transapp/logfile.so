@@ -1,0 +1,59 @@
+m4_comment([$Id: logfile.so,v 11.9 2002/11/13 21:49:24 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Log file removal,
+    @log file removal,
+    transapp/archival, transapp/recovery)
+
+m4_p([dnl
+The fourth component of the infrastructure, log file removal, concerns
+the ongoing disk consumption of the database log files.  Depending on
+the rate at which the application writes to the databases and the
+available disk space, the number of log files may increase quickly
+enough so that disk space will be a resource problem.  For this reason,
+you will periodically want to remove log files in order to conserve disk
+space.  This procedure is distinct from database and log file archival
+for catastrophic recovery, and you cannot remove the current log files
+simply because you have created a database snapshot or copied log files
+to archival media.])
+
+m4_p([dnl
+Log files may be removed at any time, as long as:])
+m4_bulletbegin
+m4_bullet([the log file is not involved in an active transaction.])
+m4_bullet([a checkpoint has been written subsequent to the log file's
+creation.])
+m4_bullet([the log file is not the only log file in the environment.])
+m4_bulletend
+
+m4_p([dnl
+If you are preparing for catastrophic failure, you will want to copy
+the log files to archival media before you remove them as described in
+m4_link(archival, Database and log file archival).])
+
+m4_p([dnl
+If you are not preparing for catastrophic failure, any one of the
+following methods can be used to remove log files:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Run the standalone m4_ref(db_archive) utility with the m4_option(d)
+option, to remove any log files that are no longer needed at the time
+the command is executed.])
+
+m4_nlist([dnl
+Call the m4_refT(log_archive) from the application, with the
+m4_ref(DB_ARCH_REMOVE) flag, to remove any log files that are no longer
+needed at the time the call is made.])
+
+m4_nlist([dnl
+Call the m4_refT(dbenv_set_flags) from the application, with the
+m4_ref(DB_LOG_AUTOREMOVE) flag, to remove any log files that are no
+longer needed on an ongoing basis.  With this configuration, m4_db will
+automatically remove log files, and the application will not have an
+opportunity to copy the log files to backup media.])
+
+m4_nlistend
+
+m4_page_footer

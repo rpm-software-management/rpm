@@ -1,6 +1,5 @@
-<!--$Id: rep_config.so,v 1.3 2006/07/14 23:08:59 alanb Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: rep_config.so,v 1.4 2007/02/13 19:32:52 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -62,8 +61,6 @@ single network transfer (defaults to off).
 unsynchronized until the application calls the <a href="../api_cxx/rep_sync.html">DbEnv::rep_sync</a> method.
 <dt><a name="DB_REP_CONF_NOAUTOINIT">DB_REP_CONF_NOAUTOINIT</a><dd>The replication master will not automatically re-initialize outdated
 clients (defaults to off).
-<p>The DB_REP_CONF_NOAUTOINIT flag is not supported by Replication
-Manager.</p>
 <dt><a name="DB_REP_CONF_NOWAIT">DB_REP_CONF_NOWAIT</a><dd>Berkeley DB method calls that would normally block while clients are in
 recovery will return errors immediately (defaults to off).
 </dl>
@@ -106,6 +103,6 @@ otherwise on.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

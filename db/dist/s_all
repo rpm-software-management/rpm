@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_all,v 12.2 2005/12/01 03:24:24 bostic Exp $
+#	$Id: s_all,v 12.8 2007/07/06 16:29:16 bostic Exp $
 
 sh s_perm		# permissions.
 sh s_symlink		# symbolic links.
@@ -13,9 +13,18 @@ sh s_recover		# logging/recovery files.
 sh s_rpc		# RPC files.
 sh s_include		# standard include files.
 
-sh s_windows		# Windows include files.
-sh s_windows_dsp	# Windows build environment.
-sh s_vxworks		# VxWorks include files.
 sh s_java		# Java support.
 sh s_test		# Test suite support.
 sh s_tags		# Tags files.
+
+# We only build the Cscope file for releases, it's too big to commit
+# into the CVS tree.
+#sh s_cscope		# Cscope files.
+
+sh s_brew		# BREW support.
+sh s_brew_dsp		# BREW support: build environment.
+sh s_s60		# S60 support.
+sh s_s60_mmp		# S60 support: build environment.
+sh s_vxworks		# VxWorks support.
+sh s_windows		# Windows support.
+sh s_windows_dsp	# Windows support: build environment.

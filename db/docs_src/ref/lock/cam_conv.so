@@ -1,0 +1,48 @@
+m4_comment([$Id: cam_conv.so,v 10.14 2003/10/18 19:16:02 bostic Exp $])
+
+m4_ref_title(Locking Subsystem,
+    m4_cam locking conventions,
+    m4_cam @locking conventions, lock/twopl, lock/am_conv)
+
+m4_p([dnl
+The m4_cam product has a simple set of conventions for locking.  It
+provides multiple-reader/single-writer semantics, but not per-page
+locking or transaction recoverability.  As such, it does its locking
+entirely in the m4_db interface layer.])
+
+m4_p([dnl
+The object it locks is the file, identified by its unique file number.
+The locking matrix is not one of the two standard lock modes, instead,
+we use a four-lock set, consisting of the following:])
+
+m4_tagbegin
+m4_tag(DB_LOCK_NG, [not granted (always 0)])
+m4_tagns(DB_LOCK_READ, [read (shared)])
+m4_tagns(DB_LOCK_WRITE, [write (exclusive)])
+m4_tagns(DB_LOCK_IWRITE, [intention-to-write (shared with NG and READ, but conflicts with WRITE and IWRITE)])
+m4_tagend
+
+m4_p([dnl
+The IWRITE lock is used for cursors that will be used for updating
+(IWRITE locks are implicitly obtained for write operations through the
+m4_db handles, for example, m4_ref(dbh_put) or m4_ref(dbh_del)).  While
+the cursor is reading, the IWRITE lock is held; but as soon as the
+cursor is about to modify the database, the IWRITE is upgraded to a
+WRITE lock.  This upgrade blocks until all readers have exited the
+database.  Because only one IWRITE lock is allowed at any one time, no
+two cursors can ever try to upgrade to a WRITE lock at the same time,
+and therefore deadlocks are prevented, which is essential because m4_cam
+does not include deadlock detection and recovery.])
+
+m4_p([dnl
+Applications that need to lock compatibly with m4_cam must obey the
+following rules:])
+
+m4_nlistbegin
+m4_nlist([Use only lock modes DB_LOCK_NG, DB_LOCK_READ, DB_LOCK_WRITE,
+DB_LOCK_IWRITE.])
+m4_nlist([Never attempt to acquire a WRITE lock on an object that is
+already locked with a READ lock.])
+m4_nlistend
+
+m4_page_footer

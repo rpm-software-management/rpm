@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: rep010.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep010.tcl,v 12.14 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  rep010
 # TEST	Replication and ISPERM
@@ -52,6 +51,12 @@ proc rep010_sub { method niter tnum logset recargs largs } {
 	global rand_init
 	berkdb srand $rand_init
 	global perm_sent_list
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 	set omethod [convert_method $method]
@@ -77,36 +82,28 @@ proc rep010_sub { method niter tnum logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env_noerr -create \
-	    -log_max 1000000 $m_logargs \
+	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
+	    $m_logargs $verbargs -errpfx MASTER \
 	    -home $masterdir $m_txnargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(M) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $m_logargs \
-#	    -errpfx MASTER -errfile /dev/stderr -verbose {rep on} \
-#	    -home $masterdir $m_txnargs -rep_master \
-#	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set env_cmd(C) "berkdb_env_noerr -create -home $clientdir \
-	    $c_txnargs $c_logargs -rep_client \
+	    $c_txnargs $c_logargs $verbargs -rep_client -errpfx CLIENT \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(C) "berkdb_env_noerr -create -home $clientdir \
-#	    $c_txnargs $c_logargs -rep_client \
-#	    -errpfx CLIENT -errfile /dev/stderr -verbose {rep on} \
-#	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
-	# Bring the client online.
-	rep010_process_msgs $masterenv $clientenv 1
+	# Bring the client online.  Since that now involves internal init, we
+	# have to avoid the special rep010_process_msgs here, because otherwise
+	# we would hang trying to open a log cursor.
+	#
+	process_msgs "{$masterenv 1} {$clientenv 2}"
 
 	# Open database in master, propagate to client.
 	set dbname rep010.db
-	set db1 [eval {berkdb_open -create} $omethod -auto_commit \
+	set db1 [eval {berkdb_open_noerr -create} $omethod -auto_commit \
 	    -env $masterenv $largs $dbname]
 	rep010_process_msgs $masterenv $clientenv 1
 

@@ -1,0 +1,11 @@
+m4_comment([$Id: compat.so,v 10.16 2007/07/06 00:22:53 mjc Exp $])
+
+m4_ref_title(Java API,
+    Compatibility, @Java compatibility, java/conf, java/program)
+
+m4_p([dnl
+The m4_db Java API has been tested with the Sun Microsystem's JDK 1.4
+and Java 5 on Linux, Windows and OS X.  It should work with any JDK
+1.4- or 5-compatible environment.])
+
+m4_page_footer

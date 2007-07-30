@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: tcl_mp.c,v 12.7 2006/09/11 14:53:42 bostic Exp $
+ * $Id: tcl_mp.c,v 12.14 2007/06/22 17:41:45 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <tcl.h>
 #endif
 #include "dbinc/tcl_db.h"
@@ -24,7 +23,7 @@ static int      pg_Cmd __P((ClientData, Tcl_Interp *, int, Tcl_Obj * CONST*));
 static int      tcl_MpGet __P((Tcl_Interp *, int, Tcl_Obj * CONST*,
     DB_MPOOLFILE *, DBTCL_INFO *));
 static int      tcl_Pg __P((Tcl_Interp *, int, Tcl_Obj * CONST*,
-    void *, DB_MPOOLFILE *, DBTCL_INFO *, int));
+    void *, DB_MPOOLFILE *, DBTCL_INFO *));
 static int      tcl_PgInit __P((Tcl_Interp *, int, Tcl_Obj * CONST*,
     void *, DBTCL_INFO *));
 static int      tcl_PgIsset __P((Tcl_Interp *, int, Tcl_Obj * CONST*,
@@ -340,12 +339,14 @@ tcl_MpStat(interp, objc, objv, envp)
 	 * list pairs and free up the memory.
 	 */
 	res = Tcl_NewObj();
+#ifdef HAVE_STATISTICS
 	/*
 	 * MAKE_STAT_LIST assumes 'res' and 'error' label.
 	 */
 	MAKE_STAT_LIST("Cache size (gbytes)", sp->st_gbytes);
 	MAKE_STAT_LIST("Cache size (bytes)", sp->st_bytes);
 	MAKE_STAT_LIST("Number of caches", sp->st_ncache);
+	MAKE_STAT_LIST("Maximum number of caches", sp->st_max_ncache);
 	MAKE_STAT_LIST("Region size", sp->st_regsize);
 	MAKE_STAT_LIST("Maximum memory-mapped file size", sp->st_mmapsize);
 	MAKE_STAT_LIST("Maximum open file descriptors", sp->st_maxopenfd);
@@ -416,6 +417,7 @@ tcl_MpStat(interp, objc, objv, envp)
 		if (result != TCL_OK)
 			goto error;
 	}
+#endif
 	Tcl_SetObjResult(interp, res1);
 error:
 	__os_ufree(envp, sp);
@@ -730,7 +732,6 @@ pg_Cmd(clientData, interp, objc, objv)
 		"pgnum",
 		"pgsize",
 		"put",
-		"set",
 		NULL
 	};
 	enum pgcmds {
@@ -738,8 +739,7 @@ pg_Cmd(clientData, interp, objc, objv)
 		PGISSET,
 		PGNUM,
 		PGSIZE,
-		PGPUT,
-		PGSET
+		PGPUT
 	};
 	DB_MPOOLFILE *mp;
 	int cmdindex, length, result;
@@ -784,10 +784,8 @@ pg_Cmd(clientData, interp, objc, objv)
 	case PGSIZE:
 		res = Tcl_NewWideIntObj((Tcl_WideInt)pgip->i_pgsz);
 		break;
-	case PGSET:
 	case PGPUT:
-		result = tcl_Pg(interp, objc, objv, page, mp, pgip,
-		    (enum pgcmds)cmdindex == PGSET ? 0 : 1);
+		result = tcl_Pg(interp, objc, objv, page, mp, pgip);
 		break;
 	case PGINIT:
 		result = tcl_PgInit(interp, objc, objv, page, pgip);
@@ -807,14 +805,13 @@ pg_Cmd(clientData, interp, objc, objv)
 }
 
 static int
-tcl_Pg(interp, objc, objv, page, mp, pgip, putop)
+tcl_Pg(interp, objc, objv, page, mp, pgip)
 	Tcl_Interp *interp;		/* Interpreter */
 	int objc;			/* How many arguments? */
 	Tcl_Obj *CONST objv[];		/* The argument objects */
 	void *page;			/* Page pointer */
 	DB_MPOOLFILE *mp;		/* Mpool pointer */
 	DBTCL_INFO *pgip;		/* Info pointer */
-	int putop;			/* Operation */
 {
 	static const char *pgopt[] = {
 		"-discard",
@@ -842,17 +839,12 @@ tcl_Pg(interp, objc, objv, page, mp, pgip, putop)
 	}
 
 	_debug_check();
-	if (putop)
-		ret = mp->put(mp, page, flag);
-	else
-		ret = mp->set(mp, page, flag);
+	ret = mp->put(mp, page, DB_PRIORITY_UNCHANGED, flag);
 
 	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "page");
 
-	if (putop) {
-		(void)Tcl_DeleteCommand(interp, pgip->i_name);
-		_DeleteInfo(pgip);
-	}
+	(void)Tcl_DeleteCommand(interp, pgip->i_name);
+	_DeleteInfo(pgip);
 	return (result);
 }
 

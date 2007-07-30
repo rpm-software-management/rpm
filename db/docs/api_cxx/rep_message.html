@@ -1,6 +1,5 @@
-<!--$Id: rep_message.so,v 1.38 2006/06/24 00:33:22 alanb Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: rep_message.so,v 1.39 2007/03/20 20:20:26 alanb Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -23,7 +22,7 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbEnv::rep_process_message(Dbt *control, Dbt *rec, int *envid, DbLsn *ret_lsnp)
+DbEnv::rep_process_message(Dbt *control, Dbt *rec, int envid, DbLsn *ret_lsnp)
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::rep_process_message</h3>
@@ -70,13 +69,6 @@ The maximum LSN of the permanent records stored is returned.
 with the new master (possibly because the client has been configured
 with the <a href="../api_cxx/rep_config.html#DB_REP_CONF_NOAUTOINIT">DB_REP_CONF_NOAUTOINIT</a> flag to turn-off automatic
 internal initialization).
-</p>
-<dt><a name="DB_REP_NEWMASTER">DB_REP_NEWMASTER</a><dd>
-<p>The DbEnv::rep_process_message method will return DB_REP_NEWMASTER if a new master has been chosen.
-The <b>envid</b> parameter contains the environment ID of the new
-master.  If the recipient of this error return has been made master, it
-is the application's responsibility to begin acting as the master
-environment.
 </p>
 <dt><a name="DB_REP_NEWSITE">DB_REP_NEWSITE</a><dd>
 <p>The DbEnv::rep_process_message method will return DB_REP_NEWSITE if the system received contact information from a new environment.
@@ -126,6 +118,6 @@ cases the value of <b>ret_lsnp</b> is undefined.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

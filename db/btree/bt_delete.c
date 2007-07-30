@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_delete.c,v 12.21 2006/08/24 14:44:44 bostic Exp $
+ * $Id: bt_delete.c,v 12.25 2007/05/17 15:14:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -274,7 +273,8 @@ __bam_dpages(dbc, use_top, update)
 	 * transactions, this lets the rest of the tree get back to business
 	 * immediately.
 	 */
-	if ((ret = __memp_dirty(mpf, &epg->page, dbc->txn, 0)) != 0)
+	if ((ret = __memp_dirty(mpf,
+	    &epg->page, dbc->txn, dbc->priority, 0)) != 0)
 		goto discard;
 	if ((ret = __bam_ditem(dbc, epg->page, epg->indx)) != 0)
 		goto discard;
@@ -293,7 +293,7 @@ __bam_dpages(dbc, use_top, update)
 	pgno = PGNO(epg->page);
 	nitems = NUM_ENT(epg->page);
 
-	ret = __memp_fput(mpf, epg->page, 0);
+	ret = __memp_fput(mpf, epg->page, dbc->priority);
 	if ((t_ret = __TLPUT(dbc, epg->lock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (ret != 0)
@@ -301,7 +301,8 @@ __bam_dpages(dbc, use_top, update)
 
 	/* Then, discard any pages that we don't care about. */
 discard: for (epg = cp->sp; epg < stack_epg; ++epg) {
-		if ((t_ret = __memp_fput(mpf, epg->page, 0)) != 0 && ret == 0)
+		if ((t_ret = __memp_fput(mpf,
+		     epg->page, dbc->priority)) != 0 && ret == 0)
 			ret = t_ret;
 		epg->page = NULL;
 		if ((t_ret = __TLPUT(dbc, epg->lock)) != 0 && ret == 0)
@@ -312,7 +313,8 @@ discard: for (epg = cp->sp; epg < stack_epg; ++epg) {
 
 	/* Free the rest of the pages in the stack. */
 	while (++epg <= cp->csp) {
-		if ((ret = __memp_dirty(mpf, &epg->page, dbc->txn, 0)) != 0)
+		if ((ret = __memp_dirty(mpf,
+		    &epg->page, dbc->txn, dbc->priority, 0)) != 0)
 			goto err;
 		/*
 		 * Delete page entries so they will be restored as part of
@@ -350,7 +352,8 @@ discard: for (epg = cp->sp; epg < stack_epg; ++epg) {
 err_inc:	++epg;
 err:		for (; epg <= cp->csp; ++epg) {
 			if (epg->page != NULL)
-				(void)__memp_fput(mpf, epg->page, 0);
+				(void)__memp_fput(mpf,
+				     epg->page, dbc->priority);
 			(void)__TLPUT(dbc, epg->lock);
 		}
 		BT_STK_CLR(cp);
@@ -470,12 +473,14 @@ stop:			done = 1;
 		if ((t_ret = __TLPUT(dbc, p_lock)) != 0 && ret == 0)
 			ret = t_ret;
 		if (parent != NULL &&
-		    (t_ret = __memp_fput(mpf, parent, 0)) != 0 && ret == 0)
+		    (t_ret = __memp_fput(mpf,
+		    parent, dbc->priority)) != 0 && ret == 0)
 			ret = t_ret;
 		if ((t_ret = __TLPUT(dbc, c_lock)) != 0 && ret == 0)
 			ret = t_ret;
 		if (child != NULL &&
-		    (t_ret = __memp_fput(mpf, child, 0)) != 0 && ret == 0)
+		    (t_ret = __memp_fput(mpf,
+		    child, dbc->priority)) != 0 && ret == 0)
 			ret = t_ret;
 	}
 
@@ -558,7 +563,7 @@ __bam_relink(dbc, pagep, new_pgno)
 			np->prev_pgno = pagep->prev_pgno;
 		else
 			np->prev_pgno = new_pgno;
-		ret = __memp_fput(mpf, np, 0);
+		ret = __memp_fput(mpf, np, dbc->priority);
 		if ((t_ret = __TLPUT(dbc, npl)) != 0 && ret == 0)
 			ret = t_ret;
 		if (ret != 0)
@@ -570,7 +575,7 @@ __bam_relink(dbc, pagep, new_pgno)
 			pp->next_pgno = pagep->next_pgno;
 		else
 			pp->next_pgno = new_pgno;
-		ret = __memp_fput(mpf, pp, 0);
+		ret = __memp_fput(mpf, pp, dbc->priority);
 		if ((t_ret = __TLPUT(dbc, ppl)) != 0 && ret == 0)
 			ret = t_ret;
 		if (ret != 0)
@@ -579,10 +584,10 @@ __bam_relink(dbc, pagep, new_pgno)
 	return (0);
 
 err:	if (np != NULL)
-		(void)__memp_fput(mpf, np, 0);
+		(void)__memp_fput(mpf, np, dbc->priority);
 	(void)__TLPUT(dbc, npl);
 	if (pp != NULL)
-		(void)__memp_fput(mpf, pp, 0);
+		(void)__memp_fput(mpf, pp, dbc->priority);
 	(void)__TLPUT(dbc, ppl);
 	return (ret);
 }
@@ -615,12 +620,12 @@ __bam_pupdate(dbc, lpg)
 	 */
 	for (epg = &cp->csp[-1]; epg >= cp->sp; epg--) {
 		if ((ret = __memp_dirty(dbc->dbp->mpf,
-		    &epg->page, dbc->txn, 0)) != 0)
+		    &epg->page, dbc->txn, dbc->priority, 0)) != 0)
 			return (ret);
 		if ((ret = __bam_ditem(dbc, epg->page, epg->indx)) != 0)
 			return (ret);
 		epg->indx--;
-		if ((ret = __bam_pinsert(dbc, epg,
+		if ((ret = __bam_pinsert(dbc, epg, 0,
 		    lpg, epg[1].page, BPI_NORECNUM)) != 0) {
 			if (ret == DB_NEEDSPLIT) {
 				/* This should not happen. */

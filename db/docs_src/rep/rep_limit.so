@@ -1,0 +1,60 @@
+m4_comment([$Id: rep_limit.so,v 1.25 2006/11/30 21:19:38 bostic Exp $])
+
+define(M4PAGELOCAL, [rep_set_limit, rep_get_limit])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_set_limit),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_set_limit(DB_ENV *env, u_int32_t gbytes, u_int32_t bytes);
+m4_blank
+int
+DB_ENV-__GT__rep_get_limit(DB_ENV *dbenv, u_int32_t *gbytesp, u_int32_t *bytesp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_set_limit(u_int32_t gbytes, u_int32_t bytes);
+m4_blank
+int
+DbEnv::rep_get_limit(u_int32_t *gbytesp, u_int32_t *bytesp);
+]))
+
+m4_p([dnl
+The m4_refT(rep_set_limit) sets a byte-count limit on the amount of data
+that will be transmitted from a site in response to a single message
+processed by the m4_refT(rep_message).  The limit is not a hard limit,
+and the record that exceeds the limit is the last record to be sent.])
+
+m4_p([dnl
+Record transmission throttling is turned on by default with a limit of
+10MB.])
+
+m4_p([dnl
+If the values passed to the m4_refT(rep_set_limit) are both zero, then
+the transmission limit is turned off.])
+
+m4_scope_env(rep_set_limit)
+m4_when_any(rep_set_limit)
+m4_return(rep_set_limit, std)
+
+m4_parambegin
+m4_param(bytes, [dnl
+The m4_arg(gbytes) and m4_arg(bytes) parameters specify the maximum
+number of bytes that will be sent in a single call to m4_refT(rep_message).])
+m4_param(gbytes, [dnl
+The m4_arg(gbytes) and m4_arg(bytes) parameters specify the maximum
+number of bytes that will be sent in a single call to m4_refT(rep_message).])
+m4_paramend
+
+m4_pf_description(rep_get_limit)
+
+m4_when_any(rep_get_limit)
+m4_return(rep_get_limit, std)
+
+m4_parambegin
+m4_param_co(bytesp, additional bytes of memory in the current transmit limit)
+m4_param_co(gbytesp, gigabytes of memory in the in the current transmit limit)
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

@@ -1,0 +1,245 @@
+m4_comment([$Id: conf.so,v 10.66 2007/04/05 20:36:38 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    Configuring m4_db,
+    [@configuring m4_db for UNIX systems, configuring m4_db for @UNIX systems],
+    build_unix/intro, build_unix/small)
+
+m4_p([dnl
+There are several arguments you can specify when configuring m4_db.
+Although only the m4_db-specific ones are described here, most of the
+standard GNU autoconf arguments are available and supported.  To see a
+complete list of possible arguments, specify the --help flag to the
+configure program.])
+
+m4_p([dnl
+The m4_db specific arguments are as follows:])
+
+m4_tagbegin
+
+m4_idefz(configuring without large @file support)
+m4_tag([m4_idef(--disable-largefile)], [dnl
+Some systems, notably versions of HP/UX and Solaris, require special
+compile-time options in order to create files larger than 2^32 bytes.
+These options are automatically enabled when m4_db is compiled.  For
+this reason, binaries built on current versions of these systems may
+not run on earlier versions of the system because the library and system
+calls necessary for large files are not available.  To disable building
+with these compile-time options, enter --disable-largefile as an argument
+to configure.])
+
+m4_idefz(disabling @shared libraries, disabling @static libraries)
+m4_tag([m4_idef(--disable-shared), m4_idef(--disable-static)], [dnl
+On systems supporting shared libraries, m4_db builds both static and
+shared libraries by default.  (Shared libraries are built using
+m4_linkweb(http://www.gnu.org/software/libtool/libtool.html, [the GNU
+Project's Libtool]) distribution, which supports shared library builds
+on many (although not all) systems.)  To not build shared libraries,
+configure using the --disable-shared argument.  To not build static
+libraries, configure using the --disable-static argument.])
+
+m4_idefz(configuring m4_db @1.85 API compatibility)
+m4_tag([m4_idef(--enable-compat185)], [dnl
+To compile or load m4_db 1.85 applications against this release of the
+m4_db library, enter --enable-compat185 as an argument to configure.
+This will include m4_db 1.85 API compatibility code in the library.])
+
+m4_idefz(configuring the @C++ API)
+m4_tag([m4_idef(--enable-cxx)], [dnl
+To build the m4_db C++ API, enter --enable-cxx as an argument to
+configure.])
+
+m4_tag([m4_idef(--enable-debug)], [dnl
+To build m4_db with m4_bold(-g) as a compiler flag and with
+m4_bold(DEBUG) #defined during compilation, enter --enable-debug as an
+argument to configure.  This will create a m4_db library and utilities
+with debugging symbols, as well as load various routines that can be
+called from a debugger to display pages, cursor queues, and so forth.
+If installed, the utilities will not be stripped.  This argument should
+not be specified when configuring to build production binaries.])
+
+m4_tag([m4_idef(--enable-debug_rop)], [dnl
+To build m4_db to output log records for read operations, enter
+--enable-debug_rop as an argument to configure.  This argument should not
+be specified when configuring to build production binaries.])
+
+m4_tag([m4_idef(--enable-debug_wop)], [dnl
+To build m4_db to output log records for write operations, enter
+--enable-debug_wop as an argument to configure.  This argument should not
+be specified when configuring to build production binaries.])
+
+m4_tag([m4_idef(--enable-diagnostic)], [dnl
+To build m4_db with run-time debugging checks, enter --enable-diagnostic
+as an argument to configure.  This causes a number of additional checks
+to be performed when m4_db is running, and also causes some failures to
+trigger process abort rather than returning errors to the application.
+Applications built using this argument should not share database
+environments with applications built without this argument.  This
+argument should not be specified when configuring to build production
+binaries.])
+
+m4_idefz(building a utility to dump m4_db @1.85 databases)
+m4_tag([m4_idef(--enable-dump185)], [dnl
+To convert m4_db 1.85 (or earlier) databases to this release of m4_db,
+enter --enable-dump185 as an argument to configure.  This will build the
+m4_ref(db_dump185) utility, which can dump m4_db 1.85 and 1.86 databases
+in a format readable by the m4_db m4_ref(db_load) utility.
+m4_p([dnl
+The system libraries with which you are loading the m4_ref(db_dump185)
+utility must already contain the m4_db 1.85 library routines for this
+to work because the m4_db distribution does not include them.  If you
+are using a non-standard library for the m4_db 1.85 library routines,
+you will have to change the Makefile that the configuration step creates
+to load the m4_ref(db_dump185) utility with that library.])])
+
+m4_idefz(configuring the @Java API)
+m4_tag([m4_idef(--enable-java)], [dnl
+To build the m4_db Java API, enter --enable-java as an argument to
+configure. To build Java, you must also build with shared libraries.
+Before configuring, you must set your PATH environment variable to
+include javac.  Note that it is not sufficient to include a symbolic
+link to javac in your PATH because the configuration process uses the
+location of javac to determine the location of the Java include files
+(for example, jni.h). On some systems, additional include directories
+may be needed to process jni.h; see m4_link(flags, Changing compile or
+load options) for more information.])
+
+m4_idefz(configuring the fine-grained lock manager)
+m4_tag([m4_idef(--enable-fine_grained_lock_manager)], [dnl
+For highly concurrent m4_db applications on multithreaded, multi-core
+architectures (for example, Sun Microsystem's Niagara systems), it may
+be advantageous to configure m4_db for finer-grained locking behavior
+in the lock manager subsystem.  To build with m4_db with finer-grained
+locking behavior in the lock manager subsystem, enter
+--enable-fine_grained_lock_manager as an argument to configure.  This
+option should not be configured without performance testing to confirm
+the finer-grained locking behavior increases overall throughput, as this
+option will decrease overall throughput for some applications.])
+
+m4_tag([m4_idef(--enable-posixmutexes)], [dnl
+To force m4_db to use the POSIX pthread mutex interfaces for underlying
+mutex support, enter --enable-posixmutexes as an argument to configure.
+This is rarely necessary: POSIX mutexes will be selected automatically
+on systems where they are the preferred implementation.
+m4_p([dnl
+The --enable-posixmutexes configuration argument is normally used in
+two ways: First, when there are multiple mutex implementations available
+and the POSIX mutex implementation is not the preferred one (for
+example, on Solaris where the LWP mutexes are used by default).  Second,
+by default the m4_db library will only select the POSIX mutex
+implementation if it supports mutexes shared between multiple processes,
+as described for the pthread_condattr_setpshared and
+pthread_mutexattr_setpshared interfaces.  The --enable-posixmutexes
+configuration argument can be used to force the selection of POSIX
+mutexes in this case, which can improve application performance
+significantly when the alternative mutex implementation is a
+non-blocking one (for example test-and-set assembly instructions).
+However, configuring to use POSIX mutexes when the implementation does
+not have inter-process support will only allow the creation of private
+database environments, that is, environments where the
+m4_ref(DB_PRIVATE) flag is specified to the m4_refT(dbenv_open).])
+m4_p([dnl
+Specifying the --enable-posixmutexes configuration argument may require
+that applications and m4_db be linked with the -lpthread library.])])
+
+m4_tag([m4_idef(--enable-pthread_api)], [dnl
+To configure m4_db for a POSIX pthreads application (with the exception
+that POSIX pthread mutexes may not be selected as the underlying mutex
+implementation for the build), enter --enable-pthread_api as an argument
+to configure.  The build will include the m4_db replication manager
+interfaces and will use the POSIX standard pthread_self and
+pthread_yield functions to identify threads of control and yield the
+processor.  The --enable-pthread_api argument requires POSIX pthread
+support already be installed on your system.
+m4_p([dnl
+Specifying the --enable-pthread_api configuration argument may require
+that applications and m4_db be linked with the -lpthread library.])])
+
+m4_idefz(configuring a @RPC client/server)
+m4_tag([m4_idef(--enable-rpc)], [dnl
+To build the m4_db RPC client code and server utility, enter --enable-rpc
+as an argument to configure.  The --enable-rpc argument requires that RPC
+support already be installed on your system.])
+
+m4_idefz(configuring a small memory @footprint library)
+m4_tag([m4_idef(--enable-smallbuild)], [dnl
+To build a small memory footprint version of the m4_db library, enter
+--enable-smallbuild as an argument to configure.  The
+--enable-smallbuild argument is equivalent to individually specifying
+--disable-cryptography, --disable-hash, --disable-queue,
+--disable-replication, --disable-statistics and --disable-verify,
+turning off cryptography support, the Hash and Queue access methods,
+database environment replication support and database verification
+support.  See m4_linkpage(M4RELDIR/ref/build_unix/small, Building a
+small memory footprint library) for more information.])
+
+m4_idefz(configuring the @Tcl API)
+m4_tag([m4_idef(--enable-tcl)], [dnl
+To build the m4_db Tcl API, enter --enable-tcl as an argument to
+configure.  This configuration argument expects to find Tcl's tclConfig.sh
+file in the m4_path(/usr/local/lib) directory.  See the --with-tcl
+argument for instructions on specifying a non-standard location for the
+Tcl installation.  See m4_link(M4RELDIR/ref/tcl/intro, Loading m4_db
+with Tcl) for information on sites from which you can download Tcl and
+which Tcl versions are compatible with m4_db.  To build Tcl, you must
+also build with shared libraries.])
+
+m4_idefz(configuring the @test suite)
+m4_tag([m4_idef(--enable-test)], [dnl
+To build the m4_db test suite, enter --enable-test as an argument to
+configure.  To run the m4_db test suite, you must also build the Tcl
+API.  This argument should not be specified when configuring to build
+production binaries.])
+
+m4_tag([m4_idef(--enable-uimutexes)], [dnl
+To force m4_db to use the UNIX International (UI) mutex interfaces for
+underlying mutex support, enter --enable-uimutexes as an argument to
+configure.  This is rarely necessary: UI mutexes will be selected
+automatically on systems where they are the preferred implementation.
+m4_p([dnl
+The --enable-uimutexes configuration argument is normally used when
+there are multiple mutex implementations available and the UI mutex
+implementation is not the preferred one (for example, on Solaris where
+the LWP mutexes are used by default).])
+m4_p([dnl
+Specifying the --enable-uimutexes configuration argument may require
+that applications and m4_db be linked with the -lthread library.])])
+
+m4_tag([m4_idef(--enable-umrw)], [dnl
+Rational Software's Purify product and other run-time tools complain
+about uninitialized reads/writes of structure fields whose only purpose
+is padding, as well as when heap memory that was never initialized is
+written to disk.  Specify the --enable-umrw argument during
+configuration to mask these errors.  This argument should not be
+specified when configuring to build production binaries.])
+
+m4_tag([m4_idef(--with-mutex=MUTEX)], [dnl
+To force m4_db to use a specific mutex implementation, configure with
+--with-mutex=MUTEX, where MUTEX is the mutex implementation you want.
+For example, --with-mutex=x86/gcc-assembly will configure m4_db to use
+the x86 GNU gcc compiler based test-and-set assembly mutexes.  This is
+rarely necessary and should be done only when the default configuration
+selects the wrong mutex implementation.  A list of available mutex
+implementations can be found in the distribution file
+m4_path(dist/aclocal/mutex.ac).])
+
+m4_tag([m4_idef(--with-tcl=DIR)], [dnl
+To build the m4_db Tcl API, enter --with-tcl=DIR, replacing DIR with
+the directory in which the Tcl tclConfig.sh file may be found.  See
+m4_link(M4RELDIR/ref/tcl/intro, Loading m4_db with Tcl) for information
+on sites from which you can download Tcl and which Tcl versions are
+compatible with m4_db.  To build Tcl, you must also build with shared
+libraries.])
+
+m4_tag([m4_idef(--with-uniquename=NAME)], [dnl
+To build m4_db with unique symbol names (in order to avoid conflicts
+with other application modules or libraries), enter --with-uniquename=NAME,
+replacing NAME with a string that to be appended to every m4_db symbol.
+If "=NAME" is not specified, a default value of "_MAJORMINOR" is used,
+where MAJORMINOR is the major and minor release numbers of the m4_db
+release.  See m4_link(M4RELDIR/ref/install/multiple, Building with
+multiple versions of m4_db) for more information.])
+
+m4_tagend
+
+m4_page_footer

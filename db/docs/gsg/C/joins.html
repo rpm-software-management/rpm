@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Database Joins</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="indexes.html" title="Chapter 5. Secondary Databases" />
+    <link rel="up" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
     <link rel="previous" href="secondaryCursor.html" title="&#10;        &#10;        Using Cursors with Secondary Databases&#10;    " />
     <link rel="next" href="coreindexusage.html" title="Secondary Database Example" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Database Joins</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Secondary Databases</th>
-          <td width="20%" align="right"> <a accesskey="n" href="coreindexusage.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Secondary Databases</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="coreindexusage.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -98,9 +98,6 @@
         using a 
             
             <span>join cursor.</span>
-    <span>
-        
-    </span>
     </p>
       <div class="sect2" lang="en" xml:lang="en">
         <div class="titlepage">
@@ -179,7 +176,6 @@
         </div>
         <p>
             For example:
-            
         </p>
         <a id="c_index9"></a>
         <pre class="programlisting">#include &lt;db.h&gt;
@@ -196,9 +192,9 @@ DBC *carray[4];
 DBT key, data;
 int ret;
 
-char *the_color = &quot;red&quot;;
-char *the_type = &quot;minivan&quot;;
-char *the_make = &quot;Toyota&quot;;
+char *the_color = "red";
+char *the_type = "minivan";
+char *the_make = "Toyota";
 
 /* Database and secondary database opens omitted for brevity.
  * Assume a primary database handle:
@@ -240,17 +236,17 @@ if (( ret =
 /* Position the cursors */
 key.data = the_color;
 key.size = strlen(the_color) + 1;
-if ((ret = color_curs-&gt;c_get(color_curs, &amp;key, &amp;data, DB_SET)) != 0)
+if ((ret = color_curs-&gt;get(color_curs, &amp;key, &amp;data, DB_SET)) != 0)
     /* Error handling goes here */
 
 key.data = the_make;
 key.size = strlen(the_make) + 1;
-if ((ret = make_curs-&gt;c_get(make_curs, &amp;key, &amp;data, DB_SET)) != 0)
+if ((ret = make_curs-&gt;get(make_curs, &amp;key, &amp;data, DB_SET)) != 0)
     /* Error handling goes here */
 
 key.data = the_type;
 key.size = strlen(the_type) + 1;
-if ((ret = type_curs-&gt;c_get(type_curs, &amp;key, &amp;data, DB_SET)) != 0)
+if ((ret = type_curs-&gt;get(type_curs, &amp;key, &amp;data, DB_SET)) != 0)
     /* Error handling goes here */
 
 /* Set up the cursor array */
@@ -264,7 +260,7 @@ if ((ret = automotiveDB-&gt;join(automotiveDB, carray, &amp;join_curs, 0)) != 0)
     /* Error handling goes here */
 
 /* Iterate using the join cursor */
-while ((ret = join_curs-&gt;c_get(join_curs, &amp;key, &amp;data, 0)) == 0) {
+while ((ret = join_curs-&gt;get(join_curs, &amp;key, &amp;data, 0)) == 0) {
     /* Do interesting things with the key and data */
 }
 
@@ -284,21 +280,21 @@ if (ret == DB_NOTFOUND) {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="secondaryCursor.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="indexes.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="coreindexusage.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="coreindexusage.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
         
         Using Cursors with Secondary Databases
-     </td>
+    Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Secondary Database Example</td>
+          <td width="40%" align="right" valign="top">Â Secondary Database Example</td>
         </tr>
       </table>
     </div>

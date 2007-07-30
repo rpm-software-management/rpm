@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Implementing Key 
         
         Extractors
@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="indexes.html" title="Chapter 5. Secondary Databases" />
-    <link rel="previous" href="indexes.html" title="Chapter 5. Secondary Databases" />
+    <link rel="up" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
+    <link rel="previous" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
     <link rel="next" href="readSecondary.html" title="Reading Secondary Databases" />
   </head>
   <body>
@@ -24,9 +24,9 @@
         </th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="indexes.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Secondary Databases</th>
-          <td width="20%" align="right"> <a accesskey="n" href="readSecondary.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="indexes.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Secondary Databases</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="readSecondary.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -123,23 +123,124 @@ get_sales_rep(Db *sdbp,          // secondary db handle
              &amp;sdb,           // Secondary database
              get_sales_rep,      // Callback used for key creation.
              0);                 // Flags</pre>
+      <div class="sect2" lang="en" xml:lang="en">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h3 class="title"><a id="multikeys"></a>Working with Multiple Keys</h3>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <p>
+                    Until now we have only discussed indexes as if there is
+                    a one-to-one relationship between the secondary key and
+                    the primary database record. In fact, it is possible to
+                    generate multiple keys for any given record, provided
+                    that you take appropriate steps in your key creator
+                    to do so.
+            </p>
+        <p>
+                    For example, suppose you had a database that contained
+                    information about books. Suppose further that you
+                    sometimes want to look up books by author. Because
+                    sometimes books have multiple authors, you may want to
+                    return multiple secondary keys for every book that you
+                    index.
+            </p>
+        <p>
+                    To do this, you write a key extractor that returns a
+                                
+                                <span>Dbt</span>
+                        whose <tt class="literal">data</tt> member points to an array of
+                                
+                                <span>Dbts.</span>
+                        Each such member of this array contains a single secondary key.
+                        In addition, the 
+                                
+                                <span>Dbt</span>
+                        returned by your key extractor must have a size field
+                        equal to the number of elements contained in the 
+                                
+                                <span>Dbt</span>
+                        array. Also, the flag field for the 
+                                
+                                <span>Dbt</span>
+                        returned by the callback must include 
+                        <tt class="literal">DB_DBT_MULTIPLE</tt>. For example:
+             </p>
+        <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Note</h3>
+          <p>
+                             It is important that the array of secondary
+                             keys created by your callback not contain
+                             repeats. That is, every element in the array
+                             must be unique. If the array does not contain
+                             a unique set, then the secondary can get out
+                             of sync with the primary.
+                     </p>
+        </div>
+        <pre class="programlisting">int
+my_callback(Db *dbp, const Dbt *pkey, const Dbt *pdata, Dbt *skey)
+{
+    Dbt *tmpdbt;
+    char *tmpdata1, tmpdata2;
+
+    // This example skips the step of extracting the data you
+    // want to use for building your secondary keys from the
+    // pkey or pdata Dbt.
+     
+    // Assume for the purpose of this example that the data 
+    // is temporarily stored in two variables, 
+    // tmpdata1 and tmpdata2.
+
+    // Create an array of Dbts that is large enough for the
+    // number of keys that you want to return. In this case, 
+    // we go with an array of size two. 
+
+    tmpdbt = malloc(sizeof(Dbt) * 2);
+    memset(tmpdbt, 0, sizeof(Dbt) * 2);
+
+    // Now assign secondary keys to each element of the array. 
+    tmpdbt[0].set_data(tmpdata1);
+    tmpdbt[0].set_size((u_int32_t)strlen(tmpdbt[0].data) + 1);
+    tmpdbt[1].set_data(tmpdata2);
+    tmpdbt[1].set_size((u_int32_t)strlen(tmpdbt[1].data) + 1);
+
+    // Now we set flags for the returned Dbt. DB_DBT_MULTIPLE is
+    // required in order for DB to know that the Dbt references an 
+    // array. In addition, we set DB_DBT_APPMALLOC because we
+    // dynamically allocated memory for the Dbt's data field.
+    // DB_DBT_APPMALLOC causes DB to release that memory once it
+    // is done with the returned Dbt. 
+    skey-&gt;set_flags(DB_DBT_MULTIPLE | DB_DBT_APPMALLOC);
+
+    // Point the results data field to the arrays of Dbts
+    skey-&gt;set_data(tmpdbt);
+
+    // Indicate the returned array is of size 2
+    skey-&gt;size = 2;
+
+    return (0);
+} </pre>
+      </div>
     </div>
     <div class="navfooter">
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="indexes.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="indexes.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="indexes.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="readSecondary.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="readSecondary.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 5. Secondary Databases </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 5.Â Secondary DatabasesÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Reading Secondary Databases</td>
+          <td width="40%" align="right" valign="top">Â Reading Secondary Databases</td>
         </tr>
       </table>
     </div>

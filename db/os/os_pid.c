@@ -1,17 +1,20 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: os_pid.c,v 12.21 2006/08/24 14:46:18 bostic Exp $
+ * $Id: os_pid.c,v 12.24 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
+
+#ifdef HAVE_MUTEX_SUPPORT
 #include "dbinc/mutex_int.h"		/* Required to load appropriate
 					   header files for thread functions. */
+#endif
+
 /*
  * __os_id --
  *	Return the current process ID.

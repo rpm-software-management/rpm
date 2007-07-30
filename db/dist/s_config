@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_config,v 12.1 2005/08/16 05:19:18 mjc Exp $
+#	$Id: s_config,v 12.2 2007/04/18 14:47:26 bostic Exp $
 #
 # Build the autoconfiguration files.
 
@@ -8,7 +8,7 @@ trap 'rm -f aclocal.m4 ; exit 0' 0 1 2 3 13 15
 . ./RELEASE
 
 echo "autoconf: building aclocal.m4..."
-cat aclocal/*.ac aclocal_java/*.ac > aclocal.m4
+cat aclocal/*.m4 aclocal_java/*.m4 > aclocal.m4
 
 echo "autoconf: running autoheader to build config.hin..."
 rm -f config.hin

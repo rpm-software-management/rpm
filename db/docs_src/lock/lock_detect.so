@@ -1,0 +1,44 @@
+m4_comment([$Id: lock_detect.so,v 10.50 2006/12/13 17:57:23 bostic Exp $])
+
+define(M4PAGELOCAL, lock_detect)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(lock_detect),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lock_detect(DB_ENV *env,
+    u_int32_t flags, u_int32_t atype, int *rejected);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lock_detect(u_int32_t flags, u_int32_t atype, int *rejected);
+]))
+
+m4_p([dnl
+The m4_refT(lock_detect) runs one iteration of the deadlock detector.
+The deadlock detector traverses the lock table and marks one of the
+participating lock requesters for rejection in each deadlock it finds.])
+
+m4_underfunc(lock_detect, lock_detect, db_deadlock)
+
+m4_return(lock_detect, std)
+
+m4_parambegin
+m4_param(rejected, [dnl
+If the m4_arg(rejected) parameter is non-NULL, the memory location to
+which it refers will be set to the number of lock requests that were
+rejected.])
+
+m4_param(atype, [dnl
+The m4_arg(atype) parameter specifies which lock request(s) to reject.
+It must be set to one of the following list:
+
+m4_lk_detect_flags])
+
+m4_unusedflags
+m4_paramend
+
+m4_err(lock_detect, einval)
+
+m4_seealso(DbLock)
+m4_page_footer

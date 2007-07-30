@@ -1,0 +1,19 @@
+m4_comment([$Id: dbc_close.so,v 11.14 2004/12/02 18:21:08 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db close, m4_tcl_dbc_close, [dnl
+dbc close
+])
+
+m4_p([dnl
+The m4_tcl_dbc_close command discards the cursor.])
+
+m4_p([dnl
+After m4_tcl_dbc_close has been called, regardless of its return, the
+cursor handle may not be used again.])
+
+m4_tcl_ret_standard(m4_tcl_dbc_close)
+
+m4_page_footer

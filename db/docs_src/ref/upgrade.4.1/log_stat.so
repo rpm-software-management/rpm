@@ -1,0 +1,13 @@
+m4_comment([$Id: log_stat.so,v 1.1 2002/01/11 16:33:12 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.1: st_flushcommit,,
+    upgrade.4.1/log_register, upgrade.4.1/checkpoint)
+
+m4_p([dnl
+The DB_ENV-__GT__log_stat "st_flushcommits" statistic has been removed
+from m4_db, as it is now the same as the "st_scount" statistic.  Any
+application using the "st_flushcommits" statistic should remove it, or
+replace it with the "st_count" statistic.])
+
+m4_page_footer

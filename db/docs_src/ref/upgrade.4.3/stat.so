@@ -1,0 +1,15 @@
+m4_comment([$Id: stat.so,v 1.4 2006/09/20 16:04:05 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: DB-__GT__stat,,
+    upgrade.4.3/cput, upgrade.4.3/verb)
+
+m4_p([dnl
+The 4.3 release adds transactional support to the m4_refT(dbh_stat).])
+
+m4_p([dnl
+Application writers can simply add a NULL m4_arg(txnid) argument to the
+m4_refT(dbh_stat) calls in their application to leave the application's
+behavior unchanged.])
+
+m4_page_footer

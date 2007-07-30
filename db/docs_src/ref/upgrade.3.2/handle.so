@@ -1,0 +1,17 @@
+m4_comment([$Id: handle.so,v 1.6 2004/08/15 03:22:57 bostic Exp $])
+
+define(BDB_LOC, ..)
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.2: Java and C++ object reuse,,
+    upgrade.3.2/mutexlock, upgrade.3.2/notfound)
+
+m4_p([dnl
+In previous releases of m4_db, Java DbEnv and Db objects, and C++
+m4_refcxx(DbEnv) and m4_refcxx(Db) objects could be reused after they
+were closed, by calling open on them again.  This is no longer
+permitted, and these objects no longer allow any operations after a
+close.  Applications reusing these objects should be modified to create
+new objects instead.])
+
+m4_page_footer

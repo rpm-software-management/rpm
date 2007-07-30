@@ -1,0 +1,36 @@
+m4_comment([$Id: bt_recnum.so,v 10.23 2002/06/24 14:50:23 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Retrieving Btree records by logical record number,
+    [retrieving Btree records by logical record @number,
+    retrieving Btree records by @logical record @number],
+    am_conf/bt_minkey, am_conf/h_ffactor)
+
+m4_p([dnl
+The Btree access method optionally supports retrieval by logical record
+numbers.  To configure a Btree to support record numbers, call the
+m4_refT(dbh_set_flags) with the m4_ref(DB_RECNUM) flag.])
+
+m4_p([dnl
+Configuring a Btree for record numbers should not be done lightly.
+While often useful, it may significantly slow down the speed at which
+items can be stored into the database, and can severely impact
+application throughput.  Generally it should be avoided in trees with
+a need for high write concurrency.])
+
+m4_p([dnl
+To retrieve by record number, use the m4_ref(DB_SET_RECNO) flag to the
+m4_ref(dbh_get) and m4_refT(dbc_get)s.  The following is an example of
+a routine that displays the data item for a Btree database created with
+the m4_ref(DB_RECNUM) option.])
+
+include(ref/am_conf/bt_recnum1.cs)
+
+m4_p([dnl
+To determine a key's record number, use the m4_ref(DB_GET_RECNO) flag
+to the m4_refT(dbc_get).  The following is an example of a routine that
+displays the record number associated with a specific key.])
+
+include(ref/am_conf/bt_recnum2.cs)
+
+m4_page_footer

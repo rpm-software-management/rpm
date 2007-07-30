@@ -1,0 +1,82 @@
+m4_comment([$Id: db_upgrade.so,v 10.37 2004/08/13 03:38:56 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_upgrade, DB_DUPSORT])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_upgrade),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__upgrade(DB *db, const char *file, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::upgrade(const char *file, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_upgrade) upgrades all of the databases included in the
+file m4_arg(file), if necessary.  If no upgrade is necessary,
+m4_ref(dbh_upgrade) always returns success.])
+
+m4_p([m4_bold([dnl
+Database upgrades are done in place and are destructive. For example,
+if pages need to be allocated and no disk space is available, the
+database may be left corrupted.  Backups should be made before databases
+are upgraded.  See m4_link(M4RELDIR/ref/am/upgrade, Upgrading databases)
+for more information.])])
+
+m4_p([dnl
+Unlike all other database operations, m4_ref(dbh_upgrade) may only be done
+on a system with the same byte-order as the database.])
+
+m4_return(dbh_upgrade, std)
+
+m4_underfunc(dbh_upgrade, dbh_upgrade, db_upgrade)
+
+m4_parambegin
+m4_param(file, [dnl
+The m4_arg(file) parameter is the physical file containing the databases
+to be upgraded.])
+
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_DUPSORT), [dnl
+m4_bold([This flag is only meaningful when upgrading databases from
+releases before the m4_db 3.1 release.])
+m4_p([dnl
+As part of the upgrade from the m4_db 3.0 release to the 3.1 release,
+the on-disk format of duplicate data items changed.  To correctly
+upgrade the format requires applications to specify whether duplicate
+data items in the database are sorted or not.  Specifying the
+m4_ref(DB_DUPSORT) flag informs m4_ref(dbh_upgrade) that the duplicates
+are sorted; otherwise they are assumed to be unsorted.  Incorrectly
+specifying the value of this flag may lead to database corruption.])
+m4_p([dnl
+Further, because the m4_refT(dbh_upgrade) upgrades a physical file
+(including all the databases it contains), it is not possible to use
+m4_ref(dbh_upgrade) to upgrade files in which some of the databases it
+includes have sorted duplicate data items, and some of the databases it
+includes have unsorted duplicate data items.  If the file does not have
+more than a single database, if the databases do not support duplicate
+data items, or if all of the databases that support duplicate data items
+support the same style of duplicates (either sorted or unsorted),
+m4_ref(dbh_upgrade) will work correctly as long as the
+m4_ref(DB_DUPSORT) flag is correctly specified.  Otherwise, the file
+cannot be upgraded using m4_ref(dbh_upgrade); it must be upgraded
+manually by dumping and reloading the databases.])])
+
+m4_tagend])
+m4_paramend
+
+m4_header([Environment Variables])
+m4_data_location(dbh_upgrade, 1)
+
+m4_err(dbh_upgrade,
+m4_idef(DB_OLD_VERSION),
+[The database cannot be upgraded by this version of the m4_db software.],
+einval, [the database is not in the same byte-order as the system])
+
+m4_seealso(Db)
+m4_page_footer

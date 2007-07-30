@@ -1,0 +1,40 @@
+m4_comment([$Id: memp_sync.so,v 10.43 2007/02/27 19:23:07 bostic Exp $])
+
+define(M4PAGELOCAL, memp_sync)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_sync),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__memp_sync(DB_ENV *env, DB_LSN *lsn);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::memp_sync(DbLsn *lsn);
+]))
+
+m4_p([dnl
+The m4_refT(memp_sync) flushes modified pages in the cache to their
+backing files.])
+
+m4_p([dnl
+Pages in the pool that cannot be immediately written back to disk (for
+example, pages that are currently in use by another thread of control)
+are waited for and written to disk as soon as it is possible to do
+so.])
+
+m4_return(memp_sync, std)
+
+m4_parambegin
+m4_param(lsn, [dnl
+The purpose of the m4_arg(lsn) parameter is to enable a transaction
+manager to ensure, as part of a checkpoint, that all pages modified by
+a certain time have been written to disk.
+m4_p([dnl
+All modified pages with a a log sequence number (m4_ref(DbLsn)) less
+than the m4_arg(lsn) parameter are written to disk.  If m4_arg(lsn) is
+NULL, all modified pages in the pool are written to disk.])])
+m4_paramend
+
+m4_seealso(DbMpool)
+m4_page_footer

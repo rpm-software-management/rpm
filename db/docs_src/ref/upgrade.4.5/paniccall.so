@@ -1,0 +1,23 @@
+m4_comment([$Id: paniccall.so,v 1.4 2006/09/15 19:35:29 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: DB_ENV-__GT__set_paniccall,,
+    upgrade.4.5/memp, upgrade.4.5/pagesize)
+
+m4_p([dnl
+In previous m4_db releases, the DB_ENV-__GT__set_paniccall and
+DB-__GT__set_paniccall methods were used to register a callback
+function, called if the database environment failed.  In the 4.5
+release, this functionality has been replaced by a general-purpose event
+notification callback function, set with the
+m4_refT(dbenv_set_event_notify).  Applications should be updated to
+replace DB_ENV-__GT__set_paniccall and DB-__GT__set_paniccall calls with
+a call to m4_ref(dbenv_set_event_notify).  This also requires the
+callback function itself change, as the callback signatures are
+different.])
+
+m4_p([dnl
+The DB_ENV-__GT__set_paniccall and DB-__GT__set_paniccall calls are
+expected to be removed in a future release of m4_db.])
+
+m4_page_footer

@@ -1,0 +1,95 @@
+m4_comment([$Id: env_set_msgcall.so,v 10.7 2006/05/17 20:47:46 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_set_msgcall)])
+
+define(M4PAGELOCAL, [dbenv_set_msgcall, dbh_set_msgcall])
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_set_msgcall, [dnl
+m4_pf_header(m4_ref(dbenv_set_msgcall),
+ifelse(M4API, C_API, [dnl
+void
+DB_ENV-__GT__set_msgcall(DB_ENV *dbenv,
+    void (*db_msgcall_fcn)(const DB_ENV *dbenv, const char *msg));
+])
+ifelse(M4API, CXX_API, [dnl
+void DbEnv::set_msgcall(
+    void (*db_msgcall_fcn)(const DbEnv *dbenv, const char *msg));
+]))],[dnl
+m4_pf_header(m4_ref(dbh_set_msgcall),
+ifelse(M4API, C_API, [dnl
+void
+DB-__GT__set_msgcall(DB *,
+    void (*db_msgcall_fcn)(const DB_ENV *dbenv, char *msg));
+])
+ifelse(M4API, CXX_API, [dnl
+void Db::set_msgcall(
+    void (*db_msgcall_fcn)(const DbEnv *dbenv, char *msg));
+]))])
+
+ifelse(M4API, C_API, [m4_p([dnl
+There are interfaces in the m4_db library which either directly output
+informational messages or statistical information, or configure the
+library to output such messages when performing other operations, for
+example, m4_ref(dbenv_set_verbose) and m4_ref(dbenv_stat_print).])
+
+m4_p([dnl
+The m4_ref(dbenv_set_msgcall) and m4_refT(dbh_set_msgcall)s are used to
+pass these messages to the application, and m4_db will call
+m4_arg(db_msgcall_fcn) with each message.  It is up to the
+m4_arg(db_msgcall_fcn) function to display the message in an appropriate
+manner.])
+
+m4_p([dnl
+Setting m4_arg(db_msgcall_fcn) to NULL unconfigures the callback interface.])
+
+m4_p([dnl
+Alternatively, you can use the m4_ref(dbh_set_msgfile) or
+m4_refT(dbenv_set_msgfile)s to display the messages via a C library FILE *.])])
+
+ifelse(M4API, CXX_API, [m4_p([dnl
+There are interfaces in the m4_db library which either directly output
+informational messages or statistical information, or configure the
+library to output such messages when performing other operations, for
+example, m4_ref(dbenv_set_verbose) and m4_ref(dbenv_stat_print).])
+
+m4_p([dnl
+The m4_ref(dbenv_set_msgcall) and m4_refT(dbh_set_msgcall)s are used to
+pass these messages to the application, and m4_db will call
+m4_arg(db_msgcall_fcn) with each message.  It is up to the
+m4_arg(db_msgcall_fcn) function to display the message in an appropriate
+manner.])
+
+m4_p([dnl
+Setting m4_arg(db_msgcall_fcn) to NULL unconfigures the callback interface.])
+
+m4_p([dnl
+Alternatively, you can use the m4_ref(dbenv_set_message_stream) and
+m4_refT(dbh_set_message_stream)s to display the messages via an output
+stream, or the m4_ref(dbh_set_msgfile) or m4_refT(dbenv_set_msgfile)s
+to display the messages via a C library FILE *.])])
+
+ifelse(M4INTERFACE, dbh_set_msgcall, [dnl
+m4_really_dbenv(dbh_set_msgcall, dbenv_set_msgcall)])
+
+ifelse(M4INTERFACE, dbh_set_msgcall,
+[m4_scope_dbh(M4INTERFACE)], [m4_scope_dbenv(M4INTERFACE)])
+
+m4_when_any(M4INTERFACE)
+
+m4_parambegin
+m4_param(db_msgcall_fcn, [dnl
+The m4_arg(db_msgcall_fcn) parameter is the application-specified message
+reporting function.  The function takes two parameters:
+m4_tagbegin
+m4_tag(m4_arg(dbenv), [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment.])
+m4_tag(m4_arg(msg), [dnl
+The m4_arg(msg) parameter is the message string.])
+m4_tagend])
+
+m4_not_reentrant
+m4_paramend
+
+ifelse(M4INTERFACE, dbenv_set_msgcall, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

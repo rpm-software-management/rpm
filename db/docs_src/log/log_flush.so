@@ -1,0 +1,31 @@
+m4_comment([$Id: log_flush.so,v 10.31 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, log_flush)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_flush),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__log_flush(DB_ENV *env, const DB_LSN *lsn);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::log_flush(const DbLsn *lsn);
+]))
+
+m4_p([dnl
+The m4_refT(log_flush) writes log records to disk.])
+
+m4_return(log_flush, std)
+
+m4_parambegin
+m4_param(lsn, [dnl
+All log records with m4_ref(DbLsn) values less than or equal to the
+m4_arg(lsn) parameter are written to disk.  If m4_arg(lsn) is NULL,
+all records in the log are flushed.])
+m4_paramend
+
+m4_err(log_flush, einval)
+
+m4_seealso(DbLog)
+m4_page_footer

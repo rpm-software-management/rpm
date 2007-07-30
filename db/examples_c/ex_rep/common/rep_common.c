@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2006,2007 Oracle.  All rights reserved.
  *
- * $Id: rep_common.c,v 12.13 2006/09/08 20:32:06 bostic Exp $
+ * $Id: rep_common.c,v 12.20 2007/05/17 17:29:27 bostic Exp $
  */
 
 #include <errno.h>
@@ -20,42 +19,12 @@
 #define	SLEEPTIME	3
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
+#define	WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #define	sleep(s)		Sleep(1000 * (s))
 #endif
 
-static void event_callback __P((DB_ENV *, u_int32_t, void *));
 static int print_stocks __P((DB *));
-
-static void
-event_callback(dbenv, which, info)
-	DB_ENV *dbenv;
-	u_int32_t which;
-	void *info;
-{
-	APP_DATA *app = dbenv->app_private;
-
-	info = NULL;				/* Currently unused. */
-
-	switch (which) {
-	case DB_EVENT_REP_MASTER:
-		app->is_master = 1;
-		break;
-
-	case DB_EVENT_REP_CLIENT:
-		app->is_master = 0;
-		break;
-
-	case DB_EVENT_REP_STARTUPDONE: /* FALLTHROUGH */
-	case DB_EVENT_REP_NEWMASTER:
-		/* I don't care about these, for now. */
-		break;
-
-	default:
-		dbenv->errx(dbenv, "ignoring event %d", which);
-	}
-}
 
 static int
 print_stocks(dbp)
@@ -69,7 +38,7 @@ print_stocks(dbp)
 	int ret, t_ret;
 	u_int32_t keysize, datasize;
 
- 	if ((ret = dbp->cursor(dbp, NULL, &dbc, 0)) != 0) {
+	if ((ret = dbp->cursor(dbp, NULL, &dbc, 0)) != 0) {
 		dbp->err(dbp, ret, "can't open cursor");
 		return (ret);
 	}
@@ -80,9 +49,9 @@ print_stocks(dbp)
 	printf("\tSymbol\tPrice\n");
 	printf("\t======\t=====\n");
 
-	for (ret = dbc->c_get(dbc, &key, &data, DB_FIRST);
+	for (ret = dbc->get(dbc, &key, &data, DB_FIRST);
 	    ret == 0;
-	    ret = dbc->c_get(dbc, &key, &data, DB_NEXT)) {
+	    ret = dbc->get(dbc, &key, &data, DB_NEXT)) {
 		keysize = key.size > MAXKEYSIZE ? MAXKEYSIZE : key.size;
 		memcpy(keybuf, key.data, keysize);
 		keybuf[keysize] = '\0';
@@ -96,7 +65,7 @@ print_stocks(dbp)
 	printf("\n");
 	fflush(stdout);
 
-	if ((t_ret = dbc->c_close(dbc)) != 0 && ret == 0)
+	if ((t_ret = dbc->close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	switch (ret) {
@@ -112,13 +81,13 @@ print_stocks(dbp)
 #define	BUFSIZE 1024
 
 int
-doloop(dbenv, app_data)
+doloop(dbenv, shared_data)
 	DB_ENV *dbenv;
-	APP_DATA *app_data;
+	SHARED_DATA *shared_data;
 {
 	DB *dbp;
 	DBT key, data;
-	char buf[BUFSIZE], *rbuf;
+	char buf[BUFSIZE], *first, *price;
 	u_int32_t flags;
 	int ret;
 
@@ -128,6 +97,32 @@ doloop(dbenv, app_data)
 	memset(&data, 0, sizeof(data));
 
 	for (;;) {
+		printf("QUOTESERVER%s> ",
+		    shared_data->is_master ? "" : " (read-only)");
+		fflush(stdout);
+
+		if (fgets(buf, sizeof(buf), stdin) == NULL)
+			break;
+
+#define	DELIM " \t\n"
+		if ((first = strtok(&buf[0], DELIM)) == NULL) {
+			/* Blank input line. */
+			price = NULL;
+		} else if ((price = strtok(NULL, DELIM)) == NULL) {
+			/* Just one input token. */
+			if (strncmp(buf, "exit", 4) == 0 ||
+			    strncmp(buf, "quit", 4) == 0)
+				break;
+			dbenv->errx(dbenv, "Format: TICKER VALUE");
+			continue;
+		} else {
+			/* Normal two-token input line. */
+			if (first != NULL && !shared_data->is_master) {
+				dbenv->errx(dbenv, "Can't update at client");
+				continue;
+			}
+		}
+
 		if (dbp == NULL) {
 			if ((ret = db_create(&dbp, dbenv, 0)) != 0)
 				return (ret);
@@ -137,7 +132,7 @@ doloop(dbenv, app_data)
 				goto err;
 
 			flags = DB_AUTO_COMMIT;
-			if (app_data->is_master)
+			if (shared_data->is_master)
 				flags |= DB_CREATE;
 			if ((ret = dbp->open(dbp,
 			    NULL, DATABASE, NULL, DB_BTREE, flags, 0)) != 0) {
@@ -150,7 +145,6 @@ doloop(dbenv, app_data)
 						goto err;
 					}
 					dbp = NULL;
-					sleep(SLEEPTIME);
 					continue;
 				}
 				dbenv->err(dbenv, ret, "DB->open");
@@ -158,14 +152,7 @@ doloop(dbenv, app_data)
 			}
 		}
 
-
-		printf("QUOTESERVER%s> ",
-		    app_data->is_master ? "" : " (read-only)");
-		fflush(stdout);
-
-		if (fgets(buf, sizeof(buf), stdin) == NULL)
-			break;
-		if (strtok(&buf[0], " \t\n") == NULL) {
+		if (first == NULL)
 			switch ((ret = print_stocks(dbp))) {
 			case 0:
 				continue;
@@ -176,31 +163,18 @@ doloop(dbenv, app_data)
 				dbp->err(dbp, ret, "Error traversing data");
 				goto err;
 			}
-		}
-		rbuf = strtok(NULL, " \t\n");
-		if (rbuf == NULL || rbuf[0] == '\0') {
-			if (strncmp(buf, "exit", 4) == 0 ||
-			    strncmp(buf, "quit", 4) == 0)
-				break;
-			dbenv->errx(dbenv, "Format: TICKER VALUE");
-			continue;
-		}
+		else {
+			key.data = first;
+			key.size = (u_int32_t)strlen(first);
 
-		if (!app_data->is_master) {
-			dbenv->errx(dbenv, "Can't update at client");
-			continue;
-		}
+			data.data = price;
+			data.size = (u_int32_t)strlen(price);
 
-		key.data = buf;
-		key.size = (u_int32_t)strlen(buf);
-
-		data.data = rbuf;
-		data.size = (u_int32_t)strlen(rbuf);
-
-		if ((ret = dbp->put(dbp,
-		    NULL, &key, &data, DB_AUTO_COMMIT)) != 0) {
-			dbp->err(dbp, ret, "DB->put");
-			goto err;
+			if ((ret = dbp->put(dbp,
+				 NULL, &key, &data, DB_AUTO_COMMIT)) != 0) {
+				dbp->err(dbp, ret, "DB->put");
+				goto err;
+			}
 		}
 	}
 
@@ -226,12 +200,10 @@ create_env(progname, dbenvp)
 
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
-	(void)dbenv->set_event_notify(dbenv, event_callback);
 
 	*dbenvp = dbenv;
 	return (0);
 }
-
 
 /* Open and configure an environment. */
 int
@@ -258,10 +230,10 @@ env_init(dbenv, home)
  * in the system would be maintained in some sort of configuration file.  The
  * critical part of this interface is that we assume at startup that we can
  * find out
- * 	1) what host/port we wish to listen on for connections,
- * 	2) a (possibly empty) list of other sites we should attempt to connect
- * 	to; and
- * 	3) what our Berkeley DB home environment is.
+ *	1) what host/port we wish to listen on for connections,
+ *	2) a (possibly empty) list of other sites we should attempt to connect
+ *	to; and
+ *	3) what our Berkeley DB home environment is.
  *
  * These pieces of information are expressed by the following flags.
  * -m host:port (required; m stands for me)
@@ -283,4 +255,3 @@ usage(progname)
 	    "[-n nsites][-p priority]\n");
 	exit(EXIT_FAILURE);
 }
-

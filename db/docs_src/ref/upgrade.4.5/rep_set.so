@@ -1,0 +1,19 @@
+m4_comment([$Id: rep_set.so,v 1.6 2006/06/09 15:28:21 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: Replication method naming,,
+    upgrade.4.5/elect, upgrade.4.5/rep_event)
+
+m4_p([dnl
+The method names DB_ENV-__GT__set_rep_limit, DB_ENV-__GT__get_rep_limit
+and DB_ENV-__GT__set_rep_transport have been changed to
+m4_ref(rep_set_limit), m4_ref(rep_get_limit) and
+m4_ref(rep_set_transport) in order to be consistent with the other
+replication method names.   That is, the characters "set_rep" and
+"get_rep" have been changed to "rep_set" and "rep_get".])
+
+m4_p([dnl
+Applications should modify the method names, no other change is
+required.])
+
+m4_page_footer

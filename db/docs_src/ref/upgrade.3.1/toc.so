@@ -1,0 +1,27 @@
+m4_comment([$Id: toc.so,v 1.7 2006/10/02 15:56:36 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 3.0 applications to m4_db 3.1,
+    Upgrading to release 3.1,,)
+
+m4_nlistbegin
+m4_nlist([m4_link(intro, [Release 3.1: introduction])])
+m4_nlistns([m4_link(config, [Release 3.1: DB_ENV-__GT__open, DB_ENV-__GT__remove])])
+m4_nlistns([m4_link(set_tx_recover, [Release 3.1: DB_ENV-__GT__set_tx_recover])])
+m4_nlistns([m4_link(set_feedback, [Release 3.1: DB_ENV-__GT__set_feedback, DB-__GT__set_feedback])])
+m4_nlistns([m4_link(set_paniccall, [Release 3.1: DB_ENV-__GT__set_paniccall, DB-__GT__set_paniccall])])
+m4_nlistns([m4_link(put, [Release 3.1: DB-__GT__put])])
+m4_nlistns([m4_link(dup, [Release 3.1: identical duplicate data items])])
+m4_nlistns([m4_link(btstat, [Release 3.1: DB-__GT__stat])])
+m4_nlistns([m4_link(sysmem, [Release 3.1: DB_SYSTEM_MEM])])
+m4_nlistns([m4_link(log_register, [Release 3.1: log_register])])
+m4_nlistns([m4_link(memp_register, [Release 3.1: memp_register])])
+m4_nlistns([m4_link(txn_check, [Release 3.1: txn_checkpoint])])
+m4_nlistns([m4_link(env, [Release 3.1: environment configuration])])
+m4_nlistns([m4_link(tcl, [Release 3.1: Tcl API])])
+m4_nlistns([m4_link(tmp, [Release 3.1: DB_TMP_DIR])])
+m4_nlistns([m4_link(logalloc, [Release 3.1: log file pre-allocation])])
+m4_nlistns([m4_link(disk, [Release 3.1: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

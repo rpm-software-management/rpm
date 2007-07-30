@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: test106.tcl,v 12.5 2006/08/24 14:46:41 bostic Exp $
+# $Id: test106.tcl,v 12.8 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test106
 # TEST
@@ -50,7 +49,6 @@ proc test106 { method {nitems 100} {niter 200} {tnum "106"} args } {
 		}
 		set testdir [get_home $env]
 	}
-
 
 	cleanup $testdir $env
 

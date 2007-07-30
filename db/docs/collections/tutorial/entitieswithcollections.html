@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
 		Using Entities with Collections
 	</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
-    <link rel="up" href="Entity.html" title="Chapter 4. &#10;        Using Entity Classes&#9;&#10;&#9;" />
+    <link rel="up" href="Entity.html" title="ChapterÂ 4.Â &#10;        Using Entity Classes&#9;&#10;&#9;" />
     <link rel="previous" href="collectionswithentities.html" title="&#10;&#9;&#9;Creating Collections with Entity Bindings&#10;&#9;" />
-    <link rel="next" href="Tuple.html" title="Chapter 5. &#10;&#9;&#9;Using Tuples&#10;&#9;" />
+    <link rel="next" href="Tuple.html" title="ChapterÂ 5.Â &#10;&#9;&#9;Using Tuples&#10;&#9;" />
   </head>
   <body>
     <div class="navheader">
@@ -22,11 +22,11 @@
 	</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="collectionswithentities.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. 
+          <td width="20%" align="left"><a accesskey="p" href="collectionswithentities.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â 
         Using Entity Classes	
 	</th>
-          <td width="20%" align="right"> <a accesskey="n" href="Tuple.html">Next</a></td>
+          <td width="20%" align="right">Â <a accesskey="n" href="Tuple.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -52,7 +52,7 @@
       <p>
     For adding and iterating entities, the collection of entities
 	returned by 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values" target="_top">Map.values</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#values" target="_top">Map.values</a>
     
 	is used. In general, when using an entity binding, all Java
 	collection methods that are passed or returned a value object will
@@ -61,14 +61,14 @@
       <p>
     The <tt class="classname">Sample</tt> class has been changed in this example to add
 	objects using the 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html#add" target="_top">Set.add</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Set.html#add" target="_top">Set.add</a>
     
 	method rather than the 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put" target="_top">Map.put</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#put" target="_top">Map.put</a>
     
 	method that was used in the prior examples. Entity objects are
 	constructed and passed to 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html#add" target="_top">Set.add</a>.
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Set.html#add" target="_top">Set.add</a>.
 </p>
       <a id="entity_addsuppliers"></a>
       <pre class="programlisting">import java.util.Set;
@@ -81,12 +81,12 @@ public class Sample
 <b class="userinput"><tt>        Set suppliers = views.getSupplierSet();
         if (suppliers.isEmpty())
         {
-            System.out.println(&quot;Adding Suppliers&quot;);
-            suppliers.add(new Supplier(&quot;S1&quot;, &quot;Smith&quot;, 20, &quot;London&quot;));
-            suppliers.add(new Supplier(&quot;S2&quot;, &quot;Jones&quot;, 10, &quot;Paris&quot;));
-            suppliers.add(new Supplier(&quot;S3&quot;, &quot;Blake&quot;, 30, &quot;Paris&quot;));
-            suppliers.add(new Supplier(&quot;S4&quot;, &quot;Clark&quot;, 20, &quot;London&quot;));
-            suppliers.add(new Supplier(&quot;S5&quot;, &quot;Adams&quot;, 30, &quot;Athens&quot;));
+            System.out.println("Adding Suppliers");
+            suppliers.add(new Supplier("S1", "Smith", 20, "London"));
+            suppliers.add(new Supplier("S2", "Jones", 10, "Paris"));
+            suppliers.add(new Supplier("S3", "Blake", 30, "Paris"));
+            suppliers.add(new Supplier("S4", "Clark", 20, "London"));
+            suppliers.add(new Supplier("S5", "Adams", 30, "Athens"));
         }</tt></b>
     }
 
@@ -95,19 +95,19 @@ public class Sample
 <b class="userinput"><tt>        Set parts = views.getPartSet();
         if (parts.isEmpty())
         {
-            System.out.println(&quot;Adding Parts&quot;);
-            parts.add(new Part(&quot;P1&quot;, &quot;Nut&quot;, &quot;Red&quot;,
-                      new Weight(12.0, Weight.GRAMS), &quot;London&quot;));
-            parts.add(new Part(&quot;P2&quot;, &quot;Bolt&quot;, &quot;Green&quot;,
-                      new Weight(17.0, Weight.GRAMS), &quot;Paris&quot;));
-            parts.add(new Part(&quot;P3&quot;, &quot;Screw&quot;, &quot;Blue&quot;,
-                      new Weight(17.0, Weight.GRAMS), &quot;Rome&quot;));
-            parts.add(new Part(&quot;P4&quot;, &quot;Screw&quot;, &quot;Red&quot;,
-                      new Weight(14.0, Weight.GRAMS), &quot;London&quot;));
-            parts.add(new Part(&quot;P5&quot;, &quot;Cam&quot;, &quot;Blue&quot;,
-                      new Weight(12.0, Weight.GRAMS), &quot;Paris&quot;));
-            parts.add(new Part(&quot;P6&quot;, &quot;Cog&quot;, &quot;Red&quot;,
-                      new Weight(19.0, Weight.GRAMS), &quot;London&quot;));
+            System.out.println("Adding Parts");
+            parts.add(new Part("P1", "Nut", "Red",
+                      new Weight(12.0, Weight.GRAMS), "London"));
+            parts.add(new Part("P2", "Bolt", "Green",
+                      new Weight(17.0, Weight.GRAMS), "Paris"));
+            parts.add(new Part("P3", "Screw", "Blue",
+                      new Weight(17.0, Weight.GRAMS), "Rome"));
+            parts.add(new Part("P4", "Screw", "Red",
+                      new Weight(14.0, Weight.GRAMS), "London"));
+            parts.add(new Part("P5", "Cam", "Blue",
+                      new Weight(12.0, Weight.GRAMS), "Paris"));
+            parts.add(new Part("P6", "Cog", "Red",
+                      new Weight(19.0, Weight.GRAMS), "London"));
         }</tt></b>
     }
 
@@ -116,34 +116,33 @@ public class Sample
 <b class="userinput"><tt>        Set shipments = views.getShipmentSet();
         if (shipments.isEmpty())
         {
-            System.out.println(&quot;Adding Shipments&quot;);
-            shipments.add(new Shipment(&quot;P1&quot;, &quot;S1&quot;, 300));
-            shipments.add(new Shipment(&quot;P2&quot;, &quot;S1&quot;, 200));
-            shipments.add(new Shipment(&quot;P3&quot;, &quot;S1&quot;, 400));
-            shipments.add(new Shipment(&quot;P4&quot;, &quot;S1&quot;, 200));
-            shipments.add(new Shipment(&quot;P5&quot;, &quot;S1&quot;, 100));
-            shipments.add(new Shipment(&quot;P6&quot;, &quot;S1&quot;, 100));
-            shipments.add(new Shipment(&quot;P1&quot;, &quot;S2&quot;, 300));
-            shipments.add(new Shipment(&quot;P2&quot;, &quot;S2&quot;, 400));
-            shipments.add(new Shipment(&quot;P2&quot;, &quot;S3&quot;, 200));
-            shipments.add(new Shipment(&quot;P2&quot;, &quot;S4&quot;, 200));
-            shipments.add(new Shipment(&quot;P4&quot;, &quot;S4&quot;, 300));
-            shipments.add(new Shipment(&quot;P5&quot;, &quot;S4&quot;, 400));
+            System.out.println("Adding Shipments");
+            shipments.add(new Shipment("P1", "S1", 300));
+            shipments.add(new Shipment("P2", "S1", 200));
+            shipments.add(new Shipment("P3", "S1", 400));
+            shipments.add(new Shipment("P4", "S1", 200));
+            shipments.add(new Shipment("P5", "S1", 100));
+            shipments.add(new Shipment("P6", "S1", 100));
+            shipments.add(new Shipment("P1", "S2", 300));
+            shipments.add(new Shipment("P2", "S2", 400));
+            shipments.add(new Shipment("P2", "S3", 200));
+            shipments.add(new Shipment("P2", "S4", 200));
+            shipments.add(new Shipment("P4", "S4", 300));
+            shipments.add(new Shipment("P5", "S4", 400));
         }</tt></b>
     } </pre>
       <p>
     Instead of printing the key/value pairs by iterating over the
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#entrySet" target="_top">Map.entrySet</a>
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#entrySet" target="_top">Map.entrySet</a>
 	
 	as done in the prior example, this example
 	iterates over the entities in the 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#values" target="_top">Map.values</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#values" target="_top">Map.values</a>
     
 	collection.
 </p>
       <a id="entity_printdatabase"></a>
-      <pre class="programlisting">import com.sleepycat.collections.StoredIterator;
-import java.util.Iterator;
+      <pre class="programlisting">import java.util.Iterator;
 import java.util.Set;
 ...
 public class Sample
@@ -154,21 +153,21 @@ public class Sample
         public void doWork()
             throws Exception
         {
-<b class="userinput"><tt>            printValues(&quot;Parts&quot;,
+<b class="userinput"><tt>            printValues("Parts",
                          views.getPartSet().iterator());
-            printValues(&quot;Suppliers&quot;,
+            printValues("Suppliers",
                          views.getSupplierSet().iterator());</tt></b>
-            printValues(&quot;Suppliers for City Paris&quot;,
+            printValues("Suppliers for City Paris",
                          views.getSupplierByCityMap().duplicates(
-                                            &quot;Paris&quot;).iterator());
-<b class="userinput"><tt>            printValues(&quot;Shipments&quot;,
+                                            "Paris").iterator());
+<b class="userinput"><tt>            printValues("Shipments",
                          views.getShipmentSet().iterator());</tt></b>
-            printValues(&quot;Shipments for Part P1&quot;,
+            printValues("Shipments for Part P1",
                          views.getShipmentByPartMap().duplicates(
-                                            new PartKey(&quot;P1&quot;)).iterator());
-            printValues(&quot;Shipments for Supplier S1&quot;,
+                                            new PartKey("P1")).iterator());
+            printValues("Shipments for Supplier S1",
                          views.getShipmentBySupplierMap().duplicates(
-                                            new SupplierKey(&quot;S1&quot;)).iterator());
+                                            new SupplierKey("S1")).iterator());
         }
     }
     ...
@@ -229,20 +228,20 @@ Shipment: part=P6 supplier=S1 quantity=100 </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="collectionswithentities.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="collectionswithentities.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="Entity.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="Tuple.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="Tuple.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
 		Creating Collections with Entity Bindings
-	 </td>
+	Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 5. 
+          <td width="40%" align="right" valign="top">Â ChapterÂ 5.Â 
 		Using Tuples
 	</td>
         </tr>

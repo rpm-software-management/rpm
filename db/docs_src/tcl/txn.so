@@ -1,0 +1,61 @@
+m4_comment([$Id: txn.so,v 11.17 2003/10/18 19:16:24 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(env txn, m4_tcl_txn, [dnl
+env txn
+	m4_tcl_arg([-nosync])
+	m4_tcl_arg([-nowait])
+	m4_tcl_arg([-parent txnid])
+	m4_tcl_arg([-sync])
+])
+
+m4_p([dnl
+The m4_tcl_txn command begins a transaction.  The returned transaction
+handle is bound to a Tcl command of the form m4_bold(env.txnX), where
+X is an integer starting at 0 (for example, env0.txn0 and env0.txn1).
+It is through this Tcl command that the script accesses the transaction
+methods.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-nosync], [dnl
+Do not synchronously flush the log when this transaction commits or
+prepares. This means the transaction will exhibit the ACI (atomicity,
+consistency, and isolation) properties, but not D (durability); that
+is, database integrity will be maintained, but it is possible that this
+transaction may be undone during recovery instead of being redone.
+m4_p([dnl
+This behavior may be set for an entire m4_db environment as part of the
+m4_tcl_env_open call.])])
+
+m4_tag([-nowait], [dnl
+If a lock is unavailable for any m4_db operation performed in the context
+of this transaction, throw a Tcl error immediately instead of blocking on
+the lock.])
+
+m4_tag([-parent txnid], [dnl
+Create the new transaction as a nested transaction, with the specified
+transaction indicated as its parent.  Transactions may be nested to any
+level.])
+
+m4_tag([-sync], [dnl
+Synchronously flush the log when this transaction commits or prepares.
+This means the transaction will exhibit all of the ACID (atomicity,
+consistency, isolation, and durability) properties.
+m4_p([dnl
+This behavior is the default for m4_db environments unless the
+m4_arg(-nosync) option was specified to the m4_tcl_env_open call.])])
+
+m4_tagend
+
+m4_p([dnl
+The m4_tcl_txn command returns a transaction handle on success.])
+
+m4_tcl_ret_error
+
+m4_page_footer

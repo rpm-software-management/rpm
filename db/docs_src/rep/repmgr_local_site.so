@@ -1,0 +1,33 @@
+m4_comment([$Id: repmgr_local_site.so,v 1.2 2006/04/27 18:07:38 bostic Exp $])
+
+define(M4PAGELOCAL, [repmgr_set_local_site])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(repmgr_set_local_site),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__repmgr_set_local_site(DB_ENV *env,
+    const char *host, u_int port, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::repmgr_set_add_site(const char *host, u_int port, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(repmgr_set_local_site) specifies the host identification
+string and port number for the local system.])
+
+m4_when_before_repmgr_start(repmgr_set_local_site)
+m4_return(repmgr_set_local_site, std)
+
+m4_parambegin
+m4_unusedflags
+m4_param(host, [dnl
+The site's host identification string, generally a TCP/IP host name.])
+m4_param(port, [dnl
+The port number on which the local site is listening.])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

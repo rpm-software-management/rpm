@@ -1,0 +1,44 @@
+m4_comment([$Id: db.so,v 11.10 2006/04/24 17:26:34 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: the DB structure,, upgrade.3.0/xa, upgrade.3.0/dbinfo)
+
+m4_p([dnl
+The m4_ref(Db) structure is now opaque for applications in the m4_db 3.0
+release.  Accesses to any fields within that structure by the application
+should be replaced with method calls.  The following example illustrates
+this using the historic type structure field.  In the m4_db 2.X releases,
+applications could find the type of an underlying database using code
+similar to the following:])
+
+m4_indent([dnl
+DB *db;
+DB_TYPE type;
+m4_blank
+	type = db-__GT__type;])
+
+m4_p([dnl
+in the m4_db 3.X releases, this should be done using the
+m4_ref(dbh_get_type) method, as follows:])
+
+m4_indent([dnl
+DB *db;
+DB_TYPE type;
+m4_blank
+	type = db-__GT__get_type(db);])
+
+m4_p([dnl
+The following table lists the m4_ref(Db) fields previously used by
+applications and the methods that should now be used to get or set them.])
+
+m4_table_begin(, _center)
+m4_table_header(m4_ref(Db) field, m4_db 3.X method)
+m4_table_element(byteswapped, m4_ref(dbh_get_byteswapped))
+m4_table_element(db_errcall, m4_ref(dbh_set_errcall))
+m4_table_element(db_errfile, m4_ref(dbh_set_errfile))
+m4_table_element(db_errpfx, m4_ref(dbh_set_errpfx))
+m4_table_element(db_paniccall, DB-__GT__set_paniccall)
+m4_table_element(type, m4_ref(dbh_get_type))
+m4_table_end
+
+m4_page_footer

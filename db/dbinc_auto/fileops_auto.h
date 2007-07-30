@@ -37,6 +37,7 @@ typedef struct ___fop_write_args {
 } __fop_write_args;
 
 #define	DB___fop_rename	146
+#define	DB___fop_rename_noundo	150
 typedef struct ___fop_rename_args {
 	u_int32_t type;
 	DB_TXN *txnp;

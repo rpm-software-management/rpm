@@ -1,0 +1,138 @@
+m4_comment([$Id: read.so,v 1.14 2006/09/13 14:30:56 mjc Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Degrees of isolation,, transapp/inc, transapp/cursor)
+
+m4_idefz(repeatable reads)
+m4_p([dnl
+Transactions can be isolated from each other to different degrees.
+m4_italic(Serializable) provides the most isolation, and means that, for
+the life of the transaction, every time a thread of control reads a data
+item, it will be unchanged from its previous value (assuming, of course,
+the thread of control does not itself modify the item).  By default,
+m4_db enforces serializability whenever database reads are wrapped in
+transactions.  This is also known as m4_italic(degree 3 isolation).])
+
+m4_p([dnl
+Most applications do not need to enclose all reads in transactions, and
+when possible, transactionally protected reads at serializable isolation
+should be avoided as they can cause performance problems.  For example,
+a serializable cursor sequentially reading each key/data pair in a
+database, will acquire a read lock on most of the pages in the database
+and so will gradually block all write operations on the databases until
+the transaction commits or aborts.  Note, however, that if there are
+update transactions present in the application, the read operations must
+still use locking, and must be prepared to repeat any operation
+(possibly closing and reopening a cursor) that fails with a return value
+of m4_ref(DB_LOCK_DEADLOCK).  Applications that need repeatable reads
+are ones that require the ability to repeatedly access a data item
+knowing that it will not have changed (for example, an operation
+modifying a data item based on its existing value).])
+
+m4_p([dnl
+m4_italic(Snapshot isolation) also guarantees repeatable reads, but
+avoids read locks by using multiversion concurrency control (MVCC).
+This makes update operations more expensive, because they have to
+allocate space for new versions of pages in cache and make copies, but
+avoiding read locks can significantly increase throughput for many
+applications.  Snapshot isolation is discussed in detail below.])
+
+m4_idefz(cursor @stability)
+m4_idefz(cursor stability)
+m4_idefz(degree 2 @isolation)
+m4_idefz(degree 2 isolation)
+m4_p([dnl
+A transaction may only require m4_italic(cursor stability), that is only
+be guaranteed that cursors see committed data that does not change so
+long as it is addressed by the cursor, but may change before the reading
+transaction completes.  This is also called m4_italic(degree 2
+isolation).  m4_db provides this level of isolation when a transaction
+is started with the m4_ref(DB_READ_COMMITTED) flag.  This flag may also
+be specified when opening a cursor within a fully isolated
+transaction.])
+
+m4_idefz(degree 1 @isolation)
+m4_idefz(degree 1 isolation)
+m4_idefz(dirty @reads)
+m4_idefz(dirty reads)
+m4_p([dnl
+m4_db optionally supports reading uncommitted data; that is, read
+operations may request data which has been modified but not yet
+committed by another transaction.  This is also called m4_italic(degree
+1 isolation).  This is done by first specifying the
+m4_ref(DB_READ_UNCOMMITTED) flag when opening the underlying database,
+and then specifying the m4_ref(DB_READ_UNCOMMITTED) flag when beginning
+a transaction, opening a cursor, or performing a read operation.  The
+advantage of using m4_ref(DB_READ_UNCOMMITTED) is that read operations
+will not block when another transaction holds a write lock on the
+requested data; the disadvantage is that read operations may return data
+that will disappear should the transaction holding the write lock
+abort.])
+
+m4_idefz(snapshot isolation)
+m4_idefz(multiversion concurrency control)
+m4_idefz(MVCC)
+m4_section([Snapshot Isolation])
+
+m4_p([dnl
+To make use of snapshot isolation, databases must first be configured
+for multiversion access by calling m4_ref(dbh_open) with the
+m4_ref(DB_MULTIVERSION) flag.  Then transactions or cursors must be
+configured with the m4_ref(DB_TXN_SNAPSHOT) flag.])
+
+m4_p([dnl
+When configuring an environment for snapshot isolation, it is important
+to realize that having multiple versions of pages in cache means that
+the working set will take up more of the cache.  As a result, snapshot
+isolation is best suited for use with larger cache sizes.])
+
+m4_p([dnl
+If the cache becomes full of page copies before the old copies can be
+discarded, additional I/O will occur as pages are written to temporary
+"freezer" files.  This can substantially reduce throughput, and should
+be avoided if possible by configuring a large cache and keeping snapshot
+isolation transactions short.  The amount of cache required to avoid
+freezing buffers can be estimated by taking a checkpoint followed by a
+call to m4_ref(log_archive).  The amount of cache required is
+approximately double the size of logs that remains.])
+
+m4_p([dnl
+The environment should also be configured for sufficient transactions
+using m4_ref(dbenv_set_tx_max).  The maximum number of transactions
+needs to include all transactions executed concurrently by the
+application plus all cursors configured for snapshot isolation.
+Further, the transactions are retained until the last page they created
+is evicted from cache, so in the extreme case, an additional transaction
+may be needed for each page in the cache.])
+
+m4_p([dnl
+So when m4_italic(should) applications use snapshot isolation?
+
+m4_bulletbegin
+m4_bullet([dnl
+There is a large cache relative to size of updates performed by
+concurrent transactions; and])
+
+m4_bullet([dnl
+Read/write contention is limiting the throughput of the application;
+or])
+
+m4_bullet([dnl
+The application is all or mostly read-only, and contention for the lock
+manager mutex is limiting throughput.])
+m4_bulletend])
+
+m4_p([dnl
+The simplest way to take advantage of snapshot isolation is for queries:
+keep update transactions using full read/write locking and set
+m4_ref(DB_TXN_SNAPSHOT) on read-only transactions or cursors.  This
+should minimize blocking of snapshot isolation transactions and will
+avoid introducing new m4_ref(DB_LOCK_DEADLOCK) errors.])
+
+m4_p([dnl
+If the application has update transactions which read many items and
+only update a small set (for example, scanning until a desired record is
+found, then modifying it), throughput may be improved by running some
+updates at snapshot isolation as well.])
+
+m4_page_footer

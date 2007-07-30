@@ -1,6 +1,5 @@
-<!--$Id: txn_begin.so,v 10.78 2006/09/13 14:30:57 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: txn_begin.so,v 10.80 2006/12/13 18:09:09 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -59,7 +58,7 @@ previously read by this transaction may be deleted or modified by other
 transactions before this transaction completes.
 <dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>This transaction will have degree 1 isolation.  Read operations
 performed by the transaction may read modified but not yet committed
-data.  Silently ignored if the <a href="../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not
+data.  Silently ignored if the DB_READ_UNCOMMITTED flag was not
 specified when the underlying database was opened.
 <dt><a name="DB_TXN_NOSYNC">DB_TXN_NOSYNC</a><dd>Do not synchronously flush the log when this transaction commits or
 prepares. This means the transaction will exhibit the ACI (atomicity,
@@ -67,12 +66,16 @@ consistency, and isolation) properties, but not D (durability); that is,
 database integrity will be maintained but it is possible that this
 transaction may be undone during recovery.
 <p>This behavior may be set for a Berkeley DB environment using the
-<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method
-overrides that setting.</p>
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method overrides
+that setting.</p>
 <dt><a name="DB_TXN_NOWAIT">DB_TXN_NOWAIT</a><dd>If a lock is unavailable for any Berkeley DB operation performed in the context
 of this transaction, cause the operation to
-return DB_LOCK_DEADLOCK
-immediately instead of blocking on the lock.
+return <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> (or <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> if the
+database environment has been configured using the
+<a href="../api_c/env_set_flags.html#DB_TIME_NOTGRANTED">DB_TIME_NOTGRANTED</a> flag).
+<p>This behavior may be set for a Berkeley DB environment using the
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method overrides
+that setting.</p>
 <dt><a name="DB_TXN_SNAPSHOT">DB_TXN_SNAPSHOT</a><dd>This transaction will execute with <a href="../ref/transapp/read.html">snapshot isolation</a>.  For databases with the <a href="../api_c/db_open.html#DB_MULTIVERSION">DB_MULTIVERSION</a>
 flag set, data values will be read as they are when the transaction
 begins, without taking read locks.  Silently ignored for operations on
@@ -85,9 +88,26 @@ which was modified after the snapshot transaction read it.</p>
 This means the transaction will exhibit all of the ACID (atomicity,
 consistency, isolation, and durability) properties.
 <p>This behavior is the default for Berkeley DB environments unless the
-<a href="../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> flag was specified to the
-<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method
-overrides that setting.</p>
+DB_TXN_NOSYNC flag was specified to the
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method overrides
+that setting.</p>
+<dt><a name="DB_TXN_WAIT">DB_TXN_WAIT</a><dd>If a lock is unavailable for any Berkeley DB operation performed in the context
+of this transaction, wait for the lock.
+<p>This behavior is the default for Berkeley DB environments unless the
+DB_TXN_NOWAIT flag was specified to the
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method overrides
+that setting.</p>
+<dt><a name="DB_TXN_WRITE_NOSYNC">DB_TXN_WRITE_NOSYNC</a><dd>Write, but do not synchronously flush, the log when this transaction
+commits.  This means the transaction will exhibit the ACI (atomicity,
+consistency, and isolation) properties, but not D (durability); that is,
+database integrity will be maintained, but if the system fails, it is
+possible some number of the most recently committed transactions may be
+undone during recovery.  The number of transactions at risk is governed
+by how often the system flushes dirty buffers to disk and how often the
+log is flushed or checkpointed.
+<p>This behavior may be set for a Berkeley DB environment using the
+<a href="../api_c/env_set_flags.html">DB_ENV-&gt;set_flags</a> method.  Any value specified to this method overrides
+that setting.</p>
 </dl>
 <dt><b>parent</b><dd>If the <b>parent</b> parameter is non-NULL, the new transaction will
 be a nested transaction, with the transaction indicated by
@@ -111,6 +131,6 @@ may fail and return one of the following non-zero errors:</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

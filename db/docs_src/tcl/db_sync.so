@@ -1,0 +1,19 @@
+m4_comment([$Id: db_sync.so,v 11.12 2004/12/02 18:21:08 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db sync, m4_tcl_db_sync, [dnl
+db sync
+])
+
+m4_p([dnl
+The m4_tcl_db_sync command function flushes any database cached
+information to disk.])
+
+m4_p([dnl
+See m4_tcl_db_close for a discussion of m4_db and cached data.])
+
+m4_tcl_ret_standard(m4_tcl_db_sync)
+
+m4_page_footer

@@ -65,6 +65,12 @@ static jthrowable __dbj_get_except(JNIEnv *jenv,
 
 	jmsg = (*jenv)->NewStringUTF(jenv, msg);
 
+	/* Retrieve error message logged by DB */
+	if (jdbenv != NULL) {
+		jmsg = (jstring) (*jenv)->CallNonvirtualObjectMethod(jenv,
+		    jdbenv, dbenv_class, get_err_msg_method, jmsg);
+	}
+
 	switch (err) {
 	case EINVAL:
 		return (jthrowable)(*jenv)->NewObject(jenv,
@@ -100,6 +106,16 @@ static jthrowable __dbj_get_except(JNIEnv *jenv,
 	case DB_REP_JOIN_FAILURE:
 		return (jthrowable)(*jenv)->NewObject(jenv,
 		    repjoinfailex_class, repjoinfailex_construct,
+		    jmsg, err, jdbenv);
+
+	case DB_REP_LEASE_EXPIRED:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    repleaseexpiredex_class, repleaseexpiredex_construct,
+		    jmsg, err, jdbenv);
+
+	case DB_REP_LEASE_TIMEOUT:
+		return (jthrowable)(*jenv)->NewObject(jenv,
+		    repleasetimeoutex_class, repleasetimeoutex_construct,
 		    jmsg, err, jdbenv);
 
 	case DB_REP_LOCKOUT:

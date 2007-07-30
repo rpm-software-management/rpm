@@ -1,0 +1,65 @@
+m4_comment([$Id: put.so,v 1.11 2003/10/18 19:16:15 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: DB-__GT__put,,
+    upgrade.3.1/set_paniccall, upgrade.3.1/dup)
+
+m4_p([dnl
+For the Queue and Recno access methods, when the m4_ref(DB_APPEND) flag
+is specified to the m4_refT(dbh_put), the allocated record number is
+returned to the application in the m4_arg(key) m4_ref(Dbt) argument.  In
+previous releases of m4_db, this m4_ref(Dbt) structure did not follow
+the usual m4_ref(Dbt) conventions.  For example, it was not possible to
+cause m4_db to allocate space for the returned record number.  Rather,
+it was always assumed that the m4_arg(data) field of the m4_arg(key)
+structure referred to memory that could be used as storage for a
+db_recno_t type.])
+
+m4_p([dnl
+As of the m4_db 3.1.0 release, the m4_arg(key) structure behaves as
+described in the m4_ref(Dbt) C++/Java class or C structure documentation.])
+
+m4_p([dnl
+Applications which are using the m4_ref(DB_APPEND) flag for Queue and
+Recno access method databases will require a change to upgrade to the
+m4_db 3.1 releases.  The simplest change is likely to be to add the
+m4_ref(DB_DBT_USERMEM) flag to the m4_arg(key) structure.  For example,
+code that appears as follows:])
+
+m4_indent([dnl
+DBT key;
+db_recno_t recno;
+m4_blank
+memset(&key, 0, sizeof(DBT));
+key.data = &recno;
+key.size = sizeof(recno);
+DB-__GT__put(DB, NULL, &key, &data, DB_APPEND);
+printf("new record number is %lu\n", (u_long)recno);])
+
+m4_p([would be changed to:])
+
+m4_indent([dnl
+DBT key;
+db_recno_t recno;
+m4_blank
+memset(&key, 0, sizeof(DBT));
+key.data = &recno;
+key.ulen = sizeof(recno);
+key.flags = DB_DBT_USERMEM;
+DB-__GT__put(DB, NULL, &key, &data, DB_APPEND);
+printf("new record number is %lu\n", (u_long)recno);])
+
+m4_p([dnl
+Note that the m4_arg(ulen) field is now set as well as the flag value.
+An alternative change would be:])
+
+m4_indent([dnl
+DBT key;
+db_recno_t recno;
+m4_blank
+memset(&key, 0, sizeof(DBT));
+DB-__GT__put(DB, NULL, &key, &data, DB_APPEND);
+recno = *(db_recno_t *)key-__GT__data;
+printf("new record number is %lu\n", (u_long)recno);])
+
+m4_page_footer

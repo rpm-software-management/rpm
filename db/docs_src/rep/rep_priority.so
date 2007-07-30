@@ -1,0 +1,41 @@
+m4_comment([$Id: rep_priority.so,v 1.1 2006/03/15 19:39:22 bostic Exp $])
+
+define(M4PAGELOCAL, [rep_set_priority, rep_get_priority])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_set_priority),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_set_priority(DB_ENV *env, int priority);
+int
+DB_ENV-__GT__rep_get_priority(DB_ENV *env, int *priorityp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_set_priority(int priority);
+int
+DbEnv::rep_get_priority(int *priorityp);
+]))
+
+m4_p([dnl
+The m4_refT(rep_set_priority) specifies the database environment's
+priority in replication group elections.  The priority must be a
+positive integer, or 0 if this environment cannot be a replication
+group master.])
+
+m4_scope_env(rep_set_priority)
+m4_when_any(rep_set_priority)
+m4_return(rep_set_priority, std)
+
+m4_parambegin
+m4_param(priority, [dnl
+The priority of this database environment in the replication group.  The
+priority must be a positive integer, or 0 if this environment cannot be
+a replication group master.  (See m4_link(M4RELDIR/ref/rep/pri,
+Replication environment priorities) for more information).])
+m4_paramend
+
+m4_pf_getter(rep_get_priority, database environment priority,, priorityp)
+
+m4_seealso(Replication)
+m4_page_footer

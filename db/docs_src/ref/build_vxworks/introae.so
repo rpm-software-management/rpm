@@ -1,0 +1,153 @@
+m4_comment([$Id: introae.so,v 1.8 2002/10/01 19:38:33 sue Exp $])
+
+m4_ref_title(Building m4_db for VxWorks systems,
+    Building for VxWorks AE, @building for VxWorks AE,
+    build_vxworks/intro, build_vxworks/notes)
+
+m4_p([dnl
+The build_vxworks directory in the m4_db distribution contains component
+files for Tornado 3.1.  The m4_db distribution also contains workspace
+and project files for Tornado 2.X.  See
+m4_link(M4RELDIR/ref/build_vxworks/intro, Building for VxWorks) for
+information about Tornado 2.0/VxWorks 5.4 and Tornado 2.2/VxWorks 5.5.])
+
+The VxWorks AE component files are all within subdirectories, and
+all component files are named m4_italic(component.wpj).
+m4_table_begin(, _center)
+m4_table_header(File, Description)
+m4_table_element(_left, m4_db/, m4_db component directory)
+m4_table_element(_left, dbdemo/dbdemo, m4_link(M4RELDIR/ref/build_vxworks/notes, Demo program) component directory)
+m4_table_element(_left, db_*/db_*, m4_link(M4RELDIR/ref/build_vxworks/notes, Support utilities) component directories)
+m4_table_end
+
+m4_section([Building With Tornado 3.1])
+m4_p([dnl
+This document assumes you already have a workspace set up and you
+want to add m4_db as a component in that workspace.  You may include
+this component in any domain deemed appropriate for your application.])
+
+m4_p([dnl
+To add the m4_db component into your workspace, right-click on the
+"Components" and choose m4_italic(Add existing...).  Enter
+the pathname to your m4_db distribution in the form
+m4_italic(__LT__pathname to your m4_db distribution__GT__)
+m4_bold(/build_vxworks/m4_db/).
+You will see m4_bold(component.wpj) listed under the "Files".
+Choose that filename and click "Ok".  You will now have
+a m4_db component in your workspace.])
+
+m4_p([dnl
+There are essentially three options regarding protection
+domains and the m4_db component.  The first option is to add
+the m4_db component directly into your application domain.  You may
+choose to do this by downloading m4_db into that domain on your
+target, or by adding the component to the domain itself and it will
+be built when the application domain is built.  The disadvantage
+of this option is that no other application domain will have access to
+the m4_db interfaces. ])
+
+m4_p([dnl
+The second option is to add the m4_db component directly into your
+m4_italic(vxKernel) domain.  The advantage is that any application
+using the m4_db interface would have access to them and no changes
+would be necessary to the linkage path.  The disadvantage is that
+all m4_db code would run with system privileges. ])
+
+m4_p([dnl
+The third option is to add a m4_db shared library domain to your
+system.  Then add or download the m4_db component to that shared
+library domain.  The advantage is that all application domains
+using the m4_db interfaces can access a single copy of the library
+running in user mode.  The disadvantages are that one must
+remember to add the m4_db shared library domain to the linkage
+path of every application domain using m4_db and that shared library
+domains may not link against one another, a consideration if the
+application using m4_db is itself a shared library.])
+
+m4_p([dnl
+We believe the options outlined above are the most common methods
+that the m4_db component will be used.  We believe that the third
+option, creating a shared library domain, is the most useful option.
+Ultimately, the responsibility of choosing the correct mechanism
+for including the m4_db component into the appropriate domain falls
+to the application developer.])
+
+m4_p([dnl
+The remainder of this document assumes that you already have a
+VxWorks AE target and a target server, both up and running.  It also
+assumes that your VxWorks AE image is configured properly for your
+needs.  It also assumes that you
+have an acceptable file system already available.  See
+m4_link(M4RELDIR/ref/build_vxworks/faq, VxWorks FAQ) for more
+information about file system requirements.])
+
+m4_p([dnl
+To build m4_db, first, you need to set the build selection.  To do
+this, right-click on the m4_db component name and choose the
+m4_italic(Build settings...) selection.  If you look at the
+m4_italic(Active Build Specification) drop down list, you will see
+several different builds, containing different configurations. ])
+
+m4_table_begin(, _center)
+m4_table_header(Build, Description)
+m4_table_element(_left, PENTIUM2gnu.debug, PII BSP with debugging)
+m4_table_element(_left, PENTIUM2gnu.release, PII BSP no debugging)
+m4_table_end
+
+m4_p([dnl
+You have to add a new build specification if you use a
+different BSP, want to add a build for the simulator or
+want to customize further.  For instance, if you have the Power PC (PPC)
+BSP, you need to add a new build for the PPC tool chain.  To do so,
+select the "Add..." button in the m4_italic(Build Settings) window.
+A new window will appear giving you a list of all the BSPs
+you have available from which to choose.
+For your new build target, you need to decide whether it should be built for
+debugging.  See the m4_italic(C/C++ compiler) tab of the Pentium
+builds for ways to
+configure for each case.  After you add this build, you still need
+to configure the include directories correctly, as described in the
+sections that follow.])
+
+m4_p([dnl
+If you are running with a different
+BSP, you should remove the build specifications that do not apply to
+your hardware.  We recommend that you do this after you configure any
+new build specifications first. ])
+
+m4_p([dnl
+If you are adding a new build you must set the include directories
+correctly.  After you have added the new build in the "Build Settings"
+window, click on the m4_italic(C/C++ compiler) tab.
+In the edit box, you need to add the pathname of the
+m4_italic(build_vxworks) subdirectory of m4_db, followed by the
+pathname of m4_db.  You should add these directories
+relative to the project directory, using the m4_bold(PRJ_DIR)
+macro, which is the m4_db subdirectory of m4_italic(build_vxworks).
+Then, click OK.  The typical addition of include
+directories will look like:])
+
+m4_indent([-I$(PRJ_DIR)/.. -I$(PRJ_DIR)/../..])
+
+m4_p([dnl
+To build and download the m4_db downloadable application for the first time
+requires several steps: ])
+
+m4_nlistbegin
+m4_nlist([dnl
+Select the build you are interested in using the m4_italic(Build Settings)
+window.  Click OK when done.])
+m4_nlist([dnl
+Select the m4_db component and right-click.  Choose the
+m4_italic(Clean Build) selection.])
+m4_nlist([dnl
+Select the m4_db component and right-click.  Choose the
+m4_italic(Download...) selection.])
+m4_nlistend
+
+m4_p([dnl
+You need to repeat this procedure for all builds you are interested in
+building, as well as for all of the utility project builds you want to
+run.])
+
+m4_page_footer

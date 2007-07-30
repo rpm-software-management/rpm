@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: xa_map.c,v 12.8 2006/08/24 14:46:54 bostic Exp $
+ * $Id: xa_map.c,v 12.10 2007/05/17 15:16:00 bostic Exp $
  */
 
 #include "db_config.h"

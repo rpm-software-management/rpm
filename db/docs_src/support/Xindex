@@ -1,0 +1,53 @@
+#! /bin/sh
+#
+# $Id: Xindex,v 10.24 2007/05/17 15:15:11 bostic Exp $
+
+test -d $BDB_SRC -a -d $TARGET || {
+	echo "Xindex: \$BDB_SRC or \$TARGET not set"
+	exit 1
+}
+
+# Build the HTML from the index.
+# $1 API Name
+# $2 API Directory name
+build()
+{
+	echo '<html>'
+	echo '<head>'
+	echo "<title>Berkeley DB: $1 API Index</title>"
+	echo '<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">'
+	echo '<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">'
+	echo '</head>'
+	echo '<body bgcolor=white>'
+	echo "<h1 align=center>$1 API Index</h1>"
+	echo "<center>"
+	echo "<table cellspacing=0 cellpadding=0>"
+
+	# The reference guide is done using the C_API, so we have to
+	# copy references from it for the C++ API.
+	(cat $BDB_SRC/docs_src/support/static.src $TARGET/$2/pindex.src;
+	    egrep '^__APIREL__/ref/|^__APIREL__/ref_xml/' \
+	    $TARGET/api_c/pindex.src) |
+	sort -u |
+	sort -f -t@ +1 |
+	sed -f $BDB_SRC/docs_src/support/html.sed |
+	sed -e 's/__APIREL__/../' \
+	    -e 's/\([^ ]\)@/\1 @/' \
+	    -e 's/^\([^ ]*\) \([^@]*\)@\([^ ]*\)\(.*\)/<tr><td align=right>\2<\/td><td>\&nbsp;<a href="\1">\3<\/a>\4<\/td><\/tr>/'
+
+	echo "</table>"
+	echo "</center>"
+	echo "<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>"
+	echo "</body>"
+	echo "</html>"
+}
+
+[ -f $TARGET/api_c/pindex.src ] &&
+    build C api_c > $TARGET/api_c/c_pindex.html
+
+[ -f $TARGET/api_cxx/pindex.src ] &&
+    build C++ api_cxx > $TARGET/api_cxx/cxx_pindex.html
+
+[ -f $TARGET/api_tcl/pindex.src ] &&
+    build Tcl api_tcl > $TARGET/api_tcl/tcl_pindex.html
+exit 0

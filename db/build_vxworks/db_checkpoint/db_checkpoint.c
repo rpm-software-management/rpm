@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_checkpoint.c,v 12.15 2006/08/26 09:23:25 bostic Exp $
+ * $Id: db_checkpoint.c,v 12.18 2007/05/17 15:14:58 bostic Exp $
  */
 
 #include "db_config.h"
@@ -13,7 +12,7 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
+    "Copyright (c) 1996,2007 Oracle.  All rights reserved.\n";
 #endif
 
 int	 db_checkpoint_main __P((int, char *[]));
@@ -50,7 +49,7 @@ db_checkpoint_main(argc, argv)
 	int ch, exitval, once, ret, verbose;
 	char *home, *logfile, *passwd, time_buf[CTIME_BUFLEN];
 
-	if ((progname = strrchr(argv[0], '/')) == NULL)
+	if ((progname = __db_rpath(argv[0])) == NULL)
 		progname = argv[0];
 	else
 		++progname;

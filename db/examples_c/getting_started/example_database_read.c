@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2004-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2004,2007 Oracle.  All rights reserved.
  */
 
 #include "gettingstarted_common.h"
@@ -104,7 +103,7 @@ int show_all_records(STOCK_DBS *my_stock)
      */
     exit_value = 0;
     while ((ret =
-      inventory_cursorp->c_get(inventory_cursorp, &key, &data, DB_NEXT)) == 0)
+      inventory_cursorp->get(inventory_cursorp, &key, &data, DB_NEXT)) == 0)
     {
         the_vendor = show_inventory_item(data.data);
         ret = show_vendor_record(the_vendor, my_stock->vendor_dbp);
@@ -115,7 +114,7 @@ int show_all_records(STOCK_DBS *my_stock)
     }
 
     /* Close the cursor */
-    inventory_cursorp->c_close(inventory_cursorp);
+    inventory_cursorp->close(inventory_cursorp);
     return (exit_value);
 }
 
@@ -152,7 +151,7 @@ show_records(STOCK_DBS *my_stock, char *itemname)
      * database that has the appropriate key.
      */
     exit_value = 0;
-    ret = itemname_cursorp->c_get(itemname_cursorp, &key, &data, DB_SET);
+    ret = itemname_cursorp->get(itemname_cursorp, &key, &data, DB_SET);
     if (!ret) {
         do {
             /*
@@ -170,14 +169,14 @@ show_records(STOCK_DBS *my_stock, char *itemname)
              * the next duplicate records and show them all. This is done
              * because an inventory item's name is not a unique value.
              */
-        } while (itemname_cursorp->c_get(itemname_cursorp, &key, &data,
+        } while (itemname_cursorp->get(itemname_cursorp, &key, &data,
             DB_NEXT_DUP) == 0);
     } else {
         printf("No records found for '%s'\n", itemname);
     }
 
     /* Close the cursor */
-    itemname_cursorp->c_close(itemname_cursorp);
+    itemname_cursorp->close(itemname_cursorp);
 
     return (exit_value);
 }

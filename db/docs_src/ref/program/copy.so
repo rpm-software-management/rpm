@@ -1,0 +1,90 @@
+m4_comment([$Id: copy.so,v 10.17 2005/06/16 17:07:07 bostic Exp $])
+
+m4_ref_title(Programmer Notes,
+    Copying or moving databases,, program/cache, program/compatible)
+
+m4_idefz(copying databases)
+m4_idefz(moving databases)
+
+m4_p([dnl
+There are two issues with copying or moving databases: database page log
+sequence numbers (LSNs), and database file identification strings.])
+
+m4_p([dnl
+Because database pages contain references to the database environment
+log records (LSNs), databases cannot be copied or moved from one
+transactional database environment to another without first clearing the
+LSNs.  Note that this is not a concern for non-transactional database
+environments and applications, and can be ignored if the database is not
+being used transactionally.  Specifically, databases created and written
+non-transactionally (for example, as part of a bulk load procedure), can
+be copied or moved into a transactional database environment without
+resetting the LSNs.  The database's LSNs may be reset in one of three
+ways: the application can call the m4_refT(dbenv_lsn_reset) to reset the
+LSNs in place, or a system administrator can reset the LSNs in place
+using the m4_option(r) option to the m4_ref(db_load) utility, or by
+dumping and reloading the database (using the m4_ref(db_dump) and
+m4_ref(db_load) utilities).])
+
+m4_p([dnl
+Because system file identification information (for example, filenames,
+device and inode numbers, volume and file IDs, and so on) are not
+necessarily unique or maintained across system reboots, each m4_db
+database file contains a unique 20-byte file identification bytestring.
+When multiple processes or threads open the same database file in m4_db,
+it is this bytestring that is used to ensure the same underlying pages
+are updated in the database environment cache, no matter which m4_db
+handle is used for the operation.])
+
+m4_p([dnl
+The database file identification string is not a concern when moving
+databases, and databases may be moved or renamed without resetting the
+identification string.  However, when copying a database, you must
+ensure there are never two databases with the same file identification
+bytestring in the same cache at the same time.  Copying databases is
+further complicated because m4_db caches do not discard cached database
+pages when database handles are closed.  Cached pages are only discarded
+when the database is removed by calling the m4_ref(dbenv_remove) or
+m4_refT(dbh_remove)s.])
+
+m4_p([dnl
+Before physically copying a database file, first ensure that all
+modified pages have been written from the cache to the backing database
+file.  This is done using the m4_ref(dbh_sync) or m4_refT(dbh_close)s.])
+
+m4_p([dnl
+Before using a copy of a database file in a database environment, you
+must ensure that all pages from any other database with the same
+bytestring have been removed from the memory pool cache.  If the
+environment in which you will open the copy of the database has pages
+from files with identical bytestrings to the copied database, there are
+a few possible solutions:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Remove the environment, either using system utilities or by calling the
+m4_refT(dbenv_remove).  Obviously, this will not allow you to access
+both the original database and the copy of the database at the same
+time.])
+
+m4_nlist([dnl
+Create a new file that will have a new bytestring.  The simplest way to
+create a new file that will have a new bytestring is to call the
+m4_ref(db_dump) utility to dump out the contents of the database and
+then use the m4_ref(db_load) utility to load the dumped output into a
+new file.  This allows you to access both the original and copy of the
+database at the same time.])
+
+m4_nlist([dnl
+If your database is too large to be dumped and reloaded, you can copy
+the database by other means, and then reset the bytestring in the copied
+database to a new bytestring.  There are two ways to reset the
+bytestring in the copy: the application can call the
+m4_refT(dbenv_fileid_reset), or a system administrator can use the
+m4_option(r) option to the m4_ref(db_load) utility.  This allows you to
+access both the original and copy of the database at the same time.])
+
+m4_nlistend
+
+m4_page_footer

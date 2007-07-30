@@ -1,6 +1,5 @@
-<!--$Id: memp_stat.so,v 10.67 2006/09/11 16:56:44 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: memp_stat.so,v 10.71 2007/07/06 00:22:53 mjc Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -51,11 +50,13 @@ The following DB_MPOOL_STAT fields will be filled in:</p>
 <dt>size_t st_gbytes;<dd>Gigabytes of cache (total cache size is st_gbytes + st_bytes).
 <dt>size_t st_bytes;<dd>Bytes of cache (total cache size is st_gbytes + st_bytes).
 <dt>u_int32_t st_ncache;<dd>Number of caches.
+<dt>u_int32_t st_max_ncache;<dd>Maximum number of caches, as configured with the
+<a href="../api_cxx/env_set_cache_max.html">DbEnv::set_cache_max</a> method.
 <dt>roff_t st_regsize;<dd>Individual cache size, in bytes.
 <dt>size_t st_mmapsize;<dd>Maximum memory-mapped file size.
 <dt>int st_maxopenfd;<dd>Maximum open file descriptors.
 <dt>int st_maxwrite;<dd>Maximum sequential buffer writes.
-<dt>int st_maxwrite_sleep;<dd>Sleep after writing maximum sequential buffers.
+<dt>db_timeout_t st_maxwrite_sleep;<dd>Microseconds to pause after writing maximum sequential buffers.
 <dt>u_int32_t st_map;<dd>Requested pages mapped into the process' address space (there is no
 available information about whether or not this request caused disk I/O,
 although examining the application page fault rate may be helpful).
@@ -97,11 +98,6 @@ region mutex without waiting.
 <dt>u_int32_t st_alloc_max_pages;<dd>Maximum number of pages checked during an allocation.
 <dt>u_int32_t st_io_wait;<dd>Number of operations blocked waiting for I/O to complete.
 </dl>
-The <b>flags</b> parameter must be set to 0 or
-the following value:
-<dl compact>
-<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after returning their values.
-</dl>
 <p>If <b>fsp</b> is non-NULL, a pointer to a NULL-terminated
 variable length array of statistics for individual files, in the cache
 <b>mp</b>, is copied into the memory location to which it refers.  If
@@ -120,6 +116,8 @@ the cache; that is, each element of the array:</p>
 <dt>u_int32_t st_page_in;<dd>Pages read into the cache.
 <dt>u_int32_t st_page_out;<dd>Pages written from the cache to the backing file.
 </dl>
+<p>The DbEnv::memp_stat method may not be called before the <a href="../api_cxx/env_open.html">DbEnv::open</a> method has
+been called.</p>
 <p>The DbEnv::memp_stat method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
@@ -149,8 +147,12 @@ invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DbEnv::memp_stat_print</h3>
-<p>The DbEnv::memp_stat_print method prints diagnostic information to the output
-channel described by the <a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> method.</p>
+<p>The DbEnv::memp_stat_print method displays the
+memory pool subsystem statistical information, as described for the DbEnv::memp_stat method.
+The information is printed to a specified output channel (see the
+<a href="../api_cxx/env_set_msgfile.html">DbEnv::set_msgfile</a> method for more information), or passed to an
+application callback function (see the <a href="../api_cxx/env_set_msgcall.html">DbEnv::set_msgcall</a> method for
+more information).</p>
 <p>The DbEnv::memp_stat_print method may not be called before the <a href="../api_cxx/env_open.html">DbEnv::open</a> method has
 been called.</p>
 <p>The DbEnv::memp_stat_print method
@@ -160,10 +162,11 @@ failure, and returns 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set by bitwise inclusively <b>OR</b>'ing together one or more
-of the following values:
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 <dt><a name="DB_STAT_MEMP_HASH">DB_STAT_MEMP_HASH</a><dd>Display the buffers with hash chains.
 </dl>
 </dl>
@@ -176,6 +179,6 @@ of the following values:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_page.h,v 12.10 2006/08/24 14:45:29 bostic Exp $
+ * $Id: db_page.h,v 12.13 2007/05/17 15:15:05 bostic Exp $
  */
 
 #ifndef _DB_PAGE_H_
@@ -36,7 +35,7 @@ extern "C" {
 /* Page types. */
 #define	P_INVALID	0	/* Invalid page type. */
 #define	__P_DUPLICATE	1	/* Duplicate. DEPRECATED in 3.1 */
-#define	P_HASH		2	/* Hash. */
+#define	P_HASH_UNSORTED	2	/* Hash pages created pre 4.6. DEPRECATED */
 #define	P_IBTREE	3	/* Btree internal. */
 #define	P_IRECNO	4	/* Recno internal. */
 #define	P_LBTREE	5	/* Btree leaf. */
@@ -47,7 +46,8 @@ extern "C" {
 #define	P_QAMMETA	10	/* Queue metadata page. */
 #define	P_QAMDATA	11	/* Queue data page. */
 #define	P_LDUP		12	/* Off-page duplicate leaf. */
-#define	P_PAGETYPE_MAX	13
+#define	P_HASH		13	/* Sorted hash page. */
+#define	P_PAGETYPE_MAX	14
 /* Flag to __db_new */
 #define	P_DONTEXTEND	0x8000	/* Don't allocate if there are no free pages. */
 
@@ -456,9 +456,9 @@ typedef struct _hkeydata {
 	(HKEYDATA_SIZE(len) + sizeof(db_indx_t))
 
 /* Put a HKEYDATA item at the location referenced by a page entry. */
-#define	PUT_HKEYDATA(pe, kd, len, type) {				\
-	((HKEYDATA *)pe)->type = type;					\
-	memcpy((u_int8_t *)pe + sizeof(u_int8_t), kd, len);		\
+#define	PUT_HKEYDATA(pe, kd, len, etype) {				\
+	((HKEYDATA *)(pe))->type = etype;				\
+	memcpy((u_int8_t *)(pe) + sizeof(u_int8_t), kd, len);		\
 }
 
 /*

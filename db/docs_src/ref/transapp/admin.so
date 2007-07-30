@@ -1,0 +1,38 @@
+m4_comment([$Id: admin.so,v 10.17 2001/03/02 21:01:21 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Environment infrastructure,
+    administering @transaction protected applications,
+    transapp/nested, transapp/deadlock)
+
+m4_p([dnl
+When building transactional applications, it is usually necessary to
+build an administrative infrastructure around the database environment.
+There are five components to this infrastructure, and each is
+supported by the m4_db package in two different ways: a standalone
+utility and one or more library interfaces.])
+
+m4_bulletbegin
+m4_bullet([Deadlock detection: m4_ref(db_deadlock),
+m4_ref(lock_detect), m4_ref(dbenv_set_lk_detect)])
+m4_bullet([Checkpoints: m4_ref(db_checkpoint), m4_ref(txn_checkpoint)])
+m4_bullet([Database and log file archival:
+m4_ref(db_archive), m4_ref(log_archive)])
+m4_bullet([Log file removal: m4_ref(db_archive), m4_ref(log_archive)])
+m4_bullet([Recovery procedures: m4_ref(db_recover), m4_ref(dbenv_open)])
+m4_bulletend
+
+m4_p([dnl
+When writing multithreaded server applications and/or applications
+intended for download from the Web, it is usually simpler to create
+local threads that are responsible for administration of the database
+environment as scheduling is often simpler in a single-process model,
+and only a single binary need be installed and run.  However, the
+supplied utilities can be generally useful tools even when the
+application is responsible for doing its own administration because
+applications rarely offer external interfaces to database
+administration.  The utilities are required when programming to a m4_db
+scripting interface because the scripting APIs do not always offer
+interfaces to the administrative functionality.])
+
+m4_page_footer

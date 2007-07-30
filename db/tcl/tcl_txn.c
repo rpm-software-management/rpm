@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: tcl_txn.c,v 12.16 2006/09/11 14:53:42 bostic Exp $
+ * $Id: tcl_txn.c,v 12.22 2007/05/17 15:15:54 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <tcl.h>
 #endif
 #include "dbinc/tcl_db.h"
@@ -141,6 +140,7 @@ tcl_Txn(interp, objc, objv, envp, envip)
 		"-read_committed",
 		"-read_uncommitted",
 		"-txn_timeout",
+		"-txn_wait",
 #endif
 		"-nosync",
 		"-nowait",
@@ -156,6 +156,7 @@ tcl_Txn(interp, objc, objv, envp, envip)
 		TXNREAD_COMMITTED,
 		TXNREAD_UNCOMMITTED,
 		TXNTIMEOUT,
+		TXNWAIT,
 #endif
 		TXNNOSYNC,
 		TXNNOWAIT,
@@ -216,6 +217,9 @@ get_timeout:		if (i >= objc) {
 			break;
 		case TXNREAD_UNCOMMITTED:
 			flag |= DB_READ_UNCOMMITTED;
+			break;
+		case TXNWAIT:
+			flag |= DB_TXN_WAIT;
 			break;
 #endif
 		case TXNNOSYNC:
@@ -405,6 +409,7 @@ tcl_TxnStat(interp, objc, objv, envp)
 	/*
 	 * MAKE_STAT_LIST assumes 'res' and 'error' label.
 	 */
+#ifdef HAVE_STATISTICS
 	MAKE_STAT_LIST("Region size", sp->st_regsize);
 	MAKE_STAT_LSN("LSN of last checkpoint", &sp->st_last_ckp);
 	MAKE_STAT_LIST("Time of last checkpoint", sp->st_time_ckp);
@@ -435,6 +440,7 @@ tcl_TxnStat(interp, objc, objv, envp)
 				break;
 			}
 		}
+#endif
 	Tcl_SetObjResult(interp, res);
 error:
 	__os_ufree(envp, sp);

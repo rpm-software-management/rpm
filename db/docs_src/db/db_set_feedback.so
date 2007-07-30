@@ -1,0 +1,4 @@
+m4_comment([$Id: db_set_feedback.so,v 10.29 2003/10/19 01:27:11 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_feedback)
+include(env/env_set_feedback.so)

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: TransactionConfig.java,v 12.6 2006/09/08 20:32:14 bostic Exp $
+ * $Id: TransactionConfig.java,v 12.10 2007/06/28 14:23:36 mjc Exp $
  */
 
 package com.sleepycat.db;
@@ -31,6 +30,8 @@ public class TransactionConfig implements Cloneable {
     private boolean noWait = false;
     private boolean snapshot = false;
     private boolean sync = false;
+    private boolean writeNoSync = false;
+    private boolean wait = false;
 
     public TransactionConfig() {
     }
@@ -103,6 +104,22 @@ public class TransactionConfig implements Cloneable {
         return sync;
     }
 
+    public void setWait(final boolean wait) {
+        this.wait = wait;
+    }
+
+    public boolean getWait() {
+        return wait;
+    }
+
+    public void setWriteNoSync(final boolean writeNoSync) {
+        this.writeNoSync = writeNoSync;
+    }
+
+    public boolean getWriteNoSync() {
+        return writeNoSync;
+    }
+
     DbTxn beginTransaction(final DbEnv dbenv, final DbTxn parent)
         throws DatabaseException {
 
@@ -113,6 +130,8 @@ public class TransactionConfig implements Cloneable {
         flags |= noWait ? DbConstants.DB_TXN_NOWAIT : 0;
         flags |= snapshot ? DbConstants.DB_TXN_SNAPSHOT : 0;
         flags |= sync ? DbConstants.DB_TXN_SYNC : 0;
+        flags |= wait ? DbConstants.DB_TXN_WAIT : 0;
+        flags |= writeNoSync ? DbConstants.DB_TXN_WRITE_NOSYNC : 0;
 
         return dbenv.txn_begin(parent, flags);
     }

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: qam_stat.c,v 12.8 2006/08/24 14:46:24 bostic Exp $
+ * $Id: qam_stat.c,v 12.11 2007/05/17 15:15:50 bostic Exp $
  */
 
 #include "db_config.h"
@@ -74,7 +73,7 @@ __qam_stat(dbc, spp, flags)
 	first = QAM_RECNO_PAGE(dbp, meta->first_recno);
 	last = QAM_RECNO_PAGE(dbp, meta->cur_recno);
 
-	ret = __memp_fput(mpf, meta, 0);
+	ret = __memp_fput(mpf, meta, dbc->priority);
 	if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (ret != 0)
@@ -124,7 +123,7 @@ begin:
 				sp->qs_pgfree += re_len;
 		}
 
-		ret = __qam_fput(dbp, pgno, h, 0);
+		ret = __qam_fput(dbp, pgno, h, dbc->priority);
 		if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 			ret = t_ret;
 		if (ret != 0)
@@ -167,7 +166,7 @@ meta_only:
 	sp->qs_cur_recno = meta->cur_recno;
 
 	/* Discard the meta-data page. */
-	ret = __memp_fput(mpf, meta, 0);
+	ret = __memp_fput(mpf, meta, dbc->priority);
 	if ((t_ret = __LPUT(dbc, lock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (ret != 0)

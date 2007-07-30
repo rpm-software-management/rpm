@@ -1,0 +1,47 @@
+m4_comment([$Id: set_func_yield.so,v 10.20 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_yield)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_yield),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_yield(int (*func_yield)(void));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to yield the processor from the current
+thread of control to any other waiting threads of control.])
+
+m4_p([dnl
+The m4_arg(func_yield) function must be able to cause the rescheduling
+of all participants in the current m4_db environment, whether threaded
+or not.  It may be incorrect to supply a thread m4_arg(yield) function
+if more than a single process is operating in the m4_db environment.
+This is because many thread-yield functions will not allow other
+processes to run, and the contested lock may be held by another process,
+not by another thread.])
+
+m4_p([dnl
+If no m4_arg(func_yield) function is specified, or if the m4_arg(yield)
+function returns an error, the function specified by the
+m4_ref(dbenv_set_func_sleep) entry will be used instead or subsequently;
+that is, if no m4_arg(yield) function is specified, or if it is possible
+for the m4_arg(yield) function to fail, the m4_arg(sleep) function
+m4_bold(must) cause the processor to reschedule any waiting threads of
+control for execution.])
+
+m4_scope_process(dbenv_set_func_yield)
+
+m4_when_init(dbenv_set_func_yield)
+
+m4_return(dbenv_set_func_yield, std)
+
+m4_parambegin
+m4_param(func_yield, [dnl
+The m4_arg(func_yield) parameter is the function which yields the processor.
+m4_ret_internal(func_yield)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: db_remove.c,v 12.28 2006/09/19 15:06:58 bostic Exp $
+ * $Id: db_remove.c,v 12.35 2007/07/05 18:43:13 alanb Exp $
  */
 
 #include "db_config.h"
@@ -77,7 +76,7 @@ __env_dbremove_pp(dbenv, txn, name, subdb, flags)
 		}
 	LF_CLR(DB_AUTO_COMMIT);
 
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
 		goto err;
 
 	ret = __db_remove_int(dbp, txn, name, subdb, flags);
@@ -89,16 +88,16 @@ __env_dbremove_pp(dbenv, txn, name, subdb, flags)
 		 * lock; mark the handle cleared explicitly.
 		 */
 		LOCK_INIT(dbp->handle_lock);
-		dbp->lid = DB_LOCK_INVALIDID;
+		dbp->locker = NULL;
 	} else if (txn != NULL) {
 		/*
 		 * We created this handle locally so we need to close it
 		 * and clean it up.  Unfortunately, it's holding transactional
 		 * locks that need to persist until the end of transaction.
-		 * If we invalidate the locker id (dbp->lid), then the close
+		 * If we invalidate the locker id (dbp->locker), then the close
 		 * won't free these locks prematurely.
 		 */
-		 dbp->lid = DB_LOCK_INVALIDID;
+		 dbp->locker = NULL;
 	}
 
 err:	if (txn_local && (t_ret =
@@ -112,11 +111,18 @@ err:	if (txn_local && (t_ret =
 	 * !!!
 	 * Note we're reversing the order of operations: we started the txn and
 	 * then opened the DB handle; we're resolving the txn and then closing
-	 * closing the DB handle -- it's safer.
+	 * closing the DB handle -- a DB handle cannot be closed before
+	 * resolving the txn.
 	 */
-	if (dbp != NULL &&
-	    (t_ret = __db_close(dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
-		ret = t_ret;
+	if (txn_local || txn == NULL) {
+		if (dbp != NULL &&
+		    (t_ret = __db_close(dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
+			ret = t_ret;
+	} else {
+		if (dbp != NULL && (t_ret =
+		     __txn_closeevent(dbenv, txn, dbp)) != 0 && ret == 0)
+			ret = t_ret;
+	}
 
 	if (handle_check && (t_ret = __env_db_rep_exit(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
@@ -205,8 +211,14 @@ __db_remove(dbp, txn, name, subdb, flags)
 
 	ret = __db_remove_int(dbp, txn, name, subdb, flags);
 
-	if ((t_ret = __db_close(dbp, txn, DB_NOSYNC)) != 0 && ret == 0)
-		ret = t_ret;
+	if (txn == NULL) {
+		if ((t_ret = __db_close(dbp, txn, DB_NOSYNC)) != 0 && ret == 0)
+			ret = t_ret;
+	} else {
+		if ((t_ret =
+		     __txn_closeevent(dbp->dbenv, txn, dbp)) != 0 && ret == 0)
+			ret = t_ret;
+	}
 
 	return (ret);
 }
@@ -305,11 +317,11 @@ __db_inmem_remove(dbp, txn, name)
 	DB_ENV *dbenv;
 	DB_LSN lsn;
 	DBT fid_dbt, name_dbt;
-	u_int32_t locker;
+	DB_LOCKER *locker;
 	int ret;
 
 	dbenv = dbp->dbenv;
-	locker = DB_LOCK_INVALIDID;
+	locker = NULL;
 
 	DB_ASSERT(dbenv, name != NULL);
 
@@ -322,10 +334,10 @@ __db_inmem_remove(dbp, txn, name)
 	dbp->preserve_fid = 1;
 
 	if (LOCKING_ON(dbenv)) {
-		if (dbp->lid == DB_LOCK_INVALIDID &&
-		    (ret = __lock_id(dbenv, &dbp->lid, NULL)) != 0)
+		if (dbp->locker == NULL &&
+		    (ret = __lock_id(dbenv, NULL, &dbp->locker)) != 0)
 			return (ret);
-		locker = txn == NULL ? dbp->lid : txn->txnid;
+		locker = txn == NULL ? dbp->locker : txn->locker;
 	}
 
 	/*
@@ -371,7 +383,7 @@ __db_subdb_remove(dbp, txn, name, subdb)
 	mdbp = sdbp = NULL;
 
 	/* Open the subdatabase. */
-	if ((ret = db_create(&sdbp, dbp->dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&sdbp, dbp->dbenv, 0)) != 0)
 		goto err;
 	if ((ret = __db_open(sdbp,
 	    txn, name, subdb, DB_UNKNOWN, DB_WRITEOPEN, 0, PGNO_BASE_MD)) != 0)
@@ -414,12 +426,21 @@ __db_subdb_remove(dbp, txn, name, subdb)
 DB_TEST_RECOVERY_LABEL
 err:
 	/* Close the main and subdatabases. */
-	if ((t_ret = __db_close(sdbp, txn, 0)) != 0 && ret == 0)
-		ret = t_ret;
+	if (txn == NULL) {
+		if ((t_ret = __db_close(sdbp, txn, 0)) != 0 && ret == 0)
+			ret = t_ret;
 
-	if (mdbp != NULL &&
-	    (t_ret = __db_close(mdbp, txn, DB_NOSYNC)) != 0 && ret == 0)
-		ret = t_ret;
+		if (mdbp != NULL &&
+		    (t_ret = __db_close(mdbp, txn, DB_NOSYNC)) != 0 && ret == 0)
+			ret = t_ret;
+	} else {
+		if ((t_ret =
+		     __txn_closeevent(sdbp->dbenv, txn, sdbp)) != 0 && ret == 0)
+			ret = t_ret;
+		if (mdbp != NULL && (t_ret =
+		     __txn_closeevent(mdbp->dbenv, txn, mdbp)) != 0 && ret == 0)
+			ret = t_ret;
+	}
 
 	return (ret);
 }

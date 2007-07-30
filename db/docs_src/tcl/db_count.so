@@ -1,0 +1,18 @@
+m4_comment([$Id: db_count.so,v 11.4 2002/08/18 21:17:24 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db count, m4_tcl_db_count, [dnl
+db count key
+])
+
+m4_p([dnl
+The m4_tcl_db_count command returns a count of the number of duplicate
+data items for the key given.  If the key does not exist, a value of 0
+is returned.  If there are no duplicates, or if the database does not
+support duplicates, but a key/data pair exists, a value of 1 is
+returned.  If an error occurs, a m4_db error message is returned or a
+Tcl error is thrown.])
+
+m4_page_footer

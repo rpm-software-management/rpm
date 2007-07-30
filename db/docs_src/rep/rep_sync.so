@@ -1,0 +1,38 @@
+m4_comment([$Id: rep_sync.so,v 1.10 2007/03/20 20:20:26 alanb Exp $])
+
+define(M4PAGELOCAL, [rep_sync])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_sync),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_sync(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_sync(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(rep_sync) forces master synchronization to begin for this
+client.  This method is the other half of setting the
+m4_ref(DB_REP_CONF_DELAYCLIENT) flag via the m4_refT(rep_set_config).])
+
+m4_p([dnl
+If an application has configured delayed master synchronization, the
+application must synchronize explicitly (otherwise the client will
+remain out-of-date and will ignore all database changes forwarded from
+the replication group master).  The m4_refT(rep_sync) may be called any
+time after the client application learns that the new master has been
+established (by receiving a m4_ref(DB_EVENT_REP_NEWMASTER) event
+notification).])
+
+m4_when_after_envopen(rep_sync)
+m4_return(rep_sync, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

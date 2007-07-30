@@ -282,6 +282,9 @@ __fop_init_print(dbenv, dtabp, dtabsizep)
 	    __fop_rename_print, DB___fop_rename)) != 0)
 		return (ret);
 	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
+	    __fop_rename_print, DB___fop_rename_noundo)) != 0)
+		return (ret);
+	if ((ret = __db_add_recovery(dbenv, dtabp, dtabsizep,
 	    __fop_file_remove_print, DB___fop_file_remove)) != 0)
 		return (ret);
 	return (0);

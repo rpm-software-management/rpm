@@ -1,0 +1,12 @@
+m4_comment([$Id: win.so,v 1.2 2007/04/05 21:20:38 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: Windows 9X,,
+    upgrade.4.6/verb, upgrade.4.6/disk)
+
+m4_p([dnl
+m4_db no longer supports process-shared database environments on Windows
+9X platforms; the m4_ref(DB_PRIVATE) flag must always be specified to
+the m4_refT(dbenv_open).])
+
+m4_page_footer

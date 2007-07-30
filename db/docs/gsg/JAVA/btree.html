@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>BTree Configuration</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="dbconfig.html" title="Chapter 6. Database Configuration" />
+    <link rel="up" href="dbconfig.html" title="ChapterÂ 6.Â Database Configuration" />
     <link rel="previous" href="cachesize.html" title="Selecting the Cache Size" />
   </head>
   <body>
@@ -17,9 +17,9 @@
           <th colspan="3" align="center">BTree Configuration</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="cachesize.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 6. Database Configuration</th>
-          <td width="20%" align="right"> </td>
+          <td width="20%" align="left"><a accesskey="p" href="cachesize.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 6.Â Database Configuration</th>
+          <td width="20%" align="right">Â </td>
         </tr>
       </table>
       <hr />
@@ -328,12 +328,12 @@ try {
     myDbConfig.setSortedDuplicates(true);
 
    // Open the database
-   myDb = new Database(&quot;mydb.db&quot;, null, myDbConfig);
+   myDb = new Database("mydb.db", null, myDbConfig);
 } catch(DatabaseException dbe) {
-    System.err.println(&quot;MyDbs: &quot; + dbe.toString());
+    System.err.println("MyDbs: " + dbe.toString());
     System.exit(-1);
 } catch(FileNotFoundException fnfe) {
-    System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
+    System.err.println("MyDbs: " + fnfe.toString());
     System.exit(-1);
 } </pre>
         </div>
@@ -458,7 +458,7 @@ try {
             comparator that uses <tt class="methodname">String.compareTo()</tt>,
             which performs a Unicode comparison of two strings (note that for
             single-byte roman characters, Unicode comparison and UTF-8
-            byte-by-byte comparisons are identical &#8211; this is something you
+            byte-by-byte comparisons are identical â€“ this is something you
             would only want to do if you were using multibyte unicode characters
             with DB). In this case, your comparator would look like the
             following:
@@ -508,7 +508,7 @@ try {
 
     // Open the database that you will use to store your data
     myDbConfig.setSortedDuplicates(true);
-    myDatabase = new Database(&quot;myDb&quot;, null, myDbConfig);
+    myDatabase = new Database("myDb", null, myDbConfig);
 } catch (DatabaseException dbe) {
     // Exception handling goes here
 } catch (FileNotFoundException fnfe) {
@@ -521,18 +521,18 @@ try {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="cachesize.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="cachesize.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="dbconfig.html">Up</a>
           </td>
-          <td width="40%" align="right"> </td>
+          <td width="40%" align="right">Â </td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Selecting the Cache Size </td>
+          <td width="40%" align="left" valign="top">Selecting the Cache SizeÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> </td>
+          <td width="40%" align="right" valign="top">Â </td>
         </tr>
       </table>
     </div>

@@ -1,0 +1,38 @@
+m4_comment([$Id: enomem.so,v 1.2 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: ENOMEM and DbMemoryException,,
+    upgrade.4.3/fileopen, upgrade.4.3/repl)
+
+m4_p([dnl
+In versions of m4_db before 4.3, the error m4_bold(ENOMEM) was used to
+indicate that the buffer in a m4_ref(Dbt) configured with
+m4_ref(DB_DBT_USERMEM) was too small to hold a key or data item being
+retrieved.  The 4.3 release adds a new error, m4_ref(DB_BUFFER_SMALL),
+that is returned in this case.])
+
+m4_p([dnl
+The reason for the change is that the use of m4_bold(ENOMEM) was
+ambiguous: calls such as m4_ref(dbh_get) or m4_ref(dbc_get) could return
+m4_bold(ENOMEM) either if a m4_ref(Dbt) was too small or if some resource
+was exhausted.])
+
+m4_p([dnl
+The result is that starting with the 4.3 release, C applications should
+always treat m4_bold(ENOMEM) as a fatal error.  Code that checked for
+the m4_bold(ENOMEM) return and allocated a new buffer should be changed
+to check for m4_ref(DB_BUFFER_SMALL).])
+
+m4_p([dnl
+In C++ applications configured for exceptions, a
+m4_refcxx(DbMemoryException) will continue to be thrown in both cases,
+and applications should check the errno in the exception to determine
+which error occurred.])
+
+m4_p([dnl
+In Java applications, a m4_bold(DbMemoryException) will be thrown
+when a m4_bold(Dbt) is too small to hold a return value, and an
+m4_bold(OutOfMemoryError) will be thrown in all cases of resource
+exhaustion.])
+
+m4_page_footer

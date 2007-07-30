@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: envscript.tcl,v 12.5 2006/08/24 14:46:35 bostic Exp $
+# $Id: envscript.tcl,v 12.7 2007/05/17 15:15:55 bostic Exp $
 #
 # Envscript -- for use with env012, DB_REGISTER test.
 # Usage: envscript testdir testfile putget key data recover envclose wait

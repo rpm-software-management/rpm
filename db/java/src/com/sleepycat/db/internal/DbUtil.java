@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: DbUtil.java,v 12.3 2006/08/24 14:46:09 bostic Exp $
+ * $Id: DbUtil.java,v 12.5 2007/05/17 15:15:42 bostic Exp $
  */
 package com.sleepycat.db.internal;
 

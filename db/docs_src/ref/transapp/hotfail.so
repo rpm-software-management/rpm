@@ -1,0 +1,92 @@
+m4_comment([$Id: hotfail.so,v 10.5 2005/02/10 20:02:41 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Hot failover,
+    hot @failover,
+    transapp/recovery, transapp/filesys)
+
+m4_p([dnl
+For some applications, it may be useful to periodically snapshot the
+database environment for use as a hot failover should the primary system
+fail.  The following steps can be taken to keep a backup environment in
+close synchrony with an active environment.  The active environment is
+entirely unaffected by these procedures, and both read and write
+operations are allowed during all steps described here.])
+
+m4_nlistbegin
+m4_nlist([dnl
+Run m4_ref(db_archive) m4_option(s) in the active environment to
+identify all of the active environment's database files, and copy them
+to the backup directory.
+m4_p([dnl
+If the database files are stored in a separate directory from the other
+m4_db files, it will be simpler (and much faster!) to copy the directory
+itself instead of the individual files (see m4_ref(dbenv_set_data_dir)
+for additional information).  m4_bold([Note: if any of the database
+files did not have an open m4_ref(Db) handle during the lifetime of the
+current log files, m4_ref(db_archive) will not list them in its
+output!])  This is another reason it may be simpler to use a separate
+database file directory and copy the entire directory instead of
+archiving only the files listed by m4_ref(db_archive).])])
+m4_nlist([dnl
+Remove all existing log files from the backup directory.])
+m4_nlist([dnl
+Run m4_ref(db_archive) m4_option(l) in the active environment to
+identify all of the active environment's log files, and copy them to
+the backup directory.])
+m4_nlist([dnl
+Run m4_ref(db_recover) m4_option(c) in the backup directory to
+catastrophically recover the copied environment.])
+m4_nlistend
+
+m4_p([dnl
+Steps 2, 3 and 4 may be repeated as often as you like.  If Step 1 (the
+initial copy of the database files) is repeated, then Steps 2, 3 and 4
+m4_bold(must) be performed at least once in order to ensure a consistent
+database environment snapshot.])
+
+m4_p([dnl
+These procedures must be integrated with your other archival procedures,
+of course.  If you are periodically removing log files from your active
+environment, you must be sure to copy them to the backup directory
+before removing them from the active directory.  Not copying a log file
+to the backup directory and subsequently running recovery with it
+present may leave the backup snapshot of the environment corrupted.  A
+simple way to ensure this never happens is to archive the log files in
+Step 2 as you remove them from the backup directory, and move inactive
+log files from your active environment into your backup directory
+(rather than copying them), in Step 3.  The following steps describe
+this procedure in more detail:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Run m4_ref(db_archive) m4_option(s) in the active environment to
+identify all of the active environment's database files, and copy them
+to the backup directory.])
+m4_nlist([dnl
+Archive all existing log files from the backup directory, moving them
+to a backup device such as CD-ROM, alternate disk, or tape.])
+m4_nlist([dnl
+Run m4_ref(db_archive) (without any option) in the active environment
+to identify all of the log files in the active environment that are no
+longer in use, and m4_bold(move) them to the backup directory.])
+m4_nlist([dnl
+Run m4_ref(db_archive) m4_option(l) in the active environment to
+identify all of the remaining log files in the active environment, and
+m4_bold(copy) the log files to the backup directory.])
+m4_nlist([dnl
+Run m4_ref(db_recover) m4_option(c) in the backup directory to
+catastrophically recover the copied environment.])
+m4_nlistend
+
+m4_p([dnl
+As before, steps 2, 3, 4 and 5 may be repeated as often as you like.
+If Step 1 (the initial copy of the database files) is repeated, then
+Steps 2 through 5 m4_bold(must) be performed at least once in order to
+ensure a consistent database environment snapshot.])
+
+m4_p([dnl
+For an example of a hot backup implementation in the m4_db distribution,
+see the source code for the m4_ref(db_hotbackup) utility.])
+
+m4_page_footer

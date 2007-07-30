@@ -1,6 +1,5 @@
-<!--$Id: repmgr_start.so,v 1.3 2006/07/14 23:08:18 alanb Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: repmgr_start.so,v 1.6 2006/11/30 21:19:38 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -71,11 +70,6 @@ only one site at a time should ever be started with the
 DB_REP_MASTER flag specified.
 <dt><a name="DB_REP_CLIENT">DB_REP_CLIENT</a><dd>Start as a client site, and do not call for an election.
 <dt><a name="DB_REP_ELECTION">DB_REP_ELECTION</a><dd>Start as a client, and call for an election if no master is found.
-<dt><a name="DB_REP_FULL_ELECTION">DB_REP_FULL_ELECTION</a><dd>Start as a client, and call for an election if no master is found.
-<p>The <a href="../api_c/repmgr_start.html#DB_REP_FULL_ELECTION">DB_REP_FULL_ELECTION</a> flag configures a single special
-election on startup, where a master will only be confirmed if all
-members of the replication group vote.  Subsequent elections will revert
-to only requiring a simple majority to elect a new master.</p>
 </dl>
 <dt><b>nthreads</b><dd>Specify the number of threads of control created and dedicated to processing
 replication messages.  In addition to these message processing threads,
@@ -91,6 +85,6 @@ control.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

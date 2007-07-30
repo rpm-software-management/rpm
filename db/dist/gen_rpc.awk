@@ -1,5 +1,5 @@
 #
-# $Id: gen_rpc.awk,v 12.7 2006/05/05 15:29:43 bostic Exp $
+# $Id: gen_rpc.awk,v 12.13 2007/05/23 15:07:29 bostic Exp $
 # Awk script for generating client/server RPC code.
 #
 # This awk script generates most of the RPC routines for DB client/server
@@ -757,7 +757,8 @@ END {
 			    args[i], args[i], xidsize) >> CFILE
 		}
 		if (rpc_type[i] == "INT") {
-			printf("\tmsg.%s = %s;\n", args[i], args[i]) >> CFILE
+			printf("\tmsg.%s = (u_int)%s;\n",
+			    args[i], args[i]) >> CFILE
 		}
 		if (rpc_type[i] == "STRING") {
 			printf("\tif (%s == NULL)\n", args[i]) >> CFILE
@@ -790,8 +791,8 @@ END {
 			# If we are an array of ints, *_len is how many
 			# elements.  If we are a GID, *_len is total bytes.
 			#
-			printf("\tmsg.%s.%s_len = %si",args[i], args[i], \
-			    args[i]) >> CFILE
+			printf("\tmsg.%s.%s_len = (u_int)%si",
+			    args[i], args[i], args[i]) >> CFILE
 			if (list_type[i] == "GID")
 				printf(" * %d;\n", xidsize) >> CFILE
 			else
@@ -858,10 +859,11 @@ END {
 		#
 		for (i = 0; i < rvars; ++i) {
 			if (ret_isarg[i]) {
-				printf("\tif (%sp != NULL)\n", \
+				printf("\tif (%sp != NULL)\n",
 				    retargs[i]) >> CFILE;
-				printf("\t\t*%sp = replyp->%s;\n", \
-				    retargs[i], retargs[i]) >> CFILE;
+				printf("\t\t*%sp = (%s)replyp->%s;\n",
+				    retargs[i],
+				    retc_type[i], retargs[i]) >> CFILE;
 			}
 		}
 	} else {
@@ -984,7 +986,7 @@ function general_headers()
 	printf("#include \"db_config.h\"\n") >> CFILE
 	printf("\n") >> CFILE
 	printf("#include \"db_int.h\"\n") >> CFILE
-	printf("#ifndef NO_SYSTEM_INCLUDES\n") >> CFILE
+	printf("#ifdef HAVE_SYSTEM_INCLUDE_FILES\n") >> CFILE
 	printf("#include <rpc/rpc.h>\n") >> CFILE
 	printf("#endif\n") >> CFILE
 	printf("#include \"db_server.h\"\n") >> CFILE
@@ -1001,7 +1003,7 @@ function general_headers()
 	printf("#include \"db_config.h\"\n") >> SFILE
 	printf("\n") >> SFILE
 	printf("#include \"db_int.h\"\n") >> SFILE
-	printf("#ifndef NO_SYSTEM_INCLUDES\n") >> SFILE
+	printf("#ifdef HAVE_SYSTEM_INCLUDE_FILES\n") >> SFILE
 	printf("#include <rpc/rpc.h>\n") >> SFILE
 	printf("#endif\n") >> SFILE
 	printf("#include \"db_server.h\"\n") >> SFILE
@@ -1012,7 +1014,7 @@ function general_headers()
 	printf("#include \"db_config.h\"\n") >> PFILE
 	printf("\n") >> PFILE
 	printf("#include \"db_int.h\"\n") >> PFILE
-	printf("#ifndef NO_SYSTEM_INCLUDES\n") >> PFILE
+	printf("#ifdef HAVE_SYSTEM_INCLUDE_FILES\n") >> PFILE
 	printf("#include <rpc/rpc.h>\n") >> PFILE
 	printf("#endif\n") >> PFILE
 	printf("#include \"db_server.h\"\n") >> PFILE
@@ -1028,6 +1030,8 @@ function illegal_functions(OUTPUT)
 	printf("static int __dbcl_dbp_illegal __P((DB *));\n") >> OUTPUT
 	printf("static int __dbcl_noserver __P((DB_ENV *));\n") >> OUTPUT
 	printf("static int __dbcl_txn_illegal __P((DB_TXN *));\n") >> OUTPUT
+	# If we ever need an "illegal" function for a DBC method.
+	# printf("static int __dbcl_dbc_illegal __P((DBC *));\n") >> OUTPUT
 	printf("\n") >> OUTPUT
 
 	printf("static int\n") >> OUTPUT
@@ -1071,23 +1075,38 @@ function illegal_functions(OUTPUT)
 	printf("{\n\treturn (__dbcl_dbenv_illegal(txn->mgrp->dbenv));\n")\
 	    >> OUTPUT
 	printf("}\n\n") >> OUTPUT
+	# If we ever need an "illegal" function for a DBC method.
+	# printf("static int\n") >> OUTPUT
+	# printf("__dbcl_dbc_illegal(dbc)\n") >> OUTPUT
+	# printf("\tDBC *dbc;\n") >> OUTPUT
+	# printf("{\n\treturn (__dbcl_dbenv_illegal(dbc->dbp->dbenv));\n") \
+	#    >> OUTPUT
+	# printf("}\n\n") >> OUTPUT
 }
 
 function obj_func(v, l)
 {
-	# Ignore db_create -- there's got to be something cleaner, but I
-	# don't want to rewrite rpc.src right now.
+	# Ignore db_create and env_create -- there's got to be something
+	# cleaner, but I don't want to rewrite rpc.src right now.
 	if (name == "db_create")
 		return;
 	if (name == "env_create")
 		return;
 
-	# Strip off the leading prefix for the method name -- there's got to
-	# be something cleaner, but I don't want to rewrite rpc.src right now.
+	# Strip off the leading prefix for the method name.
+	#
+	# There are two method names for cursors, the old and the new.
+	#
+	# There just has to be something cleaner, but yadda, yadda, yadda.
 	len = length(name);
 	i = index(name, "_");
-	l[obj_indx] = sprintf("\t%s->%s = __dbcl_%s;",
-	    v, substr(name, i + 1, len - i), name);
+	s = substr(name, i + 1, len - i)
+
+	if (v != "dbc" || s == "get_priority" || s == "set_priority")
+		o = ""
+	else
+		o = sprintf(" = %s->c_%s", v, s)
+	l[obj_indx] = sprintf("\t%s->%s%s = __dbcl_%s;", v, s, o, name)
 }
 
 function obj_illegal(l, handle, method, proto)

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2005,2007 Oracle.  All rights reserved.
  *
- * $Id: repmgr_windows.c,v 1.14 2006/09/11 15:15:20 bostic Exp $
+ * $Id: repmgr_windows.c,v 1.22 2007/06/11 18:29:34 alanb Exp $
  */
 
 #include "db_config.h"
@@ -69,7 +68,8 @@ __repmgr_thread_join(thread)
 	return (GetLastError());
 }
 
-int __repmgr_set_nonblocking(s)
+int
+__repmgr_set_nonblocking(s)
 	SOCKET s;
 {
 	int ret;
@@ -129,8 +129,8 @@ __repmgr_await_ack(dbenv, lsnp)
 		goto err;
 
 	/* convert time-out from microseconds to milliseconds, rounding up */
-	timeout = db_rep->ack_timeout > 0 ? ((db_rep->ack_timeout+999) / 1000) :
-	    INFINITE;
+	timeout = db_rep->ack_timeout > 0 ?
+	    ((db_rep->ack_timeout + (US_PER_MS - 1)) / US_PER_MS) : INFINITE;
 	me->lsnp = lsnp;
 	if ((ret = SignalObjectAndWait(db_rep->mutex, me->event, timeout,
 	    FALSE)) == WAIT_FAILED) {
@@ -438,41 +438,21 @@ __repmgr_readv(fd, iovec, buf_count, xfr_count_p)
 	return (0);
 }
 
-/*
- * Calculate the time duration from now til "when", in the form of an integer
- * (suitable for WSAWaitForMultipleEvents()), clipping the result at 0 (i.e.,
- * avoid a negative result).
- */
-void
-__repmgr_timeval_diff_current(dbenv, when, result)
-	DB_ENV *dbenv;
-	repmgr_timeval_t *when;
-	select_timeout_t *result;
-{
-	repmgr_timeval_t now;
-
-	__os_clock(dbenv, &now.tv_sec, &now.tv_usec);
-	if (__repmgr_timeval_cmp(when, &now) <= 0)
-		*result = 0;
-	else
-		*result = (when->tv_sec - now.tv_sec) * MS_PER_SEC +
-		    (when->tv_usec - now.tv_usec) / USEC_PER_MS;
-}
-
 int
 __repmgr_select_loop(dbenv)
 	DB_ENV *dbenv;
 {
+	DWORD select_timeout;
 	DB_REP *db_rep;
 	REPMGR_CONNECTION *conn, *next;
 	REPMGR_RETRY *retry;
-	select_timeout_t timeout;
 	WSAEVENT events[WSA_MAXIMUM_WAIT_EVENTS];
 	REPMGR_CONNECTION *connections[WSA_MAXIMUM_WAIT_EVENTS];
 	DWORD nevents, ret;
-	int flow_control, i;
+	db_timespec timeout;
 	WSAEVENT listen_event;
 	WSANETWORKEVENTS net_events;
+	int flow_control, i;
 
 	db_rep = dbenv->rep_handle;
 
@@ -506,17 +486,8 @@ __repmgr_select_loop(dbenv)
 		 * nevertheless still read if we haven't even yet gotten a
 		 * handshake.   Why?  (1) Handshakes are important; and (2) they
 		 * don't hurt anything flow-control-wise.
-		 *     Loop just like TAILQ_FOREACH, except that we need to be
-		 * able to unlink a list entry.
 		 */
-		for (conn = TAILQ_FIRST(&db_rep->connections);
-		     conn != NULL;
-		     conn = next) {
-			next = TAILQ_NEXT(conn, entries);
-			if (F_ISSET(conn, CONN_DEFUNCT)) {
-				__repmgr_cleanup_connection(dbenv, conn);
-				continue;
-			}
+		TAILQ_FOREACH(conn, &db_rep->connections, entries) {
 			if (F_ISSET(conn, CONN_CONNECTING) ||
 			    !STAILQ_EMPTY(&conn->outbound_queue) ||
 			    (!flow_control || !IS_VALID_EID(conn->eid))) {
@@ -531,23 +502,47 @@ __repmgr_select_loop(dbenv)
 		 * only have to examine the first one.)
 		 */
 		if (TAILQ_EMPTY(&db_rep->retries))
-			timeout = WSA_INFINITE;
+			select_timeout = WSA_INFINITE;
 		else {
 			retry = TAILQ_FIRST(&db_rep->retries);
 
-			__repmgr_timeval_diff_current(
+			__repmgr_timespec_diff_now(
 			    dbenv, &retry->time, &timeout);
+			select_timeout =
+			    (DWORD)(timeout.tv_sec * MS_PER_SEC +
+			    timeout.tv_nsec / NS_PER_MS);
 		}
 
 		UNLOCK_MUTEX(db_rep->mutex);
-		ret = WSAWaitForMultipleEvents(nevents, events, FALSE, timeout,
-		    FALSE);
+		ret = WSAWaitForMultipleEvents(
+		    nevents, events, FALSE, select_timeout, FALSE);
 		if (db_rep->finished) {
 			ret = 0;
 			goto out;
 		}
 		LOCK_MUTEX(db_rep->mutex);
 
+		/*
+		 * The first priority thing we must do is to clean up any
+		 * pending defunct connections.  Otherwise, if they have any
+		 * lingering pending input, we get very confused if we try to
+		 * process it.
+		 *     Loop just like TAILQ_FOREACH, except that we need to be
+		 * able to unlink a list entry.
+		 */
+		for (conn = TAILQ_FIRST(&db_rep->connections);
+		     conn != NULL;
+		     conn = next) {
+			next = TAILQ_NEXT(conn, entries);
+			if (F_ISSET(conn, CONN_DEFUNCT))
+				__repmgr_cleanup_connection(dbenv, conn);
+		}
+
+		/*
+		 * !!!
+		 * Note that `ret' remains set as the return code from
+		 * WSAWaitForMultipleEvents, above.
+		 */
 		if (ret >= WSA_WAIT_EVENT_0 &&
 		    ret < WSA_WAIT_EVENT_0 + nevents) {
 			switch (i = ret - WSA_WAIT_EVENT_0) {
@@ -592,6 +587,11 @@ out:
 	return (ret);
 }
 
+/*
+ * !!!
+ * Only ever called on the select() thread, since we may call
+ * __repmgr_bust_connection(..., TRUE).
+ */
 static int
 handle_completion(dbenv, conn)
 	DB_ENV *dbenv;
@@ -603,6 +603,7 @@ handle_completion(dbenv, conn)
 	if ((ret = WSAEnumNetworkEvents(conn->fd, conn->event_object, &events))
 	    == SOCKET_ERROR) {
 		__db_err(dbenv, net_errno, "EnumNetworkEvents");
+		STAT(dbenv->rep_handle->region->mstat.st_connection_drop++);
 		ret = DB_REP_UNAVAIL;
 		goto err;
 	}
@@ -615,6 +616,8 @@ handle_completion(dbenv, conn)
 			__db_err(dbenv,
 			    events.iErrorCode[FD_CLOSE_BIT],
 			    "connection closed");
+			STAT(dbenv->rep_handle->
+			    region->mstat.st_connection_drop++);
 			ret = DB_REP_UNAVAIL;
 			goto err;
 		}
@@ -624,6 +627,8 @@ handle_completion(dbenv, conn)
 				__db_err(dbenv,
 				    events.iErrorCode[FD_WRITE_BIT],
 				    "error writing");
+				STAT(dbenv->rep_handle->
+				    region->mstat.st_connection_drop++);
 				ret = DB_REP_UNAVAIL;
 				goto err;
 			} else if ((ret =
@@ -636,6 +641,8 @@ handle_completion(dbenv, conn)
 				__db_err(dbenv,
 				    events.iErrorCode[FD_READ_BIT],
 				    "error reading");
+				STAT(dbenv->rep_handle->
+				    region->mstat.st_connection_drop++);
 				ret = DB_REP_UNAVAIL;
 				goto err;
 			} else if ((ret =
@@ -663,10 +670,8 @@ finish_connecting(dbenv, conn, events)
 	int ret/*, t_ret*/;
 /*	DWORD_PTR values[1]; */
 
-	if (!(events->lNetworkEvents & FD_CONNECT)) {
-		/* TODO: Is this even possible? */
+	if (!(events->lNetworkEvents & FD_CONNECT))
 		return (0);
-	}
 
 	F_CLR(conn, CONN_CONNECTING);
 
@@ -697,8 +702,10 @@ err:
 	eid = conn->eid;
 	DB_ASSERT(dbenv, IS_VALID_EID(eid));
 
-	if (ADDR_LIST_NEXT(&SITE_FROM_EID(eid)->net_addr) == NULL)
+	if (ADDR_LIST_NEXT(&SITE_FROM_EID(eid)->net_addr) == NULL) {
+		STAT(db_rep->region->mstat.st_connect_fail++);
 		return (DB_REP_UNAVAIL);
+	}
 
 	DB_ASSERT(dbenv, !TAILQ_EMPTY(&db_rep->connections));
 	__repmgr_cleanup_connection(dbenv, conn);

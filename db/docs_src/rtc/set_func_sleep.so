@@ -1,0 +1,38 @@
+m4_comment([$Id: set_func_sleep.so,v 10.21 2007/05/07 18:03:09 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_sleep)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_sleep),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_sleep(int (*func_sleep)(u_long seconds, u_long microseconds));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to cause a thread of control to
+suspend itself for a period of time, relinquishing control of the
+processor to any other waiting thread of control.])
+
+m4_scope_process(dbenv_set_func_sleep)
+
+m4_when_init(dbenv_set_func_sleep)
+
+m4_return(dbenv_set_func_sleep, std)
+
+m4_parambegin
+m4_param(func_sleep, [dnl
+The m4_arg(func_sleep) parameter is the function which suspends execution
+of a thread of control.
+m4_p([dnl
+The m4_arg(seconds) and m4_arg(microseconds) parameters specify the amount
+of time to wait until the suspending thread of control should run again.])
+m4_p([dnl
+The m4_arg(seconds) and m4_arg(microseconds) parameters may not be
+normalized when the m4_arg(sleep) function is called; that is, the
+m4_arg(microseconds) parameter may be greater than 1000000.])
+m4_ret_internal(func_sleep)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

@@ -1,0 +1,37 @@
+m4_comment([$Id: db_fd.so,v 10.31 2005/06/14 14:06:57 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_fd)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_fd),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__fd(DB *db, int *fdp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::fd(int *fdp);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_fd) provides access to a file descriptor representative
+of the underlying database.  A file descriptor referring to the same
+file will be returned to all processes that call m4_ref(dbh_open) with
+the same m4_arg(file) parameter.])
+
+m4_p([dnl
+This file descriptor may be safely used as a parameter to the
+m4_manref(fcntl, 2) and m4_manref(flock, 2) locking functions.])
+
+m4_p([dnl
+The m4_refT(dbh_fd) only supports a coarse-grained form of locking.
+Applications should instead use the m4_db lock manager where possible.])
+
+m4_return(dbh_fd, std)
+
+m4_parambegin
+m4_param_co(fdp, current file descriptor)
+m4_paramend
+
+m4_seealso(Db)
+m4_page_footer

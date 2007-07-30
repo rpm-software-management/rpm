@@ -1,0 +1,61 @@
+m4_comment([$Id: txn_class.so,v 10.25 2005/05/17 15:25:50 bostic Exp $])
+
+define(M4PAGELOCAL, DbTxn)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbTxn),
+ifelse(M4API, C_API, [dnl
+typedef struct __db_txn DB_TXN;
+])
+ifelse(M4API, CXX_API, [dnl
+class DbTxn {
+public:
+	DB_TXN *DbTxn::get_DB_TXN();
+	const DB_TXN *DbTxn::get_const_DB_TXN() const;
+	static DbTxn *DbTxn::get_DbTxn(DB_TXN *txn);
+	static const DbTxn *DbTxn::get_const_DbTxn(const DB_TXN *txn);
+	...
+};
+]))
+
+m4_p([dnl
+The m4_ref(DbTxn) object is the handle for a transaction.  Methods of
+the m4_ref(DbTxn) handle are used to configure, abort and commit the
+transaction.  m4_ref(DbTxn) handles are provided to m4_ref(Db) methods
+in order to transactionally protect those database operations.])
+
+m4_p([dnl
+m4_ref(DbTxn) handles are not free-threaded; transactions handles may
+be used by multiple threads, but only serially, that is, the application
+must serialize access to the m4_ref(DbTxn) handle.  Once the
+m4_ref(txn_abort) or m4_refT(txn_commit)s are called, the handle may
+not be accessed again, regardless of the method's return. In addition,
+parent transactions may not issue any m4_db operations while they have
+active child transactions (child transactions that have not yet been
+committed or aborted) except for m4_ref(txn_begin), m4_ref(txn_abort)
+and m4_ref(txn_commit).])
+
+ifelse(M4API, CXX_API, [dnl
+m4_p([dnl
+Each m4_ref(DbTxn) object has an associated m4_refc(DbTxn) struct, which
+is used by the underlying implementation of m4_db and its C-language
+API.  The DbTxn::get_DB_TXN method returns a pointer to this struct.
+Given a const m4_ref(DbTxn) object, DbTxn::get_const_DB_TXN returns a
+const pointer to the same struct.])
+
+m4_p([dnl
+Given a m4_refc(DbTxn) struct, the Db::get_DbTxn method returns the
+corresponding m4_ref(DbTxn) object, if there is one.  If the
+m4_refc(DbTxn) object was not associated with a m4_ref(DbTxn) (that is,
+it was not returned from a call to DbTxn::get_DB_TXN), then the result
+of DbTxn::get_DbTxn is undefined.  Given a const m4_refc(DbTxn) struct,
+DbTxn::get_const_DbTxn returns the associated const m4_ref(DbTxn)
+object, if there is one.])
+
+m4_p([dnl
+These methods may be useful for m4_db applications including  both C
+and C++ language software.  It should not be necessary to use these
+calls in a purely C++ application.])])
+
+m4_seealso(DbTxn)
+m4_page_footer

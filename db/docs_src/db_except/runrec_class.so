@@ -1,0 +1,27 @@
+m4_comment([$Id: runrec_class.so,v 10.19 2004/08/13 03:38:56 bostic Exp $])
+
+define(M4PAGELOCAL, DbRunRecoveryException)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbRunRecoveryException),
+ifelse(M4API, C_API, [dnl
+])
+ifelse(M4API, CXX_API, [dnl
+class DbRunRecoveryException : public DbException { ... };
+]))
+
+m4_p([dnl
+This information describes the m4_ref(DbRunRecoveryException) class and
+how it is used by the various m4_db classes.])
+
+m4_p([dnl
+Errors can occur in the m4_db library where the only solution is to shut
+down the application and run recovery (for example, if m4_db is unable
+to allocate heap memory).  When a fatal error occurs in m4_db, methods
+will throw a m4_ref(DbRunRecoveryException), at which point all
+subsequent m4_db calls will also fail in the same way.  When this
+occurs, recovery should be performed.])
+m4_p([dnl
+The m4_ref(DbException) errno value is set to DB_RUNRECOVERY.])
+
+m4_page_footer

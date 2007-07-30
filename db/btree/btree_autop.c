@@ -393,7 +393,7 @@ __bam_rcuradj_print(dbenv, dbtp, lsnp, notused2, notused3)
 	(void)printf("\tmode: %ld\n", (long)argp->mode);
 	(void)printf("\troot: %ld\n", (long)argp->root);
 	(void)printf("\trecno: %ld\n", (long)argp->recno);
-	(void)printf("\torder: %ld\n", (long)argp->order);
+	(void)printf("\torder: %lu\n", (u_long)argp->order);
 	(void)printf("\n");
 	__os_free(dbenv, argp);
 	return (0);

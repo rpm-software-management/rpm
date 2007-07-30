@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: db_cds.c,v 12.5 2006/09/07 05:46:15 mjc Exp $
+ * $Id: db_cds.c,v 12.10 2007/07/17 07:29:04 mjc Exp $
  */
 
 #include "db_config.h"
@@ -50,7 +49,7 @@ static int __cdsgroup_commit(txn, flags)
 {
 	DB_ENV *dbenv;
 	DB_LOCKREQ lreq;
-	u_int32_t locker;
+	DB_LOCKER *locker;
 	int ret, t_ret;
 
 	COMPQUIET(flags, 0);
@@ -65,10 +64,10 @@ static int __cdsgroup_commit(txn, flags)
 	/* We may be holding handle locks; release them. */
 	lreq.op = DB_LOCK_PUT_ALL;
 	lreq.obj = NULL;
-	ret = __lock_vec(dbenv, txn->txnid, 0, &lreq, 1, NULL);
+	ret = __lock_vec(dbenv, txn->locker, 0, &lreq, 1, NULL);
 
 	dbenv = txn->mgrp->dbenv;
-	locker = txn->txnid;
+	locker = txn->locker;
 	__os_free(dbenv, txn->mgrp);
 	__os_free(dbenv, txn);
 	if ((t_ret = __lock_id_free(dbenv, locker)) != 0 && ret == 0)
@@ -122,7 +121,8 @@ static int __cdsgroup_set_timeout(txn, timeout, flags)
  *
  * PUBLIC: int __cdsgroup_begin __P((DB_ENV *, DB_TXN **));
  */
-int __cdsgroup_begin(dbenv, txnpp)
+int
+__cdsgroup_begin(dbenv, txnpp)
 	DB_ENV *dbenv;
 	DB_TXN **txnpp;
 {
@@ -147,7 +147,7 @@ int __cdsgroup_begin(dbenv, txnpp)
 		goto err;
 	txn->mgrp->dbenv = dbenv;
 
-	if ((ret = __lock_id(dbenv, &txn->txnid, NULL)) != 0)
+	if ((ret = __lock_id(dbenv, &txn->txnid, &txn->locker)) != 0)
 		goto err;
 
 	txn->flags = TXN_CDSGROUP;

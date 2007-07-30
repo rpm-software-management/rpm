@@ -1,0 +1,58 @@
+m4_comment([$Id: mempfile_class.so,v 10.24 2004/08/13 03:38:58 bostic Exp $])
+
+define(M4PAGELOCAL, DbMpoolFile)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbMpoolFile),
+ifelse(M4API, C_API, [dnl
+typedef struct __db_mpoolfile DB_MPOOLFILE;
+])
+ifelse(M4API, CXX_API, [dnl
+class DbMpoolFile {
+public:
+	DB_MPOOLFILE *DbMpoolFile::get_DB_MPOOLFILE();
+	const DB_MPOOLFILE *DbMpoolFile::get_const_DB_MPOOLFILE() const;
+	...
+};
+]))
+
+m4_p([dnl
+The memory pool interfaces for the m4_db database environment are
+methods of the m4_ref(DbEnv) handle.  The m4_ref(DbEnv) memory pool
+methods and the m4_ref(DbMpoolFile) class provide general-purpose,
+page-oriented buffer management of files.  Although designed to work
+with the other m4_ref(Db) classes, they are also useful for more general
+purposes.  The memory pools are referred to in this document as simply
+m4_italic(pools).])
+
+m4_p([dnl
+Pools may be shared between processes.  Pools are usually filled by
+pages from one or more files.  Pages in the pool are replaced in LRU
+(least-recently-used) order, with each new page replacing the page that
+has been unused the longest.  Pages retrieved from the pool using
+m4_ref(memp_fget) are m4_italic(pinned) in the pool until they are
+returned to the control of the buffer pool using the m4_ref(memp_fput)
+method.])
+
+m4_p([dnl
+The m4_ref(DbMpoolFile) object is the handle for a file in the memory
+pool.  The handle is not free-threaded.  Once the m4_refT(memp_fclose)
+is called, the handle may not be accessed again, regardless of that
+method's return.])
+
+ifelse(M4API, CXX_API, [dnl
+m4_p([dnl
+Each m4_ref(DbMpoolFile) object has an associated m4_refc(DbMpoolFile)
+structure, which is used by the underlying implementation of m4_db and
+its C-language API.  The DbMpoolFile::get_DB_MPOOLFILE method returns a
+pointer to this struct.  Given a const m4_ref(DbMpoolFile) object,
+DbMpoolFile::get_const_DB_MPOOLFILE returns a const pointer to the same
+struct.])
+
+m4_p([dnl
+These methods may be useful for m4_db applications including both C
+and C++ language software.  It should not be necessary to use these
+calls in a purely C++ application.])])
+
+m4_seealso(DbMpool)
+m4_page_footer

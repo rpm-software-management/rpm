@@ -1,0 +1,15 @@
+m4_comment([$Id: license_db.so,v 10.18 2006/10/05 20:52:51 bostic Exp $])
+
+m4_page_title([m4_db Product License])
+
+m4_p([dnl
+The license that applies to this copy of the m4_db software may be found
+in the "LICENSE" file included in each m4_db distribution.])
+
+m4_p([dnl
+For a license to use the m4_db software under conditions other than
+those described in the "LICENSE" file, or to purchase support for this
+software, please send email to
+m4_mailto(berkeleydb-info_us@oracle.com, berkeleydb-info_us@oracle.com).])
+
+m4_page_footer

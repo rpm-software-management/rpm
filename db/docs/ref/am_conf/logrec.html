@@ -1,6 +1,5 @@
 <!--$Id: logrec.so,v 10.31 2004/08/05 14:16:56 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -20,7 +19,7 @@
 record numbers.  Record numbers are 1-based, not 0-based, that is, the
 first record in a database is record number 1.</p>
 <p>In all cases for the Queue and Recno access methods, and when calling
-the Btree access method using the <a href="../../api_c/db_get.html">DB-&gt;get</a> and <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods
+the Btree access method using the <a href="../../api_c/db_get.html">DB-&gt;get</a> and <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> methods
 with the <a href="../../api_c/db_get.html#DB_SET_RECNO">DB_SET_RECNO</a> flag specified, the <b>data</b> field of
 the key <a href="../../api_c/dbt_class.html">DBT</a> must be a pointer to a memory location of type
 <b>db_recno_t</b>, as typedef'd in the standard Berkeley DB include file.
@@ -119,6 +118,6 @@ recno_build(dbp)
 }</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_conf/select.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_conf/pagesize.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

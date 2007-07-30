@@ -1,0 +1,27 @@
+m4_comment([$Id: deprecate.so,v 1.3 2006/01/27 16:13:51 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: deprecated interfaces,,
+    upgrade.4.5/intro, upgrade.4.5/alive)
+
+m4_p([dnl
+Some previously deprecated interfaces were removed from the m4_db 4.5
+release:])
+
+m4_bulletbegin
+m4_bullet([dnl
+The DB_ENV-__GT__set_lk_max method was removed.  This method has been
+deprecated and undocumented since the m4_db 4.0 release.])
+
+m4_bullet([dnl
+The DB-__GT__stat method flags DB_CACHED_COUNT and DB_RECORDCOUNT were
+removed.  These flags have been deprecated and undocumented since the
+m4_db 4.1 release.])
+
+m4_bullet([dnl
+The m4_option(w) option to the m4_ref(db_deadlock) utility was removed.
+This option has been deprecated and undocumented since the m4_db 4.0
+release.])
+m4_bulletend
+
+m4_page_footer

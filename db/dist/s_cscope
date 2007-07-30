@@ -1,0 +1,17 @@
+#!/bin/sh -
+#	$Id: s_cscope,v 12.2 2007/04/20 18:32:27 bostic Exp $
+#
+# Build cscope files.
+
+(
+echo ../dbinc/*.in ../dbinc/*.h ../dbinc_auto/*.h;
+cat srcfiles.in |
+sed -e '/^#/d' \
+    -e '/^$/d' \
+    -e 's/^/..\//' \
+    -e '/\/db_server_clnt.c/d' \
+    -e '/\/db_server_svc.c/d' \
+    -e '/\/db_server_xdr.c/d' \
+    -e '/\/csv_local.c/d' \
+    -e '/\/gen_db_server.c/d' |
+awk '{print $1}') | cscope -bkUu  -i-

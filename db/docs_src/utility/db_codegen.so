@@ -1,0 +1,279 @@
+m4_comment([$Id: db_codegen.so,v 10.6 2007/05/17 18:29:34 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_codegen)
+
+m4_util_header(db_codegen, [db_codegen m4_utilarg(Vv) m4_utilarg([a c]) m4_utilarg([i file]) m4_utilarg([o file])])
+m4_idefz(code generation utility)
+
+m4_p([dnl
+The m4_ref(db_codegen) utility generates application code to create and
+configure m4_db database environments and databases based on a simple
+description language, and writes it to one or more output files.  The
+generated code may need modification, in the case of complicated
+applications, but will usually significantly reduce the time required
+to create m4_db applications.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+m4_tagopt(a, [dnl
+Generate code for the specified API (currently, only "c" is accepted).])
+
+m4_tagopt(i, [dnl
+Specify an input file; by default, stdin is used.])
+
+m4_tagopt(o, [dnl
+Specify an output file prefix; by default, "application" is used.])
+
+m4_Vflag
+
+m4_tagopt(v, [dnl
+Run in verbose mode.])
+m4_tagend
+
+m4_utilexit(db_codegen)
+
+m4_section(C Language Specific Information)
+m4_p([dnl
+By default, when the m4_ref(db_codegen) utility generates C-language
+code, the output file is named "application.c".  The output filename
+can be specified with m4_option(o) option.])
+
+m4_p([dnl
+At the beginning of the output file is a list of public database
+environment (m4_ref(DbEnv)) handles and database (m4_ref(Db)) handles,
+as specified by the description language.  The database environment
+handle variables are named "XXX_dbenv", where "XXX" is the name of the
+environment in the input specification.  For databases associated with
+a database environment, the database handle variables are named
+"XXX_YYY", where "XXX" is the name of the environment, and "YYY" is the
+name of the database.  For standalone databases, the database handle
+variables are named "XXX", where "XXX" is the name of the database.])
+
+m4_p([dnl
+There are two public functions in the output file: bdb_startup and
+bdb_shutdown.  The bdb_startup function should be called to create and
+configure the database environments and databases, and the bdb_shutdown
+function should be called to gracefully shut down the environments and
+databases.])
+
+m4_section(Specification Language)
+
+m4_p([dnl
+The m4_ref(db_codegen) uses a simple description language:])
+
+m4_bulletbegin
+m4_bullet([Lines in the input consist of white-space separated tokens.])
+m4_bullet([Tokens are case-insensitive.])
+m4_bullet([Empty lines, and lines where the first non-space character
+is hash mark ("#"). are ignored.  In addition, hash marks may appear
+in lines, in which case the content of the line from the hash mark to
+the end of the line is ignored.])
+m4_bulletend
+
+m4_p([dnl
+There are two top-level objects: "environment" and "database", which
+correspond to database environments and databases, respectively.  These
+top-level objects can be associated with keywords to describe their
+configuration and relationships.])
+
+m4_p([dnl
+For example, the following input would create two standalone databases:])
+
+m4_indent([dnl
+database data_one {
+    type btree
+}
+database data_two {
+    type btree
+}])
+
+m4_p([dnl
+In this case, there would be no m4_ref(DbEnv) handle, and the public
+m4_ref(Db) handles would be:])
+
+m4_indent([dnl
+DB      *data_one;
+DB      *data_two;])
+
+m4_p([dnl
+For example, the following input would create a database environment
+which contains three databases:])
+
+m4_indent([dnl
+environment myenv {
+    database data_one {
+	type btree
+    }
+    database data_two {
+    	type btree
+    }
+    database data_three {
+    	type btree
+    }
+}])
+
+m4_p([dnl
+In this case, the public m4_ref(DbEnv) and m4_ref(Db) handles would be:])
+
+m4_indent([dnl
+DB_ENV  *myenv_dbenv;
+DB      *myenv_data_one;
+DB      *myenv_data_two;
+DB      *myenv_data_three;])
+
+m4_p([dnl
+A variety of keywords can be specified for the databases and the
+environments.  For example, the cache size can be specified for
+the database environment, and the page size can be specified for
+the database, as well as secondary relationships:])
+
+m4_indent([dnl
+environment myenv {
+    cachesize 2 0 10
+    database data_one {
+    	type btree
+    	pagesize 1024
+    }
+    database data_two {
+	primary data_one
+	secondary_offset 10 15
+    	type btree
+    	pagesize 32768
+    }
+    database data_three {
+    	type btree
+    	pagesize 512
+    }
+}])
+
+m4_section(Environment Keywords)
+
+m4_tagbegin
+
+m4_tag(environment, [dnl
+Start a database environment block.
+m4_p([dnl
+There must be three tokens on the line: the keyword, the name of the
+environment and an opening brace ("{").])])
+
+m4_tag(home, [dnl
+Specify the database environment home directory.
+m4_p([dnl
+There must be two tokens on the line: the keyword, and the home
+directory.])])
+
+m4_tag(cachesize, [dnl
+Specify the database environment cache size.
+m4_p([dnl
+There must be two tokens on the line: the keyword, the gigabytes of
+cache, the bytes of cache, and the number of caches (the number of
+underlying physical areas into which the cache is logically
+divided).])])
+
+m4_tag(private, [dnl
+Specify the database environment is private.
+m4_p([dnl
+There must be one token on the line: the keyword by itself.])])
+
+m4_tag(}, [dnl
+End the database environment block.
+m4_p([dnl
+There must be one token on the line: the keyword by itself.])])
+
+m4_tagend
+
+m4_section(Database Keywords)
+
+m4_tagbegin
+
+m4_tag(database, [dnl
+Start a database block.
+m4_p([dnl
+There must be three tokens on the line: the keyword, the name of the
+database and an opening brace ("{").])])
+
+m4_tag(custom, [dnl
+Specify a custom key-comparison routine.  This is used when the Btree
+database requires a specific sort that m4_ref(db_codegen) cannot
+generate.  A stub key comparison routine will be created and configured
+for the database which should be modified as necessary.  See the
+"key_type" keyword for more information.
+m4_p([dnl
+There must be one token on the line: the keyword by itself.])])
+
+m4_tag(dupsort, [dnl
+Configure the database to support sorted duplicates.
+m4_p([dnl
+There must be one token on the line: the keyword by itself.])])
+
+m4_tag(extentsize, [dnl
+Configure the size of the Queue database extent files.
+m4_p([dnl
+There must be two tokens on the line: the keyword, and the extent file size,
+as a number of pages.])])
+
+m4_tag(key_type, [dnl
+Configure a integral type key-comparison routine.  This is used when the
+Btree database Btree database key is an integral type (such as "unsigned
+int", or "u_int32_t").  Any C-language integral type may be specified.
+See the "custom" keyword for more information.  A Btree comparison routine
+based on the type of the key will be created and configured.
+m4_p([dnl
+There must be two tokens on the line: the keyword, and the type.])])
+
+m4_tag(pagesize, [dnl
+Configure the database page size.
+m4_p([dnl
+There must be two tokens on the line: the keyword, and the page size
+in bytes.])])
+
+m4_tag(primary, [dnl
+Configure the database as a secondary index.  A stub secondary callback
+routine will be created and configured for the database, which should
+be modified as necessary.  See the "secondary_offset" keyword for more
+information.
+m4_p([dnl There must be two tokens on the line: the keyword, and the
+name of the primary database for which this database is a secondary.])])
+
+m4_tag(recnum, [dnl
+Configure the Btree database to support record number access.
+m4_p([dnl
+There must be one token on the line: the keyword by itself.])])
+
+m4_tag(re_len, [dnl
+Configure the record length for a Queue database or a fixed-length Recno
+database.
+m4_p([dnl
+There must be two tokens on the line: the keyword, and the length of
+a record, in bytes.])])
+
+m4_tag(secondary_offset, [dnl
+Configure a secondary callback routine based on a byte string found in
+the primary database's data item.
+m4_p([dnl
+There must be three tokens on the line: the keyword, the byte offset
+from the beginning of the primary data item where the secondary key
+occurs, and the length of the secondary key in bytes.])])
+
+m4_tag(transaction, [dnl
+Configure the database (and, by extension, the database environment),
+to be transactional.
+m4_p([dnl
+There must be one token on the line: the keyword by itself.])])
+
+m4_tag(type, [dnl
+Configure the database type.
+m4_p([dnl
+There must be two tokens on the line: the keyword, and the type, where
+the type is one of "btree", "hash", "queue" or "recno".])])
+
+m4_tag(}, [dnl
+End the database environment block.
+m4_p([dnl
+There must be one token on the line: the keyword by itself.])])
+
+m4_tagend
+
+m4_page_footer

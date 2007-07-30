@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mp_bh.c,v 12.31 2006/09/07 19:11:46 bostic Exp $
+ * $Id: mp_bh.c,v 12.38 2007/05/17 15:15:45 bostic Exp $
  */
 
 #include "db_config.h"
@@ -256,9 +255,13 @@ __memp_pgread(dbmfp, hp, bhp, can_create)
 		if (len < pagesize)
 			memset(bhp->buf + len, CLEAR_BYTE, pagesize - len);
 #endif
+#ifdef HAVE_STATISTICS
 		++mfp->stat.st_page_create;
 	} else
 		++mfp->stat.st_page_in;
+#else
+	}
+#endif
 
 	/* Call any pgin function. */
 	ret = mfp->ftype == 0 ? 0 : __memp_pg(dbmfp, bhp, 1);
@@ -304,18 +307,16 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 	mfp = dbmfp == NULL ? NULL : dbmfp->mfp;
 	callpgin = ret = 0;
 
-	/*
-	 * We should never be called with a clean or trash buffer.
-	 * The sync code does call us with already locked buffers.
-	 */
+	/* We should never be called with a clean or trash buffer. */
 	DB_ASSERT(dbenv, F_ISSET(bhp, BH_DIRTY));
 	DB_ASSERT(dbenv, !F_ISSET(bhp, BH_TRASH));
 
-	/* If not already done, lock the buffer and unlock the hash bucket. */
-	if (!F_ISSET(bhp, BH_LOCKED)) {
-		F_SET(bhp, BH_LOCKED);
-		MUTEX_UNLOCK(dbenv, hp->mtx_hash);
-	}
+	/*
+	 * The sync code has already locked the buffer, but the allocation
+	 * code has not.  Lock the buffer and release the hash bucket mutex.
+	 */
+	F_SET(bhp, BH_LOCKED);
+	MUTEX_UNLOCK(dbenv, hp->mtx_hash);
 
 	/*
 	 * It's possible that the underlying file doesn't exist, either
@@ -333,7 +334,7 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 	 * If the page is in a file for which we have LSN information, we have
 	 * to ensure the appropriate log records are on disk.
 	 */
-	if (LOGGING_ON(dbenv) && mfp->lsn_off != -1 &&
+	if (LOGGING_ON(dbenv) && mfp->lsn_off != DB_LSN_OFF_NOTSET &&
 	    !IS_CLIENT_PGRECOVER(dbenv)) {
 		memcpy(&lsn, bhp->buf + mfp->lsn_off, sizeof(DB_LSN));
 		if (!IS_NOT_LOGGED_LSN(lsn) &&
@@ -402,7 +403,7 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 		    __memp_fn(dbmfp), (u_long)bhp->pgno);
 		goto err;
 	}
-	++mfp->stat.st_page_out;
+	STAT(++mfp->stat.st_page_out);
 	if (bhp->pgno > mfp->last_flushed_pgno) {
 		MUTEX_LOCK(dbenv, mfp->mutex);
 		if (bhp->pgno > mfp->last_flushed_pgno)
@@ -517,20 +518,20 @@ err:	__db_errx(dbenv, "%s: %s failed for page %lu",
  *	Free a bucket header and its referenced data.
  *
  * PUBLIC: int __memp_bhfree
- * PUBLIC:     __P((DB_MPOOL *, DB_MPOOL_HASH *, BH *, u_int32_t));
+ * PUBLIC:     __P((DB_MPOOL *, REGINFO *, DB_MPOOL_HASH *, BH *, u_int32_t));
  */
 int
-__memp_bhfree(dbmp, hp, bhp, flags)
+__memp_bhfree(dbmp, infop, hp, bhp, flags)
 	DB_MPOOL *dbmp;
+	REGINFO *infop;
 	DB_MPOOL_HASH *hp;
 	BH *bhp;
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
-	MPOOL *c_mp, *mp;
+	MPOOL *c_mp;
 	MPOOLFILE *mfp;
 	BH *next_bhp, *prev_bhp;
-	u_int32_t n_cache;
 	int reorder, ret, t_ret;
 #ifdef DIAG_MVCC
 	size_t pagesize;
@@ -542,8 +543,6 @@ __memp_bhfree(dbmp, hp, bhp, flags)
 	 * Assumes the hash bucket is locked and the MPOOL is not.
 	 */
 	dbenv = dbmp->dbenv;
-	mp = dbmp->reginfo[0].primary;
-	n_cache = NCACHE(mp, bhp->mf_offset, bhp->pgno);
 	mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
 #ifdef DIAG_MVCC
 	pagesize = mfp->stat.st_pagesize;
@@ -623,13 +622,13 @@ __memp_bhfree(dbmp, hp, bhp, flags)
 	 * real.
 	 */
 	if (LF_ISSET(BH_FREE_FREEMEM)) {
-		MPOOL_REGION_LOCK(dbenv, &dbmp->reginfo[n_cache]);
+		MPOOL_REGION_LOCK(dbenv, infop);
 
-		__memp_free(&dbmp->reginfo[n_cache], mfp, bhp);
-		c_mp = dbmp->reginfo[n_cache].primary;
+		__memp_free(infop, mfp, bhp);
+		c_mp = infop->primary;
 		c_mp->stat.st_pages--;
 
-		MPOOL_REGION_UNLOCK(dbenv, &dbmp->reginfo[n_cache]);
+		MPOOL_REGION_UNLOCK(dbenv, infop);
 	}
 
 	/*

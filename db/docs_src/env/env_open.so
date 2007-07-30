@@ -1,0 +1,271 @@
+m4_comment([$Id: env_open.so,v 10.111 2006/08/02 17:39:47 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbenv_open, dbenv_get_home, dbenv_get_open_flags, DB_CREATE,
+	DB_INIT_CDB, DB_INIT_LOCK, DB_INIT_LOG, DB_INIT_MPOOL,
+	DB_INIT_REP, DB_INIT_TXN, DB_LOCKDOWN, DB_PRIVATE, DB_RECOVER,
+	DB_RECOVER_FATAL, DB_REGISTER, DB_SYSTEM_MEM, DB_THREAD,
+	DB_VERSION_MISMATCH])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_open),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__open(DB_ENV *dbenv, char *db_home, u_int32_t flags, int mode);
+m4_blank
+int
+DB_ENV-__GT__get_home(DB_ENV *dbenv, const char **homep);
+m4_blank
+int
+DB_ENV-__GT__get_open_flags(DB_ENV *dbenv, u_int32_t *flagsp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::open(const char *db_home, u_int32_t flags, int mode);
+m4_blank
+int
+DbEnv::get_home(const char **homep);
+m4_blank
+int
+DbEnv::get_open_flags(u_int32_t *flagsp);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_open) opens a m4_db environment.  It provides a
+structure for creating a consistent environment for processes using one
+or more of the features of m4_db.])
+
+m4_return(dbenv_open, std,
+[If m4_ref(dbenv_open) fails, the m4_refT(dbenv_close) must be called
+to discard the m4_ref(DbEnv) handle.])
+
+m4_parambegin
+m4_param_utf8(db_home, [dnl
+The m4_arg(db_home) parameter is the database environment's home
+directory.  For more information on m4_arg(db_home), and filename
+resolution in general, see m4_link(M4RELDIR/ref/env/naming, [m4_db File
+Naming]).  The environment variable m4_envvar(DB_HOME) may be used as
+the path of the database home, as described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_param(flags, [dnl
+The m4_arg(flags) parameter specifies the subsystems that are initialized
+and how the application's environment affects m4_db file naming, among
+other things.
+
+m4_sf_or_may
+
+m4_p([dnl
+Because there are a large number of flags that can be specified, they
+have been grouped together by functionality.  The first group of flags
+indicates which of the m4_db subsystems should be initialized.])
+
+m4_p([dnl
+The choice of subsystems initialized for a m4_db database environment
+is specified by the thread of control initially creating the
+environment.  Any subsequent thread of control joining the environment
+will automatically be configured to use the same subsystems as were
+created in the environment (unless the thread of control requests a
+subsystem not available in the environment, which will fail).
+Applications joining an environment, able to adapt to whatever
+subsystems have been configured in the environment, should open the
+environment without specifying any subsystem flags.  Applications
+joining an environment, requiring specific subsystems from their
+environments, should open the environment specifying those specific
+subsystem flags.])
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_INIT_CDB), [dnl
+Initialize locking for the m4_link(M4RELDIR/ref/cam/intro, m4_cam)
+product.  In this mode, m4_db provides multiple reader/single writer
+access.  The only other subsystem that should be specified with the
+m4_ref(DB_INIT_CDB) flag is m4_ref(DB_INIT_MPOOL).])
+
+m4_tag(m4_idef(DB_INIT_LOCK), [dnl
+Initialize the locking subsystem.  This subsystem should be used when
+multiple processes or threads are going to be reading and writing a
+m4_db database, so that they do not interfere with each other.  If all
+threads are accessing the database(s) read-only, locking is unnecessary.
+When the m4_ref(DB_INIT_LOCK) flag is specified, it is usually necessary
+to run a deadlock detector, as well.  See m4_ref(db_deadlock) and
+m4_ref(lock_detect) for more information.])
+
+m4_tag(m4_idef(DB_INIT_LOG), [dnl
+Initialize the logging subsystem.  This subsystem should be used when
+recovery from application or system failure is necessary.  If the log
+region is being created and log files are already present, the log files
+are reviewed; subsequent log writes are appended to the end of the log,
+rather than overwriting current log entries.])
+
+m4_tag(m4_idef(DB_INIT_MPOOL), [dnl
+Initialize the shared memory buffer pool subsystem.  This subsystem
+should be used whenever an application is using any m4_db access
+method.])
+
+m4_tag(m4_idef(DB_INIT_REP), [dnl
+Initialize the replication subsystem.  This subsystem
+should be used whenever an application plans on using replication.
+The m4_ref(DB_INIT_REP) flag requires the m4_ref(DB_INIT_TXN) and
+m4_ref(DB_INIT_LOCK) flags also be configured.])
+
+m4_tag(m4_idef(DB_INIT_TXN), [dnl
+Initialize the transaction subsystem.  This subsystem should be used
+when recovery and atomicity of multiple operations are important.  The
+m4_ref(DB_INIT_TXN) flag implies the m4_ref(DB_INIT_LOG) flag.])
+
+m4_tagend
+
+m4_p([dnl
+The second group of flags govern what recovery, if any, is performed when
+the environment is initialized:])
+
+m4_tagbegin
+m4_tag(m4_idef(DB_RECOVER), [dnl
+Run normal recovery on this environment before opening it for normal
+use.  If this flag is set, the m4_ref(DB_CREATE) and m4_ref(DB_INIT_TXN)
+flags must also be set, because the regions will be removed and
+re-created, and transactions are required for application recovery.])
+
+m4_tag(m4_idef(DB_RECOVER_FATAL), [dnl
+Run catastrophic recovery on this environment before opening it for
+normal use.  If this flag is set, the m4_ref(DB_CREATE) and
+m4_ref(DB_INIT_TXN) flags must also be set, because the regions will be
+removed and re-created, and transactions are required for application
+recovery.])
+
+
+m4_tagend
+
+m4_p([dnl
+A standard part of the recovery process is to remove the existing m4_db
+environment and create a new one in which to perform recovery.  If the
+thread of control performing recovery does not specify the correct
+region initialization information (for example, the correct memory pool
+cache size), the result can be an application running in an environment
+with incorrect cache and other subsystem sizes.  For this reason, the
+thread of control performing recovery should specify correct
+configuration information before calling the m4_refT(dbenv_open); or it
+should remove the environment after recovery is completed, leaving
+creation of the correctly sized environment to a subsequent call to
+m4_ref(dbenv_open).])
+
+m4_p([dnl
+All m4_db recovery processing must be single-threaded; that is, only a
+single thread of control may perform recovery or access a m4_db
+environment while recovery is being performed.  Because it is not an
+error to specify m4_ref(DB_RECOVER) for an environment for which no
+recovery is required, it is reasonable programming practice for the
+thread of control responsible for performing recovery and creating the
+environment to always specify the m4_ref(DB_CREATE) and
+m4_ref(DB_RECOVER) flags during startup.])
+
+m4_p([dnl
+The m4_ref(dbenv_open) function returns successfully if m4_ref(DB_RECOVER)
+or m4_ref(DB_RECOVER_FATAL) is specified and no log files exist, so it
+is necessary to ensure that all necessary log files are present before
+running recovery.  For further information, consult m4_ref(db_archive)
+and m4_ref(db_recover).])
+
+m4_p([dnl
+The third group of flags govern file-naming extensions in the environment:])
+
+m4_tagbegin
+m4_env_flags
+m4_tagend
+
+m4_p([Finally, there are a few additional unrelated flags:])
+
+m4_tagbegin
+m4_tag(m4_idef(DB_CREATE), [dnl
+Cause m4_db subsystems to create any underlying files, as necessary.])
+
+m4_tag(m4_idef(DB_LOCKDOWN), [dnl
+Lock shared m4_db environment files and memory-mapped databases into
+memory.])
+
+m4_tag(m4_idef(DB_PRIVATE), [dnl
+Allocate region memory from the heap instead of from memory backed by
+the filesystem or system shared memory.
+m4_p([dnl
+This flag implies the environment will only be accessed by a single
+process (although that process may be multithreaded).  This flag has two
+effects on the m4_db environment.  First, all underlying data structures
+are allocated from per-process memory instead of from shared memory that
+is accessible to more than a single process.  Second, mutexes are only
+configured to work between threads.])
+m4_p([dnl
+This flag should not be specified if more than a single process is
+accessing the environment because it is likely to cause database
+corruption and unpredictable behavior.  For example, if both a server
+application and m4_db utilities (for example, m4_ref(db_archive),
+m4_ref(db_checkpoint) or m4_ref(db_stat)) are expected to access the
+environment, the m4_ref(DB_PRIVATE) flag should not be specified.])
+m4_p([dnl
+See m4_link(M4RELDIR/ref/env/region, [Shared Memory Regions]) for more
+information.])])
+
+m4_tag(m4_idef(DB_REGISTER), [dnl
+Check to see if recovery needs to be performed before opening the
+database environment.  (For this check to be accurate, all processes
+using the environment must specify m4_ref(DB_REGISTER) when opening the
+environment.)  If recovery needs to be performed for any reason
+(including the initial use of the m4_ref(DB_REGISTER) flag), and
+m4_ref(DB_RECOVER) is also specified, recovery will be performed and the
+open will proceed normally.  If recovery needs to be performed and
+m4_ref(DB_RECOVER) is not specified, m4_ref(DB_RUNRECOVERY) will be
+returned.  If recovery does not need to be performed, the
+m4_ref(DB_RECOVER) flag will be ignored.  See
+m4_link(M4RELDIR/ref/transapp/app, Architecting Transactional Data Store
+applications) for more information.])
+
+m4_tag(m4_idef(DB_SYSTEM_MEM), [dnl
+Allocate region memory from system shared memory instead of from heap
+memory or memory backed by the filesystem.
+m4_p([dnl
+See m4_link(M4RELDIR/ref/env/region, [Shared Memory Regions]) for more
+information.])])
+
+m4_tag(m4_idef(DB_THREAD), [dnl
+Cause the m4_ref(DbEnv) handle returned by m4_ref(dbenv_open) to be
+m4_italic(free-threaded); that is, concurrently usable by multiple
+threads in the address space.  The DB_THREAD flag should be specified
+if the m4_ref(DbEnv) handle will be concurrently used by more than one
+thread in the process, or if any m4_ref(Db) handles opened in the scope
+of the m4_ref(DbEnv) handle will be concurrently used by more than one
+thread in the process.])
+
+m4_tagend])
+
+m4_param_filemode([m4_db])
+m4_paramend
+
+m4_idefz(DB_VERSION_MISMATCH)
+m4_err(dbenv_open,
+DB_RUNRECOVERY,
+[The DB_REGISTER flag was specified, a failure has occurred, and no
+recovery flag was specified.],
+DB_VERSION_MISMATCH,
+[The version of the m4_db library doesn't match the version that created
+the database environment.],
+regionagain, einval,
+[the m4_ref(DB_THREAD) flag was specified and fast mutexes are not
+available for this architecture;
+The DB_HOME or TMPDIR environment variables were set, but empty;
+An incorrectly formatted m4_bold([NAME VALUE]) entry or line was found],
+ENOSPC,
+[HP-UX only:
+Due to the constraints of the PA-RISC memory architecture, HP-UX does not
+allow a process to map a file into its address space multiple times.
+For this reason, each m4_db environment may be opened only once by a
+process on HP-UX; that is, calls to m4_ref(dbenv_open) will fail if the
+specified m4_db environment has been opened and not subsequently closed.],
+filenotfound)
+
+m4_pf_getter(dbenv_get_home,
+database environment home directory, homep,, reference)
+
+m4_pf_getter(dbenv_get_open_flags, open method flags,, flagsp)
+
+m4_seealso(DbEnv)
+m4_page_footer

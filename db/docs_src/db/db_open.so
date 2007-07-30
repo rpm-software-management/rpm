@@ -1,0 +1,245 @@
+m4_comment([$Id: db_open.so,v 10.122 2007/05/31 18:52:36 bostic Exp $])
+
+define(M4PAGELOCAL, [dnl
+	dbh_open, dbh_get_file, dbh_get_dbname, dbh_get_transactional,
+	dbh_get_open_flags, dbh_get_transactional, DB_BTREE, DB_CREATE,
+	DB_EXCL, DB_HASH, DB_MULTIVERSION, DB_QUEUE,
+	DB_READ_UNCOMMITTED, DB_RECNO, DB_TRUNCATE, DB_UNKNOWN])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_open),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__open(DB *db, DB_TXN *txnid, const char *file,
+    const char *database, DBTYPE type, u_int32_t flags, int mode);
+m4_blank
+int
+DB-__GT__get_dbname(DB *db, const char **filenamep, const char **dbnamep);
+m4_blank
+int
+DB-__GT__get_multiple(DB *db);
+m4_blank
+int
+DB-__GT__get_open_flags(DB *db, u_int32_t *flagsp);
+m4_blank
+int
+DB-__GT__get_transactional(DB *db);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::open(DbTxn *txnid, const char *file,
+    const char *database, DBTYPE type, u_int32_t flags, int mode);
+m4_blank
+int
+Db::get_dbname(const char **filenamep, const char **dbnamep);
+m4_blank
+int
+Db::get_multiple()
+m4_blank
+int
+Db::get_open_flags(u_int32_t *flagsp);
+m4_blank
+int
+Db::get_transactional()
+]))
+
+m4_p([dnl
+The m4_refT(dbh_open) opens the database represented by the m4_arg(file)
+and m4_arg(database) parameters for both reading and writing.])
+
+m4_p([dnl
+The currently supported m4_db file formats (or m4_italic(access
+methods)) are Btree, Hash, Queue, and Recno.  The Btree format is a
+representation of a sorted, balanced tree structure.  The Hash format
+is an extensible, dynamic hashing scheme.  The Queue format supports
+fast access to fixed-length records accessed sequentially or by logical
+record number.  The Recno format supports fixed- or variable-length
+records, accessed sequentially or by logical record number, and
+optionally backed by a flat text file.])
+
+m4_p([dnl
+Storage and retrieval for the m4_db access methods are based on key/data
+pairs; see m4_ref(Dbt) for more information.])
+
+m4_p([dnl
+Calling m4_ref(dbh_open) is a relatively expensive operation, and
+maintaining a set of open databases will normally be preferable to
+repeatedly opening and closing the database for each new query.])
+
+m4_return(dbh_open, std, [dnl
+If m4_ref(dbh_open) fails, the m4_refT(dbh_close) must be called to
+discard the m4_ref(Db) handle.])
+
+m4_parambegin
+m4_param(database, [dnl
+The m4_arg(database) parameter is optional, and allows applications to
+have multiple databases in a single file.  Although no m4_arg(database)
+parameter needs to be specified, it is an error to attempt to open a
+second database in a m4_arg(file) that was not initially created using
+a m4_arg(database) name.  Further, the m4_arg(database) parameter is not
+supported by the Queue format.  Finally, when opening multiple databases
+in the same physical file, it is important to consider locking and
+memory cache issues; see m4_link(M4RELDIR/ref/am/opensub, Opening
+multiple databases in a single file) for more information.
+m4_p([dnl
+In-memory databases never intended to be preserved on disk may be
+created by setting the m4_arg(file) parameter to NULL.  If the
+m4_arg(database) parameter is also NULL, the database is strictly
+temporary and cannot be opened by any other thread of control, thus the
+database can only be accessed by sharing the single database handle that
+created it, in circumstances where doing so is safe.  If the
+m4_arg(database) parameter is not set to NULL, the database can be opened
+by other threads of control and will be replicated to client sites in
+any replication group.])])
+
+m4_param_utf8(file, [dnl
+The m4_arg(file) parameter is used as the name of an underlying file that
+will be used to back the database; see m4_link(M4RELDIR/ref/env/naming,
+File naming) for more information.
+m4_p([dnl
+In-memory databases never intended to be preserved on disk may be
+created by setting the m4_arg(file) parameter to NULL.])])
+
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_AUTO_COMMIT), [dnl
+Enclose the m4_ref(dbh_open) call within a transaction.  If the call
+succeeds, the open operation will be recoverable and all subsequent
+database modification operations based on this handle will be
+transactionally protected.  If the call fails, no database will have
+been created.])
+
+m4_tag(m4_idef(DB_CREATE), [dnl
+Create the database.  If the database does not already exist and the
+DB_CREATE flag is not specified, the m4_ref(dbh_open) will fail.])
+
+m4_tag(m4_idef(DB_EXCL), [dnl
+Return an error if the database already exists.  The m4_ref(DB_EXCL)
+flag is only meaningful when specified with the m4_ref(DB_CREATE)
+flag.])
+
+m4_tag(m4_idef(DB_MULTIVERSION), [dnl
+Open the database with support for m4_link(M4RELDIR/ref/transapp/read,
+multiversion concurrency control).  This will cause updates to the
+database to follow a copy-on-write protocol, which is required to
+support snapshot isolation.  The m4_ref(DB_MULTIVERSION) flag requires
+that the database be transactionally protected during its open and is
+not supported by the queue format.])
+
+m4_tag(m4_idef(DB_NOMMAP), [dnl
+Do not map this database into process memory (see the
+m4_refT(dbenv_set_mp_mmapsize) for further information).])
+
+m4_tag(m4_idef(DB_RDONLY), [dnl
+Open the database for reading only.  Any attempt to modify items in the
+database will fail, regardless of the actual permissions of any
+underlying files.])
+
+m4_tag(m4_idef(DB_READ_UNCOMMITTED), [dnl
+Support transactional read operations with degree 1 isolation.  Read
+operations on the database may request the return of modified but not
+yet committed data.  This flag must be specified on all m4_ref(Db)
+handles used to perform dirty reads or database updates, otherwise
+requests for dirty reads may not be honored and the read may block.])
+
+m4_tag(m4_idef(DB_THREAD), [dnl
+Cause the m4_ref(Db) handle returned by m4_ref(dbh_open) to be
+m4_italic(free-threaded); that is, concurrently usable by multiple
+threads in the address space.])
+
+ifelse(dbh_open, dbh_open, [dnl
+m4_tag(m4_idef(DB_TRUNCATE), [dnl
+Physically truncate the underlying file, discarding all previous
+databases it might have held.  Underlying filesystem primitives are used
+to implement this flag.  For this reason, it is applicable only to the
+file and cannot be used to discard databases within a file.
+m4_p([dnl
+The m4_ref(DB_TRUNCATE) flag cannot be lock or transaction-protected,
+and it is an error to specify it in a locking or transaction-protected
+environment.])])])
+m4_tagend])
+
+m4_param_filemode([the database open])
+
+m4_param_txn(dbh_open, auto, [dnl
+Note that transactionally protected operations on a m4_ref(Db) handle
+requires the m4_ref(Db) handle itself be transactionally protected
+during its open.  Also note that the transaction must be committed before
+the handle is closed; see m4_link(M4RELDIR/ref/program/scope, m4_db
+handles) for more information.])
+
+define(__m4_type, [dnl
+The m4_arg(type) parameter is of type DBTYPE, and must be set to one of
+m4_idef(DB_BTREE), m4_idef(DB_HASH), m4_idef(DB_QUEUE),
+m4_idef(DB_RECNO), or m4_idef(DB_UNKNOWN).  If m4_arg(type) is
+DB_UNKNOWN, the database must already exist and m4_ref(dbh_open) will
+automatically determine its type.  The m4_refT(dbh_get_type) may be used
+to determine the underlying type of databases opened using DB_UNKNOWN.])
+
+m4_param(type, [dnl
+__m4_type])
+m4_paramend
+
+m4_header([Environment Variables])
+m4_data_location(dbh_open, 1)
+m4_tagbegin
+m4_tag(TMPDIR, [dnl
+If the m4_arg(file) and m4_arg(dbenv) parameters to m4_ref(dbh_open) are
+NULL, the environment variable m4_envvar(TMPDIR) may be used as a
+directory in which to create temporary backing files])
+m4_tagend
+
+m4_err(dbh_open, deadlock, filenotfound,
+DB_OLD_VERSION,
+[The database cannot be opened without being first upgraded.],
+EEXIST,
+[m4_ref(DB_CREATE) and m4_ref(DB_EXCL) were specified and the database exists.],
+einval,
+[an unknown database type, page size, hash function, pad byte, byte
+order, or a flag value or parameter that is incompatible with the
+specified database was specified;
+the m4_ref(DB_THREAD) flag was specified and fast mutexes are not
+available for this architecture;
+the m4_ref(DB_THREAD) flag was specified to m4_ref(dbh_open), but was
+not specified to the m4_ref(dbenv_open) call for the environment in
+which the m4_ref(Db) handle was created;
+a backing flat text file was specified with either the m4_ref(DB_THREAD)
+flag or the provided database environment supports transaction
+processing],
+ENOENT,
+[A nonexistent m4_arg(re_source) file was specified.], repinval)
+
+m4_pf_description(m4_ref(dbh_get_dbname))
+m4_p([dnl
+The m4_refT(dbh_get_dbname) returns the current filename and database
+name.])
+m4_parambegin
+m4_param_co(filenamep, current filename, REF)
+m4_param_co(dbnamep, current database name, REF)
+m4_paramend
+m4_when_any(dbh_get_dbname)
+m4_return(dbh_get_dbname, std)
+
+m4_pf_description(m4_ref(dbh_get_multiple))
+m4_p([dnl
+The m4_refT(dbh_get_multiple) returns non-zero if the m4_ref(Db) handle
+references a physical file supporting multiple databases.])
+m4_p([dnl
+In this case, the m4_ref(Db) handle is a handle on a database whose key
+values are the names of the databases stored in the physical file and
+whose data values are opaque objects.  No keys or data values may be
+modified or stored using the database handle.])
+m4_when_after_dbopen(dbh_get_multiple)
+
+m4_pf_getter(dbh_get_open_flags, [current open method flags],, flagsp)
+
+m4_pf_description(m4_ref(dbh_get_transactional))
+m4_p([dnl
+The m4_refT(dbh_get_transactional) returns non-zero if the m4_ref(Db)
+handle has been opened in a transactional mode.])
+m4_when_any(dbh_get_transactional)
+
+m4_seealso(Db)
+m4_page_footer

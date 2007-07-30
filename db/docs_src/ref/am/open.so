@@ -1,0 +1,52 @@
+m4_comment([$Id: open.so,v 10.18 2003/10/18 19:15:53 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Database open, @opening a database, am/ops, am/opensub)
+
+m4_p([dnl
+The m4_refT(dbh_open) opens a database, and takes five arguments:])
+
+m4_tagbegin
+
+m4_tag(file, [The name of the file to be opened.])
+
+m4_tag(database, [An optional database name.])
+
+m4_tag(type, [dnl
+The type of database to open.  This value will be one of the four access
+methods m4_db supports: DB_BTREE, DB_HASH, DB_QUEUE or DB_RECNO, or the
+special value DB_UNKNOWN, which allows you to open an existing file
+without knowing its type.])
+
+m4_tag(mode, [The permissions to give to any created file.])
+
+m4_tagend
+
+m4_p([dnl
+There are a few flags that you can set to customize open:])
+
+m4_tagbegin
+m4_tag([m4_ref(DB_CREATE)], [dnl
+Create the underlying database and any necessary physical files.])
+
+m4_tag([m4_ref(DB_NOMMAP)], [dnl
+Do not map this database into process memory.])
+
+m4_tag([m4_ref(DB_RDONLY)], [Treat the data base as read-only.])
+
+m4_tag([m4_ref(DB_THREAD)], [dnl
+The returned handle is free-threaded, that is, it can be used
+simultaneously by multiple threads within the process.])
+
+m4_tag([m4_ref(DB_TRUNCATE)], [dnl
+Physically truncate the underlying database file, discarding all
+databases it contained. Underlying filesystem primitives are used to
+implement this flag. For this reason it is only applicable to the
+physical file and cannot be used to discard individual databases from
+within physical files.])
+
+m4_tag([m4_ref(DB_UPGRADE)], [Upgrade the database format as necessary.])
+
+m4_tagend
+
+m4_page_footer

@@ -1,0 +1,103 @@
+m4_comment([$Id: struct.so,v 10.8 2002/12/22 20:42:09 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Storing C/C++ structures/objects,,
+    am_misc/partial, am_misc/perm)
+
+m4_p([dnl
+m4_db can store any kind of data, that is, it is entirely 8-bit clean.
+How you use this depends, to some extent, on the application language
+you are using.  In the C/C++ languages, there are a couple of different
+ways to store structures and objects.])
+
+m4_p([dnl
+First, you can do some form of run-length encoding and copy your
+structure into another piece of memory before storing it:])
+
+m4_indent([dnl
+struct {
+	char *data1;
+	u_int32_t data2;
+	...
+} info;
+size_t len;
+u_int8_t *p, data_buffer__LB__1024__RB__;
+m4_blank
+p = &data_buffer__LB__0__RB__;
+len = strlen(info.data1);
+memcpy(p, &len, sizeof(len));
+p += sizeof(len);
+memcpy(p, info.data1, len);
+p += len;
+memcpy(p, &info.data2, sizeof(info.data2));
+p += sizeof(info.data2);
+...])
+
+m4_p([dnl
+and so on, until all the fields of the structure have been loaded into
+the byte array.  If you want more examples, see the m4_db logging
+routines (for example, btree/btree_auto.c:__bam_split_log()).  This
+technique is generally known as "marshalling".  If you use this
+technique, you must then un-marshall the data when you read it back:])
+
+m4_indent([dnl
+struct {
+	char *data1;
+	u_int32_t data2;
+	...
+} info;
+size_t len;
+u_int8_t *p;
+m4_blank
+p = &data_buffer__LB__0__RB__;
+memcpy(&len, p, sizeof(len));
+p += sizeof(len);
+info.data1 = malloc(len);
+memcpy(info.data1, p, len);
+p += len;
+memcpy(&info.data2, p, sizeof(info.data2));
+p += sizeof(info.data2);
+...])
+
+m4_p([dnl
+and so on.])
+
+m4_p([dnl
+The second way to solve this problem only works if you have just one
+variable length field in the structure.  In that case, you can declare
+the structure as follows:])
+
+m4_indent([dnl
+struct {
+	int a, b, c;
+	u_int8_t buf__LB__1__RB__;
+} info;])
+
+m4_p([dnl
+Then, let's say you have a string you want to store in this structure.
+When you allocate the structure, you allocate it as:])
+
+m4_indent([dnl
+malloc(sizeof(struct info) + strlen(string));])
+
+m4_p([dnl
+Since the allocated memory is contiguous, you can the initialize the
+structure as:])
+
+m4_indent([dnl
+info.a = 1;
+info.b = 2;
+info.c = 3;
+memcpy(&info.buf__LB__0__RB__, string, strlen(string) + 1);])
+
+m4_p([dnl
+and give it to m4_db to store, with a length of:])
+
+m4_indent([dnl
+sizeof(struct info) + strlen(string);])
+
+m4_p([dnl
+In this case, the structure can be copied out of the database and used
+without any additional work.])
+
+m4_page_footer

@@ -1,0 +1,23 @@
+m4_comment([$Id: osf1.so,v 11.11 2004/10/18 20:10:41 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    OSF/1, @OSF/1, build_unix/macosx, build_unix/qnx)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't compile and run multithreaded applications.])
+
+m4_p([dnl
+Special compile-time flags are required when compiling threaded
+applications on OSF/1.  If you are compiling a threaded application, you
+must compile with the _REENTRANT flag:])
+
+m4_indent([cc -D_REENTRANT ...])
+
+m4_p([dnl
+The m4_db library will automatically build with the correct options.])])
+
+m4_nlistend
+
+m4_page_footer

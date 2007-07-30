@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: si006.tcl,v 12.6 2006/08/24 14:46:39 bostic Exp $
+# $Id: si006.tcl,v 12.8 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	si006
 # TEST

@@ -1,0 +1,186 @@
+m4_comment([$Id: db_load.so,v 10.43 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_load)
+
+m4_util_header(db_load, [dnl
+db_load m4_utilarg(nTV) m4_utilarg([c name=value]) m4_utilarg([f file])
+    m4_utilarg([h home]) m4_utilarg([P password]) m4_utilarg([t btree | hash | queue | recno]) file
+db_load m4_utilarg([r lsn | fileid]) m4_utilarg([h home]) m4_utilarg([P password]) file])
+m4_idefz(utility to @load text files into databases)
+
+m4_p([dnl
+The m4_ref(db_load) utility reads from the standard input and loads it
+into the database m4_arg(file).  The database m4_arg(file) is created if
+it does not already exist.])
+
+m4_p([dnl
+The input to m4_ref(db_load) must be in the output format specified by the
+m4_ref(db_dump) utility, utilities, or as specified for the m4_option(T)
+below.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+m4_tagopt(c, [dnl
+Specify configuration options ignoring any value they may have based on
+the input.  The command-line format is m4_bold(name=value).  See the
+Supported Keywords section below for a list of keywords supported by
+the m4_option(c) option.])
+
+m4_tagopt(f, [dnl
+Read from the specified m4_arg(input) file instead of from the standard
+input.])
+
+m4_tagopt(h, [dnl
+Specify a home directory for the database environment.
+m4_p([dnl
+If a home directory is specified, the database environment is opened
+using the m4_ref(DB_INIT_LOCK), m4_ref(DB_INIT_LOG),
+m4_ref(DB_INIT_MPOOL), m4_ref(DB_INIT_TXN), and m4_ref(DB_USE_ENVIRON)
+flags to m4_ref(dbenv_open).  (This means that m4_ref(db_load) can be
+used to load data into databases while they are in use by other
+processes.) If the m4_ref(dbenv_open) call fails, or if no home
+directory is specified, the database is still updated, but the
+environment is ignored; for example, no locking is done.])])
+
+m4_tagopt(n, [dnl
+Do not overwrite existing keys in the database when loading into an
+already existing database.  If a key/data pair cannot be loaded into the
+database for this reason, a warning message is displayed on the standard
+error output, and the key/data pair are skipped.])
+
+m4_Pflag
+
+m4_tagopt(r, [dnl
+Reset the database's file ID or log sequence numbers (LSNs).
+m4_p([dnl
+All database pages in transactional environments contain references to
+the environment's log records.  In order to copy a database into a
+different database environment, database page references to the old
+environment's log records must be reset, otherwise data corruption can
+occur when the database is modified in the new environment.  The
+m4_option(r) m4_arg(lsn) option resets a database's log sequence
+numbers.])
+m4_p([dnl
+All databases contain an ID string used to identify the database in the
+database environment cache.  If a database is copied, and used in the
+same environment as another file with the same ID string, corruption can
+occur.  The m4_option(r) m4_arg(fileid)  option resets a database's file
+ID to a new value.])
+m4_p([m4_bold([dnl
+In both cases, the physical file specified by the m4_arg(file) argument
+is modified in-place.])])])
+
+m4_tagopt(T, [dnl
+The m4_option(T) option allows non-m4_db applications to easily load text
+files into databases.
+m4_p([dnl
+If the database to be created is of type Btree or Hash, or the keyword
+m4_bold(keys) is specified as set, the input must be paired lines of text,
+where the first line of the pair is the key item, and the second line of
+the pair is its corresponding data item.  If the database to be created
+is of type Queue or Recno and the keywork m4_bold(keys) is not set, the
+input must be lines of text, where each line is a new data item for the
+database.])
+m4_p([dnl
+A simple escape mechanism, where newline and backslash (m4_backslash())
+characters are special, is applied to the text input.  Newline characters
+are interpreted as record separators.  Backslash characters in the text
+will be interpreted in one of two ways: If the backslash character
+precedes another backslash character, the pair will be interpreted as a
+literal backslash.  If the backslash character precedes any other
+character, the two characters following the backslash will be interpreted
+as a hexadecimal specification of a single character; for example,
+m4_backslash(0a) is a newline character in the ASCII character set.])
+
+m4_p([dnl
+For this reason, any backslash or newline characters that naturally
+occur in the text input must be escaped to avoid misinterpretation by
+m4_ref(db_load).])
+m4_p([dnl
+If the m4_option(T) option is specified, the underlying access method type
+must be specified using the m4_option(t) option.])])
+
+m4_tagopt(t, [dnl
+Specify the underlying access method.  If no m4_option(t) option is
+specified, the database will be loaded into a database of the same type
+as was dumped; for example, a Hash database will be created if a Hash
+database was dumped.
+m4_p([dnl
+Btree and Hash databases may be converted from one to the other.  Queue
+and Recno databases may be converted from one to the other.  If the
+m4_bold(-k) option was specified on the call to m4_ref(db_dump) then Queue
+and Recno databases may be converted to Btree or Hash, with the key being
+the integer record number.])])
+
+m4_Vflag
+
+m4_tagend
+
+m4_detach(db_load, may be used with)
+
+m4_p([dnl
+The m4_ref(db_load) utility exits 0 on success, 1 if one or more key/data
+pairs were not loaded into the database because the key already existed,
+and __GT__1 if an error occurs.])
+
+m4_section(Examples)
+m4_p([dnl
+The m4_ref(db_load) utility can be used to load text files into databases.
+For example, the following command loads the standard UNIX
+m4_italic(/etc/passwd) file into a database, with the login name as the
+key item and the entire password entry as the data item:])
+
+m4_indent([dnl
+awk -F: '{print $1; print $0}' __LT__ /etc/passwd |
+    sed 's/m4_backslash()m4_backslash()/m4_backslash()m4_backslash()m4_backslash()m4_backslash()/g' | db_load -T -t hash passwd.db])
+
+m4_p([dnl
+Note that backslash characters naturally occurring in the text are escaped
+to avoid interpretation as escape characters by m4_ref(db_load).])
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_load)
+
+m4_section(Supported Keywords)
+The following keywords are supported for the m4_option(c) command-line
+option to the m4_ref(db_load) utility.  See m4_ref(dbh_open) for further
+discussion of these keywords and what values should be specified.
+
+m4_p([dnl
+The parenthetical listing specifies how the value part of the
+m4_bold(name=value) pair is interpreted.  Items listed as (boolean)
+expect value to be m4_bold(1) (set) or m4_bold(0) (unset).  Items listed
+as (number) convert value to a number.  Items listed as (string) use
+the string value without modification.])
+
+m4_tagbegin
+
+m4_tagns([bt_minkey (number)], [The minimum number of keys per page.])
+m4_tagns([chksum (boolean)], [Enable page checksums.])
+m4_tagns([database (string)], [The database to load.])
+m4_tagns([db_lorder (number)], [dnl
+The byte order for integers in the stored database metadata.])
+m4_tagns([db_pagesize (number)], [dnl
+The size of database pages, in bytes.])
+m4_tagns([duplicates (boolean)], [The value of the m4_ref(DB_DUP) flag.])
+m4_tagns([dupsort (boolean)], [The value of the m4_ref(DB_DUPSORT) flag.])
+m4_tagns([extentsize (number)], [dnl
+The size of database extents, in pages, for Queue databases configured
+to use extents.])
+m4_tagns([h_ffactor (number)], [The density within the Hash database.])
+m4_tagns([h_nelem (number)], [The size of the Hash database.])
+m4_tagns([keys (boolean)], [dnl
+Specify whether keys are present for Queue or Recno databases.])
+m4_tagns([re_len (number)], [dnl
+Specify fixed-length records of the specified length.])
+m4_tagns([re_pad (string)], [Specify the fixed-length record pad character.])
+m4_tagns([recnum (boolean)], [The value of the m4_ref(DB_RECNUM) flag.])
+m4_tagns([renumber (boolean)], [The value of the m4_ref(DB_RENUMBER) flag.])
+m4_tagns([subdatabase (string)], [The subdatabase to load.])
+
+m4_tagend
+
+m4_page_footer

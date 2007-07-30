@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2006,2007 Oracle.  All rights reserved.
  *
- * $Id: repmgr.h,v 12.10 2006/09/19 14:14:07 mjc Exp $
+ * $Id: repmgr.h,v 12.13 2007/05/17 15:15:05 bostic Exp $
  */
 
 #ifndef _DB_REPMGR_H_
@@ -70,11 +69,6 @@ struct __repmgr_runnable {
 	int finished;
 };
 
-typedef struct {
-	u_int32_t tv_sec;
-	u_int32_t tv_usec;
-} repmgr_timeval_t;
-
 /*
  * Information about pending connection establishment retry operations.
  *
@@ -94,7 +88,7 @@ typedef struct {
 struct __repmgr_retry {
 	TAILQ_ENTRY(__repmgr_retry) entries;
 	u_int eid;
-	repmgr_timeval_t time;
+	db_timespec time;
 };
 
 /*
@@ -340,7 +334,6 @@ typedef char * sockopt_t;
 #define	iov_len len
 #define	iov_base buf
 
-typedef DWORD select_timeout_t;
 typedef DWORD threadsync_timeout_t;
 
 #define	REPMGR_SYNC_INITED(db_rep) (db_rep->waiters != NULL)
@@ -356,7 +349,6 @@ typedef void * sockopt_t;
 
 #define	closesocket(fd)		close(fd)
 
-typedef struct timeval select_timeout_t;
 typedef struct timespec threadsync_timeout_t;
 
 #define	REPMGR_SYNC_INITED(db_rep) (db_rep->read_pipe >= 0)

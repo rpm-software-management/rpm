@@ -1,0 +1,150 @@
+m4_comment([$Id: solaris.so,v 11.26 2007/06/27 14:41:06 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    Solaris, @Solaris, build_unix/sco, build_unix/sunos)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't compile and run multithreaded applications.])
+
+m4_p([dnl
+Special compile-time flags and additional libraries are required when
+compiling threaded applications on Solaris.  If you are compiling a
+threaded application, you must compile with the D_REENTRANT flag and link
+with the libpthread.a or libthread.a libraries:])
+
+m4_indent([dnl
+cc -mt ...
+cc -D_REENTRANT ... -lthread
+cc -D_REENTRANT ... -lpthread])
+
+m4_p([dnl
+The m4_db library will automatically build with the correct options.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I've installed gcc on my Solaris system, but configuration
+fails because the compiler doesn't work.])
+
+m4_p([dnl
+On some versions of Solaris, there is a cc executable in the user's path,
+but all it does is display an error message and fail:])
+
+m4_indent([% which cc
+/usr/ucb/cc
+% cc
+/usr/ucb/cc: language optional software package not installed])
+
+m4_p([dnl
+Because m4_db always uses the native compiler in preference to gcc, this
+is a fatal error.  If the error message you are seeing is the following,
+then this may be the problem:])
+
+m4_indent([checking whether the C compiler (cc -O) works... no
+configure: error: installation or configuration problem: C compiler cannot create executables.])
+
+m4_p([dnl
+The simplest workaround is to set your CC environment variable to the
+system compiler and reconfigure; for example:])
+
+m4_indent([env CC=gcc ../dist/configure])
+
+m4_p([dnl
+If you are using the --configure-cxx option, you may also want to specify
+a C++ compiler, for example the following:])
+
+m4_indent([env CC=gcc CCC=g++ ../dist/configure])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I see the error
+"libc internal error: _rmutex_unlock: rmutex not held", followed by a core
+dump when running threaded or JAVA programs.])
+
+m4_p([dnl
+This is a known bug in Solaris 2.5 and it is fixed by Sun patch 103187-25.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I see error reports of nonexistent files, corrupted metadata
+pages and core dumps.])
+
+m4_p([dnl
+Solaris 7 contains a bug in the threading libraries (-lpthread,
+-lthread), which causes the wrong version of the pwrite routine to be
+linked into the application if the thread library is linked in after
+the C library.  The result will be that the pwrite function is called
+rather than the pwrite64.  To work around the problem, use an explicit
+link order when creating your application.])
+
+m4_p([dnl
+Sun Microsystems is tracking this problem with Bug Id's 4291109 and 4267207,
+and patch 106980-09 to Solaris 7 fixes the problem:])
+
+m4_indent([dnl
+Bug Id: 4291109
+Duplicate of: 4267207
+Category: library
+Subcategory: libthread
+State: closed
+Synopsis: pwrite64 mapped to pwrite
+Description:
+When libthread is linked after libc, there is a table of functions in
+libthread that gets "wired into" libc via _libc_threads_interface().
+The table in libthread is wrong in both Solaris 7 and on28_35 for the
+TI_PWRITE64 row (see near the end).])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I see corrupted databases when doing hot backups or creating
+a hot failover archive.])
+
+m4_p([dnl
+The Solaris cp utility is implemented using the mmap system call, and
+so writes are not blocked when it reads database pages.  See
+m4_link(M4RELDIR/ref/transapp/reclimit, [m4_db recoverability]) for more
+information.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([Performance is slow and the application is doing a lot of I/O
+to the disk on which the database environment's files are stored.])
+
+m4_p([dnl
+By default, Solaris periodically flushes dirty blocks from memory-mapped
+files to the backing filesystem.  This includes the m4_db database
+environment's shared memory regions and can affect m4_db performance.
+Workarounds include creating the shared regions in system shared memory
+(m4_ref(DB_SYSTEM_MEM)) or application private memory
+(m4_ref(DB_PRIVATE)), or, configuring Solaris to not flush memory-mapped
+pages.  For more information, see the "Solaris Tunable Parameters
+Reference Manual: fsflush and Related Tunables".])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I see errors about "open64" when building m4_db applications.])
+
+m4_p([dnl
+System include files (most commonly fcntl.h) in some releases of AIX,
+HP-UX and Solaris redefine "open" when large-file support is enabled
+for applications.  This causes problems when compiling applications
+because "open" is a method in the m4_db APIs.  To work around this
+problem:
+m4_nlistbegin
+m4_nlist([dnl
+Avoid including the problematical system include files in source code
+files which also include m4_db include files and call into the m4_db
+API.])
+m4_nlistns([dnl
+Before building m4_db, modify the generated include file db.h to itself
+include the problematical system include files.])
+m4_nlistns([dnl
+Turn off m4_db large-file support by specifying the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --disable-largefile,
+--disable-largefile) configuration option and rebuilding.])
+m4_nlistend])])
+
+m4_nlistend
+
+m4_page_footer

@@ -1,0 +1,50 @@
+m4_comment([$Id: log.so,v 1.5 2003/10/18 19:16:19 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: log_XXX,,
+    upgrade.4.0/lock, upgrade.4.0/mp)
+
+m4_p([dnl
+The C API for the m4_db Logging subsystem was reworked in the 4.0
+release as follows:])
+
+m4_table_begin(, _center)
+m4_table_header(Historic functional interface, m4_db 4.X method)
+m4_table_element(log_archive, m4_ref(log_archive))
+m4_table_element(log_file, m4_ref(log_file))
+m4_table_element(log_flush, m4_ref(log_flush))
+m4_table_element(log_get, [m4_ref(log_cursor), m4_ref(logc_get), m4_ref(logc_close)])
+m4_table_element(log_put, m4_ref(log_put))
+m4_table_element(log_register, DB_ENV-__GT__log_register)
+m4_table_element(log_stat, m4_ref(log_stat))
+m4_table_element(log_unregister, DB_ENV-__GT__log_unregister)
+m4_table_end
+
+m4_p([dnl
+Applications calling any of these functions should update their calls
+to use the enclosing m4_ref(DbEnv) handle's method (in all cases other
+than the log_get call, this is easily done as the first argument to the
+existing call is the correct handle to use).])
+
+m4_p([dnl
+Application calls to the historic log_get function must be replaced
+with the creation of a log file cursor (a m4_ref(DbLogc) object), using
+the m4_refT(log_cursor), calls to the m4_refT(logc_get) to retrieve log
+records and calls to the m4_refT(logc_close) to destroy the cursor.  It
+may also be possible to simplify some applications.  In previous
+releases of m4_db, the DB_CURRENT, DB_NEXT, and DB_PREV flags to the
+log_get function could not be used by a free-threaded m4_ref(DbEnv)
+handle.  If their m4_ref(DbEnv) handle was free-threaded, applications
+had to create an additional, unique environment handle by separately
+calling m4_ref(dbenv_open) without specifying m4_ref(DB_THREAD).  This
+is no longer an issue in the log cursor interface, and applications may
+be able to remove the now unnecessary creation of the additional
+m4_ref(DbEnv) object.])
+
+m4_p([dnl
+Finally, the m4_ref(log_stat) call has been changed in the 4.0 release
+to take a flags argument.  To leave their historic behavior unchanged,
+applications should add a final argument of 0 to any calls made to
+m4_ref(log_stat).])
+
+m4_page_footer

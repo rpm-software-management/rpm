@@ -1,0 +1,28 @@
+m4_comment([$Id: ops.so,v 10.22 2002/08/30 20:01:36 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Access method operations,, am_conf/renumber, am/open)
+
+m4_p([dnl
+Once a database handle has been created using m4_ref(dbh_create), there
+are several standard access method operations.  Each of these operations
+is performed using a method referred to by the returned handle.
+Generally, the database will be opened using m4_ref(dbh_open).  If the
+database is from an old release of m4_db, it may need to be upgraded to
+the current release before it is opened using m4_ref(dbh_upgrade).])
+
+m4_p([dnl
+Once a database has been opened, records may be retrieved (m4_ref(dbh_get)),
+stored (m4_ref(dbh_put)), and deleted (m4_ref(dbh_del)).])
+
+m4_p([dnl
+Additional operations supported by the database handle include
+statistics (m4_ref(dbh_stat)), truncation (m4_ref(dbh_truncate)),
+version upgrade (m4_ref(dbh_upgrade)), verification and salvage
+(m4_ref(dbh_verify)), flushing to a backing file (m4_ref(dbh_sync)),
+and association of secondary indices (m4_ref(dbh_associate)).  Database
+handles are eventually closed using m4_ref(dbh_close).])
+
+include(db/m4.methods)
+
+m4_page_footer

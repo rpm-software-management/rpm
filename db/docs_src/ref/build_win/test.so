@@ -1,0 +1,113 @@
+m4_comment([$Id: test.so,v 10.45 2005/12/01 03:18:51 bostic Exp $])
+
+ifdef([__m4_product_name],, [define(__m4_product_name, m4_db)])
+ifelse(__m4_product_name, m4_db, [dnl
+define(__m4_tclwinpath, ref/build_win/intro)
+define(__m4_prev_link, build_win/small)
+define(__m4_next_link, build_win/notes)],[dnl
+define(__m4_tclwinpath, ref_xml/xml_win/intro)
+define(__m4_prev_link, xml_win/intro)
+define(__m4_next_link, xml_win/notes)])
+
+m4_ref_title(Building __m4_product_name for Windows systems,
+    Running the test suite under Windows,
+    [running the @test suite under Windows,
+    running the test suite under @Windows], __m4_prev_link, __m4_next_link)
+
+m4_p([dnl
+To build the test suite on Windows platforms, you will need to configure
+Tcl support.  You will also need sufficient main memory (at least 64MB),
+and disk (around 250MB of disk will be sufficient).])
+
+m4_section(Building the software needed by the tests)
+
+m4_p([dnl
+To build for testing, perform the following steps:])
+
+m4_nlistbegin
+m4_nlist([The test suite must be run against a Debug version of
+__m4_product_name, so you will need a Debug version of the Tcl
+libraries.  This involves building Tcl from its source.  See the Tcl
+sources for more information.])
+
+m4_nlist([Open the __m4_product_name workspace.])
+
+m4_nlist([Build the Tcl API (see
+m4_link(M4RELDIR/__m4_tclwinpath, Building the Tcl API) for details).])
+
+ifelse(__m4_product_name, m4_db, [dnl
+m4_nlist([In Visual C++ 6.0, set the active configuration to db_test --
+Debug.  To set an active configuration, under the m4_italic(Build) menu,
+select m4_italic(Set Active Configuration).  Then choose
+m4_italic(db_test -- Debug).  In Visual C++ .NET, just make sure
+m4_italic(Debug) is selected in the drop down list on the tool bar.])
+
+m4_nlist([Build.  In Visual C++ 6.0, the IDE menu item for this is
+called "build dbkill.exe", even though dbkill is just one of the things
+that is built.  In Visual C++ .NET, right-click on the
+m4_italic(db_test) project and select m4_italic(Build). This step makes
+sure that the base __m4_product_name .dll, tcl support, and various tools that
+are needed by the test suite are all built.])])
+m4_nlistend
+
+m4_section(Running the test suite under Windows)
+
+m4_p([dnl
+Before running the tests for the first time, you must edit the file
+m4_path(include.tcl) in your build directory and change the line
+that reads:])
+
+m4_indent([set tclsh_path SET_YOUR_TCLSH_PATH])
+
+m4_p([dnl
+You will want to use the location of the m4_path(tclsh) program (be
+sure to include the name of the executable).  For example, if Tcl is
+installed in m4_path(d:\tcl), this line should be the following:])
+
+m4_indent([set tclsh_path d:\tcl\bin\tclsh84g.exe])
+
+m4_p([dnl
+If your path includes spaces be sure to enclose it in quotes:])
+
+m4_indent([set tclsh_path "c:\Program Files\tcl\bin\tclsh84g.exe"])
+
+m4_p([dnl
+Make sure that the path to __m4_product_name's tcl library is in your
+current path.  On Windows NT/2000/XP, edit your PATH using the My
+Computer -__GT__ Properties -__GT__ Advanced -__GT__ Environment
+Variables dialog.  On earlier versions of Windows, you may find it
+convenient to add a line to c:\AUTOEXEC.BAT:])
+
+ifelse(__m4_product_name, m4_db, [dnl
+m4_indent([SET PATH=%PATH%;c:\db\build_windows\Debug])], [dnl
+m4_indent([SET PATH=%PATH%;c:\dbxml\build_windows\Debug])
+
+m4_p([dnl
+Repeat the above step for each of the dependent DLLs.  This includes the
+m4_db DLL, the Xerces-C DLL, and the Pathan DLL.])
+])
+
+m4_p([dnl
+Then, in a shell of your choice enter the following commands:])
+
+m4_nlistbegin
+
+m4_nlist([cd build_windows])
+
+m4_nlist([run m4_path(d:\tcl\bin\tclsh84g.exe), or the equivalent name of
+the Tcl shell for your system.
+m4_p([dnl
+You should get a "%" prompt.])])
+
+m4_nlist([% source ../test/test.tcl
+m4_p([dnl
+If no errors occur, you should get a "%" prompt.])])
+
+m4_nlistend
+
+m4_p([dnl
+You are now ready to run tests in the test suite; see
+m4_link(M4RELDIR/ref/test/run, Running the test suite) for more
+information.])
+
+m4_page_footer

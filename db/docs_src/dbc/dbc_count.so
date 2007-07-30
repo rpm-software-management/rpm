@@ -1,0 +1,30 @@
+m4_comment([$Id: dbc_count.so,v 10.26 2006/10/24 13:26:50 bostic Exp $])
+
+define(M4PAGELOCAL, dbc_count)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbc_count),
+ifelse(M4API, C_API, [dnl
+int
+DBcursor-__GT__count(DBC *DBcursor, db_recno_t *countp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Dbc::count(db_recno_t *countp, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbc_count) returns a count of the number of data items for
+the key to which the cursor refers.])
+
+m4_return(dbc_count, std)
+
+m4_parambegin
+m4_param_co(countp, count of the number of duplicate data items)
+m4_unusedflags
+m4_paramend
+
+m4_err(dbc_count, repinval, einval, [the cursor has not been initialized])
+
+m4_seealso(Dbc)
+m4_page_footer

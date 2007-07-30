@@ -1,0 +1,54 @@
+m4_comment([$Id: inc.so,v 1.17 2006/08/31 15:26:59 ubell Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Isolation,, transapp/atomicity, transapp/read)
+
+m4_p([dnl
+The third reason listed for using transactions was m4_italic(isolation).
+Consider an application suite in which multiple threads of control
+(multiple processes or threads in one or more processes) are changing
+the values associated with a key in one or more databases.  Specifically,
+they are taking the current value, incrementing it, and then storing it
+back into the database.])
+
+m4_p([dnl
+Such an application requires isolation.  Because we want to change a value
+in the database, we must make sure that after we read it, no other thread
+of control modifies it.  For example, assume that both thread #1 and
+thread #2 are doing similar operations in the database, where thread #1
+is incrementing records by 3, and thread #2 is incrementing records by
+5.  We want to increment the record by a total of 8.  If the operations
+interleave in the right (well, wrong) order, that is not what will
+happen:])
+
+m4_indent([dnl
+thread [#]1  m4_bold(read) record: the value is 2
+thread [#]2  m4_bold(read) record: the value is 2
+thread [#]2  m4_bold(write) record + 5 back into the database (new value 7)
+thread [#]1  m4_bold(write) record + 3 back into the database (new value 5)])
+
+m4_p([dnl
+As you can see, instead of incrementing the record by a total of 8,
+we've incremented it only by 3 because thread #1 overwrote thread #2's
+change.  By wrapping the operations in transactions, we ensure that this
+cannot happen.  In a transaction, when the first thread reads the
+record, locks are acquired that will not be released until the
+transaction finishes, guaranteeing that all writers
+will block, waiting for the first thread's transaction to complete (or
+to be aborted).])
+
+m4_p([dnl
+Here is an example function that does transaction-protected increments
+on database records to ensure isolation:])
+
+include(ref/transapp/inc.cs)
+
+m4_p([dnl
+The m4_ref(DB_RMW) flag in the m4_ref(dbh_get) call specifies a write lock
+should be acquired on the key/data pair, instead of the more obvious read
+lock.  We do this because the application expects to write the key/data
+pair in a subsequent operation, and the transaction is much more likely to
+deadlock if we first obtain a read lock and subsequently a write lock, than
+if we obtain the write lock initially.])
+
+m4_page_footer

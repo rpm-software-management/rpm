@@ -1,0 +1,86 @@
+m4_comment([$Id: program.so,v 10.35 2004/09/10 13:04:01 bostic Exp $])
+
+m4_ref_title(Java API, Java programming notes,, java/compat, java/faq)
+
+dnl #################################################################
+dnl This whole page is Java.
+dnl #################################################################
+pushdef([M4API], JAVA_API)
+
+m4_p([dnl
+Although the Java API parallels the m4_db C++/C interface in many ways,
+it differs where the Java language requires.  For example, the handle
+method names are camel-cased and conform to Java naming patterns.  (The
+C++/C method names are currently provided, but are deprecated.)])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+The Java runtime does not automatically close m4_db objects on
+finalization.  There are several reasons for this.  One is that
+finalization is generally run only when garbage collection occurs, and
+there is no guarantee that this occurs at all, even on exit.  Allowing
+specific m4_db actions to occur in ways that cannot be replicated seems
+wrong.  Second, finalization of objects may happen in an arbitrary
+order, so we would have to do extra bookkeeping to make sure that
+everything was closed in the proper order.  The best word of advice is
+to always do a close() for any matching open() call.  Specifically, the
+m4_db package requires that you explicitly call close on each individual
+m4_linkjavadoc(com.sleepycat.db, Database) and
+m4_linkjavadoc(com.sleepycat.db, Cursor) object that you opened.  Your database
+activity may not be synchronized to disk unless you do so.])
+
+m4_nlist([dnl
+Some methods in the Java API have no return type, and throw a
+m4_linkjavadoc(com.sleepycat.db, DatabaseException) when an severe error
+arises.  There are some notable methods that do have a return value, and
+can also throw an exception.  The "get" methods in
+m4_linkjavadoc(com.sleepycat.db, Database) and
+m4_linkjavadoc(com.sleepycat.db, Cursor) both return 0 when a get
+succeeds, m4_ref(DB_NOTFOUND) when the key is not found, and throw an
+error when there is a severe error.  This approach allows the programmer
+to check for typical data-driven errors by watching return values
+without special casing exceptions.
+m4_p([dnl
+An object of type m4_linkjavadoc(com.sleepycat.db, MemoryException) is
+thrown when a Dbt is too small to hold the corresponding key or data item.])
+m4_p([dnl
+An object of type m4_linkjavadoc(com.sleepycat.db, DeadlockException) is
+thrown when a deadlock would occur.])
+m4_p([dnl
+An object of type m4_linkjavadoc(com.sleepycat.db, RunRecoveryException), a
+subclass of m4_linkjavadoc(com.sleepycat.db, DatabaseException), is thrown when
+there is an error that requires a recovery of the database using
+m4_ref(db_recover).])
+m4_p([dnl
+An object of type m4_linkjavadoc(java.lang, IllegalArgumentException)
+a standard Java Language exception, is thrown when there is an error in
+method arguments.])
+m4_p([dnl
+An object of type m4_linkjavadoc(java.lang, OutOfMemoryError) is thrown
+when the system cannot provide enough memory to complete the operation
+(the ENOMEM system error on UNIX).])])
+
+m4_nlist([dnl
+If there are embedded nulls in the m4_arg(curslist) argument for
+m4_linkjavadoc(com.sleepycat.db, Database,
+    [join(com.sleepycat.db.Cursor__BRACKETS__, com.sleepycat.db.JoinConfig)]),
+they will be treated as the end of the list of cursors, even if you
+may have allocated a longer array.  Fill in all the cursors in your
+array unless you intend to cut it short.])
+
+m4_nlist([dnl
+If you are using custom class loaders in your application, make sure
+that the m4_db classes are loaded by the system class loader, not a
+custom class loader. This is due to a JVM bug that can cause an access
+violation during finalization (see the bug 4238486 in Sun Microsystem's
+Java Bug Database).])
+
+m4_nlistend
+
+dnl #################################################################
+dnl This whole page is Java.
+dnl #################################################################
+popdef([M4API])
+
+m4_page_footer

@@ -1,0 +1,26 @@
+m4_comment([$Id: cursor.so,v 1.4 2006/11/30 21:19:37 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: C API cursor handle method names,,
+    upgrade.4.6/intro, upgrade.4.6/memp_fput)
+
+m4_p([dnl
+In the m4_db 4.6 release, the C API m4_ref(Dbc) handle methods have been
+renamed for consistency with the C++ and Java APIs.  The change is the
+removal of the leading "c_" from the names, as follows:])
+
+m4_tagbegin
+m4_tag([DBC-__GT__c_close], [Renamed DBC-__GT__close])
+m4_tag([DBC-__GT__c_count], [Renamed DBC-__GT__count])
+m4_tag([DBC-__GT__c_del], [Renamed DBC-__GT__del])
+m4_tag([DBC-__GT__c_dup], [Renamed DBC-__GT__dup])
+m4_tag([DBC-__GT__c_get], [Renamed DBC-__GT__get])
+m4_tag([DBC-__GT__c_pget], [Renamed DBC-__GT__pget])
+m4_tag([DBC-__GT__c_put], [Renamed DBC-__GT__put])
+m4_tagend
+
+m4_p([dnl
+The old m4_ref(Dbc) method names are deprecated but will continue for
+work for some number of future releases.])
+
+m4_page_footer

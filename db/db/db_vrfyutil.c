@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: db_vrfyutil.c,v 12.12 2006/09/11 15:13:24 bostic Exp $
+ * $Id: db_vrfyutil.c,v 12.16 2007/05/17 15:14:57 bostic Exp $
  */
 
 #include "db_config.h"
@@ -40,7 +39,7 @@ __db_vrfy_dbinfo_create(dbenv, pgsize, vdpp)
 	if ((ret = __os_calloc(NULL, 1, sizeof(VRFY_DBINFO), &vdp)) != 0)
 		goto err;
 
-	if ((ret = db_create(&cdbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&cdbp, dbenv, 0)) != 0)
 		goto err;
 
 	if ((ret = __db_set_flags(cdbp, DB_DUP)) != 0)
@@ -57,7 +56,7 @@ __db_vrfy_dbinfo_create(dbenv, pgsize, vdpp)
 	    NULL, NULL, NULL, DB_BTREE, DB_CREATE, 0600, PGNO_BASE_MD)) != 0)
 		goto err;
 
-	if ((ret = db_create(&pgdbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&pgdbp, dbenv, 0)) != 0)
 		goto err;
 
 	if ((ret = __db_set_pagesize(pgdbp, pgsize)) != 0)
@@ -274,7 +273,7 @@ __db_vrfy_pgset(dbenv, pgsize, dbpp)
 	DB *dbp;
 	int ret;
 
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
 		return (ret);
 	if ((ret = __db_set_pagesize(dbp, pgsize)) != 0)
 		goto err;
@@ -389,7 +388,7 @@ __db_vrfy_pgset_next(dbc, pgnop)
 	key.data = &pgno;
 	key.ulen = sizeof(db_pgno_t);
 
-	if ((ret = __db_c_get(dbc, &key, &data, DB_NEXT)) != 0)
+	if ((ret = __dbc_get(dbc, &key, &data, DB_NEXT)) != 0)
 		return (ret);
 
 	DB_ASSERT(dbc->dbp->dbenv, key.size == sizeof(db_pgno_t));
@@ -511,7 +510,7 @@ __db_vrfy_childinc(dbc, cip)
 	data.data = cip;
 	data.size = sizeof(VRFY_CHILDINFO);
 
-	return (__db_c_put(dbc, &key, &data, DB_CURRENT));
+	return (__dbc_put(dbc, &key, &data, DB_CURRENT));
 }
 
 /*
@@ -536,7 +535,7 @@ __db_vrfy_ccset(dbc, pgno, cipp)
 	key.data = &pgno;
 	key.size = sizeof(db_pgno_t);
 
-	if ((ret = __db_c_get(dbc, &key, &data, DB_SET)) != 0)
+	if ((ret = __dbc_get(dbc, &key, &data, DB_SET)) != 0)
 		return (ret);
 
 	DB_ASSERT(dbc->dbp->dbenv, data.size == sizeof(VRFY_CHILDINFO));
@@ -564,7 +563,7 @@ __db_vrfy_ccnext(dbc, cipp)
 	memset(&key, 0, sizeof(DBT));
 	memset(&data, 0, sizeof(DBT));
 
-	if ((ret = __db_c_get(dbc, &key, &data, DB_NEXT_DUP)) != 0)
+	if ((ret = __dbc_get(dbc, &key, &data, DB_NEXT_DUP)) != 0)
 		return (ret);
 
 	DB_ASSERT(dbc->dbp->dbenv, data.size == sizeof(VRFY_CHILDINFO));
@@ -589,7 +588,7 @@ __db_vrfy_ccclose(dbc)
 	DBC *dbc;
 {
 
-	return (__db_c_close(dbc));
+	return (__dbc_close(dbc));
 }
 
 /*
@@ -632,7 +631,7 @@ __db_salvage_init(vdp)
 	DB *dbp;
 	int ret;
 
-	if ((ret = db_create(&dbp, NULL, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, NULL, 0)) != 0)
 		return (ret);
 
 	if ((ret = __db_set_pagesize(dbp, 1024)) != 0)
@@ -692,14 +691,14 @@ __db_salvage_getnext(vdp, dbcp, pgnop, pgtypep, skip_overflow)
 	    (ret = __db_cursor(dbp, NULL, dbcp, 0)) != 0)
 		return (ret);
 
-	while ((ret = __db_c_get(*dbcp, &key, &data, DB_NEXT)) == 0) {
+	while ((ret = __dbc_get(*dbcp, &key, &data, DB_NEXT)) == 0) {
 		DB_ASSERT(dbp->dbenv, data.size == sizeof(u_int32_t));
 		memcpy(&pgtype, data.data, sizeof(pgtype));
 
 		if (skip_overflow && pgtype == SALVAGE_OVERFLOW)
 			continue;
 
-		if ((ret = __db_c_del(*dbcp, 0)) != 0)
+		if ((ret = __dbc_del(*dbcp, 0)) != 0)
 			return (ret);
 		if (pgtype != SALVAGE_IGNORE) {
 			DB_ASSERT(dbp->dbenv, key.size == sizeof(db_pgno_t));

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: txn_recover.c,v 12.19 2006/08/24 14:46:53 bostic Exp $
+ * $Id: txn_recover.c,v 12.29 2007/06/29 00:25:02 margo Exp $
  */
 
 #include "db_config.h"
@@ -134,7 +133,7 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 	XID *xids;
 	DB_PREPLIST *txns;
 	long count;		/* This is long for XA compatibility. */
-	long  *retp;
+	long *retp;
 	u_int32_t flags;
 {
 	DB_LSN min;
@@ -144,15 +143,14 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 	TXN_DETAIL *td;
 	XID *xidp;
 	long i;
-	int nrestores, open_files, ret;
+	int restored, ret;
 
 	*retp = 0;
 
 	MAX_LSN(min);
 	prepp = txns;
 	xidp = xids;
-	nrestores = ret = 0;
-	open_files = 1;
+	restored = ret = 0;
 
 	/*
 	 * If we are starting a scan, then we traverse the active transaction
@@ -173,23 +171,17 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 	 * restored, then we never crashed; just the main server did).
 	 */
 	TXN_SYSTEM_LOCK(dbenv);
-	if (flags == DB_FIRST) {
-		SH_TAILQ_FOREACH(td, &region->active_txn, links, __txn_detail) {
-			if (F_ISSET(td, TXN_DTL_RESTORED))
-				nrestores++;
-			F_CLR(td, TXN_DTL_COLLECTED);
-		}
-		mgr->n_discards = 0;
-	} else
-		open_files = 0;
 
 	/* Now begin collecting active transactions. */
 	for (td = SH_TAILQ_FIRST(&region->active_txn, __txn_detail);
 	    td != NULL && *retp < count;
 	    td = SH_TAILQ_NEXT(td, links, __txn_detail)) {
 		if (td->status != TXN_PREPARED ||
-		    F_ISSET(td, TXN_DTL_COLLECTED))
+		    (flags != DB_FIRST && F_ISSET(td, TXN_DTL_COLLECTED)))
 			continue;
+
+		if (F_ISSET(td, TXN_DTL_RESTORED))
+			restored = 1;
 
 		if (xids != NULL) {
 			xidp->formatID = td->format;
@@ -210,7 +202,8 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 				TXN_SYSTEM_UNLOCK(dbenv);
 				goto err;
 			}
-			__txn_continue(dbenv, prepp->txn, td);
+			if ((ret = __txn_continue(dbenv, prepp->txn, td)) != 0)
+				goto err;
 			F_SET(prepp->txn, TXN_MALLOC);
 			memcpy(prepp->gid, td->xid, sizeof(td->xid));
 			prepp++;
@@ -222,30 +215,43 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 
 		(*retp)++;
 		F_SET(td, TXN_DTL_COLLECTED);
-		if (IS_ENV_REPLICATED(dbenv) &&
-		    (ret = __op_rep_enter(dbenv)) != 0)
-			goto err;
 	}
+	if (flags == DB_FIRST)
+		for (; td != NULL; td = SH_TAILQ_NEXT(td, links, __txn_detail))
+			F_CLR(td, TXN_DTL_COLLECTED);
 	TXN_SYSTEM_UNLOCK(dbenv);
 
 	/*
 	 * Now link all the transactions into the transaction manager's list.
 	 */
-	if (txns != NULL) {
+	if (txns != NULL && *retp != 0) {
 		MUTEX_LOCK(dbenv, mgr->mutex);
 		for (i = 0; i < *retp; i++)
 			TAILQ_INSERT_TAIL(&mgr->txn_chain, txns[i].txn, links);
 		MUTEX_UNLOCK(dbenv, mgr->mutex);
-	}
 
-	if (open_files && nrestores && *retp != 0 && !IS_MAX_LSN(min)) {
-		F_SET(dbenv->lg_handle, DBLOG_RECOVER);
+		/*
+		 * If we are restoring, update our count of outstanding
+		 * transactions.
+		 */
+		if (REP_ON(dbenv)) {
+			REP_SYSTEM_LOCK(dbenv);
+			dbenv->rep_handle->region->op_cnt += (u_long)*retp;
+			REP_SYSTEM_UNLOCK(dbenv);
+		}
+
+	}
+	/*
+	 * If recovery already opened the files for us, don't
+	 * do it here.
+	 */
+	if (restored != 0 && flags == DB_FIRST &&
+	    !F_ISSET(dbenv->lg_handle, DBLOG_OPENFILES))
 		ret = __txn_openfiles(dbenv, &min, 0);
-		F_CLR(dbenv->lg_handle, DBLOG_RECOVER);
-	}
-	return (0);
 
-err:	TXN_SYSTEM_UNLOCK(dbenv);
+	if (0) {
+err:		TXN_SYSTEM_UNLOCK(dbenv);
+	}
 	return (ret);
 }
 
@@ -279,7 +285,7 @@ __txn_openfiles(dbenv, min, force)
 	memset(&data, 0, sizeof(data));
 	if ((ret = __txn_getckp(dbenv, &open_lsn)) == 0)
 		while (!IS_ZERO_LSN(open_lsn) && (ret =
-		    __log_c_get(logc, &open_lsn, &data, DB_SET)) == 0 &&
+		    __logc_get(logc, &open_lsn, &data, DB_SET)) == 0 &&
 		    (force ||
 		    (min != NULL && LOG_COMPARE(min, &open_lsn) < 0))) {
 			/* Format the log record. */
@@ -300,7 +306,7 @@ __txn_openfiles(dbenv, min, force)
 			    ckp_args->last_ckp;
 			__os_free(dbenv, ckp_args);
 			if (force) {
-				if ((ret = __log_c_get(logc, &open_lsn,
+				if ((ret = __logc_get(logc, &open_lsn,
 				    &data, DB_SET)) != 0)
 					goto err;
 				break;
@@ -317,7 +323,7 @@ __txn_openfiles(dbenv, min, force)
 	 * - We are forcing an openfiles and we have our ckp_lsn.
 	 */
 	if ((ret == DB_NOTFOUND || IS_ZERO_LSN(open_lsn)) && (ret =
-	    __log_c_get(logc, &open_lsn, &data, DB_FIRST)) != 0) {
+	    __logc_get(logc, &open_lsn, &data, DB_FIRST)) != 0) {
 		__db_errx(dbenv, "No log records");
 		goto err;
 	}
@@ -330,7 +336,7 @@ __txn_openfiles(dbenv, min, force)
 		__db_txnlist_end(dbenv, txninfo);
 
 err:
-	if (logc != NULL && (t_ret = __log_c_close(logc)) != 0 && ret == 0)
+	if (logc != NULL && (t_ret = __logc_close(logc)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
 }

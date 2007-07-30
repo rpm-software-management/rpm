@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
 		Retrieving Database Items
 	</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
-    <link rel="up" href="BasicProgram.html" title="Chapter 2. &#10;&#9;&#9;The Basic Program&#10;&#9;" />
+    <link rel="up" href="BasicProgram.html" title="ChapterÂ 2.Â &#10;&#9;&#9;The Basic Program&#10;&#9;" />
     <link rel="previous" href="addingdatabaseitems.html" title="&#10;&#9;&#9;Adding Database Items&#10;&#9;" />
     <link rel="next" href="handlingexceptions.html" title="&#10;&#9;&#9;Handling Exceptions&#10;&#9;" />
   </head>
@@ -22,11 +22,11 @@
 	</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="addingdatabaseitems.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. 
+          <td width="20%" align="left"><a accesskey="p" href="addingdatabaseitems.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â 
 		The Basic Program
 	</th>
-          <td width="20%" align="right"> <a accesskey="n" href="handlingexceptions.html">Next</a></td>
+          <td width="20%" align="right">Â <a accesskey="n" href="handlingexceptions.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -45,13 +45,13 @@
       <p>
     Retrieving information from the database is accomplished via the
 	standard Java collections API. In the example, the 
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html#iterator" target="_top">Set.iterator</a>
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Set.html#iterator" target="_top">Set.iterator</a>
 	
     method is used to iterate all 
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
 	
 	objects for each store. All standard Java methods for retrieving
-	objects from a collection may be used with the  Java Collections API.
+	objects from a collection may be used with the DB Java Collections API.
 </p>
       <p>
     The <tt class="methodname">PrintDatabase.doWork()</tt> method calls
@@ -63,8 +63,7 @@
 	class and was outlined in the previous section.
 </p>
       <a id="cb_printdatabase"></a>
-      <pre class="programlisting">import com.sleepycat.collections.StoredIterator;
-import java.util.Iterator;
+      <pre class="programlisting">import java.util.Iterator;
 ...
 public class Sample
 {
@@ -76,11 +75,11 @@ public class Sample
         public void doWork()
             throws Exception
         {
-<b class="userinput"><tt>            printEntries(&quot;Parts&quot;,
+<b class="userinput"><tt>            printEntries("Parts",
                           views.getPartEntrySet().iterator());
-            printEntries(&quot;Suppliers&quot;,
+            printEntries("Suppliers",
                           views.getSupplierEntrySet().iterator());
-            printEntries(&quot;Shipments&quot;,
+            printEntries("Shipments",
                           views.getShipmentEntrySet().iterator());</tt></b>
         }
     }
@@ -93,21 +92,21 @@ public class Sample
 } </pre>
       <p>
     The 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html" target="_top">Set</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Set.html" target="_top">Set</a>
     
 	of 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
     
 	objects for each store is obtained from the <tt class="classname">SampleViews</tt>
 	object. This set can also be obtained by calling the 
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#entrySet" target="_top">Map.entrySet</a>
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#entrySet" target="_top">Map.entrySet</a>
 	
 	method of a stored map.
 </p>
       <p>
     The <tt class="methodname">printEntries()</tt> prints the map entries for any stored
 	map. The 
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/lang/Object.html#toString" target="_top">Object.toString</a>
+	<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html#toString" target="_top">Object.toString</a>
 	
 	method of each key and value is called to
 	obtain a printable representation of each object.
@@ -115,45 +114,14 @@ public class Sample
       <a id="cb_printentries"></a>
       <pre class="programlisting">    private void printEntries(String label, Iterator iterator)
     {
-<b class="userinput"><tt>        System.out.println(&quot;\n--- &quot; + label + &quot; ---&quot;);
-        try
+<b class="userinput"><tt>        System.out.println("\n--- " + label + " ---");
+        while (iterator.hasNext())
         {
-            while (iterator.hasNext())
-            {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                System.out.println(entry.getKey().toString());
-                System.out.println(entry.getValue().toString());
-            }
-        }
-        finally
-        {
-            StoredIterator.close(iterator);
+            Map.Entry entry = (Map.Entry) iterator.next();
+            System.out.println(entry.getKey().toString());
+            System.out.println(entry.getValue().toString());
         }</tt></b>
     } </pre>
-      <p>
-    It is very important that all iterators for stored collections
-	are explicitly closed. To ensure they are closed, a <tt class="literal">finally</tt>
-	clause should be used as shown above. If the iterator is not
-	closed, the underlying Berkeley DB cursor is not closed either and
-	the store may become unusable.
-</p>
-      <p>
-    If the iterator is cast to 
-	<a href="../../java/com/sleepycat/collections/StoredIterator.html" target="_top">StoredIterator</a>
-	
-	then its 
-	<a href="../../java/com/sleepycat/collections/StoredIterator.html#close()" target="_top">StoredIterator.close()</a>
-	
-	method can be called. Or, as shown above, the static 
-	<a href="../../java/com/sleepycat/collections/StoredIterator.html#close(java.util.Iterator)" target="_top">StoredIterator.close()</a>
-	
-    method can be called
-	to avoid casting. The static form of this method can be called
-	safely for any 
-	<a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Iterator.html" target="_top">Iterator</a>.
-	If an iterator for a non-stored collection is passed, it is simply
-	ignored.
-</p>
       <p>
     This is one of a small number of behavioral differences between
 	standard Java collections and stored collections. For a complete
@@ -225,20 +193,20 @@ ShipmentData: quantity=100 </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="addingdatabaseitems.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="addingdatabaseitems.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="BasicProgram.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="handlingexceptions.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="handlingexceptions.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
 		Adding Database Items
-	 </td>
+	Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> 
+          <td width="40%" align="right" valign="top">Â 
 		Handling Exceptions
 	</td>
         </tr>

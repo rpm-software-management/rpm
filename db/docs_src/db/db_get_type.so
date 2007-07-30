@@ -1,0 +1,35 @@
+m4_comment([$Id: db_get_type.so,v 10.27 2004/08/13 03:38:55 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_get_type)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_get_type),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__get_type(DB *db, DBTYPE *type);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::get_type(DBTYPE *type);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_get_type) returns the type of the underlying access
+method (and file format).  The type value is one of DB_BTREE, DB_HASH,
+DB_RECNO, or DB_QUEUE.  This value may be used to determine the type of
+the database after a return from m4_ref(dbh_open) with the m4_arg(type)
+parameter set to DB_UNKNOWN.])
+
+m4_when_after_dbopen(dbh_get_type)
+
+m4_return(dbh_get_type, std)
+
+m4_parambegin
+m4_param_co(type, [type of the underlying access method])
+m4_paramend
+
+m4_err(dbh_get_type,
+einval, [the method was called before m4_ref(dbh_open) was called])
+
+m4_seealso(Db)
+m4_page_footer

@@ -1,0 +1,41 @@
+m4_comment([$Id: toc.so,v 11.6 2006/10/02 15:56:36 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 2.X applications to m4_db 3.0,
+    Upgrading to release 3.0,,)
+
+m4_nlistbegin
+m4_nlist([m4_link(intro, [Release 3.0: introduction])])
+m4_nlistns([m4_link(envopen, [Release 3.0: environment open/close/unlink])])
+m4_nlistns([m4_link(func, [Release 3.0: function arguments])])
+m4_nlistns([m4_link(dbenv, [Release 3.0: the DB_ENV structure])])
+m4_nlistns([m4_link(open, [Release 3.0: database open/close])])
+m4_nlistns([m4_link(xa, [Release 3.0: db_xa_open])])
+m4_nlistns([m4_link(db, [Release 3.0: the DB structure])])
+m4_nlistns([m4_link(dbinfo, [Release 3.0: the DBINFO structure])])
+m4_nlistns([m4_link(join, [Release 3.0: DB-__GT__join])])
+m4_nlistns([m4_link(stat, [Release 3.0: DB-__GT__stat])])
+m4_nlistns([m4_link(close, [Release 3.0: DB-__GT__sync and DB-__GT__close])])
+m4_nlistns([m4_link(lock_put, [Release 3.0: lock_put])])
+m4_nlistns([m4_link(lock_detect, [Release 3.0: lock_detect])])
+m4_nlistns([m4_link(lock_stat, [Release 3.0: lock_stat])])
+m4_nlistns([m4_link(log_register, [Release 3.0: log_register])])
+m4_nlistns([m4_link(log_stat, [Release 3.0: log_stat])])
+m4_nlistns([m4_link(memp_stat, [Release 3.0: memp_stat])])
+m4_nlistns([m4_link(txn_begin, [Release 3.0: txn_begin])])
+m4_nlistns([m4_link(txn_commit, [Release 3.0: txn_commit])])
+m4_nlistns([m4_link(txn_stat, [Release 3.0: txn_stat])])
+m4_nlistns([m4_link(rmw, [Release 3.0: DB_RMW])])
+m4_nlistns([m4_link(lock_notheld, [Release 3.0: DB_LOCK_NOTHELD])])
+m4_nlistns([m4_link(eagain, [Release 3.0: EAGAIN])])
+m4_nlistns([m4_link(eacces, [Release 3.0: EACCES])])
+m4_nlistns([m4_link(jump_set, [Release 3.0: db_jump_set])])
+m4_nlistns([m4_link(value_set, [Release 3.0: db_value_set])])
+m4_nlistns([m4_link(dbenv_cxx, [Release 3.0: the DbEnv class for C++ and Java])])
+m4_nlistns([m4_link(db_cxx, [Release 3.0: the Db class for C++ and Java])])
+m4_nlistns([m4_link(cxx, [Release 3.0: additional C++ changes])])
+m4_nlistns([m4_link(java, [Release 3.0: additional Java changes])])
+m4_nlistns([m4_link(disk, [Release 3.0: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

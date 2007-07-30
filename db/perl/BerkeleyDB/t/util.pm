@@ -187,6 +187,20 @@ sub docat_del
     return $result;
 }   
 
+sub docat_del_sort
+{ 
+    my $file = shift;
+    open(CAT,$file) || die "Cannot open $file: $!";
+    my @got = <CAT>;
+    @got = sort @got;
+
+    my $result = join('', @got) || "" ;
+    close(CAT);
+    unlink $file ;
+    $result = normalise($result);
+    return $result;
+}   
+
 sub writeFile
 {
     my $name = shift ;

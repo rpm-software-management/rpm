@@ -1,0 +1,13 @@
+m4_comment([$Id: lock_id_free.so,v 1.1 2001/09/25 21:05:24 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: DB_ENV-__GT__lock_id_free,,
+    upgrade.4.0/set_lk_max, upgrade.4.0/java)
+
+m4_p([dnl
+A new locker ID related API, the m4_refT(lock_id_free), was added to
+m4_db 4.0 release.  Applications using the m4_refT(lock_id) to allocate
+locker IDs may want to update their applications to free the locker ID
+when it is no longer needed.])
+
+m4_page_footer

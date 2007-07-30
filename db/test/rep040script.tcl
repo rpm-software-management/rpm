@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: rep040script.tcl,v 12.5 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep040script.tcl,v 12.9 2007/05/17 18:17:21 bostic Exp $
 #
 # Rep040 script - transaction concurrency with rep_start
 #
@@ -33,11 +32,13 @@ if { $argc != 1 } {
 # Initialize arguments
 set masterdir [ lindex $argv 0 ]
 
-set is_repchild 1
+# Join the queue env.  We assume the rep test convention of
+# placing the messages in $testdir/MSGQUEUEDIR.
+set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]
+error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
 
 # We need to set up our own machids.
 # Add 1 for master env id, and 2 for the clientenv id.
-#
 repladd 1
 repladd 2
 

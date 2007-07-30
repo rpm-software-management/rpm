@@ -1,0 +1,20 @@
+m4_comment([$Id: sco.so,v 11.9 2003/03/24 13:46:23 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    SCO, @SCO, build_unix/qnx, build_unix/solaris)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([dnl
+If I build with gcc, programs such as db_dump and db_stat core dump
+immediately when invoked.])
+
+m4_p([dnl
+We suspect gcc or the runtime loader may have a bug, but we haven't
+tracked it down.  If you want to use gcc, we suggest building static
+libraries.])])
+
+m4_nlistend
+
+m4_page_footer

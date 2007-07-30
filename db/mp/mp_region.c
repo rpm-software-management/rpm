@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mp_region.c,v 12.21 2006/08/24 14:46:15 bostic Exp $
+ * $Id: mp_region.c,v 12.33 2007/05/17 17:18:01 bostic Exp $
  */
 
 #include "db_config.h"
@@ -12,7 +11,6 @@
 #include "db_int.h"
 #include "dbinc/mp.h"
 
-static int	__memp_init __P((DB_ENV *, DB_MPOOL *, u_int, u_int32_t));
 static int	__memp_init_config __P((DB_ENV *, MPOOL *));
 static void	__memp_region_size __P((DB_ENV *, roff_t *, u_int32_t *));
 
@@ -20,17 +18,18 @@ static void	__memp_region_size __P((DB_ENV *, roff_t *, u_int32_t *));
  * __memp_open --
  *	Internal version of memp_open: only called from DB_ENV->open.
  *
- * PUBLIC: int __memp_open __P((DB_ENV *));
+ * PUBLIC: int __memp_open __P((DB_ENV *, int));
  */
 int
-__memp_open(dbenv)
+__memp_open(dbenv, create_ok)
 	DB_ENV *dbenv;
+	int create_ok;
 {
 	DB_MPOOL *dbmp;
 	MPOOL *mp;
 	REGINFO reginfo;
 	roff_t reg_size;
-	u_int i;
+	u_int i, max_nreg;
 	u_int32_t htab_buckets, *regids;
 	int ret;
 
@@ -50,9 +49,9 @@ __memp_open(dbenv)
 	reginfo.type = REGION_TYPE_MPOOL;
 	reginfo.id = INVALID_REGION_ID;
 	reginfo.flags = REGION_JOIN_OK;
-	if (F_ISSET(dbenv, DB_ENV_CREATE))
+	if (create_ok)
 		F_SET(&reginfo, REGION_CREATE_OK);
-	if ((ret = __db_r_attach(dbenv, &reginfo, reg_size)) != 0)
+	if ((ret = __env_region_attach(dbenv, &reginfo, reg_size)) != 0)
 		goto err;
 
 	/*
@@ -65,17 +64,18 @@ __memp_open(dbenv)
 		 * the REGINFO structures and create them.  Make sure we don't
 		 * clear the wrong entries on error.
 		 */
-		dbmp->nreg = dbenv->mp_ncache;
+		max_nreg = __memp_max_regions(dbenv);
 		if ((ret = __os_calloc(dbenv,
-		    dbmp->nreg, sizeof(REGINFO), &dbmp->reginfo)) != 0)
+		    max_nreg, sizeof(REGINFO), &dbmp->reginfo)) != 0)
 			goto err;
 		/* Make sure we don't clear the wrong entries on error. */
-		for (i = 0; i < dbmp->nreg; ++i)
-			dbmp->reginfo[i].id = INVALID_REGION_ID;
 		dbmp->reginfo[0] = reginfo;
+		for (i = 1; i < max_nreg; ++i)
+			dbmp->reginfo[i].id = INVALID_REGION_ID;
 
 		/* Initialize the first region. */
-		if ((ret = __memp_init(dbenv, dbmp, 0, htab_buckets)) != 0)
+		if ((ret = __memp_init(dbenv, dbmp,
+		    0, htab_buckets, max_nreg)) != 0)
 			goto err;
 
 		/*
@@ -84,16 +84,17 @@ __memp_open(dbenv)
 		 */
 		mp = R_ADDR(dbmp->reginfo, dbmp->reginfo[0].rp->primary);
 		regids = R_ADDR(dbmp->reginfo, mp->regids);
-		for (i = 1; i < dbmp->nreg; ++i) {
+		regids[0] = dbmp->reginfo[0].id;
+		for (i = 1; i < dbenv->mp_ncache; ++i) {
 			dbmp->reginfo[i].dbenv = dbenv;
 			dbmp->reginfo[i].type = REGION_TYPE_MPOOL;
 			dbmp->reginfo[i].id = INVALID_REGION_ID;
 			dbmp->reginfo[i].flags = REGION_CREATE_OK;
-			if ((ret = __db_r_attach(
+			if ((ret = __env_region_attach(
 			    dbenv, &dbmp->reginfo[i], reg_size)) != 0)
 				goto err;
-			if ((ret =
-			    __memp_init(dbenv, dbmp, i, htab_buckets)) != 0)
+			if ((ret = __memp_init(dbenv, dbmp,
+			    i, htab_buckets, max_nreg)) != 0)
 				goto err;
 
 			regids[i] = dbmp->reginfo[i].id;
@@ -105,30 +106,30 @@ __memp_open(dbenv)
 		 * information.
 		 */
 		mp = R_ADDR(&reginfo, reginfo.rp->primary);
-		dbmp->nreg = mp->nreg;
+		dbenv->mp_ncache = mp->nreg;
 		if ((ret = __os_calloc(dbenv,
-		    dbmp->nreg, sizeof(REGINFO), &dbmp->reginfo)) != 0)
+		    mp->max_nreg, sizeof(REGINFO), &dbmp->reginfo)) != 0)
 			goto err;
 		/* Make sure we don't clear the wrong entries on error. */
-		for (i = 0; i < dbmp->nreg; ++i)
+		for (i = 0; i < dbenv->mp_ncache; ++i)
 			dbmp->reginfo[i].id = INVALID_REGION_ID;
 		dbmp->reginfo[0] = reginfo;
 
 		/* Join remaining regions. */
 		regids = R_ADDR(dbmp->reginfo, mp->regids);
-		for (i = 1; i < dbmp->nreg; ++i) {
+		for (i = 1; i < dbenv->mp_ncache; ++i) {
 			dbmp->reginfo[i].dbenv = dbenv;
 			dbmp->reginfo[i].type = REGION_TYPE_MPOOL;
 			dbmp->reginfo[i].id = regids[i];
 			dbmp->reginfo[i].flags = REGION_JOIN_OK;
-			if ((ret = __db_r_attach(
+			if ((ret = __env_region_attach(
 			    dbenv, &dbmp->reginfo[i], 0)) != 0)
 				goto err;
 		}
 	}
 
 	/* Set the local addresses for the regions. */
-	for (i = 0; i < dbmp->nreg; ++i)
+	for (i = 0; i < dbenv->mp_ncache; ++i)
 		dbmp->reginfo[i].primary =
 		    R_ADDR(&dbmp->reginfo[i], dbmp->reginfo[i].rp->primary);
 
@@ -147,9 +148,9 @@ __memp_open(dbenv)
 
 err:	dbenv->mp_handle = NULL;
 	if (dbmp->reginfo != NULL && dbmp->reginfo[0].addr != NULL) {
-		for (i = 0; i < dbmp->nreg; ++i)
+		for (i = 0; i < dbenv->mp_ncache; ++i)
 			if (dbmp->reginfo[i].id != INVALID_REGION_ID)
-				(void)__db_r_detach(
+				(void)__env_region_detach(
 				    dbenv, &dbmp->reginfo[i], 0);
 		__os_free(dbenv, dbmp->reginfo);
 	}
@@ -162,27 +163,32 @@ err:	dbenv->mp_handle = NULL;
 /*
  * __memp_init --
  *	Initialize a MPOOL structure in shared memory.
+ *
+ * PUBLIC: int	__memp_init
+ * PUBLIC:     __P((DB_ENV *, DB_MPOOL *, u_int, u_int32_t, u_int));
  */
-static int
-__memp_init(dbenv, dbmp, reginfo_off, htab_buckets)
+int
+__memp_init(dbenv, dbmp, reginfo_off, htab_buckets, max_nreg)
 	DB_ENV *dbenv;
 	DB_MPOOL *dbmp;
-	u_int reginfo_off;
+	u_int reginfo_off, max_nreg;
 	u_int32_t htab_buckets;
 {
+	BH_FROZEN_ALLOC *frozen;
+	BH *frozen_bhp;
 	DB_MPOOL_HASH *htab, *hp;
-	MPOOL *mp;
-	REGINFO *reginfo;
+	MPOOL *mp, *main_mp;
+	REGINFO *infop;
+	db_mutex_t mtx_base, mtx_discard, mtx_prev;
 	u_int32_t i;
 	int ret;
 	void *p;
 
-	reginfo = &dbmp->reginfo[reginfo_off];
-	if ((ret = __db_shalloc(
-	    reginfo, sizeof(MPOOL), 0, &reginfo->primary)) != 0)
+	infop = &dbmp->reginfo[reginfo_off];
+	if ((ret = __env_alloc(infop, sizeof(MPOOL), &infop->primary)) != 0)
 		goto mem_err;
-	reginfo->rp->primary = R_OFFSET(reginfo, reginfo->primary);
-	mp = reginfo->primary;
+	infop->rp->primary = R_OFFSET(infop, infop->primary);
+	mp = infop->primary;
 	memset(mp, 0, sizeof(*mp));
 
 	if ((ret =
@@ -192,17 +198,19 @@ __memp_init(dbenv, dbmp, reginfo_off, htab_buckets)
 	if (reginfo_off == 0) {
 		ZERO_LSN(mp->lsn);
 
-		mp->nreg = dbmp->nreg;
-		if ((ret = __db_shalloc(&dbmp->reginfo[0],
-		    dbmp->nreg * sizeof(u_int32_t), 0, &p)) != 0)
+		mp->nreg = dbenv->mp_ncache;
+		mp->max_nreg = max_nreg;
+		if ((ret = __env_alloc(&dbmp->reginfo[0],
+		    max_nreg * sizeof(u_int32_t), &p)) != 0)
 			goto mem_err;
 		mp->regids = R_OFFSET(dbmp->reginfo, p);
+		mp->nbuckets = dbenv->mp_ncache * htab_buckets;
 
 		/* Allocate file table space and initialize it. */
-		if ((ret = __db_shalloc(reginfo,
-		    MPOOL_FILE_BUCKETS * sizeof(DB_MPOOL_HASH), 0, &htab)) != 0)
+		if ((ret = __env_alloc(infop,
+		    MPOOL_FILE_BUCKETS * sizeof(DB_MPOOL_HASH), &htab)) != 0)
 			goto mem_err;
-		mp->ftab = R_OFFSET(reginfo, htab);
+		mp->ftab = R_OFFSET(infop, htab);
 		for (i = 0; i < MPOOL_FILE_BUCKETS; i++) {
 			if ((ret = __mutex_alloc(dbenv,
 			     MTX_MPOOL_FILE_BUCKET, 0, &htab[i].mtx_hash)) != 0)
@@ -211,30 +219,78 @@ __memp_init(dbenv, dbmp, reginfo_off, htab_buckets)
 			htab[i].hash_page_dirty = htab[i].hash_priority = 0;
 		}
 
+		/*
+		 * Allocate all of the hash bucket mutexes up front.  We do
+		 * this so that we don't need to free and reallocate mutexes as
+		 * the cache is resized.
+		 */
+		mtx_base = mtx_prev = MUTEX_INVALID;
+		for (i = 0; i < mp->max_nreg * htab_buckets; i++) {
+			if ((ret = __mutex_alloc(dbenv, MTX_MPOOL_HASH_BUCKET,
+			    0, &mtx_discard)) != 0)
+				return (ret);
+			if (i == 0) {
+				mtx_base = mtx_discard;
+				mtx_prev = mtx_discard - 1;
+			}
+			DB_ASSERT(dbenv, mtx_discard == mtx_prev + 1 ||
+			    mtx_base == MUTEX_INVALID);
+			mtx_prev = mtx_discard;
+			if ((ret = __mutex_alloc(dbenv, MTX_MPOOL_IO,
+			    DB_MUTEX_SELF_BLOCK, &mtx_discard)) != 0)
+				return (ret);
+			DB_ASSERT(dbenv, mtx_discard == mtx_prev + 1 ||
+			    mtx_base == MUTEX_INVALID);
+			mtx_prev = mtx_discard;
+		}
+	} else {
+		main_mp = dbmp->reginfo[0].primary;
+		htab = R_ADDR(&dbmp->reginfo[0], main_mp->htab);
+		mtx_base = htab[0].mtx_hash;
 	}
 
+	if (mtx_base != MUTEX_INVALID)
+		mtx_base += reginfo_off * htab_buckets;
+
 	/* Allocate hash table space and initialize it. */
-	if ((ret = __db_shalloc(reginfo,
-	    htab_buckets * sizeof(DB_MPOOL_HASH), 0, &htab)) != 0)
+	if ((ret = __env_alloc(infop,
+	    htab_buckets * sizeof(DB_MPOOL_HASH), &htab)) != 0)
 		goto mem_err;
-	mp->htab = R_OFFSET(reginfo, htab);
+	mp->htab = R_OFFSET(infop, htab);
 	for (i = 0; i < htab_buckets; i++) {
 		hp = &htab[i];
-		if ((ret = __mutex_alloc(dbenv,
-		    MTX_MPOOL_HASH_BUCKET, 0, &hp->mtx_hash)) != 0)
-			return (ret);
-		if ((ret = __mutex_alloc(dbenv,
-		    MTX_MPOOL_IO, DB_MUTEX_SELF_BLOCK, &hp->mtx_io)) != 0)
-			return (ret);
+		hp->mtx_hash = (mtx_base == MUTEX_INVALID) ? MUTEX_INVALID :
+		    mtx_base + i * 2;
+		hp->mtx_io = (mtx_base == MUTEX_INVALID) ? MUTEX_INVALID :
+		    mtx_base + i * 2 + 1;
 		SH_TAILQ_INIT(&hp->hash_bucket);
-		hp->hash_page_dirty = hp->hash_priority = hp->hash_io_wait = 0;
+		hp->hash_page_dirty = hp->hash_priority = 0;
+#ifdef HAVE_STATISTICS
+		hp->hash_io_wait = 0;
+		hp->hash_frozen = hp->hash_thawed = hp->hash_frozen_freed = 0;
+#endif
 		hp->flags = 0;
 		ZERO_LSN(hp->old_reader);
 	}
-	mp->htab_buckets = mp->stat.st_hash_buckets = htab_buckets;
+	mp->htab_buckets = htab_buckets;
+#ifdef HAVE_STATISTICS
+	mp->stat.st_hash_buckets = htab_buckets;
+#endif
 
 	SH_TAILQ_INIT(&mp->free_frozen);
 	SH_TAILQ_INIT(&mp->alloc_frozen);
+
+	/*
+	 * Pre-allocate one frozen buffer header.  This avoids situations where
+	 * the cache becomes full of pages and we don't even have the 28 bytes
+	 * (or so) available to allocate a frozen buffer header.
+	 */
+	if ((ret = __env_alloc(infop,
+	    sizeof(BH_FROZEN_ALLOC) + sizeof(BH_FROZEN_PAGE), &frozen)) != 0)
+		goto mem_err;
+	frozen_bhp = (BH *)(frozen + 1);
+	SH_TAILQ_INSERT_TAIL(&mp->alloc_frozen, frozen, links);
+	SH_TAILQ_INSERT_TAIL(&mp->free_frozen, frozen_bhp, hq);
 
 	/*
 	 * Only the environment creator knows the total cache size, fill in
@@ -249,6 +305,25 @@ mem_err:__db_errx(dbenv, "Unable to allocate memory for mpool region");
 }
 
 /*
+ * PUBLIC: u_int32_t __memp_max_regions __P((DB_ENV *));
+ */
+u_int32_t
+__memp_max_regions(dbenv)
+	DB_ENV *dbenv;
+{
+	roff_t reg_size, max_size;
+	u_int32_t max_nreg;
+
+	__memp_region_size(dbenv, &reg_size, NULL);
+	max_size = (roff_t)dbenv->mp_max_gbytes * GIGABYTE +
+	    dbenv->mp_max_bytes;
+	max_nreg = (max_size + reg_size / 2) / reg_size;
+	if (max_nreg <= dbenv->mp_ncache)
+		max_nreg = dbenv->mp_ncache;
+	return (max_nreg);
+}
+
+/*
  * __memp_region_size --
  *	Size the region and figure out how many hash buckets we'll have.
  */
@@ -258,15 +333,16 @@ __memp_region_size(dbenv, reg_sizep, htab_bucketsp)
 	roff_t *reg_sizep;
 	u_int32_t *htab_bucketsp;
 {
-	roff_t reg_size;
+	roff_t reg_size, cache_size;
 
 	/*
 	 * Figure out how big each cache region is.  Cast an operand to roff_t
 	 * so we do 64-bit arithmetic as appropriate.
 	 */
-	reg_size = ((roff_t)GIGABYTE / dbenv->mp_ncache) * dbenv->mp_gbytes;
-	reg_size += dbenv->mp_bytes / dbenv->mp_ncache;
-	*reg_sizep = reg_size;
+	cache_size = (roff_t)dbenv->mp_gbytes * GIGABYTE + dbenv->mp_bytes;
+	reg_size = cache_size / dbenv->mp_ncache;
+	if (reg_sizep != NULL)
+		*reg_sizep = reg_size;
 
 	/*
 	 * Figure out how many hash buckets each region will have.  Assume we
@@ -281,7 +357,9 @@ __memp_region_size(dbenv, reg_sizep, htab_bucketsp)
 	 * something we need to worry about right now, but is checked when the
 	 * cache size is set.
 	 */
-	*htab_bucketsp = __db_tablesize((u_int32_t)(reg_size / (10 * 1024)));
+	if (htab_bucketsp != NULL)
+		*htab_bucketsp =
+		    __db_tablesize((u_int32_t)(reg_size / (10 * 1024)));
 }
 
 /*
@@ -294,10 +372,9 @@ u_int32_t
 __memp_region_mutex_count(dbenv)
 	DB_ENV *dbenv;
 {
-	roff_t reg_size;
 	u_int32_t htab_buckets;
 
-	__memp_region_size(dbenv, &reg_size, &htab_buckets);
+	__memp_region_size(dbenv, NULL, &htab_buckets);
 
 	/*
 	 * We need a couple of mutexes for the region itself, one for each
@@ -334,13 +411,13 @@ __memp_init_config(dbenv, mp)
 }
 
 /*
- * __memp_dbenv_refresh --
+ * __memp_env_refresh --
  *	Clean up after the mpool system on a close or failed open.
  *
- * PUBLIC: int __memp_dbenv_refresh __P((DB_ENV *));
+ * PUBLIC: int __memp_env_refresh __P((DB_ENV *));
  */
 int
-__memp_dbenv_refresh(dbenv)
+__memp_env_refresh(dbenv)
 	DB_ENV *dbenv;
 {
 	BH *bhp;
@@ -349,53 +426,72 @@ __memp_dbenv_refresh(dbenv)
 	DB_MPOOLFILE *dbmfp;
 	DB_MPOOL_HASH *hp;
 	DB_MPREG *mpreg;
-	MPOOL *mp;
-	REGINFO *reginfo;
-	u_int32_t bucket, i;
+	MPOOL *mp, *c_mp;
+	REGINFO *infop;
+	db_mutex_t mtx_base, mtx;
+	u_int32_t bucket, htab_buckets, i, max_nreg, nreg;
 	int ret, t_ret;
 
 	ret = 0;
 	dbmp = dbenv->mp_handle;
+	mp = dbmp->reginfo[0].primary;
+	htab_buckets = mp->htab_buckets;
+	nreg = mp->nreg;
+	max_nreg = mp->max_nreg;
+	hp = R_ADDR(&dbmp->reginfo[0], mp->htab);
+	mtx_base = hp->mtx_hash;
 
 	/*
 	 * If a private region, return the memory to the heap.  Not needed for
 	 * filesystem-backed or system shared memory regions, that memory isn't
 	 * owned by any particular process.
-	 *
-	 * Discard buffers.
 	 */
-	if (F_ISSET(dbenv, DB_ENV_PRIVATE))
-		for (i = 0; i < dbmp->nreg; ++i) {
-			reginfo = &dbmp->reginfo[i];
-			mp = reginfo->primary;
-			for (hp = R_ADDR(reginfo, mp->htab), bucket = 0;
-			    bucket < mp->htab_buckets; ++hp, ++bucket) {
-				while ((bhp = SH_TAILQ_FIRST(
-				    &hp->hash_bucket, __bh)) != NULL)
-					if (F_ISSET(bhp, BH_FROZEN))
-						SH_TAILQ_REMOVE(
-						    &hp->hash_bucket, bhp,
-						    hq, __bh);
-					else if ((t_ret = __memp_bhfree(
-					    dbmp, hp, bhp,
+	if (!F_ISSET(dbenv, DB_ENV_PRIVATE))
+		goto not_priv;
+
+	/* Discard buffers. */
+	for (i = 0; i < nreg; ++i) {
+		infop = &dbmp->reginfo[i];
+		c_mp = infop->primary;
+		for (hp = R_ADDR(infop, c_mp->htab), bucket = 0;
+		    bucket < c_mp->htab_buckets; ++hp, ++bucket) {
+			while ((bhp = SH_TAILQ_FIRST(
+			    &hp->hash_bucket, __bh)) != NULL)
+				if (F_ISSET(bhp, BH_FROZEN))
+					SH_TAILQ_REMOVE(
+					    &hp->hash_bucket, bhp,
+					    hq, __bh);
+				else {
+					if (F_ISSET(bhp, BH_DIRTY)) {
+						--hp->hash_page_dirty;
+						F_CLR(bhp,
+						    BH_DIRTY | BH_DIRTY_CREATE);
+					}
+					if ((t_ret = __memp_bhfree(
+					    dbmp, infop, hp, bhp,
 					    BH_FREE_FREEMEM |
 					    BH_FREE_UNLOCKED)) != 0 && ret == 0)
 						ret = t_ret;
-				if ((t_ret = __mutex_free(
-				    dbenv, &hp->mtx_hash)) != 0 && ret == 0)
-					ret = t_ret;
-				if ((t_ret = __mutex_free(
-				    dbenv, &hp->mtx_io)) != 0 && ret == 0)
-					ret = t_ret;
-			}
-			while ((frozen_alloc = SH_TAILQ_FIRST(
-			    &mp->alloc_frozen, __bh_frozen_a)) != NULL) {
-				SH_TAILQ_REMOVE(&mp->alloc_frozen, frozen_alloc,
-				    links, __bh_frozen_a);
-				__db_shalloc_free(reginfo, frozen_alloc);
-			}
+				}
+		}
+		while ((frozen_alloc = SH_TAILQ_FIRST(
+		    &c_mp->alloc_frozen, __bh_frozen_a)) != NULL) {
+			SH_TAILQ_REMOVE(&c_mp->alloc_frozen, frozen_alloc,
+			    links, __bh_frozen_a);
+			__env_alloc_free(infop, frozen_alloc);
+		}
+	}
+
+	/* Discard hash bucket mutexes. */
+	if (mtx_base != MUTEX_INVALID)
+		for (i = 0; i < 2 * max_nreg * htab_buckets; ++i) {
+			mtx = mtx_base + i;
+			if ((t_ret = __mutex_free(dbenv, &mtx)) != 0 &&
+			    ret == 0)
+				ret = t_ret;
 		}
 
+not_priv:
 	/* Discard DB_MPOOLFILEs. */
 	while ((dbmfp = TAILQ_FIRST(&dbmp->dbmfq)) != NULL)
 		if ((t_ret = __memp_fclose(dbmfp, 0)) != 0 && ret == 0)
@@ -415,25 +511,25 @@ __memp_dbenv_refresh(dbenv)
 
 	if (F_ISSET(dbenv, DB_ENV_PRIVATE)) {
 		/* Discard REGION IDs. */
-		reginfo = &dbmp->reginfo[0];
-		mp = dbmp->reginfo[0].primary;
-		__memp_free(reginfo, NULL, R_ADDR(reginfo, mp->regids));
+		infop = &dbmp->reginfo[0];
+		__memp_free(infop, NULL, R_ADDR(infop, mp->regids));
 
 		/* Discard the File table. */
-		__memp_free(reginfo, NULL, R_ADDR(reginfo, mp->ftab));
+		__memp_free(infop, NULL, R_ADDR(infop, mp->ftab));
 
 		/* Discard Hash tables. */
-		for (i = 0; i < dbmp->nreg; ++i) {
-			reginfo = &dbmp->reginfo[i];
-			mp = reginfo->primary;
-			__memp_free(reginfo, NULL, R_ADDR(reginfo, mp->htab));
+		for (i = 0; i < nreg; ++i) {
+			infop = &dbmp->reginfo[i];
+			c_mp = infop->primary;
+			__memp_free(infop, NULL, R_ADDR(infop, c_mp->htab));
 		}
 	}
 
 	/* Detach from the region. */
-	for (i = 0; i < dbmp->nreg; ++i) {
-		reginfo = &dbmp->reginfo[i];
-		if ((t_ret = __db_r_detach(dbenv, reginfo, 0)) != 0 && ret == 0)
+	for (i = 0; i < nreg; ++i) {
+		infop = &dbmp->reginfo[i];
+		if ((t_ret =
+		    __env_region_detach(dbenv, infop, 0)) != 0 && ret == 0)
 			ret = t_ret;
 	}
 

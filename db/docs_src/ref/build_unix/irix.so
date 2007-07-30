@@ -1,0 +1,23 @@
+m4_comment([$Id: irix.so,v 11.6 2003/03/24 13:46:22 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    IRIX, @IRIX, build_unix/hpux, build_unix/linux)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't compile and run multithreaded applications.])
+
+m4_p([dnl
+Special compile-time flags are required when compiling threaded
+applications on IRIX.  If you are compiling a threaded application, you
+must compile with the _SGI_MP_SOURCE flag:])
+
+m4_indent([cc -D_SGI_MP_SOURCE ...])
+
+m4_p([dnl
+The m4_db library will automatically build with the correct options.])])
+
+m4_nlistend
+
+m4_page_footer

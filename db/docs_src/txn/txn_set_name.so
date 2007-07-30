@@ -1,0 +1,48 @@
+m4_comment([$Id: txn_set_name.so,v 10.2 2005/05/17 04:01:01 mjc Exp $])
+
+define(M4PAGELOCAL, [txn_set_name, txn_get_name])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_set_name),
+ifelse(M4API, C_API, [dnl
+int
+DB_TXN-__GT__set_name(DB_TXN *txn, const char *name);
+m4_blank
+int
+DB_TXN-__GT__get_name(DB_TXN *txn, const char **namep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbTxn::set_name(const char *name);
+m4_blank
+int
+DbTxn::get_name(const char **namep);
+]))
+
+m4_p([dnl
+The m4_refT(txn_set_name) associates the specified string with the
+transaction.  The string is returned by m4_ref(txn_stat) and displayed
+by m4_ref(txn_stat_print).])
+
+m4_p([dnl
+If the database environment has been configured for logging and the
+m4_db library was configured with
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --enable-diagnostic,
+--enable-diagnostic), a debugging log record is written including the
+transaction ID and the name.])
+
+m4_when_any(txn_set_name)
+m4_return(txn_set_name, std)
+
+m4_parambegin
+m4_param(name, [dnl
+The m4_arg(name) parameter is the string to associate with the
+transaction.])
+m4_paramend
+
+m4_pf_getter(txn_get_name,
+string associated with the transaction,, namep, reference)
+
+m4_seealso(DbTxn)
+m4_page_footer
+

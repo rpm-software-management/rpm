@@ -1,0 +1,46 @@
+m4_comment([$Id: event.so,v 1.2 2007/05/14 16:03:56 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: replication events,,
+    upgrade.4.6/memp_fset, upgrade.4.6/full_election)
+
+m4_p([dnl
+It is now guaranteed the m4_ref(DB_EVENT_REP_STARTUPDONE) event will be
+presented to the application after the corresponding
+m4_ref(DB_EVENT_REP_NEWMASTER) event, even in the face of extreme
+thread-scheduling anomalies.  (In previous releases, if the thread
+processing the NEWMASTER message was starved, and STARTUPDONE occurred
+soon after, the order might have been reversed.)])
+
+m4_p([dnl
+In addition, the m4_ref(DB_EVENT_REP_NEWMASTER) event is now presented
+to all types of replication applications: users of either the
+Replication Framework or the Base Replication API.  In both cases, the
+m4_ref(DB_EVENT_REP_NEWMASTER) event always means that a site other than
+the local environment has become master.])
+
+m4_p([dnl
+The m4_arg(envid) parameter to m4_ref(rep_message) has been changed to
+be of type "int" rather than "int *", and the environment ID of a new
+master is presented to the application along with the
+m4_ref(DB_EVENT_REP_NEWMASTER) event.  Replication applications should
+be modified to use the m4_ref(DB_EVENT_REP_NEWMASTER) event to determine
+the ID of the new master.])
+
+m4_p([dnl
+The m4_arg(envid) parameter has been removed from the m4_ref(rep_elect)
+method and a new event type has been added.  The
+m4_ref(DB_EVENT_REP_ELECTED) event is presented to the application at
+the site which wins an election.  In the m4_db 4.6 release, the normal
+result of a successful election is either the
+m4_ref(DB_EVENT_REP_NEWMASTER) event (with the winner's environment ID),
+or the m4_ref(DB_EVENT_REP_ELECTED) event.  Only one of the two events
+will ever be delivered.])
+
+m4_p([dnl
+The DB_REP_NEWMASTER return code has been removed from the
+m4_refT(rep_message).  Replication applications should be modified to
+use the m4_ref(DB_EVENT_REP_NEWMASTER) and m4_ref(DB_EVENT_REP_ELECTED)
+events to determine the existence of a new master.])
+
+m4_page_footer

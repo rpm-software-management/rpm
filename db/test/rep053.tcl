@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep053.tcl,v 12.13 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep053.tcl,v 12.19 2007/05/17 19:33:06 bostic Exp $
 #
 # TEST	rep053
 # TEST	Replication and basic client-to-client synchronization.
@@ -42,7 +41,7 @@ proc rep053 { method { niter 200 } { tnum "053" } args } {
 					continue
 				}
 				puts "Rep$tnum ($method $r $t):\
-				    Replication and client-to-client syncup."
+				    Replication and client-to-client sync up."
 				puts "Rep$tnum: Master logs are [lindex $l 0]"
 				puts "Rep$tnum: Client logs are [lindex $l 1]"
 				puts "Rep$tnum: Client2 logs are [lindex $l 2]"
@@ -56,6 +55,13 @@ proc rep053_sub { method niter tnum logset recargs throttle largs } {
 	global anywhere
 	global testdir
 	global util_path
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	env_cleanup $testdir
 	set orig_tdir $testdir
 
@@ -83,32 +89,22 @@ proc rep053_sub { method niter tnum logset recargs throttle largs } {
 	# Open a master.
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -errpfx MASTER \
+	    $m_logargs -errpfx MASTER $verbargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -errpfx MASTER \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open two clients
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -errpfx CLIENT \
+	    $c_logargs -errpfx CLIENT $verbargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -errpfx CLIENT \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# If throttling is specified, turn it on here.  Throttle the
-	# client, since this is a test of client-to-client sync up.
+	# client, since this is a test of client-to-client sync-up.
 	if { $throttle == "throttle" } {
 		error_check_good \
-		    throttle [$clientenv rep_limit 0 [expr 32 * 1024]] 0
+		    throttle [$clientenv rep_limit 0 [expr 8 * 1024]] 0
 	}
 
 	#
@@ -118,12 +114,8 @@ proc rep053_sub { method niter tnum logset recargs throttle largs } {
 	# when it starts.
 	#
 	set dc1_envcmd "berkdb_env_noerr -create $c2_txnargs \
-	    $c2_logargs -errpfx DELAYCL \
+	    $c2_logargs -errpfx DELAYCL $verbargs \
 	    -home $delaycldir1 -rep_transport \[list 3 replsend\]"
-#	set dc1_envcmd "berkdb_env_noerr -create $c2_txnargs \
-#	    $c2_logargs -errpfx DELAYCL \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -home $delaycldir1 -rep_transport \[list 3 replsend\]"
 
 	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
@@ -148,19 +140,32 @@ proc rep053_sub { method niter tnum logset recargs throttle largs } {
 	set req [stat_field $clientenv rep_stat "Client service requests"]
 	set miss [stat_field $clientenv rep_stat "Client service req misses"]
 	set rereq [stat_field $newclient rep_stat "Client rerequests"]
+
+	# To complete the internal init, we need a PAGE_REQ and a LOG_REQ.  These
+	# requests get served by $clientenv.  Since the end-of-range specified
+	# in the LOG_REQ points to the very end of the log (i.e., the LSN given
+	# in the NEWMASTER message), the serving client gets NOTFOUND in its log
+	# cursor reading loop, and can't tell whether it simply hit the end, or
+	# is really missing sufficient log records to fulfill the request.  So
+	# it counts a "miss" and generates a rerequest.  When internal init
+	# finishes recovery, it sends an ALL_REQ, for a total of 3 requests in
+	# the simple case, and more than 3 in the "throttle" case.
 	#
-	# The original client should have received at least one request for
-	# service from the new client.  Since this is a fully operational
-	# client, there should be no misses and more than one request only
-	# if we are throttling.
-	#
-	if { $throttle == "throttle" } {
-		error_check_good req [expr $req > 1] 1
-	} else {
-		error_check_good req $req 1
+
+	set expected_msgs 3
+	if { [is_queue $method] } {
+		# Queue database require an extra request
+		# to retrieve the meta page.
+		incr expected_msgs
 	}
-	error_check_good miss $miss 0
-	error_check_good rereq $rereq 0
+
+	if { $throttle == "throttle" } {
+		error_check_good req [expr $req > $expected_msgs] 1
+	} else {
+		error_check_good req $req $expected_msgs
+	}
+	error_check_good miss $miss 1
+	error_check_good rereq $rereq 1
 
 	# Check for throttling.
 	if { $throttle == "throttle" } {

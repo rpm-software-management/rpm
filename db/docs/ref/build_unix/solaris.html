@@ -1,6 +1,5 @@
-<!--$Id: solaris.so,v 11.25 2003/03/24 13:46:23 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: solaris.so,v 11.26 2007/06/27 14:41:06 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -89,9 +88,8 @@ environment's shared memory regions and can affect Berkeley DB performance.
 Workarounds include creating the shared regions in system shared memory
 (<a href="../../api_c/env_open.html#DB_SYSTEM_MEM">DB_SYSTEM_MEM</a>) or application private memory
 (<a href="../../api_c/env_open.html#DB_PRIVATE">DB_PRIVATE</a>), or, configuring Solaris to not flush memory-mapped
-pages.  For more information, see the
-<a href="http://docs.sun.com/db/doc/806-4015/6jd4gh8en?a=view">Solaris Tunable Parameters Reference Manual: fsflush and Related Tunables</a>.
-</p>
+pages.  For more information, see the "Solaris Tunable Parameters
+Reference Manual: fsflush and Related Tunables".</p>
 <hr size=1 noshade>
 <p><li><b>I see errors about "open64" when building Berkeley DB applications.</b>
 <p>System include files (most commonly fcntl.h) in some releases of AIX,
@@ -111,6 +109,6 @@ include the problematical system include files.
 </ol>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/sco.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/sunos.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

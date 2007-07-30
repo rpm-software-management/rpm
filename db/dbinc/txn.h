@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: txn.h,v 12.13 2006/08/24 14:45:30 bostic Exp $
+ * $Id: txn.h,v 12.18 2007/05/17 19:33:03 bostic Exp $
  */
 
 #ifndef	_DB_TXN_H_
@@ -36,6 +35,7 @@ struct __txn_logrec;	typedef struct __txn_logrec DB_TXNLOGREC;
 #define	TXN_INVALID	0		/* Invalid transaction ID. */
 
 #define	DEF_MAX_TXNS	100		/* Default max transactions. */
+#define	TXN_NSLOTS	4		/* Initial slots to hold DB refs */
 
 /*
  * Internal data maintained in shared memory for each transaction.
@@ -50,6 +50,10 @@ typedef struct __txn_detail {
 	DB_LSN	begin_lsn;		/* LSN of begin record. */
 	roff_t	parent;			/* Offset of transaction's parent. */
 	roff_t	name;			/* Offset of txn name. */
+
+	u_int32_t	nlog_dbs;	/* Number of databases used. */
+	u_int32_t	nlog_slots;	/* Number of allocated slots. */
+	roff_t		log_dbs;	/* Databases used. */
 
 	DB_LSN	read_lsn;		/* Read LSN for MVCC. */
 	DB_LSN	visible_lsn;		/* LSN at which this transaction's
@@ -82,6 +86,7 @@ typedef struct __txn_detail {
 	u_int32_t bqual;		/* bqual_length from XID */
 	u_int32_t gtrid;		/* gtrid_length from XID */
 	int32_t format;			/* XA format */
+	roff_t slots[TXN_NSLOTS];	/* Initial DB slot allocation. */
 } TXN_DETAIL;
 
 /*

@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Reading and Writing Database Records</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="DBEntry.html" title="Chapter 3. Database Records" />
-    <link rel="previous" href="DBEntry.html" title="Chapter 3. Database Records" />
+    <link rel="up" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
+    <link rel="previous" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
     <link rel="next" href="cstructs.html" title="Using C Structures with DB" />
   </head>
   <body>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Reading and Writing Database Records</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. Database Records</th>
-          <td width="20%" align="right"> <a accesskey="n" href="cstructs.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â Database Records</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="cstructs.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -127,7 +127,7 @@
 
 ...
 
-char *description = &quot;Grocery bill.&quot;;
+char *description = "Grocery bill.";
 DBT key, data;
 DB *my_database;
 int ret;
@@ -150,7 +150,7 @@ data.size = strlen(description) +1;
 ret = my_database-&gt;put(my_database, NULL, &amp;key, &amp;data, DB_NOOVERWRITE);
 if (ret == DB_KEYEXIST) {
     my_database-&gt;err(my_database, ret, 
-      &quot;Put failed because key %f already exists&quot;, money);
+      "Put failed because key %f already exists", money);
 }</pre>
       </div>
       <div class="sect2" lang="en" xml:lang="en">
@@ -206,7 +206,7 @@ if (ret == DB_KEYEXIST) {
 DBT key, data;
 DB *my_database;
 float money;
-char *description[DESCRIPTION_SIZE + 1];
+char description[DESCRIPTION_SIZE + 1];
 
 /* Database open omitted for clarity */
 
@@ -217,11 +217,11 @@ memset(&amp;key, 0, sizeof(DBT));
 memset(&amp;data, 0, sizeof(DBT));
 
 key.data = &amp;money;
-key.ulen = sizeof(float);
+key.size = sizeof(float);
 
-data.set_data(&amp;description);
-data.set_ulen(DESCRIPTION_SIZE + 1);
-data.set_flags(DB_DBT_USERMEM);
+data.data = description;
+data.ulen = DESCRIPTION_SIZE + 1;
+data.flags = DB_DBT_USERMEM;
 my_database-&gt;get(my_database, NULL, &amp;key, &amp;data, 0);
 
 /* 
@@ -378,18 +378,18 @@ my_database-&gt;del(my_database, NULL, &amp;key, 0);</pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="DBEntry.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="cstructs.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="cstructs.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 3. Database Records </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 3.Â Database RecordsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Using C Structures with DB</td>
+          <td width="40%" align="right" valign="top">Â Using C Structures with DB</td>
         </tr>
       </table>
     </div>

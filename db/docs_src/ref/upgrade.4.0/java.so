@@ -1,0 +1,28 @@
+m4_comment([$Id: java.so,v 1.7 2005/12/01 03:18:53 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: Java CLASSPATH environment variable,,
+    upgrade.4.0/lock_id_free, upgrade.4.0/cxx)
+
+m4_p([dnl
+The m4_db Java class files are now packaged as jar files.  In the 4.0
+release, the m4_envvar(CLASSPATH) environment variable must change to
+include at least the m4_path(db.jar) file.  It can optionally include
+the m4_path(dbexamples.jar) file if you want to run the examples.  For
+example, on UNIX:])
+
+m4_indent([dnl
+export CLASSPATH="/usr/local/BerkeleyDB.M4MAJOR.M4MINOR/lib/db.jar:/usr/local/BerkeleyDB.M4MAJOR.M4MINOR/lib/dbexamples.jar"])
+
+m4_p([dnl
+For example, on Windows:])
+
+m4_indent([dnl
+set CLASSPATH="D:\db\build_windows\Release\db.jar;D:\db\build_windows\Release\dbexamples.jar"])
+
+m4_p([dnl
+For more information on Java configuration, please see
+m4_link(M4RELDIR/ref/java/conf, Java configuration) and
+m4_link(M4RELDIR/ref/build_win/intro, Building for Windows).])
+
+m4_page_footer

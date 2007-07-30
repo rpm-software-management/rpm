@@ -1,0 +1,80 @@
+m4_comment([$Id: mutex_stat.so,v 10.3 2007/06/22 16:57:16 bostic Exp $])
+
+define(M4PAGELOCAL, [mutex_stat, mutex_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(mutex_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__mutex_stat(DB_ENV *env, DB_MUTEX_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__mutex_stat_print(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::mutex_stat(DB_MUTEX_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DbEnv::mutex_stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(mutex_stat) returns the mutex subsystem statistics.])
+
+m4_p([dnl
+The m4_refT(mutex_stat) creates a statistical structure of type
+DB_MUTEX_STAT and copies a pointer to it into a user-specified memory
+location.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+The following DB_MUTEX_STAT fields will be filled in:])
+
+m4_tagbegin
+m4_field(u_int32_t, st_mutex_align,
+[The mutex alignment, in bytes.])
+
+m4_field(u_int32_t, st_mutex_tas_spins,
+[The number of times test-and-set mutexes will spin without blocking.])
+
+m4_field(int, st_mutex_cnt,
+[The total number of mutexes configured.])
+
+m4_field(u_int32_t, st_mutex_free,
+[The number of mutexes currently available.])
+
+m4_field(u_int32_t, st_mutex_inuse,
+[The number of mutexes currently in use.])
+
+m4_field(u_int32_t, st_mutex_inuse_max,
+[The maximum number of mutexes ever in use.])
+
+m4_field(roff_t, st_regsize,
+[The size of the mutex region, in bytes.])
+
+m4_field(u_int32_t, st_region_wait,
+[The number of times that a thread of control was forced to wait before
+obtaining the mutex region mutex.])
+
+m4_field(u_int32_t, st_region_nowait,
+[The number of times that a thread of control was able to obtain
+the mutex region mutex without waiting.])
+m4_tagend
+
+m4_when_after_envopen(mutex_stat)
+
+m4_return(mutex_stat, std)
+
+m4_parambegin
+m4_param(flags, m4_stat_flags)
+m4_param_co(statp, allocated statistics structure, REF)
+m4_paramend
+
+m4_err(mutex_stat, einval)
+
+m4_stat_print(mutex_stat_print, mutex subsystem, mutex_stat)
+
+m4_seealso(DbEnv)
+m4_page_footer

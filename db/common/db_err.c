@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_err.c,v 12.44 2006/09/13 14:53:34 mjc Exp $
+ * $Id: db_err.c,v 12.62 2007/05/29 15:23:05 sue Exp $
  */
 
 #include "db_config.h"
@@ -140,7 +139,7 @@ __db_assert(dbenv, e, file, line)
 {
 	__db_errx(dbenv, "assert failure: %s/%d: \"%s\"", file, line, e);
 
-	abort();
+	__os_abort();
 	/* NOTREACHED */
 }
 #endif
@@ -180,7 +179,7 @@ __db_panic(dbenv, errval)
 	int errval;
 {
 	if (dbenv != NULL) {
-		__db_panic_set(dbenv, 1);
+		__env_panic_set(dbenv, 1);
 
 		__db_err(dbenv, errval, "PANIC");
 
@@ -197,7 +196,7 @@ __db_panic(dbenv, errval)
 	 * test suite to check to make sure that DB_RUNRECOVERY is returned
 	 * under certain conditions.
 	 */
-	abort();
+	__os_abort();
 	/* NOTREACHED */
 #endif
 
@@ -207,22 +206,6 @@ __db_panic(dbenv, errval)
 	 * Order shall return.
 	 */
 	return (DB_RUNRECOVERY);
-}
-
-/*
- * __db_panic_set --
- *	Set/clear unrecoverable error.
- *
- * PUBLIC: void __db_panic_set __P((DB_ENV *, int));
- */
-void
-__db_panic_set(dbenv, on)
-	DB_ENV *dbenv;
-	int on;
-{
-	if (dbenv != NULL && dbenv->reginfo != NULL)
-		((REGENV *)
-		    ((REGINFO *)dbenv->reginfo)->primary)->panic = on ? 1 : 0;
 }
 
 /*
@@ -294,11 +277,12 @@ db_strerror(error)
 	case DB_REP_JOIN_FAILURE:
 		return
 	    ("DB_REP_JOIN_FAILURE: Unable to join replication group");
+	case DB_REP_LEASE_EXPIRED:
+		return
+	    ("DB_REP_LEASE_EXPIRED: Replication leases have expired");
 	case DB_REP_LOCKOUT:
 		return
 	    ("DB_REP_LOCKOUT: Waiting for replication recovery to complete");
-	case DB_REP_NEWMASTER:
-		return ("DB_REP_NEWMASTER: A new master has declared itself");
 	case DB_REP_NEWSITE:
 		return ("DB_REP_NEWSITE: A new site has entered the system");
 	case DB_REP_NOTPERM:
@@ -343,16 +327,14 @@ __db_unknown_error(error)
 	 * be a trailing nul byte since the error buffer is nul filled
 	 * and longer than any error message.
 	 */
-	static char ebuf[40];
-
-	(void)snprintf(ebuf, sizeof(ebuf), "Unknown error: %d", error);
-	return (ebuf);
+	(void)snprintf(DB_GLOBAL(error_buf),
+	    sizeof(DB_GLOBAL(error_buf)), "Unknown error: %d", error);
+	return (DB_GLOBAL(error_buf));
 }
 
 /*
  * __db_syserr --
- *	Standard DB system-specific error routine.  The same as __db_err except
- *	we use a system-specific function to translate errors to strings.
+ *	Standard error routine.
  *
  * PUBLIC: void __db_syserr __P((const DB_ENV *, int, const char *, ...))
  * PUBLIC:    __attribute__ ((__format__ (__printf__, 3, 4)));
@@ -361,20 +343,24 @@ void
 #ifdef STDC_HEADERS
 __db_syserr(const DB_ENV *dbenv, int error, const char *fmt, ...)
 #else
-__db_syserr(dbenv, error fmt, va_alist)
+__db_syserr(dbenv, error, fmt, va_alist)
 	const DB_ENV *dbenv;
 	int error;
 	const char *fmt;
 	va_dcl
 #endif
 {
+	/*
+	 * The same as DB->err, except we don't default to writing to stderr
+	 * after any output channel has been configured, and we use a system-
+	 * specific function to translate errors to strings.
+	 */
 	DB_REAL_ERR(dbenv, error, DB_ERROR_SYSTEM, 0, fmt);
 }
 
 /*
  * __db_err --
- *	Standard DB error routine.  The same as DB->err, except we don't write
- *	to stderr if no output mechanism was specified.
+ *	Standard error routine.
  *
  * PUBLIC: void __db_err __P((const DB_ENV *, int, const char *, ...))
  * PUBLIC:    __attribute__ ((__format__ (__printf__, 3, 4)));
@@ -383,20 +369,23 @@ void
 #ifdef STDC_HEADERS
 __db_err(const DB_ENV *dbenv, int error, const char *fmt, ...)
 #else
-__db_err(dbenv, error fmt, va_alist)
+__db_err(dbenv, error, fmt, va_alist)
 	const DB_ENV *dbenv;
 	int error;
 	const char *fmt;
 	va_dcl
 #endif
 {
+	/*
+	 * The same as DB->err, except we don't default to writing to stderr
+	 * once an output channel has been configured.
+	 */
 	DB_REAL_ERR(dbenv, error, DB_ERROR_SET, 0, fmt);
 }
 
 /*
  * __db_errx --
- *	Standard DB error routine.  The same as DB->errx, except we don't write
- *	to stderr if no output mechanism was specified.
+ *	Standard error routine.
  *
  * PUBLIC: void __db_errx __P((const DB_ENV *, const char *, ...))
  * PUBLIC:    __attribute__ ((__format__ (__printf__, 2, 3)));
@@ -411,6 +400,10 @@ __db_errx(dbenv, fmt, va_alist)
 	va_dcl
 #endif
 {
+	/*
+	 * The same as DB->errx, except we don't default to writing to stderr
+	 * once an output channel has been configured.
+	 */
 	DB_REAL_ERR(dbenv, 0, DB_ERROR_NOT_SET, 0, fmt);
 }
 
@@ -500,17 +493,34 @@ __db_msgadd(dbenv, mbp, fmt, va_alist)
 #endif
 {
 	va_list ap;
-	size_t len, olen;
-	char buf[2048];		/* !!!: END OF THE STACK DON'T TRUST SPRINTF. */
 
 #ifdef STDC_HEADERS
 	va_start(ap, fmt);
 #else
 	va_start(ap);
 #endif
-	len = (size_t)vsnprintf(buf, sizeof(buf), fmt, ap);
-
+	__db_msgadd_ap(dbenv, mbp, fmt, ap);
 	va_end(ap);
+}
+
+/*
+ * __db_msgadd_ap --
+ *	Aggregate a set of strings into a buffer for the callback API.
+ *
+ * PUBLIC: void __db_msgadd_ap
+ * PUBLIC:     __P((DB_ENV *, DB_MSGBUF *, const char *, va_list));
+ */
+void
+__db_msgadd_ap(dbenv, mbp, fmt, ap)
+	DB_ENV *dbenv;
+	DB_MSGBUF *mbp;
+	const char *fmt;
+	va_list ap;
+{
+	size_t len, olen;
+	char buf[2048];		/* !!!: END OF THE STACK DON'T TRUST SPRINTF. */
+
+	len = (size_t)vsnprintf(buf, sizeof(buf), fmt, ap);
 
 	/*
 	 * There's a heap buffer in the DB_ENV handle we use to aggregate the
@@ -600,7 +610,7 @@ __db_unknown_flag(dbenv, routine, flag)
 	__db_errx(dbenv, "%s: Unknown flag: %#x", routine, (u_int)flag);
 
 #ifdef DIAGNOSTIC
-	abort();
+	__os_abort();
 	/* NOTREACHED */
 #endif
 	return (EINVAL);
@@ -622,7 +632,7 @@ __db_unknown_type(dbenv, routine, type)
 	    routine, __db_dbtype_to_string(type));
 
 #ifdef DIAGNOSTIC
-	abort();
+	__os_abort();
 	/* NOTREACHED */
 #endif
 	return (EINVAL);
@@ -641,7 +651,7 @@ __db_unknown_path(dbenv, routine)
 	__db_errx(dbenv, "%s: Unexpected code path error", routine);
 
 #ifdef DIAGNOSTIC
-	abort();
+	__os_abort();
 	/* NOTREACHED */
 #endif
 	return (EINVAL);
@@ -651,13 +661,13 @@ __db_unknown_path(dbenv, routine)
  * __db_check_txn --
  *	Check for common transaction errors.
  *
- * PUBLIC: int __db_check_txn __P((DB *, DB_TXN *, u_int32_t, int));
+ * PUBLIC: int __db_check_txn __P((DB *, DB_TXN *, DB_LOCKER *, int));
  */
 int
-__db_check_txn(dbp, txn, assoc_lid, read_op)
+__db_check_txn(dbp, txn, assoc_locker, read_op)
 	DB *dbp;
 	DB_TXN *txn;
-	u_int32_t assoc_lid;
+	DB_LOCKER *assoc_locker;
 	int read_op;
 {
 	DB_ENV *dbenv;
@@ -683,7 +693,8 @@ __db_check_txn(dbp, txn, assoc_lid, read_op)
 	 *	a transaction handle for a non-transactional database
 	 */
 	if (txn == NULL || F_ISSET(txn, TXN_PRIVATE)) {
-		if (dbp->cur_lid >= TXN_MINIMUM)
+		if (dbp->cur_locker != NULL &&
+		    dbp->cur_locker->id >= TXN_MINIMUM)
 			goto open_err;
 
 		if (!read_op && F_ISSET(dbp, DB_AM_TXN)) {
@@ -713,10 +724,12 @@ __db_check_txn(dbp, txn, assoc_lid, read_op)
 		}
 
 		if (F_ISSET(txn, TXN_DEADLOCK))
-			return (__db_txn_deadlock_err(dbenv));
-		if (dbp->cur_lid >= TXN_MINIMUM && dbp->cur_lid != txn->txnid) {
+			return (__db_txn_deadlock_err(dbenv, txn));
+		if (dbp->cur_locker != NULL &&
+		    dbp->cur_locker->id >= TXN_MINIMUM &&
+		     dbp->cur_locker->id != txn->txnid) {
 			if ((ret = __lock_locker_is_parent(dbenv,
-			     dbp->cur_lid, txn->txnid, &isp)) != 0)
+			     dbp->cur_locker, txn->locker, &isp)) != 0)
 				return (ret);
 			if (!isp)
 				goto open_err;
@@ -724,7 +737,7 @@ __db_check_txn(dbp, txn, assoc_lid, read_op)
 	}
 
 	/*
-	 * If dbp->associate_lid is not DB_LOCK_INVALIDID, that means we're in
+	 * If dbp->associate_locker is not NULL, that means we're in
 	 * the middle of a DB->associate with DB_CREATE (i.e., a secondary index
 	 * creation).
 	 *
@@ -738,8 +751,8 @@ __db_check_txn(dbp, txn, assoc_lid, read_op)
 	 * the secondary in another transaction (presumably by updating the
 	 * primary).
 	 */
-	if (!read_op && dbp->associate_lid != DB_LOCK_INVALIDID &&
-	    txn != NULL && dbp->associate_lid != assoc_lid) {
+	if (!read_op && dbp->associate_locker != NULL &&
+	    txn != NULL && dbp->associate_locker != assoc_locker) {
 		__db_errx(dbenv,
 	    "Operation forbidden while secondary index is being created");
 		return (EINVAL);
@@ -765,13 +778,22 @@ open_err:
  * __db_txn_deadlock_err --
  *	Transaction has allready been deadlocked.
  *
- * PUBLIC: int __db_txn_deadlock_err __P((DB_ENV *));
+ * PUBLIC: int __db_txn_deadlock_err __P((DB_ENV *, DB_TXN *));
  */
 int
-__db_txn_deadlock_err(dbenv)
+__db_txn_deadlock_err(dbenv, txn)
 	DB_ENV *dbenv;
+	DB_TXN *txn;
 {
-	__db_errx(dbenv, "Previous deadlock return not resolved");
+	const char *name;
+
+	name = NULL;
+	(void)__txn_get_name(txn, &name);
+
+	__db_errx(dbenv,
+	    "%s%sprevious transaction deadlock return not resolved",
+	    name == NULL ? "" : name, name == NULL ? "" : ": ");
+
 	return (EINVAL);
 }
 
@@ -852,7 +874,7 @@ __dbc_logging(dbc)
 
 #ifndef	DEBUG_ROP
 	/*
-	 * Only check when DEBUG_ROP is not configured.  People often do
+	 *  Only check when DEBUG_ROP is not configured.  People often do
 	 * non-transactional reads, and debug_rop is going to write
 	 * a log record.
 	 */
@@ -862,12 +884,10 @@ __dbc_logging(dbc)
 	rep = db_rep->region;
 
 	/*
-	 * If we're a client and not running recovery or internally, error.
+	 * If we're a client and not running recovery or non durably, error.
 	 */
-	if (IS_REP_CLIENT(dbenv) &&
-	    !F_ISSET(dbc->dbp, DB_AM_CL_WRITER) &&
-	    !F_ISSET(dbc->dbp, DB_AM_NOT_DURABLE)) {
-		__db_errx(dbenv, "Dbc_logging: Client update");
+	if (IS_REP_CLIENT(dbenv) && !F_ISSET(dbc->dbp, DB_AM_NOT_DURABLE)) {
+		__db_errx(dbenv, "dbc_logging: Client update");
 		goto err;
 	}
 
@@ -884,12 +904,11 @@ __dbc_logging(dbc)
 #endif
 
 	if (0) {
-err:		__db_errx(dbenv, "Rep: flags 0x%lx msg_th %lu, lockout_th %d",
-		    (u_long)rep->flags, (u_long)rep->msg_th, rep->lockout_th);
-		__db_errx(dbenv, "Rep: handle %lu, opcnt %lu, in_rec %d",
-		    (u_long)rep->handle_cnt, (u_long)rep->op_cnt,
-		    rep->in_recovery);
-		abort();
+err:		__db_errx(dbenv, "Rep: flags 0x%lx msg_th %lu",
+		    (u_long)rep->flags, (u_long)rep->msg_th);
+		__db_errx(dbenv, "Rep: handle %lu, opcnt %lu",
+		    (u_long)rep->handle_cnt, (u_long)rep->op_cnt);
+		__os_abort();
 		/* NOTREACHED */
 	}
 	}

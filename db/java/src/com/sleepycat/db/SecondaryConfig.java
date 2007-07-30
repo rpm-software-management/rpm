@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: SecondaryConfig.java,v 12.4 2006/08/24 14:46:09 bostic Exp $
+ * $Id: SecondaryConfig.java,v 12.7 2007/05/17 15:15:41 bostic Exp $
  */
 
 package com.sleepycat.db;
@@ -29,16 +28,9 @@ public class SecondaryConfig extends DatabaseConfig implements Cloneable {
     private boolean allowPopulate;
     private boolean immutableSecondaryKey;
     private SecondaryKeyCreator keyCreator;
+    private SecondaryMultiKeyCreator multiKeyCreator;
 
     public SecondaryConfig() {
-    }
-
-    public void setKeyCreator(final SecondaryKeyCreator keyCreator) {
-        this.keyCreator = keyCreator;
-    }
-
-    public SecondaryKeyCreator getKeyCreator() {
-        return keyCreator;
     }
 
     public void setAllowPopulate(final boolean allowPopulate) {
@@ -55,6 +47,22 @@ public class SecondaryConfig extends DatabaseConfig implements Cloneable {
 
     public boolean getImmutableSecondaryKey() {
         return immutableSecondaryKey;
+    }
+
+    public void setKeyCreator(final SecondaryKeyCreator keyCreator) {
+        this.keyCreator = keyCreator;
+    }
+
+    public SecondaryKeyCreator getKeyCreator() {
+        return keyCreator;
+    }
+
+    public void setMultiKeyCreator(final SecondaryMultiKeyCreator multiKeyCreator) {
+        this.multiKeyCreator = multiKeyCreator;
+    }
+
+    public SecondaryMultiKeyCreator getMultiKeyCreator() {
+        return multiKeyCreator;
     }
 
     /* package */
@@ -75,6 +83,12 @@ public class SecondaryConfig extends DatabaseConfig implements Cloneable {
         final Db db = super.openDatabase(dbenv, txn, fileName, databaseName);
         boolean succeeded = false;
         try {
+            /*
+             * The multi-key creator must be set before the call to associate
+             * so that we can work out whether the C API callback should be
+             * set or not.
+             */
+            db.get_secmultikey_create(multiKeyCreator);
             primary.associate(txn, db, keyCreator, associateFlags);
             succeeded = true;
             return db;

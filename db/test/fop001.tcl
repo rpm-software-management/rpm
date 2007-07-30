@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2000,2007 Oracle.  All rights reserved.
 #
-# $Id: fop001.tcl,v 12.6 2006/08/24 14:46:35 bostic Exp $
+# $Id: fop001.tcl,v 12.9 2007/06/01 21:00:58 carol Exp $
 #
 # TEST	fop001.tcl
 # TEST	Test file system operations, combined in a transaction. [#7363]
@@ -91,88 +90,112 @@ proc fop001 { method { inmem 0 } args } {
 
 		puts "\tFop$tnum.$testid: $op1 ($names1), then $op2 ($names2)."
 
-		# Create transactional environment.
-		set env [berkdb_env -create -home $testdir -txn]
-		error_check_good is_valid_env [is_valid_env $env] TRUE
+		# The variable 'when' describes when to resolve a txn -- 
+		# before or after closing any open databases. 
+		foreach when { before after } {
 
-		# Create two databases, dba and dbb.
-		if { $inmem == 0 } {
-			set dba [eval {berkdb_open -create} \
-			    $omethod $args -env $env -auto_commit a]
-		} else {
-			set dba [eval {berkdb_open -create} \
-			    $omethod $args -env $env -auto_commit { "" a }]
-		}
-		error_check_good dba_open [is_valid_db $dba] TRUE
-		error_check_good dba_put [$dba put 1 a] 0
-		error_check_good dba_close [$dba close] 0
-
-		if { $inmem == 0 } {
-			set dbb [eval {berkdb_open -create} \
-			    $omethod $args -env $env -auto_commit b]
-		} else {
-			set dbb [eval {berkdb_open -create} \
-			    $omethod $args -env $env -auto_commit { "" b }]
-		}
-		error_check_good dbb_open [is_valid_db $dbb] TRUE
-		error_check_good dbb_put [$dbb put 1 b] 0
-		error_check_good dbb_close [$dbb close] 0
-
-		foreach end {abort commit} {
-			# Start transaction
-			set txn [$env txn]
-
-			# Execute and check operation 1
-			set result1 [$operator $omethod $op1 $names1 $txn $env $args]
-			if { $res1 == 0 } {
-				error_check_good op1_should_succeed $result1 $res1
+			# Create transactional environment.
+			set env [berkdb_env -create -home $testdir -txn]
+			error_check_good is_valid_env [is_valid_env $env] TRUE
+	
+			# Create two databases, dba and dbb.
+			if { $inmem == 0 } {
+				set dba [eval {berkdb_open -create} $omethod \
+				    $args -env $env -auto_commit a]
 			} else {
-				set error [extract_error $result1]
-				error_check_good op1_wrong_failure $error $res1
+				set dba [eval {berkdb_open -create} $omethod \
+				    $args -env $env -auto_commit { "" a }]
 			}
-
-			# Execute and check operation 2
-			set result2 [$operator $omethod $op2 $names2 $txn $env $args]
-			if { $res2 == 0 } {
-				error_check_good op2_should_succeed $result2 $res2
+			error_check_good dba_open [is_valid_db $dba] TRUE
+			error_check_good dba_put [$dba put 1 a] 0
+			error_check_good dba_close [$dba close] 0
+	
+			if { $inmem == 0 } {
+				set dbb [eval {berkdb_open -create} $omethod \
+				    $args -env $env -auto_commit b]
 			} else {
-				set error [extract_error $result2]
-				error_check_good op2_wrong_failure $error $res2
+				set dbb [eval {berkdb_open -create} $omethod \
+				    $args -env $env -auto_commit { "" b }]
 			}
-
-			# End transaction
-			error_check_good txn_$end [$txn $end] 0
-
-			# If the txn was aborted, we still have the original two
-			# databases.
-			if { $end == "abort" } {
-				if { $inmem == 1 } {
-					error_check_good a_exists \
-					    [inmem_exists $testdir a] 1
-					error_check_good b_exists \
-					    [inmem_exists $testdir b] 1
+			error_check_good dbb_open [is_valid_db $dbb] TRUE
+			error_check_good dbb_put [$dbb put 1 b] 0
+			error_check_good dbb_close [$dbb close] 0
+	
+			# The variable 'end' describes how to resolve the txn.
+			# We run the 'abort' first because that leaves the env
+			# properly set up for the 'commit' test.
+			foreach end {abort commit} {
+	
+				puts "\t\tFop$tnum.$testid:\
+				    $end $when closing database."
+	
+				# Start transaction
+				set txn [$env txn]
+	
+				# Execute and check operation 1
+				set result1 [$operator \
+				    $omethod $op1 $names1 $txn $env $args]
+				if { $res1 == 0 } {
+					error_check_good \
+					    op1_should_succeed $result1 $res1
 				} else {
-					error_check_good a_exists \
-					    [file exists $testdir/a] 1
-					error_check_good b_exists \
-					    [file exists $testdir/b] 1
+					set error [extract_error $result1]
+					error_check_good \
+					    op1_wrong_failure $error $res1
 				}
+	
+				# Execute and check operation 2
+				set result2 [$operator \
+				    $omethod $op2 $names2 $txn $env $args]
+				if { $res2 == 0 } {
+					error_check_good \
+					    op2_should_succeed $result2 $res2
+				} else {
+					set error [extract_error $result2]
+					error_check_good \
+					    op2_wrong_failure $error $res2
+				}
+	
+				if { $when == "before" } {
+					error_check_good txn_$end [$txn $end] 0
+		
+					# If the txn was aborted, we still
+					# have the original two databases.
+					if { $end == "abort" } {
+						database_exists \
+						    $inmem $testdir a
+						database_exists \
+						    $inmem $testdir b
+					}
+					close_db_handles 
+				} else {
+					close_db_handles
+					error_check_good txn_$end [$txn $end] 0
+	
+					if { $end == "abort" } {
+						database_exists \
+						    $inmem $testdir a
+						database_exists \
+						    $inmem $testdir b
+					}
+				}		
 			}
+	
+			# Clean up for next case
+			error_check_good env_close [$env close] 0
+			error_check_good envremove \
+			    [berkdb envremove -home $testdir] 0
+			env_cleanup $testdir
 		}
-
-		# Close any open db handles.  We had to wait until now
-		# because you can't close a database inside a transaction.
-		set handles [berkdb handles]
-		foreach handle $handles {
-			if {[string range $handle 0 1] == "db" } {
-				error_check_good db_close [$handle close] 0
-			}
-		}
-		# Clean up for next case
-		error_check_good env_close [$env close] 0
-		error_check_good envremove [berkdb envremove -home $testdir] 0
-		env_cleanup $testdir
 	}
+}
+
+proc database_exists { inmem testdir name } {
+	if { $inmem == 1 } {
+		error_check_good db_exists [inmem_exists $testdir $name] 1
+	} else {
+		error_check_good db_exists [file exists $testdir/$name] 1
+	}	
 }
 
 # This is a real hack.  We need to figure out if an in-memory named

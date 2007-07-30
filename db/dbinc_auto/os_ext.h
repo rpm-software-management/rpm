@@ -6,6 +6,7 @@
 extern "C" {
 #endif
 
+void __os_abort __P((void));
 int __os_abspath __P((const char *));
 int __os_umalloc __P((DB_ENV *, size_t, void *));
 int __os_urealloc __P((DB_ENV *, size_t, void *));
@@ -16,7 +17,7 @@ int __os_malloc __P((DB_ENV *, size_t, void *));
 int __os_realloc __P((DB_ENV *, size_t, void *));
 void __os_free __P((DB_ENV *, void *));
 void *__ua_memcpy __P((void *, const void *, size_t));
-void __os_clock __P((DB_ENV *, u_int32_t *, u_int32_t *));
+void __os_gettime __P((DB_ENV *, db_timespec *));
 int __os_fs_notzero __P((void));
 int __os_support_direct_io __P((void));
 int __os_support_db_register __P((void));
@@ -44,11 +45,7 @@ int __os_unmapfile __P((DB_ENV *, void *, size_t));
 int __os_mkdir __P((DB_ENV *, const char *, int));
 u_int32_t __db_oflags __P((int));
 int __db_omode __P((const char *));
-int __os_open __P((DB_ENV *, const char *, u_int32_t, int, DB_FH **));
-int __os_open_extend __P((DB_ENV *, const char *, u_int32_t, u_int32_t, int, DB_FH **));
-#ifdef HAVE_QNX
-int __os_shmname __P((DB_ENV *, const char *, char **));
-#endif
+int __os_open __P((DB_ENV *, const char *, u_int32_t, u_int32_t, int, DB_FH **));
 void __os_id __P((DB_ENV *, pid_t *, db_threadid_t*));
 int __os_r_attach __P((DB_ENV *, REGINFO *, REGION *));
 int __os_r_detach __P((DB_ENV *, REGINFO *, int));
@@ -70,8 +67,41 @@ void __os_unique_id __P((DB_ENV *, u_int32_t *));
 int __os_region_unlink __P((DB_ENV *, const char *));
 int __os_unlink __P((DB_ENV *, const char *));
 void __os_yield __P((DB_ENV *));
+#ifndef HAVE_FCLOSE
+int fclose __P((FILE *));
+#endif
+#ifndef HAVE_FGETC
+int fgetc __P((FILE *));
+#endif
+#ifndef HAVE_FGETS
+char *fgets __P((char *, int, FILE *));
+#endif
+#ifndef HAVE_FOPEN
+FILE *fopen __P((const char *, const char *));
+#endif
+#ifndef HAVE_FWRITE
+size_t fwrite __P((const void *, size_t, size_t, FILE *));
+#endif
+#ifndef HAVE_LOCALTIME
+struct tm *localtime __P((const time_t *));
+#endif
+#ifndef HAVE_TIME
+time_t time __P((time_t *));
+#endif
+#ifdef HAVE_QNX
+int __os_qnx_region_open __P((DB_ENV *, const char *, int, int, DB_FH *));
+#endif
+#ifdef HAVE_QNX
+int __os_qnx_shmname __P((DB_ENV *, const char *, char **));
+#endif
+#ifndef HAVE_TIME
+time_t time __P((time_t *));
+#endif
 int __os_is_winnt __P((void));
+#ifdef HAVE_REPLICATION_THREADS
 int __os_get_neterr __P((void));
+#endif
+int __os_mkdir __P((DB_ENV *, const char *, int));
 
 #if defined(__cplusplus)
 }

@@ -50,6 +50,7 @@ public class DbEnv {
 	private ReplicationTransport rep_transport_handler;
 	private java.io.OutputStream error_stream;
 	private java.io.OutputStream message_stream;
+	private ThreadLocal errMsg;
 
 	public static class RepProcessMessage {
 		public int envid;
@@ -61,6 +62,7 @@ public class DbEnv {
 	 */
 	void initialize() {
 		dbenv_ref = db_java.initDbEnvRef0(this, this);
+		errMsg = new ThreadLocal();
 		/* Start with System.err as the default error stream. */
 		set_error_stream(System.err);
 		set_message_stream(System.out);
@@ -81,8 +83,8 @@ public class DbEnv {
 	}
 
 	private final int handle_app_dispatch(DatabaseEntry dbt,
-	                                      LogSequenceNumber lsn,
-	                                      int recops) {
+					      LogSequenceNumber lsn,
+					      int recops) {
 		return app_dispatch_handler.handleLogRecord(wrapper, dbt, lsn,
 		    RecoveryOperation.fromFlag(recops));
 	}
@@ -91,8 +93,36 @@ public class DbEnv {
 		return app_dispatch_handler;
 	}
 
-	private final int handle_event_notify(int event) {
-		return event_notify_handler.handleEvent(EventType.fromInt(event));
+	private final void handle_panic_event_notify() {
+		event_notify_handler.handlePanicEvent();
+	}
+
+	private final void handle_rep_client_event_notify() {
+		event_notify_handler.handleRepClientEvent();
+	}
+
+	private final void handle_rep_elected_event_notify() {
+		event_notify_handler.handleRepElectedEvent();
+	}
+
+	private final void handle_rep_master_event_notify() {
+		event_notify_handler.handleRepMasterEvent();
+	}
+
+	private final void handle_rep_new_master_event_notify(int envid) {
+		event_notify_handler.handleRepNewMasterEvent(envid);
+	}
+
+	private final void handle_rep_perm_failed_event_notify() {
+		event_notify_handler.handleRepPermFailedEvent();
+	}
+
+	private final void handle_rep_startup_done_event_notify() {
+		event_notify_handler.handleRepStartupDoneEvent();
+	}
+
+	private final void handle_write_failed_event_notify(int errno) {
+		event_notify_handler.handleWriteFailedEvent(errno);
 	}
 
 	public EventHandler get_event_notify() throws com.sleepycat.db.DatabaseException {
@@ -118,7 +148,27 @@ public class DbEnv {
 	}
 
 	private final void handle_error(String msg) {
+		StringBuffer tbuf = (StringBuffer) errMsg.get();
+		/*
+		 * Populate the errMsg ThreadLocal on demand, since the
+		 * callback can be made from different threads.
+		 */
+		if (tbuf == null) {
+			tbuf = new StringBuffer();
+			errMsg.set(tbuf);
+		}
+		tbuf.append(msg);
 		error_handler.error(wrapper, this.errpfx, msg);
+	}
+
+	private final String get_err_msg(String orig_msg) {
+		String ret = null;
+		StringBuffer tbuf = (StringBuffer) errMsg.get();
+		if (tbuf != null) {
+			ret = tbuf.toString();
+			tbuf.delete(0, tbuf.length());
+		}
+		return orig_msg + ": " + ret;
 	}
 
 	public ErrorHandler get_errcall() /* no exception */ {
@@ -142,20 +192,20 @@ public class DbEnv {
 	}
 
 	private final int handle_rep_transport(DatabaseEntry control,
-	                                       DatabaseEntry rec,
-	                                       LogSequenceNumber lsn,
-	                                       int envid, int flags)
+					       DatabaseEntry rec,
+					       LogSequenceNumber lsn,
+					       int envid, int flags)
 	    throws DatabaseException {
 		return rep_transport_handler.send(wrapper,
 		    control, rec, lsn, envid,
 		    (flags & DbConstants.DB_REP_NOBUFFER) != 0,
-                    (flags & DbConstants.DB_REP_PERMANENT) != 0,
-                    (flags & DbConstants.DB_REP_ANYWHERE) != 0,
-                    (flags & DbConstants.DB_REP_REREQUEST) != 0);
+		    (flags & DbConstants.DB_REP_PERMANENT) != 0,
+		    (flags & DbConstants.DB_REP_ANYWHERE) != 0,
+		    (flags & DbConstants.DB_REP_REREQUEST) != 0);
 	}
 
 	public void lock_vec(/*u_int32_t*/ int locker, int flags,
-	                     LockRequest[] list, int offset, int count)
+			     LockRequest[] list, int offset, int count)
 	    throws DatabaseException {
 		db_javaJNI.DbEnv_lock_vec(swigCPtr, locker, flags, list,
 		    offset, count);
@@ -187,7 +237,6 @@ public class DbEnv {
 	public java.io.OutputStream get_error_stream() /* no exception */ {
 		return error_stream;
 	}
-
 
 	public void set_message_stream(java.io.OutputStream stream) /* no exception */ {
 		message_stream = stream;
@@ -265,6 +314,8 @@ public class DbEnv {
 
   public void set_cachesize(long bytes, int ncache) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_cachesize(swigCPtr, bytes, ncache); }
 
+  public void set_cache_max(long bytes) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_cache_max(swigCPtr, bytes); }
+
   public void set_data_dir(String dir) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_data_dir(swigCPtr, dir); }
 
   public void set_intermediate_dir(int mode, int flags) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_intermediate_dir(swigCPtr, mode, flags); }
@@ -272,24 +323,24 @@ public class DbEnv {
   public void set_encrypt(String passwd, int flags) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_encrypt(swigCPtr, passwd, flags); }
 
   public void set_errcall(com.sleepycat.db.ErrorHandler db_errcall_fcn) /* no exception */ {
-    db_javaJNI.DbEnv_set_errcall(swigCPtr,  (error_handler = db_errcall_fcn) );
+    db_javaJNI.DbEnv_set_errcall(swigCPtr,  (error_handler = db_errcall_fcn) != null );
   }
 
   public void set_flags(int flags, boolean onoff) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_flags(swigCPtr, flags, onoff); }
 
-  public void set_feedback(com.sleepycat.db.FeedbackHandler env_feedback_fcn) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_feedback(swigCPtr,  (env_feedback_handler = env_feedback_fcn) ); }
+  public void set_feedback(com.sleepycat.db.FeedbackHandler env_feedback_fcn) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_feedback(swigCPtr,  (env_feedback_handler = env_feedback_fcn) != null ); }
 
   public void set_mp_max_openfd(int maxopenfd) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_mp_max_openfd(swigCPtr, maxopenfd); }
 
-  public void set_mp_max_write(int maxwrite, int maxwrite_sleep) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_mp_max_write(swigCPtr, maxwrite, maxwrite_sleep); }
+  public void set_mp_max_write(int maxwrite, long maxwrite_sleep) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_mp_max_write(swigCPtr, maxwrite, maxwrite_sleep); }
 
   public void set_mp_mmapsize(long mp_mmapsize) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_mp_mmapsize(swigCPtr, mp_mmapsize); }
 
   public void set_msgcall(com.sleepycat.db.MessageHandler db_msgcall_fcn) /* no exception */ {
-    db_javaJNI.DbEnv_set_msgcall(swigCPtr,  (message_handler = db_msgcall_fcn) );
+    db_javaJNI.DbEnv_set_msgcall(swigCPtr,  (message_handler = db_msgcall_fcn) != null );
   }
 
-  public void set_paniccall(com.sleepycat.db.PanicHandler db_panic_fcn) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_paniccall(swigCPtr,  (panic_handler = db_panic_fcn) ); }
+  public void set_paniccall(com.sleepycat.db.PanicHandler db_panic_fcn) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_paniccall(swigCPtr,  (panic_handler = db_panic_fcn) != null ); }
 
   public void set_rpc_server(String host, long cl_timeout, long sv_timeout, int flags) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_rpc_server(swigCPtr, host, cl_timeout, sv_timeout, flags); }
 
@@ -301,9 +352,9 @@ public class DbEnv {
 
   public void set_tx_max(int max) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_tx_max(swigCPtr, max); }
 
-  public void set_app_dispatch(com.sleepycat.db.LogRecordHandler tx_recover) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_app_dispatch(swigCPtr,  (app_dispatch_handler = tx_recover) ); }
+  public void set_app_dispatch(com.sleepycat.db.LogRecordHandler tx_recover) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_app_dispatch(swigCPtr,  (app_dispatch_handler = tx_recover) != null ); }
 
-  public void set_event_notify(com.sleepycat.db.EventHandler event_notify) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_event_notify(swigCPtr,  (event_notify_handler = event_notify) ); }
+  public void set_event_notify(com.sleepycat.db.EventHandler event_notify) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_event_notify(swigCPtr,  (event_notify_handler = event_notify) != null ); }
 
   /* package */ void set_tx_timestamp0(long timestamp) { db_javaJNI.DbEnv_set_tx_timestamp0(swigCPtr, timestamp); }
 
@@ -401,6 +452,10 @@ public class DbEnv {
     return db_javaJNI.DbEnv_get_cachesize_ncache(swigCPtr);
   }
 
+  public long get_cache_max() throws com.sleepycat.db.DatabaseException {
+    return db_javaJNI.DbEnv_get_cache_max(swigCPtr);
+  }
+
   public int get_mp_max_openfd() throws com.sleepycat.db.DatabaseException {
     return db_javaJNI.DbEnv_get_mp_max_openfd(swigCPtr);
   }
@@ -409,9 +464,7 @@ public class DbEnv {
     return db_javaJNI.DbEnv_get_mp_max_write(swigCPtr);
   }
 
-  public int get_mp_max_write_sleep() throws com.sleepycat.db.DatabaseException {
-    return db_javaJNI.DbEnv_get_mp_max_write_sleep(swigCPtr);
-  }
+  public long get_mp_max_write_sleep() throws com.sleepycat.db.DatabaseException { return db_javaJNI.DbEnv_get_mp_max_write_sleep(swigCPtr); }
 
   public long get_mp_mmapsize() throws com.sleepycat.db.DatabaseException { return db_javaJNI.DbEnv_get_mp_mmapsize(swigCPtr); }
 
@@ -462,17 +515,17 @@ public class DbEnv {
     return db_javaJNI.DbEnv_rep_get_limit(swigCPtr);
   }
 
-  public int rep_elect(int nsites, int nvotes, int flags) throws com.sleepycat.db.DatabaseException {
-    return db_javaJNI.DbEnv_rep_elect(swigCPtr, nsites, nvotes, flags);
-  }
+  public void rep_elect(int nsites, int nvotes, int flags) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_rep_elect(swigCPtr, nsites, nvotes, flags); }
 
-  public int rep_process_message(com.sleepycat.db.DatabaseEntry control, com.sleepycat.db.DatabaseEntry rec, DbEnv.RepProcessMessage envid, com.sleepycat.db.LogSequenceNumber ret_lsn) /* no exception */ {
+  public int rep_process_message(com.sleepycat.db.DatabaseEntry control, com.sleepycat.db.DatabaseEntry rec, int envid, com.sleepycat.db.LogSequenceNumber ret_lsn) /* no exception */ {
     return db_javaJNI.DbEnv_rep_process_message(swigCPtr, control, rec, envid, ret_lsn);
   }
 
   public void rep_flush() throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_rep_flush(swigCPtr); }
 
   public void rep_set_config(int which, boolean onoff) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_rep_set_config(swigCPtr, which, onoff); }
+
+  public void rep_set_lease(int clock_scale_factor, int flags) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_rep_set_lease(swigCPtr, clock_scale_factor, flags); }
 
   public void rep_start(com.sleepycat.db.DatabaseEntry cdata, int flags) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_rep_start(swigCPtr, cdata, flags); }
 
@@ -486,7 +539,7 @@ public class DbEnv {
 
   public void set_rep_request(int min, int max) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_set_rep_request(swigCPtr, min, max); }
 
-  public void rep_set_transport(int envid, com.sleepycat.db.ReplicationTransport send) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_rep_set_transport(swigCPtr, envid,  (rep_transport_handler = send) ); }
+  public void rep_set_transport(int envid, com.sleepycat.db.ReplicationTransport send) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_rep_set_transport(swigCPtr, envid,  (rep_transport_handler = send) != null ); }
 
   public int rep_get_nsites() throws com.sleepycat.db.DatabaseException {
     return db_javaJNI.DbEnv_rep_get_nsites(swigCPtr);
@@ -517,6 +570,8 @@ public class DbEnv {
   public com.sleepycat.db.ReplicationHostAddress[] repmgr_site_list() throws com.sleepycat.db.DatabaseException { return db_javaJNI.DbEnv_repmgr_site_list(swigCPtr); }
 
   public void repmgr_start(int nthreads, int flags) throws com.sleepycat.db.DatabaseException { db_javaJNI.DbEnv_repmgr_start(swigCPtr, nthreads, flags); }
+
+  public com.sleepycat.db.ReplicationManagerStats repmgr_stat(int flags) throws com.sleepycat.db.DatabaseException { return db_javaJNI.DbEnv_repmgr_stat(swigCPtr, flags); }
 
   public static String strerror(int error) /* no exception */ {
     return db_javaJNI.DbEnv_strerror(error);

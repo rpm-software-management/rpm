@@ -1,0 +1,59 @@
+m4_comment([$Id: repmgr_site_list.so,v 1.7 2006/09/11 16:57:54 bostic Exp $])
+
+define(M4PAGELOCAL,
+    [repmgr_site_list, DB_REPMGR_CONNECTED, DB_REPMGR_DISCONNECTED])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(repmgr_site_list),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__repmgr_site_list(DB_ENV *env,
+    u_int *countp, DB_REPMGR_SITE **listp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::repmgr_site_list(u_int *countp, DB_REPMGR_SITE **listp);
+]))
+
+m4_p([dnl
+The m4_refT(repmgr_site_list) returns the status of the sites currently
+known by the replication manager.])
+
+m4_p([dnl
+The m4_refT(repmgr_site_list) creates a statistical structure of type
+DB_REPMGR_SITE and copies a pointer to it into a user-specified memory
+location.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+The following DB_REPMGR_SITE fields will be filled in:])
+
+m4_tagbegin
+m4_field(int, eid, [dnl
+Environment ID assigned by the replication manager.
+This is the same value that is passed to the application's
+event notification function for the m4_ref(DB_EVENT_REP_NEWMASTER) event.])
+m4_field(char, host__LB____RB__, [Nul-terminated host name.])
+m4_field(u_int, port, [dnl
+TCP/IP port number.])
+m4_field(u_int32_t, status, [dnl
+One of the following list of constants: m4_idef(DB_REPMGR_CONNECTED),
+m4_idef(DB_REPMGR_DISCONNECTED).])
+m4_tagend
+
+m4_when_any(repmgr_site_list)
+
+m4_return(repmgr_site_list, std)
+
+m4_parambegin
+m4_param(countp, [dnl
+A count of the returned structures will be stored into the memory
+referenced by m4_arg(countp).])
+m4_param(listp, [dnl
+A reference to an array of structures will be stored into the memory
+referenced by m4_arg(listp).])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

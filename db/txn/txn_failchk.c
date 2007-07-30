@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2005,2007 Oracle.  All rights reserved.
  *
- * $Id: txn_failchk.c,v 12.6 2006/08/24 14:46:53 bostic Exp $
+ * $Id: txn_failchk.c,v 12.9 2007/06/29 00:25:02 margo Exp $
  */
 
 #include "db_config.h"
@@ -63,7 +62,8 @@ retry:	TXN_SYSTEM_LOCK(dbenv);
 		TXN_SYSTEM_UNLOCK(dbenv);
 		if ((ret = __os_calloc(dbenv, 1, sizeof(DB_TXN), &txn)) != 0)
 			return (ret);
-		__txn_continue(dbenv, txn, td);
+		if ((ret = __txn_continue(dbenv, txn, td)) != 0)
+			return (ret);
 		F_SET(txn, TXN_MALLOC);
 		SH_TAILQ_FOREACH(ktd, &td->kids, klinks, __txn_detail) {
 			if (F_ISSET(ktd, TXN_DTL_INMEMORY))
@@ -73,7 +73,8 @@ retry:	TXN_SYSTEM_LOCK(dbenv);
 			if ((ret =
 			    __os_calloc(dbenv, 1, sizeof(DB_TXN), &ktxn)) != 0)
 				return (ret);
-			__txn_continue(dbenv, ktxn, ktd);
+			if ((ret = __txn_continue(dbenv, ktxn, ktd)) != 0)
+				return (ret);
 			F_SET(ktxn, TXN_MALLOC);
 			ktxn->parent = txn;
 			TAILQ_INSERT_HEAD(&txn->kids, txn, klinks);

@@ -1,0 +1,59 @@
+m4_comment([$Id: env_set_data_dir.so,v 10.28 2004/09/28 15:04:20 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_data_dir, dbenv_get_data_dirs])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_data_dir),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_data_dir(DB_ENV *dbenv, const char *dir);
+m4_blank
+int
+DB_ENV-__GT__get_data_dirs(DB_ENV *dbenv, const char ***dirpp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_data_dir(const char *dir);
+m4_blank
+int
+DbEnv::get_data_dirs(const char ***dirpp);
+]))
+
+m4_p([dnl
+Set the path of a directory to be used as the location of the access
+method database files.  Paths specified to the m4_ref(dbh_open) function
+will be searched relative to this path.  Paths set using this method
+are additive, and specifying more than one will result in each specified
+directory being searched for database files.  If any directories are
+specified, created database files will always be created in the first
+path specified.])
+
+m4_p([dnl
+If no database directories are specified, database files must be named
+either by absolute paths or relative to the environment home directory.
+See m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]) for more
+information.])
+
+m4_env_config(dbenv_set_data_dir,
+data directories, set_data_dir, the directory name, no)
+
+m4_scope_dbenv(dbenv_set_data_dir)
+
+m4_when_envopen(dbenv_set_data_dir, corrupt)
+
+m4_return(dbenv_set_data_dir, std)
+
+m4_parambegin
+m4_param_utf8(dir, [dnl
+The m4_arg(dir) parameter is a directory to be used as a location for
+database files.])
+m4_paramend
+
+m4_err(dbenv_set_data_dir,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_data_dirs,
+NULL-terminated array of directories,, dirpp, reference)
+
+m4_seealso(DbEnv)
+m4_page_footer

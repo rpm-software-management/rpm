@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2002,2007 Oracle.  All rights reserved.
 #
-# $Id: rep005.tcl,v 12.11 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep005.tcl,v 12.19 2007/06/15 14:39:51 carol Exp $
 #
 # TEST  rep005
 # TEST	Replication election test with error handling.
@@ -58,6 +57,12 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 	source ./include.tcl
 	global rand_init
 	error_check_good set_random_seed [berkdb srand $rand_init] 0
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -80,20 +85,11 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env -create -log_max 1000000 \
-	    -home $masterdir $m_logargs \
+	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
+	    -event rep_event \
+	    -home $masterdir $m_logargs -errpfx MASTER $verbargs \
 	    $m_txnargs -rep_master -rep_transport \[list 1 replsend\]"
-# To debug elections, uncomment the line below and further below
-# for the clients to turn on verbose.  Also edit reputils.tcl
-# in proc start_election and swap the 2 commented lines with
-# their counterpart.
-#	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
-#	    -home $masterdir $m_logargs \
-#	    $m_txnargs -rep_master \
-#	    -verbose {rep on} -errpfx MASTER -errfile /dev/stderr \
-#	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	set envlist {}
 	lappend envlist "$masterenv 1"
@@ -102,16 +98,13 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 	for { set i 0 } { $i < $nclients } { incr i } {
 		set envid [expr $i + 2]
 		repladd $envid
-		set env_cmd($i) "berkdb_env -create -home $clientdir($i) \
-		    $c_logargs($i) $c_txnargs($i) -rep_client \
+		set env_cmd($i) "berkdb_env_noerr -create \
+		    -event rep_event \
+		    -home $clientdir($i) $c_logargs($i) \
+		    $c_txnargs($i) -rep_client $verbargs \
+		    -errpfx CLIENT$i \
 		    -rep_transport \[list $envid replsend\]"
-#		set env_cmd($i) "berkdb_env_noerr -create -home $clientdir($i) \
-#		    -verbose {rep on} -errpfx CLIENT$i -errfile /dev/stderr \
-#		    $c_logargs($i) $c_txnargs($i) -rep_client \
-#		    -rep_transport \[list $envid replsend\]"
 		set clientenv($i) [eval $env_cmd($i) $recargs]
-		error_check_good \
-		    client_env($i) [is_valid_env $clientenv($i)] TRUE
 		lappend envlist "$clientenv($i) $envid"
 	}
 
@@ -173,12 +166,19 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 proc rep005_elect { ecmd celist qdir msg count \
     winner lsn_lose elist logset} {
 	global elect_timeout elect_serial
+	global timeout_ok
 	upvar $ecmd env_cmd
 	upvar $celist envlist
 	upvar $winner win
 	upvar $lsn_lose last_win
 
-	set elect_timeout 5000000
+	# Set the proper value for the first time through the 
+	# loop.  On subsequent passes, timeout_ok will already 
+	# be set. 
+	if { [info exists timeout_ok] == 0 } {
+		set timeout_ok 0
+	}
+
 	set nclients [llength $elist]
 	set nsites [expr $nclients + 1]
 
@@ -232,7 +232,9 @@ proc rep005_elect { ecmd celist qdir msg count \
 	set nsites $nclients
 	set nvotes $nsites
 	run_election env_cmd envlist err_cmd pri crash \
-	    $qdir $msg $el $nsites $nvotes $nclients $win
+	    $qdir $msg $el $nsites $nvotes $nclients $win \
+	    0 "test.db" 0 $timeout_ok
+
 	#
 	# Sometimes test elections with an existing master.
 	# Other times test elections without master by closing the
@@ -243,8 +245,15 @@ proc rep005_elect { ecmd celist qdir msg count \
 	set close_list { 0 0 0 1 1 1 1 1 1 1}
 	set close_len [expr [llength $close_list] - 1]
 	set close_index [berkdb random_int 0 $close_len]
+
+	# Unless we close the master, the next election will time out.
+	set timeout_ok 1
+
 	if { [lindex $close_list $close_index] == 1 } {
+		# Declare that we expect the next election to succeed.
+		set timeout_ok 0
 		puts -nonewline "\t\t$msg: Closing "
+		error_check_good log_flush [$clientenv($win) log_flush] 0
 		error_check_good newmaster_close [$clientenv($win) close] 0
 		#
 		# If the next test should win via LSN then remove the

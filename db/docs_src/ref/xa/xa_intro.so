@@ -1,0 +1,70 @@
+m4_comment([$Id: xa_intro.so,v 10.22 2001/03/30 20:34:54 bostic Exp $])
+
+m4_ref_title(Distributed Transactions,
+    XA Introduction, [@XA Resource Manager, XA @Resource Manager],
+    xa/build, xa/xa_config)
+
+m4_p([dnl
+m4_db can be used as an XA-compliant resource manager.  The XA
+implementation is known to work with the Tuxedo(tm) transaction
+manager.])
+
+m4_p([dnl
+The XA support is encapsulated in the resource manager switch
+db_xa_switch, which defines the following functions:])
+
+m4_indent([dnl
+__db_xa_close     Close the resource manager.
+__db_xa_commit    Commit the specified transaction.
+__db_xa_complete  Wait for asynchronous operations to
+                  complete.
+__db_xa_end       Disassociate the application from a
+                  transaction.
+__db_xa_forget    Forget about a transaction that was heuristically
+                  completed. (m4_db does not support heuristic
+                  completion.)
+__db_xa_open      Open the resource manager.
+__db_xa_prepare   Prepare the specified transaction.
+__db_xa_recover   Return a list of prepared, but not yet
+                  committed transactions.
+__db_xa_rollback  Abort the specified transaction.
+__db_xa_start     Associate the application with a
+                  transaction.
+])
+
+m4_p([dnl
+The m4_db resource manager does not support the following optional
+XA features:])
+
+m4_bulletbegin
+m4_bullet([Asynchronous operations])
+m4_bullet([Transaction migration])
+m4_bulletend
+
+m4_p([dnl
+The Tuxedo System is available from m4_linkweb(http://www.beasys.com,
+[BEA Systems, Inc.])])
+
+m4_p([dnl
+For additional information on Tuxedo, see])
+
+m4_indentv([dnl
+m4_italic([Building Client/Server Applications Using Tuxedo]),
+by Hall (John Wiley & Sons, Inc.).])
+
+m4_p([dnl
+For additional information on XA Resource Managers, see])
+
+m4_indentv([dnl
+X/Open CAE Specification
+m4_italic([Distributed Transaction Processing: The XA Specification]),
+X/Open Document Number: XO/CAE/91/300.])
+
+m4_p([dnl
+For additional information on The Tuxedo System, see])
+
+m4_indentv([dnl
+m4_italic([The Tuxedo System]),
+by Andrade, Carges, Dwyer and Felts (Addison Wesley Longman).])
+
+m4_page_footer

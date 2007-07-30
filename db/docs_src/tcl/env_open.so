@@ -1,0 +1,147 @@
+m4_comment([$Id: env_open.so,v 11.29 2002/12/22 21:11:07 bostic Exp $])
+
+define(M4PAGELOCAL, )
+include(tcl/m4.tcl)
+
+m4_tcl_header(berkdb env, m4_tcl_env_open, [dnl
+berkdb env
+	m4_tcl_arg([-cachesize {gbytes bytes ncache}])
+	m4_tcl_arg([-create])
+	m4_tcl_arg([-data_dir dirname])
+	m4_tcl_arg([-encryptaes passwd])
+	m4_tcl_arg([-encryptany passwd])
+	m4_tcl_arg([-errfile filename])
+	m4_tcl_arg([-home directory])
+	m4_tcl_arg([-log_dir dirname])
+	m4_tcl_arg([-mode mode])
+	m4_tcl_arg([-private])
+	m4_tcl_arg([-recover])
+	m4_tcl_arg([-recover_fatal])
+	m4_tcl_arg([-shm_key shmid])
+	m4_tcl_arg([-system_mem])
+	m4_tcl_arg([-tmp_dir dirname])
+	m4_tcl_arg([-txn __LB__nosync__RB__])
+	m4_tcl_arg([-txn_max max])
+	m4_tcl_arg([-use_environ])
+	m4_tcl_arg([-use_environ_root])
+])
+
+m4_p([dnl
+The m4_tcl_env_open command opens and optionally creates a database
+environment.  The returned environment handle is bound to a Tcl command
+of the form m4_bold(envN), where N is an integer starting at 0 (for
+example, env0 and env1).  It is through this Tcl command that the script
+accesses the environment methods.  The command automatically initializes
+the Shared Memory Buffer Pool subsystem.  This subsystem is used
+whenever the application is using any m4_db access method.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-cachesize {gbytes bytes ncache}], [m4_set_cachesize])
+
+m4_tag([-create], [dnl
+Cause m4_db subsystems to create any underlying files, as necessary.])
+
+m4_tag([-data_dir dirname], [dnl
+Specify the environment's data directory as described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tag([-encryptaes passwd], [dnl
+Specify the database should be encrypted with the given password
+using the Rijndael/AES (also known as the Advanced Encryption Standard
+and Federal Information Processing Standard (FIPS) 197) algorithm.])
+
+m4_tag([-encryptany passwd], [dnl
+Specify the already existing environment should be opened
+with the given password.  This option is used if the environment is
+known to be encrypted, but the specific algorithm used is not known.])
+
+m4_tag([-errfile filename], [m4_tcl_errfile(env)])
+
+m4_tag([-home directory], [dnl
+The m4_arg(-home) argument is described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tag([-log_dir dirname], [dnl
+Specify the environment's logging file directory as described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tag([-mode mode], [m4_tcl_filemode([m4_db])])
+
+m4_tag([-private], [dnl
+Specify that the environment will only be accessed by a single process
+(although that process may be multithreaded).  This flag has two effects
+on the m4_db environment.  First, all underlying data structures are
+allocated from per-process memory instead of from shared memory that is
+potentially accessible to more than a single process.  Second, mutexes
+are only configured to work between threads.
+m4_p([dnl
+This flag should not be specified if more than a single process is
+accessing the environment, as it is likely to cause database corruption
+and unpredictable behavior.  For example, if both a server application
+and the m4_db utility m4_ref(db_stat) will access the environment, the
+m4_arg(-private) option should not be specified.])])
+
+m4_tag([-recover], [dnl
+Run normal recovery on this environment before opening it for normal use.
+If this flag is set, the m4_arg(-create) option must also be set because
+the regions will be removed and re-created.])
+
+m4_tag([-recover_fatal], [dnl
+Run catastrophic recovery on this environment before opening it for
+normal use.  If this flag is set, the m4_arg(-create) option must also be
+set since the regions will be removed and re-created.])
+
+m4_tag([-shm_key key], [dnl
+Specify a base segment ID for m4_db environment shared memory regions
+created in system memory on systems supporting X/Open-style shared
+memory interfaces, for example, UNIX systems supporting shmget(2) and
+related System V IPC interfaces.  See m4_link(M4RELDIR/ref/env/region,
+[Shared Memory Regions]) for more information.])
+
+m4_tag([-system_mem], [dnl
+Allocate memory from system shared memory instead of memory backed by the
+filesystem.  See m4_link(M4RELDIR/ref/env/region, [Shared Memory Regions])
+for more information.])
+
+m4_tag([-tmp_dir dirname], [dnl
+Specify the environment's tmp directory, as described in
+m4_link(M4RELDIR/ref/env/naming, [m4_db File Naming]).])
+
+m4_tag([-txn __LB__nosync__RB__],
+[Initialize the Transaction subsystem.  This subsystem is used when
+recovery and atomicity of multiple operations and recovery are important.
+The m4_arg(-txn) option implies the initialization of the logging
+and locking subsystems as well.
+m4_p([dnl
+If the optional m4_arg(nosync) argument is specified, the log will not
+be synchronously flushed on transaction commit.  This means that
+transactions exhibit the ACI (atomicity, consistency, and isolation)
+properties, but not D (durability); that is, database integrity will be
+maintained, but it is possible that some number of the most recently
+committed transactions may be undone during recovery instead of being
+redone.])
+m4_p([dnl
+The number of transactions that are potentially at risk is governed by
+how often the log is checkpointed (see m4_ref(db_checkpoint) for more
+information) and how many log updates can fit on a single log page.])])
+
+m4_tag([-txn_max max], [dnl
+Set the maximum number of simultaneous transactions that are supported
+by the environment, which bounds the size of backing files.  When there
+are more than the specified number of concurrent transactions, calls to
+m4_tcl_txn will fail (until some active transactions complete).])
+
+m4_tcl_environ
+
+m4_tagend
+
+m4_p([dnl
+The m4_tcl_env_open command returns an environment handle on success.])
+
+m4_tcl_ret_error
+
+m4_page_footer

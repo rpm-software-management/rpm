@@ -1,0 +1,28 @@
+m4_comment([$Id: file.so,v 10.19 2001/04/10 20:44:04 bostic Exp $])
+
+m4_ref_title(System Installation Notes,
+    File utility /etc/magic information,
+    [@/etc/magic, @file utility], dumpload/text, install/multiple)
+
+m4_p([dnl
+The m4_manref(file, 1) utility is a UNIX utility that examines and
+classifies files, based on information found in its database of file
+types, the /etc/magic file.  The following information may be added
+to your system's /etc/magic file to enable m4_manref(file, 1) to
+correctly identify m4_db database files.])
+
+m4_p([dnl
+The m4_manref(file, 1) utility m4_manref(magic, 5) information for the
+standard System V UNIX implementation of the m4_manref(file, 1) utility
+is included in the m4_db distribution for both
+m4_linkweb(magic.s5.be.txt, big-endian) (for example, Sparc) and
+m4_linkweb(magic.s5.le.txt, little-endian) (for example, x86) architectures.])
+
+m4_p([dnl
+The m4_manref(file, 1) utility m4_manref(magic, 5) information for
+Release 3.X of Ian Darwin's implementation of the file utility (as
+distributed by FreeBSD and most Linux distributions) is included in the
+m4_db distribution.  This m4_linkweb(magic.txt, magic.txt) information
+is correct for both big-endian and little-endian architectures.])
+
+m4_page_footer

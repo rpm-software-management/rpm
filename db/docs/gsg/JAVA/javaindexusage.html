@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Secondary Database Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="indexes.html" title="Chapter 5. Secondary Databases" />
+    <link rel="up" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
     <link rel="previous" href="joins.html" title="Database Joins" />
-    <link rel="next" href="dbconfig.html" title="Chapter 6. Database Configuration" />
+    <link rel="next" href="dbconfig.html" title="ChapterÂ 6.Â Database Configuration" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Secondary Database Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="joins.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Secondary Databases</th>
-          <td width="20%" align="right"> <a accesskey="n" href="dbconfig.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="joins.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Secondary Databases</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="dbconfig.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -110,7 +110,7 @@ public class ItemNameKeyCreator implements SecondaryKeyCreator {
                 (Inventory) theBinding.entryToObject(dataEntry);
             // Get the item name and use that as the key
             String theItem = inventoryItem.getItemName();
-            resultEntry.setData(theItem.getBytes(&quot;UTF-8&quot;));
+            resultEntry.setData(theItem.getBytes("UTF-8"));
         } catch (IOException willNeverOccur) {}
 
         return true;
@@ -170,10 +170,10 @@ public class MyDbs {
     private Database classCatalogDb = null;
     <b class="userinput"><tt>private SecondaryDatabase itemNameIndexDb = null;</tt></b>
 
-    private String vendordb = &quot;VendorDB.db&quot;;
-    private String inventorydb = &quot;InventoryDB.db&quot;;
-    private String classcatalogdb = &quot;ClassCatalogDB.db&quot;;
-    <b class="userinput"><tt>private String itemnameindexdb = &quot;ItemNameIndexDB.db&quot;;</tt></b>
+    private String vendordb = "VendorDB.db";
+    private String inventorydb = "InventoryDB.db";
+    private String classcatalogdb = "ClassCatalogDB.db";
+    <b class="userinput"><tt>private String itemnameindexdb = "ItemNameIndexDB.db";</tt></b>
 
     // Needed for object serialization
     private StoredClassCatalog classCatalog;
@@ -197,8 +197,8 @@ public class MyDbs {
 
         myDbConfig.setErrorStream(System.err);
         <b class="userinput"><tt>mySecConfig.setErrorStream(System.err);</tt></b>
-        myDbConfig.setErrorPrefix(&quot;MyDbs&quot;);
-        <b class="userinput"><tt>mySecConfig.setErrorPrefix(&quot;MyDbs&quot;);</tt></b>
+        myDbConfig.setErrorPrefix("MyDbs");
+        <b class="userinput"><tt>mySecConfig.setErrorPrefix("MyDbs");</tt></b>
         myDbConfig.setType(DatabaseType.BTREE);
         <b class="userinput"><tt>mySecConfig.setType(DatabaseType.BTREE);</tt></b>
         myDbConfig.setAllowCreate(true);
@@ -207,24 +207,24 @@ public class MyDbs {
         // Now open, or create and open, our databases
         // Open the vendors and inventory databases
         try {
-            vendordb = databasesHome + &quot;/&quot; + vendordb;
+            vendordb = databasesHome + "/" + vendordb;
             vendorDb = new Database(vendordb,
                                     null,
                                     myDbConfig);
 
-            inventorydb = databasesHome + &quot;/&quot; + inventorydb;
+            inventorydb = databasesHome + "/" + inventorydb;
             inventoryDb = new Database(inventorydb,
                                         null,
                                         myDbConfig);
 
             // Open the class catalog db. This is used to
             // optimize class serialization.
-            classcatalogdb = databasesHome + &quot;/&quot; + classcatalogdb;
+            classcatalogdb = databasesHome + "/" + classcatalogdb;
             classCatalogDb = new Database(classcatalogdb,
                                           null,
                                           myDbConfig);
         } catch(FileNotFoundException fnfe) {
-            System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
+            System.err.println("MyDbs: " + fnfe.toString());
             System.exit(-1);
         }
 
@@ -252,13 +252,13 @@ public class MyDbs {
         mySecConfig.setKeyCreator(keyCreator);
         // Now open it
         try {
-            itemnameindexdb = databasesHome + &quot;/&quot; + itemnameindexdb;
+            itemnameindexdb = databasesHome + "/" + itemnameindexdb;
             itemNameIndexDb = new SecondaryDatabase(itemnameindexdb,
                                                     null,
                                                     inventoryDb,
                                                     mySecConfig);
         } catch(FileNotFoundException fnfe) {
-            System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
+            System.err.println("MyDbs: " + fnfe.toString());
             System.exit(-1);
         }</tt></b>
     }
@@ -295,7 +295,7 @@ public class MyDbs {
             }
 
         } catch(DatabaseException dbe) {
-            System.err.println(&quot;Error closing MyDbs: &quot; +
+            System.err.println("Error closing MyDbs: " +
                                 dbe.toString());
             System.exit(-1);
         }
@@ -374,7 +374,7 @@ import com.sleepycat.db.OperationStatus;
           <a id="java_index17"></a>
           <pre class="programlisting">    public class ExampleDatabaseRead {
 
-    private static String myDbsPath = &quot;./&quot;;
+    private static String myDbsPath = "./";
 
     // Encapsulates the database environment and databases.
     private static MyDbs myDbs = new MyDbs();
@@ -421,7 +421,7 @@ import com.sleepycat.db.OperationStatus;
             // searchKey is the key that we want to find in the
             // secondary db.
             DatabaseEntry searchKey =
-                new DatabaseEntry(locateItem.getBytes(&quot;UTF-8&quot;));
+                new DatabaseEntry(locateItem.getBytes("UTF-8"));
 
             // foundKey and foundData are populated from the primary
             // entry that is associated with the secondary db key.
@@ -447,7 +447,7 @@ import com.sleepycat.db.OperationStatus;
                     foundData, LockMode.DEFAULT);
             }
         } catch (Exception e) {
-            System.err.println(&quot;Error on inventory secondary cursor:&quot;);
+            System.err.println("Error on inventory secondary cursor:");
             System.err.println(e.toString());
             e.printStackTrace();
         } finally {
@@ -474,18 +474,18 @@ import com.sleepycat.db.OperationStatus;
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="joins.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="joins.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="indexes.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="dbconfig.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="dbconfig.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Database Joins </td>
+          <td width="40%" align="left" valign="top">Database JoinsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 6. Database Configuration</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 6.Â Database Configuration</td>
         </tr>
       </table>
     </div>

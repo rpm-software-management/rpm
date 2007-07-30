@@ -1,0 +1,57 @@
+m4_comment([$Id: seq_set_range.so,v 1.6 2004/09/07 15:37:41 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[seq_set_range, seq_get_range])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_set_range),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__set_range(DB_SEQUENCE *seq, db_seq_t min, db_seq_t max);
+m4_blank
+int
+DB_SEQUENCE-__GT__get_range(DB_SEQUENCE *seq, db_seq_t *minp, db_seq_t *maxp);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::set_range(db_seq_t min, db_seq_t max);
+m4_blank
+int DbSequence::get_range(u_int32_t, db_seq_t *minp, db_seq_t *maxp);
+]))
+
+m4_p([dnl
+Configure a sequence range.  This call is only effective when the
+sequence is being created.  The range is limited to a signed 64 bit
+integer.])
+
+m4_p([dnl
+The m4_ref(seq_set_range) method may not be called after the
+m4_ref(seq_open) method is called.])
+
+m4_return(seq_set_range, std)
+
+m4_parambegin
+m4_param(min, [dnl
+Specifies the minimum value for the sequence.])
+m4_param(max, [dnl
+Specifies the maximum value for the sequence.])
+m4_paramend
+
+m4_err(seq_set_range, einval)
+
+m4_pf_description(m4_ref(seq_get_range))
+m4_p([dnl
+The m4_refT(seq_get_range) returns the range of values in the sequence.])
+m4_when_any(seq_get_range)
+
+m4_return(seq_get_range, std)
+
+m4_parambegin
+m4_param(minp,
+[The m4_refT(seq_get_range) returns the minimum value in m4_arg(minp).])
+m4_param(maxp,
+[The m4_refT(seq_get_range) returns the maximum value in m4_arg(maxp).])
+m4_paramend
+
+m4_seealso(DbSequence)
+m4_page_footer

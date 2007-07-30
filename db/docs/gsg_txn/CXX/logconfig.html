@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Configuring the Logging Subsystem</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="filemanagement.html" title="Chapter 5. Managing DB Files" />
+    <link rel="up" href="filemanagement.html" title="ChapterÂ 5.Â Managing DB Files" />
     <link rel="previous" href="logfileremoval.html" title="Removing Log Files" />
-    <link rel="next" href="wrapup.html" title="Chapter 6. Summary and Examples" />
+    <link rel="next" href="wrapup.html" title="ChapterÂ 6.Â Summary and Examples" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Configuring the Logging Subsystem</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="logfileremoval.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Managing DB Files</th>
-          <td width="20%" align="right"> <a accesskey="n" href="wrapup.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="logfileremoval.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Managing DB Files</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="wrapup.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -272,7 +272,7 @@
         <p>
                 For example:
             </p>
-        <pre class="programlisting">#include &quot;db_cxx.h&quot;
+        <pre class="programlisting">#include "db_cxx.h"
 
 ...
                                                                                                                                   
@@ -288,7 +288,7 @@ int main(void)
                           DB_THREAD     |  // Free-thread the env handle
                           DB_INIT_TXN;     // Initialize transactions
 
-    std::string envHome(&quot;/export1/testEnv&quot;);
+    std::string envHome("/export1/testEnv");
     DbEnv myEnv(0);
 
     try {
@@ -310,8 +310,8 @@ int main(void)
         myEnv.open(envHome.c_str(), env_flags, 0);
 
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error opening database and environment: &quot;
-                  &lt;&lt; file_name &lt;&lt; &quot;, &quot;
+        std::cerr &lt;&lt; "Error opening database and environment: "
+                  &lt;&lt; file_name &lt;&lt; ", "
                   &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
     }
@@ -353,7 +353,7 @@ int main(void)
                 large enough that no transaction will ever span the entire
                 buffer. You must also avoid a state where the in-memory
                 buffer is full and no space can be freed because a
-                transaction that started the first log &quot;file&quot; is still
+                transaction that started the first log "file" is still
                 active.
             </p>
         <p>
@@ -378,18 +378,18 @@ int main(void)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="logfileremoval.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="logfileremoval.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="filemanagement.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="wrapup.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="wrapup.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Removing Log Files </td>
+          <td width="40%" align="left" valign="top">Removing Log FilesÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 6. Summary and Examples</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 6.Â Summary and Examples</td>
         </tr>
       </table>
     </div>

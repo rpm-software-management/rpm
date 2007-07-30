@@ -413,7 +413,7 @@ in the log buffer.&nbsp; Records in that buffer will be encrypted, so decryption
 will occur no matter whether we are returning records from the buffer or
 if we are returning log records directly from the disk. Current checksum
 checking is done in
-<i>__log_get_c_int.</i>&nbsp; Decryption will be done
+<i>__logc_get_int.</i>&nbsp; Decryption will be done
 after the checksum is checked.
 <p>There are currently two nasty issues with encrypted log records.&nbsp;
 The first is that <i>__txn_force_abort</i> overwrites a commit record in

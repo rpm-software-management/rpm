@@ -1,0 +1,24 @@
+m4_comment([$Id: text.so,v 10.15 2001/03/13 20:39:47 bostic Exp $])
+
+m4_ref_title(Dumping and Reloading,
+    Loading text into databases,
+    loading @text into databases,
+    dumpload/format, install/file)
+
+m4_p([dnl
+The m4_ref(db_load) utility can be used to load text into databases.
+The m4_option(T) option permits nondatabase applications to create
+flat-text files that are then loaded into databases for fast,
+highly-concurrent access.  For example, the following command loads the
+standard UNIX m4_path(/etc/passwd) file into a database, with the login
+name as the key item and the entire password entry as the data item:])
+
+m4_indent([dnl
+awk -F: '{print [$]1; print [$]0}' __LT__ /etc/passwd |m4_backslash([])
+	sed 's/m4_backslash([])m4_backslash([])/m4_backslash([])m4_backslash([])m4_backslash([])m4_backslash([])/g' | db_load -T -t hash passwd.db])
+
+m4_p([dnl
+Note that backslash characters naturally occurring in the text are escaped
+to avoid interpretation as escape characters by m4_ref(db_load).])
+
+m4_page_footer

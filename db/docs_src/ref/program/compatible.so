@@ -1,0 +1,21 @@
+m4_comment([$Id: compatible.so,v 10.34 2002/02/23 20:05:24 bostic Exp $])
+
+m4_ref_title(Programmer Notes,
+    Compatibility with historic UNIX interfaces,
+    @interface compatibility, program/copy, program/runtime)
+
+m4_p([dnl
+The m4_db version 2 library provides backward-compatible interfaces for
+the historic UNIX m4_ref(dbm), m4_ref(ndbm), and m4_ref(hsearch)
+interfaces.  It also provides a backward-compatible interface for the
+historic m4_db 1.85 release.])
+
+m4_p([dnl
+m4_db version 2 does not provide database compatibility for any of the
+previous interfaces, and existing databases must be converted manually.
+To convert existing databases from the m4_db 1.85 format to the m4_db
+version 2 format, review the m4_ref(db_dump185) and m4_ref(db_load)
+information.  No utilities are provided to convert UNIX m4_ref(dbm),
+m4_ref(ndbm), or m4_ref(hsearch) databases.])
+
+m4_page_footer

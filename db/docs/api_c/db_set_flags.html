@@ -1,6 +1,5 @@
 <!--$Id: db_set_flags.so,v 10.68 2004/09/28 15:04:19 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -130,7 +129,7 @@ will be returned.
 <a name="7"><!--meow--></a>
 <dt><a name="DB_RECNUM">DB_RECNUM</a><dd>Support retrieval from the Btree using record numbers.  For more
 information, see the <a href="../api_c/db_get.html#DB_SET_RECNO">DB_SET_RECNO</a> flag to the <a href="../api_c/db_get.html">DB-&gt;get</a>
-and <a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a> methods.
+and <a href="../api_c/dbc_get.html">DBcursor-&gt;get</a> methods.
 <p>Logical record numbers in Btree databases are mutable in the face of
 record insertion or deletion.  See the DB_RENUMBER flag in the
 Recno access method information for further discussion.</p>
@@ -229,7 +228,7 @@ refer to the new record number 4, if any such record exists, after the
 deletion.  If a cursor was positioned after record number 4 before the
 deletion, it will be shifted downward one logical record, continuing to
 refer to the same record as it did before.
-<p>Using the <a href="../api_c/db_put.html">DB-&gt;put</a> or <a href="../api_c/dbc_put.html">DBcursor-&gt;c_put</a> interfaces to create new
+<p>Using the <a href="../api_c/db_put.html">DB-&gt;put</a> or <a href="../api_c/dbc_put.html">DBcursor-&gt;put</a> interfaces to create new
 records will cause the creation of multiple records if the record number
 is more than one greater than the largest record currently in the
 database.  For example, creating record 28, when record 25 was previously
@@ -292,6 +291,6 @@ current flags in <b>flagsp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

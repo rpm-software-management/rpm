@@ -1,0 +1,87 @@
+m4_comment([$Id: env_set_feedback.so,v 10.43 2006/05/17 20:47:46 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_set_feedback)])
+
+define(M4PAGELOCAL, M4INTERFACE)
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_set_feedback, [dnl
+m4_pf_header(m4_ref(dbenv_set_feedback),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_feedback(DB_ENV *dbenv,
+    void (*db_feedback_fcn)(DB_ENV *dbenv, int opcode, int percent));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_feedback(
+    void (*db_feedback_fcn)(DbEnv *dbenv, int opcode, int percent));
+]))],[dnl
+m4_pf_header(m4_ref(dbh_set_feedback),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_feedback(DB *,
+    void (*db_feedback_fcn)(DB *dbp, int opcode, int percent));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_feedback(
+    void (*db_feedback_fcn)(DB *dbp, int opcode, int percent));
+]))])
+
+m4_p([dnl
+Some operations performed by the m4_db library can take non-trivial
+amounts of time.  The m4_refT(M4INTERFACE) can be used by applications
+to monitor progress within these operations.  When an operation is
+likely to take a long time, m4_db will call the specified callback
+function with progress information.])
+m4_p([dnl
+It is up to the callback function to display this information in an
+appropriate manner.])
+
+ifelse(M4INTERFACE,
+dbenv_set_feedback, m4_scope_dbenv(M4INTERFACE), m4_scope_dbh(M4INTERFACE))
+
+m4_when_any(M4INTERFACE)
+
+m4_return(M4INTERFACE, std)
+
+m4_parambegin
+m4_param(db_feedback_fcn, [dnl
+The m4_arg(db_feedback_fcn) parameter is the application-specified
+feedback function called to report m4_db operation progress.  The
+callback function must take three parameters:
+
+m4_tagbegin
+ifelse(M4INTERFACE, dbenv_set_feedback, [dnl
+m4_tag(m4_arg(dbenv), [dnl
+The m4_arg(dbenv) parameter is a reference to the enclosing database
+environment.])],[dnl
+m4_tag(m4_arg(db), [dnl
+The m4_arg(db) parameter is a reference to the enclosing database.])])
+
+m4_tag(m4_arg(opcode), [dnl
+The m4_arg(opcode) parameter is an operation code.  The m4_arg(opcode)
+parameter may take on any of the following values:
+
+m4_tagbegin
+ifelse(M4INTERFACE, dbenv_set_feedback, [dnl
+m4_tag(m4_idef(DB_RECOVER), [The environment is being recovered.])
+],[dnl
+m4_tag(m4_idef(DB_UPGRADE),
+[The underlying database is being upgraded.])
+m4_tag(m4_idef(DB_VERIFY),
+[The underlying database is being verified.])])
+m4_tagend])
+
+m4_tag(m4_arg(percent), [dnl
+The m4_arg(percent) parameter is the percent of the operation that has
+been completed, specified as an integer value between 0 and 100.])
+m4_tagend])
+
+m4_not_reentrant
+
+m4_paramend
+
+ifelse(M4INTERFACE, dbenv_set_feedback, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

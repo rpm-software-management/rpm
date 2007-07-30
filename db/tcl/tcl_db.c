@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: tcl_db.c,v 12.23 2006/08/24 14:46:32 bostic Exp $
+ * $Id: tcl_db.c,v 12.33 2007/06/21 17:46:59 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <tcl.h>
 #endif
 #include "dbinc/db_page.h"
@@ -645,6 +644,7 @@ tcl_DbStat(interp, objc, objv, dbp)
 		MAKE_STAT_LIST("Magic", hsp->hash_magic);
 		MAKE_STAT_LIST("Version", hsp->hash_version);
 		MAKE_STAT_LIST("Page size", hsp->hash_pagesize);
+		MAKE_STAT_LIST("Page count", hsp->hash_pagecnt);
 		MAKE_STAT_LIST("Number of keys", hsp->hash_nkeys);
 		MAKE_STAT_LIST("Number of records", hsp->hash_ndata);
 		MAKE_STAT_LIST("Fill factor", hsp->hash_ffactor);
@@ -688,6 +688,7 @@ tcl_DbStat(interp, objc, objv, dbp)
 		MAKE_STAT_LIST("Fixed record length", bsp->bt_re_len);
 		MAKE_STAT_LIST("Record pad", bsp->bt_re_pad);
 		MAKE_STAT_LIST("Page size", bsp->bt_pagesize);
+		MAKE_STAT_LIST("Page count", bsp->bt_pagecnt);
 		if (flag != DB_FAST_STAT) {
 			MAKE_STAT_LIST("Levels", bsp->bt_levels);
 			MAKE_STAT_LIST("Internal pages", bsp->bt_int_pg);
@@ -1035,6 +1036,7 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 #ifdef CONFIG_TEST
 		"-data_buf_size",
 		"-multi",
+		"-nolease",
 		"-read_committed",
 		"-read_uncommitted",
 #endif
@@ -1053,6 +1055,7 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 #ifdef CONFIG_TEST
 		DBGET_DATA_BUF_SIZE,
 		DBGET_MULTI,
+		DBGET_NOLEASE,
 		DBGET_READ_COMMITTED,
 		DBGET_READ_UNCOMMITTED,
 #endif
@@ -1140,6 +1143,9 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 			if (result != TCL_OK)
 				goto out;
 			i++;
+			break;
+		case DBGET_NOLEASE:
+			rmw |= DB_IGNORE_LEASE;
 			break;
 		case DBGET_READ_COMMITTED:
 			rmw |= DB_READ_COMMITTED;
@@ -1584,10 +1590,10 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 	if (ispget) {
 		_debug_check();
 		F_SET(&pkey, DB_DBT_MALLOC);
-		ret = dbc->c_pget(dbc, &key, &pkey, &data, cflag | rmw);
+		ret = dbc->pget(dbc, &key, &pkey, &data, cflag | rmw);
 	} else {
 		_debug_check();
-		ret = dbc->c_get(dbc, &key, &data, cflag | rmw);
+		ret = dbc->get(dbc, &key, &data, cflag | rmw);
 	}
 	result = _ReturnSetup(interp, ret, DB_RETOK_DBCGET(ret),
 	    "db get (cursor)");
@@ -1636,9 +1642,9 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 		data = save;
 		if (ispget) {
 			F_SET(&pkey, DB_DBT_MALLOC);
-			ret = dbc->c_pget(dbc, &key, &pkey, &data, cflag | rmw);
+			ret = dbc->pget(dbc, &key, &pkey, &data, cflag | rmw);
 		} else
-			ret = dbc->c_get(dbc, &key, &data, cflag | rmw);
+			ret = dbc->get(dbc, &key, &data, cflag | rmw);
 		if (ret == 0 && prefix != NULL &&
 		    memcmp(key.data, prefix, strlen(prefix)) != 0) {
 			/*
@@ -1649,7 +1655,7 @@ tcl_DbGet(interp, objc, objv, dbp, ispget)
 		}
 	}
 out1:
-	(void)dbc->c_close(dbc);
+	(void)dbc->close(dbc);
 	if (result == TCL_OK)
 		Tcl_SetObjResult(interp, retlist);
 out:
@@ -1867,7 +1873,7 @@ tcl_DbDelete(interp, objc, objv, dbp)
 			flag = DB_FIRST;
 		else
 			flag = DB_SET_RANGE;
-		ret = dbc->c_get(dbc, &key, &data, flag);
+		ret = dbc->get(dbc, &key, &data, flag);
 		while (ret == 0 &&
 		    memcmp(key.data, prefix, strlen(prefix)) == 0) {
 			/*
@@ -1876,7 +1882,7 @@ tcl_DbDelete(interp, objc, objv, dbp)
 			 * move ahead.
 			 */
 			_debug_check();
-			ret = dbc->c_del(dbc, 0);
+			ret = dbc->del(dbc, 0);
 			if (ret != 0) {
 				result = _ReturnSetup(interp, ret,
 				    DB_RETOK_DBCDEL(ret), "db c_del");
@@ -1888,7 +1894,7 @@ tcl_DbDelete(interp, objc, objv, dbp)
 			 */
 			memset(&key, 0, sizeof(key));
 			memset(&data, 0, sizeof(data));
-			ret = dbc->c_get(dbc, &key, &data, DB_NEXT);
+			ret = dbc->get(dbc, &key, &data, DB_NEXT);
 		}
 		if (ret == DB_NOTFOUND)
 			ret = 0;
@@ -1898,7 +1904,7 @@ tcl_DbDelete(interp, objc, objv, dbp)
 		 * have multiple nuls at the end, so we free using __os_free().
 		 */
 		__os_free(dbp->dbenv, prefix);
-		(void)dbc->c_close(dbc);
+		(void)dbc->close(dbc);
 		result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "db del");
 	}
 out:
@@ -2191,10 +2197,12 @@ tcl_second_call(dbp, pkey, data, skey)
 	DBT *skey;
 {
 	DBTCL_INFO *ip;
+	DBT *tskey;
 	Tcl_Interp *interp;
-	Tcl_Obj *pobj, *dobj, *objv[3];
+	Tcl_Obj *pobj, *dobj, *objv[3], *robj, **skeylist;
 	size_t len;
 	int ilen, result, ret;
+	u_int32_t i, nskeys;
 	void *retbuf, *databuf;
 
 	ip = (DBTCL_INFO *)dbp->api_internal;
@@ -2224,22 +2232,62 @@ tcl_second_call(dbp, pkey, data, skey)
 		return (EINVAL);
 	}
 
-	retbuf = Tcl_GetByteArrayFromObj(Tcl_GetObjResult(interp), &ilen);
-	len = (size_t)ilen;
+	robj = Tcl_GetObjResult(interp);
+	if (robj->typePtr == NULL || strcmp(robj->typePtr->name, "list") != 0) {
+		nskeys = 1;
+		skeylist = &robj;
+		tskey = skey;
+	} else {
+		if ((result = Tcl_ListObjGetElements(interp,
+		    robj, &ilen, &skeylist)) != TCL_OK) {
+			__db_errx(dbp->dbenv,
+			    "Could not get list elements from Tcl callback");
+			return (EINVAL);
+		}
+		nskeys = (u_int32_t)ilen;
 
-	/*
-	 * retbuf is owned by Tcl; copy it into malloc'ed memory.
-	 * We need to use __os_umalloc rather than ufree because this will
-	 * be freed by DB using __os_ufree--the DB_DBT_APPMALLOC flag
-	 * tells DB to free application-allocated memory.
-	 */
-	if ((ret = __os_umalloc(dbp->dbenv, len, &databuf)) != 0)
-		return (ret);
-	memcpy(databuf, retbuf, len);
+		/*
+		 * It would be nice to check for nskeys == 0 and return
+		 * DB_DONOTINDEX, but Tcl does not distinguish between an empty
+		 * string and an empty list, so that would disallow empty
+		 * secondary keys.
+		 */
+		if (nskeys == 0) {
+			nskeys = 1;
+			skeylist = &robj;
+		}
+		if (nskeys == 1)
+			tskey = skey;
+		else {
+			memset(skey, 0, sizeof(DBT));
+			if ((ret = __os_umalloc(dbp->dbenv,
+			    nskeys * sizeof(DBT), &skey->data)) != 0)
+				return (ret);
+			skey->size = nskeys;
+			F_SET(skey, DB_DBT_MULTIPLE | DB_DBT_APPMALLOC);
+			tskey = (DBT *)skey->data;
+		}
+	}
 
-	skey->data = databuf;
-	skey->size = len;
-	F_SET(skey, DB_DBT_APPMALLOC);
+	for (i = 0; i < nskeys; i++, tskey++) {
+		retbuf = Tcl_GetByteArrayFromObj(skeylist[i], &ilen);
+		len = (size_t)ilen;
+
+		/*
+		 * retbuf is owned by Tcl; copy it into malloc'ed memory.
+		 * We need to use __os_umalloc rather than ufree because this
+		 * will be freed by DB using __os_ufree--the DB_DBT_APPMALLOC
+		 * flag tells DB to free application-allocated memory.
+		 */
+		if ((ret = __os_umalloc(dbp->dbenv, len, &databuf)) != 0)
+			return (ret);
+		memcpy(databuf, retbuf, len);
+
+		memset(tskey, 0, sizeof(DBT));
+		tskey->data = databuf;
+		tskey->size = len;
+		F_SET(tskey, DB_DBT_APPMALLOC);
+	}
 
 	return (0);
 }
@@ -2457,7 +2505,7 @@ tcl_DbGetjoin(interp, objc, objv, dbp)
 			goto out;
 		}
 		key.data = ktmp;
-		ret = (listp[j])->c_get(listp[j], &key, &data, DB_SET);
+		ret = (listp[j])->get(listp[j], &key, &data, DB_SET);
 		if ((result = _ReturnSetup(interp, ret, DB_RETOK_DBCGET(ret),
 		    "db cget")) == TCL_ERROR)
 			goto out;
@@ -2475,7 +2523,7 @@ tcl_DbGetjoin(interp, objc, objv, dbp)
 		memset(&data, 0, sizeof(data));
 		key.flags |= DB_DBT_MALLOC;
 		data.flags |= DB_DBT_MALLOC;
-		ret = dbc->c_get(dbc, &key, &data, 0);
+		ret = dbc->get(dbc, &key, &data, 0);
 		/*
 		 * Build up our {name value} sublist
 		 */
@@ -2487,7 +2535,7 @@ tcl_DbGetjoin(interp, objc, objv, dbp)
 			__os_ufree(dbp->dbenv, data.data);
 		}
 	}
-	(void)dbc->c_close(dbc);
+	(void)dbc->close(dbc);
 	if (result == TCL_OK)
 		Tcl_SetObjResult(interp, retlist);
 out:
@@ -2495,7 +2543,7 @@ out:
 		__os_free(dbp->dbenv, ktmp);
 	while (j) {
 		if (listp[j])
-			(void)(listp[j])->c_close(listp[j]);
+			(void)(listp[j])->close(listp[j]);
 		j--;
 	}
 	__os_free(dbp->dbenv, listp);
@@ -2682,11 +2730,11 @@ tcl_DbCount(interp, objc, objv, dbp)
 	/*
 	 * Move our cursor to the key.
 	 */
-	ret = dbc->c_get(dbc, &key, &data, DB_SET);
+	ret = dbc->get(dbc, &key, &data, DB_SET);
 	if (ret == DB_KEYEMPTY || ret == DB_NOTFOUND)
 		count = 0;
 	else {
-		ret = dbc->c_count(dbc, &count, 0);
+		ret = dbc->count(dbc, &count, 0);
 		if (ret != 0) {
 			result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
 			    "db c count");
@@ -2698,7 +2746,7 @@ tcl_DbCount(interp, objc, objv, dbp)
 
 out:	if (ktmp != NULL && freekey)
 		__os_free(dbp->dbenv, ktmp);
-	(void)dbc->c_close(dbc);
+	(void)dbc->close(dbc);
 	return (result);
 }
 

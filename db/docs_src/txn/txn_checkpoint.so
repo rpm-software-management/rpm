@@ -1,0 +1,50 @@
+m4_comment([$Id: txn_checkpoint.so,v 10.49 2005/03/02 22:57:15 bostic Exp $])
+
+define(M4PAGELOCAL, txn_checkpoint)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_checkpoint),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__txn_checkpoint(const DB_ENV *env,
+    u_int32_t kbyte, u_int32_t min, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::txn_checkpoint(u_int32_t kbyte, u_int32_t min, u_int32_t flags) const;
+]))
+
+m4_p([dnl
+If there has been any logging activity in the database environment since
+the last checkpoint, the m4_refT(txn_checkpoint) flushes the underlying
+memory pool, writes a checkpoint record to the log, and then flushes the
+log.])
+
+m4_return(txn_checkpoint, std)
+
+m4_underfunc(txn_checkpoint, txn_checkpoint, db_checkpoint)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_FORCE), [dnl
+Force a checkpoint record, even if there has been no activity since the
+last checkpoint.])
+m4_tagend])
+
+m4_param(kbyte, [dnl
+If the m4_arg(kbyte) parameter is non-zero, a checkpoint will be done
+if more than m4_arg(kbyte) kilobytes of log data have been written since
+the last checkpoint.])
+
+m4_param(min, [dnl
+If the m4_arg(min) parameter is non-zero, a checkpoint will be done if
+more than m4_arg(min) minutes have passed since the last checkpoint.])
+m4_paramend
+
+m4_err(txn_checkpoint, einval)
+
+m4_seealso(DbTxn)
+m4_page_footer

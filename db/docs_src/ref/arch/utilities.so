@@ -1,0 +1,75 @@
+m4_comment([$Id: utilities.so,v 10.25 2001/03/05 19:15:07 bostic Exp $])
+
+m4_ref_title(Architecture,
+    Supporting utilities, @utilities, arch/script, env/intro)
+
+m4_p([dnl
+The following are the standalone utilities that provide supporting
+functionality for the m4_db environment:])
+
+m4_tagbegin
+
+m4_tag(m4_ref(berkeley_db_svc), [dnl
+The m4_ref(berkeley_db_svc) utility is the m4_db RPC server that
+provides standard server functionality for client applications.])
+
+m4_tag(m4_ref(db_archive), [dnl
+The m4_ref(db_archive) utility supports database backup and archival,
+and log file administration.  It facilitates log reclamation and the
+creation of database snapshots.  Generally, some form of log archival
+must be done if a database environment has been configured for logging
+or transactions.])
+
+m4_tag(m4_ref(db_checkpoint), [dnl
+The m4_ref(db_checkpoint) utility runs as a daemon process, monitoring
+the database log and periodically issuing checkpoints.  It facilitates
+log reclamation and the creation of database snapshots.  Generally, some
+form of database checkpointing must be done if a database environment has
+been configured for transactions.])
+
+m4_tag(m4_ref(db_deadlock), [dnl
+The m4_ref(db_deadlock) utility runs as a daemon process, periodically
+traversing the database lock structures and aborting transactions when it
+detects a deadlock.  Generally, some form of deadlock detection must be
+done if a database environment has been configured for locking.])
+
+m4_tag(m4_ref(db_dump), [dnl
+The m4_ref(db_dump) utility writes a copy of the database to a flat-text
+file in a portable format.])
+
+m4_tag(m4_ref(db_load), [dnl
+The m4_ref(db_load) utility reads the flat-text file produced by
+m4_ref(db_dump) and loads it into a database file.])
+
+m4_tag(m4_ref(db_printlog), [dnl
+The m4_ref(db_printlog) utility displays the contents of m4_db log files
+in a human-readable and parsable format.])
+
+m4_tag(m4_ref(db_recover), [dnl
+The m4_ref(db_recover) utility runs after an unexpected m4_db or system
+failure to restore the database to a consistent state.  Generally, some
+form of database recovery must be done if databases are being modified.])
+
+m4_tag(m4_ref(db_stat)  , [dnl
+The m4_ref(db_stat) utility displays statistics for databases and database
+environments.])
+
+m4_tag(m4_ref(db_upgrade), [dnl
+The m4_ref(db_upgrade) utility provides a command-line interface for
+upgrading underlying database formats.])
+
+m4_tag(m4_ref(db_verify), [dnl
+The m4_ref(db_verify) utility provides a command-line interface for
+verifying the database format.])
+
+m4_tagend
+
+m4_p([dnl
+All of the functionality implemented for these utilities is also available
+as part of the standard m4_db API.  This means that threaded applications
+can easily create a thread that calls the same m4_db functions as do the
+utilities.  This often simplifies an application environment by removing
+the necessity for multiple processes to negotiate database and database
+environment creation and shut down.])
+
+m4_page_footer

@@ -1,0 +1,74 @@
+m4_comment([$Id: fail.so,v 10.2 2005/10/19 21:10:31 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Handling failure in Transactional Data Store applications,,
+    transapp/term, transapp/app)
+
+m4_p([dnl
+When building Transactional Data Store applications, there are design
+issues to consider whenever a thread of control with open m4_db handles
+fails for any reason (where a thread of control may be either a true
+thread or a process).])
+
+m4_p([dnl
+The first case is handling system failure: if the system fails, the
+database environment and the databases may be left in a corrupted state.
+In this case, recovery must be performed on the database environment
+before any further action is taken, in order to:])
+
+m4_bulletbegin
+m4_bullet([recover the database environment resources,])
+m4_bullet([dnl
+release any locks or mutexes that may have been held to avoid starvation
+as the remaining threads of control convoy behind the held locks, and])
+m4_bullet([dnl
+resolve any partially completed operations that may have left a database
+in an inconsistent or corrupted state.])
+m4_bulletend
+
+m4_p([dnl
+For details on performing recovery, see the m4_link(recovery, [Recovery
+procedures]).])
+
+m4_p([dnl
+The second case is handling the failure of a thread of control.  There
+are resources maintained in database environments that may be left
+locked or corrupted if a thread of control exits unexpectedly.  These
+resources include data structure mutexes, logical database locks and
+unresolved transactions (that is, transactions which were never aborted
+or committed).  While Transactional Data Store applications can treat
+the failure of a thread of control in the same way as they do a system
+failure, they have an alternative choice, the m4_refT(dbenv_failchk).])
+
+m4_p([dnl
+The m4_refT(dbenv_failchk) will return m4_ref(DB_RUNRECOVERY) if the
+database environment is unusable as a result of the thread of control
+failure.  (If a data structure mutex or a database write lock is left
+held by thread of control failure, the application should not continue
+to use the database environment, as subsequent use of the environment
+is likely to result in threads of control convoying behind the held
+locks.)  The m4_ref(dbenv_failchk) call will release any database read
+locks that have been left held by the exit of a thread of control, and
+abort any unresolved transactions.  In this case, the application can
+continue to use the database environment.])
+
+m4_p([dnl
+A Transactional Data Store application recovering from a thread of
+control failure should call m4_ref(dbenv_failchk), and, if it returns
+success, the application can continue.  If m4_ref(dbenv_failchk) returns
+m4_ref(DB_RUNRECOVERY), the application should proceed as described for
+the case of system failure.])
+
+m4_p([dnl
+It greatly simplifies matters that recovery may be performed regardless
+of whether recovery needs to be performed; that is, it is not an error
+to recover a database environment for which recovery is not strictly
+necessary.  For this reason, applications should not try to determine
+if the database environment was active when the application or system
+failed.  Instead, applications should run recovery any time the
+m4_refT(dbenv_failchk) returns m4_ref(DB_RUNRECOVERY), or, if the
+application is not calling m4_refT(dbenv_failchk), any time any thread
+of control accessing the database environment fails, as well as any time
+the system reboots.])
+
+m4_page_footer

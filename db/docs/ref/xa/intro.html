@@ -1,10 +1,9 @@
-<!--$Id: intro.so,v 10.6 2001/11/17 16:59:33 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: intro.so,v 10.7 2006/11/13 18:05:06 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB Reference Guide: Introduction</title>
+<title>Berkeley DB Reference Guide: Introduction to distributed transactions</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
@@ -15,7 +14,7 @@
 <td align=right><a href="../rep/ex_rq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../xa/build.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
-<h3 align=center>Introduction</h3>
+<h3 align=center>Introduction to distributed transactions</h3>
 <p>Berkeley DB provides support for distributed transactions using a two-phase
 commit protocol via its <a href="../../api_c/txn_prepare.html">DB_TXN-&gt;prepare</a> and <a href="../../api_c/txn_recover.html">DB_ENV-&gt;txn_recover</a>
 interfaces.  The <a href="../../api_c/txn_prepare.html">DB_TXN-&gt;prepare</a> method performs the first phase of a
@@ -48,6 +47,6 @@ transactions, the logs may be copied for backup purposes and the backup
 will be consistent across the multiple environments.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/ex_rq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../xa/build.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

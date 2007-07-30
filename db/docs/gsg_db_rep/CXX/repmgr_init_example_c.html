@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Adding the Replication Framework to
                     
                     SimpleTxn
@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
-    <link rel="previous" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
+    <link rel="up" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
+    <link rel="previous" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
     <link rel="next" href="fwrkpermmessage.html" title="Permanent Message Handling" />
   </head>
   <body>
@@ -24,9 +24,9 @@
             </th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="repapp.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. The DB Replication Framework</th>
-          <td width="20%" align="right"> <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="repapp.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â The DB Replication Framework</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -110,7 +110,7 @@
       <p>
                 First, we create a new structure,
                 <tt class="literal">RepHostInfoObj</tt>, which we use to store
-                host and port information for all &quot;other&quot; servers
+                host and port information for all "other" servers
                 identified to the application via the
                 <tt class="literal">-o</tt> command line option. This structure
                 is chain-able, which makes cleaning up at program shutdown
@@ -123,7 +123,7 @@
 typedef struct RepHostInfoObj{
     char* host;
     int port;
-    RepHostInfoObj* next; // used for chaining multiple &quot;other&quot; hosts.
+    RepHostInfoObj* next; // used for chaining multiple "other" hosts.
 } REP_HOST_INFO; </tt></b></pre>
       <p>
         Next, we update our <tt class="classname">RepConfigInfo</tt> class
@@ -151,7 +151,7 @@ public:
       <pre class="programlisting">RepConfigInfo::RepConfigInfo()
 {
     <b class="userinput"><tt>start_policy = DB_REP_ELECTION;</tt></b>
-    home = &quot;TESTDIR&quot;;
+    home = "TESTDIR";
     <b class="userinput"><tt>got_listen_address = false;
     totalsites = 0;
     priority = 100;
@@ -160,7 +160,7 @@ public:
       <p>
         Next, we implement our new method, <tt class="methodname">RepConfigInfo::addOtherHost</tt>,
         which is used to create <tt class="literal">RepHostInfoObj</tt> instances and add them to
-        the chain of &quot;other&quot; hosts.
+        the chain of "other" hosts.
 </p>
       <pre class="programlisting">
         <b class="userinput">
@@ -214,9 +214,9 @@ using std::endl;
 using std::flush;
                 
 #define CACHESIZE   (10 * 1024 * 1024)
-#define DATABASE    &quot;quote.db&quot;
+#define DATABASE    "quote.db"
                 
-<b class="userinput"><tt>const char *progname = &quot;RepMgr&quot;;</tt></b> </pre>
+<b class="userinput"><tt>const char *progname = "RepMgr";</tt></b> </pre>
       <p>
         Next we update our usage function. The application will continue to
         accept the <tt class="literal">-h</tt> parameter so that we can identify
@@ -282,20 +282,20 @@ private:
 
 static void usage()
 {
-    cerr &lt;&lt; &quot;usage: &quot; &lt;&lt; progname &lt;&lt; endl
-         &lt;&lt; &quot;[-h home]<b class="userinput"><tt>[-o host:port][-m host:port]</tt></b>&quot;
-         <b class="userinput"><tt>&lt;&lt; &quot;[-n nsites][-p priority]&quot; &lt;&lt; endl;</tt></b>
+    cerr &lt;&lt; "usage: " &lt;&lt; progname &lt;&lt; endl
+         &lt;&lt; "[-h home]<b class="userinput"><tt>[-o host:port][-m host:port]</tt></b>"
+         <b class="userinput"><tt>&lt;&lt; "[-n nsites][-p priority]" &lt;&lt; endl;</tt></b>
 
-    cerr <b class="userinput"><tt>&lt;&lt; &quot;\t -m host:port (required; m stands for me)&quot; &lt;&lt; endl
-         &lt;&lt; &quot;\t -o host:port (optional; o stands for other; any &quot;
-         &lt;&lt; &quot;number of these may be specified)&quot; &lt;&lt; endl</tt></b>
-         &lt;&lt; &quot;\t -h home directory&quot; &lt;&lt; endl
-         <b class="userinput"><tt>&lt;&lt; &quot;\t -n nsites (optional; number of sites in replication &quot;
-         &lt;&lt; &quot;group; defaults to 0&quot; &lt;&lt; endl
-         &lt;&lt; &quot;\t  in which case we try to dynamically compute the &quot;
-         &lt;&lt; &quot;number of sites in&quot; &lt;&lt; endl
-         &lt;&lt; &quot;\t  the replication group)&quot; &lt;&lt; endl
-         &lt;&lt; &quot;\t -p priority (optional: defaults to 100)&quot; &lt;&lt; endl;</tt></b>
+    cerr <b class="userinput"><tt>&lt;&lt; "\t -m host:port (required; m stands for me)" &lt;&lt; endl
+         &lt;&lt; "\t -o host:port (optional; o stands for other; any "
+         &lt;&lt; "number of these may be specified)" &lt;&lt; endl</tt></b>
+         &lt;&lt; "\t -h home directory" &lt;&lt; endl
+         <b class="userinput"><tt>&lt;&lt; "\t -n nsites (optional; number of sites in replication "
+         &lt;&lt; "group; defaults to 0" &lt;&lt; endl
+         &lt;&lt; "\t  in which case we try to dynamically compute the "
+         &lt;&lt; "number of sites in" &lt;&lt; endl
+         &lt;&lt; "\t  the replication group)" &lt;&lt; endl
+         &lt;&lt; "\t -p priority (optional: defaults to 100)" &lt;&lt; endl;</tt></b>
 
     exit(EXIT_FAILURE);
 } </pre>
@@ -319,15 +319,15 @@ static void usage()
         configure the application's election priority if necessary.
 </p>
       <pre class="programlisting">    // Extract the command line parameters
-    while ((ch = getopt(argc, argv, &quot;h:<b class="userinput"><tt>m:n:o:p:</tt></b>&quot;)) != EOF) {
+    while ((ch = getopt(argc, argv, "h:<b class="userinput"><tt>m:n:o:p:</tt></b>")) != EOF) {
         switch (ch) {
         case 'h':
             config.home = optarg;
             break;
         <b class="userinput"><tt>case 'm':
-            config.this_host.host = strtok(optarg, &quot;:&quot;);
-            if ((portstr = strtok(NULL, &quot;:&quot;)) == NULL) {
-                cerr &lt;&lt; &quot;Bad host specification.&quot; &lt;&lt; endl;
+            config.this_host.host = strtok(optarg, ":");
+            if ((portstr = strtok(NULL, ":")) == NULL) {
+                cerr &lt;&lt; "Bad host specification." &lt;&lt; endl;
                 usage();
             }
             config.this_host.port = (unsigned short)atoi(portstr);
@@ -337,9 +337,9 @@ static void usage()
             config.totalsites = atoi(optarg);
             break;
         case 'o':
-            tmphost = strtok(optarg, &quot;:&quot;);
-            if ((portstr = strtok(NULL, &quot;:&quot;)) == NULL) {
-                cerr &lt;&lt; &quot;Bad host specification.&quot; &lt;&lt; endl;
+            tmphost = strtok(optarg, ":");
+            if ((portstr = strtok(NULL, ":")) == NULL) {
+                cerr &lt;&lt; "Bad host specification." &lt;&lt; endl;
                 usage();
             }
             tmpport = (unsigned short)atoi(portstr);
@@ -368,8 +368,8 @@ static void usage()
         if((ret = runner.doloop()) != 0)
             goto err;
     } catch (DbException dbe) {
-        cerr &lt;&lt; &quot;Caught an exception during initialization or&quot;
-            &lt;&lt; &quot; processing: &quot; &lt;&lt; dbe.what() &lt;&lt; endl;
+        cerr &lt;&lt; "Caught an exception during initialization or"
+            &lt;&lt; " processing: " &lt;&lt; dbe.what() &lt;&lt; endl;
     }
 err:
     runner.terminate();
@@ -399,15 +399,15 @@ int RepMgr::init(RepConfigInfo *config)
 
     <b class="userinput"><tt>if ((ret = dbenv.repmgr_set_local_site(app_config-&gt;this_host.host,
         app_config-&gt;this_host.port, 0)) != 0) {
-        cerr &lt;&lt; &quot;Could not set listen address to host:port &quot;
-             &lt;&lt; app_config-&gt;this_host.host &lt;&lt; &quot;:&quot;
+        cerr &lt;&lt; "Could not set listen address to host:port "
+             &lt;&lt; app_config-&gt;this_host.host &lt;&lt; ":"
              &lt;&lt; app_config-&gt;this_host.port
-             &lt;&lt; &quot;error: &quot; &lt;&lt; ret &lt;&lt; endl;
+             &lt;&lt; "error: " &lt;&lt; ret &lt;&lt; endl;
     }</tt></b> </pre>
       <p>
-    And we also add code to allow us to identify &quot;other&quot; sites to the environment handle (that is,
+    And we also add code to allow us to identify "other" sites to the environment handle (that is,
 the sites that we identify using the <tt class="literal">-o</tt> command line
-option). To do this, we iterate over each of the &quot;other&quot; sites provided to
+option). To do this, we iterate over each of the "other" sites provided to
 us using the <tt class="literal">-o</tt> command line option, and we add each one
 individually in turn:     
 </p>
@@ -415,7 +415,7 @@ individually in turn:
         cur = cur-&gt;next) {
         if ((ret = dbenv.repmgr_add_remote_site(cur-&gt;host, cur-&gt;port,
                                                 0)) != 0) {
-                cerr &lt;&lt; &quot;could not add site.&quot; &lt;&lt; endl
+                cerr &lt;&lt; "could not add site." &lt;&lt; endl
         }
     } </tt></b> </pre>
       <p>
@@ -425,9 +425,9 @@ individually in turn:
       <pre class="programlisting">    <b class="userinput"><tt>if (app_config-&gt;totalsites &gt; 0) {
         try {
             if ((ret = dbenv.rep_set_nsites(app_config-&gt;totalsites)) != 0)
-                dbenv.err(ret, &quot;set_nsites&quot;);
+                dbenv.err(ret, "set_nsites");
         } catch (DbException dbe) {
-            cerr &lt;&lt; &quot;rep_set_nsites call failed. Continuing.&quot; &lt;&lt; endl;
+            cerr &lt;&lt; "rep_set_nsites call failed. Continuing." &lt;&lt; endl;
         }
     } 
     dbenv.rep_set_priority(app_config-&gt;priority); </tt></b> </pre>
@@ -467,9 +467,9 @@ individually in turn:
             DB_INIT_TXN, 
             0);
     } catch(DbException dbe) {
-        cerr  &lt;&lt; &quot;Caught an exception during DB environment open.&quot; &lt;&lt; endl
-              &lt;&lt; &quot;Ensure that the home directory is created prior to starting&quot;
-              &lt;&lt; &quot; the application.&quot; &lt;&lt; endl;
+        cerr  &lt;&lt; "Caught an exception during DB environment open." &lt;&lt; endl
+              &lt;&lt; "Ensure that the home directory is created prior to starting"
+              &lt;&lt; " the application." &lt;&lt; endl;
         ret = ENOENT;
         goto err;
     }</pre>
@@ -501,18 +501,18 @@ err:
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="repapp.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="repapp.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="repapp.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 3. The DB Replication Framework </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 3.Â The DB Replication FrameworkÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Permanent Message Handling</td>
+          <td width="40%" align="right" valign="top">Â Permanent Message Handling</td>
         </tr>
       </table>
     </div>

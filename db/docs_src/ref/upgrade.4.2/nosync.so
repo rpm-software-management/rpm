@@ -1,0 +1,23 @@
+m4_comment([$Id: nosync.so,v 1.7 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: Client replication environments,,
+    upgrade.4.2/repinit, upgrade.4.2/tcl)
+
+m4_p([dnl
+In previous m4_db releases, replication clients always behaved as if
+m4_ref(DB_TXN_NOSYNC) behavior was configured, that is, clients would
+not write or synchronously flush their log when receiving a transaction
+commit or prepare message.  However, applications needing a high level
+of transactional guarantee may need a write and synchronous flush on
+the client.  By default in the m4_db 4.2 release, client database
+environments write and synchronously flush their logs when receiving a
+transaction commit or prepare message.  Applications not needing such
+a high level of transactional guarantee should use the environment's
+m4_ref(DB_TXN_NOSYNC) flag to configure their client database
+environments to not do the write or flush on transaction commit, as this
+will increase their performance.  Regardless of the setting of the
+m4_ref(DB_TXN_NOSYNC) flag, clients will always write and flush on
+transaction prepare.])
+
+m4_page_footer

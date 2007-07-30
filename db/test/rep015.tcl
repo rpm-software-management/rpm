@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: rep015.tcl,v 12.8 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep015.tcl,v 12.12 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep015
 # TEST	Locking across multiple pages with replication.
@@ -64,6 +63,13 @@ proc rep015 { method { nentries 100 } { tnum "015" } { ndb 3 } args } {
 
 proc rep015_sub { method nentries tnum ndb logset recargs largs } {
 	global testdir
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	env_cleanup $testdir
 	set omethod [convert_method $method]
 
@@ -88,22 +94,16 @@ proc rep015_sub { method nentries tnum ndb logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $m_logargs \
+	    $verbargs -errpfx MASTER \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $m_logargs \
-#	    -verbose {rep on} -errpfx MASTER \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $c_logargs \
+	    $verbargs -errpfx CLIENT \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $c_logargs \
-#	    -verbose {rep on} -errpfx CLIENT \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
@@ -114,8 +114,8 @@ proc rep015_sub { method nentries tnum ndb logset recargs largs } {
 	set pagesize 512
 	puts "\tRep$tnum.a: Create and populate databases in master."
 	for { set i 0 } { $i < $ndb } { incr i } {
-		set db [eval "berkdb_open -create $omethod -auto_commit \
-		    -pagesize $pagesize -env $masterenv $largs -dup testdb$i.db"]
+		set db [eval berkdb_open_noerr -create $omethod -auto_commit \
+		    -pagesize $pagesize -env $masterenv $largs -dup testdb$i.db]
 		set dblist($i) $db
 		#
 		# Populate, being sure to create multiple pages.
@@ -150,7 +150,7 @@ proc rep015_sub { method nentries tnum ndb logset recargs largs } {
 
 	# Open client databases so we can exercise locking there too.
 	for { set i 0 } { $i < $ndb } { incr i } {
-		set cdb [eval {berkdb_open} -auto_commit \
+		set cdb [eval {berkdb_open_noerr} -auto_commit \
 		    -env $clientenv $largs testdb$i.db]
 		set cdblist($i) $cdb
 	}

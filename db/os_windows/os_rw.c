@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_rw.c,v 12.15 2006/08/24 14:46:22 bostic Exp $
+ * $Id: os_rw.c,v 12.19 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -27,6 +26,7 @@ __os_io(dbenv, op, fhp, pgno, pgsize, relative, io_len, buf, niop)
 {
 	int ret;
 
+#ifndef DB_WINCE
 	if (__os_is_winnt()) {
 		ULONG64 off;
 		OVERLAPPED over;
@@ -36,6 +36,13 @@ __os_io(dbenv, op, fhp, pgno, pgsize, relative, io_len, buf, niop)
 		over.Offset = (DWORD)(off & 0xffffffff);
 		over.OffsetHigh = (DWORD)(off >> 32);
 		over.hEvent = 0; /* we don't want asynchronous notifications */
+
+		if (dbenv != NULL &&
+		    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+			__db_msg(dbenv,
+			    "fileops: %s %s: %lu bytes at offset %lu",
+			    op == DB_IO_READ ? "read" : "write",
+			    fhp->name, (u_long)io_len, (u_long)off);
 
 		switch (op) {
 		case DB_IO_READ:
@@ -59,7 +66,9 @@ __os_io(dbenv, op, fhp, pgno, pgsize, relative, io_len, buf, niop)
 		}
 	}
 
-slow:	MUTEX_LOCK(dbenv, fhp->mtx_fh);
+slow:
+#endif
+	MUTEX_LOCK(dbenv, fhp->mtx_fh);
 
 	if ((ret = __os_seek(dbenv, fhp, pgno, pgsize, relative)) != 0)
 		goto err;
@@ -96,6 +105,11 @@ __os_read(dbenv, fhp, addr, len, nrp)
 	u_int8_t *taddr;
 
 	ret = 0;
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv,
+		    "fileops: read %s: %lu bytes", fhp->name, (u_long)len);
+
 	for (taddr = addr,
 	    offset = 0; offset < len; taddr += nr, offset += nr) {
 		RETRY_CHK((!ReadFile(fhp->handle,
@@ -151,6 +165,10 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 	DWORD count;
 	int ret;
 	u_int8_t *taddr;
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv,
+		    "fileops: write %s: %lu bytes", fhp->name, (u_long)len);
 
 	/*
 	 * Make a last "panic" check.  Imagine a thread of control running in

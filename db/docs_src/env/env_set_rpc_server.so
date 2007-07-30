@@ -1,0 +1,68 @@
+m4_comment([$Id: env_set_rpc_server.so,v 10.29 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_rpc_server, DB_NOSERVER, DB_NOSERVER_ID])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_rpc_server),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_rpc_server(DB_ENV *dbenv, CLIENT *client, char *host,
+    long cl_timeout, long sv_timeout, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_rpc_server(CLIENT *client, char *host,
+    long cl_timeout, long sv_timeout, u_int32_t flags);
+]))
+
+m4_p([dnl
+Establishes a connection for this m4_arg(dbenv) to a RPC server.])
+
+m4_p([dnl
+When the m4_refT(dbenv_set_rpc_server) has been called, subsequent calls
+to m4_db library interfaces may return or throw exceptions encapsulating
+m4_idef(DB_NOSERVER), m4_idef(DB_NOSERVER_ID), or m4_idef(DB_NOSERVER_HOME).])
+
+m4_scope_dbenv(dbenv_set_rpc_server)
+
+m4_when_envopen(dbenv_set_rpc_server)
+
+m4_return(dbenv_set_rpc_server, std)
+
+m4_parambegin
+m4_param(cl_timeout, [dnl
+m4_idefz(DB_NOSERVER)
+The m4_arg(cl_timeout) parameter specifies the number of seconds the client
+should wait for results to come back from the server.  Once the timeout
+has expired on any communication with the server, m4_ref(DB_NOSERVER) will
+be returned.  If this value is zero, a default timeout is used.])
+
+m4_param(client, [dnl
+If the m4_arg(client) channel has been provided by the application then
+m4_db will use it as its connection and the m4_arg(host) and
+m4_arg(cl_timeout) fields are ignored.])
+
+m4_param(host, [dnl
+The m4_arg(host) parameter is the host to which the m4_db server will
+connect and create a channel for communication.])
+
+m4_unusedflags
+
+m4_idefz(DB_NOSERVER_ID)
+m4_param(sv_timeout, [dnl
+The m4_arg(sv_timeout) parameter specifies the number of seconds the server
+should allow a client connection to remain idle before assuming that the
+client is gone.  Once that timeout has been reached, the server releases
+all resources associated with that client connection.  Subsequent attempts
+by that client to communicate with the server result in
+m4_ref(DB_NOSERVER_ID), indicating that an invalid identifier has been
+given to the server.  This value can be considered a hint to the server.
+The server may alter this value based on its own policies or allowed
+values.  If this value is zero, a default timeout is used.])
+
+m4_paramend
+
+m4_err(dbenv_set_rpc_server, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

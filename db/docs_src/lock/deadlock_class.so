@@ -1,0 +1,27 @@
+m4_comment([$Id: deadlock_class.so,v 10.17 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, DbDeadlockException)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbDeadlockException),
+ifelse(M4API, C_API, [dnl
+])
+ifelse(M4API, CXX_API, [dnl
+class DbDeadlockException : public DbException { ... };
+]))
+
+m4_p([dnl
+This information describes the m4_ref(DbDeadlockException) class and how
+it is used in the m4_db library.])
+
+m4_p([dnl
+A m4_ref(DbDeadlockException) is thrown when multiple threads competing
+for a lock are deadlocked, when a lock request has timed out, or when a
+lock request would need to block and the transaction has been configured
+to not wait for locks.  One of the threads' transactions is selected for
+termination, and a m4_ref(DbDeadlockException) is thrown to that thread.])
+
+m4_p([dnl
+The m4_ref(DbException) errno value is set to DB_LOCK_DEADLOCK.])
+
+m4_page_footer

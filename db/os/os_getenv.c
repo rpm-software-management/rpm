@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_getenv.c,v 12.5 2006/08/31 20:30:55 bostic Exp $
+ * $Id: os_getenv.c,v 12.7 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"

@@ -120,7 +120,7 @@ umask(0) ;
     my ($k, $v) ;
     ok 33, my $db = new BerkeleyDB::Btree -Filename => $Dfile, 
 				     -Flags    => DB_CREATE ;
-#print "[$db] [$!] $BerkeleyDB::Error\n" ;				     
+    #print "[$db] [$!] $BerkeleyDB::Error\n" ;				     
 
     # create some data
     my %data =  (

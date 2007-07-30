@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_rw.c,v 12.17 2006/08/24 14:46:18 bostic Exp $
+ * $Id: os_rw.c,v 12.20 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -54,6 +53,11 @@ __os_io(dbenv, op, fhp, pgno, pgsize, relative, io_len, buf, niop)
 	case DB_IO_READ:
 		if (DB_GLOBAL(j_read) != NULL)
 			goto slow;
+		if (dbenv != NULL &&
+		    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+			__db_msg(dbenv,
+			    "fileops: read %s: %lu bytes at offset %lu",
+			    fhp->name, (u_long)io_len, (u_long)offset);
 		nio = DB_GLOBAL(j_pread) != NULL ?
 		    DB_GLOBAL(j_pread)(fhp->fd, buf, io_len, offset) :
 		    pread(fhp->fd, buf, io_len, offset);
@@ -65,6 +69,11 @@ __os_io(dbenv, op, fhp, pgno, pgsize, relative, io_len, buf, niop)
 		if (__os_fs_notzero())
 			goto slow;
 #endif
+		if (dbenv != NULL &&
+		    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+			__db_msg(dbenv,
+			    "fileops: write %s: %lu bytes at offset %lu",
+			    fhp->name, (u_long)io_len, (u_long)offset);
 		nio = DB_GLOBAL(j_pwrite) != NULL ?
 		    DB_GLOBAL(j_pwrite)(fhp->fd, buf, io_len, offset) :
 		    pwrite(fhp->fd, buf, io_len, offset);
@@ -121,8 +130,11 @@ __os_read(dbenv, fhp, addr, len, nrp)
 
 	ret = 0;
 
-	/* Check for illegal usage. */
 	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv,
+		    "fileops: read %s: %lu bytes", fhp->name, (u_long)len);
 
 	if (DB_GLOBAL(j_read) != NULL) {
 		*nrp = len;
@@ -165,7 +177,6 @@ __os_write(dbenv, fhp, addr, len, nwp)
 	size_t len;
 	size_t *nwp;
 {
-	/* Check for illegal usage. */
 	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 #ifdef HAVE_FILESYSTEM_NOTZERO
@@ -200,6 +211,10 @@ __os_physwrite(dbenv, fhp, addr, len, nwp)
 	u_int8_t *taddr;
 
 	ret = 0;
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv,
+		    "fileops: write %s: %lu bytes", fhp->name, (u_long)len);
 
 #if defined(HAVE_FILESYSTEM_NOTZERO) && defined(DIAGNOSTIC)
 	if (__os_fs_notzero()) {

@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2002,2007 Oracle.  All rights reserved.
 #
-# $Id: rep063.tcl,v 1.5 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep063.tcl,v 1.12 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  rep063
 # TEST	Replication election test with simulated different versions
@@ -17,8 +16,6 @@
 # TEST  the master with varying LSNs and priorities.
 #
 proc rep063 { method args } {
-	global errorInfo
-
 	source ./include.tcl
 	if { $is_windows9x_test == 1 } {
 		puts "Skipping replication test on Win 9x platform."
@@ -63,6 +60,14 @@ proc rep063 { method args } {
 
 proc rep063_sub { method nclients tnum logset recargs largs } {
 	source ./include.tcl
+	global electable_pri
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	set niter 80
 
 	env_cleanup $testdir
@@ -85,15 +90,12 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 		set c_txnargs($i) [adjust_txnargs $c_logtype($i)]
 	}
 
-# To debug elections, the lines to uncomment are below the
-# error checking portion of this test.  This is needed in order
-# for the error messages to come back in errorInfo and for
-# that portion of the test to pass.
 	# Open a master.
 	set envlist {}
 	repladd 1
-	set env_cmd(M) "berkdb_env -create -log_max 1000000 -home $masterdir \
-	    $m_txnargs $m_logargs -rep_master \
+	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
+	    -event rep_event \
+	    -home $masterdir $m_txnargs $m_logargs -rep_master $verbargs \
 	    -errpfx MASTER -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
@@ -104,6 +106,7 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 		set envid [expr $i + 2]
 		repladd $envid
 		set env_cmd($i) "berkdb_env_noerr -create -home $clientdir($i) \
+		    -event rep_event \
 		    $c_txnargs($i) $c_logargs($i) -rep_client \
 		    -rep_transport \[list $envid replsend\]"
 		set clientenv($i) [eval $env_cmd($i) $recargs]
@@ -154,10 +157,6 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 	error_check_good masterenv_close [$masterenv close] 0
 	set envlist [lreplace $envlist 0 0]
 
-# To debug elections, uncomment the lines below to turn on verbose
-# and set the errfile.  Also edit reputils.tcl
-# in proc start_election and swap the 2 commented lines with
-# their counterpart.
 	for { set i 0 } { $i < $nclients } { incr i } {
 		replclear [expr $i + 2]
 		#
@@ -172,11 +171,12 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
  		#
 		set pri($i) 0
 		#
-#		error_check_good pfx [$clientenv($i) errpfx CLIENT$i] 0
-#		error_check_good verb [$clientenv($i) verbose rep on] 0
-#		$clientenv($i) errfile /dev/stderr
-#		set env_cmd($i) [concat $env_cmd($i) \
-#		    "-errpfx CLIENT$i -verbose {rep on} -errfile /dev/stderr"]
+		if { $rep_verbose == 1 } {
+			error_check_good pfx [$clientenv($i) errpfx CLIENT$i] 0
+			$clientenv($i) verbose rep on
+			set env_cmd($i) [concat $env_cmd($i) \
+			    "-errpfx CLIENT$i $verbargs "]
+		}
 	}
 	#
 	# Remove clients 3 and 4 from the envlist.  We'll save those for
@@ -202,7 +202,7 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 	set nvotes $nclients
 	set winner 1
 	set elector 2
-	setpriority pri $nclients $winner
+	setpriority pri $nclients $winner 0 1
 	run_election env_cmd envlist err_cmd pri crash\
 	    $qdir $m $elector $nsites $nvotes $nclients $winner
 	#
@@ -229,7 +229,7 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 	# and client 1 a real 0 priority new client.
 	#
 	set winner 0
-	setpriority pri $nclients $winner
+	setpriority pri $nclients $winner 0 1
 	set pri(1) 0
 	run_election env_cmd envlist err_cmd pri crash\
 	    $qdir $m $elector $nsites $nvotes $nclients $winner
@@ -248,7 +248,7 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 	# is a bigger LSN "new" client participating.
 	#
 	set winner 1
-	setpriority pri $nclients $winner
+	setpriority pri $nclients $winner 0 1
 	set pri(2) [expr $pri(1) / 2]
 	run_election env_cmd envlist err_cmd pri crash\
 	    $qdir $m $elector $nsites $nvotes $nclients $winner
@@ -261,7 +261,7 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 	#
 	# Client 1 now has a bigger LSN, so make it unelectable.  Add in
 	# old client 3 since that should be the biggest LSN of all these.
-	# Set all other priorities to 10 to make them all equal (and
+	# Set all other priorities to electable_pri to make them all equal (and
 	# all "new" clients).  We know client 3 should win because we
 	# set its LSN much farther ahead in the beginning.
 	#
@@ -270,10 +270,10 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 	set nclients 4
 	set nsites $nclients
 	set nvotes $nclients
-	set pri(0) 10
+	set pri(0) $electable_pri
 	set pri(1) 0
-	set pri(2) 10
-	set pri(3) 10
+	set pri(2) $electable_pri
+	set pri(3) $electable_pri
 	replclear [lindex $cl3 1]
 	lappend envlist $cl3
 	#
@@ -295,11 +295,11 @@ proc rep063_sub { method nclients tnum logset recargs largs } {
 	set nclients 5
 	set nsites $nclients
 	set nvotes $nclients
-	set pri(0) 10
-	set pri(1) 10
-	set pri(2) 10
-	set pri(3) 10
-	set pri(4) 10
+	set pri(0) $electable_pri
+	set pri(1) $electable_pri
+	set pri(2) $electable_pri
+	set pri(3) $electable_pri
+	set pri(4) $electable_pri
 	replclear [expr $winner + 2]
 	lappend envlist $cl4
 	#

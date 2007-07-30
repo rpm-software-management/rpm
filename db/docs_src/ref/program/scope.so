@@ -1,0 +1,80 @@
+m4_comment([$Id: scope.so,v 10.12 2007/06/14 17:41:59 bostic Exp $])
+
+m4_ref_title(Programmer Notes, m4_db handles,
+    [m4_db handle @scope, m4_db @free-threaded handles],
+    program/mt, program/namespace)
+
+m4_p([dnl
+The m4_db library has a number of object handles.  The following table
+lists those handles, their scope, and whether they are free-threaded
+(that is, whether multiple threads within a process can share them).])
+
+m4_tagbegin
+
+m4_tag(m4_ref(DbEnv), [dnl
+The m4_ref(DbEnv) handle, created by the m4_refT(dbenv_create), refers
+to a m4_db database environment -- a collection of m4_db subsystems,
+log files and databases.  m4_ref(DbEnv) handles are free-threaded if
+the m4_ref(DB_THREAD) flag is specified to the m4_refT(dbenv_open) when
+the environment is opened.  The handle should not be closed while any
+other handle remains open that is using it as a reference (for example,
+m4_ref(Db) or m4_ref(DbTxn)).  Once either the m4_ref(dbenv_close) or
+m4_refT(dbenv_remove)s are called, the handle may not be accessed again,
+regardless of the method's return.])
+
+m4_tag(m4_ref(DbTxn), [dnl
+The m4_ref(DbTxn) handle, created by the m4_refT(txn_begin), refers to
+a single transaction.  The handle is not free-threaded.  Transactions
+may span threads, but only serially, that is, the application must
+serialize access to the m4_ref(DbTxn) handles.  In the case of nested
+transactions, since all child transactions are part of the same parent
+transaction, they must observe the same constraints. That is, children
+may execute in different threads only if each child executes serially.
+m4_p([dnl
+Once the m4_ref(txn_abort) or m4_refT(txn_commit)s are called, the
+handle may not be accessed again, regardless of the method's return.
+In addition, parent transactions may not issue any m4_db operations
+while they have active child transactions (child transactions that
+have not yet been committed or aborted) except for m4_ref(txn_begin),
+m4_ref(txn_abort) and m4_ref(txn_commit).])])
+
+m4_tag(m4_ref(DbLogc), [dnl
+The m4_ref(DbLogc) handle refers to a cursor into the log files.  The
+handle is not free-threaded.  Once the m4_refT(logc_close) is called,
+the handle may not be accessed again, regardless of the method's
+return.])
+
+m4_tag(m4_ref(DbMpoolFile), [dnl
+The m4_ref(DbMpoolFile) handle refers to an open file in the shared
+memory buffer pool of the database environment.  The handle is not
+free-threaded.  Once the m4_refT(memp_fclose) is called, the handle may
+not be accessed again, regardless of the method's return.])
+
+m4_tag(m4_ref(Db), [dnl
+The m4_ref(Db) handle, created by the m4_refT(dbh_create), refers to a
+single m4_db database, which may or may not be part of a database
+environment.  m4_ref(Db) handles are free-threaded if the
+m4_ref(DB_THREAD) flag is specified to the m4_refT(dbh_open) when the
+database is opened or if the database environment in which the database
+is opened is free-threaded.  The handle should not be closed while any
+other handle that refers to the database is in use; for example,
+database handles should be left open while cursor handles into the
+database remain open, or transactions that include operations on the
+database have not yet been committed or aborted.  Once the
+m4_ref(dbh_close), m4_ref(dbh_remove), or m4_refT(dbh_rename)s are
+called, the handle may not be accessed again, regardless of the method's
+return.])
+
+m4_tag(m4_ref(Dbc), [dnl
+The m4_ref(Dbc) handle refers to a cursor into a m4_db database.  The
+handle is not free-threaded.  Cursors may span threads, but only
+serially, that is, the application must serialize access to the
+m4_ref(Dbc) handles.  If the cursor is to be used to perform operations
+on behalf of a transaction, the cursor must be opened and closed within
+the context of that single transaction.  Once m4_ref(dbc_close) has been
+called, the handle may not be accessed again, regardless of the
+method's return.])
+
+m4_tagend
+
+m4_page_footer

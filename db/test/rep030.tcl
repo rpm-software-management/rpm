@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep030.tcl,v 12.16 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep030.tcl,v 12.24 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep030
 # TEST	Test of internal initialization multiple files and pagesizes.
@@ -65,6 +64,12 @@ proc rep030 { method { niter 500 } { tnum "030" } args } {
 proc rep030_sub { method niter tnum logset recargs opts largs } {
 	global testdir
 	global util_path
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -80,12 +85,8 @@ proc rep030_sub { method niter tnum logset recargs opts largs } {
 	# The documentation says that the log file must be at least
 	# four times the size of the in-memory log buffer.
 	set maxpg 16384
-	set log_buf [expr $maxpg * 2]
-	set log_max [expr $log_buf * 4]
+	set log_max [expr $maxpg * 8]
 	set cache [expr $maxpg * 32 ]
-
-	set m_logargs " -log_buffer $log_buf"
-	set c_logargs " -log_buffer $log_buf"
 
 	set m_logtype [lindex $logset 0]
 	set c_logtype [lindex $logset 1]
@@ -101,53 +102,40 @@ proc rep030_sub { method niter tnum logset recargs opts largs } {
 	#
 	# Run internal init using a data directory
 	#
+	file mkdir $masterdir/data
+	file mkdir $masterdir/data2
+	file mkdir $clientdir/data
+	file mkdir $clientdir/data2
+	#
+	# Set it twice to test duplicates data_dirs as well
+	# as multiple, different data dirs
+	#
+	set data_diropts " -data_dir data -data_dir data -data_dir data2"
 
-	#
-	# !!! - SR 14578 opening with recovery blows away data_dir.
-	#
-	if { $recargs != "-recover" } {
-		file mkdir $masterdir/data
-		file mkdir $masterdir/data2
-		file mkdir $clientdir/data
-		file mkdir $clientdir/data2
-		#
-		# Set it twice to test duplicates data_dirs as well
-		# as multiple, different data dirs
-		#
-		set data_diropts " -data_dir data -data_dir data -data_dir data2"
-	} else {
-		set data_diropts ""
-	}
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -log_max $log_max \
-	    -cachesize { 0 $cache 1 } $data_diropts \
+	    $m_logargs -log_max $log_max -errpfx MASTER \
+	    -cachesize { 0 $cache 1 } $data_diropts $verbargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -log_max $log_max \
-#	    -cachesize { 0 $cache 1 } $data_diropts \
-#	    -verbose {rep on} -errpfx MASTER -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -log_max $log_max \
-	    -cachesize { 0 $cache 1 } $data_diropts \
+	    $c_logargs -log_max $log_max -errpfx CLIENT \
+	    -cachesize { 0 $cache 1 } $data_diropts $verbargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -log_max $log_max \
-#	    -cachesize { 0 $cache 1 } $data_diropts \
-#	    -verbose {rep on} -errpfx CLIENT -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init, so that we can do a
+	# log_archive in a moment.
+	#
+	$masterenv test force noarchive_timeout
 
 	# Run rep_test in the master (and update client).
 	set startpgsz 512
@@ -183,7 +171,7 @@ proc rep030_sub { method niter tnum logset recargs opts largs } {
 		# them in dbreg list.
 		#
 		if { [expr $i % 2 ] == 0 } {
-			set db [berkdb_open -env $masterenv $new]
+			set db [berkdb_open_noerr -env $masterenv $new]
 			error_check_good dbopen.$i [is_valid_db $db] TRUE
 			lappend dbopen $db
 		}

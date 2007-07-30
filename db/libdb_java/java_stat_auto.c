@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 static int __dbj_fill_bt_stat(JNIEnv *jnienv,
     jobject jobj, struct __db_bt_stat *statp) {
@@ -13,6 +12,7 @@ static int __dbj_fill_bt_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, bt_stat_bt_metaflags_fid, statp, bt_metaflags);
 	JAVADB_STAT_INT(jnienv, jobj, bt_stat_bt_nkeys_fid, statp, bt_nkeys);
 	JAVADB_STAT_INT(jnienv, jobj, bt_stat_bt_ndata_fid, statp, bt_ndata);
+	JAVADB_STAT_INT(jnienv, jobj, bt_stat_bt_pagecnt_fid, statp, bt_pagecnt);
 	JAVADB_STAT_INT(jnienv, jobj, bt_stat_bt_pagesize_fid, statp, bt_pagesize);
 	JAVADB_STAT_INT(jnienv, jobj, bt_stat_bt_minkey_fid, statp, bt_minkey);
 	JAVADB_STAT_INT(jnienv, jobj, bt_stat_bt_re_len_fid, statp, bt_re_len);
@@ -50,6 +50,7 @@ static int __dbj_fill_h_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, h_stat_hash_metaflags_fid, statp, hash_metaflags);
 	JAVADB_STAT_INT(jnienv, jobj, h_stat_hash_nkeys_fid, statp, hash_nkeys);
 	JAVADB_STAT_INT(jnienv, jobj, h_stat_hash_ndata_fid, statp, hash_ndata);
+	JAVADB_STAT_INT(jnienv, jobj, h_stat_hash_pagecnt_fid, statp, hash_pagecnt);
 	JAVADB_STAT_INT(jnienv, jobj, h_stat_hash_pagesize_fid, statp, hash_pagesize);
 	JAVADB_STAT_INT(jnienv, jobj, h_stat_hash_ffactor_fid, statp, hash_ffactor);
 	JAVADB_STAT_INT(jnienv, jobj, h_stat_hash_buckets_fid, statp, hash_buckets);
@@ -71,9 +72,9 @@ static int __dbj_fill_lock_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_maxlockers_fid, statp, st_maxlockers);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_maxobjects_fid, statp, st_maxobjects);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_nmodes_fid, statp, st_nmodes);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_nlockers_fid, statp, st_nlockers);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_nlocks_fid, statp, st_nlocks);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_maxnlocks_fid, statp, st_maxnlocks);
-	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_nlockers_fid, statp, st_nlockers);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_maxnlockers_fid, statp, st_maxnlockers);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_nobjects_fid, statp, st_nobjects);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_maxnobjects_fid, statp, st_maxnobjects);
@@ -88,8 +89,15 @@ static int __dbj_fill_lock_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_nlocktimeouts_fid, statp, st_nlocktimeouts);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_txntimeout_fid, statp, st_txntimeout);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_ntxntimeouts_fid, statp, st_ntxntimeouts);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_objs_wait_fid, statp, st_objs_wait);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_objs_nowait_fid, statp, st_objs_nowait);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_lockers_wait_fid, statp, st_lockers_wait);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_lockers_nowait_fid, statp, st_lockers_nowait);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_locks_wait_fid, statp, st_locks_wait);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_locks_nowait_fid, statp, st_locks_nowait);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_region_wait_fid, statp, st_region_wait);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_region_nowait_fid, statp, st_region_nowait);
+	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_hash_len_fid, statp, st_hash_len);
 	JAVADB_STAT_INT(jnienv, jobj, lock_stat_st_regsize_fid, statp, st_regsize);
 	return (0);
 }
@@ -100,11 +108,11 @@ static int __dbj_fill_log_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_mode_fid, statp, st_mode);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_lg_bsize_fid, statp, st_lg_bsize);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_lg_size_fid, statp, st_lg_size);
+	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_wc_bytes_fid, statp, st_wc_bytes);
+	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_wc_mbytes_fid, statp, st_wc_mbytes);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_record_fid, statp, st_record);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_w_bytes_fid, statp, st_w_bytes);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_w_mbytes_fid, statp, st_w_mbytes);
-	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_wc_bytes_fid, statp, st_wc_bytes);
-	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_wc_mbytes_fid, statp, st_wc_mbytes);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_wcount_fid, statp, st_wcount);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_wcount_fill_fid, statp, st_wcount_fill);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_rcount_fid, statp, st_rcount);
@@ -115,9 +123,9 @@ static int __dbj_fill_log_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_cur_offset_fid, statp, st_cur_offset);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_disk_file_fid, statp, st_disk_file);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_disk_offset_fid, statp, st_disk_offset);
-	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_regsize_fid, statp, st_regsize);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_maxcommitperflush_fid, statp, st_maxcommitperflush);
 	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_mincommitperflush_fid, statp, st_mincommitperflush);
+	JAVADB_STAT_INT(jnienv, jobj, log_stat_st_regsize_fid, statp, st_regsize);
 	return (0);
 }
 static int __dbj_fill_mpool_fstat(JNIEnv *jnienv,
@@ -137,11 +145,12 @@ static int __dbj_fill_mpool_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_gbytes_fid, statp, st_gbytes);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_bytes_fid, statp, st_bytes);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_ncache_fid, statp, st_ncache);
-	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_regsize_fid, statp, st_regsize);
+	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_max_ncache_fid, statp, st_max_ncache);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_mmapsize_fid, statp, st_mmapsize);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_maxopenfd_fid, statp, st_maxopenfd);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_maxwrite_fid, statp, st_maxwrite);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_maxwrite_sleep_fid, statp, st_maxwrite_sleep);
+	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_pages_fid, statp, st_pages);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_map_fid, statp, st_map);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_cache_hit_fid, statp, st_cache_hit);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_cache_miss_fid, statp, st_cache_miss);
@@ -151,7 +160,6 @@ static int __dbj_fill_mpool_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_ro_evict_fid, statp, st_ro_evict);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_rw_evict_fid, statp, st_rw_evict);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_page_trickle_fid, statp, st_page_trickle);
-	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_pages_fid, statp, st_pages);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_page_clean_fid, statp, st_page_clean);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_page_dirty_fid, statp, st_page_dirty);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_hash_buckets_fid, statp, st_hash_buckets);
@@ -173,6 +181,7 @@ static int __dbj_fill_mpool_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_alloc_pages_fid, statp, st_alloc_pages);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_alloc_max_pages_fid, statp, st_alloc_max_pages);
 	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_io_wait_fid, statp, st_io_wait);
+	JAVADB_STAT_INT(jnienv, jobj, mpool_stat_st_regsize_fid, statp, st_regsize);
 	return (0);
 }
 static int __dbj_fill_mutex_stat(JNIEnv *jnienv,
@@ -207,6 +216,8 @@ static int __dbj_fill_qam_stat(JNIEnv *jnienv,
 }
 static int __dbj_fill_rep_stat(JNIEnv *jnienv,
     jobject jobj, struct __db_rep_stat *statp) {
+	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_log_queued_fid, statp, st_log_queued);
+	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_startup_complete_fid, statp, st_startup_complete);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_status_fid, statp, st_status);
 	JAVADB_STAT_LSN(jnienv, jobj, rep_stat_st_next_lsn_fid, statp, st_next_lsn);
 	JAVADB_STAT_LSN(jnienv, jobj, rep_stat_st_waiting_lsn_fid, statp, st_waiting_lsn);
@@ -225,7 +236,6 @@ static int __dbj_fill_rep_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_gen_fid, statp, st_gen);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_egen_fid, statp, st_egen);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_log_duplicated_fid, statp, st_log_duplicated);
-	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_log_queued_fid, statp, st_log_queued);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_log_queued_max_fid, statp, st_log_queued_max);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_log_queued_total_fid, statp, st_log_queued_total);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_log_records_fid, statp, st_log_records);
@@ -244,8 +254,8 @@ static int __dbj_fill_rep_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_pg_duplicated_fid, statp, st_pg_duplicated);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_pg_records_fid, statp, st_pg_records);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_pg_requested_fid, statp, st_pg_requested);
-	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_startup_complete_fid, statp, st_startup_complete);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_txns_applied_fid, statp, st_txns_applied);
+	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_startsync_delayed_fid, statp, st_startsync_delayed);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_elections_fid, statp, st_elections);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_elections_won_fid, statp, st_elections_won);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_election_cur_winner_fid, statp, st_election_cur_winner);
@@ -259,6 +269,15 @@ static int __dbj_fill_rep_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_election_votes_fid, statp, st_election_votes);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_election_sec_fid, statp, st_election_sec);
 	JAVADB_STAT_INT(jnienv, jobj, rep_stat_st_election_usec_fid, statp, st_election_usec);
+	return (0);
+}
+static int __dbj_fill_repmgr_stat(JNIEnv *jnienv,
+    jobject jobj, struct __db_repmgr_stat *statp) {
+	JAVADB_STAT_INT(jnienv, jobj, repmgr_stat_st_perm_failed_fid, statp, st_perm_failed);
+	JAVADB_STAT_INT(jnienv, jobj, repmgr_stat_st_msgs_queued_fid, statp, st_msgs_queued);
+	JAVADB_STAT_INT(jnienv, jobj, repmgr_stat_st_msgs_dropped_fid, statp, st_msgs_dropped);
+	JAVADB_STAT_INT(jnienv, jobj, repmgr_stat_st_connection_drop_fid, statp, st_connection_drop);
+	JAVADB_STAT_INT(jnienv, jobj, repmgr_stat_st_connect_fail_fid, statp, st_connect_fail);
 	return (0);
 }
 static int __dbj_fill_seq_stat(JNIEnv *jnienv,
@@ -276,6 +295,7 @@ static int __dbj_fill_seq_stat(JNIEnv *jnienv,
 }
 static int __dbj_fill_txn_stat(JNIEnv *jnienv,
     jobject jobj, struct __db_txn_stat *statp) {
+	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_nrestores_fid, statp, st_nrestores);
 	JAVADB_STAT_LSN(jnienv, jobj, txn_stat_st_last_ckp_fid, statp, st_last_ckp);
 	JAVADB_STAT_LONG(jnienv, jobj, txn_stat_st_time_ckp_fid, statp, st_time_ckp);
 	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_last_txnid_fid, statp, st_last_txnid);
@@ -285,7 +305,6 @@ static int __dbj_fill_txn_stat(JNIEnv *jnienv,
 	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_ncommits_fid, statp, st_ncommits);
 	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_nactive_fid, statp, st_nactive);
 	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_nsnapshot_fid, statp, st_nsnapshot);
-	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_nrestores_fid, statp, st_nrestores);
 	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_maxnactive_fid, statp, st_maxnactive);
 	JAVADB_STAT_INT(jnienv, jobj, txn_stat_st_maxnsnapshot_fid, statp, st_maxnsnapshot);
 	JAVADB_STAT_ACTIVE(jnienv, jobj, txn_stat_st_txnarray_fid, statp, st_txnarray);

@@ -1,0 +1,30 @@
+m4_comment([$Id: logc_close.so,v 10.13 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, logc_close)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(logc_close),
+ifelse(M4API, C_API, [dnl
+int
+DB_LOGC-__GT__close(DB_LOGC *cursor, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbLogc::close(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(logc_close) discards the log cursor.  After m4_ref(logc_close)
+has been called, regardless of its return, the cursor handle may not be
+used again.])
+
+m4_return(logc_close, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_err(logc_close, einval, [the cursor was previously closed])
+
+m4_seealso(DbLog)
+m4_page_footer

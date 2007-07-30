@@ -1,6 +1,5 @@
-<!--$Id: faq.so,v 10.36 2006/04/24 14:21:33 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: faq.so,v 10.37 2007/05/30 08:39:08 alexg Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -12,7 +11,7 @@
 <a name="2"><!--meow--></a><a name="3"><!--meow--></a>
 <table width="100%"><tr valign=top>
 <td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for Windows systems</dl></h3></td>
-<td align=right><a href="../build_win/notes.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<td align=right><a href="../build_win/notes.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_wince/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
 <p>
 <h3 align=center>Windows FAQ</h3>
@@ -29,14 +28,14 @@ click on db_load -&gt; Properties and change "Configuration Type" from
 fprintf (or some other standard C library function).</b>
 <p>You should be using the "Debug Multithreaded DLL" compiler option in
 your application when you link with the
-build_windows\Debug\libdb45d.lib library (this .lib file
-is actually a stub for libdb45d.DLL). To check this
+build_windows\Debug\libdb46d.lib library (this .lib file
+is actually a stub for libdb46d.DLL). To check this
 setting in Visual C++, choose the <i>Project/Settings</i> menu
 item and select <i>Code Generation</i> under the tab marked
 <i>C/C++</i>; and see the box marked <i>Use runtime
 library</i>.  This should be set to <i>Debug Multithreaded DLL</i>.
 If your application is linked against the static library,
-build_windows\Debug\libdb45sd.lib; then, you will want
+build_windows\Debug\libdb46sd.lib; then, you will want
 to set <i>Use runtime library</i> to <i>Debug Multithreaded</i>.</p>
 <p>Setting this option incorrectly can cause multiple versions of the
 standard libraries to be linked into your application (one on behalf
@@ -59,8 +58,8 @@ configuration script.  This configuration option currently only builds
 static versions of the library, it does not yet build a DLL version of
 the library.</p>
 </ol>
-<table width="100%"><tr><td><br></td><td align=right><a href="../build_win/notes.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_vxworks/intro.html"><img src="../../images/next.gif" alt="Next"></a>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_win/notes.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_wince/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

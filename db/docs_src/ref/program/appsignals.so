@@ -1,0 +1,28 @@
+m4_comment([$Id: appsignals.so,v 10.28 2002/02/23 20:05:24 bostic Exp $])
+
+m4_ref_title(Programmer Notes, Signal handling,
+    signal handling, apprec/config, program/errorret)
+
+m4_p([dnl
+When applications using m4_db receive signals, it is important that they
+exit gracefully, discarding any m4_db locks that they may hold.  This is
+normally done by setting a flag when a signal arrives and then checking
+for that flag periodically within the application.  Because m4_db is not
+re-entrant, the signal handler should not attempt to release locks and/or
+close the database handles itself.  Re-entering m4_db is not guaranteed to
+work correctly, and the results are undefined.])
+
+m4_p([dnl
+If an application exits holding a lock, the situation is no different
+than if the application crashed, and all applications participating in
+the database environment must be shut down, and then recovery must be
+performed.  If this is not done,  databases may be left in an
+inconsistent state, or locks the application held may cause unresolvable
+deadlocks inside the environment, causing applications to hang.])
+
+m4_p([dnl
+m4_db restarts all system calls interrupted by signals, that is, any
+underlying system calls that return failure with errno set to EINTR will
+be restarted rather than failing.])
+
+m4_page_footer

@@ -6,9 +6,6 @@
 extern "C" {
 #endif
 
-#ifndef HAVE_ABORT
-void abort __P((void));
-#endif
 #ifndef HAVE_ATOI
 int atoi __P((const char *));
 #endif
@@ -57,6 +54,9 @@ int fprintf __P((FILE *, const char *, ...));
 #endif
 #ifndef HAVE_PRINTF
 int vfprintf __P((FILE *, const char *, va_list));
+#endif
+#ifndef HAVE_QSORT
+void qsort __P((void *, size_t, size_t, int(*)(const void *, const void *)));
 #endif
 #ifndef HAVE_RAISE
 int raise __P((int));

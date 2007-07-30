@@ -1,6 +1,5 @@
-<!--$Id: rep_stat.so,v 10.39 2005/11/11 19:00:31 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: rep_stat.so,v 10.42 2007/06/22 16:57:17 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -87,7 +86,7 @@ time is <b>st_election_sec</b> plus <b>st_election_usec</b>).
 <dt>u_int32_t st_log_queued_max;<dd>The maximum number of log records ever queued at once.
 <dt>u_int32_t st_log_queued_total;<dd>The total number of log records queued.
 <dt>u_int32_t st_log_records;<dd>The number of log records received and appended to the log.
-<dt>u_int32_t st_log_requested;<dd>The number of log records missed and requested.
+<dt>u_int32_t st_log_requested;<dd>The number of times log records were missed and requested.
 <dt>u_int32_t st_master;<dd>The current master environment ID.
 <dt>u_int32_t st_master_changes;<dd>The number of times the master has changed.
 <dt>u_int32_t st_msgs_badgen;<dd>The number of messages received with a bad generation number.
@@ -107,6 +106,9 @@ to a single call to <a href="../api_c/rep_message.html">DB_ENV-&gt;rep_process_m
 <dt>u_int32_t st_pg_duplicated;<dd>The number of duplicate pages received.
 <dt>u_int32_t st_pg_records;<dd>The number of pages received and stored.
 <dt>u_int32_t st_pg_requested;<dd>The number of pages missed and requested from the master.
+<dt>u_int32_t st_startsync_delayed;<dd>The number of times the client had to delay the start of a
+cache flush operation (initiated by the master for an impending
+checkpoint) because it was missing some previous log record(s).
 <dt>u_int32_t st_startup_complete;<dd>The client site has completed its startup procedures and is now
 handling live records from the master.
 <dt>u_int32_t st_status;<dd>The current replication mode.  Set to <a href="../api_c/repmgr_start.html#DB_REP_MASTER">DB_REP_MASTER</a> if the
@@ -119,6 +121,8 @@ being waited for, or 0 if no log records are currently missing.
 <dt>u_int32_t st_waiting_pg;<dd>The page number of the first page we have after missing pages
 being waited for, or 0 if no pages are currently missing.
 </dl>
+<p>The DB_ENV-&gt;rep_stat method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
+been called.</p>
 <p>The DB_ENV-&gt;rep_stat method
 returns a non-zero error value on failure
 and 0 on success.
@@ -172,6 +176,6 @@ or more of the following values:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,135 @@
+m4_comment([$Id: intro.so,v 1.7 2007/07/10 16:54:16 bostic Exp $])
+
+m4_ref_title(Building m4_db for BREW,
+    Building for BREW, @building for BREW, debug/printlog, build_s60/intro)
+
+m4_p([dnl
+This page has general instructions for building the m4_db library
+and applets for the BREW platform.])
+
+m4_section([Building m4_db for the BREW simulator])
+
+m4_p([dnl
+The m4_path(build_brew) directory in the m4_db distribution contains
+project files for Microsoft Visual C++:])
+
+m4_table_begin(, _center)
+m4_table_header(Project File, Description)
+m4_table_element(_left, bdb_brew.dsw, Visual C++ 6.0 workspace)
+m4_table_element(_left, bdb_brew.dsp, Visual C++ 6.0 project)
+m4_table_end
+
+m4_p([dnl
+The project file can be used to build the m4_db library for the BREW
+platform. Both BREW SDK versions 2 and 3 are supported.  By default, the
+build is for BREW SDK version 2.])
+
+m4_p([dnl
+The steps for building the m4_db library for the BREW Simulator are as
+follows:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Install the BREW SDK and BREW SDK Tools.])
+m4_nlist([dnl
+To build for BREW SDK version 3, edit the m4_db source distribution file
+m4_path(build_brew/db_config.h) file and m4_bold(remove) the line
+"#define HAVE_BREW_SDK2".  No changes are required to build for BREW SDK
+version 2.])
+m4_nlist([dnl
+Select m4_italic(File -__GT__ Open Workspace).  Look in the build_brew
+directory for Workspaces, select m4_italic(bdb_brew.dsw), and select
+m4_italic(Open).])
+m4_nlist([dnl
+The BREW SDK creates an environment entry "BREWDIR" after the SDK
+installation. Confirm the entry exists, and if not, create an
+environment entry which points to the BREW SDK's root directory.])
+m4_nlist([dnl
+For the BREW platform, only the project "bdb_brew" is available.  Set
+the bdb_brew project as the active project and select the appropriate
+option for the build_all project (Debug or Release). Then select
+m4_italic(OK).])
+m4_nlist([dnl
+To build, press F7.])
+m4_nlistend
+
+m4_p([dnl
+The build results are placed in a subdirectory of build_brew named after
+the selected configuration (for example, m4_path(build_brew\Release) or
+m4_path(build_brew\Debug)).])
+
+m4_p([dnl
+When building the application during development, you should normally
+use compile options "Debug Multithreaded DLL" and link against
+m4_path([build_brew\Debug\bdb_brew.lib]). You can also build using a
+release version of the m4_db libraries and tools, which will be placed
+in m4_path([build_brew\Release\bdb_brew.lib]). When linking against the
+release build, you should compile your code with the "Release
+Multithreaded DLL" compile option. You will also need to add the
+m4_path(build_brew) directory to the list of include directories of your
+application's project, or copy the m4_db include files to another
+location.])
+
+m4_section([Building a BREW applet with m4_db library])
+
+m4_p([dnl
+Building a m4_db application in the BREW environment is similar to
+building in a Windows environment.  Ensure that m4_path(db.h) is in the
+build include path and m4_path(bdb_brew.lib) is in the build library
+path (alternatively, you can add project dependencies to the
+m4_path(bdb_brew) project).])
+
+m4_p([dnl
+BREW applets require a few minor additions:])
+
+m4_nlistbegin
+m4_nlist([dnl
+The m4_bold(BDBApp) structure must be extended -- the extended
+definition of BDBApp is found in the include file m4_path(db.h).])
+m4_nlist([dnl
+Before any m4_db operations are performed, the applet must call the "int
+brew_bdb_begin(void)" function.  This function returns 0 on success, and
+non-zero on failure.])
+m4_nlist([dnl
+After the last m4_db operation is performed, the applet must call the
+"void brew_bdb_end(void)" function.  Note that the brew_bdb_end function
+cannot be called in the applet "cleanup" function.  If that is a
+requirement, use the following code instead:
+m4_indent([dnl
+BDBApp *pMe=(BDBApp *)po;
+if (pMe-__GT__db_global_values != NULL)
+	FREE(pMe-__GT__db_global_values);])])
+m4_nlistend
+
+m4_section([Building a BREW applet for the physical device])
+
+m4_p([dnl
+The binaries linked with the m4_db library for the BREW simulator are
+not target files that can run on the physical device.  In order to build
+for the physical device, an ARM compiler is needed: the recommended ARM
+compiler is ARM Developer Suite 1.2.])
+
+m4_p([dnl
+The steps for building a BREW applet for the physical device are as
+follows:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Set the target BREW Applet project as the active project.])
+m4_nlist([dnl
+Select "Generate ARM Make file" in the BREW tool bar for VC6, and a make
+file will be generated (if this step does not work, confirm your ADS was
+correctly installed).])
+m4_nlist([dnl
+The m4_db library must then be manually added to this make file.  See the
+m4_path(build_brew\bdbread.mak) file in the m4_db distribution for an
+example.])
+m4_nlist([dnl
+Select m4_italic(Tools -__GT__ BREW Application 'Make') to build.])
+m4_nlistend
+
+m4_p([dnl
+The target .mod file will be created in the build directory, and this
+is the file which should be uploaded to the physical device.])
+
+m4_page_footer

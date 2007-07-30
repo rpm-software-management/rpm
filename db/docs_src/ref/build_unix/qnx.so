@@ -1,0 +1,107 @@
+m4_comment([$Id: qnx.so,v 11.11 2005/12/20 15:24:38 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    QNX, @QNX, build_unix/osf1, build_unix/sco)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([To what versions of QNX has DB been ported?])
+
+m4_p([dnl
+m4_db has been ported to the QNX Neutrino technology which is commonly
+referred to as QNX RTP (Real-Time Platform).  m4_db has not been
+ported to earlier versions of QNX, such as QNX 4.25.])])
+
+m4_nlist([dnl
+m4_bold([Building m4_db shared libraries fails.])
+
+m4_p([dnl
+The m4_path(/bin/sh) utility distributed with some QNX releases drops
+core when running the GNU libtool script (which is used to build m4_db
+shared libraries).  There are two workarounds for this problem: First,
+only build static libraries.  You can disable building shared libraries
+by specifying the m4_idef(--disable-shared) configuration flag when
+configuring m4_db.])
+m4_p([dnl
+Second, build m4_db using an alternate shell.  QNX distributions include
+an accessories disk with additional tools.  One of the included tools
+is the GNU bash shell, which is able to run the libtool script.  To
+build m4_db using an alternate shell, move m4_path(/bin/sh) aside, link
+or copy the alternate shell into that location, configure, build and
+install m4_db, and then replace the original shell utility.])])
+
+m4_nlist([dnl
+m4_bold([Are there any QNX filesystem issues?])
+
+m4_p([dnl
+m4_db generates temporary files for use in transactionally
+protected file system operations.  Due to the filename length limit of
+48 characters in the QNX filesystem, applications that are using
+transactions should specify a database name that is at most 43 characters.])])
+
+m4_nlist([dnl
+m4_bold([What is the impact of QNX's use of m4_manref(shm_open, 2) for
+shared memory regions?])
+
+m4_p([dnl
+QNX requires the use of the POSIX m4_manref(shm_open, 2) and
+m4_manref(shm_unlink, 2) calls for shared memory regions that will later
+be mapped into memory using m4_manref(mmap, 2).  QNX's implementation
+of the shared memory functions requires that the name given must begin
+with a slash, and that no other slash may appear in the name.])
+
+m4_p([dnl
+In order to comply with those requirements and allow relative pathnames
+to find the same environment, m4_db uses only the last component of the
+home directory path and the name of the shared memory file, separated
+by a colon, as the name specified to the shared memory functions.  For
+example, if an application specifies a home directory of
+m4_path(/home/db/DB_DIR), m4_db will use m4_path(/DB_DIR:__db.001) as
+the name for the shared memory area argument to m4_manref(shm_open,
+2).])
+
+m4_p([dnl
+The impact of this decision is that the last component of all
+environment home directory pathnames on QNX must be unique with respect
+to each other.  Additionally, m4_db requires that environments use home
+directories for QNX in order to generate a reasonable entry in the
+shared memory area.])])
+
+m4_nlist([dnl
+m4_bold([What are the implications of QNX's requirement to use
+m4_manref(shm_open, 2) in order to use m4_manref(mmap, 2)?])
+
+m4_p([dnl
+QNX requires that files mapped with m4_manref(mmap, 2) be opened using
+m4_manref(shm_open, 2).  There are other places in addition to the
+environment shared memory regions, where m4_db tries to memory map files
+if it can.])
+
+m4_p([dnl
+The memory pool subsystem normally attempts to use m4_manref(mmap, 2)
+even when using private memory, as indicated by the m4_ref(DB_PRIVATE)
+flag to m4_ref(dbenv_open).  In the case of QNX, if an application is
+using private memory, m4_db will not attempt to map the memory and will
+instead use the local cache.])])
+
+m4_nlist([dnl
+m4_bold([What are the implications of QNX's mutex implementation using
+microkernel resources?])
+
+m4_p([dnl
+On QNX, the primitives implementing mutexes consume system resources.
+Therefore, if an application unexpectedly fails, those resources could
+leak.  m4_db solves this problem by always allocating mutexes in the
+persistent shared memory regions.  Then, if an application fails,
+running recovery or explicitly removing the database environment by
+calling the m4_refT(dbenv_remove) will allow m4_db to release those
+previously held mutex resources.  If an application specifies the
+m4_ref(DB_PRIVATE) flag (choosing not to use persistent shared memory),
+and then fails, mutexes allocated in that private memory may leak their
+underlying system resources.  Therefore, the m4_ref(DB_PRIVATE) flag
+should be used with caution on QNX.])])
+
+m4_nlistend
+
+m4_page_footer

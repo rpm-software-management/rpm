@@ -1,0 +1,72 @@
+m4_comment([$Id: env_failchk.so,v 10.6 2006/10/12 21:37:42 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_failchk])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_failchk),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__failchk(DB_ENV *dbenv, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::failchk(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_failchk) checks for threads of control (either a true
+thread or a process) that have exited while manipulating m4_db library
+data structures, while holding a logical database lock, or with an
+unresolved transaction (that is, a transaction that was never aborted
+or committed).  For more information, see m4_link(M4RELDIR/ref/cam/app,
+Architecting Data Store and Concurrent Data Store applications), and
+m4_link(M4RELDIR/ref/transapp/app, Architecting Transactional Data Store
+applications).])
+
+m4_p([dnl
+The m4_refT(dbenv_failchk) is based on the "thread_id" and "is_alive"
+functions specified to the m4_refT(dbenv_set_thread_id).  Applications
+calling the m4_refT(dbenv_failchk) must have already called the
+m4_refT(dbenv_set_isalive), on the same m4_ref(DbEnv), and must have
+configured their database environment using the
+m4_refT(dbenv_set_thread_count).])
+
+m4_p([dnl
+If m4_ref(dbenv_failchk) determines a thread of control exited while
+holding database read locks, it will release those locks.  If
+m4_ref(dbenv_failchk) determines a thread of control exited with an
+unresolved transaction, the transaction will be aborted.  In either of
+these cases, m4_ref(dbenv_failchk) will return 0 and the application may
+continue to use the database environment.])
+
+m4_p([dnl
+In either of these cases, the m4_refT(dbenv_failchk) will also report
+the process and thread IDs associated with any released locks or
+aborted transactions.  The information is printed to a specified output
+channel (see the m4_refT(dbenv_set_msgfile) for more information), or
+passed to an application callback function (see the
+m4_refT(dbenv_set_msgcall) for more information).])
+
+m4_p([dnl
+If m4_ref(dbenv_failchk) determines a thread of control has exited such
+that database environment recovery is required, it will return
+m4_ref(DB_RUNRECOVERY).  In this case, the application should not
+continue to use the database environment.  For a further description as
+to the actions the application should take when this failure occurs, see
+m4_link(M4RELDIR/ref/cam/fail, Handling failure in Data Store and
+Concurrent Data Store applications), and
+m4_link(M4RELDIR/ref/transapp/fail, Handling failure in Transactional
+Data Store applications).])
+
+m4_when_after_envopen(dbenv_failchk)
+
+m4_return(dbenv_failchk, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_err(dbenv_failchk, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

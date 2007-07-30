@@ -1,0 +1,797 @@
+# $Id: check,v 10.155 2007/07/06 16:37:23 bostic Exp $
+#
+# Script to check HTML output for links that reference nonexistent
+# pages, and for pages that aren't referenced by anything.
+
+###################################################
+# Tests
+###################################################
+t1()
+{
+	echo "$of: CVS conflicts (<<<<<<< and >>>>>>>)..."
+	cat ${SO_FILES} |
+	    xargs egrep '<<<<<<<|>>>>>>>' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t2()
+{
+	echo "$of: Inline HTML (&gt; and &lt;)..."
+	cat ${SO_FILES} |
+	    xargs egrep '&[lg]t;' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t3()
+{
+	echo "$of: Berkeley DB (should be m4_db)..."
+	cat ${SO_FILES} |
+	    xargs egrep -w 'Berkeley DB' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t4()
+{
+	echo "$of: dialogue (should be dialog)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'dialogue' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t5()
+{
+	echo "$of: dataset (should be data set)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i -w 'dataset' |
+	    sed -e '/embedded.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t6()
+{
+	echo "$of: co-existing (should be coexisting)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'co-existing' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t7()
+{
+	echo "$of: writeable (should be writable)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'writeable' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t8()
+{
+	echo "$of: indexes (should be indices)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'indexes' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t9()
+{
+	echo "$of: useable (should be usable)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'useable' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t10()
+{
+	echo "$of: B-tree, B+tree (should be Btree)..."
+	cat ${SO_FILES} |
+	    xargs egrep -i 'B[+-]tree' |
+	    sed -e '/refs.so:.*The Ubiquitous B-tree/d' \
+		-e '/refs.so:.*Prefix B-trees/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t11()
+{
+	echo "$of: two phase (should be two-phase)..."
+	cat ${SO_FILES} |
+	    xargs egrep -i 'two phase' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t12()
+{
+	echo "$of: Punctuation/macro typos"
+	cat ${HTML_FILES} |
+	    xargs egrep ' [,;)]|\( ' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t13()
+{
+	echo "$of: Too many closing/opening m4 quotes..."
+	(cat ${HTML_FILES} |
+	    xargs egrep '\(\[|\]\)' |
+	    sed -e '/(\*fsp)\[\]/d' \
+	        -e 's/Object\[\]//g' \
+	        -e 's/\[DB_XIDDATASIZE\]//g' \
+	        -e 's/byte\[\]//g' \
+	        -e 's/byte\[\]\[\]//g' \
+	        -e 's/char\[\]//g' \
+	        -e 's/\[\]\&nbsp;//g' \
+	        -e 's/raceElement\[\]//g' \
+	        -e 's/onflicts(\[\])//g' |
+	    egrep '\(\[|\]\)') > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t14()
+{
+	echo "$of: i.e. or e.g. (should be that is, for example)..."
+	cat ${HTML_FILES} |
+	    xargs egrep 'i\.e\.|e\.g\.' |
+	    sed -e '/embedded.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t15()
+{
+	echo "$of: multi-thread, multi-process (should be multiXXX)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'multi-thread|multi-process' |
+	    sed -e '/bdb_usenix.html:/d' \
+		-e '/embedded.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t16()
+{
+	echo "$of: readonly (should be read-only)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -w -i 'readonly' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t17()
+{
+	echo "$of: off-site (should be offsite)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'off-site' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t18()
+{
+	echo "$of: user defined/specified (should be user-XXX)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'user defined|user specified' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t19()
+{
+	echo "$of: on-going (should be ongoing)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'on-going' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t20()
+{
+	echo "$of: vice-versa (should be vice versa)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'vice-versa' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t21()
+{
+	echo "$of: data dependent (should be data-dependent)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'data dependent' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t22()
+{
+	echo "$of: non-existXXX (should be nonexistXXX)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'non-exist' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t23()
+{
+	echo "$of: pre-built (should be prebuilt)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'pre-built' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t24()
+{
+	echo "$of: file/path name (should be filename/pathname)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'file name|path name' |
+	    sed '/file named/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t25()
+{
+	echo "$of: wish/wishes/wishing (should be want/wants/wanting)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i -w 'wish|wishes|wishing' |
+	    sed '/wish session/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t26()
+{
+	echo "$of: file systems (should be filesystems)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'file systems' |
+	    sed '/embedded.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t27()
+{
+	# The rule is that reXXX is re-XXX if there are two ways to read it
+	# (re-creation vs. recreation) or if the first X is 'e' (re-entrant
+	# vs. reentrant).
+	echo "$of: re-XXX (that should be reXXX)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i \
+	're-acquired|re-alloc|re-compile|re-configure|re-direct|re-instantiat|re-link|re-load|re-number|re-open|re-start' |
+	    sed '/pre-/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t28()
+{
+	echo "$of: reXXX (that should be re-XXX)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'reent|recreat' |
+	    sed -e '/_REENTRANT/d' -e '/embedded.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t29()
+{
+	echo "$of: stand-alone (should be standalone)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'stand-alone' |
+	    sed '/bdb_usenix.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t30()
+{
+	echo "$of: meta-data (should be metadata)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'meta-data' |
+	    sed '/bdb_usenix.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t31()
+{
+	echo "$of: the the, and and, or or, that that..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i -w 'the the|and and|or or|that that' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t32()
+{
+	echo "$of: doubled punctuation..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i '\.\.' |
+	    sed -e '/"\.\."/d' \
+		-e '/\.\.\//d' \
+	        -e '/\.\.\./d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t33()
+{
+	echo "$of: transaction protect (should be transaction-protect)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i -w 'transaction protect' |
+	    sed '/embedded.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t34()
+{
+	echo "$of: backward compatible (should be backward-compatible)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'backward compatible' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t35()
+{
+	echo "$of: shutdown (should be shut down)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i -w 'shutdown' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t36()
+{
+	echo "$of: described above/below (should be previously/as follows)..."
+	cat ${HTML_FILES} |
+	    xargs egrep -i 'described above|described below' |
+	    sed '/embedded.html:/d' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t37()
+{
+	echo "$of: dnl..."
+	cat ${HTML_FILES} |
+	    xargs egrep -w dnl > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t38()
+{
+	echo "$of: NOAPI..."
+	cat ${HTML_FILES} |
+	    xargs egrep -w NOAPI > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t39()
+{
+	echo "$of: Trailing whitespace..."
+	cat ${SO_FILES} |
+	    xargs egrep -l '[	 ]$' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t40()
+{
+	echo "$of: Unprintable characters..."
+	(for i in `cat ${SO_FILES}`; do
+		tr -d '\0-\10\13-\37\177-\377' < $i > ${T}/1
+		cmp $i ${T}/1 > /dev/null || echo $i
+	done) > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t41()
+{
+	echo "$of: Empty brackets..."
+	cat ${SO_FILES} ${M4_FILES} |
+	    xargs egrep '\[\]' |
+	    sed -e 's/M4XMLMAJOR\[\]//g' \
+	        -e 's/M4XMLMINOR\[\]//g' \
+	        -e 's/__LB__\[\]//g' \
+	        -e 's/libdbxml\[\]//g' \
+	        -e 's/libdbxml_tcl\[\]//g' \
+	        -e '/txn_recover.so:.*DB_XIDDATASIZE/d' \
+		-e '/\/m4\/m4.links:/d' \
+		-e '/\/ref\/build_win\/faq.so:/d' \
+		-e '/\/ref\/build_win\/intro.so:/d' \
+		-e '/\/ref\/dumpload\/format.so:/d' \
+		-e '/\/ref\/dumpload\/text.so:/d' \
+		-e '/\/ref\/env\/naming.so:/d' \
+		-e '/\/ref\/xa\/xa_config.so:/d' \
+		-e '/\/ref_xml\/xml_win\/intro.so:/d' |
+	    egrep '\[\]' > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+t42()
+{
+	echo "$of: parenthesis count ..."
+cat << END-OF-PROGRAM > /tmp/paren.c
+	#include <stdio.h>
+	main(argc, argv)
+		int argc;
+		char *argv[];
+	{
+		int ch, c, o;
+		for (o = c = 0; (ch = getchar()) != EOF;) {
+			if (ch == '(')
+				++o;
+			if (ch == ')')
+				++c;
+			if (c > o) {
+				printf("%s: too many closing parenthesis\n",
+				    argv[1]);
+				exit (0);
+			}
+		}
+		if (c != o)
+			printf("%s: too many open parenthesis\n", argv[1]);
+		exit (0);
+	}
+END-OF-PROGRAM
+
+	cc -O /tmp/paren.c -o /tmp/paren
+
+	(for i in `cat ${HTML_FILES}`; do
+		/tmp/paren $i < $i >> ${T}/check_$of
+	done)
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+	rm -f /tmp/paren /tmp/paren.c
+}
+
+t43()
+{
+	if [ "$PRODUCT" = "XML" ]; then
+		echo "$of: Missing log records... (skipping test for XML)"
+		return
+	fi
+	echo "$of: Missing log records..."
+	f=$BDB_SRC/test/logtrack.list
+	if [ ! -f $f ]; then
+		echo "$of: $f: file not found (skipping test)"
+		return
+	fi
+	egrep 'BEGIN|PREFIX' $f |
+	    awk '/PREFIX/{p = $2} /BEGIN/{printf "%s_%s\n", p, $2}' |
+	    sed 's/^__//' |
+	    sort > ${T}/1
+	sed -e '/START LOG RECORD TYPES/,/STOP LOG RECORD TYPES/p' \
+	    -e d ref/debug/printlog.so |
+	    egrep 'm4_table_element' |
+	    sed -e 's/[^(]*(//' -e 's/,.*//' | sort > ${T}/2
+	cmp ${T}/1 ${T}/2 > /dev/null ||
+	(echo "<<< Source code >>> Ref Guide" &&
+	    diff ${T}/1 ${T}/2) > ${T}/check_$of
+}
+
+###################################################
+# Chapter headings.
+###################################################
+t44()
+{
+	echo "$of: Chapter headings ..."
+	(cat ${HTML_FILES} | xargs egrep '<td><h3><dl><dt>' |
+	sed -e 's/docs\/ref\///' \
+	    -e 's/:.*<dd>/@/' -e 's/<\/dl>.*//' |
+	sed -e '/\/am.*@Access Methods$/d' \
+	    -e '/\/apprec.*@Application Specific Logging and Recovery$/d' \
+	    -e '/\/arch\/.*@Architecture$/d' \
+	    -e '/\/build_brew\/.*@Building Berkeley DB for BREW$/d' \
+	    -e '/\/build_s60\/.*@Building Berkeley DB for S60$/d' \
+	    -e '/\/build_unix\/.*@Building Berkeley DB for UNIX\/POSIX systems$/d' \
+	    -e '/\/build_vxworks\/.*@Building Berkeley DB for VxWorks systems$/d' \
+	    -e '/\/build_win\/.*@Building Berkeley DB for Windows systems$/d' \
+	    -e '/\/build_wince\/.*@Building Berkeley DB for Windows CE systems$/d' \
+	    -e '/\/cam\/.*@Berkeley DB Concurrent Data Store Applications$/d' \
+	    -e '/\/changelog\/.*@Upgrading Berkeley DB Applications$/d' \
+	    -e '/\/debug\/.*@Debugging Applications$/d' \
+	    -e '/\/distrib\/.*@Distribution$/d' \
+	    -e '/\/dumpload\/.*@Dumping and Reloading$/d' \
+	    -e '/\/env\/.*@Environment$/d' \
+	    -e '/\/ext\/.*@Berkeley DB Extensions$/d' \
+	    -e '/\/install\/.*@System Installation Notes$/d' \
+	    -e '/\/intro\/.*@Introduction$/d' \
+	    -e '/\/java\/.*@Java API$/d' \
+	    -e '/\/lock\/.*@Locking Subsystem$/d' \
+	    -e '/\/log\/.*@Logging Subsystem$/d' \
+	    -e '/\/mp\/.*@Memory Pool Subsystem$/d' \
+	    -e '/\/program\/.*@Programmer Notes$/d' \
+	    -e '/\/refs\/.*@Additional References$/d' \
+	    -e '/\/rep\/.*@Berkeley DB Replication$/d' \
+	    -e '/\/rpc\/.*@RPC Client\/Server$/d' \
+	    -e '/\/sendmail\/.*@Sendmail$/d' \
+	    -e '/\/sequence\/.*@Sequences$/d' \
+	    -e '/\/tcl\/.*@Tcl API$/d' \
+	    -e '/\/test\/.*@Test Suite$/d' \
+	    -e '/\/transapp\/.*@Berkeley DB Transactional Data Store Applications$/d' \
+	    -e '/\/txn\/.*@Transaction Subsystem$/d' \
+	    -e '/\/upgrade[\.0-9\]*\/.*@Upgrading Berkeley DB.*Applications$/d' \
+	    -e '/\/xa\/.*@Distributed Transactions$/d' \
+	    -e '/\/xml\/.*@Berkeley DB XML$/d' \
+	    -e '/\/xml_unix\/.*@Building Berkeley DB XML for UNIX\/POSIX systems$/d' \
+	    -e '/\/xml_win\/.*@Building Berkeley DB XML for Windows systems$/d' \
+	    -e '/\/xquery\/.*@Berkeley DB XML XQuery Extensions$/d' |
+	    column -t -s@) > ${T}/check_$of
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+###################################################
+# Layout document.
+###################################################
+t45()
+{
+	if [ "$PRODUCT" = "XML" ]; then
+		echo "$of: Layout document... (skipping test for XML)"
+		return
+	fi
+	echo "$of: Layout document..."
+	egrep m4_table_element ref/distrib/layout.so |
+	    sed -e 's/,.*//' \
+		-e 's/.*(//' |
+	    sort > ${T}/1
+	ls $BDB_SRC |
+	    sed -e /CVS/d \
+		-e /README/d \
+		-e /build[0-9]/d \
+		-e /test_cxx/d \
+		-e /test_perf/d \
+		-e /test_purify/d \
+		-e /test_rep/d \
+		-e /test_server/d \
+		-e /test_thread/d \
+		-e /test_vxworks/d > ${T}/2
+
+	cmp ${T}/1 ${T}/2 > /dev/null ||
+	(echo "<<< Ref Guide >>> Directory ls" && diff ${T}/1 ${T}/2) > ${T}/check_$of
+}
+
+###################################################
+# Missing flags.
+###################################################
+t46()
+{
+	echo "$of: Missing flags..."
+
+	# Compare all the items in the source files against the table of
+	# C flags.
+	cat ${SO_FILES} ${M4_FILES} |
+	    xargs egrep 'm4_idef[(]DB_|m4_idefz*[(]DB_' |
+	    tr -c 'A-Z0-9_' '\012' |
+	    egrep DB_ |
+	    sort -u > ${T}/1
+
+	sed -e 's/^\$1, \(DB_[^,]*\),.*/\1/p' \
+	    -e d $BDB_SRC/docs_src/m4/m4.links | sort > ${T}/2
+	(echo "<<< source files >>> m4/m4.links file" &&
+	    diff ${T}/1 ${T}/2 | egrep '^[<>]') >> ${T}/check_$of
+}
+
+###################################################
+# Makefile install
+###################################################
+t47()
+{
+	echo "$of: Makefile.in document install list..."
+
+	f=$DOCS_SRC/../dist/Makefile.in
+	if [ ! -f $f ]; then
+		echo "$of: $f: file not found"
+		exit 1
+	fi
+	(echo java && ls $TARGET) | sed /CVS/d | sort -u > ${T}/1
+	sed -n \
+	    -e '/DOCLIST/,/install_docs/{' \
+	    -e '/install_docs/q' \
+	    -e 's/\\//' \
+	    -e 's/DOCLIST=[	 ]*//' \
+	    -e 's/^[	 ]*//' \
+	    -e 's/[	 ]*$//' \
+	    -e '/^$/d' \
+	    -e 'p' \
+	    -e '}' < $f | tr -s ' ' '\012' | sort > ${T}/2
+	cmp ${T}/1 ${T}/2 > /dev/null ||
+	(echo "<<< docs directory >>> Makefile.in document install list" &&
+	    diff ${T}/1 ${T}/2) > ${T}/check_$of
+}
+
+###################################################
+# Spelling checks.
+###################################################
+t48()
+{
+	echo "$of: Spelling checks..."
+	for i in `find . -type d ! -name '*CVS' ! -name 'support'`; do
+		(cd $i
+		s="NO"
+		rm -f ${T}/1 ${T}/2
+		test -f ../spell.ok && s="../spell.ok"
+		test -f spell.ok && s="spell.ok"
+		if test $s != "NO"; then
+			sort -u $s > ${T}/1
+			[ "`echo m4.*`" != "m4.*" ] && \
+			    spell m4.* | \
+			    sort -u | comm -23 /dev/stdin ${T}/1 >> ${T}/2
+			[ "`echo *.so`" != "*.so" ] && \
+			    spell *.so | \
+			    sort -u | comm -23 /dev/stdin ${T}/1 >> ${T}/2
+		fi
+		[ -s ${T}/2 ] &&
+		    (echo "==== $i" && cat ${T}/2) >> ${T}/check_$of)
+	done
+}
+
+###################################################
+# Check for unexpanded m4 macros.
+###################################################
+t49()
+{
+	echo "$of: Unexpanded M4 macros..."
+
+	(cat ${HTML_FILES} | xargs egrep 'm4_|UNREF' > ${T}/check_$of)
+	[ -s ${T}/check_$of ] || rm ${T}/check_$of
+}
+
+###################################################
+# weblint
+###################################################
+t50()
+{
+	echo "$of: Weblint..."
+
+cat << END-OF-WEBPAGE > ${T}/1
+<html>
+<head>
+<title>
+title
+</title>
+</head>
+<body>
+body
+</body>
+</html>
+END-OF-WEBPAGE
+	wb=/a/db/bin/weblint
+	$wb -f ${T}/1 > /dev/null
+	if [ $? -eq 0 ] ; then
+		(cd $TARGET/.. && $wb -d heading-order -i -l docs | \
+		    sed -e '/\/frame.html/d' \
+			-e '/\/object.html/d' \
+			-e '/recommends the TITLE be no longer than 64 characters/d' \
+			-e '/ref.html.*expected tag(s) not seen: BODY/d' \
+		        -e '/directory does not have an index file/d' \
+		        -e '/docs\/articles\//d' \
+		        -e '/docs\/collections\//d' \
+		        -e '/docs\/gsg\//d' \
+		        -e '/docs\/gsg_db_rep\//d' \
+		        -e '/docs\/gsg_txn\//d' \
+		        -e '/docs\/gsg_xml\//d' \
+		        -e '/docs\/gsg_xml_txn\//d' \
+		        -e '/docs\/intro_xml\//d' \
+		        -e '/docs\/java\//d' \
+		        -e '/docs\/javaxml\//d' \
+			> ${T}/check_$of)
+		[ -s ${T}/check_$of ] || rm ${T}/check_$of
+	else
+		echo "$of: weblint not found (skipping test)"
+	fi
+}
+
+###################################################
+# Non-existent page links, unreferenced pages.
+###################################################
+missing_page()
+{
+	# $1 == path
+	d=`dirname $1`
+	f=`basename $1`
+
+	(cd $d &&
+	cat $f | tr '[:space:]' '\n' | egrep -i 'href="' | \
+	    sed -e 's/[Hh][Rr][Ee][Ff]="//' \
+		-e 's/".*//' \
+		-e 's/#.*//' \
+		-e '/.ps$/d' \
+		-e '/[Hh][Tt][Tt][Pp]:\/\//d' \
+		-e '/examples_java\/src\/com\/sleepycat\/examples\//d' \
+		-e '/ftp:\/\//d' \
+		-e '/java\/index.html/d' \
+		-e '/mailto:/d' | \
+	    while read i; do
+		if [ -z $i ]; then
+			continue;
+		fi
+		if [ ! -f $i ]; then
+			echo "$1: $i missing" >> ${BAD_LINKS}
+		else
+			(cd `dirname $i` && echo $PWD/`basename $i`)
+		fi
+	    done)
+}
+
+t51()
+{
+	echo "$of: Non-existent page links, unreferenced pages..."
+	BAD_LINKS=${T}/bad_links
+	UNREF_FILES=${T}/unref_files
+
+	# Check for links referencing nonexistent pages.
+	for i in `cat ${HTML_FILES}`; do
+		missing_page $i
+	done > ${T}/1 2>&1
+	[ -s ${BAD_LINKS} ] || rm -f ${BAD_LINKS}
+
+	# Check for pages that aren't referenced by any link.
+	(cat ${T}/1 |
+	    sed -e 's;.*/docs/;docs/;' |
+	    sort -u;
+	cat ${HTML_FILES} |
+	    sed -e 's;.*/docs/;docs/;') |
+	sort |
+	uniq -u |
+	sed -e '/docs\/api_c\/c_pindex.html/d' \
+	    -e '/docs\/api_c\/frame.html/d' \
+	    -e '/docs\/api_c\/object.html/d' \
+	    -e '/docs\/api_cxx\/cxx_pindex.html/d' \
+	    -e '/docs\/api_cxx\/object.html/d' \
+	    -e '/docs\/api_tcl\/tcl_pindex.html/d' \
+	    -e '/docs\/collections\//d' \
+	    -e '/docs\/gsg.*pdf$/d' \
+	    -e '/docs\/gsg\/CXX\/index.html/d' \
+	    -e '/docs\/gsg\/C\/index.html/d' \
+	    -e '/docs\/gsg\/JAVA\/index.html/d' \
+	    -e '/docs\/gsg_txn\/CXX\/index.html/d' \
+	    -e '/docs\/gsg_txn\/C\/index.html/d' \
+	    -e '/docs\/gsg_txn\/JAVA\/index.html/d' \
+	    -e '/docs\/gsg_xml\/cxx\/index.html/d' \
+	    -e '/docs\/gsg_xml\/cxx\/introduction.html/d' \
+	    -e '/docs\/gsg_xml\/java\/introduction.html/d' \
+	    -e '/docs\/gsg_xml_txn\/cxx\/index.html/d' \
+	    -e '/docs\/intro_xml\/BerkeleyDBXML-Intro.pdf/d' \
+	    -e '/docs\/intro_xml\/index.html/d' \
+	    -e '/docs\/java\//d' \
+	    -e '/docs\/ref\/am\/second.javas/d' \
+	    -e '/docs\/ref\/install\/magic.s5.be.txt/d' \
+	    -e '/docs\/ref\/install\/magic.s5.le.txt/d' \
+	    -e '/docs\/ref\/install\/magic.txt/d' \
+	    -e '/docs\/ref\/program\/solaris.txt/d' \
+	    -e '/docs\/ref\/transapp\/hotbackup.txt/d' \
+	    -e '/docs\/ref\/transapp\/transapp.cs/d' \
+	    -e '/docs\/ref\/transapp\/writetest.cs/d' \
+	    > ${UNREF_FILES}
+	[ -s ${UNREF_FILES} ] || rm ${UNREF_FILES}
+}
+
+###################################################
+# Initialization
+###################################################
+T=$PWD/DOC.errors
+rm -rf ${T}
+mkdir ${T}
+
+HTML_FILES=${T}/html_files
+M4_FILES=${T}/m4_files
+SO_FILES=${T}/so_files
+
+trap 'rm -f ${T}/[0-9] \
+    ${HTML_FILES} ${M4_FILES} ${SO_FILES}; exit 0' 0 1 2 3 13 15
+
+###################################################
+# Build list of output files.
+###################################################
+echo "Build local list of all HTML files..."
+find $TARGET -name '*.html' |
+    sed -e '/\/docs\/articles\//d' \
+        -e '/\/docs\/collections\//d' \
+        -e '/\/docs\/gsg\//d' \
+        -e '/\/docs\/gsg_db_rep\//d' \
+        -e '/\/docs\/gsg_txn\//d' \
+        -e '/\/docs\/gsg_xml\//d' \
+        -e '/\/docs\/gsg_xml_txn\//d' \
+        -e '/\/docs\/intro_xml\//d' \
+        -e '/\/docs\/java\//d' | sort > ${HTML_FILES}
+
+[ -z $BDB_SRC ] || f="$f $BDB_SRC/docs_src"
+[ -z $XML_SRC ] || f="$f $XML_SRC/docs_src"
+
+echo "Build list of all M4 source files..."
+find $f -name 'm4.*' | sort -u > ${M4_FILES}
+
+echo "Build list of all .so source files..."
+find $f -name '*.so' -print | sort -u > ${SO_FILES}
+
+if [ $# -eq 1 ]; then
+	of=1
+	maxtest=51
+	while [ $of -le $maxtest ] ; do
+		t$of
+		of=`expr $of + 1`
+	done
+else
+	case $2 in
+	spell)	of=47;;
+	*)	of=$2;;
+	esac
+	t$of
+fi
+
+exit 0

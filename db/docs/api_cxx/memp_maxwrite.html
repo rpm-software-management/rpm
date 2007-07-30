@@ -1,6 +1,5 @@
-<!--$Id: memp_maxwrite.so,v 10.4 2006/04/26 16:55:20 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: memp_maxwrite.so,v 10.5 2006/11/29 21:37:17 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -23,10 +22,10 @@
 #include &lt;db_cxx.h&gt;
 <p>
 int
-DbEnv::set_mp_max_write(int maxwrite, int maxwrite_sleep);
+DbEnv::set_mp_max_write(int maxwrite, db_timeout_t maxwrite_sleep);
 <p>
 int
-DbEnv::get_mp_max_write(int *maxwritep, int *maxwrite_sleepp);
+DbEnv::get_mp_max_write(int *maxwritep, db_timeout_t *maxwrite_sleepp);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::set_mp_max_write</h3>
@@ -44,7 +43,9 @@ failure, and returns 0 on success.
 library when flushing dirty pages from the cache, or 0 if there is
 no limitation on the number of sequential write operations.
 <dt><b>maxwrite_sleep</b><dd>The number of microseconds the thread of control should pause before
-scheduling further write operations.
+scheduling further write operations.  It must be specified as an
+unsigned 32-bit number of microseconds, limiting the maximum pause to
+roughly 71 minutes.
 </dl>
 <h3>Errors</h3>
 <p>The DbEnv::set_mp_max_write method
@@ -83,6 +84,6 @@ failure, and returns 0 on success.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

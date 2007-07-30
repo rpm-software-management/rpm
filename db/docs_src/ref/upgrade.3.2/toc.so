@@ -1,0 +1,21 @@
+m4_comment([$Id: toc.so,v 1.13 2006/10/02 15:56:36 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 3.1 applications to m4_db 3.2,
+    Upgrading to release 3.2,,)
+
+m4_nlistbegin
+m4_nlist([m4_link(intro, [Release 3.2: introduction])])
+m4_nlistns([m4_link(set_flags, [Release 3.2: DB_ENV-__GT__set_flags])])
+m4_nlistns([m4_link(callback, [Release 3.2: DB callback functions, app_private field])])
+m4_nlistns([m4_link(renumber, [Release 3.2: logically renumbering records])])
+m4_nlistns([m4_link(incomplete, [Release 3.2: DB_INCOMPLETE])])
+m4_nlistns([m4_link(tx_recover, [Release 3.2: DB_ENV-__GT__set_tx_recover])])
+m4_nlistns([m4_link(mutexlock, [Release 3.2: DB_ENV-__GT__set_mutexlocks])])
+m4_nlistns([m4_link(handle, [Release 3.2: Java and C++ object reuse])])
+m4_nlistns([m4_link(notfound, [Release 3.2: Java java.io.FileNotFoundException])])
+m4_nlistns([m4_link(db_dump, [Release 3.2: db_dump])])
+m4_nlistns([m4_link(disk, [Release 3.2: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

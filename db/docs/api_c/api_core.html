@@ -1,15 +1,14 @@
 <!--DO NOT EDIT: automatically built by build script.-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: Berkeley DB: C Handle Methods (version 4.5.20)</title>
+<title>Berkeley DB: Berkeley DB: C Handle Methods (version 4.6.18)</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
-<h3 align=center>Berkeley DB: C Handle Methods (version 4.5.20)</h3>
+<h3 align=center>Berkeley DB: C Handle Methods (version 4.6.18)</h3>
 <table border=1 align=center>
 <tr><th>C Handle Methods</th><th>Description</th></tr>
 <!--Db::--><tr><td><a href="../api_c/db_class.html">db_create</a></td><td>Create a database handle</td></tr>
@@ -19,6 +18,7 @@
 <!--Db::cursor--><tr><td><a href="../api_c/db_cursor.html">DB-&gt;cursor</a></td><td>Create a cursor</td></tr>
 <!--Db::del--><tr><td><a href="../api_c/db_del.html">DB-&gt;del</a></td><td>Delete items from a database</td></tr>
 <!--Db::err--><tr><td><a href="../api_c/db_err.html">DB-&gt;err</a>, <a href="../api_c/db_err.html">DB-&gt;errx</a></td><td>Error message</td></tr>
+<!--Db::exists--><tr><td><a href="../api_c/db_exists.html">DB-&gt;exists</a></td><td>Return if an item appears in a database</td></tr>
 <!--Db::fd--><tr><td><a href="../api_c/db_fd.html">DB-&gt;fd</a></td><td>Return a file descriptor from a database</td></tr>
 <!--Db::get--><tr><td><a href="../api_c/db_get.html">DB-&gt;get</a>, <a href="../api_c/db_get.html">DB-&gt;pget</a></td><td>Get items from a database</td></tr>
 <!--Db::get_byteswapped--><tr><td><a href="../api_c/db_get_byteswapped.html">DB-&gt;get_byteswapped</a></td><td>Return if the underlying database is in host order</td></tr>
@@ -45,11 +45,13 @@
 <!--Db::set_errpfx--><tr><td><a href="../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a></td><td>Set error message prefix</td></tr>
 <!--Db::set_feedback--><tr><td><a href="../api_c/db_set_feedback.html">DB-&gt;set_feedback</a></td><td>Set feedback callback</td></tr>
 <!--Db::set_flags--><tr><td><a href="../api_c/db_set_flags.html">DB-&gt;set_flags</a></td><td>General database configuration</td></tr>
+<!--Db::set_h_compare--><tr><td><a href="../api_c/db_set_h_compare.html">DB-&gt;set_h_compare</a></td><td>Set a Hash comparison function</td></tr>
 <!--Db::set_h_ffactor--><tr><td><a href="../api_c/db_set_h_ffactor.html">DB-&gt;set_h_ffactor</a></td><td>Set the Hash table density</td></tr>
 <!--Db::set_h_hash--><tr><td><a href="../api_c/db_set_h_hash.html">DB-&gt;set_h_hash</a></td><td>Set a hashing function</td></tr>
 <!--Db::set_h_nelem--><tr><td><a href="../api_c/db_set_h_nelem.html">DB-&gt;set_h_nelem</a></td><td>Set the Hash table size</td></tr>
 <!--Db::set_lorder--><tr><td><a href="../api_c/db_set_lorder.html">DB-&gt;set_lorder</a></td><td>Set the database byte order</td></tr>
 <!--Db::set_pagesize--><tr><td><a href="../api_c/db_set_pagesize.html">DB-&gt;set_pagesize</a></td><td>Set the underlying database page size</td></tr>
+<!--Db::set_priority--><tr><td><a href="../api_c/db_set_priority.html">DB-&gt;set_priority</a></td><td>Set cache page priority</td></tr>
 <!--Db::set_q_extentsize--><tr><td><a href="../api_c/db_set_q_extentsize.html">DB-&gt;set_q_extentsize</a></td><td>Set Queue database extent size</td></tr>
 <!--Db::set_re_delim--><tr><td><a href="../api_c/db_set_re_delim.html">DB-&gt;set_re_delim</a></td><td>Set the variable-length record delimiter</td></tr>
 <!--Db::set_re_len--><tr><td><a href="../api_c/db_set_re_len.html">DB-&gt;set_re_len</a></td><td>Set the fixed-length record length</td></tr>
@@ -60,12 +62,13 @@
 <!--Db::truncate--><tr><td><a href="../api_c/db_truncate.html">DB-&gt;truncate</a></td><td>Empty a database</td></tr>
 <!--Db::upgrade--><tr><td><a href="../api_c/db_upgrade.html">DB-&gt;upgrade</a></td><td>Upgrade a database</td></tr>
 <!--Db::verify--><tr><td><a href="../api_c/db_verify.html">DB-&gt;verify</a></td><td>Verify/salvage a database</td></tr>
-<!--DbCursor::close--><tr><td><a href="../api_c/dbc_close.html">DBcursor-&gt;c_close</a></td><td>Close a cursor</td></tr>
-<!--DbCursor::count--><tr><td><a href="../api_c/dbc_count.html">DBcursor-&gt;c_count</a></td><td>Return count of duplicates</td></tr>
-<!--DbCursor::del--><tr><td><a href="../api_c/dbc_del.html">DBcursor-&gt;c_del</a></td><td>Delete by cursor</td></tr>
-<!--DbCursor::dup--><tr><td><a href="../api_c/dbc_dup.html">DBcursor-&gt;c_dup</a></td><td>Duplicate a cursor</td></tr>
-<!--DbCursor::get--><tr><td><a href="../api_c/dbc_get.html">DBcursor-&gt;c_get</a>, <a href="../api_c/dbc_get.html">DBcursor-&gt;c_pget</a></td><td>Retrieve by cursor</td></tr>
-<!--DbCursor::put--><tr><td><a href="../api_c/dbc_put.html">DBcursor-&gt;c_put</a></td><td>Store by cursor</td></tr>
+<!--DbCursor::close--><tr><td><a href="../api_c/dbc_close.html">DBcursor-&gt;close</a></td><td>Close a cursor</td></tr>
+<!--DbCursor::count--><tr><td><a href="../api_c/dbc_count.html">DBcursor-&gt;count</a></td><td>Return count of duplicates</td></tr>
+<!--DbCursor::del--><tr><td><a href="../api_c/dbc_del.html">DBcursor-&gt;del</a></td><td>Delete by cursor</td></tr>
+<!--DbCursor::dup--><tr><td><a href="../api_c/dbc_dup.html">DBcursor-&gt;dup</a></td><td>Duplicate a cursor</td></tr>
+<!--DbCursor::get--><tr><td><a href="../api_c/dbc_get.html">DBcursor-&gt;get</a>, <a href="../api_c/dbc_get.html">DBcursor-&gt;pget</a></td><td>Retrieve by cursor</td></tr>
+<!--DbCursor::put--><tr><td><a href="../api_c/dbc_put.html">DBcursor-&gt;put</a></td><td>Store by cursor</td></tr>
+<!--DbCursor::set_priority--><tr><td><a href="../api_c/dbc_set_priority.html">DBcursor-&gt;set_priority</a></td><td>Set the cursor's cache priority</td></tr>
 <!--DbDeadlockException-->
 <!--DbEnv::--><tr><td><a href="../api_c/env_class.html">db_env_create</a></td><td>Create an environment handle</td></tr>
 <!--DbEnv::cdsgroup_begin--><tr><td><a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a></td><td>Get a locker ID in Berkeley DB Concurrent Data Store</td></tr>
@@ -113,6 +116,7 @@
 <!--DbEnv::rep_set_limit--><tr><td><a href="../api_c/rep_limit.html">DB_ENV-&gt;rep_set_limit</a></td><td>Limit data sent in response to a single message</td></tr>
 <!--DbEnv::rep_set_nsites--><tr><td><a href="../api_c/rep_nsites.html">DB_ENV-&gt;rep_set_nsites</a></td><td>Configure replication group site count</td></tr>
 <!--DbEnv::rep_set_priority--><tr><td><a href="../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a></td><td>Configure replication site priority</td></tr>
+<!--DbEnv::rep_set_request--><tr><td><a href="../api_c/rep_request.html">DB_ENV-&gt;rep_set_request</a></td><td>Configure replication client retransmission requests</td></tr>
 <!--DbEnv::rep_set_timeout--><tr><td><a href="../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a></td><td>Configure replication timeouts</td></tr>
 <!--DbEnv::rep_set_transport--><tr><td><a href="../api_c/rep_transport.html">DB_ENV-&gt;rep_set_transport</a></td><td>Configure replication transport callback</td></tr>
 <!--DbEnv::rep_start--><tr><td><a href="../api_c/rep_start.html">DB_ENV-&gt;rep_start</a></td><td>Configure an environment for replication</td></tr>
@@ -123,8 +127,10 @@
 <!--DbEnv::repmgr_set_local_site--><tr><td><a href="../api_c/repmgr_local_site.html">DB_ENV-&gt;repmgr_set_local_site</a></td><td>Specify the replication manager's local site</td></tr>
 <!--DbEnv::repmgr_site_list--><tr><td><a href="../api_c/repmgr_site_list.html">DB_ENV-&gt;repmgr_site_list</a></td><td>List the sites and their status</td></tr>
 <!--DbEnv::repmgr_start--><tr><td><a href="../api_c/repmgr_start.html">DB_ENV-&gt;repmgr_start</a></td><td>Start the replication manager</td></tr>
+<!--DbEnv::repmgr_stat--><tr><td><a href="../api_c/repmgr_stat.html">DB_ENV-&gt;repmgr_stat</a></td><td>Replication manager statistics</td></tr>
 <!--DbEnv::set_alloc--><tr><td><a href="../api_c/env_set_alloc.html">DB_ENV-&gt;set_alloc</a></td><td>Set local space allocation functions</td></tr>
 <!--DbEnv::set_app_dispatch--><tr><td><a href="../api_c/env_set_app_dispatch.html">DB_ENV-&gt;set_app_dispatch</a></td><td>Configure application recovery</td></tr>
+<!--DbEnv::set_cache_max--><tr><td><a href="../api_c/env_set_cache_max.html">DB_ENV-&gt;set_cache_max</a></td><td>Set the maximum cache size</td></tr>
 <!--DbEnv::set_cachesize--><tr><td><a href="../api_c/env_set_cachesize.html">DB_ENV-&gt;set_cachesize</a></td><td>Set the environment cache size</td></tr>
 <!--DbEnv::set_data_dir--><tr><td><a href="../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a></td><td>Set the environment data directory</td></tr>
 <!--DbEnv::set_encrypt--><tr><td><a href="../api_c/env_set_encrypt.html">DB_ENV-&gt;set_encrypt</a></td><td>Set the environment cryptographic key</td></tr>
@@ -177,7 +183,6 @@
 <!--DbMpoolFile::get--><tr><td><a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a></td><td>Get page from a file in a memory pool</td></tr>
 <!--DbMpoolFile::open--><tr><td><a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a></td><td>Open a file in a memory pool</td></tr>
 <!--DbMpoolFile::put--><tr><td><a href="../api_c/memp_fput.html">DB_MPOOLFILE-&gt;put</a></td><td>Return a page to a memory pool</td></tr>
-<!--DbMpoolFile::set--><tr><td><a href="../api_c/memp_fset.html">DB_MPOOLFILE-&gt;set</a></td><td>Set memory pool page attributes</td></tr>
 <!--DbMpoolFile::set_clear_len--><tr><td><a href="../api_c/memp_set_clear_len.html">DB_MPOOLFILE-&gt;set_clear_len</a></td><td>Set file page bytes to be cleared</td></tr>
 <!--DbMpoolFile::set_fileid--><tr><td><a href="../api_c/memp_set_fileid.html">DB_MPOOLFILE-&gt;set_fileid</a></td><td>Set file unique identifier</td></tr>
 <!--DbMpoolFile::set_flags--><tr><td><a href="../api_c/memp_set_flags.html">DB_MPOOLFILE-&gt;set_flags</a></td><td>General memory pool file configuration</td></tr>
@@ -211,6 +216,6 @@
 <!--db_version--><tr><td><a href="../api_c/env_version.html">db_version</a></td><td>Return version information</td></tr>
 <!--log_compare--><tr><td><a href="../api_c/log_compare.html">log_compare</a></td><td>Compare two Log Sequence Numbers</td></tr>
 </table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

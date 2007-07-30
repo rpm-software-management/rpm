@@ -2,10 +2,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: db_cxx.in,v 12.28 2006/09/13 14:53:37 mjc Exp $
+ * $Id: db_cxx.in,v 12.40 2007/06/28 13:02:50 mjc Exp $
  */
 
 #ifndef _DB_CXX_H_
@@ -163,6 +162,8 @@ extern "C" {
 		(DB *, const DBT *, const DBT *);
 	typedef int (*dup_compare_fcn_type)         /*C++ version available*/
 		(DB *, const DBT *, const DBT *);
+	typedef int (*h_compare_fcn_type)          /*C++ version available*/
+		(DB *, const DBT *, const DBT *);
 	typedef u_int32_t (*h_hash_fcn_type)        /*C++ version available*/
 		(DB *, const void *, u_int32_t);
 	typedef int (*pgin_fcn_type)
@@ -184,93 +185,98 @@ public:
 
 	// These methods exactly match those in the C interface.
 	//
-	virtual int associate(DbTxn *txn, Db *secondary,
-	    int (*callback)(Db *, const Dbt *, const Dbt *, Dbt *),
-	    u_int32_t flags);
+	virtual int associate(DbTxn *txn, Db *secondary, int (*callback)
+	    (Db *, const Dbt *, const Dbt *, Dbt *), u_int32_t flags);
 	virtual int close(u_int32_t flags);
-	virtual int compact(DbTxn *txnid, Dbt *start, Dbt *stop,
-	    DB_COMPACT *c_data, u_int32_t flags, Dbt *end);
+	virtual int compact(DbTxn *txnid, Dbt *start,
+	    Dbt *stop, DB_COMPACT *c_data, u_int32_t flags, Dbt *end);
 	virtual int cursor(DbTxn *txnid, Dbc **cursorp, u_int32_t flags);
 	virtual int del(DbTxn *txnid, Dbt *key, u_int32_t flags);
 	virtual void err(int, const char *, ...);
 	virtual void errx(const char *, ...);
+	virtual int exists(DbTxn *txnid, Dbt *key, u_int32_t flags);
 	virtual int fd(int *fdp);
 	virtual int get(DbTxn *txnid, Dbt *key, Dbt *data, u_int32_t flags);
-	virtual void *get_app_private() const;
+	virtual int get_bt_minkey(u_int32_t *);
 	virtual int get_byteswapped(int *);
+	virtual int get_cachesize(u_int32_t *, u_int32_t *, int *);
 	virtual int get_dbname(const char **, const char **);
+	virtual int get_encrypt_flags(u_int32_t *);
+	virtual void get_errfile(FILE **);
+	virtual void get_errpfx(const char **);
+	virtual int get_flags(u_int32_t *);
+	virtual int get_h_ffactor(u_int32_t *);
+	virtual int get_h_nelem(u_int32_t *);
+	virtual int get_lorder(int *);
+	virtual void get_msgfile(FILE **);
+	virtual int get_multiple();
 	virtual int get_open_flags(u_int32_t *);
-	virtual int get_type(DBTYPE *);
+	virtual int get_pagesize(u_int32_t *);
+	virtual int get_priority(DB_CACHE_PRIORITY *);
+	virtual int get_q_extentsize(u_int32_t *);
+	virtual int get_re_delim(int *);
+	virtual int get_re_len(u_int32_t *);
+	virtual int get_re_pad(int *);
+	virtual int get_re_source(const char **);
 	virtual int get_transactional();
+	virtual int get_type(DBTYPE *);
 	virtual int join(Dbc **curslist, Dbc **dbcp, u_int32_t flags);
 	virtual int key_range(DbTxn *, Dbt *, DB_KEY_RANGE *, u_int32_t);
 	virtual int open(DbTxn *txnid,
 	    const char *, const char *subname, DBTYPE, u_int32_t, int);
-	virtual int pget(DbTxn *txnid, Dbt *key, Dbt *pkey, Dbt *data,
-	    u_int32_t flags);
+	virtual int pget(DbTxn *txnid,
+	    Dbt *key, Dbt *pkey, Dbt *data, u_int32_t flags);
 	virtual int put(DbTxn *, Dbt *, Dbt *, u_int32_t);
 	virtual int remove(const char *, const char *, u_int32_t);
 	virtual int rename(const char *, const char *, const char *, u_int32_t);
-	virtual int set_alloc(db_malloc_fcn_type, db_realloc_fcn_type,
-	    db_free_fcn_type);
+	virtual int set_alloc(
+	    db_malloc_fcn_type, db_realloc_fcn_type, db_free_fcn_type);
 	virtual void set_app_private(void *);
 	virtual int set_append_recno(int (*)(Db *, Dbt *, db_recno_t));
 	virtual int set_bt_compare(bt_compare_fcn_type); /*deprecated*/
 	virtual int set_bt_compare(int (*)(Db *, const Dbt *, const Dbt *));
-	virtual int get_bt_minkey(u_int32_t *);
 	virtual int set_bt_minkey(u_int32_t);
 	virtual int set_bt_prefix(bt_prefix_fcn_type); /*deprecated*/
 	virtual int set_bt_prefix(size_t (*)(Db *, const Dbt *, const Dbt *));
-	virtual int get_cachesize(u_int32_t *, u_int32_t *, int *);
 	virtual int set_cachesize(u_int32_t, u_int32_t, int);
 	virtual int set_dup_compare(dup_compare_fcn_type); /*deprecated*/
 	virtual int set_dup_compare(int (*)(Db *, const Dbt *, const Dbt *));
-	virtual int get_encrypt_flags(u_int32_t *);
 	virtual int set_encrypt(const char *, u_int32_t);
 	virtual void set_errcall(
 	    void (*)(const DbEnv *, const char *, const char *));
-	virtual void get_errfile(FILE **);
 	virtual void set_errfile(FILE *);
-	virtual void get_errpfx(const char **);
 	virtual void set_errpfx(const char *);
 	virtual int set_feedback(void (*)(Db *, int, int));
-	virtual int get_flags(u_int32_t *);
 	virtual int set_flags(u_int32_t);
-	virtual int get_h_ffactor(u_int32_t *);
+	virtual int set_h_compare(h_compare_fcn_type); /*deprecated*/
+	virtual int set_h_compare(int (*)(Db *, const Dbt *, const Dbt *));
 	virtual int set_h_ffactor(u_int32_t);
 	virtual int set_h_hash(h_hash_fcn_type); /*deprecated*/
 	virtual int set_h_hash(u_int32_t (*)(Db *, const void *, u_int32_t));
-	virtual int get_h_nelem(u_int32_t *);
 	virtual int set_h_nelem(u_int32_t);
-	virtual int get_lorder(int *);
 	virtual int set_lorder(int);
 	virtual void set_msgcall(void (*)(const DbEnv *, const char *));
-	virtual void get_msgfile(FILE **);
 	virtual void set_msgfile(FILE *);
-	virtual int get_pagesize(u_int32_t *);
 	virtual int set_pagesize(u_int32_t);
 	virtual int set_paniccall(void (*)(DbEnv *, int));
-	virtual int get_re_delim(int *);
-	virtual int set_re_delim(int);
-	virtual int get_re_len(u_int32_t *);
-	virtual int set_re_len(u_int32_t);
-	virtual int get_re_pad(int *);
-	virtual int set_re_pad(int);
-	virtual int get_re_source(const char **);
-	virtual int set_re_source(const char *);
-	virtual int get_q_extentsize(u_int32_t *);
+	virtual int set_priority(DB_CACHE_PRIORITY);
 	virtual int set_q_extentsize(u_int32_t);
+	virtual int set_re_delim(int);
+	virtual int set_re_len(u_int32_t);
+	virtual int set_re_pad(int);
+	virtual int set_re_source(const char *);
 	virtual int stat(DbTxn *, void *sp, u_int32_t flags);
 	virtual int stat_print(u_int32_t flags);
 	virtual int sync(u_int32_t flags);
 	virtual int truncate(DbTxn *, u_int32_t *, u_int32_t);
 	virtual int upgrade(const char *name, u_int32_t flags);
-	virtual int verify(const char *, const char *, __DB_STD(ostream) *,
-		      u_int32_t);
+	virtual int verify(
+	    const char *, const char *, __DB_STD(ostream) *, u_int32_t);
 
 	// These additional methods are not in the C interface, and
 	// are only available for C++.
 	//
+	virtual void *get_app_private() const;
 	virtual __DB_STD(ostream) *get_error_stream();
 	virtual void set_error_stream(__DB_STD(ostream) *);
 	virtual __DB_STD(ostream) *get_message_stream();
@@ -327,6 +333,7 @@ public:
 	size_t (*bt_prefix_callback_)(Db *, const Dbt *, const Dbt *);
 	int (*dup_compare_callback_)(Db *, const Dbt *, const Dbt *);
 	void (*feedback_callback_)(Db *, int, int);
+	int (*h_compare_callback_)(Db *, const Dbt *, const Dbt *);
 	u_int32_t (*h_hash_callback_)(Db *, const void *, u_int32_t);
 };
 
@@ -343,8 +350,10 @@ public:
 	int del(u_int32_t flags);
 	int dup(Dbc** cursorp, u_int32_t flags);
 	int get(Dbt* key, Dbt *data, u_int32_t flags);
+	int get_priority(DB_CACHE_PRIORITY *priorityp);
 	int pget(Dbt* key, Dbt* pkey, Dbt *data, u_int32_t flags);
 	int put(Dbt* key, Dbt *data, u_int32_t flags);
+	int set_priority(DB_CACHE_PRIORITY priority);
 
 private:
 	// No data is permitted in this class (see comment at top)
@@ -409,6 +418,8 @@ public:
 	virtual void set_app_private(void *);
 	virtual int get_cachesize(u_int32_t *, u_int32_t *, int *);
 	virtual int set_cachesize(u_int32_t, u_int32_t, int);
+	virtual int get_cache_max(u_int32_t *, u_int32_t *);
+	virtual int set_cache_max(u_int32_t, u_int32_t);
 	virtual int get_data_dirs(const char ***);
 	virtual int set_data_dir(const char *);
 	virtual int get_encrypt_flags(u_int32_t *);
@@ -452,8 +463,8 @@ public:
 	virtual int set_mp_mmapsize(size_t);
 	virtual int get_mp_max_openfd(int *);
 	virtual int set_mp_max_openfd(int);
-	virtual int get_mp_max_write(int *, int *);
-	virtual int set_mp_max_write(int, int);
+	virtual int get_mp_max_write(int *, db_timeout_t *);
+	virtual int set_mp_max_write(int, db_timeout_t);
 	virtual void set_msgcall(void (*)(const DbEnv *, const char *));
 	virtual void get_msgfile(FILE **);
 	virtual void set_msgfile(FILE *);
@@ -572,17 +583,19 @@ public:
 
 	// Replication functions
 	//
-	virtual int rep_elect(int, int, int *, u_int32_t);
+	virtual int rep_elect(int, int, u_int32_t);
 	virtual int rep_flush();
-	virtual int rep_process_message(Dbt *, Dbt *, int *, DbLsn *);
+	virtual int rep_process_message(Dbt *, Dbt *, int, DbLsn *);
 	virtual int rep_start(Dbt *, u_int32_t);
 	virtual int rep_stat(DB_REP_STAT **statp, u_int32_t flags);
 	virtual int rep_stat_print(u_int32_t flags);
+	virtual int rep_set_lease(u_int32_t, u_int32_t);
 	virtual int rep_get_limit(u_int32_t *, u_int32_t *);
 	virtual int rep_set_limit(u_int32_t, u_int32_t);
 	virtual int rep_set_transport(int, int (*)(DbEnv *,
 	    const Dbt *, const Dbt *, const DbLsn *, int, u_int32_t));
 	virtual int set_rep_request(u_int32_t, u_int32_t);
+	virtual int get_thread_count(u_int32_t *);
 	virtual int set_thread_count(u_int32_t);
 	virtual int set_thread_id(void (*)(DbEnv *, pid_t *, db_threadid_t *));
 	virtual int set_thread_id_string(char *(*)(DbEnv *,
@@ -595,7 +608,7 @@ public:
 	//
 	virtual int rep_get_nsites(int *n);
 	virtual int rep_set_nsites(int n);
-	virtual int rep_get_priority(int *priority);
+	virtual int rep_get_priority(int *priorityp);
 	virtual int rep_set_priority(int priority);
 	virtual int rep_get_timeout(int which, db_timeout_t *timeout);
 	virtual int rep_set_timeout(int which, db_timeout_t timeout);
@@ -607,6 +620,8 @@ public:
 	    u_int32_t flags);
 	virtual int repmgr_site_list(u_int *countp, DB_REPMGR_SITE **listp);
 	virtual int repmgr_start(int nthreads, u_int32_t flags);
+	virtual int repmgr_stat(DB_REPMGR_STAT **statp, u_int32_t flags);
+	virtual int repmgr_stat_print(u_int32_t flags);
 
 	// Conversion functions
 	//
@@ -719,6 +734,7 @@ class _exported DbLogc : protected DB_LOGC
 public:
 	int close(u_int32_t _flags);
 	int get(DbLsn *lsn, Dbt *data, u_int32_t _flags);
+	int version(u_int32_t *versionp, u_int32_t _flags);
 
 private:
 	// No data is permitted in this class (see comment at top)
@@ -754,25 +770,25 @@ class _exported DbMpoolFile
 public:
 	int close(u_int32_t flags);
 	int get(db_pgno_t *pgnoaddr, DbTxn *txn, u_int32_t flags, void *pagep);
-	int open(const char *file, u_int32_t flags, int mode, size_t pagesize);
-	int get_transactional(void);
-	int put(void *pgaddr, u_int32_t flags);
-	int set(void *pgaddr, u_int32_t flags);
 	int get_clear_len(u_int32_t *len);
-	int set_clear_len(u_int32_t len);
 	int get_fileid(u_int8_t *fileid);
-	int set_fileid(u_int8_t *fileid);
 	int get_flags(u_int32_t *flagsp);
-	int set_flags(u_int32_t flags, int onoff);
 	int get_ftype(int *ftype);
-	int set_ftype(int ftype);
+	int get_last_pgno(db_pgno_t *pgnop);
 	int get_lsn_offset(int32_t *offsetp);
-	int set_lsn_offset(int32_t offset);
 	int get_maxsize(u_int32_t *gbytes, u_int32_t *bytes);
-	int set_maxsize(u_int32_t gbytes, u_int32_t bytes);
 	int get_pgcookie(DBT *dbt);
-	int set_pgcookie(DBT *dbt);
 	int get_priority(DB_CACHE_PRIORITY *priorityp);
+	int get_transactional(void);
+	int open(const char *file, u_int32_t flags, int mode, size_t pagesize);
+	int put(void *pgaddr, DB_CACHE_PRIORITY priority, u_int32_t flags);
+	int set_clear_len(u_int32_t len);
+	int set_fileid(u_int8_t *fileid);
+	int set_flags(u_int32_t flags, int onoff);
+	int set_ftype(int ftype);
+	int set_lsn_offset(int32_t offset);
+	int set_maxsize(u_int32_t gbytes, u_int32_t bytes);
+	int set_pgcookie(DBT *dbt);
 	int set_priority(DB_CACHE_PRIORITY priority);
 	int sync();
 

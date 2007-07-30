@@ -1,0 +1,4 @@
+m4_comment([$Id: db_set_alloc.so,v 10.3 2002/08/18 21:15:51 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_alloc)
+include(env/env_set_alloc.so)

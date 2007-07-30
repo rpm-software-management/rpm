@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: si004.tcl,v 12.8 2006/08/24 14:46:39 bostic Exp $
+# $Id: si004.tcl,v 12.13 2007/06/18 14:50:03 carol Exp $
 #
 # TEST	si004
 # TEST	si002 with secondaries created and closed mid-test
@@ -79,12 +78,14 @@ proc si004 { methods {nentries 200} {tnum "004"} args } {
 	set pdb [eval {berkdb_open -create -env} $env $pomethod $pargs $pname]
 	error_check_good primary_open [is_valid_db $pdb] TRUE
 
+	# Populate with a cursor put, exercising keyfirst/keylast.
+	set did [open $dict]
 	puts -nonewline \
 	    "\tSi$tnum.a: Cursor put (-keyfirst/-keylast) loop ... "
-	set did [open $dict]
 	set pdbc [$pdb cursor]
 	error_check_good pdb_cursor [is_valid_cursor $pdbc $pdb] TRUE
-	for { set n 0 } { [gets $did str] != -1 && $n < $nentries } { incr n } {
+	for { set n 0 } \
+	    { [gets $did str] != -1 && $n < $nentries } { incr n } {
 		if { [is_record_based $pmethod] == 1 } {
 			set key [expr $n + 1]
 			set datum $str
@@ -92,6 +93,7 @@ proc si004 { methods {nentries 200} {tnum "004"} args } {
 			set key $str
 			gets $did datum
 		}
+
 		set ns($key) $n
 		set keys($n) $key
 		set data($n) [pad_data $pmethod $datum]
@@ -106,8 +108,8 @@ proc si004 { methods {nentries 200} {tnum "004"} args } {
 		    {$key [chop_data $pmethod $datum]}]
 		error_check_good put($n) $ret 0
 	}
-	close $did
 	error_check_good pdbc_close [$pdbc close] 0
+	close $did
 
 	# Open and associate the secondaries
 	set sdbs {}

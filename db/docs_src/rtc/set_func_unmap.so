@@ -1,0 +1,36 @@
+m4_comment([$Id: set_func_unmap.so,v 10.18 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_unmap)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_unmap),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_unmap(int (*func_unmap)(void *addr, size_t len));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to unmap a file or shared memory
+region from memory.])
+
+m4_scope_process(dbenv_set_func_unmap)
+
+m4_when_init(dbenv_set_func_unmap)
+
+m4_return(dbenv_set_func_unmap, std)
+
+m4_parambegin
+m4_param(func_unmap, [dnl
+The m4_arg(func_unmap) parameter is the function which unmaps a file or
+shared memory region.
+m4_p([dnl
+The m4_arg(addr) parameter is the value returned by the
+m4_ref(dbenv_set_func_map) function when the file or region was mapped
+into memory, and the m4_arg(len) parameter is the same as the m4_arg(len)
+parameter specified to the m4_ref(dbenv_set_func_map) function when the
+file or region was mapped into memory.])
+m4_ret_internal(func_unmap)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

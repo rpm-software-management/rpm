@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.define,v 12.3 2006/07/12 21:12:17 bostic Exp $
+# $Id: chk.define,v 12.4 2007/04/20 13:53:41 bostic Exp $
 #
 # Check to make sure that all #defines are actually used.
 # Check to make sure that all #defines start in column 1.
@@ -43,6 +43,7 @@ egrep '^#define' $d/dbinc/*.h $d/dbinc/*.in |
 	-e '/^DB_MAX_PAGES/d' \
 	-e '/^DB_PAGE_QUEUE_LEN/d' \
 	-e '/^DB_QAMOLDVER/d' \
+	-e '/^DB_SPARE_FLAG/d' \
 	-e '/^DB_TXNVERSION/d' \
 	-e '/^DB_UNUSED/d' \
 	-e '/^DEFINE_DB_CLASS/d' \
@@ -72,8 +73,10 @@ egrep '^#define' $d/dbinc/*.h $d/dbinc/*.in |
 	-e '/^UINT64_MAX/d' \
 	-e '/^VM_PAGESIZE/d' \
 	-e '/^WRAPPED_CLASS/d' \
+	-e '/^_WIN32_WINNT/d' \
 	-e '/^__BIT_TYPES_DEFINED__/d' \
 	-e '/^__DBC_INTERNAL/d' \
+	-e '/^__STDC__/d' \
 	-e '/^__lock_locker_hash/d' \
 	-e '/^i_/d' \
 	-e '/_H_/d' \

@@ -1,0 +1,90 @@
+m4_comment([$Id: env_dbremove.so,v 10.49 2004/12/16 19:13:01 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_dbremove)])
+
+define(M4PAGELOCAL, M4INTERFACE)
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_dbremove, [dnl
+m4_pf_header(m4_ref(dbenv_dbremove),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__dbremove(DB_ENV *dbenv, DB_TXN *txnid,
+    const char *file, const char *database, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::dbremove(DbTxn *txnid,
+    const char *file, const char *database, u_int32_t flags);
+]))],[dnl
+m4_pf_header(m4_ref(dbh_remove),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__remove(DB *db,
+    const char *file, const char *database, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::remove(const char *file, const char *database, u_int32_t flags);
+]))])
+
+m4_p([dnl
+The m4_refT(M4INTERFACE) removes the database specified by the
+m4_arg(file) and m4_arg(database) parameters.  If no m4_arg(database)
+is specified, the underlying file represented by m4_arg(file) is
+removed, incidentally removing all of the databases it contained.])
+
+m4_p([dnl
+Applications should never remove databases with open m4_ref(Db) handles,
+or in the case of removing a file, when any database in the file has an
+open handle.  For example, some architectures do not permit the removal
+of files with open system handles.  On these architectures, attempts to
+remove databases currently in use by any thread of control in the system
+may fail.])
+
+ifelse(M4INTERFACE, dbh_remove, [dnl
+m4_p([dnl
+The m4_refT(dbh_remove) should not be called if the remove is intended
+to be transactionally safe; the m4_refT(dbenv_dbremove) should be used
+instead.])
+m4_p([dnl
+The m4_refT(dbh_remove) may not be called after calling the
+m4_refT(dbh_open) on any m4_ref(Db) handle.  If the m4_refT(dbh_open)
+has already been called on a m4_ref(Db) handle, close the existing
+handle and create a new one before calling m4_ref(dbh_remove).])
+
+m4_destructor(Db, dbh_remove)])
+
+m4_return(M4INTERFACE, std)
+
+m4_parambegin
+m4_param(database, [dnl
+The m4_arg(database) parameter is the database to be removed.])
+
+m4_param_utf8(file, [dnl
+The m4_arg(file) parameter is the physical file which contains the
+database(s) to be removed.])
+
+ifelse(M4INTERFACE, dbenv_dbremove, [dnl
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_autocommit_flag(dbenv_dbremove)
+m4_tagend])
+m4_param_txn(dbenv_dbremove, auto)
+],[dnl
+m4_unusedflags])
+m4_paramend
+
+m4_header([Environment Variables])
+m4_data_location(M4INTERFACE, ifelse(M4INTERFACE, dbenv_dbremove, 0, 1))
+
+m4_err(M4INTERFACE,
+ifelse(M4INTERFACE, dbenv_dbremove, deadlock, empty),
+einval, [ifelse(M4INTERFACE, dbenv_dbremove,
+[m4_ref(dbenv_dbremove) called before m4_ref(dbenv_open) was called],
+[m4_ref(dbh_remove) called after m4_ref(dbh_open) was called])],
+filenotfound)
+
+ifelse(M4INTERFACE, dbenv_dbremove, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

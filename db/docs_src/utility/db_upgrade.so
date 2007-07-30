@@ -1,0 +1,72 @@
+m4_comment([$Id: db_upgrade.so,v 1.10 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_upgrade)
+
+m4_util_header(db_upgrade, [dnl
+db_upgrade m4_utilarg(NsVv) m4_utilarg([h home]) m4_utilarg([P password]) file ...])
+m4_idefz(utility to upgrade @database files, utility to @upgrade database files)
+
+m4_p([dnl
+The m4_ref(db_upgrade) utility upgrades the m4_db version of one or more
+files and the databases they contain to the current release version.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+
+m4_hflag
+
+m4_Nflag
+
+m4_Pflag
+
+m4_tagopt(s, [dnl
+This flag is only meaningful when upgrading databases from releases
+before the m4_db 3.1 release.
+m4_p([dnl
+As part of the upgrade from the m4_db 3.0 release to the 3.1 release,
+the on-disk format of duplicate data items changed. To correctly upgrade
+the format requires that applications specify whether duplicate data
+items in the database are sorted or not. Specifying the m4_option(s)
+flag means that the duplicates are sorted; otherwise, they are assumed
+to be unsorted.  Incorrectly specifying the value of this flag may lead
+to database corruption.])
+m4_p([dnl
+Because the m4_ref(db_upgrade) utility upgrades a physical file
+(including all the databases it contains), it is not possible to use
+m4_ref(db_upgrade) to upgrade files where some of the databases it
+includes have sorted duplicate data items, and some of the databases it
+includes have unsorted duplicate data items. If the file does not have
+more than a single database, if the databases do not support duplicate
+data items, or if all the databases that support duplicate data items
+support the same style of duplicates (either sorted or unsorted),
+m4_ref(db_upgrade) will work correctly as long as the m4_option(s) flag
+is correctly specified. Otherwise, the file cannot be upgraded using
+m4_ref(db_upgrade), and must be upgraded manually using the
+m4_ref(db_dump) and m4_ref(db_load) utilities.])])
+
+m4_Vflag
+
+m4_tagopt(v, [dnl
+Run in verbose mode, displaying a message for each successful upgrade.])
+
+m4_tagend
+
+m4_p([dnl
+m4_bold([It is important to realize that m4_db database upgrades are done
+in place, and so are potentially destructive.]) This means that if the
+system crashes during the upgrade procedure, or if the upgrade procedure
+runs out of disk space, the databases may be left in an inconsistent and
+unrecoverable state.  See m4_link(M4RELDIR/ref/am/upgrade, [Upgrading
+databases]) for more information.])
+
+m4_detach(db_upgrade, may be used with)
+
+m4_utilexit(db_upgrade)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_upgrade)
+
+m4_page_footer

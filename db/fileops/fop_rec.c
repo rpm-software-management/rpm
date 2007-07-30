@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: fop_rec.c,v 12.12 2006/08/24 14:46:03 bostic Exp $
+ * $Id: fop_rec.c,v 12.18 2007/05/17 15:15:37 bostic Exp $
  */
 
 #include "db_config.h"
@@ -15,6 +14,9 @@
 #include "dbinc/db_am.h"
 #include "dbinc/mp.h"
 #include "dbinc/txn.h"
+
+static int __fop_rename_recover_int
+    __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *, int));
 
 /*
  * The transactional guarantees Berkeley DB provides for file
@@ -66,8 +68,8 @@ __fop_create_recover(dbenv, dbtp, lsnp, op, info)
 	char *real_name;
 	int ret;
 
-	real_name = NULL;
 	COMPQUIET(info, NULL);
+	real_name = NULL;
 	REC_PRINT(__fop_create_print);
 	REC_NOOP_INTRO(__fop_create_read);
 
@@ -78,8 +80,8 @@ __fop_create_recover(dbenv, dbtp, lsnp, op, info)
 	if (DB_UNDO(op))
 		(void)__os_unlink(dbenv, real_name);
 	else if (DB_REDO(op)) {
-		if ((ret = __os_open(dbenv, real_name,
-		    DB_OSO_CREATE | DB_OSO_EXCL, (int)argp->mode, &fhp)) == 0)
+		if ((ret = __os_open(dbenv, real_name, 0,
+		    DB_OSO_CREATE, (int)argp->mode, &fhp)) == 0)
 			(void)__os_closehandle(dbenv, fhp);
 		else
 			goto out;
@@ -112,8 +114,8 @@ __fop_remove_recover(dbenv, dbtp, lsnp, op, info)
 	char *real_name;
 	int ret;
 
-	real_name = NULL;
 	COMPQUIET(info, NULL);
+	real_name = NULL;
 	REC_PRINT(__fop_remove_print);
 	REC_NOOP_INTRO(__fop_remove_read);
 
@@ -170,9 +172,16 @@ __fop_write_recover(dbenv, dbtp, lsnp, op, info)
 
 /*
  * __fop_rename_recover --
- *	Recovery function for rename.
+ *	Recovery functions for rename.  There are two variants that
+ * both use the same utility function.  Had we known about this on day
+ * one, we would have simply added a parameter.  However, since we need
+ * to retain old records for backward compatibility (online-upgrade)
+ * wrapping the two seems like the right solution.
  *
  * PUBLIC: int __fop_rename_recover
+ * PUBLIC:   __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
+ *
+ * PUBLIC: int __fop_rename_noundo_recover
  * PUBLIC:   __P((DB_ENV *, DBT *, DB_LSN *, db_recops, void *));
  */
 int
@@ -182,6 +191,29 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 	DB_LSN *lsnp;
 	db_recops op;
 	void *info;
+{
+	return (__fop_rename_recover_int(dbenv, dbtp, lsnp, op, info, 1));
+}
+
+int
+__fop_rename_noundo_recover(dbenv, dbtp, lsnp, op, info)
+	DB_ENV *dbenv;
+	DBT *dbtp;
+	DB_LSN *lsnp;
+	db_recops op;
+	void *info;
+{
+	return (__fop_rename_recover_int(dbenv, dbtp, lsnp, op, info, 0));
+}
+
+int
+__fop_rename_recover_int(dbenv, dbtp, lsnp, op, info, undo)
+	DB_ENV *dbenv;
+	DBT *dbtp;
+	DB_LSN *lsnp;
+	db_recops op;
+	void *info;
+	int undo;
 {
 	__fop_rename_args *argp;
 	DB_FH *fhp;
@@ -221,7 +253,7 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 		 * way, shape or form, incorrect, so that we should not restore
 		 * it.
 		 */
-		if (__os_open(dbenv, src, 0, 0, &fhp) != 0)
+		if (__os_open(dbenv, src, 0, 0, 0, &fhp) != 0)
 			goto done;
 		if (__fop_read_meta(dbenv,
 		    src, mbuf, DBMETASIZE, fhp, 1, NULL) != 0)
@@ -240,7 +272,7 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 			 * file since the state of the world is beyond this
 			 * point.
 			 */
-			if (__os_open(dbenv, real_new, 0, 0, &fhp) == 0 &&
+			if (__os_open(dbenv, real_new, 0, 0, 0, &fhp) == 0 &&
 			    __fop_read_meta(dbenv, src, mbuf,
 			    DBMETASIZE, fhp, 1, NULL) == 0 &&
 			    __db_chk_meta(dbenv, NULL, meta, 1) == 0 &&
@@ -253,7 +285,7 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 		}
 	}
 
-	if (DB_UNDO(op))
+	if (undo && DB_UNDO(op))
 		(void)__memp_nameop(dbenv, fileid,
 		    (const char *)argp->oldname.data, real_new, real_old, 0);
 	if (DB_REDO(op))
@@ -320,7 +352,7 @@ __fop_file_remove_recover(dbenv, dbtp, lsnp, op, info)
 
 	/* Verify that we are manipulating the correct file.  */
 	len = 0;
-	if (__os_open(dbenv, real_name, 0, 0, &fhp) != 0 ||
+	if (__os_open(dbenv, real_name, 0, 0, 0, &fhp) != 0 ||
 	    (ret = __fop_read_meta(dbenv, real_name,
 	    mbuf, DBMETASIZE, fhp, 1, &len)) != 0) {
 		/*

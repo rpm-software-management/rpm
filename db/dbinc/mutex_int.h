@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mutex_int.h,v 12.22 2006/08/24 14:45:29 bostic Exp $
+ * $Id: mutex_int.h,v 12.39 2007/06/21 16:39:20 ubell Exp $
  */
 
 #ifndef _DB_MUTEX_INT_H_
@@ -17,7 +16,7 @@ extern "C" {
 /*********************************************************************
  * POSIX.1 pthreads interface.
  *********************************************************************/
-#ifdef HAVE_MUTEX_PTHREADS
+#if defined(HAVE_MUTEX_PTHREADS)
 #include <pthread.h>
 
 #define	MUTEX_FIELDS							\
@@ -196,13 +195,22 @@ typedef abilock_t tsl_t;
  * correctly as far as we know.
  *********************************************************************/
 #ifdef HAVE_MUTEX_SOLARIS_LOCK_TRY
+#include <sys/atomic.h>
 #include <sys/machlock.h>
 typedef lock_t tsl_t;
+
+/*
+ * The functions are declared in <sys/machlock.h>, but under #ifdef KERNEL.
+ * Re-declare them here to avoid warnings.
+ */
+extern  int _lock_try(lock_t *);
+extern void _lock_clear(lock_t *);
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
 #define	MUTEX_INIT(x)	0
 #define	MUTEX_SET(x)	_lock_try(x)
 #define	MUTEX_UNSET(x)	_lock_clear(x)
+#define	MUTEX_MEMBAR(x)	membar_enter();
 #endif
 #endif
 
@@ -289,7 +297,7 @@ typedef unsigned int tsl_t;
  * platforms, and it improves performance on Pentium 4 processor platforms."
  */
 #ifdef HAVE_MUTEX_WIN32
-#ifndef _WIN64
+#if !defined(_WIN64) && !defined(DB_WINCE)
 #define	MUTEX_PAUSE		{__asm{_emit 0xf3}; __asm{_emit 0x90}}
 #endif
 #endif
@@ -628,7 +636,7 @@ typedef unsigned char tsl_t;
 #define	MUTEX_SET(tsl) ({						\
 	register tsl_t *__l = (tsl);					\
 	register tsl_t __r;						\
-	__asm__ volatile						\
+	asm volatile							\
 	    ("ldstub [%1],%0; stbar"					\
 	    : "=r"( __r) : "r" (__l));					\
 	!__r;								\
@@ -636,6 +644,7 @@ typedef unsigned char tsl_t;
 
 #define	MUTEX_UNSET(tsl)	(*(tsl) = 0)
 #define	MUTEX_INIT(tsl)		MUTEX_UNSET(tsl)
+#define	MUTEX_MEMBAR(x)          ({asm volatile("stbar");})
 #endif
 #endif
 
@@ -658,7 +667,7 @@ typedef int tsl_t;
 #ifdef HAVE_MUTEX_MIPS_GCC_ASSEMBLY
 typedef u_int32_t tsl_t;
 
-#define MUTEX_ALIGN	4
+#define	MUTEX_ALIGN	4
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
 /*
@@ -669,7 +678,7 @@ static inline int
 MUTEX_SET(tsl_t *tsl) {
        register tsl_t *__l = tsl;
        register tsl_t __r;
-       __asm__ __volatile__(
+       asm volatile(
                "       .set push           \n"
                "       .set mips2          \n"
                "       .set noreorder      \n"
@@ -691,28 +700,38 @@ MUTEX_SET(tsl_t *tsl) {
 #endif
 
 /*********************************************************************
- * x86/gcc assembly.
+ * x86/gcc (32- and 64-bit) assembly.
  *********************************************************************/
-#ifdef HAVE_MUTEX_X86_GCC_ASSEMBLY
+#if defined(HAVE_MUTEX_X86_GCC_ASSEMBLY) || \
+    defined(HAVE_MUTEX_X86_64_GCC_ASSEMBLY)
 typedef unsigned char tsl_t;
 
 #ifdef LOAD_ACTUAL_MUTEX_CODE
 /* gcc/x86: 0 is clear, 1 is set. */
 #define	MUTEX_SET(tsl) ({						\
-	register tsl_t *__l = (tsl);					\
-	int __r;							\
-	asm volatile("movl $1,%%eax\n"					\
-		     "lock\n"						\
-		     "xchgb %1,%%al\n"					\
-		     "xorl $1,%%eax"					\
-	    : "=&a" (__r), "=m" (*__l)					\
-	    : "m1" (*__l)						\
-	    );								\
-	__r & 1;							\
+	tsl_t __r;							\
+	asm volatile("movb $1, %b0\n\t"				\
+		"xchgb %b0,%1"					\
+	    : "=&q" (__r)						\
+	    : "m" (*(volatile tsl_t *)(tsl))				\
+	    : "memory", "cc");						\
+	!__r;								\
 })
 
 #define	MUTEX_UNSET(tsl)        (*(volatile tsl_t *)(tsl) = 0)
 #define	MUTEX_INIT(tsl)		MUTEX_UNSET(tsl)
+/*
+ * We need to pass a valid address to generate the memory barrier
+ * otherwise PURIFY will complain.  Use something referenced recently
+ * and initialized.
+ */
+#if defined(HAVE_MUTEX_X86_GCC_ASSEMBLY)
+#define	MUTEX_MEMBAR(addr)						\
+    ({ asm volatile ("lock; addl $0, %0" ::"m" (addr): "memory"); 1; })
+#else
+#define	MUTEX_MEMBAR(addr)						\
+    ({ asm volatile ("mfence" ::: "memory"); 1; })
+#endif
 
 /*
  * From Intel's performance tuning documentation (and see SR #6975):
@@ -724,32 +743,6 @@ typedef unsigned char tsl_t;
  * platforms, and it improves performance on Pentium 4 processor platforms."
  */
 #define	MUTEX_PAUSE		asm volatile ("rep; nop" : : );
-#endif
-#endif
-
-/*********************************************************************
- * x86_64/gcc assembly.
- *********************************************************************/
-#ifdef HAVE_MUTEX_X86_64_GCC_ASSEMBLY
-typedef unsigned char tsl_t;
-
-#ifdef LOAD_ACTUAL_MUTEX_CODE
-/* gcc/x86_64: 0 is clear, 1 is set. */
-#define  MUTEX_SET(tsl) ({           					\
-	register tsl_t *__l = (tsl);          				\
-	int __r;              						\
-	asm volatile("mov $1,%%rax\n"					\
-		     "lock\n"						\
-		     "xchgb %1,%%al\n"					\
-		     "xor $1,%%rax"					\
-		: "=&a" (__r), "=m" (*__l)				\
-		: "1m" (*__l)						\
-		);							\
-	__r & 1;							\
-})
-
-#define	MUTEX_UNSET(tsl)	(*(tsl) = 0)
-#define	MUTEX_INIT(tsl)		MUTEX_UNSET(tsl)
 #endif
 #endif
 
@@ -799,7 +792,8 @@ struct __db_mutexmgr {
  */
 typedef struct __db_mutexregion {
 	/* These fields are initialized at create time and never modified. */
-	roff_t		mutex_offset;	/* Offset of mutex array */
+	roff_t		mutex_off_alloc;/* Offset of mutex array */
+	roff_t		mutex_off;	/* Adjusted offset of mutex array */
 	size_t		mutex_size;	/* Size of the aligned mutex */
 	roff_t		thread_off;	/* Offset of the thread area. */
 
@@ -813,13 +807,17 @@ typedef struct __db_mutexregion {
 
 struct __db_mutex_t {			/* Mutex. */
 #ifdef MUTEX_FIELDS
-	MUTEX_FIELDS
+	MUTEX_FIELDS			/* Opaque thread mutex structures. */
 #endif
-#if !defined(MUTEX_FIELDS) && !defined(HAVE_MUTEX_FCNTL)
+#if defined(HAVE_MUTEX_HYBRID) ||					\
+    (!defined(MUTEX_FIELDS) && !defined(HAVE_MUTEX_FCNTL))
 	tsl_t		tas;		/* Test and set. */
 #endif
-	pid_t 		pid;		/* Process owning mutex */
-	db_threadid_t 	tid;		/* Thread owning mutex */
+#ifdef HAVE_MUTEX_HYBRID
+	volatile u_int32_t wait;	/* Count of waiters. */
+#endif
+	pid_t		pid;		/* Process owning mutex */
+	db_threadid_t	tid;		/* Thread owning mutex */
 
 	u_int32_t mutex_next_link;	/* Linked list of free mutexes. */
 
@@ -837,7 +835,7 @@ struct __db_mutex_t {			/* Mutex. */
 	 * the possible flags values, getting a single byte on some machines
 	 * is expensive, and the mutex structure is a MP hot spot.
 	 */
-	u_int32_t flags;		/* MUTEX_XXX */
+	volatile u_int32_t flags;		/* MUTEX_XXX */
 };
 
 /* Macro to get a reference to a specific mutex. */

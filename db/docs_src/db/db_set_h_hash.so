@@ -1,0 +1,49 @@
+m4_comment([$Id: db_set_h_hash.so,v 10.40 2004/08/13 03:38:56 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_set_h_hash)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_h_hash),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_h_hash(DB *db,
+    u_int32_t (*h_hash_fcn)(DB *, const void *bytes, u_int32_t length));
+])
+ifelse(M4API, CXX_API, [dnl
+extern "C" {
+    typedef u_int32_t (*h_hash_fcn_type)
+	(DB *, const void *bytes, u_int32_t length);
+};
+int
+Db::set_h_hash(h_hash_fcn_type h_hash_fcn);
+]))
+
+m4_p([dnl
+Set a user-defined hash function; if no hash function is specified, a
+default hash function is used.  Because no hash function performs
+equally well on all possible data, the user may find that the built-in
+hash function performs poorly with a particular data set.])
+
+m4_scope_dbh(dbh_set_h_hash)
+
+m4_when_dbopen(dbh_set_h_hash, corrupt)
+
+m4_return(dbh_set_h_hash, std)
+
+m4_parambegin
+m4_param(h_hash_fcn, [dnl
+The m4_arg(h_hash_fcn) parameter is the application-specified hash function.
+m4_p([dnl
+Application-specified hash functions take a pointer to a byte string and
+a length as parameters, and return a value of type m4_bold(u_int32_t).
+The hash function must handle any key values used by the application
+(possibly including zero-length keys).])])
+m4_paramend
+
+m4_err(dbh_set_h_hash,
+einval, [the method was called after m4_ref(dbh_open) was called; the
+specified hash function differs from the hash function with which the
+database was created])
+
+m4_seealso(Db)
+m4_page_footer

@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Opening a Transactional Environment and
             Database
             
@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="enabletxn.html" title="Chapter 2. Enabling Transactions" />
-    <link rel="previous" href="enabletxn.html" title="Chapter 2. Enabling Transactions" />
-    <link rel="next" href="usingtxns.html" title="Chapter 3. Transaction Basics" />
+    <link rel="up" href="enabletxn.html" title="ChapterÂ 2.Â Enabling Transactions" />
+    <link rel="previous" href="enabletxn.html" title="ChapterÂ 2.Â Enabling Transactions" />
+    <link rel="next" href="usingtxns.html" title="ChapterÂ 3.Â Transaction Basics" />
   </head>
   <body>
     <div class="navheader">
@@ -24,9 +24,9 @@
         </th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="enabletxn.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. Enabling Transactions</th>
-          <td width="20%" align="right"> <a accesskey="n" href="usingtxns.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="enabletxn.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â Enabling Transactions</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="usingtxns.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -50,7 +50,7 @@
             (in-memory cache). Frequently, but not always, you will also 
             initialize the locking subsystem.  For example:
         </p>
-      <pre class="programlisting">#include &quot;db_cxx.h&quot;
+      <pre class="programlisting">#include "db_cxx.h"
 
 ...
                                                                                                                                   
@@ -63,7 +63,7 @@ int main(void)
                           DB_INIT_MPOOL |  // Initialize the cache
                           DB_INIT_TXN;     // Initialize transactions
                                                                                                                                   
-    std::string envHome(&quot;/export1/testEnv&quot;);
+    std::string envHome("/export1/testEnv");
     DbEnv myEnv(0);
 
     try {
@@ -71,7 +71,7 @@ int main(void)
         myEnv.open(envHome.c_str(), env_flags, 0);
 
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error opening database environment: &quot;
+        std::cerr &lt;&lt; "Error opening database environment: "
                   &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
@@ -80,7 +80,7 @@ int main(void)
     try {
         myEnv.close(0);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error closing database environment: &quot;
+        std::cerr &lt;&lt; "Error closing database environment: "
                 &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
@@ -107,7 +107,7 @@ int main(void)
 
         
     </p>
-      <pre class="programlisting">#include &quot;db_cxx.h&quot;
+      <pre class="programlisting">#include "db_cxx.h"
 
 ...
                                                                                                                                   
@@ -122,9 +122,9 @@ int main(void)
 
     <b class="userinput"><tt>u_int32_t db_flags = DB_CREATE | DB_AUTO_COMMIT;
     Db *dbp = NULL;
-    const char *file_name = &quot;mydb.db&quot;;</tt></b>
+    const char *file_name = "mydb.db";</tt></b>
                                                                                                                                   
-    std::string envHome(&quot;/export1/testEnv&quot;);
+    std::string envHome("/export1/testEnv");
     DbEnv myEnv(0);
 
     try {
@@ -139,8 +139,8 @@ int main(void)
                   0);         // File mode. Using defaults </tt></b>
 
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error opening database and environment: &quot;
-                  &lt;&lt; file_name &lt;&lt; &quot;, &quot;
+        std::cerr &lt;&lt; "Error opening database and environment: "
+                  &lt;&lt; file_name &lt;&lt; ", "
                   &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
     }
@@ -149,8 +149,8 @@ int main(void)
         <b class="userinput"><tt>dbp-&gt;close(0);</tt></b>
         myEnv.close(0);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error closing database and environment: &quot;
-                  &lt;&lt; file_name &lt;&lt; &quot;, &quot;
+        std::cerr &lt;&lt; "Error closing database and environment: "
+                  &lt;&lt; file_name &lt;&lt; ", "
                   &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
@@ -171,18 +171,18 @@ int main(void)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="enabletxn.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="enabletxn.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="enabletxn.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="usingtxns.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="usingtxns.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 2. Enabling Transactions </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 2.Â Enabling TransactionsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 3. Transaction Basics</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 3.Â Transaction Basics</td>
         </tr>
       </table>
     </div>

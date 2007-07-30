@@ -1,0 +1,24 @@
+m4_comment([$Id: toc.so,v 1.18 2006/10/02 15:56:37 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 3.3 applications to m4_db 4.0,
+    Upgrading to release 4.0,,)
+
+m4_nlistbegin
+m4_nlist([m4_link(intro, [Release 4.0: introduction])])
+m4_nlistns([m4_link(deadlock, [Release 4.0: db_deadlock])])
+m4_nlistns([m4_link(lock, [Release 4.0: lock_XXX])])
+m4_nlistns([m4_link(log, [Release 4.0: log_XXX])])
+m4_nlistns([m4_link(mp, [Release 4.0: memp_XXX])])
+m4_nlistns([m4_link(txn, [Release 4.0: txn_XXX])])
+m4_nlistns([m4_link(env, [Release 4.0: db_env_set_XXX])])
+m4_nlistns([m4_link(rpc, [Release 4.0: DB_ENV-__GT__set_server])])
+m4_nlistns([m4_link(set_lk_max, [Release 4.0: DB_ENV-__GT__set_lk_max])])
+m4_nlistns([m4_link(lock_id_free, [Release 4.0: DB_ENV-__GT__lock_id_free])])
+m4_nlistns([m4_link(java, [Release 4.0: Java CLASSPATH environment variable])])
+m4_nlistns([m4_link(cxx, [Release 4.0: C++ ostream objects])])
+m4_nlistns([m4_link(asr, [Release 4.0: application-specific recovery])])
+m4_nlistns([m4_link(disk, [Release 4.0: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

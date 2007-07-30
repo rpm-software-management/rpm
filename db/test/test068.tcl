@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: test068.tcl,v 12.4 2006/08/24 14:46:41 bostic Exp $
+# $Id: test068.tcl,v 12.6 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test068
 # TEST	Test of DB_BEFORE and DB_AFTER with partial puts.

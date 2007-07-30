@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Cursor Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="up" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
     <link rel="previous" href="ReplacingEntryWCursor.html" title="Replacing Records Using Cursors" />
-    <link rel="next" href="indexes.html" title="Chapter 5. Secondary Databases" />
+    <link rel="next" href="indexes.html" title="ChapterÂ 5.Â Secondary Databases" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Cursor Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="ReplacingEntryWCursor.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Using Cursors</th>
-          <td width="20%" align="right"> <a accesskey="n" href="indexes.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="ReplacingEntryWCursor.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Using Cursors</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="indexes.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -113,8 +113,8 @@
 #include &lt;fstream&gt;
 #include &lt;cstdlib&gt;
                                                                                                                                     
-#include &quot;MyDb.hpp&quot;
-#include &quot;gettingStartedCommon.hpp&quot;
+#include "MyDb.hpp"
+#include "gettingStartedCommon.hpp"
 
 // Forward declarations
 int show_all_records(MyDb &amp;inventoryDB, MyDb &amp;vendorDB);
@@ -130,11 +130,11 @@ int
 main (int argc, char *argv[])
 {
     // Initialize the path to the database files
-    std::string databaseHome(&quot;./&quot;);
+    std::string databaseHome("./");
 
     // Database names
-    std::string vDbName(&quot;vendordb.db&quot;);
-    std::string iDbName(&quot;inventorydb.db&quot;);
+    std::string vDbName("vendordb.db");
+    std::string iDbName("inventorydb.db");
 
     // Parse the command line arguments
     // Omitted for brevity
@@ -147,11 +147,11 @@ main (int argc, char *argv[])
 
         show_all_records(inventoryDB, vendorDB);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error reading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error reading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(e.get_errno());
     } catch(std::exception &amp;e) {
-        std::cerr &lt;&lt; &quot;Error reading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error reading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(-1);
     }
@@ -189,7 +189,7 @@ show_all_records(MyDb &amp;inventoryDB, MyDb &amp;vendorDB)
             show_vendor(vendorDB, inventoryItem.getVendor().c_str());
         }
     } catch(DbException &amp;e) {
-        inventoryDB.getDb().err(e.get_errno(), &quot;Error in show_all_records&quot;);
+        inventoryDB.getDb().err(e.get_errno(), "Error in show_all_records");
         cursorp-&gt;close();
         throw e;
     } catch(std::exception &amp;e) {
@@ -241,17 +241,17 @@ show_vendor(MyDb &amp;vendorDB, const char *vendor)
 
         // Get the record
         vendorDB.getDb().get(NULL, &amp;key, &amp;data, 0);
-        std::cout &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.street &lt;&lt; &quot;\n&quot;
-                  &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.city &lt;&lt; &quot;, &quot;
-                  &lt;&lt; my_vendor.state &lt;&lt; &quot;\n&quot;
-                  &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.zipcode &lt;&lt; &quot;\n&quot;
-                  &lt;&lt; &quot;        &quot; &lt;&lt; my_vendor.phone_number &lt;&lt; &quot;\n&quot;
-                  &lt;&lt; &quot;        Contact: &quot; &lt;&lt; my_vendor.sales_rep &lt;&lt; &quot;\n&quot;
-                  &lt;&lt; &quot;                 &quot; &lt;&lt; my_vendor.sales_rep_phone
+        std::cout &lt;&lt; "        " &lt;&lt; my_vendor.street &lt;&lt; "\n"
+                  &lt;&lt; "        " &lt;&lt; my_vendor.city &lt;&lt; ", "
+                  &lt;&lt; my_vendor.state &lt;&lt; "\n"
+                  &lt;&lt; "        " &lt;&lt; my_vendor.zipcode &lt;&lt; "\n"
+                  &lt;&lt; "        " &lt;&lt; my_vendor.phone_number &lt;&lt; "\n"
+                  &lt;&lt; "        Contact: " &lt;&lt; my_vendor.sales_rep &lt;&lt; "\n"
+                  &lt;&lt; "                 " &lt;&lt; my_vendor.sales_rep_phone
                   &lt;&lt; std::endl;
 
     } catch(DbException &amp;e) {
-        vendorDB.getDb().err(e.get_errno(), &quot;Error in show_vendor&quot;);
+        vendorDB.getDb().err(e.get_errno(), "Error in show_vendor");
         throw e;
     } catch(std::exception &amp;e) {
         throw e;
@@ -270,18 +270,18 @@ show_vendor(MyDb &amp;vendorDB, const char *vendor)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="ReplacingEntryWCursor.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="ReplacingEntryWCursor.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="Cursors.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="indexes.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="indexes.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Replacing Records Using Cursors </td>
+          <td width="40%" align="left" valign="top">Replacing Records Using CursorsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 5. Secondary Databases</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 5.Â Secondary Databases</td>
         </tr>
       </table>
     </div>

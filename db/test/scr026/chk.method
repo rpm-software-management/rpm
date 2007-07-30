@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.method,v 12.3 2006/09/11 15:28:06 bostic Exp $
+# $Id: chk.method,v 12.6 2007/06/15 18:45:42 bostic Exp $
 #
 # Check that DB doesn't call DB or DB_ENV methods internally.
 
@@ -14,16 +14,16 @@ echo ========================================================
 m=`grep '(\*[a-z][_a-z]*)' $d/dbinc/db.in |
    sed -e 's/^[^(]*(\*//' \
        -e 's/).*//' \
+       -e '/am_bulk/d' \
+       -e '/am_close/d' \
+       -e '/am_del/d' \
+       -e '/am_destroy/d' \
+       -e '/am_get/d' \
+       -e '/am_put/d' \
        -e '/am_remove/d' \
        -e '/am_rename/d' \
+       -e '/am_writelock/d' \
        -e '/app_dispatch/d' \
-       -e '/c_am_bulk/d' \
-       -e '/c_am_close/d' \
-       -e '/c_am_del/d' \
-       -e '/c_am_destroy/d' \
-       -e '/c_am_get/d' \
-       -e '/c_am_put/d' \
-       -e '/c_am_writelock/d' \
        -e '/db_append_recno/d' \
        -e '/db_errcall/d' \
        -e '/db_event_func/d' \
@@ -52,6 +52,7 @@ sed \
     -e '/^db185\//d' \
     -e '/^db_archive\//d' \
     -e '/^db_checkpoint\//d' \
+    -e '/^db_codegen\//d' \
     -e '/^db_deadlock\//d' \
     -e '/^db_dump185\//d' \
     -e '/^db_dump\//d' \
@@ -86,10 +87,12 @@ sed \
     -e '/db_iface.c:.*(txn->commit(txn, nosync ? DB_TXN_NOSYNC : 0));/d' \
     -e '/db_iface.c:.*if ((t_ret = txn->abort(txn)) != 0)/d' \
     -e '/db_iface.c:.*return (dbenv->txn_begin(dbenv, NULL, txnidp, 0));/d' \
+    -e '/db_iface.c:.*return (dbp->get(dbp, txn, key, &data, flags));/d' \
     -e '/dbenv->is_alive(/d' \
     -e '/dbenv->thread_id(/d' \
     -e '/dbenv->thread_id_string(/d' \
     -e '/rep_util.c:.*ret = dbenv->rep_send(/d' \
+    -e '/test_mutex.c:/d' \
 >$t
 
 test -s $t && {

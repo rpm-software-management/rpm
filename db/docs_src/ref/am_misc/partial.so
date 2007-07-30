@@ -1,0 +1,148 @@
+m4_comment([$Id: partial.so,v 10.25 2003/10/18 19:15:56 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Partial record storage and retrieval,
+    @partial record storage and retrieval, am_misc/get_bulk, am_misc/struct)
+
+m4_p([dnl
+It is possible to both store and retrieve parts of data items in all
+m4_db access methods.  This is done by setting the
+m4_ref(DB_DBT_PARTIAL) flag in the m4_ref(Dbt) structure passed to the
+m4_db method.])
+
+m4_p([dnl
+The m4_ref(DB_DBT_PARTIAL) flag is based on the values of two fields
+of the m4_ref(Dbt) structure: m4_arg(dlen) and m4_arg(doff).  The value
+of m4_arg(dlen) is the number of bytes of the record in which the
+application is interested.  The value of m4_arg(doff) is the offset from
+the beginning of the data item where those bytes start.])
+
+m4_p([dnl
+For example, if the data item were m4_bold(ABCDEFGHIJKL), a m4_arg(doff)
+value of 3 would indicate that the bytes of interest started at
+m4_bold(D), and a m4_arg(dlen) value of 4 would indicate that the bytes
+of interest were m4_bold(DEFG).])
+
+m4_p([dnl
+When retrieving a data item from a database, the m4_arg(dlen) bytes
+starting m4_arg(doff) bytes from the beginning of the record are
+returned, as if they comprised the entire record.  If any or all of the
+specified bytes do not exist in the record, the retrieval is still
+successful and any existing bytes are returned.])
+
+m4_p([dnl
+When storing a data item into the database, the m4_arg(dlen) bytes
+starting m4_arg(doff) bytes from the beginning of the specified key's
+data record are replaced by the data specified by the m4_arg(data) and
+m4_arg(size) fields.  If m4_arg(dlen) is smaller than m4_arg(size), the
+record will grow, and if m4_arg(dlen) is larger than m4_arg(size), the
+record will shrink. If the specified bytes do not exist, the record will
+be extended using nul bytes as necessary, and the store call will still
+succeed.])
+
+m4_p([dnl
+The following are various examples of the put case for the
+m4_ref(DB_DBT_PARTIAL) flag. In all examples, the initial data item is 20
+bytes in length:])
+
+m4_p([m4_bold([ABCDEFGHIJ0123456789])])
+
+m4_nlistbegin
+m4_nlist([m4_indent([dnl
+size = 20
+doff = 0
+dlen = 20
+data = abcdefghijabcdefghij
+m4_blank
+Result: The 20 bytes at offset 0 are replaced by the 20 bytes of data;
+that is, the entire record is replaced.
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ abcdefghijabcdefghij
+])])
+
+m4_nlist([m4_indent([dnl
+size = 10
+doff = 20
+dlen = 0
+data = abcdefghij
+m4_blank
+Result: The 0 bytes at offset 20 are replaced by the 10 bytes of data;
+that is, the record is extended by 10 bytes.
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ ABCDEFGHIJ0123456789abcdefghij
+])])
+
+m4_nlist([m4_indent([dnl
+size = 10
+doff = 10
+dlen = 5
+data = abcdefghij
+m4_blank
+Result: The 5 bytes at offset 10 are replaced by the 10 bytes of data.
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ ABCDEFGHIJabcdefghij56789
+])])
+
+m4_nlist([m4_indent([dnl
+size = 10
+doff = 10
+dlen = 0
+data = abcdefghij
+m4_blank
+Result: The 0 bytes at offset 10 are replaced by the 10 bytes of data;
+that is, 10 bytes are inserted into the record.
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ ABCDEFGHIJabcdefghij0123456789
+])])
+
+m4_nlist([m4_indent([dnl
+size = 10
+doff = 2
+dlen = 15
+data = abcdefghij
+m4_blank
+Result: The 15 bytes at offset 2 are replaced by the 10 bytes of data.
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ ABabcdefghij789
+])])
+
+m4_nlist([m4_indent([dnl
+size = 10
+doff = 0
+dlen = 0
+data = abcdefghij
+m4_blank
+Result: The 0 bytes at offset 0 are replaced by the 10 bytes of data;
+that is, the 10 bytes are inserted at the beginning of the record.
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ abcdefghijABCDEFGHIJ0123456789
+])])
+
+m4_nlist([m4_indent([dnl
+size = 0
+doff = 0
+dlen = 10
+data = ""
+m4_blank
+Result: The 10 bytes at offset 0 are replaced by the 0 bytes of data;
+that is, the first 10 bytes of the record are discarded.
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ 0123456789
+])])
+
+m4_nlist([m4_indent([dnl
+size = 10
+doff = 25
+dlen = 0
+data = abcdefghij
+m4_blank
+Result: The 0 bytes at offset 25 are replaced by the 10 bytes of data;
+that is, 10 bytes are inserted into the record past the end of the
+current data (\0 represents a nul byte).
+m4_blank
+ABCDEFGHIJ0123456789 -__GT__ ABCDEFGHIJ0123456789\0\0\0\0\0abcdefghij
+])])
+
+m4_nlistend
+
+m4_page_footer

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2004-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2004,2007 Oracle.  All rights reserved.
  *
- * $Id: sequence.c,v 12.38 2006/08/24 14:46:31 bostic Exp $
+ * $Id: sequence.c,v 12.46 2007/05/17 17:18:04 bostic Exp $
  */
 
 #include "db_config.h"
@@ -13,12 +12,11 @@
 #include "dbinc/db_page.h"
 #include "dbinc/db_am.h"
 #include "dbinc/lock.h"
-#include "dbinc/mp.h"
 #include "dbinc/txn.h"
 #include "dbinc_auto/sequence_ext.h"
 
 #ifdef HAVE_RPC
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <rpc/rpc.h>
 #endif
 #include "db_server.h"
@@ -191,15 +189,21 @@ __seq_open_pp(seq, txn, keyp, flags)
 
 	if (keyp->size == 0) {
 		__db_errx(dbenv, "Zero length sequence key specified");
+		ret = EINVAL;
 		goto err;
 	}
 
 	if ((ret = __db_get_flags(dbp, &tflags)) != 0)
 		goto err;
 
+	if (DB_IS_READONLY(dbp)) {
+		ret = __db_rdonly(dbp->dbenv, "DB_SEQUENCE->open");
+		goto err;
+	}
 	if (FLD_ISSET(tflags, DB_DUP)) {
 		__db_errx(dbenv,
 	"Sequences not supported in databases configured for duplicate data");
+		ret = EINVAL;
 		goto err;
 	}
 
@@ -227,6 +231,9 @@ __seq_open_pp(seq, txn, keyp, flags)
 
 	seq->seq_data.ulen = seq->seq_data.size = sizeof(seq->seq_record);
 	seq->seq_rp = &seq->seq_record;
+
+	if ((ret = __dbt_usercopy(dbenv, keyp)) != 0)
+		goto err;
 
 	memset(&seq->seq_key, 0, sizeof(DBT));
 	if ((ret = __os_malloc(dbenv, keyp->size, &seq->seq_key.data)) != 0)
@@ -365,6 +372,7 @@ err:	if (txn_local &&
 		ret = t_ret;
 
 	ENV_LEAVE(dbenv, ip);
+	__dbt_userfree(dbenv, keyp, NULL, NULL);
 	return (ret);
 }
 
@@ -765,6 +773,10 @@ __seq_get_key(seq, key)
 {
 	SEQ_ILLEGAL_BEFORE_OPEN(seq, "DB_SEQUENCE->get_key");
 
+	if (F_ISSET(key, DB_DBT_USERCOPY))
+		return (__db_retcopy(seq->seq_dbp->dbenv, key,
+		    seq->seq_key.data, seq->seq_key.size, NULL, 0));
+
 	key->data = seq->seq_key.data;
 	key->size = key->ulen = seq->seq_key.size;
 	key->flags = seq->seq_key.flags;
@@ -819,10 +831,11 @@ __seq_remove(seq, txn, flags)
 	DB *dbp;
 	DB_ENV *dbenv;
 	DB_THREAD_INFO *ip;
-	int handle_check, ret, t_ret;
+	int handle_check, ret, t_ret, txn_local;
 
 	dbp = seq->seq_dbp;
 	dbenv = dbp->dbenv;
+	txn_local = 0;
 
 	SEQ_ILLEGAL_BEFORE_OPEN(seq, "DB_SEQUENCE->remove");
 	ENV_ENTER(dbenv, ip);
@@ -834,8 +847,25 @@ __seq_remove(seq, txn, flags)
 		handle_check = 0;
 		goto err;
 	}
-	if (flags != 0)
+	if (flags != 0) {
 		ret = __db_ferr(dbenv, "DB_SEQUENCE->remove", 0);
+		goto err;
+	}
+
+	/*
+	 * Create a local transaction as necessary, check for consistent
+	 * transaction usage, and, if we have no transaction but do have
+	 * locking on, acquire a locker id for the handle lock acquisition.
+	 */
+	if (IS_DB_AUTO_COMMIT(dbp, txn)) {
+		if ((ret = __txn_begin(dbenv, NULL, &txn, 0)) != 0)
+			return (ret);
+		txn_local = 1;
+	}
+
+	/* Check for consistent transaction usage. */
+	if ((ret = __db_check_txn(dbp, txn, DB_LOCK_INVALIDID, 0)) != 0)
+		goto err;
 
 	ret = __db_del(dbp, txn, &seq->seq_key, 0);
 
@@ -845,7 +875,11 @@ __seq_remove(seq, txn, flags)
 	/* Release replication block. */
 	if (handle_check && (t_ret = __env_db_rep_exit(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
-err:	ENV_LEAVE(dbenv, ip);
+err:	if (txn_local && (t_ret =
+	    __db_txn_auto_resolve(dbenv, txn, 0, ret)) != 0 && ret == 0)
+		ret = t_ret;
+
+	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 

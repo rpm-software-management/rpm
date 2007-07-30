@@ -1,0 +1,84 @@
+m4_comment([$Id: db_put.so,v 10.59 2006/09/13 14:30:52 mjc Exp $])
+
+define(M4PAGELOCAL, [dbh_put, DB_APPEND, DB_NODUPDATA, DB_NOOVERWRITE])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_put),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__put(DB *db,
+    DB_TXN *txnid, DBT *key, DBT *data, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::put(DbTxn *txnid, Dbt *key, Dbt *data, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_put) stores key/data pairs in the database.  The default
+behavior of the m4_ref(dbh_put) function is to enter the new key/data
+pair, replacing any previously existing key if duplicates are disallowed,
+or adding a duplicate data item if duplicates are allowed.  If the database
+supports duplicates, the m4_refT(dbh_put) adds the new data value at the
+end of the duplicate set.  If the database supports sorted duplicates,
+the new data value is inserted at the correct sorted location.])
+
+m4_return(dbh_put, prev)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(1)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_APPEND), [dnl
+Append the key/data pair to the end of the database.  For the
+DB_APPEND flag to be specified, the underlying database must be
+a Queue or Recno database.  The record number allocated to the record is
+returned in the specified m4_arg(key).
+m4_p([dnl
+There is a minor behavioral difference between the Recno and Queue access
+methods for the m4_ref(DB_APPEND) flag.  If a transaction enclosing a
+m4_ref(dbh_put) operation with the m4_ref(DB_APPEND) flag aborts, the
+record number may be decremented (and later reallocated by a subsequent
+m4_ref(DB_APPEND) operation) by the Recno access method, but will not be
+decremented or reallocated by the Queue access method.])])
+
+m4_tag(m4_idef(DB_NODUPDATA), [dnl
+In the case of the Btree and Hash access methods, enter the new key/data
+pair only if it does not already appear in the database.
+m4_p([dnl
+The DB_NODUPDATA flag may only be specified if the underlying
+database has been configured to support sorted duplicates.  The
+DB_NODUPDATA flag may not be specified to the Queue or Recno
+access methods.])
+m4_return(dbh_put, specific, DB_KEYEXIST,
+[if m4_ref(DB_NODUPDATA) is set and the key/data pair already appears
+in the database])])
+
+m4_tag(m4_idef(DB_NOOVERWRITE), [dnl
+Enter the new key/data pair only if the key does not already appear in the
+database.  The m4_refT(dbh_put) call with the DB_NOOVERWRITE flag
+set will fail if the key already exists in the database, even if the database
+supports duplicates.
+m4_return(dbh_put, specific, DB_KEYEXIST,
+[if m4_ref(DB_NOOVERWRITE) is set and the key already appears in the
+database])])
+m4_tagend])
+
+m4_param_data
+m4_param_key
+m4_param_txn(dbh_put)
+m4_paramend
+
+m4_idefz(DB_REP_HANDLE_DEAD)
+m4_idefz(DB_REP_LOCKOUT)
+m4_err(dbh_put, deadlock, readonly, repinval, einval,
+[a record number of 0 was specified;
+an attempt was made to add a record to a fixed-length database that was too
+large to fit;
+an attempt was made to do a partial put;
+an attempt was made to add a record to a secondary index],
+ENOSPC, [A btree exceeded the maximum btree depth (255).])
+
+m4_seealso(Db)
+m4_page_footer

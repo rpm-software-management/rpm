@@ -1,0 +1,33 @@
+m4_comment([$Id: dbc_dup.so,v 11.8 2002/08/18 21:17:28 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db dup, m4_tcl_dbc_dup, [dnl
+dbc dup
+	m4_tcl_arg([-position])
+])
+
+m4_p([dnl
+The m4_tcl_dbc_dup command duplicates the cursor, creates a new cursor
+that uses the same transaction and locker ID as the original cursor. This
+is useful when an application is using locking and requires two or more
+cursors in the same thread of control.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-position], [dnl
+The newly created cursor is initialized to refer to the same position
+in the database as the original cursor and hold the same locks. If the
+m4_arg(-position) flag is not specified, the created cursor is
+uninitialized and will behave like a cursor newly created using the
+m4_tcl_db_cursor command.])
+
+m4_tagend
+
+m4_tcl_ret_standard(m4_tcl_dbc_dup)
+
+m4_page_footer

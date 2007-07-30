@@ -1,0 +1,93 @@
+m4_comment([$Id: intro.so,v 10.26 2007/04/05 20:54:56 bostic Exp $])
+
+m4_ref_title(Memory Pool Subsystem,
+    Introduction to the memory pool subsystem,
+    [introduction to the @memory pool subsystem,
+    introduction to the memory @cache subsystem,
+    introduction to the @buffer pool subsystem], log/limits, mp/config)
+
+m4_p([dnl
+The Memory Pool subsystem is the general-purpose shared memory buffer
+pool used by m4_db.  This module is useful outside of the m4_db package
+for processes that require page-oriented, shared and cached file access.])
+
+m4_p([dnl
+A m4_italic(memory pool) is a memory cache shared among any number of
+threads of control.  The m4_ref(DB_INIT_MPOOL) flag to the
+m4_refT(dbenv_open) opens and optionally creates a memory pool.  When
+that pool is no longer in use, it should be closed using the
+m4_refT(dbenv_close).])
+
+m4_p([dnl
+The m4_refT(memp_fcreate) returns a m4_ref(DbMpoolFile) handle on an
+underlying file within the memory pool.  The file may be opened using
+the m4_refT(memp_fopen).  The m4_refT(memp_fget) is used to retrieve
+pages from files in the pool.  All retrieved pages must be subsequently
+returned using the m4_refT(memp_fput).  At the time pages are returned,
+they may be marked m4_bold(dirty), which causes them to be written to
+the underlying file before being discarded from the pool.  If there is
+insufficient room to bring a new page in the pool, a page is selected
+to be discarded from the pool using a least-recently-used algorithm.
+All dirty pages in the pool from the file may be flushed using the
+m4_refT(memp_fsync).  When the file handle is no longer in use, it
+should be closed using the m4_refT(memp_fclose).])
+
+m4_p([dnl
+There are additional configuration interfaces that apply when opening
+a new file in the memory pool:])
+
+m4_bulletbegin
+m4_bullet([dnl
+The m4_refT(memp_set_clear_len) specifies the number of bytes to clear
+when creating a new page in the memory pool.])
+
+m4_bullet([dnl
+The m4_refT(memp_set_fileid) specifies a unique ID associated with the file.])
+
+m4_bullet([dnl
+The m4_refT(memp_set_ftype) specifies the type of file for the purposes of
+page input and output processing.])
+
+m4_bullet([dnl
+The m4_refT(memp_set_lsn_offset) specifies the byte offset of each page's
+log sequence number (m4_ref(DbLsn)) for the purposes of transaction
+checkpoints.])
+
+m4_bullet([dnl
+The m4_refT(memp_set_pgcookie) specifies an application provided argument
+for the purposes of page input and output processing.])
+
+m4_bulletend
+
+m4_p([dnl
+There are additional interfaces for the memory pool as a whole:])
+
+m4_bulletbegin
+m4_bullet([dnl
+It is possible to gradually flush buffers from the pool in order to
+maintain a consistent percentage of clean buffers in the pool using
+the m4_refT(memp_trickle).])
+
+m4_bullet([dnl
+Because special-purpose processing may be necessary when pages are read
+or written (for example, endian conversion, or page checksums), the
+m4_ref(memp_register) function allows applications to specify automatic
+input and output processing in these cases.])
+
+m4_bullet([dnl
+The m4_ref(db_stat) utility uses the m4_refT(memp_stat) to display
+statistics about the efficiency of the pool.])
+
+m4_bullet([dnl
+All dirty pages in the pool may be flushed using the m4_refT(memp_sync).
+In addition, m4_ref(memp_sync) takes an argument that is specific to
+database systems, and which allows the memory pool to be flushed up to
+a specified log sequence number (m4_ref(DbLsn)).])
+
+m4_bullet([dnl
+The entire pool may be discarded using the m4_refT(dbenv_remove).])
+m4_bulletend
+
+include(memp/m4.methods)
+
+m4_page_footer

@@ -1,7 +1,7 @@
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <rpc/rpc.h>
 #endif
 #include "db_server.h"
@@ -810,6 +810,28 @@ __db_get_pagesize_proc(dbpcl_id, replyp)
 	return;
 }
 
+/* BEGIN __db_get_priority_proc */
+void
+__db_get_priority_proc(dbpcl_id, replyp)
+	unsigned int dbpcl_id;
+	__db_get_priority_reply *replyp;
+/* END __db_get_priority_proc */
+{
+	int ret;
+	DB * dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	replyp->status = ret;
+	return;
+}
+
 /* BEGIN __db_get_q_extentsize_proc */
 void
 __db_get_q_extentsize_proc(dbpcl_id, replyp)
@@ -1304,6 +1326,29 @@ __db_set_pagesize_proc(dbpcl_id, pagesize, replyp)
 	return;
 }
 
+/* BEGIN __db_set_priority_proc */
+void
+__db_set_priority_proc(dbpcl_id, priority, replyp)
+	unsigned int dbpcl_id;
+	u_int32_t priority;
+	__db_set_priority_reply *replyp;
+/* END __db_set_priority_proc */
+{
+	int ret;
+	DB * dbp;
+	ct_entry *dbp_ctp;
+
+	ACTIVATE_CTP(dbp_ctp, dbpcl_id, CT_DB);
+	dbp = (DB *)dbp_ctp->ct_anyp;
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	replyp->status = ret;
+	return;
+}
+
 /* BEGIN __db_set_q_extentsize_proc */
 void
 __db_set_q_extentsize_proc(dbpcl_id, extentsize, replyp)
@@ -1478,12 +1523,12 @@ __db_truncate_proc(dbpcl_id, txnpcl_id,
 	return;
 }
 
-/* BEGIN __dbc_c_close_proc */
+/* BEGIN __dbc_close_proc */
 void
-__dbc_c_close_proc(dbccl_id, replyp)
+__dbc_close_proc(dbccl_id, replyp)
 	unsigned int dbccl_id;
-	__dbc_c_close_reply *replyp;
-/* END __dbc_c_close_proc */
+	__dbc_close_reply *replyp;
+/* END __dbc_close_proc */
 {
 	int ret;
 	DBC * dbc;
@@ -1500,36 +1545,13 @@ __dbc_c_close_proc(dbccl_id, replyp)
 	return;
 }
 
-/* BEGIN __dbc_c_count_proc */
+/* BEGIN __dbc_count_proc */
 void
-__dbc_c_count_proc(dbccl_id, flags, replyp)
-	unsigned int dbccl_id;
-	u_int32_t flags;
-	__dbc_c_count_reply *replyp;
-/* END __dbc_c_count_proc */
-{
-	int ret;
-	DBC * dbc;
-	ct_entry *dbc_ctp;
-
-	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
-	dbc = (DBC *)dbc_ctp->ct_anyp;
-
-	/*
-	 * XXX Code goes here
-	 */
-
-	replyp->status = ret;
-	return;
-}
-
-/* BEGIN __dbc_c_del_proc */
-void
-__dbc_c_del_proc(dbccl_id, flags, replyp)
+__dbc_count_proc(dbccl_id, flags, replyp)
 	unsigned int dbccl_id;
 	u_int32_t flags;
-	__dbc_c_del_reply *replyp;
-/* END __dbc_c_del_proc */
+	__dbc_count_reply *replyp;
+/* END __dbc_count_proc */
 {
 	int ret;
 	DBC * dbc;
@@ -1546,13 +1568,13 @@ __dbc_c_del_proc(dbccl_id, flags, replyp)
 	return;
 }
 
-/* BEGIN __dbc_c_dup_proc */
+/* BEGIN __dbc_del_proc */
 void
-__dbc_c_dup_proc(dbccl_id, flags, replyp)
+__dbc_del_proc(dbccl_id, flags, replyp)
 	unsigned int dbccl_id;
 	u_int32_t flags;
-	__dbc_c_dup_reply *replyp;
-/* END __dbc_c_dup_proc */
+	__dbc_del_reply *replyp;
+/* END __dbc_del_proc */
 {
 	int ret;
 	DBC * dbc;
@@ -1569,9 +1591,32 @@ __dbc_c_dup_proc(dbccl_id, flags, replyp)
 	return;
 }
 
-/* BEGIN __dbc_c_get_proc */
+/* BEGIN __dbc_dup_proc */
 void
-__dbc_c_get_proc(dbccl_id, keydlen, keydoff,
+__dbc_dup_proc(dbccl_id, flags, replyp)
+	unsigned int dbccl_id;
+	u_int32_t flags;
+	__dbc_dup_reply *replyp;
+/* END __dbc_dup_proc */
+{
+	int ret;
+	DBC * dbc;
+	ct_entry *dbc_ctp;
+
+	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
+	dbc = (DBC *)dbc_ctp->ct_anyp;
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	replyp->status = ret;
+	return;
+}
+
+/* BEGIN __dbc_get_proc */
+void
+__dbc_get_proc(dbccl_id, keydlen, keydoff,
 		keyulen, keyflags, keydata, keysize,
 		datadlen, datadoff, dataulen, dataflags,
 		datadata, datasize, flags, replyp, freep)
@@ -1589,9 +1634,9 @@ __dbc_c_get_proc(dbccl_id, keydlen, keydoff,
 	void *datadata;
 	u_int32_t datasize;
 	u_int32_t flags;
-	__dbc_c_get_reply *replyp;
+	__dbc_get_reply *replyp;
 	int * freep;
-/* END __dbc_c_get_proc */
+/* END __dbc_get_proc */
 {
 	int ret;
 	DBC * dbc;
@@ -1608,9 +1653,31 @@ __dbc_c_get_proc(dbccl_id, keydlen, keydoff,
 	return;
 }
 
-/* BEGIN __dbc_c_pget_proc */
+/* BEGIN __dbc_get_priority_proc */
 void
-__dbc_c_pget_proc(dbccl_id, skeydlen, skeydoff,
+__dbc_get_priority_proc(dbccl_id, replyp)
+	unsigned int dbccl_id;
+	__dbc_get_priority_reply *replyp;
+/* END __dbc_get_priority_proc */
+{
+	int ret;
+	DBC * dbc;
+	ct_entry *dbc_ctp;
+
+	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
+	dbc = (DBC *)dbc_ctp->ct_anyp;
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	replyp->status = ret;
+	return;
+}
+
+/* BEGIN __dbc_pget_proc */
+void
+__dbc_pget_proc(dbccl_id, skeydlen, skeydoff,
 		skeyulen, skeyflags, skeydata, skeysize,
 		pkeydlen, pkeydoff, pkeyulen, pkeyflags,
 		pkeydata, pkeysize, datadlen, datadoff,
@@ -1636,9 +1703,9 @@ __dbc_c_pget_proc(dbccl_id, skeydlen, skeydoff,
 	void *datadata;
 	u_int32_t datasize;
 	u_int32_t flags;
-	__dbc_c_pget_reply *replyp;
+	__dbc_pget_reply *replyp;
 	int * freep;
-/* END __dbc_c_pget_proc */
+/* END __dbc_pget_proc */
 {
 	int ret;
 	DBC * dbc;
@@ -1655,9 +1722,9 @@ __dbc_c_pget_proc(dbccl_id, skeydlen, skeydoff,
 	return;
 }
 
-/* BEGIN __dbc_c_put_proc */
+/* BEGIN __dbc_put_proc */
 void
-__dbc_c_put_proc(dbccl_id, keydlen, keydoff,
+__dbc_put_proc(dbccl_id, keydlen, keydoff,
 		keyulen, keyflags, keydata, keysize,
 		datadlen, datadoff, dataulen, dataflags,
 		datadata, datasize, flags, replyp, freep)
@@ -1675,9 +1742,32 @@ __dbc_c_put_proc(dbccl_id, keydlen, keydoff,
 	void *datadata;
 	u_int32_t datasize;
 	u_int32_t flags;
-	__dbc_c_put_reply *replyp;
+	__dbc_put_reply *replyp;
 	int * freep;
-/* END __dbc_c_put_proc */
+/* END __dbc_put_proc */
+{
+	int ret;
+	DBC * dbc;
+	ct_entry *dbc_ctp;
+
+	ACTIVATE_CTP(dbc_ctp, dbccl_id, CT_CURSOR);
+	dbc = (DBC *)dbc_ctp->ct_anyp;
+
+	/*
+	 * XXX Code goes here
+	 */
+
+	replyp->status = ret;
+	return;
+}
+
+/* BEGIN __dbc_set_priority_proc */
+void
+__dbc_set_priority_proc(dbccl_id, priority, replyp)
+	unsigned int dbccl_id;
+	u_int32_t priority;
+	__dbc_set_priority_reply *replyp;
+/* END __dbc_set_priority_proc */
 {
 	int ret;
 	DBC * dbc;

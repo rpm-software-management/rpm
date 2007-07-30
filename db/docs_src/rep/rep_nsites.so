@@ -1,0 +1,47 @@
+m4_comment([$Id: rep_nsites.so,v 1.2 2006/06/23 01:28:47 alanb Exp $])
+
+define(M4PAGELOCAL, [rep_set_nsites, rep_get_nsites])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_set_nsites),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_set_nsites(DB_ENV *env, int nsites);
+m4_blank
+int
+DB_ENV-__GT__rep_get_nsites(DB_ENV *env, int *nsitesp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_set_nsites(int nsites);
+m4_blank
+int
+DbEnv::rep_get_nsites(int *nsitesp);
+]))
+
+m4_p([dnl
+The m4_refT(rep_set_nsites) specifies the total number of sites
+in a replication group.])
+
+m4_p([dnl
+The m4_refT(rep_set_nsites) is typically called by applications which
+use the m4_db library "replication manager" support.  (However, see
+also the m4_ref(rep_elect) man page, the description of the m4_arg(nsites)
+parameter.)])
+
+m4_scope_env(rep_set_nsites)
+m4_when_any(rep_set_nsites)
+m4_return(rep_set_nsites, std)
+
+m4_parambegin
+m4_param(nsites, [dnl
+A positive integer specifying the total number of sites in the replication
+group.])
+m4_paramend
+
+m4_pf_getter(rep_get_nsites,
+total number of sites in the replication group,,
+nsitesp)
+
+m4_seealso(Replication)
+m4_page_footer

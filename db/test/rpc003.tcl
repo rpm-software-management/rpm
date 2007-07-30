@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rpc003.tcl,v 12.3 2006/08/24 14:46:38 bostic Exp $
+# $Id: rpc003.tcl,v 12.5 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	rpc003
 # TEST	Test RPC and secondary indices.

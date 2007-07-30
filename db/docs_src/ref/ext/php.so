@@ -1,0 +1,118 @@
+m4_comment([$Id: php.so,v 10.3 2004/10/18 17:08:43 bostic Exp $])
+
+m4_ref_title(m4_db Extensions,
+    Using m4_db with PHP, PHP, ext/perl, dumpload/utility)
+
+m4_p([dnl
+A PHP 4 extension for this release of m4_db is included in the
+distribution package.  It can either either link directly against the
+installed m4_db library (which is necessary for running in a
+non-Apache/mod_php4 environment), or against mod_db4, which provides
+additional safety when running under Apache/mod_php4.])
+
+m4_p([dnl
+The PHP extension provides the following classes, which mirror the
+standard m4_db C++ API.])
+
+m4_indent([dnl
+class Db4Env {
+m4_indent([dnl
+function Db4Env($flags = 0) {}
+function close($flags = 0) {}
+function dbremove($txn, $filename, $database = null, $flags = 0) {}
+function dbrename($txn, $file, $database, $new_database, $flags = 0) {}
+function open($home, $flags = DB_CREATE  | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN, $mode = 0666) {}
+function remove($home, $flags = 0) {}
+function set_data_dir($directory) {}
+function txn_begin($parent_txn = null, $flags = 0) {}
+function txn_checkpoint($kbytes, $minutes, $flags = 0) {}])
+}
+m4_blank
+class Db4 {
+m4_indent([dnl
+function Db4($dbenv = null) {}	// create a new Db4 object using the optional DbEnv
+function open($txn = null, $file = null, $database = null, $flags = DB_CREATE, $mode = 0) {}
+function close() {}
+function del($key, $txn = null) {}
+function get($key, $txn = null, $flags = 0) {}
+function pget($key, &$pkey, $txn = null, $flags = 0) {}
+function get_type() {}	// returns the stringified database type name
+function stat($txn = null, $flags = 0) {} // returns statistics as an as
+function join($cursor_list, $flags = 0) {}
+function sync() {}
+function truncate($txn = null, $flags = 0) {}
+function cursor($txn = null, flags = 0) {}])
+}
+m4_blank
+class Db4Txn {
+m4_indent([dnl
+function abort() {}
+function commit() {}
+function discard() {
+function id() {}
+function set_timeout($timeout, $flags = 0) {}])
+}
+m4_blank
+class Db4Cursor {
+m4_indent([dnl
+function close() {}
+function count() {}
+function del() {}
+function dup($flags = 0) {}
+function get($key, $flags = 0) {}
+function pget($key, &$primary_key, $flags = 0) {}
+function put($key, $data, $flags = 0) {}])
+}])
+
+m4_p([dnl
+The PHP extension attempts to be "smart" for you by:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Auto-committing operations on transactional databases if no explicit
+Db4Txn object is specified.])
+m4_nlist([dnl
+Performing reference and dependency checking to insure that all
+resources are closed in the correct order.])
+m4_nlist([dnl
+Supplying default values for flags.])
+m4_nlistend
+
+m4_p([dnl
+To install this PHP module linked against the mod_db4 framework, perform
+the following steps:])
+
+m4_indent([dnl
+% phpize
+% ./configure --with-db4=__LB__[]m4_db library installation directory__RB__ \
+	--with-mod_db4=$APACHE_INCLUDEDIR
+% make
+% make install])
+
+m4_p([dnl
+Then, in your php.ini file add the following:])
+
+m4_indent([extension=db4.so])
+
+m4_p([dnl
+This extension will now only run in a SAPI linked into Apache httpd
+(mod_php4, most likely), and will take advantage of all of its
+auto-recovery and handle-caching facilities.])
+
+m4_p([dnl
+To install this php module linked against the m4_db library and not the
+mod_db4 framework, perform the following steps:])
+
+m4_indent([dnl
+% phpize
+% ./configure --with-db4=__LB__[]m4_db library installation directory__RB__
+% make
+% make install])
+
+m4_p([dnl
+Then in your php.ini file add:])
+
+m4_indent([dnl
+extension=db4.so])
+
+m4_page_footer

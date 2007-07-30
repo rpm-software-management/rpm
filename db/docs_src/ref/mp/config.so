@@ -1,0 +1,45 @@
+m4_comment([$Id: config.so,v 10.20 2003/10/18 19:16:04 bostic Exp $])
+
+m4_ref_title(Memory Pool Subsystem,
+    Configuring the memory pool,
+    @memory pool configuration, mp/intro, txn/intro)
+
+m4_p([dnl
+There are two issues to consider when configuring the memory pool.])
+
+m4_p([dnl
+The first issue, the most important tuning parameter for m4_db
+applications, is the size of the memory pool.  There are two ways to
+specify the pool size.  First, calling the m4_refT(dbenv_set_cachesize)
+specifies the pool size for all of the applications sharing the m4_db
+environment.  Second, the m4_refT(dbh_set_cachesize) only specifies a
+pool size for the specific database.  Note: It is meaningless to call
+m4_ref(dbh_set_cachesize) for a database opened inside of a m4_db
+environment because the environment pool size will override any pool
+size specified for a single database.  For information on tuning the
+m4_db cache size, see m4_link(M4RELDIR/ref/am_conf/cachesize, [Selecting
+a cache size]).])
+
+m4_p([dnl
+The second memory pool configuration issue is the maximum size an
+underlying file can be and still be mapped into the process address
+space (instead of reading the file's pages into the cache).  Mapping
+files into the process address space can result in better performance
+because available virtual memory is often much larger than the local
+cache, and page faults are faster than page copying on many systems.
+However, in the presence of limited virtual memory, it can cause
+resource starvation; and in the presence of large databases, it can
+result in immense process sizes.  In addition, because of the
+requirements of the m4_db transactional implementation, only read-only
+files can be mapped into process memory.])
+
+m4_p([dnl
+To specify that no files are to be mapped into the process address
+space, specify the m4_ref(DB_NOMMAP) flag to the
+m4_refT(dbenv_set_flags).  To specify that any individual file should
+not be mapped into the process address space, specify the
+m4_ref(DB_NOMMAP) flag to the m4_ref(memp_fopen) interface.  To limit
+the size of files mapped into the process address space, use the
+m4_refT(dbenv_set_mp_mmapsize).])
+
+m4_page_footer

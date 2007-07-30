@@ -1,48 +1,24 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_open.c,v 12.18 2006/08/24 14:46:18 bostic Exp $
+ * $Id: os_open.c,v 12.22 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
 
-#ifdef HAVE_QNX
-static int __os_qnx_region_open
-	       __P((DB_ENV *, const char *, int, int, DB_FH **));
-#endif
-
 /*
  * __os_open --
- *	Open a file.
- *
- * PUBLIC: int __os_open
- * PUBLIC:     __P((DB_ENV *, const char *, u_int32_t, int, DB_FH **));
- */
-int
-__os_open(dbenv, name, flags, mode, fhpp)
-	DB_ENV *dbenv;
-	const char *name;
-	u_int32_t flags;
-	int mode;
-	DB_FH **fhpp;
-{
-	return (__os_open_extend(dbenv, name, 0, flags, mode, fhpp));
-}
-
-/*
- * __os_open_extend --
  *	Open a file descriptor (including page size and log size information).
  *
- * PUBLIC: int __os_open_extend __P((DB_ENV *,
+ * PUBLIC: int __os_open __P((DB_ENV *,
  * PUBLIC:     const char *, u_int32_t, u_int32_t, int, DB_FH **));
  */
 int
-__os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
+__os_open(dbenv, name, page_size, flags, mode, fhpp)
 	DB_ENV *dbenv;
 	const char *name;
 	u_int32_t page_size, flags;
@@ -56,6 +32,10 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 
 	*fhpp = NULL;
 	oflags = 0;
+
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: open %s", name);
 
 #define	OKFLAGS								\
 	(DB_OSO_ABSMODE | DB_OSO_CREATE | DB_OSO_DIRECT | DB_OSO_DSYNC |\
@@ -111,10 +91,6 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	    (ret = __db_mkpath(dbenv, name)) != 0)
 		return (ret);
 
-#ifdef HAVE_QNX
-	if (LF_ISSET(DB_OSO_REGION))
-		return (__os_qnx_region_open(dbenv, name, oflags, mode, fhpp));
-#endif
 	/* Open the file. */
 	if ((ret = __os_openhandle(dbenv, name, oflags, mode, &fhp)) != 0)
 		return (ret);
@@ -163,11 +139,6 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	 */
 	if (LF_ISSET(DB_OSO_TEMP)) {
 #if defined(HAVE_UNLINK_WITH_OPEN_FAILURE) || defined(CONFIG_TEST)
-		if ((ret = __os_strdup(dbenv, name, &fhp->name)) != 0) {
-			(void)__os_closehandle(dbenv, fhp);
-			(void)__os_unlink(dbenv, name);
-			return (ret);
-		}
 		F_SET(fhp, DB_FH_UNLINK);
 #else
 		(void)__os_unlink(dbenv, name);
@@ -177,134 +148,3 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	*fhpp = fhp;
 	return (0);
 }
-
-#ifdef HAVE_QNX
-/*
- * __os_qnx_region_open --
- *	Open a shared memory region file using POSIX shm_open.
- */
-static int
-__os_qnx_region_open(dbenv, name, oflags, mode, fhpp)
-	DB_ENV *dbenv;
-	const char *name;
-	int oflags;
-	int mode;
-	DB_FH **fhpp;
-{
-	DB_FH *fhp;
-	int ret;
-	char *newname;
-
-	if ((ret = __os_calloc(dbenv, 1, sizeof(DB_FH), fhpp)) != 0)
-		return (ret);
-	fhp = *fhpp;
-
-	if ((ret = __os_shmname(dbenv, name, &newname)) != 0)
-		goto err;
-
-	/*
-	 * Once we have created the object, we don't need the name
-	 * anymore.  Other callers of this will convert themselves.
-	 */
-	fhp->fd = shm_open(newname, oflags, mode);
-	if (fhp->fd == -1)
-		ret = __os_posix_err(__os_get_syserr());
-	__os_free(dbenv, newname);
-	if (fhp->fd == -1)
-		goto err;
-
-	F_SET(fhp, DB_FH_OPENED);
-
-#ifdef HAVE_FCNTL_F_SETFD
-	/* Deny file descriptor access to any child process. */
-	if (fcntl(fhp->fd, F_SETFD, 1) == -1) {
-		ret = __os_get_syserr();
-		__db_syserr(dbenv, ret, "fcntl(F_SETFD)");
-		ret = __os_posix_err(ret);
-		goto err;
-	}
-#endif
-
-err:	if (ret != 0) {
-		(void)__os_closehandle(dbenv, fhp);
-		*fhpp = NULL;
-	}
-
-	return (ret);
-}
-
-/*
- * __os_shmname --
- *	Translate a pathname into a shm_open memory object name.
- *
- * PUBLIC: #ifdef HAVE_QNX
- * PUBLIC: int __os_shmname __P((DB_ENV *, const char *, char **));
- * PUBLIC: #endif
- */
-int
-__os_shmname(dbenv, name, newnamep)
-	DB_ENV *dbenv;
-	const char *name;
-	char **newnamep;
-{
-	int ret;
-	size_t size;
-	char *p, *q, *tmpname;
-
-	*newnamep = NULL;
-
-	/*
-	 * POSIX states that the name for a shared memory object
-	 * may begin with a slash '/' and support for subsequent
-	 * slashes is implementation-dependent.  The one implementation
-	 * we know of right now, QNX, forbids subsequent slashes.
-	 * We don't want to be parsing pathnames for '.' and '..' in
-	 * the middle.  In order to allow easy conversion, just take
-	 * the last component as the shared memory name.  This limits
-	 * the namespace a bit, but makes our job a lot easier.
-	 *
-	 * We should not be modifying user memory, so we use our own.
-	 * Caller is responsible for freeing the memory we give them.
-	 */
-	if ((ret = __os_strdup(dbenv, name, &tmpname)) != 0)
-		return (ret);
-	/*
-	 * Skip over filename component.
-	 * We set that separator to '\0' so that we can do another
-	 * __db_rpath.  However, we immediately set it then to ':'
-	 * so that we end up with the tailing directory:filename.
-	 * We require a home directory component.  Return an error
-	 * if there isn't one.
-	 */
-	p = __db_rpath(tmpname);
-	if (p == NULL)
-		return (EINVAL);
-	if (p != tmpname) {
-		*p = '\0';
-		q = p;
-		p = __db_rpath(tmpname);
-		*q = ':';
-	}
-	if (p != NULL) {
-		/*
-		 * If we have a path component, copy and return it.
-		 */
-		ret = __os_strdup(dbenv, p, newnamep);
-		__os_free(dbenv, tmpname);
-		return (ret);
-	}
-
-	/*
-	 * We were given just a directory name with no path components.
-	 * Add a leading slash, and copy the remainder.
-	 */
-	size = strlen(tmpname) + 2;
-	if ((ret = __os_malloc(dbenv, size, &p)) != 0)
-		return (ret);
-	p[0] = '/';
-	memcpy(&p[1], tmpname, size-1);
-	__os_free(dbenv, tmpname);
-	*newnamep = p;
-	return (0);
-}
-#endif

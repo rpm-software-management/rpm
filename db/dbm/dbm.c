@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: dbm.c,v 12.8 2006/08/24 14:45:31 bostic Exp $
+ * $Id: dbm.c,v 12.11 2007/05/17 15:15:07 bostic Exp $
  */
 
 #define	DB_DBM_HSEARCH	1
@@ -282,7 +281,7 @@ __db_ndbm_fetch(dbm, key)
 	memset(&_data, 0, sizeof(DBT));
 
 	/*
-	 * Note that we can't simply use the dbc we have to do a c_get/SET,
+	 * Note that we can't simply use the dbc we have to do a get/SET,
 	 * because that cursor is the one used for sequential iteration and
 	 * it has to remain stable in the face of intervening gets and puts.
 	 */
@@ -321,7 +320,7 @@ __db_ndbm_firstkey(dbm)
 	memset(&_key, 0, sizeof(DBT));
 	memset(&_data, 0, sizeof(DBT));
 
-	if ((ret = dbc->c_get(dbc, &_key, &_data, DB_FIRST)) == 0) {
+	if ((ret = dbc->get(dbc, &_key, &_data, DB_FIRST)) == 0) {
 		key.dptr = _key.data;
 		key.dsize = (int)_key.size;
 	} else {
@@ -356,7 +355,7 @@ __db_ndbm_nextkey(dbm)
 	memset(&_key, 0, sizeof(DBT));
 	memset(&_data, 0, sizeof(DBT));
 
-	if ((ret = dbc->c_get(dbc, &_key, &_data, DB_NEXT)) == 0) {
+	if ((ret = dbc->get(dbc, &_key, &_data, DB_NEXT)) == 0) {
 		key.dptr = _key.data;
 		key.dsize = (int)_key.size;
 	} else {

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: TupleMarshalledBinding.java,v 12.4 2006/09/08 20:32:11 bostic Exp $
+ * $Id: TupleMarshalledBinding.java,v 12.6 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.bind.tuple;
@@ -14,7 +13,7 @@ import com.sleepycat.util.RuntimeExceptionWrapper;
 /**
  * A concrete <code>TupleBinding</code> that delegates to the
  * <code>MarshalledTupleEntry</code> interface of the data or key object.
- *
+ * 
  * <p>This class works by calling the methods of the {@link
  * MarshalledTupleEntry} interface, which must be implemented by the key or
  * data class, to convert between the key or data entry and the object.</p>

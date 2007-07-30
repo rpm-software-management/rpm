@@ -1,14 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2005
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: rep_base.h,v 12.11 2006/08/24 14:45:45 bostic Exp $
+ * $Id: rep_base.h,v 12.15 2007/05/17 17:29:27 bostic Exp $
  */
 
 #ifndef _EX_REPQUOTE_H_
 #define	_EX_REPQUOTE_H_
+
+#include "../common/rep_common.h"
 
 #define	SELF_EID	1
 
@@ -18,6 +19,12 @@ typedef struct {
 } repsite_t;
 
 /* Globals */
+typedef struct {
+	SHARED_DATA shared_data;
+	int elected;
+	void *comm_infrastructure;
+} APP_DATA;
+
 extern int master_eid;
 extern char *myaddr;
 extern unsigned short myport;
@@ -78,7 +85,7 @@ typedef HANDLE mutex_t;
 #define	sleep(s)		Sleep(1000 * (s))
 
 typedef SOCKET socket_t;
-#define SOCKET_CREATION_FAILURE INVALID_SOCKET
+#define	SOCKET_CREATION_FAILURE INVALID_SOCKET
 #define	readsocket(s, buf, sz)	recv((s), (buf), (int)(sz), 0)
 #define	writesocket(s, buf, sz)	send((s), (const char *)(buf), (int)(sz), 0)
 #define	net_errno		WSAGetLastError()
@@ -104,7 +111,7 @@ typedef pthread_mutex_t mutex_t;
 #define	mutex_unlock(m)		pthread_mutex_unlock(m)
 
 typedef int socket_t;
-#define SOCKET_CREATION_FAILURE -1
+#define	SOCKET_CREATION_FAILURE -1
 #define	closesocket(fd)		close(fd)
 #define	net_errno		errno
 #define	readsocket(s, buf, sz)	read((s), (buf), (sz))
@@ -121,7 +128,8 @@ socket_t   get_connected_socket
 	__P((machtab_t *, const char *, const char *, int, int *, int *));
 int   get_next_message __P((socket_t, DBT *, DBT *));
 socket_t   listen_socket_init __P((const char *, int));
-socket_t   listen_socket_accept __P((machtab_t *, const char *, socket_t, int *));
+socket_t   listen_socket_accept
+	__P((machtab_t *, const char *, socket_t, int *));
 int   machtab_getinfo __P((machtab_t *, int, u_int32_t *, int *));
 int   machtab_init __P((machtab_t **, int));
 void  machtab_parm __P((machtab_t *, int *, u_int32_t *));

@@ -1,0 +1,39 @@
+m4_comment([$Id: memp_trickle.so,v 10.36 2004/08/13 03:38:58 bostic Exp $])
+
+define(M4PAGELOCAL, memp_trickle)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_trickle),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__memp_trickle(DB_ENV *env, int percent, int *nwrotep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::memp_trickle(int percent, int *nwrotep);
+]))
+
+m4_p([dnl
+The m4_refT(memp_trickle) ensures that a specified percent of the pages
+in the shared memory pool are clean, by writing dirty pages to their
+backing files.])
+
+m4_p([dnl
+The purpose of the m4_ref(memp_trickle) function is to enable a memory
+pool manager to ensure that a page is always available for reading in new
+information without having to wait for a write.])
+
+m4_return(memp_trickle, std)
+
+m4_parambegin
+m4_param_co(nwrotep, number of pages written to reach the specified
+percentage)
+m4_param(percent, [dnl
+The m4_arg(percent) parameter is the percent of the pages in the cache
+that should be clean.])
+m4_paramend
+
+m4_err(memp_trickle, einval)
+
+m4_seealso(DbMpool)
+m4_page_footer

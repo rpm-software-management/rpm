@@ -1,0 +1,11 @@
+m4_comment([$Id: txn_stat.so,v 11.5 2003/10/18 19:16:14 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: txn_stat,,
+    upgrade.3.0/txn_commit, upgrade.3.0/rmw)
+
+m4_p([dnl
+The m4_arg(st_refcnt) field returned from the txn_stat function
+has been removed, and this information is no longer available.])
+
+m4_page_footer

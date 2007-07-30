@@ -1,0 +1,93 @@
+m4_comment([$Id: system.so,v 11.5 2000/03/18 21:43:20 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 2.0: system integration,, upgrade.2.0/intro, upgrade.2.0/convert)
+
+m4_nlistbegin
+m4_nlist([dnl
+It is possible to maintain both the m4_db 1.85 and m4_db version 2
+libraries on your system.  However, the m4_path(db.h) include file that
+was distributed with m4_db 1.85 is not compatible with the m4_path(db.h)
+file distributed with m4_db version 2, so you will have to install them
+in different locations.  In addition, both the m4_db 1.85 and m4_db
+version 2 libraries are named m4_path(libdb.a).
+
+m4_p([dnl
+As the m4_db 1.85 library did not have an installation target in the
+Makefile, there's no way to know exactly where it was installed on the
+system.  In addition, many vendors included it in the C library instead
+of as a separate library, and so it may actually be part of libc and the
+m4_path(db.h) include file may be installed in m4_path(/usr/include).])
+
+m4_p([dnl
+For these reasons, the simplest way to maintain both libraries is to
+install m4_db version 2 in a completely separate area of your system.
+The m4_db version 2 installation process allows you to install into a
+standalone directory hierarchy on your system.  See the
+m4_link(M4RELDIR/ref/build_unix/intro, Building for UNIX systems)
+documentation for more information and instructions on how to install the
+m4_db version 2 library, include files and documentation into specific
+locations.])])
+
+m4_nlist([dnl
+Alternatively, you can replace m4_db 1.85 on your system with m4_db
+version 2.  In this case, you'll probably want to install m4_db version
+2 in the normal place on your system, wherever that may be, and delete
+the m4_db 1.85 include files, manual pages and libraries.
+
+m4_p([dnl
+To replace 1.85 with version 2, you must either convert your 1.85
+applications to use the version 2 API or build the m4_db version 2 library
+to include m4_db 1.85 interface compatibility code.  Whether converting
+your applications to use the version 2 interface or using the version 1.85
+compatibility API, you will need to recompile or relink your 1.85
+applications, and you must convert any persistent application databases
+to the m4_db version 2 database formats.])
+
+m4_p([dnl
+If you want to recompile your m4_db 1.85 applications, you will have to
+change them to include the file m4_path(db_185.h) instead of
+m4_path(db.h).  (The m4_path(db_185.h) file is automatically installed
+during the m4_db version 2 installation process.)  You can then recompile
+the applications, linking them against the m4_db version 2 library.])
+
+m4_p([dnl
+For more information on compiling the m4_db 1.85 compatibility code into
+the m4_db version 2 library, see m4_link(M4RELDIR/ref/build_unix/intro,
+Building for UNIX platforms).])
+
+m4_p([dnl
+For more information on converting databases from the m4_db 1.85 formats
+to the m4_db version 2 formats, see the m4_ref(db_dump185) and
+m4_ref(db_load) documentation.])])
+
+m4_nlist([dnl
+Finally, although we certainly do not recommend it, it is possible to
+load both m4_db 1.85 and m4_db version 2 into the same library.
+Similarly, it is possible to use both m4_db 1.85 and m4_db version 2
+within a single application, although it is not possible to use them from
+within the same file.
+
+m4_p([dnl
+The name space in m4_db version 2 has been changed from that of previous
+m4_db versions, notably version 1.85, for portability and consistency
+reasons.  The only name collisions in the two libraries are the names used
+by the historic m4_ref(dbm), m4_ref(ndbm) and m4_ref(hsearch) interfaces,
+and the m4_db 1.85 compatibility interfaces in the m4_db version 2
+library.])
+
+m4_p([dnl
+If you are loading both m4_db 1.85 and m4_db version 2 into a single
+library, remove the historic interfaces from one of the two library
+builds, and configure the m4_db version 2 build to not include the m4_db
+1.85 compatibility API, otherwise you could have collisions and undefined
+behavior.  This can be done by editing the library Makefiles and
+reconfiguring and rebuilding the m4_db version 2 library.  Obviously, if
+you use the historic interfaces, you will get the version in the library
+from which you did not remove them.  Similarly, you will not be able to
+access m4_db version 2 files using the m4_db 1.85 compatibility interface,
+since you have removed that from the library as well.])])
+
+m4_nlistend
+
+m4_page_footer

@@ -1,0 +1,31 @@
+m4_comment([$Id: m4.methods,v 1.10 2007/06/22 16:57:17 bostic Exp $])
+
+m4_table_begin(, _center)
+
+m4_table_header(Replication Manager Methods, Description)
+m4_comment([DbEnv::repmgr_add_remote_site])m4_table_element(m4_ref(repmgr_add_remote_site), Specify the replication manager's remote sites)
+m4_comment([DbEnv::repmgr_set_ack_policy])m4_table_element(m4_ref(repmgr_set_ack_policy), Specify the replication manager's client acknowledgement policy)
+m4_comment([DbEnv::repmgr_set_local_site])m4_table_element(m4_ref(repmgr_set_local_site), Specify the replication manager's local site)
+m4_comment([DbEnv::repmgr_site_list])m4_table_element(m4_ref(repmgr_site_list), List the sites and their status)
+m4_comment([DbEnv::repmgr_start])m4_table_element(m4_ref(repmgr_start), Start the replication manager)
+m4_comment([DbEnv::repmgr_stat])m4_table_element(m4_ref(repmgr_stat), Replication manager statistics)
+
+m4_table_header(Base Replication API, _empty)
+m4_comment([DbEnv::rep_elect])m4_table_element(m4_ref(rep_elect), Hold a replication election)
+m4_comment([DbEnv::rep_process_message])m4_table_element(m4_ref(rep_message), Process a replication message)
+m4_comment([DbEnv::rep_start])m4_table_element(m4_ref(rep_start), Configure an environment for replication)
+
+m4_table_header(Additional Replication Methods, _empty)
+m4_comment([DbEnv::rep_stat])m4_table_element(m4_ref(rep_stat), Replication statistics)
+m4_comment([DbEnv::rep_sync])m4_table_element(m4_ref(rep_sync), Replication synchronization)
+
+m4_table_header(Replication Configuration, _empty)
+m4_comment([DbEnv::rep_set_config])m4_table_element(m4_ref(rep_set_config), Configure the replication subsystem)
+m4_comment([DbEnv::rep_set_limit])m4_table_element(m4_ref(rep_set_limit), Limit data sent in response to a single message)
+m4_comment([DbEnv::rep_set_nsites])m4_table_element(m4_ref(rep_set_nsites), Configure replication group site count)
+m4_comment([DbEnv::rep_set_priority])m4_table_element(m4_ref(rep_set_priority), Configure replication site priority)
+m4_comment([DbEnv::rep_set_request])m4_table_element(m4_ref(rep_set_request), Configure replication client retransmission requests)
+m4_comment([DbEnv::rep_set_timeout])m4_table_element(m4_ref(rep_set_timeout), Configure replication timeouts)
+m4_comment([DbEnv::rep_set_transport])m4_table_element(m4_ref(rep_set_transport), Configure replication transport callback)
+
+m4_table_end

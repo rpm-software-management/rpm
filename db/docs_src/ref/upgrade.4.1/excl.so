@@ -1,0 +1,13 @@
+m4_comment([$Id: excl.so,v 1.1 2002/01/16 20:12:08 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.1: DB_EXCL,,
+    upgrade.4.1/intro, upgrade.4.1/fop)
+
+m4_p([dnl
+The m4_ref(DB_EXCL) flag to the m4_ref(dbh_open) method now works for
+subdatabases as well as physical files, and it is now possible to use
+the m4_ref(DB_EXCL) flag to check for the previous existence of
+subdatabases.])
+
+m4_page_footer

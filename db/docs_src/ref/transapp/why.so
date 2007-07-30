@@ -1,0 +1,34 @@
+m4_comment([$Id: why.so,v 1.7 2003/11/04 14:53:27 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Why transactions?,, transapp/intro, transapp/term)
+
+m4_p([dnl
+Perhaps the first question to answer is "Why transactions?"  There are
+a number of reasons to include transactional support in your applications.
+The most common ones are the following:])
+
+m4_tagbegin
+
+m4_tag([Recoverability], [dnl
+Applications often need to ensure that no matter how the system or
+application fails, previously saved data is available the next time the
+application runs.  This is often called Durability.])
+
+m4_tag([Atomicity], [dnl
+Applications may need to make multiple changes to one or more databases,
+but ensure that either all of the changes happen, or none of them
+happens.  Transactions guarantee that a group of changes are atomic;
+that is, if the application or system fails, either all of the changes
+to the databases will appear when the application next runs, or none of
+them.])
+
+m4_tag([Isolation], [dnl
+Applications may need to make changes in isolation, that is, ensure that
+only a single thread of control is modifying a key/data pair at a time.
+Transactions ensure each thread of control sees all records as if all
+other transactions either completed before or after its transaction.])
+
+m4_tagend
+
+m4_page_footer

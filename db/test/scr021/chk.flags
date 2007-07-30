@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.flags,v 12.1 2005/10/20 19:16:41 bostic Exp $
+# $Id: chk.flags,v 12.2 2007/04/20 14:46:30 bostic Exp $
 #
 # Check flag name-spaces.
 
@@ -27,7 +27,7 @@ cat $t1 |
 grep '(dbenv,' |
 sed -e '/DB_ENV_/d' \
     -e '/env_method.c.*, mapped_flags*)/d' \
-    -e '/env_region.c.*, db_env_reset)/d' \
+    -e '/env_region.c.*, flags_orig*)/d' \
     > $t2
 [ -s $t2 ] && {
 	cat $t2
@@ -37,6 +37,7 @@ sed -e '/DB_ENV_/d' \
 grep 'DB_ENV_' $t1 |
 sed -e '/((*dbenv)*,/d' \
     -e '/((*dbp)*->dbenv,/d' \
+    -e '/((*env)*,/d' \
     -e '/((*infop)*->dbenv,/d' \
     -e '/((*reginfop)*->dbenv,/d' \
     -e '/((*sdbp)*->dbenv,/d' \

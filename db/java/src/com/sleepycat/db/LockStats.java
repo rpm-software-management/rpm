@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -43,6 +42,11 @@ public class LockStats {
         return st_nmodes;
     }
 
+    private int st_nlockers;
+    public int getNumLockers() {
+        return st_nlockers;
+    }
+
     private int st_nlocks;
     public int getNumLocks() {
         return st_nlocks;
@@ -51,11 +55,6 @@ public class LockStats {
     private int st_maxnlocks;
     public int getMaxNlocks() {
         return st_maxnlocks;
-    }
-
-    private int st_nlockers;
-    public int getNumLockers() {
-        return st_nlockers;
     }
 
     private int st_maxnlockers;
@@ -128,6 +127,36 @@ public class LockStats {
         return st_ntxntimeouts;
     }
 
+    private int st_objs_wait;
+    public int getObjsWait() {
+        return st_objs_wait;
+    }
+
+    private int st_objs_nowait;
+    public int getObjsNowait() {
+        return st_objs_nowait;
+    }
+
+    private int st_lockers_wait;
+    public int getLockersWait() {
+        return st_lockers_wait;
+    }
+
+    private int st_lockers_nowait;
+    public int getLockersNowait() {
+        return st_lockers_nowait;
+    }
+
+    private int st_locks_wait;
+    public int getLocksWait() {
+        return st_locks_wait;
+    }
+
+    private int st_locks_nowait;
+    public int getLocksNowait() {
+        return st_locks_nowait;
+    }
+
     private int st_region_wait;
     public int getRegionWait() {
         return st_region_wait;
@@ -136,6 +165,11 @@ public class LockStats {
     private int st_region_nowait;
     public int getRegionNowait() {
         return st_region_nowait;
+    }
+
+    private int st_hash_len;
+    public int getHashLen() {
+        return st_hash_len;
     }
 
     private int st_regsize;
@@ -151,9 +185,9 @@ public class LockStats {
             + "\n  st_maxlockers=" + st_maxlockers
             + "\n  st_maxobjects=" + st_maxobjects
             + "\n  st_nmodes=" + st_nmodes
+            + "\n  st_nlockers=" + st_nlockers
             + "\n  st_nlocks=" + st_nlocks
             + "\n  st_maxnlocks=" + st_maxnlocks
-            + "\n  st_nlockers=" + st_nlockers
             + "\n  st_maxnlockers=" + st_maxnlockers
             + "\n  st_nobjects=" + st_nobjects
             + "\n  st_maxnobjects=" + st_maxnobjects
@@ -168,8 +202,15 @@ public class LockStats {
             + "\n  st_nlocktimeouts=" + st_nlocktimeouts
             + "\n  st_txntimeout=" + st_txntimeout
             + "\n  st_ntxntimeouts=" + st_ntxntimeouts
+            + "\n  st_objs_wait=" + st_objs_wait
+            + "\n  st_objs_nowait=" + st_objs_nowait
+            + "\n  st_lockers_wait=" + st_lockers_wait
+            + "\n  st_lockers_nowait=" + st_lockers_nowait
+            + "\n  st_locks_wait=" + st_locks_wait
+            + "\n  st_locks_nowait=" + st_locks_nowait
             + "\n  st_region_wait=" + st_region_wait
             + "\n  st_region_nowait=" + st_region_nowait
+            + "\n  st_hash_len=" + st_hash_len
             + "\n  st_regsize=" + st_regsize
             ;
     }

@@ -1,0 +1,23 @@
+m4_comment([$Id: toc.so,v 1.15 2006/11/13 18:05:04 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 4.2 applications to m4_db 4.3,
+    Upgrading to release 4.3,,)
+
+m4_nlistbegin
+m4_nlistns([m4_link(intro, [Release 4.3: introduction])])
+m4_nlistns([m4_link(java, [Release 4.3: Java])])
+m4_nlistns([m4_link(err,
+    [Release 4.3: DB_ENV-__GT__set_errcall, DB-__GT__set_errcall])])
+m4_nlistns([m4_link(cput, [Release 4.3: DBcursor-__GT__c_put])])
+m4_nlistns([m4_link(stat, [Release 4.3: DB-__GT__stat])])
+m4_nlistns([m4_link(verb, [Release 4.3: DB_ENV-__GT__set_verbose])])
+m4_nlistns([m4_link(log, [Release 4.3: Logging])])
+m4_nlistns([m4_link(fileopen, [Release 4.3: DB_FILEOPEN])])
+m4_nlistns([m4_link(enomem, [Release 4.3: ENOMEM and DbMemoryException])])
+m4_nlistns([m4_link(repl, [Release 4.3: Replication])])
+m4_nlistns([m4_link(rtc, [Release 4.3: Run-time configuration])])
+m4_nlistns([m4_link(disk, [Release 4.3: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

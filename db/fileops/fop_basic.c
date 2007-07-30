@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: fop_basic.c,v 12.19 2006/09/19 15:06:59 bostic Exp $
+ * $Id: fop_basic.c,v 12.25 2007/05/17 15:15:37 bostic Exp $
  */
 
 #include "db_config.h"
@@ -82,7 +81,11 @@ __fop_create(dbenv, txn, fhpp, name, appname, mode, flags)
 	if (mode == 0)
 		mode = __db_omode(OWNER_RW);
 
-	if (DBENV_LOGGING(dbenv)) {
+	if (DBENV_LOGGING(dbenv)
+#if !defined(DEBUG_WOP)
+	    && txn != NULL
+#endif
+	    ) {
 		DB_INIT_DBT(data, name, strlen(name) + 1);
 		if ((ret = __fop_create_log(dbenv, txn, &lsn,
 		    flags | DB_FLUSH,
@@ -95,7 +98,7 @@ __fop_create(dbenv, txn, fhpp, name, appname, mode, flags)
 	if (fhpp == NULL)
 		fhpp = &fhp;
 	ret = __os_open(
-	    dbenv, real_name, DB_OSO_CREATE | DB_OSO_EXCL, mode, fhpp);
+	    dbenv, real_name, 0, DB_OSO_CREATE | DB_OSO_EXCL, mode, fhpp);
 
 err:
 DB_TEST_RECOVERY_LABEL
@@ -138,7 +141,11 @@ __fop_remove(dbenv, txn, fileid, name, appname, flags)
 		    dbenv, fileid, NULL, real_name, NULL, 0)) != 0)
 			goto err;
 	} else {
-		if (DBENV_LOGGING(dbenv)) {
+		if (DBENV_LOGGING(dbenv)
+#if !defined(DEBUG_WOP)
+		    && txn != NULL
+#endif
+		) {
 			memset(&fdbt, 0, sizeof(ndbt));
 			fdbt.data = fileid;
 			fdbt.size = fileid == NULL ? 0 : DB_FILE_ID_LEN;
@@ -170,7 +177,7 @@ err:	if (real_name != NULL)
  *
  * PUBLIC: int __fop_write __P((DB_ENV *,
  * PUBLIC:     DB_TXN *, const char *, APPNAME, DB_FH *, u_int32_t, db_pgno_t,
- * PUBLIC:     u_int32_t, u_int8_t *, u_int32_t, u_int32_t, u_int32_t));
+ * PUBLIC:     u_int32_t, void *, u_int32_t, u_int32_t, u_int32_t));
  */
 int
 __fop_write(dbenv,
@@ -183,7 +190,7 @@ __fop_write(dbenv,
 	u_int32_t pgsize;
 	db_pgno_t pageno;
 	u_int32_t off;
-	u_int8_t *buf;
+	void *buf;
 	u_int32_t size, istmp, flags;
 {
 	DB_LSN lsn;
@@ -201,7 +208,11 @@ __fop_write(dbenv,
 	    __db_appname(dbenv, appname, name, 0, NULL, &real_name)) != 0)
 		return (ret);
 
-	if (DBENV_LOGGING(dbenv)) {
+	if (DBENV_LOGGING(dbenv)
+#if !defined(DEBUG_WOP)
+	    && txn != NULL
+#endif
+	    ) {
 		memset(&data, 0, sizeof(data));
 		data.data = buf;
 		data.size = size;
@@ -214,7 +225,7 @@ __fop_write(dbenv,
 
 	if (fhp == NULL) {
 		/* File isn't open; we need to reopen it. */
-		if ((ret = __os_open(dbenv, real_name, 0, 0, &fhp)) != 0)
+		if ((ret = __os_open(dbenv, real_name, 0, 0, 0, &fhp)) != 0)
 			goto err;
 		local_open = 1;
 	}
@@ -240,17 +251,18 @@ err:	if (local_open &&
  * __fop_rename --
  *	Change a file's name.
  *
- * PUBLIC: int __fop_rename __P((DB_ENV *, DB_TXN *,
- * PUBLIC:      const char *, const char *, u_int8_t *, APPNAME, u_int32_t));
+ * PUBLIC: int __fop_rename __P((DB_ENV *, DB_TXN *, const char *,
+ * PUBLIC:      const char *, u_int8_t *, APPNAME, int, u_int32_t));
  */
 int
-__fop_rename(dbenv, txn, oldname, newname, fid, appname, flags)
+__fop_rename(dbenv, txn, oldname, newname, fid, appname, with_undo, flags)
 	DB_ENV *dbenv;
 	DB_TXN *txn;
 	const char *oldname;
 	const char *newname;
 	u_int8_t *fid;
 	APPNAME appname;
+	int with_undo;
 	u_int32_t flags;
 {
 	DB_LSN lsn;
@@ -264,14 +276,25 @@ __fop_rename(dbenv, txn, oldname, newname, fid, appname, flags)
 	if ((ret = __db_appname(dbenv, appname, newname, 0, NULL, &n)) != 0)
 		goto err;
 
-	if (DBENV_LOGGING(dbenv)) {
+	if (DBENV_LOGGING(dbenv)
+#if !defined(DEBUG_WOP)
+	    && txn != NULL
+#endif
+	    ) {
 		DB_INIT_DBT(old, oldname, strlen(oldname) + 1);
 		DB_INIT_DBT(new, newname, strlen(newname) + 1);
 		memset(&fiddbt, 0, sizeof(fiddbt));
 		fiddbt.data = fid;
 		fiddbt.size = DB_FILE_ID_LEN;
-		if ((ret = __fop_rename_log(dbenv, txn, &lsn, flags | DB_FLUSH,
-		    &old, &new, &fiddbt, (u_int32_t)appname)) != 0)
+		if (with_undo)
+			ret = __fop_rename_log(dbenv,
+			    txn, &lsn, flags | DB_FLUSH,
+			    &old, &new, &fiddbt, (u_int32_t)appname);
+		else
+			ret = __fop_rename_noundo_log(dbenv,
+			    txn, &lsn, flags | DB_FLUSH,
+			    &old, &new, &fiddbt, (u_int32_t)appname);
+		if (ret != 0)
 			goto err;
 	}
 

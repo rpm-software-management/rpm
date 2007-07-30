@@ -1,0 +1,83 @@
+m4_comment([$Id: dbt_bulk.so,v 10.14 2007/01/31 14:45:22 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[DB_MULTIPLE_INIT, DB_MULTIPLE_NEXT, DB_MULTIPLE_KEY_NEXT,
+	DB_MULTIPLE_RECNO_NEXT])
+include(m4/m4.seealso)
+
+m4_page_header(DBT, [DBT: Bulk Retrieval], yes)
+
+m4_idefz(bulk retrieval)
+m4_p([dnl
+If either of the m4_ref(DB_MULTIPLE) or m4_ref(DB_MULTIPLE_KEY) flags
+were specified to the m4_ref(dbh_get) or m4_refT(dbc_get)s, the data
+m4_ref(Dbt) returned by those interfaces will refer to a buffer that is
+filled with data.  Access to that data is through the following
+macros:])
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_MULTIPLE_INIT), [dnl
+m4_literal([DB_MULTIPLE_INIT(void *pointer, m4_ref(Dbt) *data);])
+m4_p([dnl
+Initialize the retrieval.  The m4_arg(pointer) parameter is a variable
+to be initialized.  The m4_arg(data) parameter is a m4_ref(Dbt)
+structure returned from a successful call to m4_ref(dbh_get) or
+m4_ref(dbc_get) for which one of the m4_ref(DB_MULTIPLE) or
+m4_ref(DB_MULTIPLE_KEY) flags was specified.])])
+
+m4_tag(m4_idef(DB_MULTIPLE_NEXT), [dnl
+m4_literal([DB_MULTIPLE_NEXT(void *pointer, m4_ref(Dbt) *data, void *retdata, size_t retdlen);])
+m4_p([dnl
+The m4_arg(data) parameter is a m4_ref(Dbt) structure returned from a
+successful call to m4_ref(dbh_get) or m4_ref(dbc_get) for which the
+m4_ref(DB_MULTIPLE) flag was specified.  The m4_arg(pointer) and
+m4_arg(data) parameters must have been previously initialized by a call
+to m4_ref(DB_MULTIPLE_INIT).  The m4_arg(retdata) parameter is set to
+refer to the next data element in the returned set, and the
+m4_arg(retdlen) parameter is set to the length, in bytes, of that data
+element.  When used with the Queue and Recno access methods,
+m4_arg(retdata) will be set to NULL for deleted records.  The
+m4_arg(pointer) parameter is set to NULL if there are no more data
+elements in the returned set.])])
+
+m4_tag(m4_idef(DB_MULTIPLE_KEY_NEXT), [dnl
+m4_literal([DB_MULTIPLE_KEY_NEXT(void *pointer, m4_ref(Dbt) *data,
+	void *retkey, size_t retklen, void *retdata, size_t retdlen);])
+m4_p([dnl
+The m4_arg(data) parameter is a m4_ref(Dbt) structure returned from a
+successful call to m4_ref(dbc_get) with the Btree or Hash access methods
+for which the m4_ref(DB_MULTIPLE_KEY) flag was specified.  The
+m4_arg(pointer) and m4_arg(data) parameters must have been previously
+initialized by a call to m4_ref(DB_MULTIPLE_INIT).  The m4_arg(retkey)
+parameter is set to refer to the next key element in the returned set,
+and the m4_arg(retklen) parameter is set to the length, in bytes, of
+that key element.  The m4_arg(retdata) parameter is set to refer to the
+next data element in the returned set, and the m4_arg(retdlen) parameter
+is set to the length, in bytes, of that data element.  The
+m4_arg(pointer) parameter is set to NULL if there are no more key/data
+pairs in the returned set.])])
+
+m4_tag(m4_idef(DB_MULTIPLE_RECNO_NEXT), [dnl
+m4_literal([DB_MULTIPLE_RECNO_NEXT(void *pointer, m4_ref(Dbt) *data,
+	db_recno_t recno, void * retdata, size_t retdlen);])
+m4_p([dnl
+The m4_arg(data) parameter is a m4_ref(Dbt) structure returned from a
+successful call to m4_ref(dbc_get) with the Queue or Recno access
+methods for which the m4_ref(DB_MULTIPLE_KEY) flag was specified.  The
+m4_arg(pointer) and m4_arg(data) parameters must have been previously
+initialized by a call to m4_ref(DB_MULTIPLE_INIT).  The m4_arg(recno)
+parameter is set to the record number of the next record in the returned
+set.  The m4_arg(retdata) parameter is set to refer to the next data
+element in the returned set, and the m4_arg(retdlen) parameter is set to
+the length, in bytes, of that data element.  Deleted records are not
+included in the results.  The m4_arg(pointer) parameter is set to NULL
+if there are no more key/data pairs in the returned set.])])
+
+m4_tagend
+
+m4_p([dnl
+These macros may be called multiple times, but m4_ref(DB_MULTIPLE_INIT)
+must be called before each new access of the data.])
+
+m4_page_footer

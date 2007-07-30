@@ -1,0 +1,29 @@
+m4_comment([$Id: environ.so,v 10.21 2001/04/16 17:11:40 bostic Exp $])
+
+m4_ref_title(Programmer Notes,
+    Environment variables,
+    @environment variables, program/errorret, program/mt)
+
+m4_p([dnl
+The m4_db library uses the following environment variables:])
+
+m4_tagbegin
+m4_tag(DB_HOME, [dnl
+If the environment variable DB_HOME is set, it is used as part of
+m4_link(M4RELDIR/ref/env/naming, [File Naming]).
+Note: For the DB_HOME variable to take effect, either the
+m4_ref(DB_USE_ENVIRON) or m4_ref(DB_USE_ENVIRON_ROOT) flags must be
+specified to m4_ref(dbenv_open).])
+
+dnl Note, one of the
+dnl flags, m4_ref(DB_USE_ENVIRON) or m4_ref(DB_USE_ENVIRON_ROOT) must be
+dnl specified to m4_ref(dbenv_open) for the DB_HOME variable to take effect.
+
+m4_tag([TMPDIR, TEMP, TMP, TempFolder], [dnl
+The TMPDIR, TEMP, TMP, and TempFolder environment variables are all
+checked as locations in which to create temporary files.  See
+m4_ref(dbenv_set_tmp_dir) for more information.])
+
+m4_tagend
+
+m4_page_footer

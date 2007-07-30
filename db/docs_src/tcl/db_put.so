@@ -1,0 +1,55 @@
+m4_comment([$Id: db_put.so,v 11.14 2004/12/16 19:13:05 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db put, m4_tcl_db_put, [dnl
+db put
+	-append
+	m4_tcl_arg([-partial {doff dlen}])
+	m4_tcl_arg([-txn txnid])
+	data
+db put
+	m4_tcl_arg([-nooverwrite])
+	m4_tcl_arg([-partial {doff dlen}])
+	m4_tcl_arg([-txn txnid])
+	key data
+])
+
+m4_p([dnl
+The m4_tcl_db_put command stores the specified key/data pair into the
+database.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-append], [dnl
+Append the data item to the end of the database. For the m4_arg(-append)
+option to be specified, the underlying database must be a Queue or Recno
+database.  The record number allocated to the record is returned on
+success.])
+
+m4_tag([-nooverwrite], [dnl
+Enter the new key/data pair only if the key does not already appear in
+the database.])
+
+m4_tag([-partial {doff dlen}], [m4_tcl_partial_put(m4_tcl_db_put)])
+
+m4_tcl_txnopt
+
+m4_tagend
+
+m4_p([dnl
+The m4_tcl_db_put command returns either 0 or a record number for success
+(the record number is returned if the m4_arg(-append) option was specified).
+If an error occurs, a m4_db error message is returned or a Tcl error is
+thrown.])
+
+m4_p([dnl
+If the underlying database is a Queue or Recno database, then the given
+key will be interpreted by Tcl as an integer.  For all other database
+types, the key is interpreted by Tcl as a byte array.])
+
+m4_page_footer

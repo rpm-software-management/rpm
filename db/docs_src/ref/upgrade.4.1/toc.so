@@ -1,0 +1,23 @@
+m4_comment([$Id: toc.so,v 1.18 2006/10/02 15:56:38 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 4.0 applications to m4_db 4.1,
+    Upgrading to release 4.1,,)
+
+m4_nlistbegin
+m4_nlist([m4_link(intro, [Release 4.1: introduction])])
+m4_nlistns([m4_link(excl, [Release 4.1: DB_EXCL])])
+m4_nlistns([m4_link(fop, [Release 4.1: DB-__GT__associate, DB-__GT__open, DB-__GT__remove, DB-__GT__rename])])
+m4_nlistns([m4_link(log_register, [Release 4.1: DB_ENV-__GT__log_register])])
+m4_nlistns([m4_link(log_stat, [Release 4.1: st_flushcommit])])
+m4_nlistns([m4_link(checkpoint, [Release 4.1: DB_CHECKPOINT, DB_CURLSN])])
+m4_nlistns([m4_link(incomplete, [Release 4.1: DB_INCOMPLETE])])
+m4_nlistns([m4_link(memp_sync, [Release 4.1: DB_ENV-__GT__memp_sync])])
+m4_nlistns([m4_link(hash_nelem, [Release 4.1: DB-__GT__stat.hash_nelem])])
+m4_nlistns([m4_link(java, [Release 4.1: Java exceptions])])
+m4_nlistns([m4_link(cxx, [Release 4.1: C++ exceptions])])
+m4_nlistns([m4_link(app_dispatch, [Release 4.1: Application-specific logging and recovery])])
+m4_nlistns([m4_link(disk, [Release 4.1: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

@@ -1,0 +1,75 @@
+m4_comment([$Id: env_set_lg_max.so,v 10.45 2004/09/28 15:04:21 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lg_max, dbenv_get_lg_max])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lg_max),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lg_max(DB_ENV *dbenv, u_int32_t lg_max);
+m4_blank
+int
+DB_ENV-__GT__get_lg_max(DB_ENV *dbenv, u_int32_t *lg_maxp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lg_max(u_int32_t lg_max);
+m4_blank
+int
+DbEnv::get_lg_max(u_int32_t *);
+]))
+
+m4_p([dnl
+Set the maximum size of a single file in the log, in bytes.  Because
+m4_ref(DbLsn) file offsets are unsigned four-byte values, the set
+value may not be larger than the maximum unsigned four-byte value.])
+
+m4_p([dnl
+When the logging subsystem is configured for on-disk logging, the
+default size of a log file is 10MB.])
+
+m4_p([dnl
+When the logging subsystem is configured for in-memory logging, the
+default size of a log file is 256KB.  In addition, the configured log
+buffer size must be larger than the log file size.  (The logging
+subsystem divides memory configured for in-memory log records into
+"files", as database environments configured for in-memory log records
+may exchange log records with other members of a replication group, and
+those members may be configured to store log records on-disk.)  When
+choosing log buffer and file sizes for in-memory logs, applications
+should ensure the in-memory log buffer size is large enough that no
+transaction will ever span the entire buffer, and avoid a state where
+the in-memory buffer is full and no space can be freed because a
+transaction that started in the first log "file" is still active.])
+
+m4_p([dnl
+See m4_link(M4RELDIR/ref/log/limits, [Log File Limits]) for more
+information.])
+
+m4_env_config(dbenv_set_lg_max,
+[log file size], set_lg_max, [the size in bytes])
+
+m4_scope_env(dbenv_set_lg_max)
+
+m4_when_any(dbenv_set_lg_max)
+If no size is specified by the application, the size last specified for
+the database region will be used, or if no database region previously
+existed, the default will be used.
+
+m4_return(dbenv_set_lg_max, std)
+
+m4_parambegin
+m4_param(lg_max, [dnl
+The m4_arg(lg_max) parameter is the size of a single log file, in bytes.])
+m4_paramend
+
+m4_err(dbenv_set_lg_max,
+einval, [the method was called after m4_ref(dbenv_open) was called;
+the size of the log file is less than four times the size of the in-memory
+log buffer;
+The specified log file size was too large])
+
+m4_pf_getter(dbenv_get_lg_max, maximum log file size,, lg_maxp)
+
+m4_seealso(DbLog)
+m4_page_footer

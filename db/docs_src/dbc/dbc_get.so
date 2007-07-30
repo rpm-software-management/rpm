@@ -1,0 +1,336 @@
+m4_comment([$Id: dbc_get.so,v 10.117 2007/05/31 18:52:36 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbc_get, dbc_pget, DB_CURRENT, DB_FIRST, DB_GET_BOTH,
+	DB_GET_BOTH_RANGE, DB_GET_RECNO, DB_JOIN_ITEM, DB_LAST,
+	DB_MULTIPLE, DB_MULTIPLE_KEY, DB_NEXT, DB_NEXT_DUP,
+	DB_NEXT_NODUP, DB_PREV, DB_PREV_DUP, DB_PREV_NODUP,
+	DB_SECONDARY_BAD, DB_SET, DB_SET_RANGE, DB_SET_RECNO])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbc_get),
+ifelse(M4API, C_API, [dnl
+int
+DBcursor-__GT__get(DBC *DBcursor,
+    DBT *key, DBT *data, u_int32_t flags);
+m4_blank
+int
+DBcursor-__GT__pget(DBC *DBcursor,
+    DBT *key, DBT *pkey, DBT *data, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Dbc::get(Dbt *key, Dbt *data, u_int32_t flags);
+m4_blank
+int
+Dbc::pget(Dbt *key, Dbt *pkey, Dbt *data, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbc_get) retrieves key/data pairs from the database.  The
+address and length of the key are returned in the object to which
+m4_arg(key) refers (except for the case of the m4_ref(DB_SET) flag, in
+which the m4_arg(key) object is unchanged), and the address and length
+of the data are returned in the object to which m4_arg(data) refers.])
+
+m4_p([dnl
+When called on a cursor opened on a database that has been made into a
+secondary index using the m4_refT(dbh_associate), the m4_ref(dbc_get)
+and m4_refT(dbc_pget)s return the key from the secondary index and the
+data item from the primary database. In addition, the m4_refT(dbc_pget)
+returns the key from the primary database.  In databases that are not
+secondary indices, the m4_refT(dbc_pget) will always fail.])
+
+m4_p([dnl
+Modifications to the database during a sequential scan will be reflected
+in the scan; that is, records inserted behind a cursor will not be
+returned while records inserted in front of a cursor will be returned.])
+
+m4_p([dnl
+In Queue and Recno databases, missing entries (that is, entries that
+were never explicitly created or that were created and then deleted)
+will be skipped during a sequential scan.])
+
+m4_return(dbc_get, prev)
+
+m4_p([dnl
+If m4_ref(dbc_get) fails for any reason, the state of the cursor will be
+unchanged.])
+
+m4_parambegin
+m4_param_data
+m4_param(flags, [dnl
+m4_sf_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_CURRENT), [dnl
+Return the key/data pair to which the cursor refers.
+m4_return(dbc_get, specific, DB_KEYEMPTY,
+[if m4_ref(DB_CURRENT) is set and the cursor key/data pair was deleted])])
+
+m4_tag([m4_idef(DB_FIRST)], [dnl
+The cursor is set to refer to the first key/data pair of the database,
+and that pair is returned.  If the first key has duplicate values, the
+first data item in the set of duplicates is returned.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_ref(dbc_get) using the
+m4_ref(DB_FIRST) flag will ignore any keys that exist but were never
+explicitly created by the application, or were created and later
+deleted.])
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_FIRST) is set and the database is empty])])
+
+m4_tag(m4_idef(DB_GET_BOTH), [dnl
+The m4_ref(DB_GET_BOTH) flag is identical to the m4_ref(DB_SET) flag,
+except that both the key and the data parameters must be matched by the
+key and data item in the database.
+m4_p([dnl
+When used with the m4_refT(dbc_pget) version of this method on a
+secondary index handle, both the secondary and primary keys must be
+matched by the secondary and primary key item in the database.  It is
+an error to use the m4_ref(DB_GET_BOTH) flag with the m4_ref(dbc_get)
+version of this method and a cursor that has been opened on a secondary
+index handle.])])
+
+m4_tag(m4_idef(DB_GET_BOTH_RANGE), [dnl
+The m4_ref(DB_GET_BOTH_RANGE) flag is identical to the m4_ref(DB_GET_BOTH)
+flag, except that, in the case of any database supporting sorted
+duplicate sets, the returned key/data pair is the smallest data item
+greater than or equal to the specified data item (as determined by the
+comparison function), permitting partial matches and range searches in
+duplicate data sets.])
+
+m4_tag(m4_idef(DB_GET_RECNO), [dnl
+Return the record number associated with the cursor.  The record number
+will be returned in m4_arg(data), as described in m4_ref(Dbt).  The
+m4_arg(key) parameter is ignored.
+m4_p([dnl
+For m4_ref(DB_GET_RECNO) to be specified, the underlying database must be
+of type Btree, and it must have been created with the m4_ref(DB_RECNUM)
+flag.])
+m4_p([dnl
+When called on a cursor opened on a database that has been made into a
+secondary index, the m4_ref(dbc_get) and m4_refT(dbc_pget)s return the
+record number of the primary database in m4_arg(data).  In addition, the
+m4_refT(dbc_pget) returns the record number of the secondary index in
+m4_arg(pkey).  If either underlying database is not of type Btree or is
+not created with the m4_ref(DB_RECNUM) flag, the out-of-band record
+number of 0 is returned.])])
+
+m4_tag(m4_idef(DB_JOIN_ITEM), [dnl
+Do not use the data value found in all of the cursors as a lookup key for
+the primary database, but simply return it in the key parameter instead.
+The data parameter is left unchanged.
+m4_p([dnl
+For m4_ref(DB_JOIN_ITEM) to be specified, the underlying cursor must have
+been returned from the m4_refT(dbh_join).])])
+
+m4_tag([m4_idef(DB_LAST)], [dnl
+The cursor is set to refer to the last key/data pair of the database,
+and that pair is returned.  If the last key has duplicate values, the
+last data item in the set of duplicates is returned.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_ref(dbc_get) using the
+m4_ref(DB_LAST) flag will ignore any keys that exist but were never
+explicitly created by the application, or were created and later
+deleted.])
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_LAST) is set and the database is empty])])
+
+m4_tag([m4_idef(DB_NEXT)], [dnl
+If the cursor is not yet initialized, m4_ref(DB_NEXT) is identical to
+m4_ref(DB_FIRST).  Otherwise, the cursor is moved to the next key/data
+pair of the database, and that pair is returned.  In the presence of
+duplicate key values, the value of the key may not change.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_ref(dbc_get) using the
+m4_ref(DB_NEXT) flag will skip any keys that exist but were never
+explicitly created by the application, or those that were created and
+later deleted.])
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_NEXT) is set and the cursor is already on the last record
+in the database])])
+
+m4_tag(m4_idef(DB_NEXT_DUP), [dnl
+If the next key/data pair of the database is a duplicate data record for
+the current key/data pair, the cursor is moved to the next key/data pair
+of the database, and that pair is returned.
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_NEXT_DUP) is set and the next key/data pair of the
+database is not a duplicate data record for the current key/data pair])])
+
+m4_tag([dnl
+m4_idef(DB_NEXT_NODUP)], [dnl
+If the cursor is not yet initialized, m4_ref(DB_NEXT_NODUP) is identical
+to m4_ref(DB_FIRST).  Otherwise, the cursor is moved to the next
+non-duplicate key of the database, and that key/data pair is returned.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_ref(dbc_get) using the
+m4_ref(DB_NEXT_NODUP) flag will ignore any keys that exist but were
+never explicitly created by the application, or those that were created
+and later deleted.])
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_NEXT_NODUP) is set and no non-duplicate key/data pairs
+occur after the cursor position in the database])])
+
+m4_tag([m4_idef(DB_PREV)], [dnl
+If the cursor is not yet initialized, m4_ref(DB_PREV) is identical to
+m4_ref(DB_LAST).  Otherwise, the cursor is moved to the previous
+key/data pair of the database, and that pair is returned.  In the
+presence of duplicate key values, the value of the key may not change.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_ref(dbc_get) using the
+m4_ref(DB_PREV) flag will skip any keys that exist but were never
+explicitly created by the application, or those that were created and
+later deleted.])
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_PREV) is set and the cursor is already on the first record
+in the database])])
+
+m4_tag(m4_idef(DB_PREV_DUP), [dnl
+If the previous key/data pair of the database is a duplicate data record
+for the current key/data pair, the cursor is moved to the previous key/data
+pair of the database, and that pair is returned.
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_PREV_DUP) is set and the previous key/data pair of the
+database is not a duplicate data record for the current key/data pair])])
+
+m4_tag([dnl
+m4_idef(DB_PREV_NODUP)], [dnl
+If the cursor is not yet initialized, m4_ref(DB_PREV_NODUP) is identical
+to m4_ref(DB_LAST).  Otherwise, the cursor is moved to the previous
+non-duplicate key of the database, and that key/data pair is returned.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_ref(dbc_get) using the
+m4_ref(DB_PREV_NODUP) flag will ignore any keys that exist but were
+never explicitly created by the application, or those that were created
+and later deleted.])
+m4_return(dbc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_PREV_NODUP) is set and no non-duplicate key/data pairs
+occur before the cursor position in the database])])
+
+m4_tag(m4_idef(DB_SET), [dnl
+Move the cursor to the specified key/data pair of the database, and
+return the datum associated with the given key.
+m4_return(dbc_get, specific, DB_NOTFOUND, [if m4_ref(DB_SET) is set and
+no matching keys are found],
+specific, DB_KEYEMPTY, [if m4_ref(DB_SET) is set and the database is a
+Queue or Recno database, and the specified key exists, but was never
+explicitly created by the application or was later deleted],
+[In the presence of duplicate key values, m4_ref(dbc_get) will return the
+first data item for the given key.])])
+
+m4_tag(m4_idef(DB_SET_RANGE), [dnl
+The m4_ref(DB_SET_RANGE) flag is identical to the m4_ref(DB_SET) flag,
+except that in the case of the Btree access method, the key is returned
+as well as the data item and the returned key/data pair is the smallest
+key greater than or equal to the specified key (as determined by the
+Btree comparison function), permitting partial key matches and range
+searches.])
+
+m4_tag(m4_idef(DB_SET_RECNO), [dnl
+Move the cursor to the specific numbered record of the database, and
+return the associated key/data pair.  The m4_arg(data) field of the
+specified m4_arg(key) must be a pointer to a memory location from which
+a m4_ref(db_recno_t) may be read, as described in m4_ref(Dbt).  This
+memory location will be read to determine the record to be retrieved.
+m4_p([dnl
+For m4_ref(DB_SET_RECNO) to be specified, the underlying database must be
+of type Btree, and it must have been created with the m4_ref(DB_RECNUM)
+flag.])])
+m4_tagend
+
+m4_sf_or_add(1)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_READ_UNCOMMITTED), [dnl
+Database items read during a transactional call will have degree 1
+isolation, including modified but not yet committed data.  Silently
+ignored if the m4_ref(DB_READ_UNCOMMITTED) flag was not specified when
+the underlying database was opened.])
+
+m4_tag(m4_idef(DB_MULTIPLE), [dnl
+Return multiple data items in the m4_arg(data) parameter.
+m4_p([dnl
+In the case of Btree or Hash databases, duplicate data items for the
+current key, starting at the current cursor position, are entered into
+the buffer.  Subsequent calls with both the m4_ref(DB_NEXT_DUP) and
+m4_ref(DB_MULTIPLE) flags specified will return additional duplicate
+data items associated with the current key or m4_ref(DB_NOTFOUND) if
+there are no additional duplicate data items to return.  Subsequent
+calls with both the m4_ref(DB_NEXT) and m4_ref(DB_MULTIPLE) flags
+specified will return additional duplicate data items associated with
+the current key or if there are no additional duplicate data items will
+return the next key and its data items or m4_ref(DB_NOTFOUND) if there
+are no additional keys in the database.])
+m4_p([dnl
+In the case of Queue or Recno databases, data items starting at the
+current cursor position are entered into the buffer.  The record number
+of the first record will be returned in the m4_arg(key) parameter.  The
+record number of each subsequent returned record must be calculated from
+this value.  Subsequent calls with the m4_ref(DB_MULTIPLE) flag
+specified will return additional data items or m4_ref(DB_NOTFOUND) if
+there are no additional data items to return.])
+m4_p([dnl
+m4_bulk_mem])
+m4_p([dnl
+The multiple data items can be iterated over using the
+ifelse(M4API, C_API, m4_ref(DB_MULTIPLE_NEXT) macro,
+m4_ref(DbMultipleDataIterator) class).])
+m4_p([dnl
+The m4_ref(DB_MULTIPLE) flag may only be used with the
+m4_ref(DB_CURRENT), m4_ref(DB_FIRST), m4_ref(DB_GET_BOTH),
+m4_ref(DB_GET_BOTH_RANGE), m4_ref(DB_NEXT), m4_ref(DB_NEXT_DUP),
+m4_ref(DB_NEXT_NODUP), m4_ref(DB_SET), m4_ref(DB_SET_RANGE), and
+m4_ref(DB_SET_RECNO) options.  The m4_ref(DB_MULTIPLE) flag may not be
+used when accessing databases made into secondary indices using the
+m4_refT(dbh_associate).])])
+
+m4_tag(m4_idef(DB_MULTIPLE_KEY), [dnl
+Return multiple key and data pairs in the m4_arg(data) parameter.
+m4_p([dnl
+Key and data pairs, starting at the current cursor position, are entered
+into the buffer.  Subsequent calls with both the m4_ref(DB_NEXT) and
+m4_ref(DB_MULTIPLE_KEY) flags specified will return additional key and data
+pairs or m4_ref(DB_NOTFOUND) if there are no additional key and data
+items to return.])
+m4_p([dnl
+In the case of Btree or Hash databases,
+the multiple key and data pairs can be iterated over using the
+ifelse(M4API, C_API, m4_ref(DB_MULTIPLE_KEY_NEXT) macro,
+m4_ref(DbMultipleKeyDataIterator) class).])
+m4_p([dnl
+In the case of Queue or Recno databases,
+the multiple record number and data pairs can be iterated over using the
+ifelse(M4API, C_API, m4_ref(DB_MULTIPLE_RECNO_NEXT) macro,
+m4_ref(DbMultipleRecnoDataIterator) class).])
+m4_p([dnl
+m4_bulk_mem])
+m4_p([dnl
+The m4_ref(DB_MULTIPLE_KEY) flag may only be used with the
+m4_ref(DB_CURRENT), m4_ref(DB_FIRST), m4_ref(DB_GET_BOTH),
+m4_ref(DB_GET_BOTH_RANGE), m4_ref(DB_NEXT), m4_ref(DB_NEXT_DUP),
+m4_ref(DB_NEXT_NODUP), m4_ref(DB_SET), m4_ref(DB_SET_RANGE), and
+m4_ref(DB_SET_RECNO) options.  The m4_ref(DB_MULTIPLE_KEY) flag may not
+be used when accessing databases made into secondary indices using the
+m4_refT(dbh_associate).])])
+
+m4_rmw_flag()
+m4_tagend])
+
+m4_param_key
+
+m4_param(pkey, [The secondary index key m4_ref(Dbt) operated on.])
+m4_paramend
+
+m4_err(dbc_get,
+buffersmall,
+[requested item could not be returned due to undersized buffer],
+deadlock, repinval, secondary_bad, einval,
+[the m4_ref(DB_CURRENT), m4_ref(DB_NEXT_DUP) or m4_ref(DB_PREV_DUP) flags
+were specified and the cursor has not been initialized;
+the m4_refT(dbc_pget) was called with a cursor that does not refer to a
+secondary index])
+
+m4_seealso(Dbc)
+m4_page_footer

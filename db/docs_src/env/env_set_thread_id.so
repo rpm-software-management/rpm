@@ -1,0 +1,108 @@
+m4_comment([$Id: env_set_thread_id.so,v 10.9 2006/08/24 16:32:23 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_thread_id])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_thread_id),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_thread_id(DB_ENV *dbenv,
+    void (*thread_id)(DB_ENV *dbenv, pid_t *pid, db_threadid_t *tid));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_thread_id(
+    void (*thread_id)(DbEnv *dbenv, pid_t *pid, db_threadid_t *tid));
+]))
+
+m4_p([dnl
+Declare a function that returns a unique identifier pair for the current
+thread of control.  The m4_refT(dbenv_set_thread_id) supports the
+m4_refT(dbenv_failchk).  For more information, see
+m4_link(M4RELDIR/ref/cam/app, Architecting Data Store and Concurrent
+Data Store applications), and m4_link(M4RELDIR/ref/transapp/app,
+Architecting Transactional Data Store applications).])
+
+m4_scope_dbenv(dbenv_set_thread_id)
+
+m4_when_any(dbenv_set_thread_id)
+
+m4_return(dbenv_set_thread_id, std)
+
+m4_parambegin
+m4_param(thread_id, [dnl
+The m4_arg(thread_id) parameter is a function which returns a unique
+identifier pair for a thread of control in a m4_db application.  The
+function takes three arguments:])
+
+m4_tagbegin
+m4_tag(m4_arg(dbenv), [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment
+handle, allowing application access to the application-private fields
+of that object.])
+m4_tag(m4_arg(pid), [dnl
+The m4_arg(pid) points to a memory location of type pid_t.  The
+process ID of the current thread of control may be returned in
+this memory location.])
+m4_tag(m4_arg(tid), [dnl
+The m4_arg(tid) points to a memory location of type db_threadid_t.  The
+thread ID of the current thread of control may be returned in this
+memory location.])
+m4_tagend
+m4_paramend
+
+m4_p([dnl
+The standard system library calls to return process and thread IDs are
+often sufficient for this purpose (for example, getpid() and
+pthread_self() on POSIX systems or GetCurrentThreadID on Windows
+systems).  However, if the m4_db application dynamically creates
+processes or threads, some care may be necessary in assigning unique
+IDs.  In most threading systems, process and thread IDs are available
+for re-use as soon as the process or thread exits.  If a new process or
+thread is created between the time of process or thread exit, and the
+m4_refT(dbenv_failchk) is run, it may be possible for
+m4_ref(dbenv_failchk) to not detect that a thread of control exited
+without properly releasing all m4_db resources.])
+
+m4_p([dnl
+It may be possible to handle this problem by inhibiting process or
+thread creation between thread of control exit and calling
+m4_ref(dbenv_failchk).  Alternatively, the m4_arg(thread_id) function
+must be constructed to not re-use m4_arg(pid)/m4_arg(tid) pairs.  For
+example, in a single process application, the returned process ID might
+be used as an incremental counter, with the returned thread ID set to
+the actual thread ID.  Obviously, the m4_arg(is_alive) function
+specified to the m4_refT(dbenv_set_isalive) must be compatible with any
+m4_arg(thread_id) function specified to m4_ref(dbenv_set_thread_id).])
+
+m4_p([dnl
+The db_threadid_t type is configured to be the same type as a standard
+thread identifier, in m4_db configurations where this type is known (for
+example, systems supporting pthread_t or thread_t, or DWORD on Windows).
+If the m4_db configuration process is unable to determine the type of a
+standard thread identifier, the db_thread_t type is set to uintmax_t (or
+the largest available unsigned integral type, on systems lacking the
+uintmax_t type).  Applications running on systems lacking a detectable
+standard thread type, and which are also using thread APIs where a
+thread identifier is not an integral value and so will not fit into the
+configured db_threadid_t type, must either translate between the
+db_threadid_t type and the thread identifier (mapping the thread
+identifier to a unique identifier of the appropriate size), or modify
+the m4_db sources to use an appropriate db_threadid_t type.  Note: we
+do not currently know of any systems where this is necessary.  If your
+application has to solve this problem, please contact our support group
+and let us know.])
+
+m4_p([dnl
+If no m4_arg(thread_id) function is specified by the application, the
+m4_db library will identify threads of control by using the taskIdSelf()
+call on VxWorks, the getpid() and GetCurrentThreadID() calls on Windows,
+the getpid() and pthread_self() calls when the m4_db library has been
+configured for POSIX pthreads or Solaris LWP threads, the getpid() and
+thr_self() calls when the m4_db library has been configured for UI
+threads, and otherwise getpid().])
+
+m4_err(dbenv_set_thread_id, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

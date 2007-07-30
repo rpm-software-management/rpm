@@ -1,0 +1,102 @@
+m4_comment([$Id: refs.so,v 10.30 2007/06/27 14:46:51 bostic Exp $])
+
+m4_ref_title(Additional References, Additional references,, distrib/layout,)
+
+m4_p([dnl
+For more information on m4_db or on database systems theory in general,
+we recommend the following sources:])
+
+m4_section(Technical Papers on m4_db)
+m4_p([dnl
+These papers have appeared in refereed conference proceedings, and are
+subject to copyrights held by the conference organizers and the authors
+of the papers.  Oracle makes them available here as a courtesy with the
+permission of the copyright holders.])
+
+m4_tagbegin
+m4_tag([m4_italic(m4_db)
+(m4_linkweb(bdb_usenix.ps, Postscript))],
+[Michael Olson, Keith Bostic, and Margo Seltzer, Proceedings of the 1999
+Summer Usenix Technical Conference, Monterey, California, June 1999.  This
+paper describes recent commercial releases of m4_db, its most important
+features, the history of the software, and Sleepycat Software's Open Source
+licensing policies.])
+
+m4_tag([m4_italic(Challenges in Embedded Database System Administration)
+(m4_linkpage(embedded, HTML))],
+[Margo Seltzer and Michael Olson, First Workshop on Embedded Systems,
+Cambridge, Massachusetts, March 1999.  This paper describes the challenges
+that face embedded systems developers, and how m4_db has been designed to
+address them.])
+
+m4_tag([m4_italic(LIBTP: Portable Modular Transactions for UNIX)
+(m4_linkweb(libtp_usenix.ps, Postscript))],
+[Margo Seltzer and Michael Olson, USENIX Conference Proceedings, Winter
+1992.  This paper describes an early prototype of the transactional system
+for m4_db.])
+
+m4_tag([m4_italic(A New Hashing Package for UNIX)
+(m4_linkweb(hash_usenix.ps, Postscript))],
+[Margo Seltzer and Oz Yigit, USENIX Conference Proceedings, Winter 1991.
+This paper describes the Extended Linear Hashing techniques used by m4_db.])
+
+m4_tagend
+
+m4_section(Background on m4_db Features)
+m4_p([dnl
+These papers, although not specific to m4_db, give a good overview of the
+way different m4_db features were implemented.])
+
+m4_tagbegin
+
+m4_tag([m4_italic(Operating System Support for Database Management)],
+[Michael Stonebraker, Communications of the ACM 24(7), 1981, pp. 412-418.])
+
+m4_tag([m4_italic(Dynamic Hash Tables)],
+[Per-Ake Larson, Communications of the ACM, April 1988.])
+
+m4_tag([m4_italic(Linear Hashing: A New Tool for File and Table Addressing)],
+[m4_link(witold, Witold Litwin), Proceedings of the 6th International
+Conference on Very Large Databases (VLDB), 1980])
+
+m4_tag([m4_italic(The Ubiquitous B-tree)],
+[Douglas Comer, ACM Comput. Surv. 11, 2 (June 1979), pp. 121-138.])
+
+m4_tag([m4_italic(Prefix B-trees)],
+[Bayer and Unterauer, ACM Transactions on Database Systems, Vol. 2, 1
+(March 1977), pp. 11-26.])
+
+m4_tag([m4_italic(The Art of Computer Programming Vol. 3: Sorting and Searching)],
+[D.E. Knuth, 1968, pp. 471-480.])
+
+m4_tag([m4_italic(Document Processing in a Relational Database System)],
+[Michael Stonebraker, Heidi Stettner, Joseph Kalash, Antonin Guttman,
+Nadene Lynn, Memorandum No. UCB/ERL M82/32, May 1982.])
+
+m4_tagend
+
+m4_section(Database Systems Theory)
+m4_p([dnl
+These publications are standard reference works on the design and
+implementation of database systems.  m4_db uses many of the ideas they
+describe.])
+
+m4_tagbegin
+
+m4_tag(m4_italic([Transaction Processing Concepts and Techniques]),
+[by Jim Gray and Andreas Reuter, Morgan Kaufmann Publishers.
+We recommend chapters 1, 4 (skip 4.6, 4.7, 4.9, 4.10 and 4.11),
+7, 9, 10.3, and 10.4.])
+
+m4_tag([m4_italic([An Introduction to Database Systems, Volume 1])],
+[by C.J. Date, Addison Wesley Longman Publishers.
+In the 5th Edition, we recommend chapters 1, 2, 3, 16 and 17.])
+
+m4_tag(m4_italic([Concurrency Control and Recovery in Database Systems]),
+[by Bernstein, Goodman, Hadzilaco.  Currently out of print, but available
+from m4_linkweb(http://research.microsoft.com/pubs/ccontrol/,
+http://research.microsoft.com/pubs/ccontrol/).])
+
+m4_tagend
+
+m4_page_footer

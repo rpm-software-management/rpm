@@ -1,0 +1,58 @@
+m4_comment([$Id: env_set_mp_mmapsize.so,v 10.40 2004/09/28 15:04:21 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_mp_mmapsize, dbenv_get_mp_mmapsize])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_mp_mmapsize),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_mp_mmapsize(DB_ENV *dbenv, size_t mp_mmapsize);
+m4_blank
+int
+DB_ENV-__GT__get_mp_mmapsize(DB_ENV *dbenv, size_t *mp_mmapsizep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_mp_mmapsize(size_t mp_mmapsize);
+m4_blank
+int
+DbEnv::get_mp_mmapsize(size_t *mp_mmapsizep);
+]))
+
+m4_p([dnl
+Files that are opened read-only in the pool (and that satisfy a few
+other criteria) are, by default, mapped into the process address space
+instead of being copied into the local cache.  This can result in
+better-than-usual performance because available virtual memory is
+normally much larger than the local cache, and page faults are faster
+than page copying on many systems.  However, it can cause resource
+starvation in the presence of limited virtual memory, and it can result
+in immense process sizes in the presence of large databases.])
+
+m4_p([dnl
+The m4_refT(dbenv_get_mp_mmapsize) sets the maximum file size, in bytes,
+for a file to be mapped into the process address space.  If no value is
+specified, it defaults to 10MB.])
+
+m4_env_config(dbenv_set_mp_mmapsize,
+[maximum mapped file size], set_mp_mmapsize, [the size in bytes])
+
+m4_scope_env(dbenv_set_mp_mmapsize)
+
+m4_when_any(dbenv_set_mp_mmapsize)
+
+m4_return(dbenv_set_mp_mmapsize, std)
+
+m4_parambegin
+m4_param(mp_mmapsize, [dnl
+The m4_arg(mp_mmapsize) parameter is the maximum file size, in bytes,
+for a file to be mapped into the process address space.])
+m4_paramend
+
+m4_err(dbenv_set_mp_mmapsize,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_mp_mmapsize, maximum file map size,, mp_mmapsizep)
+
+m4_seealso(DbMpool)
+m4_page_footer

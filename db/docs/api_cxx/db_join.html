@@ -1,6 +1,5 @@
-<!--$Id: db_join.so,v 10.57 2005/02/10 20:02:28 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_join.so,v 10.58 2007/05/31 18:52:36 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -51,14 +50,16 @@ The data parameter is left unchanged.
 In addition, the following flag may be set by
 bitwise inclusively <b>OR</b>'ing it into the <b>flags</b> parameter:
 <dl compact>
-<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Read modified but not yet committed data.  Silently ignored if the
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Configure a transactional join operation to have degree 1 isolation,
+reading modified but not yet committed data.  Silently ignored if the
 <a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
 database was opened.
-<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
-Setting this flag can eliminate deadlock during a read-modify-write
-cycle by acquiring the write lock during the read part of the cycle so
-that another thread of control acquiring a read lock for the same item,
-in its own read-modify-write cycle, will not result in deadlock.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the read, if
+locking is configured.  Setting this flag can eliminate deadlock during
+a read-modify-write cycle by acquiring the write lock during the read
+part of the cycle so that another thread of control acquiring a read
+lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
 </dl>
 <dt><a href="../api_cxx/dbc_close.html">Dbc::close</a><dd>Close the returned cursor and release all resources.  (Closing the cursors
 in <b>curslist</b> is the responsibility of the caller.)
@@ -130,6 +131,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

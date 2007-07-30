@@ -1,0 +1,62 @@
+m4_comment([$Id: env_set_isalive.so,v 10.4 2006/01/27 16:13:48 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_isalive])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_isalive),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_isalive(DB_ENV *dbenv,
+    int (*is_alive)(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, u_int32_t flags));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_isalive(
+    int (*is_alive)(DbEnv *dbenv, pid_t pid, db_threadid_t tid, u_int32_t flags));
+]))
+
+m4_p([dnl
+Declare a function that returns if a thread of control (either a true
+thread or a process) is still running.  The m4_refT(dbenv_set_isalive)
+supports the m4_refT(dbenv_failchk).  For more information, see
+m4_link(M4RELDIR/ref/cam/app, Architecting Data Store and Concurrent
+Data Store applications), and m4_link(M4RELDIR/ref/transapp/app,
+Architecting Transactional Data Store applications).])
+
+m4_scope_dbenv(dbenv_set_isalive)
+
+m4_when_any(dbenv_set_isalive)
+
+m4_return(dbenv_set_isalive, std)
+
+m4_parambegin
+
+m4_param(is_alive, [dnl
+The m4_arg(is_alive) parameter is a function which returns non-zero if
+the thread of control, identified by the m4_arg(pid) and m4_arg(tid)
+arguments, is still running.  The function takes four arguments:])
+m4_tagbegin
+m4_tag(m4_arg(dbenv), [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment
+handle, allowing application access to the application-private fields
+of that object.])
+m4_tag(m4_arg(pid), [dnl
+The m4_arg(pid) parameter is a process ID returned by the function
+specified to the m4_refT(dbenv_set_thread_id).])
+m4_tag(m4_arg(tid), [dnl
+The m4_arg(tid) parameter is a thread ID returned by the function
+specified to the m4_refT(dbenv_set_thread_id).])
+m4_tag(m4_arg(flags), [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_tag(m4_idef(DB_MUTEX_PROCESS_ONLY), [dnl
+Return only if the process is alive, the thread ID should be ignored.])
+m4_tagend])
+m4_tagend
+
+m4_paramend
+
+m4_err(dbenv_set_isalive, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

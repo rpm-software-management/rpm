@@ -1,0 +1,16 @@
+m4_comment([$Id: delete.so,v 10.16 2003/10/18 19:15:52 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Deleting records, @deleting records, am/put, am/stat)
+
+m4_p([dnl
+The m4_refT(dbh_del) deletes records from the database.  In general,
+m4_ref(dbh_del) takes a key and deletes the data item associated with
+it from the database.])
+
+m4_p([dnl
+If the database has been configured to support duplicate records, the
+m4_refT(dbh_del) will remove all of the duplicate records.  To remove
+individual duplicate records, you must use a m4_db cursor interface.])
+
+m4_page_footer

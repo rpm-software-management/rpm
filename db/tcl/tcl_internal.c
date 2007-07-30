@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: tcl_internal.c,v 12.13 2006/08/24 14:46:33 bostic Exp $
+ * $Id: tcl_internal.c,v 12.24 2007/05/17 17:18:05 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <tcl.h>
 #endif
 #include "dbinc/tcl_db.h"
@@ -151,8 +150,8 @@ _DeleteInfo(p)
 	}
 	if (p->i_errpfx != NULL)
 		__os_free(NULL, p->i_errpfx);
-	if (p->i_btcompare != NULL)
-		Tcl_DecrRefCount(p->i_btcompare);
+	if (p->i_compare != NULL)
+		Tcl_DecrRefCount(p->i_compare);
 	if (p->i_dupcompare != NULL)
 		Tcl_DecrRefCount(p->i_dupcompare);
 	if (p->i_hashproc != NULL)
@@ -163,6 +162,8 @@ _DeleteInfo(p)
 		Tcl_DecrRefCount(p->i_rep_eid);
 	if (p->i_rep_send != NULL)
 		Tcl_DecrRefCount(p->i_rep_send);
+	if (p->i_event != NULL)
+		Tcl_DecrRefCount(p->i_event);
 	__os_free(NULL, p->i_name);
 	__os_free(NULL, p);
 
@@ -510,7 +511,7 @@ _EventFunc(dbenv, event, info)
 	void *info;
 {
 #define	TCLDB_EVENTITEMS 2	/* Event name and any info */
-#define	TCLDB_SENDEVENT 2
+#define	TCLDB_SENDEVENT 3	/* Event Tcl proc, env name, event objects. */
 	DBTCL_INFO *ip;
 	Tcl_Interp *interp;
 	Tcl_Obj *event_o, *origobj;
@@ -522,6 +523,7 @@ _EventFunc(dbenv, event, info)
 	if (ip->i_event == NULL)
 		return;
 	objv[0] = ip->i_event;
+	objv[1] = NewStringObj(ip->i_name, strlen(ip->i_name));
 
 	/*
 	 * Most events don't have additional info.  Assume none
@@ -540,6 +542,9 @@ _EventFunc(dbenv, event, info)
 	case DB_EVENT_REP_CLIENT:
 		myobjv[0] = NewStringObj("rep_client", strlen("rep_client"));
 		break;
+	case DB_EVENT_REP_ELECTED:
+		myobjv[0] = NewStringObj("elected", strlen("elected"));
+		break;
 	case DB_EVENT_REP_MASTER:
 		myobjv[0] = NewStringObj("rep_master", strlen("rep_master"));
 		break;
@@ -549,6 +554,9 @@ _EventFunc(dbenv, event, info)
 		 */
 		myobjv[0] = NewStringObj("newmaster", strlen("newmaster"));
 		myobjv[myobjc++] = Tcl_NewIntObj(*(int *)info);
+		break;
+	case DB_EVENT_REP_PERM_FAILED:
+		myobjv[0] = NewStringObj("perm_failed", strlen("perm_failed"));
 		break;
 	case DB_EVENT_REP_STARTUPDONE:
 		myobjv[0] = NewStringObj("startupdone", strlen("startupdone"));
@@ -567,7 +575,7 @@ _EventFunc(dbenv, event, info)
 
 	event_o = Tcl_NewListObj(myobjc, myobjv);
 	Tcl_IncrRefCount(event_o);
-	objv[1] = event_o;
+	objv[2] = event_o;
 
 	/*
 	 * We really want to return the original result to the
@@ -589,7 +597,7 @@ _EventFunc(dbenv, event, info)
 		 * For now, abort.
 		 */
 		__db_errx(dbenv, "Tcl event failure");
-		abort();
+		__os_abort();
 	}
 
 	Tcl_SetObjResult(interp, origobj);
@@ -693,6 +701,13 @@ _GetFlagsList(interp, flags, fnp)
 	int result;
 
 	newlist = Tcl_NewObj();
+
+	/*
+	 * If the Berkeley DB library wasn't compiled with statistics, then
+	 * we may get a NULL reference.
+	 */
+	if (fnp == NULL)
+		return (newlist);
 
 	/*
 	 * Append a Tcl_Obj containing each pertinent flag string to the

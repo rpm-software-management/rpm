@@ -1,0 +1,113 @@
+m4_comment([$Id: intro.so,v 1.2 2007/06/04 14:55:40 bostic Exp $])
+
+m4_ref_title(Building m4_db for Windows CE systems,
+    Building for Windows CE,
+    @building for Windows CE, build_win/faq, build_wince/notes)
+
+define(TCLMAJOR, 8)
+define(TCLMINOR, 4)
+define(TCLDEBUG, g)
+
+m4_p([dnl
+This page contains general instructions on building m4_db for
+Windows CE platforms using specific compilers. The
+m4_link(M4RELDIR/ref/build_wince/faq, Windows CE FAQ) also
+contains helpful information.])
+
+m4_p([dnl
+The m4_path(build_wince) directory in the m4_db distribution contains
+project files for Microsoft eMbedded Visual C++:])
+
+m4_table_begin(, _center)
+m4_table_header(Project File, Description)
+m4_table_element(_center, Berkeley_DB.vcw, eMbedded Visual C++ 4.0 workspace)
+m4_table_element(_center, *.vcp, eMbedded Visual C++ 4.0 projects)
+m4_table_end
+
+m4_p([dnl
+These project files can be used to build m4_db for the Windows CE platform.])
+
+m4_section([Building m4_db for Windows CE])
+m4_subsection([eMbedded Visual C++ 4.0])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Choose m4_italic([File -__GT__ Open Workspace...]).
+Navigate to the m4_path(build_wince) directory, select m4_path(Berkeley_DB)
+and click Open.])
+
+m4_nlist([dnl
+Choose the project configuration from the
+m4_italic([Build -__GT__ Set Active Configuration...]) drop-down menu on the
+tool bar.  The correct target will usually db_small - Win32 (WCE emulator)
+Debug or Release.])
+
+m4_nlist([dnl
+To build, press F7, or select m4_italic([Build]) from the drop-down menu on the tool bar.])
+
+m4_nlistend
+
+m4_subsection([Build results])
+
+m4_p([dnl
+The results of your build will be placed in a subdirectory of
+m4_path(build_windows) named after the configuration you chose (for
+examples, m4_path(build_wince\Release) or
+m4_path(build_wince\Debug)).])
+
+m4_p([dnl
+When building your application during development, you should normally
+link against
+m4_path(build_wince\Debug\libdb_small[]M4MAJOR[]M4MINOR[]sd.lib).  You can
+also build using a release version of the m4_db libraries and tools,
+which will be placed in
+m4_path(build_windows\Release\libdb_small[]M4MAJOR[]M4MINOR[]s.lib).
+You will also need to add the m4_path(build_wince) directory to the list
+of include directories of your application's project, or copy the m4_db
+include files to a location in your Visual Studio include path.])
+
+m4_section([Building m4_db for different target CPU architectures])
+
+m4_p([dnl
+There are many possible target CPU architectures for a Windows CE
+application.  This section outlines the process required to add a new
+target architecture to the project files supplied with m4_db.])
+
+m4_subsection([eMbedded Visual C++ 4.0])
+m4_nlistbegin
+
+m4_nlist([dnl
+Choose m4_italic([File -__GT__ Open Workspace...]).
+Navigate to the m4_path(build_wince) directory, select m4_path(Berkeley_DB)
+and click Open.])
+
+m4_nlist([dnl
+Choose the m4_italic([Build -__GT__ Configurations...]) menu item.])
+
+m4_nlist([dnl
+Click the m4_italic([Add...]) button.])
+
+m4_nlist([dnl
+Select the desired CPU architecture from the first dropdown box. Select an
+existing target to copy the settings from (The corresponding emulator
+target is a good choice). Configuration should be either Debug or Release.
+Click m4_italic([OK]).])
+
+m4_nlist([dnl
+Choose the m4_italic([Build -__GT__ Set Active Configuration...]) menu
+item. Choose the new target then click OK.])
+
+m4_nlist([dnl
+Select the m4_italic([Project -__GT__ Settings...]) menu item. Under
+the C/C++ tab, select the Preprocessor m4_italic([Category]). In the
+m4_italic([Additional include directories:]) field add: ".,.."
+without the quotes. Click OK.])
+
+m4_nlist([dnl
+Build as per the instructions in m4_italic([Building m4_db for Windows
+CE]) above.])
+
+m4_nlistend
+
+m4_page_footer

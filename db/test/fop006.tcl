@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: fop006.tcl,v 12.9 2006/08/24 14:46:35 bostic Exp $
+# $Id: fop006.tcl,v 12.13 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	fop006
 # TEST	Test file system operations in multiple simultaneous
@@ -80,6 +79,12 @@ proc fop006 { method { inmem 0 } args } {
 #	foreach case $cases {
 #		puts "\tFop$tnum.$i: $case"
 #		incr i
+#	}
+
+	# To run a particular case, add the case in this format and
+	# uncomment.
+#	set cases {
+#		{{open_excl {foo} 0 abort} {rename {b foo} 0}}
 #	}
 
 	set testid 0

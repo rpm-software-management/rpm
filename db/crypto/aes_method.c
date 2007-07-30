@@ -1,13 +1,12 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
  * Some parts of this code originally written by Adam Stubblefield,
  * -- astubble@rice.edu.
  *
- * $Id: aes_method.c,v 12.5 2006/08/24 14:45:12 bostic Exp $
+ * $Id: aes_method.c,v 12.7 2007/05/17 15:14:55 bostic Exp $
  */
 
 #include "db_config.h"

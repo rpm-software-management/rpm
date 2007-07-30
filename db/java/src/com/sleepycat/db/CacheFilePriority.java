@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: CacheFilePriority.java,v 12.3 2006/08/24 14:46:07 bostic Exp $
+ * $Id: CacheFilePriority.java,v 12.6 2007/06/28 14:23:36 mjc Exp $
  */
 
 package com.sleepycat.db;
@@ -26,6 +25,7 @@ public final class CacheFilePriority {
     /* package */
     static CacheFilePriority fromFlag(int flag) {
         switch (flag) {
+        case 0:
         case DbConstants.DB_PRIORITY_DEFAULT:
             return DEFAULT;
         case DbConstants.DB_PRIORITY_HIGH:

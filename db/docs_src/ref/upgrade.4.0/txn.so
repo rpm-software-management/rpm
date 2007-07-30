@@ -1,0 +1,41 @@
+m4_comment([$Id: txn.so,v 1.6 2003/10/18 19:16:20 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: txn_XXX,,
+    upgrade.4.0/mp, upgrade.4.0/env)
+
+m4_p([dnl
+The C API for the m4_db Transaction subsystem was reworked in the 4.0
+release as follows:])
+
+m4_table_begin(, _center)
+m4_table_header(Historic functional interface, m4_db 4.X method)
+m4_table_element(txn_abort, m4_ref(txn_abort))
+m4_table_element(txn_begin, m4_ref(txn_begin))
+m4_table_element(txn_checkpoint, m4_ref(txn_checkpoint))
+m4_table_element(txn_commit, m4_ref(txn_commit))
+m4_table_element(txn_discard, m4_ref(txn_discard))
+m4_table_element(txn_id, m4_ref(txn_id))
+m4_table_element(txn_prepare, m4_ref(txn_prepare))
+m4_table_element(txn_recover, m4_ref(txn_recover))
+m4_table_element(txn_stat, m4_ref(txn_stat))
+m4_table_end
+
+m4_p([dnl
+Applications calling any of these functions should update their calls
+to use the enclosing m4_ref(DbEnv) or m4_ref(DbTxn) handle's method
+(easily done as the first argument to the existing call is the correct
+handle to use).])
+
+m4_p([dnl
+As a special case, since applications might potentially have many calls
+to the txn_abort, txn_begin and txn_commit functions, those functions
+continue to work unchanged in the m4_db 4.0 release.])
+
+m4_p([dnl
+In addition, the m4_ref(txn_stat) call has been changed in the 4.0
+release to take a flags argument.  To leave their historic behavior
+unchanged, applications should add a final argument of 0 to any calls
+made to m4_ref(txn_stat).])
+
+m4_page_footer

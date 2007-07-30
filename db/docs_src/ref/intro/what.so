@@ -1,0 +1,52 @@
+m4_comment([$Id: what.so,v 10.23 2001/03/01 15:58:06 bostic Exp $])
+
+m4_ref_title(Introduction,
+    What other services does m4_db provide?,, intro/need, intro/distrib)
+
+m4_p([dnl
+m4_db also provides core database services to developers.  These
+services include:])
+
+m4_tagbegin
+
+m4_tag(Page cache management:, [dnl
+The page cache provides fast access to a cache of database pages,
+handling the I/O associated with the cache to ensure that dirty pages
+are written back to the file system and that new pages are allocated on
+demand.  Applications may use the m4_db shared memory buffer manager to
+serve their own files and pages.])
+
+m4_tag(Transactions and logging:, [dnl
+The transaction and logging systems provide recoverability and atomicity
+for multiple database operations. The transaction system uses two-phase
+locking and write-ahead logging protocols to ensure that database
+operations may be undone or redone in the case of application or system
+failure.  Applications may use m4_db transaction and logging subsystems
+to protect their own data structures and operations from application or
+system failure.])
+
+m4_tag(Locking:, [dnl
+The locking system provides multiple reader or single writer access to
+objects.  The m4_db access methods use the locking system to acquire
+the right to read or write database pages.  Applications may use the
+m4_db locking subsystem to support their own locking needs.])
+
+m4_tagend
+
+m4_p([dnl
+By combining the page cache, transaction, locking, and logging systems,
+m4_db provides the same services found in much larger, more complex and
+more expensive database systems.  m4_db supports multiple simultaneous
+readers and writers and guarantees that all changes are recoverable, even
+in the case of a catastrophic hardware failure during a database update.])
+
+m4_p([dnl
+Developers may select some or all of the core database services for any
+access method or database.  Therefore, it is possible to choose the
+appropriate storage structure and the right degrees of concurrency and
+recoverability for any application.  In addition, some of the subsystems
+(for example, the Locking subsystem) can be called separately from the
+m4_db access method.  As a result, developers can integrate non-database
+objects into their transactional applications using m4_db.])
+
+m4_page_footer

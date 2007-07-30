@@ -1,0 +1,24 @@
+m4_comment([$Id: db_set_priority.so,v 1.1 2007/05/22 18:06:05 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_priority)
+define(M4PAGELOCAL, [dbh_get_priority, dbh_set_priority,
+	DB_PRIORITY_VERY_LOW, DB_PRIORITY_LOW, DB_PRIORITY_DEFAULT,
+	DB_PRIORITY_HIGH, DB_PRIORITY_VERY_HIGH])
+
+m4_pf_header(m4_ref(dbh_set_priority),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_priority(DB *db, DB_CACHE_PRIORITY priority);
+m4_blank
+int
+DB-__GT__get_priority(DB *db, DB_CACHE_PRIORITY *priorityp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_priority(DB_CACHE_PRIORITY priority);
+m4_blank
+int
+Db::get_priority(DB_CACHE_PRIORITY *priorityp);
+]))
+
+include(dbc/dbc_set_priority.so)

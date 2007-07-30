@@ -1,0 +1,21 @@
+m4_comment([$Id: intro.so,v 11.10 2006/10/09 16:51:34 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 2.0: introduction,,
+    changelog/toc, upgrade.2.0/system)
+
+m4_p([dnl
+The following pages describe how to upgrade applications coded against
+the m4_db 1.85 and 1.86 release interfaces to the m4_db 2.0 release
+interfaces.  They do not describe how to upgrade to the current m4_db
+release interfaces.])
+
+m4_p([dnl
+It is not difficult to upgrade m4_db 1.85 applications to use the m4_db
+version 2 library.  The m4_db version 2 library has a m4_db 1.85
+compatibility API, which you can use by either recompiling your
+application's source code or by relinking its object files against the
+version 2 library.  The underlying databases must be converted, however,
+as the m4_db version 2 library has a different underlying database format.])
+
+m4_page_footer

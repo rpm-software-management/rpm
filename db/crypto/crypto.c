@@ -1,13 +1,12 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
  * Some parts of this code originally written by Adam Stubblefield
  * -- astubble@rice.edu
  *
- * $Id: crypto.c,v 12.10 2006/08/24 14:45:12 bostic Exp $
+ * $Id: crypto.c,v 12.20 2007/05/17 15:14:55 bostic Exp $
  */
 
 #include "db_config.h"
@@ -53,13 +52,12 @@ __crypto_region_init(dbenv)
 		 * information that contains the passwd.  After we copy the
 		 * passwd, we smash and free the one in the dbenv.
 		 */
-		if ((ret =
-		    __db_shalloc(infop, sizeof(CIPHER), 0, &cipher)) != 0)
+		if ((ret = __env_alloc(infop, sizeof(CIPHER), &cipher)) != 0)
 			return (ret);
 		memset(cipher, 0, sizeof(*cipher));
-		if ((ret = __db_shalloc(
-		    infop, dbenv->passwd_len, 0, &sh_passwd)) != 0) {
-			__db_shalloc_free(infop, cipher);
+		if ((ret =
+		    __env_alloc(infop, dbenv->passwd_len, &sh_passwd)) != 0) {
+			__env_alloc_free(infop, cipher);
 			return (ret);
 		}
 		memset(sh_passwd, 0, dbenv->passwd_len);
@@ -113,53 +111,64 @@ __crypto_region_init(dbenv)
 }
 
 /*
- * __crypto_dbenv_close --
+ * __crypto_env_close --
  *	Crypto-specific destruction of DB_ENV structure.
  *
- * PUBLIC: int __crypto_dbenv_close __P((DB_ENV *));
+ * PUBLIC: int __crypto_env_close __P((DB_ENV *));
  */
 int
-__crypto_dbenv_close(dbenv)
+__crypto_env_close(dbenv)
 	DB_ENV *dbenv;
 {
 	DB_CIPHER *db_cipher;
 	int ret;
 
-	ret = 0;
-	db_cipher = dbenv->crypto_handle;
 	if (dbenv->passwd != NULL) {
 		memset(dbenv->passwd, 0xff, dbenv->passwd_len-1);
 		__os_free(dbenv, dbenv->passwd);
 		dbenv->passwd = NULL;
 	}
+
 	if (!CRYPTO_ON(dbenv))
 		return (0);
+
+	ret = 0;
+	db_cipher = dbenv->crypto_handle;
 	if (!F_ISSET(db_cipher, CIPHER_ANY))
 		ret = db_cipher->close(dbenv, db_cipher->data);
 	__os_free(dbenv, db_cipher);
+
+	dbenv->crypto_handle = NULL;
 	return (ret);
 }
 
 /*
- * __crypto_region_destroy --
- *	Destroy any system resources allocated in the primary region.
+ * __crypto_env_refresh --
+ *	Clean up after the crpto system on a close or failed open.
  *
- * PUBLIC: int __crypto_region_destroy __P((DB_ENV *));
+ * PUBLIC: int __crypto_env_refresh __P((DB_ENV *));
  */
 int
-__crypto_region_destroy(dbenv)
+__crypto_env_refresh(dbenv)
 	DB_ENV *dbenv;
 {
 	CIPHER *cipher;
 	REGENV *renv;
 	REGINFO *infop;
 
-	infop = dbenv->reginfo;
-	renv = infop->primary;
-	if (renv->cipher_off != INVALID_ROFF) {
-		cipher = R_ADDR(infop, renv->cipher_off);
-		__db_shalloc_free(infop, R_ADDR(infop, cipher->passwd));
-		__db_shalloc_free(infop, cipher);
+	/*
+	 * If a private region, return the memory to the heap.  Not needed for
+	 * filesystem-backed or system shared memory regions, that memory isn't
+	 * owned by any particular process.
+	 */
+	if (F_ISSET(dbenv, DB_ENV_PRIVATE)) {
+		infop = dbenv->reginfo;
+		renv = infop->primary;
+		if (renv->cipher_off != INVALID_ROFF) {
+			cipher = R_ADDR(infop, renv->cipher_off);
+			__env_alloc_free(infop, R_ADDR(infop, cipher->passwd));
+			__env_alloc_free(infop, cipher);
+		}
 	}
 	return (0);
 }
@@ -192,10 +201,10 @@ __crypto_algsetup(dbenv, db_cipher, alg, do_init)
 		ret = __aes_setup(dbenv, db_cipher);
 		break;
 	default:
-		__db_panic(dbenv, EINVAL);
-		/* NOTREACHED */
+		ret = __db_panic(dbenv, EINVAL);
+		break;
 	}
-	if (do_init)
+	if (ret == 0 && do_init)
 		ret = db_cipher->init(dbenv, db_cipher);
 	return (ret);
 }
@@ -248,8 +257,7 @@ __crypto_decrypt_meta(dbenv, dbp, mbuf, do_metachk)
 	 * since been removed).
 	 *
 	 * Ugly check to jump out if this format is older than what we support.
-	 * It assumes no encrypted page will have an unencrypted magic number,
-	 * but that seems relatively safe.  [#10920]
+	 * This works because we do not encrypt the page header.
 	 */
 	if (meta->magic == DB_HASHMAGIC && meta->version <= 5)
 		return (0);
@@ -376,9 +384,7 @@ __crypto_set_passwd(dbenv_src, dbenv_dest)
 	REGENV *renv;
 	REGINFO *infop;
 	char *sh_passwd;
-	int ret;
 
-	ret = 0;
 	infop = dbenv_src->reginfo;
 	renv = infop->primary;
 

@@ -1,6 +1,5 @@
-<!--$Id: db_stat.so,v 10.89 2005/02/10 20:02:28 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_stat.so,v 10.92 2007/06/22 16:57:15 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -43,24 +42,24 @@ one of the following values:
 Among other things, this flag makes it possible for applications to
 request key and record counts without incurring the performance penalty
 of traversing the entire database.
-<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Database items read during this operation will have degree 2 isolation.
-This ensures the stability of the data items read during the stat
-operation but permits that data to be modified or deleted by other
+<dt><a name="DB_READ_COMMITTED">DB_READ_COMMITTED</a><dd>Database items read during a transactional call will have degree 2
+isolation.  This ensures the stability of the data items read during the
+stat operation but permits that data to be modified or deleted by other
 transactions prior to the commit of the specified transaction.
-<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Database items read during this operation will have degree 1 isolation,
-including modified but not yet committed data.  Silently ignored if the
-<a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
-database was opened.
-</dl>
-<dt><b>txnid</b><dd>If the operation is part of an application-specified
-transaction, the <b>txnid</b> parameter is a transaction handle
-returned from <a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
-group, the <b>txnid</b> parameter is a handle returned from
-<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Database items read during a transactional call will have degree 1
+isolation, including modified but not yet committed data.  Silently
+ignored if the <a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when
+the underlying database was opened. </dl>
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_cxx/txn_begin.html">DbEnv::txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_cxx/env_cdsgroup_begin.html">DbEnv::cdsgroup_begin</a>; otherwise NULL.
+If no transaction handle is
 specified, but the
 operation occurs in a transactional
 database,
-the operation will be implicitly transaction protected.  
+the operation will be implicitly transaction protected.
 </dl>
 <p>Statistical structures are stored in allocated memory.  If application-specific allocation
 routines have been declared (see <a href="../api_cxx/env_set_alloc.html">DbEnv::set_alloc</a> for more
@@ -78,6 +77,8 @@ database, the information returned by Db::stat may be out-of-date.</p>
 <p>If the database was not opened read-only and the DB_FAST_STAT
 flag was not specified, the cached key and record numbers will be
 updated after the statistical information has been gathered.</p>
+<p>The Db::stat method may not be called before the <a href="../api_cxx/db_open.html">Db::open</a> method has been
+called.</p>
 <p>The Db::stat method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
@@ -99,8 +100,10 @@ DB_FAST_STAT is set.
 was specified the count will be the last saved value unless it has never
 been calculated, in which case it will be 0. Returned if
 DB_FAST_STAT is set.
-<dt>u_int32_t hash_pagesize;<dd>The underlying Hash database page (and bucket) size, in bytes.
-Returned if DB_FAST_STAT is set.
+<dt>u_int32_t hash_pagecnt;<dd>The number of pages in the database.  Returned if DB_FAST_STAT
+is set.
+<dt>u_int32_t hash_pagesize;<dd>The underlying database page (and bucket) size, in bytes.  Returned if
+DB_FAST_STAT is set.
 <dt>u_int32_t hash_ffactor;<dd>The desired fill factor (number of items per bucket) specified at
 database-creation time.  Returned if DB_FAST_STAT is set.
 <dt>u_int32_t hash_buckets;<dd>The number of hash buckets.  Returned if DB_FAST_STAT is set.
@@ -147,8 +150,10 @@ DB_FAST_STAT flag is specified the count will be exact but will
 include deleted and implicitly created records; if the
 DB_FAST_STAT flag is not specified, the count will be exact and
 will not include deleted or implicitly created records.</p>
-<p>Returned if DB_FAST_STAT is set.</p>
-<dt>u_int32_t bt_pagesize;<dd>Underlying database page size, in bytes.  Returned if
+<p><dt>u_int32_t bt_pagecnt;<dd>The number of pages in the database.  Returned if DB_FAST_STAT
+is set.
+Returned if DB_FAST_STAT is set.</p>
+<dt>u_int32_t bt_pagesize;<dd>The underlying database page size, in bytes.  Returned if
 DB_FAST_STAT is set.
 <dt>u_int32_t bt_minkey;<dd>The minimum keys per page.  Returned if DB_FAST_STAT is set.
 <dt>u_int32_t bt_re_len;<dd>The length of fixed-length records.  Returned if DB_FAST_STAT
@@ -237,7 +242,6 @@ Among other things, this flag makes it possible for applications to
 request key and record counts without incurring the performance penalty
 of traversing the entire database.
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
-<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 </dl>
 </dl>
 <hr size=1 noshade>
@@ -249,6 +253,6 @@ of traversing the entire database.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

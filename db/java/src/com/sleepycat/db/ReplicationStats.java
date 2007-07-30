@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -12,6 +11,16 @@ package com.sleepycat.db;
 public class ReplicationStats {
     // no public constructor
     /* package */ ReplicationStats() {}
+
+    private int st_log_queued;
+    public int getLogQueued() {
+        return st_log_queued;
+    }
+
+    private int st_startup_complete;
+    public int getStartupComplete() {
+        return st_startup_complete;
+    }
 
     private int st_status;
     public int getStatus() {
@@ -101,11 +110,6 @@ public class ReplicationStats {
     private int st_log_duplicated;
     public int getLogDuplicated() {
         return st_log_duplicated;
-    }
-
-    private int st_log_queued;
-    public int getLogQueued() {
-        return st_log_queued;
     }
 
     private int st_log_queued_max;
@@ -198,14 +202,14 @@ public class ReplicationStats {
         return st_pg_requested;
     }
 
-    private int st_startup_complete;
-    public int getStartupComplete() {
-        return st_startup_complete;
-    }
-
     private int st_txns_applied;
     public int getTxnsApplied() {
         return st_txns_applied;
+    }
+
+    private int st_startsync_delayed;
+    public int getStartSyncDelayed() {
+        return st_startsync_delayed;
     }
 
     private int st_elections;
@@ -275,6 +279,8 @@ public class ReplicationStats {
 
     public String toString() {
         return "ReplicationStats:"
+            + "\n  st_log_queued=" + st_log_queued
+            + "\n  st_startup_complete=" + st_startup_complete
             + "\n  st_status=" + st_status
             + "\n  st_next_lsn=" + st_next_lsn
             + "\n  st_waiting_lsn=" + st_waiting_lsn
@@ -293,7 +299,6 @@ public class ReplicationStats {
             + "\n  st_gen=" + st_gen
             + "\n  st_egen=" + st_egen
             + "\n  st_log_duplicated=" + st_log_duplicated
-            + "\n  st_log_queued=" + st_log_queued
             + "\n  st_log_queued_max=" + st_log_queued_max
             + "\n  st_log_queued_total=" + st_log_queued_total
             + "\n  st_log_records=" + st_log_records
@@ -312,8 +317,8 @@ public class ReplicationStats {
             + "\n  st_pg_duplicated=" + st_pg_duplicated
             + "\n  st_pg_records=" + st_pg_records
             + "\n  st_pg_requested=" + st_pg_requested
-            + "\n  st_startup_complete=" + st_startup_complete
             + "\n  st_txns_applied=" + st_txns_applied
+            + "\n  st_startsync_delayed=" + st_startsync_delayed
             + "\n  st_elections=" + st_elections
             + "\n  st_elections_won=" + st_elections_won
             + "\n  st_election_cur_winner=" + st_election_cur_winner

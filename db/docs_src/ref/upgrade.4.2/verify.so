@@ -1,0 +1,22 @@
+m4_comment([$Id: verify.so,v 1.5 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: DB-__GT__verify,,
+    upgrade.4.2/priority, upgrade.4.2/lockng)
+
+m4_p([dnl
+In previous releases, applications calling the m4_refT(dbh_verify) had
+to explicitly discard the m4_ref(Db) handle by calling the
+m4_refT(dbh_close).  Further, using the m4_ref(Db) handle in other ways
+after calling the m4_refT(dbh_verify) was not prohibited by the
+documentation, although such use was likely to lead to problems.])
+
+m4_p([dnl
+For consistency with other m4_db methods, m4_refT(dbh_verify) has been
+documented in the current release as a m4_ref(Db) handle destructor.
+Applications using the m4_ref(Db) handle in any way (including calling
+the m4_refT(dbh_close)) after calling m4_ref(dbh_verify) should be
+updated to make no further use of any kind of the m4_ref(Db) handle
+after m4_ref(dbh_verify) returns.])
+
+m4_page_footer

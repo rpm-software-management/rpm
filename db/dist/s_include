@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_include,v 12.3 2006/04/27 13:40:36 mjc Exp $
+#	$Id: s_include,v 12.8 2007/02/22 17:52:51 bostic Exp $
 #
 # Build the automatically generated function prototype files.
 
@@ -77,11 +77,14 @@ for i in db btree clib common crypto dbreg env fileops hash hmac \
 	head "_${i}_ext_h_" > $i_pfile
 
 	if [ $i = os ] ; then
-		f=`ls ../$i/*.c ../os_windows/*.c`
+		f=`ls ../$i/*.c \
+	    ../os_brew/*.c ../os_qnx/*.c ../os_vxworks/*.c ../os_windows/*.c`
 	elif [ $i = rpc_server ] ; then
 		f=`ls ../$i/c/*.c`
 	elif [ $i = crypto ] ; then
 		f=`ls ../$i/*.c ../$i/*/*.c`
+	elif [ $i = env ] ; then
+		f=`ls ../$i/*.c ../repmgr/repmgr_stub.c`
 	else
 		f=`ls ../$i/*.c`
 	fi

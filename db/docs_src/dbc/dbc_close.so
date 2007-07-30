@@ -1,0 +1,35 @@
+m4_comment([$Id: dbc_close.so,v 10.35 2006/10/24 13:26:50 bostic Exp $])
+
+define(M4PAGELOCAL, dbc_close)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbc_close),
+ifelse(M4API, C_API, [dnl
+int
+DBcursor-__GT__close(DBC *DBcursor);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Dbc::close(void);
+]))
+
+m4_p([dnl
+The m4_refT(dbc_close) discards the cursor.])
+
+m4_p([dnl
+It is possible for the m4_refT(dbc_close) to return
+m4_ref(DB_LOCK_DEADLOCK), signaling that any enclosing transaction should
+be aborted.  If the application is already intending to abort the
+transaction, this error should be ignored, and the application should
+proceed.])
+
+m4_p([dnl
+After m4_ref(dbc_close) has been called, regardless of its return, the
+cursor handle may not be used again.])
+
+m4_return(dbc_close, std)
+
+m4_err(dbc_close, deadlock, einval, [the cursor is already closed])
+
+m4_seealso(Dbc)
+m4_page_footer

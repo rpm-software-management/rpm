@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: test112.tcl,v 12.11 2006/08/24 14:46:41 bostic Exp $
+# $Id: test112.tcl,v 12.13 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test112
 # TEST	Test database compaction with a deep tree.

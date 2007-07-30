@@ -1,15 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_dump185.c,v 12.4 2006/08/26 09:23:04 bostic Exp $
+ * $Id: db_dump185.c,v 12.6 2007/05/17 15:15:00 bostic Exp $
  */
 
 #ifndef lint
-static char copyright[] =
-    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
+static const char copyright[] =
+    "Copyright (c) 1996,2007 Oracle.  All rights reserved.\n";
 #endif
 
 #include <sys/types.h>

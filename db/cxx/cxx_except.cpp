@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: cxx_except.cpp,v 12.10 2006/09/13 14:53:37 mjc Exp $
+ * $Id: cxx_except.cpp,v 12.12 2007/05/17 15:14:56 bostic Exp $
  */
 
 #include "db_config.h"

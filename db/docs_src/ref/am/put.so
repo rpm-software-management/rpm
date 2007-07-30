@@ -1,0 +1,31 @@
+m4_comment([$Id: put.so,v 10.15 2003/10/18 19:15:53 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Storing records, @storing records, am/get, am/delete)
+
+m4_p([dnl
+The m4_refT(dbh_put) stores records into the database.  In general,
+m4_ref(dbh_put) takes a key and stores the associated data into the
+database.])
+
+m4_p([dnl
+There are a few flags that you can set to customize storage:])
+
+m4_tagbegin
+m4_tag([m4_ref(DB_APPEND)],
+[Simply append the data to the end of the database, treating the database
+much like a simple log.  This flag is only valid for the Queue and Recno
+access methods.])
+
+m4_tag([m4_ref(DB_NOOVERWRITE)],
+[Only store the data item if the key does not already appear in the database.])
+
+m4_tagend
+
+m4_p([dnl
+If the database has been configured to support duplicate records, the
+m4_refT(dbh_put) will add the new data value at the end of the duplicate
+set.  If the database supports sorted duplicates, the new data value is
+inserted at the correct sorted location.])
+
+m4_page_footer

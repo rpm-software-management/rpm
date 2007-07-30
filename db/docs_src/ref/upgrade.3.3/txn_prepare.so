@@ -1,0 +1,14 @@
+m4_comment([$Id: txn_prepare.so,v 1.9 2003/10/18 19:16:18 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.3: txn_prepare,,
+    upgrade.3.3/memp_fget, upgrade.3.3/shared)
+
+m4_p([dnl
+An additional argument has been added to the txn_prepare function. If
+your application calls txn_prepare (that is, is performing two-phase
+commit using m4_db as a local resource manager), see
+m4_link(M4RELDIR/ref/xa/intro, Distributed Transactions) for more
+information.])
+
+m4_page_footer

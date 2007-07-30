@@ -1,0 +1,219 @@
+m4_comment([$Id: memp_stat.so,v 10.71 2007/07/06 00:22:53 mjc Exp $])
+
+define(M4PAGELOCAL, [memp_stat, memp_fstat, memp_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__memp_stat(DB_ENV *env, DB_MPOOL_STAT **gsp,
+    DB_MPOOL_FSTAT *(*fsp)__LB____RB__, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__memp_stat_print(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::memp_stat(DB_MPOOL_STAT **gsp,
+    DB_MPOOL_FSTAT *(*fsp)__LB____RB__, u_int32_t flags);
+m4_blank
+int
+DbEnv::memp_stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(memp_stat) returns the memory pool (that is, the buffer
+cache) subsystem statistics.])
+
+m4_p([dnl
+The m4_refT(memp_stat) creates statistical structures of type DB_MPOOL_STAT
+and DB_MPOOL_FSTAT, and copy pointers to them into user-specified memory
+locations.  The cache statistics are stored in the DB_MPOOL_STAT structure
+and the per-file cache statistics are stored the DB_MPOOL_FSTAT structure.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+If m4_arg(gsp) is non-NULL, the global statistics for the cache
+m4_arg(mp) are copied into the memory location to which it refers.
+The following DB_MPOOL_STAT fields will be filled in:])
+
+m4_tagbegin
+m4_field(size_t, st_gbytes,
+[Gigabytes of cache (total cache size is st_gbytes + st_bytes).])
+
+m4_field(size_t, st_bytes,
+[Bytes of cache (total cache size is st_gbytes + st_bytes).])
+
+m4_field(u_int32_t, st_ncache,
+[Number of caches.])
+
+m4_field(u_int32_t, st_max_ncache,
+[Maximum number of caches, as configured with the
+m4_refT(dbenv_set_cache_max).])
+
+m4_field(roff_t, st_regsize,
+[Individual cache size, in bytes.])
+
+m4_field(size_t, st_mmapsize,
+[Maximum memory-mapped file size.])
+
+m4_field(int, st_maxopenfd,
+[Maximum open file descriptors.])
+
+m4_field(int, st_maxwrite,
+[Maximum sequential buffer writes.])
+
+m4_field(db_timeout_t, st_maxwrite_sleep,
+[Microseconds to pause after writing maximum sequential buffers.])
+
+m4_field(u_int32_t, st_map,
+[Requested pages mapped into the process' address space (there is no
+available information about whether or not this request caused disk I/O,
+although examining the application page fault rate may be helpful).])
+
+m4_field(u_int32_t, st_cache_hit,
+[Requested pages found in the cache.])
+
+m4_field(u_int32_t, st_cache_miss,
+[Requested pages not found in the cache.])
+
+m4_field(u_int32_t, st_page_create,
+[Pages created in the cache.])
+
+m4_field(u_int32_t, st_page_in,
+[Pages read into the cache.])
+
+m4_field(u_int32_t, st_page_out,
+[Pages written from the cache to the backing file.])
+
+m4_field(u_int32_t, st_ro_evict,
+[Clean pages forced from the cache.])
+
+m4_field(u_int32_t, st_rw_evict,
+[Dirty pages forced from the cache.])
+
+m4_field(u_int32_t, st_page_trickle,
+[Dirty pages written using the m4_refT(memp_trickle).])
+
+m4_field(u_int32_t, st_pages,
+[Pages in the cache.])
+
+m4_field(u_int32_t, st_page_clean,
+[Clean pages currently in the cache.])
+
+m4_field(u_int32_t, st_page_dirty,
+[Dirty pages currently in the cache.])
+
+m4_field(u_int32_t, st_hash_buckets,
+[Number of hash buckets in buffer hash table.])
+
+m4_field(u_int32_t, st_hash_searches,
+[Total number of buffer hash table lookups.])
+
+m4_field(u_int32_t, st_hash_longest,
+[Longest chain ever encountered in buffer hash table lookups.])
+
+m4_field(u_int32_t, st_hash_examined,
+[Total number of hash elements traversed during hash table lookups.])
+
+m4_field(u_int32_t, st_hash_nowait,
+[Number of times that a thread of control was able to obtain a hash
+bucket lock without waiting.])
+
+m4_field(u_int32_t, st_hash_wait,
+[Number of times that a thread of control was forced to wait before
+obtaining a hash bucket lock.])
+
+m4_field(u_int32_t, st_hash_max_nowait,
+[The number of times a thread of control was able to obtain the hash
+bucket lock without waiting on the bucket which had the maximum number
+of times that a thread of control needed to wait.])
+
+m4_field(u_int32_t, st_hash_max_wait,
+[Maximum number of times any hash bucket lock was waited for by a
+thread of control.])
+
+m4_field(u_int32_t, st_region_wait,
+[Number of times that a thread of control was forced to wait before
+obtaining a cache region mutex.])
+
+m4_field(u_int32_t, st_region_nowait,
+[Number of times that a thread of control was able to obtain a cache
+region mutex without waiting.])
+
+m4_field(u_int32_t, st_mvcc_frozen,
+[Number of buffers frozen.])
+
+m4_field(u_int32_t, st_mvcc_thawed,
+[Number of buffers thawed.])
+
+m4_field(u_int32_t, st_mvcc_freed,
+[Number of frozen buffers freed.])
+
+m4_field(u_int32_t, st_alloc,
+[Number of page allocations.])
+
+m4_field(u_int32_t, st_alloc_buckets,
+[Number of hash buckets checked during allocation.])
+
+m4_field(u_int32_t, st_alloc_max_buckets,
+[Maximum number of hash buckets checked during an allocation.])
+
+m4_field(u_int32_t, st_alloc_pages,
+[Number of pages checked during allocation.])
+
+m4_field(u_int32_t, st_alloc_max_pages,
+[Maximum number of pages checked during an allocation.])
+
+m4_field(u_int32_t, st_io_wait,
+[Number of operations blocked waiting for I/O to complete.])
+
+m4_tagend
+
+m4_p([dnl
+If m4_arg(fsp) is non-NULL, a pointer to a NULL-terminated
+variable length array of statistics for individual files, in the cache
+m4_arg(mp), is copied into the memory location to which it refers.  If
+no individual files currently exist in the cache, m4_arg(fsp) will be
+set to NULL.])
+m4_p([dnl
+The per-file statistics are stored in structures of type DB_MPOOL_FSTAT.
+The following DB_MPOOL_FSTAT fields will be filled in for each file in
+the cache; that is, each element of the array:])
+
+m4_tagbegin
+m4_field(char *, file_name,
+[The name of the file.])
+m4_field(size_t, st_pagesize,
+[Page size in bytes.])
+m4_field(u_int32_t, st_cache_hit,
+[Requested pages found in the cache.])
+m4_field(u_int32_t, st_cache_miss,
+[Requested pages not found in the cache.])
+m4_field(u_int32_t, st_map,
+[Requested pages mapped into the process' address space.])
+m4_field(u_int32_t, st_page_create,
+[Pages created in the cache.])
+m4_field(u_int32_t, st_page_in,
+[Pages read into the cache.])
+m4_field(u_int32_t, st_page_out,
+[Pages written from the cache to the backing file.])
+m4_tagend
+
+m4_when_after_envopen(memp_stat)
+
+m4_return(memp_stat, std)
+
+m4_parambegin
+m4_param(flags, m4_stat_flags)
+m4_param_co(fsp, allocated per-file statistics structures, REF)
+m4_param_co(gsp, allocated global statistics structure, REF)
+m4_paramend
+
+m4_err(memp_stat, einval)
+
+m4_stat_print(memp_stat_print, memory pool subsystem, memp_stat)
+
+m4_seealso(DbMpool)
+m4_page_footer

@@ -1,0 +1,87 @@
+<!--$Id: dbc_set_priority.so,v 1.3 2007/05/22 18:06:05 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DBcursor-&gt;set_priority</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DBcursor-&gt;set_priority</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DbCursor-&gt;set_priority(DBC *DbCursor, DB_CACHE_PRIORITY priority);
+<p>
+int
+DbCursor-&gt;get_priority(DBC *DbCursor, DB_CACHE_PRIORITY *priorityp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DBcursor-&gt;set_priority</h3>
+<p>Set the cache priority for pages referenced by the
+<a href="../api_c/dbc_class.html">DBC</a>
+handle.</p>
+<p>The priority of a page biases the replacement algorithm to be more or
+less likely to discard a page when space is needed in the buffer pool.
+The bias is temporary, and pages will eventually be discarded if they
+are not referenced again.  The DBcursor-&gt;set_priority method is only advisory, and does
+not guarantee pages will be treated in a specific way.</p>
+<p>The DBcursor-&gt;set_priority method may be called at any time during the life of the
+application.</p>
+<p>The DBcursor-&gt;set_priority method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>priority</b><dd>The <b>priority</b> parameter must be set to one of the following
+values:
+<dl compact>
+<dt><a name="DB_PRIORITY_VERY_LOW">DB_PRIORITY_VERY_LOW</a><dd>The lowest priority: pages are the most likely to be discarded.
+<dt><a name="DB_PRIORITY_LOW">DB_PRIORITY_LOW</a><dd>The next lowest priority.
+<dt><a name="DB_PRIORITY_DEFAULT">DB_PRIORITY_DEFAULT</a><dd>The default priority.
+<dt><a name="DB_PRIORITY_HIGH">DB_PRIORITY_HIGH</a><dd>The next highest priority.
+<dt><a name="DB_PRIORITY_VERY_HIGH">DB_PRIORITY_VERY_HIGH</a><dd>The highest priority: pages are the least likely to be discarded.
+</dl>
+</dl>
+<hr size=1 noshade>
+<h3>Description: DBcursor-&gt;get_priority</h3>
+<p>The DBcursor-&gt;get_priority method returns the cache priority for pages referenced by the
+<a href="../api_c/dbc_class.html">DBC</a>
+handle.</p>
+<p>The DBcursor-&gt;get_priority method may be called at any time during the life of the
+application.</p>
+<p>The DBcursor-&gt;get_priority method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>priorityp</b><dd>The DBcursor-&gt;get_priority method returns a reference to the
+cache priority for pages referenced by the
+<a href="../api_c/dbc_class.html">DBC</a>
+handle in <b>priorityp</b>.
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/dbc_class.html">DBC</a>
+<h3>See Also</h3>
+<a href="../api_c/dbc_list.html">Database Cursors and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

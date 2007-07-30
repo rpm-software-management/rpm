@@ -1,0 +1,44 @@
+m4_comment([$Id: db_sync.so,v 10.36 2004/08/13 03:38:56 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_sync)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_sync),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__sync(DB *db, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::sync(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_sync) flushes any cached information to disk.])
+
+m4_p([dnl
+If the database is in memory only, the m4_refT(dbh_sync) has no effect and
+will always succeed.])
+
+m4_p([m4_bold([dnl
+It is important to understand that flushing cached information to disk
+only minimizes the window of opportunity for corrupted data.]) Although
+unlikely, it is possible for database corruption to happen if a system
+or application crash occurs while writing data to the database.  To
+ensure that database corruption never occurs, applications must either:
+use transactions and logging with automatic recovery; use logging and
+application-specific recovery; or edit a copy of the database, and once
+all applications using the database have successfully called
+m4_ref(dbh_close), atomically replace the original database with the
+updated copy.])
+
+m4_return(dbh_sync, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_err(dbh_sync, repinval, einval)
+
+m4_seealso(Db)
+m4_page_footer

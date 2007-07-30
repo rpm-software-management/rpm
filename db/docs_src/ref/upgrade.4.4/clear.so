@@ -1,0 +1,21 @@
+m4_comment([$Id: clear.so,v 1.2 2005/12/13 16:47:06 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.4: DB_MPOOLFILE-__GT__set_clear_len,,
+    upgrade.4.4/mutex, upgrade.4.4/lockstat)
+
+m4_p([dnl
+The meaning of a 0 "clear length" argument to the
+m4_refT(memp_set_clear_len) changed in the m4_db 4.4 release.   In
+previous releases, specifying a length of 0 was equivalent to the
+default, and the entire created page was cleared.  Unfortunately, this
+left no way to specify that no part of the page needed to be cleared.
+In the 4.4 release, specifying a "clear length" argument of 0 means that
+no part of the page need be cleared.])
+
+m4_p([dnl
+Applications specifying a 0 "clear length" argument to the
+m4_refT(memp_set_clear_len) should simply remove the call, as the
+default behavior is to clear the entire created page.])
+
+m4_page_footer

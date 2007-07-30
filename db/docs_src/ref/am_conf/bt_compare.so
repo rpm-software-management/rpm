@@ -1,0 +1,57 @@
+m4_comment([$Id: bt_compare.so,v 10.25 2004/03/05 21:39:33 bostic Exp $])
+
+m4_ref_title(Access Methods, Btree comparison,
+    specifying a Btree @comparison function, am_conf/malloc, am_conf/bt_prefix)
+
+m4_p([dnl
+The Btree data structure is a sorted, balanced tree structure storing
+associated key/data pairs.  By default, the sort order is lexicographical,
+with shorter keys collating before longer keys.  The user can specify the
+sort order for the Btree by using the m4_refT(dbh_set_bt_compare).])
+
+m4_p([dnl
+Sort routines are passed pointers to keys as arguments.  The keys are
+represented as m4_ref(Dbt) structures.  The routine must return an integer
+less than, equal to, or greater than zero if the first argument is
+considered to be respectively less than, equal to, or greater than the
+second argument.  The only fields that the routines may examine in the
+m4_ref(Dbt) structures are m4_arg(data) and m4_arg(size) fields.])
+
+m4_p([dnl
+An example routine that might be used to sort integer keys in the database
+is as follows:])
+
+include(ref/am_conf/bt_compare1.cs)
+
+m4_p([dnl
+Note that the data must first be copied into memory that is appropriately
+aligned, as m4_db does not guarantee any kind of alignment of the
+underlying data, including for comparison routines.  When writing
+comparison routines, remember that databases created on machines of
+different architectures may have different integer byte orders, for which
+your code may need to compensate.])
+
+m4_p([dnl
+An example routine that might be used to sort keys based on the first
+five bytes of the key (ignoring any subsequent bytes) is as follows:])
+
+include(ref/am_conf/bt_compare2.cs)
+
+m4_p([dnl
+All comparison functions must cause the keys in the database to be
+well-ordered. The most important implication of being well-ordered is
+that the key relations must be transitive, that is, if key A is less
+than key B, and key B is less than key C, then the comparison routine
+must also return that key A is less than key C.])
+
+m4_p([dnl
+It is reasonable for a comparison function to not examine an entire key
+in some applications, which implies that partial keys may be specified
+to the m4_db interfaces.  When partial keys are specified to m4_db,
+interfaces which retrieve data items based on a user-specified key (for
+example, m4_ref(dbh_get) and m4_ref(dbc_get) with the m4_ref(DB_SET)
+flag), will not modify the user-specified key by returning the actual
+key stored in the database.  The actual key can be retrieved by calling
+the m4_refT(dbc_get) with the m4_ref(DB_CURRENT) flag.])
+
+m4_page_footer

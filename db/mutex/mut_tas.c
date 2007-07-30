@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mut_tas.c,v 12.20 2006/08/24 14:46:16 bostic Exp $
+ * $Id: mut_tas.c,v 12.27 2007/06/21 16:39:20 ubell Exp $
  */
 
 #include "db_config.h"
@@ -12,7 +11,7 @@
 #include "db_int.h"
 
 /*
- * This is where we load in the actual test-and-set mutex code.
+ * This is where we load in architecture/compiler specific mutex code.
  */
 #define	LOAD_ACTUAL_MUTEX_CODE
 #include "dbinc/mutex_int.h"
@@ -51,6 +50,11 @@ __db_tas_mutex_init(dbenv, mutex, flags)
 		__db_syserr(dbenv, ret, "TAS: mutex initialize");
 		return (__os_posix_err(ret));
 	}
+#ifdef HAVE_MUTEX_HYBRID
+	if ((ret = __db_pthread_mutex_init(dbenv,
+	     mutex, flags | DB_MUTEX_SELF_BLOCK)) != 0)
+		return (ret);
+#endif
 	return (0);
 }
 
@@ -69,8 +73,11 @@ __db_tas_mutex_lock(dbenv, mutex)
 	DB_MUTEXMGR *mtxmgr;
 	DB_MUTEXREGION *mtxregion;
 	u_int32_t nspins;
+#ifdef HAVE_MUTEX_HYBRID
+	int ret;
+#else
 	u_long ms, max_ms;
-
+#endif
 	if (!MUTEX_ON(dbenv) || F_ISSET(dbenv, DB_ENV_NOLOCKING))
 		return (0);
 
@@ -85,6 +92,7 @@ __db_tas_mutex_lock(dbenv, mutex)
 		++mutexp->mutex_set_nowait;
 #endif
 
+#ifndef HAVE_MUTEX_HYBRID
 	/*
 	 * Wait 1ms initially, up to 10ms for mutexes backing logical database
 	 * locks, and up to 25 ms for mutual exclusion data structure mutexes.
@@ -92,6 +100,7 @@ __db_tas_mutex_lock(dbenv, mutex)
 	 */
 	ms = 1;
 	max_ms = F_ISSET(mutexp, DB_MUTEX_LOGICAL_LOCK) ? 10 : 25;
+#endif
 
 loop:	/* Attempt to acquire the resource for N spins. */
 	for (nspins =
@@ -167,9 +176,14 @@ relock:
 	}
 
 	/* Wait for the lock to become available. */
-	__os_sleep(dbenv, 0, ms * USEC_PER_MS);
+#ifdef HAVE_MUTEX_HYBRID
+	if ((ret = __db_pthread_mutex_lock(dbenv, mutex)) != 0)
+		return (ret);
+#else
+	__os_sleep(dbenv, 0, ms * US_PER_MS);
 	if ((ms <<= 1) > max_ms)
 		ms = max_ms;
+#endif
 
 	/*
 	 * We're spinning.  The environment might be hung, and somebody else
@@ -196,6 +210,9 @@ __db_tas_mutex_unlock(dbenv, mutex)
 	DB_MUTEX *mutexp;
 	DB_MUTEXMGR *mtxmgr;
 	DB_MUTEXREGION *mtxregion;
+#ifdef HAVE_MUTEX_HYBRID
+	int ret;
+#endif
 
 	if (!MUTEX_ON(dbenv) || F_ISSET(dbenv, DB_ENV_NOLOCKING))
 		return (0);
@@ -210,8 +227,15 @@ __db_tas_mutex_unlock(dbenv, mutex)
 		return (__db_panic(dbenv, EACCES));
 	}
 #endif
-	F_CLR(mutexp, DB_MUTEX_LOCKED);
 
+	F_CLR(mutexp, DB_MUTEX_LOCKED);
+#ifdef HAVE_MUTEX_HYBRID
+	MUTEX_MEMBAR(mutexp->flags);
+
+	if (mutexp->wait &&
+	    (ret = __db_pthread_mutex_unlock(dbenv, mutex)) != 0)
+		return (ret);
+#endif
 	MUTEX_UNSET(&mutexp->tas);
 
 	return (0);
@@ -231,6 +255,9 @@ __db_tas_mutex_destroy(dbenv, mutex)
 	DB_MUTEX *mutexp;
 	DB_MUTEXMGR *mtxmgr;
 	DB_MUTEXREGION *mtxregion;
+#ifdef HAVE_MUTEX_HYBRID
+	int ret;
+#endif
 
 	if (!MUTEX_ON(dbenv))
 		return (0);
@@ -241,5 +268,11 @@ __db_tas_mutex_destroy(dbenv, mutex)
 
 	MUTEX_DESTROY(&mutexp->tas);
 
+#ifdef HAVE_MUTEX_HYBRID
+	if ((ret = __db_pthread_mutex_destroy(dbenv, mutex)) != 0)
+		return (ret);
+#endif
+
+	COMPQUIET(mutexp, NULL);	/* MUTEX_DESTROY may not be defined. */
 	return (0);
 }

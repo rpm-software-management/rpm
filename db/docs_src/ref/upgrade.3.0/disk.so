@@ -1,0 +1,19 @@
+m4_comment([$Id: disk.so,v 11.15 2000/12/21 18:37:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: upgrade requirements,, upgrade.3.0/java, upgrade.3.1/intro)
+
+m4_p([dnl
+Log file formats and the Btree, Recno and Hash Access Method database
+formats changed in the m4_db 3.0 release.  (The on-disk Btree/Recno
+format changed from version 6 to version 7.  The on-disk Hash format
+changed from version 5 to version 6.) Until the underlying databases
+are upgraded, the m4_refT(dbh_open) will return a m4_ref(DB_OLD_VERSION)
+error.])
+
+m4_p([dnl
+For further information on upgrading m4_db installations, see
+m4_link(M4RELDIR/ref/upgrade/process, Upgrading m4_db
+installations).])
+
+m4_page_footer

@@ -1,0 +1,25 @@
+m4_comment([$Id: open.so,v 10.19 2003/10/18 19:16:01 bostic Exp $])
+
+m4_ref_title(Environment,
+    Opening databases within the environment,, env/create, env/error)
+
+m4_p([dnl
+Once the environment has been created, database handles may be created
+and then opened within the environment.  This is done by calling the
+m4_ref(dbh_create) function and specifying the appropriate environment
+as an argument.])
+
+m4_p([dnl
+File naming, database operations, and error handling will all be done as
+specified for the environment.  For example, if the m4_ref(DB_INIT_LOCK)
+or m4_ref(DB_INIT_CDB) flags were specified when the environment was
+created or joined, database operations will automatically perform all
+necessary locking operations for the application.])
+
+m4_p([dnl
+The following is a simple example of opening two databases within a
+database environment:])
+
+include(ref/env/open.cs)
+
+m4_page_footer

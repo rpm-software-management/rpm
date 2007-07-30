@@ -1,0 +1,69 @@
+m4_comment([$Id: env_set_lk_conflicts.so,v 10.43 2004/09/28 15:04:20 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lk_conflicts, dbenv_get_lk_conflicts])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lk_conflicts),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lk_conflicts(DB_ENV *dbenv,
+    u_int8_t *conflicts, int nmodes);
+m4_blank
+int
+DB_ENV-__GT__get_lk_conflicts(DB_ENV *dbenv,
+    const u_int8_t **lk_conflictsp, int *lk_modesp);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lk_conflicts(u_int8_t *conflicts, int nmodes);
+m4_blank
+int
+DbEnv::get_lk_conflicts(const u_int8_t **lk_conflictsp, int *lk_modesp);
+]))
+
+m4_p([dnl
+Set the locking conflicts matrix.])
+
+m4_p([dnl
+If m4_ref(dbenv_set_lk_conflicts) is never called, a standard conflicts
+array is used; see m4_link(M4RELDIR/ref/lock/stdmode, [Standard Lock
+Modes]) for more information.])
+
+m4_scope_env(dbenv_set_lk_conflicts)
+
+m4_when_envopen(dbenv_set_lk_conflicts, ignored)
+
+m4_return(dbenv_set_lk_conflicts, std)
+
+m4_parambegin
+m4_param(conflicts, [dnl
+The m4_arg(conflicts) parameter is the new locking conflicts matrix.
+The m4_arg(conflicts) parameter is an m4_arg(nmodes) by m4_arg(nmodes)
+array.  A non-0 value for the array element indicates that
+requested_mode and held_mode conflict:
+m4_indent([conflicts__LB__requested_mode__RB____LB__held_mode__RB__])
+m4_p([dnl
+The m4_italic(not-granted) mode must be represented by 0.])])
+m4_param(nmodes, [dnl
+The m4_arg(nmodes) parameter is the size of the lock conflicts matrix.])
+m4_paramend
+
+m4_err(dbenv_set_lk_conflicts,
+einval, [the method was called after m4_ref(dbenv_open) was called],
+memory, [conflicts array could not be copied])
+
+m4_pf_description(dbenv_get_lk_conflicts)
+m4_p([dnl
+The m4_refT(dbenv_get_lk_conflicts) returns the current conflicts array.])
+
+m4_when_any(dbenv_get_lk_conflicts)
+
+m4_return(dbenv_get_lk_conflicts, std)
+
+m4_parambegin
+m4_param_co(lk_conflictsp, current conflicts array, REF)
+m4_param_co(lk_modesp, size of the current conflicts array)
+m4_paramend
+
+m4_seealso(DbLock)
+m4_page_footer

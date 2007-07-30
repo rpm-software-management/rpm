@@ -1,0 +1,41 @@
+m4_comment([$Id: memp_openfd.so,v 10.3 2005/03/08 14:36:15 bostic Exp $])
+
+define(M4PAGELOCAL, [memp_get_max_openfd, memp_set_max_openfd])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_max_openfd),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_mp_max_openfd(DB_ENV *env, int maxopenfd);
+m4_blank
+int
+DB_ENV-__GT__get_mp_max_openfd(DB_ENV *env, int *maxopenfdp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_mp_max_openfd(int maxopenfd);
+m4_blank
+int
+DbEnv::get_mp_max_openfd(int *maxopenfdp);
+]))
+
+m4_p([dnl
+The m4_refT(memp_set_max_openfd) limits the number of file descriptors
+the library will open concurrently when flushing dirty pages from the
+cache.])
+
+m4_return(memp_set_max_openfd, std)
+
+m4_parambegin
+m4_param(maxopenfd, [dnl
+The maximum number of file descriptors that may be concurrently opened
+by the library when flushing dirty pages from the cache.])
+m4_paramend
+
+m4_err(memp_set_max_openfd, einval)
+
+m4_pf_getter(memp_get_max_openfd,
+maximum number of file descriptors open,, maxopenfdp)
+
+m4_seealso(DbMpool)
+m4_page_footer

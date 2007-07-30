@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2006,2007 Oracle.  All rights reserved.
 #
-# $Id: rep065script.tcl,v 12.7 2006/09/08 20:32:18 bostic Exp $
+# $Id: rep065script.tcl,v 12.15 2007/07/05 15:43:29 sue Exp $
 #
 # rep065script - procs to use at each replication site in the
 # replication upgrade test.
@@ -95,36 +94,42 @@ proc rep065scr_starttest { role oplist envid msgdir mydir allids markerfile } {
 	global qtestdir
 	global util_path
 
-	puts "repladd $allids"
+	puts "repladd_noenv $allids"
 	set qtestdir $msgdir
 	foreach id $allids {
-		repladd $id
+		repladd_noenv $id
 	}
 
 	set markerdb [berkdb_open -create -btree $markerfile]
 	error_check_good marker [is_valid_db $markerdb] TRUE
 	puts "set up env cmd"
 	set lockmax 40000
+	set logbuf [expr 16 * 1024]
+	set logmax [expr $logbuf * 4]
 	if { $role == "MASTER" } {
 		set rep_env_cmd "berkdb_env_noerr -create -home $mydir \
+		    -log_max $logmax -log_buffer $logbuf \
 		    -lock_max_objects $lockmax -lock_max_locks $lockmax \
 		    -errpfx MASTER -txn -rep_master \
-		    -rep_transport \[list $envid replsend\]"
+		    -rep_transport \[list $envid replsend_noenv\]"
 #		set rep_env_cmd "berkdb_env_noerr -create -home $mydir \
+#		    -log_max $logmax -log_buffer $logbuf \
 #		    -lock_max_objects $lockmax -lock_max_locks $lockmax \
 #		    -errpfx MASTER -txn -rep_master \
 #		    -verbose {rep on} -errfile /dev/stderr \
-#		    -rep_transport \[list $envid replsend\]"
+#		    -rep_transport \[list $envid replsend_noenv\]"
 	} elseif { $role == "CLIENT" } {
 		set rep_env_cmd "berkdb_env_noerr -create -home $mydir \
+		    -log_max $logmax -log_buffer $logbuf \
 		    -lock_max_objects $lockmax -lock_max_locks $lockmax \
 		    -errpfx CLIENT -txn -rep_client \
-		    -rep_transport \[list $envid replsend\]"
+		    -rep_transport \[list $envid replsend_noenv\]"
 #		set rep_env_cmd "berkdb_env_noerr -create -home $mydir \
+#		    -log_max $logmax -log_buffer $logbuf \
 #		    -lock_max_objects $lockmax -lock_max_locks $lockmax \
 #		    -errpfx CLIENT -txn -rep_client \
 #		    -verbose {rep on} -errfile /dev/stderr \
-#		    -rep_transport \[list $envid replsend\]"
+#		    -rep_transport \[list $envid replsend_noenv\]"
 	} else {
 		puts "FAIL: unrecognized replication role $role"
 		return
@@ -209,29 +214,29 @@ puts "$mydir: Looking for START$envid.  Got $s"
 puts "$mydir: Loop: Looking for START$envid.  Got $s"
 	}
 
-	puts "repladd $allids"
+	puts "repladd_noenv $allids"
 	set qtestdir $msgdir
 	foreach id $allids {
-		repladd $id
+		repladd_noenv $id
 	}
 
 	puts "set up env cmd"
 	if { $role == "MASTER" } {
 		set rep_env_cmd "berkdb_env_noerr -home $mydir \
 		    -errpfx MASTER -txn -rep_master \
-		    -rep_transport \[list $envid replsend\]"
+		    -rep_transport \[list $envid replsend_noenv\]"
 #		set rep_env_cmd "berkdb_env_noerr -home $mydir \
 #		    -errpfx MASTER -txn -rep_master \
 #		    -verbose {rep on} -errfile /dev/stderr \
-#		    -rep_transport \[list $envid replsend\]"
+#		    -rep_transport \[list $envid replsend_noenv\]"
 	} elseif { $role == "CLIENT" } {
 		set rep_env_cmd "berkdb_env_noerr -home $mydir \
 		    -errpfx CLIENT -txn -rep_client \
-		    -rep_transport \[list $envid replsend\]"
+		    -rep_transport \[list $envid replsend_noenv\]"
 #		set rep_env_cmd "berkdb_env_noerr -home $mydir \
 #		    -errpfx CLIENT -txn -rep_client \
 #		    -verbose {rep on} -errfile /dev/stderr \
-#		    -rep_transport \[list $envid replsend\]"
+#		    -rep_transport \[list $envid replsend_noenv\]"
 	} else {
 		puts "FAIL: unrecognized replication role $role"
 		return
@@ -264,9 +269,10 @@ puts "$mydir: Loop: Looking for START$envid.  Got $s"
 	process_msgs $envlist 0 NONE NONE 1
 	tclsleep 1
 	error_check_good marker_close [$markerdb close] 0
-	replclear $envid from
+	replclear_noenv $envid from
 	tclsleep 1
-	replclear $envid
+	replclear_noenv $envid
+	$repenv mpool_sync
 	error_check_good envclose [$repenv close] 0
 }
 
@@ -358,16 +364,27 @@ puts "Histdir $histdir"
 
 set msgtestdir $ctldir/TESTDIR
 
+global env
 cd $histdir
+set stat [catch {eval exec ./db_printlog -V} result]
+if { $stat != 0 } {
+	set env(LD_LIBRARY_PATH) ":$histdir:$histdir/.libs:$env(LD_LIBRARY_PATH)"
+}
 source ./include.tcl
 source $test_path/test.tcl
 if { [is_substr $histdir "db-4.2"] } {
 	source $ctldir/$test_path/testutils42.tcl
 }
 
+# The global variable noenv_messaging must be set after sourcing
+# test.tcl or its value will be wrong.
+global noenv_messaging
+set noenv_messaging 1
+
 set is_repchild 1
 puts "Did args. now source reputils"
 source $reputils_path/reputils.tcl
+source $reputils_path/reputilsnoenv.tcl
 
 set markerdir $msgtestdir/MARKER
 if { [file exists $markerdir] == 0 } {

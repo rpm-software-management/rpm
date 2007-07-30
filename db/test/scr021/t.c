@@ -15,7 +15,7 @@ chk(f, str)
 
 	if (freopen(f, "r", stdin) == NULL) {
 		fprintf(stderr, "%s: %s\n", f, strerror(errno));
-		exit (1);
+		exit(EXIT_FAILURE);
 	}
 
 	for (l = 1, ok = 1, s = str; (ch = getchar()) != EOF;) {

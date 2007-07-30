@@ -1,0 +1,95 @@
+m4_comment([$Id: seq_stat.so,v 1.9 2007/06/22 16:57:17 bostic Exp $])
+
+define(M4PAGELOCAL, [seq_stat, seq_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__stat(DB_SEQUENCE *db, void *sp, u_int32_t flags);
+m4_blank
+int
+DB_SEQUENCE-__GT__stat_print(DB_SEQUENCE *db, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::stat(void *sp, u_int32_t flags);
+m4_blank
+int
+Db::stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(seq_stat) creates a statistical structure and copies a
+pointer to it into user-specified memory locations.  Specifically, if
+m4_arg(sp) is non-NULL, a pointer to the statistics for the database are
+copied into the memory location to which it refers.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+In the presence of multiple threads or processes accessing an active
+sequence, the information returned by m4_ref(seq_stat) may be out-of-date.])
+
+m4_p([dnl
+The m4_refT(seq_stat) cannot be transaction-protected.  For this reason,
+it should be called in a thread of control that has no open cursors or
+active transactions.])
+
+m4_p([dnl
+The statistics are stored in a structure of type DB_SEQUENCE_STAT.  The
+following fields will be filled in:])
+
+m4_tagbegin
+m4_field(u_int32_t, st_wait,
+[The number of times a thread of control was forced to wait on the
+handle mutex.])
+m4_field(u_int32_t, st_nowait,
+[The number of times that a thread of control was able to obtain handle
+mutex without waiting.])
+m4_field(db_seq_t, st_current,
+[The current value of the sequence in the database.])
+m4_field(db_seq_t, st_value,
+[The current cached value of the sequence.])
+m4_field(db_seq_t, st_last_value,
+[The last cached value of the sequence.])
+m4_field(db_seq_t, st_min,
+[The minimum permitted value of the sequence.])
+m4_field(db_seq_t, st_max,
+[The maximum permitted value of the sequence.])
+m4_field(int32_t, st_cache_size,
+[The number of values that will be cached in this handle.])
+m4_field(u_int32_t, st_flags,
+[The flags value for the sequence.])
+m4_tagend
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_must
+m4_tagbegin
+m4_tag(m4_idef(DB_STAT_CLEAR), [dnl
+Reset statistics after printing their values.])
+m4_tagend])
+m4_paramend
+
+m4_p([dnl
+The m4_refT(seq_stat) may not be called before the m4_refT(seq_open) has
+been called.])
+
+m4_return(seq_stat, std)
+
+m4_pf_description(m4_ref(seq_stat_print))
+m4_p([dnl
+The m4_refT(seq_stat_print) prints diagnostic information to the output
+channel described by the m4_refT(dbenv_set_msgfile).])
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_must
+m4_tagbegin
+m4_tag(m4_idef(DB_STAT_CLEAR), [dnl
+Reset statistics after printing their values.])
+m4_tagend])
+m4_paramend
+
+m4_seealso(DbSequence)
+m4_page_footer

@@ -1,0 +1,92 @@
+m4_comment([$Id: intro.so,v 1.18 2006/11/13 18:05:03 bostic Exp $])
+
+m4_ref_title(RPC Client/Server, Introduction to the RPC client/server,
+    introduction to @rpc client/server, sequence/intro, rpc/client)
+
+m4_p([dnl
+m4_db includes an implementation of a client-server protocol using Sun
+Microsystem's Remote Procedure Call Protocol.  RPC support is
+available only for UNIX systems, and is not included in the m4_db library by
+default, but must be enabled during configuration.  See
+m4_link(M4RELDIR/ref/build_unix/conf, Configuring m4_db) for more
+information.  For more information on RPC itself, see your UNIX system
+documentation or m4_italic([RPC: Remote Procedure Call Protocol
+Specification, RFC1831, Sun Microsystems, Inc., USC-ISI]).])
+
+m4_p([dnl
+Only some of the complete m4_db functionality is available when using RPC.
+The following functionality is available:])
+
+m4_nlistbegin
+
+m4_nlistns([dnl
+The m4_ref(dbenv_create) function and the m4_ref(DbEnv) handle
+methods.])
+
+m4_nlistns([dnl
+The m4_ref(dbh_create) function and the m4_ref(Db) handle methods.])
+
+m4_nlistns([dnl
+The m4_ref(txn_begin), m4_ref(txn_commit), and m4_refT(txn_abort)s.])
+
+m4_nlistend
+
+m4_p([dnl
+The m4_ref(DB_THREAD) flag to the m4_ref(dbenv_open) and m4_refT(dbh_open)s
+may not be specified, that is, m4_ref(DbEnv) and m4_ref(Db) handles  used
+in RPC clients are not free-threaded.])
+
+m4_p([dnl
+The RPC client/server code does not support any of the user-defined
+comparison or allocation functions; for example, an application using
+the RPC support may not specify its own Btree comparison function.  If
+your application requires only those portions of m4_db, then using RPC
+is fairly simple.  If your application requires other m4_db
+functionality, such as direct access to locking, logging or shared
+memory buffer memory pools, then your application cannot use the RPC
+support.])
+
+m4_p([dnl
+Although a client cannot specify a callback, m4_db does support the
+m4_ref(dbh_associate) call in a limited manner.  A client program
+wanting to use a secondary index may do so only in a read-only fashion.
+The primary and secondary databases must have been created locally on
+the server machine.  Client programs must then open both the primary
+and secondary databases with the m4_ref(DB_RDONLY) flag set.  The client
+must also specify a NULL callback for the m4_ref(dbh_associate) call.])
+
+m4_p([dnl
+The m4_db RPC code requires that the client and server programs be
+running the exact same version numbers.
+The m4_db RPC protocol version number is tied to the m4_db major
+and minor release numbers.
+As such, the server program will reject requests from clients
+using a different version number.])
+
+m4_p([m4_bold([dnl
+The m4_db RPC support does not provide any security or authentication of
+any kind.])  Sites needing any kind of data security measures must modify
+the client and server code to provide whatever level of security they
+require.])
+
+m4_p([dnl
+One particularly interesting use of the RPC support is for debugging m4_db
+applications.  The seamless nature of the interface means that with very
+minor application code changes, an application can run outside of the
+m4_db address space, making it far easier to track down many types of
+errors -- such as memory misuse.])
+
+m4_p([dnl
+Using the RPC mechanisms in m4_db involves two basic steps:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Modify your m4_db application to act as a client and call the RPC
+server.])
+
+m4_nlistns([dnl
+Run the m4_ref(berkeley_db_svc) server program on the system where the
+database resides.])
+m4_nlistend
+
+m4_page_footer

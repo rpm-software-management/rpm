@@ -1,0 +1,45 @@
+m4_comment([$Id: log_printf.so,v 1.1 2005/09/30 19:00:24 bostic Exp $])
+
+define(M4PAGELOCAL, log_printf)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_printf),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__log_printf(DB_ENV *env, DB_TXN *txnid, const char *fmt, ...);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::log_printf(DB_TXN *txnid, const char *fmt, ...);
+]))
+
+m4_p([dnl
+The m4_refT(log_printf) appends an informational message to the m4_db
+database environment log files.])
+
+m4_p([dnl
+The m4_refT(log_printf) allows applications to include information in
+the database environment log files, for later review using the
+m4_ref(db_printlog) utility.  This method is intended for debugging and
+performance tuning.])
+
+m4_return(log_printf, std)
+
+m4_parambegin
+m4_param(txnid, [dnl
+If the logged message refers to an application-specified transaction,
+the m4_arg(txnid) parameter is a transaction handle returned from
+m4_ref(txn_begin); otherwise NULL.])
+
+m4_param(fmt, [dnl
+A format string that specifies how subsequent arguments (or arguments
+accessed via the variable-length argument facilities of stdarg(3)) are
+converted for output.  The format string may contain any formatting
+directives supported by the underlying C library vsnprintf(3)
+function.])
+m4_paramend
+
+m4_err(log_printf, einval)
+
+m4_seealso(DbLog)
+m4_page_footer

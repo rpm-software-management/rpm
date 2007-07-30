@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1995, 1996
@@ -35,7 +34,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: txn_chkpt.c,v 12.27 2006/08/24 14:46:53 bostic Exp $
+ * $Id: txn_chkpt.c,v 12.47 2007/06/08 17:34:57 bostic Exp $
  */
 
 #include "db_config.h"
@@ -101,22 +100,11 @@ __txn_checkpoint(dbenv, kbytes, minutes, flags)
 	REGENV *renv;
 	REGINFO *infop;
 	time_t last_ckp_time, now;
-	u_int32_t bytes, gen, id, logflags, mbytes;
+	u_int32_t bytes, id, logflags, mbytes, op;
 	int ret;
 
-	ret = gen = 0;
-	/*
-	 * A client will only call through here during recovery,
-	 * so just sync the Mpool and go home.
-	 */
-	if (IS_REP_CLIENT(dbenv)) {
-		if (MPOOL_ON(dbenv) && (ret = __memp_sync(dbenv, NULL)) != 0) {
-			__db_err(dbenv, ret,
-		    "txn_checkpoint: failed to flush the buffer cache");
-			return (ret);
-		}
-		return (0);
-	}
+	DB_ASSERT(dbenv, !IS_REP_CLIENT(dbenv));
+	ret = 0;
 
 	mgr = dbenv->tx_handle;
 	region = mgr->reginfo.primary;
@@ -177,15 +165,66 @@ __txn_checkpoint(dbenv, kbytes, minutes, flags)
 	 * sees a later chk_lsn but competes first.  An archive process could
 	 * then remove a log this checkpoint depends on.
 	 */
-do_ckp:	MUTEX_LOCK(dbenv, region->mtx_ckp);
+do_ckp:
+	MUTEX_LOCK(dbenv, region->mtx_ckp);
 	if ((ret = __txn_getactive(dbenv, &ckp_lsn)) != 0)
 		goto err;
 
-	if (MPOOL_ON(dbenv) && (ret = __memp_sync(dbenv, NULL)) != 0) {
+	/*
+	 * Checkpoints in replication groups can cause performance problems.
+	 *
+	 * As on the master, checkpoint on the replica requires the cache be
+	 * flushed.  The problem occurs when a client has dirty cache pages
+	 * to write when the checkpoint record arrives, and the client's PERM
+	 * response is necessary in order to meet the system's durability
+	 * guarantees.  In this case, the master will have to wait until the
+	 * client completes its cache flush and writes the checkpoint record
+	 * before subsequent transactions can be committed.  The delay may
+	 * cause transactions to timeout waiting on client response, which
+	 * can cause nasty ripple effects in the system's overall throughput.
+	 * [#15338]
+	 *
+	 * First, we send a start-sync record when the checkpoint starts so
+	 * clients can start flushing their cache in preparation for the
+	 * arrival of the checkpoint record.
+	 */
+	if (LOGGING_ON(dbenv) &&
+	    IS_REP_MASTER(dbenv) && dbenv->rep_handle->send != NULL)
+		(void)__rep_send_message(dbenv,
+		    DB_EID_BROADCAST, REP_START_SYNC, &ckp_lsn, NULL, 0, 0);
+
+	/* Flush the cache. */
+	if (MPOOL_ON(dbenv) &&
+	    (ret = __memp_sync_int(
+		dbenv, NULL, 0, DB_SYNC_CHECKPOINT, NULL, NULL)) != 0) {
 		__db_err(dbenv, ret,
 		    "txn_checkpoint: failed to flush the buffer cache");
 		goto err;
 	}
+
+	/*
+	 * The client won't have more dirty pages to flush from its cache than
+	 * the master did, but there may be differences between the hardware,
+	 * I/O configuration and workload on the master and the client that
+	 * can result in the client being unable to finish its cache flush as
+	 * fast as the master.  A way to avoid the problem is to pause after
+	 * the master completes its checkpoint and before the actual checkpoint
+	 * record is logged, giving the replicas additional time to finish.
+	 *
+	 * !!!
+	 * We do not currently surface an API to modify this value,
+	 *
+	 * !!!
+	 * Currently turned off when testing, because it makes the test suite
+	 * take a long time to run.
+	 */
+#ifndef	CONFIG_TEST
+	if (LOGGING_ON(dbenv) &&
+	    IS_REP_MASTER(dbenv) && dbenv->rep_handle->send != NULL &&
+	    !LF_ISSET(DB_CKP_INTERNAL) &&
+	    dbenv->rep_handle->region->chkpt_delay != 0)
+		__os_sleep(dbenv, dbenv->rep_handle->region->chkpt_delay, 0);
+#endif
 
 	/*
 	 * Because we can't be a replication client here, and because
@@ -196,9 +235,6 @@ do_ckp:	MUTEX_LOCK(dbenv, region->mtx_ckp);
 		TXN_SYSTEM_LOCK(dbenv);
 		last_ckp = region->last_ckp;
 		TXN_SYSTEM_UNLOCK(dbenv);
-		if (REP_ON(dbenv) && (ret = __rep_get_gen(dbenv, &gen)) != 0)
-			goto err;
-
 		/*
 		 * Put out records for the open files before we log
 		 * the checkpoint.  The records are certain to be at
@@ -208,11 +244,20 @@ do_ckp:	MUTEX_LOCK(dbenv, region->mtx_ckp);
 		 * checkpoint.
 		 */
 		logflags = DB_LOG_CHKPNT;
+		/*
+		 * If this is a normal checkpoint, log files as checkpoints.
+		 * If we are recovering, only log as DBREG_RCLOSE if
+		 * there are no prepared txns.  Otherwise, it should
+		 * stay as DBREG_CHKPNT.
+		 */
+		op = DBREG_CHKPNT;
 		if (!IS_RECOVERING(dbenv))
 			logflags |= DB_FLUSH;
-		if ((ret = __dbreg_log_files(dbenv)) != 0 ||
+		else if (region->stat.st_nrestores == 0)
+			op = DBREG_RCLOSE;
+		if ((ret = __dbreg_log_files(dbenv, op)) != 0 ||
 		    (ret = __txn_ckp_log(dbenv, NULL, &ckp_lsn, logflags,
-		    &ckp_lsn, &last_ckp, (int32_t)time(NULL), id, gen)) != 0) {
+		    &ckp_lsn, &last_ckp, (int32_t)time(NULL), id, 0)) != 0) {
 			__db_err(dbenv, ret,
 			    "txn_checkpoint: log failed at LSN [%ld %ld]",
 			    (long)ckp_lsn.file, (long)ckp_lsn.offset);

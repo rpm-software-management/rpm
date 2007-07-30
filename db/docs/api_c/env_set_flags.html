@@ -1,6 +1,5 @@
 <!--$Id-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -137,8 +136,12 @@ file.</p>
 the life of the application.</p>
 <a name="7"><!--meow--></a>
 <dt><a name="DB_LOG_AUTOREMOVE">DB_LOG_AUTOREMOVE</a><dd>If set, Berkeley DB will automatically remove log files that are no longer
-needed.  Automatic log file removal is likely to make catastrophic
-recovery impossible.
+needed.
+<p>Automatic log file removal is likely to make catastrophic recovery
+impossible.</p>
+<p>Replication applications will rarely want to configure automatic log
+file removal as it increases the likelihood a master will be unable to
+satisfy a client's request for a recent log record.</p>
 <p>Calling DB_ENV-&gt;set_flags with the DB_LOG_AUTOREMOVE flag affects the
 database environment, including all threads of control accessing the
 database environment.</p>
@@ -165,16 +168,6 @@ database environment, including all threads of control accessing the
 database environment.</p>
 <p>The DB_LOG_INMEMORY flag may be used to configure Berkeley DB only before the
 <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is called.</p>
-<a name="9"><!--meow--></a>
-<dt><a name="DB_NOLOCKING">DB_NOLOCKING</a><dd>If set, Berkeley DB will grant all requested mutual exclusion mutexes and
-database locks without regard for their actual availability.  This
-functionality should never be used for purposes other than debugging.
-<p>Calling DB_ENV-&gt;set_flags with the DB_NOLOCKING flag only affects
-the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
-within the scope of that handle).
-</p>
-<p>The DB_NOLOCKING flag may be used to configure Berkeley DB at any time during
-the life of the application.</p>
 <dt><a name="DB_MULTIVERSION">DB_MULTIVERSION</a><dd>If set, all databases in the environment will be opened as if
 DB_MULTIVERSION is passed to <a href="../api_c/db_open.html">DB-&gt;open</a>.  This flag will
 be ignored for queue databases for which DB_MULTIVERSION is not
@@ -187,6 +180,16 @@ handles opened in the environment must either set the DB_MULTIVERSION flag
 or the flag should be specified in the <b>DB_CONFIG</b> configuration
 file.</p>
 <p>The DB_MULTIVERSION flag may be used to configure Berkeley DB at any time during
+the life of the application.</p>
+<a name="9"><!--meow--></a>
+<dt><a name="DB_NOLOCKING">DB_NOLOCKING</a><dd>If set, Berkeley DB will grant all requested mutual exclusion mutexes and
+database locks without regard for their actual availability.  This
+functionality should never be used for purposes other than debugging.
+<p>Calling DB_ENV-&gt;set_flags with the DB_NOLOCKING flag only affects
+the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
+within the scope of that handle).
+</p>
+<p>The DB_NOLOCKING flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
 <a name="10"><!--meow--></a>
 <dt><a name="DB_NOMMAP">DB_NOMMAP</a><dd>If set, Berkeley DB will copy read-only database files into the local cache
@@ -229,14 +232,12 @@ the life of the application.</p>
 <dt><a name="DB_PANIC_ENVIRONMENT">DB_PANIC_ENVIRONMENT</a><dd>If set, Berkeley DB will set the panic state for the database environment.
 (Database environments in a panic state normally refuse all attempts to
 call Berkeley DB functions, returning <a href="../ref/program/errorret.html#DB_RUNRECOVERY">DB_RUNRECOVERY</a>.) This flag may
-not be specified using the environment's <b>DB_CONFIG</b> file.  This
-flag may be used to configure Berkeley DB only after the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method
-is called.
+not be specified using the environment's <b>DB_CONFIG</b> file.
 <p>Calling DB_ENV-&gt;set_flags with the DB_PANIC_ENVIRONMENT flag affects the
 database environment, including all threads of control accessing the
 database environment.</p>
-<p>The DB_PANIC_ENVIRONMENT flag may be used to configure Berkeley DB at any time during
-the life of the application.</p>
+<p>The DB_PANIC_ENVIRONMENT flag may be used to configure Berkeley DB only after the
+<a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is called.</p>
 <a name="13"><!--meow--></a>
 <dt><a name="DB_REGION_INIT">DB_REGION_INIT</a><dd>In some applications, the expense of page-faulting the underlying shared
 memory regions can affect performance.  (For example, if the page-fault
@@ -281,13 +282,26 @@ may be undone during recovery.  The number of transactions at risk is
 governed by how many log updates can fit into the log buffer, how often
 the operating system flushes dirty buffers to disk, and how often the
 log is checkpointed.
-<p>Calling DB_ENV-&gt;set_flags with the DB_TXN_NOSYNC flag only affects
+<p>Calling DB_ENV-&gt;set_flags with the <a href="../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> flag only affects
 the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
 within the scope of that handle).
 For consistent behavior across the environment, all <a href="../api_c/env_class.html">DB_ENV</a>
-handles opened in the environment must either set the DB_TXN_NOSYNC flag
+handles opened in the environment must either set the <a href="../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> flag
 or the flag should be specified in the <b>DB_CONFIG</b> configuration
-file.</p> <p>The DB_TXN_NOSYNC flag may be used to configure Berkeley DB at any time during
+file.</p> <p>The <a href="../api_c/env_set_flags.html#DB_TXN_NOSYNC">DB_TXN_NOSYNC</a> flag may be used to configure Berkeley DB at any time during
+the life of the application.</p>
+<dt><a name="DB_TXN_NOWAIT">DB_TXN_NOWAIT</a><dd>If set and a lock is unavailable for any Berkeley DB operation performed in
+the context of a transaction, cause the operation to
+return <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a> (or <a href="../ref/program/errorret.html#DB_LOCK_NOTGRANTED">DB_LOCK_NOTGRANTED</a> if
+configured using the <a href="../api_c/env_set_flags.html#DB_TIME_NOTGRANTED">DB_TIME_NOTGRANTED</a> flag).
+<p>Calling DB_ENV-&gt;set_flags with the <a href="../api_c/txn_begin.html#DB_TXN_NOWAIT">DB_TXN_NOWAIT</a> flag only affects
+the specified <a href="../api_c/env_class.html">DB_ENV</a> handle (and any other Berkeley DB handles opened
+within the scope of that handle).
+For consistent behavior across the environment, all <a href="../api_c/env_class.html">DB_ENV</a>
+handles opened in the environment must either set the <a href="../api_c/txn_begin.html#DB_TXN_NOWAIT">DB_TXN_NOWAIT</a> flag
+or the flag should be specified in the <b>DB_CONFIG</b> configuration
+file.</p>
+<p>The <a href="../api_c/txn_begin.html#DB_TXN_NOWAIT">DB_TXN_NOWAIT</a> flag may be used to configure Berkeley DB at any time during
 the life of the application.</p>
 <dt><a name="DB_TXN_SNAPSHOT">DB_TXN_SNAPSHOT</a><dd>If set, all transactions in the environment will be started as if
 DB_TXN_SNAPSHOT were passed to <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>, and all
@@ -368,6 +382,6 @@ configuration flags in <b>flagsp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

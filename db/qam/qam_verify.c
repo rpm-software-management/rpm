@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: qam_verify.c,v 12.9 2006/08/24 14:46:24 bostic Exp $
+ * $Id: qam_verify.c,v 12.13 2007/05/17 15:15:50 bostic Exp $
  */
 
 #include "db_config.h"
@@ -44,12 +43,12 @@ __qam_vrfy_meta(dbp, vdp, meta, pgno, flags)
 	qp = (QUEUE *)dbp->q_internal;
 	extents = NULL;
 	first = last = 0;
+	isbad = 0;
 	buf = NULL;
 	names = NULL;
 
 	if ((ret = __db_vrfy_getpageinfo(vdp, pgno, &pip)) != 0)
 		return (ret);
-	isbad = 0;
 
 	/*
 	 * Queue can't be used in subdatabases, so if this isn't set
@@ -409,7 +408,7 @@ put:			if ((ret = __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0)
 		}
 
 		/* Again, keep going iff we're salvaging. */
-		if ((t_ret = __qam_fput(dbp, i, h, 0)) != 0) {
+		if ((t_ret = __qam_fput(dbp, i, h, dbp->priority)) != 0) {
 			if (LF_ISSET(DB_SALVAGE)) {
 				if (ret == 0)
 					ret = t_ret;
@@ -439,7 +438,7 @@ put:			if ((ret = __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0)
 	}
 
 	if (0) {
-err:		if ((t_ret = __qam_fput(dbp, i, h, 0)) != 0)
+err:		if ((t_ret = __qam_fput(dbp, i, h, dbp->priority)) != 0)
 			return (ret == 0 ? t_ret : ret);
 		if (pip != NULL &&
 		     (t_ret = __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0)

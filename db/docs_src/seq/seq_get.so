@@ -1,0 +1,75 @@
+m4_comment([$Id: seq_get.so,v 1.11 2005/08/09 14:23:30 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[seq_get])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_get),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__get(DB_SEQUENCE *seq,
+    DB_TXN *txnid, int32_t delta, db_seq_t *retp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::get(DbTxn *txnid, int32_t delta, db_seq_t *retp, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(seq_get) returns the next available element in the sequence
+and changes the sequence value by m4_arg(delta).  The value of
+m4_arg(delta) must be greater than zero.  If there are enough cached
+values in the sequence handle then they will be returned.  Otherwise the
+next value will be fetched from the database and incremented
+(decremented) by enough to cover the m4_arg(delta) and the next batch
+of cached values.])
+
+m4_p([dnl
+For maximum concurrency a non-zero cache size should be specified prior
+to opening the sequence handle and m4_ref(DB_TXN_NOSYNC) should be
+specified for each m4_refT(seq_get) call.])
+
+m4_p([dnl
+By default, sequence ranges do not wrap; to cause the sequence to wrap
+around the beginning or end of its range, specify the m4_ref(DB_SEQ_WRAP)
+flag to the m4_refT(seq_set_flags).])
+
+m4_return(seq_get,
+specific, EINVAL, [if the record in the database is not a valid sequence
+record, or the sequence has reached the beginning or end of its range
+and is not configured to wrap])
+
+m4_parambegin
+m4_param(delta, [dnl
+Specifies the amount to increment or decrement the sequence.])
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_TXN_NOSYNC), [dnl
+If the operation is implicitly transaction protected (the m4_arg(txnid)
+argument is NULL but the operation occurs to a transactional database),
+do not synchronously flush the log when the transaction commits.])
+m4_tagend])
+
+m4_param(retp, [dnl
+m4_arg(retp) points to the memory to hold the return value from
+the sequence.])
+m4_param_txn(seq_get,, [dnl
+No m4_arg(txnid) handle may be specified if the sequence handle was
+opened with a non-zero cache size.
+m4_p([dnl
+If the underlying database handle was opened in a transaction, calling
+m4_ref(seq_get) may result in changes to the sequence object; these
+changes will be automatically committed in a transaction internal to the
+m4_db library.  If the thread of control calling m4_ref(seq_get) has
+an active transaction, which holds locks on the same database as the
+one in which the sequence object is stored, it is possible for a thread
+of control calling m4_ref(seq_get) to self-deadlock because the active
+transaction's locks conflict with the internal transaction's locks.
+For this reason, it is often preferable for sequence objects to be
+stored in their own database.])])
+m4_paramend
+
+m4_seealso(DbSequence)
+m4_page_footer

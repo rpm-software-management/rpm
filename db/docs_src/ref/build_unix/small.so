@@ -1,0 +1,84 @@
+m4_comment([$Id: small.so,v 10.11 2007/06/13 18:56:05 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    Building a small memory footprint library,,
+    build_unix/conf, build_unix/flags)
+
+m4_p([dnl
+There are a set of configuration options to assist you in building a
+small memory footprint library.  These configuration options turn off
+specific functionality in the m4_db library, reducing the code size.
+These configuration options include:])
+
+m4_tagbegin
+m4_tag([m4_idef(--disable-cryptography)], [dnl
+To build m4_db without support for cryptography, enter
+--disable-cryptography as an argument to configure.])
+
+m4_tag([m4_idef(--disable-hash)], [dnl
+To build m4_db without support for the Hash access method, enter
+--disable-hash as an argument to configure.])
+
+m4_tag([m4_idef(--disable-queue)], [dnl
+To build m4_db without support for the Queue access method, enter
+--disable-queue as an argument to configure.])
+
+m4_tag([m4_idef(--disable-replication)], [dnl
+To build m4_db without support for the database environment replication,
+enter --disable-replication as an argument to configure.])
+
+m4_tag([m4_idef(--disable-statistics)], [dnl
+To build m4_db without support for the statistics interfaces, enter
+--disable-statistics as an argument to configure.])
+
+m4_tag([m4_idef(--disable-verify)], [dnl
+To build m4_db without support for database verification, enter
+--disable-verify as an argument to configure.])
+
+m4_tag([m4_idef(--enable-smallbuild)], [dnl
+Equivalent to individually specifying --disable-cryptography,
+--disable-hash, --disable-queue, --disable-replication,
+--disable-statistics and --disable-verify.  In addition, when compiling
+building with the GNU gcc compiler, the --enable-smallbuild option uses
+the -Os compiler build flag instead of the default -O3.])
+
+m4_tagend
+
+m4_p([dnl
+The following configuration options will increase the size of the m4_db
+library dramatically and are only useful when debugging applications:])
+
+m4_tagbegin
+m4_tag([m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--enable-debug, --enable-debug)], [dnl
+Build m4_db with symbols for debugging.])
+m4_tag([m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--enable-debug_rop, --enable-debug_rop)], [dnl
+Build m4_db with read-operation logging.])
+m4_tag([m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--enable-debug_wop, --enable-debug_wop)], [dnl
+Build m4_db with write-operation logging.])
+m4_tag([m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--enable-diagnostic, --enable-diagnostic)], [dnl
+Build m4_db with run-time debugging checks.])
+m4_tagend
+
+m4_p([dnl
+In addition, static libraries are usually smaller than shared libraries.
+By default m4_db will build both shared and static libraries.  To build
+only a static library, configure m4_db with the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --disable-shared) option.])
+
+m4_p([dnl
+The size of the m4_db library varies depending on the compiler, machine
+architecture, and configuration options.  As an estimate, production
+m4_db libraries built with GNU gcc version 3.X compilers have footprints
+in the range of 400KB to 900KB on 32-bit x86 architectures, and in the
+range of 500KB to 1MB on 64-bit x86 architectures.])
+
+m4_p([dnl
+For assistance in further reducing the size of the m4_db library, or in
+building small memory footprint libraries on other systems, please
+contact m4_db support.])
+
+m4_page_footer

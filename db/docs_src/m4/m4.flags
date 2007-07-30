@@ -1,0 +1,138 @@
+dnl $Id: m4.flags,v 10.144 2007/07/12 18:27:43 bostic Exp $
+dnl ###################################################################
+dnl FLAGS
+dnl ###################################################################
+dnl
+dnl OR'ing language.
+dnl
+define(m4_or, [bitwise inclusively m4_bold(OR)'ing])
+
+dnl
+dnl Unused flags.
+dnl
+define(m4_unusedflags, [dnl
+m4_param(flags, [dnl
+The m4_arg(flags) parameter is currently unused, and must be set to 0.])])
+
+dnl
+dnl Flags must be 0 or one of the following OR'd values.
+dnl
+define(m4_sf_or_may, [dnl
+The m4_arg(flags) parameter must be set to 0 or by m4_or together one
+or more of the following values:])
+
+dnl
+dnl Flags must be one of the following OR'd values.
+dnl
+define(m4_sf_or_must, [dnl
+The m4_arg(flags) parameter must be set by m4_or together one or more
+of the following values:])
+
+dnl
+dnl Flags may be added to by OR'ing one of the following values.
+dnl	#1 "0" if a single flag, "1" if multiple flags
+dnl
+define(m4_sf_or_add, [dnl
+In addition, the following ifelse([$1],0, flag, flags) may be set by
+m4_or ifelse([$1],0, it, them) into the m4_arg(flags) parameter:])
+
+dnl
+dnl Flags must be one of the following values.
+dnl
+define(m4_sf_must, [dnl
+The m4_arg(flags) parameter must be set to one of the following values:])
+
+dnl
+dnl Flags must be 0 or one of the following values.
+dnl	#1 "0" if a single flag, "1" if multiple flags
+dnl
+define(m4_sf_zmust, [dnl
+The m4_arg(flags) parameter must be set to 0 or
+ifelse([$1],0, the following value:, one of the following values:)])
+
+dnl ###################################################################
+dnl Additional flags: DB_AUTO_COMMIT
+dnl   #1 method
+dnl ###################################################################
+define(m4_autocommit_flag, [dnl
+m4_tag(m4_idef(DB_AUTO_COMMIT), [dnl
+Enclose the m4_ref($1) call within a transaction.  If the call succeeds,
+changes made by the operation will be recoverable.  If the call fails,
+the operation will have made no changes.])])
+
+dnl ###################################################################
+dnl Additional flags: RMW
+dnl	#1 additional text
+dnl ###################################################################
+define(m4_rmw_flag, [dnl
+m4_tag(m4_idef(DB_RMW), [dnl
+Acquire write locks instead of read locks when doing the read, if
+locking is configured.  Setting this flag can eliminate deadlock during
+a read-modify-write cycle by acquiring the write lock during the read
+part of the cycle so that another thread of control acquiring a read
+lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
+ifelse([$1],,, [m4_p([$1])])])])
+
+dnl ###################################################################
+dnl lock_detect, set_lk_detect flags.
+dnl ###################################################################
+define(m4_lk_detect_flags, [dnl
+m4_tagbegin
+m4_tag(m4_idef(DB_LOCK_DEFAULT), [dnl
+Use whatever lock policy was specified when the database environment
+was created.  If no lock policy has yet been specified, set the lock
+policy to DB_LOCK_RANDOM.])
+m4_tagns(m4_idef(DB_LOCK_EXPIRE), [dnl
+Reject lock requests which have timed out.  No other deadlock detection
+is performed.])
+m4_tagns(m4_idef(DB_LOCK_MAXLOCKS), [dnl
+Reject the lock request for the locker ID with the most locks.])
+m4_tagns(m4_idef(DB_LOCK_MAXWRITE), [dnl
+Reject the lock request for the locker ID with the most write locks.])
+m4_tagns(m4_idef(DB_LOCK_MINLOCKS), [dnl
+Reject the lock request for the locker ID with the fewest locks.])
+m4_tagns(m4_idef(DB_LOCK_MINWRITE), [dnl
+Reject the lock request for the locker ID with the fewest write locks.])
+m4_tagns(m4_idef(DB_LOCK_OLDEST), [dnl
+Reject the lock request for the locker ID with the oldest lock.])
+m4_tagns(m4_idef(DB_LOCK_RANDOM), [dnl
+Reject the lock request for a random locker ID.])
+m4_tagns(m4_idef(DB_LOCK_YOUNGEST), [dnl
+Reject the lock request for the locker ID with the youngest lock.])
+m4_tagend])
+
+dnl ###################################################################
+dnl Cache priority.
+dnl #1 method
+dnl ###################################################################
+define(m4_cache_priority_explain, [m4_p([dnl
+The priority of a page biases the replacement algorithm to be more or
+less likely to discard a page when space is needed in the buffer pool.
+The bias is temporary, and pages will eventually be discarded if they
+are not referenced again.  The m4_refT($1) is only advisory, and does
+not guarantee pages will be treated in a specific way.])])
+
+define(m4_cache_priority_parameter, [dnl
+m4_param(priority, [dnl
+The m4_arg(priority) parameter must be set to one of the following
+values:
+m4_tagbegin
+m4_tag(m4_idef(DB_PRIORITY_VERY_LOW), [dnl
+The lowest priority: pages are the most likely to be discarded.])
+m4_tagns(m4_idef(DB_PRIORITY_LOW), [The next lowest priority.])
+m4_tagns(m4_idef(DB_PRIORITY_DEFAULT), [The default priority.])
+m4_tagns(m4_idef(DB_PRIORITY_HIGH), [The next highest priority.])
+m4_tagns(m4_idef(DB_PRIORITY_VERY_HIGH), [dnl
+The highest priority: pages are the least likely to be discarded.])
+m4_tagend])])
+
+dnl ###################################################################
+dnl Stat flags:
+dnl ###################################################################
+define(m4_stat_flags, [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_tag(m4_idef(DB_STAT_CLEAR), [dnl
+Reset statistics after returning their values.])
+m4_tagend])

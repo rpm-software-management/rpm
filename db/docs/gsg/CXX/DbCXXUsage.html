@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Database Usage Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="DBEntry.html" title="Chapter 3. Database Records" />
+    <link rel="up" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
     <link rel="previous" href="usingDbt.html" title="Reading and Writing Database Records" />
-    <link rel="next" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="next" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Database Usage Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. Database Records</th>
-          <td width="20%" align="right"> <a accesskey="n" href="Cursors.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â Database Records</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="Cursors.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -226,12 +226,12 @@ public:
         <pre class="programlisting">     // Utility function used to show the contents of this class
     void
     show() {
-        std::cout &lt;&lt; &quot;\nName:         &quot; &lt;&lt; name_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; &quot;    SKU:        &quot; &lt;&lt; sku_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; &quot;    Price:      &quot; &lt;&lt; price_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; &quot;    Quantity:   &quot; &lt;&lt; quantity_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; &quot;    Category:   &quot; &lt;&lt; category_ &lt;&lt; std::endl;
-        std::cout &lt;&lt; &quot;    Vendor:     &quot; &lt;&lt; vendor_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; "\nName:         " &lt;&lt; name_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; "    SKU:        " &lt;&lt; sku_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; "    Price:      " &lt;&lt; price_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; "    Quantity:   " &lt;&lt; quantity_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; "    Category:   " &lt;&lt; category_ &lt;&lt; std::endl;
+        std::cout &lt;&lt; "    Vendor:     " &lt;&lt; vendor_ &lt;&lt; std::endl;
     } </pre>
         <p>
         Finally, we provide a private method that is used to help us pack data
@@ -283,8 +283,8 @@ public:
 #include &lt;fstream&gt;
 #include &lt;cstdlib&gt;
                                                                                                                                     
-#include &quot;MyDb.hpp&quot;
-#include &quot;gettingStartedCommon.hpp&quot; 
+#include "MyDb.hpp"
+#include "gettingStartedCommon.hpp" 
 
 // Forward declarations
 void loadVendorDB(MyDb&amp;, std::string&amp;);
@@ -302,12 +302,12 @@ int
 main(int argc, char *argv[])
 {
     // Initialize the path to the database files
-    std::string basename(&quot;./&quot;);
-    std::string databaseHome(&quot;./&quot;);
+    std::string basename("./");
+    std::string databaseHome("./");
                                                                                                                                     
     // Database names
-    std::string vDbName(&quot;vendordb.db&quot;);
-    std::string iDbName(&quot;inventorydb.db&quot;);
+    std::string vDbName("vendordb.db");
+    std::string iDbName("inventorydb.db");
 
     // Parse the command line arguments here and determine 
     // the location of the flat text files containing the 
@@ -315,8 +315,8 @@ main(int argc, char *argv[])
 
     //  Identify the full name for our input files, which should
     //  also include some path information.
-    std::string inventoryFile = basename + &quot;inventory.txt&quot;;
-    std::string vendorFile = basename + &quot;vendors.txt&quot;;
+    std::string inventoryFile = basename + "inventory.txt";
+    std::string vendorFile = basename + "vendors.txt";
                                                                                                                                     
     try
     {
@@ -330,11 +330,11 @@ main(int argc, char *argv[])
         // Load the inventory database
         loadInventoryDB(inventoryDB, inventoryFile);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error loading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error loading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(e.get_errno());
     } catch(std::exception &amp;e) {
-        std::cerr &lt;&lt; &quot;Error loading databases. &quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error loading databases. " &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return(-1);
     }
@@ -374,8 +374,8 @@ loadVendorDB(MyDb &amp;vendorDB, std::string &amp;vendorFile)
     std::ifstream inFile(vendorFile.c_str(), std::ios::in);
     if ( !inFile )
     {
-        std::cerr &lt;&lt; &quot;Could not open file '&quot; &lt;&lt; vendorFile
-                  &lt;&lt; &quot;'. Giving up.&quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Could not open file '" &lt;&lt; vendorFile
+                  &lt;&lt; "'. Giving up." &lt;&lt; std::endl;
         throw std::exception();
     }
                                                                                                                                     
@@ -391,7 +391,7 @@ loadVendorDB(MyDb &amp;vendorDB, std::string &amp;vendorFile)
         // In a real program, there would be a lot more
         // defensive code here.
         sscanf(stringBuf.c_str(),
-          &quot;%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]&quot;,
+          "%20[^#]#%20[^#]#%20[^#]#%3[^#]#%6[^#]#%13[^#]#%20[^#]#%20[^\n]",
           my_vendor.name, my_vendor.street,
           my_vendor.city, my_vendor.state,
           my_vendor.zipcode, my_vendor.phone_number,
@@ -438,7 +438,7 @@ loadVendorDB(MyDb &amp;vendorDB, std::string &amp;vendorFile)
 int
 getNextPound(std::string &amp;theString, std::string &amp;substring)
 {
-    int pos = theString.find(&quot;#&quot;);
+    int pos = theString.find("#");
     substring.assign(theString, 0, pos);
     theString.assign(theString, pos + 1, theString.size());
     return (pos);
@@ -456,8 +456,8 @@ loadInventoryDB(MyDb &amp;inventoryDB, std::string &amp;inventoryFile)
     std::ifstream inFile(inventoryFile.c_str(), std::ios::in);
     if (!inFile)
     {
-        std::cerr &lt;&lt; &quot;Could not open file '&quot; &lt;&lt; inventoryFile
-                  &lt;&lt; &quot;'. Giving up.&quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Could not open file '" &lt;&lt; inventoryFile
+                  &lt;&lt; "'. Giving up." &lt;&lt; std::endl;
         throw std::exception();
     }
                                                                                                                                     
@@ -511,18 +511,18 @@ loadInventoryDB(MyDb &amp;inventoryDB, std::string &amp;inventoryFile)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="DBEntry.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="Cursors.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="Cursors.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Reading and Writing Database Records </td>
+          <td width="40%" align="left" valign="top">Reading and Writing Database RecordsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 4. Using Cursors</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 4.Â Using Cursors</td>
         </tr>
       </table>
     </div>

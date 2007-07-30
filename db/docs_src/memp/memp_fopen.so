@@ -1,0 +1,84 @@
+m4_comment([$Id: memp_fopen.so,v 10.53 2006/08/08 05:24:05 mjc Exp $])
+
+define(M4PAGELOCAL, [memp_fopen, DB_DIRECT, DB_ODDFILESIZE])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_fopen),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__open(DB_MPOOLFILE *mpf,
+    char *file, u_int32_t flags, int mode, size_t pagesize);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::open(const char *file, u_int32_t flags, int mode, size_t pagesize);
+]))
+
+m4_p([dnl
+The m4_refT(memp_fopen) opens a file in the shared memory buffer pool.])
+
+m4_return(memp_fopen, std)
+
+m4_parambegin
+
+m4_param_utf8(file, [dnl
+The m4_arg(file) parameter is the name of the file to be opened.  If
+m4_arg(file) is NULL, a private temporary file is created that
+cannot be shared with any other process (although it may be shared with
+other threads of control in the same process).])
+
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_CREATE), [dnl
+Create any underlying files, as necessary.  If the files do not already
+exist and the DB_CREATE flag is not specified, the call will
+fail.])
+
+m4_idefz([turn off system @buffering])
+m4_tag(m4_idef(DB_DIRECT), [dnl
+If set and supported by the system, turn off system buffering of the
+file to avoid double caching.])
+
+m4_tag(m4_idef(DB_MULTIVERSION), [dnl
+Open the file with support for m4_link(M4RELDIR/ref/transapp/read,
+multiversion concurrency control).  Calls to m4_ref(memp_fget) which
+dirty pages will cause copies to be made in the cache.])
+
+m4_tag(m4_idef(DB_NOMMAP), [dnl
+Always copy this file into the local cache instead of potentially mapping
+it into process memory (see the description of the
+m4_refT(dbenv_set_mp_mmapsize) for further information).])
+
+m4_tag(m4_idef(DB_ODDFILESIZE), [dnl
+Attempts to open files which are not a multiple of the page size in
+length will fail, by default.  If the m4_ref(DB_ODDFILESIZE) flag is
+set, any partial page at the end of the file will be ignored and the
+open will proceed.])
+
+m4_tag(m4_idef(DB_RDONLY), [dnl
+Open any underlying files for reading only.  Any attempt to write the file
+using the pool functions will fail, regardless of the actual permissions
+of the file.])
+m4_tagend])
+
+m4_param_filemode(m4_ref(memp_fopen))
+
+m4_param(pagesize, [dnl
+The m4_arg(pagesize) parameter is the size, in bytes, of the unit of
+transfer between the application and the cache, although it is not
+necessarily the unit of transfer between the cache and the underlying
+filesystem.])
+
+m4_paramend
+
+m4_err(memp_fopen, einval,
+[the file has already been entered into the pool, and the m4_arg(pagesize)
+value is not the same as when the file was entered into the pool, or the
+length of the file is not zero or a multiple of the m4_arg(pagesize);
+the DB_RDONLY flag was specified for an in-memory pool],
+memory, [maximum number of open files has been reached])
+
+m4_seealso(DbMpool)
+m4_page_footer

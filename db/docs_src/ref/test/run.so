@@ -1,0 +1,63 @@
+m4_comment([$Id: run.so,v 10.48 2006/10/02 15:56:35 bostic Exp $])
+
+m4_ref_title(Test Suite,
+    Running the test suite,
+    running the @test suite, upgrade.4.6/disk, test/faq)
+
+m4_p([dnl
+Once you have started tclsh and have loaded the test.tcl source file
+(see m4_link(M4RELDIR/ref/build_unix/test, Running the test suite under
+UNIX) and m4_link(M4RELDIR/ref/build_win/test, Running the test suite
+under Windows) for more information), you are ready to run the test
+suite.  At the tclsh prompt, to run the standard test suite, enter the
+following:])
+
+m4_indent([% run_std])
+
+m4_p([dnl
+A more exhaustive version of the test suite runs all the tests several
+more times, testing encryption, replication, and different page sizes.
+After you have a clean run for run_std, you may choose to run this
+lengthier set of tests.  At the tclsh prompt, enter:])
+
+m4_indent([% run_all])
+
+m4_p([dnl
+Running the standard tests can take from several hours to a few days to
+complete, depending on your hardware, and running all the tests will
+take at least twice as long.  For this reason, the output from these
+commands are redirected to a file in the current directory named
+m4_path(ALL.OUT).  Periodically, a line will be written to the standard
+output, indicating what test is being run.  When the test suite has
+finished, a final message will be written indicating the test suite has
+completed successfully or that it has failed.  If the run failed, you
+should review the m4_path(ALL.OUT) file to determine which tests failed.
+Errors will appear in that file as output lines, beginning with the
+string "FAIL".])
+
+m4_p([dnl
+Tests are run in the directory m4_path(TESTDIR), by default.  However,
+the test files are often large, and you should use a filesystem with at
+least several hundred megabytes of free space.  To use a different
+directory for the test directory, edit the file include.tcl in your
+build directory, and change the following line to a more appropriate
+value for your system:])
+
+m4_indent([dnl
+set testdir ./TESTDIR])
+
+m4_p([dnl
+For example, you might change it to the following:])
+
+m4_indent([dnl
+set testdir /var/tmp/db.test])
+
+m4_p([dnl
+Alternatively, you can create a symbolic link named TESTDIR in your
+build directory to an appropriate location for running the tests.
+Regardless of where you run the tests, the TESTDIR directory should be
+on a local filesystem.  Using a remote filesystem (for example, an NFS
+mounted filesystem) will almost certainly cause spurious test
+failures.])
+
+m4_page_footer

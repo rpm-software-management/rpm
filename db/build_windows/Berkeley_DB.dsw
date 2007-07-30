@@ -159,6 +159,21 @@ Package=<4>
 
 ###############################################################################
 
+Project: "db_codegen"=.\db_codegen.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name db_dll
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "db_deadlock"=.\db_deadlock.dsp - Package Owner=<4>
 
 Package=<5>

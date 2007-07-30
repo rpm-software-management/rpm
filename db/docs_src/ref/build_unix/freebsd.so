@@ -1,0 +1,68 @@
+m4_comment([$Id: freebsd.so,v 11.18 2003/04/01 17:21:45 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    FreeBSD, @FreeBSD, build_unix/aix, build_unix/hpux)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't compile and run multithreaded applications.])
+
+m4_p([dnl
+Special compile-time flags are required when compiling threaded
+applications on FreeBSD.  If you are compiling a threaded application,
+you must compile with the _THREAD_SAFE and -pthread flags:])
+
+m4_indent([cc -D_THREAD_SAFE -pthread ...])
+
+m4_p([dnl
+The m4_db library will automatically build with the correct options.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I get occasional failures when running RPC-based programs under
+FreeBSD clients.])
+
+m4_p([dnl
+There is a known bug in the XDR implementation in the FreeBSD C library
+from version 2.2 up to version 4.0-RELEASE, that causes certain-sized
+messages to fail and return a zero-filled reply to the client.  A bug
+report (#16028) has been filed with FreeBSD.  The following patch is the
+FreeBSD fix:])
+
+m4_indent([dnl
+*** /usr/src/lib/libc/xdr/xdr_rec.c.orig	Mon Jan 10 10:20:42 2000
+--- /usr/src/lib/libc/xdr/xdr_rec.c	Wed Jan 19 10:53:45 2000
+***************
+*** 558,564 ****
+  	 * but we don't have any way to be certain that they aren't
+  	 * what the client actually intended to send us.
+  	 */
+! 	if ((header & (~LAST_FRAG)) == 0)
+  		return(FALSE);
+  	rstrm-__GT__fbtbc = header & (~LAST_FRAG);
+  	return (TRUE);
+--- 558,564 ----
+  	 * but we don't have any way to be certain that they aren't
+  	 * what the client actually intended to send us.
+  	 */
+! 	if (header == 0)
+  		return(FALSE);
+  	rstrm-__GT__fbtbc = header & (~LAST_FRAG);
+  	return (TRUE);
+])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I see fsync and close system call failures when accessing
+databases or log files on NFS-mounted filesystems.])
+
+m4_p([dnl
+Some FreeBSD releases are known to return ENOLCK from fsync and close
+calls on NFS-mounted filesystems, even though the call has succeeded.
+The m4_db code should be modified to ignore ENOLCK errors, or no m4_db
+files should be placed on NFS-mounted filesystems on these systems.])])
+
+m4_nlistend
+
+m4_page_footer

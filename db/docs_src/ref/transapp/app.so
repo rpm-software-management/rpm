@@ -1,0 +1,249 @@
+m4_comment([$Id: app.so,v 10.28 2006/02/28 16:30:53 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Architecting Transactional Data Store applications,,
+    transapp/fail, transapp/env_open)
+
+m4_p([dnl
+When building Transactional Data Store applications, the architecture
+decisions involve application startup (running recovery) and handling
+system or application failure.  For details on performing recovery,
+see the m4_link(recovery, [Recovery procedures]).])
+
+m4_p([dnl
+Recovery in a database environment is a single-threaded procedure, that
+is, one thread of control or process must complete database environment
+recovery before any other thread of control or process operates in the
+m4_db environment.  It may simplify matters that m4_db serializes
+recovery and creation of a new database environment.])
+
+m4_p([dnl
+Performing recovery first marks any existing database environment as
+"failed" and then removes it, causing threads of control running in the
+database environment to fail and return to the application.  This
+feature allows applications to recover environments without concern for
+threads of control that might still be running in the removed
+environment.  The subsequent re-creation of the database environment is
+serialized, so multiple threads of control attempting to create a
+database environment will serialize behind a single creating thread.])
+
+m4_p([dnl
+One consideration in removing (as part of recovering) a database
+environment which may be in use by another thread, is the type of mutex
+being used by the m4_db library.  In the case of database environment
+failure when using test-and-set mutexes, threads of control waiting on
+a mutex when the environment is marked "failed" will quickly notice the
+failure and will return an error from the m4_db API.  In the case of
+environment failure when using blocking mutexes, where the underlying
+system mutex implementation does not unblock mutex waiters after the
+thread of control holding the mutex dies, threads waiting on a mutex
+when an environment is recovered might hang forever.  Applications
+blocked on events (for example, an application blocked on a network
+socket, or a GUI event) may also fail to notice environment recovery
+within a reasonable amount of time.  Systems with such mutex
+implementations are rare, but do exist; applications on such systems
+should use an application architecture where the thread recovering the
+database environment can explicitly terminate any process using the
+failed environment, or configure m4_db for test-and-set mutexes, or
+incorporate some form of long-running timer or watchdog process to wake
+or kill blocked processes should they block for too long.])
+
+m4_p([dnl
+Regardless, it makes little sense for multiple threads of control to
+simultaneously attempt recovery of a database environment, since the
+last one to run will remove all database environments created by the
+threads of control that ran before it.  However, for some applications,
+it may make sense for applications to have a single thread of control
+that performs recovery and then removes the database environment, after
+which the application launches a number of processes, any of which will
+create the database environment and continue forward.])
+
+m4_p([dnl
+There are three common ways to architect m4_db Transactional Data Store
+applications.  The one chosen is usually based on whether or not the
+application is comprised of a single process or group of processes
+descended from a single process (for example, a server started when the
+system first boots), or if the application is comprised of unrelated
+processes (for example, processes started by web connections or users
+logged into the system).])
+
+m4_nlistbegin
+m4_nlist([dnl
+The first way to architect Transactional Data Store applications is as
+a single process (the process may or may not be multithreaded.)
+
+m4_p([dnl
+When this process starts, it runs recovery on the database environment
+and then opens its databases.  The application can subsequently create
+new threads of control as it chooses.  Those threads of control can
+either share already open m4_db m4_ref(DbEnv) and m4_ref(Db) handles,
+or create their own.  In this architecture, databases are rarely opened
+or closed when more than a single thread of control is running; that is,
+they are opened when only a single thread is running, and closed after
+all threads but one have exited.  The last thread of control to exit
+closes the databases and the database environment.])
+
+m4_p([dnl
+This architecture is simplest to implement because thread serialization
+is easy and failure detection does not require monitoring multiple
+processes.])
+
+m4_p([dnl
+If the application's thread model allows processes to continue after
+thread failure, the m4_refT(dbenv_failchk) can be used to determine if
+the database environment is usable after thread failure.  If the
+application does not call m4_ref(dbenv_failchk), or
+m4_ref(dbenv_failchk) returns m4_ref(DB_RUNRECOVERY), the application
+must behave as if there has been a system failure, performing recovery
+and re-creating the database environment.  Once these actions have been
+taken, other threads of control can continue (as long as all existing
+m4_db handles are first discarded), or restarted.])])
+
+m4_nlist([dnl
+The second way to architect Transactional Data Store applications is as
+a group of related processes (the processes may or may not be
+multithreaded).
+
+m4_p([dnl
+This architecture requires the order in which threads of control are
+created be controlled to serialize database environment recovery.])
+
+m4_p([dnl
+In addition, this architecture requires that threads of control be
+monitored.  If any thread of control exits with open m4_db handles, the
+application may call the m4_refT(dbenv_failchk) to detect lost mutexes
+and locks and determine if the application can continue.  If the
+application does not call m4_ref(dbenv_failchk), or
+m4_ref(dbenv_failchk) returns that the database environment can no
+longer be used, the application must behave as if there has been a
+system failure, performing recovery and creating a new database
+environment.  Once these actions have been taken, other threads of
+control can be continued (as long as all existing m4_db handles are
+first discarded), or restarted.])
+
+m4_p([dnl
+The easiest way to structure groups of related processes is to first
+create a single "watcher" process (often a script) that starts when the
+system first boots, runs recovery on the database environment and then
+creates the processes or threads that will actually perform work.  The
+initial thread has no further responsibilities other than to wait on the
+threads of control it has started, to ensure none of them unexpectedly
+exit.  If a thread of control exits, the watcher process optionally
+calls the m4_refT(dbenv_failchk).  If the application does not call
+m4_ref(dbenv_failchk) or if m4_ref(dbenv_failchk) returns that the
+environment can no longer be used, the watcher kills all of the threads
+of control using the failed environment, runs recovery, and starts new
+threads of control to perform work.])])
+
+m4_nlist([dnl
+The third way to architect Transactional Data Store applications is as
+a group of unrelated processes (the processes may or may not be
+multithreaded).   This is the most difficult architecture to implement
+because of the level of difficulty in some systems of finding and
+monitoring unrelated processes.
+
+m4_p([dnl
+One solution is to log a thread of control ID when a new m4_db handle
+is opened.  For example, an initial "watcher" process could run recovery
+on the database environment and then create a sentinel file.  Any
+"worker" process wanting to use the environment would check for the
+sentinel file.  If the sentinel file does not exist, the worker would
+fail or wait for the sentinel file to be created.  Once the sentinel
+file exists, the worker would register its process ID with the watcher
+(via shared memory, IPC or some other registry mechanism), and then the
+worker would open its m4_ref(DbEnv) handles and proceed.  When the
+worker finishes using the environment, it would unregister its process
+ID with the watcher.  The watcher periodically checks to ensure that no
+worker has failed while using the environment.  If a worker fails while
+using the environment, the watcher removes the sentinel file, kills all
+of the workers currently using the environment, runs recovery on the
+environment, and finally creates a new sentinel file.])
+
+m4_p([dnl
+The weakness of this approach is that, on some systems, it is difficult
+to determine if an unrelated process is still running.  For example,
+POSIX systems generally disallow sending signals to unrelated processes.
+The trick to monitoring unrelated processes is to find a system resource
+held by the process that will be modified if the process dies.  On POSIX
+systems, flock- or fcntl-style locking will work, as will LockFile on
+Windows systems.  Other systems may have to use other process-related
+information such as file reference counts or modification times.  In the
+worst case, threads of control can be required to periodically
+re-register with the watcher process: if the watcher has not heard from
+a thread of control in a specified period of time, the watcher will take
+action, recovering the environment.])
+
+m4_p([dnl
+The m4_db library includes one built-in implementation of this approach,
+the m4_refT(dbenv_open)'s m4_ref(DB_REGISTER) flag:])
+
+m4_p([dnl
+If the m4_ref(DB_REGISTER) flag is set, each process opening the
+database environment first checks to see if recovery needs to be
+performed.  If recovery needs to be performed for any reason (including
+the initial creation of the database environment), and
+m4_ref(DB_RECOVER) is also specified, recovery will be performed and
+then the open will proceed normally.  If recovery needs to be performed
+and m4_ref(DB_RECOVER) is not specified, m4_ref(DB_RUNRECOVERY) will be
+returned.  If recovery does not need to be performed, m4_ref(DB_RECOVER)
+will be ignored.])
+
+m4_p([dnl
+There are two additional requirements for the m4_ref(DB_REGISTER)
+architecture to work: First, all applications using the database
+environment must specify the m4_ref(DB_REGISTER) flag when opening the
+environment.  However, there is no additional requirement the
+application choose a single process to recover the environment, as the
+first process to open the database environment will know to perform
+recovery.  Second, there can only be a single m4_ref(DbEnv) handle per
+database environment in each process.  As the m4_ref(DB_REGISTER)
+locking is per-process, not per-thread, multiple m4_ref(DbEnv) handles
+in a single environment could race with each other, potentially causing
+data corruption.])
+
+m4_p([dnl
+A second solution for groups of unrelated processes is also based on a
+"watcher process".  This solution is intended for systems where it is
+not practical to monitor the processes sharing a database environment,
+but it is possible to monitor the environment to detect if a thread of
+control has failed holding open m4_db handles.  This would be done by
+having a "watcher" process periodically call the m4_refT(dbenv_failchk).
+If m4_ref(dbenv_failchk) returns that the environment can no longer be
+used, the watcher would then take action, recovering the environment.])
+
+m4_p([dnl
+The weakness of this approach is that all threads of control using the
+environment must specify an "ID" function and an "is-alive" function
+using the m4_refT(dbenv_set_thread_id).  (In other words, the m4_db
+library must be able to assign a unique ID to each thread of control,
+and additionally determine if the thread of control is still running.
+It can be difficult to portably provide that information in applications
+using a variety of different programming languages and running on a
+variety of different platforms.)])
+
+m4_p([dnl
+The two described approaches are different, and should not be combined.
+Applications might use either the m4_ref(DB_REGISTER) approach or the
+m4_ref(dbenv_failchk) approach, but not both together in the same
+application.  For example, a POSIX application written as a library
+underneath a wide variety of interfaces and differing APIs might choose
+the m4_ref(DB_REGISTER) approach for a few reasons: first, it does not
+require making periodic calls to the m4_refT(dbenv_failchk); second,
+when implementing in a variety of languages, is may be more difficult
+to specify unique IDs for each thread of control;  third, it may be more
+difficult determine if a thread of control is still running, as any
+particular thread of control is likely to lack sufficient permissions
+to signal other processes.  Alternatively, an application with a
+dedicated watcher process, running with appropriate permissions, might
+choose the m4_ref(dbenv_failchk) approach as supporting higher overall
+throughput and reliability, as that approach allows the application to
+abort unresolved transactions and continue forward without having to
+recover the database environment.])])
+m4_nlistend
+
+m4_p([dnl
+Obviously, when implementing a process to monitor other threads of
+control, it is important the watcher process' code be as simple and
+well-tested as possible, because the application may hang if it fails.])
+
+m4_page_footer

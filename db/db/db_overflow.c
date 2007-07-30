@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_overflow.c,v 12.13 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_overflow.c,v 12.21 2007/05/17 19:33:03 bostic Exp $
  */
 
 #include "db_config.h"
@@ -157,9 +156,17 @@ skip_alloc:
 			if (bytes > needed)
 				bytes = needed;
 			if (F_ISSET(dbt, DB_DBT_USERCOPY)) {
-				if ((ret = dbenv->dbt_usercopy(dbt, curoff,
+				/*
+				 * The offset into the DBT is the total size
+				 * less the amount of data still needed.  Care
+				 * needs to be taken if doing a partial copy
+				 * beginning at an offset other than 0.
+				 */
+				if ((ret = dbenv->dbt_usercopy(
+				    dbt, dbt->size - needed,
 				    src, bytes, DB_USERCOPY_SETDATA)) != 0) {
-					(void)__memp_fput(mpf, h, 0);
+					(void)__memp_fput(mpf,
+					     h, dbp->priority);
 					return (ret);
 				}
 			} else
@@ -169,7 +176,7 @@ skip_alloc:
 		}
 		curoff += OV_LEN(h);
 		pgno = h->next_pgno;
-		(void)__memp_fput(mpf, h, 0);
+		(void)__memp_fput(mpf, h, dbp->priority);
 	}
 	return (0);
 }
@@ -234,7 +241,8 @@ __db_poff(dbc, dbt, pgnop)
 			    lastp == NULL ? &null_lsn : &LSN(lastp),
 			    &null_lsn)) != 0) {
 				if (lastp != NULL)
-					(void)__memp_fput(mpf, lastp, 0);
+					(void)__memp_fput(mpf,
+					     lastp, dbc->priority);
 				lastp = pagep;
 				break;
 			}
@@ -260,12 +268,12 @@ __db_poff(dbc, dbt, pgnop)
 		else {
 			lastp->next_pgno = PGNO(pagep);
 			pagep->prev_pgno = PGNO(lastp);
-			(void)__memp_fput(mpf, lastp, 0);
+			(void)__memp_fput(mpf, lastp, dbc->priority);
 		}
 		lastp = pagep;
 	}
-	if (lastp != NULL &&
-	    (t_ret = __memp_fput(mpf, lastp, 0)) != 0 && ret == 0)
+	if (lastp != NULL && (t_ret =
+	    __memp_fput(mpf, lastp, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
 }
@@ -295,7 +303,7 @@ __db_ovref(dbc, pgno)
 	if (DBC_LOGGING(dbc)) {
 		if ((ret = __db_ovref_log(dbp,
 		    dbc->txn, &LSN(h), 0, h->pgno, -1, &LSN(h))) != 0) {
-			(void)__memp_fput(mpf, h, 0);
+			(void)__memp_fput(mpf, h, dbc->priority);
 			return (ret);
 		}
 	} else
@@ -312,7 +320,7 @@ __db_ovref(dbc, pgno)
 	 */
 	--OV_REF(h);
 
-	return (__memp_fput(mpf, h, 0));
+	return (__memp_fput(mpf, h, dbc->priority));
 }
 
 /*
@@ -346,12 +354,13 @@ __db_doff(dbc, pgno)
 		 * decrement the reference count and return.
 		 */
 		if (OV_REF(pagep) > 1) {
-			(void)__memp_fput(mpf, pagep, 0);
+			(void)__memp_fput(mpf, pagep, dbc->priority);
 			return (__db_ovref(dbc, pgno));
 		}
 
-		if ((ret = __memp_dirty(mpf, &pagep, dbc->txn, 0)) != 0) {
-			(void)__memp_fput(mpf, pagep, 0);
+		if ((ret = __memp_dirty(mpf,
+		    &pagep, dbc->txn, dbc->priority, 0)) != 0) {
+			(void)__memp_fput(mpf, pagep, dbc->priority);
 			return (ret);
 		}
 
@@ -364,7 +373,7 @@ __db_doff(dbc, pgno)
 			    PGNO(pagep), PREV_PGNO(pagep),
 			    NEXT_PGNO(pagep), &tmp_dbt,
 			    &LSN(pagep), &null_lsn, &null_lsn)) != 0) {
-				(void)__memp_fput(mpf, pagep, 0);
+				(void)__memp_fput(mpf, pagep, dbc->priority);
 				return (ret);
 			}
 		} else
@@ -387,6 +396,10 @@ __db_doff(dbc, pgno)
  * We optimize this by doing chunk at a time comparison unless the user has
  * specified a comparison function.  In this case, we need to materialize
  * the entire object and call their comparison routine.
+ *
+ * __db_moff and __db_coff are generic functions useful in searching and
+ * ordering off page items. __db_moff matches an overflow DBT with an offpage
+ * item. __db_coff compares two offpage items for lexicographic sort order.
  *
  * PUBLIC: int __db_moff __P((DB *, DB_TXN *, const DBT *, db_pgno_t, u_int32_t,
  * PUBLIC:     int (*)(DB *, const DBT *, const DBT *), int *));
@@ -444,7 +457,7 @@ __db_moff(dbp, txn, dbt, pgno, tlen, cmpfunc, cmpp)
 				break;
 			}
 		pgno = NEXT_PGNO(pagep);
-		if ((ret = __memp_fput(mpf, pagep, 0)) != 0)
+		if ((ret = __memp_fput(mpf, pagep, dbp->priority)) != 0)
 			return (ret);
 		if (*cmpp != 0)
 			return (0);
@@ -457,4 +470,130 @@ __db_moff(dbp, txn, dbt, pgno, tlen, cmpfunc, cmpp)
 		*cmpp = 0;
 
 	return (0);
+}
+
+/*
+ * __db_coff --
+ *	Match two offpage dbts.
+ *
+ * The DBTs must both refer to offpage items.
+ * The match happens a chunk (page) at a time unless a user defined comparison
+ * function exists. It is not possible to optimize this comparison away when
+ * a lexicographic sort order is required on mismatch.
+ *
+ * NOTE: For now this function only works for H_OFFPAGE type items. It would
+ * be simple to extend it for use with B_OVERFLOW type items. It would only
+ * require extracting the total length, and page number, dependent on the
+ * DBT type.
+ *
+ * PUBLIC: int __db_coff __P((DB *, DB_TXN *, const DBT *, const DBT *,
+ * PUBLIC:     int (*)(DB *, const DBT *, const DBT *), int *));
+ */
+int
+__db_coff(dbp, txn, dbt, match, cmpfunc, cmpp)
+	DB *dbp;
+	DB_TXN *txn;
+	const DBT *dbt, *match;
+	int (*cmpfunc) __P((DB *, const DBT *, const DBT *)), *cmpp;
+{
+	DBT local_key, local_match;
+	DB_MPOOLFILE *mpf;
+	PAGE *dbt_pagep, *match_pagep;
+	db_pgno_t dbt_pgno, match_pgno;
+	u_int32_t cmp_bytes, dbt_bufsz, dbt_len, match_bufsz;
+	u_int32_t match_len, max_data, page_sz;
+	u_int8_t *p1, *p2;
+	int ret;
+	void *dbt_buf, *match_buf;
+
+	mpf = dbp->mpf;
+	page_sz = dbp->pgsize;
+	*cmpp = 0;
+	dbt_buf = match_buf = NULL;
+
+	DB_ASSERT(dbp->dbenv, HPAGE_PTYPE(dbt->data) == H_OFFPAGE);
+	DB_ASSERT(dbp->dbenv, HPAGE_PTYPE(match->data) == H_OFFPAGE);
+
+	/* Extract potentially unaligned length and pgno fields from DBTs */
+	memcpy(&dbt_len, HOFFPAGE_TLEN(dbt->data), sizeof(u_int32_t));
+	memcpy(&dbt_pgno, HOFFPAGE_PGNO(dbt->data), sizeof(db_pgno_t));
+	memcpy(&match_len, HOFFPAGE_TLEN(match->data), sizeof(u_int32_t));
+	memcpy(&match_pgno, HOFFPAGE_PGNO(match->data), sizeof(db_pgno_t));
+	max_data = (dbt_len < match_len ? dbt_len : match_len);
+
+	/*
+	 * If there is a custom comparator, fully resolve both DBTs.
+	 * Then call the users comparator.
+	 */
+	if (cmpfunc != NULL) {
+		memset(&local_key, 0, sizeof(local_key));
+		memset(&local_match, 0, sizeof(local_match));
+		dbt_buf = match_buf = NULL;
+		dbt_bufsz = match_bufsz = 0;
+
+		if ((ret = __db_goff(dbp, txn, &local_key, dbt_len,
+		    dbt_pgno, &dbt_buf, &dbt_bufsz)) != 0)
+			goto err1;
+		if ((ret = __db_goff(dbp, txn, &local_match, match_len,
+		    match_pgno, &match_buf, &match_bufsz)) != 0)
+			goto err1;
+		/* The key needs to be the first argument for sort order */
+		*cmpp = cmpfunc(dbp, &local_key, &local_match);
+
+err1:		if (dbt_buf != NULL)
+			__os_free(dbp->dbenv, dbt_buf);
+		if (match_buf != NULL)
+			__os_free(dbp->dbenv, match_buf);
+		return (ret);
+	}
+
+	/* Match the offpage DBTs a page at a time. */
+	while (dbt_pgno != PGNO_INVALID && match_pgno != PGNO_INVALID) {
+		if ((ret =
+		    __memp_fget(mpf, &dbt_pgno, txn, 0, &dbt_pagep)) != 0)
+			return (ret);
+		if ((ret =
+		    __memp_fget(mpf, &match_pgno, txn, 0, &match_pagep)) != 0) {
+			(void)__memp_fput(
+			    mpf, dbt_pagep, DB_PRIORITY_UNCHANGED);
+			return (ret);
+		}
+		cmp_bytes = page_sz < max_data ? page_sz : max_data;
+		for (p1 = (u_int8_t *)dbt_pagep + P_OVERHEAD(dbp),
+		    p2 = (u_int8_t *)match_pagep + P_OVERHEAD(dbp);
+		    cmp_bytes-- > 0; ++p1, ++p2)
+				if (*p1 != *p2) {
+					*cmpp = (long)*p1 - (long)*p2;
+					break;
+				}
+
+		dbt_pgno = NEXT_PGNO(dbt_pagep);
+		match_pgno = NEXT_PGNO(match_pagep);
+		max_data -= page_sz;
+		if ((ret =
+		    __memp_fput(mpf, dbt_pagep, DB_PRIORITY_UNCHANGED)) != 0) {
+			(void)__memp_fput(
+			    mpf, match_pagep, DB_PRIORITY_UNCHANGED);
+			return (ret);
+		}
+		if ((ret = __memp_fput(
+		    mpf, match_pagep, DB_PRIORITY_UNCHANGED)) != 0)
+			return (ret);
+		if (*cmpp != 0)
+			return (0);
+	}
+
+	/* If a lexicographic mismatch was found, then the result has already
+	 * been returned. If the DBTs matched, consider the lengths of the
+	 * items, and return appropriately.
+	 */
+	if (dbt_len > match_len) /* DBT is longer than the match key. */
+		*cmpp = 1;
+	else if (match_len > dbt_len) /* DBT is shorter than the match key. */
+		*cmpp = -1;
+	else
+		*cmpp = 0;
+
+	return (0);
+
 }

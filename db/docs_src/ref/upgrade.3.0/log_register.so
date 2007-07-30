@@ -1,0 +1,13 @@
+m4_comment([$Id: log_register.so,v 11.10 2003/10/18 19:16:13 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: log_register,,
+    upgrade.3.0/lock_stat, upgrade.3.0/log_stat)
+
+m4_p([dnl
+An argument has been removed from the log_register function.  The
+application should be searched for any occurrences of log_register.  In
+each of these, the DBTYPE argument (it is the fourth argument) should
+be removed.])
+
+m4_page_footer

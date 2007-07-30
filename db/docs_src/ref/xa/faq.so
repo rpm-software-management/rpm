@@ -1,0 +1,73 @@
+m4_comment([$Id: faq.so,v 10.22 2006/11/13 18:05:06 bostic Exp $])
+
+m4_ref_title(Distributed Transactions,
+    XA: Frequently Asked Questions,
+    [XA @FAQ, XA FAQ], xa/xa_config, apprec/intro)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([Is it possible to mix XA and non-XA transactions?])
+
+m4_p([dnl
+Yes.  It is also possible for XA and non-XA transactions to coexist in
+the same m4_db environment.  To do this, specify the same environment
+to the non-XA m4_ref(dbenv_open) calls as was specified in the Tuxedo
+configuration file.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([Does converting an application to run within XA change any of
+the already existing C/C++ API calls it does?])
+
+m4_p([dnl
+When converting an application to run under XA, the application's m4_db
+calls are unchanged, with three exceptions:])
+
+m4_nlistbegin
+
+m4_nlist([The application must specify the m4_ref(DB_XA_CREATE) flag to
+the m4_ref(dbh_create) function.])
+
+m4_nlist([Unless the application is performing an operation for a non-XA
+transaction, the application should never explicitly call
+m4_ref(txn_commit), m4_ref(txn_abort) or m4_ref(txn_begin), and those
+calls should be replaced by calls into the Tuxedo transaction manager.])
+
+m4_nlist([Unless the application is performing an operation for a non-XA
+transaction, the application should specify a transaction argument of NULL
+to m4_db methods taking transaction arguments (for example, m4_ref(dbh_put)
+or m4_ref(dbh_cursor)).])
+
+m4_nlistend
+
+m4_p([dnl
+Otherwise, the application should be unchanged.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([How does m4_db recovery interact with recovery by the Tuxedo
+transaction manager?])
+
+m4_p([dnl
+Recovery is completed in two steps.  First, each resource manager should
+recover its environment(s).  This can be done via a program that calls
+m4_ref(dbenv_open) or by calling the m4_ref(db_recover) utility.  If
+using the m4_ref(db_recover) utility, then the m4_option(e) option
+should be specified so that the regions that are recovered persist after
+the utility exits.  Any transactions that were prepared, but neither
+completed nor aborted, are restored to their prepared state so that they
+may be aborted or committed via the Tuxedo recovery mechanisms.  After
+each resource manager has recovered, then Tuxedo recovery may begin.
+Tuxedo will interact with each resource manager via the __db_xa_recover
+function which returns the list of prepared, but not yet completed
+transactions. It should issue a commit or abort for each one, and only
+after having completed each transaction will normal processing resume.])
+
+m4_p([dnl
+Finally, standard log file archival and catastrophic recovery procedures
+should occur independently of XA operation.])])
+
+m4_nlistend
+
+m4_page_footer

@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Designing Your Application for Recovery</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="filemanagement.html" title="Chapter 5. Managing DB Files" />
+    <link rel="up" href="filemanagement.html" title="ChapterÂ 5.Â Managing DB Files" />
     <link rel="previous" href="recovery.html" title="Recovery Procedures" />
     <link rel="next" href="hotfailover.html" title="Using Hot Failovers" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Designing Your Application for Recovery</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="recovery.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 5. Managing DB Files</th>
-          <td width="20%" align="right"> <a accesskey="n" href="hotfailover.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="recovery.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 5.Â Managing DB Files</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="hotfailover.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -155,7 +155,7 @@
                         handles. Recovery should be single threaded because when
                         recovery is run against an environment, it is
                         deleted and then recreated. This will cause all
-                        other processes and threads to &quot;fail&quot; when they
+                        other processes and threads to "fail" when they
                         attempt operations against the newly recovered
                         environment. If all threads run recovery
                         when they start up, then it is likely that some
@@ -258,7 +258,7 @@
             <div></div>
           </div>
           <p>
-                    One way to handle multi-process recovery is for every process to &quot;register&quot; its environment. In
+                    One way to handle multi-process recovery is for every process to "register" its environment. In
                     doing so, the process gains the ability to see if any other applications are using the
                     environment and, if so, whether they have suffered an abnormal termination. If an abnormal
                     termination is detected, the process runs recovery; otherwise, it does not.
@@ -427,18 +427,18 @@
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="recovery.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="recovery.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="filemanagement.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="hotfailover.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="hotfailover.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Recovery Procedures </td>
+          <td width="40%" align="left" valign="top">Recovery ProceduresÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Using Hot Failovers</td>
+          <td width="40%" align="right" valign="top">Â Using Hot Failovers</td>
         </tr>
       </table>
     </div>

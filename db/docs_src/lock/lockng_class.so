@@ -1,0 +1,72 @@
+m4_comment([$Id: lockng_class.so,v 1.14 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, DbLockNotGrantedException)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbLockNotGrantedException),
+ifelse(M4API, C_API, [dnl
+])
+ifelse(M4API, CXX_API, [dnl
+class DbLockNotGrantedException : public DbException {
+public:
+	db_lockop_t get_op() const;
+	db_lockmode_t get_mode() const;
+	const Dbt* get_obj() const;
+	DbLock *get_lock() const;
+	int get_index() const;
+};
+]))
+
+m4_p([dnl
+This information describes the m4_ref(DbLockNotGrantedException) class and
+how it is used by the various Db* classes.])
+
+m4_p([dnl
+A m4_ref(DbLockNotGrantedException) is thrown when a lock requested using
+the m4_ref(lock_get) or m4_refT(lock_vec)s, where the m4_ref(DB_LOCK_NOWAIT)
+flag or lock timers were configured, could not be granted before the
+wait-time expired.])
+m4_p([dnl
+Additionally, m4_ref(DbLockNotGrantedException) is thrown when a m4_db
+Concurrent Data Store database environment configured for lock timeouts
+was unable to grant a lock in the allowed time.])
+m4_p([dnl
+Additionally, m4_ref(DbLockNotGrantedException) is thrown when lock or
+transaction timeouts have been configured, a database operation has
+timed out, and the m4_ref(DB_TIME_NOTGRANTED) configuration flag has
+been specified.])
+
+m4_p([dnl
+The m4_ref(DbException) errno value is set to DB_LOCKNOTGRANTED.])
+
+m4_p([dnl
+The m4_arg(get_op) method returns 0 when m4_ref(lock_get) was called,
+and returns the m4_arg(op) for the failed m4_ref(DbLockRequest) when
+m4_ref(lock_vec) was called.])
+
+m4_p([dnl
+The m4_arg(get_mode) method returns the m4_arg(mode) parameter when
+m4_ref(lock_get) was called, and returns the m4_arg(mode) for the failed
+m4_ref(DbLockRequest) when m4_ref(lock_vec) was called.])
+
+m4_p([dnl
+The m4_arg(get_obj) method returns the m4_arg(mode) parameter when
+returns the m4_arg(object) parameter when m4_ref(lock_get) was called,
+and returns the m4_arg(object) for the failed m4_ref(DbLockRequest) when
+m4_ref(lock_vec) was called.
+ifelse(M4API, CXX_API, [dnl
+The m4_ref(Dbt) pointer may or may not refer to valid memory, depending on
+whether the m4_ref(Dbt) used in the call to the failed m4_ref(lock_get) or
+m4_refT(lock_vec) is still in scope and has not been deleted.])])
+
+m4_p([dnl
+The m4_arg(get_lock) method returns NULL when m4_ref(lock_get) was
+called, and returns the m4_arg(lock) in the failed m4_ref(DbLockRequest)
+when m4_ref(lock_vec) was called.])
+
+m4_p([dnl
+The m4_arg(get_index) method returns -1 when m4_ref(lock_get) was
+called, and returns the index of the failed m4_ref(DbLockRequest) when
+m4_ref(lock_vec) was called.])
+
+m4_page_footer

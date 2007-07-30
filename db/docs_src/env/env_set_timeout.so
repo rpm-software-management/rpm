@@ -1,0 +1,99 @@
+m4_comment([$Id: env_set_timeout.so,v 10.24 2005/05/20 15:07:45 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbenv_set_timeout, dbenv_get_timeout, DB_SET_LOCK_TIMEOUT,
+	DB_SET_TXN_TIMEOUT])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_timeout),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_timeout(DB_ENV *dbenv, db_timeout_t timeout, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__get_timeout(DB_ENV *dbenv, db_timeout_t *timeoutp, u_int32_t flag);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_timeout(db_timeout_t timeout, u_int32_t flags);
+m4_blank
+int
+DbEnv::get_timeout(db_timeout_t *timeoutp, u_int32_t flag);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_set_timeout) sets timeout values for locks or
+transactions in the database environment.])
+
+m4_p([dnl
+All timeouts are checked whenever a thread of control blocks on a lock
+or when deadlock detection is performed.  (In the case of
+m4_ref(DB_SET_LOCK_TIMEOUT), the lock is one requested explicitly
+through the Lock subsystem interfaces.  In the case of
+m4_ref(DB_SET_TXN_TIMEOUT), the lock is one requested on behalf of a
+transaction.  In either case, it may be a lock requested by the database
+access methods underlying the application.)  As timeouts are only
+checked when the lock request first blocks or when deadlock detection
+is performed, the accuracy of the timeout depends on how often deadlock
+detection is performed.])
+
+m4_p([dnl
+Timeout values specified for the database environment may be overridden
+on a per-lock or per-transaction basis.  See m4_ref(lock_vec) and
+m4_ref(txn_set_timeout) for more information.])
+
+m4_scope_env(dbenv_set_timeout)
+
+m4_when_any(dbenv_set_timeout)
+
+m4_return(dbenv_set_timeout, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_SET_LOCK_TIMEOUT), [dnl
+Set the timeout value for locks in this database environment.
+m4_env_config(dbenv_set_timeout,
+[lock timeout value], set_lock_timeout, [the lock timeout value])])
+
+m4_tag(m4_idef(DB_SET_TXN_TIMEOUT), [dnl
+Set the timeout value for transactions in this database environment.
+m4_env_config(dbenv_set_timeout,
+[transaction timeout value], set_txn_timeout, [the transaction timeout value])])
+m4_tagend
+
+m4_param(timeout, [dnl
+The m4_arg(timeout) parameter is the timeout value.  It must be specified
+as an unsigned 32-bit number of microseconds, limiting the maximum timeout
+to roughly 71 minutes.])])
+m4_paramend
+
+m4_err(dbenv_set_timeout, einval)
+
+m4_pf_description(m4_ref(dbenv_get_timeout))
+m4_p([dnl
+The m4_refT(dbenv_get_timeout) returns a timeout value, in microseconds.])
+
+m4_when_any(dbenv_get_timeout)
+
+m4_return(dbenv_get_timeout, std)
+
+m4_parambegin
+m4_param(flag, [dnl
+m4_sf_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_SET_LOCK_TIMEOUT), [dnl
+Return the timeout value for locks in this database environment.])
+
+m4_tag(m4_idef(DB_SET_TXN_TIMEOUT), [dnl
+Return the timeout value for transactions in this database environment.])
+m4_tagend])
+
+m4_param_co(timeoutp, timeout value of the specified m4_arg(flag) parameter)
+m4_paramend
+
+m4_seealso(DbEnv)
+m4_page_footer

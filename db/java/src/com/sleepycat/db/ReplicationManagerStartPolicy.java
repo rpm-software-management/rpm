@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: ReplicationManagerStartPolicy.java,v 12.4 2006/09/08 20:32:14 bostic Exp $
+ * $Id: ReplicationManagerStartPolicy.java,v 12.7 2007/05/17 15:15:41 bostic Exp $
  */
 
 package com.sleepycat.db;
@@ -25,10 +24,6 @@ public final class ReplicationManagerStartPolicy {
         new ReplicationManagerStartPolicy(
         "REP_ELECTION", DbConstants.DB_REP_ELECTION);
 
-    public static final ReplicationManagerStartPolicy REP_FULL_ELECTION =
-        new ReplicationManagerStartPolicy(
-        "REP_FULL_ELECTION", DbConstants.DB_REP_FULL_ELECTION);
-
     /* package */
     static ReplicationManagerStartPolicy fromInt(int type) {
         switch(type) {
@@ -38,8 +33,6 @@ public final class ReplicationManagerStartPolicy {
             return REP_CLIENT;
         case DbConstants.DB_REP_ELECTION:
             return REP_ELECTION;
-        case DbConstants.DB_REP_FULL_ELECTION:
-            return REP_FULL_ELECTION;
         default:
             throw new IllegalArgumentException(
                 "Unknown rep start policy: " + type);

@@ -1,0 +1,26 @@
+m4_comment([$Id: lock_class.so,v 10.21 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, DbLock)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbLock),
+ifelse(M4API, C_API, [dnl
+typedef struct __db_lock_u DB_LOCK;
+])
+ifelse(M4API, CXX_API, [dnl
+class DbLock {
+public:
+	DbLock();
+	DbLock(const DbLock &);
+	DbLock &operator = (const DbLock &);
+	~DbLock();
+};
+]))
+
+m4_p([dnl
+The locking interfaces for the m4_db database environment are methods
+of the m4_ref(DbEnv) handle.  The m4_ref(DbLock) object is the handle
+for a single lock, and has no methods of its own.])
+
+m4_seealso(DbLock)
+m4_page_footer

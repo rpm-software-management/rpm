@@ -1,0 +1,33 @@
+m4_comment([$Id: perl.so,v 10.29 2006/12/05 19:12:12 bostic Exp $])
+
+m4_ref_title(m4_db Extensions, Using m4_db with Perl, @Perl, ext/mod, ext/php)
+
+m4_p([dnl
+The original Perl module for m4_db was DB_File, which was written to
+interface to m4_db version 1.85.  The newer Perl module for m4_db is
+BerkeleyDB, which was written to interface to version 2.0 and subsequent
+releases.  Because m4_db version 2.X has a compatibility API for version
+1.85, you can (and should!) build DB_File using version 2.X of m4_db,
+although DB_File will still only support the 1.85 functionality.])
+
+m4_p([dnl
+DB_File is distributed with the standard Perl source distribution (look
+in the directory "ext/DB_File").  You can find both DB_File and BerkeleyDB
+on CPAN, the Comprehensive Perl Archive Network of mirrored FTP sites.
+The master CPAN site is
+m4_linkweb(ftp://ftp.funet.fi/, ftp://ftp.funet.fi/).])
+
+m4_p([dnl
+Versions of both BerkeleyDB and DB_File that are known to work correctly
+with each release of m4_db are included in the distributed m4_db source
+tree, in the subdirectories m4_path(perl.BerkeleyDB) and
+m4_path(perl.DB_File).  Each of those directories contains a
+m4_path(README) file with instructions on installing and using those
+modules.])
+
+m4_p([dnl
+The Perl interface is not maintained by Oracle.  Questions about the
+DB_File and BerkeleyDB modules are best asked on the Usenet newsgroup
+comp.lang.perl.modules.])
+
+m4_page_footer

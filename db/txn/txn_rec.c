@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1996
@@ -32,13 +31,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: txn_rec.c,v 12.14 2006/08/24 14:46:53 bostic Exp $
+ * $Id: txn_rec.c,v 12.25 2007/06/01 15:36:52 sue Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
 #include "dbinc/db_page.h"
+#include "dbinc/lock.h"
 #include "dbinc/txn.h"
 #include "dbinc/db_am.h"
 
@@ -142,6 +142,9 @@ __txn_xa_regop_recover(dbenv, dbtp, lsnp, op, info)
 	db_recops op;
 	void *info;
 {
+	DBT *lock_dbt;
+	DB_TXNHEAD *headp;
+	DB_LOCKTAB *lt;
 	__txn_xa_regop_args *argp;
 	int ret;
 	u_int32_t status;
@@ -157,6 +160,7 @@ __txn_xa_regop_recover(dbenv, dbtp, lsnp, op, info)
 		ret = EINVAL;
 		goto err;
 	}
+	headp = info;
 
 	/*
 	 * The return value here is either a DB_NOTFOUND or it is
@@ -169,9 +173,8 @@ __txn_xa_regop_recover(dbenv, dbtp, lsnp, op, info)
 
 	/*
 	 * If we are rolling forward, then an aborted prepare
-	 * indicates that this may the last record we'll see for
-	 * this transaction ID, so we should remove it from the
-	 * list.
+	 * indicates that this may be the last record we'll see for
+	 * this transaction ID, so we should remove it from the list.
 	 */
 
 	if (op == DB_TXN_FORWARD_ROLL) {
@@ -211,9 +214,27 @@ txn_err:		__db_errx(dbenv,
 			    "transaction not in list %lx",
 			    (u_long)argp->txnp->txnid);
 			ret = DB_NOTFOUND;
-		} else if ((ret = __db_txnlist_add(dbenv,
-		   info, argp->txnp->txnid, TXN_COMMIT, lsnp)) == 0)
-			ret = __txn_restore_txn(dbenv, lsnp, argp);
+		} else if (IS_ZERO_LSN(headp->trunc_lsn) ||
+		    LOG_COMPARE(&headp->trunc_lsn, lsnp) >= 0) {
+			if ((ret = __db_txnlist_add(dbenv,
+			   info, argp->txnp->txnid, TXN_COMMIT, lsnp)) == 0) {
+				/* Re-acquire the locks for this transaction. */
+				lock_dbt = &argp->locks;
+				if (LOCKING_ON(dbenv)) {
+					lt = dbenv->lk_handle;
+					if ((ret = __lock_getlocker(lt,
+						argp->txnp->txnid, 1,
+						&argp->txnp->locker)) != 0)
+						goto err;
+					if ((ret = __lock_get_list(dbenv,
+					    argp->txnp->locker, 0,
+					    DB_LOCK_WRITE, lock_dbt)) != 0)
+						goto err;
+				}
+
+				ret = __txn_restore_txn(dbenv, lsnp, argp);
+			}
+		}
 	} else
 		ret = 0;
 
@@ -237,8 +258,6 @@ __txn_ckp_recover(dbenv, dbtp, lsnp, op, info)
 	db_recops op;
 	void *info;
 {
-	DB_REP *db_rep;
-	REP *rep;
 	__txn_ckp_args *argp;
 	int ret;
 
@@ -250,16 +269,6 @@ __txn_ckp_recover(dbenv, dbtp, lsnp, op, info)
 
 	if (op == DB_TXN_BACKWARD_ROLL)
 		__db_txnlist_ckp(dbenv, info, lsnp);
-
-	if (op == DB_TXN_FORWARD_ROLL) {
-		/* Record the max generation number that we've seen. */
-		if (REP_ON(dbenv)) {
-			db_rep = dbenv->rep_handle;
-			rep = db_rep->region;
-			if (argp->rep_gen > rep->recover_gen)
-				rep->recover_gen = argp->rep_gen;
-		}
-	}
 
 	*lsnp = argp->last_ckp;
 	__os_free(dbenv, argp);
@@ -418,8 +427,7 @@ __txn_restore_txn(dbenv, lsnp, argp)
 	TXN_SYSTEM_LOCK(dbenv);
 
 	/* Allocate a new transaction detail structure. */
-	if ((ret =
-	    __db_shalloc(&mgr->reginfo, sizeof(TXN_DETAIL), 0, &td)) != 0) {
+	if ((ret = __env_alloc(&mgr->reginfo, sizeof(TXN_DETAIL), &td)) != 0) {
 		TXN_SYSTEM_UNLOCK(dbenv);
 		return (ret);
 	}
@@ -445,11 +453,16 @@ __txn_restore_txn(dbenv, lsnp, argp)
 	td->bqual = argp->bqual;
 	td->gtrid = argp->gtrid;
 	td->format = argp->formatID;
+	td->nlog_dbs = 0;
+	td->nlog_slots = TXN_NSLOTS;
+	td->log_dbs = R_OFFSET(&mgr->reginfo, td->slots);
 
 	region->stat.st_nrestores++;
+#ifdef HAVE_STATISTICS
 	region->stat.st_nactive++;
 	if (region->stat.st_nactive > region->stat.st_maxnactive)
 		region->stat.st_maxnactive = region->stat.st_nactive;
+#endif
 	TXN_SYSTEM_UNLOCK(dbenv);
 	return (0);
 }
@@ -587,8 +600,6 @@ __txn_ckp_42_recover(dbenv, dbtp, lsnp, op, info)
 	db_recops op;
 	void *info;
 {
-	DB_REP *db_rep;
-	REP *rep;
 	__txn_ckp_42_args *argp;
 	int ret;
 
@@ -600,16 +611,6 @@ __txn_ckp_42_recover(dbenv, dbtp, lsnp, op, info)
 
 	if (op == DB_TXN_BACKWARD_ROLL)
 		__db_txnlist_ckp(dbenv, info, lsnp);
-
-	if (op == DB_TXN_FORWARD_ROLL) {
-		/* Record the max generation number that we've seen. */
-		if (REP_ON(dbenv)) {
-			db_rep = dbenv->rep_handle;
-			rep = db_rep->region;
-			if (argp->rep_gen > rep->recover_gen)
-				rep->recover_gen = argp->rep_gen;
-		}
-	}
 
 	*lsnp = argp->last_ckp;
 	__os_free(dbenv, argp);

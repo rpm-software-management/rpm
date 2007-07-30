@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: StoredIterator.java,v 12.5 2006/09/08 20:32:13 bostic Exp $
+ * $Id: StoredIterator.java,v 12.7 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;
@@ -321,6 +320,10 @@ public class StoredIterator implements BaseIterator, Cloneable {
      * specified element (optional operation).
      * This method conforms to the {@link ListIterator#set} interface.
      *
+     * <p>In order to call this method, if the underlying Database is
+     * transactional then a transaction must be active when creating the
+     * iterator.</p>
+     *
      * @param value the new value.
      *
      * @throws UnsupportedOperationException if the collection is a {@link
@@ -353,6 +356,10 @@ public class StoredIterator implements BaseIterator, Cloneable {
      * This method conforms to the {@link ListIterator#remove} interface except
      * that when the collection is a list and the RECNO-RENUMBER access method
      * is not used, list indices will not be renumbered.
+     *
+     * <p>In order to call this method, if the underlying Database is
+     * transactional then a transaction must be active when creating the
+     * iterator.</p>
      *
      * <p>Note that for the JE product, RECNO-RENUMBER databases are not
      * supported, and therefore list indices are never renumbered by this
@@ -476,7 +483,7 @@ public class StoredIterator implements BaseIterator, Cloneable {
         toPrevious = MOVE_PREV;
         toCurrent = 0;
         currentData = null;
-        /*
+        /* 
 	 * Initialize cursor at beginning to avoid "initial previous == last"
 	 * behavior when cursor is uninitialized.
 	 *

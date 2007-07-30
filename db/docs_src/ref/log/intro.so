@@ -1,0 +1,61 @@
+m4_comment([$Id: intro.so,v 10.25 2006/11/13 18:05:02 bostic Exp $])
+
+m4_ref_title(Logging Subsystem,
+    Introduction to the logging subsystem,
+    introduction to the @logging subsystem, lock/nondb, log/config)
+
+m4_p([dnl
+The Logging subsystem is the logging facility used by m4_db.  It is
+largely m4_db-specific, although it is potentially useful outside of
+the m4_db package for applications wanting write-ahead logging support.
+Applications wanting to use the log for purposes other than logging file
+modifications based on a set of open file descriptors will almost
+certainly need to make source code modifications to the m4_db code
+base.])
+
+m4_p([dnl
+A log can be shared by any number of threads of control.  The
+m4_refT(dbenv_open) is used to open a log.  When the log is no longer
+in use, it should be closed using the m4_refT(dbenv_close).])
+
+m4_p([dnl
+Individual log entries are identified by log sequence numbers.  Log
+sequence numbers are stored in an opaque object, a m4_ref(DbLsn).])
+
+m4_p([dnl
+The m4_refT(log_cursor) is used to allocate a log cursor.  Log cursors
+have two methods: m4_refT(logc_get) to retrieve log records from the
+log, and m4_refT(logc_close) to destroy the cursor.])
+
+m4_p([dnl
+There are additional methods for integrating the log subsystem with a
+transaction processing system:])
+
+m4_tagbegin
+m4_tag(m4_ref(log_flush), [dnl
+Flushes the log up to a particular log sequence number.])
+
+m4_tag(m4_ref(log_compare), [dnl
+Allows applications to compare any two log sequence numbers.])
+
+m4_tag([m4_ref(log_file)   ], [dnl
+Maps a log sequence number to the specific log file that contains it.])
+
+m4_tag(m4_ref(log_archive), [dnl
+Returns various sets of log filenames.  These methods are used for
+database administration; for example, to determine if log files may
+safely be removed from the system.])
+
+m4_tag([m4_ref(log_stat)   ], [dnl
+The display m4_ref(db_stat) utility uses the m4_refT(log_stat) to
+display statistics about the log.])
+
+m4_tag(m4_ref(dbenv_remove), [dnl
+The log meta-information (but not the log files themselves) may be
+removed using the m4_refT(dbenv_remove).])
+
+m4_tagend
+
+include(log/m4.methods)
+
+m4_page_footer

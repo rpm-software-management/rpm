@@ -1,0 +1,14 @@
+m4_comment([$Id: pagesize.so,v 1.6 2006/06/05 17:32:22 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: DB-__GT__set_pagesize,,
+    upgrade.4.5/paniccall, upgrade.4.5/collect)
+
+m4_p([dnl
+In previous releases, when creating a new database in a physical file
+which already contained databases, it was an error to specify a page
+size different from the existing databases in the file.  In the m4_db
+4.5 release, any page size specified is ignored if the file in which the
+database is being created already exists.])
+
+m4_page_footer

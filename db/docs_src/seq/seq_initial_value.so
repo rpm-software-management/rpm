@@ -1,0 +1,34 @@
+m4_comment([$Id: seq_initial_value.so,v 1.6 2004/11/29 15:30:23 bostic Exp $])
+
+define(M4PAGELOCAL, [seq_initial_value])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_initial_value),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__initial_value(DB_SEQUENCE *seq, db_seq_t value);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::initial_value(db_seq_t value);
+]))
+
+m4_p([dnl
+Set the initial value for a sequence.  This call is only effective when
+the sequence is being created.])
+
+m4_p([dnl
+The m4_refT(seq_initial_value) may not be called after the
+m4_ref(seq_open) method is called.])
+
+m4_return(seq_initial_value, std)
+
+m4_parambegin
+m4_param(value, [dnl
+The initial value to set.])
+m4_paramend
+
+m4_err(seq_initial_value, einval)
+
+m4_seealso(DbSequence)
+m4_page_footer

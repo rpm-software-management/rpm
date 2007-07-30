@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Putting Records Using Cursors</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="up" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
     <link rel="previous" href="Positioning.html" title="Getting Records Using the Cursor" />
     <link rel="next" href="DeleteEntryWCursor.html" title="Deleting Records Using Cursors" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Putting Records Using Cursors</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="Positioning.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Using Cursors</th>
-          <td width="20%" align="right"> <a accesskey="n" href="DeleteEntryWCursor.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="Positioning.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Using Cursors</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="DeleteEntryWCursor.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -147,11 +147,11 @@ import com.sleepycat.db.OperationStatus;
 ...
   
 // Create the data to put into the database
-String key1str = &quot;My first string&quot;;
-String data1str = &quot;My first data&quot;;
-String key2str = &quot;My second string&quot;;
-String data2str = &quot;My second data&quot;;
-String data3str = &quot;My third data&quot;;
+String key1str = "My first string";
+String data1str = "My first data";
+String key2str = "My second string";
+String data2str = "My second data";
+String data3str = "My third data";
   
 Cursor cursor = null;
 Database myDatabase = null;
@@ -160,11 +160,11 @@ try {
     // Database open omitted for brevity
     ...
 
-    DatabaseEntry key1 = new DatabaseEntry(key1str.getBytes(&quot;UTF-8&quot;));
-    DatabaseEntry data1 = new DatabaseEntry(data1str.getBytes(&quot;UTF-8&quot;));
-    DatabaseEntry key2 = new DatabaseEntry(key2str.getBytes(&quot;UTF-8&quot;));
-    DatabaseEntry data2 = new DatabaseEntry(data2str.getBytes(&quot;UTF-8&quot;));
-    DatabaseEntry data3 = new DatabaseEntry(data3str.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry key1 = new DatabaseEntry(key1str.getBytes("UTF-8"));
+    DatabaseEntry data1 = new DatabaseEntry(data1str.getBytes("UTF-8"));
+    DatabaseEntry key2 = new DatabaseEntry(key2str.getBytes("UTF-8"));
+    DatabaseEntry data2 = new DatabaseEntry(data2str.getBytes("UTF-8"));
+    DatabaseEntry data3 = new DatabaseEntry(data3str.getBytes("UTF-8"));
 
     // Open a cursor using a database handle
     cursor = myDatabase.openCursor(null, null);
@@ -187,18 +187,18 @@ try {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="Positioning.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="Positioning.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="Cursors.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="DeleteEntryWCursor.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="DeleteEntryWCursor.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Getting Records Using the Cursor </td>
+          <td width="40%" align="left" valign="top">Getting Records Using the CursorÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Deleting Records Using Cursors</td>
+          <td width="40%" align="right" valign="top">Â Deleting Records Using Cursors</td>
         </tr>
       </table>
     </div>

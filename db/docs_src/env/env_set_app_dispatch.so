@@ -1,0 +1,105 @@
+m4_comment([$Id: env_set_app_dispatch.so,v 10.54 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbenv_set_app_dispatch, DB_TXN_BACKWARD_ROLL, DB_TXN_FORWARD_ROLL,
+	DB_TXN_ABORT, DB_TXN_APPLY, DB_TXN_PRINT])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_app_dispatch),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_app_dispatch(DB_ENV *dbenv,
+    int (*tx_recover)(DB_ENV *dbenv,
+    DBT *log_rec, DB_LSN *lsn, db_recops op));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_app_dispatch(int (*tx_recover)(DbEnv *dbenv,
+    Dbt *log_rec, DbLsn *lsn, db_recops op));
+]))
+
+define(__appDispatch_param, [dnl
+ifelse([$1], internal, [dnl
+The m4_arg(tx_recover) parameter is the application's abort and recovery
+function.  The function takes four parameters:
+m4_tagbegin
+m4_tag(m4_arg(dbenv), [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment handle.])
+m4_tag(m4_arg(log_rec), [dnl
+The m4_arg(log_rec) parameter is a log record.])
+m4_tag(m4_arg(lsn), [dnl
+The m4_arg(lsn) parameter is a log sequence number.])
+m4_tag(m4_arg(op), [dnl
+The m4_arg(op) parameter is one of the following values:])],[dnl
+m4_parambegin
+m4_param(dbenv, [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment handle.])
+m4_param(log_rec, [dnl
+The m4_arg(log_rec) parameter is a log record.])
+m4_param(lsn, [dnl
+The m4_arg(lsn) parameter is a log sequence number.])
+m4_param(op, [dnl
+The m4_arg(op) parameter is one of the following values:])])
+
+m4_tagbegin
+m4_tag(m4_idef(DB_TXN_BACKWARD_ROLL), [dnl
+The log is being read backward to determine which transactions have been
+committed and to abort those operations that were not; undo the operation
+described by the log record.])
+
+m4_tag(m4_idef(DB_TXN_FORWARD_ROLL), [dnl
+The log is being played forward; redo the operation described by the log
+record.])
+
+m4_tag(m4_idef(DB_TXN_ABORT), [dnl
+The log is being read backward during a transaction abort; undo the
+operation described by the log record.])
+
+m4_tag(m4_idef(DB_TXN_APPLY), [dnl
+The log is being applied on a replica site; redo the operation
+described by the log record.])
+
+m4_tag(m4_idef(DB_TXN_PRINT), [dnl
+The log is being printed for debugging purposes; print the contents of
+this log record in the desired format.])
+m4_tagend
+
+m4_p([dnl
+The m4_ref(DB_TXN_FORWARD_ROLL) and m4_ref(DB_TXN_APPLY) operations
+frequently imply the same actions, redoing changes that appear in the
+log record, although if a recovery function is to be used on a
+replication client where reads may be taking place concurrently with the
+processing of incoming messages, m4_ref(DB_TXN_APPLY) operations should
+also perform appropriate locking.  The macro DB_REDO(op) checks that the
+operation is one of m4_ref(DB_TXN_FORWARD_ROLL) or m4_ref(DB_TXN_APPLY),
+and should be used in the recovery code to refer to the conditions under
+which operations should be redone. Similarly, the macro DB_UNDO(op)
+checks if the operation is one of m4_ref(DB_TXN_BACKWARD_ROLL) or
+m4_ref(DB_TXN_ABORT).])
+ifelse([$1], internal, [m4_tagend], [m4_paramend])])
+
+define(__appDispatch_return, [dnl
+The function must return 0 on success and either m4_envvar(errno) or a
+value outside of the m4_db error name space on failure.])
+
+m4_p([dnl
+Declare a function to be called during transaction abort and recovery
+to process application-specific log records.])
+
+m4_scope_dbenv(dbenv_set_app_dispatch)
+
+m4_when_envopen(dbenv_set_app_dispatch, corrupt)
+
+m4_return(dbenv_set_app_dispatch, std)
+
+m4_parambegin
+m4_param(tx_recover, [dnl
+__appDispatch_param(internal)
+m4_p([__appDispatch_return])])
+m4_paramend
+
+m4_err(dbenv_set_app_dispatch,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_seealso(DbTxn)
+m4_page_footer

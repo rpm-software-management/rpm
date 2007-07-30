@@ -1,0 +1,23 @@
+m4_comment([$Id: set_func_close.so,v 10.14 2003/09/25 15:28:06 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_close)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_close),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_close(int (*func_close)(int fd));
+]))
+
+m4_posix_func(close)
+
+m4_scope_process(dbenv_set_func_close)
+
+m4_when_init(dbenv_set_func_close)
+
+m4_return(dbenv_set_func_close, std)
+
+m4_param_replace(func_close)
+
+m4_rtc_seealso
+m4_page_footer

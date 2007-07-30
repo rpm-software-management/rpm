@@ -1,0 +1,22 @@
+m4_comment([$Id: del.so,v 1.11 2004/09/28 14:13:09 bostic Exp $])
+
+define(BDB_LOC, ..)
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: DB-__GT__del,,
+    upgrade.4.2/client, upgrade.4.2/priority)
+
+m4_p([dnl
+In previous releases, the C++ m4_refcxx(dbh_del) and Java Db.delete
+methods threw exceptions encapsulating the m4_ref(DB_KEYEMPTY) error in
+some cases when called on Queue and Recno databases.  Unfortunately,
+this was undocumented behavior.])
+
+m4_p([dnl
+For consistency with the other m4_db methods that handle
+m4_ref(DB_KEYEMPTY), this is no longer the case.  Applications calling
+the m4_refcxx(dbh_del) or Db.delete methods on Queue or Recno databases,
+and handling the m4_ref(DB_KEYEMPTY) exception specially, should be
+modified to check for a return value of m4_ref(DB_KEYEMPTY) instead.])
+
+m4_page_footer

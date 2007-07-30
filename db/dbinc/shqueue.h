@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: shqueue.h,v 12.9 2006/09/07 15:11:26 mjc Exp $
+ * $Id: shqueue.h,v 12.12 2007/05/17 15:15:05 bostic Exp $
  */
 
 #ifndef	_DB_SHQUEUE_H_
@@ -381,7 +380,7 @@ struct {								\
 	} else {							\
 		(elm)->field.stqe_next = -1;				\
 		(head)->stqh_last =					\
-		    SH_PTR_TO_OFF(head, &elm->field.stqe_next);		\
+		    SH_PTR_TO_OFF(head, &(elm)->field.stqe_next);	\
 	}								\
 	(listelm)->field.stqe_next = SH_PTR_TO_OFF(listelm, elm);	\
 	(elm)->field.stqe_prev = SH_TAILQ_NEXT_TO_PREV(listelm, field);	\
@@ -393,7 +392,7 @@ struct {								\
 		    (elm)->field.stqe_prev +				\
 		    SH_PTR_TO_OFF(SH_TAILQ_NEXTP(elm,			\
 		    field, type), elm);					\
-		*__SH_TAILQ_PREV_OFF(elm, field) += elm->field.stqe_next;\
+		*__SH_TAILQ_PREV_OFF(elm, field) += (elm)->field.stqe_next;\
 	} else {							\
 		(head)->stqh_last = (elm)->field.stqe_prev +		\
 			SH_PTR_TO_OFF(head, elm);			\

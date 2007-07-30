@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_iface.c,v 12.51 2006/09/19 15:06:58 bostic Exp $
+ * $Id: db_iface.c,v 12.68 2007/06/14 19:00:55 bostic Exp $
  */
 
 #include "db_config.h"
@@ -25,10 +24,10 @@
 
 static int __db_associate_arg __P((DB *, DB *,
 	       int (*)(DB *, const DBT *, const DBT *, DBT *), u_int32_t));
-static int __db_c_del_arg __P((DBC *, u_int32_t));
-static int __db_c_get_arg __P((DBC *, DBT *, DBT *, u_int32_t));
-static int __db_c_pget_arg __P((DBC *, DBT *, u_int32_t));
-static int __db_c_put_arg __P((DBC *, DBT *, DBT *, u_int32_t));
+static int __dbc_del_arg __P((DBC *, u_int32_t));
+static int __dbc_get_arg __P((DBC *, DBT *, DBT *, u_int32_t));
+static int __dbc_pget_arg __P((DBC *, DBT *, u_int32_t));
+static int __dbc_put_arg __P((DBC *, DBT *, DBT *, u_int32_t));
 static int __db_curinval __P((const DB_ENV *));
 static int __db_cursor_arg __P((DB *, u_int32_t));
 static int __db_del_arg __P((DB *, DBT *, u_int32_t));
@@ -127,7 +126,7 @@ __db_associate_pp(dbp, txn, sdbp, callback, flags)
 		goto err;
 
 	while ((sdbc = TAILQ_FIRST(&sdbp->free_queue)) != NULL)
-		if ((ret = __db_c_destroy(sdbc)) != 0)
+		if ((ret = __dbc_destroy(sdbc)) != 0)
 			goto err;
 
 	ret = __db_associate(dbp, txn, sdbp, callback, flags);
@@ -382,7 +381,7 @@ __db_cursor(dbp, txn, dbcp, flags)
 	*dbcp = dbc;
 	return (0);
 
-err:	(void)__db_c_close(dbc);
+err:	(void)__dbc_close(dbc);
 	return (ret);
 }
 
@@ -529,6 +528,42 @@ __db_del_arg(dbp, key, flags)
 }
 
 /*
+ * __db_exists --
+ *	DB->exists implementation.
+ *
+ * PUBLIC: int __db_exists __P((DB *, DB_TXN *, DBT *, u_int32_t));
+ */
+int
+__db_exists(dbp, txn, key, flags)
+	DB *dbp;
+	DB_TXN *txn;
+	DBT *key;
+	u_int32_t flags;
+{
+	DBT data;
+	int ret;
+
+	/*
+	 * Most flag checking is done in the DB->get call, we only check for
+	 * specific incompatibilities here.  This saves making __get_arg
+	 * aware of the exist method's API constraints.
+	 */
+	if ((ret = __db_fchk(dbp->dbenv, "DB->exists", flags,
+	    DB_READ_COMMITTED | DB_READ_UNCOMMITTED | DB_RMW)) != 0)
+		return (ret);
+
+	/*
+	 * Configure a data DBT that returns no bytes so there's no copy
+	 * of the data.
+	 */
+	memset(&data, 0, sizeof(data));
+	data.dlen = 0;
+	data.flags = DB_DBT_PARTIAL | DB_DBT_USERMEM;
+
+	return (dbp->get(dbp, txn, key, &data, flags));
+}
+
+/*
  * db_fd_pp --
  *	DB->fd pre/post processing.
  *
@@ -600,7 +635,7 @@ __db_get_pp(dbp, txn, key, data, flags)
 	DB_ENV *dbenv;
 	DB_THREAD_INFO *ip;
 	u_int32_t mode;
-	int handle_check, ret, t_ret, txn_local;
+	int handle_check, ignore_lease, ret, t_ret, txn_local;
 
 	dbenv = dbp->dbenv;
 	mode = 0;
@@ -609,6 +644,9 @@ __db_get_pp(dbp, txn, key, data, flags)
 	PANIC_CHECK(dbenv);
 	STRIP_AUTO_COMMIT(flags);
 	DB_ILLEGAL_BEFORE_OPEN(dbp, "DB->get");
+
+	ignore_lease = LF_ISSET(DB_IGNORE_LEASE);
+	LF_CLR(DB_IGNORE_LEASE);
 
 	if ((ret = __db_get_arg(dbp, key, data, flags)) != 0)
 		return (ret);
@@ -641,6 +679,12 @@ __db_get_pp(dbp, txn, key, data, flags)
 		goto err;
 
 	ret = __db_get(dbp, txn, key, data, flags);
+	/*
+	 * Check for master leases.
+	 */
+	if (ret == 0 && IS_REP_MASTER(dbenv) && IS_USING_LEASES(dbenv) &&
+	    !ignore_lease)
+		ret = __rep_lease_check(dbenv, 1);
 
 err:	if (txn_local &&
 	    (t_ret = __db_txn_auto_resolve(dbenv, txn, 0, ret)) && ret == 0)
@@ -708,9 +752,9 @@ __db_get(dbp, txn, key, data, flags)
 	if (LF_ISSET(~(DB_RMW | DB_MULTIPLE)) == 0)
 		LF_SET(DB_SET);
 
-	ret = __db_c_get(dbc, key, data, flags);
+	ret = __dbc_get(dbc, key, data, flags);
 
-	if (dbc != NULL && (t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+	if (dbc != NULL && (t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -967,6 +1011,7 @@ __db_key_range_pp(dbp, txn, key, kr, flags)
 	 */
 	switch (dbp->type) {
 	case DB_BTREE:
+#ifndef HAVE_BREW
 		if ((ret = __dbt_usercopy(dbenv, key)) != 0)
 			goto err;
 
@@ -978,10 +1023,16 @@ __db_key_range_pp(dbp, txn, key, kr, flags)
 
 		ret = __bam_key_range(dbc, key, kr, flags);
 
-		if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+		if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 			ret = t_ret;
 		__dbt_userfree(dbenv, key, NULL, NULL);
 		break;
+#else
+		COMPQUIET(dbc, NULL);
+		COMPQUIET(key, NULL);
+		COMPQUIET(kr, NULL);
+		/* FALLTHROUGH */
+#endif
 	case DB_HASH:
 	case DB_QUEUE:
 	case DB_RECNO:
@@ -1108,11 +1159,13 @@ __db_open_pp(dbp, txn, fname, dname, type, flags, mode)
 	F_CLR(dbp, DB_AM_DISCARD | DB_AM_CREATED | DB_AM_CREATED_MSTR);
 
 	/*
-	 * If not transactional, remove the databases/subdatabases.  If we're
-	 * transactional, the child transaction abort cleans up.
+	 * If not transactional, remove the databases/subdatabases if it is
+	 * persistent.  If we're transactional, the child transaction abort
+	 * cleans up.
 	 */
 txnerr:	if (ret != 0 && !IS_REAL_TXN(txn)) {
-		remove_me = F_ISSET(dbp, DB_AM_CREATED);
+		remove_me = (F_ISSET(dbp, DB_AM_CREATED) &&
+			(fname != NULL || dname != NULL)) ? 1 : 0;
 		if (F_ISSET(dbp, DB_AM_CREATED_MSTR) ||
 		    (dname == NULL && remove_me))
 			/* Remove file. */
@@ -1289,12 +1342,15 @@ __db_pget_pp(dbp, txn, skey, pkey, data, flags)
 {
 	DB_ENV *dbenv;
 	DB_THREAD_INFO *ip;
-	int handle_check, ret, t_ret;
+	int handle_check, ignore_lease, ret, t_ret;
 
 	dbenv = dbp->dbenv;
 
 	PANIC_CHECK(dbenv);
 	DB_ILLEGAL_BEFORE_OPEN(dbp, "DB->pget");
+
+	ignore_lease = LF_ISSET(DB_IGNORE_LEASE);
+	LF_CLR(DB_IGNORE_LEASE);
 
 	if ((ret = __db_pget_arg(dbp, pkey, flags)) != 0 ||
 	    (ret = __db_get_arg(dbp, skey, data, flags)) != 0) {
@@ -1313,6 +1369,12 @@ __db_pget_pp(dbp, txn, skey, pkey, data, flags)
 	}
 
 	ret = __db_pget(dbp, txn, skey, pkey, data, flags);
+	/*
+	 * Check for master leases.
+	 */
+	if (ret == 0 && IS_REP_MASTER(dbenv) && IS_USING_LEASES(dbenv) &&
+	    !ignore_lease)
+		ret = __rep_lease_check(dbenv, 1);
 
 err:	/* Release replication block. */
 	if (handle_check && (t_ret = __env_db_rep_exit(dbenv)) != 0 && ret == 0)
@@ -1381,9 +1443,9 @@ __db_pget(dbp, txn, skey, pkey, data, flags)
 	if (flags == 0 || flags == DB_RMW)
 		flags |= DB_SET;
 
-	ret = __db_c_pget(dbc, skey, pkey, data, flags);
+	ret = __dbc_pget(dbc, skey, pkey, data, flags);
 
-	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+	if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -1556,14 +1618,29 @@ __db_put_arg(dbp, key, data, flags)
 err:		return (__db_ferr(dbenv, "DB->put", 0));
 	}
 
-	/* Check for invalid key/data flags. */
-	if ((ret = __dbt_ferr(dbp, "key", key, returnkey)) != 0)
+	/*
+	 * Check for invalid key/data flags.  The key may reasonably be NULL
+	 * if DB_APPEND is set and the application doesn't care about the
+	 * returned key.
+	 */
+	if (((returnkey && key != NULL) || !returnkey) &&
+	    (ret = __dbt_ferr(dbp, "key", key, returnkey)) != 0)
 		return (ret);
 	if ((ret = __dbt_ferr(dbp, "data", data, 0)) != 0)
 		return (ret);
 
-	/* Keys shouldn't have partial flags during a put. */
-	if (F_ISSET(key, DB_DBT_PARTIAL))
+	/*
+	 * The key parameter should not be NULL or have the "partial" flag set
+	 * in a put call unless the user doesn't care about a key value we'd
+	 * return.  The user tells us they don't care about the returned key by
+	 * setting the key parameter to NULL or configuring the key DBT to not
+	 * return any information.  (Returned keys from a put are always record
+	 * numbers, and returning part of a record number  doesn't make sense:
+	 * only accept a partial return if the length returned is 0.)
+	 */
+	if ((returnkey &&
+	    key != NULL && F_ISSET(key, DB_DBT_PARTIAL) && key->dlen != 0) ||
+	    (!returnkey && F_ISSET(key, DB_DBT_PARTIAL)))
 		return (__db_ferr(dbenv, "key DBT", 0));
 
 	/* Check for partial puts in the presence of duplicates. */
@@ -1619,6 +1696,11 @@ __db_compact_pp(dbp, txn, start, stop, c_data, flags, end)
 	if (DB_IS_READONLY(dbp))
 		return (__db_rdonly(dbenv, "DB->compact"));
 
+	if (start != NULL && (ret = __dbt_usercopy(dbenv, start)) != 0)
+		return (ret);
+	if (stop != NULL && (ret = __dbt_usercopy(dbenv, stop)) != 0)
+		return (ret);
+
 	ENV_ENTER(dbenv, ip);
 
 	/* Check for replication block. */
@@ -1654,6 +1736,7 @@ err:		ret = __dbh_am_chk(dbp, DB_OK_BTREE);
 		ret = t_ret;
 
 	ENV_LEAVE(dbenv, ip);
+	__dbt_userfree(dbenv, start, stop, NULL);
 	return (ret);
 }
 
@@ -1705,13 +1788,13 @@ err:	ENV_LEAVE(dbenv, ip);
 }
 
 /*
- * __db_c_close_pp --
- *	DBC->c_close pre/post processing.
+ * __dbc_close_pp --
+ *	DBC->close pre/post processing.
  *
- * PUBLIC: int __db_c_close_pp __P((DBC *));
+ * PUBLIC: int __dbc_close_pp __P((DBC *));
  */
 int
-__db_c_close_pp(dbc)
+__dbc_close_pp(dbc)
 	DBC *dbc;
 {
 	DB_ENV *dbenv;
@@ -1738,7 +1821,7 @@ __db_c_close_pp(dbc)
 
 	/* Check for replication block. */
 	handle_check = dbc->txn == NULL && IS_ENV_REPLICATED(dbenv);
-	ret = __db_c_close(dbc);
+	ret = __dbc_close(dbc);
 
 	/* Release replication block. */
 	if (handle_check &&
@@ -1750,13 +1833,13 @@ err:	ENV_LEAVE(dbenv, ip);
 }
 
 /*
- * __db_c_count_pp --
- *	DBC->c_count pre/post processing.
+ * __dbc_count_pp --
+ *	DBC->count pre/post processing.
  *
- * PUBLIC: int __db_c_count_pp __P((DBC *, db_recno_t *, u_int32_t));
+ * PUBLIC: int __dbc_count_pp __P((DBC *, db_recno_t *, u_int32_t));
  */
 int
-__db_c_count_pp(dbc, recnop, flags)
+__dbc_count_pp(dbc, recnop, flags)
 	DBC *dbc;
 	db_recno_t *recnop;
 	u_int32_t flags;
@@ -1786,19 +1869,19 @@ __db_c_count_pp(dbc, recnop, flags)
 
 	ENV_ENTER(dbenv, ip);
 
-	ret = __db_c_count(dbc, recnop);
+	ret = __dbc_count(dbc, recnop);
 	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
 /*
- * __db_c_del_pp --
- *	DBC->c_del pre/post processing.
+ * __dbc_del_pp --
+ *	DBC->del pre/post processing.
  *
- * PUBLIC: int __db_c_del_pp __P((DBC *, u_int32_t));
+ * PUBLIC: int __dbc_del_pp __P((DBC *, u_int32_t));
  */
 int
-__db_c_del_pp(dbc, flags)
+__dbc_del_pp(dbc, flags)
 	DBC *dbc;
 	u_int32_t flags;
 {
@@ -1812,7 +1895,7 @@ __db_c_del_pp(dbc, flags)
 
 	PANIC_CHECK(dbenv);
 
-	if ((ret = __db_c_del_arg(dbc, flags)) != 0)
+	if ((ret = __dbc_del_arg(dbc, flags)) != 0)
 		return (ret);
 
 	ENV_ENTER(dbenv, ip);
@@ -1822,18 +1905,18 @@ __db_c_del_pp(dbc, flags)
 		goto err;
 
 	DEBUG_LWRITE(dbc, dbc->txn, "DBcursor->del", NULL, NULL, flags);
-	ret = __db_c_del(dbc, flags);
+	ret = __dbc_del(dbc, flags);
 err:
 	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
 /*
- * __db_c_del_arg --
- *	Check DBC->c_del arguments.
+ * __dbc_del_arg --
+ *	Check DBC->del arguments.
  */
 static int
-__db_c_del_arg(dbc, flags)
+__dbc_del_arg(dbc, flags)
 	DBC *dbc;
 	u_int32_t flags;
 {
@@ -1869,13 +1952,13 @@ __db_c_del_arg(dbc, flags)
 }
 
 /*
- * __db_c_dup_pp --
- *	DBC->c_dup pre/post processing.
+ * __dbc_dup_pp --
+ *	DBC->dup pre/post processing.
  *
- * PUBLIC: int __db_c_dup_pp __P((DBC *, DBC **, u_int32_t));
+ * PUBLIC: int __dbc_dup_pp __P((DBC *, DBC **, u_int32_t));
  */
 int
-__db_c_dup_pp(dbc, dbcp, flags)
+__dbc_dup_pp(dbc, dbcp, flags)
 	DBC *dbc, **dbcp;
 	u_int32_t flags;
 {
@@ -1899,26 +1982,26 @@ __db_c_dup_pp(dbc, dbcp, flags)
 
 	ENV_ENTER(dbenv, ip);
 
-	ret = __db_c_dup(dbc, dbcp, flags);
+	ret = __dbc_dup(dbc, dbcp, flags);
 	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
 
 /*
- * __db_c_get_pp --
- *	DBC->c_get pre/post processing.
+ * __dbc_get_pp --
+ *	DBC->get pre/post processing.
  *
- * PUBLIC: int __db_c_get_pp __P((DBC *, DBT *, DBT *, u_int32_t));
+ * PUBLIC: int __dbc_get_pp __P((DBC *, DBT *, DBT *, u_int32_t));
  */
 int
-__db_c_get_pp(dbc, key, data, flags)
+__dbc_get_pp(dbc, key, data, flags)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
 {
 	DB *dbp;
 	DB_ENV *dbenv;
-	int ret;
+	int ignore_lease, ret;
 	DB_THREAD_INFO *ip;
 
 	dbp = dbc->dbp;
@@ -1926,14 +2009,23 @@ __db_c_get_pp(dbc, key, data, flags)
 
 	PANIC_CHECK(dbenv);
 
-	if ((ret = __db_c_get_arg(dbc, key, data, flags)) != 0)
+	ignore_lease = LF_ISSET(DB_IGNORE_LEASE);
+	LF_CLR(DB_IGNORE_LEASE);
+	if ((ret = __dbc_get_arg(dbc, key, data, flags)) != 0)
 		return (ret);
 
 	ENV_ENTER(dbenv, ip);
 
 	DEBUG_LREAD(dbc, dbc->txn, "DBcursor->get",
 	    flags == DB_SET || flags == DB_SET_RANGE ? key : NULL, NULL, flags);
-	ret = __db_c_get(dbc, key, data, flags);
+	ret = __dbc_get(dbc, key, data, flags);
+
+	/*
+	 * Check for master leases.
+	 */
+	if (ret == 0 && IS_REP_MASTER(dbenv) && IS_USING_LEASES(dbenv) &&
+	    !ignore_lease)
+		ret = __rep_lease_check(dbenv, 1);
 
 	ENV_LEAVE(dbenv, ip);
 	__dbt_userfree(dbenv, key, NULL, data);
@@ -1941,11 +2033,11 @@ __db_c_get_pp(dbc, key, data, flags)
 }
 
 /*
- * __db_c_get_arg --
+ * __dbc_get_arg --
  *	Common DBC->get argument checking, used by both DBC->get and DBC->pget.
  */
 static int
-__db_c_get_arg(dbc, key, data, flags)
+__dbc_get_arg(dbc, key, data, flags)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
@@ -2009,6 +2101,7 @@ __db_c_get_arg(dbc, key, data, flags)
 		break;
 	case DB_LAST:
 	case DB_PREV:
+	case DB_PREV_DUP:
 	case DB_PREV_NODUP:
 		if (multi)
 multi_err:		return (__db_ferr(dbenv, "DBcursor->get", 1));
@@ -2077,11 +2170,13 @@ err:		__dbt_userfree(dbenv, key, NULL, data);
 	}
 
 	/*
-	 * The cursor must be initialized for DB_CURRENT, DB_GET_RECNO and
-	 * DB_NEXT_DUP.  Return EINVAL for an invalid cursor, otherwise 0.
+	 * The cursor must be initialized for DB_CURRENT, DB_GET_RECNO,
+	 * DB_PREV_DUP and DB_NEXT_DUP.  Return EINVAL for an invalid
+	 * cursor, otherwise 0.
 	 */
 	if (!IS_INITIALIZED(dbc) && (flags == DB_CURRENT ||
-	    flags == DB_GET_RECNO || flags == DB_NEXT_DUP))
+	    flags == DB_GET_RECNO ||
+	    flags == DB_NEXT_DUP || flags == DB_PREV_DUP))
 		return (__db_curinval(dbenv));
 
 	/* Check for consistent transaction usage. */
@@ -2144,13 +2239,13 @@ __db_secondary_close_pp(dbp, flags)
 }
 
 /*
- * __db_c_pget_pp --
- *	DBC->c_pget pre/post processing.
+ * __dbc_pget_pp --
+ *	DBC->pget pre/post processing.
  *
- * PUBLIC: int __db_c_pget_pp __P((DBC *, DBT *, DBT *, DBT *, u_int32_t));
+ * PUBLIC: int __dbc_pget_pp __P((DBC *, DBT *, DBT *, DBT *, u_int32_t));
  */
 int
-__db_c_pget_pp(dbc, skey, pkey, data, flags)
+__dbc_pget_pp(dbc, skey, pkey, data, flags)
 	DBC *dbc;
 	DBT *skey, *pkey, *data;
 	u_int32_t flags;
@@ -2158,19 +2253,28 @@ __db_c_pget_pp(dbc, skey, pkey, data, flags)
 	DB *dbp;
 	DB_ENV *dbenv;
 	DB_THREAD_INFO *ip;
-	int ret;
+	int ignore_lease, ret;
 
 	dbp = dbc->dbp;
 	dbenv = dbp->dbenv;
 
 	PANIC_CHECK(dbenv);
 
-	if ((ret = __db_c_pget_arg(dbc, pkey, flags)) != 0 ||
-	    (ret = __db_c_get_arg(dbc, skey, data, flags)) != 0)
+	ignore_lease = LF_ISSET(DB_IGNORE_LEASE);
+	LF_CLR(DB_IGNORE_LEASE);
+	if ((ret = __dbc_pget_arg(dbc, pkey, flags)) != 0 ||
+	    (ret = __dbc_get_arg(dbc, skey, data, flags)) != 0)
 		return (ret);
 
 	ENV_ENTER(dbenv, ip);
-	ret = __db_c_pget(dbc, skey, pkey, data, flags);
+	ret = __dbc_pget(dbc, skey, pkey, data, flags);
+	/*
+	 * Check for master leases.
+	 */
+	if (ret == 0 && IS_REP_MASTER(dbenv) && IS_USING_LEASES(dbenv) &&
+	    !ignore_lease)
+		ret = __rep_lease_check(dbenv, 1);
+
 	ENV_LEAVE(dbenv, ip);
 
 	__dbt_userfree(dbenv, skey, pkey, data);
@@ -2178,11 +2282,11 @@ __db_c_pget_pp(dbc, skey, pkey, data, flags)
 }
 
 /*
- * __db_c_pget_arg --
+ * __dbc_pget_arg --
  *	Check DBC->pget arguments.
  */
 static int
-__db_c_pget_arg(dbc, pkey, flags)
+__dbc_pget_arg(dbc, pkey, flags)
 	DBC *dbc;
 	DBT *pkey;
 	u_int32_t flags;
@@ -2225,7 +2329,7 @@ __db_c_pget_arg(dbc, pkey, flags)
 			return (ret);
 		break;
 	default:
-		/* __db_c_get_arg will catch the rest. */
+		/* __dbc_get_arg will catch the rest. */
 		break;
 	}
 
@@ -2247,13 +2351,13 @@ __db_c_pget_arg(dbc, pkey, flags)
 }
 
 /*
- * __db_c_put_pp --
+ * __dbc_put_pp --
  *	DBC->put pre/post processing.
  *
- * PUBLIC: int __db_c_put_pp __P((DBC *, DBT *, DBT *, u_int32_t));
+ * PUBLIC: int __dbc_put_pp __P((DBC *, DBT *, DBT *, u_int32_t));
  */
 int
-__db_c_put_pp(dbc, key, data, flags)
+__dbc_put_pp(dbc, key, data, flags)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
@@ -2268,7 +2372,7 @@ __db_c_put_pp(dbc, key, data, flags)
 
 	PANIC_CHECK(dbenv);
 
-	if ((ret = __db_c_put_arg(dbc, key, data, flags)) != 0)
+	if ((ret = __dbc_put_arg(dbc, key, data, flags)) != 0)
 		return (ret);
 
 	ENV_ENTER(dbenv, ip);
@@ -2281,7 +2385,7 @@ __db_c_put_pp(dbc, key, data, flags)
 	    flags == DB_KEYFIRST || flags == DB_KEYLAST ||
 	    flags == DB_NODUPDATA || flags == DB_UPDATE_SECONDARY ?
 	    key : NULL, data, flags);
-	ret =__db_c_put(dbc, key, data, flags);
+	ret =__dbc_put(dbc, key, data, flags);
 
 err:	ENV_LEAVE(dbenv, ip);
 	__dbt_userfree(dbenv, key, NULL, data);
@@ -2289,11 +2393,11 @@ err:	ENV_LEAVE(dbenv, ip);
 }
 
 /*
- * __db_c_put_arg --
+ * __dbc_put_arg --
  *	Check DBC->put arguments.
  */
 static int
-__db_c_put_arg(dbc, key, data, flags)
+__dbc_put_arg(dbc, key, data, flags)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
@@ -2341,7 +2445,7 @@ __db_c_put_arg(dbc, key, data, flags)
 		case DB_RECNO:		/* Only with mutable record numbers. */
 			if (!F_ISSET(dbp, DB_AM_RENUMBER))
 				goto err;
-			key_flags = 1;
+			key_flags = key == NULL ? 0 : 1;
 			break;
 		case DB_UNKNOWN:
 		default:
@@ -2369,14 +2473,26 @@ __db_c_put_arg(dbc, key, data, flags)
 err:		return (__db_ferr(dbenv, "DBcursor->put", 0));
 	}
 
-	/* Check for invalid key/data flags. */
+	/*
+	 * Check for invalid key/data flags.  The key may reasonably be NULL
+	 * if DB_AFTER or DB_BEFORE is set and the application doesn't care
+	 * about the returned key, or if the DB_CURRENT flag is set.
+	 */
 	if (key_flags && (ret = __dbt_ferr(dbp, "key", key, 0)) != 0)
 		return (ret);
 	if ((ret = __dbt_ferr(dbp, "data", data, 0)) != 0)
 		return (ret);
 
-	/* Keys shouldn't have partial flags during a put. */
-	if (key_flags && F_ISSET(key, DB_DBT_PARTIAL))
+	/*
+	 * The key parameter should not be NULL or have the "partial" flag set
+	 * in a put call unless the user doesn't care about a key value we'd
+	 * return.  The user tells us they don't care about the returned key by
+	 * setting the key parameter to NULL or configuring the key DBT to not
+	 * return any information.  (Returned keys from a put are always record
+	 * numbers, and returning part of a record number  doesn't make sense:
+	 * only accept a partial return if the length returned is 0.)
+	 */
+	if (key_flags && F_ISSET(key, DB_DBT_PARTIAL) && key->dlen != 0)
 		return (__db_ferr(dbenv, "key DBT", 0));
 
 	/*

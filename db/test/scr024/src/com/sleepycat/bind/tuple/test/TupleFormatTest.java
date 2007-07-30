@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: TupleFormatTest.java,v 12.5 2006/08/24 14:46:45 bostic Exp $
+ * $Id: TupleFormatTest.java,v 12.7 2007/05/04 00:28:28 mark Exp $
  */
 
 package com.sleepycat.bind.tuple.test;
@@ -867,6 +866,64 @@ public class TupleFormatTest extends TestCase {
         assertEquals(0, in.readSortedDouble(), 0);
         assertEquals(1, in.readSortedDouble(), 0);
         assertEquals(-1, in.readSortedDouble(), 0);
+        assertEquals(0, in.available(), 0);
+    }
+
+    private void packedIntTest(int val, int size) {
+
+        out.reset();
+        out.writePackedInt(val);
+        assertEquals(size, out.size());
+        copyOutputToInput();
+        assertEquals(size, in.getPackedIntByteLength());
+        assertEquals(val, in.readPackedInt());
+    }
+
+    public void testPackedInt() {
+
+        /* Exhaustive value testing is in PackedIntTest. */
+        packedIntTest(119, 1);
+        packedIntTest(0xFFFF + 119, 3);
+        packedIntTest(Integer.MAX_VALUE, 5);
+
+        out.reset();
+        out.writePackedInt(119);
+        out.writePackedInt(0xFFFF + 119);
+        out.writePackedInt(Integer.MAX_VALUE);
+        assertEquals(1 + 3 + 5, out.size());
+        copyOutputToInput();
+        assertEquals(119, in.readPackedInt(), 0);
+        assertEquals(0xFFFF + 119, in.readPackedInt(), 0);
+        assertEquals(Integer.MAX_VALUE, in.readPackedInt(), 0);
+        assertEquals(0, in.available(), 0);
+    }
+
+    private void packedLongTest(long val, int size) {
+
+        out.reset();
+        out.writePackedLong(val);
+        assertEquals(size, out.size());
+        copyOutputToInput();
+        assertEquals(size, in.getPackedLongByteLength());
+        assertEquals(val, in.readPackedLong());
+    }
+
+    public void testPackedLong() {
+
+        /* Exhaustive value testing is in PackedIntTest. */
+        packedLongTest(119, 1);
+        packedLongTest(0xFFFFFFFFL + 119, 5);
+        packedLongTest(Long.MAX_VALUE, 9);
+
+        out.reset();
+        out.writePackedLong(119);
+        out.writePackedLong(0xFFFFFFFFL + 119);
+        out.writePackedLong(Long.MAX_VALUE);
+        assertEquals(1 + 5 + 9, out.size());
+        copyOutputToInput();
+        assertEquals(119, in.readPackedLong(), 0);
+        assertEquals(0xFFFFFFFFL + 119, in.readPackedLong(), 0);
+        assertEquals(Long.MAX_VALUE, in.readPackedLong(), 0);
         assertEquals(0, in.available(), 0);
     }
 }

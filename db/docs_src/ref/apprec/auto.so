@@ -1,0 +1,199 @@
+m4_comment([$Id: auto.so,v 10.4 2006/09/13 16:21:43 sue Exp $])
+
+m4_ref_title(Application Specific Logging and Recovery,
+    Automatically generated functions,,
+    apprec/def, apprec/config)
+
+m4_p([dnl
+The XXX.src file is processed using the gen_rec.awk script included in
+the dist directory of the m4_db distribution.  This is an awk script
+that is executed from with the following command line:])
+
+m4_indent([dnl
+awk -f gen_rec.awk \
+	-v source_file=m4_italic(C_FILE) \
+	-v header_file=m4_italic(H_FILE) \
+	-v template_file=m4_italic(TMP_FILE) __LT__ XXX.src])
+
+m4_p([dnl
+where m4_italic(C_FILE) is the name of the file into which to place the
+automatically generated C code, m4_italic(H_FILE) is the name of the
+file into which to place the automatically generated data structures
+and declarations, and m4_italic(TMP_FILE) is the name of the file into
+which to place a template for the recovery routines.])
+
+m4_p([dnl
+Because the gen_rec.awk script uses sources files located relative to
+the m4_db dist directory, it must be run from the dist directory.  For
+example, in building the m4_db logging and recovery routines for
+ex_apprec, the following script is used to rebuild the automatically
+generated files:])
+
+m4_indent([dnl
+E=../examples_c/ex_apprec
+m4_blank
+cd ../../dist
+awk -f gen_rec.awk \
+    -v source_file=$E/ex_apprec_auto.c \
+    -v header_file=$E/ex_apprec_auto.h \
+    -v print_file=$E/ex_apprec_autop.c \
+    -v template_file=$E/ex_apprec_template __LT__ $E/ex_apprec.src])
+
+m4_p([dnl
+For each log record description found in the XXX.src file, the following
+structure declarations and #defines will be created in the file
+m4_italic(header_file):])
+
+m4_indent([dnl
+#define DB_PREFIX_RECORD_TYPE        /* Integer ID number */
+m4_blank
+typedef struct _PREFIX_RECORD_TYPE_args {
+    /*
+     * These three fields are generated for every record.
+     */
+    u_int32_t type;      /* Record type used for dispatch. */
+m4_blank
+    /*
+     * Transaction handle that identifies the transaction on whose
+     * behalf the record is being logged.
+     */
+    DB_TXN *txnid;
+m4_blank
+    /*
+     * The log sequence number returned by the previous call to log_put
+     * for this transaction.
+     */
+    DB_LSN *prev_lsn;
+m4_blank
+    /*
+     * The rest of the structure contains one field for each of
+     * the entries in the record statement.
+     */
+};])
+
+m4_p([dnl
+Thus, the auto-generated ex_apprec_mkdir_args structure looks as follows:])
+
+m4_indent([dnl
+typedef struct _ex_apprec_mkdir_args {
+	u_int32_t type;
+	DB_TXN *txnid;
+	DB_LSN prev_lsn;
+	DBT	dirname;
+} ex_apprec_mkdir_args;])
+
+m4_p([dnl
+The template_file will contain a template for a recovery function.  The
+recovery function is called on each record read from the log during
+system recovery, transaction abort, or the application of log records
+on a replication client, and is expected to redo or undo the operations
+described by that record.  The details of the recovery function will be
+specific to the record being logged and need to be written manually,
+but the template provides a good starting point.  (Note that the
+template assumes that the record is manipulating the internals of a
+m4_db database and sets up database handles, page structures, and such
+for convenience.  Many application-specific log records will not need
+these, and may simply delete much of the template.  See
+ex_apprec_template and ex_apprec_rec.c for an example.)])
+
+m4_p([dnl
+The template file should be copied to a source file in the application
+(but not the automatically generated source_file, as that will get
+overwritten each time gen_rec.awk is run) and fully developed there.
+The recovery function takes the following parameters:])
+
+m4_indentv([dnl
+m4_tagbegin
+
+m4_tag(dbenv, [The environment in which recovery is running.])
+m4_tag(rec, [The record being recovered.])
+m4_tag(lsn, [The log sequence number of the record being recovered.  The
+prev_lsn field, automatically included in every auto-generated log
+record, should be returned through this argument.  The prev_lsn field
+is used to chain log records together to allow transaction aborts;
+because the recovery function is the only place that a log record gets
+parsed, the responsibility for returning this value lies with the
+recovery function writer.])
+m4_tag(op, [dnl
+A parameter of type db_recops, which indicates what operation is being
+run (m4_ref(DB_TXN_ABORT), m4_ref(DB_TXN_APPLY), m4_ref(DB_TXN_BACKWARD_ROLL),
+m4_ref(DB_TXN_FORWARD_ROLL) or m4_ref(DB_TXN_PRINT)).])
+m4_tag(info, [dnl
+A structure passed by the dispatch function.  It is used to contain a
+list of committed transactions and information about files that may have
+been deleted.  Application-specific log records can usually simply
+ignore this field.])
+
+m4_tagend])
+
+m4_p([dnl
+In addition to the header_file and template_file, a source_file is
+created, containing a log, read, recovery, and print function for each
+record type.])
+
+m4_p([dnl
+The log function marshalls the parameters into a buffer, and calls
+m4_ref(log_put) on that buffer returning 0 on success and non-zero on
+failure.  The log function takes the following parameters:])
+
+m4_indentv([dnl
+m4_tagbegin
+
+m4_tag(dbenv, [The environment in which recovery is running.])
+m4_tag(txnid, [dnl
+The transaction identifier for the transaction handle returned by
+m4_ref(txn_begin).])
+m4_tag(lsnp, [dnl
+A pointer to storage for a log sequence number into which the log
+sequence number of the new log record will be returned.])
+m4_tag(syncflag, [dnl
+A flag indicating whether the record must be written synchronously.
+Valid values are 0 and m4_ref(DB_FLUSH).])
+m4_tag(args, [dnl
+The remaining parameters to the log message are the fields described
+in the XXX.src file, in order.])
+
+m4_tagend])
+
+m4_p([dnl
+The read function takes a buffer and unmarshalls its contents into a
+structure of the appropriate type.  It returns 0 on success and non-zero
+on error.  After the fields of the structure have been used, the pointer
+returned from the read function should be freed.  The read function
+takes the following parameters:])
+
+m4_indentv([dnl
+m4_tagbegin
+
+m4_tag(dbenv, [The environment in which recovery is running.])
+m4_tag(recbuf, [A buffer.])
+m4_tag(argp, [A pointer to a structure of the appropriate type.])
+
+m4_tagend])
+
+m4_p([dnl
+The print function displays the contents of the record.  The print
+function takes the same parameters as the recovery function described
+previously.  Although some of the parameters are unused by the print
+function, taking the same parameters  allows a single dispatch loop to
+dispatch to a variety of functions.  The print function takes the
+following parameters:])
+
+m4_indentv([dnl
+m4_tagbegin
+
+m4_tag(dbenv, [The environment in which recovery is running.])
+m4_tag(rec, [The record being recovered.])
+m4_tag(lsn, [The log sequence number of the record being recovered.])
+m4_tag(op, Unused.)
+m4_tag(info, Unused.)
+
+m4_tagend])
+
+m4_p([dnl
+Finally, the source file will contain a function (named XXX_init_print,
+where XXX is replaced by the prefix) which should be added to the
+initialization part of the standalone m4_ref(db_printlog) utility code
+so that utility can be used to display application-specific log records.])
+
+m4_page_footer

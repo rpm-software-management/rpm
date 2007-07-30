@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mp.h,v 12.23 2006/09/07 15:11:26 mjc Exp $
+ * $Id: mp.h,v 12.38 2007/06/07 16:47:01 bostic Exp $
  */
 
 #ifndef	_DB_MP_H_
@@ -35,12 +34,17 @@ struct __mpool;		typedef struct __mpool MPOOL;
 	if (!F_ISSET(dbmfp, MP_OPEN_CALLED))				\
 		return (__db_mi_open((dbmfp)->dbenv, name, 0));
 
-typedef enum {
-	DB_SYNC_ALLOC,		/* Flush for allocation. */
-	DB_SYNC_CACHE,		/* Checkpoint or flush entire cache. */
-	DB_SYNC_FILE,		/* Flush file. */
-	DB_SYNC_TRICKLE		/* Trickle sync. */
-} db_sync_op;
+/*
+ * Cache flush operations, plus modifiers.
+ */
+#define	DB_SYNC_ALLOC		0x0001	/* Flush for allocation. */
+#define	DB_SYNC_CACHE		0x0002	/* Flush entire cache. */
+#define	DB_SYNC_CHECKPOINT	0x0004	/* Checkpoint. */
+#define	DB_SYNC_FILE		0x0008	/* Flush file. */
+#define	DB_SYNC_INTERRUPT_OK	0x0010	/* Allow interrupt and return OK. */
+#define	DB_SYNC_QUEUE_EXTENT	0x0020	/* Flush a queue file with extents. */
+#define	DB_SYNC_SUPPRESS_WRITE	0x0040	/* Ignore max-write configuration. */
+#define	DB_SYNC_TRICKLE		0x0080	/* Trickle sync. */
 
 /*
  * DB_MPOOL --
@@ -62,13 +66,10 @@ struct __db_mpool {
 	TAILQ_HEAD(__db_mpoolfileh, __db_mpoolfile) dbmfq;
 
 	/*
-	 * The dbenv, nreg and reginfo fields are not thread protected,
-	 * as they are initialized during mpool creation, and not modified
-	 * again.
+	 * The dbenv and reginfo fields are not thread protected, as they are
+	 * initialized during mpool creation, and not modified again.
 	 */
 	DB_ENV	   *dbenv;		/* Enclosing environment. */
-
-	u_int32_t   nreg;		/* N underlying cache regions. */
 	REGINFO	   *reginfo;		/* Underlying cache regions. */
 };
 
@@ -84,35 +85,6 @@ struct __db_mpreg {
 	int (*pgin) __P((DB_ENV *, db_pgno_t, void *, DBT *));
 	int (*pgout) __P((DB_ENV *, db_pgno_t, void *, DBT *));
 };
-
-/*
- * NCACHE --
- *	Select a cache based on the file and the page number.  Assumes accesses
- *	are uniform across pages, which is probably OK.  What we really want to
- *	avoid is anything that puts all pages from any single file in the same
- *	cache, as we expect that file access will be bursty, and to avoid
- *	putting all page number N pages in the same cache as we expect access
- *	to the metapages (page 0) and the root of a btree (page 1) to be much
- *	more frequent than a random data page.
- */
-#define	NCACHE(mp, mf_offset, pgno)					\
-	(((MPOOL *)mp)->nreg == 1 ? 0 :					\
-	(((pgno) ^ ((u_int32_t)(mf_offset) >> 3)) % ((MPOOL *)mp)->nreg))
-
-/*
- * NBUCKET --
- *	 We make the assumption that early pages of the file are more likely
- *	 to be retrieved than the later pages, which means the top bits will
- *	 be more interesting for hashing as they're less likely to collide.
- *	 That said, as 512 8K pages represents a 4MB file, so only reasonably
- *	 large files will have page numbers with any other than the bottom 9
- *	 bits set.  We XOR in the MPOOL offset of the MPOOLFILE that backs the
- *	 page, since that should also be unique for the page.  We don't want
- *	 to do anything very fancy -- speed is more important to us than using
- *	 good hashing.
- */
-#define	NBUCKET(mc, mf_offset, pgno)					\
-	(((pgno) ^ ((mf_offset) << 9)) % (mc)->htab_buckets)
 
 /*
  * File hashing --
@@ -149,15 +121,18 @@ struct __db_mpreg {
 struct __mpool {
 	/*
 	 * The memory pool can be broken up into individual pieces/files.
-	 * Not what we would have liked, but on Solaris you can allocate
+	 * There are two reasons for this: firstly, on Solaris you can allocate
 	 * only a little more than 2GB of memory in a contiguous chunk,
-	 * and I expect to see more systems with similar issues.
+	 * and I expect to see more systems with similar issues.  Secondly,
+	 * applications can add / remove pieces to dynamically resize the
+	 * cache.
 	 *
 	 * While this structure is duplicated in each piece of the cache,
 	 * the first of these pieces/files describes the entire pool, the
 	 * second only describe a piece of the cache.
 	 */
 	db_mutex_t	mtx_region;	/* Region mutex. */
+	db_mutex_t	mtx_resize;	/* Resizing mutex. */
 
 	/*
 	 * The lsn field and list of underlying MPOOLFILEs are thread protected
@@ -166,22 +141,33 @@ struct __mpool {
 	DB_LSN	  lsn;			/* Maximum checkpoint LSN. */
 
 	/* Configuration information: protected by the region lock. */
-	size_t mp_mmapsize;		/* Maximum file size for mmap. */
-	int    mp_maxopenfd;		/* Maximum open file descriptors. */
-	int    mp_maxwrite;		/* Maximum buffers to write. */
-	int    mp_maxwrite_sleep;	/* Sleep after writing max buffers. */
+	u_int32_t max_nreg;		/* Maximum number of regions. */
+	size_t    mp_mmapsize;		/* Maximum file size for mmap. */
+	int       mp_maxopenfd;		/* Maximum open file descriptors. */
+	int       mp_maxwrite;		/* Maximum buffers to write. */
+	db_timeout_t mp_maxwrite_sleep;	/* Sleep after writing max buffers. */
 
 	/*
-	 * The nreg, regids and maint_off fields are not thread protected,
-	 * as they are initialized during mpool creation, and not modified
-	 * again.
+	 * The number of regions and the total number of hash buckets across
+	 * all regions.
+	 * These fields are not protected by a mutex because we assume that we
+	 * can read a 32-bit value atomically.  They are only modified by cache
+	 * resizing which holds the mpool resizing mutex to ensure that
+	 * resizing is single-threaded.  See the comment in mp_resize.c for
+	 * more information.
 	 */
 	u_int32_t nreg;			/* Number of underlying REGIONS. */
-	roff_t	  regids;		/* Array of underlying REGION Ids. */
+	u_int32_t nbuckets;		/* Total number of hash buckets. */
 
 	/*
-	 * The following structure fields only describe the per-cache portion
-	 * of the region.
+	 * The regid field is protected by the resize mutex.
+	 */
+	roff_t	  regids;		/* Array of underlying REGION Ids. */
+
+	roff_t	  ftab;			/* Hash table of files. */
+
+	/*
+	 * The following fields describe the per-cache portion of the region.
 	 *
 	 * The htab and htab_buckets fields are not thread protected as they
 	 * are initialized during mpool creation, and not modified again.
@@ -189,12 +175,11 @@ struct __mpool {
 	 * The last_checked and lru_count fields are thread protected by
 	 * the region lock.
 	 */
-	u_int32_t htab_buckets;	/* Number of hash table entries. */
-	roff_t	  htab;		/* Hash table offset. */
-	u_int32_t last_checked;	/* Last bucket checked for free. */
-	u_int32_t lru_count;	/* Counter for buffer LRU */
-
-	roff_t	  ftab;		/* Hash table of files. */
+	roff_t	  htab;			/* Hash table offset. */
+	u_int32_t htab_buckets;		/* Number of hash table entries. */
+	u_int32_t last_checked;		/* Last bucket checked for free. */
+	u_int32_t lru_count;		/* Counter for buffer LRU. */
+	int32_t   lru_reset;		/* Hash bucket lru reset point. */
 
 	/*
 	 * The stat fields are generally not thread protected, and cannot be
@@ -211,12 +196,123 @@ struct __mpool {
 	 */
 	u_int32_t  put_counter;		/* Count of page put calls. */
 
+	/*
+	 * Cache flush operations take a long time...
+	 *
+	 * Some cache flush operations want to ignore the app's configured
+	 * max-write parameters (they are trying to quickly shut down an
+	 * environment, for example).  We can't specify that as an argument
+	 * to the cache region functions, because we may decide to ignore
+	 * the max-write configuration after the cache operation has begun.
+	 * If the variable suppress_maxwrite is set, ignore the application
+	 * max-write config.
+	 *
+	 * We may want to interrupt cache flush operations in high-availability
+	 * configurations.
+	 */
+#define	DB_MEMP_SUPPRESS_WRITE	0x01
+#define	DB_MEMP_SYNC_INTERRUPT	0x02
+	u_int32_t config_flags;
+
 	/* Free frozen buffer headers, protected by the region lock. */
 	SH_TAILQ_HEAD(__free_frozen) free_frozen;
 
 	/* Allocated blocks of frozen buffer headers. */
 	SH_TAILQ_HEAD(__alloc_frozen) alloc_frozen;
 };
+
+/*
+ * NREGION --
+ *	Select a cache region given the bucket number.
+ */
+#define	NREGION(mp, bucket)						\
+	((bucket) / (mp)->htab_buckets)
+
+/*
+ * MP_HASH --
+ *	 We make the assumption that early pages of the file are more likely
+ *	 to be retrieved than the later pages, which means the top bits will
+ *	 be more interesting for hashing as they're less likely to collide.
+ *	 That said, as 512 8K pages represents a 4MB file, so only reasonably
+ *	 large files will have page numbers with any other than the bottom 9
+ *	 bits set.  We XOR in the MPOOL offset of the MPOOLFILE that backs the
+ *	 page, since that should also be unique for the page.  We don't want
+ *	 to do anything very fancy -- speed is more important to us than using
+ *	 good hashing.
+ *
+ *	 Since moving to a dynamic hash, which boils down to using some of the
+ *	 least significant bits of the hash value, we no longer want to use a
+ *	 simple shift here, because it's likely with a bit shift that mf_offset
+ *	 will be ignored, and pages from different files end up in the same
+ *	 hash bucket.  Use a nearby prime instead.
+ */
+#define	MP_HASH(mf_offset, pgno)					\
+	((pgno) ^ ((mf_offset) * 509))
+
+/*
+ * Inline the calculation of the mask, since we can't reliably store the mask
+ * with the number of buckets in the region.
+ *
+ * This is equivalent to:
+ *     mask = (1 << __db_log2(nbuckets)) - 1;
+ */
+#define	MP_MASK(nbuckets, mask) do {					\
+	for (mask = 1; mask < (nbuckets); mask = (mask << 1) | 1)	\
+		;							\
+} while (0)
+
+#define	MP_HASH_BUCKET(hash, nbuckets, mask, bucket) do {		\
+	(bucket) = (hash) & (mask);					\
+	if ((bucket) >= (nbuckets))					\
+		(bucket) &= ((mask) >> 1);				\
+} while (0)
+
+#define	MP_BUCKET(mf_offset, pgno, nbuckets, bucket) do {		\
+	u_int32_t __mask;						\
+	MP_MASK(nbuckets, __mask);					\
+	MP_HASH_BUCKET(MP_HASH(mf_offset, pgno), nbuckets,		\
+	    __mask, bucket);						\
+} while (0)
+
+/*
+ * MP_GET_REGION --
+ *	Select the region for a given page.
+ */
+#define	MP_GET_REGION(dbmfp, pgno, infopp, ret) do {			\
+	DB_MPOOL *__t_dbmp;						\
+	MPOOL *__t_mp;							\
+									\
+	__t_dbmp = dbmfp->dbenv->mp_handle;				\
+	__t_mp = __t_dbmp->reginfo[0].primary;				\
+	if (__t_mp->max_nreg == 1) {					\
+		*(infopp) = &__t_dbmp->reginfo[0];			\
+	} else								\
+		ret = __memp_get_bucket((dbmfp), (pgno), (infopp), NULL);\
+} while (0)
+
+/*
+ * MP_GET_BUCKET --
+ *	Select and lock the bucket for a given page.
+ */
+#define	MP_GET_BUCKET(dbmfp, pgno, infopp, hp, ret) do {		\
+	DB_MPOOL *__t_dbmp;						\
+	MPOOL *__t_mp;							\
+	roff_t __t_mf_offset;						\
+	u_int32_t __t_bucket;						\
+									\
+	__t_dbmp = (dbmfp)->dbenv->mp_handle;				\
+	__t_mp = __t_dbmp->reginfo[0].primary;				\
+	if (__t_mp->max_nreg == 1) {					\
+		*(infopp) = &__t_dbmp->reginfo[0];			\
+		__t_mf_offset = R_OFFSET(*(infopp), (dbmfp)->mfp);	\
+		MP_BUCKET(__t_mf_offset, (pgno), __t_mp->nbuckets, __t_bucket);\
+		(hp) = R_ADDR(*(infopp), __t_mp->htab);			\
+		(hp) = &(hp)[__t_bucket];				\
+		MUTEX_LOCK(dbenv, (hp)->mtx_hash);			\
+		ret = 0;						\
+	} else								\
+		ret = __memp_get_bucket((dbmfp), (pgno), (infopp), &(hp));\
+} while (0)
 
 struct __db_mpool_hash {
 	db_mutex_t	mtx_hash;	/* Per-bucket mutex. */
@@ -227,10 +323,12 @@ struct __db_mpool_hash {
 	u_int32_t	hash_page_dirty;/* Count of dirty pages. */
 	u_int32_t	hash_priority;	/* Minimum priority of bucket buffer. */
 
+#ifndef __TEST_DB_NO_STATISTICS
 	u_int32_t	hash_io_wait;	/* Count of I/O waits. */
 	u_int32_t	hash_frozen;	/* Count of frozen buffers. */
 	u_int32_t	hash_thawed;	/* Count of thawed buffers. */
 	u_int32_t	hash_frozen_freed;/* Count of freed frozen buffers. */
+#endif
 
 	DB_LSN		old_reader;	/* Oldest snapshot reader (cached). */
 

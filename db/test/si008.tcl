@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: si008.tcl,v 12.7 2006/08/24 14:46:39 bostic Exp $
+# $Id: si008.tcl,v 12.9 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	si008
 # TEST	Secondary index put/delete with lorder test

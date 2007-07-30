@@ -41,7 +41,7 @@ __txn_regop_42_print(dbenv, dbtp, lsnp, notused2, notused3)
 	    (u_long)argp->type,
 	    (u_long)argp->txnp->txnid,
 	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
-	(void)printf("\topcode: %ld\n", (long)argp->opcode);
+	(void)printf("\topcode: %lu\n", (u_long)argp->opcode);
 	timeval = (time_t)argp->timestamp;
 	lt = localtime(&timeval);
 	(void)printf(
@@ -87,7 +87,7 @@ __txn_regop_print(dbenv, dbtp, lsnp, notused2, notused3)
 	    (u_long)argp->type,
 	    (u_long)argp->txnp->txnid,
 	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
-	(void)printf("\topcode: %ld\n", (long)argp->opcode);
+	(void)printf("\topcode: %lu\n", (u_long)argp->opcode);
 	timeval = (time_t)argp->timestamp;
 	lt = localtime(&timeval);
 	(void)printf(
@@ -96,7 +96,7 @@ __txn_regop_print(dbenv, dbtp, lsnp, notused2, notused3)
 	    (u_long)lt->tm_year - 100, (u_long)lt->tm_mon+1,
 	    (u_long)lt->tm_mday, (u_long)lt->tm_hour,
 	    (u_long)lt->tm_min, (u_long)lt->tm_sec);
-	(void)printf("\tenvid: %ld\n", (long)argp->envid);
+	(void)printf("\tenvid: %lu\n", (u_long)argp->envid);
 	(void)printf("\tlocks: \n");
 	__lock_list_print(dbenv, &argp->locks);
 	(void)printf("\n");
@@ -146,7 +146,7 @@ __txn_ckp_42_print(dbenv, dbtp, lsnp, notused2, notused3)
 	    (u_long)lt->tm_year - 100, (u_long)lt->tm_mon+1,
 	    (u_long)lt->tm_mday, (u_long)lt->tm_hour,
 	    (u_long)lt->tm_min, (u_long)lt->tm_sec);
-	(void)printf("\trep_gen: %ld\n", (long)argp->rep_gen);
+	(void)printf("\trep_gen: %lu\n", (u_long)argp->rep_gen);
 	(void)printf("\n");
 	__os_free(dbenv, argp);
 	return (0);
@@ -194,8 +194,8 @@ __txn_ckp_print(dbenv, dbtp, lsnp, notused2, notused3)
 	    (u_long)lt->tm_year - 100, (u_long)lt->tm_mon+1,
 	    (u_long)lt->tm_mday, (u_long)lt->tm_hour,
 	    (u_long)lt->tm_min, (u_long)lt->tm_sec);
-	(void)printf("\tenvid: %ld\n", (long)argp->envid);
-	(void)printf("\trep_gen: %ld\n", (long)argp->rep_gen);
+	(void)printf("\tenvid: %lu\n", (u_long)argp->envid);
+	(void)printf("\tspare: %lu\n", (u_long)argp->spare);
 	(void)printf("\n");
 	__os_free(dbenv, argp);
 	return (0);
@@ -273,8 +273,8 @@ __txn_xa_regop_print(dbenv, dbtp, lsnp, notused2, notused3)
 	}
 	(void)printf("\n");
 	(void)printf("\tformatID: %ld\n", (long)argp->formatID);
-	(void)printf("\tgtrid: %u\n", argp->gtrid);
-	(void)printf("\tbqual: %u\n", argp->bqual);
+	(void)printf("\tgtrid: %lu\n", (u_long)argp->gtrid);
+	(void)printf("\tbqual: %lu\n", (u_long)argp->bqual);
 	(void)printf("\tbegin_lsn: [%lu][%lu]\n",
 	    (u_long)argp->begin_lsn.file, (u_long)argp->begin_lsn.offset);
 	(void)printf("\tlocks: \n");
@@ -311,8 +311,8 @@ __txn_recycle_print(dbenv, dbtp, lsnp, notused2, notused3)
 	    (u_long)argp->type,
 	    (u_long)argp->txnp->txnid,
 	    (u_long)argp->prev_lsn.file, (u_long)argp->prev_lsn.offset);
-	(void)printf("\tmin: %u\n", argp->min);
-	(void)printf("\tmax: %u\n", argp->max);
+	(void)printf("\tmin: %lu\n", (u_long)argp->min);
+	(void)printf("\tmax: %lu\n", (u_long)argp->max);
 	(void)printf("\n");
 	__os_free(dbenv, argp);
 	return (0);

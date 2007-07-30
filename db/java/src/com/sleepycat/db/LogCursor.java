@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: LogCursor.java,v 12.4 2006/08/24 14:46:08 bostic Exp $
+ * $Id: LogCursor.java,v 12.7 2007/06/28 14:23:36 mjc Exp $
  */
 
 package com.sleepycat.db;
@@ -76,5 +75,11 @@ public class LogCursor {
 
         return OperationStatus.fromInt(
             logc.get(lsn, data, DbConstants.DB_SET));
+    }
+
+    public int version()
+        throws DatabaseException {
+
+        return logc.version(0);
     }
 }

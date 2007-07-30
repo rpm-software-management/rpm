@@ -1,19 +1,18 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2005,2007 Oracle.  All rights reserved.
  *
- * $Id: env_failchk.c,v 12.28 2006/08/24 14:45:39 bostic Exp $
+ * $Id: env_failchk.c,v 12.33 2007/06/06 15:34:41 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#include "dbinc/mutex_int.h"
+#ifndef HAVE_SIMPLE_THREAD_TYPE
 #include "dbinc/db_page.h"
-#include "dbinc/db_am.h"
 #include "dbinc/hash.h"			/* Needed for call to __ham_func5. */
+#endif
 #include "dbinc/lock.h"
 #include "dbinc/txn.h"
 
@@ -64,7 +63,9 @@ __env_failchk_pp(dbenv, flags)
 	if (TXN_ON(dbenv) && (ret = __txn_failchk(dbenv)) != 0)
 		goto err;
 
+#ifdef HAVE_MUTEX_SUPPORT
 	ret = __mut_failchk(dbenv);
+#endif
 
 err:	ENV_LEAVE(dbenv, ip);
 	return (ret);
@@ -77,22 +78,19 @@ err:	ENV_LEAVE(dbenv, ip);
  * PUBLIC: int __env_thread_init __P((DB_ENV *, int));
  */
 int
-__env_thread_init(dbenv, created)
+__env_thread_init(dbenv, during_creation)
 	DB_ENV *dbenv;
-	int created;
+	int during_creation;
 {
 	DB_HASHTAB *htab;
-	DB_MUTEXMGR *mtxmgr;
-	DB_MUTEXREGION *mtxregion;
 	REGINFO *infop;
+	REGENV *renv;
 	THREAD_INFO *thread;
 	int ret;
 
-	mtxmgr = dbenv->mutex_handle;
-	mtxregion = mtxmgr->reginfo.primary;
-	infop = &mtxmgr->reginfo;
-
-	if (mtxregion->thread_off == INVALID_ROFF) {
+	infop = dbenv->reginfo;
+	renv = infop->primary;
+	if (renv->thread_off == INVALID_ROFF) {
 		if (dbenv->thr_nbucket == 0) {
 			dbenv->thr_hashtab = NULL;
 			if (ALIVE_ON(dbenv)) {
@@ -103,29 +101,29 @@ __env_thread_init(dbenv, created)
 			return (0);
 		}
 
-		if (!created) {
+		if (!during_creation) {
 			__db_errx(dbenv,
-		"thread table must be allocated at environment create time");
+    "thread table must be allocated when the database environment is created");
 			return (EINVAL);
 		}
 
-		if ((ret = __db_shalloc(infop,
-		     sizeof(THREAD_INFO), 0, &thread)) != 0) {
-			__db_errx(dbenv,
-			     "cannot allocate a thread status block");
+		if ((ret =
+		    __env_alloc(infop, sizeof(THREAD_INFO), &thread)) != 0) {
+			__db_err(dbenv, ret,
+			     "unable to allocate a thread status block");
 			return (ret);
 		}
 		memset(thread, 0, sizeof(*thread));
-		mtxregion->thread_off = R_OFFSET(infop, thread);
+		renv->thread_off = R_OFFSET(infop, thread);
 		thread->thr_nbucket = __db_tablesize(dbenv->thr_nbucket);
-		if ((ret = __db_shalloc(infop,
-		     thread->thr_nbucket * sizeof(DB_HASHTAB), 0, &htab)) != 0)
+		if ((ret = __env_alloc(infop,
+		     thread->thr_nbucket * sizeof(DB_HASHTAB), &htab)) != 0)
 			return (ret);
 		thread->thr_hashoff = R_OFFSET(infop, htab);
 		__db_hashinit(htab, thread->thr_nbucket);
 		thread->thr_max = dbenv->thr_max;
 	} else {
-		thread = R_ADDR(infop, mtxregion->thread_off);
+		thread = R_ADDR(infop, renv->thread_off);
 		htab = R_ADDR(infop, thread->thr_hashoff);
 	}
 
@@ -144,9 +142,8 @@ __env_in_api(dbenv)
 	DB_ENV *dbenv;
 {
 	DB_HASHTAB *htab;
-	DB_MUTEXMGR *mtxmgr;
-	DB_MUTEXREGION *mtxregion;
 	DB_THREAD_INFO *ip;
+	REGENV *renv;
 	REGINFO *infop;
 	THREAD_INFO *thread;
 	u_int32_t i;
@@ -154,10 +151,9 @@ __env_in_api(dbenv)
 	if ((htab = dbenv->thr_hashtab) == NULL)
 		return (EINVAL);
 
-	mtxmgr = dbenv->mutex_handle;
-	mtxregion = mtxmgr->reginfo.primary;
-	infop = &mtxmgr->reginfo;
-	thread = R_ADDR(infop, mtxregion->thread_off);
+	infop = dbenv->reginfo;
+	renv = infop->primary;
+	thread = R_ADDR(infop, renv->thread_off);
 
 	for (i = 0; i < dbenv->thr_nbucket; i++)
 		SH_TAILQ_FOREACH(ip, &htab[i], dbth_links, __db_thread_info) {
@@ -195,16 +191,16 @@ __env_set_state(dbenv, ipp, state)
 	DB_THREAD_INFO **ipp;
 	DB_THREAD_STATE state;
 {
-	DB_HASHTAB *htab;
-	DB_MUTEXMGR *mtxmgr;
-	DB_MUTEXREGION *mtxregion;
-	DB_THREAD_INFO *ip;
 	struct __db_threadid id;
+	DB_HASHTAB *htab;
+	DB_THREAD_INFO *ip;
+	REGENV *renv;
 	REGINFO *infop;
 	THREAD_INFO *thread;
-	int ret;
 	u_int32_t indx;
+	int ret;
 
+	*ipp = NULL;
 	htab = (DB_HASHTAB *)dbenv->thr_hashtab;
 
 	dbenv->thread_id(dbenv, &id.pid, &id.tid);
@@ -245,11 +241,10 @@ __env_set_state(dbenv, ipp, state)
 
 	ret = 0;
 	if (ip == NULL) {
-		mtxmgr = dbenv->mutex_handle;
-		mtxregion = mtxmgr->reginfo.primary;
-		infop = &mtxmgr->reginfo;
-		thread = R_ADDR(infop, mtxregion->thread_off);
-		MUTEX_SYSTEM_LOCK(dbenv);
+		infop = dbenv->reginfo;
+		renv = infop->primary;
+		thread = R_ADDR(infop, renv->thread_off);
+		MUTEX_LOCK(dbenv, renv->mtx_regenv);
 
 		/*
 		 * If we are passed the specified max, try to reclaim one from
@@ -271,8 +266,8 @@ __env_set_state(dbenv, ipp, state)
 		}
 
 		thread->thr_count++;
-		if ((ret = __db_shalloc(infop,
-		     sizeof(DB_THREAD_INFO), 0, &ip)) == 0) {
+		if ((ret = __env_alloc(infop,
+		     sizeof(DB_THREAD_INFO), &ip)) == 0) {
 			memset(ip, 0, sizeof(*ip));
 			/*
 			 * This assumes we can link atomically since we do
@@ -286,7 +281,7 @@ init:			ip->dbth_pid = id.pid;
 			ip->dbth_tid = id.tid;
 			ip->dbth_state = state;
 		}
-		MUTEX_SYSTEM_UNLOCK(dbenv);
+		MUTEX_UNLOCK(dbenv, renv->mtx_regenv);
 	} else
 		ip->dbth_state = state;
 	*ipp = ip;

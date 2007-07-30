@@ -1,0 +1,51 @@
+m4_comment([$Id: db_set_h_nelem.so,v 10.36 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_h_nelem, dbh_get_h_nelem])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_h_nelem),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_h_nelem(DB *db, u_int32_t h_nelem);
+m4_blank
+int
+DB-__GT__get_h_nelem(DB *db, u_int32_t *h_nelemp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_h_nelem(u_int32_t h_nelem);
+m4_blank
+int
+Db::get_h_nelem(u_int32_t *h_nelemp);
+]))
+
+m4_p([dnl
+Set an estimate of the final size of the hash table.])
+
+m4_p([dnl
+In order for the estimate to be used when creating the database, the
+m4_ref(dbh_set_h_ffactor) method must also be called.  If the estimate
+or fill factor are not set or are set too low, hash tables will still
+expand gracefully as keys are entered, although a slight performance
+degradation may be noticed.])
+
+m4_scope_db(dbh_set_h_nelem)
+
+m4_when_dbopen(dbh_set_h_nelem, ignored)
+
+m4_return(dbh_set_h_nelem, std)
+
+m4_parambegin
+m4_param(h_nelem, [dnl
+The m4_arg(h_nelem) parameter is an estimate of the final size of the
+hash table.])
+m4_paramend
+
+m4_err(dbh_set_h_nelem,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_h_nelem,
+[estimate of the final size of the hash table],, h_nelemp)
+
+m4_seealso(Db)
+m4_page_footer

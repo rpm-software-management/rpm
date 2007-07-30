@@ -1,0 +1,44 @@
+m4_comment([$Id: memp_set_lsn_offset.so,v 10.17 2005/04/14 17:57:54 bostic Exp $])
+
+define(M4PAGELOCAL, [memp_set_lsn_offset, memp_get_lsn_offset])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_lsn_offset),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__set_lsn_offset(DB_MPOOLFILE *mpf, int32_t lsn_offset);
+m4_blank
+int
+DB_MPOOLFILE-__GT__get_lsn_offset(DB_MPOOLFILE *mpf, int32_t *lsn_offsetp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::set(int32_t lsn_offset);
+m4_blank
+int
+DbMpoolFile::get_lsn_offset(int32_t *lsn_offsetp);
+]))
+
+m4_p([dnl
+The m4_refT(memp_set_lsn_offset) specifies the zero-based byte offset
+of a log sequence number (m4_ref(DbLsn)) on the file's pages, for the
+purposes of page-flushing as part of transaction checkpoint.  (See the
+m4_ref(memp_sync) documentation for more information.)])
+
+m4_scope_mpf(memp_set_lsn_offset)
+
+m4_when_mpfopen(memp_set_lsn_offset, error)
+
+m4_return(memp_set_lsn_offset, std)
+
+m4_parambegin
+m4_param(lsn_offset, [dnl
+The m4_arg(lsn_offset) parameter is the zero-based byte offset of the
+log sequence number on the file's pages.])
+m4_paramend
+
+m4_pf_getter(memp_get_lsn_offset,
+    log sequence number byte offset,, lsn_offsetp)
+
+m4_seealso(DbMpool)
+m4_page_footer

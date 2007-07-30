@@ -1,0 +1,47 @@
+m4_comment([$Id: error.so,v 10.22 2003/10/18 19:15:56 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Error support, @error handling, am_misc/perm, am_misc/stability)
+
+m4_p([dnl
+m4_db offers programmatic support for displaying error return values.])
+
+m4_p([dnl
+The m4_ref(dbenv_strerror) function returns a pointer to the error
+message corresponding to any m4_db error return, similar to the ANSI C
+strerror function, but is able to handle both system error returns and
+m4_db specific return values.])
+
+m4_p([dnl
+For example:])
+
+include(ref/am_misc/error1.cs)
+
+m4_p([dnl
+There are also two additional error methods, m4_ref(dbh_err) and
+m4_ref(dbh_errx).  These methods work like the m4_ansic_name printf
+function, taking a printf-style format string and argument list, and
+writing a message constructed from the format string and arguments.])
+
+m4_p([dnl
+The m4_refT(dbh_err) appends the standard error string to the
+constructed message; the m4_refT(dbh_errx) does not.  These methods
+provide simpler ways of displaying m4_db error messages.  For example,
+if your application tracks session IDs in a variable called session_id,
+it can include that information in its error messages:])
+
+m4_p([dnl
+Error messages can additionally be configured to always include a prefix
+(for example, the program name) using the m4_refT(dbh_set_errpfx).])
+
+include(ref/am_misc/error2.cs)
+
+m4_p([dnl
+For example, if the program were called my_app and the open call returned
+an EACCESS system error, the error messages shown would appear as follows:])
+
+m4_indent([dnl
+my_app: access.db: Permission denied.
+my_app: contact your system administrator: session ID was 14])
+
+m4_page_footer

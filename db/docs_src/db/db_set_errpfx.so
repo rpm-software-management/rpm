@@ -1,0 +1,4 @@
+m4_comment([$Id: db_set_errpfx.so,v 10.10 2002/08/18 21:15:55 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_errpfx)
+include(env/env_set_errpfx.so)

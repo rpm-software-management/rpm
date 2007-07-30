@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: lock_stat.c,v 12.17 2006/08/24 14:46:11 bostic Exp $
+ * $Id: lock_stat.c,v 12.29 2007/06/22 17:38:24 bostic Exp $
  */
 
 #include "db_config.h"
@@ -67,6 +66,7 @@ __lock_stat(dbenv, statp, flags)
 	DB_LOCKTAB *lt;
 	DB_LOCK_STAT *stats, tmp;
 	int ret;
+	u_int32_t i;
 
 	*statp = NULL;
 	lt = dbenv->lk_handle;
@@ -75,20 +75,58 @@ __lock_stat(dbenv, statp, flags)
 		return (ret);
 
 	/* Copy out the global statistics. */
-	LOCK_SYSTEM_LOCK(dbenv);
+	LOCK_REGION_LOCK(dbenv);
 
 	region = lt->reginfo.primary;
 	memcpy(stats, &region->stat, sizeof(*stats));
 	stats->st_locktimeout = region->lk_timeout;
 	stats->st_txntimeout = region->tx_timeout;
 
+	for (i = 0; i < region->object_t_size; i++) {
+		stats->st_nrequests += lt->obj_stat[i].st_nrequests;
+		stats->st_nreleases += lt->obj_stat[i].st_nreleases;
+		stats->st_nupgrade += lt->obj_stat[i].st_nupgrade;
+		stats->st_ndowngrade += lt->obj_stat[i].st_ndowngrade;
+		stats->st_lock_wait += lt->obj_stat[i].st_lock_wait;
+		stats->st_lock_nowait += lt->obj_stat[i].st_lock_nowait;
+		stats->st_nlocktimeouts += lt->obj_stat[i].st_nlocktimeouts;
+		stats->st_ntxntimeouts += lt->obj_stat[i].st_ntxntimeouts;
+		if (stats->st_hash_len < lt->obj_stat[i].st_hash_len)
+			stats->st_hash_len = lt->obj_stat[i].st_hash_len;
+		if (LF_ISSET(DB_STAT_CLEAR)) {
+			memset(&lt->obj_stat[i], 0, sizeof(lt->obj_stat[i]));
+#ifdef HAVE_FINE_GRAINED_LOCK_MANAGER
+			if (!LF_ISSET(DB_STAT_SUBSYSTEM))
+				__mutex_clear(dbenv, lt->obj_mtx[i]);
+#endif
+		}
+	}
+
 	__mutex_set_wait_info(dbenv, region->mtx_region,
 	    &stats->st_region_wait, &stats->st_region_nowait);
+#ifdef HAVE_FINE_GRAINED_LOCK_MANAGER
+	__mutex_set_wait_info(dbenv, region->mtx_objs,
+	    &stats->st_objs_wait, &stats->st_objs_nowait);
+	__mutex_set_wait_info(dbenv, region->mtx_lockers,
+	    &stats->st_lockers_wait, &stats->st_lockers_nowait);
+	__mutex_set_wait_info(dbenv, region->mtx_locks,
+	    &stats->st_locks_wait, &stats->st_locks_nowait);
+#endif
 	stats->st_regsize = lt->reginfo.rp->size;
 	if (LF_ISSET(DB_STAT_CLEAR)) {
 		tmp = region->stat;
 		memset(&region->stat, 0, sizeof(region->stat));
-		__mutex_clear(dbenv, region->mtx_region);
+		if (!LF_ISSET(DB_STAT_SUBSYSTEM)) {
+			__mutex_clear(dbenv, region->mtx_region);
+#ifdef HAVE_FINE_GRAINED_LOCK_MANAGER
+			__mutex_clear(dbenv, region->mtx_objs);
+			__mutex_clear(dbenv, region->mtx_locks);
+			__mutex_clear(dbenv, region->mtx_lockers);
+#endif
+			for (i = 0; i < region->object_t_size; i++)
+				memset(&lt->obj_stat[i],
+				    0, sizeof(lt->obj_stat[i]));
+		}
 
 		region->stat.st_id = tmp.st_id;
 		region->stat.st_cur_maxid = tmp.st_cur_maxid;
@@ -104,7 +142,7 @@ __lock_stat(dbenv, statp, flags)
 		region->stat.st_nmodes = tmp.st_nmodes;
 	}
 
-	LOCK_SYSTEM_UNLOCK(dbenv);
+	LOCK_REGION_UNLOCK(dbenv);
 
 	*statp = stats;
 	return (0);
@@ -156,7 +194,7 @@ __lock_stat_print(dbenv, flags)
 	int ret;
 
 	orig_flags = flags;
-	LF_CLR(DB_STAT_CLEAR);
+	LF_CLR(DB_STAT_CLEAR | DB_STAT_SUBSYSTEM);
 	if (flags == 0 || LF_ISSET(DB_STAT_ALL)) {
 		ret = __lock_print_stats(dbenv, orig_flags);
 		if (flags == 0 || ret != 0)
@@ -183,6 +221,55 @@ __lock_print_stats(dbenv, flags)
 	DB_LOCK_STAT *sp;
 	int ret;
 
+#ifdef LOCK_DIAGNOSTIC
+	DB_LOCKTAB *lt;
+	DB_LOCKREGION *region;
+	u_int32_t i;
+#ifdef HAVE_FINE_GRAINED_LOCK_MANAGER
+	u_int32_t wait, nowait;
+#endif
+
+	lt = dbenv->lk_handle;
+	region = lt->reginfo.primary;
+
+	for (i = 0; i < region->object_t_size; i++) {
+		if (lt->obj_stat[i].st_hash_len == 0)
+			continue;
+		__db_dl(dbenv,
+		    "Hash bucket", (u_long)i);
+#ifdef HAVE_FINE_GRAINED_LOCK_MANAGER
+		__mutex_set_wait_info(dbenv, lt->obj_mtx[i], &wait, &nowait);
+		__db_dl_pct(dbenv,
+		    "The number of hash mutex requests that required waiting",
+		    (u_long)wait, DB_PCT(wait, wait + nowait), NULL);
+#endif
+		__db_dl(dbenv,
+		    "Maximum hash bucket length",
+		    (u_long)lt->obj_stat[i].st_hash_len);
+		__db_dl(dbenv,
+		    "Total number of locks requested",
+		    (u_long)lt->obj_stat[i].st_nrequests);
+		__db_dl(dbenv,
+		    "Total number of locks released",
+		    (u_long)lt->obj_stat[i].st_nreleases);
+		__db_dl(dbenv,
+		    "Total number of locks upgraded",
+		    (u_long)lt->obj_stat[i].st_nupgrade);
+		__db_dl(dbenv,
+		    "Total number of locks downgraded",
+		    (u_long)lt->obj_stat[i].st_ndowngrade);
+		__db_dl(dbenv,
+	  "Lock requests not available due to conflicts, for which we waited",
+		    (u_long)lt->obj_stat[i].st_lock_wait);
+		__db_dl(dbenv,
+  "Lock requests not available due to conflicts, for which we did not wait",
+		    (u_long)lt->obj_stat[i].st_lock_nowait);
+		__db_dl(dbenv, "Number of locks that have timed out",
+		    (u_long)lt->obj_stat[i].st_nlocktimeouts);
+		__db_dl(dbenv, "Number of transactions that have timed out",
+		    (u_long)lt->obj_stat[i].st_ntxntimeouts);
+	}
+#endif
 	if ((ret = __lock_stat(dbenv, &sp, flags)) != 0)
 		return (ret);
 
@@ -233,6 +320,20 @@ __lock_print_stats(dbenv, flags)
 
 	__db_dlbytes(dbenv, "The size of the lock region",
 	    (u_long)0, (u_long)0, (u_long)sp->st_regsize);
+#ifdef HAVE_FINE_GRAINED_LOCK_MANAGER
+	__db_dl_pct(dbenv,
+	    "The number of object allocations that required waiting",
+	    (u_long)sp->st_objs_wait, DB_PCT(sp->st_objs_wait,
+	    sp->st_objs_wait + sp->st_objs_nowait), NULL);
+	__db_dl_pct(dbenv,
+	    "The number of locker allocations that required waiting",
+	    (u_long)sp->st_lockers_wait, DB_PCT(sp->st_lockers_wait,
+	    sp->st_lockers_wait + sp->st_lockers_nowait), NULL);
+	__db_dl_pct(dbenv,
+	    "The number of lock allocations that required waiting",
+	    (u_long)sp->st_locks_wait, DB_PCT(sp->st_locks_wait,
+	    sp->st_locks_wait + sp->st_locks_nowait), NULL);
+#endif
 	__db_dl_pct(dbenv,
 	    "The number of region locks that required waiting",
 	    (u_long)sp->st_region_wait, DB_PCT(sp->st_region_wait,
@@ -264,9 +365,8 @@ __lock_print_all(dbenv, flags)
 	lrp = lt->reginfo.primary;
 	DB_MSGBUF_INIT(&mb);
 
-	LOCK_SYSTEM_LOCK(dbenv);
-
-	__db_print_reginfo(dbenv, &lt->reginfo, "Lock");
+	LOCK_REGION_LOCK(dbenv);
+	__db_print_reginfo(dbenv, &lt->reginfo, "Lock", flags);
 
 	if (LF_ISSET(DB_STAT_ALL | DB_STAT_LOCK_PARAMS)) {
 		__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
@@ -278,18 +378,19 @@ __lock_print_all(dbenv, flags)
 		STAT_ULONG("obj_off", lrp->obj_off);
 		STAT_ULONG("locker_off", lrp->locker_off);
 		STAT_ULONG("need_dd", lrp->need_dd);
-		if (LOCK_TIME_ISVALID(&lrp->next_timeout)) {
+		if (timespecisset(&lrp->next_timeout)) {
 #ifdef HAVE_STRFTIME
 			time_t t = (time_t)lrp->next_timeout.tv_sec;
 			char tbuf[64];
 			if (strftime(tbuf, sizeof(tbuf),
 			    "%m-%d-%H:%M:%S", localtime(&t)) != 0)
-				__db_msg(dbenv, "next_timeout: %s.%lu",
-				     tbuf, (u_long)lrp->next_timeout.tv_usec);
+				__db_msg(dbenv, "next_timeout: %s.%09lu",
+				     tbuf, (u_long)lrp->next_timeout.tv_nsec);
 			else
 #endif
-				__db_msg(dbenv, "next_timeout: %lu",
-				     (u_long)lrp->next_timeout.tv_usec);
+				__db_msg(dbenv, "next_timeout: %lu.%09lu",
+				     (u_long)lrp->next_timeout.tv_sec,
+				     (u_long)lrp->next_timeout.tv_nsec);
 		}
 	}
 
@@ -303,6 +404,7 @@ __lock_print_all(dbenv, flags)
 			DB_MSGBUF_FLUSH(dbenv, &mb);
 		}
 	}
+	LOCK_REGION_UNLOCK(dbenv);
 
 	if (LF_ISSET(DB_STAT_ALL | DB_STAT_LOCK_LOCKERS)) {
 		__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
@@ -325,7 +427,6 @@ __lock_print_all(dbenv, flags)
 				__db_msg(dbenv, "%s", "");
 			}
 	}
-	LOCK_SYSTEM_UNLOCK(dbenv);
 
 	return (0);
 }
@@ -346,33 +447,35 @@ __lock_dump_locker(dbenv, mbp, lt, lip)
 	    dbenv->thread_id_string(dbenv, lip->pid, lip->tid, buf));
 	__db_msgadd(
 	    dbenv, mbp, "%s", F_ISSET(lip, DB_LOCKER_DELETED) ? "(D)" : "   ");
-	if (LOCK_TIME_ISVALID(&lip->tx_expire)) {
+	if (timespecisset(&lip->tx_expire)) {
 #ifdef HAVE_STRFTIME
 		time_t t = (time_t)lip->tx_expire.tv_sec;
 		char tbuf[64];
 		if (strftime(tbuf, sizeof(tbuf),
 		    "%m-%d-%H:%M:%S", localtime(&t)) != 0)
-			__db_msgadd(dbenv, mbp, "expires %s.%lu",
-			    tbuf, (u_long)lip->tx_expire.tv_usec);
+			__db_msgadd(dbenv, mbp, "expires %s.%09lu",
+			    tbuf, (u_long)lip->tx_expire.tv_nsec);
 		else
 #endif
-			__db_msgadd(dbenv, mbp, "expires %lu",
-			    (u_long)lip->tx_expire.tv_usec);
+			__db_msgadd(dbenv, mbp, "expires %lu.%09lu",
+			    (u_long)lip->tx_expire.tv_sec,
+			    (u_long)lip->tx_expire.tv_nsec);
 	}
 	if (F_ISSET(lip, DB_LOCKER_TIMEOUT))
 		__db_msgadd(dbenv, mbp, " lk timeout %u", lip->lk_timeout);
-	if (LOCK_TIME_ISVALID(&lip->lk_expire)) {
+	if (timespecisset(&lip->lk_expire)) {
 #ifdef HAVE_STRFTIME
 		time_t t = (time_t)lip->lk_expire.tv_sec;
 		char tbuf[64];
 		if (strftime(tbuf,
 		    sizeof(tbuf), "%m-%d-%H:%M:%S", localtime(&t)) != 0)
-			__db_msgadd(dbenv, mbp, " lk expires %s.%lu",
-			    tbuf, (u_long)lip->lk_expire.tv_usec);
+			__db_msgadd(dbenv, mbp, " lk expires %s.%09lu",
+			    tbuf, (u_long)lip->lk_expire.tv_nsec);
 		else
 #endif
-			__db_msgadd(dbenv, mbp, " lk expires %lu",
-			    (u_long)lip->lk_expire.tv_usec);
+			__db_msgadd(dbenv, mbp, " lk expires %lu.%09lu",
+			    (u_long)lip->lk_expire.tv_sec,
+			    (u_long)lip->lk_expire.tv_nsec);
 	}
 	DB_MSGBUF_FLUSH(dbenv, mbp);
 
@@ -491,7 +594,8 @@ __lock_printlock(lt, mbp, lp, ispgno)
 		break;
 	}
 	__db_msgadd(dbenv, mbp, "%8lx %-10s %4lu %-7s ",
-	    (u_long)lp->holder, mode, (u_long)lp->refcount, status);
+	    (u_long)((DB_LOCKER *)R_ADDR(&lt->reginfo, lp->holder))->id,
+	    mode, (u_long)lp->refcount, status);
 
 	lockobj = (DB_LOCKOBJ *)((u_int8_t *)lp + lp->obj);
 	ptr = SH_DBT_PTR(&lockobj->lockobj);

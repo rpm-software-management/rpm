@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: log.c,v 12.40 2006/08/24 14:46:12 bostic Exp $
+ * $Id: log.c,v 12.54 2007/06/04 21:30:51 sue Exp $
  */
 
 #include "db_config.h"
@@ -23,11 +22,12 @@ static size_t	__log_region_size __P((DB_ENV *));
  * __log_open --
  *	Internal version of log_open: only called from DB_ENV->open.
  *
- * PUBLIC: int __log_open __P((DB_ENV *));
+ * PUBLIC: int __log_open __P((DB_ENV *, int));
  */
 int
-__log_open(dbenv)
+__log_open(dbenv, create_ok)
 	DB_ENV *dbenv;
+	int create_ok;
 {
 	DB_LOG *dblp;
 	LOG *lp;
@@ -51,9 +51,9 @@ __log_open(dbenv)
 	dblp->reginfo.type = REGION_TYPE_LOG;
 	dblp->reginfo.id = INVALID_REGION_ID;
 	dblp->reginfo.flags = REGION_JOIN_OK;
-	if (F_ISSET(dbenv, DB_ENV_CREATE))
+	if (create_ok)
 		F_SET(&dblp->reginfo, REGION_CREATE_OK);
-	if ((ret = __db_r_attach(
+	if ((ret = __env_region_attach(
 	    dbenv, &dblp->reginfo, __log_region_size(dbenv))) != 0)
 		goto err;
 
@@ -121,8 +121,8 @@ __log_open(dbenv)
 		 */
 		lp->ready_lsn = lp->lsn;
 		if (IS_ENV_REPLICATED(dbenv)) {
-			if ((ret = __db_shalloc(&dblp->reginfo, MEGABYTE, 0,
-			    &bulk)) != 0)
+			if ((ret =
+			    __env_alloc(&dblp->reginfo, MEGABYTE, &bulk)) != 0)
 				goto err;
 			lp->bulk_buf = R_OFFSET(&dblp->reginfo, bulk);
 			lp->bulk_len = MEGABYTE;
@@ -166,7 +166,7 @@ err:	dbenv->lg_handle = NULL;
 	if (dblp->reginfo.addr != NULL) {
 		if (region_locked)
 			LOG_SYSTEM_UNLOCK(dbenv);
-		(void)__db_r_detach(dbenv, &dblp->reginfo, 0);
+		(void)__env_region_detach(dbenv, &dblp->reginfo, 0);
 	}
 
 	(void)__mutex_free(dbenv, &dblp->mtx_dbreg);
@@ -197,8 +197,8 @@ __log_init(dbenv, dblp)
 	   __log_check_sizes(dbenv, dbenv->lg_size, dbenv->lg_bsize)) != 0)
 		return (ret);
 
-	if ((ret = __db_shalloc(&dblp->reginfo,
-	    sizeof(*lp), 0, &dblp->reginfo.primary)) != 0)
+	if ((ret = __env_alloc(&dblp->reginfo,
+	    sizeof(*lp), &dblp->reginfo.primary)) != 0)
 		goto mem_err;
 	dblp->reginfo.rp->primary =
 	    R_OFFSET(&dblp->reginfo, dblp->reginfo.primary);
@@ -239,7 +239,7 @@ __log_init(dbenv, dblp)
 		return (ret);
 
 	/* Initialize the buffer. */
-	if ((ret = __db_shalloc(&dblp->reginfo, dbenv->lg_bsize, 0, &p)) != 0) {
+	if ((ret = __env_alloc(&dblp->reginfo, dbenv->lg_bsize, &p)) != 0) {
 mem_err:	__db_errx( dbenv, "unable to allocate log region memory");
 		return (ret);
 	}
@@ -343,7 +343,7 @@ __log_recover(dblp)
 		return (ret);
 	F_SET(logc, DB_LOG_LOCKED);
 	memset(&dbt, 0, sizeof(dbt));
-	if ((ret = __log_c_get(logc, &lsn, &dbt, DB_SET)) != 0)
+	if ((ret = __logc_get(logc, &lsn, &dbt, DB_SET)) != 0)
 		goto err;
 
 	/*
@@ -351,7 +351,7 @@ __log_recover(dblp)
 	 * turn off error messages.
 	 */
 	F_SET(logc, DB_LOG_SILENT_ERR);
-	while (__log_c_get(logc, &lsn, &dbt, DB_NEXT) == 0) {
+	while (__logc_get(logc, &lsn, &dbt, DB_NEXT) == 0) {
 		if (dbt.size < sizeof(u_int32_t))
 			continue;
 		memcpy(&rectype, dbt.data, sizeof(u_int32_t));
@@ -372,11 +372,11 @@ __log_recover(dblp)
 	 */
 	lp->lsn = lsn;
 	lp->s_lsn = lsn;
-	lp->lsn.offset += logc->c_len;
-	lp->s_lsn.offset += logc->c_len;
+	lp->lsn.offset += logc->len;
+	lp->s_lsn.offset += logc->len;
 
 	/* Set up the current buffer information, too. */
-	lp->len = logc->c_len;
+	lp->len = logc->len;
 	lp->a_off = 0;
 	lp->b_off = 0;
 	lp->w_off = lp->lsn.offset;
@@ -388,7 +388,7 @@ skipsearch:
 		    (u_long)lp->lsn.file, (u_long)lp->lsn.offset);
 
 err:	if (logc != NULL)
-		(void)__log_c_close(logc);
+		(void)__logc_close(logc);
 
 	return (ret);
 }
@@ -415,7 +415,7 @@ __log_find(dblp, find_first, valp, statusp)
 	u_int32_t clv, logval;
 	int cnt, fcnt, ret;
 	const char *dir;
-	char *c, **names, *p, *q, savech;
+	char *c, **names, *p, *q;
 
 	dbenv = dblp->dbenv;
 	lp = dblp->reginfo.primary;
@@ -439,28 +439,15 @@ __log_find(dblp, find_first, valp, statusp)
 	/* Find the directory name. */
 	if ((ret = __log_name(dblp, 1, &p, NULL, 0)) != 0)
 		return (ret);
-	if ((q = __db_rpath(p)) == NULL) {
-		COMPQUIET(savech, 0);
+	if ((q = __db_rpath(p)) == NULL)
 		dir = PATH_DOT;
-	} else {
-		savech = *q;
+	else {
 		*q = '\0';
 		dir = p;
 	}
 
 	/* Get the list of file names. */
-	ret = __os_dirlist(dbenv, dir, &names, &fcnt);
-
-	/*
-	 * !!!
-	 * We overwrote a byte in the string with a nul.  Restore the string
-	 * so that the diagnostic checks in the memory allocation code work
-	 * and any error messages display the right file name.
-	 */
-	if (q != NULL)
-		*q = savech;
-
-	if (ret != 0) {
+	if ((ret = __os_dirlist(dbenv, dir, &names, &fcnt)) != 0) {
 		__db_err(dbenv, ret, "%s", dir);
 		__os_free(dbenv, p);
 		return (ret);
@@ -772,13 +759,13 @@ err:	if (fname != NULL)
 }
 
 /*
- * __log_dbenv_refresh --
+ * __log_env_refresh --
  *	Clean up after the log system on a close or failed open.
  *
- * PUBLIC: int __log_dbenv_refresh __P((DB_ENV *));
+ * PUBLIC: int __log_env_refresh __P((DB_ENV *));
  */
 int
-__log_dbenv_refresh(dbenv)
+__log_env_refresh(dbenv)
 	DB_ENV *dbenv;
 {
 	DB_LOG *dblp;
@@ -803,19 +790,21 @@ __log_dbenv_refresh(dbenv)
 		ret = t_ret;
 
 	/* We may have opened files as part of XA; if so, close them. */
-	if ((t_ret = __dbreg_close_files(dbenv)) != 0 && ret == 0)
+	if ((t_ret = __dbreg_close_files(dbenv, 0)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/*
 	 * After we close the files, check for any unlogged closes left in
-	 * the shared memory queue.  If we find any, we need to panic the
-	 * region.  Note, just set "ret" -- a panic overrides any previously
-	 * set error return.
+	 * the shared memory queue.  If we find any, try to log it, otherwise
+	 * return the error.  We cannot say the environment was closed
+	 * cleanly.
 	 */
 	MUTEX_LOCK(dbenv, lp->mtx_filelist);
 	SH_TAILQ_FOREACH(fnp, &lp->fq, q, __fname)
-		if (F_ISSET(fnp, DB_FNAME_NOTLOGGED))
-			ret = __db_panic(dbenv, EINVAL);
+		if (F_ISSET(fnp, DB_FNAME_NOTLOGGED) &&
+		    (t_ret = __dbreg_close_id_int(
+		    dbenv, fnp, DBREG_CLOSE, 1)) != 0)
+			ret = t_ret;
 	MUTEX_UNLOCK(dbenv, lp->mtx_filelist);
 
 	/*
@@ -830,11 +819,11 @@ __log_dbenv_refresh(dbenv)
 			ret = t_ret;
 
 		/* Discard the buffer. */
-		__db_shalloc_free(reginfo, R_ADDR(reginfo, lp->buffer_off));
+		__env_alloc_free(reginfo, R_ADDR(reginfo, lp->buffer_off));
 
 		/* Discard stack of free file IDs. */
 		if (lp->free_fid_stack != INVALID_ROFF)
-			__db_shalloc_free(reginfo,
+			__env_alloc_free(reginfo,
 			    R_ADDR(reginfo, lp->free_fid_stack));
 
 		/* Discard the list of in-memory log file markers. */
@@ -842,14 +831,21 @@ __log_dbenv_refresh(dbenv)
 		    __db_filestart)) != NULL) {
 			SH_TAILQ_REMOVE(&lp->logfiles, filestart, links,
 			    __db_filestart);
-			__db_shalloc_free(reginfo, filestart);
+			__env_alloc_free(reginfo, filestart);
 		}
 
 		while ((filestart = SH_TAILQ_FIRST(&lp->free_logfiles,
 		    __db_filestart)) != NULL) {
 			SH_TAILQ_REMOVE(&lp->free_logfiles, filestart, links,
 			    __db_filestart);
-			__db_shalloc_free(reginfo, filestart);
+			__env_alloc_free(reginfo, filestart);
+		}
+
+		/* Discard replication bulk buffer. */
+		if (lp->bulk_buf != INVALID_ROFF) {
+			__env_alloc_free(reginfo,
+			    R_ADDR(reginfo, lp->bulk_buf));
+			lp->bulk_buf = INVALID_ROFF;
 		}
 	}
 
@@ -858,7 +854,7 @@ __log_dbenv_refresh(dbenv)
 		ret = t_ret;
 
 	/* Detach from the region. */
-	if ((t_ret = __db_r_detach(dbenv, reginfo, 0)) != 0 && ret == 0)
+	if ((t_ret = __env_region_detach(dbenv, reginfo, 0)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/* Close open files, release allocated memory. */
@@ -924,7 +920,7 @@ __log_region_mutex_count(dbenv)
  *	Return the amount of space needed for the log region.
  *	Make the region large enough to hold txn_max transaction
  *	detail structures  plus some space to hold thread handles
- *	and the beginning of the shalloc region and anything we
+ *	and the beginning of the alloc region and anything we
  *	need for mutex system resource recording.
  */
 static size_t
@@ -963,18 +959,17 @@ __log_vtruncate(dbenv, lsn, ckplsn, trunclsn)
 	DBT log_dbt;
 	DB_LOG *dblp;
 	DB_LOGC *logc;
-	DB_LSN end_lsn;
 	LOG *lp;
-	u_int32_t bytes, c_len;
+	u_int32_t bytes, len;
 	int ret, t_ret;
 
 	/* Need to find out the length of this soon-to-be-last record. */
 	if ((ret = __log_cursor(dbenv, &logc)) != 0)
 		return (ret);
 	memset(&log_dbt, 0, sizeof(log_dbt));
-	ret = __log_c_get(logc, lsn, &log_dbt, DB_SET);
-	c_len = logc->c_len;
-	if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
+	ret = __logc_get(logc, lsn, &log_dbt, DB_SET);
+	len = logc->len;
+	if ((t_ret = __logc_close(logc)) != 0 && ret == 0)
 		ret = t_ret;
 	if (ret != 0)
 		return (ret);
@@ -992,9 +987,8 @@ __log_vtruncate(dbenv, lsn, ckplsn, trunclsn)
 	if ((ret = __log_flush_int(dblp, NULL, 0)) != 0)
 		goto err;
 
-	end_lsn = lp->lsn;
 	lp->lsn = *lsn;
-	lp->len = c_len;
+	lp->len = len;
 	lp->lsn.offset += lp->len;
 
 	if (lp->db_log_inmemory &&
@@ -1020,7 +1014,7 @@ __log_vtruncate(dbenv, lsn, ckplsn, trunclsn)
 	lp->stat.st_wc_bytes += bytes % MEGABYTE;
 
 	/*
-	 * If the saved lsn is greater than our new end of log, reset it
+	 * If the synced lsn is greater than our new end of log, reset it
 	 * to our current end of log.
 	 */
 	MUTEX_LOCK(dbenv, lp->mtx_flush);
@@ -1036,7 +1030,7 @@ __log_vtruncate(dbenv, lsn, ckplsn, trunclsn)
 		*trunclsn = lp->lsn;
 
 	/* Truncate the log to the new point. */
-	if ((ret = __log_zero(dbenv, &lp->lsn, &end_lsn)) != 0)
+	if ((ret = __log_zero(dbenv, &lp->lsn)) != 0)
 		goto err;
 
 err:	LOG_SYSTEM_UNLOCK(dbenv);
@@ -1107,12 +1101,12 @@ out:	__os_free(dbenv, name);
  * __log_zero --
  *	Zero out the tail of a log after a truncate.
  *
- * PUBLIC: int __log_zero __P((DB_ENV *, DB_LSN *, DB_LSN *));
+ * PUBLIC: int __log_zero __P((DB_ENV *, DB_LSN *));
  */
 int
-__log_zero(dbenv, from_lsn, to_lsn)
+__log_zero(dbenv, from_lsn)
 	DB_ENV *dbenv;
-	DB_LSN *from_lsn, *to_lsn;
+	DB_LSN *from_lsn;
 {
 	DB_FH *fhp;
 	DB_LOG *dblp;
@@ -1125,14 +1119,14 @@ __log_zero(dbenv, from_lsn, to_lsn)
 	char *fname;
 
 	dblp = dbenv->lg_handle;
-	DB_ASSERT(dbenv, LOG_COMPARE(from_lsn, to_lsn) <= 0);
-	if (LOG_COMPARE(from_lsn, to_lsn) > 0) {
+	lp = (LOG *)dblp->reginfo.primary;
+	DB_ASSERT(dbenv, LOG_COMPARE(from_lsn, &lp->lsn) <= 0);
+	if (LOG_COMPARE(from_lsn, &lp->lsn) > 0) {
 		__db_errx(dbenv,
 		    "Warning: truncating to point beyond end of log");
 		return (0);
 	}
 
-	lp = (LOG *)dblp->reginfo.primary;
 	if (lp->db_log_inmemory) {
 		/*
 		 * Remove the files that are invalidated by this truncate.
@@ -1277,8 +1271,8 @@ __log_inmem_newfile(dblp, file)
 
 	filestart = SH_TAILQ_FIRST(&lp->free_logfiles, __db_filestart);
 	if (filestart == NULL) {
-		if ((ret = __db_shalloc(&dblp->reginfo,
-		    sizeof(struct __db_filestart), 0, &filestart)) != 0)
+		if ((ret = __env_alloc(&dblp->reginfo,
+		    sizeof(struct __db_filestart), &filestart)) != 0)
 			return (ret);
 		memset(filestart, 0, sizeof(*filestart));
 	} else
@@ -1483,21 +1477,30 @@ __log_get_oldversion(dbenv, ver)
 	DB_LOG *dblp;
 	DB_LOGC *logc;
 	DB_LSN lsn;
+	LOG *lp;
 	u_int32_t firstfnum, fnum, lastver, oldver;
 	int ret, t_ret;
 
 	dblp = dbenv->lg_handle;
+	lp = dblp->reginfo.primary;
 
 	logc = NULL;
 	ret = 0;
 	oldver = DB_LOGVERSION;
+	/*
+	 * If we're in-memory logs we're always the current version.
+	 */
+	if (lp->db_log_inmemory) {
+		*ver = oldver;
+		return (0);
+	}
 	memset(&rec, 0, sizeof(rec));
 	if ((ret = __log_cursor(dbenv, &logc)) != 0)
 		goto err;
 	/*
 	 * Get the version numbers of the first and last log files.
 	 */
-	if ((ret = __log_c_get(logc, &lsn, &rec, DB_FIRST)) != 0) {
+	if ((ret = __logc_get(logc, &lsn, &rec, DB_FIRST)) != 0) {
 		/*
 		 * If there is no log file, we'll get DB_NOTFOUND.
 		 * If we get that, set the version to the current.
@@ -1507,7 +1510,7 @@ __log_get_oldversion(dbenv, ver)
 		goto err;
 	}
 	firstfnum = lsn.file;
-	if ((ret = __log_c_get(logc, &lsn, &rec, DB_LAST)) != 0)
+	if ((ret = __logc_get(logc, &lsn, &rec, DB_LAST)) != 0)
 		goto err;
 	if ((ret = __log_valid(dblp, firstfnum, 0, NULL, 0,
 	    NULL, &oldver)) != 0)
@@ -1540,7 +1543,7 @@ __log_get_oldversion(dbenv, ver)
 				break;
 		}
 	}
-err:	if (logc != NULL && ((t_ret = __log_c_close(logc)) != 0) && ret == 0)
+err:	if (logc != NULL && ((t_ret = __logc_close(logc)) != 0) && ret == 0)
 		ret = t_ret;
 	if (ret == 0 && ver != NULL)
 		*ver = oldver;

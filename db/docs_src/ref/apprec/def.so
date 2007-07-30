@@ -1,0 +1,159 @@
+m4_comment([$Id: def.so,v 10.7 2007/04/05 20:37:29 bostic Exp $])
+
+m4_ref_title(Application Specific Logging and Recovery,
+    Defining application-specific log records,,
+    apprec/intro, apprec/auto)
+
+m4_p([dnl
+By convention, log records are described in files named m4_path(XXX.src),
+where "XXX" is typically a descriptive name for a subsystem or other
+logical group of logging functions.  These files contain interface
+definition language descriptions for each type of log record that is
+used by the subsystem.])
+
+m4_p([dnl
+All blank lines and lines beginning with a hash ("[#]") character in
+the XXX.src files are ignored.])
+
+m4_p([dnl
+The first non-comment line in the file should begin with the keyword
+PREFIX, followed by a string that will be prepended to every generated
+function name.  Frequently, the PREFIX is either identical or similar
+to the name of the m4_path(XXX.src) file.  For example, the m4_db
+application-specific recovery example uses the file
+m4_path(ex_apprec.src), which begins with the following PREFIX line:])
+
+m4_indent([PREFIX ex_apprec])
+
+m4_p([dnl
+Following the PREFIX line are the include files required by the
+automatically generated functions.  The include files should be listed
+in order, prefixed by the keyword INCLUDE.  For example, the m4_db
+application-specific recovery example lists the following include
+files:])
+
+m4_indent([dnl
+INCLUDE [#]include __LT__ctype.h__GT__
+INCLUDE [#]include __LT__errno.h__GT__
+INCLUDE [#]include __LT__stdlib.h__GT__
+INCLUDE [#]include __LT__string.h__GT__
+INCLUDE
+INCLUDE [#]include __LT__db.h__GT__
+INCLUDE
+INCLUDE [#]include "ex_apprec.h"])
+
+m4_p([dnl
+The rest of the XXX.src file consists of log record descriptions.  Each
+log record description begins with one of the following lines:])
+
+m4_indent([BEGIN m4_italic(RECORD_NAME) m4_italic(DB_VERSION_NUMBER) m4_italic(RECORD_NUMBER)])
+m4_indent([BEGIN_BUF m4_italic(RECORD_NAME) m4_italic(DB_VERSION_NUMBER)])
+m4_indent([BEGIN_COMPAT m4_italic(RECORD_NAME) m4_italic(DB_VERSION_NUMBER) m4_italic(RECORD_NUMBER)])
+
+m4_p([dnl
+and ends with the line:])
+
+m4_indent([END])
+
+m4_p([dnl
+The m4_italic(BEGIN) line should be used for most record types.])
+
+m4_p([dnl
+The m4_italic(BEGIN_BUF) is used for records that need only marshalling and
+unmarshalling of the record, that is logging and reading routines, but not
+a recovery routine.  These records are specific to the replication system's
+internal initialization process, which sends variable length records containing
+file data and file description records.])
+
+m4_p([dnl
+The m4_italic(BEGIN_COMPAT) is used for log record compatibility to facilitate
+online upgrades of replication groups. Records created with this keyword will
+produce reading and printing routines, but no logging routines.  The recovery
+routines are retrieved from older releases, so no recovery templates will be
+generated for these records.])
+
+m4_p([dnl
+The m4_italic(DB_VERSION_NUMBER) variable should be replaced with the
+current major and minor version of m4_db, with all punctuation removed.
+For example, m4_db version 4.2 should be 42, version 4.5 should be 45.])
+
+m4_p([dnl
+The m4_italic(RECORD_NAME) variable should be replaced with a record
+name for this log record.  The m4_italic(RECORD_NUMBER) variable should
+be replaced with a record number.])
+
+m4_p([dnl
+The combination of PREFIX name and m4_italic(RECORD_NAME), and the
+m4_italic(RECORD_NUMBER) must be unique for the application, that is,
+values for application-specific and m4_db log records may not overlap.
+Further, because record numbers are stored in log files, which are
+usually portable across application and m4_db releases, any change to
+the record numbers or log record format or should be handled as
+described in the m4_link(M4RELDIR/ref/upgrade/process, Upgrading m4_db
+installations) section on log format changes.  The record number space
+below 10,000 is reserved for m4_db itself; applications should choose
+record number values equal to or greater than 10,000.])
+
+m4_p([dnl
+Between the BEGIN and END keywords there should be one optional
+m4_italic(DUPLICATE) line and one line for each
+data item logged as part of this log record.])
+
+m4_p([dnl
+The m4_italic(DUPLICATE) line is of the form:])
+
+m4_indent([DUPLICATE m4_italic(RECORD_NAME) m4_italic(DB_VERSION_NUMBER) m4_italic(RECORD_NUMBER)])
+
+m4_p([dnl
+The m4_italic(DUPLICATE) specifier should be used when creating a record
+that requires its own record number but can use the argument structure,
+reading and printing routines from another record.  In this case, we will
+create a new log record type, but use the enclosing log record type for
+the argument structure and the log reading and printing routines.])
+
+m4_p([dnl
+The format of lines for each data item logged is as follows:])
+
+m4_indent([dnl
+ARG | DBT | POINTER	m4_italic(variable_name)	m4_italic(variable_type)	m4_italic(printf_format)])
+
+m4_p([dnl
+The keyword ARG indicates that the argument is a simple parameter of
+the type specified. For example, a file ID might be logged as:])
+
+m4_indent([dnl
+ARG	fileID	int	d])
+
+m4_p([dnl
+The keyword DBT indicates that the argument is a m4_db DBT structure,
+containing a length and pointer to a byte string.  The keyword POINTER
+indicates that the argument is a pointer to the data type specified (of
+course the data type, not the pointer, is what is logged).])
+
+m4_p([dnl
+The m4_italic(variable_name) is the field name within the structure that
+will be used to refer to this item.  The m4_italic(variable_type) is
+the C-language type of the variable, and the printf format is the
+C-language format string, without the leading percent ("%") character,
+that should be used to display the contents of the field (for example,
+"s" for string, "d" for signed integral type, "u" for unsigned integral
+type, "ld" for signed long integral type, "lu" for long unsigned
+integral type, and so on).])
+
+m4_p([dnl
+For example, ex_apprec.src defines a single log record type, used to
+log a directory name that has been stored in a DBT:])
+
+m4_indent([dnl
+BEGIN	mkdir		10000
+DBT	dirname		DBT		s
+END])
+
+m4_p([dnl
+As the name suggests, this example of an application-defined log record
+will be used to log the creation of a directory.  There are many more
+examples of XXX.src files in the m4_db distribution.  For example, the
+file btree/btree.src contains the definitions for the log records
+supported by the m4_db Btree access method.])
+
+m4_page_footer

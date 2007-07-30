@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep035.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep035.tcl,v 12.17 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  	rep035
 # TEST	Test sync-up recovery in replication.
@@ -48,6 +47,12 @@ proc rep035 { method { niter 100 } { tnum "035" } args } {
 proc rep035_sub { method niter tnum envargs logset largs } {
 	source ./include.tcl
 	global testdir
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -76,49 +81,38 @@ proc rep035_sub { method niter tnum envargs logset largs } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env_noerr -create \
+	set env_cmd(M) "berkdb_env_noerr -create $verbargs \
 	    -log_max 1000000 $envargs -home $masterdir $m_logargs \
 	    -errpfx MASTER -errfile /dev/stderr $m_txnargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(M) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $envargs -home $masterdir $m_logargs \
-#	    -errpfx MASTER -errfile /dev/stderr $m_txnargs -rep_master \
-#	    -verbose {rep on} \
-#	    -rep_transport \[list 1 replsend\]"
 	set env1 [eval $env_cmd(M)]
-	error_check_good env1 [is_valid_env $env1] TRUE
 
 	# Open two clients
 	repladd 2
-	set env_cmd(C1) "berkdb_env_noerr -create \
+	set env_cmd(C1) "berkdb_env_noerr -create $verbargs \
 	    -log_max 1000000 $envargs -home $clientdir1 $c_logargs \
 	    -errfile /dev/stderr -errpfx CLIENT $c_txnargs -rep_client \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(C1) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $envargs -home $clientdir1 $c_logargs \
-#	    -errfile /dev/stderr -errpfx CLIENT $c_txnargs -rep_client \
-#	    -verbose {rep on} \
-#	    -rep_transport \[list 2 replsend\]"
 	set env2 [eval $env_cmd(C1)]
-	error_check_good env2 [is_valid_env $env2] TRUE
 
 	# Second client needs lock_detect flag.
 	repladd 3
-	set env_cmd(C2) "berkdb_env_noerr -create \
+	set env_cmd(C2) "berkdb_env_noerr -create $verbargs \
 	    -log_max 1000000 $envargs -home $clientdir2 $c2_logargs \
 	    -errpfx CLIENT2 -errfile /dev/stderr $c2_txnargs -rep_client \
 	    -lock_detect default -rep_transport \[list 3 replsend\]"
-#	set env_cmd(C2) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $envargs -home $clientdir2 $c2_logargs \
-#	    -errpfx CLIENT2 -errfile /dev/stderr $c2_txnargs -rep_client \
-#	    -verbose {rep on} \
-#	    -lock_detect default -rep_transport \[list 3 replsend\]"
 	set env3 [eval $env_cmd(C2)]
 	error_check_good client_env [is_valid_env $env3] TRUE
 
 	# Bring the client online by processing the startup messages.
 	set envlist "{$env1 1} {$env2 2} {$env3 3}"
 	process_msgs $envlist
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init, so that we can do a
+	# log_archive in a moment.
+	#
+	$env1 test force noarchive_timeout
 
 	# We need to fork off 3 child tclsh processes to operate
 	# on Site 3's (client always) home directory:
@@ -147,6 +141,11 @@ proc rep035_sub { method niter tnum envargs logset largs } {
 	    rep035script.tcl $testdir/log_archive.log \
 	    $clientdir2 archive &]
 
+	# Pause a bit to let the children get going.
+	tclsleep 5
+
+	set logfilelist [list lock_detect.log \
+	    txn_checkpoint.log memp_trickle.log log_archive.log]
 	set pidlist [list $pid1 $pid2 $pid3 $pid4]
 
 	#
@@ -231,14 +230,24 @@ proc rep035_sub { method niter tnum envargs logset largs } {
 	}
 
 	# Communicate with child processes by creating a marker file.
-	set markerenv [berkdb_env -create -home $testdir -txn]
+	set markerenv [berkdb_env_noerr -create -home $testdir -txn]
 	error_check_good markerenv_open [is_valid_env $markerenv] TRUE
-	set marker [eval "berkdb_open \
+	set marker [eval "berkdb_open_noerr \
 	    -create -btree -auto_commit -env $markerenv marker.db"]
 	error_check_good marker_close [$marker close] 0
 
-	# Script should be able to shut itself down fairly quickly.
-	watch_procs $pidlist 5
+	# Wait for child processes; they should shut down quickly.
+	watch_procs $pidlist 1
+
+	# There should not be any messages in the log files.
+	# If there are, print them out.
+	foreach file $logfilelist {
+		puts "\tRep$tnum.f: Checking $file for errors."
+		set fd [open $testdir/$file r]
+		while { [gets $fd str] != -1 } {
+			error "FAIL: found message $str"
+		}
+	}
 
 	error_check_good masterdb [$masterdb close] 0
 	error_check_good clientdb [$clientdb close] 0

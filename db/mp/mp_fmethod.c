@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mp_fmethod.c,v 12.13 2006/08/24 14:46:14 bostic Exp $
+ * $Id: mp_fmethod.c,v 12.19 2007/06/01 16:30:30 bostic Exp $
  */
 
 #include "db_config.h"
@@ -67,7 +66,7 @@ __memp_fcreate(dbenv, retp)
 		return (ret);
 
 	dbmfp->ref = 1;
-	dbmfp->lsn_offset = -1;
+	dbmfp->lsn_offset = DB_LSN_OFF_NOTSET;
 	dbmfp->dbenv = dbenv;
 	dbmfp->mfp = INVALID_ROFF;
 
@@ -77,13 +76,13 @@ __memp_fcreate(dbenv, retp)
 	dbmfp->get_fileid = __memp_get_fileid;
 	dbmfp->get_flags = __memp_get_flags;
 	dbmfp->get_ftype = __memp_get_ftype;
+	dbmfp->get_last_pgno = __memp_get_last_pgno;
 	dbmfp->get_lsn_offset = __memp_get_lsn_offset;
 	dbmfp->get_maxsize = __memp_get_maxsize;
 	dbmfp->get_pgcookie = __memp_get_pgcookie;
 	dbmfp->get_priority = __memp_get_priority;
 	dbmfp->open = __memp_fopen_pp;
 	dbmfp->put = __memp_fput_pp;
-	dbmfp->set = __memp_fset_pp;
 	dbmfp->set_clear_len = __memp_set_clear_len;
 	dbmfp->set_fileid = __memp_set_fileid;
 	dbmfp->set_flags = __memp_set_flags;
@@ -489,16 +488,17 @@ __memp_set_priority(dbmfp, priority)
 }
 
 /*
- * __memp_last_pgno --
+ * __memp_get_last_pgno --
  *	Return the page number of the last page in the file.
  *
  * !!!
- * Undocumented interface: DB private.
+ * The method is undocumented, but the handle is exported, users occasionally
+ * ask for it.
  *
- * PUBLIC: int __memp_last_pgno __P((DB_MPOOLFILE *, db_pgno_t *));
+ * PUBLIC: int __memp_get_last_pgno __P((DB_MPOOLFILE *, db_pgno_t *));
  */
 int
-__memp_last_pgno(dbmfp, pgnoaddr)
+__memp_get_last_pgno(dbmfp, pgnoaddr)
 	DB_MPOOLFILE *dbmfp;
 	db_pgno_t *pgnoaddr;
 {
@@ -540,8 +540,8 @@ __memp_fns(dbmp, mfp)
 	DB_MPOOL *dbmp;
 	MPOOLFILE *mfp;
 {
-	if (mfp->path_off == 0)
-		return ((char *)"temporary");
+	if (mfp == NULL || mfp->path_off == 0)
+		return ((char *)"unknown");
 
 	return ((char *)R_ADDR(dbmp->reginfo, mfp->path_off));
 }

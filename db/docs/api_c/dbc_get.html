@@ -1,17 +1,16 @@
-<!--$Id: dbc_get.so,v 10.114 2005/02/10 20:02:31 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: dbc_get.so,v 10.117 2007/05/31 18:52:36 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DBcursor-&gt;c_get</title>
+<title>Berkeley DB: DBcursor-&gt;get</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td>
-<h3>DBcursor-&gt;c_get</h3>
+<h3>DBcursor-&gt;get</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
@@ -23,37 +22,37 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBcursor-&gt;c_get(DBC *DBcursor,
+DBcursor-&gt;get(DBC *DBcursor,
     DBT *key, DBT *data, u_int32_t flags);
 <p>
 int
-DBcursor-&gt;c_pget(DBC *DBcursor,
+DBcursor-&gt;pget(DBC *DBcursor,
     DBT *key, DBT *pkey, DBT *data, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
-<h3>Description: DBcursor-&gt;c_get</h3>
-<p>The DBcursor-&gt;c_get method retrieves key/data pairs from the database.  The
+<h3>Description: DBcursor-&gt;get</h3>
+<p>The DBcursor-&gt;get method retrieves key/data pairs from the database.  The
 address and length of the key are returned in the object to which
 <b>key</b> refers (except for the case of the DB_SET flag, in
 which the <b>key</b> object is unchanged), and the address and length
 of the data are returned in the object to which <b>data</b> refers.</p>
 <p>When called on a cursor opened on a database that has been made into a
-secondary index using the <a href="../api_c/db_associate.html">DB-&gt;associate</a> method, the DBcursor-&gt;c_get
-and DBcursor-&gt;c_pget methods return the key from the secondary index and the
-data item from the primary database. In addition, the DBcursor-&gt;c_pget method
+secondary index using the <a href="../api_c/db_associate.html">DB-&gt;associate</a> method, the DBcursor-&gt;get
+and DBcursor-&gt;pget methods return the key from the secondary index and the
+data item from the primary database. In addition, the DBcursor-&gt;pget method
 returns the key from the primary database.  In databases that are not
-secondary indices, the DBcursor-&gt;c_pget method will always fail.</p>
+secondary indices, the DBcursor-&gt;pget method will always fail.</p>
 <p>Modifications to the database during a sequential scan will be reflected
 in the scan; that is, records inserted behind a cursor will not be
 returned while records inserted in front of a cursor will be returned.</p>
 <p>In Queue and Recno databases, missing entries (that is, entries that
 were never explicitly created or that were created and then deleted)
 will be skipped during a sequential scan.</p>
-<p>Unless otherwise specified, the DBcursor-&gt;c_get method
+<p>Unless otherwise specified, the DBcursor-&gt;get method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
-<p>If DBcursor-&gt;c_get fails for any reason, the state of the cursor will be
+<p>If DBcursor-&gt;get fails for any reason, the state of the cursor will be
 unchanged.</p>
 <h3>Parameters</h3>
 <dl compact>
@@ -61,24 +60,24 @@ unchanged.</p>
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
 <dl compact>
 <dt><a name="DB_CURRENT">DB_CURRENT</a><dd>Return the key/data pair to which the cursor refers.
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if DB_CURRENT is set and the cursor key/data pair was deleted.
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if DB_CURRENT is set and the cursor key/data pair was deleted.
 </p>
 <dt><a name="DB_FIRST">DB_FIRST</a><dd>The cursor is set to refer to the first key/data pair of the database,
 and that pair is returned.  If the first key has duplicate values, the
 first data item in the set of duplicates is returned.
-<p>If the database is a Queue or Recno database, DBcursor-&gt;c_get using the
+<p>If the database is a Queue or Recno database, DBcursor-&gt;get using the
 DB_FIRST flag will ignore any keys that exist but were never
 explicitly created by the application, or were created and later
 deleted.</p>
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_FIRST is set and the database is empty.
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_FIRST is set and the database is empty.
 </p>
 <dt><a name="DB_GET_BOTH">DB_GET_BOTH</a><dd>The DB_GET_BOTH flag is identical to the DB_SET flag,
 except that both the key and the data parameters must be matched by the
 key and data item in the database.
-<p>When used with the DBcursor-&gt;c_pget method version of this method on a
+<p>When used with the DBcursor-&gt;pget method version of this method on a
 secondary index handle, both the secondary and primary keys must be
 matched by the secondary and primary key item in the database.  It is
-an error to use the DB_GET_BOTH flag with the DBcursor-&gt;c_get
+an error to use the DB_GET_BOTH flag with the DBcursor-&gt;get
 version of this method and a cursor that has been opened on a secondary
 index handle.</p>
 <dt><a name="DB_GET_BOTH_RANGE">DB_GET_BOTH_RANGE</a><dd>The DB_GET_BOTH_RANGE flag is identical to the DB_GET_BOTH
@@ -94,9 +93,9 @@ will be returned in <b>data</b>, as described in <a href="../api_c/dbt_class.htm
 of type Btree, and it must have been created with the <a href="../api_c/db_set_flags.html#DB_RECNUM">DB_RECNUM</a>
 flag.</p>
 <p>When called on a cursor opened on a database that has been made into a
-secondary index, the DBcursor-&gt;c_get and DBcursor-&gt;c_pget methods return the
+secondary index, the DBcursor-&gt;get and DBcursor-&gt;pget methods return the
 record number of the primary database in <b>data</b>.  In addition, the
-DBcursor-&gt;c_pget method returns the record number of the secondary index in
+DBcursor-&gt;pget method returns the record number of the secondary index in
 <b>pkey</b>.  If either underlying database is not of type Btree or is
 not created with the <a href="../api_c/db_set_flags.html#DB_RECNUM">DB_RECNUM</a> flag, the out-of-band record
 number of 0 is returned.</p>
@@ -108,68 +107,74 @@ been returned from the <a href="../api_c/db_join.html">DB-&gt;join</a> method.</
 <dt><a name="DB_LAST">DB_LAST</a><dd>The cursor is set to refer to the last key/data pair of the database,
 and that pair is returned.  If the last key has duplicate values, the
 last data item in the set of duplicates is returned.
-<p>If the database is a Queue or Recno database, DBcursor-&gt;c_get using the
+<p>If the database is a Queue or Recno database, DBcursor-&gt;get using the
 DB_LAST flag will ignore any keys that exist but were never
 explicitly created by the application, or were created and later
 deleted.</p>
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_LAST is set and the database is empty.
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_LAST is set and the database is empty.
 </p>
 <dt><a name="DB_NEXT">DB_NEXT</a><dd>If the cursor is not yet initialized, DB_NEXT is identical to
 DB_FIRST.  Otherwise, the cursor is moved to the next key/data
 pair of the database, and that pair is returned.  In the presence of
 duplicate key values, the value of the key may not change.
-<p>If the database is a Queue or Recno database, DBcursor-&gt;c_get using the
+<p>If the database is a Queue or Recno database, DBcursor-&gt;get using the
 DB_NEXT flag will skip any keys that exist but were never
 explicitly created by the application, or those that were created and
 later deleted.</p>
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT is set and the cursor is already on the last record
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT is set and the cursor is already on the last record
 in the database.
 </p>
 <dt><a name="DB_NEXT_DUP">DB_NEXT_DUP</a><dd>If the next key/data pair of the database is a duplicate data record for
 the current key/data pair, the cursor is moved to the next key/data pair
 of the database, and that pair is returned.
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_DUP is set and the next key/data pair of the
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_DUP is set and the next key/data pair of the
 database is not a duplicate data record for the current key/data pair.
 </p>
 <dt><a name="DB_NEXT_NODUP">DB_NEXT_NODUP</a><dd>If the cursor is not yet initialized, DB_NEXT_NODUP is identical
 to DB_FIRST.  Otherwise, the cursor is moved to the next
 non-duplicate key of the database, and that key/data pair is returned.
-<p>If the database is a Queue or Recno database, DBcursor-&gt;c_get using the
+<p>If the database is a Queue or Recno database, DBcursor-&gt;get using the
 DB_NEXT_NODUP flag will ignore any keys that exist but were
 never explicitly created by the application, or those that were created
 and later deleted.</p>
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_NODUP is set and no non-duplicate key/data pairs
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_NEXT_NODUP is set and no non-duplicate key/data pairs
 occur after the cursor position in the database.
 </p>
 <dt><a name="DB_PREV">DB_PREV</a><dd>If the cursor is not yet initialized, DB_PREV is identical to
 DB_LAST.  Otherwise, the cursor is moved to the previous
 key/data pair of the database, and that pair is returned.  In the
 presence of duplicate key values, the value of the key may not change.
-<p>If the database is a Queue or Recno database, DBcursor-&gt;c_get using the
+<p>If the database is a Queue or Recno database, DBcursor-&gt;get using the
 DB_PREV flag will skip any keys that exist but were never
 explicitly created by the application, or those that were created and
 later deleted.</p>
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV is set and the cursor is already on the first record
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV is set and the cursor is already on the first record
 in the database.
+</p>
+<dt><a name="DB_PREV_DUP">DB_PREV_DUP</a><dd>If the previous key/data pair of the database is a duplicate data record
+for the current key/data pair, the cursor is moved to the previous key/data
+pair of the database, and that pair is returned.
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV_DUP is set and the previous key/data pair of the
+database is not a duplicate data record for the current key/data pair.
 </p>
 <dt><a name="DB_PREV_NODUP">DB_PREV_NODUP</a><dd>If the cursor is not yet initialized, DB_PREV_NODUP is identical
 to DB_LAST.  Otherwise, the cursor is moved to the previous
 non-duplicate key of the database, and that key/data pair is returned.
-<p>If the database is a Queue or Recno database, DBcursor-&gt;c_get using the
+<p>If the database is a Queue or Recno database, DBcursor-&gt;get using the
 DB_PREV_NODUP flag will ignore any keys that exist but were
 never explicitly created by the application, or those that were created
 and later deleted.</p>
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV_NODUP is set and no non-duplicate key/data pairs
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV_NODUP is set and no non-duplicate key/data pairs
 occur before the cursor position in the database.
 </p>
 <dt><a name="DB_SET">DB_SET</a><dd>Move the cursor to the specified key/data pair of the database, and
 return the datum associated with the given key.
-<p>The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_SET is set and
+<p>The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_SET is set and
 no matching keys are found.
-The DBcursor-&gt;c_get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if DB_SET is set and the database is a
+The DBcursor-&gt;get method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if DB_SET is set and the database is a
 Queue or Recno database, and the specified key exists, but was never
 explicitly created by the application or was later deleted.
-In the presence of duplicate key values, DBcursor-&gt;c_get will return the
+In the presence of duplicate key values, DBcursor-&gt;get will return the
 first data item for the given key.
 </p>
 <dt><a name="DB_SET_RANGE">DB_SET_RANGE</a><dd>The DB_SET_RANGE flag is identical to the DB_SET flag,
@@ -190,9 +195,10 @@ flag.</p>
 In addition, the following flags may be set by
 bitwise inclusively <b>OR</b>'ing them into the <b>flags</b> parameter:
 <dl compact>
-<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Read modified but not yet committed data.  Silently ignored if the
-<a href="../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
-database was opened.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Database items read during a transactional call will have degree 1
+isolation, including modified but not yet committed data.  Silently
+ignored if the <a href="../api_c/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when
+the underlying database was opened.
 <dt><a name="DB_MULTIPLE">DB_MULTIPLE</a><dd>Return multiple data items in the <b>data</b> parameter.
 <p>In the case of Btree or Hash databases, duplicate data items for the
 current key, starting at the current cursor position, are entered into
@@ -262,17 +268,18 @@ DB_NEXT_NODUP, DB_SET, DB_SET_RANGE, and
 DB_SET_RECNO options.  The DB_MULTIPLE_KEY flag may not
 be used when accessing databases made into secondary indices using the
 <a href="../api_c/db_associate.html">DB-&gt;associate</a> method.</p>
-<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
-Setting this flag can eliminate deadlock during a read-modify-write
-cycle by acquiring the write lock during the read part of the cycle so
-that another thread of control acquiring a read lock for the same item,
-in its own read-modify-write cycle, will not result in deadlock.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the read, if
+locking is configured.  Setting this flag can eliminate deadlock during
+a read-modify-write cycle by acquiring the write lock during the read
+part of the cycle so that another thread of control acquiring a read
+lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
 </dl>
 <dt><b>key</b><dd>The key <a href="../api_c/dbt_class.html">DBT</a> operated on.
 <dt><b>pkey</b><dd>The secondary index key <a href="../api_c/dbt_class.html">DBT</a> operated on.
 </dl>
 <h3>Errors</h3>
-<p>The DBcursor-&gt;c_get method
+<p>The DBcursor-&gt;get method
 may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>DB_BUFFER_SMALL<dd>The requested item could not be returned due to undersized buffer.
@@ -292,9 +299,9 @@ unrolled a committed transaction.
 <dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
 </dl>
 <dl compact>
-<dt>EINVAL<dd>If the DB_CURRENT or DB_NEXT_DUP flags were specified and
-the cursor has not been initialized;
-the DBcursor-&gt;c_pget method was called with a cursor that does not refer to a
+<dt>EINVAL<dd>If the DB_CURRENT, DB_NEXT_DUP or DB_PREV_DUP flags
+were specified and the cursor has not been initialized;
+the DBcursor-&gt;pget method was called with a cursor that does not refer to a
 secondary index; or if an
 invalid flag value or parameter was specified.
 </dl>
@@ -307,6 +314,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,250 @@
+m4_comment([$Id: app.so,v 10.9 2005/12/01 03:18:51 bostic Exp $])
+
+m4_ref_title(m4_cam Applications,
+    Architecting Data Store and Concurrent Data Store applications,,
+    cam/fail, transapp/intro)
+
+m4_p([dnl
+When building Data Store and Concurrent Data Store applications, the
+architecture decisions involve application startup (cleaning up any
+existing databases, the removal of any existing database environment
+and creation of a new environment), and handling system or application
+failure.  "Cleaning up" databases involves removal and re-creation
+of the database, restoration from an archival copy and/or verification
+and optional salvage, as described in m4_link(fail, [Handling failure
+in Data Store and Concurrent Data Store applications]).])
+
+m4_p([dnl
+Data Store or Concurrent Data Store applications without database
+environments are single process, by definition.  These applications
+should start up, re-create, restore, or verify and optionally salvage
+their databases and run until eventual exit or application or system
+failure.  After system or application failure, that process can simply
+repeat this procedure.  This document will not discuss the case of these
+applications further.])
+
+m4_p([dnl
+Otherwise, the first question of Data Store and Concurrent Data Store
+architecture is the cleaning up existing databases and the removal of
+existing database environments, and the subsequent creation of a new
+environment.  For obvious reasons, the application must serialize the
+re-creation, restoration, or verification and optional salvage of its
+databases.  Further, environment removal and creation must be
+single-threaded, that is, one thread of control (where a thread of
+control is either a true thread or a process) must remove and re-create
+the environment before any other thread of control can use the new
+environment.  It may simplify matters that m4_db serializes creation of
+the environment, so multiple threads of control attempting to create a
+environment will serialize behind a single creating thread.])
+
+m4_p([dnl
+Removing a database environment will first mark the environment as
+"failed", causing any threads of control still running in the
+environment to fail and return to the application.  This feature allows
+applications to remove environments without concern for threads of
+control that might still be running in the removed environment.])
+
+m4_p([dnl
+One consideration in removing a database environment which may be in use
+by another thread, is the type of mutex being used by the m4_db library.
+In the case of database environment failure when using test-and-set
+mutexes, threads of control waiting on a mutex when the environment is
+marked "failed" will quickly notice the failure and will return an error
+from the m4_db API.  In the case of environment failure when using
+blocking mutexes, where the underlying system mutex implementation does
+not unblock mutex waiters after the thread of control holding the mutex
+dies, threads waiting on a mutex when an environment is recovered might
+hang forever.  Applications blocked on events (for example, an
+application blocked on a network socket or a GUI event) may also fail
+to notice environment recovery within a reasonable amount of time.
+Systems with such mutex implementations are rare, but do exist;
+applications on such systems should use an application architecture
+where the thread recovering the database environment can explicitly
+terminate any process using the failed environment, or configure m4_db
+for test-and-set mutexes, or incorporate some form of long-running timer
+or watchdog process to wake or kill blocked processes should they block
+for too long.])
+
+m4_p([dnl
+Regardless, it makes little sense for multiple threads of control to
+simultaneously attempt to remove and re-create a environment, since the
+last one to run will remove all environments created by the threads of
+control that ran before it.  However, for some few applications, it may
+make sense for applications to have a single thread of control that
+checks the existing databases and removes the environment, after which
+the application launches a number of processes, any of which are able
+to create the environment.])
+
+m4_p([dnl
+With respect to cleaning up existing databases, the database environment
+must be removed before the databases are cleaned up.  Removing the
+environment causes any m4_db library calls made by threads of control
+running in the failed environment to return failure to the application.
+Removing the database environment first ensures the threads of control
+in the old environment do not race with the threads of control cleaning
+up the databases, possibly overwriting them after the cleanup has
+finished.  Where the application architecture and system permit, many
+applications kill all threads of control running in the failed database
+environment before removing the failed database environment, on general
+principles as well as to minimize overall system resource usage.  It
+does not matter if the new environment is created before or after the
+databases are cleaned up.])
+
+m4_p([dnl
+After having dealt with database and database environment recovery after
+failure, the next issue to manage is application failure.  As described
+in m4_link(fail, [Handling failure in Data Store and Concurrent Data
+Store applications]), when a thread of control in a Data Store or
+Concurrent Data Store application fails, it may exit holding data
+structure mutexes or logical database locks.  These mutexes and locks
+must be released to avoid the remaining threads of control hanging
+behind the failed thread of control's mutexes or locks.])
+
+m4_p([dnl
+There are three common ways to architect m4_db Data Store and Concurrent
+Data Store applications.  The one chosen is usually based on whether or
+not the application is comprised of a single process or group of
+processes descended from a single process (for example, a server started
+when the system first boots), or if the application is comprised of
+unrelated processes (for example, processes started by web connections
+or users logging into the system).])
+
+m4_nlistbegin
+m4_nlist([dnl
+The first way to architect Data Store and Concurrent Data Store
+applications is as a single process (the process may or may not be
+multithreaded.)
+
+m4_p([dnl
+When this process starts, it removes any existing database environment
+and creates a new environment.  It then cleans up the databases and
+opens those databases in the environment.  The application can
+subsequently create new threads of control as it chooses.  Those threads
+of control can either share already open m4_db m4_ref(DbEnv) and
+m4_ref(Db) handles, or create their own.  In this architecture,
+databases are rarely opened or closed when more than a single thread of
+control is running; that is, they are opened when only a single thread
+is running, and closed after all threads but one have exited.  The last
+thread of control to exit closes the databases and the database
+environment.])
+
+m4_p([dnl
+This architecture is simplest to implement because thread serialization
+is easy and failure detection does not require monitoring multiple
+processes.])
+
+m4_p([dnl
+If the application's thread model allows the process to continue after
+thread failure, the m4_refT(dbenv_failchk) can be used to determine if
+the database environment is usable after the failure.  If the
+application does not call m4_ref(dbenv_failchk), or
+m4_ref(dbenv_failchk) returns m4_ref(DB_RUNRECOVERY), the application
+must behave as if there has been a system failure, removing the
+environment and creating a new environment, and cleaning up any
+databases it wants to continue to use.  Once these actions have been
+taken, other threads of control can continue (as long as all existing
+m4_db handles are first discarded), or restarted.])])
+
+m4_nlist([dnl
+The second way to architect Data Store and Concurrent Data Store
+applications is as a group of related processes (the processes may or
+may not be multithreaded).
+
+m4_p([dnl
+This architecture requires the order in which threads of control are
+created be controlled to serialize database environment removal and
+creation, and database cleanup.])
+
+m4_p([dnl
+In addition, this architecture requires that threads of control be
+monitored.  If any thread of control exits with open m4_db handles, the
+application may call the m4_refT(dbenv_failchk) to determine if the
+database environment is usable after the exit.  If the application does
+not call m4_ref(dbenv_failchk), or m4_ref(dbenv_failchk) returns
+m4_ref(DB_RUNRECOVERY), the application must behave as if there has been
+a system failure, removing the environment and creating a new
+environment, and cleaning up any databases it wants to continue to use.
+Once these actions have been taken, other threads of control can
+continue (as long as all existing m4_db handles are first discarded),
+or restarted.])
+
+m4_p([dnl
+The easiest way to structure groups of related processes is to first
+create a single "watcher" process (often a script) that starts when the
+system first boots, removes and creates the database environment, cleans
+up the databases and then creates the processes or threads that will
+actually perform work.  The initial thread has no further
+responsibilities other than to wait on the threads of control it has
+started, to ensure none of them unexpectedly exit.  If a thread of
+control exits, the watcher process optionally calls the
+m4_refT(dbenv_failchk).  If the application does not call
+m4_ref(dbenv_failchk) or if m4_ref(dbenv_failchk) returns
+m4_ref(DB_RUNRECOVERY), the environment can no longer be used, the
+watcher kills all of the threads of control using the failed
+environment, cleans up, and starts new threads of control to perform
+work.])])
+
+m4_nlist([dnl
+The third way to architect Data Store and Concurrent Data Store
+applications is as a group of unrelated processes (the processes may or
+may not be multithreaded).  This is the most difficult architecture to
+implement because of the level of difficulty in some systems of finding
+and monitoring unrelated processes.
+
+m4_p([dnl
+One solution is to log a thread of control ID when a new m4_db handle
+is opened.  For example, an initial "watcher" process could open/create
+the database environment, clean up the databases and then create a
+sentinel file.  Any "worker" process wanting to use the environment
+would check for the sentinel file.  If the sentinel file does not exist,
+the worker would fail or wait for the sentinel file to be created.  Once
+the sentinel file exists, the worker would register its process ID with
+the watcher (via shared memory, IPC or some other registry mechanism),
+and then the worker would open its m4_ref(DbEnv) handles and proceed.
+When the worker finishes using the environment, it would unregister its
+process ID with the watcher.  The watcher periodically checks to ensure
+that no worker has failed while using the environment.  If a worker
+fails while using the environment, the watcher removes the sentinel
+file, kills all of the workers currently using the environment, cleans
+up the environment and databases, and finally creates a new sentinel
+file.])
+
+m4_p([dnl
+The weakness of this approach is that, on some systems, it is difficult
+to determine if an unrelated process is still running.  For example,
+POSIX systems generally disallow sending signals to unrelated processes.
+The trick to monitoring unrelated processes is to find a system resource
+held by the process that will be modified if the process dies.  On POSIX
+systems, flock- or fcntl-style locking will work, as will LockFile on
+Windows systems.  Other systems may have to use other process-related
+information such as file reference counts or modification times.  In the
+worst case, threads of control can be required to periodically
+re-register with the watcher process: if the watcher has not heard from
+a thread of control in a specified period of time, the watcher will take
+action, cleaning up the environment.])
+
+m4_p([dnl
+If it is not practical to monitor the processes sharing a database
+environment, it may be possible to monitor the environment to detect if
+a thread of control has failed holding open m4_db handles.  This would
+be done by having a "watcher" process periodically call the
+m4_refT(dbenv_failchk).  If m4_ref(dbenv_failchk) returns
+m4_ref(DB_RUNRECOVERY), the watcher would then take action, cleaning up
+the environment.])
+
+m4_p([dnl
+The weakness of this approach is that all threads of control using the
+environment must specify an "ID" function and an "is-alive" function
+using the m4_refT(dbenv_set_thread_id).  (In other words, the m4_db
+library must be able to assign a unique ID to each thread of control,
+and additionally determine if the thread of control is still running.
+It can be difficult to portably provide that information in applications
+using a variety of different programming languages and running on a
+variety of different platforms.)])]) m4_nlistend
+
+m4_p([dnl
+Obviously, when implementing a process to monitor other threads of
+control, it is important the watcher process' code be as simple and
+well-tested as possible, because the application may hang if it fails.])
+
+m4_page_footer

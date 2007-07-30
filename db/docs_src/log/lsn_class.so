@@ -1,0 +1,21 @@
+m4_comment([$Id: lsn_class.so,v 10.21 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, DbLsn)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbLsn),
+ifelse(M4API, C_API, [dnl
+typedef struct __db_lsn DB_LSN;
+])
+ifelse(M4API, CXX_API, [dnl
+class DbLsn : public DB_LSN { ... };
+]))
+
+m4_p([dnl
+The m4_ref(DbLsn) object is a m4_bold([log sequence number]) which
+specifies a unique location in a log file.  A m4_ref(DbLsn) consists of
+two unsigned 32-bit integers -- one specifies the log file number, and
+the other specifies an offset in the log file.])
+
+m4_seealso(DbLog)
+m4_page_footer

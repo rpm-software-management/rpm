@@ -1,0 +1,132 @@
+m4_comment([$Id: errorret.so,v 10.49 2006/08/25 18:22:01 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[DB_KEYEMPTY, DB_KEYEXIST, DB_LOCK_DEADLOCK, DB_LOCK_NOTGRANTED,
+	DB_NOTFOUND, DB_RUNRECOVERY])
+
+m4_ref_title(Programmer Notes,
+    Error returns to applications,
+    @error returns, program/appsignals, program/environ)
+
+m4_p([dnl
+Except for the historic m4_ref(dbm), m4_ref(ndbm), and m4_ref(hsearch)
+interfaces, m4_db does not use the global variable m4_envvar(errno) to
+return error values.  The return values for all m4_db functions are
+grouped into the following three categories:])
+
+m4_tagbegin
+m4_tag(0, [A return value of 0 indicates that the operation was successful.])
+
+m4_tag([__GT__ 0], [dnl
+A return value that is greater than 0 indicates that there was a system
+error.  The m4_bold(errno) value returned by the system is returned by
+the function; for example, when a m4_db function is unable to allocate
+memory, the return value from the function will be ENOMEM.])
+
+m4_tag([__LT__ 0], [dnl
+A return value that is less than 0 indicates a condition that was not
+a system failure, but was not an unqualified success, either.  For
+example, a routine to retrieve a key/data pair from the database may
+return m4_ref(DB_NOTFOUND) when the key/data pair does not appear in
+the database; as opposed to the value of 0, which would be returned if
+the key/data pair were found in the database.
+m4_p([dnl
+m4_idefz(error name space)
+All values returned by m4_db functions are less than 0 in order to avoid
+conflict with possible values of m4_bold(errno).  Specifically, m4_db
+reserves all values from -30,800 to -30,999 to itself as possible error
+values.  There are a few m4_db interfaces where it is possible for an
+application function to be called by a m4_db function and subsequently
+fail with an application-specific return.  Such failure returns will be
+passed back to the function that originally called a m4_db interface.
+To avoid ambiguity about the cause of the error, error values separate
+from the m4_db error name space should be used.])])
+m4_tagend
+
+m4_p([dnl
+Although possible error returns are specified by each individual function's
+manual page, there are a few error returns that deserve general mention:])
+
+m4_section(m4_idef(DB_NOTFOUND) and m4_idef(DB_KEYEMPTY))
+m4_p([dnl
+There are two special return values that are similar in meaning and that
+are returned in similar situations, and therefore might be confused:
+m4_ref(DB_NOTFOUND) and m4_ref(DB_KEYEMPTY).])
+
+m4_p([dnl
+The m4_ref(DB_NOTFOUND) error return indicates that the requested key/data
+pair did not exist in the database or that start-of- or end-of-file has
+been reached by a cursor.])
+
+m4_p([dnl
+The m4_ref(DB_KEYEMPTY) error return indicates that the requested
+key/data pair logically exists but was never explicitly created by the
+application (the Recno and Queue access methods will automatically
+create key/data pairs under some circumstances; see m4_ref(dbh_open)
+for more information), or that the requested key/data pair was deleted
+and never re-created.  In addition, the Queue access method will return
+m4_ref(DB_KEYEMPTY) for records that were created as part of a
+transaction that was later aborted and never re-created.])
+
+m4_section(m4_idef(DB_KEYEXIST))
+m4_p([dnl
+The m4_ref(DB_KEYEXIST) error return indicates the m4_ref(DB_NOOVERWRITE)
+option was specified when inserting a key/data pair into the database and
+the key already exists in the database, or the m4_ref(DB_NODUPDATA)
+option was specified and the key/data pair already exists in the data.])
+
+m4_idefz(DB_LOCK_DEADLOCK)
+m4_section(m4_idef(DB_LOCK_DEADLOCK))
+m4_p([dnl
+When multiple threads of control are modifying the database, there is
+normally the potential for deadlock. In m4_db, deadlock is signified by
+an error return from the m4_db function of the value
+m4_ref(DB_LOCK_DEADLOCK).  Whenever a m4_db function returns
+m4_ref(DB_LOCK_DEADLOCK), the enclosing transaction should be aborted.])
+
+m4_p([dnl
+Any m4_db function that attempts to acquire locks can potentially return
+m4_ref(DB_LOCK_DEADLOCK).  Practically speaking, the safest way to deal
+with applications that can deadlock is to anticipate a
+m4_ref(DB_LOCK_DEADLOCK) return from any m4_ref(Db) or m4_ref(Dbc)
+handle method call, or any m4_ref(DbEnv) handle method call that
+references a database, including the database's backing physical file.])
+
+m4_section(m4_idef(DB_LOCK_NOTGRANTED))
+m4_p([dnl
+If a lock is requested from the m4_ref(lock_get) or m4_refT(lock_vec)s
+with the m4_ref(DB_LOCK_NOWAIT) flag specified, the method will return
+m4_ref(DB_LOCK_NOTGRANTED) if the lock is not immediately available.])
+m4_p([dnl
+If the m4_ref(DB_TIME_NOTGRANTED) flag is specified to the
+m4_refT(dbenv_set_flags), database calls timing out based on lock or
+transaction timeout values will return m4_ref(DB_LOCK_NOTGRANTED)
+instead of m4_ref(DB_LOCK_DEADLOCK).])
+
+m4_section(m4_idef(DB_RUNRECOVERY))
+m4_p([dnl
+There exists a class of errors that m4_db considers fatal to an entire
+m4_db environment.  An example of this type of error is a corrupted
+database page.  The only way to recover from these failures is to have
+all threads of control exit the m4_db environment, run recovery of the
+environment, and re-enter m4_db. (It is not strictly necessary that the
+processes exit, although that is the only way to recover system
+resources, such as file descriptors and memory, allocated by m4_db.)])
+
+m4_p([dnl
+When this type of error is encountered, the error value
+m4_ref(DB_RUNRECOVERY) is returned. This error can be returned by any
+m4_db interface.  Once m4_ref(DB_RUNRECOVERY) is returned by any
+interface, it will be returned from all subsequent m4_db calls made by
+any threads of control participating in the environment.])
+
+m4_p([dnl
+Applications can handle such fatal errors in one of two ways: first, by
+checking for m4_ref(DB_RUNRECOVERY) as part of their normal m4_db error
+return checking, similarly to m4_ref(DB_LOCK_DEADLOCK) or any other
+error.  Alternatively, applications can specify a fatal-error callback
+function using the m4_refT(dbenv_set_event_notify).  Applications with
+no cleanup processing of their own should simply exit from the callback
+function.])
+
+m4_page_footer

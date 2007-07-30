@@ -1,0 +1,17 @@
+m4_comment([$Id: priority.so,v 1.2 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: DB-__GT__set_cache_priority,,
+    upgrade.4.2/del, upgrade.4.2/verify)
+
+m4_p([dnl
+In previous releases, applications set the priority of a database's
+pages in the m4_db buffer cache with the DB-__GT__set_cache_priority
+method.  This method is no longer available.  Applications wanting to
+set database page priorities in the buffer cache should use the
+m4_refT(memp_set_priority) instead.  The new call takes the same
+arguments and behaves identically to the old call, except that a
+m4_ref(DbMpoolFile) buffer cache file handle is used instead of the
+m4_ref(Db) database handle.])
+
+m4_page_footer

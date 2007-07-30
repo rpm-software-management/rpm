@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: tcl_lock.c,v 12.6 2006/08/24 14:46:33 bostic Exp $
+ * $Id: tcl_lock.c,v 12.12 2007/06/22 17:39:08 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <tcl.h>
 #endif
 #include "dbinc/tcl_db.h"
@@ -238,6 +237,7 @@ tcl_LockStat(interp, objc, objv, envp)
 	 * list pairs and free up the memory.
 	 */
 	res = Tcl_NewObj();
+#ifdef HAVE_STATISTICS
 	/*
 	 * MAKE_STAT_LIST assumes 'res' and 'error' label.
 	 */
@@ -265,10 +265,22 @@ tcl_LockStat(interp, objc, objv, envp)
 	MAKE_STAT_LIST("Deadlocks detected", sp->st_ndeadlocks);
 	MAKE_STAT_LIST("Number of region lock waits", sp->st_region_wait);
 	MAKE_STAT_LIST("Number of region lock nowaits", sp->st_region_nowait);
+	MAKE_STAT_LIST("Number of object allocation waits", sp->st_objs_wait);
+	MAKE_STAT_LIST("Number of object allocation nowaits",
+	    sp->st_objs_nowait);
+	MAKE_STAT_LIST("Number of locker allocation waits",
+	    sp->st_lockers_wait);
+	MAKE_STAT_LIST("Number of locker allocation nowaits",
+	    sp->st_lockers_nowait);
+	MAKE_STAT_LIST("Number of lock allocation waits", sp->st_locks_wait);
+	MAKE_STAT_LIST(
+	    "Number of lock allocation nowaits", sp->st_locks_nowait);
+	MAKE_STAT_LIST("Maximum hash bucket length", sp->st_hash_len);
 	MAKE_STAT_LIST("Lock timeout value", sp->st_locktimeout);
 	MAKE_STAT_LIST("Number of lock timeouts", sp->st_nlocktimeouts);
 	MAKE_STAT_LIST("Transaction timeout value", sp->st_txntimeout);
 	MAKE_STAT_LIST("Number of transaction timeouts", sp->st_ntxntimeouts);
+#endif
 	Tcl_SetObjResult(interp, res);
 error:
 	__os_ufree(envp, sp);

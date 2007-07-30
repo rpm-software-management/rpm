@@ -1,6 +1,5 @@
-<!--$Id: rep_elect.so,v 1.24 2006/06/23 01:28:47 alanb Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: rep_elect.so,v 1.26 2007/03/20 20:20:26 alanb Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -24,7 +23,7 @@
 <p>
 int
 DB_ENV-&gt;rep_elect(DB_ENV *env,
-    int nsites, int nvotes, int *envid, u_int32_t flags);
+    int nsites, int nvotes, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;rep_elect</h3>
@@ -35,19 +34,19 @@ applications.  It should only be called by applications implementing
 their own network transport layer, explicitly holding replication group
 elections and handling replication messages outside of the replication
 manager framework.</p>
-<p>If the election is successful, the new master's ID may be the ID of the
-previous master, or the ID of the current replication site.  The
+<p>If the election is successful, Berkeley DB will notify the application of
+the results of the election by means of either the
+<a href="../api_c/env_event_notify.html#DB_EVENT_REP_ELECTED">DB_EVENT_REP_ELECTED</a> or <a href="../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> events
+(see <a href="../api_c/env_event_notify.html">DB_ENV-&gt;set_event_notify</a> method for more information).  The
 application is responsible for adjusting its relationship to the other
-database environments in the replication group, including directing all
-database updates to the newly selected master, in accordance with the
-results of this election.</p>
+database environments in the replication group, including directing
+all database updates to the newly selected master, in accordance with
+the results of the election.</p>
 <p>The thread of control that calls the DB_ENV-&gt;rep_elect method must not be the
 thread of control that processes incoming messages; processing the
 incoming messages is necessary to successfully complete an election.</p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>envid</b><dd>The <b>envid</b> parameter references memory into which
- the newly elected master's ID is copied. 
 <dt><b>nsites</b><dd>The <b>nsites</b> parameter specifies the number of replication sites
 expected to participate in the election.  Once the current site has
 election information from that many sites, it will short-circuit the
@@ -92,7 +91,10 @@ sites all restarting at the same time, it makes more sense to set
 known missing site.  Furthermore, in order to ensure the best choice
 from among sites that may take longer to boot than the local site,
 setting <b>nvotes</b> also to this same total number of sites will
-guarantee that every site in the group is considered.  (See the
+guarantee that every site in the group is considered.  Alternatively,
+using the special timeout for full elections allows full participation
+on restart but allows election of a master if one site does not
+reboot and rejoin the group in a reasonable amount of time. (See the
 <a href="../ref/rep/elect.html">Elections</a>
 section in the Berkeley DB Reference Guide for more information.)</p>
 <p>Setting <b>nsites</b> to lower values can increase the speed of an
@@ -116,6 +118,6 @@ complete the election in the election timeout period (see
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,6 +1,7 @@
 __APIREL__/utility/berkeley_db_svc.html__OCT__2 utility to support @RPC client/server
 __APIREL__/utility/db_archive.html__OCT__2 utility to @archive log files
 __APIREL__/utility/db_checkpoint.html__OCT__2 utility to take @checkpoints
+__APIREL__/utility/db_codegen.html__OCT__2 @code generation utility
 __APIREL__/utility/db_deadlock.html__OCT__2 utility to detect @deadlocks
 __APIREL__/utility/db_dump.html__OCT__2 utility to @dump databases as text files
 __APIREL__/utility/db_hotbackup.html__OCT__2 utility to hot @backup database environments

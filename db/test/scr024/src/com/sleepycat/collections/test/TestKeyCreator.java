@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: TestKeyCreator.java,v 12.3 2006/08/24 14:46:47 bostic Exp $
+ * $Id: TestKeyCreator.java,v 12.5 2007/05/04 00:28:29 mark Exp $
  */
 
 package com.sleepycat.collections.test;

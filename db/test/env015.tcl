@@ -1,15 +1,13 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2006,2007 Oracle.  All rights reserved.
 #
-# $Id: env015.tcl,v 12.4 2006/09/13 13:26:05 mjc Exp $
+# $Id: env015.tcl,v 12.7 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	env015
 # TEST	Rename the underlying directory of an env, make sure everything
 # TEST	still works.  Test runs with regular named databases and with
 # TEST	in-memory named databases.
-
 proc env015 { } {
 	source ./include.tcl
 
@@ -35,6 +33,11 @@ proc env015 { } {
 			error_check_good db_put [$db put $i $i] 0
 		}
 
+		# When the database is on disk, we have a file handle open
+		# during the attempt to rename the directory.  As far as we
+		# can tell, Windows doesn't allow this (that is, Windows
+		# doesn't allow directories to be renamed when there is an
+		# open handle inside them).
 		puts "\tEnv015.b: Rename directory."
 		if { $is_windows_test } {
 			file mkdir $newdir
@@ -51,11 +54,12 @@ proc env015 { } {
 		}
 
 		puts "\tEnv015.d: Can't open database in old directory."
-		catch {set db2 \
-		    [eval {berkdb_open} -env $env -btree $testdir/$testfile]} db2
+		catch {set db2 [eval \
+		    {berkdb_open} -env $env -btree $testdir/$testfile]} db2
 		error_check_bad open_fails [is_valid_db $db2] TRUE
 
-		puts "\tEnv015.e: Recreate directory with original name and use it."
+		puts \
+	    "\tEnv015.e: Recreate directory with original name and use it."
 		file mkdir $testdir
 		set newenv [berkdb_env -create -mode 0644 -home $testdir]
 		error_check_good newenv [is_valid_env $env] TRUE
@@ -77,4 +81,3 @@ proc env015 { } {
 		fileremove -f $newdir
 	}
 }
-

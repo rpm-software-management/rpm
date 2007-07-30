@@ -1,0 +1,77 @@
+m4_comment([$Id: install.so,v 10.18 2006/10/05 01:06:05 bostic Exp $])
+
+define(__m4_product_name, m4_db)
+define(__m4_directory, build_unix)
+define(__m4_install_directory, BerkeleyDB)
+
+m4_ref_title(Building __m4_product_name for UNIX/POSIX systems,
+    Installing __m4_product_name,
+    @installing __m4_product_name for UNIX systems,
+    __m4_directory/flags, __m4_directory/shlib)
+
+m4_p([dnl
+__m4_product_name installs the following files into the following locations,
+with the following default values:])
+
+m4_table_begin(, _center)
+m4_table_header(Configuration Variables, Default value)
+m4_table_element(--prefix,
+    /usr/local/__m4_install_directory[.]m4_bold(Major).m4_bold(Minor))
+m4_table_element(--exec_prefix, $(prefix))
+m4_table_element(--bindir, $(exec_prefix)/bin)
+m4_table_element(--includedir, $(prefix)/include)
+m4_table_element(--libdir, $(exec_prefix)/lib)
+m4_table_element(docdir, $(prefix)/docs)
+m4_table_header(Files, Default location)
+m4_table_element(include files, $(includedir))
+m4_table_element(libraries, $(libdir))
+m4_table_element(utilities, $(bindir))
+m4_table_element(documentation, $(docdir))
+m4_table_end
+
+m4_p([dnl
+With one exception, this follows the GNU Autoconf and GNU Coding
+Standards installation guidelines; please see that documentation for
+more information and rationale.])
+
+m4_p([dnl
+The single exception is the __m4_product_name documentation.  The
+__m4_product_name documentation is provided in HTML format, not in
+UNIX-style man or GNU info format.  For this reason, __m4_product_name
+configuration does not support m4_bold(--infodir) or m4_bold(--mandir).
+To change the default installation location for the __m4_product_name
+documentation, modify the Makefile variable, m4_bold(docdir).])
+
+m4_p([dnl
+When installing __m4_product_name on filesystems shared by machines of
+different architectures, please note that although __m4_product_name
+include files are installed based on the value of $(prefix), rather than
+$(exec_prefix), the __m4_product_name include files are not always
+architecture independent.])
+
+m4_p([dnl
+To move the entire installation tree to somewhere besides
+m4_bold(/usr/local), change the value of m4_bold(prefix).])
+
+m4_p([dnl
+To move the binaries and libraries to a different location, change the
+value of m4_bold(exec_prefix).  The values of m4_bold(includedir) and
+m4_bold(libdir) may be similarly changed.])
+
+m4_p([dnl
+Any of these values except for m4_bold(docdir) may be set as part of
+the configuration:])
+
+m4_indent([prompt: ../dist/configure --bindir=/usr/local/bin])
+
+m4_p([dnl
+Any of these values, including m4_bold(docdir), may be changed when doing
+the install itself:])
+
+m4_indent([prompt: make prefix=/usr/contrib/bdb install])
+
+m4_p([dnl
+The __m4_product_name installation process will attempt to create any
+directories that do not already exist on the system.])
+
+m4_page_footer

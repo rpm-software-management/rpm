@@ -1,0 +1,84 @@
+m4_comment([$Id: env_set_encrypt.so,v 10.23 2004/09/28 15:04:20 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_set_encrypt)])
+define(M4GETINTERFACE, ifelse(M4INTERFACE,
+    dbenv_set_encrypt, dbenv_get_encrypt_flags, dbh_get_encrypt_flags))
+
+define(M4PAGELOCAL, [M4INTERFACE, M4GETINTERFACE])
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_set_encrypt, [dnl
+m4_pf_header(m4_ref(dbenv_set_encrypt),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_encrypt(DB_ENV *dbenv, const char *passwd, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__get_encrypt_flags(DB_ENV *dbenv, u_int32_t *flagsp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_encrypt(const char *passwd, u_int32_t flags);
+m4_blank
+int
+DbEnv::get_encrypt_flags(u_int32_t *flagsp);
+]))],[dnl
+m4_pf_header(m4_ref(dbh_set_encrypt),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_encrypt(DB *db, const char *passwd, u_int32_t flags);
+m4_blank
+int
+DB-__GT__get_encrypt_flags(DB *db, u_int32_t *flagsp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_encrypt(const char *passwd, u_int32_t flags);
+m4_blank
+int
+Db::get_encrypt_flags(u_int32_t *flagsp);
+]))])
+
+m4_p([dnl
+Set the password used by the m4_db library to perform encryption and
+decryption.])
+
+ifelse(M4INTERFACE, dbenv_set_encrypt, [dnl
+m4_scope_env(dbenv_set_encrypt)
+m4_when_envopen(dbenv_set_encrypt, error)
+m4_return(dbenv_set_encrypt, std)
+],[dnl
+m4_p([dnl
+Because databases opened within m4_db environments use the password
+specified to the environment, it is an error to attempt to set a
+password in a database created within an environment.])
+m4_when_dbopen(dbh_set_encrypt)
+m4_return(dbh_set_encrypt, std)
+])
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_ENCRYPT_AES), [dnl
+Use the Rijndael/AES (also known as the Advanced Encryption Standard
+and Federal Information Processing Standard (FIPS) 197) algorithm for
+encryption or decryption.])
+m4_tagend])
+
+m4_param(passwd, [dnl
+The m4_arg(passwd) parameter is the password used to perform encryption
+and decryption.])
+m4_paramend
+
+m4_err(M4INTERFACE, einval,
+[the method was called after
+m4_ref(ifelse(M4INTERFACE, dbenv_set_encrypt, [dbenv_open], [dbh_open]))
+was called],
+EOPNOTSUPP, [Cryptography is not available in this m4_db release.])
+
+m4_pf_getter(M4GETINTERFACE, encryption flags,, flagsp)
+
+ifelse(M4INTERFACE, dbenv_set_encrypt, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

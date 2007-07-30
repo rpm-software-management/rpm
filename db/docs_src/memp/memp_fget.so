@@ -1,0 +1,119 @@
+m4_comment([$Id: memp_fget.so,v 10.48 2006/09/13 14:30:54 mjc Exp $])
+
+define(M4PAGELOCAL,
+	[memp_fget, DB_MPOOL_CREATE, DB_MPOOL_DIRTY, DB_MPOOL_EDIT,
+	DB_MPOOL_LAST, DB_MPOOL_NEW,
+	DB_PAGE_NOTFOUND, DB_LOCK_DEADLOCK])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_fget),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__get(DB_MPOOLFILE *mpf,
+    db_pgno_t *pgnoaddr, DB_TXN * txnid, u_int32_t flags, void **pagep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::get(db_pgno_t *pgnoaddr,
+    DbTxn *txnid, u_int32_t flags, void **pagep);
+]))
+
+m4_p([dnl
+The m4_refT(memp_fget) returns pages from the cache.])
+
+m4_p([dnl
+All pages returned by m4_ref(memp_fget) will be retained (that is,
+m4_italic(pinned)), in the pool until a subsequent call to
+m4_ref(memp_fput).])
+
+m4_p([The returned page is m4_bold(size_t) type aligned.])
+
+m4_p([dnl
+Fully or partially created pages have all their bytes set to a nul byte,
+unless the m4_refT(memp_set_clear_len) was called to specify other
+behavior before the file was opened.])
+
+m4_idefz(DB_PAGE_NOTFOUND)
+m4_return(memp_fget, except, DB_PAGE_NOTFOUND,
+[if the requested page does not exist and m4_ref(DB_MPOOL_CREATE) was
+not set], prev)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_MPOOL_CREATE), [dnl
+If the specified page does not exist, create it.  In this case, the
+m4_linkpage(memp_register, pgin, pgin) method, if specified, is
+called.])
+
+m4_tag(m4_idef(DB_MPOOL_DIRTY), [dnl
+The page will be modified and must be written to the source file before
+being evicted from the pool.  For files open with the
+m4_ref(DB_MULTIVERSION) flag set, a new copy of the page will be made
+if this is the first time the specified transaction is modifying it.])
+
+m4_tag(m4_idef(DB_MPOOL_EDIT), [dnl
+The page will be modified and must be written to the source file before
+being evicted from the pool.  No copy of the page will be made, regardless
+of the m4_ref(DB_MULTIVERSION) setting.  This flag is only intended for
+use in situations where a transaction handle is not available, such as during
+aborts or recovery.])
+
+m4_tag(m4_idef(DB_MPOOL_LAST), [dnl
+Return the last page of the source file, and copy its page number into
+the memory location to which m4_arg(pgnoaddr) refers.])
+
+m4_tag(m4_idef(DB_MPOOL_NEW), [dnl
+Create a new page in the file, and copy its page number into the memory
+location to which m4_arg(pgnoaddr) refers.  In this case, the
+m4_linkpage(memp_register, pgin, pgin) method, if specified, is
+m4_bold(not) called.])
+m4_tagend
+
+m4_p([dnl
+The m4_ref(DB_MPOOL_CREATE), m4_ref(DB_MPOOL_LAST), and
+m4_ref(DB_MPOOL_NEW) flags are mutually exclusive.])])
+
+m4_param_co(pagep, returned page, REF)
+
+m4_param(pgnoaddr, [dnl
+If the m4_arg(flags) parameter is set to m4_ref(DB_MPOOL_LAST) or
+m4_ref(DB_MPOOL_NEW), the page number of the created page is copied
+into the memory location to which the m4_arg(pgnoaddr) parameter
+refers.  Otherwise, the m4_arg(pgnoaddr) parameter is the page to
+create or retrieve.
+m4_p([m4_bold([dnl
+Page numbers begin at 0; that is, the first page in the file is page
+number 0, not page number 1.])])])
+
+m4_param(txnid, [If the operation is part of an application-specified
+transaction, the m4_arg(txnid) parameter is a transaction handle
+returned from m4_ref(txn_begin); otherwise NULL.  A transaction is
+required if the file is open for multiversion concurrency control by
+passing m4_ref(DB_MULTIVERSION) to m4_ref(memp_fopen) and the
+m4_ref(DB_MPOOL_DIRTY), m4_ref(DB_MPOOL_CREATE) or
+m4_ref(DB_MPOOL_NEW) flags were specified.  Otherwise it is ignored.])
+m4_paramend
+
+m4_err(memp_fget,
+EACCES,
+[The m4_ref(DB_MPOOL_DIRTY) or m4_ref(DB_MPOOL_EDIT) flag was set and
+the source file was not opened for writing.],
+EAGAIN,
+[The page reference count has overflowed.  (This should never happen
+unless there is a bug in the application.)],
+einval,
+[the m4_ref(DB_MPOOL_NEW) flag was set, and the source file was not
+opened for writing;
+more than one of m4_ref(DB_MPOOL_CREATE), m4_ref(DB_MPOOL_LAST), and
+m4_ref(DB_MPOOL_NEW) was set.],
+m4_ref(DB_LOCK_DEADLOCK),
+[For transactions configured with m4_ref(DB_TXN_SNAPSHOT), the page has
+been modified since the transaction began.],
+memory,
+[cache is full, and no more pages will fit in the pool])
+
+m4_seealso(DbMpool)
+m4_page_footer

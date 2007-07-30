@@ -1,0 +1,303 @@
+m4_comment([$Id: trans.so,v 1.18 2006/08/24 17:58:53 bostic Exp $])
+
+m4_ref_title(m4_db Replication,
+    Transactional guarantees,, rep/bulk, rep/partition)
+
+m4_p([dnl
+It is important to consider replication in the context of the overall
+database environment's transactional guarantees.  To briefly review,
+transactional guarantees in a non-replicated application are based on
+the writing of log file records to "stable storage", usually a disk
+drive.  If the application or system then fails, the m4_db logging
+information is reviewed during recovery, and the databases are updated
+so that all changes made as part of committed transactions appear, and
+all changes made as part of uncommitted transactions do not appear.  In
+this case, no information will have been lost.])
+
+m4_p([dnl
+If a database environment does not require the log be flushed to
+stable storage on transaction commit (using the m4_ref(DB_TXN_NOSYNC)
+flag to increase performance at the cost of sacrificing transactional
+durability), m4_db recovery will only be able to restore the system to
+the state of the last commit found on stable storage.  In this case,
+information may have been lost (for example, the changes made by some
+committed transactions may not appear in the databases after recovery).])
+
+m4_p([dnl
+Further, if there is database or log file loss or corruption (for
+example, if a disk drive fails), then catastrophic recovery is
+necessary, and m4_db recovery will only be able to restore the system
+to the state of the last archived log file.  In this case, information
+may also have been lost.])
+
+m4_p([dnl
+Replicating the database environment extends this model, by adding a
+new component to "stable storage": the client's replicated information.
+If a database environment is replicated, there is no lost information
+in the case of database or log file loss, because the replicated system
+can be configured to contain a complete set of databases and log records
+up to the point of failure.  A database environment that loses a disk
+drive can have the drive replaced, and it can then rejoin the
+replication group.])
+
+m4_p([dnl
+Because of this new component of stable storage, specifying
+m4_ref(DB_TXN_NOSYNC) in a replicated environment no longer sacrifices
+durability, as long as one or more clients have acknowledged receipt of
+the messages sent by the master.  Since network connections are often
+faster than local synchronous disk writes, replication becomes a way
+for applications to significantly improve their performance as well as
+their reliability.])
+
+m4_p([dnl
+The return status from the application's m4_arg(send) function must be
+set by the application to ensure the transactional guarantees the
+application wants to provide.  Whenever the m4_arg(send) function
+returns failure, the local database environment's log is flushed as
+necessary to ensure that any information critical to database integrity
+is not lost.  Because this flush is an expensive operation in terms of
+database performance, applications should avoid returning an error from
+the m4_arg(send) function, if at all possible.])
+
+m4_p([dnl
+The only interesting message type for replication transactional
+guarantees is when the application's m4_arg(send) function was called
+with the m4_ref(DB_REP_PERMANENT) flag specified.  There is no reason
+for the m4_arg(send) function to ever return failure unless the
+m4_ref(DB_REP_PERMANENT) flag was specified -- messages without the
+m4_ref(DB_REP_PERMANENT) flag do not make visible changes to databases,
+and the m4_arg(send) function can return success to m4_db as soon as
+the message has been sent to the client(s) or even just copied to local
+application memory in preparation for being sent.])
+
+m4_p([dnl
+When a client receives a m4_ref(DB_REP_PERMANENT) message, the client
+will flush its log to stable storage before returning (unless the client
+environment has been configured with the m4_ref(DB_TXN_NOSYNC) option).
+If the client is unable to flush a complete transactional record to disk
+for any reason (for example, there is a missing log record before the
+flagged message), the call to the m4_refT(rep_message) on the client
+will return m4_ref(DB_REP_NOTPERM) and return the LSN of this record
+to the application in the m4_arg(ret_lsnp) parameter.
+The application's client or master
+message handling loops should take proper action to ensure the correct
+transactional guarantees in this case.  When missing records arrive
+and allow subsequent processing of previously stored permanent
+records, the call to the m4_refT(rep_message) on the client will
+return m4_ref(DB_REP_ISPERM) and return the largest LSN of the
+permanent records that were flushed to disk.  Client applications
+can use these LSNs to know definitively if any particular LSN is
+permanently stored or not.])
+
+m4_p([dnl
+An application relying on a client's ability to become a master and
+guarantee that no data has been lost will need to write the m4_arg(send)
+function to return an error whenever it cannot guarantee the site that
+will win the next election has the record.  Applications not requiring
+this level of transactional guarantees need not have the m4_arg(send)
+function return failure (unless the master's database environment has
+been configured with m4_ref(DB_TXN_NOSYNC)), as any information critical
+to database integrity has already been flushed to the local log before
+m4_arg(send) was called.])
+
+m4_p([dnl
+To sum up, the only reason for the m4_arg(send) function to return
+failure is when the master database environment has been configured to
+not synchronously flush the log on transaction commit (that is,
+m4_ref(DB_TXN_NOSYNC) was configured on the master), the
+m4_ref(DB_REP_PERMANENT) flag is specified for the message, and the
+m4_arg(send) function was unable to determine that some number of
+clients have received the current message (and all messages preceding
+the current message).  How many clients need to receive the message
+before the m4_arg(send) function can return success is an application
+choice (and may not depend as much on a specific number of clients
+reporting success as one or more geographically distributed clients).])
+
+m4_p([dnl
+If, however, the application does require on-disk durability on the master,
+the master should be configured to synchronously flush the log on commit.
+If clients are not configured to synchronously flush the log,
+that is, if a client is running with m4_ref(DB_TXN_NOSYNC) configured,
+then it is up to the application to reconfigure that client
+appropriately when it becomes a master.  That is, the
+application must explicitly call m4_ref(dbenv_set_flags) to
+disable asynchronous log flushing as part of re-configuring
+the client as the new master.])
+
+m4_p([dnl
+Of course, it is important to ensure that the replicated master and
+client environments are truly independent of each other.  For example,
+it does not help matters that a client has acknowledged receipt of a
+message if both master and clients are on the same power supply, as the
+failure of the power supply will still potentially lose information.])
+
+m4_p([dnl
+Configuring your replication-based application to achieve the proper
+mix of performance and transactional guarantees can be complex.  In
+brief, there are a few controls an application can set to configure the
+guarantees it makes: specification of m4_ref(DB_TXN_NOSYNC) for the
+master environment, specification of m4_ref(DB_TXN_NOSYNC) for the
+client environment, the priorities of different sites participating in
+an election, and the behavior of the application's m4_arg(send)
+function.])
+
+m4_p([dnl
+Applications using Replication Manager are free to use
+m4_ref(DB_TXN_NOSYNC) at the master and/or clients as they see fit.  The
+behavior of the m4_arg(send) function that Replication Manager provides
+on the application's behalf is determined by an "acknowledgement
+policy", which is configured by the m4_refT(repmgr_set_ack_policy).
+Clients always send acknowledgements for m4_ref(DB_REP_PERMANENT)
+messages (unless the acknowledgement policy in effect indicates that the
+master doesn't care about them).  For a m4_ref(DB_REP_PERMANENT)
+message, the master blocks the sending thread until either it receives
+the proper number of acknowledgements, or the m4_ref(DB_REP_ACK_TIMEOUT)
+expires.  In the case of timeout, Replication Manager returns an error
+code from the m4_arg(send) function, causing m4_db to flush the
+transaction log before returning to the application, as previously
+described.  The default acknowledgement policy is
+m4_ref(DB_REPMGR_ACKS_QUORUM), which ensures that the effect of a
+permanent record remains durable following an election.])
+
+m4_p([dnl
+First, it is rarely useful to write and synchronously flush the log when
+a transaction commits on a replication client.  It may be useful where
+systems share resources and multiple systems commonly fail at the same
+time.  By default, all m4_db database environments, whether master or
+client, synchronously flush the log on transaction commit or prepare.
+Generally, replication masters and clients turn log flush off for
+transaction commit using the m4_ref(DB_TXN_NOSYNC) flag.])
+
+m4_p([dnl
+Consider two systems connected by a network interface.  One acts as the
+master, the other as a read-only client.  The client takes over as
+master if the master crashes and the master rejoins the replication
+group after such a failure.  Both master and client are configured to
+not synchronously flush the log on transaction commit (that is,
+m4_ref(DB_TXN_NOSYNC) was configured on both systems).  The
+application's m4_arg(send) function never returns failure to the m4_db
+library, simply forwarding messages to the client (perhaps over a
+broadcast mechanism), and always returning success.  On the client, any
+m4_ref(DB_REP_NOTPERM) returns from the client's m4_refT(rep_message)
+are ignored, as well.  This system configuration has excellent
+performance, but may lose data in some failure modes.])
+
+m4_p([dnl
+If both the master and the client crash at once, it is possible to lose
+committed transactions, that is, transactional durability is not being
+maintained.  Reliability can be increased by providing separate power
+supplies for the systems and placing them in separate physical locations.])
+
+m4_p([dnl
+If the connection between the two machines fails (or just some number
+of messages are lost), and subsequently the master crashes, it is
+possible to lose committed transactions.  Again, because transactional
+durability is not being maintained.  Reliability can be improved in a
+couple of ways:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Use a reliable network protocol (for example, TCP/IP instead of UDP).])
+
+m4_nlist([dnl
+Increase the number of clients and network paths to make it less likely
+that a message will be lost.  In this case, it is important to also make
+sure a client that did receive the message wins any subsequent election.
+If a client that did not receive the message wins a subsequent election,
+data can still be lost.])
+
+m4_nlistend
+
+m4_p([dnl
+Further, systems may want to guarantee message delivery to the client(s)
+(for example, to prevent a network connection from simply discarding
+messages).  Some systems may want to ensure clients never return
+out-of-date information, that is, once a transaction commit returns
+success on the master, no client will return old information to a
+read-only query. Some of the following changes may be used to address
+these issues:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Write the application's m4_arg(send) function to not return to m4_db
+until one or more clients have acknowledged receipt of the message.
+The number of clients chosen will be dependent on the application: you
+will want to consider likely network partitions (ensure that a client
+at each physical site receives the message) and geographical diversity
+(ensure that a client on each coast receives the message).])
+
+m4_nlist([dnl
+Write the client's message processing loop to not acknowledge receipt
+of the message until a call to the m4_refT(rep_message) has returned
+success.  Messages resulting in a return of m4_ref(DB_REP_NOTPERM) from
+the m4_refT(rep_message) mean the message could not be flushed to the
+client's disk.  If the client does not acknowledge receipt of such
+messages to the master until a subsequent call to the
+m4_refT(rep_message) returns m4_ref(DB_REP_ISPERM) and the LSN
+returned is at least as large as this message's LSN, then the master's
+m4_arg(send) function will not return success to the m4_db library.
+This means the thread committing the transaction on the master will not
+be allowed to proceed based on the transaction having committed until
+the selected set of clients have received the message and consider it
+complete.
+
+m4_p([dnl
+Alternatively, the client's message processing loop could acknowledge
+the message to the master, but with an error code indicating that the
+application's m4_arg(send) function should not return to the m4_db
+library until a subsequent acknowledgement from the same client
+indicates success.])
+
+m4_p([dnl
+The application send callback function invoked by m4_db contains
+an LSN of the record being sent (if appropriate for that record).
+When m4_refT(rep_message) returns indicators that a permanent
+record has been written then it also returns the maximum LSN of the
+permanent record written.])])
+
+m4_nlistend
+
+m4_p([dnl
+There is one final pair of failure scenarios to consider.  First, it is
+not possible to abort transactions after the application's m4_arg(send)
+function has been called, as the master may have already written the
+commit log records to disk, and so abort is no longer an option.
+Second, a related problem is that even though the master will attempt
+to flush the local log if the m4_arg(send) function returns failure,
+that flush may fail (for example, when the local disk is full).  Again,
+the transaction cannot be aborted as one or more clients may have
+committed the transaction even if m4_arg(send) returns failure.  Rare
+applications may not be able to tolerate these unlikely failure modes.
+In that case the application may want to:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Configure the master to do always local synchronous commits (turning
+off the m4_ref(DB_TXN_NOSYNC) configuration).  This will decrease
+performance significantly, of course (one of the reasons to use
+replication is to avoid local disk writes.)  In this configuration,
+failure to write the local log will cause the transaction to abort in
+all cases.])
+
+m4_nlist([dnl
+Do not return from the application's m4_arg(send) function under any
+conditions, until the selected set of clients has acknowledged the
+message.  Until the m4_arg(send) function returns to the m4_db library,
+the thread committing the transaction on the master will wait, and so
+no application will be able to act on the knowledge that the transaction
+has committed.])
+
+m4_nlistend
+
+m4_p([dnl
+The final alternative for applications concerned about these types of
+failure is to use distributed transactions as an alternative means of
+replication, guaranteeing full consistency at the cost of implementing
+a Global Transaction Manager and performing two-phase commit across
+multiple m4_db database environments.  More information on this topic
+can be found in the m4_link(M4RELDIR/ref/xa/intro, [Distributed
+Transactions]) chapter.])
+
+m4_page_footer

@@ -1,0 +1,4 @@
+m4_comment([$Id: db_err.so,v 1.3 2002/08/18 21:15:48 bostic Exp $])
+
+define(M4INTERFACE, dbh_err)
+include(env/env_err.so)

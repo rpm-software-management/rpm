@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2004-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2004,2007 Oracle.  All rights reserved.
  *
- * $Id: seq_stat.c,v 12.10 2006/08/24 14:46:31 bostic Exp $
+ * $Id: seq_stat.c,v 12.12 2007/05/17 15:15:53 bostic Exp $
  */
 
 #include "db_config.h"

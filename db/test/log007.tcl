@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: log007.tcl,v 12.5 2006/08/24 14:46:36 bostic Exp $
+# $Id: log007.tcl,v 12.7 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	log007
 # TEST	Test of in-memory logging bugs. [#11505]

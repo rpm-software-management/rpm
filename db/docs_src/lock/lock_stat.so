@@ -1,0 +1,162 @@
+m4_comment([$Id: lock_stat.so,v 10.68 2007/06/22 16:57:15 bostic Exp $])
+
+define(M4PAGELOCAL, [lock_stat, lock_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(lock_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lock_stat(DB_ENV *env, DB_LOCK_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__lock_stat_print(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lock_stat(DB_LOCK_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DbEnv::lock_stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(lock_stat) returns the locking subsystem statistics.])
+
+m4_p([dnl
+The m4_refT(lock_stat) creates a statistical structure of type
+DB_LOCK_STAT and copies a pointer to it into a user-specified memory
+location.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+The following DB_LOCK_STAT fields will be filled in:])
+
+m4_tagbegin
+m4_field(u_int32_t, st_id,
+[The last allocated locker ID.])
+
+m4_field(u_int32_t, st_cur_maxid,
+[The current maximum unused locker ID.])
+
+m4_field(u_int32_t, st_nmodes,
+[The number of lock modes.])
+
+m4_field(u_int32_t, st_maxlocks,
+[The maximum number of locks possible.])
+
+m4_field(u_int32_t, st_maxlockers,
+[The maximum number of lockers possible.])
+
+m4_field(u_int32_t, st_maxobjects,
+[The maximum number of lock objects possible.])
+
+m4_field(u_int32_t, st_nlocks,
+[The number of current locks.])
+
+m4_field(u_int32_t, st_maxnlocks,
+[The maximum number of locks at any one time.])
+
+m4_field(u_int32_t, st_nlockers,
+[The number of current lockers.])
+
+m4_field(u_int32_t, st_maxnlockers,
+[The maximum number of lockers at any one time.])
+
+m4_field(u_int32_t, st_nobjects,
+[The number of current lock objects.])
+
+m4_field(u_int32_t, st_maxnobjects,
+[The maximum number of lock objects at any one time.])
+
+m4_field(u_int32_t, st_nrequests,
+[The total number of locks requested.])
+
+m4_field(u_int32_t, st_nreleases,
+[The total number of locks released.])
+
+m4_field(u_int32_t, st_nupgrade,
+[The total number of locks upgraded.])
+
+m4_field(u_int32_t, st_ndowngrade,
+[The total number of locks downgraded.])
+
+m4_field(u_int32_t, st_lock_wait,
+[The number of lock requests not immediately available due to conflicts,
+for which the thread of control waited.])
+
+m4_field(u_int32_t, st_lock_nowait,
+[The number of lock requests not immediately available due to conflicts,
+for which the thread of control did not wait.])
+
+m4_field(u_int32_t, st_ndeadlocks,
+[The number of deadlocks.])
+
+m4_field(u_int32_t, st_locktimeout,
+[Lock timeout value.])
+
+m4_field(u_int32_t, st_nlocktimeouts,
+[The number of lock requests that have timed out.])
+
+m4_field(u_int32_t, st_txntimeout,
+[Transaction timeout value.])
+
+m4_field(u_int32_t, st_ntxntimeouts,
+[The number of transactions that have timed out.  This value is also a
+component of m4_arg(st_ndeadlocks), the total number of deadlocks
+detected.])
+
+m4_field(u_int32_t, st_objs_wait,
+[The number of requests to allocate or deallocate an object
+for which the thread of control waited.])
+
+m4_field(u_int32_t, st_objs_nowait,
+[The number of requests to allocate or deallocate an object
+for which the thread of control did not wait.])
+
+m4_field(u_int32_t, st_lockers_wait,
+[The number of requests to allocate or deallocate a locker
+for which the thread of control waited.])
+
+m4_field(u_int32_t, st_lockers_nowait,
+[The number of requests to allocate or deallocate a locker
+for which the thread of control did not wait.])
+
+m4_field(u_int32_t, st_locks_wait,
+[The number of requests to allocate or deallocate a lock structure
+for which the thread of control waited.])
+
+m4_field(u_int32_t, st_locks_nowait,
+[The number of requests to allocate or deallocate a lock structure
+for which the thread of control did not wait.])
+
+m4_field(u_int32_t, st_hash_len,
+[Maximum length of a lock hash bucket.])
+
+m4_field(roff_t, st_regsize,
+[The size of the lock region, in bytes.])
+
+m4_field(u_int32_t, st_region_wait,
+[The number of times that a thread of control was forced to wait before
+obtaining the lock region mutex.])
+
+m4_field(u_int32_t, st_region_nowait,
+[The number of times that a thread of control was able to obtain
+the lock region mutex without waiting.])
+m4_tagend
+
+m4_when_after_envopen(lock_stat)
+
+m4_return(lock_stat, std)
+
+m4_parambegin
+m4_param(flags, m4_stat_flags)
+m4_param_co(statp, allocated statistics structure, REF)
+m4_paramend
+
+m4_err(lock_stat, einval)
+
+m4_stat_print(lock_stat_print, locking subsystem, lock_stat)
+
+m4_seealso(DbLock)
+m4_page_footer

@@ -1,32 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_dir.c,v 12.8 2006/08/24 14:46:17 bostic Exp $
+ * $Id: os_dir.c,v 12.12 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
 
+#define	__INCLUDE_DIRECTORY	1
 #include "db_int.h"
-
-#if HAVE_DIRENT_H
-# include <dirent.h>
-# define NAMLEN(dirent) strlen((dirent)->d_name)
-#else
-# define dirent direct
-# define NAMLEN(dirent) (dirent)->d_namlen
-# if HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif
-# if HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif
-# if HAVE_NDIR_H
-#  include <ndir.h>
-# endif
-#endif
 
 /*
  * __os_dirlist --
@@ -46,6 +29,10 @@ __os_dirlist(dbenv, dir, namesp, cntp)
 	struct stat sb;
 	int arraysz, cnt, ret;
 	char **names, buf[DB_MAXPATHLEN];
+
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: directory list %s", dir);
 
 	if (DB_GLOBAL(j_dirlist) != NULL)
 		return (DB_GLOBAL(j_dirlist)(dir, namesp, cntp));

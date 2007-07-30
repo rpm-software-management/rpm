@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: test115.tcl,v 12.13 2006/08/24 14:46:41 bostic Exp $
+# $Id: test115.tcl,v 12.16 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test115
 # TEST	Test database compaction with user-specified btree sort.
@@ -25,14 +24,6 @@ proc test115 { method {nentries 10000} {tnum "115"} args } {
 	if { [is_btree $method] != 1 } {
 		puts "Skipping test$tnum for method $method."
 		return
-	}
-
-	# XXX This should be removed when the fix for [#13500]
-	# is checked in.
-	# If the test module sent in the -chksum arg, get rid of it.
-	set chkindex [lsearch -exact $args "-chksum"]
-	if { $chkindex != -1 } {
-		set args [lreplace $args $chkindex $chkindex]
 	}
 
 	# If a page size was specified, find out what it is.  Pages

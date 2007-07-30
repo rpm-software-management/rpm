@@ -1,0 +1,105 @@
+m4_comment([$Id: mutex_set_max.so,v 10.3 2005/08/03 21:24:59 bostic Exp $])
+
+define(M4PAGELOCAL,
+    [mutex_set_increment, mutex_get_increment, mutex_set_max, mutex_get_max])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(mutex_set_max),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__mutex_set_increment(DB_ENV *dbenv, u_int32_t increment);
+m4_blank
+int
+DB_ENV-__GT__mutex_get_increment(DB_ENV *dbenv, u_int32_t *incrementp);
+m4_blank
+int
+DB_ENV-__GT__mutex_set_max(DB_ENV *dbenv, u_int32_t max);
+m4_blank
+int
+DB_ENV-__GT__mutex_get_max(DB_ENV *dbenv, u_int32_t *maxp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::mutex_set_increment(u_int32_t increment);
+m4_blank
+int
+DbEnv::mutex_get_increment(u_int32_t *incrementp);
+int
+DbEnv::mutex_set_max(u_int32_t max);
+m4_blank
+int
+DbEnv::mutex_get_max(u_int32_t *maxp);
+]))
+
+m4_p([dnl
+Configure the total number of mutexes to allocate.])
+
+m4_p([dnl
+m4_db allocates a default number of mutexes based on the initial
+configuration of the database environment.  That default calculation may
+be too small if the application has an unusual need for mutexes (for
+example, if the application opens an unexpectedly large number of
+databases) or too large (if the application is trying to minimize its
+memory footprint).  The m4_refT(mutex_set_max) is used to specify an
+absolute number of mutexes to allocate.])
+
+m4_p([dnl
+Calling the m4_refT(mutex_set_max) discards any value previously
+set using the m4_refT(mutex_set_increment).])
+
+m4_env_config(mutex_set_max,
+[total number of mutexes], mutex_set_max, [the total number of mutexes])
+
+m4_scope_env(mutex_set_max)
+
+m4_when_envopen(mutex_set_max, ignored)
+
+m4_return(mutex_set_max, std)
+
+m4_parambegin
+m4_param(max, [dnl
+The m4_arg(max) parameter is the absolute number of mutexes to
+allocate.])
+m4_paramend
+
+m4_err(mutex_set_max, einval)
+
+m4_pf_getter(mutex_get_max, [total number of mutexes allocated],, maxp)
+
+m4_pf_description(m4_ref(mutex_set_increment))
+
+m4_p([dnl
+Configure the number of additional mutexes to allocate.])
+
+m4_p([dnl
+Additionally, an application may want to allocate mutexes for its own
+use.  The m4_refT(mutex_set_increment) is used to add a number of
+mutexes to the default allocation.])
+
+m4_p([dnl
+Calling the m4_refT(mutex_set_increment) discards any value previously
+set using the m4_refT(mutex_set_max).])
+
+m4_env_config(mutex_set_increment,
+[number of additional mutexes],
+mutex_set_increment, [the number of additional mutexes])
+
+m4_scope_env(mutex_set_increment)
+
+m4_when_envopen(mutex_set_increment, ignored)
+
+m4_return(mutex_set_increment, std)
+
+m4_parambegin
+m4_param(increment, [dnl
+The m4_arg(increment) parameter is the number of additional mutexes to
+allocate.])
+m4_paramend
+
+m4_err(mutex_set_increment, einval)
+
+m4_pf_getter(mutex_get_increment,
+    [number of additional mutexes to allocate],, incrementp)
+
+m4_seealso(DbEnv)
+m4_page_footer

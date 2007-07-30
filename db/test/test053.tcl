@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: test053.tcl,v 12.3 2006/08/24 14:46:40 bostic Exp $
+# $Id: test053.tcl,v 12.5 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test053
 # TEST	Test of the DB_REVSPLITOFF flag in the Btree and Btree-w-recnum

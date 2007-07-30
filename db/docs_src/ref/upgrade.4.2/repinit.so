@@ -1,0 +1,37 @@
+m4_comment([$Id: repinit.so,v 1.11 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: Replication,,
+    upgrade.4.2/lockng, upgrade.4.2/nosync)
+
+m4_section(Replication initialization)
+m4_p([dnl
+In the m4_db 4.2 release, replication environments must be specifically
+initialized by any process that will ever do anything other than open
+databases in read-only mode (that is, any process which might call any
+of the m4_db replication interfaces or modify databases).  This
+initialization is done when the replication database environment handle
+is opened, by specifying the m4_ref(DB_INIT_REP) flag to the
+m4_refT(dbenv_open).])
+
+m4_section(Database methods and replication clients)
+m4_p([dnl
+All of the m4_ref(Db) object methods may now return
+m4_ref(DB_REP_HANDLE_DEAD) when a replication client changes masters.
+When this happens the m4_ref(Db) handle is no longer able to be used and
+the application must close the handle using the m4_refT(dbh_close) and
+open a new handle.  This new return value is returned when a client
+unrolls a transaction in order to synchronize with the new master.
+Otherwise, if the application was permitted to use the original handle,
+it's possible the handle might attempt to access nonexistent resources.])
+
+m4_section(m4_ref(rep_message))
+m4_p([dnl
+The m4_refT(rep_message) has new return values and an log sequence
+number (LSN) associated with those return values.  The new argument is
+m4_arg(ret_lsnp), which is the returned LSN when the
+m4_refT(rep_message) returns m4_ref(DB_REP_ISPERM) or
+m4_ref(DB_REP_NOTPERM).  See m4_link(M4RELDIR/ref/rep/trans,
+Transactional guarantees) for more information.])
+
+m4_page_footer

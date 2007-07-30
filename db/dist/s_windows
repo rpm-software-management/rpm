@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_windows,v 12.20 2006/07/13 06:19:45 mjc Exp $
+#	$Id: s_windows,v 12.26 2007/05/24 13:16:50 bostic Exp $
 #
 # Build Windows include files.
 
@@ -14,7 +14,7 @@ rm -f $s $t
 
 trap 'rm -f $s $t ; exit 1' 1 2 3 13 15
 
-# Build the Win32 automatically generated files.
+# Build the Windows db.h
 cat <<ENDOFSEDTEXT > $s
 /@inttypes_h_decl@/d
 /@stdint_h_decl@/d
@@ -29,8 +29,8 @@ s/@u_int32_decl@/typedef unsigned int u_int32_t;/
 s/@int64_decl@/typedef __int64 int64_t;/
 s/@u_int64_decl@/typedef unsigned __int64 u_int64_t;/
 s/@db_seq_decl@/typedef int64_t db_seq_t;/
-s/@pid_t_decl@/typedef int pid_t;/
 s/@db_threadid_t_decl@/typedef u_int32_t db_threadid_t;/
+s/@pid_t_decl@/typedef int pid_t;/
 /@u_char_decl@/{
 	i\\
 #ifndef _WINSOCKAPI_
@@ -43,6 +43,8 @@ s/@u_int_decl@/typedef unsigned int u_int;/
 	a\\
 #endif
 }
+/@FILE_t_decl@/d
+/@size_t_decl@/d
 /@ssize_t_decl@/{
 	i\\
 #ifdef _WIN64\\
@@ -52,6 +54,7 @@ typedef int32_t ssize_t;\\
 #endif
 	d
 }
+/@time_t_decl@/d
 s/@uintmax_t_decl@/typedef u_int64_t uintmax_t;/
 /@uintptr_t_decl@/{
 	i\\
@@ -60,6 +63,16 @@ typedef u_int64_t uintptr_t;\\
 #else\\
 typedef u_int32_t uintptr_t;\\
 #endif
+	d
+}
+/@off_t_decl@/{
+	i\\
+/*\\
+\ * Windows defines off_t to long (i.e., 32 bits).  We need to pass 64-bit\\
+\ * file offsets, so we declare our own.\\
+\ */\\
+#define	off_t	__db_off_t\\
+typedef int64_t off_t;
 	d
 }
 /@platform_header@/{
@@ -102,6 +115,11 @@ s/@DB_CONST@//
 s/@DB_PROTO1@/#undef __P/
 s/@DB_PROTO2@/#define	__P(protos)	protos/
 ENDOFSEDTEXT
+# The db.h, db_int.h files are identical between Windows and WinCE.
+# This may change in the future, for now have the script copy
+# the headers into the build_wince directory.
+# WinCE does not support the C++ API, so don't need to copy db_cxx.h
+
 (echo "$msgc" &&
     sed -f $s ../dbinc/db.in &&
     cat ../dbinc_auto/ext_prot.in) > $t
@@ -113,7 +131,11 @@ test `egrep '@.*@' $t` && {
 f=../build_windows/db.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+f=../build_wince/db.h
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
+# Build the Windows db_cxx.h.
 cat <<ENDOFSEDTEXT > $s
 s/@cxx_have_stdheaders@/#define	HAVE_CXX_STDHEADERS 1/
 ENDOFSEDTEXT
@@ -127,9 +149,8 @@ f=../build_windows/db_cxx.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
+# Build the Windows db_int.h.
 cat <<ENDOFSEDTEXT > $s
-s/@INT64_FMT@/#define	INT64_FMT	"%I64d"/
-s/@UINT64_FMT@/#define	UINT64_FMT	"%I64u"/
 s/@PATH_SEPARATOR@/\\\\\\\\\/:/
 s/@db_int_def@//
 ENDOFSEDTEXT
@@ -142,16 +163,18 @@ test `egrep '@.*@' $t` && {
 f=../build_windows/db_int.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+f=../build_wince/db_int.h
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
-# Build the Windows db_config.h file.
+# Build the Windows and WinCE db_config.h.
 # We don't fail, but we complain if the win_config.in file isn't up-to-date.
 check_config()
 {
-	egrep '^#undef' config.hin |
-	    awk '{print $2}' | sed '/^SIZEOF_/d' | sort > $s
+	egrep '^#undef' config.hin | awk '{print $2}' | sort > $s
 	(egrep '#undef' $1 | awk '{print $3}'
 	 egrep '^#define' $1 | awk '{print $2}') | sed '/__STDC__/d' | sort > $t
-	cmp $s $t || {
+	cmp $s $t > /dev/null || {
 		echo "config.hin and $1 differ"
 		echo "<<< config.hin >>> $1"
 		diff $s $t
@@ -162,7 +185,13 @@ f=../build_windows/db_config.h
 (echo "$msgc" && sed "s/__EDIT_DB_VERSION__/$DB_VERSION/" win_config.in) > $t
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+check_config wince_config.in
+f=../build_wince/db_config.h
+(echo "$msgc" && sed "s/__EDIT_DB_VERSION__/$DB_VERSION/" wince_config.in) > $t
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
+# Build the Windows libdb.rc and libdb.def.
 f=../build_windows/libdb.rc
 cat <<ENDOFSEDTEXT > $s
 s/%MAJOR%/$DB_VERSION_MAJOR/
@@ -172,7 +201,6 @@ ENDOFSEDTEXT
 sed -f $s ../build_windows/libdbrc.src > $t
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
-
 f=../build_windows/libdb.def
 (echo $msgw &&
  echo &&
@@ -185,13 +213,27 @@ done) > $t
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
-f=../build_windows/win_db.h
-i=win_db.in
-cmp $i $f > /dev/null 2>&1 ||
-    (echo "Building $f" && rm -f $f && cp $i $f && chmod 444 $f)
-
+# Build the Windows clib_port.h.
+cat <<ENDOFSEDTEXT > $s
+s/@INT64_FMT@/#define	INT64_FMT	"%I64d"/
+s/@UINT64_FMT@/#define	UINT64_FMT	"%I64u"/
+ENDOFSEDTEXT
+sed -f $s clib_port.in > $t
+test `egrep '@.*@' $t` && {
+	egrep '@.*@' $t
+	echo 'Unexpanded autoconf variables found in Windows clib_port.h.'
+	exit 1
+}
 f=../build_windows/clib_port.h
-cmp clib_port.h $f > /dev/null 2>&1 ||
-    (echo "Building $f" && rm -f $f && cp clib_port.h $f && chmod 444 $f)
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+f=../build_wince/clib_port.h
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
+
+# Copy in errno.h.
+f=../build_wince/errno.h
+cmp errno.h $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp errno.h $f && chmod 444 $f)
 
 rm -f $s $t

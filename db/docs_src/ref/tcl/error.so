@@ -1,0 +1,72 @@
+m4_comment([$Id: error.so,v 11.17 2001/06/19 19:45:47 bostic Exp $])
+
+m4_ref_title(Tcl API, Tcl error handling,, tcl/program, tcl/faq)
+
+m4_p([dnl
+The Tcl interfaces to m4_db generally return TCL_OK on success and throw
+a Tcl error on failure, using the appropriate Tcl interfaces to provide
+the user with an informative error message.  There are some "expected"
+failures, however, for which no Tcl error will be thrown and for which
+Tcl commands will return TCL_OK.  These failures include times when a
+searched-for key is not found, a requested key/data pair was previously
+deleted, or a key/data pair cannot be written because the key already
+exists.])
+
+m4_p([dnl
+These failures can be detected by searching the m4_db error message that
+is returned.  For example, use the following to detect that an attempt
+to put a record into the database failed because the key already
+existed:])
+
+m4_indent([dnl
+% berkdb open -create -btree a.db
+db0
+% db0 put dog cat
+0
+% set ret __LB__db0 put -nooverwrite dog newcat__RB__
+DB_KEYEXIST: Key/data pair already exists
+% if { __LB__string first DB_KEYEXIST $ret__RB__ != -1 } {
+	puts "This was an error; the key existed"
+}
+This was an error; the key existed
+% db0 close
+0
+% exit])
+
+m4_p([dnl
+To simplify parsing, it is recommended that the initial m4_db error name
+be checked; for example, m4_ref(DB_KEYEXIST) in the previous example.
+To ensure that Tcl scripts are not broken by upgrading to new releases
+of m4_db, these values will not change in future releases of m4_db.
+There are currently only three such "expected" error returns:])
+
+m4_indent([dnl
+DB_NOTFOUND: No matching key/data pair found
+DB_KEYEMPTY: Nonexistent key/data pair
+DB_KEYEXIST: Key/data pair already exists])
+
+m4_p([dnl
+Finally, sometimes m4_db will output additional error information when
+a m4_db error occurs.  By default, all m4_db error messages will be
+prefixed with the created command in whose context the error occurred
+(for example, "env0", "db2", and so on).  There are several ways to
+capture and access this information.])
+
+m4_p([dnl
+First, if m4_db invokes the error callback function, the additional
+information will be placed in the error result returned from the command
+and in the errorInfo backtrace variable in Tcl.])
+
+m4_p([dnl
+Also, the two calls to open an environment and open a database take an
+option, m4_arg(-errfile filename), which sets an output file to which
+these additional error messages should be written.])
+
+m4_p([dnl
+Additionally, the two calls to open an environment and open a database
+take an option, m4_arg(-errpfx string), which sets the error prefix to
+the given string.  This option may be useful in circumstances where a
+more descriptive prefix is desired or where a constant prefix indicating
+an error is desired.])
+
+m4_page_footer

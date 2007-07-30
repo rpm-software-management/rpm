@@ -1,0 +1,53 @@
+m4_comment([$Id: env_set_lk_detect.so,v 10.50 2006/02/27 14:51:30 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lk_detect, dbenv_get_lk_detect, DB_LOCK_EXPIRE])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lk_detect),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lk_detect(DB_ENV *dbenv, u_int32_t detect);
+m4_blank
+int
+DB_ENV-__GT__get_lk_detect(DB_ENV *dbenv, u_int32_t *lk_detectp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lk_detect(u_int32_t detect);
+m4_blank
+int
+DbEnv::get_lk_detect(u_int32_t *lk_detectp);
+]))
+
+m4_p([dnl
+Set if the deadlock detector is to be run whenever a lock conflict
+occurs, and specify what lock request(s) should be rejected.  As
+transactions acquire locks on behalf of a single locker ID, rejecting a
+lock request associated with a transaction normally requires the
+transaction be aborted.])
+
+m4_env_config(dbenv_set_lk_detect,
+[deadlock detector configuration], set_lk_detect, [dnl
+the method m4_arg(detect) parameter as a string; for example,
+"set_lk_detect DB_LOCK_OLDEST"])
+
+m4_scope_env(dbenv_set_lk_detect)
+
+m4_when_any(dbenv_set_lk_detect)
+
+m4_return(dbenv_set_lk_detect, std)
+
+m4_parambegin
+m4_param(detect, [dnl
+The m4_arg(detect) parameter configures the deadlock detector.  The
+specified value must be one of the following list:
+
+m4_lk_detect_flags])
+m4_paramend
+
+m4_err(dbenv_set_lk_detect, einval)
+
+m4_pf_getter(dbenv_get_lk_detect, deadlock detector configuration,, lk_detectp)
+
+m4_seealso(DbLock)
+m4_page_footer

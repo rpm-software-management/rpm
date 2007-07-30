@@ -1,0 +1,113 @@
+m4_comment([$Id: env_event_notify.so,v 10.13 2007/04/05 20:37:29 bostic Exp $])
+
+define(M4PAGELOCAL, [dnl
+	dbenv_set_event_notify, DB_EVENT_PANIC, DB_EVENT_REP_CLIENT,
+	DB_EVENT_REP_ELECTED, DB_EVENT_REP_MASTER, DB_EVENT_REP_NEWMASTER,
+        DB_EVENT_REP_PERM_FAILED, DB_EVENT_REP_STARTUPDONE])
+
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_event_notify),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_event_notify(DB_ENV *dbenv,
+    void (*db_event_fcn)(DB_ENV *dbenv, u_int32_t event, void *event_info));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_event_notify(
+    void (*db_event_fcn)(DB_ENV *dbenv, u_int32_t event, void *event_info));
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_set_event_notify) configures a callback function which
+is called to notify the process of specific m4_db events.])
+
+m4_scope_dbenv(dbenv_set_event_notify)
+
+m4_when_any(dbenv_set_event_notify)
+
+m4_return(dbenv_set_event_notify, std)
+
+m4_parambegin
+m4_param(db_event_fcn, [dnl
+The m4_arg(db_event_fcn) parameter is the application's event
+notification function.  The function takes three parameters:
+m4_tagbegin
+m4_tag(dbenv, [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment handle.])
+m4_tag(event, [dnl
+The m4_arg(event) parameter is one of the following values:])
+m4_tagbegin
+m4_tag(m4_idef(DB_EVENT_PANIC), [dnl
+Errors can occur in the m4_db library where the only solution is to shut
+down the application and run recovery (for example, if m4_db is unable
+to allocate heap memory).  In such cases, the m4_db methods will
+ifelse(M4EXCEPT, return_only, [return m4_ref(DB_RUNRECOVERY).])
+ifelse(M4EXCEPT, except_return, [dnl
+either return m4_ref(DB_RUNRECOVERY) or throw a m4_ref(DbRunRecoveryException),
+depending on the API configuration.])
+ifelse(M4EXCEPT, except_only, [throw a m4_ref(DbRunRecoveryException).])
+It is often easier to simply exit the application when such errors occur
+rather than gracefully return up the stack.
+m4_p([dnl
+When m4_arg(event) is set to m4_ref(DB_EVENT_PANIC), the database
+environment has failed.  All threads of control in the database
+environment should exit the environment, and recovery should be run.])])
+
+m4_tag(m4_idef(DB_EVENT_REP_CLIENT), [dnl
+The local site is now a replication client.])
+
+m4_tag(m4_idef(DB_EVENT_REP_ELECTED), [dnl
+The local replication site has just won an election.  An application using
+the Base replication API should arrange for a call to the m4_refT(rep_start)
+after receiving this event, to reconfigure the local environment as a
+replication master.])
+m4_p([dnl
+Replication Manager applications may safely ignore this event.  The
+Replication Manager calls m4_ref(rep_start) automatically on behalf of
+the application when appropriate (resulting in firing of the
+m4_ref(DB_EVENT_REP_MASTER) event).])
+
+m4_tag(m4_idef(DB_EVENT_REP_MASTER), [dnl
+The local site is now the master site of its replication group.  It is
+the application's responsibility to begin acting as the master environment.])
+
+m4_tag(m4_idef(DB_EVENT_REP_NEWMASTER), [dnl
+The replication group of which this site is a member has just established a
+new master; the local site is not the new master.  The
+m4_arg(event_info) parameter points to an integer containing the
+environment ID of the new master.])
+
+m4_tag(m4_idef(DB_EVENT_REP_PERM_FAILED), [dnl
+The replication manager did not receive enough acknowledgements (based on
+the acknowledgement policy configured with m4_ref(repmgr_set_ack_policy))
+to ensure a transaction's durability within the replication group.  The
+transaction will be flushed to the master's local disk storage for
+durability.])
+m4_p([dnl
+The m4_ref(DB_EVENT_REP_PERM_FAILED) event is provided only to applications
+configured for the replication manager.])
+
+m4_tag(m4_idef(DB_EVENT_REP_STARTUPDONE), [dnl
+The client has completed startup synchronization and is now processing
+live log records received from the master.])
+
+m4_tag(m4_idef(DB_EVENT_WRITE_FAILED), [dnl
+A m4_db write to stable storage failed.])
+
+m4_tagend
+
+m4_tag(event_info, [dnl
+The m4_arg(event_info) parameter may reference memory which contains
+additional information describing an event.  By default,
+m4_arg(event_info) is NULL; specific events may pass non-NULL values,
+in which case the event will also describe the memory's structure.])
+m4_tagend])
+
+m4_paramend
+
+m4_not_reentrant
+
+m4_seealso(DbEnv)
+m4_page_footer

@@ -1,0 +1,106 @@
+m4_comment([$Id: hsearch.so,v 10.28 2004/09/28 15:04:20 bostic Exp $])
+
+define(M4PAGELOCAL, [hcreate, hsearch])
+
+m4_pf_header(hsearch,
+ifelse(M4API, C_API, [dnl
+typedef enum {
+        [FIND, ENTER]
+} ACTION;
+m4_blank
+typedef struct entry {
+        char *key;
+        void *data;
+} ENTRY;
+m4_blank
+ENTRY *
+hsearch(ENTRY item, ACTION action);
+m4_blank
+int
+hcreate(size_t nelem);
+m4_blank
+void
+hdestroy(void);
+]), [#define DB_DBM_HSEARCH    1])
+
+m4_p([dnl
+The m4_ref(hsearch) functions are intended to provide a high-performance
+implementation and source code compatibility for applications written
+to the historic hsearch interface.  It is not recommended for any other
+purpose.])
+
+m4_p([dnl
+To compile m4_ref(hsearch) applications, replace the application's
+m4_bold([#include]) of the hsearch include
+file (for example, m4_bold([m4_include(search.h)]))
+with the following two lines:])
+
+m4_indent([dnl
+#define DB_DBM_HSEARCH    1
+m4_include(db.h)])
+
+m4_p([and recompile.])
+
+m4_p([dnl
+The m4_ref(hcreate) function creates an in-memory database.  The
+m4_arg(nelem) parameter is an estimation of the maximum number of key/data
+pairs that will be stored in the database.])
+
+m4_p([dnl
+The m4_arg(hdestroy) function discards the database.])
+
+m4_p([dnl
+Database elements are structures of type m4_bold(ENTRY), which contain at
+least two fields: m4_arg(key) and m4_arg(data).  The field m4_arg(key) is
+declared to be of type m4_bold([char *]), and is the key used for storage
+and retrieval.  The field m4_arg(data) is declared to be of type
+m4_bold([void *]), and is its associated data.])
+
+m4_p([dnl
+The m4_ref(hsearch) function retrieves key/data pairs from, and stores
+key/data pairs into the database.])
+
+m4_p([dnl
+The m4_arg(action) parameter must be set to one of two values:])
+
+m4_tagbegin
+m4_tag(ENTER, [dnl
+If the key does not already appear in the database, insert the key/data
+pair into the database.  If the key already appears in the database,
+return a reference to an m4_arg(ENTRY) structure which refers to the
+existing key and its associated data element.])
+
+m4_tag(FIND, [dnl
+Retrieve the specified key/data pair from the database.])
+m4_tagend
+
+m4_section([Compatibility Notes])
+m4_p([dnl
+Historically, m4_ref(hsearch) required applications to maintain the keys
+and data in the application's memory for as long as the m4_arg(hsearch)
+database existed.  Because m4_db handles key and data management
+internally, there is no requirement that applications maintain local
+copies of key and data items, although the only effect of doing so
+should be the allocation of additional memory.])
+
+m4_section([Hsearch Diagnostics])
+m4_p([dnl
+The m4_arg(hcreate) function returns 0 on failure, setting
+m4_envvar(errno), and non-zero on success.])
+
+m4_p([dnl
+The m4_arg(hsearch) function returns a pointer to an ENTRY structure on
+success, and NULL, setting m4_envvar(errno), if the m4_arg(action)
+specified was FIND and the item did not appear in the database.])
+
+m4_header(Errors)
+m4_p([dnl
+The m4_arg(hsearch) function will fail, setting m4_envvar(errno) to 0,
+if the m4_arg(action) specified was FIND and the item did not appear in
+the database.])
+m4_p([dnl
+In addition, the hcreate, hsearch and hdestroy functions may fail and
+return an error for errors specified for other m4_db and C library or
+system functions.])
+
+m4_page_footer

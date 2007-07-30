@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: StoredCollection.java,v 12.6 2006/09/08 20:32:13 bostic Exp $
+ * $Id: StoredCollection.java,v 12.8 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;
@@ -15,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sleepycat.compat.DbCompat;
 import com.sleepycat.db.CursorConfig;
 import com.sleepycat.db.DatabaseEntry;
 import com.sleepycat.db.DatabaseException;
@@ -137,6 +137,11 @@ public abstract class StoredCollection extends StoredContainer
      * The iterator will be read-only if the collection is read-only.
      * This method does not exist in the standard {@link Collection} interface.
      *
+     * <p>If {@code Iterater.set} or {@code Iterator.remove} will be called
+     * and the underlying Database is transactional, then a transaction must be
+     * active when calling this method and must remain active while using the
+     * iterator.</p>
+     *
      * <p><strong>Warning:</strong> The iterator returned must be explicitly
      * closed using {@link StoredIterator#close()} or {@link
      * StoredIterator#close(java.util.Iterator)} to release the underlying
@@ -155,6 +160,11 @@ public abstract class StoredCollection extends StoredContainer
      * Returns a read or read-write iterator over the elements in this
      * collection.
      * This method does not exist in the standard {@link Collection} interface.
+     *
+     * <p>If {@code Iterater.set} or {@code Iterator.remove} will be called
+     * and the underlying Database is transactional, then a transaction must be
+     * active when calling this method and must remain active while using the
+     * iterator.</p>
      *
      * <p><strong>Warning:</strong> The iterator returned must be explicitly
      * closed using {@link StoredIterator#close()} or {@link
@@ -192,7 +202,7 @@ public abstract class StoredCollection extends StoredContainer
      * Java iterators do not need to be closed.
      */
     public StoredIterator iterator(boolean writeAllowed) {
-
+        
         return storedIterator(writeAllowed);
     }
 
@@ -445,28 +455,36 @@ public abstract class StoredCollection extends StoredContainer
     // Inherit javadoc
     public int size() {
 
-        int count = 0;
         boolean countDups = iterateDuplicates();
-        CursorConfig cursorConfig = view.currentTxn.isLockingMode() ?
-            CursorConfig.READ_UNCOMMITTED : null;
-        DataCursor cursor = null;
-        try {
-            cursor = new DataCursor(view, false, cursorConfig);
-            OperationStatus status = cursor.getFirst(false);
-            while (status == OperationStatus.SUCCESS) {
-                if (countDups) {
-                    count += cursor.count();
-                } else {
-                    count += 1;
-                }
-                status = cursor.getNextNoDup(false);
+        if (DbCompat.DATABASE_COUNT && countDups && !view.range.hasBound()) {
+            try {
+                return (int) DbCompat.getDatabaseCount(view.db);
+            } catch (Exception e) {
+                throw StoredContainer.convertException(e);
             }
-        } catch (Exception e) {
-            throw StoredContainer.convertException(e);
-        } finally {
-            closeCursor(cursor);
+        } else {
+            int count = 0;
+            CursorConfig cursorConfig = view.currentTxn.isLockingMode() ?
+                CursorConfig.READ_UNCOMMITTED : null;
+            DataCursor cursor = null;
+            try {
+                cursor = new DataCursor(view, false, cursorConfig);
+                OperationStatus status = cursor.getFirst(false);
+                while (status == OperationStatus.SUCCESS) {
+                    if (countDups) {
+                        count += cursor.count();
+                    } else {
+                        count += 1;
+                    }
+                    status = cursor.getNextNoDup(false);
+                }
+            } catch (Exception e) {
+                throw StoredContainer.convertException(e);
+            } finally {
+                closeCursor(cursor);
+            }
+            return count;
         }
-        return count;
     }
 
     /**

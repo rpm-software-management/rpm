@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: db_setlsn.c,v 12.13 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_setlsn.c,v 12.18 2007/05/17 15:14:57 bostic Exp $
  */
 
 #include "db_config.h"
@@ -75,7 +74,7 @@ __env_lsn_reset(dbenv, name, encrypted)
 	int t_ret, ret;
 
 	/* Create the DB object. */
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
 		return (ret);
 
 	/* If configured with a password, the databases are encrypted. */
@@ -90,8 +89,10 @@ __env_lsn_reset(dbenv, name, encrypted)
 	 * for writing in this case.
 	 */
 	if ((ret = __db_open(dbp, NULL,
-	    name, NULL, DB_UNKNOWN, DB_RDWRMASTER, 0, PGNO_BASE_MD)) != 0)
+	    name, NULL, DB_UNKNOWN, DB_RDWRMASTER, 0, PGNO_BASE_MD)) != 0) {
+		__db_err(dbenv, ret, "%s", name);
 		goto err;
+	}
 
 	/* Reset the LSN on every page of the database file. */
 	mpf = dbp->mpf;
@@ -99,7 +100,7 @@ __env_lsn_reset(dbenv, name, encrypted)
 	    (ret = __memp_fget(mpf, &pgno, NULL, DB_MPOOL_DIRTY, &pagep)) == 0;
 	    ++pgno) {
 		LSN_NOT_LOGGED(pagep->lsn);
-		if ((ret = __memp_fput(mpf, pagep, 0)) != 0)
+		if ((ret = __memp_fput(mpf, pagep, DB_PRIORITY_UNCHANGED)) != 0)
 			goto err;
 	}
 

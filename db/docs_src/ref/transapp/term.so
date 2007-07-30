@@ -1,0 +1,67 @@
+m4_comment([$Id: term.so,v 10.19 2005/09/23 16:26:40 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Terminology,, transapp/why, transapp/fail)
+
+m4_p([dnl
+Here are some definitions that will be helpful in understanding
+transactions:])
+
+m4_tagbegin
+
+m4_tag(Thread of control, [dnl
+m4_db is indifferent to the type or style of threads being used by the
+application; or, for that matter, if threads are being used at all --
+because m4_db supports multiprocess access.  In the m4_db documentation,
+any time we refer to a m4_italic(thread of control), it can be read as
+a true thread (one of many in an application's address space) or a
+process.])
+
+m4_tag(Free-threaded, [dnl
+A m4_db handle that can be used by multiple threads simultaneously
+without any application-level synchronization is called
+m4_italic(free-threaded).])
+
+m4_tag(Transaction, [dnl
+A m4_italic(transaction) is a one or more operations on one or more
+databases that should be treated as a single unit of work.  For example,
+changes to a set of databases, in which either all of the changes must be
+applied to the database(s) or none of them should.  Applications specify
+when each transaction starts, what database operations are included in
+it, and when it ends.])
+
+m4_tag([Transaction abort/commit], [dnl
+Every transaction ends by m4_italic(committing) or m4_italic(aborting).
+If a transaction commits, m4_db guarantees that any database changes
+included in the transaction will never be lost, even after system or
+application failure.  If a transaction aborts, or is uncommitted when
+the system or application fails, then the changes involved will never
+appear in the database.])
+
+m4_tag(System or application failure, [dnl
+m4_italic(System or application failure) is the phrase we use to
+describe something bad happening near your data.  It can be an
+application dumping core, being interrupted by a signal, the disk
+filling up, or the entire system crashing.  In any case, for whatever
+reason, the application can no longer make forward progress, and its
+databases are left in an unknown state.])
+
+m4_tag(Recovery, [dnl
+m4_italic(Recovery) is what makes the database consistent after a system
+or application failure.  The recovery process includes review of log
+files and databases to ensure that the changes from each committed
+transaction appear in the database, and that no changes from an
+unfinished (or aborted) transaction do.  Whenever system or application
+failure occurs, applications must usually run recovery.])
+
+m4_tag(Deadlock, [dnl
+m4_italic(Deadlock), in its simplest form, happens when one thread of
+control owns resource A, but needs resource B; while another thread of
+control owns resource B, but needs resource A.  Neither thread of
+control can make progress, and so one has to give up and release all
+its resources, at which time the remaining thread of control can make
+forward progress.])
+
+m4_tagend
+
+m4_page_footer

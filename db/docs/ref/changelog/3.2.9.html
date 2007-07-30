@@ -1,0 +1,324 @@
+<!--$Id: 3.2.9.html,v 1.4 2007/05/17 18:17:18 bostic Exp $-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 3.2.9 Change Log</title>
+<meta name="description" content="Berkeley DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 3.2.9 Change Log</h3>
+
+<h3>Database On-Disk Format Changes:</h3>
+<ol>
+
+<li>The on-disk Queue format has changed from version 2 to version 3.  For
+information on upgrading database formats, see "Upgrading Applications
+to the 3.2 release" in the Berkeley DB Reference Guide.
+
+</ol>
+<h3>Major New Features:</h3>
+<ol>
+
+<li>Berkeley DB now includes support for the QNX Neutrino Real-Time
+Platform.
+
+</ol>
+<h3>Interface Additions and Changes:</h3>
+<ol>
+
+<li>Add support for blocking on a Queue "consume" operation until a
+record is available, with a new flag (DB_CONSUME_WAIT) to support this.
+[#1037]
+<li>Change the Queue "consume" operation (and the DB_CONSUME flag) to
+use the DB-&gt;get() method instead of DBC-&gt;c_get(). [#1037]
+<li>Add support for extent-based queues, and a new method to support
+them, DB-&gt;set_q_extentsize. [#1463]
+<li>Add support for wrap-around record numbers in the Queue access
+method. [#1463]
+<li>Add a DB-&gt;set_feedback interface flag for database verification
+operations. [#2019]
+<li>Add a reference to a DB object as the first argument to
+four application callback functions (the callback functions set by
+DB-&gt;set_bt_compare, DB-&gt;set_bt_prefix, DB-&gt;set_dup_compare, and
+DB-&gt;set_h_hash). [#2179]
+<li>Add a DBENV-&gt;set_flags interface to support configuration of the
+database environment. [#2727]
+<li>Add the DB_CDB_ALLDB flag to the DBENV-&gt;set_flags interface to
+support Concurrent Data Store semantics across multiple databases in an
+environment.  [#2727]
+<li>Remove the app_private field from the DBT structure.  Add app_private
+fields to the DB and DB_ENV structures. [#2862]
+<li>The db_env_set_mutexlocks function has become a method on the
+environment handle, DBENV-&gt;set_mutexlocks. [#3001]
+
+</ol>
+<h3>General Environment Changes:</h3>
+<ol>
+
+<li>Add support for the destruction of mutexes which may hold system
+resources. [#1953]
+<li>Attempts to join existing regions where the application was built with
+a different version (major, minor, patch) of Berkeley DB than was the
+application that created the region, now returns EINVAL. [#2198]
+<li>Clarify the Berkeley DB documentation that all destructor methods,
+(for example, DB-&gt;close txn_commit, txn_abort and memp_fclose),
+always destroy their respective handles, regardless of their return,
+error or not. Review the appropriate code and apply minor fixes. [#2311]
+<li>Fix a bug in which creating multiple databases in one file could fail
+when using the Concurrent Data Store product. [#2713]
+<li>Fix a bug in which running recovery in one environment could cause
+mutexes to stop working in another environment open in the same process.
+[#3001]
+<li>Fix a set of bugs in which assorted DB interfaces could panic
+and return errors other than DB_RUNRECOVERY. [#3018]
+<li>Fix a bug where calling the DB_ENV-&gt;remove method using a handle
+already passed to the DB_ENV-&gt;open method dumped core. [#3097]
+<li>Fix a bug where the Concurrent Data Store product could enter
+deadlock. [#3065]
+<li>Fix a bug where recovery output spurious error messages when opening
+a previously deleted subdatabase. [#3074]
+
+</ol>
+<h3>General Access Method Changes:</h3>
+<ol>
+
+<li>Fix a bug where the DB-&gt;verify method was unable to access
+subdatabases, returning ENOENT. [#2319]
+<li>Change filename processing to not transform database names with
+leading "./" strings. [#2382]
+<li>Fix a bug in which database verification could report the wrong number of pages and fail. [#2559]
+<li>Fix a bug in which overflow pages belonging to duplicate data items
+might not be properly counted by DB-&gt;stat. [#2911]
+<li>Fix a bug in which cursors could be adjusted incorrectly when
+items are inserted into an off-page duplicate set. [#2910]
+<li>Fix a set of bugs which could cause the DB salvager to dump core
+when running with DB_AGGRESSIVE or for certain classes of corrupt databases.
+[#2784]
+<li>Fix a bug in which DB_KEYEXIST could be incorrectly returned
+by DB-&gt;verify. [#2784]
+<li>Add a stricter verification criterion:  free lists of pages are not
+allowed on metadata pages other than the master one. [#2784]
+
+</ol>
+<h3>Btree Access Method Changes:</h3>
+<ol>
+
+<li>Fix a bug where cursors in the parent of a nested transaction could
+be incorrectly adjusted after a child transaction was aborted. [#2373]
+<li>Fix a bug where an overflow page's reference count was not
+decremented during a reverse split. [#2550]
+<li>Fix a bug where the tree record count in a Btree could be left
+incorrect after an aborted insert or delete. [#2810]
+<li>Fix a bug in which too high a value of bt_minkey could cause an
+infinite loop when executing a Btree split. [#2888]
+<li>Fix a bug in which overflow pages that stored a duplicate
+data item could be leaked when the item was deleted. [#2912]
+
+</ol>
+<h3>Hash Access Method Changes:</h3>
+<ol>
+
+<li>Fix a bug where cursors in the parent of a nested transaction could
+be incorrectly adjusted after a child transaction was aborted. [#2373]
+<li>Fix a bug in which cursor gets performed on deleted items could
+return EINVAL instead of the correct DB_KEYEMPTY. [#2596]
+<li>Fix a bug where the verifier could falsely report errors when new
+hash pages were allocated in an aborted transaction. [#2577]
+<li>Fix a bug where hash recovery roll-forward log contains a abort and
+then re-do of a hash table double. [#2599]
+<li>Fix a bug in hash recovery roll-forward that could cause database
+corruption. [#2602]
+<li>Fix a bug where sizes could be miscalculated when adding duplicate
+records. [#2611]
+<li>Fix a bug in which a Hash insert could result in a misplaced
+item or an application crash. [#2842]
+<li>Fix a memory leak in Hash which could cause salvaging of Hash
+databases to waste an amount of memory roughly equal to database size. [#2869]
+<li>Fix a bug in which a failed attempt to put a duplicate duplicate
+item could result in a corrupted database. [#2996]
+<li>Fix a bug in which databases upgraded from version 2.X could
+become corrupted by the upgrade process. [#3061]
+<li>Fix a bug in which verifying a Hash database with the DB_ORDERCHKONLY
+flag could fail. [#3061]
+
+</ol>
+<h3>Queue Access Method Changes:</h3>
+<ol>
+
+<li>Fix a bug in which a (possibly nonsense) record number was returned
+when a queue insertion failed. [#2634]
+<li>Add support for circular queues: when UINT32_T_MAX records have
+been added using DB_APPEND, wrap around to record number 1. [#2829]
+<li>Fix a bug where the DB-&gt;stat method incorrectly marked the
+metadata page clean. [#3092]
+
+</ol>
+<h3>Recno Access Method Changes:</h3>
+<ol>
+
+<li>Fix a bug where cursors in the parent of a nested transaction could
+be incorrectly adjusted after a child transaction was aborted. [#2373,#2490]
+<li>Fix a bug in which a failure during the open of a Recno database could
+result in application crashes. [#2687]
+<li>Change the Recno statistics to not count logically deleted data
+items in Recno trees with immutable record numbers. [#2629]
+<li>Fix a bug in which overflow pages in Recno databases
+might not be properly counted by DB-&gt;stat. [#2911]
+<li>Change the Recno backing source file implementation to use stdio
+and not memory map the files. [#3076]
+<li>Fix a bug where writing new records past the end of the source text
+file when the entire file hadn't been read failed. [#3276]
+
+</ol>
+<h3>C++ API Changes:</h3>
+<ol>
+
+<li>Fix a bug where calling the Db::remove() method could crash the application. [#2665]
+<li>Stop supporting "reopens" of Db/DbEnv objects in C++, fix API memory
+leaks. [#2783, #2344]
+
+</ol>
+<h3>Java API Changes:</h3>
+<ol>
+
+<li>Java now supports the Db-&gt;set_bt_compare, Db-&gt;set_bt_prefix
+Db-&gt;set_h_hash and DbEnv-&gt;set_tx_recover methods, allowing Java
+applications to specify alternate Btree comparison and prefix methods,
+Hash hashing method and application-specific recovery. [#2179]
+<li>Remove unnecessary local allocation routine setting in Java API. [#2510]
+<li>Fix a bug where the Db.DB_CACHED_COUNTS flag was not properly defined in Java. [#2568]
+<li>Fix a bug where certain DB error returns did not display the correct db_strerror text. [#2679]
+<li>Db.rename, Db.remove, DbEnv.remove now throw
+java.io.FileNotFoundException. [#2320]
+<li>Stop supporting "reopens" of Db/DbEnv objects in Java, fix API
+memory leaks. [#2320]
+
+</ol>
+<h3>Tcl API Changes:</h3>
+<ol>
+
+<li>Fix a bug where closing a Tcl environment handle (when the environment
+included open database handles), the open database handles would be
+discarded and the underlying Berkeley DB resources leaked. [#2325]
+
+</ol>
+<h3>RPC Client/Server Changes:</h3>
+
+<blockquote>None.</blockquote>
+
+<h3>XA Resource Manager Changes:</h3>
+<ol>
+
+<li>Fix a bug in which updates could be performed on behalf of the
+wrong XA transaction. [#2650]
+
+</ol>
+<h3>Locking Subsystem Changes:</h3>
+<ol>
+
+<li>Change the locking subsystem to guarantee that if any request for
+a lock fails, the off field is set to LOCK_INVALID, parts of Berkeley
+DB reasonably depend on this, and it fixes a potential uninitialized
+memory read in Btree root page processing. [#2364]
+
+</ol>
+<h3>Logging Subsystem Changes:</h3>
+<ol>
+
+<li>Fix a bug where an error message was written out if the log_get()
+interface was called and the supplied DBT included the DB_USERMEM flag,
+and there was insufficient space available for the log record. [#2243]
+
+</ol>
+<h3>Buffer Pool Subsystem Changes:</h3>
+<ol>
+
+<li>Avoid flushing the log for each buffer written during a transaction
+checkpoint. [#2287]
+<li>Fix a bug in which the "gbytes" parameter to the set_cachesize functions
+(and to set_cachesize directives in a DB_CONFIG file) was handled incorrectly.
+[#2685]
+<li>Fix a bug which could result in erratic behavior or application
+crashes during buffer pool open. [#2747]
+<li>Fix a bug in which statistics fields belonging to per-file structures
+were not returned when per-file statistics were not requested. [#3038]
+
+</ol>
+<h3>Transaction Subsystem Changes:</h3>
+<ol>
+
+<li>Rework child transaction structures on child commit in order to
+decrease transaction resource usage and ensure abort on error. [#2230] [#2489]
+<li>Display an error message if cursors opened within a transaction are
+still open at transaction commit/abort. [#2235]
+<li>Fix a bug where one abort path after a page allocation could lead to
+a corrupted free list. [#2464]
+<li>Fix bug that caused reference to potentially freed memory. [#2478]
+<li>Fix a bug in which recovery of the deletion of a file that had been
+later re-created with the same name could fail. [#2538]
+<li>Fix a bug where missing pages were handled incorrectly during
+overflow reference count recover. [#2556]
+<li>Fix a bug where recovery of a subdatabase metadata operation could fail. [#2502]
+<li>Change transaction checkpointing to render less likely a situation in which no checkpoint will ever complete because pages remain pinned. [#2569]
+<li>Fix a bug where recovery of a queue metadata operation could fail. [#2690]
+<li>Fix a bug where recovery of a DB_CONSUME operation in queue could fail. [#2698]
+<li>Fix a bug where recovery could fail if done twice without an intervening checkpoint after an unclean shut down. [#2918]
+<li>Fix a bug where an error on recovery could cause a core dump due
+to an incorrect number of arguments in a printf statement. [#2987]
+<li>Change transaction checkpointing so that checkpoints are no longer
+skipped if there are new log records in the log buffer but none which have
+been flushed to disk. [#2949]
+
+</ol>
+<h3>Utility Changes:</h3>
+<ol>
+
+<li>Fix a bug in which db_stat would print extraneous error messages
+when opening a file containing multiple databases. [#2565]
+<li>Fix a bug where db_dump would display keys as numeric strings even
+though data items were being displayed as hex pairs. [#2676]
+<li>Fix a bug where the wrong statistics value was displayed for the
+maximum locks ever requested. [#2979]
+<li>Remove mention of the "-a m" option to db_deadlock, it was never
+implemented. [#3082]
+
+</ol>
+<h3>Configuration, Documentation, Portability and Build Changes:</h3>
+<ol>
+
+<li>Support for MSVC 4 has been removed.
+<li>Add a --enable-umrw configuration option to mask harmless uninitialized
+memory reads/writes. [#2377]
+<li>Remove searching of non-standard directories for Tcl installation,
+search only /usr/local. [#2386]
+<li>Fix a bug where Win32 support did not accept colon as a device/path
+separator. [#2393]
+<li>Ensure that Tcl directory include files do not override Berkeley DB
+include files when building the Tcl API. [#2395]
+<li>Rename "try" variable something else for Compaq Tru64 UNIX 5.0a. [#2410]
+<li>Change the Reference Guide to list page name, not section name as
+the HTML title. [#2485]
+<li>Fix a bug where the DBT documentation incorrectly said that various
+flags were only used during key/data pair retrieval. [#2537]
+<li>Fix a bug where VxWorks applications were restricted to the use of one environment, and add support for DB_ENV-&gt;set_shm_key on VxWorks. [#2528]
+<li>Fix a bug where VxWorks applications incorrectly failed when trying
+to memory-map read-only database files. [#2570]
+<li>Add support in the MSVC project files to build statically on Windows. [#2554]
+<li>Fix a bug in which resolution of absolute pathnames in VxWorks was incorrect. [#2579]
+<li>Fix a bug in which file initialization was being incorrectly performed for temporary files that have not yet been physically instantiated on Windows/95 and /98. [#2341]
+<li>Enable large file support in Linux. [#2871]
+<li>Fix a compiler warning in the Solaris mutex code. [#2905]
+<li>Berkeley DB now works with the Cygwin tools.  You need at least DLL
+version 1.1.4.  Configure and build as you would on a Unix system.  Only
+static library builds are supported, no shared library support is
+included. [#2913]
+<li>Update BSD-style queue.h macros to avoid compilation problems
+on some versions of FreeBSD. [#2999]
+<li>Modify installation sequence such that the db_185.h header file is now
+only installed when --enable-compat185 was specified as an option to configure. [#3064]
+
+</ol>
+
+</body>
+</html>

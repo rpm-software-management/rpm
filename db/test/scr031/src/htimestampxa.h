@@ -1,5 +1,5 @@
 #ifndef HTIMESTAMPXA_H
-#define HTIMESTAMPXA_H
+#define	HTIMESTAMPXA_H
 
 /*
  * Timestamp with microseconds precision

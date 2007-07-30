@@ -1,0 +1,46 @@
+m4_comment([$Id: cxx.so,v 1.3 2005/12/01 03:18:53 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: C++ ostream objects,,
+    upgrade.4.0/java, upgrade.4.0/asr)
+
+m4_p([dnl
+In the 4.0 release, the m4_db C++ API has been changed to use the ISO
+standard C++ API in preference to the older, less portable interfaces,
+where available.  This means the m4_db methods that used to take an
+ostream object as a parameter now expect a std::ostream.  Specifically,
+the following methods have changed:])
+
+m4_indent([dnl
+DbEnv::set_error_stream
+Db::set_error_stream
+Db::verify])
+
+m4_p([dnl
+On many platforms, the old and the new C++ styles are interchangeable;
+on some platforms (notably Windows systems), they are incompatible. If
+your code uses these methods and you have trouble with the 4.0 release,
+you should update code that looks like this:])
+
+m4_indent([dnl
+#include __LT__iostream.h__GT__
+#include __LT__db_cxx.h__GT__
+m4_blank
+void foo(Db db) {
+	db.set_error_stream(&cerr);
+}])
+
+m4_p([dnl
+to look like this:])
+
+m4_indent([dnl
+#include __LT__iostream__GT__
+#include __LT__db_cxx.h__GT__
+m4_blank
+using std::cerr;
+m4_blank
+void foo(Db db) {
+	db.set_error_stream(&cerr);
+}])
+
+m4_page_footer

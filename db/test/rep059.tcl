@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: rep059.tcl,v 1.7 2006/09/08 20:32:18 bostic Exp $
+# $Id: rep059.tcl,v 1.12 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep059
 # TEST
@@ -15,8 +14,14 @@
 # TEST	match on.
 #
 proc rep059 { method { tnum "059" } args } {
-	global testdir
 	source ./include.tcl
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	set orig_tdir $testdir
 
 	if { $is_windows9x_test == 1 } {
@@ -25,7 +30,7 @@ proc rep059 { method { tnum "059" } args } {
 	}
 	# There should be no difference with methods.  Just use btree.
 	#
-	if { $checking_valid_methods }
+	if { $checking_valid_methods } {
 		set test_methods { btree }
 		return $test_methods
 	}
@@ -51,38 +56,23 @@ proc rep059 { method { tnum "059" } args } {
 	# Open a master.
 	repladd 1
 	set envcmd(M) "berkdb_env_noerr -create -txn nosync\
-	    -lock_detect default \
+	    -lock_detect default -errpfx MASTER $verbargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set envcmd(M) "berkdb_env_noerr -create -txn nosync \
-#	    -lock_detect default \
-#	    -errpfx ENV.M -verbose {rep on} -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set menv [eval $envcmd(M)]
-	error_check_good master_env0 [is_valid_env $menv] TRUE
 
 	# Open a client
 	repladd 2
 	set envcmd(C) "berkdb_env_noerr -create -txn nosync \
-	    -lock_detect default \
+	    -lock_detect default -errpfx CLIENT1 $verbargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set envcmd(C) "berkdb_env_noerr -create -txn nosync \
-#	    -lock_detect default \
-#	    -errpfx ENV.C -verbose {rep on} -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set cenv [eval $envcmd(C)]
-	error_check_good client_env [is_valid_env $cenv] TRUE
 
 	# Open a 2nd client
 	repladd 3
 	set envcmd(C2) "berkdb_env_noerr -create -txn nosync \
-	    -lock_detect default \
+	    -lock_detect default -errpfx CLIENT2 $verbargs \
 	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
-#	set envcmd(C2) "berkdb_env_noerr -create -txn nosync \
-#	    -lock_detect default \
-#	    -errpfx ENV.C2 -verbose {rep on} -errfile /dev/stderr \
-#	    -home $clientdir2 -rep_transport \[list 3 replsend\]"
 	set c2env [eval $envcmd(C2)]
-	error_check_good client2_env [is_valid_env $c2env] TRUE
 
 	#
 	# Set test location, then start as master and client

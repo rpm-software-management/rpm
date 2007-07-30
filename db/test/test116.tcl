@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: test116.tcl,v 12.6 2006/08/24 14:46:41 bostic Exp $
+# $Id: test116.tcl,v 12.9 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test116
 # TEST	Test of basic functionality of lsn_reset.
@@ -38,6 +37,7 @@ proc test116 { method {tnum "116"} args } {
 
 	if { $eindex == -1 } {
 		puts "\tTest$tnum.a: Creating env."
+		env_cleanup $testdir
 		set env [eval {berkdb_env} \
 		    -create $encargs $envargs -home $testdir -txn]
 		append args " -auto_commit "
@@ -140,8 +140,14 @@ proc test116 { method {tnum "116"} args } {
 		set testdir [get_home $env]
 		set newdir [get_home $newenv]
 
-		# Reset LSNs before copying.
+		# Reset LSNs before copying.  We do a little dance here:
+		# first copy the file within the same directory, then reset
+		# the fileid on the copy, then reset the LSNs on the copy,
+		# and only then copy the new file to the new env.  Otherwise
+		# the LSNs would get reset on the original file.
+
 		file copy -force $testdir/$testfile $testdir/$newfile
+		error_check_good fileid_reset [$env id_reset $newfile] 0
 		error_check_good \
 		    lsn_reset [eval {$env lsn_reset} $resetargs {$newfile}] 0
 
@@ -229,6 +235,7 @@ proc test116 { method {tnum "116"} args } {
 			}
 		}
 		error_check_good newenv_close [$newenv close] 0
+		fileremove -f $newdir
 	}
 
 	set testdir $orig_tdir

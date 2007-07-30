@@ -1,6 +1,5 @@
-<!--$Id: env_set_cachesize.so,v 10.50 2005/01/10 07:18:43 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: env_set_cachesize.so,v 10.51 2007/07/06 00:22:52 mjc Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -50,26 +49,29 @@ allocated contiguously on some architectures.  For example, some
 releases of Solaris limit the amount of memory that may be allocated
 contiguously by a process.  If <b>ncache</b> is 0 or 1, the cache will
 be allocated contiguously in memory.  If it is greater than 1, the cache
-will be broken up into <b>ncache</b> equally sized, separate pieces of
-memory.</p>
-<p>The database environment's cache size may also be configured using the
+will be split across <b>ncache</b> separate regions, where the
+<b>region size</b> is equal to the initial cache size divided by
+<b>ncache</b>.</p>
+<p>The memory pool may be resized by calling DB_ENV-&gt;set_cachesize
+after the environment is open.  The supplied size will be rounded to
+the nearest multiple of the region size and may not be larger than the
+maximum size configured with <a href="../api_c/env_set_cache_max.html">DB_ENV-&gt;set_cache_max</a>.  The
+<b>ncache</b> parameter is ignored when resizing the cache.</p>
+<p>The database environment's initial cache size may also be configured using the
 environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
 file is a single line with the string "set_cachesize", one or more whitespace
-characters, and the cache size specified in three parts: the gigabytes of cache, the
-additional bytes of cache, and the number of caches, also separated by
-whitespace characters.  For example, "set_cachesize 2 524288000 3" would
-create a 2.5GB logical cache, split between three physical caches.
+characters, and the initial cache size specified in three parts: the gigabytes of
+cache, the additional bytes of cache, and the number of caches, also
+separated by whitespace characters.  For example, "set_cachesize 2
+524288000 3" would create a 2.5GB logical cache, split between three
+physical caches.
 Because the <b>DB_CONFIG</b> file is read when the database
 environment is opened, it will silently overrule configuration done
 before that time.</p>
 <p>The DB_ENV-&gt;set_cachesize method configures a database environment, not only operations
 performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
-<p>The DB_ENV-&gt;set_cachesize method may not be called after the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method is
-called.
-If the database environment already exists when
-<a href="../api_c/env_open.html">DB_ENV-&gt;open</a> is called, the information specified to DB_ENV-&gt;set_cachesize
-will be ignored.
-</p>
+<p>The DB_ENV-&gt;set_cachesize method may be called at any time during the life of the
+application.</p>
 <p>The DB_ENV-&gt;set_cachesize method
 returns a non-zero error value on failure
 and 0 on success.
@@ -85,9 +87,7 @@ and 0 on success.
 may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>EINVAL<dd>If the specified cache size was impossibly small;
-the method was called after
-<a href="../api_c/env_open.html">DB_ENV-&gt;open</a>
-was called; or if an
+; or if an
 invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
@@ -118,6 +118,6 @@ and 0 on success.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

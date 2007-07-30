@@ -1,0 +1,29 @@
+m4_comment([$Id: renumber.so,v 1.4 2001/05/05 01:49:34 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.2: Logically renumbering records,,
+    upgrade.3.2/callback, upgrade.3.2/incomplete)
+
+m4_p([dnl
+In the m4_db 3.2 release, cursor adjustment semantics changed for Recno
+databases with mutable record numbers.  Before the 3.2 release, cursors
+were adjusted to point to the previous or next record at the time the
+record to which the cursor referred was deleted.  This could lead to
+unexpected behaviors.  For example, two cursors referring to sequential
+records that were both deleted would lose their relationship to each
+other and would refer to the same position in the database instead of
+their original sequential relationship.  There were also command
+sequences that would have unexpected results.  For example, DB_AFTER
+and DB_BEFORE cursor put operations, using a cursor previously used to
+delete an item, would perform the put relative to the cursor's adjusted
+position and not its original position.])
+
+m4_p([dnl
+In the m4_db 3.2 release, cursors maintain their position in the tree
+regardless of deletion operations using the cursor.  Applications that
+perform database operations, using cursors previously used to delete
+entries in Recno databases with mutable record numbers, should be
+evaluated to ensure that the new semantics do not cause application
+failure.])
+
+m4_page_footer

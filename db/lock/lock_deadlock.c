@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: lock_deadlock.c,v 12.17 2006/08/24 14:46:10 bostic Exp $
+ * $Id: lock_deadlock.c,v 12.26 2007/05/17 19:33:04 bostic Exp $
  */
 
 #include "db_config.h"
@@ -40,13 +39,14 @@ typedef struct {
 	u_int32_t	id;
 	roff_t		last_lock;
 	roff_t		last_obj;
+	u_int32_t	last_ndx;
 	u_int32_t	last_locker_id;
 	db_pgno_t	pgno;
 } locker_info;
 
 static int __dd_abort __P((DB_ENV *, locker_info *, int *));
-static int __dd_build __P((DB_ENV *,
-	    u_int32_t, u_int32_t **, u_int32_t *, u_int32_t *, locker_info **));
+static int __dd_build __P((DB_ENV *, u_int32_t,
+	    u_int32_t **, u_int32_t *, u_int32_t *, locker_info **, int*));
 static int __dd_find __P((DB_ENV *,
 	    u_int32_t *, locker_info *, u_int32_t, u_int32_t, u_int32_t ***));
 static int __dd_isolder __P((u_int32_t, u_int32_t, u_int32_t, u_int32_t));
@@ -65,10 +65,10 @@ static void __dd_debug
  * PUBLIC: int __lock_detect_pp __P((DB_ENV *, u_int32_t, u_int32_t, int *));
  */
 int
-__lock_detect_pp(dbenv, flags, atype, abortp)
+__lock_detect_pp(dbenv, flags, atype, rejectp)
 	DB_ENV *dbenv;
 	u_int32_t flags, atype;
-	int *abortp;
+	int *rejectp;
 {
 	DB_THREAD_INFO *ip;
 	int ret;
@@ -98,7 +98,7 @@ __lock_detect_pp(dbenv, flags, atype, abortp)
 	}
 
 	ENV_ENTER(dbenv, ip);
-	REPLICATION_WRAP(dbenv, (__lock_detect(dbenv, atype, abortp)), ret);
+	REPLICATION_WRAP(dbenv, (__lock_detect(dbenv, atype, rejectp)), ret);
 	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
@@ -110,14 +110,14 @@ __lock_detect_pp(dbenv, flags, atype, abortp)
  * PUBLIC: int __lock_detect __P((DB_ENV *, u_int32_t, int *));
  */
 int
-__lock_detect(dbenv, atype, abortp)
+__lock_detect(dbenv, atype, rejectp)
 	DB_ENV *dbenv;
 	u_int32_t atype;
-	int *abortp;
+	int *rejectp;
 {
 	DB_LOCKREGION *region;
 	DB_LOCKTAB *lt;
-	db_timeval_t now;
+	db_timespec now;
 	locker_info *idmap;
 	u_int32_t *bitmap, *copymap, **deadp, **free_me, *tmpmap;
 	u_int32_t i, cid, keeper, killid, limit, nalloc, nlockers;
@@ -134,8 +134,8 @@ __lock_detect(dbenv, atype, abortp)
 	free_me = NULL;
 
 	lt = dbenv->lk_handle;
-	if (abortp != NULL)
-		*abortp = 0;
+	if (rejectp != NULL)
+		*rejectp = 0;
 
 	/* Check if a detector run is necessary. */
 	LOCK_SYSTEM_LOCK(dbenv);
@@ -143,9 +143,9 @@ __lock_detect(dbenv, atype, abortp)
 	/* Make a pass only if auto-detect would run. */
 	region = lt->reginfo.primary;
 
-	LOCK_SET_TIME_INVALID(&now);
+	timespecclear(&now);
 	if (region->need_dd == 0 &&
-	     (!LOCK_TIME_ISVALID(&region->next_timeout) ||
+	     (!timespecisset(&region->next_timeout) ||
 	     !__lock_expired(dbenv, &now, &region->next_timeout))) {
 		LOCK_SYSTEM_UNLOCK(dbenv);
 		return (0);
@@ -157,7 +157,8 @@ __lock_detect(dbenv, atype, abortp)
 	region->need_dd = 0;
 
 	/* Build the waits-for bitmap. */
-	ret = __dd_build(dbenv, atype, &bitmap, &nlockers, &nalloc, &idmap);
+	ret = __dd_build(dbenv,
+	    atype, &bitmap, &nlockers, &nalloc, &idmap, rejectp);
 	lock_max = region->stat.st_cur_maxid;
 	LOCK_SYSTEM_UNLOCK(dbenv);
 	if (ret != 0 || atype == DB_LOCK_EXPIRE)
@@ -206,8 +207,8 @@ __lock_detect(dbenv, atype, abortp)
 	killid = BAD_KILLID;
 	free_me = deadp;
 	for (; *deadp != NULL; deadp++) {
-		if (abortp != NULL)
-			++*abortp;
+		if (rejectp != NULL)
+			++*rejectp;
 		killid = (u_int32_t)(*deadp - bitmap) / nalloc;
 		limit = killid;
 
@@ -363,26 +364,29 @@ err:	if (free_me != NULL)
 #define	DD_INVALID_ID	((u_int32_t) -1)
 
 static int
-__dd_build(dbenv, atype, bmp, nlockers, allocp, idmap)
+__dd_build(dbenv, atype, bmp, nlockers, allocp, idmap, rejectp)
 	DB_ENV *dbenv;
 	u_int32_t atype, **bmp, *nlockers, *allocp;
 	locker_info **idmap;
+	int *rejectp;
 {
 	struct __db_lock *lp;
 	DB_LOCKER *lip, *lockerp, *child;
-	DB_LOCKOBJ *op, *lo;
+	DB_LOCKOBJ *op, *lo, *np;
 	DB_LOCKREGION *region;
 	DB_LOCKTAB *lt;
 	locker_info *id_array;
-	db_timeval_t now, min_timeout;
-	u_int32_t *bitmap, count, dd, *entryp, id, ndx, nentries, *tmpmap;
+	db_timespec now, min_timeout;
+	u_int32_t *bitmap, count, dd;
+	u_int32_t *entryp, gen, id, indx, ndx, nentries, *tmpmap;
 	u_int8_t *pptr;
 	int is_first, ret;
 
+	COMPQUIET(indx, 0);
 	lt = dbenv->lk_handle;
 	region = lt->reginfo.primary;
-	LOCK_SET_TIME_INVALID(&now);
-	LOCK_SET_TIME_MAX(&min_timeout);
+	timespecclear(&now);
+	timespecclear(&min_timeout);
 
 	/*
 	 * While we always check for expired timeouts, if we are called with
@@ -393,26 +397,42 @@ __dd_build(dbenv, atype, bmp, nlockers, allocp, idmap)
 	 * needs to expect this.
 	 */
 	if (atype == DB_LOCK_EXPIRE) {
-		SH_TAILQ_FOREACH(op, &region->dd_objs, dd_links, __db_lockobj)
+skip:		LOCK_OBJECTS(dbenv, region);
+		op = SH_TAILQ_FIRST(&region->dd_objs, __db_lockobj);
+		for (; op != NULL; op = np) {
+			indx = op->indx;
+			gen = op->generation;
+			UNLOCK_OBJECTS(dbenv, region);
+			OBJECT_LOCK_NDX(lt, indx);
+			if (op->generation != gen) {
+				OBJECT_UNLOCK(lt, indx);
+				goto skip;
+			}
 			SH_TAILQ_FOREACH(lp, &op->waiters, links, __db_lock) {
-				LOCKER_LOCK(lt, region, lp->holder, ndx);
-				if ((ret = __lock_getlocker(lt,
-				    lp->holder, ndx, 0, &lockerp)) != 0)
-					continue;
+				lockerp = (DB_LOCKER *)
+				    R_ADDR(&lt->reginfo, lp->holder);
 				if (lp->status == DB_LSTAT_WAITING) {
 					if (__lock_expired(dbenv,
 					    &now, &lockerp->lk_expire)) {
 						lp->status = DB_LSTAT_EXPIRED;
 						MUTEX_UNLOCK(
 						    dbenv, lp->mtx_lock);
+						if (rejectp != NULL)
+							++*rejectp;
 						continue;
 					}
-					if (LOCK_TIME_GREATER(
-					    &min_timeout, &lockerp->lk_expire))
+					if (!timespecisset(&min_timeout) ||
+					    timespeccmp(&min_timeout,
+					    &lockerp->lk_expire, >))
 						min_timeout =
 						    lockerp->lk_expire;
 				}
 			}
+			LOCK_OBJECTS(dbenv, region);
+			np = SH_TAILQ_NEXT(op, dd_links, __db_lockobj);
+			OBJECT_UNLOCK(lt, indx);
+		}
+		UNLOCK_OBJECTS(dbenv, region);
 		goto done;
 	}
 
@@ -472,6 +492,7 @@ retry:	count = region->stat.st_nlockers;
 	 * First we go through and assign each locker a deadlock detector id.
 	 */
 	id = 0;
+	LOCK_LOCKERS(dbenv, region);
 	SH_TAILQ_FOREACH(lip, &region->lockers, ulinks, __db_locker) {
 		if (lip->master_locker == INVALID_ROFF) {
 			lip->dd_id = id++;
@@ -494,30 +515,55 @@ retry:	count = region->stat.st_nlockers;
 			lip->dd_id = DD_INVALID_ID;
 
 	}
+	UNLOCK_LOCKERS(dbenv, region);
 
 	/*
 	 * We only need consider objects that have waiters, so we use
 	 * the list of objects with waiters (dd_objs) instead of traversing
 	 * the entire hash table.  For each object, we traverse the waiters
 	 * list and add an entry in the waitsfor matrix for each waiter/holder
-	 * combination.
+	 * combination. We don't want to lock from the OBJECTS mutex to the
+	 * hash mutex, so we drop objects and get the hash mutex.  Then
+	 * check to see if the object has changed.  Once we have the object
+	 * locked then locks cannot be remove and lockers cannot go away.
 	 */
-	SH_TAILQ_FOREACH(op, &region->dd_objs, dd_links, __db_lockobj) {
-		CLEAR_MAP(tmpmap, nentries);
+	if (0) {
+		/* If an object has changed state, start over. */
+again:		memset(bitmap, 0, count * sizeof(u_int32_t) * nentries);
+	}
+	LOCK_OBJECTS(dbenv, region);
+	op = SH_TAILQ_FIRST(&region->dd_objs, __db_lockobj);
+	for (; op != NULL; op = np) {
+		indx = op->indx;
+		gen = op->generation;
+		UNLOCK_OBJECTS(dbenv, region);
+
+		OBJECT_LOCK_NDX(lt, indx);
+		if (gen != op->generation) {
+			OBJECT_UNLOCK(lt, indx);
+			goto again;
+		}
 
 		/*
 		 * First we go through and create a bit map that
 		 * represents all the holders of this object.
 		 */
+
+		CLEAR_MAP(tmpmap, nentries);
 		SH_TAILQ_FOREACH(lp, &op->holders, links, __db_lock) {
-			LOCKER_LOCK(lt, region, lp->holder, ndx);
-			if ((ret = __lock_getlocker(lt,
-			    lp->holder, ndx, 0, &lockerp)) != 0)
-				continue;
+			lockerp = (DB_LOCKER *)R_ADDR(&lt->reginfo, lp->holder);
 
 			if (lockerp->dd_id == DD_INVALID_ID) {
+				/*
+				 * If the locker was not here when we started,
+				 * then it was not deadlocked at that time.
+				 */
+				if (lockerp->master_locker == INVALID_ROFF)
+					continue;
 				dd = ((DB_LOCKER *)R_ADDR(&lt->reginfo,
 				    lockerp->master_locker))->dd_id;
+				if (dd == DD_INVALID_ID)
+					continue;
 				lockerp->dd_id = dd;
 				switch (atype) {
 				case DB_LOCK_MINLOCKS:
@@ -555,19 +601,19 @@ retry:	count = region->stat.st_nlockers;
 		    lp != NULL;
 		    is_first = 0,
 		    lp = SH_TAILQ_NEXT(lp, links, __db_lock)) {
-			LOCKER_LOCK(lt, region, lp->holder, ndx);
-			if ((ret = __lock_getlocker(lt,
-			    lp->holder, ndx, 0, &lockerp)) != 0)
-				continue;
+			lockerp = (DB_LOCKER *)R_ADDR(&lt->reginfo, lp->holder);
 			if (lp->status == DB_LSTAT_WAITING) {
 				if (__lock_expired(dbenv,
 				    &now, &lockerp->lk_expire)) {
 					lp->status = DB_LSTAT_EXPIRED;
 					MUTEX_UNLOCK(dbenv, lp->mtx_lock);
+					if (rejectp != NULL)
+						++*rejectp;
 					continue;
 				}
-				if (LOCK_TIME_GREATER(
-				    &min_timeout, &lockerp->lk_expire))
+				if (!timespecisset(&min_timeout) ||
+				    timespeccmp(
+				    &min_timeout, &lockerp->lk_expire, >))
 					min_timeout = lockerp->lk_expire;
 			}
 
@@ -613,19 +659,28 @@ retry:	count = region->stat.st_nlockers;
 				CLR_MAP(entryp, dd);
 			}
 		}
+		LOCK_OBJECTS(dbenv, region);
+		np = SH_TAILQ_NEXT(op, dd_links, __db_lockobj);
+		OBJECT_UNLOCK(lt, indx);
 	}
+	UNLOCK_OBJECTS(dbenv, region);
 
-	/* Now for each locker; record its last lock. */
+	/*
+	 * Now for each locker, record its last lock.
+	 * We need to look at the heldby list carefully.  We have the LOCKERS
+	 * locked so they cannot go away.  The lock at the head of the
+	 * list can be removed by locking the object it points at.
+	 * Since lock memory is not freed if we get a lock we can look
+	 * at it safely but SH_LIST_FIRST is not atomic, so we check that
+	 * the list has not gone empty during that macro.
+	 */
+	LOCK_LOCKERS(dbenv, region);
 	for (id = 0; id < count; id++) {
 		if (!id_array[id].valid)
 			continue;
-		LOCKER_LOCK(lt, region, id_array[id].id, ndx);
-		if ((ret = __lock_getlocker(lt,
-		    id_array[id].id, ndx, 0, &lockerp)) != 0) {
-			__db_errx(dbenv,
-			    "No locks for locker %lu", (u_long)id_array[id].id);
+		if ((ret = __lock_getlocker_int(lt,
+		    id_array[id].id, 0, &lockerp)) != 0 || lockerp == NULL)
 			continue;
-		}
 
 		/*
 		 * If this is a master transaction, try to
@@ -635,35 +690,55 @@ retry:	count = region->stat.st_nlockers;
 		child = SH_LIST_FIRST(&lockerp->child_locker, __db_locker);
 		if (child != NULL) {
 			do {
-				lp = SH_LIST_FIRST(&child->heldby, __db_lock);
+c_retry:			lp = SH_LIST_FIRST(&child->heldby, __db_lock);
+				if (SH_LIST_EMPTY(&child->heldby) || lp == NULL)
+					goto c_next;
+
+				ndx = lp->indx;
+				OBJECT_LOCK_NDX(lt, ndx);
+				if (lp != SH_LIST_FIRST(
+				    &child->heldby, __db_lock) ||
+				    ndx != lp->indx) {
+					OBJECT_UNLOCK(lt, ndx);
+					goto c_retry;
+				}
+
 				if (lp != NULL &&
 				    lp->status == DB_LSTAT_WAITING) {
 					id_array[id].last_locker_id = child->id;
 					goto get_lock;
+				} else {
+					OBJECT_UNLOCK(lt, ndx);
 				}
-				child = SH_LIST_NEXT(
+c_next:				child = SH_LIST_NEXT(
 				    child, child_link, __db_locker);
 			} while (child != NULL);
 		}
-		lp = SH_LIST_FIRST(&lockerp->heldby, __db_lock);
-		if (lp != NULL) {
+
+l_retry:	lp = SH_LIST_FIRST(&lockerp->heldby, __db_lock);
+		if (!SH_LIST_EMPTY(&lockerp->heldby) && lp != NULL) {
+			ndx = lp->indx;
+			OBJECT_LOCK_NDX(lt, ndx);
+			if (lp != SH_LIST_FIRST(&lockerp->heldby, __db_lock) ||
+			    lp->indx != ndx) {
+				OBJECT_UNLOCK(lt, ndx);
+				goto l_retry;
+			}
 			id_array[id].last_locker_id = lockerp->id;
 get_lock:		id_array[id].last_lock = R_OFFSET(&lt->reginfo, lp);
 			id_array[id].last_obj = lp->obj;
 			lo = (DB_LOCKOBJ *)((u_int8_t *)lp + lp->obj);
+			id_array[id].last_ndx = lo->indx;
 			pptr = SH_DBT_PTR(&lo->lockobj);
 			if (lo->lockobj.size >= sizeof(db_pgno_t))
 				memcpy(&id_array[id].pgno,
 				    pptr, sizeof(db_pgno_t));
 			else
 				id_array[id].pgno = 0;
+			OBJECT_UNLOCK(lt, ndx);
 		}
 	}
-
-	/*
-	 * Pass complete, reset the deadlock detector bit.
-	 */
-	region->need_dd = 0;
+	UNLOCK_LOCKERS(dbenv, region);
 
 	/*
 	 * Now we can release everything except the bitmap matrix that we
@@ -674,12 +749,8 @@ get_lock:		id_array[id].last_lock = R_OFFSET(&lt->reginfo, lp);
 	*bmp = bitmap;
 	*allocp = nentries;
 	__os_free(dbenv, tmpmap);
-done:	if (LOCK_TIME_ISVALID(&region->next_timeout)) {
-		if (LOCK_TIME_ISMAX(&min_timeout))
-			LOCK_SET_TIME_INVALID(&region->next_timeout);
-		else
-			region->next_timeout = min_timeout;
-	}
+done:	if (timespecisset(&region->next_timeout))
+		region->next_timeout = min_timeout;
 	return (0);
 }
 
@@ -760,7 +831,6 @@ __dd_abort(dbenv, info, statusp)
 	DB_LOCKOBJ *sh_obj;
 	DB_LOCKREGION *region;
 	DB_LOCKTAB *lt;
-	u_int32_t ndx;
 	int ret;
 
 	*statusp = 0;
@@ -769,15 +839,16 @@ __dd_abort(dbenv, info, statusp)
 	region = lt->reginfo.primary;
 	ret = 0;
 
+	/* We must lock so this locker cannot go away while we abort it. */
 	LOCK_SYSTEM_LOCK(dbenv);
+	LOCK_LOCKERS(dbenv, region);
 
 	/*
 	 * Get the locker.  If it's gone or was aborted while we were
 	 * detecting, return that.
 	 */
-	LOCKER_LOCK(lt, region, info->last_locker_id, ndx);
-	if ((ret = __lock_getlocker(lt,
-	    info->last_locker_id, ndx, 0, &lockerp)) != 0)
+	if ((ret = __lock_getlocker_int(lt,
+	    info->last_locker_id, 0, &lockerp)) != 0)
 		goto err;
 	if (lockerp == NULL || F_ISSET(lockerp, DB_LOCKER_INABORT)) {
 		*statusp = DB_ALREADY_ABORTED;
@@ -787,22 +858,24 @@ __dd_abort(dbenv, info, statusp)
 	/*
 	 * Find the locker's last lock.  It is possible for this lock to have
 	 * been freed, either though a timeout or another detector run.
+	 * First lock the lock object so it is stable.
 	 */
+
+	OBJECT_LOCK_NDX(lt, info->last_ndx);
 	if ((lockp = SH_LIST_FIRST(&lockerp->heldby, __db_lock)) == NULL) {
 		*statusp = DB_ALREADY_ABORTED;
-		goto out;
+		goto done;
 	}
 	if (R_OFFSET(&lt->reginfo, lockp) != info->last_lock ||
-	    lockp->holder != lockerp->id ||
+	    lockp->holder != R_OFFSET(&lt->reginfo, lockerp) ||
 	    lockp->obj != info->last_obj || lockp->status != DB_LSTAT_WAITING) {
 		*statusp = DB_ALREADY_ABORTED;
-		goto out;
+		goto done;
 	}
 
 	sh_obj = (DB_LOCKOBJ *)((u_int8_t *)lockp + lockp->obj);
 
 	/* Abort lock, take it off list, and wake up this lock. */
-	SHOBJECT_LOCK(lt, region, sh_obj, ndx);
 	lockp->status = DB_LSTAT_ABORTED;
 	SH_TAILQ_REMOVE(&sh_obj->waiters, lockp, links, __db_lock);
 
@@ -811,16 +884,20 @@ __dd_abort(dbenv, info, statusp)
 	 * it from dd_objs, or it is not empty, in which case we need to
 	 * do promotion.
 	 */
-	if (SH_TAILQ_FIRST(&sh_obj->waiters, __db_lock) == NULL)
+	if (SH_TAILQ_FIRST(&sh_obj->waiters, __db_lock) == NULL) {
+		LOCK_OBJECTS(dbenv, region);
 		SH_TAILQ_REMOVE(&region->dd_objs,
 		    sh_obj, dd_links, __db_lockobj);
-	else
+		UNLOCK_OBJECTS(dbenv, region);
+	} else
 		ret = __lock_promote(lt, sh_obj, NULL, 0);
 	MUTEX_UNLOCK(dbenv, lockp->mtx_lock);
 
-	region->stat.st_ndeadlocks++;
+	STAT(region->stat.st_ndeadlocks++);
+done:	OBJECT_UNLOCK(lt, info->last_ndx);
 err:
 out:	LOCK_SYSTEM_UNLOCK(dbenv);
+	UNLOCK_LOCKERS(dbenv, region);
 	return (ret);
 }
 

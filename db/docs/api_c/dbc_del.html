@@ -1,17 +1,16 @@
-<!--$Id: dbc_del.so,v 10.46 2006/09/13 14:30:52 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: dbc_del.so,v 10.47 2006/10/24 13:26:50 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DBcursor-&gt;c_del</title>
+<title>Berkeley DB: DBcursor-&gt;del</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td>
-<h3>DBcursor-&gt;c_del</h3>
+<h3>DBcursor-&gt;del</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
@@ -23,11 +22,11 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBcursor-&gt;c_del(DBC *DBcursor, u_int32_t flags);
+DBcursor-&gt;del(DBC *DBcursor, u_int32_t flags);
 </pre></h3>
 <hr size=1 noshade>
-<h3>Description: DBcursor-&gt;c_del</h3>
-<p>The DBcursor-&gt;c_del method deletes the key/data pair to which the cursor
+<h3>Description: DBcursor-&gt;del</h3>
+<p>The DBcursor-&gt;del method deletes the key/data pair to which the cursor
 refers.</p>
 <p>When called on a cursor opened on a database that has been made into a
 secondary index using the <a href="../api_c/db_associate.html">DB-&gt;associate</a> method, the <a href="../api_c/db_del.html">DB-&gt;del</a> method
@@ -36,8 +35,8 @@ indices.</p>
 <p>The cursor position is unchanged after a delete, and subsequent calls to
 cursor functions expecting the cursor to refer to an existing key will
 fail.</p>
-<p>The DBcursor-&gt;c_del method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if the element has already been deleted.
-Unless otherwise specified, the DBcursor-&gt;c_del method
+<p>The DBcursor-&gt;del method will return <a href="../ref/program/errorret.html#DB_KEYEMPTY">DB_KEYEMPTY</a> if the element has already been deleted.
+Unless otherwise specified, the DBcursor-&gt;del method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
@@ -46,7 +45,7 @@ and 0 on success.
 <dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
 </dl>
 <h3>Errors</h3>
-<p>The DBcursor-&gt;c_del method
+<p>The DBcursor-&gt;del method
 may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
@@ -82,6 +81,6 @@ specified to <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

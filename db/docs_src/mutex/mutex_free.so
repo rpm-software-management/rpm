@@ -1,0 +1,32 @@
+m4_comment([$Id: mutex_free.so,v 10.1 2005/07/20 16:33:59 bostic Exp $])
+
+define(M4PAGELOCAL, [mutex_free])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(mutex_free),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__mutex_free(DB_ENV *dbenv, db_mutex_t mutex);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::mutex_free(db_mutex_t mutex);
+]))
+
+m4_p([dnl
+The m4_refT(mutex_free) discards a mutex allocated by m4_ref(mutex_alloc).])
+
+m4_when_after_envopen(mutex_free)
+
+m4_return(mutex_free, std)
+
+m4_parambegin
+m4_param(mutex, [dnl
+The m4_arg(mutex) parameter is a mutex previously allocated by
+m4_ref(mutex_alloc).])
+m4_paramend
+
+m4_err(mutex_free, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

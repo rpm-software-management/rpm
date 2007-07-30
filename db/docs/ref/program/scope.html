@@ -1,6 +1,5 @@
-<!--$Id: scope.so,v 10.11 2003/10/24 22:27:56 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: scope.so,v 10.12 2007/06/14 17:41:59 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -57,23 +56,23 @@ environment.  <a href="../../api_c/db_class.html">DB</a> handles are free-thread
 database is opened or if the database environment in which the database
 is opened is free-threaded.  The handle should not be closed while any
 other handle that refers to the database is in use; for example,
-database handles must not be closed while cursor handles into the
+database handles should be left open while cursor handles into the
 database remain open, or transactions that include operations on the
 database have not yet been committed or aborted.  Once the
 <a href="../../api_c/db_close.html">DB-&gt;close</a>, <a href="../../api_c/db_remove.html">DB-&gt;remove</a>, or <a href="../../api_c/db_rename.html">DB-&gt;rename</a> methods are
-called, the handle may not be accessed again, regardless of the
-method's return.
+called, the handle may not be accessed again, regardless of the method's
+return.
 <dt><a href="../../api_c/dbc_class.html">DBC</a><dd>The <a href="../../api_c/dbc_class.html">DBC</a> handle refers to a cursor into a Berkeley DB database.  The
 handle is not free-threaded.  Cursors may span threads, but only
 serially, that is, the application must serialize access to the
 <a href="../../api_c/dbc_class.html">DBC</a> handles.  If the cursor is to be used to perform operations
 on behalf of a transaction, the cursor must be opened and closed within
-the context of that single transaction.  Once <a href="../../api_c/dbc_close.html">DBcursor-&gt;c_close</a> has been
+the context of that single transaction.  Once <a href="../../api_c/dbc_close.html">DBcursor-&gt;close</a> has been
 called, the handle may not be accessed again, regardless of the
 method's return.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../program/mt.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../program/namespace.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

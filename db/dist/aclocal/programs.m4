@@ -1,48 +1,42 @@
-dnl $Id: programs.m4,v 11.11 2000/03/30 21:20:50 bostic Exp $
+# $Id: programs.m4,v 12.3 2007/04/18 14:28:19 bostic Exp $
 
-dnl Check for programs used in building/installation.
+# Check for programs used in building/installation.
 AC_DEFUN(AM_PROGRAMS_SET, [
 
-AC_PATH_PROG(db_cv_path_ar, ar, missing_ar)
-if test "$db_cv_path_ar" = missing_ar; then
-	AC_MSG_ERROR([No ar utility found.])
-fi
-AC_PATH_PROG(db_cv_path_chmod, chmod, missing_chmod)
-if test "$db_cv_path_chmod" = missing_chmod; then
-	AC_MSG_ERROR([No chmod utility found.])
-fi
-AC_PATH_PROG(db_cv_path_cp, cp, missing_cp)
-if test "$db_cv_path_cp" = missing_cp; then
-	AC_MSG_ERROR([No cp utility found.])
-fi
-AC_PATH_PROG(db_cv_path_ln, ln, missing_ln)
-if test "$db_cv_path_ln" = missing_ln; then
-	AC_MSG_ERROR([No ln utility found.])
-fi
-AC_PATH_PROG(db_cv_path_mkdir, mkdir, missing_mkdir)
-if test "$db_cv_path_mkdir" = missing_mkdir; then
-	AC_MSG_ERROR([No mkdir utility found.])
-fi
-AC_PATH_PROG(db_cv_path_ranlib, ranlib, missing_ranlib)
-AC_PATH_PROG(db_cv_path_rm, rm, missing_rm)
-if test "$db_cv_path_rm" = missing_rm; then
-	AC_MSG_ERROR([No rm utility found.])
-fi
-AC_PATH_PROG(db_cv_path_sh, sh, missing_sh)
-if test "$db_cv_path_sh" = missing_sh; then
-	AC_MSG_ERROR([No sh utility found.])
-fi
-AC_PATH_PROG(db_cv_path_strip, strip, missing_strip)
-if test "$db_cv_path_strip" = missing_strip; then
-	AC_MSG_ERROR([No strip utility found.])
-fi
+AC_CHECK_TOOL(CHMOD, chmod, none)
+test "$CHMOD" = "none" && AC_MSG_ERROR([No chmod utility found.])
 
-dnl Check for programs used in testing.
+AC_CHECK_TOOL(CP, cp, none)
+test "$CP" = "none" && AC_MSG_ERROR([No cp utility found.])
+
+# The Tcl test suite requires a kill utility.
 if test "$db_cv_test" = "yes"; then
-	AC_PATH_PROG(db_cv_path_kill, kill, missing_kill)
-	if test "$db_cv_path_kill" = missing_kill; then
-		AC_MSG_ERROR([No kill utility found.])
-	fi
+	AC_CHECK_TOOL(KILL, kill, none)
+	test "$KILL" = "none" && AC_MSG_ERROR([No kill utility found.])
 fi
 
-])dnl
+AC_CHECK_TOOL(LN, ln, none)
+test "$LN" = "none" && AC_MSG_ERROR([No ln utility found.])
+
+AC_CHECK_TOOL(MKDIR, mkdir, none)
+test "$MKDIR" = "none" && AC_MSG_ERROR([No mkdir utility found.])
+
+AC_CHECK_TOOL(RM, rm, none)
+test "$RM" = "none" && AC_MSG_ERROR([No rm utility found.])
+
+if test "$db_cv_rpc" = "yes"; then
+	AC_CHECK_TOOL(RPCGEN, rpcgen, none)
+	test "$RPCGEN" = "none" && AC_MSG_ERROR([No rpcgen utility found.])
+fi
+
+# We need a complete path for sh, because some make utility implementations get
+# upset if SHELL is set to just the command name.  Don't use the SHELL variable
+# here because the user likely has the SHELL variable set to something other
+# than the Bourne shell, which is what Make wants.
+AC_PATH_TOOL(db_cv_path_sh, sh, none)
+test "$db_cv_path_sh" = "none" && AC_MSG_ERROR([No sh utility found.])
+
+# Don't strip the binaries if --enable-debug was specified.
+if test "$db_cv_debug" = yes; then
+	STRIP=":"
+fi])

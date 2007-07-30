@@ -1,0 +1,18 @@
+m4_comment([$Id: toc.so,v 1.7 2006/10/02 15:56:39 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 4.3 applications to m4_db 4.4,
+    Upgrading to release 4.4,,)
+
+m4_nlistbegin
+m4_nlistns([m4_link(intro, [Release 4.4: introduction])])
+m4_nlistns([m4_link(autocommit, [Release 4.4: DB_AUTO_COMMIT])])
+m4_nlistns([m4_link(isolation, [Release 4.4: DB_DEGREE_2, DB_DIRTY_READ])])
+m4_nlistns([m4_link(joinenv, [Release 4.4: DB_JOINENV])])
+m4_nlistns([m4_link(mutex, [Release 4.4: mutexes])])
+m4_nlistns([m4_link(clear, [Release 4.4: DB_MPOOLFILE-__GT__set_clear_len])])
+m4_nlistns([m4_link(lockstat, [Release 4.4: lock statistics])])
+m4_nlistns([m4_link(disk, [Release 4.4: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

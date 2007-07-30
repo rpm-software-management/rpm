@@ -1,0 +1,67 @@
+m4_comment([$Id: memp_set_flags.so,v 1.19 2007/06/07 15:30:46 bostic Exp $])
+
+define(M4PAGELOCAL,
+    [memp_set_flags, memp_get_flags, DB_MPOOL_NOFILE, DB_MPOOL_UNLINK])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_flags),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__set_flags(DB_MPOOLFILE *mpf, u_int32_t flags, int onoff)
+m4_blank
+int
+DB_MPOOLFILE-__GT__get_flags(DB_MPOOLFILE *mpf, u_int32_t *flagsp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::set_flags(u_int32_t flags, bool onoff);
+m4_blank
+int
+DbMpoolFile::get_flags(u_int32_t *flagsp);
+]))
+
+define(m4_flags_any, [m4_p([dnl
+The m4_ref($1) flag may be used to configure m4_db at any time during
+the life of the application.])])
+
+m4_p([dnl
+Configure a file in the cache.])
+
+m4_p([dnl
+To set the flags for a particular database, call the
+m4_refT(memp_set_flags) using the m4_ref(DbMpoolFile) handle stored in
+the m4_arg(mpf) field of the m4_ref(Db) handle.])
+
+m4_return(memp_set_flags, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_MPOOL_NOFILE), [dnl
+If set, no backing temporary file will be opened for the specified
+in-memory database, even if it expands to fill the entire cache.
+Attempts to create new database pages after the cache has been filled
+will fail.
+
+m4_scope_mpf_flags(DB_MPOOL_NOFILE)
+
+m4_flags_any(DB_MPOOL_NOFILE)])
+
+m4_tag(m4_idef(DB_MPOOL_UNLINK), [dnl
+If set, remove the file when the last reference to it is closed.
+m4_scope_mpf_flags(DB_MPOOL_NOFILE)
+m4_flags_any(DB_MPOOL_UNLINK)])
+m4_tagend])
+
+m4_param(onoff, [dnl
+If m4_arg(onoff) is
+ifelse(M4API, C_API, zero, false),
+the specified flags are cleared;  otherwise they are set.])
+m4_paramend
+
+m4_pf_getter(memp_get_flags, flags,, flagsp)
+
+m4_seealso(DbMpool)
+m4_page_footer

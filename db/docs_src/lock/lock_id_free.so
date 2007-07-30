@@ -1,0 +1,31 @@
+m4_comment([$Id: lock_id_free.so,v 10.14 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, lock_id_free)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(lock_id_free),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lock_id_free(DB_ENV *env, u_int32_t id);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lock_id_free(u_int32_t id);
+]))
+
+m4_p([dnl
+The m4_refT(lock_id_free) frees a locker ID allocated by the
+m4_refT(lock_id).])
+
+m4_return(lock_id_free, std)
+
+m4_parambegin
+m4_param(id, [dnl
+The m4_arg(id) parameter is the locker id to be freed.])
+m4_paramend
+
+m4_err(lock_id_free, einval,
+[the locker ID is invalid or locks are still held by this locker ID])
+
+m4_seealso(DbLock)
+m4_page_footer

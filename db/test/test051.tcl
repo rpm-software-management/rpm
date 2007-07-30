@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: test051.tcl,v 12.5 2006/08/24 14:46:40 bostic Exp $
+# $Id: test051.tcl,v 12.7 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test051
 # TEST	Fixed-length record Recno test.

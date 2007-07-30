@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>Chapter 1. Introduction</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ChapterÂ 1.Â Introduction</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
@@ -15,12 +15,12 @@
     <div class="navheader">
       <table width="100%" summary="Navigation header">
         <tr>
-          <th colspan="3" align="center">Chapter 1. Introduction</th>
+          <th colspan="3" align="center">ChapterÂ 1.Â Introduction</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="preface.html">Prev</a> </td>
-          <th width="60%" align="center"> </th>
-          <td width="20%" align="right"> <a accesskey="n" href="recovery-intro.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="preface.html">Prev</a>Â </td>
+          <th width="60%" align="center">Â </th>
+          <td width="20%" align="right">Â <a accesskey="n" href="recovery-intro.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -29,7 +29,7 @@
       <div class="titlepage">
         <div>
           <div>
-            <h2 class="title"><a id="introduction"></a>Chapter 1. Introduction</h2>
+            <h2 class="title"><a id="introduction"></a>ChapterÂ 1.Â Introduction</h2>
           </div>
         </div>
         <div></div>
@@ -213,9 +213,27 @@
             lose whatever data you were committing at the
             time of the failure, but your databases will be otherwise unaffected.
         </p>
+          <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Note</h3>
+            <p>
+                    Be aware that many disks have a disk write cache and on
+                    some systems it is enabled by default.  This means that
+                    a transaction can have committed, and to your
+                    application the data may appear to reside on disk, but
+                    the data may in fact reside only in the write cache at
+                    that time. This means that if the disk write cache is
+                    enabled and there is no battery backup for it, data can
+                    be lost after an OS crash even when maximum durability
+                    mode is in use.  For maximum durability, disable the
+                    disk write cache or use a disk write cache with a
+                    battery backup.
+                </p>
+          </div>
           <p>
             Of course, if your <span class="emphasis"><em>disk</em></span> fails, then the transactional benefits described in this book
             are only as good as the backups you have taken. 
+
+
             <span>
                 By spreading your data and log files across separate disks,
                 you can minimize the risk of data loss due to a disk failure, but even in this case it is possible to
@@ -356,7 +374,7 @@
                     include code for detecting and responding to deadlocks.
                     Note that this requirement is not
                     <span class="emphasis"><em>specific</em></span> to transactions
-                    &#8211; you can certainly write concurrent
+                    â€“ you can certainly write concurrent
                     non-transactional DB applications. Further, not
                     every transactional application uses concurrency and
                     so not every transactional application must
@@ -404,7 +422,7 @@
             you can configure your application to see uncommitted reads, which means
             that one transaction can see data that has been modified but not yet
             committed by another transaction. Doing this might mean your
-            transaction reads data &quot;dirtied&quot; by another transaction, 
+            transaction reads data "dirtied" by another transaction, 
             but which subsequently might change before that
             other transaction commits its changes.
             On the other hand, lowering your isolation
@@ -422,18 +440,18 @@
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="preface.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="preface.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="index.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="recovery-intro.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="recovery-intro.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Preface </td>
+          <td width="40%" align="left" valign="top">PrefaceÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Recoverability</td>
+          <td width="40%" align="right" valign="top">Â Recoverability</td>
         </tr>
       </table>
     </div>

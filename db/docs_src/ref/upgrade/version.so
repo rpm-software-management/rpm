@@ -1,0 +1,43 @@
+m4_comment([$Id: version.so,v 10.24 2003/11/27 18:26:01 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Library version information,, build_vxworks/faq, upgrade/process)
+
+m4_p([dnl
+Each release of the m4_db library has a major version number, a minor
+version number, and a patch number.])
+
+m4_p([dnl
+The major version number changes only when major portions of the m4_db
+functionality have been changed.  In this case, it may be necessary to
+significantly modify applications in order to upgrade them to use the new
+version of the library.])
+
+m4_p([dnl
+The minor version number changes when m4_db interfaces have changed,
+and the new release is not entirely backward-compatible with previous
+releases.  To upgrade applications to the new version, they must be
+recompiled and potentially, minor modifications made (for example, the
+order of arguments to a function might have changed).])
+
+m4_p([dnl
+The patch number changes on each release.  If only the patch number has
+changed in a release, applications do not need to be recompiled, and
+they can be upgraded to the new version by installing the new version
+of a shared library or by relinking the application to the new version
+of a static library.])
+
+m4_p([dnl
+Internal m4_db interfaces may change at any time and during any release,
+without warning. This means that the library must be entirely recompiled
+and reinstalled when upgrading to new releases of the library because
+there is no guarantee that modules from the current version of the
+library will interact correctly with modules from a previous release.])
+
+m4_p([dnl
+To retrieve the m4_db version information, applications should use the
+m4_ref(dbenv_version) function.  In addition to the previous
+information, the m4_ref(dbenv_version) function returns a string
+encapsulating the version information, suitable for display to a user.])
+
+m4_page_footer

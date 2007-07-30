@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1998,2007 Oracle.  All rights reserved.
  *
- * $Id: bt_reclaim.c,v 12.6 2006/08/24 14:44:44 bostic Exp $
+ * $Id: bt_reclaim.c,v 12.9 2007/05/17 15:14:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -47,7 +46,7 @@ __bam_reclaim(dbp, txn)
 
 	__TLPUT(dbc, meta_lock);
 	/* Discard the cursor. */
-err:	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+err:	if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);

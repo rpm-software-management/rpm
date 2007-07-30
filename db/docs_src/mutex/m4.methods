@@ -1,0 +1,18 @@
+m4_comment([$Id: m4.methods,v 10.1 2005/07/20 16:33:59 bostic Exp $])
+
+m4_table_begin(, _center)
+
+m4_table_header(Mutexes and Related Methods, Description)
+m4_comment([DbEnv::mutex_alloc])m4_table_element(m4_ref(mutex_alloc), Allocate a mutex)
+m4_comment([DbEnv::mutex_free])m4_table_element(m4_ref(mutex_free), Free a mutex)
+m4_comment([DbEnv::mutex_lock])m4_table_element(m4_ref(mutex_lock), Lock a mutex)
+m4_comment([DbEnv::mutex_stat])m4_table_element(m4_ref(mutex_stat), Mutex statistics)
+m4_comment([DbEnv::mutex_unlock])m4_table_element(m4_ref(mutex_unlock), Unlock a mutex)
+
+m4_table_header(Mutex Configuration, _empty)
+m4_comment([DbEnv::mutex_set_align])m4_table_element(m4_ref(mutex_set_align), Configure mutex alignment)
+m4_comment([DbEnv::mutex_set_increment])m4_table_element(m4_ref(mutex_set_increment), Configure number of additional mutexes)
+m4_comment([DbEnv::mutex_set_max])m4_table_element(m4_ref(mutex_set_max), Configure total number of mutexes)
+m4_comment([DbEnv::mutex_set_tas_spins])m4_table_element(m4_ref(mutex_set_tas_spins), Configure test-and-set mutex spin count)
+
+m4_table_end

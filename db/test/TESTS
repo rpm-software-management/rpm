@@ -2,24 +2,22 @@
 
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-MVCC and cursor adjustment.
-	Set up a -snapshot cursor and position it in the middle
-	of a database.
-	Write to the database, both before and after the cursor,
-	and verify that it stays on the same position.
+backup
+	Test of hotbackup functionality. 
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-MVCC and databases that turn multi-version on and off.
+	Do all the of the following tests with and without 
+	the -c (checkpoint) option.  Make sure that -c and 
+	-d (data_dir) are not allowed together. 
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-Test basic functionality: a snapshot transaction started
-	before a regular transaction's put can't see the modification.
-	A snapshot transaction started after the put can see it.
-
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-Test what happens if a txn_ckp record falls into a
-	different log file than the DBREG_CKP records generated
-	by the same checkpoint.
+	(1) Test that plain and simple hotbackup works. 
+	(2) Test with -data_dir (-d). 
+	(3) Test updating an existing hot backup (-u).
+	(4) Test with absolute path. 
+	(5) Test with DB_CONFIG (-D), setting log_dir (-l)
+	and data_dir (-d).
+	(6) DB_CONFIG and update.  
+	(7) Repeat hot backup (non-update) with DB_CONFIG and 
+	existing directories. 
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 bigfile001
@@ -335,6 +333,12 @@ log007
 	Test of in-memory logging bugs. [#11505]
 
 	Test db_printlog with in-memory logs.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+log008
+	Test what happens if a txn_ckp record falls into a
+	different log file than the DBREG_CKP records generated
+	by the same checkpoint.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 log009
@@ -811,14 +815,15 @@ rep033
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep034
-	Test of client startup synchronization.
+	Test of STARTUPDONE notification.
 
-	One master, two clients.
-	Run rep_test.
-	Close one client and change master to other client.
-	Reopen closed client - enter startup.
-	Run rep_test and we should see live messages and startup complete.
-	Run the test with/without client-to-client synchronization.
+	STARTUPDONE can now be recognized without the need for new "live" log
+	records from the master (under favorable conditions).  The response to
+	the ALL_REQ at the end of synchronization includes an end-of-log marker
+	that now triggers it.  However, the message containing that end marker
+	could get lost, so live log records still serve as a back-up mechanism.
+	The end marker may also be set under c2c sync, but only if the serving
+	client has itself achieved STARTUPDONE.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep035
@@ -862,17 +867,20 @@ rep038
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rep039
-	Test of internal initialization and master changes.
+	Test of interrupted internal initialization changes.  The
+	interruption is due to a changed master, or the client crashing,
+	or both.
 
 	One master, two clients.
 	Generate several log files. Remove old master log files.
-	Delete client files and restart client.
-	While initialization is happening, change masters.
+	Restart client, optionally having "cleaned" client env dir.  Either
+	way, this has the effect of forcing an internal init.
+	Interrupt the internal init.
 	Vary the number of times we process messages to make sure
-	we change masters at varying stages of the first internal
+	the interruption occurs at varying stages of the first internal
 	initialization.
 
-	Run for btree only because of the number of permutations.
+	Run for btree and queue only because of the number of permutations.
 
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -1177,6 +1185,136 @@ rep066
 	Make sure 2nd handle detects the old log handle and doesn't
 	write to a stale handle (if it does, the processing of the
 	commit will fail).
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep067
+	Replication election test with large timeouts.
+
+	Test replication elections among clients with widely varying
+	timeouts.  This test is used to simulate a customer that
+	wants to force full participation in an election, but only
+	if all sites are present (i.e. if all sites are restarted
+	together).  If any site has already been part of the group,
+	then we want to be able to elect a master based on majority.
+	Using varied timeouts, we can force full participation if
+	all sites are present with "long_timeout" amount of time and
+	then revert to majority.
+
+	A long_timeout would be several minutes whereas a normal
+	short timeout would be a few seconds.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep068
+	Verify replication of dbreg operations does not hang clients.
+	In a simple replication group, create a database with very
+	little data.  With DB_TXN_NOSYNC the database can be created
+	at the client even though the log is not flushed.  If we crash
+	and restart, the application of the log starts over again, even
+	though the database is still there.  The application can open
+	the database before replication tries to re-apply the create.
+	This causes a hang as replication waits to be able to get a
+	handle lock.
+
+	Run for btree only because access method shouldn't matter.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep069
+	Test of internal initialization and elections.
+
+	If a client is in a recovery mode of any kind, it
+	participates in elections at priority 0 so it can
+	never be elected master.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep070
+	Test of startup_done condition with idle master.
+
+	Join a client to an existing master, and verify that
+	the client detects startup_done even if the master
+	does not execute any new transactions.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep071
+	Test of multiple simultaneous client env handles and
+	upgrading/downgrading.  Tests use of temp db handle
+	internally.
+
+	Open a master and 2 handles to the same client env.
+	Run rep_test.
+	Close master and upgrade client to master using one env handle.
+	Run rep_test again, and then downgrade back to client.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep072
+	Verify that internal init does not leak resources from
+	the locking subsystem.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep073
+
+	Test of allowing clients to create and update their own scratch
+	databases within the environment.  Doing so requires the use
+	use of the DB_TXN_NOT_DURABLE flag for those databases.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep074
+	Verify replication withstands send errors processing requests.
+
+	Run for btree only because access method shouldn't matter.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep075
+	Replication and prepared transactions.
+	Test having outstanding prepared transactions and simulating
+	crashing or upgrading or downgrading sites.
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep076
+	Replication elections - what happens if elected client
+	does not become master?
+
+	Set up a master and 3 clients.  Take down master, run election.
+	The elected client will ignore the fact that it's been elected,
+	so we still have 2 clients.
+
+	Run another election, a regular election that allows the winner
+	to become master, and make sure it goes okay.  We do this both
+	for the client that ignored its election and for the other client.
+
+	This simulates what would happen if, say, we had a temporary
+	network partition and lost the winner.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep077
+
+	Replication, recovery and applying log records immediately.
+	Master and 1 client.  Start up both sites.
+	Close client and run rep_test on the master so that the
+	log record is the same LSN the client would be expecting.
+	Reopen client with recovery and verify the client does not
+	try to apply that "expected" record before it synchronizes
+	with the master.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+rep078
+
+	Replication and basic lease test.
+	Set leases on master and 2 clients.
+	Do a lease operation and process to all clients.
+	Read with lease on master.  Do another lease operation
+	and don't process on any client.  Try to read with
+	on the master and verify it fails.  Process the messages
+	to the clients and retry the read.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+repmgr001
+	Check repmgr stats.
+
+	Run for btree only because access method shouldn't matter.
+
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 rpc001
@@ -2270,12 +2408,16 @@ test092
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test093
-	Test using set_bt_compare.
+	Test set_bt_compare (btree key comparison function) and
+	set_h_compare (hash key comparison function).
 
-	Use the first 10,000 entries from the dictionary.
-	Insert each with self as key and data; retrieve each.
-	After all are entered, retrieve all; compare output to original.
-	Close file, reopen, do retrieve and re-verify.
+	Open a database with a comparison function specified,
+	populate, and close, saving a list with that key order as
+	we do so.  Reopen and read in the keys, saving in another
+	list; the keys should be in the order specified by the
+	comparison function.  Sort the original saved list of keys
+	using the comparison function, and verify that it matches
+	the keys as read out of the database.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test094
@@ -2480,13 +2622,25 @@ test119
 test120
 	Test of multi-version concurrency control.
 
+	Test basic functionality: a snapshot transaction started
+	before a regular transaction's put can't see the modification.
+	A snapshot transaction started after the put can see it.
+
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test121
 	Tests of multi-version concurrency control.
 
+	MVCC and cursor adjustment.
+	Set up a -snapshot cursor and position it in the middle
+	of a database.
+	Write to the database, both before and after the cursor,
+	and verify that it stays on the same position.
+
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test122
 	Tests of multi-version concurrency control.
+
+	MVCC and databases that turn multi-version on and off.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 txn001
@@ -2540,3 +2694,21 @@ txn013
 	Test of txns used in the wrong environment.
 	Set up two envs.  Start a txn in one env, and attempt to use it
 	in the other env.  Verify we get the appropriate error message.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+txn014
+	Test of parent and child txns working on the same database.
+	A txn that will become a parent create a database.
+	A txn that will not become a parent creates another database.
+	Start a child txn of the 1st txn.
+	Verify that the parent txn is disabled while child is open.
+	1. Child reads contents with child handle (should succeed).
+	2. Child reads contents with parent handle (should succeed).
+	Verify that the non-parent txn can read from its database,
+	and that the child txn cannot.
+	Return to the child txn.
+	3. Child writes with child handle (should succeed).
+	4. Child writes with parent handle (should succeed).
+
+	Commit the child, verify that the parent can write again.
+	Check contents of database with a second child.

@@ -1,0 +1,59 @@
+m4_comment([$Id: db_verify.so,v 10.11 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_verify)
+
+m4_util_header(db_verify, [dnl
+db_verify m4_utilarg(NoqV) m4_utilarg([h home]) m4_utilarg([P password]) file ...])
+m4_idefz(utility to verify @database files, utility to @verify database files)
+
+m4_p([dnl
+The m4_ref(db_verify) utility verifies the structure of one or more
+files and the databases they contain.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+
+m4_hflag
+
+m4_tagopt(o, [dnl
+Skip the database checks for btree and duplicate sort order and for
+hashing.
+m4_p([dnl
+If the file being verified contains databases with non-default
+comparison or hashing configurations, calling the m4_ref(db_verify)
+utility without the m4_option(o) flag will usually return failure.  The
+m4_option(o) flag causes m4_ref(db_verify) to ignore database sort or
+hash ordering and allows m4_ref(db_verify) to be used on these files.
+To fully verify these files, verify them explicitly using the
+m4_refT(dbh_verify), after configuring the correct comparison or hashing
+functions.])])
+
+m4_Nflag
+
+m4_Pflag
+
+m4_tagopt(q, [dnl
+Suppress the printing of any error descriptions, simply exit success or
+failure.])
+
+m4_Vflag
+
+m4_tagend
+
+m4_p([m4_bold([dnl
+The m4_ref(db_verify) utility does not perform any locking, even in
+m4_db environments that are configured with a locking subsystem.  As
+such, it should only be used on files that are not being modified by
+another thread of control.])])
+
+m4_detach(db_verify, may be used with)
+
+m4_utilexit(db_verify)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_verify)
+
+m4_page_footer

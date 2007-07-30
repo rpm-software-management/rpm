@@ -1,0 +1,21 @@
+m4_comment([$Id: memp.so,v 1.3 2007/04/05 21:19:32 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: Memory Pool API,,
+    upgrade.4.5/rep_event, upgrade.4.5/paniccall)
+
+m4_p([dnl
+As part of implementing support for multi-version concurrency control,
+the m4_ref(DB_MPOOL_DIRTY) flag is now specified to the
+m4_refT(memp_fget) instead of m4_ref(memp_fput), and the
+DB_MPOOLFILE-__GT__set method has been removed.  In addition, a new
+transaction handle parameter has been added to the m4_refT(memp_fget).])
+
+m4_p([dnl
+The DB_MPOOL_CLEAN flag is no longer supported.])
+
+m4_p([dnl
+Applications which use the memory pool API directly should update to
+the new API in order to use 4.5.])
+
+m4_page_footer

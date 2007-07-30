@@ -1,6 +1,5 @@
-<!--$Id: comm.so,v 1.18 2006/07/14 23:04:42 alanb Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: comm.so,v 1.19 2007/03/20 20:20:27 alanb Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -76,14 +75,6 @@ permanent record, perhaps a message previously returned as
 written to disk.  This record may have filled a gap in the log record that
 allowed additional records to be written.  The <b>ret_lsnp</b>
 contains the maximum LSN of the permanent records written.
-<dt><a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a>, it means that
-a new master has been elected.  The call will also return the local
-environment's ID for that master.  If the ID of the master has changed,
-the application may need to reconfigure itself (for example, to redirect
-update queries to the new master rather than the old one).  If the new
-master is the local environment, then the application must call the
-<a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and reconfigure the supporting Berkeley DB library as a
-replication master.
 <dt><a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a><dd>When <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> returns <a href="../../api_c/rep_message.html#DB_REP_NEWSITE">DB_REP_NEWSITE</a>, it means that
 a message from a previously unknown member of the replication group has
 been received.  The application should reconfigure itself as necessary
@@ -99,6 +90,6 @@ is deemed necessary to retain its recoverability characteristics.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/base_meth.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/newsite.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

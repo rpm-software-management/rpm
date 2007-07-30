@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Database Usage Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="DBEntry.html" title="Chapter 3. Database Records" />
+    <link rel="up" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
     <link rel="previous" href="bindAPI.html" title="Using the BIND APIs" />
-    <link rel="next" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="next" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Database Usage Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="bindAPI.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. Database Records</th>
-          <td width="20%" align="right"> <a accesskey="n" href="Cursors.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="bindAPI.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â Database Records</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="Cursors.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -345,9 +345,9 @@ import java.io.FileNotFoundException; </pre>
     // Needed for object serialization
     private StoredClassCatalog classCatalog;</tt></b>
 
-    private String vendordb = &quot;VendorDB.db&quot;;
-    private String inventorydb = &quot;InventoryDB.db&quot;;
-    <b class="userinput"><tt>private String classcatalogdb = &quot;ClassCatalogDB.db&quot;;</tt></b>
+    private String vendordb = "VendorDB.db";
+    private String inventorydb = "InventoryDB.db";
+    <b class="userinput"><tt>private String classcatalogdb = "ClassCatalogDB.db";</tt></b>
 
     // Our constructor does nothing
     public MyDbs() {} </pre>
@@ -370,31 +370,31 @@ import java.io.FileNotFoundException; </pre>
         // Now open, or create and open, our databases
         // Open the vendors and inventory databases
         try {
-            vendordb = databasesHome + &quot;/&quot; + vendordb;
+            vendordb = databasesHome + "/" + vendordb;
             vendorDb = new Database(vendordb,
                                     null,
                                     myDbConfig);
 
-            inventorydb = databasesHome + &quot;/&quot; + inventorydb;
+            inventorydb = databasesHome + "/" + inventorydb;
             inventoryDb = new Database(inventorydb,
                                         null,
                                         myDbConfig);
 
             <b class="userinput"><tt>// Open the class catalog db. This is used to
             // optimize class serialization.
-            classcatalogdb = databasesHome + &quot;/&quot; + classcatalogdb;
+            classcatalogdb = databasesHome + "/" + classcatalogdb;
             classCatalogDb = new Database(classcatalogdb,
                                           null,
                                           myDbConfig); </tt></b>
 
         } catch(FileNotFoundException fnfe) {
-            System.err.println(&quot;MyDbs: &quot; + fnfe.toString());
+            System.err.println("MyDbs: " + fnfe.toString());
             System.exit(-1);
         }
     } </pre>
         <p>
         Finally we need a getter method to return the class catalog. Note that we do not provide a getter for
-        the catalog database itself &#8211; our application has no need for that.
+        the catalog database itself â€“ our application has no need for that.
     </p>
         <p>
         We also update our <tt class="methodname">close()</tt> to close our class catalog.
@@ -434,7 +434,7 @@ import java.io.FileNotFoundException; </pre>
                 classCatalogDb.close();
             }</tt></b>
         } catch(DatabaseException dbe) {
-            System.err.println(&quot;Error closing MyDbs: &quot; +
+            System.err.println("Error closing MyDbs: " +
                                 dbe.toString());
             System.exit(-1);
         }
@@ -491,9 +491,9 @@ import com.sleepycat.db.DatabaseException; </pre>
         <a id="java_dbt25"></a>
         <pre class="programlisting">public class ExampleDatabaseLoad {
 
-    private static String myDbsPath = &quot;./&quot;;
-    private static File inventoryFile = new File(&quot;./inventory.txt&quot;);
-    private static File vendorsFile = new File(&quot;./vendors.txt&quot;);
+    private static String myDbsPath = "./";
+    private static File inventoryFile = new File("./inventory.txt");
+    private static File vendorsFile = new File("./vendors.txt");
 
     // DatabaseEntries used for loading records
     private static DatabaseEntry theKey = new DatabaseEntry();
@@ -517,8 +517,8 @@ import com.sleepycat.db.DatabaseException; </pre>
       handles for you.</p>
         <a id="java_dbt26"></a>
         <pre class="programlisting">    private static void usage() {
-        System.out.println(&quot;ExampleDatabaseLoad [-h &lt;database home&gt;]&quot;);
-        System.out.println(&quot;      [-s &lt;selections file&gt;] [-v &lt;vendors file&gt;]&quot;);
+        System.out.println("ExampleDatabaseLoad [-h &lt;database home&gt;]");
+        System.out.println("      [-s &lt;selections file&gt;] [-v &lt;vendors file&gt;]");
         System.exit(-1);
     }
 
@@ -527,15 +527,15 @@ import com.sleepycat.db.DatabaseException; </pre>
         try {
             edl.run(args);
         } catch (DatabaseException dbe) {
-            System.err.println(&quot;ExampleDatabaseLoad: &quot; + dbe.toString());
+            System.err.println("ExampleDatabaseLoad: " + dbe.toString());
             dbe.printStackTrace();
         } catch (Exception e) {
-            System.out.println(&quot;Exception: &quot; + e.toString());
+            System.out.println("Exception: " + e.toString());
             e.printStackTrace();
         } finally {
             myDbs.close();
         }
-        System.out.println(&quot;All done.&quot;);
+        System.out.println("All done.");
     } </pre>
         <p>Next we write the <tt class="methodname">ExampleDatabaseLoad.run()</tt>
       method. This method is responsible for initializing all objects. 
@@ -551,9 +551,9 @@ import com.sleepycat.db.DatabaseException; </pre>
 
         myDbs.setup(myDbsPath); // path to the environment home
 
-        System.out.println(&quot;loading vendors db.&quot;);
+        System.out.println("loading vendors db.");
         loadVendorsDb();
-        System.out.println(&quot;loading inventory db.&quot;);
+        System.out.println("loading inventory db.");
         loadInventoryDb();
     } </pre>
         <p>This next method loads the vendor database. This method
@@ -592,7 +592,7 @@ import com.sleepycat.db.DatabaseException; </pre>
             // ASSUMES THE VENDOR'S NAME IS UNIQUE!
             String vendorName = theVendor.getVendorName();
             try {
-                theKey = new DatabaseEntry(vendorName.getBytes(&quot;UTF-8&quot;));
+                theKey = new DatabaseEntry(vendorName.getBytes("UTF-8"));
             } catch (IOException willNeverOccur) {}
 
             // Convert the Vendor object to a DatabaseEntry object
@@ -626,7 +626,7 @@ import com.sleepycat.db.DatabaseException; </pre>
             String[] sArray = (String[])inventoryArray.get(i);
             String sku = sArray[1];
             try {
-                theKey = new DatabaseEntry(sku.getBytes(&quot;UTF-8&quot;));
+                theKey = new DatabaseEntry(sku.getBytes("UTF-8"));
             } catch (IOException willNeverOccur) {}
 
             Inventory theInventory = new Inventory();
@@ -684,18 +684,18 @@ import com.sleepycat.db.DatabaseException; </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="bindAPI.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="bindAPI.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="DBEntry.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="Cursors.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="Cursors.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Using the BIND APIs </td>
+          <td width="40%" align="left" valign="top">Using the BIND APIsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 4. Using Cursors</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 4.Â Using Cursors</td>
         </tr>
       </table>
     </div>

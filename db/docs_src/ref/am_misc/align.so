@@ -1,0 +1,14 @@
+m4_comment([$Id: align.so,v 1.4 2001/05/28 00:30:40 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Data alignment, data @alignment, am/curclose, am_misc/get_bulk)
+
+m4_p([dnl
+The m4_db access methods provide no guarantees about byte alignment for
+returned key/data pairs, or callback functions which take m4_ref(Dbt)
+references as arguments, and applications are responsible for arranging
+any necessary alignment.  The m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC) and m4_ref(DB_DBT_USERMEM) flags may be used to
+store returned items in memory of arbitrary alignment.])
+
+m4_page_footer

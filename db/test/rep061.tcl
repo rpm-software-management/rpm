@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep061.tcl,v 1.4 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep061.tcl,v 1.11 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep061
 # TEST	Test of internal initialization multiple files and pagesizes
@@ -87,6 +86,12 @@ proc rep061_sub { method niter tnum logset recargs opts dpct largs } {
 	global util_path
 	global drop drop_msg
 	global startup_done
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -98,20 +103,11 @@ proc rep061_sub { method niter tnum logset recargs opts dpct largs } {
 	file mkdir $masterdir
 	file mkdir $clientdir
 
-	#
-	# Note that by setting these 2 globals below, message dropping
-	# is automatically enabled.  By setting 'drop' to 0, further
-	# down in the test, we disable message dropping.
-	#
-	set drop 1
-	set drop_msg [expr 100 / $dpct]
-
 	# Log size is small so we quickly create more than one.
 	# The documentation says that the log file must be at least
 	# four times the size of the in-memory log buffer.
 	set maxpg 16384
-	set log_buf [expr $maxpg * 2]
-	set log_max [expr $log_buf * 4]
+	set log_max [expr $maxpg * 8]
 	set cache [expr $maxpg * 32 ]
 
 	set m_logtype [lindex $logset 0]
@@ -123,31 +119,17 @@ proc rep061_sub { method niter tnum logset recargs opts dpct largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    -log_buffer $log_buf -log_max $log_max \
-	    -cachesize { 0 $cache 1 } \
+	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $verbargs \
+	    -log_max $log_max -cachesize { 0 $cache 1 } -errpfx MASTER \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    -log_buffer $log_buf -log_max $log_max \
-#	    -cachesize { 0 $cache 1 }\
-#	    -verbose {rep on} -errpfx MASTER -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
-	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    -log_buffer $log_buf -log_max $log_max \
-	    -cachesize { 0 $cache 1 }\
+	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $verbargs \
+	    -log_max $log_max -cachesize { 0 $cache 1 } -errpfx CLIENT \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    -log_buffer $log_buf -log_max $log_max \
-#	    -cachesize { 0 $cache 1 }\
-#	    -verbose {rep on} -errpfx CLIENT \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	#
 	# Since we're dropping messages, set the rerequest values
@@ -158,6 +140,20 @@ proc rep061_sub { method niter tnum logset recargs opts dpct largs } {
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
+
+	# Clobber replication's 30-second anti-archive timer, which will have
+	# been started by client sync-up internal init, so that we can do a
+	# log_archive in a moment.
+	#
+	$masterenv test force noarchive_timeout
+
+	#
+	# Note that by setting these 2 globals below, message dropping
+	# is automatically enabled.  By setting 'drop' to 0, further
+	# down in the test, we disable message dropping.
+	#
+	set drop 1
+	set drop_msg [expr 100 / $dpct]
 
 	# Run rep_test in the master (and update client).
 	set startpgsz 512
@@ -260,6 +256,11 @@ proc rep061_sub { method niter tnum logset recargs opts dpct largs } {
 
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
+	#
+	# Since we are dropping frequent messages, we set the
+	# rerequest rate low to make sure the test finishes.
+	#
+	$clientenv rep_request 2 8
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist 0 NONE err
 	set done 0
@@ -294,9 +295,12 @@ proc rep061_sub { method niter tnum logset recargs opts dpct largs } {
 		set entries 4
 		eval rep_test $method $masterenv $db $entries $niter 0 0 0 $largs
 		process_msgs $envlist 0 NONE err
-		set startup_done [stat_field $clientenv rep_stat \
-		    "Startup complete"]
-		if { $startup_done || $iter >= $max_drop_iter } {
+		set stat [exec $util_path/db_stat -N -r -R A -h $clientdir]
+		#
+		# Loop until we are done with the RECOVER_PAGE phase.
+		#
+		set in_page [is_substr $stat "REP_F_RECOVER_PAGE"]
+		if { !$in_page || $iter >= $max_drop_iter } {
 			#
 			# If we're dropping, stop doing so.
 			# If we're not dropping, we're done.

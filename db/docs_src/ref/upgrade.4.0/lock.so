@@ -1,0 +1,40 @@
+m4_comment([$Id: lock.so,v 1.6 2001/09/27 02:25:51 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: lock_XXX,,
+    upgrade.4.0/deadlock, upgrade.4.0/log)
+
+m4_p([dnl
+The C API for the m4_db Locking subsystem was reworked in the 4.0
+release as follows:])
+
+m4_table_begin(, _center)
+m4_table_header(Historic functional interface, m4_db 4.X method)
+m4_table_element(lock_detect, m4_ref(lock_detect))
+m4_table_element(lock_get, m4_ref(lock_get))
+m4_table_element(lock_id, m4_ref(lock_id))
+m4_table_element(lock_put, m4_ref(lock_put))
+m4_table_element(lock_stat, m4_ref(lock_stat))
+m4_table_element(lock_vec, m4_ref(lock_vec))
+m4_table_end
+
+m4_p([dnl
+Applications calling any of these functions should update their calls
+to use the enclosing m4_ref(DbEnv) handle's method (easily done as the
+first argument to the existing call is the correct handle to use).])
+
+m4_p([dnl
+In addition, the m4_ref(lock_stat) call has been changed in the 4.0
+release to take a flags argument.  To leave their historic behavior
+unchanged, applications should add a final argument of 0 to any calls
+made to m4_ref(lock_stat).])
+
+m4_p([dnl
+The C++ and Java APIs for the DbLock::put (DbLock.put) method was
+reworked in the 4.0 release to make the lock put interface a method of
+the m4_ref(DbEnv) handle rather than the DbLock handle.  Applications
+calling the DbLock::put or DbLock.put method should update their calls
+to use the enclosing m4_ref(DbEnv) handle's method (easily done as the
+first argument to the existing call is the correct handle to use).])
+
+m4_page_footer

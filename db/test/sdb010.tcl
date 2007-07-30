@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2000,2007 Oracle.  All rights reserved.
 #
-# $Id: sdb010.tcl,v 12.4 2006/08/24 14:46:39 bostic Exp $
+# $Id: sdb010.tcl,v 12.6 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	sdb010
 # TEST	Test DB->remove() method and DB->truncate() for subdbs

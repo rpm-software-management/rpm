@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: ReplicationStatus.java,v 12.6 2006/08/24 14:46:09 bostic Exp $
+ * $Id: ReplicationStatus.java,v 12.9 2007/05/17 15:15:41 bostic Exp $
  */
 
 package com.sleepycat.db;
@@ -52,10 +51,6 @@ public final class ReplicationStatus {
         return errCode == DbConstants.DB_REP_ISPERM;
     }
 
-    public boolean isNewMaster() {
-        return errCode == DbConstants.DB_REP_NEWMASTER;
-    }
-
     public boolean isNewSite() {
         return errCode == DbConstants.DB_REP_NEWSITE;
     }
@@ -92,8 +87,6 @@ public final class ReplicationStatus {
             return IGNORE;
         case DbConstants.DB_REP_ISPERM:
             return new ReplicationStatus("ISPERM", errCode, cdata, envid, lsn);
-        case DbConstants.DB_REP_NEWMASTER:
-            return new ReplicationStatus("NEWMASTER", errCode, cdata, envid, lsn);
         case DbConstants.DB_REP_NEWSITE:
             return new ReplicationStatus("NEWSITE", errCode, cdata, envid, lsn);
         case DbConstants.DB_REP_NOTPERM:

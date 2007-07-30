@@ -1,6 +1,5 @@
 <!--$Id: seq_get.so,v 1.11 2005/08/09 14:23:30 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -57,15 +56,17 @@ do not synchronously flush the log when the transaction commits.
 </dl>
 <dt><b>retp</b><dd><b>retp</b> points to the memory to hold the return value from
 the sequence.
-<dt><b>txnid</b><dd>If the operation is part of an application-specified
-transaction, the <b>txnid</b> parameter is a transaction handle
-returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
-group, the <b>txnid</b> parameter is a handle returned from
-<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.
+If no transaction handle is
 specified, but the
 operation occurs in a transactional
 database,
-the operation will be implicitly transaction protected.  No <b>txnid</b> handle may be specified if the sequence handle was
+the operation will be implicitly transaction protected.
+No <b>txnid</b> handle may be specified if the sequence handle was
 opened with a non-zero cache size.
 <p>If the underlying database handle was opened in a transaction, calling
 DB_SEQUENCE-&gt;get may result in changes to the sequence object; these
@@ -87,6 +88,6 @@ stored in their own database.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

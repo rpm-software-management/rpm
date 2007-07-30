@@ -1,0 +1,71 @@
+m4_comment([$Id: db_key_range.so,v 10.23 2004/08/13 03:38:55 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_key_range)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_key_range),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__key_range(DB *db, DB_TXN *txnid,
+    DBT *key, DB_KEY_RANGE *key_range, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::key_range(DbTxn *txnid
+    Dbt *key, DB_KEY_RANGE *key_range, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_key_range) returns an estimate of the proportion of keys
+that are less than, equal to, and greater than the specified key.  The
+underlying database must be of type Btree.])
+
+m4_p([dnl
+The m4_refT(dbh_key_range) fills in a structure of type DB_KEY_RANGE.  The
+following data fields are available from the DB_KEY_RANGE structure:])
+
+m4_tagbegin
+m4_field(double, less,
+[A value between 0 and 1, the proportion of keys less than the specified
+key.])
+
+m4_field(double, equal,
+[A value between 0 and 1, the proportion of keys equal to the specified
+key.])
+
+m4_field(double, greater,
+[A value between 0 and 1, the proportion of keys greater than the
+specified key.])
+m4_tagend
+
+m4_p([dnl
+Values are in the range of 0 to 1; for example, if the field
+m4_arg(less) is 0.05, 5% of the keys in the database are less than the
+m4_arg(key) parameter.  The value for m4_arg(equal) will be zero if
+there is no matching key, and will be non-zero otherwise.])
+
+m4_return(dbh_key_range, std)
+
+m4_parambegin
+m4_param_key
+
+m4_param(key_range, [dnl
+The estimates are returned in the m4_arg(key_range) parameter, which
+contains three elements of type double: m4_arg(less), m4_arg(equal), and
+m4_arg(greater).  Values are in the range of 0 to 1; for example, if the
+field m4_arg(less) is 0.05, 5% of the keys in the database are less than
+the m4_arg(key) parameter.  The value for m4_arg(equal) will be zero if
+there is no matching key, and will be non-zero otherwise.])
+
+m4_param_txn(dbh_key_range,, [dnl
+The m4_refT(dbh_key_range) does not retain the locks it acquires for the
+life of the transaction, so estimates may not be repeatable.])
+
+m4_unusedflags
+m4_paramend
+
+m4_err(dbh_key_range, deadlock, repinval,
+einval, [the underlying database was not of type Btree])
+
+m4_seealso(Db)
+m4_page_footer

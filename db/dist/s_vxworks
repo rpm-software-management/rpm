@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_vxworks,v 12.13 2006/09/13 16:57:49 bostic Exp $
+#	$Id: s_vxworks,v 12.19 2007/05/24 13:16:50 bostic Exp $
 #
 # Build the VxWorks files.
 
@@ -16,7 +16,7 @@ vxsmallfiles=/tmp/__db_e
 trap 'rm -f $s $t $u $vxfilelist $vxsmallfiles ; exit 0' 0
 trap 'rm -f $s $t $u $vxfilelist $vxsmallfiles ; exit 1' 1 2 3 13 15
 
-# Build the VxWorks automatically generated files.
+# Build the VxWorks db.h.
 cat <<ENDOFSEDTEXT > $s
 /extern "C" {/{
 n
@@ -41,14 +41,18 @@ s/@u_int32_decl@/typedef unsigned int u_int32_t;/
 s/@int64_decl@//
 s/@u_int64_decl@/typedef unsigned long long u_int64_t;/
 /@u_char_decl@/d
-/@u_short_decl@/d
 /@u_int_decl@/d
 /@u_long_decl@/d
-/@ssize_t_decl@/d
+/@u_short_decl@/d
 s/@uintmax_t_decl@/typedef unsigned long uintmax_t;/
 s/@uintptr_t_decl@/typedef unsigned long uintptr_t;/
-s/@db_seq_decl@/typedef int db_seq_t;/
+/@FILE_t_decl@/d
+/@off_t_decl@/d
 /@pid_t_decl@/d
+/@size_t_decl@/d
+/@ssize_t_decl@/d
+/@time_t_decl@/d
+s/@db_seq_decl@/typedef int db_seq_t;/
 s/@db_threadid_t_decl@/typedef uintmax_t db_threadid_t;/
 s/@DB_VERSION_MAJOR@/$DB_VERSION_MAJOR/
 s/@DB_VERSION_MINOR@/$DB_VERSION_MINOR/
@@ -73,11 +77,15 @@ f=../build_vxworks/db.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
+# Build the VxWorks db_int.h.
 cat <<ENDOFSEDTEXT > $s
-s/@INT64_FMT@/#define	INT64_FMT	"%lld"/
-s/@UINT64_FMT@/#define	UINT64_FMT	"%llu"/
 s/@PATH_SEPARATOR@/\/\\\\\\\\/
 s/@db_int_def@//
+/#ifdef.*HAVE_SYSTEM_INCLUDE_FILES/i\\
+#include "vxWorks.h"
+/#endif.*HAVE_SYSTEM_INCLUDE_FILES/a\\
+#include "clib_port.h"\\
+#include "db.h"
 ENDOFSEDTEXT
 (echo "$msgc" && sed -f $s ../dbinc/db_int.in) > $t
 test `egrep '@.*@' $t` && {
@@ -89,15 +97,14 @@ f=../build_vxworks/db_int.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
-# Build the VxWorks db_config.h file.
+# Build the VxWorks db_config.h.
 # We don't fail, but we complain if the vx_config.in file isn't up-to-date.
 check_config()
 {
-	egrep '^#undef' config.hin |
-	    awk '{print $2}' | sed '/^SIZEOF_/d' | sort > $s
+	egrep '^#undef' config.hin | awk '{print $2}' | sort > $s
 	(egrep '#undef' $1 | awk '{print $3}'
 	 egrep '^#define' $1 | awk '{print $2}') | sort > $t
-	cmp $s $t || {
+	cmp $s $t > /dev/null || {
 		echo "config.hin and $1 differ"
 		echo "<<< config.hin >>> $1"
 		diff $s $t
@@ -109,6 +116,7 @@ f=../build_vxworks/db_config.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
+# Build the VxWorks db_config_small.h.
 f=../build_vxworks/db_config_small.h
 (echo "$msgc" &&
     sed -e "s/__EDIT_DB_VERSION__/$DB_VERSION/" \
@@ -122,9 +130,20 @@ f=../build_vxworks/db_config_small.h
 cmp $t $f > /dev/null 2>&1 ||
     (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
+# Build the VxWorks clib_port.h.
+cat <<ENDOFSEDTEXT > $s
+s/@INT64_FMT@/#define	INT64_FMT	"%lld"/
+s/@UINT64_FMT@/#define	UINT64_FMT	"%llu"/
+ENDOFSEDTEXT
+sed -f $s clib_port.in > $t
+test `egrep '@.*@' $t` && {
+	egrep '@.*@' $t
+	echo 'Unexpanded autoconf variables found in VxWorks clib_port.h.'
+	exit 1
+}
 f=../build_vxworks/clib_port.h
-cmp clib_port.h $f > /dev/null 2>&1 ||
-    (echo "Building $f" && rm -f $f && cp clib_port.h $f && chmod 444 $f)
+cmp $t $f > /dev/null 2>&1 ||
+    (echo "Building $f" && rm -f $f && cp $t $f && chmod 444 $f)
 
 # Build a sed script that will change a "standard" DB utility into
 # VxWorks-compatible code.
@@ -174,12 +193,14 @@ ENDOFSEDTEXT
 		echo "s/^\($k(\)/$1_\1/g"
 	done
 
-	# There is a special case the rules above don't catch:
+	# There are special cases the rules above don't catch:
+	#	a feedback function used as an argument to dbenv->set_feedback
+	#	a print_app_record function used as an argument to
+	#	    dbenv->set_app_dispatch.
 	#	a txn_compare function used as an argument to qsort(3).
-	#	a print_app_record function used as argument to
-	#	    dbenv->set_app_dispatch).
-	echo "s/, txn_compare);/, db_stat_txn_compare);/"
+	echo "s/, feedback);/, db_recover_feedback);/"
 	echo "s/, print_app_record)) /, db_printlog_print_app_record)) /"
+	echo "s/, txn_compare);/, db_stat_txn_compare);/"
 
 	# We convert the ex_access sample into dbdemo for VxWorks.
 	echo 's/progname = "ex_access";/progname = "dbdemo";/'
@@ -229,7 +250,7 @@ util_one()
 			i="\$(PRJ_DIR)/../../$i"
 		fi
 		o="<BEGIN> FILE_$i"
-		
+
 		echo "${o}_dependDone"
 		echo "FALSE"
 		echo "<END>"

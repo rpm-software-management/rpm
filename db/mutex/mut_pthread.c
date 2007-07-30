@@ -1,15 +1,19 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: mut_pthread.c,v 12.19 2006/08/24 14:46:16 bostic Exp $
+ * $Id: mut_pthread.c,v 12.24 2007/06/21 16:39:20 ubell Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
+
+/*
+ * This is where we load in architecture/compiler specific mutex code.
+ */
+#define	LOAD_ACTUAL_MUTEX_CODE
 #include "dbinc/mutex_int.h"
 
 #ifdef HAVE_MUTEX_SOLARIS_LWP
@@ -181,7 +185,7 @@ __db_pthread_mutex_lock(dbenv, mutex)
 	mtxregion = mtxmgr->reginfo.primary;
 	mutexp = MUTEXP_SET(mutex);
 
-#ifdef HAVE_STATISTICS
+#if defined(HAVE_STATISTICS) && !defined(HAVE_MUTEX_HYBRID)
 	/*
 	 * We want to know which mutexes are contentious, but don't want to
 	 * do an interlocked test here -- that's slower when the underlying
@@ -200,6 +204,17 @@ __db_pthread_mutex_lock(dbenv, mutex)
 		goto err;
 
 	if (F_ISSET(mutexp, DB_MUTEX_SELF_BLOCK)) {
+		/*
+		 * If we are using hybrid mutexes then the pthread mutexes
+		 * are only used to wait after spinning on the TAS mutex.
+		 * Set the wait flag before checking to see if the mutex
+		 * is still locked.  The holder will clear the bit before
+		 * checking the wait flag.
+		 */
+#ifdef HAVE_MUTEX_HYBRID
+		mutexp->wait++;
+		MUTEX_MEMBAR(mutexp->wait);
+#endif
 		while (F_ISSET(mutexp, DB_MUTEX_LOCKED)) {
 			RET_SET((pthread_cond_wait(
 			    &mutexp->cond, &mutexp->mutex)), ret);
@@ -223,9 +238,13 @@ __db_pthread_mutex_lock(dbenv, mutex)
 			}
 		}
 
+#ifdef HAVE_MUTEX_HYBRID
+		mutexp->wait--;
+#else
 		F_SET(mutexp, DB_MUTEX_LOCKED);
 		dbenv->thread_id(dbenv, &mutexp->pid, &mutexp->tid);
 		CHECK_MTX_THREAD(dbenv, mutexp);
+#endif
 
 		/*
 		 * According to HP-UX engineers contacted by Netscape,
@@ -297,7 +316,7 @@ __db_pthread_mutex_unlock(dbenv, mutex)
 	mtxregion = mtxmgr->reginfo.primary;
 	mutexp = MUTEXP_SET(mutex);
 
-#ifdef DIAGNOSTIC
+#if !defined(HAVE_MUTEX_HYBRID) && defined(DIAGNOSTIC)
 	if (!F_ISSET(mutexp, DB_MUTEX_LOCKED)) {
 		__db_errx(
 		    dbenv, "pthread unlock failed: lock already unlocked");

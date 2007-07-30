@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.str,v 12.0 2004/11/17 03:44:44 bostic Exp $
+# $Id: chk.str,v 12.1 2007/04/20 14:25:47 bostic Exp $
 #
 # Check spelling in quoted strings.
 
@@ -21,7 +21,7 @@ sed -e '/^#include/d' \
     -e 's/\\[nt]/ /g' \
     `find $d -name '*.[ch]' -o -name '*.cpp' -o -name '*.java' |
     sed '/\/perl\//d'` |
-spell | sort | comm -23 /dev/stdin spell.ok > $t1
+spell | sort -u | comm -23 /dev/stdin spell.ok > $t1
 
 test -s $t1 && {
 	cat $t1
@@ -31,7 +31,7 @@ test -s $t1 && {
 
 egrep -h '/\* | \* ' \
     `find $d -name '*.[ch]' -o -name '*.cpp' | sed '/\/perl\//d'` |
-spell | sort | comm -23 /dev/stdin spell.ok | tee /tmp/f/1 > $t1
+spell | sort -u | comm -23 /dev/stdin spell.ok | tee /tmp/f/1 > $t1
 
 test -s $t1 && {
 	cat $t1

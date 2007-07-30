@@ -1,0 +1,40 @@
+m4_comment([$Id: intro.so,v 1.5 2006/11/13 18:05:03 bostic Exp $])
+
+m4_ref_title(Sequences,
+    Introduction to sequences,
+    introduction to @sequences, txn/limits, rpc/intro)
+
+m4_p([dnl
+Sequences provide an arbitrary number of persistent objects that return
+an increasing or decreasing sequence of integers.  Opening a sequence
+handle associates it with a record in a database.  The handle can
+maintain a cache of values from the database so that a database update
+is not needed as the application allocates a value.])
+
+m4_p([dnl
+A sequence is stored as a record pair in a database.  The database may
+be of any type, but may not have been configured to support duplicate
+data items.  The sequence is referenced by the key used when the
+sequence is created, therefore the key must be compatible with the
+underlying access method.  If the database stores fixed-length records,
+the record size must be at least 64 bytes long.])
+
+m4_p([dnl
+Since a sequence handle is opened using a database handle, the use of
+transactions with the sequence must follow how the database handle was
+opened.  In other words, if the database handle was opened within a
+transaction, operations on the sequence handle must use transactions.
+Of course, if sequences are cached, not all operations will actually
+trigger a transaction.])
+
+m4_p([dnl
+For the highest concurrency, caching should be used and the
+m4_ref(DB_AUTO_COMMIT) and m4_ref(DB_TXN_NOSYNC) flags should be
+specified to the m4_refT(seq_get) call.  If the allocation of the
+sequence value must be part of a transaction, and rolled back if the
+transaction aborts, then no caching should be specified and the
+transaction handle must be passed to the m4_ref(seq_get) method.])
+
+include(seq/m4.methods)
+
+m4_page_footer

@@ -1,0 +1,40 @@
+m4_comment([$Id: intro.so,v 10.25 2004/09/17 19:51:50 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    What are the available access methods?,
+    introduction to the @access methods, intro/products, am_conf/select)
+
+m4_p([dnl
+m4_db currently offers four access methods: Btree, Hash, Queue and Recno.])
+
+m4_section(Btree)
+m4_p([dnl
+The Btree access method is an implementation of a sorted, balanced tree
+structure.  Searches, insertions, and deletions in the tree all take O(log
+base_b N) time, where base_b is the average number of keys per page, and
+N is the total number of keys stored.  Often, inserting ordered data into
+Btree implementations results in pages that are only half-full.  m4_db
+makes ordered (or inverse ordered) insertion the best case, resulting in
+nearly full-page space utilization.])
+
+m4_section(Hash)
+m4_p([dnl
+The Hash access method data structure is an implementation of Extended
+Linear Hashing, as described in "Linear Hashing: A New Tool for File and
+Table Addressing", Witold Litwin, m4_italic([Proceedings of the 6th
+International Conference on Very Large Databases (VLDB)]), 1980.])
+
+m4_section(Queue)
+m4_p([dnl
+The Queue access method stores fixed-length records with logical record
+numbers as keys.  It is designed for fast inserts at the tail and has a
+special cursor consume operation that deletes and returns a record from
+the head of the queue.  The Queue access method uses record level locking.])
+
+m4_section(Recno)
+m4_p([dnl
+The Recno access method stores both fixed and variable-length records with
+logical record numbers as keys, optionally backed by a flat text (byte
+stream) file.])
+
+m4_page_footer

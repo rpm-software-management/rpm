@@ -1,0 +1,473 @@
+<!--"$Id: 2.4.10.html,v 1.4 2007/05/17 18:17:18 bostic Exp $ (Sleepycat) $Date: 2007/05/17 18:17:18 $"-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 2.4.10 Change Log</title>
+<meta name="description" content="DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 2.4.10 Change Log</h3>
+
+<h3>Interface Changes Introduced in DB 2.4.10:</h3>
+<ol>
+
+<p><li>
+Support has been added for architectures with 16-bit integers, largely to
+port Berkeley DB to the Windows 3.1 platform.  This required <b>extensive</b>
+code changes, although almost all of them were only semantic in nature.
+In almost all of the DB public interfaces, including any public structure
+elements, all variables of type "int" or "unsigned int" have been converted
+to be either type "int32_t" or "u_int32_t".
+<p>
+Previously built binaries on any 32-bit machine should be backward
+compatible, however, previously built binaries on machines with 64-bit
+integers will not be binarily compatible.  Applications should recompile
+correctly without warning or error, unless there are explicit casts in
+the application source code.
+<font color=red>
+This change may NOT be transparent to applications.
+</font>
+
+<p><li>
+Support has been added to allow Berkeley DB to use shared memory backed
+by a paging file or swap space (as opposed to backed by the regular file
+system) on both UNIX and Win95/WNT platforms.  This required a major
+rework of the shared memory support in DB, and, for this reason, the DB
+version 2.4.10 release should, perhaps, be tested more thoroughly than
+usual in your local environment before committing to the upgrade.  This
+change caused the
+db_jump_set(3)
+and
+db_value_set(3)
+functions to change.
+<p>
+The
+db_jump_set(3)
+function interface specified by the DB_FUNC_MAP flag has changed.
+A new interface, specified by the DB_FUNC_RUNLINK flag has been added.
+Applications replacing these functions at run time will
+require additional care in upgrading to this release of DB.
+<p>
+The
+db_value_set(3)
+function interface has two additional flags: DB_REGION_ANON and
+DB_REGION_NAME, which allow applications to specify regions are
+to be created when using memory backed by a paging file.
+<p>
+See the
+db_internal(3)
+manual page for further information.
+
+<p><li>
+The
+db_jump_set(3)
+interface no longer supports the DB_FUNC_CALLOC and DB_FUNC_STRDUP flags.
+Applications may continue to set the functions associated with those flags,
+but they are no longer needed and no longer have any effect.
+
+<p><li>
+The
+db_value_set(3)
+interface has an additional flag: DB_REGION_INIT, which permits applications
+to specify that regions should be page-faulted into memory immediately upon
+creation.
+This fixes a problem where the additional time required to page-fault in
+region memory caused locks to convoy inside of the shared memory buffer pool.
+<p>
+This additionally required an interface change to the DB_FUNC_SEEK interface
+as specified by the
+db_jump_set(3)
+function interface.
+The "relative" argument is now a "u_int32_t" instead of a "u_long",
+and there is an additional argument "isrewind" in order to support
+seeking in the reverse direction.
+<p>
+See the
+db_internal(3)
+manual page for further information.
+<font color=red>
+This change may NOT be transparent to applications.
+</font>
+
+<p><li>
+The
+log_put(3)
+function has an additional flag: DB_CURLSN, which permits applications
+to determine the next log LSN value which will be used.
+This, coupled with changes to the transaction subsystem to no longer
+write transaction-begin records allows Berkeley DB to avoid writing
+any log records in the case of read-only transactions.
+
+<p><li>
+The interface to the
+hcreate(3)
+function has been changed to take a "size_t" as an argument instead of
+an "unsigned int", for compatibility with vendor platforms, notably Solaris.
+<font color=red>
+This change may NOT be transparent to applications.
+</font>
+
+<p><li>
+Specifying NULL or zero-length keys to DB functions is now explicitly
+disallowed by most of the DB interfaces, and EINVAL will be returned.
+<font color=red>
+This change may NOT be transparent to applications.
+</font>
+
+<p><li>
+Performance measurements of Berkeley DB indicated that a significant
+amount of time was being spent clearing pages created in the shared
+memory buffer pool.
+In order to fix this, additional information has been added to the
+memp_fopen(3)
+interface which allows callers to specify the number of bytes which
+need to be cleared when pages are created in the pool.
+The default behavior of the pool code is unchanged, and by default the
+entire page is cleared.
+<p>
+However, the
+memp_fopen(3)
+function interface has changed: 4 of the lesser-used historic arguments
+and the new argument have been moved to an information structure of type
+DB_MPOOL_FINFO which is passed to the memp_fget function as an argument.
+See the
+db_mpool(3)
+man page for more information.
+<font color=red>
+This change may NOT be transparent to applications.
+</font>
+
+<p><li>
+An interface has been added to the
+db_checkpoint(1)
+function allowing database administrators to force a single checkpoint.
+See the
+db_checkpoint(1)
+man page for more information.
+
+</ol>
+
+<h3>Configuration and Build Changes:</h3>
+
+<ol>
+
+<p><li>
+The environment variables used to specify a compiler, loader or compile
+and loader flags during DB configuration have been changed to be more in
+line with standard GNU autoconf practice.  The changes are as follows:
+<p>
+<table border>
+<tr><td>Old Name</td><td>New Name</td></tr>
+<tr><td>ADDCPPFLAGS</td><td>CPPFLAGS</td></tr>
+<tr><td>ADDCXXFLAGS</td><td>CXXFLAGS</td></tr>
+<tr><td>ADDLDFLAGS</td><td>LDFLAGS</td></tr>
+<tr><td>ADDLIBS</td><td>LIBS</td></tr>
+</table>
+<p>
+See the file build.unix/README for further information.
+
+<p><li>
+The DB debugging support (previously configured by specifying
+<b>--enable-debug</b> during configuration) has been split into two
+separate pieces of functionality.
+<p>
+To build DB with -g as a compiler flag and with DEBUG #defined during
+compilation, enter <b>--enable-debug</b> as an argument to configure.
+This will create DB with debugging symbols, as well as load various
+routines that can be called from a debugger to display pages, cursor
+queues and so forth.  This flag should probably not be specified when
+configuring to build production binaries, although there shouldn't be
+any significant performance degradation.
+<p>
+To build DB with diagnostic, run-time sanity checks and with DIAGNOSTIC
+#defined during compilation, enter <b>--enable-diagnostic</b> as an
+argument to configure.  This will cause a number of special checks to be
+performed when DB is running.  This flag should <b>NOT</b> be specified
+when configuring to build production binaries, as you will lose a
+significant amount of performance.
+
+<p><li>
+Some systems, notably versions of AIX, HP/UX and Solaris, require
+special compile-time options in order to create files larger than
+2^32 bytes. These options are automatically enabled when DB is
+compiled.  For this reason, binaries built on current versions of
+these systems may not run on earlier versions of the system, as
+the library and system calls necessary for large files are not
+available.  To disable building with these compile-time options,
+enter <b>--disable-bigfile</b>.
+
+<p><li>
+The autoconf configure script has been enhanced to correctly support
+<b>--disable-feature</b> or <b>--enable-feature=no</b> options.
+
+<p><li>
+The Berkeley DB test suite has been re-ordered to run system tests before
+the tests of the individual access methods.
+
+<p><li>
+The Berkeley DB test suite has been largely ported to the Windows 3.1
+environment.  See the distribution file test/README.win32 for more
+information.
+
+<p><li>
+Mutex lock support for the GCC compiler and the PaRisc architecture has
+been added.
+
+<p><li>
+The db_printlog(1) debugging utility is now built by default,
+and the
+db_stat(1)
+utility is now built on Win95/WNT platforms.
+
+<p><li>
+A number of C, C++ and Java compiler warnings have been fixed.
+
+<p><li>
+Support has been added for the Siemens-Nixdorf Informationssysteme AG
+ReliantUNIX platform.
+
+<p><li>
+Ports of Berkeley DB to the HP MPE/iX and Windows 3.1 environments have
+been begun.  They are not yet complete.
+
+</ol>
+
+<h3>B+tree Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+When performing btree range searches (that is, using the DB_SET_RANGE
+interface, or using the DB version 1.85 compatibility interface), the
+Btree access method could incorrectly return already deleted records.
+
+<p><li>
+When using a cursor to delete key/data pairs from a btree database, it
+was possible to leave empty pages in the database.  This did not cause
+incorrect behavior, however, it could lead to unexpected growth in the
+database.
+
+<p><li>
+When doing a partial put into a off-page (that is, "overflow") record,
+the Btree access method could incorrectly store the data item.
+
+<p><li>
+When an off-page (that is, "overflow") record was promoted to an internal
+page of a Btree database, DB applications could dump core when walking
+the tree on machines where a certain stack variable was not automatically
+initialized to 0.
+
+<p><li>
+When an off-page (that is, "overflow") item was promoted into an internal
+page in a Btree database, DB applications reading databases on machines
+with different byte orders could incorrectly walk the Btree, potentially
+dumping core.
+
+<p><li>
+When Btree databases had record numbering turned on (the DB_RECNUM
+option), it was possible for the record numbers to fail to stay
+synchronized with changes in the database.
+
+</ol>
+
+<h3>Recno Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+When iterating through Recno access method databases, DB could incorrectly
+return EINVAL instead of the next key/data pair.
+
+<p><li>
+Previous releases of DB did not permit Recno access method databases to
+be opened read-only.
+
+<p><li>
+When reading the last record in a Recno access method database, DB could
+incorrectly return DB_NOTFOUND instead of the key/data pair.
+
+<p><li>
+When a key/data item was deleted using the cursor interface to a Recno
+access method database, a subsequent put using DB_NOOVERWRITE set would
+fail.
+
+<p><li>
+Because DB version 2 lazily instantiates the underlying shared memory
+buffer pool files, the DB-&gt;fd call for Recno databases in the DB 1.85
+compatibility interface did not always work.
+
+</ol>
+
+<h3>C++ and Java API Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+When the C++ interface
+Db::get()
+function was called, DB incorrectly treated the DB_NOTFOUND case as an
+exception instead of returning DB_NOTFOUND.
+
+<p><li>
+The DB Java interface now sets the CLASSPATH variable instead of depending
+on -classpath.  This allows DB to work with the SGI JDK 3.0.1.
+
+<p><li>
+Using Dbc.next with the DB_SET or DB_SET_RANGE options in the DB Java
+interface would not correctly position the cursor.
+
+<p><li>
+The DB Java interface now works correctly with the Solaris JDK 1.2.
+
+</ol>
+
+<h3>Additional Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Shared regions now work correctly for multiple processes on Windows/95
+platforms.
+
+<p><li>
+It was possible under rare conditions to return illegal addresses when
+read-only databases were mapped into the process address space.
+
+<p><li>
+When a DB environment had already been specified, setting the
+"db_cachesize" field of the DB_INFO structure would be silently
+ignored by
+db_open(3).
+In DB version 2.4.10, specifying a DB environment as well as setting
+db_cachesize is considered an error, returning EINVAL.
+
+<p><li>
+Several boundary conditions were identified and fixed in database
+recovery.
+
+<p><li>
+Key-not-found and errno returns were being set incorrectly in the
+dbm/ndbm interface compatibility functions.
+
+<p><li>
+Under some conditions, database files could still be synced to disk on
+close, even if the DB_NOSYNC flag was specified to the DB-&gt;close function.
+
+<p><li>
+Under some conditions, the db_archive utility output could contain
+multiple slashes in pathnames.
+
+<p><li>
+The db_archive utility would always prepend the current working
+directory pathname when the -a option was specified, regardless
+of the DB environment information indicating that the database
+home was at an absolute pathname.
+
+<p><li>
+Page create statistics were not correctly maintained when the
+DB_MPOOL_NEW option was specified to the shared memory buffer
+pool subsystem.
+
+<p><li>
+Under rare conditions, log offsets were not maintained correctly when
+switching between log files.
+
+</ol>
+
+<h3>Additional Changes:</h3>
+
+<ol>
+
+<p><li>
+The transaction ID space in Berkeley DB is 2<sup>31</sup>, or 2 billion
+entries.
+It is possible that some environments may need to be aware of this limitation.
+Consider an application performing 600 transactions a second for 15 hours a
+day.
+The transaction ID space will run out in roughly 66 days:
+<blockquote>
+2<sup>31</sup> / (600 * 15 * 60 * 60) = 66
+</blockquote>
+<p>
+Doing only 100 transactions a second exhausts the transaction ID space in
+roughly one year.
+<p>
+In order to decrease the likelihood of exhausting the transaction ID space,
+Berkeley DB now resets the transaction ID each time that recovery is run.
+See
+db_txn(1)
+for more information.
+
+<p><li>
+The limitations on database lifetime imposed by the Berkeley DB logging
+subsystem has been documented.  See
+db_log(3)
+for more information.
+
+<p><li>
+Performance measurements of Berkeley DB indicated that a significant
+amount of time was spent in searching hash queues in the shared memory
+buffer pools.  The internal DB hash bucket code has been enhanced to
+handle much larger core memories than was possible previously, which
+should result in increased performance when using large memory pool
+caches.
+
+<p><li>
+Performance measurements of Berkeley DB indicated that a significant
+amount of time was spent in searching lock queues, and, specifically, in
+calculating hash values of lock queue elements.  Fast hash functions
+specifically for DB's use have been added to the lock subsystem to
+alleviate this problem.
+
+<p><li>
+Performance measurements of Berkeley DB indicated that a significant
+amount of time was spent in determining the number of processors on
+the Windows/NT platform.  The value is now determined initially and
+then stored.
+
+<p><li>
+Historically, the
+db_appinit(3)
+function returned EINVAL if an application attempted recovery, by
+specifying DB_RECOVER or DB_RECOVER_FATAL, and there were no log
+files currently in the database environment.  In the 2.4.10 release,
+this is no longer an error.
+
+<p><li>
+The mutex locking code has been enhanced to no longer attempt full
+test-and-set instructions unless there is a strong probability of
+acquiring the mutex.  This makes spinning on the mutex significantly
+less expensive.
+
+<p><li>
+The count of attempted mutex locks (mutex_set_wait) has been changed to
+be incremented every time a process/thread is refused the lock, instead
+of only once when it first requests the lock and is denied.
+
+<p><li>
+The
+db_dump185(1)
+utility has been enhanced to dump DB version 1.86 databases as well as
+DB version 1.85 databases.
+
+<p><li>
+The
+db_stat(1)
+utility has been enhanced to display values larger than 10 million in
+a new format, "###M".
+
+<p><li>
+The
+db_stat(1)
+utility has been enhanced to display lock region statistics.
+See
+db_stat(1)
+and
+db_lock(3)
+for more information.
+
+</ol>
+
+</body>
+</html>

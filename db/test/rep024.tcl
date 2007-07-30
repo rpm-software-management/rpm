@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep024.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep024.tcl,v 12.14 2007/06/14 18:12:56 alanb Exp $
 #
 # TEST  	rep024
 # TEST	Replication page allocation / verify test
@@ -54,7 +53,13 @@ proc rep024 { method { niter 1000 } { tnum "024" } args } {
 
 proc rep024_sub { method niter tnum envargs logset recargs largs } {
 	source ./include.tcl
-	global testdir
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	env_cleanup $testdir
 
 	replsetup $testdir/MSGQUEUEDIR
@@ -83,29 +88,17 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 	repladd 1
 	set env_cmd(1) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs $recargs -home $masterdir \
-	    -errpfx MASTER -txn $m_logargs \
+	    -errpfx MASTER $verbargs -txn $m_logargs \
 	    -rep_transport \[list 1 replsend\]"
-#	set env_cmd(1) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $envargs $recargs -home $masterdir \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -errpfx MASTER -txn $m_logargs \
-#	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(1) -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set env_cmd(2) "berkdb_env_noerr -create \
 	    -log_max 1000000 $envargs $recargs -home $clientdir \
-	    -errpfx CLIENT -txn $c_logargs \
+	    -errpfx CLIENT $verbargs -txn $c_logargs \
 	    -rep_transport \[list 2 replsend\]"
-#	set env_cmd(2) "berkdb_env_noerr -create \
-#	    -log_max 1000000 $envargs $recargs -home $clientdir \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -errpfx CLIENT -txn $c_logargs \
-#	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(2) -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
@@ -126,7 +119,7 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 
 	set omethod [convert_method $method]
 	set testfile "test$tnum.db"
-	set db [eval "berkdb_open -create $omethod -auto_commit \
+	set db [eval "berkdb_open_noerr -create $omethod -auto_commit \
 	    -pagesize $pagesize -env $masterenv $largs $testfile"]
 	eval rep_test $method $masterenv $db $niter 0 0 0 0 $largs
 	process_msgs $envlist
@@ -166,11 +159,13 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 		puts "\tRep$tnum.d: Swap master and client ($option)."
 		set newmasterenv [eval $env_cmd(2) -rep_master]
 		set newclientenv [eval $env_cmd(1) -rep_client]
+		set newmasterdir [$newmasterenv get_home]
+		set newclientdir [$newclientenv get_home]
 		set envlist "{$newmasterenv 2} {$newclientenv 1}"
 		process_msgs $envlist
 		if { $option == "add new data" } {
 			set key [expr $niter + 2]
-			set db [eval "berkdb_open -create $omethod \
+			set db [eval "berkdb_open_noerr -create $omethod \
 			    -auto_commit -pagesize $pagesize \
 			    -env $newmasterenv $largs $testfile"]
 			set pages1 [r24_check_pages $db $method]
@@ -184,6 +179,17 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 			process_msgs $envlist
 		}
 		puts "\tRep$tnum.e: Close master and client, run verify."
+		#
+		# Verify_dir will db_verify with its own private environment,
+		# which means any dirty pages still in our environment won't be
+		# noticed.  So, make sure there are no dirty pages.  Running
+		# checkpoint at the master flushes its cache, and replicating
+		# that checkpoint to the client makes the client flush its
+		# cache.
+		# 
+		$newmasterenv txn_checkpoint
+  		process_msgs $envlist
+
 		error_check_good newmasterenv_close [$newmasterenv close] 0
 		error_check_good newclientenv_close [$newclientenv close] 0
 		if { $newpages <= 0 } {
@@ -193,9 +199,9 @@ proc rep024_sub { method niter tnum envargs logset recargs largs } {
 		# This test can leave unreferenced pages on systems without
 		# FTRUNCATE and that's OK, so set unref to 0.
 		error_check_good verify \
-		    [verify_dir $masterdir "\tRep$tnum.f: " 0 0 1 0 0] 0
+		    [verify_dir $newmasterdir "\tRep$tnum.f: " 0 0 1 0 0] 0
 		error_check_good verify \
-		    [verify_dir $clientdir "\tRep$tnum.g: " 0 0 1 0 0] 0
+		    [verify_dir $newclientdir "\tRep$tnum.g: " 0 0 1 0 0] 0
 	}
 	replclose $testdir/MSGQUEUEDIR
 }

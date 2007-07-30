@@ -1,0 +1,35 @@
+m4_comment([$Id: bulk.so,v 1.4 2006/07/14 23:04:42 alanb Exp $])
+
+m4_ref_title(m4_db Replication,
+    Bulk transfer,, rep/init, rep/trans)
+
+m4_p([dnl
+Sites in a replication group may be configured to use bulk transfer by
+calling the m4_refT(rep_set_config) with the m4_ref(DB_REP_CONF_BULK)
+flag.  When configured for bulk transfer, sites will accumulate records
+in a buffer and transfer them to another site in a single network
+transfer.  Configuring bulk transfer makes sense for master sites, of
+course.  Additionally, applications using client-to-client
+synchronization may find it helpful to configure bulk transfer for
+client sites as well.])
+
+m4_p([dnl
+When a master is generating new log records, or any information request
+is made of a master, and bulk transfer has been configured, records will
+accumulate in a bulk buffer.  The bulk buffer will be sent to the client
+if either the buffer is full or if a permanent record (for example, a
+transaction commit or checkpoint record) is queued for the client.])
+
+m4_p([dnl
+When a client is responding to another client's request for information,
+and bulk transfer has been configured, records will accumulate in a bulk
+buffer.  The bulk buffer will be sent to the client when the buffer is
+full or when the client's request has been satisfied; no particular type
+of record will cause the buffer to be sent.])
+
+m4_p([dnl
+The size of the bulk buffer itself is internally determined and cannot
+be configured.  However, the overall size of a transfer may be limited
+using the m4_refT(rep_set_limit).])
+
+m4_page_footer

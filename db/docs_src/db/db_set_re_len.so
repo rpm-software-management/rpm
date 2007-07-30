@@ -1,0 +1,61 @@
+m4_comment([$Id: db_set_re_len.so,v 10.40 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_re_len, dbh_get_re_len])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_re_len),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_re_len(DB *db, u_int32_t re_len);
+m4_blank
+int
+DB-__GT__get_re_len(DB *db, u_int32_t *re_lenp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_re_len(u_int32_t re_len);
+m4_blank
+int
+Db::get_re_len(u_int32_t *re_lenp);
+]))
+
+m4_p([dnl
+For the Queue access method, specify that the records are of length
+m4_arg(re_len).  For the Queue access method, the record length must be
+enough smaller than the database's page size that at least one record
+plus the database page's metadata information can fit on each database
+page.])
+
+m4_p([dnl
+For the Recno access method, specify that the records are fixed-length,
+not byte-delimited, and are of length m4_arg(re_len).])
+
+m4_p([dnl
+Any records added to the database that are less than m4_arg(re_len) bytes
+long are automatically padded (see m4_ref(dbh_set_re_pad) for more
+information).])
+
+m4_p([dnl
+Any attempt to insert records into the database that are greater than
+m4_arg(re_len) bytes long will cause the call to fail immediately and
+return an error.])
+
+m4_scope_db(dbh_set_re_len)
+
+m4_when_dbopen(dbh_set_re_len, ignored)
+
+m4_return(dbh_set_re_len, std)
+
+m4_parambegin
+m4_param(re_len, [dnl
+The m4_arg(re_len) parameter is the length of a Queue or Recno database
+record, in bytes.])
+m4_paramend
+
+m4_err(dbh_set_re_len,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_re_len, record length,, re_lenp)
+
+m4_seealso(Db)
+m4_page_footer

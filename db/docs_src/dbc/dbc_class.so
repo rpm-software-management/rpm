@@ -1,0 +1,26 @@
+m4_comment([$Id: dbc_class.so,v 10.19 2004/08/13 03:38:56 bostic Exp $])
+
+define(M4PAGELOCAL, Dbc)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(Dbc),
+ifelse(M4API, C_API, [dnl
+typedef struct __dbc DBC;
+])
+ifelse(M4API, CXX_API, [dnl
+class Dbc { ... };
+]))
+
+m4_p([dnl
+The m4_ref(Dbc) object is the handle for a cursor into a m4_db database.
+The handle is not free-threaded.  Cursor handles may be used by multiple
+threads, but only serially, that is, the application must serialize
+access to the m4_ref(Dbc) handle.])
+
+m4_p([dnl
+If the cursor is to be used to perform operations on behalf of a
+transaction, the cursor must be opened and closed within the context of
+that single transaction.  Once m4_ref(dbc_close) has been called, the
+handle may not be accessed again, regardless of the method's return.])
+
+m4_page_footer

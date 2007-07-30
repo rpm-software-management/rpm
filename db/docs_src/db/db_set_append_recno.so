@@ -1,0 +1,72 @@
+m4_comment([$Id: db_set_append_recno.so,v 1.24 2006/05/17 20:47:46 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_append_recno, DB_DBT_APPMALLOC])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_append_recno),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_append_recno(DB *,
+    int (*db_append_recno_fcn)(DB *dbp, DBT *data, db_recno_t recno));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_append_recno(
+    int (*db_append_recno_fcn)(DB *dbp, Dbt *data, db_recno_t recno));
+]))
+
+define(__dbAppendRecno_param, [dnl
+ifelse([$1], internal, [dnl
+The m4_arg(db_append_recno_fcn) parameter is a function to call after
+the record number has been selected but before the data has been stored
+into the database.  The function takes three parameters:
+m4_tagbegin
+m4_tag(m4_arg(db), [dnl
+The m4_arg(db) parameter is the enclosing database handle.])
+m4_tag(m4_arg(dbt), [dnl
+The m4_arg(dbt) parameter is the data m4_ref(Dbt) to be stored.])
+m4_tag(m4_arg(recno), [dnl
+The m4_arg(recno) parameter is the generated record number.])
+m4_tagend],[dnl
+m4_parambegin
+m4_param(db, [dnl
+The m4_arg(db) parameter is the enclosing database handle.])
+m4_param(data, [dnl
+The m4_arg(data) parameter is the data m4_ref(Dbt) to be stored.])
+m4_param(recno, [dnl
+The m4_arg(recno) parameter is the generated record number.])
+m4_paramend])
+m4_p([dnl
+The called function may modify the data m4_ref(Dbt).  If the function
+needs to allocate memory for the m4_arg(data) field, the m4_arg(flags)
+field of the returned m4_ref(Dbt) should be set to
+m4_ref(DB_DBT_APPMALLOC), which indicates that m4_db should free the
+memory when it is done with it.])])
+
+define(__dbAppendRecno_return, [dnl
+The callback function must return 0 on success and m4_envvar(errno) or
+a value outside of the m4_db error name space on failure.])
+
+m4_p([dnl
+When using the m4_ref(DB_APPEND) option of the m4_ref(dbh_put) method,
+it may be useful to modify the stored data based on the generated key.
+If a callback function is specified using the
+m4_refT(dbh_set_append_recno), it will be called after the record number
+has been selected, but before the data has been stored.])
+
+m4_scope_dbh(dbh_set_append_recno)
+m4_when_dbopen(dbh_set_append_recno)
+m4_return(dbh_set_append_recno, std)
+
+m4_parambegin
+m4_param(db_append_recno_fcn, [dnl
+__dbAppendRecno_param(internal)
+m4_p([__dbAppendRecno_return])
+m4_not_reentrant])
+m4_paramend
+
+m4_err(dbh_set_append_recno,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_seealso(Db)
+m4_page_footer

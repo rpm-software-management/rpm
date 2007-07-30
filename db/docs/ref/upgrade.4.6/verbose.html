@@ -1,0 +1,47 @@
+<!--$Id: verbose.so,v 1.2 2006/11/17 17:44:12 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.6: verbose output</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.6/full_election.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/verb.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.6: verbose output</h3>
+<p>When an error occurs in the Berkeley DB library, an exception is thrown or an
+error return value is returned by the interface.  In some cases,
+however, the exception or returned value may be insufficient to
+completely describe the cause of the error, especially during initial
+application debugging.  Applications can configure Berkeley DB for verbose
+messages to be output when an error occurs, but it's a common cause of
+confusion for new users that no verbose messages are available by
+default.</p>
+<p>In the Berkeley DB 4.6 release, verbose messages are configured by default.
+For the C and C++ APIs, this means the default configuration when
+applications first create <a href="../../api_c/db_class.html">DB</a> or <a href="../../api_c/env_class.html">DB_ENV</a> handles is as if
+the <a href="../../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> or <a href="../../api_c/db_set_errfile.html">DB-&gt;set_errfile</a> methods were called
+with the standard error output (stderr) specified as the FILE *
+argument.  Applications wanting no output at all can turn off this
+default configuration by calling the <a href="../../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> or
+<a href="../../api_c/db_set_errfile.html">DB-&gt;set_errfile</a> methods with NULL as the FILE * argument.
+Additionally, explicitly configuring the error output channel using any
+of the <a href="../../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a>, <a href="../../api_c/db_set_errfile.html">DB-&gt;set_errfile</a>,
+<a href="../../api_c/env_set_errcall.html">DB_ENV-&gt;set_errcall</a>, <a href="../../api_c/db_set_errcall.html">DB-&gt;set_errcall</a>,
+<a href="../../api_cxx/env_set_error_stream.html">DbEnv::set_error_stream</a> or <a href="../../api_cxx/db_set_error_stream.html">Db::set_error_stream</a> methods will
+also turn off this default output for the application.</p>
+<p>Applications which configure Berkeley DB with any error output channel should
+not require any changes.</p>
+<p>Applications which depend on having no output from the Berkeley DB library by
+default, should be changed to call the <a href="../../api_c/env_set_errfile.html">DB_ENV-&gt;set_errfile</a> or
+<a href="../../api_c/db_set_errfile.html">DB-&gt;set_errfile</a> methods with NULL as the FILE * argument.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.6/full_election.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/verb.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

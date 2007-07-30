@@ -1,0 +1,148 @@
+m4_comment([$Id: db_hotbackup.so,v 1.10 2007/04/13 15:45:27 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_hotbackup)
+
+m4_util_header(db_hotbackup, [db_hotbackup m4_utilarg(cDuVv) m4_utilarg([d data_dir ...]) m4_utilarg([h home]) m4_utilarg([l log_dir]) m4_utilarg([P password]) m4_option(b) backup_dir])
+m4_idefz(utility to hot @backup database environments)
+
+m4_p([dnl
+The m4_ref(db_hotbackup) utility creates "hot backup" or "hot failover"
+snapshots of m4_db database environments.])
+
+m4_p([dnl
+The m4_ref(db_hotbackup) utility performs the following steps:])
+
+m4_nlistbegin
+m4_nlist([dnl
+If the m4_option(c) option is specified, checkpoint the source home
+database environment, and remove any unnecessary log files.])
+m4_nlist([dnl
+If the target directory for the backup does not exist, it is created
+with mode read-write-execute for the owner.
+m4_p([dnl
+If the target directory for the backup does exist and the m4_option(u)
+option was specified, all log files in the target directory are removed;
+if the m4_option(u) option was not specified, all files in the target
+directory are removed.])])
+m4_nlist([dnl
+If the m4_option(u) option was not specified, copy application-specific
+files found in the database environment home directory, and any
+directories specified using the m4_option(d) option, into the target
+directory for the backup.])
+m4_nlist([dnl
+Copy all log files found in the directory specified by the m4_option(l)
+option (or in the database environment home directory, if no m4_option(l)
+option was specified), into the target directory for the backup.])
+m4_nlist([dnl
+Perform catastrophic recovery in the target directory for the backup.])
+m4_nlist([dnl
+Remove any unnecessary log files from the target directory for the
+backup.])
+m4_nlistend
+
+m4_p([dnl
+The m4_ref(db_hotbackup) utility does not resolve pending transactions that
+are in the prepared state.  Applications that use m4_ref(txn_prepare)
+should specify m4_ref(DB_RECOVER_FATAL) when opening the environment,
+and run m4_ref(txn_recover) to resolve any pending transactions, when
+failing over to the backup.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+
+m4_tagopt(b, [dnl
+Specify the target directory for the backup.])
+
+m4_tagopt(c, [dnl
+Before performing the backup, checkpoint the source database environment
+and remove any log files that are no longer required in that environment.
+m4_bold([To avoid making catastrophic recovery impossible, log file
+removal must be integrated with log file archival.])])
+
+m4_tagopt(D, [dnl
+Use the data and log directories listed in a m4_ref(DB_CONFIG) configuration
+file in the source directory.  This option has four effects:
+
+m4_bulletbegin
+m4_bullet([dnl
+The specified data and log directories will be created relative to the
+target directory, with mode read-write-execute owner, if they do not
+already exist.])
+
+m4_bullet([dnl
+In step #3 above, all files in any source data directories specified in
+the m4_ref(DB_CONFIG) file will be copied to the target data directories.])
+
+m4_bullet([dnl
+In step #4 above, log files will be copied from any log directory specified
+in the m4_ref(DB_CONFIG) file, instead of from the default locations.])
+
+m4_bullet([dnl
+The m4_ref(DB_CONFIG) configuration file will be copied from the source
+directory to the target directory, and subsequently used for configuration
+if recovery is run in the target directory.])
+m4_bulletend
+
+m4_p([dnl
+Care should be taken with the m4_option(D) option where data and log
+directories are named relative to the source directory but are not
+subdirectories (that is, the name includes the element "..")
+Specifically, the constructed target directory names must be meaningful
+and distinct from the source directory names, otherwise running recovery
+in the target directory might corrupt the source data files.])
+
+m4_p([m4_bold([dnl
+It is an error to use absolute pathnames for data or log directories in
+this mode, as the m4_ref(DB_CONFIG) configuration file copied into the
+target directory would then point at the source directories and running
+recovery would corrupt the source data files.])])])
+
+m4_tagopt(d, [dnl
+Specify one or more directories that contain data files to be copied to
+the target directory.
+m4_p([m4_bold([dnl
+As all database files are copied into a single target directory, files
+named the same, stored in different source directories, would overwrite
+each other when copied to the target directory.])])
+m4_p([dnl
+Please note the database environment recovery log references database
+files as they are named by the application program.  m4_bold([If the
+application uses absolute or relative pathnames to name database files,
+(rather than filenames and the m4_refT(dbenv_set_data_dir) or the
+m4_ref(DB_CONFIG) configuration file to specify filenames), running
+recovery in the target directory may not properly find the copies of
+the files or might even find the source files, potentially resulting in
+corruption.])])])
+
+m4_tagopt(h, [dnl
+Specify the target directory for the backup, that is, the database
+environment home directory.])
+
+m4_tagopt(l, [dnl
+Specify a source directory that contains log files; if none is specified,
+the database environment home directory will be searched for log files.])
+
+m4_Pflag
+
+m4_tagopt(u, [dnl
+Update a pre-existing hot backup snapshot by copying in new log files.
+If the m4_option(u) option is specified, no databases will be copied
+into the target directory.])
+
+m4_Vflag
+
+m4_tagopt(v, [dnl
+Run in verbose mode, listing operations as they are done.])
+m4_tagend
+
+m4_detach(db_hotbackup, uses)
+
+m4_utilexit(db_hotbackup)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_hotbackup)
+
+m4_page_footer

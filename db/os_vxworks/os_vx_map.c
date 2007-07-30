@@ -1,13 +1,12 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1998,2007 Oracle.  All rights reserved.
  *
  * This code is derived from software contributed to Sleepycat Software by
  * Frederick G.M. Roeber of Netscape Communications Corp.
  *
- * $Id: os_vx_map.c,v 12.6 2006/08/24 14:46:20 bostic Exp $
+ * $Id: os_vx_map.c,v 12.9 2007/05/17 15:15:48 bostic Exp $
  */
 
 #include "db_config.h"
@@ -209,8 +208,6 @@ __os_segdata_init(dbenv)
  *	frees all linked data: the segments themselves, and their names.
  *	Currently not called.  This function should be called if the
  *	user creates a function to unload or shutdown.
- *
- * PUBLIC: int __os_segdata_destroy __P((DB_ENV *));
  */
 int
 __os_segdata_destroy(dbenv)

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: cxx_logc.cpp,v 12.4 2006/08/24 14:45:13 bostic Exp $
+ * $Id: cxx_logc.cpp,v 12.8 2007/06/28 13:02:50 mjc Exp $
  */
 
 #include "db_config.h"
@@ -44,12 +43,12 @@ int DbLogc::close(u_int32_t _flags)
 }
 
 // The name _flags prevents a name clash with __db_log_cursor::flags
-int DbLogc::get(DbLsn *lsn, Dbt *data, u_int32_t _flags)
+int DbLogc::get(DbLsn *get_lsn, Dbt *data, u_int32_t _flags)
 {
 	DB_LOGC *logc = this;
 	int ret;
 
-	ret = logc->get(logc, lsn, data, _flags);
+	ret = logc->get(logc, get_lsn, data, _flags);
 
 	if (!DB_RETOK_LGGET(ret)) {
 		if (ret == DB_BUFFER_SMALL)
@@ -59,6 +58,21 @@ int DbLogc::get(DbLsn *lsn, Dbt *data, u_int32_t _flags)
 			DB_ERROR(DbEnv::get_DbEnv(logc->dbenv),
 				"DbLogc::get", ret, ON_ERROR_UNKNOWN);
 	}
+
+	return (ret);
+}
+
+// The name _flags prevents a name clash with __db_log_cursor::flags
+int DbLogc::version(u_int32_t *versionp, u_int32_t _flags)
+{
+	DB_LOGC *logc = this;
+	int ret;
+
+	ret = logc->version(logc, versionp, _flags);
+
+	if (!DB_RETOK_LGGET(ret))
+		DB_ERROR(DbEnv::get_DbEnv(logc->dbenv),
+			"DbLogc::version", ret, ON_ERROR_UNKNOWN);
 
 	return (ret);
 }

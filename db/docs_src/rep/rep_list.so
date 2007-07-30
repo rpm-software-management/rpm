@@ -1,0 +1,7 @@
+m4_comment([$Id: rep_list.so,v 1.1 2002/08/30 20:02:36 bostic Exp $])
+
+m4_page_title([m4_db: Replication and Related Methods])
+
+include(rep/m4.methods)
+
+m4_page_footer

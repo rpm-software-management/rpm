@@ -1,0 +1,38 @@
+m4_comment([$Id: dbsizes.so,v 10.27 2005/02/24 20:51:50 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Database limits, database @limits, am_misc/stability, am_misc/diskspace)
+
+m4_p([dnl
+The largest database file that m4_db can handle depends on the page size
+selected by the application.  m4_db stores database file page numbers as
+unsigned 32-bit numbers and database file page sizes as unsigned 16-bit
+numbers.  Using the maximum database page size of 65536, this results in
+a maximum database file size of m4_sup(2, 48) (256 terabytes).  The
+minimum database page size is 512 bytes, which results in a minimum
+maximum database size of m4_sup(2, 41) (2 terabytes).])
+
+m4_p([dnl
+The largest database file m4_db can support is potentially further limited
+if the host system does not have filesystem support for files larger than
+m4_sup(2, 32), including the ability to seek to absolute offsets within
+those files.])
+
+m4_p([dnl
+The largest key or data item that m4_db can support is m4_sup(2, 32),
+or more likely limited by available memory.  Specifically, while key and
+data byte strings may be of essentially unlimited length, any one of
+them must fit into available memory so that it can be returned to the
+application.  As some of the m4_db interfaces return both key and data
+items to the application, those interfaces will require that any
+key/data pair fit simultaneously into memory.  Further, as the access
+methods may need to compare key and data items with other key and data
+items, it may be a requirement that any two key or two data items fit
+into available memory.  Finally, when writing applications supporting
+transactions, it may be necessary to have an additional copy of any data
+item in memory for logging purposes.])
+
+m4_p([dnl
+The maximum Btree depth is 255.])
+
+m4_page_footer

@@ -1,10 +1,9 @@
 /*
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: mut_win32.c,v 12.21 2006/08/24 14:46:16 bostic Exp $
+ * $Id: mut_win32.c,v 12.25 2007/06/28 11:14:04 alexg Exp $
  */
 
 #include "db_config.h"
@@ -48,6 +47,7 @@ static __inline int get_handle(dbenv, mutexp, eventp)
 	for (id = (mutexp)->id; id != 0; id >>= 4)
 		*--p = hex_digits[id & 0xf];
 
+#ifndef DB_WINCE
 	if (!security_initialized) {
 		InitializeSecurityDescriptor(&null_sd,
 		    SECURITY_DESCRIPTOR_REVISION);
@@ -57,6 +57,7 @@ static __inline int get_handle(dbenv, mutexp, eventp)
 		all_sa.lpSecurityDescriptor = &null_sd;
 		security_initialized = 1;
 	}
+#endif
 
 	if ((*eventp = CreateEvent(&all_sa, FALSE, FALSE, idbuf)) == NULL) {
 		ret = __os_get_syserr();
@@ -111,6 +112,9 @@ __db_win32_mutex_lock(dbenv, mutex)
 #ifdef MUTEX_DIAG
 	LARGE_INTEGER now;
 #endif
+#ifdef DB_WINCE
+	volatile db_threadid_t tmp_tid;
+#endif
 
 	if (!MUTEX_ON(dbenv) || F_ISSET(dbenv, DB_ENV_NOLOCKING))
 		return (0);
@@ -130,6 +134,20 @@ loop:	/* Attempt to acquire the resource for N spins. */
 		 * We can avoid the (expensive) interlocked instructions if
 		 * the mutex is already "set".
 		 */
+#ifdef DB_WINCE
+		/* 
+		 * Memory mapped regions on Windows CE cause problems with 
+		 * InterlockedExchange calls. Each page in a mapped region
+		 * needs to have been written to prior to an 
+		 * InterlockedExchange call, or the InterlockedExchange call
+		 * hangs. This does not seem to be documented anywhere. For
+		 * now, read/write a non-critical piece of memory from the 
+		 * shared region prior to attempting an InterlockedExchange
+		 * operation.
+		 */
+		tmp_tid = mutexp->tid;
+		mutexp->tid = tmp_tid;
+#endif
 		if (mutexp->tas || !MUTEX_SET(&mutexp->tas)) {
 			/*
 			 * Some systems (notably those with newer Intel CPUs)

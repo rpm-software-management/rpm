@@ -1,0 +1,29 @@
+m4_comment([$Id: memp_fcreate.so,v 10.12 2004/08/13 03:38:58 bostic Exp $])
+
+define(M4PAGELOCAL, memp_fcreate)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_fcreate),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__memp_fcreate(DB_ENV *dbenvp, DB_MPOOLFILE **dbmfp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::memp_fcreate(DbMpoolFile **dbmfp, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(memp_fcreate) creates a m4_ref(DbMpoolFile) structure that
+is the handle for a m4_db shared memory buffer pool file.  A pointer to
+this structure is returned in the memory to which m4_arg(dbmfp) refers.
+Calling the m4_refT(memp_fclose) will discard the returned handle.])
+
+m4_return(memp_fcreate, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_seealso(DbMpool)
+m4_page_footer

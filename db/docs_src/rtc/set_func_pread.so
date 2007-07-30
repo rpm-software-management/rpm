@@ -1,0 +1,23 @@
+m4_comment([$Id: set_func_pread.so,v 1.1 2003/12/11 21:32:46 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_pread)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_pread),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_pread(ssize_t (*func_pread)(int fd, void *buf, size_t nbytes, off_t offset));
+]))
+
+m4_posix_func(pread)
+
+m4_scope_process(dbenv_set_func_pread)
+
+m4_when_init(dbenv_set_func_pread)
+
+m4_return(dbenv_set_func_pread, std)
+
+m4_param_replace(func_pread)
+
+m4_rtc_seealso
+m4_page_footer

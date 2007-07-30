@@ -1,0 +1,36 @@
+m4_comment([$Id: db_join.so,v 11.22 2002/08/18 21:17:26 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db join, m4_tcl_db_join, [dnl
+db join
+	m4_italic(db.cX)
+	m4_italic(db.cY)
+	m4_italic(db.cZ)
+	...
+])
+
+m4_p([dnl
+The m4_tcl_db_join command joins the specified cursors and returns a
+cursor handle that can be used to iterate through the joined {key data}
+pairs.  The returned cursor handle is bound to a Tcl command of the form
+m4_bold(dbN.cX), where X is an integer starting at 0 (for example,
+db0.c0 and db0.c1).  It is through this Tcl command that the script
+accesses the cursor methods.])
+
+m4_p([dnl
+The returned join cursor has limited cursor functionality, and only the
+m4_tcl_dbc_get and m4_tcl_dbc_close commands will succeed.])
+
+m4_p([dnl
+See m4_link(M4RELDIR/ref/am/join, Equality join) for more information on
+the underlying requirements for joining.])
+
+m4_p([dnl
+In a transaction-protected environment, all the cursors listed must have
+been created within the same transaction.])
+
+m4_tcl_ret_error
+
+m4_page_footer

@@ -1,0 +1,4 @@
+m4_comment([$Id: db_remove.so,v 10.3 2002/08/18 21:15:51 bostic Exp $])
+
+define(M4INTERFACE, dbh_remove)
+include(env/env_dbremove.so)

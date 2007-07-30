@@ -1,0 +1,45 @@
+m4_comment([$Id: set_func_ioinfo.so,v 10.17 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_ioinfo)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_ioinfo),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_ioinfo(int (*func_ioinfo)(const char *path,
+    int fd, u_int32_t *mbytesp, u_int32_t *bytesp, u_int32_t *iosizep));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to determine the size and I/O
+characteristics of a file.])
+
+m4_scope_process(dbenv_set_func_ioinfo)
+
+m4_when_init(dbenv_set_func_ioinfo)
+
+m4_return(dbenv_set_func_ioinfo, std)
+
+m4_parambegin
+m4_param(func_ioinfo, [dnl
+The m4_arg(func_ioinfo) parameter is the function which returns the size
+and I/O characteristics of a file.
+m4_p([dnl
+The m4_arg(path) parameter is the pathname of the file to be checked, and the
+m4_arg(fd) parameter is an open file descriptor on the file.])
+m4_p([dnl
+If the m4_arg(mbytesp) and m4_arg(bytesp) parameters are non-NULL, the
+m4_arg(ioinfo) function must return in them the size of the file: the
+number of megabytes in the file into the memory location to which the
+m4_arg(mbytesp) parameter refers, and the number of bytes over and above
+that number of megabytes into the memory location to which the
+m4_arg(bytesp) parameter refers.])
+m4_p([dnl
+In addition, if the m4_arg(iosizep) parameter is non-NULL, the m4_arg(ioinfo)
+function must return the optimum granularity for I/O operations to the file
+into the memory location to which it refers.])
+m4_ret_internal(func_ioinfo)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

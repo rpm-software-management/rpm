@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Reverse BTree Splits</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="txnconcurrency.html" title="Chapter 4. Concurrency" />
+    <link rel="up" href="txnconcurrency.html" title="ChapterÂ 4.Â Concurrency" />
     <link rel="previous" href="txnnowait.html" title="No Wait on Blocks" />
-    <link rel="next" href="filemanagement.html" title="Chapter 5. Managing DB Files" />
+    <link rel="next" href="filemanagement.html" title="ChapterÂ 5.Â Managing DB Files" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Reverse BTree Splits</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="txnnowait.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Concurrency</th>
-          <td width="20%" align="right"> <a accesskey="n" href="filemanagement.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="txnnowait.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Concurrency</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="filemanagement.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -79,7 +79,7 @@
       <p>
             For example:
         </p>
-      <pre class="programlisting">#include &quot;db_cxx.h&quot;
+      <pre class="programlisting">#include "db_cxx.h"
 
 ...
                                                                                                                                   
@@ -95,9 +95,9 @@ int main(void)
 
     u_int32_t db_flags = DB_CREATE | DB_AUTO_COMMIT;
     Db *dbp = NULL;
-    const char *file_name = &quot;mydb.db&quot;;
+    const char *file_name = "mydb.db";
                                                                                                                                   
-    std::string envHome(&quot;/export1/testEnv&quot;);
+    std::string envHome("/export1/testEnv");
     DbEnv myEnv(0);
 
     try {
@@ -117,8 +117,8 @@ int main(void)
                   0);         // File mode. Using defaults
 
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error opening database and environment: &quot;
-                  &lt;&lt; file_name &lt;&lt; &quot;, &quot; &lt;&lt; envHome &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error opening database and environment: "
+                  &lt;&lt; file_name &lt;&lt; ", " &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
     }
 
@@ -126,8 +126,8 @@ int main(void)
         dbp-&gt;close(dbp, 0);
         myEnv.close(0);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error closing database and environment: &quot;
-                  &lt;&lt; file_name &lt;&lt; &quot;, &quot; &lt;&lt; envHome &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "Error closing database and environment: "
+                  &lt;&lt; file_name &lt;&lt; ", " &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
     }
@@ -139,18 +139,18 @@ int main(void)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="txnnowait.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="txnnowait.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="txnconcurrency.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="filemanagement.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="filemanagement.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">No Wait on Blocks </td>
+          <td width="40%" align="left" valign="top">No Wait on BlocksÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 5. Managing DB Files</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 5.Â Managing DB Files</td>
         </tr>
       </table>
     </div>

@@ -1,0 +1,20 @@
+m4_comment([$Id: faq.so,v 10.5 2003/03/19 20:20:34 bostic Exp $])
+
+m4_ref_title(Test Suite,
+    Test suite FAQ,, test/run, distrib/port)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([dnl
+The test suite has been running for over a day.  What's wrong?])
+
+m4_p([dnl
+The test suite can take anywhere from some number of hours to several
+days to run, depending on your hardware configuration.  As long as the
+run is making forward progress and new lines are being written to the
+m4_path(ALL.OUT) files, everything is probably fine.])])
+
+m4_nlistend
+
+m4_page_footer

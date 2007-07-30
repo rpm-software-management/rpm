@@ -1,0 +1,4 @@
+m4_comment([$Id: db_set_error_stream.so,v 10.2 2002/08/18 21:15:54 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_error_stream)
+include(env/env_set_error_stream.so)

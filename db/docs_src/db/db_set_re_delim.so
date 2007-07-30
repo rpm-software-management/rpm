@@ -1,0 +1,50 @@
+m4_comment([$Id: db_set_re_delim.so,v 10.39 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_re_delim, dbh_get_re_delim])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_re_delim),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_re_delim(DB *db, int delim);
+m4_blank
+int
+DB-__GT__get_re_delim(DB *db, int *delimp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_re_delim(int re_delim);
+m4_blank
+int
+Db::get_re_delim(int *delimp);
+]))
+
+m4_p([dnl
+Set the delimiting byte used to mark the end of a record in the backing
+source file for the Recno access method.])
+
+m4_p([dnl
+This byte is used for variable length records if the m4_arg(re_source)
+file is specified.  If the m4_arg(re_source) file is specified and no
+delimiting byte was specified, m4_htmlquote(newline) characters (that
+is, ASCII 0x0a) are interpreted as end-of-record markers.])
+
+m4_scope_db(dbh_set_re_delim)
+
+m4_when_dbopen(dbh_set_re_delim, ignored)
+
+m4_return(dbh_set_re_delim, std)
+
+m4_parambegin
+m4_param(re_delim, [dnl
+The m4_arg(re_delim) parameter is the delimiting byte used to mark the
+end of a record.])
+m4_paramend
+
+m4_err(dbh_set_re_delim,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_re_delim, delimiting byte,, delimp)
+
+m4_seealso(Db)
+m4_page_footer

@@ -1,0 +1,32 @@
+m4_comment([$Id: lock_id.so,v 10.33 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, lock_id)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(lock_id),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lock_id(DB_ENV *env, u_int32_t *idp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lock_id(u_int32_t *idp);
+]))
+
+m4_p([dnl
+The m4_refT(lock_id) copies a locker ID, which is guaranteed to be
+unique in the specified lock table, into the memory location to which
+m4_arg(idp) refers.])
+
+m4_p([dnl
+The m4_refT(lock_id_free) should be called to return the locker ID to
+the m4_db library when it is no longer needed.])
+
+m4_return(lock_id, std)
+
+m4_parambegin
+m4_param_co(idp, allocated locker ID)
+m4_paramend
+
+m4_seealso(DbLock)
+m4_page_footer

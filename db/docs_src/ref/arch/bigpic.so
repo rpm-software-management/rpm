@@ -1,0 +1,110 @@
+m4_comment([$Id: bigpic.so,v 8.32 2003/11/27 18:25:57 bostic Exp $])
+
+m4_ref_title(Architecture, The big picture,, java/faq, arch/progmodel)
+
+m4_p([dnl
+The previous chapters in this Reference Guide have described
+applications that use the m4_db access methods for fast data storage
+and retrieval.  The applications described in the following chapters
+are similar in nature to the access method applications, but they are
+also threaded and/or recoverable in the face of application or system
+failure.])
+
+m4_p([dnl
+Application code that uses only the m4_db access methods might appear
+as follows:])
+
+include(ref/arch/bigpic1.cs)
+
+m4_p([dnl
+The underlying m4_db architecture that supports this is])
+
+m4_picgif(center, smallpic, small)
+
+m4_p([dnl
+As you can see from this diagram, the application makes calls into the
+access methods, and the access methods use the underlying shared memory
+buffer cache to hold recently used file pages in main memory.])
+
+m4_p([dnl
+When applications require recoverability, their calls to the Access
+Methods must be wrapped in calls to the transaction subsystem.  The
+application must inform m4_db where to begin and end transactions, and
+must be prepared for the possibility that an operation may fail at any
+particular time, causing the transaction to abort.])
+
+m4_p([dnl
+An example of transaction-protected code might appear as follows:])
+
+include(ref/arch/bigpic2.cs)
+
+m4_p([dnl
+In this example, the same operation is being done as before; however,
+it is wrapped in transaction calls.  The transaction is started with
+m4_ref(txn_begin) and finished with m4_ref(txn_commit).  If the
+operation fails due to a deadlock, the transaction is aborted using
+m4_ref(txn_abort), after which the operation may be retried.])
+
+m4_p([dnl
+There are actually five major subsystems in m4_db, as follows:])
+
+m4_tagbegin
+m4_tag(Access Methods, [dnl
+The access methods subsystem provides general-purpose support for
+creating and accessing database files formatted as Btrees, Hashed files,
+and Fixed- and Variable-length records.  These modules are useful in
+the absence of transactions for applications that need fast formatted
+file support.  See m4_ref(dbh_open) and m4_ref(dbh_cursor) for more
+information.  These functions were already discussed in detail in the
+previous chapters.])
+
+m4_tag(Memory Pool, [dnl
+The Memory Pool subsystem is the general-purpose shared memory buffer pool
+used by m4_db.  This is the shared memory cache that allows multiple
+processes and threads within processes to share access to databases.  This
+module is useful outside of the m4_db package for processes that require
+portable, page-oriented, cached, shared file access.])
+
+m4_tag(Transaction, [dnl
+The Transaction subsystem allows a group of database changes to be
+treated as an atomic unit so that either all of the changes are done,
+or none of the changes are done.  The transaction subsystem implements
+the m4_db transaction model.  This module is useful outside of the m4_db
+package for processes that want to transaction-protect their own data
+modifications.])
+
+m4_tag(Locking, [dnl
+The Locking subsystem is the general-purpose lock manager used by m4_db.
+This module is useful outside of the m4_db package for processes that
+require a portable, fast, configurable lock manager.])
+
+m4_tag(Logging, [dnl
+The Logging subsystem is the write-ahead logging used to support the
+m4_db transaction model.  It is largely specific to the m4_db package,
+and unlikely to be useful elsewhere except as a supporting module for
+the m4_db transaction subsystem.])
+
+m4_tagend
+
+m4_p([dnl
+Here is a more complete picture of the m4_db library:])
+
+m4_picgif(center, bigpic, large)
+
+m4_p([dnl
+In this model, the application makes calls to the access methods and to
+the Transaction subsystem.  The access methods and Transaction subsystems
+in turn make calls into the Memory Pool, Locking and Logging subsystems
+on behalf of the application.])
+
+m4_p([dnl
+The underlying subsystems can be used independently by applications.
+For example, the Memory Pool subsystem can be used apart from the rest
+of m4_db by applications simply wanting a shared memory buffer pool, or
+the Locking subsystem may be called directly by applications that are
+doing their own locking outside of m4_db.  However, this usage is not
+common, and most applications will either use only the access methods
+subsystem, or the access methods subsystem wrapped in calls to the m4_db
+transaction interfaces.])
+
+m4_page_footer

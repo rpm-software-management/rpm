@@ -1,0 +1,34 @@
+m4_comment([$Id: set_func_dirfree.so,v 10.19 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_dirfree)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_dirfree),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_dirfree(void (*func_dirfree)(char **namesp, int cnt));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to return any memory allocated as part
+of the routine which reads through a directory and creates a list of files
+that the directory contains (see m4_ref(dbenv_set_func_dirlist)).])
+
+m4_scope_process(dbenv_set_func_dirfree)
+
+m4_when_init(dbenv_set_func_dirfree)
+
+m4_return(dbenv_set_func_dirfree, std)
+
+m4_parambegin
+m4_param(func_dirfree, [dnl
+The m4_arg(func_dirfree) parameter is a function which frees the memory
+returned from the m4_ref(dbenv_set_func_dirlist) function.
+m4_p([dnl
+The m4_arg(namesp) and m4_arg(cnt) parameters to this function are the
+same values as were returned by the m4_ref(dbenv_set_func_dirlist)
+function.])])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

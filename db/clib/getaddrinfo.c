@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2006,2007 Oracle.  All rights reserved.
  *
- * $Id: getaddrinfo.c,v 1.5 2006/08/24 14:45:09 bostic Exp $
+ * $Id: getaddrinfo.c,v 1.8 2007/05/17 15:14:54 bostic Exp $
  */
 
 #include "db_config.h"
@@ -58,6 +57,11 @@ __db_getaddrinfo(dbenv, nodename, port, servname, hints, res)
 	COMPQUIET(hints, NULL);
 	COMPQUIET(servname, NULL);
 
+	/* INADDR_NONE is not defined on Solaris 2.6, 2.7 or 2.8. */
+#ifndef	INADDR_NONE
+#define	INADDR_NONE	((u_long)0xffffffff)
+#endif
+
 	/*
 	 * Basic implementation of IPv4 component of getaddrinfo.
 	 * Limited to the functionality used by repmgr.
@@ -85,11 +89,22 @@ __db_getaddrinfo(dbenv, nodename, port, servname, hints, res)
 				 * errors.  The only function we currently
 				 * use that needs h_errno is gethostbyname,
 				 * so we deal with it here.
+				 *
+				 * hstrerror is not available on Solaris 2.6
+				 * (it is in libresolv but is a private,
+				 * unexported symbol).
 				 */
+#ifdef HAVE_HSTRERROR
 				__db_errx(dbenv,
 				    "%s(%u): host lookup failed: %s",
 				    nodename == NULL ? "" : nodename, port,
 				    hstrerror(h_errno));
+#else
+				__db_errx(dbenv,
+				    "%s(%u): host lookup failed: %d",
+				    nodename == NULL ? "" : nodename, port,
+				    h_errno);
+#endif
 				switch (h_errno) {
 				case HOST_NOT_FOUND:
 				case NO_DATA:

@@ -1,6 +1,5 @@
-<!--$Id: db_hotbackup.so,v 1.6 2006/03/08 17:34:24 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_hotbackup.so,v 1.10 2007/04/13 15:45:27 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -32,9 +31,9 @@ option was specified, all log files in the target directory are removed;
 if the <b>-u</b> option was not specified, all files in the target
 directory are removed.</p>
 <p><li>If the <b>-u</b> option was not specified, copy application-specific
-files found in the database environment home directory, or any directory
-specified using the <b>-d</b> option, into the target directory for
-the backup.
+files found in the database environment home directory, and any
+directories specified using the <b>-d</b> option, into the target
+directory for the backup.
 <p><li>Copy all log files found in the directory specified by the <b>-l</b>
 option (or in the database environment home directory, if no <b>-l</b>
 option was specified), into the target directory for the backup.
@@ -52,39 +51,37 @@ failing over to the backup.</p>
 <dt><b>-b</b><dd>Specify the target directory for the backup.
 <dt><b>-c</b><dd>Before performing the backup, checkpoint the source database environment
 and remove any log files that are no longer required in that environment.
-<b>To avoid making catastrophic failure impossible, log file removal
-must be integrated with log file archival.</b>
-<dt><b>-D</b><dd>Use the data directories listed in the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration
-file in the source directory.   This option has three effects:
-<ol>
-<p><li>First, if they do not already exist, the specified data directories will
-be created relative to the target directory (with mode read-write-execute
-owner).
-<p><li>Second, all files in the source data directories will be copied to the
-target data directories.  If the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> file specifies one
-or more absolute pathnames, files in those source directories will be
-copied to the top-level target directory.
-<p><li>Third, the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration file will be copied from the
-source directory to the target directory, and subsequently used for
-configuration if recovery is run in the target directory.
-</ol>
-<p>Care should be taken with the <b>-D</b> option and data directories
-which are named relative to the source directory but are not
+<b>To avoid making catastrophic recovery impossible, log file
+removal must be integrated with log file archival.</b>
+<dt><b>-D</b><dd>Use the data and log directories listed in a <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration
+file in the source directory.  This option has four effects:
+<p><ul type=disc>
+<li>The specified data and log directories will be created relative to the
+target directory, with mode read-write-execute owner, if they do not
+already exist.
+<li>In step #3 above, all files in any source data directories specified in
+the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> file will be copied to the target data directories.
+<li>In step #4 above, log files will be copied from any log directory specified
+in the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> file, instead of from the default locations.
+<li>The <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration file will be copied from the source
+directory to the target directory, and subsequently used for configuration
+if recovery is run in the target directory.
+</ul>
+<p>Care should be taken with the <b>-D</b> option where data and log
+directories are named relative to the source directory but are not
 subdirectories (that is, the name includes the element "..")
 Specifically, the constructed target directory names must be meaningful
 and distinct from the source directory names, otherwise running recovery
 in the target directory might corrupt the source data files.</p>
-<p><b>It is an error to use absolute pathnames for data directories
-or the log directory in this mode, as the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a>
-configuration file copied into the target directory would then point at
-the source directories and running recovery would corrupt the source
-data files.</b></p>
-<dt><b>-d</b><dd>Specify one or more source directories that contain database files; if
-no source directories are specified, the source directory will be
-searched for database files.
-<b>As all database files are copied into a single backup directory, files
+<p><b>It is an error to use absolute pathnames for data or log directories in
+this mode, as the <a href="../ref/env/db_config.html#DB_CONFIG">DB_CONFIG</a> configuration file copied into the
+target directory would then point at the source directories and running
+recovery would corrupt the source data files.</b></p>
+<dt><b>-d</b><dd>Specify one or more directories that contain data files to be copied to
+the target directory.
+<p><b>As all database files are copied into a single target directory, files
 named the same, stored in different source directories, would overwrite
-each other when copied into the backup directory.</b>
+each other when copied to the target directory.</b></p>
 <p>Please note the database environment recovery log references database
 files as they are named by the application program.  <b>If the
 application uses absolute or relative pathnames to name database files,
@@ -93,7 +90,7 @@ application uses absolute or relative pathnames to name database files,
 recovery in the target directory may not properly find the copies of
 the files or might even find the source files, potentially resulting in
 corruption.</b></p>
-<dt><b>-h</b><dd>Specify the source directory for the backup, that is, the database
+<dt><b>-h</b><dd>Specify the target directory for the backup, that is, the database
 environment home directory.
 <dt><b>-l</b><dd>Specify a source directory that contains log files; if none is specified,
 the database environment home directory will be searched for log files.
@@ -124,6 +121,6 @@ DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

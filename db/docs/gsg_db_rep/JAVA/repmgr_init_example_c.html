@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Adding the Replication Framework to
                     
-                    
+                    SimpleTxn
             </title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
-    <link rel="previous" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
+    <link rel="up" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
+    <link rel="previous" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
     <link rel="next" href="fwrkpermmessage.html" title="Permanent Message Handling" />
   </head>
   <body>
@@ -20,13 +20,13 @@
         <tr>
           <th colspan="3" align="center">Adding the Replication Framework to
                     
-                    
+                    SimpleTxn
             </th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="repapp.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. The DB Replication Framework</th>
-          <td width="20%" align="right"> <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="repapp.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â The DB Replication Framework</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -37,7 +37,7 @@
           <div>
             <h2 class="title" style="clear: both"><a id="repmgr_init_example_c"></a>Adding the Replication Framework to
                     
-                    
+                    <span>SimpleTxn</span>
             </h2>
           </div>
         </div>
@@ -47,7 +47,7 @@
                     We now use the methods described above to add partial
                     support to the 
                      
-                     
+                    <tt class="literal">SimpleTxn</tt> 
                     example that we presented in 
                     <a href="txnapp.html">Transactional Application</a>.
                     That is, in this section we will:
@@ -99,7 +99,7 @@
       <p>
         We begin by changing our package name and then importing a few new
         classes. <tt class="classname">java.util.Vector</tt> is used to
-        organize a list of &quot;other host&quot; definitions (that is, the host and
+        organize a list of "other host" definitions (that is, the host and
         port information for the other replication participants known to
         this application). We also need a couple of classes used to manage
         individual host and port information, as well as replication
@@ -122,13 +122,13 @@ public class RepConfig
         application a little later in this description.
 </p>
       <pre class="programlisting">    // Constant values used in the RepQuote application.
-    public static final String progname = <b class="userinput"><tt>&quot;RepQuoteExample&quot;;</tt></b>
+    public static final String progname = <b class="userinput"><tt>"RepQuoteExample";</tt></b>
     public static final int CACHESIZE = 10 * 1024 * 1024;
     <b class="userinput"><tt>public static final int SLEEPTIME = 5000;</tt></b>
 
     // member variables containing configuration information
     public String home; // String specifying the home directory for rep files.
-    <b class="userinput"><tt>public Vector otherHosts; // stores an optional set of &quot;other&quot; hosts.
+    <b class="userinput"><tt>public Vector otherHosts; // stores an optional set of "other" hosts.
     public int priority; // priority within the replication group.
     public ReplicationManagerStartPolicy startPolicy;
     public ReplicationHostAddress thisHost; // The host address to listen to.
@@ -145,7 +145,7 @@ public class RepConfig
       <pre class="programlisting">    public RepConfig()
     {
         <b class="userinput"><tt>startPolicy = ReplicationManagerStartPolicy.REP_ELECTION;</tt></b>
-        home = &quot;TESTDIR&quot;;
+        home = "TESTDIR";
         <b class="userinput"><tt>gotListenAddress = false;
         totalSites = 0;
         priority = 100;
@@ -174,8 +174,8 @@ public class RepConfig
     public ReplicationHostAddress getThisHost()
     {
         if (!gotListenAddress) {
-            System.err.println(&quot;Warning: no host specified.&quot;);
-            System.err.println(&quot;Returning default.&quot;);
+            System.err.println("Warning: no host specified.");
+            System.err.println("Returning default.");
         }
         return thisHost;
     }
@@ -296,20 +296,20 @@ public class <b class="userinput"><tt>RepQuoteExample</tt></b>
 
     public static void usage()
     {
-        System.err.println(&quot;usage: &quot; + repConfig.progname);
-        System.err.println(&quot;[-h home]<b class="userinput"><tt>[-o host:port][-m host:port]&quot; +
-            &quot;[-f host:port][-n nsites][-p priority]</tt></b>&quot;);
+        System.err.println("usage: " + repConfig.progname);
+        System.err.println("[-h home]<b class="userinput"><tt>[-o host:port][-m host:port]" +
+            "[-f host:port][-n nsites][-p priority]</tt></b>");
 
-        System.err.println(<b class="userinput"><tt>&quot;\t -m host:port (required; m stands for me)\n&quot; +
-             &quot;\t -o host:port (optional; o stands for other; any &quot; +
-             &quot;number of these may be specified)\n&quot; +</tt></b>
-             &quot;\t -h home directory\n&quot; +
-             <b class="userinput"><tt>&quot;\t -n nsites (optional; number of sites in replication &quot; +
-             &quot;group; defaults to 0\n&quot; +
-             &quot;\t    in which case we try to dynamically compute the &quot; +
-             &quot;number of sites in\n&quot; +
-             &quot;\t    the replication group)\n&quot; +
-             &quot;\t -p priority (optional: defaults to 100)\n&quot;);</tt></b>
+        System.err.println(<b class="userinput"><tt>"\t -m host:port (required; m stands for me)\n" +
+             "\t -o host:port (optional; o stands for other; any " +
+             "number of these may be specified)\n" +</tt></b>
+             "\t -h home directory\n" +
+             <b class="userinput"><tt>"\t -n nsites (optional; number of sites in replication " +
+             "group; defaults to 0\n" +
+             "\t    in which case we try to dynamically compute the " +
+             "number of sites in\n" +
+             "\t    the replication group)\n" +
+             "\t -p priority (optional: defaults to 100)\n");</tt></b>
 
         System.exit(1);
     } </pre>
@@ -335,51 +335,51 @@ public class <b class="userinput"><tt>RepQuoteExample</tt></b>
       <pre class="programlisting">        // Extract the command line parameters
         for (int i = 0; i &lt; argv.length; i++)
         {
-            if (argv[i].compareTo(&quot;-h&quot;) == 0) {
+            if (argv[i].compareTo("-h") == 0) {
                 // home - a string arg.
                 i++;
                 config.home = argv[i];
-           <b class="userinput"><tt>} else if (argv[i].compareTo(&quot;-m&quot;) == 0) {
-                // &quot;me&quot; should be host:port
+           <b class="userinput"><tt>} else if (argv[i].compareTo("-m") == 0) {
+                // "me" should be host:port
                 i++;
-                String[] words = argv[i].split(&quot;:&quot;);
+                String[] words = argv[i].split(":");
                 if (words.length != 2) {
                     System.err.println(
-                        &quot;Invalid host specification host:port needed.&quot;);
+                        "Invalid host specification host:port needed.");
                     usage();
                 }
                 try {
                     tmpPort = Integer.parseInt(words[1]);
                 } catch (NumberFormatException nfe) {
-                    System.err.println(&quot;Invalid host specification, &quot; +
-                        &quot;could not parse port number.&quot;);
+                    System.err.println("Invalid host specification, " +
+                        "could not parse port number.");
                     usage();
                 }
                 config.setThisHost(words[0], tmpPort);
-            } else if (argv[i].compareTo(&quot;-n&quot;) == 0) {
+            } else if (argv[i].compareTo("-n") == 0) {
                 i++;
                 config.totalSites = Integer.parseInt(argv[i]);
-            } else if (argv[i].compareTo(&quot;-o&quot;) == 0) {
+            } else if (argv[i].compareTo("-o") == 0) {
                 i++;
-                String[] words = argv[i].split(&quot;:&quot;);
+                String[] words = argv[i].split(":");
                 if (words.length != 2) {
                     System.err.println(
-                        &quot;Invalid host specification host:port needed.&quot;);
+                        "Invalid host specification host:port needed.");
                     usage();
                 }
                 try {
                     tmpPort = Integer.parseInt(words[1]);
                 } catch (NumberFormatException nfe) {
-                    System.err.println(&quot;Invalid host specification, &quot; +
-                        &quot;could not parse port number.&quot;);
+                    System.err.println("Invalid host specification, " +
+                        "could not parse port number.");
                     usage();
                 }
                 config.addOtherHost(words[0], tmpPort, isPeer);
-           } else if (argv[i].compareTo(&quot;-p&quot;) == 0) {
+           } else if (argv[i].compareTo("-p") == 0) {
                 i++;
                 config.priority = Integer.parseInt(argv[i]);
             }</tt></b> else {
-                System.err.println(&quot;Unrecognized option: &quot; + argv[i]);
+                System.err.println("Unrecognized option: " + argv[i]);
                 usage();
             }
         } 
@@ -400,8 +400,8 @@ public class <b class="userinput"><tt>RepQuoteExample</tt></b>
             runner.doloop();
             runner.terminate();
         } catch (DatabaseException dbe) {
-            System.err.println(&quot;Caught an exception during &quot; +
-                &quot;initialization or processing: &quot; + dbe.toString());
+            System.err.println("Caught an exception during " +
+                "initialization or processing: " + dbe.toString());
             if (runner != null)
                 runner.terminate();
         }
@@ -427,9 +427,9 @@ public class <b class="userinput"><tt>RepQuoteExample</tt></b>
 
         <b class="userinput"><tt>envConfig.setReplicationManagerLocalSite(appConfig.getThisHost());</tt></b> </pre>
       <p>
-    And we also add code to allow us to identify &quot;other&quot; sites to the environment handle (that is,
+    And we also add code to allow us to identify "other" sites to the environment handle (that is,
 the sites that we identify using the <tt class="literal">-o</tt> command line
-option). To do this, we iterate over each of the &quot;other&quot; sites provided to
+option). To do this, we iterate over each of the "other" sites provided to
 us using the <tt class="literal">-o</tt> command line option, and we add each one
 individually in turn:     
 </p>
@@ -479,9 +479,9 @@ individually in turn:
         try {
             dbenv = new Environment(appConfig.getHome(), envConfig);
         } catch(FileNotFoundException e) {
-            System.err.println(&quot;FileNotFound exception: &quot; + e.toString());
+            System.err.println("FileNotFound exception: " + e.toString());
             System.err.println(
-                &quot;Ensure that the environment directory is pre-created.&quot;);
+                "Ensure that the environment directory is pre-created.");
             ret = 1;
         } </pre>
       <p>
@@ -510,18 +510,18 @@ individually in turn:
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="repapp.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="repapp.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="repapp.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="fwrkpermmessage.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 3. The DB Replication Framework </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 3.Â The DB Replication FrameworkÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Permanent Message Handling</td>
+          <td width="40%" align="right" valign="top">Â Permanent Message Handling</td>
         </tr>
       </table>
     </div>

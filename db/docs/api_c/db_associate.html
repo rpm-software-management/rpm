@@ -1,6 +1,5 @@
-<!--$Id: db_associate.so,v 10.43 2006/05/17 20:47:46 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_associate.so,v 10.46 2007/03/19 19:45:47 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -44,8 +43,9 @@ and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>callback</b><dd>The <b>callback</b> parameter is a callback function that creates a
-secondary key from a given primary key and data pair.
+<dt><b>callback</b><dd>The <b>callback</b> parameter is a callback function that creates the
+set of secondary keys corresponding to a given primary key and data
+pair.
 <p>The callback parameter may be NULL if both the primary and secondary
 database handles were opened with the <a href="../api_c/db_open.html#DB_RDONLY">DB_RDONLY</a> flag.</p>
 <p>The callback takes four arguments:</p>
@@ -56,21 +56,41 @@ database handles were opened with the <a href="../api_c/db_open.html#DB_RDONLY">
 item.
 <dt><b>result</b><dd>The <b>result</b> parameter is a zeroed <a href="../api_c/dbt_class.html">DBT</a> in which the callback
 function should fill in <b>data</b> and <b>size</b> fields that describe
-the secondary key.
+the secondary key or keys.
 </dl>
-<a name="2"><!--meow--></a>
-<p>If the callback function needs to allocate memory for the <b>data</b>
-field rather than simply pointing into the primary key or datum, the
-<b>flags</b> field of the returned <a href="../api_c/dbt_class.html">DBT</a> should be set to
-DB_DBT_APPMALLOC, which indicates that Berkeley DB should free the
-memory when it is done with it.</p>
-<a name="3"><!--meow--></a>
-<p>If any key/data pair in the primary yields a null secondary key and
+<p>The callback optionally returns some special values:</p>
+<dl compact>
+<dt><a name="DB_DBT_APPMALLOC">DB_DBT_APPMALLOC</a><dd>If the callback function needs to allocate memory for the <b>result</b>
+data field (rather than simply pointing into the primary key or datum),
+DB_DBT_APPMALLOC should be set in the <b>flags</b> field of the
+<b>result</b> <a href="../api_c/dbt_class.html">DBT</a>, which indicates that Berkeley DB should free the
+memory when it is done with it.
+<dt><a name="DB_DBT_MULTIPLE">DB_DBT_MULTIPLE</a><dd>To return multiple secondary keys, DB_DBT_MULTIPLE should be set
+in the <b>flags</b> field of the <b>result</b> <a href="../api_c/dbt_class.html">DBT</a>, which
+indicates Berkeley DB should treat the <b>size</b> field as the number of
+secondary keys (zero or more), and the <b>data</b> field as a pointer
+to an array of that number of <a href="../api_c/dbt_class.html">DBT</a>s describing the set of
+secondary keys.
+<p><b>When multiple secondary keys are returned, keys may not be repeated</b>.
+In other words, there must be no repeated record numbers in the array
+for Recno and Queue databases, and keys must not compare equally using
+the secondary database's comparison function for Btree and Hash
+databases.  If keys are repeated, operations may fail and the secondary
+may become inconsistent with the primary.</p>
+<p>The DB_DBT_APPMALLOC flag may be set for any <a href="../api_c/dbt_class.html">DBT</a> in the
+array of returned <a href="../api_c/dbt_class.html">DBT</a>'s to indicate that Berkeley DB should free the
+memory referenced by that particular <a href="../api_c/dbt_class.html">DBT</a>'s data field when it
+is done with it.</p>
+<p>The DB_DBT_APPMALLOC flag may be combined with
+DB_DBT_MULTIPLE in the <b>result</b> <a href="../api_c/dbt_class.html">DBT</a>'s <b>flag</b>
+field to indicate that Berkeley DB should free the array once it is done with
+all of the returned keys.</p>
+<dt><a name="DB_DONOTINDEX">DB_DONOTINDEX</a><dd>If any key/data pair in the primary yields a null secondary key and
 should be left out of the secondary index, the callback function may
 optionally return DB_DONOTINDEX.  Otherwise, the callback
 function should return 0 in case of success or an error outside of the
 Berkeley DB name space in case of failure; the error code will be returned
-from the Berkeley DB call that initiated the callback.</p>
+from the Berkeley DB call that initiated the callback.
 <p>If the callback function returns DB_DONOTINDEX for any key/data
 pairs in the primary database, the secondary index will not contain any
 reference to those key/data pairs, and such operations as cursor
@@ -78,6 +98,10 @@ iterations and range queries will reflect only the corresponding subset
 of the database.  If this is not desirable, the application should
 ensure that the callback function is well-defined for all possible
 values and never returns DB_DONOTINDEX.</p>
+<p>Returning DB_DONOTINDEX is equivalent to setting
+DB_DBT_MULTIPLE on the <b>result</b> <a href="../api_c/dbt_class.html">DBT</a> and setting
+the <b>size</b> field to zero.</p>
+</dl>
 <p>Berkeley DB is not re-entrant.  Callback functions should not attempt to make
 library calls (for example, to release locks or close open handles).
 Re-entering Berkeley DB is not guaranteed to work correctly, and the results
@@ -124,15 +148,16 @@ with the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag it is saf
 of control after the DB-&gt;associate method has returned.  Note also
 that either secondary keys must be unique or the secondary database must
 be configured with support for duplicate data items.
-<dt><b>txnid</b><dd>If the operation is part of an application-specified
-transaction, the <b>txnid</b> parameter is a transaction handle
-returned from <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store
-group, the <b>txnid</b> parameter is a handle returned from
-<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.  If no transaction handle is
+<dt><b>txnid</b><dd>If the operation is part of an application-specified transaction, the
+<b>txnid</b> parameter is a transaction handle returned from
+<a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>; if the operation is part of a Berkeley DB Concurrent Data Store group, the
+<b>txnid</b> parameter is a handle returned from
+<a href="../api_c/env_cdsgroup_begin.html">DB_ENV-&gt;cdsgroup_begin</a>; otherwise NULL.
+If no transaction handle is
 specified, but the
 operation occurs in a transactional
 database,
-the operation will be implicitly transaction protected.  
+the operation will be implicitly transaction protected.
 </dl>
 <h3>Errors</h3>
 <p>The DB-&gt;associate method
@@ -157,6 +182,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

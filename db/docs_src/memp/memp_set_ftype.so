@@ -1,0 +1,44 @@
+m4_comment([$Id: memp_set_ftype.so,v 10.17 2005/11/30 19:46:21 bostic Exp $])
+
+define(M4PAGELOCAL, [memp_set_ftype, memp_get_ftype])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_ftype),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__set_ftype(DB_MPOOLFILE *mpf, int ftype);
+m4_blank
+int
+DB_MPOOLFILE-__GT__get_ftype(DB_MPOOLFILE *mpf, int *ftypep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::set(int ftype);
+m4_blank
+int
+DbMpoolFile::get_ftype(int *ftypep);
+]))
+
+m4_p([dnl
+The m4_refT(memp_set_ftype) specifies a file type for the purposes of
+input or output processing of the file's pages as they are read from or
+written to, the backing filesystem store.])
+
+m4_scope_mpf(memp_set_ftype)
+
+m4_when_mpfopen(memp_set_ftype, overwrite)
+
+m4_return(memp_set_ftype, std)
+
+m4_parambegin
+m4_param(ftype, [dnl
+The m4_arg(ftype) parameter sets the file's type for the purposes of input
+and output processing.  The m4_arg(ftype) must be the same as a
+m4_arg(ftype) parameter previously specified to the m4_refT(memp_register).
+(See the m4_ref(memp_register) documentation for more information.)])
+m4_paramend
+
+m4_pf_getter(memp_get_ftype, file type,, ftypep)
+
+m4_seealso(DbMpool)
+m4_page_footer

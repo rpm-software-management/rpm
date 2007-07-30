@@ -1,0 +1,31 @@
+m4_comment([$Id: callback.so,v 1.5 2000/10/26 15:20:40 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 3.2: DB callback functions, app_private field],,
+    upgrade.3.2/set_flags, upgrade.3.2/renumber)
+
+m4_p([dnl
+In the m4_db 3.2 release, four application callback functions (the
+callback functions set by m4_ref(dbh_set_bt_compare),
+m4_ref(dbh_set_bt_prefix), m4_ref(dbh_set_dup_compare) and
+m4_ref(dbh_set_h_hash)) were modified to take a reference to a
+m4_ref(Db) object as their first argument.  This change allows the m4_db
+Java API to reasonably support these interfaces.  There is currently no
+need for the callback functions to do anything with this additional
+argument.])
+
+m4_p([dnl
+C and C++ applications that specify their own Btree key comparison,
+Btree prefix comparison, duplicate data item comparison or Hash
+functions should modify these functions to take a reference to a
+m4_ref(Db) structure as their first argument.  No further change is
+required.])
+
+m4_p([dnl
+The app_private field of the m4_ref(Dbt) structure (accessible only from
+the m4_db C API) has been removed in the 3.2 release.  It was replaced
+with app_private fields in the m4_ref(DbEnv) and m4_ref(Db) handles.
+Applications using this field will have to convert to using one of the
+replacement fields.])
+
+m4_page_footer

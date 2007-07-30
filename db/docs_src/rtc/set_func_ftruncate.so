@@ -1,0 +1,34 @@
+m4_comment([$Id: set_func_ftruncate.so,v 1.3 2004/09/20 14:29:50 mjc Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_ftruncate)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_ftruncate),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_ftruncate(int (*func_ftruncate)(int fd, off_t offset));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to truncate a file.])
+
+m4_scope_process(dbenv_set_func_ftruncate)
+
+m4_when_init(dbenv_set_func_ftruncate)
+
+m4_return(dbenv_set_func_ftruncate, std)
+
+m4_parambegin
+m4_param(func_ftruncate, [dnl
+The m4_arg(func_ftruncate) parameter is the function which truncates a file.
+m4_p([dnl
+The m4_arg(fd) parameter is an open file descriptor on the file.])
+m4_p([dnl
+The m4_arg(ftruncate) function must truncate the file to the byte
+length specified by the m4_arg(offset) parameter.])
+
+m4_ret_internal(func_ftruncate)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

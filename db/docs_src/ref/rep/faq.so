@@ -1,0 +1,122 @@
+m4_comment([$Id: faq.so,v 1.12 2006/09/07 19:26:44 alanb Exp $])
+
+m4_ref_title(m4_db Replication,
+    Replication FAQ,, rep/partition, rep/ex)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([Does m4_db provide support for forwarding write queries from
+clients to masters?])
+
+m4_p([dnl
+No, it does not.  The m4_db RPC server code could be modified to support
+this functionality, but in general this protocol is left entirely to the
+application.  Note, there is no reason not to use the communications
+channels the application establishes for replication support to forward
+database update messages to the master, since m4_db does not require
+those channels to be used exclusively for replication messages.
+Replication Manager does not currently offer this service to the
+application.])])
+
+m4_nlist([dnl
+m4_bold([Can I use replication to partition my environment across
+multiple sites?])
+
+m4_p([dnl
+No, this is not possible.  All replicated databases must be equally
+shared by all environments in the replication group.])])
+
+m4_nlist([dnl
+m4_bold([I'm running with replication but I don't see my databases
+on the client.])
+
+m4_p([dnl
+This problem may be the result of the application using absolute path
+names for its databases, and the pathnames are not valid on the client
+system.])])
+
+m4_nlist([dnl
+m4_bold([How can I distinguish m4_db messages from application messages?])
+
+m4_p([dnl
+There is no way to distinguish m4_db messages from application-specific
+messages, nor does m4_db offer any way to wrap application messages
+inside of m4_db messages.  Distributed applications exchanging their
+own messages should either enclose m4_db messages in their own wrappers,
+or use separate network connections to send and receive m4_db messages.
+The one exception to this rule is connection information for new sites;
+m4_db offers a simple method for sites joining replication groups to
+send connection information to the other database environments in the
+group (see m4_link(M4RELDIR/ref/rep/newsite, Connecting to a new site)
+for more information).])])
+
+m4_nlist([dnl
+m4_bold([How should I build my m4_arg(send) function?])
+
+m4_p([dnl
+This depends on the specifics of the application.  One common way is to
+write the m4_arg(rec) and m4_arg(control) arguments' sizes and data to
+a socket connected to each remote site.  On a fast, local area net, the
+simplest method is likely to be to construct broadcast messages.  Each
+m4_db message would be encapsulated inside an application specific
+message, with header information specifying the intended recipient(s)
+for the message.  This will likely require a global numbering scheme,
+however, as the m4_db library has to be able to send specific log
+records to clients apart from the general broadcast of new log records
+intended for all members of a replication group.])])
+
+m4_nlist([dnl
+m4_bold([Does every one of my threads of control on the master have to
+set up its own connection to every client?  And, does every one of my
+threads of control on the client have to set up its own connection to
+every master?])
+
+m4_p([dnl
+This is not always necessary.  In the m4_db replication model, any
+thread of control which modifies a database in the master environment
+must be prepared to send a message to the client environments, and any
+thread of control which delivers a message to a client environment must
+be prepared to send a message to the master.  There are many ways in
+which these requirements can be satisfied.])
+
+m4_p([dnl
+The simplest case is probably a single, multithreaded process running
+on the master and clients.  The process running on the master would
+require a single write connection to each client and a single read
+connection from each client.  A process running on each client would
+require a single read connection from the master and a single write
+connection to the master.  Threads running in these processes on the
+master and clients would use the same network connections to pass
+messages back and forth.])
+
+m4_p([dnl
+A common complication is when there are multiple processes running on
+the master and clients.  A straight-forward solution is to increase the
+numbers of connections on the master -- each process running on the
+master has its own write connection to each client.  However, this
+requires only one additional connection for each possible client in the
+master process.  The master environment still requires only a single
+read connection from each client (this can be done by allocating a
+separate thread of control which does nothing other than receive client
+messages and forward them into the database).  Similarly, each client
+still only requires a single thread of control that receives master
+messages and forwards them into the database, and which also takes
+database messages and forwards them back to the master.  This model
+requires the networking infrastructure support many-to-one
+writers-to-readers, of course.])
+
+m4_p([dnl
+If the number of network connections is a problem in the multiprocess
+model, and inter-process communication on the system is inexpensive
+enough, an alternative is have a single process which communicates
+between the master the each client, and whenever a process'
+m4_bold(send) function is called, the process passes the message to the
+communications process which is responsible for forwarding the message
+to the appropriate client.  Alternatively, a broadcast mechanism will
+simplify the entire networking infrastructure, as processes will likely
+no longer have to maintain their own specific network connections.])])
+
+m4_nlistend
+
+m4_page_footer

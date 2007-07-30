@@ -1,0 +1,81 @@
+m4_comment([$Id: intro.so,v 11.25 2006/06/06 17:21:17 bostic Exp $])
+
+m4_ref_title(Tcl API,
+    Loading m4_db with Tcl, loading m4_db with @Tcl, rpc/faq, tcl/using)
+
+m4_p([dnl
+m4_db includes a dynamically loadable Tcl API, which requires that
+Tcl/Tk 8.4 or later already be installed on your system.  You can
+download a copy of Tcl from the m4_linkweb(http://www.tcl.tk, Tcl
+Developer Xchange) Web site.])
+
+m4_p([dnl
+This document assumes that you already configured m4_db for Tcl
+support, and you have built and installed everything where you want it
+to be.  If you have not done so, see
+m4_link(M4RELDIR/ref/build_unix/conf, Configuring m4_db) or
+m4_link(M4RELDIR/ref/build_win/intro, Building for Windows) for more
+information.])
+
+m4_section(Installing as a Tcl Package)
+
+m4_p([dnl
+Once enabled, the m4_db shared library for Tcl is automatically installed
+as part of the standard installation process.  However, if you want to be
+able to dynamically load it as a Tcl package into your script, there are
+several steps that must be performed:])
+
+m4_nlistbegin
+m4_nlist([Run the Tcl shell in the install directory.])
+m4_nlistns([Append this directory to your auto_path variable.])
+m4_nlistns([dnl
+Run the pkg_mkIndex proc, giving the name of the m4_db Tcl library.])
+m4_nlistend
+
+m4_p([dnl
+For example:])
+
+m4_indent([dnl
+# tclsh8.4
+% lappend auto_path /usr/local/BerkeleyDB.M4MAJOR.M4MINOR/lib
+% pkg_mkIndex /usr/local/BerkeleyDB.M4MAJOR.M4MINOR/lib libdb_tcl-M4MAJOR.M4MINOR.so])
+
+m4_p([dnl
+Note that your Tcl and m4_db version numbers may differ from the
+example, and so your tclsh and library names may be different.])
+
+m4_section([Loading m4_db with Tcl])
+
+m4_p([dnl
+The m4_db package may be loaded into the user's interactive Tcl script
+(or wish session) via the m4_bold(load) command. For example:])
+
+m4_indent([load /usr/local/BerkeleyDB.M4MAJOR.M4MINOR/lib/libdb_tcl-M4MAJOR.M4MINOR.so])
+
+m4_p([dnl
+Note that your m4_db version numbers may differ from the example, and so
+the library name may be different.])
+
+m4_p([dnl
+If you installed your library to run as a Tcl package, Tcl application
+scripts should use the m4_bold(package) command to indicate to the Tcl
+interpreter that it needs the m4_db package and where to find it. For
+example:])
+
+m4_indent([dnl
+lappend auto_path "/usr/local/BerkeleyDB.M4MAJOR.M4MINOR/lib"
+package require Db_tcl])
+
+m4_p([dnl
+No matter which way the library gets loaded, it creates a command named
+m4_bold(berkdb).  All the m4_db functionality is accessed via this
+command and additional commands it creates on behalf of the application.
+A simple test to determine whether everything is loaded and ready is to
+display the library version, as follows:])
+
+m4_indent([berkdb version -string])
+
+m4_p([dnl
+This should return you the m4_db version in a string format.])
+
+m4_page_footer

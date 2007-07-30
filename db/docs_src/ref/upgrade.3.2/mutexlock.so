@@ -1,0 +1,16 @@
+m4_comment([$Id: mutexlock.so,v 1.4 2003/10/18 19:16:16 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.2: DB_ENV-__GT__set_mutexlocks,,
+    upgrade.3.2/tx_recover, upgrade.3.2/handle)
+
+m4_p([dnl
+Previous m4_db releases included the db_env_set_mutexlocks function,
+intended for debugging, that allows applications to always obtain
+requested mutual exclusion mutexes without regard for their
+availability.  This function has been replaced with
+dbenv_set_mutexlocks, which provides the same functionality on a
+per-database environment basis.  Applications using the old function
+should be updated to use the new one.])
+
+m4_page_footer

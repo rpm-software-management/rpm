@@ -1,0 +1,50 @@
+m4_comment([$Id: db_set_q_extentsize.so,v 1.23 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_q_extentsize, dbh_get_q_extentsize])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_q_extentsize),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_q_extentsize(DB *db, u_int32_t extentsize);
+m4_blank
+int
+DB-__GT__get_q_extentsize(DB *db, u_int32_t *extentsizep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_q_extentsize(u_int32_t extentsize);
+m4_blank
+int
+Db::get_q_extentsize(u_int32_t *extentsizep);
+]))
+
+m4_p([dnl
+Set the size of the extents used to hold pages in a Queue database,
+specified as a number of pages.  Each extent is created as a separate
+physical file.  If no extent size is set, the default behavior is to
+create only a single underlying database file.])
+
+m4_p([dnl
+For information on tuning the extent size, see
+m4_link(M4RELDIR/ref/am_conf/extentsize, [Selecting a extent size]).])
+
+m4_scope_db(dbh_set_q_extentsize)
+
+m4_when_dbopen(dbh_set_q_extentsize, ignored)
+
+m4_return(dbh_set_q_extentsize, std)
+
+m4_parambegin
+m4_param(extentsize, [dnl
+The m4_arg(extentsize) parameter is the number of pages in a Queue database
+extent.])
+m4_paramend
+
+m4_err(dbh_set_q_extentsize,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_q_extentsize, number of pages in an extent,, extentsizep)
+
+m4_seealso(Db)
+m4_page_footer

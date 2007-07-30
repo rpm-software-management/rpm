@@ -1,0 +1,36 @@
+m4_comment([$Id: set_func_exists.so,v 10.18 2004/08/13 03:39:02 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_exists)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_exists),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_exists(int (*func_exists)(const char *path, int *isdirp));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to determine whether a file
+exists and whether it is a file of type directory.])
+
+m4_scope_process(dbenv_set_func_exists)
+
+m4_when_init(dbenv_set_func_exists)
+
+m4_return(dbenv_set_func_exists, std)
+
+m4_parambegin
+m4_param(func_exists, [dnl
+The m4_arg(func_exists) parameter is the function which returns if a
+file exists and if it is a file of type directory.
+m4_p([dnl
+The m4_arg(path) parameter to this function is the pathname of the file
+to be checked.])
+m4_p([dnl
+If the m4_arg(isdirp) parameter is non-NULL, it must be set to non-0 if
+m4_arg(path) is a directory, and 0 if m4_arg(path) is not a directory.])
+m4_ret_internal(func_exists)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

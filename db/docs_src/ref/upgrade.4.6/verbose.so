@@ -1,0 +1,41 @@
+m4_comment([$Id: verbose.so,v 1.2 2006/11/17 17:44:12 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: verbose output,,
+    upgrade.4.6/full_election, upgrade.4.6/verb)
+
+m4_p([dnl
+When an error occurs in the m4_db library, an exception is thrown or an
+error return value is returned by the interface.  In some cases,
+however, the exception or returned value may be insufficient to
+completely describe the cause of the error, especially during initial
+application debugging.  Applications can configure m4_db for verbose
+messages to be output when an error occurs, but it's a common cause of
+confusion for new users that no verbose messages are available by
+default.])
+
+m4_p([dnl
+In the m4_db 4.6 release, verbose messages are configured by default.
+For the C and C++ APIs, this means the default configuration when
+applications first create m4_ref(Db) or m4_ref(DbEnv) handles is as if
+the m4_ref(dbenv_set_errfile) or m4_refT(dbh_set_errfile)s were called
+with the standard error output (stderr) specified as the FILE *
+argument.  Applications wanting no output at all can turn off this
+default configuration by calling the m4_ref(dbenv_set_errfile) or
+m4_refT(dbh_set_errfile)s with NULL as the FILE * argument.
+Additionally, explicitly configuring the error output channel using any
+of the m4_ref(dbenv_set_errfile), m4_ref(dbh_set_errfile),
+m4_ref(dbenv_set_errcall), m4_ref(dbh_set_errcall),
+m4_ref(dbenv_set_error_stream) or m4_refT(dbh_set_error_stream)s will
+also turn off this default output for the application.])
+
+m4_p([dnl
+Applications which configure m4_db with any error output channel should
+not require any changes.])
+
+m4_p([dnl
+Applications which depend on having no output from the m4_db library by
+default, should be changed to call the m4_ref(dbenv_set_errfile) or
+m4_refT(dbh_set_errfile)s with NULL as the FILE * argument.])
+
+m4_page_footer

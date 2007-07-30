@@ -258,7 +258,7 @@ fml_err:	fprintf(stderr, "%s: FML ERROR: %s (code %d)\n",
 	 */
 	if (rand() % 10 > 7) {
 		if (verbose)
-		 	printf("%s: %s: commit\n", progname, TXN_STRING);
+			printf("%s: %s: commit\n", progname, TXN_STRING);
 		tpreturn(TPSUCCESS, 0L, 0, 0L, 0);
 	} else {
 		if (verbose)

@@ -1,0 +1,20 @@
+m4_comment([$Id: db_is_byteswapped.so,v 11.15 2003/10/13 19:57:26 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db is_byteswapped, m4_tcl_db_is_byteswapped, [dnl
+db is_byteswapped
+])
+
+m4_p([dnl
+The m4_tcl_db_is_byteswapped command returns 0 if the underlying
+database files were created on an architecture of the same byte order
+as the current one, and 1 if they were not (that is, big-endian on a
+little-endian machine, or vice versa). This information may be used to
+determine if application data needs to be adjusted for this architecture
+or not.])
+
+m4_tcl_ret_error
+
+m4_page_footer

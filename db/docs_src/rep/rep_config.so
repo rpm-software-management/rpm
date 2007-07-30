@@ -1,0 +1,87 @@
+m4_comment([$Id: rep_config.so,v 1.4 2007/02/13 19:32:52 bostic Exp $])
+
+define(M4PAGELOCAL, [dnl
+	rep_set_config, rep_get_config, DB_REP_CONF_BULK,
+	DB_REP_CONF_DELAYCLIENT, DB_REP_CONF_NOAUTOINIT, DB_REP_CONF_NOWAIT])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_set_config),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_set_config(DB_ENV *env, u_int32_t which, int onoff);
+m4_blank
+int
+DB_ENV-__GT__rep_get_config(DB_ENV *dbenv, u_int32_t which, int *onoffp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_set_config(u_int32_t which, int onoff);
+m4_blank
+int
+DbEnv::rep_get_config(u_int32_t which, int *onoffp);
+]))
+
+m4_p([dnl
+The m4_refT(rep_set_config) method configures the m4_db replication
+subsystem.])
+
+m4_env_config(rep_set_config, replication subsystem, rep_set_config, [dnl
+the method m4_arg(which) parameter as a string; for example,
+"rep_set_config REP_CONF_NOWAIT"])
+
+m4_scope_env(rep_set_config)
+m4_when_any(rep_set_config)
+m4_return(rep_set_config, std)
+
+m4_parambegin
+m4_param(onoff, [dnl
+If the m4_arg(onoff) parameter is zero, the configuration flag is turned
+off.  Otherwise, it is turned on.])
+
+m4_param(which, [dnl
+The m4_arg(which) parameter must be set to one of the following values:
+
+m4_tagbegin
+m4_tag(m4_idef(DB_REP_CONF_BULK), [dnl
+The replication master sends groups of records to the clients in a
+single network transfer (defaults to off).])
+
+m4_tag(m4_idef(DB_REP_CONF_DELAYCLIENT), [dnl
+The client should delay synchronizing to a newly declared master
+(defaults to off).  Clients configured in this way will remain
+unsynchronized until the application calls the m4_refT(rep_sync).])
+
+m4_tag(m4_idef(DB_REP_CONF_NOAUTOINIT), [dnl
+The replication master will not automatically re-initialize outdated
+clients (defaults to off).])
+
+m4_tag(m4_idef(DB_REP_CONF_NOWAIT), [dnl
+m4_db method calls that would normally block while clients are in
+recovery will return errors immediately (defaults to off).])
+
+m4_tagend])
+m4_paramend
+
+m4_err(rep_set_config, einval)
+
+m4_pf_description(m4_ref(rep_get_config))
+m4_p([dnl
+The m4_refT(rep_get_config) returns whether the specified m4_arg(which)
+parameter is currently set or not.])
+
+m4_when_any(rep_get_config)
+
+m4_return(rep_get_config, std)
+
+m4_parambegin
+m4_param(which, [dnl
+The m4_arg(which) parameter is the message value for which configuration
+is being checked.])
+m4_param_co(onoffp, [dnl
+configuration of the specified m4_arg(which) parameter],, [dnl
+If the returned m4_arg(onoff) value is zero, the parameter is off;
+otherwise on.])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

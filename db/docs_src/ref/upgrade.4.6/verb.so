@@ -1,0 +1,15 @@
+m4_comment([$Id: verb.so,v 1.3 2007/01/29 22:24:39 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: DB_VERB_REPLICATION,,
+    upgrade.4.6/verbose, upgrade.4.6/win)
+
+m4_p([dnl
+The m4_ref(DB_VERB_REPLICATION) flag no longer requires the m4_db
+library be built with the
+m4_linkpage(dnl
+M4RELDIR/ref/build_unix/conf, --enable-diagnostic, --enable-diagnostic)
+configuration option to output additional replication logging
+information.])
+
+m4_page_footer

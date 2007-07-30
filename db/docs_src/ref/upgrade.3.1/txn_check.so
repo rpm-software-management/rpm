@@ -1,0 +1,15 @@
+m4_comment([$Id: txn_check.so,v 1.8 2003/10/18 19:16:16 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: txn_checkpoint,,
+    upgrade.3.1/memp_register, upgrade.3.1/env)
+
+m4_p([dnl
+An additional argument has been added to the txn_checkpoint function.])
+
+m4_p([dnl
+The application should be searched for any occurrences of
+txn_checkpoint.  For each one, an argument of 0 should be appended to
+the current arguments.])
+
+m4_page_footer

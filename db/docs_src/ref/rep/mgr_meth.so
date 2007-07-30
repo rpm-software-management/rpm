@@ -1,0 +1,79 @@
+m4_comment([$Id: mgr_meth.so,v 1.8 2006/09/08 18:33:38 bostic Exp $])
+
+m4_ref_title(m4_db Replication,
+    Replication Manager methods,, rep/app, rep/base_meth)
+
+m4_p([dnl
+Applications which use the Replication Manager support generally call
+the following m4_db methods.  The general pattern is to call various
+methods to configure Replication Manager, and then start it by calling
+m4_ref(repmgr_start).  Once this initialization is complete, the
+application rarely needs to call any of these methods.  (A prime
+example of an exception to this rule would be the m4_refT(rep_sync),
+if the application is doing m4_link(M4RELDIR/ref/rep/mastersync,
+delayed synchronization).)])
+
+m4_tagbegin
+
+m4_tag(m4_ref(repmgr_set_local_site), [dnl
+The m4_refT(repmgr_set_local_site) configures the TCP/IP address of
+the local site, by specifying the port number on which it is to listen
+for incoming connection requests.  This method must be called exactly
+once before calling m4_ref(repmgr_start).])
+
+m4_tag(m4_ref(repmgr_add_remote_site), [dnl
+The m4_refT(repmgr_add_remote_site) adds a remote site to the list of
+sites initially known by the local site.  The remote site is specified
+in terms of a TCP/IP network address: host name and port number.  This
+method may be called as many times as necessary to configure all known
+remote sites.  Note that it is usually not necessary for each site in
+the replication group initially to know about all other sites in the
+group.  Sites can discover each other dynamically, as described in
+m4_link(M4RELDIR/ref/rep/newsite, Connecting to a new site).])
+
+m4_tag(m4_ref(repmgr_set_ack_policy), [dnl
+The m4_refT(repmgr_set_ack_policy) configures the acknowledgement
+policy to be used in the replication group, in other words, the
+behavior of the master with respect to acknowledgements for
+"permanent" messages, which implements the application's requirements
+for m4_link(M4RELDIR/ref/rep/trans, transactional guarantees).  The
+current implementation requires all sites in the replication group
+configure the same acknowledgement policy.])
+
+m4_tag(m4_ref(rep_set_nsites), [dnl
+The m4_refT(rep_set_nsites) tells Replication Manager the total number
+of sites in the replication group.  This is usually necessary for
+proper operation of elections, and for counting message
+acknowledgements (depending on the acknowledgement policy).])
+
+m4_tag(m4_ref(rep_set_priority), [dnl
+The m4_refT(rep_set_priority) configures the local site's priority for
+the purpose of elections.])
+
+m4_tag(m4_ref(rep_set_timeout), [dnl
+This method optionally configures various timeout values.  Otherwise
+default timeout values as specified in m4_ref(rep_set_timeout) are
+used.])
+
+m4_tag(m4_ref(dbenv_set_event_notify), [dnl
+Once configured and started, Replication Manager does virtually all of
+its work in the background, usually without the need for any direct
+communication with the application.  However, occasionally events
+occur which the application may be interested in knowing about.  The
+application can request notification of these events by calling the
+m4_refT(dbenv_set_event_notify).])
+
+m4_tag(m4_ref(repmgr_start), [dnl
+The m4_refT(repmgr_start) starts the replication system.  It opens the
+listening TCP/IP socket and creates all the background processing
+threads that will be needed.])
+
+m4_tagend
+
+m4_p([dnl
+In addition to the methods previously described, Replication Manager
+applications may also call the following methods, as needed:
+m4_ref(rep_set_config), m4_ref(rep_set_limit), m4_ref(rep_sync),
+m4_ref(rep_stat).])
+
+m4_page_footer

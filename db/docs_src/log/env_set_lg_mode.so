@@ -1,0 +1,55 @@
+m4_comment([$Id: env_set_lg_mode.so,v 1.1 2004/12/15 15:46:44 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lg_filemode, dbenv_get_lg_filemode])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lg_filemode),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lg_filemode(DB_ENV *dbenv, int lg_mode);
+m4_blank
+int
+DB_ENV-__GT__get_lg_filemode(DB_ENV *dbenv, int *lg_modep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lg_filemode(int lg_mode);
+m4_blank
+int
+DbEnv::get_lg_filemode(int *);
+]))
+
+m4_p([dnl
+Set the absolute file mode for created log files.  This method is
+m4_bold(only) useful for the rare m4_db application that does not
+control its umask value.])
+
+m4_p([dnl
+Normally, if m4_db applications set their umask appropriately, all
+processes in the application suite will have read permission on the log
+files created by any process in the application suite.  However, if the
+m4_db application is a library, a process using the library might set
+its umask to a value preventing other processes in the application suite
+from reading the log files it creates.  In this rare case, the
+m4_refT(dbenv_set_lg_filemode) can be used to set the mode of created
+log files to an absolute value.])
+
+m4_env_config(dbenv_set_lg_filemode,
+[log file mode], set_lg_filemode, [the absolute mode of created log files])
+
+m4_scope_env(dbenv_set_lg_filemode)
+
+m4_when_any(dbenv_set_lg_filemode)
+
+m4_return(dbenv_set_lg_filemode, std)
+
+m4_parambegin
+m4_param(lg_filemode, [dnl
+The m4_arg(lg_filemode) parameter is the absolute mode of the created
+log file.])
+m4_paramend
+
+m4_pf_getter(dbenv_get_lg_filemode, log file mode,, lg_modep)
+
+m4_seealso(DbLog)
+m4_page_footer

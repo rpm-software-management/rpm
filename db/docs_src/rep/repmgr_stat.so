@@ -1,0 +1,76 @@
+m4_comment([$Id: repmgr_stat.so,v 10.1 2007/06/22 16:57:17 bostic Exp $])
+
+define(M4PAGELOCAL, [repmgr_stat, repmgr_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(repmgr_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__repmgr_stat(DB_ENV *env, DB_REPMGR_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__repmgr_stat_print(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::repmgr_stat(DB_REPMGR_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DbEnv::repmgr_stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(repmgr_stat) returns the replication manager statistics.])
+
+m4_p([dnl
+The m4_refT(repmgr_stat) creates a statistical structure of type
+DB_REPMGR_STAT and copies a pointer to it into a user-specified memory
+location.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+The following DB_REPMGR_STAT fields will be filled in:])
+
+m4_tagbegin
+
+m4_field(u_int32_t, st_perm_failed, [dnl
+The number of times a message critical for maintaining database
+integrity (for example, a transaction commit), originating at this site,
+did not receive sufficient acknowledgement from clients, according to
+the configured acknowledgement policy and acknowledgement timeout.])
+
+m4_field(u_int32_t, st_msgs_queued, [dnl
+The number of outgoing messages which could not be transmitted
+immediately, due to a full network buffer, and had to be queued for
+later delivery.])
+
+m4_field(u_int32_t, st_msgs_dropped, [dnl
+The number of outgoing messages that were completely dropped, because
+the outgoing message queue was full.  (m4_db replication is tolerant of
+dropped messages, and will automatically request retransmission of any
+missing messages as needed.)])
+
+m4_field(u_int32_t, st_connection_drop, [dnl
+The number of times an existing TCP/IP connection failed.])
+
+m4_field(u_int32_t, st_connect_fail, [dnl
+The number of times an attempt to open a new TCP/IP connection failed.])
+
+m4_tagend
+
+m4_when_after_envopen(repmgr_stat)
+
+m4_return(repmgr_stat, std)
+
+m4_parambegin
+m4_param(flags, m4_stat_flags)
+m4_param_co(statp, allocated statistics structure, REF)
+m4_paramend
+
+m4_err(repmgr_stat, einval)
+
+m4_stat_print(repmgr_stat_print, replication manager, repmgr_stat)
+
+m4_seealso(Replication)
+m4_page_footer

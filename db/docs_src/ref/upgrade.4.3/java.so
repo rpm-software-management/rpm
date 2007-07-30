@@ -1,0 +1,72 @@
+m4_comment([$Id: java.so,v 1.3 2006/09/18 14:45:52 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: Java,,
+    upgrade.4.3/intro, upgrade.4.3/err)
+
+m4_p([dnl
+The m4_db Java API has changed significantly in the 4.3 release, in ways
+incompatible with previous releases.  This has been done to provide a
+consistent Java-like API for m4_db as well as to make the m4_db Java API
+match the API in m4_db Java Edition, to ease application-porting between
+the two libraries.])
+
+m4_p([dnl
+Here is a summary of the major changes:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+The low-level wrapper around the C API has been moved into a package
+called com.sleepycat.db.internal.])
+
+m4_nlist([dnl
+There is a new public API in the package com.sleepycat.db.])
+
+m4_nlist([dnl
+All flags and error numbers have been eliminated from the public API.
+All configuration is done through method calls on configuration objects.])
+
+m4_nlist([dnl
+All classes and methods are named to Java standards, matching m4_db Java
+Edition.  For example:])
+
+m4_indent([dnl
+m4_bulletbegin
+m4_bullet([Db -__GT__ Database])
+m4_bullet([Dbc -__GT__ Cursor])
+m4_bullet([Dbt -__GT__ DatabaseEntry])
+m4_bullet([DbEnv -__GT__ Environment])
+m4_bullet([DbTxn -__GT__ Transaction])
+m4_bullet([Db.cursor -__GT__ Database.openCursor])
+m4_bullet([Dbc.get(..., DbConstants.DB_CURRENT) -__GT__ Cursor.getCurrent(...)])
+m4_bulletend])
+
+m4_nlist([dnl
+The statistics classes have "getter" methods for all fields.])
+
+m4_nlist([dnl
+In transactional applications, the Java API infers whether to
+auto-commit operations: if an update is performed on a transactional
+database without supplying a transaction, it is implicitly
+auto-committed.])
+
+m4_nlist([dnl
+The com.sleepycat.bdb.* packages have been reorganized so that the binding
+classes can be used with the base API in the com.sleepycat.db package.  The
+bind and collection classes are now essentially the same in m4_db and m4_db
+Java Edition.  The former com.sleepycat.bdb.bind.* packages are now the
+com.sleepycat.bind.* packages.  The former com.sleepycat.bdb,
+com.sleepycat.bdb.collections, and com.sleepycat.bdb.factory packages are now
+combined in the new com.sleepycat.collections package.])
+
+m4_nlist([dnl
+A layer of the former collections API has been removed to simplify the API and
+to remove the redundant implementation of secondary indices.  The former
+DataStore, DataIndex, and ForeignKeyIndex classes have been removed.  Instead
+of wrapping a Database in a DataStore or DataIndex, the Database object is now
+passed directly to the constructor of a StoredMap, StoredList, etc.])
+
+m4_nlistend
+
+m4_page_footer

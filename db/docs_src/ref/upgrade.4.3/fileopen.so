@@ -1,0 +1,11 @@
+m4_comment([$Id: fileopen.so,v 1.6 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: DB_FILEOPEN,,
+    upgrade.4.3/log, upgrade.4.3/enomem)
+
+m4_p([dnl
+The 4.3 release removes the DB_FILEOPEN error return.  Any application
+check for the DB_FILEOPEN error should be removed.])
+
+m4_page_footer

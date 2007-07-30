@@ -1,0 +1,236 @@
+m4_comment([$Id: rep_stat.so,v 10.42 2007/06/22 16:57:17 bostic Exp $])
+
+define(M4PAGELOCAL, [rep_stat, rep_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_stat(DB_ENV *env, DB_REP_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__rep_stat_print(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_stat(DB_REP_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DbEnv::rep_stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(rep_stat) returns the replication subsystem statistics.])
+
+m4_p([dnl
+The m4_refT(rep_stat) creates a statistical structure of type
+DB_REP_STAT and copies a pointer to it into a user-specified memory
+location.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+The following DB_REP_STAT fields will be filled in:])
+
+m4_tagbegin
+m4_field(u_int32_t, st_bulk_fills,
+[The number of times the bulk buffer filled up, forcing the buffer content
+to be sent.])
+
+m4_field(u_int32_t, st_bulk_overflows,
+[The number of times a record was bigger than the entire bulk buffer,
+and therefore had to be sent as a singleton.])
+
+m4_field(u_int32_t, st_bulk_records,
+[The number of records added to a bulk buffer.])
+
+m4_field(u_int32_t, st_bulk_transfers,
+[The number of bulk buffers transferred (via a call to the
+application's m4_arg(send) function).])
+
+m4_field(u_int32_t, st_client_rerequests,
+[The number of times this client site received a "re-request" message,
+indicating that a request it previously sent to another client could
+not be serviced by that client.  (Compare to
+m4_arg(st_client_svc_miss).)])
+
+m4_field(u_int32_t, st_client_svc_miss,
+[The number of "request" type messages received by this client that
+could not be processed, forcing the originating requester to try sending
+the request to the master (or another client).])
+
+m4_field(u_int32_t, st_client_svc_req,
+[The number of "request" type messages received by this client.
+("Request" messages are usually sent from a client to the master, but a
+message marked with the m4_ref(DB_REP_ANYWHERE) flag in the invocation
+of the application's m4_arg(send) function may be sent to another client
+instead.)])
+
+m4_field(u_int32_t, st_dupmasters,
+[The number of duplicate master conditions detected.])
+
+m4_field(u_int32_t, st_egen,
+[The current election generation number.])
+
+m4_field(u_int32_t, st_election_cur_winner,
+[The election winner.])
+
+m4_field(u_int32_t, st_election_gen,
+[The election generation number.])
+
+m4_field(DB_LSN, st_election_lsn,
+[The maximum LSN of election winner.])
+
+m4_field(u_int32_t, st_election_nsites,
+[The number sites responding to this site during the last election.])
+
+m4_field(u_int32_t, st_election_nvotes,
+[The number of votes required in the last election.])
+
+m4_field(u_int32_t, st_election_priority,
+[The election priority.])
+
+m4_field(u_int32_t, st_election_sec,
+[The number of seconds the last election took (the total election time
+is m4_arg(st_election_sec) plus m4_arg(st_election_usec)).])
+
+m4_field(u_int32_t, st_election_status,
+[The current election phase (0 if no election is in progress).])
+
+m4_field(u_int32_t, st_election_tiebreaker,
+[The election tiebreaker value.])
+
+m4_field(u_int32_t, st_election_usec,
+[The number of microseconds the last election took (the total election
+time is m4_arg(st_election_sec) plus m4_arg(st_election_usec)).])
+
+m4_field(u_int32_t, st_election_votes,
+[The number of votes received in the last election.])
+
+m4_field(u_int32_t, st_elections,
+[The number of elections held.])
+
+m4_field(u_int32_t, st_elections_won,
+[The number of elections won.])
+
+m4_field(u_int32_t, st_env_id,
+[The current environment ID.])
+
+m4_field(u_int32_t, st_env_priority,
+[The current environment priority.])
+
+m4_field(u_int32_t, st_gen,
+[The current generation number.])
+
+m4_field(u_int32_t, st_log_duplicated,
+[The number of duplicate log records received.])
+
+m4_field(u_int32_t, st_log_queued,
+[The number of log records currently queued.])
+
+m4_field(u_int32_t, st_log_queued_max,
+[The maximum number of log records ever queued at once.])
+
+m4_field(u_int32_t, st_log_queued_total,
+[The total number of log records queued.])
+
+m4_field(u_int32_t, st_log_records,
+[The number of log records received and appended to the log.])
+
+m4_field(u_int32_t, st_log_requested,
+[The number of times log records were missed and requested.])
+
+m4_field(u_int32_t, st_master,
+[The current master environment ID.])
+
+m4_field(u_int32_t, st_master_changes,
+[The number of times the master has changed.])
+
+m4_field(u_int32_t, st_msgs_badgen,
+[The number of messages received with a bad generation number.])
+
+m4_field(u_int32_t, st_msgs_processed,
+[The number of messages received and processed.])
+
+m4_field(u_int32_t, st_msgs_recover,
+[The number of messages ignored due to pending recovery.])
+
+m4_field(u_int32_t, st_msgs_send_failures,
+[The number of failed message sends.])
+
+m4_field(u_int32_t, st_msgs_sent,
+[The number of messages sent.])
+
+m4_field(u_int32_t, st_newsites,
+[The number of new site messages received.])
+
+m4_field(DB_LSN, st_next_lsn,
+[In replication environments configured as masters, the next LSN expected.
+In replication environments configured as clients, the next LSN to be used.])
+
+m4_field(u_int32_t, st_next_pg,
+[The next page number we expect to receive.])
+
+m4_field(int, st_nsites,
+[The number of sites used in the last election.])
+
+m4_field(u_int32_t, st_nthrottles,
+[Transmission limited. This indicates the number of times that data
+transmission was stopped to limit the amount of data sent in response
+to a single call to m4_ref(rep_message).])
+
+m4_field(u_int32_t, st_outdated,
+[The number of outdated conditions detected.])
+
+m4_field(u_int32_t, st_pg_duplicated,
+[The number of duplicate pages received.])
+
+m4_field(u_int32_t, st_pg_records,
+[The number of pages received and stored.])
+
+m4_field(u_int32_t, st_pg_requested,
+[The number of pages missed and requested from the master.])
+
+m4_field(u_int32_t, st_startsync_delayed,
+[The number of times the client had to delay the start of a
+cache flush operation (initiated by the master for an impending
+checkpoint) because it was missing some previous log record(s).])
+
+m4_field(u_int32_t, st_startup_complete,
+[The client site has completed its startup procedures and is now
+handling live records from the master.])
+
+m4_field(u_int32_t, st_status,
+[The current replication mode.  Set to m4_ref(DB_REP_MASTER) if the
+environment is a replication master, m4_ref(DB_REP_CLIENT) if the
+environment is a replication client, or 0 if replication is not
+configured.])
+
+m4_field(u_int32_t, st_txns_applied,
+[The number of transactions applied.])
+
+m4_field(DB_LSN, st_waiting_lsn,
+[The LSN of the first log record we have after missing log records
+being waited for, or 0 if no log records are currently missing.])
+
+m4_field(u_int32_t, st_waiting_pg,
+[The page number of the first page we have after missing pages
+being waited for, or 0 if no pages are currently missing.])
+
+m4_tagend
+
+m4_when_after_envopen(rep_stat)
+
+m4_return(rep_stat, std)
+
+m4_parambegin
+m4_param(flags, m4_stat_flags)
+m4_param_co(statp, allocated statistics structure, REF)
+m4_paramend
+
+m4_err(rep_stat, einval)
+
+m4_stat_print(rep_stat_print, replication subsystem, rep_stat)
+
+m4_seealso(Replication)
+m4_page_footer

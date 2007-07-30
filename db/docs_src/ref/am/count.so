@@ -1,0 +1,14 @@
+m4_comment([$Id: count.so,v 1.4 2001/05/05 01:49:20 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Data item count, @counting data items for a key, am/join, am/curclose)
+
+m4_p([dnl
+Once a cursor has been initialized to refer to a particular key in the
+database, it can be used to determine the number of data items that are
+stored for any particular key.  The m4_ref(dbc_count) method returns
+this number of data items.  The returned value is always one, unless
+the database supports duplicate data items, in which case it may be any
+number of items.])
+
+m4_page_footer

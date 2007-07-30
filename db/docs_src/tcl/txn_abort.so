@@ -1,0 +1,32 @@
+m4_comment([$Id: txn_abort.so,v 11.15 2002/08/18 21:17:30 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(txn abort, m4_tcl_txn_abort, [dnl
+txn abort
+])
+
+m4_p([dnl
+The m4_tcl_txn_abort command causes an abnormal termination of the
+transaction.])
+
+m4_p([dnl
+The log is played backward, and any necessary recovery operations are
+performed.  After recovery is completed, all locks held by the
+transaction are acquired by the parent transaction in the case of a
+nested transaction, or released in the case of a non-nested transaction.
+As is the case for m4_tcl_txn_commit, applications that require strict
+two-phase locking should not explicitly release any locks.])
+
+m4_p([dnl
+In the case of nested transactions, aborting the parent transaction
+causes all children of that transaction to be aborted.])
+
+m4_p([dnl
+After m4_tcl_txn_abort has been called, regardless of its return, the
+m4_arg(txn) handle may not be accessed again.])
+
+m4_tcl_ret_standard(m4_tcl_txn_abort)
+
+m4_page_footer

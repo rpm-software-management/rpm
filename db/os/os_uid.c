@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: os_uid.c,v 12.23 2006/09/15 19:24:50 bostic Exp $
+ * $Id: os_uid.c,v 12.27 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -22,9 +21,9 @@ __os_unique_id(dbenv, idp)
 	DB_ENV *dbenv;
 	u_int32_t *idp;
 {
-	static int first = 1;
+	db_timespec v;
 	pid_t pid;
-	u_int32_t id, sec, usec;
+	u_int32_t id;
 
 	*idp = 0;
 
@@ -33,18 +32,19 @@ __os_unique_id(dbenv, idp)
 	 * time of day and a stack address, all XOR'd together.
 	 */
 	__os_id(dbenv, &pid, NULL);
-	__os_clock(dbenv, &sec, &usec);
+	__os_gettime(dbenv, &v);
 
-	id = (u_int32_t)pid ^ sec ^ usec ^ P_TO_UINT32(&pid);
+	id = (u_int32_t)pid ^
+	    (u_int32_t)v.tv_sec ^ (u_int32_t)v.tv_nsec ^ P_TO_UINT32(&pid);
 
 	/*
 	 * We could try and find a reasonable random-number generator, but
 	 * that's not all that easy to do.  Seed and use srand()/rand(), if
 	 * we can find them.
 	 */
-	if (first == 1) {
+	if (DB_GLOBAL(uid_init) == 0) {
+		DB_GLOBAL(uid_init) = 1;
 		srand((u_int)id);
-		first = 0;
 	}
 	id ^= (u_int)rand();
 

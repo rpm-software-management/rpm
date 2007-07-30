@@ -1,0 +1,57 @@
+m4_comment([$Id: db_rename.so,v 11.7 2002/09/26 17:34:02 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(berkdb dbrename, m4_tcl_db_rename, [dnl
+berkdb rename
+	m4_tcl_arg([-encrypt])
+	m4_tcl_arg([-encryptaes passwd])
+	m4_tcl_arg([-encryptany passwd])
+	m4_tcl_arg([-env env])
+	m4_tcl_arg([--])
+	file
+	m4_tcl_arg([database]
+	newname)
+])
+
+m4_p([dnl
+Renames the m4_db database specified by the database name m4_arg(file) and
+m4_tcl_arg(database) name arguments to the new name given.
+If no m4_arg(database) is specified,
+the physical file represented by m4_arg(file) is renamed.])
+
+m4_p([dnl
+No reference count of database use is maintained by m4_db.  Applications
+should not rename databases that are currently in use.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-encrypt], [dnl
+Specify the database in an environment is encrypted with the
+same password that is being used in the environment.])
+
+m4_tag([-encryptaes passwd], [dnl
+Specify the database is encrypted with the given password
+using the Rijndael/AES (also known as the Advanced Encryption Standard
+and Federal Information Processing Standard (FIPS) 197) algorithm.])
+
+m4_tag([-encryptany passwd], [dnl
+Specify the already existing database is encrypted
+with the given password.  This option is used if the database is
+known to be encrypted, but the specific algorithm used is not known.])
+
+m4_tag([-env env], [dnl
+If a m4_arg(-env) argument is given, the database in the specified m4_db
+environment is renamed.])
+
+m4_tag([--], [Mark the end of the command arguments.])
+
+m4_tagend
+
+m4_tcl_ret_standard(m4_tcl_db_rename)
+
+m4_page_footer

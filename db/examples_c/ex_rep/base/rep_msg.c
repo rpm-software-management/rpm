@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2005
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: rep_msg.c,v 12.10 2006/08/24 14:45:45 bostic Exp $
+ * $Id: rep_msg.c,v 12.15 2007/05/17 17:29:27 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -18,7 +17,7 @@
 #include "rep_base.h"
 
 static int   connect_site __P((DB_ENV *, machtab_t *,
-		 const char *, repsite_t *, int *, int *, thread_t *));
+		 const char *, repsite_t *, int *, thread_t *));
 static void *elect_thread __P((void *));
 static void *hm_loop __P((void *));
 
@@ -48,6 +47,7 @@ hm_loop(args)
 	DB_ENV *dbenv;
 	DB_LSN permlsn;
 	DBT rec, control;
+	APP_DATA *app;
 	const char *c, *home, *progname;
 	elect_args *ea;
 	hm_loop_args *ha;
@@ -55,8 +55,8 @@ hm_loop(args)
 	thread_t elect_thr, *site_thrs, *tmp, tid;
 	repsite_t self;
 	u_int32_t timeout;
-	int eid, n, nsites, newm, nsites_allocd;
-	int already_open, r, ret, t_ret, tmpid;
+	int eid, n, nsites, nsites_allocd;
+	int already_open, r, ret, t_ret;
 	socket_t fd;
 	void *status;
 
@@ -73,6 +73,7 @@ hm_loop(args)
 	progname = ha->progname;
 	tab = ha->tab;
 	free(ha);
+	app = dbenv->app_private;
 
 	memset(&rec, 0, sizeof(DBT));
 	memset(&control, 0, sizeof(DBT));
@@ -107,22 +108,23 @@ hm_loop(args)
 			(void)dbenv->rep_set_timeout(dbenv,
 			    DB_REP_ELECTION_TIMEOUT, timeout);
 			if ((ret = dbenv->rep_elect(dbenv,
-			    n, (n/2+1), &newm, 0)) != 0)
+			    n, (n/2+1), 0)) != 0)
 				continue;
 
 			/*
 			 * Regardless of the results, the site I was talking
 			 * to is gone, so I have nothing to do but exit.
 			 */
-			if (newm == SELF_EID)
+			if (app->elected) {
+				app->elected = 0;
 				ret = dbenv->rep_start(dbenv,
 				    NULL, DB_REP_MASTER);
+			}
 			break;
 		}
 
-		tmpid = eid;
 		switch (r = dbenv->rep_process_message(dbenv,
-		    &control, &rec, &tmpid, &permlsn)) {
+		    &control, &rec, eid, &permlsn)) {
 		case DB_REP_NEWSITE:
 			/*
 			 * Check if we got sent connect information and if we
@@ -155,8 +157,9 @@ hm_loop(args)
 			 */
 			if (nsites == nsites_allocd) {
 				/* Need to allocate more space. */
-				if ((tmp = realloc(site_thrs,
-				    (10 + nsites) * sizeof(thread_t))) == NULL) {
+				if ((tmp = realloc(
+				    site_thrs, (10 + nsites) *
+				    sizeof(thread_t))) == NULL) {
 					ret = errno;
 					goto out;
 				}
@@ -164,10 +167,11 @@ hm_loop(args)
 				nsites_allocd += 10;
 			}
 			if ((ret = connect_site(dbenv, tab, progname,
-			    &self, &already_open, &tmpid, &tid)) != 0)
+			    &self, &already_open, &tid)) != 0)
 				goto out;
 			if (!already_open)
-				memcpy(&site_thrs[nsites++], &tid, sizeof(thread_t));
+				memcpy(&site_thrs
+				    [nsites++], &tid, sizeof(thread_t));
 			break;
 		case DB_REP_HOLDELECTION:
 			if (master_eid == SELF_EID)
@@ -194,10 +198,11 @@ hm_loop(args)
 				    "can't create election thread");
 			}
 			break;
-		case DB_REP_NEWMASTER:
-			/* Check if it's us. */
-			master_eid = tmpid;
-			if (tmpid == SELF_EID) {
+		case DB_REP_ISPERM:
+			break;
+		case 0:
+			if (app->elected) {
+				app->elected = 0;
 				if ((ret = dbenv->rep_start(dbenv,
 				    NULL, DB_REP_MASTER)) != 0) {
 					dbenv->err(dbenv, ret,
@@ -205,10 +210,6 @@ hm_loop(args)
 					goto out;
 				}
 			}
-			break;
-		case DB_REP_ISPERM:
-			/* FALLTHROUGH */
-		case 0:
 			break;
 		default:
 			dbenv->err(dbenv, r, "DB_ENV->rep_process_message");
@@ -316,7 +317,7 @@ connect_all(args)
 	all_args *aa;
 	const char *home, *progname;
 	hm_loop_args *ha;
-	int failed, i, eid, nsites, open, ret, *success;
+	int failed, i, nsites, open, ret, *success;
 	machtab_t *machtab;
 	thread_t *hm_thr;
 	repsite_t *sites;
@@ -353,7 +354,7 @@ connect_all(args)
 				continue;
 
 			ret = connect_site(dbenv, machtab,
-			    progname, &sites[i], &open, &eid, &hm_thr[i]);
+			    progname, &sites[i], &open, &hm_thr[i]);
 
 			/*
 			 * If we couldn't make the connection, this isn't
@@ -385,20 +386,20 @@ err:	if (success != NULL)
 }
 
 static int
-connect_site(dbenv, machtab, progname, site, is_open, eidp, hm_thrp)
+connect_site(dbenv, machtab, progname, site, is_open, hm_thrp)
 	DB_ENV *dbenv;
 	machtab_t *machtab;
 	const char *progname;
 	repsite_t *site;
-	int *is_open, *eidp;
+	int *is_open;
 	thread_t *hm_thrp;
 {
-	int ret;
+	int eid, ret;
 	socket_t s;
 	hm_loop_args *ha;
 
 	if ((s = get_connected_socket(machtab, progname,
-	    site->host, site->port, is_open, eidp)) < 0)
+	    site->host, site->port, is_open, &eid)) < 0)
 		return (DB_REP_UNAVAIL);
 
 	if (*is_open)
@@ -412,7 +413,7 @@ connect_site(dbenv, machtab, progname, site, is_open, eidp, hm_thrp)
 
 	ha->progname = progname;
 	ha->fd = s;
-	ha->eid = *eidp;
+	ha->eid = eid;
 	ha->tab = machtab;
 	ha->dbenv = dbenv;
 
@@ -442,23 +443,25 @@ elect_thread(args)
 	machtab_t *machtab;
 	u_int32_t timeout;
 	int n, ret;
+	APP_DATA *app;
 
 	eargs = (elect_args *)args;
 	dbenv = eargs->dbenv;
 	machtab = eargs->machtab;
 	free(eargs);
+	app = dbenv->app_private;
 
 	machtab_parm(machtab, &n, &timeout);
 	(void)dbenv->rep_set_timeout(dbenv, DB_REP_ELECTION_TIMEOUT, timeout);
-	while ((ret = dbenv->rep_elect(dbenv, n, (n/2+1),
-	    &master_eid, 0)) != 0)
+	while ((ret = dbenv->rep_elect(dbenv, n, (n/2+1), 0)) != 0)
 		sleep(2);
 
-	/* Check if it's us. */
-	if (master_eid == SELF_EID)
+	if (app->elected) {
+		app->elected = 0;
 		if ((ret = dbenv->rep_start(dbenv, NULL, DB_REP_MASTER)) != 0)
 			dbenv->err(dbenv, ret,
 			    "can't start as master in election thread");
+	}
 
 	return (NULL);
 }

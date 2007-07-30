@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
 		Creating Bindings and Collections
 	</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
-    <link rel="up" href="BasicProgram.html" title="Chapter 2. &#10;&#9;&#9;The Basic Program&#10;&#9;" />
+    <link rel="up" href="BasicProgram.html" title="ChapterÂ 2.Â &#10;&#9;&#9;The Basic Program&#10;&#9;" />
     <link rel="previous" href="opendatabases.html" title="&#10;&#9;&#9;Opening and Closing Databases&#10;&#9;" />
     <link rel="next" href="implementingmain.html" title="&#10;&#9;&#9;Implementing the Main Program&#10;&#9;" />
   </head>
@@ -22,11 +22,11 @@
 	</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="opendatabases.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. 
+          <td width="20%" align="left"><a accesskey="p" href="opendatabases.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â 
 		The Basic Program
 	</th>
-          <td width="20%" align="right"> <a accesskey="n" href="implementingmain.html">Next</a></td>
+          <td width="20%" align="right">Â <a accesskey="n" href="implementingmain.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -46,9 +46,9 @@
     <span class="emphasis"><em>Bindings</em></span> translate between stored records and Java objects.
 	In this example, Java serialization bindings are used. Serial
 	bindings are the simplest type of bindings because no mapping of
-	fields or type conversion is needed. Tuple bindings &#8212; which are
+	fields or type conversion is needed. Tuple bindings â€” which are
 	more difficult to create than serial bindings but have some
-	advantages &#8212; will be introduced later in the Tuple example
+	advantages â€” will be introduced later in the Tuple example
 	program.
 </p>
       <p>
@@ -99,19 +99,19 @@ public class SampleViews
     
 	field is used for each database. The StoredMap class implements the
 	standard Java 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html" target="_top">Map</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html" target="_top">Map</a>
     
 	interface, which has methods for obtaining a 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html" target="_top">Set</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Set.html" target="_top">Set</a>
     
 	of keys, a 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Collection.html" target="_top">Collection</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Collection.html" target="_top">Collection</a>
     
 	of values, or a 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Set.html" target="_top">Set</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Set.html" target="_top">Set</a>
     
 	of 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.Entry.html" target="_top">Map.Entry</a>
     
 	key/value pairs. Because databases contain key/value pairs, any
 	Berkeley DB database may be represented as a Java map.
@@ -251,7 +251,7 @@ public class SampleViews
 	follows.
 </p>
       <a id="cb_sampleviews_usage"></a>
-      <pre class="programlisting"><b class="userinput"><tt>    SampleDatabase sd = new SampleDatabase(new String(&quot;/home&quot;));
+      <pre class="programlisting"><b class="userinput"><tt>    SampleDatabase sd = new SampleDatabase(new String("/home"));
     SampleViews views = new SampleViews(sd);
     Map partMap = views.getPartMap();
     Set supplierEntries = views.getSupplierEntrySet();</tt></b> </pre>
@@ -260,20 +260,20 @@ public class SampleViews
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="opendatabases.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="opendatabases.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="BasicProgram.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="implementingmain.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="implementingmain.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
 		Opening and Closing Databases
-	 </td>
+	Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> 
+          <td width="40%" align="right" valign="top">Â 
 		Implementing the Main Program
 	</td>
         </tr>

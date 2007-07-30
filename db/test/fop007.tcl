@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: fop007.tcl,v 12.4 2006/08/24 14:46:35 bostic Exp $
+# $Id: fop007.tcl,v 12.6 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	fop007
 # TEST	Test file system operations on named in-memory databases.

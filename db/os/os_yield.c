@@ -1,17 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_yield.c,v 12.11 2006/09/06 13:33:25 bostic Exp $
+ * $Id: os_yield.c,v 12.14 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
 
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #if defined(HAVE_SCHED_YIELD)
 #include <sched.h>
 #endif

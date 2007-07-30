@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: os_config.c,v 12.6 2006/08/24 14:46:21 bostic Exp $
+ * $Id: os_config.c,v 12.9 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -20,6 +19,9 @@
 int
 __os_is_winnt()
 {
+#ifdef DB_WINCE
+	return (1);
+#else
 	static int __os_type = -1;
 
 	/*
@@ -33,6 +35,7 @@ __os_is_winnt()
 			__os_type = 0;
 	}
 	return (__os_type);
+#endif
 }
 
 /*
@@ -42,6 +45,9 @@ __os_is_winnt()
 int
 __os_fs_notzero()
 {
+#ifdef DB_WINCE
+	return (1);
+#else
 	static int __os_notzero = -1;
 	OSVERSIONINFO osvi;
 
@@ -85,6 +91,7 @@ __os_fs_notzero()
 			__os_notzero = 1;		/* Not Windows/NT */
 	}
 	return (__os_notzero);
+#endif
 }
 
 /*
@@ -104,7 +111,11 @@ __os_support_direct_io()
 int
 __os_support_db_register()
 {
+#ifdef DB_WINCE
+	return (0);
+#else
 	return (__os_is_winnt());
+#endif
 }
 
 /*
@@ -114,5 +125,9 @@ __os_support_db_register()
 int
 __os_support_replication()
 {
+#ifdef DB_WINCE
+	return (0);
+#else
 	return (__os_is_winnt());
+#endif
 }

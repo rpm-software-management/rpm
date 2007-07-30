@@ -1,0 +1,14 @@
+m4_comment([$Id: client.so,v 1.2 2004/09/28 14:13:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: DB_CLIENT,,
+    upgrade.4.2/cksum, upgrade.4.2/del)
+
+m4_p([dnl
+The flag to create a client to connect to a RPC server was renamed from
+DB_CLIENT to m4_ref(DB_RPCCLIENT), in order to avoid confusion between
+RPC clients and replication clients.  Applications using the DB_CLIENT
+flag should change that use to m4_ref(DB_RPCCLIENT); no other change is
+required.])
+
+m4_page_footer

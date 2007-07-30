@@ -1,0 +1,25 @@
+# $Id: suffix,v 1.14 2007/04/05 19:38:45 bostic Exp $
+
+.SUFFIXES: .html .so
+.so.html:
+	@f=$<; echo "$${f##*..} -> ${BUILDDIR}/$@"
+	@rm -f "$@"
+	@m4 -DM4API=${API}						\
+	    -DM4MAJOR=${DB_VERSION_MAJOR}				\
+	    -DM4MINOR=${DB_VERSION_MINOR}				\
+	    -DM4PAGEPATH=${BUILDDIR}/$@					\
+	    -DM4PATCH=${DB_VERSION_PATCH}				\
+	    -DM4PRODUCT=${PRODUCT}					\
+	    -DM4RELDIR=${RELDIR}					\
+	    -DM4XMLMAJOR=${DBXML_VERSION_MAJOR}				\
+	    -DM4XMLMINOR=${DBXML_VERSION_MINOR}				\
+	    -DM4XMLPATCH=${DBXML_VERSION_PATCH}				\
+	    -I${BDB_SRC}/docs_src					\
+	    -I${DOCS_SRC}						\
+	    ${BDB_SRC}/docs_src/m4/m4.db $< |				\
+	    sed -f ${BDB_SRC}/docs_src/support/html.sed > $@
+
+# Avoid global make variables stepping on our name space.
+C=
+COMMON=
+CXX=

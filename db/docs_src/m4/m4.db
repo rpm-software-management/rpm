@@ -1,0 +1,514 @@
+dnl $Id: m4.db,v 10.188 2007/07/12 18:27:43 bostic Exp $
+
+include(m4/m4.init)
+include(m4/m4.html)
+include(m4/m4.flags)
+include(m4/m4.err)
+include(m4/m4.ret)
+ifelse(M4PRODUCT, XML, [include(m4/m4.xml)])
+include(m4/m4.links)
+ifelse(M4PRODUCT, XML, [include(m4/m4.xmllinks)])
+
+dnl Product names
+define(m4_am, m4_db Data Store)
+define(m4_cam, m4_db Concurrent Data Store)
+define(m4_ha, m4_db High Availability)
+define(m4_tam, m4_db Transactional Data Store)
+define(m4_xml, m4_db XML)
+define(m4_sxml, BDB XML)
+
+dnl Standards
+define(m4_ansic_name, [ANSI C X3.159-1989 (ANSI C)])
+define(m4_posix1_name, [IEEE/ANSI Std 1003.1 (POSIX)])
+
+dnl m4_incextra --
+dnl	API "includes".  C/C++ have standard includes (although the
+dnl	XML's header file includes the standard C++ header for you).
+dnl
+dnl	$1: "XML" use the XML include rather than the C++ one.
+dnl	    else, if it's C/C++ it's a leading #define, it comes first.
+define(m4_incextra, [dnl
+ifelse(M4API, CXX_API, [dnl
+ifelse($1, XML, [m4_include(DbXml.hpp)], [$1
+m4_include(db_cxx.h)])],
+[$1
+m4_include(db.h)])])
+
+dnl Build the reference, and append the word "method".
+dnl	$1: name
+define(m4_refT, [m4_ref($1) method])
+
+dnl Build the reference, and append the correct word "structure" or "object".
+dnl	$1: name
+define(m4_refO, [m4_ref($1) ifelse(M4API, CXX_API, object, structure)])
+
+dnl Some methods aren't available in C++.
+dnl	$1: method
+define(m4_no_such_method, [dnl
+m4_p([The m4_refT($1) is not included in the m4_db C++ API.])
+m4_page_footer
+m4exit])
+define(m4_no_such_class, [dnl
+m4_p([The $1 class is not included in the m4_db C++ API.])
+m4_page_footer
+m4exit])
+
+dnl ###################################################################
+dnl OBJECT-IN-ALLOCATED MEMORY MACRO:
+dnl	#1: the allocated object
+dnl ###################################################################
+define(m4_alloc, [m4_p([dnl
+$1 are stored in allocated memory.  If application-specific allocation
+routines have been declared (see m4_ref(dbenv_set_alloc) for more
+information), they are used to allocate the memory; otherwise, the
+standard C library m4_manref(malloc, 3) is used.  The caller is
+responsible for deallocating the memory.  To deallocate the memory, free
+the memory reference; references inside the returned memory need not be
+individually freed.])])
+
+dnl ###################################################################
+dnl BULK GET MEMORY
+dnl ###################################################################
+define(m4_bulk_mem, [dnl
+The buffer to which the m4_arg(data) parameter refers must be provided
+from user memory (see m4_ref(DB_DBT_USERMEM)).  The buffer must be at
+least as large as the page size of the underlying database, aligned for
+unsigned integer access, and be a multiple of 1024 bytes in size.  If
+the buffer size is insufficient, then upon return from the call the size
+field of the m4_arg(data) parameter will have been set to an estimated
+buffer size, m4_err_mem_insufficient.  (The size is an estimate as the
+exact size needed may not be known until all entries are read.  It is
+best to initially provide a relatively large buffer, but applications
+should be prepared to resize the buffer as necessary and repeatedly call
+the method.)])
+
+dnl ###################################################################
+dnl DB_HOME/set_data_dir
+dnl	#1: the function name
+dnl	#2: "0" if DB_ENV function, "1" if DB function.
+dnl
+dnl Several DB_ENV/DB functions are affected by DB_HOME and the data
+dnl directory value.
+dnl ###################################################################
+define(m4_data_location, [m4_p([ifelse([$2], 0, [The ], [dnl
+If the database was opened within a database environment, the])
+environment variable m4_envvar(DB_HOME) may be used as the path of the
+database environment home.])
+m4_p([m4_ref($1) is affected by any database directory specified using
+the m4_refT(dbenv_set_data_dir), or by setting the "set_data_dir" string
+in the environment's m4_path(DB_CONFIG) file.])])
+
+dnl When the method has a corresponding DB_CONFIG file entry.
+dnl	#1: method
+dnl	#2: value
+dnl	#3: matching string
+dnl	#4: syntax
+dnl	#5: "no" if doesn't overrule other configuration.
+define(m4_env_config, [m4_p([dnl
+The database environment's $2 may also be configured using the
+environment's m4_path(DB_CONFIG) file.  The syntax of the entry in that
+file is a single line with the string "$3", one or more whitespace
+characters, and $4.
+ifelse([$5], no,, [dnl
+Because the m4_path(DB_CONFIG) file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.])])])
+
+define(m4_env_flags, [dnl
+m4_idefz([use @environment constants in naming])
+m4_tag(m4_idef(DB_USE_ENVIRON), [dnl
+The m4_db process' environment may be permitted to specify information
+to be used when naming files; see m4_link(M4RELDIR/ref/env/naming,
+[m4_db File Naming]).  Because permitting users to specify which files
+are used can create security problems, environment information will be
+used in file naming for all users only if the DB_USE_ENVIRON
+flag is set.])
+m4_tag(m4_idef(DB_USE_ENVIRON_ROOT), [dnl
+The m4_db process' environment may be permitted to specify information
+to be used when naming files; see m4_link(M4RELDIR/ref/env/naming,
+[m4_db File Naming]).  Because permitting users to specify which files
+are used can create security problems, if the
+DB_USE_ENVIRON_ROOT flag is set, environment information will
+be used for file naming only for users with appropriate permissions (for
+example, users with a user-ID of 0 on UNIX systems).])])
+
+dnl ###################################################################
+dnl DOCUMENT AN UNDERLYING FUNCTION:
+dnl m4_underfunc --
+dnl	#1 function name
+dnl	#2 underlying function name
+dnl	#3 utility name
+dnl ###################################################################
+define(m4_underfunc, [dnl
+ifelse(M4API, C_API, [m4_p([dnl
+The m4_refT($1) is the underlying method used by the m4_ref($3) utility.
+See the m4_ref($3) utility source code for an example of using m4_ref($2)
+in a m4_posix1_name environment.])])
+ifelse(M4API, UTILITY, [m4_p([dnl
+The m4_refT($1) is the underlying method used by the m4_ref($3) utility.
+See the m4_ref($3) utility source code for an example of using m4_ref($2)
+in a m4_posix1_name environment.])])])
+
+dnl ###################################################################
+dnl METHOD MODIFIES DB_ENV, NOT DB
+dnl m4_really_dbenv --
+dnl	#1 DB function name
+dnl	#2 DB_ENV function name
+dnl ###################################################################
+define(m4_really_dbenv, [m4_p([dnl
+For m4_ref(Db) handles opened inside of m4_db environments, calling the
+m4_refT($1) affects the entire environment and is equivalent to calling
+the m4_refT($2).])])
+
+dnl ###################################################################
+dnl Jump functions
+dnl m4_ansi_func	ANSI C function replacement.
+dnl m4_posix_func	POSIX standard
+dnl m4_ret_internal	Return value.
+dnl	#1: function name
+dnl ###################################################################
+define(m4_ansi_func, [m4_p([dnl
+Replace m4_db calls to the ANSI C X3.159-1989 (ANSI C) standard
+m4_bold($1) function with m4_arg(func_$1), which must conform to the
+standard interface specification.])])
+
+define(m4_posix_func, [m4_p([dnl
+Replace m4_db calls to the m4_posix1_name m4_bold($1) function with
+m4_arg(func_$1), which must conform to the standard interface
+specification.])])
+
+define(m4_ret_internal, [m4_p([dnl
+The m4_arg($1) function must return the value of m4_envvar(errno) on
+failure and 0 on success.])])
+
+define(m4_param_replace, [dnl
+m4_parambegin
+m4_param([$1], [dnl
+The m4_arg([$1]) parameter is the replacement function.  It must conform
+to the standard interface specification.])
+m4_paramend])
+
+dnl ###################################################################
+dnl Stat print functions
+dnl	#1: function
+dnl	#2: type of statistics
+dnl	#3: stat function that lists the default fields
+dnl	#4: "no" if m4_pf_description call isn't needed
+dnl ###################################################################
+define(m4_stat_print, [dnl
+ifelse($4, no,, m4_pf_description(m4_ref($1)))
+m4_p([dnl
+The m4_refT($1) displays the
+ifelse($2,, [default statistical information.],
+[$2 statistical information, as described for the m4_refT($3).])
+The information is printed to a specified output channel (see the
+m4_refT(dbenv_set_msgfile) for more information), or passed to an
+application callback function (see the m4_refT(dbenv_set_msgcall) for
+more information).])
+ifelse($1, dbh_stat_print, m4_when_after_dbopen($1), m4_when_after_envopen($1))
+m4_return($1, std)
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_may(0)
+m4_tagbegin
+ifelse($1, dbh_stat_print, [dnl
+m4_tag(m4_idef(DB_FAST_STAT), [dnl
+Return only the values which do not require traversal of the database.
+Among other things, this flag makes it possible for applications to
+request key and record counts without incurring the performance penalty
+of traversing the entire database.])])
+m4_tag(m4_idef(DB_STAT_ALL), [dnl
+Display all available information.])
+ifelse($1, dbh_stat_print,, [dnl
+m4_tag(m4_idef(DB_STAT_CLEAR), [dnl
+Reset statistics after displaying their values.])])
+ifelse($1, lock_stat_print, [dnl
+m4_tagns(m4_idef(DB_STAT_LOCK_CONF), [dnl
+Display the lock conflict matrix.])
+m4_tagns(m4_idef(DB_STAT_LOCK_LOCKERS), [dnl
+Display the lockers within hash chains.])
+m4_tagns(m4_idef(DB_STAT_LOCK_OBJECTS), [dnl
+Display the lock objects within hash chains.])
+m4_tagns(m4_idef(DB_STAT_LOCK_PARAMS), [dnl
+Display the locking subsystem parameters.])])
+ifelse($1, memp_stat_print, [dnl
+m4_tag(m4_idef(DB_STAT_MEMP_HASH), [dnl
+Display the buffers with hash chains.])])
+ifelse($1, dbenv_stat_print, [dnl
+m4_tag(m4_idef(DB_STAT_SUBSYSTEM), [dnl
+Display information for all configured subsystems.])])
+m4_tagend])
+m4_paramend])
+
+dnl ###################################################################
+dnl Common destructor language.
+dnl	#1: handle
+dnl	#2: method
+dnl ###################################################################
+define(m4_destructor, [m4_p([dnl
+The m4_ref($1) handle may not be accessed again after m4_ref($2) is
+called, regardless of its return.])])
+
+dnl ###################################################################
+dnl The scope of the configuration method.
+dnl	#1: method
+dnl ###################################################################
+define(m4_scope_process, [m4_p([dnl
+The m4_refT($1) configures all operations performed by a process and
+all of its threads of control, not operations confined to a single
+database environment.])])
+define(m4_scope_dbenv, [m4_p([dnl
+The m4_refT($1) configures operations performed using the specified
+m4_ref(DbEnv) handle, not all operations performed on the underlying
+database environment.])])
+define(m4_scope_env, [m4_p([dnl
+The m4_refT($1) configures a database environment, not only operations
+performed using the specified m4_ref(DbEnv) handle.])])
+define(m4_scope_mpf, [m4_p([dnl
+The m4_refT($1) configures a file in the memory pool, not only
+operations performed using the specified m4_ref(DbMpoolFile) handle.])])
+define(m4_scope_mpf_flags, [m4_p([dnl
+The m4_ref($1) flag configures a file in the memory pool, not only
+operations performed using the specified m4_ref(DbMpoolFile) handle.])])
+define(m4_scope_db, [m4_p([dnl
+The m4_refT($1) configures a database, not only operations performed
+using the specified m4_ref(Db) handle.])])
+define(m4_scope_dbh, [m4_p([dnl
+The m4_refT($1) configures operations performed using the specified
+m4_ref(Db) handle, not all operations performed on the underlying
+database.])])
+define(m4_scope_tx, [m4_p([dnl
+The m4_refT($1) configures operations performed on the underlying
+transaction, not only operations performed using the specified
+m4_ref(DbTxn) handle.])])
+
+dnl ###################################################################
+dnl When the configuration methods can be called.
+dnl	#1: method
+dnl	#2: what happens if config info doesn't match existing object.
+dnl	    (error, ignored, corrupt, overwrite)
+dnl ###################################################################
+define(m4_when_any, [m4_p([dnl
+The m4_refT($1) may be called at any time during the life of the
+application.])])
+
+define(m4_when_init, [m4_p([dnl
+Although the m4_refT($1) may be called at any time during the life of
+the application, it should normally be called before making calls to the
+m4_ref(dbenv_create) or m4_refT(dbh_create)s.])])
+
+define(m4_when_envopen, [m4_p([dnl
+The m4_refT($1) may not be called after the m4_refT(dbenv_open) is
+called.
+ifelse($2, error, [If the database environment already exists when
+m4_ref(dbenv_open) is called, the information specified to m4_ref($1)
+must be consistent with the existing environment or an error will be
+returned.])
+ifelse($2, ignored, [If the database environment already exists when
+m4_ref(dbenv_open) is called, the information specified to m4_ref($1)
+will be ignored.])
+ifelse($2, corrupt, [If the database environment already exists when
+m4_ref(dbenv_open) is called, the information specified to m4_ref($1)
+must be consistent with the existing environment or corruption can
+occur.])])])
+
+define(m4_when_after_envopen, [m4_p([dnl
+The m4_refT($1) may not be called before the m4_refT(dbenv_open) has
+been called.])])
+
+define(m4_when_mpfopen, [m4_p([dnl
+The m4_refT($1) may not be called after the m4_refT(memp_fopen) is
+called.
+ifelse($2, error, [If the file is already open in the memory pool when
+m4_ref(memp_fopen) is called, the information specified to m4_ref($1)
+must be consistent with the existing file or an error will be
+returned.])
+ifelse($2, overwrite, [If the file is already open in the memory pool when
+m4_ref(memp_fopen) is called, the information specified to m4_ref($1)
+will replace the existing information.])])])
+
+define(m4_when_dbopen, [m4_p([dnl
+The m4_refT($1) may not be called after the m4_refT(dbh_open) is called.
+ifelse($2, ignored, [If the database already exists when
+m4_ref(dbh_open) is called, the information specified to m4_ref($1) will
+be ignored.])
+ifelse($2, corrupt, [If the database already exists when
+m4_ref(dbh_open) is called, the information specified to m4_ref($1) must
+be the same as that historically used to create the database or
+corruption can occur.])])])
+
+define(m4_when_after_dbopen, [m4_p([dnl
+The m4_refT($1) may not be called before the m4_refT(dbh_open) has been
+called.])])
+
+define(m4_when_before_repmgr_start, [m4_p([dnl
+The m4_refT($1) must be called before the m4_refT(repmgr_start) has been
+called.])])
+
+dnl ###################################################################
+dnl Common getter language.
+dnl	#1 method name
+dnl	#2 method description
+dnl	#3 text description for the variable (empty if same as #2)
+dnl	#4 C/C++ variable name
+dnl	#5 "reference" if it's a reference to an object, not a value
+dnl ###################################################################
+define(m4_pf_getter, [dnl
+m4_pf_description(m4_ref($1))
+m4_getter([$1], [$2], [$3], [$4], [$5])])
+
+define(m4_getter, [dnl
+m4_p([The m4_refT($1) returns the [$2].])
+ifelse(
+[$1], dbenv_get_open_flags, m4_when_after_envopen([$1]),
+[$1], dbh_get_open_flags, m4_when_after_dbopen([$1]), m4_when_any($1))
+ifelse([$4],,, [dnl
+ifelse([$1], dbh_getenv,, [m4_return($1, std)])
+m4_parambegin
+m4_param([$4],
+[The m4_refT($1) returns ifelse([$5], reference, a reference to) the
+ifelse([$3],, [$2], [$3]) in m4_arg([$4]).])
+m4_paramend])])
+
+dnl ###################################################################
+dnl Stat fields.
+dnl	#1 C/C++ type
+dnl	#2 field name
+dnl	#3 description
+dnl ###################################################################
+define(m4_field, [m4_tagns([$1] [$2];, [$3])])
+
+dnl ###################################################################
+dnl Parameters:
+dnl
+dnl m4_parambegin/end
+dnl m4_param
+dnl	#1 C/C++ argument name
+dnl	#2 description
+dnl ###################################################################
+define(m4_parambegin, [dnl
+m4_section(Parameters)
+m4_tagbegin])
+define(m4_paramend, m4_tagend)
+define(m4_param, [dnl
+define([__paramname], [$1])
+m4_tag(m4_arg(__paramname), [$2])])
+
+dnl ###################################################################
+dnl File/Directory parameters get standard Windows UTF-8 language.
+dnl	#1: argument name
+dnl	#2: argument text
+dnl ###################################################################
+define(m4_param_utf8, [dnl
+m4_param([$1], [$2])
+m4_p([dnl
+When using a Unicode build on Windows (the default), the m4_arg([$1])
+argument will be interpreted as a UTF-8 string, which is equivalent to
+ASCII for Latin characters.])])
+
+dnl ###################################################################
+dnl	Standard copy-out language.
+dnl
+dnl m4_param_co --
+dnl	#1: argument
+dnl	#2: copied thing
+dnl	#3: REF, if it's a reference to the object.
+dnl	#4: additional text
+dnl ###################################################################
+define(m4_param_co, [m4_param([$1], [dnl
+The m4_arg([$1]) parameter references memory into which
+ifelse([$3], REF, a pointer to) the $2 is copied.]) $4])
+
+dnl ###################################################################
+dnl Standard not reentrant language.
+dnl ###################################################################
+define(m4_not_reentrant, [m4_p([dnl
+m4_db is not re-entrant.  Callback functions should not attempt to make
+library calls (for example, to release locks or close open handles).
+Re-entering m4_db is not guaranteed to work correctly, and the results
+are undefined.])])
+
+dnl ###################################################################
+dnl The key/data argument language.
+dnl ###################################################################
+define(m4_param_key, [m4_param(key, [The key m4_ref(Dbt) operated on.])])
+define(m4_param_data, [m4_param(data, [The data m4_ref(Dbt) operated on.])])
+
+dnl ###################################################################
+dnl The filesystem mode argument language.
+dnl	#1: the subsystem name.
+dnl ###################################################################
+define(m4_param_filemode, [dnl
+m4_param(mode, [dnl
+On Windows systems, the mode parameter is ignored.
+m4_p([dnl
+On UNIX systems or in m4_posix1_name environments, files created by $1
+are created with mode m4_arg(mode) (as described in m4_manref(chmod, 2))
+and modified by the process' umask value at the time of creation (see
+m4_manref(umask, 2)).  Created files are owned by the process owner; the
+group ownership of created files is based on the system and directory
+defaults, and is not further specified by m4_db.  System shared memory
+segments created by $1 are created with mode m4_arg(mode), unmodified
+by the process' umask value.  If m4_arg(mode) is 0, $1 will use a
+default mode of readable and writable by both owner and group.])])])
+
+dnl ###################################################################
+dnl	Transaction ID arguments.
+dnl
+dnl m4_param_txn --
+dnl	#1: method
+dnl	#2: "auto" if there's an auto-commit flag.
+dnl	#2: "env" if an environment operation.
+dnl	#2: "ro" if a read-only operation
+dnl	#3: additional wording
+dnl ###################################################################
+define(m4_param_txn,
+[m4_param(txnid, [dnl
+If the operation is part of an application-specified transaction, the
+m4_arg(txnid) parameter is a transaction handle returned from
+m4_ref(txn_begin); if the operation is part of a m4_cam group, the
+m4_arg(txnid) parameter is a handle returned from
+m4_ref(cdsgroup_begin); otherwise NULL.
+ifelse([$2], ro,, [dnl
+If no transaction handle is
+specified, but the
+ifelse([$2], auto, [DB_AUTO_COMMIT flag is specified],
+[operation occurs in a transactional
+ifelse([$2], env, database environment, database)]),
+the operation will be implicitly transaction protected.])
+$3])])
+
+dnl ###################################################################
+dnl	Replication lower-level API wording.
+dnl
+dnl m4_repl_lower --
+dnl	#1: method
+dnl ###################################################################
+define(m4_repl_lower,
+[m4_p([The m4_ref($1) method is not called by most replication
+applications.  It should only be called by applications implementing
+their own network transport layer, explicitly holding replication group
+elections and handling replication messages outside of the replication
+manager framework.])])
+
+dnl #################################################################
+dnl m4_linkjavadoc and supporting macros:
+dnl	Link to specific javadoc location in any page.
+dnl	#1: package
+dnl	#2: class (optional)
+dnl	#3: method (optional)
+dnl #################################################################
+dnl __m4_javasrcref
+dnl	#1: package
+define(__m4_javasrcref, [dnl
+ifelse(index($1, com.sleepycat), 0, dnl
+[../../java/translit($1, ., /)], dnl
+ifelse(index($1, java), 0, dnl
+[http://java.sun.com/j2se/1.5.0/docs/api/translit($1, ., /)], $1))])
+
+define(m4_linkjavadoc, [dnl
+ifelse($#, 3,dnl
+[<a href="__m4_javasrcref($1)/$2.html__OCT__[pathsubst($3, ' ', '%20')]">$2.$3</a>],dnl
+$#, 2,dnl
+[<a href="__m4_javasrcref($1)/$2.html">$2</a>],dnl
+[<a href="__m4_javasrcref($1)/package-summary.html">$1</a>])])

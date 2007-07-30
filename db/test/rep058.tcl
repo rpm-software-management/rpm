@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: rep058.tcl,v 12.8 2006/08/24 14:46:38 bostic Exp $
+# $Id: rep058.tcl,v 12.13 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep058
 # TEST
@@ -53,8 +52,14 @@ proc rep058 { method { tnum "058" } args } {
 }
 
 proc rep058_sub { method tnum logset recargs largs } {
-	global testdir
 	source ./include.tcl
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	set orig_tdir $testdir
 
 	set masterdir $testdir/MASTERDIR
@@ -81,24 +86,15 @@ proc rep058_sub { method tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set envcmd(M) "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -lock_detect default \
+	    $m_logargs -lock_detect default $verbargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set envcmd(M) "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -lock_detect default \
-#	    -errpfx ENV.M -verbose {rep on} -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set menv [eval $envcmd(M) $recargs]
-	error_check_good master_env0 [is_valid_env $menv] TRUE
 
 	# Open a client
 	repladd 2
 	set envcmd(C) "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -lock_detect default \
+	    $c_logargs -lock_detect default $verbargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set envcmd(C) "berkdb_env_noerr -create $c_txnargs \
-# 	    $c_logargs -lock_detect default \
-#	    -errpfx ENV.C -verbose {rep on} -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set cenv [eval $envcmd(C) $recargs]
 	error_check_good client_env [is_valid_env $cenv] TRUE
 

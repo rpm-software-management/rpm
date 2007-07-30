@@ -1,0 +1,70 @@
+m4_comment([$Id: env_set_shm_key.so,v 10.28 2004/09/28 15:04:20 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_shm_key, dbenv_get_shm_key])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_shm_key),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_shm_key(DB_ENV *dbenv, long shm_key);
+m4_blank
+int
+DB_ENV-__GT__get_shm_key(DB_ENV *dbenv, long *shm_keyp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_shm_key(long shm_key);
+m4_blank
+int
+DbEnv::get_shm_key(long *shm_keyp);
+]))
+
+m4_p([dnl
+Specify a base segment ID for m4_db environment shared memory regions
+created in system memory on VxWorks or systems supporting X/Open-style
+shared memory interfaces; for example, UNIX systems supporting
+m4_manref(shmget, 2) and related System V IPC interfaces.])
+
+m4_p([dnl
+This base segment ID will be used when m4_db shared memory regions are
+first created.  It will be incremented a small integer value each time
+a new shared memory region is created; that is, if the base ID is 35,
+the first shared memory region created will have a segment ID of 35,
+and the next one will have a segment ID between 36 and 40 or so.  A
+m4_db environment always creates a master shared memory region; an
+additional shared memory region for each of the subsystems supported by
+the environment (Locking, Logging, Memory Pool and Transaction); plus
+an additional shared memory region for each additional memory pool cache
+that is supported.  Already existing regions with the same segment IDs
+will be removed.  See m4_link(M4RELDIR/ref/env/region, [Shared Memory
+Regions]) for more information.])
+
+m4_p([dnl
+The intent behind this method is two-fold: without it, applications
+have no way to ensure that two m4_db applications don't attempt to use
+the same segment IDs when creating different m4_db environments.  In
+addition, by using the same segment IDs each time the environment is
+created, previously created segments will be removed, and the set of
+segments on the system will not grow without bound.])
+
+m4_env_config(dbenv_set_shm_key, [base segment ID], set_shm_key, [the ID])
+
+m4_scope_dbenv(dbenv_set_shm_key)
+
+m4_when_envopen(dbenv_set_shm_key, corrupt)
+
+m4_return(dbenv_set_shm_key, std)
+
+m4_parambegin
+m4_param(shm_key, [dnl
+The m4_arg(shm_key) parameter is the base segment ID for the database
+environment.])
+m4_paramend
+
+m4_err(dbenv_set_shm_key,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_shm_key, base segment ID,, shm_keyp)
+
+m4_seealso(DbEnv)
+m4_page_footer

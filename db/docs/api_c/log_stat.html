@@ -1,6 +1,5 @@
-<!--$Id: log_stat.so,v 10.57 2005/10/28 19:45:34 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: log_stat.so,v 10.58 2007/06/22 16:57:15 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -72,6 +71,8 @@ obtaining the log region mutex.
 <dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain
 the log region mutex without waiting.
 </dl>
+<p>The DB_ENV-&gt;log_stat method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
+been called.</p>
 <p>The DB_ENV-&gt;log_stat method
 returns a non-zero error value on failure
 and 0 on success.
@@ -125,6 +126,6 @@ or more of the following values:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

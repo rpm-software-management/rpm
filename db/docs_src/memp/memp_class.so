@@ -1,0 +1,40 @@
+m4_comment([$Id: memp_class.so,v 10.21 2006/10/24 15:47:59 bostic Exp $])
+
+define(M4PAGELOCAL, DbMemoryException)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbMemoryException),
+ifelse(M4API, C_API, [dnl
+])
+ifelse(M4API, CXX_API, [dnl
+class DbMemoryException : public DbException {
+public:
+	Dbt *get_dbt() const;
+};
+]))
+
+m4_p([dnl
+This information describes the m4_ref(DbMemoryException) class and how
+it is used by the various Db* classes.])
+
+m4_p([dnl
+A m4_ref(DbMemoryException) is thrown when there is insufficient memory
+to complete an operation, and there is the possibility of recovering.
+An example is during a m4_ref(dbh_get) or m4_ref(dbc_get) operation with
+the m4_ref(Dbt) flags set to m4_ref(DB_DBT_USERMEM).])
+
+m4_idefz(DB_BUFFER_SMALL)
+m4_p([dnl
+The m4_ref(DbException) errno value is set to m4_ref(DB_BUFFER_SMALL)
+or ENOMEM.])
+
+m4_p([dnl
+The m4_arg(get_dbt) method returns the m4_ref(Dbt) with insufficient
+memory to complete the operation, causing the m4_ref(DbMemoryException)
+to be thrown.
+ifelse(M4API, CXX_API, [dnl
+The m4_ref(Dbt) pointer may or may not refer to valid memory, depending
+on whether the m4_ref(Dbt) used in the call to the failed m4_db method
+is still in scope and has not been deleted.])])
+
+m4_page_footer

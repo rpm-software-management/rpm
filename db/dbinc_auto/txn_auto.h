@@ -43,7 +43,7 @@ typedef struct ___txn_ckp_args {
 	DB_LSN	last_ckp;
 	int32_t	timestamp;
 	u_int32_t	envid;
-	u_int32_t	rep_gen;
+	u_int32_t	spare;
 } __txn_ckp_args;
 
 #define	DB___txn_child	12

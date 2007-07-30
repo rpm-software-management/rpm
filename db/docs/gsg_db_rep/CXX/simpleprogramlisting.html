@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Program Listing</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="txnapp.html" title="Chapter 2. Transactional Application" />
-    <link rel="previous" href="txnapp.html" title="Chapter 2. Transactional Application" />
-    <link rel="next" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
+    <link rel="up" href="txnapp.html" title="ChapterÂ 2.Â Transactional Application" />
+    <link rel="previous" href="txnapp.html" title="ChapterÂ 2.Â Transactional Application" />
+    <link rel="next" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Program Listing</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="txnapp.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. Transactional Application</th>
-          <td width="20%" align="right"> <a accesskey="n" href="repapp.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="txnapp.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â Transactional Application</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="repapp.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -113,7 +113,7 @@ public:
 
 RepConfigInfo::RepConfigInfo()
 {
-    home = &quot;TESTDIR&quot;;
+    home = "TESTDIR";
 }
 
 RepConfigInfo::~RepConfigInfo()
@@ -150,9 +150,9 @@ using std::endl;
 using std::flush;
 
 #define CACHESIZE   (10 * 1024 * 1024)
-#define DATABASE    &quot;quote.db&quot;
+#define DATABASE    "quote.db"
 
-const char *progname = &quot;SimpleTxn&quot;;  </pre>
+const char *progname = "SimpleTxn";  </pre>
         <p>
         And then we define our <tt class="classname">RepMgr</tt> class:
 </p>
@@ -204,8 +204,8 @@ private:
                     </p>
         <pre class="programlisting">static void usage()
 {
-    cerr &lt;&lt; &quot;usage: &quot; &lt;&lt; progname &lt;&lt; endl
-         &lt;&lt; &quot;-h home&quot; &lt;&lt; endl;
+    cerr &lt;&lt; "usage: " &lt;&lt; progname &lt;&lt; endl
+         &lt;&lt; "-h home" &lt;&lt; endl;
 
     exit(EXIT_FAILURE);
 }  </pre>
@@ -244,7 +244,7 @@ private:
             this point fairly trivial:
     </p>
         <pre class="programlisting">    // Extract the command line parameters
-    while ((ch = getopt(argc, argv, &quot;h:&quot;)) != EOF) {
+    while ((ch = getopt(argc, argv, "h:")) != EOF) {
         switch (ch) {
         case 'h':
             config.home = optarg;
@@ -279,8 +279,8 @@ private:
                 Finally, catch exceptions and terminate the program:
         </p>
         <pre class="programlisting">    } catch (DbException dbe) {
-        cerr &lt;&lt; &quot;Caught an exception during initialization or&quot;
-            &lt;&lt; &quot; processing: &quot; &lt;&lt; dbe.what() &lt;&lt; endl;
+        cerr &lt;&lt; "Caught an exception during initialization or"
+            &lt;&lt; " processing: " &lt;&lt; dbe.what() &lt;&lt; endl;
     }
 err:
     runner.terminate();
@@ -344,9 +344,9 @@ err:
             DB_INIT_TXN, 
             0);
     } catch(DbException dbe) {
-        cerr &lt;&lt; &quot;Caught an exception during DB environment open.&quot; &lt;&lt; endl
-            &lt;&lt; &quot;Ensure that the home directory is created prior to starting&quot;
-            &lt;&lt; &quot; the application.&quot; &lt;&lt; endl;
+        cerr &lt;&lt; "Caught an exception during DB environment open." &lt;&lt; endl
+            &lt;&lt; "Ensure that the home directory is created prior to starting"
+            &lt;&lt; " the application." &lt;&lt; endl;
         ret = ENOENT;
         goto err;
     }
@@ -365,7 +365,7 @@ err:
     try {
         dbenv.close(0);
     } catch (DbException dbe) {
-        cerr &lt;&lt; &quot;error closing environment: &quot; &lt;&lt; dbe.what() &lt;&lt; endl;
+        cerr &lt;&lt; "error closing environment: " &lt;&lt; dbe.what() &lt;&lt; endl;
     }
     return 0;
 }  </pre>
@@ -438,7 +438,7 @@ int RepMgr::doloop()
                 dbp-&gt;open(NULL, DATABASE, NULL, DB_BTREE,
                     DB_CREATE | DB_AUTO_COMMIT, 0);
             } catch(DbException dbe) {
-                dbenv.err(ret, &quot;DB-&gt;open&quot;);
+                dbenv.err(ret, "DB-&gt;open");
                 throw dbe;
             }
         }  </pre>
@@ -464,26 +464,26 @@ int RepMgr::doloop()
             However, in order to keep this example code as simple as
             possible, we refrain from implementing a thorough user interface.
         </p>
-        <pre class="programlisting">        cout &lt;&lt; &quot;QUOTESERVER&quot; ;
-        cout &lt;&lt; &quot;&gt; &quot; &lt;&lt; flush;
+        <pre class="programlisting">        cout &lt;&lt; "QUOTESERVER" ;
+        cout &lt;&lt; "&gt; " &lt;&lt; flush;
 
         if (fgets(buf, sizeof(buf), stdin) == NULL)
             break;
-        if (strtok(&amp;buf[0], &quot; \t\n&quot;) == NULL) {
+        if (strtok(&amp;buf[0], " \t\n") == NULL) {
             switch ((ret = print_stocks(dbp))) {
             case 0:
                 continue;
             default:
-                dbp-&gt;err(ret, &quot;Error traversing data&quot;);
+                dbp-&gt;err(ret, "Error traversing data");
                 goto err;
             }
         }
-        rbuf = strtok(NULL, &quot; \t\n&quot;);
+        rbuf = strtok(NULL, " \t\n");
         if (rbuf == NULL || rbuf[0] == '\0') {
-            if (strncmp(buf, &quot;exit&quot;, 4) == 0 ||
-                strncmp(buf, &quot;quit&quot;, 4) == 0)
+            if (strncmp(buf, "exit", 4) == 0 ||
+                strncmp(buf, "quit", 4) == 0)
                 break;
-            dbenv.errx(&quot;Format: TICKER VALUE&quot;);
+            dbenv.errx("Format: TICKER VALUE");
             continue;
         }  </pre>
         <p>
@@ -502,12 +502,12 @@ int RepMgr::doloop()
                 the database is not configured for duplicate records, so
                 the data portion of a record is overwritten if the provided
                 key already exists in the database. However, in this case
-                DB returns <tt class="literal">DB_KEYEXIST</tt> &#8212; which
+                DB returns <tt class="literal">DB_KEYEXIST</tt> â€” which
                 we ignore.
             </p>
         <pre class="programlisting">        if ((ret = dbp-&gt;put(NULL, &amp;key, &amp;data, 0)) != 0)
         {
-            dbp-&gt;err(ret, &quot;DB-&gt;put&quot;);
+            dbp-&gt;err(ret, "DB-&gt;put");
             if (ret != DB_KEYEXIST)
                 goto err;
         }
@@ -518,7 +518,7 @@ int RepMgr::doloop()
         </p>
         <pre class="programlisting">err:    if (dbp != NULL) {
         (void)dbp-&gt;close(DB_NOSYNC);
-        cout &lt;&lt; &quot;database closed&quot; &lt;&lt; endl;
+        cout &lt;&lt; "database closed" &lt;&lt; endl;
         }
 
     return (ret);
@@ -564,15 +564,15 @@ int RepMgr::doloop()
     u_int32_t keysize, datasize;
 
     if ((ret = dbp-&gt;cursor(NULL, &amp;dbc, 0)) != 0) {
-        dbp-&gt;err(ret, &quot;can't open cursor&quot;);
+        dbp-&gt;err(ret, "can't open cursor");
         return (ret);
     }
 
     memset(&amp;key, 0, sizeof(key));
     memset(&amp;data, 0, sizeof(data));
 
-    cout &lt;&lt; &quot;\tSymbol\tPrice&quot; &lt;&lt; endl
-        &lt;&lt; &quot;\t======\t=====&quot; &lt;&lt; endl;
+    cout &lt;&lt; "\tSymbol\tPrice" &lt;&lt; endl
+        &lt;&lt; "\t======\t=====" &lt;&lt; endl;
 
     for (ret = dbc-&gt;get(&amp;key, &amp;data, DB_FIRST);
         ret == 0;
@@ -586,12 +586,12 @@ int RepMgr::doloop()
         memcpy(databuf, data.get_data(), datasize);
         databuf[datasize] = '\0';
 
-        cout &lt;&lt; &quot;\t&quot; &lt;&lt; keybuf &lt;&lt; &quot;\t&quot; &lt;&lt; databuf &lt;&lt; endl;
+        cout &lt;&lt; "\t" &lt;&lt; keybuf &lt;&lt; "\t" &lt;&lt; databuf &lt;&lt; endl;
     }
     cout &lt;&lt; endl &lt;&lt; flush;
 
     if ((t_ret = dbc-&gt;close()) != 0 &amp;&amp; ret == 0) {
-        cout &lt;&lt; &quot;closed cursor&quot; &lt;&lt; endl;
+        cout &lt;&lt; "closed cursor" &lt;&lt; endl;
         ret = t_ret;
     }
 
@@ -609,18 +609,18 @@ int RepMgr::doloop()
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="txnapp.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="txnapp.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="txnapp.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="repapp.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="repapp.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 2. Transactional Application </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 2.Â Transactional ApplicationÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 3. The DB Replication Framework</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 3.Â The DB Replication Framework</td>
         </tr>
       </table>
     </div>

@@ -1,0 +1,51 @@
+m4_comment([$Id: log_file.so,v 10.34 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, log_file)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_file),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__log_file(DB_ENV *env,
+    const DB_LSN *lsn, char *namep, size_t len);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::log_file(const DbLsn *lsn, char *namep, size_t len);
+]))
+
+m4_p([dnl
+The m4_refT(log_file) maps
+ifelse(M4API, C_API, [DB_LSN structures], [m4_ref(DbLsn) objects])
+to filenames, returning the name of the file containing the record named
+by m4_arg(lsn).])
+
+m4_p([dnl
+This mapping of
+ifelse(M4API, C_API, [DB_LSN structures], [m4_ref(DbLsn) objects])
+to files is needed for database administration.  For example, a
+transaction manager typically records the earliest m4_ref(DbLsn) needed
+for restart, and the database administrator may want to archive log
+files to tape when they contain only m4_ref(DbLsn) entries before the
+earliest one needed for restart.])
+
+m4_return(log_file, std)
+
+m4_parambegin
+m4_param(lsn, [dnl
+The m4_arg(lsn) parameter is the
+ifelse(M4API, C_API, [DB_LSN structure], [m4_ref(DbLsn) object])
+for which a filename is wanted.])
+m4_param_co(namep, name of the file containing the record named by m4_arg(lsn))
+m4_param(len, [dnl
+The m4_arg(len) parameter is the length of the m4_arg(namep) buffer in
+bytes.  If m4_arg(namep) is too short to hold the filename,
+m4_ref(log_file) will fail.  (Log filenames are normally quite short,
+on the order of 10 characters.)])
+m4_paramend
+
+m4_err(log_file,
+einval, [supplied buffer was too small to hold the log filename])
+
+m4_seealso(DbLog)
+m4_page_footer

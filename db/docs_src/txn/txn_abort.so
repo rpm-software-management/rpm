@@ -1,0 +1,38 @@
+m4_comment([$Id: txn_abort.so,v 10.39 2004/08/13 03:39:03 bostic Exp $])
+
+define(M4PAGELOCAL, txn_abort)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_abort),
+ifelse(M4API, C_API, [dnl
+int
+DB_TXN-__GT__abort(DB_TXN *tid);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbTxn::abort();
+]))
+
+m4_p([dnl
+The m4_refT(txn_abort) causes an abnormal termination of the transaction.
+The log is played backward, and any necessary undo operations are done
+through the m4_arg(tx_recover) function specified to
+m4_ref(dbenv_set_app_dispatch).  Before m4_ref(txn_abort) returns, any
+locks held by the transaction will have been released.])
+
+m4_p([dnl
+In the case of nested transactions, aborting a parent transaction causes
+all children (unresolved or not) of the parent transaction to be aborted.])
+
+m4_p([dnl
+All cursors opened within the transaction must be closed before the
+transaction is aborted.])
+
+m4_p([dnl
+After m4_ref(txn_abort) has been called, regardless of its return, the
+m4_ref(DbTxn) handle may not be accessed again.])
+
+m4_return(txn_abort, std)
+
+m4_seealso(DbTxn)
+m4_page_footer

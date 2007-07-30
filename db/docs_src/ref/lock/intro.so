@@ -1,0 +1,96 @@
+m4_comment([$Id: intro.so,v 10.27 2006/11/13 18:05:02 bostic Exp $])
+
+m4_ref_title(Locking Subsystem,
+    Introduction to the locking subsystem,
+    introduction to the @locking subsystem, program/faq, lock/config)
+
+m4_p([dnl
+The locking subsystem provides interprocess and intraprocess concurrency
+control mechanisms.  Although the lock system is used extensively by
+the m4_db access methods and transaction system, it may also be used as
+a standalone subsystem to provide concurrency control to any set of
+designated resources.])
+
+m4_p([dnl
+The Lock subsystem is created, initialized, and opened by calls to
+m4_ref(dbenv_open) with the m4_ref(DB_INIT_LOCK) or m4_ref(DB_INIT_CDB)
+flags specified.])
+
+m4_p([dnl
+The m4_refT(lock_vec) is used to acquire and release locks.  The
+m4_refT(lock_vec) performs any number of lock operations atomically.  It
+also provides the capability to release all locks held by a particular
+locker and release all the locks on a particular object.  (Performing
+multiple lock operations atomically is useful in performing Btree
+traversals -- you want to acquire a lock on a child page and once
+acquired, immediately release the lock on its parent.  This is
+traditionally referred to as m4_italic(lock-coupling)).  Two additional
+methods, m4_ref(lock_get) and m4_ref(lock_put), are provided.  These
+methods are simpler front-ends to the m4_ref(lock_vec) functionality,
+where m4_ref(lock_get) acquires a lock, and m4_ref(lock_put) releases a
+lock that was acquired using m4_ref(lock_get) or m4_ref(lock_vec).  All
+locks explicitly requested by an application should be released via
+calls to m4_ref(lock_put) or m4_ref(lock_vec).  Using m4_ref(lock_vec)
+instead of separate calls to m4_ref(lock_put) and m4_ref(lock_get) also
+reduces the synchronization overhead between multiple threads or
+processes.  The three methods are fully compatible, and may be used
+interchangeably.])
+
+m4_p([dnl
+Applications must specify lockers and lock objects appropriately.  When
+used with the m4_db access methods, lockers and objects are handled
+completely internally, but an application using the lock manager
+directly must either use the same conventions as the access methods or
+define its own convention to which it adheres.  If an application is
+using the access methods with locking at the same time that it is
+calling the lock manager directly, the application must follow a
+convention that is compatible with the access methods' use of the
+locking subsystem.  See m4_link(M4RELDIR/ref/lock/am_conv, [Access
+method locking conventions]) for more information.])
+
+m4_p([dnl
+The m4_ref(lock_id) function returns a unique ID that may safely be used
+as the locker parameter to the m4_refT(lock_vec).  The access methods
+use m4_ref(lock_id) to generate unique lockers for the cursors
+associated with a database.])
+
+m4_p([dnl
+The m4_ref(lock_detect) function provides the programmatic interface to
+the m4_db deadlock detector.  Whenever two threads of control issue lock
+requests concurrently, the possibility for deadlock arises.  A deadlock
+occurs when two or more threads of control are blocked, waiting for
+actions that another one of the blocked threads must take.  For example,
+assume that threads A and B have each obtained read locks on object X.
+Now suppose that both threads want to obtain write locks on object X.
+Neither thread can be granted its write lock (because of the other
+thread's read lock).  Both threads block and will never unblock because
+the event for which they are waiting can never happen.])
+
+m4_p([dnl
+The deadlock detector examines all the locks held in the environment,
+and identifies situations where no thread can make forward progress.
+It then selects one of the participants in the deadlock (according to
+the argument that was specified to m4_ref(dbenv_set_lk_detect)), and
+forces it to return the value m4_ref(DB_LOCK_DEADLOCK), which indicates
+that a deadlock occurred.  The thread receiving such an error must
+release all of its locks and undo any incomplete modifications to the
+locked resource.  Locks are typically released, and modifications
+undone, by closing any cursors involved in the operation and aborting
+any transaction enclosing the operation.  The operation may optionally
+be retried.])
+
+m4_p([dnl
+The m4_ref(lock_stat) function returns information about the status of
+the lock subsystem.  It is the programmatic interface used by the
+m4_ref(db_stat) utility.])
+
+m4_p([dnl
+The locking subsystem is closed by the call to m4_ref(dbenv_close).])
+
+m4_p([dnl
+Finally, the entire locking subsystem may be discarded using the
+m4_refT(dbenv_remove).])
+
+include(lock/m4.methods)
+
+m4_page_footer

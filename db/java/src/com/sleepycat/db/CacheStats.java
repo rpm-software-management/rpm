@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -28,9 +27,9 @@ public class CacheStats {
         return st_ncache;
     }
 
-    private int st_regsize;
-    public int getRegSize() {
-        return st_regsize;
+    private int st_max_ncache;
+    public int getMaxNumCache() {
+        return st_max_ncache;
     }
 
     private int st_mmapsize;
@@ -51,6 +50,11 @@ public class CacheStats {
     private int st_maxwrite_sleep;
     public int getMaxWriteSleep() {
         return st_maxwrite_sleep;
+    }
+
+    private int st_pages;
+    public int getPages() {
+        return st_pages;
     }
 
     private int st_map;
@@ -96,11 +100,6 @@ public class CacheStats {
     private int st_page_trickle;
     public int getPageTrickle() {
         return st_page_trickle;
-    }
-
-    private int st_pages;
-    public int getPages() {
-        return st_pages;
     }
 
     private int st_page_clean;
@@ -208,16 +207,22 @@ public class CacheStats {
         return st_io_wait;
     }
 
+    private int st_regsize;
+    public int getRegSize() {
+        return st_regsize;
+    }
+
     public String toString() {
         return "CacheStats:"
             + "\n  st_gbytes=" + st_gbytes
             + "\n  st_bytes=" + st_bytes
             + "\n  st_ncache=" + st_ncache
-            + "\n  st_regsize=" + st_regsize
+            + "\n  st_max_ncache=" + st_max_ncache
             + "\n  st_mmapsize=" + st_mmapsize
             + "\n  st_maxopenfd=" + st_maxopenfd
             + "\n  st_maxwrite=" + st_maxwrite
             + "\n  st_maxwrite_sleep=" + st_maxwrite_sleep
+            + "\n  st_pages=" + st_pages
             + "\n  st_map=" + st_map
             + "\n  st_cache_hit=" + st_cache_hit
             + "\n  st_cache_miss=" + st_cache_miss
@@ -227,7 +232,6 @@ public class CacheStats {
             + "\n  st_ro_evict=" + st_ro_evict
             + "\n  st_rw_evict=" + st_rw_evict
             + "\n  st_page_trickle=" + st_page_trickle
-            + "\n  st_pages=" + st_pages
             + "\n  st_page_clean=" + st_page_clean
             + "\n  st_page_dirty=" + st_page_dirty
             + "\n  st_hash_buckets=" + st_hash_buckets
@@ -249,6 +253,7 @@ public class CacheStats {
             + "\n  st_alloc_pages=" + st_alloc_pages
             + "\n  st_alloc_max_pages=" + st_alloc_max_pages
             + "\n  st_io_wait=" + st_io_wait
+            + "\n  st_regsize=" + st_regsize
             ;
     }
 }

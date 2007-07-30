@@ -1,0 +1,45 @@
+m4_comment([$Id: error.so,v 10.20 2003/10/18 19:16:00 bostic Exp $])
+
+m4_ref_title(Environment, Error support,, env/open, env/db_config)
+
+m4_p([dnl
+m4_db offers programmatic support for displaying error return values.
+The m4_ref(dbenv_strerror) function returns a pointer to the error
+message corresponding to any m4_db error return.  This is similar to the
+ANSI C strerror interface, but can handle both system error returns and
+m4_db-specific return values.])
+
+m4_p([dnl
+For example:])
+
+include(ref/env/error1.cs)
+
+m4_p([dnl
+There are also two additional error methods: m4_ref(dbenv_err) and
+m4_ref(dbenv_errx).  These methods work like the ANSI C printf function,
+taking a printf-style format string and argument list, and writing a
+message constructed from the format string and arguments.])
+
+m4_p([dnl
+The m4_ref(dbenv_err) function appends the standard error string to the
+constructed message; the m4_ref(dbenv_errx) function does not.])
+
+m4_p([dnl
+Error messages can be configured always to include a prefix (for
+example, the program name) using the m4_refT(dbenv_set_errpfx).])
+
+m4_p([dnl
+These functions provide simpler ways of displaying m4_db error messages:])
+
+include(ref/env/error2.cs)
+
+m4_p([dnl
+For example, if the program was called "my_app", and it tried to open
+an environment home directory in "/tmp/home" and the open call returned
+a permission error, the error messages shown would look like this:])
+
+m4_indent([dnl
+my_app: open: /tmp/home: Permission denied.
+my_app: contact your system administrator: session ID was 2])
+
+m4_page_footer

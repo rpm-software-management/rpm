@@ -1,0 +1,34 @@
+m4_comment([$Id: env_dbrename.so,v 11.4 2004/12/16 19:13:05 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(env dbrename, m4_tcl_env_dbrename, [dnl
+env dbrename
+	m4_tcl_arg([-auto_commit])
+	m4_tcl_arg([-txn txnid])
+	m4_tcl_arg([--])
+	file
+	newname
+])
+
+m4_p([dnl
+Rename the m4_db database m4_arg(file) to m4_arg(newname).])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-auto_commit], [dnl
+Enclose the call within a transaction. If the call succeeds, changes
+made by the operation will be recoverable. If the call fails, the
+operation will have made no changes.])
+
+m4_tcl_txnopt(auto)
+
+m4_tagend
+
+m4_tcl_ret_standard(m4_tcl_env_dbrename)
+
+m4_page_footer

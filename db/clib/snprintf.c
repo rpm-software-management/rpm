@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: snprintf.c,v 12.4 2006/08/24 14:45:10 bostic Exp $
+ * $Id: snprintf.c,v 12.7 2007/05/17 15:14:54 bostic Exp $
  */
 
 #include "db_config.h"
@@ -120,7 +119,7 @@ sprintf_overflow()
 	exit(1);
 
 	/* But firm. */
-	abort();
+	__os_abort();
 
 	/* NOTREACHED */
 }

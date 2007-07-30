@@ -1,0 +1,42 @@
+m4_comment([$Id: btstat.so,v 1.12 2003/10/18 19:16:15 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: DB-__GT__stat,,
+    upgrade.3.1/dup, upgrade.3.1/sysmem)
+
+m4_p([dnl
+For Btree database statistics, the m4_refT(dbh_stat) field
+m4_arg(bt_nrecs) has been removed, replaced by two fields:
+m4_arg(bt_nkeys) and m4_arg(bt_ndata).  The m4_arg(bt_nkeys) field returns
+a count of the unique keys in the database.  The m4_arg(bt_ndata) field
+returns a count of the key/data pairs in the database.  Neither exactly
+matches the previous value of the m4_arg(bt_nrecs) field, which returned
+a count of keys in the database, but, in the case of Btree databases,
+could overcount as it sometimes counted duplicate data items as unique
+keys.  The application should be searched for any uses of the
+m4_arg(bt_nrecs) field and the field should be changed to be either
+m4_arg(bt_nkeys) or m4_arg(bt_ndata), whichever is more appropriate.])
+
+m4_p([dnl
+For Hash database statistics, the m4_refT(dbh_stat) field
+m4_arg(hash_nrecs) has been removed, replaced by two fields:
+m4_arg(hash_nkeys) and m4_arg(hash_ndata).  The m4_arg(hash_nkeys) field
+returns a count of the unique keys in the database.  The
+m4_arg(hash_ndata) field returns a count of the key/data pairs in the
+database.  The new m4_arg(hash_nkeys) field exactly matches the previous
+value of the m4_arg(hash_nrecs) field.  The application should be
+searched for any uses of the m4_arg(hash_nrecs) field, and the field
+should be changed to be m4_arg(hash_nkeys).])
+
+m4_p([dnl
+For Queue database statistics, the m4_refT(dbh_stat) field
+m4_arg(qs_nrecs) has been removed, replaced by two fields:
+m4_arg(qs_nkeys) and m4_arg(qs_ndata).  The m4_arg(qs_nkeys) field returns
+a count of the unique keys in the database.  The m4_arg(qs_ndata) field
+returns a count of the key/data pairs in the database.  The new
+m4_arg(qs_nkeys) field exactly matches the previous value of the
+m4_arg(qs_nrecs) field.  The application should be searched for any uses
+of the m4_arg(qs_nrecs) field, and the field should be changed to be
+m4_arg(qs_nkeys).])
+
+m4_page_footer

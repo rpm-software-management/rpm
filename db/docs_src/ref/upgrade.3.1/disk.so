@@ -1,0 +1,26 @@
+m4_comment([$Id: disk.so,v 1.9 2000/12/21 18:37:09 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: upgrade requirements,,
+    upgrade.3.1/logalloc, upgrade.3.2/intro)
+
+m4_p([dnl
+Log file formats and the Btree, Queue, Recno and Hash Access Method
+database formats changed in the m4_db 3.1 release.  (The on-disk
+Btree/Recno format changed from version 7 to version 8.  The on-disk
+Hash format changed from version 6 to version 7.  The on-disk Queue
+format changed from version 1 to version 2.)  Until the underlying
+databases are upgraded, the m4_refT(dbh_open) will return a
+m4_ref(DB_OLD_VERSION) error.])
+
+m4_p([dnl
+An additional flag, m4_ref(DB_DUPSORT), has been added to the
+m4_refT(dbh_upgrade) for this upgrade.   Please review the
+m4_ref(dbh_upgrade) documentation for further information.])
+
+m4_p([dnl
+For further information on upgrading m4_db installations, see
+m4_link(M4RELDIR/ref/upgrade/process, Upgrading m4_db
+installations).])
+
+m4_page_footer

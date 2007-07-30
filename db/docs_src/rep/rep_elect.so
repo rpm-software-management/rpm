@@ -1,0 +1,117 @@
+m4_comment([$Id: rep_elect.so,v 1.26 2007/03/20 20:20:26 alanb Exp $])
+
+define(M4PAGELOCAL, [rep_elect, DB_REP_UNAVAIL])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_elect),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_elect(DB_ENV *env,
+    int nsites, int nvotes, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_elect(int nsites, int nvotes, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(rep_elect) holds an election for the master of a replication
+group.])
+
+m4_repl_lower(rep_elect)
+
+m4_p([dnl
+If the election is successful, m4_db will notify the application of
+the results of the election by means of either the
+m4_ref(DB_EVENT_REP_ELECTED) or m4_ref(DB_EVENT_REP_NEWMASTER) events
+(see m4_refT(dbenv_set_event_notify) for more information).  The
+application is responsible for adjusting its relationship to the other
+database environments in the replication group, including directing
+all database updates to the newly selected master, in accordance with
+the results of the election.])
+
+m4_p([dnl
+The thread of control that calls the m4_refT(rep_elect) must not be the
+thread of control that processes incoming messages; processing the
+incoming messages is necessary to successfully complete an election.])
+
+m4_parambegin
+m4_param(nsites, [dnl
+The m4_arg(nsites) parameter specifies the number of replication sites
+expected to participate in the election.  Once the current site has
+election information from that many sites, it will short-circuit the
+election and immediately cast its vote for a new master. The
+m4_arg(nsites) parameter must be a positive integer, no less than
+m4_arg(nvotes), or 0 if the election should use the value previously set
+using the m4_refT(rep_set_nsites).])
+
+m4_param(nvotes, [dnl
+The m4_arg(nvotes) parameter specifies the minimum number of replication
+sites from which the current site must have election information, before
+the current site will cast a vote for a new master.  The m4_arg(nvotes)
+parameter must be a positive integer and no greater than m4_arg(nsites),
+or 0 if the election should use the value ((m4_arg(nsites) / 2) + 1) as
+the m4_arg(nvotes) argument.])
+
+m4_unusedflags
+m4_paramend
+
+m4_p([dnl
+Elections are done in two parts: first, replication sites collect
+information from the other replication sites they know about, and
+second, replication sites cast their votes for a new master.  The second
+phase is triggered by one of two things: either the replication site
+gets election information from m4_arg(nsites) sites, or the election
+m4_arg(timeout) expires.  Once the second phase is triggered, the
+replication site will cast a vote for the new master of its choice if,
+and only if, the site has election information from at least
+m4_arg(nvotes) sites.  If a site receives m4_arg(nvotes) votes for it
+to become the new master, then it will become the new master.])
+
+m4_p([dnl
+We recommend m4_arg(nvotes) be set to at least:])
+m4_indent([(sites participating in the election / 2) + 1])
+m4_p([dnl
+to ensure there are never more than two masters active at the same time
+even in the case of a network partition.  When a network partitions, the
+side of the partition with more than half the environments will elect a
+new master and continue, while the environments communicating with fewer
+than half of the environments will fail to find a new master, as no site
+can get m4_arg(nvotes) votes.])
+
+m4_p([dnl
+We recommend m4_arg(nsites) be set to:])
+m4_indent([number of sites in the replication group - 1])
+m4_p([dnl
+when choosing a new master after a current master fails.  This allows
+the group to reach a consensus without having to wait for the timeout
+to expire.])
+
+m4_p([dnl
+When choosing a master from among a group of client
+sites all restarting at the same time, it makes more sense to set
+m4_arg(nsites) to the total number of sites in the group, since there is no
+known missing site.  Furthermore, in order to ensure the best choice
+from among sites that may take longer to boot than the local site,
+setting m4_arg(nvotes) also to this same total number of sites will
+guarantee that every site in the group is considered.  Alternatively,
+using the special timeout for full elections allows full participation
+on restart but allows election of a master if one site does not
+reboot and rejoin the group in a reasonable amount of time. (See the
+m4_link(M4RELDIR/ref/rep/elect, [Elections])
+section in the m4_db Reference Guide for more information.)])
+
+m4_p([dnl
+Setting m4_arg(nsites) to lower values can increase the speed of an
+election, but can also result in election failure, and is usually not
+recommended.])
+
+m4_idefz(DB_REP_UNAVAIL)
+m4_err(rep_elect,
+DB_REP_UNAVAIL, [dnl
+The replication group was unable to elect a master, or was unable to
+complete the election in the election timeout period (see
+m4_refT(rep_set_timeout) for more information).])
+
+m4_seealso(Replication)
+m4_page_footer

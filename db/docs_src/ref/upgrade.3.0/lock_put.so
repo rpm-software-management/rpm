@@ -1,0 +1,14 @@
+m4_comment([$Id: lock_put.so,v 11.10 2003/10/18 19:16:13 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: lock_put,, upgrade.3.0/close, upgrade.3.0/lock_detect)
+
+m4_p([dnl
+An argument change has been made in the lock_put function.])
+
+m4_p([dnl
+The application should be searched for any occurrences of lock_put.
+For each one, instead of passing a DB_LOCK variable as the last argument
+to the function, the address of the DB_LOCK variable should be passed.])
+
+m4_page_footer

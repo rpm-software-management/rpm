@@ -1,7 +1,7 @@
 # Automatically built by dist/s_test; may require local editing.
 
 set tclsh_path SET_YOUR_TCLSH_PATH
-set tcllib ./Debug/libdb_tcl45d.dll
+set tcllib ./Debug/libdb_tcl46d.dll
 
 set src_root ..
 set test_path ../test

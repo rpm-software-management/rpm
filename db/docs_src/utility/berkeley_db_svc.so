@@ -1,0 +1,60 @@
+m4_comment([$Id: berkeley_db_svc.so,v 10.17 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, berkeley_db_svc)
+
+m4_util_header(berkeley_db_svc, [dnl
+berkeley_db_svc m4_utilarg([Vv]) m4_utilarg([h home])
+    m4_utilarg([I seconds]) m4_utilarg([L file]) m4_utilarg([t seconds]) m4_utilarg([T seconds])])
+m4_idefz(utility to support @RPC client/server)
+
+m4_p([dnl
+The m4_ref(berkeley_db_svc) utility is the m4_db RPC server.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+
+m4_tagopt(h, [dnl
+Add the specified home directory to the list of allowed home directories
+that can be specified by the client.  The home directory should be an
+absolute pathname.  The last component of each home directory specified
+must be unique because that is how clients specify which database environment
+they want to join.
+m4_p([dnl
+Recovery will be run on each specified environment before the server
+begins accepting requests from clients.  For this reason, only one copy
+of the server program should ever be run at any time because recovery
+must always be single-threaded.])])
+
+m4_tagopt(I, [dnl
+Set the default idle timeout for client environments to the specified
+number of seconds.  The default timeout is 24 hours.])
+
+m4_Lflag(berkeley_db_svc)
+
+m4_tagopt(t, [dnl
+Set the default timeout for client resources (idle transactions and
+cursors) to the specified number of seconds.  When the timeout expires,
+if the resource is a transaction, it is aborted; if the resource is a
+cursor, it is closed.  The default timeout is 5 minutes.])
+
+m4_tagopt(T, [dnl
+Set the maximum timeout allowed for client resources.  The default
+timeout is 20 minutes.  If a client application requests a server
+timeout greater than the maximum timeout set for this server, the
+client's timeout will be capped at the maximum timeout value.])
+
+m4_Vflag
+
+m4_tagopt(v, [Run in verbose mode.])
+
+m4_tagend
+
+m4_utilexit(berkeley_db_svc)
+
+m4_header([Environment Variables])
+
+m4_utilenv(berkeley_db_svc)
+
+m4_page_footer

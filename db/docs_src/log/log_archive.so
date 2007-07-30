@@ -1,0 +1,101 @@
+m4_comment([$Id: log_archive.so,v 10.49 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, log_archive)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_archive),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__log_archive(DB_ENV *env, char *(*listp)__LB____RB__, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::log_archive(char *(*listp)__LB____RB__, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(log_archive) returns an array of log or database filenames.])
+
+m4_p([dnl
+By default, m4_ref(log_archive) returns the names of all of the log
+files that are no longer in use (for example, that are no longer
+involved in active transactions), and that may safely be archived for
+catastrophic recovery and then removed from the system.  If there are
+no filenames to return, the memory location to which m4_arg(listp)
+refers will be set to NULL.])
+
+m4_alloc([Arrays of log filenames])
+
+m4_p([dnl
+Log cursor handles (returned by the m4_refT(log_cursor)) may have open
+file descriptors for log files in the database environment.  Also, the
+m4_db interfaces to the database environment logging subsystem (for
+example, m4_ref(log_put) and m4_ref(txn_abort)) may allocate log cursors
+and have open file descriptors for log files as well.  On operating
+systems where filesystem related system calls (for example, rename and
+unlink on Windows/NT) can fail if a process has an open file descriptor
+for the affected file, attempting to move or remove the log files listed
+by m4_ref(log_archive) may fail.  All m4_db internal use of log cursors
+operates on active log files only and furthermore, is short-lived in
+nature.  So, an application seeing such a failure should be restructured
+to close any open log cursors it may have, and otherwise to retry the
+operation until it succeeds.  (Although the latter is not likely to be
+necessary; it is hard to imagine a reason to move or rename a log file
+in which transactions are being logged or aborted.)])
+
+m4_p([dnl
+See m4_ref(db_archive) for more information on database archival
+procedures.])
+
+m4_underfunc(log_archive, log_archive, db_archive)
+
+m4_return(log_archive, std)
+
+m4_parambegin
+
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_ARCH_ABS), [dnl
+All pathnames are returned as absolute pathnames, instead of relative
+to the database home directory.])
+
+m4_tag(m4_idef(DB_ARCH_DATA), [dnl
+Return the database files that need to be archived in order to recover
+the database from catastrophic failure.  If any of the database files
+have not been accessed during the lifetime of the current log files,
+m4_ref(log_archive) will not include them in this list.  It is also
+possible that some of the files referred to by the log have since been
+deleted from the system.
+m4_p([dnl
+The DB_ARCH_DATA and DB_ARCH_LOG flags are mutually exclusive.])])
+
+m4_tag(m4_idef(DB_ARCH_LOG), [dnl
+Return all the log filenames, regardless of whether or not they are in
+use.
+m4_p([dnl
+The DB_ARCH_DATA and DB_ARCH_LOG flags are mutually exclusive.])])
+
+m4_tag(m4_idef(DB_ARCH_REMOVE), [dnl
+Remove log files that are no longer needed; no filenames are returned.
+Automatic log file removal is likely to make catastrophic recovery
+impossible.
+m4_p([dnl
+The DB_ARCH_REMOVE flag may not be specified with any other
+flag.])])
+
+m4_tagend])
+
+m4_param(listp, [dnl
+The m4_arg(listp) parameter references memory into which the allocated
+array of log or database filenames is copied.  If there are no filenames
+to return, the memory location to which m4_arg(listp) refers will be set
+to NULL.])
+
+m4_paramend
+
+m4_err(log_archive, einval)
+
+m4_seealso(DbLog)
+m4_page_footer

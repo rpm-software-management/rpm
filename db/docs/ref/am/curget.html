@@ -1,6 +1,5 @@
 <!--$Id: curget.so,v 10.20 2003/10/18 19:15:52 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -16,10 +15,10 @@
 </td></tr></table>
 <p>
 <h3 align=center>Retrieving records with a cursor</h3>
-<p>The <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method retrieves records from the database using a cursor.
-The <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method takes a flag which controls how the cursor is
+<p>The <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> method retrieves records from the database using a cursor.
+The <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> method takes a flag which controls how the cursor is
 positioned within the database and returns the key/data item associated
-with that positioning.  Similar to <a href="../../api_c/db_get.html">DB-&gt;get</a>, <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> may
+with that positioning.  Similar to <a href="../../api_c/db_get.html">DB-&gt;get</a>, <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> may
 also take a supplied key and retrieve the data associated with that key
 from the database.  There are several flags that you can set to
 customize retrieval.</p>
@@ -67,7 +66,7 @@ deleted.  The underlying database must be a Queue.
 retrieval. This can enhance performance in threaded applications by
 reducing the chance of deadlock.
 </dl>
-<p>In all cases, the cursor is repositioned by a <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> operation
+<p>In all cases, the cursor is repositioned by a <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> operation
 to point to the newly-returned key/data pair in the database.</p>
 <p>The following is a code example showing a cursor walking through a
 database and displaying the records it contains to the standard
@@ -132,6 +131,6 @@ err:	if (close_dbc && (ret = dbcp-&gt;c_close(dbcp)) != 0)
 }</pre></blockquote>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am/cursor.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/curput.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

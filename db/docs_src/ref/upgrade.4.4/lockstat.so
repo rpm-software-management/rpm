@@ -1,0 +1,15 @@
+m4_comment([$Id: lockstat.so,v 1.4 2005/11/08 02:45:19 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.4: lock statistics,,
+    upgrade.4.4/clear, upgrade.4.4/disk)
+
+m4_p([dnl
+The names of two fields in the lock statistics changed in the m4_db 4.4
+release.  The m4_arg(st_nconflicts) field was renamed to be
+m4_arg(st_lock_wait), and the m4_arg(st_nnowaits) field was renamed to
+be m4_arg(st_lock_nowait).  The meaning of the fields is unchanged
+(although the documentation has been updated to make it clear what these
+fields really represent).])
+
+m4_page_footer

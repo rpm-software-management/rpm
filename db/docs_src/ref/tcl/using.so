@@ -1,0 +1,51 @@
+m4_comment([$Id: using.so,v 11.9 2004/11/03 16:38:07 bostic Exp $])
+
+m4_ref_title(Tcl API,
+    Using m4_db with Tcl, using m4_db with @Tcl, tcl/intro, tcl/program)
+
+m4_p([dnl
+All commands in the m4_db Tcl interface are in the following form:])
+
+m4_indent([command_handle operation options])
+
+m4_p([dnl
+The m4_italic(command handle) is m4_bold(berkdb) or one of the additional
+commands that may be created. The m4_italic(operation) is what you want
+to do to that handle, and the m4_italic(options) apply to the operation.
+Commands that get created on behalf of the application have their own sets
+of operations.  Generally, any calls in DB that result in new object
+handles will translate into a new command handle in Tcl. Then, the user
+can access the operations of the handle via the new Tcl command handle.])
+
+m4_p([dnl
+Newly created commands are named with an abbreviated form of their
+objects, followed by a number. Some created commands are subcommands of
+other created commands and will be the first command, followed by a
+period (.), and then followed by the new subcommand. For example,
+suppose that you have a database already existing called my_data.db.
+The following example shows the commands created when you open the
+database and when you open a cursor:])
+
+m4_indent([dnl
+# First open the database and get a database command handle
+% berkdb open my_data.db
+db0
+#Get some data from that database
+% db0 get my_key
+{{my_key my_data0}{my_key my_data1}}
+#Open a cursor in this database, get a new cursor handle
+% db0 cursor
+db0.c0
+#Get the first data from the cursor
+% db0.c0 get -first
+{{first_key first_data}}])
+
+m4_p([dnl
+All commands in the library support a special option m4_bold(-?) that will
+list the correct operations for a command or the correct options.])
+
+m4_p([dnl
+A list of commands and operations can be found in the
+m4_link(M4RELDIR/api_tcl/api_tcl, Tcl Interface) documentation.])
+
+m4_page_footer

@@ -1,0 +1,17 @@
+m4_comment([$Id: ultrix.so,v 11.6 2003/03/24 13:46:24 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    Ultrix, @Ultrix, build_unix/sunos, build_win/intro)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([Configuration complains that mmap(2) interfaces aren't being used.])
+
+m4_p([dnl
+The m4_manref(mmap, 2) interfaces are not used on Ultrix, even though
+they exist, because they are known to not work correctly.])])
+
+m4_nlistend
+
+m4_page_footer

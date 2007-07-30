@@ -1,0 +1,112 @@
+m4_comment([$Id: intro.so,v 1.26 2007/05/30 08:39:07 alexg Exp $])
+
+m4_ref_title(Building m4_db for VxWorks systems,
+    Building for VxWorks 5.4 and 5.5, @building for VxWorks,
+    build_wince/faq, build_vxworks/notes)
+
+m4_p([dnl
+The build_vxworks directory in the m4_db distribution contains a workspace
+and project files for Tornado 2.0/VxWorks 5.4 and Tornado 2.2/VxWorks 5.5.])
+
+m4_table_begin(, _center)
+m4_table_header(File, Description)
+m4_table_element(_left, BerkeleyDB20.wsp, m4_db Workspace file for Tornado 2.0)
+m4_table_element(_left, BerkeleyDB20.wpj, m4_db Project file for Tornado 2.0)
+m4_table_element(_left, BerkeleyDB22.wsp, m4_db Workspace file for Tornado 2.2)
+m4_table_element(_left, BerkeleyDB22.wpj, m4_db Project file for Tornado 2.2)
+m4_table_element(_left, dbdemo/dbdemo20.wpj, m4_link(M4RELDIR/ref/build_vxworks/notes, Demo program) project file for Tornado 2.0)
+m4_table_element(_left, dbdemo/dbdemo22.wpj, m4_link(M4RELDIR/ref/build_vxworks/notes, Demo program) project file for Tornado 2.2)
+m4_table_element(_left, db_*/*20.wpj, m4_link(M4RELDIR/ref/build_vxworks/notes, Support utilities) project files for Tornado 2.0)
+m4_table_element(_left, db_*/*22.wpj, m4_link(M4RELDIR/ref/build_vxworks/notes, Support utilities) project files for Tornado 2.2)
+m4_table_end
+
+m4_section([Building With Tornado 2.0 or Tornado 2.2])
+m4_p([dnl
+Open the workspace m4_bold(BerkeleyDB20.wsp) or m4_bold(BerkeleyDB22.wsp).
+The list of projects in this workspace will be shown.  These projects
+were created for the x86 BSP for VxWorks.])
+
+m4_p([dnl
+The remainder of this document assumes that you already have a VxWorks
+target and a target server, both up and running.  It also assumes that
+your VxWorks image is configured properly for your needs.  It also
+assumes that you have an acceptable file system already available.
+See m4_link(M4RELDIR/ref/build_vxworks/faq, VxWorks FAQ) for more
+information about file system requirements.
+See m4_link(M4RELDIR/ref/build_vxworks/notes, VxWorks Notes) for more
+information about building a small footprint version of m4_db.])
+
+m4_p([dnl
+First, you need to set the include directories.  To do this, go to the
+m4_italic(Builds) tab for the workspace.  Open up m4_italic(m4_db
+Builds).  You will see several different builds, containing different
+configurations.  All of the projects in the m4_db workspace are created
+to be downloadable applications.])
+
+m4_table_begin(, _center)
+m4_table_header(Build, Description)
+m4_table_element(_left, PENTIUM_debug, x86 BSP with debugging)
+m4_table_element(_left, PENTIUM_release, x86 BSP no debugging)
+m4_table_end
+
+m4_p([dnl
+You have to add a new build specification if you use a
+different BSP, want to add a build for the simulator or
+want to customize further.  For instance, if you have the Power PC (PPC)
+BSP, you need to add a new build for the PPC tool chain.  To do so,
+select the "Builds" tab, select the m4_db project name, and right-click.
+Choose the m4_italic(New Build...) selection and create the new build
+target.  For your new build target, you need to decide whether
+it should be built for
+debugging.  See the properties of the Pentium builds for ways to
+configure for each case.  After you add this build you, you still need
+to configure correctly the include directories, as described in the
+sections that follow.])
+
+m4_p([dnl
+If you are running with a different
+BSP, you should remove the build specifications that do not apply to
+your hardware.  We recommend that you do this after you configure any
+new build specifications first.  The Tornado tools will get confused if
+you have a PENTIUMgnu build specification for a PPC BSP,
+for instance.])
+
+m4_p([dnl
+Select the build you are interested in, and right-click.  Choose the
+m4_italic(Properties...) selection.  At this point, a tabbed dialog
+should appear.  In this new window, choose the m4_italic(C/C++ compiler)
+tab.  In the edit box, you need to modify the full pathname of the
+m4_italic(build_vxworks) subdirectory of m4_db, followed by the full
+pathname of m4_db.  Then, click OK.
+Note that some versions of Tornado (such as the version for Windows)
+do not correctly handle relative pathnames in the include paths.])
+
+m4_p([dnl
+To build and download the m4_db downloadable application for the first time
+requires several steps: ])
+
+m4_nlistbegin
+m4_nlist([dnl
+Select the build you are interested in, and right-click.  Choose the
+m4_italic(Set... as Active Build) selection.])
+m4_nlist([dnl
+Select the build you are interested in, and right-click.  Choose the
+m4_italic(Dependencies...) selection.  Run dependencies over all files
+in the m4_db project.])
+m4_nlist([dnl
+Select the build you are interested in, and right-click.  Choose the
+m4_italic(Rebuild All (m4_db.out)) selection.])
+m4_nlist([dnl
+Select the m4_db project name, and right-click.  Choose the
+m4_italic(Download "m4_db.out") selection.])
+m4_nlistend
+
+m4_p([dnl
+Note that the output file listed about will really be listed as
+m4_italic(BerkeleyDB20.out) or m4_italic(BerkeleyDB22.out)
+depending on which version of Tornado you are running.
+You need to repeat this procedure for all builds you are interested in
+building, as well as for all of the utility project builds you want to
+run.])
+
+m4_page_footer

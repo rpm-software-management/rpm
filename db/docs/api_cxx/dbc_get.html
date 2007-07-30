@@ -1,6 +1,5 @@
-<!--$Id: dbc_get.so,v 10.114 2005/02/10 20:02:31 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: dbc_get.so,v 10.117 2007/05/31 18:52:36 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -151,6 +150,12 @@ later deleted.</p>
 <p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV is set and the cursor is already on the first record
 in the database.
 </p>
+<dt><a name="DB_PREV_DUP">DB_PREV_DUP</a><dd>If the previous key/data pair of the database is a duplicate data record
+for the current key/data pair, the cursor is moved to the previous key/data
+pair of the database, and that pair is returned.
+<p>The Dbc::get method will return <a href="../ref/program/errorret.html#DB_NOTFOUND">DB_NOTFOUND</a> if DB_PREV_DUP is set and the previous key/data pair of the
+database is not a duplicate data record for the current key/data pair.
+</p>
 <dt><a name="DB_PREV_NODUP">DB_PREV_NODUP</a><dd>If the cursor is not yet initialized, DB_PREV_NODUP is identical
 to DB_LAST.  Otherwise, the cursor is moved to the previous
 non-duplicate key of the database, and that key/data pair is returned.
@@ -189,9 +194,10 @@ flag.</p>
 In addition, the following flags may be set by
 bitwise inclusively <b>OR</b>'ing them into the <b>flags</b> parameter:
 <dl compact>
-<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Read modified but not yet committed data.  Silently ignored if the
-<a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when the underlying
-database was opened.
+<dt><a name="DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a><dd>Database items read during a transactional call will have degree 1
+isolation, including modified but not yet committed data.  Silently
+ignored if the <a href="../api_cxx/db_open.html#DB_READ_UNCOMMITTED">DB_READ_UNCOMMITTED</a> flag was not specified when
+the underlying database was opened.
 <dt><a name="DB_MULTIPLE">DB_MULTIPLE</a><dd>Return multiple data items in the <b>data</b> parameter.
 <p>In the case of Btree or Hash databases, duplicate data items for the
 current key, starting at the current cursor position, are entered into
@@ -261,11 +267,12 @@ DB_NEXT_NODUP, DB_SET, DB_SET_RANGE, and
 DB_SET_RECNO options.  The DB_MULTIPLE_KEY flag may not
 be used when accessing databases made into secondary indices using the
 <a href="../api_cxx/db_associate.html">Db::associate</a> method.</p>
-<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the retrieval.
-Setting this flag can eliminate deadlock during a read-modify-write
-cycle by acquiring the write lock during the read part of the cycle so
-that another thread of control acquiring a read lock for the same item,
-in its own read-modify-write cycle, will not result in deadlock.
+<dt><a name="DB_RMW">DB_RMW</a><dd>Acquire write locks instead of read locks when doing the read, if
+locking is configured.  Setting this flag can eliminate deadlock during
+a read-modify-write cycle by acquiring the write lock during the read
+part of the cycle so that another thread of control acquiring a read
+lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
 </dl>
 <dt><b>key</b><dd>The key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
 <dt><b>pkey</b><dd>The secondary index key <a href="../api_cxx/dbt_class.html">Dbt</a> operated on.
@@ -285,8 +292,8 @@ unrolled a committed transaction.
 <dt>DB_SECONDARY_BAD<dd>A secondary index references a nonexistent primary key.
 </dl>
 <dl compact>
-<dt>EINVAL<dd>If the DB_CURRENT or DB_NEXT_DUP flags were specified and
-the cursor has not been initialized;
+<dt>EINVAL<dd>If the DB_CURRENT, DB_NEXT_DUP or DB_PREV_DUP flags
+were specified and the cursor has not been initialized;
 the Dbc::pget method was called with a cursor that does not refer to a
 secondary index; or if an
 invalid flag value or parameter was specified.
@@ -311,6 +318,6 @@ throw a <a href="../api_cxx/lockng_class.html">DbLockNotGrantedException</a> exc
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1995, 1996
@@ -32,7 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: dbreg_rec.c,v 12.17 2006/09/07 20:05:28 bostic Exp $
+ * $Id: dbreg_rec.c,v 12.21 2007/05/17 15:15:07 bostic Exp $
  */
 
 #include "db_config.h"
@@ -224,17 +223,27 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 				 * assigned a fileid to.  Be sure that
 				 * we only close dbps that we opened in
 				 * the recovery code or that were opened
-				 * inside a currently aborting transaction.
+				 * inside a currently aborting transaction
+				 * but not by the recovery code.
 				 */
-				do_rem = F_ISSET(dbp, DB_AM_RECOVER) ||
-				    op == DB_TXN_ABORT;
+				do_rem = F_ISSET(dbp, DB_AM_RECOVER) ?
+				    op != DB_TXN_ABORT : op == DB_TXN_ABORT;
 				MUTEX_UNLOCK(dbenv, dblp->mtx_dbreg);
-				if (op == DB_TXN_ABORT)
-					(void)__dbreg_close_id(dbp,
-					    NULL, DBREG_RCLOSE);
-				else
-					(void)__dbreg_revoke_id(dbp, 0,
-					    DB_LOGFILEID_INVALID);
+				/*
+				 * If we are aborting an open then this
+				 * DBP can only be used in this txn, so
+				 * log it closed.
+				 */
+				if (!F_ISSET(dbp, DB_AM_RECOVER)) {
+					if (op == DB_TXN_ABORT)
+						ret = __dbreg_log_close(dbenv,
+						    dbp->log_filename,
+						    NULL, DBREG_RCLOSE);
+					if (ret == 0)
+						(void)__dbreg_revoke_id(dbp, 0,
+						    DB_LOGFILEID_INVALID);
+					ret = 0;
+				}
 			} else if (dbe->deleted) {
 				MUTEX_UNLOCK(dbenv, dblp->mtx_dbreg);
 				if ((ret = __dbreg_rem_dbentry(
@@ -272,15 +281,11 @@ __dbreg_register_recover(dbenv, dbtp, lsnp, op, info)
 				ret = 0;
 			}
 
-			if (op == DB_TXN_ABORT &&
-			    !F_ISSET(dbp, DB_AM_RECOVER)) {
+			if (op == DB_TXN_ABORT) {
 				if ((t_ret = __db_refresh(dbp,
 				    NULL, DB_NOSYNC, NULL, 0)) != 0 && ret == 0)
 					ret = t_ret;
 			} else {
-				if (op == DB_TXN_APPLY &&
-				    (t_ret = __db_sync(dbp)) != 0 && ret == 0)
-					ret = t_ret;
 				if ((t_ret = __db_close(
 				    dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
 					ret = t_ret;

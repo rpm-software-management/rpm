@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: db_method.c,v 12.23 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_method.c,v 12.40 2007/05/22 00:37:15 ubell Exp $
  */
 
 #include "db_config.h"
@@ -20,7 +19,7 @@
 #include "dbinc/txn.h"
 
 #ifdef HAVE_RPC
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <rpc/rpc.h>
 #endif
 #include "db_server.h"
@@ -31,9 +30,10 @@ static int  __db_get_byteswapped __P((DB *, int *));
 static int  __db_get_dbname __P((DB *, const char **, const char **));
 static DB_ENV *__db_get_env __P((DB *));
 static DB_MPOOLFILE *__db_get_mpf __P((DB *));
+static int  __db_get_multiple __P((DB *));
 static int  __db_get_transactional __P((DB *));
 static int  __db_get_type __P((DB *, DBTYPE *dbtype));
-static int  __db_init __P((DB_ENV *, DB *, u_int32_t));
+static int  __db_init __P((DB *, u_int32_t));
 static int  __db_set_alloc __P((DB *, void *(*)(size_t),
 		void *(*)(void *, size_t), void (*)(void *)));
 static int  __db_set_append_recno __P((DB *, int (*)(DB *, DBT *, db_recno_t)));
@@ -47,6 +47,8 @@ static int  __db_set_feedback __P((DB *, void (*)(DB *, int, int)));
 static void __db_map_flags __P((DB *, u_int32_t *, u_int32_t *));
 static int  __db_get_pagesize __P((DB *, u_int32_t *));
 static int  __db_set_paniccall __P((DB *, void (*)(DB_ENV *, int)));
+static int  __db_set_priority __P((DB *, DB_CACHE_PRIORITY));
+static int  __db_get_priority __P((DB *, DB_CACHE_PRIORITY *));
 static void __db_set_errcall
 	      __P((DB *, void (*)(const DB_ENV *, const char *, const char *)));
 static void __db_get_errfile __P((DB *, FILE **));
@@ -72,10 +74,10 @@ db_create(dbpp, dbenv, flags)
 	DB_ENV *dbenv;
 	u_int32_t flags;
 {
-	DB *dbp;
 	DB_THREAD_INFO *ip;
-	DB_REP *db_rep;
 	int ret;
+
+	ip = NULL;
 
 	/* Check for invalid function flags. */
 	switch (flags) {
@@ -100,27 +102,48 @@ db_create(dbpp, dbenv, flags)
 		return (__db_ferr(dbenv, "db_create", 0));
 	}
 
-	ip = NULL;
 	if (dbenv != NULL)
 		ENV_ENTER(dbenv, ip);
-	/* Allocate the DB. */
-	if ((ret = __os_calloc(dbenv, 1, sizeof(*dbp), &dbp)) != 0) {
-		if (dbenv != NULL)
-			ENV_LEAVE(dbenv, ip);
-		return (ret);
-	}
+	ret = __db_create_internal(dbpp, dbenv, flags);
+	if (dbenv != NULL)
+		ENV_LEAVE(dbenv, ip);
 
-	if ((ret = __db_init(dbenv, dbp, flags)) != 0)
-		goto err;
+	return (ret);
+}
+
+/*
+ * __db_create_internal --
+ *	DB constructor internal routine.
+ *
+ * PUBLIC: int __db_create_internal  __P((DB **, DB_ENV *, u_int32_t));
+ */
+int
+__db_create_internal(dbpp, dbenv, flags)
+	DB **dbpp;
+	DB_ENV *dbenv;
+	u_int32_t flags;
+{
+	DB *dbp;
+	DB_REP *db_rep;
+	int ret;
+
+	*dbpp = NULL;
 
 	/* If we don't have an environment yet, allocate a local one. */
 	if (dbenv == NULL) {
 		if ((ret = db_env_create(&dbenv, 0)) != 0)
-			goto err;
+			return (ret);
 		F_SET(dbenv, DB_ENV_DBLOCAL);
-		ENV_ENTER(dbenv, ip);
 	}
+
+	/* Allocate and initialize the DB handle. */
+	if ((ret = __os_calloc(dbenv, 1, sizeof(*dbp), &dbp)) != 0)
+		goto err;
+
 	dbp->dbenv = dbenv;
+	if ((ret = __db_init(dbp, flags)) != 0)
+		goto err;
+
 	MUTEX_LOCK(dbenv, dbenv->mtx_dblist);
 	++dbenv->db_ref;
 	MUTEX_UNLOCK(dbenv, dbenv->mtx_dblist);
@@ -150,13 +173,15 @@ db_create(dbpp, dbenv, flags)
 	*dbpp = dbp;
 	return (0);
 
-err:	if (dbp->mpf != NULL)
-		(void)__memp_fclose(dbp->mpf, 0);
-	if (dbenv != NULL && F_ISSET(dbenv, DB_ENV_DBLOCAL))
+err:	if (dbp != NULL) {
+		if (dbp->mpf != NULL)
+			(void)__memp_fclose(dbp->mpf, 0);
+		__os_free(dbenv, dbp);
+	}
+
+	if (F_ISSET(dbenv, DB_ENV_DBLOCAL))
 		(void)__env_close(dbenv, 0);
-	__os_free(dbenv, dbp);
-	*dbpp = NULL;
-	ENV_LEAVE(dbenv, ip);
+
 	return (ret);
 }
 
@@ -165,14 +190,13 @@ err:	if (dbp->mpf != NULL)
  *	Initialize a DB structure.
  */
 static int
-__db_init(dbenv, dbp, flags)
-	DB_ENV *dbenv;
+__db_init(dbp, flags)
 	DB *dbp;
 	u_int32_t flags;
 {
 	int ret;
 
-	dbp->lid = DB_LOCK_INVALIDID;
+	dbp->locker = NULL;
 	LOCK_INIT(dbp->handle_lock);
 
 	TAILQ_INIT(&dbp->free_queue);
@@ -192,6 +216,7 @@ __db_init(dbenv, dbp, flags)
 	dbp->dump = __db_dump_pp;
 	dbp->err = __dbh_err;
 	dbp->errx = __dbh_errx;
+	dbp->exists = __db_exists;
 	dbp->fd = __db_fd_pp;
 	dbp->get = __db_get_pp;
 	dbp->get_byteswapped = __db_get_byteswapped;
@@ -205,6 +230,7 @@ __db_init(dbenv, dbp, flags)
 	dbp->get_lorder = __db_get_lorder;
 	dbp->get_mpf = __db_get_mpf;
 	dbp->get_msgfile = __db_get_msgfile;
+	dbp->get_multiple = __db_get_multiple;
 	dbp->get_open_flags = __db_get_open_flags;
 	dbp->get_pagesize = __db_get_pagesize;
 	dbp->get_transactional = __db_get_transactional;
@@ -231,6 +257,8 @@ __db_init(dbenv, dbp, flags)
 	dbp->set_msgfile = __db_set_msgfile;
 	dbp->set_pagesize = __db_set_pagesize;
 	dbp->set_paniccall = __db_set_paniccall;
+	dbp->set_priority = __db_set_priority;
+	dbp->get_priority = __db_get_priority;
 	dbp->stat = __db_stat_pp;
 	dbp->stat_print = __db_stat_print_pp;
 	dbp->sync = __db_sync_pp;
@@ -259,7 +287,7 @@ __db_init(dbenv, dbp, flags)
 	 * RPC specific: must be last, as we replace methods set by the
 	 * access methods.
 	 */
-	if (dbenv != NULL && RPC_ON(dbenv)) {
+	if (RPC_ON(dbp->dbenv)) {
 		__dbcl_dbp_init(dbp);
 		/*
 		 * !!!
@@ -267,11 +295,9 @@ __db_init(dbenv, dbp, flags)
 		 * can't handle that.
 		 */
 		dbp->open = __dbcl_db_open_wrap;
-		if ((ret = __dbcl_db_create(dbp, dbenv, flags)) != 0)
+		if ((ret = __dbcl_db_create(dbp, dbp->dbenv, flags)) != 0)
 			return (ret);
 	}
-#else
-	COMPQUIET(dbenv, NULL);
 #endif
 
 	return (0);
@@ -308,7 +334,7 @@ __dbh_am_chk(dbp, flags)
 
 /*
  * __dbh_err --
- *	Error message, including the standard error string.
+ *	Db.err method.
  */
 static void
 #ifdef STDC_HEADERS
@@ -321,12 +347,13 @@ __dbh_err(dbp, error, fmt, va_alist)
 	va_dcl
 #endif
 {
+	/* Message with error string, to stderr by default. */
 	DB_REAL_ERR(dbp->dbenv, error, DB_ERROR_SET, 1, fmt);
 }
 
 /*
  * __dbh_errx --
- *	Error message.
+ *	Db.errx method.
  */
 static void
 #ifdef STDC_HEADERS
@@ -338,6 +365,7 @@ __dbh_errx(dbp, fmt, va_alist)
 	va_dcl
 #endif
 {
+	/* Message without error string, to stderr by default. */
 	DB_REAL_ERR(dbp->dbenv, 0, DB_ERROR_NOT_SET, 1, fmt);
 }
 
@@ -397,8 +425,31 @@ __db_get_mpf(dbp)
 }
 
 /*
+ * get_multiple --
+ *	Return whether this DB handle references a physical file with multiple
+ *	databases.
+ */
+static int
+__db_get_multiple(dbp)
+	DB *dbp;
+{
+	DB_ILLEGAL_BEFORE_OPEN(dbp, "DB->get_multiple");
+
+	/*
+	 * Only return TRUE if the handle is for the master database, not for
+	 * any subdatabase in the physical file.  If it's a Btree, with the
+	 * subdatabases flag set, and the meta-data page has the right value,
+	 * return TRUE.  (We don't need to check it's a Btree, I suppose, but
+	 * it doesn't hurt.)
+	 */
+	return (dbp->type == DB_BTREE &&
+	    F_ISSET(dbp, DB_AM_SUBDB) &&
+	    dbp->meta_pgno == PGNO_BASE_MD ? 1 : 0);
+}
+
+/*
  * get_transactional --
- *	Get whether this database was created in a transaction.
+ *	Return whether this database was created in a transaction.
  */
 static int
 __db_get_transactional(dbp)
@@ -629,7 +680,9 @@ __db_get_flags(dbp, flagsp)
 		DB_DUP,
 		DB_DUPSORT,
 		DB_ENCRYPT,
+#ifdef HAVE_QUEUE
 		DB_INORDER,
+#endif
 		DB_RECNUM,
 		DB_RENUMBER,
 		DB_REVSPLITOFF,
@@ -851,4 +904,22 @@ __db_set_paniccall(dbp, paniccall)
 	void (*paniccall) __P((DB_ENV *, int));
 {
 	return (__env_set_paniccall(dbp->dbenv, paniccall));
+}
+
+static int
+__db_set_priority(dbp, priority)
+	DB *dbp;
+	DB_CACHE_PRIORITY priority;
+{
+	dbp->priority = priority;
+	return (0);
+}
+
+static int
+__db_get_priority(dbp, priority)
+	DB *dbp;
+	DB_CACHE_PRIORITY *priority;
+{
+	*priority = dbp->priority;
+	return (0);
 }

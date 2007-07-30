@@ -1,6 +1,5 @@
-<!--$Id: db_recover.so,v 10.28 2005/11/01 20:22:28 alanb Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: db_recover.so,v 10.30 2006/10/12 22:09:38 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -16,7 +15,7 @@
 </tr></table>
 <hr size=1 noshade>
 <tt>
-<h3><pre>db_recover [<b>-ceVv</b>] [<b>-h home</b>] [<b>-P password</b>] [<b>-t [[CC]YY]MMDDhhmm[.SS]]</b>]</pre></h3>
+<h3><pre>db_recover [<b>-cefVv</b>] [<b>-h home</b>] [<b>-P password</b>] [<b>-t [[CC]YY]MMDDhhmm[.SS]]</b>]</pre></h3>
 <h3>Description</h3>
 <a name="2"><!--meow--></a>
 <p>The db_recover utility must be run after an unexpected application,
@@ -30,6 +29,8 @@ has run, and all uncommitted transactions will be completely undone.</p>
 will rarely be used unless a DB_CONFIG file is present in the home
 directory.  If a DB_CONFIG file is not present, then the regions will be
 created with default parameter values.
+<dt><b>-f</b><dd>Display a message on the standard output showing the
+percent of recovery completed.
 <dt><b>-h</b><dd>Specify a home directory for the database environment; by
 default, the current working directory is used.
 <dt><b>-P</b><dd>Specify an environment password.  Although Berkeley DB utilities overwrite
@@ -87,6 +88,6 @@ DB_HOME is set, it is used as the path of the database home, as described
 in <a href="../api_c/env_open.html">DB_ENV-&gt;open</a>.
 </dl>
 </tt>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

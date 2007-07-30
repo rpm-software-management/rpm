@@ -1,0 +1,64 @@
+m4_comment([$Id: dbc_set_priority.so,v 1.3 2007/05/22 18:06:05 bostic Exp $])
+
+include(m4/m4.seealso)
+
+ifdef([M4INTERFACE],, [dnl
+define(M4INTERFACE, dbc_set_priority)
+define(M4PAGELOCAL, [dbc_get_priority, dbc_set_priority,
+	DB_PRIORITY_VERY_LOW, DB_PRIORITY_LOW, DB_PRIORITY_DEFAULT,
+	DB_PRIORITY_HIGH, DB_PRIORITY_VERY_HIGH])
+m4_pf_header(m4_ref(dbc_set_priority),
+ifelse(M4API, C_API, [dnl
+int
+DbCursor-__GT__set_priority(DBC *DbCursor, DB_CACHE_PRIORITY priority);
+m4_blank
+int
+DbCursor-__GT__get_priority(DBC *DbCursor, DB_CACHE_PRIORITY *priorityp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Dbc::set_priority(DB_CACHE_PRIORITY priority);
+m4_blank
+int
+Dbc::get_priority(DB_CACHE_PRIORITY *priorityp);
+]))])
+
+m4_p([dnl
+Set the cache priority for pages referenced by the
+ifelse(M4INTERFACE, dbh_set_priority, m4_ref(Db),
+       M4INTERFACE, memp_set_priority, m4_ref(DbMpoolFile), m4_ref(Dbc))
+handle.])
+
+m4_cache_priority_explain(M4INTERFACE)
+
+ifelse(M4INTERFACE, memp_set_priority,[dnl
+m4_p([dnl
+To set the priority for the pages belonging to a particular database,
+call the m4_refT(memp_set_priority) using the m4_ref(DbMpoolFile) handle
+returned by the m4_refT(dbh_get_mpf).])
+
+m4_scope_mpf(memp_set_priority)])
+
+m4_when_any(M4INTERFACE)
+
+m4_return(M4INTERFACE, std)
+
+m4_parambegin
+m4_cache_priority_parameter
+m4_paramend
+
+ifelse(M4INTERFACE, memp_set_priority,
+m4_pf_getter(memp_get_priority,
+cache priority for the file referenced by the m4_ref(DbMpoolFile) handle,,
+priorityp, reference),
+m4_pf_getter(
+ifelse(M4INTERFACE, dbh_set_priority, dbh_get_priority, dbc_get_priority),
+cache priority for pages referenced by the
+ifelse(M4INTERFACE, dbh_set_priority, m4_ref(Db), m4_ref(Dbc))
+handle,, priorityp, reference))
+
+m4_seealso(
+ifelse(M4INTERFACE, dbh_set_priority, Db,
+       M4INTERFACE, memp_set_priority, DbMpool, Dbc))
+
+m4_page_footer

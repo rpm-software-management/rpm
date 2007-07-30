@@ -1,0 +1,37 @@
+m4_comment([$Id: env_strerror.so,v 8.13 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_strerror)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_strerror),
+ifelse(M4API, C_API, [dnl
+char *
+db_strerror(int error);
+])
+ifelse(M4API, CXX_API, [dnl
+static char *
+DbEnv::strerror(int error);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_strerror) returns an error message string corresponding
+to the error number m4_arg(error) parameter.])
+
+m4_p([dnl
+This function is a superset of the m4_ansic_name m4_manref(strerror,
+3) function.  If the error number m4_arg(error) is greater than or
+equal to 0, then the string returned by the system function
+m4_manref(strerror, 3) is returned.  If the error number is less than
+0, an error string appropriate to the corresponding m4_db library error
+is returned. See
+m4_link(M4RELDIR/ref/program/errorret, [Error returns to applications])
+for more information.])
+
+m4_parambegin
+m4_param(error, [dnl
+The m4_arg(error) parameter is the error number for which an error message
+string is wanted.])
+m4_paramend
+
+m4_seealso(DbEnv)
+m4_page_footer

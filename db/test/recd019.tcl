@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: recd019.tcl,v 12.3 2006/08/24 14:46:37 bostic Exp $
+# $Id: recd019.tcl,v 12.5 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	recd019
 # TEST	Test txn id wrap-around and recovery.

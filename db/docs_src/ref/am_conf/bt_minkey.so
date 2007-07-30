@@ -1,0 +1,51 @@
+m4_comment([$Id: bt_minkey.so,v 10.14 2000/03/18 21:43:08 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Minimum keys per page,, am_conf/bt_prefix, am_conf/bt_recnum)
+
+m4_p([dnl
+The number of keys stored on each page affects the size of a Btree and
+how it is maintained.  Therefore, it also affects the retrieval and search
+performance of the tree.  For each Btree, m4_db computes a maximum key
+and data size.  This size is a function of the page size and the fact that
+at least two key/data pairs must fit on any Btree page.  Whenever key or
+data items exceed the calculated size, they are stored on overflow pages
+instead of in the standard Btree leaf pages.])
+
+m4_p([dnl
+Applications may use the m4_refT(dbh_set_bt_minkey) to change the minimum
+number of keys that must fit on a Btree page from two to another value.
+Altering this value in turn alters the on-page maximum size, and can be
+used to force key and data items which would normally be stored in the
+Btree leaf pages onto overflow pages.])
+
+m4_p([dnl
+Some data sets can benefit from this tuning.  For example, consider an
+application using large page sizes, with a data set almost entirely
+consisting of small key and data items, but with a few large items.  By
+setting the minimum number of keys that must fit on a page, the
+application can force the outsized items to be stored on overflow pages.
+That in turn can potentially keep the tree more compact, that is, with
+fewer internal levels to traverse during searches.])
+
+m4_p([dnl
+The following calculation is similar to the one performed by the Btree
+implementation.  (The m4_bold(minimum_keys) value is multiplied by 2
+because each key/data pair requires 2 slots on a Btree page.)])
+
+m4_indent([maximum_size = page_size / (minimum_keys * 2)])
+
+m4_p([dnl
+Using this calculation, if the page size is 8KB and the default
+m4_bold(minimum_keys) value of 2 is used, then any key or data items
+larger than 2KB will be forced to an overflow page.  If an application
+were to specify a m4_bold(minimum_key) value of 100, then any key or data
+items larger than roughly 40 bytes would be forced to overflow pages.])
+
+m4_p([dnl
+It is important to remember that accesses to overflow pages do not perform
+as well as accesses to the standard Btree leaf pages, and so setting the
+value incorrectly can result in overusing overflow pages and decreasing
+the application's overall performance.])
+
+m4_page_footer

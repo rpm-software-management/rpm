@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: crdel_rec.c,v 12.13 2006/08/24 14:45:15 bostic Exp $
+ * $Id: crdel_rec.c,v 12.21 2007/06/13 18:21:30 ubell Exp $
  */
 
 #include "db_config.h"
@@ -40,7 +39,6 @@ __crdel_metasub_recover(dbenv, dbtp, lsnp, op, info)
 	int cmp_p, ret, t_ret;
 
 	pagep = NULL;
-	COMPQUIET(info, NULL);
 	REC_PRINT(__crdel_metasub_print);
 	REC_INTRO(__crdel_metasub_read, 0, 0);
 
@@ -62,7 +60,7 @@ __crdel_metasub_recover(dbenv, dbtp, lsnp, op, info)
 	CHECK_LSN(dbenv, op, cmp_p, &LSN(pagep), &argp->lsn);
 
 	if (cmp_p == 0 && DB_REDO(op)) {
-		REC_DIRTY(mpf, &pagep);
+		REC_DIRTY(mpf, file_dbp->priority, &pagep);
 		memcpy(pagep, argp->page.data, argp->page.size);
 		LSN(pagep) = *lsnp;
 
@@ -73,8 +71,8 @@ __crdel_metasub_recover(dbenv, dbtp, lsnp, op, info)
 		 */
 		if (F_ISSET(file_dbp, DB_AM_INMEM) &&
 		    argp->pgno == PGNO_BASE_MD &&
-		    (ret = __db_meta_setup(file_dbp->dbenv,
-		    file_dbp, file_dbp->dname, (DBMETA *)pagep, 0, 1)) != 0)
+		    (ret = __db_meta_setup(file_dbp->dbenv, file_dbp,
+		    file_dbp->dname, (DBMETA *)pagep, 0, DB_CHK_META)) != 0)
 			goto out;
 	} else if (DB_UNDO(op)) {
 		/*
@@ -89,14 +87,15 @@ __crdel_metasub_recover(dbenv, dbtp, lsnp, op, info)
 		 * freed.  Opening the subdb will have reinitialized the
 		 * page, but not the lsn.
 		 */
-		REC_DIRTY(mpf, &pagep);
+		REC_DIRTY(mpf, file_dbp->priority, &pagep);
 		LSN(pagep) = argp->lsn;
 	}
 
 done:	*lsnp = argp->prev_lsn;
 	ret = 0;
 
-out:	if (pagep != NULL && (t_ret = __memp_fput(mpf, pagep, 0)) != 0 &&
+out:	if (pagep != NULL &&
+	     (t_ret = __memp_fput(mpf, pagep, file_dbp->priority)) != 0 &&
 	    ret == 0)
 		ret = t_ret;
 
@@ -144,7 +143,7 @@ __crdel_inmem_create_recover(dbenv, dbtp, lsnp, op, info)
 		 * tmp file.
 		 */
 		if (ret != 0) {
-			if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+			if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
 				goto out;
 
 			F_SET(dbp, DB_AM_RECOVER | DB_AM_INMEM);
@@ -167,14 +166,14 @@ __crdel_inmem_create_recover(dbenv, dbtp, lsnp, op, info)
 			goto out;
 		dbp->preserve_fid = 1;
 		MAKE_INMEM(dbp);
-		if ((ret = __db_dbenv_setup(dbp,
+		if ((ret = __db_env_setup(dbp,
 		    NULL, NULL, argp->name.data, TXN_INVALID, 0)) != 0)
 			goto out;
-		ret = __db_dbenv_mpool(dbp, argp->name.data, 0);
+		ret = __db_env_mpool(dbp, argp->name.data, 0);
 
 		if (ret == ENOENT) {
 			dbp->pgsize = argp->pgsize;
-			if ((ret = __db_dbenv_mpool(dbp,
+			if ((ret = __db_env_mpool(dbp,
 			    argp->name.data, DB_CREATE)) != 0)
 				goto out;
 		} else if (ret != 0)
@@ -196,9 +195,8 @@ __crdel_inmem_create_recover(dbenv, dbtp, lsnp, op, info)
 
 out:	if (dbp != NULL) {
 		t_ret = 0;
-		if (DB_UNDO(op))
-			t_ret = __db_refresh(dbp, NULL, DB_NOSYNC, NULL, 0);
-		else if (do_close || ret != 0)
+
+		if (do_close || ret != 0)
 			t_ret = __db_close(dbp, NULL, DB_NOSYNC);
 		if (t_ret != 0 && ret == 0)
 			ret = t_ret;

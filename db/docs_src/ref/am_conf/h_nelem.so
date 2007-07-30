@@ -1,0 +1,20 @@
+m4_comment([$Id: h_nelem.so,v 10.12 2000/03/18 21:43:08 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Hash table size, @hash table size, am_conf/h_hash, am_conf/recno)
+
+m4_p([dnl
+When setting up the hash database, knowing the expected number of elements
+that will be stored in the hash table is useful.  This value can be used
+by the Hash access method implementation to more accurately construct the
+necessary number of buckets that the database will eventually require.])
+
+m4_p([dnl
+The anticipated number of elements in the hash table can be specified by
+calling the m4_refT(dbh_set_h_nelem).  If not specified, or set too low,
+hash tables will expand gracefully as keys are entered, although a slight
+performance degradation may be noticed.  In order for the estimated number
+of elements to be a useful value to m4_db, the m4_refT(dbh_set_h_ffactor)
+must also be called to set the page fill factor.])
+
+m4_page_footer

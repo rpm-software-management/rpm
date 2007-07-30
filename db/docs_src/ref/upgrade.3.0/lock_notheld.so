@@ -1,0 +1,14 @@
+m4_comment([$Id: lock_notheld.so,v 11.8 2001/07/26 18:35:51 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: DB_LOCK_NOTHELD,, upgrade.3.0/rmw, upgrade.3.0/eagain)
+
+m4_p([dnl
+Historically, the m4_db lock_put and lock_vec interfaces could return
+the DB_LOCK_NOTHELD error to indicate that a lock could not be released
+as it was held by another locker.  This error can no longer be returned
+under any circumstances.  The application should be searched for any
+occurrences of DB_LOCK_NOTHELD.  For each of these, the test and any
+error processing should be removed.])
+
+m4_page_footer

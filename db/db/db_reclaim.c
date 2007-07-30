@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_reclaim.c,v 12.8 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_reclaim.c,v 12.11 2007/05/17 15:14:56 bostic Exp $
  */
 
 #include "db_config.h"
@@ -52,7 +51,7 @@ __db_traverse_big(dbp, pgno, txn, callback, cookie)
 			pgno = PGNO_INVALID;
 		if ((ret = callback(dbp, p, cookie, &did_put)) == 0 &&
 		    !did_put)
-			ret = __memp_fput(mpf, p, 0);
+			ret = __memp_fput(mpf, p, dbp->priority);
 	} while (ret == 0 && pgno != PGNO_INVALID);
 
 	return (ret);
@@ -139,7 +138,8 @@ __db_truncate_callback(dbp, p, cookie, putp)
 		}
 		break;
 	case P_OVERFLOW:
-		if ((ret = __memp_dirty(mpf, &p, param->dbc->txn, 0)) != 0)
+		if ((ret = __memp_dirty(mpf,
+		    &p, param->dbc->txn, param->dbc->priority, 0)) != 0)
 			return (ret);
 		if (DBC_LOGGING(param->dbc)) {
 			if ((ret = __db_ovref_log(dbp, param->dbc->txn,
@@ -198,8 +198,8 @@ __db_truncate_callback(dbp, p, cookie, putp)
 		if (PREV_PGNO(p) == PGNO_INVALID) {
 			type = P_HASH;
 
-reinit:			if ((ret =
-			    __memp_dirty(mpf, &p, param->dbc->txn, 0)) != 0)
+reinit:			if ((ret = __memp_dirty(mpf,
+			    &p, param->dbc->txn, param->dbc->priority, 0)) != 0)
 				return (ret);
 			*putp = 0;
 			if (DBC_LOGGING(param->dbc)) {
@@ -229,7 +229,7 @@ reinit:			if ((ret =
 		if ((ret = __db_free(param->dbc, p)) != 0)
 			return (ret);
 	} else {
-		if ((ret = __memp_fput(mpf, p, 0)) != 0)
+		if ((ret = __memp_fput(mpf, p, dbp->priority)) != 0)
 			return (ret);
 		*putp = 1;
 	}

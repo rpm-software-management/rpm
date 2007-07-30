@@ -1,0 +1,59 @@
+m4_comment([$Id: re_source.so,v 10.16 2003/10/18 19:15:55 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Flat-text backing files,
+    @text backing files, am_conf/extentsize, am_conf/renumber)
+
+m4_p([dnl
+It is possible to back any Recno database (either fixed or variable
+length) with a flat-text source file.  This provides fast read (and
+potentially write) access to databases that are normally created and
+stored as flat-text files.  The backing source file may be specified by
+calling the m4_refT(dbh_set_re_source).])
+
+m4_p([dnl
+The backing source file will be read to initialize the database.  In the
+case of variable length records, the records are assumed to be separated
+as described for the m4_refT(dbh_set_re_delim).  For example, standard
+UNIX byte stream files can be interpreted as a sequence of variable
+length records separated by ASCII newline characters.  This is the
+default.])
+
+m4_p([dnl
+When cached data would normally be written back to the underlying
+database file (for example, when the m4_ref(dbh_close) or
+m4_refT(dbh_sync)s are called), the in-memory copy of the database will
+be written back to the backing source file.])
+
+m4_p([dnl
+The backing source file must already exist (but may be zero-length) when
+m4_ref(dbh_open) is called.  By default, the backing source file is read
+lazily, that is, records are not read from the backing source file until
+they are requested by the application. If multiple processes (not
+threads) are accessing a Recno database concurrently and either
+inserting or deleting records, the backing source file must be read in
+its entirety before more than a single process accesses the database,
+and only that process should specify the backing source file as part of
+the m4_ref(dbh_open) call.  This can be accomplished by calling the
+m4_refT(dbh_set_flags) with the m4_ref(DB_SNAPSHOT) flag.])
+
+m4_p([dnl
+Reading and writing the backing source file cannot be transactionally
+protected because it involves filesystem operations that are not part of
+the m4_db transaction methodology. For this reason, if a temporary
+database is used to hold the records (a NULL was specified as the file
+argument to m4_ref(dbh_open)), m4_bold([it is possible to lose the
+contents of the backing source file if the system crashes at the right
+instant]). If a permanent file is used to hold the database (a filename
+was specified as the file argument to m4_ref(dbh_open)), normal database
+recovery on that file can be used to prevent information loss.  It is
+still possible that the contents of the backing source file itself will
+be corrupted or lost if the system crashes.])
+
+m4_p([dnl
+For all of the above reasons, the backing source file is generally used
+to specify databases that are read-only for m4_db applications, and that
+are either generated on the fly by software tools, or modified using a
+different mechanism such as a text editor.])
+
+m4_page_footer

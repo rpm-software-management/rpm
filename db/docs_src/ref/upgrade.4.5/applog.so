@@ -1,0 +1,25 @@
+m4_comment([$Id: applog.so,v 1.1 2006/09/13 16:43:03 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.5: Application-specific logging,,
+    upgrade.4.5/source, upgrade.4.5/disk)
+
+m4_p([dnl
+In previous releases of m4_db, "BEGIN" lines in the XXX.src files used
+to build application-specific logging support only required a log record
+number.  In the 4.5 release, those lines require a m4_db library version
+as well.  For example, the entry:])
+
+m4_indent([BEGIN mdkir 10000])
+
+m4_p([must now be:])
+
+m4_indent([BEGIN mdkir 44 10000])
+
+m4_p([dnl
+that is, the version of the m4_db release where the log record was
+introduced must be included.  The version is the major and minor numbers
+for the m4_db library, with all punctuation removed.  For example, m4_db
+version 4.2 should be 42, version 4.5 should be 45.])
+
+m4_page_footer

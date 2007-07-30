@@ -1,0 +1,45 @@
+m4_comment([$Id: db_printlog.so,v 10.16 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_printlog)
+
+m4_util_header(db_printlog, [dnl
+db_printlog m4_utilarg(NrV) m4_utilarg([b start-LSN]) m4_utilarg([e stop-LSN]) m4_utilarg([h home]) m4_utilarg([P password])])
+m4_idefz(utility to display @log files as text)
+
+m4_p([dnl
+The m4_ref(db_printlog) utility is a debugging utility that dumps m4_db
+log files in a human-readable format.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+m4_tagopt(b, [dnl
+Display log records starting at log sequence number (LSN) m4_arg(start-LSN);
+m4_arg(start-LSN) is specified as a file number, followed by a slash (/)
+character, followed by an offset number, with no intervening whitespace.])
+m4_tagopt(e, [dnl
+Stop displaying log records at log sequence number (LSN) m4_arg(stop-LSN);
+m4_arg(stop-LSN) is specified as a file number, followed by a slash (/)
+character, followed by an offset number, with no intervening whitespace.])
+m4_hflag
+m4_Nflag
+m4_Pflag
+m4_tagopt(r, [Read the log files in reverse order.])
+m4_Vflag
+m4_tagend
+
+m4_p([dnl
+For more information on the m4_ref(db_printlog) output and using it to
+debug applications, see m4_link(M4RELDIR/ref/debug/printlog, Reviewing
+m4_db log files).])
+
+m4_detach(db_printlog, uses)
+
+m4_utilexit(db_printlog)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_printlog)
+
+m4_page_footer

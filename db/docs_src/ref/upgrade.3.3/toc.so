@@ -1,0 +1,21 @@
+m4_comment([$Id: toc.so,v 1.14 2006/10/02 15:56:37 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 3.2 applications to m4_db 3.3,
+    Upgrading to release 3.3,,)
+
+m4_nlistbegin
+m4_nlist([m4_link(intro, [Release 3.3: introduction])])
+m4_nlistns([m4_link(rpc, [Release 3.3: DB_ENV-__GT__set_server])])
+m4_nlistns([m4_link(gettype, [Release 3.3: DB-__GT__get_type])])
+m4_nlistns([m4_link(getswap, [Release 3.3: DB-__GT__get_byteswapped])])
+m4_nlistns([m4_link(alloc, [Release 3.3: DB-__GT__set_malloc, DB-__GT__set_realloc])])
+m4_nlistns([m4_link(conflict, [Release 3.3: DB_LOCK_CONFLICT])])
+m4_nlistns([m4_link(memp_fget, [Release 3.3: memp_fget, EIO])])
+m4_nlistns([m4_link(txn_prepare, [Release 3.3: txn_prepare])])
+m4_nlistns([m4_link(shared, [Release 3.3: --enable-dynamic, --enable-shared])])
+m4_nlistns([m4_link(bigfile, [Release 3.3: --disable-bigfile])])
+m4_nlistns([m4_link(disk, [Release 3.3: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

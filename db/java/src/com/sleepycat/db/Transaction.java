@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: Transaction.java,v 12.4 2006/08/24 14:46:09 bostic Exp $
+ * $Id: Transaction.java,v 12.7 2007/05/17 15:15:41 bostic Exp $
  */
 
 package com.sleepycat.db;
@@ -41,6 +40,12 @@ public class Transaction {
         throws DatabaseException {
 
         txn.commit(DbConstants.DB_TXN_NOSYNC);
+    }
+
+    public void commitWriteNoSync()
+        throws DatabaseException {
+
+        txn.commit(DbConstants.DB_TXN_WRITE_NOSYNC);
     }
 
     public void discard()

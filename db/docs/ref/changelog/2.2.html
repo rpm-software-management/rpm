@@ -1,0 +1,348 @@
+<!--"$Id: 2.2.html,v 1.4 2007/05/17 18:17:17 bostic Exp $ (Sleepycat) $Date: 2007/05/17 18:17:17 $"-->
+<html>
+<head>
+<title>The Berkeley DB Package: Interface Changes introduced in DB 2.2.0</title>
+<meta name="description" content="DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Interface Changes introduced in DB 2.2.0:</h3>
+
+<ol>
+
+<li>
+In DB 2.2.0, the handles returned by the DB subsystems, for example, the
+db_appinit() function's DB_ENV, and the db_open() function's DB, are
+free-threaded.  If you specify the DB_THREAD flag to each subsystem, or
+globally using db_appinit(), you can then use the returned handle
+concurrently in any number of threads.
+
+<p>
+There are some important caveats for using DB handles concurrently in
+multiple threads:
+
+<p><ol type=a>
+<li>
+The DB_THREAD flag must be specified for all subsystems either explicitly
+by calling the subsystems open() function, or via the db_appinit()
+function.  Setting the DB_THREAD flag inconsistently may result in
+database corruption.
+
+<p><li>
+Spinlocks must have be implemented for the compiler/architecture
+combination.  Attempting to specify the DB_THREAD flag will fail with an
+EINVAL error if spinlocks are not available.
+
+<p><li>
+Only a single thread may call the close function for a returned database
+or subsystem handle.  See
+db_open(3)
+and the appropriate subsystem manual pages for more information.
+
+<p><li>
+Either the DB_DBT_MALLOC or DB_DBT_USERMEM flags must be set in a DBT used
+for key or data retrieval.  See
+db_open(3)
+for more information.
+
+<p><li>
+The DB_CURRENT, DB_NEXT and DB_PREV flags to the log_get() function may
+not be used by a free-threaded handle.  If such calls are necessary, a
+thread should explicitly create a unique DB_LOG handle by calling log_open().
+See
+db_log(3)
+for more information.
+
+<p><li>
+Each database operation (that is, any call to a function underlying the
+handles returned by db_open() and db_cursor()) is normally performed on
+behalf of a locker associated with the handle.  If, within a single
+thread of control, multiple calls on behalf of the same locker are
+desired, then transactions must be used.  See db(3) for more
+information.
+
+<p><li>
+Transactions may not span threads, that is, each transaction must begin
+and end in the same thread, and each transaction may only be used by a
+single thread.
+
+</ol>
+
+<p>
+See
+db(3)
+and
+db_appinit(3)
+for more information on using DB in the context of threads.
+
+<p><li>
+We've added spinlock support for OSF/1, HP, Solaris and UTS4, in all cases
+for the native compiler/architecture combination.  In the case of Solaris,
+this means that all DB applications must be loaded using the <b>-lthread</b>
+library.
+
+<p><li>
+We've added a C++ API for DB.
+<font color=red>
+There are not yet any manual pages for the C++ API, and the interface is
+going to change!
+</font>
+Please feel free to browse and send us comments, but please remember
+that the C++ interface is going to be different in the next release.
+<p>
+The C++ files and directories in the source distribution are:
+<p>
+<table border>
+<tr>
+<td>db/cxx/</td>
+<td>C++ API</td>
+</tr><tr>
+<td>db/examples_cxx/</td>
+<td>The example programs recoded in C++.</td>
+</tr><tr>
+<td>db/include/cxx_int.h</td>
+<td>Internal C++ include file.</td>
+</tr><tr>
+<td>db/include/db_cxx.h</td>
+<td>External C++ include file.</td>
+</tr>
+</table>
+<p>
+C++ support is automatically built on Win32.  To configure it under UNIX,
+specify <b>--enable-cxx</b> as a configuration argument (see the file
+<b>db/build.unix/README</b> for more information).
+
+<p><li>
+The functionality previously embodied in some of the support utilities
+(db_archive(1),
+db_checkpoint(1),
+db_deadlock(1),
+and
+db_recover(1))
+is now available through the DB API as well.
+<p>
+<table border>
+<tr>
+<td><h3>Utility</h3></td>
+<td><h3>Underlying API support:</h3></td>
+</tr>
+<tr>
+<td>db_archive(1)</td>
+<td>Log archival.  See the log_archive() function in
+db_log(3)
+</td>
+</tr><tr>
+<td>db_checkpoint(1)</td>
+<td>Transaction checkpoint.  See the txn_checkpoint() function in
+db_txn(3).
+</td>
+</tr><tr>
+<td>db_deadlock(1)</td>
+<td>Deadlock detection.  See the lock_detect() function in
+db_lock(3).
+</td>
+</tr><tr>
+<td>db_recover(1)</td>
+<td>Database recovery.  See the DB_RECOVER and DB_RECOVER_FATAL flags for
+the db_appinit() function in
+db_appinit(3).
+</td>
+</tr>
+</table>
+
+<p><li>
+We've added a new default hashing function, __ham_func5(), written by
+Glenn Fowler, Landon Curt Noll and Phong Vo, and integrated into DB by
+Ariel Faigon of SGI.  We've also deleted the previous supplied function
+__ham_func1().
+<p>
+<font color=red>
+This change is NOT transparent to applications.
+</font>
+We incremented the hash access method database version number, and the
+new hash function will only be used in newly created databases, which
+means that applications written using version DB 2.2.0 and greater will
+be able to share databases with applications written using previous
+versions of DB with a major number of 2.
+
+<p>
+However, we now use the __ham_func5() hash function internally, in the
+log and lock subsystems, which means that applications written using
+version DB 2.2.0 and greater will NOT be able to share database
+environments, or read log files, written using previous versions of DB.
+
+<p><li>
+The interfaces that DB uses to export statistics have been enhanced and,
+in one case, modified:
+
+<p><ol type=a>
+<li>
+DB 2.2 exports statistical information via the DB handle for the access
+methods.  Currently, the only access method for which this information is
+available is B+tree.  See the dbp-&gt;db_stat() function in the
+db_open(3)
+manual page for more information.
+
+<p><li>
+DB 2.2 exports statistical information for the transaction region via a
+new function, txn_stat().  See
+db_txn(3)
+for more information.
+
+<p><li>
+The
+db_stat(1)
+utility has two new options.  The <b>-d</b> flag permits users to display
+the access method statistics.  The <b>-t</b> flag permits users to display
+the transaction region statistics.
+
+<p><li>
+The interface for shared memory buffer pool statistics in DB 2.2 has been
+revised to make it consistent with the interfaces provided for the
+transaction region and access methods.
+<font color=red>
+This change is NOT transparent to applications.
+</font>
+See
+db_mpool(3)
+for more information.
+</ol>
+
+<p><li>
+The interface to the shared memory buffer pool has been extended in DB
+2.2 to permit applications to control the maximum size of read-only files
+that will be mapped into the application's address space instead of being
+read through the memory pool cache.  See the DB_NOMMAP flag to the
+memp_open() function and the mp_mmapsize field in the DB_ENV structure,
+as described in
+db_mpool(3).
+
+<p><li>
+The interface to the transaction subsystem has been extended in DB 2.2 to
+permit applications to specify that the log is not to be synchronously
+flushed on transaction commit.  This potentially provides a significant
+performance improvement for applications that do not require database
+durability.  See the DB_TXN_NOSYNC flag to the txn_open() function, as
+described in
+db_txn(3).
+
+<p><li>
+There have been several changes to the process of creating a DB environment:
+
+<p><ol type=a>
+<li>
+By default, when a lock is unavailable to a DB thread (or process), the
+thread/process is put to sleep for a period of time, permitting other
+threads/processes to run.  This may not be optimal in the presence of
+multiple threads in a single process.  The DB_ENV structure has been
+extended to permit applications to specify a ``yield'' function, which is
+called when a DB thread has requested a lock which is unavailable.  See
+db_appinit(3)
+for more information.
+
+<p><li>
+In previous versions of DB, the DB_CREATE flag was implied by calling the
+db_appinit() function, that is, initializing the environment implied that
+the application wanted to create the environment if it did not already
+exist.  This version of DB no longer supports this semantic, and the
+DB_CREATE must be explicitly specified to db_appinit() if the application
+wants to create the DB environment.
+<font color=red>
+This change is NOT transparent to applications.
+</font>
+
+<p><li>
+The flags that may be specified when creating the DB environment have been
+extended in DB 2.2 to allow the specification of the DB_MPOOL_PRIVATE flag,
+which was previously supported only by the underlying memory pool subsystem.
+<p>
+The flags that may be specified when creating the DB environment have been
+extended in DB 2.2 to provide new functionality: the list of new flags
+includes DB_NOMMAP, DB_THREAD and DB_TXN_NOSYNC.
+
+<p><li>
+The DB_DATA_DIR configuration argument to the db_appinit() function is
+now additive, permitting applications to specify multiple directories in
+which to
+search for database files.  If multiple paths are specified, created data
+files will always be created in the <b>first</b> directory specified.
+
+<p><li>
+The db_errbuf field of the DB_ENV structure has been deleted from the
+current release.  In its place, we have added the db_errcall field, which
+specifies a function which is called with the information previously found
+in the db_errbuf buffer.
+<font color=red>
+This change is NOT transparent to applications.
+</font>
+
+<p><li>
+The default temporary file location list (used when no DB_TMP_DIR
+configuration argument was specified) has been extended to include any
+directory specified by the <b>TempFolder</b> environment variable, if it
+exists.
+
+</ol>
+
+<p>
+In all cases, see
+db_appinit(3)
+for more information.
+
+<p><li>
+There have been several changes to the logging subsystem:
+
+<p><ol type=a>
+<li>
+The log_get() and log_put() functions now support the
+standard DBT flags described by the
+db_open(3)
+manual page.
+
+<p><li>
+The interface to the log_flush() function has been extended to
+flush the entire log if a NULL LSN is specified.  See
+db_log(3)
+for more information.
+
+<p><li>
+The interface to the log_file() function has been changed in DB 2.2
+to eliminate the need for the library to return allocated memory
+that may never be freed.
+<font color=red>
+This change is NOT transparent to applications.
+</font>
+See
+db_log(3)
+for more information.
+
+<p><li>
+The
+db_checkpoint(1)
+and
+db_deadlock(1)
+utilities have a new option, <b>-L</b>, in DB 2.2 to optionally log their
+process ID to a file.  If they exit gracefully, or if they receive a
+SIGINT signal, the log file is removed before they exit.
+
+</ol>
+
+<p><li>
+There have been a couple of changes to the source code layout other
+than those specified above:
+
+<p><ol type=a>
+<li>
+Operating system specific functionality is separated out in DB 2.2 into
+a separate subdirectory in the source code, <b>db/os</b>.
+
+<p><li>
+All of the include files in DB 2.2 have been moved into a single
+subdirectory, <b>db/include</b>, as part of the work to port DB to MacOS.
+
+</ol>
+
+</ol>
+</body>
+</html>

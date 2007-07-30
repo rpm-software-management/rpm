@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2005,2007 Oracle.  All rights reserved.
  *
- * $Id: csv.h,v 1.15 2006/08/24 14:45:43 bostic Exp $
+ * $Id: csv.h,v 1.18 2007/05/17 17:26:05 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -17,7 +16,7 @@
 #include <string.h>
 
 #ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN	1
+#define	WIN32_LEAN_AND_MEAN	1
 
 #include <direct.h>
 #include <db.h>
@@ -95,8 +94,8 @@ extern char	 *progname;			/* Program name */
 extern int	  verbose;			/* Program verbosity */
 #ifdef _WIN32
 #undef strcasecmp
-#define strcasecmp _stricmp
+#define	strcasecmp _stricmp
 #undef strncasecmp
-#define strncasecmp _strnicmp
-#define mkdir(d, perm) _mkdir(d)
+#define	strncasecmp _strnicmp
+#define	mkdir(d, perm) _mkdir(d)
 #endif

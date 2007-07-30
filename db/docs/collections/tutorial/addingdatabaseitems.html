@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>
 		Adding Database Items
 	</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Berkeley DB Collections Tutorial" />
-    <link rel="up" href="BasicProgram.html" title="Chapter 2. &#10;&#9;&#9;The Basic Program&#10;&#9;" />
+    <link rel="up" href="BasicProgram.html" title="ChapterÂ 2.Â &#10;&#9;&#9;The Basic Program&#10;&#9;" />
     <link rel="previous" href="usingtransactions.html" title="&#10;&#9;&#9;Using Transactions&#10;&#9;" />
     <link rel="next" href="retrievingdatabaseitems.html" title="&#10;&#9;&#9;Retrieving Database Items&#10;&#9;" />
   </head>
@@ -22,11 +22,11 @@
 	</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="usingtransactions.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. 
+          <td width="20%" align="left"><a accesskey="p" href="usingtransactions.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â 
 		The Basic Program
 	</th>
-          <td width="20%" align="right"> <a accesskey="n" href="retrievingdatabaseitems.html">Next</a></td>
+          <td width="20%" align="right">Â <a accesskey="n" href="retrievingdatabaseitems.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -46,10 +46,10 @@
     Adding (as well as updating, removing, and deleting) information
 	in the database is accomplished via the standard Java collections
 	API. In the example, the 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#put" target="_top">Map.put</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#put" target="_top">Map.put</a>
     
 	method is used to add objects. All standard Java methods for
-    modifying a collection may be used with the  Java Collections API.
+    modifying a collection may be used with the DB Java Collections API.
 </p>
       <p>
     The <tt class="methodname">PopulateDatabase.doWork()</tt> method calls private methods
@@ -96,7 +96,7 @@ public class Sample
     The <tt class="methodname">addSuppliers()</tt>, <tt class="methodname">addParts()</tt> and <tt class="methodname">addShipments()</tt>
 	methods add objects to the Suppliers, Parts and Shipments stores.
 	The 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html" target="_top">Map</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html" target="_top">Map</a>
     
 	for each store is obtained from the <tt class="classname">SampleViews</tt> object.
 </p>
@@ -106,17 +106,17 @@ public class Sample
 <b class="userinput"><tt>        Map suppliers = views.getSupplierMap();
         if (suppliers.isEmpty())
         {
-            System.out.println(&quot;Adding Suppliers&quot;);
-            suppliers.put(new SupplierKey(&quot;S1&quot;),
-                          new SupplierData(&quot;Smith&quot;, 20, &quot;London&quot;));
-            suppliers.put(new SupplierKey(&quot;S2&quot;),
-                          new SupplierData(&quot;Jones&quot;, 10, &quot;Paris&quot;));
-            suppliers.put(new SupplierKey(&quot;S3&quot;),
-                          new SupplierData(&quot;Blake&quot;, 30, &quot;Paris&quot;));
-            suppliers.put(new SupplierKey(&quot;S4&quot;),
-                          new SupplierData(&quot;Clark&quot;, 20, &quot;London&quot;));
-            suppliers.put(new SupplierKey(&quot;S5&quot;),
-                          new SupplierData(&quot;Adams&quot;, 30, &quot;Athens&quot;));
+            System.out.println("Adding Suppliers");
+            suppliers.put(new SupplierKey("S1"),
+                          new SupplierData("Smith", 20, "London"));
+            suppliers.put(new SupplierKey("S2"),
+                          new SupplierData("Jones", 10, "Paris"));
+            suppliers.put(new SupplierKey("S3"),
+                          new SupplierData("Blake", 30, "Paris"));
+            suppliers.put(new SupplierKey("S4"),
+                          new SupplierData("Clark", 20, "London"));
+            suppliers.put(new SupplierKey("S5"),
+                          new SupplierData("Adams", 30, "Athens"));
         }</tt></b>
     }
 
@@ -125,31 +125,31 @@ public class Sample
 <b class="userinput"><tt>        Map parts = views.getPartMap();
         if (parts.isEmpty())
         {
-            System.out.println(&quot;Adding Parts&quot;);
-            parts.put(new PartKey(&quot;P1&quot;),
-                      new PartData(&quot;Nut&quot;, &quot;Red&quot;,
+            System.out.println("Adding Parts");
+            parts.put(new PartKey("P1"),
+                      new PartData("Nut", "Red",
                                     new Weight(12.0, Weight.GRAMS),
-                                    &quot;London&quot;));
-            parts.put(new PartKey(&quot;P2&quot;),
-                      new PartData(&quot;Bolt&quot;, &quot;Green&quot;,
+                                    "London"));
+            parts.put(new PartKey("P2"),
+                      new PartData("Bolt", "Green",
                                     new Weight(17.0, Weight.GRAMS),
-                                    &quot;Paris&quot;));
-            parts.put(new PartKey(&quot;P3&quot;),
-                      new PartData(&quot;Screw&quot;, &quot;Blue&quot;,
+                                    "Paris"));
+            parts.put(new PartKey("P3"),
+                      new PartData("Screw", "Blue",
                                     new Weight(17.0, Weight.GRAMS),
-                                    &quot;Rome&quot;));
-            parts.put(new PartKey(&quot;P4&quot;),
-                      new PartData(&quot;Screw&quot;, &quot;Red&quot;,
+                                    "Rome"));
+            parts.put(new PartKey("P4"),
+                      new PartData("Screw", "Red",
                                     new Weight(14.0, Weight.GRAMS),
-                                    &quot;London&quot;));
-            parts.put(new PartKey(&quot;P5&quot;),
-                      new PartData(&quot;Cam&quot;, &quot;Blue&quot;,
+                                    "London"));
+            parts.put(new PartKey("P5"),
+                      new PartData("Cam", "Blue",
                                     new Weight(12.0, Weight.GRAMS),
-                                    &quot;Paris&quot;));
-            parts.put(new PartKey(&quot;P6&quot;),
-                      new PartData(&quot;Cog&quot;, &quot;Red&quot;,
+                                    "Paris"));
+            parts.put(new PartKey("P6"),
+                      new PartData("Cog", "Red",
                                     new Weight(19.0, Weight.GRAMS),
-                                    &quot;London&quot;));
+                                    "London"));
         }</tt></b>
     }
 
@@ -158,30 +158,30 @@ public class Sample
 <b class="userinput"><tt>        Map shipments = views.getShipmentMap();
         if (shipments.isEmpty())
         {
-            System.out.println(&quot;Adding Shipments&quot;);
-            shipments.put(new ShipmentKey(&quot;P1&quot;, &quot;S1&quot;),
+            System.out.println("Adding Shipments");
+            shipments.put(new ShipmentKey("P1", "S1"),
                           new ShipmentData(300));
-            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S1&quot;),
+            shipments.put(new ShipmentKey("P2", "S1"),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey(&quot;P3&quot;, &quot;S1&quot;),
+            shipments.put(new ShipmentKey("P3", "S1"),
                           new ShipmentData(400));
-            shipments.put(new ShipmentKey(&quot;P4&quot;, &quot;S1&quot;),
+            shipments.put(new ShipmentKey("P4", "S1"),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey(&quot;P5&quot;, &quot;S1&quot;),
+            shipments.put(new ShipmentKey("P5", "S1"),
                           new ShipmentData(100));
-            shipments.put(new ShipmentKey(&quot;P6&quot;, &quot;S1&quot;),
+            shipments.put(new ShipmentKey("P6", "S1"),
                           new ShipmentData(100));
-            shipments.put(new ShipmentKey(&quot;P1&quot;, &quot;S2&quot;),
+            shipments.put(new ShipmentKey("P1", "S2"),
                           new ShipmentData(300));
-            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S2&quot;),
+            shipments.put(new ShipmentKey("P2", "S2"),
                           new ShipmentData(400));
-            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S3&quot;),
+            shipments.put(new ShipmentKey("P2", "S3"),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey(&quot;P2&quot;, &quot;S4&quot;),
+            shipments.put(new ShipmentKey("P2", "S4"),
                           new ShipmentData(200));
-            shipments.put(new ShipmentKey(&quot;P4&quot;, &quot;S4&quot;),
+            shipments.put(new ShipmentKey("P4", "S4"),
                           new ShipmentData(300));
-            shipments.put(new ShipmentKey(&quot;P5&quot;, &quot;S4&quot;),
+            shipments.put(new ShipmentKey("P5", "S4"),
                           new ShipmentData(400));
         }</tt></b>
     } 
@@ -195,31 +195,31 @@ public class Sample
       <p>
     In each method above, objects are added only if the map is not
 	empty. This is a simple way of allowing the example program to be
-	run repeatedly. In real-life applications another technique &#8212;
+	run repeatedly. In real-life applications another technique â€”
 	checking the 
-    <a href="http://java.sun.com/j2se/1.3/docs/api/java/util/Map.html#containsKey" target="_top">Map.containsKey</a>
+    <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/Map.html#containsKey" target="_top">Map.containsKey</a>
     
-	method, for example &#8212; might be used.
+	method, for example â€” might be used.
 </p>
     </div>
     <div class="navfooter">
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="usingtransactions.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="usingtransactions.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="BasicProgram.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="retrievingdatabaseitems.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="retrievingdatabaseitems.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">
 		Using Transactions
-	 </td>
+	Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> 
+          <td width="40%" align="right" valign="top">Â 
 		Retrieving Database Items
 	</td>
         </tr>

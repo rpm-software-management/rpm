@@ -1,0 +1,74 @@
+m4_comment([$Id: get_bulk.so,v 10.7 2004/09/03 19:47:57 mjc Exp $])
+
+define(BDB_LOC, ..)
+
+m4_ref_title(Access Methods,
+    Retrieving records in bulk, @retrieving records in bulk,
+    am_misc/align, am_misc/partial)
+
+m4_p([dnl
+When retrieving large numbers of records from the database, the number
+of method calls can often dominate performance.  m4_db offers bulk get
+interfaces which can significantly increase performance for some
+applications.  To retrieve records in bulk, an application buffer must
+be specified to the m4_ref(dbh_get) or m4_refT(dbc_get)s.  This is done
+in the C API by setting the m4_arg(data) and m4_arg(ulen) fields of the
+m4_arg(data) m4_ref(Dbt) to reference an application buffer, and the
+m4_arg(flags) field of that structure to m4_ref(DB_DBT_USERMEM).  In
+the m4_db C++ and Java APIs, the actions are similar, although there
+are API-specific methods to set the m4_ref(Dbt) values.  Then, the
+m4_ref(DB_MULTIPLE) or m4_ref(DB_MULTIPLE_KEY) flags are specified to
+the m4_ref(dbh_get) or m4_refT(dbc_get)s, which cause multiple records
+to be returned in the specified buffer.])
+
+m4_p([dnl
+The difference between m4_ref(DB_MULTIPLE) and m4_ref(DB_MULTIPLE_KEY)
+is as follows: m4_ref(DB_MULTIPLE) returns multiple data items for a
+single key.  For example, the m4_ref(DB_MULTIPLE) flag would be used to
+retrieve all of the duplicate data items for a single key in a single
+call.  The m4_ref(DB_MULTIPLE_KEY) flag is used to retrieve multiple
+key/data pairs, where each returned key may or may not have duplicate
+data items.])
+
+m4_p([dnl
+Once the m4_ref(dbh_get) or m4_refT(dbc_get) has returned, the
+application will walk through the buffer handling the returned records.
+This is implemented for the C and C++ APIs using four macros:
+m4_ref(DB_MULTIPLE_INIT), m4_ref(DB_MULTIPLE_NEXT),
+m4_ref(DB_MULTIPLE_KEY_NEXT), and m4_ref(DB_MULTIPLE_RECNO_NEXT).  For
+the Java API, this is implemented as three iterator classes:
+m4_linkjavadoc(com.sleepycat.db, MultipleDataEntry),
+m4_linkjavadoc(com.sleepycat.db, MultipleKeyDataEntry), and
+m4_linkjavadoc(com.sleepycat.db, MultipleRecnoDataEntry).])
+
+m4_p([dnl
+The m4_ref(DB_MULTIPLE_INIT) macro is always called first.  It
+initializes a local application variable and the m4_arg(data)
+m4_ref(Dbt) for stepping through the set of returned records.  Then,
+the application calls one of the remaining three macros:
+m4_ref(DB_MULTIPLE_NEXT), m4_ref(DB_MULTIPLE_KEY_NEXT), and
+m4_ref(DB_MULTIPLE_RECNO_NEXT).])
+
+m4_p([dnl
+If the m4_ref(DB_MULTIPLE) flag was specified to the m4_ref(dbh_get) or
+m4_refT(dbc_get), the application will always call the
+m4_ref(DB_MULTIPLE_NEXT) macro.  If the m4_ref(DB_MULTIPLE_KEY) flag
+was specified to the m4_ref(dbh_get) or m4_refT(dbc_get), and, the
+underlying database is a Btree or Hash database, the application will
+always call the m4_ref(DB_MULTIPLE_KEY_NEXT) macro.  If the
+m4_ref(DB_MULTIPLE_KEY) flag was specified to the m4_ref(dbh_get) or
+m4_refT(dbc_get), and, the underlying database is a Queue or Recno
+database, the application will always call the
+m4_ref(DB_MULTIPLE_RECNO_NEXT) macro.  The m4_ref(DB_MULTIPLE_NEXT),
+m4_ref(DB_MULTIPLE_KEY_NEXT), and m4_ref(DB_MULTIPLE_RECNO_NEXT) macros
+are called repeatedly, until the end of the returned records is reached.
+The end of the returned records is detected by the application's local
+pointer variable being set to NULL.])
+
+m4_p([dnl
+The following is an example of a routine that displays the contents of
+a Btree database using the bulk return interfaces.])
+
+include(ref/am_misc/get_bulk.cs)
+
+m4_page_footer

@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2006,2007 Oracle.  All rights reserved.
 #
-# $Id: rep065.tcl,v 12.9 2006/09/08 20:32:18 bostic Exp $
+# $Id: rep065.tcl,v 12.16 2007/07/06 00:24:16 sue Exp $
 #
 # TEST	rep065
 # TEST	Tests replication running with different versions.
@@ -18,6 +17,9 @@
 # TEST	the 4.5 tcl code (e.g. test.tcl).
 proc rep065 { method { nsites 3 } args } {
 	source ./include.tcl
+	global noenv_messaging
+	set noenv_messaging 1
+
 	if { $is_windows9x_test == 1 } {
 		puts "Skipping replication test on Win 9x platform."
 		return
@@ -44,15 +46,17 @@ proc rep065 { method { nsites 3 } args } {
 	puts "Rep065: Testing the following $mvlen method/version pairs:"
 	puts "Rep065: $mvlist"
 	set count 1
+	set total [llength $mvlist]
 	set slist [setup_sites $nsites]
 	foreach i $mvlist {
-		puts "Rep065: Test iteration $count: $i"
-		rep065_sub $i $nsites $slist
+		puts "Rep065: Test iteration $count of $total: $i"
+		rep065_sub $count $i $nsites $slist
 		incr count
 	}
+	set noenv_messaging 0
 }
 
-proc rep065_sub { mv nsites slist } {
+proc rep065_sub { iter mv nsites slist } {
 	source ./include.tcl
 	global machids
 	global util_path
@@ -60,13 +64,13 @@ proc rep065_sub { mv nsites slist } {
 	set method [lindex $mv 0]
 	set vers [lindex $mv 1]
 
-	puts "\tRep065.a: Set up."
+	puts "\tRep065.$iter.a: Set up."
 	# Whatever directory we started this process from is referred
 	# to as the controlling directory.  It will contain the message
 	# queue and start all the child processes.
 	set controldir [pwd]
 	env_cleanup $controldir/$testdir
-	replsetup $controldir/$testdir/MSGQUEUEDIR
+	replsetup_noenv $controldir/$testdir/MSGQUEUEDIR
 
 	# Set up the historical build directory.  The master will start
 	# running with historical code.
@@ -80,12 +84,13 @@ proc rep065_sub { mv nsites slist } {
 	set reputils_path $pwd/../test
 	set histdir $homedir/$vers/build_unix
 	if { [file exists $histdir] == 0 } {
-		puts "Skipping iteration: cannot find historical version $vers."
+		puts -nonewline "Skipping iteration $iter: cannot find"
+		puts " historical version $vers."
 		return
 	}
 	if { [file exists $histdir/db_verify] == 0 } {
-		puts -nonewline "Skipping iteration: historical version $vers"
-		puts " is missing some executables.  Is it built?"
+		puts -nonewline "Skipping iteration $iter: historical version"
+		puts " $vers is missing some executables.  Is it built?"
 		return
 	}
 
@@ -117,7 +122,7 @@ proc rep065_sub { mv nsites slist } {
 	#
 	set count 1
 	foreach sitevers $slist {
-		puts "\tRep065.b.$count: Run with sitelist $sitevers."
+		puts "\tRep065.b.$iter.$count: Run with sitelist $sitevers."
 		#
 		# Delete the marker directory each iteration so that
 		# we don't find old data in there.
@@ -193,7 +198,7 @@ proc rep065_sub { mv nsites slist } {
 		# non-existent clients.  Just clean up everyone.
 		#
 		for { set i 0 } { $i < $nsites } { incr i } {
-			replclear $siteid($i)
+			replclear_noenv $siteid($i)
 		}
 
 		#
@@ -203,7 +208,7 @@ proc rep065_sub { mv nsites slist } {
 		# old sites need to use old utilities.
 		#
 		set pids {}
-		puts "\tRep065.c.$count: Verify all sites."
+		puts "\tRep065.c.$iter.$count: Verify all sites."
 		for { set i 0 } { $i < $nsites } { incr i } {
 			if { $siteid($i) == $meid } {
 				set state MASTER
@@ -215,7 +220,7 @@ proc rep065_sub { mv nsites slist } {
 			    $controldir/$testdir/$count.S$i.ver \
 		      	    SKIP \
 			    VERIFY $state \
-		    	    {DB LOG} \
+		    	    {LOG DB} \
 			    $siteid($i) $allids $controldir \
 			    $sitedir($i) $reputils_path &]
 		}
@@ -363,7 +368,7 @@ proc method_version { } {
 	global valid_methods
 
 	set meth $valid_methods
-	set startmv { {hash db-4.2.52} {btree db-4.2.52} }
+	set startmv { {hash db-4.2.52} {btree db-4.2.52} {hash db-4.5.20} }
 
 	# Remove btree and hash from the method list, we're manually
 	# assigning those versions due to log/recovery record changes
@@ -376,9 +381,15 @@ proc method_version { } {
 	#
 	# Since we're explicitly testing 4.2.52 weight testing the other
 	# versions a bit more.
-	set vers {db-4.2.52 db-4.3.29 db-4.4.20}
+	set vers {db-4.2.52 db-4.3.29 db-4.4.20 db-4.5.20}
 	set dbvlen [llength $vers]
-	set vers_list { 0 0 1 1 1 1 2 2 2 2 }
+	#
+	# NOTE: The values in "vers_list" are indices into $vers above.
+	# Therefore, when you add a new version to $vers, you must
+	# add some new items to $vers_list to choose that index.
+	# Also need to add an entry for 'vtest' below.
+	#
+	set vers_list { 0 0 1 1 1 2 2 2 3 3 3 }
 	set vers_len [expr [llength $vers_list] - 1]
 
 	# Walk through the list of remaining methods and randomly
@@ -391,6 +402,7 @@ proc method_version { } {
 		set vtest(0) 1
 		set vtest(1) 0
 		set vtest(2) 0
+		set vtest(3) 0
 		foreach m $meth {
 			# Index into distribution list.
 			set vidx [berkdb random_int 0 $vers_len]

@@ -1,0 +1,51 @@
+m4_comment([$Id: memp_fput.so,v 10.34 2006/11/30 19:06:50 bostic Exp $])
+
+define(M4PAGELOCAL, memp_fput)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_fput),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__put(DB_MPOOLFILE *mpf,
+    void *pgaddr, DB_CACHE_PRIORITY priority, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::put(void *pgaddr, DB_CACHE_PRIORITY priority, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(memp_fput) returns a reference to a page in the cache,
+setting the priority of the page as specified by the m4_arg(priority)
+parameter.])
+
+m4_return(memp_fput, std)
+
+m4_parambegin
+
+m4_unusedflags
+
+m4_param(pgaddr, [dnl
+The m4_arg(pgaddr) parameter is the address of the page to be returned
+to the cache.  The m4_arg(pgaddr) parameter must be a value previously
+returned by the m4_refT(memp_fget).])
+
+m4_param(priority, [dnl
+Set the page's m4_arg(priority) as follows:
+m4_tagbegin
+m4_tagns(m4_idef(DB_PRIORITY_UNCHANGED), [The priority is unchanged.])
+m4_tag(m4_idef(DB_PRIORITY_VERY_LOW), [dnl
+The lowest priority: pages are the most likely to be discarded.])
+m4_tagns(m4_idef(DB_PRIORITY_LOW), [The next lowest priority.])
+m4_tagns(m4_idef(DB_PRIORITY_DEFAULT), [The default priority.])
+m4_tagns(m4_idef(DB_PRIORITY_HIGH), [The next highest priority.])
+m4_tagns(m4_idef(DB_PRIORITY_VERY_HIGH), [dnl
+The highest priority: pages are the least likely to be discarded.])
+m4_tagend])
+
+m4_paramend
+
+m4_err(memp_fput, einval)
+
+m4_seealso(DbMpool)
+m4_page_footer

@@ -1,0 +1,51 @@
+m4_comment([$Id: mutex_set_align.so,v 10.1 2005/07/20 16:34:00 bostic Exp $])
+
+define(M4PAGELOCAL, [mutex_set_align, mutex_get_align])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(mutex_set_align),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__mutex_set_align(DB_ENV *dbenv, u_int32_t align);
+m4_blank
+int
+DB_ENV-__GT__mutex_get_align(DB_ENV *dbenv, u_int32_t *alignp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::mutex_set_align(u_int32_t align);
+m4_blank
+int
+DbEnv::mutex_get_align(u_int32_t *alignp);
+]))
+
+m4_p([dnl
+Set the mutex alignment, in bytes.])
+
+m4_p([dnl
+It is sometimes advantageous to align mutexes on specific byte
+boundaries in order to minimize cache line collisions.   The
+m4_refT(mutex_set_align) specifies an alignment for mutexes allocated
+by m4_db.])
+
+m4_env_config(mutex_set_align,
+[mutex alignment], mutex_set_align, [the mutex alignment in bytes])
+
+m4_scope_env(mutex_set_align)
+
+m4_when_envopen(mutex_set_align, ignored)
+
+m4_return(mutex_set_align, std)
+
+m4_parambegin
+m4_param(align, [dnl
+The m4_arg(align) parameter is the mutex alignment, in bytes.  The mutex
+alignment must be a power-of-two.])
+m4_paramend
+
+m4_err(mutex_set_align, einval)
+
+m4_pf_getter(mutex_get_align, [mutex alignment, in bytes],, alignp)
+
+m4_seealso(DbEnv)
+m4_page_footer

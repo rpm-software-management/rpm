@@ -1,0 +1,94 @@
+m4_comment([$Id: rep_timeout.so,v 1.5 2007/03/02 18:46:41 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[rep_set_timeout, rep_get_timeout, DB_REP_ACK_TIMEOUT,
+	DB_REP_CONNECTION_RETRY,
+	DB_REP_ELECTION_TIMEOUT, DB_REP_ELECTION_RETRY,
+	DB_REP_FULL_ELECTION_TIMEOUT])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_set_timeout),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_set_timeout(DB_ENV *env, int which, u_int32_t timeout);
+m4_blank
+int
+DB_ENV-__GT__rep_get_timeout(DB_ENV *env, int which, u_int32_t *timeoutp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_set_timeout(int which, u_int32_t timeout);
+m4_blank
+int
+DbEnv::rep_get_timeout(int which, u_int32_t *timeoutp);
+]))
+
+m4_p([dnl
+The m4_refT(rep_set_timeout) specifies a variety of replication timeout
+values.])
+
+m4_scope_env(rep_set_timeout)
+m4_when_any(rep_set_timeout)
+m4_return(rep_set_timeout, std)
+
+m4_parambegin
+m4_param(which, [dnl
+The m4_arg(which) parameter must be set to one of the following values:
+
+m4_tagbegin
+m4_tag(m4_idef(DB_REP_ACK_TIMEOUT), [dnl
+Configure the amount of time the replication manager's transport
+function waits to collect enough acknowledgments from replication group
+clients, before giving up and returning a failure indication.  The
+default wait time is 1 second.])
+m4_tag(m4_idef(DB_REP_CHECKPOINT_DELAY), [dnl
+Configure the amount of time the replication manager will delay between
+completing a checkpoint and writing a checkpoint record into the log.
+This delay allows clients to complete their own checkpoints before the
+master requires completion of them.  The default is 30 seconds.])
+m4_tag(m4_idef(DB_REP_CONNECTION_RETRY), [dnl
+Configure the amount of time the replication manager will wait before
+trying to re-establish a connection to another site after a communication
+failure.  The default wait time is 30 seconds.])
+m4_tag(m4_idef(DB_REP_ELECTION_TIMEOUT), [dnl
+The timeout period for an election.  The default timeout is 2 seconds.])
+m4_tag(m4_idef(DB_REP_ELECTION_RETRY), [dnl
+Configure the amount of time the replication manager will wait before
+retrying a failed election.  The default wait time is 10 seconds.])
+m4_tag(m4_idef(DB_REP_FULL_ELECTION_TIMEOUT), [dnl
+An optional configuration timeout period to wait for full election
+participation the first time the replication group finds a master.
+By default this option is turned off and normal election
+timeouts are used.
+(See the m4_link(M4RELDIR/ref/rep/elect, [Elections])
+section in the m4_db Reference Guide for more information.)])
+m4_tagend
+
+m4_param(timeout, [dnl
+The m4_arg(timeout) parameter is the timeout value.  It must be specified
+as an unsigned 32-bit number of microseconds, limiting the maximum timeout
+to roughly 71 minutes.])])
+m4_paramend
+
+m4_err(rep_set_timeout, einval)
+
+m4_pf_description(m4_ref(rep_get_timeout))
+m4_p([dnl
+The m4_refT(rep_get_timeout) returns the timeout value for the specified
+m4_arg(which) parameter.])
+
+m4_when_any(rep_get_timeout)
+
+m4_return(rep_get_timeout, std)
+
+m4_parambegin
+m4_param(which, [dnl
+The m4_arg(which) parameter is the timeout value for which the value
+is being returned.])
+m4_param_co(timeoutp, [dnl
+timeout value of the specified m4_arg(which) parameter],, [dnl
+The returned m4_arg(timeout) value is in microseconds.])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

@@ -1,0 +1,266 @@
+m4_comment([$Id: db_set_flags.so,v 10.68 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbh_set_flags, dbh_get_flags, DB_CHKSUM, DB_DUP, DB_DUPSORT,
+	DB_ENCRYPT, DB_INORDER, DB_RECNUM, DB_REVSPLITOFF, DB_RENUMBER,
+	DB_SNAPSHOT, DB_TXN_NOT_DURABLE])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_flags),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_flags(DB *db, u_int32_t flags);
+m4_blank
+int
+DB-__GT__get_flags(DB *db, u_int32_t *flagsp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_flags(u_int32_t flags);
+m4_blank
+int Db::get_flags(u_int32_t *flagsp);
+]))
+
+define(m4_scope_db_flags, [m4_p([dnl
+Calling m4_ref(dbh_set_flags) with the m4_ref($1) flag affects the
+database, including all threads of control accessing the database.])])
+define(m4_scope_dbh_flags, [m4_p([dnl
+Calling m4_ref(dbh_set_flags) with the m4_ref($1) flag only affects the
+specified m4_ref(Db) handle (and any other m4_db handles opened within
+the scope of that handle).])])
+
+define(m4_db_flag_open, [m4_p([dnl
+If the database already exists when m4_ref(dbh_open) is called, the $1
+flag
+ifelse($2, error, [must be the same as the existing database or an error
+will be returned.])
+ifelse($2, ignored, [will be ignored.])])])
+
+define(m4_dupflag, [dnl
+m4_tag(m4_idef(DB_DUP), [dnl
+Permit duplicate data items in the database; that is, insertion when the
+key of the key/data pair being inserted already exists in the database
+will be successful.  The ordering of duplicates in the database is
+determined by the order of insertion, unless the ordering is otherwise
+specified by use of a cursor operation.
+m4_p([dnl
+The m4_ref(DB_DUPSORT) flag is preferred to m4_ref(DB_DUP) for
+performance reasons.  The m4_ref(DB_DUP) flag should only be used by
+applications wanting to order duplicate data items manually.])
+m4_scope_db_flags(DB_DUP)
+m4_db_flag_open(DB_DUP, error)
+ifelse([$1],,, m4_p([$1]))])])
+
+define(m4_dupsortflag, [dnl
+m4_tag(m4_idef(DB_DUPSORT), [dnl
+Permit duplicate data items in the database; that is, insertion when the
+key of the key/data pair being inserted already exists in the database
+will be successful.  The ordering of duplicates in the database is
+determined by the duplicate comparison function.  If the application
+does not specify a comparison function using the
+m4_refT(dbh_set_dup_compare), a default lexical comparison will be used.
+It is an error to specify both m4_ref(DB_DUPSORT) and m4_ref(DB_RECNUM).
+m4_scope_db_flags(DB_DUPSORT)
+m4_db_flag_open(DB_DUPSORT, error)])])
+
+m4_p([dnl
+Configure a database.  Calling m4_ref(dbh_set_flags) is additive; there
+is no way to clear flags.])
+
+m4_when_dbopen(dbh_set_flags)
+
+m4_return(dbh_set_flags, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_section(General)
+m4_p([dnl
+The following flags may be specified for any m4_db access method:])
+
+m4_tagbegin
+
+m4_idefz([database page @checksum])
+m4_tag(m4_idef(DB_CHKSUM), [dnl
+Do checksum verification of pages read into the cache from the backing
+filestore.  m4_db uses the SHA1 Secure Hash Algorithm
+if encryption is configured and a general hash algorithm if it is not.
+m4_scope_dbh_flags(DB_CHKSUM)
+m4_db_flag_open(DB_CHKSUM, ignored)
+If creating additional databases in a file, the checksum behavior specified
+must be consistent with the existing databases in the file or an error will
+be returned.])
+
+m4_idefz([database @encryption])
+m4_tag(m4_idef(DB_ENCRYPT), [dnl
+Encrypt the database using the cryptographic password specified to the
+m4_ref(dbenv_set_encrypt) or m4_refT(dbh_set_encrypt)s.
+m4_scope_dbh_flags(DB_ENCRYPT)
+m4_db_flag_open(DB_ENCRYPT, error)
+If creating additional databases in a file, the encryption behavior specified
+must be consistent with the existing databases in the file or an error will
+be returned.
+m4_p([dnl
+Encrypted databases are not portable between machines of different byte
+orders, that is, encrypted databases created on big-endian machines
+cannot be read on little-endian machines, and vice versa.])])
+
+m4_idefz([turn off database @durability])
+m4_tag(m4_idef(DB_TXN_NOT_DURABLE), [dnl
+If set, m4_db will not write log records for this database.  This means
+that updates of this database exhibit the ACI (atomicity, consistency,
+and isolation) properties, but not D (durability); that is, database
+integrity will be maintained, but if the application or system fails,
+integrity will not persist.  The database file must be verified and/or
+restored from backup after a failure.  In order to ensure integrity
+after application shut down, the database handles must be closed without
+specifying m4_ref(DB_NOSYNC), or all database changes must be flushed
+from the database environment cache using either the
+m4_ref(txn_checkpoint) or m4_refT(memp_sync)s.  All database handles for
+a single physical file must set m4_ref(DB_TXN_NOT_DURABLE), including
+database handles for different databases in a physical file.
+m4_scope_dbh_flags(DB_TXN_NOT_DURABLE)])
+
+m4_tagend
+
+m4_section(Btree)
+m4_p([dnl
+The following flags may be specified for the Btree access method:])
+
+m4_tagbegin
+m4_idefz([@duplicate data items])
+m4_dupflag([It is an error to specify both m4_ref(DB_DUP) and m4_ref(DB_RECNUM).])
+
+m4_idefz([sorted @duplicate data items])
+m4_dupsortflag
+
+m4_idefz([accessing Btree records by @record number])
+m4_tag(m4_idef(DB_RECNUM), [dnl
+Support retrieval from the Btree using record numbers.  For more
+information, see the m4_ref(DB_SET_RECNO) flag to the m4_ref(dbh_get)
+and m4_ref(dbc_get) methods.
+m4_p([dnl
+Logical record numbers in Btree databases are mutable in the face of
+record insertion or deletion.  See the m4_ref(DB_RENUMBER) flag in the
+Recno access method information for further discussion.])
+m4_p([dnl
+Maintaining record counts within a Btree introduces a serious point of
+contention, namely the page locations where the record counts are
+stored.  In addition, the entire database must be locked during both
+insertions and deletions, effectively single-threading the database for
+those operations.  Specifying m4_ref(DB_RECNUM) can result in serious
+performance degradation for some applications and data sets.])
+m4_p([dnl
+It is an error to specify both m4_ref(DB_DUP) and m4_ref(DB_RECNUM).])
+m4_scope_db_flags(DB_RECNUM)
+m4_db_flag_open(DB_RECNUM, error)])
+
+m4_idefz([turn off @reverse splits in Btree databases],
+[turn off reverse @splits in Btree databases])
+m4_tag(m4_idef(DB_REVSPLITOFF), [dnl
+Turn off reverse splitting in the Btree.  As pages are emptied in a
+database, the m4_db Btree implementation attempts to coalesce empty pages
+into higher-level pages in order to keep the database as small as possible
+and minimize search time.  This can hurt performance in applications
+with cyclical data demands; that is, applications where the database grows
+and shrinks repeatedly.  For example, because m4_db does page-level
+locking, the maximum level of concurrency in a database of two pages is far
+smaller than that in a database of 100 pages, so a database that has
+shrunk to a minimal size can cause severe deadlocking when a new cycle of
+data insertion begins.
+m4_scope_dbh_flags(DB_REVSPLITOFF)])
+
+m4_tagend
+
+m4_section(Hash)
+m4_p([dnl
+The following flags may be specified for the Hash access method:])
+
+m4_tagbegin
+m4_dupflag
+m4_dupsortflag
+m4_tagend
+
+m4_section(Queue)
+m4_p([dnl
+The following flags may be specified for the Queue access method:])
+
+m4_tagbegin
+m4_idefz([@ordered retrieval of records from Queue databases])
+m4_tag(m4_idef(DB_INORDER), [dnl
+The m4_ref(DB_INORDER) flag modifies the operation of the
+m4_ref(DB_CONSUME) or m4_ref(DB_CONSUME_WAIT) flags to m4_ref(dbh_get)
+to return key/data pairs in order.  That is, they will always return
+the key/data item from the head of the queue.
+
+m4_p([dnl
+The default behavior of queue databases is optimized for multiple
+readers, and does not guarantee that record will be retrieved in the
+order they are added to the queue.  Specifically, if a writing thread
+adds multiple records to an empty queue, reading threads may skip some
+of the initial records when the next m4_ref(dbh_get) call returns.])
+
+m4_p([dnl
+This flag modifies the m4_ref(dbh_get) call to verify that the record
+being returned is in fact the head of the queue.  This will increase
+contention and reduce concurrency when there are many reading threads.])
+
+m4_scope_dbh_flags(DB_INORDER)])
+m4_tagend
+
+m4_section(Recno)
+m4_p([dnl
+The following flags may be specified for the Recno access method:])
+
+m4_tagbegin
+m4_idefz([@renumbering records in Recno databases])
+m4_tag(m4_idef(DB_RENUMBER), [dnl
+Specifying the m4_ref(DB_RENUMBER) flag causes the logical record
+numbers to be mutable, and change as records are added to and deleted
+from the database.  For example, the deletion of record number 4 causes
+records numbered 5 and greater to be renumbered downward by one.  If a
+cursor was positioned to record number 4 before the deletion, it will
+refer to the new record number 4, if any such record exists, after the
+deletion.  If a cursor was positioned after record number 4 before the
+deletion, it will be shifted downward one logical record, continuing to
+refer to the same record as it did before.
+m4_p([dnl
+Using the m4_ref(dbh_put) or m4_ref(dbc_put) interfaces to create new
+records will cause the creation of multiple records if the record number
+is more than one greater than the largest record currently in the
+database.  For example, creating record 28, when record 25 was previously
+the last record in the database, will create records 26 and 27 as well as
+28.  Attempts to retrieve records that were created in this manner will
+result in an error return of m4_ref(DB_KEYEMPTY).])
+m4_p([dnl
+If a created record is not at the end of the database, all records
+following the new record will be automatically renumbered upward by one.
+For example, the creation of a new record numbered 8 causes records
+numbered 8 and greater to be renumbered upward by one.  If a cursor was
+positioned to record number 8 or greater before the insertion, it will be
+shifted upward one logical record, continuing to refer to the same record
+as it did before.])
+m4_p([dnl
+For these reasons, concurrent access to a Recno database with the
+m4_ref(DB_RENUMBER) flag specified may be largely meaningless, although
+it is supported.])
+m4_scope_db_flags(DB_RENUMBER)
+m4_db_flag_open(DB_RENUMBER, error)])
+
+m4_idefz([pre-loading @text files into Recno databases])
+m4_tag(m4_idef(DB_SNAPSHOT), [dnl
+This flag specifies that any specified m4_arg(re_source) file be read
+in its entirety when m4_ref(dbh_open) is called.  If this flag is not
+specified, the m4_arg(re_source) file may be read lazily.
+m4_scope_dbh_flags(DB_SNAPSHOT)])
+
+m4_tagend])
+m4_paramend
+
+m4_err(dbh_set_flags, einval)
+
+m4_pf_getter(dbh_get_flags, current flags,, flagsp)
+
+m4_seealso(Db)
+m4_page_footer

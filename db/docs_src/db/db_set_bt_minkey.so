@@ -1,0 +1,54 @@
+m4_comment([$Id: db_set_bt_minkey.so,v 10.38 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_bt_minkey, dbh_get_bt_minkey])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_bt_minkey),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_bt_minkey(DB *db, u_int32_t bt_minkey);
+m4_blank
+int
+DB-__GT__get_bt_minkey(DB *db, u_int32_t *bt_minkeyp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_bt_minkey(u_int32_t bt_minkey);
+m4_blank
+int
+Db::get_bt_minkey(u_int32_t *bt_minkeyp);
+]))
+
+m4_p([dnl
+Set the minimum number of key/data pairs intended to be stored on any
+single Btree leaf page.])
+
+m4_p([dnl
+This value is used to determine if key or data items will be stored on
+overflow pages instead of Btree leaf pages.  For more information on
+the specific algorithm used, see m4_link(M4RELDIR/ref/am_conf/bt_minkey,
+[Minimum keys per page]).  The m4_arg(bt_minkey) value specified must
+be at least 2; if m4_arg(bt_minkey) is not explicitly set, a value of
+2 is used.])
+
+m4_scope_db(dbh_set_bt_minkey)
+
+m4_when_dbopen(dbh_set_bt_minkey, ignored)
+
+m4_return(dbh_set_bt_minkey, std)
+
+m4_parambegin
+m4_param(bt_minkey, [dnl
+The m4_arg(bt_minkey) parameter is the minimum number of key/data pairs
+intended to be stored on any single Btree leaf page.])
+m4_paramend
+
+m4_err(dbh_set_bt_minkey,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_bt_minkey,
+[minimum number of key/data pairs intended to be stored on any single Btree
+leaf page],, bt_minkeyp)
+
+m4_seealso(Db)
+m4_page_footer

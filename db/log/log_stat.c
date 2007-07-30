@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: log_stat.c,v 12.13 2006/08/24 14:46:12 bostic Exp $
+ * $Id: log_stat.c,v 12.17 2007/05/17 15:15:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -85,7 +84,7 @@ __log_stat(dbenv, statp, flags)
 
 	__mutex_set_wait_info(dbenv, lp->mtx_region,
 	    &stats->st_region_wait, &stats->st_region_nowait);
-	if (LF_ISSET(DB_STAT_CLEAR))
+	if (LF_ISSET(DB_STAT_CLEAR | DB_STAT_SUBSYSTEM) == DB_STAT_CLEAR)
 		__mutex_clear(dbenv, lp->mtx_region);
 	stats->st_regsize = dblp->reginfo.rp->size;
 
@@ -143,7 +142,7 @@ __log_stat_print(dbenv, flags)
 	int ret;
 
 	orig_flags = flags;
-	LF_CLR(DB_STAT_CLEAR);
+	LF_CLR(DB_STAT_CLEAR | DB_STAT_SUBSYSTEM);
 	if (flags == 0 || LF_ISSET(DB_STAT_ALL)) {
 		ret = __log_print_stats(dbenv, orig_flags);
 		if (flags == 0 || ret != 0)
@@ -242,7 +241,7 @@ __log_print_all(dbenv, flags)
 
 	LOG_SYSTEM_LOCK(dbenv);
 
-	__db_print_reginfo(dbenv, &dblp->reginfo, "Log");
+	__db_print_reginfo(dbenv, &dblp->reginfo, "Log", flags);
 
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 	__db_msg(dbenv, "DB_LOG handle information:");

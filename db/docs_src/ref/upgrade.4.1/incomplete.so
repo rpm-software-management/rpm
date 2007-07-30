@@ -1,0 +1,21 @@
+m4_comment([$Id: incomplete.so,v 1.8 2004/08/15 03:22:57 bostic Exp $])
+
+define(BDB_LOC, ..)
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.1: DB_INCOMPLETE,,
+    upgrade.4.1/checkpoint, upgrade.4.1/memp_sync)
+
+m4_p([dnl
+The DB_INCOMPLETE error has been removed from the 4.1 release, and is
+no longer returned by the m4_db library.   Applications no longer need
+to check for this error return, as the underlying m4_db interfaces that
+could historically fail to checkpoint or flush the cache and return this
+error can no longer fail for that reason.  Applications should remove
+all uses of DB_INCOMPLETE.])
+
+m4_p([dnl
+Additionally, the DbEnv.checkpoint and Db.sync methods have been changed
+from returning int to returning void.])
+
+m4_page_footer

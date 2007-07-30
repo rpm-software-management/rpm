@@ -1,0 +1,91 @@
+m4_comment([$Id: memp_register.so,v 10.38 2004/08/13 03:38:58 bostic Exp $])
+
+define(M4PAGELOCAL, memp_register)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_register),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__memp_register(DB_ENV *env, int ftype,
+    int (*pgin_fcn)(DB_ENV *, db_pgno_t pgno, void *pgaddr, DBT *pgcookie),
+    int (*pgout_fcn)(DB_ENV *, db_pgno_t pgno, void *pgaddr, DBT *pgcookie));
+])
+ifelse(M4API, CXX_API, [dnl
+extern "C" {
+    typedef int (*pgin_fcn_type)(DB_ENV *dbenv,
+	db_pgno_t pgno, void *pgaddr, DBT *pgcookie);
+    typedef int (*pgout_fcn_type)(DB_ENV *dbenv,
+	db_pgno_t pgno, void *pgaddr, DBT *pgcookie);
+};
+int
+DbEnv::memp_register(int ftype,
+    pgin_fcn_type pgin_fcn, pgout_fcn_type pgout_fcn);
+]))
+
+m4_p([dnl
+The m4_refT(memp_register) registers page-in and page-out
+functions for files of type m4_arg(ftype) in the specified pool.])
+
+m4_p([dnl
+If the m4_arg(pgin_fcn) function is non-NULL, it is called each time
+a page is read into the memory pool from a file of type m4_arg(ftype), or
+a page is created for a file of type m4_arg(ftype) (see the
+DB_MPOOL_CREATE flag for the m4_refT(memp_fget)).])
+
+m4_p([dnl
+If the m4_arg(pgout_fcn) function is non-NULL, it is called each time
+a page is written to a file of type m4_arg(ftype).])
+
+m4_p([dnl
+The purpose of the m4_ref(memp_register) function is to support processing
+when pages are entered into, or flushed from, the pool.  For example, this
+functionality might be used to do byte-endian conversion as pages are read
+from, or written to, the underlying file.])
+
+m4_p([dnl
+A file type must be specified to make it possible for unrelated threads
+or processes that are sharing a pool, to evict each other's pages from
+the pool.  During initialization, applications should call
+m4_ref(memp_register) for each type of file requiring input or output
+processing that will be sharing the underlying pool.  (No registry is
+necessary for the standard m4_db access method types because
+m4_ref(dbh_open) registers them separately.)])
+
+m4_p([dnl
+If a thread or process does not call m4_ref(memp_register) for a file
+type, it is impossible for it to evict pages for any file requiring input
+or output processing from the pool.  For this reason,
+m4_ref(memp_register) should always be called by each application sharing
+a pool for each type of file included in the pool, regardless of whether
+or not the application itself uses files of that type.])
+
+m4_return(memp_register, std)
+
+m4_parambegin
+m4_param(ftype, [dnl
+The m4_arg(ftype) parameter specifies the type of file for which the
+page-in and page-out functions will be called.
+m4_p([dnl
+The m4_arg(ftype) value for a file must be a non-zero positive number
+less than 128 (0 and negative numbers are reserved for internal use by
+the m4_db library).])])
+
+m4_param([[pgin_fcn, pgout_fcn]], [dnl
+The page-in and page-out functions.
+m4_p([dnl
+The m4_arg(pgin_fcn) and m4_arg(pgout_fcn) functions are called with a
+reference to the current database environment, the page number being
+read or written, a pointer to the page being read or written, and any
+parameter m4_arg(pgcookie) that was specified to the
+m4_refT(memp_set_pgcookie).])
+m4_p([dnl
+The m4_arg(pgin_fcn) and m4_arg(pgout_fcn) functions should return 0 on
+success, and a non-zero value on failure, in which case the shared m4_db
+library function calling it will also fail, returning that non-zero
+value.  The non-zero value should be selected from values outside of the
+m4_db library namespace.])])
+
+m4_paramend
+
+m4_seealso(DbMpool)
+m4_page_footer

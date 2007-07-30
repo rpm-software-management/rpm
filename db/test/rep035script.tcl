@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep035script.tcl,v 12.4 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep035script.tcl,v 12.9 2007/05/17 18:17:21 bostic Exp $
 #
 # Rep035 script - continually calls lock_detect, txn_checkpoint,
 # or mpool_trickle.
@@ -28,8 +27,13 @@ if { $argc != 2 } {
 set clientdir [ lindex $argv 0 ]
 set apicall [ lindex $argv 1 ]
 
-set is_repchild 1
+# Join the queue env.  We assume the rep test convention of
+# placing the messages in $testdir/MSGQUEUEDIR.
+set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]     
+error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
+
 # Join the client env.
+repladd 3
 set envid 3
 set cl2_cmd "berkdb_env_noerr -home $clientdir \
 	-errfile /dev/stderr -errpfx CLIENT.$apicall \

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: ex_tpcb.c,v 12.5 2006/08/24 14:45:42 bostic Exp $
+ * $Id: ex_tpcb.c,v 12.8 2007/05/17 15:15:12 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -636,26 +635,26 @@ tp_txn(dbenv, adb, bdb, tdb, hdb, accounts, branches, tellers, verbose)
 
 	/* Account record */
 	k_dbt.data = &account;
-	if (acurs->c_get(acurs, &k_dbt, &d_dbt, DB_SET) != 0)
+	if (acurs->get(acurs, &k_dbt, &d_dbt, DB_SET) != 0)
 		goto err;
 	rec.balance += 10;
-	if (acurs->c_put(acurs, &k_dbt, &d_dbt, DB_CURRENT) != 0)
+	if (acurs->put(acurs, &k_dbt, &d_dbt, DB_CURRENT) != 0)
 		goto err;
 
 	/* Branch record */
 	k_dbt.data = &branch;
-	if (bcurs->c_get(bcurs, &k_dbt, &d_dbt, DB_SET) != 0)
+	if (bcurs->get(bcurs, &k_dbt, &d_dbt, DB_SET) != 0)
 		goto err;
 	rec.balance += 10;
-	if (bcurs->c_put(bcurs, &k_dbt, &d_dbt, DB_CURRENT) != 0)
+	if (bcurs->put(bcurs, &k_dbt, &d_dbt, DB_CURRENT) != 0)
 		goto err;
 
 	/* Teller record */
 	k_dbt.data = &teller;
-	if (tcurs->c_get(tcurs, &k_dbt, &d_dbt, DB_SET) != 0)
+	if (tcurs->get(tcurs, &k_dbt, &d_dbt, DB_SET) != 0)
 		goto err;
 	rec.balance += 10;
-	if (tcurs->c_put(tcurs, &k_dbt, &d_dbt, DB_CURRENT) != 0)
+	if (tcurs->put(tcurs, &k_dbt, &d_dbt, DB_CURRENT) != 0)
 		goto err;
 
 	/* History record */
@@ -665,8 +664,8 @@ tp_txn(dbenv, adb, bdb, tdb, hdb, accounts, branches, tellers, verbose)
 	if (hdb->put(hdb, t, &k_histdbt, &d_histdbt, DB_APPEND) != 0)
 		goto err;
 
-	if (acurs->c_close(acurs) != 0 || bcurs->c_close(bcurs) != 0 ||
-	    tcurs->c_close(tcurs) != 0)
+	if (acurs->close(acurs) != 0 || bcurs->close(bcurs) != 0 ||
+	    tcurs->close(tcurs) != 0)
 		goto err;
 
 	ret = t->commit(t, 0);
@@ -678,11 +677,11 @@ tp_txn(dbenv, adb, bdb, tdb, hdb, accounts, branches, tellers, verbose)
 	return (0);
 
 err:	if (acurs != NULL)
-		(void)acurs->c_close(acurs);
+		(void)acurs->close(acurs);
 	if (bcurs != NULL)
-		(void)bcurs->c_close(bcurs);
+		(void)bcurs->close(bcurs);
 	if (tcurs != NULL)
-		(void)tcurs->c_close(tcurs);
+		(void)tcurs->close(tcurs);
 	if (t != NULL)
 		(void)t->abort(t);
 

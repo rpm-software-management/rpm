@@ -1,13 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: TupleOutput.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
+ * $Id: TupleOutput.java,v 12.6 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.bind.tuple;
+
+import java.math.BigInteger;
 
 import com.sleepycat.util.FastOutputStream;
 import com.sleepycat.util.PackedInteger;
@@ -26,7 +27,8 @@ import com.sleepycat.util.UtfOps;
  * first) order with their sign bit (high-order bit) inverted to cause negative
  * numbers to be sorted first when comparing values as unsigned byte arrays,
  * as done in a database.  Unsigned numbers, including characters, are stored
- * in MSB order with no change to their sign bit.</p>
+ * in MSB order with no change to their sign bit.  BigInteger values are stored
+ * with a preceding length having the same sign as the value.</p>
  *
  * <p>Strings and character arrays are stored either as a fixed length array of
  * unicode characters, where the length must be known by the application, or as
@@ -482,7 +484,7 @@ public class TupleOutput extends FastOutputStream {
      *
      * @see PackedInteger
      */
-    public void writePackedInt(int val) {
+    public final void writePackedInt(int val) {
 
         makeSpace(PackedInteger.MAX_LENGTH);
 
@@ -490,5 +492,69 @@ public class TupleOutput extends FastOutputStream {
         int newLen = PackedInteger.writeInt(getBufferBytes(), oldLen, val);
 
         addSize(newLen - oldLen);
+    }
+
+    /**
+     * Writes a packed long integer.  Note that packed integers are not
+     * appropriate for sorted values (keys) unless a custom comparator is used.
+     *
+     * @see PackedInteger
+     */
+    public final void writePackedLong(long val) {
+
+        makeSpace(PackedInteger.MAX_LONG_LENGTH);
+
+        int oldLen = getBufferLength();
+        int newLen = PackedInteger.writeLong(getBufferBytes(), oldLen, val);
+
+        addSize(newLen - oldLen);
+    }
+
+    /**
+     * Writes a {@code BigInteger}.  Supported {@code BigInteger} values are
+     * limited to those with a byte array ({@link BigInteger#toByteArray})
+     * representation with a size of 0x7fff bytes or less.  The maximum {@code
+     * BigInteger} value is (2<sup>0x3fff7</sup> - 1) and the minimum value is
+     * (-2<sup>0x3fff7</sup>).
+     *
+     * <p>The byte format for a {@code BigInteger} value is:</p>
+     * <ul>
+     * <li>Byte 0 and 1: The length of the following bytes, negated if the
+     * {@code BigInteger} value is negative, and written as a sorted value as
+     * if {@link #writeShort} were called.</li>
+     * <li>Byte 2: The first byte of the {@link BigInteger#toByteArray} array,
+     * written as a sorted value as if {@link #writeByte} were called.</li>
+     * <li>Byte 3 to N: The second and remaining bytes, if any, of the {@link
+     * BigInteger#toByteArray} array, written without modification.</li>
+     * </ul>
+     * <p>This format provides correct default sorting when the default
+     * byte-by-byte comparison is used.</p>
+     *
+     * @throws NullPointerException if val is null.
+     *
+     * @throws IllegalArgumentException if the byte array representation of val
+     * is larger than 0x7fff bytes.
+     */
+    public final TupleOutput writeBigInteger(BigInteger val) {
+        byte[] a = val.toByteArray();
+        if (a.length > Short.MAX_VALUE) {
+            throw new IllegalArgumentException
+                ("BigInteger byte array is larger than 0x7fff bytes");
+        }
+        int firstByte = a[0];
+        writeShort((firstByte < 0) ? (- a.length) : a.length);
+        writeByte(firstByte);
+        writeFast(a, 1, a.length - 1);
+        return this;
+    }
+
+    /**
+     * Returns the byte length of a given {@code BigInteger} value.
+     *
+     * @see TupleOutput#writeBigInteger
+     */
+    public static int getBigIntegerByteLength(BigInteger val) {
+        return 2 /* length bytes */ +
+               (val.bitLength() + 1 /* sign bit */ + 7 /* round up */) / 8;
     }
 }

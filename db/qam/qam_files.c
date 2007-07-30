@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: qam_files.c,v 12.17 2006/08/24 14:46:24 bostic Exp $
+ * $Id: qam_files.c,v 12.31 2007/06/08 17:34:56 bostic Exp $
  */
 
 #include "db_config.h"
@@ -27,15 +26,16 @@
  * Calculate which extent the page is in, open and create if necessary.
  *
  * PUBLIC: int __qam_fprobe __P((DB *, db_pgno_t,
- * PUBLIC:     DB_TXN *, void *, qam_probe_mode, u_int32_t));
+ * PUBLIC:     DB_TXN *, void *, qam_probe_mode, DB_CACHE_PRIORITY, u_int32_t));
  */
 int
-__qam_fprobe(dbp, pgno, txn, addrp, mode, flags)
+__qam_fprobe(dbp, pgno, txn, addrp, mode, priority, flags)
 	DB *dbp;
 	db_pgno_t pgno;
 	DB_TXN *txn;
 	void *addrp;
 	qam_probe_mode mode;
+	DB_CACHE_PRIORITY priority;
 	u_int32_t flags;
 {
 	DB_ENV *dbenv;
@@ -57,9 +57,9 @@ __qam_fprobe(dbp, pgno, txn, addrp, mode, flags)
 		case QAM_PROBE_GET:
 			return (__memp_fget(mpf, &pgno, txn, flags, addrp));
 		case QAM_PROBE_PUT:
-			return (__memp_fput(mpf, addrp, flags));
+			return (__memp_fput(mpf, addrp, priority));
 		case QAM_PROBE_DIRTY:
-			return (__memp_dirty(mpf, addrp, txn, flags));
+			return (__memp_dirty(mpf, addrp, txn, priority, flags));
 		case QAM_PROBE_MPF:
 			*(DB_MPOOLFILE **)addrp = mpf;
 			return (0);
@@ -296,10 +296,11 @@ err:
 				return (0);
 			break;
 		case QAM_PROBE_PUT:
-			ret = __memp_fput(mpf, addrp, flags);
+			ret = __memp_fput(mpf, addrp, dbp->priority);
 			break;
 		case QAM_PROBE_DIRTY:
-			return (__memp_dirty(mpf, addrp, txn, flags));
+			return (__memp_dirty(mpf,
+			    addrp, txn, dbp->priority, flags));
 		case QAM_PROBE_MPF:
 			*(DB_MPOOLFILE **)addrp = mpf;
 			return (0);
@@ -461,25 +462,17 @@ int
 __qam_sync(dbp)
 	DB *dbp;
 {
-	DB_ENV *dbenv;
-	DB_MPOOLFILE *mpf;
-
-	dbenv = dbp->dbenv;
-	mpf = dbp->mpf;
-
+	int ret;
 	/*
-	 * We need to flush all extent files.  There is no easy way to find
-	 * all the extents for this queue which are currently open. For now
-	 * just flush the whole cache.  An alternative would be to have a
-	 * call into the cache layer that would flush all of the queue extent
-	 * files it has open (there's a flag when we open a queue extent file,
-	 * so the cache layer can identify them).
+	 * We can't easily identify the extent files associated with a specific
+	 * Queue file, so flush all Queue extent files.
 	 */
-
-	if (((QUEUE *)dbp->q_internal)->page_ext == 0)
-		return (__memp_fsync(mpf));
-	else
-		return (__memp_sync(dbenv, NULL));
+	if ((ret = __memp_fsync(dbp->mpf)) != 0)
+		return (ret);
+	if (((QUEUE *)dbp->q_internal)->page_ext != 0)
+		return (__memp_sync_int(
+		    dbp->dbenv, NULL, 0, DB_SYNC_QUEUE_EXTENT, NULL, NULL));
+	return (0);
 }
 
 /*
@@ -487,7 +480,7 @@ __qam_sync(dbp)
  *	Another thread may close the handle so this should only
  *	be used single threaded or with care.
  *
- * PUBLIC: int __qam_gen_filelist __P(( DB *, QUEUE_FILELIST **));
+ * PUBLIC: int __qam_gen_filelist __P((DB *, QUEUE_FILELIST **));
  */
 int
 __qam_gen_filelist(dbp, filelistp)
@@ -523,7 +516,7 @@ __qam_gen_filelist(dbp, filelistp)
 	current = meta->cur_recno;
 	first = meta->first_recno;
 
-	if ((ret = __memp_fput(mpf, meta, 0)) != 0)
+	if ((ret = __memp_fput(mpf, meta, dbp->priority)) != 0)
 		return (ret);
 
 	/*
@@ -541,6 +534,9 @@ __qam_gen_filelist(dbp, filelistp)
 	else
 		extent_cnt =
 		    (current + (UINT32_MAX - first)) / rec_extent + 4;
+
+	if (extent_cnt == 0)
+		return (0);
 	if ((ret = __os_calloc(dbenv,
 	    extent_cnt, sizeof(QUEUE_FILELIST), filelistp)) != 0)
 		return (ret);
@@ -563,7 +559,7 @@ again:
 
 	for (i = first; i >= first && i <= stop; i += rec_extent) {
 		if ((ret = __qam_fprobe(dbp, QAM_RECNO_PAGE(dbp, i), NULL,
-		    &fp->mpf, QAM_PROBE_MPF, 0)) != 0) {
+		    &fp->mpf, QAM_PROBE_MPF, dbp->priority, 0)) != 0) {
 			if (ret == ENOENT)
 				continue;
 			return (ret);
@@ -601,7 +597,7 @@ __qam_extent_names(dbenv, name, namelistp)
 
 	*namelistp = NULL;
 	filelist = NULL;
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
 		return (ret);
 	if ((ret = __db_open(dbp,
 	    NULL, name, NULL, DB_QUEUE, DB_RDONLY, 0, PGNO_BASE_MD)) != 0)
@@ -691,7 +687,8 @@ __qam_exid(dbp, fidp, exnum)
  *
  * PUBLIC: int __qam_nameop __P((DB *, DB_TXN *, const char *, qam_name_op));
  */
-int __qam_nameop(dbp, txn, newname, op)
+int
+__qam_nameop(dbp, txn, newname, op)
 	DB *dbp;
 	DB_TXN *txn;
 	const char *newname;
@@ -822,7 +819,7 @@ int __qam_nameop(dbp, txn, newname, op)
 			     ndir, PATH_SEPARATOR[0], new, exid);
 			QAM_EXNAME(qp, exid, buf, sizeof(buf));
 			if ((ret = __fop_rename(dbenv,
-			    txn, buf, nbuf, fid, DB_APP_DATA,
+			    txn, buf, nbuf, fid, DB_APP_DATA, 1,
 			    F_ISSET(dbp, DB_AM_NOT_DURABLE) ?
 			    DB_LOG_NOT_DURABLE : 0)) != 0)
 				goto err;

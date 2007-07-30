@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mp_stat.c,v 12.28 2006/09/11 14:53:42 bostic Exp $
+ * $Id: mp_stat.c,v 12.36 2007/06/22 17:41:29 bostic Exp $
  */
 
 #include "db_config.h"
@@ -104,10 +103,10 @@ __memp_stat(dbenv, gspp, fspp, flags)
 		 * a per-cache basis.  Note that configuration information
 		 * may be modified at any time, and so we have to lock.
 		 */
-		c_mp = dbmp->reginfo[0].primary;
-		sp->st_gbytes = c_mp->stat.st_gbytes;
-		sp->st_bytes = c_mp->stat.st_bytes;
-		sp->st_ncache = dbmp->nreg;
+		sp->st_gbytes = mp->stat.st_gbytes;
+		sp->st_bytes = mp->stat.st_bytes;
+		sp->st_ncache = mp->nreg;
+		sp->st_max_ncache = mp->max_nreg;
 		sp->st_regsize = dbmp->reginfo[0].rp->size;
 
 		MPOOL_SYSTEM_LOCK(dbenv);
@@ -165,7 +164,8 @@ __memp_stat(dbenv, gspp, fspp, flags)
 				    c_mp->stat.st_alloc_max_pages;
 
 			if (LF_ISSET(DB_STAT_CLEAR)) {
-				__mutex_clear(dbenv, c_mp->mtx_region);
+				if (!LF_ISSET(DB_STAT_SUBSYSTEM))
+					__mutex_clear(dbenv, c_mp->mtx_region);
 
 				MPOOL_SYSTEM_LOCK(dbenv);
 				st_bytes = c_mp->stat.st_bytes;
@@ -388,9 +388,10 @@ __memp_stat_print(dbenv, flags)
 	int ret;
 
 	orig_flags = flags;
-	LF_CLR(DB_STAT_CLEAR);
+	LF_CLR(DB_STAT_CLEAR | DB_STAT_SUBSYSTEM);
 	if (flags == 0 || LF_ISSET(DB_STAT_ALL)) {
-		ret = __memp_print_stats(dbenv, orig_flags);
+		ret = __memp_print_stats(dbenv,
+		    LF_ISSET(DB_STAT_ALL) ? flags : orig_flags);
 		if (flags == 0 || ret != 0)
 			return (ret);
 	}
@@ -423,6 +424,7 @@ __memp_print_stats(dbenv, flags)
 	__db_dlbytes(dbenv, "Total cache size",
 	    (u_long)gsp->st_gbytes, (u_long)0, (u_long)gsp->st_bytes);
 	__db_dl(dbenv, "Number of caches", (u_long)gsp->st_ncache);
+	__db_dl(dbenv, "Maximum number of caches", (u_long)gsp->st_max_ncache);
 	__db_dlbytes(dbenv, "Pool individual cache size",
 	    (u_long)0, (u_long)0, (u_long)gsp->st_regsize);
 	__db_dlbytes(dbenv, "Maximum memory-mapped file size",
@@ -551,7 +553,7 @@ __memp_print_all(dbenv, flags)
 
 	MPOOL_SYSTEM_LOCK(dbenv);
 
-	__db_print_reginfo(dbenv, dbmp->reginfo, "Mpool");
+	__db_print_reginfo(dbenv, dbmp->reginfo, "Mpool", flags);
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 
 	__db_msg(dbenv, "MPOOL structure:");
@@ -567,7 +569,7 @@ __memp_print_all(dbenv, flags)
 	__db_msg(dbenv, "DB_MPOOL handle information:");
 	__mutex_print_debug_single(
 	    dbenv, "DB_MPOOL handle mutex", dbmp->mutex, flags);
-	STAT_ULONG("Underlying cache regions", dbmp->nreg);
+	STAT_ULONG("Underlying cache regions", mp->nreg);
 
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 	__db_msg(dbenv, "DB_MPOOLFILE structures:");
@@ -709,9 +711,11 @@ __memp_print_hash(dbenv, dbmp, reginfo, fmap, flags)
 	    bucket = 0; bucket < c_mp->htab_buckets; ++hp, ++bucket) {
 		MUTEX_LOCK(dbenv, hp->mtx_hash);
 		if ((bhp = SH_TAILQ_FIRST(&hp->hash_bucket, __bh)) != NULL) {
-			__db_msgadd(dbenv, &mb, "bucket %lu: %lu, %lu ",
+			__db_msgadd(dbenv, &mb,
+			    "bucket %lu: %lu, %lu (%lu dirty)",
 			    (u_long)bucket, (u_long)hp->hash_io_wait,
-			    (u_long)hp->hash_priority);
+			    (u_long)hp->hash_priority,
+			    (u_long)hp->hash_page_dirty);
 			if (hp->hash_frozen != 0)
 				__db_msgadd(dbenv, &mb, "(MVCC %lu/%lu/%lu) ",
 				    (u_long)hp->hash_frozen,
@@ -822,7 +826,8 @@ __memp_stat_wait(dbenv, reginfo, mp, mstat, flags)
 			mstat->st_hash_max_wait = tmp_wait;
 			mstat->st_hash_max_nowait = tmp_nowait;
 		}
-		if (LF_ISSET(DB_STAT_CLEAR))
+		if (LF_ISSET(DB_STAT_CLEAR |
+		    DB_STAT_SUBSYSTEM) == DB_STAT_CLEAR)
 			__mutex_clear(dbenv, hp->mtx_hash);
 
 		mstat->st_io_wait += hp->hash_io_wait;

@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -36,6 +35,11 @@ public class HashStats extends DatabaseStats {
     private int hash_ndata;
     public int getNumData() {
         return hash_ndata;
+    }
+
+    private int hash_pagecnt;
+    public int getPageCount() {
+        return hash_pagecnt;
     }
 
     private int hash_pagesize;
@@ -100,6 +104,7 @@ public class HashStats extends DatabaseStats {
             + "\n  hash_metaflags=" + hash_metaflags
             + "\n  hash_nkeys=" + hash_nkeys
             + "\n  hash_ndata=" + hash_ndata
+            + "\n  hash_pagecnt=" + hash_pagecnt
             + "\n  hash_pagesize=" + hash_pagesize
             + "\n  hash_ffactor=" + hash_ffactor
             + "\n  hash_buckets=" + hash_buckets

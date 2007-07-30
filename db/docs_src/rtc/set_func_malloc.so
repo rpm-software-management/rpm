@@ -1,0 +1,23 @@
+m4_comment([$Id: set_func_malloc.so,v 10.14 2003/09/25 15:28:07 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_malloc)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_malloc),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_malloc(void *(*func_malloc)(size_t size));
+]))
+
+m4_ansi_func(malloc)
+
+m4_scope_process(dbenv_set_func_malloc)
+
+m4_when_init(dbenv_set_func_malloc)
+
+m4_return(dbenv_set_func_malloc, std)
+
+m4_param_replace(func_malloc)
+
+m4_rtc_seealso
+m4_page_footer

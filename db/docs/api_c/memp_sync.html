@@ -1,6 +1,5 @@
-<!--$Id: memp_sync.so,v 10.42 2004/11/12 02:55:19 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: memp_sync.so,v 10.43 2007/02/27 19:23:07 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -33,11 +32,6 @@ backing files.</p>
 example, pages that are currently in use by another thread of control)
 are waited for and written to disk as soon as it is possible to do
 so.</p>
-<p>To support the DB_ENV-&gt;memp_sync functionality, it is necessary that the
-pool functions know the location of the log sequence number on the page
-for each file type.  This location should be specified when the file is
-opened using the <a href="../api_c/memp_set_lsn_offset.html">DB_MPOOLFILE-&gt;set_lsn_offset</a> method.  It is not required that
-the log sequence number be aligned on the page in any way.</p>
 <p>The DB_ENV-&gt;memp_sync method
 returns a non-zero error value on failure
 and 0 on success.
@@ -60,6 +54,6 @@ NULL, all modified pages in the pool are written to disk.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

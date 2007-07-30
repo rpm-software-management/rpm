@@ -1,0 +1,20 @@
+m4_comment([$Id: sunos.so,v 11.6 2003/03/24 13:46:24 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    SunOS, @SunOS, build_unix/solaris, build_unix/ultrix)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't specify the m4_ref(DB_SYSTEM_MEM) flag to m4_ref(dbenv_open).])
+
+m4_p([dnl
+The m4_manref(shmget, 2) interfaces are not used on SunOS releases prior
+to 5.0, even though they apparently exist, because the distributed
+include files did not allow them to be compiled.  For this reason, it
+will not be possible to specify the m4_ref(DB_SYSTEM_MEM) flag those
+versions of SunOS.])])
+
+m4_nlistend
+
+m4_page_footer

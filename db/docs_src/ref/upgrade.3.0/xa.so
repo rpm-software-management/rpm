@@ -1,0 +1,24 @@
+m4_comment([$Id: xa.so,v 11.7 2000/03/18 21:43:21 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: db_xa_open,, upgrade.3.0/open, upgrade.3.0/db)
+
+m4_p([dnl
+The following change applies only to applications using m4_db as an XA
+Resource Manager.  If your application is not using m4_db in this way,
+you can ignore this change.])
+
+m4_p([dnl
+The db_xa_open function has been replaced with the m4_ref(DB_XA_CREATE)
+flag to the m4_ref(dbh_create) function.  All calls to db_xa_open should
+be replaced with calls to m4_ref(dbh_create) with the m4_ref(DB_XA_CREATE)
+flag set, followed by a call to the m4_ref(dbh_open) function.])
+
+m4_p([dnl
+A similar change has been made for the C++ API, where the
+m4_ref(DB_XA_CREATE) flag should be specified to the Db constructor. All
+calls to the Db::xa_open method should be replaced with the
+m4_ref(DB_XA_CREATE) flag to the Db constructor, followed by a call to
+the DB::open method.])
+
+m4_page_footer

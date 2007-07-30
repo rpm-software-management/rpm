@@ -1,0 +1,66 @@
+m4_comment([$Id: alloc.so,v 1.12 2004/08/13 03:39:00 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 3.3: DB-__GT__set_malloc, DB-__GT__set_realloc],,
+    upgrade.3.3/getswap, upgrade.3.3/conflict)
+
+m4_p([dnl
+There are two new methods in the m4_db 3.3 release:
+m4_ref(dbenv_set_alloc) and m4_ref(dbh_set_alloc).  These functions
+allow applications to specify a set of allocation functions for the
+m4_db library to use when allocating memory to be owned by the
+application and when freeing memory that was originally allocated by the
+application.])
+
+m4_p([dnl
+The new methods affect or replace the following historic methods:])
+
+m4_tagbegin
+m4_tag(DB-__GT__set_malloc, [dnl
+The DB-__GT__set_malloc method has been replaced in its entirety.
+Applications using this method should replace the call with a call
+to m4_ref(dbh_set_alloc).])
+m4_tag(DB-__GT__set_realloc, [dnl
+The DB-__GT__set_realloc method has been replaced in its entirety.
+Applications using this method should replace the call with a call
+to m4_ref(dbh_set_alloc).])
+m4_tag(m4_ref(dbh_stat), [dnl
+The historic m4_arg(db_malloc) argument to the m4_refT(dbh_stat) has
+been replaced.  Applications using this method should do as follows:
+if the argument is NULL, it should simply be removed.  If non-NULL,
+it should be replaced with a call to m4_ref(dbh_set_alloc).])
+m4_tag(lock_stat, [dnl
+The historic m4_arg(db_malloc) argument to the lock_stat function has
+been replaced.  Applications using this function should do as follows:
+if the argument is NULL, it should simply be removed.  If
+non-NULL, it should be replaced with a call to m4_ref(dbenv_set_alloc).])
+m4_tag(log_archive, [dnl
+The historic m4_arg(db_malloc) argument to the log_archive function has
+been replaced.  Applications using this function should do as follows:
+if the argument is NULL, it should simply be removed.  If non-NULL,
+it should be replaced with a call to m4_ref(dbenv_set_alloc).])
+m4_tag(log_stat, [dnl
+The historic m4_arg(db_malloc) argument to the log_stat function has
+been replaced.  Applications using this function should do as follows:
+if the argument is NULL, it should simply be removed.  If non-NULL,
+it should be replaced with a call to m4_ref(dbenv_set_alloc).])
+m4_tag(memp_stat, [dnl
+The historic m4_arg(db_malloc) argument to the memp_stat function has
+been replaced.  Applications using this function should do as follows:
+if the argument is NULL, it should simply be removed.  If non-NULL,
+it should be replaced with a call to m4_ref(dbenv_set_alloc).])
+m4_tag(txn_stat, [dnl
+The historic m4_arg(db_malloc) argument to the txn_stat function has
+been replaced.  Applications using this function should do as follows:
+if the argument is NULL, it should simply be removed.  If non-NULL,
+it should be replaced with a call to m4_ref(dbenv_set_alloc).])
+m4_tagend
+
+m4_p([dnl
+One potential incompatibility for historic applications is that the
+allocation functions for a database environment must now be set before
+the environment is opened.  Historically, m4_db applications could open
+the environment first, and subsequently call the DB-__GT__set_malloc
+and DB-__GT__set_realloc methods; that use is no longer supported.])
+
+m4_page_footer

@@ -1,0 +1,19 @@
+m4_comment([$Id: app_dispatch.so,v 1.6 2002/08/26 23:05:28 mjc Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 4.1: Application-specific logging and recovery],,
+    upgrade.4.1/cxx, upgrade.4.1/disk)
+
+m4_p([dnl
+The application-specific logging and recovery tools and interfaces have
+been reworked in the 4.1 release to make it simpler for applications to
+use m4_db to support their own logging and recovery of non-m4_db
+objects.  Specifically, the DB_ENV-__GT__set_recovery_init and
+DB_ENV-__GT__set_tx_recover interfaces have been removed, replaced by
+m4_ref(dbenv_set_app_dispatch).  Applications using either of the
+removed interfaces should be updated to call
+m4_ref(dbenv_set_app_dispatch).  For more information see
+m4_link(M4RELDIR/ref/apprec/intro, "Application-specific logging and
+recovery") and the m4_ref(dbenv_set_app_dispatch) documentation.])
+
+m4_page_footer

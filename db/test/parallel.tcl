@@ -1,5 +1,5 @@
 # Code to load up the tests in to the Queue database
-# $Id: parallel.tcl,v 12.5 2006/07/28 14:00:25 carol Exp $
+# $Id: parallel.tcl,v 12.6 2007/06/05 20:00:46 carol Exp $
 proc load_queue { file  {dbdir RUNQUEUE} nitems } {
 	global serial_tests
 	global num_serial
@@ -298,7 +298,7 @@ proc mkparalleldirs { nprocs basename queuedir } {
 		catch {eval file copy \
 		    [eval glob {$dir/db_{checkpoint,deadlock}$EXE} \
 		    {$dir/db_{dump,load,printlog,recover,stat,upgrade}$EXE} \
-		    {$dir/db_{archive,verify}$EXE}] \
+		    {$dir/db_{archive,verify,hotbackup}$EXE}] \
 		    $destdir}
 
 		# Create modified copies of include.tcl in parallel

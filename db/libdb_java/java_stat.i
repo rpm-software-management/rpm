@@ -90,6 +90,7 @@ JAVA_TYPEMAP(DB_MPOOL_FSTAT **, com.sleepycat.db.CacheFileStats[], jobjectArray)
 
 JAVA_STAT_CLASS(DB_MUTEX_STAT *, com.sleepycat.db.MutexStats, mutex_stat)
 JAVA_STAT_CLASS(DB_REP_STAT *, com.sleepycat.db.ReplicationStats, rep_stat)
+JAVA_STAT_CLASS(DB_REPMGR_STAT *, com.sleepycat.db.ReplicationManagerStats, repmgr_stat)
 JAVA_STAT_CLASS(DB_SEQUENCE_STAT *, com.sleepycat.db.SequenceStats, seq_stat)
 JAVA_TYPEMAP(DB_TXN_STAT *, com.sleepycat.db.TransactionStats, jobject)
 %typemap(out) DB_TXN_STAT * {

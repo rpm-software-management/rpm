@@ -1,0 +1,15 @@
+m4_comment([$Id: disk.so,v 11.6 2000/12/05 20:36:25 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 2.0: upgrade requirements,,
+    upgrade.2.0/convert, upgrade.3.0/intro)
+
+m4_p([dnl
+You will need to upgrade your on-disk databases, as all access method
+database formats changed in the m4_db 2.0 release.  For information on
+converting databases from m4_db 1.85 to m4_db 2.0, see the
+m4_ref(db_dump185) and m4_ref(db_load) documentation.  As database
+environments did not exist prior to the 2.0 release, there is no
+question of upgrading existing database environments.])
+
+m4_page_footer

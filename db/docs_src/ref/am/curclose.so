@@ -1,0 +1,14 @@
+m4_comment([$Id: curclose.so,v 10.15 2003/10/18 19:15:51 bostic Exp $])
+
+m4_ref_title(Access Methods, Cursor close,
+    [@closing a cursor, closing a @cursor], am/count, am_misc/align)
+
+m4_p([dnl
+The m4_refT(dbc_close) closes the m4_ref(Dbc) cursor, after which the
+cursor may no longer be used.  Although cursors are implicitly closed
+when the database they point to are closed, it is good programming
+practice to explicitly close cursors.  In addition, in transactional
+systems, cursors may not exist outside of a transaction and so must be
+explicitly closed.])
+
+m4_page_footer

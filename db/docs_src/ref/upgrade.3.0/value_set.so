@@ -1,0 +1,31 @@
+m4_comment([$Id: value_set.so,v 11.10 2003/10/18 19:16:14 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: db_value_set,, upgrade.3.0/jump_set, upgrade.3.0/dbenv_cxx)
+
+m4_p([dnl
+The db_value_set function has been removed from the m4_db 3.0 release,
+replaced by method calls on the m4_ref(DbEnv) handle.])
+
+m4_p([dnl
+The following table lists the db_value_set arguments previously used by
+applications and the function that should now be used instead.])
+
+m4_table_begin(, _center)
+m4_table_header(db_value_set argument, m4_db 3.X method)
+m4_table_element(DB_MUTEX_LOCKS, dbenv_set_mutexlocks)
+m4_table_element(DB_REGION_ANON, [The DB_REGION_ANON functionality has
+been replaced by the m4_ref(DB_SYSTEM_MEM) and m4_ref(DB_PRIVATE) flags
+to the m4_ref(dbenv_open) function.  A direct translation is not
+available, please review the m4_ref(dbenv_open) manual page for more
+information.])
+m4_table_element(DB_REGION_INIT, dbenv_set_region_init)
+m4_table_element(DB_REGION_NAME, [The DB_REGION_NAME functionality has
+been replaced by the m4_ref(DB_SYSTEM_MEM) and m4_ref(DB_PRIVATE) flags
+to the m4_ref(dbenv_open) function.  A direct translation is not
+available, please review the m4_ref(dbenv_open) manual page for more
+information.])
+m4_table_element(DB_TSL_SPINS, dbenv_set_tas_spins)
+m4_table_end
+
+m4_page_footer

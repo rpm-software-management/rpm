@@ -66,7 +66,7 @@ done
 cd "$JETEST"
 for f in `find . -name '*.java' | grep $DIRMATCH | grep -v $EXCLUDETESTS` ; do
 	#echo $DBTEST/$f
-	sed -e "$E1" < $f > $DBTEST/$f.sed.out
+	sed -e "$E1" -e "$E4" < $f > $DBTEST/$f.sed.out
         diff -q -I "\$\Id:" $DBTEST/$f $DBTEST/$f.sed.out || \
             mv -f $DBTEST/$f.sed.out $DBTEST/$f
         rm -f $DBTEST/$f.sed.out
@@ -78,7 +78,7 @@ if [ $COPY_EXAMPLES -eq 1 ] ; then
     cd "$JEEXAMPLES"
     for f in `find . -name '*.java' | grep $DIRMATCH` ; do
             #echo $DBEXAMPLES/$f
-            sed -e "$E1" < $f > $DBEXAMPLES/$f.sed.out
+            sed -e "$E1" -e "$E4" < $f > $DBEXAMPLES/$f.sed.out
             diff -q -I "\$\Id:" $DBEXAMPLES/$f $DBEXAMPLES/$f.sed.out || \
                 mv -f $DBEXAMPLES/$f.sed.out $DBEXAMPLES/$f
             rm -f $DBEXAMPLES/$f.sed.out

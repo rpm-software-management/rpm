@@ -1,0 +1,29 @@
+m4_comment([$Id: env_close.so,v 11.14 2002/08/18 21:17:29 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(env close, m4_tcl_env_close, [dnl
+env close
+])
+
+m4_p([dnl
+Close the m4_db environment, freeing any allocated resources and closing
+any underlying subsystems.])
+
+m4_p([dnl
+This does not imply closing any databases that were opened in the
+environment.])
+
+m4_p([dnl
+Where the environment was initialized with the m4_arg(-txn) option,
+calling m4_tcl_env_close does not release any locks still held by the
+closing process, providing functionality for long-lived locks.])
+
+m4_p([dnl
+After m4_tcl_env_close has been called the m4_arg(env) handle may not be
+accessed again.])
+
+m4_tcl_ret_standard(m4_tcl_env_close)
+
+m4_page_footer

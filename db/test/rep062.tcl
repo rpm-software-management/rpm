@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2006,2007 Oracle.  All rights reserved.
 #
-# $Id: rep062.tcl,v 1.5 2006/09/11 18:54:25 carol Exp $
+# $Id: rep062.tcl,v 1.13 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep062
 # TEST	Test of internal initialization where client has a different
@@ -69,7 +68,14 @@ proc rep062_sub { method tnum logset recargs largs } {
 	global testdir
 	global util_path
 	global passwd
+	global has_crypto
 	global encrypt
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	set masterdir $testdir/MASTERDIR
 	set clientdir $testdir/CLIENTDIR
@@ -78,12 +84,8 @@ proc rep062_sub { method tnum logset recargs largs } {
 	# The documentation says that the log file must be at least
 	# four times the size of the in-memory log buffer.
 	set maxpg 16384
-	set log_buf [expr $maxpg * 2]
-	set log_max [expr $log_buf * 4]
-	set cache [expr $maxpg * 32 ]
-
-	set m_logargs " -log_buffer $log_buf"
-	set c_logargs " -log_buffer $log_buf"
+	set log_max [expr $maxpg * 8]
+	set cache [expr $maxpg * 32]
 
 	set m_logtype [lindex $logset 0]
 	set c_logtype [lindex $logset 1]
@@ -116,17 +118,20 @@ proc rep062_sub { method tnum logset recargs largs } {
 
 	foreach p $pairlist {
 		env_cleanup $testdir
+		# Extract values from the list.
+		set encryptenv [lindex [lindex $p 0] 0]
+		set encryptmsg "clear"
+		if { $has_crypto == 0 && $encryptenv == 1 } {
+			continue
+		}
+		if { $encryptenv == 1 } {
+			set encryptmsg "encrypted"
+		}
 		replsetup $testdir/MSGQUEUEDIR
 
 		file mkdir $masterdir
 		file mkdir $clientdir
 
-		# Extract values from the list.
-		set encryptenv [lindex [lindex $p 0] 0]
-		set encryptmsg "clear"
-		if { $encryptenv == 1 } {
-			set encryptmsg "encrypted"
-		}
 		set method1 [lindex [lindex $p 1] 0]
 		set method2 [lindex [lindex $p 2] 0]
 		set flags1 [lindex [lindex $p 1] 1]
@@ -151,34 +156,28 @@ proc rep062_sub { method tnum logset recargs largs } {
 		# Open a master.
 		repladd 1
 		set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-		    $m_logargs -log_max $log_max \
+		    $m_logargs -log_max $log_max $verbargs -errpfx MASTER \
 		    -cachesize { 0 $cache 1 } $envflags \
 		    -home $masterdir -rep_transport \[list 1 replsend\]"
-#		set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#		    $m_logargs -log_max $log_max \
-#		    -cachesize { 0 $cache 1 } $envflags \
-#		    -verbose {rep on} -errpfx MASTER -errfile /dev/stderr \
-#		    -home $masterdir -rep_transport \[list 1 replsend\]"
 		set masterenv [eval $ma_envcmd $recargs -rep_master]
-		error_check_good master_env [is_valid_env $masterenv] TRUE
 
 		# Open a client.
 		repladd 2
 		set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-		    $c_logargs -log_max $log_max \
+		    $c_logargs -log_max $log_max $verbargs -errpfx CLIENT \
 		    -cachesize { 0 $cache 1 } $envflags \
 		    -home $clientdir -rep_transport \[list 2 replsend\]"
-#		set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#		    $c_logargs -log_max $log_max \
-#		    -cachesize { 0 $cache 1 } $envflags \
-#		    -verbose {rep on} -errpfx CLIENT -errfile /dev/stderr \
-#		    -home $clientdir -rep_transport \[list 2 replsend\]"
 		set clientenv [eval $cl_envcmd $recargs -rep_client]
-		error_check_good client_env [is_valid_env $clientenv] TRUE
 
 		# Bring the client online by processing the startup messages.
 		set envlist "{$masterenv 1} {$clientenv 2}"
 		process_msgs $envlist
+
+		# Clobber replication's 30-second anti-archive timer, which will have
+		# been started by client sync-up internal init, so that we can do a
+		# log_archive in a moment.
+		#
+		$masterenv test force noarchive_timeout
 
 		# Open two databases on the master - one to test different
 		# methods, one to advance the log, forcing internal

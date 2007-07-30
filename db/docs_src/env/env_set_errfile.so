@@ -1,0 +1,116 @@
+m4_comment([$Id: env_set_errfile.so,v 10.37 2006/10/26 15:33:59 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_set_errfile)])
+define(M4GETINTERFACE, ifelse(M4INTERFACE,
+    dbenv_set_errfile, dbenv_get_errfile, dbh_get_errfile))
+
+define(M4PAGELOCAL, [M4INTERFACE, M4GETINTERFACE])
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_set_errfile, [dnl
+m4_pf_header(m4_ref(dbenv_set_errfile),
+ifelse(M4API, C_API, [dnl
+void
+DB_ENV-__GT__set_errfile(DB_ENV *dbenv, FILE *errfile);
+m4_blank
+void
+DB_ENV-__GT__get_errfile(DB_ENV *dbenv, FILE **errfilep);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+void
+DbEnv::set_errfile(FILE *errfile);
+m4_blank
+void
+DbEnv::get_errfile(FILE **errfilep);
+]))],[dnl
+m4_pf_header(m4_ref(dbh_set_errfile),
+ifelse(M4API, C_API, [dnl
+void
+DB-__GT__set_errfile(DB *db, FILE *errfile);
+m4_blank
+void
+DB-__GT__get_errfile(DB *db, FILE **errfilep);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+void Db::set_errfile(FILE *errfile);
+m4_blank
+void Db::get_errfile(FILE **errfilep);
+]))])
+
+ifelse(M4API, C_API, [dnl
+When an error occurs in the m4_db library, a m4_db error or an error
+return value is returned by the interface.  In some cases, however, the
+return value may be insufficient to completely describe the cause of the
+error especially during initial application debugging.
+
+m4_p([dnl
+The m4_ref(dbenv_set_errfile) and m4_refT(dbh_set_errfile)s are used to
+enhance the mechanism for reporting error messages to the application
+by setting a C library FILE * to be used for displaying additional m4_db
+error messages.  In some cases, when an error occurs, m4_db will output
+an additional error message to the specified file reference.])])
+
+ifelse(M4API, CXX_API, [dnl
+When an error occurs in the m4_db library, an exception is thrown or an
+error return value is returned by the interface.  In some cases,
+however, the exception or returned value may be insufficient to
+completely describe the cause of the error, especially during initial
+application debugging.
+
+m4_p([dnl
+The m4_ref(dbenv_set_errcall) and m4_refT(dbh_set_errcall)s are used to
+enhance the mechanism for reporting error messages to the application
+by setting a C library FILE * to be used for displaying additional m4_db
+error messages.  In some cases, when an error occurs, m4_db will output
+an additional error message to the specified file reference.])
+
+m4_p([dnl
+Alternatively, you can use the m4_refT(dbenv_set_error_stream) to display
+the additional information via an output stream, or the
+m4_refT(dbenv_set_errcall) to capture the additional error information in
+a way that does not use either output streams or C library FILE *'s.  You
+should not mix these approaches.])])
+
+m4_p([dnl
+The error message will consist of the prefix string and a colon
+("m4_bold(:)") (if a prefix string was previously specified using
+m4_ref(dbh_set_errpfx) or m4_ref(dbenv_set_errpfx)), an error string, and
+a trailing m4_htmlquote(newline) character.])
+
+m4_p([dnl
+The default configuration when applications first create m4_ref(Db) or
+m4_ref(DbEnv) handles is as if the m4_ref(dbenv_set_errfile) or
+m4_refT(dbh_set_errfile)s were called with the standard error output
+(stderr) specified as the FILE * argument.  Applications wanting no
+output at all can turn off this default configuration by calling the
+m4_ref(dbenv_set_errfile) or m4_refT(dbh_set_errfile)s with NULL as the
+FILE * argument.  Additionally, explicitly configuring the error output
+channel using any of the m4_ref(dbenv_set_errfile),
+m4_ref(dbh_set_errfile), m4_ref(dbenv_set_errcall),
+m4_ref(dbh_set_errcall), m4_ref(dbenv_set_error_stream) or
+m4_refT(dbh_set_error_stream)s will also turn off this default output
+for the application.])
+
+m4_p([dnl
+This error logging enhancement does not slow performance or significantly
+increase application size, and may be run during normal operation as well
+as during application debugging.])
+
+ifelse(M4INTERFACE, dbh_set_errfile, [dnl
+m4_really_dbenv(dbh_set_errfile, dbenv_set_errfile)])
+
+ifelse(M4INTERFACE, dbh_set_errfile,
+[m4_scope_dbh(M4INTERFACE)], [m4_scope_dbenv(M4INTERFACE)])
+
+m4_when_any(M4INTERFACE)
+
+m4_parambegin
+m4_param(errfile, [dnl
+The m4_arg(errfile) parameter is a C library FILE * to be used for
+displaying additional m4_db error information.])
+m4_paramend
+
+m4_pf_getter(M4GETINTERFACE, FILE *,, errfilep)
+
+ifelse(M4INTERFACE, dbenv_set_errfile, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

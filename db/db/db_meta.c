@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_meta.c,v 12.35 2006/08/24 14:45:15 bostic Exp $
+ * $Id: db_meta.c,v 12.47 2007/05/17 17:17:41 bostic Exp $
  */
 
 #include "db_config.h"
@@ -183,7 +182,7 @@ __db_new(dbc, type, pagepp)
 	}
 	LSN(h) = LSN(meta);
 
-	ret = __memp_fput(mpf, meta, 0);
+	ret = __memp_fput(mpf, meta, dbc->priority);
 	meta = NULL;
 	if ((t_ret = __TLPUT(dbc, metalock)) != 0 && ret == 0)
 		ret = t_ret;
@@ -240,9 +239,9 @@ __db_new(dbc, type, pagepp)
 	return (0);
 
 err:	if (h != NULL)
-		(void)__memp_fput(mpf, h, 0);
+		(void)__memp_fput(mpf, h, dbc->priority);
 	if (meta != NULL)
-		(void)__memp_fput(mpf, meta, 0);
+		(void)__memp_fput(mpf, meta, dbc->priority);
 	(void)__TLPUT(dbc, metalock);
 	return (ret);
 }
@@ -262,22 +261,28 @@ __db_free(dbc, h)
 	DB *dbp;
 	DBT ddbt, ldbt;
 	DB_LOCK metalock;
+	DB_LSN *lsnp;
 	DB_MPOOLFILE *mpf;
-	db_pgno_t last_pgno, *lp, next_pgno, pgno, prev_pgno;
-	u_int32_t lflag, nelem;
-	int do_truncate, ret, t_ret;
+	PAGE *prev;
+	db_pgno_t last_pgno, next_pgno, pgno, prev_pgno;
+	u_int32_t lflag;
+	int ret, t_ret;
 #ifdef HAVE_FTRUNCATE
-	db_pgno_t *list;
-	u_int32_t position, start;
+	db_pgno_t *list, *lp;
+	u_int32_t nelem, position, start;
+	int do_truncate;
 #endif
 
 	dbp = dbc->dbp;
 	mpf = dbp->mpf;
 	prev_pgno = PGNO_INVALID;
-	nelem = 0;
 	meta = NULL;
-	do_truncate = 0;
+	prev = NULL;
+#ifdef HAVE_FTRUNCATE
 	lp = NULL;
+	nelem = 0;
+	do_truncate = 0;
+#endif
 
 	/*
 	 * Retrieve the metadata page.  If we are not keeping a sorted
@@ -293,11 +298,24 @@ __db_free(dbc, h)
 	if ((ret = __db_lget(dbc,
 	    LCK_ALWAYS, pgno, DB_LOCK_WRITE, 0, &metalock)) != 0)
 		goto err;
-	if ((ret = __memp_fget(mpf, &pgno, dbc->txn, 0, &meta)) != 0)
+
+	/* If we support truncate, we might not dirty the meta page. */
+	if ((ret = __memp_fget(mpf, &pgno, dbc->txn,
+#ifdef HAVE_FTRUNCATE
+	    0,
+#else
+	    DB_MPOOL_DIRTY,
+#endif
+	    &meta)) != 0)
 		goto err1;
 
 	last_pgno = meta->last_pgno;
 	next_pgno = meta->free;
+	/*
+	 * Assign lsnp here so it always initialized when
+	 * HAVE_FTRUNCATE is not defined.
+	 */
+	lsnp = &LSN(meta);
 
 	DB_ASSERT(dbp->dbenv, h->pgno != next_pgno);
 
@@ -352,21 +370,26 @@ __db_free(dbc, h)
 	}
 
 no_sort:
-	if (prev_pgno != PGNO_INVALID) {
-		if ((ret = __memp_fput(mpf, meta, 0)) != 0)
+	if (prev_pgno == PGNO_INVALID) {
+		if ((ret = __memp_dirty(mpf,
+		    &meta, dbc->txn, dbc->priority, 0)) != 0)
 			goto err1;
-		meta = NULL;
+		lsnp = &LSN(meta);
+	} else {
 		pgno = prev_pgno;
-		if ((ret = __memp_fget(mpf, &pgno, dbc->txn, 0, &meta)) != 0)
+		if ((ret = __memp_fget(mpf,
+		    &pgno, dbc->txn, DB_MPOOL_DIRTY, &prev)) != 0)
 			goto err1;
-		next_pgno = NEXT_PGNO(meta);
+		next_pgno = NEXT_PGNO(prev);
+		lsnp = &LSN(prev);
 	}
 #endif
 
-	if ((ret = __memp_dirty(mpf, &meta, dbc->txn, 0)) != 0)
-		goto err1;
-
-	/* Log the change. */
+	/*
+	 * Log the change.
+	 *	We are either logging an update to the metapage or to the
+	 * previous page in the sorted list.
+	 */
 	if (DBC_LOGGING(dbc)) {
 		memset(&ldbt, 0, sizeof(ldbt));
 		ldbt.data = h;
@@ -394,8 +417,8 @@ no_sort:
 				ddbt.data = (u_int8_t *)h + HOFFSET(h);
 				ddbt.size = dbp->pgsize - HOFFSET(h);
 				if ((ret = __db_pg_freedata_log(dbp, dbc->txn,
-				     &LSN(meta), lflag,
-				     h->pgno, &LSN(meta), pgno,
+				     lsnp, lflag,
+				     h->pgno, lsnp, pgno,
 				     &ldbt, next_pgno, last_pgno, &ddbt)) != 0)
 					goto err1;
 				goto logged;
@@ -415,11 +438,12 @@ no_sort:
 		}
 
 		if ((ret = __db_pg_free_log(dbp,
-		      dbc->txn, &LSN(meta), lflag, h->pgno,
-		      &LSN(meta), pgno, &ldbt, next_pgno, last_pgno)) != 0)
+		      dbc->txn, lsnp, lflag, h->pgno,
+		      lsnp, pgno, &ldbt, next_pgno, last_pgno)) != 0)
 			goto err1;
 	} else
-		LSN_NOT_LOGGED(LSN(meta));
+		LSN_NOT_LOGGED(*lsnp);
+
 logged:
 #ifdef HAVE_FTRUNCATE
 	if (do_truncate) {
@@ -429,10 +453,10 @@ logged:
 		      dbc, meta, h, list, start, nelem);
 		h = NULL;
 	} else if (h->pgno == last_pgno) {
-		LSN(h) = LSN(meta);
+		LSN(h) = *lsnp;
 		P_INIT(h, dbp->pgsize,
 		    h->pgno, PGNO_INVALID, next_pgno, 0, P_INVALID);
-		if ((ret = __memp_fput(mpf, h, DB_MPOOL_DISCARD)) != 0)
+		if ((ret = __memp_fput(mpf, h, DB_PRIORITY_VERY_LOW)) != 0)
 			goto err1;
 		h = NULL;
 		/* Give the page back to the OS. */
@@ -449,9 +473,10 @@ logged:
 		 * reinitialize it and put it at the head of
 		 * the free list.
 		 */
-		if ((ret = __memp_dirty(mpf, &h, dbc->txn, 0)) != 0)
+		if ((ret = __memp_dirty(mpf,
+		    &h, dbc->txn, dbc->priority, 0)) != 0)
 			goto err1;
-		LSN(h) = LSN(meta);
+		LSN(h) = *lsnp;
 		P_INIT(h, dbp->pgsize,
 		    h->pgno, PGNO_INVALID, next_pgno, 0, P_INVALID);
 #ifdef DIAGNOSTIC
@@ -461,18 +486,22 @@ logged:
 		if (prev_pgno == PGNO_INVALID)
 			meta->free = h->pgno;
 		else
-			NEXT_PGNO(meta) = h->pgno;
+			NEXT_PGNO(prev) = h->pgno;
 	}
 
 	/* Discard the metadata or previous page. */
-err1:	if (meta != NULL &&
-	    (t_ret = __memp_fput(mpf, (PAGE *)meta, 0)) != 0 && ret == 0)
+err1:	if (meta != NULL && (t_ret =
+	     __memp_fput(mpf, (PAGE *)meta, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __TLPUT(dbc, metalock)) != 0 && ret == 0)
 		ret = t_ret;
+	if (prev != (PAGE*) meta && prev != NULL &&
+	    (t_ret = __memp_fput(mpf, prev, dbc->priority)) != 0 && ret == 0)
+		ret = t_ret;
 
 	/* Discard the caller's page reference. */
-err:	if (h != NULL && (t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+err:	if (h != NULL &&
+	     (t_ret = __memp_fput(mpf, h, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/*
@@ -546,14 +575,14 @@ __db_freelist_sort(list, nelems)
  * __db_pg_truncate -- sort the freelist and find the truncation point.
  *
  * PUBLIC: #ifdef HAVE_FTRUNCATE
- * PUBLIC: int __db_pg_truncate __P((DB_MPOOLFILE *, DB_TXN *,
+ * PUBLIC: int __db_pg_truncate __P((DB *, DB_TXN *,
  * PUBLIC:    struct pglist *list, DB_COMPACT *, u_int32_t *, db_pgno_t *,
  * PUBLIC:    DB_LSN *, int));
  * PUBLIC: #endif
  */
 int
-__db_pg_truncate(mpf, txn, list, c_data, nelemp, last_pgno, lsnp, in_recovery)
-	DB_MPOOLFILE *mpf;
+__db_pg_truncate(dbp, txn, list, c_data, nelemp, last_pgno, lsnp, in_recovery)
+	DB *dbp;
 	DB_TXN *txn;
 	struct pglist *list;
 	DB_COMPACT *c_data;
@@ -562,6 +591,7 @@ __db_pg_truncate(mpf, txn, list, c_data, nelemp, last_pgno, lsnp, in_recovery)
 	DB_LSN *lsnp;
 	int in_recovery;
 {
+	DB_MPOOLFILE *mpf;
 	PAGE *h;
 	struct pglist *lp;
 	db_pgno_t pgno;
@@ -570,6 +600,7 @@ __db_pg_truncate(mpf, txn, list, c_data, nelemp, last_pgno, lsnp, in_recovery)
 
 	ret = 0;
 
+	mpf = dbp->mpf;
 	nelems = *nelemp;
 	/* Sort the list */
 	__db_freelist_sort(list, nelems);
@@ -601,8 +632,9 @@ __db_pg_truncate(mpf, txn, list, c_data, nelemp, last_pgno, lsnp, in_recovery)
 			goto err;
 		}
 		if (!in_recovery || LOG_COMPARE(&LSN(h), &lp->lsn) == 0) {
-			if ((ret = __memp_dirty(mpf, &h, txn, 0)) != 0) {
-				(void)__memp_fput(mpf, h, 0);
+			if ((ret = __memp_dirty(mpf,
+			    &h, txn, dbp->priority, 0)) != 0) {
+				(void)__memp_fput(mpf, h, dbp->priority);
 				goto err;
 			}
 			if (lp == &list[nelems - 1])
@@ -613,7 +645,7 @@ __db_pg_truncate(mpf, txn, list, c_data, nelemp, last_pgno, lsnp, in_recovery)
 
 			LSN(h) = *lsnp;
 		}
-		if ((ret = __memp_fput(mpf, h, 0)) != 0)
+		if ((ret = __memp_fput(mpf, h, dbp->priority)) != 0)
 			goto err;
 	}
 
@@ -711,7 +743,7 @@ __db_free_truncate(dbp, txn, flags, c_data, listp, nelemp, last_pgnop)
 		lp->pgno = pgno;
 		lp->lsn = LSN(h);
 		pgno = NEXT_PGNO(h);
-		if ((ret = __memp_fput(mpf, h, 0)) != 0)
+		if ((ret = __memp_fput(mpf, h, dbc->priority)) != 0)
 			goto err;
 		lp++;
 	} while (pgno != PGNO_INVALID);
@@ -729,7 +761,7 @@ __db_free_truncate(dbp, txn, flags, c_data, listp, nelemp, last_pgnop)
 	} else
 		LSN_NOT_LOGGED(LSN(meta));
 
-	if ((ret = __db_pg_truncate(mpf, txn, list, c_data,
+	if ((ret = __db_pg_truncate(dbp, txn, list, c_data,
 	    &nelems, &meta->last_pgno, &LSN(meta), 0)) != 0)
 		goto err;
 
@@ -757,12 +789,12 @@ done:	if (last_pgnop != NULL)
 
 err:	if (list != NULL)
 		__os_free(dbenv, list);
-	if (meta != NULL &&
-	    (t_ret = __memp_fput(mpf, (PAGE *)meta, 0)) != 0 && ret == 0)
+	if (meta != NULL && (t_ret =
+	     __memp_fput(mpf, (PAGE *)meta, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __TLPUT(dbc, metalock)) != 0 && ret == 0)
 		ret = t_ret;
-	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+	if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
 }
@@ -805,7 +837,8 @@ __db_truncate_freelist(dbc, meta, h, list, start, nelem)
 			if ((ret = __memp_fget(mpf, lp, dbc->txn, 0, &pg)) != 0)
 				goto err;
 			pp->lsn = LSN(pg);
-			if ((ret = __memp_fput(mpf, pg, DB_MPOOL_DISCARD)) != 0)
+			if ((ret =
+			    __memp_fput(mpf, pg, DB_PRIORITY_VERY_LOW)) != 0)
 				goto err;
 			pp++;
 		}
@@ -826,7 +859,7 @@ __db_truncate_freelist(dbc, meta, h, list, start, nelem)
 	if (last_free != NULL)
 		LSN(last_free) = LSN(meta);
 
-	if ((ret = __memp_fput(mpf, h, DB_MPOOL_DISCARD)) != 0)
+	if ((ret = __memp_fput(mpf, h, DB_PRIORITY_VERY_LOW)) != 0)
 		goto err;
 	h = NULL;
 	if ((ret = __memp_ftruncate(mpf, list[start], 0)) != 0)
@@ -837,7 +870,7 @@ __db_truncate_freelist(dbc, meta, h, list, start, nelem)
 		meta->free = PGNO_INVALID;
 	else {
 		NEXT_PGNO(last_free) = PGNO_INVALID;
-		if ((ret = __memp_fput(mpf, last_free, 0)) != 0)
+		if ((ret = __memp_fput(mpf, last_free, dbc->priority)) != 0)
 			goto err;
 		last_free = NULL;
 	}
@@ -850,9 +883,9 @@ err:	if (plist != NULL)
 
 	/* We need to put the page on error. */
 	if (h != NULL)
-		(void)__memp_fput(mpf, h, 0);
+		(void)__memp_fput(mpf, h, dbc->priority);
 	if (last_free != NULL)
-		(void)__memp_fput(mpf, last_free, 0);
+		(void)__memp_fput(mpf, last_free, dbc->priority);
 
 	return (ret);
 }

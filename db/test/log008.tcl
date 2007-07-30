@@ -1,10 +1,10 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: log008.tcl,v 12.4 2006/08/24 14:46:36 bostic Exp $
+# $Id: log008.tcl,v 12.7 2007/05/24 18:20:47 carol Exp $
 #
+# TEST	log008
 # TEST	Test what happens if a txn_ckp record falls into a
 # TEST 	different log file than the DBREG_CKP records generated
 # TEST	by the same checkpoint.

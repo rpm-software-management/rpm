@@ -219,6 +219,7 @@ __bam_split_log(dbp, txnp, ret_lsnp, flags, left, llsn, right, rlsn, indx,
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -228,10 +229,9 @@ __bam_split_log(dbp, txnp, ret_lsnp, flags, left, llsn, right, rlsn, indx,
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -505,6 +505,7 @@ __bam_rsplit_log(dbp, txnp, ret_lsnp, flags, pgno, pgdbt, root_pgno, nrec, roote
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -514,10 +515,9 @@ __bam_rsplit_log(dbp, txnp, ret_lsnp, flags, pgno, pgdbt, root_pgno, nrec, roote
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -758,6 +758,7 @@ __bam_adj_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, indx_copy, is_insert)
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -767,10 +768,9 @@ __bam_adj_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, indx_copy, is_insert)
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -1002,6 +1002,7 @@ __bam_cadjust_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, adjust, opflags)
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -1011,10 +1012,9 @@ __bam_cadjust_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, adjust, opflags)
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -1235,6 +1235,7 @@ __bam_cdel_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx)
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -1244,10 +1245,9 @@ __bam_cdel_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx)
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -1505,6 +1505,7 @@ __bam_repl_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, isdeleted, orig,
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -1514,10 +1515,9 @@ __bam_repl_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, isdeleted, orig,
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -1753,6 +1753,7 @@ __bam_root_log(dbp, txnp, ret_lsnp, flags, meta_pgno, root_pgno, meta_lsn)
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -1762,10 +1763,9 @@ __bam_root_log(dbp, txnp, ret_lsnp, flags, meta_pgno, root_pgno, meta_lsn)
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -1995,6 +1995,7 @@ __bam_curadj_log(dbp, txnp, ret_lsnp, flags, mode, from_pgno, to_pgno, left_pgno
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -2004,10 +2005,9 @@ __bam_curadj_log(dbp, txnp, ret_lsnp, flags, mode, from_pgno, to_pgno, left_pgno
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -2234,6 +2234,7 @@ __bam_rcuradj_log(dbp, txnp, ret_lsnp, flags, mode, root, recno, order)
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -2243,10 +2244,9 @@ __bam_rcuradj_log(dbp, txnp, ret_lsnp, flags, mode, root, recno, order)
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -2552,6 +2552,7 @@ __bam_relink_log(dbp, txnp, ret_lsnp, flags, pgno, new_pgno, prev, lsn_prev, nex
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -2561,10 +2562,9 @@ __bam_relink_log(dbp, txnp, ret_lsnp, flags, pgno, new_pgno, prev, lsn_prev, nex
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -2842,6 +2842,7 @@ __bam_merge_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, npgno, nlsn, hdr,
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -2851,10 +2852,9 @@ __bam_merge_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, npgno, nlsn, hdr,
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);
@@ -3100,6 +3100,7 @@ __bam_pgno_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, opgno, npgno)
 				 *ret_lsnp = *rlsnp;
 		}
 	} else {
+		ret = 0;
 #ifdef DIAGNOSTIC
 		/*
 		 * Set the debug bit if we are going to log non-durable
@@ -3109,10 +3110,9 @@ __bam_pgno_log(dbp, txnp, ret_lsnp, flags, pgno, lsn, indx, opgno, npgno)
 		rectype |= DB_debug_FLAG;
 		memcpy(logrec.data, &rectype, sizeof(rectype));
 
-		ret = __log_put(dbenv,
-		    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
-#else
-		ret = 0;
+		if (!IS_REP_CLIENT(dbenv))
+			ret = __log_put(dbenv,
+			    rlsnp, (DBT *)&logrec, flags | DB_LOG_NOCOPY);
 #endif
 		STAILQ_INSERT_HEAD(&txnp->logs, lr, links);
 		F_SET((TXN_DETAIL *)txnp->td, TXN_DTL_INMEMORY);

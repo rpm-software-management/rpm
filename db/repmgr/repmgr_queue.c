@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2006,2007 Oracle.  All rights reserved.
  *
- * $Id: repmgr_queue.c,v 1.6 2006/08/24 14:46:26 bostic Exp $
+ * $Id: repmgr_queue.c,v 1.9 2007/05/17 15:15:51 bostic Exp $
  */
 
 #include "db_config.h"
@@ -28,8 +27,6 @@ __repmgr_queue_create(dbenv, db_rep)
 {
 	REPMGR_QUEUE *q;
 	int ret;
-
-	COMPQUIET(dbenv, NULL);
 
 	if ((ret = __os_calloc(dbenv, 1, sizeof(REPMGR_QUEUE), &q)) != 0)
 		return (ret);

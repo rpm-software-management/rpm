@@ -1,0 +1,87 @@
+m4_comment([$Id: fail.so,v 10.2 2005/10/19 21:10:31 bostic Exp $])
+
+m4_ref_title(m4_cam Applications,
+    Handling failure in Data Store and Concurrent Data Store applications,,
+    cam/intro, cam/app)
+
+m4_p([dnl
+When building Data Store and Concurrent Data Store applications, there
+are design issues to consider whenever a thread of control with open
+m4_db handles fails for any reason (where a thread of control may be
+either a true thread or a process).])
+
+m4_p([dnl
+The simplest case is handling system failure for any Data Store or
+Concurrent Data Store application.  In the case of system failure, it
+doesn't matter if the application has opened a database environment or
+is just using standalone databases: if the system fails, after the
+application has modified a database and has not subsequently flushed the
+database to stable storage (by calling either the m4_ref(dbh_close),
+m4_ref(dbh_sync) or m4_refT(memp_sync)s), the database may be left in a
+corrupted state.  In this case, before accessing the database again, the
+database should either be:])
+
+m4_bulletbegin
+m4_bullet([removed and re-created,])
+m4_bullet([removed and restored from the last known good backup, or])
+m4_bullet([dnl
+verified using the m4_refT(dbh_verify) or m4_ref(db_verify) utility.  If
+the database does not verify cleanly, the contents may be salvaged using
+the m4_option(R) and m4_option(r) options of the m4_ref(db_dump)
+utility.])
+m4_bulletend
+
+m4_p([dnl
+Applications where the potential for data loss is unacceptable should
+consider the m4_tam product, which offers standard transactional
+durability guarantees, including recoverability after failure.])
+
+m4_p([dnl
+Additionally, system failure requires that any persistent database
+environment (that is, any database environment not created using the
+m4_ref(DB_PRIVATE) flag), be removed.  Database environments may be
+removed using the m4_refT(dbenv_remove).  If the persistent database
+environment was backed by the filesystem (that is, the environment was
+not created using the m4_ref(DB_SYSTEM_MEM) flag), the database
+environment may also be safely removed by deleting the environment's
+files with standard system utilities.])
+
+m4_p([dnl
+The second case is application failure for a Data Store application,
+with or without a database environment, or application failure for a
+Concurrent Data Store application without a database environment: as in
+the case of system failure, if any thread of control fails, after the
+application has modified a database and has not subsequently flushed the
+database to stable storage, the database may be left in a corrupted
+state.  In this case, the database should be handled as described
+previously in the system failure case.])
+
+m4_p([dnl
+The third case is application failure for a Concurrent Data Store
+application with a database environment.  There are resources maintained
+in database environments that may be left locked if a thread of control
+exits without first closing all open m4_db handles.  Concurrent Data
+Store applications with database environments have an additional option
+for handling the unexpected exit of a thread of control, the
+m4_refT(dbenv_failchk).])
+
+m4_p([dnl
+The m4_refT(dbenv_failchk) will return m4_ref(DB_RUNRECOVERY) if the
+database environment is unusable as a result of the thread of control
+failure.  (If a data structure mutex or a database write lock is left
+held by thread of control failure, the application should not continue
+to use the database environment, as subsequent use of the environment
+is likely to result in threads of control convoying behind the held
+locks.)  The m4_ref(dbenv_failchk) call will release any database read
+locks that have been left held by the exit of a thread of control.  In
+this case, the application can continue to use the database
+environment.])
+
+m4_p([dnl
+A Concurrent Data Store application recovering from a thread of control
+failure should call m4_ref(dbenv_failchk), and, if it returns success,
+the application can continue.  If m4_ref(dbenv_failchk) returns
+m4_ref(DB_RUNRECOVERY), the application should proceed as described for
+the case of system failure.])
+
+m4_page_footer

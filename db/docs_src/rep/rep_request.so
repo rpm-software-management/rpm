@@ -1,0 +1,69 @@
+m4_comment([$Id: rep_request.so,v 1.2 2006/11/30 22:28:28 bostic Exp $])
+
+define(M4PAGELOCAL, [rep_set_request, rep_get_request])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_set_request),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_set_request(DB_ENV *env, u_int32_t min, u_int32_t max);
+m4_blank
+int
+DB_ENV-__GT__rep_get_request(DB_ENV *env, u_int32_t *minp, u_int32_t *maxp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_set_request(u_int32_t min, u_int32_t max);
+m4_blank
+int
+DbEnv::rep_get_request(u_int32_t *minp, u_int32_t *maxp);
+]))
+
+m4_p([dnl
+The m4_refT(rep_set_request) sets the minimum and maximum number of
+missing log records that a client waits before requesting
+retransmission.  Specifically, if a log record is missing, m4_db will
+wait for m4_arg(min) more records to arrive before requesting
+retransmission of the missing record.  m4_db will wait double that
+amount before requesting the same missing record again, and so on, up
+to a maximum wait of m4_arg(max) records.])
+
+m4_p([dnl
+By default the minimum is 4 and the maximum is 128, and applications
+rarely need to use values other than the defaults.])
+
+m4_scope_env(rep_set_request)
+m4_when_any(rep_set_request)
+m4_return(rep_set_request, std)
+
+m4_parambegin
+m4_param(max, [dnl
+The maximum number of missing log records a client waits before
+requesting retransmission.])
+m4_param(min, [dnl
+The minimum number of missing log records a client waits before
+requesting retransmission.])
+m4_paramend
+
+m4_err(rep_set_request, einval)
+
+m4_pf_description(m4_ref(rep_get_request))
+m4_p([dnl
+The m4_refT(rep_get_request) returns the minimum and maximum number of
+missing log records a client waits before requesting retransmission.])
+
+m4_when_any(rep_get_request)
+
+m4_return(rep_get_request, std)
+
+m4_parambegin
+m4_param_co(maxp, [dnl
+maximum number of missing log records a client will wait before requesting
+retransmission])
+m4_param_co(minp, [dnl
+minimum number of missing log records a client will wait before requesting
+retransmission])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

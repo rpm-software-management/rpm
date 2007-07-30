@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: recd016.tcl,v 12.4 2006/08/24 14:46:36 bostic Exp $
+# $Id: recd016.tcl,v 12.7 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	recd016
 # TEST	Test recovery after checksum error.
@@ -136,7 +135,7 @@ proc recd016 { method args} {
 	error_check_good db:fail [is_substr $ret "run recovery"] 1
 
 	set ret [send_cmd $f1  "$dbenv close"]
-	error_check_good env_close:fail [is_substr $ret "run recovery"] 1
+	error_check_good env_close:fail [is_substr $ret "handles still open"] 1
 	close $f1
 
         # Keep track of the log types we've seen

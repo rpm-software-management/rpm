@@ -1,0 +1,10 @@
+m4_comment([$Id: truncate.so,v 10.5 2003/10/18 19:15:53 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Database truncation, [@truncating a database, @emptying a database],
+    am/stat, am/upgrade)
+
+m4_p([dnl
+The m4_refT(dbh_truncate) empties a database of all records.])
+
+m4_page_footer

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_recover.c,v 12.9 2006/08/26 09:23:13 bostic Exp $
+ * $Id: db_recover.c,v 12.14 2007/05/17 15:15:03 bostic Exp $
  */
 
 #include "db_config.h"
@@ -13,15 +12,17 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
+    "Copyright (c) 1996,2007 Oracle.  All rights reserved.\n";
 #endif
 
+void db_recover_feedback __P((DB_ENV *, int, int));
 int db_recover_main __P((int, char *[]));
 int db_recover_read_timestamp __P((char *, time_t *));
 int db_recover_usage __P((void));
 int db_recover_version_check __P((void));
 
 const char *progname;
+int newline_needed;
 
 int
 db_recover(args)
@@ -47,10 +48,10 @@ db_recover_main(argc, argv)
 	DB_ENV	*dbenv;
 	time_t timestamp;
 	u_int32_t flags;
-	int ch, exitval, fatal_recover, ret, retain_env, verbose;
+	int ch, exitval, fatal_recover, ret, retain_env, set_feedback, verbose;
 	char *home, *passwd;
 
-	if ((progname = strrchr(argv[0], '/')) == NULL)
+	if ((progname = __db_rpath(argv[0])) == NULL)
 		progname = argv[0];
 	else
 		++progname;
@@ -60,15 +61,18 @@ db_recover_main(argc, argv)
 
 	home = passwd = NULL;
 	timestamp = 0;
-	exitval = fatal_recover = retain_env = verbose = 0;
+	exitval = fatal_recover = retain_env = set_feedback = verbose = 0;
 	__db_getopt_reset = 1;
-	while ((ch = getopt(argc, argv, "ceh:P:t:Vv")) != EOF)
+	while ((ch = getopt(argc, argv, "cefh:P:t:Vv")) != EOF)
 		switch (ch) {
 		case 'c':
 			fatal_recover = 1;
 			break;
 		case 'e':
 			retain_env = 1;
+			break;
+		case 'f':
+			set_feedback = 1;
 			break;
 		case 'h':
 			home = optarg;
@@ -116,6 +120,8 @@ db_recover_main(argc, argv)
 	}
 	dbenv->set_errfile(dbenv, stderr);
 	dbenv->set_errpfx(dbenv, progname);
+	if (set_feedback)
+		(void)dbenv->set_feedback(dbenv, db_recover_feedback);
 	if (verbose)
 		(void)dbenv->set_verbose(dbenv, DB_VERB_RECOVERY, 1);
 	if (timestamp &&
@@ -156,6 +162,10 @@ db_recover_main(argc, argv)
 shutdown:	exitval = 1;
 	}
 
+	/* Flush to the next line of the output device. */
+	if (newline_needed)
+		printf("\n");
+
 	/* Clean up the environment. */
 	if ((ret = dbenv->close(dbenv, 0)) != 0) {
 		exitval = 1;
@@ -169,6 +179,25 @@ shutdown:	exitval = 1;
 	__db_util_sigresend();
 
 	return (exitval == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
+}
+
+/*
+ * feedback --
+ *	provide feedback on recovery progress.
+ */
+void
+db_recover_feedback(dbenv, opcode, percent)
+	DB_ENV *dbenv;
+	int opcode;
+	int percent;
+{
+	COMPQUIET(dbenv, NULL);
+
+	if (opcode == DB_RECOVER) {
+		printf("\rrecovery %d%% complete", percent);
+		(void)fflush(stdout);
+		newline_needed = 1;
+	}
 }
 
 #define	ATOI2(ar)	((ar)[0] - '0') * 10 + ((ar)[1] - '0'); (ar) += 2;
@@ -277,7 +306,7 @@ int
 db_recover_usage()
 {
 	(void)fprintf(stderr, "usage: %s %s\n", progname,
-	    "[-ceVv] [-h home] [-P password] [-t [[CC]YY]MMDDhhmm[.SS]]");
+	    "[-cefVv] [-h home] [-P password] [-t [[CC]YY]MMDDhhmm[.SS]]");
 	return (EXIT_FAILURE);
 }
 

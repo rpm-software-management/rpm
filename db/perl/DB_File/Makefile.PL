@@ -50,6 +50,18 @@ WriteMakefile(
 	XSPROTOARG	=> '-noprototypes',
 	DEFINE		=> "-D_NOT_CORE $OS2 $VER_INFO $COMPAT185 $WALL",
 	OBJECT		=> 'version$(OBJ_EXT) DB_File$(OBJ_EXT)',
+    ((ExtUtils::MakeMaker->VERSION() gt '6.30') 
+        ?  ('LICENSE'  => 'perl')         
+        : ()
+    ),
+    (
+    $] >= 5.005
+        ? (ABSTRACT_FROM => 'DB_File.pm',
+            AUTHOR       => 'Paul Marquess <pmqs@cpan.org>')
+        : ()
+    ),
+    
+
 	#OPTIMIZE	=> '-g',
 	'depend'	=> { 'Makefile'          => 'config.in',
                              'version$(OBJ_EXT)' => 'version.c'},

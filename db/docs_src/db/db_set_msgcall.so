@@ -1,0 +1,4 @@
+m4_comment([$Id: db_set_msgcall.so,v 10.1 2004/04/16 19:01:56 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_msgcall)
+include(env/env_set_msgcall.so)

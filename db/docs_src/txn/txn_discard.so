@@ -1,0 +1,41 @@
+m4_comment([$Id: txn_discard.so,v 10.16 2004/08/13 03:39:03 bostic Exp $])
+
+define(M4PAGELOCAL, txn_discard)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(txn_discard),
+ifelse(M4API, C_API, [dnl
+int
+DB_TXN-__GT__discard(DB_TXN *tid, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbTxn::discard(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(txn_discard) frees up all the per-process resources
+associated with the specified m4_ref(DbTxn) handle, neither committing
+nor aborting the transaction.  This call may be used only after calls
+to m4_ref(txn_recover) when there are multiple global transaction
+managers recovering transactions in a single m4_db environment.  Any
+transactions returned by m4_ref(txn_recover) that are not handled by
+the current global transaction manager should be discarded using
+m4_ref(txn_discard).])
+
+m4_return(txn_discard, std)
+
+m4_p([dnl
+After m4_ref(txn_discard) has been called, regardless of its return, the
+m4_ref(DbTxn) handle may not be accessed again.])
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_err(txn_discard, einval,
+[the transaction handle does not refer to a transaction that was
+recovered into a prepared but not yet completed state])
+
+m4_seealso(DbTxn)
+m4_page_footer

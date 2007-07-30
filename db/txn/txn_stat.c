@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: txn_stat.c,v 12.18 2006/08/24 14:46:53 bostic Exp $
+ * $Id: txn_stat.c,v 12.23 2007/06/22 18:27:51 bostic Exp $
  */
 
 #include "db_config.h"
@@ -134,7 +133,8 @@ __txn_stat(dbenv, statp, flags)
 	    &stats->st_region_wait, &stats->st_region_nowait);
 	stats->st_regsize = mgr->reginfo.rp->size;
 	if (LF_ISSET(DB_STAT_CLEAR)) {
-		__mutex_clear(dbenv, region->mtx_region);
+		if (!LF_ISSET(DB_STAT_SUBSYSTEM))
+			__mutex_clear(dbenv, region->mtx_region);
 		memset(&region->stat, 0, sizeof(region->stat));
 		region->stat.st_maxtxns = region->maxtxns;
 		region->stat.st_maxnactive =
@@ -167,7 +167,7 @@ __txn_stat_print_pp(dbenv, flags)
 	ENV_REQUIRES_CONFIG(dbenv,
 	    dbenv->tx_handle, "DB_ENV->txn_stat_print", DB_INIT_TXN);
 
-	if ((ret = __db_fchk(dbenv, "DB_ENV->txn_stat",
+	if ((ret = __db_fchk(dbenv, "DB_ENV->txn_stat_print",
 	    flags, DB_STAT_ALL | DB_STAT_CLEAR)) != 0)
 		return (ret);
 
@@ -192,7 +192,7 @@ __txn_stat_print(dbenv, flags)
 	int ret;
 
 	orig_flags = flags;
-	LF_CLR(DB_STAT_CLEAR);
+	LF_CLR(DB_STAT_CLEAR | DB_STAT_SUBSYSTEM);
 	if (flags == 0 || LF_ISSET(DB_STAT_ALL)) {
 		ret = __txn_print_stats(dbenv, orig_flags);
 		if (flags == 0 || ret != 0)
@@ -317,7 +317,7 @@ __txn_print_all(dbenv, flags)
 
 	TXN_SYSTEM_LOCK(dbenv);
 
-	__db_print_reginfo(dbenv, &mgr->reginfo, "Transaction");
+	__db_print_reginfo(dbenv, &mgr->reginfo, "Transaction", flags);
 
 	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 	__db_msg(dbenv, "DB_TXNMGR handle information:");

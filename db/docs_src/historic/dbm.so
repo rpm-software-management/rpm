@@ -1,0 +1,239 @@
+m4_comment([$Id: dbm.so,v 10.26 2003/10/18 19:15:48 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbm, dbm_delete, dbm_dirfno, dbm_fetch, dbm_firstkey, dbm_nextkey,
+	dbm_open, dbm_pagfno, dbm_store, dbmclose, dbminit, dbminit, delete,
+	fetch, firstkey, nextkey, store, dbm_clearerr, dbm_error, dbm_firstkey,
+	dbm_nextkey, firstkey, nextkey])
+
+m4_pf_header(dbm/ndbm, [dnl
+typedef struct {
+	char *dptr;
+	int dsize;
+} datum;
+m4_hl
+m4_section([Dbm Functions])
+int
+dbminit(char *file);
+m4_blank
+int
+dbmclose();
+m4_blank
+datum
+fetch(datum key);
+m4_blank
+int
+store(datum key, datum content);
+m4_blank
+int
+delete(datum key);
+m4_blank
+datum
+firstkey(void);
+m4_blank
+datum
+nextkey(datum key);
+m4_hl
+m4_section([Ndbm Functions])
+DBM *
+dbm_open(char *file, int flags, int mode);
+m4_blank
+void
+dbm_close(DBM *db);
+m4_blank
+datum
+dbm_fetch(DBM *db, datum key);
+m4_blank
+int
+dbm_store(DBM *db, datum key, datum content, int flags);
+m4_blank
+int
+dbm_delete(DBM *db, datum key);
+m4_blank
+datum
+dbm_firstkey(DBM *db);
+m4_blank
+datum
+dbm_nextkey(DBM *db);
+m4_blank
+int
+dbm_error(DBM *db);
+m4_blank
+int
+dbm_clearerr(DBM *db);
+],
+[#define DB_DBM_HSEARCH    1])
+
+m4_p([dnl
+The m4_ref(dbm) functions are intended to provide high-performance
+implementations and source code compatibility for applications written
+to historic interfaces.  They are not recommended for any other purpose.
+The historic m4_ref(dbm) database format m4_bold([is not supported]),
+and databases previously built using the real m4_ref(dbm) libraries
+cannot be read by the m4_db functions.])
+
+m4_p([dnl
+To compile m4_ref(dbm) applications, replace the application's
+m4_bold([#include]) of the dbm or ndbm include file (for example,
+m4_bold([m4_include(dbm.h)]) or m4_bold([m4_include(ndbm.h)]))
+with the following two lines:])
+
+m4_indent([dnl
+#define DB_DBM_HSEARCH    1
+m4_include(db.h)])
+
+m4_p([dnl
+and recompile.  If the application attempts to load against a dbm library
+(for example, m4_bold(-ldbm)), remove the library from the load line.])
+
+m4_p([dnl
+m4_arg(Key) and m4_arg(content) parameters are objects described by the
+m4_arg(datum) typedef.  A m4_arg(datum) specifies a string of
+m4_arg(dsize) bytes pointed to by m4_arg(dptr).  Arbitrary binary data,
+as well as normal text strings, are allowed.])
+
+m4_section([Dbm Functions])
+m4_p([dnl
+Before a database can be accessed, it must be opened by m4_ref(dbminit).
+This will open and/or create the database m4_arg(file).db.  If created,
+the database file is created read/write by owner only (as described in
+m4_manref(chmod, 2)) and modified by the process' umask value at the time
+of creation (see m4_manref(umask, 2)).  The group ownership of created
+files is based on the system and directory defaults, and is not further
+specified by m4_db.])
+
+m4_p([dnl
+A database may be closed, and any held resources released, by calling
+m4_ref(dbmclose).])
+
+m4_p([dnl
+Once open, the data stored under a key is accessed by m4_ref(fetch), and
+data is placed under a key by m4_ref(store).  A key (and its associated
+contents) are deleted by m4_ref(delete).  A linear pass through all keys
+in a database may be made, in an (apparently) random order, by using
+m4_ref(firstkey) and m4_ref(nextkey).  The m4_refT(firstkey) will return
+the first key in the database.  The m4_refT(nextkey) will return the next
+key in the database.])
+
+m4_p([dnl
+The following code will traverse the database:])
+
+m4_indent([dnl
+for (key = firstkey();
+    key.dptr != NULL; key = nextkey(key)) {
+	...
+}])
+
+m4_section([Ndbm Functions])
+m4_p([dnl
+Before a database can be accessed, it must be opened by m4_ref(dbm_open).
+This will open and/or create the database file m4_bold(file.db), depending
+on the flags parameter (see m4_manref(open, 2)).  If created, the database
+file is created with mode m4_arg(mode) (as described in m4_manref(chmod,
+2)) and modified by the process' umask value at the time of creation (see
+m4_manref(umask, 2)).  The group ownership of created files is based on
+the system and directory defaults, and is not further specified by
+m4_db.])
+
+m4_p([dnl
+Once open, the data stored under a key is accessed by m4_ref(dbm_fetch),
+and data is placed under a key by m4_ref(dbm_store).  The m4_arg(flags)
+field can be either m4_arg(DBM_INSERT) or m4_arg(DBM_REPLACE).
+m4_arg(DBM_INSERT) will only insert new entries into the database, and will
+not change an existing entry with the same key.  m4_arg(DBM_REPLACE) will
+replace an existing entry if it has the same key.  A key (and its
+associated contents) are deleted by m4_ref(dbm_delete).  A linear pass
+through all keys in a database may be made, in an (apparently) random
+order, by using m4_ref(dbm_firstkey) and m4_ref(dbm_nextkey).  The
+m4_refT(dbm_firstkey) will return the first key in the database.  The
+m4_refT(dbm_nextkey) will return the next key in the database.])
+
+m4_p([dnl
+The following code will traverse the database:])
+
+m4_indent([dnl
+for (key = dbm_firstkey(db);
+    key.dptr != NULL; key = dbm_nextkey(db)) {
+	...
+}])
+
+m4_section([Compatibility Notes])
+m4_p([dnl
+The historic m4_ref(dbm) library created two underlying database files,
+traditionally named m4_bold(file.dir) and m4_bold(file.pag).  The m4_db
+library creates a single database file named m4_bold(file.db).
+Applications that are aware of the underlying database filenames may
+require additional source code modifications.])
+
+m4_p([dnl
+The historic m4_ref(dbminit) function required that the underlying
+m4_bold(.dir) and m4_bold(.pag) files already exist (empty databases were
+created by first manually creating zero-length m4_bold(.dir) and
+m4_bold(.pag) files).  Applications that expect to create databases using
+this method may require additional source code modifications.])
+
+m4_p([dnl
+The historic m4_ref(dbm_dirfno) and m4_ref(dbm_pagfno) macros are
+supported, but will return identical file descriptors because there is
+only a single underlying file used by the m4_db hashing access method.
+Applications using both file descriptors for locking may require
+additional source code modifications.])
+
+m4_p([dnl
+If applications using the m4_ref(dbm) function exits without first
+closing the database, it may lose updates because the m4_db library
+buffers writes to underlying databases.  Such applications will require
+additional source code modifications to work correctly with the m4_db
+library.])
+
+define(m4_dbm_rd, [m4_p([dnl
+The m4_ref($1) function sets the m4_arg(dptr) field of the returned
+m4_arg(datum) to NULL on failure, setting m4_envvar(errno),
+and returns a non-NULL m4_arg(dptr) on success.])])
+define(m4_dbm_re, [m4_p([dnl
+The m4_ref($1) function returns -1 on failure, setting m4_envvar(errno),
+and 0 on success.])])
+define(m4_dbm_rf, [m4_p([dnl
+The m4_ref($1) function returns -1 on failure, setting m4_envvar(errno),
+0 on success, and 1 if DBM_INSERT was set and the specified key already
+existed in the database.])])
+define(m4_dbm_rn, [m4_p([dnl
+The m4_ref($1) function returns NULL on failure, setting m4_envvar(errno),
+and a DBM reference on success.])])
+
+m4_section([Dbm Diagnostics])
+m4_dbm_re(dbminit)
+m4_dbm_rd(fetch)
+m4_dbm_re(store)
+m4_dbm_re(delete)
+m4_dbm_rd(firstkey)
+m4_dbm_rd(nextkey)
+
+m4_header(Errors)
+m4_p([dnl
+The dbminit, fetch, store, delete, firstkey, and nextkey functions may
+fail and return an error for errors specified for other m4_db and C
+library or system functions.])
+
+m4_section([Ndbm Diagnostics])
+m4_p([dnl
+The m4_refT(dbm_error) returns non-zero when an error has occurred reading or
+writing the database.])
+m4_p([dnl
+The m4_refT(dbm_clearerr) resets the error condition on the named database.])
+m4_dbm_rn(dbm_open)
+m4_dbm_rd(dbm_fetch)
+m4_dbm_rf(dbm_store)
+m4_dbm_re(dbm_delete)
+m4_dbm_rd(dbm_firstkey)
+m4_dbm_rd(dbm_nextkey)
+m4_dbm_re(dbm_error)
+m4_dbm_re(dbm_clearerr)
+
+m4_header(Errors)
+m4_p([dnl
+The dbm_open, dbm_close, dbm_fetch, dbm_store, dbm_delete, dbm_firstkey,
+and dbm_nextkey functions may fail and return an error for errors
+specified for other m4_db and C library or system functions.])
+
+m4_page_footer

@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: sdbscript.tcl,v 12.3 2006/08/24 14:46:39 bostic Exp $
+# $Id: sdbscript.tcl,v 12.5 2007/05/17 15:15:56 bostic Exp $
 #
 # Usage: subdbscript testfile subdbnumber factor
 # testfile: name of DB itself

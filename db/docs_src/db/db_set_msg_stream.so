@@ -1,0 +1,4 @@
+m4_comment([$Id: db_set_msg_stream.so,v 1.1 2004/07/14 19:30:39 bostic Exp $])
+
+define(M4INTERFACE, dbh_set_message_stream)
+include(env/env_set_msg_stream.so)

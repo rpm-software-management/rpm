@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2002,2007 Oracle.  All rights reserved.
 #
-# $Id: rep003.tcl,v 12.7 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep003.tcl,v 12.12 2007/06/01 20:15:58 sue Exp $
 #
 # TEST  	rep003
 # TEST	Repeated shutdown/restart replication test
@@ -65,6 +64,12 @@ proc rep003 { method { tnum "003" } args } {
 
 proc rep003_sub { method tnum logset recargs largs } {
 	source ./include.tcl
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -88,7 +93,7 @@ proc rep003_sub { method tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
-	    -errpfx MASTER -errfile /dev/stderr \
+	    -errpfx MASTER $verbargs \
 	    -home $masterdir -txn $m_logargs -rep_master \
 	    -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
@@ -102,7 +107,7 @@ proc rep003_sub { method tnum logset recargs largs } {
 	# Open a client.
 	repladd 2
 	set env_cmd(C) "berkdb_env_noerr -create -private -home $clientdir \
-	    -txn $c_logargs -errpfx CLIENT -errfile /dev/stderr \
+	    -txn $c_logargs -errpfx CLIENT $verbargs \
 	    -rep_client -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
@@ -125,9 +130,7 @@ proc rep003_sub { method tnum logset recargs largs } {
 	puts "\tRep$tnum.b: Client restart."
 	rep003_put $masterenv B1 b-one
 
-	unset clientenv
-	set clientenv [berkdb_env_noerr -create -private -home $clientdir -txn \
-	    -rep_client -rep_transport [list 2 replsend]]
+	set clientenv [eval $env_cmd(C)]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Loop letting the client and master sync up and get the
@@ -172,9 +175,7 @@ proc rep003_sub { method tnum logset recargs largs } {
 	puts "\tRep$tnum.c: Client restart after recovery."
 	rep003_put $masterenv C1 c-one
 
-	unset clientenv
-	set clientenv [berkdb_env_noerr -create -private -home $clientdir -txn \
-	    -recover -rep_client -rep_transport [list 2 replsend]]
+	set clientenv [eval $env_cmd(C) -recover]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Loop, processing first the master's messages, then the client's,
@@ -222,9 +223,7 @@ proc rep003_sub { method tnum logset recargs largs } {
 	puts "\tRep$tnum.d: Client restart after catastrophic recovery."
 	rep003_put $masterenv D1 d-one
 
-	unset clientenv
-	set clientenv [berkdb_env_noerr -create -private -home $clientdir -txn \
-	    -recover_fatal -rep_client -rep_transport [list 2 replsend]]
+	set clientenv [eval $env_cmd(C) -recover_fatal]
 	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Loop, processing first the master's messages, then the client's,

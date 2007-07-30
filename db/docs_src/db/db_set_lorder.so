@@ -1,0 +1,57 @@
+m4_comment([$Id: db_set_lorder.so,v 10.38 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_lorder, dbh_get_lorder])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_lorder),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_lorder(DB *db, int lorder);
+m4_blank
+int
+DB-__GT__get_lorder(DB *db, int *lorderp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_lorder(int lorder);
+m4_blank
+int
+Db::get_lorder(int *lorderp);
+]))
+
+m4_p([dnl
+Set the byte order for integers in the stored database metadata.  The
+host byte order of the machine where the m4_db library was compiled will
+be used if no byte order is set.])
+
+m4_p([m4_bold([dnl
+The access methods provide no guarantees about the byte ordering of the
+application data stored in the database, and applications are responsible
+for maintaining any necessary ordering.])])
+
+m4_scope_db(dbh_set_lorder)
+
+m4_when_dbopen(dbh_set_lorder, ignored)
+If creating additional databases in a single physical file, information
+specified to m4_ref(dbh_set_lorder) will be ignored and the byte order
+of the existing databases will be used.
+
+m4_return(dbh_set_lorder, std)
+
+m4_parambegin
+m4_param(lorder, [dnl
+The m4_arg(lorder) parameter should represent the byte order as an
+integer; for example, big endian order is the number 4,321, and little
+endian order is the number 1,234.])
+m4_paramend
+
+m4_err(dbh_set_lorder,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_lorder,
+[database byte order; a byte order of 4,321 indicates a big endian
+order, and a byte order of 1,234 indicates a little endian order],
+[database byte order], lorderp)
+
+m4_seealso(Db)
+m4_page_footer

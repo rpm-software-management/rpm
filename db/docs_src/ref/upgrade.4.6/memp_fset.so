@@ -1,0 +1,13 @@
+m4_comment([$Id: memp_fset.so,v 1.2 2007/05/04 12:37:15 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: DB_MPOOLFILE-__GT__set,,
+    upgrade.4.6/memp_fput, upgrade.4.6/event)
+
+m4_p([dnl
+The DB_MPOOLFILE-__GT__set method has been removed from the m4_db 4.6
+release.  Applications calling this method can upgrade by removing all
+calls to the method.  This will result in no change in the application's
+behavior.])
+
+m4_page_footer

@@ -722,16 +722,6 @@ out0:	return;
 }
 %}
 
-JAVA_TYPEMAP(int *envid, DbEnv.RepProcessMessage, jobject)
-%typemap(in) int *envid (int id) %{
-	id = (*jenv)->GetIntField(jenv, $input, rep_processmsg_envid_fid);
-	$1 = &id;
-%}
-
-%typemap(argout) int *envid %{
-	(*jenv)->SetIntField(jenv, $input, rep_processmsg_envid_fid, *$1);
-%}
-
 JAVA_TYPEMAP(struct __db_repmgr_sites,
     com.sleepycat.db.ReplicationHostAddress[], jobjectArray)
 %typemap(out) struct __db_repmgr_sites

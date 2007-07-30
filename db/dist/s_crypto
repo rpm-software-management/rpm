@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_crypto,v 12.1 2005/12/01 03:24:24 bostic Exp $
+#	$Id: s_crypto,v 12.2 2007/06/13 20:16:04 bostic Exp $
 
 # Remove crypto from the DB source tree.
 
@@ -37,9 +37,11 @@ chmod 664 $f
 
 f=srcfiles.in
 chmod 664 $f
+f=srcfiles.in
+r=`egrep crypto/crypto.c $f | awk 'BEGIN { FS="\t*" } { print $2 }'`
 (echo 'g/^crypto\//d' &&
  echo '/crypto_stub\.c/' &&
- echo 's/small/dynamic small static vx/' &&
+ echo "s/\$/ $r/" &&
  echo 'w' &&
  echo 'q') | ed $f
 

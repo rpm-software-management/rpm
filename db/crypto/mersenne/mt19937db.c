@@ -1,5 +1,5 @@
 /*
- * $Id: mt19937db.c,v 12.4 2006/09/08 20:32:02 bostic Exp $
+ * $Id: mt19937db.c,v 12.6 2007/04/18 18:16:04 bostic Exp $
  */
 #include "db_config.h"
 
@@ -138,10 +138,11 @@ static unsigned long
 __db_genrand(dbenv)
     DB_ENV *dbenv;
 {
+    db_timespec ts;
     unsigned long y;
     static unsigned long mag01[2]={0x0, MATRIX_A};
     /* mag01[x] = x * MATRIX_A  for x=0,1 */
-    u_int32_t secs, seed, usecs;
+    u_int32_t seed;
 
     /*
      * We are called with DB_ENV->mtx_mt locked.
@@ -155,11 +156,11 @@ __db_genrand(dbenv)
 		 * function will return 4 bytes if we don't send in a key.
 		 */
 		do {
-			__os_clock(dbenv, &secs, &usecs);
-			__db_chksum(NULL, (u_int8_t *)&secs, sizeof(secs), NULL,
-			    (u_int8_t *)&seed);
+			__os_gettime(dbenv, &ts);
+			__db_chksum(NULL, (u_int8_t *)&ts.tv_sec,
+			    sizeof(ts.tv_sec), NULL, (u_int8_t *)&seed);
 		} while (seed == 0);
-        	__db_sgenrand((long)seed, dbenv->mt, &dbenv->mti);
+        	__db_sgenrand((unsigned long)seed, dbenv->mt, &dbenv->mti);
 	}
 
         for (kk=0;kk<N-M;kk++) {

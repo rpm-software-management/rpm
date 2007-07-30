@@ -1,0 +1,29 @@
+m4_comment([$Id: byteorder.so,v 10.17 2001/02/15 22:21:13 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Selecting a byte order,
+    selecting a @byte order,
+    am_conf/cachesize, am_conf/dup)
+
+m4_p([dnl
+Database files created by m4_db can be created in either little- or
+big-endian formats.  The byte order used for the underlying database
+is specified by calling the m4_refT(dbh_set_lorder).  If no order
+is selected, the native format of the machine on which the database is
+created will be used.])
+
+m4_p([dnl
+m4_db databases are architecture independent, and any format database can
+be used on a machine with a different native format.  In this case, as
+each page that is read into or written from the cache must be converted
+to or from the host format, and databases with non-native formats will
+incur a performance penalty for the run-time conversion.])
+
+m4_p([m4_bold([dnl
+It is important to note that the m4_db access methods do no data
+conversion for application specified data.  Key/data pairs written on a
+little-endian format architecture will be returned to the application
+exactly as they were written when retrieved on a big-endian format
+architecture.])])
+
+m4_page_footer

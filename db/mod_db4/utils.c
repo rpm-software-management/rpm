@@ -1,6 +1,5 @@
 /*-
- * Copyright (c) 2004-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2004,2007 Oracle.  All rights reserved.
  *
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
@@ -470,11 +469,11 @@ static int new_dbc_dup(DBC *oldcursor, DBC **newcursor, u_int32_t flags)
     if((ret = old_dbc_dup(oldcursor, newcursor, flags)) == 0) {
         register_cursor(*newcursor);
         
-        /* overload DBC->c_close */
-        (*newcursor)->c_close = oldcursor->c_close;
+        /* overload DBC->close */
+        (*newcursor)->close = oldcursor->close;
         
-        /* overload DBC->c_dup */
-        (*newcursor)->c_dup = oldcursor->c_dup;
+        /* overload DBC->dup */
+        (*newcursor)->dup = oldcursor->dup;
     }
     return ret;
 }
@@ -486,17 +485,17 @@ static int new_db_cursor(DB *db, DB_TXN *txnid, DBC **cursop, u_int32_t flags)
     if((ret = old_db_cursor(db, txnid, cursop, flags)) == 0) {
         register_cursor(*cursop);
         
-        /* overload DBC->c_close */
+        /* overload DBC->close */
         if(old_dbc_close == NULL) { 
-            old_dbc_close = (*cursop)->c_close;
+            old_dbc_close = (*cursop)->close;
         }
-        (*cursop)->c_close = new_dbc_close;
+        (*cursop)->close = new_dbc_close;
         
-        /* overload DBC->c_dup */
+        /* overload DBC->dup */
         if(old_dbc_dup == NULL) { 
-            old_dbc_dup = (*cursop)->c_dup;
+            old_dbc_dup = (*cursop)->dup;
         }
-        (*cursop)->c_dup = new_dbc_dup;
+        (*cursop)->dup = new_dbc_dup;
     }
     return ret;
 }
@@ -523,7 +522,7 @@ int mod_db4_db_env_create(DB_ENV **dbenvp, u_int32_t flags)
     /* grab context info from httpd.conf for error file */
     /* grab context info for cachesize */
     if (0 && cachesize) {
-        if(( ret = dbenv->set_cachesize(dbenv, 0, cachesize, 0)) != 0) {
+        if ((ret = dbenv->set_cachesize(dbenv, 0, cachesize, 0)) != 0) {
             dbenv->err(dbenv, ret, "set_cachesize");
             dbenv->close(dbenv, 0);
         }
@@ -593,7 +592,7 @@ void mod_db4_child_clean_request_shutdown()
     DBC *cursor;
     DB_TXN *transaction;
     while(cursor = (DBC *)skiplist_pop(&open_cursors, NULL)) {
-        cursor->c_close(cursor);
+        cursor->close(cursor);
     }
     while(transaction = (DB_TXN *)skiplist_pop(&open_transactions, NULL)) {
         transaction->abort(transaction);

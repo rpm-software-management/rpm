@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: gen_client_ret.c,v 12.7 2006/09/08 19:27:46 bostic Exp $
+ * $Id: gen_client_ret.c,v 12.12 2007/05/23 15:18:37 bostic Exp $
  */
 
 #include "db_config.h"
@@ -14,7 +13,7 @@
 #include "dbinc/db_am.h"
 #include "dbinc/txn.h"
 
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <rpc/rpc.h>
 #endif
 #include "db_server.h"
@@ -418,7 +417,7 @@ __dbcl_db_open_ret(dbp, txn, name, subdb, type, flags, mode, replyp)
 		 * __db_set_lorder checks that it is called before
 		 * the open flag is set.
 		 */
-		(void)__db_set_lorder(dbp, replyp->lorder);
+		(void)__db_set_lorder(dbp, (int)replyp->lorder);
 
 		/*
 		 * Explicitly set DB_AM_OPEN_CALLED since open is now
@@ -658,27 +657,27 @@ __dbcl_db_join_ret(dbp, curs, dbcp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_close_ret __P((DBC *, __dbc_c_close_reply *));
+ * PUBLIC: int __dbcl_dbc_close_ret __P((DBC *, __dbc_close_reply *));
  */
 int
-__dbcl_dbc_c_close_ret(dbc, replyp)
+__dbcl_dbc_close_ret(dbc, replyp)
 	DBC *dbc;
-	__dbc_c_close_reply *replyp;
+	__dbc_close_reply *replyp;
 {
 	__dbcl_c_refresh(dbc);
 	return (replyp->status);
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_count_ret
- * PUBLIC:     __P((DBC *, db_recno_t *, u_int32_t, __dbc_c_count_reply *));
+ * PUBLIC: int __dbcl_dbc_count_ret
+ * PUBLIC:     __P((DBC *, db_recno_t *, u_int32_t, __dbc_count_reply *));
  */
 int
-__dbcl_dbc_c_count_ret(dbc, countp, flags, replyp)
+__dbcl_dbc_count_ret(dbc, countp, flags, replyp)
 	DBC *dbc;
 	db_recno_t *countp;
 	u_int32_t flags;
-	__dbc_c_count_reply *replyp;
+	__dbc_count_reply *replyp;
 {
 	COMPQUIET(dbc, NULL);
 	COMPQUIET(flags, 0);
@@ -691,14 +690,14 @@ __dbcl_dbc_c_count_ret(dbc, countp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_dup_ret
- * PUBLIC:     __P((DBC *, DBC **, u_int32_t, __dbc_c_dup_reply *));
+ * PUBLIC: int __dbcl_dbc_dup_ret
+ * PUBLIC:     __P((DBC *, DBC **, u_int32_t, __dbc_dup_reply *));
  */
 int
-__dbcl_dbc_c_dup_ret(dbc, dbcp, flags, replyp)
+__dbcl_dbc_dup_ret(dbc, dbcp, flags, replyp)
 	DBC *dbc, **dbcp;
 	u_int32_t flags;
-	__dbc_c_dup_reply *replyp;
+	__dbc_dup_reply *replyp;
 {
 	COMPQUIET(flags, 0);
 
@@ -709,15 +708,15 @@ __dbcl_dbc_c_dup_ret(dbc, dbcp, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_get_ret
- * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_c_get_reply *));
+ * PUBLIC: int __dbcl_dbc_get_ret
+ * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_get_reply *));
  */
 int
-__dbcl_dbc_c_get_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_get_ret(dbc, key, data, flags, replyp)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
-	__dbc_c_get_reply *replyp;
+	__dbc_get_reply *replyp;
 {
 	DB_ENV *dbenv;
 	int ret;
@@ -750,17 +749,17 @@ __dbcl_dbc_c_get_ret(dbc, key, data, flags, replyp)
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
- * PUBLIC:      __dbc_c_pget_reply *));
+ * PUBLIC: int __dbcl_dbc_pget_ret __P((DBC *, DBT *, DBT *, DBT *, u_int32_t,
+ * PUBLIC:      __dbc_pget_reply *));
  */
 int
-__dbcl_dbc_c_pget_ret(dbc, skey, pkey, data, flags, replyp)
+__dbcl_dbc_pget_ret(dbc, skey, pkey, data, flags, replyp)
 	DBC * dbc;
 	DBT * skey;
 	DBT * pkey;
 	DBT * data;
 	u_int32_t flags;
-	__dbc_c_pget_reply *replyp;
+	__dbc_pget_reply *replyp;
 {
 	DB_ENV *dbenv;
 	int ret;
@@ -802,15 +801,15 @@ err:		FREE_IF_CHANGED(skey, oldskey);
 }
 
 /*
- * PUBLIC: int __dbcl_dbc_c_put_ret
- * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_c_put_reply *));
+ * PUBLIC: int __dbcl_dbc_put_ret
+ * PUBLIC:     __P((DBC *, DBT *, DBT *, u_int32_t, __dbc_put_reply *));
  */
 int
-__dbcl_dbc_c_put_ret(dbc, key, data, flags, replyp)
+__dbcl_dbc_put_ret(dbc, key, data, flags, replyp)
 	DBC *dbc;
 	DBT *key, *data;
 	u_int32_t flags;
-	__dbc_c_put_reply *replyp;
+	__dbc_put_reply *replyp;
 {
 	COMPQUIET(data, NULL);
 

@@ -1,14 +1,15 @@
 /* Callbacks */
 %define JAVA_CALLBACK(_sig, _jclass, _name)
-JAVA_TYPEMAP(_sig, _jclass, jobject)
-%typemap(javain) _sig %{ (_name##_handler = $javainput) %}
+JAVA_TYPEMAP(_sig, _jclass, jboolean)
+%typemap(jtype) _sig "boolean"
+%typemap(javain) _sig %{ (_name##_handler = $javainput) != null %}
 
 /*
  * The Java object is stored in the Db or DbEnv class.
  * Here we only care whether it is non-NULL.
  */
 %typemap(in) _sig %{
-	$1 = ($input == NULL) ? NULL : __dbj_##_name;
+	$1 = ($input == JNI_TRUE) ? __dbj_##_name : NULL;
 %}
 %enddef
 
@@ -96,21 +97,49 @@ static void __dbj_event_notify(DB_ENV *dbenv, u_int32_t event_id, void * info)
 {
 	JNIEnv *jenv = __dbj_get_jnienv();
 	jobject jdbenv = (jobject)DB_ENV_INTERNAL(dbenv);
-	int ret;
 
-	COMPQUIET(info, NULL);
-
-	if(jdbenv == NULL)
+	if (jdbenv == NULL)
 		return ;
 
-	ret = (*jenv)->CallNonvirtualIntMethod(jenv, jdbenv, dbenv_class,
-	    event_notify_method, event_id);
-
-	if((*jenv)->ExceptionOccurred(jenv)) {
-		/* The exception will be thrown, so this could be any error. */
-		ret = EINVAL;
+	switch (event_id) {
+	case DB_EVENT_PANIC:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, panic_event_notify_method);
+		break;
+	case DB_EVENT_REP_CLIENT:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, rep_client_event_notify_method);
+		break;
+	case DB_EVENT_REP_ELECTED:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, rep_elected_event_notify_method);
+		break;
+	case DB_EVENT_REP_MASTER:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, rep_master_event_notify_method);
+		break;
+	case DB_EVENT_REP_NEWMASTER:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, rep_new_master_event_notify_method, 
+		    *(int*)info);
+		break;
+	case DB_EVENT_REP_PERM_FAILED:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, rep_perm_failed_event_notify_method);
+		break;
+	case DB_EVENT_REP_STARTUPDONE:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, rep_startup_done_event_notify_method);
+		break;
+	case DB_EVENT_WRITE_FAILED:
+		(*jenv)->CallNonvirtualVoidMethod(jenv, jdbenv,
+		    dbenv_class, write_failed_event_notify_method, 
+		    *(int*)info);
+		break;
+	default:
+                dbenv->errx(dbenv, "Unhandled event callback in the Java API");
+                DB_ASSERT(dbenv, 0);
 	}
-	return ;
 }
 
 static int __dbj_rep_transport(DB_ENV *dbenv,
@@ -162,8 +191,11 @@ static int __dbj_seckey_create(DB *db,
 	JNIEnv *jenv = __dbj_get_jnienv();
 	jobject jdb = (jobject)DB_INTERNAL(db);
 	jobject jkey, jdata, jresult;
+	jobjectArray jskeys;
+	jsize i, num_skeys;
 	jbyteArray jkeyarr, jdataarr;
 	DBT_LOCKED lresult;
+	DBT *tresult;
 	int ret;
 
 	if (jdb == NULL)
@@ -175,8 +207,7 @@ static int __dbj_seckey_create(DB *db,
 	jdata = (data->app_data != NULL) ?
 	    ((DBT_LOCKED *)data->app_data)->jdbt :
 	    (*jenv)->NewObject(jenv, dbt_class, dbt_construct);
-	jresult = (*jenv)->NewObject(jenv, dbt_class, dbt_construct);
-	if (jkey == NULL || jdata == NULL || jresult == NULL)
+	if (jkey == NULL || jdata == NULL)
 		return (ENOMEM); /* An exception is pending */
 
 	if (key->app_data == NULL) {
@@ -190,11 +221,25 @@ static int __dbj_seckey_create(DB *db,
 			return (ENOMEM); /* An exception is pending */
 	}
 
-	ret = (int)(*jenv)->CallNonvirtualIntMethod(jenv, jdb, db_class,
-	    seckey_create_method, jkey, jdata, jresult);
+	jskeys = (jobjectArray)(*jenv)->CallNonvirtualObjectMethod(jenv,
+	    jdb, db_class, seckey_create_method, jkey, jdata);
 
-	if (ret != 0)
+	if (jskeys == NULL ||
+	    (num_skeys = (*jenv)->GetArrayLength(jenv, jskeys)) == 0) {
+		ret = DB_DONOTINDEX;
 		goto err;
+	} else if (num_skeys == 1) {
+		memset(result, 0, sizeof (DBT));
+		tresult = result;
+	} else {
+		if ((ret = __os_umalloc(db->dbenv,
+		    num_skeys * sizeof (DBT), &result->data)) != 0)
+			goto err;
+		memset(result->data, 0, num_skeys * sizeof (DBT));
+		result->size = num_skeys;
+		F_SET(result, DB_DBT_APPMALLOC | DB_DBT_MULTIPLE);
+		tresult = (DBT *)result->data;
+	}
 
 	if ((*jenv)->ExceptionOccurred(jenv)) {
 		/* The exception will be thrown, so this could be any error. */
@@ -202,23 +247,30 @@ static int __dbj_seckey_create(DB *db,
 		goto err;
 	}
 
-	if ((ret = __dbj_dbt_copyin(jenv, &lresult, NULL, jresult, 0)) != 0)
-		goto err;
+	for (i = 0; i < num_skeys; i++, tresult++) {
+		jresult = (*jenv)->GetObjectArrayElement(jenv, jskeys, i);
 
-	if (lresult.dbt.size != 0) {
-		/* If there's data, we need to take a copy of it.  */
-		memset(result, 0, sizeof (DBT));
-		result->size = lresult.dbt.size;
 		if ((ret =
-		    __os_umalloc(NULL, result->size, &result->data)) != 0)
+		    __dbj_dbt_copyin(jenv, &lresult, NULL, jresult, 0)) != 0)
 			goto err;
-		if ((ret = __dbj_dbt_memcopy(&lresult.dbt, 0,
-		    result->data, result->size,
-		    DB_USERCOPY_GETDATA)) != 0)
-			goto err;
-		__dbj_dbt_release(jenv, jresult, &lresult.dbt, &lresult);
-		(*jenv)->DeleteLocalRef(jenv, lresult.jarr);
-		F_SET(result, DB_DBT_APPMALLOC);
+
+		if (lresult.dbt.size != 0) {
+			/* If there's data, we need to take a copy of it.  */
+			tresult->size = lresult.dbt.size;
+			if ((ret = __os_umalloc(NULL,
+			    tresult->size, &tresult->data)) != 0)
+				goto err;
+			if ((ret = __dbj_dbt_memcopy(&lresult.dbt, 0,
+			    tresult->data, tresult->size,
+			    DB_USERCOPY_GETDATA)) != 0)
+				goto err;
+			__dbj_dbt_release(jenv,
+			    jresult, &lresult.dbt, &lresult);
+			(*jenv)->DeleteLocalRef(jenv, lresult.jarr);
+			F_SET(tresult, DB_DBT_APPMALLOC);
+		}
+
+		(*jenv)->DeleteLocalRef(jenv, jresult);
 	}
 
 err:	if (key->app_data == NULL) {
@@ -229,7 +281,6 @@ err:	if (key->app_data == NULL) {
 		(*jenv)->DeleteLocalRef(jenv, jdataarr);
 		(*jenv)->DeleteLocalRef(jenv, jdata);
 	}
-	(*jenv)->DeleteLocalRef(jenv, jresult);
 
 	return (ret);
 }
@@ -292,7 +343,11 @@ err:	(*jenv)->DeleteLocalRef(jenv, jdbtarr);
 	return (ret);
 }
 
-static int __dbj_bt_compare(DB *db, const DBT *dbt1, const DBT *dbt2)
+/*
+ * Shared by __dbj_bt_compare and __dbj_h_compare
+ */
+static int __dbj_am_compare(DB *db, const DBT *dbt1, const DBT *dbt2,
+    jmethodID compare_method)
 {
 	JNIEnv *jenv = __dbj_get_jnienv();
 	jobject jdb = (jobject)DB_INTERNAL(db);
@@ -323,7 +378,7 @@ static int __dbj_bt_compare(DB *db, const DBT *dbt1, const DBT *dbt2)
 	}
 
 	ret = (int)(*jenv)->CallNonvirtualIntMethod(jenv, jdb, db_class,
-	    bt_compare_method, jdbtarr1, jdbtarr2);
+	    compare_method, jdbtarr1, jdbtarr2);
 
 	if ((*jenv)->ExceptionOccurred(jenv)) {
 		/* The exception will be thrown, so this could be any error. */
@@ -336,6 +391,11 @@ static int __dbj_bt_compare(DB *db, const DBT *dbt1, const DBT *dbt2)
 		(*jenv)->DeleteLocalRef(jenv, jdbtarr2);
 
 	return (ret);
+}
+
+static int __dbj_bt_compare(DB *db, const DBT *dbt1, const DBT *dbt2)
+{
+	return __dbj_am_compare(db, dbt1, dbt2, bt_compare_method);
 }
 
 static size_t __dbj_bt_prefix(DB *db, const DBT *dbt1, const DBT *dbt2)
@@ -352,7 +412,8 @@ static size_t __dbj_bt_prefix(DB *db, const DBT *dbt1, const DBT *dbt2)
 	if (dbt1->app_data != NULL)
 		jdbt1 = ((DBT_LOCKED *)dbt1->app_data)->jdbt;
 	else {
-		if ((jdbt1 = (*jenv)->NewObject(jenv, dbt_class, dbt_construct)) == NULL)
+		if ((jdbt1 =
+		    (*jenv)->NewObject(jenv, dbt_class, dbt_construct)) == NULL)
 			return (ENOMEM); /* An exception is pending */
 		__dbj_dbt_copyout(jenv, dbt1, &jdbtarr1, jdbt1);
 		if (jdbtarr1 == NULL)
@@ -362,7 +423,8 @@ static size_t __dbj_bt_prefix(DB *db, const DBT *dbt1, const DBT *dbt2)
 	if (dbt2->app_data != NULL)
 		jdbt2 = ((DBT_LOCKED *)dbt2->app_data)->jdbt;
 	else {
-		if ((jdbt2 = (*jenv)->NewObject(jenv, dbt_class, dbt_construct)) == NULL)
+		if ((jdbt2 =
+		    (*jenv)->NewObject(jenv, dbt_class, dbt_construct)) == NULL)
 			return (ENOMEM); /* An exception is pending */
 		__dbj_dbt_copyout(jenv, dbt2, &jdbtarr2, jdbt2);
 		if (jdbtarr2 == NULL)
@@ -430,6 +492,11 @@ static void __dbj_db_feedback(DB *db, int opcode, int percent)
 		    db_feedback_method, opcode, percent);
 }
 
+static int __dbj_h_compare(DB *db, const DBT *dbt1, const DBT *dbt2)
+{
+	return __dbj_am_compare(db, dbt1, dbt2, h_compare_method);
+}
+
 static u_int32_t __dbj_h_hash(DB *db, const void *data, u_int32_t len)
 {
 	JNIEnv *jenv = __dbj_get_jnienv();
@@ -472,12 +539,17 @@ JAVA_CALLBACK(int (*send)(DB_ENV *, const DBT *, const DBT *,
 
 /*
  * Db.associate is a special case, because the handler must be set in the
- * secondary DB - that's what we have in the callback.
+ * secondary DB - that's what we have in the callback.  In addition, there
+ * are two flavors of callback (single key and multi-key), so we need to
+ * check for both types when working out whether the C callback should
+ * be NULL.  Note that this implies that the multi-key callback will be set
+ * on the secondary database *before* associate is called.
  */
 JAVA_CALLBACK(int (*callback)(DB *, const DBT *, const DBT *, DBT *),
     com.sleepycat.db.SecondaryKeyCreator, seckey_create)
 %typemap(javain) int (*callback)(DB *, const DBT *, const DBT *, DBT *)
-    %{ (secondary.seckey_create_handler = $javainput) %}
+    %{ (secondary.seckey_create_handler = $javainput) != null ||
+	(secondary.secmultikey_create_handler != null) %}
 
 JAVA_CALLBACK(int (*db_append_recno_fcn)(DB *, DBT *, db_recno_t),
     com.sleepycat.db.RecordNumberAppender, append_recno)
@@ -489,5 +561,7 @@ JAVA_CALLBACK(int (*dup_compare_fcn)(DB *, const DBT *, const DBT *),
     java.util.Comparator, dup_compare)
 JAVA_CALLBACK(void (*db_feedback_fcn)(DB *, int, int),
     com.sleepycat.db.FeedbackHandler, db_feedback)
+JAVA_CALLBACK(int (*h_compare_fcn)(DB *, const DBT *, const DBT *),
+    java.util.Comparator, h_compare)
 JAVA_CALLBACK(u_int32_t (*h_hash_fcn)(DB *, const void *, u_int32_t),
     com.sleepycat.db.Hasher, h_hash)

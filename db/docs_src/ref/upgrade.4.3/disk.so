@@ -1,0 +1,15 @@
+m4_comment([$Id: disk.so,v 1.6 2004/12/16 19:13:03 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: upgrade requirements,,
+    upgrade.4.3/rtc, upgrade.4.4/intro)
+
+m4_p([dnl
+The log file format changed in the m4_db 4.3 release.  No database
+formats changed in the m4_db 4.3 release.])
+
+m4_p([dnl
+For further information on upgrading m4_db installations, see
+m4_link(M4RELDIR/ref/upgrade/process, Upgrading m4_db installations).])
+
+m4_page_footer

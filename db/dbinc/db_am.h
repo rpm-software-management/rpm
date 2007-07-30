@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_am.h,v 12.17 2006/08/24 14:45:29 bostic Exp $
+ * $Id: db_am.h,v 12.29 2007/06/13 19:06:07 bostic Exp $
  */
 #ifndef _DB_AM_H_
 #define	_DB_AM_H_
@@ -55,6 +54,8 @@ extern "C" {
 	COMPQUIET(mpf, NULL);						\
 	if ((ret = func(dbenv, dbtp->data, &argp)) != 0)		\
 		goto out;						\
+	if (info != NULL)						\
+		argp->txnp->td = ((DB_TXNHEAD *)info)->td;		\
 	if ((ret = __dbreg_id_to_db(dbenv, argp->txnp,			\
 	    &file_dbp, argp->fileid, inc_count)) != 0) {		\
 		if (ret	== DB_DELETED) {				\
@@ -76,7 +77,7 @@ extern "C" {
 	if (argp != NULL)						\
 		__os_free(dbenv, argp);					\
 	if (dbc != NULL &&						\
-	    (__t_ret = __db_c_close(dbc)) != 0 && ret == 0)		\
+	    (__t_ret = __dbc_close(dbc)) != 0 && ret == 0)		\
 		ret = __t_ret;						\
 	}								\
 	return (ret)
@@ -118,8 +119,9 @@ extern "C" {
 			goto cont;					\
 	}
 #endif
-#define	REC_DIRTY(mpf, pagep)						\
-	if ((ret = __memp_dirty(mpf, pagep, NULL, DB_MPOOL_EDIT)) != 0) {\
+#define	REC_DIRTY(mpf, priority, pagep)					\
+	if ((ret = __memp_dirty(mpf,					\
+	    pagep, NULL, priority, DB_MPOOL_EDIT)) != 0) {		\
 		ret = __db_pgerr(file_dbp, PGNO(*(pagep)), ret);	\
 		goto out;						\
 	}
@@ -175,12 +177,12 @@ typedef struct {
 
 /*
  * A database should be required to be readonly if it's been explicitly
- * specified as such or if we're a client in a replicated environment and
- * we don't have the special "client-writer" designation.
+ * specified as such or if we're a client in a replicated environment
+ * and the user did not specify DB_TXN_NOT_DURABLE.
  */
 #define	DB_IS_READONLY(dbp)						\
     (F_ISSET(dbp, DB_AM_RDONLY) ||					\
-    (IS_REP_CLIENT((dbp)->dbenv)))
+    (IS_REP_CLIENT((dbp)->dbenv) && !F_ISSET((dbp), DB_AM_NOT_DURABLE)))
 
 /*
  * For portability, primary keys that are record numbers are stored in
@@ -210,9 +212,31 @@ typedef struct {
 	    TAILQ_PREV((tdbp), __dblist, dblistlinks) != NULL &&	\
 	    TAILQ_PREV((tdbp),						\
 		__dblist, dblistlinks)->adj_fileid == (dbp)->adj_fileid;\
-	    (tdbp) = TAILQ_PREV((tdbp), __dblist, dblistlinks))	\
+	    (tdbp) = TAILQ_PREV((tdbp), __dblist, dblistlinks))		\
 		;							\
 } while (0)
+
+/*
+ * Macros used to implement a binary search algorithm. Shared between the
+ * btree and hash implementations.
+ */
+#define	DB_BINARY_SEARCH_FOR(base, limit, page, adjust)			\
+	for (base = 0, limit = NUM_ENT(page) / (db_indx_t)(adjust);	\
+	    (limit) != 0; (limit) >>= 1)
+
+#define	DB_BINARY_SEARCH_INCR(index, base, limit, adjust)		\
+	index = (base) + (((limit) >> 1) * (adjust))
+
+#define	DB_BINARY_SEARCH_SHIFT_BASE(index, base, limit, adjust)	do {	\
+	base = (index) + (adjust);					\
+	--(limit);							\
+} while (0)
+
+/*
+ * Flags to __db_chk_meta.
+ */
+#define	DB_CHK_META	0x01	/* Checksum the meta page. */
+#define	DB_CHK_NOLSN	0x02	/* Don't check the LSN. */
 
 #if defined(__cplusplus)
 }

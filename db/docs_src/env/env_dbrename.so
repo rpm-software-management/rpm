@@ -1,0 +1,98 @@
+m4_comment([$Id: env_dbrename.so,v 10.37 2004/12/16 19:13:01 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_dbrename)])
+
+define(M4PAGELOCAL, M4INTERFACE)
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_dbrename, [dnl
+m4_pf_header(m4_ref(dbenv_dbrename),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__dbrename(DB_ENV *dbenv, DB_TXN *txnid, const char *file,
+    const char *database, const char *newname, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::dbrename(DbTxn *txnid, const char *file,
+    const char *database, const char *newname, u_int32_t flags);
+]))],[dnl
+m4_pf_header(m4_ref(dbh_rename),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__rename(DB *db, const char *file,
+    const char *database, const char *newname, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::rename(const char *file,
+    const char *database, const char *newname, u_int32_t flags);
+]))])
+
+m4_p([dnl
+The m4_refT(M4INTERFACE) renames the database specified by the
+m4_arg(file) and m4_arg(database) parameters to m4_arg(newname).  If no
+m4_arg(database) is specified, the underlying file represented by
+m4_arg(file) is renamed, incidentally renaming all of the databases it
+contained.])
+
+m4_p([dnl
+Applications should not rename databases that are currently in use.  If
+an underlying file is being renamed and logging is currently enabled in
+the database environment, no database in the file may be open when the
+m4_refT(M4INTERFACE) is called.  In particular, some architectures do
+not permit renaming files with open handles.  On these architectures,
+attempts to rename databases that are currently in use by any thread of
+control in the system may fail.])
+
+ifelse(M4INTERFACE, dbh_rename, [dnl
+m4_p([dnl
+The m4_refT(dbh_rename) should not be called if the rename is intended
+to be transactionally safe; the m4_refT(dbenv_dbrename) should be used
+instead.])
+m4_p([dnl
+The m4_refT(dbh_rename) may not be called after calling the
+m4_refT(dbh_open) on any m4_ref(Db) handle.  If the m4_refT(dbh_open)
+has already been called on a m4_ref(Db) handle, close the existing
+handle and create a new one before calling m4_ref(dbh_rename).])
+
+m4_destructor(Db, dbh_rename)])
+
+m4_return(M4INTERFACE, std)
+
+m4_parambegin
+m4_param(database, [dnl
+The m4_arg(database) parameter is the database to be renamed.])
+
+m4_param_utf8(file, [dnl
+The m4_arg(file) parameter is the physical file which contains the
+database(s) to be renamed.])
+
+ifelse(M4INTERFACE, dbenv_dbrename, [dnl
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_autocommit_flag(dbenv_dbrename)
+m4_tagend])
+],[dnl
+m4_unusedflags
+])
+
+m4_param(newname, [dnl
+The m4_arg(newname) parameter is the new name of the database or file.])
+
+ifelse(M4INTERFACE, dbenv_dbrename, [m4_param_txn(dbenv_dbrename, auto)])
+m4_paramend
+
+m4_header([Environment Variables])
+m4_data_location(M4INTERFACE, ifelse(M4INTERFACE, dbenv_dbrename, 0, 1))
+
+m4_err(M4INTERFACE,
+ifelse(M4INTERFACE, dbenv_dbrename, deadlock, empty), einval,
+[ifelse(M4INTERFACE, dbenv_dbrename,
+[m4_ref(dbenv_dbrename) called before m4_ref(dbenv_open) was called],
+[m4_ref(dbh_rename) called after m4_ref(dbh_open) was called])],
+filenotfound)
+
+ifelse(M4INTERFACE, dbenv_dbrename, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

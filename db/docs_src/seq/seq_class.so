@@ -1,0 +1,71 @@
+m4_comment([$Id: seq_class.so,v 1.12 2004/10/18 19:46:31 bostic Exp $])
+
+define(M4PAGELOCAL, [seq_create, DbSequence])
+include(m4/m4.seealso)
+
+ifelse(M4API, C_API, [dnl
+m4_pf_header(m4_ref(seq_create), [dnl
+typedef struct __db_sequence DB_SEQUENCE;
+m4_blank
+int
+db_sequence_create(DB_SEQUENCE **seq, DB *db, u_int32_t flags);
+])])
+ifelse(M4API, CXX_API, [dnl
+m4_pf_header(m4_ref(DbSequence), [dnl
+class DbSequence {
+public:
+	DbSequence(Db *db, u_int32_t flags);
+	~DbSequence();
+m4_blank
+	DB_SEQUENCE *DbSequence::get_DB();
+	const DB *DbSequence::get_const_DB() const;
+	static DbSequence *DbSequence::get_DbSequence(DB *db);
+	static const DbSequence *DbSequence::get_const_DbSequence(const DB *db);
+	...
+};])])
+
+m4_p([dnl
+The m4_ref(DbSequence) handle is the handle used to manipulate a
+sequence object.  A sequence object is stored in a record in a
+database.])
+
+m4_p([dnl
+m4_ref(DbSequence) handles are free-threaded if the m4_ref(DB_THREAD)
+flag is specified to the m4_refT(seq_open) when the sequence is opened.
+Once the m4_ref(seq_close) or m4_refT(seq_remove)s are called, the
+handle may not be accessed again, regardless of the method's return.])
+
+m4_p([dnl
+Each handle opened on a sequence may maintain a separate cache of values
+which are returned to the application using the m4_ref(seq_get) method
+either singly or in groups depending on its m4_arg(delta) parameter.])
+
+m4_p([dnl
+The
+ifelse(M4API, C_API, m4_refT(DbSequence), constructor) creates a
+m4_ref(DbSequence) object that serves as the handle for a sequence.
+Calling the m4_ref(seq_close) or m4_refT(seq_remove)s will discard the
+handle.])
+
+ifelse(M4API, C_API, [m4_return(seq_create, std)])
+
+m4_parambegin
+
+ifelse(M4API, C_API, [dnl
+m4_param(seq, [dnl
+The m4_arg(seq) parameter references the memory into which the returned
+structure pointer is stored.])])
+
+m4_param(db, [dnl
+The m4_arg(db) parameter is an open database handle which holds the
+persistent data for the sequence.  The database may be of any type,
+but may not have been configured to support duplicate data items.])
+
+m4_unusedflags(0)
+
+m4_paramend
+
+ifelse(M4API, C_API, [m4_err(seq_create, einval)])
+
+m4_seealso(DbSequence)
+m4_page_footer

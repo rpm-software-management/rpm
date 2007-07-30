@@ -1,0 +1,49 @@
+dnl $Id: m4.init,v 10.22 2005/10/22 13:08:23 bostic Exp $
+
+dnl The GNU m4 builtin macro format is recognized even without arguments.
+dnl This is an m4 bug, hopefully fixed in the next release.
+undefine(`format')
+
+dnl Some GNU m4 releases have a builtin macro symbols.
+undefine(`symbols')
+
+dnl We use our own quote characters to make things a bit easier.
+changequote([,])
+
+dnl ###################################################################
+dnl Paths.
+dnl
+dnl _m4_api is the path to any API references.  It's set to C++ if building
+dnl the C++ API, and to C if building the C API or sections shared by all
+dnl APIs, for example, the Reference Guide.
+dnl
+dnl _m4_ipath is the path to the index file we're building.  It's set to the
+dnl real API if we're building one, and to an everything-else file, if we're
+dnl not.
+dnl ###################################################################
+define(_m4_api, [ifelse(M4API, CXX_API, [M4RELDIR/api_cxx], [M4RELDIR/api_c])])
+
+define(_m4_ipath, [ifelse(dnl
+M4API, CXX_API, [M4RELDIR/api_cxx/pindex.src],
+M4API, C_API, [M4RELDIR/api_c/pindex.src],
+M4API, TCL_API, [M4RELDIR/api_tcl/pindex.src],
+[M4RELDIR/ref/pindex.src])])
+
+dnl Set the path of the API index
+define(m4_iurl, [dnl
+ifelse(M4PRODUCT, XML, [dnl
+ifelse(M4API, CXX_API, [M4RELDIR/api_cxx/api_xml.html],
+M4API, TCL_API, [M4RELDIR/api_tcl/api_tcl.html],
+[M4RELDIR/api_c/api_xml.html])], [dnl
+ifelse(M4API, CXX_API, [M4RELDIR/api_cxx/api_core.html],
+M4API, TCL_API, [M4RELDIR/api_tcl/api_tcl.html],
+[M4RELDIR/api_c/api_core.html])])])
+
+dnl ###################################################################
+dnl Exception style.
+dnl
+dnl The C engine has returns; the C++ core engine has exceptions and return
+dnl values, but DbXml only has exceptions.
+dnl ###################################################################
+define(M4EXCEPT,
+ifelse(M4PRODUCT, XML, except_only, M4API, CXX_API, except_return, return_only))

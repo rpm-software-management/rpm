@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1998-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1998,2007 Oracle.  All rights reserved.
  *
- * $Id: xa.h,v 12.4 2006/08/24 14:45:30 bostic Exp $
+ * $Id: xa.h,v 12.6 2007/05/17 15:15:05 bostic Exp $
  */
 /*
  * Start of xa.h header

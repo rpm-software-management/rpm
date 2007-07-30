@@ -1,0 +1,167 @@
+m4_comment([$Id: dbisnot.so,v 10.8 2002/08/23 20:36:50 bostic Exp $])
+
+m4_ref_title(Introduction, What m4_db is not,, intro/dbis, intro/need)
+
+m4_p([dnl
+In contrast to most other database systems, m4_db provides relatively
+simple data access services.])
+
+m4_p([dnl
+Records in m4_db are (m4_italic([key]), m4_italic([value])) pairs. m4_db
+supports only a few logical operations on records. They are:])
+
+m4_bulletbegin
+m4_bullet([Insert a record in a table.])
+m4_bullet([Delete a record from a table.])
+m4_bullet([Find a record in a table by looking up its key.])
+m4_bullet([Update a record that has already been found.])
+m4_bulletend
+
+m4_p([dnl
+Notice that m4_db never operates on the value part of a record.
+Values are simply payload, to be
+stored with keys and reliably delivered back to the application on
+demand.])
+
+m4_p([dnl
+Both keys and values can be arbitrary byte strings, either fixed-length
+or variable-length. As a result, programmers can put native programming
+language data structures into the database without converting them to
+a foreign record format first. Storage and retrieval are very simple,
+but the application needs to know what the structure of a key and a
+value is in advance. It cannot ask m4_db, because m4_db doesn't know.])
+
+m4_p([dnl
+This is an important feature of m4_db, and one worth considering more
+carefully.  On the one hand, m4_db cannot provide the programmer with
+any information on the contents or structure of the values that it
+stores.  The application must understand the keys and values that it
+uses.  On the other hand, there is literally no limit to the data types
+that can be store in a m4_db database. The application never needs to
+convert its own program data into the data types that m4_db supports.
+m4_db is able to operate on any data type the application uses, no
+matter how complex.])
+
+m4_p([dnl
+Because both keys and values can be up to four gigabytes in length, a
+single record can store images, audio streams, or other large data
+values.  Large values are not treated specially in m4_db. They are
+simply broken into page-sized chunks, and reassembled on demand when
+the application needs them. Unlike some other database systems, m4_db
+offers no special support for binary large objects (BLOBs).])
+
+m4_section([Not a relational database])
+
+m4_p([dnl
+m4_db is not a relational database.])
+
+m4_p([dnl
+First, m4_db does not support SQL queries. All access to data is through
+the m4_db API. Developers must learn a new set of interfaces in order
+to work with m4_db. Although the interfaces are fairly simple, they are
+non-standard.])
+
+m4_p([dnl
+SQL support is a double-edged sword. One big advantage of relational
+databases is that they allow users to write simple declarative queries
+in a high-level language. The database system knows everything about
+the data and can carry out the command. This means that it's simple to
+search for data in new ways, and to ask new questions of the database.
+No programming is required.])
+
+m4_p([dnl
+On the other hand, if a programmer can predict in advance how an
+application will access data, then writing a low-level program to get
+and store records can be faster. It eliminates the overhead of query
+parsing, optimization, and execution. The programmer must understand
+the data representation, and must write the code to do the work, but
+once that's done, the application can be very fast.])
+
+m4_p([dnl
+Second, m4_db has no notion of m4_italic([schema]) and data types in
+the way that relational systems do. Schema is the structure of records
+in tables, and the relationships among the tables in the database. For
+example, in a relational system the programmer can create a record from
+a fixed menu of data types. Because the record types are declared to
+the system, the relational engine can reach inside records and examine
+individual values in them. In addition, programmers can use SQL to
+declare relationships among tables, and to create indices on tables.
+Relational engines usually maintain these relationships and indices
+automatically.])
+
+m4_p([dnl
+In m4_db, the key and value in a record are opaque to m4_db. They may
+have a rich internal structure, but the library is unaware of it. As a
+result, m4_db cannot decompose the value part of a record into its
+constituent parts, and cannot use those parts to find values of
+interest. Only the application, which knows the data structure, can do
+that.  m4_db does support indices on tables and automatically maintain
+those indices as their associated tables are modified.])
+
+m4_p([dnl
+m4_db is not a relational system. Relational database systems are
+semantically rich and offer high-level database access. Compared to such
+systems, m4_db is a high-performance, transactional library for record
+storage. It's possible to build a relational system on top of m4_db. In
+fact, the popular MySQL relational system uses m4_db for
+transaction-protected table management, and takes care of all the SQL
+parsing and execution. It uses m4_db for the storage level, and provides
+the semantics and access tools.])
+
+m4_section([Not an object-oriented database])
+
+m4_p([dnl
+Object-oriented databases are designed for very tight integration with
+object-oriented programming languages. m4_db is written entirely in the
+C programming language. It includes language bindings for C++, Java,
+and other languages, but the library has no information about the
+objects created in any object-oriented application. m4_db never makes
+method calls on any application object. It has no idea what methods are
+defined on user objects, and cannot see the public or private members
+of any instance.  The key and value part of all records are opaque to
+m4_db.])
+
+m4_p([dnl
+m4_db cannot automatically page in objects as they are accessed, as some
+object-oriented databases do. The object-oriented application programmer
+must decide what records are required, and must fetch them by making
+method calls on m4_db objects.])
+
+m4_section([Not a network database])
+
+m4_p([dnl
+m4_db does not support network-style navigation among records, as
+network databases do. Records in a m4_db table may move around over
+time, as new records are added to the table and old ones are deleted.
+m4_db is able to do fast searches for records based on keys, but there
+is no way to create a persistent physical pointer to a record.
+Applications can only refer to records by key, not by address.])
+
+m4_section([Not a database server])
+
+m4_p([dnl
+m4_db is not a standalone database server. It is a library, and runs in
+the address space of the application that uses it. If more than one
+application links in m4_db, then all can use the same database at the
+same time; the library handles coordination among the applications, and
+guarantees that they do not interfere with one another.])
+
+m4_p([dnl
+Recent releases of m4_db allow programmers to compile the library as a
+standalone process, and to use RPC stubs to connect to it and to carry
+out operations. However, there are some important limitations to this
+feature.  The RPC stubs provide exactly the same API that the library
+itself does.  There is no higher-level access provided by the standalone
+process. Tuning the standalone process is difficult, since m4_db does
+no threading in the library (applications can be threaded, but the
+library never creates a thread on its own).])
+
+m4_p([dnl
+It is possible to build a server application that uses m4_db for data
+management. For example, many commercial and open source Lightweight
+Directory Access Protocol (LDAP) servers use m4_db for record storage.
+LDAP clients connect to these servers over the network. Individual
+servers make calls through the m4_db API to find records and return them
+to clients. On its own, however, m4_db is not a server.])
+
+m4_page_footer

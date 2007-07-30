@@ -1,0 +1,16 @@
+m4_comment([$Id: log_register.so,v 1.4 2001/07/26 19:53:12 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.1: log_register,,
+    upgrade.3.1/sysmem, upgrade.3.1/memp_register)
+
+m4_p([dnl
+The arguments to the log_register and log_unregister interfaces have
+changed.  Instead of returning (and passing in) a logging file ID, a
+reference to the m4_ref(Db) structure being registered (or unregistered)
+is passed.  The application should be searched for any occurrences of
+log_register and log_unregister.  For each one, change the arguments to
+be a reference to the m4_ref(Db) structure being registered or
+unregistered.])
+
+m4_page_footer

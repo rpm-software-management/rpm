@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep019.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep019.tcl,v 12.14 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  rep019
 # TEST	Replication and multiple clients at same LSN.
@@ -44,6 +43,12 @@ proc rep019 { method { nclients 3 } { tnum "019" } args } {
 proc rep019_sub { method nclients tnum recargs largs } {
 	global testdir
 	global util_path
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	set orig_tdir $testdir
 	env_cleanup $testdir
@@ -56,26 +61,19 @@ proc rep019_sub { method nclients tnum recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create -txn nosync \
-	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create $m_txnargs \
-#	    -errpfx MASTER -verbose {rep on} \
-#	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
+	set ma_envcmd "berkdb_env_noerr -create -txn nosync $verbargs \
+	    -home $masterdir -rep_master -errpfx MASTER \
+	    -rep_transport \[list 1 replsend\]"
 	set menv [eval $ma_envcmd $recargs]
-	error_check_good master_env [is_valid_env $menv] TRUE
 
 	for {set i 0} {$i < $nclients} {incr i} {
 		set clientdir($i) $testdir/CLIENTDIR.$i
 		file mkdir $clientdir($i)
 		set id($i) [expr 2 + $i]
 		repladd $id($i)
-		set cl_envcmd($i) "berkdb_env -create -txn nosync \
-		    -home $clientdir($i) \
+		set cl_envcmd($i) "berkdb_env_noerr -create -txn nosync \
+		    -home $clientdir($i) $verbargs -errpfx CLIENT.$i \
 		    -rep_client -rep_transport \[list $id($i) replsend\]"
-#		set cl_envcmd($i) "berkdb_env -create -txn nosync \
-#		    -home $clientdir($i) \
-#		    -errpfx CLIENT$i -verbose {rep on} \
-#		    -rep_client -rep_transport \[list $id($i) replsend\]"
 		set clenv($i) [eval $cl_envcmd($i) $recargs]
 		error_check_good client_env [is_valid_env $clenv($i)] TRUE
 	}

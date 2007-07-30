@@ -1,0 +1,105 @@
+m4_comment([$Id: db_get.so,v 11.20 2004/12/16 19:13:04 bostic Exp $])
+
+define(M4PAGELOCAL, )
+include(tcl/m4.tcl)
+
+m4_tcl_header(db get, m4_tcl_db_get, [dnl
+db get
+	m4_tcl_arg([-consume])
+	m4_tcl_arg([-consume_wait])
+	m4_tcl_arg([-glob])
+	m4_tcl_arg([-partial {doff dlen}])
+	m4_tcl_arg([-recno])
+	m4_tcl_arg([-rmw])
+	m4_tcl_arg([-txn txnid])
+	key
+db get
+	-get_both
+	m4_tcl_arg([-partial {doff dlen}])
+	m4_tcl_arg([-rmw])
+	m4_tcl_arg([-txn txnid])
+	key data
+])
+
+m4_p([dnl
+The m4_tcl_db_get command returns key/data pairs from the database.])
+
+m4_p([dnl
+In the presence of duplicate key values, m4_tcl_db_get will return all
+duplicate items.  Duplicates are sorted by insert order except where this
+order has been overridden by cursor operations.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-consume], [dnl
+Return the record number and data from the available record closest to
+the head of the queue, and delete the record. The cursor will be
+positioned on the deleted record.  A record is available if it is not
+deleted and is not currently locked.  The underlying database must be
+of type Queue for m4_arg(-consume) to be specified.])
+
+m4_tag([-consume_wait], [dnl
+The same as the m4_arg(-consume) flag except that if the Queue database
+is empty, the thread of control will wait until there is data in the
+queue before returning.  The underlying database must be of type Queue
+for m4_arg(-consume_wait) to be specified.])
+
+m4_tag([-get_both key data], [dnl
+Retrieve the key/data pair only if both the key and data match the
+arguments.])
+
+m4_tag([-glob], [dnl
+Return all keys matching the given key, where the key is a simple
+wildcard pattern.  Where it is used, it replaces the use of the key with
+the given pattern of a set of keys.  Any characters after the wildcard
+character are ignored.  For example, in a database of last names, the
+command "db0 get Jones" will return all occurrences of "Jones" in the
+database, and the command "db0 get -glob Jo*" will return both "Jones"
+and "Johnson" from the database.  The command "db0 get -glob *" will
+return all of the key/data pairs in the database.
+This option only works on databases using the Btree access method.])
+
+m4_tag([-partial {doff dlen}], [dnl
+The m4_arg(dlen) bytes starting m4_arg(doff) bytes from the beginning
+of the retrieved data record are returned as if they comprised the
+entire record. If any or all of the specified bytes do not exist in the
+record, the command is successful and any existing bytes are returned.])
+
+m4_tag([-recno], [dnl
+Retrieve the specified numbered key/data pair from a database.  For
+m4_arg(-recno) to be specified, the specified key must be a record
+number; and the underlying database must be of type Recno or Queue, or
+of type Btree that was created with the m4_arg(-recnum) option.])
+
+m4_tag([-rmw], [dnl
+Acquire write locks instead of read locks when doing the retrieval.
+Setting this flag may decrease the likelihood of deadlock during a
+read-modify-write cycle by immediately acquiring the write lock during
+the read part of the cycle so that another thread of control acquiring a
+read lock for the same item, in its own read-modify-write cycle, will not
+result in deadlock.
+m4_p([dnl
+Because the m4_tcl_db_get command will not hold locks across m4_db
+interface calls in nontransactional environments, the m4_arg(-rmw)
+argument to the m4_tcl_db_get call is only meaningful in the presence
+of transactions.])])
+
+m4_tcl_txnopt
+
+m4_tagend
+
+m4_p([dnl
+If the underlying database is a Queue or Recno database, the given key
+will be interpreted by Tcl as an integer.  For all other database types,
+the key is interpreted by Tcl as a byte array, unless indicated by a
+given option.])
+
+m4_p([dnl
+A list of key/data pairs is returned.  In the error case that no matching
+key exists, an empty list is returned.  In all other cases, a Tcl error
+is thrown.])
+
+m4_page_footer

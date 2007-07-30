@@ -1,0 +1,24 @@
+m4_comment([$Id: tx_recover.so,v 1.14 2002/02/23 20:05:28 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.2: DB_ENV-__GT__set_tx_recover,,
+    upgrade.3.2/incomplete, upgrade.3.2/mutexlock)
+
+m4_p([dnl
+The m4_arg(info) parameter of the function passed to
+DB_ENV-__GT__set_tx_recover is no longer needed.  If your application
+calls DB_ENV-__GT__set_tx_recover, find the callback function referred
+to by that call and remove the m4_arg(info) parameter.])
+
+m4_p([dnl
+In addition, the called function no longer needs to handle m4_db log
+records, m4_db will handle them internally as well as call the
+application-specified function.  Any handling of m4_db log records in the
+application's callback function may be removed.])
+
+m4_p([dnl
+In addition, the callback function will no longer be called with the
+m4_ref(DB_TXN_FORWARD_ROLL) flag specified unless the transaction
+enclosing the operation successfully committed.])
+
+m4_page_footer

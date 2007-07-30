@@ -1,0 +1,22 @@
+m4_comment([$Id: memp_sync.so,v 1.6 2006/08/24 16:32:33 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 4.1: DB_ENV-__GT__memp_sync],,
+    upgrade.4.1/incomplete, upgrade.4.1/hash_nelem)
+
+m4_p([dnl
+Historical documentation for the m4_refT(memp_sync) stated:])
+
+m4_indent([dnl
+In addition, if m4_ref(memp_sync) returns success, the value of
+m4_arg(lsn) will be overwritten with the largest log sequence number
+from any page that was written by m4_ref(memp_sync) to satisfy this
+request.])
+
+m4_p([dnl
+This functionality was never correctly implemented, and has been removed
+in the m4_db 4.1 release.  It is very unlikely application programs used
+this information.  If your application used this information, please
+contact us for help in upgrading.])
+
+m4_page_footer

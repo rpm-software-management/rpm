@@ -1,6 +1,5 @@
-<!--$Id: env_set_thread_count.so,v 10.1 2006/05/26 20:14:59 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: env_set_thread_count.so,v 10.3 2007/04/02 16:08:13 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -36,6 +35,18 @@ database environment if the <a href="../api_cxx/env_failchk.html">DbEnv::failchk
 DbEnv::set_thread_count method does not set the maximum number of
 threads but is used to determine memory sizing and the thread control
 block reclamation policy.</p>
+<p>If a process has not configured an <b>is_alive</b> function from the
+<a href="../api_cxx/env_set_isalive.html">DbEnv::set_isalive</a> method, and then attempts to join a database
+environment configured for failure checking with the
+<a href="../api_cxx/env_failchk.html">DbEnv::failchk</a>, <a href="../api_cxx/env_set_thread_id.html">DbEnv::set_thread_id</a>,
+<a href="../api_cxx/env_set_isalive.html">DbEnv::set_isalive</a> and DbEnv::set_thread_count methods, the
+program may be unable to allocate a thread control block and fail to
+join the environment.
+<b>This is true of the standalone Berkeley DB utility programs.</b>
+To avoid problems when using the standalone Berkeley DB utility programs with
+environments configured for failure checking, incorporate the utility's
+functionality directly in the application, or call the
+<a href="../api_cxx/env_failchk.html">DbEnv::failchk</a> method before running the utility.</p>
 <p>The database environment's thread count may also be configured using the
 environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
 file is a single line with the string "set_thread_count", one or more whitespace
@@ -93,6 +104,6 @@ thread count in <b>countp</b>.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

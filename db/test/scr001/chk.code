@@ -1,10 +1,10 @@
 #!/bin/sh -
 #
-# $Id: chk.code,v 12.1 2005/10/15 15:25:05 bostic Exp $
+# $Id: chk.code,v 12.2 2007/04/20 13:50:31 bostic Exp $
 #
 # Check to make sure that the code samples in the documents build.
 
-d=../../../db_docs
+d=../../docs_src
 
 [ -d $d ] || {
 	echo 'FAIL: cannot find source distribution directory.'

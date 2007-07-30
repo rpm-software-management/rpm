@@ -1,0 +1,50 @@
+m4_comment([$Id: security.so,v 10.17 2002/02/04 17:52:38 bostic Exp $])
+
+m4_ref_title(Environment, Security, @security, env/region, env/encrypt)
+
+m4_p([dnl
+The following are security issues that should be considered when writing
+m4_db applications:])
+
+m4_tagbegin
+
+m4_tag(Database environment permissions, [dnl
+The directory used as the m4_db database environment should have its
+permissions set to ensure that files in the environment are not accessible
+to users without appropriate permissions.  Applications that add to the
+user's permissions (for example, UNIX setuid or setgid applications),
+must be carefully checked to not permit illegal use of those permissions
+such as general file access in the environment directory.])
+
+m4_tag(Environment variables, [dnl
+Setting the m4_ref(DB_USE_ENVIRON) and m4_ref(DB_USE_ENVIRON_ROOT) flags
+and allowing the use of environment variables during file naming can be
+dangerous.  Setting those flags in m4_db applications with additional
+permissions (for example, UNIX setuid or setgid applications) could
+potentially allow users to read and write databases to which they would
+not normally have access.])
+
+m4_tag(File permissions, [dnl
+By default, m4_db always creates files readable and writable by the owner
+and the group (that is, S_IRUSR, S_IWUSR, S_IRGRP and S_IWGRP; or octal mode
+0660 on historic UNIX systems).  The group ownership of created files is
+based on the system and directory defaults, and is not further specified
+by m4_db.])
+
+m4_tag(Temporary backing files, [dnl
+If an unnamed database is created and the cache is too small to hold
+the database in memory, m4_db will create a temporary physical file to
+enable it to page the database to disk as needed.  In this case,
+environment variables such as m4_bold(TMPDIR) may be used to specify
+the location of that temporary file.  Although temporary backing files
+are created readable and writable by the owner only (S_IRUSR and
+S_IWUSR, or octal mode 0600 on historic UNIX systems), some filesystems
+may not sufficiently protect temporary files created in random
+directories from improper access.  To be absolutely safe, applications
+storing sensitive data in unnamed databases should use the
+m4_ref(dbenv_set_tmp_dir) method to specify a temporary directory with
+known permissions.])
+
+m4_tagend
+
+m4_page_footer

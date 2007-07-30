@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: sysscript.tcl,v 12.4 2006/09/06 05:13:30 alexg Exp $
+# $Id: sysscript.tcl,v 12.6 2007/05/17 15:15:56 bostic Exp $
 #
 # System integration test script.
 # This script runs a single process that tests the full functionality of

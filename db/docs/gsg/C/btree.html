@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>BTree Configuration</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="dbconfig.html" title="Chapter 6. Database Configuration" />
+    <link rel="up" href="dbconfig.html" title="ChapterÂ 6.Â Database Configuration" />
     <link rel="previous" href="cachesize.html" title="Selecting the Cache Size" />
   </head>
   <body>
@@ -17,9 +17,9 @@
           <th colspan="3" align="center">BTree Configuration</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="cachesize.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 6. Database Configuration</th>
-          <td width="20%" align="right"> </td>
+          <td width="20%" align="left"><a accesskey="p" href="cachesize.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 6.Â Database Configuration</th>
+          <td width="20%" align="right">Â </td>
         </tr>
       </table>
       <hr />
@@ -179,7 +179,7 @@
                     If a cursor is used to put the duplicate record to the database,
                     then the new record is placed in the duplicate set according to the
                     flags that are provided on the 
-                        <tt class="methodname">DBC-&gt;c_put()</tt>
+                        <tt class="methodname">DBC-&gt;put()</tt>
                         
                     method. The relevant flags are:
                 </p>
@@ -194,7 +194,7 @@
                         The data
                         <span>
                             provided on the call to
-                            <tt class="methodname">DBC-&gt;c_put()</tt>
+                            <tt class="methodname">DBC-&gt;put()</tt>
                             
                         </span>
                         is placed into the database
@@ -204,7 +204,7 @@
                         
                         <span>
                         to
-                            <tt class="methodname">DBC-&gt;c_put()</tt>
+                            <tt class="methodname">DBC-&gt;put()</tt>
                             
                         </span>
 
@@ -242,7 +242,7 @@
                             If the key 
                             <span>
                                 provided on the call to
-                                <tt class="methodname">DBC-&gt;c_put()</tt>
+                                <tt class="methodname">DBC-&gt;put()</tt>
                                 
                             </span>
                             already exists in the
@@ -329,15 +329,15 @@
 DB *dbp;
 FILE *error_file_pointer;
 int ret;
-char *program_name = &quot;my_prog&quot;;
-char *file_name = &quot;mydb.db&quot;;
+char *program_name = "my_prog";
+char *file_name = "mydb.db";
 
 /* Variable assignments omitted for brevity */
 
 /* Initialize the DB handle */
 ret = db_create(&amp;dbp, NULL, 0);
 if (ret != 0) {
-    fprintf(error_file_pointer, &quot;%s: %s\n&quot;, program_name,
+    fprintf(error_file_pointer, "%s: %s\n", program_name,
         db_strerror(ret));
     return(ret);
 }
@@ -351,7 +351,7 @@ dbp-&gt;set_errpfx(dbp, program_name);
  */
 ret = dbp-&gt;set_flags(dbp, DB_DUPSORT);
 if (ret != 0) {
-    dbp-&gt;err(dbp, ret, &quot;Attempt to set DUPSORT flag failed.&quot;);
+    dbp-&gt;err(dbp, ret, "Attempt to set DUPSORT flag failed.");
     dbp-&gt;close(dbp, 0);
     return(ret);
 }
@@ -365,7 +365,7 @@ ret = dbp-&gt;open(dbp,        /* Pointer to the database */
                 DB_CREATE,  /* Open flags */
                 0);         /* File mode. Using defaults */
 if (ret != 0) {
-    dbp-&gt;err(dbp, ret, &quot;Database '%s' open failed.&quot;, file_name);
+    dbp-&gt;err(dbp, ret, "Database '%s' open failed.", file_name);
     dbp-&gt;close(dbp, 0);
     return(ret);
 } </pre>
@@ -537,7 +537,7 @@ int ret;
 /* Create a database */
 ret = db_create(&amp;dbp, NULL, 0);
 if (ret != 0) {
-        fprintf(stderr, &quot;%s: %s\n&quot;, &quot;my_program&quot;,
+        fprintf(stderr, "%s: %s\n", "my_program",
           db_strerror(ret));
         return(-1);
 }
@@ -553,18 +553,18 @@ dbp-&gt;set_bt_compare(dbp, compare_int);
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="cachesize.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="cachesize.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="dbconfig.html">Up</a>
           </td>
-          <td width="40%" align="right"> </td>
+          <td width="40%" align="right">Â </td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Selecting the Cache Size </td>
+          <td width="40%" align="left" valign="top">Selecting the Cache SizeÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> </td>
+          <td width="40%" align="right" valign="top">Â </td>
         </tr>
       </table>
     </div>

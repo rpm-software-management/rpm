@@ -1,0 +1,84 @@
+<!--$Id: intro.so,v 1.2 2007/06/04 14:55:40 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Building for Windows CE</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Building Berkeley DB for Windows CE systems</dl></h3></td>
+<td align=right><a href="../build_win/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_wince/notes.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Building for Windows CE</h3>
+<p>This page contains general instructions on building Berkeley DB for
+Windows CE platforms using specific compilers. The
+<a href="../../ref/build_wince/faq.html">Windows CE FAQ</a> also
+contains helpful information.</p>
+<p>The <b>build_wince</b> directory in the Berkeley DB distribution contains
+project files for Microsoft eMbedded Visual C++:</p>
+<table border=1 align=center>
+<tr><th>Project File</th><th>Description</th></tr>
+<tr>    <td align=center>Berkeley_DB.vcw</td>    <td align=center>eMbedded Visual C++ 4.0 workspace</td>    </tr>
+<tr>    <td align=center>*.vcp</td>    <td align=center>eMbedded Visual C++ 4.0 projects</td>    </tr>
+</table>
+<p>These project files can be used to build Berkeley DB for the Windows CE platform.</p>
+<h3>Building Berkeley DB for Windows CE</h3>
+<h4>eMbedded Visual C++ 4.0</h4>
+<ol>
+<p><li>Choose <i>File -&gt; Open Workspace...</i>.
+Navigate to the <b>build_wince</b> directory, select <b>Berkeley_DB</b>
+and click Open.
+<p><li>Choose the project configuration from the
+<i>Build -&gt; Set Active Configuration...</i> drop-down menu on the
+tool bar.  The correct target will usually db_small - Win32 (WCE emulator)
+Debug or Release.
+<p><li>To build, press F7, or select <i>Build</i> from the drop-down menu on the tool bar.
+</ol>
+<h4>Build results</h4>
+<p>The results of your build will be placed in a subdirectory of
+<b>build_windows</b> named after the configuration you chose (for
+examples, <b>build_wince\Release</b> or
+<b>build_wince\Debug</b>).</p>
+<p>When building your application during development, you should normally
+link against
+<b>build_wince\Debug\libdb_small46sd.lib</b>.  You can
+also build using a release version of the Berkeley DB libraries and tools,
+which will be placed in
+<b>build_windows\Release\libdb_small46s.lib</b>.
+You will also need to add the <b>build_wince</b> directory to the list
+of include directories of your application's project, or copy the Berkeley DB
+include files to a location in your Visual Studio include path.</p>
+<h3>Building Berkeley DB for different target CPU architectures</h3>
+<p>There are many possible target CPU architectures for a Windows CE
+application.  This section outlines the process required to add a new
+target architecture to the project files supplied with Berkeley DB.</p>
+<h4>eMbedded Visual C++ 4.0</h4>
+<ol>
+<p><li>Choose <i>File -&gt; Open Workspace...</i>.
+Navigate to the <b>build_wince</b> directory, select <b>Berkeley_DB</b>
+and click Open.
+<p><li>Choose the <i>Build -&gt; Configurations...</i> menu item.
+<p><li>Click the <i>Add...</i> button.
+<p><li>Select the desired CPU architecture from the first dropdown box. Select an
+existing target to copy the settings from (The corresponding emulator
+target is a good choice). Configuration should be either Debug or Release.
+Click <i>OK</i>.
+<p><li>Choose the <i>Build -&gt; Set Active Configuration...</i> menu
+item. Choose the new target then click OK.
+<p><li>Select the <i>Project -&gt; Settings...</i> menu item. Under
+the C/C++ tab, select the Preprocessor <i>Category</i>. In the
+<i>Additional include directories:</i> field add: ".,.."
+without the quotes. Click OK.
+<p><li>Build as per the instructions in <i>Building Berkeley DB for Windows
+CE</i> above.
+</ol>
+<table width="100%"><tr><td><br></td><td align=right><a href="../build_win/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_wince/notes.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

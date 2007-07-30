@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep027.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep027.tcl,v 12.13 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep027
 # TEST	Replication and secondary indexes.
@@ -57,8 +56,13 @@ proc rep027 { method { niter 1000 } { tnum "027" } args } {
 
 proc rep027_sub { method niter tnum logset recargs largs } {
 	source ./include.tcl
-	global testdir
 	global verbose_check_secondaries
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	set omethod [convert_method $method]
 	env_cleanup $testdir
@@ -83,20 +87,18 @@ proc rep027_sub { method niter tnum logset recargs largs } {
 
 	# Open a master.
 	repladd 1
-	set env_cmd(M) "berkdb_env -create \
-	    -log_max 1000000 -home $masterdir \
+	set env_cmd(M) "berkdb_env_noerr -create $verbargs \
+	    -log_max 1000000 -home $masterdir -errpfx MASTER \
 	    $m_txnargs $m_logargs -rep_master -rep_transport \
 	    \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
-	set env_cmd(C) "berkdb_env -create \
-	    $c_txnargs $c_logargs -home $clientdir \
+	set env_cmd(C) "berkdb_env_noerr -create $verbargs \
+	    $c_txnargs $c_logargs -home $clientdir -errpfx CLIENT \
 	    -rep_client -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $env_cmd(C) $recargs]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the client online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
@@ -108,13 +110,13 @@ proc rep027_sub { method niter tnum logset recargs largs } {
 	set sname "secondary$tnum.db"
 
 	# Open the primary.
-	set pdb [eval {berkdb_open -create \
+	set pdb [eval {berkdb_open_noerr -create \
 	    -auto_commit -env} $masterenv $omethod $largs $pname]
 	error_check_good primary_open [is_valid_db $pdb] TRUE
 	process_msgs $envlist
 
 	# Open and associate a secondary.
-	set sdb [eval {berkdb_open -create \
+	set sdb [eval {berkdb_open_noerr -create \
 	    -auto_commit -env} $masterenv -btree $sname]
 	error_check_good second_open [is_valid_db $sdb] TRUE
 	error_check_good db_associate [$pdb associate [callback_n 0] $sdb] 0

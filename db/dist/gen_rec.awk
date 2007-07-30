@@ -2,10 +2,9 @@
 #
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: gen_rec.awk,v 12.22 2006/09/14 15:00:47 bostic Exp $
+# $Id: gen_rec.awk,v 12.28 2007/06/13 19:01:29 bostic Exp $
 #
 
 # This awk script generates all the log, print, and read routines for the DB
@@ -108,6 +107,7 @@ BEGIN {
 		exit
 	}
 	in_begin = 1;
+	is_duplicate = 0;
 	is_dbt = 0;
 	has_dbp = 0;
 	is_uint = 0;
@@ -122,21 +122,13 @@ BEGIN {
 	nvars = 0;
 
 	thisfunc = $2;
+	dup_thisfunc = $2;
 	version = $3;
 
 	if (not_buf)
 		rectype = $4;
 
-	logfunc = sprintf("%s_%s", prefix, $2);
-	logname[num_funcs] = logfunc;
-	if (is_compat) {
-		funcname = sprintf("%s_%s_%s", prefix, $2, version);
-	} else {
-		funcname = logfunc;
-	}
-	funcs[num_funcs] = funcname;
-	functable[num_funcs] = is_compat;
-	++num_funcs;
+	make_name(thisfunc, thisfunc, version);
 }
 /^[ 	]*(DB|ARG|DBT|LOCKS|PGDBT|POINTER|TIME)/ {
 	vars[nvars] = $2;
@@ -164,6 +156,19 @@ BEGIN {
 	}
 	nvars++;
 }
+/^[ 	]*DUPLICATE/ {
+	is_duplicate = 1;
+	dup_rectype = $4;
+	old_logfunc = logfunc;
+	old_funcname = funcname;
+	make_name($2, funcname, $3);
+	internal_name = sprintf("%s_%s_int", prefix, thisfunc);
+	dup_logfunc = logfunc;
+	dup_funcname = funcname;
+	dup_thisfunc = $2;
+	logfunc = old_logfunc;
+	funcname = old_funcname;
+}
 /^[ 	]*END/ {
 	if (!in_begin) {
 		print "Invalid format: missing BEGIN statement"
@@ -173,6 +178,10 @@ BEGIN {
 	# Declare the record type.
 	if (not_buf) {
 		printf("#define\tDB_%s\t%d\n", funcname, rectype) >> HFILE
+		if (is_duplicate)
+			printf("#define\tDB_%s\t%d\n", \
+			    dup_funcname, dup_rectype) >> HFILE
+
 	}
 
 	# Structure declaration.
@@ -207,8 +216,8 @@ BEGIN {
 	# Recovery template
 	if (not_buf) {
 		cmd = sprintf(\
-    "sed -e s/PREF/%s/ -e s/FUNC/%s/ < template/rec_ctemp >> %s",
-		    prefix, thisfunc, TFILE)
+    "sed -e s/PREF/%s/ -e s/FUNC/%s/ -e s/DUP/%s/ < template/rec_ctemp >> %s",
+		    prefix, thisfunc, dup_thisfunc, TFILE)
 		system(cmd);
 	}
 
@@ -256,7 +265,7 @@ END {
 		printf("\tif ((ret = __db_add_recovery(dbenv, ") >> PFILE;
 		printf("dtabp, dtabsizep,\n") >> PFILE;
 		printf("\t    %s_print, DB_%s)) != 0)\n", \
-		    funcs[i], funcs[i]) >> PFILE;
+		    dupfuncs[i], funcs[i]) >> PFILE;
 		printf("\t\treturn (ret);\n") >> PFILE;
 	}
 	printf("\treturn (0);\n}\n") >> PFILE;
@@ -301,82 +310,19 @@ END {
 
 function log_function()
 {
-	# Write the log function; function prototype
-	pi = 1;
-	if (not_buf) {
-		p[pi++] = sprintf("int %s_log", logfunc);
-		p[pi++] = " ";
-		if (has_dbp == 1) {
-			p[pi++] = "__P((DB *";
-		} else {
-			p[pi++] = "__P((DB_ENV *";
-		}
-		p[pi++] = ", DB_TXN *, DB_LSN *, u_int32_t";
-	} else {
-		p[pi++] = sprintf("int %s_buf", logfunc);
-		p[pi++] = " ";
-		p[pi++] = "__P((u_int8_t *, size_t, size_t *";
+	log_prototype(logfunc, 0);
+	if (is_duplicate) {
+		log_prototype(dup_logfunc, 0);
+		log_prototype(internal_name, 1);
 	}
-	for (i = 0; i < nvars; i++) {
-		if (modes[i] == "DB")
-			continue;
-		p[pi++] = ", ";
-		p[pi++] = sprintf("%s%s%s",
-		    (modes[i] == "DBT" || modes[i] == "LOCKS" ||
-		    modes[i] == "PGDBT") ? "const " : "", types[i],
-		    (modes[i] == "DBT" || modes[i] == "LOCKS" ||
-		    modes[i] == "PGDBT") ? " *" : "");
-	}
-	p[pi++] = "";
-	p[pi++] = "));";
-	p[pi++] = "";
-	proto_format(p, CFILE);
 
 	# Function declaration
-	if (not_buf && has_dbp == 1) {
-		printf("int\n%s_log(dbp, txnp, ret_lsnp, flags", \
-		    logfunc) >> CFILE;
-	} else if (not_buf) {
-		printf("int\n%s_log(dbenv, txnp, ret_lsnp, flags", \
-		    logfunc) >> CFILE;
-	} else {
-		printf("int\n%s_buf(buf, max, lenp", logfunc) >> CFILE;
-	}
-	for (i = 0; i < nvars; i++) {
-		if (modes[i] == "DB") {
-			# We pass in fileids on the dbp, so if this is one,
-			# skip it.
-			continue;
-		}
-		printf(",") >> CFILE;
-		if ((i % 6) == 0)
-			printf("\n    ") >> CFILE;
-		else
-			printf(" ") >> CFILE;
-		printf("%s", vars[i]) >> CFILE;
-	}
-	printf(")\n") >> CFILE;
-
-	# Now print the parameters
-	if (not_buf) {
-		if (has_dbp == 1) {
-			printf("\tDB *dbp;\n") >> CFILE;
-		} else {
-			printf("\tDB_ENV *dbenv;\n") >> CFILE;
-		}
-		printf("\tDB_TXN *txnp;\n\tDB_LSN *ret_lsnp;\n") >> CFILE;
-		printf("\tu_int32_t flags;\n") >> CFILE;
-	} else {
-		printf("\tu_int8_t *buf;\n") >> CFILE;
-		printf("\tsize_t max, *lenp;\n") >> CFILE;
-	}
-	for (i = 0; i < nvars; i++) {
-		# We just skip for modes == DB.
-		if (modes[i] == "DBT" ||
-		     modes[i] == "LOCKS" || modes[i] == "PGDBT")
-			printf("\tconst %s *%s;\n", types[i], vars[i]) >> CFILE;
-		else if (modes[i] != "DB")
-			printf("\t%s %s;\n", types[i], vars[i]) >> CFILE;
+	log_funcdecl(logfunc, 0);
+	if (is_duplicate) {
+		log_callint(funcname);
+		log_funcdecl(dup_logfunc, 0);
+		log_callint(dup_funcname);
+		log_funcdecl(internal_name, 1);
 	}
 
 	# Function body and local decls
@@ -415,7 +361,10 @@ function log_function()
 			printf("\tdbenv = dbp->dbenv;\n") >> CFILE;
 		if (dbprivate)
 			printf("\tCOMPQUIET(lr, NULL);\n\n") >> CFILE;
-		printf("\trectype = DB_%s;\n", logfunc) >> CFILE;
+		if (is_duplicate)
+			printf("\trectype = type;\n") >> CFILE;
+		else
+			printf("\trectype = DB_%s;\n", funcname) >> CFILE;
 		printf("\tnpad = 0;\n") >> CFILE;
 		printf("\trlsnp = ret_lsnp;\n\n") >> CFILE;
 	}
@@ -643,6 +592,7 @@ function log_function()
 			printf("\t\t\tif (rlsnp != ret_lsnp)\n") >> CFILE;
 			printf("\t\t\t\t *ret_lsnp = *rlsnp;\n") >> CFILE;
 			printf("\t\t}\n\t} else {\n") >> CFILE;
+			printf("\t\tret = 0;\n") >> CFILE;
 			printf("#ifdef DIAGNOSTIC\n") >> CFILE;
 
 			# Add the debug bit if we are logging a ND record.
@@ -660,11 +610,10 @@ function log_function()
 			printf("logrec.data, &rectype, sizeof(rectype));\n\n") \
 			    >> CFILE;
 			# Output the log record.
-			printf("\t\tret = __log_put(dbenv,\n") >> CFILE;
-			printf("\t\t    rlsnp, (DBT *)&logrec, ") >> CFILE;
+			printf("\t\tif (!IS_REP_CLIENT(dbenv))\n") >> CFILE;
+			printf("\t\t\tret = __log_put(dbenv,\n") >> CFILE;
+			printf("\t\t\t    rlsnp, (DBT *)&logrec, ") >> CFILE;
 			printf("flags | DB_LOG_NOCOPY);\n") >> CFILE;
-			printf("#else\n") >> CFILE;
-			printf("\t\tret = 0;\n") >> CFILE;
 			printf("#endif\n") >> CFILE;
 			# Add a ND record to the txn list.
 			printf("\t\tSTAILQ_INSERT_HEAD(&txnp") >> CFILE;
@@ -710,6 +659,46 @@ function log_function()
 	}
 
 	printf("\treturn (ret);\n}\n\n") >> CFILE;
+}
+
+function log_prototype(fname, with_type)
+{
+
+	# Write the log function; function prototype
+	pi = 1;
+	if (not_buf) {
+		p[pi++] = sprintf("int %s_log", fname);
+		p[pi++] = " ";
+		if (has_dbp == 1) {
+			p[pi++] = "__P((DB *";
+		} else {
+			p[pi++] = "__P((DB_ENV *";
+		}
+		p[pi++] = ", DB_TXN *, DB_LSN *, u_int32_t";
+	} else {
+		p[pi++] = sprintf("int %s_buf", fname);
+		p[pi++] = " ";
+		p[pi++] = "__P((u_int8_t *, size_t, size_t *";
+	}
+	for (i = 0; i < nvars; i++) {
+		if (modes[i] == "DB")
+			continue;
+		p[pi++] = ", ";
+		p[pi++] = sprintf("%s%s%s",
+		    (modes[i] == "DBT" || modes[i] == "LOCKS" ||
+		    modes[i] == "PGDBT") ? "const " : "", types[i],
+		    (modes[i] == "DBT" || modes[i] == "LOCKS" ||
+		    modes[i] == "PGDBT") ? " *" : "");
+	}
+
+	# If this is a logging call with type, add the type here.
+	if (with_type)
+		p[pi++] = ", u_int32_t";
+
+	p[pi++] = "";
+	p[pi++] = "));";
+	p[pi++] = "";
+	proto_format(p, CFILE);
 }
 
 # If we're logging a DB handle, make sure we have a log
@@ -1009,4 +998,110 @@ function write_free(tab, ptr, file)
 	} else {
 		print(tab "free(" ptr ");") >> file
 	}
+}
+
+function make_name(unique_name, dup_name, p_version)
+{
+	logfunc = sprintf("%s_%s", prefix, unique_name);
+	logname[num_funcs] = logfunc;
+	if (is_compat) {
+		funcname = sprintf("%s_%s_%s", prefix, unique_name, p_version);
+	} else {
+		funcname = logfunc;
+	}
+
+	if (is_duplicate)
+		dupfuncs[num_funcs] = dup_name;
+	else
+		dupfuncs[num_funcs] = funcname;
+
+	funcs[num_funcs] = funcname;
+	functable[num_funcs] = is_compat;
+	++num_funcs;
+}
+
+function log_funcdecl(name, withtype)
+{
+	# Function declaration
+	if (not_buf && has_dbp == 1) {
+		printf("int\n%s_log(dbp, txnp, ret_lsnp, flags", \
+		    name) >> CFILE;
+	} else if (not_buf) {
+		printf("int\n%s_log(dbenv, txnp, ret_lsnp, flags", \
+		    name) >> CFILE;
+	} else {
+		printf("int\n%s_buf(buf, max, lenp", name) >> CFILE;
+	}
+	for (i = 0; i < nvars; i++) {
+		if (modes[i] == "DB") {
+			# We pass in fileids on the dbp, so if this is one,
+			# skip it.
+			continue;
+		}
+		printf(",") >> CFILE;
+		if ((i % 6) == 0)
+			printf("\n    ") >> CFILE;
+		else
+			printf(" ") >> CFILE;
+		printf("%s", vars[i]) >> CFILE;
+	}
+
+	if (withtype)
+		printf(", type") >> CFILE;
+
+	printf(")\n") >> CFILE;
+
+	# Now print the parameters
+	if (not_buf) {
+		if (has_dbp == 1) {
+			printf("\tDB *dbp;\n") >> CFILE;
+		} else {
+			printf("\tDB_ENV *dbenv;\n") >> CFILE;
+		}
+		printf("\tDB_TXN *txnp;\n\tDB_LSN *ret_lsnp;\n") >> CFILE;
+		printf("\tu_int32_t flags;\n") >> CFILE;
+	} else {
+		printf("\tu_int8_t *buf;\n") >> CFILE;
+		printf("\tsize_t max, *lenp;\n") >> CFILE;
+	}
+	for (i = 0; i < nvars; i++) {
+		# We just skip for modes == DB.
+		if (modes[i] == "DBT" ||
+		     modes[i] == "LOCKS" || modes[i] == "PGDBT")
+			printf("\tconst %s *%s;\n", types[i], vars[i]) >> CFILE;
+		else if (modes[i] != "DB")
+			printf("\t%s %s;\n", types[i], vars[i]) >> CFILE;
+	}
+	if (withtype)
+		printf("\tu_int32_t type;\n") >> CFILE;
+}
+
+# This should always be called with not_buf
+function log_callint(fname)
+{
+	if (has_dbp == 1) {
+		printf("\n{\n\treturn (%s_log(dbp, txnp, ret_lsnp, flags", \
+		    internal_name) >> CFILE;
+	} else {
+		printf("\n{\n\treturn (%s_log(dbenv, txnp, ret_lsnp, flags", \
+		    internal_name) >> CFILE;
+	}
+
+	for (i = 0; i < nvars; i++) {
+		if (modes[i] == "DB") {
+			# We pass in fileids on the dbp, so if this is one,
+			# skip it.
+			continue;
+		}
+		printf(",") >> CFILE;
+		if ((i % 6) == 0)
+			printf("\n    ") >> CFILE;
+		else
+			printf(" ") >> CFILE;
+		printf("%s", vars[i]) >> CFILE;
+	}
+
+	printf(", DB_%s", fname) >> CFILE;
+
+	printf("));\n}\n") >> CFILE;
 }

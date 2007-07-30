@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: DatabaseConfig.java,v 12.6 2006/08/24 14:46:07 bostic Exp $
+ * $Id: DatabaseConfig.java,v 12.10 2007/06/28 14:23:36 mjc Exp $
  */
 
 package com.sleepycat.db;
@@ -41,6 +40,7 @@ public class DatabaseConfig implements Cloneable {
     private java.io.OutputStream messageStream = null;
     private int pageSize = 0;
     private String password = null;
+    private CacheFilePriority priority = null;
     private int queueExtentSize = 0;
     private int recordDelimiter = 0;
     private int recordLength = 0;
@@ -74,6 +74,7 @@ public class DatabaseConfig implements Cloneable {
     private FeedbackHandler feedbackHandler = null;
     private ErrorHandler errorHandler = null;
     private MessageHandler messageHandler = null;
+    private java.util.Comparator hashComparator = null;
     private Hasher hasher = null;
     private RecordNumberAppender recnoAppender = null;
     private PanicHandler panicHandler = null;
@@ -233,6 +234,14 @@ public class DatabaseConfig implements Cloneable {
         return hashFillFactor;
     }
 
+    public void setHashComparator(final java.util.Comparator hashComparator) {
+        this.hashComparator = hashComparator;
+    }
+
+    public java.util.Comparator getHashComparator() {
+        return hashComparator;
+    }
+
     public void setHasher(final Hasher hasher) {
         this.hasher = hasher;
     }
@@ -303,6 +312,14 @@ public class DatabaseConfig implements Cloneable {
 
     public PanicHandler getPanicHandler() {
         return panicHandler;
+    }
+
+    public void setPriority(final CacheFilePriority priority) {
+        this.priority = priority;
+    }
+
+    public CacheFilePriority getPriority() {
+        return priority;
     }
 
     public void setQueueExtentSize(final int queueExtentSize) {
@@ -551,6 +568,8 @@ public class DatabaseConfig implements Cloneable {
             db.set_pagesize(pageSize);
         if (password != oldConfig.password && db.getPrivateDbEnv())
             db.set_encrypt(password, DbConstants.DB_ENCRYPT_AES);
+        if (priority != oldConfig.priority)
+            db.set_priority(priority.getFlag());
         if (queueExtentSize != oldConfig.queueExtentSize)
             db.set_q_extentsize(queueExtentSize);
         if (recordDelimiter != oldConfig.recordDelimiter)
@@ -573,6 +592,8 @@ public class DatabaseConfig implements Cloneable {
             db.set_feedback(feedbackHandler);
         if (errorHandler != oldConfig.errorHandler)
             db.set_errcall(errorHandler);
+        if (hashComparator != oldConfig.hashComparator)
+            db.set_h_compare(hashComparator);
         if (hasher != oldConfig.hasher)
             db.set_h_hash(hasher);
         if (messageHandler != oldConfig.messageHandler)
@@ -626,6 +647,7 @@ public class DatabaseConfig implements Cloneable {
         messageStream = db.get_message_stream();
         // Not available by design
         password = ((dbFlags & DbConstants.DB_ENCRYPT) != 0) ? "" : null;
+        priority = CacheFilePriority.fromFlag(db.get_priority());
         if (type == DatabaseType.QUEUE) {
             queueExtentSize = db.get_q_extentsize();
         }
@@ -645,6 +667,7 @@ public class DatabaseConfig implements Cloneable {
         duplicateComparator = db.get_dup_compare();
         feedbackHandler = db.get_feedback();
         errorHandler = db.get_errcall();
+        hashComparator = db.get_h_compare();
         hasher = db.get_h_hash();
         messageHandler = db.get_msgcall();
         recnoAppender = db.get_append_recno();

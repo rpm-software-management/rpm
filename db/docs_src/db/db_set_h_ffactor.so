@@ -1,0 +1,51 @@
+m4_comment([$Id: db_set_h_ffactor.so,v 10.37 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_h_ffactor, dbh_get_h_ffactor])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_h_ffactor),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_h_ffactor(DB *db, u_int32_t h_ffactor);
+int
+m4_blank
+DB-__GT__get_h_ffactor(DB *db, u_int32_t *h_ffactorp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_h_ffactor(u_int32_t h_ffactor);
+m4_blank
+int Db::get_h_ffactor(u_int32_t *h_ffactorp);
+]))
+
+m4_p([dnl
+Set the desired density within the hash table.  If no value is
+specified, the fill factor will be selected dynamically as pages are
+filled.])
+
+m4_scope_db(dbh_set_h_ffactor)
+
+m4_when_dbopen(dbh_set_h_ffactor, ignored)
+
+m4_return(dbh_set_h_ffactor, std)
+
+m4_parambegin
+m4_param(h_ffactor, [dnl
+The m4_arg(h_ffactor) parameter is the desired density within the hash table.])
+m4_p([dnl
+The density is an approximation of the number of keys allowed to
+accumulate in any one bucket, determining when the hash table grows or
+shrinks.  If you know the average sizes of the keys and data in your
+data set, setting the fill factor can enhance performance.  A reasonable
+rule computing fill factor is to set it to the following:])
+m4_indent([dnl
+(pagesize - 32) / (average_key_size + average_data_size + 8)])
+m4_paramend
+
+m4_err(dbh_set_h_ffactor,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_h_ffactor, hash table density,, h_ffactorp)
+
+m4_seealso(Db)
+m4_page_footer

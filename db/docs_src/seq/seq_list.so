@@ -1,0 +1,7 @@
+m4_comment([$Id: seq_list.so,v 1.2 2004/08/18 02:34:52 bostic Exp $])
+
+m4_page_title([m4_db: Sequences and Related Methods])
+
+include(seq/m4.methods)
+
+m4_page_footer

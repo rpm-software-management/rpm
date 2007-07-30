@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>The Locking Subsystem</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="txnconcurrency.html" title="Chapter 4. Concurrency" />
+    <link rel="up" href="txnconcurrency.html" title="ChapterÂ 4.Â Concurrency" />
     <link rel="previous" href="blocking_deadlocks.html" title="Locks, Blocks, and Deadlocks" />
     <link rel="next" href="isolation.html" title="Isolation" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">The Locking Subsystem</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="blocking_deadlocks.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Concurrency</th>
-          <td width="20%" align="right"> <a accesskey="n" href="isolation.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="blocking_deadlocks.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Concurrency</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="isolation.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -160,7 +160,7 @@
                 For example, to configure the maximum number of locks that your
                 environment can use:
             </p>
-        <pre class="programlisting">#include &quot;db_cxx.h&quot;
+        <pre class="programlisting">#include "db_cxx.h"
 
 ...
                                                                                                                                   
@@ -174,7 +174,7 @@ int main(void)
                           DB_THREAD     |  // Free-thread the env handle.
                           DB_INIT_TXN;     // Initialize transactions
                                                                                                                                   
-    std::string envHome(&quot;/export1/testEnv&quot;);
+    std::string envHome("/export1/testEnv");
     DbEnv myEnv(0);
 
     try {
@@ -185,7 +185,7 @@ int main(void)
         myEnv.open(envHome.c_str(), env_flags, 0);
 
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error opening database environment: &quot;
+        std::cerr &lt;&lt; "Error opening database environment: "
                   &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
@@ -194,7 +194,7 @@ int main(void)
     try {
         myEnv.close(0);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error closing database environment: &quot;
+        std::cerr &lt;&lt; "Error closing database environment: "
                 &lt;&lt; envHome &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
@@ -333,7 +333,7 @@ int main(void)
                 checks the lock table for deadlocks every time a lock
                 request is blocked:
             </p>
-        <pre class="programlisting">#include &quot;db_cxx.h&quot;
+        <pre class="programlisting">#include "db_cxx.h"
 
 ...
                                                                                                                                   
@@ -347,7 +347,7 @@ int main(void)
                           DB_THREAD     |  // Free-thread the env handle
                           DB_INIT_TXN;     // Initialize transactions
 
-    std::string envHome(&quot;/export1/testEnv&quot;);
+    std::string envHome("/export1/testEnv");
     DbEnv myEnv(0);
 
     try {
@@ -459,20 +459,20 @@ while (retry_count &lt; MAX_DEADLOCK_RETRIES) {
             retry_count++;
             // If we've retried too many times, log it and exit
             if (retry_count &gt;= MAX_DEADLOCK_RETRIES) {
-                    envp-&gt;errx(&quot;Exceeded retry limit. Giving up.&quot;);
+                    envp-&gt;errx("Exceeded retry limit. Giving up.");
                     return (EXIT_FAILURE);
             }
         } catch (DbException &amp;ae) {
-            envp-&gt;err(ae.get_errno(), &quot;txn abort failed.&quot;);
+            envp-&gt;err(ae.get_errno(), "txn abort failed.");
             return (EXIT_FAILURE);    
         }
     } catch (DbException &amp;e) {
         try {
             // For a generic error, log it and abort.
-            envp-&gt;err(e.get_errno(), &quot;Error putting data.&quot;);
+            envp-&gt;err(e.get_errno(), "Error putting data.");
             txn-&gt;abort();
         } catch (DbException &amp;ae) {
-            envp-&gt;err(ae.get_errno(), &quot;txn abort failed.&quot;);
+            envp-&gt;err(ae.get_errno(), "txn abort failed.");
             return (EXIT_FAILURE);    
         }
     }
@@ -483,18 +483,18 @@ while (retry_count &lt; MAX_DEADLOCK_RETRIES) {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="blocking_deadlocks.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="blocking_deadlocks.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="txnconcurrency.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="isolation.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="isolation.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Locks, Blocks, and Deadlocks </td>
+          <td width="40%" align="left" valign="top">Locks, Blocks, and DeadlocksÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Isolation</td>
+          <td width="40%" align="right" valign="top">Â Isolation</td>
         </tr>
       </table>
     </div>

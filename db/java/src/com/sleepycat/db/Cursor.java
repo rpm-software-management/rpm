@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  *
- * $Id: Cursor.java,v 12.5 2006/08/24 14:46:07 bostic Exp $
+ * $Id: Cursor.java,v 12.8 2007/06/28 14:23:36 mjc Exp $
  */
 
 package com.sleepycat.db;
@@ -152,40 +151,10 @@ public class Cursor {
                                       LockMode lockMode)
         throws DatabaseException {
 
-        /*
-         * "Get the previous duplicate" isn't directly supported by the C API,
-         * so here's how to get it: dup the cursor and call getPrev, then dup
-         * the result and call getNextDup.  If both succeed then there was a
-         * previous duplicate and the first dup is sitting on it.  Keep that,
-         * and call getCurrent to fill in the user's buffers.
-         */
-        Dbc dup1 = dbc.dup(DbConstants.DB_POSITION);
-        try {
-            int errCode = dup1.get(DatabaseEntry.IGNORE, DatabaseEntry.IGNORE,
-                DbConstants.DB_PREV | LockMode.getFlag(lockMode));
-            if (errCode == 0) {
-                Dbc dup2 = dup1.dup(DbConstants.DB_POSITION);
-                try {
-                    errCode = dup2.get(DatabaseEntry.IGNORE,
-                        DatabaseEntry.IGNORE,
-                        DbConstants.DB_NEXT_DUP | LockMode.getFlag(lockMode));
-                } finally {
-                    dup2.close();
-                }
-            }
-            if (errCode == 0)
-                errCode = dup1.get(key, data,
-                    DbConstants.DB_CURRENT | LockMode.getFlag(lockMode) |
-                        ((data == null) ? 0 : data.getMultiFlag()));
-            if (errCode == 0) {
-                Dbc tdbc = dbc;
-                dbc = dup1;
-                dup1 = tdbc;
-            }
-            return OperationStatus.fromInt(errCode);
-        } finally {
-            dup1.close();
-        }
+        return OperationStatus.fromInt(
+            dbc.get(key, data, DbConstants.DB_PREV_DUP |
+                LockMode.getFlag(lockMode) |
+                ((data == null) ? 0 : data.getMultiFlag())));
     }
 
     public OperationStatus getPrevNoDup(final DatabaseEntry key,
@@ -350,5 +319,17 @@ public class Cursor {
 
         return OperationStatus.fromInt(
             dbc.put(DatabaseEntry.UNUSED, data, DbConstants.DB_CURRENT));
+    }
+
+    public CacheFilePriority getPriority()
+        throws DatabaseException {
+
+        return CacheFilePriority.fromFlag(dbc.get_priority());
+    }
+
+    public void setPriority(final CacheFilePriority priority)
+        throws DatabaseException {
+
+        dbc.set_priority(priority.getFlag());
     }
 }

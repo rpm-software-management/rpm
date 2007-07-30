@@ -1,0 +1,106 @@
+m4_comment([$Id: env_err.so,v 10.34 2006/04/27 20:17:47 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_err)])
+
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_err, [dnl
+define(M4PAGELOCAL, [dbenv_err, dbenv_errx])
+m4_pf_header(m4_ref(dbenv_err),
+ifelse(M4API, C_API, [dnl
+void
+DB_ENV-__GT__err(DB_ENV *dbenv, int error, const char *fmt, ...);
+m4_blank
+void
+DB_ENV-__GT__errx(DB_ENV *dbenv, const char *fmt, ...);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+DbEnv::err(int error, const char *fmt, ...);
+m4_blank
+DbEnv::errx(const char *fmt, ...);
+]))],[dnl
+define(M4PAGELOCAL, [dbh_err, dbh_errx])
+m4_pf_header(m4_ref(dbh_err),
+ifelse(M4API, C_API, [dnl
+void
+DB-__GT__err(DB *db, int error, const char *fmt, ...);
+m4_blank
+void
+DB-__GT__errx(DB *db, const char *fmt, ...);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+Db::err(int error, const char *fmt, ...);
+m4_blank
+Db::errx(const char *fmt, ...);
+]))])
+
+m4_p([dnl
+The m4_ref(dbenv_err), m4_ref(dbenv_errx),  m4_ref(dbh_err) and
+m4_refT(dbh_errx)s provide error-messaging functionality for
+applications written using the m4_db library.])
+
+m4_p([dnl
+The m4_ref(dbh_err) and m4_refT(dbenv_err)s constructs an error message
+consisting of the following elements:])
+
+m4_indentv([dnl
+m4_tagbegin
+m4_tag([An optional prefix string], [dnl
+If no error callback function has been set using the
+m4_refT(dbenv_set_errcall), any prefix string specified using the
+m4_refT(dbenv_set_errpfx), followed by two separating characters: a colon
+and a m4_htmlquote(space) character.])
+m4_tag([An optional printf-style message], [dnl
+The supplied message m4_arg(fmt), if non-NULL, in which the
+m4_ansic_name printf function specifies how subsequent parameters
+are converted for output.])
+m4_tag([A separator], [dnl
+Two separating characters: a colon and a m4_htmlquote(space) character.])
+m4_tag([A standard error string], [dnl
+The standard system or m4_db library error string associated with the
+m4_arg(error) value, as returned by the m4_refT(dbenv_strerror).])
+m4_tagend
+])
+
+m4_p([dnl
+The m4_ref(dbh_errx) and m4_refT(dbenv_errx)s are the same as the
+m4_ref(dbh_err) and m4_refT(dbenv_err)s, except they do not append the
+final separator characters and standard error string to the error
+message.])
+
+m4_p([dnl
+This constructed error message is then handled as follows:])
+
+m4_indentv([dnl
+m4_p([dnl
+If an error callback function has been set (see m4_ref(dbh_set_errcall)
+and m4_ref(dbenv_set_errcall)), that function is called with two
+parameters: any prefix string specified (see m4_ref(dbh_set_errpfx) and
+m4_ref(dbenv_set_errpfx)) and the error message.])
+
+m4_p([dnl
+If a C library FILE * has been set (see m4_ref(dbh_set_errfile) and
+m4_ref(dbenv_set_errfile)), the error message is written to that output
+stream.])
+
+ifelse(M4API, C_API,, [dnl
+m4_p([dnl
+If ifelse(M4API, CXX_API, [a C++ ostream], [an OutputStream]) has been set
+(see m4_ref(dbenv_set_error_stream) and m4_ref(dbh_set_error_stream)),
+the error message is written to that stream.])])
+
+m4_p([dnl
+If none of these output options has been configured, the error message
+is written to stderr, the standard error output stream.])])
+
+m4_parambegin
+m4_param(error, [dnl
+The m4_arg(error) parameter is the error value for which the
+m4_ref(dbenv_err)  and  m4_refT(dbh_err)s will display a explanatory
+string.])
+m4_param(fmt, [dnl
+The m4_arg(fmt) parameter is an optional printf-style message to display.])
+m4_paramend
+
+ifelse(M4INTERFACE, dbenv_err, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

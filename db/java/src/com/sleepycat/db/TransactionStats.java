@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -85,6 +84,11 @@ public class TransactionStats
         }
     };
 
+    private int st_nrestores;
+    public int getNumRestores() {
+        return st_nrestores;
+    }
+
     private LogSequenceNumber st_last_ckp;
     public LogSequenceNumber getLastCkp() {
         return st_last_ckp;
@@ -130,11 +134,6 @@ public class TransactionStats
         return st_nsnapshot;
     }
 
-    private int st_nrestores;
-    public int getNumRestores() {
-        return st_nrestores;
-    }
-
     private int st_maxnactive;
     public int getMaxNactive() {
         return st_maxnactive;
@@ -167,6 +166,7 @@ public class TransactionStats
 
     public String toString() {
         return "TransactionStats:"
+            + "\n  st_nrestores=" + st_nrestores
             + "\n  st_last_ckp=" + st_last_ckp
             + "\n  st_time_ckp=" + st_time_ckp
             + "\n  st_last_txnid=" + st_last_txnid
@@ -176,7 +176,6 @@ public class TransactionStats
             + "\n  st_ncommits=" + st_ncommits
             + "\n  st_nactive=" + st_nactive
             + "\n  st_nsnapshot=" + st_nsnapshot
-            + "\n  st_nrestores=" + st_nrestores
             + "\n  st_maxnactive=" + st_maxnactive
             + "\n  st_maxnsnapshot=" + st_maxnsnapshot
             + "\n  st_txnarray=" + DbUtil.objectArrayToString(st_txnarray, "st_txnarray")

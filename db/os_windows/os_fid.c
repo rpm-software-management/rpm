@@ -1,18 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: os_fid.c,v 12.9 2006/08/24 14:46:21 bostic Exp $
+ * $Id: os_fid.c,v 12.16 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-
-#define	SERIAL_INIT	0
-static u_int32_t fid_serial = SERIAL_INIT;
 
 /*
  * __os_fileid --
@@ -48,34 +44,11 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 	memset(fidp, 0, DB_FILE_ID_LEN);
 
 	/*
-	 * Initialize/increment the serial number we use to help avoid
-	 * fileid collisions.  Note that we don't bother with locking;
-	 * it's unpleasant to do from down in here, and if we race on
-	 * this no real harm will be done, since the finished fileid
-	 * has so many other components.
-	 *
-	 * We use the bottom 32-bits of the process ID, hoping they
-	 * are more random than the top 32-bits (should we be on a
-	 * machine with 64-bit process IDs).
-	 *
-	 * We increment by 100000 on each call as a simple way of
-	 * randomizing;  simply incrementing seems potentially less useful
-	 * if pids are also simply incremented, since this is process-local
-	 * and we may be one of a set of processes starting up.  100000
-	 * pushes us out of pid space on most platforms, and has few
-	 * interesting properties in base 2.
-	 */
-	if (fid_serial == SERIAL_INIT) {
-		__os_id(dbenv, &pid, NULL);
-		fid_serial = pid;
-	} else
-		fid_serial += 100000;
-
-	/*
 	 * First we open the file, because we're not given a handle to it.
 	 * If we can't open it, we're in trouble.
 	 */
-	if ((ret = __os_open(dbenv, fname, DB_OSO_RDONLY, _S_IREAD, &fhp)) != 0)
+	if ((ret = __os_open(dbenv, fname, 0,
+	    DB_OSO_RDONLY, __db_omode("r--------"), &fhp)) != 0)
 		return (ret);
 
 	/* File open, get its info */
@@ -116,27 +89,36 @@ __os_fileid(dbenv, fname, unique_okay, fidp)
 		*fidp++ = *p++;
 
 	if (unique_okay) {
-		/*
-		 * Use the system time to try to get a unique value
-		 * within this process.  A millisecond counter
-		 * overflows 32 bits in about 49 days.  So we use 8
-		 * bytes, and don't bother with the volume ID, which
-		 * is not very useful for our purposes.
-		 */
-		SYSTEMTIME st;
+		/* Add in 32-bits of (hopefully) unique number. */
+		__os_unique_id(dbenv, &tmp);
+		for (p = (u_int8_t *)&tmp, i = sizeof(u_int32_t); i > 0; --i)
+			*fidp++ = *p++;
 
-		GetSystemTime(&st);
-		tmp = (st.wYear - 1900) * 12 + (st.wMonth - 1);
-		for (p = (u_int8_t *)&tmp, i = sizeof(u_int32_t); i > 0; --i)
-			*fidp++ = *p++;
-		tmp = ((((st.wDay - 1) * 24 + st.wHour) * 60 +
-			st.wMinute) * 60 + st.wSecond) * 1000 +
-			st.wMilliseconds;
-		for (p = (u_int8_t *)&tmp, i = sizeof(u_int32_t); i > 0; --i)
-			*fidp++ = *p++;
-		for (p = (u_int8_t *)&fid_serial, i = sizeof(u_int32_t);
-		    i > 0; --i)
-			*fidp++ = *p++;
+		/*
+		 * Initialize/increment the serial number we use to help
+		 * avoid fileid collisions.  Note we don't bother with
+		 * locking; it's unpleasant to do from down in here, and
+		 * if we race on this no real harm will be done, since the
+		 * finished fileid has so many other components.
+		 *
+		 * We use the bottom 32-bits of the process ID, hoping they
+		 * are more random than the top 32-bits (should we be on a
+		 * machine with 64-bit process IDs).
+		 *
+		 * We increment by 100000 on each call as a simple way of
+		 * randomizing; simply incrementing seems potentially less
+		 * useful if pids are also simply incremented, since this
+		 * is process-local and we may be one of a set of processes
+		 * starting up.  100000 pushes us out of pid space on most
+		 * 32-bit platforms, and has few interesting properties in
+		 * base 2.
+		 */
+		if (DB_GLOBAL(fid_serial) == 0) {
+			__os_id(dbenv, &pid, NULL);
+			DB_GLOBAL(fid_serial) = (u_int32_t)pid;
+		} else
+			DB_GLOBAL(fid_serial) += 100000;
+
 	} else {
 		tmp = (u_int32_t)fi.dwVolumeSerialNumber;
 		for (p = (u_int8_t *)&tmp, i = sizeof(u_int32_t); i > 0; --i)

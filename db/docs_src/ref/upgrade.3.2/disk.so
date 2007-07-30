@@ -1,0 +1,18 @@
+m4_comment([$Id: disk.so,v 1.5 2001/03/28 13:55:10 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.2: upgrade requirements,,
+    upgrade.3.2/db_dump, upgrade.3.3/intro)
+
+m4_p([dnl
+Log file formats and the Queue Access Method database formats changed
+in the m4_db 3.2 release.  (The on-disk Queue format changed from
+version 2 to version 3.)  Until the underlying databases are upgraded,
+the m4_refT(dbh_open) will return a m4_ref(DB_OLD_VERSION) error.])
+
+m4_p([dnl
+For further information on upgrading m4_db installations, see
+m4_link(M4RELDIR/ref/upgrade/process, Upgrading m4_db
+installations).])
+
+m4_page_footer

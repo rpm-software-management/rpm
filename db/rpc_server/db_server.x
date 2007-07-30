@@ -368,6 +368,16 @@ struct __db_get_pagesize_reply {
 	unsigned int pagesize;
 };
 
+struct __db_get_priority_msg {
+	unsigned int dbpcl_id;
+};
+
+struct __db_get_priority_reply {
+	/* num return vars: 1 */
+	int status;
+	unsigned int priority;
+};
+
 struct __db_get_q_extentsize_msg {
 	unsigned int dbpcl_id;
 };
@@ -604,6 +614,16 @@ struct __db_set_pagesize_reply {
 	int status;
 };
 
+struct __db_set_priority_msg {
+	unsigned int dbpcl_id;
+	unsigned int priority;
+};
+
+struct __db_set_priority_reply {
+	/* num return vars: 0 */
+	int status;
+};
+
 struct __db_set_q_extentsize_msg {
 	unsigned int dbpcl_id;
 	unsigned int extentsize;
@@ -678,48 +698,48 @@ struct __db_truncate_reply {
 	unsigned int count;
 };
 
-struct __dbc_c_close_msg {
+struct __dbc_close_msg {
 	unsigned int dbccl_id;
 };
 
-struct __dbc_c_close_reply {
+struct __dbc_close_reply {
 	/* num return vars: 0 */
 	int status;
 };
 
-struct __dbc_c_count_msg {
+struct __dbc_count_msg {
 	unsigned int dbccl_id;
 	unsigned int flags;
 };
 
-struct __dbc_c_count_reply {
+struct __dbc_count_reply {
 	/* num return vars: 1 */
 	int status;
 	unsigned int dupcount;
 };
 
-struct __dbc_c_del_msg {
+struct __dbc_del_msg {
 	unsigned int dbccl_id;
 	unsigned int flags;
 };
 
-struct __dbc_c_del_reply {
+struct __dbc_del_reply {
 	/* num return vars: 0 */
 	int status;
 };
 
-struct __dbc_c_dup_msg {
+struct __dbc_dup_msg {
 	unsigned int dbccl_id;
 	unsigned int flags;
 };
 
-struct __dbc_c_dup_reply {
+struct __dbc_dup_reply {
 	/* num return vars: 1 */
 	int status;
 	unsigned int dbcidcl_id;
 };
 
-struct __dbc_c_get_msg {
+struct __dbc_get_msg {
 	unsigned int dbccl_id;
 	unsigned int keydlen;
 	unsigned int keydoff;
@@ -734,14 +754,24 @@ struct __dbc_c_get_msg {
 	unsigned int flags;
 };
 
-struct __dbc_c_get_reply {
+struct __dbc_get_reply {
 	/* num return vars: 2 */
 	int status;
 	opaque keydata<>;
 	opaque datadata<>;
 };
 
-struct __dbc_c_pget_msg {
+struct __dbc_get_priority_msg {
+	unsigned int dbccl_id;
+};
+
+struct __dbc_get_priority_reply {
+	/* num return vars: 1 */
+	int status;
+	unsigned int priority;
+};
+
+struct __dbc_pget_msg {
 	unsigned int dbccl_id;
 	unsigned int skeydlen;
 	unsigned int skeydoff;
@@ -761,7 +791,7 @@ struct __dbc_c_pget_msg {
 	unsigned int flags;
 };
 
-struct __dbc_c_pget_reply {
+struct __dbc_pget_reply {
 	/* num return vars: 3 */
 	int status;
 	opaque skeydata<>;
@@ -769,7 +799,7 @@ struct __dbc_c_pget_reply {
 	opaque datadata<>;
 };
 
-struct __dbc_c_put_msg {
+struct __dbc_put_msg {
 	unsigned int dbccl_id;
 	unsigned int keydlen;
 	unsigned int keydoff;
@@ -784,10 +814,20 @@ struct __dbc_c_put_msg {
 	unsigned int flags;
 };
 
-struct __dbc_c_put_reply {
+struct __dbc_put_reply {
 	/* num return vars: 1 */
 	int status;
 	opaque keydata<>;
+};
+
+struct __dbc_set_priority_msg {
+	unsigned int dbccl_id;
+	unsigned int priority;
+};
+
+struct __dbc_set_priority_reply {
+	/* num return vars: 0 */
+	int status;
 };
 
 struct __txn_abort_msg {
@@ -862,41 +902,45 @@ program DB_RPC_SERVERPROG {
 		__db_get_lorder_reply __DB_db_get_lorder(__db_get_lorder_msg) = 30;
 		__db_get_open_flags_reply __DB_db_get_open_flags(__db_get_open_flags_msg) = 31;
 		__db_get_pagesize_reply __DB_db_get_pagesize(__db_get_pagesize_msg) = 32;
-		__db_get_q_extentsize_reply __DB_db_get_q_extentsize(__db_get_q_extentsize_msg) = 33;
-		__db_get_re_delim_reply __DB_db_get_re_delim(__db_get_re_delim_msg) = 34;
-		__db_get_re_len_reply __DB_db_get_re_len(__db_get_re_len_msg) = 35;
-		__db_get_re_pad_reply __DB_db_get_re_pad(__db_get_re_pad_msg) = 36;
-		__db_join_reply __DB_db_join(__db_join_msg) = 37;
-		__db_key_range_reply __DB_db_key_range(__db_key_range_msg) = 38;
-		__db_open_reply __DB_db_open(__db_open_msg) = 39;
-		__db_pget_reply __DB_db_pget(__db_pget_msg) = 40;
-		__db_put_reply __DB_db_put(__db_put_msg) = 41;
-		__db_remove_reply __DB_db_remove(__db_remove_msg) = 42;
-		__db_rename_reply __DB_db_rename(__db_rename_msg) = 43;
-		__db_set_bt_minkey_reply __DB_db_set_bt_minkey(__db_set_bt_minkey_msg) = 44;
-		__db_set_encrypt_reply __DB_db_set_encrypt(__db_set_encrypt_msg) = 45;
-		__db_set_flags_reply __DB_db_set_flags(__db_set_flags_msg) = 46;
-		__db_set_h_ffactor_reply __DB_db_set_h_ffactor(__db_set_h_ffactor_msg) = 47;
-		__db_set_h_nelem_reply __DB_db_set_h_nelem(__db_set_h_nelem_msg) = 48;
-		__db_set_lorder_reply __DB_db_set_lorder(__db_set_lorder_msg) = 49;
-		__db_set_pagesize_reply __DB_db_set_pagesize(__db_set_pagesize_msg) = 50;
-		__db_set_q_extentsize_reply __DB_db_set_q_extentsize(__db_set_q_extentsize_msg) = 51;
-		__db_set_re_delim_reply __DB_db_set_re_delim(__db_set_re_delim_msg) = 52;
-		__db_set_re_len_reply __DB_db_set_re_len(__db_set_re_len_msg) = 53;
-		__db_set_re_pad_reply __DB_db_set_re_pad(__db_set_re_pad_msg) = 54;
-		__db_stat_reply __DB_db_stat(__db_stat_msg) = 55;
-		__db_sync_reply __DB_db_sync(__db_sync_msg) = 56;
-		__db_truncate_reply __DB_db_truncate(__db_truncate_msg) = 57;
-		__dbc_c_close_reply __DB_dbc_c_close(__dbc_c_close_msg) = 58;
-		__dbc_c_count_reply __DB_dbc_c_count(__dbc_c_count_msg) = 59;
-		__dbc_c_del_reply __DB_dbc_c_del(__dbc_c_del_msg) = 60;
-		__dbc_c_dup_reply __DB_dbc_c_dup(__dbc_c_dup_msg) = 61;
-		__dbc_c_get_reply __DB_dbc_c_get(__dbc_c_get_msg) = 62;
-		__dbc_c_pget_reply __DB_dbc_c_pget(__dbc_c_pget_msg) = 63;
-		__dbc_c_put_reply __DB_dbc_c_put(__dbc_c_put_msg) = 64;
-		__txn_abort_reply __DB_txn_abort(__txn_abort_msg) = 65;
-		__txn_commit_reply __DB_txn_commit(__txn_commit_msg) = 66;
-		__txn_discard_reply __DB_txn_discard(__txn_discard_msg) = 67;
-		__txn_prepare_reply __DB_txn_prepare(__txn_prepare_msg) = 68;
-	} = 4005;
+		__db_get_priority_reply __DB_db_get_priority(__db_get_priority_msg) = 33;
+		__db_get_q_extentsize_reply __DB_db_get_q_extentsize(__db_get_q_extentsize_msg) = 34;
+		__db_get_re_delim_reply __DB_db_get_re_delim(__db_get_re_delim_msg) = 35;
+		__db_get_re_len_reply __DB_db_get_re_len(__db_get_re_len_msg) = 36;
+		__db_get_re_pad_reply __DB_db_get_re_pad(__db_get_re_pad_msg) = 37;
+		__db_join_reply __DB_db_join(__db_join_msg) = 38;
+		__db_key_range_reply __DB_db_key_range(__db_key_range_msg) = 39;
+		__db_open_reply __DB_db_open(__db_open_msg) = 40;
+		__db_pget_reply __DB_db_pget(__db_pget_msg) = 41;
+		__db_put_reply __DB_db_put(__db_put_msg) = 42;
+		__db_remove_reply __DB_db_remove(__db_remove_msg) = 43;
+		__db_rename_reply __DB_db_rename(__db_rename_msg) = 44;
+		__db_set_bt_minkey_reply __DB_db_set_bt_minkey(__db_set_bt_minkey_msg) = 45;
+		__db_set_encrypt_reply __DB_db_set_encrypt(__db_set_encrypt_msg) = 46;
+		__db_set_flags_reply __DB_db_set_flags(__db_set_flags_msg) = 47;
+		__db_set_h_ffactor_reply __DB_db_set_h_ffactor(__db_set_h_ffactor_msg) = 48;
+		__db_set_h_nelem_reply __DB_db_set_h_nelem(__db_set_h_nelem_msg) = 49;
+		__db_set_lorder_reply __DB_db_set_lorder(__db_set_lorder_msg) = 50;
+		__db_set_pagesize_reply __DB_db_set_pagesize(__db_set_pagesize_msg) = 51;
+		__db_set_priority_reply __DB_db_set_priority(__db_set_priority_msg) = 52;
+		__db_set_q_extentsize_reply __DB_db_set_q_extentsize(__db_set_q_extentsize_msg) = 53;
+		__db_set_re_delim_reply __DB_db_set_re_delim(__db_set_re_delim_msg) = 54;
+		__db_set_re_len_reply __DB_db_set_re_len(__db_set_re_len_msg) = 55;
+		__db_set_re_pad_reply __DB_db_set_re_pad(__db_set_re_pad_msg) = 56;
+		__db_stat_reply __DB_db_stat(__db_stat_msg) = 57;
+		__db_sync_reply __DB_db_sync(__db_sync_msg) = 58;
+		__db_truncate_reply __DB_db_truncate(__db_truncate_msg) = 59;
+		__dbc_close_reply __DB_dbc_close(__dbc_close_msg) = 60;
+		__dbc_count_reply __DB_dbc_count(__dbc_count_msg) = 61;
+		__dbc_del_reply __DB_dbc_del(__dbc_del_msg) = 62;
+		__dbc_dup_reply __DB_dbc_dup(__dbc_dup_msg) = 63;
+		__dbc_get_reply __DB_dbc_get(__dbc_get_msg) = 64;
+		__dbc_get_priority_reply __DB_dbc_get_priority(__dbc_get_priority_msg) = 65;
+		__dbc_pget_reply __DB_dbc_pget(__dbc_pget_msg) = 66;
+		__dbc_put_reply __DB_dbc_put(__dbc_put_msg) = 67;
+		__dbc_set_priority_reply __DB_dbc_set_priority(__dbc_set_priority_msg) = 68;
+		__txn_abort_reply __DB_txn_abort(__txn_abort_msg) = 69;
+		__txn_commit_reply __DB_txn_commit(__txn_commit_msg) = 70;
+		__txn_discard_reply __DB_txn_discard(__txn_discard_msg) = 71;
+		__txn_prepare_reply __DB_txn_prepare(__txn_prepare_msg) = 72;
+	} = 4006;
 } = 351457;

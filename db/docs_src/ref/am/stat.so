@@ -1,0 +1,22 @@
+m4_comment([$Id: stat.so,v 10.21 2003/10/18 19:15:53 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Database statistics, database @statistics, am/delete, am/truncate)
+
+m4_p([dnl
+The m4_refT(dbh_stat) returns a set of statistics about the underlying
+database, for example, the number of key/data pairs in the database, how
+the database was originally configured, and so on.])
+
+m4_p([dnl
+There is one flag you can set to customize the returned statistics:])
+
+m4_tagbegin
+
+m4_tag([m4_ref(DB_FAST_STAT)], [dnl
+Return only information that can be acquired without traversing the
+entire database.])
+
+m4_tagend
+
+m4_page_footer

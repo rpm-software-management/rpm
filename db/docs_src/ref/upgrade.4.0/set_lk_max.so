@@ -1,0 +1,14 @@
+m4_comment([$Id: set_lk_max.so,v 1.4 2003/10/18 19:16:20 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: DB_ENV-__GT__set_lk_max,,
+    upgrade.4.0/rpc, upgrade.4.0/lock_id_free)
+
+m4_p([dnl
+The DB_ENV-__GT__set_lk_max method has been deprecated in favor of
+the m4_ref(dbenv_set_lk_max_locks), m4_ref(dbenv_set_lk_max_lockers),
+and m4_refT(dbenv_set_lk_max_objects)s.  The DB_ENV-__GT__set_lk_max
+method continues to be available, but is no longer documented and
+is expected to be removed in a future release.])
+
+m4_page_footer

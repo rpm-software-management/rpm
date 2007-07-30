@@ -1,0 +1,14 @@
+m4_comment([$Id: distrib.so,v 10.18 2006/08/24 16:32:30 bostic Exp $])
+
+m4_ref_title(Introduction,
+    What does the m4_db distribution include?,, intro/what, intro/where)
+
+m4_p([dnl
+The m4_db distribution includes complete source code for the m4_db
+library, including all three m4_db products and their supporting
+utilities, as well as complete documentation in HTML format.  The
+distribution includes prebuilt binaries and libraries for a small
+number of platforms.  The distribution does not include hard-copy
+documentation.])
+
+m4_page_footer

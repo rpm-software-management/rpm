@@ -1,0 +1,188 @@
+m4_comment([$Id: dbis.so,v 10.11 2006/09/19 16:21:42 bostic Exp $])
+
+m4_ref_title(Introduction, What is m4_db?,, intro/terrain, intro/dbisnot)
+
+m4_p([dnl
+So far, we've discussed database systems in general terms. It's time
+now to consider m4_db in particular and see how it fits into the
+framework we have introduced. The key question is, what kinds of
+applications should use m4_db?])
+
+m4_p([dnl
+m4_db is an Open Source embedded database library that provides
+scalable, high-performance, transaction-protected data management
+services to applications.  m4_db provides a simple function-call API for
+data access and management.])
+
+m4_p([dnl
+By "Open Source," we mean m4_db is distributed under a license that
+conforms to the m4_linkweb(http://www.opensource.org/osd.html, [Open
+Source Definition]). This license guarantees m4_db is freely available
+for use and redistribution in other Open Source applications.  Oracle
+Corporation sells commercial licenses allowing the redistribution of
+m4_db in proprietary applications.  In all cases the complete source
+code for m4_db is freely available for download and use.])
+
+m4_p([dnl
+m4_db is "embedded" because it links directly into the application.  It
+runs in the same address space as the application. As a result, no
+inter-process communication, either over the network or between
+processes on the same machine, is required for database operations.
+m4_db provides a simple function-call API for a number of programming
+languages, including C, C++, Java, Perl, Tcl, Python, and PHP. All
+database operations happen inside the library. Multiple processes, or
+multiple threads in a single process, can all use the database at the
+same time as each uses the m4_db library. Low-level services like
+locking, transaction logging, shared buffer management, memory
+management, and so on are all handled transparently by the library.])
+
+m4_p([dnl
+The m4_db library is extremely portable. It runs under almost all UNIX
+and Linux variants, Windows, and a number of embedded real-time
+operating systems. It runs on both 32-bit and 64-bit systems.  It has
+been deployed on high-end Internet servers, desktop machines, and on
+palmtop computers, set-top boxes, in network switches, and elsewhere.
+Once m4_db is linked into the application, the end user generally does
+not know that there's a database present at all.])
+
+m4_p([dnl
+m4_db is scalable in a number of respects. The database library itself
+is quite compact (under 300 kilobytes of text space on common
+architectures), but it can manage databases up to 256 terabytes in size.
+It also supports high concurrency, with thousands of users operating on
+the same database at the same time. m4_db is small enough to run in
+tightly constrained embedded systems, but can take advantage of
+gigabytes of memory and terabytes of disk on high-end server machines.])
+
+m4_p([dnl
+m4_db generally outperforms relational and object-oriented database
+systems in embedded applications for a couple of reasons. First, because
+the library runs in the same address space, no inter-process
+communication is required for database operations. The cost of
+communicating between processes on a single machine, or among machines
+on a network, is much higher than the cost of making a function call.
+Second, because m4_db uses a simple function-call interface for all
+operations, there is no query language to parse, and no execution plan
+to produce.])
+
+m4_section([Data Access Services])
+
+m4_p([dnl
+m4_db applications can choose the storage structure that best suits the
+application. m4_db supports hash tables, Btrees, simple
+record-number-based storage, and persistent queues. Programmers can
+create tables using any of these storage structures, and can mix
+operations on different kinds of tables in a single application.])
+
+m4_p([dnl
+Hash tables are generally good for very large databases that need
+predictable search and update times for random-access records.  Hash
+tables allow users to ask, "Does this key exist?" or to fetch a record
+with a known key.  Hash tables do not allow users to ask for records
+with keys that are close to a known key.])
+
+m4_p([dnl
+Btrees are better for range-based searches, as when the application
+needs to find all records with keys between some starting and ending
+value.  Btrees also do a better job of exploiting m4_italic([locality
+of reference]).  If the application is likely to touch keys near each
+other at the same time, the Btrees work well. The tree structure keeps
+keys that are close together near one another in storage, so fetching
+nearby values usually doesn't require a disk access.])
+
+m4_p([dnl
+Record-number-based storage is natural for applications that need to
+store and fetch records, but that do not have a simple way to generate
+keys of their own. In a record number table, the record number is the
+key for the record. m4_db will generate these record numbers
+automatically.])
+
+m4_p([dnl
+Queues are well-suited for applications that create records, and then
+must deal with those records in creation order. A good example is
+on-line purchasing systems. Orders can enter the system at any time,
+but should generally be filled in the order in which they were placed.])
+
+m4_section([Data management services])
+
+m4_p([dnl
+m4_db offers important data management services, including concurrency,
+transactions, and recovery. All of these services work on all of the
+storage structures.])
+
+m4_p([dnl
+Many users can work on the same database concurrently. m4_db handles
+locking transparently, ensuring that two users working on the same
+record do not interfere with one another.])
+
+m4_p([dnl
+The library provides strict ACID transaction semantics, by default.
+However, applications are allowed to relax the isolation guarantees
+the database system makes.])
+
+m4_p([dnl
+Multiple operations can be grouped into a single transaction, and can
+be committed or rolled back atomically. m4_db uses a technique called
+m4_italic([two-phase locking]) to be sure that concurrent transactions
+are isolated from one another, and a technique called
+m4_italic([write-ahead logging]) to guarantee that committed changes
+survive application, system, or hardware failures.])
+
+m4_p([dnl
+When an application starts up, it can ask m4_db to run recovery.
+Recovery restores the database to a clean state, with all committed
+changes present, even after a crash. The database is guaranteed to be
+consistent and all committed changes are guaranteed to be present when
+recovery completes.])
+
+m4_p([dnl
+An application can specify, when it starts up, which data management
+services it will use. Some applications need fast, single-user,
+non-transactional Btree data storage. In that case, the application can
+disable the locking and transaction systems, and will not incur the
+overhead of locking or logging. If an application needs to support
+multiple concurrent users, but doesn't need transactions, it can turn
+on locking without transactions. Applications that need concurrent,
+transaction-protected database access can enable all of the
+subsystems.])
+
+m4_p([dnl
+In all these cases, the application uses the same function-call API to
+fetch and update records.])
+
+m4_section([Design])
+
+m4_p([dnl
+m4_db was designed to provide industrial-strength database services to
+application developers, without requiring them to become database
+experts.  It is a classic C-library style m4_italic(toolkit), providing
+a broad base of functionality to application writers.  m4_db was designed
+by programmers, for programmers: its modular design surfaces simple,
+orthogonal interfaces to core services, and it provides mechanism (for
+example, good thread support) without imposing policy (for example, the
+use of threads is not required).  Just as importantly, m4_db allows
+developers to balance performance against the need for crash recovery
+and concurrent use.  An application can use the storage structure that
+provides the fastest access to its data and can request only the degree
+of logging and locking that it needs.])
+
+m4_p([dnl
+Because of the tool-based approach and separate interfaces for each
+m4_db subsystem, you can support a complete transaction environment for
+other system operations. m4_db even allows you to wrap transactions
+around the standard UNIX file read and write operations!  Further, m4_db
+was designed to interact correctly with the native system's toolset, a
+feature no other database package offers.  For example, m4_db supports
+hot backups (database backups while the database is in use), using
+standard UNIX system utilities, for example, dump, tar, cpio, pax or
+even cp.])
+
+m4_p([dnl
+Finally, because scripting language interfaces are available for m4_db
+(notably Tcl and Perl), application writers can build incredibly powerful
+database engines with little effort.  You can build transaction-protected
+database applications using your favorite scripting languages, an
+increasingly important feature in a world using CGI scripts to deliver
+HTML.])
+
+m4_page_footer

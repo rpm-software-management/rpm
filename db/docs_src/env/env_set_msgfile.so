@@ -1,0 +1,101 @@
+m4_comment([$Id: env_set_msgfile.so,v 10.7 2006/02/10 22:54:59 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_set_msgfile)])
+define(M4GETINTERFACE, ifelse(M4INTERFACE,
+    dbenv_set_msgfile, dbenv_get_msgfile, dbh_get_msgfile))
+
+define(M4PAGELOCAL, [M4INTERFACE, M4GETINTERFACE])
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_set_msgfile, [dnl
+m4_pf_header(m4_ref(dbenv_set_msgfile),
+ifelse(M4API, C_API, [dnl
+void
+DB_ENV-__GT__set_msgfile(DB_ENV *dbenv, FILE *msgfile);
+m4_blank
+void
+DB_ENV-__GT__get_msgfile(DB_ENV *dbenv, FILE **msgfilep);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+void
+DbEnv::set_msgfile(FILE *msgfile);
+m4_blank
+void
+DbEnv::get_msgfile(FILE **msgfilep);
+]))],[dnl
+m4_pf_header(m4_ref(dbh_set_msgfile),
+ifelse(M4API, C_API, [dnl
+void
+DB-__GT__set_msgfile(DB *db, FILE *msgfile);
+m4_blank
+void
+DB-__GT__get_msgfile(DB *db, FILE **msgfilep);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+void Db::set_msgfile(FILE *msgfile);
+m4_blank
+void Db::get_msgfile(FILE **msgfilep);
+]))])
+
+ifelse(M4API, C_API, [m4_p([dnl
+There are interfaces in the m4_db library which either directly output
+informational messages or statistical information, or configure the
+library to output such messages when performing other operations, for
+example, m4_ref(dbenv_set_verbose) and m4_ref(dbenv_stat_print).])
+
+m4_p([dnl
+The m4_ref(dbenv_set_msgfile) and m4_refT(dbh_set_msgfile)s are used to
+display these messages for the application.
+In this case the message will include a trailing m4_htmlquote(newline)
+character.])
+
+m4_p([dnl
+Setting m4_arg(msgfile) to NULL unconfigures the interface.])
+
+m4_p([dnl
+Alternatively, you can use the m4_ref(dbenv_set_msgcall) or
+m4_refT(dbh_set_msgcall)s to capture the additional error information
+in a way that does not use C library FILE *'s.])])
+
+ifelse(M4API, CXX_API, [m4_p([dnl
+There are interfaces in the m4_db library which either directly output
+informational messages or statistical information, or configure the
+library to output such messages when performing other operations, for
+example, m4_ref(dbenv_set_verbose) and m4_ref(dbenv_stat_print).])
+
+m4_p([dnl
+The m4_ref(dbenv_set_msgfile) and m4_refT(dbh_set_msgfile)s are used to
+display these messages for the application.  In this case, the message
+will include a trailing m4_htmlquote(newline) character.])
+
+m4_p([dnl
+Setting m4_arg(msgfile) to NULL unconfigures the interface.])
+
+m4_p([dnl
+Alternatively, you can use the m4_ref(dbenv_set_message_stream) and
+m4_refT(dbh_set_message_stream)s to display the messages via an output
+stream, or the m4_ref(dbenv_set_msgcall) and m4_refT(dbh_set_msgcall)s
+to capture the additional error information in a way that does not use
+either output streams or C library FILE *'s.  You should not mix these
+approaches.])])
+
+ifelse(M4INTERFACE, dbh_set_msgfile, [dnl
+m4_really_dbenv(dbh_set_msgfile, dbenv_set_msgfile)])
+
+ifelse(M4INTERFACE, dbh_set_msgfile,
+[m4_scope_dbh(M4INTERFACE)], [m4_scope_dbenv(M4INTERFACE)])
+
+m4_when_any(M4INTERFACE)
+
+m4_parambegin
+m4_param(msgfile, [dnl
+The m4_arg(msgfile) parameter is a C library FILE * to be used for
+displaying messages.])
+m4_paramend
+
+m4_pf_getter(
+    ifelse(M4INTERFACE, dbh_set_msgfile, dbh_get_msgfile, dbenv_get_msgfile),
+    FILE *,, msgfilep)
+
+ifelse(M4INTERFACE, dbenv_set_msgfile, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

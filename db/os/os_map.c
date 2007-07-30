@@ -1,17 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: os_map.c,v 12.12 2006/08/24 14:46:17 bostic Exp $
+ * $Id: os_map.c,v 12.18 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
 
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #ifdef HAVE_MMAP
 #include <sys/mman.h>
 #endif
@@ -148,7 +147,7 @@ __os_r_sysattach(dbenv, infop, rp)
 	 * the region are properly ordered, our caller has already taken care
 	 * of that.
 	 */
-	if ((ret = __os_open(dbenv, infop->name,
+	if ((ret = __os_open(dbenv, infop->name, 0,
 	    DB_OSO_REGION |
 	    (F_ISSET(infop, REGION_CREATE_OK) ? DB_OSO_CREATE : 0),
 	    dbenv->db_mode, &fhp)) != 0)
@@ -276,6 +275,10 @@ __os_mapfile(dbenv, path, fhp, len, is_rdonly, addrp)
 	void **addrp;
 {
 #if defined(HAVE_MMAP) && !defined(HAVE_QNX)
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: mmap %s", path);
+
 	return (__os_map(dbenv, path, fhp, len, 0, is_rdonly, addrp));
 #else
 	COMPQUIET(dbenv, NULL);
@@ -301,6 +304,10 @@ __os_unmapfile(dbenv, addr, len)
 	size_t len;
 {
 	int ret;
+
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: munmap");
 
 	/* If the user replaced the map call, call through their interface. */
 	if (DB_GLOBAL(j_unmap) != NULL)
@@ -348,7 +355,6 @@ __os_map(dbenv, path, fhp, len, is_region, is_rdonly, addrp)
 		return (DB_GLOBAL(j_map)
 		    (path, len, is_region, is_rdonly, addrp));
 
-	/* Check for illegal usage. */
 	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
 
 	/*
@@ -462,7 +468,7 @@ __os_map(dbenv, path, fhp, len, is_region, is_rdonly, addrp)
  *	Map the DbEnv::open method file mode permissions to shmget call
  *	permissions.
  */
-int
+static int
 __shm_mode(dbenv)
 	DB_ENV *dbenv;
 {

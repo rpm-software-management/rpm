@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os.h,v 12.18 2006/09/05 15:02:30 mjc Exp $
+ * $Id: os.h,v 12.25 2007/05/17 15:15:05 bostic Exp $
  */
 
 #ifndef _DB_OS_H_
@@ -87,6 +86,12 @@ extern "C" {
 /* DB filehandle. */
 struct __fh_t {
 	/*
+	 * Linked list of DB_FH's, linked from the DB_ENV, used to keep track
+	 * of all open file handles for resource cleanup.
+	 */
+	 TAILQ_ENTRY(__fh_t) q;
+
+	/*
 	 * The file-handle mutex is only used to protect the handle/fd
 	 * across seek and read/write pairs, it does not protect the
 	 * the reference count, or any other fields in the structure.
@@ -95,13 +100,16 @@ struct __fh_t {
 
 	int	ref;			/* Reference count. */
 
+#ifdef HAVE_BREW
+	IFile	*ifp;			/* IFile pointer */
+#endif
 #if defined(DB_WIN32)
 	HANDLE	handle;			/* Windows/32 file handle. */
 	HANDLE	trunc_handle;		/* Handle for truncate calls. */
 #endif
 	int	fd;			/* POSIX file descriptor. */
 
-	char	*name;			/* File name (ref DB_FH_UNLINK) */
+	char	*name;			/* File name at open. */
 
 	/*
 	 * Last seek statistics, used for zero-filling on filesystems
@@ -111,9 +119,10 @@ struct __fh_t {
 	u_int32_t pgsize;
 	u_int32_t offset;
 
-#define	DB_FH_NOSYNC	0x01		/* Handle doesn't need to be sync'd. */
-#define	DB_FH_OPENED	0x02		/* Handle is valid. */
-#define	DB_FH_UNLINK	0x04		/* Unlink on close */
+#define	DB_FH_ENVLINK	0x01		/* We're linked on the DB_ENV. */
+#define	DB_FH_NOSYNC	0x02		/* Handle doesn't need to be sync'd. */
+#define	DB_FH_OPENED	0x04		/* Handle is valid. */
+#define	DB_FH_UNLINK	0x08		/* Unlink on close */
 	u_int8_t flags;
 };
 

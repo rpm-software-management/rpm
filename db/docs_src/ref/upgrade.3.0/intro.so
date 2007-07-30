@@ -1,0 +1,13 @@
+m4_comment([$Id: intro.so,v 11.7 2004/09/28 14:13:07 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: introduction,,
+    upgrade.2.0/disk, upgrade.3.0/envopen)
+
+m4_p([dnl
+The following pages describe how to upgrade applications coded against
+the m4_db 2.X release interfaces to the m4_db 3.0 release interfaces.
+This information does not describe how to upgrade m4_db 1.85 release
+applications.])
+
+m4_page_footer

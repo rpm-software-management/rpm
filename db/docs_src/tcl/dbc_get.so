@@ -1,0 +1,212 @@
+m4_comment([$Id: dbc_get.so,v 11.22 2004/12/02 18:21:08 bostic Exp $])
+
+define(M4PAGELOCAL,)
+include(tcl/m4.tcl)
+
+m4_tcl_header(db get, m4_tcl_dbc_get, [dnl
+dbc get
+	m4_tcl_arg([-current])
+	m4_tcl_arg([-first])
+	m4_tcl_arg([-get_recno])
+	m4_tcl_arg([-join_item])
+	m4_tcl_arg([-last])
+	m4_tcl_arg([-next])
+	m4_tcl_arg([-nextdup])
+	m4_tcl_arg([-nextnodup])
+	m4_tcl_arg([-partial {offset length}])
+	m4_tcl_arg([-prev])
+	m4_tcl_arg([-prevnodup])
+	m4_tcl_arg([-rmw])
+
+dbc get
+	m4_tcl_arg([-partial {offset length}])
+	m4_tcl_arg([-rmw])
+	m4_tcl_arg([-set])
+	m4_tcl_arg([-set_range])
+	m4_tcl_arg([-set_recno])
+	key
+dbc get
+	-get_both
+	m4_tcl_arg([-partial {offset length}])
+	m4_tcl_arg([-rmw])
+	key data
+])
+
+m4_p([dnl
+The m4_tcl_dbc_get command returns a list of {key value} pairs, except in
+the case of the m4_arg(-get_recno) and m4_arg(-join_item) options.  In
+the case of the m4_arg(-get_recno) option, m4_tcl_dbc_get returns a list
+of the record number.  In the case of the m4_arg(-join_item) option,
+m4_tcl_dbc_get returns a list containing the joined key.])
+
+m4_p([dnl
+The options are as follows:])
+
+m4_tagbegin
+
+m4_tag([-current], [dnl
+Return the key/data pair to which the cursor currently refers.
+m4_p([dnl
+If the cursor key/data pair was deleted, m4_tcl_dbc_get will return an
+empty list.])])
+
+m4_tag([-first], [dnl
+The cursor is set to refer to the first key/data pair of the database, and
+that pair is returned. In the presence of duplicate key values, the first
+data item in the set of duplicates is returned.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_tcl_dbc_get using the
+m4_arg(-first) option will skip any keys that exist but were never
+explicitly created by the application, or were created and later deleted.])
+m4_p([dnl
+If the database is empty, m4_tcl_dbc_get will return an empty list.])])
+
+m4_tag([-last], [dnl
+The cursor is set to refer to the last key/data pair of the database, and
+that pair is returned. In the presence of duplicate key values, the last
+data item in the set of duplicates is returned.
+m4_p([dnl
+If the database is a Queue or Recno database, m4_tcl_dbc_get using the
+m4_arg(-last) option will skip any keys that exist but were never
+explicitly created by the application, or were created and later deleted.])
+m4_p([dnl
+If the database is empty, m4_tcl_dbc_get will return an empty list.])])
+
+m4_tag([-next], [dnl
+If the cursor is not yet initialized, the m4_arg(-next) option is
+identical to m4_arg(-first).
+m4_p([dnl
+Otherwise, the cursor is moved to the next key/data pair of the database,
+and that pair is returned. In the presence of duplicate key values, the
+value of the key may not change.])
+m4_p([dnl
+If the database is a Queue or Recno database, m4_tcl_dbc_get using the
+m4_arg(-next) option will skip any keys that exist but were never
+explicitly created by the application, or were created and later deleted.])
+m4_p([dnl
+If the cursor is already on the last record in the database, m4_tcl_dbc_get
+will return an empty list.])])
+
+m4_tag([-nextdup], [dnl
+If the next key/data pair of the database is a duplicate record for the
+current key/data pair, the cursor is moved to the next key/data pair of the
+database, and that pair is returned. Otherwise, m4_tcl_dbc_get will return
+an empty list.])
+
+m4_tag([-nextnodup], [dnl
+If the cursor is not yet initialized, the m4_arg(-nextnodup) option is
+identical to m4_arg(-first).
+m4_p([dnl
+Otherwise, the cursor is moved to the next non-duplicate
+key/data pair of the database, and that pair is returned.])
+m4_p([dnl
+If no non-duplicate key/data pairs occur after the cursor
+position in the database, m4_tcl_dbc_get will return an empty list.])])
+
+m4_tag([-prev], [dnl
+If the cursor is not yet initialized, m4_arg(-prev) is identical to
+m4_arg(-last).
+m4_p([dnl
+Otherwise, the cursor is moved to the previous key/data pair of the
+database, and that pair is returned. In the presence of duplicate key
+values, the value of the key may not change.])
+m4_p([dnl
+If the database is a Queue or Recno database, m4_tcl_dbc_get using the
+m4_arg(-prev) flag will skip any keys that exist but were never explicitly
+created by the application, or were created and later deleted.])
+m4_p([dnl
+If the cursor is already on the first record in the database,
+m4_tcl_dbc_get will return an empty list.])])
+
+m4_tag([-prevnodup], [dnl
+If the cursor is not yet initialized, the m4_arg(-prevnodup) option is
+identical to m4_arg(-last).
+m4_p([dnl
+Otherwise, the cursor is moved to the previous non-duplicate
+key/data pair of the database, and that pair is returned.])
+m4_p([dnl
+If no non-duplicate key/data pairs occur before the cursor
+position in the database, m4_tcl_dbc_get will return an empty list.])])
+
+m4_tag([-set], [dnl
+Move the cursor to the specified key/data pair of the database, and return
+the datum associated with the given key.
+m4_p([dnl
+In the presence of duplicate key values, m4_tcl_dbc_get will return the
+first data item for the given key.])
+m4_p([dnl
+If the database is a Queue or Recno database and the requested key exists,
+but was never explicitly created by the application or was later deleted,
+m4_tcl_dbc_get will return an empty list.])
+m4_p([dnl
+If no matching keys are found, m4_tcl_dbc_get will return an empty list.])])
+
+m4_tag([-set_range], [dnl
+The m4_arg(-set_range) option is identical to the m4_arg(-set) option,
+except that the key is returned as well as the data item, and, in the case
+of the Btree access method, the returned key/data pair is the smallest
+key greater than or equal to the specified key (as determined by the
+comparison function), permitting partial key matches and range searches.])
+
+m4_tag([-get_both], [dnl
+The m4_arg(-get_both) option is identical to the m4_arg(-set) option,
+except that both the key and the data arguments must be matched by the
+key and data item in the database.
+m4_p([dnl
+For m4_arg(-get_both) to be specified, the underlying database must be of
+type Btree or Hash.])])
+
+m4_tag([-set_recno], [dnl
+Move the cursor to the specific numbered record of the database, and
+return the associated key/data pair. The key
+must be a record number.
+m4_p([dnl
+For the m4_arg(-set_recno) option to be specified, the underlying database
+must be of type Btree, and it must have been created with the m4_arg(-recnum)
+option.])])
+
+m4_tag([-get_recno], [dnl
+Return a list of the record number associated with the current cursor
+position.  No key argument should be specified.
+m4_p([dnl
+For m4_arg(-get_recno) to be specified, the underlying database must be
+of type Btree, and it must have been created with the m4_arg(-recnum)
+option.])])
+
+m4_tag([-join_item], [dnl
+Do not use the data value found in all the cursors as a lookup key for
+the primary database, but simply return it in the key parameter instead.
+The data parameter is left unchanged.
+m4_p([dnl
+For m4_arg(-join_item) to be specified, the cursor must have been created
+by the m4_tcl_db_join command.])])
+
+m4_tag([-partial {offset length}], [dnl
+The m4_arg(dlen) bytes starting m4_arg(doff) bytes from the beginning
+of the retrieved data record are returned as if they comprised the
+entire record.  If any or all of the specified bytes do not exist in
+the record, the command is successful and any existing bytes are
+returned.])
+
+m4_tag([-rmw], [dnl
+Acquire write locks instead of read locks when doing the retrieval. Setting
+this flag may decrease the likelihood of deadlock during a read-modify-write
+cycle by immediately acquiring the write lock during the read part of the
+cycle so that another thread of control acquiring a read lock for the same
+item, in its own read-modify-write cycle, will not result in deadlock.])
+
+m4_tagend
+
+m4_p([dnl
+If a key is specified, and if the underlying database is a Queue or
+Recno database, the given key will be interpreted by Tcl as an integer.
+For all other database types, the key is interpreted by Tcl as a byte
+array, unless indicated by a given option.])
+
+m4_p([dnl
+In the normal error case of attempting to retrieve a key that does not
+exist an empty list is returned.])
+
+m4_tcl_ret_error
+
+m4_page_footer

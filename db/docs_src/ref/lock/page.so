@@ -1,0 +1,91 @@
+m4_comment([$Id: page.so,v 10.19 2002/06/01 23:42:12 bostic Exp $])
+
+m4_ref_title(Locking Subsystem, Locking granularity,
+    [page-level @locking, locking granularity], lock/deaddbg, lock/notxn)
+
+m4_p([dnl
+With the exception of the Queue access method, the m4_db access methods
+do page-level locking.  The size of pages in a database may be set when
+the database is created by calling the m4_refT(dbh_set_pagesize).  If
+not specified by the application, m4_db selects a page size that will
+provide the best I/O performance by setting the page size equal to the
+block size of the underlying file system.  Selecting a smaller page size
+can result in increased concurrency for some applications.])
+
+m4_p([dnl
+In the Btree access method, m4_db uses a technique called lock coupling
+to improve concurrency.  The traversal of a Btree requires reading a
+page, searching that page to determine which page to search next, and
+then repeating this process on the next page.  Once a page has been
+searched, it will never be accessed again for this operation, unless a
+page split is required.  To improve concurrency in the tree, once the
+next page to read/search has been determined, that page is locked and
+then the original page lock is released atomically (that is, without
+relinquishing control of the lock manager).  When page splits become
+necessary, write locks are reacquired.])
+
+m4_p([dnl
+Because the Recno access method is built upon Btree, it also uses lock
+coupling for read operations.  However, because the Recno access method
+must maintain a count of records on its internal pages, it cannot
+lock-couple during write operations.  Instead, it retains write locks
+on all internal pages during every update operation.  For this reason,
+it is not possible to have high concurrency in the Recno access method
+in the presence of write operations.])
+
+m4_p([dnl
+The Queue access method uses only short-term page locks.  That is, a page
+lock is released prior to requesting another page lock.  Record locks are
+used for transaction isolation.  The provides a high degree of concurrency
+for write operations.  A metadata page is used to keep track of the head
+and tail of the queue.  This page is never locked during other locking or
+I/O operations.])
+
+m4_p([dnl
+The Hash access method does not have such traversal issues, but it must
+always refer to its metadata while computing a hash function because it
+implements dynamic hashing.  This metadata is stored on a special page
+in the hash database.  This page must therefore be read-locked on every
+operation.  Fortunately, it needs to be write-locked only when new pages
+are allocated to the file, which happens in three cases:])
+
+m4_bulletbegin
+m4_bullet([a hash bucket becomes full and needs to split])
+m4_bullet([a key or data item is too large to fit on a normal page])
+m4_bullet([dnl
+the number of duplicate items for a fixed key becomes so large that they
+are moved to an auxiliary page])
+m4_bulletend
+
+m4_p([dnl
+In this case, the access method must obtain a write lock on the metadata
+page, thus requiring that all readers be blocked from entering the tree
+until the update completes.])
+
+m4_p([dnl
+Finally, when traversing duplicate data items for a key, the lock on
+the key value also acts as a lock on all duplicates of that key.
+Therefore, two conflicting threads of control cannot access the same
+duplicate set simultaneously.])
+
+m4_ignore([dnl
+As the Hash access method implements dynamic hashing, it must always refer
+to its metadata while computing a hash function.  This metadata is
+stored on a special page in the hash database.  The hash access uses a
+similar lock coupling technique to coordinate access between its metadata
+page and the remaining buckets in the database.  The metadata page is
+read-locked in order to determine the next bucket to traverse.  That
+bucket is then locked, and the metadata page lock is atomically released.
+If it is later necessary to write lock the metadata page, the Hash method
+uses an algorithm similar to that used for Btree splits.  It releases its
+bucket lock, obtains a write lock on the metadata page and then
+reacquires the lock on the appropriate bucket (which may have changed
+while the lock was released).  The conditions under which this scenario
+occurs are: 1) a hash bucket becomes full and needs to split, 2) a key
+or data item is too large to fit on a normal page, and 3) the number of
+duplicate items for a fixed key becomes sufficiently large that they are
+moved to an auxiliary page.  This algorithm provides much better
+concurrency and fewer deadlocks than previous algorithms, which required
+that the metadata page remain locked for the duration of every operation.])
+
+m4_page_footer

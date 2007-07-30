@@ -1,0 +1,172 @@
+m4_comment([$Id: db_get.so,v 10.90 2007/05/31 18:52:36 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbh_get, dbh_pget, DB_CONSUME, DB_CONSUME_WAIT, DB_GET_BOTH,
+	DB_MULTIPLE, DB_SECONDARY_BAD, DB_SET_RECNO])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_get),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__get(DB *db,
+    DB_TXN *txnid, DBT *key, DBT *data, u_int32_t flags);
+m4_blank
+int
+DB-__GT__pget(DB *db,
+    DB_TXN *txnid, DBT *key, DBT *pkey, DBT *data, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::get(DbTxn *txnid, Dbt *key, Dbt *data, u_int32_t flags);
+m4_blank
+int
+Db::pget(DbTxn *txnid, Dbt *key, Dbt *pkey, Dbt *data, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_get) retrieves key/data pairs from the database.  The
+address and length of the data associated with the specified m4_arg(key)
+are returned in the structure to which m4_arg(data) refers.])
+
+m4_p([dnl
+In the presence of duplicate key values, m4_ref(dbh_get) will return the
+first data item for the designated key.  Duplicates are sorted by insert
+order, except where this order has been overridden by cursor operations.
+m4_bold([Retrieval of duplicates requires the use of cursor operations.])
+See m4_ref(dbc_get) for details.])
+
+m4_p([dnl
+When called on a database that has been made into a secondary index
+using the m4_refT(dbh_associate), the m4_ref(dbh_get) and
+m4_refT(dbh_pget)s return the key from the secondary index and the data
+item from the primary database.  In addition, the m4_refT(dbh_pget)
+returns the key from the primary database.  In databases that are not
+secondary indices, the m4_refT(dbh_pget) will always fail.])
+
+m4_return(dbh_get,
+specific, DB_NOTFOUND, [if the specified key is not in the database],
+specific, DB_KEYEMPTY, [if the database is a Queue or Recno database and
+the specified key exists, but was never explicitly created by the
+application or was later deleted], prev)
+
+m4_parambegin
+m4_param_data
+m4_param(flags, [dnl
+m4_sf_zmust(1)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_CONSUME), [dnl
+Return the record number and data from the available record closest to
+the head of the queue, and delete the record.  The cursor will be
+positioned on the deleted record.  The record number will be returned
+in m4_arg(key), as described in m4_ref(Dbt).  The data will be returned
+in the m4_arg(data) parameter.  A record is available if it is not
+deleted and is not currently locked.  The underlying database must be
+of type Queue for m4_ref(DB_CONSUME) to be specified.])
+
+m4_tag(m4_idef(DB_CONSUME_WAIT), [dnl
+The m4_ref(DB_CONSUME_WAIT) flag is the same as the m4_ref(DB_CONSUME)
+flag, except that if the Queue database is empty, the thread of control
+will wait until there is data in the queue before returning.  The
+underlying database must be of type Queue for m4_ref(DB_CONSUME_WAIT)
+to be specified.
+m4_p([dnl
+If lock or transaction timeouts have been specified, the m4_refT(dbh_get)
+with the m4_ref(DB_CONSUME_WAIT) flag
+ifelse(M4EXCEPT, except_return, [dnl
+may return m4_ref(DB_LOCK_NOTGRANTED) or throw a
+m4_ref(DbLockNotGrantedException) exception.],
+M4EXCEPT, except_err, [dnl
+may throw a m4_ref(DbLockNotGrantedException) exception.],[dnl
+may return m4_ref(DB_LOCK_NOTGRANTED).])
+This failure, by itself, does not require the enclosing transaction be
+aborted.])])
+
+m4_tag(m4_idef(DB_GET_BOTH), [dnl
+Retrieve the key/data pair only if both the key and data match the
+arguments.
+m4_p([dnl
+When used with the m4_refT(dbh_pget) version of this method on a
+secondary index handle, return the secondary key/primary key/data tuple
+only if both the primary and secondary keys match the arguments.  It is
+an error to use the m4_ref(DB_GET_BOTH) flag with the m4_ref(dbh_get)
+version of this method and a secondary index handle.])])
+
+m4_tag(m4_idef(DB_SET_RECNO), [dnl
+Retrieve the specified numbered key/data pair from a database.  Upon
+return, both the m4_arg(key) and m4_arg(data) items will have been
+filled in.
+m4_p([dnl
+The m4_arg(data) field of the specified m4_arg(key) must be a pointer
+to a logical record number (that is, a m4_arg(db_recno_t)).  This record
+number determines the record to be retrieved.])
+m4_p([dnl
+For m4_ref(DB_SET_RECNO) to be specified, the underlying database must be
+of type Btree, and it must have been created with the DB_RECNUM flag.])])
+m4_tagend
+
+m4_sf_or_add(1)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_MULTIPLE), [dnl
+Return multiple data items in the buffer to which the m4_arg(data)
+parameter refers.
+m4_p([dnl
+In the case of Btree or Hash databases, all of the data items associated
+with the specified key are entered into the buffer.  In the case of
+Queue or Recno databases, all of the data items in the database,
+starting at, and subsequent to, the specified key, are entered into the
+buffer.])
+m4_p([dnl
+m4_bulk_mem])
+m4_p([dnl
+The m4_ref(DB_MULTIPLE) flag may only be used alone, or with the
+m4_ref(DB_GET_BOTH) and m4_ref(DB_SET_RECNO) options.  The
+m4_ref(DB_MULTIPLE) flag may not be used when accessing databases made
+into secondary indices using the m4_refT(dbh_associate).])
+m4_p([dnl
+See
+ifelse(M4API, C_API, m4_ref(DB_MULTIPLE_INIT), m4_ref(DbMultipleDataIterator))
+for more information.])])
+
+m4_tag(m4_idef(DB_READ_COMMITTED), [dnl
+Configure a transactional get operation to have degree 2 isolation (the
+read is not repeatable).])
+
+m4_tag(m4_idef(DB_READ_UNCOMMITTED), [dnl
+Configure a transactional get operation to have degree 1 isolation,
+reading modified but not yet committed data.  Silently ignored if the
+m4_ref(DB_READ_UNCOMMITTED) flag was not specified when the underlying
+database was opened.])
+
+m4_rmw_flag([Because the m4_refT(dbh_get) will not hold locks across
+m4_db calls in non-transactional operations, the m4_ref(DB_RMW) flag
+to the m4_ref(dbh_get) call is meaningful only in the presence of
+transactions.])
+
+m4_tagend])
+
+m4_param_key
+m4_param(pkey, [dnl
+The m4_arg(pkey) parameter is the return key from the primary database.])
+m4_param_txn(dbh_get)
+
+m4_paramend
+
+m4_err(dbh_get,
+buffersmall,
+[requested item could not be returned due to undersized buffer],
+deadlock,
+locknotgranted,
+[m4_ref(DB_CONSUME_WAIT) flag was specified, lock or transaction
+timers were configured and the],
+repinval, secondary_bad, einval,
+[a record number of 0 was specified;
+the m4_ref(DB_THREAD) flag was specified to the m4_refT(dbh_open) and
+none of the m4_ref(DB_DBT_MALLOC), m4_ref(DB_DBT_REALLOC) or
+m4_ref(DB_DBT_USERMEM) flags were set in the m4_ref(Dbt);
+the m4_refT(dbh_pget) was called with a m4_ref(Db) handle that does not
+refer to a secondary index])
+
+m4_seealso(Db)
+m4_page_footer

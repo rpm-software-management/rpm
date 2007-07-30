@@ -1,139 +1,209 @@
-dnl $Id: types.m4,v 11.4 1999/12/04 19:18:28 bostic Exp $
+# $Id: types.m4,v 12.5 2007/04/18 14:28:20 bostic Exp $
 
-dnl Check for the standard shorthand types.
-AC_DEFUN(AM_SHORTHAND_TYPES, [dnl
+# Check the sizes we know about, and see if any of them match what's needed.
+#
+# Prefer ints to anything else, because read, write and others historically
+# returned an int.
+AC_DEFUN(AM_SEARCH_USIZES, [
+	case "$3" in
+	"$ac_cv_sizeof_unsigned_int")
+		$1="typedef unsigned int $2;";;
+	"$ac_cv_sizeof_unsigned_char")
+		$1="typedef unsigned char $2;";;
+	"$ac_cv_sizeof_unsigned_short")
+		$1="typedef unsigned short $2;";;
+	"$ac_cv_sizeof_unsigned_long")
+		$1="typedef unsigned long $2;";;
+	"$ac_cv_sizeof_unsigned_long_long")
+		$1="typedef unsigned long long $2;";;
+	*)
+		if test "$4" != "notfatal"; then
+			AC_MSG_ERROR([No unsigned $3-byte integral type])
+		fi;;
+	esac])
+AC_DEFUN(AM_SEARCH_SSIZES, [
+	case "$3" in
+	"$ac_cv_sizeof_int")
+		$1="typedef int $2;";;
+	"$ac_cv_sizeof_char")
+		$1="typedef char $2;";;
+	"$ac_cv_sizeof_short")
+		$1="typedef short $2;";;
+	"$ac_cv_sizeof_long")
+		$1="typedef long $2;";;
+	"$ac_cv_sizeof_long_long")
+		$1="typedef long long $2;";;
+	*)
+		if test "$4" != "notfatal"; then
+			AC_MSG_ERROR([No signed $3-byte integral type])
+		fi;;
+	esac])
 
-AC_SUBST(ssize_t_decl)
-AC_CACHE_CHECK([for ssize_t], db_cv_ssize_t, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], ssize_t foo;,
-	[db_cv_ssize_t=yes], [db_cv_ssize_t=no])])
-if test "$db_cv_ssize_t" = no; then
-	ssize_t_decl="typedef int ssize_t;"
-fi
+# Check for the standard system types.
+AC_DEFUN(AM_TYPES, [
 
+# db.h includes <sys/types.h> and <stdio.h>, not the other default includes
+# autoconf usually includes.  For that reason, we specify a set of includes
+# for all type checking tests. [#5060]
+#
+# C99 says types should be in <stdint.h>; include <stdint.h> if it exists.
+#
+# Some systems have types in <stddef.h>; include <stddef.h> if it exists.
+#
+# IBM's OS/390 and z/OS releases have types in <inttypes.h> not also found
+# in <sys/types.h>; include <inttypes.h> if it exists.
+db_includes="#include <sys/types.h>"
+AC_SUBST(inttypes_h_decl)
+AC_CHECK_HEADER(inttypes.h, [
+	db_includes="$db_includes
+#include <inttypes.h>"
+	inttypes_h_decl="#include <inttypes.h>"])
+
+# IRIX has stdint.h that is only available when using c99 (i.e. __c99
+# is defined). Problem with having it in a public header is that a c++
+# compiler cannot #include <db.h> if db.h #includes stdint.h, so we
+# need to check that stdint.h is available for all cases.  Also the
+# IRIX compiler does not exit with a non-zero exit code when it sees
+# #error, so we actually need to use the header for the compiler to fail.
+AC_SUBST(stdint_h_decl)
+AC_MSG_CHECKING(for stdint.h)
+AC_COMPILE_IFELSE([#include <stdint.h>
+  int main() {
+  uint_least8_t x=0;
+  return x;
+  }],[AC_MSG_RESULT(yes)
+if test "$db_cv_cxx" = "yes"; then
+  AC_MSG_CHECKING([if stdint.h can be used by C++])
+  AC_LANG_PUSH(C++)
+  AC_COMPILE_IFELSE([#include <stdint.h>
+    int main() {
+    uint_least8_t x=0;
+    return x;
+  }],[AC_MSG_RESULT(yes)
+    stdint_h_decl="#include <stdint.h>"
+    db_includes="$db_includes
+#include <stdint.h>"
+],[AC_MSG_RESULT(no)
+    stdint_h_decl="#ifndef __cplusplus
+#include <stdint.h>
+#endif"
+	db_includes="$db_includes
+#ifndef __cplusplus
+#include <stdint.h>
+#endif"
+])
+    AC_LANG_POP
+else
+    stdint_h_decl="#include <stdint.h>"
+    db_includes="$db_includes
+#include <stdint.h>"
+fi],[AC_MSG_RESULT(no)])
+
+AC_SUBST(stddef_h_decl)
+AC_CHECK_HEADER(stddef.h, [
+	db_includes="$db_includes
+#include <stddef.h>"
+	stddef_h_decl="#include <stddef.h>"])
+AC_SUBST(unistd_h_decl)
+AC_CHECK_HEADER(unistd.h, [
+	db_includes="$db_includes
+#include <unistd.h>"
+	unistd_h_decl="#include <unistd.h>"])
+db_includes="$db_includes
+#include <stdio.h>"
+
+# We need to know the sizes of various objects on this system.
+AC_CHECK_SIZEOF(char,, $db_includes)
+AC_CHECK_SIZEOF(unsigned char,, $db_includes)
+AC_CHECK_SIZEOF(short,, $db_includes)
+AC_CHECK_SIZEOF(unsigned short,, $db_includes)
+AC_CHECK_SIZEOF(int,, $db_includes)
+AC_CHECK_SIZEOF(unsigned int,, $db_includes)
+AC_CHECK_SIZEOF(long,, $db_includes)
+AC_CHECK_SIZEOF(unsigned long,, $db_includes)
+AC_CHECK_SIZEOF(long long,, $db_includes)
+AC_CHECK_SIZEOF(unsigned long long,, $db_includes)
+AC_CHECK_SIZEOF(char *,, $db_includes)
+
+# We look for u_char, u_short, u_int, u_long -- if we can't find them,
+# we create our own.
 AC_SUBST(u_char_decl)
-AC_CACHE_CHECK([for u_char], db_cv_uchar, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], u_char foo;,
-	[db_cv_uchar=yes], [db_cv_uchar=no])])
-if test "$db_cv_uchar" = no; then
-	u_char_decl="typedef unsigned char u_char;"
-fi
+AC_CHECK_TYPE(u_char,,
+    [u_char_decl="typedef unsigned char u_char;"], $db_includes)
 
 AC_SUBST(u_short_decl)
-AC_CACHE_CHECK([for u_short], db_cv_ushort, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], u_short foo;,
-	[db_cv_ushort=yes], [db_cv_ushort=no])])
-if test "$db_cv_ushort" = no; then
-	u_short_decl="typedef unsigned short u_short;"
-fi
+AC_CHECK_TYPE(u_short,,
+    [u_short_decl="typedef unsigned short u_short;"], $db_includes)
 
 AC_SUBST(u_int_decl)
-AC_CACHE_CHECK([for u_int], db_cv_uint, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], u_int foo;,
-	[db_cv_uint=yes], [db_cv_uint=no])])
-if test "$db_cv_uint" = no; then
-	u_int_decl="typedef unsigned int u_int;"
-fi
+AC_CHECK_TYPE(u_int,,
+    [u_int_decl="typedef unsigned int u_int;"], $db_includes)
 
 AC_SUBST(u_long_decl)
-AC_CACHE_CHECK([for u_long], db_cv_ulong, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], u_long foo;,
-	[db_cv_ulong=yes], [db_cv_ulong=no])])
-if test "$db_cv_ulong" = no; then
-	u_long_decl="typedef unsigned long u_long;"
-fi
+AC_CHECK_TYPE(u_long,,
+    [u_long_decl="typedef unsigned long u_long;"], $db_includes)
 
-dnl DB/Vi use specific integer sizes.
+# We look for fixed-size variants of u_char, u_short, u_int, u_long as well.
 AC_SUBST(u_int8_decl)
-AC_CACHE_CHECK([for u_int8_t], db_cv_uint8, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], u_int8_t foo;,
-	[db_cv_uint8=yes],
-	AC_TRY_RUN([main(){exit(sizeof(unsigned char) != 1);}],
-	    [db_cv_uint8="unsigned char"], [db_cv_uint8=no]))])
-if test "$db_cv_uint8" = no; then
-	AC_MSG_ERROR(No unsigned 8-bit integral type.)
-fi
-if test "$db_cv_uint8" != yes; then
-	u_int8_decl="typedef $db_cv_uint8 u_int8_t;"
-fi
+AC_CHECK_TYPE(u_int8_t,,
+    [AM_SEARCH_USIZES(u_int8_decl, u_int8_t, 1)], $db_includes)
 
 AC_SUBST(u_int16_decl)
-AC_CACHE_CHECK([for u_int16_t], db_cv_uint16, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], u_int16_t foo;,
-	[db_cv_uint16=yes],
-AC_TRY_RUN([main(){exit(sizeof(unsigned short) != 2);}],
-	[db_cv_uint16="unsigned short"],
-AC_TRY_RUN([main(){exit(sizeof(unsigned int) != 2);}],
-	[db_cv_uint16="unsigned int"], [db_cv_uint16=no])))])
-if test "$db_cv_uint16" = no; then
-	AC_MSG_ERROR([No unsigned 16-bit integral type.])
-fi
-if test "$db_cv_uint16" != yes; then
-	u_int16_decl="typedef $db_cv_uint16 u_int16_t;"
-fi
+AC_CHECK_TYPE(u_int16_t,,
+    [AM_SEARCH_USIZES(u_int16_decl, u_int16_t, 2)], $db_includes)
 
 AC_SUBST(int16_decl)
-AC_CACHE_CHECK([for int16_t], db_cv_int16, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], int16_t foo;,
-	[db_cv_int16=yes],
-AC_TRY_RUN([main(){exit(sizeof(short) != 2);}],
-	[db_cv_int16="short"],
-AC_TRY_RUN([main(){exit(sizeof(int) != 2);}],
-	[db_cv_int16="int"], [db_cv_int16=no])))])
-if test "$db_cv_int16" = no; then
-	AC_MSG_ERROR([No signed 16-bit integral type.])
-fi
-if test "$db_cv_int16" != yes; then
-	int16_decl="typedef $db_cv_int16 int16_t;"
-fi
+AC_CHECK_TYPE(int16_t,,
+    [AM_SEARCH_SSIZES(int16_decl, int16_t, 2)], $db_includes)
 
 AC_SUBST(u_int32_decl)
-AC_CACHE_CHECK([for u_int32_t], db_cv_uint32, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], u_int32_t foo;,
-	[db_cv_uint32=yes],
-AC_TRY_RUN([main(){exit(sizeof(unsigned int) != 4);}],
-	[db_cv_uint32="unsigned int"],
-AC_TRY_RUN([main(){exit(sizeof(unsigned long) != 4);}],
-	[db_cv_uint32="unsigned long"], [db_cv_uint32=no])))])
-if test "$db_cv_uint32" = no; then
-	AC_MSG_ERROR([No unsigned 32-bit integral type.])
-fi
-if test "$db_cv_uint32" != yes; then
-	u_int32_decl="typedef $db_cv_uint32 u_int32_t;"
-fi
+AC_CHECK_TYPE(u_int32_t,,
+    [AM_SEARCH_USIZES(u_int32_decl, u_int32_t, 4)], $db_includes)
 
 AC_SUBST(int32_decl)
-AC_CACHE_CHECK([for int32_t], db_cv_int32, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], int32_t foo;,
-	[db_cv_int32=yes],
-AC_TRY_RUN([main(){exit(sizeof(int) != 4);}],
-	[db_cv_int32="int"],
-AC_TRY_RUN([main(){exit(sizeof(long) != 4);}],
-	[db_cv_int32="long"], [db_cv_int32=no])))])
-if test "$db_cv_int32" = no; then
-	AC_MSG_ERROR([No signed 32-bit integral type.])
-fi
-if test "$db_cv_int32" != yes; then
-	int32_decl="typedef $db_cv_int32 int32_t;"
-fi
+AC_CHECK_TYPE(int32_t,,
+    [AM_SEARCH_SSIZES(int32_decl, int32_t, 4)], $db_includes)
 
-dnl Figure out largest integral type.
-AC_SUBST(db_align_t_decl)
-AC_CACHE_CHECK([for largest integral type], db_cv_align_t, [dnl
-AC_TRY_COMPILE([#include <sys/types.h>], long long foo;,
-	[db_cv_align_t="unsigned long long"], [db_cv_align_t="unsigned long"])])
-db_align_t_decl="typedef $db_cv_align_t db_align_t;"
+AC_SUBST(u_int64_decl)
+AC_CHECK_TYPE(u_int64_t,,
+    [AM_SEARCH_USIZES(u_int64_decl, u_int64_t, 8, notfatal)], $db_includes)
 
-dnl Figure out integral type the same size as a pointer.
-AC_SUBST(db_alignp_t_decl)
-AC_CACHE_CHECK([for integral type equal to pointer size], db_cv_alignp_t, [dnl
-db_cv_alignp_t=$db_cv_align_t
-AC_TRY_RUN([main(){exit(sizeof(unsigned int) != sizeof(char *));}],
-	[db_cv_alignp_t="unsigned int"])
-AC_TRY_RUN([main(){exit(sizeof(unsigned long) != sizeof(char *));}],
-	[db_cv_alignp_t="unsigned long"])
-AC_TRY_RUN([main(){exit(sizeof(unsigned long long) != sizeof(char *));}],
-	[db_cv_alignp_t="unsigned long long"])])
-db_alignp_t_decl="typedef $db_cv_alignp_t db_alignp_t;"
+AC_SUBST(int64_decl)
+AC_CHECK_TYPE(int64_t,,
+    [AM_SEARCH_SSIZES(int64_decl, int64_t, 8, notfatal)], $db_includes)
 
-])dnl
+# No currently autoconf'd systems lack FILE, off_t pid_t, size_t, time_t.
+#
+# We require them, we don't try to substitute our own if we can't find them.
+AC_SUBST(FILE_t_decl)
+AC_CHECK_TYPE(FILE,, AC_MSG_ERROR([No FILE type.]), $db_includes)
+AC_SUBST(off_t_decl)
+AC_CHECK_TYPE(off_t,, AC_MSG_ERROR([No off_t type.]), $db_includes)
+AC_SUBST(pid_t_decl)
+AC_CHECK_TYPE(pid_t,, AC_MSG_ERROR([No pid_t type.]), $db_includes)
+AC_SUBST(size_t_decl)
+AC_CHECK_TYPE(size_t,, AC_MSG_ERROR([No size_t type.]), $db_includes)
+AC_SUBST(time_t_decl)
+AC_CHECK_TYPE(time_t,, AC_MSG_ERROR([No time_t type.]), $db_includes)
+
+# Check for ssize_t -- if none exists, find a signed integral type that's
+# the same size as a size_t.
+AC_CHECK_SIZEOF(size_t,, $db_includes)
+AC_SUBST(ssize_t_decl)
+AC_CHECK_TYPE(ssize_t,,
+    [AM_SEARCH_SSIZES(ssize_t_decl, ssize_t, $ac_cv_sizeof_size_t)],
+    $db_includes)
+
+# Check for uintmax_t -- if none exists, first the largest unsigned integral
+# type available.
+AC_SUBST(uintmax_t_decl)
+AC_CHECK_TYPE(uintmax_t,, [AC_CHECK_TYPE(unsigned long long,
+    [uintmax_t_decl="typedef unsigned long long uintmax_t;"],
+    [uintmax_t_decl="typedef unsigned long uintmax_t;"], $db_includes)])
+
+# Check for uintptr_t -- if none exists, find an integral type which is
+# the same size as a pointer.
+AC_SUBST(uintptr_t_decl)
+AC_CHECK_TYPE(uintptr_t,,
+    [AM_SEARCH_USIZES(uintptr_t_decl, uintptr_t, $ac_cv_sizeof_char_p)])
+])

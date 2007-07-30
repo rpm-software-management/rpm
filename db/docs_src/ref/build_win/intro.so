@@ -1,0 +1,430 @@
+m4_comment([$Id: intro.so,v 10.79 2006/01/27 20:01:45 bostic Exp $])
+
+m4_ref_title(Building m4_db for Windows systems,
+    Building for Windows,
+    @building for Windows, build_unix/ultrix, build_win/small)
+
+define(TCLMAJOR, 8)
+define(TCLMINOR, 4)
+define(TCLDEBUG, g)
+
+m4_p([dnl
+This page contains general instructions on building m4_db for
+specific windows platforms using specific compilers. The
+m4_link(M4RELDIR/ref/build_win/faq, Windows FAQ) also
+contains helpful information.])
+
+m4_p([dnl
+The m4_path(build_windows) directory in the m4_db distribution contains
+project files for Microsoft Visual C++:])
+
+m4_table_begin(, _center)
+m4_table_header(Project File, Description)
+m4_table_element(_center, Berkeley_DB.dsw, Visual C++ 6.0 workspace)
+m4_table_element(_center, *.dsp, Visual C++ 6.0 projects)
+m4_table_end
+
+m4_p([dnl
+These project files can be used to build m4_db for the following platforms:
+Windows NT/2K/XP/2003, Windows 98/ME and 64-bit Windows XP/2003.])
+
+m4_section([Building m4_db for Windows NT/2K/XP/2003])
+m4_subsection([Visual C++ .NET 2005])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Choose m4_italic([File -__GT__ Open -__GT__ Project/Solution...]).
+In the m4_path(build_windows), select m4_path(Berkeley_DB) and click
+Open.])
+
+m4_nlist([dnl
+You will be prompted to convert the project files to current Visual C++
+format.  Select "Yes to All".])
+
+m4_nlist([dnl
+Choose the project configuration from the drop-down menu on the tool
+bar (usually Debug or Release for Win32).])
+
+m4_nlist([dnl
+To build, right-click on the build_all target and select Build.])
+
+m4_nlistend
+
+m4_subsection([Visual C++ .NET or Visual C++ .NET 2003])
+
+m4_p([dnl
+This is very similar to the building with Visual Studio 2005, but some
+menu options have been rearranged:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Choose m4_italic([File -__GT__ Open Solution]).  Look in the
+m4_path(build_windows) directory for compatible workspace files, select
+m4_path(Berkeley_DB.dsw), and press Open.])
+
+m4_nlist([dnl
+You will be prompted to convert the project files to current Visual C++
+format.  Select "Yes to All".])
+
+m4_nlist([dnl
+Choose the project configuration from the drop-down menu on the .NET
+tool bar (Debug or Release).])
+
+m4_nlist([dnl
+To build, right-click on build_all and select Build.])
+
+m4_nlistend
+
+m4_subsection([Visual C++ 6.0])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Choose m4_italic([File -__GT__ Open Workspace]).  Look in the
+m4_path(build_windows) directory for Workspaces, select
+m4_path(Berkeley_DB.dsw), and press Open.])
+
+m4_nlist([dnl
+Choose the desired project configuration by going to m4_italic([Build
+-__GT__ Set Active Configuration]) and select the appropriate option
+to the build_all project (Debug or Release).  Then click OK.])
+
+m4_nlist([dnl
+To build, press F7.])
+
+m4_nlistend
+
+m4_subsection([Build results])
+
+m4_p([dnl
+The results of your build will be placed in a subdirectory of
+m4_path(build_windows) named after the configuration you chose (for
+examples, m4_path(build_windows\Release) or
+m4_path(build_windows\Debug)).])
+
+m4_p([dnl
+When building your application during development, you should normally
+use compile options "Debug Multithreaded DLL" and link against
+m4_path(build_windows\Debug\libdb[]M4MAJOR[]M4MINOR[]d.lib).  You can
+also build using a release version of the m4_db libraries and tools,
+which will be placed in
+m4_path(build_windows\Release\libdb[]M4MAJOR[]M4MINOR[].lib).  When
+linking against the release build, you should compile your code with
+the "Release Multithreaded DLL" compile option.  You will also need to
+add the m4_path(build_windows) directory to the list of include
+directories of your application's project, or copy the m4_db include
+files to another location.])
+
+m4_section([Building m4_db for Windows 98/ME])
+
+m4_p([dnl
+By default on Windows, m4_db supports internationalized filenames by
+treating all directory paths and filenames passed to m4_db methods as
+UTF-8 encoded strings.  All paths are internally converted to wide
+character strings and passed to the wide character variants of Windows
+system calls.])
+
+m4_p([dnl
+This allows applications to create and open databases with names that
+cannot be represented with ASCII names while maintaining compatibility
+with applications that work purely with ASCII paths.])
+
+m4_p([dnl
+Windows 98 and ME do not support Unicode paths directly.  To build for
+those versions of Windows, either follow the above instructions,
+choosing the "Debug ASCII" or "Release ASCII" build targets, or follow
+the instructions at
+m4_linkweb(
+http://www.microsoft.com/globaldev/handson/dev/mslu_announce.mspx,
+Microsoft's web site).])
+
+m4_p([dnl
+The ASCII builds will also work on Windows NT/2K/XP and 2003, but will
+not translate paths to wide character strings.])
+
+m4_section([Building m4_db for 64-bit Windows])
+
+m4_p([dnl
+The following procedure can be used on either to build natively on a
+64-bit system or to cross-compile from a 32-bit system.])
+
+m4_subsection([x64 build with Visual Studio 2005])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Choose m4_italic([File -__GT__ Open -__GT__ Project/Solution...]).
+In the m4_path(build_windows), select m4_path(Berkeley_DB) and click
+Open.])
+
+m4_nlist([dnl
+You will be prompted to convert the project files to current Visual C++
+format.  Select "Yes to All".])
+
+m4_nlist([dnl
+Choose the project configuration from the drop-down menu on the tool
+bar ("Debug AMD64", "Release AMD64").  Change the CPU type from
+Win32 to x64.])
+
+m4_nlist([dnl
+Right-click on the build_all target and select Build.])
+
+m4_nlistend
+
+m4_subsection([64-bit build with Visual Studio .NET 2003 or earlier])
+
+m4_p([dnl
+You will need latest Platform SDK from Microsoft, available from
+m4_linkweb([http://www.microsoft.com/msdownload/platformsdk/sdkupdate/],
+[Microsoft's web site]).  You only need the "Core SDK" from there.])
+
+m4_p([dnl
+Once that is installed, you should have an entry in your Start Menu
+called m4_italic([Microsoft Platform SDK (date) -__GT__ Open Build
+Environment Window -__GT__ Windows Server 2003 64-bit Build
+Environment -__GT__ Set Win Svr 2003 x64 Build Env (Debug)]).
+Selecting that will open a command window with the environment set up
+for 64-bit Windows development targeting AMD64-compatible CPUs.])
+
+m4_p([dnl
+Depending on how your computer is configured, you may need to run the
+m4_path(vcvars32.bat) or script to set up the environment to build
+from the command line with Visual Studio.])
+
+m4_p([dnl
+Then, in the m4_path(build_windows) directory in the m4_db
+distribution, run this for Visual Studio .NET:
+m4_indent([devenv Berkeley_DB.dsw])
+Choose "Yes To All" in the dialog box that appears, then close Visual
+Studio, then run:
+m4_indent([devenv Berkeley_DB.sln /build "Debug AMD64" /project "build_all" /useenv])
+For Visual Studio 6, just run this instead:
+m4_indent([msdev Berkeley_DB.dsw /make "build_all - Debug AMD64" /useenv])
+You should now have AMD64 binaries in the "Debug_AMD64" directory.])
+
+m4_p([dnl
+To build a release, open the "Retail" window instead of the "Debug"
+window, and change Debug to Release in the above commands.  To build
+for Itanium, change AMD64 and x64 to IA64.])
+
+m4_section([Building m4_db with Cygwin])
+m4_p([dnl
+To build m4_db with Cygwin, follow the instructions in
+m4_link(M4RELDIR/ref/build_unix/intro, Building for UNIX).])
+
+m4_section([Building the C++ API])
+m4_p([dnl
+C++ support is built automatically on Windows.])
+
+m4_section([Building the Java API])
+m4_p([dnl
+Java support is not built automatically.  The following instructions
+assume that you have installed the Sun Java Development Kit in
+m4_path(d:\java).  Of course, if you installed elsewhere or have
+different Java software, you will need to adjust the pathnames
+accordingly.])
+
+m4_subsection([Building Java with Visual C++ .NET or above])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Set your include directories.  Choose m4_italic([Tools -__GT__ Options
+-__GT__ Projects -__GT__ VC++ Directories]).  Under the "Show
+directories for" pull-down, select "Include files".  Add the full
+pathnames for the m4_path(d:\java\include) and
+m4_path(d:\java\include\win32) directories.  Then click OK.  These are
+the directories needed when including jni.h.])
+
+m4_nlist([dnl
+Set the executable files directories.  Choose m4_italic([Tools -__GT__
+Options -__GT__ Projects -__GT__ VC++ Directories]).  Under the "Show
+directories for" pull-down, select "Executable files".  Add the full
+pathname for the m4_path(d:\java\bin) directory, then click OK.  This is
+the directory needed to find javac.])
+
+m4_nlist([dnl
+Set the build type to Release or Debug in the drop-down on the .NET
+tool bar.])
+
+m4_nlist([dnl
+To build, right-click on db_java and select Build.  This builds the
+Java support library for m4_db and compiles all the java files,
+placing the resulting m4_path(db.jar) and m4_path(dbexamples.jar)
+files in the m4_path(build_windows\Release) or
+m4_path(build_windows\Debug) subdirectory of m4_db.])
+
+m4_nlistend
+
+m4_subsection([Building Java with Visual C++ 6.0])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Set the include directories.  Choose m4_italic([Tools -__GT__ Options
+-__GT__ Directories]).  Under the "Show directories for" pull-down,
+select "Include files".  Add the full pathnames for the
+m4_path(d:\java\include) and m4_path(d:\java\include\win32) directories.
+These are the directories needed when including m4_path(jni.h).])
+
+m4_nlist([dnl
+Set the executable files directories.  Choose m4_italic([Tools -__GT__
+Options -__GT__ Directories]).  Under the "Show directories for"
+pull-down, select "Executable files".  Add the full pathname for the
+m4_path(d:\java\bin) directory.  This is the directory needed to find
+javac.])
+
+m4_nlist([dnl
+Go to m4_italic([Build -__GT__ Set Active Configuration]) and select
+either the Debug or Release version of the db_java project.  Then
+press OK.])
+
+m4_nlist([dnl
+To build, select m4_italic([Build -__GT__ Build
+libdb_java[]M4MAJOR[]M4MINOR.dll]).  This builds the Java support
+library for m4_db and compiles all the java files, placing the
+resulting m4_path(db.jar) and m4_path(dbexamples.jar) files in the
+m4_path(build_windows\Release) or m4_path(build_windows\Debug)
+subdirectory of m4_db.])
+
+m4_nlistend
+
+m4_p([dnl
+To run Java code, set your environment variable m4_envvar(CLASSPATH)
+to include the full pathname of these jar files, and your environment
+variable m4_envvar(PATH) to include the m4_path(build_windows\Release)
+subdirectory.  On Windows, remember that files or directories in the
+m4_envvar(CLASSPATH) and m4_envvar(PATH) variables must be separated
+by semicolons (unlike UNIX).  Then, try running the following command
+as a test:])
+
+m4_indent([java db.AccessExample])
+
+m4_p([dnl
+If you want to run Java code using a Debug build, substitute 'Debug'
+for 'Release' in the instructions above.  Make sure you use the Debug
+JAR file with the Debug DLL and the Release JAR with the Release
+DLL.])
+
+m4_section([Building the Tcl API])
+m4_p([dnl
+Tcl support is not built automatically.  See
+m4_link(M4RELDIR/ref/tcl/intro, Loading m4_db with Tcl) for
+information on sites from which you can download Tcl and which Tcl
+versions are compatible with m4_db.  These notes assume that Tcl is
+installed as m4_path(d:\tcl), but you can change that if you want.])
+
+m4_p([dnl
+The Tcl library must be built as the same build type as the m4_db
+library (both Release or both Debug).  We found that the binary
+release of Tcl can be used with the Release configuration of m4_db,
+but you will need to build Tcl from sources for the Debug
+configuration.  Before building Tcl, you will need to modify its
+makefile to make sure that you are building a debug version, including
+thread support.  This is because the set of DLLs linked into the Tcl
+executable must match the corresponding set of DLLs used by m4_db.])
+
+m4_subsection([Building Tcl with Visual C++ .NET or above])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Set the include directories.  Choose m4_italic([Tools -__GT__ Options
+-__GT__ Projects -__GT__ VC++ Directories]).  Under the "Show
+directories for" pull-down, select "Include files".  Add the full
+pathname for m4_path(d:\tcl\include), then click OK.  This is the
+directory that contains m4_path(tcl.h).])
+
+m4_nlist([dnl
+Set the library files directory.  Choose m4_italic([Tools -__GT__
+Options -__GT__ Projects -__GT__ VC++ Directories]).  Under the "Show
+directories for" pull-down, select "Library files".  Add the full
+pathname for the m4_path(d:\tcl\lib) directory, then click OK.  This is
+the directory needed to find
+m4_path(tcl[]TCLMAJOR[]TCLMINOR[]TCLDEBUG.lib) (or whatever the
+library is named in your distribution).])
+
+m4_nlist([dnl
+Set the build type to Release or Debug in the drop-down on the .NET
+tool bar.])
+
+m4_nlist([dnl
+To build, right-click on db_tcl and select Build.  This builds the Tcl
+support library for m4_db, placing the result into
+m4_path(build_windows\Debug\libdb_tcl[]M4MAJOR[]M4MINOR[]d.dll) or
+m4_path(build_windows\Release\libdb_tcl[]M4MAJOR[]M4MINOR.dll).])
+
+m4_nlistend
+
+m4_p([dnl
+If you use a version different from Tcl TCLMAJOR.TCLMINOR.x you will
+need to change the name of the Tcl library used in the build (for
+example, m4_path(tcl[]TCLMAJOR[]TCLMINOR[]TCLDEBUG.lib)) to the
+appropriate name.  To do this, right click on m4_italic(db_tcl), go to
+m4_italic([Properties -__GT__ Linker -__GT__ Input -__GT__ Additional
+dependencies]) and change
+m4_path(tcl[]TCLMAJOR[]TCLMINOR[]TCLDEBUG.lib) to match the Tcl
+version you are using.])
+
+m4_subsection([Building Tcl with Visual C++ 6.0])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Set the include directories.  Choose m4_italic([Tools -__GT__ Options
+-__GT__ Directories]).  Under the "Show directories for" pull-down,
+select "Include files".  Add the full pathname for
+m4_path(d:\tcl\include), then click OK.  This is the directory that
+contains m4_path(tcl.h).])
+
+m4_nlist([dnl
+Set the library files directory.  Choose m4_italic([Tools -__GT__
+Options -__GT__ Directories]).  Under the "Show directories for"
+pull-down, select "Library files".  Add the full pathname for the
+m4_path(d:\tcl\lib) directory, then click OK.  This is the directory
+needed to find m4_path(tcl[]TCLMAJOR[]TCLMINOR[]TCLDEBUG.lib) (or
+whatever the library is named in your distribution).])
+
+m4_nlist([dnl
+Go to m4_italic([Build -__GT__ Set Active Configuration]) and select
+either the Debug or Release version of the db_tcl project.  Then press
+OK.])
+
+m4_nlist([dnl
+To build, select m4_italic([Build -__GT__ Build
+libdb_tcl[]M4MAJOR[]M4MINOR.dll]).  This builds the Tcl support
+library for m4_db, placing the result into
+m4_path(build_windows\Debug\libdb_tcl[]M4MAJOR[]M4MINOR[]d.dll) or
+m4_path(build_windows\Release\libdb_tcl[]M4MAJOR[]M4MINOR.dll).])
+
+m4_nlistend
+
+m4_p([dnl
+If you use a version different from Tcl TCLMAJOR.TCLMINOR.x you will
+need to change the name of the Tcl library used in the build (for
+example, m4_path(tcl[]TCLMAJOR[]TCLMINOR[]TCLDEBUG.lib)) to the
+appropriate name.  To do this, choose
+m4_italic([Project -__GT__ Settings -__GT__ db_tcl])
+and change the Tcl library listed in the Object/Library modules
+m4_path(tcl[]TCLMAJOR[]TCLMINOR[]TCLDEBUG.lib) to match the Tcl version
+you are using.])
+
+m4_section([Distributing DLLs])
+m4_p([dnl
+When distributing applications linked against the DLL (not static)
+version of the library, the DLL files you need will be found in the
+m4_path(build_windows\Release) subdirectory, or
+m4_path(build_windows\Debug) if you distribute a debug version.  You may
+also need to redistribute DLL files needed for the compiler's runtime.
+For Visual C++ 6.0, these files are m4_path(msvcrt.dll) and
+m4_path(msvcp60.dll) if you built with a Release configuration, or
+m4_path(msvcrtd.dll) and m4_path(msvcp60d.dll) if you are using a
+Debug configuration.  Generally, these runtime DLL files can be
+installed in the same directory that will contain your installed m4_db
+DLLs.  This directory may need to be added to your System PATH
+environment variable.  Check your compiler's license and documentation
+for specifics on redistributing runtime DLLs.])
+
+m4_page_footer

@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep022.tcl,v 12.10 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep022.tcl,v 12.16 2007/06/08 15:10:05 sue Exp $
 #
 # TEST  rep022
 # TEST	Replication elections - test election generation numbers
@@ -52,7 +51,13 @@ proc rep022 { method args } {
 
 proc rep022_sub { method nclients tnum logset largs } {
 	source ./include.tcl
-	global errorInfo
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
+
 	env_cleanup $testdir
 
 	set qdir $testdir/MSGQUEUEDIR
@@ -72,32 +77,28 @@ proc rep022_sub { method nclients tnum logset largs } {
 		set c_txnargs($i) [adjust_txnargs $c_logtype($i)]
 	}
 
-# To debug elections, the lines to uncomment are below the
-# error checking portion of this test.  This is needed in order
-# for the error messages to come back in errorInfo and for
-# that portion of the test to pass.
 	# Open a master.
 	set envlist {}
 	repladd 1
-	set env_cmd(M) "berkdb_env -create -log_max 1000000 \
+	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 $verbargs \
+	    -event rep_event \
 	    -home $masterdir $m_txnargs $m_logargs -rep_master \
 	    -errpfx MASTER -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M)]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 	lappend envlist "$masterenv 1"
 
 	# Open the clients.
 	for { set i 0 } { $i < $nclients } { incr i } {
 		set envid [expr $i + 2]
 		repladd $envid
-		set env_cmd($i) "berkdb_env_noerr -create \
+		set env_cmd($i) "berkdb_env_noerr -create $verbargs \
+		    -errpfx CLIENT.$i -event rep_event \
 		    -home $clientdir($i) $c_txnargs($i) $c_logargs($i) \
 		    -rep_client -rep_transport \[list $envid replsend\]"
 		set clientenv($i) [eval $env_cmd($i)]
-		error_check_good \
-		    client_env($i) [is_valid_env $clientenv($i)] TRUE
 		lappend envlist "$clientenv($i) $envid"
 	}
+
 	# Bring the clients online by processing the startup messages.
 	process_msgs $envlist
 
@@ -109,21 +110,19 @@ proc rep022_sub { method nclients tnum logset largs } {
 	error_check_good masterenv_close [$masterenv close] 0
 	set envlist [lreplace $envlist 0 0]
 
-# To debug elections, uncomment the lines below to turn on verbose
-# and set the errfile.  Also edit reputils.tcl
-# in proc start_election and swap the 2 commented lines with
-# their counterpart.
 	foreach pair $envlist {
 		set i [expr [lindex $pair 1] - 2]
 		replclear [expr $i + 2]
 		set err_cmd($i) "none"
 		set pri($i) 10
 		set crash($i) 0
-#		error_check_good pfx [$clientenv($i) errpfx CLIENT$i] 0
-#		error_check_good verb [$clientenv($i) verbose rep on] 0
-#		$clientenv($i) errfile /dev/stderr
-#		set env_cmd($i) [concat $env_cmd($i) \
-#		    "-errpfx CLIENT$i -verbose {rep on} -errfile /dev/stderr"]
+		if { $rep_verbose == 1 } {
+			$clientenv($i) errpfx CLIENT$i
+			$clientenv($i) verbose rep on
+			$clientenv($i) errfile /dev/stderr
+			set env_cmd($i) [concat $env_cmd($i) \
+			    "-errpfx CLIENT$i -errfile /dev/stderr"]
+		}
 	}
 
 	set msg "Rep$tnum.b"
@@ -150,6 +149,9 @@ proc rep022_sub { method nclients tnum logset largs } {
 	# Now close and reopen 2 with recovery.  Update the
 	# list of all client envs with the new information.
 	#
+	replclear 5
+	replclear 6
+	error_check_good flush [$clientenv(2) log_flush] 0
 	error_check_good clientenv_close(2) [$clientenv(2) close] 0
 	set clientenv(2) [eval $env_cmd(2) -recover]
 	set origlist [lreplace $origlist 2 2 "$clientenv(2) 4"]

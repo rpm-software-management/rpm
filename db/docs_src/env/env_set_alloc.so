@@ -1,0 +1,123 @@
+m4_comment([$Id: env_set_alloc.so,v 1.22 2004/08/13 03:38:57 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_set_alloc)])
+
+define(M4PAGELOCAL, M4INTERFACE)
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_set_alloc, [dnl
+m4_pf_header(m4_ref(dbenv_set_alloc),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_alloc(DB_ENV *dbenv,
+    void *(*app_malloc)(size_t),
+    void *(*app_realloc)(void *, size_t),
+    void (*app_free)(void *));
+])dnl
+ifelse(M4API, CXX_API, [dnl
+extern "C" {
+    typedef void *(*db_malloc_fcn_type)(size_t);
+    typedef void *(*db_realloc_fcn_type)(void *, size_t);
+    typedef void *(*db_free_fcn_type)(void *);
+};
+m4_blank
+int
+DbEnv::set_alloc(db_malloc_fcn_type app_malloc,
+    db_realloc_fcn_type app_realloc,
+    db_free_fcn_type app_free);
+]))],[dnl
+m4_pf_header(m4_ref(dbh_set_alloc),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_alloc(DB *db,
+    void *(*app_malloc)(size_t),
+    void *(*app_realloc)(void *, size_t),
+    void (*app_free)(void *));
+])dnl
+ifelse(M4API, CXX_API, [dnl
+extern "C" {
+    typedef void *(*db_malloc_fcn_type)(size_t);
+    typedef void *(*db_realloc_fcn_type)(void *, size_t);
+    typedef void *(*db_free_fcn_type)(void *);
+};
+m4_blank
+int
+Db::set_alloc(db_malloc_fcn_type app_malloc,
+    db_realloc_fcn_type app_realloc,
+    db_free_fcn_type app_free);
+]))])
+
+m4_p([dnl
+Set the allocation functions used by the m4_ref(DbEnv) and m4_ref(Db)
+methods to allocate or free memory owned by the application.])
+
+m4_p([dnl
+There are a number of interfaces in m4_db where memory is allocated by
+the library and then given to the application.  For example, the
+m4_ref(DB_DBT_MALLOC) flag, when specified in the m4_ref(Dbt) object,
+will cause the m4_ref(Db) methods to allocate and reallocate memory
+which then becomes the responsibility of the calling application.  (See
+m4_ref(Dbt) for more information.)  Other examples are the m4_db
+interfaces which return statistical information to the application:
+m4_ref(dbh_stat), m4_ref(lock_stat), m4_ref(log_archive),
+m4_ref(log_stat), m4_ref(memp_stat), and m4_ref(txn_stat).  There is one
+method in m4_db where memory is allocated by the application and then
+given to the library: m4_ref(dbh_associate).])
+
+m4_p([dnl
+On systems in which there may be multiple library versions of the
+standard allocation routines (notably Windows NT), transferring memory
+between the library and the application will fail because the m4_db
+library allocates memory from a different heap than the application uses
+to free it.  To avoid this problem, the m4_ref(dbenv_set_alloc) and
+m4_refT(dbh_set_alloc)s can be used to pass m4_db references to the
+application's allocation routines.])
+
+m4_p([dnl
+It is not an error to specify only one or two of the possible allocation
+function parameters to these interfaces; however, in that case the
+specified interfaces must be compatible with the standard library
+interfaces, as they will be used together.  The functions specified must
+match the calling conventions of the m4_ansic_name library routines of
+the same name.])
+
+ifelse(M4INTERFACE, dbenv_set_alloc, [dnl
+m4_scope_dbenv(dbenv_set_alloc)
+
+m4_when_envopen(dbenv_set_alloc)
+
+m4_return(dbenv_set_alloc, std)
+
+m4_parambegin
+m4_param(app_malloc, [dnl
+The m4_arg(app_malloc) parameter is the application-specified malloc
+function.])
+m4_param(app_realloc, [dnl
+The m4_arg(app_realloc) parameter is the application-specified realloc
+function.])
+m4_param(app_free, [dnl
+The m4_arg(app_free) parameter is the application-specified free function.])
+m4_paramend
+
+m4_err(dbenv_set_alloc,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_seealso(DbEnv)
+],[dnl
+m4_p([dnl
+Because databases opened within m4_db environments use the allocation
+interfaces specified to the environment, it is an error to attempt to
+set those interfaces in a database created within an environment.])
+
+m4_when_dbopen(dbh_set_alloc)
+
+m4_return(dbh_set_alloc, std)
+
+m4_err(dbh_set_alloc,
+einval, [Called in a database environment.
+m4_p([Called after m4_ref(dbh_open) was called.])])
+
+m4_seealso(Db)
+])
+
+m4_page_footer

@@ -1,0 +1,155 @@
+m4_comment([$Id: config.so,v 10.4 2002/06/05 21:09:14 bostic Exp $])
+
+m4_ref_title(Application Specific Logging and Recovery,
+    Application configuration,,
+    apprec/auto, program/appsignals)
+
+m4_p([dnl
+The application should include a dispatch function that dispatches to
+appropriate printing and/or recovery functions based on the log record
+type and the operation code.  The dispatch function should take the same
+arguments as the recovery function, and should call the appropriate
+recovery and/or printing functions based on the log record type and the
+operation code.  For example, the ex_apprec dispatch function is as
+follows:])
+
+m4_indent([dnl
+int
+apprec_dispatch(dbenv, dbt, lsn, op)
+	DB_ENV *dbenv;
+	DBT *dbt;
+	DB_LSN *lsn;
+	db_recops op;
+{
+	u_int32_t rectype;
+
+	/* Pull the record type out of the log record. */
+	memcpy(&rectype, dbt-__GT__data, sizeof(rectype));
+
+	switch (rectype) {
+	case DB_ex_apprec_mkdir:
+		return (ex_apprec_mkdir_recover(dbenv, dbt, lsn, op, NULL));
+	default:
+		/*
+		 * We've hit an unexpected, allegedly user-defined record
+		 * type.
+		 */
+		dbenv-__GT__errx(dbenv, "Unexpected log record type encountered");
+		return (EINVAL);
+	}
+}
+])
+
+m4_p([dnl
+Applications use this dispatch function and the automatically generated
+functions as follows:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+When the application starts, call the m4_ref(dbenv_set_app_dispatch)
+with your dispatch function.])
+
+m4_nlist([dnl
+Issue a m4_ref(txn_begin) call before any operations you want to be
+transaction-protected.])
+
+m4_nlist([dnl
+Before accessing any data, issue the appropriate lock call to lock the
+data (either for reading or writing).])
+
+m4_nlist([dnl
+Before modifying any data that is transaction-protected, issue a call
+to the appropriate log function.])
+
+m4_nlist([dnl
+Call m4_ref(txn_commit) to save all the changes, or call m4_ref(txn_abort)
+to cancel all of the modifications.])
+
+m4_nlistend
+
+m4_p([dnl
+The recovery functions are called in the three following cases:])
+
+m4_nlistbegin
+m4_nlist([dnl
+During recovery after application or system failure, with op set to
+m4_ref(DB_TXN_FORWARD_ROLL) or m4_ref(DB_TXN_BACKWARD_ROLL).])
+m4_nlist([dnl
+During transaction abort, with op set to m4_ref(DB_TXN_ABORT).])
+m4_nlist([dnl
+On a replicated client to apply updates from the master, with op set to
+m4_ref(DB_TXN_APPLY).])
+m4_nlistend
+
+m4_p([dnl
+For each log record type you declare, you must write the appropriate
+function to undo and redo the modifications.  The shell of these
+functions will be generated for you automatically, but you must fill in
+the details.])
+
+m4_p([dnl
+Your code must be able to detect whether the described modifications
+have been applied to the data.  The function will be called with the
+"op" parameter set to m4_ref(DB_TXN_ABORT) when a transaction that wrote
+the log record aborts, with m4_ref(DB_TXN_FORWARD_ROLL) and
+m4_ref(DB_TXN_BACKWARD_ROLL) during recovery, and with m4_ref(DB_TXN_APPLY)
+on a replicated client.])
+
+m4_p([dnl
+The actions for m4_ref(DB_TXN_ABORT) and m4_ref(DB_TXN_BACKWARD_ROLL)
+should generally be the same, and the actions for
+m4_ref(DB_TXN_FORWARD_ROLL) and m4_ref(DB_TXN_APPLY) should generally
+be the same.  However, if the application is using m4_db replication
+and another thread of control may be performing read operations while
+log records are applied on a replication client, the recovery function
+should perform appropriate locking during m4_ref(DB_TXN_APPLY)
+operations.  In this case, the recovery function may encounter deadlocks
+when issuing locking calls.  The application should run with the
+deadlock detector, and the recovery function should simply return
+m4_ref(DB_LOCK_DEADLOCK) if a deadlock is detected and a locking
+operation fails with that error.])
+
+m4_p([dnl
+The m4_ref(DB_TXN_PRINT) operation should print the log record,
+typically using the auto-generated print function; it is not used in
+the m4_db library, but may be useful for debugging, as in the
+m4_ref(db_printlog) utility.  Applications may safely ignore this
+operation code, they may handle printing from the recovery function, or
+they may dispatch directly to the auto-generated print function.])
+
+m4_p([dnl
+One common way to determine whether operations need to be undone or
+redone is the use of log sequence numbers (LSNs).  For example, each
+access method database page contains the LSN of the most recent log
+record that describes a modification to the page.  When the access
+method changes a page, it writes a log record describing the change and
+including the LSN that was on the page before the change.  This LSN is
+referred to as the previous LSN.  The recovery functions read the page
+described by a log record, and compare the LSN on the page to the LSN
+they were passed.])
+
+m4_p([dnl
+If the page LSN is less than the passed LSN and the operation is an
+undo, no action is necessary (because the modifications have not been
+written to the page).  If the page LSN is the same as the previous LSN
+and the operation is a redo, the actions described are reapplied to the
+page.  If the page LSN is equal to the passed LSN and the operation is
+an undo, the actions are removed from the page; if the page LSN is
+greater than the passed LSN and the operation is a redo, no further
+action is necessary.  If the action is a redo and the LSN on the page
+is less than the previous LSN in the log record, it is an error because
+it could happen only if some previous log record was not processed.])
+
+m4_p([dnl
+Examples of other recovery functions can be found in the m4_db library
+recovery functions (found in files named XXX_rec.c) and in the
+application-specific recovery example (specifically, ex_apprec_rec.c).])
+
+m4_p([dnl
+Finally, applications need to ensure that any data modifications they
+have made, that were part of a committed transaction, must be written
+to stable storage before calling the m4_refT(txn_checkpoint).  This is
+to allow the periodic removal of database environment log files.])
+
+m4_page_footer

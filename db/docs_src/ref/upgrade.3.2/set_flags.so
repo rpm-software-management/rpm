@@ -1,0 +1,25 @@
+m4_comment([$Id: set_flags.so,v 1.3 2003/10/18 19:16:16 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.2: DB_ENV-__GT__set_flags,,
+    upgrade.3.2/intro, upgrade.3.2/callback)
+
+m4_p([dnl
+A new method has been added to the m4_db environment handle,
+m4_ref(dbenv_set_flags).  This method currently takes three flags:
+m4_ref(DB_CDB_ALLDB), m4_ref(DB_NOMMAP) and m4_ref(DB_TXN_NOSYNC).  The
+first of these flags, m4_ref(DB_CDB_ALLDB), provides new functionality,
+allowing m4_cam applications to do locking across multiple databases.])
+
+m4_p([dnl
+The other two flags, m4_ref(DB_NOMMAP) and m4_ref(DB_TXN_NOSYNC), were
+specified to the m4_ref(dbenv_open) method in previous releases.  In
+the 3.2 release, they have been moved to the m4_refT(dbenv_set_flags)
+because this allows the database environment's value to be toggled
+during the life of the application as well as because it is a more
+appropriate place for them.  Applications specifying either the
+m4_ref(DB_NOMMAP) or m4_ref(DB_TXN_NOSYNC) flags to the
+m4_refT(dbenv_open) should replace those flags with calls to the
+m4_refT(dbenv_set_flags).])
+
+m4_page_footer

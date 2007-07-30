@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Reading and Writing Database Records</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="DBEntry.html" title="Chapter 3. Database Records" />
-    <link rel="previous" href="DBEntry.html" title="Chapter 3. Database Records" />
+    <link rel="up" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
+    <link rel="previous" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
     <link rel="next" href="bindAPI.html" title="Using the BIND APIs" />
   </head>
   <body>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Reading and Writing Database Records</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. Database Records</th>
-          <td width="20%" align="right"> <a accesskey="n" href="bindAPI.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â Database Records</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="bindAPI.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -157,12 +157,12 @@ import com.sleepycat.db.Database;
 // Database opens omitted for clarity.
 // Databases must NOT be opened read-only.
 
-String aKey = &quot;myFirstKey&quot;;
-String aData = &quot;myFirstData&quot;;
+String aKey = "myFirstKey";
+String aData = "myFirstData";
 
 try {
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
-    DatabaseEntry theData = new DatabaseEntry(aData.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
+    DatabaseEntry theData = new DatabaseEntry(aData.getBytes("UTF-8"));
     myDatabase.put(null, theKey, theData);
 } catch (Exception e) {
     // Exception handling goes here
@@ -232,13 +232,13 @@ Database myDatabase = null;
 // Database opens omitted for clarity.
 // Database may be opened read-only.  
   
-String aKey = &quot;myFirstKey&quot;;
+String aKey = "myFirstKey";
 
 try {
     // Create a pair of DatabaseEntry objects. theKey
     // is used to perform the search. theData is used
     // to store the data returned by the get() operation.
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
     DatabaseEntry theData = new DatabaseEntry();
     
     // Perform the get.
@@ -247,11 +247,11 @@ try {
 
         // Recreate the data String.
         byte[] retData = theData.getData();
-        String foundData = new String(retData, &quot;UTF-8&quot;);
-        System.out.println(&quot;For key: '&quot; + aKey + &quot;' found data: '&quot; + 
-                            foundData + &quot;'.&quot;);
+        String foundData = new String(retData, "UTF-8");
+        System.out.println("For key: '" + aKey + "' found data: '" + 
+                            foundData + "'.");
     } else {
-        System.out.println(&quot;No record found for key '&quot; + aKey + &quot;'.&quot;);
+        System.out.println("No record found for key '" + aKey + "'.");
     } 
 } catch (Exception e) {
     // Exception handling goes here
@@ -298,8 +298,8 @@ Database myDatabase = null;
 // Database can NOT be opened read-only.  
   
 try {
-    String aKey = &quot;myFirstKey&quot;;
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
+    String aKey = "myFirstKey";
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
     
     // Perform the deletion. All records that use this key are
     // deleted.
@@ -405,18 +405,18 @@ try {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="DBEntry.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="DBEntry.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="bindAPI.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="bindAPI.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 3. Database Records </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 3.Â Database RecordsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Using the BIND APIs</td>
+          <td width="40%" align="right" valign="top">Â Using the BIND APIs</td>
         </tr>
       </table>
     </div>

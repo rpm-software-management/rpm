@@ -1,0 +1,41 @@
+m4_comment([$Id: cxx.so,v 1.3 2002/08/27 02:28:31 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.1: C++ exceptions,,
+    upgrade.4.1/java, upgrade.4.1/app_dispatch)
+
+m4_p([dnl
+With default flags, the C++ m4_refcxx(DbEnv) and m4_refcxx(Db) classes
+can throw exceptions from their constructors.  For example, this can
+happen if invalid parameters are passed in or the underlying C
+structures could not be created.  If the objects are created in an
+environment that is not configured for exceptions (that is, the
+m4_ref(DB_CXX_NO_EXCEPTIONS) flag is specified), errors from the
+constructor will be returned when the handle's open method is called.])
+
+m4_p([dnl
+In addition, the behavior of the m4_refcxx(DbEnv) and m4_refcxx(Db)
+destructors has changed to simplify exception handling in applications.
+The destructors will now close the handle if the handle's close method
+was not called prior to the object being destroyed.  The return value
+of the call is discarded, and no exceptions will be thrown.
+Applications should call the close method in normal situations so any
+errors while closing can be handled by the application.])
+
+m4_p([dnl
+This change allows applications to be structured as follows:])
+
+m4_indent([dnl
+try {
+	DbEnv env(0);
+	env.open(/* ... */);
+	Db db(&env, 0);
+	db.open(/* ... */);
+	/* ... */
+	db.close(0);
+	env.close(0);
+} catch (DbException &dbe) {
+	// Handle the exception, the handles have already been closed.
+}])
+
+m4_page_footer

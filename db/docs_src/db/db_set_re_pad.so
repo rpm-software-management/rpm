@@ -1,0 +1,48 @@
+m4_comment([$Id: db_set_re_pad.so,v 10.37 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_set_re_pad, dbh_get_re_pad])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_re_pad),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_re_pad(DB *db, int re_pad);
+m4_blank
+int
+DB-__GT__get_re_pad(DB *db, int *re_padp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::set_re_pad(int re_pad);
+m4_blank
+int
+Db::get_re_pad(int *re_padp);
+]))
+
+m4_p([dnl
+Set the padding character for short, fixed-length records for the Queue
+and Recno access methods.])
+
+m4_p([dnl
+If no pad character is specified, m4_htmlquote(space) characters (that
+is, ASCII 0x20) are used for padding.])
+
+m4_scope_db(dbh_set_re_pad)
+
+m4_when_dbopen(dbh_set_re_pad, ignored)
+
+m4_return(dbh_set_re_pad, std)
+
+m4_parambegin
+m4_param(re_pad, [dnl
+The m4_arg(re_pad) parameter is the pad character for fixed-length
+records for the Queue and Recno access methods.])
+m4_paramend
+
+m4_err(dbh_set_re_pad,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_pf_getter(dbh_get_re_pad, pad character,, re_padp)
+
+m4_seealso(Db)
+m4_page_footer

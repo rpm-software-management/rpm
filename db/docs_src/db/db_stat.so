@@ -1,0 +1,259 @@
+m4_comment([$Id: db_stat.so,v 10.92 2007/06/22 16:57:15 bostic Exp $])
+
+define(M4PAGELOCAL, [dbh_stat, dbh_stat_print, DB_FAST_STAT])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__stat(DB *db, DB_TXN *txnid, void *sp, u_int32_t flags);
+m4_blank
+int
+DB-__GT__stat_print(DB *db, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::stat(DbTxn *txnid, void *sp, u_int32_t flags);
+m4_blank
+int
+Db::stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_stat) creates a statistical structure and copies a
+pointer to it into user-specified memory locations.  Specifically, if
+m4_arg(sp) is non-NULL, a pointer to the statistics for the database are
+copied into the memory location to which it refers.])
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(1)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_FAST_STAT), [dnl
+Return only the values which do not require traversal of the database.
+Among other things, this flag makes it possible for applications to
+request key and record counts without incurring the performance penalty
+of traversing the entire database.])
+
+m4_tag(m4_idef(DB_READ_COMMITTED), [dnl
+Database items read during a transactional call will have degree 2
+isolation.  This ensures the stability of the data items read during the
+stat operation but permits that data to be modified or deleted by other
+transactions prior to the commit of the specified transaction.])
+
+m4_tag(m4_idef(DB_READ_UNCOMMITTED), [dnl
+Database items read during a transactional call will have degree 1
+isolation, including modified but not yet committed data.  Silently
+ignored if the m4_ref(DB_READ_UNCOMMITTED) flag was not specified when
+the underlying database was opened.]) m4_tagend])
+
+m4_param_txn(dbh_stat)
+m4_paramend
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+If the m4_ref(DB_FAST_STAT) flag has not been specified, the
+m4_refT(dbh_stat) will access some of or all the pages in the database,
+incurring a severe performance penalty as well as possibly flushing the
+underlying buffer pool.])
+
+m4_p([dnl
+In the presence of multiple threads or processes accessing an active
+database, the information returned by m4_ref(dbh_stat) may be out-of-date.])
+
+m4_p([dnl
+If the database was not opened read-only and the m4_ref(DB_FAST_STAT)
+flag was not specified, the cached key and record numbers will be
+updated after the statistical information has been gathered.])
+
+m4_when_after_dbopen(dbh_stat)
+
+m4_return(dbh_stat, std)
+
+m4_section([Hash Statistics])
+m4_p([dnl
+In the case of a Hash database, the statistics are stored in a structure
+of type DB_HASH_STAT.  The following fields will be filled in:])
+
+m4_tagbegin
+m4_field(u_int32_t, hash_magic,
+[Magic number that identifies the file as a Hash file.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, hash_version,
+[The version of the Hash database.  Returned if m4_ref(DB_FAST_STAT) is
+set.])
+m4_field(u_int32_t, hash_nkeys,
+[The number of unique keys in the database.  If m4_ref(DB_FAST_STAT) was
+specified the count will be the last saved value unless it has never
+been calculated, in which case it will be 0. Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, hash_ndata,
+[The number of key/data pairs in the database.  If m4_ref(DB_FAST_STAT)
+was specified the count will be the last saved value unless it has never
+been calculated, in which case it will be 0. Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, hash_pagecnt,
+[The number of pages in the database.  Returned if m4_ref(DB_FAST_STAT)
+is set.])
+m4_field(u_int32_t, hash_pagesize,
+[The underlying database page (and bucket) size, in bytes.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, hash_ffactor,
+[The desired fill factor (number of items per bucket) specified at
+database-creation time.  Returned if m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, hash_buckets,
+[The number of hash buckets.  Returned if m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, hash_free,
+[The number of pages on the free list.])
+m4_field(u_int32_t, hash_bfree,
+[The number of bytes free on bucket pages.])
+m4_field(u_int32_t, hash_bigpages,
+[The number of big key/data pages.])
+m4_field(u_int32_t, hash_big_bfree,
+[The number of bytes free on big item pages.])
+m4_field(u_int32_t, hash_overflows,
+[The number of overflow pages (overflow pages are pages that contain items
+that did not fit in the main bucket page).])
+m4_field(u_int32_t, hash_ovfl_free,
+[The number of bytes free on overflow pages.])
+m4_field(u_int32_t, hash_dup,
+[The number of duplicate pages.])
+m4_field(u_int32_t, hash_dup_free,
+[The number of bytes free on duplicate pages.])
+m4_tagend
+
+m4_section([Btree and Recno Statistics])
+m4_p([dnl
+In the case of a Btree or Recno database, the statistics are stored in
+a structure of type DB_BTREE_STAT.  The following fields will be filled
+in:])
+
+m4_tagbegin
+m4_field(u_int32_t, bt_magic,
+[Magic number that identifies the file as a Btree database.  Returned
+if m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, bt_version,
+[The version of the Btree database.  Returned if m4_ref(DB_FAST_STAT)
+is set.])
+m4_field(u_int32_t, bt_nkeys,
+[For the Btree Access Method, the number of keys in the database.  If
+the m4_ref(DB_FAST_STAT) flag is not specified or the database was
+configured to support record numbers (see m4_ref(DB_RECNUM)), the count
+will be exact.  Otherwise, the count will be the last saved value unless
+it has never been calculated, in which case it will be 0.
+m4_p([dnl
+For the Recno Access Method, the number of records in the database.  If
+the database was configured with mutable record numbers (see
+m4_ref(DB_RENUMBER)), the count will be exact.  Otherwise, if the
+m4_ref(DB_FAST_STAT) flag is specified the count will be exact but will
+include deleted and implicitly created records; if the
+m4_ref(DB_FAST_STAT) flag is not specified, the count will be exact and
+will not include deleted or implicitly created records.])
+m4_p([dnl
+Returned if m4_ref(DB_FAST_STAT) is set.])])
+m4_field(u_int32_t, bt_ndata,
+[For the Btree Access Method, the number of key/data pairs in the
+database.  If the m4_ref(DB_FAST_STAT) flag is not specified, the count
+will be exact.  Otherwise, the count will be the last saved value unless
+it has never been calculated, in which case it will be 0.
+m4_p([dnl
+For the Recno Access Method, the number of records in the database.  If
+the database was configured with mutable record numbers (see
+m4_ref(DB_RENUMBER)), the count will be exact.  Otherwise, if the
+m4_ref(DB_FAST_STAT) flag is specified the count will be exact but will
+include deleted and implicitly created records; if the
+m4_ref(DB_FAST_STAT) flag is not specified, the count will be exact and
+will not include deleted or implicitly created records.])
+m4_p([dnl
+m4_field(u_int32_t, bt_pagecnt,
+[The number of pages in the database.  Returned if m4_ref(DB_FAST_STAT)
+is set.])
+Returned if m4_ref(DB_FAST_STAT) is set.])])
+m4_field(u_int32_t, bt_pagesize,
+[The underlying database page size, in bytes.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, bt_minkey,
+[The minimum keys per page.  Returned if m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, bt_re_len,
+[The length of fixed-length records.  Returned if m4_ref(DB_FAST_STAT)
+is set.])
+m4_field(u_int32_t, bt_re_pad,
+[The padding byte value for fixed-length records.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, bt_levels,
+[Number of levels in the database.])
+m4_field(u_int32_t, bt_int_pg,
+[Number of database internal pages.])
+m4_field(u_int32_t, bt_leaf_pg,
+[Number of database leaf pages.])
+m4_field(u_int32_t, bt_dup_pg,
+[Number of database duplicate pages.])
+m4_field(u_int32_t, bt_over_pg,
+[Number of database overflow pages.])
+m4_field(u_int32_t, bt_empty_pg,
+[Number of empty database pages.])
+m4_field(u_int32_t, bt_free,
+[Number of pages on the free list.])
+m4_field(u_int32_t, bt_int_pgfree,
+[Number of bytes free in database internal pages.])
+m4_field(u_int32_t, bt_leaf_pgfree,
+[Number of bytes free in database leaf pages.])
+m4_field(u_int32_t, bt_dup_pgfree,
+[Number of bytes free in database duplicate pages.])
+m4_field(u_int32_t, bt_over_pgfree,
+[Number of bytes free in database overflow pages.])
+m4_tagend
+
+m4_section([Queue Statistics])
+m4_p([dnl
+In the case of a Queue database, the statistics are stored in a
+structure of type DB_QUEUE_STAT.  The following fields will be filled
+in:])
+
+m4_tagbegin
+m4_field(u_int32_t, qs_magic,
+[Magic number that identifies the file as a Queue file.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_version,
+[The version of the Queue file type.  Returned if m4_ref(DB_FAST_STAT)
+is set.])
+m4_field(u_int32_t, qs_nkeys,
+[The number of records in the database.  If m4_ref(DB_FAST_STAT) was
+specified the count will be the last saved value unless it has never
+been calculated, in which case it will be 0.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_ndata,
+[The number of records in the database.  If m4_ref(DB_FAST_STAT) was
+specified the count will be the last saved value unless it has never
+been calculated, in which case it will be 0.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_pagesize,
+[Underlying database page size, in bytes.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_extentsize,
+[Underlying database extent size, in pages.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_pages,
+[Number of pages in the database.])
+m4_field(u_int32_t, qs_re_len,
+[The length of the records.  Returned if m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_re_pad,
+[The padding byte value for the records.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_pgfree,
+[Number of bytes free in database pages.])
+m4_field(u_int32_t, qs_first_recno,
+[First undeleted record in the database.  Returned if
+m4_ref(DB_FAST_STAT) is set.])
+m4_field(u_int32_t, qs_cur_recno,
+[Next available record number.  Returned if m4_ref(DB_FAST_STAT) is set.])
+m4_tagend
+
+m4_err(dbh_stat, repinval, einval)
+
+m4_stat_print(dbh_stat_print, database, dbh_stat)
+
+m4_seealso(Db)
+m4_page_footer

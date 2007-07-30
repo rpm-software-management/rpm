@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_open.c,v 12.12 2006/08/24 14:44:44 bostic Exp $
+ * $Id: bt_open.c,v 12.18 2007/05/17 15:14:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -329,12 +328,12 @@ __bam_read_root(dbp, txn, base_pgno, flags)
 
 err:	/* Put the metadata page back. */
 	if (meta != NULL &&
-	    (t_ret = __memp_fput(mpf, meta, 0)) != 0 && ret == 0)
+	    (t_ret = __memp_fput(mpf, meta, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __LPUT(dbc, metalock)) != 0 && ret == 0)
 		ret = t_ret;
 
-	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+	if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
 }
@@ -445,7 +444,7 @@ __bam_new_file(dbp, txn, fhp, name)
 		if ((ret =
 		    __db_log_page(dbp, txn, &lsn, pgno, (PAGE *)meta)) != 0)
 			goto err;
-		ret = __memp_fput(mpf, meta, 0);
+		ret = __memp_fput(mpf, meta, dbp->priority);
 		meta = NULL;
 		if (ret != 0)
 			goto err;
@@ -461,7 +460,7 @@ __bam_new_file(dbp, txn, fhp, name)
 		if ((ret =
 		    __db_log_page(dbp, txn, &root->lsn, pgno, root)) != 0)
 			goto err;
-		ret = __memp_fput(mpf, root, 0);
+		ret = __memp_fput(mpf, root, dbp->priority);
 		root = NULL;
 		if (ret != 0)
 			goto err;
@@ -511,10 +510,12 @@ err:	if (buf != NULL)
 		__os_free(dbenv, buf);
 	else {
 		if (meta != NULL &&
-		    (t_ret = __memp_fput(mpf, meta, 0)) != 0 && ret == 0)
+		    (t_ret = __memp_fput(mpf,
+		    meta, dbp->priority)) != 0 && ret == 0)
 			ret = t_ret;
 		if (root != NULL &&
-		    (t_ret = __memp_fput(mpf, root, 0)) != 0 && ret == 0)
+		    (t_ret = __memp_fput(mpf,
+		    root, dbp->priority)) != 0 && ret == 0)
 			ret = t_ret;
 	}
 	return (ret);
@@ -572,6 +573,10 @@ __bam_new_subdb(mdbp, dbp, txn)
 	root->level = LEAFLEVEL;
 
 	if (DBENV_LOGGING(dbenv) &&
+#if !defined(DEBUG_WOP)
+	    txn != NULL &&
+#endif
+
 	    (ret = __bam_root_log(mdbp, txn, &meta->dbmeta.lsn, 0,
 	    meta->dbmeta.pgno, root->pgno, &meta->dbmeta.lsn)) != 0)
 		goto err;
@@ -582,23 +587,25 @@ __bam_new_subdb(mdbp, dbp, txn)
 		goto err;
 
 	/* Release the metadata and root pages. */
-	if ((ret = __memp_fput(mpf, meta, 0)) != 0)
+	if ((ret = __memp_fput(mpf, meta, dbc->priority)) != 0)
 		goto err;
 	meta = NULL;
-	if ((ret = __memp_fput(mpf, root, 0)) != 0)
+	if ((ret = __memp_fput(mpf, root, dbc->priority)) != 0)
 		goto err;
 	root = NULL;
 err:
 	if (meta != NULL)
-		if ((t_ret = __memp_fput(mpf, meta, 0)) != 0 && ret == 0)
+		if ((t_ret = __memp_fput(mpf,
+		meta, dbc->priority)) != 0 && ret == 0)
 			ret = t_ret;
 	if (root != NULL)
-		if ((t_ret = __memp_fput(mpf, root, 0)) != 0 && ret == 0)
+		if ((t_ret = __memp_fput(mpf,
+		root, dbc->priority)) != 0 && ret == 0)
 			ret = t_ret;
 	if ((t_ret = __LPUT(dbc, metalock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (dbc != NULL)
-		if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+		if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 			ret = t_ret;
 	return (ret);
 }

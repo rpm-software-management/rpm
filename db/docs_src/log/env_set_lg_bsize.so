@@ -1,0 +1,68 @@
+m4_comment([$Id: env_set_lg_bsize.so,v 10.36 2006/08/30 10:04:48 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lg_bsize, dbenv_get_lg_bsize])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lg_bsize),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lg_bsize(DB_ENV *dbenv, u_int32_t lg_bsize);
+m4_blank
+int
+DB_ENV-__GT__get_lg_bsize(DB_ENV *dbenv, u_int32_t *lg_bsizep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lg_bsize(u_int32_t lg_bsize);
+m4_blank
+int
+DbEnv::get_lg_bsize(u_int32_t *lg_bsizep);
+]))
+
+m4_p([dnl
+Set the size of the in-memory log buffer, in bytes.])
+
+m4_p([dnl
+When the logging subsystem is configured for on-disk logging, the
+default size of the in-memory log buffer is approximately 32KB.  Log
+information is stored in-memory until the storage space fills up or
+transaction commit forces the information to be flushed to stable
+storage.  In the presence of long-running transactions or transactions
+producing large amounts of data, larger buffer sizes can increase
+throughput.])
+
+m4_p([dnl
+When the logging subsystem is configured for in-memory logging, the
+default size of the in-memory log buffer is 1MB.  Log information is
+stored in-memory until the storage space fills up or transaction abort
+or commit frees up the memory for new transactions.  In the presence of
+long-running transactions or transactions producing large amounts of
+data, the buffer size must be sufficient to hold all log information
+that can accumulate during the longest running transaction.  When
+choosing log buffer and file sizes for in-memory logs, applications
+should ensure the in-memory log buffer size is large enough that no
+transaction will ever span the entire buffer, and avoid a state where
+the in-memory buffer is full and no space can be freed because a
+transaction that started in the first log "file" is still active.])
+
+m4_env_config(dbenv_set_lg_bsize,
+[log buffer size], set_lg_bsize, [the size in bytes])
+
+m4_scope_env(dbenv_set_lg_bsize)
+
+m4_when_envopen(dbenv_set_lg_bsize, ignored)
+
+m4_return(dbenv_set_lg_bsize, std)
+
+m4_parambegin
+m4_param(lg_bsize, [dnl
+The m4_arg(lg_bsize) parameter is the size of the in-memory log buffer,
+in bytes.])
+m4_paramend
+
+m4_err(dbenv_set_lg_bsize, einval)
+
+m4_pf_getter(dbenv_get_lg_bsize, [size of the log buffer, in bytes],, lg_bsizep)
+
+m4_seealso(DbLog)
+m4_page_footer

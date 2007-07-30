@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Using the BIND APIs</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="DBEntry.html" title="Chapter 3. Database Records" />
+    <link rel="up" href="DBEntry.html" title="ChapterÂ 3.Â Database Records" />
     <link rel="previous" href="usingDbt.html" title="Reading and Writing Database Records" />
     <link rel="next" href="dbtJavaUsage.html" title="Database Usage Example" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Using the BIND APIs</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. Database Records</th>
-          <td width="20%" align="right"> <a accesskey="n" href="dbtJavaUsage.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â Database Records</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="dbtJavaUsage.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -161,8 +161,8 @@ Database myDatabase = null;
 
 // Need a key for the put.
 try {
-    String aKey = &quot;myLong&quot;;
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));    
+    String aKey = "myLong";
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));    
 
     // Now build the DatabaseEntry using a TupleBinding
     Long myLong = new Long(123456789l);
@@ -194,8 +194,8 @@ Database myDatabase = null;
 
 try {
     // Need a key for the get
-    String aKey = &quot;myLong&quot;;
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
+    String aKey = "myLong";
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
     
     // Need a DatabaseEntry to hold the associated data.
     DatabaseEntry theData = new DatabaseEntry();
@@ -212,11 +212,11 @@ try {
         // Use the binding to convert the byte array contained in theData
         // to a Long type.
         Long theLong = (Long) myBinding.entryToObject(theData);
-        retKey = new String(theKey.getData(), &quot;UTF-8&quot;);
-        System.out.println(&quot;For key: '&quot; + retKey + &quot;' found Long: '&quot; + 
-                            theLong + &quot;'.&quot;);
+        retKey = new String(theKey.getData(), "UTF-8");
+        System.out.println("For key: '" + retKey + "' found Long: '" + 
+                            theLong + "'.");
     } else {
-        System.out.println(&quot;No record found for key '&quot; + retKey + &quot;'.&quot;);
+        System.out.println("No record found for key '" + retKey + "'.");
     }
 } catch (Exception e) {
     // Exception handling goes here
@@ -247,7 +247,7 @@ try {
       serialization. While this is functionally a correct solution, the result
       is poor space-performance because this causes the class information
       to be stored on every such database record. This information can be quite large
-      and it is redundant &#8212; the class information does not vary for serialized objects of the same type.
+      and it is redundant â€” the class information does not vary for serialized objects of the same type.
       </p>
         <p>
         In other words, directly using serialization to place your objects into byte
@@ -412,13 +412,13 @@ import com.sleepycat.db.DatabaseType;
 ...
 
 // The key data.
-String aKey = &quot;myData&quot;;
+String aKey = "myData";
 
 // The data data
 MyData data2Store = new MyData();
 data2Store.setLong(123456789l);
 data2Store.setDouble(1234.9876543);
-data2Store.setDescription(&quot;A test instance of this class&quot;);
+data2Store.setDescription("A test instance of this class");
 
 try {
     // Open the database that you will use to store your data
@@ -426,13 +426,13 @@ try {
     myDbConfig.setAllowCreate(true);
     myDbConfig.setSortedDuplicates(true);
     myDbConfig.setType(DatabaseType.BTREE);
-    Database myDatabase = new Database(&quot;myDb&quot;, null, myDbConfig);
+    Database myDatabase = new Database("myDb", null, myDbConfig);
 
     // Open the database that you use to store your class information.
     // The db used to store class information does not require duplicates
     // support.
     myDbConfig.setSortedDuplicates(false);
-    Database myClassDb = new Database(&quot;classDb&quot;, null, myDbConfig); 
+    Database myClassDb = new Database("classDb", null, myDbConfig); 
 
     // Instantiate the class catalog
     StoredClassCatalog classCatalog = new StoredClassCatalog(myClassDb);
@@ -442,7 +442,7 @@ try {
                                                  MyData.class);
 
     // Create the DatabaseEntry for the key
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
 
     // Create the DatabaseEntry for the data. Use the EntryBinding object
     // that was just created to populate the DatabaseEntry
@@ -485,17 +485,17 @@ import com.sleepycat.db.LockMode;
 ...
 
 // The key data.
-String aKey = &quot;myData&quot;;
+String aKey = "myData";
 
 try {
     // Open the database that stores your data
     DatabaseConfig myDbConfig = new DatabaseConfig();
     myDbConfig.setAllowCreate(false);
     myDbConfig.setType(DatabaseType.BTREE);
-    Database myDatabase = new Database(&quot;myDb&quot;, null, myDbConfig);
+    Database myDatabase = new Database("myDb", null, myDbConfig);
 
     // Open the database that stores your class information.
-    Database myClassDb = new Database(&quot;classDb&quot;, null, myDbConfig); 
+    Database myClassDb = new Database("classDb", null, myDbConfig); 
 
     // Instantiate the class catalog
     StoredClassCatalog classCatalog = new StoredClassCatalog(myClassDb);
@@ -505,7 +505,7 @@ try {
                                                  MyData.class);
 
     // Create DatabaseEntry objects for the key and data
-    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry theKey = new DatabaseEntry(aKey.getBytes("UTF-8"));
     DatabaseEntry theData = new DatabaseEntry();
 
     // Do the get as normal
@@ -585,7 +585,7 @@ public class MyData2 {
     public MyData2() {
         longData = 0;
         doubleData = new Double(0.0);
-        description = &quot;&quot;;
+        description = "";
     }
 
     public void setLong(long data) {
@@ -724,7 +724,7 @@ TupleBinding keyBinding = new MyTupleBinding();
 MyData2 theKeyData = new MyData2();
 theKeyData.setLong(123456789l);
 theKeyData.setDouble(new Double(12345.6789));
-theKeyData.setString(&quot;My key data&quot;);
+theKeyData.setString("My key data");
 
 DatabaseEntry myKey = new DatabaseEntry();
 
@@ -747,18 +747,18 @@ try {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="usingDbt.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="DBEntry.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="dbtJavaUsage.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="dbtJavaUsage.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Reading and Writing Database Records </td>
+          <td width="40%" align="left" valign="top">Reading and Writing Database RecordsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Database Usage Example</td>
+          <td width="40%" align="right" valign="top">Â Database Usage Example</td>
         </tr>
       </table>
     </div>

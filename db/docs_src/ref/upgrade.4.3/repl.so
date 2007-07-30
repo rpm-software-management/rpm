@@ -1,0 +1,29 @@
+m4_comment([$Id: repl.so,v 1.10 2005/10/19 19:11:22 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: Replication,,
+    upgrade.4.3/enomem, upgrade.4.3/rtc)
+
+m4_p([dnl
+The 4.3 release removes support for logs-only replication clients.  Use
+of the DB_REP_LOGSONLY flag to the m4_ref(rep_start) should be replaced
+with the m4_ref(DB_REP_CLIENT) flag.])
+
+m4_p([dnl
+The 4.3 release adds two new arguments to the m4_refT(rep_elect),
+m4_arg(nvotes) and m4_arg(flags).  The m4_arg(nvotes) argument sets the
+required number of replication group members that must participate in
+an election in order for a master to be declared.  For backward
+compatibility, set the m4_arg(nvotes) argument to 0.  The flags argument
+is currently unused and should be set to 0.  See m4_refT(rep_elect) or
+"Replication Elections" for more information.])
+
+m4_p([dnl
+In the 4.3 release it is no longer necessary to do a database
+environment hot backup to initialize a replication client.  All that is
+needed now is for the client to join the replication group.  m4_db will
+perform an internal backup from the master to the client automatically
+and will run recovery on the client to bring it up to date with the
+master.])
+
+m4_page_footer

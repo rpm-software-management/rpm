@@ -1,0 +1,40 @@
+m4_comment([$Id: set_func_seek.so,v 10.19 2004/09/20 14:29:50 mjc Exp $])
+
+define(M4PAGELOCAL, dbenv_set_func_seek)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_func_seek),
+ifelse(M4API, C_API, [dnl
+int
+db_env_set_func_seek(int (*func_seek)(int fd, off_t offset, int whence));
+]))
+
+m4_p([dnl
+The m4_db library requires the ability to specify that a subsequent read
+from or write to a file will occur at a specific location in that file.])
+
+m4_scope_process(dbenv_set_func_seek)
+
+m4_when_init(dbenv_set_func_seek)
+
+m4_return(dbenv_set_func_seek, std)
+
+m4_parambegin
+m4_param(func_seek, [dnl
+The m4_arg(func_seek) parameter is the function which seeks to a specific
+location in a file.
+m4_p([dnl
+The m4_arg(fd) parameter is an open file descriptor on the file.])
+m4_p([dnl
+The m4_arg(seek) function must cause a subsequent read from or write to
+the file to occur at the byte offset specified by the m4_arg(offset)
+parameter.])
+m4_p([dnl
+The m4_arg(whence) parameter specifies where in the file the byte offset
+is relative to, as described by the m4_posix1_name m4_arg(lseek) system
+call.])
+m4_ret_internal(func_seek)])
+m4_paramend
+
+m4_rtc_seealso
+m4_page_footer

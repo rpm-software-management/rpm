@@ -1,0 +1,45 @@
+m4_comment([$Id: memp_set_clear_len.so,v 10.18 2005/11/30 19:46:21 bostic Exp $])
+
+define(M4PAGELOCAL, [memp_set_clear_len, memp_get_clear_len])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_set_clear_len),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__set_clear_len(DB_MPOOLFILE *mpf, u_int32_t len);
+m4_blank
+int
+DB_MPOOLFILE-__GT__get_clear_len(DB_MPOOLFILE *mpf, u_int32_t *lenp);
+])dnl
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::set(u_int32_t len);
+m4_blank
+int
+DbMpoolFile::get_clear_len(u_int32_t *lenp);
+]))
+
+m4_p([dnl
+The m4_refT(memp_set_clear_len) sets the number of initial bytes in a
+page that should be set to nul when the page is created as a result of
+the m4_ref(DB_MPOOL_CREATE) or m4_ref(DB_MPOOL_NEW) flags being
+specified to m4_ref(memp_fget).  If no clear length is specified, the
+entire page is cleared when it is created.])
+
+m4_scope_mpf(memp_set_clear_len)
+
+m4_when_mpfopen(memp_set_clear_len, error)
+
+m4_return(memp_set_clear_len, std)
+
+m4_parambegin
+m4_param(len, [dnl
+The m4_arg(len) parameter is the number of initial bytes in a page that
+should be set to nul when the page is created.  A value of 0 results in
+the entire page being set to nul bytes.])
+m4_paramend
+
+m4_pf_getter(memp_get_clear_len, bytes to be cleared,, lenp)
+
+m4_seealso(DbMpool)
+m4_page_footer

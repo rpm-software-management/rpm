@@ -1,6 +1,5 @@
-<!--$Id: app.so,v 1.29 2006/08/25 12:55:59 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: app.so,v 1.31 2007/05/17 18:17:18 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -86,6 +85,13 @@ startup rather than trying to reconfigure when the client becomes a
 master).  Obviously, at least one thread of control on each client must
 be configured for replication as messages must be passed between the
 master and the client.</p>
+<p>Any site in a replication group may have its own private
+transactional databases in the environment as well.  A site may
+create a local database by using the <a href="../../api_c/db_set_flags.html#DB_TXN_NOT_DURABLE">DB_TXN_NOT_DURABLE</a>
+flag to the <a href="../../api_c/db_set_flags.html">DB-&gt;set_flags</a>.  The application
+must never create a private database with the same name
+as a database replicated across the entire environment
+as data corruption can result.</p>
 <p>For implementation reasons, all incoming replication messages must be
 processed using the same <a href="../../api_c/env_class.html">DB_ENV</a> handle.  It is not required that
 a single thread of control process all messages, only that all threads
@@ -97,6 +103,6 @@ For Replication Manager applications, this also terminates all network
 connections and background processing threads.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/pri.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/mgr_meth.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

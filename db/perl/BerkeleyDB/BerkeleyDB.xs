@@ -6,7 +6,7 @@
 
  All comments/suggestions/problems are welcome
 
-     Copyright (c) 1997-2006 Paul Marquess. All rights reserved.
+     Copyright (c) 1997-2007 Paul Marquess. All rights reserved.
      This program is free software; you can redistribute it and/or
      modify it under the same terms as Perl itself.
 
@@ -162,12 +162,8 @@ extern "C" {
 
 #ifdef AT_LEAST_DB_3_2
 #    define DB_callback	DB * db,
-#    define getCurrentDB ((BerkeleyDB)db->BackRef) 
-#    define saveCurrentDB(db) 
 #else
 #    define DB_callback
-#    define getCurrentDB CurrentDB
-#    define saveCurrentDB(db) CurrentDB = db
 #endif
 
 #if DB_VERSION_MAJOR > 2
@@ -359,7 +355,7 @@ static void
 hash_delete(char * hash, char * key);
 
 #ifdef TRACE
-#  define Trace(x)	printf x
+#  define Trace(x)	(printf("# "), printf x)
 #else
 #  define Trace(x)
 #endif
@@ -381,6 +377,12 @@ hash_delete(char * hash, char * key);
 #else
 #  define flagSet(bitmask)	((flags & DB_OPFLAGS_MASK) == (bitmask))
 #endif
+
+#ifdef DB_GET_BOTH_RANGE
+#  define flagSetBoth() (flagSet(DB_GET_BOTH) || flagSet(DB_GET_BOTH_RANGE))
+#else
+#  define flagSetBoth() (flagSet(DB_GET_BOTH))
+#endif                            
 
 #ifndef AT_LEAST_DB_4
 typedef	int db_timeout_t ;
@@ -535,12 +537,39 @@ typedef	int db_timeout_t ;
 
 #define isSTDOUT_ERR(f) ((f) == stdout || (f) == stderr)
 
-/* Internal Global Data */
-static db_recno_t Value ;
-static db_recno_t zero = 0 ;
-static BerkeleyDB	CurrentDB ;
 
-static DBTKEY	empty ;
+/* Internal Global Data */
+#define MY_CXT_KEY "BerkeleyDB::_guts" XS_VERSION
+
+typedef struct {
+    db_recno_t	x_Value; 
+    db_recno_t	x_zero;
+    DBTKEY	x_empty;
+#ifndef AT_LEAST_DB_3_2
+    BerkeleyDB	x_CurrentDB;
+#endif
+} my_cxt_t;
+
+START_MY_CXT
+
+#define Value		(MY_CXT.x_Value)
+#define zero		(MY_CXT.x_zero)
+#define empty		(MY_CXT.x_empty)                             
+
+#ifdef AT_LEAST_DB_3_2
+#  define CurrentDB ((BerkeleyDB)db->BackRef) 
+#else
+#  define CurrentDB	(MY_CXT.x_CurrentDB)
+#endif
+
+#ifdef AT_LEAST_DB_3_2
+#    define getCurrentDB ((BerkeleyDB)db->BackRef) 
+#    define saveCurrentDB(db) 
+#else
+#    define getCurrentDB (MY_CXT.x_CurrentDB)
+#    define saveCurrentDB(db) (MY_CXT.x_CurrentDB) = db
+#endif
+
 #if 0
 static char	ErrBuff[1000] ;
 #endif
@@ -917,12 +946,17 @@ GetInternalObject(SV * sv)
 static int
 btree_compare(DB_callback const DBT * key1, const DBT * key2 )
 {
+#ifdef dTHX
+    dTHX;
+#endif    
     dSP ;
+    dMY_CXT ;    
     char * data1, * data2 ;
     int retval ;
     int count ;
-    BerkeleyDB	keepDB = CurrentDB ;
+    /* BerkeleyDB	keepDB = getCurrentDB ; */
 
+    Trace(("In btree_compare \n")) ;
     data1 = (char*) key1->data ;
     data2 = (char*) key2->data ;
 
@@ -939,6 +973,8 @@ btree_compare(DB_callback const DBT * key1, const DBT * key2 )
 
     ENTER ;
     SAVETMPS;
+
+    /* SAVESPTR(CurrentDB); */
 
     PUSHMARK(SP) ;
     EXTEND(SP,2) ;
@@ -958,7 +994,7 @@ btree_compare(DB_callback const DBT * key1, const DBT * key2 )
     PUTBACK ;
     FREETMPS ;
     LEAVE ;
-    CurrentDB = keepDB ;
+    /* CurrentDB = keepDB ; */
     return (retval) ;
 
 }
@@ -966,15 +1002,19 @@ btree_compare(DB_callback const DBT * key1, const DBT * key2 )
 static int
 dup_compare(DB_callback const DBT * key1, const DBT * key2 )
 {
+#ifdef dTHX
+    dTHX;
+#endif    
     dSP ;
+    dMY_CXT ;    
     char * data1, * data2 ;
     int retval ;
     int count ;
-    BerkeleyDB	keepDB = CurrentDB ;
+    /* BerkeleyDB	keepDB = CurrentDB ; */
 
     Trace(("In dup_compare \n")) ;
     if (!getCurrentDB)
-	softCrash("Internal Error - No CurrentDB in dup_compare") ;
+	    softCrash("Internal Error - No CurrentDB in dup_compare") ;
     if (getCurrentDB->dup_compare == NULL)
 
 
@@ -1015,7 +1055,7 @@ dup_compare(DB_callback const DBT * key1, const DBT * key2 )
     PUTBACK ;
     FREETMPS ;
     LEAVE ;
-    CurrentDB = keepDB ;
+    /* CurrentDB = keepDB ; */
     return (retval) ;
 
 }
@@ -1023,12 +1063,17 @@ dup_compare(DB_callback const DBT * key1, const DBT * key2 )
 static size_t
 btree_prefix(DB_callback const DBT * key1, const DBT * key2 )
 {
+#ifdef dTHX
+    dTHX;
+#endif    
     dSP ;
+    dMY_CXT ;    
     char * data1, * data2 ;
     int retval ;
     int count ;
-    BerkeleyDB	keepDB = CurrentDB ;
+    /* BerkeleyDB	keepDB = CurrentDB ; */
 
+    Trace(("In btree_prefix \n")) ;
     data1 = (char*) key1->data ;
     data2 = (char*) key2->data ;
 
@@ -1064,7 +1109,7 @@ btree_prefix(DB_callback const DBT * key1, const DBT * key2 )
     PUTBACK ;
     FREETMPS ;
     LEAVE ;
-    CurrentDB = keepDB ;
+    /* CurrentDB = keepDB ; */
 
     return (retval) ;
 }
@@ -1072,11 +1117,16 @@ btree_prefix(DB_callback const DBT * key1, const DBT * key2 )
 static u_int32_t
 hash_cb(DB_callback const void * data, u_int32_t size)
 {
+#ifdef dTHX
+    dTHX;
+#endif    
     dSP ;
+    dMY_CXT ;    
     int retval ;
     int count ;
-    BerkeleyDB	keepDB = CurrentDB ;
+    /* BerkeleyDB	keepDB = CurrentDB ; */
 
+    Trace(("In hash_cb \n")) ;
 #ifndef newSVpvn
     if (size == 0)
         data = "" ;
@@ -1102,7 +1152,7 @@ hash_cb(DB_callback const void * data, u_int32_t size)
     PUTBACK ;
     FREETMPS ;
     LEAVE ;
-    CurrentDB = keepDB ;
+    /* CurrentDB = keepDB ; */
 
     return (retval) ;
 }
@@ -1112,7 +1162,11 @@ hash_cb(DB_callback const void * data, u_int32_t size)
 static int
 associate_cb(DB_callback const DBT * pkey, const DBT * pdata, DBT * skey)
 {
+#ifdef dTHX
+    dTHX;
+#endif    
     dSP ;
+    dMY_CXT ;    
     char * pk_dat, * pd_dat ;
     /* char *sk_dat ; */
     int retval ;
@@ -1188,7 +1242,11 @@ associate_cb(DB_callback const DBT * pkey, const DBT * pdata, DBT * skey)
 static int
 associate_cb_recno(DB_callback const DBT * pkey, const DBT * pdata, DBT * skey)
 {
+#ifdef dTHX
+    dTHX;
+#endif    
     dSP ;
+    dMY_CXT ;    
     char * pk_dat, * pd_dat ;
     /* char *sk_dat ; */
     int retval ;
@@ -1196,7 +1254,7 @@ associate_cb_recno(DB_callback const DBT * pkey, const DBT * pdata, DBT * skey)
     SV * skey_SV ;
     STRLEN skey_len;
     char * skey_ptr ;
-    db_recno_t Value;
+    /* db_recno_t Value; */
 
     Trace(("In associate_cb_recno \n")) ;
     if (getCurrentDB->associated == NULL){
@@ -1268,6 +1326,7 @@ db_errcall_cb(const DB_ENV* dbenv, const char * db_errpfx, const char * buffer)
 db_errcall_cb(const char * db_errpfx, char * buffer)
 #endif
 {
+    Trace(("In errcall_cb \n")) ;
 #if 0
 
     if (db_errpfx == NULL)
@@ -1336,6 +1395,7 @@ hv_store_uv(HV * hash, char * key, UV value)
 static void
 GetKey(BerkeleyDB_type * db, SV * sv, DBTKEY * key)
 {
+    dMY_CXT ;    
     if (db->recno_or_queue) {
         Value = GetRecnoKey(db, SvIV(sv)) ; 
         key->data = & Value; 
@@ -1369,11 +1429,11 @@ my_db_open(
     DB *	dbp ;
     int		Status ;
     DB_TXN* 	txnid = NULL ;
+    dMY_CXT;
 
     Trace(("_db_open(dbenv[%p] ref_dbenv [%p] file[%s] subname [%s] type[%d] flags[%d] mode[%d]\n",
 		dbenv, ref_dbenv, file, subname, type, flags, mode)) ;
 
-    CurrentDB = db ;
     
     if (dbenv)
 	env = dbenv->Env ;
@@ -1394,7 +1454,12 @@ my_db_open(
 	        softCrash("-Encrypt needs Berkeley DB 4.x or better") ;
 #endif /* ! AT_LEAST_DB_4_1 */
 
+#ifndef AT_LEAST_DB_3_2
+    CurrentDB = db ;
+#endif
+
 #if DB_VERSION_MAJOR > 2
+    Trace(("creating\n"));
     Status = db_create(&dbp, env, 0) ;
     Trace(("db_create returned %s\n", my_db_strerror(Status))) ;
     if (Status)
@@ -1496,6 +1561,7 @@ my_db_open(
             return RETVAL ;
     }
 
+
     if (info->dup_compare) {
         Status = dbp->set_dup_compare(dbp, info->dup_compare) ;
 	Trace(("set_dup_compare [%d] returned %s\n",
@@ -1560,6 +1626,7 @@ my_db_open(
     if (! file)
         flags |= DB_CREATE;
 
+	Trace(("db_open'ing\n"));
 
 #ifdef AT_LEAST_DB_4_1
     if ((Status = (dbp->open)(dbp, txnid, file, subname, type, flags, mode)) == 0) {
@@ -1568,7 +1635,9 @@ my_db_open(
 #endif /* AT_LEAST_DB_4_1 */
 #else /* DB_VERSION_MAJOR == 2 */
     if ((Status = db_open(file, type, flags, mode, env, info, &dbp)) == 0) {
+        CurrentDB = db ;
 #endif /* DB_VERSION_MAJOR == 2 */
+
 
 	Trace(("db_opened ok\n"));
 	RETVAL = db ;
@@ -1606,6 +1675,7 @@ my_db_open(
         Trace(("db open returned %s\n", my_db_strerror(Status))) ;
     }
 
+    Trace(("End of _db_open\n"));
     return RETVAL ;
 }
 
@@ -1622,6 +1692,8 @@ env_db_version(maj, min, patch)
 	int  maj
 	int  min
 	int  patch
+	PREINIT:
+	  dMY_CXT;
 	OUTPUT:
 	  RETVAL
 	  maj
@@ -1638,6 +1710,8 @@ db_value_set(value, which)
 DualType
 _db_remove(ref)
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 #if DB_VERSION_MAJOR == 2
@@ -1682,6 +1756,8 @@ _db_remove(ref)
 DualType
 _db_verify(ref)
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 #ifndef AT_LEAST_DB_3_1
@@ -1728,6 +1804,8 @@ _db_verify(ref)
 DualType
 _db_rename(ref)
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 #ifndef AT_LEAST_DB_3_1
@@ -1777,6 +1855,8 @@ MODULE = BerkeleyDB::Env		PACKAGE = BerkeleyDB::Env PREFIX = env_
 BerkeleyDB::Env::Raw
 create(flags=0)
 	u_int32_t flags
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 #ifndef AT_LEAST_DB_4_1
@@ -1807,6 +1887,8 @@ open(env, db_home=NULL, flags=0, mode=0777)
 	char * db_home
 	u_int32_t flags
 	int mode
+	PREINIT:
+	  dMY_CXT;
     CODE:
 #ifndef AT_LEAST_DB_4_1
 	    softCrash("$env->create needs Berkeley DB 4.1 or better") ;
@@ -1820,6 +1902,8 @@ open(env, db_home=NULL, flags=0, mode=0777)
 bool
 cds_enabled(env)
 	BerkeleyDB::Env env
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	    RETVAL = env->cds_enabled ;
 	OUTPUT:
@@ -1831,6 +1915,8 @@ set_encrypt(env, passwd, flags)
 	BerkeleyDB::Env env
 	const char * passwd
 	u_int32_t flags
+	PREINIT:
+	  dMY_CXT;
     CODE:
 #ifndef AT_LEAST_DB_4_1
 	    softCrash("$env->set_encrypt needs Berkeley DB 4.1 or better") ;
@@ -1850,6 +1936,8 @@ _db_appinit(self, ref, errfile=NULL)
 	char *		self
 	SV * 		ref
 	SV * 		errfile 
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    HV *	hash ;
@@ -2083,17 +2171,23 @@ _db_appinit(self, ref, errfile=NULL)
 DB_ENV*
 DB_ENV(env)
 	BerkeleyDB::Env		env
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	    if (env->active)
 	        RETVAL = env->Env ;
 	    else
 	        RETVAL = NULL;
+	OUTPUT:
+        RETVAL 
 
 
 void
 log_archive(env, flags=0)
 	u_int32_t		flags
 	BerkeleyDB::Env		env
+	PREINIT:
+	  dMY_CXT;
 	PPCODE:
 	{
 	  char ** list;
@@ -2131,6 +2225,8 @@ _txn_begin(env, pid=NULL, flags=0)
 	u_int32_t		flags
 	BerkeleyDB::Env		env
 	BerkeleyDB::Txn		pid
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    DB_TXN *txn ;
@@ -2187,11 +2283,15 @@ env_txn_checkpoint(env, kbyte, min, flags=0)
 	long			kbyte
 	long			min
 	u_int32_t		flags
+	PREINIT:
+	  dMY_CXT;
 
 HV *
 txn_stat(env)
 	BerkeleyDB::Env		env
 	HV *			RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    DB_TXN_STAT *	stat ;
@@ -2232,6 +2332,8 @@ txn_stat(env)
 void
 printEnv(env)
         BerkeleyDB::Env  env
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Environment(env->active) ;
 	CODE:
@@ -2261,6 +2363,8 @@ SV *
 errPrefix(env, prefix)
         BerkeleyDB::Env  env
 	SV * 		 prefix
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Environment(env->active) ;
 	CODE:
@@ -2285,6 +2389,8 @@ errPrefix(env, prefix)
 DualType
 status(env)
         BerkeleyDB::Env 	env
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	    RETVAL =  env->Status ;
 	OUTPUT:
@@ -2295,6 +2401,8 @@ status(env)
 DualType
 db_appexit(env)
         BerkeleyDB::Env 	env
+	PREINIT:
+	  dMY_CXT;
 	ALIAS:	close =1
 	INIT:
 	    ckActive_Environment(env->active) ;
@@ -2319,6 +2427,8 @@ void
 _DESTROY(env)
         BerkeleyDB::Env  env
 	int RETVAL = 0 ;
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	  Trace(("In BerkeleyDB::Env::DESTROY\n"));
 	  Trace(("    env %ld Env %ld dirty %d\n", env, &env->Env, PL_dirty)) ;
@@ -2342,6 +2452,8 @@ _DESTROY(env)
 BerkeleyDB::TxnMgr::Raw
 _TxnMgr(env)
         BerkeleyDB::Env  env
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Environment(env->active) ;
 	    if (!env->txn_enabled)
@@ -2357,6 +2469,8 @@ int
 get_shm_key(env, id)
         BerkeleyDB::Env  env
 	long  		 id = NO_INIT
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2374,6 +2488,8 @@ int
 set_lg_dir(env, dir)
         BerkeleyDB::Env  env
 	char *		 dir
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2389,6 +2505,8 @@ int
 set_lg_bsize(env, bsize)
         BerkeleyDB::Env  env
 	u_int32_t	 bsize
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2404,6 +2522,8 @@ int
 set_lg_max(env, lg_max)
         BerkeleyDB::Env  env
 	u_int32_t	 lg_max
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2419,6 +2539,8 @@ int
 set_data_dir(env, dir)
         BerkeleyDB::Env  env
 	char *		 dir
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2435,6 +2557,8 @@ int
 set_tmp_dir(env, dir)
         BerkeleyDB::Env  env
 	char *		 dir
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2450,6 +2574,8 @@ int
 set_mutexlocks(env, do_lock)
         BerkeleyDB::Env  env
 	int 		 do_lock
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2474,6 +2600,8 @@ set_verbose(env, which, onoff)
         BerkeleyDB::Env  env
 	u_int32_t	 which
 	int	 	 onoff
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2490,6 +2618,8 @@ set_flags(env, flags, onoff)
         BerkeleyDB::Env  env
 	u_int32_t	 flags
 	int	 	 onoff
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2506,6 +2636,8 @@ lsn_reset(env, file, flags)
         BerkeleyDB::Env  env
 	char*       file
 	u_int32_t	 flags
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2522,6 +2654,8 @@ set_timeout(env, timeout, flags=0)
         BerkeleyDB::Env  env
 	db_timeout_t	 timeout
 	u_int32_t	 flags
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2538,6 +2672,8 @@ get_timeout(env, timeout, flags=0)
         BerkeleyDB::Env  env
 	db_timeout_t	 timeout = NO_INIT
 	u_int32_t	 flags
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(env->active) ;
 	CODE:
@@ -2555,11 +2691,15 @@ MODULE = BerkeleyDB::Term		PACKAGE = BerkeleyDB::Term
 
 void
 close_everything()
+	PREINIT:
+	  dMY_CXT;
 
 #define safeCroak(string)	softCrash(string)
 void
 safeCroak(string)
 	char * string
+	PREINIT:
+	  dMY_CXT;
 
 MODULE = BerkeleyDB::Hash	PACKAGE = BerkeleyDB::Hash	PREFIX = hash_
 
@@ -2567,6 +2707,8 @@ BerkeleyDB::Hash::Raw
 _db_open_hash(self, ref)
 	char *		self
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    HV *		hash ;
@@ -2629,6 +2771,8 @@ db_stat(db, flags=0)
 	int			flags
 	BerkeleyDB::Common	db
 	HV *			RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	CODE:
@@ -2686,6 +2830,8 @@ MODULE = BerkeleyDB::Unknown	PACKAGE = BerkeleyDB::Unknown	PREFIX = hash_
 void
 _db_open_unknown(ref)
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	PPCODE:
 	{
 	    HV *		hash ;
@@ -2740,6 +2886,8 @@ BerkeleyDB::Btree::Raw
 _db_open_btree(self, ref)
 	char *		self
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    HV *		hash ;
@@ -2808,6 +2956,8 @@ db_stat(db, flags=0)
 	int			flags
 	BerkeleyDB::Common	db
 	HV *			RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	CODE:
@@ -2880,6 +3030,8 @@ BerkeleyDB::Recno::Raw
 _db_open_recno(self, ref)
 	char *		self
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    HV *		hash ;
@@ -2945,6 +3097,8 @@ BerkeleyDB::Queue::Raw
 _db_open_queue(self, ref)
 	char *		self
 	SV * 		ref
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 #ifndef AT_LEAST_DB_3
@@ -3009,6 +3163,8 @@ db_stat(db, flags=0)
 	int			flags
 	BerkeleyDB::Common	db
 	HV *			RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	CODE:
@@ -3065,6 +3221,8 @@ DualType
 db_close(db,flags=0)
 	int 			flags
         BerkeleyDB::Common 	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	    saveCurrentDB(db) ;
@@ -3090,6 +3248,8 @@ db_close(db,flags=0)
 void
 dab__DESTROY(db)
 	BerkeleyDB::Common	db
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	  saveCurrentDB(db) ;
 	  Trace(("In BerkeleyDB::Common::_DESTROY db %d dirty=%d\n", db, PL_dirty)) ;
@@ -3106,6 +3266,8 @@ _db_cursor(db, flags=0)
 	u_int32_t		flags
         BerkeleyDB::Common 	db
         BerkeleyDB::Cursor 	RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	ALIAS: __db_write_cursor = 1
 	INIT:
 	    ckActive_Database(db->active) ;
@@ -3167,6 +3329,8 @@ _db_join(db, cursors, flags=0)
         BerkeleyDB::Common 	db
 	AV *			cursors
         BerkeleyDB::Cursor 	RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	CODE:
@@ -3238,6 +3402,8 @@ _db_join(db, cursors, flags=0)
 int
 ArrayOffset(db)
         BerkeleyDB::Common 	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	CODE:
@@ -3253,6 +3419,8 @@ ArrayOffset(db)
 bool
 cds_enabled(db)
         BerkeleyDB::Common 	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	CODE:
@@ -3265,6 +3433,8 @@ cds_enabled(db)
 int
 type(db)
         BerkeleyDB::Common 	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	CODE:
@@ -3275,6 +3445,8 @@ type(db)
 int
 byteswapped(db)
         BerkeleyDB::Common 	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	CODE:
@@ -3297,6 +3469,8 @@ byteswapped(db)
 DualType
 status(db)
         BerkeleyDB::Common 	db
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	    RETVAL =  db->Status ;
 	OUTPUT:
@@ -3361,6 +3535,8 @@ partial_set(db, offset, length)
         BerkeleyDB::Common 	db
 	u_int32_t		offset
 	u_int32_t		length
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	PPCODE:
@@ -3377,6 +3553,8 @@ partial_set(db, offset, length)
 void
 partial_clear(db)
         BerkeleyDB::Common 	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Database(db->active) ;
 	PPCODE:
@@ -3397,6 +3575,8 @@ db_del(db, key, flags=0)
 	u_int		flags
 	BerkeleyDB::Common	db
 	DBTKEY		key
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    Trace(("db_del db[%p] in [%p] txn[%p] key[%.*s] flags[%d]\n", db->dbp, db, db->txn, key.size, key.data, flags)) ;
 	    ckActive_Database(db->active) ;
@@ -3420,6 +3600,8 @@ db_get(db, key, data, flags=0)
 	BerkeleyDB::Common	db
 	DBTKEY_B	key
 	DBT_OPT		data
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	  ckActive_Database(db->active) ;
 	  saveCurrentDB(db) ;
@@ -3441,6 +3623,8 @@ db_pget(db, key, pkey, data, flags=0)
 	DBTKEY_B	key
 	DBTKEY_Bpr	pkey = NO_INIT
 	DBT_OPT		data
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 #ifndef AT_LEAST_DB_3_3
           softCrash("db_pget needs at least Berkeley DB 3.3");
@@ -3467,6 +3651,8 @@ db_put(db, key, data, flags=0)
 	BerkeleyDB::Common	db
 	DBTKEY			key
 	DBT			data
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	  ckActive_Database(db->active) ;
 	  saveCurrentDB(db) ;
@@ -3488,6 +3674,8 @@ db_key_range(db, key, less, equal, greater, flags=0)
 	double          less = 0.0 ;
 	double          equal = 0.0 ;
 	double          greater = 0.0 ;
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 #ifndef AT_LEAST_DB_3_1
@@ -3516,6 +3704,8 @@ db_key_range(db, key, less, equal, greater, flags=0)
 int
 db_fd(db)
 	BerkeleyDB::Common	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	CODE:
@@ -3530,6 +3720,8 @@ DualType
 db_sync(db, flags=0)
 	u_int			flags
 	BerkeleyDB::Common	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	  saveCurrentDB(db) ;
@@ -3538,6 +3730,8 @@ void
 _Txn(db, txn=NULL)
         BerkeleyDB::Common      db
         BerkeleyDB::Txn         txn
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	CODE:
@@ -3559,6 +3753,8 @@ truncate(db, countp, flags=0)
 	BerkeleyDB::Common	db
 	u_int32_t		countp
 	u_int32_t		flags
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	CODE:
@@ -3585,6 +3781,8 @@ associate(db, secondary, callback, flags=0)
 	BerkeleyDB::Common	secondary
 	SV*			callback
 	u_int32_t		flags
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  ckActive_Database(db->active) ;
 	CODE:
@@ -3607,6 +3805,8 @@ associate(db, secondary, callback, flags=0)
 
 DualType
 compact(db, start=NULL, stop=NULL, c_data=NULL, flags=0, end=NULL)
+	PREINIT:
+	  dMY_CXT;
     PREINIT:
         DBTKEY	    end_key;
     INPUT:
@@ -3678,6 +3878,8 @@ _c_dup(db, flags=0)
 	u_int32_t		flags
     	BerkeleyDB::Cursor	db
         BerkeleyDB::Cursor 	RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    saveCurrentDB(db->parent_db);
 	    ckActive_Database(db->active) ;
@@ -3731,6 +3933,8 @@ _c_dup(db, flags=0)
 DualType
 _c_close(db)
     BerkeleyDB::Cursor	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  saveCurrentDB(db->parent_db);
 	  ckActive_Cursor(db->active) ;
@@ -3747,6 +3951,8 @@ _c_close(db)
 void
 _DESTROY(db)
     BerkeleyDB::Cursor	db
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	  saveCurrentDB(db->parent_db);
 	  Trace(("In BerkeleyDB::Cursor::_DESTROY db %d dirty=%d active=%d\n", db, PL_dirty, db->active));
@@ -3762,6 +3968,8 @@ _DESTROY(db)
 DualType
 status(db)
         BerkeleyDB::Cursor 	db
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	    RETVAL =  db->Status ;
 	OUTPUT:
@@ -3773,6 +3981,8 @@ DualType
 cu_c_del(db, flags=0)
     int			flags
     BerkeleyDB::Cursor	db
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  saveCurrentDB(db->parent_db);
 	  ckActive_Cursor(db->active) ;
@@ -3787,6 +3997,8 @@ cu_c_get(db, key, data, flags=0)
     BerkeleyDB::Cursor	db
     DBTKEY_B		key 
     DBT_B		data 
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  Trace(("c_get db [%p] in [%p] flags [%d]\n", db->dbp, db, flags)) ;
 	  saveCurrentDB(db->parent_db);
@@ -3808,6 +4020,8 @@ cu_c_pget(db, key, pkey, data, flags=0)
     DBTKEY_B		key
     DBTKEY_Bpr		pkey = NO_INIT
     DBT_B		data
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 #ifndef AT_LEAST_DB_3_3
           softCrash("db_c_pget needs at least Berkeley DB 3.3");
@@ -3835,6 +4049,8 @@ cu_c_put(db, key, data, flags=0)
     BerkeleyDB::Cursor	db
     DBTKEY		key
     DBT			data
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	  saveCurrentDB(db->parent_db);
 	  ckActive_Cursor(db->active) ;
@@ -3848,6 +4064,8 @@ cu_c_count(db, count, flags=0)
     int			flags
     BerkeleyDB::Cursor	db
     u_int32_t           count = NO_INIT
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 #ifndef AT_LEAST_DB_3_1
           softCrash("c_count needs at least Berkeley DB 3.1.x");
@@ -3869,6 +4087,8 @@ _txn_begin(txnmgr, pid=NULL, flags=0)
 	u_int32_t		flags
 	BerkeleyDB::TxnMgr	txnmgr
 	BerkeleyDB::Txn		pid
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    DB_TXN *txn ;
@@ -3906,6 +4126,8 @@ _txn_begin(txnmgr, pid=NULL, flags=0)
 DualType
 status(mgr)
         BerkeleyDB::TxnMgr 	mgr
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	    RETVAL =  mgr->env->TxnMgrStatus ;
 	OUTPUT:
@@ -3915,6 +4137,8 @@ status(mgr)
 void
 _DESTROY(mgr)
     BerkeleyDB::TxnMgr	mgr
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	  Trace(("In BerkeleyDB::TxnMgr::DESTROY dirty=%d\n", PL_dirty)) ;
           Safefree(mgr) ;
@@ -3945,11 +4169,15 @@ xx_txn_checkpoint(txnp, kbyte, min, flags=0)
 	long			kbyte
 	long			min
 	u_int32_t		flags
+	PREINIT:
+	  dMY_CXT;
 
 HV *
 txn_stat(txnp)
 	BerkeleyDB::TxnMgr	txnp
 	HV *			RETVAL = NULL ;
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	{
 	    DB_TXN_STAT *	stat ;
@@ -4001,6 +4229,8 @@ MODULE = BerkeleyDB::Txn              PACKAGE = BerkeleyDB::Txn		PREFIX = xx_
 DualType
 status(tid)
         BerkeleyDB::Txn 	tid
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	    RETVAL =  tid->Status ;
 	OUTPUT:
@@ -4011,6 +4241,8 @@ set_timeout(txn, timeout, flags=0)
         BerkeleyDB::Txn txn
 	db_timeout_t	 timeout
 	u_int32_t	 flags
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Transaction(txn->active) ;
 	CODE:
@@ -4026,6 +4258,8 @@ int
 set_tx_max(txn, max)
         BerkeleyDB::Txn txn
 	u_int32_t	 max
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Transaction(txn->active) ;
 	CODE:
@@ -4041,6 +4275,8 @@ int
 get_tx_max(txn, max)
         BerkeleyDB::Txn txn
 	u_int32_t	 max = NO_INIT
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Transaction(txn->active) ;
 	CODE:
@@ -4056,6 +4292,8 @@ get_tx_max(txn, max)
 int
 _DESTROY(tid)
     BerkeleyDB::Txn	tid
+	PREINIT:
+	  dMY_CXT;
 	CODE:
 	  Trace(("In BerkeleyDB::Txn::_DESTROY txn [%d] active [%d] dirty=%d\n", tid->txn, tid->active, PL_dirty)) ;
 	  if (tid->active)
@@ -4091,6 +4329,8 @@ xx_txn_unlink(dir, force, dbenv)
 DualType
 xx_txn_prepare(tid)
 	BerkeleyDB::Txn	tid
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Transaction(tid->active) ;
 
@@ -4107,6 +4347,8 @@ DualType
 _txn_commit(tid, flags=0)
 	u_int32_t	flags
 	BerkeleyDB::Txn	tid
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Transaction(tid->active) ;
 	    hash_delete("BerkeleyDB::Term::Txn", (char *)tid) ;
@@ -4120,6 +4362,8 @@ _txn_commit(tid, flags=0)
 DualType
 _txn_abort(tid)
 	BerkeleyDB::Txn	tid
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Transaction(tid->active) ;
 	    hash_delete("BerkeleyDB::Term::Txn", (char *)tid) ;
@@ -4138,6 +4382,8 @@ DualType
 _txn_discard(tid, flags=0)
 	BerkeleyDB::Txn	tid
 	u_int32_t       flags
+	PREINIT:
+	  dMY_CXT;
 	INIT:
 	    ckActive_Transaction(tid->active) ;
 	    hash_delete("BerkeleyDB::Term::Txn", (char *)tid) ;
@@ -4151,12 +4397,16 @@ _txn_discard(tid, flags=0)
 u_int32_t
 xx_txn_id(tid)
 	BerkeleyDB::Txn	tid
+	PREINIT:
+	  dMY_CXT;
 
 MODULE = BerkeleyDB::_tiedHash        PACKAGE = BerkeleyDB::_tiedHash
 
 int
 FIRSTKEY(db)
         BerkeleyDB::Common         db
+	PREINIT:
+	  dMY_CXT;
         CODE:
         {
             DBTKEY      key ;
@@ -4198,6 +4448,8 @@ int
 NEXTKEY(db, key)
         BerkeleyDB::Common  db
         DBTKEY              key = NO_INIT
+	PREINIT:
+	  dMY_CXT;
         CODE:
         {
             DBT         value ;
@@ -4223,6 +4475,8 @@ MODULE = BerkeleyDB::_tiedArray        PACKAGE = BerkeleyDB::_tiedArray
 I32
 FETCHSIZE(db)
         BerkeleyDB::Common         db
+	PREINIT:
+	  dMY_CXT;
         CODE:
             saveCurrentDB(db) ;
             RETVAL = GetArrayLength(db) ;
@@ -4234,10 +4488,14 @@ MODULE = BerkeleyDB        PACKAGE = BerkeleyDB
 
 BOOT:
   {
+#ifdef dTHX
+    dTHX;
+#endif       
     SV * sv_err = perl_get_sv(ERR_BUFF, GV_ADD|GV_ADDMULTI) ;
     SV * version_sv = perl_get_sv("BerkeleyDB::db_version", GV_ADD|GV_ADDMULTI) ;
     SV * ver_sv = perl_get_sv("BerkeleyDB::db_ver", GV_ADD|GV_ADDMULTI) ;
     int Major, Minor, Patch ;
+    MY_CXT_INIT;
     (void)db_version(&Major, &Minor, &Patch) ;
     /* Check that the versions of db.h and libdb.a are the same */
     if (Major != DB_VERSION_MAJOR || Minor != DB_VERSION_MINOR

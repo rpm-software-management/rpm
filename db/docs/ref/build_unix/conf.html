@@ -1,6 +1,5 @@
-<!--$Id: conf.so,v 10.63 2006/04/07 21:08:34 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: conf.so,v 10.66 2007/04/05 20:36:38 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -61,11 +60,13 @@ be specified when configuring to build production binaries.
 --enable-debug_wop as an argument to configure.  This argument should not
 be specified when configuring to build production binaries.
 <dt><a name="--enable-diagnostic">--enable-diagnostic</a><dd>To build Berkeley DB with run-time debugging checks, enter --enable-diagnostic
-as an argument to configure.  This will cause a number of special checks
-to be performed when Berkeley DB is running.  Applications built using this
-argument should not share database environments with applications built
-without this argument.  This argument should not be specified when
-configuring to build production binaries.
+as an argument to configure.  This causes a number of additional checks
+to be performed when Berkeley DB is running, and also causes some failures to
+trigger process abort rather than returning errors to the application.
+Applications built using this argument should not share database
+environments with applications built without this argument.  This
+argument should not be specified when configuring to build production
+binaries.
 <a name="9"><!--meow--></a>
 <dt><a name="--enable-dump185">--enable-dump185</a><dd>To convert Berkeley DB 1.85 (or earlier) databases to this release of Berkeley DB,
 enter --enable-dump185 as an argument to configure.  This will build the
@@ -87,6 +88,16 @@ location of javac to determine the location of the Java include files
 (for example, jni.h). On some systems, additional include directories
 may be needed to process jni.h; see <a href="flags.html">Changing compile or
 load options</a> for more information.
+<a name="11"><!--meow--></a>
+<dt><a name="--enable-fine_grained_lock_manager">--enable-fine_grained_lock_manager</a><dd>For highly concurrent Berkeley DB applications on multithreaded, multi-core
+architectures (for example, Sun Microsystem's Niagara systems), it may
+be advantageous to configure Berkeley DB for finer-grained locking behavior
+in the lock manager subsystem.  To build with Berkeley DB with finer-grained
+locking behavior in the lock manager subsystem, enter
+--enable-fine_grained_lock_manager as an argument to configure.  This
+option should not be configured without performance testing to confirm
+the finer-grained locking behavior increases overall throughput, as this
+option will decrease overall throughput for some applications.
 <dt><a name="--enable-posixmutexes">--enable-posixmutexes</a><dd>To force Berkeley DB to use the POSIX pthread mutex interfaces for underlying
 mutex support, enter --enable-posixmutexes as an argument to configure.
 This is rarely necessary: POSIX mutexes will be selected automatically
@@ -119,11 +130,11 @@ processor.  The --enable-pthread_api argument requires POSIX pthread
 support already be installed on your system.
 <p>Specifying the --enable-pthread_api configuration argument may require
 that applications and Berkeley DB be linked with the -lpthread library.</p>
-<a name="11"><!--meow--></a>
+<a name="12"><!--meow--></a>
 <dt><a name="--enable-rpc">--enable-rpc</a><dd>To build the Berkeley DB RPC client code and server utility, enter --enable-rpc
 as an argument to configure.  The --enable-rpc argument requires that RPC
 support already be installed on your system.
-<a name="12"><!--meow--></a>
+<a name="13"><!--meow--></a>
 <dt><a name="--enable-smallbuild">--enable-smallbuild</a><dd>To build a small memory footprint version of the Berkeley DB library, enter
 --enable-smallbuild as an argument to configure.  The
 --enable-smallbuild argument is equivalent to individually specifying
@@ -133,7 +144,7 @@ turning off cryptography support, the Hash and Queue access methods,
 database environment replication support and database verification
 support.  See <a href="../../ref/build_unix/small.html">Building a
 small memory footprint library</a> for more information.
-<a name="13"><!--meow--></a>
+<a name="14"><!--meow--></a>
 <dt><a name="--enable-tcl">--enable-tcl</a><dd>To build the Berkeley DB Tcl API, enter --enable-tcl as an argument to
 configure.  This configuration argument expects to find Tcl's tclConfig.sh
 file in the <b>/usr/local/lib</b> directory.  See the --with-tcl
@@ -142,7 +153,7 @@ Tcl installation.  See <a href="../../ref/tcl/intro.html">Loading Berkeley DB
 with Tcl</a> for information on sites from which you can download Tcl and
 which Tcl versions are compatible with Berkeley DB.  To build Tcl, you must
 also build with shared libraries.
-<a name="14"><!--meow--></a>
+<a name="15"><!--meow--></a>
 <dt><a name="--enable-test">--enable-test</a><dd>To build the Berkeley DB test suite, enter --enable-test as an argument to
 configure.  To run the Berkeley DB test suite, you must also build the Tcl
 API.  This argument should not be specified when configuring to build
@@ -187,6 +198,6 @@ multiple versions of Berkeley DB</a> for more information.
 </dl>
 <table width="100%"><tr><td><br></td><td align=right><a href="../build_unix/intro.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../build_unix/small.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

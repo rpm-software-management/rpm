@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: mut_alloc.c,v 12.15 2006/08/24 14:46:16 bostic Exp $
+ * $Id: mut_alloc.c,v 12.18 2007/05/17 15:15:45 bostic Exp $
  */
 
 #include "db_config.h"
@@ -119,6 +118,7 @@ __mutex_alloc_int(dbenv, locksys, alloc_id, flags, indxp)
 
 	*indxp = mtxregion->mutex_next;
 	mutexp = MUTEXP_SET(*indxp);
+	DB_ASSERT(dbenv, ((uintptr_t)mutexp & (dbenv->mutex_align - 1)) == 0);
 	mtxregion->mutex_next = mutexp->mutex_next_link;
 
 	--mtxregion->stat.st_mutex_free;

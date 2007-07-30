@@ -1,0 +1,100 @@
+m4_comment([$Id: mod.so,v 10.6 2007/07/07 14:45:24 bostic Exp $])
+
+m4_ref_title(m4_db Extensions,
+    Using m4_db with Apache, [Apache, mod], tcl/faq, ext/perl)
+
+m4_p([dnl
+A mod_db4 Apache module is included in the m4_db distribution, providing
+a safe framework for running m4_db applications in an Apache 1.3
+environment.  Apache natively provides no interface for communication
+between threads or processes, so the mod_db4 module exists to provide
+this communication.])
+
+m4_p([dnl
+In general, it is dangerous to run m4_db in a multiprocess system
+without some facility to coordinate database recovery between processes
+sharing the database environment after application or system failure.
+Failure to run recovery after failure can include process hangs and an
+inability to access the database environment.  The mod_db4 Apache module
+oversees the proper management of m4_db database environment resources.
+Developers building applications using m4_db as the storage manager
+within an Apache module should employ this technique for proper resource
+management.])
+
+m4_p([dnl
+Specifically, mod_db4 provides the following facilities:])
+
+m4_nlistbegin
+m4_nlist([dnl
+New constructors for m4_ref(DbEnv) and m4_ref(Db) handles, which install
+replacement open/close methods.])
+m4_nlist([dnl
+Transparent caching of open m4_ref(DbEnv) and m4_ref(Db) handles.])
+m4_nlist([dnl
+Reference counting on all structures, allowing the module to detect the
+initial opening of any managed database and automatically perform recovery.])
+m4_nlist([dnl
+Automatic detection of unexpected failures (segfaults, or a module
+actually calling exit() and avoiding shut down phases), and automatic
+termination of all child processes with open database resources to
+attempt consistency.])
+m4_nlistend
+
+m4_p([dnl
+mod_db4 is designed to be used as an alternative interface to m4_db.  To
+have another Apache module (for example, mod_foo) use mod_db4, do not
+link mod_foo against the m4_db library.  In your mod_foo makefile, you
+should:])
+
+m4_indent([#include "mod_db4_export.h"])
+
+m4_p([dnl
+and add your Apache include directory to your CPPFLAGS.])
+
+m4_p([dnl
+In mod_foo, to create a mod_db4 managed m4_ref(DbEnv) handle, use the
+following:])
+
+m4_indent([dnl
+int mod_db4_db_env_create(DB_ENV **dbenvp, u_int32_t flags);])
+
+m4_p([dnl
+which takes identical arguments to m4_ref(dbenv_create).])
+
+m4_p([dnl
+To create a mod_db4 managed m4_ref(Db) handle, use the following:])
+
+m4_indent([dnl
+int mod_db4_db_create(DB **dbp, DB_ENV *dbenv, u_int32_t flags);])
+
+m4_p([dnl
+which takes identical arguments to m4_ref(dbh_create).])
+
+m4_p([dnl
+Otherwise the API is completely consistent with the standard m4_db
+API.])
+
+m4_p([dnl
+The mod_db4 module requires the m4_db library be compiled with C++
+extensions and the MM library.  (The MM library provides an abstraction
+layer which allows related processes to share data easily. On systems
+where shared memory or other inter-process communication mechanisms are
+not available, the MM library emulates them using temporary files. MM
+is used in several operating systems to provide shared memory pools to
+Apache modules.)])
+
+m4_p([dnl
+To build this apache module, perform the following steps:])
+
+m4_indent([dnl
+% ./configure --with-apxs=__LB__path to the apxs utility__RB__ \
+	--with-db4=__LB__[]m4_db library installation directory__RB__ \
+	--with-mm=__LB__libmm installation directory__RB__
+% make
+% make install])
+
+m4_p([dnl
+Post-installation, modules can use this extension via the functions
+documented in $APACHE_INCLUDEDIR/mod_db4_export.h.])
+
+m4_page_footer

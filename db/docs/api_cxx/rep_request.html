@@ -1,0 +1,98 @@
+<!--$Id: rep_request.so,v 1.2 2006/11/30 22:28:28 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv::rep_set_request</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DbEnv::rep_set_request</h3>
+</td>
+<td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+int
+DbEnv::rep_set_request(u_int32_t min, u_int32_t max);
+<p>
+int
+DbEnv::rep_get_request(u_int32_t *minp, u_int32_t *maxp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DbEnv::rep_set_request</h3>
+<p>The DbEnv::rep_set_request method sets the minimum and maximum number of
+missing log records that a client waits before requesting
+retransmission.  Specifically, if a log record is missing, Berkeley DB will
+wait for <b>min</b> more records to arrive before requesting
+retransmission of the missing record.  Berkeley DB will wait double that
+amount before requesting the same missing record again, and so on, up
+to a maximum wait of <b>max</b> records.</p>
+<p>By default the minimum is 4 and the maximum is 128, and applications
+rarely need to use values other than the defaults.</p>
+<p>The DbEnv::rep_set_request method configures a database environment, not only operations
+performed using the specified <a href="../api_cxx/env_class.html">DbEnv</a> handle.</p>
+<p>The DbEnv::rep_set_request method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::rep_set_request method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>max</b><dd>The maximum number of missing log records a client waits before
+requesting retransmission.
+<dt><b>min</b><dd>The minimum number of missing log records a client waits before
+requesting retransmission.
+</dl>
+<h3>Errors</h3>
+<p>The DbEnv::rep_set_request method
+may fail and throw
+<a href="../api_cxx/except_class.html">DbException</a>,
+encapsulating one of the following non-zero errors, or return one of
+the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>An
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DbEnv::rep_get_request</h3>
+<p>The DbEnv::rep_get_request method returns the minimum and maximum number of
+missing log records a client waits before requesting retransmission.</p>
+<p>The DbEnv::rep_get_request method may be called at any time during the life of the
+application.</p>
+<p>The DbEnv::rep_get_request method
+either returns a non-zero error value
+or throws an exception that encapsulates a non-zero error value on
+failure, and returns 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>maxp</b><dd>The <b>maxp</b> parameter references memory into which
+ the maximum number of missing log records a client will wait before requesting
+retransmission is copied. 
+<dt><b>minp</b><dd>The <b>minp</b> parameter references memory into which
+ the minimum number of missing log records a client will wait before requesting
+retransmission is copied. 
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_cxx/env_class.html">DbEnv</a>
+<h3>See Also</h3>
+<a href="../api_cxx/rep_list.html">Replication and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

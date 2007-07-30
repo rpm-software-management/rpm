@@ -1,0 +1,24 @@
+m4_comment([$Id: program.so,v 11.15 2006/07/24 17:46:17 sue Exp $])
+
+m4_ref_title(Tcl API,
+    Tcl API programming notes, @Tcl API programming notes, tcl/using, tcl/error)
+
+m4_p([dnl
+The Tcl API closely parallels the m4_db programmatic interfaces.  If you
+are already familiar with one of those interfaces, there will not be many
+surprises in the Tcl API.])
+
+m4_p([dnl
+The Tcl API currently does not support multithreading although
+it could be made to do so.  The Tcl shell itself is
+not multithreaded and the m4_db extensions use global data unprotected
+from multiple threads.])
+
+m4_p([dnl
+Several pieces of m4_db functionality are not available in the Tcl API.
+Any of the functions that require a user-provided function are not
+supported via the Tcl API. For example, there is no equivalent to the
+m4_refc(dbh_set_dup_compare) or the m4_refc(dbenv_set_errcall)
+methods.])
+
+m4_page_footer

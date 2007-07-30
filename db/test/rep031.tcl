@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep031.tcl,v 12.17 2006/09/11 19:47:22 sue Exp $
+# $Id: rep031.tcl,v 12.23 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep031
 # TEST	Test of internal initialization and blocked operations.
@@ -69,6 +68,12 @@ proc rep031 { method { niter 200 } { tnum "031" } args } {
 
 proc rep031_sub { method niter tnum logset recargs clean largs } {
 	source ./include.tcl
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
@@ -85,11 +90,7 @@ proc rep031_sub { method niter tnum logset recargs clean largs } {
 	# four times the size of the in-memory log buffer.
 	set pagesize 4096
 	append largs " -pagesize $pagesize "
-	set log_buf [expr $pagesize * 2]
-	set log_max [expr $log_buf * 4]
-
-	set m_logargs " -log_buffer $log_buf"
-	set c_logargs " -log_buffer $log_buf"
+	set log_max [expr $pagesize * 8]
 
 	set m_logtype [lindex $logset 0]
 	set c_logtype [lindex $logset 1]
@@ -103,30 +104,22 @@ proc rep031_sub { method niter tnum logset recargs clean largs } {
 	# Open a master.
 	repladd 1
 	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-	    $m_logargs -log_max $log_max \
+	    $m_logargs -log_max $log_max $verbargs \
 	    -home $masterdir -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env_noerr -create $m_txnargs \
-#	    $m_logargs -log_max $log_max \
-#	    -verbose {rep on} -errpfx MASTER -errfile /dev/stderr \
-#	    -home $masterdir -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs -rep_master]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-	    $c_logargs -log_max $log_max \
+	    $c_logargs -log_max $log_max $verbargs \
 	    -home $clientdir -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env_noerr -create $c_txnargs \
-#	    $c_logargs -log_max $log_max \
-#	    -verbose {rep on} -errpfx CLIENT -errfile /dev/stderr \
-#	    -home $clientdir -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs -rep_client]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the clients online by processing the startup messages.
 	set envlist "{$masterenv 1} {$clientenv 2}"
 	process_msgs $envlist
+
+	$masterenv test force noarchive_timeout
 
 	# Run rep_test in the master (and update client).
 	puts "\tRep$tnum.a: Running rep_test in replicated env."
@@ -248,8 +241,7 @@ proc rep031_sub { method niter tnum logset recargs clean largs } {
 		if { $is_hp_test != 1 } {
 			puts "\tRep$tnum.j.1: Log_archive in new non-rep env."
 			set newenv [berkdb_env_noerr -txn nosync \
-			    -log_buffer $log_buf -log_max $log_max \
-			    -home $masterdir]
+			    -log_max $log_max -home $masterdir]
 			error_check_good newenv [is_valid_env $newenv] TRUE
 			set res [$newenv log_archive -arch_remove]
 			set res [eval exec \

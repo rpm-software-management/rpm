@@ -1,0 +1,67 @@
+m4_comment([$Id: env_set_errpfx.so,v 10.34 2006/02/10 22:54:59 bostic Exp $])
+
+ifdef([M4INTERFACE],, [define(M4INTERFACE, dbenv_set_errpfx)])
+define(M4GETINTERFACE, ifelse(M4INTERFACE,
+    dbenv_set_errpfx, dbenv_get_errpfx, dbh_get_errpfx))
+
+define(M4PAGELOCAL, [M4INTERFACE, M4GETINTERFACE])
+include(m4/m4.seealso)
+
+ifelse(M4INTERFACE, dbenv_set_errpfx, [dnl
+m4_pf_header(m4_ref(dbenv_set_errpfx),
+ifelse(M4API, C_API, [dnl
+void
+DB_ENV-__GT__set_errpfx(DB_ENV *dbenv, const char *errpfx);
+m4_blank
+void
+DB_ENV-__GT__get_errpfx(DB_ENV *dbenv, const char **errpfxp);
+])
+ifelse(M4API, CXX_API, [dnl
+void
+DbEnv::set_errpfx(const char *errpfx);
+m4_blank
+void
+DbEnv::get_errpfx(const char **errpfxp);
+]))],[dnl
+m4_pf_header(m4_ref(dbh_set_errpfx),
+ifelse(M4API, C_API, [dnl
+void
+DB-__GT__set_errpfx(DB *db, const char *errpfx);
+m4_blank
+void DB-__GT__get_errpfx(DB *db, const char **errpfxp);
+])
+ifelse(M4API, CXX_API, [dnl
+void Db::set_errpfx(const char *errpfx);
+m4_blank
+void Db::get_errpfx(const char **errpfxp);
+]))])
+
+m4_p([dnl
+Set the prefix string that appears before error messages issued by m4_db.])
+
+m4_p([dnl
+The m4_ref(dbh_set_errpfx) and m4_refT(dbenv_set_errpfx)s do not copy
+the memory to which the m4_arg(errpfx) parameter refers; rather, they
+maintain a reference to it.  Although this allows applications to modify
+the error message prefix at any time (without repeatedly calling the
+interfaces), it means the memory must be maintained until the handle is
+closed.])
+
+ifelse(M4INTERFACE, dbh_set_errpfx, [dnl
+m4_really_dbenv(dbh_set_errpfx, dbenv_set_errpfx)])
+
+ifelse(M4INTERFACE, dbh_set_errpfx,
+[m4_scope_dbh(M4INTERFACE)], [m4_scope_dbenv(M4INTERFACE)])
+
+m4_when_any(M4INTERFACE)
+
+m4_parambegin
+m4_param(errpfx, [dnl
+The m4_arg(errpfx) parameter is the application-specified error prefix
+for additional error messages.])
+m4_paramend
+
+m4_pf_getter(M4GETINTERFACE, error prefix,, errpfxp, reference)
+
+ifelse(M4INTERFACE, dbenv_set_errpfx, [m4_seealso(DbEnv)], [m4_seealso(Db)])
+m4_page_footer

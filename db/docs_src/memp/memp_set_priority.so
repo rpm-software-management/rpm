@@ -1,0 +1,24 @@
+m4_comment([$Id: memp_set_priority.so,v 10.25 2007/05/22 18:06:06 bostic Exp $])
+
+define(M4INTERFACE, memp_set_priority)
+define(M4PAGELOCAL, [memp_set_priority, memp_get_priority,
+	DB_PRIORITY_VERY_LOW, DB_PRIORITY_LOW, DB_PRIORITY_DEFAULT,
+	DB_PRIORITY_HIGH, DB_PRIORITY_VERY_HIGH])
+
+m4_pf_header(m4_ref(memp_set_priority),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__set_priority(DB_MPOOLFILE *mpf, DB_CACHE_PRIORITY priority);
+m4_blank
+int
+DB_MPOOLFILE-__GT__get_priority(DB_MPOOLFILE *mpf, DB_CACHE_PRIORITY *priorityp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::set_priority(DB_CACHE_PRIORITY priority);
+m4_blank
+int
+DbMpoolFile::get_priority(DB_CACHE_PRIORITY *priorityp);
+]))
+
+include(dbc/dbc_set_priority.so)

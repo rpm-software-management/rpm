@@ -1,0 +1,80 @@
+m4_comment([$Id: func.so,v 11.9 2001/03/01 15:58:20 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: function arguments,, upgrade.3.0/envopen, upgrade.3.0/dbenv)
+
+m4_p([dnl
+In m4_db 3.0, there are no longer separate structures that represent
+each subsystem (for example, DB_LOCKTAB or DB_TXNMGR), and an overall
+m4_ref(DbEnv) environment structure.  Instead there is only the
+m4_ref(DbEnv) structure.  This means that m4_ref(DbEnv) references
+should be passed around by your application instead of passing around
+DB_LOCKTAB or DB_TXNMGR references.])
+
+m4_p([dnl
+Each of the following functions:])
+
+m4_indent([dnl
+lock_detect
+lock_get
+lock_id
+lock_put
+lock_stat
+lock_vec])
+
+m4_p([dnl
+should have its first argument, a reference to the DB_LOCKTAB structure,
+replaced with a reference to the enclosing m4_ref(DbEnv) structure.  For
+example, the following line of code from a m4_db 2.X application:])
+
+m4_indent([dnl
+DB_LOCKTAB *lt;
+DB_LOCK lock;
+	ret = lock_put(lt, lock);])
+
+m4_p([dnl
+should now be written as follows:])
+
+m4_indent([dnl
+DB_ENV *dbenv;
+DB_LOCK *lock;
+	ret = lock_put(dbenv, lock);])
+
+m4_p([dnl
+Similarly, all of the functions:])
+
+m4_indent([dnl
+log_archive
+log_compare
+log_file
+log_flush
+log_get
+log_put
+log_register
+log_stat
+log_unregister])
+
+m4_p([dnl
+should have their DB_LOG argument replaced with a reference to a
+m4_ref(DbEnv) structure, and the functions:])
+
+m4_indent([dnl
+memp_fopen
+memp_register
+memp_stat
+memp_sync
+memp_trickle])
+
+m4_p([dnl
+should have their DB_MPOOL argument replaced with a reference to a
+m4_ref(DbEnv) structure.])
+
+m4_p([dnl
+You should remove all references to DB_LOCKTAB, DB_LOG, DB_MPOOL, and
+DB_TXNMGR structures from your application, they are no longer useful
+in any way.  In fact, a simple way to identify all of the places that
+need to be upgraded is to remove all such structures and variables
+they declare, and then compile.  You will see a warning message from
+your compiler in each case that needs to be upgraded.])
+
+m4_page_footer

@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: tcl_dbcursor.c,v 12.11 2006/08/24 14:46:33 bostic Exp $
+ * $Id: tcl_dbcursor.c,v 12.17 2007/05/17 15:15:54 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <tcl.h>
 #endif
 #include "dbinc/tcl_db.h"
@@ -100,7 +99,7 @@ dbc_Cmd(clientData, interp, objc, objv)
 			return (TCL_ERROR);
 		}
 		_debug_check();
-		ret = dbc->c_close(dbc);
+		ret = dbc->close(dbc);
 		result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret),
 		    "dbc close");
 		if (result == TCL_OK) {
@@ -117,7 +116,7 @@ dbc_Cmd(clientData, interp, objc, objv)
 			return (TCL_ERROR);
 		}
 		_debug_check();
-		ret = dbc->c_del(dbc, 0);
+		ret = dbc->del(dbc, 0);
 		result = _ReturnSetup(interp, ret, DB_RETOK_DBCDEL(ret),
 		    "dbc delete");
 		break;
@@ -349,7 +348,7 @@ tcl_DbcPut(interp, objc, objv, dbc)
 		goto out;
 	}
 	_debug_check();
-	ret = dbc->c_put(dbc, &key, &data, flag);
+	ret = dbc->put(dbc, &key, &data, flag);
 	result = _ReturnSetup(interp, ret, DB_RETOK_DBCPUT(ret),
 	    "dbc put");
 	if (ret == 0 &&
@@ -383,6 +382,7 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 		"-key_buf_size",
 		"-multi",
 		"-multi_key",
+		"-nolease",
 		"-read_committed",
 		"-read_uncommitted",
 #endif
@@ -397,6 +397,7 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 		"-nextnodup",
 		"-partial",
 		"-prev",
+		"-prevdup",
 		"-prevnodup",
 		"-rmw",
 		"-set",
@@ -411,6 +412,7 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 		DBCGET_KEY_BUF_SIZE,
 		DBCGET_MULTI,
 		DBCGET_MULTI_KEY,
+		DBCGET_NOLEASE,
 		DBCGET_READ_COMMITTED,
 		DBCGET_READ_UNCOMMITTED,
 #endif
@@ -425,6 +427,7 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 		DBCGET_NEXTNODUP,
 		DBCGET_PART,
 		DBCGET_PREV,
+		DBCGET_PREVDUP,
 		DBCGET_PREVNODUP,
 		DBCGET_RMW,
 		DBCGET_SET,
@@ -482,7 +485,8 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 		i++;
 
 #define	FLAG_CHECK2_STDARG	\
-	(DB_RMW | DB_MULTIPLE | DB_MULTIPLE_KEY | DB_READ_UNCOMMITTED)
+	(DB_RMW | DB_MULTIPLE | DB_MULTIPLE_KEY | DB_IGNORE_LEASE | \
+	DB_READ_UNCOMMITTED)
 
 		switch ((enum dbcgetopts)optindex) {
 #ifdef CONFIG_TEST
@@ -520,6 +524,9 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 				goto out;
 			i++;
 			break;
+		case DBCGET_NOLEASE:
+			flag |= DB_IGNORE_LEASE;
+			break;
 		case DBCGET_READ_COMMITTED:
 			flag |= DB_READ_COMMITTED;
 			break;
@@ -549,6 +556,10 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 		case DBCGET_PREV:
 			FLAG_CHECK2(flag, FLAG_CHECK2_STDARG);
 			flag |= DB_PREV;
+			break;
+		case DBCGET_PREVDUP:
+			FLAG_CHECK2(flag, FLAG_CHECK2_STDARG);
+			flag |= DB_PREV_DUP;
 			break;
 		case DBCGET_PREVNODUP:
 			FLAG_CHECK2(flag, FLAG_CHECK2_STDARG);
@@ -777,9 +788,9 @@ tcl_DbcGet(interp, objc, objv, dbc, ispget)
 	_debug_check();
 	if (ispget) {
 		F_SET(&pdata, DB_DBT_MALLOC);
-		ret = dbc->c_pget(dbc, &key, &data, &pdata, flag);
+		ret = dbc->pget(dbc, &key, &data, &pdata, flag);
 	} else
-		ret = dbc->c_get(dbc, &key, &data, flag);
+		ret = dbc->get(dbc, &key, &data, flag);
 	result = _ReturnSetup(interp, ret, DB_RETOK_DBCGET(ret), "dbc get");
 	if (result == TCL_ERROR)
 		goto out;
@@ -937,7 +948,7 @@ tcl_DbcDup(interp, objc, objv, dbc)
 	    "%s.c%d", dbip->i_name, dbip->i_dbdbcid);
 	newdbcip = _NewInfo(interp, NULL, newname, I_DBC);
 	if (newdbcip != NULL) {
-		ret = dbc->c_dup(dbc, &newdbc, flag);
+		ret = dbc->dup(dbc, &newdbc, flag);
 		if (ret == 0) {
 			dbip->i_dbdbcid++;
 			newdbcip->i_parent = dbip;

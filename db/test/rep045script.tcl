@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2005-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2005,2007 Oracle.  All rights reserved.
 #
-# $Id: rep045script.tcl,v 12.7 2006/09/15 13:16:25 carol Exp $
+# $Id: rep045script.tcl,v 12.10 2007/05/17 15:15:55 bostic Exp $
 #
 # Rep045 script - replication with version dbs.
 #
@@ -29,7 +28,10 @@ set clientdir [ lindex $argv 0 ]
 set vfile [ lindex $argv 1 ]
 set niter 50
 
-set is_repchild 1
+# Join the queue env.  We assume the rep test convention of
+# placing the messages in $testdir/MSGQUEUEDIR.
+set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]
+error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
 
 # We need to set up our own machids.
 repladd 3

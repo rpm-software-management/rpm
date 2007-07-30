@@ -1,0 +1,66 @@
+<!--"$Id: 2.3.12.html,v 1.5 2007/05/17 18:17:18 bostic Exp $ (Sleepycat) $Date: 2007/05/17 18:17:18 $"-->
+<html>
+<head>
+<title>The Berkeley DB Package: Interface Changes introduced in DB 2.3.12</title>
+<meta name="description" content="DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Interface Changes introduced in DB 2.3.12:</h3>
+
+<ol>
+
+<li>
+A new DB interface, <b>db_jump_set</b>(), has been added.  The
+<b>db_jump_set</b> function enables applications to replace underlying
+DB library functionality by replacing entries in a function call jump
+table.  This interface is intended for applications needing to do
+run-time linking to specific underlying libraries, for example, for
+systems where the malloc(3) that the application will use is not known
+until run-time.  The <b>db_yield</b> field previously found in the
+DB_ENV structure has been removed, and its functionality incorporated
+into the db_jump_set function.
+<p>
+<font color=red>
+The removal of the db_yield field is NOT transparent to applications.
+</font>
+Applications should be converted from using the db_yield field to
+calling the <b>db_jump_set</b>() function with the DB_FUNC_YIELD
+flag.
+If you have a support contract with Sleepycat Software, please contact
+us for further information and assistance in migrating applications
+from previous releases of DB to this release.
+<p>
+See db_jump(3) for more information.
+
+<p><li>
+A new memory pool interface, <b>memp_trickle</b>(), has been added.
+The <b>memp_trickle</b> function permits an application to ensure
+that a certain percentage of the pages in the shared memory pool
+remain clean at all times, so that there are always buffers available
+for reading in new pages from the backing files.
+<p>
+See db_mpool(3) for more information.
+
+<p><li>
+A new log region interface, <b>log_stat</b>(), has been added.
+The <b>log_stat</b> function returns statistical information about
+the log region.
+The <b>db_stat</b>(1) utility has been updated to optionally display
+this information.
+<p>
+See db_log(3) for more information.
+
+<p><li>
+There have been various additions to the memory pool statistics
+structure, as returned by <b>memp_stat</b>() and displayed by
+<b>db_stat</b>(1).
+Applications using the memory pool statistics interface will need
+to be recompiled for this release.
+<p>
+See db_mpool(3) for more information.
+
+</ol>
+</body>
+</html>

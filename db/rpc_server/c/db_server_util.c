@@ -1,16 +1,15 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: db_server_util.c,v 12.9 2006/08/24 14:46:29 bostic Exp $
+ * $Id: db_server_util.c,v 12.13 2007/05/17 15:15:52 bostic Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #include <rpc/rpc.h>
 #endif
 #include "db_server.h"
@@ -597,7 +596,7 @@ __dbc_close_int(dbc_ctp)
 
 	dbc = (DBC *)dbc_ctp->ct_anyp;
 
-	ret = dbc->c_close(dbc);
+	ret = dbc->close(dbc);
 	/*
 	 * If this cursor is a join cursor then we need to fix up the
 	 * cursors that it was joined from so that they are independent again.

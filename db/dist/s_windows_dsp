@@ -1,5 +1,5 @@
-#!/bin/sh -
-#	$Id: s_windows_dsp,v 12.9 2006/07/13 06:19:45 mjc Exp $
+#!/bin/bash -
+#	$Id: s_windows_dsp,v 12.21 2007/07/06 16:29:16 bostic Exp $
 #
 # Build Windows/32 .dsp files.
 
@@ -17,10 +17,18 @@ create_dsp()
     release_libs="$6"   # libraries to link against in Release builds
     debug_libs="$7"     # libraries to link against in Debug builds
     lib_suffix="$8"     # the library name is libdb@lib_suffix@@VERSION@
+    proj_type="$9"	# the project type dsp or vcp
+    proj_guid="${10}"	# The project guid for VS2005 projects
 
-    srctemplate="$BUILDDIR/srcfile_dsp.src"    # template file for the src file fragments
-    dspoutput=$BUILDDIR/$projname.dsp
+    # Set the default project type to be "dsp"
+    if [ ! "$proj_type" ] ; then
+	    proj_type=dsp
+    fi
 
+			# template file for the src file fragments
+    srctemplate="$BUILDDIR/srcfile_$proj_type.src"
+    rsrctemplate="$BUILDDIR/rsrcfile_$proj_type.src"
+    dspoutput=$BUILDDIR/$projname.$proj_type
 
     postbuild=$dspoutput.postbuild
     if [ ! -f $postbuild ] ; then
@@ -40,9 +48,15 @@ create_dsp()
             -e 's;/;\\\\\\\\;g'`
 	srcdir="$1"
 	srcfile="$2"
+	if [ "${srcfile##*.}" = "rc" -a "$proj_type" = "vcproj" ] ; then
+		inptemplate=$rsrctemplate
+	else
+		inptemplate=$srctemplate
+	fi
+
         sed -e "s/@srcdir@/$srcdir/g" \
             -e "s/@srcfile@/$srcfile/g" \
-            < $srctemplate >> $dspoutput.insert
+            < $inptemplate >> $dspoutput.insert
     done
     sed -e "/@SOURCE_FILES@/r$dspoutput.insert" \
         -e "/@SOURCE_FILES@/d" \
@@ -59,7 +73,13 @@ create_dsp()
         -e "s,@lib_suffix@,$lib_suffix,g" \
         -e "s/@DB_VERSION_MAJOR@/$DB_VERSION_MAJOR/g" \
         -e "s/@DB_VERSION_MINOR@/$DB_VERSION_MINOR/g" \
+        -e "s/@PROJ_GUID@/$proj_guid/g" \
       < $dsptemplate > $dspoutput.new
+
+    # We run this script on Windows (under Cygwin).  Fix up the line-endings
+    # for the temporary files.  We don't test the platform, just run unix2dos
+    # if the command exists, ignoring any not-found error message.
+    (unix2dos.exe $dspoutput.new) >/dev/null 2>&1
 
     # Set the file mode to 644 because the VC++ IDE needs a writeable file
     # in our development environment.
@@ -84,61 +104,107 @@ sed -e "s/#.*$//" \
 
 # get a list of all modules mentioned
 #
-MODULES="`sed -e 's/^[^ ]* //' < $TMPA \
-    | tr ' ' '\012' | sort | uniq`"
+MODULES="`sed -e 's/^[^	 ]* //' < $TMPA | tr ' ' '\012' | sort | uniq`"
 
-for BUILDDIR in ../build_windows
+for module in $MODULES
 do
-    for module in $MODULES
-    do
-        case "$module" in
-        dynamic )
-            create_dsp db_dll " $module " $TMPA $BUILDDIR/dynamic_dsp.src \
-                '' 'ws2_32.lib' 'ws2_32.lib'
-            ;;
-        small )
-            create_dsp db_small " $module " $TMPA $BUILDDIR/static_dsp.src \
-                '/D "HAVE_SMALLBUILD"' '' '' _small
-            ;;
-        static )
-            create_dsp db_static " $module " $TMPA $BUILDDIR/static_dsp.src
-            ;;
-        java )
-            create_dsp db_java " $module " $TMPA $BUILDDIR/dynamic_dsp.src '' \
-                'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@.lib' \
-                'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@d.lib' _java
-            ;;
-        tcl )
-            create_dsp db_tcl " $module " $TMPA $BUILDDIR/dynamic_dsp.src \
-                '/D "DB_TCL_SUPPORT"' \
-                'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@.lib tcl84.lib' \
-                'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@d.lib tcl84g.lib' _tcl
-            ;;
-        testutil )
-            create_dsp db_test " $module " $TMPA $BUILDDIR/app_dsp.src \
-	        '' '/out:"dbkill.exe"' '/out:"dbkill.exe"'
-            ;;
-        app=* )
-            appname=`echo $module | sed -e 's/^app=//'`
-            case "$appname" in
-            ex_rep_base )
-                libs='ws2_32.lib'
-                ;;
-            * )
-                libs=''
-                ;;
-            esac
-            create_dsp $appname " $module " $TMPA $BUILDDIR/app_dsp.src '' \
-                $libs $libs
-            ;;
-        vx|vxsmall )
+    case "$module" in
+    dynamic )
+	BUILDDIR=../build_windows
+        create_dsp db_dll " $module " $TMPA $BUILDDIR/dynamic_dsp.src \
+            '' 'ws2_32.lib' 'ws2_32.lib'
+        ;;
+    small )
+	BUILDDIR=../build_windows
+        create_dsp db_small " $module " $TMPA $BUILDDIR/static_dsp.src \
+            '/D "HAVE_SMALLBUILD"' '' '' _small
+        ;;
+    static )
+	BUILDDIR=../build_windows
+        create_dsp db_static " $module " $TMPA $BUILDDIR/static_dsp.src
+        ;;
+    ce)
+	BUILDDIR=../build_wince
+        create_dsp db_static " $module " $TMPA \
+	    ../build_wince/static_vcp.src '' '' '' '' vcp
+	# Build VS2005 projects.
+	# The GUID passed in must match that in the .sln workspace.
+	# It would be ideal to grab the GUID from there if this
+	# project is already included there.
+        create_dsp db_static " $module " $TMPA \
+	    ../build_wince/static_vcproj.src '' '' '' '' vcproj \
+	    "4AB4958F-8DD0-49B5-8C02-014B5637C59A"
+        ;;
+    ce_small)
+	BUILDDIR=../build_wince
+        create_dsp db_small " $module " $TMPA  \
+            ../build_wince/static_vcp.src '/D "HAVE_SMALLBUILD"' \
+	    '' '' _small vcp
+	# Build VS2005 projects.
+	# The GUID passed in must match that in the .sln workspace.
+	# It would be ideal to grab the GUID from there if this
+	# project is already included there.
+        create_dsp db_small " $module " $TMPA  \
+            ../build_wince/static_vcproj.src 'HAVE_SMALLBUILD' \
+	    '' '' _small vcproj "6A2849DA-8F7C-4B50-BDAE-AE7752EF8213"
+        ;;
+    java )
+        BUILDDIR=../build_windows
+        create_dsp db_java " $module " $TMPA $BUILDDIR/dynamic_dsp.src '' \
+            'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@.lib' \
+            'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@d.lib' _java
+        ;;
+    tcl )
+        BUILDDIR=../build_windows
+        create_dsp db_tcl " $module " $TMPA $BUILDDIR/dynamic_dsp.src \
+            '/D "DB_TCL_SUPPORT"' \
+            'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@.lib tcl84.lib' \
+            'libdb@DB_VERSION_MAJOR@@DB_VERSION_MINOR@d.lib tcl84g.lib' _tcl
+        ;;
+    testutil )
+	BUILDDIR=../build_windows
+        create_dsp db_test " $module " $TMPA $BUILDDIR/app_dsp.src \
+	    '' '/out:"dbkill.exe"' '/out:"dbkill.exe"'
+        ;;
+    app=* )
+	BUILDDIR=../build_windows
+        appname=`echo $module | sed -e 's/^app=//'`
+        case "$appname" in
+        ex_rep_base )
+            libs='ws2_32.lib'
             ;;
         * )
-            echo \
-    "s_windows_dsp: module name $module in $SRCFILES is unknown type"
+            libs=''
             ;;
         esac
-    done
+	# Split into Windows CE and Win32/64 project creation.
+	case "$appname" in
+	wce_tpcb )
+		BUILDDIR=../build_wince
+		create_dsp $appname " $module " $TMPA \
+		    ../build_wince/app_vcp.src '/D "__NO_SYSTEM_INCLUDES"' \
+		    '' '' '' vcp
+		# The GUID passed in must match that in the .sln workspace.
+		# It would be ideal to grab the GUID from there if this
+		# project is already included there.
+		create_dsp $appname " $module " $TMPA \
+		    ../build_wince/app_vcproj.src '__NO_SYSTEM_INCLUDES' \
+		    '' '' '' vcproj "F2CE670A-ABAE-414A-9A17-8079AB58613F"
+		BUILDDIR=../build_windows
+	        ;;
+	* )
+        	create_dsp $appname " $module " $TMPA $BUILDDIR/app_dsp.src \
+        	    '' $libs $libs
+		;;
+	esac
+	;;
+    brew|s60|vx|vxsmall )
+        ;;
+    * )
+        echo \
+    "s_windows_dsp: module name $module in $SRCFILES is unknown type"
+        ;;
+    esac
 done
 
 rm -f $TMPA

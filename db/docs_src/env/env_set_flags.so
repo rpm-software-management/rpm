@@ -1,0 +1,304 @@
+m4_comment([$Id])
+
+define(M4PAGELOCAL,
+	[dbenv_set_flags, dbenv_get_flags, DB_CDB_ALLDB, DB_DIRECT_DB,
+	DB_DIRECT_LOG, DB_DSYNC_DB, DB_DSYNC_LOG, DB_LOG_AUTOREMOVE,
+	DB_LOG_BUFFER_FULL, DB_LOG_INMEMORY, DB_MULTIVERSION, DB_NOLOCKING,
+	DB_NOMMAP, DB_NOPANIC, DB_OVERWRITE, DB_PANIC_ENVIRONMENT,
+	DB_REGION_INIT, DB_TIME_NOTGRANTED DB_TXN_NOSYNC DB_TXN_NOWAIT,
+	DB_TXN_SNAPSHOT, DB_TXN_WRITE_NOSYNC, DB_YIELDCPU])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_flags),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_flags(DB_ENV *dbenv, u_int32_t flags, int onoff);
+m4_blank
+int
+DB_ENV-__GT__get_flags(DB_ENV *dbenv, u_int32_t *flagsp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_flags(u_int32_t flags, int onoff);
+m4_blank
+int
+DbEnv::get_flags(u_int32_t *flagsp)
+]))
+
+define(m4_scope_dbenv_flags, [m4_p([dnl
+Calling m4_ref(dbenv_set_flags) with the m4_ref($1) flag only affects
+the specified m4_ref(DbEnv) handle (and any other m4_db handles opened
+within the scope of that handle).
+ifelse($2, config, [dnl
+For consistent behavior across the environment, all m4_ref(DbEnv)
+handles opened in the environment must either set the m4_ref($1) flag
+or the flag should be specified in the m4_path(DB_CONFIG) configuration
+file.])])])
+define(m4_scope_env_flags, [m4_p([dnl
+Calling m4_ref(dbenv_set_flags) with the m4_ref($1) flag affects the
+database environment, including all threads of control accessing the
+database environment.])])
+define(m4_env_flags_any, [m4_p([dnl
+The m4_ref($1) flag may be used to configure m4_db at any time during
+the life of the application.])])
+define(m4_env_flags_open, [m4_p([dnl
+The m4_ref($1) flag may be used to configure m4_db only $2 the
+m4_refT(dbenv_open) is called.])])
+
+m4_p([dnl
+Configure a database environment.])
+
+m4_env_config(dbenv_set_flags, flag values, set_flags, [dnl
+the method flag parameter as a string; for example, "set_flags
+DB_TXN_NOSYNC"])
+
+m4_return(dbenv_set_flags, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_must
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_AUTO_COMMIT), [dnl
+If set, m4_ref(Db) handle operations for which no explicit transaction
+handle was specified, and which modify databases in the database
+environment, will be automatically enclosed within a transaction.
+m4_scope_dbenv_flags(DB_AUTO_COMMIT, config)
+m4_env_flags_any(DB_AUTO_COMMIT)])
+
+m4_idefz([configure @locking for m4_cam])
+m4_tag(m4_idef(DB_CDB_ALLDB), [dnl
+If set, m4_cam applications will perform locking on an environment-wide
+basis rather than on a per-database basis.
+m4_scope_dbenv_flags(DB_CDB_ALLDB, config)
+m4_env_flags_open(DB_CDB_ALLDB, before)])
+
+m4_idefz([turn off system @buffering for database files])
+m4_tag(m4_idef(DB_DIRECT_DB), [dnl
+Turn off system buffering of m4_db database files to avoid double caching.
+m4_scope_dbenv_flags(DB_DIRECT_DB, config)
+m4_env_flags_any(DB_DIRECT_DB)])
+
+m4_idefz([turn off system @buffering for log files])
+m4_tag(m4_idef(DB_DIRECT_LOG), [dnl
+Turn off system buffering of m4_db log files to avoid double caching.
+m4_scope_dbenv_flags(DB_DIRECT_LOG, config)
+m4_env_flags_any(DB_DIRECT_LOG)])
+
+m4_idefz([turn off system @buffering for database files])
+m4_tag(m4_idef(DB_DSYNC_DB), [dnl
+Configure m4_db to flush database writes to the backing disk before
+returning from the write system call, rather than flushing database
+writes explicitly in a separate system call, as necessary.  This is only
+available on some systems (for example, systems supporting the
+m4_posix1_name standard O_DSYNC flag, or systems supporting the Windows
+FILE_FLAG_WRITE_THROUGH flag).  This flag may result in inaccurate file
+modification times and other file-level information for m4_db database
+files.  This flag will almost certainly result in a performance decrease
+on most systems.  This flag is only applicable to certain filesysystem
+(for example, the Veritas VxFS filesystem), where the filesystem's
+support for trickling writes back to stable storage behaves badly (or
+more likely, has been misconfigured).
+m4_scope_dbenv_flags(DB_DSYNC_DB, config)
+m4_env_flags_any(DB_DSYNC_DB)])
+
+m4_idefz([turn off system @buffering for log files])
+m4_tag(m4_idef(DB_DSYNC_LOG), [dnl
+Configure m4_db to flush log writes to the backing disk before returning
+from the write system call, rather than flushing log writes explicitly
+in a separate system call, as necessary.  This is only available on some
+systems (for example, systems supporting the m4_posix1_name standard
+O_DSYNC flag, or systems supporting the Windows FILE_FLAG_WRITE_THROUGH
+flag).  This flag may result in inaccurate file modification times and
+other file-level information for m4_db log files.  This flag may offer
+a performance increase on some systems and a performance decrease on
+others.
+m4_scope_dbenv_flags(DB_DSYNC_LOG, config)
+m4_env_flags_any(DB_DSYNC_LOG)])
+
+m4_idefz([automatic @log file removal])
+m4_tag(m4_idef(DB_LOG_AUTOREMOVE), [dnl
+If set, m4_db will automatically remove log files that are no longer
+needed.
+m4_p([dnl
+Automatic log file removal is likely to make catastrophic recovery
+impossible.])
+m4_p([dnl
+Replication applications will rarely want to configure automatic log
+file removal as it increases the likelihood a master will be unable to
+satisfy a client's request for a recent log record.])
+m4_scope_env_flags(DB_LOG_AUTOREMOVE)
+m4_env_flags_any(DB_LOG_AUTOREMOVE)])
+
+m4_idefz([in memory @logs])
+m4_tag(m4_idef(DB_LOG_INMEMORY), [dnl
+If set, maintain transaction logs in memory rather than on disk.  This
+means that transactions exhibit the ACI (atomicity, consistency, and
+isolation) properties, but not D (durability); that is, database
+integrity will be maintained, but if the application or system fails,
+integrity will not persist.  All database files must be verified and/or
+restored from a replication group master or archival backup after
+application or system failure.
+m4_p([dnl
+When in-memory logs are configured and no more log buffer space is
+available, m4_db methods may return an additional error value,
+m4_idef(DB_LOG_BUFFER_FULL).  When choosing log buffer and file sizes
+for in-memory logs, applications should ensure the in-memory log buffer
+size is large enough that no transaction will ever span the entire
+buffer, and avoid a state where the in-memory buffer is full and no
+space can be freed because a transaction that started in the first log
+"file" is still active.])
+m4_scope_env_flags(DB_LOG_INMEMORY, config)
+m4_env_flags_open(DB_LOG_INMEMORY, before)])
+
+m4_tag(m4_idef(DB_MULTIVERSION), [dnl
+If set, all databases in the environment will be opened as if
+m4_ref(DB_MULTIVERSION) is passed to m4_ref(dbh_open).  This flag will
+be ignored for queue databases for which m4_ref(DB_MULTIVERSION) is not
+supported.
+m4_scope_dbenv_flags(DB_MULTIVERSION, config)
+m4_env_flags_any(DB_MULTIVERSION)])
+
+m4_idefz([ignore @locking])
+m4_tag(m4_idef(DB_NOLOCKING), [dnl
+If set, m4_db will grant all requested mutual exclusion mutexes and
+database locks without regard for their actual availability.  This
+functionality should never be used for purposes other than debugging.
+m4_scope_dbenv_flags(DB_NOLOCKING)
+m4_env_flags_any(DB_NOLOCKING)])
+
+m4_idefz([turn off database file @memory mapping])
+m4_tag(m4_idef(DB_NOMMAP), [dnl
+If set, m4_db will copy read-only database files into the local cache
+instead of potentially mapping them into process memory (see the
+description of the m4_refT(dbenv_set_mp_mmapsize) for further
+information).
+m4_scope_dbenv_flags(DB_NOMMAP, config)
+m4_env_flags_any(DB_NOMMAP)])
+
+m4_idefz([ignore database environment @panic])
+m4_tag(m4_idef(DB_NOPANIC), [dnl
+If set, m4_db will ignore any panic state in the database environment.
+(Database environments in a panic state normally refuse all attempts to
+call m4_db functions, returning m4_ref(DB_RUNRECOVERY).) This
+functionality should never be used for purposes other than debugging.
+m4_scope_dbenv_flags(DB_NOPANIC)
+m4_env_flags_any(DB_NOPANIC)])
+
+m4_tag(m4_idef(DB_OVERWRITE), [dnl
+Overwrite files stored in encrypted formats before deleting them.  m4_db
+overwrites files using alternating 0xff, 0x00 and 0xff byte patterns.
+For file overwriting to be effective, the underlying file must be stored
+on a fixed-block filesystem.  Systems with journaling or logging filesystems
+will require operating system support and probably modification of the
+m4_db sources.
+m4_scope_dbenv_flags(DB_OVERWRITE)
+m4_env_flags_any(DB_OVERWRITE)])
+
+m4_idefz([turn off access to a database @environment])
+m4_tag(m4_idef(DB_PANIC_ENVIRONMENT), [dnl
+If set, m4_db will set the panic state for the database environment.
+(Database environments in a panic state normally refuse all attempts to
+call m4_db functions, returning m4_ref(DB_RUNRECOVERY).) This flag may
+not be specified using the environment's m4_path(DB_CONFIG) file.
+m4_scope_env_flags(DB_PANIC_ENVIRONMENT)
+m4_env_flags_open(DB_PANIC_ENVIRONMENT, after)])
+
+m4_idefz([fault database @environment in during open])
+m4_tag(m4_idef(DB_REGION_INIT), [dnl
+In some applications, the expense of page-faulting the underlying shared
+memory regions can affect performance.  (For example, if the page-fault
+occurs while holding a lock, other lock requests can convoy, and overall
+throughput may decrease.)  If set, m4_db will page-fault shared regions
+into memory when initially creating or joining a m4_db environment.  In
+addition, m4_db will write the shared regions when creating an
+environment, forcing the underlying virtual memory and filesystems to
+instantiate both the necessary memory and the necessary disk space.
+This can also avoid out-of-disk space failures later on.
+m4_scope_dbenv_flags(DB_REGION_INIT, config)
+m4_env_flags_any(DB_REGION_INIT)])
+
+m4_tag(m4_idef(DB_TIME_NOTGRANTED), [dnl
+If set, database calls timing out based on lock or transaction timeout
+values will
+ifelse(M4EXCEPT, return_only,  [dnl
+return m4_ref(DB_LOCK_NOTGRANTED) instead of m4_ref(DB_LOCK_DEADLOCK).],[dnl
+throw a m4_ref(DbLockNotGrantedException) exception instead of
+m4_ref(DbDeadlockException).])
+This allows applications to distinguish between operations which have
+deadlocked and operations which have exceeded their time limits.
+m4_scope_dbenv_flags(DB_TIME_NOTGRANTED, config)
+m4_env_flags_any(DB_TIME_NOTGRANTED)])
+
+m4_idefz([turn off synchronous @transaction commit])
+m4_tag(m4_idef(DB_TXN_NOSYNC), [dnl
+If set, m4_db will not write or synchronously flush the log on transaction
+commit.
+This means that transactions exhibit the ACI (atomicity, consistency,
+and isolation) properties, but not D (durability); that is, database
+integrity will be maintained, but if the application or system fails,
+it is possible some number of the most recently committed transactions
+may be undone during recovery.  The number of transactions at risk is
+governed by how many log updates can fit into the log buffer, how often
+the operating system flushes dirty buffers to disk, and how often the
+log is checkpointed.
+m4_scope_dbenv_flags(DB_TXN_NOSYNC,
+config) m4_env_flags_any(DB_TXN_NOSYNC)])
+
+m4_tag(m4_idef(DB_TXN_NOWAIT), [dnl
+If set and a lock is unavailable for any m4_db operation performed in
+the context of a transaction, cause the operation to
+ifelse(M4EXCEPT, return_only, [dnl
+return m4_ref(DB_LOCK_DEADLOCK) (or m4_ref(DB_LOCK_NOTGRANTED) if
+configured using the m4_ref(DB_TIME_NOTGRANTED) flag).],[dnl
+either return m4_ref(DB_LOCK_DEADLOCK) or throw a
+m4_ref(DbDeadlockException) exception (or return
+m4_ref(DB_LOCK_NOTGRANTED) or throw a m4_ref(DbLockNotGrantedException)
+exception if configured using the m4_ref(DB_TIME_NOTGRANTED) flag).])
+m4_scope_dbenv_flags(DB_TXN_NOWAIT, config)
+m4_env_flags_any(DB_TXN_NOWAIT)])
+
+m4_tag(m4_idef(DB_TXN_SNAPSHOT), [dnl
+If set, all transactions in the environment will be started as if
+m4_ref(DB_TXN_SNAPSHOT) were passed to m4_ref(txn_begin), and all
+non-transactional cursors will be opened as if m4_ref(DB_TXN_SNAPSHOT)
+were passed to m4_ref(dbh_cursor).
+m4_scope_dbenv_flags(DB_TXN_SNAPSHOT, config)
+m4_env_flags_any(DB_TXN_SNAPSHOT)])
+
+m4_idefz([turn off synchronous @transaction commit])
+m4_tag(m4_idef(DB_TXN_WRITE_NOSYNC), [dnl
+If set, m4_db will write, but will not synchronously flush, the log on
+transaction commit.
+This means that transactions exhibit the ACI (atomicity, consistency,
+and isolation) properties, but not D (durability); that is, database
+integrity will be maintained, but if the system fails, it is possible
+some number of the most recently committed transactions may be undone
+during recovery.  The number of transactions at risk is governed by how
+often the system flushes dirty buffers to disk and how often the log is
+checkpointed.
+m4_scope_dbenv_flags(DB_TXN_WRITE_NOSYNC, config)
+m4_env_flags_any(DB_TXN_WRITE_NOSYNC)])
+
+m4_idefz([configure for @stress testing])
+m4_tag(m4_idef(DB_YIELDCPU), [dnl
+If set, m4_db will yield the processor immediately after each page or
+mutex acquisition.  This functionality should never be used for purposes
+other than stress testing.
+m4_scope_dbenv_flags(DB_YIELDCPU, config)
+m4_env_flags_any(DB_YIELDCPU)])
+
+m4_tagend])
+
+m4_param(onoff, [dnl
+If the m4_arg(onoff) parameter is zero, the specified flags are cleared;
+otherwise they are set.])
+m4_paramend
+
+m4_err(dbenv_set_flags, einval)
+
+m4_pf_getter(dbenv_get_flags, configuration flags,, flagsp)
+
+m4_seealso(DbEnv)
+m4_page_footer

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: txn_region.c,v 12.20 2006/08/24 14:46:53 bostic Exp $
+ * $Id: txn_region.c,v 12.31 2007/05/17 15:16:00 bostic Exp $
  */
 
 #include "db_config.h"
@@ -20,11 +19,12 @@ static size_t __txn_region_size __P((DB_ENV *));
  * __txn_open --
  *	Open a transaction region.
  *
- * PUBLIC: int __txn_open __P((DB_ENV *));
+ * PUBLIC: int __txn_open __P((DB_ENV *, int));
  */
 int
-__txn_open(dbenv)
+__txn_open(dbenv, create_ok)
 	DB_ENV *dbenv;
+	int create_ok;
 {
 	DB_TXNMGR *mgr;
 	int ret;
@@ -40,9 +40,9 @@ __txn_open(dbenv)
 	mgr->reginfo.type = REGION_TYPE_TXN;
 	mgr->reginfo.id = INVALID_REGION_ID;
 	mgr->reginfo.flags = REGION_JOIN_OK;
-	if (F_ISSET(dbenv, DB_ENV_CREATE))
+	if (create_ok)
 		F_SET(&mgr->reginfo, REGION_CREATE_OK);
-	if ((ret = __db_r_attach(dbenv,
+	if ((ret = __env_region_attach(dbenv,
 	    &mgr->reginfo, __txn_region_size(dbenv))) != 0)
 		goto err;
 
@@ -65,7 +65,7 @@ __txn_open(dbenv)
 
 err:	dbenv->tx_handle = NULL;
 	if (mgr->reginfo.addr != NULL)
-		(void)__db_r_detach(dbenv, &mgr->reginfo, 0);
+		(void)__env_region_detach(dbenv, &mgr->reginfo, 0);
 
 	(void)__mutex_free(dbenv, &mgr->mutex);
 	__os_free(dbenv, mgr);
@@ -106,8 +106,8 @@ __txn_init(dbenv, mgr)
 			return (ret);
 	}
 
-	if ((ret = __db_shalloc(&mgr->reginfo,
-	    sizeof(DB_TXNREGION), 0, &mgr->reginfo.primary)) != 0) {
+	if ((ret = __env_alloc(&mgr->reginfo,
+	    sizeof(DB_TXNREGION), &mgr->reginfo.primary)) != 0) {
 		__db_errx(dbenv,
 		    "Unable to allocate memory for the transaction region");
 		return (ret);
@@ -132,7 +132,9 @@ __txn_init(dbenv, mgr)
 	region->time_ckp = time(NULL);
 
 	memset(&region->stat, 0, sizeof(region->stat));
+#ifdef HAVE_STATISTICS
 	region->stat.st_maxtxns = region->maxtxns;
+#endif
 
 	SH_TAILQ_INIT(&region->active_txn);
 	SH_TAILQ_INIT(&region->mvcc_txn);
@@ -168,10 +170,10 @@ __txn_findlastckp(dbenv, lsnp, max_lsn)
 	memset(&dbt, 0, sizeof(dbt));
 	if (max_lsn != NULL) {
 		lsn = *max_lsn;
-		if ((ret = __log_c_get(logc, &lsn, &dbt, DB_SET)) != 0)
+		if ((ret = __logc_get(logc, &lsn, &dbt, DB_SET)) != 0)
 			goto err;
 	} else {
-		if ((ret = __log_c_get(logc, &lsn, &dbt, DB_LAST)) != 0)
+		if ((ret = __logc_get(logc, &lsn, &dbt, DB_LAST)) != 0)
 			goto err;
 		/*
 		 * Twiddle the last LSN so it points to the beginning of the
@@ -182,7 +184,7 @@ __txn_findlastckp(dbenv, lsnp, max_lsn)
 	}
 
 	/* Read backwards, looking for checkpoints. */
-	while ((ret = __log_c_get(logc, &lsn, &dbt, DB_PREV)) == 0) {
+	while ((ret = __logc_get(logc, &lsn, &dbt, DB_PREV)) == 0) {
 		if (dbt.size < sizeof(u_int32_t))
 			continue;
 		memcpy(&rectype, dbt.data, sizeof(u_int32_t));
@@ -192,7 +194,7 @@ __txn_findlastckp(dbenv, lsnp, max_lsn)
 		}
 	}
 
-err:	if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
+err:	if ((t_ret = __logc_close(logc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	/*
@@ -203,13 +205,13 @@ err:	if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
 }
 
 /*
- * __txn_dbenv_refresh --
+ * __txn_env_refresh --
  *	Clean up after the transaction system on a close or failed open.
  *
- * PUBLIC: int __txn_dbenv_refresh __P((DB_ENV *));
+ * PUBLIC: int __txn_env_refresh __P((DB_ENV *));
  */
 int
-__txn_dbenv_refresh(dbenv)
+__txn_env_refresh(dbenv)
 	DB_ENV *dbenv;
 {
 	DB_TXN *txn;
@@ -269,7 +271,7 @@ __txn_dbenv_refresh(dbenv)
 		ret = t_ret;
 
 	/* Detach from the region. */
-	if ((t_ret = __db_r_detach(dbenv, reginfo, 0)) != 0 && ret == 0)
+	if ((t_ret = __env_region_detach(dbenv, reginfo, 0)) != 0 && ret == 0)
 		ret = t_ret;
 
 	__os_free(dbenv, mgr);
@@ -279,12 +281,25 @@ __txn_dbenv_refresh(dbenv)
 }
 
 /*
+ * __txn_region_mutex_count --
+ *	Return the number of mutexes the txn region will need.
+ *
+ * PUBLIC: u_int32_t __txn_region_mutex_count __P((DB_ENV *));
+ */
+u_int32_t
+__txn_region_mutex_count(dbenv)
+	DB_ENV *dbenv;
+{
+	/*
+	 * We need a MVCC mutex for each TXN_DETAIL structure, a mutex for
+	 * DB_TXNMGR structure, two mutexes for the DB_TXNREGION structure.
+	 */
+	return (dbenv->tx_max + 1 + 2);
+}
+
+/*
  * __txn_region_size --
- *	 Return the amount of space needed for the txn region.  Make the
- *	 region large enough to hold txn_max transaction detail structures
- *	 plus some space to hold thread handles and the beginning of the
- *	 shalloc region and anything we need for mutex system resource
- *	 recording.
+ *	 Return the amount of space needed for the txn region.
  */
 static size_t
 __txn_region_size(dbenv)
@@ -292,8 +307,16 @@ __txn_region_size(dbenv)
 {
 	size_t s;
 
+	/*
+	 * Make the region large enough to hold the primary transaction region
+	 * structure, txn_max transaction detail structures, txn_max chunks of
+	 * overhead required by the underlying shared region allocator for each
+	 * chunk of memory, txn_max transaction names, at an average of 20
+	 * bytes each, and 10KB for safety.
+	 */
 	s = sizeof(DB_TXNREGION) +
-	    dbenv->tx_max * sizeof(TXN_DETAIL) + 10 * 1024;
+	    dbenv->tx_max * (sizeof(TXN_DETAIL) + __env_alloc_overhead() + 20) +
+	    10 * 1024;
 	return (s);
 }
 
@@ -377,7 +400,8 @@ __txn_oldest_reader(dbenv, lsnp)
  *
  * PUBLIC: int __txn_add_buffer __P((DB_ENV *, TXN_DETAIL *));
  */
-int __txn_add_buffer(dbenv, td)
+int
+__txn_add_buffer(dbenv, td)
 	DB_ENV *dbenv;
 	TXN_DETAIL *td;
 {
@@ -388,6 +412,7 @@ int __txn_add_buffer(dbenv, td)
 	++td->mvcc_ref;
 	MUTEX_UNLOCK(dbenv, td->mvcc_mtx);
 
+	COMPQUIET(dbenv, NULL);
 	return (0);
 }
 
@@ -397,7 +422,8 @@ int __txn_add_buffer(dbenv, td)
  *
  * PUBLIC: int __txn_remove_buffer __P((DB_ENV *, TXN_DETAIL *, db_mutex_t));
  */
-int __txn_remove_buffer(dbenv, td, hash_mtx)
+int
+__txn_remove_buffer(dbenv, td, hash_mtx)
 	DB_ENV *dbenv;
 	TXN_DETAIL *td;
 	db_mutex_t hash_mtx;
@@ -425,8 +451,10 @@ int __txn_remove_buffer(dbenv, td, hash_mtx)
 
 		TXN_SYSTEM_LOCK(dbenv);
 		SH_TAILQ_REMOVE(&region->mvcc_txn, td, links, __txn_detail);
+#ifdef HAVE_STATISTICS
 		--region->stat.st_nsnapshot;
-		__db_shalloc_free(&mgr->reginfo, td);
+#endif
+		__env_alloc_free(&mgr->reginfo, td);
 		TXN_SYSTEM_UNLOCK(dbenv);
 
 		MUTEX_LOCK(dbenv, hash_mtx);

@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -36,6 +35,11 @@ public class BtreeStats extends DatabaseStats {
     private int bt_ndata;
     public int getNumData() {
         return bt_ndata;
+    }
+
+    private int bt_pagecnt;
+    public int getPageCount() {
+        return bt_pagecnt;
     }
 
     private int bt_pagesize;
@@ -120,6 +124,7 @@ public class BtreeStats extends DatabaseStats {
             + "\n  bt_metaflags=" + bt_metaflags
             + "\n  bt_nkeys=" + bt_nkeys
             + "\n  bt_ndata=" + bt_ndata
+            + "\n  bt_pagecnt=" + bt_pagecnt
             + "\n  bt_pagesize=" + bt_pagesize
             + "\n  bt_minkey=" + bt_minkey
             + "\n  bt_re_len=" + bt_re_len

@@ -57,6 +57,10 @@ public class Dbc {
     return db_javaJNI.Dbc_get(swigCPtr, key, data, flags);
   }
 
+  public int get_priority() throws com.sleepycat.db.DatabaseException {
+    return db_javaJNI.Dbc_get_priority(swigCPtr);
+  }
+
   public int pget(com.sleepycat.db.DatabaseEntry key, com.sleepycat.db.DatabaseEntry pkey, com.sleepycat.db.DatabaseEntry data, int flags) throws com.sleepycat.db.DatabaseException {
     return db_javaJNI.Dbc_pget(swigCPtr, key, pkey, data, flags);
   }
@@ -64,5 +68,7 @@ public class Dbc {
   public int put(com.sleepycat.db.DatabaseEntry key, com.sleepycat.db.DatabaseEntry data, int flags) throws com.sleepycat.db.DatabaseException {
     return db_javaJNI.Dbc_put(swigCPtr, key, data, flags);
   }
+
+  public void set_priority(int priority) throws com.sleepycat.db.DatabaseException { db_javaJNI.Dbc_set_priority(swigCPtr, priority); }
 
 }

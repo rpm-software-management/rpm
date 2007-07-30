@@ -1,6 +1,5 @@
-<!--$Id: txn_recover.so,v 10.25 2004/08/13 03:39:03 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: txn_recover.so,v 10.28 2007/05/30 17:24:41 margo Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -28,14 +27,18 @@ DbEnv::txn_recover(DB_PREPLIST preplist[],
 </pre></h3>
 <hr size=1 noshade>
 <h3>Description: DbEnv::txn_recover</h3>
-<p>The DbEnv::txn_recover method returns a list of prepared but not yet resolved
-transactions.  The DbEnv::txn_recover method should only be called after the
-environment has been recovered.  Because database environment state must
-be preserved between recovery and the application calling
-DbEnv::txn_recover, applications must either call DbEnv::txn_recover
-using the same environment handle used when recovery is done, or the
-database environment must not be configured using the <a href="../api_cxx/env_open.html#DB_PRIVATE">DB_PRIVATE</a>
-flag.</p>
+<p>Database environment recovery restores transactions that were prepared,
+but not yet resolved at the time of the system shut down or crash, to
+their state prior to the shut down or crash, including any locks
+previously held.  The DbEnv::txn_recover method returns a list of those
+prepared transactions.</p>
+<p>The DbEnv::txn_recover method should only be called after the environment has
+been recovered.</p>
+<p>Multiple threads of control may call DbEnv::txn_recover, but only one
+thread of control may resolve each returned transaction, that is, only
+one thread of control may call <a href="../api_cxx/txn_commit.html">DbTxn::commit</a> or <a href="../api_cxx/txn_abort.html">DbTxn::abort</a>
+on each returned transaction.  Callers of DbEnv::txn_recover must call
+<a href="../api_cxx/txn_discard.html">DbTxn::discard</a> to discard each transaction they do not resolve.</p>
 <p>On return from DbEnv::txn_recover, the <b>preplist</b> parameter will
 be filled in with a list of transactions that must be resolved by the
 application (committed, aborted or discarded).  The <b>preplist</b>
@@ -48,9 +51,6 @@ ID is the one specified when the transaction was prepared.  The
 application is responsible for ensuring uniqueness among global
 transaction IDs.
 </dl>
-<p>The application must call <a href="../api_cxx/txn_abort.html">DbTxn::abort</a>, <a href="../api_cxx/txn_commit.html">DbTxn::commit</a> or
-<a href="../api_cxx/txn_discard.html">DbTxn::discard</a> on each returned <a href="../api_cxx/txn_class.html">DbTxn</a> handle before
-starting any new operations.</p>
 <p>The DbEnv::txn_recover method
 either returns a non-zero error value
 or throws an exception that encapsulates a non-zero error value on
@@ -65,6 +65,11 @@ array.
 <dt><b>flags</b><dd>The <b>flags</b> parameter must be set to one of the following values:
 <dl compact>
 <dt><a name="DB_FIRST">DB_FIRST</a><dd>Begin returning a list of prepared, but not yet resolved transactions.
+Specifying this flag begins a new pass over all prepared, but not yet
+completed transactions, regardless of whether they have already been returned
+in previous calls to DbEnv::txn_recover.
+Calls to DbEnv::txn_recover from different threads of control should not
+be intermixed in the same environment.
 <dt><a name="DB_NEXT">DB_NEXT</a><dd>Continue returning a list of prepared, but not yet resolved transactions,
 starting where the last call to DbEnv::txn_recover left off.
 </dl>
@@ -80,6 +85,6 @@ starting where the last call to DbEnv::txn_recover left off.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

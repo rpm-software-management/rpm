@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_unlink.c,v 12.15 2006/08/24 14:46:22 bostic Exp $
+ * $Id: os_unlink.c,v 12.18 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -20,6 +19,10 @@ __os_region_unlink(dbenv, path)
 	DB_ENV *dbenv;
 	const char *path;
 {
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: unlink %s", path);
+
 	if (F_ISSET(dbenv, DB_ENV_OVERWRITE))
 		(void)__db_file_multi_write(dbenv, path);
 
@@ -39,6 +42,10 @@ __os_unlink(dbenv, path)
 	_TCHAR *tpath, *orig_tpath, buf[DB_MAXPATHLEN];
 	u_int32_t id;
 	int ret, t_ret;
+
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: unlink %s", path);
 
 	TO_TSTRING(dbenv, path, tpath, ret);
 	if (ret != 0)

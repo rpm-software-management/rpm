@@ -1,0 +1,35 @@
+m4_comment([$Id: env_version.so,v 10.26 2004/09/28 15:04:20 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[dbenv_version, dbenv_get_version_major, dbenv_get_version_minor,
+	dbenv_get_version_patch, dbenv_get_version_string])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_version),
+ifelse(M4API, C_API, [dnl
+char *
+db_version(int *major, int *minor, int *patch);
+])
+ifelse(M4API, CXX_API, [dnl
+static char *
+DbEnv::version(int *major, int *minor, int *patch);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_version) returns a pointer to a string, suitable for
+display, containing m4_db version information.])
+
+m4_parambegin
+m4_param(major, [dnl
+If m4_arg(major) is non-NULL, the major
+version of the m4_db release is copied to the memory to which it refers.])
+m4_param(minor, [dnl
+If m4_arg(minor) is non-NULL, the minor version of the m4_db release
+is copied to the memory to which it refers.])
+m4_param(patch, [dnl
+If m4_arg(patch) is non-NULL, the patch version of the m4_db release
+is copied to the memory to which it refers.])
+m4_paramend
+
+m4_seealso(DbEnv)
+m4_page_footer

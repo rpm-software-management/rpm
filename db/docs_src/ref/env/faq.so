@@ -1,0 +1,46 @@
+m4_comment([$Id: faq.so,v 10.6 2006/05/01 15:32:01 bostic Exp $])
+
+m4_ref_title(Environment,
+    Environment FAQ, database @environment FAQ, env/remote, cam/intro)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I'm using multiple processes to access an m4_db database
+environment; is there any way to ensure that two processes don't run
+transactional recovery at the same time, or that all processes have
+exited the database environment so that recovery can be run?])
+
+m4_p([dnl
+See m4_link(M4RELDIR/ref/transapp/fail, Handling failure in
+Transactional Data Store applications) and
+m4_link(M4RELDIR/ref/transapp/app, Architecting Transactional Data Store
+applications) for a full discussion of this topic.])])
+
+m4_nlist([dnl
+m4_bold([How can I associate application information with a m4_ref(Db)
+or m4_ref(DbEnv) handle?])
+
+m4_p([dnl
+In the C API, the m4_ref(Db) and m4_ref(DbEnv) structures each contain
+an "app_private" field intended to be used to reference
+application-specific information.  See the m4_ref(dbh_create) and
+m4_ref(dbenv_create) documentation for more information.])
+
+m4_p([dnl
+In the C++ or Java APIs, the easiest way to associate
+application-specific data with a handle is to subclass the m4_refcxx(Db)
+or m4_refcxx(DbEnv), for example subclassing m4_refcxx(Db) to get MyDb.
+Objects of type MyDb will still have the m4_db API methods available on
+them, and you can put any extra data or methods you want into the MyDb
+class.  If you are using "callback" APIs that take m4_refcxx(Db) or
+m4_refcxx(DbEnv) arguments (for example, m4_refcxx(dbh_set_bt_compare))
+these will always be called with the m4_refcxx(Db) or m4_refcxx(DbEnv)
+objects you create.  So if you always use MyDb objects, you will be able
+to take the first argument to the callback function and cast it to a
+MyDb (in C++, cast it to (MyDb*)).  That will allow you to access your
+data members or methods.])])
+
+m4_nlistend
+
+m4_page_footer

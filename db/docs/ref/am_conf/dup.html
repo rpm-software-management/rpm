@@ -1,6 +1,5 @@
 <!--$Id: dup.so,v 10.28 2003/10/18 19:15:54 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -28,7 +27,7 @@ and returned from future database operations.</p>
 <p>By default, Berkeley DB stores duplicates in the order in which they were added,
 that is, each new duplicate data item will be stored after any already
 existing data items.  This default behavior can be overridden by using
-the <a href="../../api_c/dbc_put.html">DBcursor-&gt;c_put</a> method and one of the <a href="../../api_c/dbc_put.html#DB_AFTER">DB_AFTER</a>, <a href="../../api_c/dbc_put.html#DB_BEFORE">DB_BEFORE</a>
+the <a href="../../api_c/dbc_put.html">DBcursor-&gt;put</a> method and one of the <a href="../../api_c/dbc_put.html#DB_AFTER">DB_AFTER</a>, <a href="../../api_c/dbc_put.html#DB_BEFORE">DB_BEFORE</a>
 <a href="../../api_c/dbc_put.html#DB_KEYFIRST">DB_KEYFIRST</a> or <a href="../../api_c/dbc_put.html#DB_KEYLAST">DB_KEYLAST</a> flags.  Alternatively, Berkeley DB
 may be configured to sort duplicate data items.</p>
 <p>When stepping through the database sequentially, duplicate data items will
@@ -37,7 +36,7 @@ changes after the last duplicate data item has been returned.  For this
 reason, duplicate data items cannot be accessed using the
 <a href="../../api_c/db_get.html">DB-&gt;get</a> method, as it always returns the first of the duplicate data
 items.  Duplicate data items should be retrieved using a Berkeley DB cursor
-interface such as the <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> method.</p>
+interface such as the <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> method.</p>
 <p>There is a flag that permits applications to request the following data
 item only if it <b>is</b> a duplicate data item of the current entry,
 see <a href="../../api_c/dbc_get.html#DB_NEXT_DUP">DB_NEXT_DUP</a> for more information.  There is a flag that
@@ -67,9 +66,9 @@ permit duplicate duplicates in databases configured for sorted
 duplicates should begin using the <a href="../../api_c/db_put.html#DB_NODUPDATA">DB_NODUPDATA</a> flag immediately.</p>
 <p>For further information on how searching and insertion behaves in the
 presence of duplicates (sorted or not), see the <a href="../../api_c/db_get.html">DB-&gt;get</a>,
-<a href="../../api_c/db_put.html">DB-&gt;put</a>, <a href="../../api_c/dbc_get.html">DBcursor-&gt;c_get</a> and <a href="../../api_c/dbc_put.html">DBcursor-&gt;c_put</a> documentation.</p>
+<a href="../../api_c/db_put.html">DB-&gt;put</a>, <a href="../../api_c/dbc_get.html">DBcursor-&gt;get</a> and <a href="../../api_c/dbc_put.html">DBcursor-&gt;put</a> documentation.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_conf/byteorder.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am_conf/malloc.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,48 @@
+m4_comment([$Id: mutex_set_tas_spins.so,v 10.30 2005/07/20 16:34:01 bostic Exp $])
+
+define(M4PAGELOCAL, [mutex_set_tas_spins, mutex_get_tas_spins])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(mutex_set_tas_spins),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__mutex_set_tas_spins(DB_ENV *dbenv, u_int32_t tas_spins);
+m4_blank
+int
+DB_ENV-__GT__mutex_get_tas_spins(DB_ENV *dbenv, u_int32_t *tas_spinsp);
+
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::mutex_set_tas_spins(u_int32_t tas_spins);
+m4_blank
+int
+DbEnv::mutex_get_tas_spins(u_int32_t *, tas_spinsp);
+]))
+
+m4_p([dnl
+Specify that test-and-set mutexes should spin m4_arg(tas_spins) times
+without blocking.  The value defaults to 1 on uniprocessor systems and
+to 50 times the number of processors on multiprocessor systems.])
+
+m4_env_config(mutex_set_tas_spins,
+[test-and-set spin count], set_tas_spins, [the number of spins])
+
+m4_scope_dbenv(mutex_set_tas_spins)
+
+m4_when_any(mutex_set_tas_spins)
+
+m4_return(mutex_set_tas_spins, std)
+
+m4_parambegin
+m4_param(tas_spins, [dnl
+The m4_arg(tas_spins) parameter is the number of spins test-and-set
+mutexes should execute before blocking.])
+m4_paramend
+
+m4_err(mutex_set_tas_spins, einval)
+
+m4_pf_getter(mutex_get_tas_spins, test-and-set spin count,, tas_spinsp)
+
+m4_seealso(DbEnv)
+m4_page_footer

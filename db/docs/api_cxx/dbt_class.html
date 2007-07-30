@@ -1,7 +1,6 @@
 <!--$Id: dbt_class.so,v 10.1 2002/08/24 18:22:30 bostic Exp $-->
-<!--$Id: dbt_cxx.so,v 10.71 2005/04/01 01:53:16 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: dbt_cxx.so,v 10.72 2007/02/27 00:41:24 mjc Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -117,8 +116,8 @@ content for the Dbt.
 <p>Initialize the data array from a logical record number.  Recno database
 records are ordered by integer keys starting at 1.  When the
 Dbt::set_recno_key_data method is called, the data, size and offset
-fields in the Dbt are implicitly set to hold a byte array representation
-of the integer key.</p>
+fields in the Dbt are implicitly set to hold a byte array
+representation of the integer key.</p>
 <h3>Parameters</h3>
 <dl compact>
 <dt><b>recno</b><dd>The <b>recno</b> parameter logical record number used to initialize the
@@ -269,6 +268,22 @@ and a partial put was done using a Dbt having a <b>dlen</b>
 field of 20, a <b>doff</b> field of 85, and a <b>size</b> field of 30,
 the resulting record would be 115 bytes in length, where the last 30
 bytes would be those specified by the put call.</p>
+<dt><a name="DB_DBT_APPMALLOC">DB_DBT_APPMALLOC</a><dd>After an application-supplied callback routine passed to either
+<a href="../api_cxx/db_associate.html">Db::associate</a> or <a href="../api_cxx/db_set_append_recno.html">Db::set_append_recno</a> is executed, the
+<b>data</b> field of a Dbt may refer to memory allocated with
+<b>malloc</b>(3) or <b>realloc</b>(3).  In that case, the
+callback sets the DB_DBT_APPMALLOC flag in the Dbt so
+that Berkeley DB will call <b>free</b>(3) to deallocate the memory when it
+is no longer required.
+<dt><a name="DB_DBT_MULTIPLE">DB_DBT_MULTIPLE</a><dd>Set in a secondary key creation callback routine passed to
+<a href="../api_cxx/db_associate.html">Db::associate</a> to indicate that multiple secondary keys should be
+associated with the given primary key/data pair.  If set, the
+<b>size</b> field indicates the number of secondary keys and the
+<b>data</b> field refers to an array of that number of Dbt
+structures.
+<p>The DB_DBT_APPMALLOC flag may be set on any of the Dbt
+structures to indicate that their <b>data</b> field needs to be
+freed.</p>
 </dl>
 </dl>
 <hr size=1 noshade>
@@ -278,6 +293,6 @@ bytes would be those specified by the put call.</p>
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

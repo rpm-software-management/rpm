@@ -1,0 +1,85 @@
+m4_comment([$Id: ex.so,v 1.8 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+
+m4_ref_title(m4_db Replication,
+    Ex_rep: a replication example,, rep/faq, rep/ex_comm)
+
+m4_p([dnl
+Ex_rep, found in the m4_path(examples_c/ex_rep) subdirectory
+of the m4_db distribution, is a simple but complete demonstration of a
+replicated application.  The application is a mock stock ticker.  The
+master accepts a stock symbol and an numerical value as input, and
+stores this information into a replicated database; either master or
+clients can display the contents of the database, given an empty input
+line.])
+
+m4_p([dnl
+There are two versions of the application: ex_rep_mgr uses Replication
+Manager, while ex_rep_base uses the Base replication API.  This is
+intended to demonstrate that, while the basic function of the
+application is the same in either case, the replication support
+infrastructure differs markedly.])
+
+m4_p([dnl
+The communication infrastructure demonstrated with ex_rep_base has the
+same dependencies on system networking and threading support as does
+the Replication Manager (see the m4_link(M4RELDIR/ref/rep/intro,
+Introduction)).  The Makefile created by the standard UNIX
+configuration will build the ex_rep examples on most platforms.  Enter
+"make ex_rep_mgr" and/or "make ex_rep_base" to attempt to build
+them.])
+
+m4_p([The synopsis for both programs is as follows:])
+m4_literal([dnl
+ex_rep_xxx m4_utilarg(MC) m4_utilarg([h home]) m4_utilarg([m host:port]) m4_utilarg([o host:port]) m4_utilarg([n sites]) m4_utilarg([p priority])])
+
+m4_p([where "ex_rep_xxx" is either "ex_rep_mgr" or "ex_rep_base".])
+
+m4_p([The options, to either version of the program, are as follows:])
+
+m4_tagbegin
+m4_tagopt(M, [dnl
+Configure this process as a master.])
+m4_tagopt(C, [dnl
+Configure this process as a client.])
+m4_hflag
+m4_tagopt(m, [dnl
+Listen on port "port" of host "host" for incoming connections.])
+m4_tagopt(o, [dnl
+Attempt to connect to another member of the replication group which is
+listening on host "host" at port "port".  Members of a replication group
+should be able to find all other members of a replication group so long
+as they are in contact with at least one other member of the replication
+group.])
+m4_tagopt(n, [dnl
+Specify the total number of sites in the replication group.])
+m4_tagopt(p, [dnl
+Set the election priority.  See m4_ref(rep_elect) for more
+information.])
+m4_tagend
+
+m4_p([dnl
+A typical ex_rep session begins with a command such as the
+following, to start a master:])
+
+m4_indent([dnl
+ex_rep_mgr -M -p 100 -n 4 -h DIR1 -m localhost:6000])
+
+m4_p([dnl
+and several clients:])
+
+m4_indent([dnl
+ex_rep_mgr -C -p 50 -n 4 -h DIR2 -m localhost:6001 -o localhost:6000
+ex_rep_mgr -C -p 10 -n 4 -h DIR3 -m localhost:6002 -o localhost:6000
+ex_rep_mgr -C -p  0 -n 4 -h DIR4 -m localhost:6003 -o localhost:6000])
+
+m4_p([dnl
+In this example, the client with home directory DIR4 can never become
+a master (its priority is 0).  Both of the other clients can become
+masters, but the one with home directory DIR2 is preferred.  Priorities
+are assigned by the application and should reflect the desirability of
+having particular clients take over as master in the case that the
+master fails.])
+
+m4_page_footer

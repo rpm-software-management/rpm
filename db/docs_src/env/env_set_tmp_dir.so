@@ -1,0 +1,79 @@
+m4_comment([$Id: env_set_tmp_dir.so,v 10.26 2004/09/28 15:04:20 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_tmp_dir, dbenv_get_tmp_dir])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_tmp_dir),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_tmp_dir(DB_ENV *dbenv, const char *dir);
+m4_blank
+int
+DB_ENV-__GT__get_tmp_dir(DB_ENV *dbenv, const char **dirp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_tmp_dir(const char *dir);
+m4_blank
+int
+DbEnv::get_tmp_dir(const char **dirp);
+]))
+
+m4_idefz(temporary files)
+
+m4_p([dnl
+Specify the path of a directory to be used as the location of temporary
+files.  The files created to back in-memory access method databases will
+be created relative to this path.  These temporary files can be quite
+large, depending on the size of the database.])
+
+m4_p([dnl
+If no directories are specified, the following alternatives are checked
+in the specified order.  The first existing directory path is used for
+all temporary files.])
+
+m4_nlistbegin
+m4_nlist([The value of the environment variable m4_envvar(TMPDIR).])
+m4_nlistns([The value of the environment variable m4_envvar(TEMP).])
+m4_nlistns([The value of the environment variable m4_envvar(TMP).])
+m4_nlistns([The value of the environment variable m4_envvar(TempFolder).])
+m4_nlistns([The value returned by the GetTempPath interface.])
+m4_nlistns([The directory m4_path(/var/tmp).])
+m4_nlistns([The directory m4_path(/usr/tmp).])
+m4_nlistns([The directory m4_path(/temp).])
+m4_nlistns([The directory m4_path(/tmp).])
+m4_nlistns([The directory m4_path(C:/temp).])
+m4_nlistns([The directory m4_path(C:/tmp).])
+m4_nlistend
+
+m4_p([dnl
+Note: environment variables are only checked if one of the
+m4_ref(DB_USE_ENVIRON) or m4_ref(DB_USE_ENVIRON_ROOT) flags were
+specified.])
+
+m4_p([dnl
+Note: the GetTempPath interface is only checked on Win/32 platforms.])
+
+m4_env_config(dbenv_set_tmp_dir,
+[temporary file directory], set_tmp_dir, [the directory name])
+
+m4_scope_dbenv(dbenv_set_tmp_dir)
+
+m4_when_envopen(dbenv_set_tmp_dir, corrupt)
+
+m4_return(dbenv_set_tmp_dir, std)
+
+m4_parambegin
+m4_param_utf8(dir, [dnl
+The m4_arg(dir) parameter is the directory to be used to store temporary
+files.])
+m4_paramend
+
+m4_err(dbenv_set_tmp_dir,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_tmp_dir,
+database environment temporary file directory,, dirp, reference)
+
+m4_seealso(DbEnv)
+m4_page_footer

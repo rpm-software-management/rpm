@@ -1,0 +1,41 @@
+m4_comment([$Id: seq_remove.so,v 1.6 2004/12/16 19:13:04 bostic Exp $])
+
+define(M4PAGELOCAL, seq_remove)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_remove),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__remove(DB_SEQUENCE *seq, DB_TXN *txnid, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::remove(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(seq_remove) removes the sequence from the database.  This
+method should not be called if there are other open handles on this
+sequence.])
+
+m4_destructor(DbSequence, seq_remove)
+
+m4_return(seq_remove, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_TXN_NOSYNC), [dnl
+If the operation is implicitly transaction protected (the m4_arg(txnid)
+argument is NULL but the operation occurs to a transactional database),
+do not synchronously flush the log when the transaction commits.])
+m4_tagend])
+m4_param_txn(seq_get)
+m4_paramend
+
+m4_err(seq_remove, einval)
+
+m4_seealso(DbSequence)
+m4_page_footer

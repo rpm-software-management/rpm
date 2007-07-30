@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: hash_verify.c,v 12.17 2006/09/07 20:05:31 bostic Exp $
+ * $Id: hash_verify.c,v 12.26 2007/07/02 16:58:02 alexg Exp $
  */
 
 #include "db_config.h"
@@ -41,15 +40,18 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 	db_pgno_t pgno;
 	u_int32_t flags;
 {
+	DB_ENV *dbenv;
 	HASH *hashp;
 	VRFY_PAGEINFO *pip;
 	int i, ret, t_ret, isbad;
 	u_int32_t pwr, mbucket;
 	u_int32_t (*hfunc) __P((DB *, const void *, u_int32_t));
 
+	dbenv = dbp->dbenv;
+	isbad = 0;
+
 	if ((ret = __db_vrfy_getpageinfo(vdp, pgno, &pip)) != 0)
 		return (ret);
-	isbad = 0;
 
 	hashp = dbp->h_internal;
 
@@ -73,7 +75,7 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 	/* h_charkey */
 	if (!LF_ISSET(DB_NOORDERCHK))
 		if (m->h_charkey != hfunc(dbp, CHARKEY, sizeof(CHARKEY))) {
-			EPRINT((dbp->dbenv,
+			EPRINT((dbenv,
 "Page %lu: database has custom hash function; reverify with DB_NOORDERCHK set",
 			    (u_long)pgno));
 			/*
@@ -87,7 +89,7 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 
 	/* max_bucket must be less than the last pgno. */
 	if (m->max_bucket > vdp->last_pgno) {
-		EPRINT((dbp->dbenv,
+		EPRINT((dbenv,
 		    "Page %lu: Impossible max_bucket %lu on meta page",
 		    (u_long)pgno, (u_long)m->max_bucket));
 		/*
@@ -106,14 +108,14 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 	 */
 	pwr = (m->max_bucket == 0) ? 1 : 1 << __db_log2(m->max_bucket + 1);
 	if (m->high_mask != pwr - 1) {
-		EPRINT((dbp->dbenv,
+		EPRINT((dbenv,
 		    "Page %lu: incorrect high_mask %lu, should be %lu",
 		    (u_long)pgno, (u_long)m->high_mask, (u_long)pwr - 1));
 		isbad = 1;
 	}
 	pwr >>= 1;
 	if (m->low_mask != pwr - 1) {
-		EPRINT((dbp->dbenv,
+		EPRINT((dbenv,
 		    "Page %lu: incorrect low_mask %lu, should be %lu",
 		    (u_long)pgno, (u_long)m->low_mask, (u_long)pwr - 1));
 		isbad = 1;
@@ -128,7 +130,7 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 	 * which could make nelem go "negative".
 	 */
 	if (m->nelem > 0x80000000) {
-		EPRINT((dbp->dbenv,
+		EPRINT((dbenv,
 		    "Page %lu: suspiciously high nelem of %lu",
 		    (u_long)pgno, (u_long)m->nelem));
 		isbad = 1;
@@ -152,15 +154,14 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 		 */
 		mbucket = (1 << i) - 1;
 		if (BS_TO_PAGE(mbucket, m->spares) > vdp->last_pgno) {
-			EPRINT((dbp->dbenv,
+			EPRINT((dbenv,
 			    "Page %lu: spares array entry %d is invalid",
 			    (u_long)pgno, i));
 			isbad = 1;
 		}
 	}
 
-err:	if ((t_ret =
-	    __db_vrfy_putpageinfo(dbp->dbenv, vdp, pip)) != 0 && ret == 0)
+err:	if ((t_ret = __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0 && ret == 0)
 		ret = t_ret;
 	if (LF_ISSET(DB_SALVAGE) &&
 	   (t_ret = __db_salvage_markdone(vdp, pgno)) != 0 && ret == 0)
@@ -195,7 +196,7 @@ __ham_vrfy(dbp, vdp, h, pgno, flags)
 	if ((ret = __db_vrfy_getpageinfo(vdp, pgno, &pip)) != 0)
 		return (ret);
 
-	if (TYPE(h) != P_HASH) {
+	if (TYPE(h) != P_HASH && TYPE(h) != P_HASH_UNSORTED) {
 		ret = __db_unknown_path(dbenv, "__ham_vrfy");
 		goto err;
 	}
@@ -240,6 +241,10 @@ __ham_vrfy(dbp, vdp, h, pgno, flags)
 			    dbp, vdp, pgno, h, ent, flags)) != 0)
 				goto err;
 		}
+
+	if (!LF_ISSET(DB_NOORDERCHK) && TYPE(h) == P_HASH &&
+	    (ret = __ham_verify_sorted_page(dbp, NULL, h)) != 0)
+		isbad = 1;
 
 err:	if ((t_ret =
 	    __db_vrfy_putpageinfo(dbenv, vdp, pip)) != 0 && ret == 0)
@@ -459,7 +464,7 @@ __ham_vrfy_structure(dbp, vdp, meta_pgno, flags)
 			continue;
 		}
 
-		if (pip->type != P_HASH) {
+		if (pip->type != P_HASH && pip->type != P_HASH_UNSORTED) {
 			EPRINT((dbp->dbenv,
 			    "Page %lu: hash bucket %lu maps to non-hash page",
 			    (u_long)pgno, (u_long)bucket));
@@ -493,9 +498,9 @@ __ham_vrfy_structure(dbp, vdp, meta_pgno, flags)
 		goto err;
 	}
 
-err:	if ((t_ret = __memp_fput(mpf, m, 0)) != 0)
+err:	if ((t_ret = __memp_fput(mpf, m, dbp->priority)) != 0)
 		return (t_ret);
-	if (h != NULL && (t_ret = __memp_fput(mpf, h, 0)) != 0)
+	if (h != NULL && (t_ret = __memp_fput(mpf, h, dbp->priority)) != 0)
 		return (t_ret);
 	return ((isbad == 1 && ret == 0) ? DB_VERIFY_BAD: ret);
 }
@@ -541,7 +546,8 @@ __ham_vrfy_bucket(dbp, vdp, m, bucket, flags)
 		goto err;
 
 	/* Make sure we got a plausible page number. */
-	if (pgno > vdp->last_pgno || pip->type != P_HASH) {
+	if (pgno > vdp->last_pgno || 
+	    (pip->type != P_HASH && pip->type != P_HASH_UNSORTED)) {
 		EPRINT((dbenv,
 		    "Page %lu: impossible first page in bucket %lu",
 		    (u_long)pgno, (u_long)bucket));
@@ -761,7 +767,7 @@ __ham_vrfy_hashing(dbp, nentries, m, thisbucket, pgno, flags, hfunc)
 
 err:	if (dbt.data != NULL)
 		__os_ufree(dbp->dbenv, dbt.data);
-	if ((t_ret = __memp_fput(mpf, h, 0)) != 0)
+	if ((t_ret = __memp_fput(mpf, h, dbp->priority)) != 0)
 		return (t_ret);
 
 	return ((ret == 0 && isbad == 1) ? DB_VERIFY_BAD : ret);
@@ -991,19 +997,21 @@ __ham_meta2pgset(dbp, vdp, hmeta, flags, pgset)
 		for (;;) {
 			if ((ret = __memp_fget(mpf, &pgno, NULL, 0, &h)) != 0)
 				return (ret);
-			if (TYPE(h) == P_HASH) {
+			if (TYPE(h) == P_HASH || TYPE(h) == P_HASH_UNSORTED) {
 
 				/*
 				 * Make sure we don't go past the end of
 				 * pgset.
 				 */
 				if (++totpgs > vdp->last_pgno) {
-					(void)__memp_fput(mpf, h, 0);
+					(void)__memp_fput(mpf,
+					    h, dbp->priority);
 					return (DB_VERIFY_BAD);
 				}
 				if ((ret =
 				    __db_vrfy_pgset_inc(pgset, pgno)) != 0) {
-					(void)__memp_fput(mpf, h, 0);
+					(void)__memp_fput(mpf,
+					    h, dbp->priority);
 					return (ret);
 				}
 
@@ -1011,7 +1019,7 @@ __ham_meta2pgset(dbp, vdp, hmeta, flags, pgset)
 			} else
 				pgno = PGNO_INVALID;
 
-			if ((ret = __memp_fput(mpf, h, 0)) != 0)
+			if ((ret = __memp_fput(mpf, h, dbp->priority)) != 0)
 				return (ret);
 
 			/* If the new pgno is wonky, go onto the next bucket. */

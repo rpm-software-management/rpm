@@ -1,0 +1,34 @@
+m4_comment([$Id: autocommit.so,v 1.3 2005/02/10 20:02:42 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.4: DB_AUTO_COMMIT,,
+    upgrade.4.4/intro, upgrade.4.4/isolation)
+
+m4_p([dnl
+In previous m4_db releases, the m4_ref(DB_AUTO_COMMIT) flag was used in
+the C and C++ m4_db APIs to wrap operations within a transaction without
+explicitly creating a transaction and passing the m4_ref(DbTxn) handle
+as part of the operation method call.  In the 4.4 release, the
+m4_ref(DB_AUTO_COMMIT) flag no longer needs to be explicitly specified.])
+
+m4_p([dnl
+In the 4.4 release, specifying the m4_ref(DB_AUTO_COMMIT) flag to the
+m4_refT(dbenv_set_flags) causes all database modifications in that
+environment to be transactional; specifying m4_ref(DB_AUTO_COMMIT) to
+the m4_refT(dbh_open) causes all modifications to that database to be
+transactional; specifying m4_ref(DB_AUTO_COMMIT) to the
+m4_ref(dbenv_dbremove) and m4_refT(dbenv_dbrename)s causes those
+specific operations to be transactional.])
+
+m4_p([dnl
+No related application changes are required for this release, as the
+m4_ref(DB_AUTO_COMMIT) flag is ignored where it is no longer needed.
+However, application writers are encouraged to remove uses of the
+m4_ref(DB_AUTO_COMMIT) flag in places where it is no longer needed.])
+
+m4_p([dnl
+Similar changes have been made to the m4_db Tcl API.  These changes are
+not optional, and Tcl applications will need to remove the -auto_commit
+flag from methods where it is no longer needed.])
+
+m4_page_footer

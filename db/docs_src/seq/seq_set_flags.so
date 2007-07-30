@@ -1,0 +1,63 @@
+m4_comment([$Id: seq_set_flags.so,v 1.7 2004/09/07 15:37:41 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[seq_set_flags, seq_get_flags, DB_SEQ_DEC, DB_SEQ_INC, DB_SEQ_WRAP])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_set_flags),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__set_flags(DB_SEQUENCE *seq, u_int32_t flags);
+m4_blank
+int
+DB_SEQUENCE-__GT__get_flags(DB_SEQUENCE *seq, u_int32_t *flagsp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::set_flags(u_int32_t flags);
+m4_blank
+int DbSequence::get_flags(u_int32_t *flagsp);
+]))
+
+m4_p([dnl
+Configure a sequence.  The flags are only effective when creating a
+sequence.  Calling m4_ref(seq_set_flags) is additive; there is no way
+to clear flags.])
+
+m4_p([dnl
+The m4_ref(seq_set_flags) method may not be called after the
+m4_ref(seq_open) method is called.])
+
+m4_return(seq_set_flags, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+
+m4_tag(m4_idef(DB_SEQ_DEC), [dnl
+Specify that the sequence should be decremented.])
+
+m4_tagend
+m4_tagbegin
+
+m4_tag(m4_idef(DB_SEQ_INC), [dnl
+Specify that the sequence should be incremented.  This is the default.])
+
+m4_tagend
+m4_tagbegin
+
+m4_tag(m4_idef(DB_SEQ_WRAP), [dnl
+Specify that the sequence should wrap around when it is incremented
+(decremented) past the specified maximum (minimum) value.])
+
+m4_tagend])
+m4_paramend
+
+m4_err(seq_set_flags, einval)
+
+m4_pf_getter(seq_get_flags, current flags,, flagsp)
+
+m4_seealso(DbSequence)
+m4_page_footer

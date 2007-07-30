@@ -388,7 +388,7 @@ sh_t_remove_tail(l)
 	struct sh_te *ele = SH_TAILQ_FIRST(l, sh_te);
 
 	if (SH_TAILQ_EMPTY(l))
-		return(l);
+		return (l);
 
 	while (SH_TAILQ_NEXT(ele, sh_tes, sh_te) != NULL)
 		ele = SH_TAILQ_NEXT(ele, sh_tes, sh_te);
@@ -720,7 +720,7 @@ struct {
 	{ "B C", "A B C", "B", "A", INSERT_BEFORE },
 	{ "A C", "A B C", "C", "B", INSERT_BEFORE },
 	{ "A C", "A B C", "A", "B", INSERT_AFTER },
- 	{ "A C", "A C B", "C", "B", INSERT_AFTER },
+	{ "A C", "A C B", "C", "B", INSERT_AFTER },
 
 	/* all operations on a three element list */
 

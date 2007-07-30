@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: RepQuoteExample.cpp,v 1.11 2006/09/09 14:15:56 bostic Exp $
+ * $Id: RepQuoteExample.cpp,v 1.15 2007/05/17 15:15:31 bostic Exp $
  */
 
 /*
@@ -118,14 +117,11 @@ int main(int argc, char **argv)
 	int ret;
 
 	// Extract the command line parameters
-	while ((ch = getopt(argc, argv, "CFf:h:Mm:n:o:p:v")) != EOF) {
+	while ((ch = getopt(argc, argv, "Cf:h:Mm:n:o:p:v")) != EOF) {
 		tmppeer = false;
 		switch (ch) {
 		case 'C':
 			config.start_policy = DB_REP_CLIENT;
-			break;
-		case 'F':
-			config.start_policy = DB_REP_FULL_ELECTION;
 			break;
 		case 'h':
 			config.home = optarg;
@@ -399,6 +395,7 @@ void RepQuoteExample::event_callback(DbEnv* dbenv, u_int32_t which, void *info)
 
 	case DB_EVENT_REP_STARTUPDONE: /* FALLTHROUGH */
 	case DB_EVENT_REP_NEWMASTER:
+        case DB_EVENT_REP_PERM_FAILED:
 		// I don't care about this one, for now.
 		break;
 

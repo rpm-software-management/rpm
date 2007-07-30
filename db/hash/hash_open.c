@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: hash_open.c,v 12.16 2006/08/24 14:46:05 bostic Exp $
+ * $Id: hash_open.c,v 12.26 2007/06/14 14:54:37 bostic Exp $
  */
 
 #include "db_config.h"
@@ -94,7 +93,7 @@ __ham_open(dbp, txn, name, base_pgno, flags)
 	hashp = dbp->h_internal;
 	hashp->meta_pgno = base_pgno;
 	if ((ret = __ham_get_meta(dbc)) != 0)
-		goto err1;
+		goto err;
 
 	/* Initialize the hdr structure.  */
 	if (hcp->hdr->dbmeta.magic == DB_HASHMAGIC) {
@@ -102,14 +101,6 @@ __ham_open(dbp, txn, name, base_pgno, flags)
 		if (hashp->h_hash == NULL)
 			hashp->h_hash = hcp->hdr->dbmeta.version < 5
 			? __ham_func4 : __ham_func5;
-		if (!F_ISSET(dbp, DB_AM_RDONLY) && !IS_RECOVERING(dbenv) &&
-		    hashp->h_hash(dbp,
-		    CHARKEY, sizeof(CHARKEY)) != hcp->hdr->h_charkey) {
-			__db_errx(dbenv,
-			    "hash: incompatible hash function");
-			ret = EINVAL;
-			goto err2;
-		}
 		hashp->h_nelem = hcp->hdr->nelem;
 		if (F_ISSET(&hcp->hdr->dbmeta, DB_HASH_DUP))
 			F_SET(dbp, DB_AM_DUP);
@@ -117,17 +108,16 @@ __ham_open(dbp, txn, name, base_pgno, flags)
 			F_SET(dbp, DB_AM_DUPSORT);
 		if (F_ISSET(&hcp->hdr->dbmeta, DB_HASH_SUBDB))
 			F_SET(dbp, DB_AM_SUBDB);
-
 	} else if (!IS_RECOVERING(dbenv) && !F_ISSET(dbp, DB_AM_RECOVER)) {
 		__db_errx(dbenv,
-		    "%s: Invalid hash meta page %d", name, base_pgno);
+		    "%s: Invalid hash meta page %lu", name, (u_long)base_pgno);
 		ret = EINVAL;
 	}
 
-err2:	/* Release the meta data page */
+	/* Release the meta data page */
 	if ((t_ret = __ham_release_meta(dbc)) != 0 && ret == 0)
 		ret = t_ret;
-err1:	if ((t_ret  = __db_c_close(dbc)) != 0 && ret == 0)
+err:	if ((t_ret  = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -167,6 +157,7 @@ __ham_metachk(dbp, name, hashm)
 		return (DB_OLD_VERSION);
 	case 7:
 	case 8:
+	case 9:
 		break;
 	default:
 		__db_errx(dbenv,
@@ -366,7 +357,7 @@ __ham_new_file(dbp, txn, fhp, name)
 		if ((ret = __db_log_page(dbp,
 		    txn, &lsn, meta->dbmeta.pgno, (PAGE *)meta)) != 0)
 			goto err;
-		ret = __memp_fput(mpf, meta, 0);
+		ret = __memp_fput(mpf, meta, dbp->priority);
 		meta = NULL;
 		if (ret != 0)
 			goto err;
@@ -381,7 +372,7 @@ __ham_new_file(dbp, txn, fhp, name)
 		if ((ret =
 		    __db_log_page(dbp, txn, &page->lsn, lpgno, page)) != 0)
 			goto err;
-		ret = __memp_fput(mpf, page, 0);
+		ret = __memp_fput(mpf, page, dbp->priority);
 		page = NULL;
 		if (ret != 0)
 			goto err;
@@ -430,9 +421,9 @@ err:	if (buf != NULL)
 		__os_free(dbenv, buf);
 	else {
 		if (meta != NULL)
-			(void)__memp_fput(mpf, meta, 0);
+			(void)__memp_fput(mpf, meta, dbp->priority);
 		if (page != NULL)
-			(void)__memp_fput(mpf, page, 0);
+			(void)__memp_fput(mpf, page, dbp->priority);
 	}
 	return (ret);
 }
@@ -510,14 +501,18 @@ __ham_new_subdb(mdbp, dbp, txn)
 		goto err;
 
 	/* Reflect the group allocation. */
-	if (DBENV_LOGGING(dbenv))
+	if (DBENV_LOGGING(dbenv)
+#if !defined(DEBUG_WOP)
+	    && txn != NULL
+#endif
+	)
 		if ((ret = __ham_groupalloc_log(mdbp, txn,
 		    &LSN(mmeta), 0, &LSN(mmeta), meta->spares[0],
 		    meta->max_bucket + 1, 0, mmeta->last_pgno)) != 0)
 			goto err;
 
 	/* Release the new meta-data page. */
-	if ((ret = __memp_fput(mpf, meta, 0)) != 0)
+	if ((ret = __memp_fput(mpf, meta, dbc->priority)) != 0)
 		goto err;
 	meta = NULL;
 
@@ -531,22 +526,22 @@ __ham_new_subdb(mdbp, dbp, txn)
 	mmeta->last_pgno = lpgno;
 	P_INIT(h, dbp->pgsize, lpgno, PGNO_INVALID, PGNO_INVALID, 0, P_HASH);
 	LSN(h) = LSN(mmeta);
-	if ((ret = __memp_fput(mpf, h, 0)) != 0)
+	if ((ret = __memp_fput(mpf, h, dbc->priority)) != 0)
 		goto err;
 
 err:	/* Now put the master-metadata page back. */
-	if (mmeta != NULL &&
-	    (t_ret = __memp_fput(mpf, mmeta, 0)) != 0 && ret == 0)
+	if (mmeta != NULL && (t_ret = __memp_fput(mpf,
+		mmeta, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __LPUT(dbc, mmlock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (meta != NULL &&
-	    (t_ret = __memp_fput(mpf, meta, 0)) != 0 && ret == 0)
+	    (t_ret = __memp_fput(mpf, meta, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 	if ((t_ret = __LPUT(dbc, metalock)) != 0 && ret == 0)
 		ret = t_ret;
 	if (dbc != NULL)
-		if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+		if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 			ret = t_ret;
 	return (ret);
 }

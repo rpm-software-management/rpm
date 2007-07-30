@@ -14,7 +14,7 @@ chk(f)
 
 	if (freopen(f, "r", stdin) == NULL) {
 		fprintf(stderr, "%s: %s\n", f, strerror(errno));
-		exit (1);
+		exit(EXIT_FAILURE);
 	}
 	for (l = 1, r = 0; (ch = getchar()) != EOF;) {
 		if (ch != ',')

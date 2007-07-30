@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: sdb015.tcl,v 12.7 2006/08/24 14:46:39 bostic Exp $
+# $Id: sdb015.tcl,v 12.9 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	sdb015
 # TEST	Tests basic in-memory named database functionality

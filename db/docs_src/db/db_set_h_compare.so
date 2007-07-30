@@ -1,0 +1,66 @@
+m4_comment([$Id: db_set_h_compare.so,v 1.1 2006/10/27 00:28:44 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_set_h_compare)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_set_h_compare),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__set_h_compare(DB *db,
+    int (*compare_fcn)(DB *db, const DBT *dbt1, const DBT *dbt2));
+])
+ifelse(M4API, CXX_API, [dnl
+extern "C" {
+    typedef int (*compare_fcn_type)(DB *db, const DBT *dbt1, const DBT *dbt2);
+};
+int
+Db::set_h_compare(compare_fcn_type compare_fcn);
+]))
+
+m4_p([dnl
+Set the Hash key comparison function.  The comparison function is called
+whenever it is necessary to compare a key specified by the application
+with a key currently stored in the database.])
+
+m4_p([dnl
+If no comparison function is specified, a byte-by-byte comparison is
+performed.])
+
+m4_scope_dbh(dbh_set_h_compare)
+
+m4_when_dbopen(dbh_set_h_compare, corrupt)
+
+m4_return(dbh_set_h_compare, std)
+
+m4_parambegin
+m4_param(compare_fcn, [dnl
+The m4_arg(compare_fcn) function is the application-specified Hash
+comparison function.  The comparison function takes three parameters:
+m4_tagbegin
+m4_tag(m4_arg(db), [dnl
+The m4_arg(db) parameter is the enclosing database handle.])
+m4_tag(m4_arg(dbt1), [dnl
+The m4_arg(dbt1) parameter is the m4_ref(Dbt) representing the
+application supplied key.])
+m4_tag(m4_arg(dbt2), [dnl
+The m4_arg(dbt2) parameter is the m4_ref(Dbt) representing the
+current database's key.])
+m4_tagend])
+
+m4_p([dnl
+The m4_arg(compare_fcn) function must return an integer value less
+than, equal to, or greater than zero if the first key parameter is
+considered to be respectively less than, equal to, or greater than the
+second key parameter.  The comparison function must correctly handle any
+key values used by the application (possibly including zero-length
+keys).  The m4_arg(data) and m4_arg(size) fields of the m4_ref(Dbt) are
+the only fields that may be used for the purposes of this comparison,
+and no particular alignment of the memory to which by the m4_arg(data)
+field refers may be assumed.])
+m4_paramend
+
+m4_err(dbh_set_h_compare,
+einval, [the method was called after m4_ref(dbh_open) was called])
+
+m4_seealso(Db)
+m4_page_footer

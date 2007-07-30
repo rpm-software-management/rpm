@@ -1,0 +1,55 @@
+m4_comment([$Id: db_exists.so,v 1.1 2007/07/12 18:27:42 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_exists)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_exists),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__exists(DB *db, DB_TXN *txnid, DBT *key, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::exists(DbTxn *txnid, Dbt *key, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_exists) returns if the specified key appears in the
+database.])
+
+m4_return(dbh_exists,
+specific, DB_NOTFOUND, [if the specified key is not in the database],
+specific, DB_KEYEMPTY, [if the database is a Queue or Recno database and
+the specified key exists, but was never explicitly created by the
+application or was later deleted], prev)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(1)
+
+m4_sf_or_add(1)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_READ_COMMITTED), [dnl
+Configure a transactional read operation to have degree 2 isolation (the
+read is not repeatable).])
+
+m4_tag(m4_idef(DB_READ_UNCOMMITTED), [dnl
+Configure a transactional read operation to have degree 1 isolation,
+reading modified but not yet committed data.  Silently ignored if the
+m4_ref(DB_READ_UNCOMMITTED) flag was not specified when the underlying
+database was opened.])
+
+m4_rmw_flag([Because the m4_refT(dbh_exists) will not hold locks across
+m4_db calls in non-transactional operations, the m4_ref(DB_RMW) flag to
+the m4_ref(dbh_exists) call is meaningful only in the presence of
+transactions.])
+
+m4_tagend])
+
+m4_param_key
+m4_param_txn(dbh_exists, ro)
+m4_paramend
+
+m4_seealso(Db)
+m4_page_footer

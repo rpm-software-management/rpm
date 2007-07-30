@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>BTree Configuration</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="dbconfig.html" title="Chapter 6. Database Configuration" />
+    <link rel="up" href="dbconfig.html" title="ChapterÂ 6.Â Database Configuration" />
     <link rel="previous" href="cachesize.html" title="Selecting the Cache Size" />
   </head>
   <body>
@@ -17,9 +17,9 @@
           <th colspan="3" align="center">BTree Configuration</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="cachesize.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 6. Database Configuration</th>
-          <td width="20%" align="right"> </td>
+          <td width="20%" align="left"><a accesskey="p" href="cachesize.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 6.Â Database Configuration</th>
+          <td width="20%" align="right">Â </td>
         </tr>
       </table>
       <hr />
@@ -327,7 +327,7 @@
 ...
 
 Db db(NULL, 0);
-const char *file_name = &quot;myd.db&quot;;
+const char *file_name = "myd.db";
 
 try {
     // Configure the database for sorted duplicates
@@ -341,9 +341,9 @@ try {
             DB_CREATE,  // Open flags
             0);         // File mode. Using defaults
 } catch(DbException &amp;e) {
-    db.err(e.get_errno(), &quot;Database '%s' open failed.&quot;, file_name);
+    db.err(e.get_errno(), "Database '%s' open failed.", file_name);
 } catch(std::exception &amp;e) {
-    db.errx(&quot;Error opening database: %s : %s\n&quot;, file_name, e.what());
+    db.errx("Error opening database: %s : %s\n", file_name, e.what());
 } 
 
 ...
@@ -351,9 +351,9 @@ try {
 try {
     db.close(0);
 } catch(DbException &amp;e) {
-    db.err(e.get_errno(), &quot;Database '%s' close failed.&quot;, file_name);
+    db.err(e.get_errno(), "Database '%s' close failed.", file_name);
 } catch(std::exception &amp;e) {
-    db.errx(&quot;Error closing database: %s : %s\n&quot;, file_name, e.what());
+    db.errx("Error closing database: %s : %s\n", file_name, e.what());
 } 
 
 </pre>
@@ -528,18 +528,18 @@ db.set_bt_compare(compare_int);
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="cachesize.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="cachesize.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="dbconfig.html">Up</a>
           </td>
-          <td width="40%" align="right"> </td>
+          <td width="40%" align="right">Â </td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Selecting the Cache Size </td>
+          <td width="40%" align="left" valign="top">Selecting the Cache SizeÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> </td>
+          <td width="40%" align="right" valign="top">Â </td>
         </tr>
       </table>
     </div>

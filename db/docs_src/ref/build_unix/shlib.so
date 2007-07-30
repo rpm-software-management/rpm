@@ -1,0 +1,126 @@
+m4_comment([$Id: shlib.so,v 10.19 2006/10/05 01:06:05 bostic Exp $])
+
+define(__m4_product_name, m4_db)
+define(__m4_directory, build_unix)
+define(__m4_lib_name, libdb)
+define(__m4_lib_suffix, db)
+
+m4_ref_title(Building __m4_product_name for UNIX/POSIX systems,
+    Dynamic shared libraries,
+    @shared libraries, __m4_directory/install,
+    ifelse(__m4_product_name, m4_xml, __m4_directory/notes, __m4_directory/test))
+
+m4_p([dnl
+m4_bold(Warning): the following information is intended to be generic and
+is likely to be correct for most UNIX systems.  Unfortunately, dynamic
+shared libraries are not standard between UNIX systems, so there may be
+information here that is not correct for your system.  If you have
+problems, consult your compiler and linker manual pages, or your system
+administrator.])
+
+m4_p([dnl
+The __m4_product_name dynamic shared libraries are created with the name
+__m4_lib_name-m4_bold(major).m4_bold(minor).so, where m4_bold(major) is
+the major version number and m4_bold(minor) is the minor version number.
+Other shared libraries are created if Java and Tcl support are enabled:
+specifically, __m4_lib_name[_java-]m4_bold(major).m4_bold(minor).so
+and __m4_lib_name[_tcl-]m4_bold(major).m4_bold(minor).so.])
+
+m4_p([dnl
+On most UNIX systems, when any shared library is created, the linker
+stamps it with a "SONAME".  In the case of __m4_product_name, the SONAME
+is __m4_lib_name-m4_bold(major).m4_bold(minor).so.  It is important to
+realize that applications linked against a shared library remember the
+SONAMEs of the libraries they use and not the underlying names in the
+filesystem.])
+
+m4_p([dnl
+When the __m4_product_name shared library is installed, links are
+created in the install lib directory so that
+__m4_lib_name-m4_bold(major).m4_bold(minor).so,
+__m4_lib_name-m4_bold(major).so, and __m4_lib_name.so all refer to the
+same library.  This library will have an SONAME of
+__m4_lib_name-m4_bold(major).m4_bold(minor).so.])
+
+m4_p([dnl
+Any previous versions of the __m4_product_name libraries that are
+present in the install directory (such as __m4_lib_name-2.7.so or
+__m4_lib_name-2.so) are left unchanged.  (Removing or moving old shared
+libraries is one drastic way to identify applications that have been
+linked against those vintage releases.)])
+
+m4_p([dnl
+Once you have installed the __m4_product_name libraries, unless they are
+installed in a directory where the linker normally looks for shared
+libraries, you will need to specify the installation directory as part
+of compiling and linking against __m4_product_name.  Consult your system
+manuals or system administrator for ways to specify a shared library
+directory when compiling and linking applications with the
+__m4_product_name libraries.  Many systems support environment variables
+(for example, LD_LIBRARY_PATH or LD_RUN_PATH), or system configuration
+files (for example, /etc/ld.so.conf) for this purpose.])
+
+m4_p([dnl
+m4_bold(Warning): some UNIX installations may have an already existing
+m4_path(/usr/lib/__m4_lib_name.so), and this library may be an incompatible
+version of __m4_product_name.])
+
+m4_p([dnl
+We recommend that applications link against __m4_lib_name.so (for example,
+using [-l]__m4_lib_suffix).  Even though the linker uses the file named
+__m4_lib_name.so, the executable file for the application remembers the
+library's SONAME (__m4_lib_name-m4_bold(major).m4_bold(minor).so).  This
+has the effect of marking the applications with the versions they need
+at link time.  Because applications locate their needed SONAMEs when
+they are executed, all previously linked applications will continue to
+run using the library they were linked with, even when a new version of
+__m4_product_name is installed and the file m4_path(__m4_lib_name.so)
+is replaced with a new version.])
+
+m4_p([dnl
+Applications that know they are using features specific to a particular
+__m4_product_name release can be linked to that release.  For example, an
+application wanting to link to __m4_product_name major release "3" can link
+using [-l]__m4_lib_suffix[-3], and applications that know about a particular
+minor release number can specify both major and minor release numbers;
+for example, [-l]__m4_lib_suffix[-3.5.]])
+
+m4_p([dnl
+If you want to link with __m4_product_name before performing library
+installation, the "make" command will have created a shared library
+object in the m4_path(.libs) subdirectory of the build directory, such
+as m4_path(build_unix/.libs/__m4_lib_name-major.minor.so).  If you want
+to link a file against this library, with, for example, a major number
+of "3" and a minor number of "5", you should be able to do something
+like the following:])
+
+m4_indent([dnl
+cc -L BUILD_DIRECTORY/.libs -o testprog testprog.o [-l]__m4_lib_suffix[-3.5]
+env LD_LIBRARY_PATH="BUILD_DIRECTORY/.libs:$LD_LIBRARY_PATH" ./testprog])
+
+m4_p([dnl
+where m4_bold(BUILD_DIRECTORY) is the full directory path to the directory
+where you built __m4_product_name.])
+
+m4_p([dnl
+The libtool program (which is configured in the build directory) can be
+used to set the shared library path and run a program.  For example,
+the following runs the gdb debugger on the db_dump utility after setting
+the appropriate paths:])
+
+m4_indent([libtool gdb db_dump])
+
+m4_p([dnl
+Libtool may not know what to do with arbitrary commands (it is hardwired
+to recognize "gdb" and some other commands).  If it complains the mode
+argument will usually resolve the problem:])
+
+m4_indent([libtool --mode=execute my_debugger db_dump])
+
+m4_p([dnl
+On most systems, using libtool in this way is exactly equivalent to
+setting the LD_LIBRARY_PATH environment variable and then executing the
+program.  On other systems, using libtool has the virtue of knowing about
+any other details on systems that don't behave in this typical way.])
+
+m4_page_footer

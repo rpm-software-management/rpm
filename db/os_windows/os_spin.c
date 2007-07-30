@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_spin.c,v 12.6 2006/08/24 14:46:22 bostic Exp $
+ * $Id: os_spin.c,v 12.8 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"

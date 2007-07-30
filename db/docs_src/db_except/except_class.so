@@ -1,0 +1,53 @@
+m4_comment([$Id: except_class.so,v 10.38 2004/09/28 15:04:19 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[DbException, except_get_env, except_get_errno, except_what])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(DbException),
+ifelse(M4API, CXX_API, [dnl
+class DbException {
+public:
+	int get_errno() const;
+	virtual const char *what() const;
+	DbEnv *get_env() const;
+};
+]))
+
+m4_p([dnl
+This information describes the m4_ref(DbException) class and how it is
+used by the various m4_db classes.])
+
+ifelse(M4API, CXX_API, [dnl
+m4_p([dnl
+Most methods in the m4_db classes return an int, but also throw an
+exception.  This allows for two different error behaviors.  By default,
+the m4_db C++ API is configured to throw an exception whenever a serious
+error occurs.  This generally allows for cleaner logic for transaction
+processing because a try block can surround a single transaction.
+Alternatively, m4_db can be configured to not throw exceptions, and
+instead have the individual function return an error code, by setting
+the m4_ref(DB_CXX_NO_EXCEPTIONS) for the m4_ref(Db) and m4_ref(DbEnv)
+constructors.])
+
+m4_p([dnl
+A DbException object contains an informational string, an errno, and a
+reference to the environment from which the exception was thrown.  The
+errno can be obtained by using m4_ref(except_get_errno), and can be
+used, in standard cases, to determine the type of the exception.  The
+informational string can be obtained by using m4_ref(except_what).  And,
+the environment can be obtained using m4_ref(except_get_env).])
+
+m4_p([dnl
+We expect in the future that this class will inherit from the standard
+class exception, but certain language implementation bugs currently
+prevent this on some platforms.])])
+
+m4_p([dnl
+Some methods may return non-zero values without issuing an exception.
+This occurs in situations that are not normally considered an error, but
+when some informational status is returned.  For example,
+m4_ref(dbh_get) returns m4_ref(DB_NOTFOUND) when a requested key does
+not appear in the database.])
+
+m4_page_footer

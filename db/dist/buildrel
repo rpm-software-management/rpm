@@ -1,17 +1,16 @@
-# $Id: buildrel,v 12.14 2006/09/20 01:12:33 bostic Exp $
+# $Id: buildrel,v 12.28 2007/07/13 14:36:54 bostic Exp $
 #
 # Build the distribution package.
 #
 # A set of commands intended to be cut and pasted into a csh window.
 
 setenv D		~bostic/berkeleydb/db.rel
-setenv DBCONF		"~bostic/bin/dbconf thread"
+setenv DBCONF		"~db/bin/dbconf thread"
 setenv TARGETDIR	~bostic/berkeleydb/
 
 # Update the release number.
-cd $D/dist
-cvs -q update RELEASE
-vi RELEASE
+cd $D/dist && cvs -q update RELEASE && vi RELEASE
+setenv MINOR `sh -c '. RELEASE; echo $DB_VERSION_MINOR'`
 setenv VERSION `sh -c '. RELEASE; echo $DB_VERSION'`
 echo "Version: $VERSION"
 
@@ -21,39 +20,39 @@ cd $D && cvs -q update
 # Build auto-generated files.
 cd $D/dist && sh s_all
 
+# Update the change log patch number.
+cd $D/docs_src/ref/changelog && vi toc.so 4.$MINOR.html
+
 # Commit all of the changes.
 cd $D && cvs -q commit
 
 # Copy a development tree into a release tree.
 setenv R $TARGETDIR/db-$VERSION
-rm -rf $R && mkdir -p $R
-cd $D && cvs -q status | \
-    grep "Repository revision" | \
-    sed -e 's;.*CVSROOT/db/;;' \
-        -e 's;.*CVSROOT/;;' \
-	-e 's;,v$;;' | pax -rw $R/
+rm -rf $R $R.tmp && mkdir $R.tmp
+cd $R.tmp && cvs -q co db > /dev/null && mv db $R && cd .. && rm -rf $R.tmp
+cd $R && find . -name CVS | xargs rm -rf
 
-# Build the documentation, copy it into place.
-cd db_docs && cvs -q update
-cd db_docs && sh build $D clean && sh build $D |& sed '/.html$/d'
-cd je/docs_src && sh build db ../../db
-rm -rf $R/docs && cp -r $D/docs $R/docs
+# Build the C/C++/Java API documentation and Reference Guide.
+#
+# XXX
+# This command only builds the C/C++ API documentation and Reference Guide
+cd $R/docs_src && sh build clean && sh build |& sed '/.html$/d'
 
 ########################################
 # PATCH RELEASE: starting point.
 ########################################
 
-# Fix symbolic links and permissions.
+# Create symbolic links and cscope output, fix permissions.
 cd $R/dist && sh s_perm
+cd $R/dist && sh s_cscope
 cd $R/dist && sh s_symlink
 
 # Remove source directories we don't distribute.
-cd $R && rm -rf build_brew os_brew
-cd $R && rm -rf docs_src docs/api_java docs/api_c/pindex.src
+cd $R && rm -rf build_brew_x build_s60_x
 cd $R && rm -rf java/src/com/sleepycat/xa
 cd $R && rm -rf rpc_server/java
 cd $R && rm -rf test/TODO test/upgrade test_perf test_purify
-cd $R && rm -rf test_rep test_server test_thread test_vxworks test_xa
+cd $R && rm -rf test_rep test_server test_vxworks
 
 # Build a version and smoke test.
 cd $R && rm -rf build_run && mkdir build_run

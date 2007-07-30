@@ -1,0 +1,36 @@
+m4_comment([$Id: close.so,v 10.18 2003/10/18 19:15:51 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Database close, @closing a database, am/sync, am/second)
+
+m4_p([dnl
+The m4_refT(dbh_close) closes the m4_ref(Db) database handle.  By
+default, m4_ref(dbh_close) also flushes all modified records from the
+database cache to disk.])
+
+m4_p([dnl
+There is one flag that you can set to customize m4_ref(dbh_close):])
+
+m4_tagbegin
+m4_tag([m4_ref(DB_NOSYNC)], [Do not flush cached information to disk.])
+m4_tagend
+
+m4_bold([It is important to understand that flushing cached information
+to disk only minimizes the window of opportunity for corrupted data, it
+does not eliminate the possibility.])
+
+m4_p([dnl
+While unlikely, it is possible for database corruption to happen if a
+system or application crash occurs while writing data to the database. To
+ensure that database corruption never occurs, applications must either:])
+
+m4_bulletbegin
+m4_bullet([Use transactions and logging with automatic recovery.])
+m4_bullet([Use logging and application-specific recovery.])
+m4_bullet([Edit a copy of the database, and, once all applications
+using the database have successfully called m4_ref(dbh_close), use
+system operations (for example, the POSIX rename system call) to
+atomically replace the original database with the updated copy.])
+m4_bulletend
+
+m4_page_footer

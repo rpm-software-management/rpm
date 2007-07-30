@@ -1,6 +1,5 @@
 <!--$Id: memp_list.so,v 1.1 2002/08/30 20:01:28 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -10,7 +9,7 @@
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Memory Pools and Related Methods</h3>
-<!--$Id: m4.methods,v 1.9 2006/08/25 16:40:01 bostic Exp $-->
+<!--$Id: m4.methods,v 1.11 2007/07/06 00:22:53 mjc Exp $-->
 <table border=1 align=center>
 <tr><th>Memory Pools and Related Methods</th><th>Description</th></tr>
 <!--Db::mpf--><tr><td><a href="../api_c/db_get_mpf.html">DB-&gt;get_mpf</a></td><td>Return <a href="../api_c/db_class.html">DB</a>'s underlying <a href="../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle</td></tr>
@@ -21,6 +20,7 @@
 <tr><th>Memory Pool Configuration</th><th><br></th></tr>
 <!--DbEnv::memp_register--><tr><td><a href="../api_c/memp_register.html">DB_ENV-&gt;memp_register</a></td><td>Register input/output functions for a file in a memory pool</td></tr>
 <!--DbEnv::set_cachesize--><tr><td><a href="../api_c/env_set_cachesize.html">DB_ENV-&gt;set_cachesize</a></td><td>Set the environment cache size</td></tr>
+<!--DbEnv::set_cache_max--><tr><td><a href="../api_c/env_set_cache_max.html">DB_ENV-&gt;set_cache_max</a></td><td>Set the maximum cache size</td></tr>
 <!--DbEnv::set_mp_max_openfd--><tr><td><a href="../api_c/memp_openfd.html">DB_ENV-&gt;set_mp_max_openfd</a></td><td>Set the maximum number of open file descriptors</td></tr>
 <!--DbEnv::set_mp_max_write--><tr><td><a href="../api_c/memp_maxwrite.html">DB_ENV-&gt;set_mp_max_write</a></td><td>Set the maximum number of sequential disk writes</td></tr>
 <!--DbEnv::set_mp_mmapsize--><tr><td><a href="../api_c/env_set_mp_mmapsize.html">DB_ENV-&gt;set_mp_mmapsize</a></td><td>Set maximum mapped-in database file size</td></tr>
@@ -31,7 +31,6 @@
 <!--DbMpoolFile::get--><tr><td><a href="../api_c/memp_fget.html">DB_MPOOLFILE-&gt;get</a></td><td>Get page from a file in a memory pool</td></tr>
 <!--DbMpoolFile::open--><tr><td><a href="../api_c/memp_fopen.html">DB_MPOOLFILE-&gt;open</a></td><td>Open a file in a memory pool</td></tr>
 <!--DbMpoolFile::put--><tr><td><a href="../api_c/memp_fput.html">DB_MPOOLFILE-&gt;put</a></td><td>Return a page to a memory pool</td></tr>
-<!--DbMpoolFile::set--><tr><td><a href="../api_c/memp_fset.html">DB_MPOOLFILE-&gt;set</a></td><td>Set memory pool page attributes</td></tr>
 <!--DbMpoolFile::sync--><tr><td><a href="../api_c/memp_fsync.html">DB_MPOOLFILE-&gt;sync</a></td><td>Flush pages from a file in a memory pool</td></tr>
 <tr><th>Memory Pool File Configuration</th><th><br></th></tr>
 <!--DbMpoolFile::set_clear_len--><tr><td><a href="../api_c/memp_set_clear_len.html">DB_MPOOLFILE-&gt;set_clear_len</a></td><td>Set file page bytes to be cleared</td></tr>
@@ -43,6 +42,6 @@
 <!--DbMpoolFile::set_pgcookie--><tr><td><a href="../api_c/memp_set_pgcookie.html">DB_MPOOLFILE-&gt;set_pgcookie</a></td><td>Set file cookie for pgin/pgout</td></tr>
 <!--DbMpoolFile::set_priority--><tr><td><a href="../api_c/memp_set_priority.html">DB_MPOOLFILE-&gt;set_priority</a></td><td>Set memory pool file priority</td></tr>
 </table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

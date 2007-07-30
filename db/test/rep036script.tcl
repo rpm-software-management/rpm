@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2004-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2004,2007 Oracle.  All rights reserved.
 #
-# $Id: rep036script.tcl,v 12.5 2006/09/15 14:48:14 carol Exp $
+# $Id: rep036script.tcl,v 12.9 2007/05/17 18:17:21 bostic Exp $
 #
 # Rep036 script - create additional writers in master env.
 #
@@ -30,7 +29,11 @@ set writerid [ lindex $argv 1 ]
 set nentries [ lindex $argv 2 ]
 set method [ lindex $argv 3 ]
 
-set is_repchild 1
+# Join the queue env.  We assume the rep test convention of
+# placing the messages in $testdir/MSGQUEUEDIR.
+set queueenv [eval berkdb_env -home $testdir/MSGQUEUEDIR]
+error_check_good script_qenv_open [is_valid_env $queueenv] TRUE
+
 # We need to set up our own machid.
 repladd 1
 repladd 2
@@ -82,7 +85,7 @@ while { $count < $nentries } {
 	set txn "-txn $t"
 
 # 	If using deadlock detection, uncomment this and comment the
-#	following put statement. 
+#	following put statement.
 #	# Writing to this database can deadlock.  If we do, let the
 #	# deadlock detector break the lock, wait a second, and try again.
 #	while { [catch {eval {$mdb put}\
@@ -90,7 +93,7 @@ while { $count < $nentries } {
 #		error_check_good deadlock [is_substr $ret DB_LOCK_DEADLOCK] 1
 #		tclsleep 1
 #	}
-									    
+									 
 	set ret [eval \
 	    {$mdb put} $txn {$key [chop_data $method $str]}]
 	error_check_good put $ret 0

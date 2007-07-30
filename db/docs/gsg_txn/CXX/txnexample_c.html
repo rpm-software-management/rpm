@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Transaction Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="wrapup.html" title="Chapter 6. Summary and Examples" />
-    <link rel="previous" href="wrapup.html" title="Chapter 6. Summary and Examples" />
+    <link rel="up" href="wrapup.html" title="ChapterÂ 6.Â Summary and Examples" />
+    <link rel="previous" href="wrapup.html" title="ChapterÂ 6.Â Summary and Examples" />
     <link rel="next" href="inmem_txnexample_c.html" title="In-Memory Transaction Example" />
   </head>
   <body>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Transaction Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="wrapup.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 6. Summary and Examples</th>
-          <td width="20%" align="right"> <a accesskey="n" href="inmem_txnexample_c.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="wrapup.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 6.Â Summary and Examples</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="inmem_txnexample_c.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -106,7 +106,7 @@ void *writerThread(void *);  </pre>
 int
 usage()
 {
-    std::cerr &lt;&lt; &quot; [-h &lt;database_home_directory&gt;]&quot; &lt;&lt; std::endl;
+    std::cerr &lt;&lt; " [-h &lt;database_home_directory&gt;]" &lt;&lt; std::endl;
     return (EXIT_FAILURE);
 }  </pre>
       <p>
@@ -128,10 +128,10 @@ main(int argc, char *argv[])
     char *dbHomeDir;
 
     // Application name
-    const char *progName = &quot;TxnGuide&quot;;
+    const char *progName = "TxnGuide";
 
     // Database file name
-    const char *fileName = &quot;mydb.db&quot;;  </pre>
+    const char *fileName = "mydb.db";  </pre>
       <p>
     Now we need to parse our command line. In this case, all we want is to
     know where our environment directory is. If the <tt class="literal">-h</tt>
@@ -140,11 +140,11 @@ main(int argc, char *argv[])
 </p>
       <pre class="programlisting">    // Parse the command line arguments
 #ifdef _WIN32
-    dbHomeDir = &quot;.\\&quot;;
+    dbHomeDir = ".\\";
 #else
-    dbHomeDir = &quot;./&quot;;
+    dbHomeDir = "./";
 #endif
-    while ((ch = getopt(argc, argv, &quot;h:&quot;)) != EOF)
+    while ((ch = getopt(argc, argv, "h:")) != EOF)
         switch (ch) {
         case 'h':
             dbHomeDir = optarg;
@@ -247,7 +247,7 @@ The implementation of <tt class="function">open_db()</tt> is described
             (void)pthread_join(writerThreads[i], NULL);
 
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error opening database environment: &quot;
+        std::cerr &lt;&lt; "Error opening database environment: "
                   &lt;&lt; dbHomeDir &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
@@ -270,7 +270,7 @@ The implementation of <tt class="function">open_db()</tt> is described
         if (envp != NULL)
             envp-&gt;close(0);
     } catch(DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;Error closing database and environment.&quot;
+        std::cerr &lt;&lt; "Error closing database and environment."
                   &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
@@ -278,7 +278,7 @@ The implementation of <tt class="function">open_db()</tt> is described
 
     // Final status message and return.
 
-    std::cout &lt;&lt; &quot;I'm all done.&quot; &lt;&lt; std::endl;
+    std::cout &lt;&lt; "I'm all done." &lt;&lt; std::endl;
     return (EXIT_SUCCESS);
 }  </pre>
       <p>
@@ -299,9 +299,9 @@ writerThread(void *args)
 {
     int j, thread_num;
     int max_retries = 20;   // Max retry on a deadlock
-    char *key_strings[] = {&quot;key 1&quot;, &quot;key 2&quot;, &quot;key 3&quot;, &quot;key 4&quot;,
-                           &quot;key 5&quot;, &quot;key 6&quot;, &quot;key 7&quot;, &quot;key 8&quot;,
-                           &quot;key 9&quot;, &quot;key 10&quot;};
+    char *key_strings[] = {"key 1", "key 2", "key 3", "key 4",
+                           "key 5", "key 6", "key 7", "key 8",
+                           "key 9", "key 10"};
 
     Db *dbp = (Db *)args;
     DbEnv *envp = dbp-&gt;get_env();  </pre>
@@ -374,7 +374,7 @@ writerThread(void *args)
                 // deadlocks, so for this workload the correct thing 
                 // would be to perform our puts with auto commit. But 
                 // that would excessively simplify our example, so we 
-                // do the &quot;wrong&quot; thing here instead.
+                // do the "wrong" thing here instead.
                 txn = NULL;
                 envp-&gt;txn_begin(NULL, &amp;txn, 0);  </pre>
       <p>
@@ -413,11 +413,11 @@ writerThread(void *args)
     </p>
       <pre class="programlisting">                // countRecords runs a cursor over the entire database.
                 // We do this to illustrate issues of deadlocking
-                std::cout &lt;&lt; thread_num &lt;&lt;  &quot; : Found &quot; 
+                std::cout &lt;&lt; thread_num &lt;&lt;  " : Found " 
                           &lt;&lt;  countRecords(dbp, NULL)    
-                          &lt;&lt; &quot; records in the database.&quot; &lt;&lt; std::endl;
+                          &lt;&lt; " records in the database." &lt;&lt; std::endl;
 
-                std::cout &lt;&lt; thread_num &lt;&lt;  &quot; : committing txn : &quot; &lt;&lt; i 
+                std::cout &lt;&lt; thread_num &lt;&lt;  " : committing txn : " &lt;&lt; i 
                           &lt;&lt; std::endl;
 
                 // commit
@@ -426,7 +426,7 @@ writerThread(void *args)
                     retry = false;
                     txn = NULL;
                 } catch (DbException &amp;e) {
-                    std::cout &lt;&lt; &quot;Error on txn commit: &quot;
+                    std::cout &lt;&lt; "Error on txn commit: "
                               &lt;&lt; e.what() &lt;&lt; std::endl;
                 }  </pre>
       <p>
@@ -444,27 +444,27 @@ writerThread(void *args)
                 // If we have retried less than max_retries,
                 // increment the retry count and goto retry.
                 if (retry_count &lt; max_retries) {
-                    std::cout &lt;&lt; &quot;############### Writer &quot; &lt;&lt; thread_num
-                              &lt;&lt; &quot;: Got DB_LOCK_DEADLOCK.\n&quot;
-                              &lt;&lt; &quot;Retrying write operation.&quot;
+                    std::cout &lt;&lt; "############### Writer " &lt;&lt; thread_num
+                              &lt;&lt; ": Got DB_LOCK_DEADLOCK.\n"
+                              &lt;&lt; "Retrying write operation."
                               &lt;&lt; std::endl;
                     retry_count++;
                     retry = true;
                  } else {
                     // Otherwise, just give up.
-                    std::cerr &lt;&lt; &quot;Writer &quot; &lt;&lt; thread_num
-                              &lt;&lt; &quot;: Got DeadLockException and out of &quot;
-                              &lt;&lt; &quot;retries. Giving up.&quot; &lt;&lt; std::endl;
+                    std::cerr &lt;&lt; "Writer " &lt;&lt; thread_num
+                              &lt;&lt; ": Got DeadLockException and out of "
+                              &lt;&lt; "retries. Giving up." &lt;&lt; std::endl;
                     retry = false;
                  }
            } catch (DbException &amp;e) {
-                std::cerr &lt;&lt; &quot;db put failed&quot; &lt;&lt; std::endl;
+                std::cerr &lt;&lt; "db put failed" &lt;&lt; std::endl;
                 std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
                 if (txn != NULL)
                     txn-&gt;abort();
                 retry = false;
            } catch (std::exception &amp;ee) {
-            std::cerr &lt;&lt; &quot;Unknown exception: &quot; &lt;&lt; ee.what() &lt;&lt; std::endl;
+            std::cerr &lt;&lt; "Unknown exception: " &lt;&lt; ee.what() &lt;&lt; std::endl;
             return (0);
           }
         }
@@ -575,11 +575,11 @@ countRecords(Db *dbp, DbTxn *txn)
             count++;
         }
     } catch (DbDeadlockException &amp;de) {
-        std::cerr &lt;&lt; &quot;countRecords: got deadlock&quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "countRecords: got deadlock" &lt;&lt; std::endl;
         cursorp-&gt;close();
         throw de;
     } catch (DbException &amp;e) {
-        std::cerr &lt;&lt; &quot;countRecords error:&quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; "countRecords error:" &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
     }
 
@@ -587,7 +587,7 @@ countRecords(Db *dbp, DbTxn *txn)
         try {
             cursorp-&gt;close();
         } catch (DbException &amp;e) {
-            std::cerr &lt;&lt; &quot;countRecords: cursor close failed:&quot; &lt;&lt; std::endl;
+            std::cerr &lt;&lt; "countRecords: cursor close failed:" &lt;&lt; std::endl;
             std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         }
     }
@@ -637,7 +637,7 @@ openDb(Db **dbpp, const char *progname, const char *fileName,
                   openFlags,  // Open flags
                   0);         // File mode. Using defaults
     } catch (DbException &amp;e) {
-        std::cerr &lt;&lt; progname &lt;&lt; &quot;open_db: db open failed:&quot; &lt;&lt; std::endl;
+        std::cerr &lt;&lt; progname &lt;&lt; "open_db: db open failed:" &lt;&lt; std::endl;
         std::cerr &lt;&lt; e.what() &lt;&lt; std::endl;
         return (EXIT_FAILURE);
     }
@@ -655,18 +655,18 @@ openDb(Db **dbpp, const char *progname, const char *fileName,
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="wrapup.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="wrapup.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="wrapup.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="inmem_txnexample_c.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="inmem_txnexample_c.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 6. Summary and Examples </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 6.Â Summary and ExamplesÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> In-Memory Transaction Example</td>
+          <td width="40%" align="right" valign="top">Â In-Memory Transaction Example</td>
         </tr>
       </table>
     </div>

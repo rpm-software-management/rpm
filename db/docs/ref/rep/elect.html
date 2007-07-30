@@ -1,6 +1,5 @@
-<!--$Id: elect.so,v 1.23 2006/07/14 23:04:42 alanb Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: elect.so,v 1.27 2007/04/05 20:37:29 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -55,11 +54,45 @@ on B: priority 0, nsites 2</pre></blockquote>
 <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> method, and applications should be careful not to do so.
 Applications should only configure themselves as the master environment
 if they are the only possible master, or if they have won an election.
-An application can only know it has won an election if the
-<a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method returns success and the local database environment's
-ID as the new master environment ID, or if the <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method
-returns <a href="../../api_c/rep_message.html#DB_REP_NEWMASTER">DB_REP_NEWMASTER</a> and the local database environment's
-ID as the new master environment ID.</p>
+An application knows it has won an election when it receives the
+<a href="../../api_c/env_event_notify.html#DB_EVENT_REP_ELECTED">DB_EVENT_REP_ELECTED</a> event.</p>
+<p>Normally, when a master failure is detected it is desired that an
+election finish quickly so the application can continue to service
+updates.  Also, participating sites are already up and can participate.
+However, in the case of restarting a whole group after an administrative
+shut down, it is possible that a slower booting site had later logs than
+any other site.  To cover that case, an application would like to give
+the election more time to ensure all sites have a chance to participate.
+Since it is intractable to for a starting site to determine which case
+the whole group is in, the use of a long timeout gives all sites a
+reasonable chance to participate.  If an application wanting full
+participation sets the <b>nvotes</b> arg to the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method to
+the number of sites in the group and one site does not reboot, a master
+can never be elected without manual intervention.</p>
+<p>
+In those cases, the desired action at a group level is to hold
+a full election if all sites crashed and a majority election if
+a subset of sites crashed or rebooted.  Since an individual site cannot know
+which number of votes to require, a mechanism is available to
+accomplish this using timeouts.  By setting a long timeout (perhaps
+on the order of minutes) using the <b>DB_REP_FULL_ELECTION_TIMEOUT</b>
+flag to the <a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a> method, an application can
+allow Berkeley DB to elect a master even without full participation.
+Sites may also want to set a normal election timeout for majority
+based elections using the <b>DB_REP_ELECTION_TIMEOUT</b> flag
+to the <a href="../../api_c/rep_timeout.html">DB_ENV-&gt;rep_set_timeout</a> method.</p>
+<p>
+Consider 3 sites, A, B, and C where A is the master.  In the
+case where all three sites crash and all reboot, all sites
+will set a timeout for a full election, say 10 minutes, but only
+require a majority for <b>nvotes</b> to the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a> method.
+Once all three sites are booted the election will complete
+immediately if they reboot within 10 minutes of each other.  Consider
+if all three sites crash and only two reboot.  The two sites will
+enter the election, but after the 10 minute timeout they will
+elect with the majority of two sites.  Using the full election
+timeout sets a threshold for allowing a site to reboot and rejoin
+the group.</p>
 <p>To add a database environment to the replication group with the intent
 of it becoming the master, first add it as a client.  Since it may be
 out-of-date with respect to the current master, allow it to update
@@ -113,6 +146,6 @@ based on configuration information supplied to the
 <a href="../../api_c/rep_priority.html">DB_ENV-&gt;rep_set_priority</a> method and the <a href="../../api_c/rep_nsites.html">DB_ENV-&gt;rep_set_nsites</a> method.</p>
 <table width="100%"><tr><td><br></td><td align=right><a href="../rep/newsite.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rep/mastersync.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

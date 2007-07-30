@@ -206,15 +206,15 @@ __fop_rename_recover(dbenv, dbtp, lsnp, op, info)
 	db_recops op;
 	void *info;
 {
-	__fop_rename_args *argp;
+	__fop_rename_noundo_args *argp;
 	DB *file_dbp;
 	DBC *dbc;
 	DB_MPOOLFILE *mpf;
 	PAGE *pagep;
 	int cmp_n, cmp_p, modified, ret;
 
-	REC_PRINT(__fop_rename_print);
-	REC_INTRO(__fop_rename_read, 1);
+	REC_PRINT(__fop_rename_noundo_print);
+	REC_INTRO(__fop_rename_noundo_read, 1);
 
 	if ((ret = mpf->get(mpf, &argp->pgno, 0, &pagep)) != 0)
 		if (DB_REDO(op)) {

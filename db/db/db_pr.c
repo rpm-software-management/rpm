@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_pr.c,v 12.29 2006/09/07 20:05:26 bostic Exp $
+ * $Id: db_pr.c,v 12.38 2007/07/02 16:58:02 alexg Exp $
  */
 
 #include "db_config.h"
@@ -99,7 +98,6 @@ __db_dumptree(dbp, txn, op, name)
 
 static const FN __db_flags_fn[] = {
 	{ DB_AM_CHKSUM,			"checksumming" },
-	{ DB_AM_CL_WRITER,		"client replica writer" },
 	{ DB_AM_COMPENSATE,		"created by compensating transaction" },
 	{ DB_AM_CREATED,		"database created" },
 	{ DB_AM_CREATED_MSTR,		"encompassing file created" },
@@ -237,13 +235,13 @@ __db_prtree(dbp, txn, flags)
 	 * Find out the page number of the last page in the database, then
 	 * dump each page.
 	 */
-	if ((ret = __memp_last_pgno(mpf, &last)) != 0)
+	if ((ret = __memp_get_last_pgno(mpf, &last)) != 0)
 		return (ret);
 	for (i = 0; i <= last; ++i) {
 		if ((ret = __memp_fget(mpf, &i, txn, 0, &h)) != 0)
 			return (ret);
 		(void)__db_prpage(dbp, h, flags);
-		if ((ret = __memp_fput(mpf, h, 0)) != 0)
+		if ((ret = __memp_fput(mpf, h, dbp->priority)) != 0)
 			return (ret);
 	}
 
@@ -298,7 +296,7 @@ __db_meta(dbp, dbmeta, fn, flags)
 				break;
 			}
 			pgno = h->next_pgno;
-			(void)__memp_fput(mpf, h, 0);
+			(void)__memp_fput(mpf, h, dbp->priority);
 			__db_msgadd(dbenv, &mb, "%s%lu", sep, (u_long)pgno);
 			if (++cnt % 10 == 0) {
 				DB_MSGBUF_FLUSH(dbenv, &mb);
@@ -373,7 +371,6 @@ __db_hmeta(dbp, h, flags)
 	HMETA *h;
 	u_int32_t flags;
 {
-	DB_MSGBUF mb;
 	static const FN fn[] = {
 		{ DB_HASH_DUP,		"duplicates" },
 		{ DB_HASH_SUBDB,	"multiple-databases" },
@@ -381,6 +378,7 @@ __db_hmeta(dbp, h, flags)
 		{ 0,			NULL }
 	};
 	DB_ENV *dbenv;
+	DB_MSGBUF mb;
 	int i;
 
 	dbenv = dbp->dbenv;
@@ -451,7 +449,7 @@ __db_prnpage(dbp, txn, pgno)
 
 	ret = __db_prpage(dbp, h, DB_PR_PAGE);
 
-	if ((t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+	if ((t_ret = __memp_fput(mpf, h, dbp->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -498,7 +496,7 @@ __db_prpage(dbp, h, flags)
 	if ((s = __db_pagetype_to_string(TYPE(h))) == NULL) {
 		__db_msg(dbenv, "ILLEGAL PAGE TYPE: page: %lu type: %lu",
 		    (u_long)h->pgno, (u_long)TYPE(h));
-		return (1);
+		return (EINVAL);
 	}
 
 	/*
@@ -599,6 +597,7 @@ __db_prpage(dbp, h, flags)
 		}
 		deleted = 0;
 		switch (TYPE(h)) {
+		case P_HASH_UNSORTED:
 		case P_HASH:
 		case P_IBTREE:
 		case P_IRECNO:
@@ -621,6 +620,7 @@ __db_prpage(dbp, h, flags)
 		__db_msgadd(
 		    dbenv, &mb, "[%03lu] %4lu ", (u_long)i, (u_long)inp[i]);
 		switch (TYPE(h)) {
+		case P_HASH_UNSORTED:
 		case P_HASH:
 			hk = sp;
 			switch (HPAGE_PTYPE(hk)) {
@@ -813,6 +813,9 @@ __db_prflags(dbenv, mbp, flags, fn, prefix, suffix)
 	int found, standalone;
 	const char *sep;
 
+	if (fn == NULL)
+		return;
+
 	/*
 	 * If it's a standalone message, output the suffix (which will be the
 	 * label), regardless of whether we found anything or not, and flush
@@ -892,6 +895,9 @@ __db_pagetype_to_string(type)
 	case P_LDUP:
 		s = "duplicate";
 		break;
+	case P_HASH_UNSORTED:
+		s = "hash unsorted";
+		break;
 	case P_HASH:
 		s = "hash";
 		break;
@@ -959,15 +965,11 @@ __db_dumptree(dbp, txn, op, name)
 const FN *
 __db_get_flags_fn()
 {
-	static const FN __db_flags_fn[] = {
-		{ 0,	NULL }
-	};
-
 	/*
 	 * !!!
 	 * The Tcl API uses this interface, stub it off.
 	 */
-	return (__db_flags_fn);
+	return (NULL);
 }
 #endif
 
@@ -1064,7 +1066,7 @@ __db_dump(dbp, subname, callback, handle, pflag, keyflag)
 	}
 
 retry: while ((ret =
-	    __db_c_get(dbcp, &key, &data, DB_NEXT | DB_MULTIPLE_KEY)) == 0) {
+	    __dbc_get(dbcp, &key, &data, DB_NEXT | DB_MULTIPLE_KEY)) == 0) {
 		DB_MULTIPLE_INIT(pointer, &data);
 		for (;;) {
 			if (is_recno)
@@ -1099,7 +1101,7 @@ retry: while ((ret =
 	if ((t_ret = __db_prfooter(handle, callback)) != 0 && ret == 0)
 		ret = t_ret;
 
-err:	if ((t_ret = __db_c_close(dbcp)) != 0 && ret == 0)
+err:	if ((t_ret = __dbc_close(dbcp)) != 0 && ret == 0)
 		ret = t_ret;
 	if (data.data != NULL)
 		__os_free(dbenv, data.data);

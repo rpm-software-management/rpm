@@ -1,0 +1,26 @@
+m4_comment([$Id: memp_fget.so,v 1.5 2003/10/18 19:16:18 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 3.3: memp_fget, EIO],,
+    upgrade.3.3/conflict, upgrade.3.3/txn_prepare)
+
+m4_p([dnl
+Previous releases of m4_db returned the system error EIO when the
+memp_fget function was called to retrieve a page, the page did not
+exist, and the m4_ref(DB_MPOOL_CREATE) flag was not set.  In the 3.3
+release, the error m4_ref(DB_PAGE_NOTFOUND) is returned instead, to
+allow applications to distinguish between recoverable and
+non-recoverable errors.  Applications calling the memp_fget function
+and checking for a return of EIO should check for
+m4_ref(DB_PAGE_NOTFOUND) instead.])
+
+m4_p([dnl
+Previous releases of m4_db treated filesystem I/O failure (the most
+common of which the filesystem running out of space), as a fatal error,
+returning m4_ref(DB_RUNRECOVERY).  When a filesystem failure happens in
+the 3.3 release m4_db returns the underlying system error (usually EIO),
+but can continue to run.  Applications should abort any enclosing
+transaction when a recoverable system error occurs in order to recover
+from the error.])
+
+m4_page_footer

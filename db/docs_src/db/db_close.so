@@ -1,0 +1,76 @@
+m4_comment([$Id: db_close.so,v 10.55 2004/08/13 03:38:55 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_close)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_close),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__close(DB *db, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::close(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_close) flushes any cached database information to disk,
+closes any open cursors, frees any allocated resources, and closes any
+underlying files.])
+
+m4_p([dnl
+The m4_ref(Db) handle should not be closed while any other handle that
+refers to it is not yet closed; for example, database handles must not
+be closed while cursor handles into the database remain open, or
+transactions that include operations on the database have not yet been
+committed or aborted.  Specifically, this includes m4_ref(Dbc) and
+m4_ref(DbTxn) handles.])
+
+m4_p([dnl
+Because key/data pairs are cached in memory, failing to sync the file
+with the m4_ref(dbh_close) or m4_refT(dbh_sync) may result in
+inconsistent or lost information.])
+
+m4_p([dnl
+When called on a database that is the primary database for a secondary
+index, the primary database should be closed only after all secondary
+indices which reference it have been closed.])
+
+m4_p([dnl
+When multiple threads are using the m4_ref(Db) concurrently, only a single
+thread may call the m4_refT(dbh_close).])
+
+m4_destructor(Db, dbh_close)
+
+m4_return(dbh_close, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_NOSYNC), [dnl
+Do not flush cached information to disk.  The m4_ref(DB_NOSYNC) flag is
+a dangerous option.  It should be set only if the application is doing
+logging (with transactions) so that the database is recoverable after
+a system or application crash, or if the database is always generated
+from scratch after any system or application crash.
+m4_p([m4_bold([dnl
+It is important to understand that flushing cached information to disk
+only minimizes the window of opportunity for corrupted data.]) Although
+unlikely, it is possible for database corruption to happen if a system
+or application crash occurs while writing data to the database.  To
+ensure that database corruption never occurs, applications must either:
+use transactions and logging with automatic recovery; use logging and
+application-specific recovery; or edit a copy of the database, and once
+all applications using the database have successfully called
+m4_ref(dbh_close), atomically replace the original database with the
+updated copy.])])
+
+m4_tagend])
+m4_paramend
+
+m4_err(dbh_close, einval)
+
+m4_seealso(Db)
+m4_page_footer

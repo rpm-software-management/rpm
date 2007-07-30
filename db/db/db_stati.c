@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_stati.c,v 12.21 2006/08/24 14:45:16 bostic Exp $
+ * $Id: db_stati.c,v 12.29 2007/06/29 12:16:16 bostic Exp $
  */
 
 #include "db_config.h"
@@ -113,7 +112,7 @@ __db_stat(dbp, txn, spp, flags)
 		break;
 	}
 
-	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+	if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -163,7 +162,7 @@ __db_stat_print_pp(dbp, flags)
 	dbenv = dbp->dbenv;
 
 	PANIC_CHECK(dbenv);
-	DB_ILLEGAL_BEFORE_OPEN(dbp, "DB->stat");
+	DB_ILLEGAL_BEFORE_OPEN(dbp, "DB->stat_print");
 
 	/*
 	 * !!!
@@ -257,7 +256,7 @@ __db_print_stats(dbp, flags)
 		break;
 	}
 
-	if ((t_ret = __db_c_close(dbc)) != 0 && ret == 0)
+	if ((t_ret = __dbc_close(dbc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -274,7 +273,6 @@ __db_print_all(dbp, flags)
 {
 	static const FN fn[] = {
 		{ DB_AM_CHKSUM,			"DB_AM_CHKSUM" },
-		{ DB_AM_CL_WRITER,		"DB_AM_CL_WRITER" },
 		{ DB_AM_COMPENSATE,		"DB_AM_COMPENSATE" },
 		{ DB_AM_CREATED,		"DB_AM_CREATED" },
 		{ DB_AM_CREATED_MSTR,		"DB_AM_CREATED_MSTR" },
@@ -330,9 +328,12 @@ __db_print_all(dbp, flags)
 
 	STAT_ULONG("Cursor adjust ID", dbp->adj_fileid);
 	STAT_ULONG("Meta pgno", dbp->meta_pgno);
-	STAT_ULONG("Locker ID", dbp->lid);
-	STAT_ULONG("Handle lock", dbp->cur_lid);
-	STAT_ULONG("Associate lock", dbp->associate_lid);
+	if (dbp->locker != NULL)
+		STAT_ULONG("Locker ID", dbp->locker->id);
+	if (dbp->cur_locker != NULL)
+		STAT_ULONG("Handle lock", dbp->cur_locker->id);
+	if (dbp->associate_locker != NULL)
+		STAT_ULONG("Associate lock", dbp->associate_locker->id);
 	STAT_ULONG("RPC remote ID", dbp->cl_id);
 
 	__db_msg(dbenv,
@@ -396,8 +397,8 @@ __db_print_cursor(dbp)
 	return (ret);
 }
 
-static
-int __db_print_citem(dbc)
+static int
+__db_print_citem(dbc)
 	DBC *dbc;
 {
 	static const FN fn[] = {
@@ -430,7 +431,7 @@ int __db_print_citem(dbc)
 	STAT_POINTER("Internal", cp);
 	STAT_HEX("Default locker ID",
 	    dbc->lref == NULL ? 0 : ((DB_LOCKER *)dbc->lref)->id);
-	STAT_HEX("Locker", dbc->locker);
+	STAT_HEX("Locker", P_TO_ULONG(dbc->locker));
 	STAT_STRING("Type", __db_dbtype_to_string(dbc->dbtype));
 
 	STAT_POINTER("Off-page duplicate cursor", cp->opd);

@@ -1,17 +1,16 @@
-<!--$Id: dbc_close.so,v 10.34 2006/09/13 14:30:52 mjc Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: dbc_close.so,v 10.35 2006/10/24 13:26:50 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
-<title>Berkeley DB: DBcursor-&gt;c_close</title>
+<title>Berkeley DB: DBcursor-&gt;close</title>
 <meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
 <meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
 </head>
 <body bgcolor=white>
 <table width="100%"><tr valign=top>
 <td>
-<h3>DBcursor-&gt;c_close</h3>
+<h3>DBcursor-&gt;close</h3>
 </td>
 <td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
@@ -23,24 +22,24 @@
 #include &lt;db.h&gt;
 <p>
 int
-DBcursor-&gt;c_close(DBC *DBcursor);
+DBcursor-&gt;close(DBC *DBcursor);
 </pre></h3>
 <hr size=1 noshade>
-<h3>Description: DBcursor-&gt;c_close</h3>
-<p>The DBcursor-&gt;c_close method discards the cursor.</p>
-<p>It is possible for the DBcursor-&gt;c_close method to return
+<h3>Description: DBcursor-&gt;close</h3>
+<p>The DBcursor-&gt;close method discards the cursor.</p>
+<p>It is possible for the DBcursor-&gt;close method to return
 <a href="../ref/program/errorret.html#DB_LOCK_DEADLOCK">DB_LOCK_DEADLOCK</a>, signaling that any enclosing transaction should
 be aborted.  If the application is already intending to abort the
 transaction, this error should be ignored, and the application should
 proceed.</p>
-<p>After DBcursor-&gt;c_close has been called, regardless of its return, the
+<p>After DBcursor-&gt;close has been called, regardless of its return, the
 cursor handle may not be used again.</p>
-<p>The DBcursor-&gt;c_close method
+<p>The DBcursor-&gt;close method
 returns a non-zero error value on failure
 and 0 on success.
 </p>
 <h3>Errors</h3>
-<p>The DBcursor-&gt;c_close method
+<p>The DBcursor-&gt;close method
 may fail and return one of the following non-zero errors:</p>
 <dl compact>
 <dt>DB_LOCK_DEADLOCK<dd>A transactional database environment operation was selected to resolve
@@ -61,6 +60,6 @@ invalid flag value or parameter was specified.
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

@@ -1,0 +1,66 @@
+m4_comment([$Id: timeout.so,v 1.9 2005/12/02 17:27:49 alanb Exp $])
+
+m4_ref_title(Locking Subsystem,
+    Deadlock detection using timers,
+    [lock @timeouts, transaction @timeouts], lock/dead, lock/deaddbg)
+
+m4_p([dnl
+Lock and transaction timeouts may be used in place of, or in addition
+to, regular deadlock detection.  If lock timeouts are set, lock requests
+will return m4_ref(DB_LOCK_NOTGRANTED) from a lock call when it is
+detected that the lock's timeout has expired, that is, the lock request
+has blocked, waiting, longer than the specified timeout.  If transaction
+timeouts are set, lock requests will return m4_ref(DB_LOCK_NOTGRANTED)
+from a lock call when it has been detected that the transaction has been
+active longer than the specified timeout.])
+
+m4_p([dnl
+If lock or transaction timeouts have been set, database operations will
+return m4_ref(DB_LOCK_DEADLOCK) when the lock timeout has expired or the
+transaction has been active longer than the specified timeout.
+Applications wanting to distinguish between true deadlock and timeout
+can use the m4_ref(DB_TIME_NOTGRANTED) configuration flag, which causes
+database operations to instead return m4_ref(DB_LOCK_NOTGRANTED) in the
+case of timeout.])
+
+m4_p([dnl
+As lock and transaction timeouts are only checked when lock requests
+first block or when deadlock detection is performed, the accuracy of
+the timeout depends on how often deadlock detection is performed.  More
+specifically, transactions will continue to run after their timeout has
+expired if they do not block on a lock request after that time.
+A separate deadlock detection thread (or process) should always
+be used if the application depends on timeouts; otherwise, if
+there are no new blocked lock requests a pending timeout will
+never trigger.])
+
+m4_p([dnl
+If the database environment deadlock detector has been configured with
+the m4_ref(DB_LOCK_EXPIRE) option, timeouts are the only mechanism by
+which deadlocks will be broken.  If the deadlock detector has been
+configured with a different option, then regular deadlock detection will
+be performed, and in addition, if timeouts have also been specified,
+lock requests and transactions will time out as well.])
+
+m4_p([dnl
+Lock and transaction timeouts may be specified on a database environment
+wide basis using the m4_refT(dbenv_set_timeout).  Lock timeouts may be
+specified on a per-lock request basis using the m4_refT(lock_vec).  Lock
+and transaction timeouts may be specified on a per-transaction basis
+using the m4_refT(txn_set_timeout).  Per-lock and per-transaction
+timeouts supersede environment wide timeouts.])
+
+m4_p([dnl
+For example, consider that the environment wide transaction timeout has
+been set to 20ms, the environment wide lock timeout has been set to
+10ms, a transaction has been created in this environment and its timeout
+value set to 8ms, and a specific lock request has been made on behalf
+of this transaction where the lock timeout was set to 4ms.  By default,
+transactions in this environment will be timed out if they block waiting
+for a lock after 20ms.  The specific transaction described will be timed
+out if it blocks waiting for a lock after 8ms.  By default, any lock
+request in this system will be timed out if it blocks longer than 10ms,
+and the specific lock described will be timed out if it blocks longer
+than 4ms.])
+
+m4_page_footer

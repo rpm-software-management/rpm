@@ -1,0 +1,22 @@
+m4_comment([$Id: disk.so,v 1.5 2007/06/14 18:31:18 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: upgrade requirements,,
+    upgrade.4.6/win, test/run)
+
+m4_p([dnl
+The log file format changed in the m4_db 4.6 release.])
+
+m4_p([dnl
+The format of Hash database pages was changed in the m4_db 4.6 release,
+and items are now stored in sorted order.  m4_bold([The format changes
+are entirely backward-compatible, and no database upgrades are needed.])
+However, upgrading existing databases can offer significant performance
+improvements.  Note that databases created using the 4.1 release may
+not be usable with earlier m4_db releases.])
+
+m4_p([dnl
+For further information on upgrading m4_db installations, see
+m4_link(M4RELDIR/ref/upgrade/process, Upgrading m4_db installations).])
+
+m4_page_footer

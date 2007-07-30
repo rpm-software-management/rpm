@@ -1,0 +1,25 @@
+# A single private environment, with two databases, a primary and secondary
+# index pair.
+environment env1 {
+	home TESTDIR
+	cachesize 2 0 4			# 2GB, 4 caches
+
+	database db1 {			# Primary database.
+		type btree
+
+		transaction
+		pagesize 65536
+	}
+	database db2 {
+		type hash
+
+		# The secondary is a hash database, the primary is "db1".
+		# The secondary key is 10 bytes starting at byte offset
+		# 20.  The secondary key is an untyped byte string.
+		primary db1
+		secondary_offset 20 10
+
+		transaction
+		pagesize 32768
+	}
+}

@@ -1,0 +1,41 @@
+m4_comment([$Id: seq_set_cachesize.so,v 1.8 2004/09/07 15:37:41 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[seq_set_cachesize, seq_get_cachesize])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_set_cachesize),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__set_cachesize(DB_SEQUENCE *seq, int32_t size);
+m4_blank
+int
+DB_SEQUENCE-__GT__get_cachesize(DB_SEQUENCE *seq, int32_t *sizep);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::set_cachesize(int32_t size);
+m4_blank
+int DbSequence::get_cachesize(*sizep);
+]))
+
+m4_p([dnl
+Configure the number of elements cached by a sequence handle.])
+
+m4_p([dnl
+The m4_ref(seq_set_cachesize) method may not be called after the
+m4_ref(seq_open) method is called.])
+
+m4_return(seq_set_cachesize, std)
+
+m4_parambegin
+m4_param(size, [dnl
+The number of elements in the cache.])
+m4_paramend
+
+m4_err(seq_set_cachesize, einval)
+
+m4_pf_getter(seq_get_cachesize, current cache size,, sizep)
+
+m4_seealso(DbSequence)
+m4_page_footer

@@ -1,0 +1,114 @@
+m4_comment([$Id: rep_message.so,v 1.39 2007/03/20 20:20:26 alanb Exp $])
+
+define(M4PAGELOCAL,
+	[rep_message, DB_REP_DUPMASTER, DB_REP_HOLDELECTION, DB_REP_IGNORE,
+	DB_REP_ISPERM, DB_REP_JOIN_FAILURE, DB_REP_NEWSITE, DB_REP_NOTPERM])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(rep_message),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__rep_process_message(DB_ENV *env,
+    DBT *control, DBT *rec, int envid, DB_LSN *ret_lsnp)
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::rep_process_message(Dbt *control, Dbt *rec, int envid, DbLsn *ret_lsnp)
+]))
+
+m4_p([dnl
+The m4_refT(rep_message) processes an incoming replication message sent
+by a member of the replication group to the local database environment.])
+
+m4_repl_lower(rep_message)
+
+m4_p([dnl
+For implementation reasons, all incoming replication messages must be
+processed using the same m4_ref(DbEnv) handle.  It is not required that
+a single thread of control process all messages, only that all threads
+of control processing messages use the same handle.])
+
+m4_p([dnl
+The m4_refT(rep_message) has additional return values:])
+
+m4_tagbegin
+m4_tag(m4_idef(DB_REP_DUPMASTER), [dnl
+m4_return(rep_message, except, DB_REP_DUPMASTER,
+[if the replication group has more than one master],
+[The application should reconfigure itself as a client by calling the
+m4_refT(rep_start), and then call for an election by calling
+m4_ref(rep_elect).])])
+
+m4_tag(m4_idef(DB_REP_HOLDELECTION), [dnl
+m4_return(rep_message, except, DB_REP_HOLDELECTION,
+[if an election is needed],
+[The application should call for an election by calling m4_ref(rep_elect).])])
+
+m4_tag(m4_idef(DB_REP_IGNORE), [dnl
+m4_return(rep_message, specific, DB_REP_IGNORE,
+[if this message cannot be processed],
+[This is an indication that this message is irrelevant to the current
+replication state (for example, an old message
+from a previous generation arrives and is processed late).])])
+
+m4_tag(m4_idef(DB_REP_ISPERM), [dnl
+m4_return(rep_message, specific, DB_REP_ISPERM,
+[if processing this message results in the processing of records
+that are permanent],
+[The maximum LSN of the permanent records stored is returned.])])
+
+m4_tag(m4_idef(DB_REP_JOIN_FAILURE), [dnl
+m4_return(rep_message, specific, DB_REP_JOIN_FAILURE,
+[if a new master has been chosen but the client is unable to synchronize
+with the new master (possibly because the client has been configured
+with the m4_ref(DB_REP_CONF_NOAUTOINIT) flag to turn-off automatic
+internal initialization)])])
+
+m4_tag(m4_idef(DB_REP_NEWSITE), [dnl
+m4_return(rep_message, specific, DB_REP_NEWSITE,
+[if the system received contact information from a new environment],
+[The m4_arg(rec) parameter contains the opaque data specified in the
+m4_arg(cdata) parameter to the m4_ref(rep_start).  The application
+should take whatever action is needed to establish a communication
+channel with this new environment.])])
+
+m4_tag(m4_idef(DB_REP_NOTPERM), [dnl
+m4_return(rep_message, specific, DB_REP_NOTPERM,
+[if a message carrying a m4_ref(DB_REP_PERMANENT) flag was processed
+successfully, but was not written to disk],
+[The LSN of this record is returned.  The application should take
+whatever action is deemed necessary to retain its recoverability
+characteristics.])])
+
+m4_tagend
+
+m4_return(rep_message, prev)
+
+m4_parambegin
+m4_param(control, [dnl
+The m4_arg(control) parameter should reference a copy of the
+m4_arg(control) parameter specified by m4_db on the sending
+environment.])
+
+m4_param(envid, [dnl
+The m4_arg(envid) parameter should contain the local identifier that
+corresponds to the environment that sent the message to be processed
+(see m4_link(M4RELDIR/ref/rep/id, Replication environment IDs) for more
+information).])
+
+m4_param(rec, [dnl
+The m4_arg(rec) parameter should reference a copy of the m4_arg(rec)
+parameter specified by m4_db on the sending environment.])
+
+m4_param(ret_lsnp, [dnl
+If m4_refT(rep_message) returns DB_REP_NOTPERM then the m4_arg(ret_lsnp)
+parameter will contain the log sequence number of this permanent log
+message that could not be written to disk.  If m4_refT(rep_message)
+returns DB_REP_ISPERM then the m4_arg(ret_lsnp) parameter will contain
+largest log sequence number of the permanent records that are now
+written to disk as a result of processing this message.  In all other
+cases the value of m4_arg( ret_lsnp) is undefined.])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

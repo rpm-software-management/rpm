@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Example Processing Loop</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="fwrkmasterreplica.html" title="Chapter 4. Replica versus Master Processes" />
+    <link rel="up" href="fwrkmasterreplica.html" title="ChapterÂ 4.Â Replica versus Master Processes" />
     <link rel="previous" href="processingloop.html" title="Processing Loop" />
-    <link rel="next" href="addfeatures.html" title="Chapter 5. Additional Features" />
+    <link rel="next" href="addfeatures.html" title="ChapterÂ 5.Â Additional Features" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Example Processing Loop</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="processingloop.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Replica versus Master Processes</th>
-          <td width="20%" align="right"> <a accesskey="n" href="addfeatures.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="processingloop.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Replica versus Master Processes</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="addfeatures.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -87,10 +87,10 @@ using std::endl;
 using std::flush;
 
 #define CACHESIZE   (10 * 1024 * 1024)
-#define DATABASE    &quot;quote.db&quot;
+#define DATABASE    "quote.db"
 <b class="userinput"><tt>#define SLEEPTIME   3</tt></b>
 
-const char *progname = &quot;RepMgr&quot;;
+const char *progname = "RepMgr";
 
 <b class="userinput"><tt>// Struct used to store information in Db app_private field.
 typedef struct {
@@ -204,7 +204,7 @@ void RepMgr::event_callback(DbEnv *dbenv, u_int32_t which, void *info)
         break;
 
     default:
-        dbenv-&gt;errx(dbenv, &quot;ignoring event %d&quot;, which);
+        dbenv-&gt;errx(dbenv, "ignoring event %d", which);
     }
 }</tt>
         </b>
@@ -268,12 +268,12 @@ int RepMgr::doloop()
                  * and synced, and no DB will be available until then.
                  */
                 if (dbe.get_errno() == ENOENT) {
-                    cout &lt;&lt; &quot;No stock db available yet - retrying.&quot; &lt;&lt; endl;
+                    cout &lt;&lt; "No stock db available yet - retrying." &lt;&lt; endl;
                     try {
                         dbp-&gt;close(0);
                     } catch (DbException dbe2) {
-                        cout &lt;&lt; &quot;Unexpected error closing after failed&quot;
-                             &lt;&lt; &quot; open, message: &quot; &lt;&lt; dbe2.what() &lt;&lt; endl;
+                        cout &lt;&lt; "Unexpected error closing after failed"
+                             &lt;&lt; " open, message: " &lt;&lt; dbe2.what() &lt;&lt; endl;
                         dbp = NULL;
                         goto err;
                     }
@@ -281,7 +281,7 @@ int RepMgr::doloop()
                     sleep(SLEEPTIME);
                     continue;
                 } else {</tt></b>
-                    dbenv.err(ret, &quot;DB-&gt;open&quot;);
+                    dbenv.err(ret, "DB-&gt;open");
                     throw dbe;
                 <b class="userinput"><tt>}</tt></b>
             }
@@ -291,10 +291,10 @@ int RepMgr::doloop()
         as a replica, we can tell from the shell that the prompt is for a
         read-only process.
     </p>
-      <pre class="programlisting">        <b class="userinput"><tt>cout &lt;&lt; &quot;QUOTESERVER&quot; ;
+      <pre class="programlisting">        <b class="userinput"><tt>cout &lt;&lt; "QUOTESERVER" ;
         if (!app_data.is_master)
-            cout &lt;&lt; &quot;(read-only)&quot;;
-        cout &lt;&lt; &quot;&gt; &quot; &lt;&lt; flush; </tt></b></pre>
+            cout &lt;&lt; "(read-only)";
+        cout &lt;&lt; "&gt; " &lt;&lt; flush; </tt></b></pre>
       <p>
             When we collect data from the prompt, there is a case that says
             if no data is entered then show the entire stocks database.
@@ -328,26 +328,26 @@ int RepMgr::doloop()
       <pre class="programlisting">
         if (fgets(buf, sizeof(buf), stdin) == NULL)
             break;
-        if (strtok(&amp;buf[0], &quot; \t\n&quot;) == NULL) {
+        if (strtok(&amp;buf[0], " \t\n") == NULL) {
             switch ((ret = print_stocks(dbp))) {
             case 0:
                 continue;
             <b class="userinput"><tt>case DB_REP_HANDLE_DEAD:
                 (void)dbp-&gt;close(DB_NOSYNC);
-                cout &lt;&lt; &quot;closing db handle due to rep handle dead&quot; &lt;&lt; endl;
+                cout &lt;&lt; "closing db handle due to rep handle dead" &lt;&lt; endl;
                 dbp = NULL;
                 continue;</tt></b>
             default:
-                dbp-&gt;err(ret, &quot;Error traversing data&quot;);
+                dbp-&gt;err(ret, "Error traversing data");
                 goto err;
             }
         }
-        rbuf = strtok(NULL, &quot; \t\n&quot;);
+        rbuf = strtok(NULL, " \t\n");
         if (rbuf == NULL || rbuf[0] == '\0') {
-            if (strncmp(buf, &quot;exit&quot;, 4) == 0 ||
-                strncmp(buf, &quot;quit&quot;, 4) == 0)
+            if (strncmp(buf, "exit", 4) == 0 ||
+                strncmp(buf, "quit", 4) == 0)
                 break;
-            dbenv.errx(&quot;Format: TICKER VALUE&quot;);
+            dbenv.errx("Format: TICKER VALUE");
             continue;
         } </pre>
       <p>
@@ -358,7 +358,7 @@ int RepMgr::doloop()
             that happening due to user input at the prompt.
     </p>
       <pre class="programlisting">        <b class="userinput"><tt>if (!app_data.is_master) {
-            dbenv-&gt;errx(dbenv, &quot;Can't update at client&quot;);
+            dbenv-&gt;errx(dbenv, "Can't update at client");
             continue;
         }</tt></b>
 
@@ -370,7 +370,7 @@ int RepMgr::doloop()
 
         if ((ret = dbp-&gt;put(NULL, &amp;key, &amp;data, 0)) != 0)
         {
-            dbp-&gt;err(ret, &quot;DB-&gt;put&quot;);
+            dbp-&gt;err(ret, "DB-&gt;put");
             if (ret != DB_KEYEXIST)
                 goto err;
         }
@@ -522,18 +522,18 @@ QUOTESERVER (read-only)&gt; </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="processingloop.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="processingloop.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="fwrkmasterreplica.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="addfeatures.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="addfeatures.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Processing Loop </td>
+          <td width="40%" align="left" valign="top">Processing LoopÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 5. Additional Features</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 5.Â Additional Features</td>
         </tr>
       </table>
     </div>

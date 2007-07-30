@@ -1,0 +1,87 @@
+m4_comment([$Id: seq_open.so,v 1.9 2005/01/20 01:15:15 ubell Exp $])
+
+define(M4PAGELOCAL, [dnl
+	seq_open, seq_get_dbp, seq_get_key])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(seq_open),
+ifelse(M4API, C_API, [dnl
+int
+DB_SEQUENCE-__GT__open(DB_SEQUENCE *seq, DB_TXN *txnid, DBT *key, u_int32_t flags);
+m4_blank
+int
+DB_SEQUENCE-__GT__get_dbp(DB_SEQUENCE *seq, DB **dbp);
+m4_blank
+int
+DB_SEQUENCE-__GT__get_key(DB_SEQUENCE *seq, DBT *key);
+m4_blank
+])
+int
+ifelse(M4API, CXX_API, [dnl
+int
+DbSequence::open(DbTxn *txnid, Dbt *key, u_int32_t flags);
+m4_blank
+int
+DbSequence::get_dbp(Db **dbp);
+m4_blank
+int
+DbSequence::get_key(Dbt *key);
+]))
+
+m4_p([dnl
+The m4_refT(seq_open) opens the sequence represented by the m4_arg(key).
+The key must be compatible with the underlying database specified in the
+corresponding call to m4_ref(seq_create).])
+
+m4_parambegin
+m4_param(key, [dnl
+The m4_arg(key) specifies which record in the database stores
+the persistent sequence data.])
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_CREATE), [dnl
+Create the sequence.  If the sequence does not already exist and the
+DB_CREATE flag is not specified, the m4_ref(seq_open) will fail.])
+
+m4_tag(m4_idef(DB_EXCL), [dnl
+Return an error if the sequence already exists.  The m4_ref(DB_EXCL)
+flag is only meaningful when specified with the m4_ref(DB_CREATE)
+flag.])
+
+m4_tag(m4_idef(DB_THREAD), [dnl
+Cause the m4_ref(DbSequence) handle returned by m4_ref(seq_open) to be
+m4_italic(free-threaded); that is, usable by multiple threads within a
+single address space.  Note that if multiple threads create multiple
+sequences using the same database handle that handle must have been
+opened specifying m4_idef(DB_THREAD).])
+m4_tagend])
+
+m4_param_txn(seq_open,, [dnl
+Transactionally protected operations on a m4_ref(DbSequence) handle
+require the m4_ref(DbSequence) handle itself be transactionally
+protected during its open if the open creates the sequence.])
+
+m4_paramend
+
+m4_pf_description(m4_ref(seq_get_dbp))
+m4_p([dnl
+The m4_refT(seq_get_dbp) returns the database handle.])
+m4_parambegin
+m4_param_co(dbp, database handle, REF)
+m4_paramend
+m4_when_any(seq_get_dbp)
+m4_return(seq_get_dbp, std)
+
+m4_pf_description(m4_ref(seq_get_key))
+m4_p([dnl
+The m4_refT(seq_get_key) returns the key for the sequence.])
+m4_parambegin
+m4_param_co(key, key data, REF)
+m4_paramend
+m4_when_any(seq_get_key)
+m4_return(seq_get_key, std)
+
+m4_seealso(DbSequence)
+m4_page_footer

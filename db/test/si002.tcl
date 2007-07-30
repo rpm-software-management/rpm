@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: si002.tcl,v 12.8 2006/08/24 14:46:39 bostic Exp $
+# $Id: si002.tcl,v 12.13 2007/06/18 14:50:03 carol Exp $
 #
 # TEST	si002
 # TEST	Basic cursor-based secondary index put/delete test
@@ -91,11 +90,14 @@ proc si002 { methods {nentries 200} {tnum "002"} args } {
 		lappend sdbs $sdb
 	}
 
-	puts "\tSi$tnum.a: Cursor put (-keyfirst/-keylast) loop"
 	set did [open $dict]
+
+	# Populate with a cursor, exercising keyfirst/keylast.
+	puts "\tSi$tnum.a: Cursor put (-keyfirst/-keylast) loop"
 	set pdbc [$pdb cursor]
 	error_check_good pdb_cursor [is_valid_cursor $pdbc $pdb] TRUE
 	for { set n 0 } { [gets $did str] != -1 && $n < $nentries } { incr n } {
+
 		if { [is_record_based $pmethod] == 1 } {
 			set key [expr $n + 1]
 			set datum $str
@@ -103,6 +105,7 @@ proc si002 { methods {nentries 200} {tnum "002"} args } {
 			set key $str
 			gets $did datum
 		}
+
 		set ns($key) $n
 		set keys($n) $key
 		set data($n) [pad_data $pmethod $datum]
@@ -117,8 +120,9 @@ proc si002 { methods {nentries 200} {tnum "002"} args } {
 		    {$key [chop_data $pmethod $datum]}]
 		error_check_good put($n) $ret 0
 	}
-	close $did
 	error_check_good pdbc_close [$pdbc close] 0
+
+	close $did
 	check_secondaries $pdb $sdbs $nentries keys data "Si$tnum.a"
 
 	puts "\tSi$tnum.b: Cursor put overwrite (-current) loop"

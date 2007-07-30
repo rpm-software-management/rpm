@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: RepQuoteExample.java,v 1.10 2006/09/09 14:12:42 bostic Exp $
+ * $Id: RepQuoteExample.java,v 1.17 2007/05/17 18:17:19 bostic Exp $
  */
 
 package db.repquote;
@@ -30,7 +29,6 @@ import db.repquote.RepConfig;
  * <pre>
  *   -M (configure this process to start as a master)
  *   -C (configure this process to start as a client)
- *   -F Call a full election at startup
  *   -h environment home directory
  *   -m host:port (required; m stands for me)
  *   -o host:port (optional; o stands for other; any number of these may
@@ -74,7 +72,7 @@ import db.repquote.RepConfig;
  * </ul>
  */
 
-public class RepQuoteExample implements EventHandler
+public class RepQuoteExample
 {
     private RepConfig appConfig;
     private RepQuoteEnvironment dbenv;
@@ -87,7 +85,6 @@ public class RepQuoteExample implements EventHandler
 
         System.err.println(
              "\t -C start the site as client of the replication group\n" +
-             "\t -F Call a full election at startup\n" +
              "\t -M start the site as master of the replication group\n" +
              "\t -f host:port (optional; f stands for friend and \n" +
              "\t    indicates a peer relationship to the specified site)\n" +
@@ -118,9 +115,6 @@ public class RepQuoteExample implements EventHandler
             isPeer = false;
             if (argv[i].compareTo("-C") == 0) {
                 config.startPolicy = ReplicationManagerStartPolicy.REP_CLIENT;
-            } else if (argv[i].compareTo("-F") == 0) {
-                config.startPolicy =
-                    ReplicationManagerStartPolicy.REP_FULL_ELECTION;
             } else if (argv[i].compareTo("-h") == 0) {
                 // home - a string arg.
                 i++;
@@ -232,7 +226,7 @@ public class RepQuoteExample implements EventHandler
          envConfig.setCacheSize(RepConfig.CACHESIZE);
         envConfig.setTxnNoSync(true);
 
-        envConfig.setEventHandler(this);
+        envConfig.setEventHandler(new RepQuoteEventHandler());
         envConfig.setReplicationManagerAckPolicy(ReplicationManagerAckPolicy.ALL);
 
         envConfig.setAllowCreate(true);
@@ -360,22 +354,6 @@ public class RepQuoteExample implements EventHandler
         dbenv.close();
     }
 
-    public int handleEvent(EventType event)
-    {
-        int ret = 0;
-        if (event == EventType.REP_MASTER)
-            dbenv.setIsMaster(true);
-        else if (event == EventType.REP_CLIENT)
-            dbenv.setIsMaster(false);
-        else if (event == EventType.REP_NEW_MASTER) {
-            // ignored for now.
-        } else {
-            System.err.println("Unknown event callback received.\n");
-            ret = 1;
-        }
-        return ret;
-    }
-
     /*
      * void return type since error conditions are propogated
      * via exceptions.
@@ -402,6 +380,22 @@ public class RepQuoteExample implements EventHandler
 
         }
         dbc.close();
+    }
+
+    /*
+     * Implemention of EventHandler interface to handle the Berkeley DB events
+     * we are interested in receiving.
+     */
+    private /* internal */
+    class RepQuoteEventHandler extends EventHandlerAdapter {
+        public void handleRepClientEvent()
+	{
+	    dbenv.setIsMaster(false);
+	}
+        public void handleRepMasterEvent()
+	{
+	    dbenv.setIsMaster(true);
+	}
     }
 } // end class
 

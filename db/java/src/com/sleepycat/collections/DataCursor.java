@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: DataCursor.java,v 12.7 2006/09/08 20:32:13 bostic Exp $
+ * $Id: DataCursor.java,v 12.9 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.collections;
@@ -310,7 +309,7 @@ final class DataCursor implements Cloneable {
             status = cursor.getSearchBoth(keyThang, primaryKeyThang,
                                           valueThang, lockMode);
         }
-
+        
         return (status == OperationStatus.SUCCESS);
     }
 
@@ -406,7 +405,7 @@ final class DataCursor implements Cloneable {
             return DbCompat.getRecordNumber(keyThang);
         }
     }
-
+    
     /**
      * Binding version of Cursor.getCurrent(), no join cursor allowed.
      */
@@ -417,7 +416,7 @@ final class DataCursor implements Cloneable {
         return cursor.getCurrent(keyThang, primaryKeyThang, valueThang,
                                  getLockMode(lockForWrite));
     }
-
+    
     /**
      * Binding version of Cursor.getFirst(), join cursor is allowed.
      */
@@ -432,7 +431,7 @@ final class DataCursor implements Cloneable {
                                    lockMode);
         }
     }
-
+    
     /**
      * Binding version of Cursor.getNext(), join cursor is allowed.
      */
@@ -447,7 +446,7 @@ final class DataCursor implements Cloneable {
                                   lockMode);
         }
     }
-
+    
     /**
      * Binding version of Cursor.getNext(), join cursor is allowed.
      */
@@ -465,7 +464,7 @@ final class DataCursor implements Cloneable {
                 (keyThang, primaryKeyThang, valueThang, lockMode);
         }
     }
-
+    
     /**
      * Binding version of Cursor.getNextDup(), no join cursor allowed.
      */
@@ -481,7 +480,7 @@ final class DataCursor implements Cloneable {
                  getLockMode(lockForWrite));
         }
     }
-
+    
     /**
      * Binding version of Cursor.getLast(), no join cursor allowed.
      */
@@ -492,7 +491,7 @@ final class DataCursor implements Cloneable {
         return cursor.getLast(keyThang, primaryKeyThang, valueThang,
                               getLockMode(lockForWrite));
     }
-
+    
     /**
      * Binding version of Cursor.getPrev(), no join cursor allowed.
      */
@@ -503,7 +502,7 @@ final class DataCursor implements Cloneable {
         return cursor.getPrev(keyThang, primaryKeyThang, valueThang,
                               getLockMode(lockForWrite));
     }
-
+    
     /**
      * Binding version of Cursor.getPrevNoDup(), no join cursor allowed.
      */
@@ -522,7 +521,7 @@ final class DataCursor implements Cloneable {
                 (keyThang, primaryKeyThang, valueThang, lockMode);
         }
     }
-
+    
     /**
      * Binding version of Cursor.getPrevDup(), no join cursor allowed.
      */
@@ -538,7 +537,7 @@ final class DataCursor implements Cloneable {
                  getLockMode(lockForWrite));
         }
     }
-
+    
     /**
      * Binding version of Cursor.getSearchKey(), no join cursor allowed.
      * Searches by record number in a BTREE-RECNO db with RECNO access.
@@ -562,7 +561,7 @@ final class DataCursor implements Cloneable {
         }
         return OperationStatus.NOTFOUND;
     }
-
+    
     /**
      * Pass-thru version of Cursor.getSearchKey().
      * Searches by record number in a BTREE-RECNO db with RECNO access.
@@ -579,7 +578,7 @@ final class DataCursor implements Cloneable {
                                        valueThang, lockMode);
         }
     }
-
+    
     /**
      * Binding version of Cursor.getSearchKeyRange(), no join cursor allowed.
      */
@@ -703,7 +702,7 @@ final class DataCursor implements Cloneable {
 
         checkWriteAllowed(false);
         view.useValue(value, valueThang, keyThang);
-
+        
         /*
          * Workaround for a DB core problem: With HASH type a put() with
          * different data is allowed.

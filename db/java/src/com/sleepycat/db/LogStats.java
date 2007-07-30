@@ -3,8 +3,7 @@
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */
 
 package com.sleepycat.db;
@@ -38,6 +37,16 @@ public class LogStats {
         return st_lg_size;
     }
 
+    private int st_wc_bytes;
+    public int getWcBytes() {
+        return st_wc_bytes;
+    }
+
+    private int st_wc_mbytes;
+    public int getWcMbytes() {
+        return st_wc_mbytes;
+    }
+
     private int st_record;
     public int getRecord() {
         return st_record;
@@ -51,16 +60,6 @@ public class LogStats {
     private int st_w_mbytes;
     public int getWMbytes() {
         return st_w_mbytes;
-    }
-
-    private int st_wc_bytes;
-    public int getWcBytes() {
-        return st_wc_bytes;
-    }
-
-    private int st_wc_mbytes;
-    public int getWcMbytes() {
-        return st_wc_mbytes;
     }
 
     private int st_wcount;
@@ -113,11 +112,6 @@ public class LogStats {
         return st_disk_offset;
     }
 
-    private int st_regsize;
-    public int getRegSize() {
-        return st_regsize;
-    }
-
     private int st_maxcommitperflush;
     public int getMaxCommitperflush() {
         return st_maxcommitperflush;
@@ -128,6 +122,11 @@ public class LogStats {
         return st_mincommitperflush;
     }
 
+    private int st_regsize;
+    public int getRegSize() {
+        return st_regsize;
+    }
+
     public String toString() {
         return "LogStats:"
             + "\n  st_magic=" + st_magic
@@ -135,11 +134,11 @@ public class LogStats {
             + "\n  st_mode=" + st_mode
             + "\n  st_lg_bsize=" + st_lg_bsize
             + "\n  st_lg_size=" + st_lg_size
+            + "\n  st_wc_bytes=" + st_wc_bytes
+            + "\n  st_wc_mbytes=" + st_wc_mbytes
             + "\n  st_record=" + st_record
             + "\n  st_w_bytes=" + st_w_bytes
             + "\n  st_w_mbytes=" + st_w_mbytes
-            + "\n  st_wc_bytes=" + st_wc_bytes
-            + "\n  st_wc_mbytes=" + st_wc_mbytes
             + "\n  st_wcount=" + st_wcount
             + "\n  st_wcount_fill=" + st_wcount_fill
             + "\n  st_rcount=" + st_rcount
@@ -150,9 +149,9 @@ public class LogStats {
             + "\n  st_cur_offset=" + st_cur_offset
             + "\n  st_disk_file=" + st_disk_file
             + "\n  st_disk_offset=" + st_disk_offset
-            + "\n  st_regsize=" + st_regsize
             + "\n  st_maxcommitperflush=" + st_maxcommitperflush
             + "\n  st_mincommitperflush=" + st_mincommitperflush
+            + "\n  st_regsize=" + st_regsize
             ;
     }
 }

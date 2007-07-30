@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_fzero.c,v 12.17 2006/09/19 14:14:12 mjc Exp $
+ * $Id: os_fzero.c,v 12.20 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -37,6 +36,9 @@ __os_zerofill(dbenv, fhp)
 	u_int32_t bytes, mbytes;
 	int group_sync, need_free, ret;
 	u_int8_t buf[8 * 1024], *bp;
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: zero-fill %s", fhp->name);
 
 	/* Calculate the byte offset of the next write. */
 	write_offset = (off_t)fhp->pgno * fhp->pgsize + fhp->offset;

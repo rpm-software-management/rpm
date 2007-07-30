@@ -1,0 +1,125 @@
+m4_comment([$Id: log_stat.so,v 10.58 2007/06/22 16:57:15 bostic Exp $])
+
+define(M4PAGELOCAL, [log_stat, log_stat_print])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_stat),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__log_stat(DB_ENV *env, DB_LOG_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DB_ENV-__GT__log_stat_print(DB_ENV *env, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::log_stat(DB_LOG_STAT **statp, u_int32_t flags);
+m4_blank
+int
+DbEnv::log_stat_print(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(log_stat) returns the logging subsystem statistics.])
+
+m4_p([dnl
+The m4_refT(log_stat) creates a statistical structure of type
+DB_LOG_STAT and copies a pointer to it into a user-specified memory
+location.])
+
+m4_alloc([Statistical structures])
+
+m4_p([dnl
+The following DB_LOG_STAT fields will be filled in:])
+
+m4_tagbegin
+m4_field(u_int32_t, st_magic,
+[The magic number that identifies a file as a log file.])
+
+m4_field(u_int32_t, st_version,
+[The version of the log file type.])
+
+m4_field(int, st_mode,
+[The mode of any created log files.])
+
+m4_field(u_int32_t, st_lg_bsize,
+[The in-memory log record cache size.])
+
+m4_field(u_int32_t, st_lg_size,
+[The log file size.])
+
+m4_field(u_int32_t, st_record,
+[The number of records written to this log.])
+
+m4_field(u_int32_t, st_w_mbytes,
+[The number of megabytes written to this log.])
+
+m4_field(u_int32_t, st_w_bytes,
+[The number of bytes over and above m4_arg(st_w_mbytes) written to this log.])
+
+m4_field(u_int32_t, st_wc_mbytes,
+[The number of megabytes written to this log since the last checkpoint.])
+
+m4_field(u_int32_t, st_wc_bytes,
+[The number of bytes over and above m4_arg(st_wc_mbytes) written to this log
+since the last checkpoint.])
+
+m4_field(u_int32_t, st_wcount,
+[The number of times the log has been written to disk.])
+
+m4_field(u_int32_t, st_wcount_fill,
+[The number of times the log has been written to disk because the
+in-memory log record cache filled up.])
+
+m4_field(u_int32_t, st_rcount,
+[The number of times the log has been read from disk.])
+
+m4_field(u_int32_t, st_scount,
+[The number of times the log has been flushed to disk.])
+
+m4_field(u_int32_t, st_cur_file,
+[The current log file number.])
+
+m4_field(u_int32_t, st_cur_offset,
+[The byte offset in the current log file.])
+
+m4_field(u_int32_t, st_disk_file,
+[The log file number of the last record known to be on disk.])
+
+m4_field(u_int32_t, st_disk_offset,
+[The byte offset of the last record known to be on disk.])
+
+m4_field(u_int32_t, st_maxcommitperflush,
+[The maximum number of commits contained in a single log flush.])
+
+m4_field(u_int32_t, st_mincommitperflush,
+[The minimum number of commits contained in a single log flush that
+contained a commit.])
+
+m4_field(roff_t, st_regsize,
+[The size of the log region, in bytes.])
+
+m4_field(u_int32_t, st_region_wait,
+[The number of times that a thread of control was forced to wait before
+obtaining the log region mutex.])
+
+m4_field(u_int32_t, st_region_nowait,
+[The number of times that a thread of control was able to obtain
+the log region mutex without waiting.])
+m4_tagend
+
+m4_when_after_envopen(log_stat)
+
+m4_return(log_stat, std)
+
+m4_parambegin
+m4_param(flags, m4_stat_flags)
+m4_param_co(statp, allocated statistics structure, REF)
+m4_paramend
+
+m4_err(log_stat, einval)
+
+m4_stat_print(log_stat_print, logging subsystem, log_stat)
+
+m4_seealso(DbLog)
+m4_page_footer

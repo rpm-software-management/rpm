@@ -1,0 +1,120 @@
+m4_comment([$Id: conf.so,v 10.30 2005/12/01 03:18:51 bostic Exp $])
+
+m4_ref_title(Java API,
+    Java configuration, @Java configuration, am_misc/faq, java/compat)
+
+m4_p([dnl
+Building the m4_db java classes, the examples and the native support
+library is integrated into the normal build process.  See
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --enable-java, [Configuring
+m4_db]) and m4_link(M4RELDIR/ref/build_win/intro, [Building for Windows])
+for more information.])
+
+m4_p([dnl
+We expect that you already installed the Java JDK or equivalent on your
+system.  For the sake of discussion, we assume that it is in a directory
+called db-VERSION; for example, you downloaded a m4_db archive, and you
+did not change the top-level directory name.  The files related to Java
+are in three subdirectories of db-VERSION: java (the java source files),
+libdb_java (the C++ files that provide the "glue" between java and
+m4_db) and examples_java (containing all examples code).  The directory
+tree looks like this:])
+
+m4_indent([dnl
+db-VERSION
+|-- java
+|   `-- src
+|       `-- com
+|           `-- sleepycat
+|               |-- bdb
+|               |   |-- ...
+|               |   |-- bind
+|               |   |   `-- ...
+|               |   `-- util
+|               |       `-- ...
+|               `-- db
+|-- examples_java
+|   `-- src
+|       `-- com
+|           `-- sleepycat
+|               `-- examples
+|                   |-- bdb
+|                   |   `-- ...
+|                   `-- db
+|                       `-- ...
+`-- libdb_java
+    `-- ...
+])
+
+m4_p([dnl
+This naming conforms to the de facto standard for naming java packages.
+When the java code is built, it is placed into two jar files:
+m4_path(db.jar), containing the db package,
+and m4_path(dbexamples.jar), containing the examples.])
+
+m4_p([dnl
+For your application to use m4_db successfully, you must set your
+m4_envvar(CLASSPATH) environment variable to include the full pathname of
+the db jar files as well as the classes in your java distribution.
+On UNIX, m4_envvar(CLASSPATH) is a colon-separated
+list of directories and jar files;
+on Windows, it is separated by semicolons.
+On UNIX, the jar files are put in your build directory, and when
+you do the make install step, they are copied to the lib directory
+of your installation tree.  On Windows, the jar files are placed
+in the Release or Debug subdirectory with your other objects.])
+
+m4_p([dnl
+The m4_db Java classes are mostly implemented in native
+methods. Before you can use them, you need to make sure that the
+DLL or shared library containing the native methods can be found
+by your Java runtime.  On Windows, you should set your PATH variable
+to include:])
+
+m4_indent(m4_path([db-VERSION\build_windows\Release]))
+
+m4_p([dnl
+On UNIX, you should set the
+m4_envvar(LD_LIBRARY_PATH) environment variable or local equivalent
+to include the m4_db library installation directory. Of course, the
+standard install directory may have been changed for your site; see your
+system administrator for details.])
+
+m4_p([dnl
+On other platforms, the path can be set on the command line as follows
+(assuming the shared library is in m4_path(/usr/local/BerkeleyDB/lib):)])
+
+m4_indent([% java -Djava.library.path=/usr/local/BerkeleyDB/lib ...])
+
+m4_p([dnl
+Regardless, if you get the following exception when you run, you
+probably do not have the library search path configured correctly:])
+
+m4_indent([java.lang.UnsatisfiedLinkError])
+
+m4_p([dnl
+Different Java interpreters provide different error messages if the
+m4_envvar(CLASSPATH) value is incorrect, a typical error is the following:])
+
+m4_indent([java.lang.NoClassDefFoundError])
+
+m4_p([dnl
+To ensure that everything is running correctly, you may want to try a
+simple test from the example programs in])
+
+m4_indent(m4_path([db-VERSION/examples_java/src/db]))
+
+m4_p([dnl
+For example, the following sample program will prompt for text input
+lines, which are then stored in a Btree database named m4_path(access.db) in
+your current directory:])
+
+m4_indent([% java db.AccessExample])
+
+m4_p([dnl
+Try giving it a few lines of input text and then end-of-file.  Before
+it exits, you should see a list of the lines you entered display with
+data items.  This is a simple check to make sure the fundamental
+configuration is working correctly.])
+
+m4_page_footer

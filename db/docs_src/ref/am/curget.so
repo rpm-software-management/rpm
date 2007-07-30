@@ -1,0 +1,109 @@
+m4_comment([$Id: curget.so,v 10.20 2003/10/18 19:15:52 bostic Exp $])
+
+m4_ref_title(Access Methods, Retrieving records with a cursor,
+    [@retrieving records with a cursor, retrieving records with a @cursor],
+    am/cursor, am/curput)
+
+m4_p([dnl
+The m4_refT(dbc_get) retrieves records from the database using a cursor.
+The m4_refT(dbc_get) takes a flag which controls how the cursor is
+positioned within the database and returns the key/data item associated
+with that positioning.  Similar to m4_ref(dbh_get), m4_ref(dbc_get) may
+also take a supplied key and retrieve the data associated with that key
+from the database.  There are several flags that you can set to
+customize retrieval.])
+
+m4_section(Cursor position flags)
+
+m4_tagbegin
+
+m4_tag([m4_ref(DB_FIRST), m4_ref(DB_LAST)], [dnl
+Return the first (last) record in the database.])
+
+m4_tag([m4_ref(DB_NEXT), m4_ref(DB_PREV)], [dnl
+Return the next (previous) record in the database.])
+
+m4_tag([m4_ref(DB_NEXT_DUP)], [dnl
+Return the next record in the database, if it is a duplicate data item
+for the current key.])
+
+m4_tag([m4_ref(DB_NEXT_NODUP), m4_ref(DB_PREV_NODUP)], [dnl
+Return the next (previous) record in the database that is not a
+duplicate data item for the current key.])
+
+m4_tag([m4_ref(DB_CURRENT)], [dnl
+Return the record from the database to which the cursor currently refers.])
+
+m4_tagend
+
+m4_section(Retrieving specific key/data pairs)
+
+m4_tagbegin
+
+m4_tag([m4_ref(DB_SET)], [dnl
+Return the record from the database that matches the supplied key.  In
+the case of duplicates the first duplicate is returned and the cursor
+is positioned at the beginning of the duplicate list.  The user can then
+traverse the duplicate entries for the key.])
+
+m4_tag([m4_ref(DB_SET_RANGE)], [dnl
+Return the smallest record in the database greater than or equal to the
+supplied key.  This functionality permits partial key matches and range
+searches in the Btree access method.])
+
+m4_tag([m4_ref(DB_GET_BOTH)], [dnl
+Return the record from the database that matches both the supplied key
+and data items.  This is particularly useful when there are large
+numbers of duplicate records for a key, as it allows the cursor to
+easily be positioned at the correct place for traversal of some part of
+a large set of duplicate records.])
+
+m4_tag([m4_ref(DB_GET_BOTH_RANGE)], [dnl
+Return the smallest record in the database greater than or equal to the
+supplied key and data items.])
+
+m4_tagend
+
+m4_section(Retrieving based on record numbers)
+
+m4_tagbegin
+
+m4_tag([m4_ref(DB_SET_RECNO)], [dnl
+If the underlying database is a Btree, and was configured so that it is
+possible to search it by logical record number, retrieve a specific
+record based on a record number argument.])
+
+m4_tag([m4_ref(DB_GET_RECNO)], [dnl
+If the underlying database is a Btree, and was configured so that it is
+possible to search it by logical record number, return the record number
+for the record to which the cursor refers.])
+
+m4_tagend
+
+m4_section(Special-purpose flags)
+
+m4_tagbegin
+
+m4_tag([m4_ref(DB_CONSUME)], [dnl
+Read-and-delete: the first record (the head) of the queue is returned and
+deleted.  The underlying database must be a Queue.])
+
+m4_tag([m4_ref(DB_RMW)], [dnl
+Read-modify-write: acquire write locks instead of read locks during
+retrieval. This can enhance performance in threaded applications by
+reducing the chance of deadlock.])
+
+m4_tagend
+
+m4_p([dnl
+In all cases, the cursor is repositioned by a m4_ref(dbc_get) operation
+to point to the newly-returned key/data pair in the database.])
+
+m4_p([dnl
+The following is a code example showing a cursor walking through a
+database and displaying the records it contains to the standard
+output:])
+
+include(ref/am/curget.cs)
+
+m4_page_footer

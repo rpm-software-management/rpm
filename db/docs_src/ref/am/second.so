@@ -1,0 +1,158 @@
+m4_comment([$Id: second.so,v 10.12 2004/09/15 19:40:07 bostic Exp $])
+
+m4_ref_title(Access Methods, Secondary indices,
+    [secondary indices, secondary @indices], am/close, am/cursor)
+
+m4_p([dnl
+A secondary index, put simply, is a way to efficiently access records
+in a database (the primary) by means of some piece of information other
+than the usual (primary) key.  In m4_db, this index is simply another
+database whose keys are these pieces of information (the secondary
+keys), and whose data are the primary keys.  Secondary indices can be
+created manually by the application; there is no disadvantage, other
+than complexity, to doing so.  However, when the secondary key can be
+mechanically derived from the primary key and datum that it points to,
+as is frequently the case, m4_db can automatically and transparently
+manage secondary indices.])
+
+m4_p([dnl
+As an example of how secondary indices might be used, consider a
+database containing a list of students at a college, each of whom has
+a unique student ID number.  A typical database would use the student
+ID number as the key; however, one might also reasonably want to be
+able to look up students by last name.  To do this, one would construct
+a secondary index in which the secondary key was this last name.])
+
+m4_p([In SQL, this would be done by executing something like the following:])
+
+m4_indent([dnl
+CREATE TABLE students(student_id CHAR(4) NOT NULL,
+	lastname CHAR(15), firstname CHAR(15), PRIMARY KEY(student_id));
+CREATE INDEX lname ON students(lastname);])
+
+m4_p([In m4_db, this would work as follows (a
+m4_linkweb(second.javas, [Java API example is also available])):])
+
+include(ref/am/second1.cs)
+
+m4_p([dnl
+From the application's perspective, putting things into the database
+works exactly as it does without a secondary index;  one can simply
+insert records into the primary database.  In SQL one would do the
+following:])
+
+m4_indent([dnl
+INSERT INTO student
+    VALUES ("WC42", "Churchill      ", "Winston        ");])
+
+m4_p([and in m4_db, one does:])
+
+include(ref/am/second2.cs)
+
+m4_p([dnl
+Internally, a record with secondary key "Churchill" is inserted into
+the secondary database (in addition to the insertion of "WC42" into the
+primary, of course).])
+
+m4_p([Deletes are similar.  The SQL clause:])
+
+m4_indent([dnl
+DELETE FROM student WHERE (student_id = "WC42");])
+
+m4_p([looks like:])
+
+include(ref/am/second3.cs)
+
+m4_p([dnl
+Deletes can also be performed on the secondary index directly; a delete
+done this way will delete the "real" record in the primary as well.  If
+the secondary supports duplicates and there are duplicate occurrences of
+the secondary key, then all records with that secondary key are removed
+from both the secondary index and the primary database. In
+SQL:])
+
+m4_indent([dnl
+DELETE FROM lname WHERE (lastname = "Churchill      ");])
+
+m4_p([In m4_db:])
+
+include(ref/am/second4.cs)
+
+m4_p([dnl
+Gets on a secondary automatically return the primary datum.  If
+m4_ref(dbh_pget) or m4_ref(dbc_pget) is used in lieu of m4_ref(dbh_get)
+or m4_ref(dbc_get), the primary key is returned as well.  Thus, the
+equivalent of:])
+
+m4_indent([dnl
+SELECT * from lname WHERE (lastname = "Churchill      ");])
+
+m4_p([would be:])
+
+include(ref/am/second5.cs)
+
+m4_p([dnl
+To create a secondary index to a m4_db database, open the database that
+is to become a secondary index normally, then pass it as the "secondary"
+argument to the m4_refT(dbh_associate) for some primary database.])
+
+m4_p([dnl
+After a m4_ref(dbh_associate) call is made, the secondary indices become
+alternate interfaces to the primary database.  All updates to the
+primary will be automatically reflected in each secondary index that has
+been associated with it.  All get operations using the m4_ref(dbh_get)
+or m4_refT(dbc_get)s on the secondary index return the primary datum
+associated with the specified (or otherwise current, in the case of
+cursor operations) secondary key.  The m4_ref(dbh_pget) and
+m4_refT(dbc_pget)s also become usable; these behave just like
+m4_ref(dbh_get) and m4_ref(dbc_get), but return the primary key in
+addition to the primary datum, for those applications that need it as
+well.])
+
+m4_p([dnl
+Cursor get operations on a secondary index perform as expected; although
+the data returned will by default be those of the primary database, a
+position in the secondary index is maintained normally, and records will
+appear in the order determined by the secondary key and the comparison
+function or other structure of the secondary database.])
+
+m4_p([dnl
+Delete operations on a secondary index delete the item from the primary
+database and all relevant secondaries, including the current one.])
+
+m4_p([dnl
+Put operations of any kind are forbidden on secondary indices, as there
+is no way to specify a primary key for a newly put item.  Instead, the
+application should use the m4_ref(dbc_put) or m4_ref(dbh_put) methods
+on the primary database.])
+
+m4_p([dnl
+Any number of secondary indices may be associated with a given primary
+database, up to limitations on available memory and the number of open
+file descriptors.])
+
+m4_p([dnl
+Note that although m4_db guarantees that updates made using any
+m4_ref(Db) handle with an associated secondary will be reflected in the
+that secondary, associating each primary handle with all the appropriate
+secondaries is the responsibility of the application and is not enforced
+by m4_db.  It is generally unsafe, but not forbidden by m4_db, to modify
+a database that has secondary indices without having those indices open
+and associated.  Similarly, it is generally unsafe, but not forbidden,
+to modify a secondary index directly.  Applications that violate these
+rules face the possibility of outdated or incorrect results if the
+secondary indices are later used.])
+
+m4_p([dnl
+If a secondary index becomes outdated for any reason, it should be
+discarded using the m4_ref(dbh_remove) method and a new one created
+using the m4_ref(dbh_associate) method.  If a secondary index is no
+longer needed, all of its handles should be closed using the
+m4_ref(dbh_close) method, and then the database should be removed using
+a new database handle and the m4_ref(dbh_remove) method.])
+
+m4_p([dnl
+Closing a primary database handle automatically dis-associates all
+secondary database handles associated with it.])
+
+m4_page_footer

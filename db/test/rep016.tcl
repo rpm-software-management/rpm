@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2002-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2002,2007 Oracle.  All rights reserved.
 #
-# $Id: rep016.tcl,v 12.9 2006/08/24 14:46:37 bostic Exp $
+# $Id: rep016.tcl,v 12.14 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST  rep016
 # TEST	Replication election test with varying required nvotes.
@@ -58,10 +57,16 @@ proc rep016 { method args } {
 
 proc rep016_sub { method nclients tnum logset recargs largs } {
 	source ./include.tcl
-	set niter 5
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 
+	set niter 5
 	set qdir $testdir/MSGQUEUEDIR
 	replsetup $qdir
 
@@ -80,30 +85,27 @@ proc rep016_sub { method nclients tnum logset recargs largs } {
 		set c_txnargs($i) [adjust_txnargs $c_logtype($i)]
 	}
 
-# To debug elections, the lines to uncomment are below the
-# error checking portion of this test.  This is needed in order
-# for the error messages to come back in errorInfo and for
-# that portion of the test to pass.
 	# Open a master.
 	set envlist {}
 	repladd 1
-	set env_cmd(M) "berkdb_env -create -log_max 1000000 -home $masterdir \
-	    $m_txnargs $m_logargs -rep_master \
+	set env_cmd(M) "berkdb_env_noerr -create -log_max 1000000 \
+	    -event rep_event \
+	    -home $masterdir $m_txnargs $m_logargs -rep_master $verbargs \
 	    -errpfx MASTER -rep_transport \[list 1 replsend\]"
 	set masterenv [eval $env_cmd(M) $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 	lappend envlist "$masterenv 1"
 
 	# Open the clients.
+	# Don't set -errfile now -- wait until the error catching
+	# portion of the test is complete.
 	for { set i 0 } { $i < $nclients } { incr i } {
 		set envid [expr $i + 2]
 		repladd $envid
 		set env_cmd($i) "berkdb_env_noerr -create -home $clientdir($i) \
-		    $c_txnargs($i) $c_logargs($i) -rep_client \
+		    -event rep_event \
+		    $c_txnargs($i) $c_logargs($i) -rep_client $verbargs \
 		    -rep_transport \[list $envid replsend\]"
 		set clientenv($i) [eval $env_cmd($i) $recargs]
-		error_check_good \
-		    client_env($i) [is_valid_env $clientenv($i)] TRUE
 		lappend envlist "$clientenv($i) $envid"
 	}
 	# Bring the clients online by processing the startup messages.
@@ -181,10 +183,6 @@ proc rep016_sub { method nclients tnum logset recargs largs } {
 	error_check_bad catch $res 0
 	error_check_good ret [is_substr $ret "may not be negative"] 1
 
-# To debug elections, uncomment the lines below to turn on verbose
-# and set the errfile.  Also edit reputils.tcl
-# in proc start_election and swap the 2 commented lines with
-# their counterpart.
 	for { set i 0 } { $i < $nclients } { incr i } {
 		replclear [expr $i + 2]
 		#
@@ -199,11 +197,13 @@ proc rep016_sub { method nclients tnum logset recargs largs } {
  		#
 		set pri($i) 0
 		#
-#		error_check_good pfx [$clientenv($i) errpfx CLIENT$i] 0
-#		error_check_good verb [$clientenv($i) verbose rep on] 0
-#		$clientenv($i) errfile /dev/stderr
-#		set env_cmd($i) [concat $env_cmd($i) \
-#		    "-errpfx CLIENT$i -verbose {rep on} -errfile /dev/stderr"]
+		if { $rep_verbose == 1 } {
+			$clientenv($i) errpfx CLIENT.$i
+			$clientenv($i) verbose rep on
+			$clientenv($i) errfile /dev/stderr
+			set env_cmd($i) [concat $env_cmd($i) \
+			    "-errpfx CLIENT.$i -errfile /dev/stderr "]
+		}
 	}
 	set m "Rep$tnum.c"
 	puts "\t$m: Check single master/client can elect itself"

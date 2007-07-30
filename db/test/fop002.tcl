@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2000-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2000,2007 Oracle.  All rights reserved.
 #
-# $Id: fop002.tcl,v 12.3 2006/08/24 14:46:35 bostic Exp $
+# $Id: fop002.tcl,v 12.5 2007/05/17 15:15:55 bostic Exp $
 #
 # TEST	fop002.tcl
 # TEST	Test file system operations in the presence of bad permissions.

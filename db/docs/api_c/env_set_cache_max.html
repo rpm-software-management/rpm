@@ -1,0 +1,91 @@
+<!--$Id: env_set_cache_max.so,v 1.2 2007/07/07 14:40:15 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV-&gt;set_cache_max</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>DB_ENV-&gt;set_cache_max</h3>
+</td>
+<td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+int
+DB_ENV-&gt;set_cache_max(DB_ENV *dbenv, u_int32_t gbytes, u_int32_t bytes);
+<p>
+int
+DB_ENV-&gt;get_cache_max(DB_ENV *dbenv, u_int32_t *gbytesp, u_int32_t *bytesp);
+</pre></h3>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;set_cache_max</h3>
+<p>The DB_ENV-&gt;set_cache_max method sets the maximum cache size, in bytes.
+The specified size is rounded to the nearest multiple of the cache
+region size, which is the initial cache size divided by the number of
+regions specified to the <a href="../api_c/env_set_cachesize.html">DB_ENV-&gt;set_cachesize</a> method.  If no value is
+specified, it defaults to the initial cache size.</p>
+<p>The database environment's maximum cache size may also be configured using the
+environment's <b>DB_CONFIG</b> file.  The syntax of the entry in that
+file is a single line with the string "set_cache_max", one or more whitespace
+characters, and the size in bytes.
+Because the <b>DB_CONFIG</b> file is read when the database
+environment is opened, it will silently overrule configuration done
+before that time.</p>
+<p>The DB_ENV-&gt;set_cache_max method configures a database environment, not only operations
+performed using the specified <a href="../api_c/env_class.html">DB_ENV</a> handle.</p>
+<p>The DB_ENV-&gt;set_cache_max method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;set_cache_max method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>mp_mmapsize</b><dd>The <b>mp_mmapsize</b> parameter is the maximum file size, in bytes,
+for a file to be mapped into the process address space.
+</dl>
+<h3>Errors</h3>
+<p>The DB_ENV-&gt;set_cache_max method
+may fail and return one of the following non-zero errors:</p>
+<dl compact>
+<dt>EINVAL<dd>If the method was called after <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> was called; or if an
+invalid flag value or parameter was specified.
+</dl>
+<hr size=1 noshade>
+<h3>Description: DB_ENV-&gt;get_cache_max</h3>
+<p>The DB_ENV-&gt;get_cache_max method returns the maximum size of the cache.</p>
+<p>The DB_ENV-&gt;get_cache_max method may be called at any time during the life of the
+application.</p>
+<p>The DB_ENV-&gt;get_cache_max method
+returns a non-zero error value on failure
+and 0 on success.
+</p>
+<h3>Parameters</h3>
+<dl compact>
+<dt><b>bytesp</b><dd>The <b>bytesp</b> parameter references memory into which
+ the additional bytes of memory in the cache is copied. 
+<dt><b>gbytesp</b><dd>The <b>gbytesp</b> parameter references memory into which
+ the gigabytes of memory in the cache is copied. 
+</dl>
+<hr size=1 noshade>
+<h3>Class</h3>
+<a href="../api_c/env_class.html">DB_ENV</a>
+<h3>See Also</h3>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

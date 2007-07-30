@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Getting Records Using the Cursor</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB" />
-    <link rel="up" href="Cursors.html" title="Chapter 4. Using Cursors" />
-    <link rel="previous" href="Cursors.html" title="Chapter 4. Using Cursors" />
+    <link rel="up" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
+    <link rel="previous" href="Cursors.html" title="ChapterÂ 4.Â Using Cursors" />
     <link rel="next" href="PutEntryWCursor.html" title="Putting Records Using Cursors" />
   </head>
   <body>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Getting Records Using the Cursor</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="Cursors.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Using Cursors</th>
-          <td width="20%" align="right"> <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="Cursors.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Using Cursors</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -81,13 +81,13 @@ try {
         // DatabaseEntry held a byte array representation of some other data
         // type (such as a complex object) then this operation would look 
         // considerably different.
-        String keyString = new String(foundKey.getData(), &quot;UTF-8&quot;);
-        String dataString = new String(foundData.getData(), &quot;UTF-8&quot;);
-        System.out.println(&quot;Key | Data : &quot; + keyString + &quot; | &quot; + 
-                       dataString + &quot;&quot;);
+        String keyString = new String(foundKey.getData(), "UTF-8");
+        String dataString = new String(foundData.getData(), "UTF-8");
+        System.out.println("Key | Data : " + keyString + " | " + 
+                       dataString + "");
     }
 } catch (DatabaseException de) {
-    System.err.println(&quot;Error accessing database.&quot; + de);
+    System.err.println("Error accessing database." + de);
 } finally {
     // Cursors must be closed.
     cursor.close();
@@ -128,12 +128,12 @@ try {
     while (cursor.getPrev(foundKey, foundData, LockMode.DEFAULT) == 
         OperationStatus.SUCCESS) {
 
-        String theKey = new String(foundKey.getData(), &quot;UTF-8&quot;);
-        String theData = new String(foundData.getData(), &quot;UTF-8&quot;);
-        System.out.println(&quot;Key | Data : &quot; +  theKey + &quot; | &quot; + theData + &quot;&quot;);
+        String theKey = new String(foundKey.getData(), "UTF-8");
+        String theData = new String(foundData.getData(), "UTF-8");
+        System.out.println("Key | Data : " +  theKey + " | " + theData + "");
     }
 } catch (DatabaseException de) {
-    System.err.println(&quot;Error accessing database.&quot; + de);
+    System.err.println("Error accessing database." + de);
 } finally {
     // Cursors must be closed.
     cursor.close();
@@ -188,7 +188,7 @@ try {
               <p>
             <span>Identical to 
                 
-                
+                <tt class="methodname">Cursor.getSearchKey()</tt>
             unless you are using the BTree access. In this case, the cursor
             moves</span>
             
@@ -319,8 +319,8 @@ import com.sleepycat.db.OperationStatus;
 ...
   
 // For this example, hard code the search key and data
-String searchKey = &quot;Alaska&quot;;
-String searchData = &quot;Fa&quot;;
+String searchKey = "Alaska";
+String searchData = "Fa";
 
 Cursor cursor = null;
 Database myDatabase = null;
@@ -333,9 +333,9 @@ try {
     cursor = myDatabase.openCursor(null, null);
 
     DatabaseEntry theKey = 
-         new DatabaseEntry(searchKey.getBytes(&quot;UTF-8&quot;));
+         new DatabaseEntry(searchKey.getBytes("UTF-8"));
     DatabaseEntry theData = 
-         new DatabaseEntry(searchData.getBytes(&quot;UTF-8&quot;));
+         new DatabaseEntry(searchData.getBytes("UTF-8"));
 
     // Open a cursor using a database handle
     cursor = myDatabase.openCursor(null, null);
@@ -346,18 +346,18 @@ try {
     // NOTFOUND is returned if a record cannot be found whose key 
     // matches the search key AND whose data begins with the search data.
     if (retVal == OperationStatus.NOTFOUND) {
-        System.out.println(searchKey + &quot;/&quot; + searchData + 
-                           &quot; not matched in database &quot; + 
+        System.out.println(searchKey + "/" + searchData + 
+                           " not matched in database " + 
                            myDatabase.getDatabaseName());
     } else {
         // Upon completing a search, the key and data DatabaseEntry 
         // parameters for getSearchBothRange() are populated with the 
         // key/data values of the found record.
-        String foundKey = new String(theKey.getData(), &quot;UTF-8&quot;);
-        String foundData = new String(theData.getData(), &quot;UTF-8&quot;);
-        System.out.println(&quot;Found record &quot; + foundKey + &quot;/&quot; + foundData + 
-                           &quot;for search key/data: &quot; + searchKey + 
-                           &quot;/&quot; + searchData);
+        String foundKey = new String(theKey.getData(), "UTF-8");
+        String foundData = new String(theData.getData(), "UTF-8");
+        System.out.println("Found record " + foundKey + "/" + foundData + 
+                           "for search key/data: " + searchKey + 
+                           "/" + searchData);
     }
 
 } catch (Exception e) {
@@ -543,7 +543,7 @@ try {
 
     // Create DatabaseEntry objects
     // searchKey is some String.
-    DatabaseEntry theKey = new DatabaseEntry(searchKey.getBytes(&quot;UTF-8&quot;));
+    DatabaseEntry theKey = new DatabaseEntry(searchKey.getBytes("UTF-8"));
     DatabaseEntry theData = new DatabaseEntry();
 
     // Open a cursor using a database handle
@@ -558,10 +558,10 @@ try {
     // print the duplicates.
     if (cursor.count() &gt; 1) {
         while (retVal == OperationStatus.SUCCESS) {
-            String keyString = new String(theKey.getData(), &quot;UTF-8&quot;);
-            String dataString = new String(theData.getData(), &quot;UTF-8&quot;);
-            System.out.println(&quot;Key | Data : &quot; +  keyString + &quot; | &quot; + 
-                               dataString + &quot;&quot;);
+            String keyString = new String(theKey.getData(), "UTF-8");
+            String dataString = new String(theData.getData(), "UTF-8");
+            System.out.println("Key | Data : " +  keyString + " | " + 
+                               dataString + "");
    
             retVal = cursor.getNextDup(theKey, theData, LockMode.DEFAULT);
         }
@@ -578,18 +578,18 @@ try {
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="Cursors.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="Cursors.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="Cursors.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="PutEntryWCursor.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 4. Using Cursors </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 4.Â Using CursorsÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Putting Records Using Cursors</td>
+          <td width="40%" align="right" valign="top">Â Putting Records Using Cursors</td>
         </tr>
       </table>
     </div>

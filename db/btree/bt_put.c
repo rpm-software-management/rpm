@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -39,7 +38,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_put.c,v 12.21 2006/09/06 20:37:00 ubell Exp $
+ * $Id: bt_put.c,v 12.25 2007/05/25 15:37:48 bostic Exp $
  */
 
 #include "db_config.h"
@@ -84,7 +83,6 @@ __bam_iitem(dbc, key, data, op, flags)
 	int cmp, bigkey, bigdata, del, dupadjust;
 	int padrec, replace, ret, t_ret, was_deleted;
 
-	COMPQUIET(bk, NULL);
 	COMPQUIET(cnt, 0);
 
 	dbp = dbc->dbp;
@@ -247,18 +245,11 @@ __bam_iitem(dbc, key, data, op, flags)
 			return (__db_space_err(dbp));
 	}
 
-	if ((ret = __memp_dirty(mpf, &h, dbc->txn, 0)) != 0)
+	if ((ret = __memp_dirty(mpf, &h, dbc->txn, dbc->priority, 0)) != 0)
 		return (ret);
 	if (cp->csp->page == cp->page)
 		cp->csp->page = h;
 	cp->page = h;
-
-	/*
-	 * Recalculate this pointer -- the page pointer (h) may have
-	 * changed during the update.
-	 */
-	bk = GET_BKEYDATA(dbp, h,
-	    indx + (TYPE(h) == P_LBTREE ? O_INDX : 0));
 
 	/*
 	 * The code breaks it up into five cases:
@@ -324,9 +315,9 @@ __bam_iitem(dbc, key, data, op, flags)
 		if ((ret = __bam_ca_delete(dbp, PGNO(h), indx, 0, NULL)) != 0)
 			return (ret);
 
-		if (TYPE(h) == P_LBTREE) {
+		if (TYPE(h) == P_LBTREE)
 			++indx;
-		}
+		bk = GET_BKEYDATA(dbp, h, indx);
 
 		/*
 		 * In a Btree deleted records aren't counted (deleted records
@@ -874,7 +865,7 @@ __bam_dup_convert(dbc, h, indx, cnt)
 	ret = __bam_ca_di(dbc,
 	    PGNO(h), first + P_INDX, (int)(first + P_INDX - indx));
 
-err:	if ((t_ret = __memp_fput(mpf, dp, 0)) != 0 && ret == 0)
+err:	if ((t_ret = __memp_fput(mpf, dp, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);

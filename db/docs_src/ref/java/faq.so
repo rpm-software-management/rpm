@@ -1,0 +1,120 @@
+m4_comment([$Id: faq.so,v 1.16 2007/07/11 11:13:30 mjc Exp $])
+
+m4_ref_title(Java API,
+    Java FAQ, [Java @FAQ, Java FAQ], java/program, arch/bigpic)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([On what platforms is the m4_db Java API supported?])
+
+m4_p([dnl
+All platforms supported by m4_db that have a JVM compatible with J2SE
+1.4 or above.])])
+
+m4_nlist([dnl
+m4_bold([How does the m4_db Java API relate to the J2EE standard?])
+
+m4_p([dnl
+The m4_db Java API does not currently implement any part of the J2EE
+standard.  That said, it does implement the implicit standard for Java
+m4_linkweb(http://java.sun.com/j2se/1.5.0/docs/guide/collections/,dnl
+[Java Collections]).  The concept of a transaction exists in several
+Java packages (J2EE, XA, JINI to name a few).  Support for these APIs
+will be added based on demand in future versions of m4_db.])])
+
+m4_nlist([dnl
+m4_bold([How should I incorporate db.jar and the db native library into
+a Tomcat or other J2EE application servers?])
+
+m4_p([dnl
+Tomcat and other J2EE application servers have the ability to rebuild
+and reload code automatically.  When using Tomcat this is the case when
+"reloadable" is set to "true".  If your WAR file includes the db.jar it
+too will be reloaded each time your code is reloaded.  This causes
+exceptions as the native library can't be loaded more than once and
+there is no way to unload native code.  The solution is to place the
+db.jar in $TOMCAT_HOME/common/lib and let Tomcat load that library once
+at start time rather than putting it into the WAR that gets reloaded
+over and over.])])
+
+m4_nlist([dnl
+m4_bold([Can I use the m4_db Java API from within a EJB, a Servlet or a
+JSP page?])
+
+m4_p([dnl
+Yes.  The m4_db Java API can be used from within all the popular J2EE
+application servers in many different ways.])])
+
+m4_nlist([dnl
+m4_bold([During one of the first calls to the m4_db Java API, a
+DbException is thrown with a "Bad file number" or "Bad file descriptor"
+message.])
+
+m4_p([dnl
+There are known large-file support bugs under JNI in various releases
+of the JDK.  Please upgrade to the latest release of the JDK, and, if
+that does not solve the problem, disable big file support using the
+--disable-largefile configuration option.])])
+
+m4_nlist([dnl
+m4_bold([How can I use native methods from a debug build of the
+Java library?])
+
+m4_p([dnl
+Set Java's library path so that the debug version of m4_db's Java
+library appears, but the release version does not.  m4_db tries to load
+the release library first, and if that fails tries the debug library.])])
+
+m4_nlist([dnl
+m4_bold([Why is ClassNotFoundException thrown when adding a record to
+the database, when a SerialBinding is used?])
+
+m4_p([dnl
+This problem occurs if you copy the db.jar file into the Java extensions
+(ext) directory.  This will cause the database code to run under the
+System class loader, and it won't be able to find your application
+classes.])
+
+m4_p([dnl
+You'll have to actually remove db.jar from the Java extension directory.
+If you have more than one installation of Java, be sure to remove it
+from all of them.  This is necessary even if db.jar is specified in the
+classpath.])
+
+m4_p([dnl
+An example of the exception is:])
+m4_indent([dnl
+collections.ship.basic.SupplierKey
+at java.net.URLClassLoader$1.run(Unknown Source)
+at java.security.AccessController.doPrivileged(Native Method)
+at java.net.URLClassLoader.findClass(Unknown Source)
+at java.lang.ClassLoader.loadClass(Unknown Source)
+at java.lang.ClassLoader.loadClass(Unknown Source)
+at java.lang.ClassLoader.loadClassInternal(Unknown Source)
+at java.lang.Class.forName0(Native Method)
+at java.lang.Class.forName(Unknown Source)
+at com.sleepycat.bind.serial.StoredClassCatalog.getClassInfo(StoredClassCatalog.java:211)
+...])])
+
+m4_nlist([dnl
+m4_bold([I'm upgrading my Java application to m4_db 4.3.  Can I use the
+com.sleepycat.db.internal package rather than porting my code to the new
+API?])
+
+m4_p([dnl
+While it is possible to use the low-level API from applications, there
+are some caveats that should be considered when upgrading.  The first is
+that the internal API depends on some classes in the public API such as
+DatabaseEntry.])
+
+m4_p([dnl
+In addition, the internal API is closer to the C API and doesn't have
+some of the default settings that were part of the earlier Java API.
+For example, applications will need to set the DB_THREAD flag explicitly
+if handles are to be used from multiple threads, or subtle errors may
+occur.])])
+
+m4_nlistend
+
+m4_page_footer

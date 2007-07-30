@@ -1,13 +1,12 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2006,2007 Oracle.  All rights reserved.
 #
-# $Id: test120.tcl,v 12.3 2006/08/24 14:46:41 bostic Exp $
+# $Id: test120.tcl,v 12.6 2007/05/24 18:20:47 carol Exp $
 #
 # TEST	test120
 # TEST	Test of multi-version concurrency control.
-#
+# TEST
 # TEST	Test basic functionality: a snapshot transaction started
 # TEST	before a regular transaction's put can't see the modification.
 # TEST	A snapshot transaction started after the put can see it.

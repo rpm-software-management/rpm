@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: env_recover.c,v 12.34 2006/09/09 14:28:22 bostic Exp $
+ * $Id: env_recover.c,v 12.49 2007/06/08 17:34:55 bostic Exp $
  */
 
 #include "db_config.h"
@@ -21,15 +20,18 @@
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
+    "Copyright (c) 1996,2007 Oracle.  All rights reserved.\n";
 #endif
 
 static int	__db_log_corrupt __P((DB_ENV *, DB_LSN *));
 static int	__env_init_rec_42 __P((DB_ENV *));
 static int	__env_init_rec_43 __P((DB_ENV *));
-static int	__env_init_rec_45 __P((DB_ENV *));
+static int	__env_init_rec_46 __P((DB_ENV *));
 static int	__log_earliest __P((DB_ENV *, DB_LOGC *, int32_t *, DB_LSN *));
+
+#ifndef HAVE_BREW
 static double	__lsn_diff __P((DB_LSN *, DB_LSN *, DB_LSN *, u_int32_t, int));
+#endif
 
 /*
  * __db_apprec --
@@ -204,7 +206,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 	ZERO_LSN(last_lsn);
 #endif
 	memset(&data, 0, sizeof(data));
-	if ((ret = __log_c_get(logc, &last_lsn, &data, DB_LAST)) != 0) {
+	if ((ret = __logc_get(logc, &last_lsn, &data, DB_LAST)) != 0) {
 		if (ret == DB_NOTFOUND)
 			ret = 0;
 		else
@@ -219,7 +221,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 
 		if (txnid != 0)
 			break;
-	} while ((ret = __log_c_get(logc, &lsn, &data, DB_PREV)) == 0);
+	} while ((ret = __logc_get(logc, &lsn, &data, DB_PREV)) == 0);
 
 	/*
 	 * There are no transactions, so there is nothing to do unless
@@ -249,7 +251,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 	 * Get the first LSN in the log; it's an initial default
 	 * even if this is not a catastrophic recovery.
 	 */
-	if ((ret = __log_c_get(logc, &ckp_lsn, &data, DB_FIRST)) != 0) {
+	if ((ret = __logc_get(logc, &ckp_lsn, &data, DB_FIRST)) != 0) {
 		if (ret == DB_NOTFOUND)
 			ret = 0;
 		else
@@ -261,7 +263,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 
 	if (!LF_ISSET(DB_RECOVER_FATAL)) {
 		if ((ret = __txn_getckp(dbenv, &ckp_lsn)) == 0 &&
-		    (ret = __log_c_get(logc, &ckp_lsn, &data, DB_SET)) == 0) {
+		    (ret = __logc_get(logc, &ckp_lsn, &data, DB_SET)) == 0) {
 			/* We have a recent checkpoint.  This is LSN (1). */
 			if ((ret = __txn_ckp_read(dbenv,
 			    data.data, &ckp_args)) != 0) {
@@ -303,12 +305,13 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 
 	/* Get the record at first_lsn if we don't have it already. */
 	if (!have_rec &&
-	    (ret = __log_c_get(logc, &first_lsn, &data, DB_SET)) != 0) {
+	    (ret = __logc_get(logc, &first_lsn, &data, DB_SET)) != 0) {
 		__db_errx(dbenv, "Checkpoint LSN record [%ld][%ld] not found",
 		    (u_long)first_lsn.file, (u_long)first_lsn.offset);
 		goto err;
 	}
 
+#ifndef HAVE_BREW
 	if (dbenv->db_feedback != NULL) {
 		if (last_lsn.file == first_lsn.file)
 			nfiles = (double)
@@ -321,6 +324,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 		if (nfiles < 0.001)
 			nfiles = 0.001;
 	}
+#endif
 
 	/* Find a low txnid. */
 	ret = 0;
@@ -331,7 +335,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 
 		if (txnid != 0)
 			break;
-	} while ((ret = __log_c_get(logc, &lsn, &data, DB_NEXT)) == 0);
+	} while ((ret = __logc_get(logc, &lsn, &data, DB_NEXT)) == 0);
 
 	/*
 	 * There are no transactions and we're not recovering to an LSN (see
@@ -346,7 +350,7 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 
 	/* Reset to the first lsn. */
 	if (ret != 0 ||
-	    (ret = __log_c_get(logc, &first_lsn, &data, DB_SET)) != 0)
+	    (ret = __logc_get(logc, &first_lsn, &data, DB_SET)) != 0)
 		goto err;
 
 	/* Initialize the transaction list. */
@@ -378,14 +382,18 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 		    (u_long)first_lsn.file, (u_long)first_lsn.offset);
 
 	pass = "backward";
-	for (ret = __log_c_get(logc, &lsn, &data, DB_LAST);
+	for (ret = __logc_get(logc, &lsn, &data, DB_LAST);
 	    ret == 0 && LOG_COMPARE(&lsn, &first_lsn) >= 0;
-	    ret = __log_c_get(logc, &lsn, &data, DB_PREV)) {
+	    ret = __logc_get(logc, &lsn, &data, DB_PREV)) {
+#ifdef HAVE_BREW
+		COMPQUIET(progress, 0);
+#else
 		if (dbenv->db_feedback != NULL) {
 			progress = 34 + (int)(33 * (__lsn_diff(&first_lsn,
 			    &last_lsn, &lsn, log_size, 0) / nfiles));
 			dbenv->db_feedback(dbenv, DB_RECOVER, progress);
 		}
+#endif
 		tlsn = lsn;
 		ret = __db_dispatch(dbenv, dbenv->recover_dtab,
 		    dbenv->recover_dtab_size, &data, &tlsn,
@@ -421,13 +429,15 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 	if (max_lsn != NULL || dbenv->tx_timestamp != 0)
 		stop_lsn = ((DB_TXNHEAD *)txninfo)->maxlsn;
 
-	for (ret = __log_c_get(logc, &lsn, &data, DB_NEXT);
-	    ret == 0; ret = __log_c_get(logc, &lsn, &data, DB_NEXT)) {
+	for (ret = __logc_get(logc, &lsn, &data, DB_NEXT);
+	    ret == 0; ret = __logc_get(logc, &lsn, &data, DB_NEXT)) {
+#ifndef HAVE_BREW
 		if (dbenv->db_feedback != NULL) {
 			progress = 67 + (int)(33 * (__lsn_diff(&first_lsn,
 			    &last_lsn, &lsn, log_size, 1) / nfiles));
 			dbenv->db_feedback(dbenv, DB_RECOVER, progress);
 		}
+#endif
 		tlsn = lsn;
 		ret = __db_dispatch(dbenv, dbenv->recover_dtab,
 		    dbenv->recover_dtab_size, &data, &tlsn,
@@ -467,11 +477,18 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 
 	if (dbenv->tx_timestamp != 0) {
 		/* We are going to truncate, so we'd best close the cursor. */
-		if (logc != NULL && (ret = __log_c_close(logc)) != 0)
-			goto err;
-		logc = NULL;
-		/* Flush everything to disk, we are losing the log. */
-		if ((ret = __memp_sync(dbenv, NULL)) != 0)
+		if (logc != NULL) {
+			if ((ret = __logc_close(logc)) != 0)
+				goto err;
+			logc = NULL;
+		}
+
+		/*
+		 * Flush everything to disk, we are losing the log.  It's
+		 * recovery, ignore any application max-write configuration.
+		 */
+		if ((ret = __memp_sync_int(dbenv, NULL, 0,
+		    DB_SYNC_CACHE | DB_SYNC_SUPPRESS_WRITE, NULL, NULL)) != 0)
 			goto err;
 		region->last_ckp = ((DB_TXNHEAD *)txninfo)->ckplsn;
 		if ((ret = __log_vtruncate(dbenv,
@@ -487,15 +504,16 @@ __db_apprec(dbenv, max_lsn, trunclsn, update, flags)
 		 * if we roll things further back from here.
 		 * These pages are only known in memory at this pont.
 		 */
-		 if ((ret = __db_do_the_limbo(dbenv,
-		       NULL, NULL, txninfo, LIMBO_COMPENSATE)) != 0)
+		if ((ret = __db_do_the_limbo(dbenv,
+		    NULL, NULL, txninfo, LIMBO_COMPENSATE)) != 0)
 			goto err;
 #endif
 	}
 
 done:
 	/* Take a checkpoint here to force any dirty data pages to disk. */
-	if ((ret = __txn_checkpoint(dbenv, 0, 0, DB_FORCE)) != 0) {
+	if (!IS_REP_CLIENT(dbenv) && (ret = __txn_checkpoint(dbenv, 0, 0,
+	    DB_CKP_INTERNAL | DB_FORCE)) != 0) {
 		/*
 		 * If there was no space for the checkpoint we can
 		 * still bring the environment up.  No updates will
@@ -508,9 +526,15 @@ done:
 			goto err;
 	}
 
-	/* Close all the db files that are open. */
-	if ((ret = __dbreg_close_files(dbenv)) != 0)
-		goto err;
+	if (region->stat.st_nrestores == 0) {
+		/* Close all the db files that are open. */
+		if ((ret = __dbreg_close_files(dbenv, 0)) != 0)
+			goto err;
+	} else {
+		if ((ret = __dbreg_mark_restored(dbenv)) != 0)
+			goto err;
+		F_SET(dbenv->lg_handle, DBLOG_OPENFILES);
+	}
 
 	if (max_lsn != NULL) {
 		if (!IS_ZERO_LSN(((DB_TXNHEAD *)txninfo)->ckplsn))
@@ -520,7 +544,7 @@ done:
 			goto err;
 
 		/* We are going to truncate, so we'd best close the cursor. */
-		if (logc != NULL && (ret = __log_c_close(logc)) != 0)
+		if (logc != NULL && (ret = __logc_close(logc)) != 0)
 			goto err;
 		logc = NULL;
 		if ((ret = __log_vtruncate(dbenv,
@@ -536,7 +560,7 @@ done:
 		if ((ret = __log_cursor(dbenv, &logc)) != 0)
 			goto err;
 		if ((ret =
-		    __log_c_get(logc, &first_lsn, &data, DB_FIRST)) != 0) {
+		    __logc_get(logc, &first_lsn, &data, DB_FIRST)) != 0) {
 			if (ret == DB_NOTFOUND)
 				ret = 0;
 			else
@@ -544,7 +568,7 @@ done:
 			goto err;
 		}
 		if ((ret = __txn_getckp(dbenv, &first_lsn)) == 0 &&
-		    (ret = __log_c_get(logc, &first_lsn, &data, DB_SET)) == 0) {
+		    (ret = __logc_get(logc, &first_lsn, &data, DB_SET)) == 0) {
 			/* We have a recent checkpoint.  This is LSN (1). */
 			if ((ret = __txn_ckp_read(dbenv,
 			    data.data, &ckp_args)) != 0) {
@@ -557,7 +581,7 @@ done:
 			first_lsn = ckp_args->ckp_lsn;
 			__os_free(dbenv, ckp_args);
 		}
-		if ((ret = __log_c_get(logc, &first_lsn, &data, DB_SET)) != 0)
+		if ((ret = __logc_get(logc, &first_lsn, &data, DB_SET)) != 0)
 			goto err;
 		if ((ret = __env_openfiles(dbenv, logc,
 		    txninfo, &data, &first_lsn, max_lsn, nfiles, 1)) != 0)
@@ -570,14 +594,27 @@ done:
 		if ((ret = __txn_reset(dbenv)) != 0)
 			goto err;
 	} else {
-		/*
-		 * If we have restored prepared txns then they are in process
-		 * as far as replication is concerned.
-		 */
-		if (REP_ON(dbenv))
-			dbenv->rep_handle->region->op_cnt =
-			    region->stat.st_nrestores;
 		if ((ret = __txn_recycle_id(dbenv)) != 0)
+			goto err;
+	}
+
+	/*
+	 * We must be sure to zero the tail of the log.  Otherwise a partial
+	 * record may be at the end of the log and it may never be fully
+	 * overwritten.
+	 */
+	if (max_lsn == NULL && dbenv->tx_timestamp == 0) {
+		/* We are going to truncate, so we'd best close the cursor. */
+		if (logc != NULL && (ret = __logc_close(logc)) != 0)
+			goto err;
+		logc = NULL;
+
+		/* Truncate from beyond the last record in the log. */
+		if ((ret =
+		    __log_current_lsn(dbenv, &last_lsn, NULL, NULL)) != 0)
+			goto err;
+		if ((ret = __log_vtruncate(dbenv,
+		    &last_lsn, &region->last_ckp, NULL)) != 0)
 			goto err;
 	}
 
@@ -600,7 +637,7 @@ msgerr:		__db_errx(dbenv,
 		    (u_long)lsn.file, (u_long)lsn.offset, pass);
 	}
 
-err:	if (logc != NULL && (t_ret = __log_c_close(logc)) != 0 && ret == 0)
+err:	if (logc != NULL && (t_ret = __logc_close(logc)) != 0 && ret == 0)
 		ret = t_ret;
 
 	if (txninfo != NULL)
@@ -614,6 +651,7 @@ err:	if (logc != NULL && (t_ret = __log_c_close(logc)) != 0 && ret == 0)
 	return (ret);
 }
 
+#ifndef HAVE_BREW
 /*
  * Figure out how many logfiles we have processed.  If we are moving
  * forward (is_forward != 0), then we're computing current - low.  If
@@ -658,6 +696,7 @@ __lsn_diff(low, high, current, max, is_forward)
 	}
 	return (nf);
 }
+#endif
 
 /*
  * __log_backup --
@@ -695,7 +734,7 @@ __log_backup(dbenv, logc, max_lsn, start_lsn, cmp)
 	 * Cmp tells us whether to check the ckp_lsn or the last_ckp
 	 * fields in the checkpoint record.
 	 */
-	while ((ret = __log_c_get(logc, &lsn, &data, DB_SET)) == 0) {
+	while ((ret = __logc_get(logc, &lsn, &data, DB_SET)) == 0) {
 		if ((ret = __txn_ckp_read(dbenv, data.data, &ckp_args)) != 0)
 			return (ret);
 		if (cmp == CKPLSN_CMP) {
@@ -742,7 +781,7 @@ __log_backup(dbenv, logc, max_lsn, start_lsn, cmp)
 	 */
 err:	if (IS_ZERO_LSN(*start_lsn) && cmp == CKPLSN_CMP &&
 	    (ret == 0 || ret == DB_NOTFOUND))
-		ret = __log_c_get(logc, start_lsn, &data, DB_FIRST);
+		ret = __logc_get(logc, start_lsn, &data, DB_FIRST);
 	return (ret);
 }
 
@@ -772,8 +811,8 @@ __log_earliest(dbenv, logc, lowtime, lowlsn)
 	 * Read forward through the log looking for the first checkpoint
 	 * record whose ckp_lsn is greater than first_lsn.
 	 */
-	for (ret = __log_c_get(logc, &first_lsn, &data, DB_FIRST);
-	    ret == 0; ret = __log_c_get(logc, &lsn, &data, DB_NEXT)) {
+	for (ret = __logc_get(logc, &first_lsn, &data, DB_FIRST);
+	    ret == 0; ret = __logc_get(logc, &lsn, &data, DB_NEXT)) {
 		memcpy(&rectype, data.data, sizeof(rectype));
 		if (rectype != DB___txn_ckp)
 			continue;
@@ -831,12 +870,17 @@ __env_openfiles(dbenv, logc, txninfo,
 
 	lsn = *open_lsn;
 	for (;;) {
+#ifdef HAVE_BREW
+		COMPQUIET(nfiles, (double)0.001);
+		COMPQUIET(progress, 0);
+#else
 		if (in_recovery && dbenv->db_feedback != NULL) {
 			DB_ASSERT(dbenv, last_lsn != NULL);
 			progress = (int)(33 * (__lsn_diff(open_lsn,
 			   last_lsn, &lsn, log_size, 1) / nfiles));
 			dbenv->db_feedback(dbenv, DB_RECOVER, progress);
 		}
+#endif
 		tlsn = lsn;
 		ret = __db_dispatch(dbenv,
 		    dbenv->recover_dtab, dbenv->recover_dtab_size, data, &tlsn,
@@ -848,7 +892,7 @@ __env_openfiles(dbenv, logc, txninfo,
 			    (u_long)lsn.file, (u_long)lsn.offset);
 			break;
 		}
-		if ((ret = __log_c_get(logc, &lsn, data, DB_NEXT)) != 0) {
+		if ((ret = __logc_get(logc, &lsn, data, DB_NEXT)) != 0) {
 			if (ret == DB_NOTFOUND) {
 				if (last_lsn != NULL &&
 				   LOG_COMPARE(&lsn, last_lsn) != 0)
@@ -890,14 +934,18 @@ __env_init_rec(dbenv, version)
 	 * functions.  Then we overwrite only specific entries based on
 	 * each previous version we support.
 	 */
-	if ((ret = __env_init_rec_45(dbenv)) != 0)
+	if ((ret = __env_init_rec_46(dbenv)) != 0)
 		return (ret);
 	ret = 0;
 	switch (version) {
 	/*
 	 * There are no log record/recovery differences between
 	 * 4.4 and 4.5.  The log version changed due to checksum.
+	 * There are no log recovery differences between
+	 * 4.5 and 4.6.  The name of the rep_gen in txn_checkpoint
+	 * changed (to spare, since we don't use it anymore).
 	 */
+	case DB_LOGVERSION_46:
 	case DB_LOGVERSION_45:
 	case DB_LOGVERSION_44:
 		break;
@@ -979,11 +1027,11 @@ err:
 }
 
 /*
- * __env_init_rec_45 --
+ * __env_init_rec_46 --
  *
  */
 static int
-__env_init_rec_45(dbenv)
+__env_init_rec_46(dbenv)
 	DB_ENV *dbenv;
 {
 	int ret;

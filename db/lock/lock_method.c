@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: lock_method.c,v 12.13 2006/08/24 14:46:11 bostic Exp $
+ * $Id: lock_method.c,v 12.17 2007/05/17 15:15:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -13,13 +12,13 @@
 #include "dbinc/lock.h"
 
 /*
- * __lock_dbenv_create --
+ * __lock_env_create --
  *	Lock specific creation of the DB_ENV structure.
  *
- * PUBLIC: int __lock_dbenv_create __P((DB_ENV *));
+ * PUBLIC: int __lock_env_create __P((DB_ENV *));
  */
 int
-__lock_dbenv_create(dbenv)
+__lock_env_create(dbenv)
 	DB_ENV *dbenv;
 {
 	/*
@@ -36,13 +35,13 @@ __lock_dbenv_create(dbenv)
 }
 
 /*
- * __lock_dbenv_destroy --
+ * __lock_env_destroy --
  *	Lock specific destruction of the DB_ENV structure.
  *
- * PUBLIC: void __lock_dbenv_destroy __P((DB_ENV *));
+ * PUBLIC: void __lock_env_destroy __P((DB_ENV *));
  */
 void
-__lock_dbenv_destroy(dbenv)
+__lock_env_destroy(dbenv)
 	DB_ENV *dbenv;
 {
 	if (dbenv->lk_conflicts != NULL) {
@@ -132,9 +131,9 @@ __lock_get_lk_detect(dbenv, lk_detectp)
 
 	if (LOCKING_ON(dbenv)) {
 		lt = dbenv->lk_handle;
-		LOCK_SYSTEM_LOCK(dbenv);
+		LOCK_REGION_LOCK(dbenv);
 		*lk_detectp = ((DB_LOCKREGION *)lt->reginfo.primary)->detect;
-		LOCK_SYSTEM_UNLOCK(dbenv);
+		LOCK_REGION_UNLOCK(dbenv);
 	} else
 		*lk_detectp = dbenv->lk_detect;
 	return (0);
@@ -179,7 +178,7 @@ __lock_set_lk_detect(dbenv, lk_detect)
 	if (LOCKING_ON(dbenv)) {
 		lt = dbenv->lk_handle;
 		region = lt->reginfo.primary;
-		LOCK_SYSTEM_LOCK(dbenv);
+		LOCK_REGION_LOCK(dbenv);
 		/*
 		 * Check for incompatible automatic deadlock detection requests.
 		 * There are scenarios where changing the detector configuration
@@ -198,7 +197,7 @@ __lock_set_lk_detect(dbenv, lk_detect)
 		} else
 			if (region->detect == DB_LOCK_NORUN)
 				region->detect = lk_detect;
-		LOCK_SYSTEM_UNLOCK(dbenv);
+		LOCK_REGION_UNLOCK(dbenv);
 	} else
 		dbenv->lk_detect = lk_detect;
 
@@ -337,7 +336,7 @@ __lock_get_env_timeout(dbenv, timeoutp, flag)
 	if (LOCKING_ON(dbenv)) {
 		lt = dbenv->lk_handle;
 		region = lt->reginfo.primary;
-		LOCK_SYSTEM_LOCK(dbenv);
+		LOCK_REGION_LOCK(dbenv);
 		switch (flag) {
 		case DB_SET_LOCK_TIMEOUT:
 			*timeoutp = region->lk_timeout;
@@ -349,7 +348,7 @@ __lock_get_env_timeout(dbenv, timeoutp, flag)
 			ret = 1;
 			break;
 		}
-		LOCK_SYSTEM_UNLOCK(dbenv);
+		LOCK_REGION_UNLOCK(dbenv);
 	} else
 		switch (flag) {
 		case DB_SET_LOCK_TIMEOUT:
@@ -392,7 +391,7 @@ __lock_set_env_timeout(dbenv, timeout, flags)
 	if (LOCKING_ON(dbenv)) {
 		lt = dbenv->lk_handle;
 		region = lt->reginfo.primary;
-		LOCK_SYSTEM_LOCK(dbenv);
+		LOCK_REGION_LOCK(dbenv);
 		switch (flags) {
 		case DB_SET_LOCK_TIMEOUT:
 			region->lk_timeout = timeout;
@@ -404,7 +403,7 @@ __lock_set_env_timeout(dbenv, timeout, flags)
 			ret = 1;
 			break;
 		}
-		LOCK_SYSTEM_UNLOCK(dbenv);
+		LOCK_REGION_UNLOCK(dbenv);
 	} else
 		switch (flags) {
 		case DB_SET_LOCK_TIMEOUT:

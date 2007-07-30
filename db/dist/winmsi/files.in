@@ -1,4 +1,4 @@
-# $Id: files.in,v 1.10 2006/09/14 15:50:50 mjc Exp $
+# $Id: files.in,v 1.11 2007/02/16 04:50:44 alexg Exp $
 # Lists files needed to install particular
 # features in Windows.  Feature names must be
 # listed in features.in .
@@ -49,6 +49,7 @@ CoreTools	build_windows/Release/db_archive.exe	/bin/	db_arc~1.exe
 CoreTools	build_windows/Release/db_checkpoint.exe	/bin/	db_che~1.exe
 CoreTools	build_windows/Release/db_deadlock.exe	/bin/	db_dea~1.exe
 CoreTools	build_windows/Release/db_dump.exe		/bin/	db_dump.exe
+CoreTools	build_windows/Release/db_hotbackup.exe	/bin/	db_hot~1.exe
 CoreTools	build_windows/Release/db_load.exe		/bin/	db_load.exe
 CoreTools	build_windows/Release/db_printlog.exe	/bin/	db_pri~1.exe
 CoreTools	build_windows/Release/db_recover.exe	/bin/	db_rec~1.exe

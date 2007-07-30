@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: db_rename.c,v 12.20 2006/09/19 15:06:58 bostic Exp $
+ * $Id: db_rename.c,v 12.26 2007/05/17 15:14:56 bostic Exp $
  */
 
 #include "db_config.h"
@@ -16,6 +15,7 @@
 #include "dbinc/lock.h"
 #include "dbinc/log.h"
 #include "dbinc/mp.h"
+#include "dbinc/txn.h"
 
 static int __db_subdb_rename __P((DB *,
 	       DB_TXN *, const char *, const char *, const char *));
@@ -77,7 +77,7 @@ __env_dbrename_pp(dbenv, txn, name, subdb, newname, flags)
 
 	LF_CLR(DB_AUTO_COMMIT);
 
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
 		goto err;
 
 	ret = __db_rename_int(dbp, txn, name, subdb, newname);
@@ -89,16 +89,16 @@ __env_dbrename_pp(dbenv, txn, name, subdb, newname, flags)
 		 * lock; mark the handle cleared explicitly.
 		 */
 		LOCK_INIT(dbp->handle_lock);
-		dbp->lid = DB_LOCK_INVALIDID;
+		dbp->locker = NULL;
 	} else if (txn != NULL) {
 		/*
 		 * We created this handle locally so we need to close it and
 		 * clean it up.  Unfortunately, it's holding transactional
 		 * or CDS group locks that need to persist until the end of
-		 * transaction.  If we invalidate the locker id (dbp->lid),
+		 * transaction.  If we invalidate the locker (dbp->locker),
 		 * then the close won't free these locks prematurely.
 		 */
-		 dbp->lid = DB_LOCK_INVALIDID;
+		 dbp->locker = NULL;
 	}
 
 err:	if (txn_local && (t_ret =
@@ -114,9 +114,15 @@ err:	if (txn_local && (t_ret =
 	 * then opened the DB handle; we're resolving the txn and then closing
 	 * closing the DB handle -- it's safer.
 	 */
-	if (dbp != NULL &&
-	    (t_ret = __db_close(dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
-		ret = t_ret;
+	if (txn_local || txn == NULL) {
+		if (dbp != NULL &&
+		    (t_ret = __db_close(dbp, NULL, DB_NOSYNC)) != 0 && ret == 0)
+			ret = t_ret;
+	} else {
+		if (dbp != NULL && (t_ret =
+		     __txn_closeevent(dbenv, txn, dbp)) != 0 && ret == 0)
+			ret = t_ret;
+	}
 
 	if (handle_check && (t_ret = __env_db_rep_exit(dbenv)) != 0 && ret == 0)
 		ret = t_ret;
@@ -202,8 +208,14 @@ __db_rename(dbp, txn, name, subdb, newname)
 
 	ret = __db_rename_int(dbp, txn, name, subdb, newname);
 
-	if ((t_ret = __db_close(dbp, txn, DB_NOSYNC)) != 0 && ret == 0)
-		ret = t_ret;
+	if (txn == NULL) {
+		if ((t_ret = __db_close(dbp, txn, DB_NOSYNC)) != 0 && ret == 0)
+			ret = t_ret;
+	} else {
+		if ((t_ret =
+		     __txn_closeevent(dbp->dbenv, txn, dbp)) != 0 && ret == 0)
+			ret = t_ret;
+	}
 
 	return (ret);
 }
@@ -341,10 +353,10 @@ __db_subdb_rename(dbp, txn, name, subdb, newname)
 		goto err;
 	memcpy(dbp->fileid, ((DBMETA *)meta)->uid, DB_FILE_ID_LEN);
 	if ((ret = __fop_lock_handle(dbenv,
-	    dbp, mdbp->lid, DB_LOCK_WRITE, NULL, NOWAIT_FLAG(txn))) != 0)
+	    dbp, mdbp->locker, DB_LOCK_WRITE, NULL, NOWAIT_FLAG(txn))) != 0)
 		goto err;
 
-	ret = __memp_fput(mdbp->mpf, meta, 0);
+	ret = __memp_fput(mdbp->mpf, meta, dbp->priority);
 	meta = NULL;
 	if (ret != 0)
 		goto err;
@@ -357,13 +369,19 @@ __db_subdb_rename(dbp, txn, name, subdb, newname)
 
 DB_TEST_RECOVERY_LABEL
 err:
-	if (meta != NULL &&
-	    (t_ret = __memp_fput(mdbp->mpf, meta, 0)) != 0 && ret == 0)
+	if (meta != NULL && (t_ret =
+	    __memp_fput(mdbp->mpf, meta, dbp->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
-	if (mdbp != NULL &&
-	    (t_ret = __db_close(mdbp, txn, DB_NOSYNC)) != 0 && ret == 0)
-		ret = t_ret;
+	if (txn == NULL) {
+		if (mdbp != NULL &&
+		    (t_ret = __db_close(mdbp, txn, DB_NOSYNC)) != 0 && ret == 0)
+			ret = t_ret;
+	} else {
+		if (mdbp != NULL && (t_ret =
+		     __txn_closeevent(dbenv, txn, mdbp)) != 0 && ret == 0)
+			ret = t_ret;
+	}
 
 	return (ret);
 }

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: qam_method.c,v 12.8 2006/08/24 14:46:24 bostic Exp $
+ * $Id: qam_method.c,v 12.15 2007/05/17 15:15:50 bostic Exp $
  */
 
 #include "db_config.h"
@@ -180,7 +179,7 @@ __queue_pageinfo(dbp, firstp, lastp, emptyp, prpage, flags)
 	COMPQUIET(flags, 0);
 #endif
 
-	if ((t_ret = __memp_fput(mpf, meta, 0)) != 0 && ret == 0)
+	if ((t_ret = __memp_fput(mpf, meta, dbp->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	return (ret);
@@ -231,7 +230,7 @@ begin:
 			return (ret);
 		}
 		(void)__db_prpage(dbp, h, flags);
-		if ((ret = __qam_fput(dbp, i, h, 0)) != 0)
+		if ((ret = __qam_fput(dbp, i, h, dbp->priority)) != 0)
 			return (ret);
 	}
 
@@ -295,8 +294,6 @@ __qam_rr(dbp, txn, name, subdb, newname, op)
 	dbenv = dbp->dbenv;
 	ret = 0;
 
-	PANIC_CHECK(dbenv);
-
 	if (subdb != NULL && name != NULL) {
 		__db_errx(dbenv,
 		    "Queue does not support multiple databases per file");
@@ -310,14 +307,14 @@ __qam_rr(dbp, txn, name, subdb, newname, op)
 	if (F_ISSET(dbp, DB_AM_OPEN_CALLED))
 		tmpdbp = dbp;
 	else {
-		if ((ret = db_create(&tmpdbp, dbenv, 0)) != 0)
+		if ((ret = __db_create_internal(&tmpdbp, dbenv, 0)) != 0)
 			return (ret);
 
 		/*
 		 * We need to make sure we don't self-deadlock, so give
 		 * this dbp the same locker as the incoming one.
 		 */
-		tmpdbp->lid = dbp->lid;
+		tmpdbp->locker = dbp->locker;
 		if ((ret = __db_open(tmpdbp, txn,
 		    name, NULL, DB_QUEUE, DB_RDONLY, 0, PGNO_BASE_MD)) != 0)
 			goto err;
@@ -332,16 +329,22 @@ err:		/*
 		 * Since we copied the locker ID from the dbp, we'd better not
 		 * free it here.
 		 */
-		tmpdbp->lid = DB_LOCK_INVALIDID;
+		tmpdbp->locker = NULL;
 
 		/* We need to remove the lock event we associated with this. */
 		if (txn != NULL)
 			__txn_remlock(dbenv,
 			    txn, &tmpdbp->handle_lock, DB_LOCK_INVALIDID);
 
-		if ((t_ret =
-		    __db_close(tmpdbp, txn, DB_NOSYNC)) != 0 && ret == 0)
-			ret = t_ret;
+		if (txn == NULL ) {
+			if ((t_ret = __db_close(tmpdbp,
+			    txn, DB_NOSYNC)) != 0 && ret == 0)
+				ret = t_ret;
+		} else {
+			if ((t_ret = __txn_closeevent(dbenv,
+			    txn, tmpdbp)) != 0 && ret == 0)
+				ret = t_ret;
+		}
 	}
 	return (ret);
 }

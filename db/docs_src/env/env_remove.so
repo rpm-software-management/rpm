@@ -1,0 +1,95 @@
+m4_comment([$Id: env_remove.so,v 10.45 2006/12/08 16:22:45 bostic Exp $])
+
+define(M4PAGELOCAL, dbenv_remove)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_remove),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__remove(DB_ENV *dbenv, char *db_home, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::remove(const char *db_home, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_remove) destroys a m4_db environment if it is not
+currently in use.  The environment regions, including any backing files,
+are removed.  Any log or database files and the environment directory are
+not removed.])
+
+m4_p([dnl
+If there are processes that have called m4_ref(dbenv_open) without
+calling m4_ref(dbenv_close) (that is, there are processes currently
+using the environment), m4_ref(dbenv_remove) will fail without further
+action unless the m4_ref(DB_FORCE) flag is set, in which case
+m4_ref(dbenv_remove) will attempt to remove the environment, regardless
+of any processes still using it.])
+
+m4_p([dnl
+The result of attempting to forcibly destroy the environment when it is
+in use is unspecified.  Processes using an environment often maintain open
+file descriptors for shared regions within it.  On UNIX systems, the
+environment removal will usually succeed, and processes that have already
+joined the region will continue to run in that region without change.
+However, processes attempting to join the environment will either fail
+or create new regions.  On other systems in which the m4_manref(unlink,
+2) system call will fail if any process has an open file descriptor for
+the file (for example Windows/NT), the region removal will fail.])
+
+m4_p([dnl
+Calling m4_ref(dbenv_remove) should not be necessary for most applications
+because the m4_db environment is cleaned up as part of normal database
+recovery procedures. However, applications may want to call
+m4_ref(dbenv_remove) as part of application shut down to free up system
+resources.  For example, if the m4_ref(DB_SYSTEM_MEM) flag was specified
+to m4_ref(dbenv_open), it may be useful to call m4_ref(dbenv_remove) in
+order to release system shared memory segments that have been allocated.
+Or, on architectures in which mutexes require allocation of underlying
+system resources, it may be useful to call m4_ref(dbenv_remove) in order
+to release those resources.  Alternatively, if recovery is not required
+because no database state is maintained across failures, and no system
+resources need to be released, it is possible to clean up an environment
+by simply removing all the m4_db files in the database environment's
+directories.])
+
+m4_p([dnl
+In multithreaded applications, only a single thread may call
+m4_ref(dbenv_remove).])
+
+m4_p([dnl
+A m4_ref(DbEnv) handle that has already been used to open an environment
+should not be used to call the m4_refT(dbenv_remove); a new
+m4_ref(DbEnv) handle should be created for that purpose.])
+
+m4_p([dnl
+After m4_ref(dbenv_remove) has been called, regardless of its return,
+the m4_db environment handle may not be accessed again.])
+
+m4_return(dbenv_remove, std)
+
+m4_parambegin
+m4_param_utf8(db_home, [dnl
+The m4_arg(db_home) parameter names the database environment to be removed.])
+
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_FORCE), [dnl
+If the m4_ref(DB_FORCE) flag is set, the environment is removed, regardless
+of any processes that may still using it, and no locks are acquired
+during this process.  (Generally, the m4_ref(DB_FORCE) flag is
+specified only when applications were unable to shut down cleanly, and there
+is a risk that an application may have died holding a m4_db lock.)])
+
+m4_env_flags
+m4_tagend])
+m4_paramend
+
+m4_err(dbenv_remove,
+EBUSY, [The shared memory region was in use and the force flag was not set.])
+
+m4_seealso(DbEnv)
+m4_page_footer

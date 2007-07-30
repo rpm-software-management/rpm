@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: cxx_db.cpp,v 12.13 2006/08/24 14:45:13 bostic Exp $
+ * $Id: cxx_db.cpp,v 12.20 2007/06/28 13:02:50 mjc Exp $
  */
 
 #include "db_config.h"
@@ -97,6 +96,7 @@ Db::Db(DbEnv *env, u_int32_t flags)
 ,	bt_prefix_callback_(0)
 ,	dup_compare_callback_(0)
 ,	feedback_callback_(0)
+,	h_compare_callback_(0)
 ,	h_hash_callback_(0)
 {
 	if (env_ == 0)
@@ -238,6 +238,9 @@ void Db::errx(const char *format, ...)
 
 	DB_REAL_ERR(db->dbenv, 0, DB_ERROR_NOT_SET, 1, format);
 }
+
+DB_METHOD(exists, (DbTxn *txnid, Dbt *key, u_int32_t flags),
+    (db, unwrap(txnid), key, flags), DB_RETOK_EXISTS)
 
 DB_METHOD(fd, (int *fdp), (db, fdp), DB_RETOK_STD)
 
@@ -478,6 +481,14 @@ DB_CALLBACK_C_INTERCEPT(dup_compare,
 DB_SET_CALLBACK(set_dup_compare, dup_compare,
     (int (*arg)(Db *cxxthis, const Dbt *data1, const Dbt *data2)), arg)
 
+DB_CALLBACK_C_INTERCEPT(h_compare,
+    int, (DB *cthis, const DBT *data1, const DBT *data2),
+    return,
+    (cxxthis, Dbt::get_const_Dbt(data1), Dbt::get_const_Dbt(data2)))
+
+DB_SET_CALLBACK(set_h_compare, h_compare,
+    (int (*arg)(Db *cxxthis, const Dbt *data1, const Dbt *data2)), arg)
+
 DB_CALLBACK_C_INTERCEPT(h_hash,
     u_int32_t, (DB *cthis, const void *data, u_int32_t len),
     return, (cxxthis, data, len))
@@ -552,6 +563,8 @@ DB_METHOD(get_flags, (u_int32_t *flagsp), (db, flagsp),
     DB_RETOK_STD)
 DB_METHOD(set_flags, (u_int32_t flags), (db, flags),
     DB_RETOK_STD)
+DB_METHOD(set_h_compare, (h_compare_fcn_type func),
+    (db, func), DB_RETOK_STD)
 DB_METHOD(get_h_ffactor, (u_int32_t *h_ffactorp),
     (db, h_ffactorp), DB_RETOK_STD)
 DB_METHOD(set_h_ffactor, (u_int32_t h_ffactor),
@@ -568,10 +581,15 @@ DB_METHOD(set_lorder, (int db_lorder), (db, db_lorder),
     DB_RETOK_STD)
 DB_METHOD_VOID(get_msgfile, (FILE **msgfilep), (db, msgfilep))
 DB_METHOD_VOID(set_msgfile, (FILE *msgfile), (db, msgfile))
+DB_METHOD_QUIET(get_multiple, (), (db))
 DB_METHOD(get_pagesize, (u_int32_t *db_pagesizep),
     (db, db_pagesizep), DB_RETOK_STD)
 DB_METHOD(set_pagesize, (u_int32_t db_pagesize),
     (db, db_pagesize), DB_RETOK_STD)
+DB_METHOD(get_priority, (DB_CACHE_PRIORITY *priorityp),
+    (db, priorityp), DB_RETOK_STD)
+DB_METHOD(set_priority, (DB_CACHE_PRIORITY priority),
+    (db, priority), DB_RETOK_STD)
 DB_METHOD(get_re_delim, (int *re_delimp),
     (db, re_delimp), DB_RETOK_STD)
 DB_METHOD(set_re_delim, (int re_delim),

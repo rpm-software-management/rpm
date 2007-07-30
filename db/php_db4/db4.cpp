@@ -1,6 +1,5 @@
 /*-
- * Copyright (c) 2004-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2004,2007 Oracle.  All rights reserved.
  *
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
@@ -59,12 +58,10 @@ struct php_DBC {
 struct php_DB {
     DB *db;
     struct my_llist *open_cursors;
-    int autocommit;
 };
 
 struct php_DB_ENV {
     DB_ENV *dbenv;
-    int autocommit;
 };
 
 static void _free_php_db_txn(zend_rsrc_list_entry *rsrc TSRMLS_DC)
@@ -283,9 +280,11 @@ ZEND_NAMED_FUNCTION(_wrap_new_DbEnv);
 ZEND_NAMED_FUNCTION(_wrap_db_env_close);
 ZEND_NAMED_FUNCTION(_wrap_db_env_dbremove);
 ZEND_NAMED_FUNCTION(_wrap_db_env_dbrename);
+ZEND_NAMED_FUNCTION(_wrap_db_env_get_encrypt_flags);
 ZEND_NAMED_FUNCTION(_wrap_db_env_open);
 ZEND_NAMED_FUNCTION(_wrap_db_env_remove);
 ZEND_NAMED_FUNCTION(_wrap_db_env_set_data_dir);
+ZEND_NAMED_FUNCTION(_wrap_db_env_set_encrypt);
 ZEND_NAMED_FUNCTION(_wrap_db_env_txn_begin);
 ZEND_NAMED_FUNCTION(_wrap_db_env_txn_checkpoint);
 
@@ -294,9 +293,11 @@ static zend_function_entry DbEnv_functions[] = {
         ZEND_NAMED_FE(close, _wrap_db_env_close, NULL)
         ZEND_NAMED_FE(dbremove, _wrap_db_env_dbremove, NULL)
         ZEND_NAMED_FE(dbrename, _wrap_db_env_dbrename, NULL)
+		ZEND_NAMED_FE(get_encrypt, _wrap_db_env_get_encrypt_flags, NULL)
         ZEND_NAMED_FE(open, _wrap_db_env_open, NULL)
         ZEND_NAMED_FE(remove, _wrap_db_env_remove, NULL)
         ZEND_NAMED_FE(set_data_dir, _wrap_db_env_set_data_dir, NULL)
+		ZEND_NAMED_FE(set_encrypt, _wrap_db_env_set_encrypt, NULL)
         ZEND_NAMED_FE(txn_begin, _wrap_db_env_txn_begin, NULL)
         ZEND_NAMED_FE(txn_checkpoint, _wrap_db_env_txn_checkpoint, NULL)
         { NULL, NULL, NULL}
@@ -317,10 +318,12 @@ ZEND_NAMED_FUNCTION(_wrap_db_open);
 ZEND_NAMED_FUNCTION(_wrap_db_close);
 ZEND_NAMED_FUNCTION(_wrap_db_del);
 ZEND_NAMED_FUNCTION(_wrap_db_get);
+ZEND_NAMED_FUNCTION(_wrap_db_get_encrypt_flags);
 ZEND_NAMED_FUNCTION(_wrap_db_pget);
 ZEND_NAMED_FUNCTION(_wrap_db_get_type);
 ZEND_NAMED_FUNCTION(_wrap_db_join);
 ZEND_NAMED_FUNCTION(_wrap_db_put);
+ZEND_NAMED_FUNCTION(_wrap_db_set_encrypt);
 ZEND_NAMED_FUNCTION(_wrap_db_stat);
 ZEND_NAMED_FUNCTION(_wrap_db_sync);
 ZEND_NAMED_FUNCTION(_wrap_db_truncate);
@@ -330,16 +333,18 @@ static zend_function_entry Db4_functions[] = {
         ZEND_NAMED_FE(db4, _wrap_new_db4, NULL)
         ZEND_NAMED_FE(open, _wrap_db_open, NULL)
         ZEND_NAMED_FE(close, _wrap_db_close, NULL)
+        ZEND_NAMED_FE(cursor, _wrap_db_cursor, NULL)
         ZEND_NAMED_FE(del, _wrap_db_del, NULL)
         ZEND_NAMED_FE(get, _wrap_db_get, NULL)
+		ZEND_NAMED_FE(get_encrypt_flags, _wrap_db_get_encrypt_flags, NULL)
         ZEND_NAMED_FE(pget, _wrap_db_pget, second_arg_force_ref)
         ZEND_NAMED_FE(get_type, _wrap_db_get_type, NULL)
+        ZEND_NAMED_FE(join, _wrap_db_join, NULL)
         ZEND_NAMED_FE(put, _wrap_db_put, NULL)
+		ZEND_NAMED_FE(set_encrypt, _wrap_db_set_encrypt, NULL)
         ZEND_NAMED_FE(stat, _wrap_db_stat, NULL) 
         ZEND_NAMED_FE(sync, _wrap_db_sync, NULL)
         ZEND_NAMED_FE(truncate, _wrap_db_truncate, NULL)
-        ZEND_NAMED_FE(cursor, _wrap_db_cursor, NULL)
-        ZEND_NAMED_FE(join, _wrap_db_join, NULL)
         { NULL, NULL, NULL}
 };
 /* }}} */
@@ -621,7 +626,6 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_OK_QUEUE", DB_OK_QUEUE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_OK_RECNO", DB_OK_RECNO, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_CHKSUM", DB_AM_CHKSUM, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_AM_CL_WRITER", DB_AM_CL_WRITER, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_COMPENSATE", DB_AM_COMPENSATE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_CREATED", DB_AM_CREATED, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_AM_CREATED_MSTR", DB_AM_CREATED_MSTR, CONST_CS | CONST_PERSISTENT);
@@ -666,11 +670,9 @@ PHP_MINIT_FUNCTION(db4)
     REGISTER_LONG_CONSTANT("DB_ENV_AUTO_COMMIT", DB_ENV_AUTO_COMMIT, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_CDB", DB_ENV_CDB, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_CDB_ALLDB", DB_ENV_CDB_ALLDB, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_ENV_CREATE", DB_ENV_CREATE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_DBLOCAL", DB_ENV_DBLOCAL, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_DIRECT_DB", DB_ENV_DIRECT_DB, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_DIRECT_LOG", DB_ENV_DIRECT_LOG, CONST_CS | CONST_PERSISTENT);
-    REGISTER_LONG_CONSTANT("DB_ENV_FATAL", DB_ENV_FATAL, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_LOCKDOWN", DB_ENV_LOCKDOWN, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_LOG_AUTOREMOVE", DB_ENV_LOG_AUTOREMOVE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("DB_ENV_NOLOCKING", DB_ENV_NOLOCKING, CONST_CS | CONST_PERSISTENT);
@@ -770,13 +772,12 @@ do { \
   } \
 } while(0)
 
-void setDb(zval *z, DB *db, int autocommit TSRMLS_DC)
+void setDb(zval *z, DB *db TSRMLS_DC)
 {
     long rsrc_id;
     struct php_DB *pdb = (struct php_DB *) emalloc(sizeof(*pdb));
     memset(pdb, 0, sizeof(*pdb));
     pdb->db = db;
-    pdb->autocommit = autocommit;
     rsrc_id = ZEND_REGISTER_RESOURCE(NULL, pdb, le_db);
     add_property_resource(z, "_db_ptr", rsrc_id);
 }
@@ -803,7 +804,7 @@ DB *php_db4_getDbFromObj(zval *z TSRMLS_DC)
     return NULL;
 }
 
-#define getDbFromThis(a, b)        \
+#define getDbFromThis(a)        \
 do { \
   struct php_DB *pdb; \
   zval *_self = getThis(); \
@@ -818,7 +819,6 @@ do { \
     RETURN_FALSE; \
   } \
   (a) = pdb->db; \
-  (b) = pdb->autocommit; \
 } while(0)
 
 #define getPhpDbFromThis(a)        \
@@ -1172,7 +1172,7 @@ ZEND_NAMED_FUNCTION(_wrap_new_db4)
     DB_ENV *dbenv = NULL;
     zval *dbenv_obj = NULL;
     zval *self;
-    int ret, autocommit = 0;
+    int ret;
 
     self = getThis();
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|O",
@@ -1184,14 +1184,13 @@ ZEND_NAMED_FUNCTION(_wrap_new_db4)
         dbenv = php_db4_getDbEnvFromObj(dbenv_obj TSRMLS_CC);
         zval_add_ref(&dbenv_obj);
         add_property_zval(self, "dbenv", dbenv_obj);
-        autocommit = 1;
     }
     if((ret = my_db_create(&db, dbenv, 0)) != 0) {
         php_error_docref(NULL TSRMLS_CC,
 			 E_WARNING, "error occurred during open");
         RETURN_FALSE;
     }
-    setDb(self, db, autocommit TSRMLS_CC);
+    setDb(self, db TSRMLS_CC);
 }
 /* }}} */
 
@@ -1208,11 +1207,10 @@ ZEND_NAMED_FUNCTION(_wrap_db_open)
     u_int32_t flags = DB_CREATE;
     int mode = 0;
     int ret;
-    u_int32_t autocommit;
     
     zval *self;
     self = getThis();
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|O!sslll",
                              &dbtxn_obj, db_txn_ce,
@@ -1224,8 +1222,6 @@ ZEND_NAMED_FUNCTION(_wrap_db_open)
     }
     if(dbtxn_obj) {
         dbtxn = php_db4_getDbTxnFromObj(dbtxn_obj TSRMLS_CC);
-    } else if(autocommit) {
-        flags |= DB_AUTO_COMMIT;
     }
     add_property_string(self, "file", file, 1);
     add_property_string(self, "database", database, 1);
@@ -1248,7 +1244,6 @@ ZEND_NAMED_FUNCTION(_wrap_db_open)
 ZEND_NAMED_FUNCTION(_wrap_db_close)
 {
     struct php_DB *pdb = NULL;
-    int autocommit;
     getPhpDbFromThis(pdb);
 
     if(ZEND_NUM_ARGS()) {
@@ -1272,9 +1267,9 @@ ZEND_NAMED_FUNCTION(_wrap_db_del)
     u_int32_t flags;
     DBT key;
     char *keyname;
-    int keylen, autocommit;
+    int keylen;
 
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|O", &keyname, &keylen, 
                              &txn_obj, db_txn_ce) == FAILURE) 
     {
@@ -1283,8 +1278,6 @@ ZEND_NAMED_FUNCTION(_wrap_db_del)
     if(txn_obj) {
         getDbTxnFromThis(txn);
         flags = 0;
-    } else if(autocommit) {
-        flags = DB_AUTO_COMMIT;
     }
     memset(&key, 0, sizeof(DBT));
     key.data = keyname;
@@ -1302,10 +1295,10 @@ ZEND_NAMED_FUNCTION(_wrap_db_get)
     zval *txn_obj = NULL;
     DBT key, value;
     char *keyname;
-    int keylen, autocommit;
+    int keylen;
     u_int32_t flags = 0;
 
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|Ol", &keyname, &keylen, 
                              &txn_obj, db_txn_ce, &flags) == FAILURE) 
     {
@@ -1313,8 +1306,6 @@ ZEND_NAMED_FUNCTION(_wrap_db_get)
     }
     if(txn_obj) {
         txn = php_db4_getDbTxnFromObj(txn_obj);
-    } else if (((flags & DB_CONSUME) || (flags & DB_CONSUME_WAIT)) && autocommit) {
-        flags |= DB_AUTO_COMMIT;
     }
     memset(&key, 0, sizeof(DBT));
     key.data = keyname;
@@ -1336,11 +1327,11 @@ ZEND_NAMED_FUNCTION(_wrap_db_pget)
     zval *txn_obj = NULL;
     DBT key, value, pkey;
     char *keyname;
-    int keylen, autocommit;
+    int keylen;
     zval *z_pkey;
     u_int32_t flags = 0;
 
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|Ol", 
                              &keyname, &keylen, &z_pkey,
                              &txn_obj, db_txn_ce, &flags) == FAILURE) 
@@ -1349,8 +1340,6 @@ ZEND_NAMED_FUNCTION(_wrap_db_pget)
     }
     if(txn_obj) {
         txn = php_db4_getDbTxnFromObj(txn_obj);
-    } else if (((flags & DB_CONSUME) || (flags & DB_CONSUME_WAIT)) && autocommit) {
-        flags |= DB_AUTO_COMMIT;
     }
     memset(&key, 0, sizeof(DBT));
     key.data = keyname;
@@ -1377,9 +1366,8 @@ ZEND_NAMED_FUNCTION(_wrap_db_get_type)
 {
     DB *db = NULL;
     DBTYPE type;
-    int autocommit;
 
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(db->get_type(db, &type)) { 
         RETURN_FALSE; 
     }
@@ -1403,6 +1391,38 @@ ZEND_NAMED_FUNCTION(_wrap_db_get_type)
 }
 /* }}} */
 
+/* {{{ proto bool DB4::set_encrypt(string $password [, long $flags])
+ */
+ZEND_NAMED_FUNCTION(_wrap_db_set_encrypt)
+{
+    DB *db = NULL;
+    char *pass;
+    long passlen;
+	u_int32_t flags = 0;
+    getDbFromThis(db);
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &pass, &passlen,
+							 &flags) == FAILURE)
+    {
+        return;
+    }
+    RETURN_BOOL(db->set_encrypt(db, pass, flags)?0:1);
+}
+/* }}} */
+
+/* {{{ proto int DB4::get_encrypt_flags()
+ */
+ZEND_NAMED_FUNCTION(_wrap_db_get_encrypt_flags)
+{
+    DB *db = NULL;
+
+    getDbFromThis(db);
+	u_int32_t flags = 0;
+	if (db->get_encrypt_flags(db, &flags) != 0)
+			RETURN_FALSE;
+	RETURN_LONG(flags);
+}
+/* }}} */
+
 /* {{{ proto array DB4::stat([object $txn [, long flags]])
  */
 ZEND_NAMED_FUNCTION(_wrap_db_stat)
@@ -1411,10 +1431,9 @@ ZEND_NAMED_FUNCTION(_wrap_db_stat)
     DB_TXN *txn = NULL;
     zval *txn_obj = NULL;
     DBTYPE type;
-    int autocommit;
     u_int32_t flags = 0;
 
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|zl", &txn_obj, db_txn_ce, &flags) == FAILURE) {
         return;
     }
@@ -1522,11 +1541,11 @@ ZEND_NAMED_FUNCTION(_wrap_db_join)
     HashTable *array;
     HashPosition pos;
     zval **z_cursor;
-    int num_cursors, rv, autocommit, i;
+    int num_cursors, rv, i;
 
     u_int32_t flags = 0;
 
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|l", 
                              &z_array, &flags) == FAILURE) 
     {
@@ -1561,12 +1580,12 @@ ZEND_NAMED_FUNCTION(_wrap_db_put)
     DBT key, value;
     char *keyname, *dataname;
     int keylen, datalen;
-    int ret, autocommit;
+    int ret;
     zval *self;
     long flags = 0;
 
     self = getThis();
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|Ol", &keyname, &keylen, 
                              &dataname, &datalen, &txn_obj, db_txn_ce, &flags) == FAILURE) 
     {
@@ -1574,8 +1593,6 @@ ZEND_NAMED_FUNCTION(_wrap_db_put)
     }
     if(txn_obj) {
         txn = php_db4_getDbTxnFromObj(txn_obj TSRMLS_CC);
-    } else if (autocommit) {
-        flags |= DB_AUTO_COMMIT;
     }
     memset(&key, 0, sizeof(DBT));
     key.data = keyname;
@@ -1596,9 +1613,8 @@ ZEND_NAMED_FUNCTION(_wrap_db_put)
  */
 ZEND_NAMED_FUNCTION(_wrap_db_sync)
 {
-    int autocommit;
     DB *db = NULL;
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(ZEND_NUM_ARGS()) {
         WRONG_PARAM_COUNT;
     }
@@ -1615,10 +1631,9 @@ ZEND_NAMED_FUNCTION(_wrap_db_truncate)
     DB_TXN *txn = NULL;
     zval *txn_obj = NULL;
     long flags = DB_AUTO_COMMIT;
-    int autocommit;
     u_int32_t countp;
 
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|Ol", 
                              &txn_obj, db_txn_ce, &flags) == FAILURE) 
     {
@@ -1627,8 +1642,6 @@ ZEND_NAMED_FUNCTION(_wrap_db_truncate)
     if(txn_obj) {
         txn = php_db4_getDbTxnFromObj(txn_obj TSRMLS_CC);
         flags = 0;
-    } else if (autocommit) {
-        flags = DB_AUTO_COMMIT;
     }
     if(db->truncate(db, txn, &countp, flags) == 0) {
         RETURN_LONG(countp);
@@ -1646,10 +1659,10 @@ ZEND_NAMED_FUNCTION(_wrap_db_cursor)
     zval *txn_obj = NULL, *self;
     DBC *cursor = NULL;
     u_int32_t flags = 0;
-    int ret, autocommit;
+    int ret;
 
     self = getThis();
-    getDbFromThis(db, autocommit);
+    getDbFromThis(db);
     if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|Ol", &txn_obj, db_txn_ce, &flags) == FAILURE) 
     {
         return;
@@ -2043,6 +2056,41 @@ ZEND_NAMED_FUNCTION(_wrap_db_env_set_data_dir)
         return;
     }
     RETURN_BOOL(dbenv->set_data_dir(dbenv, dir)?0:1);
+}
+/* }}} */
+
+/* {{{ proto bool DB4Env::set_encrypt(string $password [, long $flags])
+ */
+ZEND_NAMED_FUNCTION(_wrap_db_env_set_encrypt)
+{
+    DB_ENV *dbenv;
+    zval *self;
+    char *pass;
+    long passlen;
+	u_int32_t flags = 0;
+    self = getThis();
+    getDbEnvFromThis(dbenv);
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &pass, &passlen,
+							 &flags) == FAILURE)
+    {
+        return;
+    }
+    RETURN_BOOL(dbenv->set_encrypt(dbenv, pass, flags)?0:1);
+}
+/* }}} */
+
+/* {{{ proto int DB4Env::get_encrypt_flags()
+ */
+ZEND_NAMED_FUNCTION(_wrap_db_env_get_encrypt_flags)
+{
+    DB_ENV *dbenv;
+    zval *self;
+	u_int32_t flags = 0;
+    self = getThis();
+    getDbEnvFromThis(dbenv);
+	if (dbenv->get_encrypt_flags(dbenv, &flags) != 0)
+			RETURN_FALSE;
+	RETURN_LONG(flags);
 }
 /* }}} */
 

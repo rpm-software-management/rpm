@@ -1,0 +1,189 @@
+<!--$Id: db_codegen.so,v 10.6 2007/05/17 18:29:34 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: db_codegen</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td>
+<h3>db_codegen</h3>
+</td>
+</tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>db_codegen [<b>-Vv</b>] [<b>-a c</b>] [<b>-i file</b>] [<b>-o file</b>]</pre></h3>
+<h3>Description</h3>
+<a name="2"><!--meow--></a>
+<p>The db_codegen utility generates application code to create and
+configure Berkeley DB database environments and databases based on a simple
+description language, and writes it to one or more output files.  The
+generated code may need modification, in the case of complicated
+applications, but will usually significantly reduce the time required
+to create Berkeley DB applications.</p>
+<p>The options are as follows:</p>
+<dl compact>
+<dt><b>-a</b><dd>Generate code for the specified API (currently, only "c" is accepted).
+<dt><b>-i</b><dd>Specify an input file; by default, stdin is used.
+<dt><b>-o</b><dd>Specify an output file prefix; by default, "application" is used.
+<dt><b>-V</b><dd>Write the library version number to the standard output, and exit.
+<dt><b>-v</b><dd>Run in verbose mode.
+</dl>
+<p>The db_codegen utility exits 0 on success, and &gt;0 if an error occurs.</p>
+<h3>C Language Specific Information</h3>
+<p>By default, when the db_codegen utility generates C-language
+code, the output file is named "application.c".  The output filename
+can be specified with <b>-o</b> option.</p>
+<p>At the beginning of the output file is a list of public database
+environment (<a href="../api_c/env_class.html">DB_ENV</a>) handles and database (<a href="../api_c/db_class.html">DB</a>) handles,
+as specified by the description language.  The database environment
+handle variables are named "XXX_dbenv", where "XXX" is the name of the
+environment in the input specification.  For databases associated with
+a database environment, the database handle variables are named
+"XXX_YYY", where "XXX" is the name of the environment, and "YYY" is the
+name of the database.  For standalone databases, the database handle
+variables are named "XXX", where "XXX" is the name of the database.</p>
+<p>There are two public functions in the output file: bdb_startup and
+bdb_shutdown.  The bdb_startup function should be called to create and
+configure the database environments and databases, and the bdb_shutdown
+function should be called to gracefully shut down the environments and
+databases.</p>
+<h3>Specification Language</h3>
+<p>The db_codegen uses a simple description language:</p>
+<p><ul type=disc>
+<li>Lines in the input consist of white-space separated tokens.
+<li>Tokens are case-insensitive.
+<li>Empty lines, and lines where the first non-space character
+is hash mark ("#"). are ignored.  In addition, hash marks may appear
+in lines, in which case the content of the line from the hash mark to
+the end of the line is ignored.
+</ul>
+<p>There are two top-level objects: "environment" and "database", which
+correspond to database environments and databases, respectively.  These
+top-level objects can be associated with keywords to describe their
+configuration and relationships.</p>
+<p>For example, the following input would create two standalone databases:</p>
+<blockquote><pre>database data_one {
+    type btree
+}
+database data_two {
+    type btree
+}</pre></blockquote>
+<p>In this case, there would be no <a href="../api_c/env_class.html">DB_ENV</a> handle, and the public
+<a href="../api_c/db_class.html">DB</a> handles would be:</p>
+<blockquote><pre>DB      *data_one;
+DB      *data_two;</pre></blockquote>
+<p>For example, the following input would create a database environment
+which contains three databases:</p>
+<blockquote><pre>environment myenv {
+    database data_one {
+	type btree
+    }
+    database data_two {
+    	type btree
+    }
+    database data_three {
+    	type btree
+    }
+}</pre></blockquote>
+<p>In this case, the public <a href="../api_c/env_class.html">DB_ENV</a> and <a href="../api_c/db_class.html">DB</a> handles would be:</p>
+<blockquote><pre>DB_ENV  *myenv_dbenv;
+DB      *myenv_data_one;
+DB      *myenv_data_two;
+DB      *myenv_data_three;</pre></blockquote>
+<p>A variety of keywords can be specified for the databases and the
+environments.  For example, the cache size can be specified for
+the database environment, and the page size can be specified for
+the database, as well as secondary relationships:</p>
+<blockquote><pre>environment myenv {
+    cachesize 2 0 10
+    database data_one {
+    	type btree
+    	pagesize 1024
+    }
+    database data_two {
+	primary data_one
+	secondary_offset 10 15
+    	type btree
+    	pagesize 32768
+    }
+    database data_three {
+    	type btree
+    	pagesize 512
+    }
+}</pre></blockquote>
+<h3>Environment Keywords</h3>
+<dl compact>
+<dt>environment<dd>Start a database environment block.
+<p>There must be three tokens on the line: the keyword, the name of the
+environment and an opening brace ("{").</p>
+<dt>home<dd>Specify the database environment home directory.
+<p>There must be two tokens on the line: the keyword, and the home
+directory.</p>
+<dt>cachesize<dd>Specify the database environment cache size.
+<p>There must be two tokens on the line: the keyword, the gigabytes of
+cache, the bytes of cache, and the number of caches (the number of
+underlying physical areas into which the cache is logically
+divided).</p>
+<dt>private<dd>Specify the database environment is private.
+<p>There must be one token on the line: the keyword by itself.</p>
+<dt>}<dd>End the database environment block.
+<p>There must be one token on the line: the keyword by itself.</p>
+</dl>
+<h3>Database Keywords</h3>
+<dl compact>
+<dt>database<dd>Start a database block.
+<p>There must be three tokens on the line: the keyword, the name of the
+database and an opening brace ("{").</p>
+<dt>custom<dd>Specify a custom key-comparison routine.  This is used when the Btree
+database requires a specific sort that db_codegen cannot
+generate.  A stub key comparison routine will be created and configured
+for the database which should be modified as necessary.  See the
+"key_type" keyword for more information.
+<p>There must be one token on the line: the keyword by itself.</p>
+<dt>dupsort<dd>Configure the database to support sorted duplicates.
+<p>There must be one token on the line: the keyword by itself.</p>
+<dt>extentsize<dd>Configure the size of the Queue database extent files.
+<p>There must be two tokens on the line: the keyword, and the extent file size,
+as a number of pages.</p>
+<dt>key_type<dd>Configure a integral type key-comparison routine.  This is used when the
+Btree database Btree database key is an integral type (such as "unsigned
+int", or "u_int32_t").  Any C-language integral type may be specified.
+See the "custom" keyword for more information.  A Btree comparison routine
+based on the type of the key will be created and configured.
+<p>There must be two tokens on the line: the keyword, and the type.</p>
+<dt>pagesize<dd>Configure the database page size.
+<p>There must be two tokens on the line: the keyword, and the page size
+in bytes.</p>
+<dt>primary<dd>Configure the database as a secondary index.  A stub secondary callback
+routine will be created and configured for the database, which should
+be modified as necessary.  See the "secondary_offset" keyword for more
+information.
+<p>name of the primary database for which this database is a secondary.</p>
+<dt>recnum<dd>Configure the Btree database to support record number access.
+<p>There must be one token on the line: the keyword by itself.</p>
+<dt>re_len<dd>Configure the record length for a Queue database or a fixed-length Recno
+database.
+<p>There must be two tokens on the line: the keyword, and the length of
+a record, in bytes.</p>
+<dt>secondary_offset<dd>Configure a secondary callback routine based on a byte string found in
+the primary database's data item.
+<p>There must be three tokens on the line: the keyword, the byte offset
+from the beginning of the primary data item where the secondary key
+occurs, and the length of the secondary key in bytes.</p>
+<dt>transaction<dd>Configure the database (and, by extension, the database environment),
+to be transactional.
+<p>There must be one token on the line: the keyword by itself.</p>
+<dt>type<dd>Configure the database type.
+<p>There must be two tokens on the line: the keyword, and the type, where
+the type is one of "btree", "hash", "queue" or "recno".</p>
+<dt>}<dd>End the database environment block.
+<p>There must be one token on the line: the keyword by itself.</p>
+</dl>
+</tt>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

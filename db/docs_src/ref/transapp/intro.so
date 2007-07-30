@@ -1,0 +1,30 @@
+m4_comment([$Id: intro.so,v 10.40 2006/11/13 18:05:03 bostic Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Transactional Data Store introduction,
+    @Transactional Data Store, cam/app, transapp/why)
+
+m4_p([dnl
+It is difficult to write a useful transactional tutorial and still keep
+within reasonable bounds of documentation; that is, without writing a
+book on transactional programming.  We have two goals in this section:
+to familiarize readers with the transactional interfaces of m4_db and
+to provide code building blocks that will be useful for creating
+applications.])
+
+m4_p([dnl
+We have not attempted to present this information using a real-world
+application.  First, transactional applications are often complex and
+time-consuming to explain.  Also, one of our goals is to give you an
+understanding of the wide variety of tools m4_db makes available to you,
+and no single application would use most of the interfaces included in
+the m4_db library.  For these reasons, we have chosen to simply present
+the m4_db data structures and programming solutions, using examples that
+differ from page to page.  All the examples are included in a standalone
+program you can examine, modify, and run; and from which you will be able
+to extract code blocks for your own applications.  Fragments of the
+program will be presented throughout this chapter, and the complete text
+of the m4_linkweb(transapp.cs, [example program]) for m4_posix1_name
+standard systems is included in the m4_db distribution.])
+
+m4_page_footer

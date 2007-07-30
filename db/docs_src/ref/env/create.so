@@ -1,0 +1,95 @@
+m4_comment([$Id: create.so,v 10.30 2005/09/23 16:22:42 bostic Exp $])
+
+m4_ref_title(Environment,
+    Creating a database environment,
+    database @environment, env/intro, env/open)
+
+m4_p([dnl
+The m4_db environment is created and described by the m4_ref(dbenv_create)
+and m4_ref(dbenv_open) interfaces.  In situations where customization is
+desired, such as storing log files on a separate disk drive or selection
+of a particular cache size, applications must describe the customization
+by either creating an environment configuration file in the environment
+home directory or by arguments passed to other m4_ref(DbEnv) handle methods.])
+
+m4_p([dnl
+Once an environment has been created, database files specified using
+relative pathnames will be named relative to the home directory.  Using
+pathnames relative to the home directory allows the entire environment
+to be easily moved, simplifying restoration and recovery of a database
+in a different directory or on a different system.])
+
+m4_p([dnl
+Applications first obtain an environment handle using the
+m4_refT(dbenv_create), then call the m4_refT(dbenv_open) which creates
+or joins the database environment.  There are a number of options you
+can set to customize m4_ref(dbenv_open) for your environment.  These
+options fall into four broad categories:])
+
+m4_tagbegin
+
+m4_tag([Subsystem Initialization:], [dnl
+These flags indicate which m4_db subsystems will be initialized for the
+environment, and what operations will happen automatically when
+databases are accessed within the environment.  The flags include
+m4_ref(DB_INIT_CDB), m4_ref(DB_INIT_LOCK), m4_ref(DB_INIT_LOG),
+m4_ref(DB_INIT_MPOOL), and m4_ref(DB_INIT_TXN).  The m4_ref(DB_INIT_CDB)
+flag does initialization for m4_cam applications.  (See
+m4_link(M4RELDIR/ref/cam/intro, Building m4_cam applications) for more
+information.)  The rest of the flags initialize a single subsystem; that
+is, when m4_ref(DB_INIT_LOCK) is specified, applications reading and
+writing databases opened in this environment will be using locking to
+ensure that they do not overwrite each other's changes.])
+
+m4_tag([Recovery options:], [dnl
+These flags, which include m4_ref(DB_RECOVER) and
+m4_ref(DB_RECOVER_FATAL), indicate what recovery is to be performed on
+the environment before it is opened for normal use.])
+
+m4_tag([Naming options:], [dnl
+These flags, which include m4_ref(DB_USE_ENVIRON) and
+m4_ref(DB_USE_ENVIRON_ROOT), modify how file naming happens in the
+environment.])
+
+m4_tag([Miscellaneous:], [dnl
+Finally, there are a number of miscellaneous flags, for example,
+m4_ref(DB_CREATE) which causes underlying files to be created as
+necessary.  See the m4_ref(dbenv_open) manual pages for further
+information.])
+
+m4_tagend
+
+m4_p([dnl
+Most applications either specify only the m4_ref(DB_INIT_MPOOL) flag or
+they specify all four subsystem initialization flags
+(m4_ref(DB_INIT_MPOOL), m4_ref(DB_INIT_LOCK), m4_ref(DB_INIT_LOG), and
+m4_ref(DB_INIT_TXN)).  The former configuration is for applications that
+simply want to use the basic Access Method interfaces with a shared
+underlying buffer pool, but don't care about recoverability after
+application or system failure.  The latter is for applications that need
+recoverability.  There are situations in which other combinations of
+the initialization flags make sense, but they are rare.])
+
+m4_p([dnl
+The m4_ref(DB_RECOVER) flag is specified by applications that want to
+perform any necessary database recovery when they start running.  That
+is, if there was a system or application failure the last time they ran,
+they want the databases to be made consistent before they start running
+again.  It is not an error to specify this flag when no recovery needs
+to be done.])
+
+m4_p([dnl
+The m4_ref(DB_RECOVER_FATAL) flag is more special-purpose.  It performs
+catastrophic database recovery, and normally requires that some initial
+arrangements be made; that is, archived log files be brought back into
+the filesystem.  Applications should not normally specify this flag.
+Instead, under these rare conditions, the m4_ref(db_recover) utility
+should be used.])
+
+m4_p([dnl
+The following is a simple example of a function that opens a database
+environment for a transactional program.])
+
+include(ref/env/create.cs)
+
+m4_page_footer

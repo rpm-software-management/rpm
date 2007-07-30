@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -36,7 +35,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_rsearch.c,v 12.11 2006/08/24 14:44:44 bostic Exp $
+ * $Id: bt_rsearch.c,v 12.14 2007/05/17 15:14:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -134,7 +133,7 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 				 * eliminate any concurrency.  A possible fix
 				 * would be to lock the last leaf page instead.
 				 */
-				ret = __memp_fput(mpf, h, 0);
+				ret = __memp_fput(mpf, h, dbc->priority);
 				if ((t_ret =
 				    __TLPUT(dbc, lock)) != 0 && ret == 0)
 					ret = t_ret;
@@ -170,7 +169,8 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 					*exactp = 0;
 					if (!LF_ISSET(SR_PAST_EOF) ||
 					    recno > t_recno + 1) {
-						ret = __memp_fput(mpf, h, 0);
+						ret = __memp_fput(mpf,
+						    h, dbc->priority);
 						h = NULL;
 						if ((t_ret = __TLPUT(dbc,
 						    lock)) != 0 && ret == 0)
@@ -255,7 +255,7 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 			    (LEVEL(h) - 1) == LEAFLEVEL)
 				stack = 1;
 
-			if ((ret = __memp_fput(mpf, h, 0)) != 0)
+			if ((ret = __memp_fput(mpf, h, dbc->priority)) != 0)
 				goto err;
 			h = NULL;
 
@@ -278,7 +278,8 @@ __bam_rsearch(dbc, recnop, flags, stop, exactp)
 	}
 	/* NOTREACHED */
 
-err:	if (h != NULL && (t_ret = __memp_fput(mpf, h, 0)) != 0 && ret == 0)
+err:	if (h != NULL &&
+	    (t_ret = __memp_fput(mpf, h, dbc->priority)) != 0 && ret == 0)
 		ret = t_ret;
 
 	BT_STK_POP(cp);
@@ -315,7 +316,8 @@ __bam_adjust(dbc, adjust)
 	for (epg = cp->sp; epg <= cp->csp; ++epg) {
 		h = epg->page;
 		if (TYPE(h) == P_IBTREE || TYPE(h) == P_IRECNO) {
-			if ((ret = __memp_dirty(mpf, &h, dbc->txn, 0)) != 0)
+			if ((ret = __memp_dirty(mpf,
+			    &h, dbc->txn, dbc->priority, 0)) != 0)
 				return (ret);
 			epg->page = h;
 			if (DBC_LOGGING(dbc)) {
@@ -371,7 +373,7 @@ __bam_nrecs(dbc, rep)
 
 	*rep = RE_NREC(h);
 
-	ret = __memp_fput(mpf, h, 0);
+	ret = __memp_fput(mpf, h, dbc->priority);
 	if ((t_ret = __TLPUT(dbc, lock)) != 0 && ret == 0)
 		ret = t_ret;
 

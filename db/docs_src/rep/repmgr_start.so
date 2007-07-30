@@ -1,0 +1,93 @@
+m4_comment([$Id: repmgr_start.so,v 1.6 2006/11/30 21:19:38 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[repmgr_start, DB_REP_MASTER, DB_REP_CLIENT, DB_REP_ELECTION,
+	DB_REP_FULL_ELECTION])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(repmgr_start),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__repmgr_start(DB_ENV *env, int nthreads, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::repmgr_start(int nthreads, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(repmgr_start) starts the replication manager.])
+
+m4_p([dnl
+There are two ways to build m4_db replication applications: the most
+common approach is to use the m4_db library "replication manager"
+support, where the m4_db library manages the replication group,
+including network transport, all replication message processing and
+acknowledgment, and group elections.  Applications using the replication
+manager support generally make the following calls:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Call m4_ref(repmgr_set_local_site) to configure the local site in the
+replication group.])
+
+m4_nlist([dnl
+Call m4_ref(repmgr_add_remote_site) to configure the remote site(s) in
+the replication group.])
+
+m4_nlist([dnl
+Call m4_ref(repmgr_set_ack_policy) to configure the message
+acknowledgment policy which provides the replication group's
+transactional needs.])
+
+m4_nlist([dnl
+Call m4_ref(rep_set_priority) to configure the local site's election
+priority.])
+
+m4_nlist([dnl
+Call m4_ref(repmgr_start) to start the replication application.])
+
+m4_nlistend
+
+m4_p([dnl
+For more information on building replication manager applications,
+please see the "Replication Manager Getting Started Guide" included in
+the m4_db documentation.])
+
+m4_p([dnl
+Applications with special needs (for example, applications using network
+protocols not supported by the m4_db replication manager), must perform
+additional configuration and call other m4_db replication methods.  For
+more information on building advanced replication applications, please
+see the "Advanced Replication Applications Guide" included in the m4_db
+documentation.])
+
+m4_when_after_envopen(repmgr_start)
+m4_return(repmgr_start, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_must
+m4_tagbegin
+m4_tag(m4_idef(DB_REP_MASTER), [dnl
+Start as a master site, and do not call for an election.  Note there
+must never be more than a single master in any replication group, and
+only one site at a time should ever be started with the
+m4_ref(DB_REP_MASTER) flag specified.])
+
+m4_tag(m4_idef(DB_REP_CLIENT), [dnl
+Start as a client site, and do not call for an election.])
+
+m4_tag(m4_idef(DB_REP_ELECTION), [dnl
+Start as a client, and call for an election if no master is found.])
+m4_tagend])
+
+m4_param(nthreads, [dnl
+Specify the number of threads of control created and dedicated to processing
+replication messages.  In addition to these message processing threads,
+the replication manager creates and manages a few of its own threads of
+control.])
+m4_paramend
+
+m4_seealso(Replication)
+m4_page_footer

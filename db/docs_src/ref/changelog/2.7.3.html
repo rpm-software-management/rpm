@@ -1,0 +1,59 @@
+<!--"$Id: 2.7.3.html,v 1.3 2007/05/17 18:17:18 bostic Exp $ (Sleepycat) $Date: 2007/05/17 18:17:18 $"-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 2.7.3 Change Log</title>
+<meta name="description" content="Berkeley DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 2.7.3 Change Log</h3>
+
+<h3>Interface Additions and Changes:</h3>
+<ol>
+
+<p><li>
+This release includes support for nested transactions.  No interface
+changes were required.
+
+<p><li>
+This release includes support for Berkeley DB as an XA Resource Manager.
+There is an additional C interface, db_xa_open, and a corresponding C++
+method, Db::xa_open.
+<font color=red>
+<p>XA support is not yet fully tested.
+<p>No Windows XA interface is included.
+</font>
+
+</ol>
+<h3>Configuration and Build Changes:</h3>
+<ol>
+
+<p><li>
+FreeBSD systems are now built using the flags <b>-D_THREAD_SAFE</b> and
+<b>-pthread</b> instead of directly loading with the <b>-lc_r</b> library.
+
+<p><li>
+Linux systems are now built using the <b>-D_REENTRANT</b> flag.
+
+</ol>
+<h3>Additional Changes:</h3>
+<ol>
+
+<p><li>
+The default memory pool cache size has been increase from 128K to 256K.
+
+</ol>
+<h3>Additional Bug Fixes:</h3>
+<ol>
+
+<p><li>
+Freeing memory allocated by the TCL library historically failed on Windows
+platforms, due to a mismatch of malloc/free implementations between the
+TCL library and the Berkeley DB module.  (This change only affects the
+Berkeley DB test suite.)
+
+</ol>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+m4_comment([$Id: dbinfo.so,v 11.10 2001/04/03 19:39:02 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: the DBINFO structure,, upgrade.3.0/db, upgrade.3.0/join)
+
+m4_p([dnl
+The DB_INFO structure has been removed from the m4_db 3.0 release.
+Accesses to any fields within that structure by the application should be
+replaced with method calls on the m4_ref(Db) handle.  The following
+example illustrates this using the historic db_cachesize structure field.
+In the m4_db 2.X releases, applications could set the size of an
+underlying database cache using code similar to the following:])
+
+m4_indent([dnl
+DB_INFO dbinfo;
+m4_blank
+	memset(dbinfo, 0, sizeof(dbinfo));
+	dbinfo.db_cachesize = 1024 * 1024;])
+
+m4_p([dnl
+in the m4_db 3.X releases, this should be done using the
+m4_ref(dbh_set_cachesize) method, as follows:])
+
+m4_indent([dnl
+DB *db;
+int ret;
+m4_blank
+	ret = db-__GT__set_cachesize(db, 0, 1024 * 1024, 0);])
+
+m4_p([dnl
+The DB_INFO structure is no longer used in any way by the m4_db 3.0
+release, and should be removed from the application.])
+
+m4_p([dnl
+The following table lists the DB_INFO fields previously used by
+applications and the methods that should now be used to set
+them.  Because these calls provide configuration for the
+database open, they must precede the call to m4_ref(dbh_open).
+Calling them after the call to m4_ref(dbh_open) will return an
+error.])
+
+m4_table_begin(, _center)
+m4_table_header(DB_INFO field, m4_db 3.X method)
+m4_table_element(bt_compare, m4_ref(dbh_set_bt_compare))
+m4_table_element(bt_minkey, m4_ref(dbh_set_bt_minkey))
+m4_table_element(bt_prefix, m4_ref(dbh_set_bt_prefix))
+
+m4_table_element(db_cachesize,
+[m4_ref(dbh_set_cachesize)
+m4_p([dnl
+Note: the m4_ref(dbh_set_cachesize) function takes additional arguments.
+Setting both the second argument (the number of GB in the pool) and the
+last argument (the number of memory pools to create) to 0 will result in
+behavior that is backward-compatible with previous m4_db releases.])])
+
+m4_table_element(db_lorder, m4_ref(dbh_set_lorder))
+m4_table_element(db_malloc, DB-__GT__set_malloc)
+m4_table_element(db_pagesize, m4_ref(dbh_set_pagesize))
+m4_table_element(dup_compare, m4_ref(dbh_set_dup_compare))
+
+m4_table_element(flags,
+[m4_ref(dbh_set_flags)
+m4_p([dnl
+Note: the DB_DELIMITER, DB_FIXEDLEN and DB_PAD flags no longer need to be
+set as there are specific methods off the m4_ref(Db) handle that set the
+file delimiter, the length of fixed-length records and the fixed-length
+record pad character.  They should simply be discarded from the application.])])
+
+m4_table_element(h_ffactor, m4_ref(dbh_set_h_ffactor))
+m4_table_element(h_hash, m4_ref(dbh_set_h_hash))
+m4_table_element(h_nelem, m4_ref(dbh_set_h_nelem))
+m4_table_element(re_delim, m4_ref(dbh_set_re_delim))
+m4_table_element(re_len, m4_ref(dbh_set_re_len))
+m4_table_element(re_pad, m4_ref(dbh_set_re_pad))
+m4_table_element(re_source, m4_ref(dbh_set_re_source))
+m4_table_end
+
+m4_page_footer

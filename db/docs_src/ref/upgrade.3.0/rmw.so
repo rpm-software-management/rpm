@@ -1,0 +1,22 @@
+m4_comment([$Id: rmw.so,v 11.10 2003/10/18 19:16:14 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: DB_RMW,, upgrade.3.0/txn_stat, upgrade.3.0/lock_notheld)
+
+m4_p([dnl
+The following change applies only to applications using the
+m4_cam product.  If your application is not using that product,
+you can ignore this change.])
+
+m4_p([dnl
+Historically, the m4_refT(dbh_cursor) took the DB_RMW flag to indicate
+that the created cursor would be used for write operations on the
+database.  This flag has been renamed to the m4_ref(DB_WRITECURSOR)
+flag.])
+
+m4_p([dnl
+The application should be searched for any occurrences of DB_RMW. For
+each of these, any that are arguments to the m4_ref(dbh_cursor) function
+should be changed to pass in the m4_ref(DB_WRITECURSOR) flag instead.])
+
+m4_page_footer

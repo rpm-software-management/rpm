@@ -1,9 +1,8 @@
 # Sel the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: rpc002.tcl,v 12.5 2006/08/24 14:46:38 bostic Exp $
+# $Id: rpc002.tcl,v 12.8 2007/07/09 16:33:08 bostic Exp $
 #
 # TEST	rpc002
 # TEST	Test invalid RPC functions and make sure we error them correctly
@@ -135,8 +134,6 @@ proc rpc002 { } {
 		    "Interface not supported by Berkeley DB RPC"] 1
 
 		puts "\tRpc002.d1: Try to upgrade a database"
-		#
-		# NOTE: the type of database doesn't matter, just use btree.
 		set stat [catch {eval {berkdb upgrade -env} $env $testfile} ret]
 		error_check_good dbupgrade $stat 1
 		error_check_good dbupgrade_err [is_substr $errorInfo \

@@ -1,0 +1,52 @@
+m4_comment([$Id: env_set_lg_regionmax.so,v 10.23 2006/08/30 10:04:48 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_lg_regionmax, dbenv_get_lg_regionmax])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_lg_regionmax),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_lg_regionmax(DB_ENV *dbenv, u_int32_t lg_regionmax);
+m4_blank
+int
+DB_ENV-__GT__get_lg_regionmax(DB_ENV *dbenv, u_int32_t *lg_regionmaxp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_lg_regionmax(u_int32_t lg_regionmax);
+m4_blank
+int
+DbEnv::get_lg_regionmax(u_int32_t *lg_regionmaxp);
+]))
+
+m4_p([dnl
+Set the size of the underlying logging area of the m4_db environment,
+in bytes.  By default, or if the value is set to 0, the default size is
+approximately 60KB.  The log region is used to store filenames, and so
+may need to be increased in size if a large number of files will be
+opened and registered with the specified m4_db environment's log
+manager.])
+
+m4_env_config(dbenv_set_lg_regionmax,
+[log region size], set_lg_regionmax, [the size in bytes])
+
+m4_scope_env(dbenv_set_lg_regionmax)
+
+m4_when_envopen(dbenv_set_lg_regionmax, ignored)
+
+m4_return(dbenv_set_lg_regionmax, std)
+
+m4_parambegin
+m4_param(lg_regionmax, [dnl
+The m4_arg(lg_regionmax) parameter is the size of the logging area in
+the m4_db environment, in bytes.])
+m4_paramend
+
+m4_err(dbenv_set_lg_regionmax,
+einval, [the method was called after m4_ref(dbenv_open) was called])
+
+m4_pf_getter(dbenv_get_lg_regionmax,
+size of the underlying logging subsystem region,, lg_regionmaxp)
+
+m4_seealso(DbLog)
+m4_page_footer

@@ -1,0 +1,479 @@
+#! /bin/sh
+#
+# $Id: test_micro,v 1.38 2007/06/07 14:01:11 moshen Exp $
+
+# We need a temporary file, and we need to clean it up after failure.
+tmp=__test_micro.$$
+trap 'rm -f $tmp t; exit 0' 0 1 2 3 13 15
+
+# Use our pathname to locate the absolute path for our SOURCES.
+t=`dirname $0`
+h=`(cd $t && echo $PWD)`
+
+# header --
+#	Output HTML page header.
+#	$1: directory name.
+header()
+{
+	echo "<html>"
+	echo "<head>"
+	machine=`echo $1 | sed 's/.*\.//'`
+	echo "<title>Berkeley DB test_micro run: $machine</title>"
+	echo "</head>"
+	echo "<body bgcolor=white>"
+	echo "<center><h1>Berkeley DB test_micro run: $machine</h1></center>"
+	echo "<p align=right>`date`</p>"
+	test -f UNAME && cat UNAME
+}
+
+# footer --
+#	Output HTML page footer.
+footer()
+{
+	echo "</body>"
+	echo "</html>"
+}
+
+# table --
+#	Create a table.
+#	$1: output file
+table()
+{
+	title="Test $1: `egrep '^#' $1 | sed 's/^#[	 ]*//'`"
+	echo "<hr size=1 noshade>"
+	echo "<table cellspacing=0 cellpadding=0 border=0>"
+	echo "<th align=left colspan=2>$title</th>"
+	echo "<tr>"
+	echo "<th align=right>Release</th>"
+	echo "<th align=center>Operations/second</th>"
+	echo "</tr>"
+
+	max=`egrep -v '^#' $1 | sort -n -k 2 | tail -1 | awk '{print $2}'`
+	egrep -v '^#' $1 | while true; do
+		read r v
+		if [ "X$r" = "X" ]; then
+			break;
+		fi
+		echo "<tr>"
+		echo "<td align=right width=80><pre>$r</pre></td>"
+		echo "<td>"
+		echo "<table>"
+		echo "<tr>"
+		t=`echo "400 * ($v/($max + $max/10))" | bc -l`
+		t=`printf %.0f $t`
+		echo "<td bgcolor='#003366' width=$t>&nbsp;</td>"
+		t=`echo "400 - $t" | bc`
+		echo "<td bgcolor='#CCCCCC' width=$t>&nbsp;</td>"
+		echo "<td>&nbsp;&nbsp;</td>"
+		echo "<td align=right width=100><pre>$v</pre></td>"
+		pct=`echo "(($max - $v) / $max) * 100" | bc -l`
+		if [ "$pct" = "0" ]; then
+			echo "<td></td>"
+		else
+			pct=`printf "(-%.0f%%)" $pct`
+			echo "<td align=right width=50><pre>$pct</pre></td>"
+		fi
+		echo "</tr>"
+		echo "</table>"
+		echo "</tr>"
+	done
+	echo "</table>"
+}
+
+# dir --
+#	Create a directory for the run
+dir()
+{
+	rundir=RUN.`hostname | sed 's/\..*//'`
+	[ -d $rundir ] || mkdir $rundir
+}
+
+# identify --
+#	Identify the machine.
+identify()
+{
+	CC=${CC:-gcc}
+	if [ "$CC" = "gcc" ]; then
+		CC="$CC -O3 -Wall -lpthread"
+	else
+		CC="$CC -O"
+	fi
+	$CC -I. $h/SOURCE/uname.c -o t $LIBS
+	./t | sed 's/CYGWIN_NT/Windows/' > $tmp
+	if test "$?" -eq 0; then
+		cp $tmp $rundir/UNAME
+	fi
+	rm -f t
+}
+
+# build_posix
+#	Build a test on a POSIX system.
+#	$1: test program source
+build_posix()
+{
+	rm -f t
+	sync
+	sleep 1
+	sync
+
+	CC=${CC:-gcc}
+	if [ "$CC" = "gcc" ]; then
+		CC="$CC -O3 -Wall -lpthread"
+	else
+		CC="$CC -O"
+	fi
+	$CC -I. $h/SOURCE/$1 -o t libdb.a $LIBS || return 1
+
+	./t $2
+	return $?
+}
+
+# build_windows
+#	Build a test on a Windows system.
+#	$1: test program source
+#	$2: arguments to the test program
+build_windows()
+{
+	rm -f t.exe
+
+	cl /nologo /o t -I.. -I../.. /DDB_WIN32 /G6 \
+	    /Ox /MD ../../../$h/SOURCE/$1 ../../clib/getopt.c \
+	    libdb*.lib ws2_32.lib advapi32.lib > /dev/null || return 1
+
+	./t $2
+	return $?
+}
+
+# runone --
+#	Run a single test case.
+#	$1: test number
+#	$2: input source file
+#	$3: command
+runone()
+{
+	>$tmp
+
+	# You can set the MAJOR and MINOR environment variables to limit
+	# the BDB releases on which the tests are run.
+	for i in db-${MAJOR:-*}.${MINOR-*}.*; do
+		echo "Test${1}: $i ($2: $3) ..."
+		if [ -f $i/build_unix/libdb.a ] ; then
+			(cd $i/build_unix/ &&
+			    build_posix "$2" "$3") >> $tmp
+		elif [ -f $i/build_win*/Release/libdb??.lib ] ; then
+			(cd $i/build_win*/Release &&
+			    build_windows "$2" "$3") >> $tmp
+		fi
+	done
+	cat $tmp | sort -r -n -k 2 | sort -u -k 1,2 > $rundir/$1
+}
+
+# Run the workload test case, and collate the data.
+run_workload()
+{
+	CONFIGS[0]='-w A -v -c 100000 -o -t hash'
+	CONFIGS[1]='-w A -v -c 100000 -o -t btree'
+	CONFIGS[2]='-w A -v -c 100000 -g 10 -d 20 -p 32768 -t hash'
+	CONFIGS[3]='-w A -v -c 100000 -g 10 -d 20 -p 32768 -t btree'
+	CONFIGS[4]='-w A -v -c 100000 -g 10 -d 20 -p 8192 -t hash'
+	CONFIGS[5]='-w A -v -c 100000 -g 10 -d 20 -p 8192 -t btree'
+	CONFIGS[6]='-w A -v -c 100000 -g 10 -d 20 -p 4096 -t hash'
+	CONFIGS[7]='-w A -v -c 100000 -g 10 -d 20 -p 4096 -t btree'
+	CONFIGS[8]='-w A -v -c 100000 -g 10 -d 20 -p 1024 -t hash'
+	CONFIGS[9]='-w A -v -c 100000 -g 10 -d 20 -p 1024 -t btree'
+	CONFIGS[10]='-w A -v -c 10000 -g 10 -d 256 -p 1024 -t hash'
+	CONFIGS[11]='-w A -v -c 10000 -g 10 -d 256 -p 1024 -t btree'
+	CONFIGS[12]='-w F -v -c 100000 -g 10 -d 20 -p 1024 -t hash'
+	CONFIGS[13]='-w F -v -c 100000 -g 10 -d 20 -p 1024 -t btree'
+	CONFIGS[14]='-w G -v -c 100000 -g 10 -d 20 -p 1024 -t hash'
+	CONFIGS[15]='-w G -v -c 100000 -g 10 -d 20 -p 1024 -t btree'
+	# Run put/get(G) with different page sizes, since fill factor
+	# is interesting when not deleting all of the elements.
+	CONFIGS[16]='-w E -v -c 100000 -g 10 -d 20 -p 32768 -t hash'
+	CONFIGS[17]='-w E -v -c 100000 -g 10 -d 20 -p 32768 -t btree'
+	CONFIGS[18]='-w E -v -c 100000 -g 10 -d 20 -p 8192 -t hash'
+	CONFIGS[19]='-w E -v -c 100000 -g 10 -d 20 -p 8192 -t btree'
+	CONFIGS[20]='-w E -v -c 100000 -g 10 -d 20 -p 4096 -t hash'
+	CONFIGS[21]='-w E -v -c 100000 -g 10 -d 20 -p 4096 -t btree'
+	CONFIGS[22]='-w E -v -c 100000 -g 10 -d 20 -p 1024 -t hash'
+	CONFIGS[23]='-w E -v -c 100000 -g 10 -d 20 -p 1024 -t btree'
+	CONFIGS[24]='-w E -v -c 10000 -g 10 -d 256 -p 1024 -t hash'
+	CONFIGS[25]='-w E -v -c 10000 -g 10 -d 256 -p 1024 -t btree'
+	CONFIGS[26]='-w E -v -c 100000 -g 10 -o -d 10 -p 1024 -t hash'
+	CONFIGS[27]='-w E -v -c 100000 -g 10 -o -d 10 -p 1024 -t btree'
+
+	CONFIGS[28]='-w A -v -c 10000 -g 10 -d 1024 -p 512 -t hash'
+	CONFIGS[29]='-w A -v -c 10000 -g 10 -d 1024 -p 512 -t btree'
+	CONFIGS[30]='-w H -v -c 1000000 -d 20 -p 8192 -t hash'
+	CONFIGS[31]='-w H -v -c 1000000 -d 20 -p 8192 -t btree'
+	CONFIGS[32]='-w H -v -c 1000000 -d 20 -p 512 -t hash'
+	CONFIGS[33]='-w H -v -c 1000000 -d 20 -p 512 -t btree'
+	CONFIGS[34]='-w H -v -c 10000000 -d 20 -p 512 -t hash'
+	CONFIGS[35]='-w H -v -c 10000000 -d 20 -p 512 -t btree'
+	MIN_CONFIGS=0
+	MAX_CONFIGS=35
+
+	# Create a directory to output info, ensure it is empty.
+	rm -rf RESULTS && mkdir RESULTS
+
+	for i in db-${MAJOR:-*}.${MINOR-*}.*; do
+		(
+		if [ -f $i/build_unix/libdb.a ] ; then
+			cd $i/build_unix/ &&
+			build_posix b_workload.c || continue
+			res_dir=../../RESULTS
+		elif [ -f $i/build_win*/Release/libdb??.lib ] ; then
+			cd $i/build_win*/Release &&
+			build_windows b_workload.c || continue
+			res_dir=../../../RESULTS
+		fi
+
+		# Run the actual tests.		
+		index=$MIN_CONFIGS
+		while test $index -lt $MAX_CONFIGS; do
+			echo -n "."
+			echo "$i:${CONFIGS[$index]}" >> $res_dir/$index
+			./t ${CONFIGS[$index]} -m $i >> $res_dir/$index
+			index=`expr $index + 1`
+		done
+		)
+	done
+}
+
+# run --
+#	Run a test.
+#	$1: test to run
+run()
+{
+	case $1 in
+
+	# Open in-memory database.
+	 1) runone $1 b_open.c "-c 10000 -t btree";;
+	 2) runone $1 b_open.c "-c 10000 -t hash";;
+	 3) runone $1 b_open.c "-c 10000 -t queue";;
+	 4) runone $1 b_open.c "-c 10000 -t recno";;
+
+	# Open named in-memory database.
+	 5) runone $1 b_open.c "-c 10000 -d -t btree";;
+	 6) runone $1 b_open.c "-c 10000 -d -t hash";;
+	 7) runone $1 b_open.c "-c 10000 -d -t queue";;
+	 8) runone $1 b_open.c "-c 10000 -d -t recno";;
+
+	# Open database.
+	 9) runone $1 b_open.c "-c 10000 -f -t btree";;
+	10) runone $1 b_open.c "-c 10000 -f -t hash";;
+	11) runone $1 b_open.c "-c 10000 -f -t queue";;
+	12) runone $1 b_open.c "-c 10000 -f -t recno";;
+
+	# Open sub-database.
+	13) runone $1 b_open.c "-c 10000 -fd -t btree";;
+	14) runone $1 b_open.c "-c 10000 -fd -t hash";;
+	15) runone $1 b_open.c "-c 10000 -fd -t recno";;
+
+	16) runone $1 b_get.c "-c 1000000 -t btree";;
+	17) runone $1 b_get.c "-c 1000000 -t hash";;
+	18) runone $1 b_get.c "-c 1000000 -t queue";;
+	19) runone $1 b_get.c "-c 1000000 -t recno";;
+
+	20) runone $1 b_put.c "-c 1000000 -t btree";;
+	21) runone $1 b_put.c "-c 1000000 -t hash";;
+	22) runone $1 b_put.c "-c 1000000 -t queue";;
+	23) runone $1 b_put.c "-c 1000000 -t recno";;
+	24) runone $1 b_put.c "-c 100000 -d 204800 -t btree";;
+	25) runone $1 b_put.c "-c 100000 -d 204800 -t hash";;
+	26) runone $1 b_put.c "-c 100000 -d 204800 -t recno";;
+	27) runone $1 b_put.c "-c 1000000 -s 10 -t btree";;
+	28) runone $1 b_put.c "-c 1000000 -s 10 -t hash";;
+	29) runone $1 b_put.c "-c 1000000 -s 10 -t queue";;
+	30) runone $1 b_put.c "-c 1000000 -s 10 -t recno";;
+
+	31) runone $1 b_curalloc.c "-c 1000000";;
+
+	32) runone $1 b_load.c "-c 1000000 -t btree";;
+	33) runone $1 b_load.c "-c 100000 -t hash";;
+	34) runone $1 b_load.c "-c 1000000 -t queue";;
+	35) runone $1 b_load.c "-c 1000000 -t recno";;
+	36) runone $1 b_load.c "-d -c 1000000 -t btree";;
+	37) runone $1 b_load.c "-d -c 1000000 -t hash";;
+
+	38) runone $1 b_del.c "-c 100000 -t btree";;
+	39) runone $1 b_del.c "-c 100000 -t hash";;
+	40) runone $1 b_del.c "-c 100000 -t queue";;
+	41) runone $1 b_del.c "-c 100000 -t recno";;
+	42) runone $1 b_del.c "-C -c 100000 -t btree";;
+	43) runone $1 b_del.c "-C -c 100000 -t hash";;
+	44) runone $1 b_del.c "-C -c 100000 -t queue";;
+	45) runone $1 b_del.c "-C -c 100000 -t recno";;
+
+	# Cursor next walk.
+	46) runone $1 b_curwalk.c "-c 100000 -t btree -w 100";;
+	47) runone $1 b_curwalk.c "-c 100000 -t hash -w 100";;
+	48) runone $1 b_curwalk.c "-c 100000 -t queue -w 100";;
+	49) runone $1 b_curwalk.c "-c 100000 -t recno -w 100";;
+
+	# Cursor prev walk.
+	50) runone $1 b_curwalk.c "-c 100000 -p -t btree -w 100";;
+	51) runone $1 b_curwalk.c "-c 100000 -p -t hash -w 100";;
+	52) runone $1 b_curwalk.c "-c 100000 -p -t queue -w 100";;
+	53) runone $1 b_curwalk.c "-c 100000 -p -t recno -w 100";;
+
+	# Cursor next walk with 10 unsorted duplicates.
+	54) runone $1 b_curwalk.c "-c 10000 -d 10 -t btree -w 100";;
+	55) runone $1 b_curwalk.c "-c 10000 -d 10 -t hash -w 100";;
+
+	# Cursor next walk with 1000 unsorted duplicates.
+	56) runone $1 b_curwalk.c "-c 100 -d 1000 -t btree -w 100";;
+	57) runone $1 b_curwalk.c "-c 100 -d 1000 -t hash -w 100";;
+
+	# Cursor prev walk with 1000 unsorted duplicates.
+	58) runone $1 b_curwalk.c "-c 100 -d 1000 -p -t btree -w 100";;
+	59) runone $1 b_curwalk.c "-c 100 -d 1000 -p -t hash -w 100";;
+
+	# Cursor next walk with 10 sorted duplicates.
+	60) runone $1 b_curwalk.c "-c 10000 -d 10 -s -t btree -w 100";;
+	61) runone $1 b_curwalk.c "-c 10000 -d 10 -s -t hash -w 100";;
+
+	# Cursor next walk with 1000 sorted duplicates.
+	62) runone $1 b_curwalk.c "-c 100 -d 1000 -s -t btree -w 100";;
+	63) runone $1 b_curwalk.c "-c 100 -d 1000 -s -t hash -w 100";;
+
+	# Cursor prev walk with 1000 sorted duplicates.
+	64) runone $1 b_curwalk.c "-c 100 -d 1000 -ps -t btree -w 100";;
+	65) runone $1 b_curwalk.c "-c 100 -d 1000 -ps -t hash -w 100";;
+
+	# Cursor next-nodup walk with 1000 sorted duplicates.
+	66) runone $1 b_curwalk.c "-c 100 -d 1000 -Ss -t btree -w 100";;
+	67) runone $1 b_curwalk.c "-c 100 -d 1000 -Ss -t hash -w 100";;
+
+	# Cursor prev-nodup walk with 1000 sorted duplicates.
+	68) runone $1 b_curwalk.c "-c 100 -d 1000 -pSs -t btree -w 100";;
+	69) runone $1 b_curwalk.c "-c 100 -d 1000 -pSs -t hash -w 100";;
+
+	70) runone $1 b_txn.c "-c 1000000";;
+	71) runone $1 b_txn.c "-a -c 1000000";;
+
+	72) runone $1 b_txn_write.c "-c 10000";;
+	73) runone $1 b_txn_write.c "-a -c 100000";;
+	74) runone $1 b_txn_write.c "-w -c 100000";;
+	75) runone $1 b_txn_write.c "-r -c 10000";;
+	76) runone $1 b_txn_write.c "-ar -c 100000";;
+	77) runone $1 b_txn_write.c "-rw -c 100000";;
+
+	78) runone $1 b_recover.c "-c 1000000";;
+
+	79) runone $1 b_workload.c "-w A -c 100000 -o -t hash";;
+	80) runone $1 b_workload.c "-w A -c 100000 -o -t btree";;
+
+	# Try the workload test case, with put/get/del and different
+	# page/data sizes.
+	81) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 32768 -t hash";;
+	82) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 32768 -t btree";;
+	83) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 8192 -t hash";;
+	84) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 8192 -t btree";;
+	85) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 4096 -t hash";;
+	86) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 4096 -t btree";;
+	87) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 1024 -t hash";;
+	88) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 20 -p 1024 -t btree";;
+	89) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 256 -p 1024 -t hash";;
+	90) runone $1 b_workload.c \
+	    "-w A -c 100000 -g 10 -d 256 -p 1024 -t btree";;
+
+	# Workload test case with put/get
+	91) runone $1 b_workload.c \
+	    "-w E -c 100000 -g 10 -d 20 -p 1024 -t hash";;
+	92) runone $1 b_workload.c \
+	    "-w E -c 100000 -g 10 -d 20 -p 1024 -t btree";;
+
+	# Workload test case with put/delete
+	93) runone $1 b_workload.c \
+	    "-w F -c 100000 -g 10 -d 20 -p 1024 -t hash";;
+	94) runone $1 b_workload.c \
+	    "-w F -c 100000 -g 10 -d 20 -p 1024 -t btree";;
+
+	# Workload test case with get/delete
+	95) runone $1 b_workload.c \
+	    "-w G -c 100000 -g 10 -d 20 -p 1024 -t hash";;
+	96) runone $1 b_workload.c \
+	    "-w G -c 100000 -g 10 -d 20 -p 1024 -t btree";;
+	97) runone $1 b_workload.c "-w H -c 10000000 -d 20 -p 1024 -t hash";;
+
+	# Speed tests.
+	 98) runone $1 inmem.c "-d 32 -k 8 -o 1000000 -p 32768 read";;
+	 99) runone $1 inmem.c "-d 32 -k 8 -o 100000 -p 32768 bulk";;
+	100) runone $1 inmem.c "-d 32 -k 8 -o 1000000 -p 32768 write";;
+	101) runone $1 inmem.c "-d 32 -k 8 -o 1000000 -p 32768 txn-read";;
+	102) runone $1 inmem.c "-d 32 -k 8 -o 1000000 -p 32768 txn-write";;
+	103) runone $1 inmem.c "-d 32 -k 8 -o 1000000 -p 32768 txn-nosync";;
+	104) runone $1 inmem.c \
+	    "-d 32 -k 8 -o 1000000 -p 32768 txn-write-nosync";;
+	105) runone $1 inmem.c "-d 32 -k 8 -o 100000 -p 32768 txn-sync";;
+
+	*)
+		echo "r: unknown test: $1"
+		exit 1;;
+	esac
+}
+
+maxtest=105
+
+if [ $# -eq 0 ]; then
+	dir
+	identify
+	next=1
+	while [ $next -le $maxtest ] ; do
+		run $next
+		next=`expr $next + 1`
+	done
+else
+	while [ $# -gt 0 ]; do
+		case $1 in
+		*-*)				# Range: -3, 3-, 3-10
+			dir
+			identify
+			next=`echo $1|sed 's/-.*//'`
+			next=${next:=1}
+			last=`echo $1|sed 's/.*-//'`
+			last=${last:=$maxtest}
+			while [ $next -le $last ] ; do
+				run $next
+				next=`expr $next + 1`
+			done
+			shift;;
+		[1-9]*)				# Specific test
+			dir
+			identify
+			run $1
+			shift;;
+		workload)
+			dir
+			identify
+			run_workload
+			shift;;
+		html)
+			for i in RUN.*; do
+				echo "Building $i..."
+				(cd $i
+				header $i
+				for j in `ls [0-9]* | sort -n`; do
+					table $j
+				done
+				footer) > $i/test_micro.html
+			done
+			shift;;
+		*)
+			echo 'usage: r [# | #- | -# | #-# | html]'
+			exit 1;;
+		esac
+	done
+fi
+
+exit 0

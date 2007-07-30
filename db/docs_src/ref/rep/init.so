@@ -1,0 +1,62 @@
+m4_comment([$Id: init.so,v 1.6 2005/10/19 19:11:20 bostic Exp $])
+
+m4_ref_title(m4_db Replication,
+    Initializing a new site,, rep/mastersync, rep/bulk)
+
+m4_p([dnl
+By default, adding a new site to a replication group only requires the
+client to join.  m4_db will automatically perform internal
+initialization from the master to the client, bringing the client into
+sync with the master.])
+
+m4_p([dnl
+However, depending on the network and infrastructure, it can be
+advantageous in a few instances to use a "hot backup" to initialize a
+client into a replication group.  Clients not wanting to automatically
+perform internal initialization should call the m4_refT(rep_set_config)
+with the m4_ref(DB_REP_CONF_NOAUTOINIT) flag.  This configuration flag
+causes m4_db to return m4_ref(DB_REP_JOIN_FAILURE) to the application's
+m4_refT(rep_message) instead of performing internal initialization.])
+
+m4_p([dnl
+To use a hot backup to initialize a client into a replication group,
+perform the following steps:])
+
+m4_nlistbegin
+
+m4_nlist([dnl
+Do an archival backup of the master's environment, as described in
+m4_link(M4RELDIR/ref/transapp/archival, [Database and log file
+archival]).  The backup can either be a conventional backup or a hot
+backup.])
+
+m4_nlist([dnl
+Copy the archival backup into a clean environment directory on the
+client.])
+
+m4_nlist([dnl
+Run catastrophic recovery on the client's new environment, as described
+in m4_link(M4RELDIR/ref/transapp/recovery, [Recovery procedures]).])
+
+m4_nlist([dnl
+Reconfigure and reopen the environment as a client member of the
+replication group.])
+
+m4_nlistend
+
+m4_p([dnl
+If copying the backup to the client takes a long time relative to the
+frequency with which log files are reclaimed using the
+m4_ref(db_archive) utility or the m4_refT(log_archive), it may be
+necessary to suppress log reclamation until the newly restarted client
+has "caught up" and applied all log records generated during its
+downtime.])
+
+m4_p([dnl
+As with any m4_db application, the database environment must be in a
+consistent state at application startup.  This is most easily assured
+by running recovery at startup time in one thread or process; it is
+harmless to do this on both clients and masters even when not strictly
+necessary.])
+
+m4_page_footer

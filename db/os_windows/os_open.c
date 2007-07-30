@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_open.c,v 12.16 2006/09/12 01:49:36 mjc Exp $
+ * $Id: os_open.c,v 12.24 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -13,24 +12,10 @@
 
 /*
  * __os_open --
- *	Open a file descriptor.
- */
-__os_open(dbenv, name, flags, mode, fhpp)
-	DB_ENV *dbenv;
-	const char *name;
-	u_int32_t flags;
-	int mode;
-	DB_FH **fhpp;
-{
-	return (__os_open_extend(dbenv, name, 0, flags, mode, fhpp));
-}
-
-/*
- * __os_open_extend --
  *	Open a file descriptor (including page size and log size information).
  */
 int
-__os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
+__os_open(dbenv, name, page_size, flags, mode, fhpp)
 	DB_ENV *dbenv;
 	const char *name;
 	u_int32_t page_size, flags;
@@ -38,13 +23,19 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	DB_FH **fhpp;
 {
 	DB_FH *fhp;
+#ifndef DB_WINCE
 	DWORD cluster_size, sector_size, free_clusters, total_clusters;
+	_TCHAR *drive, dbuf[4]; /* <letter><colon><slash><nul> */
+#endif
 	int access, attr, createflag, nrepeat, ret, share;
-	_TCHAR *drive, *tname;
-	_TCHAR dbuf[4]; /* <letter><colon><slash><nul> */
+	_TCHAR *tname;
 
-	fhp = NULL;
+	*fhpp = NULL;
 	tname = NULL;
+
+	if (dbenv != NULL &&
+	    FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS | DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv, "fileops: open %s", name);
 
 #define	OKFLAGS								\
 	(DB_OSO_ABSMODE | DB_OSO_CREATE | DB_OSO_DIRECT | DB_OSO_DSYNC |\
@@ -57,8 +48,24 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	if (ret != 0)
 		goto err;
 
+	/*
+	 * Allocate the file handle and copy the file name.  We generally only
+	 * use the name for verbose or error messages, but on systems where we
+	 * can't unlink temporary files immediately, we use the name to unlink
+	 * the temporary file when the file handle is closed.
+	 *
+	 * Lock the DB_ENV handle and insert the new file handle on the list.
+	 */
 	if ((ret = __os_calloc(dbenv, 1, sizeof(DB_FH), &fhp)) != 0)
+		return (ret);
+	if ((ret = __os_strdup(dbenv, name, &fhp->name)) != 0)
 		goto err;
+	if (dbenv != NULL) {
+		MUTEX_LOCK(dbenv, dbenv->mtx_env);
+		TAILQ_INSERT_TAIL(&dbenv->fdlist, fhp, q);
+		MUTEX_UNLOCK(dbenv, dbenv->mtx_env);
+		F_SET(fhp, DB_FH_ENVLINK);
+	}
 
 	/*
 	 * Otherwise, use the Windows/32 CreateFile interface so that we can
@@ -80,9 +87,21 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	if (!LF_ISSET(DB_OSO_RDONLY))
 		access |= GENERIC_WRITE;
 
+#ifdef DB_WINCE
+	/*
+	 * WinCE translates these flags into share flags for
+	 * CreateFileForMapping.
+	 * Also WinCE does not support the FILE_SHARE_DELETE flag.
+	 */
+	if (LF_ISSET(DB_OSO_REGION))
+		share = GENERIC_READ | GENERIC_WRITE;
+	else
+		share = FILE_SHARE_READ | FILE_SHARE_WRITE;
+#else
 	share = FILE_SHARE_READ | FILE_SHARE_WRITE;
 	if (__os_is_winnt())
 		share |= FILE_SHARE_DELETE;
+#endif
 	attr = FILE_ATTRIBUTE_NORMAL;
 
 	/*
@@ -105,10 +124,12 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 		attr |= FILE_FLAG_WRITE_THROUGH;
 	}
 
+#ifndef DB_WINCE
 	if (LF_ISSET(DB_OSO_SEQ))
 		attr |= FILE_FLAG_SEQUENTIAL_SCAN;
 	else
 		attr |= FILE_FLAG_RANDOM_ACCESS;
+#endif
 
 	if (LF_ISSET(DB_OSO_TEMP))
 		attr |= FILE_FLAG_DELETE_ON_CLOSE;
@@ -117,8 +138,12 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 	 * We can turn filesystem buffering off if the page size is a
 	 * multiple of the disk's sector size. To find the sector size,
 	 * we call GetDiskFreeSpace, which expects a drive name like "d:\\"
-	 * or NULL for the current disk (i.e., a relative path)
+	 * or NULL for the current disk (i.e., a relative path).
+	 *
+	 * WinCE only has GetDiskFreeSpaceEx which does not
+	 * return the sector size.
 	 */
+#ifndef DB_WINCE
 	if (LF_ISSET(DB_OSO_DIRECT) && page_size != 0 && name[0] != '\0') {
 		if (name[1] == ':') {
 			drive = dbuf;
@@ -135,13 +160,28 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 		    page_size % sector_size == 0)
 			attr |= FILE_FLAG_NO_BUFFERING;
 	}
+#endif
 
 	fhp->handle = fhp->trunc_handle = INVALID_HANDLE_VALUE;
 	for (nrepeat = 1;; ++nrepeat) {
-		if (fhp->handle == INVALID_HANDLE_VALUE)
-			fhp->handle = CreateFile(
-			    tname, access, share, NULL, createflag, attr, 0);
+		if (fhp->handle == INVALID_HANDLE_VALUE) {
+#ifdef DB_WINCE
+			if (LF_ISSET(DB_OSO_REGION))
+				fhp->handle = CreateFileForMapping(tname,
+				    access, share, NULL, createflag, attr, 0);
+			else
+#endif
+				fhp->handle = CreateFile(tname,
+				    access, share, NULL, createflag, attr, 0);
+		}
 
+		/*
+		 * Since WinCE does not support truncate, we don't
+		 * need to open this second handle.
+		 * This code will not work unaltered on WinCE, the
+		 * creation of the second handle fails.
+		 */
+#ifndef DB_WINCE
 		/*
 		 * Windows does not provide truncate directly.  There is no
 		 * safe way to use a handle for truncate concurrently with
@@ -156,7 +196,11 @@ __os_open_extend(dbenv, name, page_size, flags, mode, fhpp)
 
 		if (fhp->handle == INVALID_HANDLE_VALUE ||
 		    (!LF_ISSET(DB_OSO_RDONLY | DB_OSO_TEMP) &&
-		    fhp->trunc_handle == INVALID_HANDLE_VALUE)) {
+		    fhp->trunc_handle == INVALID_HANDLE_VALUE))
+#else
+		if (fhp->handle == INVALID_HANDLE_VALUE)
+#endif
+		{
 			/*
 			 * If it's a "temporary" error, we retry up to 3 times,
 			 * waiting up to 12 seconds.  While it's not a problem

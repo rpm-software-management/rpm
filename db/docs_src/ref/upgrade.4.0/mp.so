@@ -1,0 +1,62 @@
+m4_comment([$Id: mp.so,v 1.4 2007/04/05 21:19:31 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.0: memp_XXX,,
+    upgrade.4.0/log, upgrade.4.0/txn)
+
+m4_p([dnl
+The C API for the m4_db Memory Pool subsystem was reworked in the 4.0
+release as follows:])
+
+m4_table_begin(, _center)
+m4_table_header(Historic functional interface, m4_db 4.X method)
+m4_table_element(memp_register, m4_ref(memp_register))
+m4_table_element(memp_stat, m4_ref(memp_stat))
+m4_table_element(memp_sync, m4_ref(memp_sync))
+m4_table_element(memp_trickle, m4_ref(memp_trickle))
+m4_table_element(memp_fopen, m4_ref(memp_fcreate))
+m4_table_element(DB_MPOOL_FINFO: ftype, m4_ref(memp_set_ftype))
+m4_table_element(DB_MPOOL_FINFO: pgcookie, m4_ref(memp_set_pgcookie))
+m4_table_element(DB_MPOOL_FINFO: fileid, m4_ref(memp_set_fileid))
+m4_table_element(DB_MPOOL_FINFO: lsn_offset, m4_ref(memp_set_lsn_offset))
+m4_table_element(DB_MPOOL_FINFO: clear_len, m4_ref(memp_set_clear_len))
+m4_table_element(memp_fopen, m4_ref(memp_fopen))
+m4_table_element(memp_fclose, m4_ref(memp_fclose))
+m4_table_element(memp_fput, m4_ref(memp_fput))
+m4_table_element(memp_fset, DB_MPOOLFILE-__GT__set)
+m4_table_element(memp_fsync, m4_ref(memp_fsync))
+m4_table_end
+
+m4_p([dnl
+Applications calling any of the memp_register, memp_stat, memp_sync or
+memp_trickle functions should update those calls to use the enclosing
+m4_ref(DbEnv) handle's method (easily done as the first argument to the
+existing call is the correct m4_ref(DbEnv) handle).])
+
+m4_p([dnl
+In addition, the m4_ref(memp_stat) call has been changed in the 4.0
+release to take a flags argument.  To leave their historic behavior
+unchanged, applications should add a final argument of 0 to any calls
+made to m4_ref(memp_stat).])
+
+m4_p([dnl
+Applications calling the memp_fopen function should update those calls
+as follows: First, acquire a m4_ref(DbMpoolFile) handle using the
+m4_refT(memp_fcreate).  Second, if the DB_MPOOL_FINFO structure
+reference passed to the memp_fopen function was non-NULL, call the
+m4_ref(DbMpoolFile) method corresponding to each initialized field in
+the DB_MPOOL_FINFO structure.  Third, call the m4_refT(memp_fopen)
+method to open the underlying file.  If the m4_refT(memp_fopen) call
+fails, then m4_refT(memp_fclose) must be called to destroy the allocated
+handle.])
+
+m4_p([dnl
+Applications calling the memp_fopen, memp_fclose, memp_fput, memp_fset,
+or memp_fsync functions should update those calls to use the enclosing
+m4_ref(DbMpoolFile) handle's method.  Again, this is easily done as the
+first argument to the existing call is the correct m4_ref(DbMpoolFile)
+handle.  With one exception, the calling conventions of the old and new
+interfaces are identical; the one exception is the m4_refT(memp_fclose),
+which requires an additional flag parameter that should be set to 0.])
+
+m4_page_footer

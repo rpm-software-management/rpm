@@ -1,0 +1,201 @@
+<!--"$Id: 2.6.4.html,v 1.4 2007/05/17 18:17:18 bostic Exp $ (Sleepycat) $Date: 2007/05/17 18:17:18 $"-->
+<html>
+<head>
+<title>The Berkeley DB Package: DB 2.6.4 Change Log</title>
+<meta name="description" content="Berkeley DB: A database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods">
+</head>
+<body bgcolor=white>
+
+<h3 align=center>Berkeley DB 2.6.4 Change Log</h3>
+
+<h3>Interface Additions in Berkeley DB 2.6.4:</h3>
+
+<ol>
+
+<p><li>
+Berkeley DB now supports a new mode of operation: Concurrent Access Methods.
+This configuration supports multiple-reader, single-writer access without
+requiring deadlock detection and transaction protection. The new interface
+is specified by using the DB_INIT_CDB flag to the db_appinit() function.
+<p>
+In addition, the DB-&gt;cursor interface has been modified to take a fourth
+argument, a <b>flags</b> argument.  This change will require that all
+applications using the DB-&gt;cursor interface be modified and recompiled.
+(The necessary modification is trivial, simply add a final argument of
+<b>0</b> to the DB-&gt;cursor call.)
+<p><font color=red>
+This change is NOT transparent to applications.
+</font>
+
+<p><li>
+In previous Berkeley DB releases, cursors in Recno databases with mutable
+record numbers had to be re-positioned each time they were used to delete
+a record.  This is no longer the case, and all of the records in the
+database logically at and above the cursor may now be deleted by
+repeatedly calling the delete function after positioning the cursor once.
+This change causes Berkeley DB practice to conform to the documentation
+found in previous releases.
+<p><font color=red>
+This change is NOT transparent to applications.
+</font>
+
+<p><li>
+Berkeley DB no longer permits applications to specify database page sizes
+that are not powers-of-two.  This change fixes a bug which could cause
+application failure, as page alignments were not necessarily correct when
+files with page sizes other than powers-of-two were mapped into process
+memory.
+<p><font color=red>
+This change is NOT transparent to applications.
+</font>
+
+</ol>
+
+<h3>B+tree Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Fix a bug which could cause application failure or corrupted data when
+database operations would split a Btree page and then subsequently fail
+or attempt to physically delete records after being restarted.
+
+<p><li>
+Fix a bug which could cause application failure when deleting records
+failed due to a deadlock.
+
+<p><li>
+Fix a bug which could cause a NULL pointer dereference when the relinking
+of duplicate data item pages failed due to deadlock.
+
+<p><li>
+Fix a memory leak where an internal cursor could be left open when
+databases were opened.
+
+<p><li>
+Fix a single-byte memory leak when the standard DB-&gt;del() interface was
+used to delete key/data pairs with duplicate data items.
+
+</ol>
+
+<h3>Hash Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Fix a bug which could cause application failure or data corruption when
+deleting on-page duplicate items.
+
+<p><li>
+Fix a memory leak when closing cursors.
+
+</ol>
+
+<h3>Recno Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Cursors that referenced deleted records were not correctly updated when
+the record was overwritten with new data, and would continue to return
+that the record was still in a "deleted" state.
+
+<p><li>
+Fix a bug where application specified read-modify-write semantics were
+ignored.
+
+<p><li>
+Remove lock-coupling behavior in tiny databases to avoid perpetual
+deadlock.
+
+<p><li>
+Fix a bug where root pages were not always correctly write-locked.
+
+</ol>
+
+<h3>Java API Changes and Bug Fixes</h3>
+
+<ol>
+
+<p><li>
+Fix compile include directory ordering, which could cause Java to be
+compiled using the wrong db.h include file.
+
+</ol>
+
+<h3>General Access Method Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Fix a bug which left the read-modify-write semantics in place after the
+operation for which the application specified it completed.
+
+<p><li>
+Fix a bug which caused application failure if a NULL key argument was
+specified for the DB_AFTER, DB_BEFORE or DB_CURRENT flags to the
+DBcursor-&gt;get() interface.
+
+<p><li>
+Change the initial mutex timer back-off from 10ms to 1ms.
+
+</ol>
+
+<h3>Shared Memory Buffer Pool Subsystem Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Fix a bug in large database files (&gt;4Gb), which could potentially cause
+data corruption when a database was closed, reopened and new pages were
+then allocated.
+
+<p><li>
+Modify the memp_sync() interface code to no longer hold Berkeley DB region
+locks across memory allocation calls (for example, malloc(3)).  This
+change significantly increases throughput in applications checkpointing
+large memory caches.
+
+<p><li>
+Modify the memory pool qsort(3) comparison function to work when called
+by badly written qsort(3) functions.
+
+</ol>
+
+<h3>Additional Bug Fixes:</h3>
+
+<ol>
+
+<p><li>
+Fix a bug in the Berkeley DB error functions where variable numbers of
+arguments were not correctly accessed on some architectures, for
+example, the PowerPC.
+
+</ol>
+
+<h3>System Porting and Build Procedure Changes:</h3>
+
+<ol>
+
+<p><li>
+Support installation into prefix directories for which multiple directory
+components do not yet exist.
+
+<p><li>
+Support installation into different system directories on a per-type
+basis, for example, all the binaries to one directory, and include files to
+another.
+
+<p><li>
+Fix a bug where the supplied portability routine memcpy() was not
+correctly compiled.
+
+<p><li>
+Modify auto-configuration to refuse to configure in the top-level
+distribution directory.
+
+</ol>
+
+</body>
+</html>

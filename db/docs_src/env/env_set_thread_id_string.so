@@ -1,0 +1,65 @@
+m4_comment([$Id: env_set_thread_id_string.so,v 10.1 2005/10/20 17:16:02 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_set_thread_id_string, DB_THREADID_STRLEN])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_thread_id_string),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_thread_id_string(DB_ENV *dbenv,
+    char *(*thread_id_string)(DB_ENV *dbenv,
+    pid_t pid, db_threadid_t tid, char *buf));
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_thread_id(
+    char *(*thread_id_string)(DbEnv *dbenv,
+    pid_t pid, db_threadid_t tid, char *buf));
+]))
+
+m4_p([dnl
+Declare a function that formats a process ID and thread ID identifier
+pair for display into a caller-supplied buffer.  The function must
+return a reference to the caller-specified buffer.  The
+m4_refT(dbenv_set_thread_id_string) supports the
+m4_refT(dbenv_set_thread_id).])
+
+m4_scope_dbenv(dbenv_set_thread_id_string)
+
+m4_when_any(dbenv_set_thread_id_string)
+
+m4_return(dbenv_set_thread_id_string, std)
+
+m4_parambegin
+m4_param(thread_id_string, [dnl
+The m4_arg(thread_id_string) parameter is a function which returns a
+buffer in which is an identifier pair formatted for display.  The
+function takes four arguments:])
+
+m4_tagbegin
+m4_tag(m4_arg(dbenv), [dnl
+The m4_arg(dbenv) parameter is the enclosing database environment
+handle, allowing application access to the application-private fields
+of that object.])
+m4_tag(m4_arg(pid), [dnl
+The m4_arg(pid) argument is a process ID.])
+m4_tag(m4_arg(tid), [dnl
+The m4_arg(tid) argument is a thread ID.])
+m4_tag(m4_arg(buf), [dnl
+m4_idefz(DB_NOSERVER)
+The m4_arg(buf) argument is character array of at least
+m4_ref(DB_THREADID_STRLEN) bytes in length, into which the identifier
+pair should be formatted.])
+m4_tagend
+m4_paramend
+
+m4_p([dnl
+If no m4_arg(thread_id_string) function is specified, the default
+routine displays the identifier pair as "pid/tid", that is, the process
+ID represented as an unsigned integer value, a slash ('/') character,
+then the thread ID represented as an unsigned integer value.])
+
+m4_err(dbenv_set_thread_id_string, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

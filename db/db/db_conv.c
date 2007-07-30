@@ -1,8 +1,7 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  */
 /*
  * Copyright (c) 1990, 1993, 1994, 1995, 1996
@@ -36,7 +35,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_conv.c,v 12.7 2006/08/24 14:45:15 bostic Exp $
+ * $Id: db_conv.c,v 12.15 2007/07/02 16:58:02 alexg Exp $
  */
 
 #include "db_config.h"
@@ -69,18 +68,19 @@ __db_pgin(dbenv, pg, pp, cookie)
 	DB_CIPHER *db_cipher;
 	DB_LSN not_used;
 	PAGE *pagep;
-	size_t pg_off, pg_len, sum_len;
+	size_t sum_len;
 	int is_hmac, ret;
-	u_int8_t *chksum, *iv;
+	u_int8_t *chksum;
 
 	pginfo = (DB_PGINFO *)cookie->data;
 	pagep = (PAGE *)pp;
 
 	ret = is_hmac = 0;
-	chksum = iv = NULL;
+	chksum = NULL;
 	memset(&dummydb, 0, sizeof(DB));
 	dbp = &dummydb;
 	dummydb.flags = pginfo->flags;
+	dummydb.pgsize = pginfo->db_pagesize;
 	db_cipher = (DB_CIPHER *)dbenv->crypto_handle;
 	switch (pagep->type) {
 	case P_HASHMETA:
@@ -152,49 +152,15 @@ __db_pgin(dbenv, pg, pp, cookie)
 			return (ret);
 		}
 	}
-	if (F_ISSET(dbp, DB_AM_ENCRYPT)) {
-		DB_ASSERT(dbenv, db_cipher != NULL);
-		DB_ASSERT(dbenv, F_ISSET(dbp, DB_AM_CHKSUM));
-
-		pg_off = P_OVERHEAD(dbp);
-		DB_ASSERT(dbenv, db_cipher->adj_size(pg_off) == 0);
-
-		switch (pagep->type) {
-		case P_HASHMETA:
-		case P_BTREEMETA:
-		case P_QAMMETA:
-			/*
-			 * !!!
-			 * For all meta pages it is required that the iv
-			 * be at the same location.  Use BTMETA to get to it
-			 * for any meta type.
-			 */
-			iv = ((BTMETA *)pp)->iv;
-			pg_len = DBMETASIZE;
-			break;
-		case P_INVALID:
-			if (IS_ZERO_LSN(LSN(pagep)) &&
-			    pagep->pgno == PGNO_INVALID) {
-				pg_len = 0;
-				break;
-			}
-			/* FALLTHROUGH */
-		default:
-			iv = P_IV(dbp, pagep);
-			pg_len = pginfo->db_pagesize;
-			break;
-		}
-		if (pg_len != 0 && (ret = db_cipher->decrypt(dbenv,
-		    db_cipher->data, iv, ((u_int8_t *)pagep) + pg_off,
-		    pg_len - pg_off)) != 0)
-			return (ret);
-	}
+	if ((ret = __db_decrypt_pg(dbenv, dbp, pagep)) != 0)
+		return (ret);
 	switch (pagep->type) {
 	case P_INVALID:
 		if (pginfo->type == DB_QUEUE)
 			return (__qam_pgin_out(dbenv, pg, pp, cookie));
 		else
 			return (__ham_pgin(dbenv, dbp, pg, pp, cookie));
+	case P_HASH_UNSORTED:
 	case P_HASH:
 	case P_HASHMETA:
 		return (__ham_pgin(dbenv, dbp, pg, pp, cookie));
@@ -229,20 +195,17 @@ __db_pgout(dbenv, pg, pp, cookie)
 	DBT *cookie;
 {
 	DB dummydb, *dbp;
-	DB_CIPHER *db_cipher;
 	DB_PGINFO *pginfo;
 	PAGE *pagep;
-	size_t pg_off, pg_len, sum_len;
 	int ret;
-	u_int8_t *chksum, *iv, *key;
 
 	pginfo = (DB_PGINFO *)cookie->data;
 	pagep = (PAGE *)pp;
 
-	chksum = iv = key = NULL;
 	memset(&dummydb, 0, sizeof(DB));
 	dbp = &dummydb;
 	dummydb.flags = pginfo->flags;
+	dummydb.pgsize = pginfo->db_pagesize;
 	ret = 0;
 	switch (pagep->type) {
 	case P_INVALID:
@@ -252,6 +215,14 @@ __db_pgout(dbenv, pg, pp, cookie)
 			ret = __ham_pgout(dbenv, dbp, pg, pp, cookie);
 		break;
 	case P_HASH:
+	case P_HASH_UNSORTED: 
+		/* 
+		 * Support pgout of unsorted hash pages - since online
+		 * replication upgrade can cause pages of this type to be
+		 * written out.
+		 *
+		 * FALLTHROUGH
+		 */
 	case P_HASHMETA:
 		ret = __ham_pgout(dbenv, dbp, pg, pp, cookie);
 		break;
@@ -274,6 +245,89 @@ __db_pgout(dbenv, pg, pp, cookie)
 	if (ret)
 		return (ret);
 
+	return (__db_encrypt_and_checksum_pg(dbenv, dbp, pagep));
+}
+
+/*
+ * __db_decrypt_pg --
+ *      Utility function to decrypt a db page.
+ *
+ * PUBLIC: int __db_decrypt_pg __P((DB_ENV *, DB *, PAGE *));
+ */
+int
+__db_decrypt_pg (dbenv, dbp, pagep)
+	DB_ENV *dbenv;
+	DB *dbp;
+	PAGE *pagep;
+{
+	DB_CIPHER *db_cipher;
+	size_t pg_len, pg_off;
+	u_int8_t *iv;
+	int ret;
+
+	db_cipher = (DB_CIPHER *)dbenv->crypto_handle;
+	ret = 0;
+	iv = NULL;
+	if (F_ISSET(dbp, DB_AM_ENCRYPT)) {
+		DB_ASSERT(dbenv, db_cipher != NULL);
+		DB_ASSERT(dbenv, F_ISSET(dbp, DB_AM_CHKSUM));
+
+		pg_off = P_OVERHEAD(dbp);
+		DB_ASSERT(dbenv, db_cipher->adj_size(pg_off) == 0);
+
+		switch (pagep->type) {
+		case P_HASHMETA:
+		case P_BTREEMETA:
+		case P_QAMMETA:
+			/*
+			 * !!!
+			 * For all meta pages it is required that the iv
+			 * be at the same location.  Use BTMETA to get to it
+			 * for any meta type.
+			 */
+			iv = ((BTMETA *)pagep)->iv;
+			pg_len = DBMETASIZE;
+			break;
+		case P_INVALID:
+			if (IS_ZERO_LSN(LSN(pagep)) &&
+			    pagep->pgno == PGNO_INVALID) {
+				pg_len = 0;
+				break;
+			}
+			/* FALLTHROUGH */
+		default:
+			iv = P_IV(dbp, pagep);
+			pg_len = dbp->pgsize;
+			break;
+		}
+		if (pg_len != 0)
+			ret = db_cipher->decrypt(dbenv, db_cipher->data,
+			    iv, ((u_int8_t *)pagep) + pg_off,
+			    pg_len - pg_off);
+	}
+	return (ret);
+}
+
+/*
+ * __db_encrypt_and_checksum_pg --
+ *	Utility function to encrypt and checksum a db page.
+ *
+ * PUBLIC: int __db_encrypt_and_checksum_pg
+ * PUBLIC:     __P((DB_ENV *, DB *, PAGE *));
+ */
+int
+__db_encrypt_and_checksum_pg (dbenv, dbp, pagep)
+	DB_ENV *dbenv;
+	DB *dbp;
+	PAGE *pagep;
+{
+	DB_CIPHER *db_cipher;
+	int ret;
+	size_t pg_off, pg_len, sum_len;
+	u_int8_t *chksum, *iv, *key;
+
+	chksum = iv = key = NULL;
+
 	db_cipher = (DB_CIPHER *)dbenv->crypto_handle;
 	if (F_ISSET(dbp, DB_AM_ENCRYPT)) {
 
@@ -295,12 +349,12 @@ __db_pgout(dbenv, pg, pp, cookie)
 			 * be at the same location.  Use BTMETA to get to it
 			 * for any meta type.
 			 */
-			iv = ((BTMETA *)pp)->iv;
+			iv = ((BTMETA *)pagep)->iv;
 			pg_len = DBMETASIZE;
 			break;
 		default:
 			iv = P_IV(dbp, pagep);
-			pg_len = pginfo->db_pagesize;
+			pg_len = dbp->pgsize;
 			break;
 		}
 		if ((ret = db_cipher->encrypt(dbenv, db_cipher->data,
@@ -318,15 +372,15 @@ __db_pgout(dbenv, pg, pp, cookie)
 			 * be at the same location.  Use BTMETA to get to it
 			 * for any meta type.
 			 */
-			chksum = ((BTMETA *)pp)->chksum;
+			chksum = ((BTMETA *)pagep)->chksum;
 			sum_len = DBMETASIZE;
 			break;
 		default:
 			chksum = P_CHKSUM(dbp, pagep);
-			sum_len = pginfo->db_pagesize;
+			sum_len = dbp->pgsize;
 			break;
 		}
-		__db_chksum(NULL, pp, sum_len, key, chksum);
+		__db_chksum(NULL, (u_int8_t *)pagep, sum_len, key, chksum);
 		if (F_ISSET(dbp, DB_AM_SWAP) && !F_ISSET(dbp, DB_AM_ENCRYPT))
 			 P_32_SWAP(chksum);
 	}
@@ -400,6 +454,7 @@ __db_byteswap(dbenv, dbp, pg, h, pagesize, pgin)
 	}
 
 	switch (h->type) {
+	case P_HASH_UNSORTED:
 	case P_HASH:
 		for (i = 0; i < NUM_ENT(h); i++) {
 			if (pgin)

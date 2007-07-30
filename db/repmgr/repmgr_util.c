@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2005,2007 Oracle.  All rights reserved.
  *
- * $Id: repmgr_util.c,v 1.27 2006/09/19 14:14:12 mjc Exp $
+ * $Id: repmgr_util.c,v 1.34 2007/06/11 18:29:34 alanb Exp $
  */
 
 #include "db_config.h"
@@ -37,27 +36,23 @@ __repmgr_schedule_connection_attempt(dbenv, eid, immediate)
 	DB_REP *db_rep;
 	REPMGR_SITE *site;
 	REPMGR_RETRY *retry;
-	repmgr_timeval_t t;
+	db_timespec t, v;
 	int ret;
 
 	db_rep = dbenv->rep_handle;
 	if ((ret = __os_malloc(dbenv, sizeof(*retry), &retry)) != 0)
 		return (ret);
 
-	__os_clock(dbenv, &t.tv_sec, &t.tv_usec);
+	__os_gettime(dbenv, &t);
 	if (immediate)
 		TAILQ_INSERT_HEAD(&db_rep->retries, retry, entries);
 	else {
-		if ((t.tv_usec += db_rep->connection_retry_wait%1000000) >
-		    1000000) {
-			t.tv_sec++;
-			t.tv_usec -= 1000000;
-		}
-		t.tv_sec += db_rep->connection_retry_wait/1000000;
+		DB_TIMEOUT_TO_TIMESPEC(db_rep->connection_retry_wait, &v);
+		timespecadd(&t, &v);
 		TAILQ_INSERT_TAIL(&db_rep->retries, retry, entries);
 	}
 	retry->eid = eid;
-	memcpy(&retry->time, &t, sizeof(repmgr_timeval_t));
+	retry->time = t;
 
 	site = SITE_FROM_EID(eid);
 	site->state = SITE_IDLE;
@@ -71,13 +66,6 @@ __repmgr_schedule_connection_attempt(dbenv, eid, immediate)
  * message.
  *
  * PUBLIC: void __repmgr_reset_for_reading __P((REPMGR_CONNECTION *));
- */
-/*
- * TODO: we need to make sure we call this: (1) initially, when we first create
- * a connection; (2) after processing a message, to get ready to read the next
- * one; and (3) after a connection gets successfully re-established after a
- * failure.  (Actually, #1 and #3 should probably end up being the same thing,
- * if the code is organized properly.)
  */
 void
 __repmgr_reset_for_reading(con)
@@ -145,12 +133,9 @@ __repmgr_new_site(dbenv, sitep, addr, state)
 {
 	DB_REP *db_rep;
 	REPMGR_SITE *site;
+	SITE_STRING_BUFFER buffer;
 	u_int new_site_max, eid;
 	int ret;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-	SITE_STRING_BUFFER buffer;
-#endif
 
 	db_rep = dbenv->rep_handle;
 	if (db_rep->site_cnt >= db_rep->site_max) {
@@ -171,8 +156,8 @@ __repmgr_new_site(dbenv, sitep, addr, state)
 	site->priority = -1;	/* OOB value indicates we don't yet know. */
 	site->state = state;
 
-	RPRINT(dbenv, (dbenv, &mb, "EID %u is assigned for %s", eid,
-		   __repmgr_format_site_loc(site, buffer)));
+	RPRINT(dbenv, (dbenv, "EID %u is assigned for %s", eid,
+	    __repmgr_format_site_loc(site, buffer)));
 	*sitep = site;
 	return (0);
 }
@@ -333,23 +318,6 @@ __repmgr_prepare_my_addr(dbenv, dbt)
 }
 
 /*
- * PUBLIC: int __repmgr_timeval_cmp
- * PUBLIC:     __P((repmgr_timeval_t *, repmgr_timeval_t *));
- */
-int
-__repmgr_timeval_cmp(a, b)
-	repmgr_timeval_t *a, *b;
-{
-	if (a->tv_sec == b->tv_sec) {
-		if (a->tv_usec == b->tv_usec)
-			return (0);
-		else
-			return (a->tv_usec < b->tv_usec ? -1 : 1);
-	} else
-		return (a->tv_sec < b->tv_sec ? -1 : 1);
-}
-
-/*
  * Provide the appropriate value for nsites, the number of sites in the
  * replication group.  If the application has specified a value, use that.
  * Otherwise, just use the number of sites we know of.
@@ -412,4 +380,47 @@ __repmgr_format_site_loc(site, buffer)
 	snprintf(buffer, MAX_SITE_LOC_STRING, "site %s:%lu",
 	    site->net_addr.host, (u_long)site->net_addr.port);
 	return (buffer);
+}
+
+/*
+ * __repmgr_timespec_diff_now --
+ *	Calculate the time duration from now til "when".
+ *
+ * PUBLIC: void __repmgr_timespec_diff_now
+ * PUBLIC:    __P((DB_ENV *, db_timespec *, db_timespec *));
+ */
+void
+__repmgr_timespec_diff_now(dbenv, when, result)
+	DB_ENV *dbenv;
+	db_timespec *when, *result;
+{
+	db_timespec now;
+
+	__os_gettime(dbenv, &now);
+	if (timespeccmp(&now, when, >=))
+		timespecclear(result);
+	else {
+		*result = *when;
+		timespecsub(result, &now);
+	}
+}
+
+/*
+ * PUBLIC: int __repmgr_repstart __P((DB_ENV *, u_int32_t));
+ */
+int
+__repmgr_repstart(dbenv, flags)
+	DB_ENV *dbenv;
+	u_int32_t flags;
+{
+	DBT my_addr;
+	int ret;
+
+	if ((ret = __repmgr_prepare_my_addr(dbenv, &my_addr)) != 0)
+		return (ret);
+	ret = __rep_start(dbenv, &my_addr, flags);
+	__os_free(dbenv, my_addr.data);
+	if (ret != 0)
+		__db_err(dbenv, ret, "rep_start");
+	return (ret);
 }

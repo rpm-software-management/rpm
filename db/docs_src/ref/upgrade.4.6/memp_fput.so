@@ -1,0 +1,18 @@
+m4_comment([$Id: memp_fput.so,v 1.1 2006/11/30 19:06:51 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.6: DB_MPOOLFILE-__GT__put,,
+    upgrade.4.6/cursor, upgrade.4.6/memp_fset)
+
+m4_p([dnl
+The m4_refT(memp_fput) takes a new parameter in the m4_db 4.6 release, a
+page priority.  This parameter allows applications to specify the page's
+priority when returning the page to the cache.])
+
+m4_p([dnl
+Applications calling the m4_refT(memp_fput) can upgrade by adding a
+m4_ref(DB_PRIORITY_UNCHANGED) parameter to their calls to the
+m4_refT(memp_fput).  This will result in no change in the application's
+behavior.])
+
+m4_page_footer

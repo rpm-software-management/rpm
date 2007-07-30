@@ -1,5 +1,5 @@
 #ifndef HDBREC_H
-#define HDBREC_H
+#define	HDBREC_H
 
 #include "htimestampxa.h"
 

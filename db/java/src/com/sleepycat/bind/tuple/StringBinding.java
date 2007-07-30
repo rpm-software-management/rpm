@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: StringBinding.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
+ * $Id: StringBinding.java,v 12.6 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.bind.tuple;

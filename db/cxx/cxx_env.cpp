@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: cxx_env.cpp,v 12.32 2006/09/13 14:53:36 mjc Exp $
+ * $Id: cxx_env.cpp,v 12.40 2007/06/28 13:02:50 mjc Exp $
  */
 
 #include "db_config.h"
@@ -408,6 +407,7 @@ bool DbEnv::is_bigendian()
 	return unwrap(this)->is_bigendian() ? true : false;
 }
 
+DBENV_METHOD(get_thread_count, (u_int32_t *count), (dbenv, count))
 DBENV_METHOD(set_thread_count, (u_int32_t count), (dbenv, count))
 
 // used internally during constructor
@@ -741,9 +741,9 @@ DBENV_METHOD(get_lk_max_objects, (u_int32_t *max_objectsp),
 DBENV_METHOD(set_lk_max_objects, (u_int32_t max_objects), (dbenv, max_objects))
 DBENV_METHOD(get_mp_max_openfd, (int *maxopenfdp), (dbenv, maxopenfdp))
 DBENV_METHOD(set_mp_max_openfd, (int maxopenfd), (dbenv, maxopenfd))
-DBENV_METHOD(get_mp_max_write, (int *maxwritep, int *maxwrite_sleepp),
+DBENV_METHOD(get_mp_max_write, (int *maxwritep, db_timeout_t *maxwrite_sleepp),
     (dbenv, maxwritep, maxwrite_sleepp))
-DBENV_METHOD(set_mp_max_write, (int maxwrite, int maxwrite_sleep),
+DBENV_METHOD(set_mp_max_write, (int maxwrite, db_timeout_t maxwrite_sleep),
     (dbenv, maxwrite, maxwrite_sleep))
 DBENV_METHOD(get_mp_mmapsize, (size_t *mmapsizep), (dbenv, mmapsizep))
 DBENV_METHOD(set_mp_mmapsize, (size_t mmapsize), (dbenv, mmapsize))
@@ -772,6 +772,10 @@ DBENV_METHOD(get_cachesize,
 DBENV_METHOD(set_cachesize,
     (u_int32_t gbytes, u_int32_t bytes, int ncache),
     (dbenv, gbytes, bytes, ncache))
+DBENV_METHOD(get_cache_max, (u_int32_t *gbytesp, u_int32_t *bytesp),
+    (dbenv, gbytesp, bytesp))
+DBENV_METHOD(set_cache_max, (u_int32_t gbytes, u_int32_t bytes),
+    (dbenv, gbytes, bytes))
 
 void DbEnv::set_errcall(void (*arg)(const DbEnv *, const char *, const char *))
 {
@@ -1039,20 +1043,20 @@ int DbEnv::rep_set_transport(int myid, int (*arg)(DbEnv *,
 	return (ret);
 }
 
-DBENV_METHOD(rep_elect, (int nsites, int nvotes, int *eidp, u_int32_t flags),
-    (dbenv, nsites, nvotes, eidp, flags))
+DBENV_METHOD(rep_elect, (int nsites, int nvotes, u_int32_t flags),
+    (dbenv, nsites, nvotes, flags))
 DBENV_METHOD(rep_flush, (), (dbenv))
 DBENV_METHOD(rep_get_config, (u_int32_t which, int *onoffp),
     (dbenv, which, onoffp))
 DBENV_METHOD(set_rep_request, (u_int32_t min, u_int32_t max), (dbenv, min, max))
 
 int DbEnv::rep_process_message(Dbt *control,
-    Dbt *rec, int *idp, DbLsn *ret_lsnp)
+    Dbt *rec, int id, DbLsn *ret_lsnp)
 {
 	DB_ENV *dbenv = unwrap(this);
 	int ret;
 
-	ret = dbenv->rep_process_message(dbenv, control, rec, idp, ret_lsnp);
+	ret = dbenv->rep_process_message(dbenv, control, rec, id, ret_lsnp);
 	if (!DB_RETOK_REPPMSG(ret))
 		DB_ERROR(this, "DbEnv::rep_process_message", ret,
 		    error_policy());
@@ -1071,6 +1075,8 @@ DBENV_METHOD(rep_stat, (DB_REP_STAT **statp, u_int32_t flags),
 DBENV_METHOD(rep_stat_print, (u_int32_t flags), (dbenv, flags))
 DBENV_METHOD(rep_sync, (u_int32_t flags), (dbenv, flags))
 
+DBENV_METHOD(rep_set_lease, (u_int32_t clock_scale_factor, u_int32_t flags),
+    (dbenv, clock_scale_factor, flags))
 DBENV_METHOD(rep_get_limit, (u_int32_t *gbytesp, u_int32_t *bytesp),
     (dbenv, gbytesp, bytesp))
 DBENV_METHOD(rep_set_limit, (u_int32_t gbytes, u_int32_t bytes),
@@ -1098,6 +1104,9 @@ DBENV_METHOD(repmgr_site_list, (u_int *countp, DB_REPMGR_SITE **listp),
     (dbenv, countp, listp))
 DBENV_METHOD(repmgr_start, (int nthreads, u_int32_t flags),
     (dbenv, nthreads, flags))
+DBENV_METHOD(repmgr_stat, (DB_REPMGR_STAT **statp, u_int32_t flags),
+    (dbenv, statp, flags))
+DBENV_METHOD(repmgr_stat_print, (u_int32_t flags), (dbenv, flags))
 
 // End advanced replication API method implementations.
 

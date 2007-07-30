@@ -1,0 +1,59 @@
+m4_comment([$Id: joinenv.so,v 1.1 2005/09/09 12:40:34 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 4.4: DB_JOINENV],,
+    upgrade.4.4/isolation, upgrade.4.4/mutex)
+
+m4_p([dnl
+The semantics of joining existing m4_db database environments has changed
+in the 4.4 release.  Previously:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Applications joining existing environments, but not configuring some of
+the subsystems configured in the environment when it was created, would
+not be configured for those subsystems.])
+m4_nlist([dnl
+Applications joining existing environments, but configuring additional
+subsystems in addition to the subsystems configured in the environment
+when it was created, would cause additional subsystems to be configured
+in the database environment.])
+m4_nlistend
+
+m4_p([dnl
+In the 4.4 release, the semantics have been simplified to make it easier
+to write robust applications.  In the 4.4 release:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Applications joining existing environments, but not configuring some of
+the subsystems configured in the environment when it was created, will
+now automatically be configured for all of the subsystems configured in
+the environment.])
+m4_nlist([dnl
+Applications joining existing environments, but configuring additional
+subsystems in addition to the subsystems configured in the environment
+when it was created, will fail, as no additional subsystems can be
+configured for a database environment after it is created.])
+m4_nlistend
+
+m4_p([dnl
+In other words, the choice of subsystems initialized for a m4_db
+database environment is specified by the thread of control initially
+creating the environment.  Any subsequent thread of control joining the
+environment will automatically be configured to use the same subsystems
+as were created in the environment (unless the thread of control
+requests a subsystem not available in the environment, which will fail).
+Applications joining an environment, able to adapt to whatever
+subsystems have been configured in the environment, should open the
+environment without specifying any subsystem flags.  Applications
+joining an environment, requiring specific subsystems from their
+environments, should open the environment specifying those specific
+subsystem flags.])
+
+m4_p([dnl
+The DB_JOINENV flag has been changed to have no effect in the m4_db 4.4
+release.  Applications should require no changes, although uses of the
+DB_JOINENV flag may be removed.])
+
+m4_page_footer

@@ -1,0 +1,122 @@
+m4_comment([$Id: hpux.so,v 11.17 2004/08/13 03:38:59 bostic Exp $])
+
+m4_ref_title(Building m4_db for UNIX/POSIX systems,
+    HP-UX, @HP-UX, build_unix/freebsd, build_unix/irix)
+
+m4_nlistbegin
+
+m4_nlist([dnl
+m4_bold([I can't specify the m4_ref(DB_SYSTEM_MEM) flag to m4_ref(dbenv_open).])
+
+m4_p([dnl
+The m4_manref(shmget, 2) interfaces are not always used on HP-UX, even
+though they exist, because anonymous memory allocated using m4_manref(shmget, 2)
+cannot be used to store the standard HP-UX msemaphore semaphores.  For
+this reason, it may not be possible to specify the m4_ref(DB_SYSTEM_MEM)
+flag on some versions of HP-UX.  (We have seen this problem only on HP-UX
+10.XX, so the simplest workaround may be to upgrade your HP-UX release.)])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I can't specify both the m4_ref(DB_PRIVATE) and m4_ref(DB_THREAD)
+flags to m4_ref(dbenv_open).])
+
+m4_p([dnl
+It is not possible to store the standard HP-UX msemaphore semaphores in
+memory returned by m4_manref(malloc, 3) in some versions of HP-UX.  For
+this reason, it may not be possible to specify both the
+m4_ref(DB_PRIVATE) and m4_ref(DB_THREAD) flags on some versions of
+HP-UX.  (We have seen this problem only on HP-UX 10.XX, so the simplest
+workaround may be to upgrade your HP-UX release.)])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I can't compile and run multithreaded applications.])
+
+m4_p([dnl
+Special compile-time flags are required when compiling threaded
+applications on HP-UX.  If you are compiling a threaded application, you
+must compile with the _REENTRANT flag:])
+
+m4_indent([cc -D_REENTRANT ...])
+
+m4_p([dnl
+The m4_db library will automatically build with the correct options.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([An ENOMEM error is returned from m4_ref(dbenv_open) or
+m4_ref(dbenv_remove).])
+
+m4_p([dnl
+Due to the constraints of the PA-RISC memory architecture, HP-UX does not
+allow a process to map a file into its address space multiple times.
+For this reason, each m4_db environment may be opened only once by a
+process on HP-UX; that is, calls to m4_ref(dbenv_open) will fail if the
+specified m4_db environment has been opened and not subsequently closed.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([When compiling with gcc, I see the following error:
+m4_indent([dnl
+#error "Large Files (ILP32) not supported in strict ANSI mode."])])
+
+m4_p([dnl
+We believe this is an error in the HP-UX include files, but we don't
+really understand it.  The only workaround we have found is to add
+-D__STDC_EXT__ to the C preprocessor defines as part of compilation.])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([When using the Tcl or Perl APIs (including running the test
+suite), I see the error "Can't shl_load() a library containing Thread
+Local Storage".])
+
+m4_p([dnl
+This problem happens when HP-UX has been configured to use pthread mutex
+locking, and an attempt is made to call m4_db using the Tcl or Perl APIs.
+We have never found any way to fix this problem as part of the m4_db
+build process.  To work around the problem, rebuild tclsh or Perl, and
+modify its build process to explicitly link it against the HP-UX pthread
+library (currently /usr/lib/libpthread.a).])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([When running an executable that has been dynamically linked
+against the m4_db library, I see the error "Can't find path for shared
+library" even though I correctly set the SHLIB_PATH environment variable.])
+
+m4_p([dnl
+By default, some versions of HP-UX ignore the dynamic library search
+path specified by the SHLIB_PATH environment variable.  To work around
+this, specify the "+s" flag to ld when linking, or run the following
+command on the executable that is not working:])
+
+m4_indent([chatr +s enable -l /full/path/to/libdb-3.2.sl ...])])
+
+m4_hl
+m4_nlist([dnl
+m4_bold([I see errors about "open64" when building m4_db applications.])
+
+m4_p([dnl
+System include files (most commonly fcntl.h) in some releases of AIX,
+HP-UX and Solaris redefine "open" when large-file support is enabled for
+applications.  This causes problems when compiling applications because
+"open" is a method in the m4_db APIs.  To work around this problem:
+m4_nlistbegin
+m4_nlist([dnl
+Avoid including the problematical system include files in source code
+files which also include m4_db include files and call into the m4_db
+API.])
+m4_nlistns([dnl
+Before building m4_db, modify the generated include file db.h to itself
+include the problematical system include files.])
+m4_nlistns([dnl
+Turn off m4_db large-file support by specifying the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --disable-largefile,
+--disable-largefile) configuration option and rebuilding.])
+m4_nlistend])])
+
+m4_nlistend
+
+m4_page_footer

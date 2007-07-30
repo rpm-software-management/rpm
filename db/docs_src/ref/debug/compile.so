@@ -1,0 +1,42 @@
+m4_comment([$Id: compile.so,v 10.12 2001/03/13 20:39:46 bostic Exp $])
+
+m4_ref_title(Debugging Applications,
+    Compile-time configuration,, debug/intro, debug/runtime)
+
+m4_p([dnl
+There are three compile-time configuration options that assist in
+debugging m4_db and m4_db applications:])
+
+m4_tagbegin
+
+m4_tag([m4_linkpage(dnl
+M4RELDIR/ref/build_unix/conf, --enable-debug, --enable-debug)], [dnl
+If you want to build m4_db with m4_option(g) as the C and C++ compiler
+flag, enter --enable-debug as an argument to configure. This will create
+m4_db with debugging symbols, as well as load various m4_db routines
+that can be called directly from a debugger to display database page
+content, cursor queues, and so forth.  (Note that the m4_option(O)
+optimization flag will still be specified.  To compile with only the
+m4_option(g), explicitly set the m4_envvar(CFLAGS) environment variable
+before configuring.)])
+
+m4_tag([m4_linkpage(dnl
+M4RELDIR/ref/build_unix/conf, --enable-diagnostic, --enable-diagnostic)], [dnl
+If you want to build m4_db with debugging run-time sanity checks and with
+DIAGNOSTIC #defined during compilation, enter --enable-diagnostic as an
+argument to configure. This will cause a number of special checks to be
+performed when m4_db is running. This flag should not be defined when
+configuring to build production binaries because it degrades performance.])
+
+m4_tag([m4_linkpage(dnl
+M4RELDIR/ref/build_unix/conf, --enable-umrw, --enable-umrw)], [dnl
+When compiling m4_db for use in run-time memory consistency checkers
+(in particular, programs that look for reads and writes of uninitialized
+memory), use --enable-umrw as an argument to configure.  This
+guarantees, among other things, that m4_db will completely initialize
+allocated pages rather than initializing only the minimum necessary
+amount.])
+
+m4_tagend
+
+m4_page_footer

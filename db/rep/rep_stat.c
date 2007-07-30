@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2001,2007 Oracle.  All rights reserved.
  *
- * $Id: rep_stat.c,v 12.16 2006/09/07 16:51:04 bostic Exp $
+ * $Id: rep_stat.c,v 12.26 2007/06/21 16:32:24 alanb Exp $
  */
 
 #include "db_config.h"
@@ -64,7 +63,7 @@ __rep_stat(dbenv, statp, flags)
 	DB_REP_STAT *stats;
 	LOG *lp;
 	REP *rep;
-	u_int32_t queued;
+	u_int32_t queued, startupdone;
 	int dolock, ret;
 
 	db_rep = dbenv->rep_handle;
@@ -118,9 +117,11 @@ __rep_stat(dbenv, statp, flags)
 
 	if (LF_ISSET(DB_STAT_CLEAR)) {
 		queued = rep->stat.st_log_queued;
+		startupdone = rep->stat.st_startup_complete;
 		memset(&rep->stat, 0, sizeof(rep->stat));
 		rep->stat.st_log_queued = rep->stat.st_log_queued_total =
 		    rep->stat.st_log_queued_max = queued;
+		rep->stat.st_startup_complete = startupdone;
 	}
 
 	/*
@@ -135,9 +136,11 @@ __rep_stat(dbenv, statp, flags)
 		stats->st_next_pg = rep->ready_pg;
 		stats->st_waiting_pg = rep->waiting_pg;
 	} else {
-		if (F_ISSET(rep, REP_F_MASTER))
+		if (F_ISSET(rep, REP_F_MASTER)) {
+			LOG_SYSTEM_LOCK(dbenv);
 			stats->st_next_lsn = lp->lsn;
-		else
+			LOG_SYSTEM_UNLOCK(dbenv);
+		} else
 			ZERO_LSN(stats->st_next_lsn);
 		ZERO_LSN(stats->st_waiting_lsn);
 	}
@@ -192,7 +195,7 @@ __rep_stat_print(dbenv, flags)
 	int ret;
 
 	orig_flags = flags;
-	LF_CLR(DB_STAT_CLEAR);
+	LF_CLR(DB_STAT_CLEAR | DB_STAT_SUBSYSTEM);
 	if (flags == 0 || LF_ISSET(DB_STAT_ALL)) {
 		ret = __rep_print_stats(dbenv, orig_flags);
 		if (flags == 0 || ret != 0)
@@ -316,6 +319,9 @@ __rep_print_stats(dbenv, flags)
 	__db_dl(dbenv,
 	    "Number of transactions applied", (u_long)sp->st_txns_applied);
 
+	__db_dl(dbenv, "Number of startsync messages delayed",
+	    (u_long)sp->st_startsync_delayed);
+
 	__db_dl(dbenv, "Number of elections held", (u_long)sp->st_elections);
 	__db_dl(dbenv,
 	    "Number of elections won", (u_long)sp->st_elections_won);
@@ -367,11 +373,6 @@ __rep_print_stats(dbenv, flags)
 
 	__os_ufree(dbenv, sp);
 
-#ifdef HAVE_REPLICATION_THREADS
-	if ((ret = __repmgr_print_stats(dbenv)) != 0)
-		return (ret);
-#endif
-
 	return (0);
 }
 
@@ -388,10 +389,13 @@ __rep_print_all(dbenv, flags)
 		{ REP_F_CLIENT,		"REP_F_CLIENT" },
 		{ REP_F_EPHASE1,	"REP_F_EPHASE1" },
 		{ REP_F_EPHASE2,	"REP_F_EPHASE2" },
+		{ REP_F_INREPELECT,	"REP_F_INREPELECT" },
 		{ REP_F_MASTER,		"REP_F_MASTER" },
 		{ REP_F_MASTERELECT,	"REP_F_MASTERELECT" },
 		{ REP_F_NOARCHIVE,	"REP_F_NOARCHIVE" },
-		{ REP_F_READY,		"REP_F_READY" },
+		{ REP_F_READY_API,	"REP_F_READY_API" },
+		{ REP_F_READY_MSG,	"REP_F_READY_MSG" },
+		{ REP_F_READY_OP,	"REP_F_READY_OP" },
 		{ REP_F_RECOVER_LOG,	"REP_F_RECOVER_LOG" },
 		{ REP_F_RECOVER_PAGE,	"REP_F_RECOVER_PAGE" },
 		{ REP_F_RECOVER_UPDATE,	"REP_F_RECOVER_UPDATE" },
@@ -447,12 +451,9 @@ __rep_print_all(dbenv, flags)
 	STAT_ULONG("Request gap", rep->request_gap);
 	STAT_ULONG("Maximum gap", rep->max_gap);
 
-	STAT_LONG("Thread is in rep_elect", rep->elect_th);
 	STAT_ULONG("Callers in rep_proc_msg", rep->msg_th);
-	STAT_LONG("Thread is in msg lockout", rep->lockout_th);
 	STAT_ULONG("Library handle count", rep->handle_cnt);
 	STAT_ULONG("Multi-step operation count", rep->op_cnt);
-	STAT_LONG("Running recovery", rep->in_recovery);
 	__db_msg(dbenv, "%.24s\tRecovery timestamp",
 	    renv->rep_timestamp == 0 ?
 	    "0" : __db_ctime(&renv->rep_timestamp, time_buf));

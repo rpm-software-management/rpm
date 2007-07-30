@@ -1,0 +1,44 @@
+m4_comment([$Id: bt_prefix.so,v 10.22 2004/02/21 15:50:51 bostic Exp $])
+
+m4_ref_title(Access Methods,
+    Btree prefix comparison,, am_conf/bt_compare, am_conf/bt_minkey)
+
+m4_p([dnl
+The m4_db Btree implementation maximizes the number of keys that can be
+stored on an internal page by storing only as many bytes of each key as
+are necessary to distinguish it from adjacent keys.  The prefix
+comparison routine is what determines this minimum number of bytes (that
+is, the length of the unique prefix), that must be stored.  A prefix
+comparison function for the Btree can be specified by calling
+m4_ref(dbh_set_bt_prefix).])
+
+m4_p([dnl
+The prefix comparison routine must be compatible with the overall
+comparison function of the Btree, since what distinguishes any two keys
+depends entirely on the function used to compare them.  This means that
+if a prefix comparison routine is specified by the application, a
+compatible overall comparison routine must also have been specified.])
+
+m4_p([dnl
+Prefix comparison routines are passed pointers to keys as arguments.
+The keys are represented as m4_ref(Dbt) structures.  The only fields
+the routines may examine in the m4_ref(Dbt) structures are m4_arg(data)
+and m4_arg(size) fields.])
+
+m4_p([dnl
+The prefix comparison function must return the number of bytes necessary
+to distinguish the two keys.  If the keys are identical (equal and equal
+in length), the length should be returned.  If the keys are equal up to
+the smaller of the two lengths, then the length of the smaller key plus
+1 should be returned.])
+
+m4_p([dnl
+An example prefix comparison routine follows:])
+
+include(ref/am_conf/bt_prefix.cs)
+
+m4_p([dnl
+The usefulness of this functionality is data-dependent, but in some data
+sets can produce significantly reduced tree sizes and faster search times.])
+
+m4_page_footer

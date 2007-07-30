@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_flock.c,v 12.11 2006/08/24 14:46:17 bostic Exp $
+ * $Id: os_flock.c,v 12.14 2007/05/17 15:15:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -29,6 +28,11 @@ __os_fdlock(dbenv, fhp, offset, acquire, nowait)
 	int ret, t_ret;
 
 	DB_ASSERT(dbenv, F_ISSET(fhp, DB_FH_OPENED) && fhp->fd != -1);
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv,
+		    "fileops: flock %s %s offset %lu",
+		    fhp->name, acquire ? "acquire": "release", (u_long)offset);
 
 	fl.l_start = offset;
 	fl.l_len = 1;

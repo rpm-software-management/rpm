@@ -1,0 +1,37 @@
+m4_comment([$Id: memp_fclose.so,v 10.33 2004/08/13 03:38:58 bostic Exp $])
+
+define(M4PAGELOCAL, memp_fclose)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_fclose),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__close(DB_MPOOLFILE *mpf, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::close(u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(memp_fclose) closes the source file indicated by the
+m4_refO(DbMpoolFile).  Calling m4_ref(memp_fclose) does not imply a call
+to m4_ref(memp_fsync); that is, no pages are written to the source file
+as as a result of calling m4_ref(memp_fclose).])
+
+m4_p([dnl
+If the m4_ref(DbMpoolFile) was temporary, any underlying files created
+for this m4_ref(DbMpoolFile) will be removed.])
+
+m4_p([dnl
+After m4_ref(memp_fclose) has been called, regardless of its return, the
+m4_ref(DbMpoolFile) handle may not be accessed again.])
+
+m4_return(memp_fclose, std)
+
+m4_parambegin
+m4_unusedflags
+m4_paramend
+
+m4_seealso(DbMpool)
+m4_page_footer

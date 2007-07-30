@@ -1,24 +1,22 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: db_stat.c,v 12.14 2006/08/26 09:23:19 bostic Exp $
+ * $Id: db_stat.c,v 12.22 2007/07/06 15:43:57 alanb Exp $
  */
 
 #include "db_config.h"
 
 #include "db_int.h"
-#include "dbinc/db_page.h"
 
 #ifndef lint
 static const char copyright[] =
-    "Copyright (c) 1996-2006\nOracle Corporation.  All rights reserved.\n";
+    "Copyright (c) 1996,2007 Oracle.  All rights reserved.\n";
 #endif
 
-typedef enum { T_NOTSET,
-    T_DB, T_ENV, T_LOCK, T_LOG, T_MPOOL, T_MUTEX, T_REP, T_TXN } test_t;
+typedef enum { T_NOTSET, T_DB,
+    T_ENV, T_LOCK, T_LOG, T_MPOOL, T_MUTEX, T_REP, T_TXN } test_t;
 
 int	 db_init __P((DB_ENV *, char *, test_t, u_int32_t, int *));
 int	 main __P((int, char *[]));
@@ -42,7 +40,7 @@ main(argc, argv)
 	int nflag, private, resize, ret;
 	char *db, *home, *p, *passwd, *subdb;
 
-	if ((progname = strrchr(argv[0], '/')) == NULL)
+	if ((progname = __db_rpath(argv[0])) == NULL)
 		progname = argv[0];
 	else
 		++progname;
@@ -58,7 +56,7 @@ main(argc, argv)
 	db = home = passwd = subdb = NULL;
 
 	while ((ch = getopt(argc,
-	    argv, "C:cd:Eefh:L:lM:mNP:R:rs:tVxX:Z")) != EOF)
+	    argv, "C:cd:Eefgh:L:lM:mNP:R:rs:tVxX:Z")) != EOF)
 		switch (ch) {
 		case 'C': case 'c':
 			if (ttype != T_NOTSET && ttype != T_LOCK)
@@ -330,6 +328,10 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 			goto err;
 		break;
 	case T_REP:
+#ifdef HAVE_REPLICATION_THREADS
+		if (dbenv->repmgr_stat_print(dbenv, flags))
+			goto err;
+#endif
 		if (dbenv->rep_stat_print(dbenv, flags))
 			goto err;
 		break;
@@ -420,8 +422,6 @@ db_init(dbenv, home, ttype, cache, is_private)
 		oflags |= DB_INIT_MPOOL;
 	if (ttype == T_LOG)
 		oflags |= DB_INIT_LOG;
-	if (ttype == T_REP)
-		oflags |= DB_INIT_REP;
 	if ((ret = dbenv->open(dbenv, home, oflags, 0)) == 0)
 		return (0);
 

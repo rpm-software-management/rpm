@@ -1,0 +1,23 @@
+m4_comment([$Id: toc.so,v 1.16 2006/11/13 18:05:04 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 4.1 applications to m4_db 4.2,
+    Upgrading to release 4.2,,)
+
+m4_nlistbegin
+m4_nlistns([m4_link(intro, [Release 4.2: introduction])])
+m4_nlistns([m4_link(java, [Release 4.2: Java])])
+m4_nlistns([m4_link(queue, [Release 4.2: Queue access method])])
+m4_nlistns([m4_link(cksum, [Release 4.2: DB_CHKSUM_SHA1])])
+m4_nlistns([m4_link(client, [Release 4.2: DB_CLIENT])])
+m4_nlistns([m4_link(del, [Release 4.2: DB-__GT__del])])
+m4_nlistns([m4_link(priority, [Release 4.2: DB-__GT__set_cache_priority])])
+m4_nlistns([m4_link(verify, [Release 4.2: DB-__GT__verify])])
+m4_nlistns([m4_link(lockng, [Release 4.2: DB_LOCK_NOTGRANTED])])
+m4_nlistns([m4_link(repinit, [Release 4.2: Replication])])
+m4_nlistns([m4_link(nosync, [Release 4.2: Client replication environments])])
+m4_nlistns([m4_link(tcl, [Release 4.2: Tcl API])])
+m4_nlistns([m4_link(disk, [Release 4.2: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

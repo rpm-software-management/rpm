@@ -1,0 +1,101 @@
+m4_comment([$Id: logc_get.so,v 10.48 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL,
+	[logc_get, DB_CURRENT, DB_FIRST, DB_LAST, DB_NEXT, DB_PREV, DB_SET])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(logc_get),
+ifelse(M4API, C_API, [dnl
+int
+DB_LOGC-__GT__get(DB_LOGC *logc, DB_LSN *lsn, DBT *data, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbLogc::get(DbLsn *lsn, Dbt *data, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(logc_get) returns records from the log.])
+
+m4_return(logc_get, prev)
+
+m4_parambegin
+m4_param(data, [dnl
+The data field of the m4_arg(data) structure is set to the record
+retrieved, and the size field indicates the number of bytes in the
+record.  See m4_ref(Dbt) for a description of other fields in the
+m4_arg(data) structure.  The m4_ref(DB_DBT_MALLOC),
+m4_ref(DB_DBT_REALLOC) and m4_ref(DB_DBT_USERMEM) flags may be specified
+for any m4_ref(Dbt) used for data retrieval.])
+
+m4_param(flags, [dnl
+m4_sf_must
+
+m4_tagbegin
+m4_tag(m4_idef(DB_CURRENT), [dnl
+Return the log record to which the log currently refers.])
+
+m4_tag(m4_idef(DB_FIRST), [dnl
+The first record from any of the log files found in the log directory
+is returned in the m4_arg(data) parameter.
+The m4_arg(lsn) parameter is overwritten with the m4_ref(DbLsn) of the
+record returned.
+m4_return(logc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_FIRST) is set and the log is empty])])
+
+m4_tag(m4_idef(DB_LAST), [dnl
+The last record in the log is returned in the m4_arg(data) parameter.
+The m4_arg(lsn) parameter is overwritten with the m4_ref(DbLsn) of the
+record returned.
+m4_return(logc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_LAST) is set and the log is empty])])
+
+m4_tag([m4_idef(DB_NEXT)], [dnl
+The current log position is advanced to the next record in the log, and
+that record is returned in the m4_arg(data) parameter.  The m4_arg(lsn)
+parameter is overwritten with the m4_ref(DbLsn) of the record returned.
+m4_p([dnl
+If the cursor has not been initialized via DB_FIRST, DB_LAST, DB_SET,
+DB_NEXT, or DB_PREV, m4_ref(logc_get) will return the first record in
+the log.])
+m4_return(logc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_NEXT) is set and the last log record has already been
+returned or the log is empty])])
+
+m4_tag([m4_idef(DB_PREV)], [dnl
+The current log position is advanced to the previous record in the log,
+and that record is returned in the m4_arg(data) parameter.  The
+m4_arg(lsn) parameter is overwritten with the m4_ref(DbLsn) of the record
+returned.
+m4_p([dnl
+If the cursor has not been initialized via DB_FIRST, DB_LAST, DB_SET,
+DB_NEXT, or DB_PREV, m4_ref(logc_get) will return the last record in the
+log.])
+m4_return(logc_get, specific, DB_NOTFOUND,
+[if m4_ref(DB_PREV) is set and the first log record has already been
+returned or the log is empty])])
+
+m4_tag(m4_idef(DB_SET), [dnl
+Retrieve the record specified by the m4_arg(lsn) parameter.])
+m4_tagend])
+
+m4_param(lsn, [dnl
+When the m4_arg(flag) parameter is set to m4_ref(DB_CURRENT),
+m4_ref(DB_FIRST), m4_ref(DB_LAST), m4_ref(DB_NEXT) or m4_ref(DB_PREV),
+the m4_arg(lsn) parameter is overwritten with the m4_ref(DbLsn) value
+of the record retrieved.  When m4_arg(flag) is set to m4_ref(DB_SET),
+the m4_arg(lsn) parameter is the m4_ref(DbLsn) value of the record to
+be retrieved.])
+
+m4_paramend
+
+m4_err(logc_get, einval,
+[the m4_ref(DB_CURRENT) flag was set and the log cursor has not yet
+been initialized;
+the m4_ref(DB_CURRENT), m4_ref(DB_NEXT), or m4_ref(DB_PREV) flags were
+set and the log was opened with the DB_THREAD flag set;
+the m4_ref(DB_SET) flag was set and the specified log sequence number
+does not appear in the log])
+
+m4_seealso(DbLog)
+m4_page_footer

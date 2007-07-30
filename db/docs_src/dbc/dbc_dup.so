@@ -1,0 +1,42 @@
+m4_comment([$Id: dbc_dup.so,v 10.33 2006/10/24 13:26:50 bostic Exp $])
+
+define(M4PAGELOCAL, [dbc_dup, DB_POSITION])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbc_dup),
+ifelse(M4API, C_API, [dnl
+int
+DBcursor-__GT__dup(DBC *DBcursor, DBC **cursorp, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Dbc::dup(Dbc **cursorp, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbc_dup) creates a new cursor that uses the same transaction
+and locker ID as the original cursor.  This is useful when an application
+is using locking and requires two or more cursors in the same thread of
+control.])
+
+m4_return(dbc_dup, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_or_may
+
+m4_tagbegin
+m4_tag(m4_idef(DB_POSITION), [dnl
+The newly created cursor is initialized to refer to the same position
+in the database as the original cursor (if any) and hold the same locks
+(if any).  If the m4_ref(DB_POSITION) flag is not specified, or the
+original cursor does not hold a database position and locks, the created
+cursor is uninitialized and will behave like a cursor newly created
+using m4_ref(dbh_cursor).])
+m4_tagend])
+m4_paramend
+
+m4_err(dbc_dup, repinval, einval)
+
+m4_seealso(Dbc)
+m4_page_footer

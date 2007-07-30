@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2001,2007 Oracle.  All rights reserved.
 #
-# $Id: rep046.tcl,v 12.16 2006/09/07 14:48:25 carol Exp $
+# $Id: rep046.tcl,v 12.21 2007/06/19 03:33:16 moshen Exp $
 #
 # TEST  rep046
 # TEST	Replication and basic bulk transfer.
@@ -26,23 +25,42 @@ proc rep046 { method { nentries 200 } { tnum "046" } args } {
 	}
 
 	set args [convert_args $method $args]
+	set logsets [create_logsets 3]
 
 	# Run the body of the test with and without recovery.
 	set throttle { "throttle" "" }
 	foreach r $test_recopts {
-		foreach t $throttle {
-			puts "Rep$tnum ($method $r $t):\
-			    Replication and bulk transfer."
-			rep046_sub $method $nentries $tnum $r $t $args
+		foreach l $logsets {
+			set logindex [lsearch -exact $l "in-memory"]
+			if { $r == "-recover" && $logindex != -1 } {
+				puts "Skipping test with -recover for \
+				    in-memory logs."
+				continue
+			}
+			foreach t $throttle {
+				puts "Rep$tnum ($method $r $t):\
+				    Replication and bulk transfer."
+				puts "Rep$tnum: Master logs are [lindex $l 0]"
+				puts "Rep$tnum: Client 0 logs are [lindex $l 1]"
+				puts "Rep$tnum: Client 1 logs are [lindex $l 2]"
+				rep046_sub $method $nentries $tnum $l $r \
+				    $t $args
+			}
 		}
 	}
 }
 
-proc rep046_sub { method niter tnum recargs throttle largs } {
+proc rep046_sub { method niter tnum logset recargs throttle largs } {
 	global overflowword1
 	global overflowword2
 	global testdir
 	global util_path
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	set orig_tdir $testdir
 	env_cleanup $testdir
@@ -54,49 +72,51 @@ proc rep046_sub { method niter tnum recargs throttle largs } {
 	file mkdir $masterdir
 	file mkdir $clientdir
 
+	set m_logtype [lindex $logset 0]
+	set c_logtype [lindex $logset 1]
+	set c2_logtype [lindex $logset 2]
+
+	# In-memory logs require a large log buffer, and can not
+	# be used with -txn nosync.  Adjust the args for master
+	# and client.
+	# This test has a long transaction, allocate a larger log 
+	# buffer for in-memory test.
+	set m_logargs [adjust_logargs $m_logtype [expr 20 * 1024 * 1024]]
+	set c_logargs [adjust_logargs $c_logtype [expr 20 * 1024 * 1024]]
+	set c2_logargs [adjust_logargs $c2_logtype [expr 20 * 1024 * 1024]]
+	set m_txnargs [adjust_txnargs $m_logtype]
+	set c_txnargs [adjust_txnargs $c_logtype]
+	set c2_txnargs [adjust_txnargs $c2_logtype]
+
+
 	set bigniter [expr 10000 - [expr 2 * $niter]]
 	set lkmax [expr $bigniter * 2]
 
 	# Open a master.
 	repladd 1
-	set ma_envcmd "berkdb_env -create -txn nosync \
-	    -lock_max_locks 10000 -lock_max_objects 10000 \
-	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
-#	set ma_envcmd "berkdb_env -create -txn nosync \
-#	    -lock_max_locks 10000 -lock_max_objects 10000 \
-#	    -errpfx MASTER -verbose {rep on} -errfile /dev/stderr \
-#	    -home $masterdir -rep_master -rep_transport \[list 1 replsend\]"
+	set ma_envcmd "berkdb_env_noerr -create $m_txnargs $m_logargs \
+	    $verbargs -lock_max_locks 10000 -lock_max_objects 10000 \
+	    -errpfx MASTER -home $masterdir -rep_master -rep_transport \
+	    \[list 1 replsend\]"
 	set masterenv [eval $ma_envcmd $recargs]
 	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	repladd 2
-	set cl_envcmd "berkdb_env -create -txn nosync \
-	    -home $clientdir \
+	set cl_envcmd "berkdb_env_noerr -create $c_txnargs $c_logargs \
+	    $verbargs -home $clientdir -errpfx CLIENT \
 	    -lock_max_locks 10000 -lock_max_objects 10000 \
 	    -rep_client -rep_transport \[list 2 replsend\]"
-#	set cl_envcmd "berkdb_env -create -txn nosync \
-#	    -home $clientdir \
-#	    -lock_max_locks 10000 -lock_max_objects 10000 \
-#	    -errpfx CLIENT -verbose {rep on} -errfile /dev/stderr \
-#	    -rep_client -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_envcmd $recargs]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	if { $throttle == "throttle" } {
 		set clientdir2 $testdir/CLIENTDIR2
 		file mkdir $clientdir2
 		repladd 3
-		set cl2_envcmd "berkdb_env -create -txn nosync \
-		    -home $clientdir2 \
+		set cl2_envcmd "berkdb_env_noerr -create $c2_txnargs $verbargs \
+		    $c2_logargs -home $clientdir2 -errpfx CLIENT2 \
 	    	    -lock_max_locks 10000 -lock_max_objects 10000 \
 		    -rep_client -rep_transport \[list 3 replsend\]"
-#		set cl2_envcmd "berkdb_env -create -txn nosync \
-#		    -home $clientdir2 \
-#	    	    -lock_max_locks 10000 -lock_max_objects 10000 \
-#		    -errpfx CLIENT2 -verbose {rep on} -errfile /dev/stderr \
-#		    -rep_client -rep_transport \[list 3 replsend\]"
 		set cl2env [eval $cl2_envcmd $recargs]
-		error_check_good client2_env [is_valid_env $cl2env] TRUE
 		set envlist "{$masterenv 1} {$clientenv 2} {$cl2env 3}"
 		#
 		# Turn throttling on in master

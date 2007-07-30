@@ -1,0 +1,37 @@
+m4_comment([$Id: java.so,v 11.10 2004/08/15 03:22:57 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: additional Java changes,, upgrade.3.0/cxx, upgrade.3.0/disk)
+
+dnl #################################################################
+dnl This whole page is Java.
+dnl #################################################################
+pushdef([M4API], JAVA_API)
+
+m4_p([dnl
+There are several additional types of exceptions thrown in the m4_db 3.0
+Java API.])
+
+m4_p([dnl
+DbMemoryException and DbDeadlockException can be caught independently of
+DbException if you want to do special handling for these kinds of errors.
+Since they are subclassed from DbException, a try block that catches
+DbException will catch these also, so code is not required to change.
+The catch clause for these new exceptions should appear before the catch
+clause for DbException.])
+
+m4_p([dnl
+You will need to add a catch clause for java.io.FileNotFoundException,
+since that can be thrown by Db.open and DbEnv.open.])
+
+m4_p([dnl
+There are a number of smaller changes to the API that bring the C, C++
+and Java APIs much closer in terms of functionality and usage.  Please
+refer to the pages for upgrading C applications for further details.])
+
+dnl #################################################################
+dnl This whole page is Java.
+dnl #################################################################
+popdef([M4API])
+
+m4_page_footer

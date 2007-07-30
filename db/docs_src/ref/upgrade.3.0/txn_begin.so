@@ -1,0 +1,15 @@
+m4_comment([$Id: txn_begin.so,v 11.9 2003/10/18 19:16:14 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: txn_begin,,
+    upgrade.3.0/memp_stat, upgrade.3.0/txn_commit)
+
+m4_p([dnl
+An additional argument has been added to the txn_begin function.])
+
+m4_p([dnl
+The application should be searched for any occurrences of txn_begin.
+For each one, an argument of 0 should be appended to the current
+arguments.])
+
+m4_page_footer

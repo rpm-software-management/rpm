@@ -1,0 +1,16 @@
+m4_comment([$Id: cksum.so,v 1.4 2004/09/28 14:13:08 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: DB_CHKSUM_SHA1,,
+    upgrade.4.2/queue, upgrade.4.2/client)
+
+m4_p([dnl
+The flag to enable checksumming of m4_db databases pages was renamed
+from DB_CHKSUM_SHA1 to m4_ref(DB_CHKSUM), as m4_db uses an internal
+function to generate hash values for unencrypted database pages, not
+the SHA1 Secure Hash Algorithm.  m4_db continues to use the SHA1 Secure
+Hash Algorithm to generate hashes for encrypted database pages.
+Applications using the DB_CHKSUM_SHA1 flag should change that use to
+m4_ref(DB_CHKSUM); no other change is required.])
+
+m4_page_footer

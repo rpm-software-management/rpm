@@ -1,0 +1,37 @@
+m4_comment([$Id: db_config.so,v 10.3 2004/11/18 01:57:39 bostic Exp $])
+
+define(M4PAGELOCAL, DB_CONFIG)
+
+m4_ref_title(Environment, DB_CONFIG configuration file,
+    [DB_CONFIG, database environment @configuration], env/error, env/naming)
+
+m4_p([dnl
+Almost all of the configuration information that can be specified to
+m4_ref(DbEnv) methods can also be specified using a configuration file.
+If a file named m4_ref(DB_CONFIG) exists in the database home directory,
+it will be read for lines of the format m4_bold([NAME VALUE]).])
+
+m4_p([dnl
+One or more whitespace characters are used to delimit the two parts of
+the line, and trailing whitespace characters are discarded.  All empty
+lines or lines whose first character is a whitespace or hash
+(m4_bold([#])) character will be ignored.  Each line must specify both
+the NAME and the VALUE of the pair.  The specific NAME VALUE pairs are
+documented in the manual for the corresponding methods (for example,
+the m4_ref(dbenv_set_data_dir) documentation includes NAME VALUE pair
+information m4_db administrators can use to configure locations for
+database files).])
+
+m4_p([dnl
+The m4_ref(DB_CONFIG) configuration file is intended to allow database
+environment administrators to customize environments independent of
+applications using the environment.  For example, a database
+administrator can move the database log and data files to a different
+location without application recompilation.  In addition, because the
+m4_ref(DB_CONFIG) file is read when the database environment is opened,
+it can be used to overrule application configuration done before that
+time.  For example a database administrator could override the
+compiled-in application cache size to a size more appropriate for a
+specific machine.])
+
+m4_page_footer

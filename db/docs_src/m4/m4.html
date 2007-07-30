@@ -1,0 +1,389 @@
+dnl $Id: m4.html,v 10.113 2007/07/06 18:24:52 bostic Exp $
+
+dnl ###################################################################
+dnl	Fonts.
+dnl ###################################################################
+dnl Bold font
+define(m4_bold, <b>$1</b>)
+
+dnl Constant width bold font -- same as m4_bold in HTML
+define(m4_cbold, <b>$1</b>)
+
+dnl Italic font
+define(m4_italic, <i>$1</i>)
+
+dnl Environmental variable.
+dnl	#1: variable
+define(m4_envvar, <b>$1</b>)
+
+dnl Pathname.
+dnl	#1: path
+define(m4_path, <b>$1</b>)
+
+dnl Function argument.
+dnl	#1: argument name
+define(m4_arg, <b>$1</b>)
+
+dnl Utility option/flag.
+define(m4_option, <b>-$1</b>)
+
+dnl Utility argument
+define(m4_utilarg, __LB__<b>-$1</b>__RB__)
+
+dnl UNIX manual reference.
+dnl	#1: man page name
+dnl	#2: section
+define(m4_manref, [<b>$1</b>($2)])
+
+dnl ###################################################################
+dnl	Special Characters, Escapes.
+dnl ###################################################################
+dnl Superimposed
+define(m4_sup, [$1<sup>$2</sup>])
+
+dnl Backslash preceded string.
+dnl	#1: characters after the backslash
+define(m4_backslash, [\$1])
+
+dnl Angle-bracket quoted string.
+define(m4_htmlquote, [&lt;$1&gt;])
+
+dnl C include file
+dnl	#1: include file name
+define(m4_include, [__OCT__include &lt;$1&gt;])
+
+dnl ###################################################################
+dnl	Miscellaneous.
+dnl ###################################################################
+dnl Berkeley DB
+define(m4_db, [Berkeley DB])
+
+dnl Comment
+define(m4_comment, <!--$1-->)
+
+dnl Copyright strings.
+define(m4_copyright_source, [dnl
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->])
+
+define(m4_copyright_footer, [dnl
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>])
+
+dnl M4_meta definition moved to html.sed to prevent line breaks
+define(m4_meta, __M4_META__)
+
+dnl Just discard.
+define(m4_ignore,)
+
+dnl ###################################################################
+dnl	Layout: basic.
+dnl ###################################################################
+dnl Header
+define(m4_header, <h3>$1</h3>)
+
+dnl Section
+define(m4_section, <h3>$1</h3>)
+
+dnl Subsection
+define(m4_subsection, <h4>$1</h4>)
+
+dnl Paragraph
+define(m4_p, [<p>$1</p>])
+
+dnl Horizontal line.
+define(m4_hl, [<hr size=1 noshade>])
+
+dnl Single blank line.
+define(m4_blank, [<p>])
+
+dnl Literal text block.
+dnl	#1: string
+define(m4_literal, <pre>$1</pre>)
+
+dnl Indent literal text block.
+dnl	#1: string
+define(m4_indent, <blockquote><pre>$1</pre></blockquote>)
+
+dnl Indent text block.
+dnl	#1: string
+define(m4_indentv, <blockquote>$1</blockquote>)
+
+dnl PicGif display - Pic for ROFF/Gif for HTML
+dnl     #1: align, e.g., center
+dnl     #2: img src, e.g., M4RELDIR/ref/xxx
+dnl     #3: alternate string
+define(m4_picgif, [<p align=$1><img src="$2.gif" alt="$3">])
+
+dnl ###################################################################
+dnl	Layout: headers, titles and page bottoms.
+dnl ###################################################################
+dnl Reference Guide page leader.
+dnl	#1: section
+dnl	#2: page name
+dnl	#3: index entries
+dnl	#4,#5: prev, next
+define(m4_ref_title, [dnl
+ifelse($#, 5, , [errprint([$0: arg mismatch
+])])
+define(__m4_pagename, [$2])
+m4_copyright_source
+<html>
+<head>
+<title>ifelse(M4PRODUCT, XML, m4_xml, m4_db) Reference Guide: $2</title>
+m4_meta
+</head>
+<body bgcolor=white>
+m4_idefz($3)
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>ifelse(M4PRODUCT, XML, m4_xml, m4_db) Reference Guide:<dd>$1</dl></h3></td>
+<td align=right>dnl
+ifelse($4,,,
+<a href="../$4.html"><img src="M4RELDIR/images/prev.gif" alt="Prev"></a>)dnl
+<a href="../toc.html">dnl
+<img src="M4RELDIR/images/ref.gif" alt="Ref"></a>dnl
+ifelse($5,,,
+<a href="../$5.html"><img src="M4RELDIR/images/next.gif" alt="Next"></a>)
+</td></tr></table>
+<p>
+<h3 align=center>$2</h3>
+define(m4_page_footer, [dnl
+<table width="100%"><tr><td><br></td><td align=right>dnl
+ifelse($4,,,
+<a href="../$4.html"><img src="M4RELDIR/images/prev.gif" alt="Prev"></a>)dnl
+<a href="../toc.html">dnl
+<img src="M4RELDIR/images/ref.gif" alt="Ref"></a>dnl
+ifelse($5,,,
+<a href="../$5.html"><img src="M4RELDIR/images/next.gif" alt="Next"></a>)
+</td></tr></table>
+m4_copyright_footer
+</body>
+</html>])])
+
+dnl General purpose page leader
+dnl	#1: page name
+define(m4_page_title, [dnl
+m4_copyright_source
+<html>
+<head>
+<title>ifelse(M4PRODUCT, XML, m4_xml:, m4_db:) $1</title>
+m4_meta
+</head>
+<body bgcolor=white>
+<h3 align=center>$1</h3>
+define(m4_page_footer, [dnl
+m4_copyright_footer
+</body>
+</html>])])
+
+dnl General purpose page header, included by specific page headers.
+dnl	#1: page title string
+dnl	#2: section header
+dnl	#3: API/Ref links in header/footer {yes, no}
+define(m4_page_header, [dnl
+define(__m4_pagename, [$1])
+m4_copyright_source
+<html>
+<head>
+<title>ifelse(M4PRODUCT, XML, m4_xml:, m4_db:) $1</title>
+m4_meta
+</head>
+<body bgcolor=white>
+ifelse([$2],,, [dnl
+<table width="100%"><tr valign=top>
+<td>
+<h3>[$2]</h3>
+</td>
+ifelse([$3],,, [dnl
+<td align=right>
+<a href="m4_iurl"><img src="M4RELDIR/images/api.gif" alt="API"></a>
+<a href="M4RELDIR/ifelse(M4PRODUCT,XML,ref_xml,ref)/toc.html">dnl
+<img src="M4RELDIR/images/ref.gif" alt="Ref"></a></td>])
+</tr></table>
+m4_hl])
+<tt>
+define(m4_page_footer, [dnl
+</tt>
+ifelse([$3],,, [dnl
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="m4_iurl"><img src="M4RELDIR/images/api.gif" alt="API"></a>dnl
+<a href="M4RELDIR/ifelse(M4PRODUCT,XML,ref_xml,ref)/toc.html">dnl
+<img src="M4RELDIR/images/ref.gif" alt="Ref"></a>
+</td></tr></table>])
+m4_copyright_footer
+</body>
+</html>])])
+
+dnl Description header for C/C++ API manual pages.
+define(m4_pf_description, [dnl
+m4_hl
+<h3>Description: [$1]</h3>])
+
+dnl Page header for C/C++ API manual pages.
+dnl	#1: function name
+dnl	#2: function declaration
+dnl	#3: extra stuff
+define(m4_pf_header, [dnl
+m4_page_header([$1], [$1], yes)
+<h3><pre>
+m4_incextra([$3])
+ifelse([$2],,, [dnl
+<p>
+$2])
+</pre></h3>
+m4_pf_description([$1])])
+
+dnl Page header for Tcl manual pages.
+dnl	#1: tcl command name
+dnl	#2: tcl command name (correctly formatted)
+dnl	#3: utility Synopsis line
+define(m4_tcl_header, [dnl
+m4_page_header([$1], [$2], yes)
+<h3><pre>$3</pre></h3>
+<h3>Description($1)</h3>])
+
+dnl Page header for utilities.
+dnl	#1: utility name
+dnl	#2: utility Synopsis line
+define(m4_util_header, [dnl
+m4_page_header([$1], [$1])
+<h3><pre>$2</pre></h3>
+<h3>Description</h3>])
+
+dnl ###################################################################
+dnl	HTML links
+dnl ###################################################################
+dnl m4_link
+dnl	Link to titled DB Reference Guide page.
+dnl	#1: page
+dnl	#2: string
+define(m4_link, [<a href="$1.html">$2</a>])
+
+dnl m4_linkpage
+dnl	Link to specific address in any HTML page.
+dnl	#1: page
+dnl	#2: address (optional)
+dnl	#2/3: string to display
+define(m4_linkpage, [dnl
+ifelse($#, 3, [<a href="$1.html[__OCT__]$2">$3</a>],dnl
+[<a href="$1.html">$2</a>])])
+
+dnl m4_linkweb:
+dnl	Link to specific address in any page.
+dnl	#1: page
+dnl	#2: address (optional)
+dnl	#2/3: string to display
+define(m4_linkweb, [dnl
+ifelse($#, 3, [<a href="$1.html__OCT__$2">$3</a>],dnl
+[<a href="$1">$2</a>])])
+
+dnl m4_mailto
+dnl	Mailto construct.
+dnl	#1: address
+dnl	#2: string
+define(m4_mailto, [<a href="mailto:$1">$2</a>])
+
+dnl ###################################################################
+dnl Three forms of lists:
+dnl	- tagged
+dnl	- numbered
+dnl	- bullet item
+dnl ###################################################################
+dnl m4_tagbegin
+define(m4_tagbegin, <dl compact>)
+dnl m4_tag: standard tag list
+dnl	#1: tag
+dnl	#2: definition
+define(m4_tag, <dt>$1<dd>$2)
+dnl m4_tagns: standard tag list, no space
+dnl	#1: tag
+dnl	#2: definition
+define(m4_tagns, <dt>$1<dd>$2)
+dnl m4_tagopt: option tag list
+dnl	#1: option
+dnl	#2: definition
+define(m4_tagopt, <dt>m4_option($1)<dd>$2)
+dnl m4_tagoptns: option tag list, no space
+dnl	#1: option
+dnl	#2: definition
+define(m4_tagoptns, <dt>m4_option($1)<dd>$2)
+dnl m4_tagend
+define(m4_tagend, </dl>)
+
+define(m4_nlistbegin, <ol>)
+define(m4_nlist, <p><li>$1)
+define(m4_nlistns, <li>$1)
+define(m4_nlistend, </ol>)
+
+define(m4_bulletbegin, <p><ul type=disc>)
+define(m4_bullet, <li>$1)
+define(m4_bulletend, </ul>)
+
+dnl ###################################################################
+dnl	Tables
+dnl ###################################################################
+dnl m4_table_begin: a table with N elements.
+dnl	#1: optional title
+dnl	#2: option alignment (_left, _right, _center)
+dnl
+dnl m4_table_header: column headers, emboldened
+dnl
+dnl m4_table_element: table element
+dnl	#1: optional empty flag (_empty)
+dnl	#1: optional alignment (_left, _right, _center)
+dnl
+dnl m4_table_end: table end
+dnl
+define(m4_table_begin, [dnl
+[<table border=1]dnl
+ifelse([$2],,,
+    [$2], _left, [ align=left],
+    [$2], _center, [ align=center],
+    [$2], _right, [ align=right])>])
+define(m4_table_end, </table>)
+define(m4_table_header, [<tr>__m4_table_header($@)</tr>])
+define(__m4_table_header, [dnl
+ifelse([$1],,,[$1],_empty,
+<th><br></th>[__m4_table_header(shift($@))],
+<th>$1</th>[__m4_table_header(shift($@))])])
+define(m4_table_element, [<tr>__m4_table_element($@)</tr>])
+define(__m4_table_element, [dnl
+ifelse([$1],,,
+[$1], _left, [dnl
+    ifelse([$2],,,
+    <td align=left>[$2]</td>[__m4_table_element(_left, shift(shift($@)))])],
+[$1], _center, [dnl
+    ifelse([$2],,,
+    <td align=center>[$2]</td>[__m4_table_element(_center, shift(shift($@)))])],
+[$1], _right, [dnl
+    ifelse([$2],,,
+    <td align=right>[$2]</td>[__m4_table_element(_right, shift(shift($@)))])],
+[$1], _empty,
+    <td><br></td>[__m4_table_element(shift($@))],
+    <td>[$1]</td>[__m4_table_element(shift($@))])])
+
+dnl ###################################################################
+dnl	Index.
+dnl ###################################################################
+dnl __m4_icnt --
+dnl     In HTML land, each index element gets its own unique address that
+dnl	we generate based on an incremented variable, __m4_icnt.
+define(__m4_icnt, 1)
+
+dnl m4_idefz --
+dnl	$N string(s) to index
+define(m4_idefz, [dnl
+ifelse([$1],,, [dnl
+m4_idef([<!--meow-->],dnl
+ifelse(index($1,@),-1,@$1,$1))m4_idefz(shift($@))])])
+
+dnl m4_idef --
+dnl	Index definition.
+dnl	$1 display text
+dnl	$2 string to index [optional]
+define(m4_idef, [dnl
+ifelse($#, 1, [dnl
+<a name="$1">$1</a>dnl
+syscmd(echo "__APIREL__/M4PAGEPATH[__OCT__]$1 __m4_pagename@$1" >> _m4_ipath)],[dnl
+define([__m4_icnt], incr(__m4_icnt))dnl
+<a name="__m4_icnt">$1</a>dnl
+syscmd(echo "__APIREL__/M4PAGEPATH[__OCT__]__m4_icnt $2" >> _m4_ipath)])])

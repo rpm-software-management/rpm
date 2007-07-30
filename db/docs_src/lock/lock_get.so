@@ -1,0 +1,78 @@
+m4_comment([$Id: lock_get.so,v 10.53 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, lock_get)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(lock_get),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__lock_get(DB_ENV *env, u_int32_t locker,
+    u_int32_t flags, const DBT *object,
+    const db_lockmode_t lock_mode, DB_LOCK *lock);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::lock_get(u_int32_t locker, u_int32_t flags,
+    const Dbt *object, const db_lockmode_t lock_mode, DbLock *lock);
+]))
+
+m4_p([dnl
+The m4_refT(lock_get) acquires a lock from the lock table, returning
+information about it in the m4_arg(lock) parameter.])
+
+m4_return(lock_get, std)
+
+m4_parambegin
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+
+m4_tagbegin
+m4_tag(m4_idef(DB_LOCK_NOWAIT), [dnl
+If a lock cannot be granted because the requested lock conflicts with an
+existing lock,
+ifelse(M4API, C_API, [dnl
+return DB_LOCK_NOTGRANTED immediately instead of waiting
+for the lock to become available.])
+ifelse(M4API, CXX_API, [dnl
+return DB_LOCK_NOTGRANTED or throw a
+m4_ref(DbLockNotGrantedException) immediately instead of waiting for
+the lock to become available.])])
+m4_tagend])
+
+m4_param(lock_mode, [dnl
+The m4_arg(lock_mode) parameter is used as an index into the environment's
+lock conflict matrix.  When using the default lock conflict matrix,
+m4_arg(lock_mode) must be set to one of the following values:
+m4_tagbegin
+m4_tagns(DB_LOCK_READ, [read (shared)])
+m4_tagns(DB_LOCK_WRITE, [write (exclusive)])
+m4_tagns(DB_LOCK_IWRITE, [intention to write (shared)])
+m4_tagns(DB_LOCK_IREAD, [intention to read (shared)])
+m4_tagns(DB_LOCK_IWR, [intention to read and write (shared)])
+m4_tagend
+m4_p([dnl
+See m4_ref(dbenv_set_lk_conflicts) and m4_link(M4RELDIR/ref/lock/stdmode,
+[Standard Lock Modes]) for more information on the lock conflict matrix.])])
+
+m4_param(locker, [dnl
+The m4_arg(locker) parameter is an unsigned 32-bit integer quantity.  It
+represents the entity requesting the lock.])
+
+m4_param(object, [dnl
+The m4_arg(object) parameter is an untyped byte string that specifies the
+object to be locked.  Applications using the locking subsystem directly
+while also doing locking via the m4_db access methods must take care not
+to inadvertently lock objects that happen to be equal to the unique file
+IDs used to lock files.  See
+m4_link(M4RELDIR/ref/lock/am_conv, [Access method locking conventions])
+for more information.])
+
+m4_paramend
+
+m4_err(lock_get, deadlock, locknotgranted,
+[m4_ref(DB_LOCK_NOWAIT) flag or lock timers were configured and the],
+einval,,
+memory, [maximum number of locks has been reached])
+
+m4_seealso(DbLock)
+m4_page_footer

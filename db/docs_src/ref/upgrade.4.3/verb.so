@@ -1,0 +1,22 @@
+m4_comment([$Id: verb.so,v 1.8 2004/09/28 14:13:10 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.3: DB_ENV-__GT__set_verbose,,
+    upgrade.4.3/stat, upgrade.4.3/log)
+
+m4_p([dnl
+The 4.3 release removes support for the m4_refT(dbenv_set_verbose) flag
+DB_VERB_CHKPOINT.  Application writers should simply remove any use of
+this flag from their applications.])
+
+m4_p([dnl
+The 4.3 release redirects output configured by the m4_refT(dbenv_set_verbose)
+from the error output channels (see the m4_ref(dbenv_set_errfile) and
+m4_refT(dbenv_set_errcall)s for more information) to the new
+m4_ref(dbenv_set_msgcall) and m4_ref(dbenv_set_msgfile) message output
+channels.  This change means the error output channels are now only used
+for errors, and not for debugging and performance tuning messages as
+well as errors.  Application writers using m4_ref(dbenv_set_verbose)
+should confirm that output is handled appropriately.])
+
+m4_page_footer

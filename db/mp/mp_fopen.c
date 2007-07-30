@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mp_fopen.c,v 12.34 2006/09/09 13:55:52 bostic Exp $
+ * $Id: mp_fopen.c,v 12.44 2007/05/17 17:18:01 bostic Exp $
  */
 
 #include "db_config.h"
@@ -15,8 +14,10 @@
 #include "dbinc/db_page.h"
 #include "dbinc/hash.h"
 
-static int __memp_mfp_alloc __P((DB_MPOOL *,
+static int __memp_mpf_alloc __P((DB_MPOOL *,
     DB_MPOOLFILE *, const char *, u_int32_t, u_int32_t, MPOOLFILE **));
+static int __memp_mpf_find __P((DB_ENV *,
+    DB_MPOOLFILE *, DB_MPOOL_HASH *, const char *, u_int32_t, MPOOLFILE **));
 
 /*
  * __memp_fopen_pp --
@@ -140,14 +141,51 @@ __memp_fopen(dbmfp, mfp, path, flags, mode, pgsize)
 
 	bucket = 0;
 	hp = R_ADDR(dbmp->reginfo, mp->ftab);
-	if (path == NULL && mfp == NULL)
-		goto alloc;
+	if (mfp == NULL) {
+		if (path == NULL)
+			goto alloc;
 
-	/*
-	 * Our caller may be able to tell us which underlying MPOOLFILE we
-	 * need a handle for.
-	 */
-	if (mfp != NULL) {
+		/*
+		 * Hash to the proper file table entry and walk it.
+		 *
+		 * The fileID is a filesystem unique number (e.g., a
+		 * UNIX dev/inode pair) plus a timestamp.  If files are
+		 * removed and created in less than a second, the fileID
+		 * can be repeated.  The problem with repetition happens
+		 * when the file that previously had the fileID value still
+		 * has pages in the pool, since we don't want to use them
+		 * to satisfy requests for the new file. Because the
+		 * DB_TRUNCATE flag reuses the dev/inode pair, repeated
+		 * opens with that flag set guarantees matching fileIDs
+		 * when the machine can open a file and then re-open
+		 * with truncate within a second.  For this reason, we
+		 * pass that flag down, and, if we find a matching entry,
+		 * we ensure that it's never found again, and we create
+		 * a new entry for the current request.
+		 */
+
+		if (FLD_ISSET(dbmfp->config_flags, DB_MPOOL_NOFILE))
+			bucket = FNBUCKET(path, strlen(path));
+		else
+			bucket = FNBUCKET(dbmfp->fileid, DB_FILE_ID_LEN);
+		hp += bucket;
+
+		/*
+		 * If we are passed a FILEID find the MPOOLFILE and inc
+		 * its ref count.  That way it cannot go away while we
+		 * open it.
+		 */
+		if (F_ISSET(dbmfp, MP_FILEID_SET)) {
+			MUTEX_LOCK(dbenv, hp->mtx_hash);
+			ret =
+			    __memp_mpf_find(dbenv, dbmfp, hp, path, flags,&mfp);
+			MUTEX_UNLOCK(dbenv, hp->mtx_hash);
+			if (ret != 0)
+				goto err;
+			if (mfp != NULL)
+				refinc = 1;
+		}
+	} else {
 		/*
 		 * Deadfile can only be set if mpf_cnt goes to zero (or if we
 		 * failed creating the file DB_AM_DISCARD).  Increment the ref
@@ -213,7 +251,7 @@ __memp_fopen(dbmfp, mfp, path, flags, mode, pgsize)
 		}
 		if ((ret = __db_appname(dbenv,
 		     DB_APP_DATA, path, 0, NULL, &rpath)) == 0)
-			ret = __os_open_extend(dbenv, rpath,
+			ret = __os_open(dbenv, rpath,
 			     (u_int32_t)pagesize, oflags, mode, &dbmfp->fhp);
 		if (mfp != NULL)
 			MPOOL_SYSTEM_UNLOCK(dbenv);
@@ -289,83 +327,21 @@ __memp_fopen(dbmfp, mfp, path, flags, mode, pgsize)
 		goto have_mfp;
 
 	/*
-	 * Hash to the proper file table entry and walk it.
-	 *
-	 * The fileID is a filesystem unique number (e.g., a UNIX dev/inode
-	 * pair) plus a timestamp.  If files are removed and created in less
-	 * than a second, the fileID can be repeated.  The problem with
-	 * repetition happens when the file that previously had the fileID
-	 * value still has pages in the pool, since we don't want to use them
-	 * to satisfy requests for the new file.
-	 *
-	 * Because the DB_TRUNCATE flag reuses the dev/inode pair, repeated
-	 * opens with that flag set guarantees matching fileIDs when the
-	 * machine can open a file and then re-open with truncate within a
-	 * second.  For this reason, we pass that flag down, and, if we find
-	 * a matching entry, we ensure that it's never found again, and we
-	 * create a new entry for the current request.
-	 */
-	if (FLD_ISSET(dbmfp->config_flags, DB_MPOOL_NOFILE)) {
-		DB_ASSERT(dbenv, path != NULL);
-		bucket = FNBUCKET(path, strlen(path));
-	} else
-		bucket = FNBUCKET(dbmfp->fileid, DB_FILE_ID_LEN);
-	hp += bucket;
-
-	/*
 	 * We can race with another process opening the same file when
 	 * we allocate the mpoolfile structure.  We will come back
 	 * here and check the hash table again to see if it has appeared.
 	 * For most files this is not a problem, since the name is locked
 	 * at a higher layer but QUEUE extent files are not locked.
 	 */
-
 check:	MUTEX_LOCK(dbenv, hp->mtx_hash);
-	SH_TAILQ_FOREACH(mfp, &hp->hash_bucket, q, __mpoolfile) {
-		/* Skip dead files and temporary files. */
-		if (mfp->deadfile || F_ISSET(mfp, MP_TEMP))
-			continue;
+	if ((ret = __memp_mpf_find(dbenv, dbmfp, hp, path, flags, &mfp) != 0))
+		goto err;
 
-		/*
-		 * Any remaining DB_MPOOL_NOFILE databases are in-memory
-		 * named databases and need only match other in-memory
-		 * databases with the same name.
-		 */
-		if (FLD_ISSET(dbmfp->config_flags, DB_MPOOL_NOFILE)) {
-			if (!mfp->no_backing_file)
-				continue;
-
-			DB_ASSERT(dbenv, path != NULL);
-			if (strcmp(path, R_ADDR(dbmp->reginfo, mfp->path_off)))
-				continue;
-
-			/*
-			 * We matched an in-memory file; grab the fileid if
-			 * it is set in the region, but not in the dbmfp.
-			 */
-			if (!F_ISSET(dbmfp, MP_FILEID_SET))
-				(void)__memp_set_fileid(dbmfp,
-				    R_ADDR(dbmp->reginfo, mfp->fileid_off));
-		} else
-			if (memcmp(dbmfp->fileid, R_ADDR(dbmp->reginfo,
-			    mfp->fileid_off), DB_FILE_ID_LEN) != 0)
-				continue;
-
-		/*
-		 * If the file is being truncated, remove it from the system
-		 * and create a new entry.
-		 *
-		 * !!!
-		 * We should be able to set mfp to NULL and break out of the
-		 * loop, but I like the idea of checking all the entries.
-		 */
-		if (LF_ISSET(DB_TRUNCATE)) {
-			MUTEX_LOCK(dbenv, mfp->mutex);
-			mfp->deadfile = 1;
-			MUTEX_UNLOCK(dbenv, mfp->mutex);
-			continue;
-		}
-
+	if (alloc_mfp != NULL && mfp == NULL) {
+		mfp = alloc_mfp;
+		alloc_mfp = NULL;
+		SH_TAILQ_INSERT_HEAD(&hp->hash_bucket, mfp, q, __mpoolfile);
+	} else if (mfp != NULL) {
 		/*
 		 * Some things about a file cannot be changed: the clear length,
 		 * page size, or LSN location.  However, if this is an attempt
@@ -385,7 +361,7 @@ check:	MUTEX_LOCK(dbenv, hp->mtx_hash);
 		    mfp->clear_len != DB_CLEARLEN_NOTSET &&
 		    dbmfp->clear_len != mfp->clear_len) ||
 		    (pagesize != 0 && pagesize != mfp->stat.st_pagesize) ||
-		    (dbmfp->lsn_offset != -1 &&
+		    (dbmfp->lsn_offset != DB_LSN_OFF_NOTSET &&
 		    mfp->lsn_off != DB_LSN_OFF_NOTSET &&
 		    dbmfp->lsn_offset != mfp->lsn_off)) {
 			__db_errx(dbenv,
@@ -395,42 +371,6 @@ check:	MUTEX_LOCK(dbenv, hp->mtx_hash);
 			ret = EINVAL;
 			goto err;
 		}
-
-		/*
-		 * Check to see if this file has died while we waited.
-		 *
-		 * We normally don't lock the deadfile field when we read it as
-		 * we only care if the field is zero or non-zero.  We do lock
-		 * on read when searching for a matching MPOOLFILE so that two
-		 * threads of control don't race between setting the deadfile
-		 * bit and incrementing the reference count, that is, a thread
-		 * of control decrementing the reference count and then setting
-		 * deadfile because the reference count is 0 blocks us finding
-		 * the file without knowing it's about to be marked dead.
-		 */
-		MUTEX_LOCK(dbenv, mfp->mutex);
-		if (mfp->deadfile) {
-			MUTEX_UNLOCK(dbenv, mfp->mutex);
-			continue;
-		}
-		++mfp->mpf_cnt;
-		refinc = 1;
-		MUTEX_UNLOCK(dbenv, mfp->mutex);
-
-		/* Initialize any fields that are not yet set. */
-		if (dbmfp->ftype != 0)
-			mfp->ftype = dbmfp->ftype;
-		if (dbmfp->clear_len != DB_CLEARLEN_NOTSET)
-			mfp->clear_len = dbmfp->clear_len;
-		if (dbmfp->lsn_offset != -1)
-			mfp->lsn_off = dbmfp->lsn_offset;
-
-		break;
-	}
-	if (alloc_mfp != NULL && mfp == NULL) {
-		mfp = alloc_mfp;
-		alloc_mfp = NULL;
-		SH_TAILQ_INSERT_HEAD(&hp->hash_bucket, mfp, q, __mpoolfile);
 	}
 
 	MUTEX_UNLOCK(dbenv, hp->mtx_hash);
@@ -462,7 +402,7 @@ alloc:		/*
 			    __os_fileid(dbenv, rpath, 0, dbmfp->fileid)) != 0)
 				goto err;
 
-		if ((ret = __memp_mfp_alloc(dbmp,
+		if ((ret = __memp_mpf_alloc(dbmp,
 		     dbmfp, path, pagesize, flags, &alloc_mfp)) != 0)
 			goto err;
 
@@ -625,8 +565,105 @@ err:		if (refinc) {
 	return (ret);
 }
 
+/*
+ * __memp_mpf_find --
+ *	Search a hash bucket for a MPOOLFILE.
+ */
 static int
-__memp_mfp_alloc(dbmp, dbmfp, path, pagesize, flags, retmfp)
+__memp_mpf_find(dbenv, dbmfp, hp, path, flags, mfpp)
+	DB_ENV *dbenv;
+	DB_MPOOLFILE *dbmfp;
+	DB_MPOOL_HASH *hp;
+	const char *path;
+	u_int32_t flags;
+	MPOOLFILE **mfpp;
+{
+	DB_MPOOL *dbmp;
+	MPOOLFILE *mfp;
+
+	dbmp = dbenv->mp_handle;
+
+	SH_TAILQ_FOREACH(mfp, &hp->hash_bucket, q, __mpoolfile) {
+		/* Skip dead files and temporary files. */
+		if (mfp->deadfile || F_ISSET(mfp, MP_TEMP))
+			continue;
+
+		/*
+		 * Any remaining DB_MPOOL_NOFILE databases are in-memory
+		 * named databases and need only match other in-memory
+		 * databases with the same name.
+		 */
+		if (FLD_ISSET(dbmfp->config_flags, DB_MPOOL_NOFILE)) {
+			if (!mfp->no_backing_file)
+				continue;
+
+			if (strcmp(path, R_ADDR(dbmp->reginfo, mfp->path_off)))
+				continue;
+
+			/*
+			 * We matched an in-memory file; grab the fileid if
+			 * it is set in the region, but not in the dbmfp.
+			 */
+			if (!F_ISSET(dbmfp, MP_FILEID_SET))
+				(void)__memp_set_fileid(dbmfp,
+				    R_ADDR(dbmp->reginfo, mfp->fileid_off));
+		} else
+			if (memcmp(dbmfp->fileid, R_ADDR(dbmp->reginfo,
+			    mfp->fileid_off), DB_FILE_ID_LEN) != 0)
+				continue;
+
+		/*
+		 * If the file is being truncated, remove it from the system
+		 * and create a new entry.
+		 *
+		 * !!!
+		 * We should be able to set mfp to NULL and break out of the
+		 * loop, but I like the idea of checking all the entries.
+		 */
+		if (LF_ISSET(DB_TRUNCATE)) {
+			MUTEX_LOCK(dbenv, mfp->mutex);
+			mfp->deadfile = 1;
+			MUTEX_UNLOCK(dbenv, mfp->mutex);
+			continue;
+		}
+
+		/*
+		 * Check to see if this file has died while we waited.
+		 *
+		 * We normally don't lock the deadfile field when we read it as
+		 * we only care if the field is zero or non-zero.  We do lock
+		 * on read when searching for a matching MPOOLFILE so that two
+		 * threads of control don't race between setting the deadfile
+		 * bit and incrementing the reference count, that is, a thread
+		 * of control decrementing the reference count and then setting
+		 * deadfile because the reference count is 0 blocks us finding
+		 * the file without knowing it's about to be marked dead.
+		 */
+		MUTEX_LOCK(dbenv, mfp->mutex);
+		if (mfp->deadfile) {
+			MUTEX_UNLOCK(dbenv, mfp->mutex);
+			continue;
+		}
+		++mfp->mpf_cnt;
+		MUTEX_UNLOCK(dbenv, mfp->mutex);
+
+		/* Initialize any fields that are not yet set. */
+		if (dbmfp->ftype != 0)
+			mfp->ftype = dbmfp->ftype;
+		if (dbmfp->clear_len != DB_CLEARLEN_NOTSET)
+			mfp->clear_len = dbmfp->clear_len;
+		if (dbmfp->lsn_offset != -1)
+			mfp->lsn_off = dbmfp->lsn_offset;
+
+		break;
+	}
+
+	*mfpp = mfp;
+	return (0);
+}
+
+static int
+__memp_mpf_alloc(dbmp, dbmfp, path, pagesize, flags, retmfp)
 	DB_MPOOL *dbmp;
 	DB_MPOOLFILE *dbmfp;
 	const char *path;
@@ -742,14 +779,12 @@ __memp_fclose_pp(dbmfp, flags)
 
 	/*
 	 * Validate arguments, but as a handle destructor, we can't fail.
-	 *
-	 * !!!
-	 * DB_MPOOL_DISCARD: Undocumented flag: DB private.
 	 */
-	(void)__db_fchk(dbenv, "DB_MPOOLFILE->close", flags, DB_MPOOL_DISCARD);
+	if (flags != 0)
+		(void)__db_ferr(dbenv, "DB_MPOOLFILE->close", 0);
 
 	ENV_ENTER(dbenv, ip);
-	REPLICATION_WRAP(dbenv, (__memp_fclose(dbmfp, flags)), ret);
+	REPLICATION_WRAP(dbenv, (__memp_fclose(dbmfp, 0)), ret);
 	ENV_LEAVE(dbenv, ip);
 	return (ret);
 }
@@ -906,7 +941,9 @@ __memp_mf_discard(dbmp, mfp)
 {
 	DB_ENV *dbenv;
 	DB_MPOOL_HASH *hp;
+#ifdef HAVE_STATISTICS
 	DB_MPOOL_STAT *sp;
+#endif
 	MPOOL *mp;
 	int need_sync, ret, t_ret;
 
@@ -948,9 +985,10 @@ __memp_mf_discard(dbmp, mfp)
 	/* Lock the region and collect stats and free the space. */
 	MPOOL_SYSTEM_LOCK(dbenv);
 	if (need_sync &&
-	    (t_ret = __memp_mf_sync(dbmp, mfp, 1)) != 0 && ret == 0)
+	    (t_ret = __memp_mf_sync(dbmp, mfp, 0)) != 0 && ret == 0)
 		ret = t_ret;
 
+#ifdef HAVE_STATISTICS
 	/* Copy the statistics into the region. */
 	sp = &mp->stat;
 	sp->st_cache_hit += mfp->stat.st_cache_hit;
@@ -959,6 +997,7 @@ __memp_mf_discard(dbmp, mfp)
 	sp->st_page_create += mfp->stat.st_page_create;
 	sp->st_page_in += mfp->stat.st_page_in;
 	sp->st_page_out += mfp->stat.st_page_out;
+#endif
 
 	/* Free the space. */
 	if (mfp->path_off != 0)

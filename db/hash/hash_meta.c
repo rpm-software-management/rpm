@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1999-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1999,2007 Oracle.  All rights reserved.
  *
- * $Id: hash_meta.c,v 12.8 2006/08/24 14:46:05 bostic Exp $
+ * $Id: hash_meta.c,v 12.11 2007/05/17 15:15:38 bostic Exp $
  */
 
 #include "db_config.h"
@@ -63,7 +62,7 @@ __ham_release_meta(dbc)
 	hcp = (HASH_CURSOR *)dbc->internal;
 
 	if (hcp->hdr != NULL) {
-		if ((ret = __memp_fput(mpf, hcp->hdr, 0)) != 0)
+		if ((ret = __memp_fput(mpf, hcp->hdr, dbc->priority)) != 0)
 			return (ret);
 		hcp->hdr = NULL;
 	}
@@ -94,5 +93,6 @@ __ham_dirty_meta(dbc, flags)
 	     hashp->meta_pgno, DB_LOCK_WRITE, 0, &hcp->hlock)) != 0)
 		return (ret);
 
-	return (__memp_dirty(dbp->mpf, &hcp->hdr, dbc->txn, flags));
+	return (__memp_dirty(dbp->mpf,
+	    &hcp->hdr, dbc->txn, dbc->priority, flags));
 }

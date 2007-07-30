@@ -1,0 +1,51 @@
+m4_comment([$Id: api_tcl.so,v 11.21 2003/10/18 19:16:23 bostic Exp $])
+
+m4_page_title([Tcl API])
+include(tcl/m4.tcl)
+
+m4_table_begin(, _center)
+
+m4_table_header([Tcl Command], Description)
+m4_table_element(m4_link(M4RELDIR/api_tcl/env_open, m4_tcl_env_open), Create an environment handle)
+m4_table_element(m4_link(M4RELDIR/api_tcl/env_remove, m4_tcl_env_remove), Remove an environment)
+m4_table_element(m4_link(M4RELDIR/api_tcl/env_close, m4_tcl_env_close), Close an environment)
+m4_table_element(m4_link(M4RELDIR/api_tcl/env_dbremove, m4_tcl_env_dbremove), Remove a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/env_dbrename, m4_tcl_env_dbrename), Rename a database)
+
+m4_table_element(_empty, _empty)
+m4_table_element(m4_link(M4RELDIR/api_tcl/txn, m4_tcl_txn), Begin a transaction)
+m4_table_element(m4_link(M4RELDIR/api_tcl/txn_checkpoint, m4_tcl_txn_ckp), Checkpoint the environment)
+m4_table_element(m4_link(M4RELDIR/api_tcl/txn_abort, m4_tcl_txn_abort), Abort a transaction)
+m4_table_element(m4_link(M4RELDIR/api_tcl/txn_commit, m4_tcl_txn_commit), Commit a transaction)
+
+m4_table_element(_empty, _empty)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_open, m4_tcl_db_open), Create a database handle)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_remove, m4_tcl_db_remove), Remove a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_rename, m4_tcl_db_rename), Rename a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_close, m4_tcl_db_close), Close a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_count, m4_tcl_db_count), Return a count of a key's data items)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_cursor, m4_tcl_db_cursor), Open a cursor into a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_del, m4_tcl_db_del), Delete items from a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_get, m4_tcl_db_get), Get items from a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_get_join, m4_tcl_db_get_join), Get items from a database join)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_get_type, m4_tcl_db_get_type), Return the database type)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_is_byteswapped, m4_tcl_db_is_byteswapped), Return if the underlying database is in host order)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_join, m4_tcl_db_join), Perform a database join on cursors)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_put, m4_tcl_db_put), Store items into a database)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_stat, m4_tcl_db_stat), Return database statistics)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_sync, m4_tcl_db_sync), Flush a database to stable storage)
+m4_table_element(m4_link(M4RELDIR/api_tcl/db_truncate, m4_tcl_db_truncate), Truncate a database)
+
+m4_table_element(_empty, _empty)
+m4_table_element(m4_link(M4RELDIR/api_tcl/dbc_close, m4_tcl_dbc_close), Close a cursor)
+m4_table_element(m4_link(M4RELDIR/api_tcl/dbc_del, m4_tcl_dbc_del), Delete by cursor)
+m4_table_element(m4_link(M4RELDIR/api_tcl/dbc_dup, m4_tcl_dbc_dup), Duplicate a cursor)
+m4_table_element(m4_link(M4RELDIR/api_tcl/dbc_get, m4_tcl_dbc_get), Retrieve by cursor)
+m4_table_element(m4_link(M4RELDIR/api_tcl/dbc_put, m4_tcl_dbc_put), Store by cursor)
+
+m4_table_element(_empty, _empty)
+m4_table_element(m4_link(M4RELDIR/api_tcl/version, m4_tcl_version), Return version information)
+
+m4_table_end
+
+m4_page_footer

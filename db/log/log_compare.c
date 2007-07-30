@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: log_compare.c,v 12.8 2006/09/14 15:00:49 bostic Exp $
+ * $Id: log_compare.c,v 12.11 2007/05/17 15:15:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -47,21 +46,19 @@ __log_check_page_lsn(dbenv, dbp, lsnp)
 
 	LOG_SYSTEM_UNLOCK(dbenv);
 
-	if (ret >=0) {
-		__db_errx(dbenv,
-			"file %s has LSN %lu/%lu, past end of log at %lu/%lu",
-		    dbp == NULL || dbp->fname == NULL ? "unknown" : dbp->fname,
-		    (u_long)lsnp->file,
-		    (u_long)lsnp->offset,
-		    (u_long)lp->lsn.file,
-		    (u_long)lp->lsn.offset);
-		__db_errx(dbenv, "%s",
-     "Commonly caused by moving a database from one transactional database");
-		__db_errx(dbenv, "%s",
-     "environment to another without clearing the database LSNs, or removing");
-		__db_errx(dbenv, "%s",
-		     "all of the log files from a database environment");
-		return (EINVAL);
-	}
-	return (0);
+	if (ret < 0)
+		return (0);
+
+	__db_errx(dbenv,
+	    "file %s has LSN %lu/%lu, past end of log at %lu/%lu",
+	    dbp == NULL || dbp->fname == NULL ? "unknown" : dbp->fname,
+	    (u_long)lsnp->file, (u_long)lsnp->offset,
+	    (u_long)lp->lsn.file, (u_long)lp->lsn.offset);
+	__db_errx(dbenv, "%s",
+    "Commonly caused by moving a database from one database environment");
+	__db_errx(dbenv, "%s",
+    "to another without clearing the database LSNs, or by removing all of");
+	__db_errx(dbenv, "%s",
+    "the log files from a database environment");
+	return (EINVAL);
 }

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: hash_reclaim.c,v 12.6 2006/08/24 14:46:05 bostic Exp $
+ * $Id: hash_reclaim.c,v 12.9 2007/05/17 15:15:38 bostic Exp $
  */
 
 #include "db_config.h"
@@ -52,7 +51,7 @@ __ham_reclaim(dbp, txn)
 	if ((ret = __ham_traverse(dbc,
 	    DB_LOCK_WRITE, __db_reclaim_callback, dbc, 1)) != 0)
 		goto err;
-	if ((ret = __db_c_close(dbc)) != 0)
+	if ((ret = __dbc_close(dbc)) != 0)
 		goto err;
 	if ((ret = __ham_release_meta(dbc)) != 0)
 		goto err;
@@ -60,7 +59,7 @@ __ham_reclaim(dbp, txn)
 
 err:	if (hcp->hdr != NULL)
 		(void)__ham_release_meta(dbc);
-	(void)__db_c_close(dbc);
+	(void)__dbc_close(dbc);
 	return (ret);
 }
 

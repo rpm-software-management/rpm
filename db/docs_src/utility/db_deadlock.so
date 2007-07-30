@@ -1,0 +1,79 @@
+m4_comment([$Id: db_deadlock.so,v 10.32 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_deadlock)
+
+m4_util_header(db_deadlock, [dnl
+db_deadlock m4_utilarg(Vv)
+    m4_utilarg([a e | m | n | o | W | w | y]) m4_utilarg([h home]) m4_utilarg([L file]) m4_utilarg([t sec.usec])])
+m4_idefz(utility to detect @deadlocks)
+
+m4_p([dnl
+The m4_ref(db_deadlock) utility traverses the database environment lock
+region, and aborts a lock request each time it detects a deadlock or a
+lock request that has timed out.  By default, in the case of a deadlock,
+a random lock request is chosen to be aborted.])
+
+m4_p([dnl
+This utility should be run as a background daemon, or the underlying
+m4_db deadlock detection interfaces should be called in some other way,
+whenever there are multiple threads or processes accessing a database
+and at least one of them is modifying it.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+m4_tagopt(a, [dnl
+When a deadlock is detected, abort the locker:
+m4_tagbegin
+m4_tag(m, [with the most locks])
+m4_tagns(n, [with the fewest locks])
+m4_tagns(o, [with the oldest lock])
+m4_tagns(W, [with the most write locks])
+m4_tagns(w, [with the fewest write locks])
+m4_tagns(y, [with the youngest lock])
+m4_tagend])
+m4_p([dnl
+When lock or transaction timeouts have been specified:
+m4_tagbegin
+m4_tag(e, [abort any lock request that has timed out])
+m4_tagend])
+
+m4_hflag
+
+m4_Lflag(db_deadlock)
+
+m4_tagopt(t, [dnl
+Check the database environment every m4_arg(sec) seconds plus
+m4_arg(usec) microseconds to see if a process has been forced to wait
+for a lock; if one has, review the database environment lock
+structures.])
+
+m4_Vflag
+
+m4_tagopt(v, [dnl
+Run in verbose mode, generating messages each time the detector runs.])
+
+m4_tagend
+
+m4_p([dnl
+If the m4_option(t) option is not specified, m4_ref(db_deadlock) will
+run once and exit.])
+
+m4_detach(db_deadlock, uses)
+
+m4_p([dnl
+The m4_ref(db_deadlock) utility does not attempt to create the m4_db
+shared memory regions if they do not already exist.  The application
+which creates the region should be started first, and then, once the
+region is created, the m4_ref(db_deadlock) utility should be started.])
+
+m4_underfunc(lock_detect, lock_detect, db_deadlock)
+
+m4_utilexit(db_deadlock)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_deadlock)
+
+m4_page_footer

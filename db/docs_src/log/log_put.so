@@ -1,0 +1,53 @@
+m4_comment([$Id: log_put.so,v 10.41 2004/08/13 03:38:57 bostic Exp $])
+
+define(M4PAGELOCAL, log_put)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(log_put),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__log_put(DB_ENV *env,
+    DB_LSN *lsn, const DBT *data, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::log_put(DbLsn *lsn, const Dbt *data, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(log_put) appends records to the log.  The m4_ref(DbLsn) of
+the put record is returned in the m4_arg(lsn) parameter.])
+
+m4_return(log_put, std)
+
+m4_parambegin
+m4_param(data, [dnl
+The m4_arg(data) parameter is the record to write to the log.
+m4_p([dnl
+The caller is responsible for providing any necessary structure to
+m4_arg(data).  (For example, in a write-ahead logging protocol, the
+application must understand what part of m4_arg(data) is an operation
+code, what part is redo information, and what part is undo information.
+In addition, most transaction managers will store in m4_arg(data) the
+m4_ref(DbLsn) of the previous log record for the same transaction, to
+support chaining back through the transaction's log records during
+undo.)])])
+
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_tag(m4_idef(DB_FLUSH), [dnl
+The log is forced to disk after this record is written, guaranteeing
+that all records with m4_ref(DbLsn) values less than or equal to the
+one being "put" are on disk before m4_ref(log_put) returns.])
+m4_tagend])
+
+m4_param_co(lsn, m4_ref(DbLsn) of the put record)
+
+m4_paramend
+
+m4_err(log_flush,
+einval, [the record to be logged is larger than the maximum log record])
+
+m4_seealso(DbLog)
+m4_page_footer

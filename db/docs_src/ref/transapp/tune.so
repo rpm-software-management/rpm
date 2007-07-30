@@ -1,0 +1,165 @@
+m4_comment([$Id: tune.so,v 11.24 2006/08/08 05:24:09 mjc Exp $])
+
+m4_ref_title(m4_tam Applications,
+    Transaction tuning,
+    [@transaction tuning, transaction @tuning],
+    transapp/reclimit, transapp/throughput)
+
+m4_p([dnl
+There are a few different issues to consider when tuning the performance
+of m4_db transactional applications.  First, you should review
+m4_link(M4RELDIR/ref/am_misc/tune, [Access method tuning]), as the
+tuning issues for access method applications are applicable to
+transactional applications as well.  The following are additional tuning
+issues for m4_db transactional applications:])
+
+m4_tagbegin
+m4_tag(access method, [dnl
+Highly concurrent applications should use the Queue access method, where
+possible, as it provides finer-granularity of locking than the other
+access methods.  Otherwise, applications usually see better concurrency
+when using the Btree access method than when using either the Hash or
+Recno access methods.])
+
+m4_tag(record numbers, [dnl
+Using record numbers outside of the Queue access method will often slow
+down concurrent applications as they limit the degree of concurrency
+available in the database.  Using the Recno access method, or the Btree
+access method with retrieval by record number configured can slow
+applications down.])
+
+m4_tag(Btree database size, [dnl
+When using the Btree access method, applications supporting concurrent
+access may see excessive numbers of deadlocks in small databases.  There
+are two different approaches to resolving this problem.  First, as the
+Btree access method uses page-level locking, decreasing the database
+page size can result in fewer lock conflicts.  Second, in the case of
+databases that are cyclically growing and shrinking, turning off reverse
+splits (with m4_ref(DB_REVSPLITOFF)) can leave the database with enough
+pages that there will be fewer lock conflicts.])
+
+m4_tag(read locks, [dnl
+Performing all read operations outside of transactions or at
+m4_link(M4RELDIR/ref/transapp/read, snapshot isolation) can often
+significantly increase application throughput.  In addition, limiting
+the lifetime of non-transactional cursors will reduce the length of
+times locks are held, thereby improving concurrency.])
+
+m4_tag([m4_ref(DB_DIRECT_DB), m4_ref(DB_DIRECT_LOG)], [dnl
+Consider using the m4_ref(DB_DIRECT_DB) and m4_ref(DB_DIRECT_LOG) flags.
+On some systems, avoiding caching in the operating system can improve
+write throughput and allow the creation of larger m4_db caches.])
+
+m4_tag([m4_ref(DB_READ_UNCOMMITTED), m4_ref(DB_READ_COMMITTED)], [dnl
+Consider decreasing the level of isolation of transaction using the
+m4_ref(DB_READ_UNCOMMITTED) or m4_ref(DB_READ_COMMITTED) flags for
+transactions or cursors or the m4_ref(DB_READ_UNCOMMITTED) flag on
+individual read operations.  The m4_ref(DB_READ_COMMITTED) flag will
+release read locks on cursors as soon as the data page is nolonger
+referenced.  This is also called m4_italic(degree 2 isolation).  This
+will tend to block write operations for shorter periods for applications
+that do not need to have repeatable reads for cursor operations.
+m4_p([dnl
+The m4_ref(DB_READ_UNCOMMITTED) flag will allow read operations to
+potentially return data which has been modified but not yet committed,
+and can significantly increase application throughput in applications
+that do not require data be guaranteed to be permanent in the database.
+This is also called m4_italic(degree 1 isolation), or m4_italic(dirty
+reads).])])
+
+m4_tag([m4_ref(DB_RMW)], [dnl
+If there are many deadlocks, consider using the m4_ref(DB_RMW) flag to
+immediate acquire write locks when reading data items that will
+subsequently be modified.  Although this flag may increase contention
+(because write locks are held longer than they would otherwise be), it
+may decrease the number of deadlocks that occur.])
+
+m4_tag([m4_ref(DB_TXN_WRITE_NOSYNC), m4_ref(DB_TXN_NOSYNC)], [dnl
+By default, transactional commit in m4_db implies durability, that is,
+all committed operations will be present in the database after recovery
+from any application or system failure.  For applications not requiring
+that level of certainty, specifying the m4_ref(DB_TXN_NOSYNC) flag will
+often provide a significant performance improvement. In this case, the
+database will still be fully recoverable, but some number of committed
+transactions might be lost after application or system failure.])
+
+m4_tag(access databases in order, [dnl
+When modifying multiple databases in a single transaction, always access
+physical files and databases within physical files, in the same order
+where possible.  In addition, avoid returning to a physical file or
+database, that is, avoid accessing a database, moving on to another
+database and then returning to the first database.  This can
+significantly reduce the chance of deadlock between threads of
+control.])
+
+m4_tag(large key/data items, [dnl
+Transactional protections in m4_db are guaranteed by before and after
+physical image logging.  This means applications modifying large
+key/data items also write large log records, and, in the case of the
+default transaction commit, threads of control must wait until those
+log records have been flushed to disk.  Applications supporting
+concurrent access should try and keep key/data items small wherever
+possible.])
+
+m4_tag(mutex selection, [dnl
+During configuration, m4_db selects a mutex implementation for the
+architecture. m4_db normally prefers blocking-mutex implementations over
+non-blocking ones.  For example, m4_db will select POSIX pthread mutex
+interfaces rather than assembly-code test-and-set spin mutexes because
+pthread mutexes are usually more efficient and less likely to waste CPU
+cycles spinning without getting any work accomplished.
+m4_p([dnl
+For some applications and systems (generally highly concurrent
+applications on large multiprocessor systems), m4_db makes the wrong
+choice.  In some cases, better performance can be achieved by
+configuring with the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --with-mutex, --with-mutex)
+argument and selecting a different mutex implementation than the one
+selected by m4_db.  When a test-and-set spin mutex implementation is
+selected, it may be useful to tune the number of spins made before
+yielding the processor and sleeping.  For more information, see the
+m4_refT(mutex_set_tas_spins).])
+m4_p([dnl
+Finally, m4_db may put multiple mutexes on individual cache lines.  When
+tuning m4_db for large multiprocessor systems, it may be useful to tune
+mutex alignment using the
+m4_ref(mutex_set_align) method.])])
+
+m4_tag([m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--enable-posixmutexes, --enable-posixmutexes)], [dnl
+By default, the m4_db library will only select the POSIX pthread mutex
+implementation if it supports mutexes shared between multiple processes.
+If your application does not share its database environment between
+processes and your system's POSIX mutex support was not selected because
+it did not support inter-process mutexes, you may be able to increase
+performance and transactional throughput by configuring with the
+m4_linkpage(M4RELDIR/ref/build_unix/conf, --enable-posixmutexes,
+--enable-posixmutexes) argument.])
+
+m4_tag(log buffer size, [dnl
+m4_db internally maintains a buffer of log writes.   The buffer is
+written to disk at transaction commit, by default, or, whenever it
+is filled.  If it is consistently being filled before transaction
+commit, it will be written multiple times per transaction, costing
+application performance.  In these cases, increasing the size of the
+log buffer can increase application throughput.])
+
+m4_tag(log file location, [dnl
+If the database environment's log files are on the same disk as the
+databases, the disk arms will have to seek back-and-forth between the
+two.  Placing the log files and the databases on different disk arms
+can often increase application throughput.])
+
+m4_tag(trickle write, [dnl
+In some applications, the cache is sufficiently active and dirty that
+readers frequently need to write a dirty page in order to have space in
+which to read a new page from the backing database file.  You can use
+the m4_ref(db_stat) utility (or the statistics returned by the
+m4_refT(memp_stat)) to see how often this is happening in your
+application's cache.  In this case, using a separate thread of control
+and the m4_refT(memp_trickle) to trickle-write pages can often increase
+the overall throughput of the application.])
+
+m4_tagend
+
+m4_page_footer

@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: client.c,v 12.7 2006/08/24 14:46:27 bostic Exp $
+ * $Id: client.c,v 12.11 2007/05/17 15:15:51 bostic Exp $
  */
 
 #include "db_config.h"
@@ -14,7 +13,7 @@
 #include "dbinc/db_am.h"
 #include "dbinc/txn.h"
 
-#ifndef NO_SYSTEM_INCLUDES
+#ifdef HAVE_SYSTEM_INCLUDE_FILES
 #ifdef HAVE_VXWORKS
 #include <rpcLib.h>
 #else
@@ -411,7 +410,7 @@ __dbcl_c_setup(cl_id, dbp, dbcp)
 			 */
 			tmpdbc.dbp = NULL;
 			tmpdbc.cl_id = cl_id;
-			(void)__dbcl_dbc_c_close(&tmpdbc);
+			(void)__dbcl_dbc_close(&tmpdbc);
 			return (ret);
 		}
 
@@ -422,7 +421,7 @@ __dbcl_c_setup(cl_id, dbp, dbcp)
 		 * Set up the local destroy function -- we're not really
 		 * an access method, but it does what we need.
 		 */
-		dbc->c_am_destroy = __dbcl_c_destroy;
+		dbc->am_destroy = __dbcl_c_destroy;
 	}
 	dbc->cl_id = cl_id;
 	dbc->dbp = dbp;

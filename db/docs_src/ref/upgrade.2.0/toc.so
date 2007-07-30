@@ -1,0 +1,14 @@
+m4_comment([$Id: toc.so,v 11.6 2006/10/02 15:56:35 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Upgrading m4_db 1.85 or 1.86 applications to m4_db 2.0,
+    Upgrading to release 2.0,,)
+
+m4_nlistbegin
+m4_nlist([m4_link(intro, [Release 2.0: introduction])])
+m4_nlistns([m4_link(system, [Release 2.0: system integration])])
+m4_nlistns([m4_link(convert, [Release 2.0: converting applications])])
+m4_nlistns([m4_link(disk, [Release 2.0: upgrade requirements])])
+m4_nlistend
+
+m4_page_footer

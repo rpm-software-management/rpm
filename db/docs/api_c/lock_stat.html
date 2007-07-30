@@ -1,6 +1,5 @@
-<!--$Id: lock_stat.so,v 10.65 2005/07/20 16:26:38 bostic Exp $-->
-<!--Copyright 1997-2006 by Oracle Corporation-->
-<!--All rights reserved.-->
+<!--$Id: lock_stat.so,v 10.68 2007/06/22 16:57:15 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
 <html>
 <head>
@@ -70,12 +69,27 @@ for which the thread of control did not wait.
 <dt>u_int32_t st_ntxntimeouts;<dd>The number of transactions that have timed out.  This value is also a
 component of <b>st_ndeadlocks</b>, the total number of deadlocks
 detected.
+<dt>u_int32_t st_objs_wait;<dd>The number of requests to allocate or deallocate an object
+for which the thread of control waited.
+<dt>u_int32_t st_objs_nowait;<dd>The number of requests to allocate or deallocate an object
+for which the thread of control did not wait.
+<dt>u_int32_t st_lockers_wait;<dd>The number of requests to allocate or deallocate a locker
+for which the thread of control waited.
+<dt>u_int32_t st_lockers_nowait;<dd>The number of requests to allocate or deallocate a locker
+for which the thread of control did not wait.
+<dt>u_int32_t st_locks_wait;<dd>The number of requests to allocate or deallocate a lock structure
+for which the thread of control waited.
+<dt>u_int32_t st_locks_nowait;<dd>The number of requests to allocate or deallocate a lock structure
+for which the thread of control did not wait.
+<dt>u_int32_t st_hash_len;<dd>Maximum length of a lock hash bucket.
 <dt>roff_t st_regsize;<dd>The size of the lock region, in bytes.
 <dt>u_int32_t st_region_wait;<dd>The number of times that a thread of control was forced to wait before
 obtaining the lock region mutex.
 <dt>u_int32_t st_region_nowait;<dd>The number of times that a thread of control was able to obtain
 the lock region mutex without waiting.
 </dl>
+<p>The DB_ENV-&gt;lock_stat method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
+been called.</p>
 <p>The DB_ENV-&gt;lock_stat method
 returns a non-zero error value on failure
 and 0 on success.
@@ -99,8 +113,12 @@ invalid flag value or parameter was specified.
 </dl>
 <hr size=1 noshade>
 <h3>Description: DB_ENV-&gt;lock_stat_print</h3>
-<p>The DB_ENV-&gt;lock_stat_print method prints diagnostic information to the output
-channel described by the <a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method.</p>
+<p>The DB_ENV-&gt;lock_stat_print method displays the
+locking subsystem statistical information, as described for the DB_ENV-&gt;lock_stat method.
+The information is printed to a specified output channel (see the
+<a href="../api_c/env_set_msgfile.html">DB_ENV-&gt;set_msgfile</a> method for more information), or passed to an
+application callback function (see the <a href="../api_c/env_set_msgcall.html">DB_ENV-&gt;set_msgcall</a> method for
+more information).</p>
 <p>The DB_ENV-&gt;lock_stat_print method may not be called before the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method has
 been called.</p>
 <p>The DB_ENV-&gt;lock_stat_print method
@@ -109,10 +127,11 @@ and 0 on success.
 </p>
 <h3>Parameters</h3>
 <dl compact>
-<dt><b>flags</b><dd>The <b>flags</b> parameter must be set by bitwise inclusively <b>OR</b>'ing together one or more
-of the following values:
+<dt><b>flags</b><dd>The <b>flags</b> parameter must be set to 0 or by bitwise inclusively <b>OR</b>'ing together one
+or more of the following values:
 <dl compact>
 <dt><a name="DB_STAT_ALL">DB_STAT_ALL</a><dd>Display all available information.
+<dt><a name="DB_STAT_CLEAR">DB_STAT_CLEAR</a><dd>Reset statistics after displaying their values.
 <dt><a name="DB_STAT_LOCK_CONF">DB_STAT_LOCK_CONF</a><dd>Display the lock conflict matrix.
 <dt><a name="DB_STAT_LOCK_LOCKERS">DB_STAT_LOCK_LOCKERS</a><dd>Display the lockers within hash chains.
 <dt><a name="DB_STAT_LOCK_OBJECTS">DB_STAT_LOCK_OBJECTS</a><dd>Display the lock objects within hash chains.
@@ -128,6 +147,6 @@ of the following values:
 <table width="100%"><tr><td><br></td><td align=right>
 <a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
-<p><font size=1>Copyright (c) 1996-2006 Oracle Corporation - All rights reserved.</font>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
 </body>
 </html>

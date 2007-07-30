@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Transaction Example</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Berkeley DB Transaction Processing" />
-    <link rel="up" href="wrapup.html" title="Chapter 6. Summary and Examples" />
-    <link rel="previous" href="wrapup.html" title="Chapter 6. Summary and Examples" />
+    <link rel="up" href="wrapup.html" title="ChapterÂ 6.Â Summary and Examples" />
+    <link rel="previous" href="wrapup.html" title="ChapterÂ 6.Â Summary and Examples" />
     <link rel="next" href="inmem_txnexample_java.html" title="In-Memory Transaction Example" />
   </head>
   <body>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Transaction Example</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="wrapup.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 6. Summary and Examples</th>
-          <td width="20%" align="right"> <a accesskey="n" href="inmem_txnexample_java.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="wrapup.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 6.Â Summary and Examples</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="inmem_txnexample_java.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -140,9 +140,9 @@ public class TxnGuide { </pre>
     the number of threads that we are spawning. However, we also declare
     our environment and database handles here.
 </p>
-        <pre class="programlisting">    private static String myEnvPath = &quot;./&quot;;
-    private static String dbName = &quot;mydb.db&quot;;
-    private static String cdbName = &quot;myclassdb.db&quot;;
+        <pre class="programlisting">    private static String myEnvPath = "./";
+    private static String dbName = "mydb.db";
+    private static String cdbName = "myclassdb.db";
 
     // DB handles
     private static Database myDb = null;
@@ -156,7 +156,7 @@ public class TxnGuide { </pre>
     used to identify the environment home directory.
 </p>
         <pre class="programlisting">    private static void usage() {
-        System.out.println(&quot;TxnGuide [-h &lt;env directory&gt;]&quot;);
+        System.out.println("TxnGuide [-h &lt;env directory&gt;]");
         System.exit(-1);
     } </pre>
         <p>
@@ -191,12 +191,12 @@ public class TxnGuide { </pre>
                 threadArray[i].join();
             }
         } catch (Exception e) {
-            System.err.println(&quot;TxnGuide: &quot; + e.toString());
+            System.err.println("TxnGuide: " + e.toString());
             e.printStackTrace();
         } finally {
             closeEnv();
         }
-        System.out.println(&quot;All done.&quot;);
+        System.out.println("All done.");
     } </pre>
         <p>
     Next we implement <tt class="function">openEnv()</tt>. This method is used
@@ -231,7 +231,7 @@ public class TxnGuide { </pre>
     on the cursor open would, in fact, be silently ignored).
 </p>
         <pre class="programlisting">    private static void openEnv() throws DatabaseException {
-        System.out.println(&quot;opening env&quot;);
+        System.out.println("opening env");
 
         // Set up the environment.
         EnvironmentConfig myEnvConfig = new EnvironmentConfig();
@@ -283,7 +283,7 @@ public class TxnGuide { </pre>
                                            null,     // Database name,
                                            myDbConfig);
         } catch (FileNotFoundException fnfe) {
-            System.err.println(&quot;openEnv: &quot; + fnfe.toString());
+            System.err.println("openEnv: " + fnfe.toString());
             System.exit(-1);
         }
     } </pre>
@@ -295,12 +295,12 @@ public class TxnGuide { </pre>
     purely for the purpose of completeness.
 </p>
         <pre class="programlisting">    private static void closeEnv() {
-        System.out.println(&quot;Closing env and databases&quot;);
+        System.out.println("Closing env and databases");
         if (myDb != null ) {
             try {
                 myDb.close();
             } catch (DatabaseException e) {
-                System.err.println(&quot;closeEnv: myDb: &quot; +
+                System.err.println("closeEnv: myDb: " +
                     e.toString());
                 e.printStackTrace();
             }
@@ -310,7 +310,7 @@ public class TxnGuide { </pre>
             try {
                 myClassDb.close();
             } catch (DatabaseException e) {
-                System.err.println(&quot;closeEnv: myClassDb: &quot; +
+                System.err.println("closeEnv: myClassDb: " +
                     e.toString());
                 e.printStackTrace();
             }
@@ -320,7 +320,7 @@ public class TxnGuide { </pre>
             try {
                 myEnv.close();
             } catch (DatabaseException e) {
-                System.err.println(&quot;closeEnv: &quot; + e.toString());
+                System.err.println("closeEnv: " + e.toString());
                 e.printStackTrace();
             }
         }
@@ -330,7 +330,7 @@ public class TxnGuide { </pre>
 
     private static void parseArgs(String args[]) {
         for(int i = 0; i &lt; args.length; ++i) {
-            if (args[i].startsWith(&quot;-&quot;)) {
+            if (args[i].startsWith("-")) {
                 switch(args[i].charAt(1)) {
                     case 'h':
                         myEnvPath = new String(args[++i]);
@@ -490,10 +490,10 @@ public class DBWriter extends Thread
 
     private static final int MAX_RETRY = 20;
 
-    private static String[] keys = {&quot;key 1&quot;, &quot;key 2&quot;, &quot;key 3&quot;,
-                                    &quot;key 4&quot;, &quot;key 5&quot;, &quot;key 6&quot;,
-                                    &quot;key 7&quot;, &quot;key 8&quot;, &quot;key 9&quot;,
-                                    &quot;key 10&quot;}; </pre>
+    private static String[] keys = {"key 1", "key 2", "key 3",
+                                    "key 4", "key 5", "key 6",
+                                    "key 7", "key 8", "key 9",
+                                    "key 10"}; </pre>
         <p>
         Next we implement our class constructor. The most interesting thing
         we do here is instantiate a serial binding for serializing
@@ -660,13 +660,13 @@ public class DBWriter extends Thread
         as is used for the thread's writes. 
     </p>
         <pre class="programlisting">                    // commit
-                    System.out.println(getName() + &quot; : committing txn : &quot; 
+                    System.out.println(getName() + " : committing txn : " 
                         + i);
 
                     // Using uncommitted reads to avoid the deadlock, so null
                     // is passed for the transaction here.
-                    System.out.println(getName() + &quot; : Found &quot; +
-                        countRecords(null) + &quot; records in the database.&quot;); </pre>
+                    System.out.println(getName() + " : Found " +
+                        countRecords(null) + " records in the database."); </pre>
         <p>
     Having performed this somewhat inelegant counting of the records in the
     database, we can now commit the transaction.
@@ -675,7 +675,7 @@ public class DBWriter extends Thread
                         txn.commit();
                         txn = null;
                     } catch (DatabaseException e) {
-                        System.err.println(&quot;Error on txn commit: &quot; +
+                        System.err.println("Error on txn commit: " +
                             e.toString());
                     }
                     retry = false; </pre>
@@ -688,17 +688,17 @@ public class DBWriter extends Thread
     exceeded our retry limit for this transaction.
 </p>
         <pre class="programlisting">                } catch (DeadlockException de) {
-                    System.out.println(&quot;################# &quot; + getName() +
-                        &quot; : caught deadlock&quot;);
+                    System.out.println("################# " + getName() +
+                        " : caught deadlock");
                     // retry if necessary
                     if (retry_count &lt; MAX_RETRY) {
                         System.err.println(getName() +
-                            &quot; : Retrying operation.&quot;);
+                            " : Retrying operation.");
                         retry = true;
                         retry_count++;
                     } else {
                         System.err.println(getName() +
-                            &quot; : out of retries. Giving up.&quot;);
+                            " : out of retries. Giving up.");
                         retry = false;
                     } </pre>
         <p>
@@ -709,9 +709,9 @@ public class DBWriter extends Thread
                     // abort and don't retry
                     retry = false;
                     System.err.println(getName() +
-                        &quot; : caught exception: &quot; + e.toString());
+                        " : caught exception: " + e.toString());
                     System.err.println(getName() +
-                        &quot; : errno: &quot; + e.getErrno());
+                        " : errno: " + e.getErrno());
                     e.printStackTrace();  </pre>
         <p>
     And, finally, we always abort the transaction if the transaction handle
@@ -724,7 +724,7 @@ public class DBWriter extends Thread
                         try {
                             txn.abort();
                         } catch (Exception e) {
-                            System.err.println(&quot;Error aborting txn: &quot; +
+                            System.err.println("Error aborting txn: " +
                                 e.toString());
                             e.printStackTrace();
                         }
@@ -782,18 +782,18 @@ public class DBWriter extends Thread
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="wrapup.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="wrapup.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="wrapup.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="inmem_txnexample_java.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="inmem_txnexample_java.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 6. Summary and Examples </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 6.Â Summary and ExamplesÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> In-Memory Transaction Example</td>
+          <td width="40%" align="right" valign="top">Â In-Memory Transaction Example</td>
         </tr>
       </table>
     </div>

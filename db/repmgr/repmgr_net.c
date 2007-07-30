@@ -1,16 +1,16 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2005-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2005,2007 Oracle.  All rights reserved.
  *
- * $Id: repmgr_net.c,v 1.39 2006/09/19 14:14:11 mjc Exp $
+ * $Id: repmgr_net.c,v 1.55 2007/06/11 18:29:34 alanb Exp $
  */
 
 #include "db_config.h"
 
 #define	__INCLUDE_NETWORKING	1
 #include "db_int.h"
+#include "dbinc/mp.h"
 
 /*
  * The functions in this module implement a simple wire protocol for
@@ -50,9 +50,6 @@
  *     Note that, for the broadcast case, where we're going to use this
  * repeatedly, the iovecs is a template that must be copied, since in normal use
  * the iovecs pointers and lengths get adjusted after every partial write.
- *
- * TODO: this is such an important point that it's probably worth renaming the
- * iovecs field here to iovecs_template.
  */
 struct sending_msg {
 	REPMGR_IOVECS iovecs;
@@ -76,6 +73,13 @@ static REPMGR_SITE *__repmgr_available_site __P((DB_ENV *, int));
  * __repmgr_send --
  *	The send function for DB_ENV->rep_set_transport.
  *
+ * !!!
+ * This is only ever called as the replication transport call-back, which means
+ * it's either on one of our message processing threads or an application
+ * thread.  It mustn't be called from the select() thread, because we might call
+ * __repmgr_bust_connection(..., FALSE) here, and that's not allowed in the
+ * select() thread.
+ *
  * PUBLIC: int __repmgr_send __P((DB_ENV *, const DBT *, const DBT *,
  * PUBLIC:     const DB_LSN *, int, u_int32_t));
  */
@@ -92,9 +96,6 @@ __repmgr_send(dbenv, control, rec, lsnp, eid, flags)
 	int ret, t_ret;
 	REPMGR_SITE *site;
 	REPMGR_CONNECTION *conn;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	db_rep = dbenv->rep_handle;
 
@@ -115,10 +116,10 @@ __repmgr_send(dbenv, control, rec, lsnp, eid, flags)
 		    IS_VALID_EID(db_rep->peer) &&
 		    (site = __repmgr_available_site(dbenv, db_rep->peer)) !=
 		    NULL) {
-			RPRINT(dbenv, (dbenv, &mb, "sending request to peer"));
+			RPRINT(dbenv, (dbenv, "sending request to peer"));
 		} else if ((site = __repmgr_available_site(dbenv, eid)) ==
 		    NULL) {
-			RPRINT(dbenv, (dbenv, &mb,
+			RPRINT(dbenv, (dbenv,
 			    "ignoring message sent to unavailable site"));
 			ret = DB_REP_UNAVAIL;
 			goto out;
@@ -195,13 +196,16 @@ __repmgr_send(dbenv, control, rec, lsnp, eid, flags)
 			goto out;
 		}
 		/* In ALL_PEERS case, display of "needed" might be confusing. */
-		RPRINT(dbenv, (dbenv, &mb,
+		RPRINT(dbenv, (dbenv,
 		    "will await acknowledgement: need %u", needed));
 		ret = __repmgr_await_ack(dbenv, lsnp);
 	}
 
 out:	UNLOCK_MUTEX(db_rep->mutex);
-
+	if (ret != 0 && LF_ISSET(DB_REP_PERMANENT)) {
+		STAT(db_rep->region->mstat.st_perm_failed++);
+		DB_EVENT(dbenv, DB_EVENT_REP_PERM_FAILED, NULL);
+	}
 	return (ret);
 }
 
@@ -231,6 +235,10 @@ __repmgr_available_site(dbenv, eid)
  *
  * !!!
  * Caller must hold dbenv->mutex.
+ *
+ * !!!
+ * Note that this cannot be called from the select() thread, in case we call
+ * __repmgr_bust_connection(..., FALSE).
  */
 static int
 __repmgr_send_broadcast(dbenv, control, rec, nsitesp, npeersp)
@@ -321,13 +329,10 @@ __repmgr_send_internal(dbenv, conn, msg)
 {
 #define	OUT_QUEUE_LIMIT 10	/* arbitrary, for now */
 	REPMGR_IOVECS iovecs;
+	SITE_STRING_BUFFER buffer;
 	int ret;
 	size_t nw;
 	size_t total_written;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-	SITE_STRING_BUFFER buffer;
-#endif
 
 	DB_ASSERT(dbenv, !F_ISSET(conn, CONN_CONNECTING));
 	if (!STAILQ_EMPTY(&conn->outbound_queue)) {
@@ -336,14 +341,15 @@ __repmgr_send_internal(dbenv, conn, msg)
 		 * thread, so we can't try sending in-line here.  We can only
 		 * queue the msg for later.
 		 */
-		RPRINT(dbenv, (dbenv, &mb, "msg to %s to be queued",
+		RPRINT(dbenv, (dbenv, "msg to %s to be queued",
 		    __repmgr_format_eid_loc(dbenv->rep_handle,
 		    conn->eid, buffer)));
 		if (conn->out_queue_length < OUT_QUEUE_LIMIT)
 			return (enqueue_msg(dbenv, conn, msg, 0));
 		else {
-			RPRINT(dbenv, (dbenv, &mb, "queue limit exceeded"));
-/*			repmgr->stats.tossed_msgs++; */
+			RPRINT(dbenv, (dbenv, "queue limit exceeded"));
+			STAT(dbenv->rep_handle->
+			    region->mstat.st_msgs_dropped++);
 			return (0);
 		}
 	}
@@ -368,7 +374,7 @@ __repmgr_send_internal(dbenv, conn, msg)
 		return (DB_REP_UNAVAIL);
 	}
 
-	RPRINT(dbenv, (dbenv, &mb, "wrote only %lu bytes to %s",
+	RPRINT(dbenv, (dbenv, "wrote only %lu bytes to %s",
 	    (u_long)total_written,
 	    __repmgr_format_eid_loc(dbenv->rep_handle, conn->eid, buffer)));
 	/*
@@ -379,7 +385,7 @@ __repmgr_send_internal(dbenv, conn, msg)
 	if ((ret = enqueue_msg(dbenv, conn, msg, total_written)) != 0)
 		return (ret);
 
-/*	repmgr->stats.partial_retransmissions++; */
+	STAT(dbenv->rep_handle->region->mstat.st_msgs_queued++);
 
 	/*
 	 * Wake the main select thread so that it can discover that it has
@@ -512,13 +518,14 @@ __repmgr_bust_connection(dbenv, conn, do_close)
 	int do_close;
 {
 	DB_REP *db_rep;
-	int ret, eid;
+	int connecting, ret, eid;
 
 	db_rep = dbenv->rep_handle;
 	ret = 0;
 
 	DB_ASSERT(dbenv, !TAILQ_EMPTY(&db_rep->connections));
 	eid = conn->eid;
+	connecting = F_ISSET(conn, CONN_CONNECTING);
 	if (do_close)
 		__repmgr_cleanup_connection(dbenv, conn);
 	else {
@@ -538,9 +545,14 @@ __repmgr_bust_connection(dbenv, conn, do_close)
 		    dbenv, (u_int)eid, FALSE)) != 0)
 			return (ret);
 
-		if (eid == db_rep->master_eid) {
-			db_rep->master_eid = DB_EID_INVALID;
-
+		/*
+		 * If this connection had gotten no further than the CONNECTING
+		 * state, this can't count as a loss of connection to the
+		 * master.
+		 */
+		if (!connecting && eid == db_rep->master_eid) {
+			(void)__memp_set_config(
+			    dbenv, DB_MEMP_SYNC_INTERRUPT, 1);
 			if ((ret = __repmgr_init_election(
 			    dbenv, ELECT_FAILURE_ELECTION)) != 0)
 				return (ret);
@@ -572,10 +584,12 @@ __repmgr_cleanup_connection(dbenv, conn)
 	db_rep = dbenv->rep_handle;
 
 	TAILQ_REMOVE(&db_rep->connections, conn, entries);
-	(void)closesocket(conn->fd);
+	if (conn->fd != INVALID_SOCKET) {
+		(void)closesocket(conn->fd);
 #ifdef DB_WIN32
-	(void)WSACloseEvent(conn->event_object);
+		(void)WSACloseEvent(conn->event_object);
 #endif
+	}
 
 	/*
 	 * Deallocate any input and output buffers we may have.
@@ -768,8 +782,10 @@ __repmgr_getaddr(dbenv, host, port, flags, result)
 	ADDRINFO **result;
 {
 	ADDRINFO *answer, hints;
-	int ret;
 	char buffer[10];		/* 2**16 fits in 5 digits. */
+#ifdef DB_WIN32
+	int ret;
+#endif
 
 	/*
 	 * Ports are really 16-bit unsigned values, but it's too painful to
@@ -792,9 +808,16 @@ __repmgr_getaddr(dbenv, host, port, flags, result)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = flags;
 	(void)snprintf(buffer, sizeof(buffer), "%u", port);
-	if ((ret =
-	    __db_getaddrinfo(dbenv, host, port, buffer, &hints, &answer)) != 0)
-		return (ret);
+
+	/*
+	 * Although it's generally bad to discard error information, the return
+	 * code from __db_getaddrinfo is undependable.  Our callers at least
+	 * would like to be able to distinguish errors in getaddrinfo (which we
+	 * want to consider to be re-tryable), from other failure (e.g., EINVAL,
+	 * above).
+	 */
+	if (__db_getaddrinfo(dbenv, host, port, buffer, &hints, &answer) != 0)
+		return (DB_REP_UNAVAIL);
 	*result = answer;
 
 	return (0);
@@ -834,7 +857,11 @@ __repmgr_add_site(dbenv, host, port, newsitep)
 		goto out;
 	}
 
-	if ((ret = __repmgr_getaddr(dbenv, host, port, 0, &address_list)) != 0)
+	if ((ret = __repmgr_getaddr(
+	    dbenv, host, port, 0, &address_list)) == DB_REP_UNAVAIL) {
+		/* Allow re-tryable errors.  We'll try again later. */
+		address_list = NULL;
+	} else if (ret != 0)
 		return (ret);
 
 	if ((ret = __repmgr_pack_netaddr(
@@ -968,6 +995,7 @@ __repmgr_net_close(dbenv)
 	DB_ENV *dbenv;
 {
 	DB_REP *db_rep;
+	REPMGR_CONNECTION *conn;
 #ifndef DB_WIN32
 	struct sigaction sigact;
 #endif
@@ -977,8 +1005,17 @@ __repmgr_net_close(dbenv)
 	if (db_rep->listen_fd == INVALID_SOCKET)
 		return (0);
 
-	ret = 0;
+	TAILQ_FOREACH(conn, &db_rep->connections, entries) {
+		if (conn->fd != INVALID_SOCKET) {
+			(void)closesocket(conn->fd);
+			conn->fd = INVALID_SOCKET;
+#ifdef DB_WIN32
+			(void)WSACloseEvent(conn->event_object);
+#endif
+		}
+	}
 
+	ret = 0;
 	if (closesocket(db_rep->listen_fd) == SOCKET_ERROR)
 		ret = net_errno;
 
@@ -1013,14 +1050,11 @@ __repmgr_net_destroy(dbenv, db_rep)
 	REPMGR_SITE *site;
 	u_int i;
 
+	__repmgr_cleanup_netaddr(dbenv, &db_rep->my_addr);
+
 	if (db_rep->sites == NULL)
 		return;
 
-	/*
-	 * TODO: I think maybe these, and especially connections, should be
-	 * cleaned up in close(), 'cuz there's more than just memory there.
-	 * Does it matter, I wonder?
-	 */
 	while (!TAILQ_EMPTY(&db_rep->retries)) {
 		retry = TAILQ_FIRST(&db_rep->retries);
 		TAILQ_REMOVE(&db_rep->retries, retry, entries);

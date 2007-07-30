@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Permanent Message Handling</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
+    <link rel="up" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
     <link rel="previous" href="repmgr_init_example_c.html" title="Adding the Replication Framework to&#10;                    simple_txn&#10;                    &#10;            " />
     <link rel="next" href="electiontimes.html" title="Managing Election Times" />
   </head>
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Permanent Message Handling</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="repmgr_init_example_c.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 3. The DB Replication Framework</th>
-          <td width="20%" align="right"> <a accesskey="n" href="electiontimes.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="repmgr_init_example_c.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 3.Â The DB Replication Framework</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="electiontimes.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -111,7 +111,7 @@
               <p>
                     No permanent message acknowledgments are required. If
                     this policy is selected, permanent message handling is
-                    essentially &quot;turned off.&quot; That is, the master will
+                    essentially "turned off." That is, the master will
                     never wait for replica acknowledgments. In this case,
                     transaction log data is either flushed or not strictly
                     depending on the type of commit that is being performed
@@ -306,7 +306,7 @@
      * Create and configure the environment handle.
      */
     if ((ret = db_env_create(&amp;dbenv, 0)) != 0 ) {
-        fprintf(stderr, &quot;Error creating handles: %s\n&quot;,
+        fprintf(stderr, "Error creating handles: %s\n",
             db_strerror(ret));
         goto err;
     }
@@ -324,7 +324,7 @@
     dbenv-&gt;rep_set_timeout(dbenv, DB_REP_ACK_TIMEOUT, 500);</tt></b>
 
     /* Collect the command line options */
-    while ((ch = getopt(argc, argv, &quot;h:<b class="userinput"><tt>m:o:p:</tt></b>&quot;)) != EOF)
+    while ((ch = getopt(argc, argv, "h:<b class="userinput"><tt>m:o:p:</tt></b>")) != EOF)
 
     ... </pre>
       </div>
@@ -333,21 +333,21 @@
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="repmgr_init_example_c.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="repmgr_init_example_c.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="repapp.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="electiontimes.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="electiontimes.html">Next</a></td>
         </tr>
         <tr>
           <td width="40%" align="left" valign="top">Adding the Replication Framework to
                     simple_txn
                     
-             </td>
+            Â </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Managing Election Times</td>
+          <td width="40%" align="right" valign="top">Â Managing Election Times</td>
         </tr>
       </table>
     </div>

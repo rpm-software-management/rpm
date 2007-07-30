@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: dbreg_util.c,v 12.20 2006/09/09 14:28:22 bostic Exp $
+ * $Id: dbreg_util.c,v 12.29 2007/06/13 18:21:31 ubell Exp $
  */
 
 #include "db_config.h"
@@ -91,11 +90,12 @@ __dbreg_rem_dbentry(dblp, ndx)
  * __dbreg_log_files --
  *	Put a DBREG_CHKPNT/CLOSE log record for each open database.
  *
- * PUBLIC: int __dbreg_log_files __P((DB_ENV *));
+ * PUBLIC: int __dbreg_log_files __P((DB_ENV *, u_int32_t));
  */
 int
-__dbreg_log_files(dbenv)
+__dbreg_log_files(dbenv, opcode)
 	DB_ENV *dbenv;
+	u_int32_t opcode;
 {
 	DB_LOG *dblp;
 	DB_LSN r_unused;
@@ -137,7 +137,7 @@ __dbreg_log_files(dbenv)
 		if ((ret = __dbreg_register_log(dbenv,
 		    NULL, &r_unused,
 		    F_ISSET(fnp, DB_FNAME_DURABLE) ? 0 : DB_LOG_NOT_DURABLE,
-		    F_ISSET(dblp, DBLOG_RECOVER) ? DBREG_RCLOSE : DBREG_CHKPNT,
+		    opcode,
 		    dbtp, &fid_dbt, fnp->id, fnp->s_type, fnp->meta_pgno,
 		    TXN_INVALID)) != 0)
 			break;
@@ -156,11 +156,12 @@ __dbreg_log_files(dbenv)
  *	db_rename.  We may not have flushed the log_register record that
  *	closes the file.
  *
- * PUBLIC: int __dbreg_close_files __P((DB_ENV *));
+ * PUBLIC: int __dbreg_close_files __P((DB_ENV *, int));
  */
 int
-__dbreg_close_files(dbenv)
+__dbreg_close_files(dbenv, do_restored)
 	DB_ENV *dbenv;
+	int do_restored;
 {
 	DB_LOG *dblp;
 	DB *dbp;
@@ -183,12 +184,6 @@ __dbreg_close_files(dbenv)
 		 * Before doing so, we need to revoke their log fileids
 		 * so that we don't end up leaving around FNAME entries
 		 * for dbps that shouldn't have them.
-		 *
-		 * Any FNAME entries that were marked NOTLOGGED had the
-		 * log write fail while they were being closed.  Since it's
-		 * too late to be logging now we flag that as a failure
-		 * so recovery will be run.  This will get returned by
-		 * __dbreg_revoke_id.
 		 */
 		if ((dbp = dblp->dbentry[i].dbp) != NULL) {
 			/*
@@ -202,10 +197,16 @@ __dbreg_close_files(dbenv)
 			 * we're in this loop anyway--we're in the process of
 			 * making all outstanding dbps invalid.
 			 */
+			/*
+			 * If we only want to close those FNAMES marked
+			 * as restored, check now.
+			 */
+			if (do_restored &&
+			    !F_ISSET(dbp->log_filename, DB_FNAME_RESTORED))
+				continue;
 			MUTEX_UNLOCK(dbenv, dblp->mtx_dbreg);
 			if (F_ISSET(dbp, DB_AM_RECOVER))
-				t_ret = __db_close(dbp,
-				     NULL, dbp->mpf == NULL ? DB_NOSYNC : 0);
+				t_ret = __db_close(dbp, NULL, DB_NOSYNC);
 			else
 				t_ret = __dbreg_revoke_id(
 				     dbp, 0, DB_LOGFILEID_INVALID);
@@ -222,16 +223,72 @@ __dbreg_close_files(dbenv)
 }
 
 /*
+ * __dbreg_close_file --
+ *	Close a database file opened by recovery.
+ * PUBLIC: int __dbreg_close_file __P((DB_ENV *, FNAME *));
+ */
+int
+__dbreg_close_file(dbenv, fnp)
+	DB_ENV *dbenv;
+	FNAME *fnp;
+{
+	DB_LOG *dblp;
+	DB *dbp;
+
+	dblp = dbenv->lg_handle;
+
+	dbp = dblp->dbentry[fnp->id].dbp;
+	if (dbp == NULL)
+		return (0);
+	DB_ASSERT(dbenv, dbp->log_filename == fnp);
+	DB_ASSERT(dbenv, F_ISSET(dbp, DB_AM_RECOVER));
+	return (__db_close(dbp, NULL, DB_NOSYNC));
+}
+
+/*
+ * __dbreg_mark_restored --
+ *	Mark files when we change replication roles and there are outstanding
+ * prepared txns that may use these files.  These will be invalidated later
+ * when all outstanding prepared txns are resolved.
+ *
+ * PUBLIC: int __dbreg_mark_restored __P((DB_ENV *));
+ */
+int
+__dbreg_mark_restored(dbenv)
+	DB_ENV *dbenv;
+{
+	DB_LOG *dblp;
+	FNAME *fnp;
+	LOG *lp;
+
+	/* If we haven't initialized logging, we have nothing to do. */
+	if (!LOGGING_ON(dbenv))
+		return (0);
+
+	dblp = dbenv->lg_handle;
+	lp = dblp->reginfo.primary;
+
+	MUTEX_LOCK(dbenv, lp->mtx_filelist);
+	SH_TAILQ_FOREACH(fnp, &lp->fq, q, __fname)
+		if (fnp->id != DB_LOGFILEID_INVALID)
+			F_SET(fnp, DB_FNAME_RESTORED);
+
+	MUTEX_UNLOCK(dbenv, lp->mtx_filelist);
+	return (0);
+}
+
+/*
  * __dbreg_invalidate_files --
  *	Invalidate files when we change replication roles.  Save the
  * id so that another process will be able to clean up the information
  * when it notices.
  *
- * PUBLIC: int __dbreg_invalidate_files __P((DB_ENV *));
+ * PUBLIC: int __dbreg_invalidate_files __P((DB_ENV *, int));
  */
 int
-__dbreg_invalidate_files(dbenv)
+__dbreg_invalidate_files(dbenv, do_restored)
 	DB_ENV *dbenv;
+	int do_restored;
 {
 	DB_LOG *dblp;
 	FNAME *fnp;
@@ -248,6 +305,15 @@ __dbreg_invalidate_files(dbenv)
 	ret = 0;
 	MUTEX_LOCK(dbenv, lp->mtx_filelist);
 	SH_TAILQ_FOREACH(fnp, &lp->fq, q, __fname) {
+		/*
+		 * Normally, skip any file with DB_FNAME_RESTORED
+		 * set.  If do_restored is set, only invalidate
+		 * those files with the flag set and skip all others.
+		 */
+		if (F_ISSET(fnp, DB_FNAME_RESTORED) && !do_restored)
+			continue;
+		if (!F_ISSET(fnp, DB_FNAME_RESTORED) && do_restored)
+			continue;
 		if (fnp->id != DB_LOGFILEID_INVALID) {
 			if ((ret = __dbreg_log_close(dbenv,
 			    fnp, NULL, DBREG_RCLOSE)) != 0)
@@ -354,16 +420,16 @@ __dbreg_id_to_db_int(dbenv, txn, dbpp, ndx, inc, tryopen)
 		 * bottom.  If the __dbreg_do_open succeeded, then we don't need
 		 * to do any of the remaining error checking at the end of this
 		 * routine.
-		 * XXX I am sending a NULL txnlist and 0 txnid which may be
-		 * completely broken ;(
+		 * If TXN_INVALID is passed then no txnlist is needed.
 		 */
 		if ((ret = __dbreg_do_open(dbenv, txn, dblp,
-		    fname->ufid, name, fname->s_type,
-		    ndx, fname->meta_pgno, NULL, 0, DBREG_OPEN)) != 0)
+		    fname->ufid, name, fname->s_type, ndx, fname->meta_pgno,
+		    NULL, TXN_INVALID, F_ISSET(fname, DB_FNAME_INMEM) ?
+		    DBREG_REOPEN : DBREG_OPEN)) != 0)
 			return (ret);
 
 		*dbpp = dblp->dbentry[ndx].dbp;
-		return (0);
+		return (*dbpp == NULL ? DB_DELETED : 0);
 	}
 
 	/*
@@ -527,7 +593,7 @@ __dbreg_do_open(dbenv,
 	cstat = TXN_EXPECTED;
 	fname = name;
 	dname = NULL;
-	if ((ret = db_create(&dbp, lp->dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, lp->dbenv, 0)) != 0)
 		return (ret);
 
 	/*
@@ -618,7 +684,7 @@ __dbreg_check_master(dbenv, uid, name)
 	int ret;
 
 	ret = 0;
-	if ((ret = db_create(&dbp, dbenv, 0)) != 0)
+	if ((ret = __db_create_internal(&dbp, dbenv, 0)) != 0)
 		return (ret);
 	F_SET(dbp, DB_AM_RECOVER);
 	ret = __db_open(dbp, NULL,

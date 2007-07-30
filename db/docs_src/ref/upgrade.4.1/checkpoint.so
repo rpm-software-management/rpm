@@ -1,0 +1,18 @@
+m4_comment([$Id: checkpoint.so,v 1.5 2006/08/24 16:32:33 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 4.1: DB_CHECKPOINT, DB_CURLSN],,
+    upgrade.4.1/log_stat, upgrade.4.1/incomplete)
+
+m4_p([dnl
+The DB_CHECKPOINT flag has been removed from the m4_ref(logc_get) and
+m4_refT(log_put)s.  It is very unlikely application programs used this
+flag.  If your application used this flag, please contact us for help
+in upgrading.])
+
+m4_p([dnl
+The DB_CURLSN flag has been removed from the m4_refT(log_put).  It is
+very unlikely application programs used this flag.  If your application
+used this flag, please contact us for help in upgrading.])
+
+m4_page_footer

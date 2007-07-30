@@ -269,7 +269,7 @@ T_dbtdatum
 	
 T_dbtdatum_opt
 	DBT_clear($var) ;
-	if (flagSet(DB_GET_BOTH)|| flagSet(DB_GET_BOTH)) {
+	if (flagSetBoth()) {
 	   SV* my_sv = $arg ;
 	   DBM_ckFilter(my_sv, filter_store_value, \"filter_store_value\");
            SvGETMAGIC($arg) ;
@@ -282,7 +282,7 @@ T_dbtdatum_opt
 	
 T_dbtdatum_btree
 	DBT_clear($var) ;
-	if (flagSet(DB_GET_BOTH)|| flagSet(DB_GET_BOTH)) {
+	if (flagSetBoth()) {
 	    SV* my_sv = $arg ;
 	    DBM_ckFilter(my_sv, filter_store_value, \"filter_store_value\");
             SvGETMAGIC($arg) ;

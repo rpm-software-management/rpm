@@ -1,0 +1,11 @@
+m4_comment([$Id: tcl.so,v 1.2 2003/05/09 20:01:41 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.2: Tcl API,,
+    upgrade.4.2/nosync, upgrade.4.2/disk)
+
+m4_p([dnl
+The Tcl API included in the m4_db 4.2 release requires Tcl release 8.4
+or later.])
+
+m4_page_footer

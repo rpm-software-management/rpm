@@ -1,0 +1,35 @@
+m4_comment([$Id: env_cdsgroup_begin.so,v 1.2 2006/08/24 19:02:06 bostic Exp $])
+
+define(M4PAGELOCAL, [cdsgroup_begin])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(cdsgroup_begin),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__cdsgroup_begin(DB_ENV *dbenv, DB_TXN **tid);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::cdsgroup_begin(DbTxn **tid);
+]))
+
+m4_p([dnl
+The m4_ref(cdsgroup_begin) method allocates a locker ID in an
+environment configured for m4_cam applications.  It copies a pointer to
+a m4_ref(DbTxn) that uniquely identifies the locker ID into the memory
+to which m4_arg(tid) refers.  Calling the m4_refT(txn_commit) will
+discard the allocated locker ID.])
+
+m4_p([dnl
+See m4_link(M4RELDIR/ref/cam/intro, [m4_cam applications]) for more
+information about when this is required.])
+
+m4_when_any(cdsgroup_begin)
+
+m4_return(cdsgroup_begin, std)
+
+m4_err(cdsgroup_begin, memory,
+[maximum number of lockers has been reached])
+
+m4_seealso(DbTxn)
+m4_page_footer

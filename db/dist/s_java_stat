@@ -1,5 +1,5 @@
 #!/bin/sh -
-#	$Id: s_java_stat,v 12.14 2006/08/24 14:45:35 bostic Exp $
+#	$Id: s_java_stat,v 12.20 2007/07/06 00:22:52 mjc Exp $
 #
 # Build the Java files.
 
@@ -8,8 +8,7 @@ msgjava="/*-
  *
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2002-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2002,2007 Oracle.  All rights reserved.
  */"
 
 s=/tmp/__java.sed
@@ -17,7 +16,7 @@ t=/tmp/__java
 c=/tmp/__javajnic
 u1=/tmp/__javautil1
 u2=/tmp/__javautil2
-trap 'rm -f $t $c $u1 $u2; exit 0' 0 1 2 3 13 15
+trap 'rm -f $s $t $c $u1 $u2; exit 0' 0 1 2 3 13 15
 
 # Script to convert DB C structure declarations into Java declarations.
 jclass()
@@ -89,9 +88,9 @@ EOF
 	           -e     's/_n([b-df-hj-np-tv-z]|upgrade)/_num_$1/;' \
 	           -e     's/_(min|max)([a-z])/_$1_$2/;' \
 	           -e     's/_mvcc/_multiversion/;' \
-	           -e     's/_cnt/_count_/;' \
+	           -e     's/cnt/_count_/;' \
 	           -e     's/_pg/_pages_/;' \
-	           -e     's/(count|flag|free|page|percent|size|timeout)/_$1/g;' \
+	           -e     's/(count|flag|free|page|percent|size|sync|timeout)/_$1/g;' \
 	           -e     's/([^p])(id\()/$1_$2/g;' \
 	           -e     's/__*/_/g;' \
 	           -e     's/_(.)/\U$1/g' \
@@ -320,6 +319,7 @@ stat_class mpool_stat CacheStats
 stat_class mutex_stat MutexStats
 stat_class qam_stat QueueStats " extends DatabaseStats"
 stat_class rep_stat ReplicationStats
+stat_class repmgr_stat ReplicationManagerStats
 stat_class seq_stat SequenceStats
 
 # Build TransactionStats.java - special because of embedded Active class

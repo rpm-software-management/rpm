@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: os_seek.c,v 12.8 2006/08/24 14:46:22 bostic Exp $
+ * $Id: os_seek.c,v 12.11 2007/05/17 15:15:49 bostic Exp $
  */
 
 #include "db_config.h"
@@ -35,6 +34,10 @@ __os_seek(dbenv, fhp, pgno, pgsize, relative)
 	int ret;
 
 	offset = (off_t)pgsize * pgno + relative;
+
+	if (dbenv != NULL && FLD_ISSET(dbenv->verbose, DB_VERB_FILEOPS_ALL))
+		__db_msg(dbenv,
+		    "fileops: seek %s to %lu", fhp->name, (u_long)offset);
 
 	offbytes.bigint = offset;
 	ret = (SetFilePointer(fhp->handle, offbytes.low,

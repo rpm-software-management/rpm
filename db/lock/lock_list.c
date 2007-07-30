@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: lock_list.c,v 12.9 2006/08/24 14:46:11 bostic Exp $
+ * $Id: lock_list.c,v 12.12 2007/05/17 15:15:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -214,13 +213,14 @@ not_ilock:	size = nfid * sizeof(DB_LOCK_ILOCK);
 }
 
 /*
- * PUBLIC: int __lock_get_list __P((DB_ENV *, u_int32_t, u_int32_t,
+ * PUBLIC: int __lock_get_list __P((DB_ENV *, DB_LOCKER *, u_int32_t,
  * PUBLIC:	      db_lockmode_t, DBT *));
  */
 int
 __lock_get_list(dbenv, locker, flags, lock_mode, list)
 	DB_ENV *dbenv;
-	u_int32_t locker, flags;
+	DB_LOCKER *locker;
+	u_int32_t flags;
 	db_lockmode_t lock_mode;
 	DBT *list;
 {

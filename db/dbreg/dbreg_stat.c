@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: dbreg_stat.c,v 12.9 2006/08/24 14:45:32 bostic Exp $
+ * $Id: dbreg_stat.c,v 12.12 2007/05/17 15:15:07 bostic Exp $
  */
 
 #include "db_config.h"
@@ -83,7 +82,6 @@ __dbreg_print_dblist(dbenv, flags)
 	dblp = dbenv->lg_handle;
 	lp = dblp->reginfo.primary;
 
-	__db_msg(dbenv, "%s", DB_GLOBAL(db_line));
 	__db_msg(dbenv, "LOG FNAME list:");
 	__mutex_print_debug_single(
 	    dbenv, "File name mutex", lp->mtx_filelist, flags);

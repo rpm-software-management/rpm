@@ -1,0 +1,86 @@
+m4_comment([$Id: intro.so,v 1.7 2007/07/07 14:34:54 bostic Exp $])
+
+m4_ref_title(Building m4_db for S60,
+    Building for S60, @building for S60,
+    build_brew/intro, build_unix/intro)
+
+m4_p([dnl
+This page has general instructions for building the m4_db library and
+applications for the S60 platform.])
+
+m4_p([dnl
+Building m4_db for S60 requires S60 SDK version 3 or above with
+Symbian V9.1 or above; the 3rd Edition FP1 SDK is recommended.])
+
+m4_p([dnl
+The NOKIA OpenC plugin should be installed on both emulator and device.])
+
+m4_p([dnl
+CodeWarrior IDE for S60 V3.1 is recommended.])
+
+m4_section([dnl
+Building m4_db for the S60 Emulator])
+
+m4_p([dnl
+The m4_path(build_s60) directory in the m4_db distribution contains
+a m4_path(bdb_s60.mmp) project file, which can be imported to
+CodeWarrior or Carbide, etc.  This project file can be used to build the
+m4_db library for the S60 platform.])
+
+m4_p([dnl
+The steps for building the m4_db library for the S60 emulator are
+as follows:])
+
+m4_nlistbegin
+m4_nlist([dnl
+Install the S60 SDK and OpenC library.])
+m4_nlist([dnl
+In CodeWarrior, select m4_italic([File -__GT__ Import project from .mmp file]).])
+m4_nlist([dnl
+Select an SDK to use with this project: m4_italic([nokia -__GT__S60 S60_3rd_FP1]).])
+m4_nlist([dnl
+Click to browse for MMP file selection.  Look in the
+m4_path(build_s60) directory for Workspaces and select
+m4_italic(bdb_s60.mmp).])
+m4_nlist([Click Next.])
+m4_nlist([Click Finish.])
+m4_nlist([dnl
+Select build target to WINSCW UDEB, to build, press F7.])
+m4_nlistend
+
+m4_p([dnl
+The build will create the file m4_path(bdb_s60.lib), which is
+installed into m4_path($EPOCROOT/epoc32/ release/winscw/udeb), which can
+be linked by m4_db applications for the emulator.])
+
+m4_section([Building m4_db Library for the Device])
+
+m4_nlistbegin
+m4_nlist([dnl
+Install the CSL Arm tool chain.])
+m4_nlist([dnl
+From m4_path($EPOCROOT/epoc32/release/armv5/lib), add OpenC library
+libpthread.dso to the GCCE library(libc.dso already added).])
+m4_nlist([dnl
+Since m4_db uses old-style function definitions, it will not be accepted
+by the default compiler:arm-none-symbianelf-g++.exe.  Change the
+compiler to arm-none-symbianelf-gcc.exe and specify the "-x c" option
+there.])
+m4_nlist([dnl
+Select build target to GCCE UREL, to build, press F7.])
+m4_nlistend
+
+m4_p([dnl
+The build will create the file m4_path(bdb_s60.lib), which is
+installed into m4_path($EPOCROOT/epoc32/ release/armv5/urel), which can
+be linked by m4_db applications for device.])
+
+m4_section([Building a S60 application with the m4_db library])
+
+m4_p([dnl
+Building a m4_db application in the S60 environment is similar
+to building in a Windows environment.  Ensure the include file
+m4_path(build_s60/db.h) is in the build include path and the created
+m4_path(bdb_s60.lib) is in the build library path.])
+
+m4_page_footer

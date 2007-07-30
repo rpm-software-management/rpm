@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1999-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1999,2007 Oracle.  All rights reserved.
 #
-# $Id: upgrade.tcl,v 12.8 2006/09/18 14:22:44 carol Exp $
+# $Id: upgrade.tcl,v 12.13 2007/07/03 14:04:04 carol Exp $
 
 source ./include.tcl
 
@@ -240,8 +239,10 @@ proc _upgrade_test { temp_dir version method file endianness } {
 	# Open the database prior to upgrading.  If it fails,
 	# it should fail with the DB_OLDVERSION message.
 	set encargs ""
+	set upgradeargs ""
 	if { $encrypt == 1 } {
 		set encargs " -encryptany $passwd "
+		set upgradeargs " -P $passwd "
 	}
 	if { [catch \
 	    { set db [eval {berkdb open} $encargs \
@@ -252,7 +253,8 @@ proc _upgrade_test { temp_dir version method file endianness } {
 	}
 
 	# Now upgrade the database.
-	set ret [berkdb upgrade "$temp_dir/$file-$endianness.db"]
+	set ret [catch {eval exec {$util_path/db_upgrade} $upgradeargs \
+	    "$temp_dir/$file-$endianness.db" } message]
 	error_check_good dbupgrade $ret 0
 
 	error_check_good dbupgrade_verify [verify_dir $temp_dir "" 0 0 1] 0
@@ -326,11 +328,11 @@ proc _log_test { temp_dir release method file } {
 
 	# Log versions prior to 8 can only be read by their own version.
 	# Log versions of 8 or greater are readable by Berkeley DB 4.5
-	# or greater, but the output of printlog does not match unless 
+	# or greater, but the output of printlog does not match unless
 	# the versions are identical.
 	set logoldver 8
 	if { $current_logvers > $saved_logvers &&\
-	    $current_logvers < $logoldver } {
+	    $saved_logvers < $logoldver } {
 		error_check_good historic_log_version \
 		    [is_substr $message "historic log version"] 1
 	} elseif { $current_logvers > $saved_logvers } {

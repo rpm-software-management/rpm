@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <title>Chapter 2. 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ChapterÂ 2.Â 
 		The Basic Program
 	</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
@@ -17,14 +17,14 @@
     <div class="navheader">
       <table width="100%" summary="Navigation header">
         <tr>
-          <th colspan="3" align="center">Chapter 2. 
+          <th colspan="3" align="center">ChapterÂ 2.Â 
 		The Basic Program
 	</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="tutorialintroduction.html">Prev</a> </td>
-          <th width="60%" align="center"> </th>
-          <td width="20%" align="right"> <a accesskey="n" href="opendbenvironment.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="tutorialintroduction.html">Prev</a>Â </td>
+          <th width="60%" align="center">Â </th>
+          <td width="20%" align="right">Â <a accesskey="n" href="opendbenvironment.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -33,7 +33,7 @@
       <div class="titlepage">
         <div>
           <div>
-            <h2 class="title"><a id="BasicProgram"></a>Chapter 2. 
+            <h2 class="title"><a id="BasicProgram"></a>ChapterÂ 2.Â 
 		The Basic Program
 	</h2>
           </div>
@@ -138,8 +138,8 @@
           <div></div>
         </div>
         <p>
-    The key and value classes for each type of shipment record &#8212;
-	Parts, Suppliers and Shipments &#8212; are defined as ordinary Java
+    The key and value classes for each type of shipment record â€”
+	Parts, Suppliers and Shipments â€” are defined as ordinary Java
 	classes. In this example the serialized form of the key and value
 	objects is stored directly in the database. Therefore these classes
 	must implement the standard Java java.io.Serializable interface. A
@@ -207,7 +207,7 @@ public class PartKey implements Serializable
     }
 
     public String toString() {
-        return &quot;[PartKey: number=&quot; + number + ']';
+        return "[PartKey: number=" + number + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -254,10 +254,10 @@ public class PartData implements Serializable
 
     public String toString()
     {
-        return &quot;[PartData: name=&quot; + name +
-               &quot; color=&quot; + color +
-               &quot; weight=&quot; + weight +
-               &quot; city=&quot; + city + ']';
+        return "[PartData: name=" + name +
+               " color=" + color +
+               " weight=" + weight +
+               " city=" + city + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -271,8 +271,8 @@ public class PartData implements Serializable
 
 public class Weight implements Serializable
 {
-    public final static String GRAMS = &quot;grams&quot;;
-    public final static String OUNCES = &quot;ounces&quot;;
+    public final static String GRAMS = "grams";
+    public final static String OUNCES = "ounces";
 
     private double amount;
     private String units;
@@ -295,7 +295,7 @@ public class Weight implements Serializable
 
     public String toString()
     {
-        return &quot;[&quot; + amount + ' ' + units + ']';
+        return "[" + amount + ' ' + units + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -321,7 +321,7 @@ public class SupplierKey implements Serializable
 
     public String toString()
     {
-        return &quot;[SupplierKey: number=&quot; + number + ']';
+        return "[SupplierKey: number=" + number + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -361,9 +361,9 @@ public class SupplierData implements Serializable
 
     public String toString()
     {
-        return &quot;[SupplierData: name=&quot; + name +
-               &quot; status=&quot; + status +
-               &quot; city=&quot; + city + ']';
+        return "[SupplierData: name=" + name +
+               " status=" + status +
+               " city=" + city + ']';
     }
 }</tt></b>
 	</pre>
@@ -397,8 +397,8 @@ public class ShipmentKey implements Serializable
 
     public String toString()
     {
-        return &quot;[ShipmentKey: supplier=&quot; + supplierNumber +
-                &quot; part=&quot; + partNumber + ']';
+        return "[ShipmentKey: supplier=" + supplierNumber +
+                " part=" + partNumber + ']';
     }
 }</tt></b> </pre>
         <p>
@@ -427,7 +427,7 @@ public class ShipmentData implements Serializable
 
     public String toString()
     {
-        return &quot;[ShipmentData: quantity=&quot; + quantity + ']';
+        return "[ShipmentData: quantity=" + quantity + ']';
     }
 }</tt></b> </pre>
       </div>
@@ -436,18 +436,18 @@ public class ShipmentData implements Serializable
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="tutorialintroduction.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="tutorialintroduction.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="index.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="opendbenvironment.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="opendbenvironment.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Tutorial Introduction </td>
+          <td width="40%" align="left" valign="top">Tutorial IntroductionÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> 
+          <td width="40%" align="right" valign="top">Â 
 		Opening and Closing the Database Environment
 	</td>
         </tr>

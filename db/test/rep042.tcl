@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2003-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 2003,2007 Oracle.  All rights reserved.
 #
-# $Id: rep042.tcl,v 12.13 2006/09/08 20:32:18 bostic Exp $
+# $Id: rep042.tcl,v 12.17 2007/05/17 18:17:21 bostic Exp $
 #
 # TEST	rep042
 # TEST	Concurrency with updates.
@@ -54,6 +53,12 @@ proc rep042 { method { niter 10 } { tnum "042" } args } {
 proc rep042_sub { method niter tnum logset recargs largs } {
 	source ./include.tcl
 	global perm_response_list
+	global rep_verbose
+
+	set verbargs ""
+	if { $rep_verbose == 1 } {
+		set verbargs " -verbose {rep on} "
+	}
 
 	env_cleanup $testdir
 	set omethod [convert_method $method]
@@ -78,35 +83,24 @@ proc rep042_sub { method niter tnum logset recargs largs } {
 	# Open a master.
 	repladd 1
 	set ma_cmd "berkdb_env_noerr -create \
-	    -log_max 1000000 $m_txnargs $m_logargs \
-	    -home $masterdir -rep_master \
+	    -log_max 1000000 $m_txnargs $m_logargs $verbargs \
+	    -home $masterdir -rep_master -errpfx MASTER \
 	    -rep_transport \[list 1 replsend\]"
-#	set ma_cmd "berkdb_env_noerr -create \
-#	    -log_max 1000000 $m_txnargs $m_logargs \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    -home $masterdir -rep_master -rep_transport \
-#	    \[list 1 replsend\]"
 	set masterenv [eval $ma_cmd $recargs]
-	error_check_good master_env [is_valid_env $masterenv] TRUE
 
 	# Open a client
 	repladd 2
 	set cl_cmd "berkdb_env_noerr -create -home $clientdir \
-	    $c_txnargs $c_logargs -rep_client \
+	    $c_txnargs $c_logargs $verbargs -errpfx CLIENT -rep_client \
 	    -rep_transport \[list 2 replsend\]"
-#	set cl_cmd "berkdb_env_noerr -create -home $clientdir \
-#	    -verbose {rep on} -errfile /dev/stderr \
-#	    $c_txnargs $c_logargs -rep_client \
-#	    -rep_transport \[list 2 replsend\]"
 	set clientenv [eval $cl_cmd $recargs]
-	error_check_good client_env [is_valid_env $clientenv] TRUE
 
 	# Bring the client online.
 	process_msgs "{$masterenv 1} {$clientenv 2}"
 
 	puts "\tRep$tnum.a: Create and populate database."
 	set dbname rep042.db
-	set db [eval "berkdb_open -create $omethod -auto_commit \
+	set db [eval "berkdb_open_noerr -create $omethod -auto_commit \
 	    -env $masterenv $largs $dbname"]
 	for { set i 1 } { $i < $niter } { incr i } {
 		set t [$masterenv txn]

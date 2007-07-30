@@ -1,0 +1,49 @@
+m4_comment([$Id: env_fileid_reset.so,v 1.3 2005/12/13 16:48:01 bostic Exp $])
+
+define(M4PAGELOCAL, [dbenv_fileid_reset])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_fileid_reset),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__fileid_reset(DB_ENV *dbenv, const char *file, u_int32_t flags);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::fileid_reset(const char *file, u_int32_t flags);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_fileid_reset) allows database files to be copied, and
+then the copy used in the same database environment as the original.])
+
+m4_p([dnl
+All databases contain an ID string used to identify the database in the
+database environment cache.  If a physical database file is copied, and
+used in the same environment as another file with the same ID strings,
+corruption can occur.  The m4_refT(dbenv_fileid_reset) creates new ID
+strings for all of the databases in the physical file.])
+
+m4_p([dnl
+The m4_refT(dbenv_fileid_reset) modifies the physical file, in-place.
+Applications should not reset IDs in files that are currently in use.])
+
+m4_when_any(dbenv_fileid_reset)
+
+m4_return(dbenv_fileid_reset, std)
+
+m4_parambegin
+m4_param(file, [dnl
+The name of the physical file in which new file IDs are to be created.])
+m4_param(flags, [dnl
+m4_sf_zmust(0)
+m4_tagbegin
+m4_tag(DB_ENCRYPT, [dnl
+The file contains encrypted databases.])
+m4_tagend])
+m4_paramend
+
+m4_err(dbenv_fileid_reset, einval)
+
+m4_seealso(DbEnv)
+m4_page_footer

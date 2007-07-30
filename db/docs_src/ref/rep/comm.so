@@ -1,0 +1,104 @@
+m4_comment([$Id: comm.so,v 1.19 2007/03/20 20:20:27 alanb Exp $])
+
+m4_ref_title(m4_db Replication,
+    Building the communications infrastructure,, rep/base_meth, rep/newsite)
+
+m4_p([dnl
+Replication Manager provides a built-in communications
+infrastructure.])
+
+m4_p([dnl
+For applications that use the Base replication API, which must provide
+their own communications infrastructure, it is typically written with one
+or more threads of control looping on one or more communication
+channels, receiving and sending messages.  These threads accept messages
+from remote environments for the local database environment, and accept
+messages from the local environment for remote environments.  Messages
+from remote environments are passed to the local database environment
+using the m4_refT(rep_message).  Messages from the local environment are
+passed to the application for transmission using the callback function
+specified to the m4_refT(rep_set_transport).])
+
+m4_p([dnl
+Processes establish communication channels by calling the
+m4_refT(rep_set_transport), regardless of whether they are running in
+client or server environments.  This method specifies the m4_arg(send)
+function, a callback function used by m4_db for sending messages to
+other database environments in the replication group.  The m4_arg(send)
+function takes an environment ID and two opaque data objects. It is the
+responsibility of the m4_arg(send) function to transmit the information
+in the two data objects to the database environment corresponding to the
+ID, with the receiving application then calling the m4_refT(rep_message)
+to process the message.])
+
+m4_p([dnl
+The details of the transport mechanism are left entirely to the
+application; the only requirement is that the data buffer and size of
+each of the control and rec m4_ref(Dbt)s passed to the m4_arg(send)
+function on the sending site be faithfully copied and delivered to the
+receiving site by means of a call to m4_ref(rep_message) with
+corresponding arguments.  Messages that are broadcast (whether by
+broadcast media or when directed by setting the
+m4_refT(rep_set_transport)'s envid parameter DB_EID_BROADCAST), should
+not be processed by the message sender.  In all cases, the application's
+transport media or software must ensure that m4_ref(rep_message) is
+never called with a message intended for a different database
+environment or a broadcast message sent from the same environment on
+which m4_ref(rep_message) will be called.  The m4_refT(rep_message) is
+free-threaded; it is safe to deliver any number of messages
+simultaneously, and from any arbitrary thread or process in the m4_db
+environment.])
+
+m4_p([dnl
+There are a number of informational returns from the
+m4_refT(rep_message):])
+
+m4_tagbegin
+
+m4_tag([m4_ref(DB_REP_DUPMASTER)], [dnl
+When m4_ref(rep_message) returns m4_ref(DB_REP_DUPMASTER), it means that
+another database environment in the replication group also believes
+itself to be the master.  The application should complete all active
+transactions, close all open database handles, reconfigure itself as
+a client using the m4_refT(rep_start), and then call for an election by
+calling the m4_refT(rep_elect).])
+
+m4_tag([m4_ref(DB_REP_HOLDELECTION)], [dnl
+When m4_ref(rep_message) returns m4_ref(DB_REP_HOLDELECTION), it means
+that another database environment in the replication group has called
+for an election.  The application should call the m4_refT(rep_elect).])
+
+m4_tag([m4_ref(DB_REP_IGNORE)], [dnl
+When m4_ref(rep_message) returns m4_ref(DB_REP_IGNORE), it means that
+this message cannot be processed.
+This is normally an indication that this message
+is irrelevant to the current replication state, such as a message
+from an old generation that arrived late.])
+
+m4_tag([m4_ref(DB_REP_ISPERM)], [dnl
+When m4_ref(rep_message) returns m4_ref(DB_REP_ISPERM), it means a
+permanent record, perhaps a message previously returned as
+m4_ref(DB_REP_NOTPERM) was successfully
+written to disk.  This record may have filled a gap in the log record that
+allowed additional records to be written.  The m4_arg(ret_lsnp)
+contains the maximum LSN of the permanent records written.])
+
+m4_tag([m4_ref(DB_REP_NEWSITE)], [dnl
+When m4_ref(rep_message) returns m4_ref(DB_REP_NEWSITE), it means that
+a message from a previously unknown member of the replication group has
+been received.  The application should reconfigure itself as necessary
+so it is able to send messages to this site.])
+
+m4_tag([m4_ref(DB_REP_NOTPERM)], [dnl
+When m4_ref(rep_message) returns m4_ref(DB_REP_NOTPERM), it means a
+message marked as m4_ref(DB_REP_PERMANENT) was processed successfully
+but was not written to disk.  This is normally an indication that one
+or more messages, which should have arrived before this message, have
+not yet arrived.  This operation will be written to disk when the
+missing messages arrive.  The m4_arg(ret_lsnp) argument will contain
+the LSN of this record.  The application should take whatever action
+is deemed necessary to retain its recoverability characteristics.])
+
+m4_tagend
+
+m4_page_footer

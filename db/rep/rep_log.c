@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2004-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2004,2007 Oracle.  All rights reserved.
  *
- * $Id: rep_log.c,v 12.47 2006/09/11 19:41:20 sue Exp $
+ * $Id: rep_log.c,v 12.64 2007/06/21 16:32:24 alanb Exp $
  */
 
 #include "db_config.h"
@@ -28,14 +27,14 @@ __rep_allreq(dbenv, rp, eid)
 	int eid;
 {
 	DB_LOGC *logc;
-	DB_LSN oldfilelsn;
+	DB_LSN log_end, oldfilelsn;
 	DB_REP *db_rep;
 	DBT data_dbt, newfiledbt;
 	REP *rep;
 	REP_BULK bulk;
 	REP_THROTTLE repth;
 	uintptr_t bulkoff;
-	u_int32_t bulkflags, flags, use_bulk, version;
+	u_int32_t bulkflags, end_flag, flags, use_bulk, version;
 	int ret, t_ret;
 
 	ret = 0;
@@ -67,6 +66,18 @@ __rep_allreq(dbenv, rp, eid)
 	repth.type = REP_LOG;
 	repth.data_dbt = &data_dbt;
 	REP_SYSTEM_UNLOCK(dbenv);
+
+	/*
+	 * Get the LSN of the end of the log, so that in our reading loop
+	 * (below), we can recognize when we get there, and set the
+	 * REPCTL_LOG_END flag.
+	 */
+	if ((ret = __logc_get(logc, &log_end, &data_dbt, DB_LAST)) != 0) {
+		if (ret == DB_NOTFOUND && F_ISSET(rep, REP_F_MASTER))
+			ret = 0;
+		goto err;
+	}
+
 	flags = IS_ZERO_LSN(rp->lsn) ||
 	    IS_INIT_LSN(rp->lsn) ?  DB_FIRST : DB_SET;
 	/*
@@ -76,7 +87,7 @@ __rep_allreq(dbenv, rp, eid)
 	 * cannot get the record.  Return 0 if we finish the loop and
 	 * sent all that we have.
 	 */
-	ret = __log_c_get(logc, &repth.lsn, &data_dbt, flags);
+	ret = __logc_get(logc, &repth.lsn, &data_dbt, flags);
 	/*
 	 * If the client is asking for all records
 	 * because it doesn't have any, and our first
@@ -102,9 +113,9 @@ __rep_allreq(dbenv, rp, eid)
 		 * Any other error is returned.
 		 */
 		if (ret == 0)
-			ret = __log_c_get(logc, &repth.lsn,
+			ret = __logc_get(logc, &repth.lsn,
 			    &data_dbt, DB_CURRENT);
-		else if (ret == DB_NOTFOUND && F_ISSET(rep, REP_F_MASTER)) {
+		if (ret == DB_NOTFOUND && F_ISSET(rep, REP_F_MASTER)) {
 			ret = 0;
 			goto err;
 		}
@@ -117,11 +128,15 @@ __rep_allreq(dbenv, rp, eid)
 	 * Or if we're not using throttling, or we are using bulk, we stop
 	 * when we reach the end (i.e. ret != 0).
 	 */
-	for (;
-	    ret == 0 && repth.type != REP_LOG_MORE;
-	    ret = __log_c_get(logc, &repth.lsn, &data_dbt, DB_NEXT)) {
+	for (end_flag = 0;
+	    ret == 0 && repth.type != REP_LOG_MORE && end_flag == 0;
+	    ret = __logc_get(logc, &repth.lsn, &data_dbt, DB_NEXT)) {
+		/*
+		 * If we just changed log files, we need to send the
+		 * version of this log file to the client.
+		 */
 		if (repth.lsn.file != oldfilelsn.file) {
-			if ((ret = __log_c_version(logc, &version)) != 0)
+			if ((ret = __logc_version(logc, &version)) != 0)
 				break;
 			memset(&newfiledbt, 0, sizeof(newfiledbt));
 			newfiledbt.data = &version;
@@ -129,6 +144,18 @@ __rep_allreq(dbenv, rp, eid)
 			(void)__rep_send_message(dbenv,
 			    eid, REP_NEWFILE, &oldfilelsn, &newfiledbt, 0, 0);
 		}
+
+		/*
+		 * Mark the end of the ALL_REQ response to show that the
+		 * receiving client should now be "caught up" with the
+		 * replication group.  If we're the master, then our log end is
+		 * certainly authoritative.  If we're another client, only if we
+		 * ourselves have reached STARTUPDONE.
+		 */
+		end_flag = (LOG_COMPARE(&repth.lsn, &log_end) >= 0 &&
+		    (F_ISSET(rep, REP_F_MASTER) ||
+		    rep->stat.st_startup_complete)) ?
+		    REPCTL_LOG_END : 0;
 		/*
 		 * If we are configured for bulk, try to send this as a bulk
 		 * request.  If not configured, or it is too big for bulk
@@ -136,9 +163,10 @@ __rep_allreq(dbenv, rp, eid)
 		 */
 		if (use_bulk)
 			ret = __rep_bulk_message(dbenv, &bulk, &repth,
-			    &repth.lsn, &data_dbt, REPCTL_RESEND);
+			    &repth.lsn, &data_dbt, (REPCTL_RESEND | end_flag));
 		if (!use_bulk || ret == DB_REP_BULKOVF)
-			ret = __rep_send_throttle(dbenv, eid, &repth, 0);
+			ret = __rep_send_throttle(dbenv,
+			    eid, &repth, 0, end_flag);
 		if (ret != 0)
 			break;
 		/*
@@ -146,20 +174,20 @@ __rep_allreq(dbenv, rp, eid)
 		 * last LSN in the previous file.  Save it here.
 		 */
 		oldfilelsn = repth.lsn;
-		oldfilelsn.offset += logc->c_len;
+		oldfilelsn.offset += logc->len;
 	}
 
-	if (ret == DB_NOTFOUND)
+	if (ret == DB_NOTFOUND || ret == DB_REP_UNAVAIL)
 		ret = 0;
 	/*
 	 * We're done, force out whatever remains in the bulk buffer and
 	 * free it.
 	 */
 	if (use_bulk && (t_ret = __rep_bulk_free(dbenv, &bulk,
-	    REPCTL_RESEND)) != 0 && ret == 0)
+	    (REPCTL_RESEND | end_flag))) != 0 && ret == 0)
 		ret = t_ret;
 err:
-	if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
+	if ((t_ret = __logc_close(logc)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
 }
@@ -225,12 +253,23 @@ __rep_log(dbenv, rp, rec, savetime, ret_lsnp)
 		goto out;
 	}
 	if (rp->rectype == REP_LOG_MORE) {
-		REP_SYSTEM_LOCK(dbenv);
 		master = rep->master_id;
-		REP_SYSTEM_UNLOCK(dbenv);
-		LOG_SYSTEM_LOCK(dbenv);
-		lsn = lp->lsn;
-		LOG_SYSTEM_UNLOCK(dbenv);
+
+		/*
+		 * Keep the cycle from stalling: In case we got the LOG_MORE out
+		 * of order, before some preceding log records, we want to make
+		 * sure our follow-up request resumes from where the LOG_MORE
+		 * said it should.  (If the preceding log records never arrive,
+		 * normal gap processing should take care of asking for them.)
+		 * But if we already have this record and/or more, we need to
+		 * ask to resume from what we need.  The upshot is we need the
+		 * max of lp->lsn and the lsn from the message.
+		 */
+		MUTEX_LOCK(dbenv, rep->mtx_clientdb);
+		lsn = lp->ready_lsn;
+		if (LOG_COMPARE(&rp->lsn, &lsn) > 0)
+			lsn = rp->lsn;
+
 		/*
 		 * If the master_id is invalid, this means that since
 		 * the last record was sent, somebody declared an
@@ -240,37 +279,21 @@ __rep_log(dbenv, rp, rec, savetime, ret_lsnp)
 		 * This is not an error;  when we find a new master,
 		 * we'll re-negotiate where the end of the log is and
 		 * try to bring ourselves up to date again anyway.
-		 *
-		 * If we've asked for a bunch of records, it could
-		 * either be from a LOG_REQ or ALL_REQ.  If we're
-		 * waiting for a gap to be filled, call loggap_req,
-		 * otherwise use ALL_REQ again.
 		 */
-		MUTEX_LOCK(dbenv, rep->mtx_clientdb);
 		if (master == DB_EID_INVALID) {
 			ret = 0;
 			MUTEX_UNLOCK(dbenv, rep->mtx_clientdb);
-		} else if (IS_ZERO_LSN(lp->waiting_lsn)) {
-			/*
-			 * We're making an ALL_REQ.  However, since we're
-			 * in a LOG_MORE, this is in reply to a request and
-			 * it is likely we may receive new records, even if
-			 * we don't have any at this moment.  So, to avoid
-			 * multiple data streams, set the wait_recs high
-			 * now to give the master a chance to start sending
-			 * us these records before the gap code re-requests
-			 * the same gap.  Wait_recs will get reset once we
-			 * start receiving these records.
-			 */
-			lp->wait_recs = rep->max_gap;
-			MUTEX_UNLOCK(dbenv, rep->mtx_clientdb);
-			if (__rep_send_message(dbenv, master, REP_ALL_REQ,
-			    &lsn, NULL, 0, DB_REP_ANYWHERE) != 0)
-				goto out;
-		} else {
-			ret = __rep_loggap_req(dbenv, rep, &lsn, REP_GAP_FORCE);
-			MUTEX_UNLOCK(dbenv, rep->mtx_clientdb);
+			goto out;
 		}
+		/*
+		 * If we're waiting for records, set the wait_recs
+		 * high so that we avoid re-requesting too soon and
+		 * end up with multiple data streams.
+		 */
+		if (IS_ZERO_LSN(lp->waiting_lsn))
+			lp->wait_recs = rep->max_gap;
+		ret = __rep_loggap_req(dbenv, rep, &lsn, REP_GAP_FORCE);
+		MUTEX_UNLOCK(dbenv, rep->mtx_clientdb);
 	}
 out:
 	return (ret);
@@ -340,16 +363,13 @@ __rep_logreq(dbenv, rp, rec, eid)
 	uintptr_t bulkoff;
 	u_int32_t bulkflags, use_bulk, version;
 	int ret, t_ret;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	ret = 0;
 	db_rep = dbenv->rep_handle;
 	rep = db_rep->region;
 
 	if (rec != NULL && rec->size != 0) {
-		RPRINT(dbenv, (dbenv, &mb,
+		RPRINT(dbenv, (dbenv,
 		    "[%lu][%lu]: LOG_REQ max lsn: [%lu][%lu]",
 		    (u_long) rp->lsn.file, (u_long)rp->lsn.offset,
 		    (u_long)((DB_LSN *)rec->data)->file,
@@ -357,11 +377,11 @@ __rep_logreq(dbenv, rp, rec, eid)
 	}
 	/*
 	 * There are three different cases here.
-	 * 1. We asked log_c_get for a particular LSN and got it.
-	 * 2. We asked log_c_get for an LSN and it's not found because it is
+	 * 1. We asked logc_get for a particular LSN and got it.
+	 * 2. We asked logc_get for an LSN and it's not found because it is
 	 *	beyond the end of a log file and we need a NEWFILE msg.
 	 *	and then the record that was requested.
-	 * 3. We asked log_c_get for an LSN and it simply doesn't exist, but
+	 * 3. We asked logc_get for an LSN and it simply doesn't exist, but
 	 *    doesn't meet any of those other criteria, in which case
 	 *    it's an error (that should never happen on a master).
 	 *
@@ -373,7 +393,7 @@ __rep_logreq(dbenv, rp, rec, eid)
 	oldfilelsn = lsn = rp->lsn;
 	if ((ret = __log_cursor(dbenv, &logc)) != 0)
 		return (ret);
-	ret = __log_c_get(logc, &lsn, &data_dbt, DB_SET);
+	ret = __logc_get(logc, &lsn, &data_dbt, DB_SET);
 
 	if (ret == 0) /* Case 1 */
 		(void)__rep_send_message(dbenv,
@@ -427,7 +447,7 @@ __rep_logreq(dbenv, rp, rec, eid)
 	while (ret == 0 && rec != NULL && rec->size != 0 &&
 	    repth.type == REP_LOG) {
 		if ((ret =
-		    __log_c_get(logc, &repth.lsn, &data_dbt, DB_NEXT)) != 0) {
+		    __logc_get(logc, &repth.lsn, &data_dbt, DB_NEXT)) != 0) {
 			/*
 			 * If we're a client and we only have part of the gap,
 			 * return DB_NOTFOUND so that we send a REREQUEST
@@ -440,7 +460,7 @@ __rep_logreq(dbenv, rp, rec, eid)
 		if (LOG_COMPARE(&repth.lsn, (DB_LSN *)rec->data) >= 0)
 			break;
 		if (repth.lsn.file != oldfilelsn.file) {
-			if ((ret = __log_c_version(logc, &version)) != 0)
+			if ((ret = __logc_version(logc, &version)) != 0)
 				break;
 			memset(&newfiledbt, 0, sizeof(newfiledbt));
 			newfiledbt.data = &version;
@@ -457,15 +477,19 @@ __rep_logreq(dbenv, rp, rec, eid)
 			ret = __rep_bulk_message(dbenv, &bulk, &repth,
 			    &repth.lsn, &data_dbt, REPCTL_RESEND);
 		if (!use_bulk || ret == DB_REP_BULKOVF)
-			ret = __rep_send_throttle(dbenv, eid, &repth, 0);
-		if (ret != 0)
+			ret = __rep_send_throttle(dbenv, eid, &repth, 0, 0);
+		if (ret != 0) {
+			/* Ignore send failure, except to break the loop. */
+			if (ret == DB_REP_UNAVAIL)
+				ret = 0;
 			break;
+		}
 		/*
 		 * If we are about to change files, then we'll need the
 		 * last LSN in the previous file.  Save it here.
 		 */
 		oldfilelsn = repth.lsn;
-		oldfilelsn.offset += logc->c_len;
+		oldfilelsn.offset += logc->len;
 	}
 
 	/*
@@ -476,7 +500,7 @@ __rep_logreq(dbenv, rp, rec, eid)
 	    REPCTL_RESEND)) != 0 && ret == 0)
 		ret = t_ret;
 err:
-	if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
+	if ((t_ret = __logc_close(logc)) != 0 && ret == 0)
 		ret = t_ret;
 	return (ret);
 }
@@ -507,9 +531,10 @@ __rep_loggap_req(dbenv, rep, lsnp, gapflags)
 
 	dblp = dbenv->lg_handle;
 	lp = dblp->reginfo.primary;
-	LOG_SYSTEM_LOCK(dbenv);
-	next_lsn = lp->lsn;
-	LOG_SYSTEM_UNLOCK(dbenv);
+	if (FLD_ISSET(gapflags, REP_GAP_FORCE))
+		next_lsn = *lsnp;
+	else
+		next_lsn = lp->ready_lsn;
 	ctlflags = flags = 0;
 	type = REP_LOG_REQ;
 
@@ -529,15 +554,32 @@ __rep_loggap_req(dbenv, rep, lsnp, gapflags)
 	    IS_ZERO_LSN(lp->max_wait_lsn) ||
 	    (lsnp != NULL && LOG_COMPARE(lsnp, &lp->max_wait_lsn) == 0)) {
 		lp->max_wait_lsn = lp->waiting_lsn;
+		/*
+		 * If we are forcing a gap, we need to send a max_wait_lsn
+		 * that may be beyond the current gap/waiting_lsn (but
+		 * it may not be).  If we cannot determine any future
+		 * waiting LSN, then it should be zero.  If we're in
+		 * internal init, it should be our ending LSN.
+		 */
+		if (FLD_ISSET(gapflags, REP_GAP_FORCE)) {
+			if (LOG_COMPARE(&lp->max_wait_lsn, lsnp) <= 0) {
+				if (F_ISSET(rep, REP_F_RECOVER_LOG)) {
+					DB_ASSERT(dbenv, LOG_COMPARE(lsnp,
+					    &rep->last_lsn) <= 0);
+					lp->max_wait_lsn = rep->last_lsn;
+				} else
+					ZERO_LSN(lp->max_wait_lsn);
+			}
+		}
 		if (IS_ZERO_LSN(lp->max_wait_lsn))
 			type = REP_ALL_REQ;
 		memset(&max_lsn_dbt, 0, sizeof(max_lsn_dbt));
-		max_lsn_dbt.data = &lp->waiting_lsn;
-		max_lsn_dbt.size = sizeof(lp->waiting_lsn);
+		max_lsn_dbt.data = &lp->max_wait_lsn;
+		max_lsn_dbt.size = sizeof(lp->max_wait_lsn);
 		max_lsn_dbtp = &max_lsn_dbt;
 		/*
 		 * Gap requests are "new" and can go anywhere, unless
-		 * this is already a rerequest.
+		 * this is already a re-request.
 		 */
 		if (FLD_ISSET(gapflags, REP_GAP_REREQUEST))
 			flags = DB_REP_REREQUEST;
@@ -547,12 +589,12 @@ __rep_loggap_req(dbenv, rep, lsnp, gapflags)
 		max_lsn_dbtp = NULL;
 		lp->max_wait_lsn = next_lsn;
 		/*
-		 * If we're dropping to singletons, this is a rerequest.
+		 * If we're dropping to singletons, this is a re-request.
 		 */
 		flags = DB_REP_REREQUEST;
 	}
 	if (rep->master_id != DB_EID_INVALID) {
-		rep->stat.st_log_requested++;
+		STAT(rep->stat.st_log_requested++);
 		if (F_ISSET(rep, REP_F_RECOVER_LOG))
 			ctlflags = REPCTL_INIT;
 		(void)__rep_send_message(dbenv, rep->master_id,
@@ -586,6 +628,12 @@ __rep_logready(dbenv, rep, savetime, last_lsnp)
 	    savetime)) == 0) {
 		REP_SYSTEM_LOCK(dbenv);
 		ZERO_LSN(rep->first_lsn);
+
+		if (rep->originfo != NULL) {
+			__os_free(dbenv, rep->originfo);
+			rep->originfo = NULL;
+		}
+
 		F_CLR(rep, REP_F_RECOVER_LOG);
 		REP_SYSTEM_UNLOCK(dbenv);
 	} else {
@@ -605,9 +653,9 @@ out:		__db_errx(dbenv,
  * This function handles these cases:
  * [Case 1 was that we found the record we were looking for - it
  * is already handled by the caller.]
- * 2. We asked log_c_get for an LSN and it's not found because it is
+ * 2. We asked logc_get for an LSN and it's not found because it is
  *	beyond the end of a log file and we need a NEWFILE msg.
- * 3. We asked log_c_get for an LSN and it simply doesn't exist, but
+ * 3. We asked logc_get for an LSN and it simply doesn't exist, but
  *    doesn't meet any of those other criteria, in which case
  *    we return DB_NOTFOUND and the caller decides if it's an error.
  *
@@ -629,9 +677,6 @@ __rep_chk_newfile(dbenv, logc, rep, rp, eid)
 	LOG *lp;
 	u_int32_t version;
 	int ret;
-#ifdef DIAGNOSTIC
-	DB_MSGBUF mb;
-#endif
 
 	ret = 0;
 	dblp = dbenv->lg_handle;
@@ -651,11 +696,11 @@ __rep_chk_newfile(dbenv, logc, rep, rp, eid)
 		 */
 		endlsn.file = rp->lsn.file + 1;
 		endlsn.offset = 0;
-		if ((ret = __log_c_get(logc,
+		if ((ret = __logc_get(logc,
 		    &endlsn, &data_dbt, DB_SET)) != 0 ||
-		    (ret = __log_c_get(logc,
+		    (ret = __logc_get(logc,
 			&endlsn, &data_dbt, DB_PREV)) != 0) {
-			RPRINT(dbenv, (dbenv, &mb,
+			RPRINT(dbenv, (dbenv,
 			    "Unable to get prev of [%lu][%lu]",
 			    (u_long)rp->lsn.file,
 			    (u_long)rp->lsn.offset));
@@ -684,8 +729,8 @@ __rep_chk_newfile(dbenv, logc, rep, rp, eid)
 			} else
 				ret = DB_NOTFOUND;
 		} else {
-			endlsn.offset += logc->c_len;
-			if ((ret = __log_c_version(logc,
+			endlsn.offset += logc->len;
+			if ((ret = __logc_version(logc,
 			    &version)) == 0) {
 				memset(&newfiledbt, 0,
 				    sizeof(newfiledbt));

@@ -1,9 +1,8 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 1996-2006
-#	Oracle Corporation.  All rights reserved.
+# Copyright (c) 1996,2007 Oracle.  All rights reserved.
 #
-# $Id: test030.tcl,v 12.3 2006/08/24 14:46:40 bostic Exp $
+# $Id: test030.tcl,v 12.6 2007/05/17 15:15:56 bostic Exp $
 #
 # TEST	test030
 # TEST	Test DB_NEXT_DUP Functionality.
@@ -113,11 +112,11 @@ proc test030 { method {nentries 10000} args } {
 		for {set ret [$dbc get -set $str]} \
 		    {[llength $ret] != 0} \
 		    {set ret [$dbc get -nextdup] } {
-			incr x
 
 			if { [llength $ret] == 0 } {
 				break
 			}
+			incr x
 
 			set k [lindex [lindex $ret 0] 0]
 			if { [string compare $k $str] != 0 } {
@@ -132,6 +131,30 @@ proc test030 { method {nentries 10000} args } {
 			error_check_good Test030:dup# $id $x
 		}
 		error_check_good Test030:numdups $x $ndup
+
+		# Now retrieve them backwards
+		for {set ret [$dbc get -prev]} \
+		    {[llength $ret] != 0} \
+		    {set ret [$dbc get -prevdup] } {
+
+			if { [llength $ret] == 0 } {
+				break
+			}
+
+			set k [lindex [lindex $ret 0] 0]
+			if { [string compare $k $str] != 0 } {
+				break
+			}
+			incr x -1
+
+			set datastr [lindex [lindex $ret 0] 1]
+			set d [data_of $datastr]
+			error_check_good Test030:put $d $str
+
+			set id [ id_of $datastr ]
+			error_check_good Test030:dup# $id $x
+		}
+		error_check_good Test030:numdups $x 1
 		incr count
 	}
 	close $did

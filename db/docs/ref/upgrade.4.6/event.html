@@ -1,0 +1,50 @@
+<!--$Id: event.so,v 1.2 2007/05/14 16:03:56 bostic Exp $-->
+<!--Copyright (c) 1997,2007 Oracle.  All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.6: replication events</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,Java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../upgrade.4.6/memp_fset.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/full_election.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h3 align=center>Release 4.6: replication events</h3>
+<p>It is now guaranteed the <a href="../../api_c/env_event_notify.html#DB_EVENT_REP_STARTUPDONE">DB_EVENT_REP_STARTUPDONE</a> event will be
+presented to the application after the corresponding
+<a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event, even in the face of extreme
+thread-scheduling anomalies.  (In previous releases, if the thread
+processing the NEWMASTER message was starved, and STARTUPDONE occurred
+soon after, the order might have been reversed.)</p>
+<p>In addition, the <a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event is now presented
+to all types of replication applications: users of either the
+Replication Framework or the Base Replication API.  In both cases, the
+<a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event always means that a site other than
+the local environment has become master.</p>
+<p>The <b>envid</b> parameter to <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> has been changed to
+be of type "int" rather than "int *", and the environment ID of a new
+master is presented to the application along with the
+<a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event.  Replication applications should
+be modified to use the <a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event to determine
+the ID of the new master.</p>
+<p>The <b>envid</b> parameter has been removed from the <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>
+method and a new event type has been added.  The
+<a href="../../api_c/env_event_notify.html#DB_EVENT_REP_ELECTED">DB_EVENT_REP_ELECTED</a> event is presented to the application at
+the site which wins an election.  In the Berkeley DB 4.6 release, the normal
+result of a successful election is either the
+<a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> event (with the winner's environment ID),
+or the <a href="../../api_c/env_event_notify.html#DB_EVENT_REP_ELECTED">DB_EVENT_REP_ELECTED</a> event.  Only one of the two events
+will ever be delivered.</p>
+<p>The DB_REP_NEWMASTER return code has been removed from the
+<a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a> method.  Replication applications should be modified to
+use the <a href="../../api_c/env_event_notify.html#DB_EVENT_REP_NEWMASTER">DB_EVENT_REP_NEWMASTER</a> and <a href="../../api_c/env_event_notify.html#DB_EVENT_REP_ELECTED">DB_EVENT_REP_ELECTED</a>
+events to determine the existence of a new master.</p>
+<table width="100%"><tr><td><br></td><td align=right><a href="../upgrade.4.6/memp_fset.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../upgrade.4.6/full_election.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1>Copyright (c) 1996,2007 Oracle.  All rights reserved.</font>
+</body>
+</html>

@@ -1,0 +1,110 @@
+m4_comment([$Id: db_stat.so,v 10.47 2006/10/05 01:06:08 bostic Exp $])
+
+include(m4/m4.utility)
+define(M4PAGELOCAL, db_stat)
+
+m4_util_header(db_stat, [dnl
+db_stat m4_option(d) m4_arg(file) m4_utilarg(fN) m4_utilarg([h home]) m4_utilarg([P password]) m4_utilarg([s database])
+
+db_stat m4_utilarg(cEelmNrtVZ) m4_utilarg([C Aclop]) m4_utilarg([h home]) m4_utilarg([L A]) m4_utilarg([M A]) m4_utilarg([R A]) m4_utilarg([P password])])
+
+m4_idefz(utility to display database and environment @statistics)
+
+m4_p([dnl
+The m4_ref(db_stat) utility displays statistics for m4_db environments.])
+
+m4_p([The options are as follows:])
+
+m4_tagbegin
+m4_tagopt(C, [dnl
+Display detailed information about the locking subsystem.
+m4_tagbegin
+m4_tag(A, [Display all information.])
+m4_tagns(c, [Display lock conflict matrix.])
+m4_tagns(l, [Display lockers within hash chains.])
+m4_tagns(o, [Display lock objects within hash chains.])
+m4_tagns(p, [Display locking subsystem parameters.])
+m4_tagend])
+
+m4_tagopt(c, [dnl
+Display locking subsystem statistics, as described in m4_ref(lock_stat).])
+
+m4_tagopt(d, [dnl
+Display database statistics for the specified file, as described in
+m4_ref(dbh_stat).
+m4_p([dnl
+If the database contains multiple databases and the m4_option(s) flag is
+not specified, the statistics are for the internal database that describes
+the other databases the file contains, and not for the file as a whole.])])
+
+m4_tagopt(E, [dnl
+Display detailed information about the database environment.])
+
+m4_tagopt(e, [dnl
+Display information about the database environment, including
+all configured subsystems of the database environment.])
+
+m4_tagopt(f, [Display only those database statistics that can be
+acquired without traversing the database.])
+
+m4_hflag
+
+m4_tagopt(l, [dnl
+Display logging subsystem statistics, as described in m4_ref(log_stat).])
+
+m4_tagopt(M, [dnl
+Display detailed information about the cache.])
+m4_tagbegin
+m4_tag(A, [Display all information.])
+m4_tagns(h, [Display buffers within hash chains.])
+m4_tagend
+
+m4_tagopt(m, [dnl
+Display cache statistics, as described in m4_ref(memp_stat).])
+
+m4_Nflag
+
+m4_Pflag
+
+m4_tagopt(R, [dnl
+Display detailed information about the replication subsystem.])
+m4_tagbegin
+m4_tag(A, [Display all information.])
+m4_tagend
+
+m4_tagopt(r, [dnl
+Display replication statistics, as described in m4_ref(rep_stat).])
+
+m4_tagopt(s, [dnl
+Display statistics for the specified database contained in the file
+specified with the m4_option(d) flag.])
+
+m4_tagopt(t, [dnl
+Display transaction subsystem statistics, as described in m4_ref(txn_stat).])
+
+m4_Vflag
+
+m4_tagopt(Z, [dnl
+Reset the statistics after reporting them; valid only with the m4_option(C),
+m4_option(c), m4_option(E), m4_option(e), m4_option(L), m4_option(l),
+m4_option(M), m4_option(m), m4_option(R), m4_option(r), and m4_option(t)
+options.])
+
+m4_tagend
+
+m4_p([dnl
+Values normally displayed in quantities of bytes are displayed as a
+combination of gigabytes (GB), megabytes (MB), kilobytes (KB), and bytes
+(B).  Otherwise, values smaller than 10 million are displayed without
+any special notation, and values larger than 10 million are displayed
+as a number followed by "M".])
+
+m4_detach(db_stat, may be used with)
+
+m4_utilexit(db_stat)
+
+m4_header([Environment Variables])
+
+m4_utilenv(db_stat)
+
+m4_page_footer

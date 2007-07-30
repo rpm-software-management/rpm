@@ -1,0 +1,99 @@
+m4_comment([$Id: env_set_verbose.so,v 10.54 2006/10/20 15:32:29 bostic Exp $])
+
+define(M4PAGELOCAL, [dnl
+	dbenv_set_verbose, dbenv_get_verbose DB_VERB_DEADLOCK,
+	DB_VERB_RECOVERY, DB_VERB_REGISTER, DB_VERB_REPLICATION,
+	DB_VERB_WAITSFOR])
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbenv_set_verbose),
+ifelse(M4API, C_API, [dnl
+int
+DB_ENV-__GT__set_verbose(DB_ENV *dbenv, u_int32_t which, int onoff);
+m4_blank
+int
+DB_ENV-__GT__get_verbose(DB_ENV *dbenv, u_int32_t which, int *onoffp);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbEnv::set_verbose(u_int32_t which, int onoff);
+m4_blank
+int
+DbEnv::get_verbose(u_int32_t which, int *onoffp);
+]))
+
+m4_p([dnl
+The m4_refT(dbenv_set_verbose) turns specific additional informational
+and debugging messages in the m4_db message output on and off.  To see
+the additional messages, verbose messages must also be configured for
+the application.  For more information on verbose messages, see the
+m4_refT(dbenv_set_msgfile).])
+
+m4_env_config(dbenv_set_verbose, messages, set_verbose, [dnl
+the method m4_arg(which) parameter as a string; for example,
+"set_verbose DB_VERB_RECOVERY"])
+
+m4_scope_dbenv(dbenv_set_verbose)
+
+m4_when_any(dbenv_set_verbose)
+
+m4_return(dbenv_set_verbose, std)
+
+m4_parambegin
+m4_param(onoff, [dnl
+If the m4_arg(onoff) parameter is set to non-zero, the additional
+messages are output.])
+
+m4_param(which, [dnl
+The m4_arg(which) parameter must be set to one of the following values:
+
+m4_tagbegin
+m4_tag(m4_idef(DB_VERB_DEADLOCK), [dnl
+Display additional information when doing deadlock detection.])
+
+m4_tag(m4_idef(DB_VERB_FILEOPS), [dnl
+Display additional information when performing filesystem operations
+such as open, close or rename.  May not be available on all platforms.])
+
+m4_tag(m4_idef(DB_VERB_FILEOPS_ALL), [dnl
+Display additional information when performing all filesystem operations,
+including read and write.  May not be available on all platforms.])
+
+m4_tag(m4_idef(DB_VERB_RECOVERY), [dnl
+Display additional information when performing recovery.])
+
+m4_tag(m4_idef(DB_VERB_REGISTER), [dnl
+Display additional information concerning support for the
+m4_ref(DB_REGISTER) flag to the m4_refT(dbenv_open).])
+
+m4_tag(m4_idef(DB_VERB_REPLICATION), [dnl
+Display detailed information when processing replication messages.])
+
+m4_tag(m4_idef(DB_VERB_WAITSFOR), [dnl
+Display the waits-for table when doing deadlock detection.])
+m4_tagend])
+m4_paramend
+
+m4_err(dbenv_set_verbose, einval)
+
+m4_pf_description(m4_ref(dbenv_get_verbose))
+m4_p([dnl
+The m4_refT(dbenv_get_verbose) returns whether the specified m4_arg(which)
+parameter is currently set or not.])
+
+m4_when_any(dbenv_get_verbose)
+
+m4_return(dbenv_get_verbose, std)
+
+m4_parambegin
+m4_param(which, [dnl
+The m4_arg(which) parameter is the message value for which configuration
+is being checked.])
+m4_param_co(onoffp, [dnl
+configuration of the specified m4_arg(which) parameter],, [dnl
+If the returned m4_arg(onoff) value is zero, the parameter is off;
+otherwise on.])
+m4_paramend
+
+m4_seealso(DbEnv)
+m4_page_footer

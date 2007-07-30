@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1997-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1997,2007 Oracle.  All rights reserved.
  *
- * $Id: ex_access.c,v 12.3 2006/08/24 14:45:41 bostic Exp $
+ * $Id: ex_access.c,v 12.6 2007/05/17 15:15:12 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -144,7 +143,7 @@ dbdemo_main(argc, argv)
 	memset(&data, 0, sizeof(data));
 
 	/* Walk through the database and print out the key/data pairs. */
-	while ((ret = dbcp->c_get(dbcp, &key, &data, DB_NEXT)) == 0)
+	while ((ret = dbcp->get(dbcp, &key, &data, DB_NEXT)) == 0)
 		printf("%.*s : %.*s\n",
 		    (int)key.size, (char *)key.data,
 		    (int)data.size, (char *)data.data);
@@ -154,7 +153,7 @@ dbdemo_main(argc, argv)
 	}
 
 	/* Close everything down. */
-	if ((ret = dbcp->c_close(dbcp)) != 0) {
+	if ((ret = dbcp->close(dbcp)) != 0) {
 		dbp->err(dbp, ret, "DBcursor->close");
 		goto err1;
 	}
@@ -165,7 +164,7 @@ dbdemo_main(argc, argv)
 	}
 	return (EXIT_SUCCESS);
 
-err2:	(void)dbcp->c_close(dbcp);
+err2:	(void)dbcp->close(dbcp);
 err1:	(void)dbp->close(dbp, 0);
 	return (EXIT_FAILURE);
 }

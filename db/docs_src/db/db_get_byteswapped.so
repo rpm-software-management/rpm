@@ -1,0 +1,41 @@
+m4_comment([$Id: db_get_byteswapped.so,v 10.23 2004/08/13 03:38:55 bostic Exp $])
+
+define(M4PAGELOCAL, dbh_get_byteswapped)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(dbh_get_byteswapped),
+ifelse(M4API, C_API, [dnl
+int
+DB-__GT__get_byteswapped(DB *db, int *isswapped);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+Db::get_byteswapped(int *isswapped);
+]))
+
+m4_p([dnl
+The m4_refT(dbh_get_byteswapped) returns if the underlying database
+files were created on an architecture of the same byte order as the
+current one, or if they were not (that is, big-endian on a little-endian
+machine, or vice versa). This information may be used to determine
+whether application data needs to be adjusted for this architecture or
+not.])
+
+m4_when_after_dbopen(dbh_get_byteswapped)
+
+m4_return(dbh_get_byteswapped, std)
+
+m4_parambegin
+m4_param(isswapped, [dnl
+If the underlying database files were created on an architecture of the
+same byte order as the current one. 0 is stored into the memory location
+referenced by m4_arg(isswapped).  If the underlying database files were
+created on an architecture of a different byte order as the current one,
+1 is stored into the memory location referenced by m4_arg(isswapped).])
+m4_paramend
+
+m4_err(dbh_get_byteswapped,
+einval, [the method was called before m4_ref(dbh_open) was called])
+
+m4_seealso(Db)
+m4_page_footer

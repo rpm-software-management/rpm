@@ -1,0 +1,17 @@
+m4_comment([$Id: set_feedback.so,v 1.4 2001/05/15 14:44:17 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    [Release 3.1: DB_ENV-__GT__set_feedback, DB-__GT__set_feedback],,
+    upgrade.3.1/set_tx_recover, upgrade.3.1/set_paniccall)
+
+m4_p([dnl
+Starting with the 3.1 release of m4_db, the m4_ref(dbenv_set_feedback)
+and m4_refT(dbh_set_feedback)s may return an error value, that is, they
+are no longer declared as returning no value, instead they return an int
+or throw an exception as appropriate when an error occurs.])
+
+m4_p([dnl
+If your application calls these functions, you may want to check for a
+possible error on return.])
+
+m4_page_footer

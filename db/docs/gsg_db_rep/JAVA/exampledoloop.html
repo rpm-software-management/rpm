@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Example Processing Loop</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="fwrkmasterreplica.html" title="Chapter 4. Replica versus Master Processes" />
+    <link rel="up" href="fwrkmasterreplica.html" title="ChapterÂ 4.Â Replica versus Master Processes" />
     <link rel="previous" href="processingloop.html" title="Processing Loop" />
-    <link rel="next" href="addfeatures.html" title="Chapter 5. Additional Features" />
+    <link rel="next" href="addfeatures.html" title="ChapterÂ 5.Â Additional Features" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Example Processing Loop</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="processingloop.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 4. Replica versus Master Processes</th>
-          <td width="20%" align="right"> <a accesskey="n" href="addfeatures.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="processingloop.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 4.Â Replica versus Master Processes</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="addfeatures.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -204,9 +204,9 @@ public class RepQuoteExample <b class="userinput"><tt> implements EventHandler</
         try {
             dbenv = new <b class="userinput"><tt>RepQuoteEnvironment</tt></b>(appConfig.getHome(), envConfig);
         } catch(FileNotFoundException e) {
-            System.err.println(&quot;FileNotFound exception: &quot; + e.toString());
+            System.err.println("FileNotFound exception: " + e.toString());
             System.err.println(
-                &quot;Ensure that the environment directory is pre-created.&quot;);
+                "Ensure that the environment directory is pre-created.");
             ret = 1;
         }
 
@@ -231,7 +231,7 @@ public class RepQuoteExample <b class="userinput"><tt> implements EventHandler</
         else if (event == EventType.REP_NEW_MASTER) {
             // ignored for now.
         } else {
-            System.err.println(&quot;Unknown event callback received.\n&quot;);
+            System.err.println("Unknown event callback received.\n");
             ret = 1;
         }
         return ret;
@@ -283,7 +283,7 @@ public class RepQuoteExample <b class="userinput"><tt> implements EventHandler</
                     db = dbenv.openDatabase
                         (null, RepConfig.progname, null, dbconf);
                 } catch (java.io.FileNotFoundException e) {
-                    <b class="userinput"><tt>System.err.println(&quot;no stock database available yet.&quot;);
+                    <b class="userinput"><tt>System.err.println("no stock database available yet.");
                     if (db != null) {
                         db.close(true);
                         db = null;
@@ -303,19 +303,19 @@ public class RepQuoteExample <b class="userinput"><tt> implements EventHandler</
                 new BufferedReader(new InputStreamReader(System.in));
 
             // listen for input, and add it to the database.
-            System.out.print(&quot;QUOTESERVER&quot;);
+            System.out.print("QUOTESERVER");
             <b class="userinput"><tt>if (!dbenv.getIsMaster())
-                System.out.print(&quot;(read-only)&quot;);
-            System.out.print(&quot;&gt; &quot;);</tt></b>
+                System.out.print("(read-only)");
+            System.out.print("&gt; ");</tt></b>
             System.out.flush();
             String nextline = null;
             try {
                 nextline = stdin.readLine();
             } catch (IOException ioe) {
-                System.err.println(&quot;Unable to get data from stdin&quot;);
+                System.err.println("Unable to get data from stdin");
                 break;
             }
-            String[] words = nextline.split(&quot;\\s&quot;); </pre>
+            String[] words = nextline.split("\\s"); </pre>
       <p>
             When we collect data from the prompt, there is a case that says
             if no data is entered then show the entire stocks database.
@@ -361,19 +361,19 @@ public class RepQuoteExample <b class="userinput"><tt> implements EventHandler</
                     db = null;
                     continue;</tt></b>
                 } catch (DatabaseException e) {
-                    System.err.println(&quot;Got db exception reading &quot; +
-                        &quot;replication DB: &quot; + e.toString());
+                    System.err.println("Got db exception reading " +
+                        "replication DB: " + e.toString());
                     break;
                 }
                 continue;
             }
 
             if (words.length == 1 &amp;&amp;
-                (words[0].compareToIgnoreCase(&quot;quit&quot;) == 0 ||
-                words[0].compareToIgnoreCase(&quot;exit&quot;) == 0)) {
+                (words[0].compareToIgnoreCase("quit") == 0 ||
+                words[0].compareToIgnoreCase("exit") == 0)) {
                 break;
             } else if (words.length != 2) {
-                System.err.println(&quot;Format: TICKER VALUE&quot;);
+                System.err.println("Format: TICKER VALUE");
                 continue;
             } </pre>
       <p>
@@ -384,7 +384,7 @@ public class RepQuoteExample <b class="userinput"><tt> implements EventHandler</
             that happening due to user input at the prompt.
     </p>
       <pre class="programlisting">            <b class="userinput"><tt>if (!dbenv.getIsMaster()) {
-                System.err.println(&quot;Can't update client.&quot;);
+                System.err.println("Can't update client.");
                 continue;
             }</tt></b>
 
@@ -540,18 +540,18 @@ QUOTESERVER (read-only)&gt; </pre>
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="processingloop.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="processingloop.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="fwrkmasterreplica.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="addfeatures.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="addfeatures.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Processing Loop </td>
+          <td width="40%" align="left" valign="top">Processing LoopÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 5. Additional Features</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 5.Â Additional Features</td>
         </tr>
       </table>
     </div>

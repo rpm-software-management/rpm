@@ -186,12 +186,12 @@ part of an absolute path.
     ...
 
     $db1 = new BerkeleyDB::Hash
-	     -Filename = "fred.db",
+	     -Filename => "fred.db",
 	     -Env => $env
     ...
 
     $db2 = new BerkeleyDB::Hash
-	     -Filename = "/other/joe.db",
+	     -Filename => "/other/joe.db",
 	     -Env => $env
     ...
 
@@ -1259,7 +1259,7 @@ set the C<compact_fillpercent>, write you code like this
 
     my %hash;
     $hash{compact_fillpercent} = 50;
-    $db->commit(undef, undef, \%hash);
+    $db->compact(undef, undef, \%hash);
 
 The parameters operate identically to the C equivalent of this method.
 The C<$c_data> needs a bit of explanation - it must be a hash reference.
@@ -1267,7 +1267,9 @@ The values of the following keys can be set before calling C<compact> and
 will affect the operation of the compaction.
 
 =over 5
+
 =item * compact_fillpercent
+
 =item * compact_timeout
     
 =back
@@ -1278,9 +1280,13 @@ hash reference if the C<compact> operation was successful.
 =over 5
 
 =item * compact_deadlock
+
 =item * compact_levels
+
 =item * compact_pages_free
+
 =item * compact_pages_examine
+
 =item * compact_pages_truncated
 
 =back

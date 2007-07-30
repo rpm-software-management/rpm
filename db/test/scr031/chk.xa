@@ -224,7 +224,7 @@ for i in $dlist; do
 	}
 done
 flist="bin/buildclient bin/buildserver bin/buildtms bin/tmadmin bin/tmboot
-       bin/tmloadcf bin/tmshutdown lib/libtux.so udataobj/RM"
+       bin/tmloadcf bin/tmshutdown udataobj/RM"
 for i in $flist; do
 	test -f $TUXDIR/$i || {
 		echo "FAIL: check the Tuxedo install"
@@ -232,17 +232,24 @@ for i in $flist; do
 		exit 1
 	}
 done
+msg "Using Tuxedo $TUXDIR installation"
 
 # Set the location of the Berkeley DB libraries -- allow the user to override.
 # Check to make sure we have a Berkeley DB installation.  (I'd like to use the
 # local DB installation, but I've never been able to make Tuxedo load shared
 # libraries from the .libs directory.)
-test -z "$DB_INSTALL" && DB_INSTALL=/usr/local/BerkeleyDB.4.5
-export DB_INSTALL
+REL=../../dist/RELEASE
+test -z "$DB_INSTALL" && test -f $REL && {
+	. $REL
+	DB_INSTALL=/usr/local/BerkeleyDB.${DB_VERSION_MAJOR}.${DB_VERSION_MINOR}
+	export DB_INSTALL
+}
 if test -f "$DB_INSTALL/lib/libdb.so"; then
 	msg "Using Berkeley DB $DB_INSTALL/lib/ installation"
 else
 	echo "FAIL: $DB_INSTALL/lib/libdb.so not found"
+	echo \
+  "FAIL: DB_INSTALL must be set to the absolute path of the Berkeley DB install"
 	exit 1
 fi
 

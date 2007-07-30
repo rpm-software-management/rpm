@@ -1,0 +1,207 @@
+m4_comment([$Id: printlog.so,v 10.49 2007/07/10 16:54:17 bostic Exp $])
+
+m4_ref_title(Debugging Applications,
+    Reviewing m4_db log files,, debug/runtime, build_brew/intro)
+
+m4_p([dnl
+If you are running with transactions and logging, the m4_ref(db_printlog)
+utility can be a useful debugging aid.  The m4_ref(db_printlog) utility
+will display the contents of your log files in a human readable (and
+machine-readable) format.])
+
+m4_p([dnl
+The m4_ref(db_printlog) utility will attempt to display any and all
+log files present in a designated db_home directory.  For each log record,
+m4_ref(db_printlog) will display a line of the form:])
+
+m4_indent([dnl
+__LB__22__RB____LB__28__RB__db_big: rec: 43 txnid 80000963 prevlsn __LB__21__RB____LB__10483281__RB__])
+
+m4_p([dnl
+The opening numbers in square brackets are the m4_italic([log sequence
+number]) (m4_italic(LSN)) of the log record being displayed.  The first
+number indicates the log file in which the record appears, and the
+second number indicates the offset in that file of the record.])
+
+m4_p([dnl
+The first character string identifies the particular log operation being
+reported.  The log records corresponding to particular operations are
+described following.  The rest of the line consists of name/value pairs.])
+
+m4_p([dnl
+The rec field indicates the record type (this is used to dispatch records
+in the log to appropriate recovery functions).])
+
+m4_p([dnl
+The txnid field identifies the transaction for which this record was
+written.  A txnid of 0 means that the record was written outside the
+context of any transaction.  You will see these most frequently for
+checkpoints.])
+
+m4_p([dnl
+Finally, the prevlsn contains the LSN of the last record for this
+transaction.  By following prevlsn fields, you can accumulate all the
+updates for a particular transaction.  During normal abort processing,
+this field is used to quickly access all the records for a particular
+transaction.])
+
+m4_p([dnl
+After the initial line identifying the record type, each field of the log
+record is displayed, one item per line.  There are several fields that
+appear in many different records and a few fields that appear only in
+some records.])
+
+m4_p([dnl
+The following table presents each currently written log record type with
+a brief description of the operation it describes.  Any of these
+record types may have the string "_debug" appended if they
+were written because m4_ref(DB_TXN_NOT_DURABLE) was specified and the
+system was configured with m4_linkpage(M4RELDIR/ref/build_unix/conf,
+--enable-diagnostic, --enable-diagnostic).])
+
+m4_comment([START LOG RECORD TYPES])
+m4_table_begin(_center)
+
+m4_table_header(Log Record Type, Description)
+m4_table_element(bam_adj, [Used when we insert/remove an index into/from the page header of a Btree page.])
+m4_table_element(bam_cadjust, [Keeps track of record counts in a Btree or Recno database.])
+m4_table_element(bam_cdel, [Used to mark a record on a page as deleted.])
+m4_table_element(bam_curadj, [Used to adjust a cursor location when a nearby record changes in a Btree database.])
+m4_table_element(bam_merge, [Used to merge two Btree database pages during compaction.])
+m4_table_element(bam_pgno, [Used to replace a page number in a Btree record.])
+m4_table_element(bam_rcuradj, [Used to adjust a cursor location when a nearby record changes in a Recno database.])
+m4_table_element(bam_relink, [Fix leaf page prev/next chain when a page is removed.])
+m4_table_element(bam_repl, [Describes a replace operation on a record.])
+m4_table_element(bam_root, [Describes an assignment of a root page.])
+m4_table_element(bam_rsplit, [Describes a reverse page split.])
+m4_table_element(bam_split, [Describes a page split.])
+m4_table_element(crdel_inmem_create, [Record the creation of an in-memory named database.])
+m4_table_element(crdel_inmem_remove, [Record the removal of an in-memory named database.])
+m4_table_element(crdel_inmem_rename, [Record the rename of an in-memory named database.])
+m4_table_element(crdel_metasub, [Describes the creation of a metadata page for a subdatabase.])
+m4_table_element(db_addrem, [Add or remove an item from a page of duplicates.])
+m4_table_element(db_big, [Add an item to an overflow page (m4_italic(overflow pages) contain items too large to place on the main page)])
+m4_table_element(db_cksum, [Unable to checksum a page.])
+m4_table_element(db_debug, [Log debugging message.])
+m4_table_element(db_noop, [This marks an operation that did nothing but update the LSN on a page.])
+m4_table_element(db_ovref, [Increment or decrement the reference count for a big item.])
+m4_table_element(db_pg_alloc, [Indicates we allocated a page to a database.])
+m4_table_element(db_pg_free, [Indicates we freed a page (freed pages are added to a freelist and reused).])
+m4_table_element(db_pg_freedata, [Indicates we freed a page that still contained data entries (freed pages are added to a freelist and reused.)])
+m4_table_element(db_pg_init, [Indicates we reinitialized a page during a truncate.])
+m4_table_element(db_pg_new, [Indicates that a page was allocated and put on the free list.])
+m4_table_element(db_pg_prepare, [Indicates a new page was allocated during a child transaction of a prepared transaction.])
+m4_table_element(db_pg_sort, [Sort the free page list and free pages at the end of the file.])
+m4_table_element(dbreg_register, [Records an open of a file (mapping the filename to a log-id that is used in subsequent log operations).])
+m4_table_element(fop_create, [Create a file in the file system.])
+m4_table_element(fop_file_remove, [Remove a name in the file system.])
+m4_table_element(fop_remove, [Remove a file in the file system.])
+m4_table_element(fop_rename, [Rename a file in the file system.])
+m4_table_element(fop_write, [Write bytes to an object in the file system.])
+m4_table_element(ham_chgpg, [Used to adjust a cursor location when a Hash page is removed, and its elements are moved to a different Hash page.])
+m4_table_element(ham_copypage, [Used when we empty a bucket page, but there are overflow pages for the bucket; one needs to be copied back into the actual bucket.])
+m4_table_element(ham_curadj, [Used to adjust a cursor location when a nearby record changes in a Hash database.])
+m4_table_element(ham_groupalloc, [Allocate some number of contiguous pages to the Hash database.])
+m4_table_element(ham_insdel, [Insert/delete an item on a Hash page.])
+m4_table_element(ham_metagroup, [Update the metadata page to reflect the allocation of a sequence of contiguous pages.])
+m4_table_element(ham_newpage, [Adds or removes overflow pages from a Hash bucket.])
+m4_table_element(ham_replace, [Handle updates to records that are on the main page.])
+m4_table_element(ham_splitdata, [Record the page data for a split.])
+m4_table_element(qam_add, [Describes the actual addition of a new record to a Queue.])
+m4_table_element(qam_del, [Delete a record in a Queue.])
+m4_table_element(qam_delext, [Delete a record in a Queue with extents.])
+m4_table_element(qam_incfirst, [Increments the record number that refers to the first record in the database.])
+m4_table_element(qam_mvptr, [Indicates we changed the reference to either or both of the first and current records in the file.])
+m4_table_element(txn_child, [Commit a child transaction.])
+m4_table_element(txn_ckp, [Transaction checkpoint.])
+m4_table_element(txn_recycle, [Transaction IDs wrapped.])
+m4_table_element(txn_regop, [Logs a regular (non-child) transaction commit.])
+m4_table_element(txn_xa_regop, [Logs a prepare message.])
+
+m4_table_end
+m4_comment([END LOG RECORD TYPES])
+
+m4_section([Augmenting the Log for Debugging])
+
+m4_p([dnl
+When debugging applications, it is sometimes useful to log not only the
+actual operations that modify pages, but also the underlying m4_db
+functions being executed.  This form of logging can add significant bulk
+to your log, but can permit debugging application errors that are almost
+impossible to find any other way.  To turn on these log messages, specify
+the --enable-debug_rop and --enable-debug_wop configuration options when
+configuring m4_db.  See m4_link(M4RELDIR/ref/build_unix/conf, Configuring
+m4_db) for more information.])
+
+m4_section([Extracting Committed Transactions and Transaction Status])
+
+m4_p([dnl
+Sometimes, it is helpful to use the human-readable log output to
+determine which transactions committed and aborted.  The awk script,
+commit.awk, (found in the db_printlog directory of the m4_db
+distribution) allows you to do just that.  The following command,
+where log_output is the output of db_printlog, will display a list of
+the transaction IDs of all committed transactions found in the log:])
+
+m4_indent([awk -f commit.awk log_output])
+
+m4_p([dnl
+If you need a complete list of both committed and aborted transactions,
+then the script status.awk will produce it.  The syntax is as follows:])
+
+m4_indent([awk -f status.awk log_output])
+
+m4_section([Extracting Transaction Histories])
+
+m4_p([dnl
+Another useful debugging aid is to print out the complete history of a
+transaction.  The awk script txn.awk allows you to do that.  The
+following command line, where log_output is the output of
+m4_ref(db_printlog) and txnlist is a comma-separated list of transaction
+IDs, will display all log records associated with the designated
+transaction ids:])
+
+m4_indent([awk -f txn.awk TXN=txnlist log_output])
+
+m4_section([Extracting File Histories])
+
+m4_p([dnl
+The awk script fileid.awk allows you to extract all log records that
+refer to a designated file.  The syntax for the fileid.awk script is
+the following, where log_output is the output of db_printlog and fids
+is a comma-separated list of fileids:])
+
+m4_indent([awk -f fileid.awk PGNO=fids log_output])
+
+m4_section([Extracting Page Histories])
+
+m4_p([dnl
+The awk script pgno.awk allows you to extract all log records that refer
+to designated page numbers.  However, because this script will extract
+records with the designated page numbers for all files, it is most
+useful in conjunction with the fileid script.  The syntax for the
+pgno.awk script is the following, where log_output is the output of
+db_printlog and pgnolist is a comma-separated list of page numbers:])
+
+m4_indent([awk -f pgno.awk PGNO=pgnolist log_output])
+
+m4_section([Other log processing tools])
+
+m4_p([dnl
+The awk script count.awk prints out the number of log records
+encountered that belonged to some transaction (that is, the number of
+log records excluding those for checkpoints and
+non-transaction-protected operations).])
+
+m4_p([dnl
+The script range.awk will extract a subset of a log.  This is useful
+when the output of m4_ref(db_printlog) is too large to be reasonably
+manipulated with an editor or other tool.  The syntax for range.awk is
+the following, where m4_bold(sf) and m4_bold(so) represent the LSN
+of the beginning of the sublog you want to extract, and m4_bold(ef) and
+m4_bold(eo) represent the LSN of the end of the sublog you want to
+extract:])
+
+m4_indent([awk -f range.awk START_FILE=sf START_OFFSET=so END_FILE=ef END_OFFSET=eo log_output])
+
+m4_page_footer

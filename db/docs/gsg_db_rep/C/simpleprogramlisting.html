@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Program Listing</title>
     <link rel="stylesheet" href="gettingStarted.css" type="text/css" />
     <meta name="generator" content="DocBook XSL Stylesheets V1.62.4" />
     <link rel="home" href="index.html" title="Getting Started with Replicated Berkeley DB Applications" />
-    <link rel="up" href="txnapp.html" title="Chapter 2. Transactional Application" />
-    <link rel="previous" href="txnapp.html" title="Chapter 2. Transactional Application" />
-    <link rel="next" href="repapp.html" title="Chapter 3. The DB Replication Framework" />
+    <link rel="up" href="txnapp.html" title="ChapterÂ 2.Â Transactional Application" />
+    <link rel="previous" href="txnapp.html" title="ChapterÂ 2.Â Transactional Application" />
+    <link rel="next" href="repapp.html" title="ChapterÂ 3.Â The DB Replication Framework" />
   </head>
   <body>
     <div class="navheader">
@@ -18,9 +18,9 @@
           <th colspan="3" align="center">Program Listing</th>
         </tr>
         <tr>
-          <td width="20%" align="left"><a accesskey="p" href="txnapp.html">Prev</a> </td>
-          <th width="60%" align="center">Chapter 2. Transactional Application</th>
-          <td width="20%" align="right"> <a accesskey="n" href="repapp.html">Next</a></td>
+          <td width="20%" align="left"><a accesskey="p" href="txnapp.html">Prev</a>Â </td>
+          <th width="60%" align="center">ChapterÂ 2.Â Transactional Application</th>
+          <td width="20%" align="right">Â <a accesskey="n" href="repapp.html">Next</a></td>
         </tr>
       </table>
       <hr />
@@ -104,9 +104,9 @@ extern int getopt(int, char * const *, const char *);
                 error reporting later on.
             </p>
         <pre class="programlisting">#define CACHESIZE   (10 * 1024 * 1024)
-#define DATABASE    &quot;quote.db&quot;
+#define DATABASE    "quote.db"
 
-const char *progname = &quot;simple_txn&quot;;  </pre>
+const char *progname = "simple_txn";  </pre>
         <p>
                 Then we perform a couple of forward declarations. The first
                 of these, <tt class="function">create_env()</tt> and
@@ -138,8 +138,8 @@ int print_stocks(DBC *);  </pre>
 static void
 usage()
 {
-    fprintf(stderr, &quot;usage: %s &quot;, progname);
-    fprintf(stderr, &quot;[-h home]\n&quot;);
+    fprintf(stderr, "usage: %s ", progname);
+    fprintf(stderr, "[-h home]\n");
     exit(EXIT_FAILURE);
 }  </pre>
         <p>
@@ -173,7 +173,7 @@ main(int argc, char *argv[])
         <p>
             Then we parse the command line arguments:
         </p>
-        <pre class="programlisting">    while ((ch = getopt(argc, argv, &quot;h:&quot;)) != EOF)
+        <pre class="programlisting">    while ((ch = getopt(argc, argv, "h:")) != EOF)
         switch (ch) {
         case 'h':
             home = optarg;
@@ -205,7 +205,7 @@ main(int argc, char *argv[])
         here.
     </p>
         <pre class="programlisting">    if ((ret = doloop(dbenv)) != 0) {
-        dbenv-&gt;err(dbenv, ret, &quot;Application failed&quot;);
+        dbenv-&gt;err(dbenv, ret, "Application failed");
         goto err;
     }  </pre>
         <p>
@@ -245,7 +245,7 @@ create_env(char *progname, DB_ENV **dbenvp)
     int ret;
 
     if ((ret = db_env_create(&amp;dbenv, 0)) != 0) {
-        fprintf(stderr, &quot;can't create env handle: %s\n&quot;,
+        fprintf(stderr, "can't create env handle: %s\n",
             db_strerror(ret));
         return (ret);
     }
@@ -290,7 +290,7 @@ env_init(DB_ENV *dbenv, const char *home)
             DB_INIT_TXN | 
             DB_RECOVER;
     if ((ret = dbenv-&gt;open(dbenv, home, flags, 0)) != 0)
-        dbenv-&gt;err(dbenv, ret, &quot;can't open environment&quot;);
+        dbenv-&gt;err(dbenv, ret, "can't open environment");
     return (ret);
 }  </pre>
       </div>
@@ -366,7 +366,7 @@ doloop(DB_ENV *dbenv)
 
             if ((ret = dbp-&gt;open(dbp, NULL, DATABASE,
                 NULL, DB_BTREE, db_flags, 0)) != 0) {
-                dbenv-&gt;err(dbenv, ret, &quot;DB-&gt;open&quot;);
+                dbenv-&gt;err(dbenv, ret, "DB-&gt;open");
                 goto err;
             }
         }  </pre>
@@ -392,26 +392,26 @@ doloop(DB_ENV *dbenv)
             However, in order to keep this example code as simple as
             possible, we refrain from implementing a thorough user interface.
         </p>
-        <pre class="programlisting">        printf(&quot;QUOTESERVER &gt; &quot;);
+        <pre class="programlisting">        printf("QUOTESERVER &gt; ");
         fflush(stdout);
 
         if (fgets(buf, sizeof(buf), stdin) == NULL)
             break;
-        if (strtok(&amp;buf[0], &quot; \t\n&quot;) == NULL) {
+        if (strtok(&amp;buf[0], " \t\n") == NULL) {
             switch ((ret = print_stocks(dbp))) {
             case 0:
                 continue;
             default:
-                dbp-&gt;err(dbp, ret, &quot;Error traversing data&quot;);
+                dbp-&gt;err(dbp, ret, "Error traversing data");
                 goto err;
             }
         }
-        rbuf = strtok(NULL, &quot; \t\n&quot;);
+        rbuf = strtok(NULL, " \t\n");
         if (rbuf == NULL || rbuf[0] == '\0') {
-            if (strncmp(buf, &quot;exit&quot;, 4) == 0 ||
-                strncmp(buf, &quot;quit&quot;, 4) == 0)
+            if (strncmp(buf, "exit", 4) == 0 ||
+                strncmp(buf, "quit", 4) == 0)
                 break;
-            dbenv-&gt;errx(dbenv, &quot;Format: TICKER VALUE&quot;);
+            dbenv-&gt;errx(dbenv, "Format: TICKER VALUE");
             continue;
         }  </pre>
         <p>
@@ -430,12 +430,12 @@ doloop(DB_ENV *dbenv)
                 the database is not configured for duplicate records, so
                 the data portion of a record is overwritten if the provided
                 key already exists in the database. However, in this case
-                DB returns <tt class="literal">DB_KEYEXIST</tt> &#8212; which
+                DB returns <tt class="literal">DB_KEYEXIST</tt> â€” which
                 we ignore.
             </p>
         <pre class="programlisting">        if ((ret = dbp-&gt;put(dbp, NULL, &amp;key, &amp;data, 0)) != 0)
         {
-            dbp-&gt;err(dbp, ret, &quot;DB-&gt;put&quot;);
+            dbp-&gt;err(dbp, ret, "DB-&gt;put");
             if (ret != DB_KEYEXIST)
                 goto err;
         } 
@@ -495,19 +495,19 @@ print_stocks(DB *dbp)
     u_int32_t keysize, datasize;
 
     if ((ret = dbp-&gt;cursor(dbp, NULL, &amp;dbc, 0)) != 0) {
-        dbp-&gt;err(dbp, ret, &quot;can't open cursor&quot;);
+        dbp-&gt;err(dbp, ret, "can't open cursor");
         return (ret);
     }
 
     memset(&amp;key, 0, sizeof(key));
     memset(&amp;data, 0, sizeof(data));
 
-    printf(&quot;\tSymbol\tPrice\n&quot;);
-    printf(&quot;\t======\t=====\n&quot;);
+    printf("\tSymbol\tPrice\n");
+    printf("\t======\t=====\n");
 
-    for (ret = dbc-&gt;c_get(dbc, &amp;key, &amp;data, DB_FIRST);
+    for (ret = dbc-&gt;get(dbc, &amp;key, &amp;data, DB_FIRST);
         ret == 0;
-        ret = dbc-&gt;c_get(dbc, &amp;key, &amp;data, DB_NEXT)) {
+        ret = dbc-&gt;get(dbc, &amp;key, &amp;data, DB_NEXT)) {
         keysize = key.size &gt; MAXKEYSIZE ? MAXKEYSIZE : key.size;
         memcpy(keybuf, key.data, keysize);
         keybuf[keysize] = '\0';
@@ -516,12 +516,12 @@ print_stocks(DB *dbp)
         memcpy(databuf, data.data, datasize);
         databuf[datasize] = '\0';
 
-        printf(&quot;\t%s\t%s\n&quot;, keybuf, databuf);
+        printf("\t%s\t%s\n", keybuf, databuf);
     }
-    printf(&quot;\n&quot;);
+    printf("\n");
     fflush(stdout);
 
-    if ((t_ret = dbc-&gt;c_close(dbc)) != 0 &amp;&amp; ret == 0)
+    if ((t_ret = dbc-&gt;close(dbc)) != 0 &amp;&amp; ret == 0)
         ret = t_ret;
 
     switch (ret) {
@@ -538,18 +538,18 @@ print_stocks(DB *dbp)
       <hr />
       <table width="100%" summary="Navigation footer">
         <tr>
-          <td width="40%" align="left"><a accesskey="p" href="txnapp.html">Prev</a> </td>
+          <td width="40%" align="left"><a accesskey="p" href="txnapp.html">Prev</a>Â </td>
           <td width="20%" align="center">
             <a accesskey="u" href="txnapp.html">Up</a>
           </td>
-          <td width="40%" align="right"> <a accesskey="n" href="repapp.html">Next</a></td>
+          <td width="40%" align="right">Â <a accesskey="n" href="repapp.html">Next</a></td>
         </tr>
         <tr>
-          <td width="40%" align="left" valign="top">Chapter 2. Transactional Application </td>
+          <td width="40%" align="left" valign="top">ChapterÂ 2.Â Transactional ApplicationÂ </td>
           <td width="20%" align="center">
             <a accesskey="h" href="index.html">Home</a>
           </td>
-          <td width="40%" align="right" valign="top"> Chapter 3. The DB Replication Framework</td>
+          <td width="40%" align="right" valign="top">Â ChapterÂ 3.Â The DB Replication Framework</td>
         </tr>
       </table>
     </div>

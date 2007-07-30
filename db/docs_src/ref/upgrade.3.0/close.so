@@ -1,0 +1,24 @@
+m4_comment([$Id: close.so,v 11.10 2002/03/06 15:51:57 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 3.0: DB-__GT__sync and DB-__GT__close,,
+    upgrade.3.0/stat, upgrade.3.0/lock_put)
+
+m4_p([dnl
+In previous m4_db releases, the m4_ref(dbh_close) and m4_refT(dbh_sync)s
+discarded any return of DB_INCOMPLETE from the underlying buffer
+pool interfaces, and returned success to its caller.  (The
+DB_INCOMPLETE error will be returned if the buffer pool functions
+are unable to flush all of the database's dirty blocks from the pool.
+This often happens if another thread is reading or writing the database's
+pages in the pool.)])
+
+m4_p([dnl
+In the 3.X release, m4_ref(dbh_sync) and m4_ref(dbh_close) will return
+DB_INCOMPLETE to the application.  The best solution is to not
+call m4_ref(dbh_sync) and specify the m4_ref(DB_NOSYNC) flag to the
+m4_refT(dbh_close) when multiple threads are expected to be accessing the
+database.  Alternatively, the caller can ignore any error return of
+DB_INCOMPLETE.])
+
+m4_page_footer

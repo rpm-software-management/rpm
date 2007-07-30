@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 1996-2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 1996,2007 Oracle.  All rights reserved.
  *
- * $Id: mut_fcntl.c,v 12.20 2006/08/24 14:46:16 bostic Exp $
+ * $Id: mut_fcntl.c,v 12.23 2007/05/17 15:15:45 bostic Exp $
  */
 
 #include "db_config.h"
@@ -73,7 +72,7 @@ __db_fcntl_mutex_lock(dbenv, mutex)
 		 * up to 1 second.
 		 */
 		for (ms = 1; F_ISSET(mutexp, DB_MUTEX_LOCKED);) {
-			__os_sleep(NULL, 0, ms * USEC_PER_MS);
+			__os_sleep(NULL, 0, ms * US_PER_MS);
 			if ((ms <<= 1) > MS_PER_SEC)
 				ms = MS_PER_SEC;
 		}

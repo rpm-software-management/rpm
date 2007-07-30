@@ -1,10 +1,9 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2006
- *	Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2006,2007 Oracle.  All rights reserved.
  *
- * $Id: mp_mvcc.c,v 12.24 2006/09/18 13:11:50 mjc Exp $
+ * $Id: mp_mvcc.c,v 12.34 2007/06/05 11:55:28 mjc Exp $
  */
 
 #include "db_config.h"
@@ -92,9 +91,12 @@ __memp_bucket_reorder(dbenv, hp, bhp)
 			    next, bhp, hq, __bh);
 	}
 
-done:	/* Reset the hash bucket's priority. */
-	hp->hash_priority =
-	    BH_PRIORITY(SH_TAILQ_FIRST(&hp->hash_bucket, __bh));
+done:	/*
+	 * Reset the hash bucket's priority -- the chain is never empty in
+	 * this case, so bhp will never be NULL.
+	 */
+	if ((bhp = SH_TAILQ_FIRST(&hp->hash_bucket, __bh)) != NULL)
+		hp->hash_priority = BH_PRIORITY(bhp);
 }
 
 /*
@@ -103,7 +105,8 @@ done:	/* Reset the hash bucket's priority. */
  *
  * PUBLIC: int __memp_bh_settxn __P((DB_MPOOL *, MPOOLFILE *mfp, BH *, void *));
  */
-int __memp_bh_settxn(dbmp, mfp, bhp, vtd)
+int
+__memp_bh_settxn(dbmp, mfp, bhp, vtd)
 	DB_MPOOL *dbmp;
 	MPOOLFILE *mfp;
 	BH *bhp;
@@ -149,16 +152,13 @@ __memp_skip_curadj(dbc, pgno)
 	DB_MPOOL_HASH *hp;
 	DB_MPOOLFILE *dbmfp;
 	DB_TXN *txn;
-	MPOOL *c_mp, *mp;
 	MPOOLFILE *mfp;
 	REGINFO *infop;
 	roff_t mf_offset;
-	u_int32_t n_cache;
-	int skip;
+	int ret, skip;
 
 	dbenv = dbc->dbp->dbenv;
 	dbmp = dbenv->mp_handle;
-	mp = dbmp->reginfo[0].primary;
 	dbmfp = dbc->dbp->mpf;
 	mfp = dbmfp->mfp;
 	mf_offset = R_OFFSET(dbmp->reginfo, mfp);
@@ -172,13 +172,13 @@ __memp_skip_curadj(dbc, pgno)
 	 * local pointers to them.  Reset on each pass through this code, the
 	 * page number can change.
 	 */
-	n_cache = NCACHE(mp, mf_offset, pgno);
-	infop = &dbmp->reginfo[n_cache];
-	c_mp = infop->primary;
-	hp = R_ADDR(infop, c_mp->htab);
-	hp = &hp[NBUCKET(c_mp, mf_offset, pgno)];
+	MP_GET_BUCKET(dbmfp, pgno, &infop, hp, ret);
+	if (ret != 0) {
+		/* Panic: there is no way to return the error. */
+		(void)__db_panic(dbenv, ret);
+		return (0);
+	}
 
-	MUTEX_LOCK(dbenv, hp->mtx_hash);
 	SH_TAILQ_FOREACH(bhp, &hp->hash_bucket, hq, __bh) {
 		if (bhp->pgno != pgno || bhp->mf_offset != mf_offset)
 			continue;
@@ -251,12 +251,12 @@ __memp_bh_freeze(dbmp, infop, hp, bhp, need_frozenp)
 		*need_frozenp = 1;
 
 		/* There might be a small amount of unallocated space. */
-		if (__db_shalloc(infop,
-		    sizeof(BH_FROZEN_ALLOC) + sizeof(BH_FROZEN_PAGE), 0,
+		if (__env_alloc(infop,
+		    sizeof(BH_FROZEN_ALLOC) + sizeof(BH_FROZEN_PAGE),
 		    &frozen_alloc) == 0) {
 			frozen_bhp = (BH *)(frozen_alloc + 1);
-			SH_TAILQ_INSERT_HEAD(&c_mp->alloc_frozen, frozen_alloc,
-			    links, __bh_frozen_a);
+			SH_TAILQ_INSERT_TAIL(&c_mp->alloc_frozen,
+			    frozen_alloc, links);
 		}
 	}
 	MPOOL_REGION_UNLOCK(dbenv, infop);
@@ -285,7 +285,7 @@ __memp_bh_freeze(dbmp, infop, hp, bhp, need_frozenp)
 	if ((ret = __db_appname(dbenv, DB_APP_NONE, filename,
 	    0, NULL, &real_name)) != 0)
 		goto err;
-	if ((ret = __os_open_extend(dbenv, real_name, pagesize,
+	if ((ret = __os_open(dbenv, real_name, pagesize,
 	    DB_OSO_CREATE | DB_OSO_EXCL, dbenv->db_mode, &fhp)) == 0) {
 		/* We're creating the file -- initialize the metadata page. */
 		magic = DB_FREEZER_MAGIC;
@@ -299,8 +299,8 @@ __memp_bh_freeze(dbmp, infop, hp, bhp, need_frozenp)
 		    (ret = __os_seek(dbenv, fhp, 0, 0, 0)) != 0)
 			goto err;
 	} else if (ret == EEXIST)
-		ret = __os_open_extend(dbenv, real_name, pagesize, 0,
-		    dbenv->db_mode, &fhp);
+		ret = __os_open(
+		    dbenv, real_name, pagesize, 0, dbenv->db_mode, &fhp);
 	if (ret != 0)
 		goto err;
 	if ((ret = __os_read(dbenv, fhp, &magic, sizeof(u_int32_t),
@@ -372,8 +372,11 @@ __memp_bh_freeze(dbmp, infop, hp, bhp, need_frozenp)
 	 * Increment the file's block count -- freeing the original buffer will
 	 * decrement it.
 	 */
+	MUTEX_LOCK(dbenv, bh_mfp->mutex);
 	++bh_mfp->block_cnt;
-	++hp->hash_frozen;
+	MUTEX_UNLOCK(dbenv, bh_mfp->mutex);
+
+	STAT(++hp->hash_frozen);
 
 	if (0) {
 err:		if (ret == 0)
@@ -492,8 +495,8 @@ __memp_bh_thaw(dbmp, infop, hp, frozen_bhp, alloc_bhp)
 	    &real_name)) != 0)
 		goto err;
 
-	if ((ret = __os_open_extend(dbenv, real_name, pagesize, 0,
-	    dbenv->db_mode, &fhp)) != 0)
+	if ((ret = __os_open(
+	    dbenv, real_name, pagesize, 0, dbenv->db_mode, &fhp)) != 0)
 		goto err;
 
 	/*
@@ -625,8 +628,8 @@ __memp_bh_thaw(dbmp, infop, hp, frozen_bhp, alloc_bhp)
 	if (reorder) {
 		if (next_bhp != NULL)
 			__memp_bucket_reorder(dbenv, hp, next_bhp);
-		else
-			hp->hash_priority = BH_PRIORITY(SH_TAILQ_FIRST(
+		else if (!SH_TAILQ_EMPTY(&hp->hash_bucket))
+			hp->hash_priority = BH_PRIORITY(SH_TAILQ_FIRSTP(
 			    &hp->hash_bucket, __bh));
 	}
 
@@ -651,10 +654,12 @@ __memp_bh_thaw(dbmp, infop, hp, frozen_bhp, alloc_bhp)
 		F_CLR(frozen_bhp, BH_FROZEN | BH_LOCKED);
 	}
 
+#ifdef HAVE_STATISTICS
 	if (alloc_bhp != NULL)
 		++hp->hash_thawed;
 	else
 		++hp->hash_frozen_freed;
+#endif
 
 	if (0) {
 err:		if (ret == 0)

@@ -1,0 +1,84 @@
+m4_comment([$Id: intro.so,v 10.53 2006/11/13 18:04:59 bostic Exp $])
+
+m4_ref_title(Application Specific Logging and Recovery,
+    Introduction to application specific logging and recovery,,
+    xa/faq, apprec/def)
+
+m4_p([dnl
+It is possible to use the Locking, Logging and Transaction subsystems
+of m4_db to provide transaction semantics on objects other than those
+described by the m4_db access methods.  In these cases, the application
+will need application-specific logging and recovery functions.])
+
+m4_p([dnl
+For example, consider an application that provides transaction semantics
+on data stored in plain text files accessed using the POSIX read and
+write system calls.  The read and write operations for which transaction
+protection is desired will be bracketed by calls to the standard m4_db
+transactional interfaces, m4_ref(txn_begin) and m4_ref(txn_commit), and
+the transaction's locker ID will be used to acquire relevant read and
+write locks.])
+
+m4_p([dnl
+Before data is accessed, the application must make a call to the lock
+manager, m4_ref(lock_get), for a lock of the appropriate type (for
+example, read) on the object being locked.  The object might be a page
+in the file, a byte, a range of bytes, or some key.  It is up to the
+application to ensure that appropriate locks are acquired.  Before a
+write is performed, the application should acquire a write lock on the
+object by making an appropriate call to the lock manager,
+m4_ref(lock_get).  Then, the application should make a call to the log
+manager, via the automatically-generated log-writing function described
+as follows.  This record should contain enough information to redo the
+operation in case of failure after commit and to undo the operation in
+case of abort.])
+
+m4_p([dnl
+When designing applications that will use the log subsystem, it is
+important to remember that the application is responsible for providing
+any necessary structure to the log record.  For example, the application
+must understand what part of the log record is an operation code, what
+part identifies the file being modified, what part is redo information,
+and what part is undo information.])
+
+m4_p([dnl
+After the log message is written, the application may issue the write
+system call.  After all requests are issued, the application may call
+m4_ref(txn_commit).  When m4_ref(txn_commit) returns, the caller is
+guaranteed that all necessary log writes have been written to disk.])
+
+m4_p([dnl
+At any time before issuing a m4_ref(txn_commit), the application may
+call m4_ref(txn_abort), which will result in restoration of the database
+to a consistent pretransaction state.  (The application may specify its
+own recovery function for this purpose using the
+m4_refT(dbenv_set_app_dispatch).  The recovery function must be able to
+either reapply or undo the update depending on the context, for each
+different type of log record. The recovery functions must not use m4_db
+methods to access data in the environment as there is no way to
+coordinate these accesses with either the aborting transaction or the
+updates done by recovery or replication.)])
+
+m4_p([dnl
+If the application crashes, the recovery process uses the log to restore
+the database to a consistent state.])
+
+m4_p([dnl
+m4_db includes tools to assist in the development of application-specific
+logging and recovery.  Specifically, given a description of information
+to be logged in a family of log records, these tools will automatically
+create log-writing functions (functions that marshall their arguments
+into a single log record), log-reading functions (functions that read
+a log record and unmarshall it into a structure containing fields that
+map into the arguments written to the log), log-printing functions
+(functions that print the contents of a log record for debugging), and
+templates for recovery functions (functions that review log records
+during transaction abort or recovery).  The tools and generated code
+are C-language and POSIX-system based, but the generated code should be
+usable on any system, not just POSIX systems.])
+
+m4_p([dnl
+A sample application that does application-specific recovery is included
+in the m4_db distribution, in the directory m4_path(examples_c/ex_apprec).])
+
+m4_page_footer

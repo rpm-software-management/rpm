@@ -184,5 +184,5 @@ err(s)
 	char *s;
 {
 	fprintf(stderr, "\t%s: %s\n", s, strerror(errno));
-	exit (1);
+	exit(EXIT_FAILURE);
 }

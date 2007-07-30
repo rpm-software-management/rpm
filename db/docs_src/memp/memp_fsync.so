@@ -1,0 +1,25 @@
+m4_comment([$Id: memp_fsync.so,v 10.36 2006/11/30 19:06:50 bostic Exp $])
+
+define(M4PAGELOCAL, memp_fsync)
+include(m4/m4.seealso)
+
+m4_pf_header(m4_ref(memp_fsync),
+ifelse(M4API, C_API, [dnl
+int
+DB_MPOOLFILE-__GT__sync(DB_MPOOLFILE *mpf);
+])
+ifelse(M4API, CXX_API, [dnl
+int
+DbMpoolFile::sync();
+]))
+
+m4_p([dnl
+The m4_refT(memp_fsync) writes all modified pages associated with the
+m4_ref(DbMpoolFile) back to the source file.  If any of the modified
+pages are m4_italic(pinned) (that is, currently in use),
+m4_ref(memp_fsync) will ignore them.])
+
+m4_return(memp_fsync, std)
+
+m4_seealso(DbMpool)
+m4_page_footer

@@ -1,0 +1,13 @@
+m4_comment([$Id: log_register.so,v 1.4 2006/08/24 16:32:33 bostic Exp $])
+
+m4_ref_title(Upgrading m4_db Applications,
+    Release 4.1: DB_ENV-__GT__log_register,,
+    upgrade.4.1/fop, upgrade.4.1/log_stat)
+
+m4_p([dnl
+The DB_ENV-__GT__log_register and DB_ENV-__GT__log_unregister interfaces
+were removed from the m4_db 4.1 release.  It is very unlikely
+application programs used these interfaces.  If your application used
+these interfaces, please contact us for help in upgrading.])
+
+m4_page_footer

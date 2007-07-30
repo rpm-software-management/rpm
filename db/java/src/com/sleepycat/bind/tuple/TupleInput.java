@@ -1,13 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000-2006
- *      Oracle Corporation.  All rights reserved.
+ * Copyright (c) 2000,2007 Oracle.  All rights reserved.
  *
- * $Id: TupleInput.java,v 12.4 2006/08/31 18:14:06 bostic Exp $
+ * $Id: TupleInput.java,v 12.6 2007/05/04 00:28:25 mark Exp $
  */
 
 package com.sleepycat.bind.tuple;
+
+import java.math.BigInteger;
 
 import com.sleepycat.util.FastInputStream;
 import com.sleepycat.util.PackedInteger;
@@ -26,7 +27,8 @@ import com.sleepycat.util.UtfOps;
  * first) order with their sign bit (high-order bit) inverted to cause negative
  * numbers to be sorted first when comparing values as unsigned byte arrays,
  * as done in a database.  Unsigned numbers, including characters, are stored
- * in MSB order with no change to their sign bit.</p>
+ * in MSB order with no change to their sign bit.  BigInteger values are stored
+ * with a preceding length having the same sign as the value.</p>
  *
  * <p>Strings and character arrays are stored either as a fixed length array of
  * unicode characters, where the length must be known by the application, or as
@@ -599,7 +601,7 @@ public class TupleInput extends FastInputStream {
      *
      * @see PackedInteger
      */
-    public int readPackedInt() {
+    public final int readPackedInt() {
 
         int len = PackedInteger.getReadIntLength(buf, off);
         int val = PackedInteger.readInt(buf, off);
@@ -613,7 +615,62 @@ public class TupleInput extends FastInputStream {
      *
      * @see PackedInteger
      */
-    public int getPackedIntByteLength() {
+    public final int getPackedIntByteLength() {
         return PackedInteger.getReadIntLength(buf, off);
+    }
+
+    /**
+     * Reads a packed long integer.  Note that packed integers are not
+     * appropriate for sorted values (keys) unless a custom comparator is used.
+     *
+     * @see PackedInteger
+     */
+    public final long readPackedLong() {
+
+        int len = PackedInteger.getReadLongLength(buf, off);
+        long val = PackedInteger.readLong(buf, off);
+
+        off += len;
+        return val;
+    }
+
+    /**
+     * Returns the byte length of a packed long integer.
+     *
+     * @see PackedInteger
+     */
+    public final int getPackedLongByteLength() {
+        return PackedInteger.getReadLongLength(buf, off);
+    }
+
+    /**
+     * Reads a {@code BigInteger}.
+     *
+     * @see TupleOutput#writeBigInteger
+     */
+    public final BigInteger readBigInteger() {
+        int len = readShort();
+        if (len < 0) {
+            len = (- len);
+        }
+        byte[] a = new byte[len];
+        a[0] = readByte();
+        readFast(a, 1, a.length - 1);
+        return new BigInteger(a);
+    }
+
+    /**
+     * Returns the byte length of a {@code BigInteger}.
+     *
+     * @see TupleOutput#writeBigInteger
+     */
+    public final int getBigIntegerByteLength() {
+        int saveOff = off;
+        int len = readShort();
+        off = saveOff;
+        if (len < 0) {
+            len = (- len);
+        }
+        return len + 2;
     }
 }
