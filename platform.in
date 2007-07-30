@@ -23,7 +23,7 @@
 %_sharedstatedir	@sharedstatedir@
 %_localstatedir		@localstatedir@
 %_lib			@LIB@
-%_libdir		@LIBDIR@
+%_libdir		@exec_prefix@/@LIB@
 %_includedir		@includedir@
 %_oldincludedir		@oldincludedir@
 %_infodir		@infodir@

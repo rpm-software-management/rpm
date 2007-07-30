@@ -1178,12 +1178,6 @@ LOCALEDIR="`echo ${usrprefix}/share/locale`"
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
 	[Full path to rpm locale directory (usually /usr/share/locale)])
 AC_SUBST(LOCALEDIR)
-LIBDIR="`echo $libdir | sed 's-/lib$-/%{_lib}-'`"
-dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
-case "${target_cpu}" in
-x86_64*|ppc64*|powerpc64*|sparc64*|s390x*)	LIBDIR="${LIBIR}64" ;;
-esac
-AC_SUBST(LIBDIR)
 
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
