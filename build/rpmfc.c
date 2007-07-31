@@ -463,6 +463,9 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   /* XXX "python 2.3 byte-compiled" */
   { "python ",			RPMFC_PYTHON|RPMFC_INCLUDE },
 
+  { "libtool library ",         RPMFC_LIBTOOL|RPMFC_INCLUDE },
+  { "pkgconfig ",               RPMFC_PKGCONFIG|RPMFC_INCLUDE },
+
   /* XXX .NET executables and libraries.  file(1) cannot differ from win32 
    * executables unfortunately :( */
   { "PE executable",            RPMFC_MONO|RPMFC_INCLUDE },
@@ -739,7 +742,21 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "python");
-    }
+    } else 
+    if (fc->fcolor->vals[fc->ix] & RPMFC_LIBTOOL) {
+        xx = rpmfcHelper(fc, 'P', "libtool");
+#ifdef  NOTYET
+        if (is_executable)
+#endif
+            xx = rpmfcHelper(fc, 'R', "libtool");
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_PKGCONFIG) {
+        xx = rpmfcHelper(fc, 'P', "pkgconfig");
+#ifdef  NOTYET
+        if (is_executable)
+#endif
+            xx = rpmfcHelper(fc, 'R', "pkgconfig");
+    } else 
     if (fc->fcolor->vals[fc->ix] & RPMFC_MONO) {
         xx = rpmfcHelper(fc, 'P', "mono");
         if (is_executable)
@@ -1093,6 +1110,8 @@ static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PYTHON) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PKGCONFIG) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_LIBTOOL) },
     { rpmfcSCRIPT,      RPMFC_MONO },
     { NULL, 0 }
 };
@@ -1258,10 +1277,21 @@ assert(s != NULL);
 	case S_IFLNK:
 	case S_IFREG:
 	default:
+#define _suffix(_s, _x) \
+    (slen >= sizeof(_x) && !strcmp((_s)+slen-(sizeof(_x)-1), (_x)))
+
 	    /* XXX all files with extension ".pm" are perl modules for now. */
-/*@-branchstate@*/
-	    if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
+	    if (_suffix(s, ".pm"))
 		ftype = "Perl5 module source text";
+
+	    /* XXX all files with extension ".la" are libtool for now. */
+	    else if (_suffix(s, ".la"))
+		ftype = "libtoo library file";
+
+	    /* XXX all files with extension ".pc" are pkgconfig for now. */
+	    else if (_suffix(s, ".pc"))
+		ftype = "pkgconfig file";
+
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
 	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";

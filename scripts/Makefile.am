@@ -23,7 +23,8 @@ EXTRA_DIST = \
 	macros.perl.in macros.python.in \
 	macros.php.in find-requires.php find-provides.php \
 	find-php-provides find-php-requires \
-	mono-find-requires mono-find-provides
+	mono-find-requires mono-find-provides \
+	pkgconfigdeps.sh libtooldeps.sh
 
 installprefix = $(DESTDIR)
 
