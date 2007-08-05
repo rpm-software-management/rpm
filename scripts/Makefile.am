@@ -1,7 +1,5 @@
 # Makefile for rpm scripts.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 bin_SCRIPTS =		gendiff
 
 EXTRA_DIST = \

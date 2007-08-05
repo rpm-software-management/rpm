@@ -1,10 +1,8 @@
 # Makefile for rpm library.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 LINT = splint
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
@@ -180,7 +178,7 @@ clean-local:
 BUILT_SOURCES = tagtbl.c
 
 rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-splint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
+	-splint ${DEFS} ${AM_CPPFLAGS} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:
@@ -188,7 +186,7 @@ sources:
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
+	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
 
 tdbi: librpmdb.la tdbi.o
 	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)

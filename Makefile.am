@@ -1,7 +1,5 @@
 # Top level Makefile for rpm
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 LINT = splint
 
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
@@ -14,7 +12,7 @@ SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
 
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
@@ -59,7 +57,8 @@ rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
 rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
 
-rpmb_SOURCES =		$(top_srcdir)/build.c
+rpmb_SOURCES =		build.c
+# rpmb_CFLAGS = -DIAM_RPMBT
 rpmb_LDFLAGS =		$(myLDFLAGS)
 rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
 rpmb.o:	$(top_srcdir)/rpmqv.c
@@ -104,11 +103,11 @@ splint:
 	    -load lib/rpmlib.lcd \
 	    -load rpmdb/rpmdb.lcd \
 	    -load rpmio/rpmio.lcd \
-		$(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES)
+		$(DEFS) $(AM_CPPFLAGS) rpmqv.c $(rpmb_SOURCES)
 
 .PHONY:	lint
 lint:
-	$(LINT) -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
+	$(LINT) -Dlint $(DEFS) $(AM_CPPFLAGS) rpmqv.c $(rpmb_SOURCES) \
 		`make -s sources -C build` \
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \

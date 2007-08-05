@@ -1,7 +1,5 @@
 # Makefile for rpm library.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 LINT = splint
 
 pylibdir = @WITH_PYTHON_LIB@
@@ -11,7 +9,7 @@ SUBDIRS =
 
 EXTRA_DIST = system.h rpmdebug-py.c rpm/__init__.py
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
@@ -62,4 +60,4 @@ splint_srcs = \
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(splint_srcs)
+	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(splint_srcs)

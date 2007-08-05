@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 all:
 
 EXTRA_DIST = *.exp hello-1.0.tar.gz \

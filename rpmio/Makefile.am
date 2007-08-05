@@ -1,14 +1,12 @@
 # Makefile for rpm library.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 LINT = splint
 
 EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c
 
 EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpmio tsw
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_NEON_INCLUDE@ \
@@ -59,7 +57,7 @@ clean-local:
 #BUILT_SOURCES = rpmio.lcd
 
 rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-lclint -load ../beecrypt/beecrypt.lcd $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES) -dump $@ 2>/dev/null
+	-lclint -load ../beecrypt/beecrypt.lcd $(DEFS) $(AM_CPPFLAGS) $(librpmio_la_SOURCES) -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:
@@ -67,7 +65,7 @@ sources:
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmio_la_SOURCES)
 
 tax_SOURCES = tax.c
 tax_LDADD = librpmio.la

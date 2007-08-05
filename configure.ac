@@ -1,10 +1,10 @@
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 AC_INIT(rpm, 4.4.90, rpm-maint@lists.rpm.org)
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([foreign tar-ustar])
+AM_INIT_AUTOMAKE([1.10 foreign tar-ustar])
 
 AC_AIX
 AC_MINIX

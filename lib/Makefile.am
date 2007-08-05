@@ -1,10 +1,8 @@
 # Makefile for rpm library.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 LINT = splint
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/rpmdb \
@@ -84,7 +82,7 @@ BUILT_SOURCES = getdate.c # rpmlib.lcd
 #tds_LDFLAGS =	@LDFLAGS_STATIC@ ./librpm.la
 
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-lclint ${DEFS} ${INCLUDES} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
+	-lclint ${DEFS} ${AM_CPPFLAGS} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:
@@ -92,38 +90,38 @@ sources:
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(librpm_la_SOURCES)
+	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpm_la_SOURCES)
 
 setfiles: setfiles.o
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< \
 	-lselinux \
 	$(top_builddir)/rpmio/librpmio.la \
 	$(top_builddir)/popt/libpopt.la
 	
 #tds: tds.c librpm.la
-#	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+#	$(CC) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
 
 trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
 
 tthread: tthread.o librpm.la
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
+	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
 
 tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
+	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
 
 tre: tre.o librpm.la
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< \
+	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< \
 	-lselinux  librpm.la
 
 tcpu: tcpu.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
 
 tplatform: tplatform.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
 
 trhn: trhn.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
 
 tgi_SOURCES = tgi.c
 tgi_LDFLAGS = @LDFLAGS_STATIC@

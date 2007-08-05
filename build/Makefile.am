@@ -1,10 +1,8 @@
 # Makefile for rpmbuild library.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
 LINT = splint
 
-INCLUDES = -I. \
+AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
@@ -43,7 +41,7 @@ clean-local:
 #BUILT_SOURCES = rpmbuild.lcd
 
 rpmbuild.lcd: Makefile.am ${librpmbuild_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES} -dump $@ 2>/dev/null
+	-lclint ${DEFS} ${AM_CPPFLAGS} ${librpmbuild_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:
@@ -51,4 +49,4 @@ sources:
 
 .PHONY:	lint
 lint:
-	$(LINT) ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES}
+	$(LINT) ${DEFS} ${AM_CPPFLAGS} ${librpmbuild_la_SOURCES}

@@ -1,8 +1,6 @@
 # Makefile for misc library.
 
-AUTOMAKE_OPTIONS = 1.4 foreign
-
-INCLUDES = -I. -I$(top_srcdir) @INCPATH@
+AM_CPPFLAGS = -I. -I$(top_srcdir) @INCPATH@
 
 EXTRA_DIST = \
 	alloca.c	basename.c	err.c		error.c		\
