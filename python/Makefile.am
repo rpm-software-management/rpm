@@ -2,10 +2,9 @@
 
 LINT = splint
 
+if PYTHON
 pylibdir = @WITH_PYTHON_LIB@
 pyincdir = @WITH_PYTHON_INCLUDE@
-
-SUBDIRS = 
 
 EXTRA_DIST = system.h rpmdebug-py.c rpm/__init__.py
 
@@ -61,3 +60,5 @@ splint_srcs = \
 .PHONY:	lint
 lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(splint_srcs)
+
+endif
