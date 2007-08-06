@@ -1,6 +1,6 @@
 AC_PREREQ(2.61)
 AC_INIT(rpm, 4.4.90, rpm-maint@lists.rpm.org)
-AC_CANONICAL_TARGET
+
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
 
@@ -90,7 +90,7 @@ dnl	LDFLAGS_STATIC=""
 dnl
 AC_MSG_CHECKING(flag used by libtool to link rpm)
 if test X"$GCC" = Xyes ; then
-	case "$target" in
+	case "$host" in
 		*-*-linux*)	LDFLAGS_STATIC="-all-static" ;;
 		*-*-solaris*)	LDFLAGS_STATIC="-static";;
 		*-*-hpux*)	LDFLAGS_STATIC="-static";;
@@ -99,7 +99,7 @@ if test X"$GCC" = Xyes ; then
 		*-*-*)		LDFLAGS_STATIC="";;
 	esac
 elif test X"$CC" = Xcc ; then
-	case "$target" in
+	case "$host" in
 		*-*-linux*)	LDFLAGS_STATIC="-all-static";;
 		*-*-freebsd*)	LDFLAGS_STATIC="-all-static";;
 		*-*-osf*)	LDFLAGS_STATIC="";; # OSF5 has no shared pthreads libs
@@ -275,7 +275,7 @@ AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
 addlib() {
   l=$1
   shift
-  case "$target" in 
+  case "$host" in 
     *-*-solaris*)	LIBS="$LIBS -L$l -R$l $*";;
     *)		LIBS="$LIBS -L$l $*";;
   esac
@@ -611,7 +611,7 @@ AC_SUBST(DBLIBSRCS)
 AC_SUBST(DBLIBOBJS)
 
 dnl AmigaOS and IXEmul have a fork() dummy
-  case "$target" in
+  case "$host" in
     m68k-*-amigaos ) 
 	echo "Building for AmigaOS: using vfork() instead of fork()"; 
 	CFLAGS="$CFLAGS -Dfork=vfork" 
@@ -892,7 +892,7 @@ fi
 
 WITH_SELINUX_LIB=
 with_selinuxval=no
-case "$target" in
+case "$host" in
     *-*-linux*) with_selinuxval=yes ;;
 esac
 withval=${with_selinuxval}
