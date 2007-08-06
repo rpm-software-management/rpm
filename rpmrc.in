@@ -230,7 +230,7 @@ buildarchtranslate: armv4b: armv4b
 buildarchtranslate: armv4l: armv4l
 buildarchtranslate: armv4tl: armv4tl
 buildarchtranslate: armv5tel: armv5tel
-buildarchtranslate: armv5tejl: armv4tejl
+buildarchtranslate: armv5tejl: armv5tejl
 buildarchtranslate: armv6l: armv6l
 
 buildarchtranslate: atarist: m68kmint
