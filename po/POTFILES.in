@@ -22,6 +22,7 @@ build/parseScript.c
 build/parseSpec.c
 build/poptBT.c
 build/reqprov.c
+build/rpmfc.c
 build/spec.c
 lib/cpio.c
 lib/depends.c
@@ -44,6 +45,7 @@ lib/rpmgi.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmlibprov.c
+lib/rpmlock.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmsx.c
@@ -54,6 +56,7 @@ lib/signature.c
 lib/stringbuf.c
 lib/transaction.c
 lib/verify.c
+misc/error.c
 rpmdb/db3.c
 rpmdb/dbconfig.c
 rpmdb/fprint.c
@@ -65,11 +68,14 @@ rpmdb/merge.c
 rpmdb/poptDB.c
 rpmdb/rpmdb.c
 rpmdb/rpmhash.c
+rpmdb/sqlite.c
 rpmdb/tagname.c
 rpmio/argv.c
 rpmio/digest.c
 rpmio/fts.c
 rpmio/macro.c
+rpmio/rpmdav.c
+rpmio/rpmlua.c
 rpmio/rpmio.c
 rpmio/rpmlog.c
 rpmio/rpmmalloc.c
