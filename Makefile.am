@@ -118,7 +118,7 @@ CVSTAG = r$(subst .,-,$(VERSION))
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
 install-data-local:
-	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
+	@$(MKDIR_P) $(DESTDIR)$(varprefix)/lib/rpm
 	@rm -f $(DESTDIR)$(pkglibdir)/rpmt
 	@@LN_S@ rpmb $(DESTDIR)$(pkglibdir)/rpmt
 	@rm -f $(DESTDIR)$(pkglibdir)/rpme
@@ -142,45 +142,45 @@ install-data-local:
 	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)$(bindir)/rpm$$bf ; \
 	done
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
-	    $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/$$dir;\
+	    $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
 	@case "@host_cpu@" in \
-	*86)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
-	alpha*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
-	arm*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4tl ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tejl ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv6l ;;\
-	sparc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv8 ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
-	ia64*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
-	s390*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
-	mipsel*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/mipsel ;;\
-	mips*)  $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/mips ;;\
-	powerpc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppciseries ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppcpseries ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64 ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64iseries ;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64pseries ;;\
-	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
+	*86)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
+	alpha*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
+	arm*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4tl ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tejl ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv6l ;;\
+	sparc*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv8 ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
+	ia64*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
+	s390*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
+	mipsel*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/mipsel ;;\
+	mips*)  $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/mips ;;\
+	powerpc*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppciseries ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppcpseries ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64 ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64iseries ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64pseries ;;\
+	*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
 	esac
-	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
+	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
 	@case "@host_os@" in \
-	mint) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
+	mint) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
 	solaris*|linux*|darwin*) \
 	   chmod u+x $(top_srcdir)/installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" $(top_srcdir)/installplatform rpmrc macros platform ;; \
 	esac
-	@$(mkinstalldirs) $(DESTDIR)/var/tmp
+	@$(MKDIR_P) $(DESTDIR)/var/tmp
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
@@ -236,7 +236,7 @@ noconfig:
 .PHONY:	doxygen
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	rm -rf $@
-	mkdir -p $@
+	$(MKDIR_P) $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
 
 ctags:
