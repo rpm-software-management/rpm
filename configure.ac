@@ -1077,11 +1077,13 @@ fi
 #
 # get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
 #
+build_os_gnu=-gnu
 if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
 fi
 if echo "$build_os" | grep '.*-gnueabi' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnueabi$//'`
+	build_os_gnu=-gnueabi
 fi
 if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
@@ -1169,12 +1171,14 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos)
 	;;
 esac
 RPMCANONOS="$build_os_noversion"
+RPMCANONGNU="$build_os_gnu"
 AC_SUBST(RPMCANONCOLOR)
 AC_SUBST(autorelocate_path)
 AC_SUBST(autorelocate_dcolor)
 AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
+AC_SUBST(RPMCANONGNU)
 
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"

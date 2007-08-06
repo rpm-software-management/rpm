@@ -824,7 +824,7 @@ print (t)\
 %_build_arch		@RPMCANONARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
-%_gnu			-gnu
+%_gnu			@RPMCANONGNU@
 %_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}%{?_gnu}
 
 #
