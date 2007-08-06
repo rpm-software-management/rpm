@@ -25,7 +25,7 @@ main(int argc, char *argv[])
 	exit (1);
     }
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     rc = db->open(db, txnid, dbfile, NULL, DB_UNKNOWN, DB_RDONLY, 0664);
 #else
     rc = db->open(db, dbfile, NULL, DB_UNKNOWN, DB_RDONLY, 0664);

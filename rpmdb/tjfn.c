@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <errno.h>
@@ -69,7 +70,7 @@ db_open(const char * dbfn, DB_ENV * dbenv, DB ** dbp)
 	goto err;
     }
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 1)
+#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     ret = db->open(db, NULL, dbfn, NULL, DB_BTREE, DB_CREATE, 0664);
 #else
     ret = db->open(db, dbfn, NULL, DB_BTREE, DB_CREATE, 0664);
