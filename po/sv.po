@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3025,9 +3025,9 @@ msgid "Unknown system: %s\n"
 msgstr "Okänt system: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4082,6 +4082,10 @@ msgstr "%s: cacheoperation misslyckades: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: läsning av paketlista misslyckades: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Var vänlig kontakta rpm-list@redhat.com\n"
 
 #~ msgid "list install/erase scriptlets from package(s)"
 #~ msgstr "lista intallations-/raderingsskript från paket"

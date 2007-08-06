@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3109,9 +3109,9 @@ msgstr ""
 "\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Kontakt venligst rpm-list@redhat.com (på engelsk)\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4173,6 +4173,10 @@ msgstr "%s: åbning mislykkedes: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Kontakt venligst rpm-list@redhat.com (på engelsk)\n"
 
 #~ msgid "gpg failed\n"
 #~ msgstr "gpg fejlede\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3064,9 +3064,9 @@ msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Свяжитесь с rpm-list@redhat.com\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4122,6 +4122,10 @@ msgstr "%s: ошибка работы с кэш: код ошибки %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: ошибка чтения списка файлов: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
 #~ msgid "list install/erase scriptlets from package(s)"
 #~ msgstr "показать сценарии установки/удаления"

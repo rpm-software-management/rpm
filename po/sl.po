@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3144,9 +3144,9 @@ msgid "Unknown system: %s\n"
 msgstr "Neznan sistem: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, fuzzy, c-format
@@ -4216,6 +4216,10 @@ msgstr "%s: odpiranje je bilo neuspe¹no: %s\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Prosimo, pi¹ite na rpm-list@redhat.com\n"
 
 #, fuzzy
 #~ msgid "gpg failed\n"

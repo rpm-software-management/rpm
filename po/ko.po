@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3090,9 +3090,9 @@ msgid "Unknown system: %s\n"
 msgstr "알 수 없는 시스템: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "rpm-list@redhat.com으로 연락바랍니다\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4153,6 +4153,10 @@ msgstr "%s: 여는데 실패했습니다: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 읽는데 실패했습니다: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "rpm-list@redhat.com으로 연락바랍니다\n"
 
 #~ msgid "gpg failed\n"
 #~ msgstr "gpg가 실패함\n"

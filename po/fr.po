@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -3121,9 +3121,9 @@ msgid "Unknown system: %s\n"
 msgstr "système inconnu: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Contactez rpm-list@redhat.com\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4186,6 +4186,10 @@ msgstr "%s: échec de l'opération sur le cache: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: échec de la lecture de la liste de paquetages: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Contactez rpm-list@redhat.com\n"
 
 #~ msgid "list install/erase scriptlets from package(s)"
 #~ msgstr "lister les scriptlets de (dés)installation du(des) paquetage(s)"

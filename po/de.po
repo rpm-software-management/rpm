@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3065,9 +3065,9 @@ msgid "Unknown system: %s\n"
 msgstr "Unbekanntes System: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Bitte (in Englisch) rpm-list@redhat.com kontaktieren\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4120,6 +4120,10 @@ msgstr "%s: Cache-Operation(en) fehlgeschlagen: Fehler-Code %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Lesen der Paket-Liste fehlgeschlagen: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Bitte (in Englisch) rpm-list@redhat.com kontaktieren\n"
 
 #~ msgid "list install/erase scriptlets from package(s)"
 #~ msgstr "Installations-/Deinstallations-Skriptlets der Pakete auflisten"

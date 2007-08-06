@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3093,7 +3093,8 @@ msgid "Unknown system: %s\n"
 msgstr "Neznámý typ ikony: %s\n"
 
 #: lib/rpmrc.c:1565
-msgid "Please contact rpm-maint@lists.rpm.org\n"
+#, c-format
+msgid "Please contact %s\n"
 msgstr ""
 
 #: lib/rpmrc.c:1802

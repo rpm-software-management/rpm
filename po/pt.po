@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -3098,9 +3098,9 @@ msgid "Unknown system: %s\n"
 msgstr "Sistema desconhecido: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Por favor contacte o rpm-list@redhat.com\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4157,6 +4157,10 @@ msgstr "%s: o acesso falhou: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: a leitura do manifesto falhou: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Por favor contacte o rpm-list@redhat.com\n"
 
 #~ msgid "gpg failed\n"
 #~ msgstr "o gpg falhou\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -3133,7 +3133,8 @@ msgid "Unknown system: %s\n"
 msgstr ""
 
 #: lib/rpmrc.c:1565
-msgid "Please contact rpm-maint@lists.rpm.org\n"
+#, c-format
+msgid "Please contact %s\n"
 msgstr ""
 
 #: lib/rpmrc.c:1802

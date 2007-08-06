@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2007-06-29 23:42+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3034,8 +3034,9 @@ msgid "Unknown system: %s\n"
 msgstr "Nieznany system: %s\n"
 
 #: lib/rpmrc.c:1565
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Proszę skontaktować się z rpm-maint@lists.rpm.org\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4093,6 +4094,9 @@ msgstr "%s: operacja w pamięci podręcznej nie powiodła się: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
+
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Proszę skontaktować się z rpm-maint@lists.rpm.org\n"
 
 #~ msgid "list install/erase scriptlets from package(s)"
 #~ msgstr "wypisz skrypty instalacyjne/usuwania z pakietów"

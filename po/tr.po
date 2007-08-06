@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3109,9 +3109,9 @@ msgid "Unknown system: %s\n"
 msgstr "Bilinmeyen sistem: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy
-msgid "Please contact rpm-maint@lists.rpm.org\n"
-msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
+#, c-format
+msgid "Please contact %s\n"
+msgstr ""
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -4166,6 +4166,10 @@ msgstr "%s: açýlamadý: %s\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: bildirge okuma baþarýsýz: %s\n"
+
+#, fuzzy
+#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
+#~ msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
 
 #~ msgid "gpg failed\n"
 #~ msgstr "gpg hata verdi\n"

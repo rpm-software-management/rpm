@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-07-24 15:19+0300\n"
+"POT-Creation-Date: 2007-08-06 14:23+0300\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -3015,7 +3015,8 @@ msgid "Unknown system: %s\n"
 msgstr "Tuntematon järjestelmä: %s\n"
 
 #: lib/rpmrc.c:1565
-msgid "Please contact rpm-maint@lists.rpm.org\n"
+#, c-format
+msgid "Please contact %s\n"
 msgstr ""
 
 #: lib/rpmrc.c:1802
