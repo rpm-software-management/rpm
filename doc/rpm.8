@@ -591,7 +591,7 @@ List only configuration files (implies \fB-l\fR).
 List only documentation files (implies \fB-l\fR).
 .TP
 \fB--dump\fR
-Dump file information as follows:
+Dump file information as follows (implies \fB-l\fR):
 .sp
 .RS
 
@@ -600,11 +600,6 @@ path size mtime md5sum mode owner group isconfig isdoc rdev symlink
 	
 .fi
 .RE
-
-This option must be used with at least one of
-\fB-l\fR,
-\fB-c\fR,
-\fB-d\fR.
 .TP
 \fB--filesbypkg\fR
 List all the files in each selected package.
