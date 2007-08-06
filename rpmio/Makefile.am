@@ -2,7 +2,7 @@
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdigest.c tdir.c tficl.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c
+EXTRA_DIST = tax.c tdigest.c tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c
 
 EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpmio tsw
 
@@ -116,8 +116,3 @@ trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = librpmio.la
 
-tficl.o: tficl.c
-	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 
-
-tficl: tficl.o
-	$(LINK) -o $@ tficl.o -lficl -lm
