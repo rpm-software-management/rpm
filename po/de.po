@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-06 14:23+0300\n"
+"POT-Creation-Date: 2007-08-08 15:35+0200\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1044,9 +1044,9 @@ msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "Zeile %d: Benötige Argument für %%patch -z: %s\n"
 
 #: build/parsePrep.c:516
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
-msgstr "Zeile %d: Ungültiges Argument für %%patch -p: %s\n"
+msgstr "Zeile %d: Ungültiges Argument für %%patch -F: %s\n"
 
 #: build/parsePrep.c:528
 #, c-format
@@ -1337,6 +1337,61 @@ msgstr "Überschreibe Zielplattform"
 #: build/poptBT.c:248
 msgid "lookup i18N strings in specfile catalog"
 msgstr "i18n-Übersetzungen im Spec-Datei-Katalog nachschlagen"
+
+#: build/rpmfc.c:96
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#: build/rpmfc.c:102
+#, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Konnte %s nicht ausführen: %s\n"
+
+#: build/rpmfc.c:107 lib/psm.c:915
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Konnte %s nicht öffnen: %s\n"
+
+#: build/rpmfc.c:192
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: build/rpmfc.c:196
+#, c-format
+msgid "%s failed\n"
+msgstr "%s fehlgeschlagen\n"
+
+#: build/rpmfc.c:200
+#, c-format
+msgid "failed to write all data to %s\n"
+msgstr "Konnte nicht all Daten nach %s schreiben\n"
+
+#: build/rpmfc.c:1250
+#, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "magic_open(0x%x) fehlgeschlagen: %s\n"
+
+#: build/rpmfc.c:1258
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "magic_load(ms, \"%s\") fehlgeschlagen: %s\n"
+
+#: build/rpmfc.c:1303
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr "magic_file(ms, \"%s\") fehlgeschlagen: mode %06o %s\n"
+
+#: build/rpmfc.c:1524
+#, c-format
+msgid "Finding  %s: %s\n"
+msgstr "Finde %s: %s\n"
+
+#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#, c-format
+msgid "Failed to find %s:\n"
+msgstr "Fehlgeschlagenes zu finden %s:\n"
 
 #: build/spec.c:237
 #, c-format
@@ -2382,11 +2437,6 @@ msgstr "%s: %s(%s-%s-%s.%s) %ssynchronous Skriptlet gestartet\n"
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s), PID %d\n"
 
-#: lib/psm.c:915
-#, fuzzy, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "Konnte %s nicht öffnen: %s\n"
-
 #: lib/psm.c:926
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2913,6 +2963,16 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr "Interne Unterstützung für LUA-Skripte"
 
+#: lib/rpmlock.c:137 lib/rpmlock.c:144
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "Erstelle Transaktionsset"
+
+#: lib/rpmlock.c:141
+#, fuzzy, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr "Erstelle Score-Board für Transaktionen(%p, %p)\n"
+
 #: lib/rpmps.c:200
 msgid "different"
 msgstr "unterschiedlich"
@@ -3067,7 +3127,7 @@ msgstr "Unbekanntes System: %s\n"
 #: lib/rpmrc.c:1565
 #, c-format
 msgid "Please contact %s\n"
-msgstr ""
+msgstr "Bitte (in Englisch) %s kontaktieren\n"
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -3537,6 +3597,10 @@ msgstr "fehlend   %c %s"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Unerfüllte Abhängigkeiten für %s: "
 
+#: misc/error.c:107
+msgid "Unknown system error"
+msgstr "Unbekannter System-Fehler"
+
 #: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
@@ -3893,6 +3957,21 @@ msgstr "Entferne Verzeichnis %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "Entfernen des Verzeichnisses %s fehlgeschlagen: %s\n"
 
+#: rpmdb/sqlite.c:631
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:791
+#, c-format
+msgid "closed   sql db         %s\n"
+msgstr "Schließe   SQL-DB         %s\n"
+
+#: rpmdb/sqlite.c:892
+#, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "Öffne    SQL-DB         %s (%s) Mode=0x%x\n"
+
 #: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -3981,6 +4060,47 @@ msgstr "Datei %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datei %s ist kleiner als %u Byte\n"
+
+#: rpmio/rpmdav.c:617
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:619
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:621
+msgid "Server Error"
+msgstr "Server-Fehler"
+
+#: rpmio/rpmdav.c:623
+msgid "Unknown Error"
+msgstr "Unbekannter Fehler"
+
+#: rpmio/rpmlua.c:478
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr "Ungültige Syntax in lua-Scriptlet: %s\n"
+
+#: rpmio/rpmlua.c:496
+#, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "Ungültige Syntax in lua script: %s\n"
+
+#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#, c-format
+msgid "lua script failed: %s\n"
+msgstr "lua-Script fehlgeschlagen: %s\n"
+
+#: rpmio/rpmlua.c:515
+#, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "Ungültige Syntax in lua-Datei: %s\n"
+
+#: rpmio/rpmlua.c:668
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s: Fseek fehlgeschlagen: %s\n"
 
 #: rpmio/rpmio.c:694
 msgid "Success"
@@ -4120,82 +4240,3 @@ msgstr "%s: Cache-Operation(en) fehlgeschlagen: Fehler-Code %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Lesen der Paket-Liste fehlgeschlagen: %s\n"
-
-#, fuzzy
-#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
-#~ msgstr "Bitte (in Englisch) rpm-list@redhat.com kontaktieren\n"
-
-#~ msgid "list install/erase scriptlets from package(s)"
-#~ msgstr "Installations-/Deinstallations-Skriptlets der Pakete auflisten"
-
-#~ msgid "set permissions of files in a package"
-#~ msgstr "Berechtigungen von Dateien in einem Paket setzen"
-
-#~ msgid "set user/group ownership of files in a package"
-#~ msgstr "Benutzer-/Gruppen-Eigentümer von Dateien in einem Paket setzen"
-
-#~ msgid "list capabilities this package conflicts with"
-#~ msgstr "Kapazitäten, die mit diesem Paket kollidieren, auflisten"
-
-#~ msgid "list other packages removed by installing this package"
-#~ msgstr ""
-#~ "Pakete, die beim Installieren dieses Pakets entfernt werden, anzeigen"
-
-#~ msgid "list capabilities that this package provides"
-#~ msgstr "Kapazitäten, die dieses Paket bietet, anzeigen"
-
-#~ msgid "list capabilities required by package(s)"
-#~ msgstr "Kapazitäten, die von Paketen benötigt werden, anzeigen"
-
-#~ msgid "list descriptive information from package(s)"
-#~ msgstr "Beschreibende Informationen der Pakete anzeigen"
-
-#~ msgid "list change logs for this package"
-#~ msgstr "Änderungsinformationen für dieses Paket anzeigen"
-
-#~ msgid "list trigger scriptlets from package(s)"
-#~ msgstr "Trigger-Skriptlets der Pakete anzeigen"
-
-#~ msgid "list package(s) by install time, most recent first"
-#~ msgstr "Paket(e) nach dem Installationsdatum auflisten, die neuesten zuerst"
-
-#~ msgid "list all files from each package"
-#~ msgstr "Alle Dateien von jedem Paket auflisten"
-
-#~ msgid ""
-#~ "find package name that contains a provided capability (needs rpmdb-redhat "
-#~ "package installed)"
-#~ msgstr ""
-#~ "Paket-Namen finden, der eine Kapazität anbietet (benötigt das Paket rpmdb-"
-#~ "redhat/rpmdb-fedora)"
-
-#~ msgid "set buildroot <policy> (e.g. compress man pages)"
-#~ msgstr "Setzt eine BuildRoot <Richtlinie> (z.B. compress man pages)"
-
-#~ msgid "<policy>"
-#~ msgstr "<Richtlinie>"
-
-#~ msgid "enable configure <option> for build"
-#~ msgstr "Aktiviert <Option> beim RPM-Bauen"
-
-#~ msgid "<option>"
-#~ msgstr "<Option>"
-
-#~ msgid "disable configure <option> for build"
-#~ msgstr "Deaktiviert <Option> beim RPM-Bauen"
-
-#~ msgid "use database in DIRECTORY"
-#~ msgstr "Benutze Datenbank in VERZEICHNIS"
-
-#~ msgid "DIRECTORY"
-#~ msgstr "VERZEICHNIS"
-
-#~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr ""
-#~ "Nur V3- und V4-Signaturen können überprüft werden, überspringe V%u-"
-#~ "Signatur\n"
-
-#~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr ""
-#~ "Nur V3- und V4-Signaturen können überprüft werden, überspringe V%u-"
-#~ "Signatur\n"
