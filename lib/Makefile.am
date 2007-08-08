@@ -24,7 +24,6 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h rpmlock.h
 
-mylibs = librpm.la
 LIBS =
 
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
@@ -99,13 +98,13 @@ setfiles: setfiles.o
 	$(top_builddir)/popt/libpopt.la
 	
 #tds: tds.c librpm.la
-#	$(CC) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
+#	$(CC) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
 
 trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
 
 tthread: tthread.o librpm.la
-	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
+	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la @WITH_LIBELF_LIB@
 
 tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
 	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
@@ -115,13 +114,13 @@ tre: tre.o librpm.la
 	-lselinux  librpm.la
 
 tcpu: tcpu.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
 
 tplatform: tplatform.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
 
 trhn: trhn.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(mylibs)
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
 
 tgi_SOURCES = tgi.c
 tgi_LDFLAGS = @LDFLAGS_STATIC@
