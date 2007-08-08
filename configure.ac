@@ -856,12 +856,10 @@ AC_PATH_PROG(__PYTHON, "${pythonbin}")
 if test -z "${__PYTHON}"; then
   WITH_PYTHON_INCLUDE=
   WITH_PYTHON_LIB=
-  WITH_PYTHON_SUBDIR=
   WITH_PYTHON_SUBPACKAGE=0
 else
   WITH_PYTHON_INCLUDE=`${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_inc()'`
   WITH_PYTHON_LIB=`${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_lib(1)'` 
-  WITH_PYTHON_SUBDIR=python
   WITH_PYTHON_SUBPACKAGE=1
   save_CPPFLAGS="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS -I$WITH_PYTHON_INCLUDE"
