@@ -28,9 +28,9 @@ staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 myLDFLAGS = @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 
 myLDADD = \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
-	$(top_builddir)/rpmio/librpmio.la \
+	lib/librpm.la \
+	rpmdb/librpmdb.la \
+	rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@LIBMISC@
@@ -49,48 +49,39 @@ pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 rpmpopt-$(VERSION): rpmpopt
 	cp rpmpopt $@
 
-noinst_HEADERS = build.h debug.h system.h
-
-rpm_SOURCES =
+rpm_SOURCES =		rpmqv.c debug.h system.h
+rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
 rpm_LDFLAGS =		$(myLDFLAGS)
-rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
-rpm.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
+rpm_LDADD =		build/.libs/librpmbuild.a $(myLDADD)
 
-rpmb_SOURCES =		build.c
-# rpmb_CFLAGS = -DIAM_RPMBT
+rpmb_SOURCES =		build.c rpmqv.c build.h debug.h system.h
+rpmb_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMBT
 rpmb_LDFLAGS =		$(myLDFLAGS)
-rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
-rpmb.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMBT -o $@ -c $(top_srcdir)/rpmqv.c
+rpmb_LDADD =		build/librpmbuild.la $(myLDADD)
 
-rpmd_SOURCES =
+rpmd_SOURCES =		rpmqv.c debug.h system.h
+rpmd_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB
 rpmd_LDFLAGS =		$(myLDFLAGS)
-rpmd_LDADD =		rpmd.o $(myLDADD)
-rpmd.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMDB -o $@ -c $(top_srcdir)/rpmqv.c
+rpmd_LDADD =		$(myLDADD)
 
-rpmi_SOURCES =
+rpmi_SOURCES =		rpmqv.c debug.h system.h
+rpmi_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU
 #rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 #rpmi_LDADD =		rpmi.o $(myLDADD) @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 rpmi_LDFLAGS =		$(myLDFLAGS)
-rpmi_LDADD =		rpmi.o $(myLDADD)
-rpmi.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMEIU -o $@ -c $(top_srcdir)/rpmqv.c
+rpmi_LDADD =		$(myLDADD)
 
-rpmk_SOURCES =
+rpmk_SOURCES =		rpmqv.c debug.h system.h
+rpmk_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMK
 rpmk_LDFLAGS =		$(myLDFLAGS)
-rpmk_LDADD =		rpmk.o $(myLDADD)
-rpmk.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMK -o $@ -c $(top_srcdir)/rpmqv.c
+rpmk_LDADD =		$(myLDADD)
 
-rpmq_SOURCES =
+rpmq_SOURCES =		rpmqv.c debug.h system.h
+rpmq_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMQV
 rpmq_LDFLAGS =		$(myLDFLAGS)
-rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
-rpmq.o:	$(top_srcdir)/rpmqv.c
-	$(COMPILE) -DIAM_RPMQV -o $@ -c $(top_srcdir)/rpmqv.c
+rpmq_LDADD =		build/librpmbuild.la $(myLDADD)
 
-rpm2cpio_SOURCES =	$(top_srcdir)/rpm2cpio.c
+rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDFLAGS =	$(myLDFLAGS)
 rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
