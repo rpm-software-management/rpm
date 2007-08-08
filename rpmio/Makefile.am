@@ -22,8 +22,6 @@ pkginc_HEADERS = \
 	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = rpmio_internal.h rpmlua.h rpmhook.h
 
-BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
-
 LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 
 usrlibdir = $(libdir)
@@ -39,20 +37,9 @@ librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	@WITH_MAGIC_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	-lpthread
-librpmio_la_LIBADD = # $(BEECRYPTLOBJS)
-librpmio_la_DEPENDENCIES = # .created
-
-.created:
-	if test X"@WITH_BEECRYPT_SUBDIR@" != X; then \
-	${MAKE} -C $(top_builddir)/@WITH_BEECRYPT_SUBDIR@ listobjs ; \
-	for lo in $(BEECRYPTLOBJS); do \
-	  [ -f $$lo ] || $(LN_S) $(top_builddir)/@WITH_BEECRYPT_SUBDIR@/$$lo $$lo ; \
-	done \
-	fi
-	touch $@
 
 clean-local:
-	rm -f $(BEECRYPTLOBJS) *.o .created
+	rm -f *.o
 
 #BUILT_SOURCES = rpmio.lcd
 
