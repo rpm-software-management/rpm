@@ -5,7 +5,7 @@ LINT = splint
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \
 	config.site db db3/configure installplatform platform* \
-	rpm.magic rpmpopt-$(VERSION) rpmqv.c 
+	rpm.magic rpmpopt-$(VERSION)
 
 SUBDIRS = po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ lua rpmio rpmdb lib build python tools scripts doc .
 
