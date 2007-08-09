@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-06 14:23+0300\n"
+"POT-Creation-Date: 2007-08-09 15:40+0200\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -1337,6 +1337,61 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
+#: build/rpmfc.c:96
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#: build/rpmfc.c:102
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Ne mogu da izvr¹im PGP"
+
+#: build/rpmfc.c:107 lib/psm.c:915
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Ne mogu da proèitam 'sigtarget'"
+
+#: build/rpmfc.c:192
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: build/rpmfc.c:196
+#, fuzzy, c-format
+msgid "%s failed\n"
+msgstr "PGP omanuo"
+
+#: build/rpmfc.c:200
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
+msgstr "neuspelo kreiranje %s\n"
+
+#: build/rpmfc.c:1250
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "neuspelo otvaranje %s: %s\n"
+
+#: build/rpmfc.c:1258
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "uklanjanje %s nije uspelo: %s"
+
+#: build/rpmfc.c:1303
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: build/rpmfc.c:1524
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "neuspelo otvaranje %s: %s"
+
+#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
+msgstr "neuspelo kreiranje %s\n"
+
 #: build/spec.c:237
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
@@ -2450,11 +2505,6 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:915
-#, fuzzy, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "Ne mogu da proèitam 'sigtarget'"
-
 #: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2981,6 +3031,16 @@ msgstr ""
 
 #: lib/rpmlibprov.c:57
 msgid "internal support for lua scripts."
+msgstr ""
+
+#: lib/rpmlock.c:137 lib/rpmlock.c:144
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
+
+#: lib/rpmlock.c:141
+#, c-format
+msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
 #: lib/rpmps.c:200
@@ -3609,6 +3669,11 @@ msgstr "nedostaje { posle %"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
 
+#: misc/error.c:107
+#, fuzzy
+msgid "Unknown system error"
+msgstr "Neoèekivana ili nepoznata FTP gre¹ka"
+
 #: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
@@ -3965,6 +4030,21 @@ msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
+#: rpmdb/sqlite.c:631
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:791
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "rekreiraj bazu podataka iz postojeæe baze"
+
+#: rpmdb/sqlite.c:892
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "rekreiraj bazu podataka iz postojeæe baze"
+
 #: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -4053,6 +4133,49 @@ msgstr "neuspelo otvaranje %s: %s"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
+
+#: rpmio/rpmdav.c:617
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:619
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:621
+#, fuzzy
+msgid "Server Error"
+msgstr "Ulazno/izlazna FTP gre¹ka"
+
+#: rpmio/rpmdav.c:623
+#, fuzzy
+msgid "Unknown Error"
+msgstr "gre¹ka: "
+
+#: rpmio/rpmlua.c:478
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:496
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "pogre¹an broj paketa: %s\n"
+
+#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Neuspeo 'readLead'\n"
+
+#: rpmio/rpmlua.c:515
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "pogre¹an broj paketa: %s\n"
+
+#: rpmio/rpmlua.c:668
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s: Neuspeo 'readLead'\n"
 
 #: rpmio/rpmio.c:694
 msgid "Success"
@@ -4237,28 +4360,8 @@ msgstr "%s: Neuspeo 'readLead'\n"
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "Pribavljam %s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "neuspelo otvaranje %s: %s"
-
-#, fuzzy
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "neuspelo kreiranje %s\n"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "samo jedno mo¾ete koristiti: --prefix ili --relocate"
-
-#, fuzzy
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "Ne mogu da izvr¹im PGP"
-
-#, fuzzy
-#~ msgid "%s failed\n"
-#~ msgstr "PGP omanuo"
-
-#, fuzzy
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "neuspelo kreiranje %s\n"
 
 #, fuzzy
 #~ msgid "No signature\n"
@@ -5117,10 +5220,6 @@ msgstr "%s: Neuspeo 'readLead'\n"
 #, fuzzy
 #~ msgid "rename of %s to %s failed: %s\n"
 #~ msgstr "preimenovanje %s u %s nije uspelo: %s"
-
-#, fuzzy
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "uklanjanje %s nije uspelo: %s"
 
 #, fuzzy
 #~ msgid ""

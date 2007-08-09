@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-06 14:23+0300\n"
+"POT-Creation-Date: 2007-08-09 15:40+0200\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1348,6 +1348,61 @@ msgstr "predefinova» cieµovú platformu"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "pre preklad re»azcov pou¾i» katalóg správ spec-súborov"
 
+#: build/rpmfc.c:96
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#: build/rpmfc.c:102
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Nie je mo¾né spusti» %s"
+
+#: build/rpmfc.c:107 lib/psm.c:915
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Nie je mo¾né vytvori» proces %s"
+
+#: build/rpmfc.c:192
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: build/rpmfc.c:196
+#, fuzzy, c-format
+msgid "%s failed\n"
+msgstr "%s zlyhalo"
+
+#: build/rpmfc.c:200
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
+msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
+
+#: build/rpmfc.c:1250
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "otvorenie %s zlyhalo\n"
+
+#: build/rpmfc.c:1258
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "odstránenie %s zlyhalo: %s"
+
+#: build/rpmfc.c:1303
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: build/rpmfc.c:1524
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
+
+#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
+msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
+
 #: build/spec.c:237
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
@@ -2457,11 +2512,6 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:915
-#, fuzzy, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "Nie je mo¾né vytvori» proces %s"
-
 #: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2989,6 +3039,16 @@ msgstr ""
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- nie je podporované pre re»azce"
+
+#: lib/rpmlock.c:137 lib/rpmlock.c:144
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "nie je mo¾né získa» %s zámok pre databázu"
+
+#: lib/rpmlock.c:141
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
 
 #: lib/rpmps.c:200
 msgid "different"
@@ -3619,6 +3679,11 @@ msgstr "chýbajúce    %s\n"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
+#: misc/error.c:107
+#, fuzzy
+msgid "Unknown system error"
+msgstr "Neznámy systém: %s\n"
+
 #: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
@@ -3974,6 +4039,21 @@ msgstr "vytvára sa adresár %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
 
+#: rpmdb/sqlite.c:631
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:791
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "odstraòuje sa index súborov pre %s\n"
+
+#: rpmdb/sqlite.c:892
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "otvára sa databáza s právami 0x%x v %s\n"
+
 #: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -4063,6 +4143,49 @@ msgstr "Súbor %s: %s"
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Súbor %s je men¹í ako %d bajtov"
+
+#: rpmio/rpmdav.c:617
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:619
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:621
+#, fuzzy
+msgid "Server Error"
+msgstr "Chyba vstupu/výstupu servera"
+
+#: rpmio/rpmdav.c:623
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(chyba 0x%x)"
+
+#: rpmio/rpmlua.c:478
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:496
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "- nie je podporované pre re»azce"
+
+#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: readLead zlyhalo\n"
+
+#: rpmio/rpmlua.c:515
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "chybné èíslo balíku: %s\n"
+
+#: rpmio/rpmlua.c:668
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s: readLead zlyhalo\n"
 
 #: rpmio/rpmio.c:694
 msgid "Success"
@@ -4244,28 +4367,8 @@ msgstr "%s: readLead zlyhalo\n"
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "vynecháva sa %s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
-
-#, fuzzy
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "mo¾e by» pou¾itá iba jedna z volieb --prefix a --relocate"
-
-#, fuzzy
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "Nie je mo¾né spusti» %s"
-
-#, fuzzy
-#~ msgid "%s failed\n"
-#~ msgstr "%s zlyhalo"
-
-#, fuzzy
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
 #, fuzzy
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
@@ -5372,10 +5475,6 @@ msgstr "%s: readLead zlyhalo\n"
 
 #~ msgid "stopping install as we're running --test\n"
 #~ msgstr "in¹talácia zastavená kvôli re¾imu --test\n"
-
-#, fuzzy
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "odstránenie %s zlyhalo: %s"
 
 #~ msgid "will remove files test = %d\n"
 #~ msgstr "budú sa odstraòova» súbory test = %d\n"

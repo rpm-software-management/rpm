@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-06 14:23+0300\n"
+"POT-Creation-Date: 2007-08-09 15:40+0200\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1310,6 +1310,61 @@ msgstr "목표대상(target) 플랫폼을 교체(override)합니다"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "spec파일 목록(catalog)에서 i18N 문자열을 검색합니다"
 
+#: build/rpmfc.c:96
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#: build/rpmfc.c:102
+#, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "%s(을)를 실행할 수 없음: %s\n"
+
+#: build/rpmfc.c:107 lib/psm.c:915
+#, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "%s(을)를 fork 할 수 없음: %s\n"
+
+#: build/rpmfc.c:192
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: build/rpmfc.c:196
+#, c-format
+msgid "%s failed\n"
+msgstr "%s(이)가 실패했습니다\n"
+
+#: build/rpmfc.c:200
+#, c-format
+msgid "failed to write all data to %s\n"
+msgstr "%s에 모든 자료를 기록하는데 실패했습니다\n"
+
+#: build/rpmfc.c:1250
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "%s(을)를 여는데 실패함: %s\n"
+
+#: build/rpmfc.c:1258
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
+
+#: build/rpmfc.c:1303
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: build/rpmfc.c:1524
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
+
+#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#, c-format
+msgid "Failed to find %s:\n"
+msgstr "%s(을)를 찾는데 실패함:\n"
+
 #: build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -2395,11 +2450,6 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:915
-#, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "%s(을)를 fork 할 수 없음: %s\n"
-
 #: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2933,6 +2983,16 @@ msgstr ""
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
+
+#: lib/rpmlock.c:137 lib/rpmlock.c:144
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
+
+#: lib/rpmlock.c:141
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
 
 #: lib/rpmps.c:200
 msgid "different"
@@ -3563,6 +3623,11 @@ msgstr "다음을 찾을 수 없음    %s"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "%s-%s-%s에 의존성 문제 발생: "
 
+#: misc/error.c:107
+#, fuzzy
+msgid "Unknown system error"
+msgstr "알 수 없는 시스템: %s\n"
+
 #: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
@@ -3923,6 +3988,21 @@ msgstr "%s 디렉토리를 삭제합니다\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
+#: rpmdb/sqlite.c:631
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:791
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "닫힌   db 파일        %s\n"
+
+#: rpmdb/sqlite.c:892
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "여는중  db 인덱스      %s/%s %s 모드=0x%x\n"
+
 #: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -4011,6 +4091,49 @@ msgstr "%s 파일: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
+
+#: rpmio/rpmdav.c:617
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:619
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:621
+#, fuzzy
+msgid "Server Error"
+msgstr "서버 입/출력 오류입니다"
+
+#: rpmio/rpmdav.c:623
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(오류 없음)"
+
+#: rpmio/rpmlua.c:478
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:496
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
+
+#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite이 실패했습니다: %s\n"
+
+#: rpmio/rpmlua.c:515
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "부적합한 패키지 번호: %s\n"
+
+#: rpmio/rpmlua.c:668
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s: Fseek이 실패했습니다: %s\n"
 
 #: rpmio/rpmio.c:694
 msgid "Success"
@@ -4193,24 +4316,8 @@ msgstr "%s: 읽는데 실패했습니다: %s\n"
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "%s%s multilib 경로를 제외시킵니다\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
-
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "%s(을)를 찾는데 실패함:\n"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "--prefix 또는 --relocate 옵션 중 하나만 사용할 수 있습니다"
-
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "%s(을)를 실행할 수 없음: %s\n"
-
-#~ msgid "%s failed\n"
-#~ msgstr "%s(이)가 실패했습니다\n"
-
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "%s에 모든 자료를 기록하는데 실패했습니다\n"
 
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 #~ msgstr "dataLength() RPM_STRING_TYPE 카운트는 반드시 '1' 이어야 합니다.\n"
@@ -4933,9 +5040,6 @@ msgstr "%s: 읽는데 실패했습니다: %s\n"
 
 #~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
 #~ msgstr "손상된 오프셋 %d(0x%08x)의 연결부분(chain)에 재접근 합니다.\n"
-
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "닫힌   db 파일        %s\n"
 
 #~ msgid "removed db file        %s\n"
 #~ msgstr "삭제된 db 파일        %s\n"

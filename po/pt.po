@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-06 14:23+0300\n"
+"POT-Creation-Date: 2007-08-09 15:40+0200\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1326,6 +1326,61 @@ msgstr "ignorar a plataforma-alvo"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "procurar as mensagens de i18N no catálogo do ficheiro spec"
 
+#: build/rpmfc.c:96
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#: build/rpmfc.c:102
+#, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Não consegui executar o %s: %s\n"
+
+#: build/rpmfc.c:107 lib/psm.c:915
+#, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Não consegui executar à parte o %s: %s\n"
+
+#: build/rpmfc.c:192
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: build/rpmfc.c:196
+#, c-format
+msgid "%s failed\n"
+msgstr "O %s falhou\n"
+
+#: build/rpmfc.c:200
+#, c-format
+msgid "failed to write all data to %s\n"
+msgstr "não consegui escrever todos os dados em %s\n"
+
+#: build/rpmfc.c:1250
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "o acesso ao %s falhou: %s\n"
+
+#: build/rpmfc.c:1258
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "%s rmdir de %s falhou: %s\n"
+
+#: build/rpmfc.c:1303
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: build/rpmfc.c:1524
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "A procurar o %s: (usando o %s)...\n"
+
+#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#, c-format
+msgid "Failed to find %s:\n"
+msgstr "Não consegui encontrar o %s:\n"
+
 #: build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -2409,11 +2464,6 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:915
-#, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "Não consegui executar à parte o %s: %s\n"
-
 #: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2944,6 +2994,16 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr "- não suportado em cadeias de caracteres\n"
 
+#: lib/rpmlock.c:137 lib/rpmlock.c:144
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "não consigo trancar o %s no %s/%s\n"
+
+#: lib/rpmlock.c:141
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
+
 #: lib/rpmps.c:200
 msgid "different"
 msgstr ""
@@ -3100,7 +3160,7 @@ msgstr "Sistema desconhecido: %s\n"
 #: lib/rpmrc.c:1565
 #, c-format
 msgid "Please contact %s\n"
-msgstr ""
+msgstr "Por favor contacte o %s\n"
 
 #: lib/rpmrc.c:1802
 #, c-format
@@ -3573,6 +3633,11 @@ msgstr "falta     %s"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Dependências não satisfeitas para o %s-%s-%s: "
 
+#: misc/error.c:107
+#, fuzzy
+msgid "Unknown system error"
+msgstr "Sistema desconhecido: %s\n"
+
 #: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
@@ -3928,6 +3993,21 @@ msgstr "a remover a directoria %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "falhou a remoção da directoria %s: %s\n"
 
+#: rpmdb/sqlite.c:631
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:791
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "fechei o ficheiro do db %s\n"
+
+#: rpmdb/sqlite.c:892
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "a abrir o índice do db  %s/%s %s modo=0x%x\n"
+
 #: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -4016,6 +4096,49 @@ msgstr "Ficheiro %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
+
+#: rpmio/rpmdav.c:617
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:619
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:621
+#, fuzzy
+msgid "Server Error"
+msgstr "Erro de E/S do servidor"
+
+#: rpmio/rpmdav.c:623
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(nenhum erro)"
+
+#: rpmio/rpmlua.c:478
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:496
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "- não suportado em cadeias de caracteres\n"
+
+#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: O fwrite falhou: %s\n"
+
+#: rpmio/rpmlua.c:515
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "número de pacote inválido: %s\n"
+
+#: rpmio/rpmlua.c:668
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s: O Fseek falhou: %s\n"
 
 #: rpmio/rpmio.c:694
 msgid "Success"
@@ -4199,24 +4322,8 @@ msgstr "%s: a leitura do manifesto falhou: %s\n"
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "a exclur a directoria 'multilib' %s%s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "A procurar o %s: (usando o %s)...\n"
-
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "Não consegui encontrar o %s:\n"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "só uma das opções --prefix ou --relocate pode ser usada"
-
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "Não consegui executar o %s: %s\n"
-
-#~ msgid "%s failed\n"
-#~ msgstr "O %s falhou\n"
-
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "não consegui escrever todos os dados em %s\n"
 
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 #~ msgstr "o valor RPM_STRING_TYPE do dataLength() tem de ser 1.\n"
@@ -4933,9 +5040,6 @@ msgstr "%s: a leitura do manifesto falhou: %s\n"
 
 #~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
 #~ msgstr "A ligar cadeia partida no deslocamento %d(0x%08x).\n"
-
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "fechei o ficheiro do db %s\n"
 
 #~ msgid "removed db file        %s\n"
 #~ msgstr "removi o ficheiro do db %s\n"

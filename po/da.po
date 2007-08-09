@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-06 14:23+0300\n"
+"POT-Creation-Date: 2007-08-09 15:40+0200\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1324,6 +1324,61 @@ msgstr "gennemtving målplatform"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "slå i18N-strenge op i spec-fil katalog"
 
+#: build/rpmfc.c:96
+#, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr ""
+
+#: build/rpmfc.c:102
+#, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "Kunne ikke udføre %s: %s\n"
+
+#: build/rpmfc.c:107 lib/psm.c:915
+#, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
+
+#: build/rpmfc.c:192
+#, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr ""
+
+#: build/rpmfc.c:196
+#, c-format
+msgid "%s failed\n"
+msgstr "%s mislykkedes\n"
+
+#: build/rpmfc.c:200
+#, c-format
+msgid "failed to write all data to %s\n"
+msgstr "kunne ikke skrive alle data til %s\n"
+
+#: build/rpmfc.c:1250
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "åbning af %s mislykkedes %s\n"
+
+#: build/rpmfc.c:1258
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "fjernelse af %s mislykkedes: %s\n"
+
+#: build/rpmfc.c:1303
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: build/rpmfc.c:1524
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "Finder %s: (benytter %s)...\n"
+
+#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#, c-format
+msgid "Failed to find %s:\n"
+msgstr "Kunne ikke finde %s:\n"
+
 #: build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -2420,11 +2475,6 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:915
-#, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
-
 #: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
@@ -2955,6 +3005,16 @@ msgstr ""
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- understøttes ikke for strenge\n"
+
+#: lib/rpmlock.c:137 lib/rpmlock.c:144
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "kan ikke opnå %s lås på %s/%s\n"
+
+#: lib/rpmlock.c:141
+#, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr ""
 
 #: lib/rpmps.c:200
 msgid "different"
@@ -3587,6 +3647,13 @@ msgstr "manglende  %s"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
 
+#: misc/error.c:107
+#, fuzzy
+msgid "Unknown system error"
+msgstr ""
+"Ukendt system: %s\n"
+"\n"
+
 #: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
@@ -3944,6 +4011,21 @@ msgstr "fjerner kataloget %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
 
+#: rpmdb/sqlite.c:631
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:791
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "lukket  db-fil    %s\n"
+
+#: rpmdb/sqlite.c:892
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
+
 #: rpmio/macro.c:237
 #, c-format
 msgid "======================== active %d empty %d\n"
@@ -4032,6 +4114,49 @@ msgstr "Fil %s: %s\n"
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
+
+#: rpmio/rpmdav.c:617
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:619
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:621
+#, fuzzy
+msgid "Server Error"
+msgstr "I/O-fejl for server"
+
+#: rpmio/rpmdav.c:623
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(ingen fejl)"
+
+#: rpmio/rpmlua.c:478
+#, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr ""
+
+#: rpmio/rpmlua.c:496
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "- understøttes ikke for strenge\n"
+
+#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite mislykkedes: %s\n"
+
+#: rpmio/rpmlua.c:515
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "ugyldigt pakkenummer: %s\n"
+
+#: rpmio/rpmlua.c:668
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s: Fread mislykkedes: %s\n"
 
 #: rpmio/rpmio.c:694
 msgid "Success"
@@ -4213,24 +4338,8 @@ msgstr "%s: læs manifest mislykkedes: %s\n"
 #~ msgid "excluding multilib path %s%s\n"
 #~ msgstr "ekskluderer multilib-sti %s%s\n"
 
-#, fuzzy
-#~ msgid "Finding  %s: %s\n"
-#~ msgstr "Finder %s: (benytter %s)...\n"
-
-#~ msgid "Failed to find %s:\n"
-#~ msgstr "Kunne ikke finde %s:\n"
-
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "kun én af --prefix eller --relocate kan bruges"
-
-#~ msgid "Couldn't exec %s: %s\n"
-#~ msgstr "Kunne ikke udføre %s: %s\n"
-
-#~ msgid "%s failed\n"
-#~ msgstr "%s mislykkedes\n"
-
-#~ msgid "failed to write all data to %s\n"
-#~ msgstr "kunne ikke skrive alle data til %s\n"
 
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 #~ msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
@@ -4924,9 +5033,6 @@ msgstr "%s: læs manifest mislykkedes: %s\n"
 #~ "pakken har hverken en liste over gruppenavne eller id (det burde ikke "
 #~ "kunne ske)\n"
 
-#~ msgid "closed  db file        %s\n"
-#~ msgstr "lukket  db-fil    %s\n"
-
 #~ msgid "removed db file        %s\n"
 #~ msgstr "fjernet db-fil    %s\n"
 
@@ -5269,9 +5375,6 @@ msgstr "%s: læs manifest mislykkedes: %s\n"
 
 #~ msgid "stopping install as we're running --test\n"
 #~ msgstr "stopper installation, da vi kører --test\n"
-
-#~ msgid "removal of %s failed: %s\n"
-#~ msgstr "fjernelse af %s mislykkedes: %s\n"
 
 #~ msgid "will remove files test = %d\n"
 #~ msgstr "vil fjerne filer test = %d\n"
