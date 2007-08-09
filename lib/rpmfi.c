@@ -22,6 +22,7 @@
 #include "rpmte.h"
 #include "rpmts.h"
 
+#include "legacy.h"     /* XXX domd5 */
 #include "misc.h"	/* XXX stripTrailingChar */
 #include "rpmmacro.h"	/* XXX rpmCleanPath */
 
@@ -624,6 +625,49 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      * merge the difference ala CVS, but...
      */
     return save;
+}
+/*@=boundsread@*/
+
+/*@-boundsread@*/
+int rpmfiConfigConflict(const rpmfi fi)
+{
+    const char * fn = rpmfiFN(fi);
+    int flags = rpmfiFFlags(fi);
+    char buffer[1024];
+    fileTypes newWhat, diskWhat;
+    struct stat sb;
+
+    if (!(flags & RPMFILE_CONFIG) || lstat(fn, &sb)) {
+	return 0;
+    }
+
+    diskWhat = whatis((int_16)sb.st_mode);
+    newWhat = whatis(rpmfiFMode(fi));
+
+    if (newWhat != LINK && newWhat != REG)
+	return 1;
+
+    if (diskWhat != newWhat)
+	return 1;
+    
+    memset(buffer, 0, sizeof(buffer));
+    if (newWhat == REG) {
+	const unsigned char * nmd5;
+	if (domd5(fn, (unsigned char *)buffer, 0, NULL))
+	    return 0;	/* assume file has been removed */
+	nmd5 = rpmfiMD5(fi);
+	if (nmd5 && !memcmp(nmd5, buffer, 16))
+	    return 0;	/* unmodified config file */
+    } else /* newWhat == LINK */ {
+	const char * nFLink;
+	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+	    return 0;	/* assume file has been removed */
+	nFLink = rpmfiFLink(fi);
+	if (nFLink && !strcmp(nFLink, buffer))
+	    return 0;	/* unmodified config file */
+    }
+
+    return 1;
 }
 /*@=boundsread@*/
 
