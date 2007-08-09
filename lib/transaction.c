@@ -547,7 +547,7 @@ static void handleOverlappedFiles(const rpmts ts,
 /*@-boundswrite@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-	  { struct stat sb;
+	  {
 	    int reportConflicts =
 		!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
 	    int done = 0;
@@ -556,7 +556,7 @@ static void handleOverlappedFiles(const rpmts ts,
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
 		    /*@switchbreak@*/ break;
-		if ((FFlags & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
+		if (rpmfiConfigConflict(fi)) {
 		    /* Here is a non-overlapped pre-existing config file. */
 		    fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
@@ -613,7 +613,7 @@ assert(otherFi != NULL);
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = rpmfiFSize(otherFi);
 
-	    if ((FFlags & RPMFILE_CONFIG) && !lstat(fn, &sb)) {
+	    if (rpmfiConfigConflict(fi)) {
 		/* Here is an overlapped  pre-existing config file. */
 		fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;

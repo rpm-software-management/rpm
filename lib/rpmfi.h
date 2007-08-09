@@ -620,6 +620,14 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	/*@modifies nfi, fileSystem, internalState @*/;
 
 /**
+ * Return whether file is conflicting config
+ * @param fi		file info
+ * @return		1 if config file and file on disk conflicts
+ */
+int rpmfiConfigConflict(const rpmfi fi)
+	/*@*/;
+
+/**
  * Return formatted string representation of package disposition.
  * @param fi		file info set
  * @return		formatted string
