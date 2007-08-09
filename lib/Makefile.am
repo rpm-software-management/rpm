@@ -119,9 +119,6 @@ tcpu: tcpu.o librpm.la
 tplatform: tplatform.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
 
-trhn: trhn.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
-
 tgi_SOURCES = tgi.c
 tgi_LDFLAGS = @LDFLAGS_STATIC@
 tgi_LDADD = librpm.la
