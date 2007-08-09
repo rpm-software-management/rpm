@@ -85,8 +85,6 @@ rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDFLAGS =	$(myLDFLAGS)
 rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
-$(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
-
 .PHONY:	splint
 splint:
 	splint \
