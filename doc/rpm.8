@@ -822,7 +822,8 @@ The general form of an rpm rebuild database command is
 \fBrpm\fR {\fB--initdb|--rebuilddb\fR} [\fB-v\fR] [\fB--dbpath \fIDIRECTORY\fB\fR] [\fB--root \fIDIRECTORY\fB\fR]
 
 .PP
-Use \fB--initdb\fR to create a new database, use
+Use \fB--initdb\fR to create a new database if one doesn't already exist
+(existing database is not overwritten), use
 \fB--rebuilddb\fR to rebuild the database indices from
 the installed package headers.
 .SS "SHOWRC"
