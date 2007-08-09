@@ -188,8 +188,12 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
 
-tdbi: librpmdb.la tdbi.o
-	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+EXTRA_PROGRAMS += tdbi
+tdbi_SOURCES = tdbi.c
+# tdbi_LDFLAGS = @LDFLAGS_STATIC@
+tdbi_LDADD = $(mylibpaths) $(mylibs)
 
-tsql: librpmdb.la tsql.o
-	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+EXTRA_PROGRAMS += tsql
+tsql_SOURCES = tsql.c
+# tsql_LDFLAGS = @LDFLAGS_STATIC@
+tsql_LDADD = $(mylibpaths) $(mylibs) $(LIBS)
