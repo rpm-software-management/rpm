@@ -7,7 +7,7 @@ AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([foreign tar-ustar])
 
 dnl Set of available languages.
-ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr zh_TW"
+ALL_LINGUAS="cs da de es fi fr gl is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr zh_TW"
 
 AC_AIX
 AC_MINIX
