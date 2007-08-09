@@ -54,6 +54,7 @@ rpmgraph_SOURCES =	rpmgraph.c
 EXTRA_PROGRAMS +=	rpminject
 rpminject_SOURCES =	rpminject.c
 #rpminject_LDFLAGS =	$(staticLDFLAGS)
+rpminject_LDADD =	../build/librpmbuild.la
 
 EXTRA_PROGRAMS +=	rpmsort
 rpmsort_SOURCES =	rpmsort.c
