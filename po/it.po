@@ -3175,9 +3175,9 @@ msgid "Unknown system: %s\n"
 msgstr "Sistema sconosciuto: %s\n"
 
 #: lib/rpmrc.c:1565
-#, fuzzy, c-format
+#, c-format
 msgid "Please contact %s\n"
-msgstr "Si prega di contattare rpm-list@redhat.com\n"
+msgstr "Si prega di contattare %s\n"
 
 #: lib/rpmrc.c:1802
 #, c-format
