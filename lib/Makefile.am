@@ -12,9 +12,9 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
-EXTRA_DIST = getdate.y tgi.c rpmgi.c rpmgi.h
+EXTRA_DIST = getdate.y
 
-EXTRA_PROGRAMS = tgi
+EXTRA_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -76,10 +76,6 @@ getdate.c: getdate.y
 
 BUILT_SOURCES = getdate.c # rpmlib.lcd
 
-#noinst_PROGRAMS = tds
-#tds_SOURCES =	tds.c
-#tds_LDFLAGS =	@LDFLAGS_STATIC@ ./librpm.la
-
 rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${AM_CPPFLAGS} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
 
@@ -91,34 +87,50 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpm_la_SOURCES)
 
-setfiles: setfiles.o
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< \
-	-lselinux \
-	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la
-	
-#tds: tds.c librpm.la
-#	$(CC) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
-
-trb: trb.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
-
-tthread: tthread.o librpm.la
-	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la @WITH_LIBELF_LIB@
-
-tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
-	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
-
-tre: tre.o librpm.la
-	$(LINK) $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< \
-	-lselinux  librpm.la
-
-tcpu: tcpu.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
-
-tplatform: tplatform.o librpm.la
-	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(AM_CPPFLAGS) -o $@ $< librpm.la
-
+EXTRA_PROGRAMS += setfiles
+setfiles_SOURCES = setfiles.c
+setfiles_LDFLAGS = @LDFLAGS_STATIC@
+setfiles_LDADD = -lselinux \
+	../rpmio/librpmio.la \
+	@WITH_POPT_LIB@
+ 
+#EXTRA_PROGRAMS += tds
+#tds_SOURCES = tds.c
+#tds_LDADD = librpm.la	
+ 
+EXTRA_PROGRAMS += trb
+trb_SOURCES = trb.c
+#trb_LDFLAGS = @LDFLAGS_STATIC@
+trb_LDADD = librpm.la
+ 
+EXTRA_PROGRAMS += tthread
+tthread_SOURCES = tthread.c
+tthread_LDFLAGS =
+tthread_LDADD = librpm.la @WITH_LIBELF_LIB@
+ 
+EXTRA_PROGRAMS += tsystem
+tsystem_SOURCES = tsystem.c
+tsystem_LDFLAGS =
+tsystem_LDADD = ../rpmio/librpmio.la @WITH_POPT_LIB@
+ 
+EXTRA_PROGRAMS += tre
+tre_SOURCES = tre.c
+tre_LDFLAGS = 
+tre_LDADD = librpm.la -lselinux
+ 
+EXTRA_PROGRAMS += tcpu
+tcpu_SOURCES = tcpu.c
+# tcpu_LDFLAGS = @LDFLAGS_STATIC@
+tcpu_LDADD = librpm.la
+ 
+EXTRA_PROGRAMS += tplatform
+tplatform_SOURCES = tplatform.c
+# tplatform_LDFLAGS = @LDFLAGS_STATIC@
+tplatform_LDADD = librpm.la
+ 
+EXTRA_PROGRAMS += tgi
 tgi_SOURCES = tgi.c
-tgi_LDFLAGS = @LDFLAGS_STATIC@
+# tgi_LDFLAGS = @LDFLAGS_STATIC@
 tgi_LDADD = librpm.la
+
+CLEANFILES = $(EXTRA_PROGRAMS)
