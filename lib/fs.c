@@ -109,11 +109,17 @@ static int getFilesystemList(void)
 	filesystems[i].mntPoint = fsnames[i] = fsn;
 	
 	if (stat(filesystems[i].mntPoint, &sb)) {
-	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
+	    switch (errno) {
+	    case EACCES: /* fuse mount */
+	    case ESTALE: 
+		continue;
+	    default:
+	    	rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
 
-	    freeFilesystems();
-	    return 1;
+	    	freeFilesystems();
+	    	return 1;
+	    }
 	}
 	
 	filesystems[i].dev = sb.st_dev;
