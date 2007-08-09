@@ -54,6 +54,7 @@
  */
 
 #include "system.h"
+const char *__progname;
 
 #include <regex.h>
 #include <sys/vfs.h>
