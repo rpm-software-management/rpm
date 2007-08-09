@@ -1,6 +1,7 @@
 #include "system.h"
 #include "rpmcli.h"
 #include "misc.h"
+#include "rpmts.h"
 
 #include "debug.h"
 
@@ -23,6 +24,7 @@ main(int argc, const char *argv[])
     struct rpmInstallArguments_s * ia = &rpmIArgs;
     int arg;
     int ec = 0;
+    rpmts ts;
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
@@ -60,7 +62,9 @@ main(int argc, const char *argv[])
     if (rpmReadConfigFiles(NULL, NULL))
 	exit(1);
 
-    ec = rpmRollback(ia, NULL);
+    ts = rpmtsCreate();
+    ec = rpmRollback(ts, ia, NULL);
+    ts = rpmtsFree(ts);
 
     optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
