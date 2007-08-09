@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 15:40+0200\n"
+"POT-Creation-Date: 2007-08-09 16:53+0200\n"
 "PO-Revision-Date: 2006-04-28 06:25+0200\n"
 "Last-Translator: \n"
 "Language-Team:  <it@li.org>\n"
@@ -1390,9 +1390,9 @@ msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s rmdir di %s fallito: %s\n"
 
 #: build/rpmfc.c:1303
-#, c-format
+#, fuzzy, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
-msgstr ""
+msgstr "%s rmdir di %s fallito: %s\n"
 
 #: build/rpmfc.c:1524
 #, c-format
@@ -3015,9 +3015,9 @@ msgid "can't create transaction lock on %s\n"
 msgstr "impossibile connettere %s su %s/%s\n"
 
 #: lib/rpmlock.c:141
-#, c-format
+#, fuzzy, c-format
 msgid "waiting for transaction lock on %s\n"
-msgstr ""
+msgstr "impossibile connettere %s su %s/%s\n"
 
 #: lib/rpmps.c:200
 msgid "different"
@@ -4135,9 +4135,9 @@ msgid "Unknown Error"
 msgstr "(nessun errore)"
 
 #: rpmio/rpmlua.c:478
-#, c-format
+#, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
-msgstr ""
+msgstr "numero invalido del pacchetto: %s\n"
 
 #: rpmio/rpmlua.c:496
 #, fuzzy, c-format

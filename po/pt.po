@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 15:40+0200\n"
+"POT-Creation-Date: 2007-08-09 16:53+0200\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1367,9 +1367,9 @@ msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
 #: build/rpmfc.c:1303
-#, c-format
+#, fuzzy, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
-msgstr ""
+msgstr "%s rmdir de %s falhou: %s\n"
 
 #: build/rpmfc.c:1524
 #, fuzzy, c-format
@@ -3000,9 +3000,9 @@ msgid "can't create transaction lock on %s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
 #: lib/rpmlock.c:141
-#, c-format
+#, fuzzy, c-format
 msgid "waiting for transaction lock on %s\n"
-msgstr ""
+msgstr "não consigo trancar o %s no %s/%s\n"
 
 #: lib/rpmps.c:200
 msgid "different"
@@ -4116,9 +4116,9 @@ msgid "Unknown Error"
 msgstr "(nenhum erro)"
 
 #: rpmio/rpmlua.c:478
-#, c-format
+#, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
-msgstr ""
+msgstr "- não suportado em cadeias de caracteres\n"
 
 #: rpmio/rpmlua.c:496
 #, fuzzy, c-format

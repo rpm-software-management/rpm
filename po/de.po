@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 15:40+0200\n"
+"POT-Creation-Date: 2007-08-09 16:53+0200\n"
 "PO-Revision-Date: 2005-07-08 17:21+0200\n"
 "Last-Translator: Robert Scheck <rpm@robert-scheck.de>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1339,9 +1339,9 @@ msgid "lookup i18N strings in specfile catalog"
 msgstr "i18n-Übersetzungen im Spec-Datei-Katalog nachschlagen"
 
 #: build/rpmfc.c:96
-#, c-format
+#, fuzzy, c-format
 msgid "\texecv(%s) pid %d\n"
-msgstr ""
+msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s), PID %d\n"
 
 #: build/rpmfc.c:102
 #, c-format
@@ -1354,9 +1354,9 @@ msgid "Couldn't fork %s: %s\n"
 msgstr "Konnte %s nicht öffnen: %s\n"
 
 #: build/rpmfc.c:192
-#, c-format
+#, fuzzy, c-format
 msgid "\twaitpid(%d) rc %d status %x\n"
-msgstr ""
+msgstr "%s: waitpid(%d), rc %d, Status %x, %u.%03u Sekunden\n"
 
 #: build/rpmfc.c:196
 #, c-format

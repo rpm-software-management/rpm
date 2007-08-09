@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 15:40+0200\n"
+"POT-Creation-Date: 2007-08-09 16:53+0200\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -1346,9 +1346,9 @@ msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s:n poisto epäonnistui: %s"
 
 #: build/rpmfc.c:1303
-#, c-format
+#, fuzzy, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
-msgstr ""
+msgstr "%s:n poisto epäonnistui: %s"
 
 #: build/rpmfc.c:1524
 #, fuzzy, c-format
@@ -2922,9 +2922,9 @@ msgid "can't create transaction lock on %s\n"
 msgstr "en voi saada %s lukitusta tietokantaan %s/%s\n"
 
 #: lib/rpmlock.c:141
-#, c-format
+#, fuzzy, c-format
 msgid "waiting for transaction lock on %s\n"
-msgstr ""
+msgstr "en voi saada %s lukitusta tietokantaan %s/%s\n"
 
 #: lib/rpmps.c:200
 msgid "different"
@@ -3904,9 +3904,9 @@ msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
 #: rpmdb/sqlite.c:791
-#, c-format
+#, fuzzy, c-format
 msgid "closed   sql db         %s\n"
-msgstr ""
+msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
 #: rpmdb/sqlite.c:892
 #, fuzzy, c-format
@@ -4020,9 +4020,9 @@ msgid "Unknown Error"
 msgstr "Tuntematon tai odottamaton virhe"
 
 #: rpmio/rpmlua.c:478
-#, c-format
+#, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
-msgstr ""
+msgstr "virheellinen paketin numero: %s\n"
 
 #: rpmio/rpmlua.c:496
 #, fuzzy, c-format

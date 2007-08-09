@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 15:40+0200\n"
+"POT-Creation-Date: 2007-08-09 16:53+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1365,9 +1365,9 @@ msgid "magic_load(ms, \"%s\") failed: %s\n"
 msgstr "%s rmdir %s selhal: %s\n"
 
 #: build/rpmfc.c:1303
-#, c-format
+#, fuzzy, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
-msgstr ""
+msgstr "%s rmdir %s selhal: %s\n"
 
 #: build/rpmfc.c:1524
 #, fuzzy, c-format
@@ -2999,9 +2999,9 @@ msgid "can't create transaction lock on %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
 #: lib/rpmlock.c:141
-#, c-format
+#, fuzzy, c-format
 msgid "waiting for transaction lock on %s\n"
-msgstr ""
+msgstr "nemohu vytvoøit %s: %s\n"
 
 #: lib/rpmps.c:200
 msgid "different"
@@ -4111,9 +4111,9 @@ msgid "Unknown Error"
 msgstr "(chyba: 0x%x)"
 
 #: rpmio/rpmlua.c:478
-#, c-format
+#, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
-msgstr ""
+msgstr "- není podporováno pro øetìzce\n"
 
 #: rpmio/rpmlua.c:496
 #, fuzzy, c-format
