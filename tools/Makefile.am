@@ -27,7 +27,6 @@ noinst_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@ javadeps rpmcache rpmdeps
-MAGIC	= $(pkgbindir)/magic
 
 bin_PROGRAMS =	rpmgraph
 
@@ -68,3 +67,5 @@ rpmxml_CFLAGS =		-I$(includedir)/libxml2
 rpmxml_LDADD =		$(LDADD) -lxml2
 
 $(PROGRAMS): $(LDADD)
+
+CLEANFILES = $(EXTRA_PROGRAMS)
