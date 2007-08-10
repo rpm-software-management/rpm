@@ -478,13 +478,11 @@ AC_SUBST(WITH_NEON_LIB)
 
 #=================
 # Check for magic library.
-WITH_MAGIC_SUBDIR=
 WITH_MAGIC_INCLUDE=
 WITH_MAGIC_LIB=
 
 AC_CHECK_HEADER([magic.h], [
     AC_CHECK_LIB(magic, magic_open, [
-      WITH_MAGIC_SUBDIR=
       WITH_MAGIC_INCLUDE=
       WITH_MAGIC_LIB="-lmagic"
     ])
@@ -493,7 +491,6 @@ if test -z "${WITH_MAGIC_LIB}" ; then
    AC_MSG_ERROR([rpm requires libmagic]) 
 fi
 
-AC_SUBST(WITH_MAGIC_SUBDIR)
 AC_SUBST(WITH_MAGIC_INCLUDE)
 AC_SUBST(WITH_MAGIC_LIB)
 
