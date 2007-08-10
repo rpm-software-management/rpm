@@ -441,11 +441,9 @@ AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 # Check for beecrypt library.
 WITH_BEECRYPT_INCLUDE=
 WITH_BEECRYPT_LIB=
-AC_CHECK_HEADER([beecrypt/beecrypt.h], [
+AC_CHECK_HEADERS([beecrypt/beecrypt.h], [
   AC_CHECK_LIB(beecrypt, mpfprintln, [
-    AC_CHECK_HEADER([beecrypt/api.h], [
-      AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
-    ])
+    AC_CHECK_HEADERS([beecrypt/api.h])
     WITH_BEECRYPT_INCLUDE=
     WITH_BEECRYPT_LIB="-lbeecrypt"
   ],[
