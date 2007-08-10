@@ -457,8 +457,7 @@ AC_SUBST(WITH_BEECRYPT_INCLUDE)
 AC_SUBST(WITH_BEECRYPT_LIB)
 
 #=================
-# Check for neon library. Prefer external, otherwise internal.
-WITH_NEON_SUBDIR=
+# Check for neon library. Prefer external, otherwise none.
 WITH_NEON_INCLUDE=
 WITH_NEON_LIB=
 AC_CHECK_HEADER([neon/ne_session.h], [
@@ -473,17 +472,7 @@ AC_CHECK_HEADER([neon/ne_session.h], [
     WITH_NEON_INCLUDE=
     WITH_NEON_LIB="-lneon"
   ])
-],[
-  if test -d neon ; then
-    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the 'neon' library (-lneon).])
-# XXX HAVE_NEON_NE_GET_RESPONSE_HEADER assumes libneon-0.25 devel internal
-    AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
-    WITH_NEON_SUBDIR=neon
-    WITH_NEON_INCLUDE="-I\${top_srcdir}/${WITH_NEON_SUBDIR}/src"
-    WITH_NEON_LIB="\${top_builddir}/${WITH_NEON_SUBDIR}/src/libneon.la"
-  fi
 ])
-AC_SUBST(WITH_NEON_SUBDIR)
 AC_SUBST(WITH_NEON_INCLUDE)
 AC_SUBST(WITH_NEON_LIB)
 
