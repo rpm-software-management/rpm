@@ -541,26 +541,22 @@ AC_SUBST(WITH_MAGIC_INCLUDE)
 AC_SUBST(WITH_MAGIC_LIB)
 
 #=================
-# Check for popt library. Prefer internal, otherwise external.
-WITH_POPT_SUBDIR=
+# Check for popt library.
 WITH_POPT_INCLUDE=
 WITH_POPT_LIB=
 
-if test -d popt ; then
-  WITH_POPT_SUBDIR=popt
-  WITH_POPT_INCLUDE="-I\${top_srcdir}/${WITH_POPT_SUBDIR}"
-  WITH_POPT_LIB="\${top_builddir}/${WITH_POPT_SUBDIR}/libpopt.la"
-else
-  AC_CHECK_HEADER([popt.h], [
-    AC_CHECK_LIB(popt, poptGetContext, [
-      WITH_POPT_SUBDIR=
+AC_CHECK_HEADER([popt.h], [
+  AC_CHECK_LIB(popt, poptGetContext, [
       WITH_POPT_INCLUDE=
       WITH_POPT_LIB="-lpopt"
-    ])
+      WITH_POPT=yes
+  ],[
+    AC_MSG_ERROR([missing required library popt])
   ])
-fi
+],[
+  AC_MSG_ERROR([missing required header popt.h])
+])
 
-AC_SUBST(WITH_POPT_SUBDIR)
 AC_SUBST(WITH_POPT_INCLUDE)
 AC_SUBST(WITH_POPT_LIB)
 
