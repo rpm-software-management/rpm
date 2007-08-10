@@ -21,8 +21,6 @@ pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h \
 	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
 	stringbuf.h
-noinst_HEADERS = \
-	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h rpmlock.h
 
 LIBS =
 
@@ -31,13 +29,13 @@ LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	cpio.c depends.c formats.c fs.c fsm.c getdate.c \
-	manifest.c misc.c package.c \
-	poptALL.c poptI.c poptQV.c psm.c query.c \
+	cpio.c cpio.h depends.c formats.c fs.c fsm.c fsm.h getdate.c \
+	manifest.c manifest.h misc.c package.c \
+	poptALL.c poptI.c poptQV.c psm.c psm.h query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpmgi.c rpminstall.c \
-	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
-	rpmvercmp.c signature.c stringbuf.c transaction.c \
-	verify.c rpmlock.c
+	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
+	rpmvercmp.c signature.c signature.h stringbuf.c transaction.c \
+	verify.c rpmlock.c rpmlock.h
 librpm_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
@@ -76,7 +74,7 @@ getdate.c: getdate.y
 
 BUILT_SOURCES = getdate.c # rpmlib.lcd
 
-rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
+rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS}
 	-lclint ${DEFS} ${AM_CPPFLAGS} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY:	sources
