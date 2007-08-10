@@ -9,7 +9,6 @@ AM_CPPFLAGS = -I. \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
-	@WITH_LIBDWARF_INCLUDE@ \
 	@WITH_MAGIC_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
@@ -23,17 +22,19 @@ staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 noinst_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = @WITH_LIBDWARF_DEBUGEDIT@
+pkgbin_PROGRAMS =
 
 EXTRA_PROGRAMS +=	convertdb1
 convertdb1_SOURCES =	convertdb1.c
 
-EXTRA_PROGRAMS +=	debugedit
+if LIBDWARF
+pkgbin_PROGRAMS +=	debugedit
 debugedit_SOURCES =	debugedit.c hashtab.c hashtab.h
 # debugedit_LDFLAGS =	$(staticLDFLAGS) \
 debugedit_LDFLAGS =	@WITH_LIBELF_LIB@ \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@
+endif
 
 pkgbin_PROGRAMS +=	javadeps
 javadeps_SOURCES =	javadeps.c
