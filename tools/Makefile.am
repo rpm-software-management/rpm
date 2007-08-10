@@ -27,6 +27,7 @@ pkgbin_PROGRAMS =
 EXTRA_PROGRAMS +=	convertdb1
 convertdb1_SOURCES =	convertdb1.c
 
+if LIBELF
 if LIBDWARF
 pkgbin_PROGRAMS +=	debugedit
 debugedit_SOURCES =	debugedit.c hashtab.c hashtab.h
@@ -34,6 +35,7 @@ debugedit_SOURCES =	debugedit.c hashtab.c hashtab.h
 debugedit_LDFLAGS =	@WITH_LIBELF_LIB@ \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@
+endif
 endif
 
 pkgbin_PROGRAMS +=	javadeps
