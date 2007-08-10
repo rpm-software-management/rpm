@@ -15,39 +15,39 @@
 # "fat" binary with both archs, for Darwin
 optflags: fat -O2 -g -arch i386 -arch ppc
 
-optflags: i386 -O2 -g -march=i386 -mcpu=i686
-optflags: i486 -O2 -g -march=i486
-optflags: i586 -O2 -g -march=i586
-optflags: i686 -O2 -g -march=i686
-optflags: pentium3 -O2 -g -march=pentium3
-optflags: pentium4 -O2 -g -march=pentium4
-optflags: athlon -O2 -g -march=athlon
-optflags: ia64 -O2 -g
-optflags: x86_64 -O2 -g
-optflags: amd64 -O2 -g
-optflags: ia32e -O2 -g
+optflags: i386 -O2 -g -m32 -march=i386 -mtune=generic -fasynchronous-unwind-tables
+optflags: i486 -O2 -g -m32 -march=i486 -fasynchronous-unwind-tables
+optflags: i586 -O2 -g -m32 -march=i586 -fasynchronous-unwind-tables
+optflags: i686 -O2 -g -m32 -march=i686 -mtune=generic -fasynchronous-unwind-tables
+optflags: pentium3 -O2 -g -m32 -march=pentium3 -mtune=generic -fasynchronous-unwind-tables
+optflags: pentium4 -O2 -g -m32 -march=pentium4 -mtune=generic -fasynchronous-unwind-tables
+optflags: athlon -O2 -g -m32 -march=athlon -fasynchronous-unwind-tables
+optflags: ia64 -O2 -g -m64 --mtune=generic
+optflags: x86_64 -O2 -g -m64 --mtune=generic
+optflags: amd64 -O2 -g -mtune=generic
+optflags: ia32e -O2 -g -m64 --mtune=generic
 
 optflags: alpha -O2 -g -mieee
-optflags: alphaev5 -O2 -g -mieee -mcpu=ev5
-optflags: alphaev56 -O2 -g -mieee -mcpu=ev56
-optflags: alphapca56 -O2 -g -mieee -mcpu=pca56
-optflags: alphaev6 -O2 -g -mieee -mcpu=ev6
-optflags: alphaev67 -O2 -g -mieee -mcpu=ev67
+optflags: alphaev5 -O2 -g -mieee -march=ev5
+optflags: alphaev56 -O2 -g -mieee -march=ev56
+optflags: alphapca56 -O2 -g -mieee -march=pca56
+optflags: alphaev6 -O2 -g -mieee -march=ev6
+optflags: alphaev67 -O2 -g -mieee -march=ev67
 
 optflags: sparc -O2 -g -m32 -mtune=ultrasparc
 optflags: sparcv8 -O2 -g -m32 -mtune=ultrasparc -mv8
-optflags: sparcv9 -O2 -g -m32 -mcpu=ultrasparc
-optflags: sparc64 -O2 -g -m64 -mcpu=ultrasparc
+optflags: sparcv9 -O2 -g -m32 -marchu=ultrasparc
+optflags: sparc64 -O2 -g -m64 -march=ultrasparc
 
 optflags: m68k -O2 -g -fomit-frame-pointer
 
-optflags: ppc -O2 -g -fsigned-char
-optflags: ppc8260 -O2 -g -fsigned-char
-optflags: ppc8560 -O2 -g -fsigned-char
-optflags: ppc32dy4 -O2 -g -fsigned-char
-optflags: ppciseries -O2 -g -fsigned-char
-optflags: ppcpseries -O2 -g -fsigned-char
-optflags: ppc64 -O2 -g -fsigned-char
+optflags: ppc -O2 -g -m32 -fsigned-char
+optflags: ppc8260 -O2 -g -m32 -fsigned-char
+optflags: ppc8560 -O2 -g -m32 -fsigned-char
+optflags: ppc32dy4 -O2 -g -m32 -fsigned-char
+optflags: ppciseries -O2 -g -m32 -fsigned-char
+optflags: ppcpseries -O2 -g -m32 -fsigned-char
+optflags: ppc64 -O2 -g -m64 -fsigned-char
 
 optflags: parisc -O2 -g -mpa-risc-1-0
 optflags: hppa1.0 -O2 -g -mpa-risc-1-0
@@ -74,8 +74,8 @@ optflags: atariclone -O2 -g -fomit-frame-pointer
 optflags: milan -O2 -g -fomit-frame-pointer
 optflags: hades -O2 -g -fomit-frame-pointer
 
-optflags: s390 -O2 -g
-optflags: s390x -O2 -g
+optflags: s390 -O2 -g -m31
+optflags: s390x -O2 -g -m64
 
 #############################################################
 # Canonical arch names and numbers
