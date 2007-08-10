@@ -458,32 +458,22 @@ AC_SUBST(WITH_LIBDWARF_INCLUDE)
 AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
 
 #=================
-# Check for beecrypt library. Prefer external, otherwise internal.
-WITH_BEECRYPT_SUBDIR=
+# Check for beecrypt library.
 WITH_BEECRYPT_INCLUDE=
 WITH_BEECRYPT_LIB=
 AC_CHECK_HEADER([beecrypt/beecrypt.h], [
   AC_CHECK_LIB(beecrypt, mpfprintln, [
-    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the 'beecrypt' library (-lbeecrypt).])
     AC_CHECK_HEADER([beecrypt/api.h], [
       AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
     ])
     WITH_BEECRYPT_INCLUDE=
     WITH_BEECRYPT_LIB="-lbeecrypt"
+  ],[
+    AC_MSG_ERROR([missing required library beecrypt])
   ])
 ],[
-  if test -d beecrypt ; then
-    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the 'beecrypt' library (-lbeecrypt).])
-    WITH_BEECRYPT_SUBDIR=beecrypt
-    WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
-    WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
-  fi
-
-   if test -z "${WITH_BEECRYPT_LIB}" ; then
-       AC_MSG_ERROR([rpm requires beecrypt]) 
-   fi
+  AC_MSG_ERROR([missing required header beecrypt/beecrypt.h])
 ])
-AC_SUBST(WITH_BEECRYPT_SUBDIR)
 AC_SUBST(WITH_BEECRYPT_INCLUDE)
 AC_SUBST(WITH_BEECRYPT_LIB)
 
