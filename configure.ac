@@ -418,8 +418,7 @@ dnl will fail.
 AC_CHECK_LIB(port, writev)
 
 #=================
-# Check for libelf library. Prefer external, then internal, otherwise none.
-WITH_ELFUTILS_SUBDIR=
+# Check for libelf library. Prefer external, otherwise none.
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
 AC_CHECK_HEADER([libelf.h])
@@ -429,16 +428,7 @@ AC_CHECK_HEADER([gelf.h], [
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
 	    WITH_LIBELF_LIB="-lelf"
 	])
-    ], [
-	if test -d elfutils/libelf ; then
-	    AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
-	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
-	    WITH_ELFUTILS_SUBDIR=elfutils
-	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libelf"
-	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libelf/libelf.a"
-	fi
 ])
-AC_SUBST(WITH_ELFUTILS_SUBDIR)
 AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
 
@@ -447,12 +437,6 @@ WITH_LIBDWARF_DEBUGEDIT=
 AC_CHECK_HEADER([dwarf.h], [
   AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
   WITH_LIBDWARF_DEBUGEDIT="debugedit"
-],[
-  if test -d elfutils/libdwarf ; then
-    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
-    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
-    WITH_LIBDWARF_DEBUGEDIT="debugedit"
-  fi
 ])
 AC_SUBST(WITH_LIBDWARF_INCLUDE)
 AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
