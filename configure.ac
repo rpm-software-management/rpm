@@ -422,15 +422,16 @@ AC_CHECK_LIB(port, writev)
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
 AC_CHECK_HEADER([libelf.h])
-AC_CHECK_HEADER([gelf.h], [
-	AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
+AC_CHECK_HEADERS([gelf.h], [
 	AC_CHECK_LIB(elf, gelf_getvernaux, [
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
 	    WITH_LIBELF_LIB="-lelf"
+	    WITH_LIBELF=yes
 	])
 ])
 AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
+AM_CONDITIONAL(LIBELF,[test "$WITH_LIBELF" = yes])
 
 AC_CHECK_HEADERS([dwarf.h], [
   WITH_LIBDWARF=yes
