@@ -527,30 +527,18 @@ AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
 
 #=================
-# Check for sqlite3 library. Prefer external, then internal, otherwise none.
-WITH_SQLITE3_SUBDIR=
+# Check for sqlite3 library. Prefer external, otherwise none.
 WITH_SQLITE3_INCLUDE=
 WITH_SQLITE3_LIB=
 
-AC_CHECK_HEADER([sqlite3.h], [
+AC_CHECK_HEADERS([sqlite3.h], [
   AC_CHECK_LIB(sqlite3, sqlite3_open, [
-    AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
-    WITH_SQLITE3_SUBDIR=
     WITH_SQLITE3_INCLUDE=
     WITH_SQLITE3_LIB="-lsqlite3"
     DBLIBSRCS="$DBLIBSRCS sqlite.c"
   ])
-],[
-  if test -d sqlite ; then
-    AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
-    WITH_SQLITE3_SUBDIR=sqlite
-    WITH_SQLITE3_INCLUDE="-I\${top_srcdir}/${WITH_SQLITE3_SUBDIR}/src"
-    WITH_SQLITE3_LIB="\${top_builddir}/${WITH_SQLITE3_SUBDIR}/libsqlite3.la"
-    DBLIBSRCS="$DBLIBSRCS sqlite.c"
-  fi
 ])
 
-AC_SUBST(WITH_SQLITE3_SUBDIR)
 AC_SUBST(WITH_SQLITE3_INCLUDE)
 AC_SUBST(WITH_SQLITE3_LIB)
 
