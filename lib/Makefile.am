@@ -92,9 +92,9 @@ setfiles_LDADD = -lselinux \
 	../rpmio/librpmio.la \
 	@WITH_POPT_LIB@
  
-#EXTRA_PROGRAMS += tds
-#tds_SOURCES = tds.c
-#tds_LDADD = librpm.la	
+EXTRA_PROGRAMS += tds
+tds_SOURCES = tds.c
+tds_LDADD = librpm.la	
  
 EXTRA_PROGRAMS += trb
 trb_SOURCES = trb.c
