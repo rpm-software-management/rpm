@@ -841,18 +841,15 @@ fi
 AC_SUBST(WITH_SELINUX_LIB)
 
 WITH_LUA_LIB=
-WITH_LUA_SUBDIR=
 WITH_LUA_INCLUDE=
 withval=yes
 AC_ARG_WITH(lua, [  --with-lua              build with lua support ])
 if test $withval != no -a -d lua ; then
   AC_DEFINE(WITH_LUA, 1, [Build with lua support?])
-  WITH_LUA_SUBDIR="lua"
-  WITH_LUA_INCLUDE="-I\${top_srcdir}/${WITH_LUA_SUBDIR}/include -I\${top_srcdir}/${WITH_LUA_SUBDIR}/local"
-  WITH_LUA_LIB="\$(top_builddir)/${WITH_LUA_SUBDIR}/liblua.la"
+  WITH_LUA_INCLUDE="-I\${top_srcdir}/lua/include -I\${top_srcdir}/lua/local"
+  WITH_LUA_LIB="\$(top_builddir)/lua/liblua.la"
 fi
 AC_SUBST(WITH_LUA_LIB)
-AC_SUBST(WITH_LUA_SUBDIR)
 AC_SUBST(WITH_LUA_INCLUDE)
 
 if test $withval = yes; then
