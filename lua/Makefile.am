@@ -12,7 +12,7 @@ EXTRA_DIST = \
 	local/linit.lua
 
 LDADD = liblua.la
-AM_CPPFLAGS = -I$(srcdir)/include -I$(srcdir)/local -I$(includedir)
+AM_CPPFLAGS = -I$(srcdir)/include -I$(srcdir)/local
 
 lua_lua_SOURCES = lua/lua.c
 lua_lua_CFLAGS = -DLUA_USERCONFIG='"$(srcdir)/local/userconfig.c"'
