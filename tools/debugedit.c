@@ -1329,7 +1329,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
     }
 
   /* Clear the old bits so they do not affect the new hash.  */
-  memset ((char *) build_id->d_buf + build_id_offset, 0, build_id_offset);
+  memset ((char *) build_id->d_buf + build_id_offset, 0, build_id_size);
 
   hashFunctionContextInit (&ctx, hf);
 
