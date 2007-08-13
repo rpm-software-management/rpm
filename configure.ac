@@ -284,7 +284,6 @@ addlib() {
 #=================
 # Check for zlib library. 
 
-WITH_ZLIB_SUBDIR=
 WITH_ZLIB_INCLUDE=
 WITH_ZLIB_LIB=
 
@@ -302,7 +301,6 @@ dnl zlib-1.0.4 has not gzseek
   AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
 fi
 
-AC_SUBST(WITH_ZLIB_SUBDIR)
 AC_SUBST(WITH_ZLIB_INCLUDE)
 AC_SUBST(WITH_ZLIB_LIB)
 
@@ -808,7 +806,6 @@ else
   CPPFLAGS="$save_CPPFLAGS"
 fi
 
-AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_INCLUDE)
 AC_SUBST(WITH_PYTHON_LIB)
 
