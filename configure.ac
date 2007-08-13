@@ -818,14 +818,17 @@ AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
 dnl
 dnl Auto-detect whether doxygen generated API docs should be included.
 dnl
-withval=auto
-AC_ARG_WITH(apidocs, [  --with-apidocs          build rpm API docs ])
+AC_ARG_WITH(apidocs, [  --with-apidocs          build rpm API docs ],,[with_apidocs=auto])
 
-if test $withval = auto -a $__DOXYGEN != no ; then
-  withval=yes
-elif test $withval = yes -a $__DOXYGEN = no ; then
-  AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)
-fi
+case "$with_apidocs" in
+auto)
+  AS_IF([test "$__DOXYGEN" = no],[with_apidocs=no],[with_apidocs=yes])
+  ;;
+yes)
+  AS_IF([test "$__DOXYGEN" = no],
+    [AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)])
+  ;;
+esac
 
 WITH_SELINUX_LIB=
 with_selinuxval=no
@@ -852,12 +855,12 @@ fi
 AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_INCLUDE)
 
-if test $withval = yes; then
+AS_IF([test "$with_apidocs" = yes],[
   WITH_APIDOCS_TARGET=apidocs
   WITH_APIDOCS=1
-else
+],[
   WITH_APIDOCS=0
-fi
+])
 AC_SUBST(WITH_APIDOCS_TARGET)
 AC_SUBST(WITH_APIDOCS)
 
