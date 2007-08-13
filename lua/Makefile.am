@@ -15,12 +15,12 @@ LDADD = liblua.la
 AM_CPPFLAGS = -I$(srcdir)/include -I$(srcdir)/local
 
 lua_lua_SOURCES = lua/lua.c
-lua_lua_CFLAGS = -DLUA_USERCONFIG='"$(srcdir)/local/userconfig.c"'
+lua_lua_CPPFLAGS = $(AM_CPPFLAGS) -DLUA_USERCONFIG='"$(srcdir)/local/userconfig.c"'
 lua_lua_LDADD = $(LDADD)
 luac_luac_SOURCES = luac/luac.c luac/print.c lopcodes.c
-luac_luac_CFLAGS = -DLUA_OPNAMES
+luac_luac_CPPFLAGS = $(AM_CPPFLAGS) -DLUA_OPNAMES
 
-liblua_la_CFLAGS = -DUSE_DLOPEN -DWITH_POSIX
+liblua_la_CPPFLAGS = $(AM_CPPFLAGS) -DUSE_DLOPEN -DWITH_POSIX
 liblua_la_LIBADD = -lm -ldl
 liblua_la_SOURCES = \
 		local/linit.h \
