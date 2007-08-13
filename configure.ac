@@ -831,16 +831,34 @@ yes)
 esac
 
 WITH_SELINUX_LIB=
-with_selinuxval=no
-case "$host" in
-    *-*-linux*) with_selinuxval=yes ;;
+AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ],,[with_selinux=auto])
+
+case "$with_selinux" in
+yes)
+  AC_CHECK_HEADER([selinux/selinux.h],[
+    AC_CHECK_LIB(selinux,[is_selinux_enabled],[with_selinux=yes],[
+      AC_MSG_ERROR([--with-selinux given, but libselinux not found])])
+  ],[
+    AC_MSG_ERROR([--with-selinux given, but selinux/selinux.h not found])
+  ])
+  ;;
+auto)
+  AC_CHECK_HEADER([selinux/selinux.h],[
+    AC_CHECK_LIB(selinux,[is_selinux_enabled],[with_selinux=yes],[
+        [with_selinux=no]) 
+    ])
+  ],[
+      [with_selinux=no])
+  ])
+  ;;
+*) with_selinux=no
+  ;;
 esac
-withval=${with_selinuxval}
-AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ])
-if test $withval != no ; then
+
+AS_IF([test "$with_selinux" = yes],[
   AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
   WITH_SELINUX_LIB="-lselinux"
-fi
+])
 AC_SUBST(WITH_SELINUX_LIB)
 
 WITH_LUA_LIB=
