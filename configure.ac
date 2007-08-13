@@ -844,11 +844,10 @@ yes)
   ;;
 auto)
   AC_CHECK_HEADER([selinux/selinux.h],[
-    AC_CHECK_LIB(selinux,[is_selinux_enabled],[with_selinux=yes],[
-        [with_selinux=no]) 
-    ])
+    AC_CHECK_LIB(selinux,[is_selinux_enabled],[with_selinux=yes],
+      [with_selinux=no]) 
   ],[
-      [with_selinux=no])
+    with_selinux=no
   ])
   ;;
 *) with_selinux=no
