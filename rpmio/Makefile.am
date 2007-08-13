@@ -2,10 +2,6 @@
 
 LINT = splint
 
-EXTRA_DIST = tax.c tdigest.c tdir.c tfts.c tget.c thkp.c tput.c tglob.c tinv.c tkey.c trpmio.c
-
-EXTRA_PROGRAMS = tax tdigest tdir tfts tget thkp tput tglob tinv tkey tring trpmio tsw
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	@WITH_BEECRYPT_INCLUDE@ \
@@ -54,52 +50,66 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmio_la_SOURCES)
 
+EXTRA_PROGRAMS =
+
+EXTRA_PROGRAMS += tax
 tax_SOURCES = tax.c
 tax_LDADD = librpmio.la
 
+EXTRA_PROGRAMS += tdigest
 tdigest_SOURCES = tdigest.c
-tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la -lgcrypt
+tdigest_LDADD = librpmio.la @WITH_POPT_LIB@ -lgcrypt
 
+EXTRA_PROGRAMS += tdir
 tdir_SOURCES = tdir.c
-tdir_LDFLAGS = @LDFLAGS_STATIC@
-tdir_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tdir_LDFLAGS = @LDFLAGS_STATIC@
+tdir_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += tfts
 tfts_SOURCES = tfts.c
-tfts_LDFLAGS = @LDFLAGS_STATIC@
-tfts_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tfts_LDFLAGS = @LDFLAGS_STATIC@
+tfts_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += tget
 tget_SOURCES = tget.c
-tget_LDFLAGS = @LDFLAGS_STATIC@
-tget_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tget_LDFLAGS = @LDFLAGS_STATIC@
+tget_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += thkp
 thkp_SOURCES = thkp.c
-thkp_LDFLAGS = @LDFLAGS_STATIC@
-thkp_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# thkp_LDFLAGS = @LDFLAGS_STATIC@
+thkp_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += tput
 tput_SOURCES = tput.c
-tput_LDFLAGS = @LDFLAGS_STATIC@
-tput_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tput_LDFLAGS = @LDFLAGS_STATIC@
+tput_LDADD = librpmio.la @WITH_POPT_LIB@
 
 
+EXTRA_PROGRAMS += tglob
 tglob_SOURCES = tglob.c
-tglob_LDFLAGS = @LDFLAGS_STATIC@
-tglob_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tglob_LDFLAGS = @LDFLAGS_STATIC@
+tglob_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += tinv
 tinv_SOURCES = tinv.c
-tinv_LDFLAGS = @LDFLAGS_STATIC@
-tinv_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tinv_LDFLAGS = @LDFLAGS_STATIC@
+tinv_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += tkey
 tkey_SOURCES = tkey.c
-tkey_LDFLAGS = @LDFLAGS_STATIC@
-tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tkey_LDFLAGS = @LDFLAGS_STATIC@
+tkey_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += tring
 tring_SOURCES = tring.c
-tring_LDFLAGS = @LDFLAGS_STATIC@
-tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+# tring_LDFLAGS = @LDFLAGS_STATIC@
+tring_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += trpmio
 trpmio_SOURCES = trpmio.c
-trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+trpmio_LDADD = librpmio.la @WITH_POPT_LIB@
 
+EXTRA_PROGRAMS += tsw
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = librpmio.la
-
