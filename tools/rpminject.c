@@ -41,76 +41,6 @@ static const char * pr_injmode(injmode_t injmode)
     /*@notreached@*/
 }
 
-static const char *hdri18ntbl = "HEADER_I18NTABLE";
-
-static const char * getTagString(int tval)
-{
-    const struct headerTagTableEntry *t;
-
-    for (t = rpmTagTable; t->name != NULL; t++) {
-	if (t->val == tval)
-	    return t->name;
-    }
-    if (tval == HEADER_I18NTABLE)
-	return hdri18ntbl;
-    return NULL;
-}
-
-static int getTagVal(const char *tname)
-{
-    const struct headerTagTableEntry *t;
-    int tval;
-
-    if (xstrncasecmp("RPMTAG_", tname, sizeof("RPMTAG_"))) {
-	char *tagname = alloca(sizeof("RPMTAG_") + strlen(tname));
-	sprintf(tagname, "RPMTAG_%s", tname);
-	tname = tagname;
-    }
-
-    for (t = rpmTagTable; t->name != NULL; t++) {
-	if (!xstrncasecmp(tname, t->name, strlen(t->name)))
-	    return t->val;
-    }
-    if (!xstrcasecmp(tname, hdri18ntbl))
-	return HEADER_I18NTABLE;
-
-    tval = atoi(tname);
-    return tval;
-}
-
-static const struct headerTypeTableEntry {
-    char *name;
-    int_32 val;
-} rpmTypeTable[] = {
-    {"RPM_NULL_TYPE",	0},
-    {"RPM_CHAR_TYPE",	1},
-    {"RPM_INT8_TYPE",	2},
-    {"RPM_INT16_TYPE",	3},
-    {"RPM_INT32_TYPE",	4},
-    {"RPM_INT64_TYPE",	5},
-    {"RPM_STRING_TYPE",	6},
-    {"RPM_BIN_TYPE",	7},
-    {"RPM_STRING_ARRAY_TYPE",	8},
-    {"RPM_I18NSTRING_TYPE",	9},
-    {NULL,	0}
-};
-
-static char *
-getTypeString(int tval)
-{
-    const struct headerTypeTableEntry *t;
-    static char buf[128];
-
-    for (t = rpmTypeTable; t->name != NULL; t++) {
-	if (t->val == tval)
-	    return t->name;
-    }
-    sprintf(buf, "<RPM_%d_TYPE>", tval);
-    return buf;
-}
-
-/* ========================================================================= */
-
 enum cvtaction {CA_OLD, CA_NEW, CA_OMIT, CA_ERR};
 
 static enum cvtaction convertAMD(enum cvtaction ca, int_32 type,
@@ -191,7 +121,7 @@ static enum cvtaction convertAMD(enum cvtaction ca, int_32 type,
 }
 
 static enum cvtaction convertExistingAMD(int_32 tag, int_32 type,
-	void ** valsp, int_32 *countp, void ** nvalsp, int_32 *ncountp,
+	hPTR_t valsp, int_32 *countp, void ** nvalsp, int_32 *ncountp,
 	cmd_t *cmds[], int ncmds)
 {
     cmd_t *newc = NULL;
@@ -265,7 +195,7 @@ static
 Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
 {
     int_32 tag, type, count;
-    void *vals;
+    hPTR_t vals;
     HeaderIterator headerIter;
     Header res = headerNew();
    
@@ -382,19 +312,19 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 	switch(c->injmode) {
 	case INJ_ADD:
 	    if (!(rc && c->done > 0)) {
-		warnx(_("failed to add tag %s"), getTagString(c->tagval));
+		warnx(_("failed to add tag %s"), tagName(c->tagval));
 		ec = 1;
 	    }
 	    break;
 	case INJ_DELETE:
 	    if (!(!rc && c->done > 0)) {
-		warnx(_("failed to delete tag %s"), getTagString(c->tagval));
+		warnx(_("failed to delete tag %s"), tagName(c->tagval));
 		ec = 1;
 	    }
 	    break;
 	case INJ_MODIFY:
 	    if (!(rc && c->done > 0)) {
-		warnx(_("failed to modify tag %s"), getTagString(c->tagval));
+		warnx(_("failed to modify tag %s"), tagName(c->tagval));
 		ec = 1;
 	    }
 	    break;
@@ -442,13 +372,12 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
     struct rpmlead lead;	/* XXX FIXME: exorcize lead/arch/os */
     Header sigs;
     Spec spec;
-    CSA_t csabuf, *csa = &csabuf;
+    struct cpioSourceArchive_s csabuf, *csa = &csabuf;
     int rc;
 
     csa->cpioArchiveSize = 0;
     csa->cpioFdIn = fdNew("init (rewriteRPM)");
     csa->cpioList = NULL;
-    csa->cpioCount = 0;
     csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
 
     /* Read rpm and (partially) recreate spec/pkg control structures */
@@ -525,7 +454,7 @@ int
 main(int argc, char *argv[])
 {
     poptContext optCon;
-    char * optArg;
+    const char * optArg;
     cmd_t *c = NULL;
     int arg;
     int ec = 0;
@@ -544,7 +473,9 @@ main(int argc, char *argv[])
     (void)bindtextdomain(PACKAGE, LOCALEDIR);
     (void)textdomain(PACKAGE);
 
-    optCon = poptGetContext("rpminject", argc, argv, optionsTable, 0);
+    optCon = poptGetContext("rpminject", 
+			    argc, (const char **) argv, 
+			    optionsTable, 0);
     poptReadDefaultConfig(optCon, 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
@@ -570,7 +501,7 @@ main(int argc, char *argv[])
 		cmds[ncmds]->injmode = cmds[ncmds-1]->injmode;
 		ncmds++;
 	    }
-	    c->tagval = getTagVal(optArg);
+	    c->tagval = tagValue(optArg);
 	    if (!((c->tagval >= RPMTAG_NAME && c->tagval < RPMTAG_FIRSTFREE_TAG)
 	        || c->tagval >= RPMTAG_EXTERNAL_TAG))
 		errx(EXIT_FAILURE, _("unknown rpm tag \"--tag %s\""), optArg);
