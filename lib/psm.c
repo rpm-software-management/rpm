@@ -455,7 +455,6 @@ static /*@observer@*/ const char * const tag2sln(int tag)
 {
     switch (tag) {
     case RPMTAG_PRETRANS:       return "%pretrans";
-    case RPMTAG_TRIGGERPREIN:   return "%triggerprein";
     case RPMTAG_PREIN:          return "%pre";
     case RPMTAG_POSTIN:         return "%post";
     case RPMTAG_TRIGGERIN:      return "%triggerin";
