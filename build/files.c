@@ -2505,8 +2505,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
 
-	(void) rpmfcGenerateDepends(spec, pkg);
-
+	if ((rc = rpmfcGenerateDepends(spec, pkg)))
+	    res = rc;
     }
 
     /* Now we have in fileList list of files from all packages.
