@@ -343,9 +343,9 @@ do
 
 	AC_MSG_CHECKING(for $dir/include in INCPATH)
 	if test -d $dir/include 2>/dev/null ; then
-		if [[ "$dir" != "/usr/local" ]] ; then
+		AS_IF([test "$dir" != /usr/local],[
 		    INCPATH="$INCPATH -I$dir/include"
-		fi
+		])
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_RESULT(no)
