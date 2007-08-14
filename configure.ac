@@ -518,34 +518,27 @@ AC_SUBST(WITH_POPT_LIB)
 dnl ------------------ with    internal db
 AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
 WITH_DB_SUBDIR=db3
-WITH_INTERNAL_DB=1
-DBLIBSRCS="db3.c"
 
 AC_SUBST(WITH_DB_SUBDIR)
-AC_SUBST(WITH_INTERNAL_DB)
 
 #=================
 # Check for sqlite3 library. Prefer external, otherwise none.
 WITH_SQLITE3_INCLUDE=
 WITH_SQLITE3_LIB=
-
+WITH_SQLITE3=no
 AC_CHECK_HEADERS([sqlite3.h], [
   AC_CHECK_LIB(sqlite3, sqlite3_open, [
     WITH_SQLITE3_INCLUDE=
     WITH_SQLITE3_LIB="-lsqlite3"
-    DBLIBSRCS="$DBLIBSRCS sqlite.c"
+    WITH_SQLITE3=yes
   ])
 ])
 
 AC_SUBST(WITH_SQLITE3_INCLUDE)
 AC_SUBST(WITH_SQLITE3_LIB)
+AM_CONDITIONAL([SQLITE3],[test "$WITH_SQLITE3" = yes])
 
 #=================
-
-DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
-
-AC_SUBST(DBLIBSRCS)
-AC_SUBST(DBLIBOBJS)
 
 dnl AmigaOS and IXEmul have a fork() dummy
   case "$host" in

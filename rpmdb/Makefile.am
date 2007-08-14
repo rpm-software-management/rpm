@@ -49,16 +49,20 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c legacy.c merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
+librpmdb_la_SOURCES += db3.c
+if SQLITE3
+librpmdb_la_SOURCES += sqlite.c
+endif
 librpmdb_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
-librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)
-librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) $(libdb_la)
+librpmdb_la_LIBADD = $(libdb_la)
+librpmdb_la_DEPENDENCIES = $(libdb_la)
 
 # XXX make sure that db.h symlink is generated
-dbconfig.c $(DBLIBSRCS): db.h
+dbconfig.c: db.h
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@
@@ -186,7 +190,7 @@ sources:
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES) $(DBLIBSRCS)
+	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES)
 
 EXTRA_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c
