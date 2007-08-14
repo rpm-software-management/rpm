@@ -522,15 +522,29 @@ WITH_DB_SUBDIR=db3
 AC_SUBST(WITH_DB_SUBDIR)
 
 #=================
-# Check for sqlite3 library. Prefer external, otherwise none.
+# Check for sqlite3 library.
+AC_ARG_ENABLE(sqlite3, [  --enable-sqlite3        build in sqlite3 support],
+[case "$enable_sqlite3" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --enable-sqlite3])
+  ;;
+esac],
+[enable_sqlite3=no])
+
 WITH_SQLITE3_INCLUDE=
 WITH_SQLITE3_LIB=
 WITH_SQLITE3=no
-AC_CHECK_HEADERS([sqlite3.h], [
-  AC_CHECK_LIB(sqlite3, sqlite3_open, [
-    WITH_SQLITE3_INCLUDE=
-    WITH_SQLITE3_LIB="-lsqlite3"
-    WITH_SQLITE3=yes
+AS_IF([test "$enable_sqlite3" = yes],[
+  AC_CHECK_HEADERS([sqlite3.h],
+  [ AC_CHECK_LIB(sqlite3, sqlite3_open, [
+      WITH_SQLITE3_INCLUDE=
+      WITH_SQLITE3_LIB="-lsqlite3"
+      WITH_SQLITE3=yes
+    ],[
+      AC_MSG_ERROR([missing libsqlite3])
+    ])
+  ],[
+    AC_MSG_ERROR([missing sqlite3.h])
   ])
 ])
 
