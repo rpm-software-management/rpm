@@ -63,7 +63,7 @@ static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
 static PyObject * signalsCaught(PyObject * self, PyObject * check)
 {
     PyObject *caught, *o;
-    Py_ssize_t llen;
+    int llen;
     int signum, i;
     sigset_t newMask, oldMask;
 
