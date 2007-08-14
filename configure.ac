@@ -284,7 +284,6 @@ addlib() {
 #=================
 # Check for zlib library. 
 
-WITH_ZLIB_SUBDIR=
 WITH_ZLIB_INCLUDE=
 WITH_ZLIB_LIB=
 
@@ -302,7 +301,6 @@ dnl zlib-1.0.4 has not gzseek
   AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
 fi
 
-AC_SUBST(WITH_ZLIB_SUBDIR)
 AC_SUBST(WITH_ZLIB_INCLUDE)
 AC_SUBST(WITH_ZLIB_LIB)
 
@@ -808,7 +806,6 @@ else
   CPPFLAGS="$save_CPPFLAGS"
 fi
 
-AC_SUBST(WITH_PYTHON_SUBDIR)
 AC_SUBST(WITH_PYTHON_INCLUDE)
 AC_SUBST(WITH_PYTHON_LIB)
 
@@ -885,13 +882,6 @@ AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging sup
 if test $withval = yes ; then
   AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
   LIBS="$LIBS -ldmalloc"
-fi
-
-withval=no
-AC_ARG_WITH(efence, [  --with-efence           build with efence debugging support ])
-if test $withval = yes ; then
-  AC_DEFINE(EFENCE, 1, [Build with libefence support?])
-  LIBS="$LIBS -lefence"
 fi
 
 AC_CHECK_FUNCS(setlocale)
