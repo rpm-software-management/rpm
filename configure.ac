@@ -871,6 +871,7 @@ AS_IF([test "$with_selinux" = yes],[
   WITH_SELINUX_LIB="-lselinux"
 ])
 AC_SUBST(WITH_SELINUX_LIB)
+AM_CONDITIONAL(SELINUX,[test "$with_selinux" = yes])
 
 WITH_LUA_LIB=
 WITH_LUA_INCLUDE=
