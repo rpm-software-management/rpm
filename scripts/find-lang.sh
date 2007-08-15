@@ -106,6 +106,14 @@ s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
+find $TOP_DIR -type f|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\).omf\):%lang(\2) \1:
+'"$ALL_NAME$GNOME"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+/[a-zA-Z0-9.\_\-]\+-\([^/.]\+\).omf\):%lang(\2) \1:
+s:^[^%].*::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
 find $TOP_DIR -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
