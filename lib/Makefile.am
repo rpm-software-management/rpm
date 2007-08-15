@@ -85,13 +85,15 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpm_la_SOURCES)
 
+if SELINUX
 EXTRA_PROGRAMS += setfiles
 setfiles_SOURCES = setfiles.c
 setfiles_LDFLAGS = @LDFLAGS_STATIC@
 setfiles_LDADD = -lselinux \
 	../rpmio/librpmio.la \
 	@WITH_POPT_LIB@
- 
+endif
+
 EXTRA_PROGRAMS += tds
 tds_SOURCES = tds.c
 tds_LDADD = librpm.la	
