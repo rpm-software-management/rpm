@@ -387,7 +387,7 @@ static int doSetupMacro(Spec spec, char *line)
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	sprintf(buf, MKDIR_P " %s\ncd %s",
+	sprintf(buf, RPM_MKDIR_P " %s\ncd %s",
 		spec->buildSubdir, spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
     }

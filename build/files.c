@@ -1035,7 +1035,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		appendLineStringBuf(pkg->specialDoc, buf);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
 		appendLineStringBuf(pkg->specialDoc, "rm -rf $DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, MKDIR_P " $DOCDIR");
+		appendLineStringBuf(pkg->specialDoc, RPM_MKDIR_P " $DOCDIR");
 
 		/*@-temptrans@*/
 		*fileName = buf;

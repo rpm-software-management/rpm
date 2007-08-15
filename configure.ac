@@ -158,41 +158,41 @@ AC_SUBST(FIXPERMS)
 dnl
 dnl see if we have a mkdir that supports `-p'.
 dnl
-AC_PATH_PROGS(MKDIR, mkdir, mkdir)
-AC_MSG_CHECKING(if $MKDIR supports -p)
+AC_PATH_PROGS(RPM_MKDIR, mkdir, mkdir)
+AC_MSG_CHECKING(if $RPM_MKDIR supports -p)
 rm -rf conftest
-$MKDIR -p conftest/a 2>/dev/null
+$RPM_MKDIR -p conftest/a 2>/dev/null
 if test $? = 0 ; then
 	rmdir conftest/a 2>/dev/null
 	if test $? = 0  ; then
 		:
 	else
-		MKDIR_P=0
+		RPM_MKDIR_P=0
 	fi
 
 	rmdir conftest 2>/dev/null
 	if test $? = 0 ; then
-		MKDIR_P="$MKDIR -p"
+		RPM_MKDIR_P="$RPM_MKDIR -p"
 	else
-		MKDIR_P=0
+		RPM_MKDIR_P=0
 	fi
 else
-	MKDIR_P=0
+	RPM_MKDIR_P=0
 fi
 
-if test X"$MKDIR_P" = X0 ; then
+if test X"$RPM_MKDIR_P" = X0 ; then
 	AC_MSG_RESULT(no)
-	MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
+	RPM_MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
 else
 	AC_MSG_RESULT(yes)
 fi
 dnl
 dnl substitute this into config.h, so the C source picks it up.
 dnl
-AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}",
+AC_DEFINE_UNQUOTED(RPM_MKDIR_P, "${RPM_MKDIR_P}",
 [A full path to a program, possibly with arguments, that will create a
    directory and all necessary parent directories, ala 'mkdir -p'])
-AC_SUBST(MKDIR_P)
+AC_SUBST(RPM_MKDIR_P)
 
 AC_ISC_POSIX
 
