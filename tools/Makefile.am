@@ -63,16 +63,18 @@ EXTRA_PROGRAMS +=	rpmsort
 rpmsort_SOURCES =	rpmsort.c
 #rpmsort_LDFLAGS =	$(staticLDFLAGS)
 
+if LIBXML2
 EXTRA_PROGRAMS +=	rpmtool
 rpmtool_SOURCES =	rpmtool.c rpmxp.c rpmxp.h
-rpmtool_CFLAGS =	-I$(includedir)/libxml2
+rpmtool_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
 #rpmtool_LDFLAGS =	$(staticLDFLAGS)
-rpmtool_LDADD =		../lib/librpm.la -lxml2
+rpmtool_LDADD =		../lib/librpm.la $(libxml2_LIBS)
 
 EXTRA_PROGRAMS +=	rpmxml
 rpmxml_SOURCES =	rpmxml.c rpmxp.h
-rpmxml_CFLAGS =		-I$(includedir)/libxml2
+rpmxml_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
 #rpmxml_LDFLAGS =	$(staticLDFLAGS)
-rpmxml_LDADD =		../lib/librpm.la -lxml2
+rpmxml_LDADD =		../lib/librpm.la $(libxml2_LIBS)
+endif
 
 CLEANFILES = $(EXTRA_PROGRAMS)
