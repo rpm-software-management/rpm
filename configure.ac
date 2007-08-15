@@ -316,6 +316,14 @@ AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"],
 AC_SUBST(WITH_BZIP2)
 
 #=================
+# Check for libxml2.
+
+PKG_CHECK_MODULES(XML2,libxml-2.0,
+  [WITH_LIBXML2=yes],
+  [WITH_LIBXML2=no])
+AM_CONDITIONAL(LIBXML2,[test "$WITH_LIBXML2" = yes])
+ 
+#=================
 
 localdone=
 
