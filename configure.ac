@@ -830,7 +830,7 @@ auto)
   ;;
 yes)
   AS_IF([test "$__DOXYGEN" = no],
-    [AC_MSG_ERROR(--> rpm API docs needs doxygen in PATH)])
+    [AC_MSG_ERROR([rpm API docs needs doxygen in PATH])])
   ;;
 esac
 
