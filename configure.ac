@@ -305,7 +305,7 @@ AC_SUBST(WITH_ZLIB_INCLUDE)
 AC_SUBST(WITH_ZLIB_LIB)
 
 #=================
-# Check for bzip2 library. Prefer external, otherwise none.
+# Check for bzip2 library.
 
 AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
    AC_CHECK_LIB(bz2, BZ2_bzread, [
