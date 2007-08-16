@@ -32,8 +32,6 @@ pkgbin_PROGRAMS = \
 	rpmdb_printlog rpmdb_recover rpmdb_svc rpmdb_stat rpmdb_upgrade \
 	rpmdb_verify 
 
-mylibs = librpmdb.la
-
 LIBS =
 
 # XXX watchout, ../db3/libdb.la created by this Makefile may surprise
@@ -195,9 +193,9 @@ lint:
 EXTRA_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c
 # tdbi_LDFLAGS = @LDFLAGS_STATIC@
-tdbi_LDADD = $(mylibpaths) $(mylibs)
+tdbi_LDADD = librpmdb.la
 
 EXTRA_PROGRAMS += tsql
 tsql_SOURCES = tsql.c
 # tsql_LDFLAGS = @LDFLAGS_STATIC@
-tsql_LDADD = $(mylibpaths) $(mylibs) $(LIBS)
+tsql_LDADD = librpmdb.la
