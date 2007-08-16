@@ -75,7 +75,7 @@ rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmi
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDFLAGS =	$(myLDFLAGS)
-rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@ @LIBMISC@
+rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
 
 .PHONY:	splint
 splint:
