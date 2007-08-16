@@ -143,7 +143,7 @@ msgstr "RPM versão %s\n"
 #: rpmqv.c:145
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
+msgstr ""
 
 #: rpmqv.c:146
 #, c-format
