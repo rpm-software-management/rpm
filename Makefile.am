@@ -7,7 +7,7 @@ EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	config.site db db3/configure installplatform platform* \
 	rpm.magic rpmpopt-$(VERSION)
 
-SUBDIRS = po misc @WITH_DB_SUBDIR@ lua rpmio rpmdb lib build python tools scripts doc .
+SUBDIRS = po misc @WITH_DB_SUBDIR@ lua rpmio rpmdb lib build python tools scripts doc . tests
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
