@@ -44,38 +44,38 @@ rpmpopt-$(VERSION): rpmpopt
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
 rpm_LDFLAGS =		$(myLDFLAGS)
-rpm_LDADD =		build/.libs/librpmbuild.a lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
+rpm_LDADD =		build/.libs/librpmbuild.a lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmb_SOURCES =		build.c rpmqv.c build.h debug.h system.h
 rpmb_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMBT
 rpmb_LDFLAGS =		$(myLDFLAGS)
-rpmb_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
+rpmb_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmd_SOURCES =		rpmqv.c debug.h system.h
 rpmd_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB
 rpmd_LDFLAGS =		$(myLDFLAGS)
-rpmd_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
+rpmd_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmi_SOURCES =		rpmqv.c debug.h system.h
 rpmi_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU
 #rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
-#rpmi_LDADD =		rpmi.o lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@ @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
+#rpmi_LDADD =		rpmi.o lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 rpmi_LDFLAGS =		$(myLDFLAGS)
-rpmi_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
+rpmi_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmk_SOURCES =		rpmqv.c debug.h system.h
 rpmk_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMK
 rpmk_LDFLAGS =		$(myLDFLAGS)
-rpmk_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
+rpmk_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmq_SOURCES =		rpmqv.c debug.h system.h
 rpmq_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMQV
 rpmq_LDFLAGS =		$(myLDFLAGS)
-rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
+rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDFLAGS =	$(myLDFLAGS)
-rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @LIBMISC@
+rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 .PHONY:	splint
 splint:
