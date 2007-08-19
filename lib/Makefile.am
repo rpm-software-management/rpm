@@ -24,8 +24,6 @@ pkginc_HEADERS = \
 
 LIBS =
 
-LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
-
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
