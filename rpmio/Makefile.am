@@ -18,8 +18,6 @@ pkginc_HEADERS = \
 	rpmsq.h rpmsw.h ugid.h
 noinst_HEADERS = rpmio_internal.h rpmlua.h rpmhook.h
 
-LDFLAGS = -L$(RPM_BUILD_ROOT)$(usrlibdir) -L$(DESTDIR)$(usrlibdir)
-
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
