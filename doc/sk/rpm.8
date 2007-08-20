@@ -6,28 +6,28 @@
 .TH rpm 8 "22 December 1998" "Red Hat Software" "Red Hat Linux"
 
 .SH MENO
-rpm \- Red Hat správca balíkov
+rpm \- Red Hat sprÃ¡vca balÃ­kov
 
-.SH POU®ITIE
-\fBrpm\fP [voµby] 
+.SH POUÅ½ITIE
+\fBrpm\fP [voÄ¾by] 
 
 .SH POPIS
-\fBrpm\fP je veµmi vıkonnı \fIsprávca balíkov\fP, ktorı mô¾e by»
-pou¾itı na zostavenie, in¹taláciu, vıpis informácií, kontrolu,
-aktualizáciu a odin¹talovanie jednotlivıch softverovıch balíkov.
-\fIBalík\fP obsahuje archív súborov a informácií o balíku vrátane
+\fBrpm\fP je veÄ¾mi vÃ½konnÃ½ \fIsprÃ¡vca balÃ­kov\fP, ktorÃ½ mÃ´Å¾e byÅ¥
+pouÅ¾itÃ½ na zostavenie, inÅ¡talÃ¡ciu, vÃ½pis informÃ¡ciÃ­, kontrolu,
+aktualizÃ¡ciu a odinÅ¡talovanie jednotlivÃ½ch softverovÃ½ch balÃ­kov.
+\fIBalÃ­k\fP obsahuje archÃ­v sÃºborov a informÃ¡ciÃ­ o balÃ­ku vrÃ¡tane
 mena, verzie a popisu.
 
-Musí by» pou¾itı v niektorom z nasledujúcich re¾imov:
-\fIinicializácia databázy\fP, \fIprebudovanie databázy\fP,
-\fIzostavenie balíka\fP, \fIrekompilácia balíka\fP,
-\fIzostavenie balíka z tar archívu\fP, \fIzistenie informácií\fP,
-\fIvıpis informaènıch tagov\fP, \fIin¹talácia\fP, \fIobèerstvenie\fP,
-\fIodin¹talovanie\fP, \fIkontrola a overenie\fP, \fIoverenie podpisu\fP,
-\fIopätovnı podpis\fP, \fIpridanie podpisu\fP,
-\fInastavenie vlastníkov a skupín\fP a \fIvıpis konfigurácie\fP.
+MusÃ­ byÅ¥ pouÅ¾itÃ½ v niektorom z nasledujÃºcich reÅ¾imov:
+\fIinicializÃ¡cia databÃ¡zy\fP, \fIprebudovanie databÃ¡zy\fP,
+\fIzostavenie balÃ­ka\fP, \fIrekompilÃ¡cia balÃ­ka\fP,
+\fIzostavenie balÃ­ka z tar archÃ­vu\fP, \fIzistenie informÃ¡ciÃ­\fP,
+\fIvÃ½pis informaÄnÃ½ch tagov\fP, \fIinÅ¡talÃ¡cia\fP, \fIobÄerstvenie\fP,
+\fIodinÅ¡talovanie\fP, \fIkontrola a overenie\fP, \fIoverenie podpisu\fP,
+\fIopÃ¤tovnÃ½ podpis\fP, \fIpridanie podpisu\fP,
+\fInastavenie vlastnÃ­kov a skupÃ­n\fP a \fIvÃ½pis konfigurÃ¡cie\fP.
 
-Spravovanie databázy:
+Spravovanie databÃ¡zy:
 .br
 .I "\fB    rpm \-i [\-\-initdb]\fP"
 .br
@@ -35,491 +35,491 @@ Spravovanie databázy:
 
 Zostavenie:
 .br
-.I "\fB    rpm [\-b|t] [balík_spec]+\fP"
+.I "\fB    rpm [\-b|t] [balÃ­k_spec]+\fP"
 .br
-.I "\fB    rpm [\-\-rebuild] [zdrojové_rpm]+\fP"
+.I "\fB    rpm [\-\-rebuild] [zdrojovÃ©_rpm]+\fP"
 .br
-.I "\fB    rpm [\-\-tarbuild] [tarovanı_zdroj]+\fP"
+.I "\fB    rpm [\-\-tarbuild] [tarovanÃ½_zdroj]+\fP"
 .br
 
-Zistenie informácií:
+Zistenie informÃ¡ciÃ­:
 .br
-.I "\fB    rpm [\-\-query] [zis»ovacie\-voµby]\fP"
+.I "\fB    rpm [\-\-query] [zisÅ¥ovacie\-voÄ¾by]\fP"
 .br
 .I "\fB    rpm [\-\-querytags]\fP"
 .br
 
-Spravovanie in¹talovanıch balíkov:
+Spravovanie inÅ¡talovanÃ½ch balÃ­kov:
 .br
-.I "\fB    rpm [\-\-install] [in¹talaèné\-voµby] [súbor_balíka]+\fP"
+.I "\fB    rpm [\-\-install] [inÅ¡talaÄnÃ©\-voÄ¾by] [sÃºbor_balÃ­ka]+\fP"
 .br
-.I "\fB    rpm [\-\-freshen|\-F] [in¹talaèné\-voµby] [súbor_balíka]+\fP"
+.I "\fB    rpm [\-\-freshen|\-F] [inÅ¡talaÄnÃ©\-voÄ¾by] [sÃºbor_balÃ­ka]+\fP"
 .br
-.I "\fB    rpm [\-\-uninstall|\-e] [odin¹talaèné\-voµby] [balík]+\fP"
+.I "\fB    rpm [\-\-uninstall|\-e] [odinÅ¡talaÄnÃ©\-voÄ¾by] [balÃ­k]+\fP"
 .br
-.I "\fB    rpm [\-\-verify|\-V] [overovacie\-voµby] [balík]+\fP"
-.br
-
-Podpisy (signatúry):
-.br
-.I "\fB    rpm [\-\-verify|\-V] [overovacie\-voµby] [balík]+\fP"
-.br
-.I "\fB    rpm [\-\-resign] [súbor_balíka]+\fP"
-.br
-.I "\fB    rpm [\-\-addsign] [súbor_balíka]+\fP"
+.I "\fB    rpm [\-\-verify|\-V] [overovacie\-voÄ¾by] [balÃ­k]+\fP"
 .br
 
-Rozlièné:
+Podpisy (signatÃºry):
+.br
+.I "\fB    rpm [\-\-verify|\-V] [overovacie\-voÄ¾by] [balÃ­k]+\fP"
+.br
+.I "\fB    rpm [\-\-resign] [sÃºbor_balÃ­ka]+\fP"
+.br
+.I "\fB    rpm [\-\-addsign] [sÃºbor_balÃ­ka]+\fP"
+.br
+
+RozliÄnÃ©:
 .br
 .I "\fB    rpm [\-\-showrc]\fP"
 .br
-.I "\fB    rpm [\-\-setperms] [balík]+\fP"
+.I "\fB    rpm [\-\-setperms] [balÃ­k]+\fP"
 .br
-.I "\fB    rpm [\-\-setgids] [balík]+\fP"
+.I "\fB    rpm [\-\-setgids] [balÃ­k]+\fP"
 .br
 
 
-.SH V©EOBECNÉ VO¥BY
-Tieto voµby mô¾u by» pou¾ité vo v¹etkıch re¾imoch.
+.SH VÅ EOBECNÃ‰ VOÄ½BY
+Tieto voÄ¾by mÃ´Å¾u byÅ¥ pouÅ¾itÃ© vo vÅ¡etkÃ½ch reÅ¾imoch.
 .IP "\fB\-vv\fP"
-Vypí¹e mno¾stvo o¹klivıch ladiacich informácií.
+VypÃ­Å¡e mnoÅ¾stvo oÅ¡klivÃ½ch ladiacich informÃ¡ciÃ­.
 .IP "\fB\-\-quiet\fP"
-Vypí¹e èo najmenej informácií \- normálne sa zobrazia iba chybové hlá¹ky.
+VypÃ­Å¡e Äo najmenej informÃ¡ciÃ­ \- normÃ¡lne sa zobrazia iba chybovÃ© hlÃ¡Å¡ky.
 .IP "\fB\-\-help\fP"
-Vypí¹e o nieèo dlh¹iu informáciu o pou¾ití ako je be¾nı vıpis.
+VypÃ­Å¡e o nieÄo dlhÅ¡iu informÃ¡ciu o pouÅ¾itÃ­ ako je beÅ¾nÃ½ vÃ½pis.
 .IP "\fB\-\-version\fP"
-Vypí¹e jednoriadkovú informáciu pozostávajúcu z èísla pou¾ívanej verzie
+VypÃ­Å¡e jednoriadkovÃº informÃ¡ciu pozostÃ¡vajÃºcu z ÄÃ­sla pouÅ¾Ã­vanej verzie
 \fBrpm\fP.
-.IP "\fB\-\-rcfile \fI<zoznam_súborov>\fP"
-Ka¾dı zo súborov v \fI<zoznam_súborov>\fP oddelenıch dvojbodkami je
-postupne èítanı cez \fBrpm\fP za úèelom získania konfiguraènıch informácií.
-Implicitnı \fI<zoznam súborov>\fP je
+.IP "\fB\-\-rcfile \fI<zoznam_sÃºborov>\fP"
+KaÅ¾dÃ½ zo sÃºborov v \fI<zoznam_sÃºborov>\fP oddelenÃ½ch dvojbodkami je
+postupne ÄÃ­tanÃ½ cez \fBrpm\fP za ÃºÄelom zÃ­skania konfiguraÄnÃ½ch informÃ¡ciÃ­.
+ImplicitnÃ½ \fI<zoznam sÃºborov>\fP je
 \fB/usr/lib/rpm/rpmrc:/etc/rpmrc:~/.rpmrc\fP.
-Iba prvı súbor zo zoznamu súborov musí existova», a vlnovky (~) sú
-expandované na hodnotu \fB$HOME\fP.
-.IP "\fB\-\-root \fI<adresár>\fP"
-Pou¾ije adresár \fI<adresár>\fP ako koreòovı adresár systému pre v¹etky operácie.
-Uvedomte si, ¾e toto znamená, ¾e databáza sa sa bude èíta» alebo modifikova»
-pod adresárom \fI<adresár>\fP a v¹etky predin¹talaèné a poin¹talaèné skripty
-budú be¾a» po prevedení chroot() na adresár \fI<adresár>\fP.
+Iba prvÃ½ sÃºbor zo zoznamu sÃºborov musÃ­ existovaÅ¥, a vlnovky (~) sÃº
+expandovanÃ© na hodnotu \fB$HOME\fP.
+.IP "\fB\-\-root \fI<adresÃ¡r>\fP"
+PouÅ¾ije adresÃ¡r \fI<adresÃ¡r>\fP ako koreÅˆovÃ½ adresÃ¡r systÃ©mu pre vÅ¡etky operÃ¡cie.
+Uvedomte si, Å¾e toto znamenÃ¡, Å¾e databÃ¡za sa sa bude ÄÃ­taÅ¥ alebo modifikovaÅ¥
+pod adresÃ¡rom \fI<adresÃ¡r>\fP a vÅ¡etky predinÅ¡talaÄnÃ© a poinÅ¡talaÄnÃ© skripty
+budÃº beÅ¾aÅ¥ po prevedenÃ­ chroot() na adresÃ¡r \fI<adresÃ¡r>\fP.
 .IP "\fB\-\-dbpath \fI<cesta>\fP"
-Pou¾ije databázu RPM v ceste \fI<cesta>\fP.
+PouÅ¾ije databÃ¡zu RPM v ceste \fI<cesta>\fP.
 .IP "\fB\-\-justdb\fP"
-Aktualizuje iba databázu a nie súborovı systém.
-.IP "\fB\-\-ftpproxy \fI<poèítaè>\fP, \fB\-\-httpproxy \fI<poèítaè>\fP"
-Pou¾ije \fI<poèítaè>\fP ako poèítaè s FTP alebo HTTP proxy serverom.
-Bli¾¹ie podrobnosti sú uvedené v sekcii \fBVO¥BY FTP/HTTP\fP.
+Aktualizuje iba databÃ¡zu a nie sÃºborovÃ½ systÃ©m.
+.IP "\fB\-\-ftpproxy \fI<poÄÃ­taÄ>\fP, \fB\-\-httpproxy \fI<poÄÃ­taÄ>\fP"
+PouÅ¾ije \fI<poÄÃ­taÄ>\fP ako poÄÃ­taÄ s FTP alebo HTTP proxy serverom.
+BliÅ¾Å¡ie podrobnosti sÃº uvedenÃ© v sekcii \fBVOÄ½BY FTP/HTTP\fP.
 .IP "\fB\-\-ftpport \fI<port>\fP, \fB\-\-httpport \fI<port>\fP"
-Pou¾ije \fI<port>\fP ako FTP alebo HTTP port na poèítaèi s proxy serverom.
-Bli¾¹ie podrobnosti sú uvedené v sekcii \fBVO¥BY FTP/HTTP\fP.
-.IP "\fB\-\-pipe \fI<príkaz>\fP"
-Presmeruje vıstup \fBrpm\fP na príkaz \fI<príkaz>\fP.
+PouÅ¾ije \fI<port>\fP ako FTP alebo HTTP port na poÄÃ­taÄi s proxy serverom.
+BliÅ¾Å¡ie podrobnosti sÃº uvedenÃ© v sekcii \fBVOÄ½BY FTP/HTTP\fP.
+.IP "\fB\-\-pipe \fI<prÃ­kaz>\fP"
+Presmeruje vÃ½stup \fBrpm\fP na prÃ­kaz \fI<prÃ­kaz>\fP.
 
 
-.SH VO¥BY PRI IN©TALÁCII A AKTUALIZÁCII (UPGRADE)
-V¹eobecná forma in¹talaèného príkazu je
+.SH VOÄ½BY PRI INÅ TALÃCII A AKTUALIZÃCII (UPGRADE)
+VÅ¡eobecnÃ¡ forma inÅ¡talaÄnÃ©ho prÃ­kazu je
 .PP
-	\fBrpm \-i [in¹talaèné\-voµby] \fI<súbor_balíka>+\fP
+	\fBrpm \-i [inÅ¡talaÄnÃ©\-voÄ¾by] \fI<sÃºbor_balÃ­ka>+\fP
 .PP
-Táto voµba nain¹taluje novı balíèek.
-V¹eobecná forma aktualizaèného príkazu je
+TÃ¡to voÄ¾ba nainÅ¡taluje novÃ½ balÃ­Äek.
+VÅ¡eobecnÃ¡ forma aktualizaÄnÃ©ho prÃ­kazu je
 .PP
-	\fBrpm \-U [in¹talaèné\-voµby] \fI<súbor_balíka>+\fP
+	\fBrpm \-U [inÅ¡talaÄnÃ©\-voÄ¾by] \fI<sÃºbor_balÃ­ka>+\fP
 .PP
-Táto voµba aktualizuje existujúci nain¹talovanı balíèek alebo nain¹taluje
-novı balíèek. Podobá sa in¹talaènému príkazu, rozdiel je iba v tom, ¾e
-v¹etky ïaµ¹ie verzie balíka sa odstránia zo systému.
+TÃ¡to voÄ¾ba aktualizuje existujÃºci nainÅ¡talovanÃ½ balÃ­Äek alebo nainÅ¡taluje
+novÃ½ balÃ­Äek. PodobÃ¡ sa inÅ¡talaÄnÃ©mu prÃ­kazu, rozdiel je iba v tom, Å¾e
+vÅ¡etky ÄaÄ¾Å¡ie verzie balÃ­ka sa odstrÃ¡nia zo systÃ©mu.
 .PP
-	\fBrpm [\-F|--freshen] [in¹talaèné\-voµby] \fI<súbor_balíka>+\fP
+	\fBrpm [\-F|--freshen] [inÅ¡talaÄnÃ©\-voÄ¾by] \fI<sÃºbor_balÃ­ka>+\fP
 .PP
-Táto voµba aktualizuje balíky, ale iba za predpokladu, ¾e predchádzajúce
-verzie sú nain¹talované.
+TÃ¡to voÄ¾ba aktualizuje balÃ­ky, ale iba za predpokladu, Å¾e predchÃ¡dzajÃºce
+verzie sÃº nainÅ¡talovanÃ©.
 
-\fI<súbor_balíka>\fP mô¾e by» ¹pecifikovanı ako ftp alebo http URL,
-v tomto prípade sa najprv balíèek stiahne a nain¹taluje a¾ potom.
-Bli¾¹ie podrobnosti o vstavanej podpore ftp a http sú uvedené v sekcii
-\fBVO¥BY FTP/HTTP\fP.
+\fI<sÃºbor_balÃ­ka>\fP mÃ´Å¾e byÅ¥ Å¡pecifikovanÃ½ ako ftp alebo http URL,
+v tomto prÃ­pade sa najprv balÃ­Äek stiahne a nainÅ¡taluje aÅ¾ potom.
+BliÅ¾Å¡ie podrobnosti o vstavanej podpore ftp a http sÃº uvedenÃ© v sekcii
+\fBVOÄ½BY FTP/HTTP\fP.
 .PP
 .IP "\fB\-\-force\fP"
-Rovnakı efekt ako súèasné pou¾itie \fB\-\-replacepkgs\fP, \fB\-\-replacefiles\fP a 
+RovnakÃ½ efekt ako sÃºÄasnÃ© pouÅ¾itie \fB\-\-replacepkgs\fP, \fB\-\-replacefiles\fP a 
 \fB\-\-oldpackage\fP.
 .IP "\fB\-h\fP, \fB\-\-hash\fP"
-Vypí¹e 50 znakov #, keï je celı archív balíka rozbalenı. Pre lep¹í
-vzhµad je vhodné pou¾íva» s voµbou \fB\-v\fP.
+VypÃ­Å¡e 50 znakov #, keÄ je celÃ½ archÃ­v balÃ­ka rozbalenÃ½. Pre lepÅ¡Ã­
+vzhÄ¾ad je vhodnÃ© pouÅ¾Ã­vaÅ¥ s voÄ¾bou \fB\-v\fP.
 .IP "\fB\-\-oldpackage\fP"
-Povolí aktualizáciu prepísaním nov¹ieho balíka star¹ím.
+PovolÃ­ aktualizÃ¡ciu prepÃ­sanÃ­m novÅ¡ieho balÃ­ka starÅ¡Ã­m.
 .IP "\fB\-\-percent\fP"
-Vypí¹e stav rozbalovania súborov z balíkového archívu v percentách.
-Toto je praktické pri behu RPM z inıch nástrojov.
+VypÃ­Å¡e stav rozbalovania sÃºborov z balÃ­kovÃ©ho archÃ­vu v percentÃ¡ch.
+Toto je praktickÃ© pri behu RPM z inÃ½ch nÃ¡strojov.
 .IP "\fB\-\-replacefiles\fP"
-Nain¹taluje balík aj v prípade, ¾e nahradí súbory z inıch, u¾
-nain¹talovanıch balíkov.
+NainÅ¡taluje balÃ­k aj v prÃ­pade, Å¾e nahradÃ­ sÃºbory z inÃ½ch, uÅ¾
+nainÅ¡talovanÃ½ch balÃ­kov.
 .IP "\fB\-\-replacepkgs\fP"
-Nain¹taluje balíky aj v prípade, ¾e niektoré z nich u¾ sú nain¹talované
-v systéme.
+NainÅ¡taluje balÃ­ky aj v prÃ­pade, Å¾e niektorÃ© z nich uÅ¾ sÃº nainÅ¡talovanÃ©
+v systÃ©me.
 .IP "\fB\-\-allfiles\fP"
-Nain¹taluje alebo aktualizuje v¹etky missingok súbory (súbory, ktoré nemusia
-nutne existova») z balíka bez ohµadu na to, èi existujú.
+NainÅ¡taluje alebo aktualizuje vÅ¡etky missingok sÃºbory (sÃºbory, ktorÃ© nemusia
+nutne existovaÅ¥) z balÃ­ka bez ohÄ¾adu na to, Äi existujÃº.
 .IP "\fB\-\-nodeps\fP"
-Nevykoná kontrolu závislostí pred in¹talovaním alebo aktualizovaním
-balíka.
+NevykonÃ¡ kontrolu zÃ¡vislostÃ­ pred inÅ¡talovanÃ­m alebo aktualizovanÃ­m
+balÃ­ka.
 .IP "\fB\-\-noscripts\fP"
-Nevykoná predin¹talaèné a poin¹talaèné skripty.
+NevykonÃ¡ predinÅ¡talaÄnÃ© a poinÅ¡talaÄnÃ© skripty.
 .IP "\fB\-\-notriggers\fP"
-Nevykoná skripty, ktorıch spú¹»ou je in¹talácia balíka.
+NevykonÃ¡ skripty, ktorÃ½ch spÃºÅ¡Å¥ou je inÅ¡talÃ¡cia balÃ­ka.
 .IP "\fB\-\-ignoresize\fP"
-Nevykoná kontrolu pripojeného súborového systému na dostatok voµného miesta
-pred in¹taláciou balíka.
+NevykonÃ¡ kontrolu pripojenÃ©ho sÃºborovÃ©ho systÃ©mu na dostatok voÄ¾nÃ©ho miesta
+pred inÅ¡talÃ¡ciou balÃ­ka.
 .IP "\fB\-\-excludepath \fI<cesta>\fP"
-Nenain¹taluje súbory, ktorıch mená zaèínajú na \fI<cesta>\fP.
+NenainÅ¡taluje sÃºbory, ktorÃ½ch menÃ¡ zaÄÃ­najÃº na \fI<cesta>\fP.
 .IP "\fB\-\-excludedocs\fP"
-Nenain¹taluje ¾iadne súbory, ktoré sú oznaèené ako dokumentácia (ktoré
-zahàòajú najmä manuálové stránky a texinfo dokumenty).
+NenainÅ¡taluje Å¾iadne sÃºbory, ktorÃ© sÃº oznaÄenÃ© ako dokumentÃ¡cia (ktorÃ©
+zahÅ•ÅˆajÃº najmÃ¤ manuÃ¡lovÃ© strÃ¡nky a texinfo dokumenty).
 .IP "\fB\-\-includedocs\fP"
-Nain¹taluje súbory, ktoré sú oznaèené ako dokumentácia. Toto je implicitné
+NainÅ¡taluje sÃºbory, ktorÃ© sÃº oznaÄenÃ© ako dokumentÃ¡cia. Toto je implicitnÃ©
 nastavenie.
 .IP "\fB\-\-test\fP"
-Nenain¹taluje balík, iba jednoducho otestuje, èo by sa vykonalo pri
-in¹talácii a vypí¹e potenciálne konflikty.
+NenainÅ¡taluje balÃ­k, iba jednoducho otestuje, Äo by sa vykonalo pri
+inÅ¡talÃ¡cii a vypÃ­Å¡e potenciÃ¡lne konflikty.
 .IP "\fB\-\-ignorearch\fP"
-Toto umo¾ní in¹taláciu alebo aktualizáciu aj v prípade, ¾e sa nezhoduje
-architektúra popísaná v binárnom RPM a poèítaèa, na ktorı sa má balík
-in¹talova».
+Toto umoÅ¾nÃ­ inÅ¡talÃ¡ciu alebo aktualizÃ¡ciu aj v prÃ­pade, Å¾e sa nezhoduje
+architektÃºra popÃ­sanÃ¡ v binÃ¡rnom RPM a poÄÃ­taÄa, na ktorÃ½ sa mÃ¡ balÃ­k
+inÅ¡talovaÅ¥.
 .IP "\fB\-\-ignoreos\fP"
-Toto umo¾ní in¹taláciu alebo aktualizáciu aj v prípade, ¾e sa nezhoduje
-operaènı systém popísanı v binárnom RPM a poèítaèi, na ktorı sa má balík
-in¹talova».
+Toto umoÅ¾nÃ­ inÅ¡talÃ¡ciu alebo aktualizÃ¡ciu aj v prÃ­pade, Å¾e sa nezhoduje
+operaÄnÃ½ systÃ©m popÃ­sanÃ½ v binÃ¡rnom RPM a poÄÃ­taÄi, na ktorÃ½ sa mÃ¡ balÃ­k
+inÅ¡talovaÅ¥.
 .IP "\fB\-\-prefix \fI<cesta>\fP"
-Toto nastaví in¹talaènı prefix na \fI<cesta>\fP pre relokovateµné
-(premiestniteµné) balíky.
-.IP "\fB\-\-relocate \fI<stará_cesta>\fB=\fI<nová_cesta>\fP"
-Pre relokovateµné balíky, prelo¾í cestu súborov, ktoré sa mali umiestni»
-na miesto \fI<stará_cesta>\fP do \fI<nová_cesta>\fP.
+Toto nastavÃ­ inÅ¡talaÄnÃ½ prefix na \fI<cesta>\fP pre relokovateÄ¾nÃ©
+(premiestniteÄ¾nÃ©) balÃ­ky.
+.IP "\fB\-\-relocate \fI<starÃ¡_cesta>\fB=\fI<novÃ¡_cesta>\fP"
+Pre relokovateÄ¾nÃ© balÃ­ky, preloÅ¾Ã­ cestu sÃºborov, ktorÃ© sa mali umiestniÅ¥
+na miesto \fI<starÃ¡_cesta>\fP do \fI<novÃ¡_cesta>\fP.
 .IP "\fB\-\-badreloc\fP"
-Vnúti relokáciu aj v prípade, ¾e balík nie je relokovateµnı. Pou¾íva sa
-spolu s voµbou \-\-relocate.
+VnÃºti relokÃ¡ciu aj v prÃ­pade, Å¾e balÃ­k nie je relokovateÄ¾nÃ½. PouÅ¾Ã­va sa
+spolu s voÄ¾bou \-\-relocate.
 .IP "\fB\-\-noorder\fP"
-Nezmení poradie balíkov na in¹taláciu. V opaènomom prípade by mohlo by»
-zmenené poradie v zozname balíkov, aby sa zachovali závislosti.
+NezmenÃ­ poradie balÃ­kov na inÅ¡talÃ¡ciu. V opaÄnomom prÃ­pade by mohlo byÅ¥
+zmenenÃ© poradie v zozname balÃ­kov, aby sa zachovali zÃ¡vislosti.
 
 
-.SH VO¥BY PRI ZISTENÍ INFORMÁCIÍ (QUERY)
-V¹eobecná forma príkazu zistenia informácií je
+.SH VOÄ½BY PRI ZISTENÃ INFORMÃCIÃ (QUERY)
+VÅ¡eobecnÃ¡ forma prÃ­kazu zistenia informÃ¡ciÃ­ je
 .PP
-	\fBrpm \-q [zis»ovacie\-voµby]\fP
+	\fBrpm \-q [zisÅ¥ovacie\-voÄ¾by]\fP
 .PP
-Je mo¾né ¹pecifikova», v akom formáte majú by» vypísané vıstupné údaje.
-Na takıto úèel slú¾i voµba \fB[\-\-queryformat|\-\-qf]\fP, nasledovaná
-formátovacím re»azcom.
+Je moÅ¾nÃ© Å¡pecifikovaÅ¥, v akom formÃ¡te majÃº byÅ¥ vypÃ­sanÃ© vÃ½stupnÃ© Ãºdaje.
+Na takÃ½to ÃºÄel slÃºÅ¾i voÄ¾ba \fB[\-\-queryformat|\-\-qf]\fP, nasledovanÃ¡
+formÃ¡tovacÃ­m reÅ¥azcom.
 
-Informaèné vıstupy sú modifikovanou verziou ¹tandardného \fBprintf(3)\fP
-formátovania. Formát je vytvorenı zo statickıch re»azcov (ktoré mô¾u zahàòa»
-¹tandardné C znakové escape sekvencie pre novı riadok, tabelátor a ïaµ¹ie
-¹peciálne znaky a \fBprintf(3)\fP typové formátovaèe). Keï¾e \fBrpm\fP u¾
-vie, aky typ má vytlaèi», ¹pecifikátor typu musí by» vynechanı a nahradenı
-menom tagu hlavièky, ktorá má by» vytlaèená, uzavretı znakmi {}. RPMTAG_
-èas» mena tagu mô¾e by» vynechaná.
+InformaÄnÃ© vÃ½stupy sÃº modifikovanou verziou Å¡tandardnÃ©ho \fBprintf(3)\fP
+formÃ¡tovania. FormÃ¡t je vytvorenÃ½ zo statickÃ½ch reÅ¥azcov (ktorÃ© mÃ´Å¾u zahÅ•ÅˆaÅ¥
+Å¡tandardnÃ© C znakovÃ© escape sekvencie pre novÃ½ riadok, tabelÃ¡tor a ÄaÄ¾Å¡ie
+Å¡peciÃ¡lne znaky a \fBprintf(3)\fP typovÃ© formÃ¡tovaÄe). KeÄÅ¾e \fBrpm\fP uÅ¾
+vie, aky typ mÃ¡ vytlaÄiÅ¥, Å¡pecifikÃ¡tor typu musÃ­ byÅ¥ vynechanÃ½ a nahradenÃ½
+menom tagu hlaviÄky, ktorÃ¡ mÃ¡ byÅ¥ vytlaÄenÃ¡, uzavretÃ½ znakmi {}. RPMTAG_
+ÄasÅ¥ mena tagu mÃ´Å¾e byÅ¥ vynechanÃ¡.
 
-Alternatívny vıstup formátovania mô¾e by» po¾adovanı, ak je nasledovanı
-tagom s \fB:\fItypetag\fR. Momentálne sú podporované nasledujúce typy:
+AlternatÃ­vny vÃ½stup formÃ¡tovania mÃ´Å¾e byÅ¥ poÅ¾adovanÃ½, ak je nasledovanÃ½
+tagom s \fB:\fItypetag\fR. MomentÃ¡lne sÃº podporovanÃ© nasledujÃºce typy:
 \fBoctal\fR, \fBdate\fR, \fBshescape\fR, \fBperms\fR, \fBfflags\fR, a
 \fBdepflags\fR.
 
-Napríklad na vytlaèenie informácie o mene balíka je mo¾né pou¾i»
-formátovací re»azec \fB%{NAME}\fP. Na vytlaèenie informácie o mene
-a distribúcii v dvoch ståpcoch je mo¾né pou¾i»
+NaprÃ­klad na vytlaÄenie informÃ¡cie o mene balÃ­ka je moÅ¾nÃ© pouÅ¾iÅ¥
+formÃ¡tovacÃ­ reÅ¥azec \fB%{NAME}\fP. Na vytlaÄenie informÃ¡cie o mene
+a distribÃºcii v dvoch stÄºpcoch je moÅ¾nÃ© pouÅ¾iÅ¥
 \fB%\-30{NAME}%{DISTRIBUTION}\fP.
 
-\fBrpm\fP zobrazí zoznam v¹etkıch tagov, ktoré pozná, keï je spustené
+\fBrpm\fP zobrazÃ­ zoznam vÅ¡etkÃ½ch tagov, ktorÃ© poznÃ¡, keÄ je spustenÃ©
 s argumentom \fB\-\-querytags\fP.
 
-Existujú dve podmno¾iny volieb pre zistenie informácií: vıber balíka a
-vıber informácií.
+ExistujÃº dve podmnoÅ¾iny volieb pre zistenie informÃ¡ciÃ­: vÃ½ber balÃ­ka a
+vÃ½ber informÃ¡ciÃ­.
 
-Voµby vıberu balíka:
+VoÄ¾by vÃ½beru balÃ­ka:
 .br
-.IP "\fB\fI<meno_balíka>\fP"
-Zis»uje u in¹talovanıch balíkov s menom \fI<meno_balíka>\fP.
+.IP "\fB\fI<meno_balÃ­ka>\fP"
+ZisÅ¥uje u inÅ¡talovanÃ½ch balÃ­kov s menom \fI<meno_balÃ­ka>\fP.
 .IP "\fB\-a\fP, \fB\-\-all\fP"
-Zis»uje u v¹etkıch nain¹talovanıch balíkov.
-.IP "\fB\-\-whatrequires \fI<schopnos»>\fP"
-Zis»uje u v¹etkıch in¹talovanıch balíkov, ktoré vy¾adujú \fI<schopnos»>\fP
-pre správnu funkènos».
-.IP "\fB\-\-whatprovides \fI<virtuálna_schopnos»>\fP"
-Zis»uje u v¹etkıch in¹talovanıch balíkov, ktoré poskytujú vlastnos»
-\fI<virtuálna_schopnos»>\fP.
+ZisÅ¥uje u vÅ¡etkÃ½ch nainÅ¡talovanÃ½ch balÃ­kov.
+.IP "\fB\-\-whatrequires \fI<schopnosÅ¥>\fP"
+ZisÅ¥uje u vÅ¡etkÃ½ch inÅ¡talovanÃ½ch balÃ­kov, ktorÃ© vyÅ¾adujÃº \fI<schopnosÅ¥>\fP
+pre sprÃ¡vnu funkÄnosÅ¥.
+.IP "\fB\-\-whatprovides \fI<virtuÃ¡lna_schopnosÅ¥>\fP"
+ZisÅ¥uje u vÅ¡etkÃ½ch inÅ¡talovanÃ½ch balÃ­kov, ktorÃ© poskytujÃº vlastnosÅ¥
+\fI<virtuÃ¡lna_schopnosÅ¥>\fP.
 .IP "\fB\-f \fI<file>\fP, \fB\-\-file \fI<file>\fP"
-Zis»uje u balíka, ktorı vlastní súbor \fI<file>\fP.
+ZisÅ¥uje u balÃ­ka, ktorÃ½ vlastnÃ­ sÃºbor \fI<file>\fP.
 .IP "\fB\-g \fI<group>\fP, \fB\-\-group \fI<group>\fP"
-Zis»uje u balíkov, ktoré majú skupinu \fI<group>\fP.
-.IP "\fB\-p \fI<súbor_balíka>\fP"
-Zis»uje u (nenain¹talovaného) balíka \fI<súbor_balíka>\fP.
-\fI<súbor_balíka>\fP mô¾e by» ¹pecifikovanı v ftp alebo http ¹tıle URL,
-v takomto prípade bude stiahnutá hlavièka balíka, a z nej èítané po¾adované
-informácie. Bli¾¹ie informácie o vstavanej podpore ftp a http klienta sú
-v sekcii \fBFTP/HTTP VO¥BY\fP.
-.IP "\fB\-\-specfile \fI<spec_súbor>\fP"
-Rozanalyzuje \fI<spec_súbor>\fP a zis»uje informácie z tohto súboru, ako keby
-to bol balík rpm. Aj napriek neprítomnosti v¹etkıch informácií (napr. zoznam
-súborov), tento druh zis»ovania umo¾òuje rpm získa» informácie zo spec súboru
-bez nutnosti napísa» ¹peciálny analyzátor spec súborov.
-.IP "\fB\-\-querybynumber \fI<èíslo>\fP"
-Zis»uje u záznamu èíslo \fI<èíslo>\fP databázy priamo, toto je u¾itoèné pre
-ladiace úèely.
-.IP "\fB\-\-triggeredby \fI<balík>\fP"
-Vypí¹e balíky, ktorıch spú¹tou je existencia balíka \fI<balík>\fP.
+ZisÅ¥uje u balÃ­kov, ktorÃ© majÃº skupinu \fI<group>\fP.
+.IP "\fB\-p \fI<sÃºbor_balÃ­ka>\fP"
+ZisÅ¥uje u (nenainÅ¡talovanÃ©ho) balÃ­ka \fI<sÃºbor_balÃ­ka>\fP.
+\fI<sÃºbor_balÃ­ka>\fP mÃ´Å¾e byÅ¥ Å¡pecifikovanÃ½ v ftp alebo http Å¡tÃ½le URL,
+v takomto prÃ­pade bude stiahnutÃ¡ hlaviÄka balÃ­ka, a z nej ÄÃ­tanÃ© poÅ¾adovanÃ©
+informÃ¡cie. BliÅ¾Å¡ie informÃ¡cie o vstavanej podpore ftp a http klienta sÃº
+v sekcii \fBFTP/HTTP VOÄ½BY\fP.
+.IP "\fB\-\-specfile \fI<spec_sÃºbor>\fP"
+Rozanalyzuje \fI<spec_sÃºbor>\fP a zisÅ¥uje informÃ¡cie z tohto sÃºboru, ako keby
+to bol balÃ­k rpm. Aj napriek neprÃ­tomnosti vÅ¡etkÃ½ch informÃ¡ciÃ­ (napr. zoznam
+sÃºborov), tento druh zisÅ¥ovania umoÅ¾Åˆuje rpm zÃ­skaÅ¥ informÃ¡cie zo spec sÃºboru
+bez nutnosti napÃ­saÅ¥ Å¡peciÃ¡lny analyzÃ¡tor spec sÃºborov.
+.IP "\fB\-\-querybynumber \fI<ÄÃ­slo>\fP"
+ZisÅ¥uje u zÃ¡znamu ÄÃ­slo \fI<ÄÃ­slo>\fP databÃ¡zy priamo, toto je uÅ¾itoÄnÃ© pre
+ladiace ÃºÄely.
+.IP "\fB\-\-triggeredby \fI<balÃ­k>\fP"
+VypÃ­Å¡e balÃ­ky, ktorÃ½ch spÃºÅ¡tou je existencia balÃ­ka \fI<balÃ­k>\fP.
 
 .P
-Voµba vıberu informácií:
+VoÄ¾ba vÃ½beru informÃ¡ciÃ­:
 .br
 .IP "\fB\-i\fP"
-Vypí¹e informácie o balíku, vrátane mena, verzie a popisu. Táto voµba
-vyu¾íva \fB\-\-queryformat\fP, ak je ¹pecifikovanı.
+VypÃ­Å¡e informÃ¡cie o balÃ­ku, vrÃ¡tane mena, verzie a popisu. TÃ¡to voÄ¾ba
+vyuÅ¾Ã­va \fB\-\-queryformat\fP, ak je Å¡pecifikovanÃ½.
 .IP "\fB\-R\fP, \fB\-\-requires\fP"
-Vypí¹e zoznam balíkov, na ktorıch danı balík závisí.
+VypÃ­Å¡e zoznam balÃ­kov, na ktorÃ½ch danÃ½ balÃ­k zÃ¡visÃ­.
 .IP "\fB\-\-provides\fP"
-Vypí¹e zoznam vlastností/schopností, ktoré poskytuje tento balík.
+VypÃ­Å¡e zoznam vlastnostÃ­/schopnostÃ­, ktorÃ© poskytuje tento balÃ­k.
 .IP "\fB\-\-changelog\fP"
-Vypí¹e históriu zmien pre balík.
+VypÃ­Å¡e histÃ³riu zmien pre balÃ­k.
 .IP "\fB\-l\fP, \fB\-\-list\fP"
-Vypí¹e zoznam súborov v balíku.
+VypÃ­Å¡e zoznam sÃºborov v balÃ­ku.
 .IP "\fB\-s\fP, \fB\-\-state\fP"
-Vypí¹e \fIstavy\fP jednotlivıch súborov v balíku (aplikuje voµbu
-\fB\-l\fP). Stav jednotlivıch súborov mô¾e by» \fInormal\fP (normálny),
-\fInot installed\fP (nenain¹talovanı) alebo \fIreplaced\fP (nahradenı).
+VypÃ­Å¡e \fIstavy\fP jednotlivÃ½ch sÃºborov v balÃ­ku (aplikuje voÄ¾bu
+\fB\-l\fP). Stav jednotlivÃ½ch sÃºborov mÃ´Å¾e byÅ¥ \fInormal\fP (normÃ¡lny),
+\fInot installed\fP (nenainÅ¡talovanÃ½) alebo \fIreplaced\fP (nahradenÃ½).
 .IP "\fB\-d\fP, \fB\-\-docfiles\fP"
-Vypí¹e zoznam súborov oznaèenıch ako dokumentácia (aplikuje \fB\-l\fP).
+VypÃ­Å¡e zoznam sÃºborov oznaÄenÃ½ch ako dokumentÃ¡cia (aplikuje \fB\-l\fP).
 .IP "\fB\-c\fP, \fB\-\-configfiles\fP"
-Vypí¹e iba zoznam konfiguraènıch súborov (aplikuje \fB\-l\fP).
+VypÃ­Å¡e iba zoznam konfiguraÄnÃ½ch sÃºborov (aplikuje \fB\-l\fP).
 .IP "\fB\-\-scripts\fP"
-Vypí¹e balíkovo ¹pecifickı shellovı skript, ktorı je pou¾itı
-v in¹talaènom alebo odin¹talaènom procese, ak nejakı vôbec existuje.
+VypÃ­Å¡e balÃ­kovo Å¡pecifickÃ½ shellovÃ½ skript, ktorÃ½ je pouÅ¾itÃ½
+v inÅ¡talaÄnom alebo odinÅ¡talaÄnom procese, ak nejakÃ½ vÃ´bec existuje.
 .IP "\fB\-\-triggers\fP, \fB\-\-triggerscripts\fP"
-Vypí¹e skripty, ktoré sú spú¹»ané spú¹»ou, ak nejaká existuje a je
-obsiahnutá v balíku.
+VypÃ­Å¡e skripty, ktorÃ© sÃº spÃºÅ¡Å¥anÃ© spÃºÅ¡Å¥ou, ak nejakÃ¡ existuje a je
+obsiahnutÃ¡ v balÃ­ku.
 .IP "\fB\-\-dump\fP"
-Vypí¹e zoznam podrobnıch vlastností súborov pozostoávajúci z:
-cesta veµkos» mtime md5sum mód vlastník skupina je_konfiguraènı_súbor
-je_dokumentaènı_súbor rdev symlink. Táto voµba musí by» pou¾itá
-minimálne s jednou z nasledujúcich volieb \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
+VypÃ­Å¡e zoznam podrobnÃ½ch vlastnostÃ­ sÃºborov pozostoÃ¡vajÃºci z:
+cesta veÄ¾kosÅ¥ mtime md5sum mÃ³d vlastnÃ­k skupina je_konfiguraÄnÃ½_sÃºbor
+je_dokumentaÄnÃ½_sÃºbor rdev symlink. TÃ¡to voÄ¾ba musÃ­ byÅ¥ pouÅ¾itÃ¡
+minimÃ¡lne s jednou z nasledujÃºcich volieb \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
 .IP "\fB\-\-last\fP"
-Usporiada zoznam balíkov podµa èasu in¹talácie takım spôsobom, ¾e poslednı
-in¹talovanı balík bude na vrchu.
+Usporiada zoznam balÃ­kov podÄ¾a Äasu inÅ¡talÃ¡cie takÃ½m spÃ´sobom, Å¾e poslednÃ½
+inÅ¡talovanÃ½ balÃ­k bude na vrchu.
 .IP "\fB\-\-filesbypkg\fP"
-Vypí¹e zoznam v¹etkıch súborov v ka¾dom balíku.
+VypÃ­Å¡e zoznam vÅ¡etkÃ½ch sÃºborov v kaÅ¾dom balÃ­ku.
 .IP "\fB\-\-triggerscripts\fP"
-Vypí¹e v¹etky skripty, ktoré sú spú¹»ané spú¹»ou vo vybranom balíku.
+VypÃ­Å¡e vÅ¡etky skripty, ktorÃ© sÃº spÃºÅ¡Å¥anÃ© spÃºÅ¡Å¥ou vo vybranom balÃ­ku.
 
 
-.SH VO¥BY PRI KONTROLE A OVEROVANÍ
-V¹eobecná forma príkazu kontroly je
+.SH VOÄ½BY PRI KONTROLE A OVEROVANÃ
+VÅ¡eobecnÃ¡ forma prÃ­kazu kontroly je
 .PP
-	\fBrpm \-V|\-y|\-\-verify [overovacie\-voµby]\fP
+	\fBrpm \-V|\-y|\-\-verify [overovacie\-voÄ¾by]\fP
 .PP
-Kontrola balíka prebieha z porovnania informácií z in¹talovanıch súborov
-z balíkov v systéme s informáciami o súboroch, ktoré obsahoval pôvodnı balík
-(tieto su ulo¾ené v rpm databáze). Okrem inıch údajov, kontrola porovnáva
-veµkos», MD5 kontrolnı súèet, oprávnenia, typ, vlastníka a skupinu ka¾dého
-súboru. V¹etky odchıµky sú zobrazené. Specifikaèné voµby balíka sú rovnaké
-ako re¾ime vıpisu informácii balíkov.
+Kontrola balÃ­ka prebieha z porovnania informÃ¡ciÃ­ z inÅ¡talovanÃ½ch sÃºborov
+z balÃ­kov v systÃ©me s informÃ¡ciami o sÃºboroch, ktorÃ© obsahoval pÃ´vodnÃ½ balÃ­k
+(tieto su uloÅ¾enÃ© v rpm databÃ¡ze). Okrem inÃ½ch Ãºdajov, kontrola porovnÃ¡va
+veÄ¾kosÅ¥, MD5 kontrolnÃ½ sÃºÄet, oprÃ¡vnenia, typ, vlastnÃ­ka a skupinu kaÅ¾dÃ©ho
+sÃºboru. VÅ¡etky odchÃ½Ä¾ky sÃº zobrazenÃ©. SpecifikaÄnÃ© voÄ¾by balÃ­ka sÃº rovnakÃ©
+ako reÅ¾ime vÃ½pisu informÃ¡cii balÃ­kov.
 
-Súbory, ktoré neboli in¹talované z balíka, tıkajúce sa napr. dokumentaènıch
-súborov pri pou¾ití voµby "\fB\-\-excludedocs\fP" pri in¹talácii, sú v
-tichosti ignorované.
+SÃºbory, ktorÃ© neboli inÅ¡talovanÃ© z balÃ­ka, tÃ½kajÃºce sa napr. dokumentaÄnÃ½ch
+sÃºborov pri pouÅ¾itÃ­ voÄ¾by "\fB\-\-excludedocs\fP" pri inÅ¡talÃ¡cii, sÃº v
+tichosti ignorovanÃ©.
 
-Voµby, ktoré mô¾u by» pou¾ité v kontrolnom re¾ime:
+VoÄ¾by, ktorÃ© mÃ´Å¾u byÅ¥ pouÅ¾itÃ© v kontrolnom reÅ¾ime:
 
 .IP "\fB\-\-nofiles\fP"
-Ignoruje chıbajúce súbory v systéme poèas kontroly.
+Ignoruje chÃ½bajÃºce sÃºbory v systÃ©me poÄas kontroly.
 .IP "\fB\-\-nomd5\fP"
-Ignoruje chyby kontrolnıch súètov MD5 poèas kontroly.
+Ignoruje chyby kontrolnÃ½ch sÃºÄtov MD5 poÄas kontroly.
 .IP "\fB\-\-nopgp\fP"
-Ignoruje chyby PGP podpisov poèas kontroly.
+Ignoruje chyby PGP podpisov poÄas kontroly.
 
-Vıstup má formát 8 znakového re»azca, s prípadnım roz¹írením vıskytu
-"\fBc\fP", ktoré charakterizuje konfiguraènı súbor a mena súboru.
-Ka¾dı z ôsmych znakov popisuje vısledok porovnania jedného konkrétneho
-atribútu súboru s údajmi zaznamenanımi v RPM databáze. Jednoduchá "\fB.\fP"
-(bodka) znamená, ¾e test pre¹iel (neobjavené ¾iadne odchıµky).
-Nasledujúce znaky oznamujú dôvod neúspechu urèitého testu:
+VÃ½stup mÃ¡ formÃ¡t 8 znakovÃ©ho reÅ¥azca, s prÃ­padnÃ½m rozÅ¡Ã­renÃ­m vÃ½skytu
+"\fBc\fP", ktorÃ© charakterizuje konfiguraÄnÃ½ sÃºbor a mena sÃºboru.
+KaÅ¾dÃ½ z Ã´smych znakov popisuje vÃ½sledok porovnania jednÃ©ho konkrÃ©tneho
+atribÃºtu sÃºboru s Ãºdajmi zaznamenanÃ½mi v RPM databÃ¡ze. JednoduchÃ¡ "\fB.\fP"
+(bodka) znamenÃ¡, Å¾e test preÅ¡iel (neobjavenÃ© Å¾iadne odchÃ½Ä¾ky).
+NasledujÃºce znaky oznamujÃº dÃ´vod neÃºspechu urÄitÃ©ho testu:
 
 .IP "\fB5\fP"
-MD5 kontrolnı súèet
+MD5 kontrolnÃ½ sÃºÄet
 .IP "\fBS\fP"
-Veµkos» súboru
+VeÄ¾kosÅ¥ sÃºboru
 .IP "\fBL\fP"
-Symbolickı link
+SymbolickÃ½ link
 .IP "\fBT\fP"
-Mtime (poslednı èas modifikácie)
+Mtime (poslednÃ½ Äas modifikÃ¡cie)
 .IP "\fBD\fP"
 Zariadenie
 .IP "\fBU\fP"
-U¾ívateµ
+UÅ¾Ã­vateÄ¾
 .IP "\fBG\fP"
 Skupina
 .IP "\fBM\fP"
-Mód (vrátane oprávnení a typu súborov)
+MÃ³d (vrÃ¡tane oprÃ¡vnenÃ­ a typu sÃºborov)
 
 
 .SH KONTROLA PODPISOV (SIGNATURE)
-V¹eobecná forma príkazu kontroly rpm podpisu je
+VÅ¡eobecnÃ¡ forma prÃ­kazu kontroly rpm podpisu je
 .PP
-	\fBrpm \-\-checksig \fI<súbor_balíka>+\fP
+	\fBrpm \-\-checksig \fI<sÃºbor_balÃ­ka>+\fP
 .PP
-Takto sa overuje PGP podpis balíka \fI<súbor_balíka>\fP na uistenie
-sa o jeho integrite a pôvode.
-Konfiguraèné informácie PGP sú èítané z konfiguraènıch súborov.
-Bli¾¹ie údaje sa nachádzajú v sekcii PGP POPDPISY.
+Takto sa overuje PGP podpis balÃ­ka \fI<sÃºbor_balÃ­ka>\fP na uistenie
+sa o jeho integrite a pÃ´vode.
+KonfiguraÄnÃ© informÃ¡cie PGP sÃº ÄÃ­tanÃ© z konfiguraÄnÃ½ch sÃºborov.
+BliÅ¾Å¡ie Ãºdaje sa nachÃ¡dzajÃº v sekcii PGP POPDPISY.
 
 
-.SH VO¥BY PRI ODIN©TALÁCII
-V¹eobecná forma príkazu na odin¹talovanie je
+.SH VOÄ½BY PRI ODINÅ TALÃCII
+VÅ¡eobecnÃ¡ forma prÃ­kazu na odinÅ¡talovanie je
 .PP
-	\fB    rpm \-e \fI<meno_balíka>+\fP
+	\fB    rpm \-e \fI<meno_balÃ­ka>+\fP
 .PP
 .IP "\fB\-\-allmatches\fP"
-Odstráni v¹etky verzie balíka, ktoré súhlasia s menom \fI<meno_balíka>\fR.
-Normálne sa vyvolá chyba, ak viac balíkov súhlasí s menom
-\fI<meno_balíka>\fR.
+OdstrÃ¡ni vÅ¡etky verzie balÃ­ka, ktorÃ© sÃºhlasia s menom \fI<meno_balÃ­ka>\fR.
+NormÃ¡lne sa vyvolÃ¡ chyba, ak viac balÃ­kov sÃºhlasÃ­ s menom
+\fI<meno_balÃ­ka>\fR.
 .IP "\fB\-\-noscripts\fP"
-Nevykoná pred a po odin¹talaèné skripty.
+NevykonÃ¡ pred a po odinÅ¡talaÄnÃ© skripty.
 .IP "\fB\-\-notriggers\fP"
-Nevykoná skripty, ktorıch spú¹»ou je odin¹talovanie balíka.
+NevykonÃ¡ skripty, ktorÃ½ch spÃºÅ¡Å¥ou je odinÅ¡talovanie balÃ­ka.
 .IP "\fB\-\-nodeps\fP"
-Nebude skúma» závislosti pri odin¹talovaní balíkov.
+Nebude skÃºmaÅ¥ zÃ¡vislosti pri odinÅ¡talovanÃ­ balÃ­kov.
 .IP "\fB\-\-test\fP"
-Niè sa v skutoènosti neodin¹taluje, len sa preverí, èo by sa malo sta».
-Veµmi u¾itoèné s voµbou \fB\-vv\fP.
+NiÄ sa v skutoÄnosti neodinÅ¡taluje, len sa preverÃ­, Äo by sa malo staÅ¥.
+VeÄ¾mi uÅ¾itoÄnÃ© s voÄ¾bou \fB\-vv\fP.
 
 
-.SH VO¥BY PRI ZOSTAVOVANÍ
-V¹eobecná forma príkazu na zostavenie rpm je
+.SH VOÄ½BY PRI ZOSTAVOVANÃ
+VÅ¡eobecnÃ¡ forma prÃ­kazu na zostavenie rpm je
 .PP
-    \fBrpm \-[b|t]\fIO\fP [zostavovacie\-voµby] \fI<spec_súbor_balíka>+\fP
+    \fBrpm \-[b|t]\fIO\fP [zostavovacie\-voÄ¾by] \fI<spec_sÃºbor_balÃ­ka>+\fP
 .PP
-Argumentom je \fB-b\fR, ak sa na zostavenie balíka pou¾ije spec súbor
-(súbor ¹pecifikácií balíka) alebo \fB-t\fR, ak \fBRPM\fR má vyhµada»
-spec súbor vnútri gzipovaného (alebo komprimovaného) tar archívu, a tento
-pou¾i» na zostavenie balíka. Po prvom argumente ïaµ¹í argument (\fIO\fR)
-¹pecifikuje fázu ¹tádia zostavenia a zabalenia, ktorá sa má vykona», a
-ktorá je jedna z:
+Argumentom je \fB-b\fR, ak sa na zostavenie balÃ­ka pouÅ¾ije spec sÃºbor
+(sÃºbor Å¡pecifikÃ¡ciÃ­ balÃ­ka) alebo \fB-t\fR, ak \fBRPM\fR mÃ¡ vyhÄ¾adaÅ¥
+spec sÃºbor vnÃºtri gzipovanÃ©ho (alebo komprimovanÃ©ho) tar archÃ­vu, a tento
+pouÅ¾iÅ¥ na zostavenie balÃ­ka. Po prvom argumente ÄaÄ¾Å¡Ã­ argument (\fIO\fR)
+Å¡pecifikuje fÃ¡zu Å¡tÃ¡dia zostavenia a zabalenia, ktorÃ¡ sa mÃ¡ vykonaÅ¥, a
+ktorÃ¡ je jedna z:
 
 .IP "\fB\-bp\fP"
-Vykoná "%prep" fázu pre spec súbor. Normálne toto vyvolá rozbalenie
-zdrojovıch archívov a aplikovanie záplat.
+VykonÃ¡ "%prep" fÃ¡zu pre spec sÃºbor. NormÃ¡lne toto vyvolÃ¡ rozbalenie
+zdrojovÃ½ch archÃ­vov a aplikovanie zÃ¡plat.
 .IP "\fB\-bl\fP"
-Vykoná "kontrolu zoznamu". Sekcia "%files" z spec súboru je makrom
-expandovaná, a je vykonaná kontrola, ¾e ka¾dı súbor existuje.
+VykonÃ¡ "kontrolu zoznamu". Sekcia "%files" z spec sÃºboru je makrom
+expandovanÃ¡, a je vykonanÃ¡ kontrola, Å¾e kaÅ¾dÃ½ sÃºbor existuje.
 .IP "\fB\-bc\fP"
-Vykoná fázu "%build" pre spec súbor (po vykonaní prep fázy). Toto
-normálne vyvolá ekvivalent príkazu "make".
+VykonÃ¡ fÃ¡zu "%build" pre spec sÃºbor (po vykonanÃ­ prep fÃ¡zy). Toto
+normÃ¡lne vyvolÃ¡ ekvivalent prÃ­kazu "make".
 .IP "\fB\-bi\fP"
-Vykoná fázu "%install" zo spec súboru (po vykonaní prep a build fázy).
-Toto vo v¹eobecnosti vyvolá ekvivalent príkazu "make install".
+VykonÃ¡ fÃ¡zu "%install" zo spec sÃºboru (po vykonanÃ­ prep a build fÃ¡zy).
+Toto vo vÅ¡eobecnosti vyvolÃ¡ ekvivalent prÃ­kazu "make install".
 .IP "\fB\-bb\fP"
-Zostaví binárny balík (po vykonaní prep, build a install fázy).
+ZostavÃ­ binÃ¡rny balÃ­k (po vykonanÃ­ prep, build a install fÃ¡zy).
 .IP "\fB\-bs\fP"
-Zostaví iba zdrojovı balík (po vykonaní prep, build a install fázy).
+ZostavÃ­ iba zdrojovÃ½ balÃ­k (po vykonanÃ­ prep, build a install fÃ¡zy).
 .IP "\fB\-ba\fP"
-Zostaví binárny a zdrojovı balík (po vykonaní prep, build a install fázy).
+ZostavÃ­ binÃ¡rny a zdrojovÃ½ balÃ­k (po vykonanÃ­ prep, build a install fÃ¡zy).
 .PP
-Mô¾u by» pou¾ité aj nasledujúce voµby:
+MÃ´Å¾u byÅ¥ pouÅ¾itÃ© aj nasledujÃºce voÄ¾by:
 .IP "\fB\-\-short\-circuit\fP"
-Preskoèí priamo na po¾adovanú fázu (t. zn. preskoèí v¹etky fázy ¹tádia
-zostavenia, ktoré predchádzajú ¹pecifikovanej fáze). Táto voµba je platná
-iba s prepínaèmi \fB\-bc\fP and \fB\-bi\fP.
+PreskoÄÃ­ priamo na poÅ¾adovanÃº fÃ¡zu (t. zn. preskoÄÃ­ vÅ¡etky fÃ¡zy Å¡tÃ¡dia
+zostavenia, ktorÃ© predchÃ¡dzajÃº Å¡pecifikovanej fÃ¡ze). TÃ¡to voÄ¾ba je platnÃ¡
+iba s prepÃ­naÄmi \fB\-bc\fP and \fB\-bi\fP.
 .IP "\fB\-\-timecheck\fP"
-Nastavuje "kontrolu èasu" (0 zaká¾e). Táto voµba mô¾e by» nastavená
-definovaním makra "_timecheck". Hodnota "kontroly èasu" vyjadruje
-(v sekundách) maximálny vek súborov, ktoré budú zabalené. Varovania
-sú vypisované pre v¹etky súbory, ktorıch vek je za hranicou takto
+Nastavuje "kontrolu Äasu" (0 zakÃ¡Å¾e). TÃ¡to voÄ¾ba mÃ´Å¾e byÅ¥ nastavenÃ¡
+definovanÃ­m makra "_timecheck". Hodnota "kontroly Äasu" vyjadruje
+(v sekundÃ¡ch) maximÃ¡lny vek sÃºborov, ktorÃ© budÃº zabalenÃ©. Varovania
+sÃº vypisovanÃ© pre vÅ¡etky sÃºbory, ktorÃ½ch vek je za hranicou takto
 definovanej hodnoty.
 .IP "\fB\-\-clean\fP"
-Odstrání zostavovací strom (adresár) potom, èo sa vytvorí balík.
+OdstrÃ¡nÃ­ zostavovacÃ­ strom (adresÃ¡r) potom, Äo sa vytvorÃ­ balÃ­k.
 .IP "\fB\-\-rmsource\fP"
-Odstrání zdrojové súbory a spec súbor po zostavení (mô¾e sa pou¾íva» aj
+OdstrÃ¡nÃ­ zdrojovÃ© sÃºbory a spec sÃºbor po zostavenÃ­ (mÃ´Å¾e sa pouÅ¾Ã­vaÅ¥ aj
 samostatne, napr. "\fBrpm \-\-rmsource foo.spec\fP").
 .IP "\fB\-\-test\fP"
-Nevykoná ¾iadnu zo zostavovacej fázy.
-U¾itoèné pre otestovanie spec súboru.
+NevykonÃ¡ Å¾iadnu zo zostavovacej fÃ¡zy.
+UÅ¾itoÄnÃ© pre otestovanie spec sÃºboru.
 .IP "\fB\-\-sign\fP"
-Vlo¾í PGP podpis do balíka. Tento podpis mô¾e by» vyu¾itı na overenie
-integrity a pôvodu balíka. Bli¾¹ie informácie na nastavenie sú uvedené
+VloÅ¾Ã­ PGP podpis do balÃ­ka. Tento podpis mÃ´Å¾e byÅ¥ vyuÅ¾itÃ½ na overenie
+integrity a pÃ´vodu balÃ­ka. BliÅ¾Å¡ie informÃ¡cie na nastavenie sÃº uvedenÃ©
 v sekcii PGP PODPISY.
-.IP "\fB\-\-buildroot \fI<adresár>\fP"
-Pri zostavovaní balíka prepí¹e tag BuildRoot adresárom \fI<adresár>\fP.
+.IP "\fB\-\-buildroot \fI<adresÃ¡r>\fP"
+Pri zostavovanÃ­ balÃ­ka prepÃ­Å¡e tag BuildRoot adresÃ¡rom \fI<adresÃ¡r>\fP.
 .IP "\fB\-\-target \fI<platforma>\fP"
-Pri zostavovaní balíka sa interpretuje \fI<platforma>\fP ako
-\fBarch-vendor-os\fP a makrá \fB_target\fP, \fB_target_arch\fP a
-\fB_target_os\fP sa nastavia podµa tejto hodnoty.
-.IP "\fB\-\-buildarch \fI<architektúra>\fP"
-Pri zostavovaní balíka nastaví architektúru na \fI<architektúra>\fP. Táto
-voµba sa stala zastaralou pou¾itím \fB\-\-target\fI v RPM 3.0.
+Pri zostavovanÃ­ balÃ­ka sa interpretuje \fI<platforma>\fP ako
+\fBarch-vendor-os\fP a makrÃ¡ \fB_target\fP, \fB_target_arch\fP a
+\fB_target_os\fP sa nastavia podÄ¾a tejto hodnoty.
+.IP "\fB\-\-buildarch \fI<architektÃºra>\fP"
+Pri zostavovanÃ­ balÃ­ka nastavÃ­ architektÃºru na \fI<architektÃºra>\fP. TÃ¡to
+voÄ¾ba sa stala zastaralou pouÅ¾itÃ­m \fB\-\-target\fI v RPM 3.0.
 .IP "\fB\-\-buildos \fI<os>\fP"
-Pri zostavovaní balíka nastaví architektúru na \fI<os>\fP.Táto
-voµba sa stala zastaralou pou¾itím \fB\-\-target\fI v RPM 3.0.
+Pri zostavovanÃ­ balÃ­ka nastavÃ­ architektÃºru na \fI<os>\fP.TÃ¡to
+voÄ¾ba sa stala zastaralou pouÅ¾itÃ­m \fB\-\-target\fI v RPM 3.0.
 
 
-.SH VO¥BY PRI ZNOVUZOSTAVOVANÍ A REKOMPILOVANÍ
+.SH VOÄ½BY PRI ZNOVUZOSTAVOVANÃ A REKOMPILOVANÃ
 
-Existujú dve voµby, ako spusti» zostavenie balíka s rpm:
+ExistujÃº dve voÄ¾by, ako spustiÅ¥ zostavenie balÃ­ka s rpm:
 
-.I "\fBrpm \-\-recompile \fI<zdrojovı_súbor_balíka>+\fP"
+.I "\fBrpm \-\-recompile \fI<zdrojovÃ½_sÃºbor_balÃ­ka>+\fP"
 
-.I "\fBrpm \-\-rebuild \fI<zdrojovı_súbor_balíka>+\fP"
+.I "\fBrpm \-\-rebuild \fI<zdrojovÃ½_sÃºbor_balÃ­ka>+\fP"
 
-Keï je rpm spustené tımto spôsobom, \fBrpm\fP nain¹taluje zdrojovı balík a
-vykoná postupne fázy prípravy (prep), kompilácie a in¹talácie. Prídavne
-s voµbou \fB\-\-rebuild\fP zostaví novı binárny balík. Keï sa zostavenie
-dokonèí, adresár zostavovania (ako pri \fB\-\-clean\fP), zdrojové súbory,
-ako aj spec súbor sa sa odstránia.
+KeÄ je rpm spustenÃ© tÃ½mto spÃ´sobom, \fBrpm\fP nainÅ¡taluje zdrojovÃ½ balÃ­k a
+vykonÃ¡ postupne fÃ¡zy prÃ­pravy (prep), kompilÃ¡cie a inÅ¡talÃ¡cie. PrÃ­davne
+s voÄ¾bou \fB\-\-rebuild\fP zostavÃ­ novÃ½ binÃ¡rny balÃ­k. KeÄ sa zostavenie
+dokonÄÃ­, adresÃ¡r zostavovania (ako pri \fB\-\-clean\fP), zdrojovÃ© sÃºbory,
+ako aj spec sÃºbor sa sa odstrÃ¡nia.
 
 
-.SH PODPISOVANIE EXISTUJÚCEHO RPM
+.SH PODPISOVANIE EXISTUJÃšCEHO RPM
 
-.I "\fBrpm \-\-resign \fI<binárny_súbor_balíka>+\fP"
+.I "\fBrpm \-\-resign \fI<binÃ¡rny_sÃºbor_balÃ­ka>+\fP"
 
-Táto voµba vygeneruje a vlo¾í novı podpis pre zoznam balíkov.
-V¹etky prípadne existujúce podpisy sa odstránia.
+TÃ¡to voÄ¾ba vygeneruje a vloÅ¾Ã­ novÃ½ podpis pre zoznam balÃ­kov.
+VÅ¡etky prÃ­padne existujÃºce podpisy sa odstrÃ¡nia.
 
-.I "\fBrpm \-\-addsign \fI<binárny_súbor_balíka>+\fP"
+.I "\fBrpm \-\-addsign \fI<binÃ¡rny_sÃºbor_balÃ­ka>+\fP"
 
-Táto voµba vygeneruje a pridá novı podpis pre zoznam balíkov u ktorıch
-u¾ podpis existuje.
+TÃ¡to voÄ¾ba vygeneruje a pridÃ¡ novÃ½ podpis pre zoznam balÃ­kov u ktorÃ½ch
+uÅ¾ podpis existuje.
 
 
 .SH PGP PODPISY
 
-Aby bolo mo¾né pou¾íva» vlastnosti podpisovania, RPM je potrebné nastavi»
-spôsobom, aby mohlo spú¹»a» PGP, a aby bolo schopné nájs» zväzok verejnıch
-kµúèov s RPM verejnımi kµúèmi v òom. Implicitne RPM pou¾íva implicitné
-hodnoty PGP na nájdenie zväzkov kµúèov (honorujúc PGPPATH).
-Ak je zväzok kµúèov umiestnenı na inom mieste, ako PGP oèakáva, je potrebné
-nastavi» makro
+Aby bolo moÅ¾nÃ© pouÅ¾Ã­vaÅ¥ vlastnosti podpisovania, RPM je potrebnÃ© nastaviÅ¥
+spÃ´sobom, aby mohlo spÃºÅ¡Å¥aÅ¥ PGP, a aby bolo schopnÃ© nÃ¡jsÅ¥ zvÃ¤zok verejnÃ½ch
+kÄ¾ÃºÄov s RPM verejnÃ½mi kÄ¾ÃºÄmi v Åˆom. Implicitne RPM pouÅ¾Ã­va implicitnÃ©
+hodnoty PGP na nÃ¡jdenie zvÃ¤zkov kÄ¾ÃºÄov (honorujÃºc PGPPATH).
+Ak je zvÃ¤zok kÄ¾ÃºÄov umiestnenÃ½ na inom mieste, ako PGP oÄakÃ¡va, je potrebnÃ©
+nastaviÅ¥ makro
 
 .IP "\fB_pgp_path\fP"
-na definovanie umiestnenia zväzkov kµúèov PGP, ktoré sa majú pou¾i».
+na definovanie umiestnenia zvÃ¤zkov kÄ¾ÃºÄov PGP, ktorÃ© sa majÃº pouÅ¾iÅ¥.
 .PP
 
-Ak si ¾eláte podpisova» balíky, ktoré si sami vytvoríte, potrebujete
-podobnım spôsobom vytvori» vá¹ verejnı a tajnı kµúèovı pár (bli¾¹ie informácie
-sú v dokumentácii ku PGP).
-Taktie¾ potrebujete konfigurova» makrá:
+Ak si Å¾elÃ¡te podpisovaÅ¥ balÃ­ky, ktorÃ© si sami vytvorÃ­te, potrebujete
+podobnÃ½m spÃ´sobom vytvoriÅ¥ vÃ¡Å¡ verejnÃ½ a tajnÃ½ kÄ¾ÃºÄovÃ½ pÃ¡r (bliÅ¾Å¡ie informÃ¡cie
+sÃº v dokumentÃ¡cii ku PGP).
+TaktieÅ¾ potrebujete konfigurovaÅ¥ makrÃ¡:
 
 .IP "\fB_signature\fP"
-Typ podpisu. Momentálne je podporované iba pgp.
+Typ podpisu. MomentÃ¡lne je podporovanÃ© iba pgp.
 .IP "\fB_pgp_name\fP"
-Meno "u¾ívateµa", ktorého kµúèom sa má podpísa» balík.
+Meno "uÅ¾Ã­vateÄ¾a", ktorÃ©ho kÄ¾ÃºÄom sa mÃ¡ podpÃ­saÅ¥ balÃ­k.
 .PP
 
-Pri zostavovaní balíka je potrebné prida» \-\-sign do príkazového
-riadku. Nasledovne sa objaví vızva na heslo, a po správnom zadadaní
-sa balík zostaví a podpí¹e.
+Pri zostavovanÃ­ balÃ­ka je potrebnÃ© pridaÅ¥ \-\-sign do prÃ­kazovÃ©ho
+riadku. Nasledovne sa objavÃ­ vÃ½zva na heslo, a po sprÃ¡vnom zadadanÃ­
+sa balÃ­k zostavÃ­ a podpÃ­Å¡e.
 
-Napríkad pre pou¾itie PGP na podpísanie balíka ako u¾ívateµ
-\fB"John Doe <jdoe@foo.com>"\fP zo zväzku kµúèov umiestnenıch
-v \fB/etc/rpm/.pgp\fP pou¾itím \fB/usr/bin/pgp\fP zápis bude
-obsahova»
+NaprÃ­kad pre pouÅ¾itie PGP na podpÃ­sanie balÃ­ka ako uÅ¾Ã­vateÄ¾
+\fB"John Doe <jdoe@foo.com>"\fP zo zvÃ¤zku kÄ¾ÃºÄov umiestnenÃ½ch
+v \fB/etc/rpm/.pgp\fP pouÅ¾itÃ­m \fB/usr/bin/pgp\fP zÃ¡pis bude
+obsahovaÅ¥
 
 .I "\fB%_signature pgp\fP"
 
@@ -529,81 +529,81 @@ obsahova»
 
 .I "\fB%_pgpbin /usr/bin/pgp\fP"
 
-v konfiguraènom súbore makier: \fB/etc/rpm/macros\fP je urèenı na
-per-systém nastavenie a \fB~/.rpmmacros\fP na per-u¾ívateµ nastavenie.
+v konfiguraÄnom sÃºbore makier: \fB/etc/rpm/macros\fP je urÄenÃ½ na
+per-systÃ©m nastavenie a \fB~/.rpmmacros\fP na per-uÅ¾Ã­vateÄ¾ nastavenie.
 
 
-.SH VO¥BY PRI PREBUDOVANÍ DATABÁZY
-V¹eobecná forma príkazu prebudovania databázy je
+.SH VOÄ½BY PRI PREBUDOVANÃ DATABÃZY
+VÅ¡eobecnÃ¡ forma prÃ­kazu prebudovania databÃ¡zy je
 .PP
 	\fBrpm \-\-rebuilddb\fP
 .PP
 
-Na vybudovanie novej databázy treba vykona»
+Na vybudovanie novej databÃ¡zy treba vykonaÅ¥
 .PP
 	\fBrpm \-\-initdb\fP
 .PP
 
-Jedinımi voµbami pre tento re¾im sú \fB-\-dbpath\fP a \fB-\-root\fP.
+JedinÃ½mi voÄ¾bami pre tento reÅ¾im sÃº \fB-\-dbpath\fP a \fB-\-root\fP.
 
 
 .SH SHOWRC 
 
-Spustením 
+SpustenÃ­m 
 
 .PP
 	\fBrpm \-\-showrc\fP
 
 .PP
-sa vypí¹u hodnoty, ktoré bude RPM pou¾íva» pri v¹etkıch voµbách, a
-ktoré mô¾u by» nastavené v \fIrpmrc\fP súboroch.
+sa vypÃ­Å¡u hodnoty, ktorÃ© bude RPM pouÅ¾Ã­vaÅ¥ pri vÅ¡etkÃ½ch voÄ¾bÃ¡ch, a
+ktorÃ© mÃ´Å¾u byÅ¥ nastavenÃ© v \fIrpmrc\fP sÃºboroch.
 
 
-.SH FTP/HTTP VO¥BY
+.SH FTP/HTTP VOÄ½BY
 
-RPM obsahuje jednoduchého FTP a HTTP klienta na zjednodu¹enie in¹talácie
-a jednoduch¹ieho získania informácií balíkov, ktoré sú umiestenené na sieti.
-Súbory balíkov urèené pre in¹talovanie, aktualizáciu a vıpis informácií je
-mo¾né ¹pecifikova» v ftp alebo http ¹tıle URL:
+RPM obsahuje jednoduchÃ©ho FTP a HTTP klienta na zjednoduÅ¡enie inÅ¡talÃ¡cie
+a jednoduchÅ¡ieho zÃ­skania informÃ¡ciÃ­ balÃ­kov, ktorÃ© sÃº umiestenenÃ© na sieti.
+SÃºbory balÃ­kov urÄenÃ© pre inÅ¡talovanie, aktualizÃ¡ciu a vÃ½pis informÃ¡ciÃ­ je
+moÅ¾nÃ© Å¡pecifikovaÅ¥ v ftp alebo http Å¡tÃ½le URL:
 
 .PP
-	\fBftp://<u¾ívateµ>:<heslo>@poèítaè:<port>/path/to/package.rpm\fP
+	\fBftp://<uÅ¾Ã­vateÄ¾>:<heslo>@poÄÃ­taÄ:<port>/path/to/package.rpm\fP
 .PP
-Ak èas» \fB:heslo\fP chıba, objaví sa vızva na heslo (v¾dy len jeden krát
-pre pár u¾ívateµ/poèítaè). Ak chıbajú obe èasti - u¾ívateµ aj heslo, pou¾itı
-je anonymnı ftp. Vo v¹etkıch prípadoch je pou¾itı pasívny (PASV) ftp prenos.
+Ak ÄasÅ¥ \fB:heslo\fP chÃ½ba, objavÃ­ sa vÃ½zva na heslo (vÅ¾dy len jeden krÃ¡t
+pre pÃ¡r uÅ¾Ã­vateÄ¾/poÄÃ­taÄ). Ak chÃ½bajÃº obe Äasti - uÅ¾Ã­vateÄ¾ aj heslo, pouÅ¾itÃ½
+je anonymnÃ½ ftp. Vo vÅ¡etkÃ½ch prÃ­padoch je pouÅ¾itÃ½ pasÃ­vny (PASV) ftp prenos.
 
-RPM povoluje pou¾i» nasledujúce voµby s ftp URL:
+RPM povoluje pouÅ¾iÅ¥ nasledujÃºce voÄ¾by s ftp URL:
 
-.IP "\fB\--ftpproxy \fI<meno_poèítaèa>\fP"
-Poèítaè \fI<meno_poèítaèa>\fP sa pou¾ije ako proxy server pre v¹etky ftp
-prenosy, èo umo¾ní u¾ívateµom pou¾i» ftp slu¾by za firewallom, ktorı
-pou¾íva proxy systémy.
-Táto voµba mô¾e by» tak isto ¹pecifikovaná nastavením makra \fB_ftpproxy\fP.
+.IP "\fB\--ftpproxy \fI<meno_poÄÃ­taÄa>\fP"
+PoÄÃ­taÄ \fI<meno_poÄÃ­taÄa>\fP sa pouÅ¾ije ako proxy server pre vÅ¡etky ftp
+prenosy, Äo umoÅ¾nÃ­ uÅ¾Ã­vateÄ¾om pouÅ¾iÅ¥ ftp sluÅ¾by za firewallom, ktorÃ½
+pouÅ¾Ã­va proxy systÃ©my.
+TÃ¡to voÄ¾ba mÃ´Å¾e byÅ¥ tak isto Å¡pecifikovanÃ¡ nastavenÃ­m makra \fB_ftpproxy\fP.
 
 .IP "\fB\--ftpport \fI<port>\fP"
-Pou¾ije sa èíslo TCP portu \fI<port>\fP pre ftp spojenie s ftp proxy
-serverom namiesto implicitného portu. Táto voµba mô¾e by» tak isto
-¹pecifikovaná nastavením makra \fB_ftpport\fP.
+PouÅ¾ije sa ÄÃ­slo TCP portu \fI<port>\fP pre ftp spojenie s ftp proxy
+serverom namiesto implicitnÃ©ho portu. TÃ¡to voÄ¾ba mÃ´Å¾e byÅ¥ tak isto
+Å¡pecifikovanÃ¡ nastavenÃ­m makra \fB_ftpport\fP.
 .PP
 
-RPM umo¾òuje nasledujúce voµby pri pou¾ití http URL:
+RPM umoÅ¾Åˆuje nasledujÃºce voÄ¾by pri pouÅ¾itÃ­ http URL:
 
-.IP "\fB\--httpproxy \fI<meno_poèítaèa>\fP"
-Poèítaè \fI<meno_poèítaèa>\fP bude pou¾itı ako proxy server pre v¹etky http
+.IP "\fB\--httpproxy \fI<meno_poÄÃ­taÄa>\fP"
+PoÄÃ­taÄ \fI<meno_poÄÃ­taÄa>\fP bude pouÅ¾itÃ½ ako proxy server pre vÅ¡etky http
 prenosy.
-Táto voµba mô¾e by» tak isto ¹pecifikovaná konfigurovaním makra
+TÃ¡to voÄ¾ba mÃ´Å¾e byÅ¥ tak isto Å¡pecifikovanÃ¡ konfigurovanÃ­m makra
 \fB_httpproxy\fP.
 
 .IP "\fB\--httpport \fI<port>\fP"
-Pou¾ije sa èíslo TCP portu \fI<port>\fP pre http spojenie s http proxy
-serverom namiesto implicitného portu.
-Táto voµba mô¾e by» tie¾ ¹pecifikovaná konfigurovaním makra
+PouÅ¾ije sa ÄÃ­slo TCP portu \fI<port>\fP pre http spojenie s http proxy
+serverom namiesto implicitnÃ©ho portu.
+TÃ¡to voÄ¾ba mÃ´Å¾e byÅ¥ tieÅ¾ Å¡pecifikovanÃ¡ konfigurovanÃ­m makra
 \fB_httpport\fP.
 .PP
 
 
-.SH SÚBORY
+.SH SÃšBORY
 .nf
 /usr/lib/rpm/rpmrc
 /etc/rpmrc
@@ -623,7 +623,7 @@ Táto voµba mô¾e by» tie¾ ¹pecifikovaná konfigurovaním makra
 .fi
 .El
 
-.SH PRÍBUZNÁ DOKUMENTÁCIA 
+.SH PRÃBUZNÃ DOKUMENTÃCIA 
 .IR glint (8) ,
 .IR rpm2cpio (8) ,
 .B http://www.rpm.org/
