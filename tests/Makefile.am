@@ -1,9 +1,15 @@
 ## Process this file with automake to produce Makefile.in.
 
 EXTRA_DIST =
+CLEANFILES =
 
 TESTSUITE = $(srcdir)/rpmtests
 EXTRA_DIST += rpmtests.at $(TESTSUITE)
+
+AUTOTEST = $(AUTOM4TE) --language=autotest
+$(TESTSUITE): $(srcdir)/rpmtests.at $(TESTSUITE_AT)
+	$(AUTOTEST) -I '$(srcdir)' -o $@.tmp $@.at
+	mv $@.tmp $@
 
 ## testsuite components
 TESTSUITE_AT = rpmgeneral.at
