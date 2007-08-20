@@ -1,0 +1,5 @@
+AT_INIT
+
+AT_TESTED(rpm rpmbuild rpmquery)
+
+m4_include([rpmgeneral.at])
