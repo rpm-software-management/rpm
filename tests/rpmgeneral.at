@@ -31,7 +31,7 @@ AT_CLEANUP
 
 
 AT_SETUP([rpmquery --version])
-AT_CHECK([rpm --version],[0],
+AT_CHECK([rpmquery --version],[0],
 [RPM version AT_PACKAGE_VERSION
 ])
 AT_CLEANUP
