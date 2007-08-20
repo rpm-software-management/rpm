@@ -3,6 +3,10 @@
 EXTRA_DIST =
 CLEANFILES =
 
+# HACK: This should not be here.
+rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
+
+##
 TESTSUITE = $(srcdir)/rpmtests
 EXTRA_DIST += rpmtests.at $(TESTSUITE)
 
@@ -37,7 +41,8 @@ atconfig: ${top_builddir}/config.status
 CLEANFILES += atconfig
 
 defs:	defs.in
-	@sed -e "s,[@]rpmbindir[@],$(rpmbindir)," \
+	@sed \
+	  -e "s,[@]rpmbindir[@],$(rpmbindir)," \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
 	< $(srcdir)/defs.in > defs
@@ -53,6 +58,11 @@ rpmrc.in:	$(top_srcdir)/rpmrc.in
 	< $(top_srcdir)/rpmrc.in > rpmrc.in
 CLEANFILES += rpmrc.in
 
-rpmrc: rpmrc.in
-	(cd ${top_builddir} && ./config.status --file=${subdir}/rpmrc:${subdir}/rpmrc.in)
-CLEANFILES += rpmrc
+## Create a test-installation directory "testing"
+testing@RPMCONFIGDIR@/rpmrc: rpmrc.in $(top_builddir)/config.status
+	(cd ${top_builddir} && \
+	  $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
+	(cd ${top_builddir} && \
+	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmrc:${subdir}/rpmrc.in)
+
+check_DATA = defs testing@RPMCONFIGDIR@/rpmrc
