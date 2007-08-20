@@ -58,12 +58,24 @@ rpmrc.in:	$(top_srcdir)/rpmrc.in
 	< $(top_srcdir)/rpmrc.in > rpmrc.in
 CLEANFILES += rpmrc.in
 
+## Create a customizes macros
+macros.in:	$(top_srcdir)/macros.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
+	  -e "s,[@]SYSCONFIGDIR[@],`pwd`/testing$(SYSCONFIGDIR),g" \
+	  -e "s,:~/.rpmmacros,," \
+	< $(top_srcdir)/macros.in > macros.in
+CLEANFILES += macros.in
+
+
 ## Create a test-installation directory "testing"
-testing@RPMCONFIGDIR@/rpmrc: rpmrc.in $(top_builddir)/config.status
+testing@RPMCONFIGDIR@/rpmrc: rpmrc.in macros.in $(top_builddir)/config.status
 	(cd ${top_builddir} && \
 	  $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmrc:${subdir}/rpmrc.in)
+	(cd ${top_builddir} && \
+	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/macros:${subdir}/macros.in)
 
 check_DATA = defs testing@RPMCONFIGDIR@/rpmrc atconfig atlocal $(TESTSUITE)
 
