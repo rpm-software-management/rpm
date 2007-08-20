@@ -17,7 +17,7 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 # ------------------------------
-# Check rpmbuild -ba *.spec
+# Check if rpmbuild -ba *.spec works
 AT_SETUP([rpmbuild -ba *.spec])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
@@ -69,8 +69,7 @@ rpmbuild \
 AT_CLEANUP
 
 # ------------------------------
-# Check if rpmbuild --rebuild *.src.rpm
-# honours a relative topdir with --root
+# Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
@@ -94,6 +93,8 @@ AT_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
+# Check if rpmbuild --rebuild *.src.rpm
+# honours a relative topdir with --root
 AT_SETUP([rpmbuild --root=... --rebuild])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
