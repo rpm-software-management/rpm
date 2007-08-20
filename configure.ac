@@ -6,6 +6,8 @@ AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE([1.10 foreign tar-ustar])
 
+AC_CONFIG_TESTDIR(tests)
+
 AC_AIX
 AC_MINIX
 
@@ -1195,6 +1197,8 @@ AC_SUBST(OBJDUMP)
 
 AC_CONFIG_SUBDIRS(db3)
 
+AC_PATH_PROG(AUTOM4TE,autom4te,:)
+
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc rpmpopt
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile scripts/brp-redhat
@@ -1211,7 +1215,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc rpmpopt
 	doc/sk/Makefile
 	python/Makefile
  	lua/Makefile
- 	tests/Makefile
+ 	tests/Makefile tests/atlocal
   ])
 AC_CONFIG_COMMANDS([default],[[	
 	echo timestamp > stamp-h.in
