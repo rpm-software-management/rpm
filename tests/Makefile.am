@@ -33,3 +33,16 @@ defs:	defs.in
 	< $(srcdir)/defs.in > defs
 DISTCLEANFILES = defs
 EXTRA_DIST += defs.in
+
+## Create a customize rpmrc
+rpmrc.in:	$(top_srcdir)/rpmrc.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
+	  -e "s,[@]SYSCONFIGDIR[@],`pwd`/testing$(SYSCONFIGDIR),g" \
+	  -e "s,:~/.rpmmacros,," \
+	< $(top_srcdir)/rpmrc.in > rpmrc.in
+CLEANFILES += rpmrc.in
+
+rpmrc: rpmrc.in
+	(cd ${top_builddir} && ./config.status --file=${subdir}/rpmrc:${subdir}/rpmrc.in)
+CLEANFILES += rpmrc
