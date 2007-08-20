@@ -42,7 +42,7 @@ rpmpopt-$(VERSION): rpmpopt
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
 rpm_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpm_LDADD =		build/.libs/librpmbuild.a lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmb_SOURCES =		build.c rpmqv.c build.h debug.h system.h
 rpmb_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMBT
@@ -57,7 +57,6 @@ rpmd_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ 
 rpmi_SOURCES =		rpmqv.c debug.h system.h
 rpmi_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU
 #rpmi_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ $(staticLDFLAGS)
-#rpmi_LDADD =		rpmi.o lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@ @WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 rpmi_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 rpmi_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
