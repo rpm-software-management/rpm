@@ -11,7 +11,7 @@ TESTSUITE = $(srcdir)/rpmtests
 EXTRA_DIST += rpmtests.at $(TESTSUITE)
 
 AUTOTEST = $(AUTOM4TE) --language=autotest
-$(TESTSUITE): $(srcdir)/rpmtests.at $(TESTSUITE_AT)
+$(TESTSUITE): $(srcdir)/rpmtests.at $(TESTSUITE_AT) package.m4
 	$(AUTOTEST) -I '$(srcdir)' -o $@.tmp $@.at
 	mv $@.tmp $@
 
@@ -65,4 +65,16 @@ testing@RPMCONFIGDIR@/rpmrc: rpmrc.in $(top_builddir)/config.status
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmrc:${subdir}/rpmrc.in)
 
-check_DATA = defs testing@RPMCONFIGDIR@/rpmrc
+check_DATA = defs testing@RPMCONFIGDIR@/rpmrc atconfig atlocal $(TESTSUITE)
+
+check-local: $(check_DATA)
+	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
+
+installcheck-local: $(check_DATA)
+	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' \
+	$(TESTSUITEFLAGS)
+
+clean-local:
+	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
+	rm -f *.tmp
+	rm -rf testing
