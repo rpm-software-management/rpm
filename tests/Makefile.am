@@ -25,3 +25,11 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 	echo 'm4_define([AT_PACKAGE_STRING],    [@PACKAGE_STRING@])'; \
 	echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
 	} >'$(srcdir)/package.m4'
+
+defs:	defs.in
+	@sed -e "s,[@]rpmbindir[@],$(rpmbindir)," \
+	  -e "s,[@]usrbindir[@],$(bindir)," \
+	  -e "s,[@]usrlibdir[@],$(libdir)," \
+	< $(srcdir)/defs.in > defs
+DISTCLEANFILES = defs
+EXTRA_DIST += defs.in
