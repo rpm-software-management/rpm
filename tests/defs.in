@@ -1,7 +1,9 @@
 LANG=C
 
 LD_LIBRARY_PATH=`pwd`/testing@usrlibdir@
+export LD_LIBRARY_PATH
 PATH=`pwd`/testing@rpmbindir@:`pwd`/testing@usrbindir@:$PATH
+export PATH
 
 RPM="./testing@rpmbindir@/rpm"
 RPMBUILD="./testing@usrbindir@/rpmbuild"
