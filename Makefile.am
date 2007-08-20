@@ -95,8 +95,10 @@ CVSTAG = r$(subst .,-,$(VERSION))
 
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
+rpmvardir = $(varprefix)/lib/rpm
+rpmvar_DATA =
+
 install-data-local:
-	@$(MKDIR_P) $(DESTDIR)$(varprefix)/lib/rpm
 	@rm -f $(DESTDIR)$(pkglibdir)/rpmt
 	@@LN_S@ rpmb $(DESTDIR)$(pkglibdir)/rpmt
 	@rm -f $(DESTDIR)$(pkglibdir)/rpme
