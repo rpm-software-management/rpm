@@ -1,4 +1,4 @@
-#    rpmgeneral.at
+#    rpmgeneral.at: Some very basic checks
 #
 #    Copyright (C) 2007  Ralf Corsépius <corsepiu@fedoraproject.org>
 #
@@ -43,7 +43,7 @@ AT_CHECK([rpm --rcfile=${RPMRC} --showrc],[0],
 AT_CLEANUP
 
 
-AT_SETUP([rpm --querytags works])
+AT_SETUP([rpm --querytags])
 AT_CHECK([rpm --querytags],[0],
 [ignore])
 AT_CLEANUP
