@@ -16,7 +16,11 @@ $(TESTSUITE): $(srcdir)/rpmtests.at $(TESTSUITE_AT) package.m4
 	mv $@.tmp $@
 
 ## testsuite components
-TESTSUITE_AT = rpmgeneral.at rpmquery.at rpmdb.at rpmbuild.at
+TESTSUITE_AT = rpmgeneral.at
+TESTSUITE_AT += rpmquery.at
+TESTSUITE_AT += rpmdb.at
+TESTSUITE_AT += rpmbuild.at
+TESTSUITE_AT += rpmi.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
