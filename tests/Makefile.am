@@ -1,19 +1,8 @@
 ## Process this file with automake to produce Makefile.in.
 
 EXTRA_DIST =
-SUBDIRS = hello-test
 
-check-recursive: ./usr/ ./bin ./var
-
-./usr ./bin ./var: ../rpm
-	${MAKE} -C .. DESTDIR=`pwd` install
-	cp rpmrc macros ./$(pkglibdir)
-	rm -f ./@GZIPBIN@
-	if [ ! -d ./`dirname @GZIPBIN@` ] ; then mkdir -p ./`dirname @GZIPBIN@` ; fi
-	ln -s @GZIPBIN@ ./@GZIPBIN@
-	rm -f ./@BZIP2BIN@
-	if [ ! -d ./`dirname @BZIP2BIN@` ] ; then mkdir -p ./`dirname @BZIP2BIN@` ; fi
-	ln -s @BZIP2BIN@ ./@BZIP2BIN@
-
-clean-local:
-	rm -rf ./usr ./bin ./var
+EXTRA_DIST += data/SPECS/hello.spec
+EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
+EXTRA_DIST += data/RPMS/hello-1.0-1.i386.rpm
+EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
