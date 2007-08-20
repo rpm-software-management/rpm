@@ -34,7 +34,7 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c signature.h stringbuf.c transaction.c \
 	verify.c rpmlock.c rpmlock.h
-librpm_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+librpm_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
