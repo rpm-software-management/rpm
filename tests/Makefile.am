@@ -16,7 +16,7 @@ $(TESTSUITE): $(srcdir)/rpmtests.at $(TESTSUITE_AT) package.m4
 	mv $@.tmp $@
 
 ## testsuite components
-TESTSUITE_AT = rpmgeneral.at
+TESTSUITE_AT = rpmgeneral.at rpmquery.at rpmdb.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
@@ -49,7 +49,7 @@ defs:	defs.in
 DISTCLEANFILES = defs
 EXTRA_DIST += defs.in
 
-## Create a customize rpmrc
+## Create a customized rpmrc
 rpmrc.in:	$(top_srcdir)/rpmrc.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
@@ -58,7 +58,7 @@ rpmrc.in:	$(top_srcdir)/rpmrc.in
 	< $(top_srcdir)/rpmrc.in > rpmrc.in
 CLEANFILES += rpmrc.in
 
-## Create a customizes macros
+## Create a customized macros
 macros.in:	$(top_srcdir)/macros.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
