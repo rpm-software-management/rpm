@@ -26,6 +26,10 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 	echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
 	} >'$(srcdir)/package.m4'
 
+atconfig: ${top_builddir}/config.status
+	(cd ${top_builddir} && ./config.status ${subdir}/atconfig)
+CLEANFILES += atconfig
+
 defs:	defs.in
 	@sed -e "s,[@]rpmbindir[@],$(rpmbindir)," \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
