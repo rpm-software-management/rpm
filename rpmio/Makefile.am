@@ -24,7 +24,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c rpmdav.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
+librpmio_la_LDFLAGS = -release 4.4 \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \
 	@WITH_LUA_LIB@ \
