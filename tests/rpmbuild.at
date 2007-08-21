@@ -92,7 +92,6 @@ rpmbuild \
 AT_CLEANUP
 
 # ------------------------------
-# Check if rpmbuild --rebuild *.src.rpm works
 # Check if rpmbuild --rebuild *.src.rpm
 # honours a relative topdir with --root
 AT_SETUP([rpmbuild --root=... --rebuild])
