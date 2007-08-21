@@ -51,9 +51,9 @@ rpm \
 AT_CLEANUP
 
 
-
-# install a package into a local rpmdb
-# * Shall only work with relocation
+# install a package into a local rpmdb without --relocate and --nodeps
+# * Must fail due to missing deps
+# * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i *.i386.rpm])
 AT_CHECK([
 DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
@@ -70,6 +70,7 @@ AT_CHECK([
 rpm -i \
   --rcfile=${RPMRC} \
   --root="${abs_builddir}"/testing \
+  --ignorearch \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
 [1],
@@ -81,12 +82,59 @@ rpm -i \
 	rtld(GNU_HASH) is needed by hello-1.0-1.i386
 ])
 
+AT_CLEANUP
+
+
+# install a package into a local rpmdb
+# * Shall only work with relocation
+# * Use --ignorearch because we don't know the arch
+AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
+AT_CHECK([
+DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
+rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
+
+rpm \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --initdb
+],
+[0],[ignore],[ignore])
+
 AT_CHECK([
 rpm -i \
   --rcfile=${RPMRC} \
   --root="${abs_builddir}"/testing \
-  --nodeps --relocate=/usr="${abs_builddir}"/testing \
+  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[ignore],
+[ignore])
+
+AT_CLEANUP
+
+
+# install a package into a local rpmdb
+# * Shall only work with relocation
+# * Use --ignorearch because we don't know the arch
+AT_SETUP([rpm -i --relocate=.. *.ppc64.rpm])
+AT_CHECK([
+DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
+rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
+
+rpm \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --initdb
+],
+[0],[ignore],[ignore])
+
+AT_CHECK([
+rpm -i \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing \
+  "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [0],
 [ignore],
