@@ -16,17 +16,80 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+
+# Attempt to initialize a rpmdb
 AT_SETUP([rpm --initdb])
 AT_CHECK([
-rpm --initdb -r "${abs_builddir}"/testing
-status=$?
-AS_IF([test $status -ne 0],[
-  AS_IF([test `id -u` -ne 0],
-    [exit 77])
-])
-exit $status;
+DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
+rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
+rpm \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --initdb],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# Run rpm -qa on an empty rpmdb
+AT_SETUP([rpm -qa])
+AT_CHECK([
+DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
+rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
+rpm \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --initdb
+rpm \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  -qa
 ],
 [0],
 [ignore],
 [ignore])
+AT_CLEANUP
+
+
+
+# install a package into a local rpmdb
+# * Shall only work with relocation
+AT_SETUP([rpm -i *.i386.rpm])
+AT_CHECK([
+DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
+rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
+
+rpm \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --initdb
+],
+[0],[ignore],[ignore])
+
+AT_CHECK([
+rpm -i \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[1],
+[ignore],
+[error: Failed dependencies:
+	/bin/sh is needed by hello-1.0-1.i386
+	libc.so.6 is needed by hello-1.0-1.i386
+	libc.so.6(GLIBC_2.0) is needed by hello-1.0-1.i386
+	rtld(GNU_HASH) is needed by hello-1.0-1.i386
+])
+
+AT_CHECK([
+rpm -i \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --nodeps --relocate=/usr="${abs_builddir}"/testing \
+  "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[ignore],
+[ignore])
+
 AT_CLEANUP
