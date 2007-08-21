@@ -41,3 +41,33 @@ rpmquery \
 ],
 [ignore])
 AT_CLEANUP
+
+AT_SETUP([rpmquery -ql -p *.src.rpm])
+AT_CHECK([
+rpmquery \
+  --rcfile=${RPMRC} \
+  -ql \
+  -p "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
+],
+[0],
+[hello-1.0.tar.gz
+hello.spec
+],
+[ignore])
+AT_CLEANUP
+
+AT_SETUP([rpmquery -ql -p *.i386.rpm])
+AT_CHECK([
+rpmquery \
+  --rcfile=${RPMRC} \
+  -ql \
+  -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[/usr/local/bin/hello
+/usr/share/doc/hello-1.0
+/usr/share/doc/hello-1.0/FAQ
+],
+[ignore])
+AT_CLEANUP
+
