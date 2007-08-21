@@ -10,11 +10,6 @@ rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 TESTSUITE = $(srcdir)/rpmtests
 EXTRA_DIST += local.at $(TESTSUITE)
 
-AUTOTEST = $(AUTOM4TE) --language=autotest
-$(TESTSUITE): $(srcdir)/package.m4 local.at $(TESTSUITE_AT)
-	$(AUTOTEST) -I '$(srcdir)' -o $@.tmp $@.at
-	mv $@.tmp $@
-
 ## testsuite components
 TESTSUITE_AT = rpmtests.at
 TESTSUITE_AT += rpmgeneral.at
@@ -28,9 +23,15 @@ EXTRA_DIST += $(TESTSUITE_AT)
 EXTRA_DIST += data/SPECS/hello.spec
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/RPMS/hello-1.0-1.i386.rpm
+EXTRA_DIST += data/RPMS/hello-1.0-1.ppc64.rpm
 EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
 
 # testsuite voodoo
+AUTOTEST = $(AUTOM4TE) --language=autotest
+$(TESTSUITE): $(srcdir)/package.m4 local.at $(TESTSUITE_AT)
+	$(AUTOTEST) -I '$(srcdir)' -o $@.tmp $@.at
+	mv $@.tmp $@
+
 $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 	@{ \
 	echo '# Signature of the current package.'; \
@@ -45,14 +46,15 @@ atconfig: ${top_builddir}/config.status
 	(cd ${top_builddir} && ./config.status ${subdir}/atconfig)
 CLEANFILES += atconfig
 
-defs:	defs.in
+
+atlocal:	atlocal.in
 	@sed \
 	  -e "s,[@]rpmbindir[@],$(rpmbindir)," \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
-	< $(srcdir)/defs.in > defs
-DISTCLEANFILES = defs
-EXTRA_DIST += defs.in
+	< $(srcdir)/atlocal.in > atlocal
+DISTCLEANFILES = atlocal
+EXTRA_DIST += atlocal.in
 
 ## Create a customized rpmrc
 rpmrc.in:	$(top_srcdir)/rpmrc.in
@@ -82,7 +84,7 @@ testing@RPMCONFIGDIR@/rpmrc: rpmrc.in macros.in $(top_builddir)/config.status
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/macros:${subdir}/macros.in)
 
-check_DATA = defs testing@RPMCONFIGDIR@/rpmrc atconfig atlocal $(TESTSUITE)
+check_DATA = testing@RPMCONFIGDIR@/rpmrc atconfig atlocal $(TESTSUITE)
 
 check-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
