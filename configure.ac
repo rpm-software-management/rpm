@@ -4,7 +4,7 @@ AC_INIT(rpm, 4.4.90, rpm-maint@lists.rpm.org)
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([1.10 foreign tar-ustar])
+AM_INIT_AUTOMAKE([1.10 foreign tar-ustar dist-bzip2])
 
 AC_CONFIG_TESTDIR(tests)
 
@@ -1215,7 +1215,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc rpmpopt
 	doc/sk/Makefile
 	python/Makefile
  	lua/Makefile
- 	tests/Makefile tests/atlocal
+ 	tests/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	
 	echo timestamp > stamp-h.in
