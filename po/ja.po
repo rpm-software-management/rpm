@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 16:53+0200\n"
+"POT-Creation-Date: 2007-08-21 08:04+0200\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1555,22 +1555,22 @@ msgstr "mntctl() でサイズの取得に失敗しました: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() でマウントポイントの取得に失敗しました: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
+#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s に失敗しました: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:562
+#: lib/fs.c:163 rpmio/url.c:562
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/fs.c:230
+#: lib/fs.c:236
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:355
+#: lib/fs.c:361
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "ファイル %s は不明なデバイス上にあります。\n"
@@ -2722,36 +2722,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は %s を満たしません: %s\n"
 
-#: lib/rpmfi.c:562
+#: lib/rpmfi.c:563
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
-#: lib/rpmfi.c:802
+#: lib/rpmfi.c:846
 msgid "========== relocations\n"
 msgstr "========== 再配置\n"
 
-#: lib/rpmfi.c:806
+#: lib/rpmfi.c:850
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 除外しています   %s\n"
 
-#: lib/rpmfi.c:809
+#: lib/rpmfi.c:853
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 再配置しています %s -> %s\n"
 
-#: lib/rpmfi.c:943
+#: lib/rpmfi.c:987
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s を除外しています。\n"
 
-#: lib/rpmfi.c:953
+#: lib/rpmfi.c:997
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています。\n"
 
-#: lib/rpmfi.c:1045
+#: lib/rpmfi.c:1089
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"

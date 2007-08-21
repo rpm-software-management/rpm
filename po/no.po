@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 16:53+0200\n"
+"POT-Creation-Date: 2007-08-21 08:04+0200\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -122,7 +122,7 @@ msgid "RPM version %s\n"
 msgstr "RPM versjon %s\n"
 
 #: rpmqv.c:145
-#, fuzzy, c-format
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
@@ -1549,22 +1549,22 @@ msgstr "mntctl() feilet å returnere størrelse: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
+#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "feil under kjøring av stat på %s: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:562
+#: lib/fs.c:163 rpmio/url.c:562
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: lib/fs.c:230
+#: lib/fs.c:236
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Fil %s: %s\n"
 
-#: lib/fs.c:355
+#: lib/fs.c:361
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "fil %s er på en ukjent enhet\n"
@@ -2733,36 +2733,36 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "pakke %s er i konflikt: %s\n"
 
-#: lib/rpmfi.c:562
+#: lib/rpmfi.c:563
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:802
+#: lib/rpmfi.c:846
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:806
+#: lib/rpmfi.c:850
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "eksluderer %s %s\n"
 
-#: lib/rpmfi.c:809
+#: lib/rpmfi.c:853
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d omplasser %s -> %s\n"
 
-#: lib/rpmfi.c:943
+#: lib/rpmfi.c:987
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "eksluderer %s %s\n"
 
-#: lib/rpmfi.c:953
+#: lib/rpmfi.c:997
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "relokerer %s til %s\n"
 
-#: lib/rpmfi.c:1045
+#: lib/rpmfi.c:1089
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "relokerer katalog %s til %s\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 16:53+0200\n"
+"POT-Creation-Date: 2007-08-21 08:04+0200\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -124,7 +124,7 @@ msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
 
 #: rpmqv.c:145
-#, fuzzy, c-format
+#, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
@@ -1568,22 +1568,22 @@ msgstr "o mntctl() falhou ao devolver o tamanho: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "o mntctl() falhou ao devolver o número de pontos de montagem: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
+#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "Não consegui analisar o %s: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:562
+#: lib/fs.c:163 rpmio/url.c:562
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "falhei ao aceder ao %s: %s\n"
 
-#: lib/fs.c:230
+#: lib/fs.c:236
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Ficheiro%5d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:355
+#: lib/fs.c:361
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "o ficheiro %s está num dispositivo desconhecido\n"
@@ -2767,36 +2767,36 @@ msgstr "  %s     A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
 
-#: lib/rpmfi.c:562
+#: lib/rpmfi.c:563
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido à opção missingok\n"
 
-#: lib/rpmfi.c:802
+#: lib/rpmfi.c:846
 msgid "========== relocations\n"
 msgstr "========== mudanças de local\n"
 
-#: lib/rpmfi.c:806
+#: lib/rpmfi.c:850
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d excluir o %s\n"
 
-#: lib/rpmfi.c:809
+#: lib/rpmfi.c:853
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d mudar de local %s -> %s\n"
 
-#: lib/rpmfi.c:943
+#: lib/rpmfi.c:987
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "a excluir o %s %s\n"
 
-#: lib/rpmfi.c:953
+#: lib/rpmfi.c:997
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "a mudar o %s para %s\n"
 
-#: lib/rpmfi.c:1045
+#: lib/rpmfi.c:1089
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "a mudar a directoria %s para %s\n"

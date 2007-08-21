@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-09 16:53+0200\n"
+"POT-Creation-Date: 2007-08-21 08:04+0200\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1582,22 +1582,22 @@ msgstr "mntctl() n'a pas pu renvoyer la taille: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() n'a pu renvoyer les points de montage: %s\n"
 
-#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
+#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "échec de stat sur %s: %s\n"
 
-#: lib/fs.c:157 rpmio/url.c:562
+#: lib/fs.c:163 rpmio/url.c:562
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "impossible d'ouvrir %s: %s\n"
 
-#: lib/fs.c:230
+#: lib/fs.c:236
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr ""
 
-#: lib/fs.c:355
+#: lib/fs.c:361
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "le fichier %s est sur un périphérique inconnu\n"
@@ -2781,36 +2781,36 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "le paquetage %s a un(e) %s non-satisfaites: %s\n"
 
-#: lib/rpmfi.c:562
+#: lib/rpmfi.c:563
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignoré à cause du drapeau missingok\n"
 
-#: lib/rpmfi.c:802
+#: lib/rpmfi.c:846
 msgid "========== relocations\n"
 msgstr "========== relogements\n"
 
-#: lib/rpmfi.c:806
+#: lib/rpmfi.c:850
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d exclus  %s\n"
 
-#: lib/rpmfi.c:809
+#: lib/rpmfi.c:853
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d reloge %s -> %s\n"
 
-#: lib/rpmfi.c:943
+#: lib/rpmfi.c:987
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "exclusion de %s %s\n"
 
-#: lib/rpmfi.c:953
+#: lib/rpmfi.c:997
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "relogement de %s vers %s\n"
 
-#: lib/rpmfi.c:1045
+#: lib/rpmfi.c:1089
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "relogement du répertoire %s vers %s\n"
