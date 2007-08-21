@@ -1,0 +1,12 @@
+AT_TESTED([rpm rpmbuild rpmquery])
+
+m4_define([RPM_INIT_DB],[
+DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
+rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
+rpm \
+  --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --initdb
+])
+
+AT_INIT
