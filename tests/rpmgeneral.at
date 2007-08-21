@@ -16,6 +16,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+# ------------------------------
 AT_SETUP([rpm --version])
 AT_CHECK([rpm --version],[0],
 [RPM version AT_PACKAGE_VERSION
@@ -23,6 +24,7 @@ AT_CHECK([rpm --version],[0],
 AT_CLEANUP
 
 
+# ------------------------------
 AT_SETUP([rpmbuild --version])
 AT_CHECK([rpmbuild --version],[0],
 [RPM version AT_PACKAGE_VERSION
@@ -30,6 +32,7 @@ AT_CHECK([rpmbuild --version],[0],
 AT_CLEANUP
 
 
+# ------------------------------
 AT_SETUP([rpmquery --version])
 AT_CHECK([rpmquery --version],[0],
 [RPM version AT_PACKAGE_VERSION
@@ -37,6 +40,7 @@ AT_CHECK([rpmquery --version],[0],
 AT_CLEANUP
 
 
+# ------------------------------
 AT_SETUP([rpmi --version])
 AT_CHECK([rpmi --version],[0],
 [RPM version AT_PACKAGE_VERSION
@@ -44,11 +48,14 @@ AT_CHECK([rpmi --version],[0],
 AT_CLEANUP
 
 
+# ------------------------------
 AT_SETUP([rpm --showrc])
 AT_CHECK([rpm --rcfile=${RPMRC} --showrc],[0],
 [ignore])
 AT_CLEANUP
 
+
+# ------------------------------
 # Check rpm --querytags
 # * Some versions of rpm append extraneous whitespaces
 AT_SETUP([rpm --querytags])

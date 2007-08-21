@@ -16,6 +16,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
+# ------------------------------
 AT_SETUP([rpmquery --qf -p *.i386.rpm])
 AT_CHECK([
 rpmquery \
@@ -29,6 +30,7 @@ rpmquery \
 [ignore])
 AT_CLEANUP
 
+# ------------------------------
 AT_SETUP([rpmquery --qf -p *.src.rpm])
 AT_CHECK([
 rpmquery \
@@ -42,6 +44,7 @@ rpmquery \
 [ignore])
 AT_CLEANUP
 
+# ------------------------------
 AT_SETUP([rpmquery -ql -p *.src.rpm])
 AT_CHECK([
 rpmquery \
@@ -56,6 +59,7 @@ hello.spec
 [ignore])
 AT_CLEANUP
 
+# ------------------------------
 AT_SETUP([rpmquery -ql -p *.i386.rpm])
 AT_CHECK([
 rpmquery \
@@ -71,3 +75,50 @@ rpmquery \
 [ignore])
 AT_CLEANUP
 
+
+# ------------------------------
+# install a package into a local rpmdb
+# * Shall only work with relocation
+# * Use --ignorearch because we don't know the arch
+AT_SETUP([rpm -qil hello])
+AT_CHECK([
+RPM_INIT_DB
+],
+[0],[ignore],[ignore])
+
+AT_CHECK([
+rpm --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
+  -i "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm
+],
+[0],
+[ignore],
+[ignore])
+
+AT_CHECK([
+rpm --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  -q hello
+],
+[0],
+[hello-1.0-1.ppc64
+],
+[ignore])
+
+cat > expout << _ATEOF
+${abs_builddir}/testing/check/local/bin/hello
+${abs_builddir}/testing/check/share/doc/hello-1.0
+${abs_builddir}/testing/check/share/doc/hello-1.0/FAQ
+_ATEOF
+
+AT_CHECK([
+rpm --rcfile=${RPMRC} \
+  --root="${abs_builddir}"/testing \
+  -ql hello
+],
+[0],
+[expout],
+[ignore])
+
+AT_CLEANUP

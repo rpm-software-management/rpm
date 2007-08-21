@@ -17,29 +17,22 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+# ------------------------------
 # Attempt to initialize a rpmdb
 AT_SETUP([rpm --initdb])
 AT_CHECK([
-DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
-rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
-rpm \
-  --rcfile=${RPMRC} \
-  --root="${abs_builddir}"/testing \
-  --initdb],
+RPM_INIT_DB
+],
 [0],
 [ignore],
 [ignore])
 AT_CLEANUP
 
+# ------------------------------
 # Run rpm -qa on an empty rpmdb
 AT_SETUP([rpm -qa])
 AT_CHECK([
-DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
-rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
-rpm \
-  --rcfile=${RPMRC} \
-  --root="${abs_builddir}"/testing \
-  --initdb
+RPM_INIT_DB
 rpm \
   --rcfile=${RPMRC} \
   --root="${abs_builddir}"/testing \
@@ -51,18 +44,13 @@ rpm \
 AT_CLEANUP
 
 
+# ------------------------------
 # install a package into a local rpmdb without --relocate and --nodeps
 # * Must fail due to missing deps
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i *.i386.rpm])
 AT_CHECK([
-DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
-rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
-
-rpm \
-  --rcfile=${RPMRC} \
-  --root="${abs_builddir}"/testing \
-  --initdb
+RPM_INIT_DB
 ],
 [0],[ignore],[ignore])
 
@@ -85,18 +73,13 @@ rpm -i \
 AT_CLEANUP
 
 
+# ------------------------------
 # install a package into a local rpmdb
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
 AT_CHECK([
-DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
-rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
-
-rpm \
-  --rcfile=${RPMRC} \
-  --root="${abs_builddir}"/testing \
-  --initdb
+RPM_INIT_DB
 ],
 [0],[ignore],[ignore])
 
@@ -104,7 +87,7 @@ AT_CHECK([
 rpm -i \
   --rcfile=${RPMRC} \
   --root="${abs_builddir}"/testing \
-  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing \
+  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
 [0],
@@ -114,18 +97,13 @@ rpm -i \
 AT_CLEANUP
 
 
+# ------------------------------
 # install a package into a local rpmdb
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.ppc64.rpm])
 AT_CHECK([
-DBPATH=`rpm --rcfile=${RPMRC} --eval '%_dbpath'`
-rm -rf "${abs_builddir}"/testing"${DBPATH}"/*
-
-rpm \
-  --rcfile=${RPMRC} \
-  --root="${abs_builddir}"/testing \
-  --initdb
+RPM_INIT_DB
 ],
 [0],[ignore],[ignore])
 
@@ -133,7 +111,7 @@ AT_CHECK([
 rpm -i \
   --rcfile=${RPMRC} \
   --root="${abs_builddir}"/testing \
-  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing \
+  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [0],

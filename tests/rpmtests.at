@@ -1,7 +1,3 @@
-AT_INIT
-
-AT_TESTED(rpm rpmbuild rpmquery)
-
 m4_include([rpmgeneral.at])
 m4_include([rpmquery.at])
 m4_include([rpmdb.at])

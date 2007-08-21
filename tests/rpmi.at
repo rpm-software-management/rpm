@@ -35,6 +35,7 @@ rpmi \
 [ignore])
 AT_CLEANUP
 
+# ------------------------------
 # Check if rpmi -i *.src.rpm works
 AT_SETUP([rpmi -i *.src.rpm])
 AT_CHECK([
