@@ -8,15 +8,16 @@ rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 
 ##
 TESTSUITE = $(srcdir)/rpmtests
-EXTRA_DIST += rpmtests.at $(TESTSUITE)
+EXTRA_DIST += local.at $(TESTSUITE)
 
 AUTOTEST = $(AUTOM4TE) --language=autotest
-$(TESTSUITE): $(srcdir)/rpmtests.at $(TESTSUITE_AT) package.m4
+$(TESTSUITE): $(srcdir)/package.m4 local.at $(TESTSUITE_AT)
 	$(AUTOTEST) -I '$(srcdir)' -o $@.tmp $@.at
 	mv $@.tmp $@
 
 ## testsuite components
-TESTSUITE_AT = rpmgeneral.at
+TESTSUITE_AT = rpmtests.at
+TESTSUITE_AT += rpmgeneral.at
 TESTSUITE_AT += rpmquery.at
 TESTSUITE_AT += rpmdb.at
 TESTSUITE_AT += rpmbuild.at
