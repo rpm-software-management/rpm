@@ -430,9 +430,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
   }
 
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
-    rc = dbenv->open(dbenv, dbhome, eflags, dbi->dbi_perms);
+    rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
-    rc = dbenv->open(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
+    rc = (dbenv->open)(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
 #endif
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
@@ -867,7 +867,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	    if (rc) goto exit;
 	}
 	    
-	rc = dbenv->open(dbenv, dbhome,
+	rc = (dbenv->open)(dbenv, dbhome,
             DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0);
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
@@ -1303,10 +1303,10 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 #endif
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-		rc = db->open(db, txnid, dbpath, dbsubfile,
+		rc = (db->open)(db, txnid, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 #else
-		rc = db->open(db, dbpath, dbsubfile,
+		rc = (db->open)(db, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 #endif
 

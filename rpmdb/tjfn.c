@@ -42,7 +42,7 @@ db_init(const char * home, DB_ENV ** dbenvp)
     dbenv->set_errpfx(dbenv, "tjfn");
 
     flags = DB_CREATE | DB_INIT_MPOOL;
-    if ((ret = dbenv->open(dbenv, home, flags, 0)) != 0)
+    if ((ret = (dbenv->open)(dbenv, home, flags, 0)) != 0)
 	goto exit;
 
 exit:
@@ -71,12 +71,12 @@ db_open(const char * dbfn, DB_ENV * dbenv, DB ** dbp)
     }
 
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-    ret = db->open(db, NULL, dbfn, NULL, DB_BTREE, DB_CREATE, 0664);
+    ret = (db->open)(db, NULL, dbfn, NULL, DB_BTREE, DB_CREATE, 0664);
 #else
-    ret = db->open(db, dbfn, NULL, DB_BTREE, DB_CREATE, 0664);
+    ret = (db->open)(db, dbfn, NULL, DB_BTREE, DB_CREATE, 0664);
 #endif
     if (ret != 0) {
-	db->err(db, ret, "db->open(%s)", dbfn);
+	db->err(db, ret, "(db->open)(%s)", dbfn);
 	goto err;
     }
 
