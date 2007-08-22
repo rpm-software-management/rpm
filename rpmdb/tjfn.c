@@ -41,7 +41,7 @@ db_init(const char * home, DB_ENV ** dbenvp)
     dbenv->set_errpfx(dbenv, "tjfn");
 
     flags = DB_CREATE | DB_INIT_MPOOL;
-    if ((ret = dbenv->open(dbenv, home, flags, 0)) != 0)
+    if ((ret = (dbenv->open)(dbenv, home, flags, 0)) != 0)
 	goto exit;
 
 exit:
