@@ -11,8 +11,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_MAGIC_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@INCPATH@
+	-I$(top_srcdir)/misc
 
 LIBS =
 
