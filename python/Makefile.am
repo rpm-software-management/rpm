@@ -18,8 +18,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	-I$(top_srcdir)/ \
-	-I$(pyincdir) \
-	@INCPATH@
+	-I$(pyincdir)
 
 noinst_HEADERS = header-py.h \
 	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \

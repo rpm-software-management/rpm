@@ -9,8 +9,7 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@INCPATH@
+	-I$(top_srcdir)/misc
 
 EXTRA_DIST = getdate.y
 

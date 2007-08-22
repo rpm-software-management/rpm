@@ -1,6 +1,6 @@
 # Makefile for misc library.
 
-AM_CPPFLAGS = -I. -I$(top_srcdir) @INCPATH@
+AM_CPPFLAGS = -I. -I$(top_srcdir)
 
 EXTRA_DIST = \
 	alloca.c	basename.c	err.c		error.c		\

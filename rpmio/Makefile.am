@@ -8,8 +8,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_NEON_INCLUDE@ \
 	@WITH_LUA_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@INCPATH@
+	-I$(top_srcdir)/misc
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \

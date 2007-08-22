@@ -11,8 +11,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@WITH_SQLITE3_INCLUDE@ \
-	@WITH_LIBELF_INCLUDE@ \
-	@INCPATH@
+	@WITH_LIBELF_INCLUDE@
 
 EXTRA_DIST = db3.c sqlite.c db_emu.h
 

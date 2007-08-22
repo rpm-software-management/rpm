@@ -10,8 +10,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_POPT_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_MAGIC_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@INCPATH@
+	-I$(top_srcdir)/misc
 
 EXTRA_PROGRAMS =
 
