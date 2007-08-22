@@ -3,4 +3,4 @@ export LD_LIBRARY_PATH
 PATH=`pwd`/testing@rpmbindir@:`pwd`/testing@usrbindir@:$PATH
 export PATH
 
-RPMRC="${abs_srcdir}/testing@usrlibdir@/rpm/rpmrc"
+RPMRC="${abs_srcdir}/testing@RPMCONFIGDIR@/rpmrc"

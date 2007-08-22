@@ -52,6 +52,7 @@ atlocal:	atlocal.in
 	  -e "s,[@]rpmbindir[@],$(rpmbindir)," \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
+	  -e "s,[@]RPMCONFIGDIR[@],$(RPMCONFIGDIR)," \
 	< $(srcdir)/atlocal.in > atlocal
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
