@@ -1189,8 +1189,6 @@ AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
 	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
 AC_SUBST(FINDPROVIDES)
 
-AC_SUBST(INCPATH)
-
 AC_SUBST(RPM)
 
 AC_SUBST(OBJDUMP)
