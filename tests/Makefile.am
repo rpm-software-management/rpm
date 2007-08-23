@@ -70,8 +70,6 @@ CLEANFILES += rpmrc.in
 macros.in:	$(top_srcdir)/macros.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
-	  -e "s,[@]SYSCONFIGDIR[@],`pwd`/testing$(SYSCONFIGDIR),g" \
-	  -e "s,:~/.rpmmacros,," \
 	< $(top_srcdir)/macros.in > macros.in
 CLEANFILES += macros.in
 
