@@ -5,7 +5,7 @@ LINT = splint
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \
 	config.site db db3/configure installplatform platform* \
-	rpm.magic rpmpopt-$(VERSION)
+	rpm.magic
 
 SUBDIRS = po misc @WITH_DB_SUBDIR@ lua rpmio rpmdb lib build python tools scripts doc . tests
 
@@ -34,9 +34,6 @@ pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
 pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub config.site
-
-rpmpopt-$(VERSION): rpmpopt
-	cp rpmpopt $@
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
@@ -168,7 +165,7 @@ uninstall-local:
 distclean-local:
 	@rm -rf Doxytags apidocs 
 	@rm -f stamp-h.in db3/*.orig db3/db3lobjs
-	@rm -f ChangeLog rpmpopt-$(VERSION)
+	@rm -f ChangeLog
 
 .PHONY:	setperms
 setperms:

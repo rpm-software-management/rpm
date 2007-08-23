@@ -1197,7 +1197,7 @@ AC_CONFIG_SUBDIRS(db3)
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc rpmpopt
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
@@ -1215,6 +1215,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc rpmpopt
  	lua/Makefile
  	tests/Makefile
   ])
+AC_CONFIG_FILES([rpmpopt-${VERSION}:rpmpopt.in],,[VERSION=${VERSION}])
 AC_CONFIG_COMMANDS([default],[[	
 	echo timestamp > stamp-h.in
   
