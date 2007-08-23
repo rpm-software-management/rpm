@@ -129,7 +129,7 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 	 */
 	private = 0;
 	if ((ret =
-	    dbenv->open(dbenv, home, DB_INIT_MPOOL | DB_USE_ENVIRON, 0)) != 0) {
+	    (dbenv->open)(dbenv, home, DB_INIT_MPOOL | DB_USE_ENVIRON, 0)) != 0) {
 		if (ret != DB_VERSION_MISMATCH) {
 			if ((ret =
 			    dbenv->set_cachesize(dbenv, 0, cache, 1)) != 0) {
@@ -137,7 +137,7 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 				goto shutdown;
 			}
 			private = 1;
-			ret = dbenv->open(dbenv, home, DB_CREATE |
+			ret = (dbenv->open)(dbenv, home, DB_CREATE |
 			    DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0);
 		}
 		if (ret != 0) {
@@ -186,7 +186,7 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 				goto shutdown;
 			}
 
-			ret = dbp1->open(dbp1,
+			ret = (dbp1->open)(dbp1,
 			    NULL, argv[0], NULL, DB_UNKNOWN, DB_RDONLY, 0);
 
 			/*

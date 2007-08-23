@@ -282,9 +282,9 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 		 * hash databases for which we don't know the hash function).
 		 */
 		dbenv->set_errfile(dbenv, NULL);
-		ret = dbp->open(dbp, NULL, db, subdb, DB_UNKNOWN, 0, 0);
+		ret = (dbp->open)(dbp, NULL, db, subdb, DB_UNKNOWN, 0, 0);
 		dbenv->set_errfile(dbenv, stderr);
-		if (ret != 0 && (ret = dbp->open(
+		if (ret != 0 && (ret = (dbp->open)(
 		    dbp, NULL, db, subdb, DB_UNKNOWN, DB_RDONLY, 0)) != 0) {
 			dbenv->err(dbenv, ret, "DB->open: %s", db);
 			goto err;
@@ -392,7 +392,7 @@ db_init(dbenv, home, ttype, cache, is_private)
 	 * error, I think.
 	 */
 	*is_private = 0;
-	if ((ret = dbenv->open(dbenv, home, DB_USE_ENVIRON, 0)) == 0)
+	if ((ret = (dbenv->open)(dbenv, home, DB_USE_ENVIRON, 0)) == 0)
 		return (0);
 	if (ret == DB_VERSION_MISMATCH)
 		goto err;
@@ -422,7 +422,7 @@ db_init(dbenv, home, ttype, cache, is_private)
 		oflags |= DB_INIT_MPOOL;
 	if (ttype == T_LOG)
 		oflags |= DB_INIT_LOG;
-	if ((ret = dbenv->open(dbenv, home, oflags, 0)) == 0)
+	if ((ret = (dbenv->open)(dbenv, home, oflags, 0)) == 0)
 		return (0);
 
 	/* An environment is required. */

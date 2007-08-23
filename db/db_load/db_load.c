@@ -394,7 +394,7 @@ retry_db:
 #endif
 
 	/* Open the DB file. */
-	if ((ret = dbp->open(dbp, NULL, name, subdb, dbtype,
+	if ((ret = (dbp->open)(dbp, NULL, name, subdb, dbtype,
 	    DB_CREATE | (TXN_ON(dbenv) ? DB_AUTO_COMMIT : 0),
 	    __db_omode("rw-rw-rw-"))) != 0) {
 		dbp->err(dbp, ret, "DB->open: %s", name);
@@ -608,7 +608,7 @@ db_init(dbenv, home, cache, is_private)
 	/* We may be loading into a live environment.  Try and join. */
 	flags = DB_USE_ENVIRON |
 	    DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN;
-	if ((ret = dbenv->open(dbenv, home, flags, 0)) == 0)
+	if ((ret = (dbenv->open)(dbenv, home, flags, 0)) == 0)
 		return (0);
 	if (ret == DB_VERSION_MISMATCH)
 		goto err;
@@ -632,7 +632,7 @@ db_init(dbenv, home, cache, is_private)
 		dbenv->err(dbenv, ret, "set_cachesize");
 		return (1);
 	}
-	if ((ret = dbenv->open(dbenv, home, flags, 0)) == 0)
+	if ((ret = (dbenv->open)(dbenv, home, flags, 0)) == 0)
 		return (0);
 
 	/* An environment is required. */

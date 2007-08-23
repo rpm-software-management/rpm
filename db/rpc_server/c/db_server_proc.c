@@ -394,7 +394,7 @@ __env_open_proc(dbenvcl_id, home, flags, mode, replyp)
 		replyp->envcl_id = new_ctp->ct_id;
 		ret = __env_close_int(dbenvcl_id, 0, 0);
 	} else {
-		ret = dbenv->open(dbenv, fullhome->home, newflags, mode);
+		ret = (dbenv->open)(dbenv, fullhome->home, newflags, mode);
 		dbenv_ctp->ct_envdp.home = fullhome;
 		dbenv_ctp->ct_envdp.envflags = shareflags;
 	}
@@ -1392,7 +1392,7 @@ __db_open_proc(dbpcl_id, txnpcl_id, name, subdb, type, flags, mode, replyp)
 		ret = __db_close_int(dbpcl_id, 0);
 		goto out;
 	}
-	ret = dbp->open(dbp, txnp, name, subdb, (DBTYPE)type, flags, mode);
+	ret = (dbp->open)(dbp, txnp, name, subdb, (DBTYPE)type, flags, mode);
 	if (ret == 0) {
 		(void)dbp->get_type(dbp, &dbtype);
 		replyp->type = dbtype;

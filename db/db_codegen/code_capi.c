@@ -368,7 +368,7 @@ static int\nbdb_env_startup(env_list_t *ep)\n{\n\
 \tif (ep->transaction)\n\
 \t	open_flags |= DB_INIT_LOCK |\n\
 \t	    DB_INIT_LOG | DB_INIT_TXN | DB_RECOVER;\n\
-\tif ((ret = dbenv->open(dbenv, ep->home, open_flags, 0)) != 0) {\n\
+\tif ((ret = (dbenv->open)(dbenv, ep->home, open_flags, 0)) != 0) {\n\
 \t	dbenv->err(dbenv, ret, \"DB_ENV->open: %%s\",  ep->home);\n\
 \t	goto err;\n\
 \t}\n\
@@ -487,7 +487,7 @@ api_c_db()
 
 	fprintf(of, "\
 \n\
-\tif ((ret = dbp->open(dbp, NULL, dp->name, NULL, dp->type,\n\
+\tif ((ret = (dbp->open)(dbp, NULL, dp->name, NULL, dp->type,\n\
 \t    (dp->transaction ? DB_AUTO_COMMIT : 0) |\n\
 \t    DB_CREATE | DB_THREAD, 0)) != 0) {\n\
 \t\tdbp->err(dbp, ret, \"DB->open: %%s\", dp->name);\n\

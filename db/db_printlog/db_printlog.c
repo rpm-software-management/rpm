@@ -173,18 +173,18 @@ main(argc, argv)
 	 * with logging, because we don't want to log the opens.
 	 */
 	if (repflag) {
-		if ((ret = dbenv->open(dbenv, home,
+		if ((ret = (dbenv->open)(dbenv, home,
 		    DB_INIT_MPOOL | DB_USE_ENVIRON, 0)) != 0 &&
 		    (ret == DB_VERSION_MISMATCH ||
-		    (ret = dbenv->open(dbenv, home,
+		    (ret = (dbenv->open)(dbenv, home,
 		    DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0))
 		    != 0)) {
 			dbenv->err(dbenv, ret, "DB_ENV->open");
 			goto shutdown;
 		}
-	} else if ((ret = dbenv->open(dbenv, home, DB_USE_ENVIRON, 0)) != 0 &&
+	} else if ((ret = (dbenv->open)(dbenv, home, DB_USE_ENVIRON, 0)) != 0 &&
 	    (ret == DB_VERSION_MISMATCH ||
-	    (ret = dbenv->open(dbenv, home,
+	    (ret = (dbenv->open)(dbenv, home,
 	    DB_CREATE | DB_INIT_LOG | DB_PRIVATE | DB_USE_ENVIRON, 0)) != 0)) {
 		dbenv->err(dbenv, ret, "DB_ENV->open");
 		goto shutdown;
@@ -544,7 +544,7 @@ open_rep_db(dbenv, dbpp, dbcp)
 
 	dbp = *dbpp;
 	if ((ret =
-	    dbp->open(dbp, NULL, REPDBNAME, NULL, DB_BTREE, 0, 0)) != 0) {
+	    (dbp->open)(dbp, NULL, REPDBNAME, NULL, DB_BTREE, 0, 0)) != 0) {
 		dbenv->err(dbenv, ret, "DB->open");
 		goto err;
 	}

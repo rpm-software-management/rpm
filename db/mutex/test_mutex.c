@@ -673,7 +673,7 @@ tm_env_init()
 		home = TESTDIR;
 	if (nthreads != 1)
 		flags |= DB_THREAD;
-	if ((ret = dbenv->open(dbenv, home, flags, 0)) != 0) {
+	if ((ret = (dbenv->open)(dbenv, home, flags, 0)) != 0) {
 		dbenv->err(dbenv, ret, "environment open: %s", home);
 		return (1);
 	}

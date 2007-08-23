@@ -157,7 +157,7 @@ main(argc, argv)
 	}
 
 	/* An environment is required. */
-	if ((ret = dbenv->open(dbenv, home, DB_USE_ENVIRON, 0)) != 0) {
+	if ((ret = (dbenv->open)(dbenv, home, DB_USE_ENVIRON, 0)) != 0) {
 		dbenv->err(dbenv, ret, "open");
 		goto shutdown;
 	}

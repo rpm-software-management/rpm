@@ -418,9 +418,9 @@ env_init(dbenvp, home, log_dirp, data_dirp, passwd, which)
 		 * We try to attach to a pre-existing environment; if that
 		 * fails, we create a private environment and try again.
 		 */
-		if ((ret = dbenv->open(dbenv, home, DB_USE_ENVIRON, 0)) != 0 &&
+		if ((ret = (dbenv->open)(dbenv, home, DB_USE_ENVIRON, 0)) != 0 &&
 		    (ret == DB_VERSION_MISMATCH ||
-		    (ret = dbenv->open(dbenv, home, DB_CREATE |
+		    (ret = (dbenv->open)(dbenv, home, DB_CREATE |
 		    DB_INIT_LOG | DB_INIT_TXN | DB_PRIVATE | DB_USE_ENVIRON,
 		    0)) != 0)) {
 			dbenv->err(dbenv, ret, "DB_ENV->open: %s", home);
@@ -445,7 +445,7 @@ env_init(dbenvp, home, log_dirp, data_dirp, passwd, which)
 			     ret, "DB_ENV->set_cachesize: %s", home);
 			return (1);
 		}
-		if ((ret = dbenv->open(dbenv, home, DB_CREATE |
+		if ((ret = (dbenv->open)(dbenv, home, DB_CREATE |
 		    DB_INIT_LOG | DB_INIT_MPOOL | DB_INIT_TXN | DB_PRIVATE |
 		    DB_RECOVER_FATAL | DB_USE_ENVIRON, 0)) != 0) {
 			dbenv->err(dbenv, ret, "DB_ENV->open: %s", home);

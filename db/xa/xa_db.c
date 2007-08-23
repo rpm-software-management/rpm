@@ -131,7 +131,7 @@ __xa_open(dbp, txn, name, subdb, type, flags, mode)
 	if ((ret =
 	    __xa_set_txn(dbp, &txn, LF_ISSET(DB_AUTO_COMMIT) ? 1 : 0)) != 0)
 		return (ret);
-	if ((ret = xam->open(dbp, txn, name, subdb, type, flags, mode)) != 0)
+	if ((ret = (xam->open)(dbp, txn, name, subdb, type, flags, mode)) != 0)
 		return (ret);
 
 	/* Wrap any DB handle method that takes a TXN ID as an argument. */
