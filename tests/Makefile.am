@@ -76,14 +76,24 @@ macros.in:	$(top_srcdir)/macros.in
 CLEANFILES += macros.in
 
 
+## Create a customized rpmpopt
+rpmpopt.in:	$(top_srcdir)/rpmpopt.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
+	< $(top_srcdir)/rpmpopt.in > rpmpopt.in
+CLEANFILES += rpmpopt.in
+
+
 ## Create a test-installation directory "testing"
-testing@RPMCONFIGDIR@/rpmrc: rpmrc.in macros.in $(top_builddir)/config.status
+testing@RPMCONFIGDIR@/rpmrc: rpmrc.in macros.in rpmpopt.in $(top_builddir)/config.status
 	(cd ${top_builddir} && \
 	  $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmrc:${subdir}/rpmrc.in)
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/macros:${subdir}/macros.in)
+	(cd ${top_builddir} && \
+	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmpopt-@VERSION@:${subdir}/rpmpopt.in)
 
 check_DATA = testing@RPMCONFIGDIR@/rpmrc atconfig atlocal $(TESTSUITE)
 
