@@ -330,38 +330,6 @@ AM_CONDITIONAL(LIBXML2,[test "$WITH_LIBXML2" = yes])
 localdone=
 
 dirs=$prefix
-if test "$cross_compiling" != "yes"; then
-  dirs="$dirs /usr/local"
-fi
-for dir in $dirs
-do
-	case $dir in
-	NONE|/usr)	continue;;
-	/usr/local)
-		if test X$localdone != X ; then continue; fi
-		localdone="$dir"
-		;;
-	esac
-
-	AC_MSG_CHECKING(for $dir/lib in LIBS)
-	if test -d $dir/lib 2> /dev/null ; then
-		addlib $dir/lib
-		AC_MSG_RESULT(yes)
-	else
-		AC_MSG_RESULT(no)
-	fi
-
-	AC_MSG_CHECKING(for $dir/include in INCPATH)
-	if test -d $dir/include 2>/dev/null ; then
-		AS_IF([test "$dir" != /usr/local],[
-		    INCPATH="$INCPATH -I$dir/include"
-		])
-		AC_MSG_RESULT(yes)
-	else
-		AC_MSG_RESULT(no)
-	fi
-done
-
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
 	if test "$build" = "mips-sni-sysv4" ; then
