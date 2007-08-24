@@ -1146,14 +1146,6 @@ LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-${VERSION}"
 AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
 	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
 AC_SUBST(LIBRPMALIAS_FILENAME)
-FINDREQUIRES="${RPMCONFIGDIR}/find-requires"
-AC_DEFINE_UNQUOTED(FINDREQUIRES, "$FINDREQUIRES",
-	[Full path to find-requires script (usually /usr/lib/rpm/find-requires)])
-AC_SUBST(FINDREQUIRES)
-FINDPROVIDES="${RPMCONFIGDIR}/find-provides"
-AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
-	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
-AC_SUBST(FINDPROVIDES)
 
 AC_SUBST(RPM)
 
