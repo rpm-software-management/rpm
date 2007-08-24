@@ -327,8 +327,6 @@ AM_CONDITIONAL(LIBXML2,[test "$WITH_LIBXML2" = yes])
  
 #=================
 
-localdone=
-
 dirs=$prefix
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
