@@ -861,9 +861,9 @@ AS_IF([test "$with_apidocs" = yes],[
 AC_SUBST(WITH_APIDOCS_TARGET)
 AC_SUBST(WITH_APIDOCS)
 
-withval=no
+with_dmalloc=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
-if test $withval = yes ; then
+if test "$with_dmalloc" = yes ; then
   AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
   LIBS="$LIBS -ldmalloc"
 fi
