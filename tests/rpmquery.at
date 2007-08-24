@@ -77,6 +77,26 @@ AT_CLEANUP
 
 
 # ------------------------------
+# Try to check "scripts"
+# * Gets rpmpopt-$(VERSION) involved
+AT_SETUP([rpm -q --scripts -p *.i386.rpm])
+AT_CHECK([
+rpm \
+  --rcfile=${RPMRC} \
+  -q --scripts \
+  -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[preinstall program: /bin/sh
+postinstall program: /bin/sh
+preuninstall program: /bin/sh
+postuninstall program: /bin/sh
+],
+[ignore])
+AT_CLEANUP
+
+
+# ------------------------------
 # install a package into a local rpmdb
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
