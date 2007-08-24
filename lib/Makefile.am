@@ -84,7 +84,7 @@ if SELINUX
 EXTRA_PROGRAMS += setfiles
 setfiles_SOURCES = setfiles.c
 setfiles_LDFLAGS = @LDFLAGS_STATIC@
-setfiles_LDADD = -lselinux \
+setfiles_LDADD = @WITH_SELINUX_LIB@ \
 	../rpmio/librpmio.la \
 	@WITH_POPT_LIB@
 endif
@@ -111,7 +111,7 @@ tsystem_LDADD = ../rpmio/librpmio.la @WITH_POPT_LIB@
 EXTRA_PROGRAMS += tre
 tre_SOURCES = tre.c
 tre_LDFLAGS = 
-tre_LDADD = librpm.la -lselinux
+tre_LDADD = librpm.la @WITH_SELINUX_LIB@
  
 EXTRA_PROGRAMS += tcpu
 tcpu_SOURCES = tcpu.c
