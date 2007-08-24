@@ -764,12 +764,12 @@ dnl Auto-detect which python bindings should be built.
 dnl
 AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
 
-if test "{$withval}" = "no"; then
+if test "{$with_python}" = "no"; then
   pythonbin=""
-elif test "${withval}" = "yes"; then
+elif test "${with_python}" = "yes"; then
   pythonbin="python"
 else
-  pythonbin="python$withval"
+  pythonbin="python$with_python"
 fi
 AC_PATH_PROG(__PYTHON, "${pythonbin}")
 
