@@ -21,8 +21,6 @@ pkginc_HEADERS = \
 	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
 	stringbuf.h
 
-LIBS =
-
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \

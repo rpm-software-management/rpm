@@ -31,8 +31,6 @@ pkgbin_PROGRAMS = \
 	rpmdb_printlog rpmdb_recover rpmdb_svc rpmdb_stat rpmdb_upgrade \
 	rpmdb_verify 
 
-LIBS =
-
 # XXX watchout, ../db3/libdb.la created by this Makefile may surprise
 libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 

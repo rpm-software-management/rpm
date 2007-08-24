@@ -13,8 +13,6 @@ AM_CPPFLAGS = -I. \
 	@WITH_LIBELF_INCLUDE@ \
 	-I$(top_srcdir)/misc
 
-LIBS =
-
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmfc.h rpmspec.h
 noinst_HEADERS = buildio.h
