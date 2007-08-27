@@ -14,9 +14,10 @@ AM_CPPFLAGS = -I. \
 	@WITH_LIBELF_INCLUDE@
 
 EXTRA_DIST = db3.c db_emu.h
+EXTRA_PROGRAMS =
+check_PROGRAMS =
 
-EXTRA_PROGRAMS = tjfn
-
+check_PROGRAMS += tjfn
 tjfn_SOURCES = tjfn.c
 # tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
@@ -184,7 +185,7 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES)
 
-EXTRA_PROGRAMS += tdbi
+check_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c
 # tdbi_LDFLAGS = @LDFLAGS_STATIC@
 tdbi_LDADD = librpmdb.la
