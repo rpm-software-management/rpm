@@ -1,10 +1,10 @@
 #include "system.h"
                                                                                 
-#include "base64.h"
-#include "mpbarrett.h"
-#include "mp.h"
+#include <beecrypt/base64.h>
+#include <beecrypt/mpbarrett.h>
+#include <beecrypt/mp.h>
 #include "popt.h"
-                                                                                
+
 #include "debug.h"
 
 const char * applechallenge = "09KF45soMYmvj6dpsUGiIg==";
