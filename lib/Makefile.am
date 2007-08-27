@@ -12,7 +12,7 @@ AM_CPPFLAGS = -I. \
 
 EXTRA_DIST = getdate.y
 
-EXTRA_PROGRAMS =
+check_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -80,7 +80,7 @@ lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpm_la_SOURCES)
 
 if SELINUX
-EXTRA_PROGRAMS += setfiles
+check_PROGRAMS += setfiles
 setfiles_SOURCES = setfiles.c
 # setfiles_LDFLAGS = @LDFLAGS_STATIC@
 setfiles_LDADD = @WITH_SELINUX_LIB@ \
@@ -88,43 +88,46 @@ setfiles_LDADD = @WITH_SELINUX_LIB@ \
 	@WITH_POPT_LIB@
 endif
 
-EXTRA_PROGRAMS += tds
+check_PROGRAMS += tds
 tds_SOURCES = tds.c
 tds_LDADD = librpm.la	
  
-EXTRA_PROGRAMS += trb
+check_PROGRAMS += trb
 trb_SOURCES = trb.c
 #trb_LDFLAGS = @LDFLAGS_STATIC@
 trb_LDADD = librpm.la
  
-EXTRA_PROGRAMS += tthread
+check_PROGRAMS += tthread
 tthread_SOURCES = tthread.c
 tthread_LDFLAGS =
 tthread_LDADD = librpm.la @WITH_LIBELF_LIB@
  
-EXTRA_PROGRAMS += tsystem
+check_PROGRAMS += tsystem
 tsystem_SOURCES = tsystem.c
 tsystem_LDFLAGS =
 tsystem_LDADD = ../rpmio/librpmio.la @WITH_POPT_LIB@
  
-EXTRA_PROGRAMS += tre
+check_PROGRAMS += tre
 tre_SOURCES = tre.c
 tre_LDFLAGS = 
 tre_LDADD = librpm.la @WITH_SELINUX_LIB@
  
-EXTRA_PROGRAMS += tcpu
+check_PROGRAMS += tcpu
 tcpu_SOURCES = tcpu.c
 # tcpu_LDFLAGS = @LDFLAGS_STATIC@
 tcpu_LDADD = librpm.la
  
-EXTRA_PROGRAMS += tplatform
+check_PROGRAMS += tplatform
 tplatform_SOURCES = tplatform.c
 # tplatform_LDFLAGS = @LDFLAGS_STATIC@
 tplatform_LDADD = librpm.la
  
-EXTRA_PROGRAMS += tgi
+check_PROGRAMS += tgi
 tgi_SOURCES = tgi.c
 # tgi_LDFLAGS = @LDFLAGS_STATIC@
 tgi_LDADD = librpm.la
 
-CLEANFILES = $(EXTRA_PROGRAMS)
+check_PROGRAMS += tufdio
+tufdio_SOURCES = tufdio.c
+# tgi_LDFLAGS = @LDFLAGS_STATIC@
+tufdio_LDADD = librpm.la
