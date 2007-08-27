@@ -15,14 +15,14 @@ pkginc_HEADERS = \
 	argv.h fts.h rpmdav.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
 	rpmsq.h rpmsw.h ugid.h
-noinst_HEADERS = rpmio_internal.h rpmlua.h rpmhook.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c rpmdav.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
-	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
+	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c \
+	rpmio_internal.h rpmlua.h rpmhook.h
 librpmio_la_LDFLAGS = -release 4.4 \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_NEON_LIB@ \
@@ -54,33 +54,32 @@ tax_SOURCES = tax.c
 tax_LDADD = librpmio.la
 
 EXTRA_PROGRAMS += tdir
-tdir_SOURCES = tdir.c
+tdir_SOURCES = tdir.c rpmio_internal.h
 # tdir_LDFLAGS = @LDFLAGS_STATIC@
 tdir_LDADD = librpmio.la @WITH_POPT_LIB@
 
 EXTRA_PROGRAMS += tfts
-tfts_SOURCES = tfts.c
+tfts_SOURCES = tfts.c rpmio_internal.h
 # tfts_LDFLAGS = @LDFLAGS_STATIC@
 tfts_LDADD = librpmio.la @WITH_POPT_LIB@
 
 EXTRA_PROGRAMS += tget
-tget_SOURCES = tget.c
+tget_SOURCES = tget.c rpmio_internal.h
 # tget_LDFLAGS = @LDFLAGS_STATIC@
 tget_LDADD = librpmio.la @WITH_POPT_LIB@
 
 EXTRA_PROGRAMS += thkp
-thkp_SOURCES = thkp.c
+thkp_SOURCES = thkp.c rpmio_internal.h
 # thkp_LDFLAGS = @LDFLAGS_STATIC@
 thkp_LDADD = librpmio.la @WITH_POPT_LIB@
 
 EXTRA_PROGRAMS += tput
-tput_SOURCES = tput.c
+tput_SOURCES = tput.c rpmio_internal.h
 # tput_LDFLAGS = @LDFLAGS_STATIC@
 tput_LDADD = librpmio.la @WITH_POPT_LIB@
 
-
 EXTRA_PROGRAMS += tglob
-tglob_SOURCES = tglob.c
+tglob_SOURCES = tglob.c rpmio_internal.h
 # tglob_LDFLAGS = @LDFLAGS_STATIC@
 tglob_LDADD = librpmio.la @WITH_POPT_LIB@
 
@@ -90,12 +89,12 @@ tinv_SOURCES = tinv.c
 tinv_LDADD = librpmio.la @WITH_POPT_LIB@
 
 EXTRA_PROGRAMS += tkey
-tkey_SOURCES = tkey.c
+tkey_SOURCES = tkey.c rpmio_internal.h
 # tkey_LDFLAGS = @LDFLAGS_STATIC@
 tkey_LDADD = librpmio.la @WITH_POPT_LIB@
 
 EXTRA_PROGRAMS += tring
-tring_SOURCES = tring.c
+tring_SOURCES = tring.c rpmio_internal.h
 # tring_LDFLAGS = @LDFLAGS_STATIC@
 tring_LDADD = librpmio.la @WITH_POPT_LIB@
 
@@ -106,3 +105,5 @@ trpmio_LDADD = librpmio.la @WITH_POPT_LIB@
 EXTRA_PROGRAMS += tsw
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = librpmio.la
+
+CLEANFILES = $(EXTRA_PROGRAMS)
