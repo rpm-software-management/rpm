@@ -4,7 +4,7 @@ LINT = splint
 
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \
-	config.site db db3/configure installplatform platform* 
+	db db3/configure installplatform platform* 
 
 SUBDIRS = po misc @WITH_DB_SUBDIR@ lua rpmio rpmdb lib build python tools scripts doc . tests
 
