@@ -1111,10 +1111,11 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    char buf[BUFSIZ], *b = NULL, *be;
+    char *buf, *b = NULL, *be;
     int c;
 
-    buf[0] = '\0';
+    buf = alloca(gn + 1);
+    memset(buf, 0, gn + 1);
     if (g != NULL) {
 	strncpy(buf, g, gn);
 	buf[gn] = '\0';
