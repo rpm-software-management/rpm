@@ -1978,8 +1978,6 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 
-	    (void) rpmdbCheckSignals();
-
 	    if ((fi = rpmtsiFi(pi)) == NULL)
 		continue;	/* XXX can't happen */
 	    switch (rpmteType(p)) {
@@ -2031,8 +2029,6 @@ assert(psm != NULL);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	alKey pkgKey;
 	int gotfd;
-
-	(void) rpmdbCheckSignals();
 
 	gotfd = 0;
 	if ((fi = rpmtsiFi(pi)) == NULL)
