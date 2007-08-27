@@ -597,10 +597,13 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
-    char pcmd[BUFSIZ];
+    char *pcmd;
     FILE *shf;
     int rc;
     int c;
+
+    pcmd = alloca(clen + 1);
+    memset(pcmd, 0, (clen + 1));
 
     strncpy(pcmd, cmd, clen);
     pcmd[clen] = '\0';
