@@ -24,11 +24,13 @@ static char * ftppath = FTPPATH;
 static char * httppath = HTTPPATH;
 static char * httpspath = HTTPSPATH;
 
+#if 0
 static int Glob_error(const char *epath, int eerrno)
 {
 fprintf(stderr, "*** glob_error(%p,%d) path %s\n", epath, eerrno, epath);
     return 1;
 }
+#endif
 
 static void printGlob(const char * path)
 {
