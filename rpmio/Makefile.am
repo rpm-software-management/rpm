@@ -53,10 +53,6 @@ EXTRA_PROGRAMS += tax
 tax_SOURCES = tax.c
 tax_LDADD = librpmio.la
 
-EXTRA_PROGRAMS += tdigest
-tdigest_SOURCES = tdigest.c
-tdigest_LDADD = librpmio.la @WITH_POPT_LIB@ -lgcrypt
-
 EXTRA_PROGRAMS += tdir
 tdir_SOURCES = tdir.c
 # tdir_LDFLAGS = @LDFLAGS_STATIC@
