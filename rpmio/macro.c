@@ -599,13 +599,15 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
-    char *pcmd;
+    char pcmd[BUFSIZ];
     FILE *shf;
     int rc;
     int c;
 
-    pcmd = alloca(clen + 1);
-    memset(pcmd, 0, (clen + 1));
+    if (clen >= sizeof(pcmd)) {
+	rpmError(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	return 1;
+    }
 
     strncpy(pcmd, cmd, clen);
     pcmd[clen] = '\0';
@@ -1082,11 +1084,12 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
-    char *buf;
+    char buf[BUFSIZ];
 
-    buf = alloca(msglen + 1);
-    memset(buf, 0, (msglen + 1));
-
+    if (msglen >= sizeof(buf)) {
+	rpmError(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	msglen = sizeof(buf) - 1;
+    }
     strncpy(buf, msg, msglen);
     buf[msglen] = '\0';
     (void) expandU(mb, buf, sizeof(buf));
@@ -1111,12 +1114,15 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
-    char *buf, *b = NULL, *be;
+    char buf[BUFSIZ], *b = NULL, *be;
     int c;
 
-    buf = alloca(gn + 1);
-    memset(buf, 0, gn + 1);
+    buf[0] = '\0';
     if (g != NULL) {
+	if (gn >= sizeof(buf)) {
+	    rpmError(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	    gn = sizeof(buf) - 1;
+        }
 	strncpy(buf, g, gn);
 	buf[gn] = '\0';
 	(void) expandU(mb, buf, sizeof(buf));
