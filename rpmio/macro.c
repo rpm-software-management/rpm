@@ -1080,7 +1080,10 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies mb, rpmGlobalMacroContext, fileSystem @*/
 {
-    char buf[BUFSIZ];
+    char *buf;
+
+    buf = alloca(msglen + 1);
+    memset(buf, 0, (msglen + 1));
 
     strncpy(buf, msg, msglen);
     buf[msglen] = '\0';
