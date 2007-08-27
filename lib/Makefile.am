@@ -4,7 +4,6 @@ LINT = splint
 
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
