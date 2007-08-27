@@ -82,7 +82,7 @@ lint:
 if SELINUX
 EXTRA_PROGRAMS += setfiles
 setfiles_SOURCES = setfiles.c
-setfiles_LDFLAGS = @LDFLAGS_STATIC@
+# setfiles_LDFLAGS = @LDFLAGS_STATIC@
 setfiles_LDADD = @WITH_SELINUX_LIB@ \
 	../rpmio/librpmio.la \
 	@WITH_POPT_LIB@
