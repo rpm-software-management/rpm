@@ -47,63 +47,61 @@ sources:
 lint:
 	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmio_la_SOURCES)
 
-EXTRA_PROGRAMS =
+check_PROGRAMS =
 
-EXTRA_PROGRAMS += tax
+check_PROGRAMS += tax
 tax_SOURCES = tax.c
 tax_LDADD = librpmio.la
 
-EXTRA_PROGRAMS += tdir
+check_PROGRAMS += tdir
 tdir_SOURCES = tdir.c rpmio_internal.h
 # tdir_LDFLAGS = @LDFLAGS_STATIC@
 tdir_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tfts
+check_PROGRAMS += tfts
 tfts_SOURCES = tfts.c rpmio_internal.h
 # tfts_LDFLAGS = @LDFLAGS_STATIC@
 tfts_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tget
+check_PROGRAMS += tget
 tget_SOURCES = tget.c rpmio_internal.h
 # tget_LDFLAGS = @LDFLAGS_STATIC@
 tget_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += thkp
+check_PROGRAMS += thkp
 thkp_SOURCES = thkp.c rpmio_internal.h
 # thkp_LDFLAGS = @LDFLAGS_STATIC@
 thkp_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tput
+check_PROGRAMS += tput
 tput_SOURCES = tput.c rpmio_internal.h
 # tput_LDFLAGS = @LDFLAGS_STATIC@
 tput_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tglob
+check_PROGRAMS += tglob
 tglob_SOURCES = tglob.c rpmio_internal.h
 # tglob_LDFLAGS = @LDFLAGS_STATIC@
 tglob_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tinv
+check_PROGRAMS += tinv
 tinv_SOURCES = tinv.c
 # tinv_LDFLAGS = @LDFLAGS_STATIC@
 tinv_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tkey
+check_PROGRAMS += tkey
 tkey_SOURCES = tkey.c rpmio_internal.h
 # tkey_LDFLAGS = @LDFLAGS_STATIC@
 tkey_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tring
+check_PROGRAMS += tring
 tring_SOURCES = tring.c rpmio_internal.h
 # tring_LDFLAGS = @LDFLAGS_STATIC@
 tring_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += trpmio
+check_PROGRAMS += trpmio
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = librpmio.la @WITH_POPT_LIB@
 
-EXTRA_PROGRAMS += tsw
+check_PROGRAMS += tsw
 tsw_SOURCES = tsw.c
 tsw_LDFLAGS = librpmio.la
-
-CLEANFILES = $(EXTRA_PROGRAMS)
