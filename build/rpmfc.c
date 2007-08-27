@@ -1227,7 +1227,6 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     int fcolor;
     int xx;
 /*@observer@*/
-    static const char * magicfile = "/usr/lib/rpm/magic";
     int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
     magic_t ms = NULL;
 
@@ -1252,11 +1251,10 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
 assert(ms != NULL);	/* XXX figger a proper return path. */
     }
 
-    xx = magic_load(ms, magicfile);
+    xx = magic_load(ms, NULL);
     if (xx == -1) {
 	xx = RPMERR_EXEC;
-	rpmError(xx, _("magic_load(ms, \"%s\") failed: %s\n"),
-		magicfile, magic_error(ms));
+	rpmError(xx, _("magic_load failed: %s\n"), magic_error(ms));
 assert(xx != -1);	/* XXX figger a proper return path. */
     }
 
