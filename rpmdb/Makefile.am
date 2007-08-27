@@ -18,7 +18,7 @@ EXTRA_DIST = db3.c db_emu.h
 EXTRA_PROGRAMS = tjfn
 
 tjfn_SOURCES = tjfn.c
-tjfn_LDFLAGS = @LDFLAGS_STATIC@
+# tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
 
 pkgincdir = $(pkgincludedir)
