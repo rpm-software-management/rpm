@@ -1,6 +1,6 @@
 #include "system.h"
-#include "mpbarrett.h"
-#include "mp.h"
+#include <beecrypt/mpbarrett.h>
+#include <beecrypt/mp.h>
 #include "popt.h"
 #include "debug.h"
 
