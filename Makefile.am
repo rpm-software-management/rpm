@@ -32,7 +32,7 @@ pkglibdir =		@RPMCONFIGDIR@
 pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
 pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
-			config.guess config.sub config.site
+			config.guess config.sub
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
