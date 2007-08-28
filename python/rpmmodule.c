@@ -44,6 +44,18 @@ PyObject * pyrpmError;
 
 /**
  */
+static PyObject * expandMacro(PyObject * self, PyObject * args, PyObject * kwds)
+{
+    char * macro;
+
+    if (!PyArg_ParseTuple(args, "s", &macro))
+	return NULL;
+
+    return Py_BuildValue("s", rpmExpand(macro, NULL));
+}
+
+/**
+ */
 static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * arch;
@@ -186,6 +198,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmrc_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "delMacro", (PyCFunction) rpmrc_DelMacro, METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "expandMacro", (PyCFunction) expandMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
