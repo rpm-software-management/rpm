@@ -41,7 +41,7 @@ const char * macrofiles =
 #endif
 
 /*@observer@*/ /*@unchecked@*/
-static const char * platform = "/etc/rpm/platform";
+static const char * platform = SYSCONFDIR "/rpm/platform";
 /*@only@*/ /*@relnull@*/ /*@unchecked@*/
 static const char ** platpat = NULL;
 /*@unchecked@*/
