@@ -16,6 +16,10 @@
 #
 
 rpm	alias --scripts --qf '\
+%|PRETRANS?{pretrans scriptlet\
+%|PRETRANSPROG?{ (using %{PRETRANSPROG})}|:\n%{PRETRANS}\n}:\
+{%|PRETRANSPROG?{pretrans program: %{PRETRANSPROG}\n}|}|\
+\
 %|PREIN?{preinstall scriptlet\
 %|PREINPROG?{ (using %{PREINPROG})}|:\n%{PREIN}\n}:\
 {%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
@@ -31,6 +35,10 @@ rpm	alias --scripts --qf '\
 %|POSTUN?{postuninstall scriptlet\
 %|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
+\
+%|POSTTRANS?{posttrans scriptlet\
+%|POSTTRANSPROG?{ (using %{POSTTRANSPROG})}|:\n%{POSTTRANS}\n}:\
+{%|POSTTRANSPROG?{posttrans program: %{POSTTRANSPROG}\n}|}|\
 \
 %|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
 ' \
