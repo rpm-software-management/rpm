@@ -2,6 +2,7 @@
 
 LINT = splint
 
+CLEANFILES =
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \
 	db db3/configure installplatform platform* 
@@ -69,6 +70,14 @@ rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmi
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDFLAGS =	@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+
+rpmrc: $(top_srcdir)/rpmrc.in
+	@sed \
+	  -e "s,[@]SYSCONFIGDIR[@],$(sysconfdir)/rpm,g" \
+	  < $(top_srcdir)/rpmrc.in > rpmrc.tmp \
+	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/rpmrc:${subdir}/rpmrc.tmp )
+CLEANFILES += rpmrc.tmp rpmrc
+EXTRA_DIST += rpmrc.in
 
 .PHONY:	splint
 splint:
