@@ -579,7 +579,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     if (newWhat == XDIR)
 	return FA_CREATE;
 
-    if (diskWhat != newWhat)
+    if (diskWhat != newWhat && dbWhat != REG && dbWhat != LINK)
 	return save;
     else if (newWhat != dbWhat && diskWhat != dbWhat)
 	return save;
@@ -595,11 +595,13 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
 	const unsigned char * omd5, * nmd5;
-	if (domd5(fn, (unsigned char *)buffer, 0, NULL))
-	    return FA_CREATE;	/* assume file has been removed */
 	omd5 = rpmfiMD5(ofi);
-	if (omd5 && !memcmp(omd5, buffer, 16))
-	    return FA_CREATE;	/* unmodified config file, replace. */
+	if (diskWhat == REG) {
+	    if (domd5(fn, (unsigned char *)buffer, 0, NULL))
+	        return FA_CREATE;	/* assume file has been removed */
+	    if (omd5 && !memcmp(omd5, buffer, 16))
+	        return FA_CREATE;	/* unmodified config file, replace. */
+	}
 	nmd5 = rpmfiMD5(nfi);
 /*@-nullpass@*/
 	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
@@ -607,11 +609,13 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 /*@=nullpass@*/
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
+	oFLink = rpmfiFLink(ofi);
+	if (diskWhat == LINK) {
 	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 	    return FA_CREATE;	/* assume file has been removed */
-	oFLink = rpmfiFLink(ofi);
 	if (oFLink && !strcmp(oFLink, buffer))
 	    return FA_CREATE;	/* unmodified config file, replace. */
+	}
 	nFLink = rpmfiFLink(nfi);
 /*@-nullpass@*/
 	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
