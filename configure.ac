@@ -1119,11 +1119,6 @@ AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
 AC_SUBST(RPMCONFIGDIR)
 
-SYSCONFIGDIR="`echo /etc/rpm`"
-AC_DEFINE_UNQUOTED(SYSCONFIGDIR, "$SYSCONFIGDIR",
-	[Full path to rpm system configuration directory (usually /etc/rpm)])
-AC_SUBST(SYSCONFIGDIR)
-
 LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
 AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
 	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
@@ -1147,7 +1142,7 @@ AC_CONFIG_SUBDIRS(db3)
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc
+AC_CONFIG_FILES([ Doxyfile Makefile macros platform rpm.pc
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
