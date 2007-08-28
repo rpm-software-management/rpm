@@ -10,6 +10,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
+AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
 
 EXTRA_DIST = getdate.y
 
