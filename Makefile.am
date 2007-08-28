@@ -20,6 +20,7 @@ AM_CPPFLAGS = \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@WITH_LIBELF_INCLUDE@
+AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 

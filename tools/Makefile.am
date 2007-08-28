@@ -11,6 +11,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_MAGIC_INCLUDE@ \
 	-I$(top_srcdir)/misc
+AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 
 EXTRA_PROGRAMS =
 

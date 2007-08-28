@@ -9,6 +9,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_BEECRYPT_INCLUDE@ \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc
+AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 
 EXTRA_DIST = getdate.y
 
