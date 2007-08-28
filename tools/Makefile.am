@@ -36,7 +36,8 @@ bin_PROGRAMS =	rpmgraph
 convertdb1_SOURCES =	convertdb1.c
 
 debugedit_SOURCES =	debugedit.c hashtab.c
-debugedit_LDADD =	@LDFLAGS_STATIC@ \
+#debugedit_LDADD =	@LDFLAGS_STATIC@ \
+debugedit_LDADD =	\
 	@WITH_LIBELF_LIB@ \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@
