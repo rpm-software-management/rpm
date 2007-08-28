@@ -23,7 +23,9 @@
 #include "debug.h"
 
 /*@observer@*/ /*@unchecked@*/
-static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
+static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME 
+  ":" SYSCONFDIR "/rpmrc"
+  ":~/.rpmrc"; 
 
 /*@observer@*/ /*@checked@*/
 const char * macrofiles =
