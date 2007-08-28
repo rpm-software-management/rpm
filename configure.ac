@@ -1112,10 +1112,6 @@ if test X"$prefix" = XNONE ; then
 else
     usrprefix=$prefix
 fi
-LOCALEDIR="`echo ${usrprefix}/share/locale`"
-AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
-	[Full path to rpm locale directory (usually /usr/share/locale)])
-AC_SUBST(LOCALEDIR)
 
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
