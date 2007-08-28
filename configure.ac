@@ -1112,10 +1112,6 @@ if test X"$prefix" = XNONE ; then
 else
     usrprefix=$prefix
 fi
-LOCALEDIR="`echo ${usrprefix}/share/locale`"
-AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR",
-	[Full path to rpm locale directory (usually /usr/share/locale)])
-AC_SUBST(LOCALEDIR)
 
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
@@ -1174,8 +1170,4 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc
  	tests/Makefile
   ])
 AC_CONFIG_FILES([rpmpopt-${VERSION}:rpmpopt.in],,[VERSION=${VERSION}])
-AC_CONFIG_COMMANDS([default],[[	
-	echo timestamp > stamp-h.in
-  
-]],[[]])
 AC_OUTPUT

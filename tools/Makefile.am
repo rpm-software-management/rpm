@@ -11,6 +11,7 @@ AM_CPPFLAGS = -I. \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_MAGIC_INCLUDE@ \
 	-I$(top_srcdir)/misc
+AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 
 EXTRA_PROGRAMS =
 
@@ -18,7 +19,7 @@ LDADD = ../lib/librpm.la
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
-noinst_PROGRAMS = dumpdb
+check_PROGRAMS = dumpdb
 
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS =
@@ -53,27 +54,25 @@ bin_PROGRAMS =		rpmgraph
 rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	$(staticLDFLAGS)
 
-EXTRA_PROGRAMS +=	rpminject
+check_PROGRAMS +=	rpminject
 rpminject_SOURCES =	rpminject.c
 #rpminject_LDFLAGS =	$(staticLDFLAGS)
 rpminject_LDADD =	../build/librpmbuild.la
 
-EXTRA_PROGRAMS +=	rpmsort
+check_PROGRAMS +=	rpmsort
 rpmsort_SOURCES =	rpmsort.c
 #rpmsort_LDFLAGS =	$(staticLDFLAGS)
 
 if LIBXML2
-EXTRA_PROGRAMS +=	rpmtool
+check_PROGRAMS +=	rpmtool
 rpmtool_SOURCES =	rpmtool.c rpmxp.c rpmxp.h
 rpmtool_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
 #rpmtool_LDFLAGS =	$(staticLDFLAGS)
 rpmtool_LDADD =		../lib/librpm.la $(libxml2_LIBS)
 
-EXTRA_PROGRAMS +=	rpmxml
+check_PROGRAMS +=	rpmxml
 rpmxml_SOURCES =	rpmxml.c rpmxp.h
 rpmxml_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
 #rpmxml_LDFLAGS =	$(staticLDFLAGS)
 rpmxml_LDADD =		../lib/librpm.la $(libxml2_LIBS)
 endif
-
-CLEANFILES = $(EXTRA_PROGRAMS)
