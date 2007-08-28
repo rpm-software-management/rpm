@@ -130,7 +130,11 @@ sub process_file {
       if ($package eq 'main') {
         undef $package;
       } else {
-        $require{$package}=undef;
+        # If $package already exists in the $require hash, it means
+        # the package definition is broken up over multiple blocks.
+        # In that case, don't stomp a previous $VERSION we might have
+        # found.  (See BZ#214496.)
+        $require{$package}=undef unless (exists $require{$package});
       }
     }
 
