@@ -594,7 +594,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
 	const unsigned char * omd5, * nmd5;
-	omd5 = rpmfiMD5(ofi)
+	omd5 = rpmfiMD5(ofi);
 	if (diskWhat == REG) {
 	    if (domd5(fn, (unsigned char *)buffer, 0, NULL))
 		return FA_CREATE;       /* assume file has been removed */
