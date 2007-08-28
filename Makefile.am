@@ -122,10 +122,6 @@ pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
-	@rm -f $(DESTDIR)$(libdir)/rpmrc
-	@@LN_S@ rpm/rpmrc $(DESTDIR)$(libdir)/rpmrc
-	@rm -f $(DESTDIR)$(libdir)/rpmpopt
-	@@LN_S@ rpm/rpmpopt $(DESTDIR)$(libdir)/rpmpopt
 	@rm -f $(DESTDIR)$(libdir)/rpm/rpmt
 	@@LN_S@ rpmb $(DESTDIR)$(libdir)/rpm/rpmt
 	@rm -f $(DESTDIR)$(libdir)/rpm/rpme
