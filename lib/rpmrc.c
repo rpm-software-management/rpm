@@ -23,7 +23,9 @@
 #include "debug.h"
 
 /*@observer@*/ /*@unchecked@*/
-static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME 
+static const char *defrcfiles = 
+      RPMCONFIGDIR "/rpmrc" 
+  ":" VENDORRPMRC_FILENAME 
   ":" SYSCONFDIR "/rpmrc"
   ":~/.rpmrc"; 
 

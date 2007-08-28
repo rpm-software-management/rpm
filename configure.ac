@@ -1119,11 +1119,6 @@ AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
 AC_SUBST(RPMCONFIGDIR)
 
-LIBRPMRC_FILENAME="${RPMCONFIGDIR}/rpmrc"
-AC_DEFINE_UNQUOTED(LIBRPMRC_FILENAME, "$LIBRPMRC_FILENAME",
-	[Full path to rpmrc configuration file (usually /usr/lib/rpm/rpmrc)])
-AC_SUBST(LIBRPMRC_FILENAME)
-
 VENDORRPMRC_FILENAME="${RPMCONFIGDIR}/${RPMCANONVENDOR}/rpmrc"
 AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
        [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
