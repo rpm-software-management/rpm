@@ -26,7 +26,17 @@
 static const char *defrcfiles = LIBRPMRC_FILENAME ":" VENDORRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc"; 
 
 /*@observer@*/ /*@checked@*/
-const char * macrofiles = MACROFILES;
+const char * macrofiles =
+#ifndef MACROFILES
+      RPMCONFIGDIR "/macros"
+  ":" RPMCONFIGDIR "/%{_target}/macros"
+  ":" SYSCONFDIR "/rpm/macros.*"
+  ":" SYSCONFDIR "/rpm/macros"
+  ":" SYSCONFDIR "/rpm/%{_target}/macros"
+  ":~/.rpmmacros";
+#else
+  MACROFILES;
+#endif
 
 /*@observer@*/ /*@unchecked@*/
 static const char * platform = "/etc/rpm/platform";
