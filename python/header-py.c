@@ -347,19 +347,6 @@ static struct PyMethodDef hdr_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
-static PyObject * hdr_getattro(PyObject * o, PyObject * n)
-	/*@*/
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
-
 /** \ingroup py_c
  */
 static void hdr_dealloc(hdrObject * s)
@@ -540,6 +527,20 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     }
 
     return o;
+}
+
+static PyObject * hdr_getattro(PyObject * o, PyObject * n)
+{
+    PyObject * res;
+    res = PyObject_GenericGetAttr(o, n);
+    if (res == NULL)
+	res = hdr_subscript(o, n);
+    return res;
+}
+
+static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
+{
+    return PyObject_GenericSetAttr(o, n, v);
 }
 
 /** \ingroup py_c
