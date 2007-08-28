@@ -82,7 +82,7 @@ __db_hcreate(nel)
 	if ((ret = dbp->set_pagesize(dbp, 512)) != 0 ||
 	    (ret = dbp->set_h_ffactor(dbp, 16)) != 0 ||
 	    (ret = dbp->set_h_nelem(dbp, (u_int32_t)nel)) != 0 ||
-	    (ret = dbp->open(dbp,
+	    (ret = (dbp->open)(dbp,
 	    NULL, NULL, NULL, DB_HASH, DB_CREATE, __db_omode("rw----"))) != 0)
 		__os_set_errno(ret);
 

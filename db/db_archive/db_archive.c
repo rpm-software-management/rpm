@@ -117,10 +117,10 @@ main(argc, argv)
 	 * If attaching to a pre-existing environment fails, create a
 	 * private one and try again.
 	 */
-	if ((ret = dbenv->open(dbenv,
+	if ((ret = (dbenv->open)(dbenv,
 	    home, DB_JOINENV | DB_USE_ENVIRON, 0)) != 0 &&
 	    (ret == DB_VERSION_MISMATCH ||
-	    (ret = dbenv->open(dbenv, home, DB_CREATE |
+	    (ret = (dbenv->open)(dbenv, home, DB_CREATE |
 	    DB_INIT_LOG | DB_PRIVATE | DB_USE_ENVIRON, 0)) != 0)) {
 		dbenv->err(dbenv, ret, "DB_ENV->open");
 		goto shutdown;

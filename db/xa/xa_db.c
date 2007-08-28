@@ -96,7 +96,7 @@ __xa_open(dbp, txn, name, subdb, type, flags, mode)
 	xam = (XA_METHODS *)dbp->xa_internal;
 
 	SET_TXN(txn, t);
-	if ((ret = xam->open(dbp, t, name, subdb, type, flags, mode)) != 0)
+	if ((ret = (xam->open)(dbp, t, name, subdb, type, flags, mode)) != 0)
 		return (ret);
 
 	xam->cursor = dbp->cursor;

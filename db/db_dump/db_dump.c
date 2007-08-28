@@ -204,7 +204,7 @@ retry:	if ((ret = db_env_create(&dbenv, 0)) != 0) {
 		goto done;
 	}
 
-	if ((ret = dbp->open(dbp, NULL,
+	if ((ret = (dbp->open)(dbp, NULL,
 	    argv[0], subname, DB_UNKNOWN, DB_RDONLY, 0)) != 0) {
 		dbp->err(dbp, ret, "open: %s", argv[0]);
 		goto err;
@@ -305,7 +305,7 @@ db_init(dbenv, home, is_salvage, cache, is_privatep)
 	 * before we create our own.
 	 */
 	*is_privatep = 0;
-	if ((ret = dbenv->open(dbenv, home, DB_USE_ENVIRON |
+	if ((ret = (dbenv->open)(dbenv, home, DB_USE_ENVIRON |
 	    (is_salvage ? DB_INIT_MPOOL : DB_JOINENV), 0)) == 0)
 		return (0);
 	if (ret == DB_VERSION_MISMATCH)
@@ -323,7 +323,7 @@ db_init(dbenv, home, is_salvage, cache, is_privatep)
 	 */
 	*is_privatep = 1;
 	if ((ret = dbenv->set_cachesize(dbenv, 0, cache, 1)) == 0 &&
-	    (ret = dbenv->open(dbenv, home,
+	    (ret = (dbenv->open)(dbenv, home,
 	    DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0)) == 0)
 		return (0);
 
@@ -416,7 +416,7 @@ dump_sub(dbenv, parent_dbp, parent_name, pflag, keyflag)
 			free(subdb);
 			return (1);
 		}
-		if ((ret = dbp->open(dbp, NULL,
+		if ((ret = (dbp->open)(dbp, NULL,
 		    parent_name, subdb, DB_UNKNOWN, DB_RDONLY, 0)) != 0)
 			dbp->err(dbp, ret,
 			    "DB->open: %s:%s", parent_name, subdb);

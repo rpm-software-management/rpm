@@ -146,7 +146,7 @@ main(argc, argv)
 	    DB_INIT_MPOOL | DB_INIT_TXN | DB_USE_ENVIRON);
 	LF_SET(fatal_recover ? DB_RECOVER_FATAL : DB_RECOVER);
 	LF_SET(retain_env ? 0 : DB_PRIVATE);
-	if ((ret = dbenv->open(dbenv, home, flags, 0)) != 0) {
+	if ((ret = (dbenv->open)(dbenv, home, flags, 0)) != 0) {
 		dbenv->err(dbenv, ret, "DB_ENV->open");
 		goto shutdown;
 	}

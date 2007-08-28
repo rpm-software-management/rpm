@@ -235,7 +235,7 @@ __db_ndbm_open(file, oflags, mode)
 	if ((ret = dbp->set_pagesize(dbp, 4096)) != 0 ||
 	    (ret = dbp->set_h_ffactor(dbp, 40)) != 0 ||
 	    (ret = dbp->set_h_nelem(dbp, 1)) != 0 ||
-	    (ret = dbp->open(dbp, NULL,
+	    (ret = (dbp->open)(dbp, NULL,
 	    path, NULL, DB_HASH, __db_oflags(oflags), mode)) != 0) {
 		__os_set_errno(ret);
 		return (NULL);

@@ -824,7 +824,7 @@ env_recover(progname)
 			printf("Running recovery on %s\n", hp->home);
 		flags = DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_MPOOL |
 		    DB_INIT_TXN | DB_USE_ENVIRON | DB_RECOVER;
-		if ((ret = dbenv->open(dbenv, hp->home, flags, 0)) != 0) {
+		if ((ret = (dbenv->open)(dbenv, hp->home, flags, 0)) != 0) {
 			dbenv->err(dbenv, ret, "DB_ENV->open");
 			goto error;
 		}

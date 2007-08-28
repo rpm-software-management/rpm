@@ -1894,7 +1894,7 @@ db_ret_t Db_key_range(struct Db *self,DB_TXN *txnid,DBT *key,DB_KEY_RANGE *key_r
 		return self->key_range(self, txnid, key, key_range, flags);
 	}
 db_ret_t Db_open(struct Db *self,DB_TXN *txnid,char const *file,char const *database,DBTYPE type,u_int32_t flags,int mode){
-		return self->open(self, txnid, file, database,
+		return (self->open)(self, txnid, file, database,
 		    type, flags, mode);
 	}
 int Db_pget(struct Db *self,DB_TXN *txnid,DBT *key,DBT *pkey,DBT *data,u_int32_t flags){
@@ -2103,7 +2103,7 @@ int_bool DbEnv_get_verbose(struct DbEnv *self,u_int32_t which){
 		return ret;
 	}
 db_ret_t DbEnv_open(struct DbEnv *self,char const *db_home,u_int32_t flags,int mode){
-		return self->open(self, db_home, flags, mode);
+		return (self->open)(self, db_home, flags, mode);
 	}
 db_ret_t DbEnv_remove(struct DbEnv *self,char const *db_home,u_int32_t flags){
 		return self->remove(self, db_home, flags);
@@ -2499,7 +2499,7 @@ db_ret_t DbSequence_initial_value(struct DbSequence *self,db_seq_t val){
 		return self->initial_value(self, val);
 	}
 db_ret_t DbSequence_open(struct DbSequence *self,DB_TXN *txnid,DBT *key,u_int32_t flags){
-		return self->open(self, txnid, key, flags);
+		return (self->open)(self, txnid, key, flags);
 	}
 db_ret_t DbSequence_remove(struct DbSequence *self,DB_TXN *txnid,u_int32_t flags){
 		return self->remove(self, txnid, flags);

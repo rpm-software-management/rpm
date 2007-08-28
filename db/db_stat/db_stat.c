@@ -278,7 +278,7 @@ retry:	if ((ret = db_env_create(&dbenv, env_flags)) != 0) {
 			goto err;
 		}
 
-		if ((ret = dbp->open(dbp,
+		if ((ret = (dbp->open)(dbp,
 		    NULL, db, subdb, DB_UNKNOWN, DB_RDONLY, 0)) != 0) {
 			dbenv->err(dbenv, ret, "DB->open: %s", db);
 			goto err;
@@ -316,7 +316,7 @@ retry:	if ((ret = db_env_create(&dbenv, env_flags)) != 0) {
 				dbenv->err(dbenv, ret, "db_create");
 				goto err;
 			}
-			if ((ret = dbp->open(alt_dbp, NULL,
+			if ((ret = (dbp->open)(alt_dbp, NULL,
 			    db, subdb, DB_UNKNOWN, DB_RDONLY, 0)) != 0) {
 				if (subdb == NULL)
 					dbenv->err(dbenv,
@@ -413,7 +413,7 @@ db_init(dbenv, home, ttype, cache, is_private)
 	 */
 	*is_private = 0;
 	if ((ret =
-	    dbenv->open(dbenv, home, DB_JOINENV | DB_USE_ENVIRON, 0)) == 0)
+	    (dbenv->open)(dbenv, home, DB_JOINENV | DB_USE_ENVIRON, 0)) == 0)
 		return (0);
 	if (ret == DB_VERSION_MISMATCH)
 		goto err;
@@ -445,7 +445,7 @@ db_init(dbenv, home, ttype, cache, is_private)
 		oflags |= DB_INIT_LOG;
 	if (ttype == T_REP)
 		oflags |= DB_INIT_REP;
-	if ((ret = dbenv->open(dbenv, home, oflags, 0)) == 0)
+	if ((ret = (dbenv->open)(dbenv, home, oflags, 0)) == 0)
 		return (0);
 
 	/* An environment is required. */

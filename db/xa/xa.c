@@ -219,7 +219,7 @@ __db_xa_open(xa_info, rmid, arg_flags)
 	/* Open a new environment. */
 	if (db_env_create(&dbenv, 0) != 0)
 		return (XAER_RMERR);
-	if (dbenv->open(dbenv, xa_info, XA_FLAGS, 0) != 0)
+	if ((dbenv->open)(dbenv, xa_info, XA_FLAGS, 0) != 0)
 		goto err;
 
 	/* Create the mapping. */

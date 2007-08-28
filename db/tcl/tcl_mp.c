@@ -276,7 +276,7 @@ tcl_Mp(interp, objc, objv, envp, envip)
 	 * XXX
 	 * Interface doesn't currently support DB_MPOOLFILE configuration.
 	 */
-	if ((ret = mpf->open(mpf, file, flag, mode, (size_t)pgsize)) != 0) {
+	if ((ret = (mpf->open)(mpf, file, flag, mode, (size_t)pgsize)) != 0) {
 		result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "mpool");
 		_DeleteInfo(ip);
 

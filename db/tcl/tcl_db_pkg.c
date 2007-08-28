@@ -1327,7 +1327,7 @@ bdb_EnvOpen(interp, objc, objv, ip, env)
 	 * Now open the environment.
 	 */
 	_debug_check();
-	ret = (*env)->open(*env, home, open_flags, mode);
+	ret = ((*env)->open)(*env, home, open_flags, mode);
 	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "env open");
 
 	if (rep_flags != 0 && result == TCL_OK) {
@@ -2136,7 +2136,7 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 	_debug_check();
 
 	/* Open the database. */
-	ret = (*dbp)->open(*dbp, txn, db, subdb, type, open_flags, mode);
+	ret = ((*dbp)->open)(*dbp, txn, db, subdb, type, open_flags, mode);
 	result = _ReturnSetup(interp, ret, DB_RETOK_STD(ret), "db open");
 
 error:
@@ -2395,7 +2395,7 @@ bdb_SeqOpen(interp, objc, objv, ip, seqp)
 		    ret, DB_RETOK_STD(ret), "sequence init")) != TCL_OK)
 			goto error;
 	}
-	ret = (*seqp)->open(*seqp, txn, &key, oflags);
+	ret = ((*seqp)->open)(*seqp, txn, &key, oflags);
 	if ((result = _ReturnSetup(interp,
 	    ret, DB_RETOK_STD(ret), "sequence open")) != TCL_OK)
 		goto error;

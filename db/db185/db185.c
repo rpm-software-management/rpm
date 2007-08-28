@@ -230,7 +230,7 @@ __db185_open(file, oflags, mode, type, openinfo)
 	dbp->api_internal = db185p;
 
 	/* Open the database. */
-	if ((ret = dbp->open(dbp, NULL,
+	if ((ret = (dbp->open)(dbp, NULL,
 	    file, NULL, type, __db_oflags(oflags), mode)) != 0)
 		goto err;
 

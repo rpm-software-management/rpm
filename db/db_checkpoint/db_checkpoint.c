@@ -155,7 +155,7 @@ main(argc, argv)
 		goto shutdown;
 	}
 	/* Initialize the environment. */
-	if ((ret = dbenv->open(dbenv,
+	if ((ret = (dbenv->open)(dbenv,
 	    home, DB_JOINENV | DB_USE_ENVIRON, 0)) != 0) {
 		dbenv->err(dbenv, ret, "open");
 		goto shutdown;
