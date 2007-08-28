@@ -1,3 +1,34 @@
+4.4.2.1 -> 4.4.2.2:
+	- avoid .rpmnew if file in package hasn't changed (rhbz#194246)
+	- avoid .rpmnew/.rpmsave if files only differ by timestamp (rhbz#128622)
+	- minor makefile cleanups
+	- install preferred multilib color packages first (rhbz#214737)
+	- show pre- and posttrans scripts in --scripts query (susebz#253620)
+	- create compat macros for ia32e and amd64 (rhbz#211119, #223355)
+	- fix various buffer overflows in macro handling (rhbz#253971)
+	- fix building with latest glibc open() changes
+	- convert manuals to UTF-8
+	- make find-lang --with-gnome picks up omf files (rhbz#251400)
+	- fail build on dependency extraction errors (rhbz#226751)
+	- update default per-arch compiler flags for modern gcc (rhbz#212583)
+	- add comment about checking --help to manuals (rhbz#164281)
+	- avoid truncating /var/log/rpmpkgs in case of errors (rhbz#232830)
+	- clarify --initdb usage in manual (rhbz#218057)
+	- skip stale and unaccessible (FUSE) mountpoints (rhbz#190496, 220991)
+	- buildid-related debugedit fixes 
+	- add/update Spanish and Italian translations
+	- add missing files for translation (rhbz#249608)
+	- ARM-architecture fixes 
+	- fix --dump usage description in manual
+	- update scriptlet names to match with reality (rhbz#248128)
+	- make docdir checking strict (rhbz#246819)
+	- perl dependency extraction fixes (rhbz#214496, #198033, #249135)
+	- permit API users to select non-exiting rpmdb termination
+	- dont check for termination signals in middle of transaction
+	- avoid leaving stale locks around on python tracebacks
+	- python: add methods for checking and terminating on signals
+	- python: add method for expanding macros
+
 4.4.2 -> 4.4.2.1:
 	- remove internal sqlite, zlib, gettext
 	- remove obsolete utilities
