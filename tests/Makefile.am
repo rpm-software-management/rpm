@@ -58,13 +58,14 @@ DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
 
 ## Create a customized rpmrc
-rpmrc.in:	$(top_srcdir)/rpmrc.in
+rpmrc:	$(top_srcdir)/rpmrc.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
-	  -e "s,[@]SYSCONFIGDIR[@],`pwd`/testing$(SYSCONFIGDIR),g" \
+	  -e "s,[@]SYSCONFIGDIR[@],`pwd`/testing$(sysconfdir)/rpm,g" \
 	  -e "s,:~/.rpmmacros,," \
-	< $(top_srcdir)/rpmrc.in > rpmrc.in
-CLEANFILES += rpmrc.in
+	< $(top_srcdir)/rpmrc.in > rpmrc.tmp \
+	&& ( cd $(top_builddir) && ./config.status --file=${subdir}/rpmrc:${subdir}/rpmrc.tmp )
+CLEANFILES += rpmrc rpmrc.tmp
 
 ## Create a customized macros
 macros.in:	$(top_srcdir)/macros.in
@@ -83,11 +84,10 @@ CLEANFILES += rpmpopt.in
 
 
 ## Create a test-installation directory "testing"
-testing@RPMCONFIGDIR@/rpmrc: rpmrc.in macros.in rpmpopt.in $(top_builddir)/config.status
+testing@RPMCONFIGDIR@/rpmrc: rpmrc macros.in rpmpopt.in $(top_builddir)/config.status
 	(cd ${top_builddir} && \
 	  $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
-	(cd ${top_builddir} && \
-	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmrc:${subdir}/rpmrc.in)
+	$(INSTALL_DATA) rpmrc testing$(RPMCONFIGDIR)/rpmrc
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/macros:${subdir}/macros.in)
 	(cd ${top_builddir} && \
