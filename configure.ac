@@ -1174,8 +1174,4 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpm.pc
  	tests/Makefile
   ])
 AC_CONFIG_FILES([rpmpopt-${VERSION}:rpmpopt.in],,[VERSION=${VERSION}])
-AC_CONFIG_COMMANDS([default],[[	
-	echo timestamp > stamp-h.in
-  
-]],[[]])
 AC_OUTPUT
