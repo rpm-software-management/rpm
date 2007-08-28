@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 12:55+0300\n"
+"POT-Creation-Date: 2007-08-28 11:22+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -514,87 +514,87 @@ msgstr "無法將特殊 %%doc 與其他形式混合：%s\n"
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1173
+#: build/files.c:1175
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "曾列出兩次的檔案：%s\n"
 
-#: build/files.c:1312
+#: build/files.c:1314
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "到 BuildRoot 的符號連結：%s -> %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1561
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "檔案與字首不匹配 (%s)：%s\n"
 
-#: build/files.c:1583
+#: build/files.c:1585
 #, c-format
 msgid "File not found: %s\n"
 msgstr "檔案找不到：%s\n"
 
-#: build/files.c:1795
+#: build/files.c:1797
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s：無法呼叫不明的標記 (%d)。\n"
 
-#: build/files.c:1801
+#: build/files.c:1803
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:1805 lib/rpmchecksig.c:611
+#: build/files.c:1807 lib/rpmchecksig.c:611
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
 
-#: build/files.c:1812
+#: build/files.c:1814
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te 策略讀取失敗。\n"
 
-#: build/files.c:1865
+#: build/files.c:1867
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "檔案需要以「/」開頭：%s\n"
 
-#: build/files.c:1889
+#: build/files.c:1891
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "不容許以萬用字元解析：%s\n"
 
-#: build/files.c:1906 lib/rpminstall.c:362
+#: build/files.c:1908 lib/rpminstall.c:362
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "以萬用字元解析找不到檔案：%s\n"
 
-#: build/files.c:1966
+#: build/files.c:1968
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "無法開啟 %%files 的檔案 %s: %s\n"
 
-#: build/files.c:1977 build/pack.c:155
+#: build/files.c:1979 build/pack.c:155
 #, c-format
 msgid "line: %s\n"
 msgstr "列：%s\n"
 
-#: build/files.c:2387
+#: build/files.c:2389
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "損壞的檔案：%s：%s\n"
 
-#: build/files.c:2411 build/parsePrep.c:50
+#: build/files.c:2413 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "損壞的所有者/組別：%s\n"
 
-#: build/files.c:2456
+#: build/files.c:2458
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "正在檢查未被打包的檔案：%s\n"
 
-#: build/files.c:2473
+#: build/files.c:2475
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -603,7 +603,7 @@ msgstr ""
 "發現被安裝但未被打包的檔案：\n"
 "%s"
 
-#: build/files.c:2501
+#: build/files.c:2503
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "正在處理檔案：%s-%s-%s\n"
@@ -742,7 +742,7 @@ msgstr "無法重載簽名表頭。\n"
 msgid "Could not open %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/pack.c:645 lib/psm.c:1640
+#: build/pack.c:645 lib/psm.c:1645
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "無法寫入套件：%s\n"
@@ -772,7 +772,7 @@ msgstr "無法從 %s 讀取酬載: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1909
+#: build/pack.c:738 lib/psm.c:1914
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "已寫入：%s\n"
@@ -1310,6 +1310,62 @@ msgstr "無視目標平台"
 msgid "lookup i18N strings in specfile catalog"
 msgstr "在規格檔目錄中查找 i18N 字串"
 
+#: build/rpmfc.c:96
+#, fuzzy, c-format
+msgid "\texecv(%s) pid %d\n"
+msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
+
+#. XXX this error message is probably not seen.
+#: build/rpmfc.c:102
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "無法執行 %s: %s\n"
+
+#: build/rpmfc.c:107 lib/psm.c:914
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "無法開啟 %s：%s\n"
+
+#: build/rpmfc.c:192
+#, fuzzy, c-format
+msgid "\twaitpid(%d) rc %d status %x\n"
+msgstr "%s: waitpid(%d) rc %d 狀況 %x 秒 %u.%03u\n"
+
+#: build/rpmfc.c:196
+#, fuzzy, c-format
+msgid "%s failed\n"
+msgstr "%s 失敗：%s\n"
+
+#: build/rpmfc.c:200
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
+msgstr "無法寫入酬載到 %s: %s\n"
+
+#: build/rpmfc.c:1231
+#, fuzzy, c-format
+msgid "magic_open(0x%x) failed: %s\n"
+msgstr "開啟 %s 失敗：%s\n"
+
+#: build/rpmfc.c:1239
+#, fuzzy, c-format
+msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgstr "%s 移除目錄 %s 失敗：%s\n"
+
+#: build/rpmfc.c:1274
+#, c-format
+msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
+msgstr ""
+
+#: build/rpmfc.c:1495
+#, fuzzy, c-format
+msgid "Finding  %s: %s\n"
+msgstr "檔案 %s: %s\n"
+
+#: build/rpmfc.c:1501 build/rpmfc.c:1510
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
+msgstr "讀取 %s 失敗: %s。\n"
+
 #: build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s\n"
@@ -1427,32 +1483,32 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "從樹狀排列關係移除 %s\"%s\"。\n"
 
 #. Record all relations.
-#: lib/depends.c:1265
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr "========== 記錄樹狀排列關係\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1357
+#: lib/depends.c:1363
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr "========== 樹狀排列套件 (次序、#前行者、#後繼者、樹、深度、廣度)\n"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1459
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 只有後繼符號 (%d 位元組)\n"
 
-#: lib/depends.c:1526
+#: lib/depends.c:1532
 msgid "LOOP:\n"
 msgstr "迴圈：\n"
 
-#: lib/depends.c:1561
+#: lib/depends.c:1567
 msgid "========== continuing tsort ...\n"
 msgstr "========== 繼續樹狀排列…\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1566
+#: lib/depends.c:1572
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"
@@ -1492,22 +1548,22 @@ msgstr "mntctl() 回傳大小失敗：%s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() 回傳掛載點失敗：%s\n"
 
-#: lib/fs.c:112 lib/fs.c:213 lib/fs.c:332
+#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "無法檢驗狀態：%s：%s\n"
 
-#: lib/fs.c:157 rpmio/url.c:562
+#: lib/fs.c:163 rpmio/url.c:562
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: lib/fs.c:230
+#: lib/fs.c:236
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:355
+#: lib/fs.c:361
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "檔案 %s 位於一個不明的裝置上\n"
@@ -2320,90 +2376,85 @@ msgstr "需要一個原始碼套件，但這是一個二進位套件\n"
 msgid "source package contains no .spec file\n"
 msgstr "原始碼套件內沒有 .spec 檔案\n"
 
-#: lib/psm.c:483
+#: lib/psm.c:488
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) rc %d 狀況 %x 秒 %u.%03u\n"
 
-#: lib/psm.c:642
+#: lib/psm.c:647
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s(%s-%s-%s.%s) 正在執行 <lua> 短命令稿。\n"
 
-#: lib/psm.c:659
+#: lib/psm.c:664
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s.%s) 正在略過冗餘的「%s」。\n"
 
-#: lib/psm.c:667
+#: lib/psm.c:672
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s.%s) %s同步的短命令稿開始\n"
 
-#: lib/psm.c:874
+#: lib/psm.c:879
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 
-#: lib/psm.c:909
-#, fuzzy, c-format
-msgid "Couldn't fork %s: %s\n"
-msgstr "無法開啟 %s：%s\n"
-
-#: lib/psm.c:920
+#: lib/psm.c:925
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:927
+#: lib/psm.c:932
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
 
-#: lib/psm.c:931
+#: lib/psm.c:936
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
 
-#: lib/psm.c:1366
+#: lib/psm.c:1371
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s ：%s 含有 %d 個檔案，test = %d\n"
 
-#: lib/psm.c:1543
+#: lib/psm.c:1548
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s：%s 短命令稿執行失敗 (%d)，略過 %s\n"
 
-#: lib/psm.c:1652
+#: lib/psm.c:1657
 msgid "Unable to reload signature header\n"
 msgstr "無法重載簽名表頭\n"
 
-#: lib/psm.c:1730
+#: lib/psm.c:1735
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "解壓保存檔案失敗 %s%s：%s\n"
 
-#: lib/psm.c:1731
+#: lib/psm.c:1736
 msgid " on file "
 msgstr "  於檔案 "
 
-#: lib/psm.c:1917
+#: lib/psm.c:1922
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s 失敗的於檔案 %s: %s\n"
 
-#: lib/psm.c:1920
+#: lib/psm.c:1925
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗：%s\n"
 
-#: lib/psm.c:2108
+#: lib/psm.c:2113
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr "試圖在記錄板(%2$u)中標記 %1$s 為已安裝。\n"
 
-#: lib/psm.c:2141
+#: lib/psm.c:2146
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "試圖在記錄板(0x%2$x)中標記 %1$s 為已清除。\n"
@@ -2649,36 +2700,36 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "套件 %s 有不滿足的 %s：%s\n"
 
-#: lib/rpmfi.c:561
+#: lib/rpmfi.c:562
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s 由於 missingok 旗標而被略過\n"
 
-#: lib/rpmfi.c:801
+#: lib/rpmfi.c:855
 msgid "========== relocations\n"
 msgstr "========== 重新部署\n"
 
-#: lib/rpmfi.c:805
+#: lib/rpmfi.c:859
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 排除  %s\n"
 
-#: lib/rpmfi.c:808
+#: lib/rpmfi.c:862
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 重新部署 %s -> %s\n"
 
-#: lib/rpmfi.c:942
+#: lib/rpmfi.c:996
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "排除 %s %s\n"
 
-#: lib/rpmfi.c:952
+#: lib/rpmfi.c:1006
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "重新部署 %s 到 %s\n"
 
-#: lib/rpmfi.c:1044
+#: lib/rpmfi.c:1098
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "重新部署目錄 %s 到 %s\n"
@@ -2875,6 +2926,16 @@ msgstr "套件內建短命令稿在安裝程序中可以存取 rpm 資料庫。"
 #: lib/rpmlibprov.c:57
 msgid "internal support for lua scripts."
 msgstr "內部支援 lua 命令稿。"
+
+#: lib/rpmlock.c:137 lib/rpmlock.c:144
+#, fuzzy, c-format
+msgid "can't create transaction lock on %s\n"
+msgstr "建立異動作業集"
+
+#: lib/rpmlock.c:141
+#, fuzzy, c-format
+msgid "waiting for transaction lock on %s\n"
+msgstr "產生異動作業記錄板(%p, %p)\n"
 
 #. @observer@
 #: lib/rpmps.c:200
@@ -3512,23 +3573,23 @@ msgstr "計算檔案部署\n"
 msgid "Creating auto-rollback transaction\n"
 msgstr "產生自動返回異動作業\n"
 
-#: lib/transaction.c:2086
+#: lib/transaction.c:2082
 msgid "Add failed.  Could not read package header.\n"
 msgstr "加入失敗。無法讀取套件表頭。\n"
 
-#: lib/transaction.c:2170
+#: lib/transaction.c:2166
 msgid "Add failed in rpmpsmStage().\n"
 msgstr "加入 rpmpsmStage() 中失敗。\n"
 
-#: lib/transaction.c:2214
+#: lib/transaction.c:2210
 msgid "Add failed.  Could not get file list.\n"
 msgstr "加入失敗。無法取得檔案清單。\n"
 
-#: lib/transaction.c:2263
+#: lib/transaction.c:2259
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr "清除 rpmpsmStage() 中檔案失敗。\n"
 
-#: lib/transaction.c:2324
+#: lib/transaction.c:2320
 msgid "running post-transaction scripts\n"
 msgstr "正在執行異動作業後期命令稿\n"
 
@@ -3541,6 +3602,11 @@ msgstr "缺少      %c %s"
 #, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "無法滿足 %s 的相依性："
+
+#: misc/error.c:107
+#, fuzzy
+msgid "Unknown system error"
+msgstr "不明的系統：%s\n"
 
 #: rpmdb/db3.c:160
 #, c-format
@@ -3736,164 +3802,180 @@ msgstr "無法使用資料庫 %2$d- %3$s(%4$d) 開啟 %1$s 索引\n"
 msgid "cannot open %s index\n"
 msgstr "無法開啟 %s 索引\n"
 
-#: rpmdb/rpmdb.c:991
+#: rpmdb/rpmdb.c:999
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: rpmdb/rpmdb.c:1261 rpmdb/rpmdb.c:1392 rpmdb/rpmdb.c:1448 rpmdb/rpmdb.c:2410
-#: rpmdb/rpmdb.c:2539 rpmdb/rpmdb.c:3308
+#: rpmdb/rpmdb.c:1269 rpmdb/rpmdb.c:1400 rpmdb/rpmdb.c:1456 rpmdb/rpmdb.c:2418
+#: rpmdb/rpmdb.c:2547 rpmdb/rpmdb.c:3316
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:1642
+#: rpmdb/rpmdb.c:1650
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader：跳過"
 
-#: rpmdb/rpmdb.c:1652
+#: rpmdb/rpmdb.c:1660
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2296
+#: rpmdb/rpmdb.c:2304
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator：跳過"
 
-#: rpmdb/rpmdb.c:2328
+#: rpmdb/rpmdb.c:2336
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:2643
+#: rpmdb/rpmdb.c:2651
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"
 
-#: rpmdb/rpmdb.c:2706
+#: rpmdb/rpmdb.c:2714
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2821
+#: rpmdb/rpmdb.c:2829
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "正在從 %1$s 索引移除 \"%2$s\"。\n"
 
-#: rpmdb/rpmdb.c:2825
+#: rpmdb/rpmdb.c:2833
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "正在從 %2$s 索引移除 %1$d 項條目。\n"
 
-#: rpmdb/rpmdb.c:2853
+#: rpmdb/rpmdb.c:2861
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引設定 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2874
+#: rpmdb/rpmdb.c:2882
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "儲存記錄 \"%2$s\" 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2884
+#: rpmdb/rpmdb.c:2892
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "從 %3$s 移除記錄 \"%2$s\" 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:3049
+#: rpmdb/rpmdb.c:3057
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "配置新套件實體時產生錯誤(%d)\n"
 
-#: rpmdb/rpmdb.c:3111
+#: rpmdb/rpmdb.c:3119
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd：跳過"
 
-#: rpmdb/rpmdb.c:3283
+#: rpmdb/rpmdb.c:3291
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "正在加入 \"%s\" 到 %s 索引。\n"
 
-#: rpmdb/rpmdb.c:3287
+#: rpmdb/rpmdb.c:3295
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "正在加入 %d 項條目到 %s 索引。\n"
 
-#: rpmdb/rpmdb.c:3327
+#: rpmdb/rpmdb.c:3335
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "儲存記錄 %2$s 於 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:3721
+#: rpmdb/rpmdb.c:3729
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "成功重建 db3 之後移除 %s。\n"
 
-#: rpmdb/rpmdb.c:3760
+#: rpmdb/rpmdb.c:3768
 msgid "no dbpath has been set"
 msgstr "沒有 dbpath 已被設定"
 
-#: rpmdb/rpmdb.c:3792
+#: rpmdb/rpmdb.c:3800
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "重建資料庫 %s 於 %s\n"
 
-#: rpmdb/rpmdb.c:3796
+#: rpmdb/rpmdb.c:3804
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "臨時資料庫 %s 已經存在\n"
 
-#: rpmdb/rpmdb.c:3802
+#: rpmdb/rpmdb.c:3810
 #, c-format
 msgid "creating directory %s\n"
 msgstr "產生目錄 %s\n"
 
-#: rpmdb/rpmdb.c:3804
+#: rpmdb/rpmdb.c:3812
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "產生目錄 %s: %s\n"
 
-#: rpmdb/rpmdb.c:3813
+#: rpmdb/rpmdb.c:3821
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "以 dbapi %d 開啟舊的資料庫\n"
 
-#: rpmdb/rpmdb.c:3824
+#: rpmdb/rpmdb.c:3832
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "以 dbapi %d 開啟新的資料庫\n"
 
-#: rpmdb/rpmdb.c:3855
+#: rpmdb/rpmdb.c:3863
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:3895
+#: rpmdb/rpmdb.c:3903
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本在 %u 的記錄\n"
 
-#: rpmdb/rpmdb.c:3909
+#: rpmdb/rpmdb.c:3917
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: rpmdb/rpmdb.c:3917
+#: rpmdb/rpmdb.c:3925
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
-#: rpmdb/rpmdb.c:3919
+#: rpmdb/rpmdb.c:3927
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "以 %2$s 的檔案取代 %1$s 中的檔案來回復"
 
-#: rpmdb/rpmdb.c:3929
+#: rpmdb/rpmdb.c:3937
 #, c-format
 msgid "removing directory %s\n"
 msgstr "移除目錄 %s\n"
 
-#: rpmdb/rpmdb.c:3931
+#: rpmdb/rpmdb.c:3939
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
+
+#. @=castexpose@
+#: rpmdb/sqlite.c:631
+#, c-format
+msgid "Unable to get lock on db %s, retrying... (%d)\n"
+msgstr ""
+
+#: rpmdb/sqlite.c:791
+#, fuzzy, c-format
+msgid "closed   sql db         %s\n"
+msgstr "關閉資料庫索引       %s/%s\n"
+
+#: rpmdb/sqlite.c:892
+#, fuzzy, c-format
+msgid "opening  sql db         %s (%s) mode=0x%x\n"
+msgstr "開啟資料庫索引       %s/%s %s 模式=0x%x\n"
 
 #: rpmio/macro.c:237
 #, c-format
@@ -3901,90 +3983,133 @@ msgid "======================== active %d empty %d\n"
 msgstr "======================== 作用中 %d 清空 %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:394
+#: rpmio/macro.c:396
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(清空)"
 
-#: rpmio/macro.c:437
+#: rpmio/macro.c:439
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#: rpmio/macro.c:664 rpmio/macro.c:705
+#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1863
+msgid "Target buffer overflow\n"
+msgstr "目標緩衝區溢位\n"
+
+#: rpmio/macro.c:671 rpmio/macro.c:712
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "巨集 %%%s 具有未終結的主體\n"
 
-#: rpmio/macro.c:727
+#: rpmio/macro.c:734
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%define)\n"
 
-#: rpmio/macro.c:733
+#: rpmio/macro.c:740
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "巨集 %%%s 具有未終結的選項\n"
 
-#: rpmio/macro.c:738
+#: rpmio/macro.c:745
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "巨集 %%%s 具有清空的主體\n"
 
-#: rpmio/macro.c:744
+#: rpmio/macro.c:751
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "巨集 %%%s 展開時失敗\n"
 
-#: rpmio/macro.c:779
+#: rpmio/macro.c:786
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%undefine)\n"
 
-#: rpmio/macro.c:897
+#: rpmio/macro.c:904
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "巨集 %%%s (%s) 在等級 %d 之下未被使用\n"
 
-#: rpmio/macro.c:1024
+#: rpmio/macro.c:1031
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中有不明的選項 %1$c\n"
 
-#: rpmio/macro.c:1224
+#: rpmio/macro.c:1239
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "遞迴深度(%d)大於最大值(%d)\n"
 
-#: rpmio/macro.c:1297 rpmio/macro.c:1314
+#: rpmio/macro.c:1312 rpmio/macro.c:1329
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c: %s\n"
 
-#: rpmio/macro.c:1355
+#: rpmio/macro.c:1370
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#: rpmio/macro.c:1512
+#: rpmio/macro.c:1527
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "找不到巨集 %%%.*s，跳過\n"
 
-#: rpmio/macro.c:1848
-msgid "Target buffer overflow\n"
-msgstr "目標緩衝區溢位\n"
-
 #. XXX Fstrerror
-#: rpmio/macro.c:2056 rpmio/macro.c:2062
+#: rpmio/macro.c:2071 rpmio/macro.c:2077
 #, c-format
 msgid "File %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: rpmio/macro.c:2065
+#: rpmio/macro.c:2080
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"
+
+#: rpmio/rpmdav.c:620
+msgid "Authorization Required"
+msgstr ""
+
+#: rpmio/rpmdav.c:622
+msgid "Redirect"
+msgstr ""
+
+#: rpmio/rpmdav.c:624
+#, fuzzy
+msgid "Server Error"
+msgstr "伺服器 I/O 錯誤"
+
+#: rpmio/rpmdav.c:626
+#, fuzzy
+msgid "Unknown Error"
+msgstr "(無錯誤)"
+
+#: rpmio/rpmlua.c:478
+#, fuzzy, c-format
+msgid "invalid syntax in lua scriptlet: %s\n"
+msgstr "不支援舊語法：%s\n"
+
+#: rpmio/rpmlua.c:496
+#, fuzzy, c-format
+msgid "invalid syntax in lua script: %s\n"
+msgstr "不支援舊語法：%s\n"
+
+#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#, fuzzy, c-format
+msgid "lua script failed: %s\n"
+msgstr "%s: Fwrite 失敗：%s\n"
+
+#: rpmio/rpmlua.c:515
+#, fuzzy, c-format
+msgid "invalid syntax in lua file: %s\n"
+msgstr "不正確的套件編號：%s\n"
+
+#: rpmio/rpmlua.c:668
+#, fuzzy, c-format
+msgid "lua hook failed: %s\n"
+msgstr "%s：檢索失敗：%s\n"
 
 #: rpmio/rpmio.c:694
 msgid "Success"
