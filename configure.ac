@@ -1144,12 +1144,6 @@ AC_CONFIG_FILES([ Doxyfile Makefile macros platform rpm.pc
 	tools/Makefile
 	misc/Makefile 
 	doc/Makefile
-	doc/fr/Makefile
-	doc/ja/Makefile
-	doc/ko/Makefile
-	doc/pl/Makefile
-	doc/ru/Makefile
-	doc/sk/Makefile
 	python/Makefile
  	lua/Makefile
  	tests/Makefile
