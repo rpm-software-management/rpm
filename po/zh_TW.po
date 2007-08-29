@@ -1303,9 +1303,9 @@ msgid "lookup i18N strings in specfile catalog"
 msgstr "在規格檔目錄中查找 i18N 字串"
 
 #: build/rpmfc.c:96
-#, fuzzy, c-format
+#, c-format
 msgid "\texecv(%s) pid %d\n"
-msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
+msgstr ""
 
 #: build/rpmfc.c:102
 #, fuzzy, c-format
