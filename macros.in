@@ -860,7 +860,7 @@ print (t)\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
-  cd %{u2p:%{_builddir}}\
+  cd \"%{u2p:%{_builddir}}\"\
 
 
 #%___build_body		%{nil}
