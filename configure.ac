@@ -1144,7 +1144,6 @@ AC_CONFIG_FILES([ Doxyfile Makefile macros platform rpm.pc
 	tools/Makefile
 	misc/Makefile 
 	doc/Makefile
-	doc/manual/Makefile
 	doc/fr/Makefile
 	doc/ja/Makefile
 	doc/ko/Makefile
