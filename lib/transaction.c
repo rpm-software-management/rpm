@@ -32,12 +32,7 @@
 
 #include "debug.h"
 
-/*
- * This is needed for the IDTX definitions.  I think probably those need
- * to be moved into a different source file (idtx.{c,h}), but that is up
- * to Jeff Johnson.
- */
-#include "rpmcli.h"
+#include "idtx.h"
 
 /*@access Header @*/		/* XXX ts->notify arg1 is void ptr */
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */

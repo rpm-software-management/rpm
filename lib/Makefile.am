@@ -18,7 +18,7 @@ check_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	misc.h rpmcli.h rpmlib.h \
+	idtx.h misc.h rpmcli.h rpmlib.h \
 	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
 	stringbuf.h
 
@@ -26,7 +26,7 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c cpio.h depends.c formats.c fs.c fsm.c fsm.h getdate.c \
-	manifest.c manifest.h misc.c package.c \
+	idtx.c manifest.c manifest.h misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c psm.h query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpmgi.c rpminstall.c \
 	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
