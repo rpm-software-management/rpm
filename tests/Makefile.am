@@ -21,9 +21,12 @@ EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
 EXTRA_DIST += data/SPECS/hello.spec
+EXTRA_DIST += data/SPECS/foo.spec
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
+EXTRA_DIST += data/RPMS/foo-1.0-1.noarch.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.i386.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.ppc64.rpm
+EXTRA_DIST += data/SRPMS/foo-1.0-1.src.rpm
 EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
 
 # testsuite voodoo
@@ -41,6 +44,7 @@ $(srcdir)/package.m4: $(top_srcdir)/configure.ac
 	echo 'm4_define([AT_PACKAGE_STRING],    [@PACKAGE_STRING@])'; \
 	echo 'm4_define([AT_PACKAGE_BUGREPORT], [@PACKAGE_BUGREPORT@])'; \
 	} >'$(srcdir)/package.m4'
+EXTRA_DIST += package.m4
 
 atconfig: ${top_builddir}/config.status
 	(cd ${top_builddir} && ./config.status ${subdir}/atconfig)
