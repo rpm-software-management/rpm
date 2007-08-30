@@ -19,6 +19,7 @@
 # ------------------------------
 # Check if rpmbuild -ba *.spec works
 AT_SETUP([rpmbuild -ba *.spec])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
@@ -32,7 +33,7 @@ AS_MKDIR_P(${TOPDIR}/SRPMS)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
 
 rpmbuild \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --define "_topdir ${TOPDIR}" \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
 ],
@@ -45,6 +46,7 @@ AT_CLEANUP
 # Check if rpmbuild -ba *.spec 
 # honours a relative topdir with --root
 AT_SETUP([rpmbuild --root=... -ba *.spec])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
@@ -58,7 +60,7 @@ AS_MKDIR_P(${TOPDIR}/SRPMS)
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
 
 rpmbuild \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --define "_topdir build" \
   --root="${abs_builddir}"/testing \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
@@ -71,6 +73,7 @@ AT_CLEANUP
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
@@ -82,7 +85,7 @@ AS_MKDIR_P(${TOPDIR}/RPMS)
 AS_MKDIR_P(${TOPDIR}/SRPMS)
 
 rpmbuild \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --define "_topdir ${TOPDIR}" \
   --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
@@ -95,6 +98,7 @@ AT_CLEANUP
 # Check if rpmbuild --rebuild *.src.rpm
 # honours a relative topdir with --root
 AT_SETUP([rpmbuild --root=... --rebuild])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
@@ -106,7 +110,7 @@ AS_MKDIR_P(${TOPDIR}/RPMS)
 AS_MKDIR_P(${TOPDIR}/SRPMS)
 
 rpmbuild \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --define "_topdir build" \
   --root="${abs_builddir}"/testing \
   --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm

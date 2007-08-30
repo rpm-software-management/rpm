@@ -3,4 +3,10 @@ export LD_LIBRARY_PATH
 PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:$PATH"
 export PATH
 
+# Popt looks into $HOME
+HOME="${abs_builddir}/testing"
+export HOME
+
 RPMRC="${abs_builddir}/testing@RPMCONFIGDIR@/rpmrc"
+
+RPM_XFAIL=${RPM_XFAIL-1}
