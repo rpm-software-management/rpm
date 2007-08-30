@@ -51,7 +51,7 @@ atconfig: ${top_builddir}/config.status
 CLEANFILES += atconfig
 
 
-atlocal:	atlocal.in
+atlocal:	atlocal.in Makefile
 	@sed \
 	  -e "s,[@]rpmbindir[@],$(rpmbindir)," \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
@@ -72,7 +72,7 @@ rpmrc:	$(top_srcdir)/rpmrc.in
 CLEANFILES += rpmrc rpmrc.tmp
 
 ## Create a customized macros
-macros.in:	$(top_srcdir)/macros.in
+macros.in:	$(top_srcdir)/macros.in Makefile
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
 	< $(top_srcdir)/macros.in > macros.in
@@ -80,24 +80,35 @@ CLEANFILES += macros.in
 
 
 ## Create a customized rpmpopt
-rpmpopt.in:	$(top_srcdir)/rpmpopt.in
+rpmpopt.in:	$(top_srcdir)/rpmpopt.in Makefile
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
 	< $(top_srcdir)/rpmpopt.in > rpmpopt.in
 CLEANFILES += rpmpopt.in
 
 
-## Create a test-installation directory "testing"
-testing@RPMCONFIGDIR@/rpmrc: rpmrc macros.in rpmpopt.in $(top_builddir)/config.status
+# Hack: Abusing testing@RPMCONFIGDIR@/rpmb as stamp file
+testing@RPMCONFIGDIR@/rpmb: ../rpmb
+	rm -rf testing
 	(cd ${top_builddir} && \
-	  $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
+	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
+
+testing@RPMCONFIGDIR@/rpmrc: rpmrc testing@RPMCONFIGDIR@/rpmb
 	$(INSTALL_DATA) rpmrc testing$(RPMCONFIGDIR)/rpmrc
+
+testing@RPMCONFIGDIR@/macros: macros.in testing@RPMCONFIGDIR@/rpmb
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/macros:${subdir}/macros.in)
+
+testing@RPMCONFIGDIR@/rpmpopt-@VERSION@: rpmpopt.in testing@RPMCONFIGDIR@/rpmb
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmpopt-@VERSION@:${subdir}/rpmpopt.in)
 
-check_DATA = testing@RPMCONFIGDIR@/rpmrc atconfig atlocal $(TESTSUITE)
+check_DATA = atconfig atlocal $(TESTSUITE)
+check_DATA += testing@RPMCONFIGDIR@/rpmb
+check_DATA += testing@RPMCONFIGDIR@/rpmrc
+check_DATA += testing@RPMCONFIGDIR@/macros
+check_DATA += testing@RPMCONFIGDIR@/rpmpopt-@VERSION@
 
 check-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
