@@ -26,7 +26,7 @@ rm -rf ${TOPDIR}
 AS_MKDIR_P([${TOPDIR}])
 
 rpmi \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --define "_topdir ${TOPDIR}" \
   -U "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
@@ -45,7 +45,7 @@ rm -rf ${TOPDIR}
 AS_MKDIR_P([${TOPDIR}])
 
 rpmi \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --define "_topdir ${TOPDIR}" \
   -i "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],

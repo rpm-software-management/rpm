@@ -20,7 +20,7 @@
 AT_SETUP([rpmquery --qf -p *.i386.rpm])
 AT_CHECK([
 rpmquery \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
   -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
@@ -34,7 +34,7 @@ AT_CLEANUP
 AT_SETUP([rpmquery --qf -p *.src.rpm])
 AT_CHECK([
 rpmquery \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
   -p "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
@@ -48,7 +48,7 @@ AT_CLEANUP
 AT_SETUP([rpmquery -ql -p *.src.rpm])
 AT_CHECK([
 rpmquery \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   -ql \
   -p "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
@@ -63,7 +63,7 @@ AT_CLEANUP
 AT_SETUP([rpmquery -ql -p *.i386.rpm])
 AT_CHECK([
 rpmquery \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   -ql \
   -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
@@ -80,9 +80,10 @@ AT_CLEANUP
 # Try to check "scripts"
 # * Gets rpmpopt-$(VERSION) involved
 AT_SETUP([rpm -q --scripts -p *.i386.rpm])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 rpm \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   -q --scripts \
   -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
@@ -101,23 +102,20 @@ AT_CLEANUP
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -qil hello])
-AT_CHECK([
-RPM_INIT_DB
-],
-[0],[ignore],[ignore])
 
 AT_CHECK([
-rpm --rcfile=${RPMRC} \
+RPMDB_CLEAR
+RPMDB_INIT
+
+rpm --rcfile="${RPMRC}" \
   --root="${abs_builddir}"/testing \
   --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   -i "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm
 ],
-[0],
-[ignore],
-[ignore])
+[0])
 
 AT_CHECK([
-rpm --rcfile=${RPMRC} \
+rpm --rcfile="${RPMRC}" \
   --root="${abs_builddir}"/testing \
   -q hello
 ],
@@ -133,7 +131,7 @@ ${abs_builddir}/testing/check/share/doc/hello-1.0/FAQ
 _ATEOF
 
 AT_CHECK([
-rpm --rcfile=${RPMRC} \
+rpm --rcfile="${RPMRC}" \
   --root="${abs_builddir}"/testing \
   -ql hello
 ],
