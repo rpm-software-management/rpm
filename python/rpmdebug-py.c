@@ -6,8 +6,6 @@ extern PyTypeObject PyDictIter_Type;
 /*@unchecked@*/
 extern PyTypeObject PyFrame_Type;
 
-#include <rpmcli.h>	/* XXX debug only */
-
 #include "header-py.h"	/* XXX debug only */
 #include "rpmal-py.h"	/* XXX debug only */
 #include "rpmds-py.h"	/* XXX debug only */
