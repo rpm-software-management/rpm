@@ -14,7 +14,6 @@
 #include "rpmts.h"
 
 #include "manifest.h"
-#include "misc.h"	/* XXX for rpmGlob() */
 #include "debug.h"
 
 /*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
