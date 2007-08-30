@@ -2014,6 +2014,11 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 
 	/* Read macros from each file. */
 	for (i = 0; i < ac; i++) {
+	    if (strstr(av[i], ".rpmnew") || 
+		strstr(av[i], ".rpmsave") ||
+		strstr(av[i], ".rpmorig")) {
+		continue;
+	    }
 	    (void) rpmLoadMacroFile(mc, av[i]);
 	    av[i] = _free(av[i]);
 	}
