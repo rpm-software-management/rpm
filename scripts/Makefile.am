@@ -9,9 +9,8 @@ EXTRA_DIST = \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs cross-build \
 	check-buildroot check-rpaths check-rpaths-worker \
-	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
-	get_magic.pl getpo.sh http.req \
-	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
+	find-debuginfo.sh find-lang.sh 
+	perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	tcl.req tgpg trpm u_pkg.sh \
@@ -29,9 +28,8 @@ config_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs cross-build \
 	check-buildroot check-rpaths check-rpaths-worker \
-	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
-	get_magic.pl getpo.sh http.req \
-	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
+	find-debuginfo.sh find-lang.sh \
+	perldeps.pl perl.prov perl.req pythondeps.sh \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
