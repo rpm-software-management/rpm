@@ -7,7 +7,7 @@ EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files check-prereqs convertrpmrc.sh cross-build \
+	check-files check-prereqs cross-build \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl find-requires.perl \
@@ -28,7 +28,7 @@ config_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files check-prereqs convertrpmrc.sh cross-build \
+	check-files check-prereqs cross-build \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	find-provides.perl find-requires.perl \
