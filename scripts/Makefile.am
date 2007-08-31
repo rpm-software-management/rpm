@@ -21,7 +21,7 @@ EXTRA_DIST = \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh
 
-configdir = ${prefix}/lib/rpm
+configdir = @RPMCONFIGDIR@
 config_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
@@ -29,7 +29,7 @@ config_SCRIPTS = \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh \
-	perldeps.pl perl.prov perl.req pythondeps.sh \
+	perl.prov perl.req pythondeps.sh \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
