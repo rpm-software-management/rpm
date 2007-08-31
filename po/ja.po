@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-21 08:04+0200\n"
+"POT-Creation-Date: 2007-08-30 18:37+0200\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -1277,18 +1277,18 @@ msgstr "ビルド依存性を検証しない"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:282 lib/poptQV.c:363
-#: lib/poptQV.c:372 lib/poptQV.c:413
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:282 lib/poptQV.c:362
+#: lib/poptQV.c:371 lib/poptQV.c:412
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:284 lib/poptQV.c:366
-#: lib/poptQV.c:374 lib/poptQV.c:416
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:284 lib/poptQV.c:365
+#: lib/poptQV.c:373 lib/poptQV.c:415
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:286 lib/poptQV.c:369
-#: lib/poptQV.c:376 lib/poptQV.c:418
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:286 lib/poptQV.c:368
+#: lib/poptQV.c:375 lib/poptQV.c:417
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
 
@@ -1350,27 +1350,27 @@ msgstr "%s: 失敗: %s\n"
 msgid "failed to write all data to %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/rpmfc.c:1250
+#: build/rpmfc.c:1249
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1257
 #, fuzzy, c-format
-msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgid "magic_load failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: build/rpmfc.c:1303
+#: build/rpmfc.c:1301
 #, fuzzy, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: build/rpmfc.c:1524
+#: build/rpmfc.c:1522
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#: build/rpmfc.c:1528 build/rpmfc.c:1537
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s の読み込みに失敗: %s。\n"
@@ -1490,11 +1490,11 @@ msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 関係から %s \"%s\" を削除します。\n"
 
-#: lib/depends.c:1265
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 関係を記録しています\n"
 
-#: lib/depends.c:1357
+#: lib/depends.c:1363
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
@@ -1502,20 +1502,20 @@ msgstr ""
 "========== パッケージを tsort (順番、先行数、後続数、ツリー、深さ、幅) してい"
 "ます\n"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1459
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 後続のみ (%d バイト)\n"
 
-#: lib/depends.c:1526
+#: lib/depends.c:1532
 msgid "LOOP:\n"
 msgstr "ループ:\n"
 
-#: lib/depends.c:1561
+#: lib/depends.c:1567
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort を続行中...\n"
 
-#: lib/depends.c:1566
+#: lib/depends.c:1572
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
@@ -2057,7 +2057,7 @@ msgstr "データベースを更新しますが、ファイルシステムの変更は行いません。"
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証を行いません。"
 
-#: lib/poptI.c:252 lib/poptQV.c:307 lib/poptQV.c:310
+#: lib/poptI.c:252 lib/poptQV.c:306 lib/poptQV.c:309
 msgid "don't verify MD5 digest of files"
 msgstr "ファイルの MD5 ダイジェストを検証しません。"
 
@@ -2175,215 +2175,215 @@ msgstr "インストールせずに、テストのみを行います。"
 msgid "upgrade package(s)"
 msgstr "パッケージをアップグレードします。"
 
-#: lib/poptQV.c:103
+#: lib/poptQV.c:102
 msgid "query/verify all packages"
 msgstr "全てのパッケージについて問い合わせ/検証します。"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:104
 msgid "rpm checksig mode"
 msgstr "rpm の署名検査モード"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:106
 msgid "query/verify package(s) owning file"
 msgstr "<file> を所有しているパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:108
 msgid "query/verify package(s) in group"
 msgstr "グループに所属するパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:110
 msgid "query/verify a package file"
 msgstr "パッケージファイルの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:113
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "ファイルツリー探索の先頭から、問い合わせ/検証します"
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:115
 msgid "query/verify package(s) from system HDLIST"
 msgstr "システムの HDLIST から問い合わせ/検証をします。"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:118
 msgid "query/verify package(s) with package identifier"
 msgstr "パッケージ ID で問い合わせ/検証します。"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:120
 msgid "query/verify package(s) with header identifier"
 msgstr "ヘッダ ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:122
 msgid "query/verify package(s) with file identifier"
 msgstr "ファイル ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:126
+#: lib/poptQV.c:125
 msgid "rpm query mode"
 msgstr "rpm 問い合わせモード"
 
-#: lib/poptQV.c:128
+#: lib/poptQV.c:127
 msgid "query/verify a header instance"
 msgstr "ヘッダインスタンスの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:129
 msgid "query a spec file"
 msgstr "spec ファイルを問い合わせます。"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:129
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:131
 msgid "query/verify package(s) from install transaction"
 msgstr ""
 "インストールトランザクションからのパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:133
 msgid "query the package(s) triggered by the package"
 msgstr "パッケージによってトリガーされるパッケージを問い合わせます。"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:135
 msgid "rpm verify mode"
 msgstr "RPM 検証モード"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:137
 msgid "query/verify the package(s) which require a dependency"
 msgstr "依存性を要求するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:139
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "依存性を提供するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:142
 msgid "create transaction set"
 msgstr "トランザクションセットの作成"
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:144
 msgid "do not order transaction set"
 msgstr "トランザクションセットを並び替えません。"
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:146
 msgid "do not glob arguments"
 msgstr "引数を glob パターンとしてみなしません。"
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:148
 msgid "do not process non-package files as manifests"
 msgstr "リスト内の非パッケージファイルを処理しません。"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:150
 msgid "do not read headers"
 msgstr "ヘッダーを読み込みません。"
 
-#: lib/poptQV.c:258
+#: lib/poptQV.c:257
 msgid "list all configuration files"
 msgstr "全ての設定ファイルを列挙します。"
 
-#: lib/poptQV.c:260
+#: lib/poptQV.c:259
 msgid "list all documentation files"
 msgstr "全てのドキュメントファイルを列挙します。"
 
-#: lib/poptQV.c:262
+#: lib/poptQV.c:261
 msgid "dump basic file information"
 msgstr "基本的なファイル情報をダンプします。"
 
-#: lib/poptQV.c:266
+#: lib/poptQV.c:265
 msgid "list files in package"
 msgstr "パッケージ中のファイルを列挙します。"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:270
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost ファイルをスキップします。"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:274
 #, c-format
 msgid "skip %%license files"
 msgstr "%%license ファイルをスキップします。"
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:277
 #, c-format
 msgid "skip %%readme files"
 msgstr "%%readme ファイルをスキップします。"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:283
 msgid "use the following query format"
 msgstr "以下の問い合わせフォーマットを使用します。"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:285
 msgid "substitute i18n sections into spec file"
 msgstr "spec ファイルの i18n 部分を書き換えます。"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:287
 msgid "display the states of the listed files"
 msgstr "列挙したファイルの状態を表示します。"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:313
 msgid "don't verify size of files"
 msgstr "ファイルサイズを検証しません。"
 
-#: lib/poptQV.c:317
+#: lib/poptQV.c:316
 msgid "don't verify symlink path of files"
 msgstr "ファイルのシンボリックリンクを検証しません。"
 
-#: lib/poptQV.c:320
+#: lib/poptQV.c:319
 msgid "don't verify owner of files"
 msgstr "ファイルの所有者を検証しません。"
 
-#: lib/poptQV.c:323
+#: lib/poptQV.c:322
 msgid "don't verify group of files"
 msgstr "ファイルの所有グループを検証しません。"
 
-#: lib/poptQV.c:326
+#: lib/poptQV.c:325
 msgid "don't verify modification time of files"
 msgstr "ファイルの最終更新日を検証しません。"
 
-#: lib/poptQV.c:329 lib/poptQV.c:332
+#: lib/poptQV.c:328 lib/poptQV.c:331
 msgid "don't verify mode of files"
 msgstr "ファイルのモードを検証しません。"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:334
 msgid "don't verify file security contexts"
 msgstr "ファイルセキュリティコンテキストを検証しません。"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:336
 msgid "don't verify files in package"
 msgstr "パッケージ中のファイルを検証しません。"
 
-#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:266
+#: lib/poptQV.c:339 lib/poptQV.c:342 tools/rpmgraph.c:266
 msgid "don't verify package dependencies"
 msgstr "パッケージの依存関係を検証しません。"
 
-#: lib/poptQV.c:348 lib/poptQV.c:352 lib/poptQV.c:355 lib/poptQV.c:358
+#: lib/poptQV.c:347 lib/poptQV.c:351 lib/poptQV.c:354 lib/poptQV.c:357
 msgid "don't execute verify script(s)"
 msgstr "検証スクリプトを実行しません。"
 
-#: lib/poptQV.c:382
+#: lib/poptQV.c:381
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "GPG V3 RSA 署名を検証しません。"
 
-#: lib/poptQV.c:385
+#: lib/poptQV.c:384
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "PGP V3 RSA/MD5 署名を検証しません。"
 
-#: lib/poptQV.c:400
+#: lib/poptQV.c:399
 msgid "sign package(s) (identical to --resign)"
 msgstr "パッケージに署名します (--resign と同一です)"
 
-#: lib/poptQV.c:402
+#: lib/poptQV.c:401
 msgid "verify package signature(s)"
 msgstr "署名の検証を行います。"
 
-#: lib/poptQV.c:404
+#: lib/poptQV.c:403
 msgid "delete package signatures"
 msgstr "パッケージの署名を削除する"
 
-#: lib/poptQV.c:406
+#: lib/poptQV.c:405
 msgid "import an armored public key"
 msgstr "ASCII 化された公開鍵を取り込みます。"
 
-#: lib/poptQV.c:408
+#: lib/poptQV.c:407
 msgid "sign package(s) (identical to --addsign)"
 msgstr "パッケージに署名する (--addsign と同一です)"
 
-#: lib/poptQV.c:410
+#: lib/poptQV.c:409
 msgid "generate signature"
 msgstr "署名を生成します。"
 
@@ -2727,38 +2727,38 @@ msgstr "パッケージ %s は %s を満たしません: %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
-#: lib/rpmfi.c:846
+#: lib/rpmfi.c:850
 msgid "========== relocations\n"
 msgstr "========== 再配置\n"
 
-#: lib/rpmfi.c:850
+#: lib/rpmfi.c:854
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 除外しています   %s\n"
 
-#: lib/rpmfi.c:853
+#: lib/rpmfi.c:857
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 再配置しています %s -> %s\n"
 
-#: lib/rpmfi.c:987
+#: lib/rpmfi.c:991
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "%s %s を除外しています。\n"
 
-#: lib/rpmfi.c:997
+#: lib/rpmfi.c:1001
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています。\n"
 
-#: lib/rpmfi.c:1089
+#: lib/rpmfi.c:1093
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:615 lib/rpminstall.c:1041 lib/rpmts.c:643
-#: tools/rpmgraph.c:121 tools/rpmgraph.c:158
+#: lib/rpminstall.c:615 lib/rpmts.c:643 tools/rpmgraph.c:121
+#: tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -2769,7 +2769,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
 #: lib/rpmgi.c:628 lib/rpminstall.c:659 lib/rpminstall.c:834
-#: lib/rpminstall.c:1267 lib/transaction.c:1031 tools/rpmgraph.c:196
+#: lib/rpminstall.c:1084 lib/transaction.c:1026 tools/rpmgraph.c:196
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
@@ -2886,16 +2886,16 @@ msgstr "%s をオープンできません: %s\n"
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
 
-#: lib/rpminstall.c:1261 lib/transaction.c:1024
+#: lib/rpminstall.c:1078 lib/transaction.c:1019
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
-#: lib/rpminstall.c:1292 lib/transaction.c:1075
+#: lib/rpminstall.c:1109 lib/transaction.c:1070
 msgid "Cleaning up repackaged packages:\n"
 msgstr "再パッケージされたパッケージを削除中:\n"
 
-#: lib/rpminstall.c:1299 lib/transaction.c:1081
+#: lib/rpminstall.c:1116 lib/transaction.c:1076
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\t%s を削除中:\n"
@@ -3038,97 +3038,97 @@ msgstr "%s は %s%s と競合します。"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s 操作中に発生しました"
 
-#: lib/rpmrc.c:199
+#: lib/rpmrc.c:213
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "2番目の ':' がありません (%s:%d で)\n"
 
-#: lib/rpmrc.c:202
+#: lib/rpmrc.c:216
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "%s:%d にアーキテクチャ名がありません\n"
 
-#: lib/rpmrc.c:356
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "%s:%d でデータ行が不完全です\n"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:375
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "%s:%d でデータ行に引数が多すぎます\n"
 
-#: lib/rpmrc.c:369
+#: lib/rpmrc.c:383
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "不正な arch/os 番号: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:406
+#: lib/rpmrc.c:420
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "%s:%d で不完全なデフォルト行\n"
 
-#: lib/rpmrc.c:411
+#: lib/rpmrc.c:425
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s:%d でデフォルト行に引数が多すぎます\n"
 
-#: lib/rpmrc.c:577
+#: lib/rpmrc.c:591
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "%s の読み込みに失敗: %s。\n"
 
-#: lib/rpmrc.c:615
+#: lib/rpmrc.c:629
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "':' がありません (0x%02x が見つかった) (%s:%d)\n"
 
-#: lib/rpmrc.c:632 lib/rpmrc.c:706
+#: lib/rpmrc.c:646 lib/rpmrc.c:710
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s の引数がありません (%s:%d)\n"
 
-#: lib/rpmrc.c:649 lib/rpmrc.c:671
+#: lib/rpmrc.c:663
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s の展開に失敗しました (%s:%d) \"%s\"\n"
 
-#: lib/rpmrc.c:658
+#: lib/rpmrc.c:672
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%s をオープンできません (%s:%d): %s\n"
 
-#: lib/rpmrc.c:698
+#: lib/rpmrc.c:702
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s 用のアーキテクチャが見つかりません (%s:%d)\n"
 
-#: lib/rpmrc.c:765
+#: lib/rpmrc.c:769
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "不正なオプションです: '%s' (%s:%d)\n"
 
-#: lib/rpmrc.c:1564
+#: lib/rpmrc.c:1568
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明なシステム: %s\n"
 
-#: lib/rpmrc.c:1565
+#: lib/rpmrc.c:1569
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1802
+#: lib/rpmrc.c:1806
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s を展開できません。\n"
 
-#: lib/rpmrc.c:1807
+#: lib/rpmrc.c:1811
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s を読み込めません。HOME が大きすぎます。\n"
 
-#: lib/rpmrc.c:1824
+#: lib/rpmrc.c:1828
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s を読み込み用にオープンできません: %s。\n"
@@ -3418,162 +3418,162 @@ msgstr "MD5 ダイジェストが破損: サポートされていません。\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名: 未知(%d)\n"
 
-#: lib/transaction.c:935
+#: lib/transaction.c:930
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:1022
+#: lib/transaction.c:1017
 msgid "Transaction failed...rolling back\n"
 msgstr "トランザクションに失敗しました...ロールバック中\n"
 
-#: lib/transaction.c:1042
+#: lib/transaction.c:1037
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "自動ロールバックトランザクションを順序付けできませんでした!\n"
 
-#: lib/transaction.c:1132
+#: lib/transaction.c:1127
 msgid "Getting repackaged header from transaction element\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
 
-#: lib/transaction.c:1157
+#: lib/transaction.c:1152
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\t%s を検索中...\n"
 
-#: lib/transaction.c:1161
+#: lib/transaction.c:1156
 msgid "\tMatches found.\n"
 msgstr "\t一致を見つけました。\n"
 
-#: lib/transaction.c:1165
+#: lib/transaction.c:1160
 msgid "\tNo matches found.\n"
 msgstr "\t一致が見つかりません。\n"
 
-#: lib/transaction.c:1178
+#: lib/transaction.c:1173
 msgid "\tRepackaged package not found!.\n"
 msgstr "\t再パッケージされたパッケージが見つかりません!\n"
 
-#: lib/transaction.c:1199
+#: lib/transaction.c:1194
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "\tREMOVETID が INSTALLTID に一致しました。\n"
 
-#: lib/transaction.c:1201
+#: lib/transaction.c:1196
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\t名前:  %s.\n"
 
-#: lib/transaction.c:1224
+#: lib/transaction.c:1219
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\t再パッケージされたパッケージは %s です...\n"
 
-#: lib/transaction.c:1268
+#: lib/transaction.c:1263
 #, fuzzy
 msgid "Adding install element to auto-rollback transaction.\n"
 msgstr "自動ロールバックトランザクションに %s を追加しました。\n"
 
-#: lib/transaction.c:1277
+#: lib/transaction.c:1272
 msgid "Could not get install element database instance!\n"
 msgstr "インストール要素データベースのインスタンスを取得できませんでした!\n"
 
-#: lib/transaction.c:1290
+#: lib/transaction.c:1285
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "自動ロールバックトランザクションのヘッダを取得できませんでした。\n"
 
-#: lib/transaction.c:1300
+#: lib/transaction.c:1295
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\t再パッケージされたパッケージヘッダを追加しました: %s.\n"
 
-#: lib/transaction.c:1302 lib/transaction.c:1313
+#: lib/transaction.c:1297 lib/transaction.c:1308
 #, c-format
 msgid "\tAdded from install element %s.\n"
 msgstr "\tインストール要素 %s から追加しました。\n"
 
-#: lib/transaction.c:1311
+#: lib/transaction.c:1306
 msgid "\tAdded erase element.\n"
 msgstr "\t削除要素を追加しました。\n"
 
-#: lib/transaction.c:1320
+#: lib/transaction.c:1315
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 "自動ロールバックトランザクションの再パッケージヘッダを取得できませんでした!\n"
 
-#: lib/transaction.c:1327
+#: lib/transaction.c:1322
 #, fuzzy
 msgid "Add erase element to auto-rollback transaction.\n"
 msgstr "自動ロールバックトランザクションに削除要素を追加できません。\n"
 
-#: lib/transaction.c:1335
+#: lib/transaction.c:1330
 #, fuzzy
 msgid "\tFound existing upgrade element.\n"
 msgstr "\t削除要素を追加しました。\n"
 
-#: lib/transaction.c:1336
+#: lib/transaction.c:1331
 #, fuzzy, c-format
 msgid "\tNot adding erase element for %s.\n"
 msgstr "\t削除要素を追加しました。\n"
 
-#: lib/transaction.c:1353
+#: lib/transaction.c:1348
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\t再パッケージされたパッケージ %s を追加しました。\n"
 
-#: lib/transaction.c:1355
+#: lib/transaction.c:1350
 #, fuzzy, c-format
 msgid "\tAdded from erase element %s.\n"
 msgstr "\t削除要素を追加しました。\n"
 
-#: lib/transaction.c:1360
+#: lib/transaction.c:1355
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr "自動ロールバックトランザクションに削除要素を追加できません。\n"
 
-#: lib/transaction.c:1366
+#: lib/transaction.c:1361
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\t再パッケージされたパッケージがありません...何もしません。\n"
 
-#: lib/transaction.c:1372
+#: lib/transaction.c:1367
 msgid "Failure reading repackaged package!\n"
 msgstr "再パッケージされたパッケージの読み込みに失敗しました!\n"
 
-#: lib/transaction.c:1495
+#: lib/transaction.c:1490
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "%d 個の要素の健全性チェック中\n"
 
-#: lib/transaction.c:1581
+#: lib/transaction.c:1576
 msgid "running pre-transaction scripts\n"
 msgstr "トランザクション前のスクリプトを実行中\n"
 
-#: lib/transaction.c:1655
+#: lib/transaction.c:1650
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "%d ファイルの指紋を計算しています。\n"
 
-#: lib/transaction.c:1739
+#: lib/transaction.c:1734
 msgid "computing file dispositions\n"
 msgstr "ファイルの性質を計算しています。\n"
 
-#: lib/transaction.c:1932
+#: lib/transaction.c:1927
 msgid "Creating auto-rollback transaction\n"
 msgstr "自動ロールバックトランザクションを作成しています。\n"
 
-#: lib/transaction.c:2086
+#: lib/transaction.c:2077
 msgid "Add failed.  Could not read package header.\n"
 msgstr "追加に失敗しました。パッケージヘッダを読み込めませんでした。\n"
 
-#: lib/transaction.c:2170
+#: lib/transaction.c:2161
 msgid "Add failed in rpmpsmStage().\n"
 msgstr "rpmpsmStage() で追加に失敗しました。\n"
 
-#: lib/transaction.c:2214
+#: lib/transaction.c:2205
 msgid "Add failed.  Could not get file list.\n"
 msgstr "追加に失敗しました。ファイル一覧の取得ができません。\n"
 
-#: lib/transaction.c:2263
+#: lib/transaction.c:2254
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr "rpmpsmStage() で削除に失敗しました。\n"
 
-#: lib/transaction.c:2324
+#: lib/transaction.c:2315
 msgid "running post-transaction scripts\n"
 msgstr "トランザクション後のスクリプトを実行中\n"
 
@@ -3968,86 +3968,86 @@ msgstr "データベースインデックス %s/%s をオープンします %s (mode=0x%x)\n"
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 有効 %d 空 %d\n"
 
-#: rpmio/macro.c:394
+#: rpmio/macro.c:396
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(空)"
 
-#: rpmio/macro.c:437
+#: rpmio/macro.c:439
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(空)\n"
 
-#: rpmio/macro.c:664 rpmio/macro.c:705
+#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1863
+msgid "Target buffer overflow\n"
+msgstr "ターゲットバッファのオーバフローです。\n"
+
+#: rpmio/macro.c:671 rpmio/macro.c:712
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端していません。\n"
 
-#: rpmio/macro.c:727
+#: rpmio/macro.c:734
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "マクロ %%%s は不正な名前です (%%define)\n"
 
-#: rpmio/macro.c:733
+#: rpmio/macro.c:740
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "マクロ %%%s はオプションが終端されていません。\n"
 
-#: rpmio/macro.c:738
+#: rpmio/macro.c:745
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "マクロ %%%s のボディは空です。\n"
 
-#: rpmio/macro.c:744
+#: rpmio/macro.c:751
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s の展開に失敗しました。\n"
 
-#: rpmio/macro.c:779
+#: rpmio/macro.c:786
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "マクロ %%%s は不正な名前です (%%undefine)\n"
 
-#: rpmio/macro.c:897
+#: rpmio/macro.c:904
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 未満で使用されませんでした。\n"
 
-#: rpmio/macro.c:1024
+#: rpmio/macro.c:1031
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:1224
+#: rpmio/macro.c:1239
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ (%d) が最大値 (%d) より大きくなっています。\n"
 
-#: rpmio/macro.c:1297 rpmio/macro.c:1314
+#: rpmio/macro.c:1312 rpmio/macro.c:1329
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1355
+#: rpmio/macro.c:1370
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/macro.c:1512
+#: rpmio/macro.c:1527
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません。スキップします。\n"
 
-#: rpmio/macro.c:1848
-msgid "Target buffer overflow\n"
-msgstr "ターゲットバッファのオーバフローです。\n"
-
-#: rpmio/macro.c:2056 rpmio/macro.c:2062
+#: rpmio/macro.c:2076 rpmio/macro.c:2082
 #, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmio/macro.c:2065
+#: rpmio/macro.c:2085
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
