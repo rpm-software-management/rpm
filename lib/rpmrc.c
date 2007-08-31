@@ -535,16 +535,16 @@ static void setDefaults(void)
 {
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
-    addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
+    addMacro(NULL, "_var", NULL, LOCALSTATEDIR, RMIL_DEFAULT);
 
     addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
 
     setVarDefault(-1,			"_topdir",
 		"/usr/src/redhat",	"%{_usr}/src/redhat");
     setVarDefault(-1,			"_tmppath",
-		"/var/tmp",		"%{_var}/tmp");
+		LOCALSTATEDIR "/tmp",		"%{_var}/tmp");
     setVarDefault(-1,			"_dbpath",
-		"/var/lib/rpm",		"%{_var}/lib/rpm");
+		LOCALSTATEDIR "/lib/rpm",		"%{_var}/lib/rpm");
     setVarDefault(-1,			"_defaultdocdir",
 		"/usr/doc",		"%{_usr}/doc");
 
