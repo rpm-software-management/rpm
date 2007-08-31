@@ -4,7 +4,7 @@ bin_SCRIPTS =		gendiff
 
 EXTRA_DIST = \
 	gendiff \
-	brp-compress brp-python-bytecompile brp-java-gcjcompile brp-redhat \
+	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs convertrpmrc.sh cross-build \
@@ -26,7 +26,7 @@ EXTRA_DIST = \
 
 configdir = ${prefix}/lib/rpm
 config_SCRIPTS = \
-	brp-compress brp-python-bytecompile brp-java-gcjcompile brp-redhat \
+	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs convertrpmrc.sh cross-build \
