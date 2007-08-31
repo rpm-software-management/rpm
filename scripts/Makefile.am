@@ -12,7 +12,6 @@ EXTRA_DIST = \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
-	libtool.prov.sh libtool.req.sh pkgconfig.prov.sh pkgconfig.req.sh \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
