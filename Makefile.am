@@ -207,11 +207,6 @@ unsetgid:
 	    $(__CHMOD) g-s $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
 
-.PHONY: noconfig
-noconfig:
-	find . -name "Makefile" -exec rm {} \; 
-	rm -f *gz *rpm config.*
-
 .PHONY:	doxygen
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	rm -rf $@
