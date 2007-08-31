@@ -221,9 +221,6 @@ doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	$(MKDIR_P) $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
 
-ctags:
-	find . -type f -name "*.[ch]*" | xargs @CTAGS@
-
 cscope:
 	@CSCOPE@ -b -R
 
