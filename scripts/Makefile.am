@@ -7,7 +7,7 @@ EXTRA_DIST = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files check-prereqs cross-build \
+	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh 
 	perldeps.pl perl.prov perl.req pythondeps.sh \
@@ -26,12 +26,11 @@ config_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
-	check-files check-prereqs cross-build \
+	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	tcl.req tgpg trpm u_pkg.sh \
-	vpkg-provides.sh vpkg-provides2.sh
+	tcl.req tgpg trpm 
