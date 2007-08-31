@@ -10,7 +10,6 @@ EXTRA_DIST = \
 	check-files check-prereqs cross-build \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
-	find-provides.perl find-requires.perl \
 	get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
@@ -31,7 +30,6 @@ config_SCRIPTS = \
 	check-files check-prereqs cross-build \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
-	find-provides.perl find-requires.perl \
 	get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	mono-find-requires mono-find-provides \
