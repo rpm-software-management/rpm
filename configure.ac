@@ -974,7 +974,6 @@ if test "x$varprefix" = "x"; then
 	    varprefix=$prefix/var ;;
     esac	
 fi
-AC_SUBST(varprefix)
 
 if test "x$tmpdir" = "x"; then
     if test -d $varprefix/tmp; then
@@ -1135,7 +1134,7 @@ AC_CONFIG_SUBDIRS(db3)
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
-AC_CONFIG_FILES([ Doxyfile Makefile macros platform rpm.pc
+AC_CONFIG_FILES([ Doxyfile Makefile platform rpm.pc
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
