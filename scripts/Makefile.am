@@ -24,10 +24,6 @@ EXTRA_DIST = \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh
 
-installprefix = $(DESTDIR)
-
-all:
-
 configdir = ${prefix}/lib/rpm
 config_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile brp-redhat \
