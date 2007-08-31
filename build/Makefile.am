@@ -30,9 +30,6 @@ librpmbuild_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_LIBELF_LIB@
 
-clean-local:
-	rm -f *.o 
-
 #BUILT_SOURCES = rpmbuild.lcd
 
 rpmbuild.lcd: Makefile.am ${librpmbuild_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}

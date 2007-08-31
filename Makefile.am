@@ -172,7 +172,7 @@ install-data-local:
 	solaris*|linux*|darwin*) \
 	   chmod u+x $(top_srcdir)/installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" $(top_srcdir)/installplatform rpmrc macros platform ;; \
 	esac
-	@$(MKDIR_P) $(DESTDIR)/var/tmp
+	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:

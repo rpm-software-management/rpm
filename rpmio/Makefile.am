@@ -32,9 +32,6 @@ librpmio_la_LDFLAGS = -release 4.4 \
 	@WITH_ZLIB_LIB@ \
 	-lpthread
 
-clean-local:
-	rm -f *.o
-
 #BUILT_SOURCES = rpmio.lcd
 
 rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
