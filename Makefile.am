@@ -96,8 +96,6 @@ lint:
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` 
 
-CVSTAG = r$(subst .,-,$(VERSION))
-
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
 rpmvardir = $(varprefix)/lib/rpm
