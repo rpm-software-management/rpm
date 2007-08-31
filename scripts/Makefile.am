@@ -11,7 +11,7 @@ EXTRA_DIST = \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
-	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
+	find-requires.perl get_magic.pl getpo.sh http.req \
 	libtool.prov.sh libtool.req.sh pkgconfig.prov.sh pkgconfig.req.sh \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
@@ -33,7 +33,7 @@ config_SCRIPTS = \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh find-prov.pl find-req.pl \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
-	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
+	find-requires.perl get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
