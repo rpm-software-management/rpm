@@ -207,12 +207,6 @@ unsetgid:
 	    $(__CHMOD) g-s $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
 
-.PHONY: tar
-tar:
-	rm -rf /tmp/rpm-$(VERSION)
-	$(MAKE) DESTDIR=/tmp/rpm-$(VERSION) install
-	cd /tmp/rpm-$(VERSION) ; tar cvf /tmp/rpm-$(VERSION).tar .
-
 .PHONY: noconfig
 noconfig:
 	find . -name "Makefile" -exec rm {} \; 
