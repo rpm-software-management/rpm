@@ -13,7 +13,7 @@ EXTRA_DIST = \
 	perldeps.pl perl.prov perl.req pythondeps.sh \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	tcl.req tgpg trpm u_pkg.sh \
+	tcl.req tgpg u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl.in macros.python.in \
 	macros.php.in find-requires.php find-provides.php \
@@ -33,4 +33,4 @@ config_SCRIPTS = \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	tcl.req tgpg trpm 
+	tcl.req tgpg 
