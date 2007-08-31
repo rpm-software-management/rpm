@@ -11,6 +11,7 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/misc
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
+AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
 
 EXTRA_DIST = getdate.y
 
