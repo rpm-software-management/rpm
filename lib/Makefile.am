@@ -12,6 +12,7 @@ AM_CPPFLAGS = -I. \
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
 AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
+AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
 
 EXTRA_DIST = getdate.y
 
