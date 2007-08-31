@@ -79,6 +79,14 @@ rpmrc: $(top_srcdir)/rpmrc.in
 CLEANFILES += rpmrc.tmp rpmrc
 EXTRA_DIST += rpmrc.in
 
+macros: $(top_srcdir)/macros.in
+	@sed \
+	  -e "s,[@]varprefix[@],$(localstatedir),g" \
+	  < $(top_srcdir)/macros.in > macros.tmp \
+	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/macros:${subdir}/macros.tmp )
+CLEANFILES += macros.tmp macros
+EXTRA_DIST += macros.in
+
 .PHONY:	splint
 splint:
 	splint \
@@ -98,7 +106,7 @@ lint:
 
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
-rpmvardir = $(varprefix)/lib/rpm
+rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
 install-data-local:
@@ -191,10 +199,10 @@ setperms:
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
 	@$(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)
-	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(varprefix)/lib/rpm
-	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/[A-Z]*
-	-@$(__CHMOD) 0775 $(DESTDIR)$(varprefix)/lib/rpm
-	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/__db.*
+	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmvardir)
+	-@$(__CHMOD) 0664 $(DESTDIR)$(rpmvardir)/[A-Z]*
+	-@$(__CHMOD) 0775 $(DESTDIR)$(rpmvardir)
+	-@$(__CHMOD) 0664 $(DESTDIR)$(rpmvardir)/__db.*
 
 .PHONY:	unsetgid
 unsetgid:
