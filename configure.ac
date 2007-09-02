@@ -961,34 +961,6 @@ int main()
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
 
-if test "x$varprefix" = "x"; then
-    # For /usr and /usr/local, we want the 'var' directory to go
-    # in /var and /var/local respectively. For everything else, 
-    # just put the 'var' directory in prefix/var.
-    case $prefix in
-	/usr | /usr/local )
-	    varprefix=`echo $prefix | sed 's/usr/var/'` ;;
-	NONE)
- 	    varprefix=`echo $ac_default_prefix | sed 's/usr/var/'` ;;
-	*) 
-	    varprefix=$prefix/var ;;
-    esac	
-fi
-AC_SUBST(varprefix)
-
-if test "x$tmpdir" = "x"; then
-    if test -d $varprefix/tmp; then
-	tmpdir=$varprefix/tmp
-    else
-	if test -d /var/tmp; then
-	    tmpdir=/var/tmp
-	else
-	    tmpdir=/tmp
-	fi
-    fi
-fi
-AC_SUBST(tmpdir)
-
 if echo "$build_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
@@ -1124,22 +1096,15 @@ AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
        [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
 AC_SUBST(VENDORRPMRC_FILENAME)
 
-LIBRPMALIAS_FILENAME="${RPMCONFIGDIR}/rpmpopt-${VERSION}"
-AC_DEFINE_UNQUOTED(LIBRPMALIAS_FILENAME, "$LIBRPMALIAS_FILENAME",
-	[Full path to rpmpopt configuration file (usually /usr/lib/rpm/rpmpopt)])
-AC_SUBST(LIBRPMALIAS_FILENAME)
-
-AC_SUBST(RPM)
-
 AC_SUBST(OBJDUMP)
 
 AC_CONFIG_SUBDIRS(db3)
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
-AC_CONFIG_FILES([ Doxyfile Makefile macros platform rpm.pc
+AC_CONFIG_FILES([ Doxyfile Makefile platform rpm.pc
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
-	po/Makefile.in scripts/Makefile scripts/brp-redhat
+	po/Makefile.in scripts/Makefile 
 	scripts/macros.perl scripts/macros.php scripts/macros.python
 	tools/Makefile
 	misc/Makefile 

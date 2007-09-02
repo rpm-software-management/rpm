@@ -11,6 +11,9 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/misc
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
+AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
+AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
+AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"@RPMCONFIGDIR@/rpmpopt-${VERSION}\""
 
 EXTRA_DIST = getdate.y
 
@@ -35,6 +38,7 @@ librpm_la_SOURCES = \
 librpm_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
+	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
 	@LIBINTL@

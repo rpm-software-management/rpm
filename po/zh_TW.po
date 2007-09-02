@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-21 08:04+0200\n"
+"POT-Creation-Date: 2007-08-30 18:37+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1259,18 +1259,18 @@ msgstr "不校驗組建相依關係"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "產生相容於過去的 rpm2/rpm3 打包的表頭"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:282 lib/poptQV.c:363
-#: lib/poptQV.c:372 lib/poptQV.c:413
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:282 lib/poptQV.c:362
+#: lib/poptQV.c:371 lib/poptQV.c:412
 msgid "don't verify package digest(s)"
 msgstr "不校驗套件摘要"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:284 lib/poptQV.c:366
-#: lib/poptQV.c:374 lib/poptQV.c:416
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:284 lib/poptQV.c:365
+#: lib/poptQV.c:373 lib/poptQV.c:415
 msgid "don't verify database header(s) when retrieved"
 msgstr "取回時不驗證資料庫表頭"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:286 lib/poptQV.c:369
-#: lib/poptQV.c:376 lib/poptQV.c:418
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:286 lib/poptQV.c:368
+#: lib/poptQV.c:375 lib/poptQV.c:417
 msgid "don't verify package signature(s)"
 msgstr "不校驗套件簽名"
 
@@ -1332,27 +1332,27 @@ msgstr "%s 失敗：%s\n"
 msgid "failed to write all data to %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/rpmfc.c:1250
+#: build/rpmfc.c:1249
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1257
 #, fuzzy, c-format
-msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgid "magic_load failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: build/rpmfc.c:1303
+#: build/rpmfc.c:1301
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1524
+#: build/rpmfc.c:1522
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#: build/rpmfc.c:1528 build/rpmfc.c:1537
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "讀取 %s 失敗: %s。\n"
@@ -1472,30 +1472,30 @@ msgstr "忽略套件名稱關聯 [%d]\t %s-> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "從樹狀排列關係移除 %s\"%s\"。\n"
 
-#: lib/depends.c:1265
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr "========== 記錄樹狀排列關係\n"
 
-#: lib/depends.c:1357
+#: lib/depends.c:1363
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr "========== 樹狀排列套件 (次序、#前行者、#後繼者、樹、深度、廣度)\n"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1459
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 只有後繼符號 (%d 位元組)\n"
 
-#: lib/depends.c:1526
+#: lib/depends.c:1532
 msgid "LOOP:\n"
 msgstr "迴圈：\n"
 
-#: lib/depends.c:1561
+#: lib/depends.c:1567
 msgid "========== continuing tsort ...\n"
 msgstr "========== 繼續樹狀排列…\n"
 
-#: lib/depends.c:1566
+#: lib/depends.c:1572
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"
@@ -2029,7 +2029,7 @@ msgstr "僅更新資料庫，但不對檔案系統進行修改"
 msgid "do not verify package dependencies"
 msgstr "不偵測套件相依性"
 
-#: lib/poptI.c:252 lib/poptQV.c:307 lib/poptQV.c:310
+#: lib/poptI.c:252 lib/poptQV.c:306 lib/poptQV.c:309
 msgid "don't verify MD5 digest of files"
 msgstr "不校驗檔案的 MD5 碼值"
 
@@ -2143,214 +2143,214 @@ msgstr "不真正安裝，只回報作業結果是否正確"
 msgid "upgrade package(s)"
 msgstr "更新套件"
 
-#: lib/poptQV.c:103
+#: lib/poptQV.c:102
 msgid "query/verify all packages"
 msgstr "查詢/校驗所有套件"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:104
 msgid "rpm checksig mode"
 msgstr "rpm 檢查簽名模式"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:106
 msgid "query/verify package(s) owning file"
 msgstr "查詢/校驗屬於套件的檔案"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:108
 msgid "query/verify package(s) in group"
 msgstr "查詢/校驗套件所屬的組別"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:110
 msgid "query/verify a package file"
 msgstr "查詢/校驗一個套件檔案"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:113
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr "從頂端遍歷檔案樹查詢/驗證套件"
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:115
 msgid "query/verify package(s) from system HDLIST"
 msgstr "系統 HDLIST 查詢/驗證套件從"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:118
 msgid "query/verify package(s) with package identifier"
 msgstr "根據套件的識別查詢/校驗套件"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:120
 msgid "query/verify package(s) with header identifier"
 msgstr "根據表頭識別查詢/校驗套件"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:122
 msgid "query/verify package(s) with file identifier"
 msgstr "根據檔案識別查詢/校驗套件"
 
-#: lib/poptQV.c:126
+#: lib/poptQV.c:125
 msgid "rpm query mode"
 msgstr "rpm 查詢模式"
 
-#: lib/poptQV.c:128
+#: lib/poptQV.c:127
 msgid "query/verify a header instance"
 msgstr "查詢/驗證表頭實體"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:129
 msgid "query a spec file"
 msgstr "查詢一個規格檔案"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:129
 msgid "<spec>"
 msgstr "<規格檔>"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:131
 msgid "query/verify package(s) from install transaction"
 msgstr "從安裝異動作業查詢/驗證套件"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:133
 msgid "query the package(s) triggered by the package"
 msgstr "查詢由套件所觸發的套件"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:135
 msgid "rpm verify mode"
 msgstr "rpm 校驗模式"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:137
 msgid "query/verify the package(s) which require a dependency"
 msgstr "查詢/校驗需要某個相依物件的套件"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:139
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "查詢/校驗提供某個相依物件的套件"
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:142
 msgid "create transaction set"
 msgstr "建立異動作業集"
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:144
 msgid "do not order transaction set"
 msgstr "不排序異動作業集"
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:146
 msgid "do not glob arguments"
 msgstr "不以萬用字元解析引數"
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:148
 msgid "do not process non-package files as manifests"
 msgstr "不以清單方式處理非套件檔案"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:150
 msgid "do not read headers"
 msgstr "不讀取表頭"
 
-#: lib/poptQV.c:258
+#: lib/poptQV.c:257
 msgid "list all configuration files"
 msgstr "列出所有配置檔案"
 
-#: lib/poptQV.c:260
+#: lib/poptQV.c:259
 msgid "list all documentation files"
 msgstr "列出所有文件檔案"
 
-#: lib/poptQV.c:262
+#: lib/poptQV.c:261
 msgid "dump basic file information"
 msgstr "調出基本的檔案資訊"
 
-#: lib/poptQV.c:266
+#: lib/poptQV.c:265
 msgid "list files in package"
 msgstr "列出套件內的檔案"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:270
 #, c-format
 msgid "skip %%ghost files"
 msgstr "略過 %%ghost 檔案"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:274
 #, c-format
 msgid "skip %%license files"
 msgstr "略過 %%license 檔案"
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:277
 #, c-format
 msgid "skip %%readme files"
 msgstr "略過 %%readme 檔案"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:283
 msgid "use the following query format"
 msgstr "使用以下的查詢格式"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:285
 msgid "substitute i18n sections into spec file"
 msgstr "替代 i18n 區段進入規格檔案"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:287
 msgid "display the states of the listed files"
 msgstr "顯示列出的每個檔案的狀態"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:313
 msgid "don't verify size of files"
 msgstr "不校驗檔案大小"
 
-#: lib/poptQV.c:317
+#: lib/poptQV.c:316
 msgid "don't verify symlink path of files"
 msgstr "不校驗檔案的連結路徑"
 
-#: lib/poptQV.c:320
+#: lib/poptQV.c:319
 msgid "don't verify owner of files"
 msgstr "不校驗檔案的擁有者"
 
-#: lib/poptQV.c:323
+#: lib/poptQV.c:322
 msgid "don't verify group of files"
 msgstr "不校驗檔案的屬組"
 
-#: lib/poptQV.c:326
+#: lib/poptQV.c:325
 msgid "don't verify modification time of files"
 msgstr "不校驗檔案的修改時間"
 
-#: lib/poptQV.c:329 lib/poptQV.c:332
+#: lib/poptQV.c:328 lib/poptQV.c:331
 msgid "don't verify mode of files"
 msgstr "不校驗檔案的模式"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:334
 msgid "don't verify file security contexts"
 msgstr "不校驗檔案的安全關聯"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:336
 msgid "don't verify files in package"
 msgstr "不校驗套件內的檔案"
 
-#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:266
+#: lib/poptQV.c:339 lib/poptQV.c:342 tools/rpmgraph.c:266
 msgid "don't verify package dependencies"
 msgstr "不校驗套件的相依關係"
 
-#: lib/poptQV.c:348 lib/poptQV.c:352 lib/poptQV.c:355 lib/poptQV.c:358
+#: lib/poptQV.c:347 lib/poptQV.c:351 lib/poptQV.c:354 lib/poptQV.c:357
 msgid "don't execute verify script(s)"
 msgstr "不執行校驗命令稿"
 
-#: lib/poptQV.c:382
+#: lib/poptQV.c:381
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "不校驗 GPG V3 DSA 簽名"
 
-#: lib/poptQV.c:385
+#: lib/poptQV.c:384
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "不校驗 PGP V3 RSA/MD5 簽名"
 
-#: lib/poptQV.c:400
+#: lib/poptQV.c:399
 msgid "sign package(s) (identical to --resign)"
 msgstr "對套件簽名 (與 --resign 含義相同)"
 
-#: lib/poptQV.c:402
+#: lib/poptQV.c:401
 msgid "verify package signature(s)"
 msgstr "校驗套件簽名"
 
-#: lib/poptQV.c:404
+#: lib/poptQV.c:403
 msgid "delete package signatures"
 msgstr "刪除套件簽名"
 
-#: lib/poptQV.c:406
+#: lib/poptQV.c:405
 msgid "import an armored public key"
 msgstr "匯入一個受保護的公鑰"
 
-#: lib/poptQV.c:408
+#: lib/poptQV.c:407
 msgid "sign package(s) (identical to --addsign)"
 msgstr "對套件簽名 (與 --addsign 含義相同)"
 
-#: lib/poptQV.c:410
+#: lib/poptQV.c:409
 msgid "generate signature"
 msgstr "產生簽名"
 
@@ -2689,38 +2689,38 @@ msgstr "套件 %s 有不滿足的 %s：%s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s 由於 missingok 旗標而被略過\n"
 
-#: lib/rpmfi.c:846
+#: lib/rpmfi.c:850
 msgid "========== relocations\n"
 msgstr "========== 重新部署\n"
 
-#: lib/rpmfi.c:850
+#: lib/rpmfi.c:854
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 排除  %s\n"
 
-#: lib/rpmfi.c:853
+#: lib/rpmfi.c:857
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 重新部署 %s -> %s\n"
 
-#: lib/rpmfi.c:987
+#: lib/rpmfi.c:991
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "排除 %s %s\n"
 
-#: lib/rpmfi.c:997
+#: lib/rpmfi.c:1001
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "重新部署 %s 到 %s\n"
 
-#: lib/rpmfi.c:1089
+#: lib/rpmfi.c:1093
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "重新部署目錄 %s 到 %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:615 lib/rpminstall.c:1041 lib/rpmts.c:643
-#: tools/rpmgraph.c:121 tools/rpmgraph.c:158
+#: lib/rpminstall.c:615 lib/rpmts.c:643 tools/rpmgraph.c:121
+#: tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
@@ -2731,7 +2731,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "不明的標記：「%s」\n"
 
 #: lib/rpmgi.c:628 lib/rpminstall.c:659 lib/rpminstall.c:834
-#: lib/rpminstall.c:1267 lib/transaction.c:1031 tools/rpmgraph.c:196
+#: lib/rpminstall.c:1084 lib/transaction.c:1026 tools/rpmgraph.c:196
 msgid "Failed dependencies:\n"
 msgstr "相依性偵測失敗：\n"
 
@@ -2847,16 +2847,16 @@ msgstr "無法開啟檔案 %s：%s\n"
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"
 
-#: lib/rpminstall.c:1261 lib/transaction.c:1024
+#: lib/rpminstall.c:1078 lib/transaction.c:1019
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "回溯套件 (+%d/-%d) to %-24.24s (0x%08x)：\n"
 
-#: lib/rpminstall.c:1292 lib/transaction.c:1075
+#: lib/rpminstall.c:1109 lib/transaction.c:1070
 msgid "Cleaning up repackaged packages:\n"
 msgstr "正在清除重新產生的打包：\n"
 
-#: lib/rpminstall.c:1299 lib/transaction.c:1081
+#: lib/rpminstall.c:1116 lib/transaction.c:1076
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\t正在移除 %s：\n"
@@ -2989,97 +2989,97 @@ msgstr "%s 與 %s%s 衝突"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明錯誤 %d 發生在處理套件 %s 的程序中"
 
-#: lib/rpmrc.c:199
+#: lib/rpmrc.c:213
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "在 %s:%d 處漏失了第二個「:」\n"
 
-#: lib/rpmrc.c:202
+#: lib/rpmrc.c:216
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "在 %s:%d 處漏失了架構名稱\n"
 
-#: lib/rpmrc.c:356
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "不完整資料列位於 %s:%d\n"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:375
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "在資料列的 %s:%d 中有太多引數\n"
 
-#: lib/rpmrc.c:369
+#: lib/rpmrc.c:383
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "損壞的架構/作業系統序號：%s (%s:%d)\n"
 
-#: lib/rpmrc.c:406
+#: lib/rpmrc.c:420
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "不完整預設列位於 %s:%d\n"
 
-#: lib/rpmrc.c:411
+#: lib/rpmrc.c:425
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "在預設列的 %s:%d 中有太多引數\n"
 
-#: lib/rpmrc.c:577
+#: lib/rpmrc.c:591
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "讀取 %s 失敗: %s。\n"
 
-#: lib/rpmrc.c:615
+#: lib/rpmrc.c:629
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "缺少 ':' (找到 0x%02x) 於 %s:%d\n"
 
-#: lib/rpmrc.c:632 lib/rpmrc.c:706
+#: lib/rpmrc.c:646 lib/rpmrc.c:710
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s 缺少引數於 %s:%d\n"
 
-#: lib/rpmrc.c:649 lib/rpmrc.c:671
+#: lib/rpmrc.c:663
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s 擴充失敗於 %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:658
+#: lib/rpmrc.c:672
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "無法開啟 %s 於 %s:%d: %s\n"
 
-#: lib/rpmrc.c:698
+#: lib/rpmrc.c:702
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "缺少 %s 架構於 %s:%d\n"
 
-#: lib/rpmrc.c:765
+#: lib/rpmrc.c:769
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "不當的選項 '%s' 於 %s:%d\n"
 
-#: lib/rpmrc.c:1564
+#: lib/rpmrc.c:1568
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明的系統：%s\n"
 
-#: lib/rpmrc.c:1565
+#: lib/rpmrc.c:1569
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1802
+#: lib/rpmrc.c:1806
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "無法展開 %s\n"
 
-#: lib/rpmrc.c:1807
+#: lib/rpmrc.c:1811
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "無法讀取 %s，HOME 過大。\n"
 
-#: lib/rpmrc.c:1824
+#: lib/rpmrc.c:1828
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "無法開啟 %s 以讀取：%s\n"
@@ -3367,158 +3367,158 @@ msgstr "不完整的 MD 5 摘要：不支援\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "簽名：不明 (%d)\n"
 
-#: lib/transaction.c:935
+#: lib/transaction.c:930
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "排除目錄 %s\n"
 
-#: lib/transaction.c:1022
+#: lib/transaction.c:1017
 msgid "Transaction failed...rolling back\n"
 msgstr "異動作業失敗…返回\n"
 
-#: lib/transaction.c:1042
+#: lib/transaction.c:1037
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "無法排列自動返回異動作業的順序！\n"
 
-#: lib/transaction.c:1132
+#: lib/transaction.c:1127
 msgid "Getting repackaged header from transaction element\n"
 msgstr "從異動作業元件取得重新包裝的表頭\n"
 
-#: lib/transaction.c:1157
+#: lib/transaction.c:1152
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\t查找 %s…\n"
 
-#: lib/transaction.c:1161
+#: lib/transaction.c:1156
 msgid "\tMatches found.\n"
 msgstr "\t找到相符者。\n"
 
-#: lib/transaction.c:1165
+#: lib/transaction.c:1160
 msgid "\tNo matches found.\n"
 msgstr "\t找不到相符者。\n"
 
-#: lib/transaction.c:1178
+#: lib/transaction.c:1173
 msgid "\tRepackaged package not found!.\n"
 msgstr "\t找不到重新包裝的套件！。\n"
 
-#: lib/transaction.c:1199
+#: lib/transaction.c:1194
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "\t移除識別號符合安裝識別號。\n"
 
-#: lib/transaction.c:1201
+#: lib/transaction.c:1196
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\t名稱： %s。\n"
 
-#: lib/transaction.c:1224
+#: lib/transaction.c:1219
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\t重新包裝的套件是 %s…\n"
 
-#: lib/transaction.c:1268
+#: lib/transaction.c:1263
 msgid "Adding install element to auto-rollback transaction.\n"
 msgstr "加入安裝元件到自動返回異動作業。\n"
 
-#: lib/transaction.c:1277
+#: lib/transaction.c:1272
 msgid "Could not get install element database instance!\n"
 msgstr "無法取得安裝元件資料庫實體！\n"
 
-#: lib/transaction.c:1290
+#: lib/transaction.c:1285
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "無法取得表頭用於自動返回異動作業！\n"
 
-#: lib/transaction.c:1300
+#: lib/transaction.c:1295
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\t已加入重新包裝的套件表頭：%s。\n"
 
-#: lib/transaction.c:1302 lib/transaction.c:1313
+#: lib/transaction.c:1297 lib/transaction.c:1308
 #, c-format
 msgid "\tAdded from install element %s.\n"
 msgstr "\t已從安裝元件 %s 加入。\n"
 
-#: lib/transaction.c:1311
+#: lib/transaction.c:1306
 msgid "\tAdded erase element.\n"
 msgstr "\t已加入清除元件。\n"
 
-#: lib/transaction.c:1320
+#: lib/transaction.c:1315
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr "無法取得重新包裝的表頭用於自動返回異動作業！\n"
 
-#: lib/transaction.c:1327
+#: lib/transaction.c:1322
 msgid "Add erase element to auto-rollback transaction.\n"
 msgstr "加入清除元件到自動返回異動作業。\n"
 
-#: lib/transaction.c:1335
+#: lib/transaction.c:1330
 msgid "\tFound existing upgrade element.\n"
 msgstr "\t找到現有升級元件。\n"
 
-#: lib/transaction.c:1336
+#: lib/transaction.c:1331
 #, c-format
 msgid "\tNot adding erase element for %s.\n"
 msgstr "\t不加入 %s 的清除元件。\n"
 
-#: lib/transaction.c:1353
+#: lib/transaction.c:1348
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\t已加入重新包裝的套件 %s。\n"
 
-#: lib/transaction.c:1355
+#: lib/transaction.c:1350
 #, c-format
 msgid "\tAdded from erase element %s.\n"
 msgstr "\t已從清除元件 %s 加入。\n"
 
-#: lib/transaction.c:1360
+#: lib/transaction.c:1355
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr "無法加入清除元件到自動返回異動作業。\n"
 
-#: lib/transaction.c:1366
+#: lib/transaction.c:1361
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\t沒有重新包裝的套件…無事可做。\n"
 
-#: lib/transaction.c:1372
+#: lib/transaction.c:1367
 msgid "Failure reading repackaged package!\n"
 msgstr "讀取重新包裝的套件時失敗！\n"
 
-#: lib/transaction.c:1495
+#: lib/transaction.c:1490
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "明智地檢查 %d 元件\n"
 
-#: lib/transaction.c:1581
+#: lib/transaction.c:1576
 msgid "running pre-transaction scripts\n"
 msgstr "正在執行異動作業前命令稿\n"
 
-#: lib/transaction.c:1655
+#: lib/transaction.c:1650
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "正在計算 %d 個檔案指紋\n"
 
-#: lib/transaction.c:1739
+#: lib/transaction.c:1734
 msgid "computing file dispositions\n"
 msgstr "計算檔案部署\n"
 
-#: lib/transaction.c:1932
+#: lib/transaction.c:1927
 msgid "Creating auto-rollback transaction\n"
 msgstr "產生自動返回異動作業\n"
 
-#: lib/transaction.c:2086
+#: lib/transaction.c:2077
 msgid "Add failed.  Could not read package header.\n"
 msgstr "加入失敗。無法讀取套件表頭。\n"
 
-#: lib/transaction.c:2170
+#: lib/transaction.c:2161
 msgid "Add failed in rpmpsmStage().\n"
 msgstr "加入 rpmpsmStage() 中失敗。\n"
 
-#: lib/transaction.c:2214
+#: lib/transaction.c:2205
 msgid "Add failed.  Could not get file list.\n"
 msgstr "加入失敗。無法取得檔案清單。\n"
 
-#: lib/transaction.c:2263
+#: lib/transaction.c:2254
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr "清除 rpmpsmStage() 中檔案失敗。\n"
 
-#: lib/transaction.c:2324
+#: lib/transaction.c:2315
 msgid "running post-transaction scripts\n"
 msgstr "正在執行異動作業後期命令稿\n"
 
@@ -3909,86 +3909,86 @@ msgstr "開啟資料庫索引       %s/%s %s 模式=0x%x\n"
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 作用中 %d 清空 %d\n"
 
-#: rpmio/macro.c:394
+#: rpmio/macro.c:396
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(清空)"
 
-#: rpmio/macro.c:437
+#: rpmio/macro.c:439
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#: rpmio/macro.c:664 rpmio/macro.c:705
+#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1863
+msgid "Target buffer overflow\n"
+msgstr "目標緩衝區溢位\n"
+
+#: rpmio/macro.c:671 rpmio/macro.c:712
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "巨集 %%%s 具有未終結的主體\n"
 
-#: rpmio/macro.c:727
+#: rpmio/macro.c:734
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%define)\n"
 
-#: rpmio/macro.c:733
+#: rpmio/macro.c:740
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "巨集 %%%s 具有未終結的選項\n"
 
-#: rpmio/macro.c:738
+#: rpmio/macro.c:745
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "巨集 %%%s 具有清空的主體\n"
 
-#: rpmio/macro.c:744
+#: rpmio/macro.c:751
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "巨集 %%%s 展開時失敗\n"
 
-#: rpmio/macro.c:779
+#: rpmio/macro.c:786
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%undefine)\n"
 
-#: rpmio/macro.c:897
+#: rpmio/macro.c:904
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "巨集 %%%s (%s) 在等級 %d 之下未被使用\n"
 
-#: rpmio/macro.c:1024
+#: rpmio/macro.c:1031
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中有不明的選項 %1$c\n"
 
-#: rpmio/macro.c:1224
+#: rpmio/macro.c:1239
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "遞迴深度(%d)大於最大值(%d)\n"
 
-#: rpmio/macro.c:1297 rpmio/macro.c:1314
+#: rpmio/macro.c:1312 rpmio/macro.c:1329
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c: %s\n"
 
-#: rpmio/macro.c:1355
+#: rpmio/macro.c:1370
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#: rpmio/macro.c:1512
+#: rpmio/macro.c:1527
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "找不到巨集 %%%.*s，跳過\n"
 
-#: rpmio/macro.c:1848
-msgid "Target buffer overflow\n"
-msgstr "目標緩衝區溢位\n"
-
-#: rpmio/macro.c:2056 rpmio/macro.c:2062
+#: rpmio/macro.c:2076 rpmio/macro.c:2082
 #, c-format
 msgid "File %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: rpmio/macro.c:2065
+#: rpmio/macro.c:2085
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"

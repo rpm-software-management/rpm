@@ -22,6 +22,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/misc \
 	@WITH_LIBELF_INCLUDE@
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
+AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
+AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"@RPMCONFIGDIR@/rpmpopt-${VERSION}\""
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
@@ -79,6 +81,14 @@ rpmrc: $(top_srcdir)/rpmrc.in
 CLEANFILES += rpmrc.tmp rpmrc
 EXTRA_DIST += rpmrc.in
 
+macros: $(top_srcdir)/macros.in
+	@sed \
+	  -e "s,[@]varprefix[@],$(localstatedir),g" \
+	  < $(top_srcdir)/macros.in > macros.tmp \
+	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/macros:${subdir}/macros.tmp )
+CLEANFILES += macros.tmp macros
+EXTRA_DIST += macros.in
+
 .PHONY:	splint
 splint:
 	splint \
@@ -96,11 +106,9 @@ lint:
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` 
 
-CVSTAG = r$(subst .,-,$(VERSION))
-
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
-rpmvardir = $(varprefix)/lib/rpm
+rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
 install-data-local:
@@ -165,7 +173,7 @@ install-data-local:
 	solaris*|linux*|darwin*) \
 	   chmod u+x $(top_srcdir)/installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" $(top_srcdir)/installplatform rpmrc macros platform ;; \
 	esac
-	@$(MKDIR_P) $(DESTDIR)/var/tmp
+	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
@@ -193,10 +201,10 @@ setperms:
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
 	@$(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)
-	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(varprefix)/lib/rpm
-	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/[A-Z]*
-	-@$(__CHMOD) 0775 $(DESTDIR)$(varprefix)/lib/rpm
-	-@$(__CHMOD) 0664 $(DESTDIR)$(varprefix)/lib/rpm/__db.*
+	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmvardir)
+	-@$(__CHMOD) 0664 $(DESTDIR)$(rpmvardir)/[A-Z]*
+	-@$(__CHMOD) 0775 $(DESTDIR)$(rpmvardir)
+	-@$(__CHMOD) 0664 $(DESTDIR)$(rpmvardir)/__db.*
 
 .PHONY:	unsetgid
 unsetgid:
@@ -207,25 +215,11 @@ unsetgid:
 	    $(__CHMOD) g-s $(DESTDIR)$(pkglibdir)/$$f ;\
 	done
 
-.PHONY: tar
-tar:
-	rm -rf /tmp/rpm-$(VERSION)
-	$(MAKE) DESTDIR=/tmp/rpm-$(VERSION) install
-	cd /tmp/rpm-$(VERSION) ; tar cvf /tmp/rpm-$(VERSION).tar .
-
-.PHONY: noconfig
-noconfig:
-	find . -name "Makefile" -exec rm {} \; 
-	rm -f *gz *rpm config.*
-
 .PHONY:	doxygen
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	rm -rf $@
 	$(MKDIR_P) $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
-
-ctags:
-	find . -type f -name "*.[ch]*" | xargs @CTAGS@
 
 cscope:
 	@CSCOPE@ -b -R

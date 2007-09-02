@@ -28,10 +28,9 @@ librpmbuild_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_LIBELF_LIB@
-
-clean-local:
-	rm -f *.o 
+	@WITH_POPT_LIB@ \
+	@WITH_LIBELF_LIB@ \
+	@WITH_MAGIC_LIB@
 
 #BUILT_SOURCES = rpmbuild.lcd
 

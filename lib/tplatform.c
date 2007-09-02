@@ -1,9 +1,9 @@
 #include "system.h"
+
+#include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmio.h>
-
-extern int _rpmio_debug;
 
 #define	_ETC_RPM_PLATFORM	"/etc/rpm/platform"
 static const char * platform = _ETC_RPM_PLATFORM;
@@ -14,7 +14,7 @@ static int nplatpat = 0;
 static int rpmPlatform(void)
 {
     char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
-    char * b = NULL;
+    byte * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
     char * p, * pe;

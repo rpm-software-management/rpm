@@ -11,7 +11,7 @@
 
 /* Internal interface */
 
-#define RPMLOCK_PATH "/var/lock/rpm/transaction"
+#define RPMLOCK_PATH LOCALSTATEDIR "/lock/rpm/transaction"
 /*@unchecked@*/ /*@observer@*/
 static const char * rpmlock_path_default = "%{?_rpmlock_path}";
 /*@unchecked@*/
