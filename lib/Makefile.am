@@ -38,6 +38,7 @@ librpm_la_SOURCES = \
 librpm_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
+	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
 	@LIBINTL@
