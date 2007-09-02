@@ -48,6 +48,7 @@ librpmdb_la_SOURCES += sqlite.c
 endif
 librpmdb_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmio/librpmio.la \
+	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
