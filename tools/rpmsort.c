@@ -289,9 +289,6 @@ main(int argc, const char *argv[])
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     (void)setlocale(LC_ALL, "" );
 
-#ifdef  __LCLINT__
-#define LOCALEDIR	"/usr/share/locale"
-#endif
     (void)bindtextdomain(PACKAGE, LOCALEDIR);
     (void)textdomain(PACKAGE);
 
