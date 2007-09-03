@@ -72,15 +72,6 @@ getdate.c: getdate.y
 
 BUILT_SOURCES = getdate.c
 
-if SELINUX
-check_PROGRAMS += setfiles
-setfiles_SOURCES = setfiles.c
-# setfiles_LDFLAGS = @LDFLAGS_STATIC@
-setfiles_LDADD = @WITH_SELINUX_LIB@ \
-	../rpmio/librpmio.la \
-	@WITH_POPT_LIB@
-endif
-
 check_PROGRAMS += tds
 tds_SOURCES = tds.c
 tds_LDADD = librpm.la	
