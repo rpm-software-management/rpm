@@ -19,7 +19,7 @@
 }
 /*@=modfilesys@*/
 
-#if !(HAVE_MCHECK_H && defined(__GNUC__)) && !defined(__LCLINT__)
+#if !(HAVE_MCHECK_H && defined(__GNUC__))
 
 /*@out@*/ /*@only@*/ void * xmalloc (size_t size)
 {

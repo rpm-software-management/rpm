@@ -6,15 +6,6 @@
 #include <rpmsw.h>
 #include "debug.h"
 
-#if defined(__LCLINT__)
-/*@-exportheader@*/
-extern int nanosleep(const struct timespec *__requested_time,
-		/*@out@*/ /*@null@*/ struct timespec *__remaining)
-	/*@globals errno @*/
-	/*@modifies *__remaining, errno @*/;
-/*@=exportheader@*/
-#endif
-
 /*@unchecked@*/
 static rpmtime_t rpmsw_overhead = 0;
 

@@ -31,7 +31,7 @@ typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
  * typedefs to isolate the lossage.
  */
 /*@{*/
-#if !defined(__LCLINT__) && defined(__GLIBC__) && \
+#if defined(__GLIBC__) && \
 	(__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2))
 #define USE_COOKIE_SEEK_POINTER 1
 typedef _IO_off64_t 	_libio_off_t;
