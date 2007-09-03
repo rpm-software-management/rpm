@@ -228,6 +228,6 @@ cref: ctags cscope
 
 .PHONY: ChangeLog
 ChangeLog:
-	hg log -v > ChangeLog
+	hg log --no-merge -v > ChangeLog
 
 ACLOCAL_AMFLAGS = -I m4
