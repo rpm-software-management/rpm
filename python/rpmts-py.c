@@ -1186,20 +1186,6 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	(void) rpmtsSetNotifyCallback(s->ts, rpmtsCallback, (void *) &cbInfo);
     }
 
-    /* Initialize security context patterns (if not already done). */
-    if (!(s->ts->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
-	rpmsx sx = rpmtsREContext(s->ts);
-	if (sx == NULL) {
-	    const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-	    if (fn != NULL && *fn != '\0') {
-		sx = rpmsxNew(fn);
-		(void) rpmtsSetREContext(s->ts, sx);
-	    }
-	    fn = _free(fn);
-	}
-	sx = rpmsxFree(sx);
-    } 
-
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 
