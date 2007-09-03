@@ -310,6 +310,10 @@ typedef	char * security_context_t;
 
 #define	is_selinux_enabled()	(-1)
 
+#define matchpathcon_init(_fn)			(-1)
+#define matchpathcon_fini()			(0)
+#define matchpathcon(_fn, _fm, _c)		(-1)
+
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
