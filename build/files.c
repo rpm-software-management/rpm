@@ -938,9 +938,6 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    }
 	    break;
 	}
-#if defined(__LCLINT__)
-	assert(s != NULL);
-#endif
 
     /* Set flags for virtual file attributes */
     {	VFA_t *vfa;
