@@ -895,9 +895,6 @@ exit:
 static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx)
 	/*@modifies *eax, *ebx, *ecx, *edx @*/
 {
-#ifdef	__LCLINT__
-    *eax = *ebx = *ecx = *edx = 0;
-#endif
     asm volatile (
 	"pushl	%%ebx		\n"
 	"cpuid			\n"

@@ -474,7 +474,7 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 retry:
     rc = 0;	/* assume dependency is satisfied */
 
-#if defined(DYING) || defined(__LCLINT__)
+#if defined(DYING)
   { static /*@observer@*/ const char noProvidesString[] = "nada";
     static /*@observer@*/ const char * rcProvidesString = noProvidesString;
     int_32 Flags = rpmdsFlags(dep);
@@ -558,7 +558,7 @@ retry:
 	}
 	mi = rpmdbFreeIterator(mi);
 
-#if defined(DYING) || defined(__LCLINT__)
+#if defined(DYING)
 	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
@@ -1746,7 +1746,7 @@ int rpmtsCheck(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 /*@=nullpass@*/
 
-#if defined(DYING) || defined(__LCLINT__)
+#if defined(DYING)
 	/* XXX all packages now have Provides: name = version-release */
 	/* Erasing: check name against requiredby matches. */
 	rc = checkDependentPackages(ts, rpmteN(p));
