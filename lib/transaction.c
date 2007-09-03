@@ -1455,16 +1455,11 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     if (!rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
-        rpmsx sx = rpmtsREContext(ts);
-        if (sx == NULL) {
-            const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-            if (fn != NULL && *fn != '\0') {
-                sx = rpmsxNew(fn);
-                (void) rpmtsSetREContext(ts, sx);
-            }
-            fn = _free(fn);
-        }
-        sx = rpmsxFree(sx);
+	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	if (matchpathcon_init(fn) == -1) {
+	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+	}
+	_free(fn);
     }
 
     ts->probs = rpmpsFree(ts->probs);
