@@ -12,21 +12,9 @@
 /*@-noparams@*/
 #include <fnmatch.h>
 /*@=noparams@*/
-#if defined(__LCLINT__)
-/*@-declundef -exportheader -redecl @*/ /* LCL: missing annotation */
-extern int fnmatch (const char *__pattern, const char *__name, int __flags)
-	/*@*/;
-/*@=declundef =exportheader =redecl @*/
-#endif
 #endif
 
 #include <regex.h>
-#if defined(__LCLINT__)
-/*@-declundef -exportheader @*/ /* LCL: missing modifies (only is bogus) */
-extern void regfree (/*@only@*/ regex_t *preg)
-	/*@modifies *preg @*/;
-/*@=declundef =exportheader @*/
-#endif
 
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
