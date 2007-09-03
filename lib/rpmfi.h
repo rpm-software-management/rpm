@@ -533,47 +533,6 @@ void rpmfiBuildFClasses(Header h,
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies h, *fclassp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
 
-/**
- * Retrieve file security contexts from header.
- *
- * This function is used to retrieve file contexts from the header.
- * 
- * @param h		header
- * @retval *fcontextp	array of file contexts
- * @retval *fcp		number of files
- */
-void rpmfiBuildFContexts(Header h,
-		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
-
-/**
- * Retrieve file security contexts from file system.
- *
- * This function is used to retrieve file contexts from the file system.
- * 
- * @param h		header
- * @retval *fcontextp	array of file contexts
- * @retval *fcp		number of files
- */
-void rpmfiBuildFSContexts(Header h,
-		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
-
-/**
- * Retrieve file security contexts from policy RE's.
- *
- * This function is used to retrieve file contexts from policy RE's.
- * 
- * @param h		header
- * @retval *fcontextp	array of file contexts
- * @retval *fcp		number of files
- */
-void rpmfiBuildREContexts(Header h,
-		/*@out@*/ const char *** fcontextp, /*@out@*/ int * fcp)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *fcontextp, *fcp, rpmGlobalMacroContext, fileSystem @*/;
 
 /**
  * Retrieve per-file dependencies from header.
