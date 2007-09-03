@@ -358,17 +358,19 @@ void rpmDisplayQueryTags(FILE * fp)
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	if (t->name == NULL)
 	    continue;
-	fprintf(fp, "%-20s", t->name + 7);
 	if (rpmIsVerbose()) {
 	    static const char * tagtypes[] = {
 		"", "char", "int8", "int16", "int32", "int64",
 		"string", "blob", "argv", "i18nstring"
 	    };
-	    fprintf(fp, " %6d", t->val);
+	    fprintf(fp, "%-20s %6d", t->name + 7, t->val);
 	    ttype = t->type & RPM_MASK_TYPE;
 	    if (ttype > RPM_NULL_TYPE && ttype <= RPM_MAX_TYPE)
 		fprintf(fp, " %s", tagtypes[ttype]);
+	} else {
+	    fprintf(fp, "%s", t->name + 7);
 	}
+	    
 	fprintf(fp, "\n");
     }
 
