@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
-#include "rpmcli.h"	/* XXX for rpmCheckSig */
+#include "rpmlib.h"
 
 #include "legacy.h"
 #include "misc.h"

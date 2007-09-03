@@ -1,6 +1,12 @@
-LD_LIBRARY_PATH=`pwd`/testing@usrlibdir@
+LD_LIBRARY_PATH="${abs_builddir}/testing@usrlibdir@"
 export LD_LIBRARY_PATH
-PATH=`pwd`/testing@rpmbindir@:`pwd`/testing@usrbindir@:$PATH
+PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:$PATH"
 export PATH
 
-RPMRC="${abs_srcdir}/testing@RPMCONFIGDIR@/rpmrc"
+# Popt looks into $HOME
+HOME="${abs_builddir}/testing"
+export HOME
+
+RPMRC="${abs_builddir}/testing@RPMCONFIGDIR@/rpmrc"
+
+RPM_XFAIL=${RPM_XFAIL-1}

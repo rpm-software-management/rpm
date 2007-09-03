@@ -1,7 +1,5 @@
 # Makefile for rpm library.
 
-LINT = splint
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
@@ -48,14 +46,12 @@ librpmdb_la_SOURCES += sqlite.c
 endif
 librpmdb_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmio/librpmio.la \
+	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
 librpmdb_la_LIBADD = $(libdb_la)
 librpmdb_la_DEPENDENCIES = $(libdb_la)
-
-# XXX make sure that db.h symlink is generated
-dbconfig.c: db.h
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@
@@ -76,12 +72,15 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
 	@echo '/*@=bounds@*/' >> $@
 
-db.h:
-	@ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
+db.h:	../$(WITH_DB_SUBDIR)/db.h
+	$(LN_S) ../$(WITH_DB_SUBDIR)/db.h $@
+CLEANFILES = db.h
 
 # XXX grrr, force noinst libdb.la for db3.
-$(libdb_la):
-	sed -e"/^libdir=/s/^.*$$/libdir=''/" < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.6.la > $(libdb_la)
+$(libdb_la): $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.6.la
+	sed -e"/^libdir=/s/^.*$$/libdir=''/" \
+	  < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.6.la > $(libdb_la)
+CLEANFILES += $(libdb_la)
 
 rpmdb_archive_SOURCES =
 rpmdb_archive_LDADD = \
@@ -169,21 +168,7 @@ rpmdb_verify_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
-clean-local:
-	rm -f *.o db.h $(libdb_la)
-
 BUILT_SOURCES = tagtbl.c
-
-rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-splint ${DEFS} ${AM_CPPFLAGS} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
-
-.PHONY:	sources
-sources:
-	@echo $(librpmdb_la_SOURCES:%=rpmdb/%)
-
-.PHONY:	lint
-lint:
-	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES)
 
 check_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c

@@ -431,7 +431,5 @@ buildarch_compat: x86_64: noarch
 buildarch_compat: amd64: x86_64
 buildarch_compat: ia32e: x86_64
 
-macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.*:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
-
 # \endverbatim
 #*/

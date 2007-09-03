@@ -32,12 +32,7 @@
 
 #include "debug.h"
 
-/*
- * This is needed for the IDTX definitions.  I think probably those need
- * to be moved into a different source file (idtx.{c,h}), but that is up
- * to Jeff Johnson.
- */
-#include "rpmcli.h"
+#include "idtx.h"
 
 /*@access Header @*/		/* XXX ts->notify arg1 is void ptr */
 /*@access rpmps @*/	/* XXX need rpmProblemSetOK() */
@@ -1453,6 +1448,19 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+
+    /* if SELinux isn't enabled or init fails, don't bother... */
+    if (!rpmtsSELinuxEnabled(ts)) {
+        rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+    }
+
+    if (!rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
+	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	if (matchpathcon_init(fn) == -1) {
+	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+	}
+	_free(fn);
+    }
 
     ts->probs = rpmpsFree(ts->probs);
     ts->probs = rpmpsCreate();

@@ -7,10 +7,8 @@
 #include "structmember.h"
 
 #include "rpmdebug-py.c"
-
-#include <rpmcli.h>
-
 #include "rpmrc-py.h"
+#include "rpmmacro.h"
 
 #include "debug.h"
 

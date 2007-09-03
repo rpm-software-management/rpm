@@ -1,7 +1,5 @@
 # Makefile for rpmbuild library.
 
-LINT = splint
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib \
@@ -28,20 +26,6 @@ librpmbuild_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_LIBELF_LIB@
-
-clean-local:
-	rm -f *.o 
-
-#BUILT_SOURCES = rpmbuild.lcd
-
-rpmbuild.lcd: Makefile.am ${librpmbuild_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-lclint ${DEFS} ${AM_CPPFLAGS} ${librpmbuild_la_SOURCES} -dump $@ 2>/dev/null
-
-.PHONY:	sources
-sources:
-	@echo $(librpmbuild_la_SOURCES:%=build/%)
-
-.PHONY:	lint
-lint:
-	$(LINT) ${DEFS} ${AM_CPPFLAGS} ${librpmbuild_la_SOURCES}
+	@WITH_POPT_LIB@ \
+	@WITH_LIBELF_LIB@ \
+	@WITH_MAGIC_LIB@

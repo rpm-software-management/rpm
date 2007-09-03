@@ -24,7 +24,11 @@ distdir install check installcheck:\
 \
 db4_install: all install_setip' \
 -e '/^uninstall[:-]/c\
-uninstall:' > Makefile
+uninstall:' \
+-e 's/^check depend/\
+check: all\
+depend/' \
+ > Makefile
 
 mv db.h db.h.orig
 cat db.h.orig | sed \

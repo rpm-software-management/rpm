@@ -11,25 +11,6 @@
 
 #include <sys/types.h>
 
-#if defined(__LCLINT__)
-/*@-redef@*/
-typedef unsigned int u_int32_t;
-typedef unsigned short u_int16_t;
-typedef unsigned char u_int8_t;
-/*@-incondefs@*/        /* LCLint 3.0.0.15 */
-typedef int int32_t;
-/*@=incondefs@*/
-/* XXX from /usr/include/bits/sigset.h */
-/*@-sizeoftype@*/
-# define _SIGSET_NWORDS (1024 / (8 * sizeof (unsigned long int)))
-typedef struct
-  {
-    unsigned long int __val[_SIGSET_NWORDS];
-  } __sigset_t;
-/*@=sizeoftype@*/
-/*@=redef@*/
-#endif
-
 #include <sys/stat.h>
 #include <stdio.h>
 
@@ -41,14 +22,7 @@ typedef struct
    of _POSIX_VERSION.  */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#if defined(__LCLINT__)
-/*@-superuser -declundef -incondefs @*/	/* LCL: modifies clause missing */
-extern int chroot (const char *__path)
-	/*@globals errno, systemState @*/
-	/*@modifies errno, systemState @*/;
-/*@=superuser =declundef =incondefs @*/
-#endif
-#if !defined(__GLIBC__) && !defined(__LCLINT__)
+#if !defined(__GLIBC__)
 #ifdef __APPLE__
 #include <crt_externs.h>
 #define environ (*_NSGetEnviron())
@@ -122,21 +96,11 @@ extern int errno;
 /*@=declundef @*/
 #endif
 
-#if defined(__LCLINT__)
-/*@-declundef @*/
-/*@exits@*/
-extern void error(int status, int errnum, const char *format, ...)
-	__attribute__ ((__format__ (__printf__, 3, 4)))
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-/*@=declundef @*/
-#else
 #if HAVE_ERROR && HAVE_ERROR_H
 #include <error.h>
 #endif
-#endif
 
-#if HAVE___SECURE_GETENV && !defined(__LCLINT__)
+#if HAVE___SECURE_GETENV
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
 
@@ -148,14 +112,6 @@ extern void error(int status, int errnum, const char *format, ...)
 #include <stdlib.h>
 /*@=skipansiheaders@*/
 #undef getopt
-#if defined(__LCLINT__)
-/*@-declundef -incondefs @*/	/* LCL: modifies clause missing */
-extern char * realpath (const char * file_name, /*@out@*/ char * resolved_name)
-	/*@globals errno, fileSystem @*/
-	/*@requires maxSet(resolved_name) >=  (PATH_MAX - 1); @*/
-	/*@modifies *resolved_name, errno, fileSystem @*/;
-/*@=declundef =incondefs @*/
-#endif
 #else /* not STDC_HEADERS */
 char *getenv (const char *name);
 #if ! HAVE_REALPATH
@@ -174,12 +130,12 @@ char *realpath(const char *path, char resolved_path []);
 #include <sys/file.h>
 #endif
 
-#if !defined(SEEK_SET) && !defined(__LCLINT__)
+#if !defined(SEEK_SET)
 #define SEEK_SET 0
 #define SEEK_CUR 1
 #define SEEK_END 2
 #endif
-#if !defined(F_OK) && !defined(__LCLINT__)
+#if !defined(F_OK) 
 #define F_OK 0
 #define X_OK 1
 #define W_OK 2
@@ -203,14 +159,6 @@ char *realpath(const char *path, char resolved_path []);
 # endif /* HAVE_NDIR_H */
 #endif /* HAVE_DIRENT_H */
 
-#if defined(__LCLINT__)
-/*@-declundef -incondefs @*/ /* LCL: missing annotation */
-/*@only@*/ /*@out@*/ void * alloca (size_t __size)
-	/*@ensures maxSet(result) == (__size - 1) @*/
-	/*@*/;
-/*@=declundef =incondefs @*/
-#endif
-
 #ifdef __GNUC__
 # undef alloca
 # define alloca __builtin_alloca
@@ -225,34 +173,9 @@ char *alloca ();
 # endif
 #endif
 
-#if defined (__GLIBC__) && defined(__LCLINT__)
-/*@-declundef@*/
-/*@unchecked@*/
-extern __const __int32_t *__ctype_tolower;
-/*@unchecked@*/
-extern __const __int32_t *__ctype_toupper;
-/*@=declundef@*/
-#endif
-
 #include <ctype.h>
 
-#if defined (__GLIBC__) && defined(__LCLINT__)
-/*@-exportlocal@*/
-extern int isalnum(int) __THROW	/*@*/;
-extern int iscntrl(int) __THROW	/*@*/;
-extern int isgraph(int) __THROW	/*@*/;
-extern int islower(int) __THROW	/*@*/;
-extern int ispunct(int) __THROW	/*@*/;
-extern int isxdigit(int) __THROW	/*@*/;
-extern int isascii(int) __THROW	/*@*/;
-extern int toascii(int) __THROW	/*@*/;
-extern int _toupper(int) __THROW	/*@*/;
-extern int _tolower(int) __THROW	/*@*/;
-/*@=exportlocal@*/
-
-#endif
-
-#if HAVE_SYS_MMAN_H && !defined(__LCLINT__)
+#if HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
 
@@ -287,7 +210,7 @@ extern int _tolower(int) __THROW	/*@*/;
 #include <err.h>
 #endif
 
-#if HAVE_MALLOC_H && !defined(__LCLINT__)
+#if HAVE_MALLOC_H 
 #include <malloc.h>
 #endif
 
@@ -310,50 +233,11 @@ typedef	char * security_context_t;
 
 #define	is_selinux_enabled()	(-1)
 
+#define matchpathcon_init(_fn)			(-1)
+#define matchpathcon_fini()			(0)
+#define matchpathcon(_fn, _fm, _c)		(-1)
+
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
-#endif
-
-#if defined(__LCLINT__)
-/*@-incondefs@*/
-extern void freecon(/*@only@*/ security_context_t con)
-	/*@modifies con @*/;
-
-extern int getfilecon(const char *path, /*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-extern int lgetfilecon(const char *path, /*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-extern int fgetfilecon(int fd, /*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-
-extern int setfilecon(const char *path, security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern int lsetfilecon(const char *path, security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern int fsetfilecon(int fd, security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-extern int getcon(/*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-extern int getexeccon(/*@out@*/ security_context_t *con)
-	/*@modifies *con @*/;
-extern int setexeccon(security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-extern int security_check_context(security_context_t con)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern int security_getenforce(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-extern int is_selinux_enabled(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-/*@=incondefs@*/
 #endif
 
 /*@-declundef -incondefs @*/ /* FIX: these are macros */
@@ -391,40 +275,6 @@ extern int is_selinux_enabled(void)
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>
-#if defined(__LCLINT__)
-/*@-declundef -incondefs @*/ /* LCL: missing annotations */
-#if 0
-enum mcheck_status
-  {
-    MCHECK_DISABLED = -1,       /* Consistency checking is not turned on.  */
-    MCHECK_OK,                  /* Block is fine.  */
-    MCHECK_FREE,                /* Block freed twice.  */
-    MCHECK_HEAD,                /* Memory before the block was clobbered.  */
-    MCHECK_TAIL                 /* Memory after the block was clobbered.  */
-  };
-#endif
-
-extern int mcheck (void (*__abortfunc) (enum mcheck_status))
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-extern int mcheck_pedantic (void (*__abortfunc) (enum mcheck_status))
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-extern void mcheck_check_all (void)
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-extern enum mcheck_status mprobe (void *__ptr)
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-extern void mtrace (void)
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-extern void muntrace (void)
-	/*@globals internalState@*/
-	/*@modifies internalState @*/;
-/*@=declundef =incondefs @*/
-#endif /* defined(__LCLINT__) */
-
 /* Memory allocation via macro defs to get meaningful locations from mtrace() */
 #if defined(__GNUC__)
 #define	xmalloc(_size) 		(malloc(_size) ? : vmefail(_size))
@@ -467,7 +317,7 @@ extern const char *__progname;
 # define setlocale(Category, Locale) /* empty */
 #endif
 
-#if ENABLE_NLS && !defined(__LCLINT__)
+#if ENABLE_NLS
 # include <libintl.h>
 # define _(Text) gettext (Text)
 #else
@@ -484,14 +334,14 @@ extern const char *__progname;
 
 /* ============== from misc/miscfn.h */
 
-#if !defined(USE_GNU_GLOB) || defined(__LCLINT__)
+#if !defined(USE_GNU_GLOB) 
 #if HAVE_FNMATCH_H
 /*@-noparams@*/
 #include <fnmatch.h>
 /*@=noparams@*/
 #endif
 
-#if HAVE_GLOB_H || defined(__LCLINT__)
+#if HAVE_GLOB_H 
 /*@-noparams@*/
 #include <glob.h>
 /*@=noparams@*/
@@ -501,107 +351,6 @@ extern const char *__progname;
 #include "misc/glob.h"
 #include "misc/fnmatch.h"
 /*@=noparams@*/
-#endif
-
-#if defined(__LCLINT__)
-/*@-declundef -incondefs @*/ /* LCL: missing annotation */
-#if 0
-typedef /*@concrete@*/ struct
-  {
-    size_t gl_pathc;
-    char **gl_pathv;
-    size_t gl_offs;
-    int gl_flags;
-
-    void (*gl_closedir) (void *);
-#ifdef _GNU_SOURCE
-    struct dirent *(*gl_readdir) (void *);
-#else
-    void *(*gl_readdir) (void *);
-#endif
-    ptr_t (*gl_opendir) (const char *);
-#ifdef _GNU_SOURCE
-    int (*gl_lstat) (const char *restrict, struct stat *restrict);
-    int (*gl_stat) (const char *restrict, struct stat *restrict);
-#else
-    int (*gl_lstat) (const char *restrict, void *restrict);
-    int (*gl_stat) (const char *restrict, void *restrict);
-#endif
-  } glob_t;
-#endif
-
-#if 0
-/*@-constuse@*/
-/*@constant int GLOB_ERR@*/
-/*@constant int GLOB_MARK@*/
-/*@constant int GLOB_NOSORT@*/
-/*@constant int GLOB_DOOFFS@*/
-/*@constant int GLOB_NOCHECK@*/
-/*@constant int GLOB_APPEND@*/
-/*@constant int GLOB_NOESCAPE@*/
-/*@constant int GLOB_PERIOD@*/
-
-#ifdef _GNU_SOURCE
-/*@constant int GLOB_MAGCHAR@*/
-/*@constant int GLOB_ALTDIRFUNC@*/
-/*@constant int GLOB_BRACE@*/
-/*@constant int GLOB_NOMAGIC@*/
-/*@constant int GLOB_TILDE@*/
-/*@constant int GLOB_ONLYDIR@*/
-/*@constant int GLOB_TILDE_CHECK@*/
-#endif
-
-/*@constant int GLOB_FLAGS@*/
-
-/*@constant int GLOB_NOSPACE@*/
-/*@constant int GLOB_ABORTED@*/
-/*@constant int GLOB_NOMATCH@*/
-/*@constant int GLOB_NOSYS@*/
-#ifdef _GNU_SOURCE
-/*@constant int GLOB_ABEND@*/
-#endif
-/*@=constuse@*/
-#endif
-
-/*@-type@*/	/* XXX glob64_t */
-extern int glob (const char *__pattern, int __flags,
-                      int (*__errfunc) (const char *, int),
-                      /*@out@*/ glob_t *__pglob)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *__pglob, errno, fileSystem @*/;
-	/* XXX only annotation is a white lie */
-extern void globfree (/*@only@*/ glob_t *__pglob)
-	/*@modifies *__pglob @*/;
-/*@=type@*/
-#ifdef _GNU_SOURCE
-extern int glob_pattern_p (const char *__pattern, int __quote)
-	/*@*/;
-#endif
-
-#if 0
-/*@-constuse@*/
-/*@constant int FNM_PATHNAME@*/
-/*@constant int FNM_NOESCAPE@*/
-/*@constant int FNM_PERIOD@*/
-
-#ifdef _GNU_SOURCE
-/*@constant int FNM_FILE_NAME@*/	/* GNU extension */
-/*@constant int FNM_LEADING_DIR@*/	/* GNU extension */
-/*@constant int FNM_CASEFOLD@*/		/* GNU extension */
-/*@constant int FNM_EXTMATCH@*/		/* GNU extension */
-#endif
-
-/*@constant int FNM_NOMATCH@*/
-
-#ifdef _XOPEN_SOURCE
-/*@constant int FNM_NOSYS@*/		/* X/Open */
-#endif
-/*@=constuse@*/
-#endif
-
-extern int fnmatch (const char *__pattern, const char *__name, int __flags)
-	/*@*/;
-/*@=declundef =incondefs @*/
 #endif
 
 #if ! HAVE_S_IFSOCK
@@ -638,7 +387,7 @@ extern void unsetenv(const char *name);
 #if HAVE_POLL_H
 #include <poll.h>
 #else
-#if HAVE_SYS_SELECT_H && !defined(__LCLINT__)
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 #endif
@@ -701,15 +450,6 @@ extern void unsetenv(const char *name);
 
 #ifndef MOUNTED
 #define MOUNTED "/etc/mnttab"
-#endif
-
-#if defined(__LCLINT__)
-#define FILE_RCSID(id)
-#else
-#define FILE_RCSID(id) \
-static inline const char *rcsid(const char *p) { \
-        return rcsid(p = id); \
-}
 #endif
 
 #endif	/* H_SYSTEM */

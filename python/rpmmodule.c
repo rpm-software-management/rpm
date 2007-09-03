@@ -5,7 +5,6 @@
 #include "system.h"
 
 #include <rpmio_internal.h>
-#include <rpmcli.h>	/* XXX for rpmCheckSig */
 #include <rpmdb.h>
 #include <rpmsq.h>
 
@@ -27,11 +26,6 @@
 #include "spec-py.h"
 
 #include "debug.h"
-
-#ifdef __LCLINT__
-#undef	PyObject_HEAD
-#define	PyObject_HEAD	int _PyObjectHead
-#endif
 
 /** \ingroup python
  * \name Module: rpm

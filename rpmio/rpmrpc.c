@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#if defined(HAVE_PTHREAD_H) && !defined(__LCLINT__)
+#if defined(HAVE_PTHREAD_H)
 #include <pthread.h>
 #endif
 

@@ -73,9 +73,6 @@ extern int _rpmps_debug;
 extern int _rpmsq_debug;
 
 /*@unchecked@*/
-extern int _rpmsx_debug;
-
-/*@unchecked@*/
 extern int _rpmte_debug;
 
 /*@unchecked@*/
@@ -357,8 +354,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
 	NULL, NULL},
- { "rpmsxdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsx_debug, -1,
-	NULL, NULL},
  { "rpmtedebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmte_debug, -1,
 	NULL, NULL},
  { "rpmtsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_debug, -1,
@@ -409,7 +404,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 /*@=globs =mods@*/
 
-#if defined(ENABLE_NLS) && !defined(__LCLINT__)
+#if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );
     (void) bindtextdomain(PACKAGE, LOCALEDIR);
     (void) textdomain(PACKAGE);

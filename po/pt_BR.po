@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-08-21 08:04+0200\n"
+"POT-Creation-Date: 2007-08-30 18:37+0200\n"
 "PO-Revision-Date: 2007-08-03 15:46-0300\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
@@ -1409,18 +1409,18 @@ msgstr ""
 "gerar cabeçalhos de pacotes compatíveis com o empacotamento do rpm[23] "
 "(legado)"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:282 lib/poptQV.c:363
-#: lib/poptQV.c:372 lib/poptQV.c:413
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:282 lib/poptQV.c:362
+#: lib/poptQV.c:371 lib/poptQV.c:412
 msgid "don't verify package digest(s)"
 msgstr "não verificar digest(s) dos pacotes"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:284 lib/poptQV.c:366
-#: lib/poptQV.c:374 lib/poptQV.c:416
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:284 lib/poptQV.c:365
+#: lib/poptQV.c:373 lib/poptQV.c:415
 msgid "don't verify database header(s) when retrieved"
 msgstr "não verificar cabeçalho(s) do banco de dados ao recuperá-lo(s)"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:286 lib/poptQV.c:369
-#: lib/poptQV.c:376 lib/poptQV.c:418
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:286 lib/poptQV.c:368
+#: lib/poptQV.c:375 lib/poptQV.c:417
 msgid "don't verify package signature(s)"
 msgstr "não verificar a(s) assinatura(s) do pacote"
 
@@ -1485,29 +1485,29 @@ msgstr "%s falhou: %s\n"
 msgid "failed to write all data to %s\n"
 msgstr "Não foi possível gravar carga útil em %s: %s\n"
 
-#: build/rpmfc.c:1250
+#: build/rpmfc.c:1249
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "falha ao abrir %s: %s\n"
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1257
 #, fuzzy, c-format
-msgid "magic_load(ms, \"%s\") failed: %s\n"
+msgid "magic_load failed: %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
-#: build/rpmfc.c:1303
+#: build/rpmfc.c:1301
 #, fuzzy, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
 # , c-format
-#: build/rpmfc.c:1524
+#: build/rpmfc.c:1522
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Arquivo %s: %s\n"
 
 # , c-format
-#: build/rpmfc.c:1530 build/rpmfc.c:1539
+#: build/rpmfc.c:1528 build/rpmfc.c:1537
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Falha ao ler %s: %s.\n"
@@ -1632,11 +1632,11 @@ msgstr "ignorar relações do nome dos pacotes [%d]\t%s -> %s\n"
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "removendo %s \"%s\" das relações do tsort.\n"
 
-#: lib/depends.c:1265
+#: lib/depends.c:1271
 msgid "========== recording tsort relations\n"
 msgstr "========== gravando relações do tsort\n"
 
-#: lib/depends.c:1357
+#: lib/depends.c:1363
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
@@ -1644,20 +1644,20 @@ msgstr ""
 "========== tsorting dos pacotes (ordem, #predecessores, #sucessores, "
 "árvore,  profundidade, extensão)\n"
 
-#: lib/depends.c:1453
+#: lib/depends.c:1459
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== sucessores apenas (%d bytes)\n"
 
-#: lib/depends.c:1526
+#: lib/depends.c:1532
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1561
+#: lib/depends.c:1567
 msgid "========== continuing tsort ...\n"
 msgstr "========== continuando tsort ...\n"
 
-#: lib/depends.c:1566
+#: lib/depends.c:1572
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder falhou, permaneceram %d elementos\n"
@@ -2217,7 +2217,7 @@ msgstr "atualizar o banco de dados, mas não modificar o sistema de arquivos"
 msgid "do not verify package dependencies"
 msgstr "não verificar as dependências do pacote"
 
-#: lib/poptI.c:252 lib/poptQV.c:307 lib/poptQV.c:310
+#: lib/poptI.c:252 lib/poptQV.c:306 lib/poptQV.c:309
 msgid "don't verify MD5 digest of files"
 msgstr "não verificar o digest MD5 dos arquivos"
 
@@ -2334,216 +2334,216 @@ msgstr "não instalar, mas dizer se a instalação funcionaria ou não"
 msgid "upgrade package(s)"
 msgstr "atualizar pacote(s)"
 
-#: lib/poptQV.c:103
+#: lib/poptQV.c:102
 msgid "query/verify all packages"
 msgstr "consultar/verificar todos os pacotes"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:104
 msgid "rpm checksig mode"
 msgstr "modo checksig do rpm"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:106
 msgid "query/verify package(s) owning file"
 msgstr "consultar/verificar pacote(s) que detém o arquivo"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:108
 msgid "query/verify package(s) in group"
 msgstr "consultar/verificar pacote(s) em um grupo"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:110
 msgid "query/verify a package file"
 msgstr "consultar/verificar um arquivo de pacote"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:113
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr ""
 "consultar/verificar pacote(s) do topo do caminhamento da árvore de arquivos"
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:115
 msgid "query/verify package(s) from system HDLIST"
 msgstr "consultar/verificar pacote(s) do sistema HDLIST"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:118
 msgid "query/verify package(s) with package identifier"
 msgstr "consultar/verificar pacote(s) com um identificador de pacotes"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:120
 msgid "query/verify package(s) with header identifier"
 msgstr "consultar/verificar pacote(s) com um identificador de cabeçalhos"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:122
 msgid "query/verify package(s) with file identifier"
 msgstr "consultar/verificar pacote(s) com um identificador de arquivos"
 
-#: lib/poptQV.c:126
+#: lib/poptQV.c:125
 msgid "rpm query mode"
 msgstr "modo de consulta do rpm"
 
-#: lib/poptQV.c:128
+#: lib/poptQV.c:127
 msgid "query/verify a header instance"
 msgstr "consultar/verificar uma instância do cabeçalho"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:129
 msgid "query a spec file"
 msgstr "consultar um arquivo spec"
 
-#: lib/poptQV.c:130
+#: lib/poptQV.c:129
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:131
 msgid "query/verify package(s) from install transaction"
 msgstr "consultar/verificar pacote(s) da transação de instalação"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:133
 msgid "query the package(s) triggered by the package"
 msgstr "consultar o(s) pacote(s) disparado pelo pacote"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:135
 msgid "rpm verify mode"
 msgstr "modo de verificação do rpm"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:137
 msgid "query/verify the package(s) which require a dependency"
 msgstr "consultar/verificar pacotes que precisam de uma dependência"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:139
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "consultar/verificar pacote(s) que fornecem uma dependência"
 
-#: lib/poptQV.c:143
+#: lib/poptQV.c:142
 msgid "create transaction set"
 msgstr "criar conjunto de transações"
 
-#: lib/poptQV.c:145
+#: lib/poptQV.c:144
 msgid "do not order transaction set"
 msgstr "não ordenar o conjunto de transações"
 
-#: lib/poptQV.c:147
+#: lib/poptQV.c:146
 msgid "do not glob arguments"
 msgstr "não fazer glob com os argumentos"
 
-#: lib/poptQV.c:149
+#: lib/poptQV.c:148
 msgid "do not process non-package files as manifests"
 msgstr "não processar arquivos que não são de pacotes como manifestos"
 
-#: lib/poptQV.c:151
+#: lib/poptQV.c:150
 msgid "do not read headers"
 msgstr "não ler os cabeçalhos"
 
-#: lib/poptQV.c:258
+#: lib/poptQV.c:257
 msgid "list all configuration files"
 msgstr "listar todos os arquivos de configuração"
 
-#: lib/poptQV.c:260
+#: lib/poptQV.c:259
 msgid "list all documentation files"
 msgstr "listar todos os arquivos de documentação"
 
-#: lib/poptQV.c:262
+#: lib/poptQV.c:261
 msgid "dump basic file information"
 msgstr "descarregar informações básicas do arquivo"
 
-#: lib/poptQV.c:266
+#: lib/poptQV.c:265
 msgid "list files in package"
 msgstr "listar arquivos do pacote"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:270
 #, c-format
 msgid "skip %%ghost files"
 msgstr "ignorar arquivos %%ghost"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:274
 #, c-format
 msgid "skip %%license files"
 msgstr "ignorar arquivos %%license"
 
 # , c-format
-#: lib/poptQV.c:278
+#: lib/poptQV.c:277
 #, c-format
 msgid "skip %%readme files"
 msgstr "ignorar arquivos %%readme"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:283
 msgid "use the following query format"
 msgstr "utilizar o seguinte formato de consulta"
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:285
 msgid "substitute i18n sections into spec file"
 msgstr "substituir seções i18n no arquivo spec"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:287
 msgid "display the states of the listed files"
 msgstr "exibir o estado dos arquivos listados"
 
-#: lib/poptQV.c:314
+#: lib/poptQV.c:313
 msgid "don't verify size of files"
 msgstr "não verificar o tamanho dos arquivos"
 
-#: lib/poptQV.c:317
+#: lib/poptQV.c:316
 msgid "don't verify symlink path of files"
 msgstr "não verificar o caminho da ligação simbólica dos arquivos"
 
-#: lib/poptQV.c:320
+#: lib/poptQV.c:319
 msgid "don't verify owner of files"
 msgstr "não verificar o proprietário dos arquivos"
 
-#: lib/poptQV.c:323
+#: lib/poptQV.c:322
 msgid "don't verify group of files"
 msgstr "não verificar o grupo dos arquivos"
 
-#: lib/poptQV.c:326
+#: lib/poptQV.c:325
 msgid "don't verify modification time of files"
 msgstr "não verificar a hora de modificação dos arquivos"
 
-#: lib/poptQV.c:329 lib/poptQV.c:332
+#: lib/poptQV.c:328 lib/poptQV.c:331
 msgid "don't verify mode of files"
 msgstr "não verificar o modo dos arquivos"
 
-#: lib/poptQV.c:335
+#: lib/poptQV.c:334
 msgid "don't verify file security contexts"
 msgstr "não verificar os contextos de segurança dos arquivos"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:336
 msgid "don't verify files in package"
 msgstr "não verificar os arquivos do pacote"
 
-#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:266
+#: lib/poptQV.c:339 lib/poptQV.c:342 tools/rpmgraph.c:266
 msgid "don't verify package dependencies"
 msgstr "não verificar as dependências do pacote"
 
-#: lib/poptQV.c:348 lib/poptQV.c:352 lib/poptQV.c:355 lib/poptQV.c:358
+#: lib/poptQV.c:347 lib/poptQV.c:351 lib/poptQV.c:354 lib/poptQV.c:357
 msgid "don't execute verify script(s)"
 msgstr "não executar script(s) de verificação"
 
-#: lib/poptQV.c:382
+#: lib/poptQV.c:381
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "não verificar assinatura(s) GPG V3 DSA"
 
-#: lib/poptQV.c:385
+#: lib/poptQV.c:384
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "não verificar assinatura(s) PGP V3 RSA/MD5"
 
-#: lib/poptQV.c:400
+#: lib/poptQV.c:399
 msgid "sign package(s) (identical to --resign)"
 msgstr "assinar pacote(s) (idêntico ao --resign)"
 
-#: lib/poptQV.c:402
+#: lib/poptQV.c:401
 msgid "verify package signature(s)"
 msgstr "verificar a(s) assinatura(s) do pacote"
 
-#: lib/poptQV.c:404
+#: lib/poptQV.c:403
 msgid "delete package signatures"
 msgstr "remover a assinatura dos pacotes"
 
-#: lib/poptQV.c:406
+#: lib/poptQV.c:405
 msgid "import an armored public key"
 msgstr "importar uma chave pública blindada"
 
-#: lib/poptQV.c:408
+#: lib/poptQV.c:407
 msgid "sign package(s) (identical to --addsign)"
 msgstr "assinar pacote(s) (idêntico ao --addsign)"
 
-#: lib/poptQV.c:410
+#: lib/poptQV.c:409
 msgid "generate signature"
 msgstr "gerar assinatura"
 
@@ -2895,7 +2895,7 @@ msgstr "o pacote %s tem %s não satisfeito: %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido ao sinalizador missingok\n"
 
-#: lib/rpmfi.c:846
+#: lib/rpmfi.c:850
 msgid "========== relocations\n"
 msgstr "========== realocações\n"
 
@@ -2907,13 +2907,13 @@ msgstr "========== realocações\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmfi.c:850
+#: lib/rpmfi.c:854
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d exclui %s\n"
 
 # , c-format
-#: lib/rpmfi.c:853
+#: lib/rpmfi.c:857
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d realoca %s -> %s\n"
@@ -2926,26 +2926,26 @@ msgstr "%5d realoca %s -> %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmfi.c:987
+#: lib/rpmfi.c:991
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "excluindo %s %s\n"
 
 # , c-format
-#: lib/rpmfi.c:997
+#: lib/rpmfi.c:1001
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "realocando %s para %s\n"
 
 # , c-format
-#: lib/rpmfi.c:1089
+#: lib/rpmfi.c:1093
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "realocando diretório %s para %s\n"
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:615 lib/rpminstall.c:1041 lib/rpmts.c:643
-#: tools/rpmgraph.c:121 tools/rpmgraph.c:158
+#: lib/rpminstall.c:615 lib/rpmts.c:643 tools/rpmgraph.c:121
+#: tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "falha ao abrir %s: %s\n"
@@ -2957,7 +2957,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "etiqueta desconhecida: \"%s\"\n"
 
 #: lib/rpmgi.c:628 lib/rpminstall.c:659 lib/rpminstall.c:834
-#: lib/rpminstall.c:1267 lib/transaction.c:1031 tools/rpmgraph.c:196
+#: lib/rpminstall.c:1084 lib/transaction.c:1026 tools/rpmgraph.c:196
 msgid "Failed dependencies:\n"
 msgstr "Dependências não satisfeitas:\n"
 
@@ -3084,12 +3084,12 @@ msgstr "Não foi possível abrir %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Instalando %s\n"
 
-#: lib/rpminstall.c:1261 lib/transaction.c:1024
+#: lib/rpminstall.c:1078 lib/transaction.c:1019
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Recuar pacotes (+%d/-%d) para %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1292 lib/transaction.c:1075
+#: lib/rpminstall.c:1109 lib/transaction.c:1070
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Limpando pacotes reempacotados:\n"
 
@@ -3101,7 +3101,7 @@ msgstr "Limpando pacotes reempacotados:\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpminstall.c:1299 lib/transaction.c:1081
+#: lib/rpminstall.c:1116 lib/transaction.c:1076
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tRemovendo %s:\n"
@@ -3244,103 +3244,103 @@ msgstr "%s conflita com %s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erro desconhecido %d encontrado ao manipular o pacote %s"
 
-#: lib/rpmrc.c:199
+#: lib/rpmrc.c:213
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "segundo \":\" faltando em %s:%d\n"
 
-#: lib/rpmrc.c:202
+#: lib/rpmrc.c:216
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "nome da arquitetura faltando em %s:%d\n"
 
-#: lib/rpmrc.c:356
+#: lib/rpmrc.c:370
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Linha de dados incompleta em %s:%d\n"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:375
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Argumentos em excesso na linha de dados em %s:%d\n"
 
-#: lib/rpmrc.c:369
+#: lib/rpmrc.c:383
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Número de arquitetura/SO inválido: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:406
+#: lib/rpmrc.c:420
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Linha padrão incompleta em %s:%d\n"
 
-#: lib/rpmrc.c:411
+#: lib/rpmrc.c:425
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Argumentos em excesso na linha padrão em %s:%d\n"
 
 # , c-format
-#: lib/rpmrc.c:577
+#: lib/rpmrc.c:591
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Falha ao ler %s: %s.\n"
 
-#: lib/rpmrc.c:615
+#: lib/rpmrc.c:629
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "\":\" faltando (0x%02x encontrado) em %s:%d\n"
 
-#: lib/rpmrc.c:632 lib/rpmrc.c:706
+#: lib/rpmrc.c:646 lib/rpmrc.c:710
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argumento faltando para %s em %s:%d\n"
 
 # , c-format
-#: lib/rpmrc.c:649 lib/rpmrc.c:671
+#: lib/rpmrc.c:663
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "a expansão do %s falhou em %s:%d \"%s\"\n"
 
 # , c-format
-#: lib/rpmrc.c:658
+#: lib/rpmrc.c:672
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "não foi possível abrir %s em %s:%d: %s\n"
 
-#: lib/rpmrc.c:698
+#: lib/rpmrc.c:702
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "arquitetura faltando para %s em %s:%d\n"
 
 # , c-format
-#: lib/rpmrc.c:765
+#: lib/rpmrc.c:769
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "opção inválida \"%s\" em %s:%d\n"
 
-#: lib/rpmrc.c:1564
+#: lib/rpmrc.c:1568
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema desconhecido: %s\n"
 
-#: lib/rpmrc.c:1565
+#: lib/rpmrc.c:1569
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Por favor, contate %s\n"
 
 # , c-format
-#: lib/rpmrc.c:1802
+#: lib/rpmrc.c:1806
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Não foi possível expandir %s\n"
 
-#: lib/rpmrc.c:1807
+#: lib/rpmrc.c:1811
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Não foi possível ler %s, HOME é muito grande.\n"
 
 # , c-format
-#: lib/rpmrc.c:1824
+#: lib/rpmrc.c:1828
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não foi possível abrir %s para leitura: %s\n"
@@ -3652,164 +3652,164 @@ msgstr "Assinatura: DESCONHECIDA (%d)\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/transaction.c:935
+#: lib/transaction.c:930
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "excluindo diretório %s\n"
 
-#: lib/transaction.c:1022
+#: lib/transaction.c:1017
 msgid "Transaction failed...rolling back\n"
 msgstr "A transação falhou... recuando\n"
 
-#: lib/transaction.c:1042
+#: lib/transaction.c:1037
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "Não foi possível ordenar a transação de auto-recuo!\n"
 
-#: lib/transaction.c:1132
+#: lib/transaction.c:1127
 msgid "Getting repackaged header from transaction element\n"
 msgstr "Obtendo o cabeçalho reempacotado a partir do elemento da transação\n"
 
-#: lib/transaction.c:1157
+#: lib/transaction.c:1152
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\tProcurando por %s...\n"
 
-#: lib/transaction.c:1161
+#: lib/transaction.c:1156
 msgid "\tMatches found.\n"
 msgstr "\tResultados encontrados.\n"
 
-#: lib/transaction.c:1165
+#: lib/transaction.c:1160
 msgid "\tNo matches found.\n"
 msgstr "\tNenhum resultado encontrado.\n"
 
-#: lib/transaction.c:1178
+#: lib/transaction.c:1173
 msgid "\tRepackaged package not found!.\n"
 msgstr "\tPacote reempacotado não encontrado!\n"
 
-#: lib/transaction.c:1199
+#: lib/transaction.c:1194
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "\tREMOVETID coincide com INSTALLTID.\n"
 
-#: lib/transaction.c:1201
+#: lib/transaction.c:1196
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\tNome:  %s.\n"
 
-#: lib/transaction.c:1224
+#: lib/transaction.c:1219
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\tO pacote reempacotado era %s...\n"
 
-#: lib/transaction.c:1268
+#: lib/transaction.c:1263
 msgid "Adding install element to auto-rollback transaction.\n"
 msgstr "Adicionando elemento de instalação à transação de auto-recuo.\n"
 
-#: lib/transaction.c:1277
+#: lib/transaction.c:1272
 msgid "Could not get install element database instance!\n"
 msgstr ""
 "Não foi possível obter a instância do banco de dados do elemento de "
 "instalação!\n"
 
-#: lib/transaction.c:1290
+#: lib/transaction.c:1285
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "Não foi possível obter o cabeçalho da transação de auto-recuo!\n"
 
-#: lib/transaction.c:1300
+#: lib/transaction.c:1295
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\tCabeçalho do pacote reempacotado adicionado: %s.\n"
 
-#: lib/transaction.c:1302 lib/transaction.c:1313
+#: lib/transaction.c:1297 lib/transaction.c:1308
 #, c-format
 msgid "\tAdded from install element %s.\n"
 msgstr "\tAdicionado a partir do elemento de instalação %s.\n"
 
-#: lib/transaction.c:1311
+#: lib/transaction.c:1306
 msgid "\tAdded erase element.\n"
 msgstr "\tElemento de remoção adicionado.\n"
 
-#: lib/transaction.c:1320
+#: lib/transaction.c:1315
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 "Não foi possível obter o cabeçalho reempacotado para a transação de auto-"
 "recuo!\n"
 
-#: lib/transaction.c:1327
+#: lib/transaction.c:1322
 msgid "Add erase element to auto-rollback transaction.\n"
 msgstr "Adicionar um elemento de remoção à transação de auto-recuo.\n"
 
-#: lib/transaction.c:1335
+#: lib/transaction.c:1330
 msgid "\tFound existing upgrade element.\n"
 msgstr "\tElemento de atualização existente encontrado.\n"
 
-#: lib/transaction.c:1336
+#: lib/transaction.c:1331
 #, c-format
 msgid "\tNot adding erase element for %s.\n"
 msgstr "\tNão está adicionando um elemento de remoção para %s.\n"
 
-#: lib/transaction.c:1353
+#: lib/transaction.c:1348
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\tPacote reempacotado %s adicionado.\n"
 
-#: lib/transaction.c:1355
+#: lib/transaction.c:1350
 #, c-format
 msgid "\tAdded from erase element %s.\n"
 msgstr "\tAdicionado a partir de um elemento de remoção %s.\n"
 
-#: lib/transaction.c:1360
+#: lib/transaction.c:1355
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 "Não foi possível adicionar um elemento de remoção à transação de auto-"
 "recuo.\n"
 
-#: lib/transaction.c:1366
+#: lib/transaction.c:1361
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\tNenhum pacote reempacotado... nada a ser feito.\n"
 
-#: lib/transaction.c:1372
+#: lib/transaction.c:1367
 msgid "Failure reading repackaged package!\n"
 msgstr "Falha ao ler o pacote reempacotado!\n"
 
-#: lib/transaction.c:1495
+#: lib/transaction.c:1490
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "verificando a integridade de %d elementos\n"
 
-#: lib/transaction.c:1581
+#: lib/transaction.c:1576
 msgid "running pre-transaction scripts\n"
 msgstr "executando scripts de pré-transação\n"
 
-#: lib/transaction.c:1655
+#: lib/transaction.c:1650
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "computando %d impressões digitais do arquivo\n"
 
-#: lib/transaction.c:1739
+#: lib/transaction.c:1734
 msgid "computing file dispositions\n"
 msgstr "computando disposições dos arquivos\n"
 
-#: lib/transaction.c:1932
+#: lib/transaction.c:1927
 msgid "Creating auto-rollback transaction\n"
 msgstr "Criando transação de auto-recuo\n"
 
-#: lib/transaction.c:2086
+#: lib/transaction.c:2077
 msgid "Add failed.  Could not read package header.\n"
 msgstr "A adição falhou. Não foi possível ler o cabeçalho do pacote.\n"
 
-#: lib/transaction.c:2170
+#: lib/transaction.c:2161
 msgid "Add failed in rpmpsmStage().\n"
 msgstr "A adição falhou no rpmpsmStage().\n"
 
-#: lib/transaction.c:2214
+#: lib/transaction.c:2205
 msgid "Add failed.  Could not get file list.\n"
 msgstr "A adição falhou. Não foi possível obter a lista de arquivos.\n"
 
-#: lib/transaction.c:2263
+#: lib/transaction.c:2254
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr "A remoção falhou no rpmpsmStage().\n"
 
-#: lib/transaction.c:2324
+#: lib/transaction.c:2315
 msgid "running post-transaction scripts\n"
 msgstr "executando scripts de pós-transação\n"
 
@@ -4228,88 +4228,88 @@ msgstr "abrindo índice db %s/%s %s mode=0x%x\n"
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d ativo %d vazio\n"
 
-#: rpmio/macro.c:394
+#: rpmio/macro.c:396
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(vazio)"
 
-#: rpmio/macro.c:437
+#: rpmio/macro.c:439
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(vazio)\n"
 
-#: rpmio/macro.c:664 rpmio/macro.c:705
+#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1863
+msgid "Target buffer overflow\n"
+msgstr "Estouro de buffer do destino\n"
+
+#: rpmio/macro.c:671 rpmio/macro.c:712
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "O macro %%%s tem um corpo incompleto\n"
 
-#: rpmio/macro.c:727
+#: rpmio/macro.c:734
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "O macro %%%s tem um nome inválido (%%define)\n"
 
-#: rpmio/macro.c:733
+#: rpmio/macro.c:740
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "O macro %%%s tem opções incompletas\n"
 
-#: rpmio/macro.c:738
+#: rpmio/macro.c:745
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "O macro %%%s tem um corpo vazio\n"
 
-#: rpmio/macro.c:744
+#: rpmio/macro.c:751
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "O macro %%%s falhou ao expandir\n"
 
-#: rpmio/macro.c:779
+#: rpmio/macro.c:786
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "O macro %%%s tem um nome inválido (%%undefine)\n"
 
-#: rpmio/macro.c:897
+#: rpmio/macro.c:904
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "O macro %%%s (%s) não foi usado abaixo do nível %d\n"
 
-#: rpmio/macro.c:1024
+#: rpmio/macro.c:1031
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Opção desconhecida %c em %s(%s)\n"
 
-#: rpmio/macro.c:1224
+#: rpmio/macro.c:1239
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Profundidade de recursão (%d) maior do que o máximo (%d)\n"
 
 # , c-format
-#: rpmio/macro.c:1297 rpmio/macro.c:1314
+#: rpmio/macro.c:1312 rpmio/macro.c:1329
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c incompleto: %s\n"
 
-#: rpmio/macro.c:1355
+#: rpmio/macro.c:1370
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Um %% é seguido por um macro não analisável\n"
 
-#: rpmio/macro.c:1512
+#: rpmio/macro.c:1527
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Macro %%%.*s não encontrado, ignorando\n"
 
-#: rpmio/macro.c:1848
-msgid "Target buffer overflow\n"
-msgstr "Estouro de buffer do destino\n"
-
 # , c-format
-#: rpmio/macro.c:2056 rpmio/macro.c:2062
+#: rpmio/macro.c:2076 rpmio/macro.c:2082
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Arquivo %s: %s\n"
 
-#: rpmio/macro.c:2065
+#: rpmio/macro.c:2085
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O arquivo %s é menor que %u bytes\n"

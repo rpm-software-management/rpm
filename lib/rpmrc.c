@@ -535,16 +535,16 @@ static void setDefaults(void)
 {
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
-    addMacro(NULL, "_var", NULL, "/var", RMIL_DEFAULT);
+    addMacro(NULL, "_var", NULL, LOCALSTATEDIR, RMIL_DEFAULT);
 
     addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
 
     setVarDefault(-1,			"_topdir",
 		"/usr/src/redhat",	"%{_usr}/src/redhat");
     setVarDefault(-1,			"_tmppath",
-		"/var/tmp",		"%{_var}/tmp");
+		LOCALSTATEDIR "/tmp",		"%{_var}/tmp");
     setVarDefault(-1,			"_dbpath",
-		"/var/lib/rpm",		"%{_var}/lib/rpm");
+		LOCALSTATEDIR "/lib/rpm",		"%{_var}/lib/rpm");
     setVarDefault(-1,			"_defaultdocdir",
 		"/usr/doc",		"%{_usr}/doc");
 
@@ -679,16 +679,6 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		if (rc) return rc;
 		continue;	/* XXX don't save include value as var/macro */
 	      }	/*@notreached@*/ /*@switchbreak@*/ break;
-	    case RPMVAR_MACROFILES:
-		fn = rpmGetPath(se, NULL);
-		if (fn == NULL || *fn == '\0') {
-		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\"\n"),
-			option->name, urlfn, linenum, fn);
-		    fn = _free(fn);
-		    return 1;
-		}
-		se = (char *)fn;
-		/*@switchbreak@*/ break;
 	    case RPMVAR_PROVIDES:
 	      {	char *t;
 		s = rpmGetVar(RPMVAR_PROVIDES);
@@ -905,9 +895,6 @@ exit:
 static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx)
 	/*@modifies *eax, *ebx, *ecx, *edx @*/
 {
-#ifdef	__LCLINT__
-    *eax = *ebx = *ecx = *edx = 0;
-#endif
     asm volatile (
 	"pushl	%%ebx		\n"
 	"cpuid			\n"
@@ -1850,16 +1837,6 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 
     rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
-    {	const char *mfpath;
-	/*@-branchstate@*/
-	if ((mfpath = rpmGetVar(RPMVAR_MACROFILES)) != NULL) {
-	    mfpath = xstrdup(mfpath);
-	    rpmInitMacros(NULL, mfpath);
-	    mfpath = _free(mfpath);
-	}
-	/*@=branchstate@*/
-    }
-
     return rc;
 }
 
@@ -1872,6 +1849,12 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
     /* Read the files */
     if (rpmReadRC(file)) return -1;
+
+    if (macrofiles != NULL) {
+	const char *mf = rpmGetPath(macrofiles, NULL);
+	rpmInitMacros(NULL, mf);
+	_free(mf);
+    }
 
     /* Reset target macros */
     rpmRebuildTargetVars(&target, NULL);

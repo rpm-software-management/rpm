@@ -21,7 +21,8 @@
 # Attempt to initialize a rpmdb
 AT_SETUP([rpm --initdb])
 AT_CHECK([
-RPM_INIT_DB
+RPMDB_CLEAR
+RPMDB_INIT
 ],
 [0],
 [ignore],
@@ -32,43 +33,32 @@ AT_CLEANUP
 # Run rpm -qa on an empty rpmdb
 AT_SETUP([rpm -qa])
 AT_CHECK([
-RPM_INIT_DB
+RPMDB_CLEAR
+RPMDB_INIT
 rpm \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --root="${abs_builddir}"/testing \
   -qa
 ],
-[0],
-[ignore],
-[ignore])
+[0])
 AT_CLEANUP
 
 
 # ------------------------------
-# install a package into a local rpmdb without --relocate and --nodeps
-# * Must fail due to missing deps
-# * Use --ignorearch because we don't know the arch
-AT_SETUP([rpm -i *.i386.rpm])
-AT_CHECK([
-RPM_INIT_DB
-],
-[0],[ignore],[ignore])
+# install a noarch package into a local rpmdb without --relocate and --nodeps
+# * Should always succeed
+AT_SETUP([rpm -i *.noarch.rpm])
 
 AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
 rpm -i \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --root="${abs_builddir}"/testing \
-  --ignorearch \
-  "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+  "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
 ],
-[1],
-[ignore],
-[error: Failed dependencies:
-	/bin/sh is needed by hello-1.0-1.i386
-	libc.so.6 is needed by hello-1.0-1.i386
-	libc.so.6(GLIBC_2.0) is needed by hello-1.0-1.i386
-	rtld(GNU_HASH) is needed by hello-1.0-1.i386
-])
+[0])
 
 AT_CLEANUP
 
@@ -79,20 +69,16 @@ AT_CLEANUP
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
 AT_CHECK([
-RPM_INIT_DB
-],
-[0],[ignore],[ignore])
+RPMDB_CLEAR
+RPMDB_INIT
 
-AT_CHECK([
 rpm -i \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --root="${abs_builddir}"/testing \
   --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
-[0],
-[ignore],
-[ignore])
+[0])
 
 AT_CLEANUP
 
@@ -103,13 +89,11 @@ AT_CLEANUP
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.ppc64.rpm])
 AT_CHECK([
-RPM_INIT_DB
-],
-[0],[ignore],[ignore])
+RPMDB_CLEAR
+RPMDB_INIT
 
-AT_CHECK([
 rpm -i \
-  --rcfile=${RPMRC} \
+  --rcfile="${RPMRC}" \
   --root="${abs_builddir}"/testing \
   --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm

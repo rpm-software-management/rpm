@@ -624,28 +624,17 @@ static int fsmMapFContext(FSM_t fsm)
 	/*@modifies fsm @*/
 {
     rpmts ts = fsmGetTs(fsm);
-    rpmfi fi = fsmGetFi(fsm);
     struct stat * st = &fsm->sb;
 
     /*
      * Find file security context (if not disabled).
      */
     fsm->fcontext = NULL;
-    if (ts != NULL && rpmtsSELinuxEnabled(ts) == 1 &&
-	!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS))
-    {
-	rpmsx sx = rpmtsREContext(ts);
+    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+	security_context_t scon = NULL;
 
-	if (sx != NULL) {
-	    /* Get file security context from patterns. */
-	    fsm->fcontext = rpmsxFContext(sx, fsm->path, st->st_mode);
-	    sx = rpmsxFree(sx);
-	} else {
-	    int i = fsm->ix;
-
-	    /* Get file security context from package. */
-	    if (fi && i >= 0 && i < fi->fc)
-		fsm->fcontext = (fi->fcontexts ? fi->fcontexts[i] : NULL);
+	if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 && scon != NULL) {
+	    fsm->fcontext = scon;
 	}
     }
     return 0;
@@ -1276,7 +1265,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 /*@-compdef@*/
     rpmts ts = fsmGetTs(fsm);
 /*@=compdef@*/
-    rpmsx sx = rpmtsREContext(ts);
+    security_context_t scon = NULL;
 
     fsm->path = NULL;
 
@@ -1340,10 +1329,14 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-		    if (sx != NULL) {
-			fsm->fcontext = rpmsxFContext(sx, fsm->path, st->st_mode);
-			rc = fsmNext(fsm, FSM_LSETFCON);
+		    if (! rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
+			if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 &&
+			    scon != NULL) {
+            		    fsm->fcontext = scon;
+			    rc = fsmNext(fsm, FSM_LSETFCON);
+			}
 		    }
+
 		    if (fsm->fcontext == NULL)
 			rpmMessage(RPMMESS_DEBUG,
 			    _("%s directory created with perms %04o, no context.\n"),
@@ -1376,7 +1369,6 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
     }
 /*@=boundswrite@*/
     dnli = dnlFreeIterator(dnli);
-    sx = rpmsxFree(sx);
     /*@=observertrans =dependenttrans@*/
 
     fsm->path = path;

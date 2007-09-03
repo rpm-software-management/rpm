@@ -1,7 +1,5 @@
 # Makefile for rpm library.
 
-LINT = splint
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/rpmdb \
@@ -11,6 +9,9 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/misc
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
+AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
+AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
+AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"@RPMCONFIGDIR@/rpmpopt-${VERSION}\""
 
 EXTRA_DIST = getdate.y
 
@@ -18,23 +19,24 @@ check_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	misc.h rpmcli.h rpmlib.h \
-	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
+	idtx.h misc.h rpmcli.h rpmlib.h \
+	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmte.h rpmts.h \
 	stringbuf.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	cpio.c cpio.h depends.c formats.c fs.c fsm.c fsm.h getdate.c \
-	manifest.c manifest.h misc.c package.c \
+	idtx.c manifest.c manifest.h misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c psm.h query.c \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpmgi.c rpminstall.c \
-	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
+	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c signature.h stringbuf.c transaction.c \
 	verify.c rpmlock.c rpmlock.h
 librpm_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
+	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
 	@LIBINTL@
@@ -68,27 +70,7 @@ getdate.c: getdate.y
 	   fi ;\
 	fi
 
-BUILT_SOURCES = getdate.c # rpmlib.lcd
-
-rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS}
-	-lclint ${DEFS} ${AM_CPPFLAGS} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
-
-.PHONY:	sources
-sources:
-	@echo $(librpm_la_SOURCES:%=lib/%)
-
-.PHONY:	lint
-lint:
-	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpm_la_SOURCES)
-
-if SELINUX
-check_PROGRAMS += setfiles
-setfiles_SOURCES = setfiles.c
-# setfiles_LDFLAGS = @LDFLAGS_STATIC@
-setfiles_LDADD = @WITH_SELINUX_LIB@ \
-	../rpmio/librpmio.la \
-	@WITH_POPT_LIB@
-endif
+BUILT_SOURCES = getdate.c
 
 check_PROGRAMS += tds
 tds_SOURCES = tds.c
@@ -108,11 +90,6 @@ check_PROGRAMS += tsystem
 tsystem_SOURCES = tsystem.c
 tsystem_LDFLAGS =
 tsystem_LDADD = ../rpmio/librpmio.la @WITH_POPT_LIB@
- 
-check_PROGRAMS += tre
-tre_SOURCES = tre.c
-tre_LDFLAGS = 
-tre_LDADD = librpm.la @WITH_SELINUX_LIB@
  
 check_PROGRAMS += tcpu
 tcpu_SOURCES = tcpu.c

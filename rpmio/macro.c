@@ -54,12 +54,6 @@ typedef	FILE * FD_t;
 
 #include "debug.h"
 
-#if defined(__LCLINT__)
-/*@-exportheader@*/
-extern const unsigned short int **__ctype_b_loc (void) /*@*/;
-/*@=exportheader@*/
-#endif
-
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access MacroContext@*/
 /*@access MacroEntry@*/
@@ -2014,6 +2008,11 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 
 	/* Read macros from each file. */
 	for (i = 0; i < ac; i++) {
+	    if (strstr(av[i], ".rpmnew") || 
+		strstr(av[i], ".rpmsave") ||
+		strstr(av[i], ".rpmorig")) {
+		continue;
+	    }
 	    (void) rpmLoadMacroFile(mc, av[i]);
 	    av[i] = _free(av[i]);
 	}

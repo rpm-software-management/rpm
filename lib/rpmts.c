@@ -25,16 +25,8 @@
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
 /*@-incondefs@*/
-#if defined(__LCLINT__)
-/*@-declundef -exportheader -protoparammatch @*/ /* LCL: missing annotation */
-extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
-	/*@globals fileSystem @*/
-	/*@modifies *buf, fileSystem @*/;
-/*@=declundef =exportheader =protoparammatch @*/
-/*@=incondefs@*/
-#else
-# include <sys/statvfs.h>
-#endif
+#include <sys/statvfs.h>
+
 #else
 # if STATFS_IN_SYS_VFS
 #  include <sys/vfs.h>
@@ -55,7 +47,6 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 
 /*@access rpmps @*/
 /*@access rpmDiskSpaceInfo @*/
-/*@access rpmsx @*/
 /*@access rpmte @*/
 /*@access rpmtsi @*/
 /*@access fnpyKey @*/
@@ -863,8 +854,6 @@ rpmts rpmtsFree(rpmts ts)
 
     (void) rpmtsCloseSDB(ts);
 
-    ts->sx = rpmsxFree(ts->sx);
-
     ts->removedPackages = _free(ts->removedPackages);
 
     ts->availablePackages = rpmalFree(ts->availablePackages);
@@ -1082,23 +1071,6 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
 	ts->chrootDone = chrootDone;
     }
     return ochrootDone;
-}
-
-rpmsx rpmtsREContext(rpmts ts)
-{
-    return ( (ts && ts->sx ? rpmsxLink(ts->sx, __func__) : NULL) );
-}
-
-int rpmtsSetREContext(rpmts ts, rpmsx sx)
-{
-    int rc = -1;
-    if (ts != NULL) {
-	ts->sx = rpmsxFree(ts->sx);
-	ts->sx = rpmsxLink(sx, __func__);
-	if (ts->sx != NULL)
-	    rc = 0;
-    }
-    return rc;
 }
 
 int_32 rpmtsGetTid(rpmts ts)
