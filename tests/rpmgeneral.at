@@ -59,7 +59,6 @@ AT_CLEANUP
 # Check rpm --querytags
 # * Some versions of rpm append extraneous whitespaces
 AT_SETUP([rpm --querytags])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([rpm --querytags],[0],
 [ARCH
 ARCHIVESIZE
