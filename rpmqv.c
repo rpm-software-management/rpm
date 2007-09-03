@@ -3,7 +3,7 @@ const char *__progname;
 
 #define	_AUTOHELP
 
-#if defined(IAM_RPM) || defined(__LCLINT__)
+#if defined(IAM_RPM) 
 #define	IAM_RPMBT
 #define	IAM_RPMDB
 #define	IAM_RPMEIU
@@ -162,7 +162,7 @@ static void printUsage(poptContext con, FILE * fp, int flags)
 
 /*@-bounds@*/ /* LCL: segfault */
 /*@-mods@*/ /* FIX: shrug */
-#if !defined(__GLIBC__) && !defined(__LCLINT__)
+#if !defined(__GLIBC__) 
 int main(int argc, const char ** argv, /*@unused@*/ char ** envp)
 #else
 int main(int argc, const char ** argv)
@@ -219,7 +219,7 @@ int main(int argc, const char ** argv)
 #endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
 
-#if !defined(__GLIBC__) && !defined(__LCLINT__)
+#if !defined(__GLIBC__) 
     environ = envp;
 #endif  
 
@@ -278,9 +278,6 @@ int main(int argc, const char ** argv)
     /* set up the correct locale */
     (void) setlocale(LC_ALL, "" );
 
-#ifdef	__LCLINT__
-#define	LOCALEDIR	"/usr/share/locale"
-#endif
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
 #endif
