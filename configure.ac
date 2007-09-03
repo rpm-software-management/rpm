@@ -81,9 +81,6 @@ AC_SUBST(RPMUID)
 AC_SUBST(RPMGROUP)
 AC_SUBST(RPMGID)
 
-AC_PATH_PROG(CTAGS, ctags, /bin/true)
-AC_PATH_PROG(CSCOPE, cscope, /bin/true)
-
 dnl
 dnl This now uses libtool. Put
 dnl	LDFLAGS_STATIC="-all"
