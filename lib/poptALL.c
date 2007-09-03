@@ -404,7 +404,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 /*@=globs =mods@*/
 
-#if defined(ENABLE_NLS) && !defined(__LCLINT__)
+#if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );
     (void) bindtextdomain(PACKAGE, LOCALEDIR);
     (void) textdomain(PACKAGE);

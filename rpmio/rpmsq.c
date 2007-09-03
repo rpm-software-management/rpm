@@ -4,119 +4,6 @@
 
 #include "system.h"
 
-#if defined(__LCLINT__)
-#define	_BITS_SIGTHREAD_H	/* XXX avoid __sigset_t heartburn. */
-
-/*@-incondefs -protoparammatch@*/
-/*@-exportheader@*/
-/*@constant int SA_SIGINFO@*/
-extern int sighold(int sig)
-	/*@globals errno, systemState @*/;
-extern int sigignore(int sig)
-	/*@globals errno, systemState @*/;
-extern int sigpause(int sig)
-	/*@globals errno, systemState @*/;
-extern int sigrelse(int sig)
-	/*@globals errno, systemState @*/;
-extern void (*sigset(int sig, void (*disp)(int)))(int)
-	/*@globals errno, systemState @*/;
-
-struct qelem;
-extern	void insque(struct qelem * __elem, struct qelem * __prev)
-	/*@modifies  __elem, __prev @*/;
-extern	void remque(struct qelem * __elem)
-	/*@modifies  __elem @*/;
-
-extern pthread_t pthread_self(void)
-	/*@*/;
-extern int pthread_equal(pthread_t t1, pthread_t t2)
-	/*@*/;
-
-extern int pthread_create(/*@out@*/ pthread_t *restrict thread,
-		const pthread_attr_t *restrict attr,
-		void *(*start_routine)(void*), void *restrict arg)
-	/*@modifies *thread @*/;
-extern int pthread_join(pthread_t thread, /*@out@*/ void **value_ptr)
-	/*@modifies *value_ptr @*/;
-
-extern int pthread_setcancelstate(int state, /*@out@*/ int *oldstate)
-	/*@globals internalState @*/
-	/*@modifies *oldstate, internalState @*/;
-extern int pthread_setcanceltype(int type, /*@out@*/ int *oldtype)
-	/*@globals internalState @*/
-	/*@modifies *oldtype, internalState @*/;
-extern void pthread_testcancel(void)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-extern void pthread_cleanup_pop(int execute)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-extern void pthread_cleanup_push(void (*routine)(void*), void *arg)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-extern void _pthread_cleanup_pop(/*@out@*/ struct _pthread_cleanup_buffer *__buffer, int execute)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-extern void _pthread_cleanup_push(/*@out@*/ struct _pthread_cleanup_buffer *__buffer, void (*routine)(void*), /*@out@*/ void *arg)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-
-extern int pthread_mutexattr_destroy(pthread_mutexattr_t *attr)
-	/*@globals errno, internalState @*/
-	/*@modifies *attr, errno, internalState @*/;
-extern int pthread_mutexattr_init(/*@out@*/ pthread_mutexattr_t *attr)
-	/*@globals errno, internalState @*/
-	/*@modifies *attr, errno, internalState @*/;
-
-int pthread_mutexattr_gettype(const pthread_mutexattr_t *restrict attr,
-		/*@out@*/ int *restrict type)
-	/*@modifies *type @*/;
-int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int type)
-	/*@globals errno, internalState @*/
-	/*@modifies *attr, errno, internalState @*/;
-
-extern int pthread_mutex_destroy(pthread_mutex_t *mutex)
-	/*@modifies *mutex @*/;
-extern int pthread_mutex_init(/*@out@*/ pthread_mutex_t *restrict mutex,
-		/*@null@*/ const pthread_mutexattr_t *restrict attr)
-	/*@globals errno, internalState @*/
-	/*@modifies *mutex, errno, internalState @*/;
-
-extern int pthread_mutex_lock(pthread_mutex_t *mutex)
-	/*@globals errno @*/
-	/*@modifies *mutex, errno @*/;
-extern int pthread_mutex_trylock(pthread_mutex_t *mutex)
-	/*@globals errno @*/
-	/*@modifies *mutex, errno @*/;
-extern int pthread_mutex_unlock(pthread_mutex_t *mutex)
-	/*@globals errno @*/
-	/*@modifies *mutex, errno @*/;
-
-extern int pthread_cond_destroy(pthread_cond_t *cond)
-	/*@modifies *cond @*/;
-extern int pthread_cond_init(/*@out@*/ pthread_cond_t *restrict cond,
-		const pthread_condattr_t *restrict attr)
-	/*@globals errno, internalState @*/
-	/*@modifies *cond, errno, internalState @*/;
-
-extern int pthread_cond_timedwait(pthread_cond_t *restrict cond,
-		pthread_mutex_t *restrict mutex,
-		const struct timespec *restrict abstime)
-	/*@modifies *cond, *mutex @*/;
-extern int pthread_cond_wait(pthread_cond_t *restrict cond,
-		pthread_mutex_t *restrict mutex)
-	/*@modifies *cond, *mutex @*/;
-extern int pthread_cond_broadcast(pthread_cond_t *cond)
-	/*@globals errno, internalState @*/
-	/*@modifies *cond, errno, internalState @*/;
-extern int pthread_cond_signal(pthread_cond_t *cond)
-	/*@globals errno, internalState @*/
-	/*@modifies *cond, errno, internalState @*/;
-
-/*@=exportheader@*/
-/*@=incondefs =protoparammatch@*/
-#endif
-
 #include <signal.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
@@ -370,11 +257,7 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 
 		(void) sigemptyset (&sa.sa_mask);
 		sa.sa_flags = SA_SIGINFO;
-#if defined(__LCLINT__)	/* XXX glibc has union to track handler prototype. */
-		sa.sa_handler = (void*)(handler != NULL ? handler : tbl->handler);
-#else
 		sa.sa_sigaction = (void*)(handler != NULL ? handler : tbl->handler);
-#endif
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
 		    SUB_REF(tbl);
 		    break;

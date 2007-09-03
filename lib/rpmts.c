@@ -25,16 +25,8 @@
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
 /*@-incondefs@*/
-#if defined(__LCLINT__)
-/*@-declundef -exportheader -protoparammatch @*/ /* LCL: missing annotation */
-extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
-	/*@globals fileSystem @*/
-	/*@modifies *buf, fileSystem @*/;
-/*@=declundef =exportheader =protoparammatch @*/
-/*@=incondefs@*/
-#else
-# include <sys/statvfs.h>
-#endif
+#include <sys/statvfs.h>
+
 #else
 # if STATFS_IN_SYS_VFS
 #  include <sys/vfs.h>

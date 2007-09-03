@@ -207,13 +207,8 @@ extern int _dav_debug;
     if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
     /*@=modfilesys@*/
 
-#if defined(__LCLINT__XXX)
-#define DBGIO(_f, _x)
-#define DBGREFS(_f, _x)
-#else
 #define DBGIO(_f, _x)   DBG((_f), RPMIO_DEBUG_IO, _x)
 #define DBGREFS(_f, _x) DBG((_f), RPMIO_DEBUG_REFS, _x)
-#endif
 
 #ifdef __cplusplus
 extern "C" {

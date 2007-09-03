@@ -6,11 +6,6 @@
 
 #include "structmember.h"
 
-#ifdef __LCLINT__
-#undef  PyObject_HEAD
-#define PyObject_HEAD   int _PyObjectHead;
-#endif
-
 #include <fts.h>
 
 #include "rpmfts-py.h"

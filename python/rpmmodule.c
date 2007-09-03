@@ -27,11 +27,6 @@
 
 #include "debug.h"
 
-#ifdef __LCLINT__
-#undef	PyObject_HEAD
-#define	PyObject_HEAD	int _PyObjectHead
-#endif
-
 /** \ingroup python
  * \name Module: rpm
  */
