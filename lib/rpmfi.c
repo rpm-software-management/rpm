@@ -16,8 +16,6 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
-#include "rpmsx.h"
-
 #define	_RPMTE_INTERNAL	/* relocations */
 #include "rpmte.h"
 #include "rpmts.h"
