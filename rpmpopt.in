@@ -109,9 +109,6 @@ rpm	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
 
-rpm	alias --filecontext --qf '[%{FILENAMES}\t%{FILECONTEXTS}\n]' \
-	--POPTdesc=$"list file names with security context from header"
-
 rpm	alias --fscontext --qf '[%{FILENAMES}\t%{FSCONTEXTS}\n]' \
 	--POPTdesc=$"list file names with security context from file system"
 

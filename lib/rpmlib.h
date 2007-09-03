@@ -430,7 +430,7 @@ typedef enum rpmTag_e {
     RPMTAG_FILEDEPENDSN		= 1144,	/* i[] */
     RPMTAG_DEPENDSDICT		= 1145,	/* i[] */
     RPMTAG_SOURCEPKGID		= 1146,	/* x */
-    RPMTAG_FILECONTEXTS		= 1147,	/* s[] */
+    RPMTAG_FILECONTEXTS		= 1147,	/* s[] - obsolete */
     RPMTAG_FSCONTEXTS		= 1148,	/* s[] extension */
     RPMTAG_RECONTEXTS		= 1149,	/* s[] extension */
     RPMTAG_POLICIES		= 1150,	/* s[] selinux *.te policy file. */
