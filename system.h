@@ -452,9 +452,4 @@ extern void unsetenv(const char *name);
 #define MOUNTED "/etc/mnttab"
 #endif
 
-#define FILE_RCSID(id) \
-static inline const char *rcsid(const char *p) { \
-        return rcsid(p = id); \
-}
-
 #endif	/* H_SYSTEM */
