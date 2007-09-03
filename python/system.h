@@ -11,11 +11,6 @@
 
 #include "Python.h"
 
-#ifdef __LCLINT__
-#undef  PyObject_HEAD
-#define PyObject_HEAD   int _PyObjectHead;
-#endif
-
 #include "../system.h"
 
 #endif	/* H_SYSTEM_PYTHON */
