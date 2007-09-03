@@ -1,7 +1,5 @@
 # Makefile for rpm library.
 
-LINT = splint
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
@@ -171,17 +169,6 @@ rpmdb_verify_LDADD = \
 	librpmdb.la
 
 BUILT_SOURCES = tagtbl.c
-
-rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-splint ${DEFS} ${AM_CPPFLAGS} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
-
-.PHONY:	sources
-sources:
-	@echo $(librpmdb_la_SOURCES:%=rpmdb/%)
-
-.PHONY:	lint
-lint:
-	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmdb_la_SOURCES)
 
 check_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c

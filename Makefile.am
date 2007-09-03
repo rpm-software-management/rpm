@@ -1,7 +1,5 @@
 # Top level Makefile for rpm
 
-LINT = splint
-
 CLEANFILES =
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \
@@ -88,23 +86,6 @@ macros: $(top_srcdir)/macros.in
 	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/macros:${subdir}/macros.tmp )
 CLEANFILES += macros.tmp macros
 EXTRA_DIST += macros.in
-
-.PHONY:	splint
-splint:
-	splint \
-	    -load build/rpmbuild.lcd \
-	    -load lib/rpmlib.lcd \
-	    -load rpmdb/rpmdb.lcd \
-	    -load rpmio/rpmio.lcd \
-		$(DEFS) $(AM_CPPFLAGS) rpmqv.c $(rpmb_SOURCES)
-
-.PHONY:	lint
-lint:
-	$(LINT) -Dlint $(DEFS) $(AM_CPPFLAGS) rpmqv.c $(rpmb_SOURCES) \
-		`make -s sources -C build` \
-		`make -s sources -C lib` \
-		`make -s sources -C rpmdb` \
-		`make -s sources -C rpmio` 
 
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
@@ -220,11 +201,6 @@ doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	rm -rf $@
 	$(MKDIR_P) $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
-
-cscope:
-	@CSCOPE@ -b -R
-
-cref: ctags cscope
 
 .PHONY: ChangeLog
 ChangeLog:
