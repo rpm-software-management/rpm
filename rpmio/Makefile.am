@@ -1,7 +1,5 @@
 # Makefile for rpm library.
 
-LINT = splint
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	@WITH_BEECRYPT_INCLUDE@ \
@@ -31,19 +29,6 @@ librpmio_la_LDFLAGS = -release 4.4 \
 	@WITH_MAGIC_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	-lpthread
-
-#BUILT_SOURCES = rpmio.lcd
-
-rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
-	-lclint -load ../beecrypt/beecrypt.lcd $(DEFS) $(AM_CPPFLAGS) $(librpmio_la_SOURCES) -dump $@ 2>/dev/null
-
-.PHONY:	sources
-sources:
-	@echo $(librpmio_la_SOURCES:%=rpmio/%)
-
-.PHONY:	lint
-lint:
-	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpmio_la_SOURCES)
 
 check_PROGRAMS =
 

@@ -1,7 +1,5 @@
 # Makefile for rpm library.
 
-LINT = splint
-
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/rpmdb \
@@ -72,18 +70,7 @@ getdate.c: getdate.y
 	   fi ;\
 	fi
 
-BUILT_SOURCES = getdate.c # rpmlib.lcd
-
-rpmlib.lcd: Makefile.am ${librpm_la_SOURCES} ${pkginc_HEADERS}
-	-lclint ${DEFS} ${AM_CPPFLAGS} ${librpm_la_SOURCES} -dump $@ 2>/dev/null
-
-.PHONY:	sources
-sources:
-	@echo $(librpm_la_SOURCES:%=lib/%)
-
-.PHONY:	lint
-lint:
-	$(LINT) $(DEFS) $(AM_CPPFLAGS) $(librpm_la_SOURCES)
+BUILT_SOURCES = getdate.c
 
 if SELINUX
 check_PROGRAMS += setfiles
