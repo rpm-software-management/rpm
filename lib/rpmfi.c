@@ -1380,7 +1380,6 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
     xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
     xx = hge(h, RPMTAG_FILEINODES, NULL, (void **) &fi->finodes, NULL);
-    xx = hge(h, RPMTAG_FILECONTEXTS, NULL, (void **) &fi->fcontexts, NULL);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
