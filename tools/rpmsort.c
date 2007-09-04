@@ -17,11 +17,13 @@ const char *__progname;
 static int _depends_debug;
 
 static int noAvailable = 1;
+#ifdef DYING
 static const char * avdbpath =
 	"/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat";
+#endif
 static int noDeps = 0;
 
-static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
+static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 	/*@*/
 {
     if (isLegacyPreReq(f))
