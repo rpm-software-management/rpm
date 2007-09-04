@@ -824,28 +824,22 @@ yes)
 esac
 
 WITH_SELINUX_LIB=
-AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ],,[with_selinux=auto])
+AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ],
+[case "$with_selinux" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --with-selinux])
+  ;;
+esac],
+[with_selinux=no])
 
-case "$with_selinux" in
-yes)
+AS_IF([test "$with_selinux" = yes],[
   AC_CHECK_HEADER([selinux/selinux.h],[
     AC_CHECK_LIB(selinux,[is_selinux_enabled],[with_selinux=yes],[
       AC_MSG_ERROR([--with-selinux given, but libselinux not found])])
   ],[
     AC_MSG_ERROR([--with-selinux given, but selinux/selinux.h not found])
   ])
-  ;;
-auto)
-  AC_CHECK_HEADER([selinux/selinux.h],[
-    AC_CHECK_LIB(selinux,[is_selinux_enabled],[with_selinux=yes],
-      [with_selinux=no]) 
-  ],[
-    with_selinux=no
-  ])
-  ;;
-*) with_selinux=no
-  ;;
-esac
+])
 
 AS_IF([test "$with_selinux" = yes],[
   AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
