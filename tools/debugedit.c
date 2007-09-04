@@ -567,23 +567,22 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  memcpy (s + comp_dir_len + 1 + dir_len + 1, file, file_len + 1);
 	}
       canonicalize_path (s, s);
-      if (base_dir == NULL ||
-	  has_prefix (s, base_dir))
+      if (list_file_fd != -1)
 	{
-	  char *p;
-	  size_t size;
-	  ssize_t ret;
-	  if (base_dir)
-	    p = s + strlen (base_dir);
-	  else
+	  char *p = NULL;
+	  if (base_dir == NULL)
 	    p = s;
-	  
-	  if (list_file_fd != -1)
+	  else if (has_prefix (s, base_dir))
+	    p = s + strlen (base_dir);
+	  else if (has_prefix (s, dest_dir))
+	    p = s + strlen (dest_dir);
+
+	  if (p)
 	    {
-	      size = strlen (p) + 1;
+	      size_t size = strlen (p) + 1;
 	      while (size > 0)
 		{
-		  ret = write (list_file_fd, p, size);
+		  ssize_t ret = write (list_file_fd, p, size);
 		  if (ret == -1)
 		    break;
 		  size -= ret;
