@@ -1088,10 +1088,10 @@ AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
 AC_SUBST(RPMCONFIGDIR)
 
-VENDORCONFIGDIR="${RPMCONFIGDIR}/${RPMCANONVENDOR}"
-AC_DEFINE_UNQUOTED(VENDORCONFIGDIR, "$VENDORCONFIGDIR",
-       [Full path to vendor rpm configuration directory (usually /usr/lib/rpm/vendor/)])
-AC_SUBST(VENDORCONFIGDIR)
+VENDORRPMRC_FILENAME="${RPMCONFIGDIR}/${RPMCANONVENDOR}/rpmrc"
+AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
+       [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
+AC_SUBST(VENDORRPMRC_FILENAME)
 
 AC_SUBST(OBJDUMP)
 

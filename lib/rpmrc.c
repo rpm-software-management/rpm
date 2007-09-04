@@ -25,7 +25,7 @@
 /*@observer@*/ /*@unchecked@*/
 static const char *defrcfiles = 
       RPMCONFIGDIR "/rpmrc" 
-  ":" VENDORCONFIGDIR "/rpmrc"
+  ":" VENDORRPMRC_FILENAME 
   ":" SYSCONFDIR "/rpmrc"
   ":~/.rpmrc"; 
 
@@ -34,7 +34,6 @@ const char * macrofiles =
 #ifndef MACROFILES
       RPMCONFIGDIR "/macros"
   ":" RPMCONFIGDIR "/%{_target}/macros"
-  ":" VENDORCONFIGDIR "/macros"
   ":" SYSCONFDIR "/rpm/macros.*"
   ":" SYSCONFDIR "/rpm/macros"
   ":" SYSCONFDIR "/rpm/%{_target}/macros"
