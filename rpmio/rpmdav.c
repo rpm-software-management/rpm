@@ -23,6 +23,9 @@
 #include "neon/ne_string.h"
 #include "neon/ne_utils.h"
 
+/* XXX don't assume access to neon internal headers, ugh.. */
+#define NEONBLOWSCHUNKS
+
 #endif /* WITH_NEON */
 
 #include <rpmio_internal.h>
@@ -1065,7 +1068,7 @@ assert(count >= 128);	/* HACK: see ne_request.h comment */
     rc = ne_read_response_block(fd->req, buf, count);
 
 if (_dav_debug < 0) {
-fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
+fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
 #ifdef	DYING
 hexdump(buf, rc);
 #endif
@@ -1076,7 +1079,6 @@ hexdump(buf, rc);
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
 {
-    FD_t fd = cookie;
     ssize_t rc;
     int xx;
 
@@ -1103,7 +1105,7 @@ assert(fd->req != NULL);
     rc = (xx == 0 ? count : -1);
 
 if (_dav_debug < 0)
-fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, rc);
+fprintf(stderr, "*** davWrite(%p,%p,0x%x) rc 0x%x\n", cookie, buf, (unsigned)count, (unsigned)rc);
 #ifdef	DYING
 if (count > 0)
 hexdump(buf, count);
@@ -1540,7 +1542,7 @@ struct dirent * davReaddir(DIR * dir)
     dp = (struct dirent *) avdir->data;
     av = (const char **) (dp + 1);
     ac = avdir->size;
-    dt = (char *) (av + (ac + 1));
+    dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
 /*@-boundsread@*/
@@ -1625,7 +1627,7 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     nav = (const char **) (dp + 1);
-    dt = (char *) (nav + (ac + 1));
+    dt = (unsigned char *) (nav + (ac + 1));
     t = (char *) (dt + ac + 1);
     /*@=abstract@*/
 
