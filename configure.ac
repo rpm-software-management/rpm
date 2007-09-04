@@ -1085,6 +1085,7 @@ AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
 AC_SUBST(RPMCANONGNU)
+AC_DEFINE_UNQUOTED([RPMCANONVENDOR],["${RPMCANONVENDOR}"],[canonical vendor])
 
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"
@@ -1096,11 +1097,6 @@ RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
 AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
 	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
 AC_SUBST(RPMCONFIGDIR)
-
-VENDORRPMRC_FILENAME="${RPMCONFIGDIR}/${RPMCANONVENDOR}/rpmrc"
-AC_DEFINE_UNQUOTED(VENDORRPMRC_FILENAME, "$VENDORRPMRC_FILENAME",
-       [Full path to vendor rpmrc configuration file (usually /usr/lib/rpm/vendor/rpmrc)])
-AC_SUBST(VENDORRPMRC_FILENAME)
 
 AC_SUBST(OBJDUMP)
 
