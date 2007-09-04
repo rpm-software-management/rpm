@@ -1,7 +1,7 @@
 #include "system.h"
 #include <beecrypt/mpbarrett.h>
 #include <beecrypt/mp.h>
-#include "popt.h"
+#include <popt.h>
 #include "debug.h"
 
 static int _debug = 0;

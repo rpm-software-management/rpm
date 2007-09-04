@@ -12,7 +12,7 @@
 #include "rpmmessages.h"
 #include "rpmerr.h"
 #include "header.h"
-#include "popt.h"
+#include <popt.h>
 
 /**
  * Package read return codes.

@@ -1,6 +1,6 @@
 #include "system.h"
 #include "rpmio_internal.h"
-#include "popt.h"
+#include <popt.h>
 #include "debug.h"
 
 static int printing = 1;

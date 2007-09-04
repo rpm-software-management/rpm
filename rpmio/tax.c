@@ -3,7 +3,7 @@
 #include <beecrypt/base64.h>
 #include <beecrypt/mpbarrett.h>
 #include <beecrypt/mp.h>
-#include "popt.h"
+#include <popt.h>
 
 #include "debug.h"
 
