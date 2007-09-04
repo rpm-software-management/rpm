@@ -168,7 +168,7 @@ rpmdb_verify_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
-BUILT_SOURCES = tagtbl.c
+BUILT_SOURCES = tagtbl.c db.h
 
 check_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c
