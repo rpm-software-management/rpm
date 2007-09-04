@@ -25,7 +25,7 @@
 /*@observer@*/ /*@unchecked@*/
 static const char *defrcfiles = 
       RPMCONFIGDIR "/rpmrc" 
-  ":" VENDORRPMRC_FILENAME 
+  ":" RPMCONFIGDIR "/" RPMCANONVENDOR "/rpmrc"
   ":" SYSCONFDIR "/rpmrc"
   ":~/.rpmrc"; 
 
