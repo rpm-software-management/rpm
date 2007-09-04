@@ -452,7 +452,11 @@ AS_IF([test "$with_neon" = yes],[
       WITH_NEON_INCLUDE=
       WITH_NEON_LIB="-lneon"
       AC_DEFINE(WITH_NEON,1,[Build with neon support?])
+    ],[
+      AC_MSG_ERROR([--with-neon given, but required library libneon not found])
     ])
+  ],[
+    AC_MSG_ERROR([--with-neon given, but required header neon/ne_session.h not found])
   ])
 ])
 AC_SUBST(WITH_NEON_INCLUDE)
