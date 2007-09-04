@@ -1089,10 +1089,14 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
     while ((arg = *argv++) != NULL) {
 	FD_t fd;
 
-	if ((fd = Fopen(arg, "r.ufdio")) == NULL
-	 || Ferror(fd)
-	 || rpmVerifySignatures(qva, ts, fd, arg))
+	fd = Fopen(arg, "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), 
+		     arg, Fstrerror(fd));
 	    res++;
+	} else if (rpmVerifySignatures(qva, ts, fd, arg)) {
+	    res++;
+	}
 
 	if (fd != NULL) xx = Fclose(fd);
     }
