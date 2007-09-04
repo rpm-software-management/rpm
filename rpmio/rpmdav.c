@@ -44,7 +44,7 @@
 #define TIMEOUT_SECS 5
 #endif
 
-#ifdef NOTYET
+#ifdef WITH_NEON
 /*@unchecked@*/
 static int httpTimeoutSecs = TIMEOUT_SECS;
 #endif
