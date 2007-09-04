@@ -429,19 +429,30 @@ AC_SUBST(WITH_BEECRYPT_LIB)
 
 #=================
 # Check for neon library. Prefer external, otherwise none.
+AC_ARG_WITH(neon, [  --with-neon        enable neon support],
+[case "$with_neon" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --with-neon])
+  ;;
+esac],
+[with_neon=no])
+
 WITH_NEON_INCLUDE=
 WITH_NEON_LIB=
-AC_CHECK_HEADER([neon/ne_session.h], [
-  AC_CHECK_LIB(neon, ne_session_create, [
-    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the 'neon' library (-lneon).])
-    AC_CHECK_LIB(neon, ne_get_response_header, [
-      AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
-    ])
-    AC_CHECK_LIB(neon, ne_send_request_chunk, [
+AS_IF([test "$with_neon" = yes],[
+  AC_CHECK_HEADER([neon/ne_session.h], [
+    AC_CHECK_LIB(neon, ne_session_create, [
+      AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the 'neon' library (-lneon).])
+      AC_CHECK_LIB(neon, ne_get_response_header, [
+        AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
+      ])
+      AC_CHECK_LIB(neon, ne_send_request_chunk, [
 	AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1, [Define to 1 if you have ne_send_request_chunk() in libneon.])
+      ])
+      WITH_NEON_INCLUDE=
+      WITH_NEON_LIB="-lneon"
+      AC_DEFINE(WITH_NEON,1,[Build with neon support?])
     ])
-    WITH_NEON_INCLUDE=
-    WITH_NEON_LIB="-lneon"
   ])
 ])
 AC_SUBST(WITH_NEON_INCLUDE)
@@ -496,7 +507,7 @@ AC_SUBST(WITH_DB_SUBDIR)
 
 #=================
 # Check for sqlite3 library.
-AC_ARG_ENABLE(sqlite3, [  --enable-sqlite3        build in sqlite3 support],
+AC_ARG_ENABLE(sqlite3, [  --enable-sqlite3        enable sqlite3 support],
 [case "$enable_sqlite3" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --enable-sqlite3])
