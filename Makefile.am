@@ -33,8 +33,8 @@ rpmbin_PROGRAMS = rpm
 bin_PROGRAMS =		rpm2cpio
 
 rpmlibexec_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
-rpmconfig_DATA =		rpmrc rpmpopt-$(VERSION) macros
-rpmlibexec_SCRIPTS =	find-provides find-requires mkinstalldirs \
+rpmconfig_DATA =	rpmrc rpmpopt-$(VERSION) macros
+rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
