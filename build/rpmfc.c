@@ -1284,7 +1284,7 @@ assert(s != NULL);
 
 	    /* XXX all files with extension ".la" are libtool for now. */
 	    else if (_suffix(s, ".la"))
-		ftype = "libtoo library file";
+		ftype = "libtool library file";
 
 	    /* XXX all files with extension ".pc" are pkgconfig for now. */
 	    else if (_suffix(s, ".pc"))
