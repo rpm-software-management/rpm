@@ -34,7 +34,9 @@ optflags: alphaev67 -O2 -g -mieee -mcpu=ev67
 optflags: sparc -O2 -g -m32 -mtune=ultrasparc
 optflags: sparcv8 -O2 -g -m32 -mtune=ultrasparc -mv8
 optflags: sparcv9 -O2 -g -m32 -mcpu=ultrasparc
+optflags: sparcv9v -O2 -g -m32 -mcpu=niagara
 optflags: sparc64 -O2 -g -m64 -mcpu=ultrasparc
+optflags: sparc64v -O2 -g -m64 -mcpu=niagara
 
 optflags: m68k -O2 -g -fomit-frame-pointer
 
@@ -97,6 +99,7 @@ arch_canon:	alphaev67: alphaev67	2
 # We always want to prefer sparc to sparc64.
 arch_canon:     sparc64:sparc64 2
 arch_canon:     sun4u:  sparc64 2
+arch_canon:	sparc64v: sparc64v	2
 
 arch_canon: 	sparc:	sparc	3
 arch_canon: 	sun4:	sparc	3
@@ -105,6 +108,7 @@ arch_canon: 	sun4c:	sparc	3
 arch_canon:	sun4d:  sparc   3
 arch_canon:   sparcv8: sparcv8	3
 arch_canon:   sparcv9: sparcv9	3
+arch_canon:	sparcv9v: sparcv9v	3
 # This is really a place holder for MIPS.
 arch_canon:	mips:	mips	4
 
@@ -209,7 +213,9 @@ buildarchtranslate: sun4d: sparc
 buildarchtranslate: sun4m: sparc
 buildarchtranslate: sparcv8: sparc
 buildarchtranslate: sparcv9: sparc
+buildarchtranslate: sparcv9v: sparc
 buildarchtranslate: sun4u: sparc64
+buildarchtranslate: sparc64v: sparc64
 
 buildarchtranslate: osfmach3_ppc: ppc
 buildarchtranslate: powerpc: ppc
@@ -288,8 +294,10 @@ arch_compat: sun4c: sparc
 arch_compat: sun4d: sparc
 arch_compat: sun4m: sparc
 arch_compat: sun4u: sparc64
+arch_compat: sparc64v: sparc64
 arch_compat: sparc64: sparcv9
-arch_compat: sparcv9: sparc
+arch_compat: sparcv9v: sparcv9
+arch_compat: sparcv9: sparcv8
 arch_compat: sparcv8: sparc
 arch_compat: sparc: noarch
 
@@ -371,8 +379,11 @@ buildarch_compat: sun4c: noarch
 buildarch_compat: sun4d: noarch
 buildarch_compat: sun4m: noarch
 buildarch_compat: sun4u: noarch
-buildarch_compat: sparc64: noarch
-buildarch_compat: sparcv9: sparc
+buildarch_compat: sparc64v: sparc64
+buildarch_compat: sparc64: sparcv9v
+buildarch_compat: sparcv9v: sparcv9
+buildarch_compat: sparcv9: sparcv8
+buildarch_compat: sparcv8: sparc
 buildarch_compat: sparc: noarch
 
 buildarch_compat: alphaev67: alphaev6
