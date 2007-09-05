@@ -1,5 +1,7 @@
 # Top level Makefile for rpm
 
+include $(top_srcdir)/rpm.am
+
 CLEANFILES =
 EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \

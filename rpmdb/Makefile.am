@@ -1,5 +1,7 @@
 # Makefile for rpm library.
 
+include $(top_srcdir)/rpm.am
+
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \

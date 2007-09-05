@@ -1,5 +1,7 @@
 # Makefile for rpm scripts.
 
+include $(top_srcdir)/rpm.am
+
 bin_SCRIPTS =		gendiff
 
 EXTRA_DIST = \
