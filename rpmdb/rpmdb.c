@@ -2080,8 +2080,16 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		    }
 		}
 		/*@switchbreak@*/ break;
-	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
+		{
+		const char * str = bin2hex((const char*) u.ptr, c);
+		rc = miregexec(mire, str);
+		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
+		    anymatch++;
+		_free(str);
+		}
+		/*@switchbreak@*/ break;
+	    case RPM_NULL_TYPE:
 	    default:
 		/*@switchbreak@*/ break;
 	    }
@@ -2094,7 +2102,10 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	}
 /*@=boundsread@*/
 
-	u.ptr = hfd(u.ptr, t);
+	if ((tagType(mire->tag) & RPM_MASK_RETURN_TYPE) == 
+	    RPM_ARRAY_RETURN_TYPE) {
+	    u.ptr = hfd(u.ptr, t);
+	}
 
 	ntags++;
 	if (anymatch)
