@@ -1105,7 +1105,6 @@ AC_PATH_PROG(AUTOM4TE,autom4te,:)
 AC_CONFIG_FILES([ Doxyfile Makefile platform rpm.pc
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile 
-	scripts/macros.perl scripts/macros.php scripts/macros.python
 	tools/Makefile
 	misc/Makefile 
 	doc/Makefile

@@ -2,6 +2,8 @@
 
 include $(top_srcdir)/rpm.am
 
+CLEANFILES =
+
 bin_SCRIPTS =		gendiff
 
 EXTRA_DIST = \
@@ -17,8 +19,7 @@ EXTRA_DIST = \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	tcl.req tgpg u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
-	macros.perl.in macros.python.in \
-	macros.php.in find-requires.php find-provides.php \
+	find-requires.php find-provides.php \
 	find-php-provides find-php-requires \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh
@@ -42,3 +43,27 @@ if LIBDWARF
 rpmconfig_SCRIPTS += find-debuginfo.sh
 endif
 endif
+
+rpmconfig_SCRIPTS += macros.perl
+macros.perl: $(srcdir)/macros.perl.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	  < $(srcdir)/macros.perl.in > macros.perl
+CLEANFILES += macros.perl
+EXTRA_DIST += macros.perl.in
+
+rpmconfig_SCRIPTS += macros.php
+macros.php: $(srcdir)/macros.php.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	  < $(srcdir)/macros.php.in > macros.php
+CLEANFILES += macros.php
+EXTRA_DIST += macros.php.in
+
+rpmconfig_SCRIPTS += macros.python
+macros.python: $(srcdir)/macros.python.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	  < $(srcdir)/macros.python.in > macros.python
+CLEANFILES += macros.python
+EXTRA_DIST += macros.python.in
