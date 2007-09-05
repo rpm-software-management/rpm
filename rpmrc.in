@@ -1,8 +1,5 @@
-#/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
+#/*! \page config_rpmrc Default configuration: @RPMCONFIGDIR@/rpmrc
 # \verbatim
-#
-# @RPMCONFIGDIR@/@configure_input@
-# $Id: rpmrc.in,v 2.65.2.4 2005/05/19 17:26:53 pauln Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
