@@ -1031,17 +1031,6 @@ Header headerLoad(/*@kept@*/ void * uh)
     h->nrefs = 0;
     h = headerLink(h);
 
-    /*
-     * XXX XFree86-libs, ash, and pdksh from Red Hat 5.2 have bogus
-     * %verifyscript tag that needs to be diddled.
-     */
-    if (ntohl(pe->tag) == 15 &&
-	ntohl(pe->type) == RPM_STRING_TYPE &&
-	ntohl(pe->count) == 1)
-    {
-	pe->tag = htonl(1079);
-    }
-
     entry = h->index;
     i = 0;
     if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
