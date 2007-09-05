@@ -2044,8 +2044,10 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	int anymatch;
 
 	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c)) {
-	    if (mire->tag != RPMTAG_EPOCH)
+	    if (mire->tag != RPMTAG_EPOCH) {
+		ntags++;
 		continue;
+	    }
 	    t = RPM_INT32_TYPE;
 /*@-immediatetrans@*/
 	    u.i32p = &zero;
