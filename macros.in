@@ -158,8 +158,12 @@
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
+#
+#	A spec file can %%define _find_debuginfo_opts to pass options to
+#	the script.  See the script for details.
+#
 %__debug_install_post   \
-   @RPMCONFIGDIR@/find-debuginfo.sh %{_builddir}/%{?buildsubdir}\
+   @RPMCONFIGDIR@/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} %{_builddir}/%{?buildsubdir}\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -366,6 +370,13 @@ package or when debugging this package.\
 #
 # Note: The default value should be 0 for legacy compatibility.
 %_missing_doc_files_terminate_build	1
+
+#
+# Should an ELF file processed by find-debuginfo.sh having no build ID
+# terminate a build?  This is left undefined to disable it and defined to
+# enable.
+#
+#%_missing_build_ids_terminate_build	1
 
 #
 # Use internal dependency generator rather than external helpers?

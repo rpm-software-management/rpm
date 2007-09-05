@@ -172,3 +172,22 @@ void headerDump(Header h, FILE *f, int flags,
 /*@=type@*/
 /*@=sizeoftype@*/
 /*@=boundsread@*/
+
+char * bin2hex(const char *data, size_t size)
+{
+    static char hex[] = "0123456789abcdef";
+    const char * s = data;
+    char * t, * val;
+    val = t = xmalloc(size * 2 + 1);
+    while (size-- > 0) {
+	unsigned int i;
+	i = *s++;
+	*t++ = hex[ (i >> 4) & 0xf ];
+	*t++ = hex[ (i     ) & 0xf ];
+    }
+    *t = '\0';
+
+    return val;
+}
+    
+    
