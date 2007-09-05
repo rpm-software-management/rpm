@@ -18,6 +18,7 @@
 %_bindir		@bindir@
 %_sbindir		@sbindir@
 %_libexecdir		@libexecdir@
+%_datarootdir		@datarootdir@
 %_datadir		@datadir@
 %_sysconfdir		@sysconfdir@
 %_sharedstatedir	@sharedstatedir@
