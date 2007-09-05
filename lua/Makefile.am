@@ -13,6 +13,7 @@ AM_CPPFLAGS = -I$(srcdir)/include -I$(srcdir)/local
 
 lua_lua_SOURCES = lua/lua.c
 lua_lua_CPPFLAGS = $(AM_CPPFLAGS) -DLUA_USERCONFIG='"$(srcdir)/local/userconfig.c"'
+lua_lua_CPPFLAGS += -DRPMCONFIGDIR="\"$(RPMCONFIGDIR)\""
 lua_lua_LDADD = $(LDADD)
 luac_luac_SOURCES = luac/luac.c luac/print.c lopcodes.c
 luac_luac_CPPFLAGS = $(AM_CPPFLAGS) -DLUA_OPNAMES
