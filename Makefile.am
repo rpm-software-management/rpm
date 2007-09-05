@@ -32,10 +32,9 @@ rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio
 
-pkglibdir =		@RPMCONFIGDIR@
-pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
-pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
-pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
+rpmlibexec_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
+rpmconfig_DATA =		rpmrc rpmpopt-$(VERSION) macros
+rpmlibexec_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
@@ -95,14 +94,14 @@ rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
 install-data-local:
-	@rm -f $(DESTDIR)$(pkglibdir)/rpmt
-	@@LN_S@ rpmb $(DESTDIR)$(pkglibdir)/rpmt
-	@rm -f $(DESTDIR)$(pkglibdir)/rpme
-	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpme
-	@rm -f $(DESTDIR)$(pkglibdir)/rpmu
-	@@LN_S@ rpmi $(DESTDIR)$(pkglibdir)/rpmu
-	@rm -f $(DESTDIR)$(pkglibdir)/rpmv
-	@@LN_S@ rpmq $(DESTDIR)$(pkglibdir)/rpmv
+	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmt
+	@@LN_S@ rpmb $(DESTDIR)$(rpmlibexecdir)/rpmt
+	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpme
+	@@LN_S@ rpmi $(DESTDIR)$(rpmlibexecdir)/rpme
+	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmu
+	@@LN_S@ rpmi $(DESTDIR)$(rpmlibexecdir)/rpmu
+	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmv
+	@@LN_S@ rpmq $(DESTDIR)$(rpmlibexecdir)/rpmv
 	rm -f $(DESTDIR)$(bindir)/rpmbuild
 	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
 	rm -f $(DESTDIR)$(bindir)/rpmquery
@@ -154,7 +153,7 @@ install-data-local:
 	@case "@host_os@" in \
 	mint) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
 	solaris*|linux*|darwin*) \
-	   DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" $(SHELL) $(top_srcdir)/installplatform rpmrc macros platform ;; \
+	   DESTDIR="$(DESTDIR)" pkglibdir="$(rpmconfigdir)" $(SHELL) $(top_srcdir)/installplatform rpmrc macros platform ;; \
 	esac
 	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
 
@@ -176,9 +175,9 @@ setperms:
 	@for f in $(bin_PROGRAMS) ; do\
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(bindir)/$$f ;\
 	done
-	@for f in $(pkglib_PROGRAMS) ; do\
-	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
-	    $(__CHMOD) g+s $(DESTDIR)$(pkglibdir)/$$f ;\
+	@for f in $(rpmlibexec_PROGRAMS) ; do\
+	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmlibexecdir)/$$f ;\
+	    $(__CHMOD) g+s $(DESTDIR)$(rpmlibexecdir)/$$f ;\
 	done
 	@for f in $(pkglib_SCRIPTS) ; do\
 	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
@@ -194,8 +193,8 @@ unsetgid:
 	@for f in $(rpmbin_PROGRAMS) ; do\
 	    $(__CHMOD) g-s $(DESTDIR)$(rpmbindir)/$$f ;\
 	done
-	@for f in $(pkglib_PROGRAMS) ; do\
-	    $(__CHMOD) g-s $(DESTDIR)$(pkglibdir)/$$f ;\
+	@for f in $(rpmlibexec_PROGRAMS) ; do\
+	    $(__CHMOD) g-s $(DESTDIR)$(rpmlibexecdir)/$$f ;\
 	done
 
 .PHONY:	doxygen

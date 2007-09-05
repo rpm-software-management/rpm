@@ -23,8 +23,7 @@ EXTRA_DIST = \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh
 
-configdir = @RPMCONFIGDIR@
-config_SCRIPTS = \
+rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
@@ -40,6 +39,6 @@ config_SCRIPTS = \
 ## Build under same conditions as debugedit
 if LIBELF
 if LIBDWARF
-config_SCRIPTS += find-debuginfo.sh
+rpmconfig_SCRIPTS += find-debuginfo.sh
 endif
 endif

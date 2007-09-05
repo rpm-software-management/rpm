@@ -23,15 +23,14 @@ staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
 check_PROGRAMS = dumpdb
 
-pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS =
+rpmlibexec_PROGRAMS =
 
 check_PROGRAMS +=	convertdb1
 convertdb1_SOURCES =	convertdb1.c
 
 if LIBELF
 if LIBDWARF
-pkgbin_PROGRAMS +=	debugedit
+rpmlibexec_PROGRAMS +=	debugedit
 debugedit_SOURCES =	debugedit.c hashtab.c hashtab.h
 # debugedit_LDFLAGS =	$(staticLDFLAGS) \
 debugedit_LDFLAGS =	@WITH_LIBELF_LIB@ \
@@ -40,14 +39,14 @@ debugedit_LDFLAGS =	@WITH_LIBELF_LIB@ \
 endif
 endif
 
-pkgbin_PROGRAMS +=	javadeps
+rpmlibexec_PROGRAMS +=	javadeps
 javadeps_SOURCES =	javadeps.c
 
-pkgbin_PROGRAMS +=	rpmcache
+rpmlibexec_PROGRAMS +=	rpmcache
 rpmcache_SOURCES =	rpmcache.c
 #rpmcache_LDFLAGS =	-L$(libdir) # $(staticLDFLAGS)
 
-pkgbin_PROGRAMS +=	rpmdeps
+rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	rpmdeps.c
 #rpmdeps_LDFLAGS =	$(staticLDFLAGS)
 rpmdeps_LDADD =		../build/librpmbuild.la
