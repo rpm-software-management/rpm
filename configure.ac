@@ -1094,8 +1094,6 @@ else
 fi
 
 RPMCONFIGDIR="`echo ${usrprefix}/lib/rpm`"
-AC_DEFINE_UNQUOTED(RPMCONFIGDIR, "$RPMCONFIGDIR",
-	[Full path to rpm global configuration directory (usually /usr/lib/rpm)])
 AC_SUBST(RPMCONFIGDIR)
 
 AC_SUBST(OBJDUMP)
