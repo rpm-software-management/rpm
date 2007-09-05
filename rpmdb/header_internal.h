@@ -202,6 +202,14 @@ void headerDump(Header h, FILE *f, int flags,
 	/*@modifies f, fileSystem @*/;
 #define HEADER_DUMP_INLINE   1
 
+/* XXX not perhaps the right place but.. */
+/** \ingroup header
+ * Convert binary blob to printable hex string 
+ * @param data		binary data
+ * @param size		size of data in bytes
+ */
+char * bin2hex(const char *data, size_t count);
+
 #ifdef __cplusplus
 }   
 #endif
