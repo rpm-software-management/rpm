@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in.
 
+include $(top_srcdir)/rpm.am
+
 EXTRA_DIST =
 CLEANFILES =
 
@@ -56,7 +58,7 @@ atlocal:	atlocal.in Makefile
 	  -e "s,[@]rpmbindir[@],$(rpmbindir)," \
 	  -e "s,[@]usrbindir[@],$(bindir)," \
 	  -e "s,[@]usrlibdir[@],$(libdir)," \
-	  -e "s,[@]RPMCONFIGDIR[@],$(RPMCONFIGDIR)," \
+	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir)," \
 	< $(srcdir)/atlocal.in > atlocal
 DISTCLEANFILES = atlocal
 EXTRA_DIST += atlocal.in
@@ -64,7 +66,7 @@ EXTRA_DIST += atlocal.in
 ## Create a customized rpmrc
 rpmrc:	$(top_srcdir)/rpmrc.in
 	@sed \
-	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
+	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(rpmconfigdir),g" \
 	  -e "s,[@]SYSCONFIGDIR[@],`pwd`/testing$(sysconfdir)/rpm,g" \
 	  -e "s,:~/.rpmmacros,," \
 	< $(top_srcdir)/rpmrc.in > rpmrc.tmp \
@@ -74,7 +76,7 @@ CLEANFILES += rpmrc rpmrc.tmp
 ## Create a customized macros
 macros.in:	$(top_srcdir)/macros.in Makefile
 	@sed \
-	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
+	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(rpmconfigdir),g" \
 	< $(top_srcdir)/macros.in > macros.in
 CLEANFILES += macros.in
 
@@ -82,33 +84,33 @@ CLEANFILES += macros.in
 ## Create a customized rpmpopt
 rpmpopt.in:	$(top_srcdir)/rpmpopt.in Makefile
 	@sed \
-	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(RPMCONFIGDIR),g" \
+	  -e "s,[@]RPMCONFIGDIR[@],`pwd`/testing$(rpmconfigdir),g" \
 	< $(top_srcdir)/rpmpopt.in > rpmpopt.in
 CLEANFILES += rpmpopt.in
 
 
-# Hack: Abusing testing@RPMCONFIGDIR@/rpmb as stamp file
-testing@RPMCONFIGDIR@/rpmb: ../rpmb
+# Hack: Abusing testing$(rpmlibexecdir)/rpmb as stamp file
+testing$(rpmlibexecdir)/rpmb: ../rpmb
 	rm -rf testing
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 
-testing@RPMCONFIGDIR@/rpmrc: rpmrc testing@RPMCONFIGDIR@/rpmb
-	$(INSTALL_DATA) rpmrc testing$(RPMCONFIGDIR)/rpmrc
+testing$(rpmconfigdir)/rpmrc: rpmrc testing$(rpmconfigdir)/rpmb
+	$(INSTALL_DATA) rpmrc testing$(rpmconfigdir)/rpmrc
 
-testing@RPMCONFIGDIR@/macros: macros.in testing@RPMCONFIGDIR@/rpmb
+testing$(rpmconfigdir)/macros: macros.in testing$(rpmlibexecdir)/rpmb
 	(cd ${top_builddir} && \
-	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/macros:${subdir}/macros.in)
+	  ./config.status --file=${subdir}/testing$(rpmconfigdir)/macros:${subdir}/macros.in)
 
-testing@RPMCONFIGDIR@/rpmpopt-@VERSION@: rpmpopt.in testing@RPMCONFIGDIR@/rpmb
+testing$(rpmconfigdir)/rpmpopt-@VERSION@: rpmpopt.in testing$(rpmlibexecdir)/rpmb
 	(cd ${top_builddir} && \
-	  ./config.status --file=${subdir}/testing$(RPMCONFIGDIR)/rpmpopt-@VERSION@:${subdir}/rpmpopt.in)
+	  ./config.status --file=${subdir}/testing$(rpmconfigdir)/rpmpopt-@VERSION@:${subdir}/rpmpopt.in)
 
 check_DATA = atconfig atlocal $(TESTSUITE)
-check_DATA += testing@RPMCONFIGDIR@/rpmb
-check_DATA += testing@RPMCONFIGDIR@/rpmrc
-check_DATA += testing@RPMCONFIGDIR@/macros
-check_DATA += testing@RPMCONFIGDIR@/rpmpopt-@VERSION@
+check_DATA += testing$(rpmlibexecdir)/rpmb
+check_DATA += testing$(rpmconfigdir)/rpmrc
+check_DATA += testing$(rpmconfigdir)/macros
+check_DATA += testing$(rpmconfigdir)/rpmpopt-@VERSION@
 
 check-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS)
