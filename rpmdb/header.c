@@ -3174,25 +3174,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	if (val) {
 	    need = strlen(val);
 	} else {
-#ifdef	NOTYET
-	    val = memcpy(xmalloc(count), data, count);
-#else
-	    /* XXX format string not used */
-	    static char hex[] = "0123456789abcdef";
-	    const char * s = data;
-
-/*@-boundswrite@*/
-	    need = 2*count + tag->pad;
-	    val = t = xmalloc(need+1);
-	    while (count-- > 0) {
-		unsigned int i;
-		i = *s++;
-		*t++ = hex[ (i >> 4) & 0xf ];
-		*t++ = hex[ (i     ) & 0xf ];
-	    }
-	    *t = '\0';
-/*@=boundswrite@*/
-#endif
+	    val = bin2hex(data, count);
+	    need = strlen(val) + tag->pad;
 	}
 	break;
 
