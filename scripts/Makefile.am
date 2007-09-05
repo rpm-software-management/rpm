@@ -28,9 +28,16 @@ config_SCRIPTS = \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
-	find-debuginfo.sh find-lang.sh \
+	find-lang.sh \
 	perl.prov perl.req pythondeps.sh \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	tcl.req tgpg 
+
+## Build under same conditions as debugedit
+if LIBELF
+if LIBDWARF
+config_SCRIPTS += find-debuginfo.sh
+endif
+endif
