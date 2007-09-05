@@ -76,13 +76,13 @@ while ((i < nout)); do
   ((++i))
 done
 
-LISTFILE=$BUILDDIR/$out
-SOURCEFILE=$BUILDDIR/debugsources.list
-LINKSFILE=$BUILDDIR/debuglinks.list
+LISTFILE="$BUILDDIR/$out"
+SOURCEFILE="$BUILDDIR/debugsources.list"
+LINKSFILE="$BUILDDIR/debuglinks.list"
 
-> $SOURCEFILE
-> $LISTFILE
-> $LINKSFILE
+> "$SOURCEFILE"
+> "$LISTFILE"
+> "$LINKSFILE"
 
 debugdir="${RPM_BUILD_ROOT}/usr/lib/debug"
 
@@ -122,7 +122,7 @@ debug_link()
 {
   local l="/usr/lib/debug$2"
   local t="$1"
-  echo >> $LINKSFILE "$l $t"
+  echo >> "$LINKSFILE" "$l $t"
   link_relative "$t" "$l" "$RPM_BUILD_ROOT"
 }
 
@@ -173,7 +173,7 @@ strict_error=ERROR
 $strict || strict_error=WARNING
 
 # Strip ELF binaries
-find $RPM_BUILD_ROOT ! -path "${debugdir}/*.debug" -type f \
+find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*.debug" -type f \
      		     \( -perm -0100 -or -perm -0010 -or -perm -0001 \) \
 		     -print |
 file -N -f - | sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped/\1/p' |
@@ -244,24 +244,24 @@ do
 done
 
 if [ -s "$SOURCEFILE" ]; then
-  mkdir -p ${RPM_BUILD_ROOT}/usr/src/debug
-  LC_ALL=C sort -z -u $SOURCEFILE | egrep -v -z '(<internal>|<built-in>)$' |
-  (cd $RPM_BUILD_DIR; cpio -pd0mL ${RPM_BUILD_ROOT}/usr/src/debug)
+  mkdir -p "${RPM_BUILD_ROOT}/usr/src/debug"
+  LC_ALL=C sort -z -u "$SOURCEFILE" | egrep -v -z '(<internal>|<built-in>)$' |
+  (cd "$RPM_BUILD_DIR"; cpio -pd0mL "${RPM_BUILD_ROOT}/usr/src/debug")
   # stupid cpio creates new directories in mode 0700, fixup
-  find ${RPM_BUILD_ROOT}/usr/src/debug -type d -print0 |
+  find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 |
   xargs --no-run-if-empty -0 chmod a+rx
 fi
 
-if [ -d ${RPM_BUILD_ROOT}/usr/lib -o -d ${RPM_BUILD_ROOT}/usr/src ]; then
+if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
   ((nout > 0)) ||
-  test ! -d ${RPM_BUILD_ROOT}/usr/lib ||
-  (cd ${RPM_BUILD_ROOT}/usr/lib; find debug -type d) |
-  sed 's,^,%dir /usr/lib/,' >> $LISTFILE
+  test ! -d "${RPM_BUILD_ROOT}/usr/lib" ||
+  (cd "${RPM_BUILD_ROOT}/usr/lib"; find debug -type d) |
+  sed 's,^,%dir /usr/lib/,' >> "$LISTFILE"
 
-  (cd ${RPM_BUILD_ROOT}/usr
+  (cd "${RPM_BUILD_ROOT}/usr"
    test ! -d lib/debug || find lib/debug ! -type d
    test ! -d src/debug || find src/debug -mindepth 1 -maxdepth 1
-  ) | sed 's,^,/usr/,' >> $LISTFILE
+  ) | sed 's,^,/usr/,' >> "$LISTFILE"
 fi
 
 # Append to $1 only the lines from stdin not already in the file.
@@ -294,7 +294,7 @@ h
 s,^.*$,s# &$##p,p
 g
 s,^.*$,s# /usr/lib/debug&.debug$##p,p
-' "$@") $LINKSFILE | append_uniq "$out"
+' "$@") "$LINKSFILE" | append_uniq "$out"
 }
 
 # Write an output debuginfo file list based on an egrep-style regexp.
@@ -302,8 +302,8 @@ pattern_list()
 {
   local out="$1" ptn="$2"
   test -n "$ptn" || return
-  egrep -x -e "$ptn" $LISTFILE >> $out
-  sed -n -r "\#^$ptn #s/ .*\$//p" $LINKSFILE | append_uniq "$out"
+  egrep -x -e "$ptn" "$LISTFILE" >> "$out"
+  sed -n -r "\#^$ptn #s/ .*\$//p" "$LINKSFILE" | append_uniq "$out"
 }
 
 #
@@ -314,23 +314,23 @@ while ((i < nout)); do
   > ${outs[$i]}
   filtered_list ${outs[$i]} ${lists[$i]}
   pattern_list ${outs[$i]} "${ptns[$i]}"
-  fgrep -vx -f ${outs[$i]} $LISTFILE > ${LISTFILE}.new
-  mv ${LISTFILE}.new $LISTFILE
+  fgrep -vx -f ${outs[$i]} "$LISTFILE" > "${LISTFILE}.new"
+  mv "${LISTFILE}.new" "$LISTFILE"
   ((++i))
 done
 if ((nout > 0)); then
   # Now add the right %dir lines to each output list.
-  (cd ${RPM_BUILD_ROOT}; find usr/lib/debug -type d) |
+  (cd "${RPM_BUILD_ROOT}"; find usr/lib/debug -type d) |
   sed 's#^.*$#\\@^/&/@{h;s@^.*$@%dir /&@p;g;}#' |
-  LC_ALL=C sort -ur > ${LISTFILE}.dirs.sed
+  LC_ALL=C sort -ur > "${LISTFILE}.dirs.sed"
   i=0
   while ((i < nout)); do
-    sed -n -f ${LISTFILE}.dirs.sed ${outs[$i]} | sort -u > ${outs[$i]}.new
-    cat ${outs[$i]} >> ${outs[$i]}.new
-    mv -f ${outs[$i]}.new ${outs[$i]}
+    sed -n -f "${LISTFILE}.dirs.sed" "${outs[$i]}" | sort -u > "${outs[$i]}.new"
+    cat "${outs[$i]}" >> "${outs[$i]}.new"
+    mv -f "${outs[$i]}.new" "${outs[$i]}"
     ((++i))
   done
-  sed -n -f ${LISTFILE}.dirs.sed ${LISTFILE} | sort -u > ${LISTFILE}.new
-  cat $LISTFILE >> ${LISTFILE}.new
-  mv ${LISTFILE}.new $LISTFILE
+  sed -n -f "${LISTFILE}.dirs.sed" "${LISTFILE}" | sort -u > "${LISTFILE}.new"
+  cat "$LISTFILE" >> "${LISTFILE}.new"
+  mv "${LISTFILE}.new" "$LISTFILE"
 fi
