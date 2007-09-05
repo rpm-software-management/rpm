@@ -1,0 +1,7 @@
+# Internal binaries
+## HACK: It probably should be $(libexecdir)/rpm or $(libdir)/rpm
+rpmlibexecdir = $(prefix)/lib/rpm
+
+# Host independent config files
+## HACK: it probably should be $(datadir)/rpm
+rpmconfigdir = $(prefix)/lib/rpm
