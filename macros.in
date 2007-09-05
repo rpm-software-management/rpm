@@ -1,8 +1,6 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.154.2.6 2005/07/21 01:45:44 jbj Exp $
-#
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
 # should be added to /etc/rpm/macros, while per-user configuration should
