@@ -24,7 +24,7 @@ check_PROGRAMS = dumpdb
 pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS =
 
-EXTRA_PROGRAMS +=	convertdb1
+check_PROGRAMS +=	convertdb1
 convertdb1_SOURCES =	convertdb1.c
 
 if LIBELF
