@@ -13,7 +13,7 @@ EXTRA_DIST = \
 	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
-	find-debuginfo.sh find-lang.sh 
+	find-debuginfo.sh find-lang.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh osgideps.pl \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
