@@ -93,7 +93,7 @@ pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
-install-data-local:
+install-exec-hook:
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmt
 	@@LN_S@ rpmb $(DESTDIR)$(rpmlibexecdir)/rpmt
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpme
@@ -116,6 +116,8 @@ install-data-local:
 	    rm -f $(DESTDIR)$(bindir)/rpm$$bf ; \
 	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)$(bindir)/rpm$$bf ; \
 	done
+
+install-data-local:
 	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
 	    $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/$$dir;\
 	done
