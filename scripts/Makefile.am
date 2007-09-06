@@ -14,7 +14,7 @@ EXTRA_DIST = \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh 
-	perldeps.pl perl.prov perl.req pythondeps.sh \
+	perldeps.pl perl.prov perl.req pythondeps.sh osgideps.pl \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	tcl.req tgpg u_pkg.sh \
@@ -31,7 +31,7 @@ rpmconfig_SCRIPTS = \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh \
-	perl.prov perl.req pythondeps.sh \
+	perl.prov perl.req pythondeps.sh osgideps.pl \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
