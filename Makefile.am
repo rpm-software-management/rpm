@@ -168,7 +168,8 @@ uninstall-local:
 distclean-local:
 	@rm -rf Doxytags apidocs 
 	@rm -f stamp-h.in db3/*.orig db3/db3lobjs
-	@rm -f ChangeLog
+
+MAINTAINERCLEANFILES = ChangeLog
 
 .PHONY:	setperms
 setperms:
@@ -207,7 +208,6 @@ doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	$(MKDIR_P) $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
 
-.PHONY: ChangeLog
 ChangeLog:
 	hg log --no-merge -v > ChangeLog
 
