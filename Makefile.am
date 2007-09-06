@@ -137,7 +137,7 @@ install-data-local:
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv8 ;\
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9v ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;\
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64v ;;\
 	ia64*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
 	s390*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
