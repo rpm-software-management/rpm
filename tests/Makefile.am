@@ -95,7 +95,7 @@ testing$(rpmlibexecdir)/rpmb: ../rpmb
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 
-testing$(rpmconfigdir)/rpmrc: rpmrc testing$(rpmconfigdir)/rpmb
+testing$(rpmconfigdir)/rpmrc: rpmrc testing$(rpmlibexecdir)/rpmb
 	$(INSTALL_DATA) rpmrc testing$(rpmconfigdir)/rpmrc
 
 testing$(rpmconfigdir)/macros: macros.in testing$(rpmlibexecdir)/rpmb
