@@ -170,8 +170,20 @@ install-data-local:
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
-	@rm -rf $(DESTDIR)/$(pkglibdir)/*-*
-	
+	@rm -rf $(DESTDIR)/$(rpmconfigdir)/*-*
+	rm -f $(DESTDIR)$(rpmlibexecdir)/rpmu
+	rm -f $(DESTDIR)$(rpmlibexecdir)/rpme
+	rm -f $(DESTDIR)$(rpmlibexecdir)/rpmt
+	rm -f $(DESTDIR)$(rpmlibexecdir)/rpmv
+	rm -f $(DESTDIR)$(bindir)/rpmquery
+	rm -f $(DESTDIR)$(bindir)/rpmbuild
+	rm -f $(DESTDIR)$(bindir)/rpmu
+	rm -f $(DESTDIR)$(bindir)/rpmsign
+	rm -f $(DESTDIR)$(bindir)/rpme
+	rm -f $(DESTDIR)$(bindir)/rpmverify
+	rm -f $(DESTDIR)$(bindir)/rpmdb
+	rm -f $(DESTDIR)$(bindir)/rpmi
+
 distclean-local:
 	@rm -rf Doxytags apidocs 
 	@rm -f stamp-h.in db3/*.orig db3/db3lobjs
