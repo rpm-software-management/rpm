@@ -16,10 +16,9 @@ fi
 TEMPRC="/tmp/rpmrc.$$"
 cat << E_O_F > $TEMPRC
 include:	$RPMRC
-macrofiles:	$MACROS
 E_O_F
 
-RPM="./rpm --rcfile $TEMPRC"
+RPM="./rpm --rcfile=$TEMPRC --macros=$MACROS"
 
 canonarch_sed='s_i.86_i386_;s_pentium[34]_i386_;s_athlon_i386_;s_sparc[^-]*_sparc_;s_alpha[^-]*_alpha_;s_arm[^-]*_arm_;s_\(powerpc\|ppc\)[^-]*_ppc_'
 arch="`$RPM --eval '%{_arch}'|sed -e "$canonarch_sed"`"
