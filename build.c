@@ -149,7 +149,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	(void) isCompressed(arg, &res);
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
-	sprintf(cmd, "%s < '%s' | tar xOvf - Specfile 2>&1 > '%s'",
+	sprintf(cmd, "%s < '%s' | tar xOvf - Specfile 2> /dev/null > '%s'",
 			zcmds[res & 0x3], arg, tmpSpecFile);
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
@@ -161,7 +161,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	    /* Try again */
 	    (void) pclose(fp);
 
-	    sprintf(cmd, "%s < '%s' | tar xOvf - --wildcards \\*.spec 2>&1 > '%s'",
+	    sprintf(cmd, "%s < '%s' | tar xOvf - --wildcards \\*.spec 2> /dev/null > '%s'",
 		    zcmds[res & 0x3], arg, tmpSpecFile);
 	    if (!(fp = popen(cmd, "r"))) {
 		rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
