@@ -89,6 +89,16 @@ CLEANFILES += macros.tmp macros
 EXTRA_DIST += macros.in
 
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
+pkgsrc_RPMSdir = $(pkgsrcdir)/RPMS
+pkgsrc_RPMS_DATA =
+pkgsrc_SRPMSdir = $(pkgsrcdir)/SRPMS
+pkgsrc_SRPMS_DATA =
+pkgsrc_SPECSdir = $(pkgsrcdir)/SPECS
+pkgsrc_SPECS_DATA =
+pkgsrc_SOURCESdir = $(pkgsrcdir)/SOURCES
+pkgsrc_SOURCES_DATA =
+pkgsrc_BUILDdir = $(pkgsrcdir)/BUILD
+pkgsrc_BUILD_DATA =
 
 rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
@@ -118,9 +128,6 @@ install-exec-hook:
 	done
 
 install-data-local:
-	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
-	    $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/$$dir;\
-	done
 	@case "@host_cpu@" in \
 	*86)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
