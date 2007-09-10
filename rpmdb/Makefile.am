@@ -23,7 +23,8 @@ tjfn_SOURCES = tjfn.c
 tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
+pkginc_HEADERS = header.h hdrinline.h rpmdb.h rpmhash.h
+nodist_pkginc_HEADERS = db.h
 
 rpmlibexec_PROGRAMS = \
 	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump rpmdb_load \
