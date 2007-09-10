@@ -261,6 +261,7 @@ AC_MSG_CHECKING(old version of patch)
 
 AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
 AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH) 
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
@@ -774,40 +775,42 @@ AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
 AC_LIBOBJ(glob)
 AC_LIBOBJ(fnmatch)
 
-dnl
-dnl Auto-detect which python bindings should be built.
-dnl
-AC_ARG_WITH(python, [  --with-python           build rpm python bindings ])
+dnl check if python is requested
+AC_ARG_ENABLE(python, [  --enable-python           build rpm python bindings ],
+[case "$enable_python" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --enable-python])
+  ;;
+esac],
+[enable_python=no])
 
-if test "{$with_python}" = "no"; then
-  pythonbin=""
-elif test "${with_python}" = "yes"; then
-  pythonbin="python"
-else
-  pythonbin="python$with_python"
-fi
-AC_PATH_PROG(__PYTHON, "${pythonbin}")
-
-if test -z "${__PYTHON}"; then
-  WITH_PYTHON_INCLUDE=
-  WITH_PYTHON_LIB=
-  WITH_PYTHON_SUBPACKAGE=0
-else
-  WITH_PYTHON_INCLUDE=`${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_inc()'`
-  WITH_PYTHON_LIB=`${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_lib(1)'` 
-  WITH_PYTHON_SUBPACKAGE=1
-  save_CPPFLAGS="$CPPFLAGS"
-  CPPFLAGS="$CPPFLAGS -I$WITH_PYTHON_INCLUDE"
-  AC_CHECK_HEADER([Python.h],
-    [WITH_PYTHON_SUBPACKAGE=1],
-    [WITH_PYTHON_SUBPACKAGE=0])
-  CPPFLAGS="$save_CPPFLAGS"
-fi
+AS_IF([test "$enable_python" = yes],[
+  AM_PATH_PYTHON([],[
+    WITH_PYTHON_INCLUDE=`${PYTHON} -c 'from distutils.sysconfig import *; print get_python_inc()'`
+    WITH_PYTHON_SUBPACKAGE=1
+    save_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$CPPFLAGS -I$WITH_PYTHON_INCLUDE"
+    AC_CHECK_HEADER([Python.h],[],
+      [AC_MSG_ERROR([missing Python.h])
+      ])
+    CPPFLAGS="$save_CPPFLAGS"
+    save_LIBS="$LIBS"
+    AC_SEARCH_LIBS([Py_Main],[python${PYTHON_VERSION} python],[
+      WITH_PYTHON_LIB="$ac_res"
+    ],[AC_MSG_ERROR([missing python library])
+    ])
+    LIBS="$save_LIBS"
+  ])
+],[
+    WITH_PYTHON_INCLUDE=
+    WITH_PYTHON_LIB=
+    WITH_PYTHON_SUBPACKAGE=0
+])
 
 AC_SUBST(WITH_PYTHON_INCLUDE)
 AC_SUBST(WITH_PYTHON_LIB)
 
-AM_CONDITIONAL(PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = "1"])
+AM_CONDITIONAL(PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = 1])
 
 AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
 dnl
