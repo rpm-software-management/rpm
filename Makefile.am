@@ -72,6 +72,14 @@ rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDFLAGS =	@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
 rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
+## Build under same conditions as debugedit
+if LIBELF
+if LIBDWARF
+rpmconfig_SCRIPTS += scripts/find-debuginfo.sh
+endif
+endif
+
+
 rpmrc: $(top_srcdir)/rpmrc.in
 	@sed \
 	  -e "s,[@]SYSCONFIGDIR[@],$(sysconfdir)/rpm,g" \

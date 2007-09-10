@@ -37,13 +37,6 @@ rpmconfig_SCRIPTS = \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	tcl.req tgpg 
 
-## Build under same conditions as debugedit
-if LIBELF
-if LIBDWARF
-rpmconfig_SCRIPTS += find-debuginfo.sh
-endif
-endif
-
 rpmconfig_SCRIPTS += macros.perl
 macros.perl: $(srcdir)/macros.perl.in
 	@sed \
