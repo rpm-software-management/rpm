@@ -8,6 +8,8 @@ AM_INIT_AUTOMAKE([1.10 foreign tar-ustar dist-bzip2])
 
 AC_CONFIG_TESTDIR(tests)
 
+AC_DISABLE_STATIC
+
 AC_AIX
 AC_MINIX
 
