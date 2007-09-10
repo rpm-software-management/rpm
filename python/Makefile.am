@@ -1,9 +1,6 @@
 # Makefile for rpm library.
 
 if PYTHON
-pylibdir = @WITH_PYTHON_LIB@
-pyincdir = @WITH_PYTHON_INCLUDE@
-
 EXTRA_DIST = system.h rpmdebug-py.c rpm/__init__.py
 
 AM_CPPFLAGS = -I. \
@@ -16,11 +13,10 @@ AM_CPPFLAGS = -I. \
 	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	-I$(top_srcdir)/ \
-	-I$(pyincdir)
+	-I@WITH_PYTHON_INCLUDE@
 
-pyrpmdir = `${__PYTHON} -c 'from distutils.sysconfig import *; print get_python_lib(1, prefix="@prefix@")'`/rpm
-pyrpm_LTLIBRARIES = _rpmmodule.la
-pyrpm_SCRIPTS = rpm/__init__.py
+pkgpyexec_LTLIBRARIES = _rpmmodule.la
+pkgpyexec_SCRIPTS = rpm/__init__.py
 
 _rpmmodule_la_LDFLAGS = -module -avoid-version
 _rpmmodule_la_LIBADD = \
