@@ -13,12 +13,11 @@ AM_CPPFLAGS = -I. \
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmfc.h rpmspec.h
-noinst_HEADERS = buildio.h
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
-	build.c expression.c files.c misc.c names.c pack.c \
+	build.c buildio.h expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c
