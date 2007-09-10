@@ -24,7 +24,6 @@ tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
-noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 rpmlibexec_PROGRAMS = \
 	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump rpmdb_load \
@@ -37,8 +36,10 @@ libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
-	dbconfig.c fprint.c \
-	hdrNVR.c header.c header_internal.c legacy.c merge.c \
+	dbconfig.c fprint.c fprint.h \
+	hdrNVR.c header.c header_internal.c header_internal.h \
+	legacy.c legacy.h \
+	merge.c \
 	poptDB.c rpmhash.c rpmdb.c \
 	tagname.c tagtbl.c
 librpmdb_la_SOURCES += db3.c
