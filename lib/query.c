@@ -23,6 +23,7 @@
 #include "manifest.h"
 
 #include "debug.h"
+#include "misc.h"
 
 /*@access rpmgi @*/
 
