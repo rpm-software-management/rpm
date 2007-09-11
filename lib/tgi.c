@@ -23,9 +23,7 @@ static const char * queryFormat = NULL;
 static const char * defaultQueryFormat =
 	"%{name}-%{version}-%{release}.%|SOURCERPM?{%{arch}.rpm}:{%|ARCH?{src.rpm}:{pubkey}|}|";
 
-/*@only@*/ /*@null@*/
 static const char * rpmgiPathOrQF(const rpmgi gi)
-	/*@*/
 {
     const char * fmt = ((queryFormat != NULL)
 	? queryFormat : defaultQueryFormat);

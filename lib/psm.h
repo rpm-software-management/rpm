@@ -8,10 +8,7 @@
 
 #include <rpmsq.h>
 
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern int _psm_debug;
-/*@=exportlocal@*/
 
 /**
  */
@@ -64,28 +61,17 @@ typedef enum pkgStage_e {
 struct rpmpsm_s {
     struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
 
-/*@refcounted@*/
     rpmts ts;			/*!< transaction set */
-/*@dependent@*/ /*@null@*/
     rpmte te;			/*!< current transaction element */
-/*@refcounted@*/ /*@relnull@*/
     rpmfi fi;			/*!< transaction element file info */
-/*@relnull@*/
     FD_t cfd;			/*!< Payload file handle. */
-/*@relnull@*/
     FD_t fd;			/*!< Repackage file handle. */
     Header oh;			/*!< Repackage header. */
-/*@null@*/
     rpmdbMatchIterator mi;
-/*@observer@*/
     const char * stepName;
-/*@only@*/ /*@null@*/
     const char * rpmio_flags;
-/*@only@*/ /*@null@*/
     const char * failedFile;
-/*@only@*/ /*@null@*/
     const char * pkgURL;	/*!< Repackage URL. */
-/*@dependent@*/
     const char * pkgfn;		/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
@@ -100,11 +86,9 @@ struct rpmpsm_s {
     unsigned long total;	/*!< Callback total. */
     rpmRC rc;
     pkgStage goal;
-/*@unused@*/
     pkgStage stage;		/*!< Current psm stage. */
     pkgStage nstage;		/*!< Next psm stage. */
 
-/*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
 
@@ -118,18 +102,12 @@ extern "C" {
  * @param msg
  * @return		NULL always
  */
-/*@unused@*/ /*@null@*/
-rpmpsm rpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
-		/*@null@*/ const char * msg)
-	/*@modifies psm @*/;
+rpmpsm rpmpsmUnlink (rpmpsm psm,
+		const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmpsm XrpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies psm @*/;
-/*@=exportlocal@*/
+rpmpsm XrpmpsmUnlink (rpmpsm psm,
+		const char * msg, const char * fn, unsigned ln);
 #define	rpmpsmUnlink(_psm, _msg)	XrpmpsmUnlink(_psm, _msg, __FILE__, __LINE__)
 
 /**
@@ -138,17 +116,11 @@ rpmpsm XrpmpsmUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm,
  * @param msg
  * @return		new package state machine reference
  */
-/*@unused@*/ /*@newref@*/ /*@null@*/
-rpmpsm rpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg)
-	/*@modifies psm @*/;
+rpmpsm rpmpsmLink (rpmpsm psm, const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@newref@*/ /*@null@*/
-rpmpsm XrpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies psm @*/;
-/*@=exportlocal@*/
+rpmpsm XrpmpsmLink (rpmpsm psm, const char * msg,
+		const char * fn, unsigned ln);
 #define	rpmpsmLink(_psm, _msg)	XrpmpsmLink(_psm, _msg, __FILE__, __LINE__)
 
 /**
@@ -156,10 +128,7 @@ rpmpsm XrpmpsmLink (/*@null@*/ rpmpsm psm, /*@null@*/ const char * msg,
  * @param psm		package state machine
  * @return		NULL always
  */
-/*@null@*/
-rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm)
-	/*@globals fileSystem @*/
-	/*@modifies psm, fileSystem @*/;
+rpmpsm rpmpsmFree(rpmpsm psm);
 
 /**
  * Create and load a package state machine.
@@ -168,9 +137,7 @@ rpmpsm rpmpsmFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmpsm psm)
  * @param fi		file info set
  * @return		new package state machine
  */
-/*@null@*/
-rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
-	/*@modifies ts, fi @*/;
+rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi);
 
 /**
  * Package state machine driver.
@@ -178,9 +145,7 @@ rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
  * @param stage		next stage
  * @return		0 on success
  */
-rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
+rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
 
 #ifdef __cplusplus

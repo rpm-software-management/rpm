@@ -10,38 +10,24 @@
 
 /**
  */
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern int _rpmds_debug;
-/*@=exportlocal@*/
 
 /**
  */
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern int _rpmds_nopromote;
-/*@=exportlocal@*/
 
 #if defined(_RPMDS_INTERNAL)
 /**
  * A package dependency set.
  */
 struct rpmds_s {
-/*@observer@*/
     const char * Type;		/*!< Tag name. */
-/*@only@*/ /*@null@*/
     const char * DNEVR;		/*!< Formatted dependency string. */
-/*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for dependency set (or NULL) */
-/*@only@*/
     const char ** N;		/*!< Name. */
-/*@only@*/ /*@null@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
-/*@only@*/ /*@null@*/
     int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
-/*@only@*/ /*@null@*/
     uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
-/*@only@*/ /*@null@*/
     int_32 * Refs;		/*!< No. of file refs. */
     int_32 BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
@@ -51,7 +37,6 @@ struct rpmds_s {
     unsigned l;			/*!< Low element (bsearch). */
     unsigned u;			/*!< High element (bsearch). */
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
-/*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
 #endif	/* _RPMDS_INTERNAL */
@@ -66,18 +51,12 @@ extern "C" {
  * @param msg
  * @return		NULL always
  */
-/*@unused@*/ /*@null@*/
-rpmds rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
-		/*@null@*/ const char * msg)
-	/*@modifies ds @*/;
+rpmds rpmdsUnlink (rpmds ds,
+		const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies ds @*/;
-/*@=exportlocal@*/
+rpmds XrpmdsUnlink (rpmds ds,
+		const char * msg, const char * fn, unsigned ln);
 #define	rpmdsUnlink(_ds, _msg)	XrpmdsUnlink(_ds, _msg, __FILE__, __LINE__)
 
 /**
@@ -86,15 +65,11 @@ rpmds XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds,
  * @param msg
  * @return		new dependency set reference
  */
-/*@unused@*/ /*@newref@*/ /*@null@*/
-rpmds rpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg)
-	/*@modifies ds @*/;
+rpmds rpmdsLink (rpmds ds, const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies ds @*/;
+rpmds XrpmdsLink (rpmds ds, const char * msg,
+		const char * fn, unsigned ln);
 #define	rpmdsLink(_ds, _msg)	XrpmdsLink(_ds, _msg, __FILE__, __LINE__)
 
 /**
@@ -102,9 +77,7 @@ rpmds XrpmdsLink (/*@null@*/ rpmds ds, /*@null@*/ const char * msg,
  * @param ds		dependency set
  * @return		NULL always
  */
-/*@null@*/
-rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
-	/*@modifies ds@*/;
+rpmds rpmdsFree(rpmds ds);
 /**
  * Create and load a dependency set.
  * @deprecated Only scareMem = 0 will be permitted.
@@ -113,10 +86,7 @@ rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
  * @param flags		scareMem(0x1), nofilter(0x2)
  * @return		new dependency set
  */
-/*@null@*/
-rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+rpmds rpmdsNew(Header h, rpmTag tagN, int flags);
 
 /**
  * Return new formatted dependency string.
@@ -124,9 +94,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
  * @param ds		dependency set
  * @return		new formatted dependency (malloc'ed)
  */
-/*@only@*/
-char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
-	/*@*/;
+char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds);
 
 /**
  * Create, load and initialize a dependency for this header. 
@@ -135,9 +103,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
  * @param Flags		comparison flags
  * @return		new dependency set
  */
-/*@null@*/
-rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
-	/*@*/;
+rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags);
 
 /**
  * Create, load and initialize a dependency set of size 1.
@@ -147,25 +113,21 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
  * @param Flags		comparison flags
  * @return		new dependency set
  */
-/*@null@*/
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
-	/*@*/;
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags);
 
 /**
  * Return dependency set count.
  * @param ds		dependency set
  * @return		current count
  */
-int rpmdsCount(/*@null@*/ const rpmds ds)
-	/*@*/;
+int rpmdsCount(const rpmds ds);
 
 /**
  * Return dependency set index.
  * @param ds		dependency set
  * @return		current index
  */
-int rpmdsIx(/*@null@*/ const rpmds ds)
-	/*@*/;
+int rpmdsIx(const rpmds ds);
 
 /**
  * Set dependency set index.
@@ -173,59 +135,49 @@ int rpmdsIx(/*@null@*/ const rpmds ds)
  * @param ix		new index
  * @return		current index
  */
-int rpmdsSetIx(/*@null@*/ rpmds ds, int ix)
-	/*@modifies ds @*/;
+int rpmdsSetIx(rpmds ds, int ix);
 
 /**
  * Return current formatted dependency string.
  * @param ds		dependency set
  * @return		current dependency DNEVR, NULL on invalid
  */
-/*@observer@*/ /*@null@*/
-extern const char * rpmdsDNEVR(/*@null@*/ const rpmds ds)
-	/*@*/;
+extern const char * rpmdsDNEVR(const rpmds ds);
 
 /**
  * Return current dependency name.
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid
  */
-/*@observer@*/ /*@null@*/
-extern const char * rpmdsN(/*@null@*/ const rpmds ds)
-	/*@*/;
+extern const char * rpmdsN(const rpmds ds);
 
 /**
  * Return current dependency epoch-version-release.
  * @param ds		dependency set
  * @return		current dependency EVR, NULL on invalid
  */
-/*@observer@*/ /*@null@*/
-extern const char * rpmdsEVR(/*@null@*/ const rpmds ds)
-	/*@*/;
+extern const char * rpmdsEVR(const rpmds ds);
 
 /**
  * Return current dependency flags.
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
  */
-int_32 rpmdsFlags(/*@null@*/ const rpmds ds)
-	/*@*/;
+int_32 rpmdsFlags(const rpmds ds);
 
 /**
  * Return current dependency type.
  * @param ds		dependency set
  * @return		current dependency type, 0 on invalid
  */
-rpmTag rpmdsTagN(/*@null@*/ const rpmds ds)
-	/*@*/;
+rpmTag rpmdsTagN(const rpmds ds);
 
 /**
  * Return dependency build time.
  * @param ds		dependency set
  * @return		dependency build time, 0 on invalid
  */
-time_t rpmdsBT(/*@null@*/ const rpmds ds)
-	/*@*/;
+time_t rpmdsBT(const rpmds ds);
 
 /**
  * Set dependency build time.
@@ -233,8 +185,7 @@ time_t rpmdsBT(/*@null@*/ const rpmds ds)
  * @param BT		build time
  * @return		dependency build time, 0 on invalid
  */
-time_t rpmdsSetBT(/*@null@*/ const rpmds ds, time_t BT)
-	/*@modifies ds @*/;
+time_t rpmdsSetBT(const rpmds ds, time_t BT);
 
 /**
  * Return current "Don't promote Epoch:" flag.
@@ -249,8 +200,7 @@ time_t rpmdsSetBT(/*@null@*/ const rpmds ds, time_t BT)
  * @param ds		dependency set
  * @return		current "Don't promote Epoch:" flag
  */
-int rpmdsNoPromote(/*@null@*/ const rpmds ds)
-	/*@*/;
+int rpmdsNoPromote(const rpmds ds);
 
 /**
  * Set "Don't promote Epoch:" flag.
@@ -258,16 +208,14 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
  * @param nopromote	Should an unspecified Epoch: be treated as Epoch: 0?
  * @return		previous "Don't promote Epoch:" flag
  */
-int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
-	/*@modifies ds @*/;
+int rpmdsSetNoPromote(rpmds ds, int nopromote);
 
 /**
  * Return current dependency color.
  * @param ds		dependency set
  * @return		current dependency color
  */
-uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
-	/*@*/;
+uint_32 rpmdsColor(const rpmds ds);
 
 /**
  * Return current dependency color.
@@ -275,16 +223,14 @@ uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
  * @param color		new dependency color
  * @return		previous dependency color
  */
-uint_32 rpmdsSetColor(/*@null@*/ const rpmds ds, uint_32 color)
-	/*@modifies ds @*/;
+uint_32 rpmdsSetColor(const rpmds ds, uint_32 color);
 
 /**
  * Return current dependency file refs.
  * @param ds		dependency set
  * @return		current dependency file refs, -1 on global
  */
-int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
-	/*@*/;
+int_32 rpmdsRefs(const rpmds ds);
 
 /**
  * Return current dependency color.
@@ -292,8 +238,7 @@ int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
  * @param refs		new dependency refs
  * @return		previous dependency refs
  */
-int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
-	/*@modifies ds @*/;
+int_32 rpmdsSetRefs(const rpmds ds, int_32 refs);
 
 /**
  * Notify of results of dependency match.
@@ -301,28 +246,22 @@ int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
  * @param where		where dependency was resolved (or NULL)
  * @param rc		0 == YES, otherwise NO
  */
-/*@-globuse@*/ /* FIX: rpmMessage annotation is a lie */
-void rpmdsNotify(/*@null@*/ rpmds ds, /*@null@*/ const char * where, int rc)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-/*@=globuse@*/
+/* FIX: rpmMessage annotation is a lie */
+void rpmdsNotify(rpmds ds, const char * where, int rc);
 
 /**
  * Return next dependency set iterator index.
  * @param ds		dependency set
  * @return		dependency set iterator index, -1 on termination
  */
-int rpmdsNext(/*@null@*/ rpmds ds)
-	/*@modifies ds @*/;
+int rpmdsNext(rpmds ds);
 
 /**
  * Initialize dependency set iterator.
  * @param ds		dependency set
  * @return		dependency set
  */
-/*@null@*/
-rpmds rpmdsInit(/*@null@*/ rpmds ds)
-	/*@modifies ds @*/;
+rpmds rpmdsInit(rpmds ds);
 
 /**
  * Find a dependency set element using binary search.
@@ -330,9 +269,7 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
  * @param ods		dependency set element to find.
  * @return		dependency index (or -1 if not found)
  */
-/*@null@*/
-int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
-	/*@modifies ds @*/;
+int rpmdsFind(rpmds ds, const rpmds ods);
 
 /**
  * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
@@ -340,9 +277,7 @@ int rpmdsFind(rpmds ds, /*@null@*/ const rpmds ods)
  * @param ods		dependency set to merge
  * @return		(merged) dependency index
  */
-/*@null@*/
-int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
-	/*@modifies *dsp, ods @*/;
+int rpmdsMerge(rpmds * dsp, rpmds ods);
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.
@@ -350,8 +285,7 @@ int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
  * @param B		2nd dependency
  * @return		1 if dependencies overlap, 0 otherwise
  */
-int rpmdsCompare(const rpmds A, const rpmds B)
-	/*@*/;
+int rpmdsCompare(const rpmds A, const rpmds B);
 
 /**
  * Report a Requires: or Conflicts: dependency problem.
@@ -361,10 +295,9 @@ int rpmdsCompare(const rpmds A, const rpmds B)
  * @param suggestedKeys	filename or python object address
  * @param adding	dependency problem is from added package set?
  */
-void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
-		/*@only@*/ /*@null@*/ const fnpyKey * suggestedKeys,
-		int adding)
-	/*@modifies ps @*/;
+void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
+		const fnpyKey * suggestedKeys,
+		int adding);
 
 /**
  * Compare package provides dependencies from header with a single dependency.
@@ -373,9 +306,7 @@ void rpmdsProblem(/*@null@*/ rpmps ps, const char * pkgNEVR, const rpmds ds,
  * @param nopromote	Don't promote Epoch: in comparison?
  * @return		1 if any dependency overlaps, 0 otherwise
  */
-int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote);
 
 /**
  * Compare package name-version-release from header with a single dependency.
@@ -384,8 +315,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
  * @param nopromote	Don't promote Epoch: in comparison?
  * @return		1 if dependency overlaps, 0 otherwise
  */
-int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
-	/*@*/;
+int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
 
 #ifdef __cplusplus
 }

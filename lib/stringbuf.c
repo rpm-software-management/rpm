@@ -10,9 +10,7 @@
 #define BUF_CHUNK 1024
 
 struct StringBufRec {
-/*@owned@*/
     char *buf;
-/*@dependent@*/
     char *tail;     /* Points to first "free" char */
     int allocated;
     int free;
@@ -21,7 +19,7 @@ struct StringBufRec {
 /**
  * Locale insensitive isspace(3).
  */
-/*@unused@*/ static inline int xisspace(int c) /*@*/ {
+static inline int xisspace(int c)  {
     return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
@@ -30,8 +28,8 @@ struct StringBufRec {
  * @param p		memory to free
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
+static inline void *
+_free(const void * p)
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -60,16 +58,13 @@ StringBuf freeStringBuf(StringBuf sb)
 
 void truncStringBuf(StringBuf sb)
 {
-/*@-boundswrite@*/
     sb->buf[0] = '\0';
-/*@=boundswrite@*/
     sb->tail = sb->buf;
     sb->free = sb->allocated;
 }
 
 void stripTrailingBlanksStringBuf(StringBuf sb)
 {
-/*@-bounds@*/
     while (sb->free != sb->allocated) {
 	if (! xisspace(*(sb->tail - 1)))
 	    break;
@@ -77,7 +72,6 @@ void stripTrailingBlanksStringBuf(StringBuf sb)
 	sb->tail--;
     }
     sb->tail[0] = '\0';
-/*@=bounds@*/
 }
 
 char * getStringBuf(StringBuf sb)
@@ -98,10 +92,8 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
 	sb->tail = sb->buf + (sb->allocated - sb->free);
     }
     
-/*@-boundswrite@*/
-    /*@-mayaliasunique@*/ /* FIX: shrug */
+    /* FIX: shrug */
     strcpy(sb->tail, s);
-    /*@=mayaliasunique@*/
     sb->tail += l;
     sb->free -= l;
     if (nl) {
@@ -110,5 +102,4 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
 	sb->tail++;
 	sb->free--;
     }
-/*@=boundswrite@*/
 }

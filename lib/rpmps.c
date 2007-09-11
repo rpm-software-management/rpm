@@ -11,36 +11,25 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@access fnpyKey @*/
-/*@access rpmProblem @*/
 
-/*@unchecked@*/
 int _rpmps_debug = 0;
 
 rpmps XrpmpsUnlink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
-/*@-modfilesys@*/
 if (_rpmps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
     ps->nrefs--;
-/*@-refcounttrans@*/
     return ps;
-/*@=refcounttrans@*/
 }
 
 rpmps XrpmpsLink(rpmps ps, const char * msg,
 		const char * fn, unsigned ln)
 {
     ps->nrefs++;
-/*@-modfilesys@*/
 if (_rpmps_debug > 0 && msg != NULL)
 fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-/*@-refcounttrans@*/
     return ps;
-/*@=refcounttrans@*/
 }
 
 int rpmpsNumProblems(rpmps ps)
@@ -99,9 +88,7 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 
     p = ps->probs + ps->numProblems;
     ps->numProblems++;
-/*@-boundswrite@*/
     memset(p, 0, sizeof(*p));
-/*@=boundswrite@*/
 
     p->type = type;
     p->key = key;
@@ -113,13 +100,11 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 
     p->str1 = NULL;
     if (dn != NULL || bn != NULL) {
-/*@-boundswrite@*/
 	t = xcalloc(1,	(dn != NULL ? strlen(dn) : 0) +
 			(bn != NULL ? strlen(bn) : 0) + 1);
 	p->str1 = t;
 	if (dn != NULL) t = stpcpy(t, dn);
 	if (bn != NULL) t = stpcpy(t, bn);
-/*@=boundswrite@*/
     }
 }
 
@@ -146,11 +131,10 @@ int rpmpsTrim(rpmps ps, rpmps filter)
 	    continue;
 	}
 	while ((t - ps->probs) < ps->numProblems) {
-	    /*@-nullpass@*/	/* LCL: looks good to me <shrug> */
+	   	/* LCL: looks good to me <shrug> */
 	    if (f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
-		/*@innerbreak@*/ break;
-	    /*@=nullpass@*/
+		break;
 	    t++;
 	    gotProblems = 1;
 	}
@@ -170,16 +154,14 @@ int rpmpsTrim(rpmps ps, rpmps filter)
 }
 
 #if !defined(HAVE_VSNPRINTF)
-/*@-shadow -bufferoverflowhigh @*/
-static inline int vsnprintf(/*@out@*/ char * buf, /*@unused@*/ int nb,
+static inline int vsnprintf(char * buf, int nb,
 	const char * fmt, va_list ap)
 {
     return vsprintf(buf, fmt, ap);
 }
-/*@=shadow =bufferoverflowhigh @*/
 #endif
 #if !defined(HAVE_SNPRINTF)
-static inline int snprintf(/*@out@*/ char * buf, int nb, const char * fmt, ...)
+static inline int snprintf(char * buf, int nb, const char * fmt, ...)
 {
     va_list ap;
     int rc;
@@ -192,11 +174,8 @@ static inline int snprintf(/*@out@*/ char * buf, int nb, const char * fmt, ...)
 
 const char * rpmProblemString(const rpmProblem prob)
 {
-/*@observer@*/
     const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "?pkgNEVR?");
-/*@observer@*/
     const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "? ?altNEVR?");
-/*@observer@*/
     const char * str1 = (prob->str1 ? prob->str1 : N_("different"));
     int nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
     char * buf = xmalloc(nb+1);
@@ -280,7 +259,6 @@ const char * rpmProblemString(const rpmProblem prob)
 }
 
 static int sameProblem(const rpmProblem ap, const rpmProblem bp)
-	/*@*/
 {
     if (ap->type != bp->type)
 	return 1;
@@ -323,7 +301,7 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 	/* Filter already displayed problems. */
 	for (j = 0; j < i; j++) {
 	    if (!sameProblem(p, ps->probs + j))
-		/*@innerbreak@*/ break;
+		break;
 	}
 	if (j < i)
 	    continue;

@@ -15,8 +15,6 @@
 
 #include "debug.h"
 
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
 
 /**
  * Identify type of trigger.
@@ -27,10 +25,9 @@
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data, 
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
-		/*@unused@*/ int element)
-	/*@requires maxRead(data) >= 0 @*/
+static char * triggertypeFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding,
+		int element)
 {
     const int_32 * item = data;
     char * val;
@@ -59,10 +56,8 @@ static /*@only@*/ char * triggertypeFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * permsFormat(int_32 type, const void * data,
-		char * formatPrefix, int padding, /*@unused@*/ int element)
-	/*@modifies formatPrefix @*/
-	/*@requires maxRead(data) >= 0 @*/
+static char * permsFormat(int_32 type, const void * data,
+		char * formatPrefix, int padding, int element)
 {
     char * val;
     char * buf;
@@ -71,13 +66,9 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data,
 	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(15 + padding);
-/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
-/*@=boundswrite@*/
 	buf = rpmPermsString(*((int_32 *) data));
-	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
 	buf = _free(buf);
     }
 
@@ -93,10 +84,8 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * fflagsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/ int element)
-	/*@modifies formatPrefix @*/
-	/*@requires maxRead(data) >= 0 @*/
+static char * fflagsFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding, int element)
 {
     char * val;
     char buf[15];
@@ -106,7 +95,6 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 	val = xstrdup(_("(not a number)"));
     } else {
 	buf[0] = '\0';
-/*@-boundswrite@*/
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
 	if (anint & RPMFILE_CONFIG)
@@ -123,15 +111,10 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 	    strcat(buf, "l");
 	if (anint & RPMFILE_README)
 	    strcat(buf, "r");
-/*@=boundswrite@*/
 
 	val = xmalloc(5 + padding);
-/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
-/*@=boundswrite@*/
-	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
     }
 
     return val;
@@ -147,10 +130,9 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
  * @param element	no. bytes of binary data
  * @return		formatted string
  */
-static /*@only@*/ char * armorFormat(int_32 type, const void * data, 
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
+static char * armorFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding,
 		int element)
-	/*@*/
 {
     const char * enc;
     const unsigned char * s;
@@ -179,7 +161,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     case RPM_I18NSTRING_TYPE:
     default:
 	return xstrdup(_("(invalid type)"));
-	/*@notreached@*/ break;
+	break;
     }
 
     /* XXX this doesn't use padding directly, assumes enough slop in retval. */
@@ -196,9 +178,8 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
  * @param element
  * @return		formatted string
  */
-static /*@only@*/ char * base64Format(int_32 type, const void * data, 
-		/*@unused@*/ char * formatPrefix, int padding, int element)
-	/*@*/
+static char * base64Format(int_32 type, const void * data, 
+		char * formatPrefix, int padding, int element)
 {
     char * val;
 
@@ -212,8 +193,6 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	size_t ns = element;
 	size_t nt = ((ns + 2) / 3) * 4;
 
-/*@-boundswrite@*/
-	/*@-globs@*/
 	/* Add additional bytes necessary for eol string(s). */
 	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
 	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
@@ -221,7 +200,6 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
             ++lc;
 	    nt += lc * strlen(b64encode_eolstr);
 	}
-	/*@=globs@*/
 
 	val = t = xmalloc(nt + padding + 1);
 
@@ -230,7 +208,6 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
 	}
-/*@=boundswrite@*/
     }
 
     return val;
@@ -239,19 +216,16 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 /**
  */
 static size_t xmlstrlen(const char * s)
-	/*@*/
 {
     size_t len = 0;
     int c;
 
-/*@-boundsread@*/
     while ((c = *s++) != '\0')
-/*@=boundsread@*/
     {
 	switch (c) {
-	case '<': case '>':	len += 4;	/*@switchbreak@*/ break;
-	case '&':		len += 5;	/*@switchbreak@*/ break;
-	default:		len += 1;	/*@switchbreak@*/ break;
+	case '<': case '>':	len += 4;	break;
+	case '&':		len += 5;	break;
+	default:		len += 1;	break;
 	}
     }
     return len;
@@ -259,23 +233,20 @@ static size_t xmlstrlen(const char * s)
 
 /**
  */
-static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
-	/*@modifies t @*/
+static char * xmlstrcpy(char * t, const char * s)
 {
     char * te = t;
     int c;
 
-/*@-bounds@*/
     while ((c = *s++) != '\0') {
 	switch (c) {
-	case '<':	te = stpcpy(te, "&lt;");	/*@switchbreak@*/ break;
-	case '>':	te = stpcpy(te, "&gt;");	/*@switchbreak@*/ break;
-	case '&':	te = stpcpy(te, "&amp;");	/*@switchbreak@*/ break;
-	default:	*te++ = c;			/*@switchbreak@*/ break;
+	case '<':	te = stpcpy(te, "&lt;");	break;
+	case '>':	te = stpcpy(te, "&gt;");	break;
+	case '&':	te = stpcpy(te, "&amp;");	break;
+	default:	*te++ = c;			break;
 	}
     }
     *te = '\0';
-/*@=bounds@*/
     return t;
 }
 
@@ -288,11 +259,9 @@ static char * xmlstrcpy(/*@returned@*/ char * t, const char * s)
  * @param element	(unused)
  * @return		formatted string
  */
-/*@-bounds@*/
-static /*@only@*/ char * xmlFormat(int_32 type, const void * data, 
+static char * xmlFormat(int_32 type, const void * data, 
 		char * formatPrefix, int padding,
-		/*@unused@*/ int element)
-	/*@modifies formatPrefix @*/
+		int element)
 {
     const char * xtag = NULL;
     size_t nb;
@@ -302,7 +271,6 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     unsigned long anint = 0;
     int xx;
 
-/*@-branchstate@*/
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
@@ -311,15 +279,9 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	break;
     case RPM_BIN_TYPE:
     {	int cpl = b64encode_chars_per_line;
-/*@-mods@*/
 	b64encode_chars_per_line = 0;
-/*@=mods@*/
-/*@-formatconst@*/
 	s = base64Format(type, data, formatPrefix, padding, element);
-/*@=formatconst@*/
-/*@-mods@*/
 	b64encode_chars_per_line = cpl;
-/*@=mods@*/
 	xtag = "base64";
     }	break;
     case RPM_CHAR_TYPE:
@@ -336,11 +298,9 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     case RPM_STRING_ARRAY_TYPE:
     default:
 	return xstrdup(_("(invalid xml type)"));
-	/*@notreached@*/ break;
+	break;
     }
-/*@=branchstate@*/
 
-/*@-branchstate@*/
     if (s == NULL) {
 	int tlen = 32;
 	t = memset(alloca(tlen+1), 0, tlen+1);
@@ -349,7 +309,6 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
 	s = t;
 	xtag = "integer";
     }
-/*@=branchstate@*/
 
     nb = xmlstrlen(s);
     if (nb == 0) {
@@ -366,24 +325,17 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
     }
 
     /* XXX s was malloc'd */
-/*@-branchstate@*/
     if (!strcmp(xtag, "base64"))
 	s = _free(s);
-/*@=branchstate@*/
 
     nb += padding;
     val = xmalloc(nb+1);
-/*@-boundswrite@*/
     strcat(formatPrefix, "s");
-/*@=boundswrite@*/
-/*@-formatconst@*/
     xx = snprintf(val, nb, formatPrefix, t);
-/*@=formatconst@*/
     val[nb] = '\0';
 
     return val;
 }
-/*@=bounds@*/
 
 /**
  * Display signature fingerprint and time.
@@ -394,11 +346,9 @@ static /*@only@*/ char * xmlFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data, 
-		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
-		/*@unused@*/ int element)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+static char * pgpsigFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding,
+		int element)
 {
     char * val, * t;
 
@@ -407,9 +357,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
     } else {
 	unsigned char * pkt = (byte *) data;
 	unsigned int pktlen = 0;
-/*@-boundsread@*/
 	unsigned int v = *pkt;
-/*@=boundsread@*/
 	pgpTag tag = 0;
 	unsigned int plen;
 	unsigned int hlen = 0;
@@ -442,7 +390,6 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	    nb += 100;
 	    val = t = xrealloc(val, nb + 1);
 
-/*@-boundswrite@*/
 	    switch (sigp->pubkey_algo) {
 	    case PGPPUBKEYALGO_DSA:
 		t = stpcpy(t, "DSA");
@@ -489,7 +436,6 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	    if (t + strlen (tempstr) > val + nb)
 		goto again;
 	    t = stpcpy(t, tempstr);
-/*@=boundswrite@*/
 
 	    dig = pgpFreeDig(dig);
 	}
@@ -507,10 +453,8 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static /*@only@*/ char * depflagsFormat(int_32 type, const void * data, 
-		char * formatPrefix, int padding, /*@unused@*/ int element)
-	/*@modifies formatPrefix @*/
-	/*@requires maxRead(data) >= 0 @*/
+static char * depflagsFormat(int_32 type, const void * data, 
+		char * formatPrefix, int padding, int element)
 {
     char * val;
     char buf[10];
@@ -522,22 +466,16 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	anint = *((int_32 *) data);
 	buf[0] = '\0';
 
-/*@-boundswrite@*/
 	if (anint & RPMSENSE_LESS) 
 	    strcat(buf, "<");
 	if (anint & RPMSENSE_GREATER)
 	    strcat(buf, ">");
 	if (anint & RPMSENSE_EQUAL)
 	    strcat(buf, "=");
-/*@=boundswrite@*/
 
 	val = xmalloc(5 + padding);
-/*@-boundswrite@*/
 	strcat(formatPrefix, "s");
-/*@=boundswrite@*/
-	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
-	/*@=formatconst@*/
     }
 
     return val;
@@ -552,21 +490,14 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
-		/*@out@*/ void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *type, *data, *count, *freeData,
-		fileSystem, internalState @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int fsnamesTag( Header h, int_32 * type,
+		void ** data, int_32 * count,
+		int * freeData)
 {
     const char ** list;
 
-/*@-boundswrite@*/
     if (rpmGetFilesystemList(&list, count))
 	return 1;
-/*@=boundswrite@*/
 
     if (type) *type = RPM_STRING_ARRAY_TYPE;
     if (data) *((const char ***) data) = list;
@@ -584,13 +515,10 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
-		/*@null@*/ /*@out@*/ const void ** data,
-		/*@null@*/ /*@out@*/ int_32 * count,
-		/*@null@*/ /*@out@*/ int * freeData)
-	/*@modifies *type, *data, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int instprefixTag(Header h, rpmTagType * type,
+		const void ** data,
+		int_32 * count,
+		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -602,9 +530,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 	return 0;
     } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &array, count)) {
 	if (type) *type = RPM_STRING_TYPE;
-/*@-boundsread@*/
 	if (data) *data = xstrdup(array[0]);
-/*@=boundsread@*/
 	if (freeData) *freeData = 1;
 	array = hfd(array, ipt);
 	return 0;
@@ -622,15 +548,9 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int fssizesTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
@@ -646,10 +566,8 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &filenames, &numFiles);
     }
 
-/*@-boundswrite@*/
     if (rpmGetFilesystemList(NULL, count))
 	return 1;
-/*@=boundswrite@*/
 
     *type = RPM_INT32_TYPE;
     *freeData = 1;
@@ -661,10 +579,8 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	return 0;
     }
 
-/*@-boundswrite@*/
     if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
 	return 1;
-/*@=boundswrite@*/
 
     *data = usages;
 
@@ -682,12 +598,9 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int triggercondsTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -716,13 +629,12 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
-/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
 	    if (flags[j] & RPMSENSE_SENSEMASK) {
@@ -742,7 +654,6 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 
 	conds[i] = chptr;
     }
-/*@=bounds@*/
 
     names = hfd(names, tnt);
     versions = hfd(versions, tvt);
@@ -759,12 +670,9 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int triggertypeTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -788,11 +696,10 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
-/*@-bounds@*/
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    if (flags[j] & RPMSENSE_TRIGGERPREIN)
 		conds[i] = xstrdup("prein");
@@ -804,10 +711,9 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 		conds[i] = xstrdup("postun");
 	    else
 		conds[i] = xstrdup("");
-	    /*@innerbreak@*/ break;
+	    break;
 	}
     }
-/*@=bounds@*/
 
     return 0;
 }
@@ -821,12 +727,9 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@modifies *type, *data, *count, *freeData @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int filenamesTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, (const char ***) data, count);
@@ -843,14 +746,9 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
-	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int fileclassTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFClasses(h, (const char ***) data, count);
@@ -867,14 +765,9 @@ static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int fileprovideTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, (const char ***) data, count);
@@ -891,14 +784,9 @@ static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, *type, *data, *count, *freeData,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int filerequireTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, (const char ***) data, count);
@@ -909,15 +797,10 @@ static int filerequireTag(Header h, /*@out@*/ rpmTagType * type,
 /* I18N look aside diversions */
 
 #if defined(ENABLE_NLS)
-/*@-exportlocal -exportheadervar@*/
-/*@unchecked@*/
 extern int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
-/*@=exportlocal =exportheadervar@*/
 #endif
-/*@observer@*/ /*@unchecked@*/
 static const char * language = "LANGUAGE";
 
-/*@observer@*/ /*@unchecked@*/
 static const char * _macro_i18ndomains = "%{?_i18ndomains}";
 
 /**
@@ -930,13 +813,9 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int i18nTag(Header h, int_32 tag, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
@@ -970,18 +849,16 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	langval = getenv(language);
 	(void) setenv(language, "en_US", 1);
 #if defined(ENABLE_NLS)
-/*@i@*/	++_nl_msg_cat_cntr;
+        ++_nl_msg_cat_cntr;
 #endif
 
 	msgid = NULL;
-	/*@-branchstate@*/
 	for (domain = dstring; domain != NULL; domain = de) {
 	    de = strchr(domain, ':');
 	    if (de) *de++ = '\0';
-	    msgid = /*@-unrecog@*/ dgettext(domain, msgkey) /*@=unrecog@*/;
+	    msgid = dgettext(domain, msgkey);
 	    if (msgid != msgkey) break;
 	}
-	/*@=branchstate@*/
 
 	/* restore previous environment for msgid -> msgstr resolution */
 	if (langval)
@@ -989,11 +866,11 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	else
 	    unsetenv(language);
 #if defined(ENABLE_NLS)
-/*@i@*/	++_nl_msg_cat_cntr;
+        ++_nl_msg_cat_cntr;
 #endif
 
 	if (domain && msgid) {
-	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
+	    *data = dgettext(domain, msgid);
 	    *data = xstrdup(*data);	/* XXX xstrdup has side effects. */
 	    *count = 1;
 	    *freeData = 1;
@@ -1028,13 +905,9 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int summaryTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
@@ -1048,13 +921,9 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int descriptionTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }
@@ -1068,18 +937,14 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int groupTag(Header h, /*@out@*/ rpmTagType * type,
-		/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-		/*@out@*/ int * freeData)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *type, *data, *count, *freeData, rpmGlobalMacroContext @*/
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/
+static int groupTag(Header h, rpmTagType * type,
+		const void ** data, int_32 * count,
+		int * freeData)
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
 
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
@@ -1104,4 +969,3 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
     { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
 } ;
-/*@=type@*/

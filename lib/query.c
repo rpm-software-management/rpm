@@ -6,9 +6,7 @@
 #include "system.h"
 
 #ifndef PATH_MAX
-/*@-incondefs@*/	/* FIX: long int? */
 # define PATH_MAX 255
-/*@=incondefs@*/
 #endif
 
 #include <rpmcli.h>
@@ -25,7 +23,6 @@
 #include "debug.h"
 #include "misc.h"
 
-/*@access rpmgi @*/
 
 /**
  */
@@ -35,7 +32,6 @@ static void printFileInfo(char * te, const char * name,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
 			  const char * linkto)
-	/*@modifies *te @*/
 {
     char sizefield[15];
     char ownerfield[8+1], groupfield[8+1];
@@ -51,9 +47,7 @@ static void printFileInfo(char * te, const char * name,
     if (now == 0) {
 	now = time(NULL);
 	tm = localtime(&now);
-/*@-boundsread@*/
 	if (tm) nowtm = *tm;	/* structure assignment */
-/*@=boundsread@*/
     }
 
     strncpy(ownerfield, owner, sizeof(ownerfield));
@@ -110,15 +104,12 @@ static void printFileInfo(char * te, const char * name,
 
 /**
  */
-static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
-	/*@*/
+static inline const char * queryHeader(Header h, const char * qfmt)
 {
     const char * errstr = "(unkown error)";
     const char * str;
 
-/*@-modobserver@*/
     str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
-/*@=modobserver@*/
     if (str == NULL)
 	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);
     return str;
@@ -127,7 +118,6 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 /**
  */
 static void flushBuffer(char ** tp, char ** tep, int nonewline)
-	/*@ modifies *tp, *tep @*/
 {
     char *t, *te;
 
@@ -158,13 +148,10 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     int i;
 
     te = t = xmalloc(tb);
-/*@-boundswrite@*/
     *te = '\0';
-/*@=boundswrite@*/
 
     if (qva->qva_queryFormat != NULL) {
 	const char * str = queryHeader(h, qva->qva_queryFormat);
-	/*@-branchstate@*/
 	if (str) {
 	    size_t tx = (te - t);
 
@@ -174,15 +161,10 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 		t = xrealloc(t, tb);
 		te = t + tx;
 	    }
-/*@-boundswrite@*/
-	    /*@-usereleased@*/
 	    te = stpcpy(te, str);
-	    /*@=usereleased@*/
-/*@=boundswrite@*/
 	    str = _free(str);
 	    flushBuffer(&t, &te, 1);
 	}
-	/*@=branchstate@*/
     }
 
     if (!(qva->qva_flags & QUERY_FOR_LIST))
@@ -190,9 +172,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     if (rpmfiFC(fi) <= 0) {
-/*@-boundswrite@*/
 	te = stpcpy(te, _("(contains no files)"));
-/*@=boundswrite@*/
 	goto exit;
     }
 
@@ -219,7 +199,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fstate = rpmfiFState(fi);
 	fsize = rpmfiFSize(fi);
 	fn = rpmfiFN(fi);
-/*@-bounds@*/
 	{   static char hex[] = "0123456789abcdef";
 	    unsigned const char * s = rpmfiMD5(fi);
 	    char * p = fmd5;
@@ -231,7 +210,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 	    *p = '\0';
 	}
-/*@=bounds@*/
 	fuser = rpmfiFUser(fi);
 	fgroup = rpmfiFGroup(fi);
 	flink = rpmfiFLink(fi);
@@ -258,7 +236,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    te = t + tx;
 	}
 
-/*@-boundswrite@*/
 	if (!rpmIsVerbose() && prefix)
 	    te = stpcpy(te, prefix);
 
@@ -266,38 +243,35 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    switch (fstate) {
 	    case RPMFILE_STATE_NORMAL:
 		te = stpcpy(te, _("normal        "));
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMFILE_STATE_REPLACED:
 		te = stpcpy(te, _("replaced      "));
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMFILE_STATE_NOTINSTALLED:
 		te = stpcpy(te, _("not installed "));
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMFILE_STATE_NETSHARED:
 		te = stpcpy(te, _("net shared    "));
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMFILE_STATE_WRONGCOLOR:
 		te = stpcpy(te, _("wrong color   "));
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMFILE_STATE_MISSING:
 		te = stpcpy(te, _("(no state)    "));
-		/*@switchbreak@*/ break;
+		break;
 	    default:
 		sprintf(te, _("(unknown %3d) "), fstate);
 		te += strlen(te);
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	}
-/*@=boundswrite@*/
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
 	    sprintf(te, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
 	    te += strlen(te);
 
 	    if (fuser && fgroup) {
-/*@-nullpass@*/
 		sprintf(te, "%s %s", fuser, fgroup);
-/*@=nullpass@*/
 		te += strlen(te);
 	    } else {
 		rpmError(RPMERR_INTERNAL,
@@ -314,9 +288,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    te += strlen(te);
 	} else
 	if (!rpmIsVerbose()) {
-/*@-boundswrite@*/
 	    te = stpcpy(te, fn);
-/*@=boundswrite@*/
 	}
 	else {
 
@@ -327,10 +299,8 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 
 	    if (fuser && fgroup) {
-/*@-nullpass@*/
 		printFileInfo(te, fn, fsize, fmode, fmtime, frdev, fnlink,
 					fuser, fgroup, flink);
-/*@=nullpass@*/
 		te += strlen(te);
 	    } else {
 		rpmError(RPMERR_INTERNAL,
@@ -383,9 +353,9 @@ void rpmDisplayQueryTags(FILE * fp)
 	/* XXX don't print query tags twice. */
 	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	    if (t->name == NULL)	/* XXX programmer error. */
-		/*@innercontinue@*/ continue;
+		continue;
 	    if (!strcmp(t->name, ext->name))
-	    	/*@innerbreak@*/ break;
+	    	break;
 	}
 	if (i >= rpmTagTableSize && ext->type == HEADER_EXT_TAG)
 	    fprintf(fp, "%s\n", ext->name + 7);
@@ -394,8 +364,6 @@ void rpmDisplayQueryTags(FILE * fp)
 }
 
 static int rpmgiShowMatches(QVA_t qva, rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-        /*@modifies qva, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmgi gi = qva->qva_gi;
     int ec = 0;
@@ -437,7 +405,6 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
  * @return             binary nibble
  */
 static inline unsigned char nibble(char c)
-	/*@*/
 {
     if (c >= '0' && c <= '9')
 	return (c - '0');
@@ -448,7 +415,7 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
-/*@-bounds@*/ /* LCL: segfault (realpath annotation?) */
+/* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     int res = 0;
@@ -461,7 +428,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     if (qva->qva_showPackage == NULL)
 	return 1;
 
-    /*@-branchstate@*/
     switch (qva->qva_source) {
     case RPMQV_RPM:
 	res = rpmgiShowMatches(qva, ts);
@@ -617,14 +583,13 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		res = rpmcliShowMatches(qva, ts);
 	    break;
 	}
-	/*@fallthrough@*/
     case RPMQV_PATH:
     {   char * fn;
 	int myerrno = 0;
 
 	for (s = arg; *s != '\0'; s++)
 	    if (!(*s == '.' || *s == '/'))
-		/*@loopbreak@*/ break;
+		break;
 
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];
@@ -713,11 +678,9 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     }
     
     }
-    /*@=branchstate@*/
    
     return res;
 }
-/*@=bounds@*/
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
@@ -735,9 +698,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	if (rpmrc != RPMRC_NOTFOUND)
 	    return 1;	/* XXX should be no. of failures. */
 	
-	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	/* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
-	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;
     case RPMQV_RPM:
@@ -750,9 +712,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	if (rpmrc != RPMRC_NOTFOUND)
 	    return 1;	/* XXX should be no. of failures. */
 	
-	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	/* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, NULL);
-	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;
     case RPMQV_HDLIST:
@@ -765,9 +726,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	if (rpmrc != RPMRC_NOTFOUND)
 	    return 1;	/* XXX should be no. of failures. */
 	
-	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	/* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, NULL);
-	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;
     case RPMQV_FTSWALK:
@@ -782,9 +742,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	if (rpmrc != RPMRC_NOTFOUND)
 	    return 1;	/* XXX should be no. of failures. */
 	
-	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	/* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, NULL);
-	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;
     default:

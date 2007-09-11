@@ -12,44 +12,31 @@
 
 #include "debug.h"
 
-typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
+typedef struct availablePackage_s * availablePackage;
 
-/*@unchecked@*/
 int _rpmal_debug = 0;
 
-/*@access alKey @*/
-/*@access alNum @*/
-/*@access rpmal @*/
-/*@access availablePackage @*/
-
-/*@access fnpyKey @*/	/* XXX suggestedKeys array */
 
 /** \ingroup rpmdep
  * Info about a single package to be installed.
  */
 struct availablePackage_s {
-/*@refcounted@*/ /*@null@*/
     rpmds provides;		/*!< Provides: dependencies. */
-/*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File info set. */
 
     uint_32 tscolor;		/*!< Transaction color bits. */
 
-/*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< Associated file name/python object */
 
 };
 
-typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
-/*@access availableIndexEntry@*/
+typedef struct availableIndexEntry_s *	availableIndexEntry;
 
 /** \ingroup rpmdep
  * A single available item (e.g. a Provides: dependency).
  */
 struct availableIndexEntry_s {
-/*@exposed@*/ /*@dependent@*/ /*@null@*/
     alKey pkgKey;		/*!< Containing package. */
-/*@observer@*/
     const char * entry;		/*!< Dependency name. */
     unsigned short entryLen;	/*!< No. of bytes in name. */
     unsigned short entryIx;	/*!< Dependency index. */
@@ -58,44 +45,37 @@ struct availableIndexEntry_s {
     } type;			/*!< Type of available item. */
 };
 
-typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
-/*@access availableIndex@*/
+typedef struct availableIndex_s *	availableIndex;
 
 /** \ingroup rpmdep
  * Index of all available items.
  */
 struct availableIndex_s {
-/*@null@*/
     availableIndexEntry index;	/*!< Array of available items. */
     int size;			/*!< No. of available items. */
     int k;			/*!< Current index. */
 };
 
-typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
-/*@access fileIndexEntry@*/
+typedef struct fileIndexEntry_s *	fileIndexEntry;
 
 /** \ingroup rpmdep
  * A file to be installed/removed.
  */
 struct fileIndexEntry_s {
-/*@dependent@*/ /*@relnull@*/
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
     uint_32 ficolor;
 };
 
-typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
-/*@access dirInfo@*/
+typedef struct dirInfo_s *		dirInfo;
 
 /** \ingroup rpmdep
  * A directory to be installed/removed.
  */
 struct dirInfo_s {
-/*@owned@*/ /*@relnull@*/
     const char * dirName;	/*!< Directory path (+ trailing '/'). */
     int dirNameLen;		/*!< No. bytes in directory path. */
-/*@owned@*/
     fileIndexEntry files;	/*!< Array of files in directory. */
     int numFiles;		/*!< No. files in directory. */
 };
@@ -104,7 +84,6 @@ struct dirInfo_s {
  * Set of available packages, items, and directories.
  */
 struct rpmal_s {
-/*@owned@*/ /*@null@*/
     availablePackage list;	/*!< Set of packages. */
     struct availableIndex_s index;	/*!< Set of available items. */
     int delta;			/*!< Delta for pkg list reallocation. */
@@ -112,7 +91,6 @@ struct rpmal_s {
     int alloced;		/*!< No. of pkgs allocated for list. */
     uint_32 tscolor;		/*!< Transaction color. */
     int numDirs;		/*!< No. of directories. */
-/*@owned@*/ /*@null@*/
     dirInfo dirs;		/*!< Set of directories. */
 };
 
@@ -121,7 +99,6 @@ struct rpmal_s {
  * @param al		available list
  */
 static void rpmalFreeIndex(rpmal al)
-	/*@modifies al @*/
 {
     availableIndex ai = &al->index;
     if (ai->size > 0) {
@@ -136,29 +113,22 @@ static void rpmalFreeIndex(rpmal al)
  * @param al		available list
  * @return		no. of packages in list
  */
-static int alGetSize(/*@null@*/ const rpmal al)
-	/*@*/
+static int alGetSize(const rpmal al)
 {
     return (al != NULL ? al->size : 0);
 }
 #endif
 
-static inline alNum alKey2Num(/*@unused@*/ /*@null@*/ const rpmal al,
-		/*@null@*/ alKey pkgKey)
-	/*@*/
+static inline alNum alKey2Num(const rpmal al,
+		alKey pkgKey)
 {
-    /*@-nullret -temptrans -retalias @*/
     return ((alNum)pkgKey);
-    /*@=nullret =temptrans =retalias @*/
 }
 
-static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
-		/*@null@*/ alNum pkgNum)
-	/*@*/
+static inline alKey alNum2Key(const rpmal al,
+		alNum pkgNum)
 {
-    /*@-nullret -temptrans -retalias @*/
     return ((alKey)pkgNum);
-    /*@=nullret =temptrans =retalias @*/
 }
 
 #ifdef	DYING
@@ -168,10 +138,8 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const rpmal al,
  * @param pkgKey	available package key
  * @return		available package pointer
  */
-/*@dependent@*/ /*@null@*/
-static availablePackage alGetPkg(/*@null@*/ const rpmal al,
-		/*@null@*/ alKey pkgKey)
-	/*@*/
+static availablePackage alGetPkg(const rpmal al,
+		alKey pkgKey)
 {
     alNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp = NULL;
@@ -239,12 +207,9 @@ rpmal rpmalFree(rpmal al)
  * @return		result of comparison
  */
 static int dieCompare(const void * one, const void * two)
-	/*@*/
 {
-    /*@-castexpose@*/
     const dirInfo a = (const dirInfo) one;
     const dirInfo b = (const dirInfo) two;
-    /*@=castexpose@*/
     int lenchk = a->dirNameLen - b->dirNameLen;
 
     if (lenchk || a->dirNameLen == 0)
@@ -264,12 +229,9 @@ static int dieCompare(const void * one, const void * two)
  * @return		result of comparison
  */
 static int fieCompare(const void * one, const void * two)
-	/*@*/
 {
-    /*@-castexpose@*/
     const fileIndexEntry a = (const fileIndexEntry) one;
     const fileIndexEntry b = (const fileIndexEntry) two;
-    /*@=castexpose@*/
     int lenchk = a->baseNameLen - b->baseNameLen;
 
     if (lenchk)
@@ -279,7 +241,6 @@ static int fieCompare(const void * one, const void * two)
 	return lenchk;
 
 #ifdef	NOISY
-/*@-modfilesys@*/
 if (_rpmal_debug) {
 fprintf(stderr, "\t\tstrcmp(%p:%p, %p:%p)", a, a->baseName, b, b->baseName);
 #if 0
@@ -288,7 +249,6 @@ fprintf(stderr, " a %s", a->baseName);
 fprintf(stderr, " b %s", a->baseName);
 fprintf(stderr, "\n");
 }
-/*@=modfilesys@*/
 #endif
 
     return strcmp(a->baseName, b->baseName);
@@ -305,10 +265,8 @@ void rpmalDel(rpmal al, alKey pkgKey)
 
     alp = al->list + pkgNum;
 
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "*** del %p[%d]\n", al->list, (int) pkgNum);
-/*@=modfilesys@*/
 
     /* Delete directory/file info entries from added package list. */
     if ((fi = alp->fi) != NULL)
@@ -330,44 +288,32 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, (int) pkgNum);
 
 	    (void) rpmfiSetDX(fi, dx);
 
-	    /*@-assignexpose -dependenttrans -observertrans@*/
 	    dieNeedle->dirName = (char *) rpmfiDN(fi);
-	    /*@=assignexpose =dependenttrans =observertrans@*/
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
-/*@-boundswrite@*/
 	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
 			       sizeof(*dieNeedle), dieCompare);
-/*@=boundswrite@*/
 	    if (die == NULL)
 		continue;
 
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "--- die[%5ld] %p [%3d] %s\n", (die - al->dirs), die, die->dirNameLen, die->dirName);
-/*@=modfilesys@*/
 
 	    last = die->numFiles;
 	    fie = die->files + last - 1;
 	    for (i = last - 1; i >= 0; i--, fie--) {
 		if (fie->pkgNum != pkgNum)
-		    /*@innercontinue@*/ continue;
+		    continue;
 		die->numFiles--;
 
 		if (i < die->numFiles) {
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%lx) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
-/*@=modfilesys@*/
 
-/*@-bounds@*/
 		    memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
-/*@=bounds@*/
 		}
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%lx) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
-/*@=modfilesys@*/
 		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
 
 	    }
@@ -381,20 +327,14 @@ fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%lx) %p [%3d] %s\n", die->files, die->n
 	    die->dirName = _free(die->dirName);
 	    al->numDirs--;
 	    if ((die - al->dirs) < al->numDirs) {
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "    die[%5ld] memmove(%p,%p,0x%lx)\n", (die - al->dirs), die, die+1, ((al->numDirs - (die - al->dirs)) * sizeof(*die)));
-/*@=modfilesys@*/
 
-/*@-bounds@*/
 		memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
-/*@=bounds@*/
 	    }
 
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al->numDirs, sizeof(*die));
-/*@=modfilesys@*/
 	    memset(al->dirs + al->numDirs, 0, sizeof(*al->dirs)); /* overkill */
 	}
 
@@ -409,13 +349,10 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al-
     alp->provides = rpmdsFree(alp->provides);
     alp->fi = rpmfiFree(alp->fi);
 
-/*@-boundswrite@*/
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
-/*@=boundswrite@*/
     return;
 }
 
-/*@-bounds@*/
 alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 		rpmds provides, rpmfi fi, uint_32 tscolor)
 {
@@ -447,10 +384,8 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
     alp->key = key;
     alp->tscolor = tscolor;
 
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
-/*@=modfilesys@*/
 
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
     alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
@@ -488,7 +423,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 		(void) rpmfiSetDX(fi, i);
 		iDN = rpmfiDN(fi);
 		if (iDN != NULL && !strcmp(DN, iDN))
-		    /*@innerbreak@*/ break;
+		    break;
 	    }
 	    dirUnique[dx] = i;
 	}
@@ -505,7 +440,6 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 	    /* Find global dirInfo mapping for first encounter. */
 	    (void) rpmfiSetDX(fi, dx);
 
-	    /*@-assignexpose -dependenttrans -observertrans@*/
 	    {   DN = rpmfiDN(fi);
 
 #if defined(__ia64__)
@@ -516,7 +450,6 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 #endif
 		dieNeedle->dirName = DN;
 	    }
-	    /*@=assignexpose =dependenttrans =observertrans@*/
 
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
@@ -532,10 +465,8 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 		die->dirNameLen = dieNeedle->dirNameLen;
 		die->files = NULL;
 		die->numFiles = 0;
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "+++ die[%5d] %p [%3d] %s\n", al->numDirs, die, die->dirNameLen, die->dirName);
-/*@=modfilesys@*/
 
 		al->numDirs++;
 	    }
@@ -549,7 +480,7 @@ fprintf(stderr, "+++ die[%5d] %p [%3d] %s\n", al->numDirs, die, die->dirNameLen,
 	    dx = rpmfiDX(fi);
 	    while ((next = rpmfiNext(fi)) >= 0) {
 		if (dx != rpmfiDX(fi))
-		    /*@innerbreak@*/ break;
+		    break;
 	    }
 	    if (next < 0) next = rpmfiFC(fi);	/* XXX reset end-of-list */
 
@@ -559,26 +490,20 @@ fprintf(stderr, "+++ die[%5d] %p [%3d] %s\n", al->numDirs, die, die->dirNameLen,
 
 	    fie = die->files + die->numFiles;
 
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "    die[%5d] %p->files [%p[%d],%p) -> [%p[%d],%p)\n", dirMapping[dx], die,
 die->files, die->numFiles, die->files+die->numFiles,
 fie, (next - first), fie + (next - first));
-/*@=modfilesys@*/
 
 	    /* Rewind to first file, generate file index entry for each file. */
 	    fi = rpmfiInit(fi, first);
 	    while ((first = rpmfiNext(fi)) >= 0 && first < next) {
-		/*@-assignexpose -dependenttrans -observertrans @*/
 		fie->baseName = rpmfiBN(fi);
-		/*@=assignexpose =dependenttrans =observertrans @*/
 		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
 		fie->pkgNum = pkgNum;
 		fie->ficolor = rpmfiFColor(fi);
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie->baseName, fie->baseNameLen, rpmfiFN(fi));
-/*@=modfilesys@*/
 
 		die->numFiles++;
 		fie++;
@@ -598,7 +523,6 @@ fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie
 assert(((alNum)(alp - al->list)) == pkgNum);
     return ((alKey)(alp - al->list));
 }
-/*@=bounds@*/
 
 /**
  * Compare two available index entries by name (qsort/bsearch).
@@ -607,12 +531,9 @@ assert(((alNum)(alp - al->list)) == pkgNum);
  * @return		result of comparison
  */
 static int indexcmp(const void * one, const void * two)
-	/*@*/
 {
-    /*@-castexpose@*/
     const availableIndexEntry a = (const availableIndexEntry) one;
     const availableIndexEntry b = (const availableIndexEntry) two;
-    /*@=castexpose@*/
     int lenchk;
 
     lenchk = a->entryLen - b->entryLen;
@@ -742,30 +663,24 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	goto exit;
     baseName++;
 
-    /*@-branchstate@*/ /* FIX: ret is a problem */
+    /* FIX: ret is a problem */
     for (found = 0, ret = NULL;
 	 die < al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
 	 die++)
     {
 
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"));
-/*@=modfilesys@*/
 
-/*@-observertrans@*/
 	fieNeedle->baseName = baseName;
-/*@=observertrans@*/
 	fieNeedle->baseNameLen = strlen(fieNeedle->baseName);
 	fie = bsearch(fieNeedle, die->files, die->numFiles,
 		       sizeof(*fieNeedle), fieCompare);
 	if (fie == NULL)
 	    continue;	/* XXX shouldn't happen */
 
-/*@-modfilesys@*/
 if (_rpmal_debug)
 fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"));
-/*@=modfilesys@*/
 
 	alp = al->list + fie->pkgNum;
 
@@ -784,7 +699,6 @@ fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"
 	    *keyp = alNum2Key(al, fie->pkgNum);
 	found++;
     }
-    /*@=branchstate@*/
 
 exit:
     dirName = _free(dirName);
@@ -824,9 +738,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	return NULL;
 
     needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
-    /*@-assignexpose -temptrans@*/
     needle->entry = KName;
-    /*@=assignexpose =temptrans@*/
     needle->entryLen = strlen(needle->entry);
 
     match = bsearch(needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
@@ -856,29 +768,24 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	    if (rc)
 		rpmdsNotify(ds, _("(added provide)"), 0);
 
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
-	/*@-branchstate@*/
 	if (rc) {
 	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
 		ret[found] = alp->key;
-/*@-dependenttrans@*/
 	    if (keyp)
 		*keyp = match->pkgKey;
-/*@=dependenttrans@*/
 	    found++;
 	}
-	/*@=branchstate@*/
     }
 
     if (ret)
 	ret[found] = NULL;
 
-/*@-nullstate@*/ /* FIX: *keyp may be NULL */
+/* FIX: *keyp may be NULL */
     return ret;
-/*@=nullstate@*/
 }
 
 fnpyKey

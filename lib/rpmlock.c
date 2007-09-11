@@ -12,9 +12,7 @@
 /* Internal interface */
 
 #define RPMLOCK_PATH LOCALSTATEDIR "/lock/rpm/transaction"
-/*@unchecked@*/ /*@observer@*/
 static const char * rpmlock_path_default = "%{?_rpmlock_path}";
-/*@unchecked@*/
 static const char * rpmlock_path = NULL;
 
 enum {
@@ -28,10 +26,7 @@ typedef struct {
 	int openmode;
 } * rpmlock;
 
-/*@null@*/
-static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+static rpmlock rpmlock_new(const char *rootdir)
 {
 	rpmlock lock = (rpmlock) malloc(sizeof(*lock));
 
@@ -48,32 +43,22 @@ static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
 		lock->fd = open(rpmlock_path, O_RDWR|O_CREAT, 0644);
 		(void) umask(oldmask);
 
-/*@-branchstate@*/
 		if (lock->fd == -1) {
 			lock->fd = open(rpmlock_path, O_RDONLY);
 			if (lock->fd == -1) {
 				free(lock);
 				lock = NULL;
 			} else {
-/*@-nullderef@*/	/* XXX splint on crack */
 				lock->openmode = RPMLOCK_READ;
-/*@=nullderef@*/
 			}
 		} else {
-/*@-nullderef@*/	/* XXX splint on crack */
 			lock->openmode = RPMLOCK_WRITE | RPMLOCK_READ;
-/*@=nullderef@*/
 		}
-/*@=branchstate@*/
 	}
-/*@-compdef@*/
 	return lock;
-/*@=compdef@*/
 }
 
-static void rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies lock, fileSystem, internalState @*/
+static void rpmlock_free(rpmlock lock)
 {
 	if (lock) {
 		(void) close(lock->fd);
@@ -81,8 +66,7 @@ static void rpmlock_free(/*@only@*/ /*@null@*/ rpmlock lock)
 	}
 }
 
-static int rpmlock_acquire(/*@null@*/ rpmlock lock, int mode)
-	/*@*/
+static int rpmlock_acquire(rpmlock lock, int mode)
 {
 	int res = 0;
 	if (lock && (mode & lock->openmode)) {
@@ -106,9 +90,7 @@ static int rpmlock_acquire(/*@null@*/ rpmlock lock, int mode)
 	return res;
 }
 
-static void rpmlock_release(/*@null@*/ rpmlock lock)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
+static void rpmlock_release(rpmlock lock)
 {
 	if (lock) {
 		struct flock info;
@@ -132,7 +114,6 @@ void *rpmtsAcquireLock(rpmts ts)
 	if (!rootDir || rpmtsChrootDone(ts))
 		rootDir = "/";
 	lock = rpmlock_new(rootDir);
-/*@-branchstate@*/
 	if (!lock) {
 		rpmMessage(RPMMESS_ERROR, _("can't create transaction lock on %s\n"), rpmlock_path);
 	} else if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
@@ -146,7 +127,6 @@ void *rpmtsAcquireLock(rpmts ts)
 			lock = NULL;
 		}
 	}
-/*@=branchstate@*/
 	return lock;
 }
 

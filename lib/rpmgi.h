@@ -13,10 +13,7 @@
 
 /**
  */
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern int _rpmgi_debug;
-/*@=exportlocal@*/
 
 /**
  */
@@ -29,47 +26,36 @@ typedef enum rpmgiFlags_e {
     RPMGI_NOHEADER	= (1 << 4)
 } rpmgiFlags;
 
-/*@unchecked@*/
 extern rpmgiFlags giFlags;
 
 #if defined(_RPMGI_INTERNAL)
 /** \ingroup rpmio
  */
 struct rpmgi_s {
-/*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
     int tag;			/*!< Iterator type. */
-/*@kept@*/ /*@relnull@*/
     const void * keyp;		/*!< Iterator key. */
     size_t keylen;		/*!< Iterator key length. */
 
     rpmgiFlags flags;		/*!< Iterator control bits. */
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
-/*@null@*/
     const char * hdrPath;	/*!< Path to current iterator header. */
-/*@refcounted@*/ /*@null@*/
     Header h;			/*!< Current iterator header. */
 
-/*@null@*/
     rpmtsi tsi;
 
-/*@null@*/
     rpmdbMatchIterator mi;
 
-/*@refcounted@*/
     FD_t fd;
 
     ARGV_t argv;
     int argc;
 
     int ftsOpts;
-/*@null@*/
     FTS * ftsp;
-/*@relnull@*/
     FTSENT * fts;
 
-/*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
 #endif
@@ -84,18 +70,12 @@ extern "C" {
  * @param msg
  * @return		NULL always
  */
-/*@unused@*/ /*@null@*/
-rpmgi rpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
-		/*@null@*/ const char * msg)
-	/*@modifies gi @*/;
+rpmgi rpmgiUnlink (rpmgi gi,
+		const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmgi XrpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
-	/*@modifies gi @*/;
-/*@=exportlocal@*/
+rpmgi XrpmgiUnlink (rpmgi gi,
+		const char * msg, const char * fn, unsigned ln);
 #define	rpmgiUnlink(_gi, _msg)	XrpmgiUnlink(_gi, _msg, __FILE__, __LINE__)
 
 /**
@@ -104,25 +84,18 @@ rpmgi XrpmgiUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi,
  * @param msg
  * @return		new generalized iterator reference
  */
-/*@unused@*/ /*@newref@*/ /*@null@*/
-rpmgi rpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg)
-	/*@modifies gi @*/;
+rpmgi rpmgiLink (rpmgi gi, const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@newref@*/ /*@null@*/
-rpmgi XrpmgiLink (/*@null@*/ rpmgi gi, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies gi @*/;
+rpmgi XrpmgiLink (rpmgi gi, const char * msg,
+		const char * fn, unsigned ln);
 #define	rpmgiLink(_gi, _msg)	XrpmgiLink(_gi, _msg, __FILE__, __LINE__)
 
 /** Destroy a generalized iterator.
  * @param gi		generalized iterator
  * @return		NULL always
  */
-/*@null@*/
-rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-        /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
+rpmgi rpmgiFree(rpmgi gi);
 
 /**
  * Return a generalized iterator.
@@ -132,47 +105,36 @@ rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		new iterator
  */
-/*@null@*/
-rpmgi rpmgiNew(rpmts ts, int tag, /*@kept@*/ /*@null@*/ const void * keyp,
-		size_t keylen)
-	/*@globals internalState @*/
-	/*@modifies ts, internalState @*/;
+rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp,
+		size_t keylen);
 
 /**
  * Perform next iteration step.
  * @param gi		generalized iterator
  * @returns		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
  */
-rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-        /*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/;
+rpmRC rpmgiNext(rpmgi gi);
 
 /**
  * Return current header path.
  * @param gi		generalized iterator
  * @returns		header path
  */
-/*@observer@*/ /*@null@*/
-const char * rpmgiHdrPath(rpmgi gi)
-	/*@*/;
+const char * rpmgiHdrPath(rpmgi gi);
 
 /**
  * Return current iteration header.
  * @param gi		generalized iterator
  * @returns		header
  */
-/*@null@*/
-Header rpmgiHeader(/*@null@*/ rpmgi gi)
-        /*@*/;
+Header rpmgiHeader(rpmgi gi);
 
 /**
  * Return current iteration transaction set.
  * @param gi		generalized iterator
  * @returns		transaction set
  */
-/*@null@*/
-rpmts rpmgiTs(/*@null@*/ rpmgi gi)
-        /*@*/;
+rpmts rpmgiTs(rpmgi gi);
 
 /**
  * Load iterator args.
@@ -182,10 +144,8 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
  * @param flags		iterator flags
  * @returns		RPMRC_OK on success
  */
-rpmRC rpmgiSetArgs(rpmgi gi, /*@null@*/ ARGV_t argv,
-		int ftsOpts, rpmgiFlags flags)
-	/*@globals internalState @*/
-	/*@modifies gi, internalState @*/;
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv,
+		int ftsOpts, rpmgiFlags flags);
 
 #ifdef __cplusplus
 }

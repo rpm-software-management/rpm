@@ -5,17 +5,13 @@
 #include "rpmts.h"
 #include "rpmmacro.h"
 
-/*@unchecked@*/
 static int reverse = -1;
 
 /**
  */
 static int IDTintcmp(const void * a, const void * b)
-	/*@*/
 {
-    /*@-castexpose@*/
     return ( reverse * (((IDT)a)->val.u32 - ((IDT)b)->val.u32) );
-    /*@=castexpose@*/
 }
 
 IDTX IDTXfree(IDTX idtx)
@@ -73,7 +69,6 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
     HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
 
-    /*@-branchstate@*/
     mi = rpmtsInitIterator(ts, tag, NULL, 0);
 #ifdef	NOTYET
     (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
@@ -97,9 +92,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 	    continue;
 
 	{   IDT idt;
-	    /*@-nullderef@*/
 	    idt = idtx->idt + idtx->nidt;
-	    /*@=nullderef@*/
 	    idt->h = headerLink(h);
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
@@ -108,7 +101,6 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 	idtx->nidt++;
     }
     mi = rpmdbFreeIterator(mi);
-    /*@=branchstate@*/
 
     return IDTXsort(idtx);
 }
@@ -148,18 +140,17 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	switch (rpmrc) {
 	default:
 	    goto bottom;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:
 	    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 	    if (isSource)
 		goto bottom;
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	tidp = NULL;
-	/*@-branchstate@*/
 	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp != NULL) {
 
 	    idtx = IDTXgrow(idtx, 1);
@@ -176,7 +167,6 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	    }
 	    idtx->nidt++;
 	}
-	/*@=branchstate@*/
 bottom:
 	h = headerFree(h);
     }

@@ -1,4 +1,3 @@
-/*@-modfilesys@*/
 /** \ingroup rpmio
  * \file rpmio/rpmio.c
  */
@@ -17,21 +16,13 @@
 
 #include "debug.h"
 
-/*@access fnpyKey @*/
-/*@access rpmdbMatchIterator @*/
-/*@access rpmts @*/
-/*@access rpmps @*/
 
-/*@unchecked@*/
 int _rpmgi_debug = 0;
 
-/*@unchecked@*/
 rpmgiFlags giFlags = RPMGI_NONE;
 
-/*@unchecked@*/
 static int indent = 2;
 
-/*@unchecked@*/ /*@observer@*/
 static const char * ftsInfoStrings[] = {
     "UNKNOWN",
     "D",
@@ -50,16 +41,12 @@ static const char * ftsInfoStrings[] = {
     "W",
 };
 
-/*@observer@*/
 static const char * ftsInfoStr(int fts_info)
-	/*@*/
 {
 
     if (!(fts_info >= 1 && fts_info <= 14))
 	fts_info = 0;
-/*@-compmempass@*/
     return ftsInfoStrings[ fts_info ];
-/*@=compmempass@*/
 }
 
 /**
@@ -69,10 +56,7 @@ static const char * ftsInfoStr(int fts_info)
  * @param fmode		open mode
  * @return		file handle
  */
-/*@null@*/
 static FD_t rpmgiOpen(const char * path, const char * fmode)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies rpmGlobalMacroContext, h_errno, internalState @*/
 {
     const char * fn = rpmExpand(path, NULL);
     FD_t fd = Fopen(fn, fmode);
@@ -94,8 +78,6 @@ static FD_t rpmgiOpen(const char * path, const char * fmode)
  * @return		RPMRC_OK on success
  */
 static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     FD_t fd = rpmgiOpen(path, "r.ufdio");
     rpmRC rpmrc = RPMRC_FAIL;
@@ -113,10 +95,7 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
  * @param path		file path
  * @return		header (NULL on failure)
  */
-/*@null@*/
 static Header rpmgiReadHeader(rpmgi gi, const char * path)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     FD_t fd = rpmgiOpen(path, "r.ufdio");
     Header h = NULL;
@@ -152,10 +131,7 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
  */
-/*@null@*/
 static rpmRC rpmgiLoadReadHeader(rpmgi gi)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
     Header h = NULL;
@@ -201,9 +177,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
  */
-/*@null@*/
 static rpmRC rpmgiWalkPathFilter(rpmgi gi)
-	/*@*/
 {
     FTSENT * fts = gi->fts;
     rpmRC rpmrc = RPMRC_NOTFOUND;
@@ -250,10 +224,7 @@ rpmMessage(RPMMESS_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
  */
-/*@null@*/
 static rpmRC rpmgiWalkReadHeader(rpmgi gi)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
 
@@ -285,9 +256,7 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
  * @param argv		arg list to be globbed (or NULL)
  * @returns		RPMRC_OK on success
  */
-static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
-	/*@globals internalState @*/
-	/*@modifies gi, internalState @*/
+static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_t argv)
 {
     const char * arg;
     rpmRC rpmrc = RPMRC_OK;
@@ -301,9 +270,8 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
 	if (argv != NULL) {
 	    while (argv[ac] != NULL)
 		ac++;
-/*@-nullstate@*/ /* XXX argv is not NULL */
+/* XXX argv is not NULL */
 	    xx = argvAppend(&gi->argv, argv);
-/*@=nullstate@*/
 	}
 	gi->argc = ac;
 	return rpmrc;
@@ -328,8 +296,6 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
  * @returns		RPMRC_OK on success
  */
 static rpmRC rpmgiInitFilter(rpmgi gi)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies gi, rpmGlobalMacroContext, h_errno, internalState @*/
 {
     rpmRC rpmrc = RPMRC_OK;
     ARGV_t av;
@@ -350,7 +316,6 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	tag = RPMTAG_NAME;
 
 	/* Parse for "tag=pattern" args. */
-/*@-branchstate@*/
 	if ((ae = strchr(a, '=')) != NULL) {
 	    *ae++ = '\0';
 	    tag = tagValue(a);
@@ -360,7 +325,6 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	    }
 	    pat = ae;
 	}
-/*@=branchstate@*/
 
 	if (!res) {
 if (_rpmgi_debug  < 0)
@@ -399,7 +363,7 @@ rpmgi XrpmgiLink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
 if (_rpmgi_debug && msg != NULL)
 fprintf(stderr, "--> gi %p ++ %d %s at %s:%u\n", gi, gi->nrefs, msg, fn, ln);
 
-    /*@-refcounttrans@*/ return gi; /*@=refcounttrans@*/
+    return gi;
 }
 
 rpmgi rpmgiFree(rpmgi gi)
@@ -412,7 +376,6 @@ rpmgi rpmgiFree(rpmgi gi)
 
     (void) rpmgiUnlink(gi, __FUNCTION__);
 
-/*@-usereleased@*/
 
     gi->hdrPath = _free(gi->hdrPath);
     gi->h = headerFree(gi->h);
@@ -434,10 +397,7 @@ rpmgi rpmgiFree(rpmgi gi)
     gi->ts = rpmtsFree(gi->ts);
 
     memset(gi, 0, sizeof(*gi));		/* XXX trash and burn */
-/*@-refcounttrans@*/
     gi = _free(gi);
-/*@=refcounttrans@*/
-/*@=usereleased@*/
     return NULL;
 }
 
@@ -450,9 +410,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 
     gi->ts = rpmtsLink(ts, __FUNCTION__);
     gi->tag = tag;
-/*@-assignexpose@*/
     gi->keyp = keyp;
-/*@=assignexpose@*/
     gi->keylen = keylen;
 
     gi->flags = 0;
@@ -475,7 +433,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     return gi;
 }
 
-rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
+rpmRC rpmgiNext(rpmgi gi)
 {
     char hnum[32];
     rpmRC rpmrc = RPMRC_NOTFOUND;
@@ -489,7 +447,6 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
     gi->hdrPath = _free(gi->hdrPath);
     hnum[0] = '\0';
 
-/*@-branchstate@*/
     if (++gi->i >= 0)
     switch (gi->tag) {
     default:
@@ -600,7 +557,6 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	    gi->hdrPath = xstrdup(gi->fts->fts_path);
 	break;
     }
-/*@=branchstate@*/
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
 	/* XXX rpmgi hack: Save header in transaction element. */
@@ -629,7 +585,6 @@ enditer:
 	    if (rpmIsVerbose())
 		rpmpsPrint(NULL, ps);
 
-/*@-branchstate@*/
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
 		rpmMessage(RPMMESS_VERBOSE, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
@@ -645,7 +600,6 @@ enditer:
 		}
 		ts->suggests = _free(ts->suggests);
 	    }
-/*@=branchstate@*/
 
 	}
 	ps = rpmpsFree(ps);
@@ -672,16 +626,12 @@ const char * rpmgiHdrPath(rpmgi gi)
 
 Header rpmgiHeader(rpmgi gi)
 {
-/*@-compdef -refcounttrans -retexpose -usereleased@*/
     return (gi != NULL ? gi->h : NULL);
-/*@=compdef =refcounttrans =retexpose =usereleased@*/
 }
 
 rpmts rpmgiTs(rpmgi gi)
 {
-/*@-compdef -refcounttrans -retexpose -usereleased@*/
     return (gi != NULL ? gi->ts : NULL);
-/*@=compdef =refcounttrans =retexpose =usereleased@*/
 }
 
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
@@ -691,4 +641,3 @@ rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
     return rpmgiGlobArgv(gi, argv);
 }
 
-/*@=modfilesys@*/

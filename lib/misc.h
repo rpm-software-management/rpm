@@ -19,9 +19,7 @@ extern "C" {
  * @param dname		directory use string
  * @return		rpmRC return code
  */
-rpmRC rpmMkdirPath (const char * dpath, const char * dname)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+rpmRC rpmMkdirPath (const char * dpath, const char * dname);
 
 /**
  * Split string into fields separated by a character.
@@ -30,15 +28,13 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
  * @param sep		separator character
  * @return		(malloc'd) argv array
  */
-/*@only@*/ char ** splitString(const char * str, int length, char sep)
-	/*@*/;
+char ** splitString(const char * str, int length, char sep);
 
 /**
  * Free split string argv array.
  * @param list		argv array
  */
-void freeSplitString( /*@only@*/ char ** list)
-	/*@modifies list @*/;
+void freeSplitString( char ** list);
 
 /**
  * Remove occurences of trailing character from string.
@@ -46,15 +42,12 @@ void freeSplitString( /*@only@*/ char ** list)
  * @param c		character to strip
  * @return 		string
  */
-/*@unused@*/ static inline
-/*@only@*/ char * stripTrailingChar(/*@only@*/ char * s, char c)
-	/*@modifies *s */
+static inline
+char * stripTrailingChar(char * s, char c)
 {
     char * t;
-/*@-boundswrite@*/
     for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
 	*t = '\0';
-/*@=boundswrite@*/
     return s;
 }
 
@@ -65,18 +58,14 @@ void freeSplitString( /*@only@*/ char ** list)
  * @param overwrite	should an existing variable be changed?
  * @return		0 on success
  */
-int dosetenv(const char * name, const char * value, int overwrite)
-	/*@globals environ@*/
-	/*@modifies *environ @*/;
+int dosetenv(const char * name, const char * value, int overwrite);
 
 /**
  * Like the libc function, but malloc()'s the space needed.
  * @param str		"name=value" string
  * @return		0 on success
  */
-int doputenv(const char * str)
-	/*@globals environ@*/
-	/*@modifies *environ @*/;
+int doputenv(const char * str);
 
 /**
  * Return file handle for a temporaray file.
@@ -91,20 +80,15 @@ int doputenv(const char * str)
  * @retval fdptr	temp file handle
  * @return		0 on success
  */
-int makeTempFile(/*@null@*/ const char * prefix,
-		/*@null@*/ /*@out@*/ const char ** fnptr,
-		/*@out@*/ FD_t * fdptr)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies *fnptr, *fdptr, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+int makeTempFile(const char * prefix,
+		const char ** fnptr,
+		FD_t * fdptr);
 
 /**
  * Return (malloc'd) current working directory.
  * @return		current working directory (malloc'ed)
  */
-/*@only@*/ char * currentDirectory(void)
-	/*@*/;
+char * currentDirectory(void);
 
 #ifdef __cplusplus
 }

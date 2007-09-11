@@ -34,8 +34,7 @@ extern "C" {
  * Return new, empty (signature) header instance.
  * @return		signature header
  */
-Header rpmNewSignature(void)
-	/*@*/;
+Header rpmNewSignature(void);
 
 /** \ingroup signature
  * Read (and verify header+payload size) signature header.
@@ -46,10 +45,8 @@ Header rpmNewSignature(void)
  * @retval msg		failure msg
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
-		sigType sig_type, /*@null@*/ /*@out@*/ const char ** msg)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *sighp, *msg, fileSystem @*/;
+rpmRC rpmReadSignature(FD_t fd, Header *sighp,
+		sigType sig_type, const char ** msg);
 
 /** \ingroup signature
  * Write signature header.
@@ -57,9 +54,7 @@ rpmRC rpmReadSignature(FD_t fd, /*@null@*/ /*@out@*/ Header *sighp,
  * @param h		(signature) header
  * @return		0 on success, 1 on error
  */
-int rpmWriteSignature(FD_t fd, Header h)
-	/*@globals fileSystem @*/
-	/*@modifies fd, h, fileSystem @*/;
+int rpmWriteSignature(FD_t fd, Header h);
 
 /** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.
@@ -70,9 +65,7 @@ int rpmWriteSignature(FD_t fd, Header h)
  * @return		0 on success, -1 on failure
  */
 int rpmAddSignature(Header sigh, const char * file,
-		    int_32 sigTag, /*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies sigh, rpmGlobalMacroContext, fileSystem, internalState @*/;
+		    int_32 sigTag, const char * passPhrase);
 
 /******************************************************************/
 
@@ -88,9 +81,7 @@ int rpmAddSignature(Header sigh, const char * file,
  * @param action	enable/disable/query action
  * @return		sigTag to use, 0 if none, -1 on error
  */
-int rpmLookupSignatureType(int action)
-	/*@globals rpmGlobalMacroContext, h_errno, internalState @*/
-	/*@modifies rpmGlobalMacroContext, internalState @*/;
+int rpmLookupSignatureType(int action);
 
 /** \ingroup signature
  * Read a pass phrase using getpass(3), confirm with gpg/pgp helper binaries.
@@ -98,23 +89,16 @@ int rpmLookupSignatureType(int action)
  * @param sigTag	signature type/tag
  * @return		pass phrase
  */
-/*@dependent@*/ /*@null@*/
-char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
-		const int sigTag)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+char * rpmGetPassPhrase(const char * prompt,
+		const int sigTag);
 
 /** \ingroup signature
  * Return path to pgp executable of given type, or NULL when not found.
  * @retval pgpVer	pgp version
  * @return		path to pgp executable
  */
-/*@-exportlocal -redecl@*/
-/*@null@*/ const char * rpmDetectPGPVersion(
-			/*@null@*/ /*@out@*/ pgpVersion * pgpVer)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *pgpVer, rpmGlobalMacroContext @*/;
-/*@=exportlocal =redecl@*/
+const char * rpmDetectPGPVersion(
+			pgpVersion * pgpVer);
 
 #ifdef __cplusplus
 }

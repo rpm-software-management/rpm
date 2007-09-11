@@ -13,16 +13,12 @@
 /**
  */
 struct rpmlibProvides_s {
-/*@observer@*/ /*@null@*/
     const char * featureName;
-/*@observer@*/ /*@null@*/
     const char * featureEVR;
     int featureFlags;
-/*@observer@*/ /*@null@*/
     const char * featureDescription;
 };
 
-/*@observer@*/ /*@unchecked@*/
 static struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
@@ -64,10 +60,9 @@ void rpmShowRpmlibProvides(FILE * fp)
     const struct rpmlibProvides_s * rlp;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
-/*@-nullpass@*/ /* FIX: rlp->featureEVR not NULL */
+/* FIX: rlp->featureEVR not NULL */
 	rpmds pro = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
-/*@=nullpass@*/
 	const char * DNEVR = rpmdsDNEVR(pro);
 
 	if (pro != NULL && DNEVR != NULL) {
@@ -105,45 +100,34 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
     int * flags;
     int n = 0;
     
-/*@-boundswrite@*/
     while (rpmlibProvides[n].featureName != NULL)
         n++;
-/*@=boundswrite@*/
 
     names = xcalloc((n+1), sizeof(*names));
     versions = xcalloc((n+1), sizeof(*versions));
     flags = xcalloc((n+1), sizeof(*flags));
     
-/*@-boundswrite@*/
     for (n = 0; rpmlibProvides[n].featureName != NULL; n++) {
         names[n] = rpmlibProvides[n].featureName;
         flags[n] = rpmlibProvides[n].featureFlags;
         versions[n] = rpmlibProvides[n].featureEVR;
     }
     
-    /*@-branchstate@*/
     if (provNames)
 	*provNames = names;
     else
 	names = _free(names);
-    /*@=branchstate@*/
 
-    /*@-branchstate@*/
     if (provFlags)
 	*provFlags = flags;
     else
 	flags = _free(flags);
-    /*@=branchstate@*/
 
-    /*@-branchstate@*/
     if (provVersions)
 	*provVersions = versions;
     else
 	versions = _free(versions);
-    /*@=branchstate@*/
-/*@=boundswrite@*/
 
-    /*@-compmempass@*/ /* FIX: rpmlibProvides[] reachable */
+    /* FIX: rpmlibProvides[] reachable */
     return n;
-    /*@=compmempass@*/
 }

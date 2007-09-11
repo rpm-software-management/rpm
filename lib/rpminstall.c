@@ -16,19 +16,10 @@
 #include "manifest.h"
 #include "debug.h"
 
-/*@access rpmts @*/	/* XXX ts->goal, ts->dbmode */
-/*@access IDTX @*/
-/*@access IDT @*/
-
-/*@unchecked@*/
 int rpmcliPackagesTotal = 0;
-/*@unchecked@*/
 int rpmcliHashesCurrent = 0;
-/*@unchecked@*/
 int rpmcliHashesTotal = 0;
-/*@unchecked@*/
 int rpmcliProgressCurrent = 0;
-/*@unchecked@*/
 int rpmcliProgressTotal = 0;
 
 /**
@@ -38,20 +29,14 @@ int rpmcliProgressTotal = 0;
  * @param total		final
  */
 static void printHash(const unsigned long amount, const unsigned long total)
-	/*@globals rpmcliHashesCurrent, rpmcliHashesTotal,
-		rpmcliProgressCurrent, fileSystem @*/
-	/*@modifies rpmcliHashesCurrent, rpmcliHashesTotal,
-		rpmcliProgressCurrent, fileSystem @*/
 {
     int hashesNeeded;
 
     rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 44 : 50);
 
     if (rpmcliHashesCurrent != rpmcliHashesTotal) {
-/*@+relaxtypes@*/
 	float pct = (total ? (((float) amount) / total) : 1.0);
 	hashesNeeded = (rpmcliHashesTotal * pct) + 0.5;
-/*@=relaxtypes@*/
 	while (hashesNeeded > rpmcliHashesCurrent) {
 	    if (isatty (STDOUT_FILENO)) {
 		int i;
@@ -75,11 +60,9 @@ static void printHash(const unsigned long amount, const unsigned long total)
 	    if (isatty(STDOUT_FILENO)) {
 	        for (i = 1; i < rpmcliHashesCurrent; i++)
 		    (void) putchar ('#');
-/*@+relaxtypes@*/
 		pct = (rpmcliProgressTotal
 		    ? (((float) rpmcliProgressCurrent) / rpmcliProgressTotal)
 		    : 1);
-/*@=relaxtypes@*/
 		fprintf(stdout, " [%3d%%]", (int)((100 * pct) + 0.5));
 	    }
 	    fprintf(stdout, "\n");
@@ -88,37 +71,27 @@ static void printHash(const unsigned long amount, const unsigned long total)
     }
 }
 
-void * rpmShowProgress(/*@null@*/ const void * arg,
+void * rpmShowProgress(const void * arg,
 			const rpmCallbackType what,
 			const unsigned long amount,
 			const unsigned long total,
-			/*@null@*/ fnpyKey key,
-			/*@null@*/ void * data)
-	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem @*/
-	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem @*/
+			fnpyKey key,
+			void * data)
 {
-/*@-abstract -castexpose @*/
     Header h = (Header) arg;
-/*@=abstract =castexpose @*/
     char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
-/*@-abstract -assignexpose @*/
     const char * filename = (const char *)key;
-/*@=abstract =assignexpose @*/
     static FD_t fd = NULL;
     int xx;
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
-/*@-boundsread@*/
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
-/*@=boundsread@*/
 	fd = Fopen(filename, "r.ufdio");
-	/*@-type@*/ /* FIX: still necessary? */
+	/* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
 	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
@@ -128,16 +101,12 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 	    }
 	} else
 	    fd = fdLink(fd, "persist (showProgress)");
-	/*@=type@*/
-/*@+voidabstract@*/
 	return (void *)fd;
-/*@=voidabstract@*/
-	/*@notreached@*/ break;
+	break;
 
     case RPMCALLBACK_INST_CLOSE_FILE:
-	/*@-type@*/ /* FIX: still necessary? */
+	/* FIX: still necessary? */
 	fd = fdFree(fd, "persist (showProgress)");
-	/*@=type@*/
 	if (fd != NULL) {
 	    xx = Fclose(fd);
 	    fd = NULL;
@@ -169,14 +138,12 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
-/*@+relaxtypes@*/
 	if (flags & INSTALL_PERCENT)
 	    fprintf(stdout, "%%%% %f\n", (double) (total
 				? ((((float) amount) / total) * 100)
 				: 100.0));
 	else if (flags & INSTALL_HASH)
 	    printHash(amount, total);
-/*@=relaxtypes@*/
 	(void) fflush(stdout);
 	break;
 
@@ -252,36 +219,29 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     return rc;
 }	
 
-typedef /*@only@*/ /*@null@*/ const char * str_t;
+typedef const char * str_t;
 
 struct rpmEIU {
     Header h;
     FD_t fd;
     int numFailed;
     int numPkgs;
-/*@only@*/
     str_t * pkgURL;
-/*@dependent@*/ /*@null@*/
     str_t * fnp;
-/*@only@*/
     char * pkgState;
     int prevx;
     int pkgx;
     int numRPMS;
     int numSRPMS;
-/*@only@*/ /*@null@*/
     str_t * sourceURL;
     int isSource;
     int argc;
-/*@only@*/ /*@null@*/
     str_t * argv;
-/*@dependent@*/
     rpmRelocation * relocations;
     rpmRC rpmrc;
 };
 
 /** @todo Generalize --freshen policies. */
-/*@-bounds@*/
 int rpmInstall(rpmts ts,
 		struct rpmInstallArguments_s * ia,
 		const char ** fileArgv)
@@ -290,7 +250,7 @@ int rpmInstall(rpmts ts,
     rpmps ps;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
-/*@only@*/ /*@null@*/ const char * fileURL = NULL;
+const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
     rpmVSFlags vsflags, ovsflags, tvsflags;
@@ -338,10 +298,7 @@ int rpmInstall(rpmts ts,
     }
 
     /* Build fully globbed list of arguments in argv[argc]. */
-    /*@-branchstate@*/
-    /*@-temptrans@*/
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
-    /*@=temptrans@*/
 	av = _free(av);	ac = 0;
 	rc = rpmGlob(*eiu->fnp, &ac, &av);
 	if (rc || ac == 0) {
@@ -354,7 +311,6 @@ int rpmInstall(rpmts ts,
 	eiu->argc += ac;
 	eiu->argv[eiu->argc] = NULL;
     }
-    /*@=branchstate@*/
     av = _free(av);	ac = 0;
 
 restart:
@@ -430,12 +386,12 @@ if (fileURL[0] == '=') {
 		eiu->numFailed++;
 		eiu->pkgURL[eiu->pkgx] = NULL;
 		tfn = _free(tfn);
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	    eiu->pkgState[eiu->pkgx] = 1;
 	    eiu->pkgURL[eiu->pkgx] = tfn;
 	    eiu->pkgx++;
-	}   /*@switchbreak@*/ break;
+	}   break;
 	case URL_IS_PATH:
 	case URL_IS_DASH:	/* WRONG WRONG WRONG */
 	case URL_IS_HKP:	/* WRONG WRONG WRONG */
@@ -443,7 +399,7 @@ if (fileURL[0] == '=') {
 	    eiu->pkgURL[eiu->pkgx] = fileURL;
 	    fileURL = NULL;
 	    eiu->pkgx++;
-	    /*@switchbreak@*/ break;
+	    break;
 	}
     }
     fileURL = _free(fileURL);
@@ -485,15 +441,15 @@ if (fileURL[0] == '=') {
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *eiu->fnp);
 	    eiu->numFailed++; *eiu->fnp = NULL;
 	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case RPMRC_NOTFOUND:
 	    goto maybe_manifest;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
@@ -527,7 +483,6 @@ if (fileURL[0] == '=') {
 			       _("package %s is not relocatable\n"), name);
 		eiu->numFailed++;
 		goto exit;
-		/*@notreached@*/
 	    }
 	}
 
@@ -543,10 +498,10 @@ if (fileURL[0] == '=') {
 	    count = rpmdbGetIteratorCount(mi);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 		if (rpmVersionCompare(oldH, eiu->h) < 0)
-		    /*@innercontinue@*/ continue;
+		    continue;
 		/* same or newer package already installed */
 		count = 0;
-		/*@innerbreak@*/ break;
+		break;
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	    if (count == 0) {
@@ -556,11 +511,9 @@ if (fileURL[0] == '=') {
 	    /* Package is newer than those currently installed. */
 	}
 
-	/*@-abstract@*/
 	rc = rpmtsAddInstallElement(ts, eiu->h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			relocations);
-	/*@=abstract@*/
 
 	/* XXX reference held by transaction set */
 	eiu->h = headerFree(eiu->h);
@@ -571,24 +524,24 @@ if (fileURL[0] == '=') {
 	case 0:
 	    rpmMessage(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
 			eiu->numRPMS);
-	    /*@switchbreak@*/ break;
+	    break;
 	case 1:
 	    rpmMessage(RPMMESS_ERROR,
 			    _("error reading from file %s\n"), *eiu->fnp);
 	    eiu->numFailed++;
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case 2:
 	    rpmMessage(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
 			    *eiu->fnp);
 	    eiu->numFailed++;
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	default:
 	    eiu->numFailed++;
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	}
 
 	eiu->numRPMS++;
@@ -609,9 +562,8 @@ maybe_manifest:
 	}
 
 	/* Read list of packages from manifest. */
-/*@-nullstate@*/ /* FIX: *eiu->argv can be NULL */
+/* FIX: *eiu->argv can be NULL */
 	rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
-/*@=nullstate@*/
 	if (rc != RPMRC_OK)
 	    rpmError(RPMERR_MANIFEST, _("%s: not an rpm package (or package manifest): %s\n"),
 			*eiu->fnp, Fstrerror(eiu->fd));
@@ -647,7 +599,6 @@ maybe_manifest:
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 
-	    /*@-branchstate@*/
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
 		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
@@ -663,7 +614,6 @@ maybe_manifest:
 		}
 		ts->suggests = _free(ts->suggests);
 	    }
-	    /*@=branchstate@*/
 	}
 	ps = rpmpsFree(ps);
     }
@@ -738,7 +688,6 @@ exit:
 
     return eiu->numFailed;
 }
-/*@=bounds@*/
 
 int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 		const char ** argv)
@@ -795,7 +744,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 		    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
-		    /*@innerbreak@*/ break;
+		    break;
 		}
 		if (recOffset) {
 		    (void) rpmtsAddEraseElement(ts, h, recOffset);
@@ -879,12 +828,10 @@ int rpmInstallSource(rpmts ts, const char * arg,
     }
     if (rc != 0) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
-	/*@-unqualifiedtrans@*/
 	if (specFilePtr && *specFilePtr)
 	    *specFilePtr = _free(*specFilePtr);
 	if (cookie && *cookie)
 	    *cookie = _free(*cookie);
-	/*@=unqualifiedtrans@*/
     }
 
     (void) Fclose(fd);
@@ -1003,10 +950,8 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
-/*@-abstract@*/
 	    rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
-/*@=abstract@*/
 	    if (rc != 0)
 		goto exit;
 
@@ -1097,7 +1042,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    for (i = 0; i < rtids->nidt; i++) {
 		IDT rrp = rtids->idt + i;
 		if (rrp->val.u32 != thistid)
-		    /*@innercontinue@*/ continue;
+		    continue;
 		if (rrp->key) {	/* XXX can't happen */
 		    rpmMessage(RPMMESS_NORMAL, _("\tRemoving %s:\n"), rrp->key);
 		    (void) unlink(rrp->key);	/* XXX: Should check rc??? */

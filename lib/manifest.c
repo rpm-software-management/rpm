@@ -13,9 +13,7 @@
 #include "misc.h"
 #include "debug.h"
 
-/*@access StringBuf @*/
 
-/*@-boundswrite@*/
 char * rpmPermsString(int mode)
 {
     char *perms = xstrdup("----------");
@@ -28,10 +26,8 @@ char * rpmPermsString(int mode)
 	perms[0] = 'l';
     else if (S_ISFIFO(mode)) 
 	perms[0] = 'p';
-    /*@-unrecog@*/
     else if (S_ISSOCK(mode)) 
 	perms[0] = 's';
-    /*@=unrecog@*/
     else if (S_ISCHR(mode))
 	perms[0] = 'c';
     else if (S_ISBLK(mode))
@@ -62,10 +58,8 @@ char * rpmPermsString(int mode)
 
     return perms;
 }
-/*@=boundswrite@*/
 
 /**@todo Infinite loops through manifest files exist, operator error for now. */
-/*@-boundsread@*/
 rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 {
     StringBuf sb = newStringBuf();
@@ -75,13 +69,10 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     const char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     const char ** argv = (argvPtr ? *argvPtr : NULL);
-/*@+voidabstract@*/
     FILE * f = (FILE *) fdGetFp(fd);
-/*@=voidabstract@*/
     rpmRC rpmrc = RPMRC_OK;
     int i, j, next, npre;
 
-/*@-boundswrite@*/
     if (f != NULL)
     while (1) {
 	char line[BUFSIZ];
@@ -116,10 +107,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 	appendStringBuf(sb, s);
     }
 
-    /*@-branchstate@*/
     if (s == NULL)		/* XXX always true */
 	s = getStringBuf(sb);
-    /*@=branchstate@*/
 
     if (!(s && *s)) {
 	rpmrc = RPMRC_NOTFOUND;
@@ -173,22 +162,15 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     }
     if (argcPtr)
 	*argcPtr = ac;
-/*@=boundswrite@*/
 
 exit:
-    /*@-branchstate@*/
     if (argvPtr == NULL || (rpmrc != RPMRC_OK && av)) {
 	if (av)
-/*@-boundswrite@*/
 	for (i = 0; i < ac; i++)
-	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
-/*@=boundswrite@*/
-	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
+	   av[i] = _free(av[i]);
+	av = _free(av);
     }
-    /*@=branchstate@*/
     sb = freeStringBuf(sb);
-    /*@-nullstate@*/ /* FIX: *argvPtr may be NULL. */
+    /* FIX: *argvPtr may be NULL. */
     return rpmrc;
-    /*@=nullstate@*/
 }
-/*@=boundsread@*/

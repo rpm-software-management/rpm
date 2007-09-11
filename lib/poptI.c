@@ -9,11 +9,8 @@
 
 #include "debug.h"
 
-/*@-redecl@*/
 extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
-/*@=redecl@*/
 
-/*@unchecked@*/
 struct rpmInstallArguments_s rpmIArgs = {
     0,			/* transFlags */
     0,			/* probFilter */
@@ -33,31 +30,22 @@ struct rpmInstallArguments_s rpmIArgs = {
 #define	POPT_EXCLUDEPATH	-1022
 #define	POPT_ROLLBACK		-1023
 
-/*@exits@*/
 static void argerror(const char * desc)
-	/*@globals stderr, fileSystem @*/
-	/*@modifies stderr, fileSystem @*/
 {
-    /*@-modfilesys -globs @*/
     fprintf(stderr, _("%s: %s\n"), __progname, desc);
-    /*@=modfilesys =globs @*/
     exit(EXIT_FAILURE);
 }
 
 /**
  */
-/*@-bounds@*/
-static void installArgCallback( /*@unused@*/ poptContext con,
-		/*@unused@*/ enum poptCallbackReason reason,
+static void installArgCallback( poptContext con,
+		enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg,
-		/*@unused@*/ const void * data)
-	/*@globals rpmIArgs, stderr, fileSystem @*/
-	/*@modifies rpmIArgs, stderr, fileSystem @*/
+		const void * data)
 {
     struct rpmInstallArguments_s * ia = &rpmIArgs;
 
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
-    /*@-branchstate@*/
     if (opt->arg == NULL)
     switch (opt->val) {
 
@@ -70,9 +58,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	    argerror(_("exclude paths must begin with a /"));
 	ia->relocations = xrealloc(ia->relocations, 
 			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-/*@-temptrans@*/
 	ia->relocations[ia->numRelocations].oldPath = xstrdup(arg);
-/*@=temptrans@*/
 	ia->relocations[ia->numRelocations].newPath = NULL;
 	ia->numRelocations++;
 	break;
@@ -90,12 +76,8 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	    argerror(_("relocations must have a / following the ="));
 	ia->relocations = xrealloc(ia->relocations, 
 			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-/*@-temptrans@*/
 	ia->relocations[ia->numRelocations].oldPath = oldPath;
-/*@=temptrans@*/
-/*@-kepttrans -usereleased @*/
 	ia->relocations[ia->numRelocations].newPath = newPath;
-/*@=kepttrans =usereleased @*/
 	ia->numRelocations++;
       }	break;
 
@@ -104,9 +86,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	if (arg == NULL)
 	    argerror(_("rollback takes a time/date stamp argument"));
 
-	/*@-moduncon@*/
 	tid = get_date(arg, NULL);
-	/*@=moduncon@*/
 
 	if (tid == (time_t)-1 || tid == (time_t)0)
 	    argerror(_("malformed rollback time/date stamp argument"));
@@ -150,19 +130,14 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	break;
 
     }
-    /*@=branchstate@*/
 }
-/*@=bounds@*/
 
 /**
  */
-/*@-bitwisesigned -compmempass @*/
-/*@unchecked@*/
 struct poptOption rpmInstallPoptTable[] = {
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	installArgCallback, 0, NULL, NULL },
-/*@=type@*/
 
  { "aid", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_ADDINDEPS,
 	N_("add suggested packages to transaction"), NULL },
@@ -334,4 +309,3 @@ struct poptOption rpmInstallPoptTable[] = {
 
    POPT_TABLEEND
 };
-/*@=bitwisesigned =compmempass @*/

@@ -27,18 +27,14 @@
 
 #include "debug.h"
 
-/*@access rpmte @*/
 
-/*@unchecked@*/
 int _rpmfi_debug = 0;
 
 rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
-/*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
 fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
     fi->nrefs--;
     return NULL;
 }
@@ -47,11 +43,9 @@ rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
 {
     if (fi == NULL) return NULL;
     fi->nrefs++;
-/*@-modfilesys@*/
 if (_rpmfi_debug && msg != NULL)
 fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
+    return fi;
 }
 
 int rpmfiFC(rpmfi fi)
@@ -82,9 +76,7 @@ int rpmfiSetFX(rpmfi fi, int fx)
     if (fi != NULL && fx >= 0 && fx < fi->fc) {
 	i = fi->i;
 	fi->i = fx;
-/*@-boundsread@*/
 	fi->j = fi->dil[fi->i];
-/*@=boundsread@*/
     }
     return i;
 }
@@ -110,10 +102,8 @@ const char * rpmfiBN(rpmfi fi)
     const char * BN = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->bnl != NULL)
 	    BN = fi->bnl[fi->i];
-/*@=boundsread@*/
     }
     return BN;
 }
@@ -123,10 +113,8 @@ const char * rpmfiDN(rpmfi fi)
     const char * DN = NULL;
 
     if (fi != NULL && fi->j >= 0 && fi->j < fi->dc) {
-/*@-boundsread@*/
 	if (fi->dnl != NULL)
 	    DN = fi->dnl[fi->j];
-/*@=boundsread@*/
     }
     return DN;
 }
@@ -135,19 +123,15 @@ const char * rpmfiFN(rpmfi fi)
 {
     const char * FN = "";
 
-    /*@-branchstate@*/
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	char * t;
 	if (fi->fn == NULL)
 	    fi->fn = xmalloc(fi->fnlen);
 	FN = t = fi->fn;
-/*@-boundswrite@*/
 	*t = '\0';
 	t = stpcpy(t, fi->dnl[fi->dil[fi->i]]);
 	t = stpcpy(t, fi->bnl[fi->i]);
-/*@=boundswrite@*/
     }
-    /*@=branchstate@*/
     return FN;
 }
 
@@ -156,10 +140,8 @@ uint_32 rpmfiFFlags(rpmfi fi)
     int_32 FFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fflags != NULL)
 	    FFlags = fi->fflags[fi->i];
-/*@=boundsread@*/
     }
     return FFlags;
 }
@@ -169,10 +151,8 @@ uint_32 rpmfiVFlags(rpmfi fi)
     int_32 VFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->vflags != NULL)
 	    VFlags = fi->vflags[fi->i];
-/*@=boundsread@*/
     }
     return VFlags;
 }
@@ -182,10 +162,8 @@ int_16 rpmfiFMode(rpmfi fi)
     int_16 fmode = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fmodes != NULL)
 	    fmode = fi->fmodes[fi->i];
-/*@=boundsread@*/
     }
     return fmode;
 }
@@ -195,10 +173,8 @@ rpmfileState rpmfiFState(rpmfi fi)
     rpmfileState fstate = RPMFILE_STATE_MISSING;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fstates != NULL)
 	    fstate = fi->fstates[fi->i];
-/*@=boundsread@*/
     }
     return fstate;
 }
@@ -208,10 +184,8 @@ const unsigned char * rpmfiMD5(rpmfi fi)
     unsigned char * MD5 = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->md5s != NULL)
 	    MD5 = fi->md5s + (16 * fi->i);
-/*@=boundsread@*/
     }
     return MD5;
 }
@@ -221,10 +195,8 @@ const char * rpmfiFLink(rpmfi fi)
     const char * flink = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->flinks != NULL)
 	    flink = fi->flinks[fi->i];
-/*@=boundsread@*/
     }
     return flink;
 }
@@ -234,10 +206,8 @@ int_32 rpmfiFSize(rpmfi fi)
     int_32 fsize = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fsizes != NULL)
 	    fsize = fi->fsizes[fi->i];
-/*@=boundsread@*/
     }
     return fsize;
 }
@@ -247,10 +217,8 @@ int_16 rpmfiFRdev(rpmfi fi)
     int_16 frdev = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->frdevs != NULL)
 	    frdev = fi->frdevs[fi->i];
-/*@=boundsread@*/
     }
     return frdev;
 }
@@ -260,10 +228,8 @@ int_32 rpmfiFInode(rpmfi fi)
     int_32 finode = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->finodes != NULL)
 	    finode = fi->finodes[fi->i];
-/*@=boundsread@*/
     }
     return finode;
 }
@@ -283,11 +249,9 @@ uint_32 rpmfiFColor(rpmfi fi)
     uint_32 fcolor = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fcolors != NULL)
 	    /* XXX ignore all but lsnibble for now. */
 	    fcolor = (fi->fcolors[fi->i] & 0x0f);
-/*@=boundsread@*/
     }
     return fcolor;
 }
@@ -298,11 +262,9 @@ const char * rpmfiFClass(rpmfi fi)
     int cdictx;
 
     if (fi != NULL && fi->fcdictx != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	cdictx = fi->fcdictx[fi->i];
 	if (fi->cdict != NULL && cdictx >= 0 && cdictx < fi->ncdict)
 	    fclass = fi->cdict[cdictx];
-/*@=boundsread@*/
     }
     return fclass;
 }
@@ -312,10 +274,8 @@ const char * rpmfiFContext(rpmfi fi)
     const char * fcontext = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fcontexts != NULL)
 	    fcontext = fi->fcontexts[fi->i];
-/*@=boundsread@*/
     }
     return fcontext;
 }
@@ -327,19 +287,15 @@ int_32 rpmfiFDepends(rpmfi fi, const uint_32 ** fddictp)
     const uint_32 * fddict = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fddictn != NULL)
 	    fddictn = fi->fddictn[fi->i];
 	if (fddictn > 0 && fi->fddictx != NULL)
 	    fddictx = fi->fddictx[fi->i];
 	if (fi->ddict != NULL && fddictx >= 0 && (fddictx+fddictn) <= fi->nddict)
 	    fddict = fi->ddict + fddictx;
-/*@=boundsread@*/
     }
-/*@-boundswrite -dependenttrans -onlytrans @*/
     if (fddictp)
 	*fddictp = fddict;
-/*@=boundswrite =dependenttrans =onlytrans @*/
     return fddictn;
 }
 
@@ -349,7 +305,6 @@ int_32 rpmfiFNlink(rpmfi fi)
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
-/*@-boundsread@*/
 	if (fi->finodes && fi->frdevs) {
 	    int_32 finode = fi->finodes[fi->i];
 	    int_16 frdev = fi->frdevs[fi->i];
@@ -360,7 +315,6 @@ int_32 rpmfiFNlink(rpmfi fi)
 		    nlink++;
 	    }
 	}
-/*@=boundsread@*/
     }
     return nlink;
 }
@@ -370,10 +324,8 @@ int_32 rpmfiFMtime(rpmfi fi)
     int_32 fmtime = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fmtimes != NULL)
 	    fmtime = fi->fmtimes[fi->i];
-/*@=boundsread@*/
     }
     return fmtime;
 }
@@ -384,10 +336,8 @@ const char * rpmfiFUser(rpmfi fi)
 
     /* XXX add support for ancient RPMTAG_FILEUIDS? */
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fuser != NULL)
 	    fuser = fi->fuser[fi->i];
-/*@=boundsread@*/
     }
     return fuser;
 }
@@ -398,10 +348,8 @@ const char * rpmfiFGroup(rpmfi fi)
 
     /* XXX add support for ancient RPMTAG_FILEGIDS? */
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-/*@-boundsread@*/
 	if (fi->fgroup != NULL)
 	    fgroup = fi->fgroup[fi->i];
-/*@=boundsread@*/
     }
     return fgroup;
 }
@@ -413,17 +361,13 @@ int rpmfiNext(rpmfi fi)
     if (fi != NULL && ++fi->i >= 0) {
 	if (fi->i < fi->fc) {
 	    i = fi->i;
-/*@-boundsread@*/
 	    if (fi->dil != NULL)
 		fi->j = fi->dil[fi->i];
-/*@=boundsread@*/
 	} else
 	    fi->i = -1;
 
-/*@-modfilesys @*/
 if (_rpmfi_debug  < 0 && i != -1)
 fprintf(stderr, "*** fi %p\t%s[%d] %s%s\n", fi, (fi->Type ? fi->Type : "?Type?"), i, (i >= 0 ? fi->dnl[fi->j] : ""), (i >= 0 ? fi->bnl[fi->i] : ""));
-/*@=modfilesys @*/
 
     }
 
@@ -439,9 +383,7 @@ rpmfi rpmfiInit(rpmfi fi, int fx)
 	}
     }
 
-    /*@-refcounttrans@*/
     return fi;
-    /*@=refcounttrans@*/
 }
 
 int rpmfiNextD(rpmfi fi)
@@ -454,10 +396,8 @@ int rpmfiNextD(rpmfi fi)
 	else
 	    fi->j = -1;
 
-/*@-modfilesys @*/
 if (_rpmfi_debug  < 0 && j != -1)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), j);
-/*@=modfilesys @*/
 
     }
 
@@ -473,9 +413,7 @@ rpmfi rpmfiInitD(rpmfi fi, int dx)
 	    fi = NULL;
     }
 
-    /*@-refcounttrans@*/
     return fi;
-    /*@=refcounttrans@*/
 }
 
 /**
@@ -483,9 +421,8 @@ rpmfi rpmfiInitD(rpmfi fi, int dx)
  * @param ft		file type
  * @return		string to identify a file type
  */
-static /*@observer@*/
+static
 const char * ftstring (fileTypes ft)
-	/*@*/
 {
     switch (ft) {
     case XDIR:	return "directory";
@@ -497,7 +434,6 @@ const char * ftstring (fileTypes ft)
     case REG:	return "file";
     default:	return "unknown file type";
     }
-    /*@notreached@*/
 }
 
 fileTypes whatis(uint_16 mode)
@@ -506,16 +442,12 @@ fileTypes whatis(uint_16 mode)
     if (S_ISCHR(mode))	return CDEV;
     if (S_ISBLK(mode))	return BDEV;
     if (S_ISLNK(mode))	return LINK;
-/*@-unrecog@*/
     if (S_ISSOCK(mode))	return SOCK;
-/*@=unrecog@*/
     if (S_ISFIFO(mode))	return PIPE;
     return REG;
 }
 
-/*@-boundsread@*/
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
-	/*@*/
 {
     fileTypes awhat = whatis(rpmfiFMode(afi));
     fileTypes bwhat = whatis(rpmfiFMode(bfi));
@@ -540,9 +472,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 
     return 0;
 }
-/*@=boundsread@*/
 
-/*@-boundsread@*/
 fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
     const char * fn = rpmfiFN(nfi);
@@ -601,10 +531,8 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	        return FA_CREATE;	/* unmodified config file, replace. */
 	}
 	nmd5 = rpmfiMD5(nfi);
-/*@-nullpass@*/
 	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
 	    return FA_SKIP;	/* identical file, don't bother. */
-/*@=nullpass@*/
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
 	oFLink = rpmfiFLink(ofi);
@@ -615,10 +543,8 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	    return FA_CREATE;	/* unmodified config file, replace. */
 	}
 	nFLink = rpmfiFLink(nfi);
-/*@-nullpass@*/
 	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
-/*@=nullpass@*/
     }
 
     /*
@@ -629,9 +555,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      */
     return save;
 }
-/*@=boundsread@*/
 
-/*@-boundsread@*/
 int rpmfiConfigConflict(const rpmfi fi)
 {
     const char * fn = rpmfiFN(fi);
@@ -672,9 +596,7 @@ int rpmfiConfigConflict(const rpmfi fi)
 
     return 1;
 }
-/*@=boundsread@*/
 
-/*@observer@*/
 const char * rpmfiTypeString(rpmfi fi)
 {
     switch(rpmteType(fi->te)) {
@@ -682,7 +604,6 @@ const char * rpmfiTypeString(rpmfi fi)
     case TR_REMOVED:	return "   erase";
     default:		return "???";
     }
-    /*@noteached@*/
 }
 
 #define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
@@ -696,12 +617,9 @@ const char * rpmfiTypeString(rpmfi fi)
  * @param actions	file dispositions
  * @return		header with relocated files
  */
-/*@-bounds@*/
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, fileAction * actions)
-	/*@globals h_errno, rpmGlobalMacroContext @*/
-	/*@modifies ts, fi, origH, actions, rpmGlobalMacroContext @*/
 {
     rpmte p = rpmtsRelocateElement(ts);
     HGE_t hge = fi->hge;
@@ -780,28 +698,24 @@ assert(p != NULL);
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
 	t = alloca_strdup(p->relocs[i].oldPath);
-	/*@-branchstate@*/
 	relocations[i].oldPath = (t[0] == '/' && t[1] == '\0')
 	    ? t
 	    : stripTrailingChar(t, '/');
-	/*@=branchstate@*/
 
 	/* An old path w/o a new path is valid, and indicates exclusion */
 	if (p->relocs[i].newPath) {
 	    int del;
 
 	    t = alloca_strdup(p->relocs[i].newPath);
-	    /*@-branchstate@*/
 	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
 		? t
 		: stripTrailingChar(t, '/');
-	    /*@=branchstate@*/
 
-	    /*@-nullpass@*/	/* FIX:  relocations[i].oldPath == NULL */
+	   	/* FIX:  relocations[i].oldPath == NULL */
 	    /* Verify that the relocation's old path is in the header. */
 	    for (j = 0; j < numValid; j++) {
 		if (!strcmp(validRelocations[j], relocations[i].oldPath))
-		    /*@innerbreak@*/ break;
+		    break;
 	    }
 
 	    /* XXX actions check prevents problem from being appended twice. */
@@ -814,7 +728,6 @@ assert(p != NULL);
 	    }
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
-	    /*@=nullpass@*/
 
 	    if (del > reldel)
 		reldel = del;
@@ -832,12 +745,11 @@ assert(p != NULL);
 	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
 		relocations[j    ].oldPath == NULL || /* XXX can't happen */
 	strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
-		/*@innercontinue@*/ continue;
-	    /*@-usereleased@*/ /* LCL: ??? */
+		continue;
+	    /* LCL: ??? */
 	    tmpReloc = relocations[j - 1];
 	    relocations[j - 1] = relocations[j];
 	    relocations[j] = tmpReloc;
-	    /*@=usereleased@*/
 	    madeSwap = 1;
 	}
 	if (!madeSwap) break;
@@ -868,13 +780,13 @@ assert(p != NULL);
 	    for (j = 0; j < numRelocations; j++) {
 		if (relocations[j].oldPath == NULL || /* XXX can't happen */
 		    strcmp(validRelocations[i], relocations[j].oldPath))
-		    /*@innercontinue@*/ continue;
+		    continue;
 		/* On install, a relocate to NULL means skip the path. */
 		if (relocations[j].newPath) {
 		    actualRelocations[numActual] = relocations[j].newPath;
 		    numActual++;
 		}
-		/*@innerbreak@*/ break;
+		break;
 	    }
 	    if (j == numRelocations) {
 		actualRelocations[numActual] = validRelocations[i];
@@ -918,12 +830,10 @@ assert(p != NULL);
 
 	len = reldel +
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
-	/*@-branchstate@*/
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
 	    fn = xrealloc(fn, fileAlloced);
 	}
-	/*@=branchstate@*/
 
 assert(fn != NULL);		/* XXX can't happen */
 	*fn = '\0';
@@ -932,7 +842,7 @@ assert(fn != NULL);		/* XXX can't happen */
 if (fColors != NULL) {
 /* XXX pkgs may not have unique dirNames, so color all dirNames that match. */
 for (j = 0; j < dirCount; j++) {
-if (strcmp(dirNames[dirIndexes[i]], dirNames[j])) /*@innercontinue@*/ continue;
+if (strcmp(dirNames[dirIndexes[i]], dirNames[j])) continue;
 dColors[j] |= fColors[i];
 }
 }
@@ -946,29 +856,28 @@ dColors[j] |= fColors[i];
 	 */
 	for (j = numRelocations - 1; j >= 0; j--) {
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
-		/*@innercontinue@*/ continue;
+		continue;
 	    len = strcmp(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
 
 	    if (fnlen < len)
-		/*@innercontinue@*/ continue;
+		continue;
 	    /*
 	     * Only subdirectories or complete file paths may be relocated. We
 	     * don't check for '\0' as our directory names all end in '/'.
 	     */
 	    if (!(fn[len] == '/' || fnlen == len))
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    if (strncmp(relocations[j].oldPath, fn, len))
-		/*@innercontinue@*/ continue;
-	    /*@innerbreak@*/ break;
+		continue;
+	    break;
 	}
 	if (j < 0) continue;
 
-/*@-nullderef@*/ /* FIX: fModes may be NULL */
+/* FIX: fModes may be NULL */
 	ft = whatis(fModes[i]);
-/*@=nullderef@*/
 
 	/* On install, a relocate to NULL means skip the path. */
 	if (relocations[j].newPath == NULL) {
@@ -978,10 +887,10 @@ dColors[j] |= fColors[i];
 		    len = strlen(dirNames[j]) - 1;
 		    while (len > 0 && dirNames[j][len-1] == '/') len--;
 		    if (fnlen != len)
-			/*@innercontinue@*/ continue;
+			continue;
 		    if (strncmp(fn, dirNames[j], fnlen))
-			/*@innercontinue@*/ continue;
-		    /*@innerbreak@*/ break;
+			continue;
+		    break;
 		}
 	    }
 	    if (actions) {
@@ -1007,20 +916,19 @@ dColors[j] |= fColors[i];
 		fnlen = te - fn;
 	    } else
 		te = fn + strlen(fn);
-	    /*@-nullpass -nullderef@*/	/* LCL: te != NULL here. */
+	   	/* LCL: te != NULL here. */
 	    if (strcmp(baseNames[i], te)) /* basename changed too? */
 		baseNames[i] = alloca_strdup(te);
 	    *te = '\0';			/* terminate new directory name */
-	    /*@=nullpass =nullderef@*/
 	}
 
 	/* Does this directory already exist in the directory list? */
 	for (j = 0; j < dirCount; j++) {
 	    if (fnlen != strlen(dirNames[j]))
-		/*@innercontinue@*/ continue;
+		continue;
 	    if (strncmp(fn, dirNames[j], fnlen))
-		/*@innercontinue@*/ continue;
-	    /*@innerbreak@*/ break;
+		continue;
+	    break;
 	}
 	
 	if (j < dirCount) {
@@ -1055,23 +963,23 @@ dColors[j] |= fColors[i];
            /* XXX Don't autorelocate uncolored directories. */
            if (j == p->autorelocatex
             && (dColors[i] == 0 || !(dColors[i] & mydColor)))
-               /*@innercontinue@*/ continue;
+               continue;
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
-		/*@innercontinue@*/ continue;
+		continue;
 	    len = strcmp(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
 
 	    if (len && strncmp(relocations[j].oldPath, dirNames[i], len))
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    /*
 	     * Only subdirectories or complete file paths may be relocated. We
 	     * don't check for '\0' as our directory names all end in '/'.
 	     */
 	    if (dirNames[i][len] != '/')
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char * s = relocations[j].newPath;
@@ -1133,13 +1041,10 @@ dColors[j] |= fColors[i];
 
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
     dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
-/*@-dependenttrans@*/
     fn = _free(fn);
-/*@=dependenttrans@*/
 
     return h;
 }
-/*@=bounds@*/
 
 rpmfi rpmfiFree(rpmfi fi)
 {
@@ -1150,10 +1055,8 @@ rpmfi rpmfiFree(rpmfi fi)
     if (fi->nrefs > 1)
 	return rpmfiUnlink(fi, fi->Type);
 
-/*@-modfilesys@*/
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
-/*@=modfilesys@*/
 
     /* Free pre- and post-transaction script and interpreter strings. */
     fi->pretrans = _free(fi->pretrans);
@@ -1161,7 +1064,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->posttrans = _free(fi->posttrans);
     fi->posttransprog = _free(fi->posttransprog);
 
-    /*@-branchstate@*/
     if (fi->fc > 0) {
 	fi->bnl = hfd(fi->bnl, -1);
 	fi->dnl = hfd(fi->dnl, -1);
@@ -1178,7 +1080,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 	fi->fstates = _free(fi->fstates);
 
-	/*@-evalorder@*/
 	if (!fi->keep_header && fi->h == NULL) {
 	    fi->fmtimes = _free(fi->fmtimes);
 	    fi->fmodes = _free(fi->fmodes);
@@ -1196,9 +1097,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	    fi->fddictn = _free(fi->fddictn);
 
 	}
-	/*@=evalorder@*/
     }
-    /*@=branchstate@*/
 
     fi->fsm = freeFSM(fi->fsm);
 
@@ -1217,11 +1116,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     fi->h = headerFree(fi->h);
 
-    /*@-nullstate -refcounttrans -usereleased@*/
     (void) rpmfiUnlink(fi, fi->Type);
     memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
     fi = _free(fi);
-    /*@=nullstate =refcounttrans =usereleased@*/
 
     return NULL;
 }
@@ -1232,7 +1129,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
  * @return		binary nibble
  */
 static inline unsigned char nibble(char c)
-	/*@*/
 {
     if (c >= '0' && c <= '9')
 	return (c - '0');
@@ -1417,12 +1313,11 @@ if (fi->actions == NULL)
 	i = p->nrelocs;
 	if (newPath != NULL && *newPath != '\0' && p->relocs != NULL)
 	for (i = 0; i < p->nrelocs; i++) {
-/*@-nullpass@*/ /* XXX {old,new}Path might be NULL */
+/* XXX {old,new}Path might be NULL */
 	   if (strcmp(p->relocs[i].oldPath, "/"))
 		continue;
 	   if (strcmp(p->relocs[i].newPath, newPath))
 		continue;
-/*@=nullpass@*/
 	   break;
 	}
 
@@ -1445,9 +1340,8 @@ if (fi->actions == NULL)
 /* XXX DYING */
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	/*@-compdef@*/ /* FIX: fi-md5s undefined */
+	/* FIX: fi-md5s undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
-	/*@=compdef@*/
 	fi->h = headerFree(fi->h);
 	fi->h = headerLink(foo);
 	foo = headerFree(foo);
@@ -1493,18 +1387,15 @@ if (fi->actions == NULL)
     fi->fperms = 0644;
 
 exit:
-/*@-modfilesys@*/
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
-/*@=modfilesys@*/
 
-    /*@-compdef -nullstate@*/ /* FIX: rpmfi null annotations */
+    /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
-    /*@=compdef =nullstate@*/
 }
 
 void rpmfiBuildFClasses(Header h,
-	/*@out@*/ const char *** fclassp, /*@out@*/ int * fcp)
+	const char *** fclassp, int * fcp)
 {
     int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
@@ -1545,21 +1436,18 @@ void rpmfiBuildFClasses(Header h,
 	*t++ = '\0';
     }
     av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
-    /*@=branchstate@*/
 
 exit:
     fi = rpmfiFree(fi);
-    /*@-branchstate@*/
     if (fclassp)
 	*fclassp = av;
     else
 	av = _free(av);
-    /*@=branchstate@*/
     if (fcp) *fcp = ac;
 }
 
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
-	/*@out@*/ const char *** fdepsp, /*@out@*/ int * fcp)
+	const char *** fdepsp, int * fcp)
 {
     int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
@@ -1600,11 +1488,11 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	    ix = *ddict++;
 	    mydt = ((ix >> 24) & 0xff);
 	    if (mydt != deptype)
-		/*@innercontinue@*/ continue;
+		continue;
 	    ix &= 0x00ffffff;
 	    (void) rpmdsSetIx(ds, ix-1);
 	    if (rpmdsNext(ds) < 0)
-		/*@innercontinue@*/ continue;
+		continue;
 	    DNEVR = rpmdsDNEVR(ds);
 	    if (DNEVR != NULL)
 		nb += strlen(DNEVR+2) + 1;
@@ -1616,7 +1504,6 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
     av = xmalloc(nb);
     t = ((char *) av) + ((ac + 1) * sizeof(*av));
     ac = 0;
-    /*@-branchstate@*/
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
@@ -1628,11 +1515,11 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	    ix = *ddict++;
 	    mydt = ((ix >> 24) & 0xff);
 	    if (mydt != deptype)
-		/*@innercontinue@*/ continue;
+		continue;
 	    ix &= 0x00ffffff;
 	    (void) rpmdsSetIx(ds, ix-1);
 	    if (rpmdsNext(ds) < 0)
-		/*@innercontinue@*/ continue;
+		continue;
 	    DNEVR = rpmdsDNEVR(ds);
 	    if (DNEVR != NULL) {
 		t = stpcpy(t, DNEVR+2);
@@ -1642,17 +1529,14 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	}
 	*t++ = '\0';
     }
-    /*@=branchstate@*/
     av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
 
 exit:
     fi = rpmfiFree(fi);
     ds = rpmdsFree(ds);
-    /*@-branchstate@*/
     if (fdepsp)
 	*fdepsp = av;
     else
 	av = _free(av);
-    /*@=branchstate@*/
     if (fcp) *fcp = ac;
 }

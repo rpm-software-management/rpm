@@ -16,11 +16,8 @@
 
 #include "debug.h"
 
-/*@unchecked@*/
 int _rpmte_debug = 0;
 
-/*@access alKey @*/
-/*@access rpmtsi @*/
 
 void rpmteCleanDS(rpmte te)
 {
@@ -36,8 +33,6 @@ void rpmteCleanDS(rpmte te)
  * @param p		transaction element
  */
 static void delTE(rpmte p)
-	/*@globals fileSystem @*/
-	/*@modifies p, fileSystem @*/
 {
     rpmRelocation * r;
 
@@ -65,12 +60,9 @@ static void delTE(rpmte p)
 
     p->h = headerFree(p->h);
 
-/*@-boundswrite@*/
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
-/*@=boundswrite@*/
-    /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
+    /* FIX: p->{NEVR,name} annotations */
     return;
-    /*@=nullstate@*/
 }
 
 /**
@@ -81,13 +73,9 @@ static void delTE(rpmte p)
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
  */
-/*@-bounds@*/
 static void addTE(rpmts ts, rpmte p, Header h,
-		/*@dependent@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmRelocation * relocs)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, p, h,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
+		fnpyKey key,
+		rpmRelocation * relocs)
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -146,13 +134,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
-/*@-branchstate@*/
     if (ep) {
 	p->epoch = xmalloc(20);
 	sprintf(p->epoch, "%d", *ep);
     } else
 	p->epoch = NULL;
-/*@=branchstate@*/
 
     p->nrelocs = 0;
     p->relocs = NULL;
@@ -190,11 +176,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
-/*@-compdef@*/
     return;
-/*@=compdef@*/
 }
-/*@=bounds@*/
 
 rpmte rpmteFree(rpmte te)
 {
@@ -392,14 +375,10 @@ rpmte rpmteParent(rpmte te)
 rpmte rpmteSetParent(rpmte te, rpmte pte)
 {
     rpmte opte = NULL;
-/*@-branchstate@*/
     if (te != NULL) {
 	opte = te->parent;
-	/*@-assignexpose -temptrans@*/
 	te->parent = pte;
-	/*@=assignexpose =temptrans@*/
     }
-/*@=branchstate@*/
     return opte;
 }
 
@@ -420,9 +399,7 @@ int rpmteSetDegree(rpmte te, int ndegree)
 
 tsortInfo rpmteTSI(rpmte te)
 {
-    /*@-compdef -retalias -retexpose -usereleased @*/
     return te->tsi;
-    /*@=compdef =retalias =retexpose =usereleased @*/
 }
 
 void rpmteFreeTSI(rpmte te)
@@ -438,9 +415,8 @@ void rpmteFreeTSI(rpmte te)
 	}
 	te->tsi = _free(te->tsi);
     }
-    /*@-nullstate@*/ /* FIX: te->tsi is NULL */
+    /* FIX: te->tsi is NULL */
     return;
-    /*@=nullstate@*/
 }
 
 void rpmteNewTSI(rpmte te)
@@ -489,9 +465,7 @@ const char * rpmteNEVRA(rpmte te)
 
 FD_t rpmteFd(rpmte te)
 {
-    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     return (te != NULL ? te->fd : NULL);
-    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
 fnpyKey rpmteKey(rpmte te)
@@ -501,7 +475,6 @@ fnpyKey rpmteKey(rpmte te)
 
 rpmds rpmteDS(rpmte te, rpmTag tag)
 {
-    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     if (te == NULL)
 	return NULL;
 
@@ -521,12 +494,10 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 	return te->obsoletes;
     else
 	return NULL;
-    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
 rpmfi rpmteFI(rpmte te, rpmTag tag)
 {
-    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
     if (te == NULL)
 	return NULL;
 
@@ -534,7 +505,6 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
 	return te->fi;
     else
 	return NULL;
-    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
 void rpmteColorDS(rpmte te, rpmTag tag)
@@ -558,7 +528,7 @@ void rpmteColorDS(rpmte te, rpmTag tag)
     switch (tag) {
     default:
 	return;
-	/*@notreached@*/ break;
+	break;
     case RPMTAG_PROVIDENAME:
 	deptype = 'P';
 	break;
@@ -584,7 +554,7 @@ void rpmteColorDS(rpmte te, rpmTag tag)
 	    ix = *ddict++;
 	    mydt = ((ix >> 24) & 0xff);
 	    if (mydt != deptype)
-		/*@innercontinue@*/ continue;
+		continue;
 	    ix &= 0x00ffffff;
 assert (ix < Count);
 	    colors[ix] |= val;
@@ -610,19 +580,15 @@ int rpmtsiOc(rpmtsi tsi)
     return tsi->ocsave;
 }
 
-rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
+rpmtsi XrpmtsiFree(rpmtsi tsi,
 		const char * fn, unsigned int ln)
 {
     /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
-/*@-internalglobs@*/
     if (tsi)
 	tsi->ts = rpmtsFree(tsi->ts);
-/*@=internalglobs@*/
 
-/*@-modfilesys@*/
 if (_rpmte_debug)
 fprintf(stderr, "*** tsi %p -- %s:%d\n", tsi, fn, ln);
-/*@=modfilesys@*/
     return _free(tsi);
 }
 
@@ -635,10 +601,8 @@ rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
     tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;
-/*@-modfilesys@*/
 if (_rpmte_debug)
 fprintf(stderr, "*** tsi %p ++ %s:%d\n", tsi, fn, ln);
-/*@=modfilesys@*/
     return tsi;
 }
 
@@ -647,9 +611,8 @@ fprintf(stderr, "*** tsi %p ++ %s:%d\n", tsi, fn, ln);
  * @param tsi		transaction element iterator
  * @return		transaction element, NULL on termination
  */
-static /*@null@*/ /*@dependent@*/
+static
 rpmte rpmtsiNextElement(rpmtsi tsi)
-	/*@modifies tsi @*/
 {
     rpmte te = NULL;
     int oc = -1;
@@ -663,10 +626,8 @@ rpmte rpmtsiNextElement(rpmtsi tsi)
     	if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
     }
     tsi->ocsave = oc;
-/*@-branchstate@*/
     if (oc != -1)
 	te = rpmtsElement(tsi->ts, oc);
-/*@=branchstate@*/
     return te;
 }
 

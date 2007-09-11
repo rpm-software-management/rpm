@@ -17,22 +17,13 @@
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
-/*@access FD_t @*/		/* XXX stealing digests */
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
-
-/*@unchecked@*/
 int _print_pkts = 0;
 
 /**
  */
-/*@-boundsread@*/
-static int manageFile(/*@out@*/ FD_t *fdp,
-		/*@null@*/ /*@out@*/ const char **fnp,
-		int flags, /*@unused@*/ int rc)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *fdp, *fnp, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+static int manageFile(FD_t *fdp,
+		const char **fnp,
+		int flags, int rc)
 {
     const char *fn;
     FD_t fd;
@@ -40,7 +31,6 @@ static int manageFile(/*@out@*/ FD_t *fdp,
     if (fdp == NULL)	/* programmer error */
 	return 1;
 
-/*@-boundswrite@*/
     /* close and reset *fdp to NULL */
     if (*fdp && (fnp == NULL || *fnp == NULL)) {
 	(void) Fclose(*fdp);
@@ -73,7 +63,6 @@ static int manageFile(/*@out@*/ FD_t *fdp,
 	fd = fdFree(fd, "manageFile return");
 	return 0;
     }
-/*@=boundswrite@*/
 
     /* no operation */
     if (*fdp != NULL && fnp != NULL && *fnp != NULL)
@@ -82,18 +71,12 @@ static int manageFile(/*@out@*/ FD_t *fdp,
     /* XXX never reached */
     return 1;
 }
-/*@=boundsread@*/
 
 /**
  * Copy header+payload, calculating digest(s) on the fly.
  */
-/*@-boundsread@*/
 static int copyFile(FD_t *sfdp, const char **sfnp,
 		FD_t *tfdp, const char **tfnp)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies *sfdp, *sfnp, *tfdp, *tfnp, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
 {
     unsigned char buf[BUFSIZ];
     ssize_t count;
@@ -128,7 +111,6 @@ exit:
     if (*tfdp)	(void) manageFile(tfdp, NULL, 0, rc);
     return rc;
 }
-/*@=boundsread@*/
 
 /**
  * Retrieve signer fingerprint from an OpenPGP signature tag.
@@ -138,8 +120,6 @@ exit:
  * @return		0 on success
  */
 static int getSignid(Header sig, int sigtag, unsigned char * signid)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *signid, fileSystem, internalState @*/
 {
     void * pkt = NULL;
     int_32 pkttyp = 0;
@@ -150,9 +130,7 @@ static int getSignid(Header sig, int sigtag, unsigned char * signid)
 	pgpDig dig = pgpNewDig();
 
 	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
-/*@-bounds@*/
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
-/*@=bounds@*/
 	    rc = 0;
 	}
      
@@ -169,12 +147,8 @@ static int getSignid(Header sig, int sigtag, unsigned char * signid)
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-static int rpmReSign(/*@unused@*/ rpmts ts,
+static int rpmReSign(rpmts ts,
 		QVA_t qva, const char ** argv)
-        /*@globals rpmGlobalMacroContext, h_errno,
-                fileSystem, internalState @*/
-        /*@modifies rpmGlobalMacroContext,
-                fileSystem, internalState @*/
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -193,11 +167,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     int xx;
     
     tmprpm[0] = '\0';
-    /*@-branchstate@*/
-/*@-boundsread@*/
     if (argv)
     while ((rpm = *argv++) != NULL)
-/*@=boundsread@*/
     {
 
 	fprintf(stdout, "%s:\n", rpm);
@@ -205,9 +176,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	if (manageFile(&fd, &rpm, O_RDONLY, 0))
 	    goto exit;
 
-/*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
-/*@=boundswrite@*/
 	rc = readLead(fd, l);
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), rpm);
@@ -217,13 +186,13 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	case 1:
 	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't sign v1 packaging\n"), rpm);
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case 2:
 	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2 packaging\n"), rpm);
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	msg = NULL;
@@ -234,13 +203,13 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case RPMRC_OK:
 	    if (sigh == NULL) {
 		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
 		goto exit;
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	msg = _free(msg);
 
@@ -312,17 +281,16 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    switch (sigtag) {
 	    case RPMSIGTAG_DSA:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMSIGTAG_RSA:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMSIGTAG_GPG:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
-		/*@fallthrough@*/
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
-		/*@switchbreak@*/ break;
+		break;
 	    }
 
 	    xx = headerRemoveEntry(sigh, sigtag);
@@ -356,10 +324,8 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    goto exit;
 
 	/* Write the lead/signature of the output rpm */
-/*@-boundswrite@*/
 	strcpy(tmprpm, rpm);
 	strcat(tmprpm, ".XXXXXX");
-/*@=boundswrite@*/
 	(void) mktemp(tmprpm);
 	trpm = tmprpm;
 
@@ -396,7 +362,6 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	xx = unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
-    /*@=branchstate@*/
 
     res = 0;
 
@@ -461,7 +426,6 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
      || pubp->userid == NULL)
 	goto exit;
 
-/*@-boundswrite@*/
     v = t = xmalloc(16+1);
     t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
 
@@ -471,15 +435,13 @@ rpmRC rpmcliImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktl
     n = t = xmalloc(sizeof("gpg()")+8);
     t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
 
-    /*@-nullpass@*/ /* FIX: pubp->userid may be NULL */
+    /* FIX: pubp->userid may be NULL */
     u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
     t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
-    /*@=nullpass@*/
 
     evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
     t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
     t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
-/*@=boundswrite@*/
 
     /* Check for pre-existing header. */
 
@@ -562,12 +524,8 @@ exit:
  * @return		0 on success
  */
 static int rpmcliImportPubkeys(const rpmts ts,
-		/*@unused@*/ QVA_t qva,
-		/*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+		QVA_t qva,
+		const char ** argv)
 {
     const char * fn;
     const unsigned char * pkt = NULL;
@@ -579,10 +537,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
 
     if (argv == NULL) return res;
 
-    /*@-branchstate@*/
-/*@-boundsread@*/
     while ((fn = *argv++) != NULL) {
-/*@=boundsread@*/
 
 	rpmtsClean(ts);
 	pkt = _free(pkt);
@@ -621,7 +576,6 @@ static int rpmcliImportPubkeys(const rpmts ts,
 	}
 
     }
-    /*@=branchstate@*/
     
 rpmtsClean(ts);
     pkt = _free(pkt);
@@ -629,7 +583,6 @@ rpmtsClean(ts);
     return res;
 }
 
-/*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
@@ -638,8 +591,6 @@ static unsigned char header_magic[8] = {
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
 static int readFile(FD_t fd, const char * fn, pgpDig dig)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fd, *dig, fileSystem, internalState @*/
 {
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
@@ -696,7 +647,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 assert(dig->md5ctx == NULL);
 	    dig->md5ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
-	    /*@switchbreak@*/ break;
+	    break;
 	case PGPHASHALGO_SHA1:
 #if HAVE_BEECRYPT_API_H
 	case PGPHASHALGO_SHA256:
@@ -706,9 +657,9 @@ assert(dig->md5ctx == NULL);
 assert(dig->sha1ctx == NULL);
 	    dig->sha1ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
     }
 
@@ -743,9 +694,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
     {
-/*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
-/*@=boundswrite@*/
 	rc = readLead(fd, l);
 	if (rc != RPMRC_OK) {
 	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), fn);
@@ -757,9 +706,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), fn);
 	    res++;
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	msg = NULL;
@@ -771,14 +720,14 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    msg = _free(msg);
 	    res++;
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case RPMRC_OK:
 	    if (sigh == NULL) {
 		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
 		res++;
 		goto exit;
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	msg = _free(msg);
 
@@ -867,14 +816,14 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    res++;
 		    goto exit;
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMSIGTAG_SHA1:
 		if (nodigests)
 		     continue;
 		/* XXX Don't bother with header sha1 if header dsa. */
 		if (!nosignatures && sigtag == RPMSIGTAG_DSA)
 		    continue;
-		/*@switchbreak@*/ break;
+		break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
 	    case RPMSIGTAG_MD5:
@@ -886,15 +835,14 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		 */
 		if (!nosignatures && sigtag == RPMSIGTAG_PGP)
 		    continue;
-		/*@switchbreak@*/ break;
+		break;
 	    default:
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+		break;
 	    }
 
 	    res3 = rpmVerifySignature(ts, result);
 
-/*@-bounds@*/
 	    if (res3) {
 		if (rpmIsVerbose()) {
 		    b = stpcpy(b, "    ");
@@ -906,27 +854,26 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "SIZE ");
 			res2 = 1;
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_SHA1:
 			b = stpcpy(b, "SHA1 ");
 			res2 = 1;
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_LEMD5_2:
 		    case RPMSIGTAG_LEMD5_1:
 		    case RPMSIGTAG_MD5:
 			b = stpcpy(b, "MD5 ");
 			res2 = 1;
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_RSA:
 			b = stpcpy(b, "RSA ");
 			res2 = 1;
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			switch (res3) {
 			case RPMRC_NOKEY:
 			    res2 = 1;
-			    /*@fallthrough@*/
 			case RPMRC_NOTTRUSTED:
 			{   int offset = 6;
 			    b = stpcpy(b, "(MD5) (PGP) ");
@@ -946,17 +893,17 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 				*u = '\0';
 			      }
 			    }
-			}   /*@innerbreak@*/ break;
+			}   break;
 			default:
 			    b = stpcpy(b, "MD5 PGP ");
 			    res2 = 1;
-			    /*@innerbreak@*/ break;
+			    break;
 			}
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_DSA:
 			b = stpcpy(b, "(SHA1) DSA ");
 			res2 = 1;
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_GPG:
 			/* Do not consider this a failure */
 			switch (res3) {
@@ -969,17 +916,17 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 				*m = '\0';
 			    }
 			    res2 = 1;
-			    /*@innerbreak@*/ break;
+			    break;
 			default:
 			    b = stpcpy(b, "GPG ");
 			    res2 = 1;
-			    /*@innerbreak@*/ break;
+			    break;
 			}
-			/*@switchbreak@*/ break;
+			break;
 		    default:
 			b = stpcpy(b, "?UnknownSignatureType? ");
 			res2 = 1;
-			/*@switchbreak@*/ break;
+			break;
 		    }
 		}
 	    } else {
@@ -990,35 +937,34 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    switch (sigtag) {
 		    case RPMSIGTAG_SIZE:
 			b = stpcpy(b, "size ");
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_SHA1:
 			b = stpcpy(b, "sha1 ");
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_LEMD5_2:
 		    case RPMSIGTAG_LEMD5_1:
 		    case RPMSIGTAG_MD5:
 			b = stpcpy(b, "md5 ");
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_RSA:
 			b = stpcpy(b, "rsa ");
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			b = stpcpy(b, "(md5) pgp ");
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_DSA:
 			b = stpcpy(b, "(sha1) dsa ");
-			/*@switchbreak@*/ break;
+			break;
 		    case RPMSIGTAG_GPG:
 			b = stpcpy(b, "gpg ");
-			/*@switchbreak@*/ break;
+			break;
 		    default:
 			b = stpcpy(b, "??? ");
-			/*@switchbreak@*/ break;
+			break;
 		    }
 		}
 	    }
-/*@=bounds@*/
 	}
 	hi = headerFreeIterator(hi);
 
@@ -1074,16 +1020,16 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	break;
     case RPMSIGN_IMPORT_PUBKEY:
 	return rpmcliImportPubkeys(ts, qva, argv);
-	/*@notreached@*/ break;
+	break;
     case RPMSIGN_NEW_SIGNATURE:
     case RPMSIGN_ADD_SIGNATURE:
     case RPMSIGN_DEL_SIGNATURE:
 	return rpmReSign(ts, qva, argv);
-	/*@notreached@*/ break;
+	break;
     case RPMSIGN_NONE:
     default:
 	return -1;
-	/*@notreached@*/ break;
+	break;
     }
 
     while ((arg = *argv++) != NULL) {

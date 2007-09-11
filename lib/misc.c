@@ -27,7 +27,6 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	case URL_IS_UNKNOWN:
 	    if (errno != ENOENT)
 		break;
-	    /*@fallthrough@*/
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
@@ -49,7 +48,6 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-/*@-bounds@*/
 char ** splitString(const char * str, int length, char sep)
 {
     const char * source;
@@ -83,17 +81,13 @@ char ** splitString(const char * str, int length, char sep)
 
     list[i] = NULL;
 
-/*@-nullret@*/ /* FIX: list[i] is NULL */
+/* FIX: list[i] is NULL */
     return list;
-/*@=nullret@*/
 }
-/*@=bounds@*/
 
 void freeSplitString(char ** list)
 {
-    /*@-unqualifiedtrans@*/
     list[0] = _free(list[0]);
-    /*@=unqualifiedtrans@*/
     list = _free(list);
 }
 
@@ -129,19 +123,15 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     FD_t fd = NULL;
     int ran;
 
-    /*@-branchstate@*/
     if (!prefix) prefix = "";
-    /*@=branchstate@*/
 
     /* Create the temp directory if it doesn't already exist. */
-    /*@-branchstate@*/
     if (!_initialized) {
 	_initialized = 1;
 	tempfn = rpmGenPath(prefix, tpmacro, NULL);
 	if (rpmioMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
 	    goto errxit;
     }
-    /*@=branchstate@*/
 
     /* XXX should probably use mkstemp here */
     srand(time(NULL));
@@ -168,12 +158,12 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	case URL_IS_DASH:
 	case URL_IS_HKP:
 	    goto errxit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	fd = Fopen(tempfn, "w+x.ufdio");
@@ -208,21 +198,17 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 	break;
     }
 
-    /*@-branchstate@*/
     if (fnptr)
 	*fnptr = tempfn;
     else 
 	tempfn = _free(tempfn);
-    /*@=branchstate@*/
     *fdptr = fd;
 
     return 0;
 
 errxit:
     tempfn = _free(tempfn);
-    /*@-usereleased@*/
     if (fd != NULL) (void) Fclose(fd);
-    /*@=usereleased@*/
     return 1;
 }
 
@@ -261,7 +247,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
 	}
 	if (c)	*c = 0;
 	return 0;
-    }	/*@notreached@*/ break;
+    }	break;
 
     case RPMTAG_GROUP:
     case RPMTAG_DESCRIPTION:
@@ -284,11 +270,10 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
 	    if (c)	*c = 0;
 	    return 0;
 	}
-    }	/*@notreached@*/ break;
+    }	break;
 
     default:
 	return headerGetEntry(h, tag, type, p, c);
-	/*@notreached@*/ break;
+	break;
     }
-    /*@notreached@*/
 }

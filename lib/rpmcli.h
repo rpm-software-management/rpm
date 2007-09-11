@@ -14,10 +14,7 @@
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
  */
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _noDirTokens;
-/*@=redecl@*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,22 +23,16 @@ extern "C" {
 /** \ingroup rpmcli
  * Popt option table for options shared by all modes and executables.
  */
-/*@unchecked@*/
 extern struct poptOption		rpmcliAllPoptTable[];
 
-/*@unchecked@*/
 extern int ftsOpts;
 
-/*@unchecked@*/
 extern struct poptOption		rpmcliFtsPoptTable[];
 
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliPipeOutput;
 
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliRcfile;
 
-/*@unchecked@*/ /*@observer@*/ /*@null@*/
 extern const char * rpmcliRootDir;
 
 /**
@@ -51,24 +42,14 @@ extern const char * rpmcliRootDir;
  * @param optionsTable		popt option table
  * @return			popt context (or NULL)
  */
-/*@null@*/
 poptContext
-rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno, stderr, 
-		fileSystem, internalState @*/
-	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
-		fileSystem, internalState @*/;
+rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable);
 
 /**
  * Make sure that rpm configuration has been read.
  * @warning Options like --rcfile and --verbose must precede callers option.
  */
-/*@mayexit@*/
-void rpmcliConfigured(void)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+void rpmcliConfigured(void);
 
 /**
  * Destroy most everything needed by an rpm CLI executable context.
@@ -76,8 +57,7 @@ void rpmcliConfigured(void)
  * @return			NULL always
  */
 poptContext
-rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
-	/*@modifies optCon @*/;
+rpmcliFini(poptContext optCon);
 
 /**
  * Common/global popt tokens used for command line option tables.
@@ -93,7 +73,6 @@ rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
 
 /* ==================================================================== */
 /** \name RPMQV */
-/*@{*/
 
 /** \ingroup rpmcli
  * Query/Verify argument qualifiers.
@@ -149,7 +128,6 @@ typedef enum rpmVerifyAttrs_e {
  * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs?.
  */
 typedef enum rpmQueryFlags_e {
-/*@-enummemuse@*/
     QUERY_FOR_DEFAULT	= 0,		/*!< */
     QUERY_MD5		= (1 << 0),	/*!< from --nomd5 */
     QUERY_SIZE		= (1 << 1),	/*!< from --nosize */
@@ -168,7 +146,6 @@ typedef enum rpmQueryFlags_e {
     QUERY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
     QUERY_PATCHES	= (1 << 21),	/*!< verify: from --nopatches */
     QUERY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
-/*@=enummemuse@*/
     QUERY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
     QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
@@ -183,7 +160,6 @@ typedef enum rpmQueryFlags_e {
 /** \ingroup rpmcli
  * Bit(s) from common command line options.
  */
-/*@unchecked@*/
 extern rpmQueryFlags rpmcliQueryFlags;
 
 /** \ingroup rpmcli
@@ -191,9 +167,7 @@ extern rpmQueryFlags rpmcliQueryFlags;
  * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs values?.
  */
 typedef enum rpmVerifyFlags_e {
-/*@-enummemuse@*/
     VERIFY_DEFAULT	= 0,		/*!< */
-/*@=enummemuse@*/
     VERIFY_MD5		= (1 << 0),	/*!< from --nomd5 */
     VERIFY_SIZE		= (1 << 1),	/*!< from --nosize */
     VERIFY_LINKTO	= (1 << 2),	/*!< from --nolinkto */
@@ -211,13 +185,11 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_SIGNATURE	= (1 << 20),	/*!< verify: from --nosignature */
     VERIFY_PATCHES	= (1 << 21),	/*!< verify: from --nopatches */
     VERIFY_HDRCHK	= (1 << 22),	/*!< verify: from --nohdrchk */
-/*@-enummemuse@*/
     VERIFY_FOR_LIST	= (1 << 23),	/*!< query:  from --list */
     VERIFY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
     VERIFY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
     VERIFY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
     VERIFY_FOR_DUMPFILES= (1 << 27)	/*!< query:  from --dump */
-/*@=enummemuse@*/
 	/* bits 28-31 used in rpmVerifyAttrs */
 } rpmVerifyFlags;
 
@@ -240,9 +212,7 @@ typedef struct rpmQVKArguments_s * QVA_t;
  * @param h		header to use for query/verify
  * @return		0 on success
  */
-typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h)
-	/*@globals fileSystem @*/
-	/*@modifies qva, ts, fileSystem @*/;
+typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h);
 
 /** \ingroup rpmcli
  * Function to query spec file.
@@ -252,11 +222,7 @@ typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h)
  * @param arg		query argument
  * @return		0 on success
  */
-typedef	int (*QSpecF_t) (rpmts ts, QVA_t qva, const char * arg)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, qva, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+typedef	int (*QSpecF_t) (rpmts ts, QVA_t qva, const char * arg);
 
 /** \ingroup rpmcli
  * Describe query/verify/signature command line operation.
@@ -266,24 +232,16 @@ struct rpmQVKArguments_s {
     int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
     rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
-/*@only@*/ /*@null@*/
     rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
-/*@refccounted@*/ /*@relnull@*/
     rpmgi qva_gi;		/*!< Generalized iterator on args. */
     rpmRC qva_rc;		/*!< Current return code. */
 
-/*@null@*/
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
-/*@null@*/
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
-/*@unused@*/
     int qva_verbose;		/*!< (unused) */
-/*@only@*/ /*@null@*/
     const char * qva_queryFormat;/*!< Format for headerSprintf(). */
     int sign;			/*!< Is a passphrase needed? */
-/*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
-/*@observer@*/ /*@null@*/
     const char * qva_prefix;	/*!< Path to top of install tree. */
     char	qva_mode;
 		/*!<
@@ -300,27 +258,22 @@ struct rpmQVKArguments_s {
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct rpmQVKArguments_s rpmQVKArgs;
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct poptOption rpmQVSourcePoptTable[];
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern int specedit;
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct poptOption rpmQueryPoptTable[];
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct poptOption rpmVerifyPoptTable[];
 
 /** \ingroup rpmcli
@@ -334,17 +287,13 @@ extern struct poptOption rpmVerifyPoptTable[];
  * @param ts		transaction set
  * @return		result of last non-zero showPackage() return
  */
-int rpmcliShowMatches(QVA_t qva, rpmts ts)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies qva, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmcliShowMatches(QVA_t qva, rpmts ts);
 
 /** \ingroup rpmcli
  * Display list of tags that can be used in --queryformat.
  * @param fp	file handle to use for display
  */
-void rpmDisplayQueryTags(FILE * fp)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
+void rpmDisplayQueryTags(FILE * fp);
 
 /** \ingroup rpmcli
  * Common query/verify source interface, called once for each CLI arg.
@@ -358,11 +307,7 @@ void rpmDisplayQueryTags(FILE * fp)
  * @param arg		name of source to query/verify
  * @return		showPackage() result, 1 if rpmdbInitIterator() is NULL
  */
-int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies qva, ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg);
 
 /** \ingroup rpmcli
  * Display results of package query.
@@ -372,9 +317,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
  * @param h		header to use for query
  * @return		0 always
  */
-int showQueryPackage(QVA_t qva, rpmts ts, Header h)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int showQueryPackage(QVA_t qva, rpmts ts, Header h);
 
 /** \ingroup rpmcli
  * Iterate over query/verify arg list.
@@ -383,11 +326,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
  * @param argv		query argument(s) (or NULL)
  * @return		0 on success, else no. of failures
  */
-int rpmcliArgIter(rpmts ts, QVA_t qva, /*@null@*/ ARGV_t argv)
-	/*@globals ftsOpts, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, qva, ftsOpts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv);
 
 /** \ingroup rpmcli
  * Display package information.
@@ -397,11 +336,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, /*@null@*/ ARGV_t argv)
  * @param argv		query argument(s) (or NULL)
  * @return		0 on success, else no. of failures
  */
-int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, qva, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv);
 
 /** \ingroup rpmcli
  * Verify file attributes (including MD5 sum).
@@ -412,13 +347,8 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
  * @param omitMask	bit(s) to disable verify checks
  * @return		0 on success (or not installed), 1 on error
  */
-/*@-incondefs@*/
 int rpmVerifyFile(const rpmts ts, rpmfi fi,
-		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, *res, fileSystem, internalState @*/
-	/*@requires maxSet(res) >= 0 @*/;
-/*@=incondefs@*/
+		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask);
 
 /** \ingroup rpmcli
  * Display results of package verify.
@@ -427,9 +357,7 @@ int rpmVerifyFile(const rpmts ts, rpmfi fi,
  * @param h		header to use for verify
  * @return		result of last non-zero verify return
  */
-int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int showVerifyPackage(QVA_t qva, rpmts ts, Header h);
 
 /**
  * Check package and header signatures.
@@ -439,10 +367,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
  * @param fn		package file name
  * @return		0 on success, 1 on failure
  */
-int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies qva, ts, fd, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/;
+int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn);
 
 /** \ingroup rpmcli
  * Verify package install.
@@ -452,16 +377,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
  * @param argv		verify argument(s) (or NULL)
  * @return		0 on success, else no. of failures
  */
-int rpmcliVerify(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, qva, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv);
 
-/*@}*/
 /* ==================================================================== */
 /** \name RPMBT */
-/*@{*/
 
 /** \ingroup rpmcli
  * Describe build command line request.
@@ -469,13 +388,9 @@ int rpmcliVerify(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 struct rpmBuildArguments_s {
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
     int buildAmount;		/*!< Bit(s) to control operation. */
-/*@null@*/
     const char * buildRootOverride; /*!< from --buildroot */
-/*@null@*/
     char * targets;		/*!< Target platform(s), comma separated. */
-/*@observer@*/
     const char * passPhrase;	/*!< Pass phrase. */
-/*@only@*/ /*@null@*/
     const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
     int force;			/*!< from --force */
     int noBuild;		/*!< from --nobuild */
@@ -486,7 +401,6 @@ struct rpmBuildArguments_s {
     int useCatalog;		/*!< from --usecatalog */
     char buildMode;		/*!< Build mode (one of "btBC") */
     char buildChar;		/*!< Build stage (one of "abcilps ") */
-/*@observer@*/ /*@null@*/
     const char * rootdir;
 };
 
@@ -496,29 +410,20 @@ typedef	struct rpmBuildArguments_s *	BTA_t;
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct rpmBuildArguments_s	rpmBTArgs;
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct poptOption		rpmBuildPoptTable[];
 
-/*@}*/
 /* ==================================================================== */
 /** \name RPMEIU */
-/*@{*/
 /* --- install/upgrade/erase modes */
 
-/*@unchecked@*/
 extern int rpmcliPackagesTotal;
-/*@unchecked@*/
 extern int rpmcliHashesCurrent;
-/*@unchecked@*/
 extern int rpmcliHashesTotal;
-/*@unchecked@*/
 extern int rpmcliProgressCurrent;
-/*@unchecked@*/
 extern int rpmcliProgressTotal;
 
 /** \ingroup rpmcli
@@ -535,19 +440,12 @@ extern int rpmcliProgressTotal;
  * @param data		private data (e.g. rpmInstallInterfaceFlags)
  * @return		per-callback data (e.g. an opened FD_t)
  */
-/*@null@*/
-void * rpmShowProgress(/*@null@*/ const void * arg,
+void * rpmShowProgress(const void * arg,
 		const rpmCallbackType what,
 		const unsigned long amount,
 		const unsigned long total,
-		/*@null@*/ fnpyKey key,
-		/*@null@*/ void * data)
-	/*@globals rpmcliHashesCurrent,
-		rpmcliProgressCurrent, rpmcliProgressTotal,
-		h_errno, fileSystem, internalState @*/
-	/*@modifies rpmcliHashesCurrent,
-		rpmcliProgressCurrent, rpmcliProgressTotal,
-		fileSystem, internalState @*/;
+		fnpyKey key,
+		void * data);
 
 /** \ingroup rpmcli
  * Install source rpm package.
@@ -558,12 +456,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
  * @return		0 on success
  */
 int rpmInstallSource(rpmts ts, const char * arg,
-		/*@null@*/ /*@out@*/ const char ** specFilePtr,
-		/*@null@*/ /*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState@*/
-	/*@modifies ts, *specFilePtr, *cookie, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+		const char ** specFilePtr,
+		const char ** cookie);
 
 /** \ingroup rpmcli
  * Describe database command line requests.
@@ -578,11 +472,8 @@ struct rpmInstallArguments_s {
     int numRelocations;
     int noDeps;
     int incldocs;
-/*@owned@*/ /*@null@*/
     rpmRelocation * relocations;
-/*@null@*/
     const char * prefix;
-/*@observer@*/ /*@null@*/
     const char * rootdir;
 };
 
@@ -594,11 +485,7 @@ struct rpmInstallArguments_s {
  * @return		0 on success
  */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
-		/*@null@*/ const char ** fileArgv)
-	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState@*/
-	/*@modifies ts, ia, rpmcliPackagesTotal, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+		const char ** fileArgv);
 
 /** \ingroup rpmcli
  * Erase binary rpm package.
@@ -609,10 +496,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
  */
 
 int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
-		/*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, ia, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+		const char ** argv);
 
 /** \ingroup rpmcli
  * Rollback transactions, erasing new, reinstalling old, package(s).
@@ -622,26 +506,18 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
  * @return		0 on success
  */
 int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia,
-		/*@null@*/ const char ** argv)
-	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, ia, rpmcliPackagesTotal, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+		const char ** argv);
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct rpmInstallArguments_s rpmIArgs;
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct poptOption rpmInstallPoptTable[];
 
-/*@}*/
 /* ==================================================================== */
 /** \name RPMDB */
-/*@{*/
 /* --- database modes */
 
 /** \ingroup rpmcli
@@ -655,18 +531,14 @@ struct rpmDatabaseArguments_s {
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct rpmDatabaseArguments_s rpmDBArgs;
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct poptOption rpmDatabasePoptTable[];
 
-/*@}*/
 /* ==================================================================== */
 /** \name RPMK */
-/*@{*/
 
 /** \ingroup rpmcli
  * Import public key packet(s).
@@ -677,16 +549,11 @@ extern struct poptOption rpmDatabasePoptTable[];
  * @return		RPMRC_OK/RPMRC_FAIL
  */
 rpmRC rpmcliImportPubkey(const rpmts ts,
-		const unsigned char * pkt, ssize_t pktlen)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+		const unsigned char * pkt, ssize_t pktlen);
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmReSign() operation.
  */
-/*@-typeuse@*/
 typedef enum rpmSignFlags_e {
     RPMSIGN_NONE		= 0,
     RPMSIGN_CHK_SIGNATURE	= 'K',	/*!< from --checksig */
@@ -695,11 +562,9 @@ typedef enum rpmSignFlags_e {
     RPMSIGN_DEL_SIGNATURE	= 'D',	/*!< from --delsign */
     RPMSIGN_IMPORT_PUBKEY	= 'I',	/*!< from --import */
 } rpmSignFlags;
-/*@=typeuse@*/
 
 /** \ingroup rpmcli
  */
-/*@unchecked@*/
 extern struct poptOption rpmSignPoptTable[];
 
 /** \ingroup rpmcli
@@ -709,13 +574,7 @@ extern struct poptOption rpmSignPoptTable[];
  * @param argv		array of arguments (NULL terminated)
  * @return		0 on success
  */
-int rpmcliSign(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
-	/*@globals RPMVERSION, rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies ts, qva, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
-
-/*@}*/
+int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv);
 
 #ifdef __cplusplus
 }

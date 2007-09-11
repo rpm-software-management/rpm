@@ -7,7 +7,7 @@
 
 /**
  */
-typedef /*@abstract@*/ struct StringBufRec *StringBuf;
+typedef struct StringBufRec *StringBuf;
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,29 +15,23 @@ extern "C" {
 
 /**
  */
-/*@only@*/ StringBuf newStringBuf(void)
-	/*@*/;
+StringBuf newStringBuf(void);
 
 /**
  */
-/*@null@*/ StringBuf freeStringBuf( /*@only@*/ /*@null@*/ StringBuf sb)
-	/*@modifies sb @*/;
+StringBuf freeStringBuf( StringBuf sb);
 
 /**
  */
-/*@unused@*/
-void truncStringBuf(StringBuf sb)
-	/*@modifies sb @*/;
+void truncStringBuf(StringBuf sb);
 
 /**
  */
-/*@observer@*/ char * getStringBuf(StringBuf sb)
-	/*@*/;
+char * getStringBuf(StringBuf sb);
 
 /**
  */
-void stripTrailingBlanksStringBuf(StringBuf sb)
-	/*@modifies sb @*/;
+void stripTrailingBlanksStringBuf(StringBuf sb);
 
 /**
  */
@@ -49,8 +43,7 @@ void stripTrailingBlanksStringBuf(StringBuf sb)
 
 /**
  */
-void appendStringBufAux(StringBuf sb, const char * s, int nl)
-	/*@modifies sb @*/;
+void appendStringBufAux(StringBuf sb, const char * s, int nl);
 
 #ifdef __cplusplus
 }

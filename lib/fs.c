@@ -7,35 +7,24 @@
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 #include "debug.h"
 
-/*@-usereleased -onlytrans@*/
 
 struct fsinfo {
-/*@only@*/ /*@relnull@*/
     const char * mntPoint;	/*!< path to mount point. */
     dev_t dev;			/*!< devno for mount point. */
     int rdonly;			/*!< is mount point read only? */
 };
 
-/*@unchecked@*/
-/*@only@*/ /*@null@*/
 static struct fsinfo * filesystems = NULL;
-/*@unchecked@*/
-/*@only@*/ /*@null@*/
 static const char ** fsnames = NULL;
-/*@unchecked@*/
 static int numFilesystems = 0;
 
 void freeFilesystems(void)
-	/*@globals filesystems, fsnames, numFilesystems @*/
-	/*@modifies filesystems, fsnames, numFilesystems @*/
 {
     int i;
 
-/*@-boundswrite@*/
     if (filesystems)
     for (i = 0; i < numFilesystems; i++)
 	filesystems[i].mntPoint = _free(filesystems[i].mntPoint);
-/*@=boundswrite@*/
 
     filesystems = _free(filesystems);
     fsnames = _free(fsnames);
@@ -61,7 +50,6 @@ int mntctl(int command, int size, char *buffer);
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
-	/*@*/
 {
     int size;
     void * buf;
@@ -143,10 +131,6 @@ static int getFilesystemList(void)
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
-	/*@globals filesystems, fsnames, numFilesystems,
-		fileSystem, internalState @*/
-	/*@modifies filesystems, fsnames, numFilesystems,
-		fileSystem, internalState @*/
 {
     int numAlloced = 10;
     struct stat sb;
@@ -187,20 +171,14 @@ static int getFilesystemList(void)
     while (1) {
 #	if GETMNTENT_ONE
 	    /* this is Linux */
-	    /*@-modunconnomods -moduncon @*/
 	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
-/*@-boundsread@*/
 	    item = *itemptr;	/* structure assignment */
-/*@=boundsread@*/
 	    mntdir = item.our_mntdir;
 #if defined(MNTOPT_RO)
-	    /*@-compdef@*/
 	    if (hasmntopt(itemptr, MNTOPT_RO) != NULL)
 		rdonly = 1;
-	    /*@=compdef@*/
 #endif
-	    /*@=modunconnomods =moduncon @*/
 #	elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;
@@ -252,16 +230,13 @@ static int getFilesystemList(void)
     filesystems[numFilesystems].mntPoint = NULL;
     filesystems[numFilesystems].rdonly = 0;
 
-/*@-boundswrite@*/
     fsnames = xcalloc((numFilesystems + 1), sizeof(*fsnames));
     for (i = 0; i < numFilesystems; i++)
 	fsnames[i] = filesystems[i].mntPoint;
     fsnames[numFilesystems] = NULL;
-/*@=boundswrite@*/
 
-/*@-nullstate@*/ /* FIX: fsnames[] may be NULL */
+/* FIX: fsnames[] may be NULL */
     return 0; 
-/*@=nullstate@*/
 }
 #endif	/* HAVE_MNTCTL */
 
@@ -271,16 +246,14 @@ int rpmGetFilesystemList(const char *** listptr, int * num)
 	if (getFilesystemList())
 	    return 1;
 
-/*@-boundswrite@*/
     if (listptr) *listptr = fsnames;
     if (num) *num = numFilesystems;
-/*@=boundswrite@*/
 
     return 0;
 }
 
 int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles,
-			  uint_32 ** usagesPtr, /*@unused@*/ int flags)
+			  uint_32 ** usagesPtr, int flags)
 {
     uint_32 * usages;
     int i, len, j;
@@ -302,14 +275,11 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
     sourceDir = rpmGetPath("%{_sourcedir}", NULL);
 
     maxLen = strlen(sourceDir);
-/*@-boundsread@*/
     for (i = 0; i < numFiles; i++) {
 	len = strlen(fileList[i]);
 	if (maxLen < len) maxLen = len;
     }
-/*@=boundsread@*/
     
-/*@-boundswrite@*/
     buf = alloca(maxLen + 1);
     lastDir = alloca(maxLen + 1);
     dirName = alloca(maxLen + 1);
@@ -354,7 +324,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	    if (lastDev != sb.st_dev) {
 		for (j = 0; j < numFilesystems; j++)
 		    if (filesystems && filesystems[j].dev == sb.st_dev)
-			/*@innerbreak@*/ break;
+			break;
 
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 
@@ -372,19 +342,13 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	strcpy(lastDir, buf);
 	usages[lastfs] += fssizes[i];
     }
-/*@=boundswrite@*/
 
     sourceDir = _free(sourceDir);
 
-/*@-boundswrite@*/
-    /*@-branchstate@*/
     if (usagesPtr)
 	*usagesPtr = usages;
     else
 	usages = _free(usages);
-    /*@=branchstate@*/
-/*@=boundswrite@*/
 
     return 0;
 }
-/*@=usereleased =onlytrans@*/

@@ -6,20 +6,17 @@
  * Structures and prototypes used for an "rpmps" problem set.
  */
 
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern int _rpmps_debug;
-/*@=exportlocal@*/
 
 /**
  * Raw data for an element of a problem set.
  */
-typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
+typedef struct rpmProblem_s * rpmProblem;
 
 /**
  * Transaction problems found while processing a transaction set/
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmps_s * rpmps;
+typedef struct rpmps_s * rpmps;
 
 /**
  * Enumerate transaction set problem types.
@@ -42,15 +39,11 @@ typedef enum rpmProblemType_e {
 /**
  */
 struct rpmProblem_s {
-/*@only@*/ /*@null@*/
     char * pkgNEVR;
-/*@only@*/ /*@null@*/
     char * altNEVR;
-/*@exposed@*/ /*@null@*/
     fnpyKey key;
     rpmProblemType type;
     int ignoreProblem;
-/*@only@*/ /*@null@*/
     char * str1;
     unsigned long ulong1;
 };
@@ -61,7 +54,6 @@ struct rpmps_s {
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */
-/*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
 
@@ -74,12 +66,7 @@ extern "C" {
  * @param prob		rpm problem
  * @return		formatted string (malloc'd)
  */
-/*@-exportlocal@*/
-/*@-redecl@*/	/* LCL: is confused. */
-/*@only@*/ extern const char * rpmProblemString(const rpmProblem prob)
-	/*@*/;
-/*@=redecl@*/
-/*@=exportlocal@*/
+extern const char * rpmProblemString(const rpmProblem prob);
 
 /**
  * Unreference a problem set instance.
@@ -87,19 +74,13 @@ extern "C" {
  * @param msg
  * @return		problem set
  */
-/*@unused@*/
-rpmps rpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
-		const char * msg)
-	/*@modifies ps @*/;
+rpmps rpmpsUnlink (rpmps ps,
+		const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmps XrpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
-		const char * msg, const char * fn, unsigned ln)
-	/*@modifies ps @*/;
+rpmps XrpmpsUnlink (rpmps ps,
+		const char * msg, const char * fn, unsigned ln);
 #define	rpmpsUnlink(_ps, _msg)	XrpmpsUnlink(_ps, _msg, __FILE__, __LINE__)
-/*@=exportlocal@*/
 
 /**
  * Reference a problem set instance.
@@ -107,14 +88,11 @@ rpmps XrpmpsUnlink (/*@killref@*/ /*@returned@*/ rpmps ps,
  * @param msg
  * @return		new transaction set reference
  */
-/*@unused@*/
-rpmps rpmpsLink (rpmps ps, const char * msg)
-	/*@modifies ps @*/;
+rpmps rpmpsLink (rpmps ps, const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
 rpmps XrpmpsLink (rpmps ps,
-		const char * msg, const char * fn, unsigned ln)
-        /*@modifies ps @*/;
+		const char * msg, const char * fn, unsigned ln);
 #define	rpmpsLink(_ps, _msg)	XrpmpsLink(_ps, _msg, __FILE__, __LINE__)
 
 /**
@@ -122,33 +100,27 @@ rpmps XrpmpsLink (rpmps ps,
  * @param ps		problem set
  * @return		number of problems
  */
-int rpmpsNumProblems(/*@null@*/ rpmps ps)
-	/*@*/;
+int rpmpsNumProblems(rpmps ps);
 
 /**
  * Create a problem set.
  * @return		new problem set
  */
-rpmps rpmpsCreate(void)
-	/*@*/;
+rpmps rpmpsCreate(void);
 
 /**
  * Destroy a problem set.
  * @param ps		problem set
  * @return		NULL always
  */
-/*@null@*/
-rpmps rpmpsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmps ps)
-	/*@modifies ps @*/;
+rpmps rpmpsFree(rpmps ps);
 
 /**
  * Print problems to file handle.
  * @param fp		file handle (NULL uses stderr)
  * @param ps		problem set
  */
-void rpmpsPrint(/*@null@*/ FILE *fp, /*@null@*/ rpmps ps)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, ps, fileSystem @*/;
+void rpmpsPrint(FILE *fp, rpmps ps);
 
 /**
  * Append a problem to current set of problems.
@@ -161,13 +133,12 @@ void rpmpsPrint(/*@null@*/ FILE *fp, /*@null@*/ rpmps ps)
  * @param altNEVR	related (e.g. through a dependency) package name
  * @param ulong1	generic pointer/long attribute
  */
-void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,
-		/*@null@*/ const char * pkgNEVR,
-		/*@exposed@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ const char * dn, /*@null@*/ const char * bn,
-		/*@null@*/ const char * altNEVR,
-		unsigned long ulong1)
-	/*@modifies ps @*/;
+void rpmpsAppend(rpmps ps, rpmProblemType type,
+		const char * pkgNEVR,
+		fnpyKey key,
+		const char * dn, const char * bn,
+		const char * altNEVR,
+		unsigned long ulong1);
 
 /**
  * Filter a problem set.
@@ -184,8 +155,7 @@ void rpmpsAppend(/*@null@*/ rpmps ps, rpmProblemType type,
  * @param filter	problem filter (or NULL)
  * @return		0 no problems, 1 if problems remain
  */
-int rpmpsTrim(/*@null@*/ rpmps ps, /*@null@*/ rpmps filter)
-	/*@modifies ps @*/;
+int rpmpsTrim(rpmps ps, rpmps filter);
 
 #ifdef __cplusplus
 }

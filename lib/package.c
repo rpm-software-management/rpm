@@ -21,26 +21,13 @@
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
-/*@access Header @*/		/* XXX compared with NULL */
-/*@access entryInfo @*/		/* XXX headerCheck */
-/*@access indexEntry @*/	/* XXX headerCheck */
-/*@access FD_t @*/		/* XXX stealing digests */
-
-/*@unchecked@*/
 static int _print_pkts = 0;
 
-/*@unchecked@*/
 static unsigned int nkeyids_max = 256;
-/*@unchecked@*/
 static unsigned int nkeyids = 0;
-/*@unchecked@*/
 static unsigned int nextkeyid  = 0;
-/*@unchecked@*/ /*@only@*/ /*@null@*/
 static unsigned int * keyids;
 
-/*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
@@ -48,7 +35,6 @@ static unsigned char header_magic[8] = {
 /**
  * Alignment needs (and sizeof scalars types) for internal rpm data types.
  */
-/*@observer@*/ /*@unchecked@*/
 static int typeAlign[16] =  {
     1,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
@@ -112,35 +98,35 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	/* XXX Translate legacy signature tag values. */
 	case RPMSIGTAG_SIZE:
 	    tag = RPMTAG_SIGSIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_LEMD5_1:
 	    tag = RPMTAG_SIGLEMD5_1;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_PGP:
 	    tag = RPMTAG_SIGPGP;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_LEMD5_2:
 	    tag = RPMTAG_SIGLEMD5_2;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_MD5:
 	    tag = RPMTAG_SIGMD5;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_GPG:
 	    tag = RPMTAG_SIGGPG;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_PGP5:
 	    tag = RPMTAG_SIGPGP5;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_PAYLOADSIZE:
 	    tag = RPMTAG_ARCHIVESIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMSIGTAG_SHA1:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
 	default:
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(h, tag)) {
@@ -151,23 +137,23 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	    switch(type) {
 	    case RPM_NULL_TYPE:
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+		break;
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
 	    case RPM_INT16_TYPE:
 	    case RPM_INT32_TYPE:
 		if (count != 1)
 		    continue;
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_STRING_TYPE:
 	    case RPM_BIN_TYPE:
 		if (count >= 16*1024)
 		    continue;
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+		break;
 	    }
  	    xx = hae(h, tag, type, ptr, count);
 	}
@@ -192,31 +178,31 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	/* XXX Translate legacy signature tag values. */
 	case RPMTAG_SIGSIZE:
 	    stag = RPMSIGTAG_SIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SIGLEMD5_1:
 	    stag = RPMSIGTAG_LEMD5_1;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SIGPGP:
 	    stag = RPMSIGTAG_PGP;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SIGLEMD5_2:
 	    stag = RPMSIGTAG_LEMD5_2;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SIGMD5:
 	    stag = RPMSIGTAG_MD5;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SIGGPG:
 	    stag = RPMSIGTAG_GPG;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SIGPGP5:
 	    stag = RPMSIGTAG_PGP5;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_ARCHIVESIZE:
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    if (noArchiveSize)
 		continue;
 	    stag = RPMSIGTAG_PAYLOADSIZE;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_SHA1HEADER:
 	case RPMTAG_DSAHEADER:
 	case RPMTAG_RSAHEADER:
@@ -224,7 +210,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
 		continue;
 	    stag = tag;
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(sigh, stag))
@@ -240,8 +226,6 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
  * @return		0 if new keyid, otherwise 1
  */
 static int rpmtsStashKeyid(rpmts ts)
-	/*@globals nextkeyid, nkeyids, keyids @*/
-	/*@modifies nextkeyid, nkeyids, keyids @*/
 {
     const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
@@ -258,20 +242,16 @@ static int rpmtsStashKeyid(rpmts ts)
 
     if (keyids != NULL)
     for (i = 0; i < nkeyids; i++) {
-/*@-boundsread@*/
 	if (keyid == keyids[i])
 	    return 1;
-/*@=boundsread@*/
     }
 
     if (nkeyids < nkeyids_max) {
 	nkeyids++;
 	keyids = xrealloc(keyids, nkeyids * sizeof(*keyids));
     }
-/*@-boundswrite@*/
     if (keyids)		/* XXX can't happen */
 	keyids[nextkeyid] = keyid;
-/*@=boundswrite@*/
     nextkeyid++;
     nextkeyid %= nkeyids_max;
 
@@ -280,13 +260,10 @@ static int rpmtsStashKeyid(rpmts ts)
 
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 {
-/*@-castexpose@*/
     entryInfo pe = (entryInfo) pev;
-/*@=castexpose@*/
     entryInfo info = iv;
     int i;
 
-/*@-boundsread@*/
     for (i = 0; i < il; i++) {
 	info->tag = ntohl(pe[i].tag);
 	info->type = ntohl(pe[i].type);
@@ -305,7 +282,6 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 	    return i;
 
     }
-/*@=boundsread@*/
     return -1;
 }
 
@@ -327,13 +303,9 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     pgpDig dig;
     char buf[8*BUFSIZ];
     int_32 * ei = (int_32 *) uh;
-/*@-boundsread@*/
     int_32 il = ntohl(ei[0]);
     int_32 dl = ntohl(ei[1]);
-/*@-castexpose@*/
     entryInfo pe = (entryInfo) &ei[2];
-/*@=castexpose@*/
-/*@=boundsread@*/
     int_32 ildl[2];
     int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
@@ -353,9 +325,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     static int hclvl;
 
     hclvl++;
-/*@-boundswrite@*/
     buf[0] = '\0';
-/*@=boundswrite@*/
 
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
@@ -376,7 +346,6 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     }
 
     /* Is there an immutable header region tag? */
-/*@-sizeoftype@*/
     if (!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
        && entry->info.type == RPM_BIN_TYPE
        && entry->info.count == REGION_TAG_COUNT))
@@ -384,7 +353,6 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
-/*@=sizeoftype@*/
 
     /* Is the offset within the data area? */
     if (entry->info.offset >= dl) {
@@ -397,10 +365,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 
     /* Is there an immutable header region tag trailer? */
     regionEnd = dataStart + entry->info.offset;
-/*@-sizeoftype@*/
-/*@-bounds@*/
     (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
-/*@=bounds@*/
     regionEnd += REGION_TAG_COUNT;
 
     xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
@@ -415,10 +380,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		entry->info.offset, entry->info.count);
 	goto exit;
     }
-/*@=sizeoftype@*/
-/*@-boundswrite@*/
     memset(info, 0, sizeof(*info));
-/*@=boundswrite@*/
 
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = entry->info.offset/sizeof(*pe);
@@ -442,12 +404,11 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 	switch (entry->info.tag) {
 	case RPMTAG_SHA1HEADER:
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
-		/*@switchbreak@*/ break;
+		break;
 	    blen = 0;
-/*@-boundsread@*/
 	    for (b = dataStart + entry->info.offset; *b != '\0'; b++) {
 		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
-		    /*@innerbreak@*/ break;
+		    break;
 		blen++;
 	    }
 	    if (entry->info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
@@ -455,40 +416,33 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		(void) snprintf(buf, sizeof(buf), _("hdr SHA1: BAD, not hex\n"));
 		goto exit;
 	    }
-/*@=boundsread@*/
 	    if (info->tag == 0) {
-/*@-boundswrite@*/
 		*info = entry->info;	/* structure assignment */
-/*@=boundswrite@*/
 		siglen = blen + 1;
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_RSAHEADER:
 	    if (vsflags & RPMVSF_NORSAHEADER)
-		/*@switchbreak@*/ break;
+		break;
 	    if (entry->info.type != RPM_BIN_TYPE) {
 		(void) snprintf(buf, sizeof(buf), _("hdr RSA: BAD, not binary\n"));
 		goto exit;
 	    }
-/*@-boundswrite@*/
 	    *info = entry->info;	/* structure assignment */
-/*@=boundswrite@*/
 	    siglen = info->count;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
-		/*@switchbreak@*/ break;
+		break;
 	    if (entry->info.type != RPM_BIN_TYPE) {
 		(void) snprintf(buf, sizeof(buf), _("hdr DSA: BAD, not binary\n"));
 		goto exit;
 	    }
-/*@-boundswrite@*/
 	    *info = entry->info;	/* structure assignment */
-/*@=boundswrite@*/
 	    siglen = info->count;
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
     }
     rc = RPMRC_NOTFOUND;
@@ -496,10 +450,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 exit:
     /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
     if (rc != RPMRC_NOTFOUND) {
-/*@-boundswrite@*/
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
-/*@=boundswrite@*/
 	hclvl--;
 	return rc;
     }
@@ -518,10 +470,8 @@ verifyinfo_exit:
 	    (void) snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
 	    rc = RPMRC_OK;
 	}
-/*@-boundswrite@*/
 	buf[sizeof(buf)-1] = '\0';
 	if (msg) *msg = xstrdup(buf);
-/*@=boundswrite@*/
 	hclvl--;
 	return rc;
     }
@@ -532,9 +482,7 @@ verifyinfo_exit:
 	goto verifyinfo_exit;
     dig->nbytes = 0;
 
-/*@-boundsread@*/
     sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
-/*@=boundsread@*/
     (void) rpmtsSetSig(ts, info->tag, info->type, sig, info->count);
 
     switch (info->tag) {
@@ -590,13 +538,10 @@ verifyinfo_exit:
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	/*@fallthrough@*/
     case RPMTAG_SHA1HEADER:
-/*@-boundswrite@*/
 	ildl[0] = htonl(ril);
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
-/*@=boundswrite@*/
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -628,15 +573,11 @@ verifyinfo_exit:
 	break;
     }
 
-/*@-boundswrite@*/
     buf[0] = '\0';
-/*@=boundswrite@*/
     rc = rpmVerifySignature(ts, buf);
 
-/*@-boundswrite@*/
     buf[sizeof(buf)-1] = '\0';
     if (msg) *msg = xstrdup(buf);
-/*@=boundswrite@*/
 
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1)
@@ -660,14 +601,12 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
-/*@-boundswrite@*/
     buf[0] = '\0';
 
     if (hdrp)
 	*hdrp = NULL;
     if (msg)
 	*msg = NULL;
-/*@=boundswrite@*/
 
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
@@ -679,30 +618,23 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
 	goto exit;
     }
-/*@-boundsread@*/
     il = ntohl(block[2]);
-/*@=boundsread@*/
     if (hdrchkTags(il)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr tags: BAD, no. of tags(%d) out of range\n"), il);
 
 	goto exit;
     }
-/*@-boundsread@*/
     dl = ntohl(block[3]);
-/*@=boundsread@*/
     if (hdrchkData(dl)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("hdr data: BAD, no. of bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
-/*@-sizeoftype@*/
     nb = (il * sizeof(struct entryInfo_s)) + dl;
-/*@=sizeoftype@*/
     uc = sizeof(il) + sizeof(dl) + nb;
     ei = xmalloc(uc);
-/*@-bounds@*/
     ei[0] = block[2];
     ei[1] = block[3];
     if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
@@ -710,7 +642,6 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 		_("hdr blob(%d): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
-/*@=bounds@*/
 
     /* Sanity check header tags */
     rc = headerCheck(ts, ei, uc, msg);
@@ -727,24 +658,19 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
     ei = NULL;	/* XXX will be freed with header */
     
 exit:
-/*@-boundswrite@*/
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
-/*@=boundswrite@*/
     ei = _free(ei);
     h = headerFree(h);
 
-/*@-boundswrite@*/
     if (msg != NULL && *msg == NULL && buf[0] != '\0') {
 	buf[sizeof(buf)-1] = '\0';
 	*msg = xstrdup(buf);
     }
-/*@=boundswrite@*/
 
     return rc;
 }
 
-/*@-bounds@*/	/* LCL: segfault */
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig;
@@ -769,9 +695,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 #ifdef	DYING
     {	struct stat st;
-/*@-boundswrite@*/
 	memset(&st, 0, sizeof(st));
-/*@=boundswrite@*/
 	(void) fstat(Fileno(fd), &st);
 	/* if fd points to a socket, pipe, etc, st.st_size is *always* zero */
 	if (S_ISREG(st.st_mode) && st.st_size < sizeof(*l)) {
@@ -792,7 +716,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    _("packaging version 1 is not supported by this version of RPM\n"));
 	rc = RPMRC_NOTFOUND;
 	goto exit;
-	/*@notreached@*/ break;
+	break;
     case 2:
     case 3:
     case 4:
@@ -802,7 +726,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 		"is supported by this version of RPM\n"));
 	rc = RPMRC_NOTFOUND;
 	goto exit;
-	/*@notreached@*/ break;
+	break;
     }
 
     /* Read the signature header. */
@@ -814,7 +738,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
-	/*@notreached@*/ break;
+	break;
     case RPMRC_OK:
 	if (sigh == NULL) {
 	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
@@ -875,11 +799,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     /* XXX repackaged packages have appended tags, legacy dig/sig check fails */
     if (opx > 0)
 	(void) rpmswEnter(rpmtsOp(ts, opx), 0);
-/*@-type@*/	/* XXX arrow access of non-pointer (FDSTAT_t) */
     nb = -fd->stats->ops[FDSTAT_READ].bytes;
     rc = rpmReadHeader(ts, fd, &h, &msg);
     nb += fd->stats->ops[FDSTAT_READ].bytes;
-/*@=type@*/
     if (opx > 0)
 	(void) rpmswExit(rpmtsOp(ts, opx), nb);
 
@@ -950,7 +872,6 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	/*@fallthrough@*/
     case RPMSIGTAG_SHA1:
     {	void * uh = NULL;
 	int_32 uht;
@@ -982,7 +903,6 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-	/*@fallthrough@*/
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
@@ -1006,7 +926,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    case PGPHASHALGO_MD5:
 		dig->md5ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
-		/*@switchbreak@*/ break;
+		break;
 	    case PGPHASHALGO_SHA1:
 #if HAVE_BEECRYPT_API_H
 	    case PGPHASHALGO_SHA256:
@@ -1015,9 +935,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 #endif
 		dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
-		/*@switchbreak@*/ break;
+		break;
 	    default:
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	}
 	break;
@@ -1025,9 +945,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 /** @todo Implement disable/enable/warn/error/anal policy. */
 
-/*@-boundswrite@*/
     buf[0] = '\0';
-/*@=boundswrite@*/
     rc = rpmVerifySignature(ts, buf);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
@@ -1057,9 +975,7 @@ exit:
 	headerMergeLegacySigs(h, sigh);
 
 	/* Bump reference count for return. */
-/*@-boundswrite@*/
 	*hdrp = headerLink(h);
-/*@=boundswrite@*/
     }
     h = headerFree(h);
     rpmtsCleanDig(ts);
@@ -1105,4 +1021,3 @@ rpmRC headerCheckPayloadFormat(Header h) {
 }
 
 
-/*@=bounds@*/

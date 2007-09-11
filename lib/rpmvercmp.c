@@ -33,8 +33,6 @@ int rpmvercmp(const char * a, const char * b)
     two = str2;
 
     /* loop through each version segment of str1 and str2 and compare them */
-    /*@-branchstate@*/
-/*@-boundsread@*/
     while (*one && *two) {
 	while (*one && !xisalnum(*one)) one++;
 	while (*two && !xisalnum(*two)) two++;
@@ -60,12 +58,10 @@ int rpmvercmp(const char * a, const char * b)
 
 	/* save character at the end of the alpha or numeric segment */
 	/* so that they can be restored after the comparison */
-/*@-boundswrite@*/
 	oldch1 = *str1;
 	*str1 = '\0';
 	oldch2 = *str2;
 	*str2 = '\0';
-/*@=boundswrite@*/
 
 	/* this cannot happen, as we previously tested to make sure that */
 	/* the first string has a non-null segment */
@@ -99,23 +95,17 @@ int rpmvercmp(const char * a, const char * b)
 	if (rc) return (rc < 1 ? -1 : 1);
 
 	/* restore character that was replaced by null above */
-/*@-boundswrite@*/
 	*str1 = oldch1;
 	one = str1;
 	*str2 = oldch2;
 	two = str2;
-/*@=boundswrite@*/
     }
-    /*@=branchstate@*/
-/*@=boundsread@*/
 
     /* this catches the case where all numeric and alpha segments have */
     /* compared identically but the segment sepparating characters were */
     /* different */
-/*@-boundsread@*/
     if ((!*one) && (!*two)) return 0;
 
     /* whichever version still has characters left over wins */
     if (!*one) return -1; else return 1;
-/*@=boundsread@*/
 }

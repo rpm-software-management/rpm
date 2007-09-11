@@ -15,9 +15,7 @@ extern "C" {
  * @param lead		package lead
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
-	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
+rpmRC writeLead(FD_t fd, const struct rpmlead *lead);
 
 /** \ingroup lead
  * Read lead from file handle.
@@ -25,8 +23,7 @@ rpmRC writeLead(FD_t fd, const struct rpmlead *lead)
  * @retval lead		package lead
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
-rpmRC readLead(FD_t fd, /*@out@*/ struct rpmlead *lead)
-	/*@modifies fd, *lead @*/;
+rpmRC readLead(FD_t fd, struct rpmlead *lead);
 
 #ifdef __cplusplus
 }

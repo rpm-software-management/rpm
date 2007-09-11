@@ -15,13 +15,8 @@
 #include "ugid.h"
 #include "debug.h"
 
-/*@access rpmps @*/
-/*@access rpmProblem @*/
-/*@access rpmpsm @*/	/* XXX for %verifyscript through rpmpsmStage() */
-
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
-/*@unchecked@*/
 extern int _rpmds_unspecified_epoch_noise;
 
 int rpmVerifyFile(const rpmts ts, const rpmfi fi,
@@ -36,7 +31,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     int rc;
 
     /* Prepend the path to root (if specified). */
-/*@-bounds@*/
     if (rootDir && *rootDir != '\0'
      && !(rootDir[0] == '/' && rootDir[1] == '\0'))
     {
@@ -54,7 +48,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	t = stpcpy(t, fn);
 	fn = tb;
     }
-/*@=bounds@*/
 
     *res = RPMVERIFY_NONE;
 
@@ -67,7 +60,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     case RPMFILE_STATE_NOTINSTALLED:
     case RPMFILE_STATE_WRONGCOLOR:
 	return 0;
-	/*@notreached@*/ break;
+	break;
     case RPMFILE_STATE_NORMAL:
 	break;
     }
@@ -114,7 +107,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      */
     flags &= ~(omitMask | RPMVERIFY_FAILURES);
 
-/*@=branchstate@*/
 
     if (flags & RPMVERIFY_MD5) {
 	unsigned char md5sum[16];
@@ -217,11 +209,8 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
-		rpmfi fi, /*@null@*/ FD_t scriptFd)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, scriptFd, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+static int rpmVerifyScript(QVA_t qva, rpmts ts,
+		rpmfi fi, FD_t scriptFd)
 {
     rpmpsm psm = rpmpsmNew(ts, NULL, fi);
     int rc = 0;
@@ -253,13 +242,10 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
  * @return		0 no problems, 1 problems found
  */
 static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies ts, fi, fileSystem, internalState  @*/
 {
     rpmVerifyAttrs verifyResult = 0;
-    /*@-type@*/ /* FIX: union? */
+    /* FIX: union? */
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
-    /*@=type@*/
     int ec = 0;		/* assume no problems */
     char * t, * te;
     char buf[BUFSIZ];
@@ -282,9 +268,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	&& (fileAttrs & RPMFILE_GHOST))
 	    continue;
 
-/*@-boundswrite@*/
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
-/*@=boundswrite@*/
 	if (rc) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		sprintf(te, _("missing   %c %s"),
@@ -306,8 +290,8 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	} else if (verifyResult || rpmIsVerbose()) {
 	    const char * size, * MD5, * link, * mtime, * mode;
 	    const char * group, * user, * rdev;
-	    /*@observer@*/ static const char *const aok = ".";
-	    /*@observer@*/ static const char *const unknown = "?";
+	    static const char *const aok = ".";
+	    static const char *const unknown = "?";
 
 	    ec = 1;
 
@@ -345,7 +329,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    te += strlen(te);
 	}
 
-/*@-boundswrite@*/
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';
@@ -353,7 +336,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    te = t = buf;
 	    *t = '\0';
 	}
-/*@=boundswrite@*/
     }
     fi = rpmfiUnlink(fi, "verifyHeader");
 	
@@ -367,10 +349,8 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
  * @param h		header
  * @return		0 no problems, 1 problems found
  */
-static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
+static int verifyDependencies(QVA_t qva, rpmts ts,
 		Header h)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmps ps;
     int numProblems;
@@ -385,7 +365,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     ps = rpmtsProblems(ts);
 
     numProblems = rpmpsNumProblems(ps);
-    /*@-branchstate@*/
     if (ps != NULL && numProblems > 0) {
 	const char * pkgNEVR, * altNEVR;
 	rpmProblem p;
@@ -398,7 +377,6 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    nb += strlen(altNEVR+2) + sizeof(", ") - 1;
 	}
 	te = t = alloca(nb);
-/*@-boundswrite@*/
 	*te = '\0';
 	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
 	sprintf(te, _("Unsatisfied dependencies for %s: "), pkgNEVR);
@@ -418,10 +396,8 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    te = t;
 	    *t = '\0';
 	}
-/*@=boundswrite@*/
 	rc = 1;
     }
-    /*@=branchstate@*/
 
     ps = rpmpsFree(ps);
 
@@ -442,13 +418,11 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 
 	if (qva->qva_flags & VERIFY_DEPS) {
 	    int save_noise = _rpmds_unspecified_epoch_noise;
-/*@-mods@*/
 	    if (rpmIsVerbose())
 		_rpmds_unspecified_epoch_noise = 1;
 	    if ((rc = verifyDependencies(qva, ts, h)) != 0)
 		ec = rc;
 	    _rpmds_unspecified_epoch_noise = save_noise;
-/*@=mods@*/
 	}
 	if (qva->qva_flags & VERIFY_FILES) {
 	    if ((rc = verifyHeader(qva, ts, fi)) != 0)

@@ -10,10 +10,8 @@
 
 #include "debug.h"
 
-/*@unchecked@*/
 struct rpmQVKArguments_s rpmQVKArgs;
 
-/*@unchecked@*/
 int specedit = 0;
 
 #define POPT_QUERYFORMAT	-1000
@@ -31,12 +29,10 @@ int specedit = 0;
 #define POPT_FTSWALK		-1012
 
 /* ========== Query/Verify/Signature source args */
-static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
-		/*@unused@*/ enum poptCallbackReason reason,
-		const struct poptOption * opt, /*@unused@*/ const char * arg, 
-		/*@unused@*/ const void * data)
-	/*@globals rpmQVKArgs @*/
-	/*@modifies rpmQVKArgs @*/
+static void rpmQVSourceArgCallback( poptContext con,
+		enum poptCallbackReason reason,
+		const struct poptOption * opt, const char * arg, 
+		const void * data)
 {
     QVA_t qva = &rpmQVKArgs;
 
@@ -92,12 +88,10 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 /**
  * Common query/verify mode options.
  */
-/*@unchecked@*/
 struct poptOption rpmQVSourcePoptTable[] = {
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
 	rpmQVSourceArgCallback, 0, NULL, NULL },
-/*@=type@*/
  { "all", 'a', 0, 0, 'a',
 	N_("query/verify all packages"), NULL },
  { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
@@ -156,11 +150,9 @@ struct poptOption rpmQVSourcePoptTable[] = {
 /* ========== Query specific popt args */
 
 static void queryArgCallback(poptContext con,
-		/*@unused@*/enum poptCallbackReason reason,
+		enum poptCallbackReason reason,
 		const struct poptOption * opt, const char * arg, 
-		/*@unused@*/ const void * data)
-	/*@globals rpmQVKArgs @*/
-	/*@modifies con, rpmQVKArgs @*/
+		const void * data)
 {
     QVA_t qva = &rpmQVKArgs;
 
@@ -176,27 +168,21 @@ static void queryArgCallback(poptContext con,
     case POPT_QUERYFORMAT:
 	if (arg) {
 	    char * qf = (char *)qva->qva_queryFormat;
-	    /*@-branchstate@*/
 	    if (qf) {
 		int len = strlen(qf) + strlen(arg) + 1;
 		qf = xrealloc(qf, len);
-/*@-boundswrite@*/
 		strcat(qf, arg);
-/*@=boundswrite@*/
 	    } else {
 		qf = xmalloc(strlen(arg) + 1);
 		strcpy(qf, arg);
 	    }
-	    /*@=branchstate@*/
 	    qva->qva_queryFormat = qf;
 	}
 	break;
 
     case 'i':
 	if (qva->qva_mode == 'q') {
-	    /*@-nullassign -readonlytrans@*/
 	    const char * infoCommand[] = { "--info", NULL };
-	    /*@=nullassign =readonlytrans@*/
 	    (void) poptStuffArgs(con, infoCommand);
 	}
 	break;
@@ -245,12 +231,10 @@ static void queryArgCallback(poptContext con,
 /**
  * Query mode options.
  */
-/*@unchecked@*/
 struct poptOption rpmQueryPoptTable[] = {
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
 	queryArgCallback, 0, NULL, NULL },
-/*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
  { "configfiles", 'c', 0, 0, 'c',
@@ -292,10 +276,9 @@ struct poptOption rpmQueryPoptTable[] = {
  * Verify mode options.
  */
 struct poptOption rpmVerifyPoptTable[] = {
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
 	queryArgCallback, 0, NULL, NULL },
-/*@=type@*/
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
 	NULL, NULL },
 
@@ -389,12 +372,10 @@ struct poptOption rpmVerifyPoptTable[] = {
 /**
  * Signature mode options.
  */
-/*@unchecked@*/
 struct poptOption rpmSignPoptTable[] = {
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	rpmQVSourceArgCallback, 0, NULL, NULL },
-/*@=type@*/
  { "addsign", '\0', 0, NULL, 'A',
 	N_("sign package(s) (identical to --resign)"), NULL },
  { "checksig", 'K', 0, NULL, 'K',

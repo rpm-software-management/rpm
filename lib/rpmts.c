@@ -24,7 +24,6 @@
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
-/*@-incondefs@*/
 #include <sys/statvfs.h>
 
 #else
@@ -43,20 +42,8 @@
 
 #include "debug.h"
 
-/*@access rpmdb @*/		/* XXX db->db_chrootDone, NULL */
-
-/*@access rpmps @*/
-/*@access rpmDiskSpaceInfo @*/
-/*@access rpmte @*/
-/*@access rpmtsi @*/
-/*@access fnpyKey @*/
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
-
-/*@unchecked@*/
 int _rpmts_debug = 0;
 
-/*@unchecked@*/
 int _rpmts_stats = 0;
 
 char * hGetNEVR(Header h, const char ** np)
@@ -66,7 +53,6 @@ char * hGetNEVR(Header h, const char ** np)
 
     (void) headerNVR(h, &n, &v, &r);
     NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-/*@-boundswrite@*/
     t = stpcpy(t, n);
     t = stpcpy(t, "-");
     t = stpcpy(t, v);
@@ -74,7 +60,6 @@ char * hGetNEVR(Header h, const char ** np)
     t = stpcpy(t, r);
     if (np)
 	*np = n;
-/*@=boundswrite@*/
     return NVR;
 }
 
@@ -87,7 +72,6 @@ char * hGetNEVRA(Header h, const char ** np)
     (void) headerNVR(h, &n, &v, &r);
     xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
     NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
-/*@-boundswrite@*/
     t = stpcpy(t, n);
     t = stpcpy(t, "-");
     t = stpcpy(t, v);
@@ -97,7 +81,6 @@ char * hGetNEVRA(Header h, const char ** np)
     t = stpcpy(t, a);
     if (np)
 	*np = n;
-/*@=boundswrite@*/
     return NVRA;
 }
 
@@ -114,10 +97,8 @@ uint_32 hGetColor(Header h)
     if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
      && fcolors != NULL && ncolors > 0)
     {
-/*@-boundsread@*/
 	for (i = 0; i < ncolors; i++)
 	    hcolor |= fcolors[i];
-/*@=boundsread@*/
     }
     hcolor &= 0x0f;
 
@@ -126,10 +107,8 @@ uint_32 hGetColor(Header h)
 
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
-/*@-modfilesys@*/
 if (_rpmts_debug)
 fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
     ts->nrefs--;
     return NULL;
 }
@@ -137,11 +116,9 @@ fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
 rpmts XrpmtsLink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
     ts->nrefs++;
-/*@-modfilesys@*/
 if (_rpmts_debug)
 fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    /*@-refcounttrans@*/ return ts; /*@=refcounttrans@*/
+    return ts;
 }
 
 int rpmtsCloseDB(rpmts ts)
@@ -209,13 +186,9 @@ int rpmtsVerifyDB(rpmts ts)
     return rpmdbVerify(ts->rootDir);
 }
 
-/*@-boundsread@*/
 static int isArch(const char * arch)
-	/*@*/
 {
     const char ** av;
-/*@-nullassign@*/
-    /*@observer@*/
     static const char *arches[] = {
 	"i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e",
 	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
@@ -233,7 +206,6 @@ static int isArch(const char * arch)
 	"noarch",
 	NULL,
     };
-/*@=nullassign@*/
 
     for (av = arches; *av != NULL; av++) {
 	if (!strcmp(arch, *av))
@@ -241,9 +213,8 @@ static int isArch(const char * arch)
     }
     return 0;
 }
-/*@=boundsread@*/
 
-/*@-compdef@*/ /* keyp might no be defined. */
+/* keyp might no be defined. */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
@@ -255,7 +226,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	return NULL;
 
     /* Parse out "N(EVR).A" tokens from a label key. */
-/*@-bounds -branchstate@*/
     if (rpmtag == RPMDBI_LABEL && keyp != NULL) {
 	const char * s = keyp;
 	const char *se;
@@ -269,7 +239,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	    switch (c) {
 	    default:
 		*t++ = c;
-		/*@switchbreak@*/ break;
+		break;
 	    case '(':
 		/* XXX Fail if nested parens. */
 		if (level++ != 0) {
@@ -287,7 +257,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		    /* No Epoch: found. Convert '(' to '-' and chug. */
 		    *t++ = '-';
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    case ')':
 		/* XXX Fail if nested parens. */
 		if (--level != 0) {
@@ -295,7 +265,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		    return NULL;
 		}
 		/* Don't copy trailing ')' */
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	}
 	if (level) {
@@ -311,7 +281,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	   arch = t;
 	}
     }
-/*@=bounds =branchstate@*/
 
     mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
 
@@ -324,7 +293,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
     return mi;
 }
-/*@=compdef@*/
 
 rpmRC rpmtsFindPubkey(rpmts ts)
 {
@@ -372,17 +340,14 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
-/*@-boundsread@*/
 	    if (ix >= pc
 	     || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = -1;
-/*@=boundsread@*/
 	    pubkeys = headerFreeData(pubkeys, pt);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
 
-/*@-branchstate@*/
 	if (ix >= 0) {
 	    char hnum[32];
 	    sprintf(hnum, "h#%d", hx);
@@ -391,7 +356,6 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
 	}
-/*@=branchstate@*/
     }
 
     /* Try keyserver lookup. */
@@ -404,7 +368,6 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
 	}
 	fn = _free(fn);
-/*@-branchstate@*/
 	if (xx) {
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
@@ -412,7 +375,6 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    /* Save new pubkey in local ts keyring for delayed import. */
 	    pubkeysource = xstrdup("keyserver");
 	}
-/*@=branchstate@*/
     }
 
 #ifdef	NOTNOW
@@ -451,9 +413,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	/* XXX Verify any pubkey signatures. */
 
 	/* Pubkey packet looks good, save the signer id. */
-/*@-boundsread@*/
 	memcpy(ts->pksignid, pubp->signid, sizeof(ts->pksignid));
-/*@=boundsread@*/
 
 	if (pubkeysource)
 	    rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
@@ -525,17 +485,13 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
  * @return		result of comparison
  */
 static int sugcmp(const void * a, const void * b)
-	/*@*/
 {
-/*@-boundsread@*/
     const char * astr = *(const char **)a;
     const char * bstr = *(const char **)b;
-/*@=boundsread@*/
     return strcmp(astr, bstr);
 }
 
-/*@-bounds@*/
-int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
+int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 {
     const char * errstr;
     const char * str;
@@ -683,11 +639,9 @@ int rpmtsSolve(rpmts ts, rpmds ds, /*@unused@*/ const void * data)
 	qsort(ts->suggests, ts->nsuggests, sizeof(*ts->suggests), sugcmp);
 
 exit:
-/*@-nullstate@*/ /* FIX: ts->suggests[] may be NULL */
+/* FIX: ts->suggests[] may be NULL */
     return rc;
-/*@=nullstate@*/
 }
-/*@=bounds@*/
 
 int rpmtsAvailable(rpmts ts, const rpmds ds)
 {
@@ -710,9 +664,8 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 	ts->suggests[ts->nsuggests] = NULL;
     }
     sugkey = _free(sugkey);
-/*@-nullstate@*/ /* FIX: ts->suggests[] may be NULL */
+/* FIX: ts->suggests[] may be NULL */
     return rc;
-/*@=nullstate@*/
 }
 
 int rpmtsSetSolveCallback(rpmts ts,
@@ -721,14 +674,10 @@ int rpmtsSetSolveCallback(rpmts ts,
 {
     int rc = 0;
 
-/*@-branchstate@*/
     if (ts) {
-/*@-assignexpose -temptrans @*/
 	ts->solve = solve;
 	ts->solveData = solveData;
-/*@=assignexpose =temptrans @*/
     }
-/*@=branchstate@*/
     return rc;
 }
 
@@ -780,14 +729,10 @@ void rpmtsEmpty(rpmts ts)
     if (ts == NULL)
 	return;
 
-/*@-nullstate@*/	/* FIX: partial annotations */
     rpmtsClean(ts);
-/*@=nullstate@*/
 
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
-/*@-type -unqualifiedtrans @*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
-/*@=type =unqualifiedtrans @*/
     }
     pi = rpmtsiFree(pi);
 
@@ -796,14 +741,10 @@ void rpmtsEmpty(rpmts ts)
     ts->maxDepth = 0;
 
     ts->numRemovedPackages = 0;
-/*@-nullstate@*/	/* FIX: partial annotations */
     return;
-/*@=nullstate@*/
 }
 
-static void rpmtsPrintStat(const char * name, /*@null@*/ struct rpmop_s * op)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+static void rpmtsPrintStat(const char * name, struct rpmop_s * op)
 {
     static unsigned int scale = (1000 * 1000);
     if (op != NULL && op->count > 0)
@@ -814,8 +755,6 @@ static void rpmtsPrintStat(const char * name, /*@null@*/ struct rpmop_s * op)
 }
 
 static void rpmtsPrintStats(rpmts ts)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_TOTAL), 0);
 
@@ -846,9 +785,7 @@ rpmts rpmtsFree(rpmts ts)
     if (ts->nrefs > 1)
 	return rpmtsUnlink(ts, "tsCreate");
 
-/*@-nullstate@*/	/* FIX: partial annotations */
     rpmtsEmpty(ts);
-/*@=nullstate@*/
 
     (void) rpmtsCloseDB(ts);
 
@@ -868,9 +805,7 @@ rpmts rpmtsFree(rpmts ts)
     ts->rootDir = _free(ts->rootDir);
     ts->currDir = _free(ts->currDir);
 
-/*@-type +voidabstract @*/	/* FIX: double indirection */
     ts->order = _free(ts->order);
-/*@=type =voidabstract @*/
     ts->orderAlloced = 0;
 
     if (ts->pkpkt != NULL)
@@ -882,15 +817,11 @@ rpmts rpmtsFree(rpmts ts)
 	rpmtsPrintStats(ts);
 
     /* Free up the memory used by the rpmtsScore */
-/*@-kepttrans -onlytrans @*/
     ts->score = rpmtsScoreFree(ts->score);
-/*@=kepttrans =onlytrans @*/
 
     (void) rpmtsUnlink(ts, "tsCreate");
 
-    /*@-refcounttrans -usereleased @*/
     ts = _free(ts);
-    /*@=refcounttrans =usereleased @*/
 
     return NULL;
 }
@@ -958,7 +889,6 @@ const char * rpmtsRootDir(rpmts ts)
 {
     const char * rootDir = NULL;
 
-/*@-branchstate@*/
     if (ts != NULL && ts->rootDir != NULL) {
 	urltype ut = urlPath(ts->rootDir, &rootDir);
 	switch (ut) {
@@ -975,7 +905,6 @@ const char * rpmtsRootDir(rpmts ts)
 	    break;
 	}
     }
-/*@=branchstate@*/
     return rootDir;
 }
 
@@ -994,7 +923,6 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 	}
 	rootLen = strlen(rootDir);
 
-/*@-branchstate@*/
 	/* Make sure that rootDir has trailing / */
 	if (!(rootLen && rootDir[rootLen - 1] == '/')) {
 	    char * t = alloca(rootLen + 2);
@@ -1002,7 +930,6 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 	    (void) stpcpy( stpcpy(t, rootDir), "/");
 	    rootDir = t;
 	}
-/*@=branchstate@*/
 	ts->rootDir = xstrdup(rootDir);
     }
 }
@@ -1031,9 +958,7 @@ FD_t rpmtsScriptFd(rpmts ts)
     if (ts != NULL) {
 	scriptFd = ts->scriptFd;
     }
-/*@-compdef -refcounttrans -usereleased@*/
     return scriptFd;
-/*@=compdef =refcounttrans =usereleased@*/
 }
 
 void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
@@ -1044,10 +969,8 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
 	    ts->scriptFd = NULL;
 	}
-/*@+voidabstract@*/
 	if (scriptFd != NULL)
 	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
-/*@=voidabstract@*/
     }
 }
 
@@ -1132,9 +1055,7 @@ int rpmtsSetSig(rpmts ts,
 	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
 	ts->sigtag = sigtag;
 	ts->sigtype = (sig ? sigtype : 0);
-/*@-assignexpose -kepttrans@*/
 	ts->sig = sig;
-/*@=assignexpose =kepttrans@*/
 	ts->siglen = siglen;
     }
     return 0;
@@ -1142,10 +1063,9 @@ int rpmtsSetSig(rpmts ts,
 
 pgpDig rpmtsDig(rpmts ts)
 {
-/*@-mods@*/ /* FIX: hide lazy malloc for now */
+/* FIX: hide lazy malloc for now */
     if (ts->dig == NULL)
 	ts->dig = pgpNewDig();
-/*@=mods@*/
     if (ts->dig == NULL)
 	return NULL;
     return ts->dig;
@@ -1155,18 +1075,14 @@ pgpDigParams rpmtsSignature(const rpmts ts)
 {
     pgpDig dig = rpmtsDig(ts);
     if (dig == NULL) return NULL;
-/*@-immediatetrans@*/
     return &dig->signature;
-/*@=immediatetrans@*/
 }
 
 pgpDigParams rpmtsPubkey(const rpmts ts)
 {
     pgpDig dig = rpmtsDig(ts);
     if (dig == NULL) return NULL;
-/*@-immediatetrans@*/
     return &dig->pubkey;
-/*@=immediatetrans@*/
 }
 
 rpmdb rpmtsGetRdb(rpmts ts)
@@ -1175,9 +1091,7 @@ rpmdb rpmtsGetRdb(rpmts ts)
     if (ts != NULL) {
 	rdb = ts->rdb;
     }
-/*@-compdef -refcounttrans -usereleased @*/
     return rdb;
-/*@=compdef =refcounttrans =usereleased @*/
 }
 
 int rpmtsInitDSI(const rpmts ts)
@@ -1281,7 +1195,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
     case FA_ALTNAME:
 	dsi->ineeded++;
 	dsi->bneeded += bneeded;
-	/*@switchbreak@*/ break;
+	break;
 
     /*
      * FIXME: If two packages share a file (same md5sum), and
@@ -1291,15 +1205,15 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
     case FA_CREATE:
 	dsi->bneeded += bneeded;
 	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->bsize);
-	/*@switchbreak@*/ break;
+	break;
 
     case FA_ERASE:
 	dsi->ineeded--;
 	dsi->bneeded -= bneeded;
-	/*@switchbreak@*/ break;
+	break;
 
     default:
-	/*@switchbreak@*/ break;
+	break;
     }
 
     if (fixupSize)
@@ -1349,12 +1263,10 @@ void * rpmtsNotify(rpmts ts, rpmte te,
     void * ptr = NULL;
     if (ts && ts->notify && te) {
 assert(!(te->type == TR_ADDED && te->h == NULL));
-	/*@-type@*/ /* FIX: cast? */
-	/*@-noeffectuncon @*/ /* FIX: check rc */
+	/* FIX: cast? */
+	/* FIX: check rc */
 	ptr = ts->notify(te->h, what, amount, total,
 			rpmteKey(te), ts->notifyData);
-	/*@=noeffectuncon @*/
-	/*@=type@*/
     }
     return ptr;
 }
@@ -1375,9 +1287,7 @@ rpmte rpmtsElement(rpmts ts, int ix)
 	if (ix >= 0 && ix < ts->orderCount)
 	    te = ts->order[ix];
     }
-    /*@-compdef@*/
     return te;
-    /*@=compdef@*/
 }
 
 rpmprobFilterFlags rpmtsFilterFlags(rpmts ts)
@@ -1402,33 +1312,25 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
 
 Spec rpmtsSpec(rpmts ts)
 {
-/*@-compdef -retexpose -usereleased@*/
     return ts->spec;
-/*@=compdef =retexpose =usereleased@*/
 }
 
 Spec rpmtsSetSpec(rpmts ts, Spec spec)
 {
     Spec ospec = ts->spec;
-/*@-assignexpose -temptrans@*/
     ts->spec = spec;
-/*@=assignexpose =temptrans@*/
     return ospec;
 }
 
 rpmte rpmtsRelocateElement(rpmts ts)
 {
-/*@-compdef -retexpose -usereleased@*/
     return ts->relocateElement;
-/*@=compdef =retexpose =usereleased@*/
 }
 
 rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
 {
     rpmte orelocateElement = ts->relocateElement;
-/*@-assignexpose -temptrans@*/
     ts->relocateElement = relocateElement;
-/*@=assignexpose =temptrans@*/
     return orelocateElement;
 }
 
@@ -1458,9 +1360,7 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 
     if (ts != NULL && opx >= 0 && opx < RPMTS_OP_MAX)
 	op = ts->ops + opx;
-/*@-usereleased -compdef @*/
     return op;
-/*@=usereleased =compdef @*/
 }
 
 int rpmtsSetNotifyCallback(rpmts ts,
@@ -1487,14 +1387,12 @@ int rpmtsGetKeys(const rpmts ts, fnpyKey ** ep, int * nep)
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	    switch (rpmteType(p)) {
 	    case TR_ADDED:
-		/*@-dependenttrans@*/
 		*e = rpmteKey(p);
-		/*@=dependenttrans@*/
-		/*@switchbreak@*/ break;
+		break;
 	    case TR_REMOVED:
 	    default:
 		*e = NULL;
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	    e++;
 	}
@@ -1626,16 +1524,15 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
 	    se = score->scores[i]; 
   	    if (strcmp(rpmteN(p), se->N) == 0) {
 		found = 1;
-	 	/*@innerbreak@*/ break;
+	 	break;
 	    }
 	}
 
 	/* If we did not find the entry then allocate space for it */
 	if (!found) {
-/*@-compdef -usereleased@*/ /* XXX p->fi->te undefined. */
+/* XXX p->fi->te undefined. */
     	    rpmMessage(RPMMESS_DEBUG, _("\tAdding entry for %s to score board.\n"),
 		rpmteN(p));
-/*@=compdef =usereleased@*/
     	    se = xcalloc(1, sizeof(*(*(score->scores))));
     	    rpmMessage(RPMMESS_DEBUG, _("\t\tEntry address:  %p\n"), se);
 	    se->N         = xstrdup(rpmteN(p));
@@ -1691,7 +1588,6 @@ rpmtsScore rpmtsScoreFree(rpmtsScore score)
     rpmMessage(RPMMESS_DEBUG, _("\tRefcount is zero...will free\n"));
     /* No more references, lets clean up  */
     /* First deallocate the score entries */
-/*@-branchstate@*/
     for(i = 0; i < score->entries; i++) {
 	/* Get the score for the ith entry */
 	se = score->scores[i]; 
@@ -1702,7 +1598,6 @@ rpmtsScore rpmtsScoreFree(rpmtsScore score)
 	/* Deallocate the score entry itself */
 	se = _free(se);
     }
-/*@=branchstate@*/
 
     /* Next deallocate the score entry table */
     score->scores = _free(score->scores);
@@ -1750,7 +1645,6 @@ rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N)
 	}
     }
 	
-/*@-compdef@*/ /* XXX score->scores undefined. */
+/* XXX score->scores undefined. */
     return ret;	
-/*@=compdef@*/
 }
