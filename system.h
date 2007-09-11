@@ -82,18 +82,16 @@ char *memchr ();
 #endif
 
 #if !defined(HAVE_STPCPY)
-char * stpcpy(/*@out@*/ char * dest, const char * src);
+char * stpcpy(char * dest, const char * src);
 #endif
 
 #if !defined(HAVE_STPNCPY)
-char * stpncpy(/*@out@*/ char * dest, const char * src, size_t n);
+char * stpncpy(char * dest, const char * src, size_t n);
 #endif
 
 #include <errno.h>
 #ifndef errno
-/*@-declundef @*/
 extern int errno;
-/*@=declundef @*/
 #endif
 
 #if HAVE_ERROR && HAVE_ERROR_H
@@ -105,12 +103,9 @@ extern int errno;
 #endif
 
 #ifdef STDC_HEADERS
-/*@-macrounrecog -incondefs -globuse -mustmod @*/ /* FIX: shrug */
+/* FIX: shrug */
 #define getopt system_getopt
-/*@=macrounrecog =incondefs =globuse =mustmod @*/
-/*@-skipansiheaders@*/
 #include <stdlib.h>
-/*@=skipansiheaders@*/
 #undef getopt
 #else /* not STDC_HEADERS */
 char *getenv (const char *name);
@@ -193,9 +188,7 @@ char *alloca ();
 #endif
 
 #if HAVE_GETOPT_H
-/*@-noparams@*/
 #include <getopt.h>
-/*@=noparams@*/
 #endif
 
 #if HAVE_GRP_H
@@ -240,38 +233,28 @@ typedef	char * security_context_t;
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
-/*@-declundef -incondefs @*/ /* FIX: these are macros */
+/* FIX: these are macros */
 /**
  */
-/*@mayexit@*/ /*@only@*/ /*@out@*/ void * xmalloc (size_t size)
-	/*@globals errno @*/
-	/*@ensures maxSet(result) == (size - 1) @*/
-	/*@modifies errno @*/;
+void * xmalloc (size_t size);
 
 /**
  */
-/*@mayexit@*/ /*@only@*/ void * xcalloc (size_t nmemb, size_t size)
-	/*@ensures maxSet(result) == (nmemb - 1) @*/
-	/*@*/;
+void * xcalloc (size_t nmemb, size_t size);
 
 /**
  * @todo Annotate ptr with returned/out.
  */
-/*@mayexit@*/ /*@only@*/ void * xrealloc (/*@null@*/ /*@only@*/ void * ptr,
-					size_t size)
-	/*@ensures maxSet(result) == (size - 1) @*/
-	/*@modifies *ptr @*/;
+void * xrealloc (void * ptr,
+					size_t size);
 
 /**
  */
-/*@mayexit@*/ /*@only@*/ char * xstrdup (const char *str)
-	/*@*/;
-/*@=declundef =incondefs @*/
+char * xstrdup (const char *str);
 
 /**
  */
-/*@unused@*/ /*@exits@*/ /*@only@*/ void * vmefail(size_t size)
-	/*@*/;
+void * vmefail(size_t size);
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>
@@ -297,7 +280,6 @@ typedef	char * security_context_t;
     else __progname = pn;		\
   }
 #endif
-/*@unchecked@*/
 extern const char *__progname;
 
 #if HAVE_NETDB_H
@@ -336,21 +318,15 @@ extern const char *__progname;
 
 #if !defined(USE_GNU_GLOB) 
 #if HAVE_FNMATCH_H
-/*@-noparams@*/
 #include <fnmatch.h>
-/*@=noparams@*/
 #endif
 
 #if HAVE_GLOB_H 
-/*@-noparams@*/
 #include <glob.h>
-/*@=noparams@*/
 #endif
 #else
-/*@-noparams@*/
 #include "misc/glob.h"
 #include "misc/fnmatch.h"
-/*@=noparams@*/
 #endif
 
 #if ! HAVE_S_IFSOCK

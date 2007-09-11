@@ -14,15 +14,9 @@
 #include "build.h"
 #include "debug.h"
 
-/*@access rpmts @*/	/* XXX compared with NULL @*/
-/*@access rpmdb @*/		/* XXX compared with NULL @*/
-/*@access FD_t @*/		/* XXX compared with NULL @*/
-
 /**
  */
 static int checkSpec(rpmts ts, Header h)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     rpmps ps;
     int rc;
@@ -57,8 +51,6 @@ static int checkSpec(rpmts ts, Header h)
 /**
  */
 static int isSpecFile(const char * specfile)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     char buf[256];
     const char * s;
@@ -81,20 +73,18 @@ static int isSpecFile(const char * specfile)
 	case '\r':
 	case '\n':
 	    checking = 1;
-	    /*@switchbreak@*/ break;
+	    break;
 	case ':':
 	    checking = 0;
-	    /*@switchbreak@*/ break;
-/*@-boundsread@*/
+	    break;
 	default:
 #if 0
 	    if (checking && !(isprint(*s) || isspace(*s))) return 0;
-	    /*@switchbreak@*/ break;
+	    break;
 #else
 	    if (checking && !(isprint(*s) || isspace(*s)) && *(unsigned char *)s < 32) return 0;
-	    /*@switchbreak@*/ break;
+	    break;
 #endif
-/*@=boundsread@*/
 	}
     }
     return 1;
@@ -102,10 +92,7 @@ static int isSpecFile(const char * specfile)
 
 /**
  */
-/*@-boundswrite@*/
 static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;
@@ -122,19 +109,17 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 #endif
 
-    /*@-branchstate@*/
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
-    /*@=branchstate@*/
 
-    /*@-compmempass@*/ /* FIX: static zcmds heartburn */
+    /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
 	FILE *fp;
 	const char * specDir;
 	char * tmpSpecFile;
 	char * cmd, * s;
 	rpmCompressedMagic res = COMPRESSED_OTHER;
-	/*@observer@*/ static const char *zcmds[] =
+	static const char *zcmds[] =
 		{ "cat", "gunzip", "bunzip2", "cat" };
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
@@ -228,7 +213,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     } else {
 	specURL = arg;
     }
-    /*@=compmempass@*/
 
     specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {
@@ -304,7 +288,6 @@ exit:
     buildRootURL = _free(buildRootURL);
     return rc;
 }
-/*@=boundswrite@*/
 
 int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 {
