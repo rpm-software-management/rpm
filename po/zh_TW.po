@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-28 11:22+0300\n"
+"POT-Creation-Date: 2007-09-11 09:59+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -772,7 +772,7 @@ msgstr "無法從 %s 讀取酬載: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1914
+#: build/pack.c:738 lib/psm.c:1921
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "已寫入：%s\n"
@@ -1514,7 +1514,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
+#: rpmdb/header.c:3529 rpmdb/header.c:3558 rpmdb/header.c:3582
 msgid "(not a number)"
 msgstr "(不是數字)"
 
@@ -2439,22 +2439,22 @@ msgstr "解壓保存檔案失敗 %s%s：%s\n"
 msgid " on file "
 msgstr "  於檔案 "
 
-#: lib/psm.c:1922
+#: lib/psm.c:1929
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s 失敗的於檔案 %s: %s\n"
 
-#: lib/psm.c:1925
+#: lib/psm.c:1932
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗：%s\n"
 
-#: lib/psm.c:2113
+#: lib/psm.c:2120
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr "試圖在記錄板(%2$u)中標記 %1$s 為已安裝。\n"
 
-#: lib/psm.c:2146
+#: lib/psm.c:2153
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "試圖在記錄板(0x%2$x)中標記 %1$s 為已清除。\n"
@@ -2574,7 +2574,7 @@ msgstr "(加入的檔案)"
 msgid "(added provide)"
 msgstr "(加入的提供物)"
 
-#: lib/rpmchecksig.c:55
+#: lib/rpmchecksig.c:55 lib/rpmchecksig.c:1094
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
@@ -3753,16 +3753,16 @@ msgstr "| 預期於運算式的結束"
 msgid "(index out of range)"
 msgstr "(索引超出範圍)"
 
-#: rpmdb/header.c:3318
+#: rpmdb/header.c:3301
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
-#: rpmdb/header.c:3637
+#: rpmdb/header.c:3620
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3653
+#: rpmdb/header.c:3636
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
@@ -3806,8 +3806,8 @@ msgstr "無法開啟 %s 索引\n"
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: rpmdb/rpmdb.c:1269 rpmdb/rpmdb.c:1400 rpmdb/rpmdb.c:1456 rpmdb/rpmdb.c:2418
-#: rpmdb/rpmdb.c:2547 rpmdb/rpmdb.c:3316
+#: rpmdb/rpmdb.c:1269 rpmdb/rpmdb.c:1400 rpmdb/rpmdb.c:1456 rpmdb/rpmdb.c:2429
+#: rpmdb/rpmdb.c:2558 rpmdb/rpmdb.c:3327
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
@@ -3821,142 +3821,142 @@ msgstr "miFreeHeader：跳過"
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2304
+#: rpmdb/rpmdb.c:2315
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator：跳過"
 
-#: rpmdb/rpmdb.c:2336
+#: rpmdb/rpmdb.c:2347
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:2651
+#: rpmdb/rpmdb.c:2662
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"
 
-#: rpmdb/rpmdb.c:2714
+#: rpmdb/rpmdb.c:2725
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2829
+#: rpmdb/rpmdb.c:2840
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "正在從 %1$s 索引移除 \"%2$s\"。\n"
 
-#: rpmdb/rpmdb.c:2833
+#: rpmdb/rpmdb.c:2844
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "正在從 %2$s 索引移除 %1$d 項條目。\n"
 
-#: rpmdb/rpmdb.c:2861
+#: rpmdb/rpmdb.c:2872
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引設定 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2882
+#: rpmdb/rpmdb.c:2893
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "儲存記錄 \"%2$s\" 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2892
+#: rpmdb/rpmdb.c:2903
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "從 %3$s 移除記錄 \"%2$s\" 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:3057
+#: rpmdb/rpmdb.c:3068
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "配置新套件實體時產生錯誤(%d)\n"
 
-#: rpmdb/rpmdb.c:3119
+#: rpmdb/rpmdb.c:3130
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd：跳過"
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3302
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "正在加入 \"%s\" 到 %s 索引。\n"
 
-#: rpmdb/rpmdb.c:3295
+#: rpmdb/rpmdb.c:3306
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "正在加入 %d 項條目到 %s 索引。\n"
 
-#: rpmdb/rpmdb.c:3335
+#: rpmdb/rpmdb.c:3346
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "儲存記錄 %2$s 於 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:3729
+#: rpmdb/rpmdb.c:3740
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "成功重建 db3 之後移除 %s。\n"
 
-#: rpmdb/rpmdb.c:3768
+#: rpmdb/rpmdb.c:3779
 msgid "no dbpath has been set"
 msgstr "沒有 dbpath 已被設定"
 
-#: rpmdb/rpmdb.c:3800
+#: rpmdb/rpmdb.c:3811
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "重建資料庫 %s 於 %s\n"
 
-#: rpmdb/rpmdb.c:3804
+#: rpmdb/rpmdb.c:3815
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "臨時資料庫 %s 已經存在\n"
 
-#: rpmdb/rpmdb.c:3810
+#: rpmdb/rpmdb.c:3821
 #, c-format
 msgid "creating directory %s\n"
 msgstr "產生目錄 %s\n"
 
-#: rpmdb/rpmdb.c:3812
+#: rpmdb/rpmdb.c:3823
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "產生目錄 %s: %s\n"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3832
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "以 dbapi %d 開啟舊的資料庫\n"
 
-#: rpmdb/rpmdb.c:3832
+#: rpmdb/rpmdb.c:3843
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "以 dbapi %d 開啟新的資料庫\n"
 
-#: rpmdb/rpmdb.c:3863
+#: rpmdb/rpmdb.c:3874
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:3903
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本在 %u 的記錄\n"
 
-#: rpmdb/rpmdb.c:3917
+#: rpmdb/rpmdb.c:3928
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: rpmdb/rpmdb.c:3925
+#: rpmdb/rpmdb.c:3936
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
-#: rpmdb/rpmdb.c:3927
+#: rpmdb/rpmdb.c:3938
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "以 %2$s 的檔案取代 %1$s 中的檔案來回復"
 
-#: rpmdb/rpmdb.c:3937
+#: rpmdb/rpmdb.c:3948
 #, c-format
 msgid "removing directory %s\n"
 msgstr "移除目錄 %s\n"
 
-#: rpmdb/rpmdb.c:3939
+#: rpmdb/rpmdb.c:3950
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
@@ -4058,12 +4058,12 @@ msgid "Macro %%%.*s not found, skipping\n"
 msgstr "找不到巨集 %%%.*s，跳過\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2071 rpmio/macro.c:2077
+#: rpmio/macro.c:2076 rpmio/macro.c:2082
 #, c-format
 msgid "File %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: rpmio/macro.c:2080
+#: rpmio/macro.c:2085
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"

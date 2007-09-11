@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-28 11:22+0300\n"
+"POT-Creation-Date: 2007-09-11 09:59+0300\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -795,7 +795,7 @@ msgstr "Impossible de lire la charge utile dans %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Impossible d'écrire la charge utile dans %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1914
+#: build/pack.c:738 lib/psm.c:1921
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Ecrit: %s\n"
@@ -1561,7 +1561,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "échec de rpmtsOrder, %d éléments toujours présents\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3546 rpmdb/header.c:3575 rpmdb/header.c:3599
+#: rpmdb/header.c:3529 rpmdb/header.c:3558 rpmdb/header.c:3582
 msgid "(not a number)"
 msgstr "(n'est pas un nombre)"
 
@@ -2534,22 +2534,22 @@ msgstr "échec du déballage de l'archive %s%s: %s\n"
 msgid " on file "
 msgstr " dans fichier "
 
-#: lib/psm.c:1922
+#: lib/psm.c:1929
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "échec de %s sur le fichier %s: %s\n"
 
-#: lib/psm.c:1925
+#: lib/psm.c:1932
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "échec %s: %s\n"
 
-#: lib/psm.c:2113
+#: lib/psm.c:2120
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2146
+#: lib/psm.c:2153
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2670,7 +2670,7 @@ msgstr "(fichiers ajoutés)"
 msgid "(added provide)"
 msgstr "(fourniture ajoutée)"
 
-#: lib/rpmchecksig.c:55
+#: lib/rpmchecksig.c:55 lib/rpmchecksig.c:1094
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: échec de l'ouverture: %s\n"
@@ -3878,16 +3878,16 @@ msgstr "| attendu a la fin de l'expression"
 msgid "(index out of range)"
 msgstr "(index hors bornes)"
 
-#: rpmdb/header.c:3318
+#: rpmdb/header.c:3301
 msgid "array iterator used with different sized arrays"
 msgstr "itérateur de tableau utilisé avec des tableaux de tailles différentes"
 
-#: rpmdb/header.c:3637
+#: rpmdb/header.c:3620
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3653
+#: rpmdb/header.c:3636
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3933,8 +3933,8 @@ msgstr "ne peut ouvrir l'index %s\n"
 msgid "no dbpath has been set\n"
 msgstr "aucun dbpath n'a été fourni\n"
 
-#: rpmdb/rpmdb.c:1269 rpmdb/rpmdb.c:1400 rpmdb/rpmdb.c:1456 rpmdb/rpmdb.c:2418
-#: rpmdb/rpmdb.c:2547 rpmdb/rpmdb.c:3316
+#: rpmdb/rpmdb.c:1269 rpmdb/rpmdb.c:1400 rpmdb/rpmdb.c:1456 rpmdb/rpmdb.c:2429
+#: rpmdb/rpmdb.c:2558 rpmdb/rpmdb.c:3327
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en attrapant les articles \"%s\" de l'index %s\n"
@@ -3948,147 +3948,147 @@ msgstr "miFreeHeader: on saute"
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erreur(%d) en stockant l'article nº%d dans %s\n"
 
-#: rpmdb/rpmdb.c:2304
+#: rpmdb/rpmdb.c:2315
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: on saute"
 
-#: rpmdb/rpmdb.c:2336
+#: rpmdb/rpmdb.c:2347
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: l'entête nº%u endommagé a été téléchargé -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:2651
+#: rpmdb/rpmdb.c:2662
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: impossible de lire l'entête à 0x%x\n"
 
-#: rpmdb/rpmdb.c:2714
+#: rpmdb/rpmdb.c:2725
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "erreur(%d) en affectant l'article de l'entête nº%d pour l'enlèvement de %s\n"
 
-#: rpmdb/rpmdb.c:2829
+#: rpmdb/rpmdb.c:2840
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "enlèvement \"%s\" à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:2833
+#: rpmdb/rpmdb.c:2844
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "enlèvement de %d entrées à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:2861
+#: rpmdb/rpmdb.c:2872
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en affectant les articles \"%s\" de l'index %s\n"
 
-#: rpmdb/rpmdb.c:2882
+#: rpmdb/rpmdb.c:2893
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erreur(%d) en stockant l'article \"%s\" dans %s\n"
 
-#: rpmdb/rpmdb.c:2892
+#: rpmdb/rpmdb.c:2903
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erreur(%d) en enlevant l'article \"%s\" de %s\n"
 
-#: rpmdb/rpmdb.c:3057
+#: rpmdb/rpmdb.c:3068
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erreur(%d) en allouant une nouvelle instance de paquetage\n"
 
-#: rpmdb/rpmdb.c:3119
+#: rpmdb/rpmdb.c:3130
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: on saute"
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3302
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "rajout de \"%s\" à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:3295
+#: rpmdb/rpmdb.c:3306
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "rajout de %d entrées à l'index %s.\n"
 
-#: rpmdb/rpmdb.c:3335
+#: rpmdb/rpmdb.c:3346
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erreur(%d) en stockant l'article %s dans %s\n"
 
-#: rpmdb/rpmdb.c:3729
+#: rpmdb/rpmdb.c:3740
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "enlèvement de %s après la reconstruction réussie en db3.\n"
 
-#: rpmdb/rpmdb.c:3768
+#: rpmdb/rpmdb.c:3779
 msgid "no dbpath has been set"
 msgstr "aucun dbpath fourni"
 
-#: rpmdb/rpmdb.c:3800
+#: rpmdb/rpmdb.c:3811
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstruction de la base de données de %s en %s\n"
 
-#: rpmdb/rpmdb.c:3804
+#: rpmdb/rpmdb.c:3815
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "la base de données temporarire %s existe déjà\n"
 
-#: rpmdb/rpmdb.c:3810
+#: rpmdb/rpmdb.c:3821
 #, c-format
 msgid "creating directory %s\n"
 msgstr "création du répertoire %s\n"
 
-#: rpmdb/rpmdb.c:3812
+#: rpmdb/rpmdb.c:3823
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "création du répertoire %s: %s\n"
 
-#: rpmdb/rpmdb.c:3821
+#: rpmdb/rpmdb.c:3832
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "ouverture d'une vieille base de données avec dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3832
+#: rpmdb/rpmdb.c:3843
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "ouverture d'une nouvelle base de données avec dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3863
+#: rpmdb/rpmdb.c:3874
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "l'entête nº%u dans la base de données n'est pas bon -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:3903
+#: rpmdb/rpmdb.c:3914
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "impossible d'ajouter l'article qui était au départ à %u\n"
 
-#: rpmdb/rpmdb.c:3917
+#: rpmdb/rpmdb.c:3928
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Ne peut reconstruire la base de données: la base originale reste telle "
 "qu'elle est\n"
 
-#: rpmdb/rpmdb.c:3925
+#: rpmdb/rpmdb.c:3936
 msgid "failed to replace old database with new database!\n"
 msgstr "Ne peut remplacer la vieille base de données par la nouvelle!\n"
 
-#: rpmdb/rpmdb.c:3927
+#: rpmdb/rpmdb.c:3938
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 "remplacer les fichiers dans %s avec les fichiers de %s pour faire une "
 "récupération"
 
-#: rpmdb/rpmdb.c:3937
+#: rpmdb/rpmdb.c:3948
 #, c-format
 msgid "removing directory %s\n"
 msgstr "destruction du répertoire %s\n"
 
-#: rpmdb/rpmdb.c:3939
+#: rpmdb/rpmdb.c:3950
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Ne peut détruire le répertoire %s: %s\n"
@@ -4190,12 +4190,12 @@ msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Macro %%%.*s non trouvé, ignoré\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2071 rpmio/macro.c:2077
+#: rpmio/macro.c:2076 rpmio/macro.c:2082
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fichier %s: %s\n"
 
-#: rpmio/macro.c:2080
+#: rpmio/macro.c:2085
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
