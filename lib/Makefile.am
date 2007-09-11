@@ -33,7 +33,9 @@ librpm_la_SOURCES = \
 	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c signature.h stringbuf.c transaction.c \
 	verify.c rpmlock.c rpmlock.h
-librpm_la_LDFLAGS = -release 4.4 \
+librpm_la_LDFLAGS = -release 4.4
+
+librpm_la_LIBADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_BEECRYPT_LIB@ \
@@ -78,35 +80,28 @@ tds_LDADD = librpm.la
  
 check_PROGRAMS += trb
 trb_SOURCES = trb.c
-#trb_LDFLAGS = @LDFLAGS_STATIC@
 trb_LDADD = librpm.la
  
 check_PROGRAMS += tthread
 tthread_SOURCES = tthread.c
-tthread_LDFLAGS =
 tthread_LDADD = librpm.la @WITH_LIBELF_LIB@
  
 check_PROGRAMS += tsystem
 tsystem_SOURCES = tsystem.c
-tsystem_LDFLAGS =
 tsystem_LDADD = ../rpmio/librpmio.la @WITH_POPT_LIB@
  
 check_PROGRAMS += tcpu
 tcpu_SOURCES = tcpu.c
-# tcpu_LDFLAGS = @LDFLAGS_STATIC@
 tcpu_LDADD = librpm.la
  
 check_PROGRAMS += tplatform
 tplatform_SOURCES = tplatform.c
-# tplatform_LDFLAGS = @LDFLAGS_STATIC@
 tplatform_LDADD = librpm.la
  
 check_PROGRAMS += tgi
 tgi_SOURCES = tgi.c
-# tgi_LDFLAGS = @LDFLAGS_STATIC@
 tgi_LDADD = librpm.la
 
 check_PROGRAMS += tufdio
 tufdio_SOURCES = tufdio.c
-# tgi_LDFLAGS = @LDFLAGS_STATIC@
 tufdio_LDADD = librpm.la

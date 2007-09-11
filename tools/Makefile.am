@@ -32,8 +32,7 @@ if LIBELF
 if LIBDWARF
 rpmlibexec_PROGRAMS +=	debugedit
 debugedit_SOURCES =	debugedit.c hashtab.c hashtab.h
-# debugedit_LDFLAGS =	$(staticLDFLAGS) \
-debugedit_LDFLAGS =	@WITH_LIBELF_LIB@ \
+debugedit_LDADD =	@WITH_LIBELF_LIB@ \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@
 endif
@@ -44,36 +43,29 @@ javadeps_SOURCES =	javadeps.c
 
 rpmlibexec_PROGRAMS +=	rpmcache
 rpmcache_SOURCES =	rpmcache.c
-#rpmcache_LDFLAGS =	-L$(libdir) # $(staticLDFLAGS)
 
 rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	rpmdeps.c
-#rpmdeps_LDFLAGS =	$(staticLDFLAGS)
 rpmdeps_LDADD =		../build/librpmbuild.la
 
 bin_PROGRAMS =		rpmgraph
 rpmgraph_SOURCES =	rpmgraph.c
-#rpmgraph_LDFLAGS =	$(staticLDFLAGS)
 
 check_PROGRAMS +=	rpminject
 rpminject_SOURCES =	rpminject.c
-#rpminject_LDFLAGS =	$(staticLDFLAGS)
 rpminject_LDADD =	../build/librpmbuild.la
 
 check_PROGRAMS +=	rpmsort
 rpmsort_SOURCES =	rpmsort.c
-#rpmsort_LDFLAGS =	$(staticLDFLAGS)
 
 if LIBXML2
 check_PROGRAMS +=	rpmtool
 rpmtool_SOURCES =	rpmtool.c rpmxp.c rpmxp.h
 rpmtool_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
-#rpmtool_LDFLAGS =	$(staticLDFLAGS)
 rpmtool_LDADD =		../lib/librpm.la $(libxml2_LIBS)
 
 check_PROGRAMS +=	rpmxml
 rpmxml_SOURCES =	rpmxml.c rpmxp.h
 rpmxml_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
-#rpmxml_LDFLAGS =	$(staticLDFLAGS)
 rpmxml_LDADD =		../lib/librpm.la $(libxml2_LIBS)
 endif

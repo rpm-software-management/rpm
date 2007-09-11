@@ -19,7 +19,6 @@ check_PROGRAMS =
 
 check_PROGRAMS += tjfn
 tjfn_SOURCES = tjfn.c
-# tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
 
 pkgincdir = $(pkgincludedir)
@@ -47,14 +46,14 @@ librpmdb_la_SOURCES += db3.c
 if SQLITE3
 librpmdb_la_SOURCES += sqlite.c
 endif
-librpmdb_la_LDFLAGS = -release 4.4 \
+librpmdb_la_LDFLAGS = -release 4.4
+librpmdb_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
-	@WITH_LIBELF_LIB@
-librpmdb_la_LIBADD = $(libdb_la)
-librpmdb_la_DEPENDENCIES = $(libdb_la)
+	@WITH_LIBELF_LIB@ \
+        $(libdb_la)
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '/*@-bounds@*/' > $@
@@ -175,10 +174,8 @@ BUILT_SOURCES = tagtbl.c db.h
 
 check_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c
-# tdbi_LDFLAGS = @LDFLAGS_STATIC@
 tdbi_LDADD = librpmdb.la
 
 EXTRA_PROGRAMS += tsql
 tsql_SOURCES = tsql.c
-# tsql_LDFLAGS = @LDFLAGS_STATIC@
 tsql_LDADD = librpmdb.la
