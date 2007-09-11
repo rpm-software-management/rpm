@@ -1,8 +1,3 @@
-/*@-bounds@*/
-/*@-retalias@*/
-/*@-shiftimplementation@*/
-/*@-temptrans@*/
-/*@-unreachable@*/
 /* Copyright (C) 1991-1993, 1996-1999, 2000 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -613,8 +608,3 @@ fnmatch (const char *pattern, const char *string, int flags)
 }
 
 #endif	/* _LIBC or not __GNU_LIBRARY__.  */
-/*@=unreachable@*/
-/*@=temptrans@*/
-/*@=shiftimplementation@*/
-/*@=retalias@*/
-/*@=bounds@*/

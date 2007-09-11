@@ -87,8 +87,7 @@ char resolved_path [];
 					if (new_path == resolved_path + 1)
 						continue;
 					/* Handle ".." by backing up. */
-					while ((--new_path)[-1] != '/')
-						;
+					while ((--new_path)[-1] != '/');
 					continue;
 				}
 			}
@@ -123,8 +122,7 @@ char resolved_path [];
 				new_path = resolved_path;
 			else
 				/* Otherwise back up over this component. */
-				while (*(--new_path) != '/')
-					;
+				while (*(--new_path) != '/');
 			/* Safe sex check. */
 			if (strlen(path) + n >= PATH_MAX) {
 				errno = ENAMETOOLONG;

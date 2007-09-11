@@ -1,24 +1,3 @@
-/*@-bounds@*/
-/*@-branchstate@*/
-/*@-compdef@*/
-/*@-immediatetrans@*/
-/*@-internalglobs@*/
-/*@-loopswitchbreak@*/
-/*@-modnomods@*/
-/*@-mods@*/
-/*@-moduncon@*/
-/*@-modunconnomods@*/
-/*@-noeffectuncon@*/
-/*@-nullpass@*/
-/*@-onlytrans@*/
-/*@-protoparammatch@*/
-/*@-retalias@*/
-/*@-retvalint@*/
-/*@-shadow@*/
-/*@-sizeoftype@*/
-/*@-temptrans@*/
-/*@-unqualifiedtrans@*/
-/*@-unrecog@*/
 
 /* Copyright (C) 1991,92,93,94,95,96,97,98,99 Free Software Foundation, Inc.
 
@@ -42,7 +21,6 @@
  #pragma alloca
 #endif
 
-/*@access DIR@*/
 
 # include "system.h"
 
@@ -1176,24 +1154,3 @@ glob_in_dir (const char *pattern, const char *directory, int flags,
     }
   return GLOB_NOSPACE;
 }
-/*@=unrecog@*/
-/*@=unqualifiedtrans@*/
-/*@=temptrans@*/
-/*@=sizeoftype@*/
-/*@=shadow@*/
-/*@=retvalint@*/
-/*@=retalias@*/
-/*@=protoparammatch@*/
-/*@=onlytrans@*/
-/*@=nullpass@*/
-/*@=noeffectuncon@*/
-/*@=modunconnomods@*/
-/*@=moduncon@*/
-/*@=mods@*/
-/*@=modnomods@*/
-/*@=loopswitchbreak@*/
-/*@=internalglobs@*/
-/*@=immediatetrans@*/
-/*@=compdef@*/
-/*@=branchstate@*/
-/*@=bounds@*/
