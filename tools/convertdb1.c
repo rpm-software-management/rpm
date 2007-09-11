@@ -67,7 +67,7 @@ static FD_t fadOpen(const char * path)
 	Fclose(fd);
 	return NULL;
     }
-    /*@-refcounttrans@*/ return fd /*@=refcounttrans@*/ ;
+    return fd ;
 }
 
 static int fadNextOffset(FD_t fd, unsigned int lastOffset)

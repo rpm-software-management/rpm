@@ -80,7 +80,7 @@ static void freeItems(void) {
     nitems = 0;
 }
 
-static int ftsCachePrint(/*@unused@*/ rpmts ts, FILE * fp)
+static int ftsCachePrint(rpmts ts, FILE * fp)
 {
     int rc = 0;
     int i;
@@ -163,8 +163,7 @@ static int ftsCacheUpdate(rpmts ts)
 
 /**
  */
-static int archOkay(/*@null@*/ const char * pkgArch)
-        /*@*/
+static int archOkay(const char * pkgArch)
 {
     if (pkgArch == NULL) return 0;
     return (rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch) ? 1 : 0);
@@ -172,8 +171,7 @@ static int archOkay(/*@null@*/ const char * pkgArch)
 
 /**
  */
-static int osOkay(/*@null@*/ const char * pkgOs)
-        /*@*/
+static int osOkay(const char * pkgOs)
 {
     if (pkgOs == NULL) return 0;
     return (rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs) ? 1 : 0);
@@ -439,7 +437,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmts ts)
  * @param ts		transaction set
  * @param argv		package names to match
  */
-static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
+static void initGlobs(rpmts ts, const char ** argv)
 {
     char buf[BUFSIZ];
     int i;

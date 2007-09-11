@@ -19,8 +19,7 @@ static int noDeps = 1;
 
 static rpmVSFlags vsflags = 0;
 
-static inline /*@observer@*/ const char * identifyDepend(int_32 f)
-	/*@*/
+static inline const char * identifyDepend(int_32 f)
 {
     if (isLegacyPreReq(f))
 	return "PreReq:";
@@ -42,7 +41,6 @@ static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 
 static int
 rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
-	/*@*/
 {
     rpmps ps;
     const char ** pkgURL = NULL;
@@ -140,13 +138,13 @@ restart:
 	default:
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
 	    numFailed++; *fnp = NULL;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMRC_OK:
 	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMRC_NOTFOUND:
 	    goto maybe_manifest;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	}
 	h = headerFree(h); 
 	continue;
@@ -197,7 +195,6 @@ maybe_manifest:
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPkgs;
 
-            /*@-branchstate@*/
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
 		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
@@ -212,7 +209,6 @@ maybe_manifest:
 		}
 		ts->suggests = _free(ts->suggests);
 	    }
-	    /*@=branchstate@*/
 	}
 	ps = rpmpsFree(ps);
     }

@@ -8,13 +8,10 @@ const char *__progname;
 
 #include "debug.h"
 
-/*@unchecked@*/
 char *progname;
 
-/*@unchecked@*/
 static int print_provides;
 
-/*@unchecked@*/
 static int print_requires;
 
 static void rpmdsPrint(const char * msg, rpmds ds, FILE * fp)
@@ -56,12 +53,10 @@ main(int argc, char *const argv[])
     int xx;
 char buf[BUFSIZ];
 
-/*@-modobserver@*/
     if ((progname = strrchr(argv[0], '/')) != NULL)
 	progname++;
     else
 	progname = argv[0];
-/*@=modobserver@*/
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)

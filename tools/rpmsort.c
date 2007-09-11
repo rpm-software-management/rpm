@@ -23,8 +23,7 @@ static const char * avdbpath =
 #endif
 static int noDeps = 0;
 
-static inline /*@observer@*/ const char * identifyDepend(int_32 f)
-	/*@*/
+static inline const char * identifyDepend(int_32 f)
 {
     if (isLegacyPreReq(f))
 	return "PreReq:";
@@ -308,7 +307,7 @@ main(int argc, const char *argv[])
 	default:
 	    fprintf(stderr, _("unknown popt return (%d)"), arg);
 	    exit(EXIT_FAILURE);
-	    /*@notreached@*/ break;
+	    break;
 	}
     }
 

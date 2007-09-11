@@ -38,7 +38,6 @@ static const char * pr_injmode(injmode_t injmode)
     case INJ_UNKNOWN:	return("unknown");
     default:		return("???");
     }
-    /*@notreached@*/
 }
 
 enum cvtaction {CA_OLD, CA_NEW, CA_OMIT, CA_ERR};
@@ -524,7 +523,7 @@ main(int argc, char *argv[])
 	    break;
 	default:
 	    errx(EXIT_FAILURE, _("unknown popt return (%d)"), arg);
-	    /*@notreached@*/ break;
+	    break;
 	}
 
 	if (injmode != lastmode) {
