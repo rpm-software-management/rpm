@@ -214,8 +214,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		    _("package %s was already added, skipping %s\n"),
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
-	    ec = 1;
-	    break;
+	    ec = 0;
+	    goto exit;
 	}
 
 	/*
