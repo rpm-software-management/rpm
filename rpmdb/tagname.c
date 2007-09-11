@@ -8,8 +8,6 @@
 #include <rpmio.h>
 #include "debug.h"
 
-/*@access headerTagTableEntry @*/
-/*@access headerTagIndices @*/
 
 /**
  * Compare tag table entries by name.
@@ -18,7 +16,6 @@
  * @return		comparison
  */
 static int tagCmpName(const void * avp, const void * bvp)
-        /*@*/
 {
     headerTagTableEntry a = *(headerTagTableEntry *) avp;
     headerTagTableEntry b = *(headerTagTableEntry *) bvp;
@@ -32,7 +29,6 @@ static int tagCmpName(const void * avp, const void * bvp)
  * @return		comparison
  */
 static int tagCmpValue(const void * avp, const void * bvp)
-        /*@*/
 {
     headerTagTableEntry a = *(headerTagTableEntry *) avp;
     headerTagTableEntry b = *(headerTagTableEntry *) bvp;
@@ -52,20 +48,17 @@ static int tagCmpValue(const void * avp, const void * bvp)
  */
 static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
 		int (*cmp) (const void * avp, const void * bvp))
-	/*@modifies *ipp, *np @*/
 {
     headerTagTableEntry tte, *ip;
     int n = 0;
 
     ip = xcalloc(rpmTagTableSize, sizeof(*ip));
     n = 0;
-/*@-dependenttrans@*/ /*@-observertrans@*/ /*@-castexpose@*/ /*@-mods@*/ /*@-modobserver@*/
     for (tte = (headerTagTableEntry)rpmTagTable; tte->name != NULL; tte++) {
 	ip[n] = tte;
 	n++;
     }
 assert(n == rpmTagTableSize);
-/*@=dependenttrans@*/ /*@=observertrans@*/ /*@=castexpose@*/ /*@=mods@*/ /*@=modobserver@*/
 
     if (n > 1)
 	qsort(ip, n, sizeof(*ip), cmp);
@@ -76,24 +69,17 @@ assert(n == rpmTagTableSize);
 
 
 /* forward refs */
-static const char * _tagName(int tag)
-	/*@*/;
-static int _tagType(int tag)
-	/*@*/;
-static int _tagValue(const char * tagstr)
-	/*@*/;
+static const char * _tagName(int tag);
+static int _tagType(int tag);
+static int _tagValue(const char * tagstr);
 
-/*@unchecked@*/
 static struct headerTagIndices_s _rpmTags = {
     tagLoadIndex,
     NULL, 0, tagCmpName, _tagValue,
     NULL, 0, tagCmpValue, _tagName, _tagType,
 };
 
-/*@-compmempass@*/
-/*@unchecked@*/
 headerTagIndices rpmTags = &_rpmTags;
-/*@=compmempass@*/
 
 static const char * _tagName(int tag)
 {
@@ -144,7 +130,6 @@ static const char * _tagName(int tag)
 	strcpy(nameBuf, "(unknown)");
 	if (_rpmTags.byValue == NULL)
 	    break;
-/*@-boundswrite@*/
 	l = 0;
 	u = _rpmTags.byValueSize;
 	while (l < u) {
@@ -168,14 +153,12 @@ static const char * _tagName(int tag)
 		    strcpy(nameBuf, t->name + (sizeof("RPMTAG_")-1));
 		for (s = nameBuf+1; *s != '\0'; s++)
 		    *s = xtolower(*s);
-		/*@loopbreak@*/ break;
+		break;
 	    }
 	}
 	break;
     }
-/*@-statictrans@*/
     return nameBuf;
-/*@=statictrans@*/
 }
 
 static int _tagType(int tag)
@@ -200,7 +183,6 @@ static int _tagType(int tag)
     default:
 	if (_rpmTags.byValue == NULL)
 	    break;
-/*@-boundswrite@*/
 	l = 0;
 	u = _rpmTags.byValueSize;
 	while (l < u) {

@@ -33,12 +33,8 @@
  * @retval fsizep	file size
  * @return		-1 on error, otherwise, an open file descriptor
  */ 
-static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_t *fsizep)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+static int open_dso(const char * path, pid_t * pidp, size_t *fsizep)
 {
-/*@only@*/
     static const char * cmd = NULL;
     static int initted = 0;
     int fdno;
@@ -48,7 +44,6 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	initted++;
     }
 
-/*@-boundswrite@*/
     if (pidp) *pidp = 0;
 
     if (fsizep) {
@@ -57,16 +52,13 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	    return -1;
 	*fsizep = st->st_size;
     }
-/*@=boundswrite@*/
 
     fdno = open(path, O_RDONLY);
     if (fdno < 0)
 	return fdno;
 
-/*@-boundsread@*/
     if (!(cmd && *cmd))
 	return fdno;
-/*@=boundsread@*/
 
 #if HAVE_GELF_H && HAVE_LIBELF
  {  Elf *elf = NULL;
@@ -79,16 +71,13 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 
     (void) elf_version(EV_CURRENT);
 
-/*@-evalorder@*/
     if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
      || elf_kind(elf) != ELF_K_ELF
      || gelf_getehdr(elf, &ehdr) == NULL
      || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
 	goto exit;
-/*@=evalorder@*/
 
     bingo = 0;
-    /*@-branchstate -uniondef @*/
     while (!bingo && (scn = elf_nextscn(elf, scn)) != NULL) {
 	(void) gelf_getshdr(scn, &shdr);
 	if (shdr.sh_type != SHT_DYNAMIC)
@@ -100,15 +89,13 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
             for (ndx = 0; ndx < maxndx; ++ndx) {
 		(void) gelf_getdyn (data, ndx, &dyn);
 		if (!(dyn.d_tag == DT_GNU_PRELINKED || dyn.d_tag == DT_GNU_LIBLIST))
-		    /*@innercontinue@*/ continue;
+		    continue;
 		bingo = 1;
-		/*@innerbreak@*/ break;
+		break;
 	    }
 	}
     }
-    /*@=branchstate =uniondef @*/
 
-/*@-boundswrite@*/
     if (pidp != NULL && bingo) {
 	int pipes[2];
 	pid_t pid;
@@ -135,7 +122,6 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	fdno = pipes[0];
 	xx = close(pipes[1]);
     }
-/*@=boundswrite@*/
 
 exit:
     if (elf) (void) elf_end(elf);
@@ -158,9 +144,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
     int rc = 0;
     int fdno;
 
-/*@-globs -internalglobs -mods @*/
     fdno = open_dso(path, &pid, &fsize);
-/*@=globs =internalglobs =mods @*/
     if (fdno < 0) {
 	rc = 1;
 	goto exit;
@@ -200,7 +184,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 	    xx = munmap(mapped, fsize);
 	xx = close(fdno);
 	break;
-      }	/*@fallthrough@*/
+      }
 #endif
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
@@ -239,33 +223,24 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
     }
 
 exit:
-/*@-boundswrite@*/
     if (fsizep)
 	*fsizep = fsize;
     if (!rc)
 	memcpy(digest, md5sum, md5len);
-/*@=boundswrite@*/
     md5sum = _free(md5sum);
 
     return rc;
 }
 
-/*@-exportheadervar@*/
-/*@unchecked@*/
 int _noDirTokens = 0;
-/*@=exportheadervar@*/
 
-/*@-boundsread@*/
 static int dncmp(const void * a, const void * b)
-	/*@*/
 {
     const char *const * first = a;
     const char *const * second = b;
     return strcmp(*first, *second);
 }
-/*@=boundsread@*/
 
-/*@-bounds@*/
 void compressFilelist(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -312,7 +287,6 @@ void compressFilelist(Header h)
 	goto exit;
     }
 
-    /*@-branchstate@*/
     for (i = 0; i < count; i++) {
 	const char ** needle;
 	char savechar;
@@ -326,7 +300,6 @@ void compressFilelist(Header h)
 	needle = dirNames;
 	savechar = *baseName;
 	*baseName = '\0';
-/*@-compdef@*/
 	if (dirIndex < 0 ||
 	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
 	    char *s = alloca(len + 1);
@@ -336,12 +309,10 @@ void compressFilelist(Header h)
 	    dirNames[dirIndex] = s;
 	} else
 	    dirIndexes[i] = needle - dirNames;
-/*@=compdef@*/
 
 	*baseName = savechar;
 	baseNames[i] = baseName;
     }
-    /*@=branchstate@*/
 
 exit:
     if (count > 0) {
@@ -356,10 +327,9 @@ exit:
 
     xx = hre(h, RPMTAG_OLDFILENAMES);
 }
-/*@=bounds@*/
 
 void rpmfiBuildFNames(Header h, rpmTag tagN,
-	/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
+	const char *** fnp, int * fcp)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -398,22 +368,18 @@ void rpmfiBuildFNames(Header h, rpmTag tagN,
 
     fileNames = xmalloc(size);
     t = ((char *) fileNames) + (sizeof(*fileNames) * count);
-    /*@-branchstate@*/
     for (i = 0; i < count; i++) {
 	fileNames[i] = t;
 	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
 	*t++ = '\0';
     }
-    /*@=branchstate@*/
     baseNames = hfd(baseNames, bnt);
     dirNames = hfd(dirNames, dnt);
 
-    /*@-branchstate@*/
     if (fnp)
 	*fnp = fileNames;
     else
 	fileNames = _free(fileNames);
-    /*@=branchstate@*/
     if (fcp) *fcp = count;
 }
 
@@ -425,7 +391,6 @@ void expandFilelist(Header h)
     int count = 0;
     int xx;
 
-    /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
 	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
 	if (fileNames == NULL || count <= 0)
@@ -434,7 +399,6 @@ void expandFilelist(Header h)
 			fileNames, count);
 	fileNames = _free(fileNames);
     }
-    /*@=branchstate@*/
 
     xx = hre(h, RPMTAG_DIRNAMES);
     xx = hre(h, RPMTAG_BASENAMES);
@@ -499,7 +463,7 @@ void providePackageNVR(Header h)
 
     xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
 
-    /*@-nullderef@*/	/* LCL: providesEVR is not NULL */
+   	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
     for (i = 0; i < providesCount; i++) {
         if (!(provides[i] && providesEVR[i]))
@@ -510,7 +474,6 @@ void providePackageNVR(Header h)
 	bingo = 0;
 	break;
     }
-    /*@=nullderef@*/
 
 exit:
     provides = hfd(provides, pnt);
@@ -546,14 +509,12 @@ void legacyRetrofit(Header h, const struct rpmlead * lead)
      * careful. This fixup makes queries give the new values though,
      * which is quite handy.
      */
-    /*@=branchstate@*/
     if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &prefix, NULL))
     {
 	const char * nprefix = stripTrailingChar(alloca_strdup(prefix), '/');
 	(void) headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 		&nprefix, 1); 
     }
-    /*@=branchstate@*/
 
     /*
      * The file list was moved to a more compressed format which not

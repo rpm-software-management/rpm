@@ -8,10 +8,7 @@
 
 /**
  */
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _noDirTokens;
-/*@=redecl@*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,17 +22,14 @@ extern "C" {
  * @retval *fsizep	file size pointer (or NULL)
  * @return		0 on success, 1 on error
  */
-int domd5(const char * fn, /*@out@*/ unsigned char * digest, int asAscii,
-		/*@null@*/ /*@out@*/ size_t *fsizep)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies digest, *fsizep, fileSystem, internalState @*/;
+int domd5(const char * fn, unsigned char * digest, int asAscii,
+		size_t *fsizep);
 
 /**
  * Convert absolute path tag to (dirname,basename,dirindex) tags.
  * @param h		header
  */
-void compressFilelist(Header h)
-	/*@modifies h @*/;
+void compressFilelist(Header h);
 
 /**
  * Retrieve file names from header.
@@ -55,31 +49,27 @@ void compressFilelist(Header h)
  * @retval *fcp		number of files
  */
 void rpmfiBuildFNames(Header h, rpmTag tagN,
-		/*@out@*/ const char *** fnp, /*@out@*/ int * fcp)
-	/*@modifies *fnp, *fcp @*/;
+		const char *** fnp, int * fcp);
 
 /**
  * Convert (dirname,basename,dirindex) tags to absolute path tag.
  * @param h		header
  */
-void expandFilelist(Header h)
-	/*@modifies h @*/;
+void expandFilelist(Header h);
 
 /**
  * Retrofit a Provides: name = version-release dependency into legacy
  * package headers.
  * @param h		header
  */
-void providePackageNVR(Header h)
-	/*@modifies h @*/;
+void providePackageNVR(Header h);
 
 /**
  * Do all necessary retorfits for a package header.
  * @param h		header
  * @param lead
  */
-void legacyRetrofit(Header h, const struct rpmlead * lead)
-	/*@modifies h@*/;
+void legacyRetrofit(Header h, const struct rpmlead * lead);
 
 #ifdef __cplusplus
 }

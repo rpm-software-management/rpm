@@ -33,18 +33,15 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache)
  * @param dirName	string to locate in cache
  * @return pointer to directory name entry (or NULL if not found).
  */
-static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
+static const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache,
 			    const char * dirName)
-	/*@*/
 {
     const void ** data;
 
     if (htGetEntry(cache->ht, dirName, &data, NULL, NULL))
 	return NULL;
-/*@-boundsread@*/
     return data[0];
-/*@=boundsread@*/
 }
 
 /**
@@ -55,10 +52,9 @@ static /*@null@*/ const struct fprintCacheEntry_s * cacheContainsDirectory(
  * @param scareMemory
  * @return pointer to the finger print associated with a file path.
  */
-/*@-bounds@*/ /* LCL: segfault */
+/* LCL: segfault */
 static fingerPrint doLookup(fingerPrintCache cache,
 		const char * dirName, const char * baseName, int scareMemory)
-	/*@modifies cache @*/
 {
     char dir[PATH_MAX];
     const char * cleanDirName;
@@ -76,11 +72,9 @@ static fingerPrint doLookup(fingerPrintCache cache,
     cdnl = strlen(cleanDirName);
 
     if (*cleanDirName == '/') {
-	/*@-branchstate@*/
 	if (!scareMemory)
 	    cleanDirName =
 		rpmCleanPath(strcpy(alloca(cdnl+1), dirName));
-	/*@=branchstate@*/
     } else {
 	scareMemory = 0;	/* XXX causes memory leak */
 
@@ -93,7 +87,6 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
 	dir[0] = '\0';
-	/*@-branchstate@*/
 	if (realpath(".", dir) != NULL) {
 	    end = dir + strlen(dir);
 	    if (end[-1] != '/')	*end++ = '/';
@@ -106,14 +99,11 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    cleanDirName = dir;
 	    cdnl = end - dir;
 	}
-	/*@=branchstate@*/
     }
     fp.entry = NULL;
     fp.subDir = NULL;
     fp.baseName = NULL;
-    /*@-nullret@*/
     if (cleanDirName == NULL) return fp;	/* XXX can't happen */
-    /*@=nullret@*/
 
     buf = strcpy(alloca(cdnl + 1), cleanDirName);
     end = buf + cdnl;
@@ -136,7 +126,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    char * dn = xmalloc(nb);
 	    struct fprintCacheEntry_s * newEntry = (void *)dn;
 
-	    /*@-usereleased@*/	/* LCL: contiguous malloc confusion */
+	   	/* LCL: contiguous malloc confusion */
 	    dn += sizeof(*newEntry);
 	    strcpy(dn, (*buf != '\0' ? buf : "/"));
 	    newEntry->ino = sb.st_ino;
@@ -144,10 +134,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    newEntry->dirName = dn;
 	    fp.entry = newEntry;
 
-	    /*@-kepttrans -dependenttrans @*/
 	    htAddEntry(cache->ht, dn, fp.entry);
-	    /*@=kepttrans =dependenttrans @*/
-	    /*@=usereleased@*/
 	}
 
         if (fp.entry) {
@@ -161,9 +148,8 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    fp.baseName = baseName;
 	    if (!scareMemory && fp.subDir != NULL)
 		fp.subDir = xstrdup(fp.subDir);
-	/*@-compdef@*/ /* FIX: fp.entry.{dirName,dev,ino} undef @*/
+	/* FIX: fp.entry.{dirName,dev,ino} undef @*/
 	    return fp;
-	/*@=compdef@*/
 	}
 
         /* stat of '/' just failed! */
@@ -178,13 +164,10 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	*end = '\0';
     }
 
-    /*@notreached@*/
 
-    /*@-compdef@*/ /* FIX: fp.entry.{dirName,dev,ino} undef @*/
-    /*@-nullret@*/ return fp; /*@=nullret@*/	/* LCL: can't happen. */
-    /*@=compdef@*/
+    /* FIX: fp.entry.{dirName,dev,ino} undef @*/
+    return fp;	/* LCL: can't happen. */
 }
-/*@=bounds@*/
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
 			const char * baseName, int scareMemory)
@@ -201,9 +184,7 @@ unsigned int fpHashFunction(const void * key)
 
     ch = 0;
     chptr = fp->baseName;
-/*@-boundsread@*/
     while (*chptr != '\0') ch ^= *chptr++;
-/*@=boundsread@*/
 
     hash |= ((unsigned)ch) << 24;
     hash |= (((((unsigned)fp->entry->dev) >> 8) ^ fp->entry->dev) & 0xFF) << 16;
@@ -212,7 +193,6 @@ unsigned int fpHashFunction(const void * key)
     return hash;
 }
 
-/*@-boundsread@*/
 int fpEqual(const void * key1, const void * key2)
 {
     const fingerPrint *k1 = key1;
@@ -223,16 +203,13 @@ int fpEqual(const void * key1, const void * key2)
 	return 0;
 
     /* Otherwise, compare fingerprints by value. */
-    /*@-nullpass@*/	/* LCL: whines about (*k2).subdir */
+   	/* LCL: whines about (*k2).subdir */
     if (FP_EQUAL(*k1, *k2))
 	return 0;
-    /*@=nullpass@*/
     return 1;
 
 }
-/*@=boundsread@*/
 
-/*@-bounds@*/
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
 		  const char ** baseNames, const uint_32 * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
@@ -252,7 +229,6 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	}
     }
 }
-/*@=bounds@*/
 
 #ifdef	UNUSED
 /**
@@ -263,8 +239,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
  * @retval fpList	pointer to array of finger prints
  */
 static
-void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
-	/*@modifies h, cache, *fpList @*/;
+void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList);
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;

@@ -8,7 +8,7 @@
 
 /**
  */
-typedef /*@abstract@*/ struct hashTable_s * hashTable;
+typedef struct hashTable_s * hashTable;
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,21 +16,18 @@ extern "C" {
 
 /**
  */
-typedef unsigned int (*hashFunctionType) (const void * string)
-	/*@*/;
+typedef unsigned int (*hashFunctionType) (const void * string);
 
 /**
  */
-typedef int (*hashEqualityType) (const void * key1, const void * key2)
-	/*@*/;
+typedef int (*hashEqualityType) (const void * key1, const void * key2);
 
 /**
  * Return hash value of a string
  * @param string	string on which to calculate hash value
  * @return		hash value
  */
-unsigned int hashFunctionString(const void * string)
-	/*@*/;
+unsigned int hashFunctionString(const void * string);
 
 /**
  * Compare two hash table entries for equality.
@@ -38,8 +35,7 @@ unsigned int hashFunctionString(const void * string)
  * @param key2          entry 2
  * @return		0 if entries are equal
  */
-int hashEqualityString(const void * key1, const void * key2)
-	/*@*/;
+int hashEqualityString(const void * key1, const void * key2);
 
 /**
  * Create hash table.
@@ -53,17 +49,14 @@ int hashEqualityString(const void * key1, const void * key2)
  * @return		pointer to initialized hash table
  */
 hashTable htCreate(int numBuckets, int keySize, int freeData,
-		hashFunctionType fn, hashEqualityType eq)
-	/*@*/; 
+		hashFunctionType fn, hashEqualityType eq); 
 
 /**
  * Destroy hash table.
  * @param ht            pointer to hash table
  * @return		NULL always
  */
-/*@null@*/
-hashTable htFree( /*@only@*/ hashTable ht)
-	/*@modifies ht @*/;
+hashTable htFree( hashTable ht);
 
 /**
  * Add item to hash table.
@@ -71,9 +64,8 @@ hashTable htFree( /*@only@*/ hashTable ht)
  * @param key           pointer to key
  * @param data          pointer to data value
  */
-void htAddEntry(hashTable ht, /*@owned@*/ const void * key,
-		/*@owned@*/ const void * data)
-	/*@modifies ht */;
+void htAddEntry(hashTable ht, const void * key,
+		const void * data);
 
 /**
  * Retrieve item from hash table.
@@ -85,10 +77,9 @@ void htAddEntry(hashTable ht, /*@owned@*/ const void * key,
  * @return		0 on success, 1 if the item is not found.
  */
 int htGetEntry(hashTable ht, const void * key,
-		/*@null@*/ /*@out@*/ const void *** data,
-		/*@null@*/ /*@out@*/ int * dataCount,
-		/*@null@*/ /*@out@*/ const void ** tableKey)
-	/*@modifies *data, *dataCount, *tableKey @*/;
+		const void *** data,
+		int * dataCount,
+		const void ** tableKey);
 
 /**
  * Check for key in hash table.
@@ -96,9 +87,7 @@ int htGetEntry(hashTable ht, const void * key,
  * @param key           pointer to key value
  * @return		1 if the key is present, 0 otherwise
  */
-/*@unused@*/
-int htHasEntry(hashTable ht, const void * key)
-	/*@*/;
+int htHasEntry(hashTable ht, const void * key);
 
 #ifdef __cplusplus
 }

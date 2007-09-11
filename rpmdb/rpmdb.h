@@ -1,6 +1,5 @@
 #ifndef H_RPMDB
 #define H_RPMDB
-/*@-bounds@*/
 
 /** \ingroup rpmdb dbi db1 db3
  * \file rpmdb/rpmdb.h
@@ -12,21 +11,18 @@
 #include "rpmsw.h"
 #include "db.h"
 
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern int _rpmdb_debug;
-/*@=exportlocal@*/
 
 #ifdef	NOTYET
 /** \ingroup rpmdb
  * Database of headers and tag value indices.
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
+typedef struct rpmdb_s * rpmdb;
 
 /** \ingroup rpmdb
  * Database iterator.
  */
-typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
+typedef struct _rpmdbMatchIterator * rpmdbMatchIterator;
 #endif
 
 /**
@@ -41,16 +37,16 @@ typedef enum rpmMireMode_e {
 
 /**
  */
-typedef /*@abstract@*/ struct _dbiIndexItem * dbiIndexItem;
+typedef struct _dbiIndexItem * dbiIndexItem;
 
 /** \ingroup rpmdb
  * A single element (i.e. inverted list from tag values) of a database.
  */
-typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
+typedef struct _dbiIndexSet * dbiIndexSet;
 
 /**
  */
-typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
+typedef struct _dbiIndex * dbiIndex;
 
 /* this will break if sizeof(int) != 4 */
 /** \ingroup dbi
@@ -68,7 +64,7 @@ struct _dbiIndexItem {
  * Items retrieved from the index database.
  */
 struct _dbiIndexSet {
-/*@owned@*/ struct _dbiIndexItem * recs; /*!< array of records */
+struct _dbiIndexItem * recs; /*!< array of records */
     int count;				/*!< number of records */
 };
 
@@ -86,9 +82,7 @@ struct _dbiVec {
  * @param rpmtag	rpm tag
  * @return		0 on success
  */
-    int (*open) (rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
-	/*@globals fileSystem @*/
-	/*@modifies *dbip, fileSystem @*/;
+    int (*open) (rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
 
 /** \ingroup dbi
  * Close index database, and destroy database handle.
@@ -96,9 +90,7 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*close) (/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/;
+    int (*close) (dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
  * Flush pending operations to disk.
@@ -106,9 +98,7 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*sync) (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+    int (*sync) (dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
  * Associate secondary database with primary.
@@ -120,9 +110,7 @@ struct _dbiVec {
  */
     int (*associate) (dbiIndex dbi, dbiIndex dbisecondary,
                 int (*callback) (DB *, const DBT *, const DBT *, DBT *),
-                unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/;
+                unsigned int flags);
 
 /** \ingroup dbi
  * Return join cursor for list of cursors.
@@ -132,10 +120,8 @@ struct _dbiVec {
  * @param flags		DB_JOIN_NOSORT or 0
  * @return		0 on success
  */
-    int (*join) (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
-                unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcp, fileSystem @*/;
+    int (*join) (dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
+                unsigned int flags);
 
 /** \ingroup dbi
  * Open database cursor.
@@ -145,10 +131,8 @@ struct _dbiVec {
  * @param dbiflags	DB_WRITECURSOR or 0
  * @return		0 on success
  */
-    int (*copen) (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
-			/*@out@*/ DBC ** dbcp, unsigned int dbiflags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *txnid, *dbcp, fileSystem @*/;
+    int (*copen) (dbiIndex dbi, DB_TXN * txnid,
+			DBC ** dbcp, unsigned int dbiflags);
 
 /** \ingroup dbi
  * Close database cursor.
@@ -157,9 +141,7 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cclose) (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcursor, fileSystem @*/;
+    int (*cclose) (dbiIndex dbi, DBC * dbcursor, unsigned int flags);
 
 /** \ingroup dbi
  * Duplicate a database cursor.
@@ -169,10 +151,8 @@ struct _dbiVec {
  * @param flags		DB_POSITION for same position, 0 for uninitialized
  * @return		0 on success
  */
-    int (*cdup) (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
-		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcp, fileSystem @*/;
+    int (*cdup) (dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
+		unsigned int flags);
 
 /** \ingroup dbi
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
@@ -183,10 +163,8 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cdel) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-			unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/;
+    int (*cdel) (dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+			unsigned int flags);
 
 /** \ingroup dbi
  * Retrieve (key,data) pair using db->get or dbcursor->c_get.
@@ -197,10 +175,8 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cget) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-			unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, *data, fileSystem @*/;
+    int (*cget) (dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+			unsigned int flags);
 
 /** \ingroup dbi
  * Retrieve (key,data) pair using dbcursor->c_pget.
@@ -212,10 +188,8 @@ struct _dbiVec {
  * @param flags		DB_NEXT, DB_SET, or 0
  * @return		0 on success
  */
-    int (*cpget) (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
-		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/;
+    int (*cpget) (dbiIndex dbi, DBC * dbcursor,
+		DBT * key, DBT * pkey, DBT * data, unsigned int flags);
 
 /** \ingroup dbi
  * Store (key,data) pair using db->put or dbcursor->c_put.
@@ -226,10 +200,8 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cput) (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
-			unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/;
+    int (*cput) (dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+			unsigned int flags);
 
 /** \ingroup dbi
  * Retrieve count of (possible) duplicate items using dbcursor->c_count.
@@ -240,19 +212,15 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*ccount) (dbiIndex dbi, DBC * dbcursor,
-			/*@out@*/ unsigned int * countp,
-			unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/;
+			unsigned int * countp,
+			unsigned int flags);
 
 /** \ingroup dbi
  * Is database byte swapped?
  * @param dbi		index database handle
  * @return		0 no
  */
-    int (*byteswapped) (dbiIndex dbi)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+    int (*byteswapped) (dbiIndex dbi);
 
 /** \ingroup dbi
  * Save statistics in database handle.
@@ -260,24 +228,17 @@ struct _dbiVec {
  * @param flags		retrieve statistics that don't require traversal?
  * @return		0 on success
  */
-    int (*stat) (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/;
+    int (*stat) (dbiIndex dbi, unsigned int flags);
 };
 
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
-/*@null@*/
     const char * dbi_root;	/*!< chroot(2) component of path */
-/*@null@*/
     const char * dbi_home;	/*!< directory component of path */
-/*@relnull@*/
     const char * dbi_file;	/*!< file component of path */
-/*@relnull@*/
     const char * dbi_subfile;
-/*@null@*/
     const char * dbi_tmpdir;	/*!< temporary directory */
 
     int	dbi_ecflags;		/*!< db_env_create flags */
@@ -303,19 +264,14 @@ struct _dbiIndex {
     int	dbi_debug;
     int	dbi_byteswapped;
 
-/*@null@*/
     char * dbi_host;
     unsigned long dbi_cl_timeout;
     unsigned long dbi_sv_timeout;
 
 	/* dbenv parameters */
     int	dbi_lorder;
-/*@unused@*/
     /* XXX db-4.3.14 adds dbenv as 1st arg. */
-    void (*db_errcall) (void * dbenv, const char *db_errpfx, char *buffer)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-/*@unused@*/ /*@shared@*/
+    void (*db_errcall) (void * dbenv, const char *db_errpfx, char *buffer);
     FILE *	dbi_errfile;
     const char * dbi_errpfx;
     int	dbi_verbose;
@@ -327,8 +283,8 @@ struct _dbiIndex {
 	/* lock sub-system parameters */
     unsigned int dbi_lk_max;
     unsigned int dbi_lk_detect;
-/*@unused@*/ int dbi_lk_nmodes;
-/*@unused@*/ unsigned char * dbi_lk_conflicts;
+int dbi_lk_nmodes;
+unsigned char * dbi_lk_conflicts;
 	/* log sub-system parameters */
     unsigned int dbi_lg_max;
     unsigned int dbi_lg_bsize;
@@ -336,33 +292,24 @@ struct _dbiIndex {
     unsigned int dbi_tx_max;
 #if 0
     int	(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec,
-				DB_LSN *lsnp, int redo, void *info)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+				DB_LSN *lsnp, int redo, void *info);
 #endif
 	/* dbinfo parameters */
     int	dbi_pagesize;		/*!< (fs blksize) */
-/*@unused@*/ /*@null@*/
-    void * (*dbi_malloc) (size_t nbytes)
-	/*@*/;
+    void * (*dbi_malloc) (size_t nbytes);
 	/* hash access parameters */
     unsigned int dbi_h_ffactor;	/*!< */
     unsigned int (*dbi_h_hash_fcn) (DB *, const void *bytes,
-				unsigned int length)
-	/*@*/;
+				unsigned int length);
     unsigned int dbi_h_nelem;	/*!< */
     unsigned int dbi_h_flags;	/*!< DB_DUP, DB_DUPSORT */
-    int (*dbi_h_dup_compare_fcn) (DB *, const DBT *, const DBT *)
-	/*@*/;
+    int (*dbi_h_dup_compare_fcn) (DB *, const DBT *, const DBT *);
 	/* btree access parameters */
     int	dbi_bt_flags;
     int	dbi_bt_minkey;
-    int	(*dbi_bt_compare_fcn) (DB *, const DBT *, const DBT *)
-	/*@*/;
-    int	(*dbi_bt_dup_compare_fcn) (DB *, const DBT *, const DBT *)
-	/*@*/;
-    size_t (*dbi_bt_prefix_fcn) (DB *, const DBT *, const DBT *)
-	/*@*/;
+    int	(*dbi_bt_compare_fcn) (DB *, const DBT *, const DBT *);
+    int	(*dbi_bt_dup_compare_fcn) (DB *, const DBT *, const DBT *);
+    size_t (*dbi_bt_prefix_fcn) (DB *, const DBT *, const DBT *);
 	/* recno access parameters */
     int	dbi_re_flags;
     int	dbi_re_delim;
@@ -372,19 +319,14 @@ struct _dbiIndex {
 	/* queue access parameters */
     unsigned int dbi_q_extentsize;
 
-/*@refcounted@*/
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
     int	dbi_jlen;		/*!< size of join key */
 
-/*@only@*//*@null@*/
     DB * dbi_db;		/*!< Berkeley DB * handle */
-/*@only@*//*@null@*/
     DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
-/*@only@*//*@null@*/
     void * dbi_stats;		/*!< Berkeley db statistics */
 
-/*@observer@*/
     const struct _dbiVec * dbi_vec;	/*!< private methods */
 
 };
@@ -393,38 +335,26 @@ struct _dbiIndex {
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
-/*@owned@*/
     const char * db_root;/*!< path prefix */
-/*@owned@*/
     const char * db_home;/*!< directory path */
     int		db_flags;
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_api;		/*!< Berkeley API type */
-/*@owned@*/
     const char * db_errpfx;
     int		db_remove_env;
     int		db_filter_dups;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
-    void (*db_errcall) (const char *db_errpfx, char *buffer)
-	/*@*/;
-/*@shared@*/
+    void (*db_errcall) (const char *db_errpfx, char *buffer);
     FILE *	db_errfile;
-/*@only@*/
-    void * (*db_malloc) (size_t nbytes)
-	/*@*/;
-/*@only@*/
-    void * (*db_realloc) (/*@only@*//*@null@*/ void * ptr,
-						size_t nbytes)
-	/*@*/;
-    void (*db_free) (/*@only@*/ void * ptr)
-	/*@modifies *ptr @*/;
-/*@only@*/ /*@null@*/
+    void * (*db_malloc) (size_t nbytes);
+    void * (*db_realloc) (void * ptr,
+						size_t nbytes);
+    void (*db_free) (void * ptr);
     unsigned char * db_bits;	/*!< package instance bit mask. */
     int		db_nbits;	/*!< no. of bits in mask. */
     rpmdb	db_next;
     int		db_opens;
-/*@only@*/ /*@null@*/
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
@@ -433,7 +363,6 @@ struct rpmdb_s {
     struct rpmop_s db_putops;
     struct rpmop_s db_delops;
 
-/*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
 
@@ -444,35 +373,27 @@ struct rpmdb_s {
 enum rpmdbFlags {
 	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
 	RPMDB_FLAG_MINIMAL	= (1 << 1),
-/*@-enummemuse@*/
 	RPMDB_FLAG_CHROOT	= (1 << 2)
-/*@=enummemuse@*/
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*@-exportlocal@*/
 /** \ingroup db3
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
  * @param rpmtag	rpm tag
  * @return		index database handle
  */
-/*@unused@*/ /*@only@*/ /*@null@*/
-dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag);
 
 /** \ingroup db3
  * Destroy index database handle instance.
  * @param dbi		index database handle
  * @return		NULL always
  */
-/*@null@*/
-dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
-	/*@*/;
+dbiIndex db3Free( dbiIndex dbi);
 
 /** \ingroup db3
  * Format db3 open flags for debugging print.
@@ -480,11 +401,7 @@ dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi)
  * @param print_dbenv_flags	format db env flags instead?
  * @return			formatted flags (static buffer)
  */
-/*@-redecl@*/
-/*@exposed@*/
-extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
-	/*@*/;
-/*@=redecl@*/
+extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 
 /** \ingroup dbi
  * Return handle for an index database.
@@ -493,12 +410,10 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
  * @param flags		(unused)
  * @return		index database handle
  */
-/*@only@*/ /*@null@*/ dbiIndex dbiOpen(/*@null@*/ rpmdb db, rpmTag rpmtag,
-		unsigned int flags)
-	/*@globals rpmGlobalMacroContext, errno, h_errno @*/
-	/*@modifies db, rpmGlobalMacroContext, errno @*/;
+dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag,
+		unsigned int flags);
 
-/*@-globuse -mustmod @*/ /* FIX: vector annotations */
+/* FIX: vector annotations */
 /** \ingroup dbi
  * Open a database cursor.
  * @param dbi		index database handle
@@ -507,11 +422,9 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
  * @param flags		DB_WRITECURSOR if writing, or 0
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiCopen(dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
-		/*@out@*/ DBC ** dbcp, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcp, fileSystem @*/
+static inline
+int dbiCopen(dbiIndex dbi, DB_TXN * txnid,
+		DBC ** dbcp, unsigned int flags)
 {
     return (*dbi->dbi_vec->copen) (dbi, txnid, dbcp, flags);
 }
@@ -523,10 +436,8 @@ int dbiCopen(dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcursor, fileSystem @*/
+static inline
+int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
 {
     return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
 }
@@ -539,10 +450,9 @@ int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags)
  * @param flags		DB_POSITION for same position, 0 for uninitialized
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiCdup(dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
+static inline
+int dbiCdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
 		unsigned int flags)
-	/*@modifies dbi, *dbcp @*/
 {
     return (*dbi->dbi_vec->cdup) (dbi, dbcursor, dbcp, flags);
 }
@@ -556,11 +466,9 @@ int dbiCdup(dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
+static inline
+int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies dbi, *dbcursor, fileSystem, internalState @*/
 {
     int rc;
     assert(key->data != NULL && key->size > 0);
@@ -579,11 +487,9 @@ int dbiDel(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
+static inline
+int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies dbi, *dbcursor, *key, *data, fileSystem, internalState @*/
 {
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
@@ -603,11 +509,9 @@ int dbiGet(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
  * @param flags		DB_NEXT, DB_SET, or 0
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
+static inline
+int dbiPget(dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies dbi, *dbcursor, *key, *pkey, *data, fileSystem, internalState @*/
 {
     int rc;
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
@@ -626,11 +530,9 @@ int dbiPget(dbiIndex dbi, /*@null@*/ DBC * dbcursor,
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
+static inline
+int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies dbi, *dbcursor, *key, fileSystem, internalState @*/
 {
     int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
@@ -648,11 +550,9 @@ int dbiPut(dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key, DBT * data,
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
+static inline
+int dbiCount(dbiIndex dbi, DBC * dbcursor, unsigned int * countp,
 		unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies *dbcursor, fileSystem @*/
 {
     return (*dbi->dbi_vec->ccount) (dbi, dbcursor, countp, flags);
 }
@@ -663,10 +563,8 @@ int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
+static inline
+int dbiVerify(dbiIndex dbi, unsigned int flags)
 {
     dbi->dbi_verify_on_close = 1;
     return (*dbi->dbi_vec->close) (dbi, flags);
@@ -678,10 +576,8 @@ int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags)
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiClose(/*@only@*/ dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
+static inline
+int dbiClose(dbiIndex dbi, unsigned int flags)
 {
     return (*dbi->dbi_vec->close) (dbi, flags);
 }
@@ -692,10 +588,8 @@ int dbiClose(/*@only@*/ dbiIndex dbi, unsigned int flags)
  * @param flags		(unused)
  * @return		0 on success
  */
-/*@unused@*/ static inline
+static inline
 int dbiSync (dbiIndex dbi, unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     return (*dbi->dbi_vec->sync) (dbi, flags);
 }
@@ -708,12 +602,10 @@ int dbiSync (dbiIndex dbi, unsigned int flags)
  * @param flags		DB_CREATE or 0
  * @return		0 on success
  */
-/*@unused@*/ static inline
+static inline
 int dbiAssociate(dbiIndex dbi, dbiIndex dbisecondary,
                 int (*callback) (DB *, const DBT *, const DBT *, DBT *),
                 unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, fileSystem @*/
 {
     return (*dbi->dbi_vec->associate) (dbi, dbisecondary, callback, flags);
 }
@@ -726,11 +618,9 @@ int dbiAssociate(dbiIndex dbi, dbiIndex dbisecondary,
  * @param flags		DB_JOIN_NOSORT or 0
  * @return		0 on success
  */
-/*@unused@*/ static inline
-int dbiJoin(dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
+static inline
+int dbiJoin(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
                 unsigned int flags)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcp, fileSystem @*/
 {
     return (*dbi->dbi_vec->join) (dbi, curslist, dbcp, flags);
 }
@@ -740,9 +630,8 @@ int dbiJoin(dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
  * @param dbi		index database handle
  * @return		0 same order, 1 swapped order
  */
-/*@unused@*/ static inline
+static inline
 int dbiByteSwapped(dbiIndex dbi)
-	/*@modifies dbi @*/
 {
     if (dbi->dbi_byteswapped == -1)
         dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
@@ -754,36 +643,30 @@ int dbiByteSwapped(dbiIndex dbi)
  * @param flags		DB_FAST_STAT or 0
  * @return		0 on success
  */
-/*@unused@*/ static inline
+static inline
 int dbiStat(dbiIndex dbi, unsigned int flags)
-	/*@modifies dbi @*/
 {
     return (*dbi->dbi_vec->stat) (dbi, flags);
 }
-/*@=globuse =mustmod @*/
 
-/*@=exportlocal@*/
 
 /** \ingroup rpmdb
  */
-unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
-	/*@*/;
+unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 
 /** \ingroup dbi
  * Destroy set of index database items.
  * @param set	set of index database items
  * @return	NULL always
  */
-/*@null@*/ dbiIndexSet dbiFreeIndexSet(/*@only@*/ /*@null@*/ dbiIndexSet set)
-	/*@modifies set @*/;
+dbiIndexSet dbiFreeIndexSet(dbiIndexSet set);
 
 /** \ingroup dbi
  * Count items in index database set.
  * @param set	set of index database items
  * @return	number of items
  */
-unsigned int dbiIndexSetCount(dbiIndexSet set)
-	/*@*/;
+unsigned int dbiIndexSetCount(dbiIndexSet set);
 
 /** \ingroup dbi
  * Return record offset of header from element in index database set.
@@ -791,8 +674,7 @@ unsigned int dbiIndexSetCount(dbiIndexSet set)
  * @param recno	index of item in set
  * @return	record offset of header
  */
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
-	/*@*/;
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
 
 /** \ingroup dbi
  * Return file index from element in index database set.
@@ -800,18 +682,13 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
  * @param recno	index of item in set
  * @return	file index
  */
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
-	/*@*/;
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 
 /** \ingroup rpmdb
  * Tags for which rpmdb indices will be built.
  */
-/*@-exportlocal@*/
-/*@unchecked@*/
-/*@only@*/ /*@null@*/ extern int * dbiTags;
-/*@unchecked@*/
+extern int * dbiTags;
 extern int dbiTagsMax;
-/*@=exportlocal@*/
 
 /** \ingroup rpmdb
  * Unreference a database instance.
@@ -819,17 +696,11 @@ extern int dbiTagsMax;
  * @param msg
  * @return		NULL always
  */
-/*@unused@*/ /*@null@*/
-rpmdb rpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg)
-	/*@modifies db @*/;
+rpmdb rpmdbUnlink (rpmdb db, const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
-/*@null@*/
-rpmdb XrpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg,
-		const char * fn, unsigned ln)
-	/*@modifies db @*/;
-/*@=exportlocal@*/
+rpmdb XrpmdbUnlink (rpmdb db, const char * msg,
+		const char * fn, unsigned ln);
 #define	rpmdbUnlink(_db, _msg)	XrpmdbUnlink(_db, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmdb
@@ -838,16 +709,11 @@ rpmdb XrpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg,
  * @param msg
  * @return		new rpm database reference
  */
-/*@unused@*/
-rpmdb rpmdbLink (rpmdb db, const char * msg)
-	/*@modifies db @*/;
+rpmdb rpmdbLink (rpmdb db, const char * msg);
 
 /** @todo Remove debugging entry from the ABI. */
-/*@-exportlocal@*/
 rpmdb XrpmdbLink (rpmdb db, const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies db @*/;
-/*@=exportlocal@*/
+		const char * fn, unsigned ln);
 #define	rpmdbLink(_db, _msg)	XrpmdbLink(_db, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmdb
@@ -858,10 +724,8 @@ rpmdb XrpmdbLink (rpmdb db, const char * msg,
  * @param perms		database permissions
  * @return		0 on success
  */
-int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
-		int mode, int perms)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *dbp, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdbOpen (const char * prefix, rpmdb * dbp,
+		int mode, int perms);
 
 /** \ingroup rpmdb
  * Initialize database.
@@ -869,18 +733,14 @@ int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
  * @param perms		database permissions
  * @return		0 on success
  */
-int rpmdbInit(/*@null@*/ const char * prefix, int perms)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdbInit(const char * prefix, int perms);
 
 /** \ingroup rpmdb
  * Verify database components.
  * @param prefix	path to top of install tree
  * @return		0 on success
  */
-int rpmdbVerify(/*@null@*/ const char * prefix)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdbVerify(const char * prefix);
 
 /**
  * Close a single database index.
@@ -888,38 +748,28 @@ int rpmdbVerify(/*@null@*/ const char * prefix)
  * @param rpmtag	rpm tag
  * @return              0 on success
  */
-int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/;
+int rpmdbCloseDBI(rpmdb db, int rpmtag);
 
 /** \ingroup rpmdb
  * Close all database indices and free rpmdb.
  * @param db		rpm database
  * @return		0 on success
  */
-int rpmdbClose (/*@killref@*/ /*@only@*/ /*@null@*/ rpmdb db)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/;
+int rpmdbClose (rpmdb db);
 
 /** \ingroup rpmdb
  * Sync all database indices.
  * @param db		rpm database
  * @return		0 on success
  */
-int rpmdbSync (/*@null@*/ rpmdb db)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+int rpmdbSync (rpmdb db);
 
 /** \ingroup rpmdb
  * Open all database indices.
  * @param db		rpm database
  * @return		0 on success
  */
-/*@-exportlocal@*/
-int rpmdbOpenAll (/*@null@*/ rpmdb db)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies db, rpmGlobalMacroContext @*/;
-/*@=exportlocal@*/
+int rpmdbOpenAll (rpmdb db);
 
 /** \ingroup rpmdb
  * Return number of instances of package in rpm database.
@@ -927,25 +777,21 @@ int rpmdbOpenAll (/*@null@*/ rpmdb db)
  * @param name		rpm package name
  * @return		number of instances
  */
-int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdbCountPackages(rpmdb db, const char * name);
 
 /** \ingroup rpmdb
  * Return header join key for current position of rpm database iterator.
  * @param mi		rpm database iterator
  * @return		current header join key
  */
-unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmdbMatchIterator mi)
-	/*@*/;
+unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
  * Return number of elements in rpm database iterator.
  * @param mi		rpm database iterator
  * @return		number of elements
  */
-int rpmdbGetIteratorCount(/*@null@*/ rpmdbMatchIterator mi)
-	/*@*/;
+int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
  * Append items to set of package instances to iterate.
@@ -954,9 +800,8 @@ int rpmdbGetIteratorCount(/*@null@*/ rpmdbMatchIterator mi)
  * @param nHdrNums	number of elements in array
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
-		/*@null@*/ const int * hdrNums, int nHdrNums)
-	/*@modifies mi @*/;
+int rpmdbAppendIterator(rpmdbMatchIterator mi,
+		const int * hdrNums, int nHdrNums);
 
 /** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
@@ -967,9 +812,8 @@ int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
  * @param sorted	is the array sorted? (array will be sorted on return)
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
-		/*@null@*/ int * hdrNums, int nHdrNums, int sorted)
-	/*@modifies mi, hdrNums @*/;
+int rpmdbPruneIterator(rpmdbMatchIterator mi,
+		int * hdrNums, int nHdrNums, int sorted);
 
 /** \ingroup rpmdb
  * Add pattern to iterator selector.
@@ -979,10 +823,8 @@ int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
  * @param pattern	pattern to match
  * @return		0 on success
  */
-int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
-		rpmMireMode mode, /*@null@*/ const char * pattern)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies mi, mode, rpmGlobalMacroContext @*/;
+int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
+		rpmMireMode mode, const char * pattern);
 
 /** \ingroup rpmdb
  * Prepare iterator for lazy writes.
@@ -991,8 +833,7 @@ int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
  * @param rewrite	new value of rewrite
  * @return		previous value
  */
-int rpmdbSetIteratorRewrite(/*@null@*/ rpmdbMatchIterator mi, int rewrite)
-	/*@modifies mi @*/;
+int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite);
 
 /** \ingroup rpmdb
  * Modify iterator to mark header for lazy write on release.
@@ -1000,8 +841,7 @@ int rpmdbSetIteratorRewrite(/*@null@*/ rpmdbMatchIterator mi, int rewrite)
  * @param modified	new value of modified
  * @return		previous value
  */
-int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
-	/*@modifies mi @*/;
+int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
 
 /** \ingroup rpmdb
  * Modify iterator to verify retrieved header blobs.
@@ -1010,9 +850,8 @@ int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
  * @param (*hdrchk)	headerCheck() vector
  * @return		0 always
  */
-int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg))
-	/*@modifies mi @*/;
+int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
+		rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg));
 
 /** \ingroup rpmdb
  * Return database iterator.
@@ -1022,29 +861,20 @@ int rpmdbSetHdrChk(/*@null@*/ rpmdbMatchIterator mi, /*@null@*/ rpmts ts,
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-/*@only@*/ /*@null@*/
-rpmdbMatchIterator rpmdbInitIterator(/*@null@*/ rpmdb db, rpmTag rpmtag,
-			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
+			const void * keyp, size_t keylen);
 
 /** \ingroup rpmdb
  * Return next package header from iteration.
  * @param mi		rpm database iterator
  * @return		NULL on end of iteration.
  */
-/*@null@*/
-Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
+Header rpmdbNextIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
  * Check for and exit on termination signals.
  */
-/*@mayexit@*/
-int rpmdbCheckSignals(void)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+int rpmdbCheckSignals(void);
 
 /** \ingroup rpmdb
  * Check rpmdb signal handler for trapped signal and/or requested exit,
@@ -1061,10 +891,7 @@ int rpmdbCheckTerminate(int terminate);
  * @param mi		rpm database iterator
  * @return		NULL always
  */
-/*@null@*/
-rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies mi, rpmGlobalMacroContext, fileSystem, internalState @*/;
+rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.
@@ -1075,10 +902,8 @@ rpmdbMatchIterator rpmdbFreeIterator(/*@only@*/ /*@null@*/rpmdbMatchIterator mi)
  * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdbAdd(rpmdb db, int iid, Header h, rpmts ts,
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg));
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
@@ -1089,11 +914,9 @@ int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h, /*@null@*/ rpmts ts,
  * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
-		/*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies db, rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
+		rpmts ts,
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg));
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
@@ -1102,20 +925,15 @@ int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum,
  * @param (*hdrchk)	headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbRebuild(/*@null@*/ const char * prefix, /*@null@*/ rpmts ts,
-		/*@null@*/ rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmdbRebuild(const char * prefix, rpmts ts,
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg));
 
 #ifndef __APPLE__
 /**
  * Mergesort, same arguments as qsort(2).
  */
-/*@unused@*/
 int mergesort(void *base, size_t nmemb, size_t size,
-                int (*cmp) (const void *, const void *))
-	/*@globals errno @*/
-	/*@modifies base, errno @*/;
+                int (*cmp) (const void *, const void *));
 #else
 /* mergesort is defined in stdlib.h on Mac OS X */
 #endif /* __APPLE__ */
@@ -1124,5 +942,4 @@ int mergesort(void *base, size_t nmemb, size_t size,
 }
 #endif
 
-/*@=bounds@*/
 #endif	/* H_RPMDB */

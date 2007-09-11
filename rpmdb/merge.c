@@ -1,4 +1,3 @@
-/*@-bounds -mustmod -sizeoftype @*/
 #ifndef __APPLE__
 /*-
  * Copyright (c) 1992, 1993
@@ -113,7 +112,6 @@ static char sccsid[] = "@(#)merge.c	8.2 (Berkeley) 2/14/94";
 static void
 insertionsort(unsigned char *a, size_t n, size_t size,
 		int (*cmp) (const void *, const void *))
-	/*@modifies *a @*/
 {
 	u_char *ai, *s, *t, *u, tmp;
 	int i;
@@ -122,7 +120,7 @@ insertionsort(unsigned char *a, size_t n, size_t size,
 		for (t = ai; t > a; t -= size) {
 			u = t - size;
 			if (cmp(u, t) <= 0)
-				/*@innerbreak@*/ break;
+				break;
 			swap(u, t);
 		}
 }
@@ -134,9 +132,8 @@ insertionsort(unsigned char *a, size_t n, size_t size,
  * is defined.  Otherwise simple pairwise merging is used.)
  */
 static void
-setup(unsigned char *list1, /*@out@*/ unsigned char *list2,
+setup(unsigned char *list1, unsigned char *list2,
 		size_t n, size_t size, int (*cmp) (const void *, const void *))
-	/*@modifies list1, list2 @*/
 {
 	int i, length, size2, tmp, sense;
 	unsigned char *f1, *f2, *s, *l2, *last, *p2;
@@ -165,7 +162,7 @@ setup(unsigned char *list1, /*@out@*/ unsigned char *list2,
 					/* Find pairs with same sense. */
 		for (f2 = f1 + size2; f2 < last; f2 += size2) {
 			if ((cmp(f2, f2+ size) > 0) != sense)
-				/*@innerbreak@*/ break;
+				break;
 			length += 2;
 		}
 		if (length < THRESHOLD) {		/* Pairwise merge */
@@ -212,11 +209,8 @@ mergesort(void *base, size_t nmemb, size_t size,
 	register int i, sense;
 	int big, iflag;
 	register unsigned char *f1, *f2, *t, *b, *q, *l1, *l2;
-	/*@dependent@*/
 	register unsigned char *tp2;
-	/*@owned@*/
 	unsigned char *list2;
-	/*@dependent@*/
 	unsigned char *list1;
 	unsigned char *p2, *p, *last, **p1;
 
@@ -243,7 +237,6 @@ mergesort(void *base, size_t nmemb, size_t size,
 	setup(list1, list2, nmemb, size, cmp);
 	last = list2 + nmemb * size;
 	i = big = 0;
-/*@-branchstate@*/
 	while (*EVAL(list2) != last) {
 	    l2 = list1;
 	    p1 = EVAL(list1);
@@ -271,7 +264,6 @@ mergesort(void *base, size_t nmemb, size_t size,
 	    					goto EXPONENTIAL;
 	    				}
 	    		} else {
-/*@-shiftimplementation@*/
 EXPONENTIAL:	    		for (i = size; ; i <<= 1)
 	    				if ((p = (b + i)) >= t) {
 	    					if ((p = t - size) > b &&
@@ -279,7 +271,7 @@ EXPONENTIAL:	    		for (i = size; ; i <<= 1)
 	    						t = p;
 	    					else
 	    						b = p;
-	    					/*@innerbreak@*/ break;
+	    					break;
 	    				} else if ((*cmp)(q, p) <= sense) {
 	    					t = p;
 	    					if (i == size)
@@ -287,7 +279,6 @@ EXPONENTIAL:	    		for (i = size; ; i <<= 1)
 	    					goto FASTCASE;
 	    				} else
 	    					b = p;
-				/*@-infloopsuncon@*/
 				while (t > b+size) {
 	    				i = (((t - b) / size) >> 1) * size;
 	    				if ((*cmp)(q, p = b + i) <= sense)
@@ -302,8 +293,6 @@ FASTCASE:	    		while (i > size)
 	    					t = p;
 	    				else
 	    					b = p;
-				/*@=infloopsuncon@*/
-/*@=shiftimplementation@*/
 COPY:	    			b = t;
 	    		}
 	    		i = size;
@@ -338,24 +327,18 @@ COPY:	    			b = t;
 	    	}
 	    	*p1 = l2;
 	    }
-/*@-dependenttrans@*/
 	    tp2 = list1;	/* swap list1, list2 */
 	    list1 = list2;
 	    list2 = tp2;
-/*@=dependenttrans@*/
 	    last = list2 + nmemb*size;
 	}
-/*@=branchstate@*/
 	if (base == list2) {
 		memmove(list2, list1, nmemb*size);
 		list2 = list1;
 	}
-/*@-usereleased@*/
 	free(list2);
-/*@=usereleased@*/
 	return (0);
 }
 #else
 /* mergesort is implemented in System on Mac OS X */
 #endif /* __APPLE__ */
-/*@=bounds =mustmod =sizeoftype @*/

@@ -100,7 +100,6 @@ typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 typedef unsigned char uint_8;
 
-/*@-redef@*/	/* LCL: no clue */
 /** \ingroup header
  */
 typedef const char *	errmsg_t;
@@ -114,18 +113,17 @@ typedef int_32 *	hCNT_t;
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
+typedef struct headerToken_s * Header;
 
 /** \ingroup header
  */
-typedef /*@abstract@*/ struct headerIterator_s * HeaderIterator;
+typedef struct headerIterator_s * HeaderIterator;
 
 /** \ingroup header
  * Associate tag names with numeric values.
  */
-typedef /*@abstract@*/ struct headerTagTableEntry_s * headerTagTableEntry;
+typedef struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
-/*@observer@*/ /*@null@*/
     const char * name;		/*!< Tag name. */
     int val;			/*!< Tag numeric value. */
     int type;			/*!< Tag type. */
@@ -133,27 +131,20 @@ struct headerTagTableEntry_s {
 
 /**
  */
-typedef /*@abstract@*/ struct headerTagIndices_s * headerTagIndices;
+typedef struct headerTagIndices_s * headerTagIndices;
 struct headerTagIndices_s {
     int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
-                int (*cmp) (const void * avp, const void * bvp))
-        /*@ modifies *ipp, *np */;	/*!< load sorted tag index. */
-/*@relnull@*/
+                int (*cmp) (const void * avp, const void * bvp));
+                                        /*!< load sorted tag index. */
     headerTagTableEntry * byName;	/*!< header tags sorted by name. */
     int byNameSize;			/*!< no. of entries. */
-    int (*byNameCmp) (const void * avp, const void * bvp)
-        /*@*/;				/*!< compare entries by name. */
-    int (*tagValue) (const char * name)
-	/*@*/;				/* return value from name. */
-/*@relnull@*/
+    int (*byNameCmp) (const void * avp, const void * bvp);				/*!< compare entries by name. */
+    int (*tagValue) (const char * name);				/* return value from name. */
     headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
     int byValueSize;			/*!< no. of entries. */
-    int (*byValueCmp) (const void * avp, const void * bvp)
-        /*@*/;				/*!< compare entries by value. */
-    const char * (*tagName) (int value)
-	/*@*/;				/* Return name from value. */
-    int (*tagType) (int value)
-	/*@*/;				/* Return type from value. */
+    int (*byValueCmp) (const void * avp, const void * bvp);				/*!< compare entries by value. */
+    const char * (*tagName) (int value);				/* Return name from value. */
+    int (*tagType) (int value);				/* Return type from value. */
 };
 
 /** \ingroup header
@@ -179,8 +170,7 @@ enum headerSprintfExtensionType {
  */
 typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
 				const void * data, char * formatPrefix,
-				int padding, int element)
-	/*@requires maxSet(data) >= 0 @*/;
+				int padding, int element);
 
 /** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.
@@ -194,23 +184,19 @@ typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
  * @return		0 on success
  */
 typedef int (*headerTagTagFunction) (Header h,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * data,
-		/*@null@*/ /*@out@*/ hCNT_t count,
-		/*@null@*/ /*@out@*/ int * freeData)
-	/*@requires maxSet(type) >= 0 /\ maxSet(data) >= 0
-		/\ maxSet(count) >= 0 /\ maxSet(freeData) >= 0 @*/;
+		hTYP_t type,
+		hPTR_t * data,
+		hCNT_t count,
+		int * freeData);
 
 /** \ingroup header
  * Define header tag output formats.
  */
-typedef /*@abstract@*/ struct headerSprintfExtension_s * headerSprintfExtension;
+typedef struct headerSprintfExtension_s * headerSprintfExtension;
 struct headerSprintfExtension_s {
     enum headerSprintfExtensionType type;	/*!< Type of extension. */
-/*@observer@*/ /*@null@*/
     const char * name;				/*!< Name of extension. */
     union {
-/*@observer@*/ /*@null@*/
 	void * generic;				/*!< Private extension. */
 	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
 	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
@@ -221,10 +207,7 @@ struct headerSprintfExtension_s {
 /** \ingroup header
  * Supported default header tag output formats.
  */
-/*@-redecl@*/
-/*@observer@*/
 extern const struct headerSprintfExtension_s headerDefaultFormats[];
-/*@=redecl@*/
 
 /** \ingroup header
  * Include calculation for 8 bytes of (magic, 0)?
@@ -261,7 +244,6 @@ typedef enum rpmTagType_e {
  * value of the tag a 16 byte image of what should/will be in the header index,
  * followed by per-tag private data.
  */
-/*@-enummemuse -typeuse @*/
 typedef enum rpmSubTagType_e {
     RPM_REGION_TYPE		= -10,
     RPM_BIN_ARRAY_TYPE		= -11,
@@ -271,12 +253,10 @@ typedef enum rpmSubTagType_e {
   /*!<@todo Implement, intent is to to carry a (???,tagNum,valNum) cross
 	reference to retrieve data from other tags. */
 } rpmSubTagType;
-/*@=enummemuse =typeuse @*/
 
 /** \ingroup header
  *  * Identify how to return the header data type.
  *   */
-/*@-enummemuse -typeuse @*/
 typedef enum rpmTagReturnType_e {
     RPM_ANY_RETURN_TYPE         = 0,
     RPM_SCALAR_RETURN_TYPE      = 0x00010000,
@@ -284,7 +264,6 @@ typedef enum rpmTagReturnType_e {
     RPM_MAPPING_RETURN_TYPE     = 0x00040000,
     RPM_MASK_RETURN_TYPE        = 0xffff0000
 } rpmTagReturnType;
-/*@=enummemuse =typeuse @*/
 
 /**
  * Header private tags.
@@ -300,7 +279,6 @@ typedef enum rpmTagReturnType_e {
 
 /**
  */
-/*@-typeuse -fielduse@*/
 typedef union hRET_s {
     const void * ptr;
     const char ** argv;
@@ -311,33 +289,25 @@ typedef union hRET_s {
     int_16 * i16p;
     int_8 * i8p;
 } * hRET_t;
-/*@=typeuse =fielduse@*/
 
 /**
  */
-/*@-typeuse -fielduse@*/
 typedef struct HE_s {
     int_32 tag;
-/*@null@*/
     hTYP_t typ;
     union {
-/*@null@*/
 	hPTR_t * ptr;
-/*@null@*/
 	hRET_t * ret;
     } u;
-/*@null@*/
     hCNT_t cnt;
 } * HE_t;
-/*@=typeuse =fielduse@*/
 
 /** \ingroup header
  * Create new (empty) header instance.
  * @return		header
  */
 typedef
-Header (*HDRnew) (void)
-	/*@*/;
+Header (*HDRnew) (void);
 
 /** \ingroup header
  * Dereference a header instance.
@@ -345,8 +315,7 @@ Header (*HDRnew) (void)
  * @return		NULL always
  */
 typedef
-/*@null@*/ Header (*HDRfree) (/*@killref@*/ /*@null@*/ Header h)
-        /*@modifies h @*/;
+Header (*HDRfree) (Header h);
 
 /** \ingroup header
  * Reference a header instance.
@@ -354,8 +323,7 @@ typedef
  * @return		referenced header instance
  */
 typedef
-Header (*HDRlink) (Header h)
-        /*@modifies h @*/;
+Header (*HDRlink) (Header h);
 
 /** \ingroup header
  * Dereference a header instance.
@@ -363,8 +331,7 @@ Header (*HDRlink) (Header h)
  * @return		NULL always
  */
 typedef
-Header (*HDRunlink) (/*@killref@*/ /*@null@*/ Header h)
-        /*@modifies h @*/;
+Header (*HDRunlink) (Header h);
 
 /** \ingroup header
  * Sort tags in header.
@@ -372,8 +339,7 @@ Header (*HDRunlink) (/*@killref@*/ /*@null@*/ Header h)
  * @param h		header
  */
 typedef
-void (*HDRsort) (Header h)
-        /*@modifies h @*/;
+void (*HDRsort) (Header h);
 
 /** \ingroup header
  * Restore tags in header to original ordering.
@@ -381,8 +347,7 @@ void (*HDRsort) (Header h)
  * @param h		header
  */
 typedef
-void (*HDRunsort) (Header h)
-        /*@modifies h @*/;
+void (*HDRunsort) (Header h);
 
 /** \ingroup header
  * Return size of on-disk header representation in bytes.
@@ -391,8 +356,7 @@ void (*HDRunsort) (Header h)
  * @return		size of on-disk header
  */
 typedef
-unsigned int (*HDRsizeof) (/*@null@*/ Header h, enum hMagic magicp)
-        /*@modifies h @*/;
+unsigned int (*HDRsizeof) (Header h, enum hMagic magicp);
 
 /** \ingroup header
  * Convert header to on-disk representation.
@@ -400,8 +364,7 @@ unsigned int (*HDRsizeof) (/*@null@*/ Header h, enum hMagic magicp)
  * @return		on-disk header blob (i.e. with offsets)
  */
 typedef
-/*@only@*/ /*@null@*/ void * (*HDRunload) (Header h)
-        /*@modifies h @*/;
+void * (*HDRunload) (Header h);
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.
@@ -411,8 +374,7 @@ typedef
  * @return		on-disk header (with offsets)
  */
 typedef
-/*@null@*/ Header (*HDRreload) (/*@only@*/ Header h, int tag)
-        /*@modifies h @*/;
+Header (*HDRreload) (Header h, int tag);
 
 /** \ingroup header
  * Duplicate a header.
@@ -420,8 +382,7 @@ typedef
  * @return		new header instance
  */
 typedef
-Header (*HDRcopy) (Header h)
-        /*@modifies h @*/;
+Header (*HDRcopy) (Header h);
 
 /** \ingroup header
  * Convert header to in-memory representation.
@@ -429,8 +390,7 @@ Header (*HDRcopy) (Header h)
  * @return		header
  */
 typedef
-/*@null@*/ Header (*HDRload) (/*@kept@*/ void * uh)
-	/*@modifies uh @*/;
+Header (*HDRload) (void * uh);
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
@@ -438,8 +398,7 @@ typedef
  * @return		header
  */
 typedef
-/*@null@*/ Header (*HDRcopyload) (const void * uh)
-	/*@*/;
+Header (*HDRcopyload) (const void * uh);
 
 /** \ingroup header
  * Read (and load) header from file handle.
@@ -448,8 +407,7 @@ typedef
  * @return		header (or NULL on error)
  */
 typedef
-/*@null@*/ Header (*HDRread) (FD_t fd, enum hMagic magicp)
-	/*@modifies fd @*/;
+Header (*HDRread) (FD_t fd, enum hMagic magicp);
 
 /** \ingroup header
  * Write (with unload) header to file handle.
@@ -459,9 +417,7 @@ typedef
  * @return		0 on success, 1 on error
  */
 typedef
-int (*HDRwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
-	/*@globals fileSystem @*/
-	/*@modifies fd, h, fileSystem @*/;
+int (*HDRwrite) (FD_t fd, Header h, enum hMagic magicp);
 
 /** \ingroup header
  * Check if tag is in header.
@@ -470,8 +426,7 @@ int (*HDRwrite) (FD_t fd, /*@null@*/ Header h, enum hMagic magicp)
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRisentry) (/*@null@*/Header h, int_32 tag)
-        /*@*/;  
+int (*HDRisentry) (Header h, int_32 tag);  
 
 /** \ingroup header
  * Free data allocated when retrieved from header.
@@ -481,9 +436,8 @@ int (*HDRisentry) (/*@null@*/Header h, int_32 tag)
  * @return		NULL always
  */
 typedef
-/*@null@*/ void * (*HDRfreetag) (Header h,
-		/*@only@*/ /*@null@*/ const void * data, rpmTagType type)
-	/*@modifies data @*/;
+void * (*HDRfreetag) (Header h,
+		const void * data, rpmTagType type);
 
 /** \ingroup header
  * Retrieve tag value.
@@ -500,10 +454,9 @@ typedef
  */
 typedef
 int (*HDRget) (Header h, int_32 tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ void ** p,
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/;
+			hTYP_t type,
+			void ** p,
+			hCNT_t c);
 
 /** \ingroup header
  * Retrieve tag value using header internal array.
@@ -519,10 +472,9 @@ int (*HDRget) (Header h, int_32 tag,
  */
 typedef
 int (*HDRgetmin) (Header h, int_32 tag,
-			/*@null@*/ /*@out@*/ hTYP_t type,
-			/*@null@*/ /*@out@*/ hPTR_t * p,
-			/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies *type, *p, *c @*/;
+			hTYP_t type,
+			hPTR_t * p,
+			hCNT_t c);
 
 /** \ingroup header
  * Add tag to header.
@@ -539,8 +491,7 @@ int (*HDRgetmin) (Header h, int_32 tag,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRadd) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
-        /*@modifies h @*/;
+int (*HDRadd) (Header h, int_32 tag, int_32 type, const void * p, int_32 c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -557,8 +508,7 @@ int (*HDRadd) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
-        /*@modifies h @*/;
+int (*HDRappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c);
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -571,8 +521,7 @@ int (*HDRappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRaddorappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
-        /*@modifies h @*/;
+int (*HDRaddorappend) (Header h, int_32 tag, int_32 type, const void * p, int_32 c);
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -596,8 +545,7 @@ int (*HDRaddorappend) (Header h, int_32 tag, int_32 type, const void * p, int_32
  */
 typedef
 int (*HDRaddi18n) (Header h, int_32 tag, const char * string,
-                const char * lang)
-        /*@modifies h @*/;
+                const char * lang);
 
 /** \ingroup header
  * Modify tag in header.
@@ -610,8 +558,7 @@ int (*HDRaddi18n) (Header h, int_32 tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRmodify) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
-        /*@modifies h @*/;
+int (*HDRmodify) (Header h, int_32 tag, int_32 type, const void * p, int_32 c);
 
 /** \ingroup header
  * Delete tag in header.
@@ -623,8 +570,7 @@ int (*HDRmodify) (Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 typedef
-int (*HDRremove) (Header h, int_32 tag)
-        /*@modifies h @*/;
+int (*HDRremove) (Header h, int_32 tag);
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -638,11 +584,10 @@ int (*HDRremove) (Header h, int_32 tag)
  * @return		formatted output string (malloc'ed)
  */
 typedef
-/*@only@*/ char * (*HDRsprintf) (Header h, const char * fmt,
+char * (*HDRsprintf) (Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tags,
 		     const struct headerSprintfExtension_s * extensions,
-		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
-	/*@modifies *errmsg @*/;
+		     errmsg_t * errmsg);
 
 /** \ingroup header
  * Duplicate tag values from one header into another.
@@ -651,8 +596,7 @@ typedef
  * @param tagstocopy	array of tags that are copied
  */
 typedef
-void (*HDRcopytags) (Header headerFrom, Header headerTo, hTAG_t tagstocopy)
-	/*@modifies headerFrom, headerTo @*/;
+void (*HDRcopytags) (Header headerFrom, Header headerTo, hTAG_t tagstocopy);
 
 /** \ingroup header
  * Destroy header tag iterator.
@@ -660,8 +604,7 @@ void (*HDRcopytags) (Header headerFrom, Header headerTo, hTAG_t tagstocopy)
  * @return		NULL always
  */
 typedef
-HeaderIterator (*HDRfreeiter) (/*@only@*/ HeaderIterator hi)
-	/*@modifies hi @*/;
+HeaderIterator (*HDRfreeiter) (HeaderIterator hi);
 
 /** \ingroup header
  * Create header tag iterator.
@@ -669,8 +612,7 @@ HeaderIterator (*HDRfreeiter) (/*@only@*/ HeaderIterator hi)
  * @return		header tag iterator
  */
 typedef
-HeaderIterator (*HDRinititer) (Header h)
-	/*@modifies h */;
+HeaderIterator (*HDRinititer) (Header h);
 
 /** \ingroup header
  * Return next tag from header.
@@ -683,16 +625,15 @@ HeaderIterator (*HDRinititer) (Header h)
  */
 typedef
 int (*HDRnextiter) (HeaderIterator hi,
-		/*@null@*/ /*@out@*/ hTAG_t tag,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * p,
-		/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies hi, *tag, *type, *p, *c @*/;
+		hTAG_t tag,
+		hTYP_t type,
+		hPTR_t * p,
+		hCNT_t c);
 
 /** \ingroup header
  * Header method vectors.
  */
-typedef /*@abstract@*/ struct HV_s * HV_t;
+typedef struct HV_s * HV_t;
 struct HV_s {
     HDRlink	hdrlink;
     HDRunlink	hdrunlink;
@@ -723,9 +664,7 @@ struct HV_s {
     HDRfreeiter	hdrfreeiter;
     HDRinititer	hdrinititer;
     HDRnextiter	hdrnextiter;
-/*@null@*/
     void *	hdrvecs;
-/*@null@*/
     void *	hdrdata;
     int		hdrversion;
 };
@@ -739,18 +678,15 @@ struct HV_s {
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/
-void * headerFreeData( /*@only@*/ /*@null@*/ const void * data, rpmTagType type)
-	/*@modifies data @*/
+static inline
+void * headerFreeData( const void * data, rpmTagType type)
 {
     if (data) {
-	/*@-branchstate@*/
 	if (type == -1 ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)
 		free((void *)data);
-	/*@=branchstate@*/
     }
     return NULL;
 }

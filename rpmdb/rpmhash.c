@@ -8,17 +8,17 @@
 #include "rpmhash.h"
 #include "debug.h"
 
-typedef /*@owned@*/ const void * voidptr;
+typedef const void * voidptr;
 
 typedef	struct hashBucket_s * hashBucket;
 
 /**
  */
 struct hashBucket_s {
-    voidptr key;			/*!< hash key */
-/*@owned@*/ voidptr * data;		/*!< pointer to hashed data */
-    int dataCount;			/*!< length of data (0 if unknown) */
-/*@dependent@*/hashBucket next;		/*!< pointer to next item in bucket */
+    voidptr key;	/*!< hash key */
+voidptr * data;		/*!< pointer to hashed data */
+    int dataCount;	/*!< length of data (0 if unknown) */
+    hashBucket next;	/*!< pointer to next item in bucket */
 };
 
 /**
@@ -38,22 +38,17 @@ struct hashTable_s {
  * @param key           pointer to key value
  * @return pointer to hash bucket of key (or NULL)
  */
-static /*@shared@*/ /*@null@*/
+static
 hashBucket findEntry(hashTable ht, const void * key)
-	/*@*/
 {
     unsigned int hash;
     hashBucket b;
 
-    /*@-modunconnomods@*/
     hash = ht->fn(key) % ht->numBuckets;
-/*@-boundsread@*/
     b = ht->buckets[hash];
-/*@=boundsread@*/
 
     while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
-    /*@=modunconnomods@*/
 
     return b;
 }
@@ -74,12 +69,10 @@ unsigned int hashFunctionString(const void * string)
     const char * chp = string;
 
     len = strlen(string);
-/*@-boundsread@*/
     for (i = 0; i < len; i++, chp++) {
 	xorValue ^= *chp;
 	sum += *chp;
     }
-/*@=boundsread@*/
 
     return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
 }
@@ -94,15 +87,12 @@ hashTable htCreate(int numBuckets, int keySize, int freeData,
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->keySize = keySize;
     ht->freeData = freeData;
-    /*@-assignexpose@*/
     ht->fn = fn;
     ht->eq = eq;
-    /*@=assignexpose@*/
 
     return ht;
 }
 
-/*@-boundswrite@*/
 void htAddEntry(hashTable ht, const void * key, const void * data)
 {
     unsigned int hash;
@@ -114,7 +104,6 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
     while (b && b->key && ht->eq(b->key, key))
 	b = b->next;
 
-    /*@-branchstate@*/
     if (b == NULL) {
 	b = xmalloc(sizeof(*b));
 	if (ht->keySize) {
@@ -129,12 +118,10 @@ void htAddEntry(hashTable ht, const void * key, const void * data)
 	b->data = NULL;
 	ht->buckets[hash] = b;
     }
-    /*@=branchstate@*/
 
     b->data = xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
     b->data[b->dataCount++] = data;
 }
-/*@=boundswrite@*/
 
 hashTable htFree(hashTable ht)
 {
@@ -142,27 +129,19 @@ hashTable htFree(hashTable ht)
     int i;
 
     for (i = 0; i < ht->numBuckets; i++) {
-/*@-boundsread@*/
 	b = ht->buckets[i];
-/*@=boundsread@*/
 	if (b == NULL)
 	    continue;
-/*@-boundswrite@*/
 	ht->buckets[i] = NULL;
-/*@=boundswrite@*/
 	if (ht->keySize > 0)
 	    b->key = _free(b->key);
 	do {
 	    n = b->next;
-	    /*@-branchstate@*/
 	    if (b->data) {
-/*@-boundswrite@*/
 		if (ht->freeData)
 		    *b->data = _free(*b->data);
-/*@=boundswrite@*/
 		b->data = _free(b->data);
 	    }
-	    /*@=branchstate@*/
 	    b = _free(b);
 	} while ((b = n) != NULL);
     }
@@ -187,14 +166,12 @@ int htGetEntry(hashTable ht, const void * key, const void *** data,
     if ((b = findEntry(ht, key)) == NULL)
 	return 1;
 
-/*@-boundswrite@*/
     if (data)
 	*data = (const void **) b->data;
     if (dataCount)
 	*dataCount = b->dataCount;
     if (tableKey)
 	*tableKey = b->key;
-/*@=boundswrite@*/
 
     return 0;
 }

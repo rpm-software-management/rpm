@@ -10,28 +10,18 @@
 #include "rpmdb.h"
 #include "debug.h"
 
-/*@access rpmdb@*/
-/*@access dbiIndex@*/
-/*@access dbiIndexSet@*/
 
 #if (DB_VERSION_MAJOR == 3) || (DB_VERSION_MAJOR == 4)
 #define	__USE_DB3	1
 
-/*@-exportlocal -exportheadervar@*/
-/*@unchecked@*/
 struct _dbiIndex db3dbi;
-/*@=exportlocal =exportheadervar@*/
 
-/*@unchecked@*/
 static int dbi_use_cursors;
 
-/*@unchecked@*/
 static int dbi_tear_down;
 
-/*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
  */
-/*@unchecked@*/
 struct poptOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
 #if defined(DB_CLIENT)
@@ -249,7 +239,6 @@ struct poptOption rdbOptions[] = {
 
     POPT_TABLEEND
 };
-/*@=compmempass =immediatetrans =exportlocal =exportheadervar@*/
 
 dbiIndex db3Free(dbiIndex dbi)
 {
@@ -269,11 +258,9 @@ dbiIndex db3Free(dbiIndex dbi)
 }
 
 /** @todo Set a reasonable "last gasp" default db config. */
-/*@observer@*/ /*@unchecked@*/
 static const char *db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
 
-/*@-bounds@*/
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
@@ -291,7 +278,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     }
 
     /* Parse the options for the database element(s). */
-    /*@-branchstate@*/
     if (dbOpts && *dbOpts && *dbOpts != '%') {
 	char *o, *oe;
 	char *p, *pe;
@@ -310,9 +296,9 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	    /* Find and terminate next key=value pair. Save next start point. */
 	    for (oe = o; oe && *oe; oe++) {
 		if (xisspace(*oe))
-		    /*@innerbreak@*/ break;
+		    break;
 		if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
-		    /*@innerbreak@*/ break;
+		    break;
 	    }
 	    if (oe && *oe)
 		*oe++ = '\0';
@@ -331,8 +317,8 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	    /* Find key in option table. */
 	    for (opt = rdbOptions; opt->longName != NULL; opt++) {
 		if (strcmp(tok, opt->longName))
-		    /*@innercontinue@*/ continue;
-		/*@innerbreak@*/ break;
+		    continue;
+		break;
 	    }
 	    if (opt->longName == NULL) {
 		rpmError(RPMERR_DBCONFIG,
@@ -350,21 +336,18 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 
 	    case POPT_ARG_NONE:
 		(void) poptSaveInt((int *)opt->arg, argInfo, 1L);
-		/*@switchbreak@*/ break;
+		break;
 	    case POPT_ARG_VAL:
 		(void) poptSaveInt((int *)opt->arg, argInfo, (long)opt->val);
-	    	/*@switchbreak@*/ break;
+	    	break;
 	    case POPT_ARG_STRING:
 	    {	const char ** t = opt->arg;
-		/*@-mods@*/
 		if (t) {
-/*@-unqualifiedtrans@*/ /* FIX: opt->arg annotation in popt.h */
+/* FIX: opt->arg annotation in popt.h */
 		    *t = _free(*t);
-/*@=unqualifiedtrans@*/
 		    *t = xstrdup( (p ? p : "") );
 		}
-		/*@=mods@*/
-	    }	/*@switchbreak@*/ break;
+	    }	break;
 
 	    case POPT_ARG_INT:
 	    case POPT_ARG_LONG:
@@ -390,7 +373,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 			continue;
 		    }
 		    (void) poptSaveLong((long *)opt->arg, argInfo, aLong);
-		    /*@switchbreak@*/ break;
+		    break;
 		} else {
 		    if (aLong > INT_MAX || aLong < INT_MIN) {
 			rpmError(RPMERR_DBCONFIG,
@@ -400,34 +383,29 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 		    }
 		    (void) poptSaveInt((int *)opt->arg, argInfo, aLong);
 		}
-	      }	/*@switchbreak@*/ break;
+	      }	break;
 	    default:
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	}
 /*=========*/
     }
-    /*@=branchstate@*/
 
     dbOpts = _free(dbOpts);
 
-    /*@-assignexpose@*/
-/*@i@*/	*dbi = db3dbi;	/* structure assignment */
-    /*@=assignexpose@*/
+    *dbi = db3dbi;	/* structure assignment */
     memset(&db3dbi, 0, sizeof(db3dbi));
 
     if (!(dbi->dbi_perms & 0600))
 	dbi->dbi_perms = 0644;
     dbi->dbi_mode = rpmdb->db_mode;
-    /*@-assignexpose -newreftrans@*/ /* FIX: figger rpmdb/dbi refcounts */
-/*@i@*/	dbi->dbi_rpmdb = rpmdb;
-    /*@=assignexpose =newreftrans@*/
+    /* FIX: figger rpmdb/dbi refcounts */
+    dbi->dbi_rpmdb = rpmdb;
     dbi->dbi_rpmtag = rpmtag;
     
     /*
      * Inverted lists have join length of 2, primary data has join length of 1.
      */
-    /*@-sizeoftype@*/
     switch (rpmtag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
@@ -437,7 +415,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	dbi->dbi_jlen = 2 * sizeof(int_32);
 	break;
     }
-    /*@=sizeoftype@*/
 
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
 
@@ -451,13 +428,10 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)
 	dbi->dbi_permit_dups = 1;
 
-    /*@-globstate@*/ /* FIX: *(rdbOptions->arg) reachable */
+    /* FIX: *(rdbOptions->arg) reachable */
     return dbi;
-    /*@=globstate@*/
 }
-/*@=bounds@*/
 
-/*@-boundswrite@*/
 const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     static char buf[256];
@@ -492,6 +466,5 @@ const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
     }
     return buf;
 }
-/*@=boundswrite@*/
 
 #endif

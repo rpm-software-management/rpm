@@ -1,4 +1,3 @@
-/*@-sizeoftype@*/
 /** \ingroup header
  * \file rpmdb/header_internal.c
  */
@@ -9,7 +8,6 @@
 
 #include "debug.h"
 
-/*@-boundswrite@*/
 char ** headerGetLangs(Header h)
 {
     char **s, *e, **table;
@@ -26,12 +24,10 @@ char ** headerGetLangs(Header h)
 	table[i] = e;
     table[count] = NULL;
 
-    /*@-nullret@*/ return table; /*@=nullret@*/	/* LCL: double indirection? */
+    return table;	/* LCL: double indirection? */
 }
-/*@=boundswrite@*/
 
-/*@-boundsread@*/
-/*@-type@*/ /* FIX: shrug */
+/* FIX: shrug */
 void headerDump(Header h, FILE *f, int flags,
 	const struct headerTagTableEntry_s * tags)
 {
@@ -52,35 +48,35 @@ void headerDump(Header h, FILE *f, int flags,
 	switch (p->info.type) {
 	case RPM_NULL_TYPE:
 	    type = "NULL";
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_CHAR_TYPE:
 	    type = "CHAR";
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_BIN_TYPE:
 	    type = "BIN";
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_INT8_TYPE:
 	    type = "INT8";
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_INT16_TYPE:
 	    type = "INT16";
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_INT32_TYPE:
 	    type = "INT32";
-	    /*@switchbreak@*/ break;
+	    break;
 	/*case RPM_INT64_TYPE:  	type = "INT64"; 	break;*/
 	case RPM_STRING_TYPE:
 	    type = "STRING";
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_STRING_ARRAY_TYPE:
 	    type = "STRING_ARRAY";
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPM_I18NSTRING_TYPE:
 	    type = "I18N_STRING";
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
 	    type = "(unknown)";
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	tage = tags;
@@ -109,7 +105,7 @@ void headerDump(Header h, FILE *f, int flags,
 			    (int) *((int_32 *) dp));
 		    dp += sizeof(int_32);
 		}
-		/*@switchbreak@*/ break;
+		break;
 
 	    case RPM_INT16_TYPE:
 		while (c--) {
@@ -118,7 +114,7 @@ void headerDump(Header h, FILE *f, int flags,
 			    (int) *((int_16 *) dp));
 		    dp += sizeof(int_16);
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_INT8_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%02x (%d)\n", ct++,
@@ -126,7 +122,7 @@ void headerDump(Header h, FILE *f, int flags,
 			    (int) *((int_8 *) dp));
 		    dp += sizeof(int_8);
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_BIN_TYPE:
 		while (c > 0) {
 		    fprintf(f, "       Data: %.3d ", ct);
@@ -135,12 +131,12 @@ void headerDump(Header h, FILE *f, int flags,
 			ct++;
 			dp += sizeof(int_8);
 			if (! (ct % 8)) {
-			    /*@loopbreak@*/ break;
+			    break;
 			}
 		    }
 		    fprintf(f, "\n");
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_CHAR_TYPE:
 		while (c--) {
 		    char ch = (char) *((char *) dp);
@@ -150,7 +146,7 @@ void headerDump(Header h, FILE *f, int flags,
 			    (int) *((char *) dp));
 		    dp += sizeof(char);
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    case RPM_STRING_TYPE:
 	    case RPM_STRING_ARRAY_TYPE:
 	    case RPM_I18NSTRING_TYPE:
@@ -159,19 +155,16 @@ void headerDump(Header h, FILE *f, int flags,
 		    dp = strchr(dp, 0);
 		    dp++;
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    default:
 		fprintf(stderr, _("Data type %d not supported\n"), 
 			(int) p->info.type);
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	}
 	p++;
     }
 }
-/*@=type@*/
-/*@=sizeoftype@*/
-/*@=boundsread@*/
 
 char * bin2hex(const char *data, size_t size)
 {
