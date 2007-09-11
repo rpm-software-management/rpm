@@ -48,9 +48,6 @@ rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDADD =		../build/librpmbuild.la
 
-bin_PROGRAMS =		rpmgraph
-rpmgraph_SOURCES =	rpmgraph.c
-
 check_PROGRAMS +=	rpminject
 rpminject_SOURCES =	rpminject.c
 rpminject_LDADD =	../build/librpmbuild.la

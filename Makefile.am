@@ -79,6 +79,11 @@ endif
 endif
 
 
+bin_PROGRAMS +=		rpmgraph
+rpmgraph_SOURCES =	tools/rpmgraph.c
+rpmgraph_LDADD =	lib/librpm.la
+
+
 rpmrc: $(top_srcdir)/rpmrc.in
 	@sed \
 	  -e "s,[@]SYSCONFIGDIR[@],$(sysconfdir)/rpm,g" \
