@@ -28,16 +28,6 @@ rpmlibexec_PROGRAMS =
 check_PROGRAMS +=	convertdb1
 convertdb1_SOURCES =	convertdb1.c
 
-if LIBELF
-if LIBDWARF
-rpmlibexec_PROGRAMS +=	debugedit
-debugedit_SOURCES =	debugedit.c hashtab.c hashtab.h
-debugedit_LDADD =	@WITH_LIBELF_LIB@ \
-	@WITH_BEECRYPT_LIB@ \
-	@WITH_POPT_LIB@
-endif
-endif
-
 rpmlibexec_PROGRAMS +=	javadeps
 javadeps_SOURCES =	javadeps.c
 

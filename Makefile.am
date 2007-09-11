@@ -71,10 +71,14 @@ rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
 rpm2cpio_LDADD +=	@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
-## Build under same conditions as debugedit
+
 if LIBELF
 if LIBDWARF
 rpmconfig_SCRIPTS += scripts/find-debuginfo.sh
+
+rpmlibexec_PROGRAMS +=	debugedit
+debugedit_SOURCES =	tools/debugedit.c tools/hashtab.c tools/hashtab.h
+debugedit_LDADD =	@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@
 endif
 endif
 
