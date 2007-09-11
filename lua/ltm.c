@@ -19,7 +19,6 @@
 
 
 
-/*@observer@*/
 const char *const luaT_typenames[] = {
   "nil", "boolean", "userdata", "number",
   "string", "table", "function", "userdata", "thread"
@@ -27,7 +26,6 @@ const char *const luaT_typenames[] = {
 
 
 void luaT_init (lua_State *L) {
-/*@observer@*/
   static const char *const luaT_eventname[] = {  /* ORDER TM */
     "__index", "__newindex",
     "__gc", "__mode", "__eq",

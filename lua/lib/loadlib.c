@@ -46,7 +46,6 @@
 #include <dlfcn.h>
 
 static int loadlib(lua_State *L)
-	/*@modifies L @*/
 {
  const char *path=luaL_checkstring(L,1);
  const char *init=luaL_checkstring(L,2);
@@ -94,7 +93,6 @@ static int loadlib(lua_State *L)
 #include <windows.h>
 
 static void pusherror(lua_State *L)
-	/*@modifies L @*/
 {
  int error=GetLastError();
  char buffer[128];
@@ -106,7 +104,6 @@ static void pusherror(lua_State *L)
 }
 
 static int loadlib(lua_State *L)
-	/*@modifies L @*/
 {
  const char *path=luaL_checkstring(L,1);
  const char *init=luaL_checkstring(L,2);
@@ -167,7 +164,6 @@ static int loadlib(lua_State *L)
 #endif
 
 static int loadlib(lua_State *L)
-	/*@modifies L @*/
 {
  lua_pushnil(L);
  lua_pushliteral(L,LOADLIB);

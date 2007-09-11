@@ -27,7 +27,6 @@
 
 
 /* ORDER RESERVED */
-/*@observer@*/ /*@unchecked@*/
 static const char *const token2string [] = {
     "and", "break", "do", "else", "elseif",
     "end", "false", "for", "function", "if",
@@ -70,7 +69,6 @@ void luaX_errorline (LexState *ls, const char *s, const char *token, int line) {
 
 
 static void luaX_error (LexState *ls, const char *s, const char *token)
-	/*@modifies ls @*/
 {
   luaX_errorline(ls, s, token, ls->linenumber);
 }
@@ -105,7 +103,6 @@ const char *luaX_token2str (LexState *ls, int token) {
 
 
 static void luaX_lexerror (LexState *ls, const char *s, int token)
-	/*@modifies ls @*/
 {
   if (token == TK_EOS)
     luaX_error(ls, s, luaX_token2str(ls, token));
@@ -115,7 +112,6 @@ static void luaX_lexerror (LexState *ls, const char *s, int token)
 
 
 static void inclinenumber (LexState *LS)
-	/*@modifies LS @*/
 {
   next(LS);  /* skip `\n' */
   ++LS->linenumber;
@@ -166,7 +162,6 @@ void luaX_setinput (lua_State *L, LexState *LS, ZIO *z, TString *source) {
 
 
 static size_t readname (LexState *LS)
-	/*@modifies LS @*/
 {
   size_t l = 0;
   checkbuffer(LS, l);
@@ -181,7 +176,6 @@ static size_t readname (LexState *LS)
 
 /* LUA_NUMBER */
 static void read_numeral (LexState *LS, int comma, SemInfo *seminfo)
-	/*@modifies LS, seminfo @*/
 {
   size_t l = 0;
   checkbuffer(LS, l);
@@ -219,8 +213,7 @@ static void read_numeral (LexState *LS, int comma, SemInfo *seminfo)
 }
 
 
-static void read_long_string (LexState *LS, /*@null@*/ SemInfo *seminfo)
-	/*@modifies LS, seminfo @*/
+static void read_long_string (LexState *LS, SemInfo *seminfo)
 {
   int cont = 0;
   size_t l = 0;
@@ -269,7 +262,6 @@ static void read_long_string (LexState *LS, /*@null@*/ SemInfo *seminfo)
 
 
 static void read_string (LexState *LS, int del, SemInfo *seminfo)
-	/*@modifies LS, seminfo @*/
 {
   size_t l = 0;
   checkbuffer(LS, l);

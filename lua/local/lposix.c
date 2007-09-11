@@ -30,7 +30,6 @@
 #include "lauxlib.h"
 #include "lposix.h"
 
-/*@access DIR @*/
 
 #ifndef MYBUFSIZ
 #define MYBUFSIZ 512
@@ -38,9 +37,7 @@
 
 #include "modemuncher.c"
 
-/*@observer@*/
 static const char *filetype(mode_t m)
-	/*@*/
 {
 	if (S_ISREG(m))		return "regular";
 	else if (S_ISLNK(m))	return "link";
@@ -55,7 +52,6 @@ static const char *filetype(mode_t m)
 typedef int (*Selector)(lua_State *L, int i, const void *data);
 
 static int doselection(lua_State *L, int i, const char *const S[], Selector F, const void *data)
-	/*@modifies L @*/
 {
 	if (lua_isnone(L, i))
 	{
@@ -77,14 +73,12 @@ static int doselection(lua_State *L, int i, const char *const S[], Selector F, c
 }
 
 static void storeindex(lua_State *L, int i, const char *value)
-	/*@modifies L @*/
 {
 	lua_pushstring(L, value);
 	lua_rawseti(L, -2, i);
 }
 
 static void storestring(lua_State *L, const char *name, const char *value)
-	/*@modifies L @*/
 {
 	lua_pushstring(L, name);
 	lua_pushstring(L, value);
@@ -92,7 +86,6 @@ static void storestring(lua_State *L, const char *name, const char *value)
 }
 
 static void storenumber(lua_State *L, const char *name, lua_Number value)
-	/*@modifies L @*/
 {
 	lua_pushstring(L, name);
 	lua_pushnumber(L, value);
@@ -100,7 +93,6 @@ static void storenumber(lua_State *L, const char *name, lua_Number value)
 }
 
 static int pusherror(lua_State *L, const char *info)
-	/*@modifies L @*/
 {
 	lua_pushnil(L);
 	if (info==NULL)
@@ -112,7 +104,6 @@ static int pusherror(lua_State *L, const char *info)
 }
 
 static int pushresult(lua_State *L, int i, const char *info)
-	/*@modifies L @*/
 {
 	if (i != -1)
 	{
@@ -123,15 +114,13 @@ static int pushresult(lua_State *L, int i, const char *info)
 		return pusherror(L, info);
 }
 
-static void badoption(lua_State *L, /*@unused@*/ int i, const char *what, int option)
-	/*@modifies L @*/
+static void badoption(lua_State *L, int i, const char *what, int option)
 {
 	luaL_argerror(L, 2,
 		lua_pushfstring(L, "unknown %s option `%c'", what, option));
 }
 
 static uid_t mygetuid(lua_State *L, int i)
-	/*@modifies L @*/
 {
 	if (lua_isnone(L, i))
 		return -1;
@@ -147,7 +136,6 @@ static uid_t mygetuid(lua_State *L, int i)
 }
 
 static gid_t mygetgid(lua_State *L, int i)
-	/*@modifies L @*/
 {
 	if (lua_isnone(L, i))
 		return -1;
@@ -165,7 +153,6 @@ static gid_t mygetgid(lua_State *L, int i)
 
 
 static int Perrno(lua_State *L)			/** errno() */
-	/*@modifies L @*/
 {
 	lua_pushstring(L, strerror(errno));
 	lua_pushnumber(L, errno);
@@ -174,8 +161,6 @@ static int Perrno(lua_State *L)			/** errno() */
 
 
 static int Pdir(lua_State *L)			/** dir([path]) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *path = luaL_optstring(L, 1, ".");
 	DIR *d = opendir(path);
@@ -195,7 +180,6 @@ static int Pdir(lua_State *L)			/** dir([path]) */
 
 
 static int aux_files(lua_State *L)
-	/*@modifies L @*/
 {
 	DIR *d = lua_touserdata(L, lua_upvalueindex(1));
 	struct dirent *entry;
@@ -222,8 +206,6 @@ static int aux_files(lua_State *L)
 }
 
 static int Pfiles(lua_State *L)			/** files([path]) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *path = luaL_optstring(L, 1, ".");
 	DIR *d = opendir(path);
@@ -239,7 +221,6 @@ static int Pfiles(lua_State *L)			/** files([path]) */
 
 
 static int Pgetcwd(lua_State *L)		/** getcwd() */
-	/*@modifies L @*/
 {
 	char buf[MYBUFSIZ];
 	if (getcwd(buf, sizeof(buf)) == NULL)
@@ -253,8 +234,6 @@ static int Pgetcwd(lua_State *L)		/** getcwd() */
 
 
 static int Pmkdir(lua_State *L)			/** mkdir(path) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *path = luaL_checkstring(L, 1);
 	return pushresult(L, mkdir(path, 0777), path);
@@ -262,8 +241,6 @@ static int Pmkdir(lua_State *L)			/** mkdir(path) */
 
 
 static int Pchdir(lua_State *L)			/** chdir(path) */
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
 {
 	const char *path = luaL_checkstring(L, 1);
 	return pushresult(L, chdir(path), path);
@@ -271,8 +248,6 @@ static int Pchdir(lua_State *L)			/** chdir(path) */
 
 
 static int Prmdir(lua_State *L)			/** rmdir(path) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *path = luaL_checkstring(L, 1);
 	return pushresult(L, rmdir(path), path);
@@ -280,8 +255,6 @@ static int Prmdir(lua_State *L)			/** rmdir(path) */
 
 
 static int Punlink(lua_State *L)		/** unlink(path) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *path = luaL_checkstring(L, 1);
 	return pushresult(L, unlink(path), path);
@@ -289,8 +262,6 @@ static int Punlink(lua_State *L)		/** unlink(path) */
 
 
 static int Plink(lua_State *L)			/** link(oldpath,newpath) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *oldpath = luaL_checkstring(L, 1);
 	const char *newpath = luaL_checkstring(L, 2);
@@ -299,8 +270,6 @@ static int Plink(lua_State *L)			/** link(oldpath,newpath) */
 
 
 static int Psymlink(lua_State *L)		/** symlink(oldpath,newpath) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *oldpath = luaL_checkstring(L, 1);
 	const char *newpath = luaL_checkstring(L, 2);
@@ -309,8 +278,6 @@ static int Psymlink(lua_State *L)		/** symlink(oldpath,newpath) */
 
 
 static int Preadlink(lua_State *L)		/** readlink(path) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	char buf[MYBUFSIZ];
 	const char *path = luaL_checkstring(L, 1);
@@ -322,7 +289,6 @@ static int Preadlink(lua_State *L)		/** readlink(path) */
 
 
 static int Paccess(lua_State *L)		/** access(path,[mode]) */
-	/*@modifies L @*/
 {
 	int mode=F_OK;
 	const char *path=luaL_checkstring(L, 1);
@@ -342,8 +308,6 @@ static int Paccess(lua_State *L)		/** access(path,[mode]) */
 
 
 static int Pmkfifo(lua_State *L)		/** mkfifo(path) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	const char *path = luaL_checkstring(L, 1);
 	return pushresult(L, mkfifo(path, 0777), path);
@@ -351,8 +315,6 @@ static int Pmkfifo(lua_State *L)		/** mkfifo(path) */
 
 
 static int Pexec(lua_State *L)			/** exec(path,[args]) */
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
 {
 	const char *path = luaL_checkstring(L, 1);
 	int i,n=lua_gettop(L);
@@ -367,16 +329,12 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 
 
 static int Pfork(lua_State *L)			/** fork() */
-	/*@globals fileSystem, internalState @*/
-	/*@modifies L, fileSystem, internalState @*/
 {
 	return pushresult(L, fork(), NULL);
 }
 
 
 static int Pwait(lua_State *L)			/** wait([pid]) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	pid_t pid = luaL_optint(L, 1, -1);
 	return pushresult(L, waitpid(pid, NULL, 0), NULL);
@@ -384,7 +342,6 @@ static int Pwait(lua_State *L)			/** wait([pid]) */
 
 
 static int Pkill(lua_State *L)			/** kill(pid,[sig]) */
-	/*@modifies L @*/
 {
 	pid_t pid = luaL_checkint(L, 1);
 	int sig = luaL_optint(L, 2, SIGTERM);
@@ -393,8 +350,6 @@ static int Pkill(lua_State *L)			/** kill(pid,[sig]) */
 
 
 static int Psleep(lua_State *L)			/** sleep(seconds) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	unsigned int seconds = luaL_checkint(L, 1);
 	lua_pushnumber(L, sleep(seconds));
@@ -403,7 +358,6 @@ static int Psleep(lua_State *L)			/** sleep(seconds) */
 
 
 static int Pputenv(lua_State *L)		/** putenv(string) */
-	/*@modifies L @*/
 {
 	size_t l;
 	const char *s=luaL_checklstring(L, 1, &l);
@@ -414,7 +368,6 @@ static int Pputenv(lua_State *L)		/** putenv(string) */
 
 #ifdef linux
 static int Psetenv(lua_State *L)		/** setenv(name,value,[over]) */
-	/*@modifies L @*/
 {
 	const char *name=luaL_checkstring(L, 1);
 	const char *value=luaL_checkstring(L, 2);
@@ -424,7 +377,6 @@ static int Psetenv(lua_State *L)		/** setenv(name,value,[over]) */
 
 
 static int Punsetenv(lua_State *L)		/** unsetenv(name) */
-	/*@modifies L @*/
 {
 	const char *name=luaL_checkstring(L, 1);
 	unsetenv(name);
@@ -434,18 +386,15 @@ static int Punsetenv(lua_State *L)		/** unsetenv(name) */
 
 
 static int Pgetenv(lua_State *L)		/** getenv([name]) */
-	/*@modifies L @*/
 {
 	if (lua_isnone(L, 1))
 	{
-/*@-nestedextern -shadow@*/
 	#ifdef __APPLE__
 		#include <crt_externs.h>
 		#define environ (*_NSGetEnviron())
 	#else
 		extern char **environ;
 	#endif /* __APPLE__ */
-/*@=nestedextern =shadow@*/
 		char **e;
 		if (*environ==NULL) lua_pushnil(L); else lua_newtable(L);
 		for (e=environ; *e!=NULL; e++)
@@ -472,8 +421,6 @@ static int Pgetenv(lua_State *L)		/** getenv([name]) */
 
 
 static int Pumask(lua_State *L)			/** umask([mode]) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	char m[10];
 	mode_t mode;
@@ -496,8 +443,6 @@ static int Pumask(lua_State *L)			/** umask([mode]) */
 
 
 static int Pchmod(lua_State *L)			/** chmod(path,mode) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	mode_t mode;
 	struct stat s;
@@ -511,8 +456,6 @@ static int Pchmod(lua_State *L)			/** chmod(path,mode) */
 
 
 static int Pchown(lua_State *L)			/** chown(path,uid,gid) */
-	/*@globals fileSystem, internalState @*/
-	/*@modifies L, fileSystem, internalState @*/
 {
 	const char *path = luaL_checkstring(L, 1);
 	uid_t uid = mygetuid(L, 2);
@@ -522,8 +465,6 @@ static int Pchown(lua_State *L)			/** chown(path,uid,gid) */
 
 
 static int Putime(lua_State *L)			/** utime(path,[mtime,atime]) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	struct utimbuf times;
 	time_t currtime = time(NULL);
@@ -534,8 +475,7 @@ static int Putime(lua_State *L)			/** utime(path,[mtime,atime]) */
 }
 
 
-static int FgetID(lua_State *L, int i, /*@unused@*/ const void *data)
-	/*@modifies L @*/
+static int FgetID(lua_State *L, int i, const void *data)
 {
 	switch (i)
 	{
@@ -550,21 +490,18 @@ static int FgetID(lua_State *L, int i, /*@unused@*/ const void *data)
 	return 1;
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const char *const SgetID[] =
 {
 	"egid", "euid", "gid", "uid", "pgrp", "pid", "ppid", NULL
 };
 
 static int Pgetprocessid(lua_State *L)		/** getprocessid([selector]) */
-	/*@modifies L @*/
 {
 	return doselection(L, 1, SgetID, FgetID, NULL);
 }
 
 
 static int Pttyname(lua_State *L)		/** ttyname(fd) */
-	/*@modifies L @*/
 {
 	int fd=luaL_optint(L, 1, 0);
 	lua_pushstring(L, ttyname(fd));
@@ -572,8 +509,6 @@ static int Pttyname(lua_State *L)		/** ttyname(fd) */
 }
 
 static int Pctermid(lua_State *L)		/** ctermid() */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	char b[L_ctermid];
 	lua_pushstring(L, ctermid(b));
@@ -582,7 +517,6 @@ static int Pctermid(lua_State *L)		/** ctermid() */
 
 
 static int Pgetlogin(lua_State *L)		/** getlogin() */
-	/*@modifies L @*/
 {
 	lua_pushstring(L, getlogin());
 	return 1;
@@ -590,7 +524,6 @@ static int Pgetlogin(lua_State *L)		/** getlogin() */
 
 
 static int Fgetpasswd(lua_State *L, int i, const void *data)
-	/*@modifies L @*/
 {
 	const struct passwd *p=data;
 	switch (i)
@@ -607,7 +540,6 @@ static int Fgetpasswd(lua_State *L, int i, const void *data)
 	return 1;
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const char *const Sgetpasswd[] =
 {
 	"name", "uid", "gid", "dir", "shell", "gecos", "passwd", NULL
@@ -615,7 +547,6 @@ static const char *const Sgetpasswd[] =
 
 
 static int Pgetpasswd(lua_State *L)		/** getpasswd(name or id) */
-	/*@modifies L @*/
 {
 	struct passwd *p=NULL;
 	if (lua_isnoneornil(L, 1))
@@ -635,7 +566,6 @@ static int Pgetpasswd(lua_State *L)		/** getpasswd(name or id) */
 
 
 static int Pgetgroup(lua_State *L)		/** getgroup(name or id) */
-	/*@modifies L @*/
 {
 	struct group *g=NULL;
 	if (lua_isnumber(L, 1))
@@ -660,16 +590,12 @@ static int Pgetgroup(lua_State *L)		/** getgroup(name or id) */
 
 
 static int Psetuid(lua_State *L)		/** setuid(name or id) */
-	/*@globals fileSystem, internalState @*/
-	/*@modifies L, fileSystem, internalState @*/
 {
 	return pushresult(L, setuid(mygetuid(L, 1)), NULL);
 }
 
 
 static int Psetgid(lua_State *L)		/** setgid(name or id) */
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
 	return pushresult(L, setgid(mygetgid(L, 1)), NULL);
 }
@@ -683,7 +609,6 @@ struct mytimes
 #define pushtime(L,x)		lua_pushnumber(L,((lua_Number)x)/CLOCKS_PER_SEC)
 
 static int Ftimes(lua_State *L, int i, const void *data)
-	/*@modifies L @*/
 {
 	const struct mytimes *t=data;
 	switch (i)
@@ -697,7 +622,6 @@ static int Ftimes(lua_State *L, int i, const void *data)
 	return 1;
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const char *const Stimes[] =
 {
 	"utime", "stime", "cutime", "cstime", "elapsed", NULL
@@ -706,7 +630,6 @@ static const char *const Stimes[] =
 #define storetime(L,name,x)	storenumber(L,name,(lua_Number)x/CLOCKS_PER_SEC)
 
 static int Ptimes(lua_State *L)			/** times() */
-	/*@modifies L @*/
 {
 	struct mytimes t;
 	t.elapsed = times(&t.t);
@@ -718,12 +641,10 @@ struct mystat
 {
 	struct stat s;
 	char mode[10];
-/*@observer@*/
 	const char *type;
 };
 
 static int Fstat(lua_State *L, int i, const void *data)
-	/*@modifies L @*/
 {
 	const struct mystat *s=data;
 	switch (i)
@@ -744,7 +665,6 @@ static int Fstat(lua_State *L, int i, const void *data)
 	return 1;
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const char *const Sstat[] =
 {
 	"mode", "ino", "dev", "nlink", "uid", "gid",
@@ -753,7 +673,6 @@ static const char *const Sstat[] =
 };
 
 static int Pstat(lua_State *L)			/** stat(path,[selector]) */
-	/*@modifies L @*/
 {
 	struct mystat s;
 	const char *path=luaL_checkstring(L, 1);
@@ -765,7 +684,6 @@ static int Pstat(lua_State *L)			/** stat(path,[selector]) */
 
 
 static int Puname(lua_State *L)			/** uname([string]) */
-	/*@modifies L @*/
 {
 	struct utsname u;
 	luaL_Buffer b;
@@ -790,7 +708,6 @@ static int Puname(lua_State *L)			/** uname([string]) */
 }
 
 
-/*@observer@*/ /*@unchecked@*/
 static const int Kpathconf[] =
 {
 	_PC_LINK_MAX, _PC_MAX_CANON, _PC_MAX_INPUT, _PC_NAME_MAX, _PC_PATH_MAX,
@@ -799,15 +716,12 @@ static const int Kpathconf[] =
 };
 
 static int Fpathconf(lua_State *L, int i, const void *data)
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
 {
 	const char *path=data;
 	lua_pushnumber(L, pathconf(path, Kpathconf[i]));
 	return 1;
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const char *const Spathconf[] =
 {
 	"link_max", "max_canon", "max_input", "name_max", "path_max",
@@ -816,14 +730,12 @@ static const char *const Spathconf[] =
 };
 
 static int Ppathconf(lua_State *L)		/** pathconf(path,[selector]) */
-	/*@modifies L @*/
 {
 	const char *path=luaL_checkstring(L, 1);
 	return doselection(L, 2, Spathconf, Fpathconf, path);
 }
 
 
-/*@observer@*/ /*@unchecked@*/
 static const int Ksysconf[] =
 {
 	_SC_ARG_MAX, _SC_CHILD_MAX, _SC_CLK_TCK, _SC_NGROUPS_MAX, _SC_STREAM_MAX,
@@ -831,14 +743,12 @@ static const int Ksysconf[] =
 	-1
 };
 
-static int Fsysconf(lua_State *L, int i, /*@unused@*/ const void *data)
-	/*@modifies L @*/
+static int Fsysconf(lua_State *L, int i, const void *data)
 {
 	lua_pushnumber(L, sysconf(Ksysconf[i]));
 	return 1;
 }
 
-/*@observer@*/ /*@unchecked@*/
 static const char *const Ssysconf[] =
 {
 	"arg_max", "child_max", "clk_tck", "ngroups_max", "stream_max",
@@ -847,14 +757,11 @@ static const char *const Ssysconf[] =
 };
 
 static int Psysconf(lua_State *L)		/** sysconf([selector]) */
-	/*@modifies L @*/
 {
 	return doselection(L, 1, Ssysconf, Fsysconf, NULL);
 }
 
 
-/*@-readonlytrans@*/
-/*@observer@*/ /*@unchecked@*/
 static const luaL_reg R[] =
 {
 	{"access",		Paccess},
@@ -901,7 +808,6 @@ static const luaL_reg R[] =
 #endif
 	{NULL,			NULL}
 };
-/*@=readonlytrans@*/
 
 LUALIB_API int luaopen_posix (lua_State *L)
 {

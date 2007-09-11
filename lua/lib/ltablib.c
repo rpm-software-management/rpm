@@ -19,7 +19,6 @@
 
 
 static int luaB_foreachi (lua_State *L)
-	/*@modifies L @*/
 {
   int i;
   int n = aux_getn(L, 1);
@@ -38,7 +37,6 @@ static int luaB_foreachi (lua_State *L)
 
 
 static int luaB_foreach (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checktype(L, 1, LUA_TTABLE);
   luaL_checktype(L, 2, LUA_TFUNCTION);
@@ -58,7 +56,6 @@ static int luaB_foreach (lua_State *L)
 
 
 static int luaB_getn (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, (lua_Number)aux_getn(L, 1));
   return 1;
@@ -66,7 +63,6 @@ static int luaB_getn (lua_State *L)
 
 
 static int luaB_setn (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checktype(L, 1, LUA_TTABLE);
   luaL_setn(L, 1, luaL_checkint(L, 2));
@@ -75,7 +71,6 @@ static int luaB_setn (lua_State *L)
 
 
 static int luaB_tinsert (lua_State *L)
-	/*@modifies L @*/
 {
   int v = lua_gettop(L);  /* number of arguments */
   int n = aux_getn(L, 1) + 1;
@@ -99,7 +94,6 @@ static int luaB_tinsert (lua_State *L)
 
 
 static int luaB_tremove (lua_State *L)
-	/*@modifies L @*/
 {
   int n = aux_getn(L, 1);
   int pos = luaL_optint(L, 2, n);
@@ -117,7 +111,6 @@ static int luaB_tremove (lua_State *L)
 
 
 static int str_concat (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_Buffer b;
   size_t lsep;
@@ -149,14 +142,12 @@ static int str_concat (lua_State *L)
 
 
 static void set2 (lua_State *L, int i, int j)
-	/*@modifies L @*/
 {
   lua_rawseti(L, 1, i);
   lua_rawseti(L, 1, j);
 }
 
 static int sort_comp (lua_State *L, int a, int b)
-	/*@modifies L @*/
 {
   if (!lua_isnil(L, 2)) {  /* function? */
     int res;
@@ -173,7 +164,6 @@ static int sort_comp (lua_State *L, int a, int b)
 }
 
 static void auxsort (lua_State *L, int l, int u)
-	/*@modifies L @*/
 {
   while (l < u) {  /* for tail recursion */
     int i, j;
@@ -238,7 +228,6 @@ static void auxsort (lua_State *L, int l, int u)
 }
 
 static int luaB_sort (lua_State *L)
-	/*@modifies L @*/
 {
   int n = aux_getn(L, 1);
   luaL_checkstack(L, 40, "");  /* assume array is smaller than 2^40 */
@@ -252,8 +241,6 @@ static int luaB_sort (lua_State *L)
 /* }====================================================== */
 
 
-/*@-readonlytrans@*/
-/*@unchecked@*/
 static const luaL_reg tab_funcs[] = {
   {"concat", str_concat},
   {"foreach", luaB_foreach},
@@ -265,7 +252,6 @@ static const luaL_reg tab_funcs[] = {
   {"remove", luaB_tremove},
   {NULL, NULL}
 };
-/*@=readonlytrans@*/
 
 
 LUALIB_API int luaopen_table (lua_State *L) {

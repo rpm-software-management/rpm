@@ -218,7 +218,6 @@ enum OpModeMask {
 };
 
 
-/*@unchecked@*/
 extern const lu_byte luaP_opmodes[NUM_OPCODES];
 
 #define getOpMode(m)            (cast(enum OpMode, luaP_opmodes[m] & 3))

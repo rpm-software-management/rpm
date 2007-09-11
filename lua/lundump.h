@@ -11,22 +11,16 @@
 #include "lzio.h"
 
 /* load one chunk; from lundump.c */
-/*@null@*/
-Proto* luaU_undump (lua_State* L, ZIO* Z, Mbuffer* buff)
-	/*@*/;
+Proto* luaU_undump (lua_State* L, ZIO* Z, Mbuffer* buff);
 
 /* find byte order; from lundump.c */
-int luaU_endianness (void)
-	/*@*/;
+int luaU_endianness (void);
 
 /* dump one chunk; from ldump.c */
-void luaU_dump (lua_State* L, const Proto* Main, lua_Chunkwriter w, void* data)
-	/*@*/;
+void luaU_dump (lua_State* L, const Proto* Main, lua_Chunkwriter w, void* data);
 
 /* print one chunk; from print.c */
-/*@unused@*/
-void luaU_print (const Proto* Main)
-	/*@*/;
+void luaU_print (const Proto* Main);
 
 /* definitions for headers of binary files */
 #define	LUA_SIGNATURE	"\033Lua"	/* binary files start with "<esc>Lua" */

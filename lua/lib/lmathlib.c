@@ -36,133 +36,114 @@
 
 
 static int math_abs (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, fabs(luaL_checknumber(L, 1)));
   return 1;
 }
 
 static int math_sin (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, sin(TORAD(luaL_checknumber(L, 1))));
   return 1;
 }
 
 static int math_cos (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, cos(TORAD(luaL_checknumber(L, 1))));
   return 1;
 }
 
 static int math_tan (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, tan(TORAD(luaL_checknumber(L, 1))));
   return 1;
 }
 
 static int math_asin (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, FROMRAD(asin(luaL_checknumber(L, 1))));
   return 1;
 }
 
 static int math_acos (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, FROMRAD(acos(luaL_checknumber(L, 1))));
   return 1;
 }
 
 static int math_atan (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, FROMRAD(atan(luaL_checknumber(L, 1))));
   return 1;
 }
 
 static int math_atan2 (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, FROMRAD(atan2(luaL_checknumber(L, 1), luaL_checknumber(L, 2))));
   return 1;
 }
 
 static int math_ceil (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, ceil(luaL_checknumber(L, 1)));
   return 1;
 }
 
 static int math_floor (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, floor(luaL_checknumber(L, 1)));
   return 1;
 }
 
 static int math_mod (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, fmod(luaL_checknumber(L, 1), luaL_checknumber(L, 2)));
   return 1;
 }
 
 static int math_sqrt (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, sqrt(luaL_checknumber(L, 1)));
   return 1;
 }
 
 static int math_pow (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, pow(luaL_checknumber(L, 1), luaL_checknumber(L, 2)));
   return 1;
 }
 
 static int math_log (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, log(luaL_checknumber(L, 1)));
   return 1;
 }
 
 static int math_log10 (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, log10(luaL_checknumber(L, 1)));
   return 1;
 }
 
 static int math_exp (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, exp(luaL_checknumber(L, 1)));
   return 1;
 }
 
 static int math_deg (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, luaL_checknumber(L, 1)/RADIANS_PER_DEGREE);
   return 1;
 }
 
 static int math_rad (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, luaL_checknumber(L, 1)*RADIANS_PER_DEGREE);
   return 1;
 }
 
 static int math_frexp (lua_State *L)
-	/*@modifies L @*/
 {
   int e;
   lua_pushnumber(L, frexp(luaL_checknumber(L, 1), &e));
@@ -171,7 +152,6 @@ static int math_frexp (lua_State *L)
 }
 
 static int math_ldexp (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, ldexp(luaL_checknumber(L, 1), luaL_checkint(L, 2)));
   return 1;
@@ -180,7 +160,6 @@ static int math_ldexp (lua_State *L)
 
 
 static int math_min (lua_State *L)
-	/*@modifies L @*/
 {
   int n = lua_gettop(L);  /* number of arguments */
   lua_Number dmin = luaL_checknumber(L, 1);
@@ -196,7 +175,6 @@ static int math_min (lua_State *L)
 
 
 static int math_max (lua_State *L)
-	/*@modifies L @*/
 {
   int n = lua_gettop(L);  /* number of arguments */
   lua_Number dmax = luaL_checknumber(L, 1);
@@ -212,8 +190,6 @@ static int math_max (lua_State *L)
 
 
 static int math_random (lua_State *L)
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
 {
   /* the `%' avoids the (rare) case of r==1, and is needed also because on
      some systems (SunOS!) `rand()' may return a value larger than RAND_MAX */
@@ -243,16 +219,12 @@ static int math_random (lua_State *L)
 
 
 static int math_randomseed (lua_State *L)
-	/*@globals internalState @*/
-	/*@modifies L, internalState @*/
 {
   srand(luaL_checkint(L, 1));
   return 0;
 }
 
 
-/*@-readonlytrans@*/
-/*@unchecked@*/
 static const luaL_reg mathlib[] = {
   {"abs",   math_abs},
   {"sin",   math_sin},
@@ -280,7 +252,6 @@ static const luaL_reg mathlib[] = {
   {"randomseed", math_randomseed},
   {NULL, NULL}
 };
-/*@=readonlytrans@*/
 
 
 /*

@@ -40,16 +40,13 @@ union UEXTRASPACE {L_Umaxalign a; LUA_USERSTATE b;};
 ** call `lua_setpanicf'
 */
 static int default_panic (lua_State *L)
-	/*@*/
 {
   UNUSED(L);
   return 0;
 }
 
 
-/*@null@*/
-static lua_State *mallocstate (/*@null@*/ lua_State *L)
-	/*@modifies L @*/
+static lua_State *mallocstate (lua_State *L)
 {
   lu_byte *block = (lu_byte *)luaM_malloc(L, sizeof(lua_State) + EXTRASPACE);
   if (block == NULL) return NULL;
@@ -60,8 +57,7 @@ static lua_State *mallocstate (/*@null@*/ lua_State *L)
 }
 
 
-static void freestate (/*@null@*/ lua_State *L, lua_State *L1)
-	/*@modifies L @*/
+static void freestate (lua_State *L, lua_State *L1)
 {
   luaM_free(L, cast(lu_byte *, L1) - EXTRASPACE,
                sizeof(lua_State) + EXTRASPACE);
@@ -69,7 +65,6 @@ static void freestate (/*@null@*/ lua_State *L, lua_State *L1)
 
 
 static void stack_init (lua_State *L1, lua_State *L)
-	/*@modifies L1, L @*/
 {
   L1->stack = luaM_newvector(L, BASIC_STACK_SIZE + EXTRA_STACK, TObject);
   L1->stacksize = BASIC_STACK_SIZE + EXTRA_STACK;
@@ -87,7 +82,6 @@ static void stack_init (lua_State *L1, lua_State *L)
 
 
 static void freestack (lua_State *L, lua_State *L1)
-	/*@modifies L, L1 @*/
 {
   luaM_freearray(L, L1->base_ci, L1->size_ci, CallInfo);
   luaM_freearray(L, L1->stack, L1->stacksize, TObject);
@@ -98,7 +92,6 @@ static void freestack (lua_State *L, lua_State *L1)
 ** open parts that may cause memory-allocation errors
 */
 static void f_luaopen (lua_State *L, void *ud)
-	/*@modifies L @*/
 {
   /* create a new global state */
   global_State *g = luaM_new(NULL, global_State);
@@ -137,7 +130,6 @@ static void f_luaopen (lua_State *L, void *ud)
 
 
 static void preinit_state (lua_State *L)
-	/*@modifies L @*/
 {
   L->stack = NULL;
   L->stacksize = 0;
@@ -157,7 +149,6 @@ static void preinit_state (lua_State *L)
 
 
 static void close_state (lua_State *L)
-	/*@modifies L @*/
 {
   luaF_close(L, L->stack);  /* close all upvalues for this thread */
   if (G(L)) {  /* close global state */
@@ -195,7 +186,6 @@ void luaE_freethread (lua_State *L, lua_State *L1) {
 }
 
 
-/*@null@*/
 LUA_API lua_State *lua_open (void) {
   lua_State *L = mallocstate(NULL);
   if (L) {  /* allocation OK? */
@@ -216,7 +206,6 @@ LUA_API lua_State *lua_open (void) {
 
 
 static void callallgcTM (lua_State *L, void *ud)
-	/*@modifies L @*/
 {
   UNUSED(ud);
   luaC_callGCTM(L);  /* call GC metamethods for all udata */

@@ -46,15 +46,11 @@ struct BlockCnt;  /* defined in lparser.c */
 
 /* state needed to generate code for a given function */
 typedef struct FuncState {
-/*@null@*/
   Proto *f;  /* current function header */
-/*@null@*/
   Table *h;  /* table to find (and reuse) elements in `k' */
-/*@null@*/
   struct FuncState *prev;  /* enclosing function */
   struct LexState *ls;  /* lexical state */
   struct lua_State *L;  /* copy of the Lua state */
-/*@null@*/
   struct BlockCnt *bl;  /* chain of current blocks */
   int pc;  /* next position to code (equivalent to `ncode') */
   int lasttarget;   /* `pc' of last `jump target' */
@@ -69,8 +65,7 @@ typedef struct FuncState {
 } FuncState;
 
 
-Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff)
-	/*@modifies L, z @*/;
+Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff);
 
 
 #endif

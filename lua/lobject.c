@@ -102,7 +102,6 @@ int luaO_str2d (const char *s, lua_Number *result) {
 
 
 static void pushstr (lua_State *L, const char *str)
-	/*@modifies L @*/
 {
   setsvalue2s(L->top, luaS_new(L, str));
   incr_top(L);

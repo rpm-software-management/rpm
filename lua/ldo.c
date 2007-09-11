@@ -48,7 +48,6 @@ struct lua_longjmp {
 
 
 static void seterrorobj (lua_State *L, int errcode, StkId oldtop)
-	/*@modifies L, oldtop @*/
 {
   switch (errcode) {
     case LUA_ERRMEM: {
@@ -94,7 +93,6 @@ int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud) {
 
 
 static void restore_stack_limit (lua_State *L)
-	/*@modifies L @*/
 {
   L->stack_last = L->stack+L->stacksize-1;
   if (L->size_ci > LUA_MAXCALLS) {  /* there was an overflow? */
@@ -108,7 +106,6 @@ static void restore_stack_limit (lua_State *L)
 
 
 static void correctstack (lua_State *L, TObject *oldstack)
-	/*@modifies L @*/
 {
   CallInfo *ci;
   GCObject *up;
@@ -150,7 +147,6 @@ void luaD_growstack (lua_State *L, int n) {
 
 
 static void luaD_growCI (lua_State *L)
-	/*@modifies L @*/
 {
   if (L->size_ci > LUA_MAXCALLS)  /* overflow while handling overflow? */
     luaD_throw(L, LUA_ERRERR);
@@ -189,7 +185,6 @@ void luaD_callhook (lua_State *L, int event, int line) {
 
 
 static void adjust_varargs (lua_State *L, int nfixargs, StkId base)
-	/*@modifies L @*/
 {
   int i;
   Table *htab;
@@ -213,9 +208,7 @@ static void adjust_varargs (lua_State *L, int nfixargs, StkId base)
 }
 
 
-/*@dependent@*/
 static StkId tryfuncTM (lua_State *L, StkId func)
-	/*@modifies L @*/
 {
   const TObject *tm = luaT_gettmbyobj(L, func, TM_CALL);
   StkId p;
@@ -277,9 +270,7 @@ StkId luaD_precall (lua_State *L, StkId func) {
 }
 
 
-/*@dependent@*/
 static StkId callrethooks (lua_State *L, StkId firstResult)
-	/*@modifies L @*/
 {
   ptrdiff_t fr = savestack(L, firstResult);  /* next call may change stack */
   luaD_callhook(L, LUA_HOOKRET, -1);
@@ -334,7 +325,6 @@ void luaD_call (lua_State *L, StkId func, int nResults) {
 
 
 static void resume (lua_State *L, void *ud)
-	/*@modifies L @*/
 {
   StkId firstResult;
   int nargs = *cast(int *, ud);
@@ -366,7 +356,6 @@ static void resume (lua_State *L, void *ud)
 
 
 static int resume_error (lua_State *L, const char *msg)
-	/*@modifies L @*/
 {
   L->top = L->ci->base;
   setsvalue2s(L->top, luaS_new(L, msg));
@@ -377,7 +366,6 @@ static int resume_error (lua_State *L, const char *msg)
 
 
 LUA_API int lua_resume (lua_State *L, int nargs)
-	/*@modifies L @*/
 {
   int status;
   lu_byte old_allowhooks;
@@ -406,7 +394,6 @@ LUA_API int lua_resume (lua_State *L, int nargs)
 
 
 LUA_API int lua_yield (lua_State *L, int nresults)
-	/*@modifies L @*/
 {
   CallInfo *ci;
   lua_lock(L);
@@ -464,7 +451,6 @@ struct SParser {  /* data to `f_parser' */
 };
 
 static void f_parser (lua_State *L, void *ud)
-	/*@modifies L @*/
 {
   struct SParser *p;
   Proto *tf;

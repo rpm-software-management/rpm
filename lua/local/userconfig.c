@@ -33,8 +33,7 @@ static int myreadline (lua_State *L, const char *prompt) {
 
 static void mysaveline (lua_State *L, const char *s) {
   const char *p;
-  for (p=s; isspace(*p); p++)
-    ;
+  for (p=s; isspace(*p); p++);
   if (*p!=0) {
     size_t n=strlen(s)-1;
     if (s[n]!='\n')

@@ -23,18 +23,15 @@ typedef struct {
  ZIO* Z;
  Mbuffer* b;
  int swap;
-/*@observer@*/
  const char* name;
 } LoadState;
 
 static void unexpectedEOZ (LoadState* S)
-	/*@modifies S @*/
 {
  luaG_runerror(S->L,"unexpected end of file in %s",S->name);
 }
 
 static int ezgetc (LoadState* S)
-	/*@modifies S @*/
 {
  int c=zgetc(S->Z);
  if (c==EOZ) unexpectedEOZ(S);
@@ -42,14 +39,12 @@ static int ezgetc (LoadState* S)
 }
 
 static void ezread (LoadState* S, void* b, int n)
-	/*@modifies S, *b @*/
 {
  int r=luaZ_read(S->Z,b,n);
  if (r!=0) unexpectedEOZ(S);
 }
 
 static void LoadBlock (LoadState* S, void* b, size_t size)
-	/*@modifies S, *b @*/
 {
  if (S->swap)
  {
@@ -62,7 +57,6 @@ static void LoadBlock (LoadState* S, void* b, size_t size)
 }
 
 static void LoadVector (LoadState* S, void* b, int m, size_t size)
-	/*@modifies S, *b @*/
 {
  if (S->swap)
  {
@@ -80,7 +74,6 @@ static void LoadVector (LoadState* S, void* b, int m, size_t size)
 }
 
 static int LoadInt (LoadState* S)
-	/*@modifies S @*/
 {
  int x;
  LoadBlock(S,&x,sizeof(x));
@@ -89,7 +82,6 @@ static int LoadInt (LoadState* S)
 }
 
 static size_t LoadSize (LoadState* S)
-	/*@modifies S @*/
 {
  size_t x;
  LoadBlock(S,&x,sizeof(x));
@@ -97,16 +89,13 @@ static size_t LoadSize (LoadState* S)
 }
 
 static lua_Number LoadNumber (LoadState* S)
-	/*@modifies S @*/
 {
  lua_Number x;
  LoadBlock(S,&x,sizeof(x));
  return x;
 }
 
-/*@null@*/
 static TString* LoadString (LoadState* S)
-	/*@modifies S @*/
 {
  size_t size=LoadSize(S);
  if (size==0)
@@ -120,7 +109,6 @@ static TString* LoadString (LoadState* S)
 }
 
 static void LoadCode (LoadState* S, Proto* f)
-	/*@modifies S, f @*/
 {
  int size=LoadInt(S);
  f->code=luaM_newvector(S->L,size,Instruction);
@@ -129,7 +117,6 @@ static void LoadCode (LoadState* S, Proto* f)
 }
 
 static void LoadLocals (LoadState* S, Proto* f)
-	/*@modifies S, f @*/
 {
  int i,n;
  n=LoadInt(S);
@@ -144,7 +131,6 @@ static void LoadLocals (LoadState* S, Proto* f)
 }
 
 static void LoadLines (LoadState* S, Proto* f)
-	/*@modifies S, f @*/
 {
  int size=LoadInt(S);
  f->lineinfo=luaM_newvector(S->L,size,int);
@@ -153,7 +139,6 @@ static void LoadLines (LoadState* S, Proto* f)
 }
 
 static void LoadUpvalues (LoadState* S, Proto* f)
-	/*@modifies S, f @*/
 {
  int i,n;
  n=LoadInt(S);
@@ -165,12 +150,9 @@ static void LoadUpvalues (LoadState* S, Proto* f)
  for (i=0; i<n; i++) f->upvalues[i]=LoadString(S);
 }
 
-/*@null@*/
-static Proto* LoadFunction (LoadState* S, /*@null@*/ TString* p)
-	/*@modifies S @*/;
+static Proto* LoadFunction (LoadState* S, TString* p);
 
 static void LoadConstants (LoadState* S, Proto* f)
-	/*@modifies S, f @*/
 {
  int i,n;
  n=LoadInt(S);
@@ -203,7 +185,6 @@ static void LoadConstants (LoadState* S, Proto* f)
 }
 
 static Proto* LoadFunction (LoadState* S, TString* p)
-	/*@modifies S @*/
 {
  Proto* f=luaF_newproto(S->L);
  f->source=LoadString(S); if (f->source==NULL) f->source=p;
@@ -224,7 +205,6 @@ static Proto* LoadFunction (LoadState* S, TString* p)
 }
 
 static void LoadSignature (LoadState* S)
-	/*@modifies S @*/
 {
  const char* s=LUA_SIGNATURE;
  while (*s!=0 && ezgetc(S)==*s)
@@ -233,7 +213,6 @@ static void LoadSignature (LoadState* S)
 }
 
 static void TestSize (LoadState* S, int s, const char* what)
-	/*@modifies S @*/
 {
  int r=LoadByte(S);
  if (r!=s)
@@ -245,7 +224,6 @@ static void TestSize (LoadState* S, int s, const char* what)
 #define V(v)		v/16,v%16
 
 static void LoadHeader (LoadState* S)
-	/*@modifies S @*/
 {
  int version;
  lua_Number x,tx=TEST_NUMBER;
@@ -273,9 +251,7 @@ static void LoadHeader (LoadState* S)
   luaG_runerror(S->L,"unknown number format in %s",S->name);
 }
 
-/*@null@*/
 static Proto* LoadChunk (LoadState* S)
-	/*@modifies S @*/
 {
  LoadHeader(S);
  return LoadFunction(S,NULL);

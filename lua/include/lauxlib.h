@@ -22,74 +22,45 @@
 
 
 typedef struct luaL_reg {
-/*@null@*/
   const char *name;
-/*@dependent@*/ /*@null@*/
   lua_CFunction func;
 } luaL_reg;
 
 
 LUALIB_API void luaL_openlib (lua_State *L, const char *libname,
-                               const luaL_reg *l, int nup)
-	/*@modifies L @*/;
-LUALIB_API int luaL_getmetafield (lua_State *L, int obj, const char *e)
-	/*@modifies L @*/;
-LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *e)
-	/*@modifies L @*/;
-LUALIB_API int luaL_typerror (lua_State *L, int narg, const char *tname)
-	/*@modifies L @*/;
-LUALIB_API int luaL_argerror (lua_State *L, int numarg, const char *extramsg)
-	/*@modifies L @*/;
-/*@observer@*/
-LUALIB_API const char *luaL_checklstring (lua_State *L, int numArg, size_t *l)
-	/*@modifies L, *l @*/;
-/*@observer@*/
+                               const luaL_reg *l, int nup);
+LUALIB_API int luaL_getmetafield (lua_State *L, int obj, const char *e);
+LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *e);
+LUALIB_API int luaL_typerror (lua_State *L, int narg, const char *tname);
+LUALIB_API int luaL_argerror (lua_State *L, int numarg, const char *extramsg);
+LUALIB_API const char *luaL_checklstring (lua_State *L, int numArg, size_t *l);
 LUALIB_API const char *luaL_optlstring (lua_State *L, int numArg,
-                                           const char *def, size_t *l)
-	/*@modifies L, *l @*/;
-LUALIB_API lua_Number luaL_checknumber (lua_State *L, int numArg)
-	/*@modifies L @*/;
-LUALIB_API lua_Number luaL_optnumber (lua_State *L, int nArg, lua_Number def)
-	/*@modifies L @*/;
+                                           const char *def, size_t *l);
+LUALIB_API lua_Number luaL_checknumber (lua_State *L, int numArg);
+LUALIB_API lua_Number luaL_optnumber (lua_State *L, int nArg, lua_Number def);
 
-LUALIB_API void luaL_checkstack (lua_State *L, int sz, const char *msg)
-	/*@modifies L @*/;
-LUALIB_API void luaL_checktype (lua_State *L, int narg, int t)
-	/*@modifies L @*/;
-LUALIB_API void luaL_checkany (lua_State *L, int narg)
-	/*@modifies L @*/;
+LUALIB_API void luaL_checkstack (lua_State *L, int sz, const char *msg);
+LUALIB_API void luaL_checktype (lua_State *L, int narg, int t);
+LUALIB_API void luaL_checkany (lua_State *L, int narg);
 
-LUALIB_API int   luaL_newmetatable (lua_State *L, const char *tname)
-	/*@modifies L @*/;
-LUALIB_API void  luaL_getmetatable (lua_State *L, const char *tname)
-	/*@modifies L @*/;
-LUALIB_API void *luaL_checkudata (lua_State *L, int ud, const char *tname)
-	/*@modifies L @*/;
+LUALIB_API int   luaL_newmetatable (lua_State *L, const char *tname);
+LUALIB_API void  luaL_getmetatable (lua_State *L, const char *tname);
+LUALIB_API void *luaL_checkudata (lua_State *L, int ud, const char *tname);
 
-LUALIB_API void luaL_where (lua_State *L, int lvl)
-	/*@modifies L @*/;
-LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...)
-	/*@modifies L @*/;
+LUALIB_API void luaL_where (lua_State *L, int lvl);
+LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...);
 
-LUALIB_API int luaL_findstring (const char *st, const char *const lst[])
-	/*@*/;
+LUALIB_API int luaL_findstring (const char *st, const char *const lst[]);
 
-LUALIB_API int luaL_ref (lua_State *L, int t)
-	/*@modifies L @*/;
-LUALIB_API void luaL_unref (lua_State *L, int t, int ref)
-	/*@modifies L @*/;
+LUALIB_API int luaL_ref (lua_State *L, int t);
+LUALIB_API void luaL_unref (lua_State *L, int t, int ref);
 
-LUALIB_API int luaL_getn (lua_State *L, int t)
-	/*@modifies L @*/;
-LUALIB_API void luaL_setn (lua_State *L, int t, int n)
-	/*@modifies L @*/;
+LUALIB_API int luaL_getn (lua_State *L, int t);
+LUALIB_API void luaL_setn (lua_State *L, int t, int n);
 
-LUALIB_API int luaL_loadfile (lua_State *L, const char *filename)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/;
+LUALIB_API int luaL_loadfile (lua_State *L, const char *filename);
 LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t sz,
-                                const char *name)
-	/*@modifies L @*/;
+                                const char *name);
 
 
 
@@ -122,7 +93,6 @@ LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t sz,
 
 
 typedef struct luaL_Buffer {
-/*@dependent@*/
   char *p;			/* current position in buffer */
   int lvl;  /* number of strings in the stack (level) */
   lua_State *L;
@@ -135,19 +105,12 @@ typedef struct luaL_Buffer {
 
 #define luaL_addsize(B,n)	((B)->p += (n))
 
-LUALIB_API void luaL_buffinit (lua_State *L, luaL_Buffer *B)
-	/*@modifies L, B @*/;
-/*@dependent@*/
-LUALIB_API char *luaL_prepbuffer (luaL_Buffer *B)
-	/*@modifies B @*/;
-LUALIB_API void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l)
-	/*@modifies B @*/;
-LUALIB_API void luaL_addstring (luaL_Buffer *B, const char *s)
-	/*@modifies B @*/;
-LUALIB_API void luaL_addvalue (luaL_Buffer *B)
-	/*@modifies B @*/;
-LUALIB_API void luaL_pushresult (luaL_Buffer *B)
-	/*@modifies B @*/;
+LUALIB_API void luaL_buffinit (lua_State *L, luaL_Buffer *B);
+LUALIB_API char *luaL_prepbuffer (luaL_Buffer *B);
+LUALIB_API void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l);
+LUALIB_API void luaL_addstring (luaL_Buffer *B, const char *s);
+LUALIB_API void luaL_addvalue (luaL_Buffer *B);
+LUALIB_API void luaL_pushresult (luaL_Buffer *B);
 
 
 /* }====================================================== */
@@ -158,16 +121,10 @@ LUALIB_API void luaL_pushresult (luaL_Buffer *B)
 ** Compatibility macros and functions
 */
 
-LUALIB_API int   lua_dofile (lua_State *L, const char *filename)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/;
-LUALIB_API int   lua_dostring (lua_State *L, const char *str)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/;
+LUALIB_API int   lua_dofile (lua_State *L, const char *filename);
+LUALIB_API int   lua_dostring (lua_State *L, const char *str);
 LUALIB_API int   lua_dobuffer (lua_State *L, const char *buff, size_t sz,
-                               const char *n)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/;
+                               const char *n);
 
 
 #define luaL_check_lstr 	luaL_checklstring

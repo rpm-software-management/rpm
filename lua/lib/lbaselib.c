@@ -28,8 +28,6 @@
 ** (a console window or a log file, for instance).
 */
 static int luaB_print (lua_State *L)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
   int n = lua_gettop(L);  /* number of arguments */
   int i;
@@ -52,7 +50,6 @@ static int luaB_print (lua_State *L)
 
 
 static int luaB_tonumber (lua_State *L)
-	/*@modifies L @*/
 {
   int base = luaL_optint(L, 2, 10);
   if (base == 10) {  /* standard conversion */
@@ -82,7 +79,6 @@ static int luaB_tonumber (lua_State *L)
 
 
 static int luaB_error (lua_State *L)
-	/*@modifies L @*/
 {
   int level = luaL_optint(L, 2, 1);
   luaL_checkany(L, 1);
@@ -98,7 +94,6 @@ static int luaB_error (lua_State *L)
 
 
 static int luaB_getmetatable (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checkany(L, 1);
   if (!lua_getmetatable(L, 1)) {
@@ -111,7 +106,6 @@ static int luaB_getmetatable (lua_State *L)
 
 
 static int luaB_setmetatable (lua_State *L)
-	/*@modifies L @*/
 {
   int t = lua_type(L, 2);
   luaL_checktype(L, 1, LUA_TTABLE);
@@ -126,7 +120,6 @@ static int luaB_setmetatable (lua_State *L)
 
 
 static void getfunc (lua_State *L)
-	/*@modifies L @*/
 {
   if (lua_isfunction(L, 1)) lua_pushvalue(L, 1);
   else {
@@ -144,7 +137,6 @@ static void getfunc (lua_State *L)
 
 
 static int aux_getfenv (lua_State *L)
-	/*@modifies L @*/
 {
   lua_getfenv(L, -1);
   lua_pushliteral(L, "__fenv");
@@ -154,7 +146,6 @@ static int aux_getfenv (lua_State *L)
 
 
 static int luaB_getfenv (lua_State *L)
-	/*@modifies L @*/
 {
   getfunc(L);
   if (!aux_getfenv(L))  /* __fenv not defined? */
@@ -164,7 +155,6 @@ static int luaB_getfenv (lua_State *L)
 
 
 static int luaB_setfenv (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checktype(L, 2, LUA_TTABLE);
   getfunc(L);
@@ -182,7 +172,6 @@ static int luaB_setfenv (lua_State *L)
 
 
 static int luaB_rawequal (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checkany(L, 1);
   luaL_checkany(L, 2);
@@ -192,7 +181,6 @@ static int luaB_rawequal (lua_State *L)
 
 
 static int luaB_rawget (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checktype(L, 1, LUA_TTABLE);
   luaL_checkany(L, 2);
@@ -201,7 +189,6 @@ static int luaB_rawget (lua_State *L)
 }
 
 static int luaB_rawset (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checktype(L, 1, LUA_TTABLE);
   luaL_checkany(L, 2);
@@ -212,7 +199,6 @@ static int luaB_rawset (lua_State *L)
 
 
 static int luaB_gcinfo (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushnumber(L, (lua_Number)lua_getgccount(L));
   lua_pushnumber(L, (lua_Number)lua_getgcthreshold(L));
@@ -221,7 +207,6 @@ static int luaB_gcinfo (lua_State *L)
 
 
 static int luaB_collectgarbage (lua_State *L)
-	/*@modifies L @*/
 {
   lua_setgcthreshold(L, luaL_optint(L, 1, 0));
   return 0;
@@ -229,7 +214,6 @@ static int luaB_collectgarbage (lua_State *L)
 
 
 static int luaB_type (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checkany(L, 1);
   lua_pushstring(L, lua_typename(L, lua_type(L, 1)));
@@ -238,7 +222,6 @@ static int luaB_type (lua_State *L)
 
 
 static int luaB_next (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checktype(L, 1, LUA_TTABLE);
   lua_settop(L, 2);  /* create a 2nd argument if there isn't one */
@@ -252,7 +235,6 @@ static int luaB_next (lua_State *L)
 
 
 static int luaB_pairs (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checktype(L, 1, LUA_TTABLE);
   lua_pushliteral(L, "next");
@@ -264,7 +246,6 @@ static int luaB_pairs (lua_State *L)
 
 
 static int luaB_ipairs (lua_State *L)
-	/*@modifies L @*/
 {
   lua_Number i = lua_tonumber(L, 2);
   luaL_checktype(L, 1, LUA_TTABLE);
@@ -285,7 +266,6 @@ static int luaB_ipairs (lua_State *L)
 
 
 static int load_aux (lua_State *L, int status)
-	/*@modifies L @*/
 {
   if (status == 0)  /* OK? */
     return 1;
@@ -298,7 +278,6 @@ static int load_aux (lua_State *L, int status)
 
 
 static int luaB_loadstring (lua_State *L)
-	/*@modifies L @*/
 {
   size_t l;
   const char *s = luaL_checklstring(L, 1, &l);
@@ -308,8 +287,6 @@ static int luaB_loadstring (lua_State *L)
 
 
 static int luaB_loadfile (lua_State *L)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
   const char *fname = luaL_optstring(L, 1, NULL);
   return load_aux(L, luaL_loadfile(L, fname));
@@ -317,8 +294,6 @@ static int luaB_loadfile (lua_State *L)
 
 
 static int luaB_dofile (lua_State *L)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
   const char *fname = luaL_optstring(L, 1, NULL);
   int n = lua_gettop(L);
@@ -330,7 +305,6 @@ static int luaB_dofile (lua_State *L)
 
 
 static int luaB_assert (lua_State *L)
-	/*@modifies L @*/
 {
   luaL_checkany(L, 1);
   if (!lua_toboolean(L, 1))
@@ -341,7 +315,6 @@ static int luaB_assert (lua_State *L)
 
 
 static int luaB_unpack (lua_State *L)
-	/*@modifies L @*/
 {
   int n, i;
   luaL_checktype(L, 1, LUA_TTABLE);
@@ -354,7 +327,6 @@ static int luaB_unpack (lua_State *L)
 
 
 static int luaB_pcall (lua_State *L)
-	/*@modifies L @*/
 {
   int status;
   luaL_checkany(L, 1);
@@ -366,7 +338,6 @@ static int luaB_pcall (lua_State *L)
 
 
 static int luaB_xpcall (lua_State *L)
-	/*@modifies L @*/
 {
   int status;
   luaL_checkany(L, 2);
@@ -380,7 +351,6 @@ static int luaB_xpcall (lua_State *L)
 
 
 static int luaB_tostring (lua_State *L)
-	/*@modifies L @*/
 {
   char buff[128];
   luaL_checkany(L, 1);
@@ -419,7 +389,6 @@ static int luaB_tostring (lua_State *L)
 
 
 static int luaB_newproxy (lua_State *L)
-	/*@modifies L @*/
 {
   lua_settop(L, 1);
   lua_newuserdata(L, 0);  /* create proxy */
@@ -472,9 +441,7 @@ static int luaB_newproxy (lua_State *L)
 #endif
 
 
-/*@observer@*/
 static const char *getpath (lua_State *L)
-	/*@modifies L @*/
 {
   const char *path;
   lua_getglobal(L, LUA_PATH);  /* try global variable */
@@ -488,7 +455,6 @@ static const char *getpath (lua_State *L)
 
 
 static const char *pushnextpath (lua_State *L, const char *path)
-	/*@modifies L @*/
 {
   const char *l;
   if (*path == '\0') return NULL;  /* no more paths */
@@ -501,7 +467,6 @@ static const char *pushnextpath (lua_State *L, const char *path)
 
 
 static void pushcomposename (lua_State *L)
-	/*@modifies L @*/
 {
   const char *path = lua_tostring(L, -1);
   const char *wild;
@@ -520,8 +485,6 @@ static void pushcomposename (lua_State *L)
 
 
 static int luaB_require (lua_State *L)
-	/*@globals fileSystem @*/
-	/*@modifies L, fileSystem @*/
 {
   const char *path;
   int status = LUA_ERRFILE;  /* not found (yet) */
@@ -574,8 +537,6 @@ static int luaB_require (lua_State *L)
 /* }====================================================== */
 
 
-/*@-readonlytrans@*/
-/*@unchecked@*/
 static const luaL_reg base_funcs[] = {
   {"error", luaB_error},
   {"getmetatable", luaB_getmetatable},
@@ -604,7 +565,6 @@ static const luaL_reg base_funcs[] = {
   {"require", luaB_require},
   {NULL, NULL}
 };
-/*@=readonlytrans@*/
 
 
 /*
@@ -614,7 +574,6 @@ static const luaL_reg base_funcs[] = {
 */
 
 static int auxresume (lua_State *L, lua_State *co, int narg)
-	/*@modifies L, co @*/
 {
   int status;
   if (!lua_checkstack(co, narg))
@@ -636,7 +595,6 @@ static int auxresume (lua_State *L, lua_State *co, int narg)
 
 
 static int luaB_coresume (lua_State *L)
-	/*@modifies L @*/
 {
   lua_State *co = lua_tothread(L, 1);
   int r;
@@ -656,7 +614,6 @@ static int luaB_coresume (lua_State *L)
 
 
 static int luaB_auxwrap (lua_State *L)
-	/*@modifies L @*/
 {
   lua_State *co = lua_tothread(L, lua_upvalueindex(1));
   int r = auxresume(L, co, lua_gettop(L));
@@ -673,7 +630,6 @@ static int luaB_auxwrap (lua_State *L)
 
 
 static int luaB_cocreate (lua_State *L)
-	/*@modifies L @*/
 {
   lua_State *NL = lua_newthread(L);
   luaL_argcheck(L, lua_isfunction(L, 1) && !lua_iscfunction(L, 1), 1,
@@ -685,7 +641,6 @@ static int luaB_cocreate (lua_State *L)
 
 
 static int luaB_cowrap (lua_State *L)
-	/*@modifies L @*/
 {
   luaB_cocreate(L);
   lua_pushcclosure(L, luaB_auxwrap, 1);
@@ -694,14 +649,12 @@ static int luaB_cowrap (lua_State *L)
 
 
 static int luaB_yield (lua_State *L)
-	/*@modifies L @*/
 {
   return lua_yield(L, lua_gettop(L));
 }
 
 
 static int luaB_costatus (lua_State *L)
-	/*@modifies L @*/
 {
   lua_State *co = lua_tothread(L, 1);
   luaL_argcheck(L, co, 1, "coroutine expected");
@@ -717,8 +670,6 @@ static int luaB_costatus (lua_State *L)
 }
 
 
-/*@-readonlytrans@*/
-/*@unchecked@*/
 static const luaL_reg co_funcs[] = {
   {"create", luaB_cocreate},
   {"wrap", luaB_cowrap},
@@ -727,14 +678,12 @@ static const luaL_reg co_funcs[] = {
   {"status", luaB_costatus},
   {NULL, NULL}
 };
-/*@=readonlytrans@*/
 
 /* }====================================================== */
 
 
 
 static void base_open (lua_State *L)
-	/*@modifies L @*/
 {
   lua_pushliteral(L, "_G");
   lua_pushvalue(L, LUA_GLOBALSINDEX);

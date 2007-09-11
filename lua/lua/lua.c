@@ -61,16 +61,12 @@
 #endif
 
 
-/*@unchecked@*/ /*@relnull@*/
 static lua_State *L = NULL;
 
-/*@-readonlytrans@*/
-/*@unchecked@*/ /*@relnull@*/
 static const char *progname = PROGNAME;
 
 
 
-/*@unchecked@*/
 static const luaL_reg lualibs[] = {
   {"base", luaopen_base},
   {"table", luaopen_table},
@@ -83,12 +79,10 @@ static const luaL_reg lualibs[] = {
   LUA_EXTRALIBS
   {NULL, NULL}
 };
-/*@=readonlytrans@*/
 
 
 
 static void lstop (lua_State *l, lua_Debug *ar)
-	/*@modifies l @*/
 {
   (void)ar;  /* unused arg. */
   lua_sethook(l, NULL, 0, 0);
@@ -97,8 +91,6 @@ static void lstop (lua_State *l, lua_Debug *ar)
 
 
 static void laction (int i)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
 {
   signal(i, SIG_DFL); /* if another SIGINT happens before lstop,
                               terminate process (default action) */
@@ -107,8 +99,6 @@ static void laction (int i)
 
 
 static void print_usage (void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
   fprintf(stderr,
   "usage: %s [options] [script [args]].\n"
@@ -123,9 +113,7 @@ static void print_usage (void)
 }
 
 
-static void l_message (/*@null@*/ const char *pname, const char *msg)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+static void l_message (const char *pname, const char *msg)
 {
   if (pname) fprintf(stderr, "%s: ", pname);
   fprintf(stderr, "%s\n", msg);
@@ -133,8 +121,6 @@ static void l_message (/*@null@*/ const char *pname, const char *msg)
 
 
 static int report (int status)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
   const char *msg;
   if (status) {
@@ -148,8 +134,6 @@ static int report (int status)
 
 
 static int lcall (int narg, int clear)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
 {
   int status;
   int base = lua_gettop(L) - narg;  /* function index */
@@ -165,15 +149,12 @@ static int lcall (int narg, int clear)
 
 
 static void print_version (void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
   l_message(NULL, LUA_VERSION "  " LUA_COPYRIGHT);
 }
 
 
 static void getargs (char *argv[], int n)
-	/*@*/
 {
   int i;
   lua_newtable(L);
@@ -190,33 +171,25 @@ static void getargs (char *argv[], int n)
 
 
 static int docall (int status)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
   if (status == 0) status = lcall(0, 1);
   return report(status);
 }
 
 
-static int file_input (/*@null@*/ const char *name)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+static int file_input (const char *name)
 {
   return docall(luaL_loadfile(L, name));
 }
 
 
 static int dostring (const char *s, const char *name)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
   return docall(luaL_loadbuffer(L, s, strlen(s), name));
 }
 
 
 static int load_file (const char *name)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
   lua_pushliteral(L, "require");
   lua_rawget(L, LUA_GLOBALSINDEX);
@@ -254,8 +227,6 @@ static int load_file (const char *name)
 
 
 static int readline (lua_State *l, const char *prompt)
-	/*@globals fileSystem @*/
-	/*@modifies l, fileSystem @*/
 {
   static char buffer[MAXINPUT];
   if (prompt) {
@@ -273,9 +244,7 @@ static int readline (lua_State *l, const char *prompt)
 #endif
 
 
-/*@observer@*/
 static const char *get_prompt (int firstline)
-	/*@*/
 {
   const char *p = NULL;
   lua_pushstring(L, firstline ? "_PROMPT" : "_PROMPT2");
@@ -288,7 +257,6 @@ static const char *get_prompt (int firstline)
 
 
 static int incomplete (int status)
-	/*@*/
 {
   if (status == LUA_ERRSYNTAX &&
          strstr(lua_tostring(L, -1), "near `<eof>'") != NULL) {
@@ -301,8 +269,6 @@ static int incomplete (int status)
 
 
 static int load_string (void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
   int status;
   lua_settop(L, 0);
@@ -326,8 +292,6 @@ static int load_string (void)
 
 
 static void manual_input (void)
-	/*@globals progname, fileSystem, internalState @*/
-	/*@modifies progname, fileSystem, internalState @*/
 {
   int status;
   const char *oldprogname = progname;
@@ -350,8 +314,6 @@ static void manual_input (void)
 
 
 static int handle_argv (char *argv[], int *interactive)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *interactive, fileSystem, internalState @*/
 {
   if (argv[1] == NULL) {  /* no more arguments? */
     if (stdin_is_tty()) {
@@ -434,7 +396,6 @@ static int handle_argv (char *argv[], int *interactive)
 
 
 static void openstdlibs (lua_State *l)
-	/*@modifies l @*/
 {
   const luaL_reg *lib = lualibs;
   for (; lib->func; lib++) {
@@ -445,8 +406,6 @@ static void openstdlibs (lua_State *l)
 
 
 static int handle_luainit (void)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
   const char *init = getenv("LUA_INIT");
   if (init == NULL) return 0;  /* status OK */
@@ -459,15 +418,12 @@ static int handle_luainit (void)
 
 struct Smain {
   int argc;
-/*@relnull@*/
   char **argv;
   int status;
 };
 
 
 static int pmain (lua_State *l)
-	/*@globals L, progname, fileSystem, internalState @*/
-	/*@modifies l, L, progname, fileSystem, internalState @*/
 {
   struct Smain *s = (struct Smain *)lua_touserdata(l, 1);
   int status;
@@ -486,8 +442,6 @@ static int pmain (lua_State *l)
 
 
 int main (int argc, char *argv[])
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
   int status;
   struct Smain s;

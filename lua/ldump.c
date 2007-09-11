@@ -25,7 +25,6 @@ typedef struct {
 } DumpState;
 
 static void DumpBlock(const void* b, size_t size, DumpState* D)
-	/*@*/
 {
  lua_unlock(D->L);
  (*D->write)(D->L,b,size,D->data);
@@ -33,32 +32,27 @@ static void DumpBlock(const void* b, size_t size, DumpState* D)
 }
 
 static void DumpByte(int y, DumpState* D)
-	/*@*/
 {
  char x=(char)y;
  DumpBlock(&x,sizeof(x),D);
 }
 
 static void DumpInt(int x, DumpState* D)
-	/*@*/
 {
  DumpBlock(&x,sizeof(x),D);
 }
 
 static void DumpSize(size_t x, DumpState* D)
-	/*@*/
 {
  DumpBlock(&x,sizeof(x),D);
 }
 
 static void DumpNumber(lua_Number x, DumpState* D)
-	/*@*/
 {
  DumpBlock(&x,sizeof(x),D);
 }
 
-static void DumpString(/*@null@*/ TString* s, DumpState* D)
-	/*@*/
+static void DumpString(TString* s, DumpState* D)
 {
  if (s==NULL || getstr(s)==NULL)
   DumpSize(0,D);
@@ -71,14 +65,12 @@ static void DumpString(/*@null@*/ TString* s, DumpState* D)
 }
 
 static void DumpCode(const Proto* f, DumpState* D)
-	/*@*/
 {
  DumpInt(f->sizecode,D);
  DumpVector(f->code,f->sizecode,sizeof(*f->code),D);
 }
 
 static void DumpLocals(const Proto* f, DumpState* D)
-	/*@*/
 {
  int i,n=f->sizelocvars;
  DumpInt(n,D);
@@ -91,24 +83,21 @@ static void DumpLocals(const Proto* f, DumpState* D)
 }
 
 static void DumpLines(const Proto* f, DumpState* D)
-	/*@*/
 {
  DumpInt(f->sizelineinfo,D);
  DumpVector(f->lineinfo,f->sizelineinfo,sizeof(*f->lineinfo),D);
 }
 
 static void DumpUpvalues(const Proto* f, DumpState* D)
-	/*@*/
 {
  int i,n=f->sizeupvalues;
  DumpInt(n,D);
  for (i=0; i<n; i++) DumpString(f->upvalues[i],D);
 }
 
-static void DumpFunction(const Proto* f, /*@null@*/ const TString* p, DumpState* D)		/*@*/;
+static void DumpFunction(const Proto* f, const TString* p, DumpState* D)		;
 
 static void DumpConstants(const Proto* f, DumpState* D)
-	/*@*/
 {
  int i,n;
  DumpInt(n=f->sizek,D);
@@ -136,7 +125,6 @@ static void DumpConstants(const Proto* f, DumpState* D)
 }
 
 static void DumpFunction(const Proto* f, const TString* p, DumpState* D)
-	/*@*/
 {
  DumpString((f->source==p) ? NULL : f->source,D);
  DumpInt(f->lineDefined,D);
@@ -152,7 +140,6 @@ static void DumpFunction(const Proto* f, const TString* p, DumpState* D)
 }
 
 static void DumpHeader(DumpState* D)
-	/*@*/
 {
  DumpLiteral(LUA_SIGNATURE,D);
  DumpByte(VERSION,D);

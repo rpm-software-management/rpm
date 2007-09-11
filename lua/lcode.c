@@ -52,7 +52,6 @@ int luaK_jump (FuncState *fs) {
 
 
 static int luaK_condjump (FuncState *fs, OpCode op, int A, int B, int C)
-	/*@modifies fs @*/
 {
   luaK_codeABC(fs, op, A, B, C);
   return luaK_jump(fs);
@@ -60,7 +59,6 @@ static int luaK_condjump (FuncState *fs, OpCode op, int A, int B, int C)
 
 
 static void luaK_fixjump (FuncState *fs, int pc, int dest)
-	/*@modifies fs @*/
 {
   Instruction *jmp = &fs->f->code[pc];
   int offset = dest-(pc+1);
@@ -82,7 +80,6 @@ int luaK_getlabel (FuncState *fs) {
 
 
 static int luaK_getjump (FuncState *fs, int pc)
-	/*@*/
 {
   int offset = GETARG_sBx(fs->f->code[pc]);
   if (offset == NO_JUMP)  /* point to itself represents end of list */
@@ -93,7 +90,6 @@ static int luaK_getjump (FuncState *fs, int pc)
 
 
 static Instruction *getjumpcontrol (FuncState *fs, int pc)
-	/*@*/
 {
   Instruction *pi = &fs->f->code[pc];
   if (pc >= 1 && testOpMode(GET_OPCODE(*(pi-1)), OpModeT))
@@ -108,7 +104,6 @@ static Instruction *getjumpcontrol (FuncState *fs, int pc)
 ** (or produce an inverted value)
 */
 static int need_value (FuncState *fs, int list, int cond)
-	/*@*/
 {
   for (; list != NO_JUMP; list = luaK_getjump(fs, list)) {
     Instruction i = *getjumpcontrol(fs, list);
@@ -119,7 +114,6 @@ static int need_value (FuncState *fs, int list, int cond)
 
 
 static void patchtestreg (Instruction *i, int reg)
-	/*@modifies *i @*/
 {
   if (reg == NO_REG) reg = GETARG_B(*i);
   SETARG_A(*i, reg);
@@ -128,7 +122,6 @@ static void patchtestreg (Instruction *i, int reg)
 
 static void luaK_patchlistaux (FuncState *fs, int list,
           int ttarget, int treg, int ftarget, int freg, int dtarget)
-	/*@modifies fs @*/
 {
   while (list != NO_JUMP) {
     int next = luaK_getjump(fs, list);
@@ -155,7 +148,6 @@ static void luaK_patchlistaux (FuncState *fs, int list,
 
 
 static void luaK_dischargejpc (FuncState *fs)
-	/*@modifies fs @*/
 {
   luaK_patchlistaux(fs, fs->jpc, fs->pc, NO_REG, fs->pc, NO_REG, fs->pc);
   fs->jpc = NO_JUMP;
@@ -209,7 +201,6 @@ void luaK_reserveregs (FuncState *fs, int n) {
 
 
 static void freereg (FuncState *fs, int reg)
-	/*@modifies fs @*/
 {
   if (reg >= fs->nactvar && reg < MAXSTACK) {
     fs->freereg--;
@@ -219,7 +210,6 @@ static void freereg (FuncState *fs, int reg)
 
 
 static void freeexp (FuncState *fs, expdesc *e)
-	/*@modifies fs @*/
 {
   if (e->k == VNONRELOC)
     freereg(fs, e->info);
@@ -227,7 +217,6 @@ static void freeexp (FuncState *fs, expdesc *e)
 
 
 static int addk (FuncState *fs, TObject *k, TObject *v)
-	/*@modifies fs @*/
 {
   const TObject *idx = luaH_get(fs->h, k);
   if (ttisnumber(idx)) {
@@ -260,7 +249,6 @@ int luaK_numberK (FuncState *fs, lua_Number r) {
 
 
 static int nil_constant (FuncState *fs)
-	/*@modifies fs @*/
 {
   TObject k, v;
   setnilvalue(&v);
@@ -313,7 +301,6 @@ void luaK_dischargevars (FuncState *fs, expdesc *e) {
 
 
 static int code_label (FuncState *fs, int A, int b, int jump)
-	/*@modifies fs @*/
 {
   luaK_getlabel(fs);  /* those instructions may be jump targets */
   return luaK_codeABC(fs, OP_LOADBOOL, A, b, jump);
@@ -321,7 +308,6 @@ static int code_label (FuncState *fs, int A, int b, int jump)
 
 
 static void discharge2reg (FuncState *fs, expdesc *e, int reg)
-	/*@modifies fs, e @*/
 {
   luaK_dischargevars(fs, e);
   switch (e->k) {
@@ -358,7 +344,6 @@ static void discharge2reg (FuncState *fs, expdesc *e, int reg)
 
 
 static void discharge2anyreg (FuncState *fs, expdesc *e)
-	/*@modifies fs, e @*/
 {
   if (e->k != VNONRELOC) {
     luaK_reserveregs(fs, 1);
@@ -368,7 +353,6 @@ static void discharge2anyreg (FuncState *fs, expdesc *e)
 
 
 static void luaK_exp2reg (FuncState *fs, expdesc *e, int reg)
-	/*@modifies fs, e @*/
 {
   discharge2reg(fs, e, reg);
   if (e->k == VJMP)
@@ -493,7 +477,6 @@ void luaK_self (FuncState *fs, expdesc *e, expdesc *key) {
 
 
 static void invertjump (FuncState *fs, expdesc *e)
-	/*@*/
 {
   Instruction *pc = getjumpcontrol(fs, e->info);
   lua_assert(testOpMode(GET_OPCODE(*pc), OpModeT) &&
@@ -503,7 +486,6 @@ static void invertjump (FuncState *fs, expdesc *e)
 
 
 static int jumponcond (FuncState *fs, expdesc *e, int cond)
-	/*@modifies fs, e @*/
 {
   if (e->k == VRELOCABLE) {
     Instruction ie = getcode(fs, e);
@@ -571,7 +553,6 @@ void luaK_goiffalse (FuncState *fs, expdesc *e) {
 
 
 static void codenot (FuncState *fs, expdesc *e)
-	/*@modifies fs, e @*/
 {
   luaK_dischargevars(fs, e);
   switch (e->k) {
@@ -656,7 +637,6 @@ void luaK_infix (FuncState *fs, BinOpr op, expdesc *v) {
 
 static void codebinop (FuncState *fs, expdesc *res, BinOpr op,
                        int o1, int o2)
-	/*@modifies fs, res @*/
 {
   if (op <= OPR_POW) {  /* arithmetic operator? */
     OpCode opc = cast(OpCode, (op - OPR_ADD) + OP_ADD);  /* ORDER OP */

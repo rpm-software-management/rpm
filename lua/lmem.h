@@ -16,14 +16,10 @@
 #define MEMERRMSG	"not enough memory"
 
 
-/*@null@*/
-void *luaM_realloc (/*@null@*/ lua_State *L, /*@null@*/ void *oldblock, lu_mem oldsize, lu_mem size)
-	/*@modifies L, oldblock @*/;
+void *luaM_realloc (lua_State *L, void *oldblock, lu_mem oldsize, lu_mem size);
 
-/*@null@*/
 void *luaM_growaux (lua_State *L, void *block, int *size, int size_elem,
-                    int limit, const char *errormsg)
-	/*@modifies L, block, *size @*/;
+                    int limit, const char *errormsg);
 
 #define luaM_free(L, b, s)	luaM_realloc(L, (b), (s), 0)
 #define luaM_freelem(L, b)	luaM_realloc(L, (b), sizeof(*(b)), 0)
