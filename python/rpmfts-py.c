@@ -14,7 +14,6 @@
 
 #include "debug.h"
 
-/*@unchecked@*/
 static int _rpmfts_debug = 1;
 
 #define	infoBit(_ix)	(1 << (((unsigned)(_ix)) & 0x1f))
@@ -37,9 +36,7 @@ static const char * ftsInfoStrings[] = {
     "W",
 };
 
-/*@observer@*/
 static const char * ftsInfoStr(int fts_info)
-	/*@*/
 {
     if (!(fts_info >= 1 && fts_info <= 14))
 	fts_info = 0;
@@ -63,14 +60,11 @@ rpmfts_debug (const char * msg, rpmftsObject * s)
 
 static int
 rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
-	/*@modifies s @*/
 {
     int ac = 1;
     size_t nb;
 
-/*@-branchstate@*/
     if (root == NULL)	root = "/";
-/*@=branchstate@*/
     if (options == -1)	options = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     if (ignore == -1)	ignore = infoBit(FTS_DP);
 
@@ -100,7 +94,6 @@ rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
 
 static int
 rpmfts_state(rpmftsObject * s, int nactive)
-	/*@modifies s @*/
 {
     int rc = 0;
 
@@ -128,10 +121,8 @@ rpmfts_debug(__FUNCTION__, s);
     return rc;
 }
 
-/*@null@*/
 static PyObject *
 rpmfts_step(rpmftsObject * s)
-	/*@modifies s @*/
 {
     PyObject * result = NULL;
     int xx;
@@ -166,11 +157,8 @@ rpmfts_debug(__FUNCTION__, s);
  * \brief A python rpm.fts object represents an rpm fts(3) handle.
  */
 
-/*@null@*/
 static PyObject *
-rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args, PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies _Py_NoneStruct @*/
+rpmfts_Debug(rpmftsObject * s, PyObject * args, PyObject * kwds)
 {
     char * kwlist[] = {"debugLevel", NULL};
 
@@ -182,10 +170,8 @@ rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args, PyObject * kwds)
     return Py_None;
 }
 
-/*@null@*/
 static PyObject *
 rpmfts_Open(rpmftsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     char * root = NULL;
     int options = -1;
@@ -205,11 +191,8 @@ rpmfts_debug(__FUNCTION__, s);
     return (PyObject *)s;
 }
 
-/*@null@*/
 static PyObject *
 rpmfts_Read(rpmftsObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result;
 
@@ -225,11 +208,8 @@ rpmfts_debug(__FUNCTION__, s);
     return result;
 }
 
-/*@null@*/
 static PyObject *
 rpmfts_Children(rpmftsObject * s, PyObject * args, PyObject * kwds)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
 {
     int instr;
     char * kwlist[] = {"instructions", NULL};
@@ -249,10 +229,8 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_None;
 }
 
-/*@null@*/
 static PyObject *
 rpmfts_Close(rpmftsObject * s)
-	/*@modifies s @*/
 {
 
 rpmfts_debug(__FUNCTION__, s);
@@ -260,10 +238,8 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_BuildValue("i", rpmfts_state(s, RPMFTS_CLOSE));
 }
 
-/*@null@*/
 static PyObject *
 rpmfts_Set(rpmftsObject * s, PyObject * args, PyObject * kwds)
-	/*@modifies s @*/
 {
     int instr = 0;
     int rc = 0;
@@ -281,8 +257,6 @@ rpmfts_debug(__FUNCTION__, s);
 
 /** \ingroup py_c
  */
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfts_methods[] = {
     {"Debug",	(PyCFunction)rpmfts_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
@@ -298,7 +272,6 @@ static struct PyMethodDef rpmfts_methods[] = {
 	NULL},
     {NULL,		NULL}		/* sentinel */
 };
-/*@=fullinitblock@*/
 
 /* ---------- */
 
@@ -315,14 +288,12 @@ static PyMemberDef rpmfts_members[] = {
 };
 
 static PyObject * rpmfts_getattro(PyObject * o, PyObject * n)
-	/*@*/
 {
 rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
     return PyObject_GenericGetAttr(o, n);
 }
 
 static int rpmfts_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
 {
 rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
     return PyObject_GenericSetAttr(o, n, v);
@@ -332,16 +303,13 @@ rpmfts_debug(__FUNCTION__, (rpmftsObject *)o);
 
 static PyObject *
 rpmfts_iter(rpmftsObject * s)
-	/*@*/
 {
     Py_INCREF(s);
     return (PyObject *)s;
 }
 
-/*@null@*/
 static PyObject *
 rpmfts_iternext(rpmftsObject * s)
-	/*@modifies s @*/
 {
     int xx;
 
@@ -353,20 +321,17 @@ rpmfts_iternext(rpmftsObject * s)
 
 /* ---------- */
 
-static void rpmfts_free(/*@only@*/ PyObject * s)
-	/*@*/
+static void rpmfts_free(PyObject * s)
 {
     _PyObject_GC_Del(s);
 }
 
 static PyObject * rpmfts_alloc(PyTypeObject * type, int nitems)
-	/*@*/
 {
     return PyType_GenericAlloc(type, nitems);
 }
 
-static void rpmfts_dealloc(/*@only@*/ rpmftsObject * s)
-	/*@modifies s @*/
+static void rpmfts_dealloc(rpmftsObject * s)
 {
     int xx;
 
@@ -388,7 +353,6 @@ rpmfts_debug(__FUNCTION__, s);
 }
 
 static int rpmfts_init(rpmftsObject * s, PyObject *args, PyObject *kwds)
-	/*@modifies s @*/
 {
     char * root = NULL;
     int options = -1;
@@ -403,9 +367,7 @@ rpmfts_debug(__FUNCTION__, s);
     return rpmfts_initialize(s, root, options, ignore);
 }
 
-/*@null@*/
 static PyObject * rpmfts_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-	/*@*/
 {
     rpmftsObject *s;
     PyObject *o;
@@ -496,7 +458,6 @@ rpmfts_debug(__FUNCTION__, s);
 }
 
 static int rpmfts_traverse(rpmftsObject * s, visitproc visit, void * arg)
-	/*@*/
 {
     if (s->md_dict != NULL)
 	return visit(s->md_dict, arg);
@@ -505,9 +466,7 @@ static int rpmfts_traverse(rpmftsObject * s, visitproc visit, void * arg)
     return 0;
 }
 
-static int rpmfts_print(rpmftsObject * s,  FILE * fp, /*@unused@*/ int flags)
-	/*@globals fileSystem @*/
-	/*@modifies fp, fileSystem @*/
+static int rpmfts_print(rpmftsObject * s,  FILE * fp, int flags)
 {
     static int indent = 2;
 
@@ -521,13 +480,11 @@ static int rpmfts_print(rpmftsObject * s,  FILE * fp, /*@unused@*/ int flags)
 
 /**
  */
-/*@unchecked@*/ /*@observer@*/
 static char rpmfts_doc[] =
 "";
 
 /** \ingroup py_c
  */
-/*@-fullinitblock@*/
 PyTypeObject rpmfts_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -572,4 +529,3 @@ PyTypeObject rpmfts_Type = {
 	(freefunc) rpmfts_free,		/* tp_free */
 	0,				/* tp_is_gc */
 };
-/*@=fullinitblock@*/

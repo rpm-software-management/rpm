@@ -17,7 +17,6 @@ typedef struct mpwObject_s {
 
 /**
  */
-/*@unchecked@*/
 extern PyTypeObject mpw_Type;
 
 #define	mpw_Check(_o)		PyObject_TypeCheck((_o), &mpw_Type)
@@ -31,11 +30,11 @@ extern PyTypeObject mpw_Type;
 /**
  */
 mpwObject * mpw_New(int ob_size)
-	/*@*/;
+	;
 
 /**
  */
 mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize)
-	/*@*/;
+	;
 
 #endif

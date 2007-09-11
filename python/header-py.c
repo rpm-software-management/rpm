@@ -131,7 +131,6 @@
 /** \ingroup python
  * \name Class: rpm.hdr
  */
-/*@{*/
 
 /** \ingroup py_c
  */
@@ -148,8 +147,7 @@ struct hdrObject_s {
     unsigned short * modes;
 } ;
 
-/*@unused@*/ static inline Header headerAllocated(Header h)
-	/*@modifies h @*/
+static inline Header headerAllocated(Header h)
 {
     h->flags |= HEADERFLAG_ALLOCATED;
     return 0;
@@ -158,7 +156,6 @@ struct hdrObject_s {
 /** \ingroup py_c
  */
 static PyObject * hdrKeyList(hdrObject * s)
-	/*@*/
 {
     PyObject * list, *o;
     HeaderIterator hi;
@@ -190,7 +187,6 @@ static PyObject * hdrKeyList(hdrObject * s)
 /** \ingroup py_c
  */
 static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
-	/*@*/
 {
     char * buf;
     PyObject * rc;
@@ -225,7 +221,6 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 /** \ingroup py_c
  */
 static PyObject * hdrExpandFilelist(hdrObject * s)
-	/*@*/
 {
     expandFilelist (s->h);
 
@@ -236,7 +231,6 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
 /** \ingroup py_c
  */
 static PyObject * hdrCompressFilelist(hdrObject * s)
-	/*@*/
 {
     compressFilelist (s->h);
 
@@ -248,7 +242,6 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
 /** \ingroup py_c
  */
 static void mungeFilelist(Header h)
-	/*@*/
 {
     const char ** fileNames = NULL;
     int count = 0;
@@ -273,7 +266,6 @@ static void mungeFilelist(Header h)
 /** \ingroup py_c
  */
 static PyObject * hdrFullFilelist(hdrObject * s)
-	/*@*/
 {
     mungeFilelist (s->h);
 
@@ -284,7 +276,6 @@ static PyObject * hdrFullFilelist(hdrObject * s)
 /** \ingroup py_c
  */
 static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
-	/*@*/
 {
     char * fmt;
     char * r;
@@ -310,7 +301,6 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)
-	/*@*/
 {
     return rpmVersionCompare(a->h, b->h);
 }
@@ -322,7 +312,6 @@ static long hdr_hash(PyObject * h)
 
 /** \ingroup py_c
  */
-/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef hdr_methods[] = {
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
@@ -350,7 +339,6 @@ static struct PyMethodDef hdr_methods[] = {
 /** \ingroup py_c
  */
 static void hdr_dealloc(hdrObject * s)
-	/*@*/
 {
     if (s->h) headerFree(s->h);
     s->md5list = _free(s->md5list);
@@ -377,7 +365,6 @@ long tagNumFromPyObject (PyObject *item)
 /** \ingroup py_c
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
-	/*@*/
 {
     int tagtype, type, count, i, tag = -1;
     void * data;
@@ -545,7 +532,6 @@ static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
 
 /** \ingroup py_c
  */
-/*@unchecked@*/ /*@observer@*/
 static PyMappingMethods hdr_as_mapping = {
 	(lenfunc) 0,			/* mp_length */
 	(binaryfunc) hdr_subscript,	/* mp_subscript */
@@ -559,7 +545,6 @@ static char hdr_doc[] =
 
 /** \ingroup py_c
  */
-/*@unchecked@*/ /*@observer@*/
 PyTypeObject hdr_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -930,4 +915,3 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
     return Py_BuildValue("i", rc);
 }
 
-/*@}*/

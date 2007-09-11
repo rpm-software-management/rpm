@@ -10,7 +10,6 @@
 typedef struct specObject_s {
     PyObject_HEAD
     /*type specific fields */
-/*@null@*/
     Spec spec;
 } specObject;
 
@@ -18,14 +17,10 @@ extern PyTypeObject spec_Type;
 
 /**
  */
-/*@null@*/
-Spec specFromSpec(specObject * spec)
-/*@*/;
+Spec specFromSpec(specObject * spec);
 
 /**
  */
-/*@null@*/
-specObject * spec_Wrap(Spec spec)
-/*@*/;
+specObject * spec_Wrap(Spec spec);
 
 #endif /* RPMPYTHON_SPEC */

@@ -20,22 +20,14 @@ struct rpmrcObject_s {
     PyObject *md_dict;		/*!< to look like PyModuleObject */
 } ;
 
-/*@unchecked@*/
 extern PyTypeObject rpmrc_Type;
 
-/*@null@*/
-PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
-	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
-/*@null@*/
-PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
-	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
+PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args, PyObject * kwds);
+PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args, PyObject * kwds);
 
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
-/*@null@*/
 PyObject * rpmrc_Create(PyObject * self, PyObject * args, PyObject * kwds)
-	/*@*/;
+	;
 #endif
 
 #endif

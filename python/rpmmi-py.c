@@ -64,13 +64,11 @@
 /** \ingroup python
  * \name Class: Rpmmi
  */
-/*@{*/
 
 /**
  */
 static PyObject *
 rpmmi_iter(rpmmiObject * s)
-	/*@*/
 {
     Py_INCREF(s);
     return (PyObject *)s;
@@ -78,11 +76,8 @@ rpmmi_iter(rpmmiObject * s)
 
 /**
  */
-/*@null@*/
 static PyObject *
 rpmmi_iternext(rpmmiObject * s)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
 {
     Header h;
 
@@ -95,11 +90,8 @@ rpmmi_iternext(rpmmiObject * s)
 
 /**
  */
-/*@null@*/
 static PyObject *
 rpmmi_Next(rpmmiObject * s)
-	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
-	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * result;
 
@@ -114,10 +106,8 @@ rpmmi_Next(rpmmiObject * s)
 
 /**
  */
-/*@null@*/
 static PyObject *
 rpmmi_Instance(rpmmiObject * s)
-	/*@*/
 {
     int rc = 0;
 
@@ -129,10 +119,8 @@ rpmmi_Instance(rpmmiObject * s)
 
 /**
  */
-/*@null@*/
 static PyObject *
 rpmmi_Count(rpmmiObject * s)
-	/*@*/
 {
     int rc = 0;
 
@@ -144,11 +132,8 @@ rpmmi_Count(rpmmiObject * s)
 
 /**
  */
-/*@null@*/
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
-	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject *TagN = NULL;
     int type;
@@ -174,8 +159,6 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 
 /** \ingroup py_c
  */
-/*@-fullinitblock@*/
-/*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmmi_methods[] = {
     {"next",	    (PyCFunction) rpmmi_Next,		METH_NOARGS,
 "mi.next() -> hdr\n\
@@ -189,13 +172,10 @@ static struct PyMethodDef rpmmi_methods[] = {
 - Set a secondary match pattern on tags from retrieved header.\n" },
     {NULL,		NULL}		/* sentinel */
 };
-/*@=fullinitblock@*/
 
 /** \ingroup py_c
  */
-static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies s, rpmGlobalMacroContext @*/
+static void rpmmi_dealloc(rpmmiObject * s)
 {
     if (s) {
 	s->mi = rpmdbFreeIterator(s->mi);
@@ -205,26 +185,22 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
 }
 
 static PyObject * rpmmi_getattro(PyObject * o, PyObject * n)
-	/*@*/
 {
     return PyObject_GenericGetAttr(o, n);
 }
 
 static int rpmmi_setattro(PyObject * o, PyObject * n, PyObject * v)
-	/*@*/
 {
     return PyObject_GenericSetAttr(o, n, v);
 }
 
 /**
  */
-/*@unchecked@*/ /*@observer@*/
 static char rpmmi_doc[] =
 "";
 
 /** \ingroup py_c
  */
-/*@-fullinitblock@*/
 PyTypeObject rpmmi_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -270,7 +246,6 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_is_gc */
 #endif
 };
-/*@=fullinitblock@*/
 
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
 {
@@ -286,4 +261,3 @@ rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
     return mio;
 }
 
-/*@}*/

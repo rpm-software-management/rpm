@@ -16,7 +16,6 @@ typedef struct rpmbcObject_s {
 
 /**
  */
-/*@unchecked@*/
 extern PyTypeObject rpmbc_Type;
 
 #endif

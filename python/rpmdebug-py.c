@@ -1,9 +1,6 @@
 
-/*@unchecked@*/
 extern PyTypeObject PyCode_Type;
-/*@unchecked@*/
 extern PyTypeObject PyDictIter_Type;
-/*@unchecked@*/
 extern PyTypeObject PyFrame_Type;
 
 #include "header-py.h"	/* XXX debug only */
@@ -20,9 +17,7 @@ extern PyTypeObject PyFrame_Type;
 
 /**
  */
-/*@observer@*/
 static const char * lbl(void * s)
-	/*@*/
 {
     PyObject * o = s;
 

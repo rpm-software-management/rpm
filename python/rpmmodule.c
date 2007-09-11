@@ -30,7 +30,6 @@
 /** \ingroup python
  * \name Module: rpm
  */
-/*@{*/
 
 /**
  */
@@ -534,4 +533,3 @@ void init_rpm(void)
     REGISTER_ENUM((int)RPMAL_NOMATCH);
 }
 
-/*@}*/

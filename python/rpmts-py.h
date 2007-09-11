@@ -13,13 +13,11 @@ typedef struct rpmtsObject_s {
     rpmts	ts;
     PyObject * keyList;		/* keeps reference counts correct */
     FD_t scriptFd;
-/*@relnull@*/
     rpmtsi tsi;
     rpmElementType tsiFilter;
     rpmprobFilterFlags ignoreSet;
 } rpmtsObject;
 
-/*@unchecked@*/
 extern PyTypeObject rpmts_Type;
 
 /* XXX These names/constants have been removed from the rpmlib API. */
@@ -28,8 +26,6 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
-PyObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+PyObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds);
 
 #endif

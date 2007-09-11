@@ -11,24 +11,17 @@ typedef struct rpmfiObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     int active;
-/*@null@*/
     rpmfi fi;
 } rpmfiObject;
 
-/*@unchecked@*/
 extern PyTypeObject rpmfi_Type;
 
-/*@null@*/
 rpmfi fiFromFi(rpmfiObject * fi)
-	/*@*/;
+	;
 
-/*@null@*/
 rpmfiObject * rpmfi_Wrap(rpmfi fi)
-	/*@*/;
+	;
 
-/*@null@*/
-rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
 
 #endif

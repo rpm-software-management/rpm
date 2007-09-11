@@ -18,11 +18,9 @@ struct rpmmiObject_s {
     rpmdbMatchIterator mi;
 } ;
 
-/*@unchecked@*/
 extern PyTypeObject rpmmi_Type;
 
-/*@null@*/
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
-	/*@*/;
+	;
 
 #endif

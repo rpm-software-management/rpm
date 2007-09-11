@@ -22,18 +22,15 @@ struct rpmdbObject_s {
     int *offsets;
 } ;
 
-/*@unchecked@*/
 extern PyTypeObject rpmdb_Type;
 
 #ifdef  _LEGACY_BINDINGS_TOO
 rpmdb dbFromDb(rpmdbObject * db)
-	/*@*/;
+	;
 
 rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args, PyObject * kwds)
-	/*@*/;
-PyObject * rebuildDB (PyObject * self, PyObject * args, PyObject * kwds)
-	/*@globals rpmGlobalMacroContext @*/
-	/*@modifies rpmGlobalMacroContext @*/;
+	;
+PyObject * rebuildDB (PyObject * self, PyObject * args, PyObject * kwds);
 #endif
 
 #endif
