@@ -26,6 +26,15 @@
 	- permit API users to select non-exiting rpmdb termination
 	- dont check for termination signals in middle of transaction
 	- avoid leaving stale locks around on python tracebacks
+	- debugedit -l file matching fixes
+	- don't read *.rpmnew etc backup macro files
+	- fix error reporting on rpm --checksig (rhbz#155079)
+	- fix false mire matches on nonexistent headers
+	- handle mire matching on binary blobs
+	- fix segfault in mire matching on binary data types
+	- add Sparch Niagara arch support
+	- fake callbacks on erasure for packages without files (rhbz#259961)
+	- rpmtsAddInstallElement() consistency (rhbz#180996, rhbz#281611)
 	- python: add methods for checking and terminating on signals
 	- python: add method for expanding macros
 
