@@ -13,4 +13,9 @@
 
 #include "../system.h"
 
+#if ((PY_MAJOR_VERSION << 8) | (PY_MINOR_VERSION << 0)) < 0x0205
+typedef ssize_t Py_ssize_t;
+typedef Py_ssize_t (*lenfunc)(PyObject *);
+#endif  
+
 #endif	/* H_SYSTEM_PYTHON */
