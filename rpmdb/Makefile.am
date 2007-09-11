@@ -56,23 +56,18 @@ librpmdb_la_LIBADD = \
         $(libdb_la)
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
-	@echo '/*@-bounds@*/' > $@
-	@echo '#include "system.h"' >> $@
+	@echo '#include "system.h"' > $@
 	@echo '#include <rpmlib.h>' >> $@
 	@echo '#include "debug.h"' >> $@
 	@echo '' >> $@
-	@echo '/*@observer@*/ /*@unchecked@*/' >> $@
 	@echo 'static const struct headerTagTableEntry_s rpmTagTbl[] = {' >> $@
 	${AWK} '/(RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {tt = "NULL"; ta = "ANY"; if ($$5 == "c") {tt = "CHAR"; ta = "SCALAR"} if ($$5 == "c[]") {tt = "CHAR"; ta = "ARRAY"} if ($$5 == "h") {tt = "INT16"; ta = "SCALAR"} if ($$5 == "h[]") {tt = "INT16"; ta = "ARRAY"} if ($$5 == "i") {tt = "INT32"; ta = "SCALAR"} if ($$5 == "i[]") {tt = "INT32"; ta = "ARRAY"} if ($$5 == "l") {tt = "INT64"; ta = "SCALAR"} if ($$5 == "l[]") {tt = "INT64"; ta = "ARRAY"} if ($$5 == "s") {tt = "STRING"; ta = "SCALAR"} if ($$5 == "s[]") {tt = "STRING_ARRAY"; ta = "ARRAY"} if ($$5 == "s{}") {tt = "I18NSTRING"; ta = "SCALAR"} if ($$5 == "x") {tt = "BIN"; ta = "SCALAR"} if ($$2 == "=") { printf("\t{ \"%s\",	%s	RPM_%s_TYPE + RPM_%s_RETURN_TYPE },\n", $$1, $$3, tt, ta) } else { printf("\t{ \"%s\",	%s,	RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", $$2, $$3, tt, ta) } }' < ${top_srcdir}/lib/rpmlib.h | sort >> $@
 	@echo '	{ NULL, 0, 0 }' >> $@
 	@echo '};' >> $@
 	@echo '' >> $@
-	@echo '/*@observer@*/ /*@unchecked@*/' >> $@
 	@echo 'const struct headerTagTableEntry_s * rpmTagTable = rpmTagTbl;' >> $@
 	@echo '' >> $@
-	@echo '/*@unchecked@*/' >> $@
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
-	@echo '/*@=bounds@*/' >> $@
 
 db.h:	../$(WITH_DB_SUBDIR)/db.h
 	$(LN_S) ../$(WITH_DB_SUBDIR)/db.h $@
