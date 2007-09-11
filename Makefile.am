@@ -39,38 +39,37 @@ rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
-rpm_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpm_LDADD +=		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmb_SOURCES =		build.c rpmqv.c build.h debug.h system.h
 rpmb_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMBT
-rpmb_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpmb_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmb_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmb_LDADD += 		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmd_SOURCES =		rpmqv.c debug.h system.h
 rpmd_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB
-rpmd_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpmd_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmd_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmd_LDADD +=		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmi_SOURCES =		rpmqv.c debug.h system.h
 rpmi_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU
-#rpmi_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ $(staticLDFLAGS)
-rpmi_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpmi_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmi_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmi_LDADD +=		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmk_SOURCES =		rpmqv.c debug.h system.h
 rpmk_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMK
-rpmk_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpmk_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmk_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmk_LDADD +=		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmq_SOURCES =		rpmqv.c debug.h system.h
 rpmq_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMQV
-rpmq_LDFLAGS =		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmq_LDADD +=		@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
-rpm2cpio_LDFLAGS =	@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@
-rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpm2cpio_LDADD +=	@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 ## Build under same conditions as debugedit
 if LIBELF
