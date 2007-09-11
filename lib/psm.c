@@ -1752,7 +1752,14 @@ psm->te->h = headerLink(fi->h);
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)	break;
-	    if (fc <= 0)				break;
+
+	    /* XXX Synthesize callbacks for packages with no files. */
+	    if (rpmfiFC(fi) <= 0) {
+		void * ptr;
+		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_UNINST_START, 0, 100);
+		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_UNINST_STOP, 0, 100);
+		break;
+	    }
 
 	    psm->what = RPMCALLBACK_UNINST_START;
 	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
