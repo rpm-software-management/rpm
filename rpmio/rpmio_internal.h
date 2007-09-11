@@ -38,9 +38,7 @@
  * Values parsed from OpenPGP signature/pubkey packet(s).
  */
 struct pgpDigParams_s {
-/*@only@*/ /*@null@*/
     const char * userid;
-/*@only@*/ /*@null@*/
     const byte * hash;
     const char * params[4];
     byte tag;
@@ -69,19 +67,13 @@ struct pgpDig_s {
 
     size_t nbytes;		/*!< No. bytes of plain text. */
 
-/*@only@*/ /*@null@*/
     DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
-/*@only@*/ /*@null@*/
     DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
-/*@only@*/ /*@null@*/
     void * sha1;		/*!< (dsa) V3 signature hash. */
     size_t sha1len;		/*!< (dsa) V3 signature hash length. */
 
-/*@only@*/ /*@null@*/
     DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
-/*@only@*/ /*@null@*/
     DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
-/*@only@*/ /*@null@*/
     void * md5;			/*!< (rsa) V3 signature hash. */
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
 
@@ -104,9 +96,7 @@ struct pgpDig_s {
 /** \ingroup rpmio
  */
 typedef struct _FDSTACK_s {
-/*@exposed@*/
     FDIO_t		io;
-/*@dependent@*/
     void *		fp;
     int			fdno;
 } FDSTACK_t;
@@ -126,7 +116,7 @@ typedef enum fdOpX_e {
 /** \ingroup rpmio
  * Cumulative statistics for a descriptor.
  */
-typedef	/*@abstract@*/ struct {
+typedef	struct {
     struct rpmop_s	ops[FDSTAT_MAX];	/*!< Cumulative statistics. */
 } * FDSTAT_t;
 
@@ -141,7 +131,6 @@ typedef struct _FDDIGEST_s {
  * The FD_t File Handle data structure.
  */
 struct _FD_s {
-/*@refs@*/
     int		nrefs;
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
@@ -152,9 +141,7 @@ struct _FD_s {
     FDSTACK_t	fps[8];
     int		urlType;	/* ufdio: */
 
-/*@dependent@*/
     void *	url;		/* ufdio: URL info */
-/*@relnull@*/
     void *	req;		/* ufdio: HTTP request */
 
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
@@ -164,7 +151,6 @@ struct _FD_s {
     int		wr_chunked;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
-/*@observer@*/
     const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
     FDSTAT_t	stats;		/* I/O statistics */
@@ -178,34 +164,20 @@ struct _FD_s {
     long int	fileSize;	/* fadio: */
     long int	fd_cpioPos;	/* cpio: */
 };
-/*@access FD_t@*/
 
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
 
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _rpmio_debug;
-/*@=redecl@*/
 
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _av_debug;
-/*@=redecl@*/
 
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _ftp_debug;
-/*@=redecl@*/
 
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _dav_debug;
-/*@=redecl@*/
 
 #define DBG(_f, _m, _x) \
-    /*@-modfilesys@*/ \
+    \
     if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
-    /*@=modfilesys@*/
 
 #define DBGIO(_f, _x)   DBG((_f), RPMIO_DEBUG_IO, _x)
 #define DBGREFS(_f, _x) DBG((_f), RPMIO_DEBUG_REFS, _x)
@@ -216,134 +188,94 @@ extern "C" {
 
 /** \ingroup rpmio
  */
-int fdFgets(FD_t fd, char * buf, size_t len)
-	/*@globals errno, fileSystem @*/
-	/*@modifies *buf, fd, errno, fileSystem @*/;
+int fdFgets(FD_t fd, char * buf, size_t len);
 
 /** \ingroup rpmio
  */
-/*@null@*/ FD_t ftpOpen(const char *url, /*@unused@*/ int flags,
-                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo *uret)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *uret, fileSystem, internalState @*/;
+FD_t ftpOpen(const char *url, int flags,
+                mode_t mode, urlinfo *uret);
 
 /** \ingroup rpmio
  */
-int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies data, fileSystem, internalState @*/;
+int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg);
 
 /** \ingroup rpmio
  */
-int ftpCmd(const char * cmd, const char * url, const char * arg2)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+int ftpCmd(const char * cmd, const char * url, const char * arg2);
 
 /** \ingroup rpmio
  */
-int ufdClose( /*@only@*/ void * cookie)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies cookie, fileSystem, internalState @*/;
+int ufdClose( void * cookie);
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@null@*/ FDIO_t fdGetIo(FD_t fd)
-	/*@*/
+static inline
+FDIO_t fdGetIo(FD_t fd)
 {
     FDSANE(fd);
-/*@-boundsread@*/
     return fd->fps[fd->nfps].io;
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
  */
-/*@-nullstate@*/ /* FIX: io may be NULL */
-/*@unused@*/ static inline
-void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
-	/*@modifies fd @*/
+/* FIX: io may be NULL */
+static inline
+void fdSetIo(FD_t fd, FDIO_t io)
 {
     FDSANE(fd);
-/*@-boundswrite@*/
-    /*@-assignexpose@*/
     fd->fps[fd->nfps].io = io;
-    /*@=assignexpose@*/
-/*@=boundswrite@*/
 }
-/*@=nullstate@*/
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@exposed@*/ /*@dependent@*/ /*@null@*/ FILE * fdGetFILE(FD_t fd)
-	/*@*/
+static inline
+FILE * fdGetFILE(FD_t fd)
 {
     FDSANE(fd);
-/*@-boundsread@*/
-    /*@+voidabstract@*/
     return ((FILE *)fd->fps[fd->nfps].fp);
-    /*@=voidabstract@*/
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-/*@exposed@*/ /*@dependent@*/ /*@null@*/ void * fdGetFp(FD_t fd)
-	/*@*/
+static inline
+void * fdGetFp(FD_t fd)
 {
     FDSANE(fd);
-/*@-boundsread@*/
     return fd->fps[fd->nfps].fp;
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
  */
-/*@-nullstate@*/ /* FIX: fp may be NULL */
-/*@unused@*/ static inline
-void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp)
-	/*@modifies fd @*/
+/* FIX: fp may be NULL */
+static inline
+void fdSetFp(FD_t fd, void * fp)
 {
     FDSANE(fd);
-/*@-boundswrite@*/
-    /*@-assignexpose@*/
     fd->fps[fd->nfps].fp = fp;
-    /*@=assignexpose@*/
-/*@=boundswrite@*/
 }
-/*@=nullstate@*/
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 int fdGetFdno(FD_t fd)
-	/*@*/
 {
     FDSANE(fd);
-/*@-boundsread@*/
     return fd->fps[fd->nfps].fdno;
-/*@=boundsread@*/
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 void fdSetFdno(FD_t fd, int fdno)
-	/*@modifies fd @*/
 {
     FDSANE(fd);
-/*@-boundswrite@*/
     fd->fps[fd->nfps].fdno = fdno;
-/*@=boundswrite@*/
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 void fdSetContentLength(FD_t fd, ssize_t contentLength)
-	/*@modifies fd @*/
 {
     FDSANE(fd);
     fd->contentLength = fd->bytesRemain = contentLength;
@@ -351,9 +283,8 @@ void fdSetContentLength(FD_t fd, ssize_t contentLength)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
-	/*@modifies fd @*/
 {
     FDSANE(fd);
     if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
@@ -366,9 +297,8 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 void fdPop(FD_t fd)
-	/*@modifies fd @*/
 {
     FDSANE(fd);
     if (fd->nfps < 0) return;
@@ -380,25 +310,20 @@ void fdPop(FD_t fd)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline /*@null@*/
-rpmop fdstat_op(/*@null@*/ FD_t fd, fdOpX opx)
-	/*@*/
+static inline
+rpmop fdstat_op(FD_t fd, fdOpX opx)
 {
     rpmop op = NULL;
 
-/*@-boundsread@*/
     if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
         op = fd->stats->ops + opx;
-/*@=boundsread@*/
     return op;
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-void fdstat_enter(/*@null@*/ FD_t fd, int opx)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
+static inline
+void fdstat_enter(FD_t fd, int opx)
 {
     if (fd == NULL) return;
     if (fd->stats != NULL)
@@ -407,10 +332,8 @@ void fdstat_enter(/*@null@*/ FD_t fd, int opx)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
-	/*@globals internalState @*/
-	/*@modifies fd, internalState @*/
+static inline
+void fdstat_exit(FD_t fd, int opx, ssize_t rc)
 {
     if (fd == NULL) return;
     if (rc == -1)
@@ -430,11 +353,8 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
 
 /** \ingroup rpmio
  */
-/*@-boundsread@*/
-/*@unused@*/ static inline
-void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/
+static inline
+void fdstat_print(FD_t fd, const char * msg, FILE * fp)
 {
     static int usec_scale = (1000*1000);
     int opx;
@@ -449,40 +369,35 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%06d secs\n",
 		op->count, (long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
-	    /*@switchbreak@*/ break;
+	    break;
 	case FDSTAT_WRITE:
 	    if (msg) fprintf(fp, "%s:", msg);
 	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%06d secs\n",
 		op->count, (long)op->bytes,
 		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
-	    /*@switchbreak@*/ break;
+	    break;
 	case FDSTAT_SEEK:
-	    /*@switchbreak@*/ break;
+	    break;
 	case FDSTAT_CLOSE:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
     }
 }
-/*@=boundsread@*/
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-void fdSetSyserrno(FD_t fd, int syserrno, /*@kept@*/ const void * errcookie)
-	/*@modifies fd @*/
+static inline
+void fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie)
 {
     FDSANE(fd);
     fd->syserrno = syserrno;
-    /*@-assignexpose@*/
     fd->errcookie = errcookie;
-    /*@=assignexpose@*/
 }
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 int fdGetRdTimeoutSecs(FD_t fd)
-	/*@*/
 {
     FDSANE(fd);
     return fd->rd_timeoutsecs;
@@ -490,9 +405,8 @@ int fdGetRdTimeoutSecs(FD_t fd)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 long int fdGetCpioPos(FD_t fd)
-	/*@*/
 {
     FDSANE(fd);
     return fd->fd_cpioPos;
@@ -500,9 +414,8 @@ long int fdGetCpioPos(FD_t fd)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 void fdSetCpioPos(FD_t fd, long int cpioPos)
-	/*@modifies fd @*/
 {
     FDSANE(fd);
     fd->fd_cpioPos = cpioPos;
@@ -510,24 +423,19 @@ void fdSetCpioPos(FD_t fd, long int cpioPos)
 
 /** \ingroup rpmio
  */
-/*@mayexit@*/ /*@unused@*/ static inline
-FD_t c2f(/*@null@*/ void * cookie)
-	/*@*/
+static inline
+FD_t c2f(void * cookie)
 {
-    /*@-castexpose@*/
     FD_t fd = (FD_t) cookie;
-    /*@=castexpose@*/
     FDSANE(fd);
-    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
+    return fd;
 }
 
 /** \ingroup rpmio
  * Attach digest to fd.
  */
-/*@unused@*/ static inline
+static inline
 void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
-	/*@globals internalState @*/
-	/*@modifies fd, internalState @*/
 {
     FDDIGEST_t fddig = fd->digests + fd->ndigests;
     if (fddig != (fd->digests + FDDIGEST_MAX)) {
@@ -542,10 +450,8 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 /** \ingroup rpmio
  * Update digest(s) attached to fd.
  */
-/*@unused@*/ static inline
+static inline
 void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
-	/*@globals internalState @*/
-	/*@modifies fd, internalState @*/
 {
     int i;
 
@@ -562,13 +468,11 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
 
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
+static inline
 void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
-		/*@null@*/ /*@out@*/ void ** datap,
-		/*@null@*/ /*@out@*/ size_t * lenp,
+		void ** datap,
+		size_t * lenp,
 		int asAscii)
-	/*@globals internalState @*/
-	/*@modifies fd, *datap, *lenp, internalState @*/
 {
     int imax = -1;
     int i;
@@ -586,33 +490,26 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	fddig->hashctx = NULL;
 	break;
     }
-/*@-boundswrite@*/
     if (i < 0) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
     }
-/*@=boundswrite@*/
 
     fd->ndigests = imax;
     if (i < imax)
 	fd->ndigests++;		/* convert index to count */
 }
 
-/*@-shadow@*/
 /** \ingroup rpmio
  */
-/*@unused@*/ static inline
-int fdFileno(/*@null@*/ void * cookie)
-	/*@*/
+static inline
+int fdFileno(void * cookie)
 {
     FD_t fd;
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
-/*@-boundsread@*/
     return fd->fps[0].fdno;
-/*@=boundsread@*/
 }
-/*@=shadow@*/
 
 /**
  * Read an entire file into a buffer.
@@ -622,9 +519,7 @@ int fdFileno(/*@null@*/ void * cookie)
  * @return		0 on success
  */
 int rpmioSlurp(const char * fn,
-                /*@out@*/ byte ** bp, /*@out@*/ ssize_t * blenp)
-        /*@globals h_errno, fileSystem, internalState @*/
-        /*@modifies *bp, *blenp, fileSystem, internalState @*/;
+                byte ** bp, ssize_t * blenp);
 
 #ifdef __cplusplus
 }

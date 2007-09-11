@@ -9,19 +9,16 @@
 #define	EXIT_FAILURE	1
 #endif
 
-/*@-modfilesys@*/
-/*@only@*/ void *vmefail(size_t size)
+void *vmefail(size_t size)
 {
     fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
     exit(EXIT_FAILURE);
-    /*@notreached@*/
     return NULL;
 }
-/*@=modfilesys@*/
 
 #if !(HAVE_MCHECK_H && defined(__GNUC__))
 
-/*@out@*/ /*@only@*/ void * xmalloc (size_t size)
+void * xmalloc (size_t size)
 {
     register void *value;
     if (size == 0) size++;
@@ -31,7 +28,7 @@
     return value;
 }
 
-/*@only@*/ void * xcalloc (size_t nmemb, size_t size)
+void * xcalloc (size_t nmemb, size_t size)
 {
     register void *value;
     if (size == 0) size++;
@@ -42,7 +39,7 @@
     return value;
 }
 
-/*@only@*/ void * xrealloc (/*@only@*/ void *ptr, size_t size)
+void * xrealloc (void *ptr, size_t size)
 {
     register void *value;
     if (size == 0) size++;
@@ -52,7 +49,7 @@
     return value;
 }
 
-/*@only@*/ char * xstrdup (const char *str)
+char * xstrdup (const char *str)
 {
     size_t size = strlen(str) + 1;
     char *newstr = (char *) malloc (size);

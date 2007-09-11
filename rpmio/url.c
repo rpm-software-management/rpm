@@ -13,7 +13,6 @@
 #include "debug.h"
 
 /*@access FD_t@*/		/* XXX compared with NULL */
-/*@access urlinfo@*/
 
 #ifndef	IPPORT_FTP
 #define	IPPORT_FTP	21
@@ -30,12 +29,10 @@
 
 /**
  */
-/*@unchecked@*/
 int _url_iobuf_size = RPMURL_IOBUF_SIZE;
 
 /**
  */
-/*@unchecked@*/
 int _url_debug = 0;
 
 #define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
@@ -45,13 +42,10 @@ int _url_debug = 0;
 
 /**
  */
-/*@unchecked@*/
-/*@only@*/ /*@null@*/
 urlinfo *_url_cache = NULL;
 
 /**
  */
-/*@unchecked@*/
 int _url_count = 0;
 
 /**
@@ -59,8 +53,8 @@ int _url_count = 0;
  * @param p		memory to free
  * @retval		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ const void * p) /*@modifies p@*/
+static inline void *
+_free(const void * p)
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -70,10 +64,8 @@ urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
 {
     URLSANE(u);
     u->nrefs++;
-/*@-modfilesys@*/
 URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
-/*@=modfilesys@*/
-    /*@-refcounttrans@*/ return u; /*@=refcounttrans@*/
+    return u;
 }
 
 urlinfo XurlNew(const char *msg, const char *file, unsigned line)
@@ -103,28 +95,24 @@ urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
     URLSANE(u);
 URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
-	/*@-refcounttrans -retalias@*/ return u; /*@=refcounttrans =retalias@*/
+	return u;
     if (u->ctrl) {
 #ifndef	NOTYET
 	void * fp = fdGetFp(u->ctrl);
-	/*@-branchstate@*/
 	if (fp) {
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->ctrl);
 	} else if (fdio->_fileno(u->ctrl) >= 0)
 	    xx = fdio->close(u->ctrl);
-	/*@=branchstate@*/
 #else
 	(void) Fclose(u->ctrl);
 #endif
 
 	u->ctrl = fdio->_fdderef(u->ctrl, "persist ctrl (urlFree)", file, line);
-	/*@-usereleased@*/
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, (u->host ? u->host : ""),
 			(u->scheme ? u->scheme : ""));
-	/*@=usereleased@*/
     }
     if (u->data) {
 #ifndef	NOTYET
@@ -139,12 +127,10 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 #endif
 
 	u->data = fdio->_fdderef(u->data, "persist data (urlFree)", file, line);
-	/*@-usereleased@*/
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, (u->host ? u->host : ""),
 			(u->scheme ? u->scheme : ""));
-	/*@=usereleased@*/
     }
     if (u->sess != NULL) {
 #ifdef WITH_NEON
@@ -163,11 +149,10 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     u->proxyu = _free((void *)u->proxyu);
     u->proxyh = _free((void *)u->proxyh);
 
-    /*@-refcounttrans@*/ u = _free(u); /*@-refcounttrans@*/
+    u = _free(u);
     return NULL;
 }
 
-/*@-boundswrite@*/
 void urlFreeCache(void)
 {
     if (_url_cache) {
@@ -186,10 +171,8 @@ void urlFreeCache(void)
     _url_cache = _free(_url_cache);
     _url_count = 0;
 }
-/*@=boundswrite@*/
 
-static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
-	/*@*/
+static int urlStrcmp(const char * str1, const char * str2)
 {
     if (str1)
 	if (str2)
@@ -199,11 +182,7 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
     return 0;
 }
 
-/*@-boundswrite@*/
-/*@-mods@*/
-static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *uret, rpmGlobalMacroContext, fileSystem, internalState @*/
+static void urlFind(urlinfo * uret, int mustAsk)
 {
     urlinfo u;
     int ucx;
@@ -257,9 +236,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     if (_url_cache)		/* XXX always true */
 	u = urlLink(_url_cache[ucx], "_url_cache");
     *uret = u;
-    /*@-usereleased@*/
     u = urlFree(u, "_url_cache (urlFind)");
-    /*@=usereleased@*/
 
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
@@ -275,9 +252,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	    prompt = alloca(strlen(host) + strlen(user) + 256);
 	    sprintf(prompt, _("Password for %s@%s: "), user, host);
 	    u->password = _free(u->password);
-/*@-dependenttrans -moduncon @*/
-	    u->password = /*@-unrecog@*/ getpass(prompt) /*@=unrecog@*/;
-/*@=dependenttrans =moduncon @*/
+	    u->password = getpass(prompt);
 	    if (u->password)
 		u->password = xstrdup(u->password);
 	}
@@ -285,7 +260,6 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_ftpproxy}", NULL);
 	    if (proxy && *proxy != '%') {
-/*@observer@*/
 		const char * host = (u->host ? u->host : "");
 		const char *uu = (u->user ? u->user : "anonymous");
 		char *nu = xmalloc(strlen(uu) + sizeof("@") + strlen(host));
@@ -341,14 +315,10 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 
     return;
 }
-/*@=mods@*/
-/*@=boundswrite@*/
 
 /**
  */
-/*@observer@*/ /*@unchecked@*/
 static struct urlstring {
-/*@observer@*/ /*@null@*/
     const char * leadin;
     urltype	ret;
 } urlstrings[] = {
@@ -365,7 +335,6 @@ urltype urlIsURL(const char * url)
 {
     struct urlstring *us;
 
-/*@-boundsread@*/
     if (url && *url) {
 	for (us = urlstrings; us->leadin != NULL; us++) {
 	    if (strncmp(url, us->leadin, strlen(us->leadin)))
@@ -373,12 +342,10 @@ urltype urlIsURL(const char * url)
 	    return us->ret;
 	}
     }
-/*@=boundsread@*/
 
     return URL_IS_UNKNOWN;
 }
 
-/*@-boundswrite@*/
 /* Return path portion of url (or pointer to NUL if url == NULL) */
 urltype urlPath(const char * url, const char ** pathp)
 {
@@ -387,7 +354,6 @@ urltype urlPath(const char * url, const char ** pathp)
 
     path = url;
     urltype = urlIsURL(url);
-    /*@-branchstate@*/
     switch (urltype) {
     case URL_IS_FTP:
 	url += sizeof("ftp://") - 1;
@@ -421,14 +387,10 @@ urltype urlPath(const char * url, const char ** pathp)
 	path = "";
 	break;
     }
-    /*@=branchstate@*/
     if (pathp)
-	/*@-observertrans@*/
 	*pathp = path;
-	/*@=observertrans@*/
     return urltype;
 }
-/*@=boundswrite@*/
 
 /*
  * Split URL into components. The URL can look like
@@ -436,8 +398,6 @@ urltype urlPath(const char * url, const char ** pathp)
   * or as in RFC2732 for IPv6 address
   *    service://user:password@[ip:v6:ad:dr:es:s]:port/path
  */
-/*@-bounds@*/
-/*@-modfilesys@*/
 int urlSplit(const char * url, urlinfo *uret)
 {
     urlinfo u;
@@ -477,7 +437,6 @@ int urlSplit(const char * url, urlinfo *uret)
     /* Look for ...@host... */
     fe = f = s;
     while (*fe && *fe != '@') fe++;
-    /*@-branchstate@*/
     if (*fe == '@') {
 	s = fe + 1;
 	*fe = '\0';
@@ -489,7 +448,6 @@ int urlSplit(const char * url, urlinfo *uret)
 	}
 	u->user = xstrdup(f);
     }
-    /*@=branchstate@*/
 
     /* Look for ...host:port or [v6addr]:port*/
     fe = f = s;
@@ -518,10 +476,8 @@ int urlSplit(const char * url, urlinfo *uret)
 
     if (u->port < 0 && u->scheme != NULL) {
 	struct servent *serv;
-/*@-multithreaded -moduncon @*/
 	/* HACK hkp:// might lookup "pgpkeyserver" */
 	serv = getservbyname(u->scheme, "tcp");
-/*@=multithreaded =moduncon @*/
 	if (serv != NULL)
 	    u->port = ntohs(serv->s_port);
 	else if (u->urltype == URL_IS_FTP)
@@ -537,14 +493,11 @@ int urlSplit(const char * url, urlinfo *uret)
     myurl = _free(myurl);
     if (uret) {
 	*uret = u;
-/*@-globs -mods @*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
+/* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 	urlFind(uret, 0);
-/*@=globs =mods @*/
     }
     return 0;
 }
-/*@=modfilesys@*/
-/*@=bounds@*/
 
 int urlGetFile(const char * url, const char * dest)
 {
@@ -595,7 +548,7 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : N
 	if ((rc = ufdGetFile(sfd, tfd))) {
 	    (void) Unlink(dest);
 	    /* XXX FIXME: sfd possibly closed by copyData */
-	    /*@-usereleased@*/ (void) Fclose(sfd) /*@=usereleased@*/ ;
+	    (void) Fclose(sfd) ;
 	}
 	sfd = NULL;	/* XXX Fclose(sfd) done by ufdGetFile */
 	break;

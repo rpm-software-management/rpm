@@ -8,15 +8,13 @@
 
 #include "debug.h"
 
-/*@-bounds@*/
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/
-void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
-	/*@modifies p @*/
+static inline
+void * _free(const void * p)
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -47,15 +45,13 @@ ARGI_t argiFree(ARGI_t argi)
     return NULL;
 }
 
-ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
+ARGV_t argvFree(ARGV_t argv)
 {
     ARGV_t av;
     
-/*@-branchstate@*/
     if (argv)
     for (av = argv; *av; av++)
 	*av = _free(*av);
-/*@=branchstate@*/
     argv = _free(argv);
     return NULL;
 }
@@ -87,17 +83,13 @@ int argvCount(const ARGV_t argv)
 
 ARGV_t argvData(const ARGV_t argv)
 {
-/*@-retalias -temptrans @*/
     return argv;
-/*@=retalias =temptrans @*/
 }
 
 int argvCmp(const void * a, const void * b)
 {
-/*@-boundsread@*/
     ARGstr_t astr = *(ARGV_t)a;
     ARGstr_t bstr = *(ARGV_t)b;
-/*@=boundsread@*/
     return strcmp(astr, bstr);
 }
 
@@ -119,7 +111,7 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
     return bsearch(&val, argv, argvCount(argv), sizeof(*argv), compar);
 }
 
-int argiAdd(/*@out@*/ ARGI_t * argip, int ix, int val)
+int argiAdd(ARGI_t * argip, int ix, int val)
 {
     ARGI_t argi;
 
@@ -140,7 +132,7 @@ int argiAdd(/*@out@*/ ARGI_t * argip, int ix, int val)
     return 0;
 }
 
-int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
+int argvAdd(ARGV_t * argvp, ARGstr_t val)
 {
     ARGV_t argv;
     int argc;
@@ -148,16 +140,14 @@ int argvAdd(/*@out@*/ ARGV_t * argvp, ARGstr_t val)
     if (argvp == NULL)
 	return -1;
     argc = argvCount(*argvp);
-/*@-unqualifiedtrans@*/
     *argvp = xrealloc(*argvp, (argc + 1 + 1) * sizeof(**argvp));
-/*@=unqualifiedtrans@*/
     argv = *argvp;
     argv[argc++] = xstrdup(val);
     argv[argc  ] = NULL;
     return 0;
 }
 
-int argvAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
+int argvAppend(ARGV_t * argvp, const ARGV_t av)
 {
     ARGV_t argv = *argvp;
     int argc = argvCount(argv);
@@ -200,8 +190,5 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
     }
     argv[c] = NULL;
     *argvp = argv;
-/*@-nullstate@*/
     return 0;
-/*@=nullstate@*/
 }
-/*@=bounds@*/

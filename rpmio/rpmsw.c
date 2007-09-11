@@ -6,16 +6,12 @@
 #include <rpmsw.h>
 #include "debug.h"
 
-/*@unchecked@*/
 static rpmtime_t rpmsw_overhead = 0;
 
-/*@unchecked@*/
 static rpmtime_t rpmsw_cycles = 1;
 
-/*@unchecked@*/
 static int rpmsw_type = 0;
 
-/*@unchecked@*/
 static int rpmsw_initialized = 0;
 
 #if defined(__i386__)
@@ -95,9 +91,8 @@ rpmsw rpmswNow(rpmsw sw)
  * @return		difference in milli-seconds
  */
 static inline
-rpmtime_t tvsub(/*@null@*/ const struct timeval * etv,
-		/*@null@*/ const struct timeval * btv)
-	/*@*/
+rpmtime_t tvsub(const struct timeval * etv,
+		const struct timeval * btv)
 {
     time_t secs, usecs;
     if (etv == NULL  || btv == NULL) return 0;
@@ -134,8 +129,6 @@ rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
 
 #if defined(HP_TIMING_NOW)
 static rpmtime_t rpmswCalibrate(void)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
 {
     struct rpmsw_s begin, end;
     rpmtime_t ticks;
@@ -143,9 +136,7 @@ static rpmtime_t rpmswCalibrate(void)
     int rc;
     int i;
 
-/*@-uniondef@*/
     (void) rpmswNow(&begin);
-/*@=uniondef@*/
     req.tv_sec = 0;
     req.tv_nsec = 20 * 1000 * 1000;
     for (i = 0; i < 100; i++) {
@@ -156,9 +147,7 @@ static rpmtime_t rpmswCalibrate(void)
 	    break;
 	req = rem;	/* structure assignment */
     }
-/*@-uniondef@*/
     ticks = rpmswDiff(rpmswNow(&end), &begin);
-/*@=uniondef@*/
 
     return ticks;
 }
@@ -194,9 +183,7 @@ rpmtime_t rpmswInit(void)
 
 	/* Start wall clock. */
 	rpmsw_type = 0;
-/*@-uniondef@*/
 	(void) rpmswNow(&begin);
-/*@=uniondef@*/
 
 	/* Get no. of cycles while doing nanosleep. */
 	rpmsw_type = 1;
@@ -207,9 +194,7 @@ rpmtime_t rpmswInit(void)
 
 	/* Compute wall clock delta in usecs. */
 	rpmsw_type = 0;
-/*@-uniondef@*/
 	sum_usecs += rpmswDiff(rpmswNow(&end), &begin);
-/*@=uniondef@*/
 	rpmsw_type = 1;
 
 	/* Compute cycles/usec */
@@ -219,10 +204,8 @@ rpmtime_t rpmswInit(void)
 #endif
 
 	/* Calculate timing overhead in usecs. */
-/*@-uniondef@*/
 	(void) rpmswNow(&begin);
 	sum_overhead += rpmswDiff(rpmswNow(&end), &begin);
-/*@=uniondef@*/
 
 	rpmsw_overhead = sum_overhead/(i+1);
 
@@ -241,9 +224,7 @@ int rpmswEnter(rpmop op, ssize_t rc)
 	op->bytes = 0;
 	op->usecs = 0;
     }
-/*@-uniondef@*/
     (void) rpmswNow(&op->begin);
-/*@=uniondef@*/
     return 0;
 }
 
@@ -254,9 +235,7 @@ rpmtime_t rpmswExit(rpmop op, ssize_t rc)
     if (op == NULL)
 	return 0;
 
-/*@-uniondef@*/
     op->usecs += rpmswDiff(rpmswNow(&end), &op->begin);
-/*@=uniondef@*/
     if (rc > 0)
 	op->bytes += rc;
     op->begin = end;	/* structure assignment */

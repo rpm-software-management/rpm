@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmio
  * \file rpmio/rpmlog.c
  */
@@ -20,20 +19,17 @@
 # endif
 #endif
 
-/*@access rpmlogRec @*/
 
-/*@unchecked@*/
 static int nrecs = 0;
-/*@unchecked@*/
-static /*@only@*/ /*@null@*/ rpmlogRec recs = NULL;
+static rpmlogRec recs = NULL;
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
  * @retval		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies p@*/
+static inline void *
+_free(const void * p)
 {
     if (p != NULL)	free((void *)p);
     return NULL;
@@ -59,7 +55,6 @@ const char * rpmlogMessage(void)
     return _("(no error)");
 }
 
-/*@-modfilesys@*/
 void rpmlogPrint(FILE *f)
 {
     int i;
@@ -74,11 +69,8 @@ void rpmlogPrint(FILE *f)
 	    fprintf(f, "    %s", rec->message);
     }
 }
-/*@=modfilesys@*/
 
 void rpmlogClose (void)
-	/*@globals recs, nrecs @*/
-	/*@modifies recs, nrecs @*/
 {
     int i;
 
@@ -91,22 +83,18 @@ void rpmlogClose (void)
     nrecs = 0;
 }
 
-void rpmlogOpen (/*@unused@*/ const char *ident, /*@unused@*/ int option,
-		/*@unused@*/ int facility)
+void rpmlogOpen (const char *ident, int option,
+		int facility)
 {
 }
 
-/*@unchecked@*/
 static unsigned rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
 
 #ifdef NOTYET
-/*@unchecked@*/
-static /*@unused@*/ unsigned rpmlogFacility = RPMLOG_USER;
+static unsigned rpmlogFacility = RPMLOG_USER;
 #endif
 
 int rpmlogSetMask (int mask)
-	/*@globals rpmlogMask @*/
-	/*@modifies rpmlogMask @*/
 {
     int omask = rpmlogMask;
     if (mask)
@@ -114,24 +102,18 @@ int rpmlogSetMask (int mask)
     return omask;
 }
 
-/*@unchecked@*/
-static /*@null@*/ rpmlogCallback _rpmlogCallback = NULL;
+static rpmlogCallback _rpmlogCallback = NULL;
 
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
-	/*@globals _rpmlogCallback @*/
-	/*@modifies _rpmlogCallback @*/
 {
     rpmlogCallback ocb = _rpmlogCallback;
     _rpmlogCallback = cb;
     return ocb;
 }
 
-/*@unchecked@*/ /*@null@*/
 static FILE * _stdlog = NULL;
 
 FILE * rpmlogSetFile(FILE * fp)
-	/*@globals _stdlog @*/
-	/*@modifies _stdlog @*/
 {
     FILE * ofp = _stdlog;
     _stdlog = fp;
@@ -139,7 +121,6 @@ FILE * rpmlogSetFile(FILE * fp)
 }
 
 /*@-readonlytrans@*/	/* FIX: double indirection. */
-/*@observer@*/ /*@unchecked@*/
 static char *rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */
@@ -150,27 +131,23 @@ static char *rpmlogMsgPrefix[] = {
     "",			/*!< RPMLOG_INFO */
     "D: ",		/*!< RPMLOG_DEBUG */
 };
-/*@=readonlytrans@*/
 
 #if !defined(HAVE_VSNPRINTF)
-static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
+static inline int vsnprintf(char * buf, int nb,
 	const char * fmt, va_list ap)
 {
     return vsprintf(buf, fmt, ap);
 }
 #endif
 
-/*@-modfilesys@*/
-/*@-compmempass@*/ /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
-/*@-nullstate@*/ /* FIX: rpmlogMsgPrefix[] may be NULL */
+/* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
+/* FIX: rpmlogMsgPrefix[] may be NULL */
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)
-	/*@globals nrecs, recs, internalState @*/
-	/*@modifies nrecs, recs, internalState @*/
 {
     unsigned pri = RPMLOG_PRI(code);
     unsigned mask = RPMLOG_MASK(pri);
 #ifdef NOTYET
-    /*@unused@*/ unsigned fac = RPMLOG_FAC(code);
+    unsigned fac = RPMLOG_FAC(code);
 #endif
     char *msgbuf, *msg;
     int msgnb = BUFSIZ, nb;
@@ -179,14 +156,13 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     if ((mask & rpmlogMask) == 0)
 	return;
 
-/*@-boundswrite@*/
     msgbuf = xmalloc(msgnb);
     *msgbuf = '\0';
 
     /* Allocate a sufficently large buffer for output. */
     while (1) {
 	va_list apc;
-	/*@-sysunrecog -usedef@*/ va_copy(apc, ap); /*@=sysunrecog =usedef@*/
+	va_copy(apc, ap);
 	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
 	if (nb > -1 && nb < msgnb)
 	    break;
@@ -195,15 +171,12 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	else			/* glibc 2.0 */
 	    msgnb *= 2;
 	msgbuf = xrealloc(msgbuf, msgnb);
-/*@-mods@*/
 	va_end(apc);
-/*@=mods@*/
     }
     msgbuf[msgnb - 1] = '\0';
     msg = msgbuf;
 
     /* Save copy of all messages at warning (or below == "more important"). */
-    /*@-branchstate@*/
     if (pri <= RPMLOG_WARNING) {
 
 	if (recs == NULL)
@@ -218,14 +191,11 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	++nrecs;
 
 	if (_rpmlogCallback) {
-	    /*@-noeffectuncon@*/ /* FIX: useless callback */
+	    /* FIX: useless callback */
 	    _rpmlogCallback();
-	    /*@=noeffectuncon@*/
 	    return;	/* XXX Preserve legacy rpmError behavior. */
 	}
     }
-    /*@=branchstate@*/
-/*@=boundswrite@*/
 
     /* rpmMessage behavior */
 
@@ -253,17 +223,14 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     if (pri <= RPMLOG_CRIT)
 	exit(EXIT_FAILURE);
 }
-/*@=compmempass =nullstate@*/
-/*@=modfilesys@*/
 
 void rpmlog (int code, const char *fmt, ...)
 {
     va_list ap;
 
     va_start(ap, fmt);
-    /*@-internalglobs@*/ /* FIX: shrug */
+    /* FIX: shrug */
     vrpmlog(code, fmt, ap);
-    /*@=internalglobs@*/
     va_end(ap);
 }
 
@@ -281,4 +248,3 @@ rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
 {
     return rpmlogSetCallback(cb);
 }
-/*@=boundsread@*/

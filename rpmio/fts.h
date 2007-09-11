@@ -66,37 +66,21 @@
 #include <dirent.h>
 
 typedef struct {
-/*@owned@*/ /*@relnull@*/
 	struct _ftsent *fts_cur;	/*!< current node */
-/*@owned@*/ /*@null@*/
 	struct _ftsent *fts_child;	/*!< linked list of children */
-/*@owned@*/ /*@null@*/
 	struct _ftsent **fts_array;	/*!< sort array */
 	dev_t fts_dev;			/*!< starting device # */
-/*@owned@*/ /*@relnull@*/
 	char *fts_path;			/*!< path for this descent */
 	int fts_rfd;			/*!< fd for root */
 	int fts_pathlen;		/*!< sizeof(path) */
 	int fts_nitems;			/*!< elements in the sort array */
-/*@null@*/
-	int (*fts_compar) (const void *, const void *)
-		/*@*/;			/*!< compare fn */
+	int (*fts_compar) (const void *, const void *);			/*!< compare fn */
 
-	DIR * (*fts_opendir) (const char * path)
-		/*@globals fileSystem @*/
-		/*@modifies fileSystem @*/;
-	struct dirent * (*fts_readdir) (DIR * dir)
-		/*@globals fileSystem @*/
-		/*@modifies *dir, fileSystem @*/;
-	int (*fts_closedir) (/*@only@*/ DIR * dir)
-		/*@globals fileSystem @*/
-		/*@modifies *dir, fileSystem @*/;
-	int (*fts_stat) (const char * path, /*@out@*/ struct stat * st)
-		/*@globals fileSystem @*/
-		/*@modifies *st, fileSystem @*/;
-	int (*fts_lstat) (const char * path, /*@out@*/ struct stat * st)
-		/*@globals fileSystem @*/
-		/*@modifies *st, fileSystem @*/;
+	DIR * (*fts_opendir) (const char * path);
+	struct dirent * (*fts_readdir) (DIR * dir);
+	int (*fts_closedir) (DIR * dir);
+	int (*fts_stat) (const char * path, struct stat * st);
+	int (*fts_lstat) (const char * path, struct stat * st);
 
 #define	FTS_COMFOLLOW	0x0001		/* follow command line symlinks */
 #define	FTS_LOGICAL	0x0002		/* logical walk */
@@ -114,18 +98,12 @@ typedef struct {
 } FTS;
 
 typedef struct _ftsent {
-/*@dependent@*/
 	struct _ftsent *fts_cycle;	/*!< cycle node */
-/*@dependent@*/ /*@relnull@*/
 	struct _ftsent *fts_parent;	/*!< parent directory */
-/*@dependent@*/ /*@null@*/
 	struct _ftsent *fts_link;	/*!< next file in directory */
 	long fts_number;	        /*!< local numeric value */
-/*@null@*/
 	void *fts_pointer;	        /*!< local address value */
-/*@dependent@*/
 	char *fts_accpath;		/*!< access path */
-/*@dependent@*/
 	char *fts_path;			/*!< root path */
 	int fts_errno;			/*!< errno for this node */
 	int fts_symfd;			/*!< fd for symlink */
@@ -166,7 +144,6 @@ typedef struct _ftsent {
 #define	FTS_SKIP	 4		/* discard node */
 	u_short fts_instr;		/*!< fts_set() instructions */
 
-/*@dependent@*/
 	struct stat *fts_statp;		/*!< stat(2) information */
 	char fts_name[1];		/*!< file name */
 } FTSENT;
@@ -179,19 +156,16 @@ __BEGIN_DECLS
  * @param instr
  * @return		file set member
  */
-/*@dependent@*/ /*@null@*/
 FTSENT	*Fts_children (FTS * sp, int instr) __THROW
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *sp, fileSystem, internalState @*/;
+;
 
 /**
  * Destroy a file hierarchy traversal handle.
  * @param sp		file hierarchy state
  * @return		0 on sucess, -1 on error
  */
-int	 Fts_close (/*@only@*/ /*@null@*/ FTS * sp) __THROW
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *sp, fileSystem, internalState @*/;
+int	 Fts_close (FTS * sp) __THROW
+;
 
 /**
  * Create a handle for file hierarchy traversal.
@@ -200,21 +174,17 @@ int	 Fts_close (/*@only@*/ /*@null@*/ FTS * sp) __THROW
  * @param compar	traversal ordering (or NULL)
  * @return 		file hierarchy state (or NULL on error)
  */
-/*@only@*/ /*@null@*/
 FTS	*Fts_open (char * const * argv, int options,
-		   /*@null@*/
 		   int (*compar) (const FTSENT **, const FTSENT **)) __THROW
-	/*@*/;
+	;
 
 /**
  * Return next node in the file hierarchy traversal.
  * @param sp		file hierarchy state
  * @return		file set member
  */
-/*@null@*/
-FTSENT	*Fts_read (/*@null@*/ FTS * sp) __THROW
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *sp, fileSystem, internalState @*/;
+FTSENT	*Fts_read (FTS * sp) __THROW
+;
 
 /**
  * Modify the traversal for a file set member.
@@ -224,7 +194,7 @@ FTSENT	*Fts_read (/*@null@*/ FTS * sp) __THROW
  * @return		0 on sucess, -1 on error
  */
 int	 Fts_set (FTS * sp, FTSENT * p, int instr) __THROW
-	/*@modifies *p @*/;
+;
 
 __END_DECLS
 

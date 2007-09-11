@@ -16,27 +16,21 @@
 #include "ugid.h"
 #include "debug.h"
 
-/*@access DIR @*/
-/*@access FD_t @*/
-/*@access urlinfo @*/
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
  * @retval		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
-	/*@modifies p@*/
+static inline void *
+_free(const void * p)
 {
     if (p != NULL)	free((void *)p);
     return NULL;
 }
 
 /* =============================================================== */
-static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+static int ftpMkdir(const char * path, mode_t mode)
 {
     int rc;
     if ((rc = ftpCmd("MKD", path, NULL)) != 0)
@@ -51,22 +45,16 @@ static int ftpMkdir(const char * path, /*@unused@*/ mode_t mode)
 }
 
 static int ftpChdir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("CWD", path, NULL);
 }
 
 static int ftpRmdir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("RMD", path, NULL);
 }
 
 static int ftpRename(const char * oldpath, const char * newpath)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     int rc;
     if ((rc = ftpCmd("RNFR", oldpath, NULL)) != 0)
@@ -75,8 +63,6 @@ static int ftpRename(const char * oldpath, const char * newpath)
 }
 
 static int ftpUnlink(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     return ftpCmd("DELE", path, NULL);
 }
@@ -90,23 +76,22 @@ int Mkdir (const char * path, mode_t mode)
     switch (ut) {
     case URL_IS_FTP:
 	return ftpMkdir(path, mode);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef WITH_NEON
 	return davMkdir(path, mode);
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return mkdir(path, mode);
 }
@@ -119,7 +104,7 @@ int Chdir (const char * path)
     switch (ut) {
     case URL_IS_FTP:
 	return ftpChdir(path);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef	NOTYET
@@ -127,17 +112,16 @@ int Chdir (const char * path)
 #else
 	return -2;
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return chdir(path);
 }
@@ -150,23 +134,22 @@ int Rmdir (const char * path)
     switch (ut) {
     case URL_IS_FTP:
 	return ftpRmdir(path);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef WITH_NEON
 	return davRmdir(path);
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return rmdir(path);
 }
@@ -189,7 +172,7 @@ int Rename (const char * oldpath, const char * newpath)
 #ifdef WITH_NEON
 	return davRename(oldpath, newpath);
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
@@ -198,7 +181,7 @@ int Rename (const char * oldpath, const char * newpath)
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
 
     newut = urlPath(newpath, &ne);
@@ -210,7 +193,7 @@ fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (i
 	    !xstrncasecmp(oldpath, newpath, (oe - oldpath))))
 	    return -2;
 	return ftpRename(oldpath, newpath);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
@@ -223,7 +206,7 @@ fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (i
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return rename(oldpath, newpath);
 }
@@ -246,7 +229,7 @@ int Link (const char * oldpath, const char * newpath)
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
 
     newut = urlPath(newpath, &ne);
@@ -269,7 +252,7 @@ fprintf(stderr, "*** link old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return link(oldpath, newpath);
 }
@@ -283,23 +266,22 @@ int Unlink(const char * path) {
     switch (ut) {
     case URL_IS_FTP:
 	return ftpUnlink(path);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef WITH_NEON
 	return davUnlink(path);
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return unlink(path);
 }
@@ -312,26 +294,18 @@ int Unlink(const char * path) {
 /*
  * FIXME: this is broken. It depends on mc not crossing border on month!
  */
-/*@unchecked@*/
 static int current_mday;
-/*@unchecked@*/
 static int current_mon;
-/*@unchecked@*/
 static int current_year;
 
 /* Following stuff (parse_ls_lga) is used by ftpfs and extfs */
 #define MAXCOLS		30
 
-/*@unchecked@*/
 static char *columns [MAXCOLS];	/* Points to the string in column n */
-/*@unchecked@*/
 static int   column_ptr [MAXCOLS]; /* Index from 0 to the starting positions of the columns */
 
-/*@-boundswrite@*/
 static int
 vfs_split_text (char *p)
-	/*@globals columns, column_ptr @*/
-	/*@modifies *p, columns, column_ptr @*/
 {
     char *original = p;
     int  numcols;
@@ -349,41 +323,31 @@ vfs_split_text (char *p)
     }
     return numcols;
 }
-/*@=boundswrite@*/
 
-/*@-boundsread@*/
 static int
 is_num (int idx)
-	/*@*/
 {
     if (!columns [idx] || columns [idx][0] < '0' || columns [idx][0] > '9')
 	return 0;
     return 1;
 }
-/*@=boundsread@*/
 
-/*@-boundsread@*/
 static int
-is_dos_date(/*@null@*/ const char *str)
-	/*@*/
+is_dos_date(const char *str)
 {
     if (str != NULL && strlen(str) == 8 &&
 		str[2] == str[5] && strchr("\\-/", (int)str[2]) != NULL)
 	return 1;
     return 0;
 }
-/*@=boundsread@*/
 
 static int
-is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
-	/*@modifies *tim @*/
+is_week (const char * str, struct tm * tim)
 {
-/*@observer@*/ static const char * week = "SunMonTueWedThuFriSat";
+static const char * week = "SunMonTueWedThuFriSat";
     const char * pos;
 
-    /*@-observertrans -mayaliasunique@*/
     if (str != NULL && (pos=strstr(week, str)) != NULL) {
-    /*@=observertrans =mayaliasunique@*/
         if (tim != NULL)
 	    tim->tm_wday = (pos - week)/3;
 	return 1;
@@ -392,15 +356,12 @@ is_week (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 }
 
 static int
-is_month (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
-	/*@modifies *tim @*/
+is_month (const char * str, struct tm * tim)
 {
-/*@observer@*/ static const char * month = "JanFebMarAprMayJunJulAugSepOctNovDec";
+static const char * month = "JanFebMarAprMayJunJulAugSepOctNovDec";
     const char * pos;
     
-    /*@-observertrans -mayaliasunique@*/
     if (str != NULL && (pos = strstr(month, str)) != NULL) {
-    /*@=observertrans -mayaliasunique@*/
         if (tim != NULL)
 	    tim->tm_mon = (pos - month)/3;
 	return 1;
@@ -409,8 +370,7 @@ is_month (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 }
 
 static int
-is_time (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
-	/*@modifies *tim @*/
+is_time (const char * str, struct tm * tim)
 {
     const char * p, * p2;
 
@@ -428,8 +388,7 @@ is_time (/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
     return 1;
 }
 
-static int is_year(/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
-	/*@modifies *tim @*/
+static int is_year(const char * str, struct tm * tim)
 {
     long year;
 
@@ -461,7 +420,6 @@ static int is_year(/*@null@*/ const char * str, /*@out@*/ struct tm * tim)
 
 static int
 vfs_parse_filetype (char c)
-	/*@*/
 {
     switch (c) {
         case 'd': return S_IFDIR; 
@@ -480,7 +438,6 @@ vfs_parse_filetype (char c)
 }
 
 static int vfs_parse_filemode (const char *p)
-	/*@*/
 {	/* converts rw-rw-rw- into 0666 */
     int res = 0;
     switch (*(p++)) {
@@ -538,9 +495,7 @@ static int vfs_parse_filemode (const char *p)
     return res;
 }
 
-/*@-boundswrite@*/
-static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
-	/*@modifies *t @*/
+static int vfs_parse_filedate(int idx, time_t *t)
 {	/* This thing parses from idx in columns[] array */
 
     char *p;
@@ -585,9 +540,7 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 
 	/* Here just this special case with MM-DD-YY */
         if (is_dos_date(p)){
-	    /*@-mods@*/
             p[2] = p[5] = '-';
-	    /*@=mods@*/
 	    
 	    memset(d, 0, sizeof(d));
 	    if (sscanf(p, "%2d-%2d-%2d", &d[0], &d[1], &d[2]) == 3){
@@ -646,14 +599,11 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
         *t = 0;
     return idx;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 static int
-vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
-		/*@out@*/ const char ** filename,
-		/*@out@*/ const char ** linkname)
-	/*@modifies *p, *st, *filename, *linkname @*/
+vfs_parse_ls_lga (char * p, struct stat * st,
+		const char ** filename,
+		const char ** linkname)
 {
     int idx, idx2, num_cols;
     int i;
@@ -676,13 +626,11 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	if (strlen (p) <= 8 || p [8] != ']')
 	    goto error;
 	/* Should parse here the Notwell permissions :) */
-	/*@-unrecog@*/
 	if (S_ISDIR (st->st_mode))
 	    st->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IXUSR | S_IXGRP | S_IXOTH);
 	else
 	    st->st_mode |= (S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR);
 	p += 9;
-	/*@=unrecog@*/
     } else {
 	if ((i = vfs_parse_filemode(p)) == -1)
 	    goto error;
@@ -846,13 +794,10 @@ error:
     }
 #endif
 
-    /*@-usereleased@*/
     if (p_copy != p)		/* Carefull! */
-    /*@=usereleased@*/
 	g_free (p_copy);
     return 0;
 }
-/*@=boundswrite@*/
 
 typedef enum {
 	DO_FTP_STAT	= 1,
@@ -864,20 +809,17 @@ typedef enum {
 
 /**
  */
-/*@unchecked@*/
 static size_t ftpBufAlloced = 0;
 
 /**
  */
-/*@unchecked@*/
-static /*@only@*/ char * ftpBuf = NULL;
+static char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
-/*@-boundswrite@*/
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
-		/*@out@*/ /*@null@*/ struct stat * st,
-		/*@out@*/ /*@null@*/ char * rlbuf, size_t rlbufsiz)
+		struct stat * st,
+		char * rlbuf, size_t rlbufsiz)
 	/*@globals ftpBufAlloced, ftpBuf,
 		h_errno, fileSystem, internalState @*/
 	/*@modifies *st, *rlbuf, ftpBufAlloced, ftpBuf,
@@ -910,14 +852,12 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	break;
     default:
 	urldn = alloca_strdup(url);
-	/*@-branchstate@*/
 	if ((bn = strrchr(urldn, '/')) == NULL)
 	    return -2;
 	else if (bn == path)
 	    bn = ".";
 	else
 	    *bn++ = '\0';
-	/*@=branchstate@*/
 	nbn = strlen(bn);
 
 	rc = ftpChdir(urldn);		/* XXX don't care about CWD */
@@ -980,44 +920,44 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	    while (*se && *se != '\n') se++;
 	    if (se > s && se[-1] == '\r') se[-1] = '\0';
 	    if (*se == '\0') 
-		/*@innerbreak@*/ break;
+		break;
 	    *se++ = '\0';
 
 	    if (!strncmp(s, "total ", sizeof("total ")-1))
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    o = NULL;
 	    for (bingo = 0, n = se; n >= s; n--) {
 		switch (*n) {
 		case '\0':
 		    oe = ne = n;
-		    /*@switchbreak@*/ break;
+		    break;
 		case ' ':
 		    if (o || !(n[-3] == ' ' && n[-2] == '-' && n[-1] == '>')) {
 			while (*(++n) == ' ')
 			    {};
 			bingo++;
-			/*@switchbreak@*/ break;
+			break;
 		    }
 		    for (o = n + 1; *o == ' '; o++)
 			{};
 		    n -= 3;
 		    ne = n;
-		    /*@switchbreak@*/ break;
+		    break;
 		default:
-		    /*@switchbreak@*/ break;
+		    break;
 		}
 		if (bingo)
-		    /*@innerbreak@*/ break;
+		    break;
 	    }
 
 	    if (nbn != (ne - n))	/* Same name length? */
-		/*@innercontinue@*/ continue;
+		continue;
 	    if (strncmp(n, bn, nbn))	/* Same name? */
-		/*@innercontinue@*/ continue;
+		continue;
 
 	    moretodo = 0;
-	    /*@innerbreak@*/ break;
+	    break;
 	}
 
         if (moretodo && se > s) {
@@ -1034,7 +974,6 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 	if (o && oe) {
 	    /* XXX FIXME: symlink, replace urldn/bn from [o,oe) and restart */
 	}
-	/*@fallthrough@*/
     case DO_FTP_LSTAT:
 	if (st == NULL || !(n && ne)) {
 	    rc = -1;
@@ -1066,11 +1005,9 @@ exit:
     (void) ufdClose(fd);
     return rc;
 }
-/*@=boundswrite@*/
 
 static const char * statstr(const struct stat * st,
-		/*@returned@*/ /*@out@*/ char * buf)
-	/*@modifies *buf @*/
+		char * buf)
 {
     sprintf(buf,
 	"*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
@@ -1085,13 +1022,10 @@ static const char * statstr(const struct stat * st,
     return buf;
 }
 
-/*@unchecked@*/
 static int ftp_st_ino = 0xdead0000;
 
 /* FIXME: borked for path with trailing '/' */
-static int ftpStat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
-	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
+static int ftpStat(const char * path, struct stat *st)
 {
     char buf[1024];
     int rc;
@@ -1105,9 +1039,7 @@ fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st, buf));
 }
 
 /* FIXME: borked for path with trailing '/' */
-static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
-	/*@globals ftp_st_ino, h_errno, fileSystem, internalState @*/
-	/*@modifies *st, ftp_st_ino, fileSystem, internalState @*/
+static int ftpLstat(const char * path, struct stat *st)
 {
     char buf[1024];
     int rc;
@@ -1120,9 +1052,7 @@ fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st, buf));
     return rc;
 }
 
-static int ftpReadlink(const char * path, /*@out@*/ char * buf, size_t bufsiz)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies *buf, fileSystem, internalState @*/
+static int ftpReadlink(const char * path, char * buf, size_t bufsiz)
 {
     int rc;
     rc = ftpNLST(path, DO_FTP_READLINK, NULL, buf, bufsiz);
@@ -1131,11 +1061,7 @@ fprintf(stderr, "*** ftpReadlink(%s) rc %d\n", path, rc);
     return rc;
 }
 
-/*@-boundswrite@*/
-/*@null@*/
 static DIR * ftpOpendir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     AVDIR avdir;
     struct dirent * dp;
@@ -1167,7 +1093,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	switch (c) {
 	case '/':
 	    sb = se;
-	    /*@switchbreak@*/ break;
+	    break;
 	case '\r':
 	    if (sb == NULL) {
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
@@ -1179,41 +1105,33 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
     }
 
     nb += sizeof(*avdir) + sizeof(*dp) + ((ac + 1) * sizeof(*av)) + (ac + 1);
     avdir = xcalloc(1, nb);
-    /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     av = (const char **) (dp + 1);
     dt = (unsigned char *) (av + (ac + 1));
     t = (char *) (dt + ac + 1);
-    /*@=abstract@*/
 
     avdir->fd = avmagicdir;
-/*@-usereleased@*/
     avdir->data = (char *) dp;
-/*@=usereleased@*/
     avdir->allocation = nb;
     avdir->size = ac;
     avdir->offset = -1;
     avdir->filepos = 0;
 
 #if defined(HAVE_PTHREAD_H)
-/*@-moduncon -noeffectuncon@*/
     (void) pthread_mutex_init(&avdir->lock, NULL);
-/*@=moduncon =noeffectuncon@*/
 #endif
 
     ac = 0;
-    /*@-dependenttrans -unrecog@*/
     dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, ".");	t++;
     dt[ac] = DT_DIR;	av[ac++] = t;	t = stpcpy(t, "..");	t++;
-    /*@=dependenttrans =unrecog@*/
     sb = NULL;
     s = se = ftpBuf;
     while ((c = *se) != '\0') {
@@ -1221,40 +1139,36 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	switch (c) {
 	case '/':
 	    sb = se;
-	    /*@switchbreak@*/ break;
+	    break;
 	case '\r':
-	    /*@-dependenttrans@*/
 	    av[ac] = t;
-	    /*@=dependenttrans@*/
 	    if (sb == NULL) {
-		/*@-unrecog@*/
 		switch(*s) {
 		case 'p':
 		    dt[ac] = DT_FIFO;
-		    /*@innerbreak@*/ break;
+		    break;
 		case 'c':
 		    dt[ac] = DT_CHR;
-		    /*@innerbreak@*/ break;
+		    break;
 		case 'd':
 		    dt[ac] = DT_DIR;
-		    /*@innerbreak@*/ break;
+		    break;
 		case 'b':
 		    dt[ac] = DT_BLK;
-		    /*@innerbreak@*/ break;
+		    break;
 		case '-':
 		    dt[ac] = DT_REG;
-		    /*@innerbreak@*/ break;
+		    break;
 		case 'l':
 		    dt[ac] = DT_LNK;
-		    /*@innerbreak@*/ break;
+		    break;
 		case 's':
 		    dt[ac] = DT_SOCK;
-		    /*@innerbreak@*/ break;
+		    break;
 		default:
 		    dt[ac] = DT_UNKNOWN;
-		    /*@innerbreak@*/ break;
+		    break;
 		}
-		/*@=unrecog@*/
 		for (sb = se; sb > s && sb[-1] != ' '; sb--)
 		    {};
 	    }
@@ -1264,18 +1178,15 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 	    if (*se == '\n') se++;
 	    sb = NULL;
 	    s = se;
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
     }
     av[ac] = NULL;
 
-/*@-kepttrans@*/
     return (DIR *) avdir;
-/*@=kepttrans@*/
 }
-/*@=boundswrite@*/
 
 int Stat(const char * path, struct stat * st)
 {
@@ -1287,23 +1198,22 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpStat(path, st);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef WITH_NEON
 	return davStat(path, st);
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return stat(path, st);
 }
@@ -1318,23 +1228,22 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpLstat(path, st);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef WITH_NEON
 	return davLstat(path, st);
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return lstat(path, st);
 }
@@ -1347,7 +1256,7 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     switch (ut) {
     case URL_IS_FTP:
 	return ftpReadlink(path, buf, bufsiz);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef	NOTYET
@@ -1355,21 +1264,19 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
 #else
 	return -2;
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
-/*@-compdef@*/ /* FIX: *buf is undefined */
+/* FIX: *buf is undefined */
     return readlink(path, buf, bufsiz);
-/*@=compdef@*/
 }
 
 int Access(const char * path, int amode)
@@ -1385,14 +1292,13 @@ fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return access(path, amode);
 }
@@ -1438,7 +1344,7 @@ int Glob_pattern_p (const char * pattern, int quote)
     return (0);
 }
 
-int Glob_error(/*@unused@*/const char * epath, /*@unused@*/ int eerrno)
+int Glob_error(/*@unused@*/const char * epath, int eerrno)
 {
     return 1;
 }
@@ -1449,34 +1355,29 @@ int Glob(const char *pattern, int flags,
     const char * lpath;
     int ut = urlPath(pattern, &lpath);
 
-/*@-castfcnptr@*/
 if (_rpmio_debug)
 fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)errfunc, pglob);
-/*@=castfcnptr@*/
     switch (ut) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
     case URL_IS_FTP:
-/*@-type@*/
 	pglob->gl_closedir = (void *) Closedir;
 	pglob->gl_readdir = (void *) Readdir;
 	pglob->gl_opendir = (void *) Opendir;
 	pglob->gl_lstat = Lstat;
 	pglob->gl_stat = Stat;
-/*@=type@*/
 	flags |= GLOB_ALTDIRFUNC;
 	flags &= ~GLOB_TILDE;
 	break;
     case URL_IS_PATH:
 	pattern = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return -2;
-	/*@notreached@*/ break;
+	break;
     }
     return glob(pattern, flags, errfunc, pglob);
 }
@@ -1498,27 +1399,24 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
     switch (ut) {
     case URL_IS_FTP:
 	return ftpOpendir(path);
-	/*@notreached@*/ break;
+	break;
     case URL_IS_HTTPS:	
     case URL_IS_HTTP:
 #ifdef WITH_NEON
 	return davOpendir(path);
 #endif
-	/*@notreached@*/ break;
+	break;
     case URL_IS_PATH:
 	path = lpath;
-	/*@fallthrough@*/
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
     default:
 	return NULL;
-	/*@notreached@*/ break;
+	break;
     }
-    /*@-dependenttrans@*/
     return opendir(path);
-    /*@=dependenttrans@*/
 }
 
 struct dirent * Readdir(DIR * dir)

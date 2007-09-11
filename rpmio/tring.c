@@ -35,8 +35,7 @@ main (int argc, const char *argv[])
     const char * fn;
     int rc, ec = 0;
 
-    while ((rc = poptGetNextOpt(optCon)) > 0)
-	;
+    while ((rc = poptGetNextOpt(optCon)) > 0);
 
     if ((args = poptGetArgs(optCon)) != NULL)
     while ((fn = *args++) != NULL) {

@@ -45,31 +45,19 @@ extern "C" {
  * @param *sw		time stamp
  * @return		0 on success
  */
-/*@-exportlocal@*/
-/*@null@*/
-rpmsw rpmswNow(/*@returned@*/ rpmsw sw)
-	/*@globals internalState @*/
-	/*@modifies sw, internalState @*/;
-/*@=exportlocal@*/
+rpmsw rpmswNow(rpmsw sw);
 
 /** Return benchmark time stamp difference.
  * @param *end		end time stamp
  * @param *begin	begin time stamp
  * @return		difference in micro-seconds
  */
-/*@-exportlocal@*/
-rpmtime_t rpmswDiff(/*@null@*/ rpmsw end, /*@null@*/ rpmsw begin)
-	/*@*/;
-/*@=exportlocal@*/
+rpmtime_t rpmswDiff(rpmsw end, rpmsw begin);
 
 /** Return benchmark time stamp overhead.
  * @return		overhead in micro-seconds
  */
-/*@-exportlocal@*/
-rpmtime_t rpmswInit(void)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
-/*@=exportlocal@*/
+rpmtime_t rpmswInit(void);
 
 /** \ingroup rpmio
  * Enter timed operation.
@@ -77,9 +65,7 @@ rpmtime_t rpmswInit(void)
  * @param rc			-1 clears usec counter
  * @return			0 always
  */
-int rpmswEnter(/*@null@*/ rpmop op, ssize_t rc)
-	/*@globals internalState @*/
-	/*@modifies *op, internalState @*/;
+int rpmswEnter(rpmop op, ssize_t rc);
 
 /** \ingroup rpmio
  * Exit timed operation.
@@ -87,9 +73,7 @@ int rpmswEnter(/*@null@*/ rpmop op, ssize_t rc)
  * @param rc			per-operation data (e.g. bytes transferred)
  * @return			cumulative usecs for operation
  */
-rpmtime_t rpmswExit(/*@null@*/ rpmop op, ssize_t rc)
-	/*@globals internalState @*/
-	/*@modifies op, internalState @*/;
+rpmtime_t rpmswExit(rpmop op, ssize_t rc);
 
 /** \ingroup rpmio
  * Sum statistic counters.
@@ -97,8 +81,7 @@ rpmtime_t rpmswExit(/*@null@*/ rpmop op, ssize_t rc)
  * @param from			operation statistics
  * @return			cumulative usecs for operation
  */
-rpmtime_t rpmswAdd(/*@null@*/ rpmop to, /*@null@*/ rpmop from)
-	/*@modifies to @*/;
+rpmtime_t rpmswAdd(rpmop to, rpmop from);
 
 /** \ingroup rpmio
  * Subtract statistic counters.
@@ -106,8 +89,7 @@ rpmtime_t rpmswAdd(/*@null@*/ rpmop to, /*@null@*/ rpmop from)
  * @param from			operation statistics
  * @return			cumulative usecs for operation
  */
-rpmtime_t rpmswSub(rpmop to, rpmop from)
-	/*@modifies to @*/;
+rpmtime_t rpmswSub(rpmop to, rpmop from);
 
 #ifdef __cplusplus
 }

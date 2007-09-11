@@ -40,12 +40,10 @@ AjjDx3lJnQBXUDmxM484YXLXZjWFXCiY8GJt6whjf7/2c3rIoT3Z7PQpEvPmM\
  * @param nbytes	no. of bytes
  * @return		target buffer
  */
-/*@unused@*/ static inline
-char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
-	/*@modifies *t @*/
+static inline
+char * pgpHexCvt(char *t, const byte *s, int nbytes)
 {
     static char hex[] = "0123456789abcdef";
-/*@-boundswrite@*/
     while (nbytes-- > 0) {
 	unsigned int i;
 	i = *s++;
@@ -53,7 +51,6 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
 	*t++ = hex[ (i     ) & 0xf ];
     }
     *t = '\0';
-/*@=boundswrite@*/
     return t;
 }
 
@@ -64,9 +61,8 @@ char * pgpHexCvt(/*@returned@*/ char *t, const byte *s, int nbytes)
  * @param plen		no. of bytes
  * @return		hex formatted string
  */
-/*@unused@*/ static inline /*@observer@*/
+static inline
 char * pgpHexStr(const byte *p, unsigned int plen)
-	/*@*/
 {
     static char prbuf[2048];
     char *t = prbuf;

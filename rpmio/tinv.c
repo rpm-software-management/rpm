@@ -104,10 +104,8 @@ fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 
 	if (result) {
 		mpsetx(b->size, result, ysize, A);
-		/*@-usedef@*/
 		if (*A & 0x80000000)
 			(void) mpneg(b->size, result);
-		/*@=usedef@*/
 		while (--k > 0)
 			mpadd(b->size, result, result);
 	}
@@ -397,10 +395,8 @@ fprintf(stderr, "       D: "), mpfprintln(stderr, ysize, D);
 	if (result)
 	{
 		mpsetx(b->size, result, ysize, D);
-		/*@-usedef@*/
 		if (*D & 0x80000000)
 			(void) mpadd(b->size, result, b->modl);
-		/*@=usedef@*/
 	}
 
 fprintf(stderr, "=== EXIT: "), mpfprintln(stderr, b->size, result);
@@ -477,7 +473,7 @@ main(int argc, const char * argv[])
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	switch (rc) {
 	default:
-            /*@switchbreak@*/ break;
+            break;
 	}
     }
 

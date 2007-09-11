@@ -75,9 +75,9 @@ main(int argc, const char *argv[])
 	switch (rc) {
 	case 'v':
 	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-            /*@switchbreak@*/ break;
+            break;
 	}
     }
 

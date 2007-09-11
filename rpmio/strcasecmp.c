@@ -17,10 +17,8 @@ int xstrcasecmp(const char * s1, const char * s2)
 
   do
     {
-/*@-boundsread@*/
       c1 = xtolower (*p1++);
       c2 = xtolower (*p2++);
-/*@=boundsread@*/
       if (c1 == '\0')
         break;
     }
@@ -40,10 +38,8 @@ int xstrncasecmp(const char *s1, const char *s2, size_t n)
 
   do
     {
-/*@-boundsread@*/
       c1 = xtolower (*p1++);
       c2 = xtolower (*p2++);
-/*@=boundsread@*/
       if (c1 == '\0' || c1 != c2)
 	break;
     } while (--n > 0);

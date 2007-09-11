@@ -12,7 +12,6 @@
 #define	DPRINTF(_a)
 #endif
 
-/*@access DIGEST_CTX@*/
 
 /**
  * MD5/SHA1 digest private data.
@@ -27,11 +26,10 @@ struct DIGEST_CTX_s {
 	/*@modifies param @*/;	/*!< Digest initialize. */
     int (*Update) (void * param, const byte * data, size_t size)
 	/*@modifies param @*/;	/*!< Digest transform. */
-    int (*Digest) (void * param, /*@out@*/ byte * digest)
+    int (*Digest) (void * param, byte * digest)
 	/*@modifies param, digest @*/;	/*!< Digest finish. */
 };
 
-/*@-boundsread@*/
 DIGEST_CTX
 rpmDigestDup(DIGEST_CTX octx)
 {
@@ -40,7 +38,6 @@ rpmDigestDup(DIGEST_CTX octx)
     nctx->param = memcpy(xcalloc(1, nctx->paramlen), octx->param, nctx->paramlen);
     return nctx;
 }
-/*@=boundsread@*/
 
 DIGEST_CTX
 rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
@@ -54,68 +51,58 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     case PGPHASHALGO_MD5:
 	ctx->digestlen = 16;
 	ctx->datalen = 64;
-/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+/* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(md5Param);
-/*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
 	ctx->Reset = (void *) md5Reset;
 	ctx->Update = (void *) md5Update;
 	ctx->Digest = (void *) md5Digest;
-/*@=type@*/
 	break;
     case PGPHASHALGO_SHA1:
 	ctx->digestlen = 20;
 	ctx->datalen = 64;
-/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+/* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha1Param);
-/*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
 	ctx->Reset = (void *) sha1Reset;
 	ctx->Update = (void *) sha1Update;
 	ctx->Digest = (void *) sha1Digest;
-/*@=type@*/
 	break;
 #if HAVE_BEECRYPT_API_H
     case PGPHASHALGO_SHA256:
 	ctx->digestlen = 32;
 	ctx->datalen = 64;
-/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+/* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha256Param);
-/*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
 	ctx->Reset = (void *) sha256Reset;
 	ctx->Update = (void *) sha256Update;
 	ctx->Digest = (void *) sha256Digest;
-/*@=type@*/
 	break;
     case PGPHASHALGO_SHA384:
 	ctx->digestlen = 48;
 	ctx->datalen = 128;
-/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+/* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha384Param);
-/*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
 	ctx->Reset = (void *) sha384Reset;
 	ctx->Update = (void *) sha384Update;
 	ctx->Digest = (void *) sha384Digest;
-/*@=type@*/
 	break;
     case PGPHASHALGO_SHA512:
 	ctx->digestlen = 64;
 	ctx->datalen = 128;
-/*@-sizeoftype@*/ /* FIX: union, not void pointer */
+/* FIX: union, not void pointer */
 	ctx->paramlen = sizeof(sha512Param);
-/*@=sizeoftype@*/
 	ctx->param = xcalloc(1, ctx->paramlen);
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
 	ctx->Reset = (void *) sha512Reset;
 	ctx->Update = (void *) sha512Update;
 	ctx->Digest = (void *) sha512Digest;
-/*@=type@*/
 	break;
 #endif
     case PGPHASHALGO_RIPEMD160:
@@ -125,18 +112,16 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     default:
 	free(ctx);
 	return NULL;
-	/*@notreached@*/ break;
+	break;
     }
 
-/*@-boundsread@*/
     xx = (*ctx->Reset) (ctx->param);
-/*@=boundsread@*/
 
 DPRINTF((stderr, "*** Init(%x) ctx %p param %p\n", flags, ctx, ctx->param));
     return ctx;
 }
 
-/*@-mustmod@*/ /* LCL: ctx->param may be modified, but ctx is abstract @*/
+/* LCL: ctx->param may be modified, but ctx is abstract @*/
 int
 rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {
@@ -144,13 +129,9 @@ rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 	return -1;
 
 DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->param, ((char *)data)));
-/*@-boundsread@*/
     return (*ctx->Update) (ctx->param, data, len);
-/*@=boundsread@*/
 }
-/*@=mustmod@*/
 
-/*@-boundswrite@*/
 int
 rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 {
@@ -163,12 +144,10 @@ rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
     digest = xmalloc(ctx->digestlen);
 
 DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp, asAscii, ctx->param, digest));
-/*@-noeffectuncon@*/ /* FIX: check rc */
+/* FIX: check rc */
     (void) (*ctx->Digest) (ctx->param, digest);
-/*@=noeffectuncon@*/
 
     /* Return final digest. */
-/*@-branchstate@*/
     if (!asAscii) {
 	if (lenp) *lenp = ctx->digestlen;
 	if (datap) {
@@ -189,7 +168,6 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
 	    *t = '\0';
 	}
     }
-/*@=branchstate@*/
     if (digest) {
 	memset(digest, 0, ctx->digestlen);	/* In case it's sensitive */
 	free(digest);
@@ -200,4 +178,3 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp
     free(ctx);
     return 0;
 }
-/*@=boundswrite@*/

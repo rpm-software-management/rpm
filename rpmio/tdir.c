@@ -60,9 +60,9 @@ main(int argc, const char *argv[])
 	switch (rc) {
 	case 'v':
 	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-            /*@switchbreak@*/ break;
+            break;
 	}
     }
 
@@ -78,7 +78,7 @@ _dav_debug = -1;
     printDir(ftppath);
     printDir(httppath);
 
-/*@i@*/ urlFreeCache();
+urlFreeCache();
 
     return 0;
 }

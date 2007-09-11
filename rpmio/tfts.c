@@ -8,7 +8,6 @@
 
 #include "debug.h"
 
-/*@unchecked@*/
 static int _fts_debug = 0;
 
 #if 0
@@ -153,9 +152,9 @@ main(int argc, const char *argv[])
 	switch (rc) {
 	case 'v':
 	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-            /*@switchbreak@*/ break;
+            break;
 	}
     }
 
@@ -174,7 +173,7 @@ _dav_debug = 1;
     ftsWalk(httpspath);
 #endif
 
-/*@i@*/ urlFreeCache();
+urlFreeCache();
 
     return 0;
 }

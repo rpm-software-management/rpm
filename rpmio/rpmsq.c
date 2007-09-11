@@ -19,13 +19,9 @@
 #endif
 
 #ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-/*@unchecked@*/
 static pthread_mutex_t rpmsigTbl_lock = PTHREAD_MUTEX_INITIALIZER;
 #else
-/*@unchecked@*/
-/*@-type@*/
 static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-/*@=type@*/
 #endif
 
 #define	DO_LOCK()	pthread_mutex_lock(&rpmsigTbl_lock);
@@ -56,8 +52,8 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 #define	DO_LOCK()
 #define	DO_UNLOCK()
 #define	INIT_LOCK()
-#define	ADD_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
-#define	SUB_REF(__tbl)	/*@-noeffect@*/ (0) /*@=noeffect@*/
+#define	ADD_REF(__tbl)	(0)
+#define	SUB_REF(__tbl)	(0)
 #define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr)
 #define	CLEANUP_RESET(__execute, __oldtype)
 
@@ -72,16 +68,11 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 #include "debug.h"
 
 #define	_RPMSQ_DEBUG	0
-/*@unchecked@*/
 int _rpmsq_debug = _RPMSQ_DEBUG;
 
-/*@unchecked@*/
 static struct rpmsqElem rpmsqRock;
 
-/*@-compmempass@*/
-/*@unchecked@*/
 rpmsq rpmsqQueue = &rpmsqRock;
-/*@=compmempass@*/
 
 int rpmsqInsert(void * elem, void * prev)
 {
@@ -99,9 +90,7 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
 	    sq->reaped = 0;
 	    sq->status = 0;
 	    sq->reaper = 1;
-/*@-bounds@*/
 	    sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 
 	    sq->id = ME();
 	    ret = pthread_mutex_init(&sq->mutex, NULL);
@@ -132,11 +121,9 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 		ret = pthread_mutex_destroy(&sq->mutex);
 
 	    sq->id = NULL;
-/*@-bounds@*/
 	    if (sq->pipes[1])	ret = close(sq->pipes[1]);
 	    if (sq->pipes[0])	ret = close(sq->pipes[0]);
 	    sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 #ifdef	NOTYET	/* rpmpsmWait debugging message needs */
 	    sq->reaper = 1;
 	    sq->status = 0;
@@ -149,11 +136,8 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
     return ret;
 }
 
-/*@unchecked@*/
 sigset_t rpmsqCaught;
 
-/*@unchecked@*/
-/*@-fullinitblock@*/
 static struct rpmsig_s {
     int signum;
     void (*handler) (int signum, void * info, void * context);
@@ -174,10 +158,9 @@ static struct rpmsig_s {
 #define	rpmsigTbl_sigpipe	(&rpmsigTbl[5])
     { -1,	NULL },
 };
-/*@=fullinitblock@*/
 
 void rpmsqAction(int signum,
-		/*@unused@*/ void * info, /*@unused@*/ void * context)
+		void * info, void * context)
 {
     int save = errno;
     rpmsig tbl;
@@ -197,7 +180,7 @@ void rpmsqAction(int signum,
 
 		/* XXX errno set to ECHILD/EINVAL/EINTR. */
 		if (reaped <= 0)
-		    /*@innerbreak@*/ break;
+		    break;
 
 		/* XXX insque(3)/remque(3) are dequeue, not ring. */
 		for (sq = rpmsqQueue->q_forw;
@@ -207,7 +190,7 @@ void rpmsqAction(int signum,
 		    int ret;
 
 		    if (sq->child != reaped)
-			/*@innercontinue@*/ continue;
+			continue;
 		    sq->reaped = reaped;
 		    sq->status = status;
 
@@ -218,21 +201,19 @@ void rpmsqAction(int signum,
 		     */
 		    ret = pthread_mutex_unlock(&sq->mutex); 
 
-		    /*@innerbreak@*/ break;
+		    break;
 		}
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	break;
     }
     errno = save;
 }
 
-int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
-	/*@globals rpmsigTbl @*/
-	/*@modifies rpmsigTbl @*/
+int rpmsqEnable(int signum, rpmsqAction_t handler)
 {
     int tblsignum = (signum >= 0 ? signum : -signum);
     struct sigaction sa;
@@ -309,11 +290,9 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
     if (!nothreads) {
 	if(pthread_mutex_lock(&sq->mutex)) {
 	    /* Yack we did not get the lock, lets just give up */
-/*@-bounds@*/
 	    xx = close(sq->pipes[0]);
 	    xx = close(sq->pipes[1]);
 	    sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 	    goto out;
 	}
     }
@@ -321,22 +300,18 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
     pid = fork();
     if (pid < (pid_t) 0) {		/* fork failed.  */
 	sq->child = (pid_t)-1;
-/*@-bounds@*/
 	xx = close(sq->pipes[0]);
 	xx = close(sq->pipes[1]);
 	sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 	goto out;
     } else if (pid == (pid_t) 0) {	/* Child. */
 	int yy;
 
 	/* Block to permit parent time to wait. */
-/*@-bounds@*/
 	xx = close(sq->pipes[1]);
 	xx = read(sq->pipes[0], &yy, sizeof(yy));
 	xx = close(sq->pipes[0]);
 	sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 
 #ifdef _RPMSQ_DEBUG
 if (_rpmsq_debug)
@@ -366,8 +341,6 @@ out:
  * @return		0 on success
  */
 static int rpmsqWaitUnregister(rpmsq sq)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies sq, fileSystem, internalState @*/
 {
     int nothreads = 0;
     int ret = 0;
@@ -377,19 +350,16 @@ static int rpmsqWaitUnregister(rpmsq sq)
     ret = sighold(SIGCHLD);
 
     /* Start the child, linux often runs child before parent. */
-/*@-bounds@*/
     if (sq->pipes[0] >= 0)
 	xx = close(sq->pipes[0]);
     if (sq->pipes[1] >= 0)
 	xx = close(sq->pipes[1]);
     sq->pipes[0] = sq->pipes[1] = -1;
-/*@=bounds@*/
 
     /* Put a stopwatch on the time spent waiting to measure performance gain. */
     (void) rpmswEnter(&sq->op, -1);
 
     /* Wait for handler to receive SIGCHLD. */
-    /*@-infloops@*/
     while (ret == 0 && sq->reaped != sq->child) {
 	if (nothreads)
 	    /* Note that sigpause re-enables SIGCHLD. */
@@ -406,7 +376,6 @@ static int rpmsqWaitUnregister(rpmsq sq)
 	    xx = sighold(SIGCHLD);
 	}
     }
-    /*@=infloops@*/
 
     /* Accumulate stopwatch time spent waiting, potential performance gain. */
     sq->ms_scriptlets += rpmswExit(&sq->op, -1)/1000;
@@ -492,8 +461,6 @@ int rpmsqThreadEqual(void * thread)
  */
 static void
 sigchld_cancel (void *arg)
-	/*@globals rpmsigTbl, fileSystem, internalState @*/
-	/*@modifies rpmsigTbl, fileSystem, internalState @*/
 {
     pid_t child = *(pid_t *) arg;
     pid_t result;
@@ -517,8 +484,6 @@ sigchld_cancel (void *arg)
  */
 int
 rpmsqExecve (const char ** argv)
-	/*@globals rpmsigTbl @*/
-	/*@modifies rpmsigTbl @*/
 {
     int oldtype;
     int status = -1;

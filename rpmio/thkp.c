@@ -116,9 +116,9 @@ main(int argc, const char *argv[])
 	switch (rc) {
 	case 'v':
 	    rpmIncreaseVerbosity();
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
-            /*@switchbreak@*/ break;
+            break;
 	}
     }
 
@@ -129,7 +129,7 @@ main(int argc, const char *argv[])
 
     readKeys(hkppath);
 
-/*@i@*/ urlFreeCache();
+urlFreeCache();
 
     return 0;
 }

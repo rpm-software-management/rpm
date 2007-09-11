@@ -31,9 +31,8 @@
 #define	rpmIsDebug()		\
 	(rpmlogSetMask(0) >= RPMLOG_MASK( RPMMESS_DEBUG ))
 
-/*@-redef@*/ /* LCL: ??? */
-typedef /*@abstract@*/ const void * fnpyKey;
-/*@=redef@*/
+/* LCL: ??? */
+typedef const void * fnpyKey;
 
 /**
  * Bit(s) to identify progress callbacks.
@@ -68,18 +67,15 @@ extern "C" {
 /**
  */
 typedef void * (*rpmCallbackFunction)
-		(/*@null@*/ const void * h, 
+		(const void * h, 
 		const rpmCallbackType what, 
 		const unsigned long amount, 
 		const unsigned long total,
-		/*@null@*/ fnpyKey key,
-		/*@null@*/ rpmCallbackData data)
-	/*@globals internalState@*/
-	/*@modifies internalState@*/;
+		fnpyKey key,
+		rpmCallbackData data);
 
 /**
  */
-/*@unused@*/
 void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
 		int notifyCount);
 

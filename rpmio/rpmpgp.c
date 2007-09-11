@@ -1,4 +1,3 @@
-/*@-boundsread@*/
 /** \ingroup rpmio signature
  * \file rpmio/rpmpgp.c
  * Routines to handle RFC-2440 detached signatures.
@@ -8,19 +7,13 @@
 #include "rpmio_internal.h"
 #include "debug.h"
 
-/*@access pgpDig @*/
-/*@access pgpDigParams @*/
 
-/*@unchecked@*/
 static int _debug = 0;
 
-/*@unchecked@*/
 static int _print = 0;
 
-/*@unchecked@*/ /*@null@*/
 static pgpDig _dig = NULL;
 
-/*@unchecked@*/ /*@null@*/
 static pgpDigParams _digp = NULL;
 
 struct pgpValTbl_s pgpSigTypeTbl[] = {
@@ -90,13 +83,10 @@ struct pgpValTbl_s pgpHashTbl[] = {
     { -1,			"Unknown hash algorithm" },
 };
 
-/*@-exportlocal -exportheadervar@*/
-/*@observer@*/ /*@unchecked@*/
 struct pgpValTbl_s pgpKeyServerPrefsTbl[] = {
     { 0x80,			"No-modify" },
     { -1,			"Unknown key server preference" },
 };
-/*@=exportlocal =exportheadervar@*/
 
 struct pgpValTbl_s pgpSubTypeTbl[] = {
     { PGPSUBTYPE_SIG_CREATE_TIME,"signature creation time" },
@@ -188,25 +178,20 @@ struct pgpValTbl_s pgpArmorKeyTbl[] = {
  * @param p		memory to free
  * @return		NULL always
  */
-/*@unused@*/ static inline /*@null@*/ void *
-_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
-	/*@modifies p @*/
+static inline void *
+_free(const void * p)
 {
     if (p != NULL)	free((void *)p);
     return NULL;
 }
 
 static void pgpPrtNL(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     if (!_print) return;
     fprintf(stderr, "\n");
 }
 
 static void pgpPrtInt(const char *pre, int i)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     if (!_print) return;
     if (pre && *pre)
@@ -215,8 +200,6 @@ static void pgpPrtInt(const char *pre, int i)
 }
 
 static void pgpPrtStr(const char *pre, const char *s)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     if (!_print) return;
     if (pre && *pre)
@@ -225,8 +208,6 @@ static void pgpPrtStr(const char *pre, const char *s)
 }
 
 static void pgpPrtHex(const char *pre, const byte *p, unsigned int plen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     if (!_print) return;
     if (pre && *pre)
@@ -235,8 +216,6 @@ static void pgpPrtHex(const char *pre, const byte *p, unsigned int plen)
 }
 
 void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     if (!_print) return;
     if (pre && *pre)
@@ -246,9 +225,8 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, byte val)
 
 /**
  */
-/*@unused@*/ static /*@observer@*/
+static
 const char * pgpMpiHex(const byte *p)
-        /*@*/
 {
     static char prbuf[2048];
     char *t = prbuf;
@@ -256,14 +234,11 @@ const char * pgpMpiHex(const byte *p)
     return prbuf;
 }
 
-/*@-boundswrite@*/
 /**
  * @return		0 on success
  */
 static int pgpHexSet(const char * pre, int lbits,
-		/*@out@*/ mpnumber * mpn, const byte * p, const byte * pend)
-	/*@globals fileSystem @*/
-	/*@modifies mpn, fileSystem @*/
+		mpnumber * mpn, const byte * p, const byte * pend)
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
@@ -291,7 +266,6 @@ if (_debug && _print)
 fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
     return 0;
 }
-/*@=boundswrite@*/
 
 int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 {
@@ -312,29 +286,26 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_PREFER_SYMKEY:	/* preferred symmetric algorithms */
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpSymkeyTbl, p[i]);
-	    /*@switchbreak@*/ break;
+	    break;
 	case PGPSUBTYPE_PREFER_HASH:	/* preferred hash algorithms */
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpHashTbl, p[i]);
-	    /*@switchbreak@*/ break;
+	    break;
 	case PGPSUBTYPE_PREFER_COMPRESS:/* preferred compression algorithms */
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpCompressionTbl, p[i]);
-	    /*@switchbreak@*/ break;
+	    break;
 	case PGPSUBTYPE_KEYSERVER_PREFERS:/* key server preferences */
 	    for (i = 1; i < plen; i++)
 		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
-	    /*@switchbreak@*/ break;
+	    break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
-/*@-mods -mayaliasunique @*/
 	    if (_digp && !(_digp->saved & PGPDIG_SAVED_TIME) &&
 		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
 		_digp->saved |= PGPDIG_SAVED_TIME;
 		memcpy(_digp->time, p+1, sizeof(_digp->time));
 	    }
-/*@=mods =mayaliasunique @*/
-	    /*@fallthrough@*/
 	case PGPSUBTYPE_SIG_EXPIRE_TIME:
 	case PGPSUBTYPE_KEY_EXPIRE_TIME:
 	    if ((plen - 1) == 4) {
@@ -343,18 +314,15 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 		   fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
 	    } else
 		pgpPrtHex("", p+1, plen-1);
-	    /*@switchbreak@*/ break;
+	    break;
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
-/*@-mods -mayaliasunique @*/
 	    if (_digp && !(_digp->saved & PGPDIG_SAVED_ID) &&
 		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
 		_digp->saved |= PGPDIG_SAVED_ID;
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
 	    }
-/*@=mods =mayaliasunique @*/
-	    /*@fallthrough@*/
 	case PGPSUBTYPE_EXPORTABLE_CERT:
 	case PGPSUBTYPE_TRUST_SIG:
 	case PGPSUBTYPE_REGEX:
@@ -383,7 +351,7 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
 	case PGPSUBTYPE_INTERNAL_110:
 	default:
 	    pgpPrtHex("", p+1, plen-1);
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 	pgpPrtNL();
 	p += plen;
@@ -392,25 +360,19 @@ int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
     return 0;
 }
 
-/*@-varuse =readonlytrans @*/
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpSigRSA[] = {
     " m**d =",
     NULL,
 };
 
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpSigDSA[] = {
     "    r =",
     "    s =",
     NULL,
 };
-/*@=varuse =readonlytrans @*/
 
-static int pgpPrtSigParams(/*@unused@*/ pgpTag tag, byte pubkey_algo, byte sigtype,
+static int pgpPrtSigParams(pgpTag tag, byte pubkey_algo, byte sigtype,
 		const byte *p, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
 {
     const byte * pend = h + hlen;
     int i;
@@ -426,9 +388,9 @@ static int pgpPrtSigParams(/*@unused@*/ pgpTag tag, byte pubkey_algo, byte sigty
 		    (void) mpnsethex(&_dig->c, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t  m**d = "),  mpfprintln(stderr, _dig->c.size, _dig->c.data);
-		    /*@switchbreak@*/ break;
+		    break;
 		default:
-		    /*@switchbreak@*/ break;
+		    break;
 		}
 	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
@@ -442,13 +404,13 @@ fprintf(stderr, "\t  m**d = "),  mpfprintln(stderr, _dig->c.size, _dig->c.data);
 		switch (i) {
 		case 0:		/* r */
 		    xx = pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p, pend);
-		    /*@switchbreak@*/ break;
+		    break;
 		case 1:		/* s */
 		    xx = pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p, pend);
-		    /*@switchbreak@*/ break;
+		    break;
 		default:
 		    xx = 1;
-		    /*@switchbreak@*/ break;
+		    break;
 		}
 		if (xx) return xx;
 	    }
@@ -465,8 +427,6 @@ fprintf(stderr, "\t  m**d = "),  mpfprintln(stderr, _dig->c.size, _dig->c.data);
 }
 
 int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals _digp @*/
-	/*@modifies *_digp @*/
 {
     byte version = h[0];
     byte * p;
@@ -571,8 +531,6 @@ fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
     return rc;
 }
 
-/*@-varuse =readonlytrans @*/
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicRSA[] = {
     "    n =",
     "    e =",
@@ -580,7 +538,6 @@ static const char * pgpPublicRSA[] = {
 };
 
 #ifdef NOTYET
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretRSA[] = {
     "    d =",
     "    p =",
@@ -590,7 +547,6 @@ static const char * pgpSecretRSA[] = {
 };
 #endif
 
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicDSA[] = {
     "    p =",
     "    q =",
@@ -600,14 +556,12 @@ static const char * pgpPublicDSA[] = {
 };
 
 #ifdef NOTYET
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretDSA[] = {
     "    x =",
     NULL,
 };
 #endif
 
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpPublicELGAMAL[] = {
     "    p =",
     "    g =",
@@ -616,18 +570,14 @@ static const char * pgpPublicELGAMAL[] = {
 };
 
 #ifdef NOTYET
-/*@observer@*/ /*@unchecked@*/
 static const char * pgpSecretELGAMAL[] = {
     "    x =",
     NULL,
 };
 #endif
-/*@=varuse =readonlytrans @*/
 
 static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
-		/*@returned@*/ const byte *p, const byte *h, unsigned int hlen)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+		const byte *p, const byte *h, unsigned int hlen)
 {
     int i;
 
@@ -640,14 +590,14 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 		    (void) mpbsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     n = "),  mpfprintln(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
-		    /*@switchbreak@*/ break;
+		    break;
 		case 1:		/* e */
 		    (void) mpnsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     e = "),  mpfprintln(stderr, _dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
-		    /*@switchbreak@*/ break;
+		    break;
 		default:
-		    /*@switchbreak@*/ break;
+		    break;
 		}
 	    }
 	    pgpPrtStr("", pgpPublicRSA[i]);
@@ -659,24 +609,24 @@ fprintf(stderr, "\t     e = "),  mpfprintln(stderr, _dig->rsa_pk.e.size, _dig->r
 		    (void) mpbsethex(&_dig->p, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     p = "),  mpfprintln(stderr, _dig->p.size, _dig->p.modl);
-		    /*@switchbreak@*/ break;
+		    break;
 		case 1:		/* q */
 		    (void) mpbsethex(&_dig->q, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     q = "),  mpfprintln(stderr, _dig->q.size, _dig->q.modl);
-		    /*@switchbreak@*/ break;
+		    break;
 		case 2:		/* g */
 		    (void) mpnsethex(&_dig->g, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     g = "),  mpfprintln(stderr, _dig->g.size, _dig->g.data);
-		    /*@switchbreak@*/ break;
+		    break;
 		case 3:		/* y */
 		    (void) mpnsethex(&_dig->y, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     y = "),  mpfprintln(stderr, _dig->y.size, _dig->y.data);
-		    /*@switchbreak@*/ break;
+		    break;
 		default:
-		    /*@switchbreak@*/ break;
+		    break;
 		}
 	    }
 	    pgpPrtStr("", pgpPublicDSA[i]);
@@ -694,10 +644,8 @@ fprintf(stderr, "\t     y = "),  mpfprintln(stderr, _dig->y.size, _dig->y.data);
     return p;
 }
 
-static const byte * pgpPrtSeckeyParams(/*@unused@*/ byte pubkey_algo,
-		/*@returned@*/ const byte *p, const byte *h, unsigned int hlen)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
+static const byte * pgpPrtSeckeyParams(byte pubkey_algo,
+		const byte *p, const byte *h, unsigned int hlen)
 {
     int i;
 
@@ -712,21 +660,20 @@ static const byte * pgpPrtSeckeyParams(/*@unused@*/ byte pubkey_algo,
 	case 0x00:
 	    pgpPrtVal(" simple ", pgpHashTbl, p[2]);
 	    p += 2;
-	    /*@innerbreak@*/ break;
+	    break;
 	case 0x01:
 	    pgpPrtVal(" salted ", pgpHashTbl, p[2]);
 	    pgpPrtHex("", p+3, 8);
 	    p += 10;
-	    /*@innerbreak@*/ break;
+	    break;
 	case 0x03:
 	    pgpPrtVal(" iterated/salted ", pgpHashTbl, p[2]);
-	    /*@-shiftnegative -shiftimplementation @*/ /* FIX: unsigned cast */
+	    /* FIX: unsigned cast */
 	    i = (16 + (p[11] & 0xf)) << ((p[11] >> 4) + 6);
-	    /*@=shiftnegative =shiftimplementation @*/
 	    pgpPrtHex("", p+3, 8);
 	    pgpPrtInt(" iter", i);
 	    p += 11;
-	    /*@innerbreak@*/ break;
+	    break;
 	}
 	break;
     default:
@@ -769,8 +716,6 @@ static const byte * pgpPrtSeckeyParams(/*@unused@*/ byte pubkey_algo,
 }
 
 int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals _digp @*/
-	/*@modifies *_digp @*/
 {
     byte version = *h;
     const byte * p;
@@ -829,10 +774,7 @@ int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
     return rc;
 }
 
-/*@-boundswrite@*/
 int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
-	/*@globals _digp @*/
-	/*@modifies *_digp @*/
 {
     pgpPrtVal("", pgpTagTbl, tag);
     if (_print)
@@ -845,7 +787,6 @@ int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
     }
     return 0;
 }
-/*@=boundswrite@*/
 
 int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 {
@@ -873,7 +814,7 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
     return 0;
 }
 
-int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
+int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
 		byte * keyid)
 {
     const byte *s = pkt;
@@ -893,13 +834,11 @@ int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
 	switch (v->pubkey_algo) {
 	case PGPPUBKEYALGO_RSA:
 	    s += (pgpMpiLen(s) - 8);
-/*@-boundswrite@*/
 	    memmove(keyid, s, 8);
-/*@=boundswrite@*/
 	    rc = 0;
-	    /*@innerbreak@*/ break;
+	    break;
 	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
-	    /*@innerbreak@*/ break;
+	    break;
 	}
       }	break;
     case 4:
@@ -912,11 +851,11 @@ int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
 	case PGPPUBKEYALGO_RSA:
 	    for (i = 0; i < 2; i++)
 		s += pgpMpiLen(s);
-	    /*@innerbreak@*/ break;
+	    break;
 	case PGPPUBKEYALGO_DSA:
 	    for (i = 0; i < 4; i++)
 		s += pgpMpiLen(s);
-	    /*@innerbreak@*/ break;
+	    break;
 	}
 
 	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -924,9 +863,7 @@ int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
 	(void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 0);
 
 	s = SHA1 + 12;
-/*@-boundswrite@*/
 	memmove(keyid, s, 8);
-/*@=boundswrite@*/
 	rc = 0;
 
 	if (SHA1) free(SHA1);
@@ -970,14 +907,11 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key fingerprint. */
 	if (_digp) {
-/*@-mods@*/
 	    if (!pgpPubkeyFingerprint(pkt, pktlen, _digp->signid))
 		_digp->saved |= PGPDIG_SAVED_ID;
 	    else
 		memset(_digp->signid, 0, sizeof(_digp->signid));
-/*@=mods@*/
 	}
-	/*@fallthrough@*/
     case PGPTAG_PUBLIC_SUBKEY:
 	rc = pgpPrtKey(tag, h, hlen);
 	break;
@@ -1023,7 +957,6 @@ pgpDig pgpNewDig(void)
     return dig;
 }
 
-/*@-boundswrite@*/
 void pgpCleanDig(pgpDig dig)
 {
     if (dig != NULL) {
@@ -1032,12 +965,11 @@ void pgpCleanDig(pgpDig dig)
 	dig->pubkey.userid = _free(dig->pubkey.userid);
 	dig->signature.hash = _free(dig->signature.hash);
 	dig->pubkey.hash = _free(dig->pubkey.hash);
-	/*@-unqualifiedtrans@*/ /* FIX: double indirection */
+	/* FIX: double indirection */
 	for (i = 0; i < 4; i++) {
 	    dig->signature.params[i] = _free(dig->signature.params[i]);
 	    dig->pubkey.params[i] = _free(dig->pubkey.params[i]);
 	}
-	/*@=unqualifiedtrans@*/
 
 	memset(&dig->signature, 0, sizeof(dig->signature));
 	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
@@ -1053,30 +985,22 @@ void pgpCleanDig(pgpDig dig)
 	mpnfree(&dig->c);
 	mpnfree(&dig->rsahm);
     }
-/*@-nullstate@*/
     return;
-/*@=nullstate@*/
 }
-/*@=boundswrite@*/
 
-pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
-	/*@modifies dig @*/
+pgpDig pgpFreeDig(pgpDig dig)
 {
     if (dig != NULL) {
 
 	/* DUmp the signature/pubkey data. */
 	pgpCleanDig(dig);
 
-	/*@-branchstate@*/
 	if (dig->hdrsha1ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->hdrsha1ctx = NULL;
 
-	/*@-branchstate@*/
 	if (dig->sha1ctx != NULL)
 	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->sha1ctx = NULL;
 
 	mpbfree(&dig->p);
@@ -1088,17 +1012,13 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	mpnfree(&dig->s);
 
 #ifdef	NOTYET
-	/*@-branchstate@*/
 	if (dig->hdrmd5ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->hdrmd5ctx = NULL;
 #endif
 
-	/*@-branchstate@*/
 	if (dig->md5ctx != NULL)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
 	dig->md5ctx = NULL;
 
 	mpbfree(&dig->rsa_pk.n);
@@ -1113,8 +1033,6 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 }
 
 int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
-	/*@globals _dig, _digp, _print @*/
-	/*@modifies _dig, _digp, *_digp, _print @*/
 {
     unsigned int val = *pkts;
     const byte *p;
@@ -1140,7 +1058,6 @@ int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
     return 0;
 }
 
-/*@-boundswrite@*/
 pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 {
     byte * b = NULL;
@@ -1199,7 +1116,7 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 		continue;
 	    *t = '\0';
 	    pstate++;
-	    /*@switchbreak@*/ break;
+	    break;
 	case 1:
 	    enc = NULL;
 	    rc = pgpValTok(pgpArmorKeyTbl, t, te);
@@ -1211,7 +1128,7 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	    }
 	    enc = te;		/* Start of encoded packets */
 	    pstate++;
-	    /*@switchbreak@*/ break;
+	    break;
 	case 2:
 	    crcenc = NULL;
 	    if (*t != '=')
@@ -1219,7 +1136,7 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	    *t++ = '\0';	/* Terminate encoded packets */
 	    crcenc = t;		/* Start of encoded crc */
 	    pstate++;
-	    /*@switchbreak@*/ break;
+	    break;
 	case 3:
 	    pstate = 0;
 	    if (!TOKEQ(t, "-----END PGP ")) {
@@ -1272,7 +1189,7 @@ pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 	    blen = declen;
 	    ec = PGPARMOR_PUBKEY;	/* XXX ASCII Pubkeys only, please. */
 	    goto exit;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	}
     }
     ec = PGPARMOR_NONE;
@@ -1286,7 +1203,6 @@ exit:
 	*pktlen = blen;
     return ec;
 }
-/*@=boundswrite@*/
 
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 {
@@ -1297,7 +1213,6 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     int lc;
 
     nt = ((ns + 2) / 3) * 4;
-    /*@-globs@*/
     /* Add additional bytes necessary for eol string(s). */
     if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
 	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
@@ -1305,18 +1220,14 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
         ++lc;
 	nt += lc * strlen(b64encode_eolstr);
     }
-    /*@=globs@*/
 
     nt += 512;	/* XXX slop for armor and crc */
 
-/*@-boundswrite@*/
     val = t = xmalloc(nt + 1);
     *t = '\0';
     t = stpcpy(t, "-----BEGIN PGP ");
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
-    /*@-globs@*/
     t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), VERSION);
-    /*@=globs@*/
     t = stpcpy(t, " (beecrypt-4.1.2)\n\n");
 
     if ((enc = b64encode(s, ns)) != NULL) {
@@ -1332,9 +1243,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     t = stpcpy(t, "-----END PGP ");
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
     t = stpcpy(t, "-----\n");
-/*@=boundswrite@*/
 
     return val;
 }
 
-/*@=boundsread@*/

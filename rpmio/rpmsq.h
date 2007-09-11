@@ -22,13 +22,9 @@ typedef struct rpmsqElem * rpmsq;
  * @param info		(siginfo_t) signal info
  * @param context	signal context
  */
-typedef void (*rpmsqAction_t) (int signum, void * info, void * context)
-	/*@*/;
+typedef void (*rpmsqAction_t) (int signum, void * info, void * context);
 
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _rpmsq_debug;
-/*@=redecl@*/
 
 /**
  * SIGCHLD queue element.
@@ -43,18 +39,13 @@ struct rpmsqElem {
     rpmtime_t ms_scriptlets;	/*!< Accumulated script duration (msecs). */
     int reaper;			/*!< Register SIGCHLD handler? */
     int pipes[2];		/*!< Parent/child interlock. */
-/*@shared@*/
     void * id;			/*!< Blocking thread id (pthread_t). */
     pthread_mutex_t mutex;	/*!< Signal delivery to thread condvar. */
     pthread_cond_t cond;
 };
 
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern rpmsq rpmsqQueue;
-/*@=exportlocal@*/
 
-/*@unchecked@*/
 extern sigset_t rpmsqCaught;
 
 #ifdef __cplusplus
@@ -67,22 +58,14 @@ extern "C" {
  * @param prev		previous node from queue
  * @return		0 on success
  */
-/*@-exportlocal@*/
-int rpmsqInsert(/*@null@*/ void * elem, /*@null@*/ void * prev)
-	/*@globals systemState @*/
-	/*@modifies elem, prev, systemState @*/;
-/*@=exportlocal@*/
+int rpmsqInsert(void * elem, void * prev);
 
 /**
  * Remove node from queue.
  * @param elem		node to link
  * @return		0 on success
  */
-/*@-exportlocal@*/
-int rpmsqRemove(/*@null@*/ void * elem)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies elem, fileSystem, internalState @*/;
-/*@=exportlocal@*/
+int rpmsqRemove(void * elem);
 
 /**
  * Default signal handler.
@@ -90,11 +73,7 @@ int rpmsqRemove(/*@null@*/ void * elem)
  * @param info		(siginfo_t) signal info
  * @param context	signal context
  */
-/*@-exportlocal@*/
-void rpmsqAction(int signum, void * info, void * context)
-	/*@globals rpmsqCaught, rpmsqQueue, errno, fileSystem @*/
-	/*@modifies rpmsqCaught, rpmsqQueue, errno, fileSystem @*/;
-/*@=exportlocal@*/
+void rpmsqAction(int signum, void * info, void * context);
 
 /**
  * Enable or disable a signal handler.
@@ -102,27 +81,21 @@ void rpmsqAction(int signum, void * info, void * context)
  * @param handler	sa_sigaction handler (or NULL to use rpmsqHandler())
  * @return		no. of refs, -1 on error
  */
-int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
-	/*@globals rpmsqCaught, rpmsqQueue, fileSystem, internalState @*/
-	/*@modifies rpmsqCaught, rpmsqQueue, fileSystem, internalState @*/;
+int rpmsqEnable(int signum, rpmsqAction_t handler);
 
 /**
  * Fork a child process.
  * @param sq		scriptlet queue element
  * @return		fork(2) pid
  */
-pid_t rpmsqFork(rpmsq sq)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies sq, fileSystem, internalState @*/;
+pid_t rpmsqFork(rpmsq sq);
 
 /**
  * Wait for child process to be reaped.
  * @param sq		scriptlet queue element
  * @return		reaped child pid
  */
-pid_t rpmsqWait(rpmsq sq)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies sq, fileSystem, internalState @*/;
+pid_t rpmsqWait(rpmsq sq);
 
 /**
  * Call a function in a thread.
@@ -130,34 +103,26 @@ pid_t rpmsqWait(rpmsq sq)
  * @param arg		function argument
  * @return		thread pointer (NULL on error)
  */
-void * rpmsqThread(void * (*start) (void * arg), void * arg)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
+void * rpmsqThread(void * (*start) (void * arg), void * arg);
 
 /**
  * Wait for thread to terminate.
  * @param thread	thread
  * @return		0 on success
  */
-int rpmsqJoin(/*@null@*/ void * thread)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
+int rpmsqJoin(void * thread);
 
 /**
  * Compare thread with current thread.
  * @param thread	thread
  * @return		0 if not equal
  */
-int rpmsqThreadEqual(/*@null@*/ void * thread)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/;
+int rpmsqThreadEqual(void * thread);
 
 /**
  * Execute a command, returning its status.
  */
-int rpmsqExecve (const char ** argv)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+int rpmsqExecve (const char ** argv);
 
 #ifdef __cplusplus
 }

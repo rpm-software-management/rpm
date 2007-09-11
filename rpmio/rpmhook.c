@@ -1,4 +1,3 @@
-/*@-bounds@*/
 #include "system.h"
 
 #include <stdlib.h>
@@ -19,7 +18,6 @@ typedef struct rpmhookItem_s {
 
 typedef struct rpmhookBucket_s {
     unsigned long hash;
-/*@relnull@*/
     char *name;
     rpmhookItem item;
 } * rpmhookBucket;
@@ -46,9 +44,7 @@ rpmhookArgs rpmhookArgsFree(rpmhookArgs args)
     return NULL;
 }
 
-/*@only@*/
 static rpmhookTable rpmhookTableNew(int size)
-	/*@*/
 {
     rpmhookTable table = (rpmhookTable) xcalloc(1,
 		sizeof(*table) + sizeof(table->bucket) * (size-1));
@@ -58,7 +54,6 @@ static rpmhookTable rpmhookTableNew(int size)
 
 #if 0
 static rpmhookTable rpmhookTableFree(rpmhookTable table)
-	/*@*/
 {
     rpmhookItem item, nextItem;
     int i;
@@ -78,11 +73,9 @@ static rpmhookTable rpmhookTableFree(rpmhookTable table)
 }
 #endif
 
-static void rpmhookTableRehash(rpmhookTable *table)
-	/*@modifies *table @*/;
+static void rpmhookTableRehash(rpmhookTable *table);
 
 static int rpmhookTableFindBucket(rpmhookTable *table, const char *name)
-	/*@modifies *table @*/
 {
     /* Hash based on http://www.isthe.com/chongo/tech/comp/fnv/ */
     unsigned long perturb;
@@ -104,9 +97,7 @@ static int rpmhookTableFindBucket(rpmhookTable *table, const char *name)
     while (bucket->name &&
 	    (bucket->hash != hash || strcmp(bucket->name, name) != 0)) {
 	/* Collision resolution based on Python's perturb scheme. */
-/*@-shiftimplementation@*/
 	ret = ((ret << 2) + ret + perturb + 1) % (*table)->size;
-/*@=shiftimplementation@*/
 	perturb >>= 5;
 	bucket = &(*table)->bucket[ret];
     }
@@ -116,12 +107,10 @@ static int rpmhookTableFindBucket(rpmhookTable *table, const char *name)
 }
 
 static void rpmhookTableRehash(rpmhookTable *table)
-	/*@modifies *table @*/
 {
     rpmhookTable newtable = rpmhookTableNew((*table)->size*2);
     int n, i = 0;
 
-/*@-branchstate@*/
     for (; i != (*table)->size; i++) {
 	if ((*table)->bucket[i].name == NULL)
 	    continue;
@@ -129,17 +118,13 @@ static void rpmhookTableRehash(rpmhookTable *table)
 	newtable->bucket[n].name = (*table)->bucket[i].name;
 	newtable->bucket[n].item = (*table)->bucket[i].item;
     }
-/*@=branchstate@*/
     newtable->used = (*table)->used;
-/*@-unqualifiedtrans@*/
     free(*table);
-/*@=unqualifiedtrans@*/
     *table = newtable;
 }
 
 static void rpmhookTableAddItem(rpmhookTable *table, const char *name,
 				rpmhookFunc func, void *data)
-	/*@modifies *table @*/
 {
     int n = rpmhookTableFindBucket(table, name);
     rpmhookBucket bucket = &(*table)->bucket[n];
@@ -151,15 +136,12 @@ static void rpmhookTableAddItem(rpmhookTable *table, const char *name,
     while (*item) item = &(*item)->next;
     *item = xcalloc(1, sizeof(**item));
     (*item)->func = func;
-/*@-temptrans@*/
     (*item)->data = data;
-/*@=temptrans@*/
 }
 
 static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
-		/*@null@*/ rpmhookFunc func, /*@null@*/ void *data,
+		rpmhookFunc func, void *data,
 		int matchfunc, int matchdata)
-	/*@modifies *table @*/
 {
     int n = rpmhookTableFindBucket(table, name);
     rpmhookBucket bucket = &(*table)->bucket[n];
@@ -168,7 +150,6 @@ static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
     rpmhookItem nextItem;
     while (item) {
 	nextItem = item->next;
-/*@-branchstate@*/
 	if ((!matchfunc || item->func == func) &&
 	    (!matchdata || item->data == data)) {
 	    free(item);
@@ -179,8 +160,6 @@ static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
 	} else {
 	    lastItem = item;
 	}
-/*@=branchstate@*/
-/*@-usereleased@*/
 	item = nextItem;
     }
     if (!bucket->item) {
@@ -188,38 +167,32 @@ static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
 	bucket->name = NULL;
 	(*table)->used--;
     }
-/*@=usereleased@*/
 }
 
 static rpmhookArgs rpmhookArgsParse(const char *argt, va_list ap)
-	/*@*/
 {
     rpmhookArgs args = rpmhookArgsNew(strlen(argt));
     int i;
 
-/*@-temptrans@*/
     args->argt = argt;
-/*@=temptrans@*/
     for (i = 0; i != args->argc; i++) {
 	switch (argt[i]) {
 	    case 's':
 		args->argv[i].s = va_arg(ap, char *);
-		/*@switchbreak@*/ break;
+		break;
 	    case 'i':
 		args->argv[i].i = va_arg(ap, int);
-		/*@switchbreak@*/ break;
+		break;
 	    case 'f':
 		args->argv[i].f = (float)va_arg(ap, double);
-		/*@switchbreak@*/ break;
+		break;
 	    case 'p':
 		args->argv[i].p = va_arg(ap, void *);
-		/*@switchbreak@*/ break;
+		break;
 	    default:
-/*@-modfilesys @*/
 		fprintf(stderr, "error: unsupported type '%c' as "
 				"a hook argument\n", argt[i]);
-/*@=modfilesys @*/
-		/*@switchbreak@*/ break;
+		break;
 	}
     }
     return args;
@@ -227,7 +200,6 @@ static rpmhookArgs rpmhookArgsParse(const char *argt, va_list ap)
 
 static void rpmhookTableCallArgs(rpmhookTable *table, const char *name,
 			rpmhookArgs args)
-	/*@modifies *table @*/
 {
     int n = rpmhookTableFindBucket(table, name);
     rpmhookItem item = (*table)->bucket[n].item;
@@ -238,12 +210,9 @@ static void rpmhookTableCallArgs(rpmhookTable *table, const char *name,
     }
 }
 
-/*@unchecked@*/ /*@only@*/ /*@null@*/
 static rpmhookTable globalTable = NULL;
 
 void rpmhookRegister(const char *name, rpmhookFunc func, void *data)
-	/*@globals globalTable @*/
-	/*@modifies globalTable @*/
 {
     if (globalTable == NULL)
 	globalTable = rpmhookTableNew(RPMHOOK_TABLE_INITSIZE);
@@ -275,9 +244,7 @@ void rpmhookCall(const char *name, const char *argt, ...)
 	va_list ap;
 	va_start(ap, argt);
 	args = rpmhookArgsParse(argt, ap);
-/*@-noeffect@*/
 	rpmhookTableCallArgs(&globalTable, name, args);
-/*@=noeffect@*/
 	(void) rpmhookArgsFree(args);
 	va_end(ap);
     }
@@ -285,9 +252,6 @@ void rpmhookCall(const char *name, const char *argt, ...)
 
 void rpmhookCallArgs(const char *name, rpmhookArgs args)
 {
-/*@-noeffect@*/
     if (globalTable != NULL)
 	rpmhookTableCallArgs(&globalTable, name, args);
-/*@=noeffect@*/
 }
-/*@=bounds@*/

@@ -37,13 +37,11 @@ typedef DIR *			DAVDIR;
 
 /**
  */
-/*@unchecked@*/
 extern int avmagicdir;
 #define ISAVMAGIC(_dir) (!memcmp((_dir), &avmagicdir, sizeof(avmagicdir)))
 
 /**
  */
-/*@unchecked@*/
 extern int davmagicdir;
 #define ISDAVMAGIC(_dir) (!memcmp((_dir), &davmagicdir, sizeof(davmagicdir)))
 
@@ -56,29 +54,21 @@ extern "C" {
  * @param dir		argv DIR
  * @return 		0 always
  */
-int avClosedir(/*@only@*/ DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies dir, fileSystem @*/;
+int avClosedir(DIR * dir);
 
 /**
  * Return next entry from an argv directory.
  * @param dir		argv DIR
  * @return 		next entry
  */
-/*@dependent@*/ /*@null@*/
-struct dirent * avReaddir(DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+struct dirent * avReaddir(DIR * dir);
 
 /**
  * Create an argv directory from URL collection.
  * @param path		URL for collection path
  * @return 		argv DIR
  */
-/*@null@*/
-DIR * avOpendir(const char * path)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+DIR * avOpendir(const char * path);
 
 /**
  * Send a http request.
@@ -87,9 +77,7 @@ DIR * avOpendir(const char * path)
  * @param httpArg	http command argument (NULL if none)
  * @returns		0 on success
  */
-int davReq(FD_t ctrl, const char * httpCmd, /*@null@*/ const char * httpArg)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ctrl, fileSystem, internalState @*/;
+int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg);
 
 /**
  * Read a http response.
@@ -98,112 +86,75 @@ int davReq(FD_t ctrl, const char * httpCmd, /*@null@*/ const char * httpArg)
  * @retval *str		error msg		
  * @returns		0 on success
  */
-int davResp(urlinfo u, FD_t ctrl, /*@out@*/ /*@null@*/ char *const * str)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ctrl, *str, fileSystem, internalState @*/;
+int davResp(urlinfo u, FD_t ctrl, char *const * str);
 
 /**
  */
-/*@null@*/
-FD_t davOpen(const char * url, /*@unused@*/ int flags,
-		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-        /*@globals internalState @*/
-        /*@modifies *uret, internalState @*/;
+FD_t davOpen(const char * url, int flags,
+		mode_t mode, urlinfo * uret);
 
 /**
  */
-/*@-incondefs@*/
-ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies buf, fileSystem, internalState @*/
-	/*@requires maxSet(buf) >= (count - 1) @*/
-	/*@ensures maxRead(buf) == result @*/;
-/*@=incondefs@*/
+ssize_t davRead(void * cookie, char * buf, size_t count);
 
 /**
  */
-ssize_t davWrite(void * cookie, const char * buf, size_t count)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies fileSystem, internalState @*/;
+ssize_t davWrite(void * cookie, const char * buf, size_t count);
 
 /**
  */
-int davSeek(void * cookie, _libio_pos_t pos, int whence)
-        /*@globals fileSystem, internalState @*/
-        /*@modifies fileSystem, internalState @*/;
+int davSeek(void * cookie, _libio_pos_t pos, int whence);
 
 /**
  */
-int davClose(void * cookie)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies cookie, fileSystem, internalState @*/;
+int davClose(void * cookie);
 
 /**
  */
-int davMkdir(const char * path, mode_t mode)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+int davMkdir(const char * path, mode_t mode);
 
 /**
  */
-int davRmdir(const char * path)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+int davRmdir(const char * path);
 
 /**
  */
-int davRename(const char * oldpath, const char * newpath)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+int davRename(const char * oldpath, const char * newpath);
 
 /**
  */
-int davUnlink(const char * path)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+int davUnlink(const char * path);
 
 /**
  * Close a DAV collection.
  * @param dir		argv DIR
  * @return 		0 always
  */
-int davClosedir(/*@only@*/ DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies dir, fileSystem @*/;
+int davClosedir(DIR * dir);
 
 /**
  * Return next entry from a DAV collection.
  * @param dir		argv DIR
  * @return 		next entry
  */
-/*@dependent@*/ /*@null@*/
-struct dirent * davReaddir(DIR * dir)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+struct dirent * davReaddir(DIR * dir);
 
 /**
  * Create an argv directory from DAV collection.
  * @param path		URL for DAV collection path
  * @return 		argv DIR
  */
-/*@null@*/
-DIR * davOpendir(const char * path)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
+DIR * davOpendir(const char * path);
 
 /**
  * stat(2) clone.
  */
-int davStat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/;
+int davStat(const char * path, struct stat * st);
 
 /**
  * lstat(2) clone.
  */
-int davLstat(const char * path, /*@out@*/ struct stat * st)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *st, fileSystem, internalState @*/;
+int davLstat(const char * path, struct stat * st);
 
 #ifdef __cplusplus
 }
