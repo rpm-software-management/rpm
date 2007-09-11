@@ -154,10 +154,6 @@ static rpmtime_t rpmswCalibrate(void)
 #endif
 
 rpmtime_t rpmswInit(void)
-	/*@globals rpmsw_cycles, rpmsw_initialized, rpmsw_overhead,
-		rpmsw_type @*/
-	/*@modifies rpmsw_cycles, rpmsw_initialized, rpmsw_overhead,
-		rpmsw_type @*/
 {
     struct rpmsw_s begin, end;
 #if defined(HP_TIMING_NOW)

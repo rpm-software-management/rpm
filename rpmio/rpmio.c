@@ -71,8 +71,6 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 
 #include "debug.h"
 
-/*@access FILE @*/	/* XXX to permit comparison/conversion with void *. */
-
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
@@ -726,7 +724,6 @@ static int mygethostbyname(const char * host,
 }
 #endif
 
-/*@-compdef@*/	/* FIX: address->s_addr undefined. */
 static int getHostAddress(const char * host, struct in_addr * address)
 {
 #if 0	/* XXX workaround nss_foo module hand-off using valgrind. */
@@ -1866,7 +1863,6 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     return fdSeek(cookie, pos, whence);
 }
 
-/*@-usereleased@*/	/* LCL: fd handling is tricky here. */
 int ufdClose( void * cookie)
 {
     FD_t fd = c2f(cookie);
@@ -1970,7 +1966,6 @@ int ufdClose( void * cookie)
     return fdClose(fd);
 }
 
-/*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
 FD_t ftpOpen(const char *url, int flags,
 		mode_t mode, urlinfo *uret)
 {
@@ -2423,7 +2418,6 @@ static int bzdFlush(FD_t fd)
 }
 
 /* =============================================================== */
-/*@-mustmod@*/		/* LCL: *buf is modified */
 static ssize_t bzdRead(void * cookie, char * buf, size_t count)
 {
     FD_t fd = c2f(cookie);

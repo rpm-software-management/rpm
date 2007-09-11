@@ -22,12 +22,9 @@ struct DIGEST_CTX_s {
     uint32_t paramlen;		/*!< No. bytes of digest parameters. */
     uint32_t digestlen;		/*!< No. bytes of digest. */
     void * param;		/*!< Digest parameters. */
-    int (*Reset) (void * param)
-	/*@modifies param @*/;	/*!< Digest initialize. */
-    int (*Update) (void * param, const byte * data, size_t size)
-	/*@modifies param @*/;	/*!< Digest transform. */
-    int (*Digest) (void * param, byte * digest)
-	/*@modifies param, digest @*/;	/*!< Digest finish. */
+    int (*Reset) (void * param);	/*!< Digest initialize. */
+    int (*Update) (void * param, const byte * data, size_t size);	/*!< Digest transform. */
+    int (*Digest) (void * param, byte * digest);	/*!< Digest finish. */
 };
 
 DIGEST_CTX

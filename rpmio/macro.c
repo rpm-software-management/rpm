@@ -53,8 +53,6 @@ typedef	FILE * FD_t;
 
 #include "debug.h"
 
-/*@access FD_t@*/		/* XXX compared with NULL */
-
 static struct MacroContext_s rpmGlobalMacroContext_s;
 MacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
 
@@ -90,11 +88,7 @@ int print_expand_trace = _PRINT_EXPAND_TRACE;
 #define	MACRO_CHUNK_SIZE	16
 
 /* forward ref */
-static int expandMacro(MacroBuf mb)
-	/*@globals rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, h_errno, fileSystem @*/
-	/*@modifies mb, rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, fileSystem @*/;
+static int expandMacro(MacroBuf mb);
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
@@ -416,30 +410,25 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 }
 
 #define	SKIPBLANK(_s, _c)	\
-	/*@-globs@*/	/* FIX: __ctype_b */ \
 	while (((_c) = *(_s)) && isblank(_c)) \
 		(_s)++;		\
 
 #define	SKIPNONBLANK(_s, _c)	\
-	/*@-globs@*/	/* FIX: __ctype_b */ \
 	while (((_c) = *(_s)) && !(isblank(_c) || iseol(_c))) \
 		(_s)++;		\
 
 #define	COPYNAME(_ne, _s, _c)	\
     {	SKIPBLANK(_s,_c);	\
-	/*@-boundswrite@*/	\
 	while(((_c) = *(_s)) && (xisalnum(_c) || (_c) == '_')) \
 		*(_ne)++ = *(_s)++; \
 	*(_ne) = '\0';		\
-	/*@=boundswrite@*/	\
     }
 
 #define	COPYOPTS(_oe, _s, _c)	\
-    {	/*@-boundswrite@*/	\
+    { \
 	while(((_c) = *(_s)) && (_c) != ')') \
 		*(_oe)++ = *(_s)++; \
 	*(_oe) = '\0';		\
-	/*@=boundswrite@*/	\
     }
 
 /**
@@ -1105,10 +1094,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
  */
 static int
 expandMacro(MacroBuf mb)
-	/*@globals rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, h_errno, fileSystem @*/
-	/*@modifies mb, rpmGlobalMacroContext,
-		print_macro_trace, print_expand_trace, fileSystem @*/
 {
     MacroEntry *mep;
     MacroEntry me;

@@ -285,7 +285,6 @@ static int davInit(const char * url, urlinfo * uret)
     urlinfo u = NULL;
     int rc = 0;
 
-/*@-globs@*/	/* FIX: h_errno annoyance. */
     if (urlSplit(url, &u))
 	return -1;	/* XXX error returns needed. */
 
@@ -438,7 +437,6 @@ static void *fetch_create_context(const char *uri)
     struct fetch_context_s * ctx;
     urlinfo u;
 
-/*@-globs@*/	/* FIX: h_errno annoyance. */
     if (urlSplit(uri, &u))
 	return NULL;
 
@@ -1034,7 +1032,6 @@ fprintf(stderr, "*** davSeek(%p,pos,%d)\n", cookie, whence);
     return -1;
 }
 
-/*@-mustmod@*/	/* HACK: fd->req is modified. */
 int davClose(void * cookie)
 {
     FD_t fd = cookie;

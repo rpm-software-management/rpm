@@ -120,7 +120,6 @@ FILE * rpmlogSetFile(FILE * fp)
     return ofp;
 }
 
-/*@-readonlytrans@*/	/* FIX: double indirection. */
 static char *rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */

@@ -17,7 +17,7 @@ typedef struct MacroEntry_s {
 
 /*! The structure used to store the set of macros in a context. */
 typedef struct MacroContext_s {
-/*@owned@*/MacroEntry *macroTable;	/*!< Macro entry table for context. */
+    MacroEntry *macroTable;	/*!< Macro entry table for context. */
     int	macrosAllocated;/*!< No. of allocated macros. */
     int	firstFree;	/*!< No. of macros. */
 } * MacroContext;
@@ -124,20 +124,14 @@ void	rpmLoadMacros	(MacroContext mc, int level);
  * @param mc		(unused)
  * @param fn		macro file name
  */
-int	rpmLoadMacroFile(MacroContext mc, const char * fn)
-	/*@globals rpmGlobalMacroContext,
-		h_errno, fileSystem, internalState @*/
-;
+int	rpmLoadMacroFile(MacroContext mc, const char * fn);
 
 /**
  * Initialize macro context from set of macrofile(s).
  * @param mc		macro context
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
-void	rpmInitMacros	(MacroContext mc, const char * macrofiles)
-	/*@globals rpmGlobalMacroContext, rpmCLIMacroContext,
-		h_errno, fileSystem, internalState @*/
-;
+void	rpmInitMacros	(MacroContext mc, const char * macrofiles);
 
 /**
  * Destroy macro context.

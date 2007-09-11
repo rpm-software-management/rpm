@@ -12,8 +12,6 @@
 
 #include "debug.h"
 
-/*@access FD_t@*/		/* XXX compared with NULL */
-
 #ifndef	IPPORT_FTP
 #define	IPPORT_FTP	21
 #endif

@@ -820,10 +820,6 @@ static char * ftpBuf = NULL;
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		struct stat * st,
 		char * rlbuf, size_t rlbufsiz)
-	/*@globals ftpBufAlloced, ftpBuf,
-		h_errno, fileSystem, internalState @*/
-	/*@modifies *st, *rlbuf, ftpBufAlloced, ftpBuf,
-		fileSystem, internalState @*/
 {
     FD_t fd;
     const char * path;
@@ -1344,7 +1340,7 @@ int Glob_pattern_p (const char * pattern, int quote)
     return (0);
 }
 
-int Glob_error(/*@unused@*/const char * epath, int eerrno)
+int Glob_error(const char * epath, int eerrno)
 {
     return 1;
 }
