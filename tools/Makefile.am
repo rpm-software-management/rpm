@@ -44,15 +44,3 @@ rpminject_LDADD =	../build/librpmbuild.la
 
 check_PROGRAMS +=	rpmsort
 rpmsort_SOURCES =	rpmsort.c
-
-if LIBXML2
-check_PROGRAMS +=	rpmtool
-rpmtool_SOURCES =	rpmtool.c rpmxp.c rpmxp.h
-rpmtool_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
-rpmtool_LDADD =		../lib/librpm.la $(libxml2_LIBS)
-
-check_PROGRAMS +=	rpmxml
-rpmxml_SOURCES =	rpmxml.c rpmxp.h
-rpmxml_CPPFLAGS =	$(AM_CPPFLAGS) $(libxml2_CFLAGS)
-rpmxml_LDADD =		../lib/librpm.la $(libxml2_LIBS)
-endif
