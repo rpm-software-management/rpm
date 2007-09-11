@@ -9,11 +9,8 @@
 #include <rpmbuild.h>
 #include "debug.h"
 
-/*@access FD_t @*/	/* compared with NULL */
-
 /**
  */
-/*@observer@*/ /*@unchecked@*/
 static rpmTag copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
@@ -37,7 +34,6 @@ static rpmTag copyTagsDuringParse[] = {
 
 /**
  */
-/*@observer@*/ /*@unchecked@*/
 static rpmTag requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
@@ -51,7 +47,6 @@ static rpmTag requiredTags[] = {
 /**
  */
 static void addOrAppendListEntry(Header h, int_32 tag, char * line)
-	/*@modifies h @*/
 {
     int xx;
     int argc;
@@ -68,10 +63,7 @@ static void addOrAppendListEntry(Header h, int_32 tag, char * line)
 
 /**
  */
-/*@-boundswrite@*/
-static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
-	/*@globals internalState@*/
-	/*@modifies *name, *flag, internalState @*/
+static int parseSimplePart(char *line,char **name,int *flag)
 {
     char *tok;
     char linebuf[BUFSIZ];
@@ -99,12 +91,10 @@ static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
 
     return (strtok(NULL, " \t\n")) ? 1 : 0;
 }
-/*@=boundswrite@*/
 
 /**
  */
 static inline int parseYesNo(const char * s)
-	/*@*/
 {
     return ((!s || (s[0] == 'n' || s[0] == 'N' || s[0] == '0') ||
 	!xstrcasecmp(s, "false") || !xstrcasecmp(s, "off"))
@@ -112,14 +102,12 @@ static inline int parseYesNo(const char * s)
 }
 
 typedef struct tokenBits_s {
-/*@observer@*/ /*@null@*/
     const char * name;
     rpmsenseFlags bits;
 } * tokenBits;
 
 /**
  */
-/*@observer@*/ /*@unchecked@*/
 static struct tokenBits_s installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
     { "prereq",		RPMSENSE_PREREQ },
@@ -134,7 +122,6 @@ static struct tokenBits_s installScriptBits[] = {
 
 /**
  */
-/*@observer@*/ /*@unchecked@*/
 static struct tokenBits_s buildScriptBits[] = {
     { "prep",		RPMSENSE_SCRIPT_PREP },
     { "build",		RPMSENSE_SCRIPT_BUILD },
@@ -145,10 +132,8 @@ static struct tokenBits_s buildScriptBits[] = {
 
 /**
  */
-/*@-boundswrite@*/
 static int parseBits(const char * s, const tokenBits tokbits,
-		/*@out@*/ rpmsenseFlags * bp)
-	/*@modifies *bp @*/
+		rpmsenseFlags * bp)
 {
     tokenBits tb;
     const char * se;
@@ -165,7 +150,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	    for (tb = tokbits; tb->name; tb++) {
 		if (tb->name != NULL &&
 		    strlen(tb->name) == (se-s) && !strncmp(tb->name, s, (se-s)))
-		    /*@innerbreak@*/ break;
+		    break;
 	    }
 	    if (tb->name == NULL)
 		break;
@@ -179,32 +164,25 @@ static int parseBits(const char * s, const tokenBits tokbits,
     if (c == 0 && bp) *bp = bits;
     return (c ? RPMERR_BADSPEC : 0);
 }
-/*@=boundswrite@*/
 
 /**
  */
 static inline char * findLastChar(char * s)
-	/*@*/
 {
     char *res = s;
 
-/*@-boundsread@*/
     while (*s != '\0') {
 	if (! xisspace(*s))
 	    res = s;
 	s++;
     }
-/*@=boundsread@*/
 
-    /*@-temptrans -retalias@*/
     return res;
-    /*@=temptrans =retalias@*/
 }
 
 /**
  */
 static int isMemberInEntry(Header h, const char *name, rpmTag tag)
-	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -214,20 +192,17 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 
     if (!hge(h, tag, &type, (void **)&names, &count))
 	return -1;
-/*@-boundsread@*/
     while (count--) {
 	if (!xstrcasecmp(names[count], name))
 	    break;
     }
     names = hfd(names, type);
-/*@=boundsread@*/
     return (count >= 0 ? 1 : 0);
 }
 
 /**
  */
 static int checkForValidArchitectures(Spec spec)
-	/*@*/
 {
 #ifndef	DYING
     const char *arch = NULL;
@@ -271,12 +246,11 @@ static int checkForValidArchitectures(Spec spec)
  * @return		0 if OK
  */
 static int checkForRequired(Header h, const char * NVR)
-	/*@modifies h @*/ /* LCL: parse error here with modifies */
+	/* LCL: parse error here with modifies */
 {
     int res = 0;
     rpmTag * p;
 
-/*@-boundsread@*/
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
 	    rpmError(RPMERR_BADSPEC,
@@ -285,7 +259,6 @@ static int checkForRequired(Header h, const char * NVR)
 	    res = 1;
 	}
     }
-/*@=boundsread@*/
 
     return res;
 }
@@ -297,7 +270,6 @@ static int checkForRequired(Header h, const char * NVR)
  * @return		0 if OK
  */
 static int checkForDuplicates(Header h, const char * NVR)
-	/*@modifies h @*/
 {
     int res = 0;
     int lastTag, tag;
@@ -320,10 +292,8 @@ static int checkForDuplicates(Header h, const char * NVR)
 
 /**
  */
-/*@observer@*/ /*@unchecked@*/
 static struct optionalTag {
     rpmTag	ot_tag;
-/*@observer@*/ /*@null@*/
     const char * ot_mac;
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
@@ -336,29 +306,22 @@ static struct optionalTag {
 /**
  */
 static void fillOutMainPackage(Header h)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies h, rpmGlobalMacroContext @*/
 {
     struct optionalTag *ot;
 
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
 	if (!headerIsEntry(h, ot->ot_tag)) {
-/*@-boundsread@*/
 	    const char *val = rpmExpand(ot->ot_mac, NULL);
 	    if (val && *val != '%')
 		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
 	    val = _free(val);
-/*@=boundsread@*/
 	}
     }
 }
 
 /**
  */
-/*@-boundswrite@*/
 static int readIcon(Header h, const char * file)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     const char *fn = NULL;
     char *icon;
@@ -413,7 +376,6 @@ exit:
     fn = _free(fn);
     return rc;
 }
-/*@=boundswrite@*/
 
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
@@ -441,9 +403,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	    }
 	}
     }
-    /*@-usereleased -compdef@*/
     return t;
-    /*@=usereleased =compdef@*/
 }
 
 #define SINGLE_TOKEN_ONLY \
@@ -453,22 +413,12 @@ if (multiToken) { \
     return RPMERR_BADSPEC; \
 }
 
-/*@-redecl@*/
 extern int noLang;
-/*@=redecl@*/
 
 /**
  */
-/*@-boundswrite@*/
 static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies spec->macros, spec->st, spec->buildRootURL,
-		spec->sources, spec->numSources, spec->noSource,
-		spec->buildRestrictions, spec->BANames, spec->BACount,
-		spec->line, spec->gotBuildRootURL,
-		pkg->header, pkg->autoProv, pkg->autoReq, pkg->icon,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -539,7 +489,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
 	(void) stashSt(spec, pkg->header, tag, lang);
-	/*@fallthrough@*/
     case RPMTAG_DISTRIBUTION:
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
@@ -571,9 +520,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 
 		buildRootURL = _free(buildRootURL);
 		(void) urlPath(specURL, (const char **)&field);
-		/*@-branchstate@*/
 		if (*field == '\0') field = "/";
-		/*@=branchstate@*/
 		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
 		spec->buildRootURL = buildRootURL;
 		field = (char *) buildRootURL;
@@ -584,9 +531,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	}
 	buildRootURL = rpmGenPath(NULL, spec->buildRootURL, NULL);
 	(void) urlPath(buildRootURL, &buildRoot);
-	/*@-branchstate@*/
 	if (*buildRoot == '\0') buildRoot = "/";
-	/*@=branchstate@*/
 	if (!strcmp(buildRoot, "/")) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRootURL);
@@ -721,7 +666,6 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     
     return 0;
 }
-/*@=boundswrite@*/
 
 /* This table has to be in a peculiar order.  If one tag is the */
 /* same as another, plus a few letters, it must come first.     */
@@ -733,11 +677,9 @@ typedef struct PreambleRec_s {
     int len;
     int multiLang;
     int obsolete;
-/*@observer@*/ /*@null@*/
     const char * token;
 } * PreambleRec;
 
-/*@unchecked@*/
 static struct PreambleRec_s preambleList[] = {
     {RPMTAG_NAME,		0, 0, 0, "name"},
     {RPMTAG_VERSION,		0, 0, 0, "version"},
@@ -783,16 +725,13 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_DISTTAG,		0, 0, 0, "disttag"},
     {RPMTAG_CVSID,		0, 0, 0, "cvsid"},
     {RPMTAG_SVNID,		0, 0, 0, "svnid"},
-    /*@-nullassign@*/	/* LCL: can't add null annotation */
+   	/* LCL: can't add null annotation */
     {0, 0, 0, 0, 0}
-    /*@=nullassign@*/
 };
 
 /**
  */
 static inline void initPreambleList(void)
-	/*@globals preambleList @*/
-	/*@modifies preambleList @*/
 {
     PreambleRec p;
     for (p = preambleList; p->token != NULL; p++)
@@ -801,10 +740,8 @@ static inline void initPreambleList(void)
 
 /**
  */
-/*@-boundswrite@*/
-static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
-		/*@null@*/ /*@out@*/ const char ** macro, /*@out@*/ char * lang)
-	/*@modifies *tag, *macro, *lang @*/
+static int findPreambleTag(Spec spec,rpmTag * tag,
+		const char ** macro, char * lang)
 {
     PreambleRec p;
     char *s;
@@ -858,14 +795,10 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 
     *tag = p->tag;
     if (macro)
-	/*@-onlytrans -observertrans -dependenttrans@*/	/* FIX: double indirection. */
 	*macro = p->token;
-	/*@=onlytrans =observertrans =dependenttrans@*/
     return 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
@@ -963,4 +896,3 @@ int parsePreamble(Spec spec, int initialPackage)
 
     return nextPart;
 }
-/*@=boundswrite@*/

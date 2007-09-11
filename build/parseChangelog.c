@@ -34,19 +34,17 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
  * @retval secs		secs since the unix epoch
  * @return 		0 on success, -1 on error
  */
-/*@-boundswrite@*/
-static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
-	/*@modifies *secs @*/
+static int dateToTimet(const char * datestr, time_t * secs)
 {
     struct tm time;
     char * p, * pe, * q, ** idx;
     char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
-/*@observer@*/ static char * days[] =
+static char * days[] =
 	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
-/*@observer@*/ static char * months[] =
+static char * months[] =
 	{ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
  	  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
-/*@observer@*/ static char lengths[] =
+static char lengths[] =
 	{ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
     memset(&time, 0, sizeof(time));
@@ -99,7 +97,6 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 
     return 0;
 }
-/*@=boundswrite@*/
 
 /**
  * Add %changelog section to header.
@@ -107,9 +104,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
  * @param sb		changelog strings
  * @return		0 on success
  */
-/*@-boundswrite@*/
 static int addChangelog(Header h, StringBuf sb)
-	/*@modifies h @*/
 {
     char *s;
     int i;
@@ -136,9 +131,7 @@ static int addChangelog(Header h, StringBuf sb)
 	    rpmError(RPMERR_BADSPEC, _("incomplete %%changelog entry\n"));
 	    return RPMERR_BADSPEC;
 	}
-	/*@-modobserver@*/
 	*s = '\0';
-	/*@=modobserver@*/
 	text = s + 1;
 	
 	/* 4 fields of date */
@@ -204,7 +197,6 @@ static int addChangelog(Header h, StringBuf sb)
 
     return 0;
 }
-/*@=boundswrite@*/
 
 int parseChangelog(Spec spec)
 {

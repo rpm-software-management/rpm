@@ -9,17 +9,11 @@
 #include <rpmbuild.h>
 #include "debug.h"
 
-/*@access StringBuf @*/	/* compared with NULL */
-
 /* These have to be global to make up for stupid compilers */
-/*@unchecked@*/
     static int leaveDirs, skipDefaultAction;
-/*@unchecked@*/
     static int createDir, quietly;
-/*@unchecked@*/
-/*@observer@*/ /*@null@*/ static const char * dirName = NULL;
-/*@unchecked@*/
-/*@observer@*/ static struct poptOption optionsTable[] = {
+static const char * dirName = NULL;
+static struct poptOption optionsTable[] = {
 	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
 	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
 	    { NULL, 'c', 0, &createDir, 0,		NULL, NULL},
@@ -36,8 +30,6 @@
  * @return		0 on success
  */
 static int checkOwners(const char * urlfn)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
 {
     struct stat sb;
 
@@ -65,12 +57,9 @@ static int checkOwners(const char * urlfn)
  * @param removeEmpties	include -E?
  * @return		expanded %patch macro (NULL on error)
  */
-/*@-boundswrite@*/
-/*@observer@*/ 
+
 static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -127,7 +116,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     case URL_IS_DASH:
 	urlfn = _free(urlfn);
 	return NULL;
-	/*@notreached@*/ break;
+	break;
     }
 
     if (compressed) {
@@ -142,7 +131,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		c, /*@-unrecog@*/ (const char *) basename(fn), /*@=unrecog@*/
+		c, (const char *) basename(fn),
 		zipper,
 		fn, strip, args);
 	zipper = _free(zipper);
@@ -156,7 +145,6 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     urlfn = _free(urlfn);
     return buf;
 }
-/*@=boundswrite@*/
 
 /**
  * Expand %setup macro into %prep scriptlet.
@@ -165,10 +153,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
  */
-/*@-boundswrite@*/
-/*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+static const char *doUntar(Spec spec, int c, int quietly)
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -190,9 +175,8 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 
     urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
-    /*@-internalglobs@*/ /* FIX: shrug */
+    /* FIX: shrug */
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
-    /*@=internalglobs@*/
 
 #ifdef AUTOFETCH_NOT	/* XXX don't expect this code to be enabled */
     /* XXX
@@ -233,7 +217,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     case URL_IS_DASH:
 	urlfn = _free(urlfn);
 	return NULL;
-	/*@notreached@*/ break;
+	break;
     }
 
     if (compressed != COMPRESSED_NOT) {
@@ -281,7 +265,6 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
     urlfn = _free(urlfn);
     return buf;
 }
-/*@=boundswrite@*/
 
 /**
  * Parse %setup macro.
@@ -291,9 +274,6 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
  * @return		0 on success
  */
 static int doSetupMacro(Spec spec, char *line)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies spec->buildSubdir, spec->macros, spec->prep,
-		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
     StringBuf before;
@@ -306,11 +286,9 @@ static int doSetupMacro(Spec spec, char *line)
     int rc;
     int num;
 
-    /*@-mods@*/
     leaveDirs = skipDefaultAction = 0;
     createDir = quietly = 0;
     dirName = NULL;
-    /*@=mods@*/
 
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, _("Error parsing %%setup: %s\n"),
@@ -421,18 +399,16 @@ static int doSetupMacro(Spec spec, char *line)
 
     /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
     /* Fix the owner, group, and permissions of the setup build tree */
-    {	/*@observer@*/ static const char *fixmacs[] =
+    {	static const char *fixmacs[] =
 		{ "%{_fixowner}", "%{_fixgroup}", "%{_fixperms}", NULL };
 	const char ** fm;
 
 	for (fm = fixmacs; *fm; fm++) {
 	    const char *fix;
-/*@-boundsread@*/
 	    fix = rpmExpand(*fm, " .", NULL);
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
 	    fix = _free(fix);
-/*@=boundsread@*/
 	}
     }
     
@@ -445,12 +421,7 @@ static int doSetupMacro(Spec spec, char *line)
  * @param line		current line from spec file
  * @return		0 on success
  */
-/*@-boundswrite@*/
 static int doPatchMacro(Spec spec, char *line)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies spec->prep, rpmGlobalMacroContext,
-		fileSystem, internalState  @*/
 {
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E, opt_F;
@@ -471,7 +442,7 @@ static int doPatchMacro(Spec spec, char *line)
 	strcpy(buf, line);
     }
     
-    /*@-internalglobs@*/	/* FIX: strtok has state */
+   	/* FIX: strtok has state */
     for (bp = buf; (s = strtok(bp, " \t\n")) != NULL;) {
 	if (bp) {	/* remove 1st token (%patch) */
 	    bp = NULL;
@@ -551,7 +522,6 @@ static int doPatchMacro(Spec spec, char *line)
 	    patch_index++;
 	}
     }
-    /*@=internalglobs@*/
 
     /* All args processed */
 
@@ -571,7 +541,6 @@ static int doPatchMacro(Spec spec, char *line)
     
     return 0;
 }
-/*@=boundswrite@*/
 
 int parsePrep(Spec spec)
 {
@@ -608,10 +577,8 @@ int parsePrep(Spec spec)
     }
 
     saveLines = splitString(getStringBuf(sb), strlen(getStringBuf(sb)), '\n');
-    /*@-usereleased@*/
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
-/*@-boundsread@*/
 	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
 	} else if (! strncmp(*lines, "%patch", sizeof("%patch")-1)) {
@@ -619,14 +586,12 @@ int parsePrep(Spec spec)
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
-/*@=boundsread@*/
 	if (res && !spec->force) {
 	    freeSplitString(saveLines);
 	    sb = freeStringBuf(sb);
 	    return res;
 	}
     }
-    /*@=usereleased@*/
 
     freeSplitString(saveLines);
     sb = freeStringBuf(sb);

@@ -8,15 +8,9 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/*@access StringBuf @*/		/* compared with NULL */
-/*@access poptContext @*/	/* compared with NULL */
-
 /* These have to be global scope to make up for *stupid* compilers */
-/*@unchecked@*/
-    /*@observer@*/ /*@null@*/ static const char *name = NULL;
-/*@unchecked@*/
-    /*@observer@*/ /*@null@*/ static const char *file = NULL;
-/*@unchecked@*/
+    static const char *name = NULL;
+    static const char *file = NULL;
     static struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
@@ -33,10 +27,8 @@ int parseFiles(Spec spec)
     int flag = PART_SUBNAME;
     poptContext optCon = NULL;
 
-    /*@-mods@*/
     name = NULL;
     file = NULL;
-    /*@=mods@*/
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%files: %s\n"),
@@ -62,10 +54,8 @@ int parseFiles(Spec spec)
     }
 
     if (poptPeekArg(optCon)) {
-	/*@-mods@*/
 	if (name == NULL)
 	    name = poptGetArg(optCon);
-	/*@=mods@*/
 	if (poptPeekArg(optCon)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,

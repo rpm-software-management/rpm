@@ -1,4 +1,3 @@
-/*@-mods@*/
 /** \ingroup rpmbuild
  * \file build/names.c
  * Simple user/group name/id cache (plus hostname and buildtime)
@@ -10,23 +9,16 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-typedef /*@owned@*/ /*@null@*/ const char * ugstr_t;
+typedef const char * ugstr_t;
 
-/*@unchecked@*/
 static uid_t uids[1024];
-/*@unchecked@*/
 static ugstr_t unames[1024];
-/*@unchecked@*/
 static int uid_used = 0;
 
-/*@unchecked@*/
 static gid_t gids[1024];
-/*@unchecked@*/
 static ugstr_t gnames[1024];
-/*@unchecked@*/
 static int gid_used = 0;
     
-/*@-boundswrite@*/
 void freeNames(void)
 {
     int x;
@@ -35,12 +27,8 @@ void freeNames(void)
     for (x = 0; x < gid_used; x++)
 	gnames[x] = _free(gnames[x]);
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getUname(uid_t uid)
-	/*@globals uid_used, uids, unames @*/
-	/*@modifies uid_used, uids, unames @*/
 {
     struct passwd *pw;
     int x;
@@ -61,12 +49,8 @@ const char *getUname(uid_t uid)
     unames[uid_used] = xstrdup(pw->pw_name);
     return unames[uid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getUnameS(const char *uname)
-	/*@globals uid_used, uids, unames @*/
-	/*@modifies uid_used, uids, unames @*/
 {
     struct passwd *pw;
     int x;
@@ -90,12 +74,8 @@ const char *getUnameS(const char *uname)
     }
     return unames[uid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 uid_t getUidS(const char *uname)
-	/*@globals uid_used, uids, unames @*/
-	/*@modifies uid_used, uids, unames @*/
 {
     struct passwd *pw;
     int x;
@@ -119,12 +99,8 @@ uid_t getUidS(const char *uname)
     }
     return uids[uid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getGname(gid_t gid)
-	/*@globals gid_used, gids, gnames @*/
-	/*@modifies gid_used, gids, gnames @*/
 {
     struct group *gr;
     int x;
@@ -145,12 +121,8 @@ const char *getGname(gid_t gid)
     gnames[gid_used] = xstrdup(gr->gr_name);
     return gnames[gid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 const char *getGnameS(const char *gname)
-	/*@globals gid_used, gids, gnames @*/
-	/*@modifies gid_used, gids, gnames @*/
 {
     struct group *gr;
     int x;
@@ -174,12 +146,8 @@ const char *getGnameS(const char *gname)
     }
     return gnames[gid_used++];
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 gid_t getGidS(const char *gname)
-	/*@globals gid_used, gids, gnames @*/
-	/*@modifies gid_used, gids, gnames @*/
 {
     struct group *gr;
     int x;
@@ -203,20 +171,16 @@ gid_t getGidS(const char *gname)
     }
     return gids[gid_used++];
 }
-/*@=boundswrite@*/
 
 int_32 * getBuildTime(void)
 {
     static int_32 buildTime[1];
 
-/*@-boundsread@*/
     if (buildTime[0] == 0)
 	buildTime[0] = (int_32) time(NULL);
-/*@=boundsread@*/
     return buildTime;
 }
 
-/*@-boundswrite@*/
 const char * buildHost(void)
 {
     static char hostname[1024];
@@ -225,11 +189,7 @@ const char * buildHost(void)
 
     if (! oneshot) {
         (void) gethostname(hostname, sizeof(hostname));
-	/*@-unrecog -multithreaded @*/
-	/*@-globs@*/	/* FIX: h_errno access */
 	hbn = gethostbyname(hostname);
-	/*@=globs@*/
-	/*@=unrecog =multithreaded @*/
 	if (hbn)
 	    strcpy(hostname, hbn->h_name);
 	else
@@ -239,5 +199,3 @@ const char * buildHost(void)
     }
     return(hostname);
 }
-/*@=boundswrite@*/
-/*@=mods@*/

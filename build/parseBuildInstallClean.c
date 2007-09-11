@@ -7,16 +7,13 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/*@access StringBuf @*/
 
-/*@-boundswrite@*/
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {
     int nextPart, rc;
     StringBuf *sbp = NULL;
     const char *name = NULL;
 
-    /*@-branchstate@*/
     if (parsePart == PART_BUILD) {
 	sbp = &(spec->build);
 	name = "%build";
@@ -30,7 +27,6 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 	sbp = &(spec->clean);
 	name = "%clean";
     }
-    /*@=branchstate@*/
     
     if (*sbp != NULL) {
 	rpmError(RPMERR_BADSPEC, _("line %d: second %s\n"),
@@ -56,4 +52,3 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 
     return nextPart;
 }
-/*@=boundswrite@*/

@@ -11,15 +11,11 @@
 #include "rpmts.h"
 #include "debug.h"
 
-/*@access FD_t @*/	/* compared with NULL */
-
 /**
  */
-/*@unchecked@*/
 static struct PartRec {
     int part;
     int len;
-/*@observer@*/ /*@null@*/
     const char * token;
 } partList[] = {
     { PART_PREAMBLE,      0, "%package"},
@@ -48,7 +44,6 @@ static struct PartRec {
 /**
  */
 static inline void initParts(struct PartRec *p)
-	/*@modifies p->len @*/
 {
     for (; p->token != NULL; p++)
 	p->len = strlen(p->token);
@@ -58,18 +53,14 @@ rpmParseState isPart(const char *line)
 {
     struct PartRec *p;
 
-/*@-boundsread@*/
     if (partList[0].len == 0)
 	initParts(partList);
-/*@=boundsread@*/
     
     for (p = partList; p->token != NULL; p++) {
 	char c;
 	if (xstrncasecmp(line, p->token, p->len))
 	    continue;
-/*@-boundsread@*/
 	c = *(line + p->len);
-/*@=boundsread@*/
 	if (c == '\0' || xisspace(c))
 	    break;
     }
@@ -80,13 +71,11 @@ rpmParseState isPart(const char *line)
 /**
  */
 static int matchTok(const char *token, const char *line)
-	/*@*/
 {
     const char *b, *be = line;
     size_t toklen = strlen(token);
     int rc = 0;
 
-/*@-boundsread@*/
     while ( *(b = be) != '\0' ) {
 	SKIPSPACE(b);
 	be = b;
@@ -98,24 +87,20 @@ static int matchTok(const char *token, const char *line)
 	rc = 1;
 	break;
     }
-/*@=boundsread@*/
 
     return rc;
 }
 
-/*@-boundswrite@*/
 void handleComments(char *s)
 {
     SKIPSPACE(s);
     if (*s == '#')
 	*s = '\0';
 }
-/*@=boundswrite@*/
 
 /**
  */
 static void forceIncludeFile(Spec spec, const char * fileName)
-	/*@modifies spec->fileStack @*/
 {
     OFI_t * ofi;
 
@@ -127,13 +112,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 
 /**
  */
-/*@-boundswrite@*/
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem @*/
-	/*@modifies spec->nextline, spec->nextpeekc, spec->lbuf, spec->line,
-		ofi->readPtr,
-		rpmGlobalMacroContext, fileSystem @*/
 {
     char *last;
     char ch;
@@ -152,9 +131,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	ch = ' ';
 	while (*from && ch != '\n')
 	    ch = *to++ = *from++;
-/*@-mods@*/
 	spec->lbufPtr = to;
-/*@=mods@*/
 	*to++ = '\0';
 	ofi->readPtr = from;
 
@@ -163,37 +140,33 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	    switch (*p) {
 		case '\\':
 		    switch (*(p+1)) {
-			case '\n': p++, nc = 1; /*@innerbreak@*/ break;
-			case '\0': /*@innerbreak@*/ break;
-			default: p++; /*@innerbreak@*/ break;
+			case '\n': p++, nc = 1; break;
+			case '\0': break;
+			default: p++; break;
 		    }
-		    /*@switchbreak@*/ break;
-		case '\n': nc = 0; /*@switchbreak@*/ break;
+		    break;
+		case '\n': nc = 0; break;
 		case '%':
 		    switch (*(p+1)) {
-			case '{': p++, bc++; /*@innerbreak@*/ break;
-			case '(': p++, pc++; /*@innerbreak@*/ break;
-			case '%': p++; /*@innerbreak@*/ break;
+			case '{': p++, bc++; break;
+			case '(': p++, pc++; break;
+			case '%': p++; break;
 		    }
-		    /*@switchbreak@*/ break;
-		case '{': if (bc > 0) bc++; /*@switchbreak@*/ break;
-		case '}': if (bc > 0) bc--; /*@switchbreak@*/ break;
-		case '(': if (pc > 0) pc++; /*@switchbreak@*/ break;
-		case ')': if (pc > 0) pc--; /*@switchbreak@*/ break;
+		    break;
+		case '{': if (bc > 0) bc++; break;
+		case '}': if (bc > 0) bc--; break;
+		case '(': if (pc > 0) pc++; break;
+		case ')': if (pc > 0) pc--; break;
 	    }
 	}
 	
 	/* If it doesn't, ask for one more line. We need a better
 	 * error code for this. */
 	if (pc || bc || nc ) {
-/*@-observertrans -readonlytrans@*/
 	    spec->nextline = "";
-/*@=observertrans =readonlytrans@*/
 	    return RPMERR_UNMATCHEDIF;
 	}
-/*@-mods@*/
 	spec->lbufPtr = spec->lbuf;
-/*@=mods@*/
 
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
 	if (spec->readStack->reading &&
@@ -228,9 +201,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 
     return 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int readLine(Spec spec, int strip)
 {
 #ifdef	DYING
@@ -245,7 +216,6 @@ int readLine(Spec spec, int strip)
 
 retry:
     /* Make sure the current file is open */
-    /*@-branchstate@*/
     if (ofi->fd == NULL) {
 	ofi->fd = Fopen(ofi->fileName, "r.fpio");
 	if (ofi->fd == NULL || Ferror(ofi->fd)) {
@@ -256,13 +226,11 @@ retry:
 	}
 	spec->lineNum = ofi->lineNum = 0;
     }
-    /*@=branchstate@*/
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	/*@-type@*/ /* FIX: cast? */
+	/* FIX: cast? */
 	FILE * f = fdGetFp(ofi->fd);
-	/*@=type@*/
 	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
@@ -410,11 +378,9 @@ retry:
 	spec->line[0] = '\0';
     }
 
-    /*@-compmempass@*/ /* FIX: spec->readStack->next should be dependent */
+    /* FIX: spec->readStack->next should be dependent */
     return 0;
-    /*@=compmempass@*/
 }
-/*@=boundswrite@*/
 
 void closeSpec(Spec spec)
 {
@@ -429,13 +395,8 @@ void closeSpec(Spec spec)
     }
 }
 
-/*@-redecl@*/
-/*@unchecked@*/
 extern int noLang;		/* XXX FIXME: pass as arg */
-/*@=redecl@*/
 
-/*@todo Skip parse recursion if os is not compatible. @*/
-/*@-boundswrite@*/
 int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int recursing, const char *passPhrase,
 		const char *cookie, int anyarch, int force)
@@ -464,9 +425,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     if (buildRootURL) {
 	const char * buildRoot;
 	(void) urlPath(buildRootURL, &buildRoot);
-	/*@-branchstate@*/
 	if (*buildRoot == '\0') buildRoot = "/";
-	/*@=branchstate@*/
 	if (!strcmp(buildRoot, "/")) {
             rpmError(RPMERR_BADSPEC,
                      _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
@@ -494,28 +453,28 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     /* in the spec's line buffer.  Except for parsePreamble(),   */
     /* which handles the initial entry into a spec file.         */
     
-    /*@-infloops@*/	/* LCL: parsePart is modified @*/
+   	/* LCL: parsePart is modified @*/
     while (parsePart < PART_LAST && parsePart != PART_NONE) {
 	switch (parsePart) {
 	case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
-	    /*@switchbreak@*/ break;
+	    break;
 	case PART_PREP:
 	    parsePart = parsePrep(spec);
-	    /*@switchbreak@*/ break;
+	    break;
 	case PART_BUILD:
 	case PART_INSTALL:
 	case PART_CHECK:
 	case PART_CLEAN:
 	    parsePart = parseBuildInstallClean(spec, parsePart);
-	    /*@switchbreak@*/ break;
+	    break;
 	case PART_CHANGELOG:
 	    parsePart = parseChangelog(spec);
-	    /*@switchbreak@*/ break;
+	    break;
 	case PART_DESCRIPTION:
 	    parsePart = parseDescription(spec);
-	    /*@switchbreak@*/ break;
+	    break;
 
 	case PART_PRE:
 	case PART_POST:
@@ -528,16 +487,16 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_TRIGGERUN:
 	case PART_TRIGGERPOSTUN:
 	    parsePart = parseScript(spec, parsePart);
-	    /*@switchbreak@*/ break;
+	    break;
 
 	case PART_FILES:
 	    parsePart = parseFiles(spec);
-	    /*@switchbreak@*/ break;
+	    break;
 
 	case PART_NONE:		/* XXX avoid gcc whining */
 	case PART_LAST:
 	case PART_BUILDARCHITECTURES:
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 	if (parsePart >= PART_LAST) {
@@ -559,7 +518,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
 		/* Skip if not arch is not compatible. */
 		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
-		    /*@innercontinue@*/ continue;
+		    continue;
 #ifdef	DYING
 		rpmGetMachine(&saveArch, NULL);
 		saveArch = xstrdup(saveArch);
@@ -573,10 +532,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
-/*@-nullstate@*/
 			spec = freeSpec(spec);
 			return RPMERR_BADSPEC;
-/*@=nullstate@*/
 		}
 #ifdef	DYING
 		rpmSetMachine(saveArch, NULL);
@@ -591,10 +548,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    if (! index) {
 		rpmError(RPMERR_BADSPEC,
 			_("No compatible architectures found for build\n"));
-/*@-nullstate@*/
 		spec = freeSpec(spec);
 		return RPMERR_BADSPEC;
-/*@=nullstate@*/
 	    }
 
 	    /*
@@ -606,20 +561,18 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	     * further problem that the macro context, particularly
 	     * %{_target_cpu}, disagrees with the info in the header.
 	     */
-	    /*@-branchstate@*/
 	    if (spec->BACount >= 1) {
 		Spec nspec = spec->BASpecs[0];
 		spec->BASpecs = _free(spec->BASpecs);
 		spec = freeSpec(spec);
 		spec = nspec;
 	    }
-	    /*@=branchstate@*/
 
 	    (void) rpmtsSetSpec(ts, spec);
 	    return 0;
 	}
     }
-    /*@=infloops@*/	/* LCL: parsePart is modified @*/
+   	/* LCL: parsePart is modified @*/
 
     /* Check for description in each package and add arch and os */
   {
@@ -681,4 +634,3 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     return 0;
 }
-/*@=boundswrite@*/

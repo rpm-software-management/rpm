@@ -8,7 +8,7 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
+int addReqProv(Spec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		int index)
 {
@@ -57,10 +57,8 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 
     Flags = (Flags & RPMSENSE_SENSEMASK) | extra;
 
-    /*@-branchstate@*/
     if (EVR == NULL)
 	EVR = "";
-    /*@=branchstate@*/
     
     /* Check for duplicate dependencies. */
     if (hge(h, nametag, &dnt, (void **) &names, &len)) {
@@ -77,7 +75,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 	if (indextag)
 	    xx = hge(h, indextag, NULL, (void **) &indexes, NULL);
 
-/*@-boundsread@*/
 	while (len > 0) {
 	    len--;
 	    if (strcmp(names[len], N))
@@ -93,7 +90,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
 
 	    break;
 	}
-/*@=boundsread@*/
 	names = hfd(names, dnt);
 	versions = hfd(versions, dvt);
 	if (duplicate)
@@ -114,7 +110,6 @@ int addReqProv(/*@unused@*/ Spec spec, Header h, /*@unused@*/ rpmTag tagN,
     return 0;
 }
 
-/*@-boundswrite@*/
 int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
 {
     char * reqname = alloca(sizeof("rpmlib()") + strlen(feature));
@@ -125,4 +120,3 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
    return addReqProv(NULL, h, RPMTAG_REQUIRENAME, reqname, featureEVR,
 	RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
 }
-/*@=boundswrite@*/

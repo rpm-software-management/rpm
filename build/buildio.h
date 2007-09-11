@@ -12,12 +12,10 @@
 
 /**
  */
-typedef /*@abstract@*/ struct cpioSourceArchive_s {
+typedef struct cpioSourceArchive_s {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
-/*@refcounted@*/ /*@relnull@*/
     rpmfi	cpioList;
-/*@only@*/
     struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
 } * CSA_t;
 
@@ -34,15 +32,11 @@ extern "C" {
  * @param csa
  * @return		0 on success
  */
-/*@unused@*/ int readRPM(/*@null@*/ const char * fileName,
-		/*@out@*/ Spec * specp,
-		/*@out@*/ struct rpmlead * lead,
-		/*@out@*/ Header * sigs,
-		CSA_t csa)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies *specp, *lead, *sigs, csa, csa->cpioFdIn,
-		rpmGlobalMacroContext, fileSystem, internalState @*/;
+int readRPM(const char * fileName,
+		Spec * specp,
+		struct rpmlead * lead,
+		Header * sigs,
+		CSA_t csa);
 
 /**
  * Write rpm package to file.
@@ -59,16 +53,12 @@ extern "C" {
  * @retval cookie	generated cookie (i.e build host/time)
  * @return		0 on success
  */
-int writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
+int writeRPM(Header * hdrp, unsigned char ** pkgidp,
 		const char * fileName,
 		int type,
 		CSA_t csa,
-		/*@null@*/ char * passPhrase,
-		/*@out@*/ const char ** cookie)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem, internalState @*/
-	/*@modifies *hdrp, *pkgidp, *cookie, csa, csa->cpioArchiveSize,
-		rpmGlobalMacroContext, fileSystem, internalState @*/;
+		char * passPhrase,
+		const char ** cookie);
 
 #ifdef __cplusplus
 }

@@ -10,18 +10,11 @@
 
 #include "debug.h"
 
-/*@unchecked@*/
 static int _build_debug = 0;
-
-/*@access StringBuf @*/
-/*@access urlinfo @*/		/* XXX compared with NULL */
-/*@access FD_t @*/
 
 /**
  */
 static void doRmSource(Spec spec)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     struct Source *p;
     Package pkg;
@@ -77,7 +70,6 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     int status;
     int rc;
     
-    /*@-branchstate@*/
     switch (what) {
     case RPMBUILD_PREP:
 	name = "%prep";
@@ -129,7 +121,6 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     }
     if (name == NULL)	/* XXX shouldn't happen */
 	name = "???";
-    /*@=branchstate@*/
 
     if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
 	rc = 0;
@@ -153,24 +144,19 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     }
 #endif
 
-    /*@-branchstate@*/
     if (fdGetFp(fd) == NULL)
 	xfd = Fdopen(fd, "w.fpio");
     else
 	xfd = fd;
-    /*@=branchstate@*/
 
-    /*@-type@*/ /* FIX: cast? */
+    /* FIX: cast? */
     if ((fp = fdGetFp(xfd)) == NULL) {
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
-    /*@=type@*/
     
     (void) urlPath(rootURL, &rootDir);
-    /*@-branchstate@*/
     if (*rootDir == '\0') rootDir = "/";
-    /*@=branchstate@*/
 
     (void) urlPath(scriptName, &buildScript);
 
@@ -199,13 +185,11 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     
 if (_build_debug)
 fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
-/*@-boundsread@*/
     if (buildDirURL && buildDirURL[0] != '/' &&
 	(urlSplit(buildDirURL, &u) != 0)) {
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
-/*@=boundsread@*/
     if (u != NULL) {
 	switch (u->urltype) {
 	case URL_IS_HTTPS:
@@ -233,12 +217,8 @@ fprintf(stderr, "*** addMacros\n");
     rpmMessage(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
-	/*@-mods@*/
 	errno = 0;
-	/*@=mods@*/
-/*@-boundsread@*/
 	(void) execvp(argv[0], (char *const *)argv);
-/*@=boundsread@*/
 
 	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
@@ -300,14 +280,12 @@ int buildSpec(rpmts ts, Spec spec, int what, int test)
 	/* packaging on the first run, and skip RMSOURCE altogether */
 	if (spec->BASpecs != NULL)
 	for (x = 0; x < spec->BACount; x++) {
-/*@-boundsread@*/
 	    if ((rc = buildSpec(ts, spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
 				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
 				test))) {
 		goto exit;
 	    }
-/*@=boundsread@*/
 	}
     } else {
 	if ((what & RPMBUILD_PREP) &&

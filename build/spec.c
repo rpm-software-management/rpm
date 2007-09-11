@@ -12,23 +12,17 @@
 
 #include "debug.h"
 
-/*@-redecl@*/
 extern int specedit;
-/*@=redecl@*/
 
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
-
-/*@access Header @*/	/* compared with NULL */
-/*@access rpmfi @*/	/* compared with NULL */
 
 /**
  * @param p		trigger entry chain
  * @return		NULL always
  */
 static inline
-/*@null@*/ struct TriggerFileEntry * freeTriggerFiles(/*@only@*/ /*@null@*/ struct TriggerFileEntry * p)
-	/*@modifies p @*/
+struct TriggerFileEntry * freeTriggerFiles(struct TriggerFileEntry * p)
 {
     struct TriggerFileEntry *o, *q = p;
     
@@ -49,8 +43,7 @@ static inline
  * @return		NULL always
  */
 static inline
-/*@null@*/ struct Source * freeSources(/*@only@*/ /*@null@*/ struct Source * s)
-	/*@modifies s @*/
+struct Source * freeSources(struct Source * s)
 {
     struct Source *r, *t = s;
 
@@ -63,8 +56,7 @@ static inline
     return NULL;
 }
 
-/*@-boundswrite@*/
-int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
+int lookupPackage(Spec spec, const char *name, int flag,Package *pkg)
 {
     const char *pname;
     const char *fullName;
@@ -87,9 +79,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     } else {
 	fullName = n = alloca(strlen(name)+1);
     }
-    /*@-mayaliasunique@*/
     strcpy(n, name);
-    /*@=mayaliasunique@*/
   }
 
     /* Locate package with fullName */
@@ -101,10 +91,9 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     }
 
     if (pkg)
-	/*@-dependenttrans@*/ *pkg = p; /*@=dependenttrans@*/
+	*pkg = p;
     return ((p == NULL) ? 1 : 0);
 }
-/*@=boundswrite@*/
 
 Package newPackage(Spec spec)
 {
@@ -196,8 +185,7 @@ Package freePackages(Package packages)
 
 /**
  */
-static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag)
-	/*@*/
+static inline struct Source *findSource(Spec spec, int num, int flag)
 {
     struct Source *p;
 
@@ -207,7 +195,6 @@ static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag
     return NULL;
 }
 
-/*@-boundsread@*/
 int parseNoSource(Spec spec, const char * field, int tag)
 {
     const char *f, *fe;
@@ -251,9 +238,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
 
     return 0;
 }
-/*@=boundsread@*/
 
-/*@-boundswrite@*/
 int addSource(Spec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
@@ -265,7 +250,6 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     int num = 0;
 
     buf[0] = '\0';
-    /*@-branchstate@*/
     switch (tag) {
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
@@ -282,7 +266,6 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 	fieldp = NULL;
 	break;
     }
-    /*@=branchstate@*/
 
     /* Get the number */
     if (tag != RPMTAG_ICON) {
@@ -333,9 +316,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     spec->numSources++;
 
     if (tag != RPMTAG_ICON) {
-	/*@-nullpass@*/		/* LCL: varargs needs null annotate. */
 	const char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	/*@=nullpass@*/
 
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
@@ -348,63 +329,50 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     
     return 0;
 }
-/*@=boundswrite@*/
 
 /**
  */
-static inline /*@only@*/ /*@null@*/ speclines newSl(void)
-	/*@*/
+static inline speclines newSl(void)
 {
     speclines sl = NULL;
-    /*@-branchstate@*/
     if (specedit) {
 	sl = xmalloc(sizeof(*sl));
 	sl->sl_lines = NULL;
 	sl->sl_nalloc = 0;
 	sl->sl_nlines = 0;
     }
-    /*@=branchstate@*/
     return sl;
 }
 
 /**
  */
-/*@-boundswrite@*/
-static inline /*@null@*/ speclines freeSl(/*@only@*/ /*@null@*/ speclines sl)
-	/*@modifies sl @*/
+static inline speclines freeSl(speclines sl)
 {
     int i;
     if (sl == NULL) return NULL;
     for (i = 0; i < sl->sl_nlines; i++)
-	/*@-unqualifiedtrans@*/
 	sl->sl_lines[i] = _free(sl->sl_lines[i]);
-	/*@=unqualifiedtrans@*/
     sl->sl_lines = _free(sl->sl_lines);
     return _free(sl);
 }
-/*@=boundswrite@*/
 
 /**
  */
-static inline /*@only@*/ /*@null@*/ spectags newSt(void)
-	/*@*/
+static inline spectags newSt(void)
 {
     spectags st = NULL;
-    /*@-branchstate@*/
     if (specedit) {
 	st = xmalloc(sizeof(*st));
 	st->st_t = NULL;
 	st->st_nalloc = 0;
 	st->st_ntags = 0;
     }
-    /*@=branchstate@*/
     return st;
 }
 
 /**
  */
-static inline /*@null@*/ spectags freeSt(/*@only@*/ /*@null@*/ spectags st)
-	/*@modifies st @*/
+static inline spectags freeSt(spectags st)
 {
     int i;
     if (st == NULL) return NULL;
@@ -427,9 +395,7 @@ Spec newSpec(void)
     spec->st = newSt();
 
     spec->fileStack = NULL;
-/*@-boundswrite@*/
     spec->lbuf[0] = '\0';
-/*@=boundswrite@*/
     spec->line = spec->lbuf;
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
@@ -472,7 +438,7 @@ Spec newSpec(void)
     spec->force = 0;
     spec->anyarch = 0;
 
-/*@i@*/	spec->macros = rpmGlobalMacroContext;
+    spec->macros = rpmGlobalMacroContext;
     
     return spec;
 }
@@ -513,9 +479,7 @@ Spec freeSpec(Spec spec)
 
     while (spec->readStack) {
 	rl = spec->readStack;
-	/*@-dependenttrans@*/
 	spec->readStack = rl->next;
-	/*@=dependenttrans@*/
 	rl->next = NULL;
 	rl = _free(rl);
     }
@@ -533,18 +497,12 @@ Spec freeSpec(Spec spec)
     spec->buildRestrictions = headerFree(spec->buildRestrictions);
 
     if (!spec->recursing) {
-/*@-boundswrite@*/
 	if (spec->BASpecs != NULL)
 	while (spec->BACount--) {
-	    /*@-unqualifiedtrans@*/
 	    spec->BASpecs[spec->BACount] =
 			freeSpec(spec->BASpecs[spec->BACount]);
-	    /*@=unqualifiedtrans@*/
 	}
-/*@=boundswrite@*/
-	/*@-compdef@*/
 	spec->BASpecs = _free(spec->BASpecs);
-	/*@=compdef@*/
     }
     spec->BANames = _free(spec->BANames);
 
@@ -559,7 +517,6 @@ Spec freeSpec(Spec spec)
     return spec;
 }
 
-/*@only@*/
 struct OpenFileInfo * newOpenFileInfo(void)
 {
     struct OpenFileInfo *ofi;
@@ -568,9 +525,7 @@ struct OpenFileInfo * newOpenFileInfo(void)
     ofi->fd = NULL;
     ofi->fileName = NULL;
     ofi->lineNum = 0;
-/*@-boundswrite@*/
     ofi->readBuf[0] = '\0';
-/*@=boundswrite@*/
     ofi->readPtr = NULL;
     ofi->next = NULL;
 
@@ -583,8 +538,6 @@ struct OpenFileInfo * newOpenFileInfo(void)
  */
 static void
 printNewSpecfile(Spec spec)
-	/*@globals fileSystem @*/
-	/*@modifies spec->sl->sl_lines[], fileSystem @*/
 {
     Header h;
     speclines sl = spec->sl;
@@ -595,7 +548,6 @@ printNewSpecfile(Spec spec)
     if (sl == NULL || st == NULL)
 	return;
 
-    /*@-branchstate@*/
     for (i = 0; i < st->st_ntags; i++) {
 	spectag t = st->st_t + i;
 	const char * tn = tagName(t->t_tag);
@@ -609,19 +561,17 @@ printNewSpecfile(Spec spec)
 	    Package pkg;
 	    char *fe;
 
-/*@-bounds@*/
 	    strcpy(fmt, t->t_msgid);
 	    for (fe = fmt; *fe && *fe != '('; fe++)
 		{} ;
 	    if (*fe == '(') *fe = '\0';
-/*@=bounds@*/
 	    h = NULL;
 	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 		const char *pkgname;
 		h = pkg->header;
 		(void) headerNVR(h, &pkgname, NULL, NULL);
 		if (!strcmp(pkgname, fmt))
-		    /*@innerbreak@*/ break;
+		    break;
 	    }
 	    if (pkg == NULL || h == NULL)
 		h = spec->packages->header;
@@ -631,9 +581,7 @@ printNewSpecfile(Spec spec)
 	    continue;
 
 	fmt[0] = '\0';
-/*@-boundswrite@*/
 	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
-/*@=boundswrite@*/
 	msgstr = _free(msgstr);
 
 	/* XXX this should use queryHeader(), but prints out tn as well. */
@@ -643,28 +591,23 @@ printNewSpecfile(Spec spec)
 	    return;
 	}
 
-/*@-boundswrite@*/
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
 	case RPMTAG_GROUP:
-	    /*@-unqualifiedtrans@*/
 	    sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
-	    /*@=unqualifiedtrans@*/
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
 		continue;
 	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
 		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
 		sl->sl_lines[t->t_startx] = buf;
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_DESCRIPTION:
 	    for (j = 1; j < t->t_nlines; j++) {
 		if (*sl->sl_lines[t->t_startx + j] == '%')
-		    /*@innercontinue@*/ continue;
-		/*@-unqualifiedtrans@*/
+		    continue;
 		sl->sl_lines[t->t_startx + j] =
 			_free(sl->sl_lines[t->t_startx + j]);
-		/*@=unqualifiedtrans@*/
 	    }
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
 		sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
@@ -673,14 +616,11 @@ printNewSpecfile(Spec spec)
 	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
 	    if (t->t_nlines > 2)
 		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
-	    /*@switchbreak@*/ break;
+	    break;
 	}
-/*@=boundswrite@*/
     }
-    /*@=branchstate@*/
     msgstr = _free(msgstr);
 
-/*@-boundsread@*/
     for (i = 0; i < sl->sl_nlines; i++) {
 	const char * s = sl->sl_lines[i];
 	if (s == NULL)
@@ -689,7 +629,6 @@ printNewSpecfile(Spec spec)
 	if (strchr(s, '\n') == NULL && s[strlen(s)-1] != '\n')
 	    printf("\n");
     }
-/*@=boundsread@*/
 }
 
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
@@ -708,8 +647,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     if (qva->qva_showPackage == NULL)
 	goto exit;
 
-/*@-branchstate@*/
-    /*@-mods@*/ /* FIX: make spec abstract */
+    /* FIX: make spec abstract */
     if (parseSpec(ts, arg, "/", buildRoot, recursing, passPhrase,
 		cookie, anyarch, force)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
@@ -718,8 +656,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	    		_("query of specfile %s failed, can't parse\n"), arg);
 	goto exit;
     }
-    /*@=mods@*/
-/*@=branchstate@*/
 
     res = 0;
     if (specedit) {

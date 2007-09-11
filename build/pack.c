@@ -25,17 +25,9 @@
 #include "rpmlead.h"
 #include "debug.h"
 
-/*@access rpmts @*/
-/*@access rpmfi @*/	/* compared with NULL */
-/*@access Header @*/	/* compared with NULL */
-/*@access FD_t @*/	/* compared with NULL */
-/*@access StringBuf @*/	/* compared with NULL */
-/*@access CSA_t @*/
-
 /**
  */
 static inline int genSourceRpmName(Spec spec)
-	/*@modifies spec->sourceRpmName @*/
 {
     if (spec->sourceRpmName == NULL) {
 	const char *name, *version, *release;
@@ -53,11 +45,8 @@ static inline int genSourceRpmName(Spec spec)
 /**
  * @todo Create transaction set *much* earlier.
  */
-static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
+static int cpio_doio(FD_t fdo, Header h, CSA_t csa,
 		const char * fmodeMacro)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fdo, csa, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
 {
     rpmts ts = rpmtsCreate();
     rpmfi fi = csa->cpioList;
@@ -65,17 +54,13 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     FD_t cfd;
     int rc, ec;
 
-/*@-boundsread@*/
     {	const char *fmode = rpmExpand(fmodeMacro, NULL);
 	if (!(fmode && fmode[0] == 'w'))
 	    fmode = xstrdup("w9.gzdio");
-	/*@-nullpass@*/
 	(void) Fflush(fdo);
 	cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-	/*@=nullpass@*/
 	fmode = _free(fmode);
     }
-/*@=boundsread@*/
     if (cfd == NULL)
 	return 1;
 
@@ -104,8 +89,6 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 /**
  */
 static int cpio_copy(FD_t fdo, CSA_t csa)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fdo, csa, fileSystem, internalState @*/
 {
     char buf[BUFSIZ];
     size_t nb;
@@ -128,10 +111,8 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
 
 /**
  */
-static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
-		const char * file, /*@only@*/ StringBuf sb)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
+static StringBuf addFileToTagAux(Spec spec,
+		const char * file, StringBuf sb)
 {
     char buf[BUFSIZ];
     const char * fn = buf;
@@ -146,9 +127,8 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 	sb = freeStringBuf(sb);
 	return NULL;
     }
-    /*@-type@*/ /* FIX: cast? */
+    /* FIX: cast? */
     if ((f = fdGetFp(fd)) != NULL)
-    /*@=type@*/
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
@@ -166,8 +146,6 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
 /**
  */
 static int addFileToTag(Spec spec, const char * file, Header h, int tag)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
@@ -190,8 +168,6 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 /**
  */
 static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState  @*/
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -209,9 +185,6 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 /**
  */
 static int processScriptFiles(Spec spec, Package pkg)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies pkg->header, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
 {
     struct TriggerFileEntry *p;
     
@@ -292,7 +265,6 @@ static int processScriptFiles(Spec spec, Package pkg)
     return 0;
 }
 
-/*@-boundswrite@*/
 int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 		Header *sigs, CSA_t csa)
 {
@@ -313,14 +285,12 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     }
 
     /* Get copy of lead */
-    /*@-sizeoftype@*/
     if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
 	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	return RPMERR_BADMAGIC;
     }
-    /*@=sizeoftype@*/
 
     /* XXX FIXME: EPIPE on <stdin> */
     if (Fseek(fdi, 0, SEEK_SET) == -1) {
@@ -340,10 +310,9 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     {	rpmts ts = rpmtsCreate();
 
 	/* XXX W2DO? pass fileName? */
-	/*@-mustmod@*/      /* LCL: segfault */
+	     /* LCL: segfault */
 	rc = rpmReadPackageFile(ts, fdi, "readRPM",
 			 &spec->packages->header);
-	/*@=mustmod@*/
 
 	ts = rpmtsFree(ts);
 
@@ -364,15 +333,13 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
 		(fileName ? fileName : "<stdin>"));
 	return RPMERR_BADMAGIC;
-	/*@notreached@*/ break;
+	break;
     }
 
-    /*@-branchstate@*/
     if (specp)
 	*specp = spec;
     else
 	spec = freeSpec(spec);
-    /*@=branchstate@*/
 
     if (csa != NULL)
 	csa->cpioFdIn = fdi;
@@ -381,10 +348,8 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 
     return 0;
 }
-/*@=boundswrite@*/
 
 #ifdef	DYING
-/*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
@@ -392,12 +357,9 @@ static unsigned char header_magic[8] = {
 
 #define	RPMPKGVERSION_MIN	30004
 #define	RPMPKGVERSION_MAX	40003
-/*@unchecked@*/
 static int rpmpkg_version = -1;
 
 static int rpmLeadVersion(void)
-	/*@globals rpmpkg_version, rpmGlobalMacroContext, h_errno @*/
-	/*@modifies rpmpkg_version, rpmGlobalMacroContext @*/
 {
     int rpmlead_version;
 
@@ -416,7 +378,6 @@ static int rpmLeadVersion(void)
     return rpmlead_version;
 }
 
-/*@-boundswrite@*/
 int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 		int type, CSA_t csa, char *passPhrase, const char **cookie)
 {
@@ -453,7 +414,6 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	providePackageNVR(h);
 
     /* Save payload information */
-    /*@-branchstate@*/
     switch(type) {
     case RPMLEAD_SOURCE:
 	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
@@ -462,7 +422,6 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
 	break;
     }
-    /*@=branchstate@*/
     if (!(rpmio_flags && *rpmio_flags)) {
 	rpmio_flags = _free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
@@ -741,9 +700,7 @@ exit:
 
     return rc;
 }
-/*@=boundswrite@*/
 
-/*@unchecked@*/
 static int_32 copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
@@ -751,7 +708,6 @@ static int_32 copyTags[] = {
     0
 };
 
-/*@-boundswrite@*/
 int packageBinaries(Spec spec)
 {
     struct cpioSourceArchive_s csabuf;
@@ -822,12 +778,11 @@ int packageBinaries(Spec spec)
 		    switch(errno) {
 		    case  ENOENT:
 			if (Mkdir(dn, 0755) == 0)
-			    /*@switchbreak@*/ break;
-			/*@fallthrough@*/
+			    break;
 		    default:
 			rpmError(RPMERR_BADFILENAME,_("cannot create %s: %s\n"),
 			    dn, strerror(errno));
-			/*@switchbreak@*/ break;
+			break;
 		    }
 		}
 		dn = _free(dn);
@@ -837,18 +792,15 @@ int packageBinaries(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	/*@-type@*/ /* LCL: function typedefs */
+	/* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
-	/*@-assignexpose -newreftrans@*/
 	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
-	/*@=assignexpose =newreftrans@*/
 
 	rc = writeRPM(&pkg->header, NULL, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
-	/*@=type@*/
 	fn = _free(fn);
 	if (rc)
 	    return rc;
@@ -856,9 +808,7 @@ int packageBinaries(Spec spec)
     
     return 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int packageSources(Spec spec)
 {
     struct cpioSourceArchive_s csabuf;
@@ -882,11 +832,9 @@ int packageSources(Spec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	/*@-type@*/ /* LCL: function typedefs */
+	/* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageSources)");
-	/*@-assignexpose -newreftrans@*/
 	csa->cpioList = rpmfiLink(spec->sourceCpioList, "packageSources");
-	/*@=assignexpose =newreftrans@*/
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, RPMLEAD_SOURCE,
@@ -894,9 +842,7 @@ int packageSources(Spec spec)
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
-	/*@=type@*/
 	fn = _free(fn);
     }
     return rc;
 }
-/*@=boundswrite@*/

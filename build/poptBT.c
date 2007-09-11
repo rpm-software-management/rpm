@@ -12,7 +12,6 @@
 #include "legacy.h"	/* XXX _noDirTokens */
 #include "debug.h"
 
-/*@unchecked@*/
 struct rpmBuildArguments_s         rpmBTArgs;
 
 #define	POPT_USECATALOG		-1011
@@ -43,32 +42,22 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_TP			0x7470
 #define	POPT_TS			0x7473
 
-/*@-redecl@*/
-/*@unchecked@*/
 extern int _fsm_debug;
-/*@=redecl@*/
 
-/*@-exportlocal@*/
-/*@unchecked@*/
 int noLang = 0;
-/*@=exportlocal@*/
 
-/*@unchecked@*/
 static int noBuild = 0;
 
-/*@unchecked@*/
 static int signIt = 0;
 
-/*@unchecked@*/
 static int useCatalog = 0;
 
 /**
  */
-/*@-boundswrite@*/
-static void buildArgCallback( /*@unused@*/ poptContext con,
-	/*@unused@*/ enum poptCallbackReason reason,
+static void buildArgCallback( poptContext con,
+	enum poptCallbackReason reason,
 	const struct poptOption * opt, const char * arg,
-	/*@unused@*/ const void * data)
+	const void * data)
 {
     BTA_t rba = &rpmBTArgs;
 
@@ -144,17 +133,13 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 
     }
 }
-/*@=boundswrite@*/
 
 /**
  */
-/*@-bitwisesigned -compmempass @*/
-/*@unchecked@*/
 struct poptOption rpmBuildPoptTable[] = {
-/*@-type@*/ /* FIX: cast? */
+/* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	buildArgCallback, 0, NULL, NULL },
-/*@=type@*/
 
  { "bp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BP,
 	N_("build through %prep (unpack sources and apply patches) from <specfile>"),
@@ -249,4 +234,3 @@ struct poptOption rpmBuildPoptTable[] = {
 
    POPT_TABLEEND
 };
-/*@=bitwisesigned =compmempass @*/

@@ -3,14 +3,11 @@
 
 #include "magic.h"
 
-/*@-exportlocal@*/
-/*@unchecked@*/
 extern int _rpmfc_debug;
-/*@=exportlocal@*/
 
 /**
  */
-typedef /*@abstract@*/ struct rpmfc_s * rpmfc;
+typedef struct rpmfc_s * rpmfc;
 
 /**
  */
@@ -33,9 +30,7 @@ struct rpmfc_s {
     ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
     ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
 
-/*@relnull@*/
     rpmds provides;	/*!< (#provides) package provides */
-/*@relnull@*/
     rpmds requires;	/*!< (#requires) package requires */
 
     StringBuf sb_java;	/*!< concatenated list of java colored files. */
@@ -89,7 +84,6 @@ typedef	enum FCOLOR_e FCOLOR_t;
 /**
  */
 struct rpmfcTokens_s {
-/*@observer@*/
     const char * token;
     int colors;
 };
@@ -109,22 +103,15 @@ extern "C" {
  * @retval *sb_stdoutp	helper output
  * @param failnonzero	IS non-zero helper exit status a failure?
  */
-int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
-		int failnonzero)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies *sb_stdoutp, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-        /*@requires maxSet(sb_stdoutp) >= 0 @*/;
+int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+		int failnonzero);
 
 /**
  * Return file color given file(1) string.
  * @param fmstr		file(1) string
  * @return		file color
  */
-/*@-exportlocal@*/
-int rpmfcColoring(const char * fmstr)
-	/*@*/;
-/*@=exportlocal@*/
+int rpmfcColoring(const char * fmstr);
 
 /**
  * Print results of file classification.
@@ -133,31 +120,20 @@ int rpmfcColoring(const char * fmstr)
  * @param fc		file classifier
  * @param fp		output file handle (NULL for stderr)
  */
-/*@-exportlocal@*/
-void rpmfcPrint(/*@null@*/ const char * msg, rpmfc fc, /*@null@*/ FILE * fp)
-	/*@globals fileSystem @*/
-	/*@modifies *fp, fc, fileSystem @*/;
-/*@=exportlocal@*/
+void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp);
 
 /**
  * Destroy a file classifier.
  * @param fc		file classifier
  * @return		NULL always
  */
-/*@-exportlocal@*/
-/*@null@*/
-rpmfc rpmfcFree(/*@only@*/ /*@null@*/ rpmfc fc)
-	/*@modifies fc @*/;
-/*@=exportlocal@*/
+rpmfc rpmfcFree(rpmfc fc);
 
 /**
  * Create a file classifier.
  * @return		new file classifier
  */
-/*@-exportlocal@*/
-rpmfc rpmfcNew(void)
-	/*@*/;
-/*@=exportlocal@*/
+rpmfc rpmfcNew(void);
 
 /**
  * Build file class dictionary and mappings.
@@ -166,21 +142,14 @@ rpmfc rpmfcNew(void)
  * @param fmode		files mode_t array (or NULL)
  * @return		0 on success
  */
-/*@-exportlocal@*/
-int rpmfcClassify(rpmfc fc, ARGV_t argv, /*@null@*/ int16_t * fmode)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fc, fileSystem, internalState @*/;
-/*@=exportlocal@*/
+int rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode);
 
 /**
  * Build file/package dependency dictionary and mappings.
  * @param fc		file classifier
  * @return		0 on success
  */
-/*@-exportlocal@*/
-int rpmfcApply(rpmfc fc)
-	/*@modifies fc @*/;
-/*@=exportlocal@*/
+int rpmfcApply(rpmfc fc);
 
 /**
  * Generate package dependencies.
@@ -188,10 +157,7 @@ int rpmfcApply(rpmfc fc)
  * @param pkg		package control
  * @return		0 on success
  */
-int rpmfcGenerateDepends(const Spec spec, Package pkg)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies pkg->cpioList, pkg->header,
-		rpmGlobalMacroContext, fileSystem, internalState @*/;
+int rpmfcGenerateDepends(const Spec spec, Package pkg);
 
 #ifdef __cplusplus
 }

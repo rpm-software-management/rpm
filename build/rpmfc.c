@@ -21,23 +21,17 @@
 
 #include "debug.h"
 
-/*@access rpmds @*/
 
 /**
  */
-static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
-	/*@globals rpmGlobalMacroContext, h_errno @*/
-	/*@modifies *argvp, rpmGlobalMacroContext @*/
-	/*@requires maxRead(argvp) >= 0 @*/
+static int rpmfcExpandAppend(ARGV_t * argvp, const ARGV_t av)
 {
     ARGV_t argv = *argvp;
     int argc = argvCount(argv);
     int ac = argvCount(av);
     int i;
 
-/*@-bounds@*/	/* LCL: internal error */
     argv = xrealloc(argv, (argc + ac + 1) * sizeof(*argv));
-/*@=bounds@*/
     for (i = 0; i < ac; i++)
 	argv[argc + i] = rpmExpand(av[i], NULL);
     argv[argc + ac] = NULL;
@@ -55,12 +49,9 @@ static int rpmfcExpandAppend(/*@out@*/ ARGV_t * argvp, const ARGV_t av)
  * @param failNonZero	is script failure an error?
  * @return		buffered stdout from script, NULL on error
  */     
-/*@null@*/
-static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
+static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
                         const char * writePtr, int writeBytesLeft,
                         int failNonZero)
-        /*@globals fileSystem, internalState@*/
-        /*@modifies fileSystem, internalState@*/
 {
     pid_t child, reaped;
     int toProg[2];
@@ -70,9 +61,8 @@ static StringBuf getOutputFrom(/*@null@*/ const char * dir, ARGV_t argv,
     StringBuf readBuff;
     int done;
 
-    /*@-type@*/ /* FIX: cast? */
+    /* FIX: cast? */
     oldhandler = signal(SIGPIPE, SIG_IGN);
-    /*@=type@*/
 
     toProg[0] = toProg[1] = 0;
     (void) pipe(toProg);
@@ -164,14 +154,12 @@ top:
 	}
 	
 	/* Read any data from prog */
-/*@-boundswrite@*/
 	{   char buf[BUFSIZ+1];
 	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
 		buf[nbr] = '\0';
 		appendStringBuf(readBuff, buf);
 	    }
 	}
-/*@=boundswrite@*/
 
 	/* terminate on (non-blocking) EOF or error */
 	done = (nbr == 0 || (nbr < 0 && errno != EAGAIN));
@@ -183,9 +171,8 @@ top:
     	(void) close(toProg[1]);
     if (fromProg[0] >= 0)
 	(void) close(fromProg[0]);
-    /*@-type@*/ /* FIX: cast? */
+    /* FIX: cast? */
     (void) signal(SIGPIPE, oldhandler);
-    /*@=type@*/
 
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
@@ -234,11 +221,9 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 
     /* Build argv, appending args to the executable args. */
     xav = NULL;
-/*@-boundswrite@*/
     xx = argvAppend(&xav, pav);
     if (av[1])
 	xx = rpmfcExpandAppend(&xav, av + 1);
-/*@=boundswrite@*/
 
     if (sb_stdin != NULL) {
 	buf_stdin = getStringBuf(sb_stdin);
@@ -248,12 +233,10 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     /* Read output from exec'd helper. */
     sb = getOutputFrom(NULL, xav, buf_stdin, buf_stdin_len, failnonzero);
 
-/*@-branchstate@*/
     if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
 	sb = NULL;	/* XXX don't free */
     }
-/*@=branchstate@*/
 
     ec = 0;
 
@@ -267,9 +250,7 @@ exit:
 
 /**
  */
-static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
-	/*@modifies *argvp @*/
-	/*@requires maxSet(argvp) >= 0 @*/
+static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
 {
     int rc = 0;
 
@@ -280,11 +261,8 @@ static int rpmfcSaveArg(/*@out@*/ ARGV_t * argvp, const char * key)
     return rc;
 }
 
-static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
-		/*@null@*/ rpmds ds)
-	/*@modifies buf @*/
-	/*@requires maxSet(buf) >= 0 @*/
-	/*@ensures maxRead(buf) == 0 @*/
+static char * rpmfcFileDep(char * buf, int ix,
+		rpmds ds)
 {
     int_32 tagN = rpmdsTagN(ds);
     char deptype = 'X';
@@ -298,11 +276,9 @@ static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
 	deptype = 'R';
 	break;
     }
-/*@-nullpass@*/
     if (ds != NULL)
 	sprintf(buf, "%08d%c %s %s 0x%08x", ix, deptype,
 		rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
-/*@=nullpass@*/
     return buf;
 };
 
@@ -314,8 +290,6 @@ static char * rpmfcFileDep(/*@returned@*/ char * buf, int ix,
  * @return		0 on success
  */
 static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * fn = fc->fn[fc->ix];
     char buf[BUFSIZ];
@@ -335,7 +309,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     switch (deptype) {
     default:
 	return -1;
-	/*@notreached@*/ break;
+	break;
     case 'P':
 	if (fc->skipProv)
 	    return 0;
@@ -360,9 +334,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     sb_stdin = newStringBuf();
     appendLineStringBuf(sb_stdin, fn);
     sb_stdout = NULL;
-/*@-boundswrite@*/
     xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0);
-/*@=boundswrite@*/
     sb_stdin = freeStringBuf(sb_stdin);
 
     if (xx == 0 && sb_stdout != NULL) {
@@ -374,30 +346,28 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	    N = pav[i];
 	    EVR = "";
 	    Flags = dsContext;
-/*@-branchstate@*/
 	    if (pav[i+1] && strchr("=<>", *pav[i+1])) {
 		i++;
 		for (s = pav[i]; *s; s++) {
 		    switch(*s) {
 		    default:
 assert(*s != '\0');
-			/*@switchbreak@*/ break;
+			break;
 		    case '=':
 			Flags |= RPMSENSE_EQUAL;
-			/*@switchbreak@*/ break;
+			break;
 		    case '<':
 			Flags |= RPMSENSE_LESS;
-			/*@switchbreak@*/ break;
+			break;
 		    case '>':
 			Flags |= RPMSENSE_GREATER;
-			/*@switchbreak@*/ break;
+			break;
 		    }
 		}
 		i++;
 		EVR = pav[i];
 assert(EVR != NULL);
 	    }
-/*@=branchstate@*/
 
 
 	    /* Add tracking dependency for versioned Provides: */
@@ -416,9 +386,7 @@ assert(EVR != NULL);
 	    xx = rpmdsMerge(depsp, ds);
 
 	    /* Add to file dependencies. */
-/*@-boundswrite@*/
 	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
-/*@=boundswrite@*/
 
 	    ds = rpmdsFree(ds);
 	}
@@ -432,7 +400,6 @@ assert(EVR != NULL);
 
 /**
  */
-/*@unchecked@*/ /*@observer@*/
 static struct rpmfcTokens_s rpmfcTokens[] = {
   { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
 
@@ -595,7 +562,7 @@ assert(fx < fc->fddictn->nvals);
 	    switch (deptype) {
 	    default:
 assert(depval != NULL);
-		/*@switchbreak@*/ break;
+		break;
 	    case 'P':
 		if (nprovides > 0) {
 assert(ix < nprovides);
@@ -603,7 +570,7 @@ assert(ix < nprovides);
 		    if (rpmdsNext(fc->provides) >= 0)
 			depval = rpmdsDNEVR(fc->provides);
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    case 'R':
 		if (nrequires > 0) {
 assert(ix < nrequires);
@@ -611,7 +578,7 @@ assert(ix < nrequires);
 		    if (rpmdsNext(fc->requires) >= 0)
 			depval = rpmdsDNEVR(fc->requires);
 		}
-		/*@switchbreak@*/ break;
+		break;
 	    }
 	    if (depval)
 		fprintf(fp, "\t%s\n", depval);
@@ -655,8 +622,6 @@ rpmfc rpmfcNew(void)
  * @return		0 on success
  */
 static int rpmfcSCRIPT(rpmfc fc)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char * fn = fc->fn[fc->ix];
     const char * bn;
@@ -681,7 +646,6 @@ static int rpmfcSCRIPT(rpmfc fc)
     }
 
     /* Look for #! interpreter in first 10 lines. */
-/*@-boundswrite@*/
     for (i = 0; i < 10; i++) {
 
 	s = fgets(buf, sizeof(buf) - 1, fp);
@@ -701,7 +665,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 
 	for (se = s+1; *se; se++) {
 	    if (strchr(" \t\n\r", *se) != NULL)
-		/*@innerbreak@*/ break;
+		break;
 	}
 	*se = '\0';
 	se++;
@@ -726,7 +690,6 @@ static int rpmfcSCRIPT(rpmfc fc)
 
 	break;
     }
-/*@=boundswrite@*/
 
     (void) fclose(fp);
 
@@ -772,8 +735,6 @@ static int rpmfcSCRIPT(rpmfc fc)
  * @return		0 on success
  */
 static int rpmfcELF(rpmfc fc)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies fc, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
 #if HAVE_GELF_H && HAVE_LIBELF
     const char * fn = fc->fn[fc->ix];
@@ -822,19 +783,16 @@ static int rpmfcELF(rpmfc fc)
 
     (void) elf_version(EV_CURRENT);
 
-/*@-evalorder@*/
     elf = NULL;
     if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
      || elf_kind(elf) != ELF_K_ELF
      || (ehdr = gelf_getehdr(elf, &ehdr_mem)) == NULL
      || !(ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC))
 	goto exit;
-/*@=evalorder@*/
 
     isElf64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
     isDSO = ehdr->e_type == ET_DYN;
 
-    /*@-branchstate -uniondef @*/
     scn = NULL;
     while ((scn = elf_nextscn(elf, scn)) != NULL) {
 	shdr = gelf_getshdr(scn, &shdr_mem);
@@ -845,7 +803,7 @@ static int rpmfcELF(rpmfc fc)
 	switch (shdr->sh_type) {
 	default:
 	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	case SHT_GNU_verdef:
 	    data = NULL;
 	    if (!fc->skipProv)
@@ -855,23 +813,23 @@ static int rpmfcELF(rpmfc fc)
 		
 		    def = gelf_getverdef (data, offset, &def_mem);
 		    if (def == NULL)
-			/*@innerbreak@*/ break;
+			break;
 		    auxoffset = offset + def->vd_aux;
 		    for (cnt2 = def->vd_cnt; --cnt2 >= 0; ) {
 			GElf_Verdaux aux_mem, * aux;
 
 			aux = gelf_getverdaux (data, auxoffset, &aux_mem);
 			if (aux == NULL)
-			    /*@innerbreak@*/ break;
+			    break;
 
 			s = elf_strptr(elf, shdr->sh_link, aux->vda_name);
 			if (s == NULL)
-			    /*@innerbreak@*/ break;
+			    break;
 			if (def->vd_flags & VER_FLG_BASE) {
 			    soname = _free(soname);
 			    soname = xstrdup(s);
 			    auxoffset += aux->vda_next;
-			    /*@innercontinue@*/ continue;
+			    continue;
 			} else
 			if (soname != NULL
 			 && !(filter_GLIBC_PRIVATE != 0
@@ -903,7 +861,7 @@ static int rpmfcELF(rpmfc fc)
 		    offset += def->vd_next;
 		}
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	case SHT_GNU_verneed:
 	    data = NULL;
 	    /* Files with executable bit set only. */
@@ -913,11 +871,11 @@ static int rpmfcELF(rpmfc fc)
 		for (cnt = shdr->sh_info; --cnt >= 0; ) {
 		    need = gelf_getverneed (data, offset, &need_mem);
 		    if (need == NULL)
-			/*@innerbreak@*/ break;
+			break;
 
 		    s = elf_strptr(elf, shdr->sh_link, need->vn_file);
 		    if (s == NULL)
-			/*@innerbreak@*/ break;
+			break;
 		    soname = _free(soname);
 		    soname = xstrdup(s);
 		    auxoffset = offset + need->vn_aux;
@@ -926,11 +884,11 @@ static int rpmfcELF(rpmfc fc)
 
 			aux = gelf_getvernaux (data, auxoffset, &aux_mem);
 			if (aux == NULL)
-			    /*@innerbreak@*/ break;
+			    break;
 
 			s = elf_strptr(elf, shdr->sh_link, aux->vna_name);
 			if (s == NULL)
-			    /*@innerbreak@*/ break;
+			    break;
 
 			/* Filter dependencies that contain GLIBC_PRIVATE */
 			if (soname != NULL
@@ -962,54 +920,53 @@ static int rpmfcELF(rpmfc fc)
 		    offset += need->vn_next;
 		}
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	case SHT_DYNAMIC:
 	    data = NULL;
 	    while ((data = elf_getdata (scn, data)) != NULL) {
-/*@-boundswrite@*/
 		for (cnt = 0; cnt < (shdr->sh_size / shdr->sh_entsize); ++cnt) {
 		    dyn = gelf_getdyn (data, cnt, &dyn_mem);
 		    if (dyn == NULL)
-			/*@innerbreak@*/ break;
+			break;
 		    s = NULL;
 		    switch (dyn->d_tag) {
 		    default:
-			/*@innercontinue@*/ continue;
-			/*@notreached@*/ /*@switchbreak@*/ break;
+			continue;
+			break;
                     case DT_HASH:    
 			gotHASH= 1;
-			/*@innercontinue@*/ continue;
+			continue;
                     case DT_GNU_HASH:
 			gotGNUHASH= 1;
-			/*@innercontinue@*/ continue;
+			continue;
                     case DT_DEBUG:    
 			gotDEBUG = 1;
-			/*@innercontinue@*/ continue;
+			continue;
 		    case DT_NEEDED:
 			/* Files with executable bit set only. */
 			if (fc->skipReq || !(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
-			    /*@innercontinue@*/ continue;
+			    continue;
 			/* Add to package requires. */
 			depsp = &fc->requires;
 			tagN = RPMTAG_REQUIRENAME;
 			dsContext = RPMSENSE_FIND_REQUIRES;
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
 assert(s != NULL);
-			/*@switchbreak@*/ break;
+			break;
 		    case DT_SONAME:
 			gotSONAME = 1;
 			/* Add to package provides. */
 			if (fc->skipProv)
-			    /*@innercontinue@*/ continue;
+			    continue;
 			depsp = &fc->provides;
 			tagN = RPMTAG_PROVIDENAME;
 			dsContext = RPMSENSE_FIND_PROVIDES;
 			s = elf_strptr(elf, shdr->sh_link, dyn->d_un.d_val);
 assert(s != NULL);
-			/*@switchbreak@*/ break;
+			break;
 		    }
 		    if (s == NULL)
-			/*@innercontinue@*/ continue;
+			continue;
 
 		    buf[0] = '\0';
 		    t = buf;
@@ -1031,12 +988,10 @@ assert(s != NULL);
 
 		    ds = rpmdsFree(ds);
 		}
-/*@=boundswrite@*/
 	    }
-	    /*@switchbreak@*/ break;
+	    break;
 	}
     }
-    /*@=branchstate =uniondef @*/
 
     /* For DSOs which use the .gnu_hash section and don't have a .hash
      * section, we need to ensure that we have a new enough glibc. */ 
@@ -1062,18 +1017,15 @@ assert(s != NULL);
 	else
 	    s = fn;
 
-/*@-boundswrite@*/
 	buf[0] = '\0';
 	t = buf;
-/*@-nullpass@*/ /* LCL: s is not null. */
+/* LCL: s is not null. */
 	t = stpcpy(t, s);
-/*@=nullpass@*/
 
 #if !defined(__alpha__)
 	if (isElf64)
 	    t = stpcpy(t, "()(64bit)");
 #endif
-/*@=boundswrite@*/
 	t++;
 
 	/* Add to package dependencies. */
@@ -1081,9 +1033,7 @@ assert(s != NULL);
 	xx = rpmdsMerge(depsp, ds);
 
 	/* Add to file dependencies. */
-/*@-boundswrite@*/
 	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(t, fc->ix, ds));
-/*@=boundswrite@*/
 
 	ds = rpmdsFree(ds);
     }
@@ -1105,7 +1055,6 @@ typedef struct rpmfcApplyTbl_s {
 
 /**
  */
-/*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
@@ -1152,12 +1101,11 @@ int rpmfcApply(rpmfc fc)
 	if (fc->fcolor->vals[fc->ix])
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
-		/*@innercontinue@*/ continue;
+		continue;
 	    xx = (*fcat->func) (fc);
 	}
     }
 
-/*@-boundswrite@*/
     /* Generate per-file indices into package dependencies. */
     nddict = argvCount(fc->ddict);
     previx = -1;
@@ -1182,17 +1130,17 @@ assert(se != NULL);
 	dix = -1;
 	switch (deptype) {
 	default:
-	    /*@switchbreak@*/ break;
+	    break;
 	case 'P':	
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->provides, ds);
 	    ds = rpmdsFree(ds);
-	    /*@switchbreak@*/ break;
+	    break;
 	case 'R':
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->requires, ds);
 	    ds = rpmdsFree(ds);
-	    /*@switchbreak@*/ break;
+	    break;
 	}
 
 /* XXX assertion incorrect while generating -debuginfo deps. */
@@ -1213,7 +1161,6 @@ assert(dix >= 0);
 	if (fc->fddictn && fc->fddictn->vals)
 	    fc->fddictn->vals[ix]++;
     }
-/*@=boundswrite@*/
 
     return 0;
 }
@@ -1226,7 +1173,6 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     size_t slen;
     int fcolor;
     int xx;
-/*@observer@*/
     int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
     magic_t ms = NULL;
 
@@ -1303,7 +1249,6 @@ assert(s != NULL);
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }
 	}
-/*@=branchstate@*/
 
 	se = ftype;
         rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
@@ -1318,10 +1263,8 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
 	fcolor = rpmfcColoring(se);
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
-/*@-boundswrite@*/
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    xx = rpmfcSaveArg(&fc->cdict, se);
-/*@=boundswrite@*/
     }
 
     /* Build per-file class index array. */
@@ -1355,9 +1298,7 @@ typedef struct DepMsg_s * DepMsg_t;
 /**
  */
 struct DepMsg_s {
-/*@observer@*/ /*@null@*/
     const char * msg;
-/*@observer@*/
     const char * argv[4];
     rpmTag ntag;
     rpmTag vtag;
@@ -1368,7 +1309,6 @@ struct DepMsg_s {
 
 /**
  */
-/*@unchecked@*/
 static struct DepMsg_s depMsgs[] = {
   { "Provides",		{ "%{?__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -1415,14 +1355,11 @@ static struct DepMsg_s depMsgs[] = {
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
 
-/*@unchecked@*/
 static DepMsg_t DepMsgs = depMsgs;
 
 /**
  */
 static void printDeps(Header h)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     DepMsg_t dm;
     rpmds ds = NULL;
@@ -1449,13 +1386,13 @@ static void printDeps(Header h)
 	    Flags = rpmdsFlags(ds);
 	
 	    if (!((Flags & dm->mask) ^ dm->xor))
-		/*@innercontinue@*/ continue;
+		continue;
 	    if (bingo == 0) {
 		rpmMessage(RPMMESS_NORMAL, "%s:", (dm->msg ? dm->msg : ""));
 		bingo = 1;
 	    }
 	    if ((DNEVR = rpmdsDNEVR(ds)) == NULL)
-		/*@innercontinue@*/ continue;	/* XXX can't happen */
+		continue;	/* XXX can't happen */
 	    rpmMessage(RPMMESS_NORMAL, " %s", DNEVR+2);
 	}
 	if (bingo)
@@ -1467,8 +1404,6 @@ static void printDeps(Header h)
 /**
  */
 static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
-	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-        /*@modifies fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     StringBuf sb_stdin;
     StringBuf sb_stdout;
@@ -1500,21 +1435,19 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
 		continue;
 	    failnonzero = 1;
 	    tagflags = RPMSENSE_FIND_PROVIDES;
-	    /*@switchbreak@*/ break;
+	    break;
 	case RPMTAG_REQUIREFLAGS:
 	    if (!pkg->autoReq)
 		continue;
 	    failnonzero = 0;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
-	    /*@switchbreak@*/ break;
+	    break;
 	default:
 	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
+	    break;
 	}
 
-/*@-boundswrite@*/
 	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
-/*@=boundswrite@*/
 	if (xx == -1)
 	    continue;
 
@@ -1582,7 +1515,6 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     av = xcalloc(ac+1, sizeof(*av));
     fmode = xcalloc(ac+1, sizeof(*fmode));
 
-/*@-boundswrite@*/
     genConfigDeps = 0;
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
@@ -1597,7 +1529,6 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
 	fmode[c] = rpmfiFMode(fi);
     }
     av[ac] = NULL;
-/*@=boundswrite@*/
 
     fc = rpmfcNew();
     fc->skipProv = !pkg->autoProv;
@@ -1687,13 +1618,11 @@ assert(ac == c);
 			p, c);
 
     /* Add Provides: */
-/*@-branchstate@*/
     if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
 	p = (const void **) fc->provides->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-/*@-nullpass@*/
 	p = (const void **) fc->provides->EVR;
 assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
@@ -1702,18 +1631,14 @@ assert(p != NULL);
 assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 			p, c);
-/*@=nullpass@*/
     }
-/*@=branchstate@*/
 
     /* Add Requires: */
-/*@-branchstate@*/
     if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
 	p = (const void **) fc->requires->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-/*@-nullpass@*/
 	p = (const void **) fc->requires->EVR;
 assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREVERSION, RPM_STRING_ARRAY_TYPE,
@@ -1722,9 +1647,7 @@ assert(p != NULL);
 assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
 			p, c);
-/*@=nullpass@*/
     }
-/*@=branchstate@*/
 
     /* Add dependency dictionary(#dependencies) */
     p = (const void **) argiData(fc->ddictx);

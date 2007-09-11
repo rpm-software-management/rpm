@@ -6,7 +6,6 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/*@-boundswrite@*/
 int parseNum(const char * line, int * res)
 {
     char * s1 = NULL;
@@ -17,4 +16,3 @@ int parseNum(const char * line, int * res)
     if (res) *res = rc;
     return (((*s1) || (s1 == line) || (rc == ULONG_MAX)) ? 1 : 0);
 }
-/*@=boundswrite@*/
