@@ -1220,7 +1220,7 @@ done \
 %find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
 
 # Commands + opts to use for retrieving remote files
-%__urlhelpercmd         /usr/bin/curl
+%__urlhelpercmd         @__CURL@
 %__urlhelperopts        --silent --show-error --fail --location -o
 %_urlhelper             %{__urlhelpercmd} %{__urlhelperopts}
 
