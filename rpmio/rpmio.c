@@ -67,6 +67,9 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 
 #include "ugid.h"
 #include "rpmmessages.h"
+#include "argv.h"
+#include "rpmerr.h"
+#include "rpmmacro.h"
 
 #include "debug.h"
 
@@ -1998,12 +2001,55 @@ exit:
     return fd;
 }
 
+/*
+ * Deal with remote url's by fetching them with a helper application
+ * and treat as local file afterwards.
+ * TODO:
+ * - better error checking + reporting
+ * - curl & friends don't know about hkp://, transform to http?
+ */
+static FD_t urlOpen(const char * url, int flags, mode_t mode)
+{
+    FD_t fd = NULL;
+    char cmd[BUFSIZ];
+    char *dest = NULL;
+    char *urlhelper = NULL;
+    int rc;
+    pid_t pid, wait;
+
+    urlhelper = rpmExpand("%{?_urlhelper}", NULL);
+
+    dest = (char *) rpmGenPath(NULL, "%{_tmppath}/", "rpm-transfer.XXXXXX");
+    close(mkstemp(dest));
+    sprintf(cmd, "%s %s %s\n", urlhelper, dest, url);
+    urlhelper = _free(urlhelper);
+
+    if ((pid = fork()) == 0) {
+        ARGV_t argv = NULL;
+        argvSplit(&argv, cmd, " ");
+        execvp(argv[0], (char *const *)argv);
+        exit(-1); /* error out if exec fails */
+    }
+    wait = waitpid(pid, &rc, 0);
+
+    if (!WIFEXITED(rc) || WEXITSTATUS(rc)) {
+        rpmError(RPMERR_EXEC, _("URL helper failed: %s (%d)\n"),
+                 cmd, WEXITSTATUS(rc));
+    } else {
+	fd = fdOpen(dest, flags, mode);
+	unlink(dest);
+    }
+    dest = _free(dest);
+
+    return fd;
+
+}
+
 static FD_t ufdOpen(const char * url, int flags, mode_t mode)
 {
     FD_t fd = NULL;
-    const char * cmd;
-    urlinfo u;
     const char * path;
+    int timeout = 1;
     urltype urlType = urlPath(url, &path);
 
 if (_rpmio_debug)
@@ -2011,71 +2057,32 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 
     switch (urlType) {
     case URL_IS_FTP:
-	fd = ftpOpen(url, flags, mode, &u);
-	if (fd == NULL || u == NULL)
-	    break;
-
-	/* XXX W2DO? use STOU rather than STOR to prevent clobbering */
-	cmd = ((flags & O_WRONLY) 
-		?  ((flags & O_APPEND) ? "APPE" :
-		   ((flags & O_CREAT) ? "STOR" : "STOR"))
-		:  ((flags & O_CREAT) ? "STOR" : "RETR"));
-	u->openError = ftpReq(fd, cmd, path);
-	if (u->openError < 0) {
-	    /* XXX make sure that we can exit through ufdClose */
-	    fd = fdLink(fd, "error data (ufdOpen FTP)");
-	} else {
-	    fd->bytesRemain = ((!strcmp(cmd, "RETR"))
-		?  fd->contentLength : -1);
-	    fd->wr_chunked = 0;
-	}
-	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
     case URL_IS_HKP:
-	fd = httpOpen(url, flags, mode, &u);
-	if (fd == NULL || u == NULL)
-	    break;
-
-	cmd = ((flags & O_WRONLY)
-		?  ((flags & O_APPEND) ? "PUT" :
-		   ((flags & O_CREAT) ? "PUT" : "PUT"))
-		: "GET");
-	u->openError = httpReq(fd, cmd, path);
-	if (u->openError < 0) {
-	    /* XXX make sure that we can exit through ufdClose */
-	    fd = fdLink(fd, "error ctrl (ufdOpen HTTP)");
-	    fd = fdLink(fd, "error data (ufdOpen HTTP)");
-	} else {
-	    fd->bytesRemain = ((!strcmp(cmd, "GET"))
-		?  fd->contentLength : -1);
-	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
-		?  fd->wr_chunked : 0);
-	}
+	fd = urlOpen(url, flags, mode);
+	/* we're dealing with local file when urlOpen() returns */
+	urlType = URL_IS_UNKNOWN;
 	break;
     case URL_IS_DASH:
 	assert(!(flags & O_RDWR));
 	fd = fdDup( ((flags & O_WRONLY) ? STDOUT_FILENO : STDIN_FILENO) );
-	if (fd) {
-	    fdSetIo(fd, ufdio);
-	    fd->rd_timeoutsecs = 600;	/* XXX W2DO? 10 mins? */
-	    fd->contentLength = fd->bytesRemain = -1;
-	}
+	timeout = 600; /* XXX W2DO? 10 mins? */
 	break;
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
     default:
 	fd = fdOpen(path, flags, mode);
-	if (fd) {
-	    fdSetIo(fd, ufdio);
-	    fd->rd_timeoutsecs = 1;
-	    fd->contentLength = fd->bytesRemain = -1;
-	}
 	break;
     }
 
     if (fd == NULL) return NULL;
+
+    fdSetIo(fd, ufdio);
+    fd->rd_timeoutsecs = timeout;
+    fd->contentLength = fd->bytesRemain = -1;
     fd->urlType = urlType;
+
     if (Fileno(fd) < 0) {
 	(void) ufdClose(fd);
 	return NULL;
