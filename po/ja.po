@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 00:42+0200\n"
+"POT-Creation-Date: 2007-09-12 11:45+0200\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -127,7 +127,7 @@ msgstr "全モード・コマンドで共通のオプション:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:133 lib/poptALL.c:88
+#: rpmqv.c:133 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
@@ -1277,17 +1277,17 @@ msgstr "ビルド依存性を検証しない"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成"
 
-#: build/poptBT.c:214 lib/poptALL.c:214 lib/poptI.c:257 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:210 lib/poptI.c:257 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:216 lib/poptALL.c:216 lib/poptI.c:259 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:212 lib/poptI.c:259 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:218 lib/poptALL.c:222 lib/poptI.c:261 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:218 lib/poptI.c:261 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
@@ -1560,7 +1560,7 @@ msgstr "mntctl() でマウントポイントの取得に失敗しました: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s に失敗しました: %s\n"
 
-#: lib/fs.c:147 rpmio/url.c:513
+#: lib/fs.c:147 rpmio/url.c:435
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -1779,147 +1779,135 @@ msgstr "%s をインストールできません。\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:170
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: コマンドラインのシンボリックリンクを追いかけます"
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:172
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: 論理探索"
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:174
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: ディレクトリを変更しません。"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:176
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: ステータス情報を取得しません。"
 
-#: lib/poptALL.c:182
+#: lib/poptALL.c:178
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: 物理探索"
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:180
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: ドット(.)とドットドット(..)を返します。"
 
-#: lib/poptALL.c:186
+#: lib/poptALL.c:182
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: 他のファイルシステムを探索しません。"
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:184
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: 修正された情報を返します。"
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:197
 msgid "predefine MACRO with value EXPR"
 msgstr "値 EXPR を持つマクロを予め定義します。"
 
-#: lib/poptALL.c:202 lib/poptALL.c:205
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:200
 msgid "define MACRO with value EXPR"
 msgstr "値 EXPR を持つ MACRO を定義します。"
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:203
 msgid "print macro expansion of EXPR"
 msgstr "EXPR のマクロを展開した結果を表示します。"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:210 lib/poptALL.c:229 lib/poptALL.c:233
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
 
-#: lib/poptALL.c:211 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:219 lib/poptALL.c:253
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API の使用を無効にします。"
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:221
 msgid "send stdout to CMD"
 msgstr "標準出力を CMD に送信します。"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:222
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:233
 msgid "use ROOT as top level directory"
 msgstr "ROOT をトップディレクトリとして使用します。"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:234
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:237
 msgid "display known query tags"
 msgstr "全問い合わせタグを表示します。"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:239
 msgid "display final rpmrc and macro configuration"
 msgstr "最終的な rpmrc とマクロの設定を表示します。"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:241
 msgid "provide less detailed output"
 msgstr "詳細でない出力を提供します。"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:243
 msgid "provide more detailed output"
 msgstr "より詳細な出力を提供します。"
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "使用している rpm のバージョンを表示します。"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:258
 msgid "debug payload file state machine"
 msgstr "ペイロードのファイル状態マシンのデバッグ"
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:260
 msgid "use threads for file state machine"
 msgstr "ファイル状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:266
-msgid "debug FTP/HTTP data stream"
-msgstr "FTP/HTTP プロトコルデータストリームのデバッグ"
-
-#: lib/poptALL.c:268
-msgid "debug argv collections"
-msgstr "argv 収集のデバッグ"
-
-#: lib/poptALL.c:270
-msgid "debug WebDAV data stream"
-msgstr "WebDAV プロトコルデータストリームのデバッグ"
-
-#: lib/poptALL.c:275
+#: lib/poptALL.c:265
 msgid "debug option/argument processing"
 msgstr "オプション/引数処理中のデバッグ"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:270
 msgid "debug package state machine"
 msgstr "パッケージ状態マシンのデバッグ"
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:272
 msgid "use threads for package state machine"
 msgstr "パッケージ状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:286
 msgid "debug rpmio I/O"
 msgstr "rpmio 入出力のデバッグ"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr "URL キャッシュハンドリングのデバッグ"
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: オプションテーブルの設定が正しくありません (%d)\n"
@@ -4027,24 +4015,6 @@ msgstr "ファイル %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
-#: rpmio/rpmdav.c:560
-msgid "Authorization Required"
-msgstr ""
-
-#: rpmio/rpmdav.c:562
-msgid "Redirect"
-msgstr ""
-
-#: rpmio/rpmdav.c:564
-#, fuzzy
-msgid "Server Error"
-msgstr "サーバ I/O エラーです。"
-
-#: rpmio/rpmdav.c:566
-#, fuzzy
-msgid "Unknown Error"
-msgstr "(エラーなし)"
-
 #: rpmio/rpmlua.c:450
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -4070,62 +4040,62 @@ msgstr "無効なパッケージ番号: %s\n"
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek に失敗しました: %s\n"
 
-#: rpmio/rpmio.c:639
+#: rpmio/rpmio.c:586
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:609
 msgid "Bad server response"
 msgstr "サーバからの不正な応答。"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:611
 msgid "Server I/O error"
 msgstr "サーバ I/O エラーです。"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:613
 msgid "Server timeout"
 msgstr "サーバがタイムアウトしました。"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:615
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません。"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:617
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません。"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:619
 msgid "Failed to connect to server"
 msgstr "サーバとの接続に失敗しました。"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:621
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータ接続確立に失敗しました。"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "ローカルファイルの I/O エラーです。"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:625
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバを passive モードに設定できませんでした。"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません。"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:629
 msgid "Abort in progress"
 msgstr "処理中の中断"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:633
 msgid "Unknown or unexpected error"
 msgstr "不明または予期せぬエラー"
 
-#: rpmio/rpmio.c:1444
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "%s に %s (パスワード %s) でログイン中\n"
+#: rpmio/rpmio.c:915
+#, fuzzy, c-format
+msgid "URL helper failed: %s (%d)\n"
+msgstr "読み込みの失敗: %s (%d)\n"
 
 #: rpmio/rpmlog.c:55
 msgid "(no error)"
@@ -4158,26 +4128,16 @@ msgstr "警告: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "警告: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:163
+#: rpmio/url.c:156
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "警告: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:251
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "%s@%s のパスワード: "
-
-#: rpmio/url.c:277 rpmio/url.c:303
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "エラー: %sポートは数字でなければなりません。\n"
-
-#: rpmio/url.c:466
+#: rpmio/url.c:388
 msgid "url port must be a number\n"
 msgstr "url ポートは数字でなければなりません。\n"
 
-#: rpmio/url.c:533
+#: rpmio/url.c:455
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました: %s\n"
@@ -4208,220 +4168,3 @@ msgstr "%s: キャッシュ操作に失敗しました: ec %d。\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: manifest の読み込みに失敗: %s\n"
-
-#~ msgid "%s:  no newline on line number %d (only read %s)\n"
-#~ msgstr "%s:  %d 行目に改行がありません (%s のみ読み込みます)\n"
-
-#~ msgid "%s:  line number %d is missing fields (only read %s)\n"
-#~ msgstr "%s:  %d 行目にフィールドがありません (%s のみ読み込みます)\n"
-
-#~ msgid ""
-#~ "%s:  unable to compile regular expression %s on line number %d:  %s\n"
-#~ msgstr "%s:  正規表現 %s をコンパイルできません (%d 行目): %s\n"
-
-#~ msgid "%s:  invalid type specifier %s on line number %d\n"
-#~ msgstr "%s:  不正なタイプ指定 %s (%d 行目)\n"
-
-#~ msgid "%s:  invalid context %s on line number %d\n"
-#~ msgstr "%s: 不正なコンテキスト %s (%d 行目)\n"
-
-#, fuzzy
-#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
-#~ msgstr "rpm-list@redhat.com に連絡を下さい\n"
-
-#~ msgid "list install/erase scriptlets from package(s)"
-#~ msgstr "パッケージに含まれるインストール/削除スクリプトを表示します。"
-
-#~ msgid "set permissions of files in a package"
-#~ msgstr "パッケージ中のファイルのパーミッションを設定します。"
-
-#~ msgid "set user/group ownership of files in a package"
-#~ msgstr "パッケージ中のファイルのユーザ/グループ所有者権を設定します。"
-
-#~ msgid "list capabilities this package conflicts with"
-#~ msgstr "このパッケージと競合する機能を表示します。"
-
-#~ msgid "list other packages removed by installing this package"
-#~ msgstr ""
-#~ "このパッケージをインストールすることにより削除されるパッケージを表示しま"
-#~ "す。"
-
-#~ msgid "list capabilities that this package provides"
-#~ msgstr "このパッケージが提供する機能を表示します。"
-
-#~ msgid "list capabilities required by package(s)"
-#~ msgstr "パッケージに必要な機能を表示します。"
-
-#~ msgid "list descriptive information from package(s)"
-#~ msgstr "パッケージの情報を表示します。"
-
-#~ msgid "list change logs for this package"
-#~ msgstr "このパッケージの変更ログを一覧表示します。"
-
-#~ msgid "list trigger scriptlets from package(s)"
-#~ msgstr "パッケージに含まれるトリガースクリプトを表示します。"
-
-#~ msgid "list package(s) by install time, most recent first"
-#~ msgstr "インストール時刻が新しいものから順にパッケージを表示します。"
-
-#~ msgid "list all files from each package"
-#~ msgstr "パッケージ中の全ファイルを列挙します。"
-
-#~ msgid ""
-#~ "find package name that contains a provided capability (needs rpmdb-redhat "
-#~ "package installed)"
-#~ msgstr ""
-#~ "指定された機能を含むパッケージ名を検索します (rpmdb-redhat パッケージがイ"
-#~ "ンストールされている必要があります)"
-
-#~ msgid "set buildroot <policy> (e.g. compress man pages)"
-#~ msgstr "buildroot <policy>設定 (例えば man ページの圧縮)"
-
-#~ msgid "<policy>"
-#~ msgstr "<policy>"
-
-#~ msgid "enable configure <option> for build"
-#~ msgstr "ビルドのための設定 <option> を有効にします。"
-
-#~ msgid "<option>"
-#~ msgstr "<option>"
-
-#~ msgid "disable configure <option> for build"
-#~ msgstr "ビルドのための設定 <option> を無効にします。"
-
-#~ msgid "use database in DIRECTORY"
-#~ msgstr "DIRECTORY のデータベースを使用"
-
-#~ msgid "DIRECTORY"
-#~ msgstr "DIRECTORY"
-
-#~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "V3/V4 署名のみ検証可能です、V%u 署名をスキップします\n"
-
-#~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "V3/V4 署名のみ検証可能です、V%u 署名を飛ばします\n"
-
-#~ msgid "disable use of libneon for HTTP"
-#~ msgstr "HTTP に libneon を使用しないようにします。"
-
-#~ msgid "rbexclude takes a Transaction I.D. argument"
-#~ msgstr "rbexclude にはトランザクション ID 引数が必要です"
-
-#~ msgid "arbgoal takes a time/date stamp argument"
-#~ msgstr "arbgoal には日付/時刻スタンプの指定が必要です"
-
-#~ msgid "malformed arbgoal time/date stamp argument"
-#~ msgstr "arbgoal の時刻/日付スタンプの形式が正しくありません"
-
-#~ msgid "If transaction fails rollback to <date>"
-#~ msgstr "トランザクションに失敗した場合に <date> にロールバックする"
-
-#~ msgid "Exclude Transaction I.D. from rollback"
-#~ msgstr "ロールバックでトランザクション ID を除外する"
-
-#~ msgid "<tid>"
-#~ msgstr "<tid>"
-
-#~ msgid "Could not aquire transaction score entry for %s\n"
-#~ msgstr "%s のトランザクションスコアのエントリーを取得できませんでした。\n"
-
-#~ msgid "Setting %s to TID of 0x%08x\n"
-#~ msgstr "%s を TID 0x%08x に設定します。\n"
-
-#~ msgid "Attempting to mark %s as installed in trasaction score\n"
-#~ msgstr ""
-#~ "トランザクションスコアにおいて、インストールされたものとしてマーク %s を付"
-#~ "けようとしています。\n"
-
-#~ msgid "Autorollback Goal: %-24.24s\n"
-#~ msgstr "自動ロールバック 目標: %-24.24s\n"
-
-#~ msgid "Excluding TID %d from rollback\n"
-#~ msgstr "ロールバックから TID %d を除外しています\n"
-
-#~ msgid "Could not get header for transaction score!\n"
-#~ msgstr "トランザクションスコアのヘッダを取得できませんでした。\n"
-
-#~ msgid "NEVRA: %s"
-#~ msgstr "NEVRA: %s"
-
-#~ msgid "\tCould not get INSTALLTID for %s.\n"
-#~ msgstr "\t%s の INSTALLTID を取得できませんでした。\n"
-
-#~ msgid "\tINSTALLTID for %s is 0x%08x.\n"
-#~ msgstr "\t%s の INSTALLTID は 0x%08x です。\n"
-
-#~ msgid "gpg failed\n"
-#~ msgstr "gpg 失敗\n"
-
-#~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "V3 RSA/MD5 署名: "
-
-#~ msgid "Rollback to Autorollback goal requested.\n"
-#~ msgstr "自動ロールバック目標へのロールバックが要求されました。\n"
-
-#~ msgid "No Autorollback goal set.\n"
-#~ msgstr "自動ロールバック目標が設定されていません。\n"
-
-#~ msgid "Rolling back successful transactions to %s.\n"
-#~ msgstr "%s へのトランザクションのロールバックに成功しました。\n"
-
-#~ msgid "Creating rollback transaction to achieve goal\n"
-#~ msgstr ""
-#~ "アーカイブ目標のためのロールバックトランザクションを作成しています。\n"
-
-#~ msgid "Failed Tran:  0x%08x\n"
-#~ msgstr "トランザクション失敗:  0x%08x\n"
-
-#~ msgid "\t%s\n"
-#~ msgstr "\t%s\n"
-
-#~ msgid "\tRepackage Dir = %s...\n"
-#~ msgstr "\t再パッケージディレクトリ = %s...\n"
-
-#~ msgid "Could not aquire transaction score!.\n"
-#~ msgstr "トランザクションスコアを取得できませんでした。\n"
-
-#~ msgid "Could not acquire score entry %s!.\n"
-#~ msgstr "%s のスコアエントリを取得できませんでした。\n"
-
-#~ msgid "Processing failed install element %s for autorollback.\n"
-#~ msgstr ""
-#~ "自動ロールバックのために、インストールに失敗した要素 %s を処理していま"
-#~ "す。\n"
-
-#~ msgid "\tForce adding header to rpmdb.\n"
-#~ msgstr "\trpmdb にヘッダーを強制的に追加しています。\n"
-
-#~ msgid "\tCould not add failed package header to db!\n"
-#~ msgstr "\t失敗したパッケージのヘッダーを db に追加できませんでした。\n"
-
-#~ msgid "Processing failed erase element %s for autorollback.\n"
-#~ msgstr "自動ロールバックのために、削除に失敗した要素 %s を処理中です。\n"
-
-#~ msgid "\tForce removing header from rpmdb.\n"
-#~ msgstr "\trpmdb から強制的にヘッダを削除しています。\n"
-
-#~ msgid "\tCould not remove failed package header from db!\n"
-#~ msgstr "\tdb から失敗したパッケージのヘッダを削除できませんでした。\n"
-
-#~ msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
-#~ msgstr "_rpmtsAddRollbackElement: 不明なトランザクションエレメント種別。\n"
-
-#~ msgid "TYPE:  %d\n"
-#~ msgstr "TYPE:  %d\n"
-
-#~ msgid "Processing install element for autorollback...\n"
-#~ msgstr "自動ロールバックのために、インストール要素を処理中...\n"
-
-#~ msgid "\tNEVRA: %s\n"
-#~ msgstr "\tNEVRA: %s\n"
-
-#~ msgid "Processing erase element for autorollback...\n"
-#~ msgstr "自動ロールバックのために、削除要素を処理中...\n"
-
-#~ msgid "\tErase element already added for complimentary install.\n"
-#~ msgstr "\t削除要素は、既にインストール対象に追加されています。\n"
-
-#~ msgid "Could not add transaction element to autorollback!.\n"
-#~ msgstr "自動ロールバックにトランザクション要素を追加できませんでした。\n"

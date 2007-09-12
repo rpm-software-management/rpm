@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 00:42+0200\n"
+"POT-Creation-Date: 2007-09-12 11:45+0200\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -118,7 +118,7 @@ msgstr "Opções comuns para todos os modos do rpm:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:133 lib/poptALL.c:88
+#: rpmqv.c:133 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
@@ -1280,19 +1280,19 @@ msgstr "não verificar as dependências de compilação"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "gerar um cabeçalho do pacote compatível com os pacotes do rpm[23]"
 
-#: build/poptBT.c:214 lib/poptALL.c:214 lib/poptI.c:257 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:210 lib/poptI.c:257 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "não verificar as dependências do pacote"
 
-#: build/poptBT.c:216 lib/poptALL.c:216 lib/poptI.c:259 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:212 lib/poptI.c:259 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "não verifica a arquitectura do pacote"
 
-#: build/poptBT.c:218 lib/poptALL.c:222 lib/poptI.c:261 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:218 lib/poptI.c:261 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1573,7 +1573,7 @@ msgstr "o mntctl() falhou ao devolver o número de pontos de montagem: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "Não consegui analisar o %s: %s\n"
 
-#: lib/fs.c:147 rpmio/url.c:513
+#: lib/fs.c:147 rpmio/url.c:435
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "falhei ao aceder ao %s: %s\n"
@@ -1789,159 +1789,145 @@ msgstr "o %s não pode ser instalado\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:170
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:172
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:174
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "a criar a directoria %s\n"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:176
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:182
+#: lib/poptALL.c:178
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:180
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:186
+#: lib/poptALL.c:182
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:184
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:197
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:202 lib/poptALL.c:205
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:200
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:203
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "imprimir a expansão da macro <expr>+"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:210 lib/poptALL.c:229 lib/poptALL.c:233
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "ler o <fich:...> em vez do(s) ficheiro(s) de macros por omissão"
 
-#: lib/poptALL.c:211 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:219 lib/poptALL.c:253
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
 msgstr "desactivar o uso da API da libio(3)"
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:221
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "manda o stdout para <cmd>"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:222
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:233
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "usa <dir> como a directoria de topo"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:234
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:237
 msgid "display known query tags"
 msgstr "mostrar as opções de pesquisa conhecidas"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:239
 msgid "display final rpmrc and macro configuration"
 msgstr "mostra a configuração final do rpmrc e das macros"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:241
 msgid "provide less detailed output"
 msgstr "devolver um resultado menos detalhado"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:243
 msgid "provide more detailed output"
 msgstr "devolver um resultado mais detalhado"
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "imprime a versão do RPM que está a usar"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:258
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:260
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:266
-#, fuzzy
-msgid "debug FTP/HTTP data stream"
-msgstr "depurar a sequência de dados do protocolo"
-
-#: lib/poptALL.c:268
-msgid "debug argv collections"
-msgstr ""
-
-#: lib/poptALL.c:270
-#, fuzzy
-msgid "debug WebDAV data stream"
-msgstr "depurar a sequência de dados do protocolo"
-
-#: lib/poptALL.c:275
+#: lib/poptALL.c:265
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Erro interno no processamento de argumentos (%d) :-(\n"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:270
 #, fuzzy
 msgid "debug package state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:272
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:286
 msgid "debug rpmio I/O"
 msgstr "depurar a E/S da rpmio"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr "depurar a gestão da 'cache' de URLs"
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -4072,24 +4058,6 @@ msgstr "Ficheiro %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"
 
-#: rpmio/rpmdav.c:560
-msgid "Authorization Required"
-msgstr ""
-
-#: rpmio/rpmdav.c:562
-msgid "Redirect"
-msgstr ""
-
-#: rpmio/rpmdav.c:564
-#, fuzzy
-msgid "Server Error"
-msgstr "Erro de E/S do servidor"
-
-#: rpmio/rpmdav.c:566
-#, fuzzy
-msgid "Unknown Error"
-msgstr "(nenhum erro)"
-
 #: rpmio/rpmlua.c:450
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -4115,62 +4083,62 @@ msgstr "número de pacote inválido: %s\n"
 msgid "lua hook failed: %s\n"
 msgstr "%s: O Fseek falhou: %s\n"
 
-#: rpmio/rpmio.c:639
+#: rpmio/rpmio.c:586
 msgid "Success"
 msgstr "Sucesso"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:609
 msgid "Bad server response"
 msgstr "Resposta errada do servidor"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:611
 msgid "Server I/O error"
 msgstr "Erro de E/S do servidor"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:613
 msgid "Server timeout"
 msgstr "Tempo de espera pelo servidor expirado"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:615
 msgid "Unable to lookup server host address"
 msgstr "Incapaz de descobrir o endereço da máquina do servidor"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:617
 msgid "Unable to lookup server host name"
 msgstr "Incapaz de descobrir o nome da máquina do servidor"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:619
 msgid "Failed to connect to server"
 msgstr "Não consegui ligar ao servidor"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:621
 msgid "Failed to establish data connection to server"
 msgstr "Não consigo estabelecer uma ligação de dados ao servidor"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "Erro de E/S no ficheiro local"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:625
 msgid "Error setting remote server to passive mode"
 msgstr "Erro ao configurar o servidor remoto para o modo passivo"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "Ficheiro não encontrado no servidor"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:629
 msgid "Abort in progress"
 msgstr "Interrupção em progresso"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:633
 msgid "Unknown or unexpected error"
 msgstr "Erro desconhecido ou inesperado"
 
-#: rpmio/rpmio.c:1444
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "a ligar ao %s como %s com senha %s\n"
+#: rpmio/rpmio.c:915
+#, fuzzy, c-format
+msgid "URL helper failed: %s (%d)\n"
+msgstr "a leitura falhou: %s (%d)\n"
 
 #: rpmio/rpmlog.c:55
 msgid "(no error)"
@@ -4203,26 +4171,16 @@ msgstr "aviso: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "aviso: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:163
+#: rpmio/url.c:156
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "aviso: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:251
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "Senha para o %s@%s: "
-
-#: rpmio/url.c:277 rpmio/url.c:303
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "erro: o %sport tem de ser um número\n"
-
-#: rpmio/url.c:466
+#: rpmio/url.c:388
 msgid "url port must be a number\n"
 msgstr "o porto do URL tem de ser um número\n"
 
-#: rpmio/url.c:533
+#: rpmio/url.c:455
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"

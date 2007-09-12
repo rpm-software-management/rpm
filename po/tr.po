@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 00:42+0200\n"
+"POT-Creation-Date: 2007-09-12 11:45+0200\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -120,7 +120,7 @@ msgstr "Tüm rpm kipleri için ortak seçenekler:"
 msgid "%s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: rpmqv.c:133 lib/poptALL.c:88
+#: rpmqv.c:133 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Sürüm %s\n"
@@ -1292,19 +1292,19 @@ msgstr "paket baðýmlýlýklarýný denetlemez"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "paket baþlýklarýný (eski) rpm[23] paketleme ile uyumlu üretir"
 
-#: build/poptBT.c:214 lib/poptALL.c:214 lib/poptI.c:257 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:210 lib/poptI.c:257 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "paket baðýmlýlýklarý doðrulanmaz"
 
-#: build/poptBT.c:216 lib/poptALL.c:216 lib/poptI.c:259 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:212 lib/poptI.c:259 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "paket mimarisi denetlenmez"
 
-#: build/poptBT.c:218 lib/poptALL.c:222 lib/poptI.c:261 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:218 lib/poptI.c:261 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1586,7 +1586,7 @@ msgstr "mntctl() sonuçlanan hatalý baðlantý yerleri nedeniyle baþarýsýz: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s baþarýsýz: %s\n"
 
-#: lib/fs.c:147 rpmio/url.c:513
+#: lib/fs.c:147 rpmio/url.c:435
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -1802,159 +1802,145 @@ msgstr "%s yüklenemedi\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:170
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:172
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:174
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "%s dizini oluþturuluyor\n"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:176
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:182
+#: lib/poptALL.c:178
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:180
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:186
+#: lib/poptALL.c:182
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:184
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:197
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:202 lib/poptALL.c:205
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:200
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:203
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "<ifade>+ için makro açýlýmýný gösterir"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:210 lib/poptALL.c:229 lib/poptALL.c:233
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "öntanýmlý makro dosyasý yerine <dosya:...> okunur"
 
-#: lib/poptALL.c:211 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:219 lib/poptALL.c:253
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API kullanýmýný iptal eder"
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:221
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "standart çýktýyý <KOMUT>'a gönderir"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:222
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:233
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "Üst düzey dizin olarak <dizin> kullanýlýr"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:234
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:237
 msgid "display known query tags"
 msgstr "tanýmlanmýþ sorgulama etiketlerini gösterir"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:239
 msgid "display final rpmrc and macro configuration"
 msgstr "son rpmrc ve makro yapýlandýrmasýný gösterir"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:241
 msgid "provide less detailed output"
 msgstr "daha az ayrýntýlý çýktý saðlar"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:243
 msgid "provide more detailed output"
 msgstr "daha ayrýntýlý çýktý saðlar"
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "Kullanýlan RPM sürümünü verir"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:258
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:260
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:266
-#, fuzzy
-msgid "debug FTP/HTTP data stream"
-msgstr "protokol veri akýþýnda hata kontrolu"
-
-#: lib/poptALL.c:268
-msgid "debug argv collections"
-msgstr ""
-
-#: lib/poptALL.c:270
-#, fuzzy
-msgid "debug WebDAV data stream"
-msgstr "protokol veri akýþýnda hata kontrolu"
-
-#: lib/poptALL.c:275
+#: lib/poptALL.c:265
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "(%d) argümaný iþlenirken iç hata oluþtu :-(\n"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:270
 #, fuzzy
 msgid "debug package state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:272
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:286
 msgid "debug rpmio I/O"
 msgstr "rpmio G/Ç hata kontrolu"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr "URL arabellek kullanýmý hata kontrolu"
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -4081,24 +4067,6 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmdav.c:560
-msgid "Authorization Required"
-msgstr ""
-
-#: rpmio/rpmdav.c:562
-msgid "Redirect"
-msgstr ""
-
-#: rpmio/rpmdav.c:564
-#, fuzzy
-msgid "Server Error"
-msgstr "Sunucu G/Ç hatasý"
-
-#: rpmio/rpmdav.c:566
-#, fuzzy
-msgid "Unknown Error"
-msgstr "(hata yok)"
-
 #: rpmio/rpmlua.c:450
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -4124,62 +4092,62 @@ msgstr "geçersiz paket numarasý: %s\n"
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek baþarýsýz: %s\n"
 
-#: rpmio/rpmio.c:639
+#: rpmio/rpmio.c:586
 msgid "Success"
 msgstr "Baþarýlý"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:609
 msgid "Bad server response"
 msgstr "Sunucudan kötü yanýt"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:611
 msgid "Server I/O error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:613
 msgid "Server timeout"
 msgstr "Sunucu zaman aþýmý"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:615
 msgid "Unable to lookup server host address"
 msgstr "Sunucu makina adresi bulunamadý"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:617
 msgid "Unable to lookup server host name"
 msgstr "Sunucu makina ismi bulunamadý"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:619
 msgid "Failed to connect to server"
 msgstr "Sunucuya baðlanýlamadý"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:621
 msgid "Failed to establish data connection to server"
 msgstr "Sunucuya veri baðlantýsý kurulamadý"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "Yerel dosyaya G/Ç hatasý"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:625
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokma ayarlarýnda hata"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:629
 msgid "Abort in progress"
 msgstr "Kesme iþlemi sürüyor"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:633
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1444
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"
+#: rpmio/rpmio.c:915
+#, fuzzy, c-format
+msgid "URL helper failed: %s (%d)\n"
+msgstr "okuma baþarýsýz: %s (%d)\n"
 
 #: rpmio/rpmlog.c:55
 msgid "(no error)"
@@ -4212,26 +4180,16 @@ msgstr "uyarý: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "uyarý: u %p veri %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:163
+#: rpmio/url.c:156
 #, fuzzy, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "uyarý: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:251
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "%s@%s için parola: "
-
-#: rpmio/url.c:277 rpmio/url.c:303
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "hata: %sport bir sayý olmalý\n"
-
-#: rpmio/url.c:466
+#: rpmio/url.c:388
 msgid "url port must be a number\n"
 msgstr "url portu bir sayý olmalý\n"
 
-#: rpmio/url.c:533
+#: rpmio/url.c:455
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"
@@ -4264,810 +4222,3 @@ msgstr "%s: açýlamadý: %s\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: bildirge okuma baþarýsýz: %s\n"
-
-#, fuzzy
-#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
-#~ msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
-
-#~ msgid "gpg failed\n"
-#~ msgstr "gpg hata verdi\n"
-
-#, fuzzy
-#~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "tüm MD5 imzalarýný atlar"
-
-#, fuzzy
-#~ msgid "disable use of libneon for HTTP"
-#~ msgstr "libio(3) API kullanýmýný iptal eder"
-
-#~ msgid "Common options for all rpm modes:"
-#~ msgstr "Tüm rpm kipleri için ortak seçenekler:"
-
-#~ msgid "--replacefiles may only be specified during package installation"
-#~ msgstr "--replacefiles sadece paket kurulumu sýrasýnda kullanýlabilir"
-
-#~ msgid "line %d: File name not permitted: %s\n"
-#~ msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
-
-#~ msgid "install even if the package replaces installed files"
-#~ msgstr "paket dosyalarý mevcut dosyalarla yer deðiþtirse bile paketi kurar"
-
-#~ msgid "query of %s failed\n"
-#~ msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
-
-#~ msgid "old format source packages cannot be queried\n"
-#~ msgstr "eski biçem kaynak paketleri sorgulanamaz\n"
-
-#~ msgid "no packages\n"
-#~ msgstr "paket yok\n"
-
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "multilib dosya yolu dýþlanýyor %s%s\n"
-
-#~ msgid "only one of --prefix or --relocate may be used"
-#~ msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"
-
-#~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-#~ msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
-
-#~ msgid "file is not regular -- skipping size check\n"
-#~ msgstr "dosya normal deðil -- uzunluk denetimi atlanýyor\n"
-
-#~ msgid "No signature\n"
-#~ msgstr "Ýmza yok\n"
-
-#~ msgid "Old PGP signature\n"
-#~ msgstr "Eski PGP imzasý\n"
-
-#~ msgid "Old (internal-only) signature!  How did you get that!?\n"
-#~ msgstr "Eski imza !!! Bunu nasýl aldýn!?\n"
-
-#~ msgid ""
-#~ "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-#~ msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, waitpid sonucu %s\n"
-
-#, fuzzy
-#~ msgid "%s: base64 encode failed.\n"
-#~ msgstr "%s: readLead baþarýsýz\n"
-
-#~ msgid "%s: readLead failed\n"
-#~ msgstr "%s: readLead baþarýsýz\n"
-
-#, fuzzy
-#~ msgid "h#%7u: %s"
-#~ msgstr "dosya %s: %s\n"
-
-#~ msgid "unexpected arguments to --querytags "
-#~ msgstr "--querytags ile beklenmeyen girdiler"
-
-#~ msgid "<cmd>"
-#~ msgstr "<kmt>"
-
-#~ msgid "read <file:...> instead of default macro file(s)"
-#~ msgstr "öntanýmlý makro dosyasý yerine <dosya:...> okunur"
-
-#~ msgid "<file:...>"
-#~ msgstr "<dosya:...>"
-
-#~ msgid "read <file:...> instead of default rpmrc file(s)"
-#~ msgstr "öntanýmlý rpmrc dosyasý yerine <dosya:...> okunur"
-
-#~ msgid "Usage: %s {--help}\n"
-#~ msgstr "Kullanýmý: %s {--help}\n"
-
-#~ msgid "The --rcfile option has been eliminated.\n"
-#~ msgstr "--rcfile seçeneði kaldýrýlmýþtý.\n"
-
-#~ msgid "Use \"--macros <file:...>\" instead.\n"
-#~ msgstr "Yerine \"--macros <dosya:...>\" kullanýn.\n"
-
-#~ msgid "--dbpath given for operation that does not use a database"
-#~ msgstr "--dbpath bir veritabaný kullanmayan iþlemler için verilmiþ"
-
-#~ msgid "query/verify a package file (i.e. a binary *.rpm file)"
-#~ msgstr ""
-#~ "bir paket dosyasýný sorgular/denetler (örn. bir çalýþtýrýlabilir *.rpm "
-#~ "dosyasý)"
-
-#~ msgid "display a verbose file listing"
-#~ msgstr "ayrýntýlý dosya listesi gösterir"
-
-#, fuzzy
-#~ msgid "don't verify package digest"
-#~ msgstr "paket baðýmlýlýklarý doðrulanmaz"
-
-#, fuzzy
-#~ msgid "don't verify package signature"
-#~ msgstr "paket imzasýný denetler"
-
-#~ msgid "define macro <name> with value <body>"
-#~ msgstr "<isim> makrosunu <gövde> deðeriyle tanýmlar"
-
-#~ msgid "'<name> <body>'"
-#~ msgstr "'<isim> <gövde>'"
-
-#~ msgid "<expr>+"
-#~ msgstr "<ifade>+"
-
-#~ msgid "removing these packages would break dependencies:\n"
-#~ msgstr ""
-#~ "bu paketin silinmesi aþaðýdakilerin baðýmlýlýklarýný etkileyecektir:\n"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Requires: %s\n"
-#~ msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Conflicts: %s\n"
-#~ msgstr "%s paketi çeliþiyor: %s\n"
-
-#~ msgid "rpm: %s\n"
-#~ msgstr "rpm: %s\n"
-
-#~ msgid "Usage: rpm {--help}"
-#~ msgstr "Kullanýmý: rpm {--help}"
-
-#~ msgid "       rpm {--version}"
-#~ msgstr "       rpm {--version}"
-
-#~ msgid "       rpm {--initdb}   [--dbpath <dir>]"
-#~ msgstr "       rpm {--initdb}   [--dbpath <dizin>]"
-
-#~ msgid ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-#~ msgstr ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <dizin>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <dosya>] [--ignorearch] [--dbpath "
-#~ "<dizin>]"
-
-#~ msgid ""
-#~ "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-#~ msgstr ""
-#~ "                        [--prefix <dizin>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-
-#~ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-#~ msgstr "                        [--ftpproxy <makina>] [--ftpport <port>]"
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>]"
-#~ msgstr "                        [--httpproxy <makina>] [--httpport <port>]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--noorder] [--relocate "
-#~ "oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--justdb] [--noorder] [--relocate "
-#~ "eskiDizin=yeniDizin]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath <path>]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath "
-#~ "<dyolu>]"
-
-#~ msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-#~ msgstr "                        [--ignoresize] dosya1.rpm ... dosyaN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--oldpackage] [--root <dizin>] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <dosya>]"
-
-#~ msgid ""
-#~ "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-#~ msgstr ""
-#~ "                        [--ignorearch]  [--dbpath <dizin>] [--prefix "
-#~ "<dizin>] "
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>] "
-#~ msgstr "                        [--httpproxy <makina>] [--httpport <port>]"
-
-#~ msgid ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-
-#~ msgid "                        [--noorder] [--relocate oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--noorder] [--relocate eskiDizin=yeniDizin]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--excludepath <dyolu>] [--"
-#~ "ignoresize]"
-
-#~ msgid "                        file1.rpm ... fileN.rpm"
-#~ msgstr "                        dosya1.rpm ... dosyaN.rpm"
-
-#~ msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
-#~ msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <dizin>] [--rcfile <dosya>]"
-
-#~ msgid ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-#~ msgstr ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-
-#~ msgid "                        [--triggeredby]"
-#~ msgstr "                        [--triggeredby]"
-
-#~ msgid "                        [--provides] [--triggers] [--dump]"
-#~ msgstr "                        [--provides] [--triggers] [--dump]"
-
-#~ msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-#~ msgstr "                        [--changelog] [--dbpath <dizin>] [hedefler]"
-
-#~ msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--verify -V -y} [-afpg] [--root <dizin>] [--rcfile <dosya>]"
-
-#~ msgid ""
-#~ "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-#~ msgstr ""
-#~ "                        [--dbpath <dizin>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-
-#~ msgid "                        [--nomd5] [targets]"
-#~ msgstr "                        [--nomd5] [hedefler]"
-
-#~ msgid "       rpm {--setperms} [-afpg] [target]"
-#~ msgstr "       rpm {--setperms} [-afpg] [hedef]"
-
-#~ msgid "       rpm {--setugids} [-afpg] [target]"
-#~ msgstr "       rpm {--setugids} [-afpg] [hedef]"
-
-#~ msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-#~ msgstr "       rpm {--freshen -F} dosya1.rpm ... dosyaN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--erase -e] [--root <dizin>] [--noscripts] [--rcfile <dosya>]"
-
-#~ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-#~ msgstr ""
-#~ "                        [--dbpath <dizin>] [--nodeps] [--allmatches]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--notriggers] package1 ... packageN"
-#~ msgstr "                        [--justdb] [--notriggers] paket1 ... paketN"
-
-#~ msgid ""
-#~ "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--resign} [--rcfile <dosya>] paket1 paket2 ... paketN"
-
-#~ msgid ""
-#~ "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--addsign} [--rcfile <dosya>] paket1 paket2 ... paketN"
-
-#~ msgid ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<dosya>]"
-
-#~ msgid "                           package1 ... packageN"
-#~ msgstr "                           paket1 ... paketN"
-
-#~ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <dosya>] [--dbpath <dizin>]"
-
-#~ msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--verifydb} [--rcfile <dosya>] [--dbpath <dizin>]"
-
-#~ msgid "       rpm {--querytags}"
-#~ msgstr "       rpm {--querytags}"
-
-#~ msgid "Usage:"
-#~ msgstr "Kullanýmý:"
-
-#~ msgid "print this message"
-#~ msgstr "Bu iletiyi gösterir"
-
-#~ msgid "   All modes support the following arguments:"
-#~ msgstr "   Tüm kipler aþaðýdaki argümanlarý destekler:"
-
-#~ msgid "    --define '<name> <body>'"
-#~ msgstr "    --define '<isim> <gövde>'"
-
-#~ msgid "    --eval '<name>+'      "
-#~ msgstr "    --eval '<isim>+'      "
-
-#~ msgid "print the expansion of macro <name> to stdout"
-#~ msgstr "<isim> makrosunun açýlýmýný gösterir"
-
-#~ msgid "    --pipe <cmd>          "
-#~ msgstr "    --pipe <komut>        "
-
-#~ msgid "    --rcfile <file>       "
-#~ msgstr "    --rcfile <dosya>      "
-
-#~ msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-#~ msgstr "/etc/rpmrc ve $HOME/.rpmrc yerine <dosya> kullanýlýr"
-
-#~ msgid "be a little more verbose"
-#~ msgstr "daha çok açýklama verilir"
-
-#~ msgid "be incredibly verbose (for debugging)"
-#~ msgstr "çok fazla açýklama verilir (hata ayýklama için)"
-
-#~ msgid ""
-#~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr ""
-#~ "   URL'lerde yerinde iþlem için kurma, güncelleme ve sorgulamaya (-p ile) "
-#~ "izin verir"
-
-#~ msgid "   of file names as well as the following options:"
-#~ msgstr "   dosya isimleriyle aþaðýdaki seçenekler:"
-
-#~ msgid "      --ftpproxy <host>   "
-#~ msgstr "      --ftpproxy <makina> "
-
-#~ msgid "hostname or IP of ftp proxy"
-#~ msgstr "ftp proxy'nin makina ismi ya da IP numarasý"
-
-#~ msgid "      --ftpport <port>    "
-#~ msgstr "      --ftpport <port>    "
-
-#~ msgid "port number of ftp server (or proxy)"
-#~ msgstr "FTP sunucusunun (ya da proxy'nin) port numarasý"
-
-#~ msgid "      --httpproxy <host>  "
-#~ msgstr "      --httpproxy <makina>  "
-
-#~ msgid "hostname or IP of http proxy"
-#~ msgstr "makina ismi veya http proxy'nin IP numarasý"
-
-#~ msgid "      --httpport <port>   "
-#~ msgstr "      --httpport <port>   "
-
-#~ msgid "port number of http server (or proxy)"
-#~ msgstr "http sunucusunun (ya da proxy'nin) port numarasý"
-
-#~ msgid "query mode"
-#~ msgstr "sorgulama kipi"
-
-#~ msgid "      --dbpath <dir>      "
-#~ msgstr "      --dbpath <dizin>    "
-
-#~ msgid "use <dir> as the directory for the database"
-#~ msgstr "veritabaný dizini olarak <dizin> kullanýlýr"
-
-#~ msgid "      --queryformat <qfmt>"
-#~ msgstr "      --queryformat <sorbçm>"
-
-#~ msgid "use <qfmt> as the header format (implies --info)"
-#~ msgstr "baþlýk biçemi olarak <sbçm> kullanýlýr (--info içerir)"
-
-#~ msgid "      --root <dir>        "
-#~ msgstr "      --root <dizin>      "
-
-#~ msgid "      Package specification options:"
-#~ msgstr "      Paket özellik seçenekleri:"
-
-#~ msgid "query all packages"
-#~ msgstr "tüm paketler sorgulanýr"
-
-#~ msgid "        -f <file>+        "
-#~ msgstr "        -f <dosya>+       "
-
-#~ msgid "query package owning <file>"
-#~ msgstr "<dosya> içeren paket sorgulanýr"
-
-#~ msgid "        -p <packagefile>+ "
-#~ msgstr "        -p <paketDosyasý>+ "
-
-#~ msgid "query (uninstalled) package <packagefile>"
-#~ msgstr "(kurulu olmayan) <paketDosyasý> paketi sorgulanýr"
-
-#~ msgid "        --triggeredby <pkg>"
-#~ msgstr "        --triggeredby <pkt>"
-
-#~ msgid "query packages triggered by <pkg>"
-#~ msgstr "<pkt> tarafýndan tetiklenen paketler sorgulanýr"
-
-#~ msgid "        --whatprovides <cap>"
-#~ msgstr "        --whatprovides <ytnk>"
-
-#~ msgid "query packages which provide <cap> capability"
-#~ msgstr "<ytnk> yeteneðini saðlayan paketler sorgulanýr"
-
-#~ msgid "        --whatrequires <cap>"
-#~ msgstr "        --whatrequires <ytnk>"
-
-#~ msgid "query packages which require <cap> capability"
-#~ msgstr "<ytnk> yeteneðini gerektiren paketler sorgulanýr"
-
-#~ msgid "      Information selection options:"
-#~ msgstr "      Bilgi seçim seçenekleri:"
-
-#~ msgid "display package information"
-#~ msgstr "paket bilgileri gösterilir"
-
-#~ msgid "display the package's change log"
-#~ msgstr "Paketin 'Change Log' (deðiþiklik) bilgisi gösterilir"
-
-#~ msgid "display package file list"
-#~ msgstr "Paketin içerdiði dosyalar gösterilir"
-
-#~ msgid "show file states (implies -l)"
-#~ msgstr "dosya durumlarýný gösterir (-l içerir)"
-
-#~ msgid "list only documentation files (implies -l)"
-#~ msgstr "sadece belge dosyalarýný gösterir (-l içerir)"
-
-#~ msgid "list only configuration files (implies -l)"
-#~ msgstr "sadece yapýlandýrma dosyalarýný gösterir (-l ile)"
-
-#~ msgid ""
-#~ "show all verifiable information for each file (must be used with -l, -c, "
-#~ "or -d)"
-#~ msgstr ""
-#~ "her dosya için doðrulanabilir bilgileri gösterir (-l, -c veya -d ile "
-#~ "kullanýlmalý)"
-
-#~ msgid "list capabilities package provides"
-#~ msgstr "paketin saðladýðý yetenekleri gösterir"
-
-#~ msgid "list package dependencies"
-#~ msgstr "paketin baðýmlýlýklarýný gösterir"
-
-#~ msgid "print the various [un]install scripts"
-#~ msgstr "paketin çeþitli kurma/kaldýrma betiklerini gösterir"
-
-#~ msgid "show the trigger scripts contained in the package"
-#~ msgstr "paketin içerdiði tetikleme betiklerini gösterir"
-
-#~ msgid ""
-#~ "verify a package installation using the same same package specification "
-#~ "options as -q"
-#~ msgstr ""
-#~ "bir paketin kurulumunu -q ile belirtilen paket parametrelerini kullanarak "
-#~ "denetler"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "dosyalarýn 'md5-checksum' larýný denetlemez"
-
-#~ msgid "do not verify file attributes"
-#~ msgstr "dosya özelliklerini denetlemez"
-
-#~ msgid "list the tags that can be used in a query format"
-#~ msgstr "sorgulama sýrasýnda kullanýlabilecek etiketleri gösterir"
-
-#~ msgid "    --install <packagefile>"
-#~ msgstr "    --install <paketDosyasý>"
-
-#~ msgid "    -i <packagefile>      "
-#~ msgstr "    -i <paketDosyasý>     "
-
-#~ msgid "      --excludepath <path>"
-#~ msgstr "      --excludepath <dizin>"
-
-#~ msgid "skip files in path <path>"
-#~ msgstr "<dizin> yolunda bulunan dosyalarý atlar"
-
-#~ msgid "      --relocate <oldpath>=<newpath>"
-#~ msgstr "   --relocate <eskidizin>=<yenidizin>"
-
-#~ msgid "relocate files from <oldpath> to <newpath>"
-#~ msgstr "<eskidizin> deki dosyalarý <yenidizin> e yerleþtirir"
-
-#~ msgid "      --prefix <dir>      "
-#~ msgstr "      --prefix <dizin>    "
-
-#~ msgid "don't execute any installation scripts"
-#~ msgstr "kurulum betiklerini çalýþtýrmaz."
-
-#~ msgid "don't execute any scripts triggered by this package"
-#~ msgstr "bu paket tarafýndan tetiklenen betikleri çalýþtýrmaz"
-
-#~ msgid "    --upgrade <packagefile>"
-#~ msgstr "   --upgrade <paketDosyasý>"
-
-#~ msgid "    -U <packagefile>      "
-#~ msgstr "    -U <paketDosyasý>     "
-
-#~ msgid "upgrade package (same options as --install, plus)"
-#~ msgstr "Paketi günceller (seçenekler --install ile ayný, fazlasý var)"
-
-#~ msgid "    --erase <package>"
-#~ msgstr "    --erase <paket>  "
-
-#~ msgid "    -e <package>          "
-#~ msgstr "    -e <paket>     "
-
-#~ msgid "do not execute any package specific scripts"
-#~ msgstr "pakete özgü hiçbir betik çalýþtýrýlmaz"
-
-#~ msgid "    -b<stage> <spec>      "
-#~ msgstr "    -b<adým> <spec>       "
-
-#~ msgid "    -t<stage> <tarball>   "
-#~ msgstr "    -t<adým> <tarPaketi>  "
-
-#~ msgid "build package, where <stage> is one of:"
-#~ msgstr "paketi aþaðýdaki <adým> lardan biri ile oluþturur:"
-
-#~ msgid "prep (unpack sources and apply patches)"
-#~ msgstr "hazýrlama (kaynak dosyalarý açýlýr ve yamalar uygulanýr)"
-
-#~ msgid "list check (do some cursory checks on %files)"
-#~ msgstr "denetimi gösterir (%files üstünkörü bir kontrol edilir)"
-
-#~ msgid "compile (prep and compile)"
-#~ msgstr "derler (hazýrlar ve derler)"
-
-#~ msgid "install (prep, compile, install)"
-#~ msgstr "kurar (hazýrlar, derler, kurar)"
-
-#~ msgid "binary package (prep, compile, install, package)"
-#~ msgstr ""
-#~ "çalýþtýrýlabilir paket oluþturur (hazýrlar, derler, kurar, paketler)"
-
-#~ msgid "bin/src package (prep, compile, install, package)"
-#~ msgstr ""
-#~ "çalýþtýrýlabilir ve kaynak paketlerini oluþturur (hazýrlar, derler, "
-#~ "kurar, paketler)"
-
-#~ msgid "remove spec file when done"
-#~ msgstr "iþlem sonunda spec dosyasýný siler"
-
-#~ msgid "      --buildroot <dir>   "
-#~ msgstr "      --buildroot <dizin> "
-
-#~ msgid "use <dir> as the build root"
-#~ msgstr "<dizin> paket kök dizini olarak kullanýlýr"
-
-#~ msgid "      --target=<platform>+"
-#~ msgstr "      --target=<platform>+"
-
-#~ msgid "build the packages for the build targets platform1...platformN."
-#~ msgstr "platform1...platformN hedefleri için paketleri derler."
-
-#~ msgid "do not execute any stages"
-#~ msgstr "adýmlarýn hiç birini çalýþtýrmaz"
-
-#~ msgid "    --rebuild <src_pkg>   "
-#~ msgstr "   --rebuild <kaynak_pkt> "
-
-#~ msgid ""
-#~ "install source package, build binary package and remove spec file, "
-#~ "sources, patches, and icons."
-#~ msgstr ""
-#~ "kaynak paketini açar, çalýþýr paketi oluþturur ve spec dosyasý, "
-#~ "kaynaklar, yamalar ile kýsayol simgelerini siler"
-
-#~ msgid "    --recompile <src_pkg> "
-#~ msgstr "  --recompile <kaynak_pkt> "
-
-#~ msgid "like --rebuild, but don't build any package"
-#~ msgstr "--rebuild gibi, ama paket oluþturmaz"
-
-#~ msgid "    --resign <pkg>+       "
-#~ msgstr "    --resign <pkt>+       "
-
-#~ msgid "    --addsign <pkg>+      "
-#~ msgstr "    --addsign <pkt>+      "
-
-#~ msgid "add a signature to a package"
-#~ msgstr "pakete bir imza ekler"
-
-#~ msgid "    --checksig <pkg>+"
-#~ msgstr "    --checksig <pkt>+"
-
-#~ msgid "    -K <pkg>+             "
-#~ msgstr "    -K <pkt>+             "
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "tüm GPG imzalarýný atlar"
-
-#~ msgid "make sure a valid database exists"
-#~ msgstr "geçerli bir veritabanýnýz varsa kullanmayýn"
-
-#~ msgid "rebuild database from existing database"
-#~ msgstr "mevcut veritabaný kullanýlarak veritabaný yeniden oluþturulur"
-
-#~ msgid ""
-#~ "set the file permissions to those in the package database using the same "
-#~ "package specification options as -q"
-#~ msgstr ""
-#~ "-q ile belirlenen ayný paket özellik seçeneklerini kullanarak dosya "
-#~ "izinlerini paket veritabanýnda düzenler"
-
-#~ msgid ""
-#~ "set the file owner and group to those in the package database using the "
-#~ "same package specification options as -q"
-#~ msgstr ""
-#~ "-q ile belirlenen ayný paket özellik seçeneklerini kullanarak dosya "
-#~ "sahibi ve grubunu paket veritabanýnda düzenler"
-
-#~ msgid "-u and --uninstall are deprecated and no longer work.\n"
-#~ msgstr "-u ve --uninstall komutlarý eskidirler ve çalýþmamaktadýrlar.\n"
-
-#~ msgid "Use -e or --erase instead.\n"
-#~ msgstr "Yerine  -e veya --erase kullanýn.\n"
-
-#~ msgid "Use --macros with a colon separated list of macro files to read.\n"
-#~ msgstr ""
-#~ "--macros ile okunacak makro dosyalarýný iki nokta üstüstelerle ayrýlmýþ "
-#~ "bir liste olarak verin.\n"
-
-#~ msgid ""
-#~ "script disabling options may only be specified during package "
-#~ "installation, erasure, and verification"
-#~ msgstr ""
-#~ "betik iptal seçenekleri sadece paketin kurulmasý, kaldýrýlmasý, silinmesi "
-#~ "ve denetlenmesi sýrasýnda belirtilebilir"
-
-#~ msgid "--apply may only be specified during package installation"
-#~ msgstr "--apply sadece paketin kurulumu sýrasýnda belirtilebilir"
-
-#~ msgid "--oldpackage may only be used during upgrades"
-#~ msgstr "--oldpackage sadece güncelleme sýrasýnda kullanýlabilir"
-
-#~ msgid "--nopgp may only be used during signature checking"
-#~ msgstr "--nopgp sadece imza kontrolü sýrasýnda kullanýlabilir"
-
-#~ msgid "--nogpg may only be used during signature checking"
-#~ msgstr "--nogpg sadece imza kontrolü sýrasýnda kullanýlabilir"
-
-#~ msgid ""
-#~ "--nomd5 may only be used during signature checking and package "
-#~ "verification"
-#~ msgstr ""
-#~ "--nomd5 sadece imza kontrolü veya paket denetimi sýrasýnda kullanýlýr"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "imzasý kontrol edilecek paket(ler) belirtilmedi"
-
-#~ msgid "no packages given for signing"
-#~ msgstr "imzalanacak paket(ler) belirtilmedi"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "sistemden silinecek paket(ler) belirtilmedi"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "tüm paketlerin sorgulanmasý için fazladan argümanlar belirtildi"
-
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "tüm paketlerin denetlenmesi için fazladan argümanlar belirtildi"
-
-#~ msgid "%s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s EVET (dosyalar eklendi)\n"
-
-#~ msgid "%s: %-45s %-s (cached)\n"
-#~ msgstr "%s: %-45s %-s (arabellekli)\n"
-
-#~ msgid "%s: %-45s YES (db files)\n"
-#~ msgstr "%s: %-45s EVET (db dosyalarý)\n"
-
-#~ msgid "%s: %-45s YES (db package)\n"
-#~ msgstr "%s: %-45s EVET (db paketi)\n"
-
-#~ msgid "%s: %-45s NO\n"
-#~ msgstr "%s: %-45s HAYIR\n"
-
-#~ msgid "%s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
-
-#~ msgid "package %s-%s-%s require not satisfied: %s\n"
-#~ msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "%s paketi çeliþiyor: %s\n"
-
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "rpm denetleme kipi (eski tip)"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "%s/packages.rpm açýlamýyor\n"
-
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "PGP kullanarak imza üretiliyor.\n"
-
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "GPG kullanýlarak imza üretiliyor.\n"
-
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "paket hem kullanýcý ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
-#~ "deðil)\n"
-
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "paket hem grup ismi hem de kimlik listelerinden yoksun (bu hiç iyi "
-#~ "deðil)\n"
-
-#~ msgid "%s-%s-%s: immutable header region digest check failed\n"
-#~ msgstr "%s-%s-%s: deðiþmez baþlýk alaný özet denetimi baþarýsýz\n"
-
-#~ msgid ""
-#~ "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
-#~ msgstr ""
-#~ "%d(0x%08x) göreli konumunda paket zinciri kopuk, yeniden baðlanmaya "
-#~ "çalýþýlýyor...\n"
-
-#~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-#~ msgstr "%d(0x%08x) göreli konumunda kopan zincir yeniden baðlanýyor.\n"
-
-#~ msgid "removed db file        %s\n"
-#~ msgstr "silinen db dosyasý     %s\n"
-
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "açýlan db dosyasý      %s kip 0x%x\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "Veritabaný için %s kilit alýnamadý\n"
-
-#~ msgid ""
-#~ "free list corrupt (%u)- please run\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "More information is available from http://www.rpm.org or the rpm-"
-#~ "list@redhat.com mailing list\n"
-#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
-#~ msgstr ""
-#~ "serbest liste bozuk (%u)- lütfen \t\"rpm --rebuilddb\" ile çalýþtýrýn\n"
-#~ "eðer \"rpm --rebuilddb\" çalýþmazsa problemin çözümü ve\n"
-#~ "daha fazla bilgi için http://www.rpm.org adresine bakýn veya rpm-"
-#~ "list@redhat.com e-posta listesine kaydolun.\n"
-
-#~ msgid ""
-#~ "old format database is present; use --rebuilddb to generate a new format "
-#~ "database\n"
-#~ msgstr ""
-#~ "veritabaný eski sürüme ait; yeni sürüm bir veritabaný oluþturmak için --"
-#~ "rebuilddb kullanýn\n"
-
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "paketler taranýrken hata(%d)\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(bilinmeyen tür)"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "pgp çalýþtýrýlamadý (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "gpg çalýþtýrýlamadý\n"
-
-#~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-#~ msgstr ""
-#~ "pgp çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn.\n"
-
-#~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-#~ msgstr ""
-#~ "gpg çalýþtýrýlamadý. GPG kontrollerini atlamak için --nogpg kullanýn.\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "pgp çalýþtýrýlamadý\n"

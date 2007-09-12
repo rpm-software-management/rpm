@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 00:42+0200\n"
+"POT-Creation-Date: 2007-09-12 11:45+0200\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -119,7 +119,7 @@ msgstr "Fælles tilvalg for alle rpm-tilstande:"
 msgid "%s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: rpmqv.c:133 lib/poptALL.c:88
+#: rpmqv.c:133 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
@@ -1278,19 +1278,19 @@ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "generér pakkehoved(er), der er kompatible med (gamle) rpm[23]-indpakninger"
 
-#: build/poptBT.c:214 lib/poptALL.c:214 lib/poptI.c:257 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:210 lib/poptI.c:257 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: build/poptBT.c:216 lib/poptALL.c:216 lib/poptI.c:259 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:212 lib/poptI.c:259 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: build/poptBT.c:218 lib/poptALL.c:222 lib/poptI.c:261 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:218 lib/poptI.c:261 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1571,7 +1571,7 @@ msgstr "mntctl() returnerede ingen monteringspunkter: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "kunne ikke finde %s: %s\n"
 
-#: lib/fs.c:147 rpmio/url.c:513
+#: lib/fs.c:147 rpmio/url.c:435
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
@@ -1785,157 +1785,143 @@ msgstr "%s kunne ikke installeres\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:170
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:172
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:174
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr ""
 "opretter kataloget %s\n"
 "\n"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:176
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:182
+#: lib/poptALL.c:178
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:180
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:186
+#: lib/poptALL.c:182
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:184
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:197
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:202 lib/poptALL.c:205
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:200
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:203
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "udlæs makroudvidelse af <udtryk>+"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:210 lib/poptALL.c:229 lib/poptALL.c:233
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "læs <fil:...> i stedet for standard makrofil(er)"
 
-#: lib/poptALL.c:211 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:219 lib/poptALL.c:253
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
 msgstr "undlad at benytte libio(3)-API"
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:221
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "send standard-ud til <kmd>"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:222
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:233
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "brug <katalog> som topniveau-katalog"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:234
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:237
 msgid "display known query tags"
 msgstr "vis kendte forespørgselsmærker"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:239
 msgid "display final rpmrc and macro configuration"
 msgstr "vis den endelige rpmrc og makrokonfiguration"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:241
 msgid "provide less detailed output"
 msgstr "medtag mindre detaljerede oplysninger"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:243
 msgid "provide more detailed output"
 msgstr "medtag mere detaljerede oplysninger"
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "vis versionen af rpm som benyttes"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:258
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:260
 msgid "use threads for file state machine"
 msgstr ""
 
-#: lib/poptALL.c:266
-#, fuzzy
-msgid "debug FTP/HTTP data stream"
-msgstr "aflus protokol-datastrøm"
-
-#: lib/poptALL.c:268
-msgid "debug argv collections"
-msgstr ""
-
-#: lib/poptALL.c:270
-#, fuzzy
-msgid "debug WebDAV data stream"
-msgstr "aflus protokol-datastrøm"
-
-#: lib/poptALL.c:275
+#: lib/poptALL.c:265
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Intern fejl i parameterfortolkningen (%d) :-(\n"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:270
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:272
 msgid "use threads for package state machine"
 msgstr ""
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:286
 msgid "debug rpmio I/O"
 msgstr "aflus rpmio I/O"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr "aflus URL-bufferhåndtering"
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -4090,24 +4076,6 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
 
-#: rpmio/rpmdav.c:560
-msgid "Authorization Required"
-msgstr ""
-
-#: rpmio/rpmdav.c:562
-msgid "Redirect"
-msgstr ""
-
-#: rpmio/rpmdav.c:564
-#, fuzzy
-msgid "Server Error"
-msgstr "I/O-fejl for server"
-
-#: rpmio/rpmdav.c:566
-#, fuzzy
-msgid "Unknown Error"
-msgstr "(ingen fejl)"
-
 #: rpmio/rpmlua.c:450
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -4133,62 +4101,62 @@ msgstr "ugyldigt pakkenummer: %s\n"
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: rpmio/rpmio.c:639
+#: rpmio/rpmio.c:586
 msgid "Success"
 msgstr "Succes"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:609
 msgid "Bad server response"
 msgstr "Ugyldigt svar fra server"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:611
 msgid "Server I/O error"
 msgstr "I/O-fejl for server"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:613
 msgid "Server timeout"
 msgstr "Tidsudløb for server"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:615
 msgid "Unable to lookup server host address"
 msgstr "Kunne ikke skaffe serverens IP-addresse"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:617
 msgid "Unable to lookup server host name"
 msgstr "Kunne ikke slå serverens navn op"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:619
 msgid "Failed to connect to server"
 msgstr "Kunne ikke etablere en forbindelse til serveren"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:621
 msgid "Failed to establish data connection to server"
 msgstr "Kunne ikke etablere en data-forbindelse til serveren"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "I/O-fejl i lokal fil"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:625
 msgid "Error setting remote server to passive mode"
 msgstr "Kunne ikke sætte fjernserveren i passiv tilstand"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "Fil ikke fundet på server"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:629
 msgid "Abort in progress"
 msgstr "Afbryder programmet"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:633
 msgid "Unknown or unexpected error"
 msgstr "Ukendt eller uventet fejl"
 
-#: rpmio/rpmio.c:1444
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "logger på %s som %s, adgangskode %s\n"
+#: rpmio/rpmio.c:915
+#, fuzzy, c-format
+msgid "URL helper failed: %s (%d)\n"
+msgstr "læsning mislykkedes: %s (%d)\n"
 
 #: rpmio/rpmlog.c:55
 msgid "(no error)"
@@ -4221,26 +4189,16 @@ msgstr "advarsel: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "advarsel: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:163
+#: rpmio/url.c:156
 #, fuzzy, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "advarsel: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:251
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "Adgangskode for %s@%s: "
-
-#: rpmio/url.c:277 rpmio/url.c:303
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "Fejl: %sport skal være et tal\n"
-
-#: rpmio/url.c:466
+#: rpmio/url.c:388
 msgid "url port must be a number\n"
 msgstr "url-port skal være et tal\n"
 
-#: rpmio/url.c:533
+#: rpmio/url.c:455
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
@@ -4273,1096 +4231,3 @@ msgstr "%s: åbning mislykkedes: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: læs manifest mislykkedes: %s\n"
-
-#, fuzzy
-#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
-#~ msgstr "Kontakt venligst rpm-list@redhat.com (på engelsk)\n"
-
-#~ msgid "gpg failed\n"
-#~ msgstr "gpg fejlede\n"
-
-#, fuzzy
-#~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "overspring eventuelle MD5-signaturer"
-
-#, fuzzy
-#~ msgid "disable use of libneon for HTTP"
-#~ msgstr "undlad at benytte libio(3)-API"
-
-#~ msgid "Common options for all rpm modes:"
-#~ msgstr "Fælles tilvalg for alle rpm-tilstande:"
-
-#~ msgid "--replacefiles may only be specified during package installation"
-#~ msgstr "--replacefiles kan kun angives ved installation"
-
-#~ msgid "line %d: File name not permitted: %s\n"
-#~ msgstr "linie %d: Filnavn ikke tilladt: %s\n"
-
-#~ msgid "install even if the package replaces installed files"
-#~ msgstr "intallér selvom pakken erstatter installerede filer"
-
-#~ msgid "query of %s failed\n"
-#~ msgstr "forespørgsel af %s mislykkedes\n"
-
-#~ msgid "old format source packages cannot be queried\n"
-#~ msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
-
-#~ msgid "no packages\n"
-#~ msgstr "ingen pakker\n"
-
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "ekskluderer multilib-sti %s%s\n"
-
-#~ msgid "only one of --prefix or --relocate may be used"
-#~ msgstr "kun én af --prefix eller --relocate kan bruges"
-
-#~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
-#~ msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
-
-#~ msgid "file is not regular -- skipping size check\n"
-#~ msgstr "filen er ikke regulær -- overspringer størrelsestjek\n"
-
-#~ msgid "No signature\n"
-#~ msgstr "Ingen signatur\n"
-
-#~ msgid "Old PGP signature\n"
-#~ msgstr "Gammel PGP-signatur\n"
-
-#~ msgid "Old (internal-only) signature!  How did you get that!?\n"
-#~ msgstr "Gammel (internt brug) signatur! Hvordan fik du fingre i den!?\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-#~ msgstr ""
-#~ "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
-
-#, fuzzy
-#~ msgid "%s: base64 encode failed.\n"
-#~ msgstr "%s: readLead mislykkedes\n"
-
-#~ msgid "%s: readLead failed\n"
-#~ msgstr "%s: readLead mislykkedes\n"
-
-#, fuzzy
-#~ msgid "h#%7u: %s"
-#~ msgstr "fil %s: %s\n"
-
-#~ msgid "unexpected arguments to --querytags "
-#~ msgstr "uventede parametre til --querytags "
-
-#~ msgid "<cmd>"
-#~ msgstr "<kmd>"
-
-#~ msgid "read <file:...> instead of default macro file(s)"
-#~ msgstr "læs <fil:...> i stedet for standard makrofil(er)"
-
-#~ msgid "<file:...>"
-#~ msgstr "<fil:...>"
-
-#~ msgid "read <file:...> instead of default rpmrc file(s)"
-#~ msgstr "læs <fil:...> i stedet for standard rpmrc-fil(er)"
-
-#~ msgid "Usage: %s {--help}\n"
-#~ msgstr "Brug: %s {--help}\n"
-
-#~ msgid "The --rcfile option has been eliminated.\n"
-#~ msgstr "Tilvalget --rcfile er fjernet.\n"
-
-#~ msgid "Use \"--macros <file:...>\" instead.\n"
-#~ msgstr "Brug \"--macros <fil:...>\" i stedet..\n"
-
-#~ msgid "--dbpath given for operation that does not use a database"
-#~ msgstr "--dbpath angivet ved en operation, der ikke benytter en database"
-
-#~ msgid "query/verify a package file (i.e. a binary *.rpm file)"
-#~ msgstr "forespørg/verificér en pakkefil (dvs. en binær *.rpm-fil)"
-
-#~ msgid "display a verbose file listing"
-#~ msgstr "giv en detaljeret filliste"
-
-#, fuzzy
-#~ msgid "don't verify package digest"
-#~ msgstr "undlad at tjekke pakkers afhængighedskrav"
-
-#, fuzzy
-#~ msgid "don't verify package signature"
-#~ msgstr "verificér pakkesignatur"
-
-#~ msgid "define macro <name> with value <body>"
-#~ msgstr "definér makro <navn> med værdi <vrdi>"
-
-#~ msgid "'<name> <body>'"
-#~ msgstr "'<navn> <indhold>'"
-
-#~ msgid "<expr>+"
-#~ msgstr "<udtryk>+"
-
-#~ msgid "removing these packages would break dependencies:\n"
-#~ msgstr "fjernelse af disse pakker ville bryde afhængighederne:\n"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Requires: %s\n"
-#~ msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Conflicts: %s\n"
-#~ msgstr "pakke %s skaber konflikt: %s\n"
-
-#~ msgid "rpm: %s\n"
-#~ msgstr "rpm %s\n"
-
-#~ msgid "Usage: rpm {--help}"
-#~ msgstr "Brug: rpm {--help}"
-
-#~ msgid "       rpm {--version}"
-#~ msgstr "       rpm {--version}"
-
-#~ msgid "       rpm {--initdb}   [--dbpath <dir>]"
-#~ msgstr "       rpm {--initdb}   [--dbpath <katalog>]"
-
-#~ msgid ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-#~ msgstr ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root "
-#~ "<katalog>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <fil>] [--ignorearch] [--dbpath "
-#~ "<katalog>]"
-
-#~ msgid ""
-#~ "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-#~ msgstr ""
-#~ "                        [--prefix <katalog>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-
-#~ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-#~ msgstr "                        [--ftpproxy <vært>] [--ftpport <port>]"
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>]"
-#~ msgstr "                        [--httpproxy <vært>] [--httpport <port>]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--noorder] [--relocate "
-#~ "oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--justdb] [--noorder] [--relocate oldpath=nysti]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath <path>]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath <sti>]"
-
-#~ msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-#~ msgstr "                        [--ignoresize] fil-1.rpm ... fil-N.rpm"
-
-#~ msgid ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--oldpackage] [--root <katalog>] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
-
-#~ msgid ""
-#~ "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-#~ msgstr ""
-#~ "                        [--ignorearch]  [--dbpath <katalog>] [--prefix "
-#~ "<katalog>] "
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>] "
-#~ msgstr "                        [--httpproxy <vært>] [--httpport <port>] "
-
-#~ msgid ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-
-#~ msgid "                        [--noorder] [--relocate oldpath=newpath]"
-#~ msgstr "                        [--noorder] [--relocate gammelsti=nysti]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--excludepath <sti>] [--ignoresize]"
-
-#~ msgid "                        file1.rpm ... fileN.rpm"
-#~ msgstr "                        fil-1.rpm ... fil-N.rpm"
-
-#~ msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
-#~ msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <katalog>] [--rcfile <fil>]"
-
-#~ msgid ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-#~ msgstr ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-
-#~ msgid "                        [--triggeredby]"
-#~ msgstr "                        [--triggeredby]"
-
-#~ msgid "                        [--provides] [--triggers] [--dump]"
-#~ msgstr "                        [--provides] [--triggers] [--dump]"
-
-#~ msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-#~ msgstr "                        [--changelog] [--dbpath <katalog>] [mål]"
-
-#~ msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil>]"
-
-#~ msgid ""
-#~ "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-#~ msgstr ""
-#~ "                        [--dbpath <katalog>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-
-#~ msgid "                        [--nomd5] [targets]"
-#~ msgstr "                        [--nomd5] [mål]"
-
-#~ msgid "       rpm {--setperms} [-afpg] [target]"
-#~ msgstr "       rpm {--setperms} [-afpg] [mål]"
-
-#~ msgid "       rpm {--setugids} [-afpg] [target]"
-#~ msgstr "       rpm {--setugids} [-afpg] [mål]"
-
-#~ msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-#~ msgstr "       rpm {--freshen -F} fil1.rpm ... filN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--erase -e} [--root <katalog>] [--noscripts] [--rcfile <fil>]"
-
-#~ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-#~ msgstr ""
-#~ "                        [--dbpath <katalog>] [--nodeps] [--allmatches]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--notriggers] package1 ... packageN"
-#~ msgstr "                        [--justdb] [--notriggers] pakke1 ... pakkeN"
-
-#~ msgid ""
-#~ "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--resign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN"
-
-#~ msgid ""
-#~ "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--addsign} [--rcfile <fil>] pakke1 pakke2 ... pakkeN"
-
-#~ msgid ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]"
-
-#~ msgid "                           package1 ... packageN"
-#~ msgstr "                           pakke1 ... pakkeN"
-
-#~ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <katalog>]"
-
-#, fuzzy
-#~ msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <katalog>]"
-
-#~ msgid "       rpm {--querytags}"
-#~ msgstr "       rpm {--querytags}"
-
-#~ msgid "Usage:"
-#~ msgstr "Brug:"
-
-#~ msgid "print this message"
-#~ msgstr "vis denne meddelelse"
-
-#~ msgid "   All modes support the following arguments:"
-#~ msgstr "   Alle tilstande understøtter følgende argumenter:"
-
-#~ msgid "    --define '<name> <body>'"
-#~ msgstr "    --define '<navn> <vrdi>'"
-
-#~ msgid "    --eval '<name>+'      "
-#~ msgstr "    --eval '<navn>+'      "
-
-#~ msgid "print the expansion of macro <name> to stdout"
-#~ msgstr "send udvidelsen af makro <navn> til standard-ud"
-
-#~ msgid "    --pipe <cmd>          "
-#~ msgstr "    --pipe <kmd>          "
-
-#~ msgid "    --rcfile <file>       "
-#~ msgstr "    --rcfile <fil>        "
-
-#~ msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-#~ msgstr "brug <fil> i stedet for /etc/rpmrc og $HOME/.rpmrc"
-
-#~ msgid "be a little more verbose"
-#~ msgstr "vis lidt flere detaljer"
-
-#~ msgid "be incredibly verbose (for debugging)"
-#~ msgstr "vis rigtigt mange detaljer (til aflusning)"
-
-#~ msgid ""
-#~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr ""
-#~ "   Installér, opgradér og forespørg (med -p) tillader, at URL'er bruges i"
-
-#~ msgid "   of file names as well as the following options:"
-#~ msgstr "   stedet for filnavne såvel som følgende tilvalg:"
-
-#~ msgid "      --ftpproxy <host>   "
-#~ msgstr "      --ftpproxy <vært>   "
-
-#~ msgid "hostname or IP of ftp proxy"
-#~ msgstr "værtsnavn eller IP for ftp-proxy"
-
-#~ msgid "      --ftpport <port>    "
-#~ msgstr "      --ftpport <port>    "
-
-#~ msgid "port number of ftp server (or proxy)"
-#~ msgstr "portnummer for ftp-server (eller -proxy)"
-
-#~ msgid "      --httpproxy <host>  "
-#~ msgstr "      --httpproxy <vært>  "
-
-#~ msgid "hostname or IP of http proxy"
-#~ msgstr "værtsnavn eller IP for http-proxy"
-
-#~ msgid "      --httpport <port>   "
-#~ msgstr "      --httpport <port>   "
-
-#~ msgid "port number of http server (or proxy)"
-#~ msgstr "portnummer for http-server (eller -proxy)"
-
-#~ msgid "query mode"
-#~ msgstr "forespørgselstilstand"
-
-#~ msgid "      --dbpath <dir>      "
-#~ msgstr "      --dbpath <katalog>  "
-
-#~ msgid "use <dir> as the directory for the database"
-#~ msgstr "brug <katalog> som databasens katalog"
-
-#~ msgid "      --queryformat <qfmt>"
-#~ msgstr "      --queryformat <ffmt>"
-
-#~ msgid "use <qfmt> as the header format (implies --info)"
-#~ msgstr "brug <ffmt> som format på hovedet (indebærer --info)"
-
-#~ msgid "      --root <dir>        "
-#~ msgstr "      --root <katalog>    "
-
-#~ msgid "      Package specification options:"
-#~ msgstr "      Tilvalg for angivelse af pakke:"
-
-#~ msgid "query all packages"
-#~ msgstr "forespørg alle pakker"
-
-#~ msgid "        -f <file>+        "
-#~ msgstr "        -f <fil>+         "
-
-#~ msgid "query package owning <file>"
-#~ msgstr "forespørg pakke, der ejer <fil>"
-
-#~ msgid "        -p <packagefile>+ "
-#~ msgstr "        -p <pakkefil>+    "
-
-#~ msgid "query (uninstalled) package <packagefile>"
-#~ msgstr "forespørg (ikke-installeret) pakke <pakkefil>"
-
-#~ msgid "        --triggeredby <pkg>"
-#~ msgstr "        --triggeredby <pakke>"
-
-#~ msgid "query packages triggered by <pkg>"
-#~ msgstr "forespørg pakker, der udløses af pakken <pakke>"
-
-#~ msgid "        --whatprovides <cap>"
-#~ msgstr "        --whatprovides <fac>"
-
-#~ msgid "query packages which provide <cap> capability"
-#~ msgstr "forespørg pakker, der tilfører faciliteten <fac>"
-
-#~ msgid "        --whatrequires <cap>"
-#~ msgstr "        --whatrequires <fac>"
-
-#~ msgid "query packages which require <cap> capability"
-#~ msgstr "forespørg pakker, der kræver faciliteten <fac>"
-
-#~ msgid "      Information selection options:"
-#~ msgstr "      Tilvalg for informationsvalg"
-
-#~ msgid "display package information"
-#~ msgstr "vis pakkeinformation"
-
-#~ msgid "display the package's change log"
-#~ msgstr "vis ændringshistorie for pakke"
-
-#~ msgid "display package file list"
-#~ msgstr "vis filliste for pakke"
-
-#~ msgid "show file states (implies -l)"
-#~ msgstr "vis filernes status (indebærer -l)"
-
-#~ msgid "list only documentation files (implies -l)"
-#~ msgstr "vis kun dokumentationsfiler (indebærer -l)"
-
-#~ msgid "list only configuration files (implies -l)"
-#~ msgstr "vis kun konfigurationsfiler (indebærer -l)"
-
-#~ msgid ""
-#~ "show all verifiable information for each file (must be used with -l, -c, "
-#~ "or -d)"
-#~ msgstr ""
-#~ "vis al verificerbar information om hver fil (kræver -l, -c eller -d)"
-
-#~ msgid "list capabilities package provides"
-#~ msgstr "vis de faciliteter, pakken tilbyder"
-
-#~ msgid "list package dependencies"
-#~ msgstr "vis pakkeafhængigheder"
-
-#~ msgid "print the various [un]install scripts"
-#~ msgstr "vis de forskellige [af]installations-skripter"
-
-#~ msgid "show the trigger scripts contained in the package"
-#~ msgstr "vis udløserskripter indeholdt i pakke"
-
-#~ msgid ""
-#~ "verify a package installation using the same same package specification "
-#~ "options as -q"
-#~ msgstr "tjek en pakkes installation ved brug af samme pakkeangivelse som -q"
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "tjek ikke filers md5-checksummer"
-
-#~ msgid "do not verify file attributes"
-#~ msgstr "tjek ikke filegenskaber"
-
-#~ msgid "list the tags that can be used in a query format"
-#~ msgstr "vis de mærker, der kan bruges i et forespørgselsformat"
-
-#~ msgid "    --install <packagefile>"
-#~ msgstr "    --install <pakkefil>   "
-
-#~ msgid "    -i <packagefile>      "
-#~ msgstr "    -i <pakkefil>         "
-
-#~ msgid "      --excludepath <path>"
-#~ msgstr "      --excludepath <sti> "
-
-#~ msgid "skip files in path <path>"
-#~ msgstr "spring filer i stien <sti> over"
-
-#~ msgid "      --relocate <oldpath>=<newpath>"
-#~ msgstr "      --relocate <gammelsti>=<nysti>"
-
-#~ msgid "relocate files from <oldpath> to <newpath>"
-#~ msgstr "omdirigér filer fra <gammelsti> til <nysti>"
-
-#~ msgid "      --prefix <dir>      "
-#~ msgstr "      --prefix <katalog>  "
-
-#~ msgid "don't execute any installation scripts"
-#~ msgstr "udfør ingen installationsskripter"
-
-#~ msgid "don't execute any scripts triggered by this package"
-#~ msgstr "udfør ingen skripter, der måtte foranlediges af denne pakke"
-
-#~ msgid "    --upgrade <packagefile>"
-#~ msgstr "    --upgrade <pakkefil>   "
-
-#~ msgid "    -U <packagefile>      "
-#~ msgstr "    -U <pakkefil>         "
-
-#~ msgid "upgrade package (same options as --install, plus)"
-#~ msgstr "opgradér pakke (samme som --install, plus)"
-
-#~ msgid "    --erase <package>"
-#~ msgstr "    --erase <pakke>"
-
-#~ msgid "    -e <package>          "
-#~ msgstr "    -e <pakke>            "
-
-#~ msgid "do not execute any package specific scripts"
-#~ msgstr "udfør ingen pakkespecifikke skripter"
-
-#~ msgid "    -b<stage> <spec>      "
-#~ msgstr "    -b<stadium> <spec>    "
-
-#~ msgid "    -t<stage> <tarball>   "
-#~ msgstr "    -t<stadium> <tarfil>  "
-
-#~ msgid "build package, where <stage> is one of:"
-#~ msgstr "opbyg pakke, hvor <stadium> er en af:"
-
-#~ msgid "prep (unpack sources and apply patches)"
-#~ msgstr "forbered (udpak kilderne og påfør lapper (patches))"
-
-#~ msgid "list check (do some cursory checks on %files)"
-#~ msgstr "listekontrol (nogle hurtige tjek af %filer)"
-
-#~ msgid "compile (prep and compile)"
-#~ msgstr "oversæt (forbered og oversæt)"
-
-#~ msgid "install (prep, compile, install)"
-#~ msgstr "installér (forbered, oversæt og installér)"
-
-#~ msgid "binary package (prep, compile, install, package)"
-#~ msgstr "binær pakke (forbered, oversæt, installér, pak)"
-
-#~ msgid "bin/src package (prep, compile, install, package)"
-#~ msgstr "binær og kilde-pakke (forbered, oversæt, installér, pak)"
-
-#~ msgid "remove spec file when done"
-#~ msgstr "fjern spec-fil ved afslutning"
-
-#~ msgid "      --buildroot <dir>   "
-#~ msgstr "      --buildroot <katalog>"
-
-#~ msgid "use <dir> as the build root"
-#~ msgstr "brug <katalog> som opbygningsrod"
-
-#~ msgid "      --target=<platform>+"
-#~ msgstr "      --target=<platform>+"
-
-#~ msgid "build the packages for the build targets platform1...platformN."
-#~ msgstr "byg pakkerne for byggemålene platform1...platformN."
-
-#~ msgid "do not execute any stages"
-#~ msgstr "udfør ingen af stadierne"
-
-#~ msgid "    --rebuild <src_pkg>   "
-#~ msgstr "    --rebuild <kilde_pak> "
-
-#~ msgid ""
-#~ "install source package, build binary package and remove spec file, "
-#~ "sources, patches, and icons."
-#~ msgstr ""
-#~ "installér kildepakke, opbyg binær pakke og fjern spec-fil, kilder, lapper "
-#~ "('patches') og ikoner"
-
-#~ msgid "    --recompile <src_pkg> "
-#~ msgstr "    --recompile <kilde_pak>"
-
-#~ msgid "like --rebuild, but don't build any package"
-#~ msgstr "som --rebuild, men opbygger ikke nogen pakke"
-
-#~ msgid "    --resign <pkg>+       "
-#~ msgstr "    --resign <pakke>+     "
-
-#~ msgid "    --addsign <pkg>+      "
-#~ msgstr "    --addsign <pakke>+    "
-
-#~ msgid "add a signature to a package"
-#~ msgstr "tilføj signatur til pakke"
-
-#~ msgid "    --checksig <pkg>+"
-#~ msgstr "    --checksig <pakke>+"
-
-#~ msgid "    -K <pkg>+             "
-#~ msgstr "    -K <pakke>+           "
-
-#~ msgid "skip any GPG signatures"
-#~ msgstr "overspring eventuelle GPG-signaturer"
-
-#~ msgid "make sure a valid database exists"
-#~ msgstr "tjek at der eksisterer en gyldig database"
-
-#~ msgid "rebuild database from existing database"
-#~ msgstr "genopbyg database fra eksisterende database"
-
-#~ msgid ""
-#~ "set the file permissions to those in the package database using the same "
-#~ "package specification options as -q"
-#~ msgstr ""
-#~ "sæt filrettigheder ud fra pakkedatabasen ved brug af samme "
-#~ "pakkeangivelses-tilvalg som -q"
-
-#~ msgid ""
-#~ "set the file owner and group to those in the package database using the "
-#~ "same package specification options as -q"
-#~ msgstr ""
-#~ "sæt ejer og gruppe ud fra pakkedatabasen ved brug af samme "
-#~ "pakkeangivelses-tilvalg som -q"
-
-#~ msgid "-u and --uninstall are deprecated and no longer work.\n"
-#~ msgstr "-u og --uninstall er forældede og virker ikke længere.\n"
-
-#~ msgid "Use -e or --erase instead.\n"
-#~ msgstr "Brug -e eller --erase i stedet.\n"
-
-#~ msgid "Use --macros with a colon separated list of macro files to read.\n"
-#~ msgstr ""
-#~ "Brug --macros med en kolonsepareret liste over de makrofiler, der skal "
-#~ "indlæses.\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "script disabling options may only be specified during package "
-#~ "installation, erasure, and verification"
-#~ msgstr ""
-#~ "--noscripts kan kun angives ved installation, sletning og verifikation"
-
-#, fuzzy
-#~ msgid "--apply may only be specified during package installation"
-#~ msgstr "--allfiles kan kun angives ved installation"
-
-#~ msgid "--oldpackage may only be used during upgrades"
-#~ msgstr "--oldpackage kan kun bruges ved opgraderinger"
-
-#~ msgid "--nopgp may only be used during signature checking"
-#~ msgstr "--nopgp kan kun bruges ved signaturkontrol"
-
-#~ msgid "--nogpg may only be used during signature checking"
-#~ msgstr "--nogpg kan kun bruges ved signaturkontrol"
-
-#~ msgid ""
-#~ "--nomd5 may only be used during signature checking and package "
-#~ "verification"
-#~ msgstr "--nomd5 kan kun bruges ved signaturkontrol og pakkeverifikation"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "ingen pakker angivet ved signatur-tjek"
-
-#~ msgid "no packages given for signing"
-#~ msgstr "ingen pakker angivet ved signering"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "ingen pakker angivet ved afinstallation"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "ekstra parametre angivet ved forespørgsel på alle pakker"
-
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "ekstra parametre angivet ved verifikation af alle pakker"
-
-#~ msgid "%s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s JA (tilføjede filer)\n"
-
-#, fuzzy
-#~ msgid "%s: %-45s %-s (cached)\n"
-#~ msgstr "%s: %-45s %-3s (husket)\n"
-
-#~ msgid "%s: %-45s YES (db files)\n"
-#~ msgstr "%s: %-45s JA (db-filer)\n"
-
-#~ msgid "%s: %-45s YES (db package)\n"
-#~ msgstr "%s: %-45s JA (db-pakke)\n"
-
-#~ msgid "%s: %-45s NO\n"
-#~ msgstr "%s: %-45s NEJ\n"
-
-#~ msgid "%s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "%s: (%s, %s) tilføjet til afhængigheds-buffer.\n"
-
-#~ msgid "package %s-%s-%s require not satisfied: %s\n"
-#~ msgstr "pakke %s-%s-%s krav ikke opfyldt: %s\n"
-
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "pakke %s skaber konflikt: %s\n"
-
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "gammel rpm verifikationstilstand"
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "kunne ikke åbne %s/packages.rpm\n"
-
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "Genererer signatur med pgp.\n"
-
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "Genererer signatur med gpg.\n"
-
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "pakken har hverken en liste over brugernavne eller id (det burde ikke "
-#~ "kunne ske)\n"
-
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "pakken har hverken en liste over gruppenavne eller id (det burde ikke "
-#~ "kunne ske)\n"
-
-#~ msgid "removed db file        %s\n"
-#~ msgstr "fjernet db-fil    %s\n"
-
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "åbner db-fil      %s modus 0x%x\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "kunne ikke opnå %s lås på database\n"
-
-#~ msgid ""
-#~ "free list corrupt (%u)- please run\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "More information is available from http://www.rpm.org or the rpm-"
-#~ "list@redhat.com mailing list\n"
-#~ "if \"rpm --rebuilddb\" fails to correct the problem.\n"
-#~ msgstr ""
-#~ "fri-listen er ikke konsistent (%u)- kør venligst\n"
-#~ "\t\"rpm --rebuilddb\"\n"
-#~ "Mere information kan findes på http://www.rpm.org ellerpostlisten rpm-"
-#~ "list@redhat.com\n"
-#~ "hvis \"rpm --rebuilddb\" ikke løser problemet.\n"
-
-#~ msgid ""
-#~ "old format database is present; use --rebuilddb to generate a new format "
-#~ "database\n"
-#~ msgstr ""
-#~ "gammelt databaseformat til stede; brug --rebuilddb for at oprette en "
-#~ "database med det nye format\n"
-
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "fejl(%d) ved optælling af pakker\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(ukendt type)"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Kunne ikke køre pgp (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Kunne ikke køre gpg\n"
-
-#~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-#~ msgstr "Kunne ikke køre pgp. Brug --nopgp for at overspringe PGP-tjek.\n"
-
-#~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-#~ msgstr "Kunne ikke køre gpg. Brug --nogpg for at overspringe GPG-tjek.\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Kunne ikke køre pgp\n"
-
-#, fuzzy
-#~ msgid "generate GPG/PGP signature"
-#~ msgstr "generér PGP/GPG-signatur"
-
-#~ msgid "cannot open package: %s\n"
-#~ msgstr "kan ikke åbne pakke: %s\n"
-
-#~ msgid "Bad count for headerAddEntry(): %d\n"
-#~ msgstr "Ugyldigt antal for headerAddEntry(): %d\n"
-
-#~ msgid "  All modes support the following options:"
-#~ msgstr "  Følgende tilvalg understøttes af samtlige tilstande:"
-
-#~ msgid "   --define '<name> <body>'"
-#~ msgstr "   --define '<navn> <indhold>'"
-
-#~ msgid "   --eval '<expr>+'       "
-#~ msgstr "   --eval '<udtryk>+'     "
-
-#~ msgid "print the expansion of macro <expr> to stdout"
-#~ msgstr "send udvidelsen af makro <udtryk> til standard-ud"
-
-#~ msgid "   --pipe <cmd>           "
-#~ msgstr "   --pipe <kmd>           "
-
-#~ msgid "   --rcfile <file:...>    "
-#~ msgstr "    --rcfile <fil:....>   "
-
-#~ msgid "use <file:...> instead of default list of macro files"
-#~ msgstr "læs <fil:...> i stedet for standardlisten over makrofil(er)"
-
-#~ msgid "   --dbpath <dir>         "
-#~ msgstr "   --dbpath <katalog>     "
-
-#~ msgid "   --root <dir>           "
-#~ msgstr "   --root <katalog>       "
-
-#~ msgid ""
-#~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
-#~ "place"
-#~ msgstr ""
-#~ "  Installations-, opgradering- og forespørgselstilstande (med -p) "
-#~ "tillader at"
-
-#~ msgid "  of file names as well as the following options:"
-#~ msgstr "  en URL angives i stedet for navne såvel som de følgende tilvalg:"
-
-#~ msgid "     --ftpproxy <host>    "
-#~ msgstr "     --ftpproxy <vært>    "
-
-#~ msgid "     --ftpport <port>     "
-#~ msgstr "     --ftpport <port>     "
-
-#~ msgid "     --httpproxy <host>   "
-#~ msgstr "     --httpproxy <vært>   "
-
-#~ msgid "     --httpport <port>    "
-#~ msgstr "     --httpport <port>    "
-
-#~ msgid "  Package specification options:"
-#~ msgstr "  Tilvalg for pakkeangivelse:"
-
-#~ msgid "     -f <file>+           "
-#~ msgstr "     -f <fil>+            "
-
-#~ msgid "query/verify package owning <file>"
-#~ msgstr "forespørg/verificér pakken, der ejer <fil>"
-
-#~ msgid "     -p <packagefile>+    "
-#~ msgstr "     -p <pakkefil>+       "
-
-#~ msgid "query/verify (uninstalled) package <packagefile>"
-#~ msgstr "forespørg/verificér (den ikke-installerede) pakke <pakkefil>"
-
-#~ msgid "     --triggeredby <pkg>  "
-#~ msgstr "     --triggeredby <pakke>"
-
-#~ msgid "query/verify packages triggered by <pkg>"
-#~ msgstr "forespørg/verificér pakker, der udløses af <pakke>"
-
-#~ msgid "     --whatprovides <cap> "
-#~ msgstr "     --whatprovides <fac>"
-
-#~ msgid "query/verify packages which provide <cap> capability"
-#~ msgstr "forespørg/verificér pakker, der tilfører faciliteten <fac>"
-
-#~ msgid "     --whatrequires <cap> "
-#~ msgstr "     --whatrequires <fac>"
-
-#~ msgid "query/verify packages which require <cap> capability"
-#~ msgstr "forespørg/verificér pakker, som kræver faciliteten <fac>"
-
-#~ msgid "     --queryformat <qfmt> "
-#~ msgstr "     --queryformat <ffmt> "
-
-#~ msgid "    Information selection options:"
-#~ msgstr "    Tilvalg for informationangivelse:"
-
-#~ msgid "list capabilities provided by package"
-#~ msgstr "vis faciliteter, der tilføres af pakke"
-
-#~ msgid "list capabilities required by package"
-#~ msgstr "vis faciliteter, der pakken kræver"
-
-#~ msgid "print the various [un]install scriptlets"
-#~ msgstr "vis de forskellige småskripter til [af]installation"
-
-#~ msgid "show the trigger scriptlets contained in the package"
-#~ msgstr "vis de udløserskripter, pakken indeholder"
-
-#~ msgid "do not execute scripts (if any)"
-#~ msgstr "udfør ikke eventuelle skripter"
-
-#~ msgid "   --install <packagefile>"
-#~ msgstr "   --install <pakkefil>   "
-
-#~ msgid "   -i <packagefile>       "
-#~ msgstr "   -i <pakkefil>          "
-
-#~ msgid "     --excludepath <path> "
-#~ msgstr "     --excludepath <sti>  "
-
-#~ msgid "don't execute any installation scriptlets"
-#~ msgstr "udfør ingen installations-småskripter"
-
-#~ msgid "don't execute any scriptlets triggered by this package"
-#~ msgstr "udfør ikke småskripter, der måtte udløses af denne pakke"
-
-#~ msgid "     --prefix <dir>       "
-#~ msgstr "     --prefix <katalog>   "
-
-#~ msgid "     --relocate <oldpath>=<newpath>"
-#~ msgstr "     --relocate <gammelsti>=<nysti>"
-
-#~ msgid "   --upgrade <packagefile>"
-#~ msgstr "   --upgrade <pakkefil>   "
-
-#~ msgid "   -U <packagefile>       "
-#~ msgstr "   -U <pakkefil>          "
-
-#~ msgid "   --erase <package>"
-#~ msgstr "   --erase <pakke>  "
-
-#~ msgid "   -e <package>           "
-#~ msgstr "   -e <pakke>            "
-
-#~ msgid "   --resign <pkg>+        "
-#~ msgstr "   --resign <pakke>+      "
-
-#~ msgid "   --addsign <pkg>+       "
-#~ msgstr "   --addsign <pakke>+     "
-
-#~ msgid "   --checksig <pkg>+"
-#~ msgstr "   --checksig <pakke>+"
-
-#~ msgid "   -K <pkg>+             "
-#~ msgstr "   -K <pakke>+           "
-
-#~ msgid "initalize database (unnecessary, legacy use)"
-#~ msgstr "forbereder database (unødvendigt, gammelt brug)"
-
-#~ msgid "rebuild database indices from existing database headers"
-#~ msgstr "genopbyg databaseindekser ud fra eksisterende databasehoveder"
-
-#~ msgid "closed  db environment %s/%s\n"
-#~ msgstr "lukkede db-miljø  %s/%s\n"
-
-#~ msgid "removed db environment %s/%s\n"
-#~ msgstr "fjernede db-miljø  %s/%s\n"
-
-#~ msgid "closed  db index       %s/%s\n"
-#~ msgstr "lukkede db-indeks %s/%s\n"
-
-#~ msgid "opening db index       %s/%s %s mode=0x%x\n"
-#~ msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
-
-#~ msgid "locked  db index       %s/%s\n"
-#~ msgstr "låste   db-index  %s/%s\n"
-
-#~ msgid "========== tsorting packages\n"
-#~ msgstr "========== tsort'er pakker\n"
-
-#~ msgid ""
-#~ "--notriggers may only be specified during package installation, erasure, "
-#~ "and verification"
-#~ msgstr ""
-#~ "--notriggers kan kun angives ved installation, sletning og verifikation"
-
-#~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
-#~ msgstr "       %s {--initdb}   [--dbpath <katalog>]\n"
-
-#~ msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-#~ msgstr ""
-#~ "       %s {--rebuilddb} [--rcfile <fil:....>] [--dbpath <katalog>]\n"
-
-#~ msgid ""
-#~ "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-#~ msgstr ""
-#~ "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
-
-#~ msgid ""
-#~ "                        [--rcfile <file:...>] [--ignorearch] [--dbpath "
-#~ "<dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <fil:....>] [--ignorearch] [--dbpath "
-#~ "<katalog>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<file:...>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<fil:....>]"
-
-#~ msgid ""
-#~ "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:..."
-#~ ">]\n"
-#~ msgstr ""
-#~ "       %s {--erase -e} [--root <katalog>] [--noscripts] [--rcfile "
-#~ "<fil:....>]\n"
-
-#~ msgid ""
-#~ "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <katalog>] [--rcfile <fil:...."
-#~ ">]"
-
-#~ msgid ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <katalog>] [--rcfile <fil:...."
-#~ ">]\n"
-
-#~ msgid "       %s {--setperms} [-afpg] [target]\n"
-#~ msgstr "       %s {--setperms} [-afpg] [mål]\n"
-
-#~ msgid "       %s {--setugids} [-afpg] [target]\n"
-#~ msgstr "       %s {--setugids} [-afpg] [mål]\n"
-
-#~ msgid ""
-#~ "       %s {--resign} [--rcfile <file:...>] package1 package2 ... "
-#~ "packageN\n"
-#~ msgstr ""
-#~ "       %s {--resign} [--rcfile <fil:....>] pakke1 pakke2 ... pakkeN\n"
-
-#~ msgid ""
-#~ "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-#~ msgstr ""
-#~ "       %s {--addsign} [--rcfile <fil:....>] pakke1 pakke2 ... pakkeN"
-
-#~ msgid ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<file:...>]\n"
-#~ msgstr ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<fil:....>]\n"
-
-#~ msgid "archive = %s, fs = %s\n"
-#~ msgstr "archive = %s, fs = %s\n"
-
-#~ msgid "can't rename %s to %s: %s\n"
-#~ msgstr "kunne ikke omdøbe %s til %s: %s\n"
-
-#~ msgid "can't unlink %s: %s\n"
-#~ msgstr "kunne ikke bryde lænke %s: %s\n"
-
-#~ msgid "getNextHeader: %s\n"
-#~ msgstr "getNextHeader: %s\n"
-
-#~ msgid "   file: %s action: %s\n"
-#~ msgstr "   fil: %s aktion: %s\n"
-
-#~ msgid "installing a source package\n"
-#~ msgstr "ved installation af kildepakke\n"
-
-#~ msgid "cannot create sourcedir %s\n"
-#~ msgstr "kunne ikke oprette kildekatalog %s\n"
-
-#~ msgid "cannot create specdir %s\n"
-#~ msgstr "kunne ikke oprette spec-katalog %s\n"
-
-#~ msgid "spec file in: %s\n"
-#~ msgstr "spec-fil i: %s\n"
-
-#~ msgid "renaming %s to %s\n"
-#~ msgstr "omdøber %s til %s\n"
-
-#~ msgid "rename of %s to %s failed: %s\n"
-#~ msgstr "omdøbning af %s til %s mislykkedes: %s\n"
-
-#~ msgid "stopping install as we're running --test\n"
-#~ msgstr "stopper installation, da vi kører --test\n"
-
-#~ msgid "will remove files test = %d\n"
-#~ msgstr "vil fjerne filer test = %d\n"
-
-#~ msgid ""
-#~ "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
-#~ "returned %s\n"
-#~ msgstr ""
-#~ "modtagelse af returkode på %s småskript fra %s-%s-%s mislykkedes, waitpid "
-#~ "returnerede %s\n"
-
-#~ msgid "      --timecheck <secs>  "
-#~ msgstr "      --timecheck <sek>   "
-
-#~ msgid "set the time check to <secs> seconds (0 disables)"
-#~ msgstr "sæt tidstjek til <sek> sekunder (0 deaktiverer)"

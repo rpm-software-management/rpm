@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 00:42+0200\n"
+"POT-Creation-Date: 2007-09-12 11:45+0200\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -115,7 +115,7 @@ msgstr "Yhteiset valitsimet kaikille rpm moodeille:"
 msgid "%s: %s\n"
 msgstr ""
 
-#: rpmqv.c:133 lib/poptALL.c:88
+#: rpmqv.c:133 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versio %s\n"
@@ -1262,17 +1262,17 @@ msgstr "‰l‰ tarkista k‰‰nnˆsriippuvuuksia"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:214 lib/poptALL.c:214 lib/poptI.c:257 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:210 lib/poptI.c:257 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 msgid "don't verify package digest(s)"
 msgstr ""
 
-#: build/poptBT.c:216 lib/poptALL.c:216 lib/poptI.c:259 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:212 lib/poptI.c:259 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 msgid "don't verify database header(s) when retrieved"
 msgstr ""
 
-#: build/poptBT.c:218 lib/poptALL.c:222 lib/poptI.c:261 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:218 lib/poptI.c:261 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 msgid "don't verify package signature(s)"
 msgstr "‰l‰ tarkista paketin allekirjoitusta"
@@ -1543,7 +1543,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:147 rpmio/url.c:513
+#: lib/fs.c:147 rpmio/url.c:435
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "en voinut avata %s: %s\n"
@@ -1760,147 +1760,135 @@ msgstr "%s:‰‰ ei voida asentaa\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:170
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:172
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:174
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr ""
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:176
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:182
+#: lib/poptALL.c:178
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:180
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:186
+#: lib/poptALL.c:182
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:184
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:197
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:202 lib/poptALL.c:205
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:200
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:203
 msgid "print macro expansion of EXPR"
 msgstr ""
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:210 lib/poptALL.c:229 lib/poptALL.c:233
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:211 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:219 lib/poptALL.c:253
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:221
 msgid "send stdout to CMD"
 msgstr "l‰het‰ vakiotuloste <komento>:lle"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:222
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:233
 msgid "use ROOT as top level directory"
 msgstr "k‰yt‰ <hakem> ylimp‰n‰ hakemistona"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:234
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:237
 msgid "display known query tags"
 msgstr "n‰yt‰ tunnetut kyselymuodot"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:239
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:241
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:243
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "tulosta k‰ytetyn rpm:n versio"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:258
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:260
 msgid "use threads for file state machine"
 msgstr ""
 
-#: lib/poptALL.c:266
-msgid "debug FTP/HTTP data stream"
-msgstr ""
-
-#: lib/poptALL.c:268
-msgid "debug argv collections"
-msgstr ""
-
-#: lib/poptALL.c:270
-msgid "debug WebDAV data stream"
-msgstr ""
-
-#: lib/poptALL.c:275
+#: lib/poptALL.c:265
 msgid "debug option/argument processing"
 msgstr ""
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:270
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:272
 msgid "use threads for package state machine"
 msgstr ""
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:286
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr ""
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -3977,23 +3965,6 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmdav.c:560
-msgid "Authorization Required"
-msgstr ""
-
-#: rpmio/rpmdav.c:562
-msgid "Redirect"
-msgstr ""
-
-#: rpmio/rpmdav.c:564
-msgid "Server Error"
-msgstr ""
-
-#: rpmio/rpmdav.c:566
-#, fuzzy
-msgid "Unknown Error"
-msgstr "Tuntematon tai odottamaton virhe"
-
 #: rpmio/rpmlua.c:450
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -4019,63 +3990,63 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "lua hook failed: %s\n"
 msgstr "%s: avaus ep‰onnistui: %s\n"
 
-#: rpmio/rpmio.c:639
+#: rpmio/rpmio.c:586
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:609
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:611
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:613
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:615
 msgid "Unable to lookup server host address"
 msgstr "Palvelimen osoitetta ei lˆytynyt"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:617
 msgid "Unable to lookup server host name"
 msgstr "Palvelimen nime‰ ei lˆytynyt"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:619
 msgid "Failed to connect to server"
 msgstr "Yhteyden muodostus palvelimeen ep‰onnistui"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:621
 msgid "Failed to establish data connection to server"
 msgstr "Datayhteyden muodostus palvelimeen ep‰onnistui"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "Paikallisen tiedoston IO-virhe"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:625
 msgid "Error setting remote server to passive mode"
 msgstr "Virhe asetettaessa palvelinta passiiviseen moodiin"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "Tiedostoa ei lˆytynyt palvelimelta"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:629
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:633
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Tuntematon tai odottamaton virhe"
 
-#: rpmio/rpmio.c:1444
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr ""
+#: rpmio/rpmio.c:915
+#, fuzzy, c-format
+msgid "URL helper failed: %s (%d)\n"
+msgstr "luku ep‰onnistui: %s (%d)\n"
 
 #: rpmio/rpmlog.c:55
 msgid "(no error)"
@@ -4108,26 +4079,16 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:163
+#: rpmio/url.c:156
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: rpmio/url.c:251
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "%s@%s:n salasana: "
-
-#: rpmio/url.c:277 rpmio/url.c:303
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "virhe: %sport pit‰‰ olla luku\n"
-
-#: rpmio/url.c:466
+#: rpmio/url.c:388
 msgid "url port must be a number\n"
 msgstr "url portin pit‰‰ olla luku\n"
 
-#: rpmio/url.c:533
+#: rpmio/url.c:455
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti ep‰onnistui: %s\n"
@@ -4158,1592 +4119,3 @@ msgstr ""
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
-
-#, fuzzy
-#~ msgid "gpg failed\n"
-#~ msgstr "pgp ep‰onnistui"
-
-#, fuzzy
-#~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "ohita MD5-allekirjoitukset"
-
-#~ msgid "--replacefiles may only be specified during package installation"
-#~ msgstr "--replacefiles: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#, fuzzy
-#~ msgid "line %d: File name not permitted: %s\n"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#~ msgid "install even if the package replaces installed files"
-#~ msgstr "asenna vaikka paketti korvaisi asennettuja tiedostoja"
-
-#~ msgid "query of %s failed\n"
-#~ msgstr "%s:n kysely ei onnistunut\n"
-
-#~ msgid "old format source packages cannot be queried\n"
-#~ msgstr "vanhan formaatin l‰hdekoodipaketteja ei voi kysell‰\n"
-
-#, fuzzy
-#~ msgid "no packages\n"
-#~ msgstr "kysele kaikki paketit"
-
-#, fuzzy
-#~ msgid "excluding multilib path %s%s\n"
-#~ msgstr "Haen: %s\n"
-
-#~ msgid "only one of --prefix or --relocate may be used"
-#~ msgstr "vain toinen --prefix tai --relocate voidaan antaa"
-
-#, fuzzy
-#~ msgid "No signature\n"
-#~ msgstr "%s: Ei allekirjoitusta saatavilla\n"
-
-#, fuzzy
-#~ msgid "Old PGP signature\n"
-#~ msgstr "generoi PGP-allekirjoitus"
-
-#, fuzzy
-#~ msgid "Old (internal-only) signature!  How did you get that!?\n"
-#~ msgstr "Vanha (sis‰isen k‰ytˆn) allekirjoitus! Mist‰ sait sen!?"
-
-#, fuzzy
-#~ msgid ""
-#~ "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-#~ msgstr "skriptin ajo ep‰onnistui"
-
-#, fuzzy
-#~ msgid "%s: base64 encode failed.\n"
-#~ msgstr "%s: readLead  ep‰onnistui\n"
-
-#~ msgid "%s: readLead failed\n"
-#~ msgstr "%s: readLead  ep‰onnistui\n"
-
-#, fuzzy
-#~ msgid "rollback %d packages to %s"
-#~ msgstr "poistolle ei m‰‰ritelty paketteja"
-
-#, fuzzy
-#~ msgid "h#%7u: %s"
-#~ msgstr "en voinut avata %s: %s"
-
-#~ msgid "unexpected arguments to --querytags "
-#~ msgstr "--querytags: odottamattomia parametrej‰"
-
-#, fuzzy
-#~ msgid "Usage: %s {--help}\n"
-#~ msgstr "k‰yttˆ: rpm {--help}"
-
-#, fuzzy
-#~ msgid "Use \"--macros <file:...>\" instead.\n"
-#~ msgstr "K‰yt‰ sen sijaan -e tai --erase .\n"
-
-#~ msgid "--dbpath given for operation that does not use a database"
-#~ msgstr "--dbpath parametri annettu toiminnolle, joka ei k‰yt‰ tietokantaa"
-
-#, fuzzy
-#~ msgid "query/verify a package file (i.e. a binary *.rpm file)"
-#~ msgstr "kysele kaikki paketit"
-
-#, fuzzy
-#~ msgid "display a verbose file listing"
-#~ msgstr "n‰yt‰ paketin tiedostolistaus"
-
-#, fuzzy
-#~ msgid "don't verify package digest"
-#~ msgstr "‰l‰ tarkista paketin riippuvuuksia"
-
-#, fuzzy
-#~ msgid "don't verify package signature"
-#~ msgstr "tarkista paketin allekirjoitus"
-
-#~ msgid "removing these packages would break dependencies:\n"
-#~ msgstr "n‰iden pakettien poisto rikkoisi riippuvuuksia:\n"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Requires: %s\n"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "package %s has unsatisfied Conflicts: %s\n"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "Usage: rpm {--help}"
-#~ msgstr "k‰yttˆ: rpm {--help}"
-
-#~ msgid "       rpm {--initdb}   [--dbpath <dir>]"
-#~ msgstr "       rpm {--initdb}   [--dbpath <hakem>]"
-
-#~ msgid ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-#~ msgstr ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <hakem>]"
-
-#~ msgid ""
-#~ "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <tiedosto>] [--ignorearch] [--dbpath "
-#~ "<hakem>]"
-
-#~ msgid ""
-#~ "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-#~ msgstr ""
-#~ "                        [--prefix <hakem>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-
-#~ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-#~ msgstr "                        [--ftpproxy <kone>] [--ftpport <portti>]"
-
-#, fuzzy
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>]"
-#~ msgstr "                        [--ftpproxy <kone>] [--ftpport <portti>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--justdb] [--noorder] [--relocate "
-#~ "oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--noorder] [--relocate vanhapolku=uusipolku]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath <path>]"
-#~ msgstr ""
-#~ "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
-
-#, fuzzy
-#~ msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-#~ msgstr ""
-#~ "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
-
-#~ msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--oldpackage] [--root <hakem>] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<tiedosto>]"
-
-#~ msgid ""
-#~ "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-#~ msgstr ""
-#~ "                        [--ignorearch]  [--dbpath <hakem>] [--prefix "
-#~ "<hakem>] "
-
-#, fuzzy
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>] "
-#~ msgstr "                        [--ftpproxy <kone>] [--ftpport <portti>]"
-
-#~ msgid "                        [--noorder] [--relocate oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--noorder] [--relocate vanhapolku=uusipolku]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
-#~ msgstr "                        [--nomd5] [kohteet]"
-
-#, fuzzy
-#~ msgid "                        file1.rpm ... fileN.rpm"
-#~ msgstr ""
-#~ "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
-
-#~ msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <hakem>] [--rcfile <tiedosto>]"
-
-#, fuzzy
-#~ msgid "                        [--triggeredby]"
-#~ msgstr "                        [--nomd5] [kohteet]"
-
-#, fuzzy
-#~ msgid "                        [--provides] [--triggers] [--dump]"
-#~ msgstr ""
-#~ "                        [--dbpath <hakem>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-
-#, fuzzy
-#~ msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-#~ msgstr "                        [--nomd5] [kohteet]"
-
-#~ msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--verify -V -y} [-afpg] [--root <hakem>] [--rcfile <tiedosto>]"
-
-#~ msgid ""
-#~ "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-#~ msgstr ""
-#~ "                        [--dbpath <hakem>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-
-#~ msgid "                        [--nomd5] [targets]"
-#~ msgstr "                        [--nomd5] [kohteet]"
-
-#~ msgid "       rpm {--setperms} [-afpg] [target]"
-#~ msgstr "       rpm {--setperms} [-afpg] [kohde]"
-
-#~ msgid "       rpm {--setugids} [-afpg] [target]"
-#~ msgstr "       rpm {--setugids} [-afpg] [kohde]"
-
-#, fuzzy
-#~ msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-#~ msgstr ""
-#~ "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--erase -e} [--root <hakem>] [--noscripts] [--rcfile "
-#~ "<tiedosto>]"
-
-#~ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-#~ msgstr ""
-#~ "                        [--dbpath <hakem>] [--nodeps] [--allmatches]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--justdb] [--notriggers] package1 ... packageN"
-#~ msgstr "                        [--justdb] paketti1 ... pakettiN"
-
-#~ msgid ""
-#~ "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr ""
-#~ "       rpm {--resign} [--rcfile <tiedosto>] paketti1 paketti2 ... pakettiN"
-
-#~ msgid ""
-#~ "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr ""
-#~ "       rpm {--addsign} [--rcfile <tiedosto>] paketti1 paketti2 ... "
-#~ "pakettiN"
-
-#, fuzzy
-#~ msgid ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <tiedosto>]"
-
-#~ msgid "                           package1 ... packageN"
-#~ msgstr "                           paketti1 ... pakettiN"
-
-#~ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <tiedosto>] [--dbpath <hakem>]"
-
-#, fuzzy
-#~ msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <tiedosto>] [--dbpath <hakem>]"
-
-#, fuzzy
-#~ msgid "Usage:"
-#~ msgstr "k‰yttˆ:"
-
-#~ msgid "print this message"
-#~ msgstr "tulosta t‰m‰ viesti"
-
-#, fuzzy
-#~ msgid "   All modes support the following arguments:"
-#~ msgstr "   kaikki moodit tukevat seuraavia parametrej‰"
-
-#, fuzzy
-#~ msgid "    --eval '<name>+'      "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "print the expansion of macro <name> to stdout"
-#~ msgstr "tulosta k‰ytetyn rpm:n versio"
-
-#, fuzzy
-#~ msgid "    --pipe <cmd>          "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "    --rcfile <file>       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-#~ msgstr "k‰yt‰ <tiedosto> eik‰ /etc/rpmrc tai $HOME/.rpmrc"
-
-#~ msgid "be a little more verbose"
-#~ msgstr "tulosta enemm‰n viestej‰"
-
-#~ msgid "be incredibly verbose (for debugging)"
-#~ msgstr "tulosta mahdollisimman paljon viestej‰ (vianetsint‰‰n)"
-
-#, fuzzy
-#~ msgid ""
-#~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr ""
-#~ "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja "
-#~ "voidaan k‰ytt‰‰"
-
-#, fuzzy
-#~ msgid "   of file names as well as the following options:"
-#~ msgstr "   tiedostonimin‰, kuten myˆs seuraavia parametrej‰:\n"
-
-#~ msgid "hostname or IP of ftp proxy"
-#~ msgstr "koneen nimi tai IP tai ftp-proxy"
-
-#~ msgid "port number of ftp server (or proxy)"
-#~ msgstr "ftp-palvelijan (tai proxyn) porttinumero"
-
-#, fuzzy
-#~ msgid "      --httpproxy <host>  "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "hostname or IP of http proxy"
-#~ msgstr "koneen nimi tai IP tai ftp-proxy"
-
-#, fuzzy
-#~ msgid "      --httpport <port>   "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "port number of http server (or proxy)"
-#~ msgstr "ftp-palvelijan (tai proxyn) porttinumero"
-
-#~ msgid "query mode"
-#~ msgstr "kyselymoodi"
-
-#, fuzzy
-#~ msgid "      --dbpath <dir>      "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "use <dir> as the directory for the database"
-#~ msgstr "kayt‰ <hakem> tietokannan hakemistona"
-
-#, fuzzy
-#~ msgid "use <qfmt> as the header format (implies --info)"
-#~ msgstr "k‰yt‰ s headerin formaatina (josta seuraa -i)"
-
-#~ msgid "      Package specification options:"
-#~ msgstr "      Paketin m‰‰rittelyparametrit:"
-
-#~ msgid "query all packages"
-#~ msgstr "kysele kaikki paketit"
-
-#~ msgid "query package owning <file>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#~ msgid "query (uninstalled) package <packagefile>"
-#~ msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
-
-#, fuzzy
-#~ msgid "        --triggeredby <pkg>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "query packages triggered by <pkg>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "        --whatprovides <cap>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "query packages which provide <cap> capability"
-#~ msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
-
-#, fuzzy
-#~ msgid "        --whatrequires <cap>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "query packages which require <cap> capability"
-#~ msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
-
-#~ msgid "      Information selection options:"
-#~ msgstr "      Tietojen valintaparametrit:"
-
-#~ msgid "display package information"
-#~ msgstr "n‰yt‰ paketin tiedot"
-
-#~ msgid "display the package's change log"
-#~ msgstr "n‰yt‰ paketin muutosloki"
-
-#~ msgid "display package file list"
-#~ msgstr "n‰yt‰ paketin tiedostolistaus"
-
-#~ msgid "show file states (implies -l)"
-#~ msgstr "n‰yt‰ tiedostojen tilat (josta seuraa -l)"
-
-#~ msgid "list only documentation files (implies -l)"
-#~ msgstr "listaa vain dokumettitiedostot (josta seuraa -l)"
-
-#~ msgid "list only configuration files (implies -l)"
-#~ msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
-
-#~ msgid ""
-#~ "show all verifiable information for each file (must be used with -l, -c, "
-#~ "or -d)"
-#~ msgstr ""
-#~ "n‰yt‰ kaikki varmistettavissa oleva tieto kustakin tiedostosta (pit‰‰ "
-#~ "k‰ytt‰‰ -l, -c, tai -d kanssa)"
-
-#~ msgid "list capabilities package provides"
-#~ msgstr "luettele paketin tarjoamat ominaisuudet"
-
-#~ msgid "list package dependencies"
-#~ msgstr "listaa paketin riippuvuudet"
-
-#~ msgid "print the various [un]install scripts"
-#~ msgstr "tulosta erin‰iset asennus/poisto-skriptit"
-
-#~ msgid ""
-#~ "verify a package installation using the same same package specification "
-#~ "options as -q"
-#~ msgstr ""
-#~ "tarkista paketin asennus k‰ytt‰en samoja paketin m‰‰rittelyparametrej‰ "
-#~ "kuin -q "
-
-#~ msgid "do not verify file md5 checksums"
-#~ msgstr "‰l‰ tarkista tiedostojen md5-tarkistussummia"
-
-#~ msgid "do not verify file attributes"
-#~ msgstr "‰l‰ tarkista tiedostojen ominaisuuksia"
-
-#~ msgid "list the tags that can be used in a query format"
-#~ msgstr "luettele nimiˆt, joita voidaan k‰ytt‰‰ kyselyn formaatissa"
-
-#, fuzzy
-#~ msgid "    --install <packagefile>"
-#~ msgstr "asenna paketti"
-
-#, fuzzy
-#~ msgid "    -i <packagefile>      "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "      --excludepath <path>"
-#~ msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
-
-#, fuzzy
-#~ msgid "      --relocate <oldpath>=<newpath>"
-#~ msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
-
-#~ msgid "relocate files from <oldpath> to <newpath>"
-#~ msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
-
-#~ msgid "don't execute any installation scripts"
-#~ msgstr "‰l‰ suorita asennusskriptej‰"
-
-#, fuzzy
-#~ msgid "    -U <packagefile>      "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "upgrade package (same options as --install, plus)"
-#~ msgstr "p‰ivit‰ paketti (samat parametrit kuin --install, plus)"
-
-#, fuzzy
-#~ msgid "    -e <package>          "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "do not execute any package specific scripts"
-#~ msgstr "‰l‰ aja mit‰‰n pakettikohtaisia skriptej‰"
-
-#~ msgid "    -b<stage> <spec>      "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "    -t<stage> <tarball>   "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "build package, where <stage> is one of:"
-#~ msgstr "tee paketti, jossa <vaihe> on jokin:"
-
-#~ msgid "prep (unpack sources and apply patches)"
-#~ msgstr "valmistele (pura l‰hdekoodi ja tee korjaukset)"
-
-#~ msgid "list check (do some cursory checks on %files)"
-#~ msgstr "listatarkistus (tee joitakin tarkistuksia %tiedostoihin)"
-
-#~ msgid "compile (prep and compile)"
-#~ msgstr "k‰‰nn‰ (valmistele ja k‰‰nn‰)"
-
-#~ msgid "install (prep, compile, install)"
-#~ msgstr "asenna (valmistele, k‰‰nn‰ ja asenna)"
-
-#~ msgid "binary package (prep, compile, install, package)"
-#~ msgstr "bin‰‰ripaketti (valmistele, k‰‰nn‰, asenna, paketoi)"
-
-#~ msgid "bin/src package (prep, compile, install, package)"
-#~ msgstr "bin/src-paketti (valmistele, k‰‰nn‰, asenna, paketoi)"
-
-#, fuzzy
-#~ msgid "remove spec file when done"
-#~ msgstr "poista l‰hdekoodit ja m‰‰rittelytiedosto, kun valmis"
-
-#, fuzzy
-#~ msgid "      --buildroot <dir>   "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "use <dir> as the build root"
-#~ msgstr "k‰yt‰ <hakem> k‰‰nnˆspuun juurena"
-
-#~ msgid "do not execute any stages"
-#~ msgstr "‰l‰ suorita mit‰‰n vaiheita"
-
-#~ msgid ""
-#~ "install source package, build binary package and remove spec file, "
-#~ "sources, patches, and icons."
-#~ msgstr ""
-#~ "asenna l‰hdekoodipaketti, k‰‰nn‰ bin‰‰ripaketti ja poista "
-#~ "m‰‰rittelytiedosto, l‰hdekoodi, korjaukset ja kuvakkeet"
-
-#~ msgid "like --rebuild, but don't build any package"
-#~ msgstr "kuten --rebuild, mutta ei k‰‰nn‰ paketteja"
-
-#, fuzzy
-#~ msgid "    --resign <pkg>+       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "    --addsign <pkg>+      "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "add a signature to a package"
-#~ msgstr "lis‰‰ allekirjoitus pakettiin"
-
-#, fuzzy
-#~ msgid "    --checksig <pkg>+"
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "    -K <pkg>+             "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "skip any GPG signatures"
-#~ msgstr "ohita PGP-allekirjoitukset"
-
-#~ msgid "make sure a valid database exists"
-#~ msgstr "tarkista, ett‰ kunnollinen tietokanta lˆytyy"
-
-#~ msgid "rebuild database from existing database"
-#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#~ msgid ""
-#~ "set the file permissions to those in the package database using the same "
-#~ "package specification options as -q"
-#~ msgstr ""
-#~ "aseta tiedostojen oikeudet niiksi, jotka ne ovat pakettien tietokannassa "
-#~ "k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
-
-#~ msgid ""
-#~ "set the file owner and group to those in the package database using the "
-#~ "same package specification options as -q"
-#~ msgstr ""
-#~ "aseta tiedostojen omistaja ja ryhm‰ niiksi, jotka ne ovat pakettien "
-#~ "tietokannassa k‰ytt‰en samoja pakettien m‰‰rittelyparametrej‰ kuin -q"
-
-#~ msgid "-u and --uninstall are deprecated and no longer work.\n"
-#~ msgstr "-u ja --uninstall ovat vanhentuneet eiv‰tk‰ en‰‰ toimi.\n"
-
-#~ msgid "Use -e or --erase instead.\n"
-#~ msgstr "K‰yt‰ sen sijaan -e tai --erase .\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "script disabling options may only be specified during package "
-#~ "installation, erasure, and verification"
-#~ msgstr ""
-#~ "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa "
-#~ "tai tarkistettaessa"
-
-#, fuzzy
-#~ msgid "--apply may only be specified during package installation"
-#~ msgstr "--allfiles: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#~ msgid "--oldpackage may only be used during upgrades"
-#~ msgstr "--oldpackage: voidaan k‰ytt‰‰ vain paketteja p‰ivitett‰ess‰"
-
-#~ msgid "--nopgp may only be used during signature checking"
-#~ msgstr "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa"
-
-#, fuzzy
-#~ msgid "--nogpg may only be used during signature checking"
-#~ msgstr "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa"
-
-#, fuzzy
-#~ msgid ""
-#~ "--nomd5 may only be used during signature checking and package "
-#~ "verification"
-#~ msgstr ""
-#~ "--nopgp: voidaan k‰ytt‰‰ vain allekirjoitusta tarkistettaessa ja "
-#~ "paketteja todennettaessa"
-
-#~ msgid "no packages given for signature check"
-#~ msgstr "allekirjoituksen tarkistukselle ei m‰‰ritelty paketteja"
-
-#~ msgid "no packages given for signing"
-#~ msgstr "allekirjoitukselle ei m‰‰ritelty paketteja"
-
-#~ msgid "no packages given for uninstall"
-#~ msgstr "poistolle ei m‰‰ritelty paketteja"
-
-#~ msgid "extra arguments given for query of all packages"
-#~ msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
-
-#, fuzzy
-#~ msgid "extra arguments given for verify of all packages"
-#~ msgstr "pakettien kyselylle annettiin ylim‰‰r‰isi‰ parametrej‰"
-
-#, fuzzy
-#~ msgid "%s: %-45s %-s (cached)\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "%s: %-45s YES (db package)\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "%s: (%s, %s) added to Depends cache.\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "package %s-%s-%s require not satisfied: %s\n"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "package %s conflicts: %s\n"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "rpm verify mode (legacy)"
-#~ msgstr "kyselymoodi"
-
-#, fuzzy
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
-
-#, fuzzy
-#~ msgid "Generating signature using PGP.\n"
-#~ msgstr "generoi PGP-allekirjoitus"
-
-#, fuzzy
-#~ msgid "Generating signature using GPG.\n"
-#~ msgstr "generoi PGP-allekirjoitus"
-
-#, fuzzy
-#~ msgid "opening db file        %s mode 0x%x\n"
-#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#, fuzzy
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "en voi saada %s lukitusta tietokantaan"
-
-#, fuzzy
-#~ msgid "error(%d) counting packages\n"
-#~ msgstr "virhe etsitt‰ess‰ pakettia %s\n"
-
-#~ msgid "(unknown type)"
-#~ msgstr "(tuntematon tyyppi)"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "En voinut ajaa pgp:t‰"
-
-#, fuzzy
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "En voinut ajaa pgp:t‰"
-
-#, fuzzy
-#~ msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
-#~ msgstr "En voinut ajaa pgp:t‰. K‰yt‰ --nopgpg ohittaaksesi PGP-tarkistus"
-
-#, fuzzy
-#~ msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
-#~ msgstr "En voinut ajaa pgp:t‰. K‰yt‰ --nopgpg ohittaaksesi PGP-tarkistus"
-
-#, fuzzy
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "En voinut ajaa pgp:t‰"
-
-#, fuzzy
-#~ msgid "generate GPG/PGP signature"
-#~ msgstr "generoi PGP-allekirjoitus"
-
-#, fuzzy
-#~ msgid "cannot open package: %s\n"
-#~ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
-
-#, fuzzy
-#~ msgid "  All modes support the following options:"
-#~ msgstr "   kaikki moodit tukevat seuraavia parametrej‰"
-
-#, fuzzy
-#~ msgid "   --eval '<expr>+'       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "print the expansion of macro <expr> to stdout"
-#~ msgstr "tulosta k‰ytetyn rpm:n versio"
-
-#, fuzzy
-#~ msgid "   --pipe <cmd>           "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --rcfile <file:...>    "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --dbpath <dir>         "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --root <dir>           "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid ""
-#~ "  Install, upgrade and query (with -p) modes allow URL's to be used in "
-#~ "place"
-#~ msgstr ""
-#~ "   asennuksessa, p‰ivityksess‰ ja kyselyss‰ (-p:n kanssa)  ftp URL:ja "
-#~ "voidaan k‰ytt‰‰"
-
-#, fuzzy
-#~ msgid "  of file names as well as the following options:"
-#~ msgstr "   tiedostonimin‰, kuten myˆs seuraavia parametrej‰:\n"
-
-#, fuzzy
-#~ msgid "     --ftpproxy <host>    "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "     --ftpport <port>     "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "     --httpproxy <host>   "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "     --httpport <port>    "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "  Package specification options:"
-#~ msgstr "      Paketin m‰‰rittelyparametrit:"
-
-#, fuzzy
-#~ msgid "     -f <file>+           "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "query/verify package owning <file>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "     -p <packagefile>+    "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "query/verify (uninstalled) package <packagefile>"
-#~ msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
-
-#, fuzzy
-#~ msgid "     --triggeredby <pkg>  "
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "query/verify packages triggered by <pkg>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "     --whatprovides <cap> "
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "query/verify packages which provide <cap> capability"
-#~ msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
-
-#, fuzzy
-#~ msgid "     --whatrequires <cap> "
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "query/verify packages which require <cap> capability"
-#~ msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
-
-#, fuzzy
-#~ msgid "    Information selection options:"
-#~ msgstr "      Tietojen valintaparametrit:"
-
-#, fuzzy
-#~ msgid "list capabilities provided by package"
-#~ msgstr "luettele paketin tarjoamat ominaisuudet"
-
-#, fuzzy
-#~ msgid "list capabilities required by package"
-#~ msgstr "luettele paketin tarjoamat ominaisuudet"
-
-#, fuzzy
-#~ msgid "print the various [un]install scriptlets"
-#~ msgstr "tulosta erin‰iset asennus/poisto-skriptit"
-
-#, fuzzy
-#~ msgid "do not execute scripts (if any)"
-#~ msgstr "‰l‰ suorita mit‰‰n vaiheita"
-
-#, fuzzy
-#~ msgid "   --install <packagefile>"
-#~ msgstr "asenna paketti"
-
-#, fuzzy
-#~ msgid "   -i <packagefile>       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "     --excludepath <path> "
-#~ msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
-
-#, fuzzy
-#~ msgid "don't execute any installation scriptlets"
-#~ msgstr "‰l‰ suorita asennusskriptej‰"
-
-#, fuzzy
-#~ msgid "     --prefix <dir>       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "     --relocate <oldpath>=<newpath>"
-#~ msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
-
-#, fuzzy
-#~ msgid "   --upgrade <packagefile>"
-#~ msgstr "asenna paketti"
-
-#, fuzzy
-#~ msgid "   -U <packagefile>       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --erase <package>"
-#~ msgstr "asenna paketti"
-
-#, fuzzy
-#~ msgid "   -e <package>           "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --resign <pkg>+        "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --addsign <pkg>+       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --checksig <pkg>+"
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   -K <pkg>+             "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "rebuild database indices from existing database headers"
-#~ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
-
-#, fuzzy
-#~ msgid ""
-#~ "--notriggers may only be specified during package installation, erasure, "
-#~ "and verification"
-#~ msgstr ""
-#~ "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
-#~ "tarkistettaessa"
-
-#, fuzzy
-#~ msgid "       %s {--initdb}   [--dbpath <dir>]\n"
-#~ msgstr "       rpm {--initdb}   [--dbpath <hakem>]"
-
-#, fuzzy
-#~ msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <tiedosto>] [--dbpath <hakem>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--rcfile <file:...>] [--ignorearch] [--dbpath "
-#~ "<dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <tiedosto>] [--ignorearch] [--dbpath "
-#~ "<hakem>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<file:...>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile "
-#~ "<tiedosto>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:..."
-#~ ">]\n"
-#~ msgstr ""
-#~ "       rpm {--erase -e} [--root <hakem>] [--noscripts] [--rcfile "
-#~ "<tiedosto>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <hakem>] [--rcfile <tiedosto>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
-#~ msgstr ""
-#~ "       rpm {--verify -V -y} [-afpg] [--root <hakem>] [--rcfile <tiedosto>]"
-
-#, fuzzy
-#~ msgid "       %s {--setperms} [-afpg] [target]\n"
-#~ msgstr "       rpm {--setperms} [-afpg] [kohde]"
-
-#, fuzzy
-#~ msgid "       %s {--setugids} [-afpg] [target]\n"
-#~ msgstr "       rpm {--setugids} [-afpg] [kohde]"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {--resign} [--rcfile <file:...>] package1 package2 ... "
-#~ "packageN\n"
-#~ msgstr ""
-#~ "       rpm {--resign} [--rcfile <tiedosto>] paketti1 paketti2 ... pakettiN"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
-#~ msgstr ""
-#~ "       rpm {--addsign} [--rcfile <tiedosto>] paketti1 paketti2 ... "
-#~ "pakettiN"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
-#~ "<file:...>]\n"
-#~ msgstr ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <tiedosto>]"
-
-#, fuzzy
-#~ msgid "can't rename %s to %s: %s\n"
-#~ msgstr "En voi lukea %s: %s."
-
-#, fuzzy
-#~ msgid "   file: %s action: %s\n"
-#~ msgstr "en voinut avata %s: %s"
-
-#, fuzzy
-#~ msgid "installing a source package\n"
-#~ msgstr "asenna paketti"
-
-#, fuzzy
-#~ msgid "cannot create sourcedir %s\n"
-#~ msgstr "en voinut avata tiedostoa %s: "
-
-#, fuzzy
-#~ msgid "cannot create specdir %s\n"
-#~ msgstr "en voinut avata tiedostoa %s: "
-
-#, fuzzy
-#~ msgid "spec file in: %s\n"
-#~ msgstr "en voinut avata %s: %s"
-
-#, fuzzy
-#~ msgid "rename of %s to %s failed: %s\n"
-#~ msgstr "%s:n nime‰minen %s:ksi ep‰onnistui: %s"
-
-#, fuzzy
-#~ msgid ""
-#~ "retrieval of return code of %s scriptlet from %s-%s-%s failed, waitpid "
-#~ "returned %s\n"
-#~ msgstr "skriptin ajo ep‰onnistui"
-
-#, fuzzy
-#~ msgid "      --timecheck <secs>  "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "set the time check to <secs> seconds (0 disables)"
-#~ msgstr "aseta aikatarkistus S sekunniksi (0 ohittaa)"
-
-#, fuzzy
-#~ msgid "counting packages to install\n"
-#~ msgstr "asennukselle ei m‰‰ritelty paketteja"
-
-#, fuzzy
-#~ msgid "found %d packages\n"
-#~ msgstr "kysele kaikki paketit"
-
-#, fuzzy
-#~ msgid "looking for packages to download\n"
-#~ msgstr "virhe etsitt‰ess‰ pakettia %s\n"
-
-#, fuzzy
-#~ msgid "skipping %s - rpmGlob failed(%d)\n"
-#~ msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
-
-#~ msgid "%s does not appear to be a RPM package\n"
-#~ msgstr "%s ei vaikuta RPM-paketilta\n"
-
-#, fuzzy
-#~ msgid "   --rcfile <file>        "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "failed to open %s: %s"
-#~ msgstr "en voinut avata %s: %s"
-
-#~ msgid "error creating directory %s: %s"
-#~ msgstr "virhe luotaessa hakemistoa %s: %s"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<file>]\n"
-#~ msgstr ""
-#~ "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<tiedosto>]"
-
-#, fuzzy
-#~ msgid "                        [--target=platform1[,platform2...]]"
-#~ msgstr "                        [kohteet]"
-
-#, fuzzy
-#~ msgid "                        [--rmsource] [--rmspec] specfile"
-#~ msgstr ""
-#~ "                        [--buildarch <arkk>] [--rmsource] "
-#~ "m‰‰rittelytiedosto"
-
-#, fuzzy
-#~ msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
-#~ msgstr ""
-#~ "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
-#~ msgstr ""
-#~ "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
-#~ "l‰hdekoodiN.rpm"
-
-#, fuzzy
-#~ msgid ""
-#~ "       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN."
-#~ "rpm\n"
-#~ msgstr ""
-#~ "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
-#~ "l‰hdekoodiN.rpm"
-
-#, fuzzy
-#~ msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
-#~ msgstr ""
-#~ "                        [--badreloc] tiedosto1.rpm ... tiedostoN.rpm"
-
-#, fuzzy
-#~ msgid "   -b<stage> <spec>       "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   -t<stage> <tarball>    "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "package src rpm only"
-#~ msgstr "paketilla ei ole nime‰"
-
-#, fuzzy
-#~ msgid "     --buildroot <dir>    "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "     --target=<platform>+ "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --rebuild <src_pkg>    "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "   --recompile <src_pkg>  "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#, fuzzy
-#~ msgid "query the packages which require a capability"
-#~ msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
-
-#, fuzzy
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
-
-#, fuzzy
-#~ msgid "exec failed!\n"
-#~ msgstr "%s: avaus ei onnistunut\n"
-
-#, fuzzy
-#~ msgid "New Header signature\n"
-#~ msgstr "en voinut lukea allekirjoitusta"
-
-#, fuzzy
-#~ msgid "path %s is not relocateable for package %s-%s-%s"
-#~ msgstr "paketti %s ei ole asennettu\n"
-
-#, fuzzy
-#~ msgid "Unable to read sigtarget %s: %s"
-#~ msgstr "%s:n kirjoitus ei onnistu"
-
-#~ msgid "loop in prerequisite chain: %s"
-#~ msgstr "silmukka edellytysten ketjussa: %s"
-
-#~ msgid ""
-#~ "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ftpproxy <kone>] [--ftpport <portti>] [--"
-#~ "justdb]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
-#~ msgstr ""
-#~ "                        [--ftpuseport] [--ftpproxy <kone>] [--ftpport "
-#~ "<portti>]"
-
-#, fuzzy
-#~ msgid "package not found in database"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "%s: %-45s YES (added package)\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid ""
-#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<file>]"
-#~ msgstr ""
-#~ "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<tiedosto>]"
-
-#, fuzzy
-#~ msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-#~ msgstr ""
-#~ "                        [--sign] [--test] [--timecheck <s>] [--buildos "
-#~ "<kj>]"
-
-#~ msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-#~ msgstr ""
-#~ "       rpm {--rmsource} [--rcfile <tiedosto>] [-v] m‰‰rittelytiedosto"
-
-#~ msgid ""
-#~ "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr ""
-#~ "       rpm {--rebuild} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
-#~ "l‰hdekoodiN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN."
-#~ "rpm"
-#~ msgstr ""
-#~ "       rpm {--recompile} [--rcfile <tiedosto>] [-v] l‰hdekoodi1.rpm ... "
-#~ "l‰hdekoodiN.rpm"
-
-#, fuzzy
-#~ msgid "                        [--sign] [--nobuild] ]"
-#~ msgstr ""
-#~ "                        [--sign] [--test] [--timecheck <s>] [--buildos "
-#~ "<kj>]"
-
-#, fuzzy
-#~ msgid "cannot retrieve package \"%s\" from db"
-#~ msgstr "virhe: en voi avata %s%s/packages.rpm\n"
-
-#, fuzzy
-#~ msgid "cannot allocate new instance in database"
-#~ msgstr "en voi varata tilaa tietokannalle"
-
-#, fuzzy
-#~ msgid "override build architecture"
-#~ msgstr "‰l‰ tarkista paketin arkkitehtuuria"
-
-#, fuzzy
-#~ msgid "override build operating system"
-#~ msgstr "‰l‰ tarkista paketin k‰yttˆj‰rjestelm‰‰"
-
-#~ msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr ""
-#~ "--build (-b) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
-
-#~ msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-#~ msgstr ""
-#~ "--tarbuild (-t) vaatii yhden joukosta a,b,i,c,p,l ainoana parametrin‰‰n"
-
-#~ msgid "arguments to --dbpath must begin with a /"
-#~ msgstr "--dbpath:n parametrien pit‰‰ alkaa /-merkill‰"
-
-#~ msgid "--timecheck may only be used during package builds"
-#~ msgstr "--timecheck parametri‰ voidaan k‰ytt‰‰ vain paketteja koottaessa"
-
-#~ msgid ""
-#~ "ftp options can only be used during package queries, installs, and "
-#~ "upgrades"
-#~ msgstr ""
-#~ "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa "
-#~ "ja p‰ivitett‰ess‰"
-
-#, fuzzy
-#~ msgid ""
-#~ "http options can only be used during package queries, installs, and "
-#~ "upgrades"
-#~ msgstr ""
-#~ "ftp-parametrej‰ voidaan k‰ytt‰‰ vain paketteja kyselless‰, asennettaessa "
-#~ "ja p‰ivitett‰ess‰"
-
-#~ msgid "relocate files even though the package doesn't allow it"
-#~ msgstr "siirr‰ tiedostot toiseen hakemistoon vaikka paketti ei sit‰ sallisi"
-
-#~ msgid "remove sources and spec file when done"
-#~ msgstr "poista l‰hdekoodit ja m‰‰rittelytiedosto, kun valmis"
-
-#, fuzzy
-#~ msgid "    --rmsource <spec>     "
-#~ msgstr "    -b<vaihe> <m‰‰rittely> "
-
-#~ msgid "remove sources and spec file"
-#~ msgstr "poista l‰hdekoodi ja m‰‰rittelytiedosto"
-
-#, fuzzy
-#~ msgid "%s: %s satisfied by added package (shouldn't happen).\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "%s: %s satisfied by Depends cache.\n"
-#~ msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
-
-#, fuzzy
-#~ msgid "rpmQuery: rpmdbOpen() failed\n"
-#~ msgstr "%s: avaus ei onnistunut\n"
-
-#, fuzzy
-#~ msgid "key \"%s\" not found in %s"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "key \"%s\" not removed from %s"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "rpmVerify: rpmdbOpen() failed\n"
-#~ msgstr "%s: avaus ei onnistunut\n"
-
-#~ msgid "cannot read header at %d for dependency check"
-#~ msgstr "en voi lukea headeria %d:ss‰ riippuvuutta tarkistaessa"
-
-#~ msgid "error: could not read database record\n"
-#~ msgstr "virhe: tietokannan tietuetta ei voinut lukea\n"
-
-#~ msgid "cannot read header at %d for uninstall"
-#~ msgstr "en voi lukea headeria %d:st‰ poistamiseen"
-
-#, fuzzy
-#~ msgid "cannot open file %s: %s"
-#~ msgstr "en voinut avata tiedostoa %s: "
-
-#, fuzzy
-#~ msgid "package not found with key \"%s\" in %s"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#~ msgid "could not read database record!\n"
-#~ msgstr "en voinut lukea tietokannan tietuetta!\n"
-
-#~ msgid "record number %d in database is bad -- skipping it"
-#~ msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
-
-#~ msgid "cannot read header at %d for update"
-#~ msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
-
-#, fuzzy
-#~ msgid "cannot read packages named %s for uninstall"
-#~ msgstr "en voi lukea headeria %d:st‰ poistamiseen"
-
-#~ msgid "package %s not listed in %s"
-#~ msgstr "paketti %s ei ole %s:ss‰"
-
-#, fuzzy
-#~ msgid "removing requiredby index for %s\n"
-#~ msgstr "virhe poistettaessa tietuetta %s %s:st‰"
-
-#, fuzzy
-#~ msgid "cannot create %s"
-#~ msgstr "en voinut avata tiedostoa %s: "
-
-#, fuzzy
-#~ msgid "Unable to stat icon: %s"
-#~ msgstr "%s:n kirjoitus ei onnistu"
-
-#~ msgid "failed to open %s\n"
-#~ msgstr "%s:n avaus ep‰onnistui\n"
-
-#, fuzzy
-#~ msgid "failed build prerequisites:\n"
-#~ msgstr "puuttuvat riippuvuudet:\n"
-
-#~ msgid "Couldn't read the header/archive"
-#~ msgstr "En voinut lukea header/arkistotiedostoa"
-
-#~ msgid "Couldn't write header/archive to temp file"
-#~ msgstr "En voinut kirjoittaa header/arkistotiedostoa v‰liaikaistiedostoon"
-
-#~ msgid "Couldn't write package"
-#~ msgstr "Paketin kirjoitus ei onnistunut"
-
-#~ msgid "unexpected query specifiers"
-#~ msgstr "odottamattomia kyselyn parametrej‰"
-
-#~ msgid "--nofiles may only be specified during package verification"
-#~ msgstr "--nofiles: voidaan k‰ytt‰‰ vain paketteja tarkistettaessa"
-
-#~ msgid "--clean may only be used with -b and -t"
-#~ msgstr "--clean: voidaan k‰ytt‰‰ vain -b ja -t kanssa"
-
-#~ msgid "--rmsource may only be used with -b and -t"
-#~ msgstr "--rmsource: voidaan k‰ytt‰‰ vain -b ja -t kanssa"
-
-#~ msgid "--short-circuit may only be used during package building"
-#~ msgstr "--short-circuit: voidaan k‰ytt‰‰ vain paketteja asennettaessa"
-
-#, fuzzy
-#~ msgid "--short-circuit may only be used with -bc, -bi, -bs, -tc -ti, or -ts"
-#~ msgstr "--short-circuit: voidaan k‰ytt‰‰ vain -bc, -bi, -tc tai -ti kanssa"
-
-#, fuzzy
-#~ msgid "pgp version 5 not found: "
-#~ msgstr "Tiedostoa ei lˆytynyt palvelimelta"
-
-#~ msgid "showing package: %d\n"
-#~ msgstr "n‰yt‰n paketin: %d\n"
-
-#, fuzzy
-#~ msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
-#~ msgstr "siirr‰ tiedostot hakemistosta <vanhapolku> hakemistoon <uusipolku>"
-
-#~ msgid "error: cannot open file %s\n"
-#~ msgstr "virhe: tiedostoa %s ei voi avata\n"
-
-#~ msgid "error: %s does not appear to be a RPM package\n"
-#~ msgstr "virhe: %s ei vaikuta RPM paketilta\n"
-
-#, fuzzy
-#~ msgid "counting packages to uninstall\n"
-#~ msgstr "poistolle ei m‰‰ritelty paketteja"
-
-#, fuzzy
-#~ msgid "error %d reading header: %s\n"
-#~ msgstr "virhe luotaessa hakemistoa %s: %s"
-
-#, fuzzy
-#~ msgid "not installing %s -- linguas\n"
-#~ msgstr "Asennan: %s\n"
-
-#, fuzzy
-#~ msgid "package %s is now obsolete and will be removed\n"
-#~ msgstr "paketti %s ei ole asennettu\n"
-
-#, fuzzy
-#~ msgid "package %s contains no files"
-#~ msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
-
-#, fuzzy
-#~ msgid "file %s is shared\n"
-#~ msgstr "en voinut avata %s: %s"
-
-#, fuzzy
-#~ msgid "no macroname for setenv %s:%d"
-#~ msgstr "%s:n puuttuva parametri %s:%d"
-
-#, fuzzy
-#~ msgid "keeping %s\n"
-#~ msgstr "Haen: %s\n"
-
-#~ msgid "one type of query may be performed at a time"
-#~ msgstr "yhden tyyppinen kysely voidaan suorittaa kerralla"
-
-#~ msgid "--dump may only be used during queries"
-#~ msgstr "--dump: voidaan k‰ytt‰‰ vain paketteja kyselt‰ess‰"
-
-#~ msgid "--dump of queries must be used with -l, -c, or -d"
-#~ msgstr "kyselyjen --dump on k‰ytett‰v‰ -l, -c, tai -d kanssa"
-
-#~ msgid "(none)"
-#~ msgstr "(ei mit‰‰n)"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport "
-#~ "<port>]"
-#~ msgstr "                        [--ftpproxy <kone>] [--ftpport <portti>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-#~ msgstr ""
-#~ "                        [--provides] [--dump] [--dbpath <hakem>] [--"
-#~ "changelog]"
-
-#, fuzzy
-#~ msgid "   --help\t\t- print this message"
-#~ msgstr "tulosta t‰m‰ viesti"
-
-#, fuzzy
-#~ msgid "   --version\t- print the version of rpm being used"
-#~ msgstr "tulosta k‰ytetyn rpm:n versio"
-
-#, fuzzy
-#~ msgid "       -v\t\t      - be a little more verbose"
-#~ msgstr "tulosta enemm‰n viestej‰"
-
-#, fuzzy
-#~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
-#~ msgstr "tulosta mahdollisimman paljon viestej‰ (vianetsint‰‰n)"
-
-#, fuzzy
-#~ msgid "   -q                   - query mode"
-#~ msgstr "                        [--nomd5] [kohteet]"
-
-#, fuzzy
-#~ msgid "      --queryformat <s>   - use s as the header format (implies -i)"
-#~ msgstr "k‰yt‰ s headerin formaatina (josta seuraa -i)"
-
-#, fuzzy
-#~ msgid "        -a                - query all packages"
-#~ msgstr "                           paketti1 ... pakettiN"
-
-#, fuzzy
-#~ msgid "        -f <file>+        - query package owning <file>"
-#~ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
-
-#, fuzzy
-#~ msgid "        -F                - like -f, but read file names from stdin"
-#~ msgstr ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <hakem>]"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-#~ msgstr "kysele(asentamatonta) pakettia <pakettitiedosto>"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -P                - like -p, but read package names from stdin"
-#~ msgstr "                           paketti1 ... pakettiN"
-
-#, fuzzy
-#~ msgid ""
-#~ "\t   --whatprovides <i> - query packages which provide <i> capability"
-#~ msgstr "kysele paketteja, jotka tarjoavat <i> ominaisuuden"
-
-#, fuzzy
-#~ msgid ""
-#~ "\t   --whatrequires <i> - query packages which require <i> capability"
-#~ msgstr "kysele paketteja, jotka vaativat <i> ominaisuutta"
-
-#, fuzzy
-#~ msgid "        -i                - display package information"
-#~ msgstr "                           paketti1 ... pakettiN"
-
-#, fuzzy
-#~ msgid "        -l                - display package file list"
-#~ msgstr "                           paketti1 ... pakettiN"
-
-#, fuzzy
-#~ msgid "        -s                - show file states (implies -l)"
-#~ msgstr "n‰yt‰ tiedostojen tilat (josta seuraa -l)"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -d                - list only documentation files (implies -l)"
-#~ msgstr "listaa vain dokumettitiedostot (josta seuraa -l)"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -c                - list only configuration files (implies -l)"
-#~ msgstr "listaa vain konfigurointiedostot (josta seuraa -l)"
-
-#, fuzzy
-#~ msgid "                            (must be used with -l, -c, or -d)"
-#~ msgstr "kyselyjen --dump on k‰ytett‰v‰ -l, -c, tai -d kanssa"
-
-#, fuzzy
-#~ msgid "        --provides        - list capabilbities package provides"
-#~ msgstr "luettele paketin tarjoamat ominaisuudet"
-
-#, fuzzy
-#~ msgid "        -R                - list package dependencies"
-#~ msgstr "                           paketti1 ... pakettiN"
-
-#, fuzzy
-#~ msgid "        --scripts         - print the various [un]install scripts"
-#~ msgstr "tulosta erin‰iset asennus/poisto-skriptit"
-
-#, fuzzy
-#~ msgid ""
-#~ "    --querytags         - list the tags that can be used in a query format"
-#~ msgstr "luettele nimiˆt, joita voidaan k‰ytt‰‰ kyselyn formaatissa"
-
-#, fuzzy
-#~ msgid "only one type of query may be performed at a time"
-#~ msgstr "yhden tyyppinen kysely voidaan suorittaa kerralla"
-
-#, fuzzy
-#~ msgid ""
-#~ "--noscripts may only be specified during package installation and "
-#~ "uninstallation"
-#~ msgstr ""
-#~ "--noscripts: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa "
-#~ "tai tarkistettaessa"
-
-#, fuzzy
-#~ msgid ""
-#~ "--nodeps may only be specified during package installation, "
-#~ "uninstallation, and verification"
-#~ msgstr ""
-#~ "--nodeps: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa tai "
-#~ "tarkistettaessa"
-
-#, fuzzy
-#~ msgid ""
-#~ "--test may only be specified during package installation, uninstallation, "
-#~ "and building"
-#~ msgstr ""
-#~ "--test: voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa ja "
-#~ "k‰‰nnett‰ess‰"
-
-#, fuzzy
-#~ msgid ""
-#~ "--root (-r) may only be specified during installation, uninstallation, "
-#~ "querying, and database rebuilds"
-#~ msgstr ""
-#~ "--root (-r): voidaan k‰ytt‰‰ vain paketteja asennettaessa, poistettaessa, "
-#~ "kyselt‰ess‰ ja tietokannan uudelleenluonnissa"
-
-#, fuzzy
-#~ msgid "--clean may only be used during package building"
-#~ msgstr "--sign: voidaan k‰ytt‰‰ vain paketteja k‰‰nnett‰ess‰"
-
-#, fuzzy
-#~ msgid "--short-circuit may only be used with -bc or -bi"
-#~ msgstr "--short-circuit: voidaan k‰ytt‰‰ vain -bc, -bi, -tc tai -ti kanssa"
-
-#, fuzzy
-#~ msgid "--dump may only be used during queryies"
-#~ msgstr "--dump: voidaan k‰ytt‰‰ vain paketteja kyselt‰ess‰"
-
-#~ msgid "build the packages for architecture <arch>"
-#~ msgstr "k‰‰nn‰ paketit arkkitehtuurille <arkk>"
-
-#~ msgid "cannot read database record at %d"
-#~ msgstr "en voi lukea tietokannan tietuetta %d"

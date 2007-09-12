@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 00:42+0200\n"
+"POT-Creation-Date: 2007-09-12 11:45+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -122,7 +122,7 @@ msgstr "用於所有 rpm 模式和可執行檔案的共同選項："
 msgid "%s: %s\n"
 msgstr "%s：%s\n"
 
-#: rpmqv.c:133 lib/poptALL.c:88
+#: rpmqv.c:133 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM 版本 %s\n"
@@ -1259,17 +1259,17 @@ msgstr "不校驗組建相依關係"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "產生相容於過去的 rpm2/rpm3 打包的表頭"
 
-#: build/poptBT.c:214 lib/poptALL.c:214 lib/poptI.c:257 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:210 lib/poptI.c:257 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 msgid "don't verify package digest(s)"
 msgstr "不校驗套件摘要"
 
-#: build/poptBT.c:216 lib/poptALL.c:216 lib/poptI.c:259 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:212 lib/poptI.c:259 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 msgid "don't verify database header(s) when retrieved"
 msgstr "取回時不驗證資料庫表頭"
 
-#: build/poptBT.c:218 lib/poptALL.c:222 lib/poptI.c:261 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:218 lib/poptI.c:261 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 msgid "don't verify package signature(s)"
 msgstr "不校驗套件簽名"
@@ -1540,7 +1540,7 @@ msgstr "mntctl() 回傳掛載點失敗：%s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "無法檢驗狀態：%s：%s\n"
 
-#: lib/fs.c:147 rpmio/url.c:513
+#: lib/fs.c:147 rpmio/url.c:435
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
@@ -1753,147 +1753,135 @@ msgstr "%s 無法安裝\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:170
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: 跟隨命令列符號連結"
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:172
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: 邏輯遍歷"
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:174
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: 不變更目錄"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:176
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: 不取得狀態資訊"
 
-#: lib/poptALL.c:182
+#: lib/poptALL.c:178
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL:實體遍歷"
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:180
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: 回傳 . 和 .."
 
-#: lib/poptALL.c:186
+#: lib/poptALL.c:182
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: 不交叉裝置"
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:184
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: 回傳空白化資訊"
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:197
 msgid "predefine MACRO with value EXPR"
 msgstr "預先以值 EXPR 定義巨集"
 
-#: lib/poptALL.c:202 lib/poptALL.c:205
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr "「巨集 EXPR」"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:200
 msgid "define MACRO with value EXPR"
 msgstr "定義巨集附有值 EXPR"
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:203
 msgid "print macro expansion of EXPR"
 msgstr "印出巨集展開的 EXPR"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr "「EXPR」"
 
-#: lib/poptALL.c:210 lib/poptALL.c:229 lib/poptALL.c:233
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "讀取 <檔案:…> 以代替預設檔案"
 
-#: lib/poptALL.c:211 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr "<檔案:…>"
 
-#: lib/poptALL.c:219 lib/poptALL.c:253
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
 msgstr "停止使用 libio(3) API"
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:221
 msgid "send stdout to CMD"
 msgstr "發送標準輸出到 CMD"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:222
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:233
 msgid "use ROOT as top level directory"
 msgstr "使用 ROOT 做為頂層目錄"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:234
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:237
 msgid "display known query tags"
 msgstr "顯示已知的查詢標記"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:239
 msgid "display final rpmrc and macro configuration"
 msgstr "顯示完整的 rpmrc 與巨集定義配置"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:241
 msgid "provide less detailed output"
 msgstr "提供較少的細節輸出"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:243
 msgid "provide more detailed output"
 msgstr "提供較多的細節輸出"
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "印出正在使用的 rpm 版本資訊"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:258
 msgid "debug payload file state machine"
 msgstr "對酬載檔案狀態機器除錯"
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:260
 msgid "use threads for file state machine"
 msgstr "使用執行緒做為檔案狀態機器"
 
-#: lib/poptALL.c:266
-msgid "debug FTP/HTTP data stream"
-msgstr "除錯 FTP/HTTP 資料流"
-
-#: lib/poptALL.c:268
-msgid "debug argv collections"
-msgstr "除錯 argv 收集"
-
-#: lib/poptALL.c:270
-msgid "debug WebDAV data stream"
-msgstr "對 WebDAV 資料流除錯"
-
-#: lib/poptALL.c:275
+#: lib/poptALL.c:265
 msgid "debug option/argument processing"
 msgstr "對選項/引數處理除錯"
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:270
 msgid "debug package state machine"
 msgstr "對套件狀態機器除錯"
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:272
 msgid "use threads for package state machine"
 msgstr "使用執行緒用於套件狀態機"
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:286
 msgid "debug rpmio I/O"
 msgstr "對 rpmio I/O 除錯"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr "對網址快取處理除錯"
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: 選項表格 misconfigured(%d)\n"
@@ -3968,24 +3956,6 @@ msgstr "檔案 %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"
 
-#: rpmio/rpmdav.c:560
-msgid "Authorization Required"
-msgstr ""
-
-#: rpmio/rpmdav.c:562
-msgid "Redirect"
-msgstr ""
-
-#: rpmio/rpmdav.c:564
-#, fuzzy
-msgid "Server Error"
-msgstr "伺服器 I/O 錯誤"
-
-#: rpmio/rpmdav.c:566
-#, fuzzy
-msgid "Unknown Error"
-msgstr "(無錯誤)"
-
 #: rpmio/rpmlua.c:450
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -4011,62 +3981,62 @@ msgstr "不正確的套件編號：%s\n"
 msgid "lua hook failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"
 
-#: rpmio/rpmio.c:639
+#: rpmio/rpmio.c:586
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:609
 msgid "Bad server response"
 msgstr "不當的伺服器回應"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:611
 msgid "Server I/O error"
 msgstr "伺服器 I/O 錯誤"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:613
 msgid "Server timeout"
 msgstr "伺服器逾時"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:615
 msgid "Unable to lookup server host address"
 msgstr "無法查找伺服器主機位址"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:617
 msgid "Unable to lookup server host name"
 msgstr "無法查找伺服器主機名稱"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:619
 msgid "Failed to connect to server"
 msgstr "連接到伺服器時失敗"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:621
 msgid "Failed to establish data connection to server"
 msgstr "建立資料連接到伺服器時失敗"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "到本機檔案的 I/O 錯誤"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:625
 msgid "Error setting remote server to passive mode"
 msgstr "設定遠端伺服器為被動模式時發生錯誤"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "在伺服器上找不到檔案"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:629
 msgid "Abort in progress"
 msgstr "正在進行放棄"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:633
 msgid "Unknown or unexpected error"
 msgstr "不明的或非預期錯誤"
 
-#: rpmio/rpmio.c:1444
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "以 %2$s 登錄進入 %1$s，密碼 %3$s\n"
+#: rpmio/rpmio.c:915
+#, fuzzy, c-format
+msgid "URL helper failed: %s (%d)\n"
+msgstr "讀取失敗：%s (%d)\n"
 
 #: rpmio/rpmlog.c:55
 msgid "(no error)"
@@ -4099,26 +4069,16 @@ msgstr "警告：u %p 控制 %p nrefs != 0(%s %s)\n"
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "警告：u %p 資料 %p nrefs != 0(%s %s)\n"
 
-#: rpmio/url.c:163
+#: rpmio/url.c:156
 #, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "警告：_url_cache[%d] %p nrefs(%d) != 1(%s %s)\n"
 
-#: rpmio/url.c:251
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "密碼用於 %s@%s："
-
-#: rpmio/url.c:277 rpmio/url.c:303
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "錯誤：%sport 必須是數字\n"
-
-#: rpmio/url.c:466
+#: rpmio/url.c:388
 msgid "url port must be a number\n"
 msgstr "網址連接埠必須是數字\n"
 
-#: rpmio/url.c:533
+#: rpmio/url.c:455
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "建立 %s 時失敗: %s\n"
@@ -4149,127 +4109,3 @@ msgstr "%s: 快取作業失敗：ec %d。\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 讀取清單失敗：%s\n"
-
-#~ msgid "%s:  no newline on line number %d (only read %s)\n"
-#~ msgstr "%s:  在列號 %d 上沒有新列符號 (只有讀取 %s)\n"
-
-#~ msgid "%s:  line number %d is missing fields (only read %s)\n"
-#~ msgstr "%s:  列號 %d 缺少欄位 (只有讀取 %s)\n"
-
-#~ msgid ""
-#~ "%s:  unable to compile regular expression %s on line number %d:  %s\n"
-#~ msgstr "%s： 無法編譯正規運算式 %s 於列號 %d: %s 處\n"
-
-#~ msgid "%s:  invalid type specifier %s on line number %d\n"
-#~ msgstr "%s： 指定了不正確的類型 %s 於第 %d 列處。\n"
-
-#~ msgid "%s:  invalid context %s on line number %d\n"
-#~ msgstr "%s:  無效的上下文 %s 於列數 %d\n"
-
-#, fuzzy
-#~ msgid "Please contact rpm-maint@lists.rpm.org\n"
-#~ msgstr "請洽詢 rpm-list@redhat.com\n"
-
-#~ msgid "list install/erase scriptlets from package(s)"
-#~ msgstr "從套件中列出安裝/清除短命令稿"
-
-#~ msgid "set permissions of files in a package"
-#~ msgstr "設定套件中檔案的權限"
-
-#~ msgid "set user/group ownership of files in a package"
-#~ msgstr "設定套件中檔案的使用者/群組所有權"
-
-#~ msgid "list capabilities this package conflicts with"
-#~ msgstr "列出此套件會產生衝突的對象"
-
-#~ msgid "list other packages removed by installing this package"
-#~ msgstr "列出由於安裝此套件而被移除的其他套件"
-
-#~ msgid "list capabilities that this package provides"
-#~ msgstr "列出此套件所能提供的對象"
-
-#~ msgid "list capabilities required by package(s)"
-#~ msgstr "列出這些套件所需的功能"
-
-#~ msgid "list descriptive information from package(s)"
-#~ msgstr "列出套件的描述性資訊"
-
-#~ msgid "list change logs for this package"
-#~ msgstr "列出此套件的變更記錄"
-
-#~ msgid "list trigger scriptlets from package(s)"
-#~ msgstr "列出套件的觸發性短命令稿"
-
-#~ msgid "list package(s) by install time, most recent first"
-#~ msgstr "列出套件依其安裝時間，最近者在前"
-
-#~ msgid "list all files from each package"
-#~ msgstr "列出每個套件的所有檔案"
-
-#~ msgid ""
-#~ "find package name that contains a provided capability (needs rpmdb-redhat "
-#~ "package installed)"
-#~ msgstr "尋找含有所提供功能的套件名稱 (需要先安裝 rpmdb-redhat 套件)"
-
-#~ msgid "set buildroot <policy> (e.g. compress man pages)"
-#~ msgstr "設定 buildroot <策略> (例如: 壓縮 man 頁面)"
-
-#~ msgid "<policy>"
-#~ msgstr "<策略>"
-
-#~ msgid "enable configure <option> for build"
-#~ msgstr "啟動用於組建的配置 <選項>"
-
-#~ msgid "<option>"
-#~ msgstr "<選項>"
-
-#~ msgid "disable configure <option> for build"
-#~ msgstr "停止用於組建的配置 <選項>"
-
-#~ msgid "use database in DIRECTORY"
-#~ msgstr "使用在[目錄]中的資料庫"
-
-#~ msgid "DIRECTORY"
-#~ msgstr "[目錄]"
-
-#~ msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "只能校驗 V3 與 V4 版本的簽名，現略過 V%u 版本的簽名\n"
-
-#~ msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "只能校驗 V3 與 V4 版本的簽名，正略過 V%u 版本的簽名\n"
-
-#~ msgid "Common options for all rpm modes:"
-#~ msgstr "用於所有 rpm 模式的共同選項："
-
-#~ msgid "--replacefiles may only be specified during package installation"
-#~ msgstr "--replacefiles 選項只能在套件安裝時指定"
-
-#~ msgid "line %d: File name not permitted: %s\n"
-#~ msgstr "列 %d: 不容許的檔案名稱：%s\n"
-
-#~ msgid "%s directory created with perms %04o.\n"
-#~ msgstr "%s 以權限 %04o 所建立的目錄。\n"
-
-#~ msgid "only V3 signatures can be verified, skipping V%u signature\n"
-#~ msgstr "只能校驗 V3 版本的簽名，略過 V%u 版本的簽名\n"
-
-#~ msgid "install even if the package replaces installed files"
-#~ msgstr "即使套件會置換已安裝的檔案仍要安裝"
-
-#~ msgid "query of %s failed\n"
-#~ msgstr "查詢 %s 時失敗\n"
-
-#~ msgid "old format source packages cannot be queried\n"
-#~ msgstr "無法查詢舊格式的原始碼套件\n"
-
-#~ msgid "no packages\n"
-#~ msgstr "沒有套件\n"
-
-#~ msgid "gpg failed\n"
-#~ msgstr "gpg 失敗\n"
-
-#~ msgid "V3 RSA/MD5 signature: "
-#~ msgstr "V3 RSA/MD 5 簽名："
-
-#~ msgid "V4 DSA signature: "
-#~ msgstr "V4 DSA 簽名："

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 00:42+0200\n"
+"POT-Creation-Date: 2007-09-12 11:45+0200\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -116,7 +116,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:133 lib/poptALL.c:88
+#: rpmqv.c:133 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM útgáfa %s\n"
@@ -1253,19 +1253,19 @@ msgstr "ekki skoða pakkaskilyrðin"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:214 lib/poptALL.c:214 lib/poptI.c:257 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:210 lib/poptI.c:257 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: build/poptBT.c:216 lib/poptALL.c:216 lib/poptI.c:259 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:212 lib/poptI.c:259 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "ekki skoða pakkaskilyrðin"
 
-#: build/poptBT.c:218 lib/poptALL.c:222 lib/poptI.c:261 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:218 lib/poptI.c:261 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1539,7 +1539,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr "gat ekki skoðað %s: %s\n"
 
-#: lib/fs.c:147 rpmio/url.c:513
+#: lib/fs.c:147 rpmio/url.c:435
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "gat ekki opnað %s: %s\n"
@@ -1752,149 +1752,137 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:170
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:172
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:174
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr ""
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:176
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:182
+#: lib/poptALL.c:178
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:180
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:186
+#: lib/poptALL.c:182
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:184
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:197
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:202 lib/poptALL.c:205
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:200
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:207
+#: lib/poptALL.c:203
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "prenta útvíkkun fjölva <expr>+"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:210 lib/poptALL.c:229 lib/poptALL.c:233
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:211 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:219 lib/poptALL.c:253
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:225
+#: lib/poptALL.c:221
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "senda frálag í <skipun>"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:222
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:233
 msgid "use ROOT as top level directory"
 msgstr ""
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:234
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:237
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:239
 msgid "display final rpmrc and macro configuration"
 msgstr "sýna endanlega rpmrc og stillingar fjölva"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:241
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:243
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "prenta útgáfunúmer rpm sem verið er að nota"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:258
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:260
 msgid "use threads for file state machine"
 msgstr ""
 
-#: lib/poptALL.c:266
-msgid "debug FTP/HTTP data stream"
-msgstr ""
-
-#: lib/poptALL.c:268
-msgid "debug argv collections"
-msgstr ""
-
-#: lib/poptALL.c:270
-msgid "debug WebDAV data stream"
-msgstr ""
-
-#: lib/poptALL.c:275
+#: lib/poptALL.c:265
 msgid "debug option/argument processing"
 msgstr ""
 
-#: lib/poptALL.c:280
+#: lib/poptALL.c:270
 msgid "debug package state machine"
 msgstr ""
 
-#: lib/poptALL.c:282
+#: lib/poptALL.c:272
 msgid "use threads for package state machine"
 msgstr ""
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:286
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr ""
 
-#: lib/poptALL.c:367
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -3987,24 +3975,6 @@ msgstr "Skrá %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Skráin %s er minni en %u bæti\n"
 
-#: rpmio/rpmdav.c:560
-msgid "Authorization Required"
-msgstr ""
-
-#: rpmio/rpmdav.c:562
-msgid "Redirect"
-msgstr ""
-
-#: rpmio/rpmdav.c:564
-#, fuzzy
-msgid "Server Error"
-msgstr "Les/ritvilla á þjóninum"
-
-#: rpmio/rpmdav.c:566
-#, fuzzy
-msgid "Unknown Error"
-msgstr "(engin villa)"
-
 #: rpmio/rpmlua.c:450
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
@@ -4030,62 +4000,62 @@ msgstr ""
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek brást: %s\n"
 
-#: rpmio/rpmio.c:639
+#: rpmio/rpmio.c:586
 msgid "Success"
 msgstr "Tókst"
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:609
 msgid "Bad server response"
 msgstr "Þjónninn svaraði rangt"
 
-#: rpmio/rpmio.c:664
+#: rpmio/rpmio.c:611
 msgid "Server I/O error"
 msgstr "Les/ritvilla á þjóninum"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:613
 msgid "Server timeout"
 msgstr "Þjónninn tímaði út"
 
-#: rpmio/rpmio.c:668
+#: rpmio/rpmio.c:615
 msgid "Unable to lookup server host address"
 msgstr "Gat ekki flett upp vistfangi þjónsins"
 
-#: rpmio/rpmio.c:670
+#: rpmio/rpmio.c:617
 msgid "Unable to lookup server host name"
 msgstr "Gat ekki flett upp heiti þjónsins"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:619
 msgid "Failed to connect to server"
 msgstr "Gat ekki tengst þjóninum"
 
-#: rpmio/rpmio.c:674
+#: rpmio/rpmio.c:621
 msgid "Failed to establish data connection to server"
 msgstr "Gat ekki opnað gagnatengingu við þjóninn"
 
-#: rpmio/rpmio.c:676
+#: rpmio/rpmio.c:623
 msgid "I/O error to local file"
 msgstr "Les/ritvilla í skrána"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:625
 msgid "Error setting remote server to passive mode"
 msgstr "Ekki tókst að fá þjóninn í \"passive\" ham"
 
-#: rpmio/rpmio.c:680
+#: rpmio/rpmio.c:627
 msgid "File not found on server"
 msgstr "Skráin fannst ekki á þjóninum"
 
-#: rpmio/rpmio.c:682
+#: rpmio/rpmio.c:629
 msgid "Abort in progress"
 msgstr "Er að hætta við"
 
-#: rpmio/rpmio.c:686
+#: rpmio/rpmio.c:633
 msgid "Unknown or unexpected error"
 msgstr "Óþekkt eða óvænt villa"
 
-#: rpmio/rpmio.c:1444
-#, c-format
-msgid "logging into %s as %s, pw %s\n"
-msgstr "tengist %s sem %s með aðgangsorði %s\n"
+#: rpmio/rpmio.c:915
+#, fuzzy, c-format
+msgid "URL helper failed: %s (%d)\n"
+msgstr "ggp brást\n"
 
 #: rpmio/rpmlog.c:55
 msgid "(no error)"
@@ -4118,26 +4088,16 @@ msgstr "aðvörun: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "aðvörun: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:163
+#: rpmio/url.c:156
 #, fuzzy, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "aðvörun: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:251
-#, c-format
-msgid "Password for %s@%s: "
-msgstr "Lykilorð fyrir %s@%s: "
-
-#: rpmio/url.c:277 rpmio/url.c:303
-#, c-format
-msgid "error: %sport must be a number\n"
-msgstr "villa: %sport verður að vera tala\n"
-
-#: rpmio/url.c:466
+#: rpmio/url.c:388
 msgid "url port must be a number\n"
 msgstr "gátt slóðar verður að vera tala\n"
 
-#: rpmio/url.c:533
+#: rpmio/url.c:455
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "gat ekki búið til %s: %s\n"
@@ -4169,389 +4129,3 @@ msgstr "%s: Fseek brást: %s\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s rmdir %s brást: %s\n"
-
-#, fuzzy
-#~ msgid "%s: base64 encode failed.\n"
-#~ msgstr "%s: Fseek brást: %s\n"
-
-#, fuzzy
-#~ msgid "h#%7u: %s"
-#~ msgstr "%s: %s\n"
-
-#, fuzzy
-#~ msgid "don't verify package digest"
-#~ msgstr "ekki skoða pakkaskilyrðin"
-
-#, fuzzy
-#~ msgid "don't verify package signature"
-#~ msgstr "ekki skoða pakkaskilyrðin"
-
-#~ msgid "define macro <name> with value <body>"
-#~ msgstr "skilgreina fjölva <nafn> með gildinu <gildi>"
-
-#~ msgid "'<name> <body>'"
-#~ msgstr "'<nafn> <gildi>'"
-
-#~ msgid "<expr>+"
-#~ msgstr "<expr>+"
-
-#~ msgid "rpm: %s\n"
-#~ msgstr "rpm: %s\n"
-
-#~ msgid "Usage: rpm {--help}"
-#~ msgstr "Notkun: rpm {--help}"
-
-#~ msgid "       rpm {--version}"
-#~ msgstr "       rpm {--version}"
-
-#~ msgid "       rpm {--initdb}   [--dbpath <dir>]"
-#~ msgstr "       rpm {--initdb}   [--dbpath <mappa>]"
-
-#~ msgid ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-#~ msgstr ""
-#~ "                        [--replacepkgs] [--replacefiles] [--root <mappa>]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-#~ msgstr ""
-#~ "                        [--rcfile <skrá>] [--ignorearch] [--dbpath "
-#~ "<mappa>]"
-
-#~ msgid ""
-#~ "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-#~ msgstr ""
-#~ "                        [--prefix <mappa>] [--ignoreos] [--nodeps] [--"
-#~ "allfiles]"
-
-#~ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-#~ msgstr ""
-#~ "                        [--ftpproxy <þjónn>] [--ftpport <gátt>] [--justdb]"
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>]"
-#~ msgstr "                        [--httpproxy <þjónn>] [--httpport <gátt>]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--noorder] [--relocate "
-#~ "oldpath=newpath]"
-#~ msgstr ""
-#~ "                        [--justdb] [--noorder] [--relocate slóð=nýslóð]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath <path>]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--notriggers] [--excludepath <slóð>]"
-
-#~ msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-#~ msgstr "                        [--ignoresize] skrá1.rpm ... skráN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-#~ msgstr ""
-#~ "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
-
-#~ msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-#~ msgstr ""
-#~ "                        [--oldpackage] [--root <mappa>] [--noscripts]"
-
-#~ msgid ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--excludedocs] [--includedocs] [--rcfile <skrá>]"
-
-#~ msgid ""
-#~ "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-#~ msgstr ""
-#~ "                        [--ignorearch]  [--dbpath <mappa>] [--prefix "
-#~ "<mappa>] "
-
-#~ msgid "                        [--httpproxy <host>] [--httpport <port>] "
-#~ msgstr "                        [--httpproxy <þjónn>] [--httpport <gátt>]"
-
-#~ msgid ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-
-#~ msgid ""
-#~ "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
-#~ msgstr ""
-#~ "                        [--badreloc] [--excludepath <slóð>] [--ignoresize]"
-
-#~ msgid "                        file1.rpm ... fileN.rpm"
-#~ msgstr "                        skrá1.rpm ... skráN.rpm"
-
-#~ msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-#~ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-
-#~ msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "                        [--scripts] [--root <mappa>] [--rcfile <skrá>]"
-
-#~ msgid ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-#~ msgstr ""
-#~ "                        [--whatprovides] [--whatrequires] [--requires]"
-
-#~ msgid "                        [--triggeredby]"
-#~ msgstr ""
-#~ "                        [--triggeredby] [--ftpport] [--ftpproxy <þjónn>]"
-
-#~ msgid "                        [--provides] [--triggers] [--dump]"
-#~ msgstr ""
-#~ "                        [--ftpport <gátt>] [--provides] [--triggers] [--"
-#~ "dump]"
-
-#~ msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-#~ msgstr "                        [--changelog] [--dbpath <mappa>] [targets]"
-
-#~ msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--verify -V -y} [-afpg] [--root <mappa>] [--rcfile <skrá>]"
-
-#~ msgid ""
-#~ "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-#~ msgstr ""
-#~ "                        [--dbpath <mappa>] [--nodeps] [--nofiles] [--"
-#~ "noscripts]"
-
-#~ msgid "                        [--nomd5] [targets]"
-#~ msgstr "                        [--nomd5] [targets]"
-
-#~ msgid "       rpm {--setperms} [-afpg] [target]"
-#~ msgstr "       rpm {--setperms} [-afpg] [target]"
-
-#~ msgid "       rpm {--setugids} [-afpg] [target]"
-#~ msgstr "       rpm {--setugids} [-afpg] [target]"
-
-#~ msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-#~ msgstr "       rpm {--freshen -F} skrá1.rpm ... skráN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--erase -e} [--root <mappa>] [--noscripts] [--rcfile <skrá>]"
-
-#~ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-#~ msgstr ""
-#~ "                        [--dbpath <mappa>] [--nodeps] [--allmatches]"
-
-#~ msgid ""
-#~ "                        [--justdb] [--notriggers] package1 ... packageN"
-#~ msgstr "                        [--justdb] [--notriggers] pakki1 ... pakkiN"
-
-#~ msgid ""
-#~ "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--resign} [--rcfile <skrá>] pakki1 pakki2 ... pakkiN"
-
-#~ msgid ""
-#~ "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-#~ msgstr "       rpm {--addsign} [--rcfile <skrá>] pakki1 pakki2 ... pakkiN"
-
-#~ msgid ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
-#~ msgstr ""
-#~ "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <skrá>]"
-
-#~ msgid "                           package1 ... packageN"
-#~ msgstr "                           pakki1 ... pakkiN"
-
-#~ msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--rebuilddb} [--rcfile <skrá>] [--dbpath <mappa>]"
-
-#~ msgid "       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"
-#~ msgstr "       rpm {--verifydb} [--rcfile <skrá>] [--dbpath <mappa>]"
-
-#~ msgid "       rpm {--querytags}"
-#~ msgstr "       rpm {--querytags}"
-
-#~ msgid "Usage:"
-#~ msgstr "Notkun:"
-
-#~ msgid "print this message"
-#~ msgstr "prenta þessi skilaboð"
-
-#~ msgid "   All modes support the following arguments:"
-#~ msgstr "   Allir hamir styðja eftirtalin viðföng:"
-
-#~ msgid "    --define '<name> <body>'"
-#~ msgstr "    --define '<nafn> <gildi>'"
-
-#~ msgid "    --eval '<name>+'      "
-#~ msgstr "    --eval '<nafn>+'      "
-
-#~ msgid "print the expansion of macro <name> to stdout"
-#~ msgstr "prenta útvíkkun fjölva <nafn> á staðalfrálag"
-
-#~ msgid "    --pipe <cmd>          "
-#~ msgstr "    --pipe <skipun>       "
-
-#~ msgid "    --rcfile <file>       "
-#~ msgstr "    --rcfile <skrá>       "
-
-#~ msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-#~ msgstr "nota <skrá> í stað /etc/rpmrc og $HOME/.rpmrc"
-
-#~ msgid "be a little more verbose"
-#~ msgstr "vera aðeins ítarlegri"
-
-#~ msgid "be incredibly verbose (for debugging)"
-#~ msgstr "vera hrikalega ítarlegur (fyrir aflúsun)"
-
-#~ msgid ""
-#~ "   Install, upgrade and query (with -p) allow URL's to be used in place"
-#~ msgstr ""
-#~ "   Innsetningar, uppfærslur og fyrirspurnir (með -p) leyfa notkun URLa"
-
-#~ msgid "   of file names as well as the following options:"
-#~ msgstr "   í stað skráarnafna ásamt eftirfarandi rofum:"
-
-#~ msgid "      --ftpproxy <host>   "
-#~ msgstr "      --ftpproxy <þjónn>  "
-
-#~ msgid "hostname or IP of ftp proxy"
-#~ msgstr "vélarheiti eða IP vistfang ftp sels"
-
-#~ msgid "      --ftpport <port>    "
-#~ msgstr "      --ftpport <gátt>    "
-
-#~ msgid "port number of ftp server (or proxy)"
-#~ msgstr "gátt ftp þjónsins eða selsins"
-
-#~ msgid "      --httpproxy <host>  "
-#~ msgstr "      --httpproxy <þjónn> "
-
-#~ msgid "hostname or IP of http proxy"
-#~ msgstr "vélarheiti eða IP vistfang vefsels"
-
-#~ msgid "      --httpport <port>   "
-#~ msgstr "      --httpport <gátt>   "
-
-#~ msgid "port number of http server (or proxy)"
-#~ msgstr "gátt vefþjónsins eða vefselsins"
-
-#~ msgid "query mode"
-#~ msgstr "fyrirspurnarhamur"
-
-#~ msgid "      --dbpath <dir>      "
-#~ msgstr "      --dbpath <mappa>    "
-
-#~ msgid "      --queryformat <qfmt>"
-#~ msgstr "      --queryformat <qfmt>"
-
-#~ msgid "      --root <dir>        "
-#~ msgstr "      --root <mappa>      "
-
-#~ msgid "query all packages"
-#~ msgstr "fyrirspurn á alla pakka"
-
-#~ msgid "        -f <file>+        "
-#~ msgstr "        -f <skrá>+        "
-
-#~ msgid "query package owning <file>"
-#~ msgstr "fyrirspurn á pakkann sem á <skrá>"
-
-#~ msgid "        -p <packagefile>+ "
-#~ msgstr "        -p <pakkaskrá>+ "
-
-#~ msgid "query (uninstalled) package <packagefile>"
-#~ msgstr "fyrirspurn á (fjarlægðann) package <pakkaskrá>"
-
-#~ msgid "        --triggeredby <pkg>"
-#~ msgstr "        --triggeredby <pakki>"
-
-#~ msgid "        --whatprovides <cap>"
-#~ msgstr "        --whatprovides <cap>"
-
-#~ msgid "query packages which provide <cap> capability"
-#~ msgstr "fyrirspurn á pakkana sem veita <cap> eiginleika"
-
-#~ msgid "        --whatrequires <cap>"
-#~ msgstr "        --whatrequires <cap>"
-
-#~ msgid "query packages which require <cap> capability"
-#~ msgstr "fyrirspurn á pakkana sem þarfnast <cap> eiginleika"
-
-#~ msgid "      Information selection options:"
-#~ msgstr "      Rofar um upplýsingaval:"
-
-#~ msgid "display package information"
-#~ msgstr "birta pakkaupplýsingar"
-
-#~ msgid "display the package's change log"
-#~ msgstr "birta breytingaskrá pakkans"
-
-#~ msgid "display package file list"
-#~ msgstr "birta innihald pakkans"
-
-#~ msgid "show file states (implies -l)"
-#~ msgstr "bírta ástand skráa (innifelur -l)"
-
-#~ msgid "list only documentation files (implies -l)"
-#~ msgstr "birta einungis skrán sem eru leuðbeiningar (innifelur -l)"
-
-#~ msgid "list capabilities package provides"
-#~ msgstr "sýna einigleikana sem pakkin veitir"
-
-#~ msgid "list package dependencies"
-#~ msgstr "skoða pakkaskilyrðin"
-
-#~ msgid "    --install <packagefile>"
-#~ msgstr "    --install <pakkaskrá>"
-
-#~ msgid "    -i <packagefile>      "
-#~ msgstr "    -i <pakkaskrá>        "
-
-#~ msgid "      --excludepath <path>"
-#~ msgstr "      --excludepath <slóð>"
-
-#~ msgid "      --relocate <oldpath>=<newpath>"
-#~ msgstr "      --relocate <gömulslóð>=<nýslóð>"
-
-#~ msgid "      --prefix <dir>      "
-#~ msgstr "      --prefix <mappa>    "
-
-#~ msgid "    -e <package>          "
-#~ msgstr "    -e <pakkaskrá>        "
-
-#~ msgid "    --checksig <pkg>+"
-#~ msgstr "    --checksig <pakki>+"
-
-#~ msgid "    -K <pkg>+             "
-#~ msgstr "    -K <pakki>+           "
-
-#~ msgid "cannot open %s/packages.rpm\n"
-#~ msgstr "get ekki opnað %s/packages.rpm\n"
-
-#~ msgid ""
-#~ "package lacks both user name and id lists (this should never happen)\n"
-#~ msgstr ""
-#~ "í pakkanum eru engir notandalistar (þetta ætti aldrei að koma fyrir)\n"
-
-#~ msgid ""
-#~ "package lacks both group name and id lists (this should never happen)\n"
-#~ msgstr "í pakkanum eru engir hópalistar (þetta ætti aldrei að koma fyrir)\n"
-
-#~ msgid "cannot get %s lock on database\n"
-#~ msgstr "get ekki fengið %s lás á gagnagrunninn\n"
-
-#~ msgid "Couldn't exec pgp (%s)\n"
-#~ msgstr "Gat ekki keyrt pgp (%s)\n"
-
-#~ msgid "Couldn't exec gpg\n"
-#~ msgstr "Gat ekki keyrt gpg\n"
-
-#~ msgid "Couldn't exec pgp\n"
-#~ msgstr "Gat ekki keyrt pgp\n"
