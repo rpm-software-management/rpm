@@ -778,8 +778,8 @@ esac],
 
 AS_IF([test "$enable_python" = yes],[
 # rpm-python is based on python-2.5, 
-# with legacy hacks for building against 2.4
-  AM_PATH_PYTHON([2.4],[
+# with legacy hacks to allow building against python >= 2.3
+  AM_PATH_PYTHON([2.3],[
     WITH_PYTHON_INCLUDE=`${PYTHON} -c 'from distutils.sysconfig import *; print get_python_inc()'`
     WITH_PYTHON_SUBPACKAGE=1
     save_CPPFLAGS="$CPPFLAGS"
