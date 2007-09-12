@@ -74,21 +74,15 @@ int Mkdir (const char * path, mode_t mode)
     int ut = urlPath(path, &lpath);
 
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpMkdir(path, mode);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davMkdir(path, mode);
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -102,23 +96,15 @@ int Chdir (const char * path)
     int ut = urlPath(path, &lpath);
 
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpChdir(path);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef	NOTYET
-	return davChdir(path);
-#else
-	return -2;
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -132,21 +118,15 @@ int Rmdir (const char * path)
     int ut = urlPath(path, &lpath);
 
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpRmdir(path);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davRmdir(path);
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -167,18 +147,14 @@ int Rename (const char * oldpath, const char * newpath)
 
     oldut = urlPath(oldpath, &oe);
     switch (oldut) {
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davRename(oldpath, newpath);
-#endif
-	break;
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
     default:
 	return -2;
 	break;
@@ -186,16 +162,6 @@ int Rename (const char * oldpath, const char * newpath)
 
     newut = urlPath(newpath, &ne);
     switch (newut) {
-    case URL_IS_FTP:
-if (_rpmio_debug)
-fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int)(ne - newpath), newpath);
-	if (!(oldut == newut && oe && ne && (oe - oldpath) == (ne - newpath) &&
-	    !xstrncasecmp(oldpath, newpath, (oe - oldpath))))
-	    return -2;
-	return ftpRename(oldpath, newpath);
-	break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	oldpath = oe;
 	newpath = ne;
@@ -204,6 +170,9 @@ fprintf(stderr, "*** rename old %*s new %*s\n", (int)(oe - oldpath), oldpath, (i
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -219,14 +188,14 @@ int Link (const char * oldpath, const char * newpath)
 
     oldut = urlPath(oldpath, &oe);
     switch (oldut) {
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
     default:
 	return -2;
 	break;
@@ -234,9 +203,6 @@ int Link (const char * oldpath, const char * newpath)
 
     newut = urlPath(newpath, &ne);
     switch (newut) {
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 if (_rpmio_debug)
 fprintf(stderr, "*** link old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int)(ne - newpath), newpath);
@@ -250,6 +216,9 @@ fprintf(stderr, "*** link old %*s new %*s\n", (int)(oe - oldpath), oldpath, (int
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
     default:
 	return -2;
 	break;
@@ -264,21 +233,15 @@ int Unlink(const char * path) {
     int ut = urlPath(path, &lpath);
 
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpUnlink(path);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davUnlink(path);
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -1192,21 +1155,15 @@ int Stat(const char * path, struct stat * st)
 if (_rpmio_debug)
 fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpStat(path, st);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davStat(path, st);
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -1222,21 +1179,15 @@ int Lstat(const char * path, struct stat * st)
 if (_rpmio_debug)
 fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpLstat(path, st);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davLstat(path, st);
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -1250,23 +1201,15 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     int ut = urlPath(path, &lpath);
 
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpReadlink(path, buf, bufsiz);
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-#ifdef	NOTYET
-	return davReadlink(path, buf, bufsiz);
-#else
-	return -2;
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
     default:
 	return -2;
 	break;
@@ -1283,15 +1226,15 @@ int Access(const char * path, int amode)
 if (_rpmio_debug)
 fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
     switch (ut) {
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
     default:
 	return -2;
 	break;
@@ -1354,23 +1297,15 @@ int Glob(const char *pattern, int flags,
 if (_rpmio_debug)
 fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)errfunc, pglob);
     switch (ut) {
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_FTP:
-	pglob->gl_closedir = (void *) Closedir;
-	pglob->gl_readdir = (void *) Readdir;
-	pglob->gl_opendir = (void *) Opendir;
-	pglob->gl_lstat = Lstat;
-	pglob->gl_stat = Stat;
-	flags |= GLOB_ALTDIRFUNC;
-	flags &= ~GLOB_TILDE;
-	break;
     case URL_IS_PATH:
 	pattern = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+    case URL_IS_FTP:
     default:
 	return -2;
 	break;
@@ -1393,21 +1328,15 @@ DIR * Opendir(const char * path)
 if (_rpmio_debug)
 fprintf(stderr, "*** Opendir(%s)\n", path);
     switch (ut) {
-    case URL_IS_FTP:
-	return ftpOpendir(path);
-	break;
-    case URL_IS_HTTPS:	
-    case URL_IS_HTTP:
-#ifdef WITH_NEON
-	return davOpendir(path);
-#endif
-	break;
     case URL_IS_PATH:
 	path = lpath;
     case URL_IS_UNKNOWN:
 	break;
     case URL_IS_DASH:
     case URL_IS_HKP:
+    case URL_IS_FTP:
+    case URL_IS_HTTPS:	
+    case URL_IS_HTTP:
     default:
 	return NULL;
 	break;
@@ -1421,12 +1350,6 @@ if (_rpmio_debug)
 fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
     if (dir == NULL)
 	return NULL;
-    if (ISAVMAGIC(dir))
-	return avReaddir(dir);
-#ifdef WITH_NEON
-    if (ISDAVMAGIC(dir))
-	return davReaddir(dir);
-#endif
     return readdir(dir);
 }
 
@@ -1436,11 +1359,5 @@ if (_rpmio_debug)
 fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
     if (dir == NULL)
 	return 0;
-    if (ISAVMAGIC(dir))
-	return avClosedir(dir);
-#ifdef WITH_NEON
-    if (ISDAVMAGIC(dir))
-	return davClosedir(dir);
-#endif
     return closedir(dir);
 }
