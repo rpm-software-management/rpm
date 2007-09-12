@@ -70,8 +70,6 @@ const char * rpmcliRootDir = "/";
 
 rpmQueryFlags rpmcliQueryFlags;
 
-extern int _ftp_debug;
-
 extern int noLibio;
 
 extern int _rpmio_debug;
@@ -260,8 +258,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("debug payload file state machine"), NULL},
  { "fsmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_threads, -1,
 	N_("use threads for file state machine"), NULL},
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug FTP/HTTP data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
 	NULL, NULL},
 #ifdef	DYING

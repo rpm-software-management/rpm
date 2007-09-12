@@ -169,8 +169,6 @@ struct _FD_s {
 
 extern int _rpmio_debug;
 
-extern int _ftp_debug;
-
 #define DBG(_f, _m, _x) \
     \
     if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
@@ -185,19 +183,6 @@ extern "C" {
 /** \ingroup rpmio
  */
 int fdFgets(FD_t fd, char * buf, size_t len);
-
-/** \ingroup rpmio
- */
-FD_t ftpOpen(const char *url, int flags,
-                mode_t mode, urlinfo *uret);
-
-/** \ingroup rpmio
- */
-int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg);
-
-/** \ingroup rpmio
- */
-int ftpCmd(const char * cmd, const char * url, const char * arg2);
 
 /** \ingroup rpmio
  */

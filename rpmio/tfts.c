@@ -131,8 +131,6 @@ static struct poptOption optionsTable[] = {
  { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, FTS_WHITEOUT,
 	N_("return whiteout information"), NULL },
 
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
@@ -161,7 +159,6 @@ main(int argc, const char *argv[])
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
-_ftp_debug = -1;
 #if 0
     ftsWalk(dirpath);
     ftsWalk(ftppath);

@@ -96,8 +96,6 @@ fprintf(stderr, "===== %s\n", path);
 
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
@@ -128,7 +126,6 @@ main(int argc, const char *argv[])
 	rpmIncreaseVerbosity();
     }
 
-_ftp_debug = -1;
 #if 0
     doFile(dirpath);
     doFile(ftppath);

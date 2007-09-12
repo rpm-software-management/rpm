@@ -440,14 +440,6 @@ const char * ftpStrerror(int errorNumber);
 
 /**
  */
-void * ufdGetUrlinfo(FD_t fd);
-
-/**
- */
-const char * urlStrerror(const char * url);
-
-/**
- */
 int ufdCopy(FD_t sfd, FD_t tfd);
 
 /**
