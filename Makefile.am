@@ -100,11 +100,11 @@ rpmgraph_LDADD =	lib/librpm.la
 
 check_PROGRAMS = 	dumpdb
 dumpdb_SOURCES = 	tools/dumpdb.c
-dumpdb_LDADD =
+dumpdb_LDADD =		lib/librpm.la
 
 check_PROGRAMS +=	convertdb1
 convertdb1_SOURCES =	tools/convertdb1.c
-convertdb1_LDADD =
+convertdb1_LDADD =	lib/librpm.la
 
 check_PROGRAMS +=	rpminject
 rpminject_SOURCES =	tools/rpminject.c
@@ -112,7 +112,7 @@ rpminject_LDADD =	build/librpmbuild.la
 
 check_PROGRAMS +=	rpmsort
 rpmsort_SOURCES =	tools/rpmsort.c
-rpmsort_LDADD =
+rpmsort_LDADD =		lib/librpm.la
 
 rpmrc: $(top_srcdir)/rpmrc.in
 	@sed \
