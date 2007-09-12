@@ -768,7 +768,7 @@ AC_LIBOBJ(glob)
 AC_LIBOBJ(fnmatch)
 
 dnl check if python is requested
-AC_ARG_ENABLE(python, [  --enable-python           build rpm python bindings ],
+AC_ARG_ENABLE(python, [  --enable-python         build rpm python bindings ],
 [case "$enable_python" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --enable-python])
