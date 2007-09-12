@@ -161,9 +161,7 @@ main(int argc, const char *argv[])
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
-_av_debug = -1;
 _ftp_debug = -1;
-_dav_debug = 1;
 #if 0
     ftsWalk(dirpath);
     ftsWalk(ftppath);

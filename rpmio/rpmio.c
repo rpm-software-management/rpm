@@ -65,7 +65,6 @@ static int inet_aton(const char *cp, struct in_addr *inp)
 #undef	fdClose
 #define	fdClose	__fdClose
 
-#include <rpmdav.h>
 #include "ugid.h"
 #include "rpmmessages.h"
 
@@ -107,15 +106,7 @@ int _rpmio_debug = 0;
 
 /**
  */
-int _av_debug = 0;
-
-/**
- */
 int _ftp_debug = 0;
-
-/**
- */
-int _dav_debug = 0;
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
@@ -340,18 +331,7 @@ static ssize_t fdRead(void * cookie, char * buf, size_t count)
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     fdstat_enter(fd, FDSTAT_READ);
-    /* HACK: flimsy wiring for davRead */
-    if (fd->req != NULL) {
-#ifdef WITH_NEON
-	rc = davRead(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
-#else
-	rc = -1;
-#endif
-	/* XXX Chunked davRead EOF. */
-	if (rc == 0)
-	    fd->bytesRemain = 0;
-    } else
-	rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
     if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
@@ -374,15 +354,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     if (count == 0) return 0;
 
     fdstat_enter(fd, FDSTAT_WRITE);
-    /* HACK: flimsy wiring for davWrite */
-    if (fd->req != NULL) {
-#ifdef WITH_NEON
-	rc = davWrite(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
-#else
-	return -1;
-#endif
-    } else
-	rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_WRITE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
@@ -423,15 +395,7 @@ static int fdClose( void * cookie)
     fdSetFdno(fd, -1);
 
     fdstat_enter(fd, FDSTAT_CLOSE);
-    /* HACK: flimsy wiring for davClose */
-    if (fd->req != NULL) {
-#ifdef WITH_NEON
-	rc = davClose(fd);
-#else
-	return -1;
-#endif
-    } else
-	rc = ((fdno >= 0) ? close(fdno) : -2);
+    rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
@@ -478,10 +442,6 @@ int fdWritable(FD_t fd, int secs)
     FD_ZERO(&wrfds);
 #endif
 	
-    /* HACK: flimsy wiring for davWrite */
-    if (fd->req != NULL)
-	return 1;
-
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
 	
@@ -529,10 +489,6 @@ int fdReadable(FD_t fd, int secs)
     fd_set rdfds;
     FD_ZERO(&rdfds);
 #endif
-
-    /* HACK: flimsy wiring for davRead */
-    if (fd->req != NULL)
-	return 1;
 
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
@@ -2001,7 +1957,6 @@ exit:
     return fd;
 }
 
-#ifndef WITH_NEON
        /* FIX: u->{ctrl,data}->url undef after XurlLink. */
 static FD_t httpOpen(const char * url, int flags,
                 mode_t mode, urlinfo * uret)
@@ -2042,7 +1997,6 @@ exit:
         *uret = u;
     return fd;
 }
-#endif
 
 static FD_t ufdOpen(const char * url, int flags, mode_t mode)
 {
@@ -2079,11 +2033,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
     case URL_IS_HKP:
-#ifdef WITH_NEON
-	fd = davOpen(url, flags, mode, &u);
-#else
 	fd = httpOpen(url, flags, mode, &u);
-#endif
 	if (fd == NULL || u == NULL)
 	    break;
 
@@ -2091,11 +2041,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 		?  ((flags & O_APPEND) ? "PUT" :
 		   ((flags & O_CREAT) ? "PUT" : "PUT"))
 		: "GET");
-#ifdef WITH_NEON
-	u->openError = davReq(fd, cmd, path);
-#else
 	u->openError = httpReq(fd, cmd, path);
-#endif
 	if (u->openError < 0) {
 	    /* XXX make sure that we can exit through ufdClose */
 	    fd = fdLink(fd, "error ctrl (ufdOpen HTTP)");
@@ -2946,10 +2892,6 @@ int Ferror(FD_t fd)
     int i, rc = 0;
 
     if (fd == NULL) return -1;
-    if (fd->req != NULL) {
-	/* HACK: flimsy wiring for neon errors. */
-	rc = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
-    } else
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
 	int ec;

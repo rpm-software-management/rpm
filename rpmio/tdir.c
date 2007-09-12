@@ -71,9 +71,7 @@ main(int argc, const char *argv[])
 	rpmIncreaseVerbosity();
     }
 
-_av_debug = -1;
 _ftp_debug = -1;
-_dav_debug = -1;
     printDir(dirpath);
     printDir(ftppath);
     printDir(httppath);

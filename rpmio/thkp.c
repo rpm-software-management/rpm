@@ -10,8 +10,6 @@
 static int _debug = 0;
 static int _printing = 0;
 
-int noNeon;
-
 #if 0
 #define	HKPPATH		"hkp://pgp.mit.edu:11371/pks/lookup?op=get&search=0xF5C75256"
 #else
@@ -91,12 +89,8 @@ static struct poptOption optionsTable[] = {
  { "print", 'p', POPT_ARG_VAL,  &_printing, 1,		NULL, NULL },
  { "noprint", 'n', POPT_ARG_VAL, &_printing, 0,		NULL, NULL },
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
- { "davdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_dav_debug, -1,
-	N_("debug protocol data stream"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
- { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
-	N_("disable use of libneon for HTTP"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,

@@ -169,11 +169,7 @@ struct _FD_s {
 
 extern int _rpmio_debug;
 
-extern int _av_debug;
-
 extern int _ftp_debug;
-
-extern int _dav_debug;
 
 #define DBG(_f, _m, _x) \
     \
