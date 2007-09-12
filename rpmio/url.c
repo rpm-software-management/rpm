@@ -130,13 +130,6 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 			u, u->data, (u->host ? u->host : ""),
 			(u->scheme ? u->scheme : ""));
     }
-    if (u->sess != NULL) {
-#ifdef WITH_NEON
-	/* HACK: neon include has prototype. */
-	ne_session_destroy(u->sess);
-#endif
-	u->sess = NULL;
-    }
     u->buf = _free(u->buf);
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);
@@ -239,77 +232,6 @@ static void urlFind(urlinfo * uret, int mustAsk)
     /* Zap proxy host and port in case they have been reset */
     u->proxyp = -1;
     u->proxyh = _free(u->proxyh);
-
-    /* Perform one-time FTP initialization */
-    if (u->urltype == URL_IS_FTP) {
-
-	if (mustAsk || (u->user != NULL && u->password == NULL)) {
-	    const char * host = (u->host ? u->host : "");
-	    const char * user = (u->user ? u->user : "");
-	    char * prompt;
-	    prompt = alloca(strlen(host) + strlen(user) + 256);
-	    sprintf(prompt, _("Password for %s@%s: "), user, host);
-	    u->password = _free(u->password);
-	    u->password = getpass(prompt);
-	    if (u->password)
-		u->password = xstrdup(u->password);
-	}
-
-	if (u->proxyh == NULL) {
-	    const char *proxy = rpmExpand("%{_ftpproxy}", NULL);
-	    if (proxy && *proxy != '%') {
-		const char * host = (u->host ? u->host : "");
-		const char *uu = (u->user ? u->user : "anonymous");
-		char *nu = xmalloc(strlen(uu) + sizeof("@") + strlen(host));
-		(void) stpcpy( stpcpy( stpcpy(nu, uu), "@"), host);
-		u->proxyu = nu;
-		u->proxyh = xstrdup(proxy);
-	    }
-	    proxy = _free(proxy);
-	}
-
-	if (u->proxyp < 0) {
-	    const char *proxy = rpmExpand("%{_ftpport}", NULL);
-	    if (proxy && *proxy != '%') {
-		char *end = NULL;
-		int port = strtol(proxy, &end, 0);
-		if (!(end && *end == '\0')) {
-		    fprintf(stderr, _("error: %sport must be a number\n"),
-			(u->scheme ? u->scheme : ""));
-		    return;
-		}
-		u->proxyp = port;
-	    }
-	    proxy = _free(proxy);
-	}
-    }
-
-    /* Perform one-time HTTP initialization */
-    if (u->urltype == URL_IS_HTTP || u->urltype == URL_IS_HTTPS || u->urltype == URL_IS_HKP) {
-
-	if (u->proxyh == NULL) {
-	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
-	    if (proxy && *proxy != '%')
-		u->proxyh = xstrdup(proxy);
-	    proxy = _free(proxy);
-	}
-
-	if (u->proxyp < 0) {
-	    const char *proxy = rpmExpand("%{_httpport}", NULL);
-	    if (proxy && *proxy != '%') {
-		char *end;
-		int port = strtol(proxy, &end, 0);
-		if (!(end && *end == '\0')) {
-		    fprintf(stderr, _("error: %sport must be a number\n"),
-			(u->scheme ? u->scheme : ""));
-		    return;
-		}
-		u->proxyp = port;
-	    }
-	    proxy = _free(proxy);
-	}
-
-    }
 
     return;
 }

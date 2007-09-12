@@ -9,8 +9,6 @@
 
 static int _debug = 0;
 
-int noNeon;
-
 #define	HTTPSPATH	"https://localhost/test.txt"
 #define	HTTPPATH	"http://localhost/test.txt"
 #define	FTPPATH		"ftp://localhost/test.txt"
@@ -38,10 +36,6 @@ fprintf(stderr, "===== %s\n", path);
 
 static struct poptOption optionsTable[] = {
  { "debug", 'd', POPT_ARG_VAL,	&_debug, -1,		NULL, NULL },
- { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
-	N_("debug protocol data stream"), NULL},
- { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
-	N_("disable use of libneon for HTTP"), NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
@@ -72,9 +66,6 @@ main(int argc, const char *argv[])
 	rpmIncreaseVerbosity();
     }
 
-_av_debug = -1;
-_ftp_debug = -1;
-_dav_debug = 1;
 #if 1
     readFile(dirpath);
 #endif

@@ -11,7 +11,6 @@
 #include <err.h>
 #include "debug.h"
 
-extern int _ftp_debug;
 extern int _url_debug;
 extern int _rpmio_debug;
 
@@ -152,7 +151,6 @@ int main (int argc, char * argv[])
 {
     int rc;
 
-    _ftp_debug = -1;
     _url_debug = -1;
     _rpmio_debug = -1;
 
