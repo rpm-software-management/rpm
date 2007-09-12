@@ -117,7 +117,7 @@ check-local: $(check_DATA)
 
 installcheck-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' \
-	$(TESTSUITEFLAGS)
+	$(TESTSUITEFLAGS) ||:
 
 clean-local:
 	test ! -f '$(TESTSUITE)' || $(SHELL) '$(TESTSUITE)' --clean
