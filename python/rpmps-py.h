@@ -23,12 +23,10 @@ extern PyTypeObject rpmps_Type;
 
 /**
  */
-rpmps psFromPs(rpmpsObject * ps)
-	;
+rpmps psFromPs(rpmpsObject * ps);
 
 /**
  */
-rpmpsObject * rpmps_Wrap(rpmps ps)
-	;
+rpmpsObject * rpmps_Wrap(rpmps ps);
 
 #endif

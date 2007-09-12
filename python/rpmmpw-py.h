@@ -29,12 +29,10 @@ extern PyTypeObject mpw_Type;
 
 /**
  */
-mpwObject * mpw_New(int ob_size)
-	;
+mpwObject * mpw_New(int ob_size);
 
 /**
  */
-mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize)
-	;
+mpwObject * mpw_FromMPW(size_t size, mpw* data, int normalize);
 
 #endif

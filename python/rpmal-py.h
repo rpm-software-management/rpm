@@ -15,7 +15,6 @@ typedef struct rpmalObject_s {
 
 extern PyTypeObject rpmal_Type;
 
-rpmalObject * rpmal_Wrap(rpmal al)
-	;
+rpmalObject * rpmal_Wrap(rpmal al);
 
 #endif

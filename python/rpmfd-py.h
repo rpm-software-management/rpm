@@ -13,7 +13,6 @@ typedef struct rpmfdObject_s {
 
 extern PyTypeObject rpmfd_Type;
 
-rpmfdObject * rpmfd_Wrap(FD_t fd)
-	;
+rpmfdObject * rpmfd_Wrap(FD_t fd);
 
 #endif
