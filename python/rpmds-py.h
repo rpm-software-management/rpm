@@ -22,27 +22,22 @@ extern PyTypeObject rpmds_Type;
 
 /**
  */
-rpmds dsFromDs(rpmdsObject * ds)
-	;
+rpmds dsFromDs(rpmdsObject * ds);
 
 /**
  */
-rpmdsObject * rpmds_Wrap(rpmds ds)
-	;
+rpmdsObject * rpmds_Wrap(rpmds ds);
 
 /**
  */
-rpmdsObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
-	;
+rpmdsObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds);
 
 /**
  */
-rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-	;
+rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
 
 /**
  */
-rpmdsObject * hdr_dsOfHeader(PyObject * s)
-	;
+rpmdsObject * hdr_dsOfHeader(PyObject * s);
 
 #endif

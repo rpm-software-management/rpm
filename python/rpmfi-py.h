@@ -16,11 +16,9 @@ typedef struct rpmfiObject_s {
 
 extern PyTypeObject rpmfi_Type;
 
-rpmfi fiFromFi(rpmfiObject * fi)
-	;
+rpmfi fiFromFi(rpmfiObject * fi);
 
-rpmfiObject * rpmfi_Wrap(rpmfi fi)
-	;
+rpmfiObject * rpmfi_Wrap(rpmfi fi);
 
 rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
 

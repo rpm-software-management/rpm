@@ -20,7 +20,6 @@ struct rpmmiObject_s {
 
 extern PyTypeObject rpmmi_Type;
 
-rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
-	;
+rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s);
 
 #endif

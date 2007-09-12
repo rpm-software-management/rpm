@@ -7,7 +7,7 @@ EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \
 	db db3/configure installplatform platform* 
 
-SUBDIRS = po misc @WITH_DB_SUBDIR@ lua rpmio rpmdb lib build python tools scripts doc . tests
+SUBDIRS = po misc @WITH_DB_SUBDIR@ lua rpmio rpmdb lib build python scripts doc . tests
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
@@ -82,11 +82,37 @@ debugedit_LDADD =	@WITH_LIBELF_LIB@ @WITH_BEECRYPT_LIB@ @WITH_POPT_LIB@
 endif
 endif
 
+rpmlibexec_PROGRAMS +=	javadeps
+javadeps_SOURCES =	tools/javadeps.c
+javadeps_LDADD =
+
+rpmlibexec_PROGRAMS +=	rpmcache
+rpmcache_SOURCES =	tools/rpmcache.c
+rpmcache_LDADD =	lib/librpm.la
+
+rpmlibexec_PROGRAMS +=	rpmdeps
+rpmdeps_SOURCES =	tools/rpmdeps.c
+rpmdeps_LDADD =		build/librpmbuild.la
 
 bin_PROGRAMS +=		rpmgraph
 rpmgraph_SOURCES =	tools/rpmgraph.c
 rpmgraph_LDADD =	lib/librpm.la
 
+check_PROGRAMS = 	dumpdb
+dumpdb_SOURCES = 	tools/dumpdb.c
+dumpdb_LDADD =
+
+check_PROGRAMS +=	convertdb1
+convertdb1_SOURCES =	tools/convertdb1.c
+convertdb1_LDADD =
+
+check_PROGRAMS +=	rpminject
+rpminject_SOURCES =	tools/rpminject.c
+rpminject_LDADD =	build/librpmbuild.la
+
+check_PROGRAMS +=	rpmsort
+rpmsort_SOURCES =	tools/rpmsort.c
+rpmsort_LDADD =
 
 rpmrc: $(top_srcdir)/rpmrc.in
 	@sed \
