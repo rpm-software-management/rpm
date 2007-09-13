@@ -179,11 +179,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 
 	xx = db_env_create(&dbenv, 0);
 	xx = cvtdberr(dbi, "db_env_create", xx, _debug);
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = dbenv->remove(dbenv, dbhome, 0);
-#else
-	xx = dbenv->remove(dbenv, dbhome, NULL, 0);
-#endif
 	xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
 
 	if (dbfile)
@@ -294,16 +290,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	    dbhome = ++home;
 
 	while (retry++ < 5) {
-/* XXX 3.3.4 change. */
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
 	    xx = dbenv->set_rpc_server(dbenv, NULL, dbi->dbi_host,
 		dbi->dbi_cl_timeout, dbi->dbi_sv_timeout, 0);
 	    xx = cvtdberr(dbi, "dbenv->set_server", xx, _debug);
-#else
-	    xx = dbenv->set_server(dbenv, dbi->dbi_host,
-		dbi->dbi_cl_timeout, dbi->dbi_sv_timeout, 0);
-	    xx = cvtdberr(dbi, "dbenv->set_server", xx, _debug);
-#endif
 	    if (!xx)
 		break;
 	    (void) sleep(15);
@@ -363,11 +352,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* dbenv->set_rep_limit(???) */
 
     if (dbi->dbi_no_fsync) {
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = db_env_set_func_fsync(db3_fsync_disable);
-#else
-	xx = dbenv->set_func_fsync(dbenv, db3_fsync_disable);
-#endif
 	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
     }
 
@@ -377,11 +362,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     }
   }
 
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
     rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
-#else
-    rc = (dbenv->open)(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
-#endif
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
@@ -413,11 +394,7 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     if (db != NULL)
 	rc = db->sync(db, flags);
     /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     _printit = _debug;
-#else
-    _printit = (rc == DB_INCOMPLETE ? 0 : _debug);
-#endif
     rc = cvtdberr(dbi, "db->sync", rc, _printit);
     return rc;
 }
@@ -587,15 +564,10 @@ static int db3byteswapped(dbiIndex dbi)
     int rc = 0;
 
     if (db != NULL) {
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
- || (DB_VERSION_MAJOR == 4)
 	int isswapped = 0;
 	rc = db->get_byteswapped(db, &isswapped);
 	if (rc == 0)
 	    rc = isswapped;
-#else
-	rc = db->get_byteswapped(db);
-#endif
     }
 
     return rc;
@@ -617,15 +589,10 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 #endif
 	flags = 0;
     dbi->dbi_stats = _free(dbi->dbi_stats);
-/* XXX 3.3.4 change. */
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
     rc = db->stat(db, txnid, &dbi->dbi_stats, flags);
 #else
     rc = db->stat(db, &dbi->dbi_stats, flags);
-#endif
-#else
-    rc = db->stat(db, &dbi->dbi_stats, NULL, flags);
 #endif
     rc = cvtdberr(dbi, "db->stat", rc, _debug);
     return rc;
@@ -639,15 +606,10 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
     DB * secondary = dbisecondary->dbi_db;
     int rc;
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     DB_TXN * txnid = NULL;
 
 assert(db != NULL);
     rc = db->associate(db, txnid, secondary, callback, flags);
-#else
-assert(db != NULL);
-    rc = db->associate(db, secondary, callback, flags);
-#endif
     rc = cvtdberr(dbi, "db->associate", rc, _debug);
     return rc;
 }
@@ -811,9 +773,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     DB_TXN * txnid = NULL;
-#endif
     u_int32_t oflags;
     int _printit;
 
@@ -994,8 +954,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 
-/* XXX 3.3.4 change. */
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3) || (DB_VERSION_MAJOR == 4)
 	    if (rc == 0 &&
 			rpmdb->db_malloc && rpmdb->db_realloc && rpmdb->db_free)
 	    {
@@ -1003,12 +961,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			rpmdb->db_malloc, rpmdb->db_realloc, rpmdb->db_free);
 		rc = cvtdberr(dbi, "db->set_alloc", rc, _debug);
 	    }
-#else
-	    if (rc == 0 && rpmdb->db_malloc) {
-		rc = db->set_malloc(db, rpmdb->db_malloc);
-		rc = cvtdberr(dbi, "db->set_malloc", rc, _debug);
-	    }
-#endif
 
 /* 4.1: db->set_cache_priority(???) */
 	    if (rc == 0 && !dbi->dbi_use_dbenv && dbi->dbi_cachesize) {
@@ -1049,8 +1001,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			rc = cvtdberr(dbi, "db->set_h_flags", rc, _debug);
 			if (rc) break;
 		    }
-/* XXX db-3.2.9 has added a DB arg to the call. */
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2) || (DB_VERSION_MAJOR == 4)
 		    if (dbi->dbi_h_hash_fcn) {
 			rc = db->set_h_hash(db, dbi->dbi_h_hash_fcn);
 			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
@@ -1061,7 +1011,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
 			if (rc) break;
 		    }
-#endif
 		    break;
 		case DB_BTREE:
 /* 4.1: db->set_append_recno(???) */
@@ -1075,8 +1024,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			rc = cvtdberr(dbi, "db->set_bt_minkey", rc, _debug);
 			if (rc) break;
 		    }
-/* XXX db-3.2.9 has added a DB arg to the call. */
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR > 2) || (DB_VERSION_MAJOR == 4)
 		    if (dbi->dbi_bt_compare_fcn) {
 			rc = db->set_bt_compare(db, dbi->dbi_bt_compare_fcn);
 			rc = cvtdberr(dbi, "db->set_bt_compare", rc, _debug);
@@ -1092,7 +1039,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			rc = cvtdberr(dbi, "db->set_bt_prefix", rc, _debug);
 			if (rc) break;
 		    }
-#endif
 		    break;
 		case DB_RECNO:
 		    if (dbi->dbi_re_delim) {
@@ -1148,24 +1094,14 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			? dbfullpath : dbfile;
 #endif
 
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
 		rc = (db->open)(db, txnid, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
-#else
-		rc = (db->open)(db, dbpath, dbsubfile,
-		    dbi->dbi_type, oflags, dbi->dbi_perms);
-#endif
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
-#if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3 && DB_VERSION_PATCH == 11) \
- || (DB_VERSION_MAJOR == 4)
 		    DBTYPE dbi_type = DB_UNKNOWN;
 		    xx = db->get_type(db, &dbi_type);
 		    if (xx == 0)
 			dbi->dbi_type = dbi_type;
-#else
-		    dbi->dbi_type = db->get_type(db);
-#endif
 		}
 	    }
 
