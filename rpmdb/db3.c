@@ -249,6 +249,26 @@ static int db3_pthread_nptl(void)
 #endif
 #endif
 
+/*
+ * dbenv->failchk() callback method for determining is the given pid/tid 
+ * is alive. We only care about pid's though. 
+ */ 
+static int db3isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, u_int32_t flags)
+{
+    int alive = 0;
+
+    if (pid == getpid()) {
+	alive = 1;
+    } else if (kill(pid, 0) == 0) {
+	alive = 1;
+    /* only existing processes can fail with EPERM */
+    } else if (errno == EPERM) {
+    	alive = 1;
+    }
+    
+    return alive;
+}
+
 static int db_init(dbiIndex dbi, const char * dbhome,
 		const char * dbfile,
 		const char * dbsubfile,
@@ -306,6 +326,15 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* 4.1: dbenv->set_flags(???) */
 
  /* dbenv->set_paniccall(???) */
+
+#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
+    /* 
+     * These enable automatic stale lock removal. 
+     * thread_count 8 is some kind of "magic minimum" value...
+     */
+    dbenv->set_thread_count(dbenv, 8);
+    dbenv->set_isalive(dbenv, db3isalive);
+#endif
 
     if ((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host) {
 	const char * home;
@@ -406,6 +435,11 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
+
+#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
+    /* stale lock removal */
+    rc = dbenv->failchk(dbenv, 0);
+#endif
 
     *dbenvp = dbenv;
 
