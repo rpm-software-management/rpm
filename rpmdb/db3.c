@@ -1,4 +1,3 @@
-/* FIX: annotate db3 methods */
 /** \ingroup db3
  * \file rpmdb/db3.c
  */
@@ -146,7 +145,6 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     int rc = error;
 
     if (printit && rc) {
-	/* FIX: annotate db3 methods */
 	if (msg)
 	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
 		dbi->dbi_api, rc, msg, db_strerror(error));
@@ -179,7 +177,6 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     if (rpmdb->db_remove_env) {
 	int xx;
 
-	/* FIX: annotate db3 methods */
 	xx = db_env_create(&dbenv, 0);
 	xx = cvtdberr(dbi, "db_env_create", xx, _debug);
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
@@ -252,7 +249,6 @@ static int db3_pthread_nptl(void)
 #endif
 #endif
 
-/* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		const char * dbfile,
 		const char * dbsubfile,
@@ -296,7 +292,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	goto errxit;
 
   { int xx;
-    /* FIX: annotate db3 methods */
 
  /* 4.1: dbenv->set_app_dispatch(???) */
  /* 4.1: dbenv->set_alloc(???) */
@@ -660,7 +655,6 @@ static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
     DB * secondary = dbisecondary->dbi_db;
     int rc;
 
-/* FIX: annotate db3 methods */
 #if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
     DB_TXN * txnid = NULL;
 
@@ -681,13 +675,11 @@ static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
     int rc;
 
 assert(db != NULL);
-/* FIX: annotate db3 methods */
     rc = db->join(db, curslist, dbcp, flags);
     rc = cvtdberr(dbi, "db->join", rc, _debug);
     return rc;
 }
 
-/* FIX: annotate db3 methods */
 static int db3close(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -753,12 +745,10 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
 	DB_ENV * dbenv = NULL;
 
-	/* FIX: annotate db3 methods */
 	rc = db_env_create(&dbenv, 0);
 	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
 	if (rc || dbenv == NULL) goto exit;
 
-	/* FIX: annotate db3 methods */
 	dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
@@ -787,7 +777,6 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
-	/* FIX: annotate db3 methods */
 	rc = db_create(&db, dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
@@ -1030,7 +1019,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (rc == 0) {
 	static int _lockdbfd = 0;
 
-	/* FIX: annotate db3 methods */
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
