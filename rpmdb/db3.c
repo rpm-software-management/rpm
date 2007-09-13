@@ -199,56 +199,6 @@ static int db3_fsync_disable(int fd)
     return 0;
 }
 
-#if 0
-#if HAVE_LIBPTHREAD
-#if HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
-
-/**
- * Check that posix mutexes are shared.
- * @return		0 == shared.
- */
-static int db3_pthread_nptl(void)
-{
-    pthread_mutex_t mutex;
-    pthread_mutexattr_t mutexattr, *mutexattrp = NULL;
-    pthread_cond_t cond;
-    pthread_condattr_t condattr, *condattrp = NULL;
-    int ret = 0;
-
-    ret = pthread_mutexattr_init(&mutexattr);
-    if (ret == 0) {
-	ret = pthread_mutexattr_setpshared(&mutexattr, PTHREAD_PROCESS_SHARED);
-	mutexattrp = &mutexattr;
-    }
-
-    if (ret == 0)
-	ret = pthread_mutex_init(&mutex, mutexattrp);
-    if (mutexattrp != NULL)
-	pthread_mutexattr_destroy(mutexattrp);
-    if (ret)
-	return ret;
-    (void) pthread_mutex_destroy(&mutex);
-
-    ret = pthread_condattr_init(&condattr);
-    if (ret == 0) {
-	ret = pthread_condattr_setpshared(&condattr, PTHREAD_PROCESS_SHARED);
-	condattrp = &condattr;
-    }
-
-    if (ret == 0)
-	ret = pthread_cond_init(&cond, condattrp);
-
-    if (condattrp != NULL)
-	(void)pthread_condattr_destroy(condattrp);
-    if (ret == 0)
-	(void) pthread_cond_destroy(&cond);
-    return ret;
-}
-#endif
-#endif
-
 /*
  * dbenv->failchk() callback method for determining is the given pid/tid 
  * is alive. We only care about pid's though. 
@@ -939,19 +889,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
      */
     if (dbi->dbi_use_dbenv) {
-
-#if 0
-#if HAVE_LIBPTHREAD
-	if (rpmdb->db_dbenv == NULL) {
-	    /* Set DB_PRIVATE if posix mutexes are not shared. */
-	    xx = db3_pthread_nptl();
-	    if (xx) {
-		dbi->dbi_eflags |= DB_PRIVATE;
-		rpmMessage(RPMMESS_DEBUG, _("unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"), xx);
-	    }
-	}
-#endif
-#endif
 
 	if (access(dbhome, W_OK) == -1) {
 
