@@ -132,6 +132,14 @@ macros: $(top_srcdir)/macros.in
 CLEANFILES += macros.tmp macros
 EXTRA_DIST += macros.in
 
+platform: $(top_srcdir)/platform.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	  < $(top_srcdir)/platform.in > platform.tmp \
+	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/platform:${subdir}/platform.tmp )
+CLEANFILES += platform.tmp platform
+EXTRA_DIST += platform.in
+
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 pkgsrc_RPMSdir = $(pkgsrcdir)/RPMS
 pkgsrc_RPMS_DATA =
