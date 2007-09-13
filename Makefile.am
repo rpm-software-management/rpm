@@ -98,6 +98,8 @@ bin_PROGRAMS +=		rpmgraph
 rpmgraph_SOURCES =	tools/rpmgraph.c
 rpmgraph_LDADD =	lib/librpm.la
 
+dist_bin_SCRIPTS =	scripts/gendiff
+
 check_PROGRAMS = 	dumpdb
 dumpdb_SOURCES = 	tools/dumpdb.c
 dumpdb_LDADD =		lib/librpm.la
