@@ -208,13 +208,6 @@ int Unlink(const char * path) {
     return unlink(path);
 }
 
-/* XXX swiped from mc-4.5.39-pre9 vfs/ftpfs.c */
-
-#define	g_strdup	xstrdup
-#define	g_free		free
-
-#define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
-
 int Stat(const char * path, struct stat * st)
 {
     const char * lpath;
