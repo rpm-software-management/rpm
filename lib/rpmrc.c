@@ -1636,7 +1636,7 @@ void rpmFreeRpmrc(void)
 /** \ingroup rpmrc
  * Read rpmrc (and macro) configuration file(s).
  * @param rcfiles	colon separated files to read (NULL uses default)
- * @return		0 on succes
+ * @return		0 on success
  */
 static int rpmReadRC(const char * rcfiles)
 {
