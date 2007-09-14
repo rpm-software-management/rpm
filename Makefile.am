@@ -148,6 +148,14 @@ rpm.pc: $(top_srcdir)/rpm.pc.in
 CLEANFILES += rpm.pc.tmp rpm.pc
 EXTRA_DIST += rpm.pc.in
 
+rpmpopt-@VERSION@: $(top_srcdir)/rpmpopt.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	  < $(top_srcdir)/rpmpopt.in > rpmpopt-@VERSION@.tmp \
+	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/rpmpopt-@VERSION@:${subdir}/rpmpopt-@VERSION@.tmp )
+CLEANFILES += rpmpopt-@VERSION@.tmp rpmpopt-@VERSION@
+EXTRA_DIST += rpmpopt.in
+
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 pkgsrc_RPMSdir = $(pkgsrcdir)/RPMS
 pkgsrc_RPMS_DATA =

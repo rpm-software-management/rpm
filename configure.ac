@@ -1076,5 +1076,4 @@ AC_CONFIG_FILES([ Doxyfile Makefile
  	lua/Makefile
  	tests/Makefile
   ])
-AC_CONFIG_FILES([rpmpopt-${VERSION}:rpmpopt.in],,[VERSION=${VERSION}])
 AC_OUTPUT
