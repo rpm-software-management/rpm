@@ -140,6 +140,14 @@ platform: $(top_srcdir)/platform.in
 CLEANFILES += platform.tmp platform
 EXTRA_DIST += platform.in
 
+rpm.pc: $(top_srcdir)/rpm.pc.in
+	@sed \
+	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	  < $(top_srcdir)/rpm.pc.in > rpm.pc.tmp \
+	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/rpm.pc:${subdir}/rpm.pc.tmp )
+CLEANFILES += rpm.pc.tmp rpm.pc
+EXTRA_DIST += rpm.pc.in
+
 pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 pkgsrc_RPMSdir = $(pkgsrcdir)/RPMS
 pkgsrc_RPMS_DATA =

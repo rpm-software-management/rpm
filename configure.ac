@@ -1067,7 +1067,7 @@ AC_CONFIG_SUBDIRS(db3)
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpm.pc
+AC_CONFIG_FILES([ Doxyfile Makefile
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile 
 	misc/Makefile 
