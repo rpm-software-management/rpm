@@ -1649,7 +1649,7 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
 	    fd = ufdOpen(path, flags, perms);
-	    if (fd == NULL || !fdFileno(fd) >= 0)
+	    if (fd == NULL || !(fdFileno(fd) >= 0))
 		return fd;
 	    break;
 	default:
