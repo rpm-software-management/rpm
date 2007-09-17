@@ -295,7 +295,6 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
-    fd->url = NULL;
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
     fd->contentLength = fd->bytesRemain = -1;
     fd->wr_chunked = 0;
@@ -306,7 +305,6 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));
 
-    fd->ftpFileDoneNeeded = 0;
     fd->firstFree = 0;
     fd->fileSize = 0;
     fd->fd_cpioPos = 0;
@@ -865,12 +863,6 @@ int ufdClose( void * cookie)
 
     UFDONLY(fd);
 
-    if (fd->url) {
-	fd = fdFree(fd, "grab data (ufdClose)");
-	(void) urlFree(fd->url, "url (ufdClose)");
-	fd->url = NULL;
-
-    }
     return fdClose(fd);
 }
 
@@ -1686,7 +1678,7 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
 	    fd = ufdOpen(path, flags, perms);
-	    if (fd == NULL || !(fdFileno(fd) >= 0 || fd->req != NULL))
+	    if (fd == NULL || !fdFileno(fd) >= 0)
 		return fd;
 	    break;
 	default:

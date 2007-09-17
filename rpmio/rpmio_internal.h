@@ -141,9 +141,6 @@ struct _FD_s {
     FDSTACK_t	fps[8];
     int		urlType;	/* ufdio: */
 
-    void *	url;		/* ufdio: URL info */
-    void *	req;		/* ufdio: HTTP request */
-
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
     ssize_t	bytesRemain;	/* ufdio: */
     ssize_t	contentLength;	/* ufdio: */
@@ -159,7 +156,6 @@ struct _FD_s {
 #define	FDDIGEST_MAX	4
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
-    int		ftpFileDoneNeeded; /* ufdio: (FTP) */
     unsigned int firstFree;	/* fadio: */
     long int	fileSize;	/* fadio: */
     long int	fd_cpioPos;	/* cpio: */
