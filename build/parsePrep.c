@@ -7,6 +7,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "misc.h"	/* XXX for splitString */
 #include "debug.h"
 
 /* These have to be global to make up for stupid compilers */

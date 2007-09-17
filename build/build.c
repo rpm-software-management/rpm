@@ -7,6 +7,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "misc.h" 	/* XXX for makeTempFile */
 
 #include "debug.h"
 

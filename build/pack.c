@@ -23,6 +23,7 @@
 #include "legacy.h"	/* XXX providePackageNVR */
 #include "signature.h"
 #include "rpmlead.h"
+#include "misc.h"	/* XXX for makeTempFile */
 #include "debug.h"
 
 /**

@@ -10,7 +10,6 @@
 
 /* and it shouldn't need these :-( */
 #include "stringbuf.h"
-#include "misc.h"
 
 /* but this will be needed */
 #include "rpmspec.h"

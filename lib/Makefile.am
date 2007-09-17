@@ -19,7 +19,7 @@ check_PROGRAMS =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
-	idtx.h misc.h rpmcli.h rpmlib.h \
+	idtx.h rpmcli.h rpmlib.h \
 	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmte.h rpmts.h \
 	stringbuf.h
 
@@ -32,7 +32,7 @@ librpm_la_SOURCES = \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpmgi.c rpminstall.c \
 	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c signature.h stringbuf.c transaction.c \
-	verify.c rpmlock.c rpmlock.h
+	verify.c rpmlock.c rpmlock.h misc.h
 librpm_la_LDFLAGS = -release 4.4
 
 librpm_la_LIBADD = \
