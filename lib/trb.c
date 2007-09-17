@@ -31,11 +31,13 @@ main(int argc, const char *argv[])
 #endif
     setprogname(argv[0]);       /* Retrofit glibc __progname */
 
+#if defined(ENABLE_NLS)
     /* set up the correct locale */
     (void) setlocale(LC_ALL, "" );
 
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
+#endif
 
     rpmSetVerbosity(RPMMESS_NORMAL);
 
