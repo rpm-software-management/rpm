@@ -16,22 +16,10 @@ AM_CPPFLAGS = -I. \
 EXTRA_DIST = db3.c db_emu.h
 EXTRA_PROGRAMS =
 check_PROGRAMS =
-
-check_PROGRAMS += tjfn
-tjfn_SOURCES = tjfn.c
-tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
+CLEANFILES =
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = header.h hdrinline.h rpmdb.h 
-nodist_pkginc_HEADERS = db.h
-
-rpmlibexec_PROGRAMS = \
-	rpmdb_archive rpmdb_checkpoint rpmdb_deadlock rpmdb_dump rpmdb_load \
-	rpmdb_printlog rpmdb_recover rpmdb_svc rpmdb_stat rpmdb_upgrade \
-	rpmdb_verify 
-
-# XXX watchout, ../db3/libdb.la created by this Makefile may surprise
-libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
@@ -68,10 +56,16 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 	@echo 'const struct headerTagTableEntry_s * rpmTagTable = rpmTagTbl;' >> $@
 	@echo '' >> $@
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
+BUILT_SOURCES = tagtbl.c
+
+nodist_pkginc_HEADERS = db.h
 
 db.h:	../$(WITH_DB_SUBDIR)/db.h
 	$(LN_S) ../$(WITH_DB_SUBDIR)/db.h $@
-CLEANFILES = db.h
+BUILT_SOURCES += db.h
+
+# XXX watchout, ../db3/libdb.la created by this Makefile may surprise
+libdb_la = $(top_builddir)/$(WITH_DB_SUBDIR)/libdb.la
 
 # XXX grrr, force noinst libdb.la for db3.
 $(libdb_la): $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.6.la
@@ -79,12 +73,16 @@ $(libdb_la): $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.6.la
 	  < $(top_builddir)/$(WITH_DB_SUBDIR)/libdb-4.6.la > $(libdb_la)
 CLEANFILES += $(libdb_la)
 
+rpmlibexec_PROGRAMS =
+
+rpmlibexec_PROGRAMS += rpmdb_archive
 rpmdb_archive_SOURCES =
 rpmdb_archive_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_archive.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_checkpoint
 rpmdb_checkpoint_SOURCES =
 rpmdb_checkpoint_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_checkpoint.o \
@@ -92,6 +90,7 @@ rpmdb_checkpoint_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_deadlock
 rpmdb_deadlock_SOURCES =
 rpmdb_deadlock_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_deadlock.o \
@@ -99,6 +98,7 @@ rpmdb_deadlock_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_dump
 rpmdb_dump_SOURCES =
 rpmdb_dump_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_dump.o \
@@ -106,6 +106,7 @@ rpmdb_dump_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_load
 rpmdb_load_SOURCES =
 rpmdb_load_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_load.o \
@@ -113,6 +114,7 @@ rpmdb_load_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_printlog
 rpmdb_printlog_SOURCES =
 rpmdb_printlog_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_printlog.o \
@@ -128,6 +130,7 @@ rpmdb_printlog_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_recover
 rpmdb_recover_SOURCES =
 rpmdb_recover_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_recover.o \
@@ -135,6 +138,7 @@ rpmdb_recover_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_stat
 rpmdb_stat_SOURCES =
 rpmdb_stat_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_stat.o \
@@ -142,6 +146,7 @@ rpmdb_stat_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_svc
 rpmdb_svc_SOURCES =
 rpmdb_svc_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_server_proc.o \
@@ -151,6 +156,7 @@ rpmdb_svc_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_log.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_upgrade
 rpmdb_upgrade_SOURCES =
 rpmdb_upgrade_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_upgrade.o \
@@ -158,6 +164,7 @@ rpmdb_upgrade_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
+rpmlibexec_PROGRAMS += rpmdb_verify 
 rpmdb_verify_SOURCES =
 rpmdb_verify_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/db_verify.o \
@@ -165,12 +172,16 @@ rpmdb_verify_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
 
-BUILT_SOURCES = tagtbl.c db.h
-
 check_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c
 tdbi_LDADD = librpmdb.la
 
+check_PROGRAMS += tjfn
+tjfn_SOURCES = tjfn.c
+tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
+
 EXTRA_PROGRAMS += tsql
 tsql_SOURCES = tsql.c
 tsql_LDADD = librpmdb.la
+
+CLEANFILES += $(BUILT_SOURCES)
