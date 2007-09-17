@@ -1433,7 +1433,7 @@ static int rpmts_init(rpmtsObject * s, PyObject *args, PyObject *kwds)
 static void rpmts_free(rpmtsObject * s)
 {
 if (_rpmts_debug)
-fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts);
+fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd)
@@ -1486,7 +1486,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     s->tsiFilter = 0;
 
     if (_rpmts_debug)
-	fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts);
+	fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
 
     return (PyObject *)s;
 }
