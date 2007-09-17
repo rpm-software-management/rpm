@@ -30,9 +30,10 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>     /* XXX urlPath proto */
 
-#include <rpmdb.h>
+#include "rpmdb_internal.h"
+#include "rpmdb.h"
 
-#include "sqlite3.h"
+#include <sqlite3.h>
 
 #include "debug.h"
 
