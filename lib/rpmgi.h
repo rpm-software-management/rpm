@@ -8,7 +8,6 @@
 #include <rpmlib.h>
 #include <rpmte.h>
 #include <rpmts.h>
-#include <fts.h>
 #include <argv.h>
 
 /**
@@ -29,6 +28,7 @@ typedef enum rpmgiFlags_e {
 extern rpmgiFlags giFlags;
 
 #if defined(_RPMGI_INTERNAL)
+#include "fts.h"
 /** \ingroup rpmio
  */
 struct rpmgi_s {
