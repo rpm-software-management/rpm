@@ -62,8 +62,7 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 BUILT_SOURCES = tagtbl.c
 
 if WITH_INTERNAL_DB
-nodist_pkginc_HEADERS = db.h
-
+librpmdb_la_SOURCES += db.h
 db.h:	../$(WITH_DB_SUBDIR)/db.h
 	$(LN_S) ../$(WITH_DB_SUBDIR)/db.h $@
 BUILT_SOURCES += db.h
