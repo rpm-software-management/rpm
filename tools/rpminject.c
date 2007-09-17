@@ -472,7 +472,9 @@ main(int argc, char *argv[])
 #endif
 
     optCon = poptGetContext("rpminject", argc, (const char **) argv, optionsTable, 0);
+#if RPM_USES_POPTREADDEFAULTCONFIG
     poptReadDefaultConfig(optCon, 1);
+#endif
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
