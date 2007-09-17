@@ -866,15 +866,9 @@ int ufdClose( void * cookie)
     UFDONLY(fd);
 
     if (fd->url) {
-	urlinfo u = fd->url;
-
-	if (fd == u->data)
-		fd = u->data = fdFree(fd, "grab data (ufdClose persist)");
-	else
-		fd = fdFree(fd, "grab data (ufdClose)");
+	fd = fdFree(fd, "grab data (ufdClose)");
 	(void) urlFree(fd->url, "url (ufdClose)");
 	fd->url = NULL;
-	u->ctrl = fdFree(u->ctrl, "grab ctrl (ufdClose)");
 
     }
     return fdClose(fd);

@@ -41,14 +41,7 @@ int nrefs;		/*!< no. of references */
     int proxyp;			/*!< FTP/HTTP: proxy port */
     int	port;			/*!< URI port. */
     int urltype;		/*!< URI type. */
-    FD_t ctrl;			/*!< control channel */
-    FD_t data;			/*!< per-xfer data channel */
-
-    int bufAlloced;		/*!< sizeof I/O buffer */
-    char * buf;			/*!< I/O buffer */
     int openError;		/*!< Type of open failure */
-    int httpVersion;
-    int httpHasRange;
     int magic;
 };
 

@@ -75,12 +75,6 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->proxyp = -1;
     u->port = -1;
     u->urltype = URL_IS_UNKNOWN;
-    u->ctrl = NULL;
-    u->data = NULL;
-    u->bufAlloced = 0;
-    u->buf = NULL;
-    u->httpHasRange = 1;
-    u->httpVersion = 0;
     u->nrefs = 0;
     u->magic = URLMAGIC;
     return XurlLink(u, msg, file, line);
@@ -88,49 +82,10 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
 
 urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
-    int xx;
-
     URLSANE(u);
 URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
 	return u;
-    if (u->ctrl) {
-#ifndef	NOTYET
-	void * fp = fdGetFp(u->ctrl);
-	if (fp) {
-	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
-	    (void) Fclose(u->ctrl);
-	} else if (fdio->_fileno(u->ctrl) >= 0)
-	    xx = fdio->close(u->ctrl);
-#else
-	(void) Fclose(u->ctrl);
-#endif
-
-	u->ctrl = fdio->_fdderef(u->ctrl, "persist ctrl (urlFree)", file, line);
-	if (u->ctrl)
-	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
-			u, u->ctrl, (u->host ? u->host : ""),
-			(u->scheme ? u->scheme : ""));
-    }
-    if (u->data) {
-#ifndef	NOTYET
-	void * fp = fdGetFp(u->data);
-	if (fp) {
-	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
-	    (void) Fclose(u->data);
-	} else if (fdio->_fileno(u->data) >= 0)
-	    xx = fdio->close(u->data);
-#else
-	(void) Fclose(u->ctrl);
-#endif
-
-	u->data = fdio->_fdderef(u->data, "persist data (urlFree)", file, line);
-	if (u->data)
-	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
-			u, u->data, (u->host ? u->host : ""),
-			(u->scheme ? u->scheme : ""));
-    }
-    u->buf = _free(u->buf);
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);
     u->user = _free((void *)u->user);
