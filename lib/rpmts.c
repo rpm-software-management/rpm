@@ -8,7 +8,8 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 
-#include "rpmdb.h"		/* XXX stealing db->db_mode. */
+#include "rpmdb.h"
+#include "rpmdb_internal.h"	/* XXX for db->ops statistics */
 
 #include "rpmal.h"
 #include "rpmds.h"

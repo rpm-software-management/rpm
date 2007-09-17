@@ -40,7 +40,7 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c header_internal.h \
 	legacy.c legacy.h \
 	merge.c \
-	poptDB.c rpmhash.c rpmdb.c \
+	poptDB.c rpmhash.c rpmdb.c rpmdb_internal.h \
 	tagname.c tagtbl.c
 librpmdb_la_SOURCES += db3.c
 if SQLITE3

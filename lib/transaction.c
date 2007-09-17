@@ -11,6 +11,7 @@
 #include "psm.h"
 
 #include "rpmdb.h"
+#include "rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
 
 #include "rpmds.h"
 

@@ -15,6 +15,7 @@ const char *__progname;
 #include <rpmbuild.h>
 
 #include "rpmdb.h"
+#include "rpmdb_internal.h"	/* XXX for freeing dbiTags */
 #include "rpmps.h"
 #include "rpmts.h"
 
@@ -853,6 +854,7 @@ exit:
     /* keeps memory leak checkers quiet */
     freeFilesystems();
     rpmlogClose();
+    /* XXX FIXME: hide this in the api */
     dbiTags = _free(dbiTags);
 
 #ifdef	IAM_RPMQV

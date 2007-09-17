@@ -18,6 +18,7 @@
 #include <rpmmacro.h>
 #include <rpmsq.h>
 
+#include "rpmdb_internal.h"
 #include "rpmdb.h"
 #include "fprint.h"
 #include "legacy.h"

@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmdb.h>
+#include "rpmdb_internal.h"
 #include <rpmmacro.h>	/* XXX for rpmCleanPath */
 
 #include "fprint.h"

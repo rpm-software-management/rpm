@@ -8,7 +8,8 @@
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
-#include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
+#include "rpmdb.h"
+#include "rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
 
 #include "rpmds.h"
 #include "rpmfi.h"
