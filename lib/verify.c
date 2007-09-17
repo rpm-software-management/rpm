@@ -11,8 +11,8 @@
 #include "rpmfi.h"
 #include "rpmts.h"
 
-#include "legacy.h"	/* XXX domd5(), uidToUname(), gnameToGid */
-#include "ugid.h"
+#include "legacy.h"	/* XXX domd5() */
+#include "ugid.h" 	/* uidToUname(), gnameToGid */
 #include "debug.h"
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
