@@ -1433,8 +1433,7 @@ main (int argc, char *argv[])
   Elf_Data *build_id = NULL;
   size_t build_id_offset = 0, build_id_size = 0;
 
-  optCon = poptGetContext("debugedit", argc, (const char **)argv,
-			  optionsTable, 0);
+  optCon = poptGetContext("debugedit", argc, (const char **)argv, optionsTable, 0);
   
   while ((nextopt = poptGetNextOpt (optCon)) > 0 || nextopt == POPT_ERROR_BADOPT)
     /* do nothing */ ;

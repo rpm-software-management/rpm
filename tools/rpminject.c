@@ -471,9 +471,7 @@ main(int argc, char *argv[])
     (void)textdomain(PACKAGE);
 #endif
 
-    optCon = poptGetContext("rpminject", 
-			    argc, (const char **) argv, 
-			    optionsTable, 0);
+    optCon = poptGetContext("rpminject", argc, (const char **) argv, optionsTable, 0);
     poptReadDefaultConfig(optCon, 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
