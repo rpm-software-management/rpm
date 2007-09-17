@@ -40,8 +40,12 @@ librpmdb_la_LIBADD = \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
-	@WITH_LIBELF_LIB@ \
-        $(libdb_la)
+	@WITH_LIBELF_LIB@
+if WITH_INTERNAL_DB
+librpmdb_la_LIBADD += $(libdb_la)
+else
+librpmdb_la_LIBADD += @WITH_DB_LIB@
+endif
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
 	@echo '#include "system.h"' > $@
@@ -58,6 +62,7 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
 BUILT_SOURCES = tagtbl.c
 
+if WITH_INTERNAL_DB
 nodist_pkginc_HEADERS = db.h
 
 db.h:	../$(WITH_DB_SUBDIR)/db.h
@@ -171,6 +176,7 @@ rpmdb_verify_LDADD = \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_cache.o \
 	$(top_builddir)/$(WITH_DB_SUBDIR)/util_sig.o \
 	librpmdb.la
+endif
 
 check_PROGRAMS += tdbi
 tdbi_SOURCES = tdbi.c
