@@ -9,18 +9,6 @@
 # include <machine/types.h>
 #endif
 
-#if HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-
-#include <netinet/in.h>
-#include <arpa/inet.h>		/* XXX for inet_aton and HP-UX */
-
-#if HAVE_NETINET_IN_SYSTM_H
-# include <sys/types.h>
-# include <netinet/in_systm.h>
-#endif
-
 #if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
@@ -35,23 +23,6 @@ extern int h_errno;
 #endif
 #ifndef	IPPORT_HTTP
 #define	IPPORT_HTTP	80
-#endif
-
-#if !defined(HAVE_INET_ATON)
-static int inet_aton(const char *cp, struct in_addr *inp)
-{
-    long addr;
-
-    addr = inet_addr(cp);
-    if (addr == ((long) -1)) return 0;
-
-    memcpy(inp, &addr, sizeof(addr));
-    return 1;
-}
-#endif
-
-#if defined(USE_ALT_DNS) && USE_ALT_DNS
-#include "dns.h"
 #endif
 
 #include <rpmio_internal.h>
