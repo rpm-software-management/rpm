@@ -430,14 +430,14 @@ int main(int argc, const char ** argv) {
     char * hdListFile2 = NULL;
     char * depOrderFile = NULL;
     poptContext optCon;
-    struct poptOption options[] = {
+    struct poptOption optionsTable[] = {
             { "hdlist", '\0', POPT_ARG_STRING, &hdListFile, 0 },
             { "withnumbers", '\0', 0, &doNumber, 0 },
 	    { "fileorder", '\0', POPT_ARG_STRING, &depOrderFile, 0 },
             { 0, 0, 0, 0, 0 }
     };
 
-    optCon = poptGetContext("genhdlist", argc, argv, options, 0);
+    optCon = poptGetContext("genhdlist", argc, argv, optionsTable, 0);
     poptReadDefaultConfig(optCon, 1);
 
     if ((rc = poptGetNextOpt(optCon)) < -1) {
