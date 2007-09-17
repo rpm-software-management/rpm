@@ -17,7 +17,7 @@
 #include "rpmte-py.h"
 #include "spec-py.h"
 
-#define	_RPMTS_INTERNAL	/* XXX for ts->rdb, ts->availablePackage */
+#define	_RPMTS_INTERNAL	/* XXX for ts->availablePackage */
 #include "rpmts-py.h"
 
 #include "debug.h"
@@ -1269,9 +1269,9 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 
     /* XXX If not already opened, open the database O_RDONLY now. */
     /* XXX FIXME: lazy default rdonly open also done by rpmtsInitIterator(). */
-    if (s->ts->rdb == NULL) {
+    if (rpmtsGetRdb(s->ts) == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
-	if (rc || s->ts->rdb == NULL) {
+	if (rc || rpmtsGetRdb(s->ts) == NULL) {
 	    PyErr_SetString(PyExc_TypeError, "rpmdb open failed");
 	    return NULL;
 	}
@@ -1380,7 +1380,7 @@ static void rpmts_dealloc(rpmtsObject * s)
 {
 
 if (_rpmts_debug)
-fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
+fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
     s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd) Fclose(s->scriptFd);
@@ -1433,7 +1433,7 @@ static int rpmts_init(rpmtsObject * s, PyObject *args, PyObject *kwds)
 static void rpmts_free(rpmtsObject * s)
 {
 if (_rpmts_debug)
-fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
+fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts-);
     s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd)
@@ -1486,7 +1486,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     s->tsiFilter = 0;
 
     if (_rpmts_debug)
-	fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, s->ts->rdb);
+	fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts);
 
     return (PyObject *)s;
 }
