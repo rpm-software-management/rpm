@@ -27,24 +27,9 @@
 
 /**
  */
-int _url_iobuf_size = RPMURL_IOBUF_SIZE;
-
-/**
- */
 int _url_debug = 0;
 
 #define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
-
-#define URLDBGIO(_f, _x)	URLDBG((_f), RPMURL_DEBUG_IO, _x)
-#define URLDBGREFS(_f, _x)	URLDBG((_f), RPMURL_DEBUG_REFS, _x)
-
-/**
- */
-urlinfo *_url_cache = NULL;
-
-/**
- */
-int _url_count = 0;
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
@@ -58,15 +43,7 @@ _free(const void * p)
     return NULL;
 }
 
-urlinfo XurlLink(urlinfo u, const char *msg, const char *file, unsigned line)
-{
-    URLSANE(u);
-    u->nrefs++;
-URLDBGREFS(0, (stderr, "--> url %p ++ %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
-    return u;
-}
-
-urlinfo XurlNew(const char *msg, const char *file, unsigned line)
+urlinfo urlNew()
 {
     urlinfo u;
     if ((u = xmalloc(sizeof(*u))) == NULL)
@@ -75,17 +52,13 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->proxyp = -1;
     u->port = -1;
     u->urltype = URL_IS_UNKNOWN;
-    u->nrefs = 0;
     u->magic = URLMAGIC;
-    return XurlLink(u, msg, file, line);
+    return u;
 }
 
-urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
+urlinfo urlFree(urlinfo u)
 {
     URLSANE(u);
-URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
-    if (--u->nrefs > 0)
-	return u;
     u->url = _free(u->url);
     u->scheme = _free((void *)u->scheme);
     u->user = _free((void *)u->user);
@@ -97,98 +70,6 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 
     u = _free(u);
     return NULL;
-}
-
-void urlFreeCache(void)
-{
-    if (_url_cache) {
-	int i;
-	for (i = 0; i < _url_count; i++) {
-	    if (_url_cache[i] == NULL) continue;
-	    _url_cache[i] = urlFree(_url_cache[i], "_url_cache");
-	    if (_url_cache[i])
-		fprintf(stderr,
-			_("warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"),
-			i, _url_cache[i], _url_cache[i]->nrefs,
-			(_url_cache[i]->host ? _url_cache[i]->host : ""),
-			(_url_cache[i]->scheme ? _url_cache[i]->scheme : ""));
-	}
-    }
-    _url_cache = _free(_url_cache);
-    _url_count = 0;
-}
-
-static int urlStrcmp(const char * str1, const char * str2)
-{
-    if (str1)
-	if (str2)
-	    return strcmp(str1, str2);
-    if (str1 != str2)
-	return -1;
-    return 0;
-}
-
-static void urlFind(urlinfo * uret, int mustAsk)
-{
-    urlinfo u;
-    int ucx;
-    int i = 0;
-
-    if (uret == NULL)
-	return;
-
-    u = *uret;
-    URLSANE(u);
-
-    ucx = -1;
-    for (i = 0; i < _url_count; i++) {
-	urlinfo ou = NULL;
-	if (_url_cache == NULL || (ou = _url_cache[i]) == NULL) {
-	    if (ucx < 0)
-		ucx = i;
-	    continue;
-	}
-
-	/* Check for cache-miss condition. A cache miss is
-	 *    a) both items are not NULL and don't compare.
-	 *    b) either of the items is not NULL.
-	 */
-	if (urlStrcmp(u->scheme, ou->scheme))
-	    continue;
-    	if (urlStrcmp(u->host, ou->host))
-	    continue;
-	if (urlStrcmp(u->user, ou->user))
-	    continue;
-	if (urlStrcmp(u->portstr, ou->portstr))
-	    continue;
-	break;	/* Found item in cache */
-    }
-
-    if (i == _url_count) {
-	if (ucx < 0) {
-	    ucx = _url_count++;
-	    _url_cache = xrealloc(_url_cache, sizeof(*_url_cache) * _url_count);
-	}
-	if (_url_cache)		/* XXX always true */
-	    _url_cache[ucx] = urlLink(u, "_url_cache (miss)");
-	u = urlFree(u, "urlSplit (urlFind miss)");
-    } else {
-	ucx = i;
-	u = urlFree(u, "urlSplit (urlFind hit)");
-    }
-
-    /* This URL is now cached. */
-
-    if (_url_cache)		/* XXX always true */
-	u = urlLink(_url_cache[ucx], "_url_cache");
-    *uret = u;
-    u = urlFree(u, "_url_cache (urlFind)");
-
-    /* Zap proxy host and port in case they have been reset */
-    u->proxyp = -1;
-    u->proxyh = _free(u->proxyh);
-
-    return;
 }
 
 /**
@@ -281,11 +162,11 @@ int urlSplit(const char * url, urlinfo *uret)
 
     if (uret == NULL)
 	return -1;
-    if ((u = urlNew("urlSplit")) == NULL)
+    if ((u = urlNew()) == NULL)
 	return -1;
 
     if ((se = s = myurl = xstrdup(url)) == NULL) {
-	u = urlFree(u, "urlSplit (error #1)");
+	u = urlFree(u);
 	return -1;
     }
 
@@ -342,7 +223,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	    if (!(end && *end == '\0')) {
 		rpmMessage(RPMMESS_ERROR, _("url port must be a number\n"));
 		myurl = _free(myurl);
-		u = urlFree(u, "urlSplit (error #3)");
+		u = urlFree(u);
 		return -1;
 	    }
 	}
@@ -368,8 +249,6 @@ int urlSplit(const char * url, urlinfo *uret)
     myurl = _free(myurl);
     if (uret) {
 	*uret = u;
-/* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
-	urlFind(uret, 0);
     }
     return 0;
 }

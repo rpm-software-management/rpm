@@ -73,7 +73,5 @@ main(int argc, const char *argv[])
     printDir(ftppath);
     printDir(httppath);
 
-urlFreeCache();
-
     return 0;
 }

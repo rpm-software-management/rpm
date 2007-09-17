@@ -121,7 +121,5 @@ main(int argc, const char *argv[])
 
     readKeys(hkppath);
 
-urlFreeCache();
-
     return 0;
 }

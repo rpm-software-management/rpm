@@ -29,7 +29,6 @@ typedef struct urlinfo_s * urlinfo;
  * URL control structure.
  */
 struct urlinfo_s {
-int nrefs;		/*!< no. of references */
     const char * url;		/*!< copy of original url */
     const char * scheme;	/*!< URI scheme. */
     const char * user;		/*!< URI user. */
@@ -49,58 +48,20 @@ int nrefs;		/*!< no. of references */
 extern "C" {
 #endif
 
-extern int _url_count;		/*!< No. of cached URL's. */
-
-extern urlinfo * _url_cache;	/*!< URL cache. */
-
-extern int _url_iobuf_size;	/*!< Initial size of URL I/O buffer. */
-#define RPMURL_IOBUF_SIZE	4096
-
 extern int _url_debug;		/*!< URL debugging? */
-#define RPMURL_DEBUG_IO		0x40000000
-#define RPMURL_DEBUG_REFS	0x20000000
-
 
 /**
- * Create a URL control structure instance.
- * @param msg		debugging identifier (unused)
+ * Create a URL info structure instance.
  * @return		new instance
  */
-urlinfo	urlNew(const char * msg)	;
-
-/** @todo Remove debugging entry from the ABI. */
-urlinfo	XurlNew(const char * msg, const char * file, unsigned line)	;
-#define	urlNew(_msg) XurlNew(_msg, __FILE__, __LINE__)
+urlinfo	urlNew(void);
 
 /**
- * Reference a URL control structure instance.
+ * Free a URL info structure instance.
  * @param u		URL control structure
- * @param msg		debugging identifier (unused)
- * @return		referenced instance
- */
-urlinfo	urlLink(urlinfo u, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-urlinfo	XurlLink(urlinfo u, const char * msg, const char * file, unsigned line);
-#define	urlLink(_u, _msg) XurlLink(_u, _msg, __FILE__, __LINE__)
-
-/**
- * Dereference a URL control structure instance.
- * @param u		URL control structure
- * @param msg		debugging identifier (unused)
  * @return		dereferenced instance (NULL if freed)
  */
-urlinfo	urlFree( urlinfo u, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-urlinfo	XurlFree( urlinfo u, const char * msg,
-		const char * file, unsigned line);
-#define	urlFree(_u, _msg) XurlFree(_u, _msg, __FILE__, __LINE__)
-
-/**
- * Free cached URL control structures.
- */
-void urlFreeCache(void);
+urlinfo	urlFree(urlinfo u);
 
 /**
  * Return type of URL.

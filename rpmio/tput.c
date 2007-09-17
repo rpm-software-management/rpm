@@ -135,7 +135,5 @@ main(int argc, const char *argv[])
     doFile(httpspath);
 #endif
 
-urlFreeCache();
-
     return 0;
 }

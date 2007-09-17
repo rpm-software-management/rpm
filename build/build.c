@@ -260,6 +260,7 @@ fprintf(stderr, "*** delMacros\n");
 	default:
 	    break;
 	}
+	u = urlFree(u);
     }
     argv = _free(argv);
     buildCmd = _free(buildCmd);

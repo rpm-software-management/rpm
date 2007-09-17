@@ -85,7 +85,5 @@ main(int argc, const char *argv[])
     readFile(httpspath);
 #endif
 
-urlFreeCache();
-
     return 0;
 }

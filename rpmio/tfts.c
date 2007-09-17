@@ -168,7 +168,5 @@ main(int argc, const char *argv[])
     ftsWalk(httpspath);
 #endif
 
-urlFreeCache();
-
     return 0;
 }

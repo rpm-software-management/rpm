@@ -850,7 +850,6 @@ exit:
 
     /* keeps memory leak checkers quiet */
     freeFilesystems();
-    urlFreeCache();
     rpmlogClose();
     dbiTags = _free(dbiTags);
 
