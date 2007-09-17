@@ -276,16 +276,6 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 int rpmdbRebuild(const char * prefix, rpmts ts,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg));
 
-#ifndef __APPLE__
-/**
- * Mergesort, same arguments as qsort(2).
- */
-int mergesort(void *base, size_t nmemb, size_t size,
-                int (*cmp) (const void *, const void *));
-#else
-/* mergesort is defined in stdlib.h on Mac OS X */
-#endif /* __APPLE__ */
-
 #ifdef __cplusplus
 }
 #endif

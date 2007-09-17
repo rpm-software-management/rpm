@@ -658,4 +658,14 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 extern int * dbiTags;
 extern int dbiTagsMax;
 
+#ifndef __APPLE__
+/**
+ *  * Mergesort, same arguments as qsort(2).
+ *   */
+int mergesort(void *base, size_t nmemb, size_t size,
+                int (*cmp) (const void *, const void *));
+#else
+/* mergesort is defined in stdlib.h on Mac OS X */
+#endif /* __APPLE__ */
+
 #endif
