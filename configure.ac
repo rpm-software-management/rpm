@@ -466,9 +466,6 @@ AC_SUBST(WITH_POPT_LIB)
 
 dnl ------------------ with    internal db
 AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
-WITH_DB_SUBDIR=db3
-
-AC_SUBST(WITH_DB_SUBDIR)
 # FIXME: Temporary helper until external BDB is fully supported
 with_internal_db=yes
 

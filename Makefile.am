@@ -7,7 +7,7 @@ EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
 	autodeps autogen.sh \
 	db db3/configure installplatform platform* 
 
-SUBDIRS = po misc @WITH_DB_SUBDIR@ lua rpmio rpmdb lib build python scripts doc . tests
+SUBDIRS = po misc db3 lua rpmio rpmdb lib build python scripts doc . tests
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rpm.pc
