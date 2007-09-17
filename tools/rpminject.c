@@ -464,10 +464,12 @@ main(int argc, char *argv[])
 #endif
 
     setprogname(argv[0]);	/* Retrofit glibc __progname */
+#if defined(ENABLE_NLS)
     (void)setlocale(LC_ALL, "" );
 
     (void)bindtextdomain(PACKAGE, LOCALEDIR);
     (void)textdomain(PACKAGE);
+#endif
 
     optCon = poptGetContext("rpminject", 
 			    argc, (const char **) argv, 

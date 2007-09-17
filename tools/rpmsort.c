@@ -286,10 +286,12 @@ main(int argc, const char *argv[])
     mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 #endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
+#if defined(ENABLE_NLS)
     (void)setlocale(LC_ALL, "" );
 
     (void)bindtextdomain(PACKAGE, LOCALEDIR);
     (void)textdomain(PACKAGE);
+#endif
 
     _depends_debug = 1;
 

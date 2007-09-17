@@ -332,6 +332,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
 #if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );
+
     (void) bindtextdomain(PACKAGE, LOCALEDIR);
     (void) textdomain(PACKAGE);
 #endif
