@@ -22,7 +22,7 @@ tjfn_SOURCES = tjfn.c
 tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = header.h hdrinline.h rpmdb.h rpmhash.h
+pkginc_HEADERS = header.h hdrinline.h rpmdb.h 
 nodist_pkginc_HEADERS = db.h
 
 rpmlibexec_PROGRAMS = \
@@ -40,7 +40,7 @@ librpmdb_la_SOURCES = \
 	hdrNVR.c header.c header_internal.c header_internal.h \
 	legacy.c legacy.h \
 	merge.c \
-	poptDB.c rpmhash.c rpmdb.c rpmdb_internal.h \
+	poptDB.c rpmhash.c rpmhash.h rpmdb.c rpmdb_internal.h \
 	tagname.c tagtbl.c
 librpmdb_la_SOURCES += db3.c
 if SQLITE3
