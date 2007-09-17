@@ -43,7 +43,9 @@ main(int argc, const char *argv[])
 
     optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+#if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
+#endif
     poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {

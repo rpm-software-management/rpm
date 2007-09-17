@@ -270,7 +270,9 @@ int main(int argc, const char ** argv)
     /* We need to handle that before dealing with the rest of the arguments. */
     optCon = poptGetContext(__progname, argc, argv, optionsTable, 0);
     (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+#if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
+#endif
     poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
