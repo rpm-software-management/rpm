@@ -464,10 +464,36 @@ AC_SUBST(WITH_POPT_LIB)
 
 #=================
 
-dnl ------------------ with    internal db
-AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
-# FIXME: Temporary helper until external BDB is fully supported
-with_internal_db=yes
+# Process --with/without-internal-db
+## FIXME: Intentionally kept hidden until things have matured.
+case "$with_internal_db" in
+no )
+  AC_CHECK_HEADER([db.h],[
+    save_LIBS="$LIBS"
+    AC_CHECK_LIB([db],[db_create],[],[
+      AC_MSG_ERROR([missing db_create in libdb])
+      ])
+    AC_CHECK_LIB([db],[db_env_create],[],[
+      AC_MSG_ERROR([missing db_env_create in libdb])
+      ])
+    AC_CHECK_LIB([db],[db_env_set_func_fsync],[],[
+      AC_MSG_ERROR([missing db_env_set_func_fsync in libdb])
+      ])
+    AC_CHECK_LIB([db],[db_strerror],[],[
+      AC_MSG_ERROR([missing db_strerror in libdb])
+      ])
+    WITH_DB_LIB=-ldb
+    LIBS="$save_LIBS"
+  ],[
+    AC_MSG_ERROR([missing required header db.h])
+  ])
+  ;;
+* ) # Fall back to internal db
+  AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
+  ;;
+esac
+
+AC_SUBST([WITH_DB_LIB])
 
 #=================
 # Check for sqlite3 library.
