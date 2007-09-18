@@ -433,7 +433,7 @@ AC_CHECK_HEADER([magic.h], [
       WITH_MAGIC_INCLUDE=
       WITH_MAGIC_LIB="-lmagic"
     ],[
-      AC_MSG_ERROR([missing required libary 'libmagic']) 
+      AC_MSG_ERROR([missing required library 'libmagic']) 
     ])
 ],[
       AC_MSG_ERROR([missing required header magic.h]) 
