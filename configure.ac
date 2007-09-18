@@ -219,7 +219,7 @@ fi
 dnl
 dnl Find some common programs
 dnl
-AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
+AC_PATH_PROG(__BZIP2, bzip2, /usr/bin/bzip2, $MYPATH)
 AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
 AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
 AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
@@ -230,8 +230,8 @@ AC_PATH_PROG(__CURL, curl, /usr/bin/curl, $MYPATH)
 AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
 AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
 AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
-AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
-AC_PATH_PROG(UNZIPBIN, unzip, /usr/bin/unzip, $MYPATH)
+AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
+AC_PATH_PROG(__UNZIP, unzip, /usr/bin/unzip, $MYPATH)
 
 AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
 AC_MSG_CHECKING(checking whether id supports -u)
@@ -261,7 +261,7 @@ AC_MSG_CHECKING(old version of patch)
     fi
 
 AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
-AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+AC_PATH_PROG(__PGP, pgp, /usr/bin/pgp, $MYPATH)
 AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH) 
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
