@@ -1090,7 +1090,7 @@ AC_SUBST(OBJDUMP)
 
 AC_CONFIG_SUBDIRS(db3)
 
-AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_internal_db" = yes])
+AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_internal_db" != no])
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
