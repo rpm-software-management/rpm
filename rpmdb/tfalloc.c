@@ -7,7 +7,7 @@
 #define	RPMDBFN	"/var/lib/rpm/packages.rpm"
 static const char * rpmdbfn = RPMDBFN;
 
-int main(int argc, const char ** argv)
+int main(int argc, char *argv[])
 {
     int lasto = 0;
     FD_t fd;

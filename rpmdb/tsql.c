@@ -42,7 +42,7 @@ fprintf(stderr, "%s: DONE scp %p [%d:%d] av %p avlen %p nr %d nc %d\n", __FUNCTI
 static const char *dbname = "/var/lib/rpm/Packages";
 static const char *qcmd = "SELECT key from 'Packages';";
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
   sqlite3 *db;
   int rc;

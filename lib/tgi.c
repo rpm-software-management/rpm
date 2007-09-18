@@ -83,7 +83,7 @@ static struct poptOption optionsTable[] = {
 };
 
 int
-main(int argc, char *const argv[])
+main(int argc, char *argv[])
 {
     poptContext optCon;
     rpmts ts = NULL;

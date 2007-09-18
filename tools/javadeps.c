@@ -1187,7 +1187,7 @@ void processJavaFile (FILE *fileHandle) {
 
 
 int
-main(int argc, char **argv)
+main(int argc, char *argv[])
 {
   FILE *fileHandle;
   int i = 0;

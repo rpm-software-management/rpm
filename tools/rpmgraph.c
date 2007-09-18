@@ -277,7 +277,7 @@ static struct poptOption optionsTable[] = {
 };
 
 int
-main(int argc, char *const argv[])
+main(int argc, char *argv[])
 {
     rpmts ts = NULL;
     struct rpmInstallArguments_s * ia = &rpmIArgs;

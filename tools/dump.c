@@ -5,7 +5,7 @@ const char *__progname;
 #include "header_internal.h"
 #include "debug.h"
 
-int main(int argc, char ** argv)
+int main(int argc, char *argv[])
 {
     Header h;
     FD_t fdi;

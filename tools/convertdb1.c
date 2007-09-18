@@ -116,7 +116,7 @@ static int fadFirstOffset(FD_t fd)
 static rpmdb db;
 
 int
-main(int argc, char ** argv)
+main(int argc, char *argv[])
 {
   FD_t fd;
   int offset;

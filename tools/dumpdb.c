@@ -8,7 +8,7 @@ const char *__progname;
 
 #include "debug.h"
 
-int main(int argc, char ** argv)
+int main(int argc, char *argv[])
 {
     unsigned int dspBlockNum = 0;		/* default to all */
     rpmdb db;

@@ -155,9 +155,9 @@ static void printUsage(poptContext con, FILE * fp, int flags)
 /* LCL: segfault */
 /* FIX: shrug */
 #if !defined(__GLIBC__) 
-int main(int argc, const char ** argv, char ** envp)
+int main(int argc, char *argv[], char ** envp)
 #else
-int main(int argc, const char ** argv)
+int main(int argc, char *argv[])
 #endif
 {
     rpmts ts = NULL;
