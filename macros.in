@@ -32,7 +32,7 @@
 # ---- Generally useful path macros.
 #
 %__awk			@AWK@
-%__bzip2		@BZIP2BIN@
+%__bzip2		@__BZIP2@
 %__cat			@__CAT@
 %__chgrp		@__CHGRP@
 %__chmod		@__CHMOD@
@@ -42,7 +42,7 @@
 %__file			@__FILE@
 %__gpg			@__GPG@
 %__grep			@__GREP@
-%__gzip			@GZIPBIN@
+%__gzip			@__GZIP@
 %__id			@__ID@
 %__install		@__INSTALL@
 %__ln_s			@LN_S@
@@ -52,14 +52,14 @@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__perl			@__PERL@
-%__pgp			@PGPBIN@
+%__pgp			@__PGP@
 %__python		@__PYTHON@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@
 %__ssh			@__SSH@
 %__tar			@__TAR@
-%__unzip		@UNZIPBIN@
+%__unzip		@__UNZIP@
 
 #==============================================================================
 # ---- Build system path macros.
