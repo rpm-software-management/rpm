@@ -1,5 +1,0 @@
-#!/bin/sh
-
-$rpmlead $myrpm | od -c > $0.out
-
-diff $0.out $0.exp || exit 1

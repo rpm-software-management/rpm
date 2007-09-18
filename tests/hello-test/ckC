@@ -1,5 +1,0 @@
-#!/bin/sh
-
-$rpm2cpio $myrpm | cpio -it > $0.out
-
-diff $0.out $0.exp || exit 1
