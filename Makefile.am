@@ -16,7 +16,6 @@ SUBDIRS += lua rpmio rpmdb lib build python scripts doc . tests
 DIST_SUBDIRS = po misc db3 lua rpmio rpmdb lib build python scripts doc tests
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = rpm.pc
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/build \
@@ -122,6 +121,7 @@ check_PROGRAMS +=	rpmsort
 rpmsort_SOURCES =	tools/rpmsort.c
 rpmsort_LDADD =		lib/librpm.la
 
+rpmconfig_DATA = rpmrc
 rpmrc: $(top_srcdir)/rpmrc.in
 	@sed \
 	  -e "s,[@]SYSCONFIGDIR[@],$(sysconfdir)/rpm,g" \
@@ -130,6 +130,7 @@ rpmrc: $(top_srcdir)/rpmrc.in
 CLEANFILES += rpmrc.tmp rpmrc
 EXTRA_DIST += rpmrc.in
 
+rpmconfig_DATA += macros
 macros: $(top_srcdir)/macros.in
 	@sed \
 	  -e "s,[@]varprefix[@],$(localstatedir),g" \
@@ -138,6 +139,7 @@ macros: $(top_srcdir)/macros.in
 CLEANFILES += macros.tmp macros
 EXTRA_DIST += macros.in
 
+noinst_DATA = platform
 platform: $(top_srcdir)/platform.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
@@ -146,6 +148,7 @@ platform: $(top_srcdir)/platform.in
 CLEANFILES += platform.tmp platform
 EXTRA_DIST += platform.in
 
+pkgconfig_DATA = rpm.pc
 rpm.pc: $(top_srcdir)/rpm.pc.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
@@ -154,6 +157,7 @@ rpm.pc: $(top_srcdir)/rpm.pc.in
 CLEANFILES += rpm.pc.tmp rpm.pc
 EXTRA_DIST += rpm.pc.in
 
+rpmconfig_DATA += rpmpopt-$(VERSION)
 rpmpopt-@VERSION@: $(top_srcdir)/rpmpopt.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
