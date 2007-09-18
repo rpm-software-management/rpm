@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-09-12 11:45+0200\n"
+"POT-Creation-Date: 2007-09-17 18:04+0200\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -75,179 +75,179 @@ msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "payload를 다시 열 수 없음: %s\n"
 
-#: rpmqv.c:72
+#: rpmqv.c:73
 msgid "Query options (with -q or --query):"
 msgstr "질의 옵션 (-q 또는 --query 옵션과 함께 사용):"
 
-#: rpmqv.c:75
+#: rpmqv.c:76
 msgid "Verify options (with -V or --verify):"
 msgstr "검증 옵션 (-V 또는 --verify 옵션과 함께 사용):"
 
-#: rpmqv.c:79
+#: rpmqv.c:80
 #, fuzzy
 msgid "Source options (with --query or --verify):"
 msgstr "검증 옵션 (-V 또는 --verify 옵션과 함께 사용):"
 
-#: rpmqv.c:83
+#: rpmqv.c:84
 msgid "File tree walk options (with --ftswalk):"
 msgstr ""
 
-#: rpmqv.c:89
+#: rpmqv.c:90
 msgid "Signature options:"
 msgstr "서명 옵션:"
 
-#: rpmqv.c:95
+#: rpmqv.c:96
 msgid "Database options:"
 msgstr "데이터베이스 옵션:"
 
-#: rpmqv.c:101
+#: rpmqv.c:102
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "다음과 함께 사용하는 제작 옵션 [ <spec파일> | <tar파일> | <소스 패키지> ]:"
 
-#: rpmqv.c:107
+#: rpmqv.c:108
 msgid "Install/Upgrade/Erase options:"
 msgstr "설치/업그레이드/삭제 옵션:"
 
-#: rpmqv.c:112 tools/rpmcache.c:524 tools/rpmdeps.c:32 tools/rpmgraph.c:271
+#: rpmqv.c:113 tools/rpmcache.c:524 tools/rpmdeps.c:32 tools/rpmgraph.c:271
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "모든 rpm 모드에서의 일반적인 옵션:"
 
-#: rpmqv.c:127 lib/poptI.c:35
+#: rpmqv.c:128 lib/poptI.c:35
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:133 lib/poptALL.c:84
+#: rpmqv.c:134 lib/poptALL.c:84
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM 버전 - %s\n"
 
-#: rpmqv.c:138
+#: rpmqv.c:139
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
-#: rpmqv.c:139
+#: rpmqv.c:140
 #, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "이 프로그램은 GNU Public License 내에서 자유롭게 재배포할 수 있습니다"
 
-#: rpmqv.c:281
+#: rpmqv.c:284
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "인수 처리과정 (%d) 도중 내부 오류가 발생했습니다 :-(\n"
 
-#: rpmqv.c:319 rpmqv.c:325 rpmqv.c:331 rpmqv.c:368
+#: rpmqv.c:322 rpmqv.c:328 rpmqv.c:334 rpmqv.c:371
 msgid "only one major mode may be specified"
 msgstr "하나의 주(major) 모드만 지정할 수 있습니다"
 
-#: rpmqv.c:347
+#: rpmqv.c:350
 msgid "one type of query/verify may be performed at a time"
 msgstr "질의/검증 유형은 각각 다른 유형과 동시에 수행할 수 있습니다"
 
-#: rpmqv.c:351
+#: rpmqv.c:354
 msgid "unexpected query flags"
 msgstr "부적절한 질의 플래그 입니다"
 
-#: rpmqv.c:354
+#: rpmqv.c:357
 msgid "unexpected query format"
 msgstr "부적절한 질의 형식 입니다"
 
-#: rpmqv.c:357
+#: rpmqv.c:360
 msgid "unexpected query source"
 msgstr "부적절한 질의 소스 입니다"
 
-#: rpmqv.c:400
+#: rpmqv.c:403
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "설치, 업그레이드, 소스 삭제, spec 파일 삭제시에만 수행됩니다"
 
-#: rpmqv.c:402
+#: rpmqv.c:405
 msgid "files may only be relocated during package installation"
 msgstr "패키지 설치시에만 파일을 재배치할 수 있습니다"
 
-#: rpmqv.c:405
+#: rpmqv.c:408
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:408
+#: rpmqv.c:411
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate 와 --excludepath 옵션은 최신의 패키지를 설치할 때에만 사용할 수 있"
 "습니다"
 
-#: rpmqv.c:411
+#: rpmqv.c:414
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix 옵션은 최신의 패키지를 설치할 때에만 사용할 수 있습니다"
 
-#: rpmqv.c:414
+#: rpmqv.c:417
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
-#: rpmqv.c:417
+#: rpmqv.c:420
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:421
+#: rpmqv.c:424
 msgid "--percent may only be specified during package installation"
 msgstr "--percent 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:425
+#: rpmqv.c:428
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:429
+#: rpmqv.c:432
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:433
+#: rpmqv.c:436
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:437
+#: rpmqv.c:440
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs 와 --includedocs 옵션만 지정할 수 있습니다"
 
-#: rpmqv.c:441
+#: rpmqv.c:444
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:445
+#: rpmqv.c:448
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:450
+#: rpmqv.c:453
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:454
+#: rpmqv.c:457
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches 옵션은 패키지 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:458
+#: rpmqv.c:461
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:463
+#: rpmqv.c:466
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:468
+#: rpmqv.c:471
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "스크립트 해제 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:473
+#: rpmqv.c:476
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "트리거 해제 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:477
+#: rpmqv.c:480
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -255,13 +255,13 @@ msgstr ""
 "--nodeps 옵션은 패키지 제작, 재제작(rebuild), 재컴파일(recompile), 설치, 삭"
 "제, 검증시에만 지정할 수 있습니다"
 
-#: rpmqv.c:482
+#: rpmqv.c:485
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test 옵션은 패키지 설치, 삭제, 제작시에만 지정할 수 있습니다"
 
-#: rpmqv.c:487
+#: rpmqv.c:490
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -269,106 +269,106 @@ msgstr ""
 "--root (-r) 옵션은 패키지 설치, 삭제, 질의, 데이터베이스 재구축시에만 지정할 "
 "수 있습니다"
 
-#: rpmqv.c:498
+#: rpmqv.c:501
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
-#: rpmqv.c:521
+#: rpmqv.c:524
 #, c-format
 msgid "no files to sign\n"
 msgstr "서명할 파일이 없습니다\n"
 
-#: rpmqv.c:526
+#: rpmqv.c:529
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "%s 파일에 접근할 수 없습니다\n"
 
-#: rpmqv.c:546
+#: rpmqv.c:549
 #, c-format
 msgid "pgp not found: "
 msgstr "pgp를 찾을 수 없음: "
 
-#: rpmqv.c:554
+#: rpmqv.c:557
 msgid "Enter pass phrase: "
 msgstr "패스 구문(pass phrase) 입력: "
 
-#: rpmqv.c:556
+#: rpmqv.c:559
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "패스 구문(pass phrase)이 올바르지 않습니다\n"
 
-#: rpmqv.c:560
+#: rpmqv.c:563
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "패스 구문(pass phrase)이 일치합니다.\n"
 
-#: rpmqv.c:565
+#: rpmqv.c:568
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "매크로 파일에 부적합한 %%_signature의 내용이 있습니다.\n"
 
-#: rpmqv.c:572
+#: rpmqv.c:575
 msgid "--sign may only be used during package building"
 msgstr "--sign 옵션은 패키지 제작시에만 사용할 수 있습니다"
 
-#: rpmqv.c:588
+#: rpmqv.c:591
 #, c-format
 msgid "exec failed\n"
 msgstr "실행에 실패했습니다\n"
 
-#: rpmqv.c:624
+#: rpmqv.c:627
 msgid "no packages files given for rebuild"
 msgstr "재제작(rebuild)할 패키지 파일이 지정되지 않았습니다"
 
-#: rpmqv.c:690
+#: rpmqv.c:693
 msgid "no spec files given for build"
 msgstr "패키지 제작에 필요한 spec 파일이 지정되지 않았습니다"
 
-#: rpmqv.c:692
+#: rpmqv.c:695
 msgid "no tar files given for build"
 msgstr "패키지 제작에 필요한 tar 파일이 지정되지 않았습니다"
 
-#: rpmqv.c:714
+#: rpmqv.c:717
 msgid "no packages given for erase"
 msgstr "삭제할 패키지가 지정되지 않았습니다"
 
-#: rpmqv.c:752
+#: rpmqv.c:755
 msgid "no packages given for install"
 msgstr "설치할 패키지가 지정되지 않았습니다"
 
-#: rpmqv.c:768
+#: rpmqv.c:771
 msgid "no arguments given for query"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: rpmqv.c:783
+#: rpmqv.c:786
 msgid "no arguments given for verify"
 msgstr "검증에 필요한 인수가 지정되지 않았습니다"
 
-#: rpmqv.c:798
+#: rpmqv.c:801
 #, fuzzy
 msgid "no arguments given"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: build/build.c:131 build/pack.c:469
+#: build/build.c:132 build/pack.c:470
 msgid "Unable to open temp file.\n"
 msgstr "임시 파일을 열 수 없습니다.\n"
 
-#: build/build.c:217
+#: build/build.c:218
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "실행 중(%s): %s\n"
 
-#: build/build.c:223
+#: build/build.c:224
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "%s의 실행에 실패함 (%s): %s\n"
 
-#: build/build.c:232
+#: build/build.c:233
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "%s의 잘못된 종료 상황 (%s)\n"
 
-#: build/build.c:341
+#: build/build.c:343
 msgid ""
 "\n"
 "\n"
@@ -572,7 +572,7 @@ msgstr "glob으로 파일을 찾을 수 없음: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%s 파일의 %%files를 열 수 없음: %s\n"
 
-#: build/files.c:1807 build/pack.c:135
+#: build/files.c:1807 build/pack.c:136
 #, c-format
 msgid "line: %s\n"
 msgstr "행: %s\n"
@@ -582,7 +582,7 @@ msgstr "행: %s\n"
 msgid "Bad file: %s: %s\n"
 msgstr "잘못된 파일: %s: %s\n"
 
-#: build/files.c:2214 build/parsePrep.c:42
+#: build/files.c:2214 build/parsePrep.c:43
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "잘못된 소유자/그룹: %s\n"
@@ -633,152 +633,152 @@ msgstr "그룹 id 설정[getGidS]: gid가 너무 많습니다\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "호스트명을 정규화(canonicalize) 할 수 없음: %s\n"
 
-#: build/pack.c:75
+#: build/pack.c:76
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "%s 파일의 아카이브를 생성하는데 실패함: %s\n"
 
-#: build/pack.c:78
+#: build/pack.c:79
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "아카이브 생성에 실패함: %s\n"
 
-#: build/pack.c:98
+#: build/pack.c:99
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy 작성에 실패함: %s\n"
 
-#: build/pack.c:105
+#: build/pack.c:106
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy 읽기에 실패함: %s\n"
 
-#: build/pack.c:194 build/pack.c:208
+#: build/pack.c:195 build/pack.c:209
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:201
+#: build/pack.c:202
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:215
+#: build/pack.c:216
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:222 build/pack.c:229
+#: build/pack.c:223 build/pack.c:230
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:237
+#: build/pack.c:238
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:252
+#: build/pack.c:253
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "트리거 스크립트 파일을 열 수 없음: %s\n"
 
-#: build/pack.c:280
+#: build/pack.c:281
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "RPM 읽기(readRPM): %s(을)를 엽니다: %s\n"
 
-#: build/pack.c:289
+#: build/pack.c:290
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "RPM 읽기(readRPM): %s(을)를 읽습니다: %s\n"
 
-#: build/pack.c:297 build/pack.c:515
+#: build/pack.c:298 build/pack.c:516
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek이 실패했습니다: %s\n"
 
-#: build/pack.c:328
+#: build/pack.c:329
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "RPM 읽기(readRPM): %s(은)는 RPM 패키지가 아닙니다\n"
 
-#: build/pack.c:333
+#: build/pack.c:334
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "RPM 읽기(readRPM): %s에서 헤더를 읽고 있습니다\n"
 
-#: build/pack.c:457
+#: build/pack.c:458
 msgid "Unable to create immutable header region.\n"
 msgstr "고정 헤더 영역(immutable header region)을 생성할 수 없습니다.\n"
 
-#: build/pack.c:476
+#: build/pack.c:477
 msgid "Unable to write temp header\n"
 msgstr "임시(temp) 헤더를 작성할 수 없습니다\n"
 
-#: build/pack.c:486
+#: build/pack.c:487
 msgid "Bad CSA data\n"
 msgstr "잘못된 CSA 데이터\n"
 
-#: build/pack.c:522
+#: build/pack.c:523
 msgid "Unable to write final header\n"
 msgstr "마지막(final) 헤더를 작성할 수 없습니다\n"
 
-#: build/pack.c:542
+#: build/pack.c:543
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "서명 생성 중: %d\n"
 
-#: build/pack.c:560
+#: build/pack.c:561
 msgid "Unable to reload signature header.\n"
 msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 
-#: build/pack.c:568
+#: build/pack.c:569
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: build/pack.c:604 lib/psm.c:1527
+#: build/pack.c:605 lib/psm.c:1527
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
 
-#: build/pack.c:619
+#: build/pack.c:620
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "서명할 대상 %s(을)를 열 수 없음: %s\n"
 
-#: build/pack.c:630
+#: build/pack.c:631
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s의 헤더를 읽을 수 없음: %s\n"
 
-#: build/pack.c:644
+#: build/pack.c:645
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s에 헤더를 작성할 수 없음: %s\n"
 
-#: build/pack.c:654
+#: build/pack.c:655
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s의 payload를 읽을 수 없음: %s\n"
 
-#: build/pack.c:660
+#: build/pack.c:661
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:697 lib/psm.c:1795
+#: build/pack.c:698 lib/psm.c:1795
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
 
-#: build/pack.c:767
+#: build/pack.c:768
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "%s 패키지의 출력 파일명을 생성할 수 없음: %s\n"
 
-#: build/pack.c:783
+#: build/pack.c:784
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s(을)를 생성할 수 없음: %s\n"
@@ -977,76 +977,76 @@ msgstr "%d 번째 행: 알 수 없는 태그입니다: %s\n"
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec 파일은 BuildRoot를 사용할 수 없습니다\n"
 
-#: build/parsePrep.c:37
+#: build/parsePrep.c:38
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "잘못된 소스: %s: %s\n"
 
-#: build/parsePrep.c:77
+#: build/parsePrep.c:78
 #, c-format
 msgid "No patch number %d\n"
 msgstr "패치 번호 %d가 없습니다\n"
 
-#: build/parsePrep.c:172
+#: build/parsePrep.c:173
 #, c-format
 msgid "No source number %d\n"
 msgstr "소스 번호 %d가 없습니다\n"
 
-#: build/parsePrep.c:193
+#: build/parsePrep.c:194
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "nosource %s(을)를 다운로드할 수 없음: %s\n"
 
-#: build/parsePrep.c:294
+#: build/parsePrep.c:295
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup에서 오류 발생: %s\n"
 
-#: build/parsePrep.c:309
+#: build/parsePrep.c:310
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:327
+#: build/parsePrep.c:328
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
 
-#: build/parsePrep.c:462
+#: build/parsePrep.c:463
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 번째 행: %%patch -b 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:471
+#: build/parsePrep.c:472
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 번째 행: %%patch -z 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:488
+#: build/parsePrep.c:489
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:500
+#: build/parsePrep.c:501
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 인수가 필요합니다: %s\n"
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:508
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 번째 행: %%patch -p 에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:515
 msgid "Too many patches!\n"
 msgstr "패치가 너무 많습니다!\n"
 
-#: build/parsePrep.c:518
+#: build/parsePrep.c:519
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 번째 행: %%patch에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:552
+#: build/parsePrep.c:553
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 번째 행: 두번째 %%prep\n"
@@ -1432,65 +1432,65 @@ msgstr "헤더에 아카이브 파일이 없습니다"
 msgid " failed - "
 msgstr " 실패함 - "
 
-#: lib/depends.c:191
+#: lib/depends.c:192
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:208
+#: lib/depends.c:209
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/depends.c:342
+#: lib/depends.c:343
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:424
+#: lib/depends.c:425
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:448
+#: lib/depends.c:449
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s 예 (rpmrc이 제공함)\n"
 
-#: lib/depends.c:464
+#: lib/depends.c:465
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s 예 (rpmlib이 제공함)\n"
 
-#: lib/depends.c:492
+#: lib/depends.c:493
 #, fuzzy
 msgid "(db files)"
 msgstr "잘못된 db 파일 %s\n"
 
-#: lib/depends.c:504
+#: lib/depends.c:505
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s 예 (db가 제공함)\n"
 
-#: lib/depends.c:517
+#: lib/depends.c:518
 #, fuzzy
 msgid "(db package)"
 msgstr "패키지가 없습니다\n"
 
-#: lib/depends.c:821
+#: lib/depends.c:822
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "다음과 관련된 패키지 이름을 무시합니다 [%d]\t%s -> %s\n"
 
-#: lib/depends.c:926
+#: lib/depends.c:927
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort 관계에서 %s-%s-%s \"%s\"(을)를 삭제합니다.\n"
 
-#: lib/depends.c:1146
+#: lib/depends.c:1147
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort 관계를 기록(record)합니다\n"
 
-#: lib/depends.c:1238
+#: lib/depends.c:1239
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1499,20 +1499,20 @@ msgstr ""
 "========== 패키지를 tsort 합니다 (순서, #선임자, #후임자, 트리, 깊이"
 "[depth])\n"
 
-#: lib/depends.c:1334
+#: lib/depends.c:1335
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 후임자만 [successors only] (표현 순)\n"
 
-#: lib/depends.c:1407
+#: lib/depends.c:1408
 msgid "LOOP:\n"
 msgstr "루프(LOOP):\n"
 
-#: lib/depends.c:1442
+#: lib/depends.c:1443
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort를 진행합니다...\n"
 
-#: lib/depends.c:1447
+#: lib/depends.c:1448
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1559,7 +1559,7 @@ msgstr "mntctl()에서 마운트할 지점을 반환하는데 실패함: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "%s의 상태(stat)를 표시하는데 실패함: %s\n"
 
-#: lib/fs.c:147 rpmio/url.c:435
+#: lib/fs.c:147 rpmio/url.c:269
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
@@ -1911,7 +1911,7 @@ msgstr "rpmio 입/출력을 디버그 합니다"
 msgid "debug URL cache handling"
 msgstr "URL 캐시 핸들링을 디버그 합니다"
 
-#: lib/poptALL.c:357
+#: lib/poptALL.c:360
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2501,7 +2501,7 @@ msgstr ""
 msgid "Attempting to mark %s as erased in score board(%p).\n"
 msgstr ""
 
-#: lib/query.c:114 lib/rpmts.c:579
+#: lib/query.c:114 lib/rpmts.c:580
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2778,7 +2778,7 @@ msgid "relocating directory %s to %s\n"
 msgstr "%s 디렉토리를 %s(으)로 재배치 합니다\n"
 
 #: lib/rpmgi.c:65 lib/rpminstall.c:96 lib/rpminstall.c:422
-#: lib/rpminstall.c:554 lib/rpmts.c:590 tools/rpmgraph.c:119
+#: lib/rpminstall.c:554 lib/rpmts.c:591 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2790,7 +2790,7 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "알 수 없는 태그 입니다"
 
 #: lib/rpmgi.c:584 lib/rpminstall.c:597 lib/rpminstall.c:769
-#: lib/rpminstall.c:1015 lib/transaction.c:945 tools/rpmgraph.c:194
+#: lib/rpminstall.c:1015 lib/transaction.c:946 tools/rpmgraph.c:194
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "의존성 문제로 인해 실패함:\n"
@@ -2910,16 +2910,16 @@ msgstr "%s(을)를 열 수 없음: %s\n"
 msgid "Installing %s\n"
 msgstr "%s(을)를 설치합니다\n"
 
-#: lib/rpminstall.c:1009 lib/transaction.c:938
+#: lib/rpminstall.c:1009 lib/transaction.c:939
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1040 lib/transaction.c:989
+#: lib/rpminstall.c:1040 lib/transaction.c:990
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:1047 lib/transaction.c:995
+#: lib/rpminstall.c:1047 lib/transaction.c:996
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "%s(을)를 복구합니다\n"
@@ -3155,99 +3155,99 @@ msgstr "%s(을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
-#: lib/rpmts.c:155
+#: lib/rpmts.c:156
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s 안의 패키지 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:246
+#: lib/rpmts.c:247
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:264
+#: lib/rpmts.c:265
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "%s %s에 '(' 가 없습니다\n"
 
-#: lib/rpmts.c:272
+#: lib/rpmts.c:273
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:473
+#: lib/rpmts.c:474
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:611
+#: lib/rpmts.c:612
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "행: %s\n"
 
-#: lib/rpmts.c:623
+#: lib/rpmts.c:624
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "%s(을)를 복구합니다\n"
 
-#: lib/rpmts.c:1107
+#: lib/rpmts.c:1108
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1109
+#: lib/rpmts.c:1110
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1165
+#: lib/rpmts.c:1166
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "파일%5d: %07o %s.%s\t %s\n"
 
-#: lib/rpmts.c:1492
+#: lib/rpmts.c:1493
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1497
+#: lib/rpmts.c:1498
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1507
+#: lib/rpmts.c:1508
 #, fuzzy, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "%s(을)를 %s(으)로 재배치 합니다\n"
 
-#: lib/rpmts.c:1534
+#: lib/rpmts.c:1535
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1537
+#: lib/rpmts.c:1538
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1548
+#: lib/rpmts.c:1549
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1573
+#: lib/rpmts.c:1574
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1588
+#: lib/rpmts.c:1589
 msgid "\tRefcount is zero...will free\n"
 msgstr ""
 
-#: lib/rpmts.c:1636
+#: lib/rpmts.c:1637
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1642
+#: lib/rpmts.c:1643
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""
@@ -3417,160 +3417,160 @@ msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/transaction.c:862
+#: lib/transaction.c:863
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"
 
-#: lib/transaction.c:936
+#: lib/transaction.c:937
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:956
+#: lib/transaction.c:957
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1043
+#: lib/transaction.c:1044
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
-#: lib/transaction.c:1068
+#: lib/transaction.c:1069
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1072
+#: lib/transaction.c:1073
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1076
+#: lib/transaction.c:1077
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1088
+#: lib/transaction.c:1089
 #, fuzzy
 msgid "\tRepackaged package not found!.\n"
 msgstr "소스 패키지가 필요하며, 바이너리가 검색되었습니다\n"
 
-#: lib/transaction.c:1109
+#: lib/transaction.c:1110
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1111
+#: lib/transaction.c:1112
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1133
+#: lib/transaction.c:1134
 #, fuzzy, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "%s(와)과 일치하는 패키지가 없음: %s\n"
 
-#: lib/transaction.c:1172
+#: lib/transaction.c:1173
 msgid "Adding install element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1181
+#: lib/transaction.c:1182
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1194
+#: lib/transaction.c:1195
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1204
+#: lib/transaction.c:1205
 #, fuzzy, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "<소스 패키지>"
 
-#: lib/transaction.c:1206 lib/transaction.c:1217
+#: lib/transaction.c:1207 lib/transaction.c:1218
 #, c-format
 msgid "\tAdded from install element %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1215
+#: lib/transaction.c:1216
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1224
+#: lib/transaction.c:1225
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1231
+#: lib/transaction.c:1232
 msgid "Add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1239
+#: lib/transaction.c:1240
 msgid "\tFound existing upgrade element.\n"
 msgstr ""
 
-#: lib/transaction.c:1240
+#: lib/transaction.c:1241
 #, c-format
 msgid "\tNot adding erase element for %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1257
+#: lib/transaction.c:1258
 #, fuzzy, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "<소스 패키지>"
 
-#: lib/transaction.c:1259
+#: lib/transaction.c:1260
 #, c-format
 msgid "\tAdded from erase element %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1264
+#: lib/transaction.c:1265
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1270
+#: lib/transaction.c:1271
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1276
+#: lib/transaction.c:1277
 #, fuzzy
 msgid "Failure reading repackaged package!\n"
 msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 
-#: lib/transaction.c:1410
+#: lib/transaction.c:1411
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1496
+#: lib/transaction.c:1497
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
-#: lib/transaction.c:1563
+#: lib/transaction.c:1564
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
 
-#: lib/transaction.c:1639
+#: lib/transaction.c:1640
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:1828
+#: lib/transaction.c:1829
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:1976
+#: lib/transaction.c:1977
 msgid "Add failed.  Could not read package header.\n"
 msgstr ""
 
-#: lib/transaction.c:2058
+#: lib/transaction.c:2059
 msgid "Add failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2101
+#: lib/transaction.c:2102
 msgid "Add failed.  Could not get file list.\n"
 msgstr ""
 
-#: lib/transaction.c:2147
+#: lib/transaction.c:2148
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2205
+#: lib/transaction.c:2206
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -3589,65 +3589,60 @@ msgstr "%s-%s-%s에 의존성 문제 발생: "
 msgid "Unknown system error"
 msgstr "알 수 없는 시스템: %s\n"
 
-#: rpmdb/db3.c:151
+#: rpmdb/db3.c:149
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "%3$s의 db%1$d 오류(%2$d): %4$s\n"
 
-#: rpmdb/db3.c:154
+#: rpmdb/db3.c:152
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d 오류(%d): %s\n"
 
-#: rpmdb/db3.c:176
+#: rpmdb/db3.c:174
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "닫힌    db 환경        %s/%s\n"
 
-#: rpmdb/db3.c:193
+#: rpmdb/db3.c:186
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "삭제된  db 환경        %s/%s\n"
 
-#: rpmdb/db3.c:277
+#: rpmdb/db3.c:239
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "여는중  db 환경        %s/%s %s\n"
 
-#: rpmdb/db3.c:740
+#: rpmdb/db3.c:678
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "닫힌    db 인덱스      %s/%s\n"
 
-#: rpmdb/db3.c:800
+#: rpmdb/db3.c:735
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "검증된  db 인덱스      %s/%s\n"
 
-#: rpmdb/db3.c:927
-#, c-format
-msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-msgstr ""
-
-#: rpmdb/db3.c:1026
+#: rpmdb/db3.c:946
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "여는중  db 인덱스      %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1263
+#: rpmdb/db3.c:1158
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1265
+#: rpmdb/db3.c:1160
 msgid "exclusive"
 msgstr "폐쇄적(exclusive)"
 
-#: rpmdb/db3.c:1265
+#: rpmdb/db3.c:1160
 msgid "shared"
 msgstr "공유됨"
 
-#: rpmdb/db3.c:1269
+#: rpmdb/db3.c:1164
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠금된  db 인덱스      %s/%s\n"
@@ -3768,198 +3763,198 @@ msgstr "데이터베이스 파일을 검사합니다"
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "(기존의) rpm[23] 패키징과 호환하는 헤더를 생성합니다"
 
-#: rpmdb/rpmdb.c:173
+#: rpmdb/rpmdb.c:174
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 "DB 태그 초기화[dbiTagsInit]: 인증되지 않은 태그 이름: \"%s\"(은)는 무시됩니"
 "다\n"
 
-#: rpmdb/rpmdb.c:246
+#: rpmdb/rpmdb.c:247
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "db%2$d(을)를 이용하여 %1$s 인덱스를 열 수 없습니다 - %3$s (%4$d)\n"
 
-#: rpmdb/rpmdb.c:266
+#: rpmdb/rpmdb.c:267
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s 인덱스를 열 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:873
+#: rpmdb/rpmdb.c:874
 msgid "no dbpath has been set\n"
 msgstr "db경로가 설정되어 있지 않습니다\n"
 
-#: rpmdb/rpmdb.c:1110 rpmdb/rpmdb.c:1235 rpmdb/rpmdb.c:1285 rpmdb/rpmdb.c:2189
-#: rpmdb/rpmdb.c:2308 rpmdb/rpmdb.c:3020
+#: rpmdb/rpmdb.c:1111 rpmdb/rpmdb.c:1236 rpmdb/rpmdb.c:1286 rpmdb/rpmdb.c:2190
+#: rpmdb/rpmdb.c:2309 rpmdb/rpmdb.c:3021
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:1460
+#: rpmdb/rpmdb.c:1461
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1470
+#: rpmdb/rpmdb.c:1471
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2086
+#: rpmdb/rpmdb.c:2087
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2115
+#: rpmdb/rpmdb.c:2116
 #, fuzzy, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2409
+#: rpmdb/rpmdb.c:2410
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2467
+#: rpmdb/rpmdb.c:2468
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2574
+#: rpmdb/rpmdb.c:2575
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\"(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2578
+#: rpmdb/rpmdb.c:2579
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2605
+#: rpmdb/rpmdb.c:2606
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2624
+#: rpmdb/rpmdb.c:2625
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2634
+#: rpmdb/rpmdb.c:2635
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "%3$s에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2784
+#: rpmdb/rpmdb.c:2785
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2840
+#: rpmdb/rpmdb.c:2841
 #, fuzzy
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdb: 손상된 헤더 #%u(이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2996
+#: rpmdb/rpmdb.c:2997
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\"(을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3000
+#: rpmdb/rpmdb.c:3001
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3036
+#: rpmdb/rpmdb.c:3037
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "%3$s(으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:3392
+#: rpmdb/rpmdb.c:3393
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축한 후에 %s(을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3423
+#: rpmdb/rpmdb.c:3424
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3449
+#: rpmdb/rpmdb.c:3450
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s에 %1$s 데이터베이스를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3453
+#: rpmdb/rpmdb.c:3454
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s(이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3459
+#: rpmdb/rpmdb.c:3460
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3461
+#: rpmdb/rpmdb.c:3462
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3470
+#: rpmdb/rpmdb.c:3471
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d로 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3479
+#: rpmdb/rpmdb.c:3480
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d로 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3508
+#: rpmdb/rpmdb.c:3509
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u(이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:3546
+#: rpmdb/rpmdb.c:3547
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u에 처음부터 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3560
+#: rpmdb/rpmdb.c:3561
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3568
+#: rpmdb/rpmdb.c:3569
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3570
+#: rpmdb/rpmdb.c:3571
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 %2$s의 파일을 %1$s의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3580
+#: rpmdb/rpmdb.c:3581
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3582
+#: rpmdb/rpmdb.c:3583
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: rpmdb/sqlite.c:593
+#: rpmdb/sqlite.c:594
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmdb/sqlite.c:744
+#: rpmdb/sqlite.c:745
 #, fuzzy, c-format
 msgid "closed   sql db         %s\n"
 msgstr "닫힌   db 파일        %s\n"
 
-#: rpmdb/sqlite.c:834
+#: rpmdb/sqlite.c:835
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "여는중  db 인덱스      %s/%s %s 모드=0x%x\n"
@@ -4078,60 +4073,60 @@ msgstr "부적합한 패키지 번호: %s\n"
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek이 실패했습니다: %s\n"
 
-#: rpmio/rpmio.c:586
+#: rpmio/rpmio.c:555
 msgid "Success"
 msgstr "성공"
 
-#: rpmio/rpmio.c:609
+#: rpmio/rpmio.c:578
 msgid "Bad server response"
 msgstr "잘못된 서버 응답입니다"
 
-#: rpmio/rpmio.c:611
+#: rpmio/rpmio.c:580
 msgid "Server I/O error"
 msgstr "서버 입/출력 오류입니다"
 
-#: rpmio/rpmio.c:613
+#: rpmio/rpmio.c:582
 msgid "Server timeout"
 msgstr "서버 대기시간이 초과되었습니다"
 
-#: rpmio/rpmio.c:615
+#: rpmio/rpmio.c:584
 msgid "Unable to lookup server host address"
 msgstr "서버 호스트 주소를 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:617
+#: rpmio/rpmio.c:586
 msgid "Unable to lookup server host name"
 msgstr "서버 호스트 이름을 검색할 수 없습니다"
 
-#: rpmio/rpmio.c:619
+#: rpmio/rpmio.c:588
 msgid "Failed to connect to server"
 msgstr "서버에 접속하는데 실패했습니다"
 
-#: rpmio/rpmio.c:621
+#: rpmio/rpmio.c:590
 msgid "Failed to establish data connection to server"
 msgstr "서버에 데이터 접속을 시도하는데 실패했습니다"
 
-#: rpmio/rpmio.c:623
+#: rpmio/rpmio.c:592
 msgid "I/O error to local file"
 msgstr "로컬 파일에 입/출력 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:625
+#: rpmio/rpmio.c:594
 msgid "Error setting remote server to passive mode"
 msgstr ""
 "원격 서버를 수동 모드(passive mode)로 설정하는 도중 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:627
+#: rpmio/rpmio.c:596
 msgid "File not found on server"
 msgstr "서버에서 파일을 찾을 수 없습니다"
 
-#: rpmio/rpmio.c:629
+#: rpmio/rpmio.c:598
 msgid "Abort in progress"
 msgstr "진행이 중단되었습니다"
 
-#: rpmio/rpmio.c:633
+#: rpmio/rpmio.c:602
 msgid "Unknown or unexpected error"
 msgstr "알 수 없는 혹은 예상치 못한 오류가 발생했습니다"
 
-#: rpmio/rpmio.c:915
+#: rpmio/rpmio.c:872
 #, fuzzy, c-format
 msgid "URL helper failed: %s (%d)\n"
 msgstr "읽는데 실패함: %s (%d)\n"
@@ -4157,26 +4152,11 @@ msgstr "경고: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "메모리 할당 값 (%u 바이트)이 NULL을 반환하였습니다.\n"
 
-#: rpmio/url.c:111
-#, c-format
-msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
-msgstr "경고: u %p ctrl %p nrefs != 0 (%s %s)\n"
-
-#: rpmio/url.c:129
-#, c-format
-msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
-msgstr "경고: u %p data %p nrefs != 0 (%s %s)\n"
-
-#: rpmio/url.c:156
-#, c-format
-msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr "경고: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-
-#: rpmio/url.c:388
+#: rpmio/url.c:224
 msgid "url port must be a number\n"
 msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 
-#: rpmio/url.c:455
+#: rpmio/url.c:289
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s(을)를 생성하는데 실패함: %s\n"
