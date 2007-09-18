@@ -645,7 +645,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 # if STATFS_IN_SYS_VFS
 #  include <sys/vfs.h>
 # elif STATFS_IN_SYS_MOUNT
-#  include <sys/mouht.h>
+#  include <sys/mount.h>
 # elif STATFS_IN_SYS_STATFS
 #  include <sys/statfs.h>
 # endif
