@@ -8,6 +8,7 @@
 
 #include <rpmmacro.h>
 #include <rpmmessages.h>
+#include <fts.h>
 #include <popt.h>
 
 #include "debug.h"
