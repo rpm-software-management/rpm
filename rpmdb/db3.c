@@ -195,6 +195,7 @@ static int db3_fsync_disable(int fd)
     return 0;
 }
 
+#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
 /*
  * dbenv->failchk() callback method for determining is the given pid/tid 
  * is alive. We only care about pid's though. 
@@ -214,6 +215,7 @@ static int db3isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, u_int32_t fla
     
     return alive;
 }
+#endif
 
 static int db_init(dbiIndex dbi, const char * dbhome,
 		const char * dbfile,
