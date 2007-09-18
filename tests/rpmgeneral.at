@@ -58,8 +58,8 @@ AT_CLEANUP
 # ------------------------------
 # Check rpm --querytags
 # * Some versions of rpm append extraneous whitespaces
-AT_SETUP([rpm --querytags])
-AT_CHECK([rpm --querytags],[0],
+AT_SETUP([rpmquery --querytags])
+AT_CHECK([rpmquery --querytags],[0],
 [ARCH
 ARCHIVESIZE
 BASENAMES
