@@ -468,6 +468,9 @@ AC_SUBST(WITH_POPT_LIB)
 case "$with_internal_db" in
 no )
   AC_CHECK_HEADER([db.h],[
+    AC_CHECK_TYPE(db_threadid_t,[],
+      [AC_MSG_WARN([missing type db_threadid_t])],
+      [#include <db.h>])
     save_LIBS="$LIBS"
     AC_CHECK_LIB([db],[db_create],[],[
       AC_MSG_ERROR([missing db_create in libdb])
