@@ -484,21 +484,6 @@ retry:
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);
-
-#if defined(DYING)
-	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
-	(void) rpmdbPruneIterator(mi,
-			ts->removedPackages, ts->numRemovedPackages, 1);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
-		rpmdsNotify(dep, _("(db package)"), rc);
-		mi = rpmdbFreeIterator(mi);
-		goto exit;
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
-#endif
-
     }
 
     /*
@@ -1588,14 +1573,6 @@ int rpmtsCheck(rpmts ts)
 	/* FIX: rpmts{A,O} can return null. */
 	rpmMessage(RPMMESS_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
-#if defined(DYING)
-	/* XXX all packages now have Provides: name = version-release */
-	/* Erasing: check name against requiredby matches. */
-	rc = checkDependentPackages(ts, rpmteN(p));
-	if (rc)
-		goto exit;
-#endif
 
 	rc = 0;
 	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
