@@ -42,7 +42,7 @@ static int readKeys(const char * uri)
 {
     unsigned int * kip;
     const byte * pkt;
-    ssize_t pktlen;
+    size_t pktlen;
     byte keyid[8];
     char fn[BUFSIZ];
     pgpDig dig;
