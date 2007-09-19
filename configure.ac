@@ -452,11 +452,16 @@ AC_SUBST(WITH_POPT_INCLUDE)
 AC_SUBST(WITH_POPT_LIB)
 
 #=================
+# Process --with/without-external-db
+AC_ARG_WITH(external_db, [  --with-external-db     build against an external Berkeley db],
+[case "$with_external_db" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --with-external-db]) ;;
+esac],
+[with_external_db=no])
 
-# Process --with/without-internal-db
-## FIXME: Intentionally kept hidden until things have matured.
-case "$with_internal_db" in
-no )
+case "$with_external_db" in
+yes )
   AC_CHECK_HEADER([db.h],[
     AC_CHECK_TYPE(db_threadid_t,[],
       [AC_MSG_WARN([missing type db_threadid_t])],
@@ -1082,7 +1087,7 @@ AC_SUBST(OBJDUMP)
 
 AC_CONFIG_SUBDIRS(db3)
 
-AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_internal_db" != no])
+AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_external_db" = no])
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
