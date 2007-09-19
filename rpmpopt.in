@@ -116,12 +116,6 @@ rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 rpm	alias --filerequire --qf '[%{FILENAMES}\t%{FILEREQUIRE}\n]' \
 	--POPTdesc=$"list file names with requires"
 
-rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides \
-	--POPTdesc=$"find package name that contains a provided capability (needs rpmdb-redhat package installed)"
-
-rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires \
-	--POPTdesc=$"find package name that contains a required capability (needs rpmdb-redhat package installed)"
-
 # colon separated i18n domains to use as PO catalogue lookaside for
 * retrieving header group/description/summary.
 #
