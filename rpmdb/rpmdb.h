@@ -8,6 +8,7 @@
 
 #include <assert.h>
 #include "rpmlib.h"
+#include "rpmsw.h"
 
 extern int _rpmdb_debug;
 
@@ -33,6 +34,28 @@ typedef enum rpmMireMode_e {
     RPMMIRE_GLOB	= 3	/*!< glob(7) patterns through fnmatch(3) */
 } rpmMireMode;
 
+typedef enum rpmdbOpX_e {
+    RPMDB_OP_DBGET              = 1,
+    RPMDB_OP_DBPUT              = 2,
+    RPMDB_OP_DBDEL              = 3,
+    RPMDB_OP_MAX		= 4
+} rpmdbOpX;
+
+/** \ingroup rpmdb
+ * Retrieve operation timestamp from rpm database.
+ * @param db            rpm database
+ * @param opx           operation timestamp index
+ * @return              pointer to operation timestamp.
+ */
+rpmop rpmdbOp(rpmdb db, rpmdbOpX opx);
+
+/** \ingroup rpmdb
+ * Set chrootDone flag, i.e. has chroot(2) been performed?
+ * @param db            rpm database
+ * @param chrootDone    new chrootDone flag
+ * @return              previous chrootDone flag
+ */
+int rpmdbSetChrootDone(rpmdb db, int chrootDone);
 
 /** \ingroup rpmdb
  * Unreference a database instance.

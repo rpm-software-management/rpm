@@ -715,6 +715,35 @@ static int isTemporaryDB(int rpmtag)
     return rc;
 }
 
+rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
+{
+    rpmop op = NULL;
+    switch (opx) {
+    case RPMDB_OP_DBGET:
+	op = &rpmdb->db_getops;
+	break;
+    case RPMDB_OP_DBPUT:
+	op = &rpmdb->db_putops;
+	break;
+    case RPMDB_OP_DBDEL:
+	op = &rpmdb->db_delops;
+	break;
+    default:
+	break;
+    }
+    return op;
+}
+
+int rpmdbSetChrootDone(rpmdb db, int chrootDone)
+{
+    int ochrootDone = 0;
+    if (db != NULL) {
+	ochrootDone = db->db_chrootDone;
+	db->db_chrootDone = chrootDone;
+    }
+    return ochrootDone;
+}
+
 int rpmdbOpenAll(rpmdb db)
 {
     int dbix;

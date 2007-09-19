@@ -9,7 +9,6 @@
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 
 #include "rpmdb.h"
-#include "rpmdb_internal.h"	/* XXX for db->ops statistics */
 
 #include "rpmal.h"
 #include "rpmds.h"
@@ -127,9 +126,12 @@ int rpmtsCloseDB(rpmts ts)
     int rc = 0;
 
     if (ts->rdb != NULL) {
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), &ts->rdb->db_getops);
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT), &ts->rdb->db_putops);
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBDEL), &ts->rdb->db_delops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), 
+			rpmdbOp(ts->rdb, RPMDB_OP_DBGET));
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT),
+			rpmdbOp(ts->rdb, RPMDB_OP_DBPUT));
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBDEL),
+			rpmdbOp(ts->rdb, RPMDB_OP_DBDEL));
 	rc = rpmdbClose(ts->rdb);
 	ts->rdb = NULL;
     }
@@ -440,9 +442,12 @@ int rpmtsCloseSDB(rpmts ts)
     int rc = 0;
 
     if (ts->sdb != NULL) {
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), &ts->sdb->db_getops);
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT), &ts->sdb->db_putops);
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBDEL), &ts->sdb->db_delops);
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), 
+			rpmdbOp(ts->sdb, RPMDB_OP_DBGET));
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT),
+			rpmdbOp(ts->sdb, RPMDB_OP_DBPUT));
+	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBDEL),
+			rpmdbOp(ts->sdb, RPMDB_OP_DBDEL));
 	rc = rpmdbClose(ts->sdb);
 	ts->sdb = NULL;
     }
@@ -990,8 +995,7 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
     int ochrootDone = 0;
     if (ts != NULL) {
 	ochrootDone = ts->chrootDone;
-	if (ts->rdb != NULL)
-	    ts->rdb->db_chrootDone = chrootDone;
+	rpmdbSetChrootDone(rpmtsGetRdb(ts), chrootDone);
 	ts->chrootDone = chrootDone;
     }
     return ochrootDone;
