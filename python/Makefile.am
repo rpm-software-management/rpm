@@ -1,8 +1,8 @@
 # Makefile for rpm library.
 
-if PYTHON
-EXTRA_DIST = system.h rpmdebug-py.c rpm/__init__.py
+EXTRA_DIST = rpmdebug-py.c rpm/__init__.py
 
+if PYTHON
 AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
@@ -29,7 +29,7 @@ _rpmmodule_la_LIBADD = \
 	@WITH_LIBELF_LIB@ \
 	@WITH_PYTHON_LIB@
 
-_rpmmodule_la_SOURCES = rpmmodule.c \
+_rpmmodule_la_SOURCES = rpmmodule.c system.h \
 	header-py.c header-py.h \
 	rpmal-py.c rpmal-py.h \
 	rpmds-py.c rpmds-py.h \
