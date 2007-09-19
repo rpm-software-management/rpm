@@ -550,7 +550,6 @@ typedef	enum rpmsenseFlags_e {
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 #define	RPMVAR_OPTFLAGS			3
-#define	RPMVAR_PROVIDES			38
 #define	RPMVAR_INCLUDE			43
 #define	RPMVAR_MACROFILES		49
 

@@ -431,30 +431,6 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 retry:
     rc = 0;	/* assume dependency is satisfied */
 
-#if defined(DYING)
-  { static const char noProvidesString[] = "nada";
-    static const char * rcProvidesString = noProvidesString;
-    int_32 Flags = rpmdsFlags(dep);
-    const char * start;
-    int i;
-
-    if (rcProvidesString == noProvidesString)
-	rcProvidesString = rpmGetVar(RPMVAR_PROVIDES);
-
-    if (rcProvidesString != NULL && !(Flags & RPMSENSE_SENSEMASK)) {
-
-	i = strlen(Name);
-	while ((start = strstr(rcProvidesString, Name))) {
-	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
-		rpmdsNotify(dep, _("(rpmrc provides)"), rc);
-		goto exit;
-	    }
-	    rcProvidesString = start + 1;
-	}
-    }
-  }
-#endif
-
     /*
      * New features in rpm packaging implicitly add versioned dependencies
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".

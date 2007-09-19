@@ -125,7 +125,6 @@ static struct rpmOption optionTable[] = {
     { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
     { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	0, 1 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
-    { "provides",               RPMVAR_PROVIDES,                0, 0,	0, 0 },
 };
 
 static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
@@ -619,17 +618,6 @@ static int doReadRC( FD_t fd, const char * urlfn)
 		fn = _free(fn);
 		if (rc) return rc;
 		continue;	/* XXX don't save include value as var/macro */
-	      }	break;
-	    case RPMVAR_PROVIDES:
-	      {	char *t;
-		s = rpmGetVar(RPMVAR_PROVIDES);
-		if (s == NULL) s = "";
-		fn = t = xmalloc(strlen(s) + strlen(se) + 2);
-		while (*s != '\0') *t++ = *s++;
-		*t++ = ' ';
-		while (*se != '\0') *t++ = *se++;
-		*t++ = '\0';
-		se = (char *)fn;
 	      }	break;
 	    default:
 		break;
