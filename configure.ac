@@ -453,7 +453,7 @@ AC_SUBST(WITH_POPT_LIB)
 
 #=================
 # Process --with/without-external-db
-AC_ARG_WITH(external_db, [  --with-external-db     build against an external Berkeley db],
+AC_ARG_WITH(external_db, [  --with-external-db      build against an external Berkeley db],
 [case "$with_external_db" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --with-external-db]) ;;
@@ -463,7 +463,7 @@ esac],
 case "$with_external_db" in
 yes )
   AC_CHECK_HEADER([db.h],[
-    AC_CHECK_TYPE(db_threadid_t,[],
+    AC_CHECK_TYPE([db_threadid_t],[],
       [AC_MSG_WARN([missing type db_threadid_t])],
       [#include <db.h>])
     save_LIBS="$LIBS"
