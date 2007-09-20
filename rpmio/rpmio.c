@@ -120,8 +120,10 @@ static const char * fdbg(FD_t fd)
 	    sprintf(be, "FD %d fp %p", fps->fdno, fps->fp);
 	} else if (fps->io == ufdio) {
 	    sprintf(be, "UFD %d fp %p", fps->fdno, fps->fp);
+#if HAVE_ZLIB_H
 	} else if (fps->io == gzdio) {
 	    sprintf(be, "GZD %p fdno %d", fps->fp, fps->fdno);
+#endif
 #if HAVE_BZLIB_H
 	} else if (fps->io == bzdio) {
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
@@ -1544,9 +1546,11 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (end && *end) {
 	if (!strcmp(end, "fdio")) {
 	    iof = fdio;
+#if HAVE_ZLIB_H
 	} else if (!strcmp(end, "gzdio")) {
 	    iof = gzdio;
 	    fd = gzdFdopen(fd, zstdio);
+#endif
 #if HAVE_BZLIB_H
 	} else if (!strcmp(end, "bzdio")) {
 	    iof = bzdio;
@@ -1691,9 +1695,11 @@ int Ferror(FD_t fd)
 	
 	if (fps->io == fpio) {
 	    ec = ferror(fdGetFILE(fd));
+#if HAVE_ZLIB_H
 	} else if (fps->io == gzdio) {
 	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under gzdio always has fdno == -1 */
+#endif
 #if HAVE_BZLIB_H
 	} else if (fps->io == bzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
