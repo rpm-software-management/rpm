@@ -473,7 +473,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
     return 0;
 }
 
-fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
@@ -619,7 +619,7 @@ const char * rpmfiTypeString(rpmfi fi)
  */
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
-		Header origH, fileAction * actions)
+		Header origH, rpmFileAction * actions)
 {
     rpmte p = rpmtsRelocateElement(ts);
     HGE_t hge = fi->hge;

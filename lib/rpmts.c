@@ -1177,7 +1177,7 @@ int rpmtsInitDSI(const rpmts ts)
 
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
-		fileAction action)
+		rpmFileAction action)
 {
     rpmDiskSpaceInfo dsi;
     uint_32 bneeded;

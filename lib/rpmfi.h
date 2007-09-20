@@ -93,8 +93,8 @@ struct rpmfi_s {
     uid_t uid;			/*!< File uid (default). */
     gid_t gid;			/*!< File gid (default). */
     uint_32 flags;		/*!< File flags (default). */
-    fileAction action;		/*!< File disposition (default). */
-    fileAction * actions;	/*!< File disposition(s). */
+    rpmFileAction action;	/*!< File disposition (default). */
+    rpmFileAction * actions;	/*!< File disposition(s). */
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
     const char ** obnl;		/*!< Original basename(s) (from header) */
     const char ** odnl;		/*!< Original dirname(s) (from header) */
@@ -466,7 +466,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
  * @param skipMissing	OK to skip missing files?
  * @return		file dispostion
  */
-fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
+rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
 
 /**
  * Return whether file is conflicting config

@@ -710,7 +710,7 @@ int rpmtsInitDSI(const rpmts ts);
  */
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
 		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
-		fileAction action);
+		rpmFileAction action);
 
 /** \ingroup rpmts
  * Check a transaction element for disk space problems.

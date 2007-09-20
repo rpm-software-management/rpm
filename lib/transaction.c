@@ -203,7 +203,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	if (isCfgFile) {
 	    int skipMissing =
 		((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
-	    fileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
+	    rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
 	    fi->actions[fileNum] = action;
 	}
 	fi->replacedSizes[fileNum] = rpmfiFSize(otherFi);
@@ -2004,7 +2004,7 @@ assert(psm != NULL);
 		psm->fi = rpmfiFree(psm->fi);
 		{
 		    char * fstates = fi->fstates;
-		    fileAction * actions = fi->actions;
+		    rpmFileAction * actions = fi->actions;
 		    sharedFileInfo replaced = fi->replaced;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;

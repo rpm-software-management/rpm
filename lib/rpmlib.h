@@ -750,7 +750,7 @@ int rpmVersionCompare(Header first, Header second);
 /**
  * File disposition(s) during package install/erase transaction.
  */
-typedef enum fileAction_e {
+typedef enum rpmFileAction_e {
     FA_UNKNOWN = 0,	/*!< initial action for file ... */
     FA_CREATE,		/*!< ... copy in from payload. */
     FA_COPYIN,		/*!< ... copy in from payload. */
@@ -763,7 +763,7 @@ typedef enum fileAction_e {
     FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
     FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
     FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
-} fileAction;
+} rpmFileAction;
 
 #define XFA_SKIPPING(_a)	\
     ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)

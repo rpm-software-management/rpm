@@ -2224,7 +2224,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     return rc;
 }
 
-const char * fileActionString(fileAction a)
+const char * fileActionString(rpmFileAction a)
 {
     switch (a) {
     case FA_UNKNOWN:	return "unknown";

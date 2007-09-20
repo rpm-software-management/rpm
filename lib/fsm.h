@@ -162,7 +162,7 @@ struct fsm_s {
     const char * fcontext;	/*!< File security context (NULL disables). */
     
     unsigned fflags;		/*!< File flags. */
-    fileAction action;		/*!< File disposition. */
+    rpmFileAction action;	/*!< File disposition. */
     fileStage goal;		/*!< Package state machine goal. */
     fileStage stage;		/*!< External file stage. */
     fileStage nstage;		/*!< Next file stage. */
@@ -186,7 +186,7 @@ const char * fileStageString(fileStage a)	;
  * @param a		file dispostion
  * @return		formatted string
  */
-const char * fileActionString(fileAction a)	;
+const char * fileActionString(rpmFileAction a)	;
 
 /**
  * Create file state machine instance.

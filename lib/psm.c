@@ -1656,8 +1656,8 @@ psm->te->h = headerLink(fi->h);
 
 	}
 	if (psm->goal == PSM_PKGSAVE) {
-	    fileAction * actions = fi->actions;
-	    fileAction action = fi->action;
+	    rpmFileAction * actions = fi->actions;
+	    rpmFileAction action = fi->action;
 
 	    fi->action = FA_COPYOUT;
 	    fi->actions = NULL;
