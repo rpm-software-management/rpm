@@ -902,7 +902,6 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
 
-    RPMTRANS_FLAG_ANACONDA	= (1 << 26),	/*!< from --anaconda */
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
     RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */

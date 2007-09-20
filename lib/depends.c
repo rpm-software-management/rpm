@@ -758,8 +758,7 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
     if (!badDepsInitialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
-	int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
-	int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+	int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
 			? RPMMESS_WARNING : RPMMESS_DEBUG;
 	int ac = 0;
 	int i;
@@ -1049,7 +1048,6 @@ int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     int_32 Flags;
-    int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
     uint_32 prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
@@ -1205,11 +1203,6 @@ rescan:
     qlen = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
-
-	/* Prefer packages in chainsaw or anaconda presentation order. */
-	if (anaconda)
-	    rpmteTSI(p)->tsi_qcnt = (ts->orderCount - rpmtsiOc(pi));
-
 	if (rpmteTSI(p)->tsi_count != 0)
 	    continue;
 	rpmteTSI(p)->tsi_suc = NULL;
@@ -1358,7 +1351,7 @@ rescan:
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
 		const char * dp;
 		char buf[4096];
-		int msglvl = (anaconda || (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS))
+		int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
 			? RPMMESS_WARNING : RPMMESS_DEBUG;
 ;
 
@@ -1462,18 +1455,6 @@ rescan:
 
 	newOrder[newOrderCount++] = q;
 	ts->order[j] = NULL;
-	if (anaconda)
-	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
-	    if ((q = ts->order[j]) == NULL)
-		break;
-	    if (rpmteType(q) == TR_REMOVED
-	     && rpmteDependsOnKey(q) == needle->pkgKey)
-	    {
-		newOrder[newOrderCount++] = q;
-		ts->order[j] = NULL;
-	    } else
-		break;
-	}
     }
 
     for (j = 0; j < ts->orderCount; j++) {

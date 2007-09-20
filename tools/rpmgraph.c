@@ -262,11 +262,6 @@ static struct poptOption optionsTable[] = {
 	N_("don't verify package dependencies"), NULL },
  { "nolegacy", '\0', POPT_BIT_SET,	&vsflags, RPMVSF_NEEDPAYLOAD,
         N_("don't verify header+payload signature"), NULL },
-
- { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA,
-	N_("use anaconda \"presentation order\""), NULL},
-
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
 	NULL }, 

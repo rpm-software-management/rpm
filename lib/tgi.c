@@ -50,10 +50,6 @@ static struct poptOption optionsTable[] = {
  { "key", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &gikeystr, 0,
 	N_("tag value key"), NULL },
 
- { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
- 	&transFlags, RPMTRANS_FLAG_ANACONDA|RPMTRANS_FLAG_DEPLOOPS,
-	N_("use anaconda \"presentation order\""), NULL},
-
  { "transaction", 'T', POPT_BIT_SET, &giFlags, (RPMGI_TSADD|RPMGI_TSORDER),
 	N_("create transaction set"), NULL},
  { "noorder", '\0', POPT_BIT_CLR, &giFlags, RPMGI_TSORDER,
