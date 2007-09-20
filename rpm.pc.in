@@ -12,4 +12,4 @@ URL: http://rpm.org
 # Conflicts:
 Cflags: -I${includedir}/rpm
 Libs: -L${libdir} -lrpmbuild -lrpm -lrpmdb -lrpmio -lrpmmisc
-Libs.private: -lpopt -lmagic -lbeecrypt -lrt -lpthread @WITH_SELINUX_LIB@ @WITH_SQLITE3_LIB@ @WITH_DB_LIB@
+Libs.private: -lpopt -lmagic -lbeecrypt -lrt -lpthread @WITH_SELINUX_LIB@ @WITH_SQLITE3_LIB@ @WITH_DB_LIB@ @WITH_BZ2_LIB@ @WITH_ZLIB_LIB@

@@ -26,6 +26,7 @@ librpmio_la_LIBADD = \
 	@WITH_BEECRYPT_LIB@ \
 	@WITH_LUA_LIB@ \
 	@WITH_MAGIC_LIB@ \
+	@WITH_BZ2_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	-lpthread
 
