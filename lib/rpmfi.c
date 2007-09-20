@@ -422,7 +422,7 @@ rpmfi rpmfiInitD(rpmfi fi, int dx)
  * @return		string to identify a file type
  */
 static
-const char * ftstring (fileTypes ft)
+const char * ftstring (rpmFileTypes ft)
 {
     switch (ft) {
     case XDIR:	return "directory";
@@ -436,7 +436,7 @@ const char * ftstring (fileTypes ft)
     }
 }
 
-fileTypes whatis(uint_16 mode)
+rpmFileTypes whatis(uint_16 mode)
 {
     if (S_ISDIR(mode))	return XDIR;
     if (S_ISCHR(mode))	return CDEV;
@@ -449,8 +449,8 @@ fileTypes whatis(uint_16 mode)
 
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 {
-    fileTypes awhat = whatis(rpmfiFMode(afi));
-    fileTypes bwhat = whatis(rpmfiFMode(bfi));
+    rpmFileTypes awhat = whatis(rpmfiFMode(afi));
+    rpmFileTypes bwhat = whatis(rpmfiFMode(bfi));
 
     if (awhat != bwhat) return 1;
 
@@ -478,7 +478,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     const char * fn = rpmfiFN(nfi);
     int newFlags = rpmfiFFlags(nfi);
     char buffer[1024];
-    fileTypes dbWhat, newWhat, diskWhat;
+    rpmFileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
@@ -561,7 +561,7 @@ int rpmfiConfigConflict(const rpmfi fi)
     const char * fn = rpmfiFN(fi);
     int flags = rpmfiFFlags(fi);
     char buffer[1024];
-    fileTypes newWhat, diskWhat;
+    rpmFileTypes newWhat, diskWhat;
     struct stat sb;
 
     if (!(flags & RPMFILE_CONFIG) || lstat(fn, &sb)) {
@@ -825,7 +825,7 @@ assert(p != NULL);
     /* Relocate individual paths. */
 
     for (i = fileCount - 1; i >= 0; i--) {
-	fileTypes ft;
+	rpmFileTypes ft;
 	int fnlen;
 
 	len = reldel +
