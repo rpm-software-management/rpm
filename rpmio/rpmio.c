@@ -382,7 +382,6 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
     return fd;
 }
 
-/* LCL: function typedefs */
 static struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
@@ -927,7 +926,6 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
     return fd;
 }
 
-/* LCL: function typedefs */
 static struct FDIO_s ufdio_s = {
   ufdRead, ufdWrite, ufdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
@@ -1129,7 +1127,6 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     return rc;
 }
 
-/* LCL: function typedefs */
 static struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   NULL, gzdOpen, gzdFileno, gzdFlush,	NULL, NULL, NULL, NULL, NULL
@@ -1293,7 +1290,6 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     return rc;
 }
 
-/* LCL: function typedefs */
 static struct FDIO_s bzdio_s = {
   bzdRead, bzdWrite, bzdSeek, bzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush,	NULL, NULL, NULL, NULL, NULL
@@ -1836,7 +1832,6 @@ exit:
     return rc;
 }
 
-/* LCL: function typedefs */
 static struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink

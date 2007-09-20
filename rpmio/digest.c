@@ -118,7 +118,6 @@ DPRINTF((stderr, "*** Init(%x) ctx %p param %p\n", flags, ctx, ctx->param));
     return ctx;
 }
 
-/* LCL: ctx->param may be modified, but ctx is abstract @*/
 int
 rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {

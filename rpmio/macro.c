@@ -1757,7 +1757,6 @@ delMacro(MacroContext mc, const char * n)
     }
 }
 
-/* LCL: mc is modified through mb->mc, mb is abstract */
 int
 rpmDefineMacro(MacroContext mc, const char * macro, int level)
 {
