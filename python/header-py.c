@@ -363,6 +363,66 @@ long tagNumFromPyObject (PyObject *item)
 }
 
 /** \ingroup py_c
+ * Retrieve tag info from header.
+ * This is a "dressed" entry to headerGetEntry to do:
+ *     1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
+ *     2) i18n lookaside (if enabled).
+ *
+ * @param h            header
+ * @param tag          tag
+ * @retval type                address of tag value data type
+ * @retval p           address of pointer to tag value(s)
+ * @retval c           address of number of values
+ * @return             0 on success, 1 on bad magic, 2 on error
+ */
+static int dressedHeaderGetEntry(Header h, int_32 tag, int_32 *type,
+	void **p, int_32 *c)
+{
+    switch (tag) {
+    case RPMTAG_OLDFILENAMES:
+    {	const char ** fl = NULL;
+	int count;
+	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
+	if (count > 0) {
+	    *p = fl;
+	    if (c)	*c = count;
+	    if (type)	*type = RPM_STRING_ARRAY_TYPE;
+	    return 1;
+	}
+	if (c)	*c = 0;
+	return 0;
+    }	break;
+
+    case RPMTAG_GROUP:
+    case RPMTAG_DESCRIPTION:
+    case RPMTAG_SUMMARY:
+    {	char fmt[128];
+	const char * msgstr;
+	const char * errstr;
+
+	fmt[0] = '\0';
+	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tagName(tag)), "}\n");
+
+	/* XXX FIXME: memory leak. */
+        msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	if (msgstr) {
+	    *p = (void *) msgstr;
+	    if (type)	*type = RPM_STRING_TYPE;
+	    if (c)	*c = 1;
+	    return 1;
+	} else {
+	    if (c)	*c = 0;
+	    return 0;
+	}
+    }	break;
+
+    default:
+	return headerGetEntry(h, tag, type, p, c);
+	break;
+    }
+}
+
+/** \ingroup py_c
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
@@ -402,7 +462,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
             return NULL;
         }
         
-	if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
+	if (!dressedHeaderGetEntry(s->h, tag, &type, &data, &count)) {
 	    switch (tag) {
 	    case RPMTAG_EPOCH:
 	    case RPMTAG_NAME:
