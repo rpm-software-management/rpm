@@ -18,7 +18,7 @@ static struct fsinfo * filesystems = NULL;
 static const char ** fsnames = NULL;
 static int numFilesystems = 0;
 
-void freeFilesystems(void)
+void rpmFreeFilesystems(void)
 {
     int i;
 
@@ -105,7 +105,7 @@ static int getFilesystemList(void)
 	    	rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
 
-	    	freeFilesystems();
+	    	rpmFreeFilesystems();
 	    	return 1;
 	    }
 	}
@@ -197,7 +197,7 @@ static int getFilesystemList(void)
 	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), mntdir,
 			strerror(errno));
 
-	    freeFilesystems();
+	    rpmFreeFilesystems();
 	    return 1;
 	}
 

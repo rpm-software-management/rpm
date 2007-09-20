@@ -852,7 +852,7 @@ exit:
     }
 
     /* keeps memory leak checkers quiet */
-    freeFilesystems();
+    rpmFreeFilesystems();
     rpmlogClose();
     /* XXX FIXME: hide this in the api */
     dbiTags = _free(dbiTags);
