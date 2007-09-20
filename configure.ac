@@ -300,13 +300,16 @@ AC_SUBST(WITH_ZLIB_LIB)
 #=================
 # Check for bzip2 library.
 
-AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
-   AC_CHECK_LIB(bz2, BZ2_bzread, [
-     WITH_BZIP2=1
-     LIBS="$LIBS -lbz2"
-     AC_DEFINE(HAVE_BZ2_1_0, 1, [Define as 1 if you bzip2 1.0]) ], 
-     WITH_BZIP2=0))
-AC_SUBST(WITH_BZIP2)
+AC_CHECK_HEADERS([bzlib.h],[
+  AC_CHECK_LIB(bz2, bzread, [WITH_BZ2_LIB=-lbz2],
+  [
+    AC_CHECK_LIB(bz2, BZ2_bzread,[ 
+      WITH_BZ2_LIB="-lbz2"
+      AC_DEFINE(HAVE_BZ2_1_0, 1, [Define as 1 if you bzip2 1.0])
+    ]) 
+  ])
+])
+AC_SUBST(WITH_BZ2_LIB)
 
 #=================
 
@@ -552,7 +555,7 @@ AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
-AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
+AC_CHECK_HEADERS(libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 AC_CHECK_HEADERS(pthread.h)
 
