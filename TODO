@@ -24,6 +24,7 @@ API:
 - proper package build API (python)
 - proper separation of rpm-cli and lib functionality
 - eliminate need for headerGetEntry() where it makes sense (eg changelogs)
+- provide compat headers for renamed APIs and structures
 
 Build:
 - grammar for specfiles, rpm macros 
