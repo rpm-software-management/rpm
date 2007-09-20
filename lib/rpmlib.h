@@ -25,9 +25,9 @@ typedef	enum rpmRC_e {
     RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
 } rpmRC;
 
-extern struct MacroContext_s * rpmGlobalMacroContext;
+extern struct rpmMacroContext_s * rpmGlobalMacroContext;
 
-extern struct MacroContext_s * rpmCLIMacroContext;
+extern struct rpmMacroContext_s * rpmCLIMacroContext;
 
 extern const char * RPMVERSION;
 

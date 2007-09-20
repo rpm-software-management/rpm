@@ -127,7 +127,7 @@ struct Spec_s {
     Header sourceHeader;
     rpmfi sourceCpioList;
 
-    MacroContext macros;
+    rpmMacroContext macros;
 
     StringBuf prep;		/*!< %prep scriptlet. */
     StringBuf build;		/*!< %build scriptlet. */

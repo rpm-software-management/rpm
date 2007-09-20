@@ -53,11 +53,11 @@ typedef	FILE * FD_t;
 
 #include "debug.h"
 
-static struct MacroContext_s rpmGlobalMacroContext_s;
-MacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
+static struct rpmMacroContext_s rpmGlobalMacroContext_s;
+rpmMacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
 
-static struct MacroContext_s rpmCLIMacroContext_s;
-MacroContext rpmCLIMacroContext = &rpmCLIMacroContext_s;
+static struct rpmMacroContext_s rpmCLIMacroContext_s;
+rpmMacroContext rpmCLIMacroContext = &rpmCLIMacroContext_s;
 
 /**
  * Macro expansion state.
@@ -70,7 +70,7 @@ typedef struct MacroBuf_s {
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
     void * spec;		/*!< (future) %file expansion info?. */
-    MacroContext mc;
+    rpmMacroContext mc;
 } * MacroBuf;
 
 #define SAVECHAR(_mb, _c) { *(_mb)->t = (_c), (_mb)->t++, (_mb)->nb--; }
@@ -101,8 +101,8 @@ static int expandMacro(MacroBuf mb);
 static int
 compareMacroName(const void * ap, const void * bp)
 {
-    MacroEntry ame = *((MacroEntry *)ap);
-    MacroEntry bme = *((MacroEntry *)bp);
+    rpmMacroEntry ame = *((rpmMacroEntry *)ap);
+    rpmMacroEntry bme = *((rpmMacroEntry *)bp);
 
     if (ame == NULL && bme == NULL)
 	return 0;
@@ -118,16 +118,16 @@ compareMacroName(const void * ap, const void * bp)
  * @param mc		macro context
  */
 static void
-expandMacroTable(MacroContext mc)
+expandMacroTable(rpmMacroContext mc)
 {
     if (mc->macroTable == NULL) {
 	mc->macrosAllocated = MACRO_CHUNK_SIZE;
-	mc->macroTable = (MacroEntry *)
+	mc->macroTable = (rpmMacroEntry *)
 	    xmalloc(sizeof(*(mc->macroTable)) * mc->macrosAllocated);
 	mc->firstFree = 0;
     } else {
 	mc->macrosAllocated += MACRO_CHUNK_SIZE;
-	mc->macroTable = (MacroEntry *)
+	mc->macroTable = (rpmMacroEntry *)
 	    xrealloc(mc->macroTable, sizeof(*(mc->macroTable)) *
 			mc->macrosAllocated);
     }
@@ -139,7 +139,7 @@ expandMacroTable(MacroContext mc)
  * @param mc		macro context
  */
 static void
-sortMacroTable(MacroContext mc)
+sortMacroTable(rpmMacroContext mc)
 {
     int i;
 
@@ -159,7 +159,7 @@ sortMacroTable(MacroContext mc)
 }
 
 void
-rpmDumpMacroTable(MacroContext mc, FILE * fp)
+rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 {
     int nempty = 0;
     int nactive = 0;
@@ -171,7 +171,7 @@ rpmDumpMacroTable(MacroContext mc, FILE * fp)
     if (mc->macroTable != NULL) {
 	int i;
 	for (i = 0; i < mc->firstFree; i++) {
-	    MacroEntry me;
+	    rpmMacroEntry me;
 	    if ((me = mc->macroTable[i]) == NULL) {
 		/* XXX this should never happen */
 		nempty++;
@@ -198,11 +198,11 @@ rpmDumpMacroTable(MacroContext mc, FILE * fp)
  * @param namelen	no. of bytes
  * @return		address of slot in macro table with name (or NULL)
  */
-static MacroEntry *
-findEntry(MacroContext mc, const char * name, size_t namelen)
+static rpmMacroEntry *
+findEntry(rpmMacroContext mc, const char * name, size_t namelen)
 {
-    MacroEntry key, *ret;
-    struct MacroEntry_s keybuf;
+    rpmMacroEntry key, *ret;
+    struct rpmMacroEntry_s keybuf;
     char *namebuf = NULL;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
@@ -220,7 +220,7 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
     key = &keybuf;
     memset(key, 0, sizeof(*key));
     key->name = (char *)name;
-    ret = (MacroEntry *) bsearch(&key, mc->macroTable, mc->firstFree,
+    ret = (rpmMacroEntry *) bsearch(&key, mc->macroTable, mc->firstFree,
 			sizeof(*(mc->macroTable)), compareMacroName);
     /* XXX TODO: find 1st empty slot and return that */
     return ret;
@@ -668,7 +668,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
  * @return		address to continue parsing
  */
 static const char *
-doUndefine(MacroContext mc, const char * se)
+doUndefine(rpmMacroContext mc, const char * se)
 {
     const char *s = se;
     char buf[BUFSIZ], *n = buf, *ne = n;
@@ -695,7 +695,7 @@ doUndefine(MacroContext mc, const char * se)
 
 #ifdef	DYING
 static void
-dumpME(const char * msg, MacroEntry me)
+dumpME(const char * msg, rpmMacroEntry me)
 {
     if (msg)
 	fprintf(stderr, "%s", msg);
@@ -716,12 +716,12 @@ dumpME(const char * msg, MacroEntry me)
  * @param level		macro recursion level
  */
 static void
-pushMacro(MacroEntry * mep,
+pushMacro(rpmMacroEntry * mep,
 		const char * n, const char * o,
 		const char * b, int level)
 {
-    MacroEntry prev = (mep && *mep ? *mep : NULL);
-    MacroEntry me = (MacroEntry) xmalloc(sizeof(*me));
+    rpmMacroEntry prev = (mep && *mep ? *mep : NULL);
+    rpmMacroEntry me = (rpmMacroEntry) xmalloc(sizeof(*me));
 
     me->prev = prev;
     me->name = (prev ? prev->name : xstrdup(n));
@@ -740,9 +740,9 @@ pushMacro(MacroEntry * mep,
  * @param mep		address of macro entry slot
  */
 static void
-popMacro(MacroEntry * mep)
+popMacro(rpmMacroEntry * mep)
 {
-	MacroEntry me = (*mep ? *mep : NULL);
+	rpmMacroEntry me = (*mep ? *mep : NULL);
 
 	if (me) {
 		/* XXX cast to workaround const */
@@ -761,7 +761,7 @@ popMacro(MacroEntry * mep)
 static void
 freeArgs(MacroBuf mb)
 {
-    MacroContext mc = mb->mc;
+    rpmMacroContext mc = mb->mc;
     int ndeleted = 0;
     int i;
 
@@ -770,7 +770,7 @@ freeArgs(MacroBuf mb)
 
     /* Delete dynamic macro definitions */
     for (i = 0; i < mc->firstFree; i++) {
-	MacroEntry *mep, me;
+	rpmMacroEntry *mep, me;
 	int skiptest = 0;
 	mep = &mc->macroTable[i];
 	me = *mep;
@@ -809,7 +809,7 @@ freeArgs(MacroBuf mb)
  * @return		address to continue parsing
  */
 static const char *
-grabArgs(MacroBuf mb, const MacroEntry me, const char * se,
+grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
     char buf[BUFSIZ], *b, *be;
@@ -1083,8 +1083,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 static int
 expandMacro(MacroBuf mb)
 {
-    MacroEntry *mep;
-    MacroEntry me;
+    rpmMacroEntry *mep;
+    rpmMacroEntry me;
     const char *s = mb->s, *se;
     const char *f, *fe;
     const char *g, *ge;
@@ -1670,7 +1670,7 @@ exit:
 /* =============================================================== */
 
 int
-expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
+expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
 {
     MacroBuf mb = alloca(sizeof(*mb));
     char *tbuf;
@@ -1705,10 +1705,10 @@ expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
 }
 
 void
-addMacro(MacroContext mc,
+addMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level)
 {
-    MacroEntry * mep;
+    rpmMacroEntry * mep;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
@@ -1731,9 +1731,9 @@ addMacro(MacroContext mc,
 }
 
 void
-delMacro(MacroContext mc, const char * n)
+delMacro(rpmMacroContext mc, const char * n)
 {
-    MacroEntry * mep;
+    rpmMacroEntry * mep;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
     /* If name exists, pop entry */
@@ -1746,7 +1746,7 @@ delMacro(MacroContext mc, const char * n)
 }
 
 int
-rpmDefineMacro(MacroContext mc, const char * macro, int level)
+rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
 {
     MacroBuf mb = alloca(sizeof(*mb));
 
@@ -1758,7 +1758,7 @@ rpmDefineMacro(MacroContext mc, const char * macro, int level)
 }
 
 void
-rpmLoadMacros(MacroContext mc, int level)
+rpmLoadMacros(rpmMacroContext mc, int level)
 {
 
     if (mc == NULL || mc == rpmGlobalMacroContext)
@@ -1767,7 +1767,7 @@ rpmLoadMacros(MacroContext mc, int level)
     if (mc->macroTable != NULL) {
 	int i;
 	for (i = 0; i < mc->firstFree; i++) {
-	    MacroEntry *mep, me;
+	    rpmMacroEntry *mep, me;
 	    mep = &mc->macroTable[i];
 	    me = *mep;
 
@@ -1779,7 +1779,7 @@ rpmLoadMacros(MacroContext mc, int level)
 }
 
 int
-rpmLoadMacroFile(MacroContext mc, const char * fn)
+rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 {
     FD_t fd = Fopen(fn, "r.fpio");
     char buf[BUFSIZ];
@@ -1810,7 +1810,7 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
 }
 
 void
-rpmInitMacros(MacroContext mc, const char * macrofiles)
+rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 {
     char *mfiles, *m, *me;
 
@@ -1863,7 +1863,7 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 }
 
 void
-rpmFreeMacros(MacroContext mc)
+rpmFreeMacros(rpmMacroContext mc)
 {
     
     if (mc == NULL) mc = rpmGlobalMacroContext;
@@ -1871,7 +1871,7 @@ rpmFreeMacros(MacroContext mc)
     if (mc->macroTable != NULL) {
 	int i;
 	for (i = 0; i < mc->firstFree; i++) {
-	    MacroEntry me;
+	    rpmMacroEntry me;
 	    while ((me = mc->macroTable[i]) != NULL) {
 		/* XXX cast to workaround const */
 		if ((mc->macroTable[i] = me->prev) == NULL)

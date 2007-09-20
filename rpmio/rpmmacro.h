@@ -6,25 +6,25 @@
  */
 
 /*! The structure used to store a macro. */
-typedef struct MacroEntry_s {
-    struct MacroEntry_s *prev;/*!< Macro entry stack. */
+typedef struct rpmMacroEntry_s {
+    struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
     const char *name;	/*!< Macro name. */
     const char *opts;	/*!< Macro parameters (a la getopt) */
     const char *body;	/*!< Macro body. */
     int	used;		/*!< No. of expansions. */
     int	level;		/*!< Scoping level. */
-} * MacroEntry;
+} * rpmMacroEntry;
 
 /*! The structure used to store the set of macros in a context. */
-typedef struct MacroContext_s {
-    MacroEntry *macroTable;	/*!< Macro entry table for context. */
+typedef struct rpmMacroContext_s {
+    rpmMacroEntry *macroTable;	/*!< Macro entry table for context. */
     int	macrosAllocated;/*!< No. of allocated macros. */
     int	firstFree;	/*!< No. of macros. */
-} * MacroContext;
+} * rpmMacroContext;
 
-extern MacroContext rpmGlobalMacroContext;
+extern rpmMacroContext rpmGlobalMacroContext;
 
-extern MacroContext rpmCLIMacroContext;
+extern rpmMacroContext rpmCLIMacroContext;
 
 /** \ingroup rpmrc
  * List of macro files to read when configuring rpm.
@@ -55,7 +55,7 @@ extern "C" {
  * @param mc		macro context (NULL uses global context).
  * @param fp		file stream (NULL uses stderr).
  */
-void	rpmDumpMacroTable	(MacroContext mc,
+void	rpmDumpMacroTable	(rpmMacroContext mc,
 					FILE * fp);
 
 /**
@@ -78,7 +78,7 @@ int rpmGlob(const char * patterns, int * argcPtr,
  * @param slen		size of buffer
  * @return		0 on success
  */
-int	expandMacros	(void * spec, MacroContext mc,
+int	expandMacros	(void * spec, rpmMacroContext mc,
 				char * sbuf,
 				size_t slen);
 
@@ -91,7 +91,7 @@ int	expandMacros	(void * spec, MacroContext mc,
  * @param b		macro body
  * @param level		macro recursion level (0 is entry API)
  */
-void	addMacro	(MacroContext mc, const char * n,
+void	addMacro	(rpmMacroContext mc, const char * n,
 				const char * o,
 				const char * b, int level);
 
@@ -100,7 +100,7 @@ void	addMacro	(MacroContext mc, const char * n,
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
  */
-void	delMacro	(MacroContext mc, const char * n);
+void	delMacro	(rpmMacroContext mc, const char * n);
 
 /**
  * Define macro in context.
@@ -109,7 +109,7 @@ void	delMacro	(MacroContext mc, const char * n);
  * @param level		macro recursion level (0 is entry API)
  * @return		@todo Document.
  */
-int	rpmDefineMacro	(MacroContext mc, const char * macro,
+int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
 
 /**
@@ -117,27 +117,27 @@ int	rpmDefineMacro	(MacroContext mc, const char * macro,
  * @param mc		macro context (NULL does nothing).
  * @param level		macro recursion level (0 is entry API)
  */
-void	rpmLoadMacros	(MacroContext mc, int level);
+void	rpmLoadMacros	(rpmMacroContext mc, int level);
 
 /**
  * Load macro context from a macro file.
  * @param mc		(unused)
  * @param fn		macro file name
  */
-int	rpmLoadMacroFile(MacroContext mc, const char * fn);
+int	rpmLoadMacroFile(rpmMacroContext mc, const char * fn);
 
 /**
  * Initialize macro context from set of macrofile(s).
  * @param mc		macro context
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
-void	rpmInitMacros	(MacroContext mc, const char * macrofiles);
+void	rpmInitMacros	(rpmMacroContext mc, const char * macrofiles);
 
 /**
  * Destroy macro context.
  * @param mc		macro context (NULL uses global context).
  */
-void	rpmFreeMacros	(MacroContext mc);
+void	rpmFreeMacros	(rpmMacroContext mc);
 
 typedef enum rpmCompressedMagic_e {
     COMPRESSED_NOT		= 0,	/*!< not compressed */
