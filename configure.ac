@@ -280,19 +280,17 @@ addlib() {
 WITH_ZLIB_INCLUDE=
 WITH_ZLIB_LIB=
 
-if test -z "${WITH_ZLIB_LIB}" ; then
-  for zlib in z gz ; do
-   AC_CHECK_LIB(${zlib}, gzread, 
-	[WITH_ZLIB_LIB="-l${zlib}"; break], 
-	[if test ${zlib} = gz; then 
-	    AC_MSG_ERROR([sorry rpm requires libz.a or libgz.a (from the zlib package)]) 
-	 fi]
-	       )
-  done
+AC_CHECK_HEADERS([zlib.h],[
+  AS_IF([test -z "${WITH_ZLIB_LIB}"],[
+    for zlib in z gz ; do
+      AC_CHECK_LIB(${zlib}, gzread, 
+	[WITH_ZLIB_LIB="-l${zlib}"; break])
+    done
 
 dnl zlib-1.0.4 has not gzseek
-  AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
-fi
+    AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
+  ])
+])
 
 AC_SUBST(WITH_ZLIB_INCLUDE)
 AC_SUBST(WITH_ZLIB_LIB)
@@ -555,7 +553,7 @@ AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
-AC_CHECK_HEADERS(libio.h zlib.h)
+AC_CHECK_HEADERS(libio.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 AC_CHECK_HEADERS(pthread.h)
 
