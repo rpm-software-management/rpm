@@ -233,6 +233,19 @@ typedef	char * security_context_t;
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param p             memory to free
+ * @return              NULL always
+ */
+static inline
+void * _free(const void * p)
+{
+    if (p != NULL)      free((void *)p);
+    return NULL;
+}
+
+
 /* FIX: these are macros */
 /**
  */

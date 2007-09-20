@@ -173,18 +173,6 @@ struct pgpValTbl_s pgpArmorKeyTbl[] = {
     { -1,			"Unknown armor key" }
 };
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @return		NULL always
- */
-static inline void *
-_free(const void * p)
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
 static void pgpPrtNL(void)
 {
     if (!_print) return;

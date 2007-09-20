@@ -70,18 +70,6 @@ int noLibio = 1;
  */
 int _rpmio_debug = 0;
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @retval		NULL always
- */
-static inline void *
-_free(const void * p)
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
 /* =============================================================== */
 
 static const char * fdbg(FD_t fd)

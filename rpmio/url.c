@@ -31,18 +31,6 @@ int _url_debug = 0;
 
 #define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @retval		NULL always
- */
-static inline void *
-_free(const void * p)
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
 urlinfo urlNew()
 {
     urlinfo u;

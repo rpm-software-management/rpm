@@ -23,18 +23,6 @@ static inline int xisspace(int c)  {
     return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @return		NULL always
- */
-static inline void *
-_free(const void * p)
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
 StringBuf newStringBuf(void)
 {
     StringBuf sb = xmalloc(sizeof(*sb));

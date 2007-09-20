@@ -41,18 +41,6 @@ extern int rpmFLAGS;
 extern "C" {
 #endif
 
-/**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
- * @param p		memory to free
- * @return		NULL always
- */
-static inline
-void * _free(const void * p)
-{
-    if (p != NULL)	free((void *)p);
-    return NULL;
-}
-
 /** \ingroup rpmtrans
  * The RPM Transaction Set.
  * Transaction sets are inherently unordered! RPM may reorder transaction
