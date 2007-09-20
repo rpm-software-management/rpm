@@ -1059,36 +1059,6 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
 		int flags);
 
 /* ==================================================================== */
-/** \name RPMEIU */
-/* --- install/upgrade/erase modes */
-
-/** \ingroup rpmcli
- * Bit(s) to control rpmInstall() operation.
- * @todo Move to rpmcli.h
- */
-typedef enum rpmInstallInterfaceFlags_e {
-    INSTALL_NONE	= 0,
-    INSTALL_PERCENT	= (1 << 0),	/*!< from --percent */
-    INSTALL_HASH	= (1 << 1),	/*!< from --hash */
-    INSTALL_NODEPS	= (1 << 2),	/*!< from --nodeps */
-    INSTALL_NOORDER	= (1 << 3),	/*!< from --noorder */
-    INSTALL_LABEL	= (1 << 4),	/*!< from --verbose (notify) */
-    INSTALL_UPGRADE	= (1 << 5),	/*!< from --upgrade */
-    INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
-    INSTALL_INSTALL	= (1 << 7),	/*!< from --install */
-    INSTALL_ERASE	= (1 << 8)	/*!< from --erase */
-} rpmInstallInterfaceFlags;
-
-/** \ingroup rpmcli
- * Bit(s) to control rpmErase() operation.
- */
-typedef enum rpmEraseInterfaceFlags_e {
-    UNINSTALL_NONE	= 0,
-    UNINSTALL_NODEPS	= (1 << 0),	/*!< from --nodeps */
-    UNINSTALL_ALLMATCHES= (1 << 1)	/*!< from --allmatches */
-} rpmEraseInterfaceFlags;
-
-/* ==================================================================== */
 /** \name RPMK */
 
 /** \ingroup signature
