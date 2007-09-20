@@ -831,7 +831,7 @@ static int i18nTag(Header h, int_32 tag, rpmTagType * type,
 	const char * msgkey;
 	const char * msgid;
 
-	{   const char * tn = tagName(tag);
+	{   const char * tn = rpmTagGetName(tag);
 	    const char * n;
 	    char * mk;
 	    size_t nb = sizeof("()");

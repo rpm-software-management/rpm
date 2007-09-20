@@ -255,7 +255,7 @@ static int checkForRequired(Header h, const char * NVR)
 	if (!headerIsEntry(h, *p)) {
 	    rpmError(RPMERR_BADSPEC,
 			_("%s field must be present in package: %s\n"),
-			tagName(*p), NVR);
+			rpmTagGetName(*p), NVR);
 	    res = 1;
 	}
     }
@@ -282,7 +282,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 	if (tag != lastTag)
 	    continue;
 	rpmError(RPMERR_BADSPEC, _("Duplicate %s entries in package: %s\n"),
-		     tagName(tag), NVR);
+		     rpmTagGetName(tag), NVR);
 	res = 1;
     }
     hi = headerFreeIterator(hi);
@@ -398,7 +398,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 	    char *n;
 	    if (hge(h, RPMTAG_NAME, NULL, (void **) &n, NULL)) {
 		char buf[1024];
-		sprintf(buf, "%s(%s)", n, tagName(tag));
+		sprintf(buf, "%s(%s)", n, rpmTagGetName(tag));
 		t->t_msgid = xstrdup(buf);
 	    }
 	}
@@ -612,7 +612,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseBits(lang, buildScriptBits, &tagflags))) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
-		     spec->lineNum, tagName(tag), spec->line);
+		     spec->lineNum, rpmTagGetName(tag), spec->line);
 	    return rc;
 	}
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
@@ -623,7 +623,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
 	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
-		     spec->lineNum, tagName(tag), spec->line);
+		     spec->lineNum, rpmTagGetName(tag), spec->line);
 	    return rc;
 	}
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))

@@ -663,9 +663,9 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     } else {
 #ifdef	HACK	/* XXX necessary to support dbsubfile */
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
-	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : tagName(dbi->dbi_rpmtag));
+	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : rpmTagGetName(dbi->dbi_rpmtag));
 #else
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : tagName(dbi->dbi_rpmtag));
+	dbfile = (dbi->dbi_file ? dbi->dbi_file : rpmTagGetName(dbi->dbi_rpmtag));
 	dbsubfile = NULL;
 #endif
     }
@@ -678,7 +678,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	db = dbi->dbi_db = NULL;
 
 	rpmMessage(RPMMESS_DEBUG, _("closed   db index       %s/%s\n"),
-		dbhome, (dbfile ? dbfile : tagName(dbi->dbi_rpmtag)));
+		dbhome, (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)));
 
     }
 
@@ -736,7 +736,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 
 		rpmMessage(RPMMESS_DEBUG, _("verified db index       %s/%s\n"),
 			(dbhome ? dbhome : ""),
-			(dbfile ? dbfile : tagName(dbi->dbi_rpmtag)));
+			(dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)));
 
 	        /*
 		 * The DB handle may not be accessed again after
@@ -809,9 +809,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     } else {
 #ifdef	HACK	/* XXX necessary to support dbsubfile */
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
-	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : tagName(dbi->dbi_rpmtag));
+	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : rpmTagGetName(dbi->dbi_rpmtag));
 #else
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : tagName(dbi->dbi_rpmtag));
+	dbfile = (dbi->dbi_file ? dbi->dbi_file : rpmTagGetName(dbi->dbi_rpmtag));
 	dbsubfile = NULL;
 #endif
     }
@@ -906,7 +906,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
 	/* dbhome is writable, and DB->open flags may conflict. */
-	const char * dbfn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
+	const char * dbfn = (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag));
 	const char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
 
 	if (access(dbf, F_OK) == -1) {
@@ -946,7 +946,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     }
 
     rpmMessage(RPMMESS_DEBUG, _("opening  db index       %s/%s %s mode=0x%x\n"),
-		dbhome, (dbfile ? dbfile : tagName(dbi->dbi_rpmtag)),
+		dbhome, (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)),
 		prDbiOpenFlags(oflags, 0), dbi->dbi_mode);
 
     if (rc == 0) {

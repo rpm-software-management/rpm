@@ -550,7 +550,7 @@ printNewSpecfile(Spec spec)
 
     for (i = 0; i < st->st_ntags; i++) {
 	spectag t = st->st_t + i;
-	const char * tn = tagName(t->t_tag);
+	const char * tn = rpmTagGetName(t->t_tag);
 	const char * errstr;
 	char fmt[1024];
 

@@ -267,7 +267,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     char dbiTagMacro[128];
     char * dbOpts;
 
-    sprintf(dbiTagMacro, "%%{_dbi_config_%s}", tagName(rpmtag));
+    sprintf(dbiTagMacro, "%%{_dbi_config_%s}", rpmTagGetName(rpmtag));
     dbOpts = rpmExpand(dbiTagMacro, NULL);
     if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
 	dbOpts = _free(dbOpts);

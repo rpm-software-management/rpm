@@ -168,7 +168,7 @@ static void dbiTagsInit(void)
 	}
 	if (oe && *oe)
 	    *oe++ = '\0';
-	rpmtag = tagValue(o);
+	rpmtag = rpmTagGetValue(o);
 	if (rpmtag < 0) {
 	    rpmMessage(RPMMESS_WARNING,
 		_("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
@@ -245,7 +245,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	    if (!_printed[dbix & 0x1f]++)
 		rpmError(RPMERR_DBOPEN,
 			_("cannot open %s index using db%d - %s (%d)\n"),
-			tagName(rpmtag), _dbapi,
+			rpmTagGetName(rpmtag), _dbapi,
 			(rc > 0 ? strerror(rc) : ""), rc);
 	    _dbapi = -1;
 	}
@@ -265,7 +265,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	    static int _printed[32];
 	    if (!_printed[dbix & 0x1f]++)
 		rpmError(RPMERR_DBOPEN, _("cannot open %s index\n"),
-			tagName(rpmtag));
+			rpmTagGetName(rpmtag));
 	    rc = 1;
 	    goto exit;
 	}
@@ -1138,7 +1138,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	if (rc > 0) {
 	    rpmError(RPMERR_DBGETINDEX,
 		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 	}
 
 if (rc == 0)
@@ -1263,7 +1263,7 @@ key->size = strlen(name);
     } else {			/* error */
 	rpmError(RPMERR_DBGETINDEX,
 		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 	rc = -1;
     }
 
@@ -1313,7 +1313,7 @@ key->size = strlen(name);
     } else {			/* error */
 	rpmError(RPMERR_DBGETINDEX,
 		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 	return RPMRC_FAIL;
     }
 
@@ -1498,7 +1498,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    if (rc) {
 		rpmError(RPMERR_DBPUTINDEX,
 			_("error(%d) storing record #%d into %s\n"),
-			rc, mi->mi_prevoffset, tagName(dbi->dbi_rpmtag));
+			rc, mi->mi_prevoffset, rpmTagGetName(dbi->dbi_rpmtag));
 	    }
 	    xx = dbiSync(dbi, 0);
 	    (void) unblockSignals(dbi->dbi_rpmdb, &signalMask);
@@ -1925,7 +1925,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    break;
 	}
 
-	if ((tagType(mire->tag) & RPM_MASK_RETURN_TYPE) == 
+	if ((rpmTagGetType(mire->tag) & RPM_MASK_RETURN_TYPE) == 
 	    RPM_ARRAY_RETURN_TYPE) {
 	    u.ptr = hfd(u.ptr, t);
 	}
@@ -2217,7 +2217,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi, int fpNum)
 	if (rc != DB_NOTFOUND)
 	    rpmError(RPMERR_DBGETINDEX,
 		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, key->data, tagName(dbi->dbi_rpmtag));
+		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 #ifdef	SQLITE_HACK
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
@@ -2336,7 +2336,7 @@ if (key->data && key->size == 0) key->size++;	/* XXX "/" fixup. */
 	    if (rc > 0) {
 		rpmError(RPMERR_DBGETINDEX,
 			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, (key->data ? key->data : "???"), tagName(dbi->dbi_rpmtag));
+			rc, (key->data ? key->data : "???"), rpmTagGetName(dbi->dbi_rpmtag));
 	    }
 
 	    /* Join keys need to be native endian internally. */
@@ -2495,7 +2495,7 @@ if (dbiByteSwapped(dbi) == 1)
 		if (rc) {
 		    rpmError(RPMERR_DBGETINDEX,
 			_("error(%d) setting header #%d record for %s removal\n"),
-			rc, hdrNum, tagName(dbi->dbi_rpmtag));
+			rc, hdrNum, rpmTagGetName(dbi->dbi_rpmtag));
 		} else
 		    rc = dbiDel(dbi, dbcursor, key, data, 0);
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
@@ -2602,11 +2602,11 @@ if (dbiByteSwapped(dbi) == 1)
 		    if (rpmcnt == 1 && stringvalued) {
 			rpmMessage(RPMMESS_DEBUG,
 				_("removing \"%s\" from %s index.\n"),
-				(char *)key->data, tagName(dbi->dbi_rpmtag));
+				(char *)key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    } else {
 			rpmMessage(RPMMESS_DEBUG,
 				_("removing %d entries from %s index.\n"),
-				rpmcnt, tagName(dbi->dbi_rpmtag));
+				rpmcnt, rpmTagGetName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
 		}
@@ -2633,7 +2633,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		} else {			/* error */
 		    rpmError(RPMERR_DBGETINDEX,
 			_("error(%d) setting \"%s\" records from %s index\n"),
-			rc, key->data, tagName(dbi->dbi_rpmtag));
+			rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
 		    continue;
 		}
@@ -2652,7 +2652,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    if (rc) {
 			rpmError(RPMERR_DBPUTINDEX,
 				_("error(%d) storing record \"%s\" into %s\n"),
-				rc, key->data, tagName(dbi->dbi_rpmtag));
+				rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 			ret += 1;
 		    }
 		    data->data = _free(data->data);
@@ -2662,7 +2662,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    if (rc) {
 			rpmError(RPMERR_DBPUTINDEX,
 				_("error(%d) removing record \"%s\" from %s\n"),
-				rc, key->data, tagName(dbi->dbi_rpmtag));
+				rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 			ret += 1;
 		    }
 		}
@@ -3024,11 +3024,11 @@ data->size = 0;
 		    if (rpmcnt == 1 && stringvalued) {
 			rpmMessage(RPMMESS_DEBUG,
 				_("adding \"%s\" to %s index.\n"),
-				(char *)key->data, tagName(dbi->dbi_rpmtag));
+				(char *)key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    } else {
 			rpmMessage(RPMMESS_DEBUG,
 				_("adding %d entries to %s index.\n"),
-				rpmcnt, tagName(dbi->dbi_rpmtag));
+				rpmcnt, rpmTagGetName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
 		}
@@ -3048,7 +3048,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		} else if (rc != DB_NOTFOUND) {	/* error */
 		    rpmError(RPMERR_DBGETINDEX,
 			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, key->data, tagName(dbi->dbi_rpmtag));
+			rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
 		    continue;
 		}
@@ -3064,7 +3064,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		if (rc) {
 		    rpmError(RPMERR_DBPUTINDEX,
 				_("error(%d) storing record %s into %s\n"),
-				rc, key->data, tagName(dbi->dbi_rpmtag));
+				rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
 		}
 		data->data = _free(data->data);
@@ -3290,7 +3290,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
     case 3:
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base = tagName(dbiTags[i]);
+	    const char * base = rpmTagGetName(dbiTags[i]);
 	    sprintf(filename, "%s/%s/%s", prefix, dbpath, base);
 	    (void)rpmCleanPath(filename);
 	    if (!rpmioFileExists(filename))
@@ -3362,7 +3362,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    if (isTemporaryDB((rpmtag = dbiTags[i])))
 		continue;
 
-	    base = tagName(rpmtag);
+	    base = rpmTagGetName(rpmtag);
 	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
 	    (void)rpmCleanPath(ofilename);
 	    if (!rpmioFileExists(ofilename))

@@ -460,7 +460,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
 	}   break;
 	default:
-	    switch (tagType(dbi->dbi_rpmtag)) {
+	    switch (rpmTagGetType(dbi->dbi_rpmtag)) {
 	    case RPM_NULL_TYPE:   
 	    case RPM_BIN_TYPE:
 	        rc = sqlite3_bind_blob(scp->pStmt, pos, key->data, key->size, SQLITE_STATIC);
@@ -632,7 +632,7 @@ static int sql_initDB(dbiIndex dbi)
 	    valtype = "blob";
 	    break;
 	default:
-	    switch (tagType(dbi->dbi_rpmtag)) {
+	    switch (rpmTagGetType(dbi->dbi_rpmtag)) {
 	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
 	    default:
@@ -653,7 +653,7 @@ static int sql_initDB(dbiIndex dbi)
 	    }
 	}
 if (_debug)
-fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), keytype);
+fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", rpmTagGetName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, rpmTagGetType(dbi->dbi_rpmtag), keytype);
 	sprintf(cmd, "CREATE TABLE '%s' (key %s, value %s)",
 			dbi->dbi_subfile, keytype, valtype);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
@@ -798,7 +798,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     dbi->dbi_root = root;
     dbi->dbi_home = home;
       
-    dbfile = tagName(dbi->dbi_rpmtag);
+    dbfile = rpmTagGetName(dbi->dbi_rpmtag);
 
 enterChroot(dbi);
 
@@ -907,7 +907,7 @@ static int sql_copen (dbiIndex dbi, DB_TXN * txnid,
     int rc = 0;
 
 if (_debug)
-fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), scp);
+fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, rpmTagGetName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, rpmTagGetType(dbi->dbi_rpmtag), scp);
 
 enterChroot(dbi);
 

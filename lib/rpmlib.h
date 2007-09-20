@@ -198,7 +198,7 @@ typedef enum rpmTag_e {
 
     RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, /*!< I18N string locales. */
 
-/* Retrofit (and uniqify) signature tags for use by tagName() and rpmQuery. */
+/* Retrofit (and uniqify) signature tags for use by rpmTagGetName() and rpmQuery. */
 /* the md5 sum was broken *twice* on big endian machines */
 /* XXX 2nd underscore prevents tagTable generation */
     RPMTAG_SIG_BASE		= HEADER_SIGBASE,
@@ -976,7 +976,7 @@ void rpmShowRpmlibProvides(FILE * fp);
  * @return		tag name, "(unknown)" on not found
  */
 static inline
-const char * tagName(int tag)
+const char * rpmTagGetName(int tag)
 {
     return ((*rpmTags->tagName)(tag));
 }
@@ -987,7 +987,7 @@ const char * tagName(int tag)
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
 static inline
-int tagType(int tag)
+int rpmTagGetType(int tag)
 {
     return ((*rpmTags->tagType)(tag));
 }
@@ -998,7 +998,7 @@ int tagType(int tag)
  * @return		tag value, -1 on not found
  */
 static inline
-int tagValue(const char * tagstr)
+int rpmTagGetValue(const char * tagstr)
 {
     return ((*rpmTags->tagValue)(tagstr));
 }

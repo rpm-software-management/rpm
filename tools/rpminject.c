@@ -311,19 +311,19 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 	switch(c->injmode) {
 	case INJ_ADD:
 	    if (!(rc && c->done > 0)) {
-		warnx(_("failed to add tag %s"), tagName(c->tagval));
+		warnx(_("failed to add tag %s"), rpmTagGetName(c->tagval));
 		ec = 1;
 	    }
 	    break;
 	case INJ_DELETE:
 	    if (!(!rc && c->done > 0)) {
-		warnx(_("failed to delete tag %s"), tagName(c->tagval));
+		warnx(_("failed to delete tag %s"), rpmTagGetName(c->tagval));
 		ec = 1;
 	    }
 	    break;
 	case INJ_MODIFY:
 	    if (!(rc && c->done > 0)) {
-		warnx(_("failed to modify tag %s"), tagName(c->tagval));
+		warnx(_("failed to modify tag %s"), rpmTagGetName(c->tagval));
 		ec = 1;
 	    }
 	    break;
@@ -499,7 +499,7 @@ main(int argc, char *argv[])
 		cmds[ncmds]->injmode = cmds[ncmds-1]->injmode;
 		ncmds++;
 	    }
-	    c->tagval = tagValue(optArg);
+	    c->tagval = rpmTagGetValue(optArg);
 	    if (!((c->tagval >= RPMTAG_NAME && c->tagval < RPMTAG_FIRSTFREE_TAG)
 	        || c->tagval >= RPMTAG_EXTERNAL_TAG))
 		errx(EXIT_FAILURE, _("unknown rpm tag \"--tag %s\""), optArg);

@@ -103,7 +103,7 @@ main(int argc, char *argv[])
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
 
     if (gitagstr != NULL) {
-	gitag = tagValue(gitagstr);
+	gitag = rpmTagGetValue(gitagstr);
 	if (gitag < 0) {
 	    fprintf(stderr, _("unknown --tag argument: %s\n"), gitagstr);
 	    exit(EXIT_FAILURE);

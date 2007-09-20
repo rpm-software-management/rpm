@@ -318,7 +318,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	/* Parse for "tag=pattern" args. */
 	if ((ae = strchr(a, '=')) != NULL) {
 	    *ae++ = '\0';
-	    tag = tagValue(a);
+	    tag = rpmTagGetValue(a);
 	    if (tag < 0) {
 		rpmError(RPMERR_QUERYINFO, _("unknown tag: \"%s\"\n"), a);
 		res = 1;
@@ -328,7 +328,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 
 	if (!res) {
 if (_rpmgi_debug  < 0)
-fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (av - gi->argv), *av, tagName(tag), pat);
+fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (av - gi->argv), *av, rpmTagGetName(tag), pat);
 	    res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
 	}
 	a = _free(a);

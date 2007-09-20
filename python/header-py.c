@@ -357,7 +357,7 @@ long tagNumFromPyObject (PyObject *item)
 	return PyInt_AsLong(item);
     } else if (PyString_Check(item)) {
 	str = PyString_AsString(item);
-	return tagValue(str);
+	return rpmTagGetValue(str);
     }
     return -1;
 }
@@ -401,7 +401,7 @@ static int dressedHeaderGetEntry(Header h, int_32 tag, int_32 *type,
 	const char * errstr;
 
 	fmt[0] = '\0';
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tagName(tag)), "}\n");
+	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), rpmTagGetName(tag)), "}\n");
 
 	/* XXX FIXME: memory leak. */
         msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
@@ -480,7 +480,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	}
     }
 
-    tagtype = tagType(tag); 
+    tagtype = rpmTagGetType(tag); 
 #if NOTYET
     /* this blows up with header extension types */
     type = tagtype & RPM_MASK_TYPE;
