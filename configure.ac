@@ -351,7 +351,7 @@ AC_CHECK_FUNCS(error)
 
 AC_CHECK_HEADERS(poll.h)
 
-AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
+AC_CHECK_HEADERS(thread.h pthread.h)
 
 AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
   dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
@@ -360,7 +360,6 @@ AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
   ])
 ])
 
-AC_CHECK_HEADERS(aio.h)
 AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 
 dnl Better not use fchmod at all.
