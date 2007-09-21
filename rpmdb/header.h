@@ -132,20 +132,6 @@ struct headerTagTableEntry_s {
 /**
  */
 typedef struct headerTagIndices_s * headerTagIndices;
-struct headerTagIndices_s {
-    int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
-                int (*cmp) (const void * avp, const void * bvp));
-                                        /*!< load sorted tag index. */
-    headerTagTableEntry * byName;	/*!< header tags sorted by name. */
-    int byNameSize;			/*!< no. of entries. */
-    int (*byNameCmp) (const void * avp, const void * bvp);				/*!< compare entries by name. */
-    int (*tagValue) (const char * name);				/* return value from name. */
-    headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
-    int byValueSize;			/*!< no. of entries. */
-    int (*byValueCmp) (const void * avp, const void * bvp);				/*!< compare entries by value. */
-    const char * (*tagName) (int value);				/* Return name from value. */
-    int (*tagType) (int value);				/* Return type from value. */
-};
 
 /** \ingroup header
  */

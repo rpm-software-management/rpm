@@ -936,33 +936,21 @@ void rpmShowRpmlibProvides(FILE * fp);
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
-static inline
-const char * rpmTagGetName(int tag)
-{
-    return ((*rpmTags->tagName)(tag));
-}
+const char * rpmTagGetName(int tag);
 
 /**
  * Return tag data type from value.
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
-static inline
-int rpmTagGetType(int tag)
-{
-    return ((*rpmTags->tagType)(tag));
-}
+int rpmTagGetType(int tag);
 
 /**
  * Return tag value from name.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found
  */
-static inline
-int rpmTagGetValue(const char * tagstr)
-{
-    return ((*rpmTags->tagValue)(tagstr));
-}
+int rpmTagGetValue(const char * tagstr);
 
 #define	RPMLEAD_BINARY 0
 #define	RPMLEAD_SOURCE 1

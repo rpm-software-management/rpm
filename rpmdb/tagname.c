@@ -8,6 +8,20 @@
 #include <rpmio.h>
 #include "debug.h"
 
+struct headerTagIndices_s {
+    int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
+                int (*cmp) (const void * avp, const void * bvp));
+                                        /*!< load sorted tag index. */
+    headerTagTableEntry * byName;	/*!< header tags sorted by name. */
+    int byNameSize;			/*!< no. of entries. */
+    int (*byNameCmp) (const void * avp, const void * bvp);				/*!< compare entries by name. */
+    int (*tagValue) (const char * name);				/* return value from name. */
+    headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
+    int byValueSize;			/*!< no. of entries. */
+    int (*byValueCmp) (const void * avp, const void * bvp);				/*!< compare entries by value. */
+    const char * (*tagName) (int value);				/* Return name from value. */
+    int (*tagType) (int value);				/* Return type from value. */
+};
 
 /**
  * Compare tag table entries by name.
@@ -254,3 +268,29 @@ static int _tagValue(const char * tagstr)
     }
     return -1;
 }
+
+const char * rpmTagGetName(int tag)
+{
+    return ((*rpmTags->tagName)(tag));
+}
+
+/**
+ * Return tag data type from value.
+ * @param tag           tag value
+ * @return              tag data type, RPM_NULL_TYPE on not found.
+ */
+int rpmTagGetType(int tag)
+{
+    return ((*rpmTags->tagType)(tag));
+}
+
+/**
+ * Return tag value from name.
+ * @param tagstr        name of tag
+ * @return              tag value, -1 on not found
+ */
+int rpmTagGetValue(const char * tagstr)
+{
+    return ((*rpmTags->tagValue)(tagstr));
+}
+
