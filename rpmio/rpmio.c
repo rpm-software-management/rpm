@@ -27,8 +27,6 @@ extern int h_errno;
 
 #include <rpmio_internal.h>
 #undef	fdFileno
-#undef	fdClose
-#define	fdClose	__fdClose
 
 #include "ugid.h"
 #include "rpmmessages.h"
@@ -326,7 +324,7 @@ DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence
     return rc;
 }
 
-static int fdClose( void * cookie)
+static int __fdClose( void * cookie)
 {
     FD_t fd;
     int fdno;
@@ -342,9 +340,9 @@ static int fdClose( void * cookie)
     rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
-DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\t__fdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
 
-    fd = fdFree(fd, "open (fdClose)");
+    fd = fdFree(fd, "open (__fdClose)");
     return rc;
 }
 
@@ -367,7 +365,7 @@ DBGIO(fd, (stderr, "==>\t__fdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (
 }
 
 static struct FDIO_s fdio_s = {
-  __fdRead, __fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  __fdRead, __fdWrite, fdSeek, __fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   __fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fdio = &fdio_s ;
@@ -817,7 +815,7 @@ int ufdClose( void * cookie)
 
     UFDONLY(fd);
 
-    return fdClose(fd);
+    return __fdClose(fd);
 }
 
 /*
@@ -1614,7 +1612,7 @@ if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	fd = __fdOpen(path, flags, perms);
 	if (fdFileno(fd) < 0) {
-	    if (fd) (void) fdClose(fd);
+	    if (fd) (void) __fdClose(fd);
 	    return NULL;
 	}
     } else {
