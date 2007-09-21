@@ -27,8 +27,6 @@ extern int h_errno;
 
 #include <rpmio_internal.h>
 #undef	fdFileno
-#undef	fdRead
-#define	fdRead	__fdRead
 #undef	fdWrite
 #define	fdWrite	__fdWrite
 #undef	fdClose
@@ -271,7 +269,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     return XfdLink(fd, msg, file, line);
 }
 
-static ssize_t fdRead(void * cookie, char * buf, size_t count)
+static ssize_t __fdRead(void * cookie, char * buf, size_t count)
 {
     FD_t fd = c2f(cookie);
     ssize_t rc;
@@ -284,7 +282,7 @@ static ssize_t fdRead(void * cookie, char * buf, size_t count)
 
     if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 
-DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\t__fdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
 }
@@ -371,7 +369,7 @@ DBGIO(fd, (stderr, "==>\t__fdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (
 }
 
 static struct FDIO_s fdio_s = {
-  fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  __fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   __fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fdio = &fdio_s ;
@@ -501,7 +499,7 @@ int fdFgets(FD_t fd, char * buf, size_t len)
 
 	errno = 0;
 #ifdef	NOISY
-	rc = fdRead(fd, buf + nb, 1);
+	rc = __fdRead(fd, buf + nb, 1);
 #else
 	rc = read(fdFileno(fd), buf + nb, 1);
 #endif
@@ -683,7 +681,7 @@ static ssize_t ufdRead(void * cookie, char * buf, size_t count)
 	int fdno = fdFileno(fd);
 	(void) fstat(fdno, &sb);
 	if (S_ISREG(sb.st_mode))
-	    return fdRead(fd, buf, count);
+	    return __fdRead(fd, buf, count);
     }
 
     UFDONLY(fd);
@@ -708,7 +706,7 @@ static ssize_t ufdRead(void * cookie, char * buf, size_t count)
 	    break;
 	}
 
-	rc = fdRead(fd, buf + total, count - total);
+	rc = __fdRead(fd, buf + total, count - total);
 
 	if (rc < 0) {
 	    switch (errno) {
