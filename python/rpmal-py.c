@@ -30,7 +30,7 @@ rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
     rpmdsObject * dso;
     rpmfiObject * fio;
     PyObject * key;
-    alKey pkgKey;
+    rpmalKey pkgKey;
     char * kwlist[] = {"packageKey", "key", "dso", "fileInfo", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "iOO!O!:Add", kwlist,
@@ -47,7 +47,7 @@ rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmal_Del(rpmalObject * s, PyObject * args, PyObject * kwds)
 {
-    alKey pkgKey;
+    rpmalKey pkgKey;
     char * kwlist[] = {"key", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Del", kwlist, &pkgKey))
@@ -63,7 +63,7 @@ static PyObject *
 rpmal_AddProvides(rpmalObject * s, PyObject * args, PyObject * kwds)
 {
     rpmdsObject * dso;
-    alKey pkgKey;
+    rpmalKey pkgKey;
     char * kwlist[] = {"index", "packageIndex", "dso", NULL};
 
     /* XXX: why is there an argument listed in the format string that

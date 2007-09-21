@@ -53,6 +53,7 @@ typedef struct rpmts_s * rpmts;
  */
 typedef struct Spec_s * Spec;
 
+#if 0
 /** \ingroup rpmtrans
  * An added/available package retrieval key.
  */
@@ -63,6 +64,7 @@ typedef void * alKey;
  * An added/available package retrieval index.
  */
 typedef intptr_t alNum;
+#endif
 
 /** \ingroup rpmtrans
  * Dependency tag sets from a header, so that a header can be discarded early.

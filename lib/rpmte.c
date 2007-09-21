@@ -194,7 +194,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		fnpyKey key,
 		rpmRelocation * relocs,
 		int dboffset,
-		alKey pkgKey)
+		rpmalKey pkgKey)
 {
     rpmte p = xcalloc(1, sizeof(*p));
     int_32 * ep;
@@ -427,14 +427,14 @@ void rpmteNewTSI(rpmte te)
     }
 }
 
-alKey rpmteAddedKey(rpmte te)
+rpmalKey rpmteAddedKey(rpmte te)
 {
     return (te != NULL ? te->u.addedKey : RPMAL_NOMATCH);
 }
 
-alKey rpmteSetAddedKey(rpmte te, alKey npkgKey)
+rpmalKey rpmteSetAddedKey(rpmte te, rpmalKey npkgKey)
 {
-    alKey opkgKey = RPMAL_NOMATCH;
+    rpmalKey opkgKey = RPMAL_NOMATCH;
     if (te != NULL) {
 	opkgKey = te->u.addedKey;
 	te->u.addedKey = npkgKey;
@@ -443,7 +443,7 @@ alKey rpmteSetAddedKey(rpmte te, alKey npkgKey)
 }
 
 
-alKey rpmteDependsOnKey(rpmte te)
+rpmalKey rpmteDependsOnKey(rpmte te)
 {
     return (te != NULL ? te->u.removed.dependsOnKey : RPMAL_NOMATCH);
 }

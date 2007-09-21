@@ -12,6 +12,17 @@ extern int _rpmal_debug;
  */
 typedef struct rpmal_s *		rpmal;
 
+/** \ingroup rpmtrans
+ *  * An added/available package retrieval key.
+ *   */
+typedef void * rpmalKey;
+#define RPMAL_NOMATCH   ((rpmalKey)-1L)
+
+/** \ingroup rpmtrans
+ *  * An added/available package retrieval index.
+ *   */
+typedef intptr_t rpmalNum;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,7 +46,7 @@ rpmal rpmalFree(rpmal al);
  * @param al		available list
  * @param pkgKey	package key
  */
-void rpmalDel(rpmal al, alKey pkgKey);
+void rpmalDel(rpmal al, rpmalKey pkgKey);
 
 /**
  * Add package to available list.
@@ -47,8 +58,8 @@ void rpmalDel(rpmal al, alKey pkgKey);
  * @param tscolor	transaction color bits
  * @return		available package index
  */
-alKey rpmalAdd(rpmal * alistp,
-		alKey pkgKey,
+rpmalKey rpmalAdd(rpmal * alistp,
+		rpmalKey pkgKey,
 		fnpyKey key,
 		rpmds provides, rpmfi fi,
 		uint_32 tscolor);
@@ -61,7 +72,7 @@ alKey rpmalAdd(rpmal * alistp,
  * @param tscolor	transaction color bits
  */
 void rpmalAddProvides(rpmal al,
-		alKey pkgKey,
+		rpmalKey pkgKey,
 		rpmds provides, uint_32 tscolor);
 
 /**
@@ -78,7 +89,7 @@ void rpmalMakeIndex(rpmal al);
  * @return		associated package key(s), NULL if none
  */
 fnpyKey * rpmalAllFileSatisfiesDepend(const rpmal al,
-		const rpmds ds, alKey * keyp);
+		const rpmds ds, rpmalKey * keyp);
 
 /**
  * Check added package file lists for package(s) that have a provide.
@@ -88,7 +99,7 @@ fnpyKey * rpmalAllFileSatisfiesDepend(const rpmal al,
  * @return		associated package key(s), NULL if none
  */
 fnpyKey * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds,
-		alKey * keyp);
+		rpmalKey * keyp);
 
 /**
  * Check added package file lists for first package that has a provide.
@@ -99,7 +110,7 @@ fnpyKey * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds,
  * @return		associated package key, NULL if none
  */
 fnpyKey rpmalSatisfiesDepend(const rpmal al, const rpmds ds,
-		alKey * keyp);
+		rpmalKey * keyp);
 
 #ifdef __cplusplus
 }

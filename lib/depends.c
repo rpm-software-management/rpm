@@ -30,7 +30,7 @@ typedef struct orderListIndex_s *	orderListIndex;
 /**
  */
 struct orderListIndex_s {
-    alKey pkgKey;
+    rpmalKey pkgKey;
     int orIndex;
 };
 
@@ -65,7 +65,7 @@ static int intcmp(const void * a, const void * b)
  * @return		0 on success
  */
 static int removePackage(rpmts ts, Header h, int dboffset,
-		alKey depends)
+		rpmalKey depends)
 {
     rpmte p;
 
@@ -119,7 +119,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     const char * os;
     rpmds oldChk, newChk;
     rpmds obsoletes;
-    alKey pkgKey;	/* addedPackages key */
+    rpmalKey pkgKey;	/* addedPackages key */
     int xx;
     int ec = 0;
     int rc;
@@ -919,7 +919,7 @@ static inline int addRelation(rpmts ts,
     tsortInfo tsi;
     const char * Name;
     fnpyKey key;
-    alKey pkgKey;
+    rpmalKey pkgKey;
     int i = 0;
 
     if ((Name = rpmdsN(requires)) == NULL)
@@ -1054,7 +1054,7 @@ int rpmtsOrder(rpmts ts)
     rpmtsi ri; rpmte r;
     tsortInfo tsi;
     tsortInfo tsi_next;
-    alKey * ordering;
+    rpmalKey * ordering;
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;

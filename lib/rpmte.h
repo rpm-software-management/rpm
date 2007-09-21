@@ -6,6 +6,8 @@
  * Structures used for an "rpmte" transaction element.
  */
 
+#include "rpmal.h"
+
 /**
  */
 extern int _rpmte_debug;
@@ -90,9 +92,9 @@ struct rpmte_s {
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
     union {
-	alKey addedKey;
+	rpmalKey addedKey;
 	struct {
-	    alKey dependsOnKey;
+	    rpmalKey dependsOnKey;
 	    int dboffset;
 	} removed;
     } u;
@@ -137,7 +139,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		fnpyKey key,
 		rpmRelocation * relocs,
 		int dboffset,
-		alKey pkgKey);
+		rpmalKey pkgKey);
 
 /**
  * Retrieve header from transaction element.
@@ -368,7 +370,7 @@ void rpmteCleanDS(rpmte te);
  * @param te		transaction element
  * @return		pkgKey
  */
-alKey rpmteAddedKey(rpmte te);
+rpmalKey rpmteAddedKey(rpmte te);
 
 /**
  * Set pkgKey of TR_ADDED transaction element.
@@ -376,15 +378,15 @@ alKey rpmteAddedKey(rpmte te);
  * @param npkgKey	new pkgKey
  * @return		previous pkgKey
  */
-alKey rpmteSetAddedKey(rpmte te,
-		alKey npkgKey);
+rpmalKey rpmteSetAddedKey(rpmte te,
+		rpmalKey npkgKey);
 
 /**
  * Retrieve dependent pkgKey of TR_REMOVED transaction element.
  * @param te		transaction element
  * @return		dependent pkgKey
  */
-alKey rpmteDependsOnKey(rpmte te);
+rpmalKey rpmteDependsOnKey(rpmte te);
 
 /**
  * Retrieve rpmdb instance of TR_REMOVED transaction element.

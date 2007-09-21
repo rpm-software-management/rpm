@@ -1313,7 +1313,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     sharedFileInfo shared, sharedList;
     int numShared;
     int nexti;
-    alKey lastFailKey;
+    rpmalKey lastFailKey;
     fingerPrintCache fpc;
     rpmps ps;
     rpmpsm psm;
@@ -1920,11 +1920,11 @@ assert(psm != NULL);
     /* ===============================================
      * Install and remove packages.
      */
-    lastFailKey = (alKey)-2;	/* erased packages have -1 */
+    lastFailKey = (rpmalKey)-2;	/* erased packages have -1 */
     pi = rpmtsiInit(ts);
     /* FIX: fi reload needs work */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	alKey pkgKey;
+	rpmalKey pkgKey;
 	int gotfd;
 
 	gotfd = 0;

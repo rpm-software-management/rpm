@@ -36,7 +36,7 @@ typedef struct availableIndexEntry_s *	availableIndexEntry;
  * A single available item (e.g. a Provides: dependency).
  */
 struct availableIndexEntry_s {
-    alKey pkgKey;		/*!< Containing package. */
+    rpmalKey pkgKey;		/*!< Containing package. */
     const char * entry;		/*!< Dependency name. */
     unsigned short entryLen;	/*!< No. of bytes in name. */
     unsigned short entryIx;	/*!< Dependency index. */
@@ -64,7 +64,7 @@ typedef struct fileIndexEntry_s *	fileIndexEntry;
 struct fileIndexEntry_s {
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
-    alNum pkgNum;		/*!< Containing package index. */
+    rpmalNum pkgNum;		/*!< Containing package index. */
     uint_32 ficolor;
 };
 
@@ -119,16 +119,16 @@ static int alGetSize(const rpmal al)
 }
 #endif
 
-static inline alNum alKey2Num(const rpmal al,
-		alKey pkgKey)
+static inline rpmalNum alKey2Num(const rpmal al,
+		rpmalKey pkgKey)
 {
-    return ((alNum)pkgKey);
+    return ((rpmalNum)pkgKey);
 }
 
-static inline alKey alNum2Key(const rpmal al,
-		alNum pkgNum)
+static inline rpmalKey alNum2Key(const rpmal al,
+		rpmalNum pkgNum)
 {
-    return ((alKey)pkgNum);
+    return ((rpmalKey)pkgNum);
 }
 
 #ifdef	DYING
@@ -139,9 +139,9 @@ static inline alKey alNum2Key(const rpmal al,
  * @return		available package pointer
  */
 static availablePackage alGetPkg(const rpmal al,
-		alKey pkgKey)
+		rpmalKey pkgKey)
 {
-    alNum pkgNum = alKey2Num(al, pkgKey);
+    rpmalNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp = NULL;
 
     if (al != NULL && pkgNum >= 0 && pkgNum < alGetSize(al)) {
@@ -254,9 +254,9 @@ fprintf(stderr, "\n");
     return strcmp(a->baseName, b->baseName);
 }
 
-void rpmalDel(rpmal al, alKey pkgKey)
+void rpmalDel(rpmal al, rpmalKey pkgKey)
 {
-    alNum pkgNum = alKey2Num(al, pkgKey);
+    rpmalNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp;
     rpmfi fi;
 
@@ -353,10 +353,10 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al-
     return;
 }
 
-alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
+rpmalKey rpmalAdd(rpmal * alistp, rpmalKey pkgKey, fnpyKey key,
 		rpmds provides, rpmfi fi, uint_32 tscolor)
 {
-    alNum pkgNum;
+    rpmalNum pkgNum;
     rpmal al;
     availablePackage alp;
 
@@ -520,8 +520,8 @@ fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie
 
     rpmalFreeIndex(al);
 
-assert(((alNum)(alp - al->list)) == pkgNum);
-    return ((alKey)(alp - al->list));
+assert(((rpmalNum)(alp - al->list)) == pkgNum);
+    return ((rpmalKey)(alp - al->list));
 }
 
 /**
@@ -543,11 +543,11 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint_32 tscolor)
+void rpmalAddProvides(rpmal al, rpmalKey pkgKey, rpmds provides, uint_32 tscolor)
 {
     uint_32 dscolor;
     const char * Name;
-    alNum pkgNum = alKey2Num(al, pkgKey);
+    rpmalNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
     availableIndexEntry aie;
     int ix;
@@ -605,7 +605,7 @@ void rpmalMakeIndex(rpmal al)
     ai->k = 0;
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
-	rpmalAddProvides(al, (alKey)i, alp->provides, alp->tscolor);
+	rpmalAddProvides(al, (rpmalKey)i, alp->provides, alp->tscolor);
     }
 
     /* Reset size to the no. of provides added. */
@@ -614,7 +614,7 @@ void rpmalMakeIndex(rpmal al)
 }
 
 fnpyKey *
-rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
+rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 {
     uint_32 tscolor;
     uint_32 ficolor;
@@ -708,7 +708,7 @@ exit:
 }
 
 fnpyKey *
-rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
+rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 {
     availableIndex ai;
     availableIndexEntry needle;
@@ -789,7 +789,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 }
 
 fnpyKey
-rpmalSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
+rpmalSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 {
     fnpyKey * tmp = rpmalAllSatisfiesDepend(al, ds, keyp);
 
