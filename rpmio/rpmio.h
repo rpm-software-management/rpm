@@ -371,18 +371,15 @@ extern int fdClose( void * cookie);
 
 /**
  */
-FD_t fdLink (void * cookie, const char * msg);
-#define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
+extern FD_t fdLink (void * cookie, const char * msg);
 
 /**
  */
-FD_t fdFree(FD_t fd, const char * msg);
-#define	fdFree(_fd, _msg)	fdio->_fdderef(_fd, _msg, __FILE__, __LINE__)
+extern FD_t fdFree(FD_t fd, const char * msg);
 
 /**
  */
-FD_t fdNew (const char * msg);
-#define	fdNew(_msg)		fdio->_fdnew(_msg, __FILE__, __LINE__)
+extern FD_t fdNew (const char * msg);
 
 /**
  */
