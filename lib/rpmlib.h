@@ -785,16 +785,6 @@ typedef enum rpmFileTypes_e {
     SOCK	= 12	/*!< socket */
 } rpmFileTypes;
 
-/** \ingroup payload
- * Iterator across package file info, forward on install, backward on erase.
- */
-typedef struct fsmIterator_s * FSMI_t;
-
-/** \ingroup payload
- * File state machine data.
- */
-typedef struct fsm_s * FSM_t;
-
 /**
  * Perform simple sanity and range checks on header tag(s).
  * @param il		no. of tags in header

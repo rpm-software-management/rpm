@@ -94,6 +94,10 @@ struct cpioCrcPhysicalHeader {
 
 #define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
 
+/* XXX circular includes avoidance... */
+typedef struct fsmIterator_s * FSMI_t;
+typedef struct fsm_s * FSM_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
