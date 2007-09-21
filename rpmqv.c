@@ -269,7 +269,8 @@ int main(int argc, char *argv[])
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
-    optCon = poptGetContext(__progname, argc, argv, optionsTable, 0);
+    /* XXX popt argv definition should be fixed instead of casting... */
+    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
     (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
 #if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
