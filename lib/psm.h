@@ -10,6 +10,8 @@
 
 extern int _psm_debug;
 
+typedef struct rpmpsm_s * rpmpsm;
+
 /**
  */
 #define	PSM_VERBOSE	0x8000

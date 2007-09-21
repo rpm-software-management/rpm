@@ -795,11 +795,6 @@ typedef struct fsmIterator_s * FSMI_t;
  */
 typedef struct fsm_s * FSM_t;
 
-/** \ingroup rpmtrans
- * Package state machine data.
- */
-typedef struct rpmpsm_s * rpmpsm;
-
 /**
  * Perform simple sanity and range checks on header tag(s).
  * @param il		no. of tags in header
