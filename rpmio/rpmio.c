@@ -27,8 +27,6 @@ extern int h_errno;
 
 #include <rpmio_internal.h>
 #undef	fdFileno
-#undef	fdOpen
-#define	fdOpen	__fdOpen
 #undef	fdRead
 #define	fdRead	__fdRead
 #undef	fdWrite
@@ -354,7 +352,7 @@ DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned l
     return rc;
 }
 
-static FD_t fdOpen(const char *path, int flags, mode_t mode)
+static FD_t __fdOpen(const char *path, int flags, mode_t mode)
 {
     FD_t fd;
     int fdno;
@@ -365,16 +363,16 @@ static FD_t fdOpen(const char *path, int flags, mode_t mode)
 	(void) close(fdno);
 	return NULL;
     }
-    fd = fdNew("open (fdOpen)");
+    fd = fdNew("open (__fdOpen)");
     fdSetFdno(fd, fdno);
     fd->flags = flags;
-DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\t__fdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     return fd;
 }
 
 static struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
-  fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
+  __fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fdio = &fdio_s ;
 
@@ -861,7 +859,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
         rpmError(RPMERR_EXEC, _("URL helper failed: %s (%d)\n"),
                  cmd, WEXITSTATUS(rc));
     } else {
-	fd = fdOpen(dest, flags, mode);
+	fd = __fdOpen(dest, flags, mode);
 	unlink(dest);
     }
     dest = _free(dest);
@@ -897,7 +895,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
     default:
-	fd = fdOpen(path, flags, mode);
+	fd = __fdOpen(path, flags, mode);
 	break;
     }
 
@@ -1618,7 +1616,7 @@ FD_t Fopen(const char *path, const char *fmode)
     if (end == NULL || !strcmp(end, "fdio")) {
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
-	fd = fdOpen(path, flags, perms);
+	fd = __fdOpen(path, flags, perms);
 	if (fdFileno(fd) < 0) {
 	    if (fd) (void) fdClose(fd);
 	    return NULL;
