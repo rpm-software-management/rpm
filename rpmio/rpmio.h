@@ -355,23 +355,19 @@ int fdFileno(void * cookie);
 
 /**
  */
-FD_t fdOpen(const char *path, int flags, mode_t mode);
-#define	fdOpen(_path, _flags, _mode)	fdio->_open((_path), (_flags), (_mode))
+extern FD_t fdOpen(const char *path, int flags, mode_t mode);
 
 /**
  */
-ssize_t fdRead(void * cookie, char * buf, size_t count);
-#define	fdRead(_fd, _buf, _count)	fdio->read((_fd), (_buf), (_count))
+extern ssize_t fdRead(void * cookie, char * buf, size_t count);
 
 /**
  */
-ssize_t	fdWrite(void * cookie, const char * buf, size_t count);
-#define	fdWrite(_fd, _buf, _count)	fdio->write((_fd), (_buf), (_count))
+extern ssize_t	fdWrite(void * cookie, const char * buf, size_t count);
 
 /**
  */
-int fdClose( void * cookie);
-#define	fdClose(_fd)		fdio->close(_fd)
+extern int fdClose( void * cookie);
 
 /**
  */
