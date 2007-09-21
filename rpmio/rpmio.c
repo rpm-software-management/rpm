@@ -265,6 +265,15 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     return XfdLink(fd, msg, file, line);
 }
 
+/**
+ */
+ssize_t fdRead(void * cookie, char * buf, size_t count)
+{
+    return fdio->read(cookie, buf, count);
+}
+
+/**
+ */
 static ssize_t __fdRead(void * cookie, char * buf, size_t count)
 {
     FD_t fd = c2f(cookie);
@@ -283,6 +292,15 @@ DBGIO(fd, (stderr, "==>\t__fdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)co
     return rc;
 }
 
+/**
+ */
+ssize_t fdWrite(void * cookie, const char * buf, size_t count)
+{
+    return fdio->write(cookie, buf, count);
+}
+
+/**
+ */
 static ssize_t __fdWrite(void * cookie, const char * buf, size_t count)
 {
     FD_t fd = c2f(cookie);
@@ -324,6 +342,15 @@ DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence
     return rc;
 }
 
+/**
+ */
+int fdClose( void * cookie)
+{
+   return fdio->close(cookie);
+}
+
+/**
+ */
 static int __fdClose( void * cookie)
 {
     FD_t fd;
@@ -346,6 +373,15 @@ DBGIO(fd, (stderr, "==>\t__fdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned
     return rc;
 }
 
+/**
+ */
+FD_t fdOpen(const char *path, int flags, mode_t mode)
+{
+    return fdio->_open(path, flags, mode);
+}
+
+/**
+ */
 static FD_t __fdOpen(const char *path, int flags, mode_t mode)
 {
     FD_t fd;
