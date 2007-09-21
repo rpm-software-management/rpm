@@ -83,7 +83,7 @@ rpmds rpmdsFree(rpmds ds);
  * @deprecated Only scareMem = 0 will be permitted.
  * @param h		header
  * @param tagN		type of dependency
- * @param flags		scareMem(0x1), nofilter(0x2)
+ * @param flags		scareMem(0x1)
  * @return		new dependency set
  */
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags);

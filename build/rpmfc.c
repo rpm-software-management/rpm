@@ -1363,7 +1363,7 @@ static void printDeps(Header h)
 {
     DepMsg_t dm;
     rpmds ds = NULL;
-    int flags = 0x2;	/* XXX no filtering, !scareMem */
+    int flags = 0;	/* XXX !scareMem */
     const char * DNEVR;
     int_32 Flags;
     int bingo = 0;
@@ -1482,7 +1482,7 @@ int rpmfcGenerateDepends(const Spec spec, Package pkg)
     rpmfi fi = pkg->cpioList;
     rpmfc fc = NULL;
     rpmds ds;
-    int flags = 0x2;	/* XXX no filtering, !scareMem */
+    int flags = 0;	/* XXX !scareMem */
     ARGV_t av;
     int_16 * fmode;
     int ac = rpmfiFC(fi);
