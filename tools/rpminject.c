@@ -370,7 +370,7 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
 {
     struct rpmlead lead;	/* XXX FIXME: exorcize lead/arch/os */
     Header sigs;
-    Spec spec;
+    rpmSpec spec;
     struct cpioSourceArchive_s csabuf, *csa = &csabuf;
     int rc;
 
