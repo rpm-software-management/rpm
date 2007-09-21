@@ -1662,13 +1662,15 @@ int Fflush(FD_t fd)
 	return fflush(fdGetFILE(fd));
 
     vh = fdGetFp(fd);
+#if HAVE_ZLIB_H
     if (vh && fdGetIo(fd) == gzdio)
 	return gzdFlush(vh);
+#endif
 #if HAVE_BZLIB_H
     if (vh && fdGetIo(fd) == bzdio)
 	return bzdFlush(vh);
 #endif
-
+/* FIXME: If we get here, something went wrong above */
     return 0;
 }
 
