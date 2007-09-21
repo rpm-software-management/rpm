@@ -56,7 +56,7 @@ struct Source * freeSources(struct Source * s)
     return NULL;
 }
 
-int lookupPackage(Spec spec, const char *name, int flag,Package *pkg)
+int lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 {
     const char *pname;
     const char *fullName;
@@ -95,7 +95,7 @@ int lookupPackage(Spec spec, const char *name, int flag,Package *pkg)
     return ((p == NULL) ? 1 : 0);
 }
 
-Package newPackage(Spec spec)
+Package newPackage(rpmSpec spec)
 {
     Package p;
     Package pp;
@@ -185,7 +185,7 @@ Package freePackages(Package packages)
 
 /**
  */
-static inline struct Source *findSource(Spec spec, int num, int flag)
+static inline struct Source *findSource(rpmSpec spec, int num, int flag)
 {
     struct Source *p;
 
@@ -195,7 +195,7 @@ static inline struct Source *findSource(Spec spec, int num, int flag)
     return NULL;
 }
 
-int parseNoSource(Spec spec, const char * field, int tag)
+int parseNoSource(rpmSpec spec, const char * field, int tag)
 {
     const char *f, *fe;
     const char *name;
@@ -239,7 +239,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
     return 0;
 }
 
-int addSource(Spec spec, Package pkg, const char *field, int tag)
+int addSource(rpmSpec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
     int flag = 0;
@@ -385,9 +385,9 @@ static inline spectags freeSt(spectags st)
     return _free(st);
 }
 
-Spec newSpec(void)
+rpmSpec newSpec(void)
 {
-    Spec spec = xcalloc(1, sizeof(*spec));
+    rpmSpec spec = xcalloc(1, sizeof(*spec));
     
     spec->specFile = NULL;
 
@@ -443,7 +443,7 @@ Spec newSpec(void)
     return spec;
 }
 
-Spec freeSpec(Spec spec)
+rpmSpec freeSpec(rpmSpec spec)
 {
     struct ReadLevelEntry *rl;
 
@@ -537,7 +537,7 @@ struct OpenFileInfo * newOpenFileInfo(void)
  * @param spec		spec file control structure
  */
 static void
-printNewSpecfile(Spec spec)
+printNewSpecfile(rpmSpec spec)
 {
     Header h;
     speclines sl = spec->sl;
@@ -633,7 +633,7 @@ printNewSpecfile(Spec spec)
 
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
-    Spec spec = NULL;
+    rpmSpec spec = NULL;
     Package pkg;
     char * buildRoot = NULL;
     int recursing = 0;

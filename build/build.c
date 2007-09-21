@@ -15,7 +15,7 @@ static int _build_debug = 0;
 
 /**
  */
-static void doRmSource(Spec spec)
+static void doRmSource(rpmSpec spec)
 {
     struct Source *p;
     Package pkg;
@@ -47,7 +47,7 @@ static void doRmSource(Spec spec)
 /*
  * @todo Single use by %%doc in files.c prevents static.
  */
-int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
+int doScript(rpmSpec spec, int what, const char *name, StringBuf sb, int test)
 {
     const char * rootURL = spec->rootURL;
     const char * rootDir;
@@ -272,7 +272,7 @@ fprintf(stderr, "*** delMacros\n");
     return rc;
 }
 
-int buildSpec(rpmts ts, Spec spec, int what, int test)
+int buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 {
     int rc = 0;
 

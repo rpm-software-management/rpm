@@ -286,7 +286,7 @@ struct rpmts_s {
 
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
 
-    Spec spec;			/*!< Spec file control structure. */
+    rpmSpec spec;		/*!< Spec file control structure. */
 
     rpmtsScore score;		/*!< Transaction Score (autorollback). */
 
@@ -773,7 +773,7 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags);
  * @param ts		transaction set
  * @return		spec control structure
  */
-Spec rpmtsSpec(rpmts ts);
+rpmSpec rpmtsSpec(rpmts ts);
 
 /** \ingroup rpmts
  * Set a spec control structure in transaction set.
@@ -781,7 +781,7 @@ Spec rpmtsSpec(rpmts ts);
  * @param spec		new spec control structure
  * @return		previous spec control structure
  */
-Spec rpmtsSetSpec(rpmts ts, Spec spec);
+rpmSpec rpmtsSetSpec(rpmts ts, rpmSpec spec);
 
 /** \ingroup rpmts
  * Get current relocate transaction element.

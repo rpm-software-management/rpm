@@ -3,7 +3,7 @@
 
 /** \ingroup rpmbuild
  * \file build/rpmspec.h
- *  The Spec and Package data structures used during build.
+ *  The rpmSpec and Package data structures used during build.
  */
 
 /** \ingroup rpmbuild
@@ -84,7 +84,7 @@ char **sl_lines;
 /** \ingroup rpmbuild
  * The structure used to store values parsed from a spec file.
  */
-struct Spec_s {
+struct rpmSpec_s {
     const char * specFile;	/*!< Name of the spec file. */
     const char * buildRootURL;
     const char * buildSubdir;
@@ -104,7 +104,7 @@ struct Spec_s {
     struct ReadLevelEntry * readStack;
 
     Header buildRestrictions;
-    Spec * BASpecs;
+    rpmSpec * BASpecs;
     const char ** BANames;
     int BACount;
     int recursing;		/*!< parse is recursive? */
@@ -174,17 +174,17 @@ extern "C" {
 #endif
 
 /** \ingroup rpmbuild
- * Create and initialize Spec structure.
+ * Create and initialize rpmSpec structure.
  * @return spec		spec file control structure
  */
-Spec newSpec(void);
+rpmSpec newSpec(void);
 
 /** \ingroup rpmbuild
  * Destroy Spec structure.
  * @param spec		spec file control structure
  * @return		NULL always
  */
-Spec freeSpec(Spec spec);
+rpmSpec freeSpec(rpmSpec spec);
 
 /** \ingroup rpmbuild
  * Function to query spec file(s).
@@ -205,7 +205,7 @@ struct OpenFileInfo * newOpenFileInfo(void);
  * @param tag
  * @param lang
  */
-spectag stashSt(Spec spec, Header h, int tag, const char * lang);
+spectag stashSt(rpmSpec spec, Header h, int tag, const char * lang);
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
@@ -213,14 +213,14 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang);
  * @param field
  * @param tag
  */
-int addSource(Spec spec, Package pkg, const char * field, int tag);
+int addSource(rpmSpec spec, Package pkg, const char * field, int tag);
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
  * @param field
  * @param tag
  */
-int parseNoSource(Spec spec, const char * field, int tag);
+int parseNoSource(rpmSpec spec, const char * field, int tag);
 
 #ifdef __cplusplus
 }

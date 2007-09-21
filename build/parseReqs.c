@@ -31,7 +31,7 @@ const char * token;
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
-int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
+int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;

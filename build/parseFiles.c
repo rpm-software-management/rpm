@@ -17,7 +17,7 @@
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-int parseFiles(Spec spec)
+int parseFiles(rpmSpec spec)
 {
     int nextPart;
     Package pkg;

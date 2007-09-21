@@ -51,7 +51,7 @@ typedef struct rpmts_s * rpmts;
 
 /** \ingroup rpmbuild
  */
-typedef struct Spec_s * Spec;
+typedef struct rpmSpec_s * rpmSpec;
 
 /** \ingroup rpmtrans
  * Dependency tag sets from a header, so that a header can be discarded early.

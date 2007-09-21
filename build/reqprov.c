@@ -8,7 +8,7 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-int addReqProv(Spec spec, Header h, rpmTag tagN,
+int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		int index)
 {

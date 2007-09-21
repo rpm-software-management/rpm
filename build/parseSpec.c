@@ -100,7 +100,7 @@ void handleComments(char *s)
 
 /**
  */
-static void forceIncludeFile(Spec spec, const char * fileName)
+static void forceIncludeFile(rpmSpec spec, const char * fileName)
 {
     OFI_t * ofi;
 
@@ -112,7 +112,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 
 /**
  */
-static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
+static int copyNextLine(rpmSpec spec, OFI_t *ofi, int strip)
 {
     char *last;
     char ch;
@@ -202,7 +202,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     return 0;
 }
 
-int readLine(Spec spec, int strip)
+int readLine(rpmSpec spec, int strip)
 {
 #ifdef	DYING
     const char *arch;
@@ -382,7 +382,7 @@ retry:
     return 0;
 }
 
-void closeSpec(Spec spec)
+void closeSpec(rpmSpec spec)
 {
     OFI_t *ofi;
 
@@ -407,7 +407,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     const char *saveArch;
 #endif
     Package pkg;
-    Spec spec;
+    rpmSpec spec;
     
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
@@ -562,7 +562,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	     * %{_target_cpu}, disagrees with the info in the header.
 	     */
 	    if (spec->BACount >= 1) {
-		Spec nspec = spec->BASpecs[0];
+		rpmSpec nspec = spec->BASpecs[0];
 		spec->BASpecs = _free(spec->BASpecs);
 		spec = freeSpec(spec);
 		spec = nspec;

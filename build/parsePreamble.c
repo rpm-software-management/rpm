@@ -202,7 +202,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 
 /**
  */
-static int checkForValidArchitectures(Spec spec)
+static int checkForValidArchitectures(rpmSpec spec)
 {
 #ifndef	DYING
     const char *arch = NULL;
@@ -377,7 +377,7 @@ exit:
     return rc;
 }
 
-spectag stashSt(Spec spec, Header h, int tag, const char * lang)
+spectag stashSt(rpmSpec spec, Header h, int tag, const char * lang)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     spectag t = NULL;
@@ -417,7 +417,7 @@ extern int noLang;
 
 /**
  */
-static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
+static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -740,7 +740,7 @@ static inline void initPreambleList(void)
 
 /**
  */
-static int findPreambleTag(Spec spec,rpmTag * tag,
+static int findPreambleTag(rpmSpec spec,rpmTag * tag,
 		const char ** macro, char * lang)
 {
     PreambleRec p;
@@ -799,7 +799,7 @@ static int findPreambleTag(Spec spec,rpmTag * tag,
     return 0;
 }
 
-int parsePreamble(Spec spec, int initialPackage)
+int parsePreamble(rpmSpec spec, int initialPackage)
 {
     int nextPart;
     int rc, xx;

@@ -198,7 +198,7 @@ static int addChangelog(Header h, StringBuf sb)
     return 0;
 }
 
-int parseChangelog(Spec spec)
+int parseChangelog(rpmSpec spec)
 {
     int nextPart, res, rc;
     StringBuf sb = newStringBuf();

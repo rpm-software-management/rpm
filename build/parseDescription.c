@@ -20,7 +20,7 @@ extern int noLang;
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-int parseDescription(Spec spec)
+int parseDescription(rpmSpec spec)
 {
     int nextPart = RPMERR_BADSPEC;	/* assume error */
     StringBuf sb;

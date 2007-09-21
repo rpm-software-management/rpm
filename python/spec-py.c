@@ -54,7 +54,7 @@ spec_print(specObject * s)
 static PyObject * 
 spec_get_buildroot(specObject * s) 
 {
-    Spec spec = specFromSpec(s);
+    rpmSpec spec = specFromSpec(s);
     if (spec != NULL && spec->buildRootURL) {
         return Py_BuildValue("s", spec->buildRootURL);
     }
@@ -66,7 +66,7 @@ spec_get_buildroot(specObject * s)
 static PyObject * 
 spec_get_prep(specObject * s) 
 {
-    Spec spec = specFromSpec(s);
+    rpmSpec spec = specFromSpec(s);
     if (spec != NULL && spec->prep) {
         StringBuf sb = newStringBuf();
         sb=spec->prep;
@@ -80,7 +80,7 @@ spec_get_prep(specObject * s)
 static PyObject * 
 spec_get_build(specObject * s) 
 {
-    Spec spec = specFromSpec(s);
+    rpmSpec spec = specFromSpec(s);
     if (spec != NULL && spec->build) {
         StringBuf sb = newStringBuf();
         sb=spec->build;
@@ -94,7 +94,7 @@ spec_get_build(specObject * s)
 static PyObject * 
 spec_get_install(specObject * s) 
 {
-    Spec spec = specFromSpec(s);
+    rpmSpec spec = specFromSpec(s);
     if (spec != NULL && spec->install) {
         StringBuf sb = newStringBuf();
         sb=spec->install;
@@ -108,7 +108,7 @@ spec_get_install(specObject * s)
 static PyObject * 
 spec_get_clean(specObject * s) 
 {
-    Spec spec = specFromSpec(s);
+    rpmSpec spec = specFromSpec(s);
     if (spec != NULL && spec->clean) {
         StringBuf sb = newStringBuf();
         sb=spec->clean;
@@ -124,7 +124,7 @@ spec_get_sources(specObject *s)
 {
     struct Source * source;
     PyObject *sourceList, *srcUrl;
-    Spec spec;
+    rpmSpec spec;
     char * fullSource;
 
     sourceList = PyList_New(0);
@@ -206,13 +206,13 @@ PyTypeObject spec_Type = {
     0,                         /* tp_is_gc */
 };
 
-Spec specFromSpec(specObject *s) 
+rpmSpec specFromSpec(specObject *s) 
 {
     return s->spec;
 }
 
 specObject *
-spec_Wrap(Spec spec) 
+spec_Wrap(rpmSpec spec) 
 {
     specObject * s = PyObject_New(specObject, &spec_Type);
     if (s == NULL)

@@ -59,7 +59,7 @@ static int checkOwners(const char * urlfn)
  * @return		expanded %patch macro (NULL on error)
  */
 
-static char *doPatch(Spec spec, int c, int strip, const char *db,
+static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz)
 {
     const char *fn, *urlfn;
@@ -154,7 +154,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
  */
-static const char *doUntar(Spec spec, int c, int quietly)
+static const char *doUntar(rpmSpec spec, int c, int quietly)
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
@@ -274,7 +274,7 @@ static const char *doUntar(Spec spec, int c, int quietly)
  * @param line		current line from spec file
  * @return		0 on success
  */
-static int doSetupMacro(Spec spec, char *line)
+static int doSetupMacro(rpmSpec spec, char *line)
 {
     char buf[BUFSIZ];
     StringBuf before;
@@ -422,7 +422,7 @@ static int doSetupMacro(Spec spec, char *line)
  * @param line		current line from spec file
  * @return		0 on success
  */
-static int doPatchMacro(Spec spec, char *line)
+static int doPatchMacro(rpmSpec spec, char *line)
 {
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E, opt_F;
@@ -543,7 +543,7 @@ static int doPatchMacro(Spec spec, char *line)
     return 0;
 }
 
-int parsePrep(Spec spec)
+int parsePrep(rpmSpec spec)
 {
     int nextPart, res, rc;
     StringBuf sb;

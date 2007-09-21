@@ -28,7 +28,7 @@
 
 /**
  */
-static inline int genSourceRpmName(Spec spec)
+static inline int genSourceRpmName(rpmSpec spec)
 {
     if (spec->sourceRpmName == NULL) {
 	const char *name, *version, *release;
@@ -112,7 +112,7 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
 
 /**
  */
-static StringBuf addFileToTagAux(Spec spec,
+static StringBuf addFileToTagAux(rpmSpec spec,
 		const char * file, StringBuf sb)
 {
     char buf[BUFSIZ];
@@ -146,7 +146,7 @@ static StringBuf addFileToTagAux(Spec spec,
 
 /**
  */
-static int addFileToTag(Spec spec, const char * file, Header h, int tag)
+static int addFileToTag(rpmSpec spec, const char * file, Header h, int tag)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
@@ -168,7 +168,7 @@ static int addFileToTag(Spec spec, const char * file, Header h, int tag)
 
 /**
  */
-static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
+static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, int tag)
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -185,7 +185,7 @@ static int addFileToArrayTag(Spec spec, const char *file, Header h, int tag)
 
 /**
  */
-static int processScriptFiles(Spec spec, Package pkg)
+static int processScriptFiles(rpmSpec spec, Package pkg)
 {
     struct TriggerFileEntry *p;
     
@@ -266,11 +266,11 @@ static int processScriptFiles(Spec spec, Package pkg)
     return 0;
 }
 
-int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
+int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
 		Header *sigs, CSA_t csa)
 {
     FD_t fdi;
-    Spec spec;
+    rpmSpec spec;
     rpmRC rc;
 
     fdi = (fileName != NULL)
@@ -709,7 +709,7 @@ static int_32 copyTags[] = {
     0
 };
 
-int packageBinaries(Spec spec)
+int packageBinaries(rpmSpec spec)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
@@ -810,7 +810,7 @@ int packageBinaries(Spec spec)
     return 0;
 }
 
-int packageSources(Spec spec)
+int packageSources(rpmSpec spec)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;

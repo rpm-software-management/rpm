@@ -102,7 +102,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     const char * specURL;
     int specut;
     char buf[BUFSIZ];
-    Spec spec = NULL;
+    rpmSpec spec = NULL;
     int rc;
 
 #ifndef	DYING

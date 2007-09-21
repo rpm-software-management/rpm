@@ -157,7 +157,7 @@ int rpmfcApply(rpmfc fc);
  * @param pkg		package control
  * @return		0 on success
  */
-int rpmfcGenerateDepends(const Spec spec, Package pkg);
+int rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
 
 #ifdef __cplusplus
 }

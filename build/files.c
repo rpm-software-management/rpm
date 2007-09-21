@@ -826,7 +826,7 @@ VFA_t virtualFileAttributes[] = {
  * @retval *fileName	file name
  * @return		0 on success
  */
-static int parseForSimple(Spec spec, Package pkg, char * buf,
+static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 			  FileList fl, const char ** fileName)
 {
     char *s, *t;
@@ -1760,7 +1760,7 @@ exit:
 
 /**
  */
-static int processPackageFiles(Spec spec, Package pkg,
+static int processPackageFiles(rpmSpec spec, Package pkg,
 			       int installSpecialDoc, int test)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -2009,7 +2009,7 @@ exit:
     return fl.processingFailed;
 }
 
-void initSourceHeader(Spec spec)
+void initSourceHeader(rpmSpec spec)
 {
     HeaderIterator hi;
     int_32 tag, type, count;
@@ -2068,7 +2068,7 @@ void initSourceHeader(Spec spec)
     }
 }
 
-int processSourceFiles(Spec spec)
+int processSourceFiles(rpmSpec spec)
 {
     struct Source *srcPtr;
     StringBuf sourceFiles;
@@ -2277,7 +2277,7 @@ exit:
     return rc;
 }
 
-int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
+int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 {
     Package pkg;
     int res = 0;

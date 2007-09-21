@@ -1315,14 +1315,14 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     return otransFlags;
 }
 
-Spec rpmtsSpec(rpmts ts)
+rpmSpec rpmtsSpec(rpmts ts)
 {
     return ts->spec;
 }
 
-Spec rpmtsSetSpec(rpmts ts, Spec spec)
+rpmSpec rpmtsSetSpec(rpmts ts, rpmSpec spec)
 {
-    Spec ospec = ts->spec;
+    rpmSpec ospec = ts->spec;
     ts->spec = spec;
     return ospec;
 }

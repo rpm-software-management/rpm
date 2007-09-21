@@ -8,7 +8,7 @@
 #include "debug.h"
 
 
-int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
+int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
 {
     int nextPart, rc;
     StringBuf *sbp = NULL;

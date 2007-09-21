@@ -1403,7 +1403,7 @@ static void printDeps(Header h)
 
 /**
  */
-static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
+static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 {
     StringBuf sb_stdin;
     StringBuf sb_stdout;
@@ -1477,7 +1477,7 @@ static int rpmfcGenerateDependsHelper(const Spec spec, Package pkg, rpmfi fi)
     return rc;
 }
 
-int rpmfcGenerateDepends(const Spec spec, Package pkg)
+int rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
     rpmfi fi = pkg->cpioList;
     rpmfc fc = NULL;

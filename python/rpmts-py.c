@@ -1205,7 +1205,7 @@ static specObject *
 spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     const char * specfile;
-    Spec spec;
+    rpmSpec spec;
     char * buildRoot = NULL;
     int recursing = 0;
     char * passPhrase = "";

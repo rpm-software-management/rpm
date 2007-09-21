@@ -33,7 +33,7 @@ extern "C" {
  * @return		0 on success
  */
 int readRPM(const char * fileName,
-		Spec * specp,
+		rpmSpec * specp,
 		struct rpmlead * lead,
 		Header * sigs,
 		CSA_t csa);

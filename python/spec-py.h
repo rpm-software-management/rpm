@@ -10,17 +10,17 @@
 typedef struct specObject_s {
     PyObject_HEAD
     /*type specific fields */
-    Spec spec;
+    rpmSpec spec;
 } specObject;
 
 extern PyTypeObject spec_Type;
 
 /**
  */
-Spec specFromSpec(specObject * spec);
+rpmSpec specFromSpec(specObject * spec);
 
 /**
  */
-specObject * spec_Wrap(Spec spec);
+specObject * spec_Wrap(rpmSpec spec);
 
 #endif /* RPMPYTHON_SPEC */
