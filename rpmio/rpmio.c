@@ -188,7 +188,16 @@ DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie,
 #endif
 
 /* =============================================================== */
-/* FIX: cookie is modified */
+
+/**
+ */
+FD_t fdLink (void * cookie, const char * msg)
+{
+    return fdio->_fdref(cookie, msg, __FILE__, __LINE__);
+}
+
+/**
+ */
 static inline FD_t XfdLink(void * cookie, const char * msg,
 		const char * file, unsigned line)
 {
@@ -203,6 +212,15 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
     return fd;
 }
 
+/**
+ */
+FD_t fdFree(FD_t fd, const char * msg)
+{
+     return fdio->_fdderef(fd, msg, __FILE__, __LINE__);
+}
+
+/**
+ */
 static inline
 FD_t XfdFree( FD_t fd, const char *msg,
 		const char *file, unsigned line)
@@ -230,6 +248,15 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
     return NULL;
 }
 
+/**
+ */
+FD_t fdNew (const char * msg)
+{
+    return fdio->_fdnew(msg, __FILE__, __LINE__);
+}
+
+/**
+ */
 static inline
 FD_t XfdNew(const char * msg, const char * file, unsigned line)
 {
