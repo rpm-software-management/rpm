@@ -10,6 +10,10 @@
 #include "rpmlib.h"
 #include "rpmsw.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int _rpmdb_debug;
 
 #ifdef	NOTYET
