@@ -193,21 +193,20 @@ DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie,
  */
 FD_t fdLink (void * cookie, const char * msg)
 {
-    return fdio->_fdref(cookie, msg, __FILE__, __LINE__);
+    return fdio->_fdref(cookie, msg);
 }
 
 /**
  */
-static inline FD_t XfdLink(void * cookie, const char * msg,
-		const char * file, unsigned line)
+static inline FD_t XfdLink(void * cookie, const char * msg)
 {
     FD_t fd;
 if (cookie == NULL)
-DBGREFS(0, (stderr, "--> fd  %p ++ %d %s at %s:%u\n", cookie, FDNREFS(cookie)+1, msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p ++ %d %s\n", cookie, FDNREFS(cookie)+1, msg));
     fd = c2f(cookie);
     if (fd) {
 	fd->nrefs++;
-DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
+DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s  %s\n", fd, fd->nrefs, msg, fdbg(fd)));
     }
     return fd;
 }
@@ -289,7 +288,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->fileSize = 0;
     fd->fd_cpioPos = 0;
 
-    return XfdLink(fd, msg, file, line);
+    return XfdLink(fd, msg);
 }
 
 /**

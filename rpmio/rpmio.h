@@ -74,7 +74,7 @@ typedef int (*fdio_close_function_t) (void *cookie);
 /**
  */
 typedef FD_t (*fdio_ref_function_t) ( void * cookie,
-		const char * msg, const char * file, unsigned line);
+		const char * msg);
 
 /**
  */
