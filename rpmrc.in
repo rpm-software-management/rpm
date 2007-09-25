@@ -22,10 +22,10 @@ optflags: i686 -O2 -g -m32 -march=i686 -mtune=generic -fasynchronous-unwind-tabl
 optflags: pentium3 -O2 -g -m32 -march=pentium3 -mtune=generic -fasynchronous-unwind-tables
 optflags: pentium4 -O2 -g -m32 -march=pentium4 -mtune=generic -fasynchronous-unwind-tables
 optflags: athlon -O2 -g -m32 -march=athlon -fasynchronous-unwind-tables
-optflags: ia64 -O2 -g -m64 --mtune=generic
-optflags: x86_64 -O2 -g -m64 --mtune=generic
+optflags: ia64 -O2 -g -m64 -mtune=generic
+optflags: x86_64 -O2 -g -m64 -mtune=generic
 optflags: amd64 -O2 -g -mtune=generic
-optflags: ia32e -O2 -g -m64 --mtune=generic
+optflags: ia32e -O2 -g -m64 -mtune=generic
 
 optflags: alpha -O2 -g -mieee
 optflags: alphaev5 -O2 -g -mieee -march=ev5
