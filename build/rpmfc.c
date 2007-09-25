@@ -21,6 +21,36 @@
 
 #include "debug.h"
 
+/**
+ */
+struct rpmfc_s {
+    int nfiles;		/*!< no. of files */
+    int fknown;		/*!< no. of classified files */
+    int fwhite;		/*!< no. of "white" files */
+    int ix;		/*!< current file index */
+    int skipProv;	/*!< Don't auto-generate Provides:? */
+    int skipReq;	/*!< Don't auto-generate Requires:? */
+    int tracked;	/*!< Versioned Provides: tracking dependency added? */
+    size_t brlen;	/*!< strlen(spec->buildRoot) */
+
+    ARGV_t fn;		/*!< (#files) file names */
+    ARGI_t fcolor;	/*!< (#files) file colors */
+    ARGI_t fcdictx;	/*!< (#files) file class dictionary indices */
+    ARGI_t fddictx;	/*!< (#files) file depends dictionary start */
+    ARGI_t fddictn;	/*!< (#files) file depends dictionary no. entries */
+    ARGV_t cdict;	/*!< (#classes) file class dictionary */
+    ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
+    ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
+
+    rpmds provides;	/*!< (#provides) package provides */
+    rpmds requires;	/*!< (#requires) package requires */
+
+    StringBuf sb_java;	/*!< concatenated list of java colored files. */
+    StringBuf sb_perl;	/*!< concatenated list of perl colored files. */
+    StringBuf sb_python;/*!< concatenated list of python colored files. */
+
+};
+
 
 /**
  */
@@ -615,6 +645,17 @@ rpmfc rpmfcNew(void)
     rpmfc fc = xcalloc(1, sizeof(*fc));
     return fc;
 }
+
+rpmds rpmfcProvides(rpmfc fc)
+{
+    return (fc != NULL ? fc->provides : NULL);
+}
+
+rpmds rpmfcRequires(rpmfc fc)
+{
+    return (fc != NULL ? fc->requires : NULL);
+}
+
 
 /**
  * Extract script dependencies.

@@ -89,14 +89,13 @@ char buf[BUFSIZ];
     xx = rpmfcApply(fc);
 
 if (_rpmfc_debug) {
-sprintf(buf, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 rpmfcPrint(buf, fc, NULL);
 }
 
     if (print_provides)
-	rpmdsPrint(NULL, fc->provides, stdout);
+	rpmdsPrint(NULL, rpmfcProvides(fc), stdout);
     if (print_requires)
-	rpmdsPrint(NULL, fc->requires, stdout);
+	rpmdsPrint(NULL, rpmfcRequires(fc), stdout);
 
     fc = rpmfcFree(fc);
 

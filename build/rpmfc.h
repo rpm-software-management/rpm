@@ -11,36 +11,6 @@ typedef struct rpmfc_s * rpmfc;
 
 /**
  */
-struct rpmfc_s {
-    int nfiles;		/*!< no. of files */
-    int fknown;		/*!< no. of classified files */
-    int fwhite;		/*!< no. of "white" files */
-    int ix;		/*!< current file index */
-    int skipProv;	/*!< Don't auto-generate Provides:? */
-    int skipReq;	/*!< Don't auto-generate Requires:? */
-    int tracked;	/*!< Versioned Provides: tracking dependency added? */
-    size_t brlen;	/*!< strlen(spec->buildRoot) */
-
-    ARGV_t fn;		/*!< (#files) file names */
-    ARGI_t fcolor;	/*!< (#files) file colors */
-    ARGI_t fcdictx;	/*!< (#files) file class dictionary indices */
-    ARGI_t fddictx;	/*!< (#files) file depends dictionary start */
-    ARGI_t fddictn;	/*!< (#files) file depends dictionary no. entries */
-    ARGV_t cdict;	/*!< (#classes) file class dictionary */
-    ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
-    ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
-
-    rpmds provides;	/*!< (#provides) package provides */
-    rpmds requires;	/*!< (#requires) package requires */
-
-    StringBuf sb_java;	/*!< concatenated list of java colored files. */
-    StringBuf sb_perl;	/*!< concatenated list of perl colored files. */
-    StringBuf sb_python;/*!< concatenated list of python colored files. */
-
-};
-
-/**
- */
 enum FCOLOR_e {
     RPMFC_BLACK			= 0,
     RPMFC_ELF32			= (1 <<  0),
@@ -158,6 +128,20 @@ int rpmfcApply(rpmfc fc);
  * @return		0 on success
  */
 int rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
+
+/**
+ * Retrieve file classification provides
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc provides
+ */
+rpmds rpmfcProvides(rpmfc fc);
+
+/**
+ * Retrieve file classification requires
+ * @param fc		file classifier
+ * @return		rpmds dependency set of fc requires
+ */
+rpmds rpmfcRequires(rpmfc fc);
 
 #ifdef __cplusplus
 }
