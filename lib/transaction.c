@@ -1492,7 +1492,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point. */
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
-     	  || (ts->probs->numProblems &&
+     	  || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
 	rpmMessage(RPMMESS_DEBUG, _("running pre-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
@@ -1807,7 +1807,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
      * If unfiltered problems exist, free memory and return.
      */
     if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS)
-     || (ts->probs->numProblems &&
+     || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))
        )
     {
