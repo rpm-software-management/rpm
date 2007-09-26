@@ -848,7 +848,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
 	    fFMode = rpmfiFMode(fi);
 
-	    if (whatis(fFMode) != XDIR)
+	    if (rpmfiWhatis(fFMode) != XDIR)
 		continue;
 	    fdn = rpmfiDN(fi);
 	    if (strlen(fdn) != dnlen)

@@ -436,7 +436,7 @@ const char * ftstring (rpmFileTypes ft)
     }
 }
 
-rpmFileTypes whatis(uint_16 mode)
+rpmFileTypes rpmfiWhatis(uint_16 mode)
 {
     if (S_ISDIR(mode))	return XDIR;
     if (S_ISCHR(mode))	return CDEV;
@@ -449,8 +449,8 @@ rpmFileTypes whatis(uint_16 mode)
 
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 {
-    rpmFileTypes awhat = whatis(rpmfiFMode(afi));
-    rpmFileTypes bwhat = whatis(rpmfiFMode(bfi));
+    rpmFileTypes awhat = rpmfiWhatis(rpmfiFMode(afi));
+    rpmFileTypes bwhat = rpmfiWhatis(rpmfiFMode(bfi));
 
     if (awhat != bwhat) return 1;
 
@@ -496,9 +496,9 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	}
     }
 
-    diskWhat = whatis((int_16)sb.st_mode);
-    dbWhat = whatis(rpmfiFMode(ofi));
-    newWhat = whatis(rpmfiFMode(nfi));
+    diskWhat = rpmfiWhatis((int_16)sb.st_mode);
+    dbWhat = rpmfiWhatis(rpmfiFMode(ofi));
+    newWhat = rpmfiWhatis(rpmfiFMode(nfi));
 
     /*
      * RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
@@ -568,8 +568,8 @@ int rpmfiConfigConflict(const rpmfi fi)
 	return 0;
     }
 
-    diskWhat = whatis((int_16)sb.st_mode);
-    newWhat = whatis(rpmfiFMode(fi));
+    diskWhat = rpmfiWhatis((int_16)sb.st_mode);
+    newWhat = rpmfiWhatis(rpmfiFMode(fi));
 
     if (newWhat != LINK && newWhat != REG)
 	return 1;
@@ -877,7 +877,7 @@ dColors[j] |= fColors[i];
 	if (j < 0) continue;
 
 /* FIX: fModes may be NULL */
-	ft = whatis(fModes[i]);
+	ft = rpmfiWhatis(fModes[i]);
 
 	/* On install, a relocate to NULL means skip the path. */
 	if (relocations[j].newPath == NULL) {

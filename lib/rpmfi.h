@@ -449,7 +449,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
  * @param mode		file mode bits (from header)
  * @return		file type
  */
-rpmFileTypes whatis(uint_16 mode);
+rpmFileTypes rpmfiWhatis(uint_16 mode);
 
 /**
  * Return file info comparison.
