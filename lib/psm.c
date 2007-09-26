@@ -270,7 +270,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-    fi->te->h = headerLink(fi->h);
+    rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, "installSourcePackage");
     hge = fi->hge;
     hfd = fi->hfd;
@@ -386,7 +386,7 @@ exit:
     if (h != NULL) h = headerFree(h);
 
     if (fi != NULL) {
-	fi->te->h = headerFree(fi->te->h);
+	rpmteSetHeader(fi->te, NULL);
 	if (fi->te->fd != NULL)
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
@@ -1377,9 +1377,8 @@ assert(psm->mi == NULL);
 	
 	    /* Retrieve installed header. */
 	    rc = rpmpsmNext(psm, PSM_RPMDB_LOAD);
-if (rc == RPMRC_OK)
-if (psm->te)
-psm->te->h = headerLink(fi->h);
+	    if (rc == RPMRC_OK && psm->te)
+		rpmteSetHeader(psm->te, fi->h);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Open output package for writing. */
@@ -1815,9 +1814,8 @@ psm->te->h = headerLink(fi->h);
 	}
 
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
-if (psm->te != NULL)
-if (psm->te->h != NULL)
-psm->te->h = headerFree(psm->te->h);
+	    if (psm->te != NULL) 
+		rpmteSetHeader(psm->te, NULL);
 	    if (fi->h != NULL)
 		fi->h = headerFree(fi->h);
  	}
