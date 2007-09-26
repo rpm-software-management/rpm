@@ -6,6 +6,8 @@
  *
  */
 
+#include "rpmlead.h"
+
 /**
  */
 extern int _noDirTokens;

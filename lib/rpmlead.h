@@ -9,6 +9,36 @@
 extern "C" {
 #endif
 
+#define RPMLEAD_BINARY 0
+#define RPMLEAD_SOURCE 1
+
+#define RPMLEAD_MAGIC0 0xed
+#define RPMLEAD_MAGIC1 0xab
+#define RPMLEAD_MAGIC2 0xee
+#define RPMLEAD_MAGIC3 0xdb
+
+#define RPMLEAD_SIZE 96         /*!< Don't rely on sizeof(struct) */
+
+/** \ingroup lead
+ * The lead data structure.
+ * The lead needs to be 8 byte aligned.
+ * @deprecated The lead (except for signature_type) is legacy.
+ * @todo Don't use any information from lead.
+ */
+struct rpmlead {
+    unsigned char magic[4];
+    unsigned char major;
+    unsigned char minor;
+    short type;
+    short archnum;
+    char name[66];
+    short osnum;
+    short signature_type;	/*!< Signature header type (RPMSIG_HEADERSIG) */
+char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
+} ;
+
+#include "rpmlib.h"
+
 /** \ingroup lead
  * Write lead to file handle.
  * @param fd		file handle
