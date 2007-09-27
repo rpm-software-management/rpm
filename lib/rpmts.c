@@ -1245,14 +1245,14 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     ps = rpmtsProblems(ts);
     for (i = 0; i < ts->filesystemCount; i++, dsi++) {
 
-	if (dsi->bavail > 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
+	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
 	    rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
  	   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
 	}
 
-	if (dsi->iavail > 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
+	if (dsi->iavail >= 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
 	    rpmpsAppend(ps, RPMPROB_DISKNODES,
 			rpmteNEVR(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
