@@ -106,6 +106,12 @@ s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
+find $TOP_DIR -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'$\):%dir \1:
+s:^\([^%].*\)::
+/^$/d' >> $MO_NAME
+
 find $TOP_DIR -type f|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'/'"$NAME"'-\([^/.]\+\).omf\):%lang(\2) \1:
