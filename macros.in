@@ -1194,6 +1194,11 @@ done \
 # arch macro for all supported ARM processors
 %arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l
 
+
+#------------------------------------------------------------------------------
+# arch macro for all supported Alpha processors
+%alpha	alpha alphaev56 alphaev6 alphaev67
+
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #
