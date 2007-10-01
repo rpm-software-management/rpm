@@ -351,7 +351,7 @@ AC_CHECK_FUNCS(error)
 
 AC_CHECK_HEADERS(poll.h)
 
-AC_CHECK_HEADERS(thread.h pthread.h)
+AC_CHECK_HEADERS(pthread.h)
 
 AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
   dnl OSF 5.0 has the the symbols prefixed with __ in libpthread.
@@ -554,7 +554,6 @@ AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(libio.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
-AC_CHECK_HEADERS(pthread.h)
 
 AC_CHECK_HEADERS(glob.h)
 AC_CHECK_HEADERS(locale.h)
