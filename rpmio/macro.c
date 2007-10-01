@@ -1572,9 +1572,10 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	const char * globURL;
 	const char * path;
 	int ut = urlPath(av[j], &path);
+	int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
 	glob_t gl;
 
-	if (!Glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL) {
+	if (!local || (!Glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL)) {
 	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
 	    argv[argc] = xstrdup(av[j]);
 if (_debug)
