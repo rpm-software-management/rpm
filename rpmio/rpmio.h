@@ -391,7 +391,7 @@ int fdReadable(FD_t fd, int secs);
 
 /**
  * Insure that directories in path exist, creating as needed.
- * @param path		diretory path
+ * @param path		directory path
  * @param mode		directory mode (if created)
  * @param uid		directory uid (if created), or -1 to skip
  * @param gid		directory uid (if created), or -1 to skip
