@@ -13,6 +13,8 @@
 	- update default per-arch compiler flags for modern gcc (rhbz#212583)
 	- add comment about checking --help to manuals (rhbz#164281)
 	- avoid truncating /var/log/rpmpkgs in case of errors (rhbz#232830)
+	- avoid wrong selinux context on /var/log/rpmpkgs creation (rhbz#315271)
+	- rpmtsAddInstallElement() consistency (rhbz#180996, rhbz#281611)
 	- clarify --initdb usage in manual (rhbz#218057)
 	- skip stale and unaccessible (FUSE) mountpoints (rhbz#190496, 220991)
 	- buildid-related debugedit fixes 
@@ -29,12 +31,15 @@
 	- debugedit -l file matching fixes
 	- don't read *.rpmnew etc backup macro files
 	- fix error reporting on rpm --checksig (rhbz#155079)
-	- fix false mire matches on nonexistent headers
+	- fix false mire matches on nonexistent headers (rhbz#277161)
 	- handle mire matching on binary blobs
 	- fix segfault in mire matching on binary data types
-	- add Sparch Niagara arch support
+	- add Sparch Niagara arch support (rhbz#263521)
+	- add %alpha macro for supported alpha archs (rhbz#295941)
+	- fix typos in default optflags for some archs (rhbz#305221)
+	- fix disk space checking on 100% full filesystems (rhbz#308171)
+	- own omf directories found by find-lang (rhbz#296731)
 	- fake callbacks on erasure for packages without files (rhbz#259961)
-	- rpmtsAddInstallElement() consistency (rhbz#180996, rhbz#281611)
 	- python: add methods for checking and terminating on signals
 	- python: add method for expanding macros
 
