@@ -1,9 +1,13 @@
 #!/bin/sh
 
-tmpfile=`/bin/mktemp rpmpkgs.XXXXXXXXX` || exit 1
+tmpfile=`/bin/mktemp /var/log/rpmpkgs.XXXXXXXXX` || exit 1
 /bin/rpm -qa --qf '%{name}-%{version}-%{release}.%{arch}.rpm\n' 2>&1 \
 	| /bin/sort > "$tmpfile"
 
-[ -s "$tmpfile" ] || exit 1
+if [ ! -s "$tmpfile" ]; then
+	rm -f "$tmpfile"
+	exit 1
+fi
+
 /bin/mv "$tmpfile" /var/log/rpmpkgs
 /bin/chmod 0644 /var/log/rpmpkgs
