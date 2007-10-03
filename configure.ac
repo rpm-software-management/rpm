@@ -311,7 +311,6 @@ AC_SUBST(WITH_BZ2_LIB)
 
 #=================
 
-dirs=$prefix
 AC_MSG_CHECKING(for /usr/ucblib in LIBS)
 if test -d /usr/ucblib ; then
 	if test "$build" = "mips-sni-sysv4" ; then
