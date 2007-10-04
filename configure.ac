@@ -548,7 +548,6 @@ AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
 AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
 
 AC_CHECK_HEADERS(netinet/in_systm.h)
-AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(libio.h)

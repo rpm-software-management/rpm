@@ -4,10 +4,6 @@
 
 #include "system.h"
 
-#if HAVE_MACHINE_TYPES_H
-# include <machine/types.h>
-#endif
-
 #include <netinet/in.h>
 
 #include <rpmlib.h>

@@ -5,10 +5,6 @@
 #include "system.h"
 #include <stdarg.h>
 
-#if HAVE_MACHINE_TYPES_H
-# include <machine/types.h>
-#endif
-
 #if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
