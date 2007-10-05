@@ -154,7 +154,7 @@ enum headerSprintfExtensionType {
  * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
+typedef char * (*headerTagFormatFunction)(int_32 type,
 				const void * data, char * formatPrefix,
 				int padding, int element);
 
