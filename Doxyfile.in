@@ -672,10 +672,7 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/tools/rpmcache.c \
                          @top_srcdir@/tools/rpmdeps.c \
                          @top_srcdir@/tools/rpmgraph.c \
-                         @top_srcdir@/tools/rpminject.c \
-                         @top_srcdir@/tools/rpmtool.c \
-                         @top_srcdir@/tools/rpmxml.c \
-                         @top_srcdir@/tools/rpmxp.c
+                         @top_srcdir@/tools/rpminject.c
 
 # This tag can be used to specify the character encoding of the source files that 
 # doxygen parses. Internally doxygen uses the UTF-8 encoding, which is also the default 
