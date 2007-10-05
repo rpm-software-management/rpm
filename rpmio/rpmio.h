@@ -348,10 +348,7 @@ FILE *fdFdopen( void * cookie, const char * mode);
 
 /**
  */
-#ifndef H_RPMIO_INTERNAL	/* XXX avoid gcc warning */
-int fdFileno(void * cookie);
-#define	fdFileno(_fd)		fdio->_fileno(_fd)
-#endif
+extern int fdFileno(void * cookie);
 
 /**
  */
