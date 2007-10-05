@@ -477,17 +477,6 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	fd->ndigests++;		/* convert index to count */
 }
 
-/** \ingroup rpmio
- */
-static inline
-int fdFileno(void * cookie)
-{
-    FD_t fd;
-    if (cookie == NULL) return -2;
-    fd = c2f(cookie);
-    return fd->fps[0].fdno;
-}
-
 /**
  * Read an entire file into a buffer.
  * @param fn		file name to read
