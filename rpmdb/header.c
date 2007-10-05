@@ -518,7 +518,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
  * @return		unloaded header blob (NULL on error)
  */
 static void * doHeaderUnload(Header h,
-		int * lengthPtr)
+		size_t * lengthPtr)
 {
     int_32 * ei = NULL;
     entryInfo pe;
@@ -765,7 +765,7 @@ errxit:
 static
 void * headerUnload(Header h)
 {
-    int length;
+    size_t length;
     void * uh = doHeaderUnload(h, &length);
     return uh;
 }
@@ -1020,7 +1020,7 @@ static
 Header headerReload(Header h, int tag)
 {
     Header nh;
-    int length;
+    size_t length;
     void * uh = doHeaderUnload(h, &length);
 
     h = headerFree(h);
@@ -1147,7 +1147,7 @@ static
 int headerWrite(FD_t fd, Header h, enum hMagic magicp)
 {
     ssize_t nb;
-    int length;
+    size_t length;
     const void * uh;
 
     if (h == NULL)
