@@ -646,14 +646,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmio/ugid.c \
                          @top_srcdir@/rpmio/ugid.h \
                          @top_srcdir@/rpmio/url.c \
-                         @top_srcdir@/popt/findme.c \
-                         @top_srcdir@/popt/findme.h \
-                         @top_srcdir@/popt/popt.c \
-                         @top_srcdir@/popt/popt.h \
-                         @top_srcdir@/popt/poptconfig.c \
-                         @top_srcdir@/popt/popthelp.c \
-                         @top_srcdir@/popt/poptint.h \
-                         @top_srcdir@/popt/poptparse.c \
                          @top_srcdir@/python/header-py.c \
                          @top_srcdir@/python/header-py.h \
                          @top_srcdir@/python/rpmal-py.c \
