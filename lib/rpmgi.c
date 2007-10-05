@@ -1,5 +1,5 @@
 /** \ingroup rpmio
- * \file rpmio/rpmio.c
+ * \file lib/rpmgi.c
  */
 #include "system.h"
 
