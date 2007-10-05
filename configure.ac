@@ -806,6 +806,7 @@ yes)
     [AC_MSG_ERROR([rpm API docs needs doxygen in PATH])])
   ;;
 esac
+AC_CHECK_PROG(HAVE_DOT,[dot],[YES],[NO])
 
 WITH_SELINUX_LIB=
 AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ],
