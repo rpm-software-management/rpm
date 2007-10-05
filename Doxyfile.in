@@ -546,8 +546,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmps.c \
                          @top_srcdir@/lib/rpmps.h \
                          @top_srcdir@/lib/rpmrc.c \
-                         @top_srcdir@/lib/rpmsx.c \
-                         @top_srcdir@/lib/rpmsx.h \
                          @top_srcdir@/lib/rpmte.c \
                          @top_srcdir@/lib/rpmte.h \
                          @top_srcdir@/lib/rpmts.c \
