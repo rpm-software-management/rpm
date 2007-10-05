@@ -1497,7 +1497,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * Convert stdio fmode to open(2) mode, filtering out zlib/bzlib flags.
  *	returns stdio[0] = NUL on error.
  *
- * - gzopen:	[0-9] is compession level
+ * - gzopen:	[0-9] is compression level
  * - gzopen:	'f' is filtered (Z_FILTERED)
  * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
  * - bzopen:	[1-9] is block size (modulo 100K)
