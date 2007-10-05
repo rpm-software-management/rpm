@@ -33,17 +33,17 @@ struct rpmfc_s {
     int tracked;	/*!< Versioned Provides: tracking dependency added? */
     size_t brlen;	/*!< strlen(spec->buildRoot) */
 
-    ARGV_t fn;		/*!< (#files) file names */
-    ARGI_t fcolor;	/*!< (#files) file colors */
-    ARGI_t fcdictx;	/*!< (#files) file class dictionary indices */
-    ARGI_t fddictx;	/*!< (#files) file depends dictionary start */
-    ARGI_t fddictn;	/*!< (#files) file depends dictionary no. entries */
-    ARGV_t cdict;	/*!< (#classes) file class dictionary */
-    ARGV_t ddict;	/*!< (#dependencies) file depends dictionary */
-    ARGI_t ddictx;	/*!< (#dependencies) file->dependency mapping */
+    ARGV_t fn;		/*!< (no. files) file names */
+    ARGI_t fcolor;	/*!< (no. files) file colors */
+    ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
+    ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
+    ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
+    ARGV_t cdict;	/*!< (no. classes) file class dictionary */
+    ARGV_t ddict;	/*!< (no. dependencies) file depends dictionary */
+    ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
 
-    rpmds provides;	/*!< (#provides) package provides */
-    rpmds requires;	/*!< (#requires) package requires */
+    rpmds provides;	/*!< (no. provides) package provides */
+    rpmds requires;	/*!< (no. requires) package requires */
 
     StringBuf sb_java;	/*!< concatenated list of java colored files. */
     StringBuf sb_perl;	/*!< concatenated list of perl colored files. */
