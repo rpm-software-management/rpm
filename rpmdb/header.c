@@ -513,6 +513,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 }
 
 /** \ingroup header
+ * doHeaderUnload.
  * @param h		header
  * @retval *lengthPtr	no. bytes in unloaded header blob
  * @return		unloaded header blob (NULL on error)
@@ -2235,6 +2236,7 @@ static int myTagValue(headerTagTableEntry tbl, const char * name)
 }
 
 /**
+ * Search extensions and tags for a name.
  * @param hsa		headerSprintf args
  * @param token		parsed fields
  * @param name		name to find
@@ -2300,16 +2302,18 @@ bingo:
 
 /* forward ref */
 /**
+ * Parse an expression.
  * @param hsa		headerSprintf args
- * @param token
- * @param str
- * @retval *endPtr
+ * @param token		token
+ * @param str		string
+ * @param[out] *endPtr
  * @return		0 on success
  */
 static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 		char * str,char ** endPtr);
 
 /**
+ * Parse a headerSprintf term.
  * @param hsa		headerSprintf args
  * @param str
  * @retval *formatPtr
@@ -2661,6 +2665,7 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 }
 
 /**
+ * formatValue
  * @param hsa		headerSprintf args
  * @param tag
  * @param element
@@ -2820,6 +2825,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 }
 
 /**
+ * Format a single headerSprintf item.
  * @param hsa		headerSprintf args
  * @param token
  * @param element
@@ -3096,6 +3102,7 @@ exit:
 }
 
 /**
+ * octalFormat.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3120,6 +3127,7 @@ static char * octalFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * hexFormat.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3174,6 +3182,7 @@ static char * realDateFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Format a date.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3189,6 +3198,7 @@ static char * dateFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Format a day.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
@@ -3204,6 +3214,7 @@ static char * dayFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * Return shell escape formatted data.
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix	sprintf format string
