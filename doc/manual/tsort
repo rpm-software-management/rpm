@@ -2,7 +2,7 @@
 
 The package ordering algorithm in rpm-4.0.1 has changed.
 
-\subsection tsort_problem The Problem
+\section tsort_problem The Problem
 
 Here's a simple test to illustrate the need for the change (from
 bugzilla #12327):
@@ -44,7 +44,7 @@ The problem is that the previous ordering algorithm, basically a very clever
 implementation of tsort, was sensitive to initial conditions, and the first
 command "happens" to snip a loop, while the second does not.
 
-\subsection tsort_solution The Solution
+\section tsort_solution The Solution
 
 The current ordering algorithm is exactly tsort from Knuth V1, with one further
 twist. Since the only way out of a dependency loop is to snip the loop
@@ -107,7 +107,7 @@ Here's what cures the libtermcap <-> bash loop:
 which, since the dependency is clearly not useful or necessary in determining
 install ordering, is safely ignored.
 
-\subsection tsort_sideeffects Side Effects
+\section tsort_sideeffects Side Effects
 
 One of the side effects of changing the package install ordering, is that
 there are a handful of new loops that are detected. Here's what I found
@@ -141,7 +141,7 @@ to perform package ordering. Please note that all of the known to cause
 loop dependencies listed above are, for now, explicitly ignored when
 determining package install ordering.
 
-\subsection tsort_summary Summary
+\section tsort_summary Summary
 
 So what does this all mean? Basically not much, unless you find yourself
 trying to specify dependencies amongst a set of packages correctly and
