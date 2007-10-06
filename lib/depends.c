@@ -1002,6 +1002,7 @@ static int orderListIndexCmp(const void * one, const void * two)
  * @param p		new element
  * @retval qp		address of first element
  * @retval rp		address of last element
+ * @param prefcolor
  */
 static void addQ(rpmte p,
 		rpmte * qp,
