@@ -193,7 +193,7 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
  * @param s
  * @param delim
  */
-static char *strtokWithQuotes(char *s, char *delim)
+static char *strtokWithQuotes(char *s, const char *delim)
 {
     static char *olds = NULL;
     char *token;
