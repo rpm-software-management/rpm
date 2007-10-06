@@ -300,9 +300,9 @@ The second, --requires, shows the other packages that a package requires
 to be installed, along with any version number checking.
 
 There are also two new ways to search for packages. Running a query with 
---whatrequires <item> queries all of the packages that require <item>. 
-Similarly, running --whatprovides <item> queries all of the packages that 
-provide the <item> virtual package. Note that querying for package that 
+--whatrequires \<item\> queries all of the packages that require \<item\>. 
+Similarly, running --whatprovides \<item\> queries all of the packages that 
+provide the \<item\> virtual package. Note that querying for package that 
 provides "python" will not return anything, as python is a package, not
 a virtual package.
 

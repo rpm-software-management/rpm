@@ -9,7 +9,7 @@ include whitespace and may include a hyphen '-' (unlike version and release
 tags). Names should not include any numeric operators ('<', '>','=') as
 future versions of rpm may need to reserve characters other than '-'.
 
-By default subpackages are named by prepending `<main package>-' to
+By default subpackages are named by prepending `\<main package\>-' to
 the subpackages name(s). If you wish to change the name of a
 subpackage (most commonly this is to change the '-' to '.'), then you
 must specify the full name with the -n argument in the %package

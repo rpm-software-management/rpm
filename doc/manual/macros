@@ -6,7 +6,7 @@ argc/argv processing on white space separated tokens to the next newline.
 During macro expansion, both flags and arguments are available as macros
 which are deleted at the end of macro expansion.  Macros can be used
 (almost) anywhere in a spec file, and, in particular, in "included file
-lists" (i.e. those read in using %files -f <file>).  In addition, macros
+lists" (i.e. those read in using %files -f \<file\>).  In addition, macros
 can be nested, hiding the previous definition for the duration of the
 expansion of the macro which contains nested macros.
 
@@ -18,7 +18,7 @@ To define a macro use:
 	%define <name>[(opts)] <body>
 \endverbatim
 
-All whitespace surrounding <body> is removed.  Name may be composed
+All whitespace surrounding \<body\> is removed.  Name may be composed
 of alphanumeric characters, and the character `_' and must be at least
 3 characters in length. A macro without an (opts) field is "simple" in that
 only recursive macro expansion is performed. A parameterized macro contains
@@ -145,9 +145,9 @@ or
 \endverbatim
 
 The %{...} form allows you to place the expansion adjacent to other text.
-The %<name> form, if a parameterized macro, will do argc/argv processing
+The %\<name\> form, if a parameterized macro, will do argc/argv processing
 of the rest of the line as described above.  Normally you will likely want
-to invoke a parameterized macro by using the %<name> form so that
+to invoke a parameterized macro by using the %\<name\> form so that
 parameters are expanded properly.
 
 Example:
