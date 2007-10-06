@@ -48,8 +48,8 @@
  *	  changes to the original header.
  *	- (rpm-4.0.3) Private methods (e.g. headerLoad(), headerUnload(), etc.)
  *	  to permit header data to be manipulated opaquely through vectors.
- *	- (rpm-4.0.3) Sanity checks on header data to limit #tags to 65K,
- *	  #bytes to 16Mb, and total metadata size to 32Mb added.
+ *	- (rpm-4.0.3) Sanity checks on header data to limit \#tags to 65K,
+ *	  \#bytes to 16Mb, and total metadata size to 32Mb added.
  *	- with addition of tracking dependencies, the package version has been
  *	  reverted back to 3.
  * .
