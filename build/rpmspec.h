@@ -200,25 +200,28 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg);
 struct OpenFileInfo * newOpenFileInfo(void);
 
 /** \ingroup rpmbuild
+ * stashSt.
  * @param spec		spec file control structure
- * @param h
- * @param tag
- * @param lang
+ * @param h		header
+ * @param tag		tag
+ * @param lang		locale
  */
 spectag stashSt(rpmSpec spec, Header h, int tag, const char * lang);
 
 /** \ingroup rpmbuild
+ * addSource.
  * @param spec		spec file control structure
  * @param pkg		package control
- * @param field
- * @param tag
+ * @param field		field to parse
+ * @param tag		tag
  */
 int addSource(rpmSpec spec, Package pkg, const char * field, int tag);
 
 /** \ingroup rpmbuild
+ * parseNoSource.
  * @param spec		spec file control structure
- * @param field
- * @param tag
+ * @param field		field to parse
+ * @param tag		tag
  */
 int parseNoSource(rpmSpec spec, const char * field, int tag);
 
