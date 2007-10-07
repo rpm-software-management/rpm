@@ -1,0 +1,2 @@
+ChangeLog:
+	hg log --no-merge -v > ChangeLog

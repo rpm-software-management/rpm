@@ -304,7 +304,4 @@ doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	$(MKDIR_P) $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
 
-ChangeLog:
-	hg log --no-merge -v > ChangeLog
-
 ACLOCAL_AMFLAGS = -I m4
