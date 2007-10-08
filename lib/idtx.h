@@ -1,7 +1,6 @@
 #ifndef H_RPMIDTX
 #define H_RPMIDTX
 
-#include "system.h"
 #include "rpmlib.h"
 
 /**
