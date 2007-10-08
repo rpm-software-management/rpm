@@ -5,10 +5,10 @@
  * \file lib/rpmgi.h
  */
 
-#include <rpmlib.h>
-#include <rpmte.h>
-#include <rpmts.h>
-#include <argv.h>
+#include "rpmlib.h"
+#include "rpmte.h"
+#include "rpmts.h"
+#include "argv.h"
 
 /**
  */
