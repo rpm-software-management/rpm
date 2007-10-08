@@ -1,3 +1,4 @@
+#include "system.h"
 
 #include "idtx.h"
 #include "rpmlib.h"
