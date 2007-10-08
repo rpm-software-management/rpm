@@ -6,7 +6,9 @@
  * \file rpmdb/hdrinline.h
  */
 
-#include "header.h"	/* for HV_t */
+#ifndef H_HEADER
+#error "Never include <rpm/hdrinline.h> directly; use <rpm/header.h> instead."
+#endif
 
 #ifdef __cplusplus
 extern "C" {
