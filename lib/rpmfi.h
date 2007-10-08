@@ -6,6 +6,10 @@
  * Structure(s) used for file info tag sets.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int _rpmfi_debug;
 
 #if defined(_RPMFI_INTERNAL)
@@ -133,10 +137,6 @@ int nrefs;		/*!< Reference count. */
 };
 
 #endif	/* _RPMFI_INTERNAL */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Unreference a file info set instance.

@@ -8,6 +8,10 @@
 
 #include "rpmlog.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define	_em(_e)	\
     (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_ERR))
 #define	_wm(_e)	\
@@ -120,5 +124,8 @@ typedef enum rpmerrCode_e {
 #define	rpmErrorSetCallback(_cb)	rpmlogSetCallback(_cb)
 typedef rpmlogCallback rpmErrorCallBackType;
 
+#ifdef __cplusplus
+}   
+#endif
 
 #endif  /* H_RPMERR */

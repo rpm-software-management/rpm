@@ -8,6 +8,10 @@
 
 #include "rpmps.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  */
 extern int _rpmds_debug;
@@ -40,10 +44,6 @@ struct rpmds_s {
     int nrefs;			/*!< Reference count. */
 };
 #endif	/* _RPMDS_INTERNAL */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Unreference a dependency set instance.

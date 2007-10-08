@@ -8,6 +8,10 @@
 
 #include "rpmsw.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  */
 typedef struct rpmsig_s * rpmsig;
@@ -47,10 +51,6 @@ struct rpmsqElem {
 extern rpmsq rpmsqQueue;
 
 extern sigset_t rpmsqCaught;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Insert node into from queue.

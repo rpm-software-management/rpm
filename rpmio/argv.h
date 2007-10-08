@@ -5,6 +5,10 @@
  * \file rpmio/argv.h
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef	const char * ARGstr_t;
 typedef ARGstr_t * ARGV_t;
 
@@ -14,10 +18,6 @@ struct ARGI_s {
     ARGint_t vals;
 };
 typedef	struct ARGI_s * ARGI_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Print argv array elements.

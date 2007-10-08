@@ -3,6 +3,10 @@
 
 #include <magic.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int _rpmfc_debug;
 
 /**
@@ -61,10 +65,6 @@ struct rpmfcTokens_s {
 /**
  */
 typedef struct rpmfcTokens_s * rpmfcToken;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Return helper output.

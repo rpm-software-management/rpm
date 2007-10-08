@@ -7,6 +7,10 @@
 
 #include <assert.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Supported URL types.
  */
@@ -43,10 +47,6 @@ struct urlinfo_s {
     int openError;		/*!< Type of open failure */
     int magic;
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 extern int _url_debug;		/*!< URL debugging? */
 

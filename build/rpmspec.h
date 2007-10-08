@@ -6,6 +6,10 @@
  *  The rpmSpec and Package data structures used during build.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmbuild
  */
 typedef struct Package_s * Package;
@@ -168,10 +172,6 @@ struct Package_s {
 
     Package next;
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \ingroup rpmbuild
  * Create and initialize rpmSpec structure.

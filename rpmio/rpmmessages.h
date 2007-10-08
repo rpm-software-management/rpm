@@ -8,6 +8,10 @@
 
 #include "rpmlog.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define	RPMMESS_DEBUG		RPMLOG_DEBUG
 #define	RPMMESS_VERBOSE		RPMLOG_INFO
 #define	RPMMESS_NORMAL		RPMLOG_NOTICE
@@ -59,10 +63,6 @@ typedef enum rpmCallbackType_e {
 /**
  */
 typedef void * rpmCallbackData;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  */

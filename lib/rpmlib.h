@@ -14,6 +14,10 @@
 #include "header.h"
 #include <popt.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Package read return codes.
  */
@@ -36,10 +40,6 @@ extern const char * rpmNAME;
 extern const char * rpmEVR;
 
 extern int rpmFLAGS;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \ingroup rpmtrans
  * The RPM Transaction Set.

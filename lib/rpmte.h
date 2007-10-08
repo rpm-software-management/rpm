@@ -8,6 +8,10 @@
 
 #include "rpmal.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  */
 extern int _rpmte_debug;
@@ -112,10 +116,6 @@ struct rpmtsi_s {
 };
 
 #endif	/* _RPMTE_INTERNAL */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Destroy a transaction element.

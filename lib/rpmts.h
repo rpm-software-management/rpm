@@ -9,6 +9,10 @@
 #include "rpmps.h"
 #include "rpmsw.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int _rpmts_debug;
 extern int _rpmts_stats;
 extern int _fps_debug;
@@ -293,10 +297,6 @@ struct rpmts_s {
     int nrefs;			/*!< Reference count. */
 };
 #endif	/* _RPMTS_INTERNAL */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \ingroup rpmts
  * Check that all dependencies can be resolved.

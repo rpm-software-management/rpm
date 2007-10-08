@@ -6,6 +6,10 @@
  * Structures and prototypes used for an "rpmps" problem set.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int _rpmps_debug;
 
 /**
@@ -56,10 +60,6 @@ struct rpmps_s {
     rpmProblem probs;		/*!< Array of specific problems. */
     int nrefs;			/*!< Reference count. */
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Return formatted string representation of a problem.

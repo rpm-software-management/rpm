@@ -5,13 +5,13 @@
  *
  */
 
-/**
- */
-typedef struct StringBufRec *StringBuf;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ */
+typedef struct StringBufRec *StringBuf;
 
 /**
  */

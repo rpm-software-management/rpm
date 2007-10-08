@@ -3,6 +3,10 @@
 
 #include "rpmlib.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  *  * A rollback transaction id element.
  *   */
@@ -70,5 +74,9 @@ IDTX IDTXload(rpmts ts, rpmTag tag);
  * @return 		id index
  */
 IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag);
+
+#ifdef __cplusplus
+}   
+#endif
 
 #endif /* H_RPMIDTX */

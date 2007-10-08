@@ -5,6 +5,10 @@
  * \file rpmio/rpmmacro.h
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*! The structure used to store a macro. */
 typedef struct rpmMacroEntry_s {
     struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
@@ -45,10 +49,6 @@ extern const char * macrofiles;
 #define	RMIL_SPEC	-3
 #define	RMIL_OLDSPEC	-1
 #define	RMIL_GLOBAL	0
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Print macros to file stream.

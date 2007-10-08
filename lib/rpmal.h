@@ -6,6 +6,10 @@
  * Structures used for managing added/available package lists.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int _rpmal_debug;
 
 /**
@@ -22,10 +26,6 @@ typedef void * rpmalKey;
  *  * An added/available package retrieval index.
  *   */
 typedef intptr_t rpmalNum;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Initialize available packckages, items, and directory list.

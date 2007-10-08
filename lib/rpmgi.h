@@ -10,6 +10,10 @@
 #include "rpmts.h"
 #include "argv.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  */
 extern int _rpmgi_debug;
@@ -58,10 +62,6 @@ struct rpmgi_s {
 
     int nrefs;			/*!< Reference count. */
 };
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 /**

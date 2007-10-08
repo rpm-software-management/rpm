@@ -5,6 +5,10 @@
  * \file rpmio/rpmsw.h
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmio
  */
 typedef unsigned long int rpmtime_t;
@@ -36,10 +40,6 @@ struct rpmop_s {
     size_t		bytes;	/*!< Number of bytes transferred. */
     rpmtime_t		usecs;	/*!< Number of ticks. */
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** Return benchmark time stamp.
  * @param *sw		time stamp

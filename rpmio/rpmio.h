@@ -14,6 +14,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  */
 typedef struct pgpDig_s * pgpDig;
@@ -45,10 +49,6 @@ typedef	struct _FD_s * FD_t;
 /** \ingroup rpmio
  */
 typedef struct FDIO_s * FDIO_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \ingroup rpmio
  * \name RPMIO Vectors.

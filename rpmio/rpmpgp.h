@@ -12,6 +12,10 @@
 
 #include <string.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if !defined(_BEECRYPT_API_H)
 typedef unsigned char byte;
 #endif	/* _BEECRYPT_API_H */
@@ -953,10 +957,6 @@ typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Return (native-endian) integer from big-endian representation.

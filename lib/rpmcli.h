@@ -11,14 +11,14 @@
 #include "argv.h"
 #include "idtx.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
  */
 extern int _noDirTokens;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \ingroup rpmcli
  * Popt option table for options shared by all modes and executables.

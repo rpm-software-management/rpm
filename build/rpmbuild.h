@@ -14,6 +14,10 @@
 /* but this will be needed */
 #include "rpmspec.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmbuild
  * Bit(s) to control buildSpec() operation.
  */
@@ -72,10 +76,6 @@ typedef enum rpmParseState_e {
 #define STRIP_NOTHING             0
 #define STRIP_TRAILINGSPACE (1 << 0)
 #define STRIP_COMMENTS      (1 << 1)
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /** \ingroup rpmbuild
  * Destroy uid/gid caches.

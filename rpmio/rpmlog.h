@@ -9,6 +9,10 @@
 
 #include <stdarg.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * RPM Log levels.
  * priorities/facilities are encoded into a single 32-bit quantity, where the
@@ -156,10 +160,6 @@ typedef struct rpmlogRec_s {
     int		code;
     const char * message;
 } * rpmlogRec;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Return number of rpmError() ressages.
