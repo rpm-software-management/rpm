@@ -3,24 +3,41 @@ To build RPM you will need several other packages:
 
 The zlib library for compression support. You might also need/want
 the zip executable for java jar dependency analysis. All available from
-    ftp://ftp.freesoftware.com/pub/infozip/zlib/
+    http://www.gzip.org/zlib/
 
-The Berkeley db1 and db3 libraries. These are available from
-    http://www.sleepycat.com.
+The Berkeley DB >= 4.3.x (4.5.x or newer recommended). RPM includes an
+internal copy which is used by default, but if you want to use an external
+BDB (--with-external-db) it's available at
+    http://www.oracle.com/technology/software/products/berkeley-db/index.html
 
-Minimal instructions for building db3 are (see a Red Hat dbN package
-spac file for more conmplete details)
+Minimal instructions for building BDB are 
     cd build_unix 
-    ../dist/configure --enable-compat185
+    ../dist/configure --with-posixmutexes
     make
     make install
+
+If you want to use the alternative SQLite backend for RPM database instead 
+of the default Berkeley DB, it can be enabled with --enable-sqlite3 option 
+to configure. Note that the SQLite backend is not as tested as BDB. 
+SQLite >= 3.x is required and is available from
+    http://www.sqlite.org/
+
+If SELinux support is desired, it can be enabled with --with-selinux option
+to configure and libselinux development environment installed. SELinux
+is available from
+    http://www.nsa.gov/selinux/
 
 It may be desired to install bzip2 and gzip so that RPM can use these
 formats.  Gzip, is necessary to build packages that contain compressed
 tar balls, these are quite common on the Internet.
 These are availible from
-    http://www.digistar.com/bzip2/index.html
-    http://sources.redhat.com/bzip2/
+    http://www.gzip.org
+    http://www.bzip.org
+
+If you want to build the Python bindings to RPM library, it can be enabled
+with --enable-python option to configure. You'll need to have Python (>= 2.3)
+runtime and C API development environment installed, this is available from 
+    http://www.python.org/
 
 For best results you should compile with GCC and GNU Make.  Users have
 reported difficulty with other build tools (any patches to lift these
@@ -32,33 +49,19 @@ gettext (currently this is required to build rpm but we hope to
 lift this requirement soon), available from 
     http://www.gnu.org/
 
-If you are going to hack the sources (or compile from anonymous cvs
-retrevial) you will need most of the GNU development tools including:
+If you are going to hack the sources (or compile from source repository)
+you will need most of the GNU development tools including:
 autoconf, automake, gettext, libtool, makeinfo, perl, GNU m4, GNU tar
 available from 
     http://www.gnu.org/
 
+If you want to build RPM API documentation, use --enable-apidocs configure
+option. Doxygen is needed for this, it's available at
+    http://www.stack.nl/~dimitri/doxygen/
+
 If you plan on using cryptographic signatures you will need a version
-of GPG.
-
-Since Red Hat 6.1 uses gnupg for signing packages, previous releases were
-signed with pgp-2.6.3. Pgp5 can be used instead of pgp-2.6.3 signatures iff
-RSA signature's are used.
-
-These can be downloaded (for US citizens) from:
-    http://web.mit.edu/network/pgp.html
-    http://www.gnu.org/
-    http://www.pgpi.com/
-
-Note: rpm-4.0 on Red Hat 7.0 is currently using
-    zlib-1.1.3
-    db1-1.85
-    db3-3.1.14
-    bzip2-1.0.1
-    gnupg-1.0.2
-You may use the tarballs within those packagese, and examine the patches and
-spec files for details about how to build the libraries needed by rpm.
-
+of GPG, available from
+    http://www.gnupg.org/
 
 To compile RPM:
 --------------
@@ -66,14 +69,10 @@ To compile RPM:
 RPM uses a small shell script to run: libtool, autoconf,
 automake. This step should not be necessary if you are running a
 released version of rpm, however if you have gotten the rpm sources
-using anonymous CVS or via anonymous FTP, you should probably regenerate
-intermediate files by re-running the autogen.sh script.
+directly from the source code repository, you need to generate
+intermediate files by running the autogen.sh script.
 
 The autogen.sh script checks that the required tools are installed.
-While other versions of the tools may be used, the script checks for
-the same version of the tools that was used at the time the tarball
-was produced. Edit the top of the script to change version numbers if you wish.
-
 The autogen.sh script also runs configure for you and passes the command line
 arguments to configure.  To run it without configure type:
 
@@ -130,9 +129,9 @@ After RPM has been installed you can run rpm to build an rpm package.
 Edit the rpm.spec file to mirror any special steps you needed to
 follow to make rpm compile and change the specfile to match your
 taste.  You will need to put the rpm source tar file into the
-redhat/SOURCES directory and we suggest putting the specfile in the
-redhat/SPECS directory, then run rpmbuild -ba rpm.spec.  You will end up
-with two rpms which can be found in redhat/RPMS and redhat/SRPMS.
+SOURCES directory and we suggest putting the specfile in the
+SPECS directory, then run rpmbuild -ba rpm.spec.  You will end up
+with two rpms which can be found in RPMS and SRPMS.
 
 If you are going to install rpm on machines with OS package managers
 other then rpm, you may choose to install the base rpm package via a
@@ -152,8 +151,9 @@ Non Linux Configuration Issues:
 OS dependencies:
 ----------------
 
-Under Red Hat Linux all libraries (in fact all files distributed with
-the OS) are under RPM control and this section is not an issue.
+Under RPM based Linux distributions all libraries (in fact all files 
+distributed with the OS) are under RPM control and this section is not 
+an issue.
 
 RPM will need to be informed of all the dependencies which were
 satisfied before RPM was installed.  Typically this only refers to
@@ -257,32 +257,9 @@ GPG/PGP/PGP5
 ------------
 
 To use the signing features of rpm, you will need to configure certain
-rpm macros.
+rpm macros in ~/.rpmmacros:
 
-Here's what I use for gpg:
-
-    /etc/rpm/macros for per-system (or ~/.rpmmacros for per-user) configuration
 	%_signature     gpg
-	%_gpg_name      Jeff Johnson (ARS N3NPQ) <jbj@redhat.com>
-	%_gpg_path      /home/devel/jbj/.gnupg
+	%_gpg_name      <GPG UID>
+	%_gpg_path      %(echo $HOME)/.gnupg
 
-Here's what I use for pgp2.6:
-
-    /etc/rpm/macros for per-system (or ~/.rpmmacros for per-user) configuration
-	%_signature	pgp
-	%_pgpbin	/usr/bin/pgp
-	%_pgp_name	Jeff Johnson <jbj@redhat.com>
-	%_pgp_path	/home/jbj/.pgp
-
-In order to use pgp5, you will need to change:
-
-	%_signature	pgp5
-	%_pgpbin	/path/to/pgp5/binary
-	%_pgp_path	/path/to/pgp5/keyring
-
-(Note: Only one of pgp and pgp5 may be used because of name conflicts.)
-
-You may also need Red Hat GPG/PGP public keys. These can be found in the
-rpm source tarball, in /usr/doc/rpm*, or form http://www.redhat.com. In
-order to verify a package signed by Red Hat you will need to import these
-keys onto you key ring. See the GPG/PGP documentation for how to do this.
