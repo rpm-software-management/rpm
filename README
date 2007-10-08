@@ -1,11 +1,11 @@
-This is RPM, the Red Hat Package Manager.
+This is RPM, the RPM Package Manager.
 
 The latest releases are always available at:
 
-	ftp://ftp.rpm.org/pub/rpm
+	http://rpm.org/releases/
 
 Additional RPM documentation (papers, slides, HOWTOs) can also be
-found at the same site, as well as http://www.rpm.org.
+found at the same site: http://rpm.org.
 
 There is a mailing list for discussion of RPM issues, rpm-list@redhat.com.
 To subscribe, send a message to rpm-list-request@redhat.com with the word
