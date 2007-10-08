@@ -6,6 +6,8 @@
  * Structures and prototypes used for an "rpmps" problem set.
  */
 
+#include "rpmmessages.h"	/* for fnpyKey */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
