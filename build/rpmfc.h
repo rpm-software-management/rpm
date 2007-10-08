@@ -1,7 +1,7 @@
 #ifndef _H_RPMFC_
 #define _H_RPMFC_
 
-#include "magic.h"
+#include <magic.h>
 
 extern int _rpmfc_debug;
 
