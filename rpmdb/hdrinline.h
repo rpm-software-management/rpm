@@ -6,6 +6,8 @@
  * \file rpmdb/hdrinline.h
  */
 
+#include "header.h"	/* for HV_t */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
