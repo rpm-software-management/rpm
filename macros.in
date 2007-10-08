@@ -46,6 +46,7 @@
 %__id			@__ID@
 %__install		@__INSTALL@
 %__ln_s			@LN_S@
+%__lzma			@__LZMA@
 %__make			@__MAKE@
 %__mkdir		@__MKDIR@
 %__mkdir_p		@MKDIR_P@
