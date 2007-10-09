@@ -193,7 +193,7 @@ const char * buildHost(void)
 	if (hbn)
 	    strcpy(hostname, hbn->h_name);
 	else
-	    rpmlog(RPMMESS_WARNING,
+	    rpmlog(RPMLOG_WARNING,
 			_("Could not canonicalize hostname: %s\n"), hostname);
 	oneshot = 1;
     }

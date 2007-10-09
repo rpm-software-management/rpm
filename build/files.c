@@ -248,7 +248,7 @@ static void timeCheck(int tc, Header h)
     
     for (x = 0; x < count; x++) {
 	if ((currentTime - mtime[x]) > tc)
-	    rpmlog(RPMMESS_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
+	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
     }
     files = hfd(files, fnt);
 }
@@ -1071,7 +1071,7 @@ static void genCpioListAndHeader(FileList fl,
 	    flp[1].flags |= flp->flags;	
 
 	    if (!(flp[1].flags & RPMFILE_EXCLUDE))
-		rpmlog(RPMMESS_WARNING, _("File listed twice: %s\n"),
+		rpmlog(RPMLOG_WARNING, _("File listed twice: %s\n"),
 			flp->fileURL);
    
 	    /* file mode */
@@ -2267,7 +2267,7 @@ static int checkFiles(StringBuf fileList)
 	t = getStringBuf(sb_stdout);
 	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
-	    rpmlog((rc ? RPMLOG_ERR : RPMMESS_WARNING),
+	    rpmlog((rc ? RPMLOG_ERR : RPMLOG_WARNING),
 		_("Installed (but unpackaged) file(s) found:\n%s"), t);
 	}
     }

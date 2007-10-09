@@ -170,7 +170,7 @@ static void dbiTagsInit(void)
 	    *oe++ = '\0';
 	rpmtag = rpmTagGetValue(o);
 	if (rpmtag < 0) {
-	    rpmlog(RPMMESS_WARNING,
+	    rpmlog(RPMLOG_WARNING,
 		_("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
 	    continue;
 	}

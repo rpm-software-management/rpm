@@ -241,9 +241,9 @@ dbg_scp(scp);
     }
     if (scp->pStmt) {
 	xx = sqlite3_reset(scp->pStmt);
-	if (xx) rpmlog(RPMMESS_WARNING, "reset %d\n", xx);
+	if (xx) rpmlog(RPMLOG_WARNING, "reset %d\n", xx);
 	xx = sqlite3_finalize(scp->pStmt);
-	if (xx) rpmlog(RPMMESS_WARNING, "finalize %d\n", xx);
+	if (xx) rpmlog(RPMLOG_WARNING, "finalize %d\n", xx);
 	scp->pStmt = NULL;
     }
 
@@ -591,7 +591,7 @@ static int sql_busy_handler(void * dbi_void, int time)
 {
     dbiIndex dbi = (dbiIndex) dbi_void;
 
-    rpmlog(RPMMESS_WARNING, _("Unable to get lock on db %s, retrying... (%d)\n"),
+    rpmlog(RPMLOG_WARNING, _("Unable to get lock on db %s, retrying... (%d)\n"),
 		dbi->dbi_file, time);
 
     (void) sleep(1);
@@ -679,7 +679,7 @@ fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", rpmTagGetName(dbi->dbi_rpmtag)
 
 exit:
     if (rc)
-	rpmlog(RPMMESS_WARNING, "Unable to initDB %s (%d)\n",
+	rpmlog(RPMLOG_WARNING, "Unable to initDB %s (%d)\n",
 		scp->pzErrmsg, rc);
 
     scp = scpFree(scp);
@@ -948,14 +948,14 @@ enterChroot(dbi);
 	dbi->dbi_subfile);
 
     rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-    if (rc) rpmlog(RPMMESS_WARNING, "cdel(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+    if (rc) rpmlog(RPMLOG_WARNING, "cdel(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
     rc = sql_bind_key(dbi, scp, 1, key);
-    if (rc) rpmlog(RPMMESS_WARNING, "cdel(%s) bind key %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+    if (rc) rpmlog(RPMLOG_WARNING, "cdel(%s) bind key %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
     rc = sql_bind_data(dbi, scp, 2, data);
-    if (rc) rpmlog(RPMMESS_WARNING, "cdel(%s) bind data %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+    if (rc) rpmlog(RPMLOG_WARNING, "cdel(%s) bind data %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
     rc = sql_step(dbi, scp);
-    if (rc) rpmlog(RPMMESS_WARNING, "cdel(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
+    if (rc) rpmlog(RPMLOG_WARNING, "cdel(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
     scp = scpFree(scp);
 
@@ -1023,10 +1023,10 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	        break;
 	    }
 	    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-	    if (rc) rpmlog(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+	    if (rc) rpmlog(RPMLOG_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
 	    rc = sql_step(dbi, scp);
-	    if (rc) rpmlog(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
+	    if (rc) rpmlog(RPMLOG_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
 
 	    scp = scpResetKeys(scp);
 	    scp->nkeys = scp->nr;
@@ -1056,7 +1056,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
         scp->cmd = sqlite3_mprintf("SELECT value FROM '%q' WHERE key=?;", dbi->dbi_subfile);
         rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 
-        if (rc) rpmlog(RPMMESS_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+        if (rc) rpmlog(RPMLOG_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
     }
 
     scp = scpResetAv(scp);	/* Free av and avlen, reset counters.*/
@@ -1070,13 +1070,13 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 
     /* Bind key to prepared statement */
     rc = sql_bind_key(dbi, scp, 1, scp->keys[scp->rx]);
-    if (rc) rpmlog(RPMMESS_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+    if (rc) rpmlog(RPMLOG_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
     rc = sql_step(dbi, scp);
-    if (rc) rpmlog(RPMMESS_WARNING, "cget(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
+    if (rc) rpmlog(RPMLOG_WARNING, "cget(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
     rc = sqlite3_reset(scp->pStmt);
-    if (rc) rpmlog(RPMMESS_WARNING, "reset %d\n", rc);
+    if (rc) rpmlog(RPMLOG_WARNING, "reset %d\n", rc);
 
 /* 1 key should return 0 or 1 row/value */
 assert(scp->nr < 2);
@@ -1166,14 +1166,14 @@ enterChroot(dbi);
 	scp->cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES(?, ?);",
 		dbi->dbi_subfile);
 	rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-	if (rc) rpmlog(RPMMESS_WARNING, "cput(%s) prepare %s (%d)\n",dbi->dbi_subfile,  sqlite3_errmsg(sqldb->db), rc);
+	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s) prepare %s (%d)\n",dbi->dbi_subfile,  sqlite3_errmsg(sqldb->db), rc);
 	rc = sql_bind_key(dbi, scp, 1, key);
-	if (rc) rpmlog(RPMMESS_WARNING, "cput(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 	rc = sql_bind_data(dbi, scp, 2, data);
-	if (rc) rpmlog(RPMMESS_WARNING, "cput(%s) data bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s) data bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
 	rc = sql_step(dbi, scp);
-	if (rc) rpmlog(RPMMESS_WARNING, "cput(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
+	if (rc) rpmlog(RPMLOG_WARNING, "cput(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
 	break;
     }
@@ -1216,7 +1216,7 @@ assert(scp->av != NULL);
 	    rpmlog(RPMLOG_DEBUG, "db_info failed %s (%d)\n",
 		scp->pzErrmsg, sql_rc);
 	}
-	rpmlog(RPMMESS_WARNING, "Unable to determine DB endian.\n");
+	rpmlog(RPMLOG_WARNING, "Unable to determine DB endian.\n");
     }
 
     scp = scpFree(scp);

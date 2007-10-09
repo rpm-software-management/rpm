@@ -799,7 +799,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
 	if (!B->nopromote) {
-	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMMESS_WARNING : RPMLOG_DEBUG);
+	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMLOG_WARNING : RPMLOG_DEBUG);
 	    rpmlog(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
 		aDepend, bDepend);
 	    sense = 0;

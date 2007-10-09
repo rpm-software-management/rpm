@@ -118,7 +118,7 @@ void *rpmtsAcquireLock(rpmts ts)
 		rpmlog(RPMLOG_ERR, _("can't create transaction lock on %s\n"), rpmlock_path);
 	} else if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
 		if (lock->openmode & RPMLOCK_WRITE)
-			rpmlog(RPMMESS_WARNING,
+			rpmlog(RPMLOG_WARNING,
 				   _("waiting for transaction lock on %s\n"), rpmlock_path);
 		if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
 			rpmlog(RPMLOG_ERR,

@@ -954,11 +954,11 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (rpmtsStashKeyid(ts) ? RPMLOG_DEBUG : RPMMESS_WARNING);
+    {	int lvl = (rpmtsStashKeyid(ts) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s", fn, buf);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
-	rpmlog(RPMMESS_WARNING, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_WARNING, "%s: %s", fn, buf);
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */

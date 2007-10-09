@@ -666,7 +666,7 @@ int fsmMapAttrs(FSM_t fsm)
 
 	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
 	    if (fsm->goal == FSM_PKGINSTALL)
-		rpmlog(RPMMESS_WARNING,
+		rpmlog(RPMLOG_WARNING,
 		    _("user %s does not exist - using root\n"), fi->fuser[i]);
 	    uid = 0;
 	    finalMode &= ~S_ISUID;      /* turn off suid bit */
@@ -674,7 +674,7 @@ int fsmMapAttrs(FSM_t fsm)
 
 	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
 	    if (fsm->goal == FSM_PKGINSTALL)
-		rpmlog(RPMMESS_WARNING,
+		rpmlog(RPMLOG_WARNING,
 		    _("group %s does not exist - using root\n"), fi->fgroup[i]);
 	    gid = 0;
 	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
@@ -1464,7 +1464,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->ix < 0) {
 	    if (fsm->goal == FSM_PKGINSTALL) {
 #if 0
-		rpmlog(RPMMESS_WARNING,
+		rpmlog(RPMLOG_WARNING,
 		    _("archive file %s was not found in header file list\n"),
 			fsm->path);
 #endif
@@ -1586,7 +1586,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
 		rc = fsmNext(fsm, FSM_RENAME);
 		if (!rc)
-		    rpmlog(RPMMESS_WARNING,
+		    rpmlog(RPMLOG_WARNING,
 			_("%s saved as %s\n"),
 				(fsm->opath ? fsm->opath : ""),
 				(fsm->path ? fsm->path : ""));
@@ -1713,7 +1713,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
 	    rc = fsmNext(fsm, FSM_RENAME);
 	    if (!rc) {
-		rpmlog(RPMMESS_WARNING, _("%s saved as %s\n"),
+		rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
 				(fsm->opath ? fsm->opath : ""),
 				(fsm->path ? fsm->path : ""));
 	    }
@@ -1782,7 +1782,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmNext(fsm, FSM_RENAME);
 		if (!rc && fsm->nsuffix) {
 		    const char * opath = fsmFsPath(fsm, st, NULL, NULL);
-		    rpmlog(RPMMESS_WARNING, _("%s created as %s\n"),
+		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 				(opath ? opath : ""),
 				(fsm->path ? fsm->path : ""));
 		    opath = _free(opath);

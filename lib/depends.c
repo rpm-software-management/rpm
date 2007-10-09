@@ -188,7 +188,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    const char * pkgNEVR = rpmdsDNEVR(this);
 	    const char * addNEVR = rpmdsDNEVR(oldChk);
 	    if (rpmIsVerbose())
-		rpmlog(RPMMESS_WARNING,
+		rpmlog(RPMLOG_WARNING,
 		    _("package %s was already added, skipping %s\n"),
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
@@ -205,7 +205,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    const char * pkgNEVR = rpmdsDNEVR(this);
 	    const char * addNEVR = rpmdsDNEVR(newChk);
 	    if (rpmIsVerbose())
-		rpmlog(RPMMESS_WARNING,
+		rpmlog(RPMLOG_WARNING,
 		    _("package %s was already added, replacing with %s\n"),
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
@@ -759,7 +759,7 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
 	int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
-			? RPMMESS_WARNING : RPMLOG_DEBUG;
+			? RPMLOG_WARNING : RPMLOG_DEBUG;
 	int ac = 0;
 	int i;
 
@@ -1353,7 +1353,7 @@ rescan:
 		const char * dp;
 		char buf[4096];
 		int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
-			? RPMMESS_WARNING : RPMLOG_DEBUG;
+			? RPMLOG_WARNING : RPMLOG_DEBUG;
 ;
 
 		/* Unchain predecessor loop. */

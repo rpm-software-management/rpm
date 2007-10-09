@@ -306,7 +306,7 @@ static int rpmReSign(rpmts ts,
 		/* If same signer, skip resigning the package. */
 		if (!memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
 
-		    rpmlog(RPMMESS_WARNING,
+		    rpmlog(RPMLOG_WARNING,
 			_("%s: was already signed by key ID %s, skipping\n"),
 			rpm, pgpHexStr(newsignid+4, sizeof(newsignid)-4));
 

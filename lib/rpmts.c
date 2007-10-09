@@ -475,7 +475,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
     if (rc) {
 	const char * dn;
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmlog(RPMMESS_WARNING,
+	rpmlog(RPMLOG_WARNING,
 			_("cannot open Solve database in %s\n"), dn);
 	dn = _free(dn);
     }
