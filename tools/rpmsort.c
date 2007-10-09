@@ -70,7 +70,7 @@ do_tsort(const char *fileArgv[])
 
     rc = rpmtsOpenDB(ts, O_RDONLY);
     if (rc) {
-	rpmlog(RPMMESS_ERROR, _("cannot open Packages database\n"));
+	rpmlog(RPMLOG_ERR, _("cannot open Packages database\n"));
 	rc = -1;
 	goto exit;
     }
@@ -86,7 +86,7 @@ do_tsort(const char *fileArgv[])
 	rc = rpmdbOpen(rootdir, &avdb, O_RDONLY, 0644);
 	delMacro(NULL, "_dbpath");
 	if (rc) {
-	    rpmlog(RPMMESS_ERROR, _("cannot open Available database\n"));
+	    rpmlog(RPMLOG_ERR, _("cannot open Available database\n"));
 	    goto endavail;
 	}
         mi = rpmdbInitIterator(avdb, RPMDBI_PACKAGES, NULL, 0);
@@ -172,7 +172,7 @@ restart:
 	}
 
 	if (rc != RPMRC_NOTFOUND) {
-	    rpmlog(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
+	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *fnp);
 	    numFailed++; *fnp = NULL;
 	    break;
 	}
@@ -213,7 +213,7 @@ restart:
 
 	ps = rpmtsProblems(ts);
 	if (ps) {
-	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    ps = rpmpsFree(ps);
 	    rc = -1;

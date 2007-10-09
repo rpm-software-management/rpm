@@ -1485,7 +1485,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    int lvl;
 
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
-	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMLOG_DEBUG);
+	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
 			mi->mi_prevoffset, (msg ? msg : "\n"));
@@ -2111,7 +2111,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    int lvl;
 
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
-	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMLOG_DEBUG);
+	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
 			mi->mi_offset, (msg ? msg : "\n"));
@@ -2865,7 +2865,7 @@ data->size = headerSizeof(h, HEADER_MAGIC_NO);
 		    int lvl;
 
 		    rpmrc = (*hdrchk) (ts, data->data, data->size, &msg);
-		    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMLOG_DEBUG);
+		    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 		    rpmlog(lvl, "%s h#%8u %s",
 			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),
 				hdrNum, (msg ? msg : "\n"));
@@ -3595,9 +3595,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     } else if (!nocleanup) {
 	if (rpmdbMoveDatabase(prefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi)) {
-	    rpmlog(RPMMESS_ERROR, _("failed to replace old database with new "
+	    rpmlog(RPMLOG_ERR, _("failed to replace old database with new "
 			"database!\n"));
-	    rpmlog(RPMMESS_ERROR, _("replace files in %s with files from %s "
+	    rpmlog(RPMLOG_ERR, _("replace files in %s with files from %s "
 			"to recover"), dbpath, newdbpath);
 	    rc = 1;
 	    goto exit;
@@ -3609,7 +3609,7 @@ exit:
     if (removedir && !(rc == 0 && nocleanup)) {
 	rpmlog(RPMLOG_DEBUG, _("removing directory %s\n"), newrootdbpath);
 	if (Rmdir(newrootdbpath))
-	    rpmlog(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }
     newrootdbpath = _free(newrootdbpath);

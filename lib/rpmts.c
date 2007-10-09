@@ -154,7 +154,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     if (rc) {
 	const char * dn;
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmlog(RPMMESS_ERROR,
+	rpmlog(RPMLOG_ERR,
 			_("cannot open Packages database in %s\n"), dn);
 	dn = _free(dn);
     }

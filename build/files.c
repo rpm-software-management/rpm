@@ -2267,7 +2267,7 @@ static int checkFiles(StringBuf fileList)
 	t = getStringBuf(sb_stdout);
 	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
-	    rpmlog((rc ? RPMMESS_ERROR : RPMMESS_WARNING),
+	    rpmlog((rc ? RPMLOG_ERR : RPMMESS_WARNING),
 		_("Installed (but unpackaged) file(s) found:\n%s"), t);
 	}
     }

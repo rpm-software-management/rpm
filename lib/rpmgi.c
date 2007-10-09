@@ -580,7 +580,7 @@ enditer:
 	/* XXX query/verify will need the glop added to a buffer instead. */
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0) {
-	    /* XXX rpminstall will need RPMMESS_ERROR */
+	    /* XXX rpminstall will need RPMLOG_ERR */
 	    rpmlog(RPMMESS_VERBOSE, _("Failed dependencies:\n"));
 	    if (rpmIsVerbose())
 		rpmpsPrint(NULL, ps);

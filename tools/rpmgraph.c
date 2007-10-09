@@ -136,7 +136,7 @@ restart:
 	switch (rpmrc) {
 	case RPMRC_FAIL:
 	default:
-	    rpmlog(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
+	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *fnp);
 	    numFailed++; *fnp = NULL;
 	    break;
 	case RPMRC_OK:
@@ -191,7 +191,7 @@ maybe_manifest:
 	}
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0) {
-	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPkgs;
 

@@ -209,7 +209,7 @@ int urlSplit(const char * url, urlinfo *uret)
 	    char *end;
 	    u->port = strtol(u->portstr, &end, 0);
 	    if (!(end && *end == '\0')) {
-		rpmlog(RPMMESS_ERROR, _("url port must be a number\n"));
+		rpmlog(RPMLOG_ERR, _("url port must be a number\n"));
 		myurl = _free(myurl);
 		u = urlFree(u);
 		return -1;

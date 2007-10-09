@@ -944,7 +944,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     rc = rpmtsCheck(rollbackTransaction);
     ps = rpmtsProblems(rollbackTransaction);
     if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	rpmpsPrint(NULL, ps);
 	ps = rpmpsFree(ps);
 	return -1;
@@ -954,7 +954,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     /* Order the transaction */
     rc = rpmtsOrder(rollbackTransaction);
     if (rc != 0) {
-	rpmlog(RPMMESS_ERROR,
+	rpmlog(RPMLOG_ERR,
 	    _("Could not order auto-rollback transaction!\n"));
        return -1;
     }
@@ -1974,7 +1974,7 @@ assert(psm != NULL);
 			/* If we should rollback this transaction
 			   on failure, lets do it.                 */
 			if (rollbackOnFailure) {
-			    rpmlog(RPMMESS_ERROR,
+			    rpmlog(RPMLOG_ERR,
 				_("Add failed.  Could not read package header.\n"));
 			    /* Clean up the current transaction */
 			    p->h = headerFree(p->h);
@@ -2056,7 +2056,7 @@ assert(psm != NULL);
 		    /* If we should rollback this transaction
 		       on failure, lets do it.                 */
 		    if (rollbackOnFailure) {
-			rpmlog(RPMMESS_ERROR,
+			rpmlog(RPMLOG_ERR,
 			    _("Add failed in rpmpsmStage().\n"));
 			/* Clean up the current transaction */
 			p->h = headerFree(p->h);
@@ -2100,7 +2100,7 @@ assert(psm != NULL);
 		 * on failure, lets do it.
 		 */
 		if (rollbackOnFailure) {
-		    rpmlog(RPMMESS_ERROR, _("Add failed.  Could not get file list.\n"));
+		    rpmlog(RPMLOG_ERR, _("Add failed.  Could not get file list.\n"));
 		    /* Clean up the current transaction */
 	    	    p->h = headerFree(p->h);
 		    xx = rpmdbSync(rpmtsGetRdb(ts));
@@ -2145,7 +2145,7 @@ assert(psm != NULL);
 		     * on failure, lets do it.
 		     */
 		    if (rollbackOnFailure) {
-			rpmlog(RPMMESS_ERROR,
+			rpmlog(RPMLOG_ERR,
 			    _("Erase failed failed in rpmpsmStage().\n"));
 			/* Clean up the current transaction */
 			xx = rpmdbSync(rpmtsGetRdb(ts));

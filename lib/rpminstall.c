@@ -380,7 +380,7 @@ if (fileURL[0] == '=') {
 	    rpmlog(RPMLOG_DEBUG, _(" ... as %s\n"), tfn);
 	    rc = urlGetFile(fileURL, tfn);
 	    if (rc < 0) {
-		rpmlog(RPMMESS_ERROR,
+		rpmlog(RPMLOG_ERR,
 			_("skipping %s - transfer failed - %s\n"),
 			fileURL, ftpStrerror(rc));
 		eiu->numFailed++;
@@ -438,7 +438,7 @@ if (fileURL[0] == '=') {
 
 	switch (eiu->rpmrc) {
 	case RPMRC_FAIL:
-	    rpmlog(RPMMESS_ERROR, _("%s cannot be installed\n"), *eiu->fnp);
+	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *eiu->fnp);
 	    eiu->numFailed++; *eiu->fnp = NULL;
 	    continue;
 	    break;
@@ -479,7 +479,7 @@ if (fileURL[0] == '=') {
 	    } else {
 		const char * name;
 		xx = headerNVR(eiu->h, &name, NULL, NULL);
-		rpmlog(RPMMESS_ERROR,
+		rpmlog(RPMLOG_ERR,
 			       _("package %s is not relocatable\n"), name);
 		eiu->numFailed++;
 		goto exit;
@@ -526,13 +526,13 @@ if (fileURL[0] == '=') {
 			eiu->numRPMS);
 	    break;
 	case 1:
-	    rpmlog(RPMMESS_ERROR,
+	    rpmlog(RPMLOG_ERR,
 			    _("error reading from file %s\n"), *eiu->fnp);
 	    eiu->numFailed++;
 	    goto exit;
 	    break;
 	case 2:
-	    rpmlog(RPMMESS_ERROR,
+	    rpmlog(RPMLOG_ERR,
 			    _("file %s requires a newer version of RPM\n"),
 			    *eiu->fnp);
 	    eiu->numFailed++;
@@ -594,7 +594,7 @@ maybe_manifest:
 
 	ps = rpmtsProblems(ts);
 	if (!stopInstall && rpmpsNumProblems(ps) > 0) {
-	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
@@ -653,7 +653,7 @@ maybe_manifest:
 	    if (eiu->sourceURL[i] == NULL) continue;
 	    eiu->fd = Fopen(eiu->sourceURL[i], "r.ufdio");
 	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
-		rpmlog(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
+		rpmlog(RPMLOG_ERR, _("cannot open file %s: %s\n"),
 			   eiu->sourceURL[i], Fstrerror(eiu->fd));
 		if (eiu->fd != NULL) {
 		    xx = Fclose(eiu->fd);
@@ -732,7 +732,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
 	if (mi == NULL) {
-	    rpmlog(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
+	    rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), *arg);
 	    numFailed++;
 	} else {
 	    Header h;	/* XXX iterator owns the reference */
@@ -741,7 +741,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
 		if (!(count++ == 0 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
-		    rpmlog(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
+		    rpmlog(RPMLOG_ERR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
 		    break;
@@ -766,7 +766,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 
 	ps = rpmtsProblems(ts);
 	if (!stopUninstall && rpmpsNumProblems(ps) > 0) {
-	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPackages;
 	    stopUninstall = 1;
@@ -811,7 +811,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
-	rpmlog(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
 	return 1;
     }
@@ -827,7 +827,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
     }
     if (rc != 0) {
-	rpmlog(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
+	rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), arg);
 	if (specFilePtr && *specFilePtr)
 	    *specFilePtr = _free(*specFilePtr);
 	if (cookie && *cookie)
@@ -1012,7 +1012,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	rc = rpmtsCheck(ts);
 	ps = rpmtsProblems(ts);
 	if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    ps = rpmpsFree(ps);
 	    goto exit;

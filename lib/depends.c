@@ -1400,7 +1400,7 @@ rescan:
 	}
 
 	/* Return no. of packages that could not be ordered. */
-	rpmlog(RPMMESS_ERROR, _("rpmtsOrder failed, %d elements remain\n"),
+	rpmlog(RPMLOG_ERR, _("rpmtsOrder failed, %d elements remain\n"),
 			loopcheck);
 	return loopcheck;
     }
