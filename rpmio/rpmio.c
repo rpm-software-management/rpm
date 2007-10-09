@@ -168,7 +168,7 @@ static inline int fdSeekNot(void * cookie,
 /** \ingroup rpmio
  */
 static inline
-int __fdFileno(void * cookie)
+int fdFileno(void * cookie)
 {
     FD_t fd;
     if (cookie == NULL) return -2;
@@ -282,7 +282,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
 
 /**
  */
-static ssize_t __fdRead(void * cookie, char * buf, size_t count)
+static ssize_t fdRead(void * cookie, char * buf, size_t count)
 {
     FD_t fd = c2f(cookie);
     ssize_t rc;
@@ -290,22 +290,22 @@ static ssize_t __fdRead(void * cookie, char * buf, size_t count)
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     fdstat_enter(fd, FDSTAT_READ);
-    rc = read(__fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
     if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 
-DBGIO(fd, (stderr, "==>\t__fdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
 }
 
 /**
  */
-static ssize_t __fdWrite(void * cookie, const char * buf, size_t count)
+static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 {
     FD_t fd = c2f(cookie);
-    int fdno = __fdFileno(fd);
+    int fdno = fdFileno(fd);
     ssize_t rc;
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
@@ -318,7 +318,7 @@ static ssize_t __fdWrite(void * cookie, const char * buf, size_t count)
     rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_WRITE, rc);
 
-DBGIO(fd, (stderr, "==>\t__fdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
 }
@@ -335,7 +335,7 @@ static inline int fdSeek(void * cookie, _libio_pos_t pos, int whence)
 
     assert(fd->bytesRemain == -1);	/* XXX FIXME fadio only for now */
     fdstat_enter(fd, FDSTAT_SEEK);
-    rc = lseek(__fdFileno(fd), p, whence);
+    rc = lseek(fdFileno(fd), p, whence);
     fdstat_exit(fd, FDSTAT_SEEK, rc);
 
 DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
@@ -345,7 +345,7 @@ DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence
 
 /**
  */
-static int __fdClose( void * cookie)
+static int fdClose( void * cookie)
 {
     FD_t fd;
     int fdno;
@@ -353,7 +353,7 @@ static int __fdClose( void * cookie)
 
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
-    fdno = __fdFileno(fd);
+    fdno = fdFileno(fd);
 
     fdSetFdno(fd, -1);
 
@@ -361,15 +361,15 @@ static int __fdClose( void * cookie)
     rc = ((fdno >= 0) ? close(fdno) : -2);
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
-DBGIO(fd, (stderr, "==>\t__fdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
 
-    fd = fdFree(fd, "open (__fdClose)");
+    fd = fdFree(fd, "open (fdClose)");
     return rc;
 }
 
 /**
  */
-static FD_t __fdOpen(const char *path, int flags, mode_t mode)
+static FD_t fdOpen(const char *path, int flags, mode_t mode)
 {
     FD_t fd;
     int fdno;
@@ -380,16 +380,16 @@ static FD_t __fdOpen(const char *path, int flags, mode_t mode)
 	(void) close(fdno);
 	return NULL;
     }
-    fd = fdNew("open (__fdOpen)");
+    fd = fdNew("open (fdOpen)");
     fdSetFdno(fd, fdno);
     fd->flags = flags;
-DBGIO(fd, (stderr, "==>\t__fdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     return fd;
 }
 
 static struct FDIO_s fdio_s = {
-  __fdRead, __fdWrite, fdSeek, __fdClose, XfdLink, XfdFree, XfdNew, __fdFileno,
-  __fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
+  fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fdio = &fdio_s ;
 
@@ -406,7 +406,7 @@ int fdWritable(FD_t fd, int secs)
     FD_ZERO(&wrfds);
 #endif
 	
-    if ((fdno = __fdFileno(fd)) < 0)
+    if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
 	
     do {
@@ -454,7 +454,7 @@ int fdReadable(FD_t fd, int secs)
     FD_ZERO(&rdfds);
 #endif
 
-    if ((fdno = __fdFileno(fd)) < 0)
+    if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
 	
     do {
@@ -634,10 +634,10 @@ static ssize_t ufdRead(void * cookie, char * buf, size_t count)
     /* XXX preserve timedRead() behavior */
     if (fdGetIo(fd) == fdio) {
 	struct stat sb;
-	int fdno = __fdFileno(fd);
+	int fdno = fdFileno(fd);
 	(void) fstat(fdno, &sb);
 	if (S_ISREG(sb.st_mode))
-	    return __fdRead(fd, buf, count);
+	    return fdRead(fd, buf, count);
     }
 
     UFDONLY(fd);
@@ -662,7 +662,7 @@ static ssize_t ufdRead(void * cookie, char * buf, size_t count)
 	    break;
 	}
 
-	rc = __fdRead(fd, buf + total, count - total);
+	rc = fdRead(fd, buf + total, count - total);
 
 	if (rc < 0) {
 	    switch (errno) {
@@ -697,7 +697,7 @@ static ssize_t ufdWrite(void * cookie, const char * buf, size_t count)
 	struct stat sb;
 	(void) fstat(fdGetFdno(fd), &sb);
 	if (S_ISREG(sb.st_mode))
-	    return __fdWrite(fd, buf, count);
+	    return fdWrite(fd, buf, count);
     }
 #endif
 
@@ -725,7 +725,7 @@ fprintf(stderr, "*** ufdWrite fd %p WRITE PAST END OF CONTENT\n", fd);
 	    break;
 	}
 
-	rc = __fdWrite(fd, buf + total, count - total);
+	rc = fdWrite(fd, buf + total, count - total);
 
 	if (rc < 0) {
 	    switch (errno) {
@@ -775,7 +775,7 @@ int ufdClose( void * cookie)
 
     UFDONLY(fd);
 
-    return __fdClose(fd);
+    return fdClose(fd);
 }
 
 /*
@@ -813,7 +813,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
         rpmError(RPMERR_EXEC, _("URL helper failed: %s (%d)\n"),
                  cmd, WEXITSTATUS(rc));
     } else {
-	fd = __fdOpen(dest, flags, mode);
+	fd = fdOpen(dest, flags, mode);
 	unlink(dest);
     }
     dest = _free(dest);
@@ -849,7 +849,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
     default:
-	fd = __fdOpen(path, flags, mode);
+	fd = fdOpen(path, flags, mode);
 	break;
     }
 
@@ -869,7 +869,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 }
 
 static struct FDIO_s ufdio_s = {
-  ufdRead, ufdWrite, ufdSeek, ufdClose, XfdLink, XfdFree, XfdNew, __fdFileno,
+  ufdRead, ufdWrite, ufdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
 FDIO_t ufdio = &ufdio_s ;
@@ -919,7 +919,7 @@ static FD_t gzdFdopen(void * cookie, const char *fmode)
     gzFile gzfile;
 
     if (fmode == NULL) return NULL;
-    fdno = __fdFileno(fd);
+    fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
     gzfile = gzdopen(fdno, fmode);
@@ -1070,7 +1070,7 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 }
 
 static struct FDIO_s gzdio_s = {
-  gzdRead, gzdWrite, gzdSeek, gzdClose, XfdLink, XfdFree, XfdNew, __fdFileno,
+  gzdRead, gzdWrite, gzdSeek, gzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   NULL, gzdOpen, gzdFileno, gzdFlush,	NULL, NULL, NULL, NULL, NULL
 };
 FDIO_t gzdio = &gzdio_s ;
@@ -1129,7 +1129,7 @@ static FD_t bzdFdopen(void * cookie, const char * fmode)
     BZFILE *bzfile;
 
     if (fmode == NULL) return NULL;
-    fdno = __fdFileno(fd);
+    fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
     bzfile = bzdopen(fdno, fmode);
@@ -1233,7 +1233,7 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 }
 
 static struct FDIO_s bzdio_s = {
-  bzdRead, bzdWrite, bzdSeek, bzdClose, XfdLink, XfdFree, XfdNew, __fdFileno,
+  bzdRead, bzdWrite, bzdSeek, bzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush,	NULL, NULL, NULL, NULL, NULL
 };
 FDIO_t bzdio = &bzdio_s ;
@@ -1570,9 +1570,9 @@ FD_t Fopen(const char *path, const char *fmode)
     if (end == NULL || !strcmp(end, "fdio")) {
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
-	fd = __fdOpen(path, flags, perms);
-	if (__fdFileno(fd) < 0) {
-	    if (fd) (void) __fdClose(fd);
+	fd = fdOpen(path, flags, perms);
+	if (fdFileno(fd) < 0) {
+	    if (fd) (void) fdClose(fd);
 	    return NULL;
 	}
     } else {
@@ -1589,7 +1589,7 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
 	    fd = ufdOpen(path, flags, perms);
-	    if (fd == NULL || !(__fdFileno(fd) >= 0))
+	    if (fd == NULL || !(fdFileno(fd) >= 0))
 		return fd;
 	    break;
 	default:
@@ -1649,7 +1649,7 @@ int Ferror(FD_t fd)
 #endif
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
-	    ec = (__fdFileno(fd) < 0 ? -1 : 0);
+	    ec = (fdFileno(fd) < 0 ? -1 : 0);
 	}
 
 	if (rc == 0 && ec)
@@ -1781,7 +1781,7 @@ exit:
 }
 
 static struct FDIO_s fpio_s = {
-  ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, __fdFileno,
+  ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
 };
 FDIO_t fpio = &fpio_s ;
