@@ -178,10 +178,6 @@ extern "C" {
 
 /** \ingroup rpmio
  */
-int fdFgets(FD_t fd, char * buf, size_t len);
-
-/** \ingroup rpmio
- */
 int ufdClose( void * cookie);
 
 /** \ingroup rpmio
