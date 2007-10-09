@@ -1179,7 +1179,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	db_instance = rpmteDBInstance(te);
 	if (db_instance == 0) {
 	    /* Could not get the db instance: WTD! */
-    	    rpmlog(RPMMESS_FATALERROR,
+    	    rpmlog(RPMLOG_CRIT,
 		_("Could not get install element database instance!\n"));
 	    break;
 	}
@@ -1192,7 +1192,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	mi = rpmdbFreeIterator(mi);
 	if (h == NULL) {
 	    /* Header was not there??? */
-    	    rpmlog(RPMMESS_FATALERROR,
+    	    rpmlog(RPMLOG_CRIT,
 		_("Could not get header for auto-rollback transaction!\n"));
 	    break;
 	}
@@ -1222,7 +1222,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 			
 	default:
 	    /* Not sure what to do on failure...just give up */
-   	    rpmlog(RPMMESS_FATALERROR,
+   	    rpmlog(RPMLOG_CRIT,
 		_("Could not get repackaged header for auto-rollback transaction!\n"));
 	    break;
 	}
@@ -1262,7 +1262,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	    rc = rpmtsAddInstallElement(rollbackTransaction, rph,
 		(fnpyKey) rpn, 1, te->relocs);
 	    if (rc != RPMRC_OK)
-	        rpmlog(RPMMESS_FATALERROR,
+	        rpmlog(RPMLOG_CRIT,
 		    _("Could not add erase element to auto-rollback transaction.\n"));
 	    break;
 
@@ -1274,7 +1274,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	    break;
 
 	default:
-	    rpmlog(RPMMESS_FATALERROR,
+	    rpmlog(RPMLOG_CRIT,
 		_("Failure reading repackaged package!\n"));
 	    break;
 	}
