@@ -861,7 +861,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 		continue;
 	    if (strncmp(fbn, bn, bnlen))
 		continue;
-	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), dn);
+	    rpmlog(RPMMESS_DEBUG, _("excluding directory %s\n"), dn);
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    break;
 	}
@@ -935,8 +935,8 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     }
     tsi = rpmtsiFree(tsi);
 
-    rpmMessage(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
-    rpmMessage(RPMMESS_NORMAL,
+    rpmlog(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
+    rpmlog(RPMMESS_NORMAL,
 	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
                         numAdded, numRemoved, ctime((time_t*) &tid), tid);
 
@@ -944,7 +944,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     rc = rpmtsCheck(rollbackTransaction);
     ps = rpmtsProblems(rollbackTransaction);
     if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	rpmpsPrint(NULL, ps);
 	ps = rpmpsFree(ps);
 	return -1;
@@ -954,7 +954,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     /* Order the transaction */
     rc = rpmtsOrder(rollbackTransaction);
     if (rc != 0) {
-	rpmMessage(RPMMESS_ERROR,
+	rpmlog(RPMMESS_ERROR,
 	    _("Could not order auto-rollback transaction!\n"));
        return -1;
     }
@@ -988,13 +988,13 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
      */
     tsi = rpmtsiInit(rollbackTransaction);
     while((te = rpmtsiNext(tsi, 0)) != NULL) {
-	rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
+	rpmlog(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
 	switch (rpmteType(te)) {
 	/* The install elements are repackaged packages */
 	case TR_ADDED:
 	    /* Make sure the filename is still there.  XXX: Can't happen */
 	    if(te->key) {
-		rpmMessage(RPMMESS_NORMAL, _("\tRemoving %s:\n"), te->key);
+		rpmlog(RPMMESS_NORMAL, _("\tRemoving %s:\n"), te->key);
 		(void) unlink(te->key); /* XXX: Should check for an error? */
 	    }
 	    break;
@@ -1041,7 +1041,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
     int rc   = RPMRC_NOTFOUND;	/* Assume we do not find it*/
     int xx;
 
-    rpmMessage(RPMMESS_DEBUG,
+    rpmlog(RPMMESS_DEBUG,
 	_("Getting repackaged header from transaction element\n"));
 
     /* Set header pointer to null if its not already */
@@ -1067,15 +1067,15 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
     xx = snprintf(rp, nb, "%s/%s%s.rpm", _repackage_dir, name, globStr);
 
     /* Get the index of possible repackaged packages */
-    rpmMessage(RPMMESS_DEBUG, _("\tLooking for %s...\n"), rp);
+    rpmlog(RPMMESS_DEBUG, _("\tLooking for %s...\n"), rp);
     rtids = IDTXglob(ts, rp, RPMTAG_REMOVETID);
     rp = _free(rp);
     if (rtids != NULL) {
-    	rpmMessage(RPMMESS_DEBUG, _("\tMatches found.\n"));
+    	rpmlog(RPMMESS_DEBUG, _("\tMatches found.\n"));
 	rpIDT = rtids->idt;
 	nrids = rtids->nidt;
     } else {
-    	rpmMessage(RPMMESS_DEBUG, _("\tNo matches found.\n"));
+    	rpmlog(RPMMESS_DEBUG, _("\tNo matches found.\n"));
 	goto exit;
     }
 
@@ -1087,7 +1087,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 	 * get out of here...the repackaged package was not found.
 	 */
 	if (rpIDT == NULL) {
-    	    rpmMessage(RPMMESS_DEBUG, _("\tRepackaged package not found!.\n"));
+    	    rpmlog(RPMMESS_DEBUG, _("\tRepackaged package not found!.\n"));
 	    break;
 	}
 
@@ -1108,9 +1108,9 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 	 * would be found.
 	 * XXX:  Should Match NAC!
 	 */
-    	rpmMessage(RPMMESS_DEBUG, _("\tREMOVETID matched INSTALLTID.\n"));
+    	rpmlog(RPMMESS_DEBUG, _("\tREMOVETID matched INSTALLTID.\n"));
 	if (headerGetEntry(rpIDT->h, RPMTAG_NAME, NULL, (void **) &rpname, NULL)) {
-    	    rpmMessage(RPMMESS_DEBUG, _("\t\tName:  %s.\n"), rpname);
+    	    rpmlog(RPMMESS_DEBUG, _("\t\tName:  %s.\n"), rpname);
 	    if (!strcmp(name,rpname)) {
 		/* It matched we have a canidate */
 		h  = headerLink(rpIDT->h);
@@ -1132,7 +1132,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 
 exit:
     if (rc != RPMRC_NOTFOUND && h != NULL && hdrp != NULL) {
-    	rpmMessage(RPMMESS_DEBUG, _("\tRepackaged Package was %s...\n"), rp);
+    	rpmlog(RPMMESS_DEBUG, _("\tRepackaged Package was %s...\n"), rp);
 	if (hdrp != NULL)
 	    *hdrp = headerLink(h);
 	if (fnp != NULL)
@@ -1170,7 +1170,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
     case TR_ADDED:
     {   rpmdbMatchIterator mi;
 
-	rpmMessage(RPMMESS_DEBUG,
+	rpmlog(RPMMESS_DEBUG,
 	    _("Adding install element to auto-rollback transaction.\n"));
 
 	/* Get the header for this package from the database
@@ -1179,7 +1179,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	db_instance = rpmteDBInstance(te);
 	if (db_instance == 0) {
 	    /* Could not get the db instance: WTD! */
-    	    rpmMessage(RPMMESS_FATALERROR,
+    	    rpmlog(RPMMESS_FATALERROR,
 		_("Could not get install element database instance!\n"));
 	    break;
 	}
@@ -1192,7 +1192,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	mi = rpmdbFreeIterator(mi);
 	if (h == NULL) {
 	    /* Header was not there??? */
-    	    rpmMessage(RPMMESS_FATALERROR,
+    	    rpmlog(RPMMESS_FATALERROR,
 		_("Could not get header for auto-rollback transaction!\n"));
 	    break;
 	}
@@ -1202,9 +1202,9 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	switch(rc) {
 	case RPMRC_OK:
 	    /* Add the install element, as we had a repackaged package */
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG,
 		_("\tAdded repackaged package header: %s.\n"), rpn);
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG,
 		_("\tAdded from install element %s.\n"), rpmteNEVRA(te));
 	    rc = rpmtsAddInstallElement(rollbackTransaction, headerLink(rph),
 		(fnpyKey) rpn, 1, te->relocs);
@@ -1214,22 +1214,22 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	    /* Add the header as an erase element, we did not
 	     * have a repackaged package
 	     */
-	    rpmMessage(RPMMESS_DEBUG, _("\tAdded erase element.\n"));
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG, _("\tAdded erase element.\n"));
+	    rpmlog(RPMMESS_DEBUG,
 		_("\tAdded from install element %s.\n"), rpmteNEVRA(te));
 	    rc = rpmtsAddEraseElement(rollbackTransaction, h, db_instance);
 	    break;
 			
 	default:
 	    /* Not sure what to do on failure...just give up */
-   	    rpmMessage(RPMMESS_FATALERROR,
+   	    rpmlog(RPMMESS_FATALERROR,
 		_("Could not get repackaged header for auto-rollback transaction!\n"));
 	    break;
 	}
     }	break;
 
    case TR_REMOVED:
-	rpmMessage(RPMMESS_DEBUG,
+	rpmlog(RPMMESS_DEBUG,
 	    _("Add erase element to auto-rollback transaction.\n"));
 	/* See if this element has already been added.
  	 * If so we want to do nothing.  Compare N's for match.
@@ -1238,8 +1238,8 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	pi = rpmtsiInit(rollbackTransaction);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	    if (!strcmp(rpmteN(p), rpmteN(te))) {
-	    	rpmMessage(RPMMESS_DEBUG, _("\tFound existing upgrade element.\n"));
-	    	rpmMessage(RPMMESS_DEBUG, _("\tNot adding erase element for %s.\n"),
+	    	rpmlog(RPMMESS_DEBUG, _("\tFound existing upgrade element.\n"));
+	    	rpmlog(RPMMESS_DEBUG, _("\tNot adding erase element for %s.\n"),
 			rpmteN(te));
 		rc = RPMRC_OK;	
 		pi = rpmtsiFree(pi);
@@ -1255,26 +1255,26 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	switch(rc) {
 	case RPMRC_OK:
 	    /* Add the install element */
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG,
 		_("\tAdded repackaged package %s.\n"), rpn);
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG,
 		_("\tAdded from erase element %s.\n"), rpmteNEVRA(te));
 	    rc = rpmtsAddInstallElement(rollbackTransaction, rph,
 		(fnpyKey) rpn, 1, te->relocs);
 	    if (rc != RPMRC_OK)
-	        rpmMessage(RPMMESS_FATALERROR,
+	        rpmlog(RPMMESS_FATALERROR,
 		    _("Could not add erase element to auto-rollback transaction.\n"));
 	    break;
 
 	case RPMRC_NOTFOUND:
 	    /* Just did not have a repackaged package */
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG,
 		_("\tNo repackaged package...nothing to do.\n"));
 	    rc = RPMRC_OK;
 	    break;
 
 	default:
-	    rpmMessage(RPMMESS_FATALERROR,
+	    rpmlog(RPMMESS_FATALERROR,
 		_("Failure reading repackaged package!\n"));
 	    break;
 	}
@@ -1409,7 +1409,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * - count files.
      */
 
-rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
+rpmlog(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
     pi = rpmtsiInit(ts);
@@ -1495,7 +1495,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
      	  || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
-	rpmMessage(RPMMESS_DEBUG, _("running pre-transaction scripts\n"));
+	rpmlog(RPMMESS_DEBUG, _("running pre-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    if ((fi = rpmtsiFi(pi)) == NULL)
@@ -1562,7 +1562,7 @@ assert(psm != NULL);
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
+rpmlog(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
 
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
@@ -1638,7 +1638,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
+rpmlog(RPMMESS_DEBUG, _("computing file dispositions\n"));
     ps = rpmtsProblems(ts);
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1826,7 +1826,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	rpmVSFlags ovsflags;
 	rpmVSFlags vsflags;
 
-	rpmMessage(RPMMESS_DEBUG,
+	rpmlog(RPMMESS_DEBUG,
 	    _("Creating auto-rollback transaction\n"));
 
 	rollbackTransaction = rpmtsCreate();
@@ -1943,7 +1943,7 @@ assert(psm != NULL);
 
 	    pkgKey = rpmteAddedKey(p);
 
-	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+	    rpmlog(RPMMESS_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	    p->h = NULL;
@@ -1974,7 +1974,7 @@ assert(psm != NULL);
 			/* If we should rollback this transaction
 			   on failure, lets do it.                 */
 			if (rollbackOnFailure) {
-			    rpmMessage(RPMMESS_ERROR,
+			    rpmlog(RPMMESS_ERROR,
 				_("Add failed.  Could not read package header.\n"));
 			    /* Clean up the current transaction */
 			    p->h = headerFree(p->h);
@@ -2056,7 +2056,7 @@ assert(psm != NULL);
 		    /* If we should rollback this transaction
 		       on failure, lets do it.                 */
 		    if (rollbackOnFailure) {
-			rpmMessage(RPMMESS_ERROR,
+			rpmlog(RPMMESS_ERROR,
 			    _("Add failed in rpmpsmStage().\n"));
 			/* Clean up the current transaction */
 			p->h = headerFree(p->h);
@@ -2100,7 +2100,7 @@ assert(psm != NULL);
 		 * on failure, lets do it.
 		 */
 		if (rollbackOnFailure) {
-		    rpmMessage(RPMMESS_ERROR, _("Add failed.  Could not get file list.\n"));
+		    rpmlog(RPMMESS_ERROR, _("Add failed.  Could not get file list.\n"));
 		    /* Clean up the current transaction */
 	    	    p->h = headerFree(p->h);
 		    xx = rpmdbSync(rpmtsGetRdb(ts));
@@ -2130,7 +2130,7 @@ assert(psm != NULL);
 	case TR_REMOVED:
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
 
-	    rpmMessage(RPMMESS_DEBUG, "========== --- %s %s-%s 0x%x\n",
+	    rpmlog(RPMMESS_DEBUG, "========== --- %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	    /*
@@ -2145,7 +2145,7 @@ assert(psm != NULL);
 		     * on failure, lets do it.
 		     */
 		    if (rollbackOnFailure) {
-			rpmMessage(RPMMESS_ERROR,
+			rpmlog(RPMMESS_ERROR,
 			    _("Erase failed failed in rpmpsmStage().\n"));
 			/* Clean up the current transaction */
 			xx = rpmdbSync(rpmtsGetRdb(ts));
@@ -2204,7 +2204,7 @@ assert(psm != NULL);
 	rollbackTransaction = rpmtsFree(rollbackTransaction);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	rpmMessage(RPMMESS_DEBUG, _("running post-transaction scripts\n"));
+	rpmlog(RPMMESS_DEBUG, _("running post-transaction scripts\n"));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    int haspostscript;

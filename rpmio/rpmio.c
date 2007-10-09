@@ -1730,7 +1730,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     }
     rc = 0;
     if (created)
-	rpmMessage(RPMMESS_DEBUG, "created directory(s) %s mode 0%o\n",
+	rpmlog(RPMMESS_DEBUG, "created directory(s) %s mode 0%o\n",
 			path, mode);
     return rc;
 }

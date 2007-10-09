@@ -1442,8 +1442,8 @@ static void getMachineInfo(int type, const char ** name,
 	if (name) *name = current[type];
 
 	if (tables[currTables[type]].hasCanon) {
-	    rpmMessage(RPMMESS_WARNING, _("Unknown system: %s\n"), current[type]);
-	    rpmMessage(RPMMESS_WARNING, _("Please contact %s\n"), PACKAGE_BUGREPORT);
+	    rpmlog(RPMMESS_WARNING, _("Unknown system: %s\n"), current[type]);
+	    rpmlog(RPMMESS_WARNING, _("Please contact %s\n"), PACKAGE_BUGREPORT);
 	}
     }
 }

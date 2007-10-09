@@ -136,7 +136,7 @@ restart:
 	switch (rpmrc) {
 	case RPMRC_FAIL:
 	default:
-	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
+	    rpmlog(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
 	    numFailed++; *fnp = NULL;
 	    break;
 	case RPMRC_OK:
@@ -191,19 +191,19 @@ maybe_manifest:
 	}
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPkgs;
 
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+		rpmlog(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
 		    const char * str = ts->suggests[i];
 
 		    if (str == NULL)
 			break;
 
-		    rpmMessage(RPMMESS_NORMAL, "\t%s\n", str);
+		    rpmlog(RPMMESS_NORMAL, "\t%s\n", str);
 		    ts->suggests[i] = NULL;
 		    str = _free(str);
 		}

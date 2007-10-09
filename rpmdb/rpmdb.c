@@ -170,7 +170,7 @@ static void dbiTagsInit(void)
 	    *oe++ = '\0';
 	rpmtag = rpmTagGetValue(o);
 	if (rpmtag < 0) {
-	    rpmMessage(RPMMESS_WARNING,
+	    rpmlog(RPMMESS_WARNING,
 		_("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
 	    continue;
 	}
@@ -234,7 +234,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
     default:
 	_dbapi = _dbapi_wanted;
 	if (_dbapi < 0 || _dbapi >= 5 || mydbvecs[_dbapi] == NULL) {
-            rpmMessage(RPMMESS_DEBUG, "dbiOpen: _dbiapi failed\n");
+            rpmlog(RPMMESS_DEBUG, "dbiOpen: _dbiapi failed\n");
 	    return NULL;
 	}
 	errno = 0;
@@ -653,7 +653,7 @@ int rpmdbCheckSignals(void)
 {
     if (rpmdbCheckTerminate(0)) {
 /* sigset_t is abstract type */
-	rpmMessage(RPMMESS_DEBUG, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
+	rpmlog(RPMMESS_DEBUG, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
 	exit(EXIT_FAILURE);
     }
     return 0;
@@ -1486,7 +1486,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
-	    rpmMessage(lvl, "%s h#%8u %s",
+	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
 			mi->mi_prevoffset, (msg ? msg : "\n"));
 	    msg = _free(msg);
@@ -2112,7 +2112,7 @@ if (dbiByteSwapped(dbi) == 1)
 
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
-	    rpmMessage(lvl, "%s h#%8u %s",
+	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
 			mi->mi_offset, (msg ? msg : "\n"));
 	    msg = _free(msg);
@@ -2451,7 +2451,7 @@ memset(data, 0, sizeof(*data));
 
     {	const char *n, *v, *r;
 	(void) headerNVR(h, &n, &v, &r);
-	rpmMessage(RPMMESS_DEBUG, "  --- h#%8u %s-%s-%s\n", hdrNum, n, v, r);
+	rpmlog(RPMMESS_DEBUG, "  --- h#%8u %s-%s-%s\n", hdrNum, n, v, r);
     }
 
     (void) blockSignals(db, &signalMask);
@@ -2600,11 +2600,11 @@ if (dbiByteSwapped(dbi) == 1)
 
 		if (!printed) {
 		    if (rpmcnt == 1 && stringvalued) {
-			rpmMessage(RPMMESS_DEBUG,
+			rpmlog(RPMMESS_DEBUG,
 				_("removing \"%s\" from %s index.\n"),
 				(char *)key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    } else {
-			rpmMessage(RPMMESS_DEBUG,
+			rpmlog(RPMMESS_DEBUG,
 				_("removing %d entries from %s index.\n"),
 				rpmcnt, rpmTagGetName(dbi->dbi_rpmtag));
 		    }
@@ -2866,7 +2866,7 @@ data->size = headerSizeof(h, HEADER_MAGIC_NO);
 
 		    rpmrc = (*hdrchk) (ts, data->data, data->size, &msg);
 		    lvl = (rpmrc == RPMRC_FAIL ? RPMMESS_ERROR : RPMMESS_DEBUG);
-		    rpmMessage(lvl, "%s h#%8u %s",
+		    rpmlog(lvl, "%s h#%8u %s",
 			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),
 				hdrNum, (msg ? msg : "\n"));
 		    msg = _free(msg);
@@ -3022,11 +3022,11 @@ data->size = 0;
 
 		if (!printed) {
 		    if (rpmcnt == 1 && stringvalued) {
-			rpmMessage(RPMMESS_DEBUG,
+			rpmlog(RPMMESS_DEBUG,
 				_("adding \"%s\" to %s index.\n"),
 				(char *)key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    } else {
-			rpmMessage(RPMMESS_DEBUG,
+			rpmlog(RPMMESS_DEBUG,
 				_("adding %d entries to %s index.\n"),
 				rpmcnt, rpmTagGetName(dbi->dbi_rpmtag));
 		    }
@@ -3418,7 +3418,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	const char * mdb1 = "/etc/rpm/macros.db1";
 	struct stat st;
 	if (!stat(mdb1, &st) && S_ISREG(st.st_mode) && !unlink(mdb1))
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG,
 		_("removing %s after successful db3 rebuild.\n"), mdb1);
     }
 #endif
@@ -3450,7 +3450,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     tfn = rpmGetPath("%{?_dbpath}", NULL);
     if (!(tfn && tfn[0] != '\0'))
     {
-	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
+	rpmlog(RPMMESS_DEBUG, _("no dbpath has been set"));
 	rc = 1;
 	goto exit;
     }
@@ -3476,7 +3476,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	newdbpath += strlen(prefix) - 1;
     tfn = _free(tfn);
 
-    rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
+    rpmlog(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
 	rootdbpath, newrootdbpath);
 
     if (!access(newrootdbpath, F_OK)) {
@@ -3486,7 +3486,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("creating directory %s\n"), newrootdbpath);
+    rpmlog(RPMMESS_DEBUG, _("creating directory %s\n"), newrootdbpath);
     if (Mkdir(newrootdbpath, 0755)) {
 	rpmlog(RPMERR_MKDIR, _("creating directory %s: %s\n"),
 	      newrootdbpath, strerror(errno));
@@ -3497,7 +3497,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     _rebuildinprogress = 0;
 
-    rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
+    rpmlog(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
 		_dbapi);
     if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
@@ -3506,7 +3506,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     _dbapi = olddb->db_api;
     _rebuildinprogress = 1;
-    rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
+    rpmlog(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
     if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
@@ -3587,7 +3587,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     xx = rpmdbClose(newdb);
 
     if (failed) {
-	rpmMessage(RPMMESS_NORMAL, _("failed to rebuild database: original database "
+	rpmlog(RPMMESS_NORMAL, _("failed to rebuild database: original database "
 		"remains in place\n"));
 
 	xx = rpmdbRemoveDatabase(prefix, newdbpath, _dbapi_rebuild);
@@ -3595,9 +3595,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     } else if (!nocleanup) {
 	if (rpmdbMoveDatabase(prefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi)) {
-	    rpmMessage(RPMMESS_ERROR, _("failed to replace old database with new "
+	    rpmlog(RPMMESS_ERROR, _("failed to replace old database with new "
 			"database!\n"));
-	    rpmMessage(RPMMESS_ERROR, _("replace files in %s with files from %s "
+	    rpmlog(RPMMESS_ERROR, _("replace files in %s with files from %s "
 			"to recover"), dbpath, newdbpath);
 	    rc = 1;
 	    goto exit;
@@ -3607,9 +3607,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
 exit:
     if (removedir && !(rc == 0 && nocleanup)) {
-	rpmMessage(RPMMESS_DEBUG, _("removing directory %s\n"), newrootdbpath);
+	rpmlog(RPMMESS_DEBUG, _("removing directory %s\n"), newrootdbpath);
 	if (Rmdir(newrootdbpath))
-	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
+	    rpmlog(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }
     newrootdbpath = _free(newrootdbpath);

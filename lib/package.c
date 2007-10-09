@@ -490,7 +490,7 @@ verifyinfo_exit:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
@@ -531,7 +531,7 @@ verifyinfo_exit:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMMESS_ERROR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
@@ -840,7 +840,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMMESS_ERROR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 		fn, dig->signature.version);
 	    rc = RPMRC_FAIL;
@@ -866,7 +866,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMMESS_ERROR,
 		_("skipping package %s with unverifiable V%u signature\n"), 
 		fn, dig->signature.version);
 	    rc = RPMRC_FAIL;
@@ -897,7 +897,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMMESS_ERROR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 		fn, dig->signature.version);
 	    rc = RPMRC_FAIL;
@@ -949,20 +949,20 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rc = rpmVerifySignature(ts, buf);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
-	rpmMessage(RPMMESS_DEBUG, "%s: %s", fn, buf);
+	rpmlog(RPMMESS_DEBUG, "%s: %s", fn, buf);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
     {	int lvl = (rpmtsStashKeyid(ts) ? RPMMESS_DEBUG : RPMMESS_WARNING);
-	rpmMessage(lvl, "%s: %s", fn, buf);
+	rpmlog(lvl, "%s: %s", fn, buf);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
-	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
+	rpmlog(RPMMESS_WARNING, "%s: %s", fn, buf);
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
-	rpmMessage(RPMMESS_ERROR, "%s: %s", fn, buf);
+	rpmlog(RPMMESS_ERROR, "%s: %s", fn, buf);
 	break;
     }
 
@@ -1007,11 +1007,11 @@ rpmRC headerCheckPayloadFormat(Header h) {
     } else {
         const char *nevra = hGetNEVRA(h, NULL);
         if (payloadfmt && strncmp(payloadfmt, "drpm", strlen("drpm")) == 0) {
-            rpmMessage(RPMMESS_ERROR,
+            rpmlog(RPMMESS_ERROR,
                      _("%s is a Delta RPM and cannot be directly installed\n"),
                      nevra);
         } else {
-            rpmMessage(RPMMESS_ERROR, 
+            rpmlog(RPMMESS_ERROR, 
                      _("Unsupported payload (%s) in package %s\n"),
                      payloadfmt ? payloadfmt : "none", nevra);
         } 

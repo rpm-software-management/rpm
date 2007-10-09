@@ -348,7 +348,7 @@ if (fileURL[0] == '=') {
 	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
 	}
 	ts->suggests = _free(ts->suggests);
-	rpmMessage(RPMMESS_DEBUG, _("Adding goal: %s\n"), fileURL);
+	rpmlog(RPMMESS_DEBUG, _("Adding goal: %s\n"), fileURL);
 	eiu->pkgURL[eiu->pkgx] = fileURL;
 	fileURL = NULL;
 	eiu->pkgx++;
@@ -377,10 +377,10 @@ if (fileURL[0] == '=') {
 
 	    /* XXX undefined %{name}/%{version}/%{release} here */
 	    /* XXX %{_tmpdir} does not exist */
-	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
+	    rpmlog(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
 	    rc = urlGetFile(fileURL, tfn);
 	    if (rc < 0) {
-		rpmMessage(RPMMESS_ERROR,
+		rpmlog(RPMMESS_ERROR,
 			_("skipping %s - transfer failed - %s\n"),
 			fileURL, ftpStrerror(rc));
 		eiu->numFailed++;
@@ -413,7 +413,7 @@ if (fileURL[0] == '=') {
     {
 	const char * fileName;
 
-	rpmMessage(RPMMESS_DEBUG, "============== %s\n", *eiu->fnp);
+	rpmlog(RPMMESS_DEBUG, "============== %s\n", *eiu->fnp);
 	(void) urlPath(*eiu->fnp, &fileName);
 
 	/* Try to read the header from a package file. */
@@ -438,7 +438,7 @@ if (fileURL[0] == '=') {
 
 	switch (eiu->rpmrc) {
 	case RPMRC_FAIL:
-	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *eiu->fnp);
+	    rpmlog(RPMMESS_ERROR, _("%s cannot be installed\n"), *eiu->fnp);
 	    eiu->numFailed++; *eiu->fnp = NULL;
 	    continue;
 	    break;
@@ -455,7 +455,7 @@ if (fileURL[0] == '=') {
 	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
 
 	if (eiu->isSource) {
-	    rpmMessage(RPMMESS_DEBUG, _("\tadded source package [%d]\n"),
+	    rpmlog(RPMMESS_DEBUG, _("\tadded source package [%d]\n"),
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
 				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
@@ -479,7 +479,7 @@ if (fileURL[0] == '=') {
 	    } else {
 		const char * name;
 		xx = headerNVR(eiu->h, &name, NULL, NULL);
-		rpmMessage(RPMMESS_ERROR,
+		rpmlog(RPMMESS_ERROR,
 			       _("package %s is not relocatable\n"), name);
 		eiu->numFailed++;
 		goto exit;
@@ -522,17 +522,17 @@ if (fileURL[0] == '=') {
 
 	switch(rc) {
 	case 0:
-	    rpmMessage(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
+	    rpmlog(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
 			eiu->numRPMS);
 	    break;
 	case 1:
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMMESS_ERROR,
 			    _("error reading from file %s\n"), *eiu->fnp);
 	    eiu->numFailed++;
 	    goto exit;
 	    break;
 	case 2:
-	    rpmMessage(RPMMESS_ERROR,
+	    rpmlog(RPMMESS_ERROR,
 			    _("file %s requires a newer version of RPM\n"),
 			    *eiu->fnp);
 	    eiu->numFailed++;
@@ -580,7 +580,7 @@ maybe_manifest:
 	break;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"),
+    rpmlog(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"),
 		eiu->numSRPMS, eiu->numRPMS);
 
     if (eiu->numFailed) goto exit;
@@ -594,20 +594,20 @@ maybe_manifest:
 
 	ps = rpmtsProblems(ts);
 	if (!stopInstall && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+		rpmlog(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
 		    const char * str = ts->suggests[i];
 
 		    if (str == NULL)
 			break;
 
-		    rpmMessage(RPMMESS_NORMAL, "\t%s\n", str);
+		    rpmlog(RPMMESS_NORMAL, "\t%s\n", str);
 		
 		    ts->suggests[i] = NULL;
 		    str = _free(str);
@@ -629,7 +629,7 @@ maybe_manifest:
 
 	rpmcliPackagesTotal += eiu->numSRPMS;
 
-	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
+	rpmlog(RPMMESS_DEBUG, _("installing binary packages\n"));
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
@@ -653,7 +653,7 @@ maybe_manifest:
 	    if (eiu->sourceURL[i] == NULL) continue;
 	    eiu->fd = Fopen(eiu->sourceURL[i], "r.ufdio");
 	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
-		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
+		rpmlog(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
 			   eiu->sourceURL[i], Fstrerror(eiu->fd));
 		if (eiu->fd != NULL) {
 		    xx = Fclose(eiu->fd);
@@ -732,7 +732,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
 	if (mi == NULL) {
-	    rpmMessage(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
+	    rpmlog(RPMMESS_ERROR, _("package %s is not installed\n"), *arg);
 	    numFailed++;
 	} else {
 	    Header h;	/* XXX iterator owns the reference */
@@ -741,7 +741,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
 		if (!(count++ == 0 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
-		    rpmMessage(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
+		    rpmlog(RPMMESS_ERROR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
 		    break;
@@ -766,7 +766,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 
 	ps = rpmtsProblems(ts);
 	if (!stopUninstall && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPackages;
 	    stopUninstall = 1;
@@ -811,7 +811,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
-	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
+	rpmlog(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
 	return 1;
     }
@@ -827,7 +827,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
     }
     if (rc != 0) {
-	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
+	rpmlog(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
 	if (specFilePtr && *specFilePtr)
 	    *specFilePtr = _free(*specFilePtr);
 	if (cookie && *cookie)
@@ -947,7 +947,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Install the previously erased packages for this transaction. */
 	while (rp != NULL && rp->val.u32 == thistid) {
 
-	    rpmMessage(RPMMESS_DEBUG, "\t+++ install %s\n",
+	    rpmlog(RPMMESS_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
 	    rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
@@ -973,7 +973,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Erase the previously installed packages for this transaction. */
 	while (ip != NULL && ip->val.u32 == thistid) {
 
-	    rpmMessage(RPMMESS_DEBUG,
+	    rpmlog(RPMMESS_DEBUG,
 			"\t--- erase h#%u\n", ip->instance);
 
 	    rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);
@@ -1005,14 +1005,14 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    break;
 
 	tid = (time_t)thistid;
-	rpmMessage(RPMMESS_NORMAL,
+	rpmlog(RPMMESS_NORMAL,
 		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 			numAdded, numRemoved, ctime(&tid), tid);
 
 	rc = rpmtsCheck(ts);
 	ps = rpmtsProblems(ts);
 	if (rc != 0 && rpmpsNumProblems(ps) > 0) {
-	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmlog(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    ps = rpmpsFree(ps);
 	    goto exit;
@@ -1037,14 +1037,14 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Clean up after successful rollback. */
 	if (rtids && !rpmIsDebug()) {
 	    int i;
-	    rpmMessage(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
+	    rpmlog(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
 	    if (rtids->idt)
 	    for (i = 0; i < rtids->nidt; i++) {
 		IDT rrp = rtids->idt + i;
 		if (rrp->val.u32 != thistid)
 		    continue;
 		if (rrp->key) {	/* XXX can't happen */
-		    rpmMessage(RPMMESS_NORMAL, _("\tRemoving %s:\n"), rrp->key);
+		    rpmlog(RPMMESS_NORMAL, _("\tRemoving %s:\n"), rrp->key);
 		    (void) unlink(rrp->key);	/* XXX: Should check rc??? */
 		}
 	    }

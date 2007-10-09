@@ -211,7 +211,7 @@ static int getFilesystemList(void)
 	filesystems[numFilesystems].mntPoint = xstrdup(mntdir);
 	filesystems[numFilesystems].rdonly = rdonly;
 #if 0
-	rpmMessage(RPMMESS_DEBUG, _("%5d 0x%04x %s %s\n"),
+	rpmlog(RPMMESS_DEBUG, _("%5d 0x%04x %s %s\n"),
 		numFilesystems,
 		(unsigned) filesystems[numFilesystems].dev,
 		(filesystems[numFilesystems].rdonly ? "ro" : "rw"),

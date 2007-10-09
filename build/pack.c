@@ -540,7 +540,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
     if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
-	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtag);
+	rpmlog(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtag);
 	(void) rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
     }
     
@@ -695,7 +695,7 @@ exit:
     }
 
     if (rc == 0)
-	rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
+	rpmlog(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
     else
 	(void) Unlink(fileName);
 

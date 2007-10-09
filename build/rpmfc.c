@@ -113,7 +113,7 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	    (void) chdir(dir);
 	}
 	
-	rpmMessage(RPMMESS_DEBUG, _("\texecv(%s) pid %d\n"),
+	rpmlog(RPMMESS_DEBUG, _("\texecv(%s) pid %d\n"),
                         argv[0], (unsigned)getpid());
 
 	unsetenv("MALLOC_CHECK_");
@@ -206,7 +206,7 @@ top:
 
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
-    rpmMessage(RPMMESS_DEBUG, _("\twaitpid(%d) rc %d status %x\n"),
+    rpmlog(RPMMESS_DEBUG, _("\twaitpid(%d) rc %d status %x\n"),
         (unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
@@ -1292,7 +1292,7 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
 	}
 
 	se = ftype;
-        rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
+        rpmlog(RPMMESS_DEBUG, "%s: %s\n", s, se);
 
 	/* Save the path. */
 	xx = argvAdd(&fc->fn, s);
@@ -1429,15 +1429,15 @@ static void printDeps(Header h)
 	    if (!((Flags & dm->mask) ^ dm->xor))
 		continue;
 	    if (bingo == 0) {
-		rpmMessage(RPMMESS_NORMAL, "%s:", (dm->msg ? dm->msg : ""));
+		rpmlog(RPMMESS_NORMAL, "%s:", (dm->msg ? dm->msg : ""));
 		bingo = 1;
 	    }
 	    if ((DNEVR = rpmdsDNEVR(ds)) == NULL)
 		continue;	/* XXX can't happen */
-	    rpmMessage(RPMMESS_NORMAL, " %s", DNEVR+2);
+	    rpmlog(RPMMESS_NORMAL, " %s", DNEVR+2);
 	}
 	if (bingo)
-	    rpmMessage(RPMMESS_NORMAL, "\n");
+	    rpmlog(RPMMESS_NORMAL, "\n");
     }
     ds = rpmdsFree(ds);
 }
@@ -1493,7 +1493,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	    continue;
 
 	s = rpmExpand(dm->argv[0], NULL);
-	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: %s\n"), dm->msg,
+	rpmlog(RPMMESS_NORMAL, _("Finding  %s: %s\n"), dm->msg,
 		(s ? s : ""));
 	s = _free(s);
 
