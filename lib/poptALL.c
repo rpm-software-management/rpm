@@ -109,7 +109,7 @@ static void rpmcliAllArgCallback( poptContext con,
     if (opt->arg == NULL)
     switch (opt->val) {
     case 'q':
-	rpmSetVerbosity(RPMMESS_QUIET);
+	rpmSetVerbosity(RPMLOG_WARNING);
 	break;
     case 'v':
 	rpmIncreaseVerbosity();
