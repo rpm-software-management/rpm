@@ -15,6 +15,7 @@
 #include "legacy.h"	/* XXX legacyRetrofit() */
 #include "rpmlead.h"
 
+#include "rpmerr.h"
 #include "header_internal.h"	/* XXX headerCheck */
 #include "signature.h"
 #include "debug.h"

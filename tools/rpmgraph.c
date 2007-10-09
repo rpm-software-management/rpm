@@ -13,6 +13,7 @@ const char *__progname;
 
 #include "manifest.h"
 #include "misc.h"		/* rpmGlob */
+#include "rpmerr.h"
 #include "debug.h"
 
 static int noDeps = 1;

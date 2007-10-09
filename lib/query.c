@@ -19,6 +19,7 @@
 #include "rpmts.h"
 
 #include "manifest.h"
+#include "rpmerr.h"
 
 #include "debug.h"
 #include "misc.h"

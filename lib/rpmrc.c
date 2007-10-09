@@ -18,6 +18,7 @@
 #include <rpmmacro.h>
 #include <rpmlua.h>
 
+#include "rpmerr.h"
 #include "misc.h"
 #include "debug.h"
 

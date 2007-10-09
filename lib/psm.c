@@ -31,6 +31,7 @@
 #include "legacy.h"		/* XXX rpmfiBuildFNames() */
 #include "misc.h"		/* XXX stripTrailingChar() */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
+#include "rpmerr.h"
 #include "debug.h"
 
 #define	_PSM_DEBUG	0

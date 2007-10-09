@@ -13,6 +13,7 @@
 #include <rpmdb.h>
 #include <rpmmacro.h>		/* XXX rpmExpand */
 #include "manifest.h"
+#include "rpmerr.h"
 
 #include "debug.h"
 

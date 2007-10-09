@@ -11,7 +11,7 @@ AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	argv.h \
-	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
+	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmpgp.h \
 	rpmsq.h rpmsw.h 
 
 usrlibdir = $(libdir)
@@ -20,7 +20,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c \
-	rpmio_internal.h rpmlua.h rpmhook.h ugid.h fts.h
+	rpmio_internal.h rpmlua.h rpmhook.h ugid.h fts.h rpmerr.h
 librpmio_la_LDFLAGS = -release 4.4
 librpmio_la_LIBADD = \
 	@WITH_BEECRYPT_LIB@ \

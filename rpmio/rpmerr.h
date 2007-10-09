@@ -3,7 +3,6 @@
 
 /** \ingroup rpmio
  * \file rpmio/rpmerr.h
- * @todo Eliminate from API.
  */
 
 #include "rpmlog.h"

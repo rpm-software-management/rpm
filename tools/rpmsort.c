@@ -12,6 +12,7 @@ const char *__progname;
 
 #include "manifest.h"
 #include "misc.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 static int _depends_debug;

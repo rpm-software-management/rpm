@@ -14,6 +14,7 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmlock.h"
+#include "rpmerr.h"
 
 #define	_RPMTE_INTERNAL		/* XXX te->h */
 #include "rpmte.h"

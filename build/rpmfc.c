@@ -5,6 +5,7 @@
 #include <rpmbuild.h>
 #include <argv.h>
 #include <rpmfc.h>
+#include "rpmerr.h"
 
 #define	_RPMDS_INTERNAL
 #include <rpmds.h>

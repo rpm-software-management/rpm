@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 /* These have to be global scope to make up for *stupid* compilers */

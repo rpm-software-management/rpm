@@ -12,6 +12,7 @@
 
 #include "rpmts.h"
 
+#include "rpmerr.h"
 #include "rpmlead.h"
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */

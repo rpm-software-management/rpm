@@ -9,6 +9,7 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmts.h"
+#include "rpmerr.h"
 
 #include "debug.h"
 

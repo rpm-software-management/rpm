@@ -12,6 +12,7 @@
 #include "rpmts.h"
 
 #include "build.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 /**

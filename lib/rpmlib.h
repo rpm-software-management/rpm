@@ -10,7 +10,6 @@
 
 #include "rpmio.h"
 #include "rpmmessages.h"
-#include "rpmerr.h"
 #include "header.h"
 #include <popt.h>
 

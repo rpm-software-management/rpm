@@ -15,6 +15,7 @@
 
 #include <rpmbuild.h>
 #include <rpmlib.h>
+#include "rpmerr.h"
 
 #include "debug.h"
 

@@ -30,6 +30,7 @@
 
 #include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
 #include "misc.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}

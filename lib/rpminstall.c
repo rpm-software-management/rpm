@@ -14,6 +14,7 @@
 #include "rpmts.h"
 
 #include "manifest.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 int rpmcliPackagesTotal = 0;

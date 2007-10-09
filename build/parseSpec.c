@@ -9,6 +9,7 @@
 #include <rpmbuild.h>
 #include "rpmds.h"
 #include "rpmts.h"
+#include "rpmerr.h"
 #include "debug.h"
 
 /**

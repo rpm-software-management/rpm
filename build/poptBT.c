@@ -10,6 +10,7 @@
 
 #include "build.h"
 #include "legacy.h"	/* XXX _noDirTokens */
+#include "rpmerr.h"
 #include "debug.h"
 
 struct rpmBuildArguments_s         rpmBTArgs;
