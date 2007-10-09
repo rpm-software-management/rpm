@@ -1791,7 +1791,7 @@ assert(psm->mi == NULL);
 
 	if (psm->goal == PSM_PKGSAVE) {
 	    if (!rc && ts && ts->notify == NULL) {
-		rpmlog(RPMMESS_VERBOSE, _("Wrote: %s\n"),
+		rpmlog(RPMLOG_INFO, _("Wrote: %s\n"),
 			(psm->pkgURL ? psm->pkgURL : "???"));
 	    }
 	}

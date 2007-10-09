@@ -581,19 +581,19 @@ enditer:
 	ps = rpmtsProblems(ts);
 	if (rpmpsNumProblems(ps) > 0) {
 	    /* XXX rpminstall will need RPMLOG_ERR */
-	    rpmlog(RPMMESS_VERBOSE, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_INFO, _("Failed dependencies:\n"));
 	    if (rpmIsVerbose())
 		rpmpsPrint(NULL, ps);
 
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmlog(RPMMESS_VERBOSE, _("    Suggested resolutions:\n"));
+		rpmlog(RPMLOG_INFO, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
 		    const char * str = ts->suggests[i];
 
 		    if (str == NULL)
 			break;
 
-		    rpmlog(RPMMESS_VERBOSE, "\t%s\n", str);
+		    rpmlog(RPMLOG_INFO, "\t%s\n", str);
 		
 		    ts->suggests[i] = NULL;
 		    str = _free(str);
