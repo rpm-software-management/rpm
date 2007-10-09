@@ -537,69 +537,6 @@ int fdReadable(FD_t fd, int secs)
     } while (1);
 }
 
-int fdFgets(FD_t fd, char * buf, size_t len)
-{
-    int fdno;
-    int secs = fd->rd_timeoutsecs;
-    size_t nb = 0;
-    int ec = 0;
-    char lastchar = '\0';
-
-    if ((fdno = __fdFileno(fd)) < 0)
-	return 0;	/* XXX W2DO? */
-	
-    do {
-	int rc;
-
-	/* Is there data to read? */
-	rc = fdReadable(fd, secs);
-
-	switch (rc) {
-	case -1:	/* error */
-	    ec = -1;
-	    continue;
-	    break;
-	case  0:	/* timeout */
-	    ec = -1;
-	    continue;
-	    break;
-	default:	/* data to read */
-	    break;
-	}
-
-	errno = 0;
-#ifdef	NOISY
-	rc = __fdRead(fd, buf + nb, 1);
-#else
-	rc = read(__fdFileno(fd), buf + nb, 1);
-#endif
-	if (rc < 0) {
-	    fd->syserrno = errno;
-	    switch (errno) {
-	    case EWOULDBLOCK:
-		continue;
-		break;
-	    default:
-		break;
-	    }
-if (_rpmio_debug)
-fprintf(stderr, "*** read: fd %p rc %d errno %d %s \"%s\"\n", fd, rc, errno, strerror(errno), buf);
-	    ec = -1;
-	    break;
-	} else if (rc == 0) {
-if (_rpmio_debug)
-fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno, strerror(errno), buf);
-	    break;
-	} else {
-	    nb += rc;
-	    buf[nb] = '\0';
-	    lastchar = buf[nb - 1];
-	}
-    } while (ec == 0 && nb < len && lastchar != '\n');
-
-    return (ec >= 0 ? nb : ec);
-}
-
 /* =============================================================== */
 /* Support for FTP/HTTP I/O.
  */
