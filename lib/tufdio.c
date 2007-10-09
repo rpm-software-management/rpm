@@ -6,6 +6,7 @@
 
 #include <rpmlib.h>
 #include <rpmurl.h>
+#include "rpmio_internal.h"
 
 #include <stdarg.h>
 #include <err.h>
@@ -68,7 +69,7 @@ static int doFIO(const char *ofn, const char *rfmode, const char *wfmode)
 	warn("Compare: write(%s) \"%s\" != read(%s) \"%s\" for %s\n", wfmode, ofn, rfmode, buf, ofn);
     else
 	rc = 0;
-    if (Unlink(ofn) != 0)
+    if (ufdio->_unlink(ofn) != 0)
 	warn("Unlink: write(%s) read(%s) for %s\n", wfmode, rfmode, ofn);
     return rc;
 }
