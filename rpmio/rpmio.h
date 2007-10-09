@@ -344,26 +344,6 @@ FD_t fdDup(int fdno);
 
 /**
  */
-extern int fdFileno(void * cookie);
-
-/**
- */
-extern FD_t fdOpen(const char *path, int flags, mode_t mode);
-
-/**
- */
-extern ssize_t fdRead(void * cookie, char * buf, size_t count);
-
-/**
- */
-extern ssize_t	fdWrite(void * cookie, const char * buf, size_t count);
-
-/**
- */
-extern int fdClose( void * cookie);
-
-/**
- */
 extern FD_t fdLink (void * cookie, const char * msg);
 
 /**

@@ -176,12 +176,6 @@ int __fdFileno(void * cookie)
     return fd->fps[0].fdno;
 }
 
-/**
- */
-int fdFileno(void * cookie) { 
-  return fdio->_fileno(cookie); 
-}
-
 /* =============================================================== */
 
 /**
@@ -288,13 +282,6 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
 
 /**
  */
-ssize_t fdRead(void * cookie, char * buf, size_t count)
-{
-    return fdio->read(cookie, buf, count);
-}
-
-/**
- */
 static ssize_t __fdRead(void * cookie, char * buf, size_t count)
 {
     FD_t fd = c2f(cookie);
@@ -311,13 +298,6 @@ static ssize_t __fdRead(void * cookie, char * buf, size_t count)
 DBGIO(fd, (stderr, "==>\t__fdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
-}
-
-/**
- */
-ssize_t fdWrite(void * cookie, const char * buf, size_t count)
-{
-    return fdio->write(cookie, buf, count);
 }
 
 /**
@@ -365,13 +345,6 @@ DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence
 
 /**
  */
-int fdClose( void * cookie)
-{
-   return fdio->close(cookie);
-}
-
-/**
- */
 static int __fdClose( void * cookie)
 {
     FD_t fd;
@@ -392,13 +365,6 @@ DBGIO(fd, (stderr, "==>\t__fdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned
 
     fd = fdFree(fd, "open (__fdClose)");
     return rc;
-}
-
-/**
- */
-FD_t fdOpen(const char *path, int flags, mode_t mode)
-{
-    return fdio->_open(path, flags, mode);
 }
 
 /**
