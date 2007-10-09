@@ -1029,21 +1029,19 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	for (be = b; (c = *be) && !isblank(c);)
 	    be++;
 	*be++ = '\0';
-#ifndef	DEBUG_MACROS
 	(void) isCompressed(b, &compressed);
-#endif
 	switch(compressed) {
 	default:
-	case 0:	/* COMPRESSED_NOT */
+	case COMPRESSED_NOT:
 	    sprintf(be, "%%_cat %s", b);
 	    break;
-	case 1:	/* COMPRESSED_OTHER */
+	case COMPRESSED_OTHER:
 	    sprintf(be, "%%_gzip -dc %s", b);
 	    break;
-	case 2:	/* COMPRESSED_BZIP2 */
+	case COMPRESSED_BZIP2:
 	    sprintf(be, "%%_bzip2 %s", b);
 	    break;
-	case 3:	/* COMPRESSED_ZIP */
+	case COMPRESSED_ZIP:
 	    sprintf(be, "%%_unzip %s", b);
 	    break;
 	}
