@@ -874,6 +874,11 @@ static struct FDIO_s ufdio_s = {
 };
 FDIO_t ufdio = &ufdio_s ;
 
+int timedRead(FD_t fd, void * bufptr, int length)
+{
+    return ufdio->read(fd, bufptr, length);
+}
+
 /* =============================================================== */
 /* Support for GZIP library.
  */

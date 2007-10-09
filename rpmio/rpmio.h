@@ -413,9 +413,11 @@ int ufdCopy(FD_t sfd, FD_t tfd);
 int ufdGetFile( FD_t sfd, FD_t tfd);
 
 /**
+ * XXX the name is misleading, this is a legacy wrapper that ensures 
+ * only S_ISREG() files are read, nothing to do with timed... 
+ * TODO: get this out of the API
  */
 int timedRead(FD_t fd, void * bufptr, int length);
-#define	timedRead	(ufdio->read)
 
 /**
  */
