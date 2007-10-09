@@ -39,7 +39,7 @@ main(int argc, char *argv[])
     textdomain(PACKAGE);
 #endif
 
-    rpmSetVerbosity(RPMMESS_NORMAL);
+    rpmSetVerbosity(RPMLOG_NOTICE);
 
     optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);

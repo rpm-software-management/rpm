@@ -600,14 +600,14 @@ maybe_manifest:
 	    stopInstall = 1;
 
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmlog(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+		rpmlog(RPMLOG_NOTICE, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
 		    const char * str = ts->suggests[i];
 
 		    if (str == NULL)
 			break;
 
-		    rpmlog(RPMMESS_NORMAL, "\t%s\n", str);
+		    rpmlog(RPMLOG_NOTICE, "\t%s\n", str);
 		
 		    ts->suggests[i] = NULL;
 		    str = _free(str);
@@ -1005,7 +1005,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	    break;
 
 	tid = (time_t)thistid;
-	rpmlog(RPMMESS_NORMAL,
+	rpmlog(RPMLOG_NOTICE,
 		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
 			numAdded, numRemoved, ctime(&tid), tid);
 
@@ -1037,14 +1037,14 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Clean up after successful rollback. */
 	if (rtids && !rpmIsDebug()) {
 	    int i;
-	    rpmlog(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
+	    rpmlog(RPMLOG_NOTICE, _("Cleaning up repackaged packages:\n"));
 	    if (rtids->idt)
 	    for (i = 0; i < rtids->nidt; i++) {
 		IDT rrp = rtids->idt + i;
 		if (rrp->val.u32 != thistid)
 		    continue;
 		if (rrp->key) {	/* XXX can't happen */
-		    rpmlog(RPMMESS_NORMAL, _("\tRemoving %s:\n"), rrp->key);
+		    rpmlog(RPMLOG_NOTICE, _("\tRemoving %s:\n"), rrp->key);
 		    (void) unlink(rrp->key);	/* XXX: Should check rc??? */
 		}
 	    }

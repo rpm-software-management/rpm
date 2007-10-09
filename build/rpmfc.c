@@ -1429,15 +1429,15 @@ static void printDeps(Header h)
 	    if (!((Flags & dm->mask) ^ dm->xor))
 		continue;
 	    if (bingo == 0) {
-		rpmlog(RPMMESS_NORMAL, "%s:", (dm->msg ? dm->msg : ""));
+		rpmlog(RPMLOG_NOTICE, "%s:", (dm->msg ? dm->msg : ""));
 		bingo = 1;
 	    }
 	    if ((DNEVR = rpmdsDNEVR(ds)) == NULL)
 		continue;	/* XXX can't happen */
-	    rpmlog(RPMMESS_NORMAL, " %s", DNEVR+2);
+	    rpmlog(RPMLOG_NOTICE, " %s", DNEVR+2);
 	}
 	if (bingo)
-	    rpmlog(RPMMESS_NORMAL, "\n");
+	    rpmlog(RPMLOG_NOTICE, "\n");
     }
     ds = rpmdsFree(ds);
 }
@@ -1493,7 +1493,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	    continue;
 
 	s = rpmExpand(dm->argv[0], NULL);
-	rpmlog(RPMMESS_NORMAL, _("Finding  %s: %s\n"), dm->msg,
+	rpmlog(RPMLOG_NOTICE, _("Finding  %s: %s\n"), dm->msg,
 		(s ? s : ""));
 	s = _free(s);
 

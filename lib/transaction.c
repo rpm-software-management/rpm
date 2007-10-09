@@ -935,8 +935,8 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     }
     tsi = rpmtsiFree(tsi);
 
-    rpmlog(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
-    rpmlog(RPMMESS_NORMAL,
+    rpmlog(RPMLOG_NOTICE, _("Transaction failed...rolling back\n"));
+    rpmlog(RPMLOG_NOTICE,
 	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
                         numAdded, numRemoved, ctime((time_t*) &tid), tid);
 
@@ -988,13 +988,13 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
      */
     tsi = rpmtsiInit(rollbackTransaction);
     while((te = rpmtsiNext(tsi, 0)) != NULL) {
-	rpmlog(RPMMESS_NORMAL, _("Cleaning up repackaged packages:\n"));
+	rpmlog(RPMLOG_NOTICE, _("Cleaning up repackaged packages:\n"));
 	switch (rpmteType(te)) {
 	/* The install elements are repackaged packages */
 	case TR_ADDED:
 	    /* Make sure the filename is still there.  XXX: Can't happen */
 	    if(te->key) {
-		rpmlog(RPMMESS_NORMAL, _("\tRemoving %s:\n"), te->key);
+		rpmlog(RPMLOG_NOTICE, _("\tRemoving %s:\n"), te->key);
 		(void) unlink(te->key); /* XXX: Should check for an error? */
 	    }
 	    break;

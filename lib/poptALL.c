@@ -337,7 +337,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     (void) textdomain(PACKAGE);
 #endif
 
-    rpmSetVerbosity(RPMMESS_NORMAL);
+    rpmSetVerbosity(RPMLOG_NOTICE);
 
     if (optionsTable == NULL) {
 	/* Read rpm configuration (if not already read). */

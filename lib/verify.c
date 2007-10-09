@@ -332,7 +332,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';
-	    rpmlog(RPMMESS_NORMAL, "%s", t);
+	    rpmlog(RPMLOG_NOTICE, "%s", t);
 	    te = t = buf;
 	    *t = '\0';
 	}
@@ -392,7 +392,7 @@ static int verifyDependencies(QVA_t qva, rpmts ts,
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';
-	    rpmlog(RPMMESS_NORMAL, "%s", t);
+	    rpmlog(RPMLOG_NOTICE, "%s", t);
 	    te = t;
 	    *t = '\0';
 	}

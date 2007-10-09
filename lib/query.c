@@ -128,7 +128,7 @@ static void flushBuffer(char ** tp, char ** tep, int nonewline)
 	    *te++ = '\n';
 	    *te = '\0';
 	}
-	rpmlog(RPMMESS_NORMAL, "%s", t);
+	rpmlog(RPMLOG_NOTICE, "%s", t);
 	te = t;
 	*t = '\0';
     }

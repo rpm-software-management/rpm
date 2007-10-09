@@ -2253,7 +2253,7 @@ static int checkFiles(StringBuf fileList)
     }
     rc = 0;
 
-    rpmlog(RPMMESS_NORMAL, _("Checking for unpackaged file(s): %s\n"), s);
+    rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
     rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0);
     if (rc < 0)
@@ -2293,7 +2293,7 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	    continue;
 
 	(void) headerNVR(pkg->header, &n, &v, &r);
-	rpmlog(RPMMESS_NORMAL, _("Processing files: %s-%s-%s\n"), n, v, r);
+	rpmlog(RPMLOG_NOTICE, _("Processing files: %s-%s-%s\n"), n, v, r);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;

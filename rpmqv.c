@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
     textdomain(PACKAGE);
 #endif
 
-    rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
+    rpmSetVerbosity(RPMLOG_NOTICE);	/* XXX silly use by showrc */
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */

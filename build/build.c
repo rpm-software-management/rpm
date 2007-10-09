@@ -215,7 +215,7 @@ fprintf(stderr, "*** addMacros\n");
     buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
-    rpmlog(RPMMESS_NORMAL, _("Executing(%s): %s\n"), name, buildCmd);
+    rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
     if (!(child = fork())) {
 
 	errno = 0;
@@ -340,7 +340,7 @@ int buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 
 exit:
     if (rc && rpmlogGetNrecs() > 0) {
-	rpmlog(RPMMESS_NORMAL, _("\n\nRPM build errors:\n"));
+	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
     }
 

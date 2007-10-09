@@ -196,14 +196,14 @@ maybe_manifest:
 	    numFailed += numPkgs;
 
 	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmlog(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+		rpmlog(RPMLOG_NOTICE, _("    Suggested resolutions:\n"));
 		for (i = 0; i < ts->nsuggests; i++) {
 		    const char * str = ts->suggests[i];
 
 		    if (str == NULL)
 			break;
 
-		    rpmlog(RPMMESS_NORMAL, "\t%s\n", str);
+		    rpmlog(RPMLOG_NOTICE, "\t%s\n", str);
 		    ts->suggests[i] = NULL;
 		    str = _free(str);
 		}

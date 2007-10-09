@@ -3587,7 +3587,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     xx = rpmdbClose(newdb);
 
     if (failed) {
-	rpmlog(RPMMESS_NORMAL, _("failed to rebuild database: original database "
+	rpmlog(RPMLOG_NOTICE, _("failed to rebuild database: original database "
 		"remains in place\n"));
 
 	xx = rpmdbRemoveDatabase(prefix, newdbpath, _dbapi_rebuild);
