@@ -182,23 +182,6 @@ int fdFileno(void * cookie) {
   return fdio->_fileno(cookie); 
 }
 
-#ifdef UNUSED
-FILE *fdFdopen(void * cookie, const char *fmode)
-{
-    FD_t fd = c2f(cookie);
-    int fdno;
-    FILE * fp;
-
-    if (fmode == NULL) return NULL;
-    fdno = __fdFileno(fd);
-    if (fdno < 0) return NULL;
-    fp = fdopen(fdno, fmode);
-DBGIO(fd, (stderr, "==> fdFdopen(%p,\"%s\") fdno %d -> fp %p fdno %d\n", cookie, fmode, fdno, fp, fileno(fp)));
-    fd = fdFree(fd, "open (fdFdopen)");
-    return fp;
-}
-#endif
-
 /* =============================================================== */
 
 /**

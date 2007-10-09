@@ -340,10 +340,6 @@ off_t	fdSize(FD_t fd);
  */
 FD_t fdDup(int fdno);
 
-#ifdef UNUSED
-FILE *fdFdopen( void * cookie, const char * mode);
-#endif
-
 /* XXX Legacy interfaces needed by gnorpm, rpmfind et al */
 
 /**
