@@ -161,6 +161,152 @@ struct _FD_s {
     long int	fd_cpioPos;	/* cpio: */
 };
 
+/** \ingroup rpmio
+ * \name RPMIO Vectors.
+ */
+
+/**
+ */
+typedef ssize_t (*fdio_read_function_t) (void *cookie, char *buf, size_t nbytes);
+
+/**
+ */
+typedef ssize_t (*fdio_write_function_t) (void *cookie, const char *buf, size_t nbytes);
+
+/**
+ */
+typedef int (*fdio_seek_function_t) (void *cookie, _libio_pos_t pos, int whence);
+
+/**
+ */
+typedef int (*fdio_close_function_t) (void *cookie);
+
+
+/**
+ */
+typedef FD_t (*fdio_ref_function_t) ( void * cookie,
+		const char * msg);
+
+/**
+ */
+typedef FD_t (*fdio_deref_function_t) ( FD_t fd,
+		const char * msg, const char * file, unsigned line);
+
+
+/**
+ */
+typedef FD_t (*fdio_new_function_t) (const char * msg,
+		const char * file, unsigned line);
+
+
+/**
+ */
+typedef int (*fdio_fileno_function_t) (void * cookie);
+
+
+/**
+ */
+typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
+
+/**
+ */
+typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode);
+
+/**
+ */
+typedef void * (*fdio_ffileno_function_t) (FD_t fd);
+
+/**
+ */
+typedef int (*fdio_fflush_function_t) (FD_t fd);
+
+
+/** \ingroup rpmrpc
+ * \name RPMRPC Vectors.
+ */
+
+/**
+ */
+typedef int (*fdio_mkdir_function_t) (const char * path, mode_t mode);
+
+/**
+ */
+typedef int (*fdio_chdir_function_t) (const char * path);
+
+/**
+ */
+typedef int (*fdio_rmdir_function_t) (const char * path);
+
+/**
+ */
+typedef int (*fdio_rename_function_t) (const char * oldpath, const char * newpath);
+
+/**
+ */
+typedef int (*fdio_unlink_function_t) (const char * path);
+
+/**
+ */
+typedef int (*fdio_stat_function_t) (const char * path, struct stat * st);
+
+/**
+ */
+typedef int (*fdio_lstat_function_t) (const char * path, struct stat * st);
+
+/**
+ */
+typedef int (*fdio_access_function_t) (const char * path, int amode);
+
+
+/** \ingroup rpmio
+ */
+struct FDIO_s {
+  fdio_read_function_t		read;
+  fdio_write_function_t		write;
+  fdio_seek_function_t		seek;
+  fdio_close_function_t		close;
+
+  fdio_ref_function_t		_fdref;
+  fdio_deref_function_t		_fdderef;
+  fdio_new_function_t		_fdnew;
+  fdio_fileno_function_t	_fileno;
+
+  fdio_open_function_t		_open;
+  fdio_fopen_function_t		_fopen;
+  fdio_ffileno_function_t	_ffileno;
+  fdio_fflush_function_t	_fflush;
+
+  fdio_mkdir_function_t		_mkdir;
+  fdio_chdir_function_t		_chdir;
+  fdio_rmdir_function_t		_rmdir;
+  fdio_rename_function_t	_rename;
+  fdio_unlink_function_t	_unlink;
+};
+
+/**
+ */
+extern FDIO_t fdio;
+
+/**
+ */
+extern FDIO_t fpio;
+
+/**
+ */
+extern FDIO_t ufdio;
+
+/**
+ */
+extern FDIO_t gzdio;
+
+/**
+ */
+extern FDIO_t bzdio;
+
+/**
+ */
+extern FDIO_t fadio;
+
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
 
 extern int _rpmio_debug;
