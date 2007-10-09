@@ -221,17 +221,3 @@ void rpmlog (int code, const char *fmt, ...)
     va_end(ap);
 }
 
-int rpmErrorCode(void)
-{
-    return rpmlogCode();
-}
-
-const char * rpmErrorString(void)
-{
-    return rpmlogMessage();
-}
-
-rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb)
-{
-    return rpmlogSetCallback(cb);
-}

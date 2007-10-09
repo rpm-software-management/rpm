@@ -226,26 +226,6 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
  */
 FILE * rpmlogSetFile(FILE * fp);
 
-/**
- * Set rpmlog callback function.
- * @deprecated gnorpm needs, use rpmlogSetCallback() instead.
- */
-extern rpmlogCallback rpmErrorSetCallback(rpmlogCallback cb);
-
-/**
- * Return error code from last rpmError() message.
- * @deprecated Perl-RPM needs, use rpmlogCode() instead.
- * @return		code from last message
- */
-extern int rpmErrorCode(void);
-
-/**
- * Return text of last rpmError() message.
- * @deprecated gnorpm needs, use rpmlogMessage() instead.
- * @return		text of last message
- */
-extern const char * rpmErrorString(void)	;
-
 #ifdef __cplusplus
 }
 #endif
