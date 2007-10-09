@@ -714,6 +714,7 @@ maybe_manifest:
     if (eiu->numSRPMS && !stopInstall) {
 	if (eiu->sourceURL != NULL)
 	for (i = 0; i < eiu->numSRPMS; i++) {
+	    rpmdbCheckSignals();
 	    if (eiu->sourceURL[i] == NULL) continue;
 	    eiu->fd = Fopen(eiu->sourceURL[i], "r.ufdio");
 	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
