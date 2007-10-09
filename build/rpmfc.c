@@ -119,12 +119,12 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	unsetenv("MALLOC_CHECK_");
 	(void) execvp(argv[0], (char *const *)argv);
 	/* XXX this error message is probably not seen. */
-	rpmError(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
+	rpmlog(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
 	_exit(RPMERR_EXEC);
     }
     if (child < 0) {
-	rpmError(RPMERR_FORK, _("Couldn't fork %s: %s\n"),
+	rpmlog(RPMERR_FORK, _("Couldn't fork %s: %s\n"),
 		argv[0], strerror(errno));
 	return NULL;
     }
@@ -210,11 +210,11 @@ top:
         (unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmError(RPMERR_EXEC, _("%s failed\n"), argv[0]);
+	rpmlog(RPMERR_EXEC, _("%s failed\n"), argv[0]);
 	return NULL;
     }
     if (writeBytesLeft) {
-	rpmError(RPMERR_EXEC, _("failed to write all data to %s\n"), argv[0]);
+	rpmlog(RPMERR_EXEC, _("failed to write all data to %s\n"), argv[0]);
 	return NULL;
     }
     return readBuff;
@@ -1233,7 +1233,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
     ms = magic_open(msflags);
     if (ms == NULL) {
 	xx = RPMERR_EXEC;
-	rpmError(xx, _("magic_open(0x%x) failed: %s\n"),
+	rpmlog(xx, _("magic_open(0x%x) failed: %s\n"),
 		msflags, strerror(errno));
 assert(ms != NULL);	/* XXX figger a proper return path. */
     }
@@ -1241,7 +1241,7 @@ assert(ms != NULL);	/* XXX figger a proper return path. */
     xx = magic_load(ms, NULL);
     if (xx == -1) {
 	xx = RPMERR_EXEC;
-	rpmError(xx, _("magic_load failed: %s\n"), magic_error(ms));
+	rpmlog(xx, _("magic_load failed: %s\n"), magic_error(ms));
 assert(xx != -1);	/* XXX figger a proper return path. */
     }
 
@@ -1285,7 +1285,7 @@ assert(s != NULL);
 
 	    if (ftype == NULL) {
 		xx = RPMERR_EXEC;
-		rpmError(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
+		rpmlog(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
 			s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }
@@ -1499,7 +1499,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 
 	if (sb_stdout == NULL) {
 	    rc = RPMERR_EXEC;
-	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
+	    rpmlog(rc, _("Failed to find %s:\n"), dm->msg);
 	    break;
 	}
 
@@ -1508,7 +1508,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	sb_stdout = freeStringBuf(sb_stdout);
 
 	if (rc) {
-	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
+	    rpmlog(rc, _("Failed to find %s:\n"), dm->msg);
 	    break;
 	}
     }

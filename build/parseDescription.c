@@ -36,7 +36,7 @@ int parseDescription(rpmSpec spec)
     lang = RPMBUILD_DEFAULT_LANG;
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%description: %s\n"),
+	rpmlog(RPMERR_BADSPEC, _("line %d: Error parsing %%description: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
 	return RPMERR_BADSPEC;
     }
@@ -49,7 +49,7 @@ int parseDescription(rpmSpec spec)
     }
 
     if (arg < -1) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Bad option %s: %s\n"),
+	rpmlog(RPMERR_BADSPEC, _("line %d: Bad option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
@@ -60,7 +60,7 @@ int parseDescription(rpmSpec spec)
 	if (name == NULL)
 	    name = poptGetArg(optCon);
 	if (poptPeekArg(optCon)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
 	    goto exit;
@@ -68,7 +68,7 @@ int parseDescription(rpmSpec spec)
     }
 
     if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
+	rpmlog(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
 	goto exit;
     }
@@ -78,7 +78,7 @@ int parseDescription(rpmSpec spec)
 
 #if 0    
     if (headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Second description\n"),
+	rpmlog(RPMERR_BADSPEC, _("line %d: Second description\n"),
 		spec->lineNum);
 	goto exit;
     }

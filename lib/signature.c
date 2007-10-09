@@ -403,7 +403,7 @@ static int makePGPSignature(const char * file, int_32 * sigTagp,
 		break;
 	    }
 	}
-	rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+	rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
 	_exit(RPMERR_EXEC);
     }
@@ -419,14 +419,14 @@ static int makePGPSignature(const char * file, int_32 * sigTagp,
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SIGGEN, _("pgp failed\n"));
+	rpmlog(RPMERR_SIGGEN, _("pgp failed\n"));
 	return 1;
     }
 
     if (stat(sigfile, &st)) {
 	/* PGP failed to write signature */
 	if (sigfile) (void) unlink(sigfile);  /* Just in case */
-	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
+	rpmlog(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
 	return 1;
     }
 
@@ -445,7 +445,7 @@ static int makePGPSignature(const char * file, int_32 * sigTagp,
 	}
 	if (rc != *pktlenp) {
 	    *pktp = _free(*pktp);
-	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
+	    rpmlog(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -514,7 +514,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	if (!rc)
 	    rc = execve(av[0], av+1, environ);
 
-	rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+	rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	_exit(RPMERR_EXEC);
     }
@@ -531,14 +531,14 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 
     (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SIGGEN, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
+	rpmlog(RPMERR_SIGGEN, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
 	return 1;
     }
 
     if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
 	if (sigfile) (void) unlink(sigfile);  /* Just in case */
-	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
+	rpmlog(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
 	return 1;
     }
 
@@ -557,7 +557,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	}
 	if (rc != *pktlenp) {
 	    *pktp = _free(*pktp);
-	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
+	    rpmlog(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -807,7 +807,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	    if (!rc)
 		rc = execve(av[0], av+1, environ);
 
-	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+	    rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	}   break;
 	case RPMSIGTAG_RSA:
@@ -840,12 +840,12 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 		    break;
 		}
 	    }
-	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+	    rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
 	    _exit(RPMERR_EXEC);
 	}   break;
 	default: /* This case should have been screened out long ago. */
-	    rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
+	    rpmlog(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
 	    _exit(RPMERR_SIGGEN);
 	    break;
 	}
@@ -875,7 +875,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
       }
 	if (aok)
 	    break;
-	rpmError(RPMERR_SIGGEN,
+	rpmlog(RPMERR_SIGGEN,
 		_("You must set \"%%_gpg_name\" in your macro file\n"));
 	break;
     case RPMSIGTAG_RSA:
@@ -887,14 +887,14 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
       }
 	if (aok)
 	    break;
-	rpmError(RPMERR_SIGGEN,
+	rpmlog(RPMERR_SIGGEN,
 		_("You must set \"%%_pgp_name\" in your macro file\n"));
 	break;
     default:
 	/* Currently the calling function (rpm.c:main) is checking this and
 	 * doing a better job.  This section should never be accessed.
 	 */
-	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
+	rpmlog(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
 	break;
     }
 

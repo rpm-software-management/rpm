@@ -810,7 +810,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
     wait = waitpid(pid, &rc, 0);
 
     if (!WIFEXITED(rc) || WEXITSTATUS(rc)) {
-        rpmError(RPMERR_EXEC, _("URL helper failed: %s (%d)\n"),
+        rpmlog(RPMERR_EXEC, _("URL helper failed: %s (%d)\n"),
                  cmd, WEXITSTATUS(rc));
     } else {
 	fd = fdOpen(dest, flags, mode);

@@ -42,7 +42,7 @@ static int manageFile(FD_t *fdp,
     if (*fdp == NULL && fnp != NULL && *fnp != NULL) {
 	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
+	    rpmlog(RPMERR_OPEN, _("%s: open failed: %s\n"), *fnp,
 		Fstrerror(fd));
 	    return 1;
 	}
@@ -54,7 +54,7 @@ static int manageFile(FD_t *fdp,
     if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
 	fn = NULL;
 	if (makeTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
-	    rpmError(RPMERR_MAKETEMP, _("makeTempFile failed\n"));
+	    rpmlog(RPMERR_MAKETEMP, _("makeTempFile failed\n"));
 	    return 1;
 	}
 	if (fnp != NULL)
@@ -90,17 +90,17 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
 	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp) != count) {
-	    rpmError(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
+	    rpmlog(RPMERR_FWRITE, _("%s: Fwrite failed: %s\n"), *tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;
 	}
     }
     if (count < 0) {
-	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
+	rpmlog(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
 	goto exit;
     }
     if (Fflush(*tfdp) != 0) {
-	rpmError(RPMERR_FWRITE, _("%s: Fflush failed: %s\n"), *tfnp,
+	rpmlog(RPMERR_FWRITE, _("%s: Fflush failed: %s\n"), *tfnp,
 	    Fstrerror(*tfdp));
     }
 
@@ -179,16 +179,16 @@ static int rpmReSign(rpmts ts,
 	memset(l, 0, sizeof(*l));
 	rc = readLead(fd, l);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), rpm);
+	    rpmlog(RPMERR_READLEAD, _("%s: not an rpm package\n"), rpm);
 	    goto exit;
 	}
 	switch (l->major) {
 	case 1:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't sign v1 packaging\n"), rpm);
+	    rpmlog(RPMERR_BADSIGTYPE, _("%s: Can't sign v1 packaging\n"), rpm);
 	    goto exit;
 	    break;
 	case 2:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2 packaging\n"), rpm);
+	    rpmlog(RPMERR_BADSIGTYPE, _("%s: Can't re-sign v2 packaging\n"), rpm);
 	    goto exit;
 	    break;
 	default:
@@ -199,14 +199,14 @@ static int rpmReSign(rpmts ts,
 	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), rpm,
+	    rpmlog(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), rpm,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    goto exit;
 	    break;
 	case RPMRC_OK:
 	    if (sigh == NULL) {
-		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
+		rpmlog(RPMERR_SIGGEN, _("%s: No signature available\n"), rpm);
 		goto exit;
 	    }
 	    break;
@@ -335,13 +335,13 @@ static int rpmReSign(rpmts ts,
 	l->signature_type = RPMSIGTYPE_HEADERSIG;
 	rc = writeLead(ofd, l);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), trpm,
+	    rpmlog(RPMERR_WRITELEAD, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
 	}
 
 	if (rpmWriteSignature(ofd, sigh)) {
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), trpm,
+	    rpmlog(RPMERR_SIGGEN, _("%s: rpmWriteSignature failed: %s\n"), trpm,
 		Fstrerror(ofd));
 	    goto exit;
 	}
@@ -558,19 +558,19 @@ static int rpmcliImportPubkeys(const rpmts ts,
 
 	/* Read pgp packet. */
 	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
-	    rpmError(RPMERR_IMPORT, _("%s: import read failed(%d).\n"), fn, rc);
+	    rpmlog(RPMERR_IMPORT, _("%s: import read failed(%d).\n"), fn, rc);
 	    res++;
 	    continue;
 	}
 	if (rc != PGPARMOR_PUBKEY) {
-	    rpmError(RPMERR_IMPORT, _("%s: not an armored public key.\n"), fn);
+	    rpmlog(RPMERR_IMPORT, _("%s: not an armored public key.\n"), fn);
 	    res++;
 	    continue;
 	}
 
 	/* Import pubkey packet(s). */
 	if ((rpmrc = rpmcliImportPubkey(ts, pkt, pktlen)) != RPMRC_OK) {
-	    rpmError(RPMERR_IMPORT, _("%s: import failed.\n"), fn);
+	    rpmlog(RPMERR_IMPORT, _("%s: import failed.\n"), fn);
 	    res++;
 	    continue;
 	}
@@ -602,7 +602,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     /* Read the header from the package. */
     {	Header h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL) {
-	    rpmError(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
+	    rpmlog(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
 	    goto exit;
 	}
 
@@ -616,7 +616,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    ||   uh == NULL)
 	    {
 		h = headerFree(h);
-		rpmError(RPMERR_FREAD, _("%s: headerGetEntry failed\n"), fn);
+		rpmlog(RPMERR_FREAD, _("%s: headerGetEntry failed\n"), fn);
 		goto exit;
 	    }
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -634,7 +634,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	dig->nbytes += count;
     if (count < 0) {
-	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
+	rpmlog(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
     }
 
@@ -697,13 +697,13 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	memset(l, 0, sizeof(*l));
 	rc = readLead(fd, l);
 	if (rc != RPMRC_OK) {
-	    rpmError(RPMERR_READLEAD, _("%s: not an rpm package\n"), fn);
+	    rpmlog(RPMERR_READLEAD, _("%s: not an rpm package\n"), fn);
 	    res++;
 	    goto exit;
 	}
 	switch (l->major) {
 	case 1:
-	    rpmError(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), fn);
+	    rpmlog(RPMERR_BADSIGTYPE, _("%s: No signature available (v1.0 RPM)\n"), fn);
 	    res++;
 	    goto exit;
 	    break;
@@ -715,7 +715,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
 	switch (rc) {
 	default:
-	    rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
+	    rpmlog(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
 			(msg && *msg ? msg : "\n"));
 	    msg = _free(msg);
 	    res++;
@@ -723,7 +723,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    break;
 	case RPMRC_OK:
 	    if (sigh == NULL) {
-		rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+		rpmlog(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
 		res++;
 		goto exit;
 	    }
@@ -810,7 +810,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 			(_print_pkts & rpmIsDebug()));
 
 		if (sigp->version != 3 && sigp->version != 4) {
-		    rpmError(RPMERR_SIGVFY,
+		    rpmlog(RPMERR_SIGVFY,
 		_("skipping package %s with unverifiable V%u signature\n"),
 			fn, sigp->version);
 		    res++;
@@ -972,9 +972,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 	if (res2) {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", buf);
+		rpmlog(RPMERR_SIGVFY, "%s", buf);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
+		rpmlog(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
 			_("NOT OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
@@ -986,9 +986,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		rpmError(RPMERR_SIGVFY, "%s", buf);
+		rpmlog(RPMERR_SIGVFY, "%s", buf);
 	    } else {
-		rpmError(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
+		rpmlog(RPMERR_SIGVFY, "%s%s%s%s%s%s%s%s\n", buf,
 			_("OK"),
 			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 			missingKeys,
@@ -1037,7 +1037,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 
 	fd = Fopen(arg, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_OPEN, _("%s: open failed: %s\n"), 
+	    rpmlog(RPMERR_OPEN, _("%s: open failed: %s\n"), 
 		     arg, Fstrerror(fd));
 	    res++;
 	} else if (rpmVerifySignatures(qva, ts, fd, arg)) {

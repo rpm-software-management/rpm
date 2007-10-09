@@ -146,10 +146,10 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 
     if (printit && rc) {
 	if (msg)
-	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
+	    rpmlog(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
 		dbi->dbi_api, rc, msg, db_strerror(error));
 	else
-	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
+	    rpmlog(RPMERR_DBERR, _("db%d error(%d): %s\n"),
 		dbi->dbi_api, rc, db_strerror(error));
     }
 
@@ -1156,7 +1156,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 				(dbi->dbi_eflags & DB_INIT_CDB) &&
 				!(dbi->dbi_eflags & DB_PRIVATE))
 			    ? 0 : 1);
-			rpmError( (rc ? RPMERR_FLOCK : RPMWARN_FLOCK),
+			rpmlog( (rc ? RPMERR_FLOCK : RPMWARN_FLOCK),
 				_("cannot get %s lock on %s/%s\n"),
 				((dbi->dbi_mode & (O_RDWR|O_WRONLY))
 					? _("exclusive") : _("shared")),

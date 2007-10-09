@@ -305,7 +305,7 @@ static int parseForVerify(char * buf, FileList fl)
     SKIPSPACE(pe);
 
     if (*pe != '(') {
-	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s %s\n"), name, pe);
+	rpmlog(RPMERR_BADSPEC, _("Missing '(' in %s %s\n"), name, pe);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -316,7 +316,7 @@ static int parseForVerify(char * buf, FileList fl)
 	{};
 
     if (*pe == '\0') {
-	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
+	rpmlog(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -354,7 +354,7 @@ static int parseForVerify(char * buf, FileList fl)
 	if (!strcmp(p, "not")) {
 	    negated ^= 1;
 	} else {
-	    rpmError(RPMERR_BADSPEC, _("Invalid %s token: %s\n"), name, p);
+	    rpmlog(RPMERR_BADSPEC, _("Invalid %s token: %s\n"), name, p);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -458,7 +458,7 @@ static int parseForDev(char * buf, FileList fl)
 
 exit:
     if (rc) {
-	rpmError(RPMERR_BADSPEC, _("Missing %s in %s %s\n"), errstr, name, p);
+	rpmlog(RPMERR_BADSPEC, _("Missing %s in %s %s\n"), errstr, name, p);
 	fl->processingFailed = 1;
     }
     return rc;
@@ -494,7 +494,7 @@ static int parseForAttr(char * buf, FileList fl)
     SKIPSPACE(pe);
 
     if (*pe != '(') {
-	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s %s\n"), name, pe);
+	rpmlog(RPMERR_BADSPEC, _("Missing '(' in %s %s\n"), name, pe);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -509,7 +509,7 @@ static int parseForAttr(char * buf, FileList fl)
 	q++;
 	SKIPSPACE(q);
 	if (*q != '\0') {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMERR_BADSPEC,
 		     _("Non-white space follows %s(): %s\n"), name, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
@@ -548,7 +548,7 @@ static int parseForAttr(char * buf, FileList fl)
     }
 
     if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group) || *p != '\0') {
-	rpmError(RPMERR_BADSPEC, _("Bad syntax: %s(%s)\n"), name, q);
+	rpmlog(RPMERR_BADSPEC, _("Bad syntax: %s(%s)\n"), name, q);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -558,7 +558,7 @@ static int parseForAttr(char * buf, FileList fl)
 	unsigned int ui;
 	x = sscanf(ar->ar_fmodestr, "%o", &ui);
 	if ((x == 0) || (ar->ar_fmode & ~MYALLPERMS)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad mode spec: %s(%s)\n"), name, q);
+	    rpmlog(RPMERR_BADSPEC, _("Bad mode spec: %s(%s)\n"), name, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -570,7 +570,7 @@ static int parseForAttr(char * buf, FileList fl)
 	unsigned int ui;
 	x = sscanf(ar->ar_dmodestr, "%o", &ui);
 	if ((x == 0) || (ar->ar_dmode & ~MYALLPERMS)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad dirmode spec: %s(%s)\n"), name, q);
+	    rpmlog(RPMERR_BADSPEC, _("Bad dirmode spec: %s(%s)\n"), name, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -621,7 +621,7 @@ static int parseForConfig(char * buf, FileList fl)
 	{};
 
     if (*pe == '\0') {
-	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
+	rpmlog(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -646,7 +646,7 @@ static int parseForConfig(char * buf, FileList fl)
 	} else if (!strcmp(p, "noreplace")) {
 	    fl->currentFlags |= RPMFILE_NOREPLACE;
 	} else {
-	    rpmError(RPMERR_BADSPEC, _("Invalid %s token: %s\n"), name, p);
+	    rpmlog(RPMERR_BADSPEC, _("Invalid %s token: %s\n"), name, p);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -680,7 +680,7 @@ static int parseForLang(char * buf, FileList fl)
     SKIPSPACE(pe);
 
     if (*pe != '(') {
-	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s %s\n"), name, pe);
+	rpmlog(RPMERR_BADSPEC, _("Missing '(' in %s %s\n"), name, pe);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -691,7 +691,7 @@ static int parseForLang(char * buf, FileList fl)
 	{};
 
     if (*pe == '\0') {
-	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
+	rpmlog(RPMERR_BADSPEC, _("Missing ')' in %s(%s\n"), name, p);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -717,7 +717,7 @@ static int parseForLang(char * buf, FileList fl)
 	
 	/* Sanity check on locale lengths */
 	if (np < 1 || (np == 1 && *p != 'C') || np >= 32) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMERR_BADSPEC,
 		_("Unusual locale length: \"%.*s\" in %%lang(%s)\n"),
 		(int)np, p, q);
 	    fl->processingFailed = 1;
@@ -729,7 +729,7 @@ static int parseForLang(char * buf, FileList fl)
 	for (i = 0; i < fl->nLangs; i++) {
 	    if (strncmp(fl->currentLangs[i], p, np))
 		continue;
-	    rpmError(RPMERR_BADSPEC, _("Duplicate locale %.*s in %%lang(%s)\n"),
+	    rpmlog(RPMERR_BADSPEC, _("Duplicate locale %.*s in %%lang(%s)\n"),
 		(int)np, p, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
@@ -844,7 +844,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	if (!strcmp(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
 	    if (fl->docDirCount == MAXDOCDIR) {
-		rpmError(RPMERR_INTERNAL, _("Hit limit for %%docdir\n"));
+		rpmlog(RPMERR_INTERNAL, _("Hit limit for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }
@@ -852,7 +852,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    if (s != NULL)
 		fl->docDirs[fl->docDirCount++] = xstrdup(s);
 	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
-		rpmError(RPMERR_INTERNAL, _("Only one arg for %%docdir\n"));
+		rpmlog(RPMERR_INTERNAL, _("Only one arg for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = 1;
 	    }
@@ -883,7 +883,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
 	if (*fileName) {
 	    /* We already got a file -- error */
-	    rpmError(RPMERR_BADSPEC, _("Two files on one line: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("Two files on one line: %s\n"),
 		*fileName);
 	    fl->processingFailed = 1;
 	    res = 1;
@@ -900,7 +900,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		*fileName = s;
 	    } else {
 		/* not in %doc, does not begin with / -- error */
-		rpmError(RPMERR_BADSPEC,
+		rpmlog(RPMERR_BADSPEC,
 		    _("File must begin with \"/\": %s\n"), s);
 		fl->processingFailed = 1;
 		res = 1;
@@ -912,7 +912,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
     if (specialDoc) {
 	if (*fileName || (fl->currentFlags & ~(RPMFILE_DOC))) {
-	    rpmError(RPMERR_BADSPEC,
+	    rpmlog(RPMERR_BADSPEC,
 		     _("Can't mix special %%doc with other forms: %s\n"),
 		     (*fileName ? *fileName : ""));
 	    fl->processingFailed = 1;
@@ -931,7 +931,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		}
 		fmt = headerSprintf(pkg->header, _docdir_fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 		if (!fmt) {
-		    rpmError(RPMERR_BADSPEC, _("illegal _docdir_fmt: %s\n"), errstr);
+		    rpmlog(RPMERR_BADSPEC, _("illegal _docdir_fmt: %s\n"), errstr);
 		    fl->processingFailed = 1;
 		    res = 1;
 		}
@@ -1207,7 +1207,7 @@ static void genCpioListAndHeader(FileList fl,
 
 		if (buf[0] == '/' && strcmp(buildRoot, "/") &&
 		    !strncmp(buf, buildRoot, strlen(buildRoot))) {
-		     rpmError(RPMERR_BADSPEC,
+		     rpmlog(RPMERR_BADSPEC,
 				_("Symlink points to BuildRoot: %s -> %s\n"),
 				flp->fileURL, buf);
 		    fl->processingFailed = 1;
@@ -1413,7 +1413,7 @@ static int addFile(FileList fl, const char * diskURL,
 	    prefixTest++;
 	}
 	if (*prefixPtr || (*prefixTest && *prefixTest != '/')) {
-	    rpmError(RPMERR_BADSPEC, _("File doesn't match prefix (%s): %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("File doesn't match prefix (%s): %s\n"),
 		     fl->prefix, fileURL);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
@@ -1437,7 +1437,7 @@ static int addFile(FileList fl, const char * diskURL,
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
 	} else if (Lstat(diskURL, statp)) {
-	    rpmError(RPMERR_BADSPEC, _("File not found: %s\n"), diskURL);
+	    rpmlog(RPMERR_BADSPEC, _("File not found: %s\n"), diskURL);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -1639,24 +1639,24 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 
     switch (tag) {
     default:
-	rpmError(RPMERR_BADSPEC, _("%s: can't load unknown tag (%d).\n"),
+	rpmlog(RPMERR_BADSPEC, _("%s: can't load unknown tag (%d).\n"),
 		fn, tag);
 	goto exit;
 	break;
     case RPMTAG_PUBKEYS:
 	if ((rc = pgpReadPkts(fn, (const byte **)&pkt, (size_t *)&pktlen)) <= 0) {
-	    rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
+	    rpmlog(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
 	    goto exit;
 	}
 	if (rc != PGPARMOR_PUBKEY) {
-	    rpmError(RPMERR_BADSPEC, _("%s: not an armored public key.\n"), fn);
+	    rpmlog(RPMERR_BADSPEC, _("%s: not an armored public key.\n"), fn);
 	    goto exit;
 	}
 	apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
 	break;
     case RPMTAG_POLICIES:
 	if ((rc = rpmioSlurp(fn, &pkt, &pktlen)) != 0) {
-	    rpmError(RPMERR_BADSPEC, _("%s: *.te policy read failed.\n"), fn);
+	    rpmlog(RPMERR_BADSPEC, _("%s: *.te policy read failed.\n"), fn);
 	    goto exit;
 	}
 	apkt = (const char *) pkt;	/* XXX unsigned char */
@@ -1703,7 +1703,7 @@ static int processBinaryFile(Package pkg, FileList fl,
     {	const char * fileName;
 	(void) urlPath(fileURL, &fileName);
 	if (*fileName != '/') {
-	    rpmError(RPMERR_BADSPEC, _("File needs leading \"/\": %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("File needs leading \"/\": %s\n"),
 			fileName);
 	    rc = 1;
 	    goto exit;
@@ -1727,7 +1727,7 @@ static int processBinaryFile(Package pkg, FileList fl,
 
 	/* XXX for %dev marker in file manifest only */
 	if (fl->noGlob) {
-	    rpmError(RPMERR_BADSPEC, _("Glob not permitted: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("Glob not permitted: %s\n"),
 			diskURL);
 	    rc = 1;
 	    goto exit;
@@ -1741,7 +1741,7 @@ static int processBinaryFile(Package pkg, FileList fl,
 	    }
 	    argv = _free(argv);
 	} else {
-	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("File not found by glob: %s\n"),
 			diskURL);
 	    rc = 1;
 	    goto exit;
@@ -1793,7 +1793,7 @@ static int processPackageFiles(rpmSpec spec, Package pkg,
 	fd = Fopen(ffn, "r.fpio");
 
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		_("Could not open %%files file %s: %s\n"),
 		ffn, Fstrerror(fd));
 	    return RPMERR_BADFILENAME;
@@ -1805,7 +1805,7 @@ static int processPackageFiles(rpmSpec spec, Package pkg,
 	while (fgets(buf, sizeof(buf), f)) {
 	    handleComments(buf);
 	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-		rpmError(RPMERR_BADSPEC, _("line: %s\n"), buf);
+		rpmlog(RPMERR_BADSPEC, _("line: %s\n"), buf);
 		return RPMERR_BADSPEC;
 	    }
 	    appendStringBuf(pkg->fileList, buf);
@@ -2188,7 +2188,7 @@ int processSourceFiles(rpmSpec spec)
 	flp->verifyFlags = RPMVERIFY_ALL;
 
 	if (Stat(diskURL, &flp->fl_st)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad file: %s: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("Bad file: %s: %s\n"),
 		diskURL, strerror(errno));
 	    fl.processingFailed = 1;
 	}
@@ -2212,7 +2212,7 @@ int processSourceFiles(rpmSpec spec)
 	fl.totalFileSize += flp->fl_size;
 	
 	if (! (flp->uname && flp->gname)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskURL);
+	    rpmlog(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskURL);
 	    fl.processingFailed = 1;
 	}
 

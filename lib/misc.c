@@ -37,12 +37,12 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    break;
 	}
 	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create %%%s %s\n"), dname, dpath);
+	    rpmlog(RPMERR_CREATE, _("cannot create %%%s %s\n"), dname, dpath);
 	    return RPMRC_FAIL;
 	}
     }
     if ((rc = Access(dpath, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
+	rpmlog(RPMERR_CREATE, _("cannot write to %%%s %s\n"), dname, dpath);
 	return RPMRC_FAIL;
     }
     return RPMRC_OK;
@@ -178,18 +178,18 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     case URL_IS_UNKNOWN:
       {	struct stat sb, sb2;
 	if (!stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
-	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
+	    rpmlog(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
 	    goto errxit;
 	}
 
 	if (sb.st_nlink != 1) {
-	    rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
+	    rpmlog(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
 	    goto errxit;
 	}
 
 	if (fstat(Fileno(fd), &sb2) == 0) {
 	    if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
-		rpmError(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
+		rpmlog(RPMERR_SCRIPT, _("error creating temporary file %s\n"), tfn);
 		goto errxit;
 	    }
 	}

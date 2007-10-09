@@ -93,7 +93,7 @@ void * rpmShowProgress(const void * arg,
 	fd = Fopen(filename, "r.ufdio");
 	/* FIX: still necessary? */
 	if (fd == NULL || Ferror(fd)) {
-	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
+	    rpmlog(RPMERR_OPEN, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
 	    if (fd != NULL) {
 		xx = Fclose(fd);
@@ -302,7 +302,7 @@ const char * fileURL = NULL;
 	av = _free(av);	ac = 0;
 	rc = rpmGlob(*eiu->fnp, &ac, &av);
 	if (rc || ac == 0) {
-	    rpmError(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
+	    rpmlog(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
 	    continue;
 	}
 
@@ -419,7 +419,7 @@ if (fileURL[0] == '=') {
 	/* Try to read the header from a package file. */
 	eiu->fd = Fopen(*eiu->fnp, "r.ufdio");
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
-	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
+	    rpmlog(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
 	    if (eiu->fd != NULL) {
 		xx = Fclose(eiu->fd);
@@ -551,7 +551,7 @@ maybe_manifest:
 	/* Try to read a package manifest. */
 	eiu->fd = Fopen(*eiu->fnp, "r.fpio");
 	if (eiu->fd == NULL || Ferror(eiu->fd)) {
-	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
+	    rpmlog(RPMERR_OPEN, _("open of %s failed: %s\n"), *eiu->fnp,
 			Fstrerror(eiu->fd));
 	    if (eiu->fd != NULL) {
 		xx = Fclose(eiu->fd);
@@ -565,7 +565,7 @@ maybe_manifest:
 /* FIX: *eiu->argv can be NULL */
 	rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
 	if (rc != RPMRC_OK)
-	    rpmError(RPMERR_MANIFEST, _("%s: not an rpm package (or package manifest): %s\n"),
+	    rpmlog(RPMERR_MANIFEST, _("%s: not an rpm package (or package manifest): %s\n"),
 			*eiu->fnp, Fstrerror(eiu->fd));
 	xx = Fclose(eiu->fd);
 	eiu->fd = NULL;

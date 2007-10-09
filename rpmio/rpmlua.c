@@ -446,7 +446,7 @@ int rpmluaCheckScript(rpmlua _lua, const char *script, const char *name)
     if (name == NULL)
 	name = "<lua>";
     if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
-	rpmError(RPMERR_SCRIPT,
+	rpmlog(RPMERR_SCRIPT,
 		_("invalid syntax in lua scriptlet: %s\n"),
 		  lua_tostring(L, -1));
 	ret = -1;
@@ -463,12 +463,12 @@ int rpmluaRunScript(rpmlua _lua, const char *script, const char *name)
     if (name == NULL)
 	name = "<lua>";
     if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
-	rpmError(RPMERR_SCRIPT, _("invalid syntax in lua script: %s\n"),
+	rpmlog(RPMERR_SCRIPT, _("invalid syntax in lua script: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
 	ret = -1;
     } else if (lua_pcall(L, 0, 0, 0) != 0) {
-	rpmError(RPMERR_SCRIPT, _("lua script failed: %s\n"),
+	rpmlog(RPMERR_SCRIPT, _("lua script failed: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
 	ret = -1;
@@ -482,12 +482,12 @@ int rpmluaRunScriptFile(rpmlua _lua, const char *filename)
     lua_State *L = lua->L;
     int ret = 0;
     if (luaL_loadfile(L, filename) != 0) {
-	rpmError(RPMERR_SCRIPT, _("invalid syntax in lua file: %s\n"),
+	rpmlog(RPMERR_SCRIPT, _("invalid syntax in lua file: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
 	ret = -1;
     } else if (lua_pcall(L, 0, 0, 0) != 0) {
-	rpmError(RPMERR_SCRIPT, _("lua script failed: %s\n"),
+	rpmlog(RPMERR_SCRIPT, _("lua script failed: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
 	ret = -1;
@@ -617,7 +617,7 @@ static int rpmluaHookWrapper(rpmhookArgs args, void *data)
 	}
     }
     if (lua_pcall(L, 1, 1, 0) != 0) {
-	rpmError(RPMERR_SCRIPT, _("lua hook failed: %s\n"),
+	rpmlog(RPMERR_SCRIPT, _("lua hook failed: %s\n"),
 		 lua_tostring(L, -1));
 	lua_pop(L, 1);
     } else {

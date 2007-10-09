@@ -712,7 +712,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     switch (l->major) {
     case 1:
-	rpmError(RPMERR_NEWPACKAGE,
+	rpmlog(RPMERR_NEWPACKAGE,
 	    _("packaging version 1 is not supported by this version of RPM\n"));
 	rc = RPMRC_NOTFOUND;
 	goto exit;
@@ -722,7 +722,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     case 4:
 	break;
     default:
-	rpmError(RPMERR_NEWPACKAGE, _("only packaging with major numbers <= 4 "
+	rpmlog(RPMERR_NEWPACKAGE, _("only packaging with major numbers <= 4 "
 		"is supported by this version of RPM\n"));
 	rc = RPMRC_NOTFOUND;
 	goto exit;
@@ -734,14 +734,14 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
     switch (rc) {
     default:
-	rpmError(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
+	rpmlog(RPMERR_SIGGEN, _("%s: rpmReadSignature failed: %s"), fn,
 		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
 	break;
     case RPMRC_OK:
 	if (sigh == NULL) {
-	    rpmError(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
+	    rpmlog(RPMERR_SIGGEN, _("%s: No signature available\n"), fn);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -806,7 +806,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	(void) rpmswExit(rpmtsOp(ts, opx), nb);
 
     if (rc != RPMRC_OK || h == NULL) {
-	rpmError(RPMERR_FREAD, _("%s: headerRead failed: %s"), fn,
+	rpmlog(RPMERR_FREAD, _("%s: headerRead failed: %s"), fn,
 		(msg && *msg ? msg : "\n"));
 	msg = _free(msg);
 	goto exit;
@@ -912,7 +912,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 	dig->nbytes += nb;	/* XXX include size of header blob. */
 	if (count < 0) {
-	    rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"),
+	    rpmlog(RPMERR_FREAD, _("%s: Fread failed: %s\n"),
 					fn, Fstrerror(fd));
 	    rc = RPMRC_FAIL;
 	    goto exit;

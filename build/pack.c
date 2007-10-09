@@ -73,10 +73,10 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t csa,
 
     if (rc) {
 	if (failedFile)
-	    rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
+	    rpmlog(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
 		failedFile, cpioStrerror(rc));
 	else
-	    rpmError(RPMERR_CPIO, _("create archive failed: %s\n"),
+	    rpmlog(RPMERR_CPIO, _("create archive failed: %s\n"),
 		cpioStrerror(rc));
       rc = 1;
     }
@@ -96,14 +96,14 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
 
     while((nb = Fread(buf, sizeof(buf[0]), sizeof(buf), csa->cpioFdIn)) > 0) {
 	if (Fwrite(buf, sizeof(buf[0]), nb, fdo) != nb) {
-	    rpmError(RPMERR_CPIO, _("cpio_copy write failed: %s\n"),
+	    rpmlog(RPMERR_CPIO, _("cpio_copy write failed: %s\n"),
 			Fstrerror(fdo));
 	    return 1;
 	}
 	csa->cpioArchiveSize += nb;
     }
     if (Ferror(csa->cpioFdIn)) {
-	rpmError(RPMERR_CPIO, _("cpio_copy read failed: %s\n"),
+	rpmlog(RPMERR_CPIO, _("cpio_copy read failed: %s\n"),
 		Fstrerror(csa->cpioFdIn));
 	return 1;
     }
@@ -133,7 +133,7 @@ static StringBuf addFileToTagAux(rpmSpec spec,
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-	    rpmError(RPMERR_BADSPEC, _("line: %s\n"), buf);
+	    rpmlog(RPMERR_BADSPEC, _("line: %s\n"), buf);
 	    sb = freeStringBuf(sb);
 	    break;
 	}
@@ -191,42 +191,42 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
     
     if (pkg->preInFile) {
 	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		     _("Could not open PreIn file: %s\n"), pkg->preInFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->preUnFile) {
 	if (addFileToTag(spec, pkg->preUnFile, pkg->header, RPMTAG_PREUN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		     _("Could not open PreUn file: %s\n"), pkg->preUnFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->preTransFile) {
 	if (addFileToTag(spec, pkg->preTransFile, pkg->header, RPMTAG_PRETRANS)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		     _("Could not open PreIn file: %s\n"), pkg->preTransFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->postInFile) {
 	if (addFileToTag(spec, pkg->postInFile, pkg->header, RPMTAG_POSTIN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		     _("Could not open PostIn file: %s\n"), pkg->postInFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->postUnFile) {
 	if (addFileToTag(spec, pkg->postUnFile, pkg->header, RPMTAG_POSTUN)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		     _("Could not open PostUn file: %s\n"), pkg->postUnFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->postTransFile) {
 	if (addFileToTag(spec, pkg->postTransFile, pkg->header, RPMTAG_POSTTRANS)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		     _("Could not open PostUn file: %s\n"), pkg->postTransFile);
 	    return RPMERR_BADFILENAME;
 	}
@@ -234,7 +234,7 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
     if (pkg->verifyFile) {
 	if (addFileToTag(spec, pkg->verifyFile, pkg->header,
 			 RPMTAG_VERIFYSCRIPT)) {
-	    rpmError(RPMERR_BADFILENAME,
+	    rpmlog(RPMERR_BADFILENAME,
 		     _("Could not open VerifyScript file: %s\n"), pkg->verifyFile);
 	    return RPMERR_BADFILENAME;
 	}
@@ -249,7 +249,7 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
 	} else if (p->fileName) {
 	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
 				  RPMTAG_TRIGGERSCRIPTS)) {
-		rpmError(RPMERR_BADFILENAME,
+		rpmlog(RPMERR_BADFILENAME,
 			 _("Could not open Trigger script file: %s\n"),
 			 p->fileName);
 		return RPMERR_BADFILENAME;
@@ -278,7 +278,7 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
 	: fdDup(STDIN_FILENO);
 
     if (fdi == NULL || Ferror(fdi)) {
-	rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"),
+	rpmlog(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	if (fdi) (void) Fclose(fdi);
@@ -287,7 +287,7 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
 
     /* Get copy of lead */
     if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
-	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
+	rpmlog(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	return RPMERR_BADMAGIC;
@@ -295,7 +295,7 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
 
     /* XXX FIXME: EPIPE on <stdin> */
     if (Fseek(fdi, 0, SEEK_SET) == -1) {
-	rpmError(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
+	rpmlog(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
 			(fileName ? fileName : "<stdin>"), Fstrerror(fdi));
 	return RPMERR_FSEEK;
     }
@@ -326,12 +326,12 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
     case RPMRC_NOTTRUSTED:
 	break;
     case RPMRC_NOTFOUND:
-	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
+	rpmlog(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
 		(fileName ? fileName : "<stdin>"));
 	return RPMERR_BADMAGIC;
     case RPMRC_FAIL:
     default:
-	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
+	rpmlog(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"),
 		(fileName ? fileName : "<stdin>"));
 	return RPMERR_BADMAGIC;
 	break;
@@ -455,7 +455,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h == NULL) {	/* XXX can't happen */
 	rc = RPMERR_RELOAD;
-	rpmError(RPMERR_RELOAD, _("Unable to create immutable header region.\n"));
+	rpmlog(RPMERR_RELOAD, _("Unable to create immutable header region.\n"));
 	goto exit;
     }
     /* Re-reference reallocated header. */
@@ -467,14 +467,14 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      */
     if (makeTempFile(NULL, &sigtarget, &fd)) {
 	rc = RPMERR_CREATE;
-	rpmError(RPMERR_CREATE, _("Unable to open temp file.\n"));
+	rpmlog(RPMERR_CREATE, _("Unable to open temp file.\n"));
 	goto exit;
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
-	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
+	rpmlog(RPMERR_NOSPACE, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
 	(void) Fflush(fd);
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
@@ -484,7 +484,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    rc = cpio_copy(fd, csa);
 	} else {
 	    rc = RPMERR_BADARG;
-	    rpmError(RPMERR_BADARG, _("Bad CSA data\n"));
+	    rpmlog(RPMERR_BADARG, _("Bad CSA data\n"));
 	}
     }
     rpmio_flags = _free(rpmio_flags);
@@ -513,14 +513,14 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     (void) Fflush(fd);
     if (Fseek(fd, 0, SEEK_SET) == -1) {
 	rc = RPMERR_FSEEK;
-	rpmError(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
+	rpmlog(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
 			sigtarget, Fstrerror(fd));
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
 	rc = RPMERR_NOSPACE;
-	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
+	rpmlog(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }
     (void) Fflush(fd);
     fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
@@ -558,7 +558,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
     if (sig == NULL) {	/* XXX can't happen */
 	rc = RPMERR_RELOAD;
-	rpmError(RPMERR_RELOAD, _("Unable to reload signature header.\n"));
+	rpmlog(RPMERR_RELOAD, _("Unable to reload signature header.\n"));
 	goto exit;
     }
 
@@ -566,7 +566,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     fd = Fopen(fileName, "w.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rc = RPMERR_CREATE;
-	rpmError(RPMERR_CREATE, _("Could not open %s: %s\n"),
+	rpmlog(RPMERR_CREATE, _("Could not open %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
     }
@@ -602,7 +602,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
 	if (writeLead(fd, &lead) != RPMRC_OK) {
 	    rc = RPMERR_NOSPACE;
-	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+	    rpmlog(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
 		 Fstrerror(fd));
 	    goto exit;
 	}
@@ -617,7 +617,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     ifd = Fopen(sigtarget, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
 	rc = RPMERR_READ;
-	rpmError(RPMERR_READ, _("Unable to open sigtarget %s: %s\n"),
+	rpmlog(RPMERR_READ, _("Unable to open sigtarget %s: %s\n"),
 		sigtarget, Fstrerror(ifd));
 	goto exit;
     }
@@ -628,7 +628,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
 	if (nh == NULL) {
 	    rc = RPMERR_READ;
-	    rpmError(RPMERR_READ, _("Unable to read header from %s: %s\n"),
+	    rpmlog(RPMERR_READ, _("Unable to read header from %s: %s\n"),
 			sigtarget, Fstrerror(ifd));
 	    goto exit;
 	}
@@ -642,7 +642,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
 	if (rc) {
 	    rc = RPMERR_NOSPACE;
-	    rpmError(RPMERR_NOSPACE, _("Unable to write header to %s: %s\n"),
+	    rpmlog(RPMERR_NOSPACE, _("Unable to write header to %s: %s\n"),
 			fileName, Fstrerror(fd));
 	    goto exit;
 	}
@@ -652,13 +652,13 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
 	    rc = RPMERR_READ;
-	    rpmError(RPMERR_READ, _("Unable to read payload from %s: %s\n"),
+	    rpmlog(RPMERR_READ, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
 	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
 	    rc = RPMERR_NOSPACE;
-	    rpmError(RPMERR_NOSPACE, _("Unable to write payload to %s: %s\n"),
+	    rpmlog(RPMERR_NOSPACE, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    goto exit;
 	}
@@ -765,7 +765,7 @@ int packageBinaries(rpmSpec spec)
 	    if (binRpm == NULL) {
 		const char *name;
 		(void) headerNVR(pkg->header, &name, NULL, NULL);
-		rpmError(RPMERR_BADFILENAME, _("Could not generate output "
+		rpmlog(RPMERR_BADFILENAME, _("Could not generate output "
 		     "filename for package %s: %s\n"), name, errorString);
 		return RPMERR_BADFILENAME;
 	    }
@@ -781,7 +781,7 @@ int packageBinaries(rpmSpec spec)
 			if (Mkdir(dn, 0755) == 0)
 			    break;
 		    default:
-			rpmError(RPMERR_BADFILENAME,_("cannot create %s: %s\n"),
+			rpmlog(RPMERR_BADFILENAME,_("cannot create %s: %s\n"),
 			    dn, strerror(errno));
 			break;
 		    }

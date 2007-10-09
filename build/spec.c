@@ -221,13 +221,13 @@ int parseNoSource(rpmSpec spec, const char * field, int tag)
 	if (*fe != '\0') fe++;
 
 	if (parseNum(f, &num)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("line %d: Bad number: %s\n"),
 		     spec->lineNum, f);
 	    return RPMERR_BADSPEC;
 	}
 
 	if (! (p = findSource(spec, num, flag))) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad no%s number: %d\n"),
+	    rpmlog(RPMERR_BADSPEC, _("line %d: Bad no%s number: %d\n"),
 		     spec->lineNum, name, num);
 	    return RPMERR_BADSPEC;
 	}
@@ -286,7 +286,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, int tag)
 	    num = 0;
 	} else {
 	    if (parseNum(buf, &num)) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
+		rpmlog(RPMERR_BADSPEC, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
 		return RPMERR_BADSPEC;
 	    }
@@ -587,7 +587,7 @@ printNewSpecfile(rpmSpec spec)
 	/* XXX this should use queryHeader(), but prints out tn as well. */
 	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
-	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
+	    rpmlog(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
 	    return;
 	}
 
@@ -652,7 +652,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 		cookie, anyarch, force)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {
-	rpmError(RPMERR_QUERY,
+	rpmlog(RPMERR_QUERY,
 	    		_("query of specfile %s failed, can't parse\n"), arg);
 	goto exit;
     }

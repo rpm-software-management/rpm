@@ -1738,13 +1738,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			    break;
 
 			/* XXX common error message. */
-			rpmError(
+			rpmlog(
 			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
 				rpmfiTypeString(fi), fsm->path);
 			break;
 		    default:
-			rpmError(
+			rpmlog(
 			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 				_("%s rmdir of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));
@@ -1758,7 +1758,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			if (fsm->fflags & RPMFILE_MISSINGOK)
 			    break;
 		    default:
-			rpmError(
+			rpmlog(
 			    (strict_erasures ? RPMERR_UNLINK : RPMDEBUG_UNLINK),
 				_("%s unlink of %s failed: %s\n"),
 				rpmfiTypeString(fi), fsm->path, strerror(errno));

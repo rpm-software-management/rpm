@@ -42,7 +42,7 @@ rpmRC readLead(FD_t fd, struct rpmlead *lead)
     /* FIX: remove timed read */
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
 	if (Ferror(fd)) {
-	    rpmError(RPMERR_READ, _("read failed: %s (%d)\n"),
+	    rpmlog(RPMERR_READ, _("read failed: %s (%d)\n"),
 			Fstrerror(fd), errno);
 	    return RPMRC_FAIL;
 	}

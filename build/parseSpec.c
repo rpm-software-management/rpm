@@ -171,7 +171,7 @@ static int copyNextLine(rpmSpec spec, OFI_t *ofi, int strip)
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
 	if (spec->readStack->reading &&
 	    expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
-		rpmError(RPMERR_BADSPEC, _("line %d: %s\n"),
+		rpmlog(RPMERR_BADSPEC, _("line %d: %s\n"),
 			spec->lineNum, spec->lbuf);
 		return RPMERR_BADSPEC;
 	}
@@ -220,7 +220,7 @@ retry:
 	ofi->fd = Fopen(ofi->fileName, "r.fpio");
 	if (ofi->fd == NULL || Ferror(ofi->fd)) {
 	    /* XXX Fstrerror */
-	    rpmError(RPMERR_BADSPEC, _("Unable to open %s: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("Unable to open %s: %s\n"),
 		     ofi->fileName, Fstrerror(ofi->fd));
 	    return RPMERR_BADSPEC;
 	}
@@ -234,7 +234,7 @@ retry:
 	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
-		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if\n"));
+		rpmlog(RPMERR_UNMATCHEDIF, _("Unclosed %%if\n"));
 	        return RPMERR_UNMATCHEDIF;
 	    }
 
@@ -310,7 +310,7 @@ retry:
 	s += 3;
         match = parseExpressionBoolean(spec, s);
 	if (match < 0) {
-	    rpmError(RPMERR_UNMATCHEDIF,
+	    rpmlog(RPMERR_UNMATCHEDIF,
 			_("%s:%d: parseExpressionBoolean returns %d\n"),
 			ofi->fileName, ofi->lineNum, match);
 	    return RPMERR_BADSPEC;
@@ -319,7 +319,7 @@ retry:
 	s += 5;
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF,
+	    rpmlog(RPMERR_UNMATCHEDIF,
 			_("%s:%d: Got a %%else with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
 	    return RPMERR_UNMATCHEDIF;
@@ -331,7 +331,7 @@ retry:
 	s += 6;
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF,
+	    rpmlog(RPMERR_UNMATCHEDIF,
 			_("%s:%d: Got a %%endif with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
 	    return RPMERR_UNMATCHEDIF;
@@ -346,7 +346,7 @@ retry:
 	s += 8;
 	fileName = s;
 	if (! xisspace(*fileName)) {
-	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement\n"));
+	    rpmlog(RPMERR_BADSPEC, _("malformed %%include statement\n"));
 	    return RPMERR_BADSPEC;
 	}
 	SKIPSPACE(fileName);
@@ -355,7 +355,7 @@ retry:
 	p = endFileName;
 	SKIPSPACE(p);
 	if (*p != '\0') {
-	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement\n"));
+	    rpmlog(RPMERR_BADSPEC, _("malformed %%include statement\n"));
 	    return RPMERR_BADSPEC;
 	}
 	*endFileName = '\0';
@@ -427,7 +427,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	(void) urlPath(buildRootURL, &buildRoot);
 	if (*buildRoot == '\0') buildRoot = "/";
 	if (!strcmp(buildRoot, "/")) {
-            rpmError(RPMERR_BADSPEC,
+            rpmlog(RPMERR_BADSPEC,
                      _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
             return RPMERR_BADSPEC;
         }
@@ -546,7 +546,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
 	    spec->BACount = index;
 	    if (! index) {
-		rpmError(RPMERR_BADSPEC,
+		rpmlog(RPMERR_BADSPEC,
 			_("No compatible architectures found for build\n"));
 		spec = freeSpec(spec);
 		return RPMERR_BADSPEC;
@@ -604,7 +604,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    const char * name;
 	    (void) headerNVR(pkg->header, &name, NULL, NULL);
-	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s\n"),
+	    rpmlog(RPMERR_BADSPEC, _("Package has no %%description: %s\n"),
 			name);
 	    spec = freeSpec(spec);
 	    return RPMERR_BADSPEC;
