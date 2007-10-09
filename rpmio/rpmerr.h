@@ -115,15 +115,6 @@ typedef enum rpmerrCode_e {
     RPMWARN_FLOCK	= _wm(512u+27)	/*!< locking the database failed */
 } rpmerrCode;
 
-/**
- * Retrofit rpmError() onto rpmlog sub-system.
- */
-#define	rpmError			rpmlog
-#define	rpmErrorCode()			rpmlogCode()
-#define	rpmErrorString()		rpmlogMessage()
-#define	rpmErrorSetCallback(_cb)	rpmlogSetCallback(_cb)
-typedef rpmlogCallback rpmErrorCallBackType;
-
 #ifdef __cplusplus
 }   
 #endif

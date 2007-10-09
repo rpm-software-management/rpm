@@ -12,16 +12,6 @@
 extern "C" {
 #endif
 
-#define	RPMMESS_DEBUG		RPMLOG_DEBUG
-#define	RPMMESS_VERBOSE		RPMLOG_INFO
-#define	RPMMESS_NORMAL		RPMLOG_NOTICE
-#define	RPMMESS_WARNING		RPMLOG_WARNING
-#define	RPMMESS_ERROR		RPMLOG_ERR
-#define	RPMMESS_FATALERROR	RPMLOG_CRIT
-
-#define	RPMMESS_QUIET		RPMMESS_WARNING
-
-#define	rpmMessage		rpmlog
 #define	rpmSetVerbosity(_lvl)	\
 	((void)rpmlogSetMask( RPMLOG_UPTO( RPMLOG_PRI(_lvl))))
 #define	rpmIncreaseVerbosity()	\
