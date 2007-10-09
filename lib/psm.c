@@ -441,7 +441,7 @@ static pid_t psmWait(rpmpsm psm)
     msecs = psm->sq.op.usecs/1000;
     (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), &psm->sq.op);
 
-    rpmlog(RPMMESS_DEBUG,
+    rpmlog(RPMLOG_DEBUG,
 	_("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
 	psm->stepName, (unsigned)psm->sq.child,
 	(unsigned)psm->sq.reaped, psm->sq.status,
@@ -582,7 +582,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
-	rpmlog(RPMMESS_DEBUG,
+	rpmlog(RPMLOG_DEBUG,
 		_("%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"),
 		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a);
 	return runLuaScript(psm, h, sln, progArgc, progArgv,
@@ -599,7 +599,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
      */
     if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
-	    rpmlog(RPMMESS_DEBUG,
+	    rpmlog(RPMLOG_DEBUG,
 		_("%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"),
 		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
 		progArgv[0]);
@@ -607,7 +607,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	}
     }
 
-    rpmlog(RPMMESS_DEBUG,
+    rpmlog(RPMLOG_DEBUG,
 		_("%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"),
 		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
 		(psm->unorderedSuccessor ? "a" : ""));
@@ -807,7 +807,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		xx = chroot(rootDir);
 	    }
 	    xx = chdir("/");
-	    rpmlog(RPMMESS_DEBUG, _("%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"),
+	    rpmlog(RPMLOG_DEBUG, _("%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"),
 			psm->stepName, sln, n, v, r, a,
 			argv[0], (unsigned)getpid());
 
@@ -1253,7 +1253,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_UNKNOWN:
 	break;
     case PSM_INIT:
-	rpmlog(RPMMESS_DEBUG, _("%s: %s has %d files, test = %d\n"),
+	rpmlog(RPMLOG_DEBUG, _("%s: %s has %d files, test = %d\n"),
 		psm->stepName, rpmteNEVR(psm->te),
 		rpmfiFC(fi), (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST));
 
@@ -1978,7 +1978,7 @@ assert(psm->mi == NULL);
 		/* OK, we got a real score so lets get the appropriate
 		 * score entry.
 		 */
-		rpmlog(RPMMESS_DEBUG,
+		rpmlog(RPMLOG_DEBUG,
 		    _("Attempting to mark %s as installed in score board(%p).\n"),
 		    rpmteN(psm->te), score);
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
@@ -2011,7 +2011,7 @@ assert(psm->mi == NULL);
 		/* OK, we got a real score so lets get the appropriate
 		 * score entry.
 		 */
-		rpmlog(RPMMESS_DEBUG,
+		rpmlog(RPMLOG_DEBUG,
 		    _("Attempting to mark %s as erased in score board(%p).\n"),
 		    rpmteN(psm->te), score);
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));

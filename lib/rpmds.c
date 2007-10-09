@@ -504,7 +504,7 @@ void rpmdsNotify(rpmds ds, const char * where, int rc)
     if (!(ds->Type != NULL && ds->DNEVR != NULL))
 	return;
 
-    rpmlog(RPMMESS_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
+    rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
 		(!strcmp(ds->DNEVR, "cached") ? ds->DNEVR : ds->DNEVR+2),
 		(rc ? _("NO ") : _("YES")),
 		(where != NULL ? where : ""));
@@ -799,7 +799,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
 	if (!B->nopromote) {
-	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMMESS_WARNING : RPMMESS_DEBUG);
+	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMMESS_WARNING : RPMLOG_DEBUG);
 	    rpmlog(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
 		aDepend, bDepend);
 	    sense = 0;
@@ -831,7 +831,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
 exit:
     if (_noisy_range_comparison_debug_message)
-    rpmlog(RPMMESS_DEBUG, _("  %s    A %s\tB %s\n"),
+    rpmlog(RPMLOG_DEBUG, _("  %s    A %s\tB %s\n"),
 	(result ? _("YES") : _("NO ")), aDepend, bDepend);
     aDepend = _free(aDepend);
     bDepend = _free(bDepend);
@@ -853,7 +853,7 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
     if (EVR == NULL) EVR = "?EVR?";
     if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
 
-    rpmlog(RPMMESS_DEBUG, _("package %s has unsatisfied %s: %s\n"),
+    rpmlog(RPMLOG_DEBUG, _("package %s has unsatisfied %s: %s\n"),
 	    pkgNEVR, ds->Type, DNEVR+2);
 
     switch ((unsigned)DNEVR[0]) {

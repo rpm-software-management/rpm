@@ -348,7 +348,7 @@ if (fileURL[0] == '=') {
 	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
 	}
 	ts->suggests = _free(ts->suggests);
-	rpmlog(RPMMESS_DEBUG, _("Adding goal: %s\n"), fileURL);
+	rpmlog(RPMLOG_DEBUG, _("Adding goal: %s\n"), fileURL);
 	eiu->pkgURL[eiu->pkgx] = fileURL;
 	fileURL = NULL;
 	eiu->pkgx++;
@@ -377,7 +377,7 @@ if (fileURL[0] == '=') {
 
 	    /* XXX undefined %{name}/%{version}/%{release} here */
 	    /* XXX %{_tmpdir} does not exist */
-	    rpmlog(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
+	    rpmlog(RPMLOG_DEBUG, _(" ... as %s\n"), tfn);
 	    rc = urlGetFile(fileURL, tfn);
 	    if (rc < 0) {
 		rpmlog(RPMMESS_ERROR,
@@ -413,7 +413,7 @@ if (fileURL[0] == '=') {
     {
 	const char * fileName;
 
-	rpmlog(RPMMESS_DEBUG, "============== %s\n", *eiu->fnp);
+	rpmlog(RPMLOG_DEBUG, "============== %s\n", *eiu->fnp);
 	(void) urlPath(*eiu->fnp, &fileName);
 
 	/* Try to read the header from a package file. */
@@ -455,7 +455,7 @@ if (fileURL[0] == '=') {
 	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
 
 	if (eiu->isSource) {
-	    rpmlog(RPMMESS_DEBUG, _("\tadded source package [%d]\n"),
+	    rpmlog(RPMLOG_DEBUG, _("\tadded source package [%d]\n"),
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
 				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
@@ -522,7 +522,7 @@ if (fileURL[0] == '=') {
 
 	switch(rc) {
 	case 0:
-	    rpmlog(RPMMESS_DEBUG, _("\tadded binary package [%d]\n"),
+	    rpmlog(RPMLOG_DEBUG, _("\tadded binary package [%d]\n"),
 			eiu->numRPMS);
 	    break;
 	case 1:
@@ -580,7 +580,7 @@ maybe_manifest:
 	break;
     }
 
-    rpmlog(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"),
+    rpmlog(RPMLOG_DEBUG, _("found %d source and %d binary packages\n"),
 		eiu->numSRPMS, eiu->numRPMS);
 
     if (eiu->numFailed) goto exit;
@@ -629,7 +629,7 @@ maybe_manifest:
 
 	rpmcliPackagesTotal += eiu->numSRPMS;
 
-	rpmlog(RPMMESS_DEBUG, _("installing binary packages\n"));
+	rpmlog(RPMLOG_DEBUG, _("installing binary packages\n"));
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);
@@ -947,7 +947,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Install the previously erased packages for this transaction. */
 	while (rp != NULL && rp->val.u32 == thistid) {
 
-	    rpmlog(RPMMESS_DEBUG, "\t+++ install %s\n",
+	    rpmlog(RPMLOG_DEBUG, "\t+++ install %s\n",
 			(rp->key ? rp->key : "???"));
 
 	    rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
@@ -973,7 +973,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	/* Erase the previously installed packages for this transaction. */
 	while (ip != NULL && ip->val.u32 == thistid) {
 
-	    rpmlog(RPMMESS_DEBUG,
+	    rpmlog(RPMLOG_DEBUG,
 			"\t--- erase h#%u\n", ip->instance);
 
 	    rc = rpmtsAddEraseElement(ts, ip->h, ip->instance);

@@ -647,7 +647,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    rpmlog(RPMERR_QUERYINFO, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmlog(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
+	rpmlog(RPMLOG_DEBUG, _("package record number: %u\n"), recOffset);
 	/* RPMDBI_PACKAGES */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {

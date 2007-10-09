@@ -184,7 +184,7 @@ static rpmRC rpmgiWalkPathFilter(rpmgi gi)
     const char * s;
 
 if (_rpmgi_debug < 0)
-rpmlog(RPMMESS_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
+rpmlog(RPMLOG_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name,
 	((fts->fts_info == FTS_D || fts->fts_info == FTS_DP) ? "/" : ""));

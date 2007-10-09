@@ -301,13 +301,13 @@ void * dnlInitIterator(const FSM_t fsm,
 		if (!dnli->active[i]) continue;
 		if (j == 0) {
 		    j = 1;
-		    rpmlog(RPMMESS_DEBUG,
+		    rpmlog(RPMLOG_DEBUG,
 	_("========== Directories not explicitly included in package:\n"));
 		}
-		rpmlog(RPMMESS_DEBUG, _("%10d %s\n"), i, fi->dnl[i]);
+		rpmlog(RPMLOG_DEBUG, _("%10d %s\n"), i, fi->dnl[i]);
 	    }
 	    if (j)
-		rpmlog(RPMMESS_DEBUG, "==========\n");
+		rpmlog(RPMLOG_DEBUG, "==========\n");
 	}
     }
     return dnli;
@@ -1171,11 +1171,11 @@ static int fsmMkdirs(FSM_t fsm)
 		    }
 
 		    if (fsm->fcontext == NULL)
-			rpmlog(RPMMESS_DEBUG,
+			rpmlog(RPMLOG_DEBUG,
 			    _("%s directory created with perms %04o, no context.\n"),
 			    fsm->path, (unsigned)(st->st_mode & 07777));
 		    else
-			rpmlog(RPMMESS_DEBUG,
+			rpmlog(RPMLOG_DEBUG,
 			    _("%s directory created with perms %04o, context %s.\n"),
 			    fsm->path, (unsigned)(st->st_mode & 07777),
 			    fsm->fcontext);
@@ -1265,7 +1265,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	/* do nothing */
     } else if (stage & FSM_INTERNAL) {
 	if (_fsm_debug && !(stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s %06o%3d (%4d,%4d)%10d %s %s\n",
+	    rpmlog(RPMLOG_DEBUG, " %8s %06o%3d (%4d,%4d)%10d %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
 		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
@@ -1274,7 +1274,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     } else {
 	fsm->stage = stage;
 	if (_fsm_debug || !(stage & FSM_VERBOSE))
-	    rpmlog(RPMMESS_DEBUG, "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n",
+	    rpmlog(RPMLOG_DEBUG, "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n",
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
 		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
@@ -1923,7 +1923,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	rc = Unlink(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
@@ -1943,14 +1943,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 #endif
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
 	break;
     case FSM_MKDIR:
 	rc = Mkdir(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
@@ -1958,7 +1958,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_RMDIR:
 	rc = Rmdir(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)
 	    switch (errno) {
@@ -1973,7 +1973,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    break;
 	rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->path, fsm->fcontext,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : CPIOERR_LSETFCON_FAILED);
@@ -1981,7 +1981,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_CHOWN:
 	rc = chown(fsm->path, st->st_uid, st->st_gid);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		fsm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
@@ -1990,7 +1990,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 #if ! CHOWN_FOLLOWS_SYMLINK
 	rc = lchown(fsm->path, st->st_uid, st->st_gid);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		fsm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
@@ -1999,7 +1999,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_CHMOD:
 	rc = chmod(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
@@ -2010,7 +2010,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    stamp.modtime = st->st_mtime;
 	    rc = utime(fsm->path, &stamp);
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
-		rpmlog(RPMMESS_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
+		rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
 			fsm->path, (unsigned)st->st_mtime,
 			(rc < 0 ? strerror(errno) : ""));
 	    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
@@ -2019,21 +2019,21 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_SYMLINK:
 	rc = symlink(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
 	break;
     case FSM_LINK:
 	rc = Link(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
 	break;
     case FSM_MKFIFO:
 	rc = mkfifo(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
@@ -2042,7 +2042,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* FIX: check S_IFIFO or dev != 0 */
 	rc = mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & ~07777),
 		(unsigned)st->st_rdev,
 		(rc < 0 ? strerror(errno) : ""));
@@ -2051,7 +2051,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_LSTAT:
 	rc = Lstat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) {
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
@@ -2061,7 +2061,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_STAT:
 	rc = Stat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, ost) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0) {
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_STAT_FAILED);
@@ -2072,7 +2072,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
 	rc = Readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
 		fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
 	else {
@@ -2132,7 +2132,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_DREAD:
 	fsm->rdnb = Fread(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->wrlen, fsm->cfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, cfd)\trdnb %d\n",
 		cur, (fsm->wrbuf == fsm->wrb ? "wrbuf" : "mmap"),
 		(int)fsm->wrlen, (int)fsm->rdnb);
 	if (fsm->rdnb != fsm->wrlen || Ferror(fsm->cfd))
@@ -2143,7 +2143,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_DWRITE:
 	fsm->wrnb = Fwrite(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdnb, fsm->cfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, %d, cfd)\twrnb %d\n",
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, cfd)\twrnb %d\n",
 		cur, (fsm->rdbuf == fsm->rdb ? "rdbuf" : "mmap"),
 		(int)fsm->rdnb, (int)fsm->wrnb);
 	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->cfd))
@@ -2161,13 +2161,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    break;
 	}
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
 		fsm->path, fsm->rfd, fsm->rdbuf);
 	break;
     case FSM_READ:
 	fsm->rdnb = Fread(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdlen, fsm->rfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
+	    rpmlog(RPMLOG_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
 		cur, (int)fsm->rdlen, (int)fsm->rdnb);
 	if (fsm->rdnb != fsm->rdlen || Ferror(fsm->rfd))
 	    rc = CPIOERR_READ_FAILED;
@@ -2175,7 +2175,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_RCLOSE:
 	if (fsm->rfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
-		rpmlog(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
+		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
 	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
 			fdstat_op(fsm->rfd, FDSTAT_DIGEST));
 	    (void) Fclose(fsm->rfd);
@@ -2191,13 +2191,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = CPIOERR_OPEN_FAILED;
 	}
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
 		fsm->path, fsm->wfd, fsm->wrbuf);
 	break;
     case FSM_WRITE:
 	fsm->wrnb = Fwrite(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->rdnb, fsm->wfd);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMMESS_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
+	    rpmlog(RPMLOG_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
 		cur, (int)fsm->rdnb, (int)fsm->wrnb);
 	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->wfd))
 	    rc = CPIOERR_WRITE_FAILED;
@@ -2205,7 +2205,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_WCLOSE:
 	if (fsm->wfd != NULL) {
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
-		rpmlog(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
+		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
 	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
 			fdstat_op(fsm->wfd, FDSTAT_DIGEST));
 	    (void) Fclose(fsm->wfd);

@@ -171,7 +171,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
 
     if (dbfile)
-	rpmlog(RPMMESS_DEBUG, _("closed   db environment %s/%s\n"),
+	rpmlog(RPMLOG_DEBUG, _("closed   db environment %s/%s\n"),
 			dbhome, dbfile);
 
     if (rpmdb->db_remove_env) {
@@ -183,7 +183,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 	xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
 
 	if (dbfile)
-	    rpmlog(RPMMESS_DEBUG, _("removed  db environment %s/%s\n"),
+	    rpmlog(RPMLOG_DEBUG, _("removed  db environment %s/%s\n"),
 			dbhome, dbfile);
 
     }
@@ -238,7 +238,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
     if (dbfile)
-	rpmlog(RPMMESS_DEBUG, _("opening  db environment %s/%s %s\n"),
+	rpmlog(RPMLOG_DEBUG, _("opening  db environment %s/%s %s\n"),
 		dbhome, dbfile, prDbiOpenFlags(eflags, 1));
 
     /* XXX Can't do RPC w/o host. */
@@ -677,7 +677,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	rc = cvtdberr(dbi, "db->close", rc, _printit);
 	db = dbi->dbi_db = NULL;
 
-	rpmlog(RPMMESS_DEBUG, _("closed   db index       %s/%s\n"),
+	rpmlog(RPMLOG_DEBUG, _("closed   db index       %s/%s\n"),
 		dbhome, (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)));
 
     }
@@ -734,7 +734,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 		rc = db->verify(db, dbf, NULL, NULL, flags);
 		rc = cvtdberr(dbi, "db->verify", rc, _debug);
 
-		rpmlog(RPMMESS_DEBUG, _("verified db index       %s/%s\n"),
+		rpmlog(RPMLOG_DEBUG, _("verified db index       %s/%s\n"),
 			(dbhome ? dbhome : ""),
 			(dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)));
 
@@ -945,7 +945,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	}
     }
 
-    rpmlog(RPMMESS_DEBUG, _("opening  db index       %s/%s %s mode=0x%x\n"),
+    rpmlog(RPMLOG_DEBUG, _("opening  db index       %s/%s %s mode=0x%x\n"),
 		dbhome, (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)),
 		prDbiOpenFlags(oflags, 0), dbi->dbi_mode);
 
@@ -1162,7 +1162,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 					? _("exclusive") : _("shared")),
 				dbhome, (dbfile ? dbfile : ""));
 		    } else if (dbfile) {
-			rpmlog(RPMMESS_DEBUG,
+			rpmlog(RPMLOG_DEBUG,
 				_("locked   db index       %s/%s\n"),
 				dbhome, dbfile);
 		    }

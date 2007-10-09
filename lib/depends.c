@@ -340,7 +340,7 @@ addheader:
 		if (rpmVersionCompare(h, oh))
 #endif
 		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
-		rpmlog(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
+		rpmlog(RPMLOG_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		ohNEVRA = _free(ohNEVRA);
 	    }
@@ -759,7 +759,7 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
 	const char ** av = NULL;
 	int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
-			? RPMMESS_WARNING : RPMMESS_DEBUG;
+			? RPMMESS_WARNING : RPMLOG_DEBUG;
 	int ac = 0;
 	int i;
 
@@ -1104,7 +1104,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
 
     /* Record all relations. */
-    rpmlog(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
+    rpmlog(RPMLOG_DEBUG, _("========== recording tsort relations\n"));
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
@@ -1196,7 +1196,7 @@ int rpmtsOrder(rpmts ts)
     ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
-    rpmlog(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n"));
+    rpmlog(RPMLOG_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n"));
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
@@ -1239,7 +1239,7 @@ rescan:
 	breadth = ((depth < npeer) ? peer[depth]++ : 0);
 	(void) rpmteSetBreadth(q, breadth);
 
-	rpmlog(RPMMESS_DEBUG, "%5d%5d%5d%5d%5d%5d %*s%c%s\n",
+	rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d%5d%5d %*s%c%s\n",
 			orderingCount, rpmteNpreds(q),
 			rpmteTSI(q)->tsi_qcnt,
 			treex, depth, breadth,
@@ -1286,7 +1286,7 @@ rescan:
 	if (!_printed && loopcheck == qlen && rpmteTSI(q)->tsi_suc != NULL) {
 	    _printed++;
 	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
-	    rpmlog(RPMMESS_DEBUG,
+	    rpmlog(RPMLOG_DEBUG,
 		_("========== successors only (%d bytes)\n"), (int)tsbytes);
 
 	    /* Relink the queue in presentation order. */
@@ -1353,7 +1353,7 @@ rescan:
 		const char * dp;
 		char buf[4096];
 		int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
-			? RPMMESS_WARNING : RPMMESS_DEBUG;
+			? RPMMESS_WARNING : RPMLOG_DEBUG;
 ;
 
 		/* Unchain predecessor loop. */
@@ -1395,7 +1395,7 @@ rescan:
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
 	if (nzaps && nrescans-- > 0) {
-	    rpmlog(RPMMESS_DEBUG, _("========== continuing tsort ...\n"));
+	    rpmlog(RPMLOG_DEBUG, _("========== continuing tsort ...\n"));
 	    goto rescan;
 	}
 
@@ -1513,7 +1513,7 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides;
 
 	/* FIX: rpmts{A,O} can return null. */
-	rpmlog(RPMMESS_DEBUG, "========== +++ %s %s/%s 0x%x\n",
+	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 	rc = checkPackageDeps(ts, rpmteNEVRA(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
@@ -1553,7 +1553,7 @@ int rpmtsCheck(rpmts ts)
 	rpmfi fi;
 
 	/* FIX: rpmts{A,O} can return null. */
-	rpmlog(RPMMESS_DEBUG, "========== --- %s %s/%s 0x%x\n",
+	rpmlog(RPMLOG_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	rc = 0;

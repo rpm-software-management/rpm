@@ -113,7 +113,7 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	    (void) chdir(dir);
 	}
 	
-	rpmlog(RPMMESS_DEBUG, _("\texecv(%s) pid %d\n"),
+	rpmlog(RPMLOG_DEBUG, _("\texecv(%s) pid %d\n"),
                         argv[0], (unsigned)getpid());
 
 	unsetenv("MALLOC_CHECK_");
@@ -206,7 +206,7 @@ top:
 
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
-    rpmlog(RPMMESS_DEBUG, _("\twaitpid(%d) rc %d status %x\n"),
+    rpmlog(RPMLOG_DEBUG, _("\twaitpid(%d) rc %d status %x\n"),
         (unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
@@ -1292,7 +1292,7 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
 	}
 
 	se = ftype;
-        rpmlog(RPMMESS_DEBUG, "%s: %s\n", s, se);
+        rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, se);
 
 	/* Save the path. */
 	xx = argvAdd(&fc->fn, s);

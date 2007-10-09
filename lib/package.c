@@ -949,12 +949,12 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rc = rpmVerifySignature(ts, buf);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
-	rpmlog(RPMMESS_DEBUG, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, buf);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (rpmtsStashKeyid(ts) ? RPMMESS_DEBUG : RPMMESS_WARNING);
+    {	int lvl = (rpmtsStashKeyid(ts) ? RPMLOG_DEBUG : RPMMESS_WARNING);
 	rpmlog(lvl, "%s: %s", fn, buf);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */

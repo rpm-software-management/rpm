@@ -187,7 +187,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
     int ec = -1;	/* assume not found */
     int i = 0;
 
-    rpmlog(RPMMESS_DEBUG, "============== %s\n", fts->fts_accpath);
+    rpmlog(RPMLOG_DEBUG, "============== %s\n", fts->fts_accpath);
 
     /* Read header from file. */
     {   FD_t fd = Fopen(fts->fts_accpath, "r");
@@ -502,7 +502,7 @@ static void initGlobs(rpmts ts, const char ** argv)
 	bhglobs[i].patterns[0] = pattern;
 	bhglobs[i].fnflags = (FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH);
 	if (bhglobs[i].patterns[0] != NULL)
-	    rpmlog(RPMMESS_DEBUG, "\t%d \"%s\"\n",
+	    rpmlog(RPMLOG_DEBUG, "\t%d \"%s\"\n",
 		i, bhglobs[i].patterns[0]);
     }
 }
