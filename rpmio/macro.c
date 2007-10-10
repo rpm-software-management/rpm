@@ -1044,6 +1044,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	case COMPRESSED_ZIP:
 	    sprintf(be, "%%_unzip %s", b);
 	    break;
+        case COMPRESSED_LZMA:
+            sprintf(be, "%%_lzma -dc %s", b);
+            break;
 	}
 	b = be;
     } else if (STREQ("S", f, fn)) {
@@ -1891,7 +1894,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     FD_t fd;
     ssize_t nb;
     int rc = -1;
-    unsigned char magic[4];
+    unsigned char magic[13];
 
     *compressed = COMPRESSED_NOT;
 
@@ -1922,6 +1925,12 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
 	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
 	*compressed = COMPRESSED_ZIP;
+    } else if ((magic[ 9] == 0x00) && (magic[10] == 0x00) &&
+         (magic[11] == 0x00) && (magic[12] == 0x00)) { 
+         /* lzma */
+         /* FIXME: lzma doesn't have a magic, 
+          * consider to additionally check the filename */
+        *compressed = COMPRESSED_LZMA;
     } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
 	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
 	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */

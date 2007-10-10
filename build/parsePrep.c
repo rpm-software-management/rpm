@@ -241,6 +241,9 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 		t = "%{_unzipbin} -qq";
 	    needtar = 0;
 	    break;
+	case COMPRESSED_LZMA:
+	    t = "%{__lzma} -dc";
+	    break;
 	}
 	zipper = rpmGetPath(t, NULL);
 	buf[0] = '\0';
