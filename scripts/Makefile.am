@@ -57,3 +57,6 @@ macros.python: $(srcdir)/macros.python.in
 	  < $(srcdir)/macros.python.in > macros.python
 CLEANFILES += macros.python
 EXTRA_DIST += macros.python.in
+
+rpmconfig_SCRIPTS += pkgconfigdeps.sh
+rpmconfig_SCRIPTS += libtooldeps.sh
