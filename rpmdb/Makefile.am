@@ -17,9 +17,6 @@ EXTRA_PROGRAMS =
 check_PROGRAMS =
 CLEANFILES =
 
-pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = header.h hdrinline.h rpmdb.h 
-
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \

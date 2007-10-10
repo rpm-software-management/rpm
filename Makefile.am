@@ -32,6 +32,39 @@ AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"@RPMCONFIGDIR@/rpmpopt-${VERSION}\""
 
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
+pkginclude_HEADERS =
+
+pkginclude_HEADERS += rpmio/argv.h
+pkginclude_HEADERS += rpmio/rpmio.h
+pkginclude_HEADERS += rpmio/rpmurl.h
+pkginclude_HEADERS += rpmio/rpmmacro.h
+pkginclude_HEADERS += rpmio/rpmlog.h
+pkginclude_HEADERS += rpmio/rpmmessages.h
+pkginclude_HEADERS += rpmio/rpmpgp.h
+pkginclude_HEADERS += rpmio/rpmsq.h
+pkginclude_HEADERS += rpmio/rpmsw.h
+
+pkginclude_HEADERS += rpmdb/header.h
+pkginclude_HEADERS += rpmdb/hdrinline.h
+pkginclude_HEADERS += rpmdb/rpmdb.h 
+
+pkginclude_HEADERS += lib/idtx.h
+pkginclude_HEADERS += lib/rpmcli.h
+pkginclude_HEADERS += lib/rpmlib.h
+pkginclude_HEADERS += lib/rpmal.h
+pkginclude_HEADERS += lib/rpmds.h
+pkginclude_HEADERS += lib/rpmfi.h
+pkginclude_HEADERS += lib/rpmgi.h
+pkginclude_HEADERS += lib/rpmps.h
+pkginclude_HEADERS += lib/rpmte.h
+pkginclude_HEADERS += lib/rpmts.h
+pkginclude_HEADERS += lib/stringbuf.h
+
+pkginclude_HEADERS += build/rpmbuild.h
+pkginclude_HEADERS += build/rpmfc.h
+pkginclude_HEADERS += build/rpmspec.h
+
+
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 

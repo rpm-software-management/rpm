@@ -11,9 +11,6 @@ AM_CPPFLAGS = -I. \
 	@WITH_LIBELF_INCLUDE@ \
 	-I$(top_srcdir)/misc
 
-pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = rpmbuild.h rpmfc.h rpmspec.h
-
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \

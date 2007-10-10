@@ -17,12 +17,6 @@ EXTRA_DIST = getdate.y
 
 check_PROGRAMS =
 
-pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = \
-	idtx.h rpmcli.h rpmlib.h \
-	rpmal.h rpmds.h rpmfi.h rpmgi.h rpmps.h rpmte.h rpmts.h \
-	stringbuf.h
-
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \

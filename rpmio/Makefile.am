@@ -8,12 +8,6 @@ AM_CPPFLAGS = -I. \
 	-I$(top_srcdir)/misc
 AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
 
-pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = \
-	argv.h \
-	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmpgp.h \
-	rpmsq.h rpmsw.h 
-
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
