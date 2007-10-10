@@ -255,6 +255,9 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		t = "%{_unzipbin} -qq";
 	    needtar = 0;
 	    break;
+	case COMPRESSED_LZMA:
+	    t = "%{__lzma} -dc";
+	    break;
 	}
 	zipper = rpmGetPath(t, NULL);
 	buf[0] = '\0';
