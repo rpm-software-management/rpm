@@ -22,7 +22,7 @@ usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \
 	dbconfig.c fprint.c fprint.h \
 	hdrNVR.c header.c header_internal.c header_internal.h \
-	header_common.c \
+	header_common.c header_method.h \
 	legacy.c legacy.h \
 	merge.c \
 	poptDB.c rpmhash.c rpmhash.h rpmdb.c rpmdb_internal.h \
