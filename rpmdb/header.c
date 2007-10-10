@@ -10,9 +10,7 @@
 
 #include "system.h"
 
-#define	__HEADER_PROTOTYPES__
-
-#include <header_internal.h>
+#include "header_internal.h"
 
 #include "debug.h"
 
