@@ -49,11 +49,6 @@ static int checkSpec(rpmts ts, Header h)
     return rc;
 }
 
-/*
- * Kurwa, durni ameryka?ce sobe zawsze my?l?, ?e ca?y ?wiat mówi po
- * angielsku...
- */
-/* XXX this is still a dumb test but at least it's i18n aware */
 /**
  */
 static int isSpecFile(const char * specfile)
