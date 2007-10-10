@@ -45,6 +45,7 @@ pkginclude_HEADERS += rpmio/rpmsq.h
 pkginclude_HEADERS += rpmio/rpmsw.h
 
 pkginclude_HEADERS += rpmdb/header.h
+pkginclude_HEADERS += rpmdb/header_method.h
 pkginclude_HEADERS += rpmdb/hdrinline.h
 pkginclude_HEADERS += rpmdb/rpmdb.h 
 
