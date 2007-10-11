@@ -485,7 +485,7 @@ static void setDefaults(void)
     addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
 
     setVarDefault(-1,			"_topdir",
-		"/usr/src/redhat",	"%{_usr}/src/redhat");
+		"/usr/src/packages",	"%{_usrsrc}/packages");
     setVarDefault(-1,			"_tmppath",
 		LOCALSTATEDIR "/tmp",		"%{_var}/tmp");
     setVarDefault(-1,			"_dbpath",
