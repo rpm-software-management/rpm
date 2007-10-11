@@ -300,7 +300,12 @@ struct rpmts_s {
 #endif	/* _RPMTS_INTERNAL */
 
 /** \ingroup rpmts
- * Check that all dependencies can be resolved.
+ * Perform dependency resolution on the transaction set.
+ *
+ * Any problems found by rpmtsCheck() can be examined by retrieving the 
+ * problem set with rpmtsProblems(), success here only means that
+ * the resolution was successfully attempted for all packages in the set.
+ *
  * @param ts		transaction set
  * @return		0 on success
  */
