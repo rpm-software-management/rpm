@@ -11,7 +11,7 @@
 #in tact and are included with any redistribution of this file or any
 #work based on this file.
 
-# 2004-06-20 Arkadiusz Mi∂kiewicz <arekm@pld-linux.org>
+# 2004-06-20 Arkadiusz Mi≈õkiewicz <arekm@pld-linux.org>
 #   * merge PLD changes, kde, all-name (mkochano,pascalek@PLD)
 # 1999-10-19 Artur Frysiak <wiget@pld-linux.org>
 #   * added support for GNOME help files
@@ -33,7 +33,7 @@ Additional options:
   --with-gnome		find GNOME help files
   --with-kde		find KDE help files
   --all-name		match all package/domain names
-  --without-mo		not find locales files
+  --without-mo		do not find locale files
 EOF
 exit 1
 }
