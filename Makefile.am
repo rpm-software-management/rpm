@@ -197,7 +197,9 @@ rpmpopt-@VERSION@: $(top_srcdir)/rpmpopt.in
 CLEANFILES += rpmpopt-@VERSION@.tmp rpmpopt-@VERSION@
 EXTRA_DIST += rpmpopt.in
 
-pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
+usrsrcdir = $(prefix)/src
+
+pkgsrcdir = $(usrsrcdir)/packages
 pkgsrc_RPMSdir = $(pkgsrcdir)/RPMS
 pkgsrc_RPMS_DATA =
 pkgsrc_SRPMSdir = $(pkgsrcdir)/SRPMS
