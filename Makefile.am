@@ -1,5 +1,7 @@
 # Top level Makefile for rpm
 
+ACLOCAL_AMFLAGS = -I m4
+
 include $(top_srcdir)/rpm.am
 
 CLEANFILES =
@@ -337,5 +339,3 @@ doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	rm -rf $@
 	$(MKDIR_P) $@
 	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
-
-ACLOCAL_AMFLAGS = -I m4
