@@ -14,7 +14,6 @@ AM_CPPFLAGS = -I. \
 	@WITH_LIBELF_INCLUDE@
 
 EXTRA_PROGRAMS =
-check_PROGRAMS =
 CLEANFILES =
 
 usrlibdir = $(libdir)
@@ -173,17 +172,5 @@ rpmdb_verify_LDADD = \
 	$(top_builddir)/db3/util_sig.o \
 	librpmdb.la
 endif
-
-check_PROGRAMS += tdbi
-tdbi_SOURCES = tdbi.c
-tdbi_LDADD = librpmdb.la
-
-check_PROGRAMS += tjfn
-tjfn_SOURCES = tjfn.c
-tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
-
-EXTRA_PROGRAMS += tsql
-tsql_SOURCES = tsql.c
-tsql_LDADD = librpmdb.la
 
 CLEANFILES += $(BUILT_SOURCES)
