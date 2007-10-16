@@ -64,7 +64,7 @@ pkginclude_HEADERS += build/rpmfc.h
 pkginclude_HEADERS += build/rpmspec.h
 
 
-rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
+rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio
@@ -154,7 +154,7 @@ rpmsort_LDADD =		lib/librpm.la
 
 rpmconfig_DATA = rpmrc
 rpmrc: $(top_srcdir)/rpmrc.in
-	@sed \
+	@$(SED) \
 	  -e "s,[@]SYSCONFIGDIR[@],$(sysconfdir)/rpm,g" \
 	  < $(top_srcdir)/rpmrc.in > rpmrc.tmp \
 	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/rpmrc:${subdir}/rpmrc.tmp )
@@ -163,7 +163,7 @@ EXTRA_DIST += rpmrc.in
 
 rpmconfig_DATA += macros
 macros: $(top_srcdir)/macros.in
-	@sed \
+	@$(SED) \
 	  -e "s,[@]varprefix[@],$(localstatedir),g" \
 	  < $(top_srcdir)/macros.in > macros.tmp \
 	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/macros:${subdir}/macros.tmp )
@@ -172,7 +172,7 @@ EXTRA_DIST += macros.in
 
 noinst_DATA = platform
 platform: $(top_srcdir)/platform.in
-	@sed \
+	@$(SED) \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
 	  < $(top_srcdir)/platform.in > platform.tmp \
 	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/platform:${subdir}/platform.tmp )
@@ -181,7 +181,7 @@ EXTRA_DIST += platform.in
 
 pkgconfig_DATA = rpm.pc
 rpm.pc: $(top_srcdir)/rpm.pc.in
-	@sed \
+	@$(SED) \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
 	  < $(top_srcdir)/rpm.pc.in > rpm.pc.tmp \
 	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/rpm.pc:${subdir}/rpm.pc.tmp )
@@ -190,7 +190,7 @@ EXTRA_DIST += rpm.pc.in
 
 rpmconfig_DATA += rpmpopt-$(VERSION)
 rpmpopt-@VERSION@: $(top_srcdir)/rpmpopt.in
-	@sed \
+	@$(SED) \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
 	  < $(top_srcdir)/rpmpopt.in > rpmpopt-@VERSION@.tmp \
 	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/rpmpopt-@VERSION@:${subdir}/rpmpopt-@VERSION@.tmp )
