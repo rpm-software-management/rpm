@@ -4,7 +4,7 @@ AC_PREREQ(2.12)
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE(popt, 1.10.2.2)
 
-ALL_LINGUAS="cs da de es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN zh_TW"
+ALL_LINGUAS="cs da de es eu_ES fi fr gl hu id is it ja ko nb pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN zh_TW"
 
 AC_ISC_POSIX
 
