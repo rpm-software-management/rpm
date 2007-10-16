@@ -79,7 +79,6 @@
 
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
-#include <stdio.h>
 #include "rpmio.h"
 
 #ifdef __cplusplus
