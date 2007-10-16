@@ -232,11 +232,6 @@ const char * rpmProblemString(const rpmProblem prob)
 	    _("installing package %s needs %ld inodes on the %s filesystem"),
 		pkgNEVR, (long)prob->ulong1, str1);
 	break;
-    case RPMPROB_BADPRETRANS:
-	rc = snprintf(buf, nb,
-		_("package %s pre-transaction syscall(s): %s failed: %s"),
-		pkgNEVR, str1, strerror(prob->ulong1));
-	break;
     case RPMPROB_REQUIRES:
 	rc = snprintf(buf, nb, _("%s is needed by %s%s"),
 		altNEVR+2,
