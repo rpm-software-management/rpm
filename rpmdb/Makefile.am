@@ -60,11 +60,6 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h
 BUILT_SOURCES = tagtbl.c
 
 if WITH_INTERNAL_DB
-nodist_librpmdb_la_SOURCES = db.h
-db.h:	$(top_builddir)/db3/db.h
-	$(LN_S) $(top_builddir)/db3/db.h $@
-BUILT_SOURCES += db.h
-
 # XXX watchout, $(top_builddir)/db3/libdb.la created by this Makefile may surprise
 libdb_la = $(top_builddir)/db3/libdb.la
 

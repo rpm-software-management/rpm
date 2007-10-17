@@ -353,3 +353,9 @@ EXTRA_DIST += doc/librpm/html
 
 maintainer-clean-local:
 	rm -rf doc/librpm/html
+
+if WITH_INTERNAL_DB
+db.h:	$(top_builddir)/db3/db.h
+	$(LN_S) $(top_builddir)/db3/db.h $@
+BUILT_SOURCES = db.h
+endif
