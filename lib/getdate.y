@@ -13,11 +13,7 @@
 /* SUPPRESS 288 on yyerrlab *//* Label unused */
 
 #ifdef HAVE_CONFIG_H
-#if defined (emacs) || defined (CONFIG_BROKETS)
-#include <config.h>
-#else
 #include "config.h"
-#endif
 #endif
 
 /* Since the code of getdate.y is not included in the Emacs executable
@@ -26,9 +22,6 @@
    wouldn't do any harm to #undef it here; this will only cause
    problems if we try to write to a static variable, which I don't
    think this code needs to do.  */
-#ifdef emacs
-#undef static
-#endif
 
 #include <stdio.h>
 #include <ctype.h>
