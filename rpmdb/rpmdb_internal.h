@@ -5,7 +5,7 @@
 
 #include <rpmsw.h>
 #include <rpmlib.h>
-#include "db.h"
+#include <db.h>
 
 /**
  */
