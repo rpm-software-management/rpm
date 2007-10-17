@@ -1,6 +1,7 @@
 # Makefile for misc library.
 
-AM_CPPFLAGS = -I. -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
+AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 EXTRA_DIST = \
 	alloca.c	basename.c	err.c		err.h \

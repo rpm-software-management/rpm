@@ -3,7 +3,8 @@
 EXTRA_DIST = rpmdebug-py.c rpm/__init__.py
 
 if PYTHON
-AM_CPPFLAGS = -I.
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
+AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += -I$(top_srcdir)/build
 AM_CPPFLAGS += -I$(top_srcdir)/lib
 AM_CPPFLAGS += -I$(top_srcdir)/rpmdb
@@ -12,7 +13,6 @@ AM_CPPFLAGS += @WITH_LIBELF_INCLUDE@
 AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
-AM_CPPFLAGS += -I$(top_srcdir)
 AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
 
 pkgpyexec_LTLIBRARIES = _rpmmodule.la
