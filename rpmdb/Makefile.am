@@ -177,43 +177,13 @@ endif
 CLEANFILES += $(BUILT_SOURCES)
 
 check_PROGRAMS += tdbi
-tdbi_CPPFLAGS = -I$(top_srcdir)/rpmdb \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/rpmio \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@WITH_SQLITE3_INCLUDE@ \
-	@WITH_LIBELF_INCLUDE@
-tdbi_SOURCES = $(top_builddir)/rpmdb/tdbi.c
-tdbi_LDADD = $(top_builddir)/rpmdb/librpmdb.la
+tdbi_SOURCES = tdbi.c
+tdbi_LDADD = librpmdb.la
 
 check_PROGRAMS += tjfn
-tjfn_CPPFLAGS = -I$(top_srcdir)/rpmdb \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/rpmio \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@WITH_SQLITE3_INCLUDE@ \
-	@WITH_LIBELF_INCLUDE@
-tjfn_SOURCES = $(top_builddir)/rpmdb/tjfn.c
-tjfn_LDADD = $(top_builddir)/rpmdb/librpmdb.la @WITH_BEECRYPT_LIB@
+tjfn_SOURCES = tjfn.c
+tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
 
 EXTRA_PROGRAMS += tsql
-tsql_SOURCES = $(top_builddir)/rpmdb/tsql.c
-tsql_CPPFLAGS = -I$(top_srcdir)/rpmdb \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/rpmio \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@WITH_SQLITE3_INCLUDE@ \
-	@WITH_LIBELF_INCLUDE@
-tsql_LDADD = $(top_builddir)/rpmdb/librpmdb.la
+tsql_SOURCES = tsql.c
+tsql_LDADD = librpmdb.la
