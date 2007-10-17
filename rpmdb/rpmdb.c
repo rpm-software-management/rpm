@@ -188,7 +188,7 @@ static void dbiTagsInit(void)
 #define	DB1vec		NULL
 #define	DB2vec		NULL
 
-#ifdef HAVE_DB3_DB_H
+#ifdef HAVE_DB_H
 extern struct _dbiVec db3vec;
 #define	DB3vec		&db3vec
 #else
@@ -310,7 +310,7 @@ exit:
 	    db->db_bits = PBM_ALLOC(db->db_nbits);
 	}
     }
-#ifdef HAVE_DB3_DB_H
+#ifdef HAVE_DB_H
       else
 	dbi = db3Free(dbi);
 #endif

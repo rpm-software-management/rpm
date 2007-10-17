@@ -462,7 +462,7 @@ esac],
 
 case "$with_external_db" in
 yes )
-  AC_CHECK_HEADER([db.h],[
+  AC_CHECK_HEADERS([db.h],[
     AC_CHECK_TYPE([db_threadid_t],[],
       [AC_MSG_WARN([missing type db_threadid_t])],
       [#include <db.h>])
@@ -486,7 +486,8 @@ yes )
   ])
   ;;
 * ) # Fall back to internal db
-  AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
+  # XXX for now we always have in-tree BDB available...
+  AC_DEFINE(HAVE_DB_H, 1, [Define if you have the <db3/db.h> header file])
   ;;
 esac
 
