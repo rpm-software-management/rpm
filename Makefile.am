@@ -74,6 +74,8 @@ bin_PROGRAMS =		rpm2cpio
 rpmlibexec_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
+DISTCLEANFILES = find-provides
+DISTCLEANFILES += find-requires
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
@@ -359,3 +361,4 @@ db.h:	$(top_builddir)/db3/db.h
 	$(LN_S) $(top_builddir)/db3/db.h $@
 BUILT_SOURCES = db.h
 endif
+DISTCLEANFILES += db.h
