@@ -69,3 +69,7 @@ trpmio_LDADD = librpmio.la @WITH_POPT_LIB@
 check_PROGRAMS += tsw
 tsw_SOURCES = tsw.c
 tsw_LDADD = librpmio.la
+
+check_PROGRAMS += tput
+tput_SOURCES = tput.c
+tput_LDADD = librpmio.la @WITH_POPT_LIB@
