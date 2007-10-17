@@ -2,16 +2,16 @@
 
 include $(top_srcdir)/rpm.am
 
-AM_CPPFLAGS = -I. \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/rpmio \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
-	-I$(top_srcdir)/misc \
-	@WITH_SQLITE3_INCLUDE@ \
-	@WITH_LIBELF_INCLUDE@
+AM_CPPFLAGS = -I.
+AM_CPPFLAGS += -I$(top_srcdir)
+AM_CPPFLAGS += -I$(top_srcdir)/build
+AM_CPPFLAGS += -I$(top_srcdir)/lib
+AM_CPPFLAGS += -I$(top_srcdir)/rpmio
+AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
+AM_CPPFLAGS += @WITH_POPT_INCLUDE@
+AM_CPPFLAGS += -I$(top_srcdir)/misc
+AM_CPPFLAGS += @WITH_SQLITE3_INCLUDE@
+AM_CPPFLAGS += @WITH_LIBELF_INCLUDE@
 
 check_PROGRAMS =
 EXTRA_PROGRAMS =

@@ -1,11 +1,11 @@
 # Makefile for rpm library.
 
-AM_CPPFLAGS = -I. \
-	-I$(top_srcdir) \
-	@WITH_BEECRYPT_INCLUDE@ \
-	@WITH_LUA_INCLUDE@ \
-	@WITH_POPT_INCLUDE@ \
-	-I$(top_srcdir)/misc
+AM_CPPFLAGS = -I.
+AM_CPPFLAGS += -I$(top_srcdir)
+AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
+AM_CPPFLAGS += @WITH_LUA_INCLUDE@
+AM_CPPFLAGS += @WITH_POPT_INCLUDE@
+AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
 
 usrlibdir = $(libdir)
