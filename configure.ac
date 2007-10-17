@@ -4,7 +4,7 @@ AC_INIT(rpm, 4.4.90, rpm-maint@lists.rpm.org)
 AC_CONFIG_SRCDIR([rpmqv.c])
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE([1.10 foreign tar-ustar dist-bzip2 subdir-objects])
+AM_INIT_AUTOMAKE([1.10 foreign tar-ustar dist-bzip2 subdir-objects nostdinc])
 
 AC_CONFIG_TESTDIR(tests)
 
