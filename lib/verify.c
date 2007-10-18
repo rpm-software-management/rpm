@@ -347,16 +347,15 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
  * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header
- * @return		0 no problems, 1 problems found
+ * @return		number of problems found (0 for no problems)
  */
 static int verifyDependencies(QVA_t qva, rpmts ts,
 		Header h)
 {
     rpmps ps;
-    int numProblems;
+    rpmpsi psi;
     int rc = 0;		/* assume no problems */
     int xx;
-    int i;
 
     rpmtsEmpty(ts);
     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
@@ -364,41 +363,18 @@ static int verifyDependencies(QVA_t qva, rpmts ts,
     xx = rpmtsCheck(ts);
     ps = rpmtsProblems(ts);
 
-    numProblems = rpmpsNumProblems(ps);
-    if (ps != NULL && numProblems > 0) {
-	const char * pkgNEVR, * altNEVR;
-	rpmProblem p;
-	char * t, * te;
-	int nb = 512;
-
-	for (i = 0; i < numProblems; i++) {
-	    p = ps->probs + i;
-	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
-	    nb += strlen(altNEVR+2) + sizeof(", ") - 1;
+    psi = rpmpsInitIterator(ps);
+    if (rpmpsNumProblems(ps) > 0) {
+	char *nevra = hGetNEVRA(h, NULL);
+	rpmlog(RPMLOG_NOTICE, "Unsatisfied dependencies for %s:\n", nevra);
+	free(nevra);
+	while (rpmpsNextIterator(psi) >= 0) {
+	    rpmProblem p = rpmpsProblem(psi);
+	    rpmlog(RPMLOG_NOTICE, "\t%s\n", rpmProblemString(p));
+	    rc++;	
 	}
-	te = t = alloca(nb);
-	*te = '\0';
-	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
-	sprintf(te, _("Unsatisfied dependencies for %s: "), pkgNEVR);
-	te += strlen(te);
-	for (i = 0; i < numProblems; i++) {
-	    p = ps->probs + i;
-	    altNEVR = (p->altNEVR ? p->altNEVR : "? ?altNEVR?");
-	    if (i) te = stpcpy(te, ", ");
-	    /* XXX FIXME: should probably supply the "[R|C] " type prefix */
-	    te = stpcpy(te, altNEVR+2);
-	}
-
-	if (te > t) {
-	    *te++ = '\n';
-	    *te = '\0';
-	    rpmlog(RPMLOG_NOTICE, "%s", t);
-	    te = t;
-	    *t = '\0';
-	}
-	rc = 1;
     }
-
+    psi = rpmpsFreeIterator(psi);
     ps = rpmpsFree(ps);
 
     rpmtsEmpty(ts);
