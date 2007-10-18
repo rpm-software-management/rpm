@@ -793,7 +793,7 @@ AC_SUBST(WITH_PYTHON_LIB)
 
 AM_CONDITIONAL(PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = 1])
 
-AC_PATH_PROG(DOXYGEN, doxygen, no, $PATH)
+AC_PATH_PROG(DOXYGEN, doxygen, no)
 dnl
 dnl Auto-detect whether doxygen generated API docs should be included.
 dnl
