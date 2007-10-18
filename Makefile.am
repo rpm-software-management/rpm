@@ -340,16 +340,17 @@ unsetgid:
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	rm -rf $@
 	$(MKDIR_P) $@
-	- [ X"@__DOXYGEN@" != Xno ] && @__DOXYGEN@
+	- [ X"@DOXYGEN@" != Xno ] && @DOXYGEN@
 
 doc/librpm.doxy: doc/librpm.doxy.in $(pkginclude_HEADERS) Makefile.am
-	  ( cd $(top_builddir) && ./config.status --file=${subdir}/doc/librpm.doxy.tmp:${subdir}/doc/librpm.doxy.in )
-	  $(SED) -e 's,[@]pkginclude_HEADERS[@],@top_srcdir@$(pkginclude_HEADERS),' \
+	  (cd $(top_builddir) && ./config.status --file=${subdir}/doc/librpm.doxy.tmp:${subdir}/doc/librpm.doxy.in )
+	  files=`echo " $(pkginclude_HEADERS)" | $(SED) -e 's, , @top_srcdir@/,g'`; \
+	    $(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
 	    < doc/librpm.doxy.tmp > doc/librpm.doxy
 EXTRA_DIST += doc/librpm.doxy.in
 
 doc/librpm/html/index.html: doc/librpm.doxy
-	@__DOXYGEN@ doc/librpm.doxy
+	@DOXYGEN@ doc/librpm.doxy
 noinst_DATA += doc/librpm/html/index.html
 EXTRA_DIST += doc/librpm/html
 
