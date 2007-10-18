@@ -299,10 +299,6 @@ uninstall-local:
 	rm -f $(DESTDIR)$(bindir)/rpmdb
 	rm -f $(DESTDIR)$(bindir)/rpmi
 
-distclean-local:
-	@rm -rf Doxytags apidocs 
-	@rm -f stamp-h.in db3/*.orig db3/db3lobjs
-
 MAINTAINERCLEANFILES = ChangeLog
 
 .PHONY:	setperms
@@ -336,26 +332,33 @@ unsetgid:
 	    $(__CHMOD) g-s $(DESTDIR)$(rpmlibexecdir)/$$f ;\
 	done
 
-.PHONY:	doxygen
-doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
-	rm -rf $@
-	$(MKDIR_P) $@
-	- [ X"@DOXYGEN@" != Xno ] && @DOXYGEN@
+# Build apidocs only on request
+if APIDOCS
+if DOXYGEN
+doc/apidocs.doxy:	Doxyfile.in
+	(cd doc && ../config.status --file=apidocs.doxy:../Doxyfile.in)
 
+apidocs/html/index.html: doc/apidocs.doxy rpmpopt-@VERSION@
+	@DOXYGEN@ doc/apidocs.doxy
+noinst_DATA += apidocs/html/index.html
+endif
+endif
+
+# Always build librpm docs
+if DOXYGEN
 doc/librpm.doxy: doc/librpm.doxy.in $(pkginclude_HEADERS) Makefile.am
-	  (cd $(top_builddir) && ./config.status --file=${subdir}/doc/librpm.doxy.tmp:${subdir}/doc/librpm.doxy.in )
-	  files=`echo " $(pkginclude_HEADERS)" | $(SED) -e 's, , @top_srcdir@/,g'`; \
-	    $(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
-	    < doc/librpm.doxy.tmp > doc/librpm.doxy
+	  files=`echo " $(pkginclude_HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
+	    $(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," $(top_srcdir)/doc/librpm.doxy.in > doc/librpm.doxy.tmp
+	  (cd doc && ../config.status --file=librpm.doxy:librpm.doxy.tmp)
+	  rm -f doc/librpm.doxy.tmp
 EXTRA_DIST += doc/librpm.doxy.in
 
 doc/librpm/html/index.html: doc/librpm.doxy
 	@DOXYGEN@ doc/librpm.doxy
 noinst_DATA += doc/librpm/html/index.html
-EXTRA_DIST += doc/librpm/html
+endif
 
-maintainer-clean-local:
-	rm -rf doc/librpm
+EXTRA_DIST += doc/librpm/html
 
 if WITH_INTERNAL_DB
 db.h:	$(top_builddir)/db3/db.h
@@ -363,3 +366,14 @@ db.h:	$(top_builddir)/db3/db.h
 BUILT_SOURCES = db.h
 endif
 DISTCLEANFILES += db.h
+
+clean-local:
+	rm -rf apidocs
+
+distclean-local:
+	rm -rf Doxytags
+	rm -f stamp-h.in db3/*.orig db3/db3lobjs
+
+maintainer-clean-local:
+	rm -rf doc/librpm
+
