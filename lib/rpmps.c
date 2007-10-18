@@ -320,6 +320,7 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
 void rpmpsPrint(FILE *fp, rpmps ps)
 {
     const char * msg;
+    rpmpsi psi = NULL;
     int i;
 
     if (ps == NULL || ps->probs == NULL || ps->numProblems <= 0)
@@ -328,20 +329,21 @@ void rpmpsPrint(FILE *fp, rpmps ps)
     if (fp == NULL)
 	fp = stderr;
 
-    for (i = 0; i < ps->numProblems; i++) {
-	rpmProblem p;
+    psi = rpmpsInitIterator(ps);
+    while ((i = rpmpsNextIterator(psi)) >= 0) {
 	int j;
-
-	p = ps->probs + i;
+	rpmProblem p = rpmpsProblem(psi);
 
 	if (p->ignoreProblem)
 	    continue;
 
+	rpmpsi psif = rpmpsInitIterator(ps);
 	/* Filter already displayed problems. */
-	for (j = 0; j < i; j++) {
-	    if (!sameProblem(p, ps->probs + j))
+    	while ((j = rpmpsNextIterator(psif)) < i) {
+	    if (!sameProblem(p, rpmpsProblem(psif)))
 		break;
 	}
+	rpmpsFreeIterator(psif);
 	if (j < i)
 	    continue;
 
@@ -350,4 +352,5 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 	msg = _free(msg);
 
     }
+    psi = rpmpsFreeIterator(psi);
 }
