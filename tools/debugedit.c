@@ -560,11 +560,16 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	}
       else
 	{
-	  memcpy (s, comp_dir, comp_dir_len);
-	  s[comp_dir_len] = '/';
-	  memcpy (s + comp_dir_len + 1, dirt[value], dir_len);
-	  s[comp_dir_len + 1 + dir_len] = '/';
-	  memcpy (s + comp_dir_len + 1 + dir_len + 1, file, file_len + 1);
+	  char *p = s;
+	  if (comp_dir_len != 0)
+	    {
+	      memcpy (s, comp_dir, comp_dir_len);
+	      s[comp_dir_len] = '/';
+	      p += comp_dir_len + 1;
+	    }
+	  memcpy (p, dirt[value], dir_len);
+	  p[dir_len] = '/';
+	  memcpy (p + dir_len + 1, file, file_len + 1);
 	}
       canonicalize_path (s, s);
       if (list_file_fd != -1)
