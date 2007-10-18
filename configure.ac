@@ -793,7 +793,7 @@ AC_SUBST(WITH_PYTHON_LIB)
 
 AM_CONDITIONAL(PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = 1])
 
-AC_PATH_PROG(__DOXYGEN, doxygen, no, $PATH)
+AC_PATH_PROG(DOXYGEN, doxygen, no)
 dnl
 dnl Auto-detect whether doxygen generated API docs should be included.
 dnl
@@ -801,10 +801,10 @@ AC_ARG_WITH(apidocs, [  --with-apidocs          build rpm API docs ],,[with_apid
 
 case "$with_apidocs" in
 auto)
-  AS_IF([test "$__DOXYGEN" = no],[with_apidocs=no],[with_apidocs=yes])
+  AS_IF([test "$DOXYGEN" = no],[with_apidocs=no],[with_apidocs=yes])
   ;;
 yes)
-  AS_IF([test "$__DOXYGEN" = no],
+  AS_IF([test "$DOXYGEN" = no],
     [AC_MSG_ERROR([rpm API docs needs doxygen in PATH])])
   ;;
 esac
