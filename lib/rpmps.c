@@ -40,6 +40,50 @@ int rpmpsNumProblems(rpmps ps)
     return numProblems;
 }
 
+rpmpsi rpmpsInitIterator(rpmps ps)
+{
+    rpmpsi psi = NULL;
+    if (ps != NULL) {
+	psi = xcalloc(1, sizeof(*psi));
+	psi->ps = rpmpsLink(ps, "iter ref");
+	psi->ix = -1;
+    }
+    return psi;
+}
+
+rpmpsi rpmpsFreeIterator(rpmpsi psi)
+{
+    if (psi != NULL) {
+	rpmpsUnlink(psi->ps, "iter unref");
+	free(psi);
+	psi = NULL;
+    }
+    return psi;
+}
+
+int rpmpsNextIterator(rpmpsi psi)
+{
+    int i = -1;
+
+    if (psi != NULL && ++psi->ix >= 0) {
+	if (psi->ix < rpmpsNumProblems(psi->ps)) {
+	    i = psi->ix;
+	} else {
+	    psi->ix = -1;
+	}	     
+    }
+    return i;
+}
+
+rpmProblem rpmpsProblem(rpmpsi psi)
+{
+    rpmProblem p = NULL;
+    if (psi != NULL && psi->ix >= 0 && psi->ix < rpmpsNumProblems(psi->ps)) {
+	p = psi->ps->probs + psi->ix;
+    } 
+    return p;
+}
+
 rpmps rpmpsCreate(void)
 {
     rpmps ps = xcalloc(1, sizeof(*ps));
