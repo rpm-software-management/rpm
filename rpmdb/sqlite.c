@@ -761,6 +761,7 @@ leaveChroot(dbi);
  * Return handle for an index database.
  * @param rpmdb         rpm database
  * @param rpmtag        rpm tag
+ * @param dbip
  * @return              0 on success
  */
 static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
