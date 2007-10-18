@@ -846,15 +846,6 @@ AS_IF([test "$with_lua" = yes],[
 AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_INCLUDE)
 
-AS_IF([test "$with_apidocs" = yes],[
-  WITH_APIDOCS_TARGET=apidocs
-  WITH_APIDOCS=1
-],[
-  WITH_APIDOCS=0
-])
-AC_SUBST(WITH_APIDOCS_TARGET)
-AC_SUBST(WITH_APIDOCS)
-
 with_dmalloc=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
 if test "$with_dmalloc" = yes ; then
@@ -1088,10 +1079,12 @@ AC_SUBST(OBJDUMP)
 AC_CONFIG_SUBDIRS(db3)
 
 AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_external_db" = no])
+AM_CONDITIONAL([DOXYGEN],[test "$DOXYGEN" != no])
+AM_CONDITIONAL([APIDOCS],[test "$with_apidocs" == yes])
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
-AC_CONFIG_FILES([ Doxyfile Makefile
+AC_CONFIG_FILES([Makefile
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile 
 	misc/Makefile 
