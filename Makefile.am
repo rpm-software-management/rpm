@@ -355,7 +355,7 @@ noinst_DATA += doc/librpm/html/index.html
 EXTRA_DIST += doc/librpm/html
 
 maintainer-clean-local:
-	rm -rf doc/librpm/html
+	rm -rf doc/librpm
 
 if WITH_INTERNAL_DB
 db.h:	$(top_builddir)/db3/db.h
