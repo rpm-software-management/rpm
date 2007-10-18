@@ -821,6 +821,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 
 	  switch (form)
 	    {
+	    case DW_FORM_ref_addr: /* ptr_size in DWARF 2, offset in DWARF 3 */
 	    case DW_FORM_addr:
 	      ptr += ptr_size;
 	      break;
@@ -846,7 +847,6 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    case DW_FORM_udata:
 	      read_uleb128 (ptr);
 	      break;
-	    case DW_FORM_ref_addr:
 	    case DW_FORM_strp:
 	      ptr += 4;
 	      break;
