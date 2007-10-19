@@ -44,32 +44,6 @@ typedef enum rpmProblemType_e {
  } rpmProblemType;
 
 /**
- */
-struct rpmProblem_s {
-    char * pkgNEVR;
-    char * altNEVR;
-    fnpyKey key;
-    rpmProblemType type;
-    int ignoreProblem;
-    char * str1;
-    unsigned long ulong1;
-};
-
-/**
- */
-struct rpmps_s {
-    int numProblems;		/*!< Current probs array size. */
-    int numProblemsAlloced;	/*!< Allocated probs array size. */
-    rpmProblem probs;		/*!< Array of specific problems. */
-    int nrefs;			/*!< Reference count. */
-};
-
-struct rpmpsi_s {
-    size_t ix;
-    rpmps ps;
-};
-
-/**
  * Return package NEVR
  * @param prob		rpm problem
  * @return		package NEVR
