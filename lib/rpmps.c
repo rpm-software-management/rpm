@@ -216,6 +216,36 @@ static inline int snprintf(char * buf, int nb, const char * fmt, ...)
 }
 #endif
 
+const char * rpmProblemGetPkgNEVR(const rpmProblem p)
+{
+    return (p->pkgNEVR);
+}
+
+const char * rpmProblemGetAltNEVR(const rpmProblem p)
+{
+    return (p->altNEVR);
+}
+
+fnpyKey rpmProblemGetKey(const rpmProblem p)
+{
+    return (p->key);
+}
+
+rpmProblemType rpmProblemGetType(const rpmProblem p)
+{
+    return (p->type);
+}
+
+const char * rpmProblemGetStr(const rpmProblem p)
+{
+    return (p->str1);
+}
+
+unsigned long rpmProblemGetLong(const rpmProblem p)
+{
+    return (p->ulong1);
+}
+
 const char * rpmProblemString(const rpmProblem prob)
 {
     const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "?pkgNEVR?");

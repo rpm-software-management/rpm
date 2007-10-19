@@ -70,6 +70,49 @@ struct rpmpsi_s {
 };
 
 /**
+ * Return package NEVR
+ * @param prob		rpm problem
+ * @return		package NEVR
+ */
+const char * rpmProblemGetPkgNEVR(const rpmProblem prob);
+/**
+ * Return related (e.g. through a dependency) package NEVR
+ * @param prob		rpm problem
+ * @return		related (e.g. through a dependency) package NEVR
+ */
+const char * rpmProblemGetAltNEVR(const rpmProblem prob);
+
+/**
+ * Return type of problem (dependency, diskpace etc)
+ * @param prob		rpm problem
+ * @return		type of problem
+ */
+
+rpmProblemType rpmProblemGetType(const rpmProblem prob);
+
+/**
+ * Return filename or python object address of a problem
+ * @param prob		rpm problem
+ * @return		filename or python object address
+ */
+fnpyKey rpmProblemGetKey(const rpmProblem prob);
+
+/**
+ * Return a generic data string from a problem
+ * @param prob		rpm problem
+ * @return		a generic data string
+ * @todo		needs a better name
+ */
+const char * rpmProblemGetStr(const rpmProblem prob);
+/**
+ * Return generic pointer/long attribute from a problem
+ * @param prob		rpm problem
+ * @return		a generic pointer/long attribute
+ * @todo		needs a better name
+ */
+unsigned long rpmProblemGetLong(const rpmProblem prob);
+
+/**
  * Return formatted string representation of a problem.
  * @param prob		rpm problem
  * @return		formatted string (malloc'd)
