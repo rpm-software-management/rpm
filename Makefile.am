@@ -335,7 +335,7 @@ unsetgid:
 # Build apidocs only on request
 if APIDOCS
 if DOXYGEN
-doc/apidocs.doxy:	Doxyfile.in
+doc/apidocs.doxy: Doxyfile.in
 	(cd doc && ../config.status --file=apidocs.doxy:../Doxyfile.in)
 
 apidocs/html/index.html: doc/apidocs.doxy rpmpopt-@VERSION@
@@ -343,6 +343,7 @@ apidocs/html/index.html: doc/apidocs.doxy rpmpopt-@VERSION@
 noinst_DATA += apidocs/html/index.html
 endif
 endif
+EXTRA_DIST += Doxyfile.in
 
 # Always build librpm docs
 if DOXYGEN
@@ -351,13 +352,12 @@ doc/librpm.doxy: doc/librpm.doxy.in $(pkginclude_HEADERS) Makefile.am
 	    $(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," $(top_srcdir)/doc/librpm.doxy.in > doc/librpm.doxy.tmp
 	  (cd doc && ../config.status --file=librpm.doxy:librpm.doxy.tmp)
 	  rm -f doc/librpm.doxy.tmp
-EXTRA_DIST += doc/librpm.doxy.in
 
 doc/librpm/html/index.html: doc/librpm.doxy
 	@DOXYGEN@ doc/librpm.doxy
 noinst_DATA += doc/librpm/html/index.html
 endif
-
+EXTRA_DIST += doc/librpm.doxy.in
 EXTRA_DIST += doc/librpm/html
 
 if WITH_INTERNAL_DB
