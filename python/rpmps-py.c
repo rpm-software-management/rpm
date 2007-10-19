@@ -25,6 +25,26 @@ rpmps_Debug(rpmpsObject * s, PyObject * args, PyObject * kwds)
     return Py_None;
 }
 
+static int
+rpmps_append(rpmpsObject * s, PyObject * value)
+{
+    char *pkgNEVR, *altNEVR, *str1;
+    unsigned long ulong1;
+    int ignoreProblem;
+    rpmProblemType type;
+    fnpyKey key;
+
+    if (!PyArg_ParseTuple(value, "ssOiisN:rpmps value tuple",
+			&pkgNEVR, &altNEVR, &key,
+			&type, &ignoreProblem, &str1,
+			&ulong1))
+    {
+    	return -1;
+    }
+    rpmpsAppend(s->ps, type, pkgNEVR, key, str1, NULL, altNEVR, ulong1);
+    return 0;
+}
+
 static PyObject *
 rpmps_iter(rpmpsObject * s)
 {
@@ -61,6 +81,7 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
 static struct PyMethodDef rpmps_methods[] = {
  {"Debug",	(PyCFunction)rpmps_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
+  {"append",	(PyCFunction)rpmps_append,	METH_VARARGS, NULL},
  {NULL,		NULL}		/* sentinel */
 };
 
@@ -143,77 +164,9 @@ fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(res
     return result;
 }
 
-static int
-rpmps_ass_sub(rpmpsObject * s, PyObject * key, PyObject * value)
-{
-    rpmps ps;
-    int ix;
-
-    if (!PyArg_Parse(key, "i:ass_sub", &ix)) {
-	PyErr_SetString(PyExc_TypeError, "rpmps key type must be integer");
-	return -1;
-    }
-
-    /* XXX get rid of negative indices */
-    if (ix < 0) ix = -ix;
-
-    ps = s->ps;
-
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, lbl(s), key, lbl(key), value, lbl(value), ps, ix, ps->numProblems, ps->numProblemsAlloced);
-
-    if (value == NULL) {
-	if (ix < ps->numProblems) {
-	    rpmProblem op = ps->probs + ix;
-	    
-	    op->pkgNEVR = _free(op->pkgNEVR);
-	    op->altNEVR = _free(op->altNEVR);
-	    op->str1 = _free(op->str1);
-
-	    if ((ix+1) == ps->numProblems)
-		memset(op, 0, sizeof(*op));
-	    else
-		memmove(op, op+1, (ps->numProblems - ix) * sizeof(*op));
-	    if (ps->numProblems > 0)
-		ps->numProblems--;
-	}
-    } else {
-	rpmProblem p = memset(alloca(sizeof(*p)), 0, sizeof(*p));
-
-	if (!PyArg_ParseTuple(value, "ssOiisN:rpmps value tuple",
-				&p->pkgNEVR, &p->altNEVR, &p->key,
-				&p->type, &p->ignoreProblem, &p->str1,
-				&p->ulong1))
-	{
-	    return -1;
-	}
-
-	if (ix >= ps->numProblems) {
-	    /* XXX force append for indices out of range. */
-	    rpmpsAppend(s->ps, p->type, p->pkgNEVR, p->key,
-		p->str1, NULL, p->altNEVR, p->ulong1);
-	} else {
-	    rpmProblem op = ps->probs + ix;
-
-	    op->pkgNEVR = _free(op->pkgNEVR);
-	    op->altNEVR = _free(op->altNEVR);
-	    op->str1 = _free(op->str1);
-
-	    p->pkgNEVR = (p->pkgNEVR && *p->pkgNEVR ? xstrdup(p->pkgNEVR) : NULL);
-	    p->altNEVR = (p->altNEVR && *p->altNEVR ? xstrdup(p->altNEVR) : NULL);
-	    p->str1 = (p->str1 && *p->str1 ? xstrdup(p->str1) : NULL);
-
-	    *op = *p;	/* structure assignment */
-	}
-    }
-
-    return 0;
-}
-
 static PyMappingMethods rpmps_as_mapping = {
         (lenfunc) rpmps_length,		/* mp_length */
         (binaryfunc) rpmps_subscript,	/* mp_subscript */
-        (objobjargproc) rpmps_ass_sub,	/* mp_ass_subscript */
 };
 
 /** \ingroup py_c
