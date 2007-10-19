@@ -30,7 +30,7 @@ rpmps_iter(rpmpsObject * s)
 {
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_iter(%p)\n", s);
-    s->ix = -1;
+    s->psi = rpmpsInitIterator(s->ps);
     Py_INCREF(s);
     return (PyObject *)s;
 }
@@ -39,23 +39,20 @@ static PyObject *
 rpmps_iternext(rpmpsObject * s)
 {
     PyObject * result = NULL;
-    rpmps ps = s->ps;
 
 if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->ix, s->active);
+fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
 
     /* Reset loop indices on 1st entry. */
-    if (!s->active) {
-	s->ix = -1;
-	s->active = 1;
+    if (s->psi == NULL) {
+    	s->psi = rpmpsInitIterator(s->ps);
     }
 
     /* If more to do, return a problem set string. */
-    s->ix++;
-    if (s->ix < ps->numProblems) {
-	result = Py_BuildValue("s", rpmProblemString(ps->probs+s->ix));
+    if (rpmpsNextIterator(s->psi) >= 0) {
+	result = Py_BuildValue("s", rpmProblemString(rpmpsProblem(s->psi)));
     } else {
-	s->active = 0;
+	s->psi = rpmpsFreeIterator(s->psi);
     }
 
     return result;
@@ -118,8 +115,8 @@ static PyObject *
 rpmps_subscript(rpmpsObject * s, PyObject * key)
 {
     PyObject * result = NULL;
-    rpmps ps;
-    int ix;
+    rpmpsi psi;
+    int ix, i;
 
     if (!PyInt_Check(key)) {
 if (_rpmps_debug < 0)
@@ -130,12 +127,18 @@ fprintf(stderr, "*** rpmps_subscript(%p[%s],%p[%s])\n", s, lbl(s), key, lbl(key)
 
     ix = (int) PyInt_AsLong(key);
     /* XXX range check */
-    ps = s->ps;
-    if (ix < ps->numProblems) {
-	result = Py_BuildValue("s", rpmProblemString(ps->probs + ix));
+
+    psi = rpmpsInitIterator(s->ps);
+    while ((i = rpmpsNextIterator(psi)) >= 0) {
+	if (i == ix) {
+	    result = Py_BuildValue("s", rpmProblemString(rpmpsProblem(psi)));
+	    break;
+	}
+    }
+    psi = rpmpsFreeIterator(psi);
+
 if (_rpmps_debug < 0)
 fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(result));
-    }
 
     return result;
 }
@@ -226,8 +229,7 @@ fprintf(stderr, "*** rpmps_init(%p,%p,%p)\n", s, args, kwds);
 	return -1;
 
     s->ps = rpmpsCreate();
-    s->active = 0;
-    s->ix = -1;
+    s->psi = NULL;
 
     return 0;
 }
@@ -339,7 +341,6 @@ rpmps_Wrap(rpmps ps)
     if (s == NULL)
 	return NULL;
     s->ps = ps;
-    s->active = 0;
-    s->ix = -1;
+    s->psi = NULL;
     return s;
 }
