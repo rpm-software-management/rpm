@@ -5,7 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 include $(top_srcdir)/rpm.am
 
 CLEANFILES =
-EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS INSTALL \
+EXTRA_DIST = CHANGES ChangeLog CREDITS GROUPS INSTALL \
 	autodeps autogen.sh \
 	db db3/configure installplatform platform* 
 
@@ -332,32 +332,40 @@ unsetgid:
 	    $(__CHMOD) g-s $(DESTDIR)$(rpmlibexecdir)/$$f ;\
 	done
 
-# Build apidocs only on request
+# Build hacking only on request
 if APIDOCS
 if DOXYGEN
-doc/apidocs.doxy: Doxyfile.in
-	(cd doc && ../config.status --file=apidocs.doxy:../Doxyfile.in)
+doc/hacking.doxy: doc/hacking.doxy.in doc/hacking/Doxyheader Makefile.am
+	$(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
+	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
+	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
+	    -e "s,[@]PACKAGE[@],$(PACKAGE)," \
+	    -e "s,[@]VERSION[@],$(VERSION)," \
+	< $(top_srcdir)/doc/hacking.doxy.in > doc/hacking.doxy
 
-apidocs/html/index.html: doc/apidocs.doxy rpmpopt-@VERSION@
-	@DOXYGEN@ doc/apidocs.doxy
-noinst_DATA += apidocs/html/index.html
+doc/hacking/html/index.html: doc/hacking.doxy rpmpopt-@VERSION@
+	@DOXYGEN@ doc/hacking.doxy
+noinst_DATA += doc/hacking/html/index.html
 endif
 endif
-EXTRA_DIST += Doxyfile.in
+EXTRA_DIST += doc/hacking.doxy.in doc/hacking/Doxyheader
 
 # Always build librpm docs
 if DOXYGEN
-doc/librpm.doxy: doc/librpm.doxy.in $(pkginclude_HEADERS) Makefile.am
-	  files=`echo " $(pkginclude_HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
-	    $(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," $(top_srcdir)/doc/librpm.doxy.in > doc/librpm.doxy.tmp
-	  (cd doc && ../config.status --file=librpm.doxy:librpm.doxy.tmp)
-	  rm -f doc/librpm.doxy.tmp
+doc/librpm.doxy: doc/librpm.doxy.in doc/librpm/Doxyheader Makefile.am $(pkginclude_HEADERS)
+	files=`echo " $(pkginclude_HEADERS)" | $(SED) -e "s, , \@top_srcdir\@/,g"`; \
+	$(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
+	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
+	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
+	  -e "s,[@]PACKAGE[@],$(PACKAGE)," \
+	  -e "s,[@]VERSION[@],$(VERSION)," \
+	< $(top_srcdir)/doc/librpm.doxy.in > doc/librpm.doxy
 
 doc/librpm/html/index.html: doc/librpm.doxy
 	@DOXYGEN@ doc/librpm.doxy
 noinst_DATA += doc/librpm/html/index.html
 endif
-EXTRA_DIST += doc/librpm.doxy.in
+EXTRA_DIST += doc/librpm.doxy.in doc/librpm/Doxyheader
 EXTRA_DIST += doc/librpm/html
 
 if WITH_INTERNAL_DB
@@ -368,12 +376,12 @@ endif
 DISTCLEANFILES += db.h
 
 clean-local:
-	rm -rf apidocs
+	rm -rf doc/hacking/html
 
 distclean-local:
 	rm -rf Doxytags
 	rm -f stamp-h.in db3/*.orig db3/db3lobjs
 
 maintainer-clean-local:
-	rm -rf doc/librpm
+	rm -rf doc/librpm/html
 
