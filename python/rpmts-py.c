@@ -387,9 +387,10 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
     if (ps != NULL) {
 	list = PyList_New(0);
+	rpmpsi psi = rpmpsInitIterator(ps);
 
 	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
-	for (i = 0; i < ps->numProblems; i++) {
+	while ((i = rpmpsNextIterator(psi)) >= 0) {
 #ifdef	DYING
 	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
 			       conflicts[i].byVersion, conflicts[i].byRelease,
@@ -407,7 +408,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    int needsFlags, sense;
 	    fnpyKey key;
 
-	    p = ps->probs + i;
+	    p = rpmpsProblem(psi);
 
             /* XXX autorelocated i386 on ia64, fix system-config-packages! */
 	    if (p->type == RPMPROB_BADRELOCATE)
@@ -451,6 +452,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    Py_DECREF(cf);
 	}
 
+	psi = rpmpsFreeIterator(psi);
 	ps = rpmpsFree(ps);
 
 	return list;
@@ -1073,9 +1075,10 @@ fprintf(stderr, "*** rpmts_Problems(%p) ts %p\n", s, s->ts);
 static PyObject *
 rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    int rc, i;
+    int rc;
     PyObject * list;
     rpmps ps;
+    rpmpsi psi;
     struct rpmtsCallbackType_s cbInfo;
     char * kwlist[] = {"callback", "data", NULL};
 
@@ -1120,8 +1123,9 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     }
 
     list = PyList_New(0);
-    for (i = 0; i < ps->numProblems; i++) {
-	rpmProblem p = ps->probs + i;
+    psi = rpmpsInitIterator(ps);
+    while (rpmpsNextIterator(psi) >= 0) {
+	rpmProblem p = rpmpsProblem(psi);
 	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
 			     p->type,
 			     p->str1,
@@ -1130,6 +1134,7 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 	Py_DECREF(prob);
     }
 
+    psi = rpmpsFreeIterator(psi);
     ps = rpmpsFree(ps);
 
     return list;
