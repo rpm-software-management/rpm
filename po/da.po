@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3038,27 +3038,22 @@ msgstr "installation af pakke %s kræver %ld%cb på %s-filsystemet"
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "installation af pakken %s kræver %ld inode'r på %s-filsystemet"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "pakke %s prætransaktion-systemkald: %s mislykkedes: %s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " kræves af %s-%s-%s\n"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 #, fuzzy
 msgid "(installed) "
 msgstr "ej installeret"
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " skaber konflikt med %s-%s-%s\n"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "ukendt fejl %d under arbejdet med pakken %s"
@@ -3963,7 +3958,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "lukket  db-fil    %s\n"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"

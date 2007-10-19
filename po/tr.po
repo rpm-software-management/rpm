@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -3040,27 +3040,22 @@ msgstr "%s kurulumu %ld%cb gerektiriyor (%s dosya sisteminde)"
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "%s kurulumu %ld i-düðüm gerektiriyor (%s dosya sisteminde)"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "%s iþlem öncesi sistem çaðrý(sý/larý): %s baþarýsýz: %s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " %s-%s-%s için gerekli\n"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 #, fuzzy
 msgid "(installed) "
 msgstr "yüklenmedi "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " %s-%s-%s ile çeliþiyor\n"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "anlaþýlamayan %d hatasý, %s paketi iþlenirken saptandý"
@@ -3954,7 +3949,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "kapanan db dosyasý     %s\n"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"

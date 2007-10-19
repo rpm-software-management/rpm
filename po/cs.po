@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3024,27 +3024,22 @@ msgstr "instalace balíèku %s potøebuje %ld%cB na systému souborù %s"
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld inodù na systému souborù %s"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "pøedtransakèní syscall v balíèku %s: %s selhalo: %s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " je nutné pro %s-%s-%s\n"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 #, fuzzy
 msgid "(installed) "
 msgstr "neinstalován  "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
@@ -3941,7 +3936,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr ""
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr ""

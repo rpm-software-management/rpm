@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2006-04-28 09:52+1000\n"
 "Last-Translator: Manuel Ospina <mospina@redhat.com>\n"
 "Language-Team: Spanish <en@li.org>\n"
@@ -3035,26 +3035,21 @@ msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "la instalación de paquete %s necesita %ld inodos en el sistema de archivos %s"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "transacción previa syscall(s) del paquete %s: %s fallido: %s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s se necesita para %s%s"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 msgid "(installed) "
 msgstr "(instalado) "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s entra en conflicto con %s%s"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3954,7 +3949,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "índice db cerrado %s/%s\n"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "abriendo índice db %s/%s %s modo=0x%x\n"

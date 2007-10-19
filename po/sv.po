@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2961,26 +2961,21 @@ msgstr "installation av paket %s kräver %ld %cB på filsystemet %s"
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "installation av paket %s kräver %ld inoder på filsystem %s"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "paket %s systemanrop före transaktion: %s misslyckades: %s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s behövs av %s%s"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 msgid "(installed) "
 msgstr "(installerat) "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s står i konflikt med %s%s"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
@@ -3875,7 +3870,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "stängde     db-index %s/%s\n"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"

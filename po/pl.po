@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2007-08-29 13:48+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2969,27 +2969,21 @@ msgstr "instalowanie pakietu %s wymaga %ld%cB w systemie plików %s"
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalowanie pakietu %s wymaga %ld i-węzłów w systemie plików %s"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr ""
-"przedtransakcyjne wywołanie systemowe pakietu %s: %s nie powiodło się: %s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s jest wymagany przez %s%s"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 msgid "(installed) "
 msgstr "(zainstalowany) "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s jest w konflikcie z %s%s"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "wystąpił nieznany błąd %d podczas manipulowania pakietem %s"
@@ -3883,7 +3877,7 @@ msgstr "Nie można zablokować bazy danych %s, ponawianie... (%d)\n"
 msgid "closed   sql db         %s\n"
 msgstr "zamknięto   bazę danych SQL         %s\n"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "otwieranie  bazy danych SQL         %s (%s) tryb=0x%x\n"

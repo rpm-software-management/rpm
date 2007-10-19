@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -3067,27 +3067,22 @@ msgstr ""
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:237
-#, fuzzy, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " je potreban paketu %s-%s-%s\n"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 #, fuzzy
 msgid "(installed) "
 msgstr "paket %s nije instaliran\n"
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " se sudara sa %s-%s-%s\n"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3985,7 +3980,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"

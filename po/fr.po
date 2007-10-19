@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -3053,28 +3053,21 @@ msgstr ""
 "installer le paquetage %s nécessite %ld i-noeuds sur le système de fichiers %"
 "s"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr ""
-"échec du(des) appel(s) système(s) de la pré-transaction du paquetage %s: %s: "
-"%s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s est nécessaire pour %s%s"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 msgid "(installed) "
 msgstr "(déjà installé) "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s entre en conflit avec %s%s"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erreur %d inconnue rencontrée en manipulant le paquetage %s"
@@ -3973,7 +3966,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "fermeture     index db    %s/%s\n"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "ouverture     index db    %s/%s %s mode=0x%x\n"

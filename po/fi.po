@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -2951,26 +2951,21 @@ msgstr "paketin %s asennus tarvitsee %ld%c tavua tiedostojärjestelmällä %s"
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "paketin %s tarvitsee %ld inodea tiedostojärjestelmällä %s"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr ""
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr ""
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 msgid "(installed) "
 msgstr "(asennettu) "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s on ristiriidassa %s-%s:n kanssa"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3854,7 +3849,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -2941,26 +2941,21 @@ msgstr "安裝套件 %s 時需要 %ld%cB 空間於檔案系統 %s 上"
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "安裝套件 %s 時需要 %ld 個節點於檔案系統 %s 上"
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "套件 %s 的異動作業前系統呼叫：%s 失敗：%s"
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s 被 %s%s 所需要"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 msgid "(installed) "
 msgstr "(已安裝) "
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s 與 %s%s 衝突"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明錯誤 %d 發生在處理套件 %s 的程序中"
@@ -3844,7 +3839,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr "關閉資料庫索引       %s/%s\n"
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, fuzzy, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr "開啟資料庫索引       %s/%s %s 模式=0x%x\n"

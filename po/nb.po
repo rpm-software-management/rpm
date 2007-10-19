@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-14 18:22+0200\n"
+"POT-Creation-Date: 2007-10-19 06:59+0200\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -2992,27 +2992,22 @@ msgstr ""
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:237
-#, c-format
-msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr ""
-
-#: lib/rpmps.c:241
+#: lib/rpmps.c:236
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " kreves av %s-%s-%s\n"
 
-#: lib/rpmps.c:243 lib/rpmps.c:248
+#: lib/rpmps.c:238 lib/rpmps.c:243
 #, fuzzy
 msgid "(installed) "
 msgstr "ikke installert"
 
-#: lib/rpmps.c:246
+#: lib/rpmps.c:241
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " er i konflikt med %s-%s-%s\n"
 
-#: lib/rpmps.c:252
+#: lib/rpmps.c:247
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3902,7 +3897,7 @@ msgstr ""
 msgid "closed   sql db         %s\n"
 msgstr ""
 
-#: rpmdb/sqlite.c:835
+#: rpmdb/sqlite.c:836
 #, c-format
 msgid "opening  sql db         %s (%s) mode=0x%x\n"
 msgstr ""
@@ -4135,7 +4130,3 @@ msgstr "%s: åpne feilet: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: lesing av manifest feilet: %s\n"
-
-#, fuzzy
-#~ msgid "(db package)"
-#~ msgstr "ingen pakker\n"
