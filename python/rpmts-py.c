@@ -403,18 +403,19 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 				   conflicts[i].suggestedPkgs[0] : Py_None,
 			       conflicts[i].sense);
 #else
-	    char * byName, * byVersion, * byRelease, *byArch;
-	    char * needsName, * needsOP, * needsVersion;
+	    const char * byName, * needsName;
+	    char * byVersion, * byRelease, *byArch;
+	    char * needsOP, * needsVersion;
 	    int needsFlags, sense;
 	    fnpyKey key;
 
 	    p = rpmpsProblem(psi);
 
             /* XXX autorelocated i386 on ia64, fix system-config-packages! */
-	    if (p->type == RPMPROB_BADRELOCATE)
+	    if (rpmProblemGetType(p) == RPMPROB_BADRELOCATE)
 		continue;
 
-	    byName = p->pkgNEVR;
+	    byName = rpmProblemGetPkgNEVR(p);
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
@@ -422,9 +423,9 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    if ((byVersion = strrchr(byName, '-')) != NULL)
 		*byVersion++ = '\0';
 
-	    key = p->key;
+	    key = rpmProblemGetKey(p);
 
-	    needsName = p->altNEVR;
+	    needsName = rpmProblemGetAltNEVR(p);
 	    if (needsName[1] == ' ') {
 		sense = (needsName[0] == 'C')
 			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
@@ -1127,9 +1128,9 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     while (rpmpsNextIterator(psi) >= 0) {
 	rpmProblem p = rpmpsProblem(psi);
 	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
-			     p->type,
-			     p->str1,
-			     PyLong_FromLongLong(p->ulong1));
+			     rpmProblemGetType(p),
+			     rpmProblemGetStr(p),
+			     PyLong_FromLongLong(rpmProblemGetLong(p)));
 	PyList_Append(list, prob);
 	Py_DECREF(prob);
     }
