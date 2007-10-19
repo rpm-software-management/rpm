@@ -369,7 +369,7 @@ static int verifyDependencies(QVA_t qva, rpmts ts,
 	rpmlog(RPMLOG_NOTICE, "Unsatisfied dependencies for %s:\n", nevra);
 	free(nevra);
 	while (rpmpsNextIterator(psi) >= 0) {
-	    rpmProblem p = rpmpsProblem(psi);
+	    rpmProblem p = rpmpsGetProblem(psi);
 	    rpmlog(RPMLOG_NOTICE, "\t%s\n", rpmProblemString(p));
 	    rc++;	
 	}

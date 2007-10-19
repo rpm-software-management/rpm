@@ -409,7 +409,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    int needsFlags, sense;
 	    fnpyKey key;
 
-	    p = rpmpsProblem(psi);
+	    p = rpmpsGetProblem(psi);
 
             /* XXX autorelocated i386 on ia64, fix system-config-packages! */
 	    if (rpmProblemGetType(p) == RPMPROB_BADRELOCATE)
@@ -1126,7 +1126,7 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     list = PyList_New(0);
     psi = rpmpsInitIterator(ps);
     while (rpmpsNextIterator(psi) >= 0) {
-	rpmProblem p = rpmpsProblem(psi);
+	rpmProblem p = rpmpsGetProblem(psi);
 	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
 			     rpmProblemGetType(p),
 			     rpmProblemGetStr(p),

@@ -178,7 +178,7 @@ int rpmpsNextIterator(rpmpsi psi);
  * @param psi		problem set iterator
  * @return		current rpmProblem 
  */
-rpmProblem rpmpsProblem(rpmpsi psi);
+rpmProblem rpmpsGetProblem(rpmpsi psi);
 
 /**
  * Create a problem set.

@@ -101,7 +101,7 @@ int rpmpsNextIterator(rpmpsi psi)
     return i;
 }
 
-rpmProblem rpmpsProblem(rpmpsi psi)
+rpmProblem rpmpsGetProblem(rpmpsi psi)
 {
     rpmProblem *p = NULL;
     if (psi != NULL && psi->ix >= 0 && psi->ix < rpmpsNumProblems(psi->ps)) {
@@ -126,7 +126,7 @@ rpmps rpmpsFree(rpmps ps)
     if (ps->probs) {
 	rpmpsi psi = rpmpsInitIterator(ps);
 	while (rpmpsNextIterator(psi) >= 0) {
-	    rpmProblemFree(rpmpsProblem(psi));	
+	    rpmProblemFree(rpmpsGetProblem(psi));	
 	}
 	rpmpsFreeIterator(psi);
 	ps->probs = _free(ps->probs);
@@ -415,7 +415,7 @@ void rpmpsPrint(FILE *fp, rpmps ps)
     psi = rpmpsInitIterator(ps);
     while ((i = rpmpsNextIterator(psi)) >= 0) {
 	int j;
-	rpmProblem p = rpmpsProblem(psi);
+	rpmProblem p = rpmpsGetProblem(psi);
 
 	if (p->ignoreProblem)
 	    continue;
@@ -423,7 +423,7 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 	rpmpsi psif = rpmpsInitIterator(ps);
 	/* Filter already displayed problems. */
     	while ((j = rpmpsNextIterator(psif)) < i) {
-	    if (!sameProblem(p, rpmpsProblem(psif)))
+	    if (!sameProblem(p, rpmpsGetProblem(psif)))
 		break;
 	}
 	rpmpsFreeIterator(psif);
