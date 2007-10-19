@@ -44,6 +44,31 @@ typedef enum rpmProblemType_e {
  } rpmProblemType;
 
 /**
+ * Create a problem item.
+ * @param type		type of problem
+ * @param pkgNEVR	package name
+ * @param key		filename or python object address
+ * @param dn		directory name
+ * @param bn		file base name
+ * @param altNEVR	related (e.g. through a dependency) package name
+ * @param ulong1	generic pointer/long attribute
+ * @return		rpmProblem
+ */
+rpmProblem rpmProblemCreate(rpmProblemType type,
+                            const char * pkgNEVR,
+                            fnpyKey key,
+                            const char * dn, const char * bn,
+                            const char * altNEVR,
+                            unsigned long ulong1);
+
+/**
+ * Destroy a problem item.
+ * @param prob		rpm problem
+ * @return		rpm problem (NULL)
+ */
+rpmProblem rpmProblemFree(rpmProblem prob);
+
+/**
  * Return package NEVR
  * @param prob		rpm problem
  * @return		package NEVR
@@ -174,6 +199,13 @@ rpmps rpmpsFree(rpmps ps);
  * @param ps		problem set
  */
 void rpmpsPrint(FILE *fp, rpmps ps);
+
+/**
+ * Append a problem to current set of problems.
+ * @param ps		problem set
+ * @param prob		rpmProblem 
+ */
+void rpmpsAppendProblem(rpmps ps, rpmProblem prob);
 
 /**
  * Append a problem to current set of problems.

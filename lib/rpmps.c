@@ -28,7 +28,7 @@ struct rpmProblem_s {
 struct rpmps_s {
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
-    rpmProblem probs;		/*!< Array of specific problems. */
+    rpmProblem *probs;		/*!< Array of pointers to specific problems. */
     int nrefs;			/*!< Reference count. */
 };
 
@@ -103,11 +103,11 @@ int rpmpsNextIterator(rpmpsi psi)
 
 rpmProblem rpmpsProblem(rpmpsi psi)
 {
-    rpmProblem p = NULL;
+    rpmProblem *p = NULL;
     if (psi != NULL && psi->ix >= 0 && psi->ix < rpmpsNumProblems(psi->ps)) {
 	p = psi->ps->probs + psi->ix;
     } 
-    return p;
+    return *p;
 }
 
 rpmps rpmpsCreate(void)
@@ -124,27 +124,20 @@ rpmps rpmpsFree(rpmps ps)
 	return NULL;
 	
     if (ps->probs) {
-	int i;
-	for (i = 0; i < ps->numProblems; i++) {
-	    rpmProblem p = ps->probs + i;
-	    p->pkgNEVR = _free(p->pkgNEVR);
-	    p->altNEVR = _free(p->altNEVR);
-	    p->str1 = _free(p->str1);
+	rpmpsi psi = rpmpsInitIterator(ps);
+	while (rpmpsNextIterator(psi) >= 0) {
+	    rpmProblemFree(rpmpsProblem(psi));	
 	}
+	rpmpsFreeIterator(psi);
 	ps->probs = _free(ps->probs);
     }
     ps = _free(ps);
     return NULL;
 }
 
-void rpmpsAppend(rpmps ps, rpmProblemType type,
-		const char * pkgNEVR, fnpyKey key,
-		const char * dn, const char * bn,
-		const char * altNEVR, unsigned long ulong1)
+void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 {
-    rpmProblem p;
-    char *t;
-
+    rpmProblem *p = NULL;
     if (ps == NULL) return;
 
     if (ps->numProblems == ps->numProblemsAlloced) {
@@ -153,37 +146,33 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 	else
 	    ps->numProblemsAlloced = 2;
 	ps->probs = xrealloc(ps->probs,
-			ps->numProblemsAlloced * sizeof(*ps->probs));
+			ps->numProblemsAlloced * sizeof(ps->probs));
     }
 
     p = ps->probs + ps->numProblems;
     ps->numProblems++;
-    memset(p, 0, sizeof(*p));
+    *p = prob;
+}
 
-    p->type = type;
-    p->key = key;
-    p->ulong1 = ulong1;
-    p->ignoreProblem = 0;
+void rpmpsAppend(rpmps ps, rpmProblemType type,
+		const char * pkgNEVR, fnpyKey key,
+		const char * dn, const char * bn,
+		const char * altNEVR, unsigned long ulong1)
+{
+    rpmProblem p = NULL;
+    if (ps == NULL) return;
 
-    p->pkgNEVR = (pkgNEVR ? xstrdup(pkgNEVR) : NULL);
-    p->altNEVR = (altNEVR ? xstrdup(altNEVR) : NULL);
-
-    p->str1 = NULL;
-    if (dn != NULL || bn != NULL) {
-	t = xcalloc(1,	(dn != NULL ? strlen(dn) : 0) +
-			(bn != NULL ? strlen(bn) : 0) + 1);
-	p->str1 = t;
-	if (dn != NULL) t = stpcpy(t, dn);
-	if (bn != NULL) t = stpcpy(t, bn);
-    }
+    p = rpmProblemCreate(type, pkgNEVR, key, dn, bn, altNEVR, ulong1);
+    rpmpsAppendProblem(ps, p);
 }
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
+/* XXX TODO: implement with iterators */
 int rpmpsTrim(rpmps ps, rpmps filter)
 {
-    rpmProblem t;
-    rpmProblem f;
+    rpmProblem *t;
+    rpmProblem *f;
     int gotProblems = 0;
 
     if (ps == NULL || ps->numProblems == 0)
@@ -196,14 +185,14 @@ int rpmpsTrim(rpmps ps, rpmps filter)
     f = filter->probs;
 
     while ((f - filter->probs) < filter->numProblems) {
-	if (!f->ignoreProblem) {
+	if (!(*f)->ignoreProblem) {
 	    f++;
 	    continue;
 	}
 	while ((t - ps->probs) < ps->numProblems) {
 	   	/* LCL: looks good to me <shrug> */
-	    if (f->type == t->type && t->key == f->key &&
-		     XSTRCMP(f->str1, t->str1))
+	    if ((*f)->type == (*t)->type && (*t)->key == (*f)->key &&
+		     XSTRCMP((*f)->str1, (*t)->str1))
 		break;
 	    t++;
 	    gotProblems = 1;
@@ -213,7 +202,7 @@ int rpmpsTrim(rpmps ps, rpmps filter)
 	if ((t - ps->probs) == ps->numProblems)
 	    break;
 
-	t->ignoreProblem = f->ignoreProblem;
+	(*t)->ignoreProblem = (*f)->ignoreProblem;
 	t++, f++;
     }
 
@@ -241,6 +230,44 @@ static inline int snprintf(char * buf, int nb, const char * fmt, ...)
     return rc;
 }
 #endif
+
+rpmProblem rpmProblemCreate(rpmProblemType type,
+                            const char * pkgNEVR,
+                            fnpyKey key,
+                            const char * dn, const char * bn,
+                            const char * altNEVR,
+                            unsigned long ulong1)
+{
+    rpmProblem p = xcalloc(1, sizeof(*p));
+    char *t;
+
+    p->type = type;
+    p->key = key;
+    p->ulong1 = ulong1;
+    p->ignoreProblem = 0;
+
+    p->pkgNEVR = (pkgNEVR ? xstrdup(pkgNEVR) : NULL);
+    p->altNEVR = (altNEVR ? xstrdup(altNEVR) : NULL);
+
+    p->str1 = NULL;
+    if (dn != NULL || bn != NULL) {
+        t = xcalloc(1,  (dn != NULL ? strlen(dn) : 0) +
+                        (bn != NULL ? strlen(bn) : 0) + 1);
+        p->str1 = t;
+        if (dn != NULL) t = stpcpy(t, dn);
+        if (bn != NULL) t = stpcpy(t, bn);
+    }
+    return p;
+}
+
+rpmProblem rpmProblemFree(rpmProblem prob)
+{
+    prob->pkgNEVR = _free(prob->pkgNEVR);
+    prob->altNEVR = _free(prob->altNEVR);
+    prob->str1 = _free(prob->str1);
+    prob = _free(prob);
+    return NULL;
+}
 
 const char * rpmProblemGetPkgNEVR(const rpmProblem p)
 {
