@@ -618,14 +618,16 @@ fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
 static PyObject *
 rpmts_OpenDB(rpmtsObject * s)
 {
+    int dbmode;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_OpenDB(%p) ts %p\n", s, s->ts);
 
-    if (s->ts->dbmode == -1)
-	s->ts->dbmode = O_RDONLY;
+    dbmode = rpmtsGetDBMode(s->ts);
+    if (dbmode == -1)
+	dbmode = O_RDONLY;
 
-    return Py_BuildValue("i", rpmtsOpenDB(s->ts, s->ts->dbmode));
+    return Py_BuildValue("i", rpmtsOpenDB(s->ts, dbmode));
 }
 
 /** \ingroup py_c
@@ -639,7 +641,7 @@ if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
 
     rc = rpmtsCloseDB(s->ts);
-    s->ts->dbmode = -1;		/* XXX disable lazy opens */
+    rpmtsSetDBMode(s->ts, -1);	/* XXX disable lazy opens */
 
     return Py_BuildValue("i", rc);
 }

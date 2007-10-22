@@ -267,8 +267,8 @@ addheader:
 	goto exit;
 
     /* Do lazy (readonly?) open of rpm database. */
-    if (rpmtsGetRdb(ts) == NULL && ts->dbmode != -1) {
-	if ((ec = rpmtsOpenDB(ts, ts->dbmode)) != 0)
+    if (rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
+	if ((ec = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
 	    goto exit;
     }
 
@@ -1493,8 +1493,8 @@ int rpmtsCheck(rpmts ts)
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     /* Do lazy, readonly, open of rpm database. */
-    if (rpmtsGetRdb(ts) == NULL && ts->dbmode != -1) {
-	if ((rc = rpmtsOpenDB(ts, ts->dbmode)) != 0)
+    if (rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
+	if ((rc = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
 	    goto exit;
 	closeatexit = 1;
     }

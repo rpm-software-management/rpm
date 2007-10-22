@@ -10,7 +10,7 @@
 #include "rpmds.h"
 
 #include "rpmte.h"	/* XXX: rpmts.h needs this for rpmtsScoreEntries */
-#define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
+#define	_RPMTS_INTERNAL		/* ts->goal, ts->suggests */
 #include "rpmts.h"
 
 #include "manifest.h"

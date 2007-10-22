@@ -574,7 +574,7 @@ enditer:
 
 	/* XXX installed database needs close here. */
 	xx = rpmtsCloseDB(ts);
-	ts->dbmode = -1;	/* XXX disable lazy opens */
+	xx = rpmtsSetDBMode(ts, -1);	/* XXX disable lazy opens */
 
 	xx = rpmtsCheck(ts);
 
