@@ -99,6 +99,7 @@ typedef	enum rpmtsOpX_e {
 
 #include "rpmhash.h"	/* XXX hashTable */
 #include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
+#include "rpmte.h"	/* for rpmElementType */
 
 /**********************
  * Transaction Scores *
