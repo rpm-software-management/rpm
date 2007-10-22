@@ -8,7 +8,8 @@
 
 #include <rpmmacro.h>
 #include <rpmmessages.h>
-#include <rpmio_internal.h>
+#include "rpmurl.h"
+#include "rpmio.h"
 
 #include "debug.h"
 

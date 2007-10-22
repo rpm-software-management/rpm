@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include <rpmio_internal.h>
 #include <rpmgi.h>
 #include <rpmcli.h>
 
