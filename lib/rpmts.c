@@ -172,6 +172,24 @@ int rpmtsInitDB(rpmts ts, int dbmode)
     return rc;
 }
 
+int rpmtsGetDBMode(rpmts ts)
+{
+    assert(ts != NULL);
+    return (ts->dbmode);
+}
+
+int rpmtsSetDBMode(rpmts ts, int dbmode)
+{
+    int rc = 1;
+    /* mode setting only permitted on non-open db */
+    if (ts != NULL && rpmtsGetRdb(ts) == NULL) {
+    	ts->dbmode = dbmode;
+	rc = 0;
+    }
+    return rc;
+}
+
+
 int rpmtsRebuildDB(rpmts ts)
 {
     int rc;

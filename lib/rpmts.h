@@ -400,6 +400,22 @@ int rpmtsOpenDB(rpmts ts, int dbmode);
 int rpmtsInitDB(rpmts ts, int dbmode);
 
 /** \ingroup rpmts
+ * Return the transaction database mode
+ * @param ts		transaction set
+ * @return		O_RDONLY, O_RDWR or -1 (lazy opens disabled)
+ */
+int rpmtsGetDBMode(rpmts ts);
+
+/** \ingroup rpmts
+ * Set the transaction database mode. Only permitted when when backing
+ * database hasn't been opened yet (ie rpmtsGetRdb(ts) == NULL)
+ * @param ts		transaction set
+ * @param dbmode	O_RDONLY, O_RDWR or -1 (disable lazy opens)
+ * @return		0 on success, 1 on error 
+ */
+int rpmtsSetDBMode(rpmts ts, int dbmode);
+
+/** \ingroup rpmts
  * Rebuild the database used by the transaction.
  * @param ts		transaction set
  * @return		0 on success
