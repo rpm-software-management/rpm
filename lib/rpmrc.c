@@ -419,10 +419,7 @@ const char * lookupInDefaultTable(const char * name,
 static void setVarDefault(int var, const char * macroname, const char * val,
 		const char * body)
 {
-    if (var >= 0) {	/* XXX Dying ... */
-	if (rpmGetVar(var)) return;
-	rpmSetVar(var, val);
-    }
+    assert(!(var >= 0)); /* must not happen */
     if (body == NULL)
 	body = val;
     addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
@@ -430,24 +427,7 @@ static void setVarDefault(int var, const char * macroname, const char * val,
 
 static void setPathDefault(int var, const char * macroname, const char * subdir)
 {
-
-    if (var >= 0) {	/* XXX Dying ... */
-	const char * topdir;
-	char * fn;
-
-	if (rpmGetVar(var)) return;
-
-	topdir = rpmGetPath("%{_topdir}", NULL);
-
-	fn = alloca(strlen(topdir) + strlen(subdir) + 2);
-	strcpy(fn, topdir);
-	if (fn[strlen(topdir) - 1] != '/')
-	    strcat(fn, "/");
-	strcat(fn, subdir);
-
-	rpmSetVar(var, fn);
-	topdir = _free(topdir);
-    }
+    assert(!(var >= 0)); /* must not happen */
 
     if (macroname != NULL) {
 #define	_TOPDIRMACRO	"%{_topdir}/"
