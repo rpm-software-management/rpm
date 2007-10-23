@@ -4,11 +4,7 @@
 
 #include "system.h"
 
-#include <glob.h>	/* XXX rpmio.h */
-#include <dirent.h>	/* XXX rpmio.h */
-#include <rpmio_internal.h>
-
-#include <rpmlib.h>	/* XXX _free */
+#include "rpmio_internal.h"	/* XXX fdGetFp */
 
 #include "header-py.h"	/* XXX pyrpmError */
 #include "rpmfd-py.h"

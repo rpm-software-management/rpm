@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
 #include "rpmlib.h"
 
 #include "legacy.h"

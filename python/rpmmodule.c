@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
 #include <rpmdb.h>
 #include <rpmsq.h>
 
