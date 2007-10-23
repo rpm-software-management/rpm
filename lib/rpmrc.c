@@ -476,7 +476,7 @@ static void setDefaults(void)
     setVarDefault(-1,			"_rpmfilename",
 	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
 
-    setVarDefault(RPMVAR_OPTFLAGS,	"optflags",
+    setVarDefault(-1,			"optflags",
 		"-O2",			NULL);
     setVarDefault(-1,			"sigtype",
 		"none",			NULL);
