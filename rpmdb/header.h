@@ -80,24 +80,11 @@
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
 #include "rpmio.h"
+#include "rpmints.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
-typedef long long int int_64;
-#endif
-typedef int int_32;
-typedef short int int_16;
-typedef char int_8;
-
-#if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
-typedef unsigned long long int uint_64;
-#endif
-typedef unsigned int uint_32;
-typedef unsigned short uint_16;
-typedef unsigned char uint_8;
 
 /** \ingroup header
  */

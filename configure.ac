@@ -1081,6 +1081,12 @@ AM_CONDITIONAL([APIDOCS],[test "$with_apidocs" == yes])
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
+AS_IF([test "$ac_cv_header_stdint_h" = "yes"],[
+AC_DEFINE([__RPM_USES_STDINT_H__],[1],[if rpm uses stdint.h])
+])
+
+AM_CONFIG_HEADER([rpmdb/rpmints.h])
+
 AC_CONFIG_FILES([Makefile
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile 

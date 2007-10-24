@@ -1,0 +1,46 @@
+#ifndef _RPM_RPMINTS_H
+#define _RPM_RPMINTS_H
+
+/* if rpm uses stdint.h */
+#undef __RPM_USES_STDINT_H__
+
+#ifdef __RPM_USES_STDINT_H__
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef int32_t        int_32;
+typedef int16_t        int_16;
+typedef int8_t         int_8;
+
+typedef uint32_t       uint_32;
+typedef uint16_t       uint_16;
+typedef uint8_t        uint_8;
+
+#ifdef __cplusplus
+}
+#endif
+
+#else
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef int            int_32;
+typedef short int      int_16;
+typedef char           int_8;
+
+typedef unsigned int   uint_32;
+typedef unsigned short uint_16;
+typedef unsigned char  uint_8;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif

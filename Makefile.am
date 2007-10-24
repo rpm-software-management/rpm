@@ -35,6 +35,7 @@ AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"@RPMCONFIGDIR@/rpmpopt-${VERSION}\""
 staticLDFLAGS = @LDFLAGS_STATIC@ @LDFLAGS_NPTL@
 
 pkginclude_HEADERS =
+nodist_pkginclude_HEADERS =
 
 pkginclude_HEADERS += rpmio/argv.h
 pkginclude_HEADERS += rpmio/rpmio.h
@@ -47,7 +48,8 @@ pkginclude_HEADERS += rpmio/rpmsq.h
 pkginclude_HEADERS += rpmio/rpmsw.h
 
 pkginclude_HEADERS += rpmdb/header.h
-pkginclude_HEADERS += rpmdb/rpmdb.h 
+pkginclude_HEADERS += rpmdb/rpmdb.h
+nodist_pkginclude_HEADERS += rpmdb/rpmints.h
 
 pkginclude_HEADERS += lib/idtx.h
 pkginclude_HEADERS += lib/rpmcli.h
