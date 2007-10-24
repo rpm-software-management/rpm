@@ -1903,7 +1903,7 @@ msgstr "suprimit   entorn de bd %s/%s\n"
 #: ../rpmdb/db3.c:298
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
-msgstr "obrint   entorn de bd %s/%s\n"
+msgstr "obrint   entorn de bd %s/%s %s\n"
 
 #: ../rpmdb/db3.c:819
 #, c-format
