@@ -135,17 +135,6 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 	goto exit;
     }
 
-#ifdef HAVE_FCHMOD
-    switch (rootut) {
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	(void)fchmod(Fileno(fd), 0600);
-	break;
-    default:
-	break;
-    }
-#endif
-
     if (fdGetFp(fd) == NULL)
 	xfd = Fdopen(fd, "w.fpio");
     else
