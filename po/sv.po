@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-19 06:59+0200\n"
+"POT-Creation-Date: 2007-10-24 15:58+0300\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -352,22 +352,22 @@ msgstr "inga argument angivna"
 msgid "Unable to open temp file.\n"
 msgstr "Kan inte öppna temporär fil.\n"
 
-#: build/build.c:219
+#: build/build.c:208
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Kör(%s): %s\n"
 
-#: build/build.c:225
+#: build/build.c:214
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Körning (exec) av %s misslyckades (%s): %s\n"
 
-#: build/build.c:234
+#: build/build.c:223
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Dålig slutstatus från %s (%s)\n"
 
-#: build/build.c:344
+#: build/build.c:333
 msgid ""
 "\n"
 "\n"
@@ -561,7 +561,7 @@ msgstr "Filen behöver inledande \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Matchning inte tillåtet: %s\n"
 
-#: build/files.c:1745 lib/rpminstall.c:306
+#: build/files.c:1745 lib/rpminstall.c:305
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Hittade ingen fil vid matchningen: %s\n"
@@ -1392,44 +1392,44 @@ msgstr "kan inte fråga %s: %s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga av specfil %s misslyckades, kan inte tolka\n"
 
-#: lib/cpio.c:188
+#: lib/cpio.c:187
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(fel 0x%x)"
 
-#: lib/cpio.c:191
+#: lib/cpio.c:190
 msgid "Bad magic"
 msgstr "Felaktigt magiskt tal"
 
-#: lib/cpio.c:192
+#: lib/cpio.c:191
 msgid "Bad/unreadable  header"
 msgstr "Felaktigt/oläsbart huvud"
 
-#: lib/cpio.c:214
+#: lib/cpio.c:213
 msgid "Header size too big"
 msgstr "Huvudstorleken för stor"
 
-#: lib/cpio.c:215
+#: lib/cpio.c:214
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: lib/cpio.c:216
+#: lib/cpio.c:215
 msgid "Missing hard link(s)"
 msgstr "Saknade hårda länkar"
 
-#: lib/cpio.c:217
+#: lib/cpio.c:216
 msgid "MD5 sum mismatch"
 msgstr "MD5-summan stämmer inte"
 
-#: lib/cpio.c:218
+#: lib/cpio.c:217
 msgid "Internal error"
 msgstr "Internt fel"
 
-#: lib/cpio.c:219
+#: lib/cpio.c:218
 msgid "Archive file not in header"
 msgstr "Ingen arkivfilen i huvud"
 
-#: lib/cpio.c:230
+#: lib/cpio.c:229
 msgid " failed - "
 msgstr " misslyckades - "
 
@@ -1544,7 +1544,7 @@ msgstr "mntctl() kunde inte returnera monteringspunkter: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "kunde inte ta status på %s: %s\n"
 
-#: lib/fs.c:148 rpmio/url.c:257
+#: lib/fs.c:148 rpmio/url.c:258
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "kunde inte öppna %s: %s\n"
@@ -1623,17 +1623,17 @@ msgstr "%s skapades som %s\n"
 msgid "adding %d args from manifest.\n"
 msgstr "lägger till %d poster från förteckning.\n"
 
-#: lib/misc.c:41
+#: lib/misc.c:40
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "kan inte skapa %%%s %s\n"
 
-#: lib/misc.c:46
+#: lib/misc.c:45
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kan inte skriva till %%%s %s\n"
 
-#: lib/misc.c:182 lib/misc.c:187 lib/misc.c:193
+#: lib/misc.c:181 lib/misc.c:186 lib/misc.c:192
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "fel när tämporärfil %s skapades\n"
@@ -2441,7 +2441,7 @@ msgstr "Försöker markera %s som installerad på resultattavla(%p).\n"
 msgid "Attempting to mark %s as erased in score board(%p).\n"
 msgstr "Försöker markera %s som raderat på resultattavla(%p).\n"
 
-#: lib/query.c:115 lib/rpmts.c:586
+#: lib/query.c:115 lib/rpmts.c:604
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "fel format: %s\n"
@@ -2542,7 +2542,7 @@ msgstr "paketpost nummer: %u\n"
 msgid "record %u could not be read\n"
 msgstr "post %u kunde inte läsas\n"
 
-#: lib/query.c:672 lib/rpminstall.c:737
+#: lib/query.c:672 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
@@ -2680,42 +2680,42 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
 
-#: lib/rpmfi.c:491
+#: lib/rpmfi.c:490
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
 
-#: lib/rpmfi.c:760
+#: lib/rpmfi.c:759
 msgid "========== relocations\n"
 msgstr "========== omflyttningar\n"
 
-#: lib/rpmfi.c:764
+#: lib/rpmfi.c:763
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d utesluter  %s\n"
 
-#: lib/rpmfi.c:767
+#: lib/rpmfi.c:766
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d flyttar om %s -> %s\n"
 
-#: lib/rpmfi.c:898
+#: lib/rpmfi.c:897
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "hoppar över %s %s\n"
 
-#: lib/rpmfi.c:908
+#: lib/rpmfi.c:907
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "flyttar %s till %s\n"
 
-#: lib/rpmfi.c:999
+#: lib/rpmfi.c:998
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "flyttar katalogen %s till %s\n"
 
-#: lib/rpmgi.c:66 lib/rpminstall.c:97 lib/rpminstall.c:423
-#: lib/rpminstall.c:555 lib/rpmts.c:597 tools/rpmgraph.c:120
+#: lib/rpmgi.c:66 lib/rpminstall.c:96 lib/rpminstall.c:422
+#: lib/rpminstall.c:554 lib/rpmts.c:615 tools/rpmgraph.c:120
 #: tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2726,133 +2726,133 @@ msgstr "misslyckades med att öppna %s: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "okänd tagg: \"%s\"\n"
 
-#: lib/rpmgi.c:585 lib/rpminstall.c:598 lib/rpminstall.c:771
-#: lib/rpminstall.c:1017 lib/transaction.c:947 tools/rpmgraph.c:195
+#: lib/rpmgi.c:585 lib/rpminstall.c:597 lib/rpminstall.c:770
+#: lib/rpminstall.c:1016 lib/transaction.c:947 tools/rpmgraph.c:195
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
-#: lib/rpmgi.c:590 lib/rpminstall.c:604 tools/rpmgraph.c:200
+#: lib/rpmgi.c:590 lib/rpminstall.c:603 tools/rpmgraph.c:200
 msgid "    Suggested resolutions:\n"
 msgstr "    Föreslagna lösningar:\n"
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:157
 msgid "Preparing..."
 msgstr "Förbereder..."
 
-#: lib/rpminstall.c:160
+#: lib/rpminstall.c:159
 msgid "Preparing packages for installation..."
 msgstr "Förbereder paket för installation ..."
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:177
 msgid "Repackaging..."
 msgstr "Packar om..."
 
-#: lib/rpminstall.c:180
+#: lib/rpminstall.c:179
 msgid "Repackaging erased files..."
 msgstr "Packar om raderade filer..."
 
-#: lib/rpminstall.c:199
+#: lib/rpminstall.c:198
 msgid "Upgrading..."
 msgstr "Uppgraderar..."
 
-#: lib/rpminstall.c:201
+#: lib/rpminstall.c:200
 msgid "Upgrading packages..."
 msgstr "Uppgraderar paket..."
 
-#: lib/rpminstall.c:352
+#: lib/rpminstall.c:351
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Lägger till mål: %s\n"
 
-#: lib/rpminstall.c:368
+#: lib/rpminstall.c:367
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hämtar %s\n"
 
-#: lib/rpminstall.c:381
+#: lib/rpminstall.c:380
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... som %s\n"
 
-#: lib/rpminstall.c:385
+#: lib/rpminstall.c:384
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
-#: lib/rpminstall.c:442 lib/rpminstall.c:832 tools/rpmgraph.c:140
+#: lib/rpminstall.c:441 lib/rpminstall.c:831 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kan inte installeras\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:458
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tlade till källpaket [%d]\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:483
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s är inte relokerbart\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:525
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tlade till binärpaket [%d]\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:530
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "fel vid läsning från fil %s\n"
 
-#: lib/rpminstall.c:537
+#: lib/rpminstall.c:536
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "filen %s behöver en nyare version av RPM\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:568
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: inte ett rpm-paket (eller paketspecifikation): %s\n"
 
-#: lib/rpminstall.c:584
+#: lib/rpminstall.c:583
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "hittade %d käll- och %d binärpaket\n"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:632
 msgid "installing binary packages\n"
 msgstr "installerar binärpaket\n"
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:657
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kan inte öppna filen %s: %s\n"
 
-#: lib/rpminstall.c:746
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" anger flera paket\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:815
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:822
+#: lib/rpminstall.c:821
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
 
-#: lib/rpminstall.c:1011 lib/transaction.c:940
+#: lib/rpminstall.c:1010 lib/transaction.c:940
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Återställer paket (+%d/-%d) till %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1042 lib/transaction.c:991
+#: lib/rpminstall.c:1041 lib/transaction.c:991
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Rensar upp ompaketerade paket:\n"
 
-#: lib/rpminstall.c:1049 lib/transaction.c:997
+#: lib/rpminstall.c:1048 lib/transaction.c:997
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tTar bort %s:\n"
@@ -2912,70 +2912,70 @@ msgstr "skapa transaktionsmängd"
 msgid "waiting for transaction lock on %s\n"
 msgstr "Skapar resultattavla för transaktion(%p, %p)\n"
 
-#: lib/rpmps.c:179
+#: lib/rpmps.c:306
 msgid "different"
 msgstr "annan"
 
-#: lib/rpmps.c:187
+#: lib/rpmps.c:314
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "paket %s är avsett för en %s-arkitektur"
 
-#: lib/rpmps.c:192
+#: lib/rpmps.c:319
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "paket %s är avsett för ett %s-operativsystem"
 
-#: lib/rpmps.c:197
+#: lib/rpmps.c:324
 #, c-format
 msgid "package %s is already installed"
 msgstr "paket %s är redan installerat"
 
-#: lib/rpmps.c:202
+#: lib/rpmps.c:329
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "sökväg %s i paket %s är inte relokerbar"
 
-#: lib/rpmps.c:207
+#: lib/rpmps.c:334
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "fil %s är en konflikt mellan installationsförsök av %s och %s"
 
-#: lib/rpmps.c:212
+#: lib/rpmps.c:339
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "fil %s från installation av %s står i konflikt med filen från paket %s"
 
-#: lib/rpmps.c:217
+#: lib/rpmps.c:344
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s (som är nyare än %s) är redan installerat"
 
-#: lib/rpmps.c:222
+#: lib/rpmps.c:349
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "installation av paket %s kräver %ld %cB på filsystemet %s"
 
-#: lib/rpmps.c:232
+#: lib/rpmps.c:359
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "installation av paket %s kräver %ld inoder på filsystem %s"
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:363
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s behövs av %s%s"
 
-#: lib/rpmps.c:238 lib/rpmps.c:243
+#: lib/rpmps.c:365 lib/rpmps.c:370
 msgid "(installed) "
 msgstr "(installerat) "
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:368
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s står i konflikt med %s%s"
 
-#: lib/rpmps.c:247
+#: lib/rpmps.c:374
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "okänt fel %d uppträdde under behandling av paket %s"
@@ -3015,62 +3015,62 @@ msgstr "Ofullständig standardvärdesrad vid %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "För många argument i standardvärdesrad vid %s:%d\n"
 
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:514
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Misslyckades med att läsa %s: %s.\n"
 
-#: lib/rpmrc.c:571
+#: lib/rpmrc.c:551
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "\":\" saknas (hittade 0x%02x) vid %s:%d\n"
 
-#: lib/rpmrc.c:588 lib/rpmrc.c:640
+#: lib/rpmrc.c:568 lib/rpmrc.c:620
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argument till %s saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:605
+#: lib/rpmrc.c:585
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s expansion misslyckades vid %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:593
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "kan inte öppna %s vid %s:%d: %s\n"
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:612
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "arkitektur saknas för %s vid %s:%d\n"
 
-#: lib/rpmrc.c:699
+#: lib/rpmrc.c:679
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "okänd flagga \"%s\" vid %s:%d\n"
 
-#: lib/rpmrc.c:1446
+#: lib/rpmrc.c:1426
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Okänt system: %s\n"
 
-#: lib/rpmrc.c:1447
+#: lib/rpmrc.c:1427
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1667
+#: lib/rpmrc.c:1647
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Kan inte expandera %s\n"
 
-#: lib/rpmrc.c:1672
+#: lib/rpmrc.c:1652
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Kan inte läsa %s, HOME är för stor.\n"
 
-#: lib/rpmrc.c:1689
+#: lib/rpmrc.c:1669
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kan inte öppna %s för läsning: %s.\n"
@@ -3080,95 +3080,95 @@ msgstr "Kan inte öppna %s för läsning: %s.\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/rpmts.c:250
+#: lib/rpmts.c:268
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "överflödigt \"(\" i paketetikett: %s\n"
 
-#: lib/rpmts.c:268
+#: lib/rpmts.c:286
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "\"(\" saknas i etikett: %s\n"
 
-#: lib/rpmts.c:276
+#: lib/rpmts.c:294
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "\")\" saknas i paketetikett: %s\n"
 
-#: lib/rpmts.c:480
+#: lib/rpmts.c:498
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "kan inte öppna Solve-databas i %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:636
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Lägger till: %s\n"
 
-#: lib/rpmts.c:630
+#: lib/rpmts.c:648
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Föreslår %s\n"
 
-#: lib/rpmts.c:1113
+#: lib/rpmts.c:1131
 msgid "mounted filesystems:\n"
 msgstr "monterade filsystem:\n"
 
-#: lib/rpmts.c:1115
+#: lib/rpmts.c:1133
 #, fuzzy
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i  enhet bstrl       btillg       itillg monteringspunkt\n"
 
-#: lib/rpmts.c:1171
+#: lib/rpmts.c:1189
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1498
+#: lib/rpmts.c:1516
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr "Skapar resultattavla för transaktion(%p, %p)\n"
 
-#: lib/rpmts.c:1503
+#: lib/rpmts.c:1521
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr "\tResultattavleadress:  %p\n"
 
-#: lib/rpmts.c:1513
+#: lib/rpmts.c:1531
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "\tAllokerar utrymme för %d poster\n"
 
-#: lib/rpmts.c:1540
+#: lib/rpmts.c:1558
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr "\tLägger till post för %s till resultattavla.\n"
 
-#: lib/rpmts.c:1543
+#: lib/rpmts.c:1561
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr "\t\tStartadress:  %p\n"
 
-#: lib/rpmts.c:1554
+#: lib/rpmts.c:1572
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr "\tUppdaterar post för %s i resultattavla.\n"
 
-#: lib/rpmts.c:1579
+#: lib/rpmts.c:1597
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr "Kan frigöra resultattavla(%p)\n"
 
-#: lib/rpmts.c:1594
+#: lib/rpmts.c:1612
 msgid "\tRefcount is zero...will free\n"
 msgstr "\tReferensräknare är noll...frigör\n"
 
-#: lib/rpmts.c:1642
+#: lib/rpmts.c:1660
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr "Letar i resultattavla(%p) efter %s\n"
 
-#: lib/rpmts.c:1648
+#: lib/rpmts.c:1666
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr "\tHittade post vid adress:  %p\n"
@@ -3501,11 +3501,6 @@ msgstr "kör skript efter transaktion\n"
 #, c-format
 msgid "missing   %c %s"
 msgstr "saknas    %c %s"
-
-#: lib/verify.c:382
-#, c-format
-msgid "Unsatisfied dependencies for %s: "
-msgstr "Ouppfyllda beroenden för %s: "
 
 #: misc/error.c:107
 #, fuzzy
@@ -4067,11 +4062,11 @@ msgstr "varning: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "minnesallokering (%u byte) returnerade NULL.\n"
 
-#: rpmio/url.c:212
+#: rpmio/url.c:213
 msgid "url port must be a number\n"
 msgstr "url-port måste vara ett tal\n"
 
-#: rpmio/url.c:277
+#: rpmio/url.c:278
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
@@ -4102,3 +4097,6 @@ msgstr "%s: cacheoperation misslyckades: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: läsning av paketlista misslyckades: %s\n"
+
+#~ msgid "Unsatisfied dependencies for %s: "
+#~ msgstr "Ouppfyllda beroenden för %s: "

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-19 06:59+0200\n"
+"POT-Creation-Date: 2007-10-24 15:58+0300\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -359,22 +359,22 @@ msgstr "k dotazu nezadány ¾ádné parametry"
 msgid "Unable to open temp file.\n"
 msgstr "Nelze otevøít doèasný soubor.\n"
 
-#: build/build.c:219
+#: build/build.c:208
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: build/build.c:225
+#: build/build.c:214
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Spu¹tìní %s selhalo (%s): %s\n"
 
-#: build/build.c:234
+#: build/build.c:223
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "©patný návratový kód z %s (%s)\n"
 
-#: build/build.c:344
+#: build/build.c:333
 msgid ""
 "\n"
 "\n"
@@ -568,7 +568,7 @@ msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:1745 lib/rpminstall.c:306
+#: build/files.c:1745 lib/rpminstall.c:305
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
@@ -1404,44 +1404,44 @@ msgstr "nemohu provést dotaz %s: %s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "dotaz na spec soubor %s selhal, nemohu parsovat\n"
 
-#: lib/cpio.c:188
+#: lib/cpio.c:187
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(chyba: 0x%x)"
 
-#: lib/cpio.c:191
+#: lib/cpio.c:190
 msgid "Bad magic"
 msgstr "©patné magické èíslo"
 
-#: lib/cpio.c:192
+#: lib/cpio.c:191
 msgid "Bad/unreadable  header"
 msgstr "©patná nebo neèitelná hlavièka"
 
-#: lib/cpio.c:214
+#: lib/cpio.c:213
 msgid "Header size too big"
 msgstr "Velikost hlavièky je pøili¹ velká"
 
-#: lib/cpio.c:215
+#: lib/cpio.c:214
 msgid "Unknown file type"
 msgstr "Neznámý typ souboru"
 
-#: lib/cpio.c:216
+#: lib/cpio.c:215
 msgid "Missing hard link(s)"
 msgstr "Chybìjící hardlink(y)"
 
-#: lib/cpio.c:217
+#: lib/cpio.c:216
 msgid "MD5 sum mismatch"
 msgstr "MD5 souèet nesouhlasí"
 
-#: lib/cpio.c:218
+#: lib/cpio.c:217
 msgid "Internal error"
 msgstr "Interní chyba"
 
-#: lib/cpio.c:219
+#: lib/cpio.c:218
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:230
+#: lib/cpio.c:229
 msgid " failed - "
 msgstr "selhal - "
 
@@ -1562,7 +1562,7 @@ msgstr "mntctl() nevrátil pøípojné body: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "nemohu zjistit stav %s: %s\n"
 
-#: lib/fs.c:148 rpmio/url.c:257
+#: lib/fs.c:148 rpmio/url.c:258
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nemohu otevøít %s: %s\n"
@@ -1642,17 +1642,17 @@ msgstr "%s vytvoøen jako %s\n"
 msgid "adding %d args from manifest.\n"
 msgstr ""
 
-#: lib/misc.c:41
+#: lib/misc.c:40
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/misc.c:46
+#: lib/misc.c:45
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nemohu zapsat do %%%s %s\n"
 
-#: lib/misc.c:182 lib/misc.c:187 lib/misc.c:193
+#: lib/misc.c:181 lib/misc.c:186 lib/misc.c:192
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
@@ -2494,7 +2494,7 @@ msgstr ""
 msgid "Attempting to mark %s as erased in score board(%p).\n"
 msgstr ""
 
-#: lib/query.c:115 lib/rpmts.c:586
+#: lib/query.c:115 lib/rpmts.c:604
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "nesprávný formát: %s\n"
@@ -2596,7 +2596,7 @@ msgstr "záznam balíèku èíslo: %u\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %u nelze pøeèíst\n"
 
-#: lib/query.c:672 lib/rpminstall.c:737
+#: lib/query.c:672 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2737,43 +2737,43 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"
 
-#: lib/rpmfi.c:491
+#: lib/rpmfi.c:490
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:760
+#: lib/rpmfi.c:759
 #, fuzzy
 msgid "========== relocations\n"
 msgstr "========== ukládání tsort relací\n"
 
-#: lib/rpmfi.c:764
+#: lib/rpmfi.c:763
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je vyøazen: %s\n"
 
-#: lib/rpmfi.c:767
+#: lib/rpmfi.c:766
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s vytvoøen jako %s\n"
 
-#: lib/rpmfi.c:898
+#: lib/rpmfi.c:897
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:908
+#: lib/rpmfi.c:907
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmfi.c:999
+#: lib/rpmfi.c:998
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: lib/rpmgi.c:66 lib/rpminstall.c:97 lib/rpminstall.c:423
-#: lib/rpminstall.c:555 lib/rpmts.c:597 tools/rpmgraph.c:120
+#: lib/rpmgi.c:66 lib/rpminstall.c:96 lib/rpminstall.c:422
+#: lib/rpminstall.c:554 lib/rpmts.c:615 tools/rpmgraph.c:120
 #: tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2784,137 +2784,137 @@ msgstr "otevøení %s selhalo: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "neznámá znaèka"
 
-#: lib/rpmgi.c:585 lib/rpminstall.c:598 lib/rpminstall.c:771
-#: lib/rpminstall.c:1017 lib/transaction.c:947 tools/rpmgraph.c:195
+#: lib/rpmgi.c:585 lib/rpminstall.c:597 lib/rpminstall.c:770
+#: lib/rpminstall.c:1016 lib/transaction.c:947 tools/rpmgraph.c:195
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "chybné závislosti pøi sestavování:\n"
 
-#: lib/rpmgi.c:590 lib/rpminstall.c:604 tools/rpmgraph.c:200
+#: lib/rpmgi.c:590 lib/rpminstall.c:603 tools/rpmgraph.c:200
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:157
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:160
+#: lib/rpminstall.c:159
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "nezadány ¾ádné balíèky pro instalaci"
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:177
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:180
+#: lib/rpminstall.c:179
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:199
+#: lib/rpminstall.c:198
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:201
+#: lib/rpminstall.c:200
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "aktualizace balíèku"
 
-#: lib/rpminstall.c:352
+#: lib/rpminstall.c:351
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Hledám   %s: (pou¾it %s)...\n"
 
-#: lib/rpminstall.c:368
+#: lib/rpminstall.c:367
 #, fuzzy, c-format
 msgid "Retrieving %s\n"
 msgstr "RPM verze %s\n"
 
-#: lib/rpminstall.c:381
+#: lib/rpminstall.c:380
 #, fuzzy, c-format
 msgid " ... as %s\n"
 msgstr "%s ulo¾eno jako %s\n"
 
-#: lib/rpminstall.c:385
+#: lib/rpminstall.c:384
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:442 lib/rpminstall.c:832 tools/rpmgraph.c:140
+#: lib/rpminstall.c:441 lib/rpminstall.c:831 tools/rpmgraph.c:140
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "neinstalován  "
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:458
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "<zdrojový balíèek>"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:483
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:525
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "nainstalovat balíèek"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:530
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi vytváøení doèasného souboru %s\n"
 
-#: lib/rpminstall.c:537
+#: lib/rpminstall.c:536
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:568
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/rpminstall.c:584
+#: lib/rpminstall.c:583
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "vytvoøení zdrojového a binárního balíèku z <tar_soubor>"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:632
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "nainstalovat balíèek"
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:657
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:746
+#: lib/rpminstall.c:745
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "Polo¾ka %s musí být v balíèku pøítomna: %s\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:815
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpminstall.c:822
+#: lib/rpminstall.c:821
 #, fuzzy, c-format
 msgid "Installing %s\n"
 msgstr "øádek: %s\n"
 
-#: lib/rpminstall.c:1011 lib/transaction.c:940
+#: lib/rpminstall.c:1010 lib/transaction.c:940
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1042 lib/transaction.c:991
+#: lib/rpminstall.c:1041 lib/transaction.c:991
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:1049 lib/transaction.c:997
+#: lib/rpminstall.c:1048 lib/transaction.c:997
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "RPM verze %s\n"
@@ -2975,71 +2975,71 @@ msgstr "nemohu vytvoøit %s: %s\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpmps.c:179
+#: lib/rpmps.c:306
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:187
+#: lib/rpmps.c:314
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "balíèek %s je pro jinou architekturu"
 
-#: lib/rpmps.c:192
+#: lib/rpmps.c:319
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "balíèek %s je pro jiný operaèní systém"
 
-#: lib/rpmps.c:197
+#: lib/rpmps.c:324
 #, c-format
 msgid "package %s is already installed"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/rpmps.c:202
+#: lib/rpmps.c:329
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/rpmps.c:207
+#: lib/rpmps.c:334
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "soubor %s zpùsobuje konflikt mezi instalovaným %s a %s"
 
-#: lib/rpmps.c:212
+#: lib/rpmps.c:339
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "soubor %s z instalace %s koliduje se souborem z balíèku %s"
 
-#: lib/rpmps.c:217
+#: lib/rpmps.c:344
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "balíèek %s (který je novìj¹í, ne¾ %s) je ji¾ nainstalován"
 
-#: lib/rpmps.c:222
+#: lib/rpmps.c:349
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld%cB na systému souborù %s"
 
-#: lib/rpmps.c:232
+#: lib/rpmps.c:359
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld inodù na systému souborù %s"
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:363
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " je nutné pro %s-%s-%s\n"
 
-#: lib/rpmps.c:238 lib/rpmps.c:243
+#: lib/rpmps.c:365 lib/rpmps.c:370
 #, fuzzy
 msgid "(installed) "
 msgstr "neinstalován  "
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:368
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/rpmps.c:247
+#: lib/rpmps.c:374
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
@@ -3079,62 +3079,62 @@ msgstr ""
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:514
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "nemohu zjistit stav %s: %s\n"
 
-#: lib/rpmrc.c:571
+#: lib/rpmrc.c:551
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:588 lib/rpmrc.c:640
+#: lib/rpmrc.c:568 lib/rpmrc.c:620
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "Sestavuji cílové platformy: %s\n"
 
-#: lib/rpmrc.c:605
+#: lib/rpmrc.c:585
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "nemohu otevøít %s: %s\n"
 
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:593
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:612
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "øádek %d: ©patný formát BuildArchitecture: %s\n"
 
-#: lib/rpmrc.c:699
+#: lib/rpmrc.c:679
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "nemohu zjistit stav %s: %m\n"
 
-#: lib/rpmrc.c:1446
+#: lib/rpmrc.c:1426
 #, fuzzy, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámý typ ikony: %s\n"
 
-#: lib/rpmrc.c:1447
+#: lib/rpmrc.c:1427
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1667
+#: lib/rpmrc.c:1647
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "nemohu znovu otevøít payload: %s\n"
 
-#: lib/rpmrc.c:1672
+#: lib/rpmrc.c:1652
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1689
+#: lib/rpmrc.c:1669
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nemohu otevøít %s: %s\n"
@@ -3144,95 +3144,95 @@ msgstr "Nemohu otevøít %s: %s\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: lib/rpmts.c:250
+#: lib/rpmts.c:268
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/rpmts.c:268
+#: lib/rpmts.c:286
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Chybí '(' v %s %s\n"
 
-#: lib/rpmts.c:276
+#: lib/rpmts.c:294
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/rpmts.c:480
+#: lib/rpmts.c:498
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:636
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "øádek: %s\n"
 
-#: lib/rpmts.c:630
+#: lib/rpmts.c:648
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "RPM verze %s\n"
 
-#: lib/rpmts.c:1113
+#: lib/rpmts.c:1131
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "získávám seznam pøipojených systémù souborù\n"
 
-#: lib/rpmts.c:1115
+#: lib/rpmts.c:1133
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1171
+#: lib/rpmts.c:1189
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "Soubor %4d: %07o %s.%s\t %s\n"
 
-#: lib/rpmts.c:1498
+#: lib/rpmts.c:1516
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1503
+#: lib/rpmts.c:1521
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1513
+#: lib/rpmts.c:1531
 #, fuzzy, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "Provádìní(%s): %s\n"
 
-#: lib/rpmts.c:1540
+#: lib/rpmts.c:1558
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1543
+#: lib/rpmts.c:1561
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1554
+#: lib/rpmts.c:1572
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1579
+#: lib/rpmts.c:1597
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1594
+#: lib/rpmts.c:1612
 msgid "\tRefcount is zero...will free\n"
 msgstr ""
 
-#: lib/rpmts.c:1642
+#: lib/rpmts.c:1660
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1648
+#: lib/rpmts.c:1666
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""
@@ -3567,11 +3567,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "chybí { po %"
-
-#: lib/verify.c:382
-#, fuzzy, c-format
-msgid "Unsatisfied dependencies for %s: "
-msgstr "chybné závislosti pøi sestavování:\n"
 
 #: misc/error.c:107
 #, fuzzy
@@ -4139,12 +4134,12 @@ msgstr ""
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:212
+#: rpmio/url.c:213
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "øádek %d: Polo¾ka Epoch/Serial musí být èíslo: %s\n"
 
-#: rpmio/url.c:277
+#: rpmio/url.c:278
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nemohu zjistit stav %s: %s\n"
@@ -4177,3 +4172,7 @@ msgstr "%s: otevøení selhalo: %s\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
+
+#, fuzzy
+#~ msgid "Unsatisfied dependencies for %s: "
+#~ msgstr "chybné závislosti pøi sestavování:\n"

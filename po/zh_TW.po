@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-19 06:59+0200\n"
+"POT-Creation-Date: 2007-10-24 15:58+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -349,22 +349,22 @@ msgstr "沒有指定引數"
 msgid "Unable to open temp file.\n"
 msgstr "無法開啟暫時檔案。\n"
 
-#: build/build.c:219
+#: build/build.c:208
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "正在執行 (%s)：%s\n"
 
-#: build/build.c:225
+#: build/build.c:214
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "執行 %s 失敗 (%s)：%s\n"
 
-#: build/build.c:234
+#: build/build.c:223
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "來自 (%s) 錯誤的離開狀態 (%s)\n"
 
-#: build/build.c:344
+#: build/build.c:333
 msgid ""
 "\n"
 "\n"
@@ -558,7 +558,7 @@ msgstr "檔案需要以「/」開頭：%s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "不容許以萬用字元解析：%s\n"
 
-#: build/files.c:1745 lib/rpminstall.c:306
+#: build/files.c:1745 lib/rpminstall.c:305
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "以萬用字元解析找不到檔案：%s\n"
@@ -1382,44 +1382,44 @@ msgstr "無法查詢 %s：%s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "規格檔 %s 的查詢失敗，無法剖析\n"
 
-#: lib/cpio.c:188
+#: lib/cpio.c:187
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(error 0x%x)"
 
-#: lib/cpio.c:191
+#: lib/cpio.c:190
 msgid "Bad magic"
 msgstr "不當的魔法數字"
 
-#: lib/cpio.c:192
+#: lib/cpio.c:191
 msgid "Bad/unreadable  header"
 msgstr "損壞或無法讀取的表頭"
 
-#: lib/cpio.c:214
+#: lib/cpio.c:213
 msgid "Header size too big"
 msgstr "表頭尺寸過大"
 
-#: lib/cpio.c:215
+#: lib/cpio.c:214
 msgid "Unknown file type"
 msgstr "不明的檔案類型"
 
-#: lib/cpio.c:216
+#: lib/cpio.c:215
 msgid "Missing hard link(s)"
 msgstr "丟失的硬式鏈結"
 
-#: lib/cpio.c:217
+#: lib/cpio.c:216
 msgid "MD5 sum mismatch"
 msgstr "MD5 比照結果不匹配"
 
-#: lib/cpio.c:218
+#: lib/cpio.c:217
 msgid "Internal error"
 msgstr "內部錯誤"
 
-#: lib/cpio.c:219
+#: lib/cpio.c:218
 msgid "Archive file not in header"
 msgstr "在檔頭中沒有歸檔檔案"
 
-#: lib/cpio.c:230
+#: lib/cpio.c:229
 msgid " failed - "
 msgstr " 失敗 - "
 
@@ -1532,7 +1532,7 @@ msgstr "mntctl() 回傳掛載點失敗：%s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "無法檢驗狀態：%s：%s\n"
 
-#: lib/fs.c:148 rpmio/url.c:257
+#: lib/fs.c:148 rpmio/url.c:258
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
@@ -1611,17 +1611,17 @@ msgstr "%s 如同 %s 而建立\n"
 msgid "adding %d args from manifest.\n"
 msgstr "從清單中加入 %d 個引數。\n"
 
-#: lib/misc.c:41
+#: lib/misc.c:40
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "無法建立 %%%s %s\n"
 
-#: lib/misc.c:46
+#: lib/misc.c:45
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "無法寫入 %%%s %s\n"
 
-#: lib/misc.c:182 lib/misc.c:187 lib/misc.c:193
+#: lib/misc.c:181 lib/misc.c:186 lib/misc.c:192
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "建立暫時檔案 %s 時發生錯誤\n"
@@ -2421,7 +2421,7 @@ msgstr "試圖在記錄板(%2$u)中標記 %1$s 為已安裝。\n"
 msgid "Attempting to mark %s as erased in score board(%p).\n"
 msgstr "試圖在記錄板(0x%2$x)中標記 %1$s 為已清除。\n"
 
-#: lib/query.c:115 lib/rpmts.c:586
+#: lib/query.c:115 lib/rpmts.c:604
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "不正確的格式：%s\n"
@@ -2522,7 +2522,7 @@ msgstr "套件記錄：%u\n"
 msgid "record %u could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:672 lib/rpminstall.c:737
+#: lib/query.c:672 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -2660,42 +2660,42 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "套件 %s 有不滿足的 %s：%s\n"
 
-#: lib/rpmfi.c:491
+#: lib/rpmfi.c:490
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s 由於 missingok 旗標而被略過\n"
 
-#: lib/rpmfi.c:760
+#: lib/rpmfi.c:759
 msgid "========== relocations\n"
 msgstr "========== 重新部署\n"
 
-#: lib/rpmfi.c:764
+#: lib/rpmfi.c:763
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d 排除  %s\n"
 
-#: lib/rpmfi.c:767
+#: lib/rpmfi.c:766
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d 重新部署 %s -> %s\n"
 
-#: lib/rpmfi.c:898
+#: lib/rpmfi.c:897
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "排除 %s %s\n"
 
-#: lib/rpmfi.c:908
+#: lib/rpmfi.c:907
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "重新部署 %s 到 %s\n"
 
-#: lib/rpmfi.c:999
+#: lib/rpmfi.c:998
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "重新部署目錄 %s 到 %s\n"
 
-#: lib/rpmgi.c:66 lib/rpminstall.c:97 lib/rpminstall.c:423
-#: lib/rpminstall.c:555 lib/rpmts.c:597 tools/rpmgraph.c:120
+#: lib/rpmgi.c:66 lib/rpminstall.c:96 lib/rpminstall.c:422
+#: lib/rpminstall.c:554 lib/rpmts.c:615 tools/rpmgraph.c:120
 #: tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2706,133 +2706,133 @@ msgstr "開啟 %s 失敗：%s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明的標記：「%s」\n"
 
-#: lib/rpmgi.c:585 lib/rpminstall.c:598 lib/rpminstall.c:771
-#: lib/rpminstall.c:1017 lib/transaction.c:947 tools/rpmgraph.c:195
+#: lib/rpmgi.c:585 lib/rpminstall.c:597 lib/rpminstall.c:770
+#: lib/rpminstall.c:1016 lib/transaction.c:947 tools/rpmgraph.c:195
 msgid "Failed dependencies:\n"
 msgstr "相依性偵測失敗：\n"
 
-#: lib/rpmgi.c:590 lib/rpminstall.c:604 tools/rpmgraph.c:200
+#: lib/rpmgi.c:590 lib/rpminstall.c:603 tools/rpmgraph.c:200
 msgid "    Suggested resolutions:\n"
 msgstr "    推薦解決方案：\n"
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:157
 msgid "Preparing..."
 msgstr "正在準備…"
 
-#: lib/rpminstall.c:160
+#: lib/rpminstall.c:159
 msgid "Preparing packages for installation..."
 msgstr "正在準備要安裝的套件…"
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:177
 msgid "Repackaging..."
 msgstr "重新打包中…"
 
-#: lib/rpminstall.c:180
+#: lib/rpminstall.c:179
 msgid "Repackaging erased files..."
 msgstr "正在重新打包被清除的檔案…"
 
-#: lib/rpminstall.c:199
+#: lib/rpminstall.c:198
 msgid "Upgrading..."
 msgstr "更新中…"
 
-#: lib/rpminstall.c:201
+#: lib/rpminstall.c:200
 msgid "Upgrading packages..."
 msgstr "正在更新套件…"
 
-#: lib/rpminstall.c:352
+#: lib/rpminstall.c:351
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "加入目的物：%s\n"
 
-#: lib/rpminstall.c:368
+#: lib/rpminstall.c:367
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "取回中 %s\n"
 
-#: lib/rpminstall.c:381
+#: lib/rpminstall.c:380
 #, c-format
 msgid " ... as %s\n"
 msgstr " … 為 %s\n"
 
-#: lib/rpminstall.c:385
+#: lib/rpminstall.c:384
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "略過 %s - 傳輸失敗 - %s\n"
 
-#: lib/rpminstall.c:442 lib/rpminstall.c:832 tools/rpmgraph.c:140
+#: lib/rpminstall.c:441 lib/rpminstall.c:831 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s 無法安裝\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:458
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\t加入原始碼套件 [%d]\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:483
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "套件 %s 不能重新部署\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:525
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\t加入二進位套件 [%d]\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:530
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "讀取檔案 %s 時發生錯誤\n"
 
-#: lib/rpminstall.c:537
+#: lib/rpminstall.c:536
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "檔案 %s 需要更新版本的 RPM\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:568
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: 不是 rpm 套件(或套件清單)：%s\n"
 
-#: lib/rpminstall.c:584
+#: lib/rpminstall.c:583
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "找到 %d 個原始碼套件和 %d 個二進位套件\n"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:632
 msgid "installing binary packages\n"
 msgstr "正在安裝二進位套件\n"
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:657
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "無法開啟檔案 %s：%s\n"
 
-#: lib/rpminstall.c:746
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "「%s」指定了多個套件\n"
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:815
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "無法開啟檔案 %s：%s\n"
 
-#: lib/rpminstall.c:822
+#: lib/rpminstall.c:821
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"
 
-#: lib/rpminstall.c:1011 lib/transaction.c:940
+#: lib/rpminstall.c:1010 lib/transaction.c:940
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "回溯套件 (+%d/-%d) to %-24.24s (0x%08x)：\n"
 
-#: lib/rpminstall.c:1042 lib/transaction.c:991
+#: lib/rpminstall.c:1041 lib/transaction.c:991
 msgid "Cleaning up repackaged packages:\n"
 msgstr "正在清除重新產生的打包：\n"
 
-#: lib/rpminstall.c:1049 lib/transaction.c:997
+#: lib/rpminstall.c:1048 lib/transaction.c:997
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\t正在移除 %s：\n"
@@ -2892,70 +2892,70 @@ msgstr "建立異動作業集"
 msgid "waiting for transaction lock on %s\n"
 msgstr "產生異動作業記錄板(%p, %p)\n"
 
-#: lib/rpmps.c:179
+#: lib/rpmps.c:306
 msgid "different"
 msgstr "不同的"
 
-#: lib/rpmps.c:187
+#: lib/rpmps.c:314
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "套件 %s 是適用於 %s 架構的"
 
-#: lib/rpmps.c:192
+#: lib/rpmps.c:319
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "套件 %s 是適用於 %s 作業系統的"
 
-#: lib/rpmps.c:197
+#: lib/rpmps.c:324
 #, c-format
 msgid "package %s is already installed"
 msgstr "套件 %s 已經安裝了"
 
-#: lib/rpmps.c:202
+#: lib/rpmps.c:329
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "在套件 %2$s 中的路徑 %1$s 無法重新部署"
 
-#: lib/rpmps.c:207
+#: lib/rpmps.c:334
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "在試圖安裝的 %s 和 %s 之間產生檔案 %s 的衝突"
 
-#: lib/rpmps.c:212
+#: lib/rpmps.c:339
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "從 %s 安裝的檔案 %s 與來自套件 %s 的檔案產生衝突"
 
-#: lib/rpmps.c:217
+#: lib/rpmps.c:344
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "套件 %s (較 %s 版本還新) 已經安裝了"
 
-#: lib/rpmps.c:222
+#: lib/rpmps.c:349
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "安裝套件 %s 時需要 %ld%cB 空間於檔案系統 %s 上"
 
-#: lib/rpmps.c:232
+#: lib/rpmps.c:359
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "安裝套件 %s 時需要 %ld 個節點於檔案系統 %s 上"
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:363
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s 被 %s%s 所需要"
 
-#: lib/rpmps.c:238 lib/rpmps.c:243
+#: lib/rpmps.c:365 lib/rpmps.c:370
 msgid "(installed) "
 msgstr "(已安裝) "
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:368
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s 與 %s%s 衝突"
 
-#: lib/rpmps.c:247
+#: lib/rpmps.c:374
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明錯誤 %d 發生在處理套件 %s 的程序中"
@@ -2995,62 +2995,62 @@ msgstr "不完整預設列位於 %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "在預設列的 %s:%d 中有太多引數\n"
 
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:514
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "讀取 %s 失敗: %s。\n"
 
-#: lib/rpmrc.c:571
+#: lib/rpmrc.c:551
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "缺少 ':' (找到 0x%02x) 於 %s:%d\n"
 
-#: lib/rpmrc.c:588 lib/rpmrc.c:640
+#: lib/rpmrc.c:568 lib/rpmrc.c:620
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s 缺少引數於 %s:%d\n"
 
-#: lib/rpmrc.c:605
+#: lib/rpmrc.c:585
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s 擴充失敗於 %s:%d \"%s\"\n"
 
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:593
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "無法開啟 %s 於 %s:%d: %s\n"
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:612
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "缺少 %s 架構於 %s:%d\n"
 
-#: lib/rpmrc.c:699
+#: lib/rpmrc.c:679
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "不當的選項 '%s' 於 %s:%d\n"
 
-#: lib/rpmrc.c:1446
+#: lib/rpmrc.c:1426
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明的系統：%s\n"
 
-#: lib/rpmrc.c:1447
+#: lib/rpmrc.c:1427
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1667
+#: lib/rpmrc.c:1647
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "無法展開 %s\n"
 
-#: lib/rpmrc.c:1672
+#: lib/rpmrc.c:1652
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "無法讀取 %s，HOME 過大。\n"
 
-#: lib/rpmrc.c:1689
+#: lib/rpmrc.c:1669
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "無法開啟 %s 以讀取：%s\n"
@@ -3060,94 +3060,94 @@ msgstr "無法開啟 %s 以讀取：%s\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "無法開啟套件資料庫 %s\n"
 
-#: lib/rpmts.c:250
+#: lib/rpmts.c:268
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "額外的「(」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:268
+#: lib/rpmts.c:286
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "丟失的「(」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:276
+#: lib/rpmts.c:294
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "丟失的「)」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:480
+#: lib/rpmts.c:498
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "無法開啟解析資料庫於 %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:636
 #, c-format
 msgid "Adding: %s\n"
 msgstr "正在加入：%s\n"
 
-#: lib/rpmts.c:630
+#: lib/rpmts.c:648
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "正在建議：%s\n"
 
-#: lib/rpmts.c:1113
+#: lib/rpmts.c:1131
 msgid "mounted filesystems:\n"
 msgstr "已掛載的檔案系統：\n"
 
-#: lib/rpmts.c:1115
+#: lib/rpmts.c:1133
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        dev    bsize       bavail       iavail 掛載點\n"
 
-#: lib/rpmts.c:1171
+#: lib/rpmts.c:1189
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1498
+#: lib/rpmts.c:1516
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr "產生異動作業記錄板(%p, %p)\n"
 
-#: lib/rpmts.c:1503
+#: lib/rpmts.c:1521
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr "\t記錄板位址： %p\n"
 
-#: lib/rpmts.c:1513
+#: lib/rpmts.c:1531
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "\t配置空間給 %d 項條目\n"
 
-#: lib/rpmts.c:1540
+#: lib/rpmts.c:1558
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr "\t加入 %s 的條目到記錄板。\n"
 
-#: lib/rpmts.c:1543
+#: lib/rpmts.c:1561
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr "\t\t條目位址： %p\n"
 
-#: lib/rpmts.c:1554
+#: lib/rpmts.c:1572
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr "\t在記錄板中更新 %s 條目。\n"
 
-#: lib/rpmts.c:1579
+#: lib/rpmts.c:1597
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr "也許會釋放記錄板(%p)\n"
 
-#: lib/rpmts.c:1594
+#: lib/rpmts.c:1612
 msgid "\tRefcount is zero...will free\n"
 msgstr "\t參照數為零…將會釋放\n"
 
-#: lib/rpmts.c:1642
+#: lib/rpmts.c:1660
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr "在記錄板(%p)中查找 %s\n"
 
-#: lib/rpmts.c:1648
+#: lib/rpmts.c:1666
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr "\t找到條目於位址： %p\n"
@@ -3472,11 +3472,6 @@ msgstr "正在執行異動作業後期命令稿\n"
 #, c-format
 msgid "missing   %c %s"
 msgstr "缺少      %c %s"
-
-#: lib/verify.c:382
-#, c-format
-msgid "Unsatisfied dependencies for %s: "
-msgstr "無法滿足 %s 的相依性："
 
 #: misc/error.c:107
 #, fuzzy
@@ -4036,11 +4031,11 @@ msgstr "警告："
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "記憶體配置 (%u 位元組) 回傳空值。\n"
 
-#: rpmio/url.c:212
+#: rpmio/url.c:213
 msgid "url port must be a number\n"
 msgstr "網址連接埠必須是數字\n"
 
-#: rpmio/url.c:277
+#: rpmio/url.c:278
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "建立 %s 時失敗: %s\n"
@@ -4071,3 +4066,6 @@ msgstr "%s: 快取作業失敗：ec %d。\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 讀取清單失敗：%s\n"
+
+#~ msgid "Unsatisfied dependencies for %s: "
+#~ msgstr "無法滿足 %s 的相依性："

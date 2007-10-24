@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-19 06:59+0200\n"
+"POT-Creation-Date: 2007-10-24 15:58+0300\n"
 "PO-Revision-Date: 2007-08-03 15:46-0300\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
@@ -398,23 +398,23 @@ msgstr "Não foi possível abrir o arquivo temporário.\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: build/build.c:219
+#: build/build.c:208
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Executando (%s): %s\n"
 
-#: build/build.c:225
+#: build/build.c:214
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "A execução de %s falhou (%s): %s\n"
 
 # , c-format
-#: build/build.c:234
+#: build/build.c:223
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Status de saída de %s inválido (%s)\n"
 
-#: build/build.c:344
+#: build/build.c:333
 msgid ""
 "\n"
 "\n"
@@ -618,7 +618,7 @@ msgstr "O arquivo precisa da \"/\" inicial: %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Glob não permitido: %s\n"
 
-#: build/files.c:1745 lib/rpminstall.c:306
+#: build/files.c:1745 lib/rpminstall.c:305
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "O arquivo não foi encontrado pelo glob: %s\n"
@@ -1540,44 +1540,44 @@ msgstr "Não foi possível consultar %s: %s\n"
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "a consulta ao specfile %s falhou, não foi possível analisá-lo\n"
 
-#: lib/cpio.c:188
+#: lib/cpio.c:187
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(erro 0x%x)"
 
-#: lib/cpio.c:191
+#: lib/cpio.c:190
 msgid "Bad magic"
 msgstr "Magic inválido"
 
-#: lib/cpio.c:192
+#: lib/cpio.c:191
 msgid "Bad/unreadable  header"
 msgstr "Cabeçalho inválido/impossível de ler"
 
-#: lib/cpio.c:214
+#: lib/cpio.c:213
 msgid "Header size too big"
 msgstr "Tamanho do cabeçalho muito grande"
 
-#: lib/cpio.c:215
+#: lib/cpio.c:214
 msgid "Unknown file type"
 msgstr "Tipo de arquivo desconhecido"
 
-#: lib/cpio.c:216
+#: lib/cpio.c:215
 msgid "Missing hard link(s)"
 msgstr "Ligação(ões) absoluta(s) faltando"
 
-#: lib/cpio.c:217
+#: lib/cpio.c:216
 msgid "MD5 sum mismatch"
 msgstr "soma MD5 não coincide"
 
-#: lib/cpio.c:218
+#: lib/cpio.c:217
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: lib/cpio.c:219
+#: lib/cpio.c:218
 msgid "Archive file not in header"
 msgstr "Arquivo de pacote não está no cabeçalho"
 
-#: lib/cpio.c:230
+#: lib/cpio.c:229
 msgid " failed - "
 msgstr " falhou - "
 
@@ -1697,7 +1697,7 @@ msgid "failed to stat %s: %s\n"
 msgstr "falha ao iniciar %s: %s\n"
 
 # , c-format
-#: lib/fs.c:148 rpmio/url.c:257
+#: lib/fs.c:148 rpmio/url.c:258
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "falha ao abrir %s: %s\n"
@@ -1783,19 +1783,19 @@ msgid "adding %d args from manifest.\n"
 msgstr "adicionando %d argumentos do manifesto.\n"
 
 # , c-format
-#: lib/misc.c:41
+#: lib/misc.c:40
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "não foi possível criar %%%s %s\n"
 
 # , c-format
-#: lib/misc.c:46
+#: lib/misc.c:45
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "não foi possível gravar em %%%s %s\n"
 
 # , c-format
-#: lib/misc.c:182 lib/misc.c:187 lib/misc.c:193
+#: lib/misc.c:181 lib/misc.c:186 lib/misc.c:192
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o arquivo temporário %s\n"
@@ -2616,7 +2616,7 @@ msgstr "Tentando marcar %s como instalado no placar (%p).\n"
 msgid "Attempting to mark %s as erased in score board(%p).\n"
 msgstr "Tentando marcar %s como removido no placar (%p).\n"
 
-#: lib/query.c:115 lib/rpmts.c:586
+#: lib/query.c:115 lib/rpmts.c:604
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "formato incorreto: %s\n"
@@ -2718,7 +2718,7 @@ msgstr "número de registro do pacote: %u\n"
 msgid "record %u could not be read\n"
 msgstr "o registro %u não pôde ser lido\n"
 
-#: lib/query.c:672 lib/rpminstall.c:737
+#: lib/query.c:672 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
@@ -2866,12 +2866,12 @@ msgstr "  %s    A %s\tB %s\n"
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "o pacote %s tem %s não satisfeito: %s\n"
 
-#: lib/rpmfi.c:491
+#: lib/rpmfi.c:490
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido ao sinalizador missingok\n"
 
-#: lib/rpmfi.c:760
+#: lib/rpmfi.c:759
 msgid "========== relocations\n"
 msgstr "========== realocações\n"
 
@@ -2883,13 +2883,13 @@ msgstr "========== realocações\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmfi.c:764
+#: lib/rpmfi.c:763
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d exclui %s\n"
 
 # , c-format
-#: lib/rpmfi.c:767
+#: lib/rpmfi.c:766
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d realoca %s -> %s\n"
@@ -2902,25 +2902,25 @@ msgstr "%5d realoca %s -> %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmfi.c:898
+#: lib/rpmfi.c:897
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "excluindo %s %s\n"
 
 # , c-format
-#: lib/rpmfi.c:908
+#: lib/rpmfi.c:907
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "realocando %s para %s\n"
 
 # , c-format
-#: lib/rpmfi.c:999
+#: lib/rpmfi.c:998
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "realocando diretório %s para %s\n"
 
-#: lib/rpmgi.c:66 lib/rpminstall.c:97 lib/rpminstall.c:423
-#: lib/rpminstall.c:555 lib/rpmts.c:597 tools/rpmgraph.c:120
+#: lib/rpmgi.c:66 lib/rpminstall.c:96 lib/rpminstall.c:422
+#: lib/rpminstall.c:554 lib/rpmts.c:615 tools/rpmgraph.c:120
 #: tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2932,41 +2932,41 @@ msgstr "falha ao abrir %s: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "etiqueta desconhecida: \"%s\"\n"
 
-#: lib/rpmgi.c:585 lib/rpminstall.c:598 lib/rpminstall.c:771
-#: lib/rpminstall.c:1017 lib/transaction.c:947 tools/rpmgraph.c:195
+#: lib/rpmgi.c:585 lib/rpminstall.c:597 lib/rpminstall.c:770
+#: lib/rpminstall.c:1016 lib/transaction.c:947 tools/rpmgraph.c:195
 msgid "Failed dependencies:\n"
 msgstr "Dependências não satisfeitas:\n"
 
-#: lib/rpmgi.c:590 lib/rpminstall.c:604 tools/rpmgraph.c:200
+#: lib/rpmgi.c:590 lib/rpminstall.c:603 tools/rpmgraph.c:200
 msgid "    Suggested resolutions:\n"
 msgstr "    Resoluções sugeridas:\n"
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:157
 msgid "Preparing..."
 msgstr "Preparando..."
 
-#: lib/rpminstall.c:160
+#: lib/rpminstall.c:159
 msgid "Preparing packages for installation..."
 msgstr "Preparando os pacotes para instalação..."
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:177
 msgid "Repackaging..."
 msgstr "Reempacotando..."
 
-#: lib/rpminstall.c:180
+#: lib/rpminstall.c:179
 msgid "Repackaging erased files..."
 msgstr "Reempacotando arquivos apagados..."
 
-#: lib/rpminstall.c:199
+#: lib/rpminstall.c:198
 msgid "Upgrading..."
 msgstr "Atualizando..."
 
-#: lib/rpminstall.c:201
+#: lib/rpminstall.c:200
 msgid "Upgrading packages..."
 msgstr "Atualizando pacotes..."
 
 # , c-format
-#: lib/rpminstall.c:352
+#: lib/rpminstall.c:351
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "Adicionando meta: %s\n"
@@ -2979,93 +2979,93 @@ msgstr "Adicionando meta: %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpminstall.c:368
+#: lib/rpminstall.c:367
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Obtendo %s\n"
 
-#: lib/rpminstall.c:381
+#: lib/rpminstall.c:380
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... como %s\n"
 
-#: lib/rpminstall.c:385
+#: lib/rpminstall.c:384
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "ignorando %s - a transferência falhou - %s\n"
 
-#: lib/rpminstall.c:442 lib/rpminstall.c:832 tools/rpmgraph.c:140
+#: lib/rpminstall.c:441 lib/rpminstall.c:831 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s não pode ser instalado\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:458
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tpacote fonte adicionado [%d]\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:483
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "o pacote %s não é realocável\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:525
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tpacote binário adicionado [%d]\n"
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:530
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "erro ao ler o arquivo %s\n"
 
-#: lib/rpminstall.c:537
+#: lib/rpminstall.c:536
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "o arquivo %s requer uma versão mais recente do RPM\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:568
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: não é um pacote rpm (ou um manifesto de pacote): %s\n"
 
-#: lib/rpminstall.c:584
+#: lib/rpminstall.c:583
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "foram encontrados %d pacotes fontes e %d binários\n"
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:632
 msgid "installing binary packages\n"
 msgstr "instalando pacotes binários\n"
 
 # , c-format
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:657
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "Não foi possível abrir o arquivo %s: %s\n"
 
-#: lib/rpminstall.c:746
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" especifica múltiplos pacotes\n"
 
 # , c-format
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:815
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "Não foi possível abrir %s: %s\n"
 
-#: lib/rpminstall.c:822
+#: lib/rpminstall.c:821
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalando %s\n"
 
-#: lib/rpminstall.c:1011 lib/transaction.c:940
+#: lib/rpminstall.c:1010 lib/transaction.c:940
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "Recuar pacotes (+%d/-%d) para %-24.24s (0x%08x):\n"
 
-#: lib/rpminstall.c:1042 lib/transaction.c:991
+#: lib/rpminstall.c:1041 lib/transaction.c:991
 msgid "Cleaning up repackaged packages:\n"
 msgstr "Limpando pacotes reempacotados:\n"
 
@@ -3077,7 +3077,7 @@ msgstr "Limpando pacotes reempacotados:\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpminstall.c:1049 lib/transaction.c:997
+#: lib/rpminstall.c:1048 lib/transaction.c:997
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\tRemovendo %s:\n"
@@ -3146,71 +3146,71 @@ msgstr "criar conjunto de transações"
 msgid "waiting for transaction lock on %s\n"
 msgstr "Criando placar (%p, %p) da transação\n"
 
-#: lib/rpmps.c:179
+#: lib/rpmps.c:306
 msgid "different"
 msgstr "diferente"
 
-#: lib/rpmps.c:187
+#: lib/rpmps.c:314
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "o pacote %s é destinado para a arquitetura %s"
 
-#: lib/rpmps.c:192
+#: lib/rpmps.c:319
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "o pacote %s é destinado para o sistema operacional %s"
 
-#: lib/rpmps.c:197
+#: lib/rpmps.c:324
 #, c-format
 msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
-#: lib/rpmps.c:202
+#: lib/rpmps.c:329
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "o caminho %s no pacote %s não é realocável"
 
-#: lib/rpmps.c:207
+#: lib/rpmps.c:334
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "o arquivo %s conflita entre a tentativa de instalação de %s e %s"
 
-#: lib/rpmps.c:212
+#: lib/rpmps.c:339
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "o arquivo %s da instalação de %s conflita com o arquivo do pacote %s"
 
-#: lib/rpmps.c:217
+#: lib/rpmps.c:344
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "o pacote %s (que é mais recente que o %s) já está instalado"
 
-#: lib/rpmps.c:222
+#: lib/rpmps.c:349
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "a instalação do pacote %s precisa de %ld%cB no sistema de arquivos %s"
 
-#: lib/rpmps.c:232
+#: lib/rpmps.c:359
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "a instalação do pacote %s precisa de %ld inodes no sistema de arquivos %s"
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:363
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s é requerido por %s%s"
 
-#: lib/rpmps.c:238 lib/rpmps.c:243
+#: lib/rpmps.c:365 lib/rpmps.c:370
 msgid "(installed) "
 msgstr "(instalado) "
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:368
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s conflita com %s%s"
 
-#: lib/rpmps.c:247
+#: lib/rpmps.c:374
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erro desconhecido %d encontrado ao manipular o pacote %s"
@@ -3251,67 +3251,67 @@ msgid "Too many args in default line at %s:%d\n"
 msgstr "Argumentos em excesso na linha padrão em %s:%d\n"
 
 # , c-format
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:514
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Falha ao ler %s: %s.\n"
 
-#: lib/rpmrc.c:571
+#: lib/rpmrc.c:551
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "\":\" faltando (0x%02x encontrado) em %s:%d\n"
 
-#: lib/rpmrc.c:588 lib/rpmrc.c:640
+#: lib/rpmrc.c:568 lib/rpmrc.c:620
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argumento faltando para %s em %s:%d\n"
 
 # , c-format
-#: lib/rpmrc.c:605
+#: lib/rpmrc.c:585
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "a expansão do %s falhou em %s:%d \"%s\"\n"
 
 # , c-format
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:593
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "não foi possível abrir %s em %s:%d: %s\n"
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:612
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "arquitetura faltando para %s em %s:%d\n"
 
 # , c-format
-#: lib/rpmrc.c:699
+#: lib/rpmrc.c:679
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "opção inválida \"%s\" em %s:%d\n"
 
-#: lib/rpmrc.c:1446
+#: lib/rpmrc.c:1426
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema desconhecido: %s\n"
 
-#: lib/rpmrc.c:1447
+#: lib/rpmrc.c:1427
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Por favor, contate %s\n"
 
 # , c-format
-#: lib/rpmrc.c:1667
+#: lib/rpmrc.c:1647
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Não foi possível expandir %s\n"
 
-#: lib/rpmrc.c:1672
+#: lib/rpmrc.c:1652
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Não foi possível ler %s, HOME é muito grande.\n"
 
 # , c-format
-#: lib/rpmrc.c:1689
+#: lib/rpmrc.c:1669
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não foi possível abrir %s para leitura: %s\n"
@@ -3322,29 +3322,29 @@ msgstr "Não foi possível abrir %s para leitura: %s\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "não foi possível abrir o banco de dados de pacotes em %s\n"
 
-#: lib/rpmts.c:250
+#: lib/rpmts.c:268
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "\"(\" extra no rótulo do pacote: %s\n"
 
-#: lib/rpmts.c:268
+#: lib/rpmts.c:286
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "\"(\" faltando no rótulo do pacote: %s\n"
 
-#: lib/rpmts.c:276
+#: lib/rpmts.c:294
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "\")\" faltando no rótulo do pacote: %s\n"
 
 # , c-format
-#: lib/rpmts.c:480
+#: lib/rpmts.c:498
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "não foi possível abrir o banco de dados Solve em %s\n"
 
 # , c-format
-#: lib/rpmts.c:618
+#: lib/rpmts.c:636
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Adicionando: %s\n"
@@ -3357,71 +3357,71 @@ msgstr "Adicionando: %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/rpmts.c:630
+#: lib/rpmts.c:648
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Sugerindo: %s\n"
 
-#: lib/rpmts.c:1113
+#: lib/rpmts.c:1131
 msgid "mounted filesystems:\n"
 msgstr "sistemas de arquivos montados:\n"
 
-#: lib/rpmts.c:1115
+#: lib/rpmts.c:1133
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        dis    tamb       bavail       ponto de montagem iavail\n"
 
 # , c-format
-#: lib/rpmts.c:1171
+#: lib/rpmts.c:1189
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1498
+#: lib/rpmts.c:1516
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr "Criando placar (%p, %p) da transação\n"
 
-#: lib/rpmts.c:1503
+#: lib/rpmts.c:1521
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr "\tEndereço do placar:  %p\n"
 
 # , c-format
-#: lib/rpmts.c:1513
+#: lib/rpmts.c:1531
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "\tAlocando espaço para %d entradas\n"
 
-#: lib/rpmts.c:1540
+#: lib/rpmts.c:1558
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr "\tAdicionando entrada %s ao placar.\n"
 
-#: lib/rpmts.c:1543
+#: lib/rpmts.c:1561
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr "\t\tEndereço da entrada:  %p\n"
 
-#: lib/rpmts.c:1554
+#: lib/rpmts.c:1572
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr "\tAtualizando entrada para o %s no placar.\n"
 
-#: lib/rpmts.c:1579
+#: lib/rpmts.c:1597
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr "Liberar placar (%p)\n"
 
-#: lib/rpmts.c:1594
+#: lib/rpmts.c:1612
 msgid "\tRefcount is zero...will free\n"
 msgstr "\tRefcount é zero... irá liberar\n"
 
-#: lib/rpmts.c:1642
+#: lib/rpmts.c:1660
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr "Procurando no placar (%p) por %s\n"
 
-#: lib/rpmts.c:1648
+#: lib/rpmts.c:1666
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr "\tEntrada encontrada no endereço:  %p\n"
@@ -3762,11 +3762,6 @@ msgstr "executando scripts de pós-transação\n"
 #, c-format
 msgid "missing   %c %s"
 msgstr "%c %s faltando"
-
-#: lib/verify.c:382
-#, c-format
-msgid "Unsatisfied dependencies for %s: "
-msgstr "Dependências não satisfeitas para %s: "
 
 #: misc/error.c:107
 #, fuzzy
@@ -4357,12 +4352,12 @@ msgstr "aviso: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "a alocação de memória (%u bytes) retornou NULL.\n"
 
-#: rpmio/url.c:212
+#: rpmio/url.c:213
 msgid "url port must be a number\n"
 msgstr "a porta url deve ser um número\n"
 
 # , c-format
-#: rpmio/url.c:277
+#: rpmio/url.c:278
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "falha ao criar %s: %s\n"
@@ -4397,3 +4392,6 @@ msgstr "%s: falha na operação do cache: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: falha na leitura do manifesto: %s\n"
+
+#~ msgid "Unsatisfied dependencies for %s: "
+#~ msgstr "Dependências não satisfeitas para %s: "

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2007-10-19 06:59+0200\n"
+"POT-Creation-Date: 2007-10-24 15:58+0300\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -343,22 +343,22 @@ msgstr ""
 msgid "Unable to open temp file.\n"
 msgstr "Get ekki opnað tempi skrá.\n"
 
-#: build/build.c:219
+#: build/build.c:208
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
-#: build/build.c:225
+#: build/build.c:214
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Gat ekki keyrt %s (%s): %s\n"
 
-#: build/build.c:234
+#: build/build.c:223
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:344
+#: build/build.c:333
 msgid ""
 "\n"
 "\n"
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Glob not permitted: %s\n"
 msgstr "Gat ekki opnað PreUn skrá: %s\n"
 
-#: build/files.c:1745 lib/rpminstall.c:306
+#: build/files.c:1745 lib/rpminstall.c:305
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Skráin fannst ekki með 'glob': %s\n"
@@ -1379,44 +1379,44 @@ msgstr ""
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/cpio.c:188
+#: lib/cpio.c:187
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:191
+#: lib/cpio.c:190
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:192
+#: lib/cpio.c:191
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:214
+#: lib/cpio.c:213
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:215
+#: lib/cpio.c:214
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:216
+#: lib/cpio.c:215
 msgid "Missing hard link(s)"
 msgstr "Harðar tengingar vantar"
 
-#: lib/cpio.c:217
+#: lib/cpio.c:216
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:218
+#: lib/cpio.c:217
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:219
+#: lib/cpio.c:218
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:230
+#: lib/cpio.c:229
 msgid " failed - "
 msgstr ""
 
@@ -1530,7 +1530,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr "gat ekki skoðað %s: %s\n"
 
-#: lib/fs.c:148 rpmio/url.c:257
+#: lib/fs.c:148 rpmio/url.c:258
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "gat ekki opnað %s: %s\n"
@@ -1609,17 +1609,17 @@ msgstr "%s búið til sem %s\n"
 msgid "adding %d args from manifest.\n"
 msgstr ""
 
-#: lib/misc.c:41
+#: lib/misc.c:40
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "gat ekki búið til %%%s %s\n"
 
-#: lib/misc.c:46
+#: lib/misc.c:45
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "get ekki ritað í %%%s %s\n"
 
-#: lib/misc.c:182 lib/misc.c:187 lib/misc.c:193
+#: lib/misc.c:181 lib/misc.c:186 lib/misc.c:192
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr ""
@@ -2438,7 +2438,7 @@ msgstr ""
 msgid "Attempting to mark %s as erased in score board(%p).\n"
 msgstr ""
 
-#: lib/query.c:115 lib/rpmts.c:586
+#: lib/query.c:115 lib/rpmts.c:604
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2539,7 +2539,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:672 lib/rpminstall.c:737
+#: lib/query.c:672 lib/rpminstall.c:736
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2675,42 +2675,42 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/rpmfi.c:491
+#: lib/rpmfi.c:490
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:760
+#: lib/rpmfi.c:759
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:764
+#: lib/rpmfi.c:763
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:767
+#: lib/rpmfi.c:766
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:898
+#: lib/rpmfi.c:897
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "lína %d: %s\n"
 
-#: lib/rpmfi.c:908
+#: lib/rpmfi.c:907
 #, fuzzy, c-format
 msgid "relocating %s to %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmfi.c:999
+#: lib/rpmfi.c:998
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmgi.c:66 lib/rpminstall.c:97 lib/rpminstall.c:423
-#: lib/rpminstall.c:555 lib/rpmts.c:597 tools/rpmgraph.c:120
+#: lib/rpmgi.c:66 lib/rpminstall.c:96 lib/rpminstall.c:422
+#: lib/rpminstall.c:554 lib/rpmts.c:615 tools/rpmgraph.c:120
 #: tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2721,135 +2721,135 @@ msgstr ""
 msgid "unknown tag: \"%s\"\n"
 msgstr "Óþekkt tegund táknmyndar: %s\n"
 
-#: lib/rpmgi.c:585 lib/rpminstall.c:598 lib/rpminstall.c:771
-#: lib/rpminstall.c:1017 lib/transaction.c:947 tools/rpmgraph.c:195
+#: lib/rpmgi.c:585 lib/rpminstall.c:597 lib/rpminstall.c:770
+#: lib/rpminstall.c:1016 lib/transaction.c:947 tools/rpmgraph.c:195
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "gat ekki útbúið pakkaskilyrði:\n"
 
-#: lib/rpmgi.c:590 lib/rpminstall.c:604 tools/rpmgraph.c:200
+#: lib/rpmgi.c:590 lib/rpminstall.c:603 tools/rpmgraph.c:200
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:157
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:160
+#: lib/rpminstall.c:159
 msgid "Preparing packages for installation..."
 msgstr ""
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:177
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:180
+#: lib/rpminstall.c:179
 msgid "Repackaging erased files..."
 msgstr ""
 
-#: lib/rpminstall.c:199
+#: lib/rpminstall.c:198
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:201
+#: lib/rpminstall.c:200
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "uppfæra pakka"
 
-#: lib/rpminstall.c:352
+#: lib/rpminstall.c:351
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Skrá %s: %s\n"
 
-#: lib/rpminstall.c:368
+#: lib/rpminstall.c:367
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:381
+#: lib/rpminstall.c:380
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:385
+#: lib/rpminstall.c:384
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:442 lib/rpminstall.c:832 tools/rpmgraph.c:140
+#: lib/rpminstall.c:441 lib/rpminstall.c:831 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:458
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "Get ekki ritað í pakka: %s\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:483
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "Skráin %s er ekki venjuleg skrá.\n"
 
-#: lib/rpminstall.c:526
+#: lib/rpminstall.c:525
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr ""
 
-#: lib/rpminstall.c:531
+#: lib/rpminstall.c:530
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:537
+#: lib/rpminstall.c:536
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:568
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/rpminstall.c:584
+#: lib/rpminstall.c:583
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:633
+#: lib/rpminstall.c:632
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:657
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:746
+#: lib/rpminstall.c:745
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:816
+#: lib/rpminstall.c:815
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:822
+#: lib/rpminstall.c:821
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1011 lib/transaction.c:940
+#: lib/rpminstall.c:1010 lib/transaction.c:940
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1042 lib/transaction.c:991
+#: lib/rpminstall.c:1041 lib/transaction.c:991
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:1049 lib/transaction.c:997
+#: lib/rpminstall.c:1048 lib/transaction.c:997
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr ""
@@ -2909,70 +2909,70 @@ msgstr ""
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmps.c:179
+#: lib/rpmps.c:306
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:187
+#: lib/rpmps.c:314
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr ""
 
-#: lib/rpmps.c:192
+#: lib/rpmps.c:319
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr ""
 
-#: lib/rpmps.c:197
+#: lib/rpmps.c:324
 #, c-format
 msgid "package %s is already installed"
 msgstr ""
 
-#: lib/rpmps.c:202
+#: lib/rpmps.c:329
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr ""
 
-#: lib/rpmps.c:207
+#: lib/rpmps.c:334
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:212
+#: lib/rpmps.c:339
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:217
+#: lib/rpmps.c:344
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/rpmps.c:222
+#: lib/rpmps.c:349
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:232
+#: lib/rpmps.c:359
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:236
+#: lib/rpmps.c:363
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr ""
 
-#: lib/rpmps.c:238 lib/rpmps.c:243
+#: lib/rpmps.c:365 lib/rpmps.c:370
 msgid "(installed) "
 msgstr ""
 
-#: lib/rpmps.c:241
+#: lib/rpmps.c:368
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr ""
 
-#: lib/rpmps.c:247
+#: lib/rpmps.c:374
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3012,62 +3012,62 @@ msgstr ""
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:514
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Get ekki lesið %s: %s.\n"
 
-#: lib/rpmrc.c:571
+#: lib/rpmrc.c:551
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:588 lib/rpmrc.c:640
+#: lib/rpmrc.c:568 lib/rpmrc.c:620
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "viðfang vantar fyrir %s á %s:%d\n"
 
-#: lib/rpmrc.c:605
+#: lib/rpmrc.c:585
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr ""
 
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:593
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "get ekki opnað %s á %s:%d: %s\n"
 
-#: lib/rpmrc.c:632
+#: lib/rpmrc.c:612
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:699
+#: lib/rpmrc.c:679
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "ólöglegur rofi '%s' á %s:%d\n"
 
-#: lib/rpmrc.c:1446
+#: lib/rpmrc.c:1426
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1447
+#: lib/rpmrc.c:1427
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1667
+#: lib/rpmrc.c:1647
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1672
+#: lib/rpmrc.c:1652
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1689
+#: lib/rpmrc.c:1669
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Get ekki opnað %s til lesturs: %s.\n"
@@ -3077,94 +3077,94 @@ msgstr "Get ekki opnað %s til lesturs: %s.\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í %s\n"
 
-#: lib/rpmts.c:250
+#: lib/rpmts.c:268
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:268
+#: lib/rpmts.c:286
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "vantar '(' í  %s %s\n"
 
-#: lib/rpmts.c:276
+#: lib/rpmts.c:294
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "vantar '(' í  %s %s\n"
 
-#: lib/rpmts.c:480
+#: lib/rpmts.c:498
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "get ekki opnað pakka gagnagrunn í %s\n"
 
-#: lib/rpmts.c:618
+#: lib/rpmts.c:636
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "lína: %s\n"
 
-#: lib/rpmts.c:630
+#: lib/rpmts.c:648
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1113
+#: lib/rpmts.c:1131
 msgid "mounted filesystems:\n"
 msgstr ""
 
-#: lib/rpmts.c:1115
+#: lib/rpmts.c:1133
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1171
+#: lib/rpmts.c:1189
 #, fuzzy, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "Skrá %s: %s\n"
 
-#: lib/rpmts.c:1498
+#: lib/rpmts.c:1516
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1503
+#: lib/rpmts.c:1521
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1513
+#: lib/rpmts.c:1531
 #, fuzzy, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "%5d færa %s -> %s\n"
 
-#: lib/rpmts.c:1540
+#: lib/rpmts.c:1558
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1543
+#: lib/rpmts.c:1561
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr ""
 
-#: lib/rpmts.c:1554
+#: lib/rpmts.c:1572
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr ""
 
-#: lib/rpmts.c:1579
+#: lib/rpmts.c:1597
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr ""
 
-#: lib/rpmts.c:1594
+#: lib/rpmts.c:1612
 msgid "\tRefcount is zero...will free\n"
 msgstr ""
 
-#: lib/rpmts.c:1642
+#: lib/rpmts.c:1660
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr ""
 
-#: lib/rpmts.c:1648
+#: lib/rpmts.c:1666
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr ""
@@ -3491,11 +3491,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "vantar     %s"
-
-#: lib/verify.c:382
-#, fuzzy, c-format
-msgid "Unsatisfied dependencies for %s: "
-msgstr "Óuppfyllt pakkaskilyrði fyrir %s-%s-%s: "
 
 #: misc/error.c:107
 #, fuzzy
@@ -4055,11 +4050,11 @@ msgstr "aðvörun: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "minnisfrátekt (%u bæta) skilaði NULL.\n"
 
-#: rpmio/url.c:212
+#: rpmio/url.c:213
 msgid "url port must be a number\n"
 msgstr "gátt slóðar verður að vera tala\n"
 
-#: rpmio/url.c:277
+#: rpmio/url.c:278
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "gat ekki búið til %s: %s\n"
@@ -4091,3 +4086,7 @@ msgstr "%s: Fseek brást: %s\n"
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s rmdir %s brást: %s\n"
+
+#, fuzzy
+#~ msgid "Unsatisfied dependencies for %s: "
+#~ msgstr "Óuppfyllt pakkaskilyrði fyrir %s-%s-%s: "
