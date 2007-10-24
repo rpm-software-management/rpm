@@ -278,7 +278,7 @@ char * parseExpressionString(rpmSpec spec, const char * expr);
  * @param test		don't execute scripts or package if testing
  * @return		0 on success, RPMERR_SCRIPT on failure
  */
-int doScript(rpmSpec spec, int what, const char * name,
+int doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
 		StringBuf sb, int test);
 
 /** \ingroup rpmbuild

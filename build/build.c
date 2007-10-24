@@ -48,7 +48,7 @@ static void doRmSource(rpmSpec spec)
 /*
  * @todo Single use by %%doc in files.c prevents static.
  */
-int doScript(rpmSpec spec, int what, const char *name, StringBuf sb, int test)
+int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, int test)
 {
     const char * rootURL = spec->rootURL;
     const char * rootDir;
