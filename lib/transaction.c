@@ -111,7 +111,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    altNEVR = hGetNEVR(h, NULL);
+	    altNEVR = hGetNEVRA(h, NULL);
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
@@ -187,7 +187,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 
 	    if (rConflicts) {
 		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
-			rpmteNEVR(p), rpmteKey(p),
+			rpmteNEVRA(p), rpmteKey(p),
 			rpmfiDN(fi), rpmfiBN(fi),
 			altNEVR,
 			0);
@@ -543,9 +543,9 @@ assert(otherFi != NULL);
 
 		if (rConflicts) {
 		    rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
-			rpmteNEVR(p), rpmteKey(p),
+			rpmteNEVRA(p), rpmteKey(p),
 			fn, NULL,
-			rpmteNEVR(otherFi->te),
+			rpmteNEVRA(otherFi->te),
 			0);
 		}
 	    }
@@ -639,9 +639,9 @@ static int ensureOlder(rpmts ts,
 
     if (rc == 0) {
 	rpmps ps = rpmtsProblems(ts);
-	const char * altNEVR = hGetNEVR(h, NULL);
+	const char * altNEVR = hGetNEVRA(h, NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
-		rpmteNEVR(p), rpmteKey(p),
+		rpmteNEVRA(p), rpmteKey(p),
 		NULL, NULL,
 		altNEVR,
 		0);
@@ -1425,14 +1425,14 @@ rpmlog(RPMLOG_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH) && !tscolor)
 	    if (!archOkay(rpmteA(p)))
 		rpmpsAppend(ps, RPMPROB_BADARCH,
-			rpmteNEVR(p), rpmteKey(p),
+			rpmteNEVRA(p), rpmteKey(p),
 			rpmteA(p), NULL,
 			NULL, 0);
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREOS))
 	    if (!osOkay(rpmteO(p)))
 		rpmpsAppend(ps, RPMPROB_BADOS,
-			rpmteNEVR(p), rpmteKey(p),
+			rpmteNEVRA(p), rpmteKey(p),
 			rpmteO(p), NULL,
 			NULL, 0);
 
@@ -1461,7 +1461,7 @@ rpmlog(RPMLOG_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
 
 	    while (rpmdbNextIterator(mi) != NULL) {
 		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
-			rpmteNEVR(p), rpmteKey(p),
+			rpmteNEVRA(p), rpmteKey(p),
 			NULL, NULL,
 			NULL, 0);
 		break;
