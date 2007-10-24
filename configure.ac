@@ -362,9 +362,6 @@ AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
 
 AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 
-dnl Better not use fchmod at all.
-AC_CHECK_FUNC(fchmod)
-
 AC_CHECK_FUNCS(vsnprintf snprintf)
 
 dnl Temporary hack for MiNT.  Some functions (writev, snprintf) are
