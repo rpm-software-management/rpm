@@ -391,18 +391,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
 	while ((i = rpmpsNextIterator(psi)) >= 0) {
-#ifdef	DYING
-	    cf = Py_BuildValue("((sss)(ss)iOi)", conflicts[i].byName,
-			       conflicts[i].byVersion, conflicts[i].byRelease,
-
-			       conflicts[i].needsName,
-			       conflicts[i].needsVersion,
-
-			       conflicts[i].needsFlags,
-			       conflicts[i].suggestedPkgs ?
-				   conflicts[i].suggestedPkgs[0] : Py_None,
-			       conflicts[i].sense);
-#else
 	    const char * needsName;
 	    char * byName, * byVersion, * byRelease, *byArch;
 	    char * needsOP, * needsVersion;
@@ -448,7 +436,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 			       needsName, needsVersion, needsFlags,
 			       (key != NULL ? key : Py_None),
 			       sense);
-#endif
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
 	    free(byName);
