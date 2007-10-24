@@ -336,11 +336,11 @@ unsetgid:
 if APIDOCS
 if DOXYGEN
 doc/hacking.doxy: doc/hacking.doxy.in doc/hacking/Doxyheader Makefile.am
-	$(SED) -e "s,[@]pkginclude_HEADERS[@],$$files," \
+	$(SED) \
 	  -e "s,\@top_srcdir\@/,$(top_srcdir)/,g" \
 	  -e "s,[@]HAVE_DOT[@],$(HAVE_DOT)," \
-	    -e "s,[@]PACKAGE[@],$(PACKAGE)," \
-	    -e "s,[@]VERSION[@],$(VERSION)," \
+	  -e "s,[@]PACKAGE[@],$(PACKAGE)," \
+	  -e "s,[@]VERSION[@],$(VERSION)," \
 	< $(top_srcdir)/doc/hacking.doxy.in > doc/hacking.doxy
 
 doc/hacking/html/index.html: doc/hacking.doxy rpmpopt-@VERSION@
