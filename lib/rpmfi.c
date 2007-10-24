@@ -815,7 +815,7 @@ assert(p != NULL);
 	    if (j == numValid && !allowBadRelocate && actions) {
 		rpmps ps = rpmtsProblems(ts);
 		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
-			rpmteNEVR(p), rpmteKey(p),
+			rpmteNEVRA(p), rpmteKey(p),
 			relocations[i].oldPath, NULL, NULL, 0);
 		ps = rpmpsFree(ps);
 	    }
