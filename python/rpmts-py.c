@@ -403,8 +403,8 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 				   conflicts[i].suggestedPkgs[0] : Py_None,
 			       conflicts[i].sense);
 #else
-	    const char * byName, * needsName;
-	    char * byVersion, * byRelease, *byArch;
+	    const char * needsName;
+	    char * byName, * byVersion, * byRelease, *byArch;
 	    char * needsOP, * needsVersion;
 	    int needsFlags, sense;
 	    fnpyKey key;
@@ -415,7 +415,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    if (rpmProblemGetType(p) == RPMPROB_BADRELOCATE)
 		continue;
 
-	    byName = rpmProblemGetPkgNEVR(p);
+	    byName = strdup(rpmProblemGetPkgNEVR(p));
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
@@ -451,6 +451,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 #endif
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
+	    free(byName);
 	}
 
 	psi = rpmpsFreeIterator(psi);
