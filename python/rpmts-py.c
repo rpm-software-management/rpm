@@ -439,7 +439,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    if (p->type == RPMPROB_BADRELOCATE)
 		continue;
 
-	    byName = p->pkgNEVR;
+	    byName = strdup(p->pkgNEVR);
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
@@ -475,6 +475,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 #endif
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
+	    free(byName);
 	}
 
 	ps = rpmpsFree(ps);
