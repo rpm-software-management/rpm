@@ -718,10 +718,10 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
-    {	int notifyFlags;
+    {	int notifyFlags, xx;
 	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
-			rpmShowProgress, (void *) ((long)notifyFlags)
+			rpmShowProgress, (void *) ((long)notifyFlags));
     }
 #endif
 
