@@ -449,6 +449,16 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 rpmRC rpmtsFindPubkey(rpmts ts);
 
 /** \ingroup rpmts
+ * Import public key packet(s).
+ * @todo Implicit --update policy for gpg-pubkey headers.
+ * @param ts            transaction set
+ * @param pkt           pgp pubkey packet(s)
+ * @param pktlen        pgp pubkey length
+ * @return              RPMRC_OK/RPMRC_FAIL
+ */
+rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, ssize_t pktlen);
+
+/** \ingroup rpmts
  * Close the database used by the transaction to solve dependencies.
  * @param ts		transaction set
  * @return		0 on success

@@ -456,6 +456,138 @@ exit:
     return res;
 }
 
+rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
+{
+    static unsigned char zeros[] =
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    const char * afmt = "%{pubkeys:armor}";
+    const char * group = "Public Keys";
+    const char * license = "pubkey";
+    const char * buildhost = "localhost";
+    int_32 pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    int_32 zero = 0;
+    pgpDig dig = NULL;
+    pgpDigParams pubp = NULL;
+    const char * d = NULL;
+    const char * enc = NULL;
+    const char * n = NULL;
+    const char * u = NULL;
+    const char * v = NULL;
+    const char * r = NULL;
+    const char * evr = NULL;
+    Header h = NULL;
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    char * t;
+    int xx;
+
+    if (pkt == NULL || pktlen <= 0)
+	return RPMRC_FAIL;
+    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
+	return RPMRC_FAIL;
+
+    if ((enc = b64encode(pkt, pktlen)) == NULL)
+	goto exit;
+
+    dig = pgpNewDig();
+
+    /* Build header elements. */
+    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
+    pubp = &dig->pubkey;
+
+    if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
+     || !memcmp(pubp->time, zeros, sizeof(pubp->time))
+     || pubp->userid == NULL)
+	goto exit;
+
+    v = t = xmalloc(16+1);
+    t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
+
+    r = t = xmalloc(8+1);
+    t = stpcpy(t, pgpHexStr(pubp->time, sizeof(pubp->time)));
+
+    n = t = xmalloc(sizeof("gpg()")+8);
+    t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
+
+    /* FIX: pubp->userid may be NULL */
+    u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
+    t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
+
+    evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
+    t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
+    t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
+
+    /* Check for pre-existing header. */
+
+    /* Build pubkey header. */
+    h = headerNew();
+
+    xx = headerAddOrAppendEntry(h, RPMTAG_PUBKEYS,
+			RPM_STRING_ARRAY_TYPE, &enc, 1);
+
+    d = headerSprintf(h, afmt, rpmTagTable, rpmHeaderFormats, NULL);
+    if (d == NULL)
+	goto exit;
+
+    xx = headerAddEntry(h, RPMTAG_NAME, RPM_STRING_TYPE, "gpg-pubkey", 1);
+    xx = headerAddEntry(h, RPMTAG_VERSION, RPM_STRING_TYPE, v+8, 1);
+    xx = headerAddEntry(h, RPMTAG_RELEASE, RPM_STRING_TYPE, r, 1);
+    xx = headerAddEntry(h, RPMTAG_DESCRIPTION, RPM_STRING_TYPE, d, 1);
+    xx = headerAddEntry(h, RPMTAG_GROUP, RPM_STRING_TYPE, group, 1);
+    xx = headerAddEntry(h, RPMTAG_LICENSE, RPM_STRING_TYPE, license, 1);
+    xx = headerAddEntry(h, RPMTAG_SUMMARY, RPM_STRING_TYPE, u, 1);
+
+    xx = headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &zero, 1);
+
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
+			RPM_STRING_ARRAY_TYPE, &u, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
+			RPM_STRING_ARRAY_TYPE, &evr, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
+			RPM_INT32_TYPE, &pflags, 1);
+
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME,
+			RPM_STRING_ARRAY_TYPE, &n, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION,
+			RPM_STRING_ARRAY_TYPE, &evr, 1);
+    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS,
+			RPM_INT32_TYPE, &pflags, 1);
+
+    xx = headerAddEntry(h, RPMTAG_RPMVERSION, RPM_STRING_TYPE, RPMVERSION, 1);
+
+    /* XXX W2DO: tag value inheirited from parent? */
+    xx = headerAddEntry(h, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildhost, 1);
+    {   int_32 tid = rpmtsGetTid(ts);
+	xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &tid, 1);
+	/* XXX W2DO: tag value inheirited from parent? */
+	xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &tid, 1);
+    }
+
+#ifdef	NOTYET
+    /* XXX W2DO: tag value inheirited from parent? */
+    xx = headerAddEntry(h, RPMTAG_SOURCERPM, RPM_STRING_TYPE, fn, 1);
+#endif
+
+    /* Add header to database. */
+    xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
+    if (xx != 0)
+	goto exit;
+    rc = RPMRC_OK;
+
+exit:
+    /* Clean up. */
+    h = headerFree(h);
+    dig = pgpFreeDig(dig);
+    n = _free(n);
+    u = _free(u);
+    v = _free(v);
+    r = _free(r);
+    evr = _free(evr);
+    enc = _free(enc);
+    d = _free(d);
+    
+    return rc;
+}
+
 int rpmtsCloseSDB(rpmts ts)
 {
     int rc = 0;
