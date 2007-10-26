@@ -107,18 +107,6 @@ static void rpmalFreeIndex(rpmal al)
     }
 }
 
-#ifdef	DYING
-/**
- * Return number of packages in list.
- * @param al		available list
- * @return		no. of packages in list
- */
-static int alGetSize(const rpmal al)
-{
-    return (al != NULL ? al->size : 0);
-}
-#endif
-
 static inline rpmalNum alKey2Num(const rpmal al,
 		rpmalKey pkgKey)
 {
@@ -130,27 +118,6 @@ static inline rpmalKey alNum2Key(const rpmal al,
 {
     return ((rpmalKey)pkgNum);
 }
-
-#ifdef	DYING
-/**
- * Return available package.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		available package pointer
- */
-static availablePackage alGetPkg(const rpmal al,
-		rpmalKey pkgKey)
-{
-    rpmalNum pkgNum = alKey2Num(al, pkgKey);
-    availablePackage alp = NULL;
-
-    if (al != NULL && pkgNum >= 0 && pkgNum < alGetSize(al)) {
-	if (al->list != NULL)
-	    alp = al->list + pkgNum;
-    }
-    return alp;
-}
-#endif
 
 rpmal rpmalCreate(int delta)
 {
