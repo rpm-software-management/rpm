@@ -47,7 +47,7 @@ static rpmTag requiredTags[] = {
 
 /**
  */
-static void addOrAppendListEntry(Header h, int_32 tag, char * line)
+static void addOrAppendListEntry(Header h, int32_t tag, char * line)
 {
     int xx;
     int argc;
@@ -890,7 +890,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
-			(int_32 *)copyTagsDuringParse);
+			(int32_t *)copyTagsDuringParse);
 
     if (checkForRequired(pkg->header, NVR))
 	return RPMERR_BADSPEC;

@@ -657,7 +657,7 @@ typedef
 typedef int (*HGE_t) (Header h, rpmTag tag,
 			rpmTagType * type,
 			void ** p,
-			int_32 * c);
+			int32_t * c);
 
 /**
  * Prototype for headerAddEntry() vector.
@@ -675,7 +675,7 @@ typedef int (*HGE_t) (Header h, rpmTag tag,
  * @return              1 on success, 0 on failure
  */
 typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
-			const void * p, int_32 c);
+			const void * p, int32_t c);
 
 /**
  * Prototype for headerModifyEntry() vector.
@@ -689,7 +689,7 @@ typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
-			const void * p, int_32 c);
+			const void * p, int32_t c);
 
 /**
  * Prototype for headerRemoveEntry() vector.
@@ -701,7 +701,7 @@ typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-typedef int (*HRE_t) (Header h, int_32 tag);
+typedef int (*HRE_t) (Header h, int32_t tag);
 
 /**
  * @todo Generalize filter mechanism.
@@ -974,8 +974,8 @@ int rpmGetFilesystemList( const char *** listptr,
  * @param flags			(unused)
  * @return			0 on success, 1 on error
  */
-int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes,
-		int numFiles, uint_32 ** usagesPtr,
+int rpmGetFilesystemUsage(const char ** fileList, int32_t * fssizes,
+		int numFiles, uint32_t ** usagesPtr,
 		int flags);
 
 /* ==================================================================== */

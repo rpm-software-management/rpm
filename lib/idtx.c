@@ -77,8 +77,8 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 #endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmTagType type = RPM_NULL_TYPE;
-	int_32 count = 0;
-	int_32 * tidp;
+	int32_t count = 0;
+	int32_t * tidp;
 
 	tidp = NULL;
 	if (!hge(h, tag, &type, (void **)&tidp, &count) || tidp == NULL)
@@ -112,7 +112,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
     IDTX idtx = NULL;
     HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
-    int_32 * tidp;
+    int32_t * tidp;
     FD_t fd;
     const char ** av = NULL;
     int ac = 0;
@@ -126,7 +126,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
     if (xx == 0)
     for (i = 0; i < ac; i++) {
 	rpmTagType type;
-	int_32 count;
+	int32_t count;
 	int isSource;
 
 	fd = Fopen(av[i], "r.ufdio");

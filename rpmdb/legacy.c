@@ -251,7 +251,7 @@ void compressFilelist(Header h)
     char ** fileNames;
     const char ** dirNames;
     const char ** baseNames;
-    uint_32 * dirIndexes;
+    uint32_t * dirIndexes;
     rpmTagType fnt;
     int count;
     int i, xx;
@@ -336,7 +336,7 @@ void rpmfiBuildFNames(Header h, rpmTag tagN,
     HFD_t hfd = headerFreeData;
     const char ** baseNames;
     const char ** dirNames;
-    uint_32 * dirIndexes;
+    uint32_t * dirIndexes;
     int count;
     const char ** fileNames;
     int size;
@@ -415,14 +415,14 @@ void providePackageNVR(Header h)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char *name, *version, *release;
-    int_32 * epoch;
+    int32_t * epoch;
     const char *pEVR;
     char *p;
-    int_32 pFlags = RPMSENSE_EQUAL;
+    int32_t pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
     rpmTagType pnt, pvt;
-    int_32 * provideFlags = NULL;
+    int32_t * provideFlags = NULL;
     int providesCount;
     int i, xx;
     int bingo = 1;
@@ -453,7 +453,7 @@ void providePackageNVR(Header h)
     if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
-	    int_32 fdummy = RPMSENSE_ANY;
+	    int32_t fdummy = RPMSENSE_ANY;
 	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			&vdummy, 1);
 	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
@@ -528,7 +528,7 @@ void legacyRetrofit(Header h, const struct rpmlead * lead)
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (lead->type == RPMLEAD_SOURCE) {
-	int_32 one = 1;
+	int32_t one = 1;
 	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	    (void) headerAddEntry(h, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
 				&one, 1);

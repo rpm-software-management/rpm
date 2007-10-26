@@ -49,43 +49,43 @@ struct rpmfi_s {
     const char ** flinks;	/*!< File link(s) (from header) */
     const char ** flangs;	/*!< File lang(s) (from header) */
 
-          uint_32 * dil;	/*!< Directory indice(s) (from header) */
+          uint32_t * dil;	/*!< Directory indice(s) (from header) */
 /*?null?*/
-    const uint_32 * fflags;	/*!< File flag(s) (from header) */
+    const uint32_t * fflags;	/*!< File flag(s) (from header) */
 /*?null?*/
-    const uint_32 * fsizes;	/*!< File size(s) (from header) */
+    const uint32_t * fsizes;	/*!< File size(s) (from header) */
 /*?null?*/
-    const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
+    const uint32_t * fmtimes;	/*!< File modification time(s) (from header) */
 /*?null?*/
-          uint_16 * fmodes;	/*!< File mode(s) (from header) */
+          uint16_t * fmodes;	/*!< File mode(s) (from header) */
 /*?null?*/
-    const uint_16 * frdevs;	/*!< File rdev(s) (from header) */
+    const uint16_t * frdevs;	/*!< File rdev(s) (from header) */
 /*?null?*/
-    const uint_32 * finodes;	/*!< File inodes(s) (from header) */
+    const uint32_t * finodes;	/*!< File inodes(s) (from header) */
 
     const char ** fuser;	/*!< File owner(s) (from header) */
     const char ** fgroup;	/*!< File group(s) (from header) */
 
     char * fstates;		/*!< File state(s) (from header) */
 
-    const uint_32 * fcolors;	/*!< File color bits (header) */
+    const uint32_t * fcolors;	/*!< File color bits (header) */
 
     const char ** fcontexts;	/*! FIle security contexts. */
 
     const char ** cdict;	/*!< File class dictionary (header) */
-    int_32 ncdict;		/*!< No. of class entries. */
-    const uint_32 * fcdictx;	/*!< File class dictionary index (header) */
+    int32_t ncdict;		/*!< No. of class entries. */
+    const uint32_t * fcdictx;	/*!< File class dictionary index (header) */
 
-    const uint_32 * ddict;	/*!< File depends dictionary (header) */
-    int_32 nddict;		/*!< No. of depends entries. */
-    const uint_32 * fddictx;	/*!< File depends dictionary start (header) */
-    const uint_32 * fddictn;	/*!< File depends dictionary count (header) */
+    const uint32_t * ddict;	/*!< File depends dictionary (header) */
+    int32_t nddict;		/*!< No. of depends entries. */
+    const uint32_t * fddictx;	/*!< File depends dictionary start (header) */
+    const uint32_t * fddictn;	/*!< File depends dictionary count (header) */
 
 /*?null?*/
-    const uint_32 * vflags;	/*!< File verify flag(s) (from header) */
+    const uint32_t * vflags;	/*!< File verify flag(s) (from header) */
 
-    int_32 dc;			/*!< No. of directories. */
-    int_32 fc;			/*!< No. of files. */
+    int32_t dc;			/*!< No. of directories. */
+    int32_t fc;			/*!< No. of files. */
 
 /*=============================*/
     rpmte te;
@@ -98,13 +98,13 @@ struct rpmfi_s {
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
     gid_t gid;			/*!< File gid (default). */
-    uint_32 flags;		/*!< File flags (default). */
+    uint32_t flags;		/*!< File flags (default). */
     rpmFileAction action;	/*!< File disposition (default). */
     rpmFileAction * actions;	/*!< File disposition(s). */
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
     const char ** obnl;		/*!< Original basename(s) (from header) */
     const char ** odnl;		/*!< Original dirname(s) (from header) */
-    int_32 * odil;		/*!< Original dirindex(s) (from header) */
+    int32_t * odil;		/*!< Original dirindex(s) (from header) */
 
     unsigned char * md5s;	/*!< File md5 sums in binary. */
 
@@ -127,9 +127,9 @@ struct rpmfi_s {
     int * fmapflags;
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
-    uint_32 color;		/*!< Color bit(s) from file color union. */
+    uint32_t color;		/*!< Color bit(s) from file color union. */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
-    uint_32 * replacedSizes;	/*!< (TR_ADDED) */
+    uint32_t * replacedSizes;	/*!< (TR_ADDED) */
     unsigned int record;	/*!< (TR_REMOVED) */
     int magic;
 #define	RPMFIMAGIC	0x09697923
@@ -249,21 +249,21 @@ extern const char * rpmfiFN(rpmfi fi);
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
-uint_32 rpmfiFFlags(rpmfi fi);
+uint32_t rpmfiFFlags(rpmfi fi);
 
 /**
  * Return current file verify flags from file info set.
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
-uint_32 rpmfiVFlags(rpmfi fi);
+uint32_t rpmfiVFlags(rpmfi fi);
 
 /**
  * Return current file mode from file info set.
  * @param fi		file info set
  * @return		current file mode, 0 on invalid
  */
-int_16 rpmfiFMode(rpmfi fi);
+int16_t rpmfiFMode(rpmfi fi);
 
 /**
  * Return current file state from file info set.
@@ -291,35 +291,35 @@ extern const char * rpmfiFLink(rpmfi fi);
  * @param fi		file info set
  * @return		current file size, 0 on invalid
  */
-int_32 rpmfiFSize(rpmfi fi);
+int32_t rpmfiFSize(rpmfi fi);
 
 /**
  * Return current file rdev from file info set.
  * @param fi		file info set
  * @return		current file rdev, 0 on invalid
  */
-int_16 rpmfiFRdev(rpmfi fi);
+int16_t rpmfiFRdev(rpmfi fi);
 
 /**
  * Return current file inode from file info set.
  * @param fi		file info set
  * @return		current file inode, 0 on invalid
  */
-int_32 rpmfiFInode(rpmfi fi);
+int32_t rpmfiFInode(rpmfi fi);
 
 /**
  * Return union of all file color bits from file info set.
  * @param fi		file info set
  * @return		current color
  */
-uint_32 rpmfiColor(rpmfi fi);
+uint32_t rpmfiColor(rpmfi fi);
 
 /**
  * Return current file color bits from file info set.
  * @param fi		file info set
  * @return		current file color
  */
-uint_32 rpmfiFColor(rpmfi fi);
+uint32_t rpmfiFColor(rpmfi fi);
 
 /**
  * Return current file class from file info set.
@@ -341,22 +341,22 @@ extern const char * rpmfiFContext(rpmfi fi);
  * @retval *fddictp	file depends dictionary array (or NULL)
  * @return		no. of file depends entries, 0 on invalid
  */
-int_32 rpmfiFDepends(rpmfi fi,
-		const uint_32 ** fddictp);
+int32_t rpmfiFDepends(rpmfi fi,
+		const uint32_t ** fddictp);
 
 /**
  * Return (calculated) current file nlink count from file info set.
  * @param fi		file info set
  * @return		current file nlink count, 0 on invalid
  */
-int_32 rpmfiFNlink(rpmfi fi);
+int32_t rpmfiFNlink(rpmfi fi);
 
 /**
  * Return current file modify time from file info set.
  * @param fi		file info set
  * @return		current file modify time, 0 on invalid
  */
-int_32 rpmfiFMtime(rpmfi fi);
+int32_t rpmfiFMtime(rpmfi fi);
 
 /**
  * Return current file owner from file info set.
@@ -451,7 +451,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
  * @param mode		file mode bits (from header)
  * @return		file type
  */
-rpmFileTypes rpmfiWhatis(uint_16 mode);
+rpmFileTypes rpmfiWhatis(uint16_t mode);
 
 /**
  * Return file info comparison.

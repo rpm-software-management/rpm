@@ -448,7 +448,7 @@ assert(key->data != NULL);
     switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
 	{   unsigned int hnum;
-assert(key->size == sizeof(int_32));
+assert(key->size == sizeof(int32_t));
 	    memcpy(&hnum, key->data, sizeof(hnum));
 
 if (dbiByteSwapped(dbi) == 1)
@@ -475,7 +475,7 @@ assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 	    }   break;
 	    case RPM_INT16_TYPE:
 	    {	unsigned short i;
-assert(key->size == sizeof(int_16));
+assert(key->size == sizeof(int16_t));
 assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 		memcpy(&i, key->data, sizeof(i));
 	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
@@ -484,7 +484,7 @@ assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 /*          case RPM_INT64_TYPE: */   
 	    default:
 	    {	unsigned int i;
-assert(key->size == sizeof(int_32));
+assert(key->size == sizeof(int32_t));
 		memcpy(&i, key->data, sizeof(i));
 
 if (dbiByteSwapped(dbi) == 1)

@@ -41,8 +41,8 @@ static int indent = 2;
 
 typedef struct Item_s {
     const char * path;
-    int_32 size;
-    int_32 mtime;
+    int32_t size;
+    int32_t mtime;
     rpmds this;
     Header h;
 } * Item;
@@ -103,7 +103,7 @@ static int ftsCachePrint(rpmts ts, FILE * fp)
 static int ftsCacheUpdate(rpmts ts)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    int_32 tid = rpmtsGetTid(ts);
+    int32_t tid = rpmtsGetTid(ts);
     rpmdbMatchIterator mi;
     unsigned char * md5;
     int rc = 0;
@@ -568,7 +568,7 @@ main(int argc, char *argv[])
 	vsflags |= RPMVSF_NOHDRCHK;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    {   int_32 tid = (int_32) time(NULL);
+    {   int32_t tid = (int32_t) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
 

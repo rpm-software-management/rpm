@@ -31,13 +31,13 @@ struct rpmds_s {
     Header h;			/*!< Header for dependency set (or NULL) */
     const char ** N;		/*!< Name. */
     const char ** EVR;		/*!< Epoch-Version-Release. */
-    int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
-    uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
-    int_32 * Refs;		/*!< No. of file refs. */
-    int_32 BT;			/*!< Package build time tie breaker. */
+    int32_t * Flags;		/*!< Bit(s) identifying context/comparison. */
+    uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
+    int32_t * Refs;		/*!< No. of file refs. */
+    int32_t BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
-    int_32 Count;		/*!< No. of elements */
+    int32_t Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */
     unsigned u;			/*!< High element (bsearch). */
@@ -104,7 +104,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds);
  * @param Flags		comparison flags
  * @return		new dependency set
  */
-rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags);
+rpmds rpmdsThis(Header h, rpmTag tagN, int32_t Flags);
 
 /**
  * Create, load and initialize a dependency set of size 1.
@@ -114,7 +114,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags);
  * @param Flags		comparison flags
  * @return		new dependency set
  */
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags);
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int32_t Flags);
 
 /**
  * Return dependency set count.
@@ -164,7 +164,7 @@ extern const char * rpmdsEVR(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency flags, 0 on invalid
  */
-int_32 rpmdsFlags(const rpmds ds);
+int32_t rpmdsFlags(const rpmds ds);
 
 /**
  * Return current dependency type.
@@ -216,7 +216,7 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote);
  * @param ds		dependency set
  * @return		current dependency color
  */
-uint_32 rpmdsColor(const rpmds ds);
+uint32_t rpmdsColor(const rpmds ds);
 
 /**
  * Return current dependency color.
@@ -224,14 +224,14 @@ uint_32 rpmdsColor(const rpmds ds);
  * @param color		new dependency color
  * @return		previous dependency color
  */
-uint_32 rpmdsSetColor(const rpmds ds, uint_32 color);
+uint32_t rpmdsSetColor(const rpmds ds, uint32_t color);
 
 /**
  * Return current dependency file refs.
  * @param ds		dependency set
  * @return		current dependency file refs, -1 on global
  */
-int_32 rpmdsRefs(const rpmds ds);
+int32_t rpmdsRefs(const rpmds ds);
 
 /**
  * Return current dependency color.
@@ -239,7 +239,7 @@ int_32 rpmdsRefs(const rpmds ds);
  * @param refs		new dependency refs
  * @return		previous dependency refs
  */
-int_32 rpmdsSetRefs(const rpmds ds, int_32 refs);
+int32_t rpmdsSetRefs(const rpmds ds, int32_t refs);
 
 /**
  * Notify of results of dependency match.

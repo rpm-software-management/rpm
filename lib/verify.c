@@ -171,8 +171,8 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	{
 	    *res |= RPMVERIFY_RDEV;
 	} else if (S_ISDEV(fmode) && S_ISDEV(sb.st_mode)) {
-	    uint_16 st_rdev = (sb.st_rdev & 0xffff);
-	    uint_16 frdev = (rpmfiFRdev(fi) & 0xffff);
+	    uint16_t st_rdev = (sb.st_rdev & 0xffff);
+	    uint16_t frdev = (rpmfiFRdev(fi) & 0xffff);
 	    if (st_rdev != frdev)
 		*res |= RPMVERIFY_RDEV;
 	} 

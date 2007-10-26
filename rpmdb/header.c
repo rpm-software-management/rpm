@@ -157,7 +157,7 @@ Header _headerFree(Header h)
 	for (i = 0; i < h->indexUsed; i++, entry++) {
 	    if ((h->flags & HEADERFLAG_ALLOCATED) && ENTRY_IS_REGION(entry)) {
 		if (entry->length > 0) {
-		    int_32 * ei = entry->data;
+		    int32_t * ei = entry->data;
 		    if ((ei - 2) == h->blob) h->blob = _free(h->blob);
 		    entry->data = NULL;
 		}
@@ -271,11 +271,11 @@ unsigned int _headerSizeof(Header h, enum hMagic magicp)
 	break;
     }
 
-    size += 2 * sizeof(int_32);	/* count of index entries */
+    size += 2 * sizeof(int32_t);	/* count of index entries */
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	unsigned diff;
-	int_32 type;
+	int32_t type;
 
 	/* Regions go in as is ... */
         if (ENTRY_IS_REGION(entry)) {
@@ -315,7 +315,7 @@ unsigned int _headerSizeof(Header h, enum hMagic magicp)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
+static int dataLength(int32_t type, hPTR_t p, int32_t count, int onDisk,
 		hPTR_t pend)
 {
     const unsigned char * s = p;
@@ -370,7 +370,7 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk,
 }
 
 /** \ingroup header
- * Swap int_32 and int_16 arrays within header region.
+ * Swap int32_t and int16_t arrays within header region.
  *
  * This code is way more twisty than I would like.
  *
@@ -410,7 +410,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
     memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
-	int_32 type;
+	int32_t type;
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
@@ -469,7 +469,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
 	case RPM_INT32_TYPE:
-	{   int_32 * it = (int_32 *)t;
+	{   int32_t * it = (int32_t *)t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
@@ -478,7 +478,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	    t = (unsigned char *) it;
 	}   break;
 	case RPM_INT16_TYPE:
-	{   int_16 * it = (int_16 *) t;
+	{   int16_t * it = (int16_t *) t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
@@ -519,16 +519,16 @@ static int regionSwab(indexEntry entry, int il, int dl,
 static void * doHeaderUnload(Header h,
 		size_t * lengthPtr)
 {
-    int_32 * ei = NULL;
+    int32_t * ei = NULL;
     entryInfo pe;
     char * dataStart;
     char * te;
     unsigned pad;
     unsigned len;
-    int_32 il = 0;
-    int_32 dl = 0;
+    int32_t il = 0;
+    int32_t dl = 0;
     indexEntry entry; 
-    int_32 type;
+    int32_t type;
     int i;
     int drlen, ndribbles;
     int driplen, ndrips;
@@ -542,8 +542,8 @@ static void * doHeaderUnload(Header h,
     drlen = ndribbles = driplen = ndrips = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	if (ENTRY_IS_REGION(entry)) {
-	    int_32 rdl = -entry->info.offset;	/* negative offset */
-	    int_32 ril = rdl/sizeof(*pe);
+	    int32_t rdl = -entry->info.offset;	/* negative offset */
+	    int32_t ril = rdl/sizeof(*pe);
 	    int rid = entry->info.offset;
 
 	    il += ril;
@@ -631,8 +631,8 @@ static void * doHeaderUnload(Header h,
 	pe->count = htonl(entry->info.count);
 
 	if (ENTRY_IS_REGION(entry)) {
-	    int_32 rdl = -entry->info.offset;	/* negative offset */
-	    int_32 ril = rdl/sizeof(*pe) + ndribbles;
+	    int32_t rdl = -entry->info.offset;	/* negative offset */
+	    int32_t ril = rdl/sizeof(*pe) + ndribbles;
 	    int rid = entry->info.offset;
 
 	    src = (char *)entry->data;
@@ -640,7 +640,7 @@ static void * doHeaderUnload(Header h,
 
 	    /* XXX Legacy regions do not include the region tag and data. */
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY)) {
-		int_32 stei[4];
+		int32_t stei[4];
 
 		legacy = 1;
 		memcpy(pe+1, src, rdl);
@@ -713,9 +713,9 @@ static void * doHeaderUnload(Header h,
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int_32 *)te) = htonl(*((int_32 *)src));
-		te += sizeof(int_32);
-		src += sizeof(int_32);
+		*((int32_t *)te) = htonl(*((int32_t *)src));
+		te += sizeof(int32_t);
+		src += sizeof(int32_t);
 	    }
 	    break;
 
@@ -723,9 +723,9 @@ static void * doHeaderUnload(Header h,
 	    count = entry->info.count;
 	    src = entry->data;
 	    while (count--) {
-		*((int_16 *)te) = htons(*((int_16 *)src));
-		te += sizeof(int_16);
-		src += sizeof(int_16);
+		*((int16_t *)te) = htons(*((int16_t *)src));
+		te += sizeof(int16_t);
+		src += sizeof(int16_t);
 	    }
 	    break;
 
@@ -777,7 +777,7 @@ void * _headerUnload(Header h)
  * @return 		header entry
  */
 static
-indexEntry findEntry(Header h, int_32 tag, int_32 type)
+indexEntry findEntry(Header h, int32_t tag, int32_t type)
 {
     indexEntry entry, entry2, last;
     struct indexEntry_s key;
@@ -823,7 +823,7 @@ indexEntry findEntry(Header h, int_32 tag, int_32 type)
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 static
-int _headerRemoveEntry(Header h, int_32 tag)
+int _headerRemoveEntry(Header h, int32_t tag)
 {
     indexEntry last = h->index + h->indexUsed;
     indexEntry entry, first;
@@ -868,9 +868,9 @@ int _headerRemoveEntry(Header h, int_32 tag)
 static
 Header _headerLoad(void * uh)
 {
-    int_32 * ei = (int_32 *) uh;
-    int_32 il = ntohl(ei[0]);		/* index length */
-    int_32 dl = ntohl(ei[1]);		/* data length */
+    int32_t * ei = (int32_t *) uh;
+    int32_t il = ntohl(ei[0]);		/* index length */
+    int32_t dl = ntohl(ei[1]);		/* data length */
     size_t pvlen = sizeof(il) + sizeof(dl) +
                (il * sizeof(struct entryInfo_s)) + dl;
     void * pv = uh;
@@ -886,7 +886,7 @@ Header _headerLoad(void * uh)
     if (hdrchkTags(il) || hdrchkData(dl))
 	goto errxit;
 
-    ei = (int_32 *) pv;
+    ei = (int32_t *) pv;
     pe = (entryInfo) &ei[2];
     dataStart = (unsigned char *) (pe + il);
     dataEnd = dataStart + dl;
@@ -921,8 +921,8 @@ Header _headerLoad(void * uh)
 	entry++;
 	h->indexUsed++;
     } else {
-	int_32 rdl;
-	int_32 ril;
+	int32_t rdl;
+	int32_t ril;
 
 	h->flags &= ~HEADERFLAG_LEGACY;
 
@@ -940,7 +940,7 @@ Header _headerLoad(void * uh)
 		goto errxit;
 	    if (off) {
 		size_t nb = REGION_TAG_COUNT;
-		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
+		int32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
 		ril = rdl/sizeof(*pe);
 		if (hdrchkTags(ril) || hdrchkData(rdl))
@@ -1048,9 +1048,9 @@ Header _headerReload(Header h, int tag)
 static
 Header _headerCopyLoad(const void * uh)
 {
-    int_32 * ei = (int_32 *) uh;
-    int_32 il = ntohl(ei[0]);		/* index length */
-    int_32 dl = ntohl(ei[1]);		/* data length */
+    int32_t * ei = (int32_t *) uh;
+    int32_t il = ntohl(ei[0]);		/* index length */
+    int32_t dl = ntohl(ei[1]);		/* data length */
     size_t pvlen = sizeof(il) + sizeof(dl) +
 			(il * sizeof(struct entryInfo_s)) + dl;
     void * nuh = NULL;
@@ -1076,12 +1076,12 @@ Header _headerCopyLoad(const void * uh)
 static
 Header _headerRead(FD_t fd, enum hMagic magicp)
 {
-    int_32 block[4];
-    int_32 reserved;
-    int_32 * ei = NULL;
-    int_32 il;
-    int_32 dl;
-    int_32 magic;
+    int32_t block[4];
+    int32_t reserved;
+    int32_t * ei = NULL;
+    int32_t il;
+    int32_t dl;
+    int32_t magic;
     Header h = NULL;
     size_t len;
     int i;
@@ -1178,7 +1178,7 @@ exit:
  * @return		1 on success, 0 on failure
  */
 static
-int _headerIsEntry(Header h, int_32 tag)
+int _headerIsEntry(Header h, int32_t tag)
 {
    		/* FIX: h modified by sort. */
     return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
@@ -1201,7 +1201,7 @@ static int copyEntry(const indexEntry entry,
 		hCNT_t c,
 		int minMem)
 {
-    int_32 count = entry->info.count;
+    int32_t count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
 
     if (p)
@@ -1214,11 +1214,11 @@ static int copyEntry(const indexEntry entry,
 	 * XXX a legacy header freshly read, but not yet unloaded to the rpmdb).
 	 */
 	if (ENTRY_IS_REGION(entry)) {
-	    int_32 * ei = ((int_32 *)entry->data) - 2;
+	    int32_t * ei = ((int32_t *)entry->data) - 2;
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
-	    int_32 rdl = -entry->info.offset;	/* negative offset */
-	    int_32 ril = rdl/sizeof(*pe);
+	    int32_t rdl = -entry->info.offset;	/* negative offset */
+	    int32_t ril = rdl/sizeof(*pe);
 
 	    rdl = entry->rdlen;
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) + rdl;
@@ -1231,7 +1231,7 @@ static int copyEntry(const indexEntry entry,
 	    }
 
 	    *p = xmalloc(count);
-	    ei = (int_32 *) *p;
+	    ei = (int32_t *) *p;
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(rdl);
 
@@ -1429,7 +1429,7 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, int_32 tag,
+static int intGetEntry(Header h, int32_t tag,
 		hTAG_t type,
 		hPTR_t * p,
 		hCNT_t c,
@@ -1498,7 +1498,7 @@ static void * _headerFreeTag(Header h,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerGetEntry(Header h, int_32 tag,
+int _headerGetEntry(Header h, int32_t tag,
 			hTYP_t type,
 			void ** p,
 			hCNT_t c)
@@ -1519,7 +1519,7 @@ int _headerGetEntry(Header h, int_32 tag,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerGetEntryMinMemory(Header h, int_32 tag,
+int _headerGetEntryMinMemory(Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p,
 			hCNT_t c)
@@ -1527,8 +1527,8 @@ int _headerGetEntryMinMemory(Header h, int_32 tag,
     return intGetEntry(h, tag, type, p, c, 1);
 }
 
-int headerGetRawEntry(Header h, int_32 tag, int_32 * type, hPTR_t * p,
-		int_32 * c)
+int headerGetRawEntry(Header h, int32_t tag, int32_t * type, hPTR_t * p,
+		int32_t * c)
 {
     indexEntry entry;
     int rc;
@@ -1552,8 +1552,8 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, hPTR_t * p,
 
 /**
  */
-static void copyData(int_32 type, void * dstPtr, const void * srcPtr,
-		int_32 cnt, int dataLength)
+static void copyData(int32_t type, void * dstPtr, const void * srcPtr,
+		int32_t cnt, int dataLength)
 {
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
@@ -1586,7 +1586,7 @@ static void copyData(int_32 type, void * dstPtr, const void * srcPtr,
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
-grabData(int_32 type, hPTR_t p, int_32 c, int * lengthPtr)
+grabData(int32_t type, hPTR_t p, int32_t c, int * lengthPtr)
 {
     void * data = NULL;
     int length;
@@ -1617,7 +1617,7 @@ grabData(int_32 type, hPTR_t p, int_32 c, int * lengthPtr)
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
+int _headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, int32_t c)
 {
     indexEntry entry;
     void * data;
@@ -1674,8 +1674,8 @@ int _headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAppendEntry(Header h, int_32 tag, int_32 type,
-		const void * p, int_32 c)
+int _headerAppendEntry(Header h, int32_t tag, int32_t type,
+		const void * p, int32_t c)
 {
     indexEntry entry;
     int length;
@@ -1722,8 +1722,8 @@ int _headerAppendEntry(Header h, int_32 tag, int_32 type,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
-		const void * p, int_32 c)
+int _headerAddOrAppendEntry(Header h, int32_t tag, int32_t type,
+		const void * p, int32_t c)
 {
     return (findEntry(h, tag, type)
 	? _headerAppendEntry(h, tag, type, p, c)
@@ -1751,7 +1751,7 @@ int _headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAddI18NString(Header h, int_32 tag, const char * string,
+int _headerAddI18NString(Header h, int32_t tag, const char * string,
 		const char * lang)
 {
     indexEntry table, entry;
@@ -1885,8 +1885,8 @@ int _headerAddI18NString(Header h, int_32 tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerModifyEntry(Header h, int_32 tag, int_32 type,
-			const void * p, int_32 c)
+int _headerModifyEntry(Header h, int32_t tag, int32_t type,
+			const void * p, int32_t c)
 {
     indexEntry entry;
     void * oldData;
@@ -2071,7 +2071,7 @@ Header _headerCopy(Header h)
 {
     Header nh = _headerNew();
     HeaderIterator hi;
-    int_32 tag, type, count;
+    int32_t tag, type, count;
     hPTR_t ptr;
    
     for (hi = _headerInitIterator(h);
@@ -2145,9 +2145,9 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 	if (hsa->hi == NULL) {
 	    hsa->i++;
 	} else {
-	    int_32 tagno;
-	    int_32 type;
-	    int_32 count;
+	    int32_t tagno;
+	    int32_t type;
+	    int32_t count;
 
 	    if (!_headerNextIterator(hsa->hi, &tagno, &type, NULL, &count))
 		fmt = NULL;
@@ -2675,7 +2675,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    int_32 count, type;
+    int32_t count, type;
     hPTR_t data;
     unsigned int intVal;
     const char ** strarray;
@@ -2766,14 +2766,14 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	switch (type) {
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
-	    intVal = *(((int_8 *) data) + element);
+	    intVal = *(((int8_t *) data) + element);
 	    break;
 	case RPM_INT16_TYPE:
-	    intVal = *(((uint_16 *) data) + element);
+	    intVal = *(((uint16_t *) data) + element);
 	    break;
 	default:		/* keep -Wall quiet */
 	case RPM_INT32_TYPE:
-	    intVal = *(((int_32 *) data) + element);
+	    intVal = *(((int32_t *) data) + element);
 	    break;
 	}
 
@@ -2835,8 +2835,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
     char * t, * te;
     int i, j;
     int numElements;
-    int_32 type;
-    int_32 count;
+    int32_t type;
+    int32_t count;
     sprintfToken spft;
     int condNumFormats;
     size_t need;
@@ -3108,7 +3108,7 @@ exit:
  * @param element	(unused)
  * @return		formatted string
  */
-static char * octalFormat(int_32 type, hPTR_t data, 
+static char * octalFormat(int32_t type, hPTR_t data, 
 		char * formatPrefix, int padding,int element)
 {
     char * val;
@@ -3118,7 +3118,7 @@ static char * octalFormat(int_32 type, hPTR_t data,
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
-	sprintf(val, formatPrefix, *((int_32 *) data));
+	sprintf(val, formatPrefix, *((int32_t *) data));
     }
 
     return val;
@@ -3133,7 +3133,7 @@ static char * octalFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * hexFormat(int_32 type, hPTR_t data, 
+static char * hexFormat(int32_t type, hPTR_t data, 
 		char * formatPrefix, int padding,int element)
 {
     char * val;
@@ -3143,7 +3143,7 @@ static char * hexFormat(int_32 type, hPTR_t data,
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
-	sprintf(val, formatPrefix, *((int_32 *) data));
+	sprintf(val, formatPrefix, *((int32_t *) data));
     }
 
     return val;
@@ -3151,7 +3151,7 @@ static char * hexFormat(int_32 type, hPTR_t data,
 
 /**
  */
-static char * realDateFormat(int_32 type, hPTR_t data, 
+static char * realDateFormat(int32_t type, hPTR_t data, 
 		char * formatPrefix, int padding,int element,
 		const char * strftimeFormat)
 {
@@ -3166,8 +3166,8 @@ static char * realDateFormat(int_32 type, hPTR_t data,
 	val = xmalloc(50 + padding);
 	strcat(formatPrefix, "s");
 
-	/* this is important if sizeof(int_32) ! sizeof(time_t) */
-	{   time_t dateint = *((int_32 *) data);
+	/* this is important if sizeof(int32_t) ! sizeof(time_t) */
+	{   time_t dateint = *((int32_t *) data);
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
@@ -3188,7 +3188,7 @@ static char * realDateFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * dateFormat(int_32 type, hPTR_t data, 
+static char * dateFormat(int32_t type, hPTR_t data, 
 		         char * formatPrefix, int padding, int element)
 {
     return realDateFormat(type, data, formatPrefix, padding, element,
@@ -3204,7 +3204,7 @@ static char * dateFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * dayFormat(int_32 type, hPTR_t data, 
+static char * dayFormat(int32_t type, hPTR_t data, 
 		         char * formatPrefix, int padding, int element)
 {
     return realDateFormat(type, data, formatPrefix, padding, element, 
@@ -3220,7 +3220,7 @@ static char * dayFormat(int_32 type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * shescapeFormat(int_32 type, hPTR_t data, 
+static char * shescapeFormat(int32_t type, hPTR_t data, 
 		char * formatPrefix, int padding,int element)
 {
     char * result, * dst, * src, * buf;
@@ -3228,7 +3228,7 @@ static char * shescapeFormat(int_32 type, hPTR_t data,
     if (type == RPM_INT32_TYPE) {
 	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
-	sprintf(result, formatPrefix, *((int_32 *) data));
+	sprintf(result, formatPrefix, *((int32_t *) data));
     } else {
 	buf = alloca(strlen(data) + padding + 2);
 	strcat(formatPrefix, "s");
@@ -3280,8 +3280,8 @@ void _headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 
     for (p = tagstocopy; *p != 0; p++) {
 	char *s;
-	int_32 type;
-	int_32 count;
+	int32_t type;
+	int32_t count;
 	if (_headerIsEntry(headerTo, *p))
 	    continue;
 	if (!_headerGetEntryMinMemory(headerFrom, *p, &type,

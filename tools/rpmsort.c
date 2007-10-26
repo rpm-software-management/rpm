@@ -24,7 +24,7 @@ static const char * avdbpath =
 #endif
 static int noDeps = 0;
 
-static inline const char * identifyDepend(int_32 f)
+static inline const char * identifyDepend(int32_t f)
 {
     if (isLegacyPreReq(f))
 	return "PreReq:";

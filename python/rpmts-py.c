@@ -282,7 +282,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	mi = rpmdbFreeIterator(mi);
     } else
     if (PyInt_Check(o)) {
-	uint_32 instance = PyInt_AsLong(o);
+	uint32_t instance = PyInt_AsLong(o);
 
 	mi = rpmtsInitIterator(s->ts, RPMDBI_PACKAGES, &instance, sizeof(instance));
 	if (instance == 0 || mi == NULL) {
@@ -292,7 +292,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else {
 	    Header h;
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		uint_32 recOffset = rpmdbGetIteratorOffset(mi);
+		uint32_t recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset)
 		    rpmtsAddEraseElement(s->ts, h, recOffset);
 		break;
@@ -573,7 +573,7 @@ rpmts_Rollback(rpmtsObject * s, PyObject * args, PyObject * kwds)
     struct rpmInstallArguments_s * ia = alloca(sizeof(*ia));
     rpmtransFlags transFlags;
     const char ** av = NULL;
-    uint_32 rbtid;
+    uint32_t rbtid;
     int rc;
     char * kwlist[] = {"transactionId", NULL};
 
@@ -815,7 +815,7 @@ fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
 static PyObject *
 rpmts_SetColor(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    uint_32 tscolor;
+    uint32_t tscolor;
     char * kwlist[] = {"color", NULL};
 
 if (_rpmts_debug)

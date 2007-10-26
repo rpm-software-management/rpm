@@ -46,8 +46,8 @@ extern unsigned int myinstall_instance;
 int rpmVersionCompare(Header first, Header second)
 {
     const char * one, * two;
-    int_32 * epochOne, * epochTwo;
-    static int_32 zero = 0;
+    int32_t * epochOne, * epochTwo;
+    static int32_t zero = 0;
     int rc;
 
     if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &epochOne, NULL))
@@ -102,7 +102,7 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
 void * ptr;
 const char ** argv;
 	const char * str;
-	int_32 * i32p;
+	int32_t * i32p;
     } body;
     char numbuf[32];
     rpmTagType type;
@@ -946,7 +946,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     rpmds trigger = NULL;
     const char ** triggerScripts;
     const char ** triggerProgs;
-    int_32 * triggerIndices;
+    int32_t * triggerIndices;
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
@@ -965,7 +965,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     while ((i = rpmdsNext(trigger)) >= 0) {
 	rpmTagType tit, tst, tpt;
 	const char * Name;
-	int_32 Flags = rpmdsFlags(trigger);
+	int32_t Flags = rpmdsFlags(trigger);
 
 	if ((Name = rpmdsN(trigger)) == NULL)
 	    continue;   /* XXX can't happen */
@@ -1079,7 +1079,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     const char ** triggerNames;
     int numTriggers;
-    int_32 * triggerIndices;
+    int32_t * triggerIndices;
     rpmTagType tnt, tit;
     int numTriggerIndices;
     unsigned char * triggersRun;
@@ -1242,7 +1242,7 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
-    uint_32 tscolor = rpmtsColor(ts);
+    uint32_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -1462,7 +1462,7 @@ assert(psm->mi == NULL);
 
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
-		int_32 uht, uhc;
+		int32_t uht, uhc;
 
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
 		    psm->oh = headerCopyLoad(uh);
@@ -1471,7 +1471,7 @@ assert(psm->mi == NULL);
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMAGE, &uht, &uh, &uhc))
 		{
 		    HeaderIterator hi;
-		    int_32 tag, type, count;
+		    int32_t tag, type, count;
 		    hPTR_t ptr;
 		    Header oh;
 
@@ -1547,7 +1547,7 @@ assert(psm->mi == NULL);
 
 	    /* Add remove transaction id to header. */
 	    if (psm->oh != NULL)
-	    {	int_32 tid = rpmtsGetTid(ts);
+	    {	int32_t tid = rpmtsGetTid(ts);
 		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
 			RPM_INT32_TYPE, &tid, 1);
 	    }
@@ -1701,7 +1701,7 @@ assert(psm->mi == NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    int_32 installTime = (int_32) time(NULL);
+	    int32_t installTime = (int32_t) time(NULL);
 	    int fc = rpmfiFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */

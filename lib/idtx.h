@@ -15,7 +15,7 @@ typedef struct IDT_s {
     const char * key;           /*! removed package file name. */
     Header h;                   /*!< removed package header. */
     union {
-        uint_32 u32;            /*!< install/remove transaction id */
+        uint32_t u32;            /*!< install/remove transaction id */
     } val;
 } * IDT;
 

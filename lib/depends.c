@@ -105,12 +105,12 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
-    uint_32 tscolor = rpmtsColor(ts);
-    uint_32 dscolor;
-    uint_32 hcolor;
+    uint32_t tscolor = rpmtsColor(ts);
+    uint32_t dscolor;
+    uint32_t hcolor;
     rpmdbMatchIterator mi;
     Header oh;
-    uint_32 ohcolor;
+    uint32_t ohcolor;
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
@@ -554,9 +554,9 @@ exit:
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		rpmds requires, rpmds conflicts,
-		const char * depName, uint_32 tscolor, int adding)
+		const char * depName, uint32_t tscolor, int adding)
 {
-    uint_32 dscolor;
+    uint32_t dscolor;
     const char * Name;
     int rc;
     int ourrc = 0;
@@ -818,7 +818,7 @@ static void markLoop(tsortInfo tsi, rpmte q)
     }
 }
 
-static inline const char * identifyDepend(int_32 f)
+static inline const char * identifyDepend(int32_t f)
 {
     if (isLegacyPreReq(f))
 	return "PreReq:";
@@ -866,7 +866,7 @@ zapRelation(rpmte q, rpmte p,
 	/* XXX Note: the loop traverses "not found", break on "found". */
 	 tsi_prev = tsi, tsi = tsi->tsi_next)
     {
-	int_32 Flags;
+	int32_t Flags;
 
 	if (tsi->tsi_suc != p)
 	    continue;
@@ -1007,7 +1007,7 @@ static int orderListIndexCmp(const void * one, const void * two)
 static void addQ(rpmte p,
 		rpmte * qp,
 		rpmte * rp,
-		uint_32 prefcolor)
+		uint32_t prefcolor)
 {
     rpmte q, qprev;
 
@@ -1048,8 +1048,8 @@ static void addQ(rpmte p,
 int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
-    int_32 Flags;
-    uint_32 prefcolor = rpmtsPrefColor(ts);
+    int32_t Flags;
+    uint32_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -1483,7 +1483,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
-    uint_32 tscolor = rpmtsColor(ts);
+    uint32_t tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;

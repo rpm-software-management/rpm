@@ -101,13 +101,13 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpmTag tagBT = RPMTAG_BUILDTIME;
     rpmTagType BTt;
-    int_32 * BTp;
+    int32_t * BTp;
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
     const char ** N;
     rpmTagType Nt;
-    int_32 Count;
+    int32_t Count;
 
     if (tagN == RPMTAG_PROVIDENAME) {
 	Type = "Provides";
@@ -218,13 +218,13 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     return tbuf;
 }
 
-rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, int32_t Flags)
 {
     HGE_t hge = (HGE_t) headerGetEntryMinMemory;
     rpmds ds = NULL;
     const char * Type;
     const char * n, * v, * r;
-    int_32 * ep;
+    int32_t * ep;
     const char ** N, ** EVR;
     char * t;
     int xx;
@@ -291,7 +291,7 @@ exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
 }
 
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int32_t Flags)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -391,9 +391,9 @@ const char * rpmdsEVR(const rpmds ds)
     return EVR;
 }
 
-int_32 rpmdsFlags(const rpmds ds)
+int32_t rpmdsFlags(const rpmds ds)
 {
-    int_32 Flags = 0;
+    int32_t Flags = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Flags != NULL)
@@ -449,9 +449,9 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
     return onopromote;
 }
 
-uint_32 rpmdsColor(const rpmds ds)
+uint32_t rpmdsColor(const rpmds ds)
 {
-    uint_32 Color = 0;
+    uint32_t Color = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Color != NULL)
@@ -460,9 +460,9 @@ uint_32 rpmdsColor(const rpmds ds)
     return Color;
 }
 
-uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
+uint32_t rpmdsSetColor(const rpmds ds, uint32_t color)
 {
-    uint_32 ocolor = 0;
+    uint32_t ocolor = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Color != NULL) {
@@ -473,9 +473,9 @@ uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
     return ocolor;
 }
 
-int_32 rpmdsRefs(const rpmds ds)
+int32_t rpmdsRefs(const rpmds ds)
 {
-    int_32 Refs = 0;
+    int32_t Refs = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Refs != NULL)
@@ -484,9 +484,9 @@ int_32 rpmdsRefs(const rpmds ds)
     return Refs;
 }
 
-int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
+int32_t rpmdsSetRefs(const rpmds ds, int32_t refs)
 {
-    int_32 orefs = 0;
+    int32_t orefs = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Refs != NULL) {
@@ -642,7 +642,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
     rpmds ds;
     const char ** N;
     const char ** EVR;
-    int_32 * Flags;
+    int32_t * Flags;
     int j;
 int save;
 
@@ -921,10 +921,10 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * pkgN, * v, * r;
-    int_32 * epoch;
+    int32_t * epoch;
     const char * pkgEVR;
     char * t;
-    int_32 pkgFlags = RPMSENSE_EQUAL;
+    int32_t pkgFlags = RPMSENSE_EQUAL;
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
 

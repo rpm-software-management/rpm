@@ -92,10 +92,10 @@ typedef const char *	errmsg_t;
 
 /** \ingroup header
  */
-typedef int_32 *	hTAG_t;
-typedef int_32 *	hTYP_t;
+typedef int32_t *	hTAG_t;
+typedef int32_t *	hTYP_t;
 typedef const void *	hPTR_t;
-typedef int_32 *	hCNT_t;
+typedef int32_t *	hCNT_t;
 
 /** \ingroup header
  */
@@ -140,7 +140,7 @@ enum headerSprintfExtensionType {
  * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef char * (*headerTagFormatFunction)(int_32 type,
+typedef char * (*headerTagFormatFunction)(int32_t type,
 				const void * data, char * formatPrefix,
 				int padding, int element);
 
@@ -255,17 +255,17 @@ typedef union hRET_s {
     const void * ptr;
     const char ** argv;
     const char * str;
-    uint_32 * ui32p;
-    uint_16 * ui16p;
-    int_32 * i32p;
-    int_16 * i16p;
-    int_8 * i8p;
+    uint32_t * ui32p;
+    uint16_t * ui16p;
+    int32_t * i32p;
+    int16_t * i16p;
+    int8_t * i8p;
 } * hRET_t;
 
 /**
  */
 typedef struct HE_s {
-    int_32 tag;
+    int32_t tag;
     hTYP_t typ;
     union {
 	hPTR_t * ptr;
@@ -381,7 +381,7 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp);
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-int headerIsEntry(Header h, int_32 tag);
+int headerIsEntry(Header h, int32_t tag);
 
 /** \ingroup header
  * Free data allocated when retrieved from header.
@@ -405,7 +405,7 @@ void * headerFreeTag(Header h, const void * data, rpmTagType type);
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntry(Header h, int_32 tag,
+int headerGetEntry(Header h, int32_t tag,
 			hTYP_t type,
 			void ** p,
 			hCNT_t c);
@@ -422,7 +422,7 @@ int headerGetEntry(Header h, int_32 tag,
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntryMinMemory(Header h, int_32 tag,
+int headerGetEntryMinMemory(Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p, 
 			hCNT_t c);
@@ -441,7 +441,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c);
+int headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, int32_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -457,8 +457,8 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c);
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAppendEntry(Header h, int_32 tag, int_32 type,
-		const void * p, int_32 c);
+int headerAppendEntry(Header h, int32_t tag, int32_t type,
+		const void * p, int32_t c);
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -470,8 +470,8 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
-		const void * p, int_32 c);
+int headerAddOrAppendEntry(Header h, int32_t tag, int32_t type,
+		const void * p, int32_t c);
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -493,7 +493,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
-int headerAddI18NString(Header h, int_32 tag, const char * string,
+int headerAddI18NString(Header h, int32_t tag, const char * string,
 		const char * lang);
 
 /** \ingroup header
@@ -506,8 +506,8 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerModifyEntry(Header h, int_32 tag, int_32 type,
-			const void * p, int_32 c);
+int headerModifyEntry(Header h, int32_t tag, int32_t type,
+			const void * p, int32_t c);
 
 /** \ingroup header
  * Delete tag in header.
@@ -518,7 +518,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-int headerRemoveEntry(Header h, int_32 tag);
+int headerRemoveEntry(Header h, int32_t tag);
 
 /** \ingroup header
  * Return formatted output string from header tags.

@@ -385,7 +385,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    int_32 count, sigtag;
+    int32_t count, sigtag;
     const char * sigtarget;
     const char * rpmio_flags = NULL;
     const char * SHA1 = NULL;
@@ -506,7 +506,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      */
     if (Fileno(csa->cpioFdIn) < 0) {
 	HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-	int_32 * archiveSize;
+	int32_t * archiveSize;
 	if (hge(h, RPMTAG_ARCHIVESIZE, NULL, (void *)&archiveSize, NULL))
 	    *archiveSize = csa->cpioArchiveSize;
     }
@@ -550,7 +550,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	SHA1 = _free(SHA1);
     }
 
-    {	int_32 payloadSize = csa->cpioArchiveSize;
+    {	int32_t payloadSize = csa->cpioArchiveSize;
 	(void) headerAddEntry(sig, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
 			&payloadSize, 1);
     }
@@ -672,9 +672,9 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sig != NULL && pkgidp != NULL) {
-	int_32 tagType;
+	int32_t tagType;
 	unsigned char * MD5 = NULL;
-	int_32 c;
+	int32_t c;
 	int xx;
 	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, (void **)&MD5, &c);
 	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)
@@ -703,7 +703,7 @@ exit:
     return rc;
 }
 
-static int_32 copyTags[] = {
+static int32_t copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,

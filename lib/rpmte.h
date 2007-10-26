@@ -86,8 +86,8 @@ struct rpmte_s {
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
     rpmfi fi;			/*!< File information. */
 
-    uint_32 color;		/*!< Color bit(s) from package dependencies. */
-    uint_32 pkgFileSize;	/*!< No. of bytes in package file (approx). */
+    uint32_t color;		/*!< Color bit(s) from package dependencies. */
+    uint32_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
 
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
@@ -217,7 +217,7 @@ extern int rpmteIsSource(rpmte te);
  * @param te		transaction element
  * @return		color bits
  */
-uint_32 rpmteColor(rpmte te);
+uint32_t rpmteColor(rpmte te);
 
 /**
  * Set color bits of transaction element.
@@ -225,7 +225,7 @@ uint_32 rpmteColor(rpmte te);
  * @param color		new color bits
  * @return		previous color bits
  */
-uint_32 rpmteSetColor(rpmte te, uint_32 color);
+uint32_t rpmteSetColor(rpmte te, uint32_t color);
 
 /**
  * Retrieve last instance installed to the database.
@@ -248,7 +248,7 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance);
  * @param te		transaction element
  * @return		size in bytes of package file.
  */
-uint_32 rpmtePkgFileSize(rpmte te);
+uint32_t rpmtePkgFileSize(rpmte te);
 
 /**
  * Retrieve dependency tree depth of transaction element.

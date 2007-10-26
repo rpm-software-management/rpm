@@ -494,7 +494,7 @@ struct rpmInstallArguments_s {
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;
     rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
-    uint_32 rbtid;		/*!< from --rollback */
+    uint32_t rbtid;		/*!< from --rollback */
     int numRelocations;
     int noDeps;
     int incldocs;

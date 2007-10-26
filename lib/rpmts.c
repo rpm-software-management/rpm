@@ -85,12 +85,12 @@ char * hGetNEVRA(Header h, const char ** np)
     return NVRA;
 }
 
-uint_32 hGetColor(Header h)
+uint32_t hGetColor(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    uint_32 hcolor = 0;
-    uint_32 * fcolors;
-    int_32 ncolors;
+    uint32_t hcolor = 0;
+    uint32_t * fcolors;
+    int32_t ncolors;
     int i;
 
     fcolors = NULL;
@@ -356,7 +356,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    const char ** pubkeys;
-	    int_32 pt, pc;
+	    int32_t pt, pc;
 
 	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
 		continue;
@@ -464,8 +464,8 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktle
     const char * group = "Public Keys";
     const char * license = "pubkey";
     const char * buildhost = "localhost";
-    int_32 pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
-    int_32 zero = 0;
+    int32_t pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    int32_t zero = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
     const char * d = NULL;
@@ -556,7 +556,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktle
 
     /* XXX W2DO: tag value inheirited from parent? */
     xx = headerAddEntry(h, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildhost, 1);
-    {   int_32 tid = rpmtsGetTid(ts);
+    {   int32_t tid = rpmtsGetTid(ts);
 	xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &tid, 1);
 	/* XXX W2DO: tag value inheirited from parent? */
 	xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &tid, 1);
@@ -691,7 +691,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 	const char * hname;
 	size_t hnamelen;
 	time_t htime;
-	int_32 * ip;
+	int32_t * ip;
 
 	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
 	    continue;
@@ -1152,18 +1152,18 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
     return ochrootDone;
 }
 
-int_32 rpmtsGetTid(rpmts ts)
+int32_t rpmtsGetTid(rpmts ts)
 {
-    int_32 tid = 0;
+    int32_t tid = 0;
     if (ts != NULL) {
 	tid = ts->tid;
     }
     return tid;
 }
 
-int_32 rpmtsSetTid(rpmts ts, int_32 tid)
+int32_t rpmtsSetTid(rpmts ts, int32_t tid)
 {
-    int_32 otid = 0;
+    int32_t otid = 0;
     if (ts != NULL) {
 	otid = ts->tid;
 	ts->tid = tid;
@@ -1171,17 +1171,17 @@ int_32 rpmtsSetTid(rpmts ts, int_32 tid)
     return otid;
 }
 
-int_32 rpmtsSigtag(const rpmts ts)
+int32_t rpmtsSigtag(const rpmts ts)
 {
-    int_32 sigtag = 0;
+    int32_t sigtag = 0;
     if (ts != NULL)
 	sigtag = ts->sigtag;
     return sigtag;
 }
 
-int_32 rpmtsSigtype(const rpmts ts)
+int32_t rpmtsSigtype(const rpmts ts)
 {
-    int_32 sigtype = 0;
+    int32_t sigtype = 0;
     if (ts != NULL)
 	sigtype = ts->sigtype;
     return sigtype;
@@ -1195,16 +1195,16 @@ const void * rpmtsSig(const rpmts ts)
     return sig;
 }
 
-int_32 rpmtsSiglen(const rpmts ts)
+int32_t rpmtsSiglen(const rpmts ts)
 {
-    int_32 siglen = 0;
+    int32_t siglen = 0;
     if (ts != NULL)
 	siglen = ts->siglen;
     return siglen;
 }
 
 int rpmtsSetSig(rpmts ts,
-		int_32 sigtag, int_32 sigtype, const void * sig, int_32 siglen)
+		int32_t sigtag, int32_t sigtype, const void * sig, int32_t siglen)
 {
     if (ts != NULL) {
 	if (ts->sig && ts->sigtype)
@@ -1327,11 +1327,11 @@ int rpmtsInitDSI(const rpmts ts)
 }
 
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
+		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
 		rpmFileAction action)
 {
     rpmDiskSpaceInfo dsi;
-    uint_32 bneeded;
+    uint32_t bneeded;
 
     dsi = ts->dsi;
     if (dsi) {
@@ -1490,14 +1490,14 @@ rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
     return orelocateElement;
 }
 
-uint_32 rpmtsColor(rpmts ts)
+uint32_t rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);
 }
 
-uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
+uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
 {
-    uint_32 ocolor = 0;
+    uint32_t ocolor = 0;
     if (ts != NULL) {
 	ocolor = ts->color;
 	ts->color = color;
@@ -1505,7 +1505,7 @@ uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
     return ocolor;
 }
 
-uint_32 rpmtsPrefColor(rpmts ts)
+uint32_t rpmtsPrefColor(rpmts ts)
 {
     return (ts != NULL ? ts->prefcolor : 0);
 }
@@ -1581,7 +1581,7 @@ rpmts rpmtsCreate(void)
     ts->dbmode = O_RDONLY;
 
     ts->scriptFd = NULL;
-    ts->tid = (int_32) time(NULL);
+    ts->tid = (int32_t) time(NULL);
     ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");

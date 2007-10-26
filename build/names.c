@@ -172,12 +172,12 @@ gid_t getGidS(const char *gname)
     return gids[gid_used++];
 }
 
-int_32 * getBuildTime(void)
+int32_t * getBuildTime(void)
 {
-    static int_32 buildTime[1];
+    static int32_t buildTime[1];
 
     if (buildTime[0] == 0)
-	buildTime[0] = (int_32) time(NULL);
+	buildTime[0] = (int32_t) time(NULL);
     return buildTime;
 }
 

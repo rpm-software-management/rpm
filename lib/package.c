@@ -87,7 +87,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     HFD_t hfd = (HFD_t) headerFreeData;
     HAE_t hae = (HAE_t) headerAddEntry;
     HeaderIterator hi;
-    int_32 tag, type, count;
+    int32_t tag, type, count;
     const void * ptr;
     int xx;
 
@@ -167,7 +167,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
     HFD_t hfd = (HFD_t) headerFreeData;
     Header sigh = rpmNewSignature();
     HeaderIterator hi;
-    int_32 tag, stag, type, count;
+    int32_t tag, stag, type, count;
     const void * ptr;
     int xx;
 
@@ -303,12 +303,12 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 {
     pgpDig dig;
     char buf[8*BUFSIZ];
-    int_32 * ei = (int_32 *) uh;
-    int_32 il = ntohl(ei[0]);
-    int_32 dl = ntohl(ei[1]);
+    int32_t * ei = (int32_t *) uh;
+    int32_t il = ntohl(ei[0]);
+    int32_t dl = ntohl(ei[1]);
     entryInfo pe = (entryInfo) &ei[2];
-    int_32 ildl[2];
-    int_32 pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
+    int32_t ildl[2];
+    int32_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
@@ -318,7 +318,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     int siglen = 0;
     int blen;
     size_t nb;
-    int_32 ril = 0;
+    int32_t ril = 0;
     unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
@@ -592,12 +592,12 @@ verifyinfo_exit:
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
 {
     char buf[BUFSIZ];
-    int_32 block[4];
-    int_32 il;
-    int_32 dl;
-    int_32 * ei = NULL;
+    int32_t block[4];
+    int32_t il;
+    int32_t dl;
+    int32_t * ei = NULL;
     size_t uc;
-    int_32 nb;
+    int32_t nb;
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
@@ -679,10 +679,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     ssize_t count;
     struct rpmlead * l = alloca(sizeof(*l));
     Header sigh = NULL;
-    int_32 sigtag;
-    int_32 sigtype;
+    int32_t sigtag;
+    int32_t sigtype;
     const void * sig;
-    int_32 siglen;
+    int32_t siglen;
     rpmtsOpX opx;
     size_t nb;
     Header h = NULL;
@@ -848,8 +848,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    goto exit;
 	}
     {	void * uh = NULL;
-	int_32 uht;
-	int_32 uhc;
+	int32_t uht;
+	int32_t uhc;
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
@@ -875,8 +875,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	}
     case RPMSIGTAG_SHA1:
     {	void * uh = NULL;
-	int_32 uht;
-	int_32 uhc;
+	int32_t uht;
+	int32_t uhc;
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;

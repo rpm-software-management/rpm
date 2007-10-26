@@ -18,7 +18,7 @@ injmode_t injmode = INJ_UNKNOWN;
 typedef struct cmd_s {
     injmode_t	injmode;
     char *	tag;
-    int_32	tagval;
+    int32_t	tagval;
     int		done;
     int		oldcnt;
     int		nvals;
@@ -42,8 +42,8 @@ static const char * pr_injmode(injmode_t injmode)
 
 enum cvtaction {CA_OLD, CA_NEW, CA_OMIT, CA_ERR};
 
-static enum cvtaction convertAMD(enum cvtaction ca, int_32 type,
-	void ** nvalsp, int_32 *ncountp, cmd_t *newc)
+static enum cvtaction convertAMD(enum cvtaction ca, int32_t type,
+	void ** nvalsp, int32_t *ncountp, cmd_t *newc)
 {
     int i;
 
@@ -64,7 +64,7 @@ static enum cvtaction convertAMD(enum cvtaction ca, int_32 type,
     case CA_NEW:
 	switch (type) {
 	case RPM_INT32_TYPE:
-	{   int_32 *intp = xmalloc(newc->nvals * sizeof(*intp));
+	{   int32_t *intp = xmalloc(newc->nvals * sizeof(*intp));
 	    for (i = 0; i < newc->nvals; i++) {
 		long ival;
 		char *end;
@@ -119,8 +119,8 @@ static enum cvtaction convertAMD(enum cvtaction ca, int_32 type,
     return ca;
 }
 
-static enum cvtaction convertExistingAMD(int_32 tag, int_32 type,
-	hPTR_t valsp, int_32 *countp, void ** nvalsp, int_32 *ncountp,
+static enum cvtaction convertExistingAMD(int32_t tag, int32_t type,
+	hPTR_t valsp, int32_t *countp, void ** nvalsp, int32_t *ncountp,
 	cmd_t *cmds[], int ncmds)
 {
     cmd_t *newc = NULL;
@@ -193,7 +193,7 @@ static enum cvtaction convertExistingAMD(int_32 tag, int_32 type,
 static
 Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
 {
-    int_32 tag, type, count;
+    int32_t tag, type, count;
     hPTR_t vals;
     HeaderIterator headerIter;
     Header res = headerNew();
@@ -203,7 +203,7 @@ Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
     while (headerNextIterator(headerIter, &tag, &type, &vals, &count)) {
 	enum cvtaction ca;
 	void *nvals;
-	int_32 ncount;
+	int32_t ncount;
 
 	nvals = NULL;
 	ncount = 0;
@@ -297,7 +297,7 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 
 	rc = headerIsEntry(h, c->tagval);
 	if (!rc && !c->done && c->injmode != INJ_DELETE) {
-	    int_32 type, ncount;
+	    int32_t type, ncount;
 	    void *nvals;
 	    enum cvtaction ca;
 

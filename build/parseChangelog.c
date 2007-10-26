@@ -11,7 +11,7 @@
 
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
-    int_32 mytime = time;	/* XXX convert to header representation */
+    int32_t mytime = time;	/* XXX convert to header representation */
     if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
 	(void) headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
 			  &mytime, 1);

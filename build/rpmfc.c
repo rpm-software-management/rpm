@@ -295,7 +295,7 @@ static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
 static char * rpmfcFileDep(char * buf, int ix,
 		rpmds ds)
 {
-    int_32 tagN = rpmdsTagN(ds);
+    int32_t tagN = rpmdsTagN(ds);
     char deptype = 'X';
 
     buf[0] = '\0';
@@ -330,7 +330,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     rpmds * depsp, ds;
     const char * N;
     const char * EVR;
-    int_32 Flags, dsContext, tagN;
+    int32_t Flags, dsContext, tagN;
     ARGV_t pav;
     const char * s;
     int pac;
@@ -798,7 +798,7 @@ static int rpmfcELF(rpmfc fc)
     struct stat sb, * st = &sb;
     const char * soname = NULL;
     rpmds * depsp, ds;
-    int_32 tagN, dsContext;
+    int32_t tagN, dsContext;
     char * t;
     int xx;
     int isElf64;
@@ -1115,7 +1115,7 @@ int rpmfcApply(rpmfc fc)
     rpmds ds;
     const char * N;
     const char * EVR;
-    int_32 Flags;
+    int32_t Flags;
     unsigned char deptype;
     int nddict;
     int previx;
@@ -1207,7 +1207,7 @@ assert(dix >= 0);
     return 0;
 }
 
-int rpmfcClassify(rpmfc fc, ARGV_t argv, int_16 * fmode)
+int rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode)
 {
     ARGV_t fcav = NULL;
     ARGV_t dav;
@@ -1248,7 +1248,7 @@ assert(xx != -1);	/* XXX figger a proper return path. */
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
-	int_16 mode = (fmode ? fmode[fc->ix] : 0);
+	int16_t mode = (fmode ? fmode[fc->ix] : 0);
 
 	s = argv[fc->ix];
 assert(s != NULL);
@@ -1407,7 +1407,7 @@ static void printDeps(Header h)
     rpmds ds = NULL;
     int flags = 0;	/* XXX !scareMem */
     const char * DNEVR;
-    int_32 Flags;
+    int32_t Flags;
     int bingo = 0;
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
@@ -1526,7 +1526,7 @@ int rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     rpmds ds;
     int flags = 0;	/* XXX !scareMem */
     ARGV_t av;
-    int_16 * fmode;
+    int16_t * fmode;
     int ac = rpmfiFC(fi);
     const void ** p;
     char buf[BUFSIZ];
@@ -1634,7 +1634,7 @@ assert(EVR != NULL);
     c = argiCount(fc->fcolor);
 assert(ac == c);
     if (p != NULL && c > 0) {
-	int_32 * fcolors = (int_32 *)p;
+	int32_t * fcolors = (int32_t *)p;
 	int i;
 
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */

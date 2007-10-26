@@ -94,10 +94,10 @@ static int handleInstInstalledFiles(const rpmts ts,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
 {
-    uint_32 tscolor = rpmtsColor(ts);
-    uint_32 prefcolor = rpmtsPrefColor(ts);
-    uint_32 otecolor, tecolor;
-    uint_32 oFColor, FColor;
+    uint32_t tscolor = rpmtsColor(ts);
+    uint32_t prefcolor = rpmtsPrefColor(ts);
+    uint32_t otecolor, tecolor;
+    uint32_t oFColor, FColor;
     const char * altNEVR = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
@@ -162,7 +162,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    continue;
 
 	if (!(fi->mapflags & CPIO_SBIT_CHECK)) {
-	    int_16 omode = rpmfiFMode(otherFi);
+	    int16_t omode = rpmfiFMode(otherFi);
 	    if (S_ISREG(omode) && (omode & 06000) != 0) {
 		fi->mapflags |= CPIO_SBIT_CHECK;
 	    }
@@ -392,7 +392,7 @@ bingoFps->baseName);
 static void handleOverlappedFiles(const rpmts ts,
 		const rpmte p, rpmfi fi)
 {
-    uint_32 fixupSize = 0;
+    uint32_t fixupSize = 0;
     rpmps ps;
     const char * fn;
     int i, j;
@@ -401,14 +401,14 @@ static void handleOverlappedFiles(const rpmts ts,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
-	uint_32 tscolor = rpmtsColor(ts);
-	uint_32 prefcolor = rpmtsPrefColor(ts);
-	uint_32 oFColor, FColor;
+	uint32_t tscolor = rpmtsColor(ts);
+	uint32_t prefcolor = rpmtsPrefColor(ts);
+	uint32_t oFColor, FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
-	int_32 FFlags;
-	int_16 FMode;
+	int32_t FFlags;
+	int16_t FMode;
 	const rpmfi * recs;
 	int numRecs;
 
@@ -614,7 +614,7 @@ assert(otherFi != NULL);
 static int ensureOlder(rpmts ts,
 		const rpmte p, const Header h)
 {
-    int_32 reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
+    int32_t reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
     rpmds req;
     char * t;
@@ -662,8 +662,8 @@ static int ensureOlder(rpmts ts,
 /* FIX: fi->actions is modified. */
 static void skipFiles(const rpmts ts, rpmfi fi)
 {
-    uint_32 tscolor = rpmtsColor(ts);
-    uint_32 FColor;
+    uint32_t tscolor = rpmtsColor(ts);
+    uint32_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
@@ -842,7 +842,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    const char * fdn, * fbn;
-	    int_16 fFMode;
+	    int16_t fFMode;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
 		continue;
@@ -906,7 +906,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     int    rc         = 0;
     int    numAdded   = 0;
     int    numRemoved = 0;
-    int_32 tid;
+    int32_t tid;
     rpmtsi tsi;
     rpmte  te;
     rpmps  ps;
@@ -1027,7 +1027,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 		Header *hdrp,
 		const char **fnp)
 {
-    int_32 tid;
+    int32_t tid;
     const char * name;
     const char * rpname = NULL;
     const char * _repackage_dir = NULL;
@@ -1306,7 +1306,7 @@ cleanup:
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
-    uint_32 tscolor = rpmtsColor(ts);
+    uint32_t tscolor = rpmtsColor(ts);
     int i, j;
     int ourrc = 0;
     int totalFileCount = 0;
@@ -1393,7 +1393,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     (void) rpmtsSetChrootDone(ts, 0);
 
-    {	int_32 tid = (int_32) time(NULL);
+    {	int32_t tid = (int32_t) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
 
@@ -1760,7 +1760,7 @@ rpmlog(RPMLOG_DEBUG, _("computing file dispositions\n"));
 	if (rpmteType(p) == TR_REMOVED) {
 	    fi = rpmfiInit(fi, 0);
 	    while ((i = rpmfiNext(fi)) >= 0) {
-		int_16 mode;
+		int16_t mode;
 		if (XFA_SKIPPING(fi->actions[i]))
 		    continue;
 		(void) rpmfiSetFX(fi, i);

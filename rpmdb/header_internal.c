@@ -101,35 +101,35 @@ void headerDump(Header h, FILE *f, int flags,
 	    case RPM_INT32_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%08x (%d)\n", ct++,
-			    (unsigned) *((int_32 *) dp),
-			    (int) *((int_32 *) dp));
-		    dp += sizeof(int_32);
+			    (unsigned) *((int32_t *) dp),
+			    (int) *((int32_t *) dp));
+		    dp += sizeof(int32_t);
 		}
 		break;
 
 	    case RPM_INT16_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%04x (%d)\n", ct++,
-			    (unsigned) (*((int_16 *) dp) & 0xffff),
-			    (int) *((int_16 *) dp));
-		    dp += sizeof(int_16);
+			    (unsigned) (*((int16_t *) dp) & 0xffff),
+			    (int) *((int16_t *) dp));
+		    dp += sizeof(int16_t);
 		}
 		break;
 	    case RPM_INT8_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%02x (%d)\n", ct++,
-			    (unsigned) (*((int_8 *) dp) & 0xff),
-			    (int) *((int_8 *) dp));
-		    dp += sizeof(int_8);
+			    (unsigned) (*((int8_t *) dp) & 0xff),
+			    (int) *((int8_t *) dp));
+		    dp += sizeof(int8_t);
 		}
 		break;
 	    case RPM_BIN_TYPE:
 		while (c > 0) {
 		    fprintf(f, "       Data: %.3d ", ct);
 		    while (c--) {
-			fprintf(f, "%02x ", (unsigned) (*(int_8 *)dp & 0xff));
+			fprintf(f, "%02x ", (unsigned) (*(int8_t *)dp & 0xff));
 			ct++;
-			dp += sizeof(int_8);
+			dp += sizeof(int8_t);
 			if (! (ct % 8)) {
 			    break;
 			}

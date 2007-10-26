@@ -139,9 +139,9 @@ struct hdrObject_s {
     char ** md5list;
     char ** fileList;
     char ** linkList;
-    int_32 * fileSizes;
-    int_32 * mtimes;
-    int_32 * uids, * gids;	/* XXX these tags are not used anymore */
+    int32_t * fileSizes;
+    int32_t * mtimes;
+    int32_t * uids, * gids;	/* XXX these tags are not used anymore */
     unsigned short * rdevs;
     unsigned short * modes;
 } ;
@@ -374,8 +374,8 @@ long tagNumFromPyObject (PyObject *item)
  * @retval c           address of number of values
  * @return             0 on success, 1 on bad magic, 2 on error
  */
-static int dressedHeaderGetEntry(Header h, int_32 tag, int_32 *type,
-	void **p, int_32 *c)
+static int dressedHeaderGetEntry(Header h, int32_t tag, int32_t *type,
+	void **p, int32_t *c)
 {
     switch (tag) {
     case RPMTAG_OLDFILENAMES:
@@ -794,8 +794,8 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
     Header h;
     HeaderIterator hi;
-    int_32 * newMatch;
-    int_32 * oldMatch;
+    int32_t * newMatch;
+    int32_t * oldMatch;
     hdrObject * hdr;
     int count = 0;
     int type, c, tag;

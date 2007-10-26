@@ -119,7 +119,7 @@ main(int argc, char *argv[])
 	vsflags |= RPMVSF_NOHDRCHK;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    {   int_32 tid = (int_32) time(NULL);
+    {   int32_t tid = (int32_t) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
 

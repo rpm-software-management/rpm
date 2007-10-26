@@ -660,7 +660,7 @@ int fsmMapAttrs(FSM_t fsm)
 	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
 	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
-	int_32 finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
+	int32_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
 	uid_t uid = fi->uid;
 	gid_t gid = fi->gid;
 

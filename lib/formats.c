@@ -24,11 +24,11 @@
  * @param element	(unused)
  * @return		formatted string
  */
-static char * triggertypeFormat(int_32 type, const void * data, 
+static char * triggertypeFormat(int32_t type, const void * data, 
 		char * formatPrefix, int padding,
 		int element)
 {
-    const int_32 * item = data;
+    const int32_t * item = data;
     char * val;
 
     if (type != RPM_INT32_TYPE)
@@ -55,7 +55,7 @@ static char * triggertypeFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * permsFormat(int_32 type, const void * data,
+static char * permsFormat(int32_t type, const void * data,
 		char * formatPrefix, int padding, int element)
 {
     char * val;
@@ -66,7 +66,7 @@ static char * permsFormat(int_32 type, const void * data,
     } else {
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString(*((int_32 *) data));
+	buf = rpmPermsString(*((int32_t *) data));
 	sprintf(val, formatPrefix, buf);
 	buf = _free(buf);
     }
@@ -83,12 +83,12 @@ static char * permsFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * fflagsFormat(int_32 type, const void * data, 
+static char * fflagsFormat(int32_t type, const void * data, 
 		char * formatPrefix, int padding, int element)
 {
     char * val;
     char buf[15];
-    int anint = *((int_32 *) data);
+    int anint = *((int32_t *) data);
 
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
@@ -129,7 +129,7 @@ static char * fflagsFormat(int_32 type, const void * data,
  * @param element	no. bytes of binary data
  * @return		formatted string
  */
-static char * armorFormat(int_32 type, const void * data, 
+static char * armorFormat(int32_t type, const void * data, 
 		char * formatPrefix, int padding,
 		int element)
 {
@@ -177,7 +177,7 @@ static char * armorFormat(int_32 type, const void * data,
  * @param element
  * @return		formatted string
  */
-static char * base64Format(int_32 type, const void * data, 
+static char * base64Format(int32_t type, const void * data, 
 		char * formatPrefix, int padding, int element)
 {
     char * val;
@@ -258,7 +258,7 @@ static char * xmlstrcpy(char * t, const char * s)
  * @param element	(unused)
  * @return		formatted string
  */
-static char * xmlFormat(int_32 type, const void * data, 
+static char * xmlFormat(int32_t type, const void * data, 
 		char * formatPrefix, int padding,
 		int element)
 {
@@ -285,13 +285,13 @@ static char * xmlFormat(int_32 type, const void * data,
     }	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = *((uint_8 *) data);
+	anint = *((uint8_t *) data);
 	break;
     case RPM_INT16_TYPE:
-	anint = *((uint_16 *) data);
+	anint = *((uint16_t *) data);
 	break;
     case RPM_INT32_TYPE:
-	anint = *((uint_32 *) data);
+	anint = *((uint32_t *) data);
 	break;
     case RPM_NULL_TYPE:
     case RPM_STRING_ARRAY_TYPE:
@@ -345,7 +345,7 @@ static char * xmlFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * pgpsigFormat(int_32 type, const void * data, 
+static char * pgpsigFormat(int32_t type, const void * data, 
 		char * formatPrefix, int padding,
 		int element)
 {
@@ -421,7 +421,7 @@ static char * pgpsigFormat(int_32 type, const void * data,
 
 	    t = stpcpy(t, ", ");
 
-	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
+	    /* this is important if sizeof(int32_t) ! sizeof(time_t) */
 	    {	time_t dateint = pgpGrab(sigp->time, sizeof(sigp->time));
 		struct tm * tstruct = localtime(&dateint);
 		if (tstruct)
@@ -452,7 +452,7 @@ static char * pgpsigFormat(int_32 type, const void * data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * depflagsFormat(int_32 type, const void * data, 
+static char * depflagsFormat(int32_t type, const void * data, 
 		char * formatPrefix, int padding, int element)
 {
     char * val;
@@ -462,7 +462,7 @@ static char * depflagsFormat(int_32 type, const void * data,
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	anint = *((int_32 *) data);
+	anint = *((int32_t *) data);
 	buf[0] = '\0';
 
 	if (anint & RPMSENSE_LESS) 
@@ -489,8 +489,8 @@ static char * depflagsFormat(int_32 type, const void * data,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fsnamesTag( Header h, int_32 * type,
-		void ** data, int_32 * count,
+static int fsnamesTag( Header h, int32_t * type,
+		void ** data, int32_t * count,
 		int * freeData)
 {
     const char ** list;
@@ -516,7 +516,7 @@ static int fsnamesTag( Header h, int_32 * type,
  */
 static int instprefixTag(Header h, rpmTagType * type,
 		const void ** data,
-		int_32 * count,
+		int32_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -548,13 +548,13 @@ static int instprefixTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int fssizesTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
-    int_32 * filesizes;
-    uint_32 * usages;
+    int32_t * filesizes;
+    uint32_t * usages;
     int numFiles;
 
     if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles)) {
@@ -598,13 +598,13 @@ static int fssizesTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int triggercondsTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType tnt, tvt, tst;
-    int_32 * indices, * flags;
+    int32_t * indices, * flags;
     char ** names, ** versions;
     int numNames, numScripts;
     char ** conds, ** s;
@@ -670,13 +670,13 @@ static int triggercondsTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int triggertypeTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType tst;
-    int_32 * indices, * flags;
+    int32_t * indices, * flags;
     const char ** conds;
     const char ** s;
     int i, j, xx;
@@ -727,7 +727,7 @@ static int triggertypeTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int filenamesTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -746,7 +746,7 @@ static int filenamesTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int fileclassTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -765,7 +765,7 @@ static int fileclassTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int fileprovideTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -784,7 +784,7 @@ static int fileprovideTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int filerequireTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -812,8 +812,8 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int i18nTag(Header h, int_32 tag, rpmTagType * type,
-		const void ** data, int_32 * count,
+static int i18nTag(Header h, int32_t tag, rpmTagType * type,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -905,7 +905,7 @@ static int i18nTag(Header h, int_32 tag, rpmTagType * type,
  * @return		0 on success
  */
 static int summaryTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
@@ -921,7 +921,7 @@ static int summaryTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int descriptionTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
@@ -937,7 +937,7 @@ static int descriptionTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int groupTag(Header h, rpmTagType * type,
-		const void ** data, int_32 * count,
+		const void ** data, int32_t * count,
 		int * freeData)
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);

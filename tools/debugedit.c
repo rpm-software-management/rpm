@@ -48,8 +48,8 @@ char *list_file = NULL;
 int list_file_fd = -1;
 int do_build_id = 0;
 
-typedef unsigned int uint_32;
-typedef unsigned short uint_16;
+typedef unsigned int uint32_t;
+typedef unsigned short uint16_t;
 
 typedef struct
 {
@@ -64,7 +64,7 @@ typedef struct
 typedef struct
 {
   unsigned char *ptr;
-  uint_32 addend;
+  uint32_t addend;
 } REL;
 
 #define read_uleb128(ptr) ({		\
@@ -83,31 +83,31 @@ typedef struct
   ret;					\
 })
 
-static uint_16 (*do_read_16) (unsigned char *ptr);
-static uint_32 (*do_read_32) (unsigned char *ptr);
+static uint16_t (*do_read_16) (unsigned char *ptr);
+static uint32_t (*do_read_32) (unsigned char *ptr);
 static void (*write_32) (unsigned char *ptr, GElf_Addr val);
 
 static int ptr_size;
 
-static inline uint_16
+static inline uint16_t
 buf_read_ule16 (unsigned char *data)
 {
   return data[0] | (data[1] << 8);
 }
 
-static inline uint_16
+static inline uint16_t
 buf_read_ube16 (unsigned char *data)
 {
   return data[1] | (data[0] << 8);
 }
 
-static inline uint_32
+static inline uint32_t
 buf_read_ule32 (unsigned char *data)
 {
   return data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
 }
 
-static inline uint_32
+static inline uint32_t
 buf_read_ube32 (unsigned char *data)
 {
   return data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24);
@@ -139,13 +139,13 @@ strptr (DSO *dso, int sec, off_t offset)
 #define read_1(ptr) *ptr++
 
 #define read_16(ptr) ({					\
-  uint_16 ret = do_read_16 (ptr);			\
+  uint16_t ret = do_read_16 (ptr);			\
   ptr += 2;						\
   ret;							\
 })
 
 #define read_32(ptr) ({					\
-  uint_32 ret = do_read_32 (ptr);			\
+  uint32_t ret = do_read_32 (ptr);			\
   ptr += 4;						\
   ret;							\
 })
@@ -154,7 +154,7 @@ REL *relptr, *relend;
 int reltype;
 
 #define do_read_32_relocated(ptr) ({			\
-  uint_32 dret = do_read_32 (ptr);			\
+  uint32_t dret = do_read_32 (ptr);			\
   if (relptr)						\
     {							\
       while (relptr < relend && relptr->ptr < ptr)	\
@@ -171,7 +171,7 @@ int reltype;
 })
 
 #define read_32_relocated(ptr) ({			\
-  uint_32 ret = do_read_32_relocated (ptr);		\
+  uint32_t ret = do_read_32_relocated (ptr);		\
   ptr += 4;						\
   ret;							\
 })
@@ -179,7 +179,7 @@ int reltype;
 static void
 dwarf2_write_le32 (unsigned char *p, GElf_Addr val)
 {
-  uint_32 v = (uint_32) val;
+  uint32_t v = (uint32_t) val;
 
   p[0] = v;
   p[1] = v >> 8;
@@ -191,7 +191,7 @@ dwarf2_write_le32 (unsigned char *p, GElf_Addr val)
 static void
 dwarf2_write_be32 (unsigned char *p, GElf_Addr val)
 {
-  uint_32 v = (uint_32) val;
+  uint32_t v = (uint32_t) val;
 
   p[3] = v;
   p[2] = v >> 8;
@@ -452,14 +452,14 @@ has_prefix (const char  *str,
 }
 
 static int
-edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
+edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 {
   unsigned char *ptr = debug_sections[DEBUG_LINE].data, *dir;
   unsigned char **dirt;
   unsigned char *endsec = ptr + debug_sections[DEBUG_LINE].size;
   unsigned char *endcu, *endprol;
   unsigned char opcode_base;
-  uint_32 value, dirt_cnt;
+  uint32_t value, dirt_cnt;
   size_t comp_dir_len = strlen (comp_dir);
   size_t abs_file_cnt = 0, abs_dir_cnt = 0;
 
@@ -708,7 +708,7 @@ static unsigned char *
 edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 {
   int i;
-  uint_32 list_offs;
+  uint32_t list_offs;
   int found_list_offs;
   char *comp_dir;
   
@@ -717,8 +717,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   found_list_offs = 0;
   for (i = 0; i < t->nattr; ++i)
     {
-      uint_32 form = t->attr[i].form;
-      uint_32 len = 0;
+      uint32_t form = t->attr[i].form;
+      uint32_t len = 0;
       int base_len, dest_len;
       
 
@@ -1005,7 +1005,7 @@ edit_dwarf2 (DSO *dso)
   if (debug_sections[DEBUG_INFO].data != NULL)
     {
       unsigned char *ptr, *endcu, *endsec;
-      uint_32 value;
+      uint32_t value;
       htab_t abbrev;
       struct abbrev_tag tag, *t;
       int phase;

@@ -6,7 +6,7 @@
  * Structures used for managing added/available package lists.
  */
 
-#include "rpmlib.h"		/* for rpmds, rpmfi, uint_32 */
+#include "rpmlib.h"		/* for rpmds, rpmfi, uint32_t */
 #include "rpmmessages.h"	/* for fnpyKey */
 
 #ifdef __cplusplus
@@ -65,7 +65,7 @@ rpmalKey rpmalAdd(rpmal * alistp,
 		rpmalKey pkgKey,
 		fnpyKey key,
 		rpmds provides, rpmfi fi,
-		uint_32 tscolor);
+		uint32_t tscolor);
 
 /**
  * Add package provides to available list index.
@@ -76,7 +76,7 @@ rpmalKey rpmalAdd(rpmal * alistp,
  */
 void rpmalAddProvides(rpmal al,
 		rpmalKey pkgKey,
-		rpmds provides, uint_32 tscolor);
+		rpmds provides, uint32_t tscolor);
 
 /**
  * Generate index for available list.

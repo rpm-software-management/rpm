@@ -174,7 +174,7 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-int headerIsEntry(Header h, int_32 tag)
+int headerIsEntry(Header h, int32_t tag)
 {
     if (h == NULL) return 0;
     return (h2hv(h)->hdrisentry) (h, tag);
@@ -206,7 +206,7 @@ void * headerFreeTag(Header h,
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntry(Header h, int_32 tag,
+int headerGetEntry(Header h, int32_t tag,
 			hTYP_t type,
 			void ** p,
 			hCNT_t c)
@@ -226,7 +226,7 @@ int headerGetEntry(Header h, int_32 tag,
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntryMinMemory(Header h, int_32 tag,
+int headerGetEntryMinMemory(Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p, 
 			hCNT_t c)
@@ -248,7 +248,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
+int headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, int32_t c)
 {
     return (h2hv(h)->hdradd) (h, tag, type, p, c);
 }
@@ -267,8 +267,8 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAppendEntry(Header h, int_32 tag, int_32 type,
-		const void * p, int_32 c)
+int headerAppendEntry(Header h, int32_t tag, int32_t type,
+		const void * p, int32_t c)
 {
     return (h2hv(h)->hdrappend) (h, tag, type, p, c);
 }
@@ -283,8 +283,8 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
-		const void * p, int_32 c)
+int headerAddOrAppendEntry(Header h, int32_t tag, int32_t type,
+		const void * p, int32_t c)
 {
     return (h2hv(h)->hdraddorappend) (h, tag, type, p, c);
 }
@@ -309,7 +309,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
-int headerAddI18NString(Header h, int_32 tag, const char * string,
+int headerAddI18NString(Header h, int32_t tag, const char * string,
 		const char * lang)
 {
     return (h2hv(h)->hdraddi18n) (h, tag, string, lang);
@@ -325,8 +325,8 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerModifyEntry(Header h, int_32 tag, int_32 type,
-			const void * p, int_32 c)
+int headerModifyEntry(Header h, int32_t tag, int32_t type,
+			const void * p, int32_t c)
 {
     return (h2hv(h)->hdrmodify) (h, tag, type, p, c);
 }
@@ -340,7 +340,7 @@ int headerModifyEntry(Header h, int_32 tag, int_32 type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-int headerRemoveEntry(Header h, int_32 tag)
+int headerRemoveEntry(Header h, int32_t tag)
 {
     return (h2hv(h)->hdrremove) (h, tag);
 }

@@ -23,10 +23,10 @@
  */
 typedef struct entryInfo_s * entryInfo;
 struct entryInfo_s {
-    int_32 tag;			/*!< Tag identifier. */
-    int_32 type;		/*!< Tag data type. */
-    int_32 offset;		/*!< Offset into data segment (ondisk only). */
-    int_32 count;		/*!< Number of tag elements. */
+    int32_t tag;			/*!< Tag identifier. */
+    int32_t type;		/*!< Tag data type. */
+    int32_t offset;		/*!< Offset into data segment (ondisk only). */
+    int32_t count;		/*!< Number of tag elements. */
 };
 
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
@@ -71,7 +71,7 @@ struct sprintfTag_s {
     headerTagFormatFunction fmt;
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
-    int_32 tag;
+    int32_t tag;
     int justOne;
     int arrayCount;
     char * format;
@@ -84,8 +84,8 @@ struct sprintfTag_s {
  */
 typedef struct rpmec_s * rpmec;
 struct rpmec_s {
-    int_32 type;
-    int_32 count;
+    int32_t type;
+    int32_t count;
     int avail;
     int freeit;
     const void * data;
@@ -147,7 +147,7 @@ char ** headerGetLangs(Header h);
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetRawEntry(Header h, int_32 tag,
+int headerGetRawEntry(Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p, 
 			hCNT_t c);

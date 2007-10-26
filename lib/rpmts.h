@@ -271,18 +271,18 @@ struct rpmts_s {
     const char * currDir;	/*!< Current working directory. */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    int_32 tid;			/*!< Transaction id. */
+    int32_t tid;			/*!< Transaction id. */
 
-    uint_32 color;		/*!< Transaction color bits. */
-    uint_32 prefcolor;		/*!< Preferred file color. */
+    uint32_t color;		/*!< Transaction color bits. */
+    uint32_t prefcolor;		/*!< Preferred file color. */
 
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 
     const char * fn;		/*!< Current package fn. */
-    int_32  sigtag;		/*!< Current package signature tag. */
-    int_32  sigtype;		/*!< Current package signature data type. */
+    int32_t  sigtag;		/*!< Current package signature tag. */
+    int32_t  sigtype;		/*!< Current package signature data type. */
     const void * sig;		/*!< Current package signature. */
-    int_32 siglen;		/*!< Current package signature length. */
+    int32_t siglen;		/*!< Current package signature length. */
 
     const unsigned char * pkpkt;/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
@@ -646,7 +646,7 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone);
  * @param ts		transaction set
  * @return		transaction id
  */
-int_32 rpmtsGetTid(rpmts ts);
+int32_t rpmtsGetTid(rpmts ts);
 
 /** \ingroup rpmts
  * Set transaction id, i.e. transaction time stamp.
@@ -654,21 +654,21 @@ int_32 rpmtsGetTid(rpmts ts);
  * @param tid		new transaction id
  * @return		previous transaction id
  */
-int_32 rpmtsSetTid(rpmts ts, int_32 tid);
+int32_t rpmtsSetTid(rpmts ts, int32_t tid);
 
 /** \ingroup rpmts
  * Get signature tag.
  * @param ts		transaction set
  * @return		signature tag
  */
-int_32 rpmtsSigtag(const rpmts ts);
+int32_t rpmtsSigtag(const rpmts ts);
 
 /** \ingroup rpmts
  * Get signature tag type.
  * @param ts		transaction set
  * @return		signature tag type
  */
-int_32 rpmtsSigtype(const rpmts ts);
+int32_t rpmtsSigtype(const rpmts ts);
 
 /** \ingroup rpmts
  * Get signature tag data, i.e. from header.
@@ -682,7 +682,7 @@ extern const void * rpmtsSig(const rpmts ts);
  * @param ts		transaction set
  * @return		signature tag data length
  */
-int_32 rpmtsSiglen(const rpmts ts);
+int32_t rpmtsSiglen(const rpmts ts);
 
 /** \ingroup rpmts
  * Set signature tag info, i.e. from header.
@@ -694,8 +694,8 @@ int_32 rpmtsSiglen(const rpmts ts);
  * @return		0 always
  */
 int rpmtsSetSig(rpmts ts,
-		int_32 sigtag, int_32 sigtype,
-		const void * sig, int_32 siglen);
+		int32_t sigtag, int32_t sigtype,
+		const void * sig, int32_t siglen);
 
 /** \ingroup rpmts
  * Get OpenPGP packet parameters, i.e. signature/pubkey constants.
@@ -742,7 +742,7 @@ int rpmtsInitDSI(const rpmts ts);
  * @param action	file disposition
  */
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		uint_32 fileSize, uint_32 prevSize, uint_32 fixupSize,
+		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
 		rpmFileAction action);
 
 /** \ingroup rpmts
@@ -836,14 +836,14 @@ rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement);
  * @param ts		transaction set
  * @return		color bits
  */
-uint_32 rpmtsColor(rpmts ts);
+uint32_t rpmtsColor(rpmts ts);
 
 /**
  * Retrieve prefered file color
  * @param ts		transaction set
  * @return		color bits
  */
-uint_32 rpmtsPrefColor(rpmts ts);
+uint32_t rpmtsPrefColor(rpmts ts);
 
 /**
  * Set color bits of transaction set.
@@ -851,7 +851,7 @@ uint_32 rpmtsPrefColor(rpmts ts);
  * @param color		new color bits
  * @return		previous color bits
  */
-uint_32 rpmtsSetColor(rpmts ts, uint_32 color);
+uint32_t rpmtsSetColor(rpmts ts, uint32_t color);
 
 /**
  * Retrieve operation timestamp from a transaction set.
@@ -941,7 +941,7 @@ char * hGetNEVRA(Header h, const char ** np );
  * @param h		header
  * @return		header color
  */
-uint_32 hGetColor(Header h);
+uint32_t hGetColor(Header h);
 
 #ifdef __cplusplus
 }

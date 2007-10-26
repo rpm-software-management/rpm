@@ -374,7 +374,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 
     switch (dbi->dbi_jlen) {
     default:
-    case 2*sizeof(int_32):
+    case 2*sizeof(int32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -391,7 +391,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 	    set->recs[i].fpNum = 0;
 	}
 	break;
-    case 1*sizeof(int_32):
+    case 1*sizeof(int32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum;
 
@@ -435,7 +435,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 
     switch (dbi->dbi_jlen) {
     default:
-    case 2*sizeof(int_32):
+    case 2*sizeof(int32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -453,7 +453,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 	    tdbir += sizeof(tagNum.ui);
 	}
 	break;
-    case 1*sizeof(int_32):
+    case 1*sizeof(int32_t):
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum;
 
@@ -1162,7 +1162,7 @@ if (rc == 0)
     if (allMatches != NULL)
     while (i < allMatches->count) {
 	const char ** baseNames, ** dirNames;
-	uint_32 * dirIndexes;
+	uint32_t * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
 	Header h;
@@ -1833,15 +1833,15 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	void * ptr;
 	const char ** argv;
 	const char * str;
-	int_32 * i32p;
-	int_16 * i16p;
-	int_8 * i8p;
+	int32_t * i32p;
+	int16_t * i16p;
+	int8_t * i8p;
     } u;
     char numbuf[32];
     rpmTagType t;
-    int_32 c;
+    int32_t c;
     miRE mire;
-    static int_32 zero = 0;
+    static int32_t zero = 0;
     int ntags = 0;
     int nmatches = 0;
     int i, j;
@@ -2445,7 +2445,7 @@ memset(data, 0, sizeof(*data));
 #ifdef	DYING
     /* Add remove transaction id to header. */
     if (rid != 0 && rid != -1) {
-	int_32 tid = rid;
+	int32_t tid = rid;
 	(void) headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
     }
 #endif
@@ -2547,11 +2547,11 @@ if (dbiByteSwapped(dbi) == 1)
 		    key->data = rpmvals + i;
 		    break;
 		case RPM_INT16_TYPE:
-		    key->size = sizeof(int_16);
+		    key->size = sizeof(int16_t);
 		    key->data = rpmvals + i;
 		    break;
 		case RPM_INT32_TYPE:
-		    key->size = sizeof(int_32);
+		    key->size = sizeof(int32_t);
 		    key->data = rpmvals + i;
 		    break;
 		case RPM_BIN_TYPE:
@@ -2732,7 +2732,7 @@ memset(data, 0, sizeof(*data));
     xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
 #endif
     if (iid != 0 && iid != -1) {
-	int_32 tid = iid;
+	int32_t tid = iid;
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
 	   xx = headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
     }
@@ -2832,7 +2832,7 @@ memset(data, 0, sizeof(*data));
 	    rpmTagType rpmtype = 0;
 	    int rpmcnt = 0;
 	    int rpmtag;
-	    int_32 * requireFlags;
+	    int32_t * requireFlags;
 	    rpmRC rpmrc;
 	    int i, j;
 
@@ -2966,15 +2966,15 @@ data->size = 0;
 		switch (rpmtype) {
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
-		    key->size = sizeof(int_8);
+		    key->size = sizeof(int8_t);
 		    key->data = rpmvals + i;
 		    break;
 		case RPM_INT16_TYPE:
-		    key->size = sizeof(int_16);
+		    key->size = sizeof(int16_t);
 		    key->data = rpmvals + i;
 		    break;
 		case RPM_INT32_TYPE:
-		    key->size = sizeof(int_32);
+		    key->size = sizeof(int32_t);
 		    key->data = rpmvals + i;
 		    break;
 		case RPM_BIN_TYPE:
@@ -3174,8 +3174,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	const char ** baseNames;
 	const char ** fullBaseNames;
 	rpmTagType bnt, dnt;
-	uint_32 * dirIndexes;
-	uint_32 * fullDirIndexes;
+	uint32_t * dirIndexes;
+	uint32_t * fullDirIndexes;
 	fingerPrint * fps;
 	dbiIndexItem im;
 	int start;
