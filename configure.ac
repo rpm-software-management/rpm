@@ -47,31 +47,19 @@ export CFLAGS
 AC_PROG_GCC_TRADITIONAL
 AC_SYS_LARGEFILE
 
-dnl Does this platform require array notation to assign to a va_list?
-dnl If cross-compiling, we assume va_list is "normal".  If this breaks
-dnl you, set ac_cv_valistisarray=true and maybe define HAVE_VA_LIST_AS_ARRAY
-dnl also just to be sure.
-AC_MSG_CHECKING(whether va_list assignments need array notation)
-AC_CACHE_VAL(ac_cv_valistisarray,
-	[AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
-		     #include <stdarg.h>
-		     void foo(int i, ...) {
-			va_list ap1, ap2;
-			va_start(ap1, i);
-			ap2 = ap1;
-			if (va_arg(ap2, int) != 123 || va_arg(ap1, int) != 123)
-			    { exit(1); }
-			va_end(ap1); va_end(ap2);
-		     }
-		     int main() { foo(0, 123); return(0); }]])],[ac_cv_valistisarray=false],[ac_cv_valistisarray=true],[ac_cv_valistisarray=false])])
-
-if test "$ac_cv_valistisarray" = true ; then
-	AC_DEFINE(HAVE_VA_LIST_AS_ARRAY, 1,
-		[Define as 1 if your va_list type is an array])
-	AC_MSG_RESULT(yes)
-else
-       AC_MSG_RESULT(no)
-fi
+AC_CHECK_HEADER([stdarg.h])
+AC_MSG_CHECKING([for va_copy])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <stdarg.h>
+void foo(int i, ...) {
+  va_list ap, aq;
+  va_start(ap, i);
+  va_copy(aq,ap);
+  va_end(aq);
+}]], [[
+  foo(1,2,3,4);
+]])],[ac_cv_va_copy=yes],[ac_cv_va_copy=no])
+AC_MSG_RESULT([$ac_cv_va_copy])
 
 RPMUSER=rpm
 RPMUID=37
