@@ -251,15 +251,6 @@ AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
 
-addlib() {
-  l=$1
-  shift
-  case "$host" in 
-    *-*-solaris*)	LIBS="$LIBS -L$l -R$l $*";;
-    *)		LIBS="$LIBS -L$l $*";;
-  esac
-}
-
 #=================
 # Check for zlib library. 
 
@@ -296,19 +287,6 @@ AC_CHECK_HEADERS([bzlib.h],[
 AC_SUBST(WITH_BZ2_LIB)
 
 #=================
-
-AC_MSG_CHECKING(for /usr/ucblib in LIBS)
-if test -d /usr/ucblib ; then
-	if test "$build" = "mips-sni-sysv4" ; then
-		addlib /usr/ccs/lib -lc
-	fi
-
-	addlib /usr/ucblib
-	
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
-fi
 
 dnl
 dnl Check for features
