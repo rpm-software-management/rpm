@@ -44,7 +44,6 @@ if test "$GCC" = yes; then
 fi
 export CFLAGS
 
-AC_PROG_GCC_TRADITIONAL
 AC_SYS_LARGEFILE
 
 AC_CHECK_HEADER([stdarg.h])
