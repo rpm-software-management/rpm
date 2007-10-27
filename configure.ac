@@ -2,7 +2,7 @@ AC_PREREQ(2.61)
 AC_INIT(rpm, 4.4.90, rpm-maint@lists.rpm.org)
 
 AC_CONFIG_SRCDIR([rpmqv.c])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 AM_INIT_AUTOMAKE([1.10 foreign tar-ustar dist-bzip2 subdir-objects nostdinc])
 
@@ -1073,7 +1073,7 @@ AS_IF([test "$ac_cv_header_stdint_h" = "yes"],[
 AC_DEFINE([__RPM_USES_STDINT_H__],[1],[if rpm uses stdint.h])
 ])
 
-AM_CONFIG_HEADER([rpmdb/rpmints.h])
+AC_CONFIG_HEADERS([rpmdb/rpmints.h])
 
 AC_CONFIG_FILES([Makefile
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
