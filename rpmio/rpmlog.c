@@ -7,19 +7,6 @@
 #include "rpmlog.h"
 #include "debug.h"
 
-#ifndef va_copy
-# ifdef __va_copy
-#  define va_copy(DEST,SRC) __va_copy((DEST),(SRC))
-# else
-#  ifdef HAVE_VA_LIST_AS_ARRAY
-#   define va_copy(DEST,SRC) (*(DEST) = *(SRC))
-#  else
-#   define va_copy(DEST,SRC) ((DEST) = (SRC))
-#  endif
-# endif
-#endif
-
-
 static int nrecs = 0;
 static rpmlogRec recs = NULL;
 
