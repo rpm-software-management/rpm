@@ -152,13 +152,7 @@ static void printUsage(poptContext con, FILE * fp, int flags)
 	poptPrintUsage(con, fp, flags);
 }
 
-/* LCL: segfault */
-/* FIX: shrug */
-#if !defined(__GLIBC__) 
-int main(int argc, char *argv[], char ** envp)
-#else
 int main(int argc, char *argv[])
-#endif
 {
     rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
@@ -203,10 +197,6 @@ int main(int argc, char *argv[])
     mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 #endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
-
-#if !defined(__GLIBC__) 
-    environ = envp;
-#endif  
 
     /* XXX glibc churn sanity */
     if (__progname == NULL) {
