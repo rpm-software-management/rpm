@@ -21,7 +21,7 @@
 /* This is almost copied from strncpy.c, written by Torbjorn Granlund.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+# include "config.h"
 #endif
 
 #ifdef _LIBC

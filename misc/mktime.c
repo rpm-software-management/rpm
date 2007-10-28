@@ -23,7 +23,7 @@
 /* #define DEBUG 1 */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 /* Assume that leap seconds are possible, unless told otherwise.
