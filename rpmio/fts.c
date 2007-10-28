@@ -92,7 +92,7 @@ static size_t	fts_maxarglen(char * const * argv);
 static void	fts_padjust(FTS * sp, FTSENT * head);
 static int	fts_palloc(FTS * sp, size_t more);
 static FTSENT *	fts_sort(FTS * sp, FTSENT * head, int nitems);
-static u_short	fts_stat(FTS * sp, FTSENT * p, int follow);
+static uint16_t	fts_stat(FTS * sp, FTSENT * p, int follow);
 static int      fts_safe_changedir(FTS * sp, FTSENT * p, int fd,
 			const char * path);
 
@@ -764,9 +764,9 @@ mem1:				saved_errno = errno;
 			maxlen = sp->fts_pathlen - len;
 		}
 
-		if (len + _D_EXACT_NAMLEN (dp) >= USHRT_MAX) {
+		if (len + _D_EXACT_NAMLEN (dp) >= UINT16_MAX) {
 			/*
-			 * In an FTSENT, fts_pathlen is a u_short so it is
+			 * In an FTSENT, fts_pathlen is a uint16_t so it is
 			 * possible to wraparound here.  If we do, free up
 			 * the current structure and the structures already
 			 * allocated, then error out with ENAMETOOLONG.
@@ -880,7 +880,7 @@ mem1:				saved_errno = errno;
 	return (head);
 }
 
-static u_short
+static uint16_t
 fts_stat(FTS * sp, FTSENT * p, int follow)
 {
 	register FTSENT *t;
@@ -1059,9 +1059,9 @@ fts_palloc(FTS * sp, size_t more)
 	/*
 	 * Check for possible wraparound.  In an FTS, fts_pathlen is
 	 * a signed int but in an FTSENT it is an unsigned short.
-	 * We limit fts_pathlen to USHRT_MAX to be safe in both cases.
+	 * We limit fts_pathlen to UINT16_MAX to be safe in both cases.
 	 */
-	if (sp->fts_pathlen < 0 || sp->fts_pathlen >= USHRT_MAX) {
+	if (sp->fts_pathlen < 0 || sp->fts_pathlen >= UINT16_MAX) {
 		if (sp->fts_path) {
 			free(sp->fts_path);
 			sp->fts_path = NULL;
