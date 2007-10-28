@@ -6,7 +6,7 @@
 const char *__progname;
 
 #include <fnmatch.h>
-#include <fts.h>
+#include "fts.h"
 
 #include <rpmcli.h>
 

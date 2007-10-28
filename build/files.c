@@ -11,7 +11,7 @@
 #include <regex.h>
 
 #include <rpmio_internal.h>
-#include <fts.h>
+#include "fts.h"
 
 #include <rpmbuild.h>
 

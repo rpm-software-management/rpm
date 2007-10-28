@@ -1,5 +1,5 @@
 #include "system.h"
-#include <fts.h>
+#include "fts.h"
 
 #include <rpmio_internal.h>
 #include "rpmmacro.h"

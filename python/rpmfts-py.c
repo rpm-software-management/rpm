@@ -6,7 +6,7 @@
 
 #include "structmember.h"
 
-#include <fts.h>
+#include "fts.h"
 
 #include "rpmfts-py.h"
 
