@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include "rpmcli.h"
-#include <rpmbuild.h>
+#include "rpmbuild.h"
 
 #include "rpmps.h"
 #include "rpmte.h"

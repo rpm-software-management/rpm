@@ -13,7 +13,7 @@
 #include "rpmio_internal.h"
 #include "fts.h"
 
-#include <rpmbuild.h>
+#include "rpmbuild.h"
 
 #include "cpio.h"
 

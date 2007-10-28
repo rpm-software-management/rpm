@@ -12,7 +12,7 @@ const char *__progname;
 #endif
 
 #include "rpmcli.h"
-#include <rpmbuild.h>
+#include "rpmbuild.h"
 
 #include "rpmdb.h"
 #include "rpmdb_internal.h"	/* XXX for freeing dbiTags */

@@ -6,7 +6,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
-#include <rpmbuild.h>
+#include "rpmbuild.h"
 #include "rpmerr.h"
 #include "misc.h"	/* XXX for splitString */
 #include "debug.h"

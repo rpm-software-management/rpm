@@ -13,7 +13,7 @@
 
 #include "system.h"
 
-#include <rpmbuild.h>
+#include "rpmbuild.h"
 #include "rpmlib.h"
 #include "rpmerr.h"
 
