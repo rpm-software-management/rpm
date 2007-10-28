@@ -9,7 +9,7 @@
 
 #define	_RPMDS_INTERNAL
 #include "rpmds.h"
-#include <rpmfi.h>
+#include "rpmfi.h"
 
 #if HAVE_GELF_H
 #include <gelf.h>
