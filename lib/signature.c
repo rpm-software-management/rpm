@@ -6,7 +6,7 @@
 
 #include "rpmio_internal.h"
 #include <rpmlib.h>
-#include <rpmmacro.h>	/* XXX for rpmGetPath() */
+#include "rpmmacro.h"	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
 
 #include "rpmts.h"

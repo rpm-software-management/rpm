@@ -5,7 +5,7 @@
 #include "system.h"
 #include <rpmlib.h>
 
-#include <rpmmacro.h>	/* XXX for rpmExpand */
+#include "rpmmacro.h"	/* XXX for rpmExpand */
 
 #include "fsm.h"
 #include "psm.h"

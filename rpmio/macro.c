@@ -49,7 +49,7 @@ typedef	FILE * FD_t;
 
 #endif
 
-#include <rpmmacro.h>
+#include "rpmmacro.h"
 
 #include "debug.h"
 

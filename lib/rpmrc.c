@@ -15,7 +15,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmlib.h>
-#include <rpmmacro.h>
+#include "rpmmacro.h"
 #include <rpmlua.h>
 
 #include "rpmerr.h"

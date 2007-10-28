@@ -2,7 +2,7 @@
 const char *__progname;
 
 #include <rpmlib.h>
-#include <rpmmacro.h>
+#include "rpmmacro.h"
 #include "rpmurl.h"
 
 #include "rpmdb.h"

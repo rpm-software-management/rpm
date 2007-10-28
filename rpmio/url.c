@@ -6,7 +6,7 @@
 
 #include <netinet/in.h>
 
-#include <rpmmacro.h>
+#include "rpmmacro.h"
 #include "rpmmessages.h"
 #include "rpmurl.h"
 #include "rpmio.h"

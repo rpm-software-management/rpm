@@ -11,7 +11,7 @@
 #include <rpmgi.h>
 
 #include <rpmdb.h>
-#include <rpmmacro.h>		/* XXX rpmExpand */
+#include "rpmmacro.h"		/* XXX rpmExpand */
 #include "manifest.h"
 #include "rpmerr.h"
 

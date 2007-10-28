@@ -5,7 +5,7 @@
 #include "system.h"
 #include "rpmio_internal.h"
 #include <rpmlib.h>
-#include <rpmmacro.h>	/* XXX for %_i18ndomains */
+#include "rpmmacro.h"	/* XXX for %_i18ndomains */
 
 #include <rpmfi.h>
 

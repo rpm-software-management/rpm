@@ -10,7 +10,7 @@ const char *__progname;
 #include <rpmlib.h>
 #include <rpmdb.h>
 #include <rpmio.h>
-#include <rpmmacro.h>
+#include "rpmmacro.h"
 #include <rpmdb/legacy.h>
 
 #define FA_MAGIC      0x02050920

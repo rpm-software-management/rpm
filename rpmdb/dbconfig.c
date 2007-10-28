@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmmacro.h>
+#include "rpmmacro.h"
 
 #include "rpmerr.h"
 #include "rpmdb_internal.h"

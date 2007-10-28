@@ -20,7 +20,7 @@
 #include "rpmio_internal.h"
 #include "rpmlead.h"
 #include <rpmlib.h>
-#include <rpmmacro.h>
+#include "rpmmacro.h"
 #include "misc.h"
 #include "legacy.h"
 #include "debug.h"

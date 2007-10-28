@@ -6,7 +6,7 @@
 
 #include "rpmio_internal.h"	/* XXX for pgp and beecrypt */
 #include <rpmlib.h>
-#include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
+#include "rpmmacro.h"		/* XXX rpmtsOpenDB() needs rpmGetPath */
 
 #include "rpmdb.h"
 
