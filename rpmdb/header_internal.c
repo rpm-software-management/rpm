@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <header_internal.h>
+#include "header_internal.h"
 
 #include "debug.h"
 
