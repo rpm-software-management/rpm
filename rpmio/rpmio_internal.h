@@ -16,7 +16,7 @@
 #endif
 
 #include <rpmpgp.h>
-#include <rpmsw.h>
+#include "rpmsw.h"
 
 /* Drag in the beecrypt includes. */
 #include <beecrypt/beecrypt.h>
