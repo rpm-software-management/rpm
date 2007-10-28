@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmlib.h>
+#include "rpmlib.h"
 
 #define	_RPMDS_INTERNAL
 #include "rpmds.h"

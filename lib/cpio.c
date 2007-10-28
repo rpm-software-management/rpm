@@ -9,7 +9,7 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include "rpmlib.h"
 
 #include "cpio.h"
 #include "fsm.h"

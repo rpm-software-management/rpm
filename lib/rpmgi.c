@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmlib.h>
+#include "rpmlib.h"
 #include <rpmte.h>		/* XXX rpmElementType */
 
 #define	_RPMGI_INTERNAL

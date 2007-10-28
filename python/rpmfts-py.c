@@ -10,7 +10,7 @@
 
 #include "rpmfts-py.h"
 
-#include <rpmlib.h>	/* XXX _free */
+#include "rpmlib.h"	/* XXX _free */
 
 #include "debug.h"
 

@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include "rpmlib.h"
 
 #include "rpmdb-py.h"
 #include "rpmmi-py.h"

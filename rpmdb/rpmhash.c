@@ -4,7 +4,7 @@
  */
 
 #include "system.h"
-#include <rpmlib.h>
+#include "rpmlib.h"
 #include "rpmhash.h"
 #include "debug.h"
 

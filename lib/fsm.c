@@ -6,7 +6,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
-#include <rpmlib.h>
+#include "rpmlib.h"
 
 #include "cpio.h"
 

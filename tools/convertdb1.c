@@ -7,7 +7,7 @@ const char *__progname;
 #include <string.h>
 #endif
 
-#include <rpmlib.h>
+#include "rpmlib.h"
 #include "rpmdb.h"
 #include "rpmio.h"
 #include "rpmmacro.h"

@@ -3,7 +3,7 @@
  * Routine(s) to handle an "rpmte"  transaction element.
  */
 #include "system.h"
-#include <rpmlib.h>
+#include "rpmlib.h"
 
 #include "psm.h"
 

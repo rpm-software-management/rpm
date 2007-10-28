@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include "rpmio_internal.h"
-#include <rpmlib.h>
+#include "rpmlib.h"
 #include "rpmmacro.h"
 
 #include "stringbuf.h"

@@ -3,7 +3,7 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmlib.h>
+#include "rpmlib.h"
 #include "rpmpgp.h"
 
 #include <rpmts.h>
