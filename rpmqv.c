@@ -11,7 +11,7 @@ const char *__progname;
 #define	IAM_RPMK
 #endif
 
-#include <rpmcli.h>
+#include "rpmcli.h"
 #include <rpmbuild.h>
 
 #include "rpmdb.h"

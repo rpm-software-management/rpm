@@ -8,7 +8,7 @@ const char *__progname;
 #include <fnmatch.h>
 #include "fts.h"
 
-#include <rpmcli.h>
+#include "rpmcli.h"
 
 #include "rpmps.h"
 #include "rpmdb.h"

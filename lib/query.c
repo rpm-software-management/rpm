@@ -9,7 +9,7 @@
 # define PATH_MAX 255
 #endif
 
-#include <rpmcli.h>
+#include "rpmcli.h"
 
 #include "rpmdb.h"
 #include "rpmfi.h"

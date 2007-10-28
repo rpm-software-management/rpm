@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmcli.h>
+#include "rpmcli.h"
 
 #include "rpmdb.h"
 #include "rpmds.h"

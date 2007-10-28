@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
+#include "rpmcli.h"		/* XXX rpmcliPackagesTotal */
 
 #include "rpmmacro.h"		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
