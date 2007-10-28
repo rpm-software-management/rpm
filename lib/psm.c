@@ -9,7 +9,7 @@
 #include <rpmlib.h>
 #include "rpmmacro.h"
 #include "rpmurl.h"
-#include <rpmlua.h>
+#include "rpmlua.h"
 
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */

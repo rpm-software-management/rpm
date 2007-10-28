@@ -44,7 +44,7 @@ typedef	FILE * FD_t;
 #include <rpmerr.h>
 
 #ifdef	WITH_LUA
-#include <rpmlua.h>
+#include "rpmlua.h"
 #endif
 
 #endif

@@ -9,7 +9,7 @@
 #include "rpmerr.h"
 #include "debug.h"
 
-#include <rpmlua.h>
+#include "rpmlua.h"
 
 /**
  */
