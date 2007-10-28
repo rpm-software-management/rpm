@@ -8,7 +8,7 @@
 
 #define	_RPMGI_INTERNAL
 #define	_RPMTS_INTERNAL		/* XXX ts->probs et al */
-#include <rpmgi.h>
+#include "rpmgi.h"
 
 #include "rpmdb.h"
 #include "rpmmacro.h"		/* XXX rpmExpand */
