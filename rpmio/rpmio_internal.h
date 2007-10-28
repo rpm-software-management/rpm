@@ -6,7 +6,7 @@
  */
 
 
-#include <rpmio.h>
+#include "rpmio.h"
 #include "rpmurl.h"
 
 #if HAVE_BEECRYPT_API_H

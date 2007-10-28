@@ -3,7 +3,7 @@
 #include "rpmio_internal.h"
 #include <rpmlib.h>
 #include "rpmmacro.h"
-#include <rpmio.h>
+#include "rpmio.h"
 
 #define	_ETC_RPM_PLATFORM	"/etc/rpm/platform"
 static const char * platform = _ETC_RPM_PLATFORM;

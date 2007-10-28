@@ -9,7 +9,7 @@ const char *__progname;
 
 #include <rpmlib.h>
 #include "rpmdb.h"
-#include <rpmio.h>
+#include "rpmio.h"
 #include "rpmmacro.h"
 #include <rpmdb/legacy.h>
 
