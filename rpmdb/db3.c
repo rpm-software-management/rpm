@@ -14,7 +14,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include "rpmmacro.h"
 #include "rpmurl.h"	/* XXX urlPath proto */
 
-#include <rpmdb_internal.h>
+#include "rpmdb_internal.h"
 #include "rpmerr.h"
 
 #include "debug.h"
