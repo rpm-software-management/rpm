@@ -4,7 +4,7 @@
 #include <rpmio.h>
 #include <rpmmacro.h>
 #include <rpmerr.h>
-#include <rpmurl.h>
+#include "rpmurl.h"
 #include <rpmhook.h>
 
 #include <lua.h>

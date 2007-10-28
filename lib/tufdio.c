@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmurl.h>
+#include "rpmurl.h"
 #include "rpmio_internal.h"
 
 #include <stdarg.h>

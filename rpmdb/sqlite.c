@@ -28,7 +28,7 @@
 
 #include <rpmlib.h>
 #include <rpmmacro.h>
-#include <rpmurl.h>     /* XXX urlPath proto */
+#include "rpmurl.h"     /* XXX urlPath proto */
 
 #include "rpmdb_internal.h"
 #include "rpmdb.h"
