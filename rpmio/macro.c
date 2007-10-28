@@ -40,7 +40,7 @@ typedef	FILE * FD_t;
 #else
 
 #include <rpmio_internal.h>
-#include <rpmmessages.h>
+#include "rpmmessages.h"
 #include <rpmerr.h>
 
 #ifdef	WITH_LUA
