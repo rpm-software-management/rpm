@@ -201,7 +201,7 @@ static int db3_fsync_disable(int fd)
  * dbenv->failchk() callback method for determining is the given pid/tid 
  * is alive. We only care about pid's though. 
  */ 
-static int db3isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, u_int32_t flags)
+static int db3isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flags)
 {
     int alive = 0;
 
@@ -777,7 +777,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
     DB_TXN * txnid = NULL;
-    u_int32_t oflags;
+    uint32_t oflags;
     int _printit;
 
     if (dbip)

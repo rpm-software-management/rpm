@@ -113,7 +113,7 @@ static void
 insertionsort(unsigned char *a, size_t n, size_t size,
 		int (*cmp) (const void *, const void *))
 {
-	u_char *ai, *s, *t, *u, tmp;
+	unsigned char *ai, *s, *t, *u, tmp;
 	int i;
 
 	for (ai = a+size; --n >= 1; ai += size)

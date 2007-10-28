@@ -132,7 +132,7 @@ Fts_open(char * const * argv, int options,
 	}
 
 	/* Allocate/initialize the stream */
-	if ((sp = malloc((u_int)sizeof(*sp))) == NULL)
+	if ((sp = malloc(sizeof(*sp))) == NULL)
 		return (NULL);
 	memset(sp, 0, sizeof(*sp));
 	sp->fts_compar = (int (*) (const void *, const void *)) compar;
