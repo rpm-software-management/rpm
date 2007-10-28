@@ -5,7 +5,7 @@
 #include "rpmmacro.h"
 #include "rpmerr.h"
 #include "rpmurl.h"
-#include <rpmhook.h>
+#include "rpmhook.h"
 
 #include <lua.h>
 #include <lualib.h>
