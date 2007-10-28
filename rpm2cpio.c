@@ -6,7 +6,7 @@ const char *__progname;
 #include "rpmlib.h"
 #include "rpmpgp.h"
 
-#include <rpmts.h>
+#include "rpmts.h"
 
 #include "debug.h"
 
