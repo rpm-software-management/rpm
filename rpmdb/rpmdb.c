@@ -16,7 +16,7 @@
 
 #include <rpmio_internal.h>
 #include <rpmmacro.h>
-#include <rpmsq.h>
+#include "rpmsq.h"
 
 #include "rpmerr.h"
 #include "rpmdb_internal.h"

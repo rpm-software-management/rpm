@@ -2,7 +2,7 @@
 
 #include <pthread.h>
 
-#include <rpmsq.h>
+#include "rpmsq.h"
 #include <popt.h>
 
 #include "debug.h"

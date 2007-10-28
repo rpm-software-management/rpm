@@ -6,7 +6,7 @@
  * Package state machine to handle a package from a transaction set.
  */
 
-#include <rpmsq.h>
+#include "rpmsq.h"
 
 extern int _psm_debug;
 

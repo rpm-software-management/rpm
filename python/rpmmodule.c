@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmdb.h>
-#include <rpmsq.h>
+#include "rpmsq.h"
 
 #include "legacy.h"
 #include "misc.h"
