@@ -3,7 +3,7 @@
 #include "rpmgi.h"
 #include "rpmcli.h"
 
-#include <rpmte.h>
+#include "rpmte.h"
 
 #include "rpmmacro.h"
 #include "rpmmessages.h"
