@@ -3,7 +3,7 @@
 #include <signal.h>	/* getOutputFrom() */
 
 #include <rpmbuild.h>
-#include <argv.h>
+#include "argv.h"
 #include <rpmfc.h>
 #include "rpmerr.h"
 

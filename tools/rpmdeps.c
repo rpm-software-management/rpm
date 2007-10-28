@@ -2,7 +2,7 @@
 const char *__progname;
 
 #include <rpmbuild.h>
-#include <argv.h>
+#include "argv.h"
 #include <rpmds.h>
 #include <rpmfc.h>
 
