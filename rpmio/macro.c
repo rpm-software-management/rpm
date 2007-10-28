@@ -39,7 +39,7 @@ typedef	FILE * FD_t;
 
 #else
 
-#include <rpmio_internal.h>
+#include "rpmio_internal.h"
 #include "rpmmessages.h"
 #include "rpmerr.h"
 

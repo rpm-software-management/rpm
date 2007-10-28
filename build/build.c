@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
+#include "rpmio_internal.h"
 #include <rpmbuild.h>
 #include "rpmerr.h"
 #include "misc.h" 	/* XXX for makeTempFile */

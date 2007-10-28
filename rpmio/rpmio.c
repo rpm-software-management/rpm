@@ -21,7 +21,7 @@ extern int h_errno;
 #define	IPPORT_HTTP	80
 #endif
 
-#include <rpmio_internal.h>
+#include "rpmio_internal.h"
 
 #include "ugid.h"
 #include "rpmmessages.h"

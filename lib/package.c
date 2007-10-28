@@ -6,7 +6,7 @@
 
 #include <netinet/in.h>
 
-#include <rpmio_internal.h>
+#include "rpmio_internal.h"
 #include <rpmlib.h>
 
 #include "rpmts.h"

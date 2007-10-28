@@ -10,7 +10,7 @@
 
 #include <regex.h>
 
-#include <rpmio_internal.h>
+#include "rpmio_internal.h"
 #include "fts.h"
 
 #include <rpmbuild.h>

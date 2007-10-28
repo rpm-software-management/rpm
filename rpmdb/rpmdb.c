@@ -14,7 +14,7 @@
 
 #include <regex.h>
 
-#include <rpmio_internal.h>
+#include "rpmio_internal.h"
 #include "rpmmacro.h"
 #include "rpmsq.h"
 
