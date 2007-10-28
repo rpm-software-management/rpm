@@ -1,8 +1,10 @@
 #ifndef _RPM_RPMINTS_H
 #define _RPM_RPMINTS_H
 
+/* @cond NODOXYGEN */
 /* if rpm uses stdint.h */
 #undef __RPM_USES_STDINT_H__
+/* @endcond */
 
 #ifdef __RPM_USES_STDINT_H__
 #include <stdint.h>
