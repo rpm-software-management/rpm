@@ -6,7 +6,7 @@
 
 #include <rpmlib.h>
 #include "rpmpgp.h"
-#include <rpmdb.h>
+#include "rpmdb.h"
 #include <rpmbuild.h>
 
 #include "header-py.h"

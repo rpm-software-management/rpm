@@ -10,7 +10,7 @@
 #define	_RPMTS_INTERNAL		/* XXX ts->probs et al */
 #include <rpmgi.h>
 
-#include <rpmdb.h>
+#include "rpmdb.h"
 #include "rpmmacro.h"		/* XXX rpmExpand */
 #include "manifest.h"
 #include "rpmerr.h"

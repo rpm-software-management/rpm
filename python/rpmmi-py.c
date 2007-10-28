@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmdb.h>
+#include "rpmdb.h"
 
 #include "rpmmi-py.h"
 #include "header-py.h"
