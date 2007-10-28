@@ -8,7 +8,7 @@
 #include "rpmerr.h"
 
 #define	_RPMDS_INTERNAL
-#include <rpmds.h>
+#include "rpmds.h"
 #include <rpmfi.h>
 
 #if HAVE_GELF_H
