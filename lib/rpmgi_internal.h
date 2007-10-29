@@ -4,7 +4,7 @@
 #include "rpmgi.h"
 #include "fts.h"
 
-ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
