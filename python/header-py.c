@@ -8,7 +8,6 @@
 
 #include "legacy.h"
 #include "misc.h"
-#include "header_internal.h"
 
 #include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
 
@@ -145,12 +144,6 @@ struct hdrObject_s {
     unsigned short * rdevs;
     unsigned short * modes;
 } ;
-
-static inline Header headerAllocated(Header h)
-{
-    h->flags |= HEADERFLAG_ALLOCATED;
-    return 0;
-}
 
 /** \ingroup py_c
  */
@@ -679,20 +672,16 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &obj, &len))
 	return NULL;
 
-    /* malloc is needed to avoid surprises from data swab in headerLoad(). */
-    copy = malloc(len);
-    if (copy == NULL) {
-	PyErr_SetString(pyrpmError, "out of memory");
-	return NULL;
-    }
-    memcpy (copy, obj, len);
-
-    h = headerLoad(copy);
+    /* copy is needed to avoid surprises from data swab in headerLoad(). */
+    h = headerCopyLoad(obj);
     if (!h) {
-	PyErr_SetString(pyrpmError, "bad header");
+	if (errno == ENOMEM) {
+	    PyErr_SetString(pyrpmError, "out of memory");
+	} else {
+	    PyErr_SetString(pyrpmError, "bad header");
+	}
 	return NULL;
     }
-    headerAllocated(h);
     compressFilelist (h);
     providePackageNVR (h);
 
