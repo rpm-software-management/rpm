@@ -11,6 +11,7 @@
 #include <regex.h>
 
 #include "rpmpgp.h"
+#include "rpmio_internal.h"	/* XXX rpmioSlurp */
 #include "fts.h"
 
 #include "rpmbuild.h"
