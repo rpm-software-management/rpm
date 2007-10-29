@@ -14,8 +14,7 @@
 #include "rpmdb.h"
 #include "rpmfi.h"
 
-#define	_RPMGI_INTERNAL	/* XXX for gi->flags */
-#include "rpmgi.h"
+#include "rpmgi_internal.h"
 #include "rpmts.h"
 
 #include "manifest.h"

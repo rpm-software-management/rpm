@@ -31,39 +31,6 @@ typedef enum rpmgiFlags_e {
 
 extern rpmgiFlags giFlags;
 
-#if defined(_RPMGI_INTERNAL)
-#include "fts.h"
-/** \ingroup rpmio
- */
-struct rpmgi_s {
-    rpmts ts;			/*!< Iterator transaction set. */
-    int tag;			/*!< Iterator type. */
-    const void * keyp;		/*!< Iterator key. */
-    size_t keylen;		/*!< Iterator key length. */
-
-    rpmgiFlags flags;		/*!< Iterator control bits. */
-    int active;			/*!< Iterator is active? */
-    int i;			/*!< Element index. */
-    const char * hdrPath;	/*!< Path to current iterator header. */
-    Header h;			/*!< Current iterator header. */
-
-    rpmtsi tsi;
-
-    rpmdbMatchIterator mi;
-
-    FD_t fd;
-
-    ARGV_t argv;
-    int argc;
-
-    int ftsOpts;
-    FTS * ftsp;
-    FTSENT * fts;
-
-    int nrefs;			/*!< Reference count. */
-};
-#endif
-
 /**
  * Unreference a generalized iterator instance.
  * @param gi		generalized iterator

@@ -6,9 +6,8 @@
 #include "rpmlib.h"
 #include "rpmte.h"		/* XXX rpmElementType */
 
-#define	_RPMGI_INTERNAL
 #define	_RPMTS_INTERNAL		/* XXX ts->probs et al */
-#include "rpmgi.h"
+#include "rpmgi_internal.h"
 
 #include "rpmdb.h"
 #include "rpmmacro.h"		/* XXX rpmExpand */
