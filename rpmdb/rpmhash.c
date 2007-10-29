@@ -25,7 +25,7 @@ voidptr * data;		/*!< pointer to hashed data */
  */
 struct hashTable_s {
     int numBuckets;			/*!< number of hash buckets */
-    int keySize;			/*!< size of key (0 if unknown) */
+    size_t keySize;			/*!< size of key (0 if unknown) */
     int freeData;	/*!< should data be freed when table is destroyed? */
     hashBucket * buckets;		/*!< hash bucket array */
     hashFunctionType fn;		/*!< generate hash value for key */
@@ -77,7 +77,7 @@ unsigned int hashFunctionString(const void * string)
     return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
 }
 
-hashTable htCreate(int numBuckets, int keySize, int freeData,
+hashTable htCreate(int numBuckets, size_t keySize, int freeData,
 		hashFunctionType fn, hashEqualityType eq)
 {
     hashTable ht;
