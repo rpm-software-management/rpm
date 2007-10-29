@@ -10,6 +10,10 @@
 
 #include "rpmbuild.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  */
 typedef struct cpioSourceArchive_s {
@@ -18,10 +22,6 @@ typedef struct cpioSourceArchive_s {
     rpmfi	cpioList;
     struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
 } * CSA_t;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Read rpm package components from file.
