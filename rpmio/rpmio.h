@@ -218,8 +218,6 @@ off_t	fdSize(FD_t fd);
  */
 FD_t fdDup(int fdno);
 
-/* XXX Legacy interfaces needed by gnorpm, rpmfind et al */
-
 /**
  */
 extern FD_t fdLink (void * cookie, const char * msg);
