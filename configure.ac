@@ -172,11 +172,6 @@ AC_DEFINE_UNQUOTED(RPM_MKDIR_P, "${RPM_MKDIR_P}",
    directory and all necessary parent directories, ala 'mkdir -p'])
 AC_SUBST(RPM_MKDIR_P)
 
-dnl This test must precede tests of compiler characteristics like
-dnl that for the inline keyword, since it may change the degree to
-dnl which the compiler supports such features.
-AM_C_PROTOTYPES
-
 dnl AM_DISABLE_SHARED
 AM_PROG_LIBTOOL
 
