@@ -9,6 +9,9 @@
 #include "rpmerr.h"
 #include "debug.h"
 
+#define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
+#define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
+
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     int32_t mytime = time;	/* XXX convert to header representation */
