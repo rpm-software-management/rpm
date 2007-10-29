@@ -5,7 +5,6 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
 #include "rpmbuild.h"
 #include "rpmerr.h"
 #include "misc.h" 	/* XXX for makeTempFile */
@@ -135,13 +134,12 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 	goto exit;
     }
 
-    if (fdGetFp(fd) == NULL)
+    if (fdGetFILE(fd) == NULL)
 	xfd = Fdopen(fd, "w.fpio");
     else
 	xfd = fd;
 
-    /* FIX: cast? */
-    if ((fp = fdGetFp(xfd)) == NULL) {
+    if ((fp = fdGetFILE(xfd)) == NULL) {
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }

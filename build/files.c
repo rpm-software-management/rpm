@@ -1801,7 +1801,7 @@ static int processPackageFiles(rpmSpec spec, Package pkg,
 	}
 	ffn = _free(ffn);
 
-	f = fdGetFp(fd);
+	f = fdGetFILE(fd);
 	if (f != NULL)
 	while (fgets(buf, sizeof(buf), f)) {
 	    handleComments(buf);

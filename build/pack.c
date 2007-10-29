@@ -129,8 +129,7 @@ static StringBuf addFileToTagAux(rpmSpec spec,
 	sb = freeStringBuf(sb);
 	return NULL;
     }
-    /* FIX: cast? */
-    if ((f = fdGetFp(fd)) != NULL)
+    if ((f = fdGetFILE(fd)) != NULL)
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {

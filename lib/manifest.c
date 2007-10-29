@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"
 
@@ -69,7 +68,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     const char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     const char ** argv = (argvPtr ? *argvPtr : NULL);
-    FILE * f = (FILE *) fdGetFp(fd);
+    FILE * f = fdGetFILE(fd);
     rpmRC rpmrc = RPMRC_OK;
     int i, j, next, npre;
 

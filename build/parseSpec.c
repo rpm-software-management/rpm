@@ -5,7 +5,6 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
 #include "rpmbuild.h"
 #include "rpmds.h"
 #include "rpmts.h"
@@ -230,8 +229,7 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	/* FIX: cast? */
-	FILE * f = fdGetFp(ofi->fd);
+	FILE * f = fdGetFILE(ofi->fd);
 	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
 	    /* EOF */
 	    if (spec->readStack->next) {

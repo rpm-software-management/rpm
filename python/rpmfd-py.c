@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"	/* XXX fdGetFp */
+#include "rpmio.h"	/* XXX fdGetFILE */
 
 #include "header-py.h"	/* XXX pyrpmError */
 #include "rpmfd-py.h"
@@ -115,7 +115,7 @@ rpmfd_Fopen(PyObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    node->f = fdGetFp(node->fd);
+    node->f = fdGetFILE(node->fd);
     if (!node->f) {
 	PyErr_SetString(pyrpmError, "FD_t has no FILE*");
 	free(node);
