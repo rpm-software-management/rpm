@@ -12,41 +12,12 @@
 
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
 
-#ifdef DEBUG_MACROS
-#include <sys/types.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#define rpmError fprintf
-#define RPMERR_BADSPEC stderr
-#undef	_
-#define	_(x)	x
-
-#define	vmefail()		(exit(1), NULL)
-#define	urlPath(_xr, _r)	*(_r) = (_xr)
-
-typedef	FILE * FD_t;
-#define Fopen(_path, _fmode)	fopen(_path, "r");
-#define	Ferror			ferror
-#define Fstrerror(_fd)		strerror(errno)
-#define	Fread			fread
-#define	Fclose			fclose
-
-#define	fdGetFILE(_fd)		(_fd)
-
-#else
-
 #include "rpmio_internal.h"
 #include "rpmmessages.h"
 #include "rpmerr.h"
 
 #ifdef	WITH_LUA
 #include "rpmlua.h"
-#endif
-
 #endif
 
 #include "rpmmacro.h"
@@ -443,30 +414,6 @@ expandT(MacroBuf mb, const char * f, size_t flen)
     mb->s = s;
     return rc;
 }
-
-#if 0
-/**
- * Save target and expand sbuf into target.
- * @param mb		macro expansion state
- * @param tbuf		target buffer
- * @param tbuflen	no. bytes in target buffer
- * @return		result of expansion
- */
-static int
-expandS(MacroBuf mb, char * tbuf, size_t tbuflen)
-{
-    const char *t = mb->t;
-    size_t nb = mb->nb;
-    int rc;
-
-    mb->t = tbuf;
-    mb->nb = tbuflen;
-    rc = expandMacro(mb);
-    mb->t = t;
-    mb->nb = nb;
-    return rc;
-}
-#endif
 
 /**
  * Save source/target and expand macro in u.
@@ -2126,16 +2073,10 @@ const char * file = xfile;
     int nurl = 0;
     int ut;
 
-#if 0
-if (_debug) fprintf(stderr, "*** RGP xroot %s xmdir %s xfile %s\n", xroot, xmdir, xfile);
-#endif
     ut = urlPath(xroot, &root);
     if (url == NULL && ut > URL_IS_DASH) {
 	url = xroot;
 	nurl = root - xroot;
-#if 0
-if (_debug) fprintf(stderr, "*** RGP ut %d root %s nurl %d\n", ut, root, nurl);
-#endif
     }
     if (root == NULL || *root == '\0') root = "/";
 
@@ -2143,9 +2084,6 @@ if (_debug) fprintf(stderr, "*** RGP ut %d root %s nurl %d\n", ut, root, nurl);
     if (url == NULL && ut > URL_IS_DASH) {
 	url = xmdir;
 	nurl = mdir - xmdir;
-#if 0
-if (_debug) fprintf(stderr, "*** RGP ut %d mdir %s nurl %d\n", ut, mdir, nurl);
-#endif
     }
     if (mdir == NULL || *mdir == '\0') mdir = "/";
 
@@ -2153,9 +2091,6 @@ if (_debug) fprintf(stderr, "*** RGP ut %d mdir %s nurl %d\n", ut, mdir, nurl);
     if (url == NULL && ut > URL_IS_DASH) {
 	url = xfile;
 	nurl = file - xfile;
-#if 0
-if (_debug) fprintf(stderr, "*** RGP ut %d file %s nurl %d\n", ut, file, nurl);
-#endif
     }
 
     if (url && nurl > 0) {
@@ -2170,90 +2105,6 @@ if (_debug) fprintf(stderr, "*** RGP ut %d file %s nurl %d\n", ut, file, nurl);
     xroot = _free(xroot);
     xmdir = _free(xmdir);
     xfile = _free(xfile);
-#if 0
-if (_debug) fprintf(stderr, "*** RGP result %s\n", result);
-#endif
     return result;
 }
 
-/* =============================================================== */
-
-#if defined(DEBUG_MACROS)
-
-#if defined(EVAL_MACROS)
-
-char *macrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros:~/.rpmmacros";
-
-int
-main(int argc, char *argv[])
-{
-    int c;
-    int errflg = 0;
-    extern char *optarg;
-    extern int optind;
-
-    while ((c = getopt(argc, argv, "f:")) != EOF ) {
-	switch (c) {
-	case 'f':
-	    macrofiles = optarg;
-	    break;
-	case '?':
-	default:
-	    errflg++;
-	    break;
-	}
-    }
-    if (errflg || optind >= argc) {
-	fprintf(stderr, "Usage: %s [-f macropath ] macro ...\n", argv[0]);
-	exit(1);
-    }
-
-    rpmInitMacros(NULL, macrofiles);
-    for ( ; optind < argc; optind++) {
-	const char *val;
-
-	val = rpmGetPath(argv[optind], NULL);
-	if (val) {
-	    fprintf(stdout, "%s:\t%s\n", argv[optind], val);
-	    val = _free(val);
-	}
-    }
-    rpmFreeMacros(NULL);
-    return 0;
-}
-
-#else	/* !EVAL_MACROS */
-
-char *macrofiles = "../macros:./testmacros";
-char *testfile = "./test";
-
-int
-main(int argc, char *argv[])
-{
-    char buf[BUFSIZ];
-    FILE *fp;
-    int x;
-
-    rpmInitMacros(NULL, macrofiles);
-    rpmDumpMacroTable(NULL, NULL);
-
-    if ((fp = fopen(testfile, "r")) != NULL) {
-	while(rdcl(buf, sizeof(buf), fp)) {
-	    x = expandMacros(NULL, NULL, buf, sizeof(buf));
-	    fprintf(stderr, "%d->%s\n", x, buf);
-	    memset(buf, 0, sizeof(buf));
-	}
-	fclose(fp);
-    }
-
-    while(rdcl(buf, sizeof(buf), stdin)) {
-	x = expandMacros(NULL, NULL, buf, sizeof(buf));
-	fprintf(stderr, "%d->%s\n <-\n", x, buf);
-	memset(buf, 0, sizeof(buf));
-    }
-    rpmFreeMacros(NULL);
-
-    return 0;
-}
-#endif	/* EVAL_MACROS */
-#endif	/* DEBUG_MACROS */
