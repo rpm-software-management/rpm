@@ -6,7 +6,6 @@
  * Access RPM indices using Berkeley DB interface(s).
  */
 
-#include <assert.h>
 #include "rpmlib.h"
 #include "rpmsw.h"
 
