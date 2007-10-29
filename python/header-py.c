@@ -663,7 +663,6 @@ Header hdrGetHeader(hdrObject * s)
 PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 {
     hdrObject * hdr;
-    char * copy = NULL;
     char * obj;
     Header h;
     int len;
