@@ -27,6 +27,7 @@
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -47,9 +48,6 @@ char *dest_dir = NULL;
 char *list_file = NULL;
 int list_file_fd = -1;
 int do_build_id = 0;
-
-typedef unsigned int uint32_t;
-typedef unsigned short uint16_t;
 
 typedef struct
 {
@@ -439,8 +437,8 @@ static int
 has_prefix (const char  *str,
 	    const char  *prefix)
 {
-  int str_len;
-  int prefix_len;
+  size_t str_len;
+  size_t prefix_len;
   
   str_len = strlen (str);
   prefix_len = strlen (prefix);
