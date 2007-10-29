@@ -15,6 +15,7 @@
 
 extern int specedit;
 
+#define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
 #define SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
