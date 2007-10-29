@@ -6,13 +6,13 @@
  * Hash table implemenation.
  */
 
-/**
- */
-typedef struct hashTable_s * hashTable;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ */
+typedef struct hashTable_s * hashTable;
 
 /**
  */
