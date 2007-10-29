@@ -41,8 +41,6 @@ extern int h_errno;
 
 #define	UFDONLY(fd)	/* assert(fdGetIo(fd) == ufdio) */
 
-#define	fdGetFILE(_fd)	((FILE *)fdGetFp(_fd))
-
 /**
  */
 #if _USE_LIBIO
@@ -174,6 +172,11 @@ int fdFileno(void * cookie)
     if (cookie == NULL) return -2;
     fd = c2f(cookie);
     return fd->fps[0].fdno;
+}
+
+FILE * fdGetFILE(FD_t fd)
+{
+    return ((FILE *)fdGetFp(fd));
 }
 
 /* =============================================================== */

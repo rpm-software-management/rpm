@@ -348,15 +348,6 @@ void fdSetIo(FD_t fd, FDIO_t io)
 /** \ingroup rpmio
  */
 static inline
-FILE * fdGetFILE(FD_t fd)
-{
-    FDSANE(fd);
-    return ((FILE *)fd->fps[fd->nfps].fp);
-}
-
-/** \ingroup rpmio
- */
-static inline
 void * fdGetFp(FD_t fd)
 {
     FDSANE(fd);
