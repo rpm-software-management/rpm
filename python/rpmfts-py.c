@@ -10,8 +10,6 @@
 
 #include "rpmfts-py.h"
 
-#include "rpmlib.h"	/* XXX _free */
-
 #include "debug.h"
 
 static int _rpmfts_debug = 1;

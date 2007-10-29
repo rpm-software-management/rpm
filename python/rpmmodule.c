@@ -7,9 +7,6 @@
 #include "rpmdb.h"
 #include "rpmsq.h"
 
-#include "legacy.h"
-#include "misc.h"
-
 #include "header-py.h"
 #include "rpmal-py.h"
 #include "rpmds-py.h"
