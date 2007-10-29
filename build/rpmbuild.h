@@ -14,6 +14,8 @@
 /* but this will be needed */
 #include "rpmspec.h"
 
+#include "rpmio.h"	/* for xisspace */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,8 +38,6 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_STRINGBUF	= (1 << 10),	/*!< only for doScript() */
     RPMBUILD_RMSPEC	= (1 << 11)	/*!< Remove spec file. */
 } rpmBuildFlags;
-
-#include <ctype.h>
 
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
