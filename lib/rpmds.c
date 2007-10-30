@@ -5,7 +5,6 @@
 
 #include "rpmlib.h"
 
-#define	_RPMDS_INTERNAL
 #include "rpmds.h"
 
 #include "debug.h"
@@ -21,6 +20,28 @@ int _rpmds_nopromote = 1;
 
 int _rpmds_unspecified_epoch_noise = 0;
 
+/**
+ * A package dependency set.
+ */
+struct rpmds_s {
+    const char * Type;		/*!< Tag name. */
+    const char * DNEVR;		/*!< Formatted dependency string. */
+    Header h;			/*!< Header for dependency set (or NULL) */
+    const char ** N;		/*!< Name. */
+    const char ** EVR;		/*!< Epoch-Version-Release. */
+    int32_t * Flags;		/*!< Bit(s) identifying context/comparison. */
+    uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
+    int32_t * Refs;		/*!< No. of file refs. */
+    int32_t BT;			/*!< Package build time tie breaker. */
+    rpmTag tagN;		/*!< Header tag. */
+    rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
+    int32_t Count;		/*!< No. of elements */
+    int i;			/*!< Element index. */
+    unsigned l;			/*!< Low element (bsearch). */
+    unsigned u;			/*!< High element (bsearch). */
+    int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
+    int nrefs;			/*!< Reference count. */
+};
 rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
 {
     if (ds == NULL) return NULL;

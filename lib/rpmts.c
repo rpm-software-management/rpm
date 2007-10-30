@@ -16,7 +16,6 @@
 #include "rpmlock.h"
 #include "rpmerr.h"
 
-#define	_RPMTE_INTERNAL		/* XXX te->h */
 #include "rpmte.h"
 
 #define	_RPMTS_INTERNAL
@@ -1418,11 +1417,13 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 {
     void * ptr = NULL;
     if (ts && ts->notify && te) {
-assert(!(te->type == TR_ADDED && te->h == NULL));
+	Header h = rpmteHeader(te);
+assert(!(rpmteType(te) == TR_ADDED && h == NULL));
 	/* FIX: cast? */
 	/* FIX: check rc */
-	ptr = ts->notify(te->h, what, amount, total,
+	ptr = ts->notify(h, what, amount, total,
 			rpmteKey(te), ts->notifyData);
+	headerUnlink(h); /* undo rpmteHeader() ref */
     }
     return ptr;
 }

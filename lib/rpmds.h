@@ -21,31 +21,6 @@ extern int _rpmds_debug;
  */
 extern int _rpmds_nopromote;
 
-#if defined(_RPMDS_INTERNAL)
-/**
- * A package dependency set.
- */
-struct rpmds_s {
-    const char * Type;		/*!< Tag name. */
-    const char * DNEVR;		/*!< Formatted dependency string. */
-    Header h;			/*!< Header for dependency set (or NULL) */
-    const char ** N;		/*!< Name. */
-    const char ** EVR;		/*!< Epoch-Version-Release. */
-    int32_t * Flags;		/*!< Bit(s) identifying context/comparison. */
-    uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
-    int32_t * Refs;		/*!< No. of file refs. */
-    int32_t BT;			/*!< Package build time tie breaker. */
-    rpmTag tagN;		/*!< Header tag. */
-    rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
-    int32_t Count;		/*!< No. of elements */
-    int i;			/*!< Element index. */
-    unsigned l;			/*!< Low element (bsearch). */
-    unsigned u;			/*!< High element (bsearch). */
-    int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
-    int nrefs;			/*!< Reference count. */
-};
-#endif	/* _RPMDS_INTERNAL */
-
 /**
  * Unreference a dependency set instance.
  * @param ds		dependency set
