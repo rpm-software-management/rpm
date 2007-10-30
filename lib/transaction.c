@@ -35,19 +35,6 @@
 
 #include "idtx.h"
 
-
-/* XXX: This is a hack.  I needed a to setup a notify callback
- * for the rollback transaction, but I did not want to create
- * a header for rpminstall.c.
- */
-extern void * rpmShowProgress(const void * arg,
-                        const rpmCallbackType what,
-                        const unsigned long amount,
-                        const unsigned long total,
-                        fnpyKey key,
-                        void * data)
-	;
-
 /**
  */
 static int archOkay(const char * pkgArch)
