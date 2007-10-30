@@ -178,7 +178,3 @@ tdbi_LDADD = librpmdb.la
 check_PROGRAMS += tjfn
 tjfn_SOURCES = tjfn.c
 tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
-
-EXTRA_PROGRAMS += tsql
-tsql_SOURCES = tsql.c
-tsql_LDADD = librpmdb.la
