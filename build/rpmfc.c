@@ -7,7 +7,6 @@
 #include "rpmfc.h"
 #include "rpmerr.h"
 
-#define	_RPMDS_INTERNAL
 #include "rpmds.h"
 #include "rpmfi.h"
 
@@ -1661,34 +1660,70 @@ assert(ac == c);
 
     /* Add Provides: */
     if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
-	p = (const void **) fc->provides->N;
-	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
-			p, c);
-	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-	p = (const void **) fc->provides->EVR;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
-			p, c);
-	p = (const void **) fc->provides->Flags;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
-			p, c);
+	const char **names = xcalloc(c, sizeof(char *));	
+	const char **evrs = xcalloc(c, sizeof(char *));	
+	const char **flags = xcalloc(c, sizeof(int_32 *));	
+	int i;
+	rpmds pi = rpmdsInit(fc->provides);
+	while ((i = rpmdsNext(pi)) >= 0) {
+	    names[i] = rpmdsN(pi);
+	    evrs[i] = rpmdsEVR(pi);
+	    flags[i] = rpmdsFlags(pi);
+	}
+	 
+assert(names != NULL);
+	xx = headerAddEntry(pkg->header, 
+			    RPMTAG_PROVIDENAME, 
+			    RPM_STRING_ARRAY_TYPE,
+			    names, c);
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+assert(evrs != NULL);
+	xx = headerAddEntry(pkg->header, 
+			    RPMTAG_PROVIDEVERSION, 
+			    RPM_STRING_ARRAY_TYPE,
+		    	    evrs, c);
+assert(flags != NULL);
+	xx = headerAddEntry(pkg->header, 
+			     RPMTAG_PROVIDEFLAGS, 
+			     RPM_INT32_TYPE,
+			     flags, c);
+	free(names);
+	free(evrs);
+	free(flags);
     }
 
     /* Add Requires: */
     if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
-	p = (const void **) fc->requires->N;
-	xx = headerAddEntry(pkg->header, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
-			p, c);
-	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-	p = (const void **) fc->requires->EVR;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREVERSION, RPM_STRING_ARRAY_TYPE,
-			p, c);
-	p = (const void **) fc->requires->Flags;
-assert(p != NULL);
-	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
-			p, c);
+	const char **names = xcalloc(c, sizeof(char *));	
+	const char **evrs = xcalloc(c, sizeof(char *));	
+	const char **flags = xcalloc(c, sizeof(int_32 *));	
+	int i;
+	rpmds ri = rpmdsInit(fc->requires);
+	while ((i = rpmdsNext(ri)) >= 0) {
+	    names[i] = rpmdsN(ri);
+	    evrs[i] = rpmdsEVR(ri);
+	    flags[i] = rpmdsFlags(ri);
+	}
+	 
+assert(names != NULL);
+	xx = headerAddEntry(pkg->header, 
+			    RPMTAG_REQUIRENAME, 
+			    RPM_STRING_ARRAY_TYPE,
+			    names, c);
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+assert(evrs != NULL);
+	xx = headerAddEntry(pkg->header, 
+			    RPMTAG_REQUIREVERSION, 
+			    RPM_STRING_ARRAY_TYPE,
+		    	    evrs, c);
+assert(flags != NULL);
+	xx = headerAddEntry(pkg->header, 
+			     RPMTAG_REQUIREFLAGS, 
+			     RPM_INT32_TYPE,
+			     flags, c);
+	free(names);
+	free(evrs);
+	free(flags);
     }
 
     /* Add dependency dictionary(#dependencies) */
