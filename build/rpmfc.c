@@ -1662,7 +1662,7 @@ assert(ac == c);
     if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
 	const char **names = xcalloc(c, sizeof(char *));	
 	const char **evrs = xcalloc(c, sizeof(char *));	
-	const char **flags = xcalloc(c, sizeof(int_32 *));	
+	int32_t *flags = xcalloc(c, sizeof(int32_t *));	
 	int i;
 	rpmds pi = rpmdsInit(fc->provides);
 	while ((i = rpmdsNext(pi)) >= 0) {
@@ -1696,7 +1696,7 @@ assert(flags != NULL);
     if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
 	const char **names = xcalloc(c, sizeof(char *));	
 	const char **evrs = xcalloc(c, sizeof(char *));	
-	const char **flags = xcalloc(c, sizeof(int_32 *));	
+	int32_t *flags = xcalloc(c, sizeof(int32_t *));	
 	int i;
 	rpmds ri = rpmdsInit(fc->requires);
 	while ((i = rpmdsNext(ri)) >= 0) {

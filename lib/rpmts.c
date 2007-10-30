@@ -20,6 +20,7 @@
 
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
+#include "rpmtsscore.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */

@@ -23,7 +23,7 @@
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 
-#define	_RPMTS_INTERNAL		/* XXX ts->notify */
+#include "rpmtsscore.h"
 #include "rpmts.h"
 
 #include "rpmlead.h"		/* writeLead proto */
@@ -1774,13 +1774,6 @@ assert(psm->mi == NULL);
 	    xx = Fclose(psm->fd);
 	    psm->fd = NULL;
 	    errno = saveerrno;
-	}
-
-	if (psm->goal == PSM_PKGSAVE) {
-	    if (!rc && ts && ts->notify == NULL) {
-		rpmlog(RPMLOG_INFO, _("Wrote: %s\n"),
-			(psm->pkgURL ? psm->pkgURL : "???"));
-	    }
 	}
 
 	if (rc) {
