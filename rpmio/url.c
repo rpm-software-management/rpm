@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <assert.h>
 #include <netinet/in.h>
 
 #include "rpmmacro.h"
@@ -26,11 +27,12 @@
 #define	IPPORT_PGPKEYSERVER	11371
 #endif
 
+#define	URLMAGIC	0xd00b1ed0
+#define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
+
 /**
  */
 int _url_debug = 0;
-
-#define	URLDBG(_f, _m, _x)	if ((_url_debug | (_f)) & (_m)) fprintf _x
 
 urlinfo urlNew()
 {
