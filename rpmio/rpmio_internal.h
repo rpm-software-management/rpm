@@ -5,6 +5,7 @@
  * \file rpmio/rpmio_internal.h
  */
 
+#include <assert.h>
 
 #include "rpmio.h"
 #include "rpmurl.h"
