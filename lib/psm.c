@@ -1776,13 +1776,6 @@ assert(psm->mi == NULL);
 	    errno = saveerrno;
 	}
 
-	if (psm->goal == PSM_PKGSAVE) {
-	    if (!rc && ts && ts->notify == NULL) {
-		rpmlog(RPMLOG_INFO, _("Wrote: %s\n"),
-			(psm->pkgURL ? psm->pkgURL : "???"));
-	    }
-	}
-
 	if (rc) {
 	    if (psm->failedFile)
 		rpmlog(RPMERR_CPIO,
