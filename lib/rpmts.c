@@ -848,6 +848,13 @@ rpmps rpmtsProblems(rpmts ts)
     return ps;
 }
 
+void rpmtsCleanProblems(rpmts ts)
+{
+    if (ts && ts->probs) {
+	ts->probs = rpmpsFree(ts->probs);
+    }
+}
+
 void rpmtsCleanDig(rpmts ts)
 {
     ts->sig = headerFreeData(ts->sig, ts->sigtype);
@@ -873,7 +880,7 @@ void rpmtsClean(rpmts ts)
     ts->suggests = _free(ts->suggests);
     ts->nsuggests = 0;
 
-    ts->probs = rpmpsFree(ts->probs);
+    rpmtsCleanProblems(ts);
 
     rpmtsCleanDig(ts);
 }
