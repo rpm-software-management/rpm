@@ -975,14 +975,16 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
      */
     tsi = rpmtsiInit(rollbackTransaction);
     while((te = rpmtsiNext(tsi, 0)) != NULL) {
+	fnpyKey key = NULL;
 	rpmlog(RPMLOG_NOTICE, _("Cleaning up repackaged packages:\n"));
 	switch (rpmteType(te)) {
 	/* The install elements are repackaged packages */
 	case TR_ADDED:
 	    /* Make sure the filename is still there.  XXX: Can't happen */
-	    if(te->key) {
-		rpmlog(RPMLOG_NOTICE, _("\tRemoving %s:\n"), te->key);
-		(void) unlink(te->key); /* XXX: Should check for an error? */
+	    key = rpmteKey(te);
+	    if(key) {
+		rpmlog(RPMLOG_NOTICE, _("\tRemoving %s:\n"), key);
+		(void) unlink(key); /* XXX: Should check for an error? */
 	    }
 	    break;
                                                                                 
