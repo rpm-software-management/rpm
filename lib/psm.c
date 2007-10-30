@@ -23,7 +23,7 @@
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 
-#define	_RPMTS_INTERNAL		/* XXX ts->notify */
+#include "rpmtsscore.h"
 #include "rpmts.h"
 
 #include "rpmlead.h"		/* writeLead proto */
