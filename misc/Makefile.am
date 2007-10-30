@@ -15,9 +15,7 @@ EXTRA_DIST = \
 	strftime.c	strcspn.c	strstr.c	strtol.c	\
 	strtoul.c
 
-noinst_LIBRARIES = libmisc.a
+noinst_LTLIBRARIES = libmisc.la
 
-libmisc_a_SOURCES =
-
-libmisc_a_LIBADD = @LIBOBJS@ @ALLOCA@
-libmisc_a_DEPENDENCIES = $(libmisc_a_LIBADD)
+libmisc_la_SOURCES =
+libmisc_la_LIBADD = @LTLIBOBJS@ @ALLOCA@
