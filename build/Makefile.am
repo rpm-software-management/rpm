@@ -3,7 +3,7 @@
 AM_CPPFLAGS =  -I$(top_builddir) -I$(top_srcdir)
 AM_CPPFLAGS += -I$(top_srcdir)/build
 AM_CPPFLAGS += -I$(top_srcdir)/lib
-AM_CPPFLAGS += -I$(top_srcdir)/rpmdb
+AM_CPPFLAGS += -I$(top_builddir)/rpmdb  -I$(top_srcdir)/rpmdb
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio
 AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
 AM_CPPFLAGS += @WITH_MAGIC_INCLUDE@
