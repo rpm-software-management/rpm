@@ -685,10 +685,14 @@ dnl point, but should offer good performance improvements, check after
 dnl 4.4.2.1...
 dnl AC_FUNC_MMAP
 
-AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
-AC_CHECK_FUNCS(mtrace putenv realpath setenv)
-AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
-AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
+AC_CHECK_FUNCS(getaddrinfo getnameinfo inet_aton)
+AC_CHECK_FUNCS(mtrace)
+AC_CHECK_FUNCS(strndup strerror)
+
+AC_REPLACE_FUNCS(basename getcwd getwd)
+AC_REPLACE_FUNCS(putenv realpath setenv)
+AC_REPLACE_FUNCS(stpcpy stpncpy strcspn)
+AC_REPLACE_FUNCS(strdup strtol strtoul strspn strstr)
 
 AC_CHECK_FUNCS(__secure_getenv)
 
