@@ -5,8 +5,6 @@
  * \file rpmio/rpmurl.h
  */
 
-#include <assert.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,9 +21,6 @@ typedef enum urltype_e {
     URL_IS_HTTPS	= 5,	/*!< https://... */
     URL_IS_HKP		= 6	/*!< hkp://... */
 } urltype;
-
-#define	URLMAGIC	0xd00b1ed0
-#define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
 
 typedef struct urlinfo_s * urlinfo;
 
