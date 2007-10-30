@@ -8,7 +8,7 @@ EXTRA_DIST = \
 	error.c		error.h \
 	fakefork.c	fnmatch.c	fnmatch.h \
 	getcwd.c	getmntent.c	\
-	getwd.c		glob.c		glob.h		memcmp.c	\
+	getwd.c		glob.c		glob.h				\
 	mktime.c	myrealloc.c	putenv.c	realpath.c	\
 	setenv.c	stpcpy.c	stpncpy.c			\
 			strcspn.c	strdup.c	strerror.c	\
