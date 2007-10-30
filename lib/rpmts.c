@@ -1051,6 +1051,7 @@ const char * rpmtsRootDir(rpmts ts)
 	case URL_IS_UNKNOWN:
 	case URL_IS_PATH:
 	    break;
+	/* XXX these shouldn't be allowed as rootdir! */
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_HKP:

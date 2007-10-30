@@ -586,6 +586,7 @@ extern const char * rpmtsRootDir(rpmts ts);
 
 /** \ingroup rpmts
  * Set transaction rootDir, i.e. path to chroot(2).
+ * @todo		disallow funky http:// etc urls...
  * @param ts		transaction set
  * @param rootDir	new transaction rootDir (or NULL)
  */

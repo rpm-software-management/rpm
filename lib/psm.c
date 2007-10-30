@@ -795,13 +795,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    }
 	}
 
-	rootDir = ts->rootDir;	/* HACK: rootDir = rpmtsRootDir(ts); instead */
-	if (rootDir  != NULL)	/* XXX can't happen */
-	switch(urlIsURL(rootDir)) {
-	case URL_IS_PATH:
-	    rootDir += sizeof("file://") - 1;
-	    rootDir = strchr(rootDir, '/');
-	case URL_IS_UNKNOWN:
+	rootDir = rpmtsRootDir(ts);
+	if (rootDir  != NULL) {	/* XXX can't happen */
 	    if (!rpmtsChrootDone(ts) &&
 		!(rootDir[0] == '/' && rootDir[1] == '\0'))
 	    {
@@ -818,21 +813,12 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /* Permit libselinux to do the scriptlet exec. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
 		xx = rpm_execcon(0, argv[0], (char ** const) argv, environ);
-		if (xx != 0)
-		    break;
 	    }
 
-	    xx = execv(argv[0], (char *const *)argv);
-	    break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	case URL_IS_DASH:
-	case URL_IS_HKP:
-	default:
-	    break;
+	    if (xx == 0) {
+	    	xx = execv(argv[0], (char *const *)argv);
+	    }
 	}
-
  	_exit(-1);
     }
 
