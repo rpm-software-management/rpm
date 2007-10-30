@@ -451,6 +451,12 @@ void rpmtsSetType(rpmts ts, rpmtsType type);
  */
 rpmps rpmtsProblems(rpmts ts);
 
+/**
+ * Clean current transaction problem set.
+ * @param ts		transaction set
+ */
+void rpmtsCleanProblems(rpmts ts);
+
 /** \ingroup rpmts
  * Free signature verification data.
  * @param ts		transaction set

@@ -603,7 +603,7 @@ enditer:
 
 	}
 	ps = rpmpsFree(ps);
-	ts->probs = rpmpsFree(ts->probs);	/* XXX hackery */
+	rpmtsCleanProblems(ts);
 
 	xx = rpmtsOrder(ts);
 
