@@ -17,7 +17,6 @@
 #include "rpmte-py.h"
 #include "spec-py.h"
 
-#define	_RPMTS_INTERNAL	/* XXX for ts->availablePackage */
 #include "rpmts-py.h"
 
 #include "debug.h"
@@ -171,6 +170,7 @@ fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
     return Py_None;
 }
 
+#if 0
 /** \ingroup py_c
  * Add package to universe of possible packages to install in transaction set.
  * @param ts		transaction set
@@ -194,6 +194,7 @@ if (_rpmts_debug < 0)
 fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
 
 }
+#endif
 
 /** \ingroup py_c
  */
@@ -227,9 +228,19 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     } else if (how && !strcmp(how, "u"))
     	isUpgrade = 1;
 
-    if (how && !strcmp(how, "a"))
-	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key);
-    else
+    /*
+     * XXX resurrect when better available mechanism is, well, available.
+     * OTOH nothing appears to use it these days...
+     * Raise exception to catch out any callers while broken.
+     */
+    if (how && !strcmp(how, "a")) {
+#ifdef DYING
+	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key); 
+#else
+	PyErr_SetString(pyrpmError, "available package mechanism currently broken");
+	return NULL;
+#endif
+    } else
 	rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
     if (rc) {
 	PyErr_SetString(pyrpmError, "adding package to transaction failed");
@@ -374,8 +385,10 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
 
+#ifdef DYING
     /* XXX resurrect availablePackages one more time ... */
     rpmalMakeIndex(s->ts->availablePackages);
+#endif
 
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
