@@ -14,7 +14,7 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 
-#define	_RPMTE_INTERNAL
+#define	_RPMTE_INTERNAL		/* XXX tsortInfo_s */
 #include "rpmte.h"
 
 #include "rpmts_internal.h"

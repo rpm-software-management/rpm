@@ -20,7 +20,7 @@
 #define _RPMFI_INTERNAL
 #include "rpmfi.h"
 
-#define	_RPMTE_INTERNAL
+#define	_RPMTE_INTERNAL		/* XXX te->fd */
 #include "rpmte.h"
 
 #include "rpmtsscore.h"

@@ -20,7 +20,7 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
-#define	_RPMTE_INTERNAL
+#define	_RPMTE_INTERNAL		/* XXX te->h, te->fd, te->h */
 #include "rpmte.h"
 
 #include "rpmts_internal.h"

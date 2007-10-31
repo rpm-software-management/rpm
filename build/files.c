@@ -24,7 +24,7 @@
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
-#define	_RPMTE_INTERNAL
+#define	_RPMTE_INTERNAL		/* XXX rpmte init */
 #include "rpmte.h"
 
 #include "buildio.h"
