@@ -17,7 +17,7 @@
 
 #include "rpmds.h"
 
-#define _RPMFI_INTERNAL
+#define _RPMFI_INTERNAL		/* XXX replaced/states, fi->hge, fi->te... */
 #include "rpmfi.h"
 
 #define	_RPMTE_INTERNAL		/* XXX te->fd */

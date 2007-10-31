@@ -21,7 +21,7 @@
 #include "argv.h"
 #include "rpmfc.h"
 
-#define	_RPMFI_INTERNAL
+#define	_RPMFI_INTERNAL		/* XXX pretty much all rpmfi internals... */
 #include "rpmfi.h"
 
 #define	_RPMTE_INTERNAL		/* XXX rpmte init */

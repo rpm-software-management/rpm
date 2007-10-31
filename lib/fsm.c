@@ -15,7 +15,7 @@
 
 #include "rpmerr.h"
 
-#define	_RPMFI_INTERNAL
+#define	_RPMFI_INTERNAL		/* XXX fi->apath, fi->action... */
 #include "rpmfi.h"
 #include "rpmte.h"
 #include "rpmts.h"
