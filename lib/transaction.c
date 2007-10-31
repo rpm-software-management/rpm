@@ -23,8 +23,7 @@
 #define	_RPMTE_INTERNAL
 #include "rpmte.h"
 
-#define	_RPMTS_INTERNAL
-#include "rpmts.h"
+#include "rpmts_internal.h"
 
 #include "cpio.h"
 #include "fprint.h"
