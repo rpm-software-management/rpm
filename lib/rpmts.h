@@ -128,19 +128,10 @@ struct diskspaceInfo_s {
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
 /** \ingroup rpmts
- */
-typedef enum tsStage_e {
-    TSM_UNKNOWN		=  0,
-    TSM_INSTALL		=  7,
-    TSM_ERASE		=  8,
-} tsmStage;
-
-/** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
 struct rpmts_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
-    tsmStage goal;		/*!< Transaction goal (i.e. mode) */
     rpmtsType type;             /*!< default, rollback, autorollback */
 
     rpmdb sdb;			/*!< Solve database handle. */

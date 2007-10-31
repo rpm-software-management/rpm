@@ -261,7 +261,6 @@ const char * fileURL = NULL;
 
     if (fileArgv == NULL) goto exit;
 
-    ts->goal = TSM_INSTALL;
     rpmcliPackagesTotal = 0;
 
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
@@ -715,6 +714,9 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
 	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
+    /* XXX suggest mechanism only meaningful when installing */
+    ia->transFlags |= RPMTRANS_FLAG_NOSUGGEST;
+
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
@@ -724,8 +726,6 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 			rpmShowProgress, (void *) ((long)notifyFlags));
     }
 #endif
-
-    ts->goal = TSM_ERASE;
 
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;

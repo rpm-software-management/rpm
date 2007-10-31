@@ -664,10 +664,6 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
     int rc = 1;	/* assume not found */
     int xx;
 
-    /* Make suggestions only for install Requires: */
-    if (ts->goal != TSM_INSTALL)
-	return rc;
-
     if (rpmdsTagN(ds) != RPMTAG_REQUIRENAME)
 	return rc;
 
@@ -1575,7 +1571,6 @@ rpmts rpmtsCreate(void)
     memset(&ts->ops, 0, sizeof(ts->ops));
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_TOTAL), -1);
     ts->type = RPMTRANS_TYPE_NORMAL;
-    ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
     ts->dsi = NULL;
