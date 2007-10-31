@@ -9,7 +9,6 @@
 #include "rpmdb.h"
 #include "rpmds.h"
 
-#define	_RPMTS_INTERNAL		/* ts->goal, ts->suggests */
 #include "rpmts.h"
 
 #include "manifest.h"
@@ -598,21 +597,9 @@ maybe_manifest:
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 
-	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmlog(RPMLOG_NOTICE, _("    Suggested resolutions:\n"));
-		for (i = 0; i < ts->nsuggests; i++) {
-		    const char * str = ts->suggests[i];
+	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST))
+		rpmtsPrintSuggests(ts);
 
-		    if (str == NULL)
-			break;
-
-		    rpmlog(RPMLOG_NOTICE, "\t%s\n", str);
-		
-		    ts->suggests[i] = NULL;
-		    str = _free(str);
-		}
-		ts->suggests = _free(ts->suggests);
-	    }
 	}
 	ps = rpmpsFree(ps);
     }

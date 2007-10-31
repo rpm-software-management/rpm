@@ -436,6 +436,15 @@ rpmtsType rpmtsGetType(rpmts ts);
 void rpmtsSetType(rpmts ts, rpmtsType type);
 
 /**
+ * Print possible suggestions for current transaction set, assuming
+ * solvedb exists etc.
+ * @todo		The whole suggests handling needs rework, this
+ * 			is just a temporary measure...
+ * @param ts		transaction set
+ */
+void rpmtsPrintSuggests(rpmts ts);
+
+/**
  * Return current transaction set problems.
  * @param ts		transaction set
  * @return		current problem set (or NULL)

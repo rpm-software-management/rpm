@@ -834,6 +834,23 @@ int rpmtsSetSolveCallback(rpmts ts,
     return rc;
 }
 
+void rpmtsPrintSuggests(rpmts ts)
+{
+    if (ts->suggests != NULL && ts->nsuggests > 0) {
+	int i;
+	rpmlog(RPMLOG_NOTICE, _("    Suggested resolutions:\n"));
+	for (i = 0; i < ts->nsuggests; i++) {
+	    const char * str = ts->suggests[i];
+
+	    if (str == NULL)
+		break;
+
+	    rpmlog(RPMLOG_NOTICE, "\t%s\n", str);
+	}
+    }
+}
+
+
 rpmps rpmtsProblems(rpmts ts)
 {
     rpmps ps = NULL;
@@ -860,6 +877,7 @@ void rpmtsCleanDig(rpmts ts)
 void rpmtsClean(rpmts ts)
 {
     rpmtsi pi; rpmte p;
+    int i;
 
     if (ts == NULL)
 	return;
@@ -873,6 +891,11 @@ void rpmtsClean(rpmts ts)
     ts->addedPackages = rpmalFree(ts->addedPackages);
     ts->numAddedPackages = 0;
 
+    for (i = 0; i < ts->nsuggests; i++) {
+	const char * str = ts->suggests[i];
+	ts->suggests[i] = NULL;
+	_free(str);
+    }
     ts->suggests = _free(ts->suggests);
     ts->nsuggests = 0;
 

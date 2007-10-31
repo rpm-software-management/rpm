@@ -6,7 +6,6 @@
 #include "rpmlib.h"
 #include "rpmte.h"		/* XXX rpmElementType */
 
-#define	_RPMTS_INTERNAL		/* XXX ts->probs et al */
 #include "rpmgi_internal.h"
 
 #include "rpmdb.h"
@@ -569,7 +568,6 @@ enditer:
     if (gi->flags & RPMGI_TSORDER) {
 	rpmts ts = gi->ts;
 	rpmps ps;
-	int i;
 
 	/* XXX installed database needs close here. */
 	xx = rpmtsCloseDB(ts);
@@ -585,21 +583,9 @@ enditer:
 	    if (rpmIsVerbose())
 		rpmpsPrint(NULL, ps);
 
-	    if (ts->suggests != NULL && ts->nsuggests > 0) {
-		rpmlog(RPMLOG_INFO, _("    Suggested resolutions:\n"));
-		for (i = 0; i < ts->nsuggests; i++) {
-		    const char * str = ts->suggests[i];
 
-		    if (str == NULL)
-			break;
-
-		    rpmlog(RPMLOG_INFO, "\t%s\n", str);
-		
-		    ts->suggests[i] = NULL;
-		    str = _free(str);
-		}
-		ts->suggests = _free(ts->suggests);
-	    }
+            if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST))
+                rpmtsPrintSuggests(ts);
 
 	}
 	ps = rpmpsFree(ps);
