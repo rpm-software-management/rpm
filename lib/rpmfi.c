@@ -22,7 +22,6 @@
 #include "legacy.h"     /* XXX domd5 */
 #include "misc.h"	/* XXX stripTrailingChar */
 #include "rpmmacro.h"	/* XXX rpmCleanPath */
-#include "legacy.h"
 
 #include "debug.h"
 
