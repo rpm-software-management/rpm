@@ -51,10 +51,6 @@ check_PROGRAMS += tglob
 tglob_SOURCES = tglob.c rpmio_internal.h
 tglob_LDADD = librpmio.la @WITH_POPT_LIB@
 
-check_PROGRAMS += tinv
-tinv_SOURCES = tinv.c
-tinv_LDADD = librpmio.la @WITH_POPT_LIB@
-
 check_PROGRAMS += tkey
 tkey_SOURCES = tkey.c rpmio_internal.h
 tkey_LDADD = librpmio.la @WITH_POPT_LIB@
