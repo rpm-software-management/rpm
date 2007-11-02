@@ -651,7 +651,7 @@ print (t)\
 	pgps +batchmode=on +verbose=0 +armor=off \
 	"+myname=%{_pgp_name}" -b %{__plaintext_filename} -o %{__signature_filename}
 
-# XXX rpm-4.1 verifies signatures using beecrypt.
+# XXX rpm >= 4.1 verifies signatures internally
 #%__gpg_verify_cmd		%{__gpg} \
 #	gpg --batch --no-verbose --verify --no-secmem-warning \
 #	%{__signature_filename} %{__plaintext_filename}

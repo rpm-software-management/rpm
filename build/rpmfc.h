@@ -62,13 +62,6 @@ typedef	enum FCOLOR_e FCOLOR_t;
 
 /**
  */
-struct rpmfcTokens_s {
-    const char * token;
-    int colors;
-};
-
-/**
- */
 typedef struct rpmfcTokens_s * rpmfcToken;
 
 /**

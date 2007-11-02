@@ -31,7 +31,7 @@ fprintf(stderr, "*** sig is\n%s\n", sig);
 	return rc;
     }
 
-    if ((enc = b64encode(dec, declen)) == NULL) {
+    if ((enc = b64encode(dec, declen, -1)) == NULL) {
 	fprintf(stderr, "*** b64encode failed\n");
 	return rc;
     }
@@ -50,18 +50,6 @@ fprintf(stderr, "??? %5d %02x != %02x '%c' != '%c'\n", i, (*s & 0xff), (*t & 0xf
 
     return rc;
 }
-
-/* FIPS-186 test vectors. */
-static const char * fips_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
-static const char * fips_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
-static const char * fips_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
-
-static const char * fips_hm = "a9993e364706816aba3e25717850c26c9cd0d89d";
-
-static const char * fips_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
-
-static const char * fips_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
-static const char * fips_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
 
 /* Secret key */
 static const char * jbjSecretDSA =
@@ -108,28 +96,6 @@ main (int argc, char *argv[])
 
     dig = pgpNewDig();
 
-    mpbzero(&dig->p);	mpbsethex(&dig->p, fips_p);
-    mpbzero(&dig->q);	mpbsethex(&dig->q, fips_q);
-    mpnzero(&dig->g);	mpnsethex(&dig->g, fips_g);
-    mpnzero(&dig->y);	mpnsethex(&dig->y, fips_y);
-    mpnzero(&dig->r);	mpnsethex(&dig->r, fips_r);
-    mpnzero(&dig->s);	mpnsethex(&dig->s, fips_s);
-    mpnzero(&dig->hm);	mpnsethex(&dig->hm, fips_hm);
-
-    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
-		&dig->y, &dig->r, &dig->s);
-
-fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
-
-    mpbfree(&dig->p);
-    mpbfree(&dig->q);
-    mpnfree(&dig->g);
-    mpnfree(&dig->y);
-
-    mpnfree(&dig->hm);
-    mpnfree(&dig->r);
-    mpnfree(&dig->s);
-
 fprintf(stderr, "=============================== GPG Secret Key\n");
     if ((rc = doit(jbjSecretDSA, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
@@ -144,39 +110,33 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	struct pgpDigParams_s * dsig = &dig->signature;
-	const char * digest = NULL;
+	void *digest = NULL;
 	size_t digestlen = 0;
 	const char * txt = "abc";
+	SECItem digitem;
 	
 	rpmDigestUpdate(ctx, txt, strlen(txt));
 	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
-	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
+	rpmDigestFinal(ctx, &digest, &digestlen, 0);
 
-	mpnzero(&dig->hm); mpnsethex(&dig->hm, digest);
+fprintf(stderr, "\n    hm = [ 160]: %s\n\n", pgpHexStr(digest, digestlen));
+	digitem.type = siBuffer;
+	digitem.data = digest;
+	digitem.len = digestlen;
 
-fprintf(stderr, "\n    hm = [ 160]: %s\n\n", digest);
+	rc = VFY_VerifyDigest(&digitem, dig->dsa, dig->dsasig, SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST, NULL);
 
 	if (digest) {
-	    free((void *)digest);
+	    free(digest);
 	    digest = NULL;
 	}
     }
 
-    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
-		&dig->y, &dig->r, &dig->s);
 
 fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
-
-    mpbfree(&dig->p);
-    mpbfree(&dig->q);
-    mpnfree(&dig->g);
-    mpnfree(&dig->y);
-
-    mpnfree(&dig->hm);
-    mpnfree(&dig->r);
-    mpnfree(&dig->s);
 
     dig = pgpFreeDig(dig);
 
     return rc;
 }
+

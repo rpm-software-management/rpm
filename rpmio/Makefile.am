@@ -2,7 +2,7 @@
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio
-AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
+AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_LUA_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
@@ -11,14 +11,14 @@ AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \
-	argv.c digest.c fts.c macro.c \
+	argv.c base64.c digest.c fts.c macro.c \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c url.c ugid.c \
 	rpmio_internal.h rpmlua.h rpmhook.h ugid.h fts.h rpmerr.h
 librpmio_la_LDFLAGS = -release 4.4
 librpmio_la_LIBADD = \
 	../misc/libmisc.la \
-	@WITH_BEECRYPT_LIB@ \
+	@WITH_NSS_LIB@ \
 	@WITH_LUA_LIB@ \
 	@WITH_MAGIC_LIB@ \
 	@WITH_BZ2_LIB@ \
@@ -50,10 +50,6 @@ thkp_LDADD = librpmio.la @WITH_POPT_LIB@
 check_PROGRAMS += tglob
 tglob_SOURCES = tglob.c rpmio_internal.h
 tglob_LDADD = librpmio.la @WITH_POPT_LIB@
-
-check_PROGRAMS += tinv
-tinv_SOURCES = tinv.c
-tinv_LDADD = librpmio.la @WITH_POPT_LIB@
 
 check_PROGRAMS += tkey
 tkey_SOURCES = tkey.c rpmio_internal.h

@@ -929,11 +929,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 		fddig->hashctx = NULL;
 		break;
 	    case PGPHASHALGO_SHA1:
-#if HAVE_BEECRYPT_API_H
 	    case PGPHASHALGO_SHA256:
 	    case PGPHASHALGO_SHA384:
 	    case PGPHASHALGO_SHA512:
-#endif
 		dig->sha1ctx = fddig->hashctx;
 		fddig->hashctx = NULL;
 		break;

@@ -518,11 +518,9 @@ assert(dig->md5ctx == NULL);
 	    fddig->hashctx = NULL;
 	    break;
 	case PGPHASHALGO_SHA1:
-#if HAVE_BEECRYPT_API_H
 	case PGPHASHALGO_SHA256:
 	case PGPHASHALGO_SHA384:
 	case PGPHASHALGO_SHA512:
-#endif
 assert(dig->sha1ctx == NULL);
 	    dig->sha1ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;

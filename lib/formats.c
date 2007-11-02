@@ -190,20 +190,16 @@ static char * base64Format(int32_t type, const void * data,
 	int lc;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	size_t ns = element;
-	size_t nt = ((ns + 2) / 3) * 4;
+	size_t nt = 0;
 
-	/* Add additional bytes necessary for eol string(s). */
-	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
-	    lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
-        if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
-            ++lc;
-	    nt += lc * strlen(b64encode_eolstr);
+	if ((enc = b64encode(data, ns, -1)) != NULL) {
+		nt = strlen(enc);
 	}
 
 	val = t = xmalloc(nt + padding + 1);
 
 	*t = '\0';
-	if ((enc = b64encode(data, ns)) != NULL) {
+	if (enc != NULL) {
 	    t = stpcpy(t, enc);
 	    enc = _free(enc);
 	}
@@ -277,10 +273,13 @@ static char * xmlFormat(int32_t type, const void * data,
 	xtag = "string";
 	break;
     case RPM_BIN_TYPE:
-    {	int cpl = b64encode_chars_per_line;
-	b64encode_chars_per_line = 0;
-	s = base64Format(type, data, formatPrefix, padding, element);
-	b64encode_chars_per_line = cpl;
+    {	
+	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
+	size_t ns = element;
+    	if ((s = b64encode(data, ns, 0)) == NULL) {
+    		/* XXX proper error handling would be better. */
+    		s = xcalloc(1, padding + (ns / 3) * 4 + 1);
+    	}
 	xtag = "base64";
     }	break;
     case RPM_CHAR_TYPE:

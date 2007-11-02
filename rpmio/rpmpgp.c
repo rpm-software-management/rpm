@@ -225,34 +225,95 @@ const char * pgpMpiHex(const byte *p)
 /**
  * @return		0 on success
  */
-static int pgpHexSet(const char * pre, int lbits,
-		mpnumber * mpn, const byte * p, const byte * pend)
+static int pgpMpiSet(const char * pre, int lbits,
+		void *dest, const byte * p, const byte * pend)
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
     unsigned int nbytes;
-    char * t;
+    char *t = dest;
     unsigned int ix;
 
     if ((p + ((mbits+7) >> 3)) > pend)
 	return 1;
 
+    if (mbits > lbits)
+	return 1;
+
     nbits = (lbits > mbits ? lbits : mbits);
     nbytes = ((nbits + 7) >> 3);
-    t = xmalloc(2*nbytes+1);
-    ix = 2 * ((nbits - mbits) >> 3);
+    ix = (nbits - mbits) >> 3;
 
 if (_debug)
-fprintf(stderr, "*** mbits %u nbits %u nbytes %u t %p[%d] ix %u\n", mbits, nbits, nbytes, t, (2*nbytes+1), ix);
-    if (ix > 0) memset(t, (int)'0', ix);
-    strcpy(t+ix, pgpMpiHex(p));
+fprintf(stderr, "*** mbits %u nbits %u nbytes %u ix %u\n", mbits, nbits, nbytes, ix);
+    if (ix > 0) memset(t, '\0', ix);
+    memcpy(t+ix, p+2, nbytes-ix);
 if (_debug)
-fprintf(stderr, "*** %s %s\n", pre, t);
-    (void) mpnsethex(mpn, t);
-    t = _free(t);
-if (_debug && _print)
-fprintf(stderr, "\t %s ", pre), mpfprintln(stderr, mpn->size, mpn->data);
+fprintf(stderr, "*** %s %s\n", pre, pgpHexStr(dest, nbytes));
+
     return 0;
+}
+
+/**
+ * @return		NULL on error
+ */
+static SECItem *pgpMpiItem(PRArenaPool *arena, SECItem *item, const byte *p)
+{
+    unsigned int nbytes = pgpMpiLen(p)-2;
+
+    if (item == NULL) {
+    	if ((item=SECITEM_AllocItem(arena, item, nbytes)) == NULL)
+    	    return item;
+    } else {
+    	if (arena != NULL)
+    	    item->data = PORT_ArenaGrow(arena, item->data, item->len, nbytes);
+    	else
+    	    item->data = PORT_Realloc(item->data, nbytes);
+    	
+    	if (item->data == NULL) {
+    	    if (arena == NULL)
+    		SECITEM_FreeItem(item, PR_TRUE);
+    	    return NULL;
+    	}
+    }
+
+    memcpy(item->data, p+2, nbytes);
+    item->len = nbytes;
+    return item;
+}
+/*@=boundswrite@*/
+
+static SECKEYPublicKey *pgpNewPublicKey(KeyType type)
+{
+    PRArenaPool *arena;
+    SECKEYPublicKey *key;
+    
+    arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
+    if (arena == NULL)
+	return NULL;
+    
+    key = PORT_ArenaZAlloc(arena, sizeof(SECKEYPublicKey));
+    
+    if (key == NULL) {
+	PORT_FreeArena(arena, PR_FALSE);
+	return NULL;
+    }
+    
+    key->keyType = type;
+    key->pkcs11ID = CK_INVALID_HANDLE;
+    key->pkcs11Slot = NULL;
+    key->arena = arena;
+    return key;
+}
+
+static SECKEYPublicKey *pgpNewRSAKey(void)
+{
+    return pgpNewPublicKey(rsaKey);
+}
+
+static SECKEYPublicKey *pgpNewDSAKey(void)
+{
+    return pgpNewPublicKey(dsaKey);
 }
 
 int pgpPrtSubType(const byte *h, unsigned int hlen, pgpSigType sigtype)
@@ -359,12 +420,22 @@ static const char * pgpSigDSA[] = {
     NULL,
 };
 
+#ifndef DSA_SUBPRIME_LEN
+#define DSA_SUBPRIME_LEN 20
+#endif
+
 static int pgpPrtSigParams(pgpTag tag, byte pubkey_algo, byte sigtype,
 		const byte *p, const byte *h, unsigned int hlen)
 {
     const byte * pend = h + hlen;
     int i;
+    SECItem dsaraw;
+    unsigned char dsabuf[2*DSA_SUBPRIME_LEN];
 
+    dsaraw.type = 0;
+    dsaraw.data = dsabuf;
+    dsaraw.len = sizeof(dsabuf);
+    
     for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 1) break;
@@ -373,9 +444,9 @@ static int pgpPrtSigParams(pgpTag tag, byte pubkey_algo, byte sigtype,
 	    {
 		switch (i) {
 		case 0:		/* m**d */
-		    (void) mpnsethex(&_dig->c, pgpMpiHex(p));
-if (_debug && _print)
-fprintf(stderr, "\t  m**d = "),  mpfprintln(stderr, _dig->c.size, _dig->c.data);
+		    _dig->rsasig = pgpMpiItem(NULL, _dig->rsasig, p);
+		    if (_dig->rsasig == NULL)
+			return 1;
 		    break;
 		default:
 		    break;
@@ -390,11 +461,21 @@ fprintf(stderr, "\t  m**d = "),  mpfprintln(stderr, _dig->c.size, _dig->c.data);
 		int xx;
 		xx = 0;
 		switch (i) {
-		case 0:		/* r */
-		    xx = pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p, pend);
+		case 0:
+		    memset(dsaraw.data, '\0', 2*DSA_SUBPRIME_LEN);
+				/* r */
+		    xx = pgpMpiSet(pgpSigDSA[i], DSA_SUBPRIME_LEN*8, dsaraw.data, p, pend);
 		    break;
 		case 1:		/* s */
-		    xx = pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p, pend);
+		    xx = pgpMpiSet(pgpSigDSA[i], DSA_SUBPRIME_LEN*8, dsaraw.data + DSA_SUBPRIME_LEN, p, pend);
+		    if (_dig->dsasig != NULL)
+		    	SECITEM_FreeItem(_dig->dsasig, PR_FALSE);
+		    else if ((_dig->dsasig=SECITEM_AllocItem(NULL, NULL, 0)) == NULL) {
+		        xx = 1;
+		        break;
+		    }
+		    if (DSAU_EncodeDerSig(_dig->dsasig, &dsaraw) != SECSuccess)
+		    	xx = 1;
 		    break;
 		default:
 		    xx = 1;
@@ -573,16 +654,17 @@ static const byte * pgpPrtPubkeyParams(byte pubkey_algo,
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 2) break;
 	    if (_dig) {
+		if (_dig->rsa == NULL) {
+		    _dig->rsa = pgpNewRSAKey();
+		    if (_dig->rsa == NULL)
+			break; /* error abort? */
+		}
 		switch (i) {
 		case 0:		/* n */
-		    (void) mpbsethex(&_dig->rsa_pk.n, pgpMpiHex(p));
-if (_debug && _print)
-fprintf(stderr, "\t     n = "),  mpfprintln(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
+		    pgpMpiItem(_dig->rsa->arena, &_dig->rsa->u.rsa.modulus, p);
 		    break;
 		case 1:		/* e */
-		    (void) mpnsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
-if (_debug && _print)
-fprintf(stderr, "\t     e = "),  mpfprintln(stderr, _dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
+		    pgpMpiItem(_dig->rsa->arena, &_dig->rsa->u.rsa.publicExponent, p);
 		    break;
 		default:
 		    break;
@@ -592,26 +674,23 @@ fprintf(stderr, "\t     e = "),  mpfprintln(stderr, _dig->rsa_pk.e.size, _dig->r
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (i >= 4) break;
 	    if (_dig) {
+		if (_dig->dsa == NULL) {
+		    _dig->dsa = pgpNewDSAKey();
+		    if (_dig->dsa == NULL)
+			break; /* error abort? */
+		}
 		switch (i) {
 		case 0:		/* p */
-		    (void) mpbsethex(&_dig->p, pgpMpiHex(p));
-if (_debug && _print)
-fprintf(stderr, "\t     p = "),  mpfprintln(stderr, _dig->p.size, _dig->p.modl);
+		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.params.prime, p);
 		    break;
 		case 1:		/* q */
-		    (void) mpbsethex(&_dig->q, pgpMpiHex(p));
-if (_debug && _print)
-fprintf(stderr, "\t     q = "),  mpfprintln(stderr, _dig->q.size, _dig->q.modl);
+		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.params.subPrime, p);
 		    break;
 		case 2:		/* g */
-		    (void) mpnsethex(&_dig->g, pgpMpiHex(p));
-if (_debug && _print)
-fprintf(stderr, "\t     g = "),  mpfprintln(stderr, _dig->g.size, _dig->g.data);
+		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.params.base, p);
 		    break;
 		case 3:		/* y */
-		    (void) mpnsethex(&_dig->y, pgpMpiHex(p));
-if (_debug && _print)
-fprintf(stderr, "\t     y = "),  mpfprintln(stderr, _dig->y.size, _dig->y.data);
+		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.publicValue, p);
 		    break;
 		default:
 		    break;
@@ -942,6 +1021,8 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 pgpDig pgpNewDig(void)
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
+    NSS_NoDB_Init(NULL);
+
     return dig;
 }
 
@@ -964,14 +1045,27 @@ void pgpCleanDig(pgpDig dig)
 
 	dig->md5 = _free(dig->md5);
 	dig->sha1 = _free(dig->sha1);
-	mpnfree(&dig->hm);
-	mpnfree(&dig->r);
-	mpnfree(&dig->s);
 
-	(void) rsapkFree(&dig->rsa_pk);
-	mpnfree(&dig->m);
-	mpnfree(&dig->c);
-	mpnfree(&dig->rsahm);
+	if (dig->dsa != NULL) {
+	    SECKEY_DestroyPublicKey(dig->dsa);
+	    dig->dsa = NULL;
+	}
+
+	if (dig->dsasig != NULL) {
+	    SECITEM_ZfreeItem(dig->dsasig, PR_TRUE);
+	    dig->dsasig = NULL;
+	}
+
+	if (dig->rsa != NULL) {
+	    SECKEY_DestroyPublicKey(dig->rsa);
+	    dig->rsa = NULL;
+	}
+
+	if (dig->rsasig != NULL) {
+	    SECITEM_ZfreeItem(dig->rsasig, PR_TRUE);
+	    dig->rsasig = NULL;
+	}
+
     }
     return;
 }
@@ -991,14 +1085,6 @@ pgpDig pgpFreeDig(pgpDig dig)
 	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
 	dig->sha1ctx = NULL;
 
-	mpbfree(&dig->p);
-	mpbfree(&dig->q);
-	mpnfree(&dig->g);
-	mpnfree(&dig->y);
-	mpnfree(&dig->hm);
-	mpnfree(&dig->r);
-	mpnfree(&dig->s);
-
 #ifdef	NOTYET
 	if (dig->hdrmd5ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
@@ -1008,12 +1094,6 @@ pgpDig pgpFreeDig(pgpDig dig)
 	if (dig->md5ctx != NULL)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
 	dig->md5ctx = NULL;
-
-	mpbfree(&dig->rsa_pk.n);
-	mpnfree(&dig->rsa_pk.e);
-	mpnfree(&dig->m);
-	mpnfree(&dig->c);
-	mpnfree(&dig->hm);
 
 	dig = _free(dig);
     }
@@ -1196,17 +1276,12 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 {
     const char * enc;
     char * t;
-    size_t nt;
+    size_t nt = 0;
     char * val;
-    int lc;
 
-    nt = ((ns + 2) / 3) * 4;
-    /* Add additional bytes necessary for eol string(s). */
-    if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
-	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
-       if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
-        ++lc;
-	nt += lc * strlen(b64encode_eolstr);
+    enc = b64encode(s, ns, -1);
+    if (enc != NULL) {
+    	nt = strlen(enc);
     }
 
     nt += 512;	/* XXX slop for armor and crc */
@@ -1216,9 +1291,9 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     t = stpcpy(t, "-----BEGIN PGP ");
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
     t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), VERSION);
-    t = stpcpy(t, " (beecrypt-4.1.2)\n\n");
+    t = stpcpy(t, " (NSS-3)\n\n");
 
-    if ((enc = b64encode(s, ns)) != NULL) {
+    if (enc != NULL) {
 	t = stpcpy(t, enc);
 	enc = _free(enc);
 	if ((enc = b64crc(s, ns)) != NULL) {

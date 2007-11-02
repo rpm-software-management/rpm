@@ -25,6 +25,24 @@
 
 #include "debug.h"
 
+/*! The structure used to store a macro. */
+struct rpmMacroEntry_s {
+    struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
+    const char *name;   /*!< Macro name. */
+    const char *opts;   /*!< Macro parameters (a la getopt) */
+    const char *body;   /*!< Macro body. */
+    int used;           /*!< No. of expansions. */
+    int level;          /*!< Scoping level. */
+};
+
+/*! The structure used to store the set of macros in a context. */
+struct rpmMacroContext_s {
+    rpmMacroEntry *macroTable;  /*!< Macro entry table for context. */
+    int macrosAllocated;/*!< No. of allocated macros. */
+    int firstFree;      /*!< No. of macros. */
+};
+
+
 static struct rpmMacroContext_s rpmGlobalMacroContext_s;
 rpmMacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
 
