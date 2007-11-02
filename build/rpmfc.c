@@ -51,6 +51,12 @@ struct rpmfc_s {
 
 };
 
+/**
+ */
+struct rpmfcTokens_s {
+    const char * token;
+    int colors;
+};  
 
 /**
  */
