@@ -5,6 +5,9 @@ The zlib library for compression support. You might also need/want
 the zip executable for java jar dependency analysis. All available from
     http://www.gzip.org/zlib/
 
+The NSS library for encryption. This is available from 
+    http://www.mozilla.org/projects/security/pki/nss/
+
 The Berkeley DB >= 4.3.x (4.5.x or newer recommended). RPM includes an
 internal copy which is used by default, but if you want to use an external
 BDB (--with-external-db) it's available at
