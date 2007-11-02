@@ -18,9 +18,7 @@
 extern "C" {
 #endif
 
-#if !defined(_BEECRYPT_API_H)
 typedef unsigned char byte;
-#endif	/* _BEECRYPT_API_H */
 
 /**
  */
@@ -1314,6 +1312,13 @@ unsigned int pgpCRC(const byte *octets, size_t len)
  * @return		duplicated digest context
  */
 DIGEST_CTX rpmDigestDup(DIGEST_CTX octx);
+
+/** \ingroup rpmio
+ * Obtain digest length in bytes.
+ * @param hashalgo	type of digest
+ * @return		digest length
+ */
+size_t rpmDigestLength(pgpHashAlgo hashalgo);
 
 /** \ingroup rpmio
  * Initialize digest.

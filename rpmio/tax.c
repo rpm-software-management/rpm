@@ -1,8 +1,6 @@
 #include "system.h"
                                                                                 
-#include <beecrypt/base64.h>
-#include <beecrypt/mpbarrett.h>
-#include <beecrypt/mp.h>
+#include "base64.h"
 #include <popt.h>
 
 #include "debug.h"

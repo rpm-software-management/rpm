@@ -4,7 +4,7 @@
  */
 #include "system.h"
 
-#include "rpmio_internal.h"	/* XXX for pgp and beecrypt */
+#include "rpmio_internal.h"	/* XXX for pgp */
 #include "rpmlib.h"
 #include "rpmmacro.h"		/* XXX rpmtsOpenDB() needs rpmGetPath */
 
@@ -483,7 +483,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktle
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
 	return RPMRC_FAIL;
 
-    if ((enc = b64encode(pkt, pktlen)) == NULL)
+    if ((enc = b64encode(pkt, pktlen, -1)) == NULL)
 	goto exit;
 
     dig = pgpNewDig();

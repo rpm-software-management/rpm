@@ -351,22 +351,32 @@ AC_CHECK_HEADERS([dwarf.h], [
 AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 
 #=================
-# Check for beecrypt library.
-WITH_BEECRYPT_INCLUDE=
-WITH_BEECRYPT_LIB=
-AC_CHECK_HEADERS([beecrypt/beecrypt.h], [
-  AC_CHECK_LIB(beecrypt, mpfprintln, [
-    AC_CHECK_HEADERS([beecrypt/api.h])
-    WITH_BEECRYPT_INCLUDE=
-    WITH_BEECRYPT_LIB="-lbeecrypt"
-  ],[
-    AC_MSG_ERROR([missing required library beecrypt])
+# Check for NSS library.
+WITH_NSS_INCLUDE=
+WITH_NSS_LIB=
+check=`pkg-config --version 2>/dev/null`
+if test -n "$check"; then
+  addlib=$(pkg-config --libs nss | sed 's/-lsmime3//;s/-lssl3//')
+  addcppflags=$(pkg-config --cflags nss)
+else
+# Without pkg-config, we'll kludge in some defaults
+  addlib="-lnss3 -lplds4 -lplc4 -lnspr4 -lpthread -ldl"
+  addcppflags="-I/usr/include/nss3 -I/usr/include/nspr4"
+fi
+save_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$save_CPPFLAGS $addcppflags"
+AC_CHECK_HEADER([nss3/nss.h], [
+  AC_CHECK_LIB(nss3, NSS_NoDB_Init, [
+    AC_DEFINE(HAVE_LIBNSS, 1, [Define to 1 if you have the 'NSS' library (-lnss3).])
+    WITH_NSS_INCLUDE="$addcppflags"
+    WITH_NSS_LIB="$addlib"
   ])
 ],[
-  AC_MSG_ERROR([missing required header beecrypt/beecrypt.h])
+  AC_MSG_ERROR([missing required header nss3/nss.h])
 ])
-AC_SUBST(WITH_BEECRYPT_INCLUDE)
-AC_SUBST(WITH_BEECRYPT_LIB)
+CPPFLAGS="$save_CPPFLAGS"
+AC_SUBST(WITH_NSS_INCLUDE)
+AC_SUBST(WITH_NSS_LIB)
 
 #=================
 # Check for magic library.

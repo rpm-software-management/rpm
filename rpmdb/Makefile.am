@@ -7,7 +7,7 @@ AM_CPPFLAGS += -I$(top_builddir)/rpmdb -I$(top_srcdir)/rpmdb
 AM_CPPFLAGS += -I$(top_srcdir)/build
 AM_CPPFLAGS += -I$(top_srcdir)/lib
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio
-AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
+AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += @WITH_SQLITE3_INCLUDE@
@@ -34,7 +34,7 @@ endif
 librpmdb_la_LDFLAGS = -release 4.4
 librpmdb_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_BEECRYPT_LIB@ \
+	@WITH_NSS_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
@@ -177,4 +177,4 @@ tdbi_LDADD = librpmdb.la
 
 check_PROGRAMS += tjfn
 tjfn_SOURCES = tjfn.c
-tjfn_LDADD = librpmdb.la @WITH_BEECRYPT_LIB@
+tjfn_LDADD = librpmdb.la @WITH_NSS_LIB@

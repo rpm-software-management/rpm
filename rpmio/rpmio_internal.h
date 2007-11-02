@@ -10,30 +10,14 @@
 #include "rpmio.h"
 #include "rpmurl.h"
 
-#if HAVE_BEECRYPT_API_H
-#include <beecrypt/api.h>
-#else
-#include <beecrypt/beecrypt.api.h>
-#endif
-
+#include "base64.h"
 #include "rpmpgp.h"
 #include "rpmsw.h"
 
-/* Drag in the beecrypt includes. */
-#include <beecrypt/beecrypt.h>
-#include <beecrypt/base64.h>
-#include <beecrypt/dsa.h>
-#include <beecrypt/endianness.h>
-#include <beecrypt/md5.h>
-#include <beecrypt/mp.h>
-#include <beecrypt/rsa.h>
-#include <beecrypt/rsapk.h>
-#include <beecrypt/sha1.h>
-#if HAVE_BEECRYPT_API_H
-#include <beecrypt/sha256.h>
-#include <beecrypt/sha384.h>
-#include <beecrypt/sha512.h>
-#endif
+#include <nss.h>
+#include <sechash.h>
+#include <keyhi.h>
+#include <cryptohi.h>
 
 /** \ingroup rpmio
  * Values parsed from OpenPGP signature/pubkey packet(s).
@@ -78,20 +62,13 @@ struct pgpDig_s {
     void * md5;			/*!< (rsa) V3 signature hash. */
     size_t md5len;		/*!< (rsa) V3 signature hash length. */
 
-    /* DSA parameters. */
-    mpbarrett p;
-    mpbarrett q;
-    mpnumber g;
-    mpnumber y;
-    mpnumber hm;
-    mpnumber r;
-    mpnumber s;
+    /* DSA parameters */
+    SECKEYPublicKey *dsa;
+    SECItem *dsasig;
 
-    /* RSA parameters. */
-    rsapk rsa_pk;
-    mpnumber m;
-    mpnumber c;
-    mpnumber rsahm;
+    /* RSA parameters */
+    SECKEYPublicKey *rsa;
+    SECItem *rsasig;
 };
 
 /** \ingroup rpmio

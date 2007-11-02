@@ -1093,9 +1093,10 @@ verifyRSASignature(rpmts ts, char * t,
     int32_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
-    const char * prefix = NULL;
+    SECOidTag sigalg;
     rpmRC res = RPMRC_OK;
     int xx;
+    SECItem digest;
 
     *t = '\0';
     if (dig != NULL && dig->hdrmd5ctx == md5ctx)
@@ -1125,43 +1126,40 @@ verifyRSASignature(rpmts ts, char * t,
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	t = stpcpy(t, " RSA/MD5");
-	prefix = "3020300c06082a864886f70d020505000410";
+	sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA1:
 	t = stpcpy(t, " RSA/SHA1");
-	prefix = "3021300906052b0e03021a05000414";
+	sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_RIPEMD160:
 	res = RPMRC_NOKEY;
-	prefix = NULL;
 	break;
     case PGPHASHALGO_MD2:
 	t = stpcpy(t, " RSA/MD2");
-	prefix = "3020300c06082a864886f70d020205000410";
+	sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_TIGER192:
 	res = RPMRC_NOKEY;
-	prefix = NULL;
 	break;
     case PGPHASHALGO_HAVAL_5_160:
 	res = RPMRC_NOKEY;
-	prefix = NULL;
 	break;
     case PGPHASHALGO_SHA256:
 	t = stpcpy(t, " RSA/SHA256");
-	prefix = "3031300d060960864801650304020105000420";
+	sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA384:
 	t = stpcpy(t, " RSA/SHA384");
-	prefix = "3041300d060960864801650304020205000430";
+	sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA512:
 	t = stpcpy(t, " RSA/SHA512");
-	prefix = "3051300d060960864801650304020305000440";
+	sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
 	break;
     default:
 	res = RPMRC_NOKEY;
-	prefix = NULL;
+	sigalg = SEC_OID_UNKNOWN;
 	break;
     }
 
@@ -1172,8 +1170,6 @@ verifyRSASignature(rpmts ts, char * t,
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
-	byte signhash16[2];
-	const char * s;
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
@@ -1190,40 +1186,18 @@ verifyRSASignature(rpmts ts, char * t,
 	}
 #endif
 
-	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
 	/* Compare leading 16 bits of digest for quick check. */
-	s = dig->md5;
-	signhash16[0] = (nibble(s[0]) << 4) | nibble(s[1]);
-	signhash16[1] = (nibble(s[2]) << 4) | nibble(s[3]);
-	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
+	if (memcmp(dig->md5, sigp->signhash16, 2)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
-    }
-
-    /* Generate RSA modulus parameter. */
-    {	unsigned int nbits = MP_WORDS_TO_BITS(dig->c.size);
-	unsigned int nb = (nbits + 7) >> 3;
-	const char * hexstr;
-	char * tt;
-
-assert(prefix != NULL);
-	hexstr = tt = xmalloc(2 * nb + 1);
-	memset(tt, 'f', (2 * nb));
-	tt[0] = '0'; tt[1] = '0';
-	tt[2] = '0'; tt[3] = '1';
-	tt += (2 * nb) - strlen(prefix) - strlen(dig->md5) - 2;
-	*tt++ = '0'; *tt++ = '0';
-	tt = stpcpy(tt, prefix);
-	tt = stpcpy(tt, dig->md5);
-
-	mpnzero(&dig->rsahm);	(void) mpnsethex(&dig->rsahm, hexstr);
-
-	hexstr = _free(hexstr);
-
+	digest.type = siBuffer;
+	digest.data = dig->md5;
+	digest.len = dig->md5len;
     }
 
     /* Retrieve the matching public key. */
@@ -1232,12 +1206,7 @@ assert(prefix != NULL);
 	goto exit;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
-#if HAVE_BEECRYPT_API_H
-    xx = rsavrfy(&dig->rsa_pk.n, &dig->rsa_pk.e, &dig->c, &dig->rsahm);
-#else
-    xx = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
-#endif
-    if (xx)
+    if (VFY_VerifyDigest(&digest, dig->rsa, dig->rsasig, sigalg, NULL) == SECSuccess)
 	res = RPMRC_OK;
     else
 	res = RPMRC_FAIL;
@@ -1274,6 +1243,7 @@ verifyDSASignature(rpmts ts, char * t,
     pgpDigParams sigp = rpmtsSignature(ts);
     rpmRC res;
     int xx;
+    SECItem digest;
 
     *t = '\0';
     if (dig != NULL && dig->hdrsha1ctx == sha1ctx)
@@ -1301,7 +1271,6 @@ verifyDSASignature(rpmts ts, char * t,
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
-	byte signhash16[2];
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
@@ -1315,19 +1284,18 @@ verifyDSASignature(rpmts ts, char * t,
 	    memcpy(trailer+2, &nb, sizeof(nb));
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
-	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
-	mpnzero(&dig->hm);	(void) mpnsethex(&dig->hm, dig->sha1);
-
 	/* Compare leading 16 bits of digest for quick check. */
-	signhash16[0] = (*dig->hm.data >> 24) & 0xff;
-	signhash16[1] = (*dig->hm.data >> 16) & 0xff;
-	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
+	if (memcmp(dig->sha1, sigp->signhash16, 2)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
+	digest.type = siBuffer;
+	digest.data = dig->sha1;
+	digest.len = dig->sha1len;
     }
 
     /* Retrieve the matching public key. */
@@ -1336,8 +1304,8 @@ verifyDSASignature(rpmts ts, char * t,
 	goto exit;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
-    if (dsavrfy(&dig->p, &dig->q, &dig->g,
-		&dig->hm, &dig->y, &dig->r, &dig->s))
+    if (VFY_VerifyDigest(&digest, dig->dsa, dig->dsasig,
+    		SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST, NULL) == SECSuccess)
 	res = RPMRC_OK;
     else
 	res = RPMRC_FAIL;

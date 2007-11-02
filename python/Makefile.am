@@ -10,7 +10,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/lib
 AM_CPPFLAGS += -I$(top_srcdir)/rpmdb
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio
 AM_CPPFLAGS += @WITH_LIBELF_INCLUDE@
-AM_CPPFLAGS += @WITH_BEECRYPT_INCLUDE@
+AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
@@ -24,7 +24,7 @@ _rpmmodule_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_BEECRYPT_LIB@ \
+	@WITH_NSS_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_LIBELF_LIB@ \
 	@WITH_PYTHON_LIB@
