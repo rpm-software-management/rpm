@@ -1,5 +1,6 @@
 #include "system.h"
                                                                                 
+#include "rpmpgp.h"
 #include "base64.h"
 #include <popt.h>
 
@@ -31,43 +32,6 @@ AjjDx3lJnQBXUDmxM484YXLXZjWFXCiY8GJt6whjf7/2c3rIoT3Z7PQpEvPmM\
 1MXU9cv4NL59Y/q0OAVQ38foOz7eGAhfvjOsCnHU25aik7/7ToIYt1tyVtap/kA==\
 ";
 
-/**
- * Convert to hex.
- * @param t		target buffer (returned)
- * @param s		source bytes
- * @param nbytes	no. of bytes
- * @return		target buffer
- */
-static inline
-char * pgpHexCvt(char *t, const byte *s, int nbytes)
-{
-    static char hex[] = "0123456789abcdef";
-    while (nbytes-- > 0) {
-	unsigned int i;
-	i = *s++;
-	*t++ = hex[ (i >> 4) & 0xf ];
-	*t++ = hex[ (i     ) & 0xf ];
-    }
-    *t = '\0';
-    return t;
-}
-
-/**
- * Return hex formatted representation of bytes.
- * @todo Remove static buffer. 
- * @param p		bytes
- * @param plen		no. of bytes
- * @return		hex formatted string
- */
-static inline
-char * pgpHexStr(const byte *p, unsigned int plen)
-{
-    static char prbuf[2048];
-    char *t = prbuf;
-    t = pgpHexCvt(t, p, plen);
-    return prbuf;
-}
-
 static int doit(const char * msg, const char * sig)
 {
     unsigned char * dec;
@@ -79,7 +43,7 @@ static int doit(const char * msg, const char * sig)
 	return rc;
     }
 
-    fprintf(stderr, "*** %p[%d] %s\n", dec, declen, msg);
+    fprintf(stderr, "*** %p[%zd] %s\n", dec, declen, msg);
     if (declen == 256) {
 	fprintf(stderr, "%s\n", pgpHexStr(dec, declen/2));
 	fprintf(stderr, "%s\n", pgpHexStr(dec+declen/2, declen/2));
@@ -99,4 +63,5 @@ main (int argc, char *argv[])
     doit("rsaaeskey", rsaaeskey);
     doit("aesiv", aesiv);
     doit("appleresponse", appleresponse);
+    return 0;
 }
