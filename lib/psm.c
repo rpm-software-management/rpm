@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
+#include "rpmio_internal.h"	/* FDSTAT_*, fdsta_op */
 #include "rpmlib.h"
 #include "rpmmacro.h"
 #include "rpmurl.h"

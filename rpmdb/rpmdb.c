@@ -14,7 +14,9 @@
 
 #include <regex.h>
 
-#include "rpmio_internal.h"
+#include "rpmurl.h"
+#include "rpmpgp.h"
+#include "rpmio_internal.h"	/* XXX for base64, pgpDig*_s (signid) */
 #include "rpmmacro.h"
 #include "rpmsq.h"
 

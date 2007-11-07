@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
+#include "rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
 #include "rpmbuild.h"
 
 #include "rpmps.h"

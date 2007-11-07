@@ -5,7 +5,8 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"
+#include "rpmpgp.h"
+#include "rpmio_internal.h"	/* for fd digest stuff, pgpDig*_s */
 #include "rpmcli.h"
 
 #include "rpmdb.h"

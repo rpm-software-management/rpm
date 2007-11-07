@@ -17,7 +17,8 @@
 
 #endif
 
-#include "rpmio_internal.h"
+#include "rpmurl.h"
+#include "rpmio_internal.h"	/* XXX fdInitDigest, fdFiniDigest */
 #include "rpmlead.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"

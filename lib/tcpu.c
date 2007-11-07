@@ -1,5 +1,4 @@
 #include "system.h"
-#include "rpmio_internal.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"
 #include "debug.h"
@@ -176,7 +175,6 @@ int main (int argc, char *argv[])
 
     int rc;
 
-_rpmio_debug = 0;
     rc = rpmCpuinfo();
 
     return rc;
