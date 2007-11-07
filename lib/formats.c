@@ -187,7 +187,6 @@ static char * base64Format(int32_t type, const void * data,
     } else {
 	const char * enc;
 	char * t;
-	int lc;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	size_t ns = element;
 	size_t nt = 0;
