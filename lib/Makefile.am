@@ -88,6 +88,3 @@ check_PROGRAMS += tgi
 tgi_SOURCES = tgi.c
 tgi_LDADD = librpm.la
 
-check_PROGRAMS += tufdio
-tufdio_SOURCES = tufdio.c
-tufdio_LDADD = librpm.la
