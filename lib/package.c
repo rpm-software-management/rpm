@@ -966,8 +966,13 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
-	/* Convert legacy headers on the fly ... */
-	legacyRetrofit(h, l);
+	/* 
+         * Convert legacy headers on the fly. Not having "new" style compressed
+         * filenames is close enough estimate for legacy indication... 
+         */
+	if (!headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	    legacyRetrofit(h, l);
+	}
 	
 	/* Append (and remap) signature tags to the metadata. */
 	headerMergeLegacySigs(h, sigh);
