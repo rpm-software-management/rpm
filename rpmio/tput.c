@@ -108,7 +108,7 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = poptGetContext(argv[0], argc, (const char **) argv, optionsTable, 0);
     int rc;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {

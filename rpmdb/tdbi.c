@@ -58,7 +58,7 @@ main(int argc, char *argv[])
 	}
 	kval = key.data;
 	klen = key.size;
-	printf("%3d %.*s\t%p[%d]\n", nrecs, klen, kval, data.data, data.size);
+	printf("%3d %.*s\t%p[%d]\n", nrecs, (int) klen, kval, data.data, data.size);
 
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));

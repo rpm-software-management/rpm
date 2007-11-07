@@ -21,13 +21,14 @@ static char * dirpath = DIRPATH;
 static void readFile(const char * path)
 {
     FD_t fd;
+    int xx;
 
 fprintf(stderr, "===== %s\n", path);
     fd = Fopen(path, "r.ufdio");
     if (fd != NULL) {
 	char buf[BUFSIZ];
 	size_t len = Fread(buf, 1, sizeof(buf), fd);
-	int xx = Fclose(fd);
+	xx = Fclose(fd);
 
 	if (len > 0)
 	    fwrite(buf, 1, len, stderr);
@@ -48,7 +49,7 @@ static struct poptOption optionsTable[] = {
 int
 main(int argc, char *argv[])
 {
-    poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
+    poptContext optCon = poptGetContext(argv[0], argc, (const char **) argv, optionsTable, 0);
     int rc;
 
     while ((rc = poptGetNextOpt(optCon)) > 0) {

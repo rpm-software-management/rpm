@@ -295,7 +295,7 @@ main(int argc, char *argv[])
 
     _depends_debug = 1;
 
-    optCon = poptGetContext("rpmsort", argc, argv, optionsTable, 0);
+    optCon = poptGetContext("rpmsort", argc, (const char **) argv, optionsTable, 0);
 #if RPM_USES_POPTREADDEFAULTCONFIG
     poptReadDefaultConfig(optCon, 1);
 #endif

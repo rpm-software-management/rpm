@@ -27,7 +27,7 @@ static int rpmPlatform(void)
 	goto exit;
     }
 
-    p = b;
+    p = (char *) b;
     for (pe = p; p && *p; p = pe) {
 	pe = strchr(p, '\n');
 	if (pe)

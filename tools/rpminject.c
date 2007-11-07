@@ -231,9 +231,9 @@ Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
 	}
 
 	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-	    free(vals);
+	    _free(vals);
 	if (nvals)
-	    free(nvals);
+	    _free(nvals);
     }
 
     headerFreeIterator(headerIter);
