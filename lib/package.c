@@ -693,18 +693,6 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     if (hdrp) *hdrp = NULL;
 
-#ifdef	DYING
-    {	struct stat st;
-	memset(&st, 0, sizeof(st));
-	(void) fstat(Fileno(fd), &st);
-	/* if fd points to a socket, pipe, etc, st.st_size is *always* zero */
-	if (S_ISREG(st.st_mode) && st.st_size < sizeof(*l)) {
-	    rc = RPMRC_NOTFOUND;
-	    goto exit;
-	}
-    }
-#endif
-
     memset(l, 0, sizeof(*l));
     rc = readLead(fd, l);
     if (rc != RPMRC_OK)
