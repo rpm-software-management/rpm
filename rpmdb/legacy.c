@@ -21,7 +21,7 @@
 #include "rpmlead.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"
-#include "misc.h"
+#include "misc.h"	/* XXX stripTrailingChar */
 #include "legacy.h"
 #include "debug.h"
 

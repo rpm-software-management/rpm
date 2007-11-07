@@ -28,7 +28,7 @@
 #include "cpio.h"
 #include "fprint.h"
 #include "legacy.h"	/* XXX domd5 */
-#include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
+#include "misc.h" /* XXX (free)splitString, currentDirectory */
 
 #include "debug.h"
 

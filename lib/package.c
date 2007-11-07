@@ -11,7 +11,6 @@
 
 #include "rpmts.h"
 
-#include "misc.h"	/* XXX stripTrailingChar() */
 #include "legacy.h"	/* XXX legacyRetrofit() */
 #include "rpmlead.h"
 

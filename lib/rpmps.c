@@ -8,7 +8,6 @@
 
 #include "rpmps.h"
 
-#include "misc.h"
 #include "debug.h"
 
 /**

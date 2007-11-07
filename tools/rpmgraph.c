@@ -11,7 +11,6 @@ const char *__progname;
 #include "rpmts.h"
 
 #include "manifest.h"
-#include "misc.h"		/* rpmGlob */
 #include "rpmerr.h"
 #include "debug.h"
 

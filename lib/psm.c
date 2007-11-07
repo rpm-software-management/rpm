@@ -29,7 +29,7 @@
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "legacy.h"		/* XXX rpmfiBuildFNames() */
-#include "misc.h"		/* XXX stripTrailingChar() */
+#include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "rpmerr.h"
 #include "debug.h"
