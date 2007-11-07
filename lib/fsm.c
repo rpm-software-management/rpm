@@ -536,7 +536,8 @@ int fsmTeardown(FSM_t fsm)
 static int fsmMapFContext(FSM_t fsm)
 {
     rpmts ts = fsmGetTs(fsm);
-    struct stat * st = &fsm->sb;
+    struct stat * st;
+    st = &fsm->sb;
 
     /*
      * Find file security context (if not disabled).
