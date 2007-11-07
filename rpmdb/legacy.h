@@ -6,8 +6,6 @@
  *
  */
 
-#include "rpmlead.h"
-
 /**
  */
 extern int _noDirTokens;
@@ -67,11 +65,10 @@ void expandFilelist(Header h);
 void providePackageNVR(Header h);
 
 /**
- * Do all necessary retorfits for a package header.
+ * Do all necessary retrofits for a package header.
  * @param h		header
- * @param lead
  */
-void legacyRetrofit(Header h, const struct rpmlead * lead);
+void legacyRetrofit(Header h);
 
 #ifdef __cplusplus
 }

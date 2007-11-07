@@ -19,7 +19,6 @@
 
 #include "rpmurl.h"
 #include "rpmio_internal.h"	/* XXX fdInitDigest, fdFiniDigest */
-#include "rpmlead.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"
 #include "misc.h"	/* XXX stripTrailingChar */
@@ -491,7 +490,7 @@ exit:
     }
 }
 
-void legacyRetrofit(Header h, const struct rpmlead * lead)
+void legacyRetrofit(Header h)
 {
     const char * prefix;
 
@@ -524,16 +523,15 @@ void legacyRetrofit(Header h, const struct rpmlead * lead)
      * speed boost (very nice). Go ahead and convert old headers to
      * the new style (this is a noop for new headers).
      */
-    if (lead->major < 4)
-	compressFilelist(h);
+     compressFilelist(h);
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-    if (lead->type == RPMLEAD_SOURCE) {
+    if (!headerIsEntry(h, RPMTAG_SOURCERPM)) {
 	int32_t one = 1;
 	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	    (void) headerAddEntry(h, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
 				&one, 1);
-    } else if (lead->major < 4) {
+    } else {
 	/* Retrofit "Provide: name = EVR" for binary packages. */
 	providePackageNVR(h);
     }

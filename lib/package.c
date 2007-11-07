@@ -971,7 +971,7 @@ exit:
          * filenames is close enough estimate for legacy indication... 
          */
 	if (!headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	    legacyRetrofit(h, l);
+	    legacyRetrofit(h);
 	}
 	
 	/* Append (and remap) signature tags to the metadata. */
