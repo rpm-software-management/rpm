@@ -118,6 +118,14 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
     { "buildos", 0, 1 }
 };
 
+/* XXX get rid of this stuff... */
+/* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
+#define RPMVAR_OPTFLAGS                 3
+#define RPMVAR_INCLUDE                  43
+#define RPMVAR_MACROFILES               49
+
+#define RPMVAR_NUM                      55      /* number of RPMVAR entries */
+
 /* this *must* be kept in alphabetical order */
 /* The order of the flags is archSpecific, required, macroize, localize */
 
@@ -1253,7 +1261,7 @@ const char * rpmGetVarArch(int var, const char * arch)
     return next ? next->value : NULL;
 }
 
-const char *rpmGetVar(int var)
+static const char *rpmGetVar(int var)
 {
     return rpmGetVarArch(var, NULL);
 }
@@ -1273,7 +1281,7 @@ static void freeRpmVar(struct rpmvarValue * orig)
     }
 }
 
-void rpmSetVar(int var, const char * val)
+static void rpmSetVar(int var, const char * val)
 {
     freeRpmVar(&values[var]);
     values[var].value = (val ? xstrdup(val) : NULL);

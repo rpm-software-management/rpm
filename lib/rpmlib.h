@@ -508,27 +508,6 @@ typedef	enum rpmsenseFlags_e {
 /* ==================================================================== */
 /** \name RPMRC */
 
-/* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
-#define	RPMVAR_OPTFLAGS			3
-#define	RPMVAR_INCLUDE			43
-#define	RPMVAR_MACROFILES		49
-
-#define	RPMVAR_NUM			55	/* number of RPMVAR entries */
-
-/** \ingroup rpmrc
- * Return value of an rpmrc variable.
- * @deprecated Use rpmExpand() with appropriate macro expression.
- * @todo Eliminate from API.
- */
-extern const char * rpmGetVar(int var);
-
-/** \ingroup rpmrc
- * Set value of an rpmrc variable.
- * @deprecated Use rpmDefineMacro() to change appropriate macro instead.
- * @todo Eliminate from API.
- */
-void rpmSetVar(int var, const char * val);
-
 /** \ingroup rpmrc
  * Build and install arch/os table identifiers.
  * @todo Eliminate from API.
