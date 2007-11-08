@@ -579,17 +579,6 @@ int rpmShowRC(FILE * fp);
 void rpmSetTables(int archTable, int osTable);
 
 /** \ingroup rpmrc
- * Return current arch/os names.
- * @deprecated Use rpmExpand on _target_* macros.
- * @todo Eliminate from API.
- *
- * @retval arch		address of arch name (or NULL)
- * @retval os		address of os name (or NULL)
- */
-void rpmGetMachine( const char **arch,
-		const char **os);
-
-/** \ingroup rpmrc
  * Destroy rpmrc arch/os compatibility tables.
  * @todo Eliminate from API.
  */

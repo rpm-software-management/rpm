@@ -1321,15 +1321,6 @@ int rpmMachineScore(int type, const char * name)
     return (info != NULL ? info->score : 0);
 }
 
-void rpmGetMachine(const char ** arch, const char ** os)
-{
-    if (arch)
-	*arch = current[ARCH];
-
-    if (os)
-	*os = current[OS];
-}
-
 /** \ingroup rpmrc
  * Set current arch/os names.
  * NULL as argument is set to the default value (munged uname())
