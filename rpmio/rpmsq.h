@@ -30,6 +30,8 @@ typedef void (*rpmsqAction_t) (int signum, void * info, void * context);
 
 extern int _rpmsq_debug;
 
+/* XXX make this fully opaque? */
+#if defined(_RPMSQ_INTERNAL)
 /**
  * SIGCHLD queue element.
  */
@@ -47,6 +49,7 @@ struct rpmsqElem {
     pthread_mutex_t mutex;	/*!< Signal delivery to thread condvar. */
     pthread_cond_t cond;
 };
+#endif /* _RPMSQ_INTERNAL */
 
 extern rpmsq rpmsqQueue;
 

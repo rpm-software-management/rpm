@@ -63,6 +63,7 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #endif	/* HAVE_PTHREAD_H */
 
+#define _RPMSQ_INTERNAL
 #include "rpmsq.h"
 
 #include "debug.h"
