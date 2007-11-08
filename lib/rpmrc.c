@@ -423,18 +423,16 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
-static void setVarDefault(int var, const char * macroname, const char * val,
+static void addMacroDefault(const char * macroname, const char * val,
 		const char * body)
 {
-    assert(!(var >= 0)); /* must not happen */
     if (body == NULL)
 	body = val;
     addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
 }
 
-static void setPathDefault(int var, const char * macroname, const char * subdir)
+static void setPathDefault(const char * macroname, const char * subdir)
 {
-    assert(!(var >= 0)); /* must not happen */
 
     if (macroname != NULL) {
 #define	_TOPDIRMACRO	"%{_topdir}/"
@@ -471,30 +469,30 @@ static void setDefaults(void)
 
     addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
 
-    setVarDefault(-1,			"_topdir",
+    addMacroDefault("_topdir",
 		"/usr/src/packages",	"%{_usrsrc}/packages");
-    setVarDefault(-1,			"_tmppath",
+    addMacroDefault("_tmppath",
 		LOCALSTATEDIR "/tmp",		"%{_var}/tmp");
-    setVarDefault(-1,			"_dbpath",
+    addMacroDefault("_dbpath",
 		LOCALSTATEDIR "/lib/rpm",		"%{_var}/lib/rpm");
-    setVarDefault(-1,			"_defaultdocdir",
+    addMacroDefault("_defaultdocdir",
 		"/usr/doc",		"%{_usr}/doc");
 
-    setVarDefault(-1,			"_rpmfilename",
+    addMacroDefault("_rpmfilename",
 	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
 
-    setVarDefault(-1,			"optflags",
+    addMacroDefault("optflags",
 		"-O2",			NULL);
-    setVarDefault(-1,			"sigtype",
+    addMacroDefault("sigtype",
 		"none",			NULL);
-    setVarDefault(-1,			"_buildshell",
+    addMacroDefault("_buildshell",
 		"/bin/sh",		NULL);
 
-    setPathDefault(-1,			"_builddir",	"BUILD");
-    setPathDefault(-1,			"_rpmdir",	"RPMS");
-    setPathDefault(-1,			"_srcrpmdir",	"SRPMS");
-    setPathDefault(-1,			"_sourcedir",	"SOURCES");
-    setPathDefault(-1,			"_specdir",	"SPECS");
+    setPathDefault("_builddir",	"BUILD");
+    setPathDefault("_rpmdir",	"RPMS");
+    setPathDefault("_srcrpmdir",	"SRPMS");
+    setPathDefault("_sourcedir",	"SOURCES");
+    setPathDefault("_specdir",	"SPECS");
 
 }
 
