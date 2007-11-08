@@ -5,8 +5,6 @@
 #include "system.h"
 #include "rpmlib.h"
 
-#include "psm.h"
-
 #include "rpmds.h"
 #include "rpmfi.h"
 
