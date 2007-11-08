@@ -401,15 +401,6 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     if (pkgidp)
 	*pkgidp = NULL;
 
-#ifdef	DYING
-    if (Fileno(csa->cpioFdIn) < 0) {
-	csa->cpioArchiveSize = 0;
-	/* Add a bogus archive size to the Header */
-	(void) headerAddEntry(h, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
-		&csa->cpioArchiveSize, 1);
-    }
-#endif
-
     /* Binary packages now have explicit Provides: name = version-release. */
     if (type == RPMLEAD_BINARY)
 	providePackageNVR(h);
@@ -491,40 +482,6 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     if (rc)
 	goto exit;
-
-#ifdef	DYING
-    /*
-     * Set the actual archive size, and rewrite the header.
-     * This used to be done using headerModifyEntry(), but now that headers
-     * have regions, the value is scribbled directly into the header data
-     * area. Some new scheme for adding the final archive size will have
-     * to be devised if headerGetEntryMinMemory() ever changes to return
-     * a pointer to memory not in the region, probably by appending
-     * the archive size to the header region rather than including the
-     * archive size within the header region.
-     */
-    if (Fileno(csa->cpioFdIn) < 0) {
-	HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-	int32_t * archiveSize;
-	if (hge(h, RPMTAG_ARCHIVESIZE, NULL, (void *)&archiveSize, NULL))
-	    *archiveSize = csa->cpioArchiveSize;
-    }
-
-    (void) Fflush(fd);
-    if (Fseek(fd, 0, SEEK_SET) == -1) {
-	rc = RPMERR_FSEEK;
-	rpmlog(RPMERR_FSEEK, _("%s: Fseek failed: %s\n"),
-			sigtarget, Fstrerror(fd));
-    }
-
-    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
-	rc = RPMERR_NOSPACE;
-	rpmlog(RPMERR_NOSPACE, _("Unable to write final header\n"));
-    }
-    (void) Fflush(fd);
-    fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
-#endif
 
     (void) Fclose(fd);
     fd = NULL;
