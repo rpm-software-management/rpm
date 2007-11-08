@@ -1266,27 +1266,6 @@ static const char *rpmGetVar(int var)
     return rpmGetVarArch(var, NULL);
 }
 
-/* this doesn't free the passed pointer! */
-static void freeRpmVar(struct rpmvarValue * orig)
-{
-    struct rpmvarValue * next, * var = orig;
-
-    while (var) {
-	next = var->next;
-	var->arch = _free(var->arch);
-	var->value = _free(var->value);
-
-	if (var != orig) var = _free(var);
-	var = next;
-    }
-}
-
-static void rpmSetVar(int var, const char * val)
-{
-    freeRpmVar(&values[var]);
-    values[var].value = (val ? xstrdup(val) : NULL);
-}
-
 static void rpmSetVarArch(int var, const char * val, const char * arch)
 {
     struct rpmvarValue * next = values + var;
