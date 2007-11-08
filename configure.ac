@@ -27,7 +27,9 @@ AC_PROG_YACC
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$GCC" = yes; then
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wno-char-subscripts"
+    # XXX disabled for now due to noise from NSPR headers
+    # CFLAGS="$CFLAGS -Wstrict-prototypes"
     cflags_to_try="-fno-strict-aliasing"
     AC_MSG_CHECKING([supported compiler flags])
     old_cflags=$CFLAGS
