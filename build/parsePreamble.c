@@ -207,16 +207,8 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
  */
 static int checkForValidArchitectures(rpmSpec spec)
 {
-#ifndef	DYING
-    const char *arch = NULL;
-    const char *os = NULL;
-
-    rpmGetArchInfo(&arch, NULL);
-    rpmGetOsInfo(&os, NULL);
-#else
     const char *arch = rpmExpand("%{_target_cpu}", NULL);
     const char *os = rpmExpand("%{_target_os}", NULL);
-#endif
     
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUDEARCH) == 1) {
@@ -238,6 +230,9 @@ static int checkForValidArchitectures(rpmSpec spec)
 	rpmlog(RPMERR_BADSPEC, _("OS is not included: %s\n"), os);
 	return RPMERR_BADSPEC;
     }
+
+    arch = _free(arch);
+    os = _free(os);
 
     return 0;
 }
