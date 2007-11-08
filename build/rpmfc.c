@@ -1360,18 +1360,9 @@ static struct DepMsg_s depMsgs[] = {
   { "Provides",		{ "%{?__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
 	0, -1 },
-#ifdef	DYING
-  { "PreReq",		{ NULL, NULL, NULL, NULL },
-	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
-	RPMSENSE_PREREQ, 0 },
-  { "Requires(interp)",	{ NULL, "interp", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	_notpre(RPMSENSE_INTERP), 0 },
-#else
   { "Requires(interp)",	{ NULL, "interp", NULL, NULL },
 	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_INTERP), 0 },
-#endif
   { "Requires(rpmlib)",	{ NULL, "rpmlib", NULL, NULL },
 	-1, -1, RPMTAG_REQUIREFLAGS,
 	_notpre(RPMSENSE_RPMLIB), 0 },
