@@ -369,7 +369,11 @@ if (fileURL[0] == '=') {
 		if (!(rootDir && * rootDir))
 		    rootDir = "";
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
+#if defined(HAVE_MKSTEMP)
+		(void) close(mkstemp(tfnbuf));
+#else
 		(void) mktemp(tfnbuf);
+#endif
 		tfn = rpmGenPath(rootDir, "%{_tmppath}/", tfnbuf);
 	    }
 
