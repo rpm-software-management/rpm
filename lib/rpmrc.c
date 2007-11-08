@@ -1330,7 +1330,18 @@ void rpmGetMachine(const char ** arch, const char ** os)
 	*os = current[OS];
 }
 
-void rpmSetMachine(const char * arch, const char * os)
+/** \ingroup rpmrc
+ * Set current arch/os names.
+ * NULL as argument is set to the default value (munged uname())
+ * pushed through a translation table (if appropriate).
+ * @deprecated Use addMacro to set _target_* macros.
+ * @todo Eliminate 
+ *
+ * @param arch          arch name (or NULL)
+ * @param os            os name (or NULL)
+ *          */
+
+static void rpmSetMachine(const char * arch, const char * os)
 {
     const char * host_cpu, * host_os;
 

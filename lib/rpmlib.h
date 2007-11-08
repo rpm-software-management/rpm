@@ -579,18 +579,6 @@ int rpmShowRC(FILE * fp);
 void rpmSetTables(int archTable, int osTable);
 
 /** \ingroup rpmrc
- * Set current arch/os names.
- * NULL as argument is set to the default value (munged uname())
- * pushed through a translation table (if appropriate).
- * @deprecated Use addMacro to set _target_* macros.
- * @todo Eliminate from API.
- *
- * @param arch		arch name (or NULL)
- * @param os		os name (or NULL)
- */
-void rpmSetMachine(const char * arch, const char * os);
-
-/** \ingroup rpmrc
  * Return current arch/os names.
  * @deprecated Use rpmExpand on _target_* macros.
  * @todo Eliminate from API.
