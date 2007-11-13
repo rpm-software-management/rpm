@@ -510,6 +510,8 @@ AC_HEADER_MAJOR
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 
+AC_CHECK_HEADERS(locale.h)
+
 AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
 AC_CHECK_HEADERS(sys/ipc.h sys/socket.h sys/select.h)
