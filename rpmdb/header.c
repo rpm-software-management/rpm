@@ -1453,7 +1453,7 @@ static int copyEntry(const indexEntry entry,
 	    /*@=sizeoftype@*/
 /*@=bounds@*/
 
-	    rc = regionSwab(NULL, ril, 0, pe, dataStart, NULL, 0);
+	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataStart + rdl, 0);
 	    /* XXX 1 on success. */
 	    rc = (rc < 0) ? 0 : 1;
 	} else {
