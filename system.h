@@ -314,7 +314,7 @@ extern const char *__progname;
 
 #if ENABLE_NLS
 # include <libintl.h>
-# define _(Text) gettext (Text)
+# define _(Text) dgettext (PACKAGE, Text)
 #else
 # undef bindtextdomain
 # define bindtextdomain(Domain, Directory) /* empty */
