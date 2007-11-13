@@ -335,7 +335,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 #undef _verifylink
 #undef _verify
 
-	    sprintf(te, "%s%s%s%s%s%s%s%s %c %s",
+	    sprintf(te, "%s%s%s%s%s%s%s%s  %c %s",
 			size, mode, MD5, rdev, link, user, group, mtime,
 			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
