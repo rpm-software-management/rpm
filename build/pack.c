@@ -423,7 +423,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     FD_t fd = NULL;
     FD_t ifd = NULL;
     int_32 count, sigtag;
-    const char * sigtarget;
+    const char * sigtarget = NULL;
     const char * rpmio_flags = NULL;
     const char * SHA1 = NULL;
     char *s;
