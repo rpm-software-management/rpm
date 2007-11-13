@@ -1239,7 +1239,7 @@ static int copyEntry(const indexEntry entry,
 
 	    dataStart = (unsigned char *) memcpy(pe + ril, dataStart, rdl);
 
-	    rc = regionSwab(NULL, ril, 0, pe, dataStart, NULL, 0);
+	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataStart + rdl, 0);
 	    /* XXX 1 on success. */
 	    rc = (rc < 0) ? 0 : 1;
 	} else {
