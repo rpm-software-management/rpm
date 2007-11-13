@@ -64,6 +64,8 @@ enum modes {
 #define	MODES_FOR_TEST		(MODES_BT | MODES_IE)
 #define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB | MODES_K)
 
+static int quiet;
+
 /* the structure describing the options we take and the defaults */
 /*@unchecked@*/
 static struct poptOption optionsTable[] = {
@@ -108,6 +110,8 @@ static struct poptOption optionsTable[] = {
 	N_("Install/Upgrade/Erase options:"),
 	NULL },
 #endif	/* IAM_RPMEIU */
+
+ { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
@@ -524,6 +528,9 @@ int main(int argc, const char ** argv)
 	}
     }
 
+    if (quiet)
+	rpmSetVerbosity(RPMLOG_WARNING);
+
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
     if (0
 #if defined(IAM_RPMBT)
@@ -681,7 +688,7 @@ int main(int argc, const char ** argv)
     case MODE_BUILD:
     case MODE_TARBUILD:
     {	const char * pkg;
-        while (!rpmIsVerbose())
+        if (!quiet) while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
        
 	switch (ba->buildChar) {
