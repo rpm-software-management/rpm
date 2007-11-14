@@ -98,21 +98,20 @@ char *b64encode(const void *data, size_t len, int linelen)
 	return output;
 }
 
-static int base64_decode_value(char value_in)
+static int base64_decode_value(unsigned char value_in)
 {
-	static const char decoding[] = {62,-1,-1,-1,63,52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-2,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,-1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51};
-	static const char decoding_size = sizeof(decoding);
+	static const int decoding[] = {62,-1,-1,-1,63,52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-2,-1,-1,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,-1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51};
 	value_in -= 43;
-	if (value_in < 0 || value_in > decoding_size)
+	if (value_in > sizeof(decoding)/sizeof(int))
 		return -1;
-	return decoding[(int)value_in];
+	return decoding[value_in];
 }
 
 static size_t base64_decode_block(const char *code_in, const size_t length_in, char *plaintext_out)
 {
 	const char *codechar = code_in;
 	char *plainchar = plaintext_out;
-	char fragment;
+	int fragment;
 	
 	*plainchar = 0;
 	
@@ -123,38 +122,38 @@ static size_t base64_decode_block(const char *code_in, const size_t length_in, c
 			{
 				return plainchar - plaintext_out;
 			}
-			fragment = (char)base64_decode_value(*codechar++);
+			fragment = base64_decode_value(*codechar++);
 		} while (fragment < 0);
-		*plainchar    = (fragment & 0x03f) << 2;
+		*plainchar    = (char)((fragment & 0x03f) << 2);
 
 		do {
 			if (codechar == code_in+length_in)
 			{
 				return plainchar - plaintext_out;
 			}
-			fragment = (char)base64_decode_value(*codechar++);
+			fragment = base64_decode_value(*codechar++);
 		} while (fragment < 0);
-		*plainchar++ |= (fragment & 0x030) >> 4;
-		*plainchar    = (fragment & 0x00f) << 4;
+		*plainchar++ |= (char)((fragment & 0x030) >> 4);
+		*plainchar    = (char)((fragment & 0x00f) << 4);
 
 		do {
 			if (codechar == code_in+length_in)
 			{
 				return plainchar - plaintext_out;
 			}
-			fragment = (char)base64_decode_value(*codechar++);
+			fragment = base64_decode_value(*codechar++);
 		} while (fragment < 0);
-		*plainchar++ |= (fragment & 0x03c) >> 2;
-		*plainchar    = (fragment & 0x003) << 6;
+		*plainchar++ |= (char)((fragment & 0x03c) >> 2);
+		*plainchar    = (char)((fragment & 0x003) << 6);
 
 		do {
 			if (codechar == code_in+length_in)
 			{
 				return plainchar - plaintext_out;
 			}
-			fragment = (char)base64_decode_value(*codechar++);
+			fragment = base64_decode_value(*codechar++);
 		} while (fragment < 0);
-		*plainchar++   |= (fragment & 0x03f);
+		*plainchar++   |= (char)(fragment & 0x03f);
 	}
 	/* control should not reach here */
 	return plainchar - plaintext_out;
