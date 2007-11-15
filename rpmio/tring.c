@@ -31,6 +31,8 @@ main (int argc, const char *argv[])
     const char * fn;
     int rc, ec = 0;
 
+    rpmInitCrypto();
+
     while ((rc = poptGetNextOpt(optCon)) > 0);
 
     if ((args = poptGetArgs(optCon)) != NULL)

@@ -94,6 +94,7 @@ main (int argc, char *argv[])
     int printing = 1;
     int rc;
 
+    rpmInitCrypto();
     dig = pgpNewDig();
 
 fprintf(stderr, "=============================== GPG Secret Key\n");
