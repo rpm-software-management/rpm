@@ -1672,6 +1672,10 @@ static int rpmReadRC(const char * rcfiles)
 
 int rpmReadConfigFiles(const char * file, const char * target)
 {
+    /* Initialize crypto engine as early as possible */
+    if (rpmInitCrypto() < 0) {
+	return -1;
+    }	
 
     /* Preset target macros */
    	/* FIX: target can be NULL */

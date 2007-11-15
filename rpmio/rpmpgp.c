@@ -12,6 +12,8 @@ static int _debug = 0;
 
 static int _print = 0;
 
+static int _crypto_initialized = 0;
+
 static pgpDig _dig = NULL;
 
 static pgpDigParams _digp = NULL;
@@ -1021,7 +1023,6 @@ int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 pgpDig pgpNewDig(void)
 {
     pgpDig dig = xcalloc(1, sizeof(*dig));
-    NSS_NoDB_Init(NULL);
 
     return dig;
 }
@@ -1310,3 +1311,14 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     return val;
 }
 
+int rpmInitCrypto(void) {
+    int rc = 0;
+
+    if (!_crypto_initialized && NSS_NoDB_Init(NULL) != SECSuccess) {
+	rc = -1;
+    } else {
+    	_crypto_initialized = 1;
+    }
+
+    return rc;
+}

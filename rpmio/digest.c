@@ -75,9 +75,6 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     HASH_HashType type;
     DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));
 
-    if (NSS_NoDB_Init(NULL) != SECSuccess)
-	return NULL;
-
     ctx->flags = flags;
 
     type = getHashType(hashalgo);

@@ -1307,6 +1307,15 @@ unsigned int pgpCRC(const byte *octets, size_t len)
 }
 
 /** \ingroup rpmio
+ * Perform cryptography initialization.
+ * It must be called before any cryptography can be used within rpm.
+ * It's not normally necessary to call it directly as it's called in
+ * general rpm initialization routines.
+ * @return		0 on success, -1 on failure
+ */
+int rpmInitCrypto(void);
+
+/** \ingroup rpmio
  * Duplicate a digest context.
  * @param octx		existing digest context
  * @return		duplicated digest context
