@@ -16,7 +16,7 @@
 
 #include "rpmurl.h"
 #include "rpmpgp.h"
-#include "rpmio_internal.h"	/* XXX for base64, pgpDig*_s (signid) */
+#include "rpmpgp.h"
 #include "rpmmacro.h"
 #include "rpmsq.h"
 
@@ -2580,18 +2580,11 @@ if (dbiByteSwapped(dbi) == 1)
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			pgpDig dig = pgpNewDig();
-			const byte * pkt;
-			size_t pktlen;
-
-			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
+			int nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+			if (nbin <= 0)
 			    continue;
-			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
-			memcpy(bin, dig->pubkey.signid, 8);
-			pkt = _free(pkt);
-			dig = _free(dig);
 			key->data = bin;
-			key->size = 8;
+			key->size = nbin;
 			break;
 		    }
 		default:
@@ -3002,18 +2995,11 @@ data->size = 0;
 		    }
 		    /* Extract the pubkey id from the base64 blob. */
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			pgpDig dig = pgpNewDig();
-			const byte * pkt;
-			size_t pktlen;
-
-			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
+			int nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+			if (nbin <= 0)
 			    continue;
-			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
-			memcpy(bin, dig->pubkey.signid, 8);
-			pkt = _free(pkt);
-			dig = _free(dig);
 			key->data = bin;
-			key->size = 8;
+			key->size = nbin;
 			break;
 		    }
 		default:

@@ -1170,6 +1170,16 @@ int pgpPubkeyFingerprint(const byte * pkt, unsigned int pktlen,
 		byte * keyid);
 
 /**
+* Extract OpenPGP public key fingerprint from base64 encoded packet.
+* @todo V3 non-RSA public keys not implemented.
+* @param b64pkt       base64 encoded openpgp packet
+* @retval keyid[8]    public key fingerprint
+* @return             8 (no. of bytes) on success, < 0 on error
+*/
+int pgpExtractPubkeyFingerprint(const char * b64pkt, byte * keyid);
+
+
+/**
  * Print/parse next OpenPGP packet.
  * @param pkt		OpenPGP packet
  * @param pleft		no. bytes remaining
