@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"	/* pgpDig*_s, other crypto... */
+#include "digest.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"	/* XXX for rpmGetPath() */
 #include "rpmdb.h"

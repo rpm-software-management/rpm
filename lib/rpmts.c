@@ -4,7 +4,8 @@
  */
 #include "system.h"
 
-#include "rpmio_internal.h"	/* XXX for pgp */
+#include "rpmurl.h"
+#include "digest.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"		/* XXX rpmtsOpenDB() needs rpmGetPath */
 

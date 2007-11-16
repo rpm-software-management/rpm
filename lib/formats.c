@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include "rpmio_internal.h"	/* for b64, pgpDig*_s */
+#include "digest.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"	/* XXX for %_i18ndomains */
 

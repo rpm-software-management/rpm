@@ -6,7 +6,7 @@
 static int _debug = 0;
 
 #include "system.h"
-#include "rpmio_internal.h"
+#include "digest.h"
 #include "debug.h"
 
 static int doit(const char *sig, pgpDig dig, int printing)

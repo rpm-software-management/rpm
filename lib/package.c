@@ -6,7 +6,8 @@
 
 #include <netinet/in.h>
 
-#include "rpmio_internal.h"	/* fddigest-stuff, FDSTAT_READ, pgpDig*_s */
+#include "digest.h"
+#include "rpmio_internal.h"	/* fd*Digest(), fd stats */
 #include "rpmlib.h"
 
 #include "rpmts.h"

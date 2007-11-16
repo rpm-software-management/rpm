@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include "rpmio_internal.h"
+#include "digest.h"
 #include "debug.h"
 
 #ifdef	SHA_DEBUG
