@@ -469,7 +469,6 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
-    int i;
 
     dig->nbytes = 0;
 
@@ -511,29 +510,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	rpmlog(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
     }
-
-    /* XXX Steal the digest-in-progress from the file handle. */
-    for (i = fd->ndigests - 1; i >= 0; i--) {
-	FDDIGEST_t fddig = fd->digests + i;
-	if (fddig->hashctx != NULL)
-	switch (fddig->hashalgo) {
-	case PGPHASHALGO_MD5:
-assert(dig->md5ctx == NULL);
-	    dig->md5ctx = fddig->hashctx;
-	    fddig->hashctx = NULL;
-	    break;
-	case PGPHASHALGO_SHA1:
-	case PGPHASHALGO_SHA256:
-	case PGPHASHALGO_SHA384:
-	case PGPHASHALGO_SHA512:
-assert(dig->sha1ctx == NULL);
-	    dig->sha1ctx = fddig->hashctx;
-	    fddig->hashctx = NULL;
-	    break;
-	default:
-	    break;
-	}
-    }
+    fdStealDigest(fd, dig);
 
     rc = 0;
 
