@@ -18,7 +18,7 @@
 #include "rpmmacro.h"
 #include "rpmlua.h"
 
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 static const char *defrcfiles = 

@@ -10,7 +10,7 @@
 
 #include "signature.h"
 #include "rpmlead.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 static unsigned char lead_magic[] = {

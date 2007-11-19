@@ -6,7 +6,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 extern int noLang;

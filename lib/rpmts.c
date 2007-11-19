@@ -15,7 +15,7 @@
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmlock.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 
 #include "rpmte.h"
 

@@ -18,7 +18,7 @@
 #include "rpmts.h"
 
 #include "manifest.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 
 #include "debug.h"
 #include "misc.h"	/* XXX for currentDirectory */

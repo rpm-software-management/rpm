@@ -26,7 +26,7 @@ extern int h_errno;
 #include "ugid.h"
 #include "rpmmessages.h"
 #include "argv.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "rpmmacro.h"
 
 #include "debug.h"

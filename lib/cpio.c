@@ -14,7 +14,7 @@
 #include "cpio.h"
 #include "fsm.h"
 
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 

@@ -31,7 +31,7 @@
 
 #include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
 #include "misc.h"	/* for splitString, freeSplitString */
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }

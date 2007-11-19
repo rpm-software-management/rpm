@@ -11,7 +11,7 @@
 #include "rpmdb.h"
 #include "rpmmacro.h"		/* XXX rpmExpand */
 #include "manifest.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 
 #include "debug.h"
 

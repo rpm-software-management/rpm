@@ -3,7 +3,7 @@
 #ifdef	WITH_LUA
 #include "rpmio.h"
 #include "rpmmacro.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "rpmurl.h"
 #include "rpmhook.h"
 

@@ -5,7 +5,7 @@
 #include "rpmbuild.h"
 #include "argv.h"
 #include "rpmfc.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 
 #include "rpmds.h"
 #include "rpmfi.h"

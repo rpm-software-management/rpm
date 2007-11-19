@@ -5,7 +5,7 @@
 #include "system.h"
 #include "rpmlib.h"
 #include "rpmmacro.h"	/* XXX for rpmGetPath */
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 

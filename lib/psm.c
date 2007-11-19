@@ -31,7 +31,7 @@
 #include "legacy.h"		/* XXX rpmfiBuildFNames() */
 #include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
 #include "rpmdb.h"		/* XXX for db_chrootDone */
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 #define	_PSM_DEBUG	0

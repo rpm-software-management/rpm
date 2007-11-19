@@ -13,7 +13,7 @@
 
 #include "rpmts.h"
 
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "rpmlead.h"
 #include "signature.h"
 #include "misc.h"	/* XXX for makeTempFile() */

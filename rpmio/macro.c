@@ -15,7 +15,7 @@
 #include "rpmio.h"
 #include "rpmurl.h"
 #include "rpmmessages.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 
 #ifdef	WITH_LUA
 #include "rpmlua.h"

@@ -13,7 +13,7 @@
 #include "fsm.h"
 #define	fsmUNSAFE	fsmStage
 
-#include "rpmerr.h"
+#include "rpmlog.h"
 
 #define	_RPMFI_INTERNAL		/* XXX fi->apath, fi->action... */
 #include "rpmfi.h"

@@ -24,7 +24,7 @@
 #include "signature.h"
 #include "rpmlead.h"
 #include "misc.h"	/* XXX for makeTempFile */
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 /**

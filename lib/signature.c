@@ -11,7 +11,7 @@
 
 #include "rpmts.h"
 
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "legacy.h"	/* XXX for mdbinfile() */
 #include "rpmlead.h"

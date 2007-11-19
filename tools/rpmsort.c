@@ -11,7 +11,7 @@ const char *__progname;
 #include "rpmts.h"
 
 #include "manifest.h"
-#include "rpmerr.h"
+#include "rpmlog.h"
 #include "debug.h"
 
 static int _depends_debug;
