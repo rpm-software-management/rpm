@@ -404,9 +404,9 @@ static int makePGPSignature(const char * file, int32_t * sigTagp,
 		break;
 	    }
 	}
-	rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
-	_exit(RPMERR_EXEC);
+	_exit(RPMLOG_ERR);
     }
 
     delMacro(NULL, "__plaintext_filename");
@@ -420,14 +420,14 @@ static int makePGPSignature(const char * file, int32_t * sigTagp,
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmlog(RPMERR_SIGGEN, _("pgp failed\n"));
+	rpmlog(RPMLOG_ERR, _("pgp failed\n"));
 	return 1;
     }
 
     if (stat(sigfile, &st)) {
 	/* PGP failed to write signature */
 	if (sigfile) (void) unlink(sigfile);  /* Just in case */
-	rpmlog(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
+	rpmlog(RPMLOG_ERR, _("pgp failed to write signature\n"));
 	return 1;
     }
 
@@ -446,7 +446,7 @@ static int makePGPSignature(const char * file, int32_t * sigTagp,
 	}
 	if (rc != *pktlenp) {
 	    *pktp = _free(*pktp);
-	    rpmlog(RPMERR_SIGGEN, _("unable to read the signature\n"));
+	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -515,9 +515,9 @@ static int makeGPGSignature(const char * file, int32_t * sigTagp,
 	if (!rc)
 	    rc = execve(av[0], av+1, environ);
 
-	rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
-	_exit(RPMERR_EXEC);
+	_exit(RPMLOG_ERR);
     }
 
     delMacro(NULL, "__plaintext_filename");
@@ -532,14 +532,14 @@ static int makeGPGSignature(const char * file, int32_t * sigTagp,
 
     (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmlog(RPMERR_SIGGEN, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
+	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
 	return 1;
     }
 
     if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
 	if (sigfile) (void) unlink(sigfile);  /* Just in case */
-	rpmlog(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
+	rpmlog(RPMLOG_ERR, _("gpg failed to write signature\n"));
 	return 1;
     }
 
@@ -558,7 +558,7 @@ static int makeGPGSignature(const char * file, int32_t * sigTagp,
 	}
 	if (rc != *pktlenp) {
 	    *pktp = _free(*pktp);
-	    rpmlog(RPMERR_SIGGEN, _("unable to read the signature\n"));
+	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -808,7 +808,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	    if (!rc)
 		rc = execve(av[0], av+1, environ);
 
-	    rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
 	}   break;
 	case RPMSIGTAG_RSA:
@@ -841,13 +841,13 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 		    break;
 		}
 	    }
-	    rpmlog(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
-	    _exit(RPMERR_EXEC);
+	    _exit(RPMLOG_ERR);
 	}   break;
 	default: /* This case should have been screened out long ago. */
-	    rpmlog(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
-	    _exit(RPMERR_SIGGEN);
+	    rpmlog(RPMLOG_ERR, _("Invalid %%_signature spec in macro file\n"));
+	    _exit(RPMLOG_ERR);
 	    break;
 	}
     }
@@ -876,7 +876,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
       }
 	if (aok)
 	    break;
-	rpmlog(RPMERR_SIGGEN,
+	rpmlog(RPMLOG_ERR,
 		_("You must set \"%%_gpg_name\" in your macro file\n"));
 	break;
     case RPMSIGTAG_RSA:
@@ -888,14 +888,14 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
       }
 	if (aok)
 	    break;
-	rpmlog(RPMERR_SIGGEN,
+	rpmlog(RPMLOG_ERR,
 		_("You must set \"%%_pgp_name\" in your macro file\n"));
 	break;
     default:
 	/* Currently the calling function (rpm.c:main) is checking this and
 	 * doing a better job.  This section should never be accessed.
 	 */
-	rpmlog(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
+	rpmlog(RPMLOG_ERR, _("Invalid %%_signature spec in macro file\n"));
 	break;
     }
 

@@ -35,13 +35,13 @@ static int checkOwners(const char * urlfn)
     struct stat sb;
 
     if (Lstat(urlfn, &sb)) {
-	rpmlog(RPMERR_BADSPEC, _("Bad source: %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Bad source: %s: %s\n"),
 		urlfn, strerror(errno));
-	return RPMERR_BADSPEC;
+	return RPMLOG_ERR;
     }
     if (!getUname(sb.st_uid) || !getGname(sb.st_gid)) {
-	rpmlog(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), urlfn);
-	return RPMERR_BADSPEC;
+	rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), urlfn);
+	return RPMLOG_ERR;
     }
 
     return 0;
@@ -75,7 +75,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	}
     }
     if (sp == NULL) {
-	rpmlog(RPMERR_BADSPEC, _("No patch number %d\n"), c);
+	rpmlog(RPMLOG_ERR, _("No patch number %d\n"), c);
 	return NULL;
     }
 
@@ -170,7 +170,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 	}
     }
     if (sp == NULL) {
-	rpmlog(RPMERR_BADSPEC, _("No source number %d\n"), c);
+	rpmlog(RPMLOG_ERR, _("No source number %d\n"), c);
 	return NULL;
     }
 
@@ -190,7 +190,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 	if (Lstat(urlfn, &st) != 0 && errno == ENOENT &&
 	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
 	    if ((rc = urlGetFile(sp->fullSource, urlfn)) != 0) {
-		rpmlog(RPMERR_BADFILENAME,
+		rpmlog(RPMLOG_ERR,
 			_("Couldn't download nosource %s: %s\n"),
 			sp->fullSource, ftpStrerror(rc));
 		return NULL;
@@ -295,9 +295,9 @@ static int doSetupMacro(rpmSpec spec, char *line)
     dirName = NULL;
 
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
-	rpmlog(RPMERR_BADSPEC, _("Error parsing %%setup: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Error parsing %%setup: %s\n"),
 			poptStrerror(rc));
-	return RPMERR_BADSPEC;
+	return RPMLOG_ERR;
     }
 
     before = newStringBuf();
@@ -310,25 +310,25 @@ static int doSetupMacro(rpmSpec spec, char *line)
 	/* We only parse -a and -b here */
 
 	if (parseNum(optArg, &num)) {
-	    rpmlog(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%setup: %s\n"),
 		     spec->lineNum, (optArg ? optArg : "???"));
 	    before = freeStringBuf(before);
 	    after = freeStringBuf(after);
 	    optCon = poptFreeContext(optCon);
 	    argv = _free(argv);
-	    return RPMERR_BADSPEC;
+	    return RPMLOG_ERR;
 	}
 
 	{   const char *chptr = doUntar(spec, num, quietly);
 	    if (chptr == NULL)
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 
 	    appendLineStringBuf((arg == 'a' ? after : before), chptr);
 	}
     }
 
     if (arg < -1) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Bad %%setup option %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Bad %%setup option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 poptStrerror(arg));
@@ -336,7 +336,7 @@ static int doSetupMacro(rpmSpec spec, char *line)
 	after = freeStringBuf(after);
 	optCon = poptFreeContext(optCon);
 	argv = _free(argv);
-	return RPMERR_BADSPEC;
+	return RPMLOG_ERR;
     }
 
     if (dirName) {
@@ -379,7 +379,7 @@ static int doSetupMacro(rpmSpec spec, char *line)
    if (!createDir && !skipDefaultAction) {
 	const char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
-	    return RPMERR_BADSPEC;
+	    return RPMLOG_ERR;
 	appendLineStringBuf(spec->prep, chptr);
     }
 
@@ -394,7 +394,7 @@ static int doSetupMacro(rpmSpec spec, char *line)
     if (createDir && !skipDefaultAction) {
 	const char * chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
-	    return RPMERR_BADSPEC;
+	    return RPMLOG_ERR;
 	appendLineStringBuf(spec->prep, chptr);
     }
     
@@ -462,19 +462,19 @@ static int doPatchMacro(rpmSpec spec, char *line)
 	    /* orig suffix */
 	    opt_b = strtok(NULL, " \t\n");
 	    if (! opt_b) {
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			_("line %d: Need arg to %%patch -b: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 	    }
 	} else if (!strcmp(s, "-z")) {
 	    /* orig suffix */
 	    opt_b = strtok(NULL, " \t\n");
 	    if (! opt_b) {
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			_("line %d: Need arg to %%patch -z: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 	    }
 	} else if (!strncmp(s, "-F", strlen("-F"))) {
 	    /* fuzz factor */
@@ -488,10 +488,10 @@ static int doPatchMacro(rpmSpec spec, char *line)
 	    }
 	    opt_F = (fnum ? strtol(fnum, &end, 10) : 0);
 	    if (! opt_F || *end) {
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			_("line %d: Bad arg to %%patch -F: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 	    }
 	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
 	    /* unfortunately, we must support -pX */
@@ -500,28 +500,28 @@ static int doPatchMacro(rpmSpec spec, char *line)
 	    } else {
 		s = strtok(NULL, " \t\n");
 		if (s == NULL) {
-		    rpmlog(RPMERR_BADSPEC,
+		    rpmlog(RPMLOG_ERR,
 			     _("line %d: Need arg to %%patch -p: %s\n"),
 			     spec->lineNum, spec->line);
-		    return RPMERR_BADSPEC;
+		    return RPMLOG_ERR;
 		}
 	    }
 	    if (parseNum(s, &opt_p)) {
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			_("line %d: Bad arg to %%patch -p: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 	    }
 	} else {
 	    /* Must be a patch num */
 	    if (patch_index == 1024) {
-		rpmlog(RPMERR_BADSPEC, _("Too many patches!\n"));
-		return RPMERR_BADSPEC;
+		rpmlog(RPMLOG_ERR, _("Too many patches!\n"));
+		return RPMLOG_ERR;
 	    }
 	    if (parseNum(s, &(patch_nums[patch_index]))) {
-		rpmlog(RPMERR_BADSPEC, _("line %d: Bad arg to %%patch: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch: %s\n"),
 			 spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 	    }
 	    patch_index++;
 	}
@@ -532,14 +532,14 @@ static int doPatchMacro(rpmSpec spec, char *line)
     if (! opt_P) {
 	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F);
 	if (s == NULL)
-	    return RPMERR_BADSPEC;
+	    return RPMLOG_ERR;
 	appendLineStringBuf(spec->prep, s);
     }
 
     for (x = 0; x < patch_index; x++) {
 	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F);
 	if (s == NULL)
-	    return RPMERR_BADSPEC;
+	    return RPMLOG_ERR;
 	appendLineStringBuf(spec->prep, s);
     }
     
@@ -553,8 +553,8 @@ int parsePrep(rpmSpec spec)
     char **lines, **saveLines;
 
     if (spec->prep != NULL) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: second %%prep\n"), spec->lineNum);
-	return RPMERR_BADSPEC;
+	rpmlog(RPMLOG_ERR, _("line %d: second %%prep\n"), spec->lineNum);
+	return RPMLOG_ERR;
     }
 
     spec->prep = newStringBuf();

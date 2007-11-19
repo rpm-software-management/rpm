@@ -129,8 +129,8 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
     }
     
     if (makeTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
-	rpmlog(RPMERR_SCRIPT, _("Unable to open temp file.\n"));
-	rc = RPMERR_SCRIPT;
+	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
+	rc = RPMLOG_ERR;
 	goto exit;
     }
 
@@ -140,7 +140,7 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 	xfd = fd;
 
     if ((fp = fdGetFILE(xfd)) == NULL) {
-	rc = RPMERR_SCRIPT;
+	rc = RPMLOG_ERR;
 	goto exit;
     }
     
@@ -176,7 +176,7 @@ if (_build_debug)
 fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
     if (buildDirURL && buildDirURL[0] != '/' &&
 	(urlSplit(buildDirURL, &u) != 0)) {
-	rc = RPMERR_SCRIPT;
+	rc = RPMLOG_ERR;
 	goto exit;
     }
     if (u != NULL) {
@@ -209,7 +209,7 @@ fprintf(stderr, "*** addMacros\n");
 	errno = 0;
 	(void) execvp(argv[0], (char *const *)argv);
 
-	rpmlog(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s\n"),
+	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
 
 	_exit(-1);
@@ -218,9 +218,9 @@ fprintf(stderr, "*** addMacros\n");
     rc = waitpid(child, &status, 0);
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmlog(RPMERR_SCRIPT, _("Bad exit status from %s (%s)\n"),
+	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
 		 scriptName, name);
-	rc = RPMERR_SCRIPT;
+	rc = RPMLOG_ERR;
     } else
 	rc = 0;
     

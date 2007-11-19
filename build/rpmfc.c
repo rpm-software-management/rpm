@@ -125,12 +125,12 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	unsetenv("MALLOC_CHECK_");
 	(void) execvp(argv[0], (char *const *)argv);
 	/* XXX this error message is probably not seen. */
-	rpmlog(RPMERR_EXEC, _("Couldn't exec %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
-	_exit(RPMERR_EXEC);
+	_exit(RPMLOG_ERR);
     }
     if (child < 0) {
-	rpmlog(RPMERR_FORK, _("Couldn't fork %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
 		argv[0], strerror(errno));
 	return NULL;
     }
@@ -216,11 +216,11 @@ top:
         (unsigned)child, (unsigned)reaped, status);
 
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmlog(RPMERR_EXEC, _("%s failed\n"), argv[0]);
+	rpmlog(RPMLOG_ERR, _("%s failed\n"), argv[0]);
 	return NULL;
     }
     if (writeBytesLeft) {
-	rpmlog(RPMERR_EXEC, _("failed to write all data to %s\n"), argv[0]);
+	rpmlog(RPMLOG_ERR, _("failed to write all data to %s\n"), argv[0]);
 	return NULL;
     }
     return readBuff;
@@ -1238,7 +1238,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode)
 
     ms = magic_open(msflags);
     if (ms == NULL) {
-	xx = RPMERR_EXEC;
+	xx = RPMLOG_ERR;
 	rpmlog(xx, _("magic_open(0x%x) failed: %s\n"),
 		msflags, strerror(errno));
 assert(ms != NULL);	/* XXX figger a proper return path. */
@@ -1246,7 +1246,7 @@ assert(ms != NULL);	/* XXX figger a proper return path. */
 
     xx = magic_load(ms, NULL);
     if (xx == -1) {
-	xx = RPMERR_EXEC;
+	xx = RPMLOG_ERR;
 	rpmlog(xx, _("magic_load failed: %s\n"), magic_error(ms));
 assert(xx != -1);	/* XXX figger a proper return path. */
     }
@@ -1290,7 +1290,7 @@ assert(s != NULL);
 		ftype = magic_file(ms, s);
 
 	    if (ftype == NULL) {
-		xx = RPMERR_EXEC;
+		xx = RPMLOG_ERR;
 		rpmlog(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
 			s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
@@ -1495,7 +1495,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	s = _free(s);
 
 	if (sb_stdout == NULL) {
-	    rc = RPMERR_EXEC;
+	    rc = RPMLOG_ERR;
 	    rpmlog(rc, _("Failed to find %s:\n"), dm->msg);
 	    break;
 	}

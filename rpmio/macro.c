@@ -485,7 +485,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
     int c;
 
     if (clen >= sizeof(pcmd)) {
-	rpmlog(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
 	return 1;
     }
 
@@ -544,7 +544,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
     SKIPBLANK(s, c);
     if (c == '{') {	/* XXX permit silent {...} grouping */
 	if ((se = matchchar(s, c, '}')) == NULL) {
-	    rpmlog(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
 	    return se;
@@ -582,7 +582,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	*be = '\0';
 
 	if (bc || pc) {
-	    rpmlog(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
 	    return se;
@@ -601,24 +601,24 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
     if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmlog(RPMERR_BADSPEC,
+	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%define)\n"), n);
 	return se;
     }
 
     /* Options must be terminated with ')' */
     if (o && oc != ')') {
-	rpmlog(RPMERR_BADSPEC, _("Macro %%%s has unterminated opts\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
 	return se;
     }
 
     if ((be - b) < 1) {
-	rpmlog(RPMERR_BADSPEC, _("Macro %%%s has empty body\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s has empty body\n"), n);
 	return se;
     }
 
     if (expandbody && expandU(mb, b, (&buf[sizeof(buf)] - b))) {
-	rpmlog(RPMERR_BADSPEC, _("Macro %%%s failed to expand\n"), n);
+	rpmlog(RPMLOG_ERR, _("Macro %%%s failed to expand\n"), n);
 	return se;
     }
 
@@ -649,7 +649,7 @@ doUndefine(rpmMacroContext mc, const char * se)
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
     if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
-	rpmlog(RPMERR_BADSPEC,
+	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%undefine)\n"), n);
 	return se;
     }
@@ -750,7 +750,7 @@ freeArgs(MacroBuf mb)
 		skiptest = 1; /* XXX skip test for %# %* %0 */
 	} else if (!skiptest && me->used <= 0) {
 #if NOTYET
-	    rpmlog(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 			_("Macro %%%s (%s) was not used below level %d\n"),
 			me->name, me->body, me->level);
 #endif
@@ -870,7 +870,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     while((c = getopt(argc, (char **)argv, opts)) != -1)
     {
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
-	    rpmlog(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)\n"),
+	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
 	    return se;
 	}
@@ -925,14 +925,14 @@ doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
     char buf[BUFSIZ];
 
     if (msglen >= sizeof(buf)) {
-	rpmlog(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
 	msglen = sizeof(buf) - 1;
     }
     strncpy(buf, msg, msglen);
     buf[msglen] = '\0';
     (void) expandU(mb, buf, sizeof(buf));
     if (waserror)
-	rpmlog(RPMERR_BADSPEC, "%s\n", buf);
+	rpmlog(RPMLOG_ERR, "%s\n", buf);
     else
 	fprintf(stderr, "%s", buf);
 }
@@ -956,7 +956,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     buf[0] = '\0';
     if (g != NULL) {
 	if (gn >= sizeof(buf)) {
-	    rpmlog(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	    rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
 	    gn = sizeof(buf) - 1;
         }
 	strncpy(buf, g, gn);
@@ -1064,7 +1064,7 @@ expandMacro(MacroBuf mb)
     int chkexist;
 
     if (++mb->depth > max_macro_depth) {
-	rpmlog(RPMERR_BADSPEC,
+	rpmlog(RPMLOG_ERR,
 		_("Recursion depth(%d) greater than max(%d)\n"),
 		mb->depth, max_macro_depth);
 	mb->depth--;
@@ -1133,7 +1133,7 @@ expandMacro(MacroBuf mb)
 		break;
 	case '(':		/* %(...) shell escape */
 		if ((se = matchchar(s, c, ')')) == NULL) {
-			rpmlog(RPMERR_BADSPEC,
+			rpmlog(RPMLOG_ERR,
 				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
 			continue;
@@ -1150,7 +1150,7 @@ expandMacro(MacroBuf mb)
 		break;
 	case '{':		/* %{...}/%{...:...} substitution */
 		if ((se = matchchar(s, c, '}')) == NULL) {
-			rpmlog(RPMERR_BADSPEC,
+			rpmlog(RPMLOG_ERR,
 				_("Unterminated %c: %s\n"), (char)c, s);
 			rc = 1;
 			continue;
@@ -1191,7 +1191,7 @@ expandMacro(MacroBuf mb)
 		c = '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
 #if 0
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			_("A %% is followed by an unparseable macro\n"));
 #endif
 		s = se;
@@ -1347,7 +1347,7 @@ expandMacro(MacroBuf mb)
 		c = '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
 #else
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			_("Macro %%%.*s not found, skipping\n"), fn, f);
 		s = se;
 #endif
@@ -1664,7 +1664,7 @@ expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
     rc = expandMacro(mb);
 
     if (mb->nb == 0)
-	rpmlog(RPMERR_BADSPEC, _("Target buffer overflow\n"));
+	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
 
     tbuf[slen] = '\0';	/* XXX just in case */
     strncpy(sbuf, tbuf, (slen - mb->nb + 1));
@@ -1867,16 +1867,16 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     fd = Fopen(file, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	/* XXX Fstrerror */
-	rpmlog(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
 	if (fd) (void) Fclose(fd);
 	return 1;
     }
     nb = Fread(magic, sizeof(magic[0]), sizeof(magic), fd);
     if (nb < 0) {
-	rpmlog(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
 	rc = 1;
     } else if (nb < sizeof(magic)) {
-	rpmlog(RPMERR_BADSPEC, _("File %s is smaller than %u bytes\n"),
+	rpmlog(RPMLOG_ERR, _("File %s is smaller than %u bytes\n"),
 		file, (unsigned)sizeof(magic));
 	rc = 0;
     }

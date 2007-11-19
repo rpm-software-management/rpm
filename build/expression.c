@@ -212,7 +212,7 @@ static int rdToken(ParseState state)
       token = TOK_EQ;
       p++;
     } else {
-      rpmlog(RPMERR_BADSPEC, _("syntax error while parsing ==\n"));
+      rpmlog(RPMLOG_ERR, _("syntax error while parsing ==\n"));
       return -1;
     }
     break;
@@ -242,7 +242,7 @@ static int rdToken(ParseState state)
       token = TOK_LOGICAL_AND;
       p++;
     } else {
-      rpmlog(RPMERR_BADSPEC, _("syntax error while parsing &&\n"));
+      rpmlog(RPMLOG_ERR, _("syntax error while parsing &&\n"));
       return -1;
     }
     break;
@@ -251,7 +251,7 @@ static int rdToken(ParseState state)
       token = TOK_LOGICAL_OR;
       p++;
     } else {
-      rpmlog(RPMERR_BADSPEC, _("syntax error while parsing ||\n"));
+      rpmlog(RPMLOG_ERR, _("syntax error while parsing ||\n"));
       return -1;
     }
     break;
@@ -294,7 +294,7 @@ static int rdToken(ParseState state)
       v = valueMakeString( rpmExpand(temp, NULL) );
 
     } else {
-      rpmlog(RPMERR_BADSPEC, _("parse error in expression\n"));
+      rpmlog(RPMLOG_ERR, _("parse error in expression\n"));
       return -1;
     }
   }
@@ -326,7 +326,7 @@ static Value doPrimary(ParseState state)
       return NULL;
     v = doLogical(state);
     if (state->nextToken != TOK_CLOSE_P) {
-      rpmlog(RPMERR_BADSPEC, _("unmatched (\n"));
+      rpmlog(RPMLOG_ERR, _("unmatched (\n"));
       return NULL;
     }
     if (rdToken(state))
@@ -358,7 +358,7 @@ static Value doPrimary(ParseState state)
       return NULL;
 
     if (! valueIsInteger(v)) {
-      rpmlog(RPMERR_BADSPEC, _("- only on numbers\n"));
+      rpmlog(RPMLOG_ERR, _("- only on numbers\n"));
       return NULL;
     }
 
@@ -374,7 +374,7 @@ static Value doPrimary(ParseState state)
       return NULL;
 
     if (! valueIsInteger(v)) {
-      rpmlog(RPMERR_BADSPEC, _("! only on numbers\n"));
+      rpmlog(RPMLOG_ERR, _("! only on numbers\n"));
       return NULL;
     }
 
@@ -416,7 +416,7 @@ static Value doMultiplyDivide(ParseState state)
       return NULL;
 
     if (! valueSameType(v1, v2)) {
-      rpmlog(RPMERR_BADSPEC, _("types must match\n"));
+      rpmlog(RPMLOG_ERR, _("types must match\n"));
       return NULL;
     }
 
@@ -429,7 +429,7 @@ static Value doMultiplyDivide(ParseState state)
       else
 	v1 = valueMakeInteger(i1 / i2);
     } else {
-      rpmlog(RPMERR_BADSPEC, _("* / not suported for strings\n"));
+      rpmlog(RPMLOG_ERR, _("* / not suported for strings\n"));
       return NULL;
     }
   }
@@ -464,7 +464,7 @@ static Value doAddSubtract(ParseState state)
       return NULL;
 
     if (! valueSameType(v1, v2)) {
-      rpmlog(RPMERR_BADSPEC, _("types must match\n"));
+      rpmlog(RPMLOG_ERR, _("types must match\n"));
       return NULL;
     }
 
@@ -480,7 +480,7 @@ static Value doAddSubtract(ParseState state)
       char *copy;
 
       if (op == TOK_MINUS) {
-	rpmlog(RPMERR_BADSPEC, _("- not suported for strings\n"));
+	rpmlog(RPMLOG_ERR, _("- not suported for strings\n"));
 	return NULL;
       }
 
@@ -522,7 +522,7 @@ static Value doRelational(ParseState state)
       return NULL;
 
     if (! valueSameType(v1, v2)) {
-      rpmlog(RPMERR_BADSPEC, _("types must match\n"));
+      rpmlog(RPMLOG_ERR, _("types must match\n"));
       return NULL;
     }
 
@@ -614,7 +614,7 @@ static Value doLogical(ParseState state)
       return NULL;
 
     if (! valueSameType(v1, v2)) {
-      rpmlog(RPMERR_BADSPEC, _("types must match\n"));
+      rpmlog(RPMLOG_ERR, _("types must match\n"));
       return NULL;
     }
 
@@ -627,7 +627,7 @@ static Value doLogical(ParseState state)
       else
 	v1 = valueMakeInteger(i1 || i2);
     } else {
-      rpmlog(RPMERR_BADSPEC, _("&& and || not suported for strings\n"));
+      rpmlog(RPMLOG_ERR, _("&& and || not suported for strings\n"));
       return NULL;
     }
   }
@@ -660,7 +660,7 @@ int parseExpressionBoolean(rpmSpec spec, const char *expr)
 
   /* If the next token is not TOK_EOF, we have a syntax error. */
   if (state.nextToken != TOK_EOF) {
-    rpmlog(RPMERR_BADSPEC, _("syntax error in expression\n"));
+    rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
     state.str = _free(state.str);
     return -1;
   }
@@ -707,7 +707,7 @@ char * parseExpressionString(rpmSpec spec, const char *expr)
 
   /* If the next token is not TOK_EOF, we have a syntax error. */
   if (state.nextToken != TOK_EOF) {
-    rpmlog(RPMERR_BADSPEC, _("syntax error in expression\n"));
+    rpmlog(RPMLOG_ERR, _("syntax error in expression\n"));
     state.str = _free(state.str);
     return NULL;
   }

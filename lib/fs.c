@@ -63,7 +63,7 @@ static int getFilesystemList(void)
 
     num = mntctl(MCTL_QUERY, sizeof(size), (char *) &size);
     if (num < 0) {
-	rpmlog(RPMERR_MTAB, _("mntctl() failed to return size: %s\n"), 
+	rpmlog(RPMLOG_ERR, _("mntctl() failed to return size: %s\n"), 
 		 strerror(errno));
 	return 1;
     }
@@ -78,7 +78,7 @@ static int getFilesystemList(void)
     buf = alloca(size);
     num = mntctl(MCTL_QUERY, size, buf);
     if ( num <= 0 ) {
-        rpmlog(RPMERR_MTAB, _("mntctl() failed to return mount points: %s\n"), 
+        rpmlog(RPMLOG_ERR, _("mntctl() failed to return mount points: %s\n"), 
 		 strerror(errno));
 	return 1;
     }
@@ -103,7 +103,7 @@ static int getFilesystemList(void)
 	    case ESTALE: 
 		continue;
 	    default:
-	    	rpmlog(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
+	    	rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
 
 	    	rpmFreeFilesystems();
@@ -145,7 +145,7 @@ static int getFilesystemList(void)
 
 	mtab = fopen(MOUNTED, "r");
 	if (!mtab) {
-	    rpmlog(RPMERR_MTAB, _("failed to open %s: %s\n"), MOUNTED, 
+	    rpmlog(RPMLOG_ERR, _("failed to open %s: %s\n"), MOUNTED, 
 		     strerror(errno));
 	    return 1;
 	}
@@ -195,7 +195,7 @@ static int getFilesystemList(void)
 #	endif
 
 	if (stat(mntdir, &sb)) {
-	    rpmlog(RPMERR_STAT, _("failed to stat %s: %s\n"), mntdir,
+	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), mntdir,
 			strerror(errno));
 
 	    rpmFreeFilesystems();
@@ -306,7 +306,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int32_t * fssizes, int numFile
 	    chptr = dirName + strlen(dirName) - 1;
 	    while (stat(dirName, &sb)) {
 		if (errno != ENOENT) {
-		    rpmlog(RPMERR_STAT, _("failed to stat %s: %s\n"), buf,
+		    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), buf,
 				strerror(errno));
 		    sourceDir = _free(sourceDir);
 		    usages = _free(usages);
@@ -328,7 +328,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int32_t * fssizes, int numFile
 			break;
 
 		if (j == numFilesystems) {
-		    rpmlog(RPMERR_BADDEV, 
+		    rpmlog(RPMLOG_ERR, 
 				_("file %s is on an unknown device\n"), buf);
 		    sourceDir = _free(sourceDir);
 		    usages = _free(usages);

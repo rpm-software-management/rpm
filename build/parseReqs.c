@@ -97,10 +97,10 @@ int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 
 	/* Tokens must begin with alphanumeric, _, or / */
 	if (!(xisalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
-	    rpmlog(RPMERR_BADSPEC,
+	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMLOG_ERR;
 	}
 
 	re = r;
@@ -125,10 +125,10 @@ int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 		continue;
 
 	    if (r[0] == '/') {
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 	    }
 
 	    switch(tagN) {
@@ -156,9 +156,9 @@ int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 
 	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
-		rpmlog(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMERR_BADSPEC;
+		return RPMLOG_ERR;
 	    }
 	    EVR = xmalloc((ve-v) + 1);
 	    strncpy(EVR, v, (ve-v));

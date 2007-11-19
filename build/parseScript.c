@@ -165,9 +165,9 @@ int parseScript(rpmSpec spec, int parsePart)
 	/* break line into two */
 	p = strstr(spec->line, "--");
 	if (!p) {
-	    rpmlog(RPMERR_BADSPEC, _("line %d: triggers must have --: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: triggers must have --: %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMERR_BADSPEC;
+	    return RPMLOG_ERR;
 	}
 
 	*p = '\0';
@@ -175,9 +175,9 @@ int parseScript(rpmSpec spec, int parsePart)
     }
     
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Error parsing %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %s: %s\n"),
 		 spec->lineNum, partname, poptStrerror(rc));
-	return RPMERR_BADSPEC;
+	return RPMLOG_ERR;
     }
     
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
@@ -186,17 +186,17 @@ int parseScript(rpmSpec spec, int parsePart)
 	case 'p':
 	    if (prog[0] == '<') {
 		if (prog[strlen(prog)-1] != '>') {
-		    rpmlog(RPMERR_BADSPEC,
+		    rpmlog(RPMLOG_ERR,
 			     _("line %d: internal script must end "
 			     "with \'>\': %s\n"), spec->lineNum, prog);
-		    rc = RPMERR_BADSPEC;
+		    rc = RPMLOG_ERR;
 		    goto exit;
 		}
 	    } else if (prog[0] != '/') {
-		rpmlog(RPMERR_BADSPEC,
+		rpmlog(RPMLOG_ERR,
 			 _("line %d: script program must begin "
 			 "with \'/\': %s\n"), spec->lineNum, prog);
-		rc = RPMERR_BADSPEC;
+		rc = RPMLOG_ERR;
 		goto exit;
 	    }
 	    break;
@@ -207,11 +207,11 @@ int parseScript(rpmSpec spec, int parsePart)
     }
     
     if (arg < -1) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Bad option %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Bad option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
-	rc = RPMERR_BADSPEC;
+	rc = RPMLOG_ERR;
 	goto exit;
     }
 
@@ -219,34 +219,34 @@ int parseScript(rpmSpec spec, int parsePart)
 	if (name == NULL)
 	    name = poptGetArg(optCon);
 	if (poptPeekArg(optCon)) {
-	    rpmlog(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
-	    rc = RPMERR_BADSPEC;
+	    rc = RPMLOG_ERR;
 	    goto exit;
 	}
     }
     
     if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
-	rc = RPMERR_BADSPEC;
+	rc = RPMLOG_ERR;
 	goto exit;
     }
 
     if (tag != RPMTAG_TRIGGERSCRIPTS) {
 	if (headerIsEntry(pkg->header, progtag)) {
-	    rpmlog(RPMERR_BADSPEC, _("line %d: Second %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Second %s\n"),
 		     spec->lineNum, partname);
-	    rc = RPMERR_BADSPEC;
+	    rc = RPMLOG_ERR;
 	    goto exit;
 	}
     }
 
     if ((rc = poptParseArgvString(prog, &progArgc, &progArgv))) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Error parsing %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %s: %s\n"),
 		 spec->lineNum, partname, poptStrerror(rc));
-	rc = RPMERR_BADSPEC;
+	rc = RPMLOG_ERR;
 	goto exit;
     }
 
@@ -273,7 +273,7 @@ int parseScript(rpmSpec spec, int parsePart)
     if (!strcmp(progArgv[0], "<lua>")) {
 	rpmlua lua = NULL; /* Global state. */
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
-	    rc = RPMERR_BADSPEC;
+	    rc = RPMLOG_ERR;
 	    goto exit;
 	}
 	(void) rpmlibNeedsFeature(pkg->header,
@@ -281,10 +281,10 @@ int parseScript(rpmSpec spec, int parsePart)
     } else
 #endif
     if (progArgv[0][0] == '<') {
-	rpmlog(RPMERR_BADSPEC,
+	rpmlog(RPMLOG_ERR,
 		 _("line %d: unsupported internal script: %s\n"),
 		 spec->lineNum, progArgv[0]);
-	rc = RPMERR_BADSPEC;
+	rc = RPMLOG_ERR;
 	goto exit;
     } else {
         (void) addReqProv(spec, pkg->header, RPMTAG_REQUIRENAME,

@@ -246,7 +246,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	if (rc) {
 	    static int _printed[32];
 	    if (!_printed[dbix & 0x1f]++)
-		rpmlog(RPMERR_DBOPEN,
+		rpmlog(RPMLOG_ERR,
 			_("cannot open %s index using db%d - %s (%d)\n"),
 			rpmTagGetName(rpmtag), _dbapi,
 			(rc > 0 ? strerror(rc) : ""), rc);
@@ -267,7 +267,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	if (_dbapi <= 0) {
 	    static int _printed[32];
 	    if (!_printed[dbix & 0x1f]++)
-		rpmlog(RPMERR_DBOPEN, _("cannot open %s index\n"),
+		rpmlog(RPMLOG_ERR, _("cannot open %s index\n"),
 			rpmTagGetName(rpmtag));
 	    rc = 1;
 	    goto exit;
@@ -903,7 +903,7 @@ rpmdb newRpmdb(const char * root,
 	db->db_root = rpmGetPath(_DB_ROOT, NULL);
     db->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
     if (!(db->db_home && db->db_home[0] != '%')) {
-	rpmlog(RPMERR_DBOPEN, _("no dbpath has been set\n"));
+	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
 	db->db_root = _free(db->db_root);
 	db->db_home = _free(db->db_home);
 	db = _free(db);
@@ -1139,7 +1139,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 	if (rc > 0) {
-	    rpmlog(RPMERR_DBGETINDEX,
+	    rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
 		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 	}
@@ -1264,7 +1264,7 @@ key->size = strlen(name);
     if (rc == DB_NOTFOUND) {	/* not found */
 	rc = 0;
     } else {			/* error */
-	rpmlog(RPMERR_DBGETINDEX,
+	rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
 		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 	rc = -1;
@@ -1314,7 +1314,7 @@ key->size = strlen(name);
     if (rc == DB_NOTFOUND) {	/* not found */
 	return RPMRC_NOTFOUND;
     } else {			/* error */
-	rpmlog(RPMERR_DBGETINDEX,
+	rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
 		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 	return RPMRC_FAIL;
@@ -1499,7 +1499,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    (void) blockSignals(dbi->dbi_rpmdb, &signalMask);
 	    rc = dbiPut(dbi, mi->mi_dbc, key, data, DB_KEYLAST);
 	    if (rc) {
-		rpmlog(RPMERR_DBPUTINDEX,
+		rpmlog(RPMLOG_ERR,
 			_("error(%d) storing record #%d into %s\n"),
 			rc, mi->mi_prevoffset, rpmTagGetName(dbi->dbi_rpmtag));
 	    }
@@ -1600,7 +1600,7 @@ static int miregexec(miRE mire, const char * val)
 	    char msg[256];
 	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
-	    rpmlog(RPMERR_REGEXEC, "%s: regexec failed: %s\n",
+	    rpmlog(RPMLOG_ERR, "%s: regexec failed: %s\n",
 			mire->pattern, msg);
 	    rc = -1;
 	}
@@ -1781,7 +1781,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	    char msg[256];
 	    (void) regerror(rc, preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
-	    rpmlog(RPMERR_REGCOMP, "%s: regcomp failed: %s\n", allpat, msg);
+	    rpmlog(RPMLOG_ERR, "%s: regcomp failed: %s\n", allpat, msg);
 	}
 	break;
     case RPMMIRE_GLOB:
@@ -2144,7 +2144,7 @@ if (dbiByteSwapped(dbi) == 1)
     mi->mi_h = headerCopyLoad(uh);
 #endif
     if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
-	rpmlog(RPMERR_BADHEADER,
+	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u retrieved -- skipping.\n"),
 		mi->mi_offset);
 	goto top;
@@ -2218,7 +2218,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi, int fpNum)
 
     if (rc) {			/* error/not found */
 	if (rc != DB_NOTFOUND)
-	    rpmlog(RPMERR_DBGETINDEX,
+	    rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
 		rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 #ifdef	SQLITE_HACK
@@ -2337,7 +2337,7 @@ if (key->data && key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 	    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 	    if (rc > 0) {
-		rpmlog(RPMERR_DBGETINDEX,
+		rpmlog(RPMLOG_ERR,
 			_("error(%d) getting \"%s\" records from %s index\n"),
 			rc, (key->data ? key->data : "???"), rpmTagGetName(dbi->dbi_rpmtag));
 	    }
@@ -2439,7 +2439,7 @@ memset(data, 0, sizeof(*data));
     }
 
     if (h == NULL) {
-	rpmlog(RPMERR_DBCORRUPT, _("%s: cannot read header at 0x%x\n"),
+	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
 	      "rpmdbRemove", hdrNum);
 	return 1;
     }
@@ -2496,7 +2496,7 @@ if (dbiByteSwapped(dbi) == 1)
 		rc = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 		if (rc) {
-		    rpmlog(RPMERR_DBGETINDEX,
+		    rpmlog(RPMLOG_ERR,
 			_("error(%d) setting header #%d record for %s removal\n"),
 			rc, hdrNum, rpmTagGetName(dbi->dbi_rpmtag));
 		} else
@@ -2627,7 +2627,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		} else if (rc == DB_NOTFOUND) {	/* not found */
 		    continue;
 		} else {			/* error */
-		    rpmlog(RPMERR_DBGETINDEX,
+		    rpmlog(RPMLOG_ERR,
 			_("error(%d) setting \"%s\" records from %s index\n"),
 			rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
@@ -2646,7 +2646,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    (void) set2dbt(dbi, data, set);
 		    rc = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 		    if (rc) {
-			rpmlog(RPMERR_DBPUTINDEX,
+			rpmlog(RPMLOG_ERR,
 				_("error(%d) storing record \"%s\" into %s\n"),
 				rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 			ret += 1;
@@ -2656,7 +2656,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		} else {
 		    rc = dbiDel(dbi, dbcursor, key, data, 0);
 		    if (rc) {
-			rpmlog(RPMERR_DBPUTINDEX,
+			rpmlog(RPMLOG_ERR,
 				_("error(%d) removing record \"%s\" from %s\n"),
 				rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 			ret += 1;
@@ -2806,7 +2806,7 @@ memset(data, 0, sizeof(*data));
     }
 
     if (ret) {
-	rpmlog(RPMERR_DBCORRUPT,
+	rpmlog(RPMLOG_ERR,
 		_("error(%d) allocating new package instance\n"), ret);
 	goto exit;
     }
@@ -3035,7 +3035,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    if (!dbi->dbi_permit_dups)
 			(void) dbt2set(dbi, data, &set);
 		} else if (rc != DB_NOTFOUND) {	/* error */
-		    rpmlog(RPMERR_DBGETINDEX,
+		    rpmlog(RPMLOG_ERR,
 			_("error(%d) getting \"%s\" records from %s index\n"),
 			rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
@@ -3051,7 +3051,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		rc = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 
 		if (rc) {
-		    rpmlog(RPMERR_DBPUTINDEX,
+		    rpmlog(RPMLOG_ERR,
 				_("error(%d) storing record %s into %s\n"),
 				rc, key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
@@ -3469,7 +3469,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	rootdbpath, newrootdbpath);
 
     if (!access(newrootdbpath, F_OK)) {
-	rpmlog(RPMERR_MKDIR, _("temporary database %s already exists\n"),
+	rpmlog(RPMLOG_ERR, _("temporary database %s already exists\n"),
 	      newrootdbpath);
 	rc = 1;
 	goto exit;
@@ -3477,7 +3477,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     rpmlog(RPMLOG_DEBUG, _("creating directory %s\n"), newrootdbpath);
     if (Mkdir(newrootdbpath, 0755)) {
-	rpmlog(RPMERR_MKDIR, _("creating directory %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("creating directory %s: %s\n"),
 	      newrootdbpath, strerror(errno));
 	rc = 1;
 	goto exit;
@@ -3523,7 +3523,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 		headerIsEntry(h, RPMTAG_RELEASE) &&
 		headerIsEntry(h, RPMTAG_BUILDTIME)))
 	    {
-		rpmlog(RPMERR_INTERNAL,
+		rpmlog(RPMLOG_ERR,
 			_("header #%u in the database is bad -- skipping.\n"),
 			_RECNUM);
 		continue;
@@ -3561,7 +3561,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    }
 
 	    if (rc) {
-		rpmlog(RPMERR_INTERNAL,
+		rpmlog(RPMLOG_ERR,
 			_("cannot add record originally at %u\n"), _RECNUM);
 		failed = 1;
 		break;

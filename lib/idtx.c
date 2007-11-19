@@ -131,7 +131,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 
 	fd = Fopen(av[i], "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-            rpmlog(RPMERR_OPEN, _("open of %s failed: %s\n"), av[i],
+            rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), av[i],
                         Fstrerror(fd));
 	    if (fd != NULL) (void) Fclose(fd);
 	    continue;

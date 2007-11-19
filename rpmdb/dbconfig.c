@@ -322,7 +322,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 		break;
 	    }
 	    if (opt->longName == NULL) {
-		rpmlog(RPMERR_DBCONFIG,
+		rpmlog(RPMLOG_ERR,
 			_("unrecognized db option: \"%s\" ignored.\n"), o);
 		continue;
 	    }
@@ -359,7 +359,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 		    else if (!xstrncasecmp(pe, "Kb", 2))
 			aLong *= 1024;
 		    else if (*pe != '\0') {
-			rpmlog(RPMERR_DBCONFIG,
+			rpmlog(RPMLOG_ERR,
 				_("%s has invalid numeric value, skipped\n"),
 				opt->longName);
 			continue;
@@ -368,7 +368,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 
 		if ((argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
 		    if (aLong == LONG_MIN || aLong == LONG_MAX) {
-			rpmlog(RPMERR_DBCONFIG,
+			rpmlog(RPMLOG_ERR,
 				_("%s has too large or too small long value, skipped\n"),
 				opt->longName);
 			continue;
@@ -377,7 +377,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 		    break;
 		} else {
 		    if (aLong > INT_MAX || aLong < INT_MIN) {
-			rpmlog(RPMERR_DBCONFIG,
+			rpmlog(RPMLOG_ERR,
 				_("%s has too large or too small integer value, skipped\n"),
 				opt->longName);
 			continue;

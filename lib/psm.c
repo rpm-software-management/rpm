@@ -247,7 +247,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
     if (!isSource) {
-	rpmlog(RPMERR_NOTSRPM, _("source package expected, binary found\n"));
+	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
@@ -358,7 +358,7 @@ fi->fmd5s = hfd(fi->fmd5s, -1);
 	(void) stpcpy( stpcpy( stpcpy(t, _specdir), "/"), fi->bnl[i]);
 	specFile = t;
     } else {
-	rpmlog(RPMERR_NOSPEC, _("source package contains no .spec file\n"));
+	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
@@ -823,7 +823,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
 
     if (psm->sq.child == (pid_t)-1) {
-	rpmlog(RPMERR_FORK, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
+	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
 	rc = RPMRC_FAIL;
 	goto exit;
     }
@@ -833,18 +833,18 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
   /* XXX filter order dependent multilib "other" arch helper error. */
   if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     if (psm->sq.reaped < 0) {
-	rpmlog(RPMERR_SCRIPT,
+	rpmlog(RPMLOG_ERR,
 		_("%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sln, n, v, r, a, psm->sq.child, psm->sq.reaped, strerror(errno));
 	rc = RPMRC_FAIL;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
       if (WIFSIGNALED(psm->sq.status)) {
-        rpmlog(RPMERR_SCRIPT,
+        rpmlog(RPMLOG_ERR,
                  _("%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"),
                  sln, n, v, r, a, WTERMSIG(psm->sq.status));
       } else {
-	rpmlog(RPMERR_SCRIPT,
+	rpmlog(RPMLOG_ERR,
 		_("%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"),
 		sln, n, v, r, a, WEXITSTATUS(psm->sq.status));
       }
@@ -1415,7 +1415,7 @@ assert(psm->mi == NULL);
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
 		rc = rpmpsmNext(psm, PSM_SCRIPT);
 		if (rc != RPMRC_OK) {
-		    rpmlog(RPMERR_SCRIPT,
+		    rpmlog(RPMLOG_ERR,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
 			psm->stepName, tag2sln(psm->scriptTag), rc,
 			rpmteNEVR(psm->te));
@@ -1510,7 +1510,7 @@ assert(psm->mi == NULL);
 
 		rc = writeLead(psm->fd, &lead);
 		if (rc != RPMRC_OK) {
-		    rpmlog(RPMERR_NOSPACE, _("Unable to write package: %s\n"),
+		    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
 			 Fstrerror(psm->fd));
 		    break;
 		}
@@ -1522,7 +1522,7 @@ assert(psm->mi == NULL);
 		/* Reallocate the signature into one contiguous region. */
 		sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
 		if (sigh == NULL) {
-		    rpmlog(RPMERR_NOSPACE, _("Unable to reload signature header\n"));
+		    rpmlog(RPMLOG_ERR, _("Unable to reload signature header\n"));
 		    rc = RPMRC_FAIL;
 		    break;
 		}
@@ -1596,7 +1596,7 @@ assert(psm->mi == NULL);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (rc) {
-		rpmlog(RPMERR_CPIO,
+		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
 			(psm->failedFile != NULL ? psm->failedFile : ""),
@@ -1778,11 +1778,11 @@ assert(psm->mi == NULL);
 
 	if (rc) {
 	    if (psm->failedFile)
-		rpmlog(RPMERR_CPIO,
+		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),
 			psm->stepName, psm->failedFile, cpioStrerror(rc));
 	    else
-		rpmlog(RPMERR_CPIO, _("%s failed: %s\n"),
+		rpmlog(RPMLOG_ERR, _("%s failed: %s\n"),
 			psm->stepName, cpioStrerror(rc));
 
 	    /* XXX notify callback on error. */

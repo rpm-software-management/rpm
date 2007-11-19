@@ -23,7 +23,7 @@ extern int noLang;
 
 int parseDescription(rpmSpec spec)
 {
-    int nextPart = RPMERR_BADSPEC;	/* assume error */
+    int nextPart = RPMLOG_ERR;	/* assume error */
     StringBuf sb;
     int flag = PART_SUBNAME;
     Package pkg;
@@ -37,9 +37,9 @@ int parseDescription(rpmSpec spec)
     lang = RPMBUILD_DEFAULT_LANG;
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Error parsing %%description: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%description: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
-	return RPMERR_BADSPEC;
+	return RPMLOG_ERR;
     }
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
@@ -50,7 +50,7 @@ int parseDescription(rpmSpec spec)
     }
 
     if (arg < -1) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Bad option %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Bad option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
@@ -61,7 +61,7 @@ int parseDescription(rpmSpec spec)
 	if (name == NULL)
 	    name = poptGetArg(optCon);
 	if (poptPeekArg(optCon)) {
-	    rpmlog(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
 	    goto exit;
@@ -69,7 +69,7 @@ int parseDescription(rpmSpec spec)
     }
 
     if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
 	goto exit;
     }
@@ -79,7 +79,7 @@ int parseDescription(rpmSpec spec)
 
 #if 0    
     if (headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: Second description\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: Second description\n"),
 		spec->lineNum);
 	goto exit;
     }
@@ -93,7 +93,7 @@ int parseDescription(rpmSpec spec)
 	nextPart = PART_NONE;
     } else {
 	if (rc) {
-	    nextPart = RPMERR_BADSPEC;
+	    nextPart = RPMLOG_ERR;
 	    goto exit;
 	}
 	while (! (nextPart = isPart(spec->line))) {
@@ -105,7 +105,7 @@ int parseDescription(rpmSpec spec)
 		break;
 	    }
 	    if (rc) {
-		nextPart = RPMERR_BADSPEC;
+		nextPart = RPMLOG_ERR;
 		goto exit;
 	    }
 	}

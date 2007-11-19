@@ -61,7 +61,7 @@ static FD_t rpmgiOpen(const char * path, const char * fmode)
     FD_t fd = Fopen(fn, fmode);
 
     if (fd == NULL || Ferror(fd)) {
-	rpmlog(RPMERR_OPEN, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
+	rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), fn, Fstrerror(fd));
 	if (fd != NULL) (void) Fclose(fd);
 	fd = NULL;
     }
@@ -319,7 +319,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	    *ae++ = '\0';
 	    tag = rpmTagGetValue(a);
 	    if (tag < 0) {
-		rpmlog(RPMERR_QUERYINFO, _("unknown tag: \"%s\"\n"), a);
+		rpmlog(RPMLOG_NOTICE, _("unknown tag: \"%s\"\n"), a);
 		res = 1;
 	    }
 	    pat = ae;

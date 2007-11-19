@@ -115,7 +115,7 @@ restart:
 	/* Try to read the header from a package file. */
 	fd = Fopen(*fnp, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
+	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *fnp,
 			Fstrerror(fd));
 	    if (fd) {
 		Fclose(fd);
@@ -152,7 +152,7 @@ maybe_manifest:
 	/* Try to read a package manifest. */
 	fd = Fopen(*fnp, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
+	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *fnp,
 			Fstrerror(fd));
 	    if (fd) {
 		Fclose(fd);
@@ -165,7 +165,7 @@ maybe_manifest:
 	/* Read list of packages from manifest. */
 	rc = rpmReadPackageManifest(fd, &argc, &argv);
 	if (rc)
-	    rpmlog(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
+	    rpmlog(RPMLOG_NOTICE, _("%s: read manifest failed: %s\n"),
 			fileURL, Fstrerror(fd));
 	Fclose(fd);
 	fd = NULL;

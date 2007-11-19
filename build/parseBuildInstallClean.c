@@ -30,9 +30,9 @@ int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
     }
     
     if (*sbp != NULL) {
-	rpmlog(RPMERR_BADSPEC, _("line %d: second %s\n"),
+	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
 		spec->lineNum, name);
-	return RPMERR_BADSPEC;
+	return RPMLOG_ERR;
     }
     
     *sbp = newStringBuf();
