@@ -953,9 +953,9 @@ build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 
 rm -f ./find-provides
-if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.prov ./find-provides
+if test -f ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.prov ; then
+	echo "using ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.prov ./find-provides
 elif test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
 	echo "using ${srcdir}/autodeps/${build_os_exact}.prov for automatic provides generation"
     ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides
@@ -971,9 +971,9 @@ else
 fi
 
 rm -f ./find-requires
-if test -f ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ; then
-	echo "using ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_cpu}-${build_os_exact}.req ./find-requires
+if test -f ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.req ; then
+	echo "using ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.req ./find-requires
 elif test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
 	echo "using ${srcdir}/autodeps/${build_os_exact}.req for automatic requires generation"
     ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires
@@ -991,7 +991,7 @@ fi
 dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
-case "${build_cpu}" in
+case "${host_cpu}" in
 *86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
 ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
 amd64*)		RPMCANONCOLOR=3; RPMCANONARCH=amd64 ;;
