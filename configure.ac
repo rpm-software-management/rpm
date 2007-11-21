@@ -8,10 +8,9 @@ AM_INIT_AUTOMAKE([1.10 foreign tar-ustar dist-bzip2 subdir-objects nostdinc])
 
 AC_CONFIG_TESTDIR(tests)
 
-AC_DISABLE_STATIC
+AC_USE_SYSTEM_EXTENSIONS
 
-AC_AIX
-AC_MINIX
+AC_DISABLE_STATIC
 
 dnl Checks for programs.
 AC_PROG_CXX
@@ -27,7 +26,7 @@ AC_PROG_YACC
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$GCC" = yes; then
-    CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wno-char-subscripts"
+    CFLAGS="$CFLAGS -fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wno-char-subscripts"
     # XXX disabled for now due to noise from NSPR headers
     # CFLAGS="$CFLAGS -Wstrict-prototypes"
     cflags_to_try="-fno-strict-aliasing"
