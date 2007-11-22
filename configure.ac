@@ -853,9 +853,9 @@ AC_CHECK_FUNC(lchown,
     AC_ARG_ENABLE([broken-chown],
     [  --enable-broken-chown   this system's chown follows symbolic links], 
 	    result=$enableval, result=unknown)
-    if echo "$build" | egrep "(aix)|(hpux)|(linux)" > /dev/null ; then
+    if echo "$build" | ${EGREP} "(aix)|(hpux)|(linux)" > /dev/null ; then
 	result=yes
-    elif echo "$build" | egrep "(nextstep)" > /dev/null ; then
+    elif echo "$build" | ${EGREP} "(nextstep)" > /dev/null ; then
 	result=no
     fi
     if test $result = unknown; then
