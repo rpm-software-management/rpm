@@ -26,6 +26,14 @@ typedef struct DIGEST_CTX_s * DIGEST_CTX;
 
 /**
  */
+typedef struct pgpDig_s * pgpDig;
+
+/**
+ */
+typedef struct pgpDigParams_s * pgpDigParams;
+
+/**
+ */
 typedef const struct pgpValTbl_s {
     int val;
 const char * str;

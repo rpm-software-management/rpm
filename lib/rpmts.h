@@ -9,6 +9,7 @@
 #include <rpmlib.h>	/* for rpmts */
 #include <rpmps.h>
 #include <rpmsw.h>
+#include <rpmpgp.h>
 
 #ifdef __cplusplus
 extern "C" {
