@@ -17,6 +17,7 @@
 #include <rpmfileutil.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>
+#include <rpmlog.h>
 #include <argv.h>
 
 static int open_dso(const char * path, pid_t * pidp, size_t *fsizep)
@@ -217,5 +218,104 @@ exit:
     md5sum = _free(md5sum);
 
     return rc;
+}
+
+int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
+{
+    const char * tpmacro = "%{?_tmppath:%{_tmppath}}%{!?_tmppath:" LOCALSTATEDIR "/tmp}";
+    const char * tempfn = NULL;
+    const char * tfn = NULL;
+    static int _initialized = 0;
+    int temput;
+    FD_t fd = NULL;
+    int ran;
+
+    if (!prefix) prefix = "";
+
+    /* Create the temp directory if it doesn't already exist. */
+    if (!_initialized) {
+	_initialized = 1;
+	tempfn = rpmGenPath(prefix, tpmacro, NULL);
+	if (rpmioMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
+	    goto errxit;
+    }
+
+    /* XXX should probably use mkstemp here */
+    srand(time(NULL));
+    ran = rand() % 100000;
+
+    /* maybe this should use link/stat? */
+
+    do {
+	char tfnbuf[64];
+#ifndef	NOTYET
+	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
+	tempfn = _free(tempfn);
+	tempfn = rpmGenPath(prefix, tpmacro, tfnbuf);
+#else
+	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
+	tempfn = _free(tempfn);
+	tempfn = rpmGenPath(prefix, tpmacro, mktemp(tfnbuf));
+#endif
+
+	temput = urlPath(tempfn, &tfn);
+	if (*tfn == '\0') goto errxit;
+
+	switch (temput) {
+	case URL_IS_DASH:
+	case URL_IS_HKP:
+	    goto errxit;
+	    break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
+	default:
+	    break;
+	}
+
+	fd = Fopen(tempfn, "w+x.ufdio");
+	/* XXX FIXME: errno may not be correct for ufdio */
+    } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
+
+    if (fd == NULL || Ferror(fd))
+	goto errxit;
+
+    switch(temput) {
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+      {	struct stat sb, sb2;
+	if (!stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
+	    rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
+	    goto errxit;
+	}
+
+	if (sb.st_nlink != 1) {
+	    rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
+	    goto errxit;
+	}
+
+	if (fstat(Fileno(fd), &sb2) == 0) {
+	    if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
+		rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
+		goto errxit;
+	    }
+	}
+      }	break;
+    default:
+	break;
+    }
+
+    if (fnptr)
+	*fnptr = tempfn;
+    else 
+	tempfn = _free(tempfn);
+    *fdptr = fd;
+
+    return 0;
+
+errxit:
+    tempfn = _free(tempfn);
+    if (fd != NULL) (void) Fclose(fd);
+    return 1;
 }
 

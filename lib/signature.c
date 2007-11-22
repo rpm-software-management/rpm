@@ -13,8 +13,8 @@
 #include <rpmts.h>
 
 #include <rpmlog.h>
-#include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
-#include "rpmfileutil.h"
+#include "misc.h"	/* XXX for dosetenv() */
+#include <rpmfileutil.h>
 #include "rpmlead.h"
 #include "signature.h"
 #include "header_internal.h"
@@ -672,7 +672,7 @@ static int makeHDRSignature(Header sigh, const char * file, int32_t sigTag,
 	if (h == NULL)
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
-	if (makeTempFile(NULL, &fn, &fd))
+	if (rpmMkTempFile(NULL, &fn, &fd))
 	    goto exit;
 	if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	    goto exit;
@@ -690,7 +690,7 @@ static int makeHDRSignature(Header sigh, const char * file, int32_t sigTag,
 	if (h == NULL)
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
-	if (makeTempFile(NULL, &fn, &fd))
+	if (rpmMkTempFile(NULL, &fn, &fd))
 	    goto exit;
 	if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	    goto exit;

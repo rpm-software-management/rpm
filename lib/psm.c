@@ -29,7 +29,8 @@
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "legacy.h"		/* XXX rpmfiBuildFNames() */
-#include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
+#include <rpmfileutil.h>	/* rpmMkTempFile() */
+#include "misc.h"		/* XXX rpmMkdirPath, doputenv */
 #include <rpmdb.h>		/* XXX for db_chrootDone */
 #include <rpmlog.h>
 #include "debug.h"
@@ -680,7 +681,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
 
-	if (makeTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
+	if (rpmMkTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
 	    if (prefixes != NULL && freePrefixes) free(prefixes);
 	    return RPMRC_FAIL;
 	}

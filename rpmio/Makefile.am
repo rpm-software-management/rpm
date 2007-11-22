@@ -7,6 +7,7 @@ AM_CPPFLAGS += @WITH_LUA_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -DRPMCONFIGDIR="\"@RPMCONFIGDIR@\""
+AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmio.la

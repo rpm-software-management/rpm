@@ -7,7 +7,7 @@
 
 #include <rpmbuild.h>
 #include <rpmlog.h>
-#include "misc.h" 	/* XXX for makeTempFile */
+#include <rpmfileutil.h>
 
 #include "debug.h"
 
@@ -128,7 +128,7 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 	goto exit;
     }
     
-    if (makeTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
+    if (rpmMkTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	rc = RPMLOG_ERR;
 	goto exit;

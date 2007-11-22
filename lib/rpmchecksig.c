@@ -16,7 +16,7 @@
 #include <rpmlog.h>
 #include "rpmlead.h"
 #include "signature.h"
-#include "misc.h"	/* XXX for makeTempFile() */
+#include <rpmfileutil.h>	/* rpmMkTempFile() */
 #include "debug.h"
 
 int _print_pkts = 0;
@@ -55,8 +55,8 @@ static int manageFile(FD_t *fdp,
     /* open a temp file */
     if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
 	fn = NULL;
-	if (makeTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
-	    rpmlog(RPMLOG_ERR, _("makeTempFile failed\n"));
+	if (rpmMkTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
+	    rpmlog(RPMLOG_ERR, _("rpmMkTempFile failed\n"));
 	    return 1;
 	}
 	if (fnp != NULL)

@@ -23,7 +23,7 @@
 #include "legacy.h"	/* XXX providePackageNVR */
 #include "signature.h"
 #include "rpmlead.h"
-#include "misc.h"	/* XXX for makeTempFile */
+#include <rpmfileutil.h>
 #include <rpmlog.h>
 #include "debug.h"
 
@@ -456,7 +456,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      * Write the header+archive into a temp file so that the size of
      * archive (after compression) can be added to the header.
      */
-    if (makeTempFile(NULL, &sigtarget, &fd)) {
+    if (rpmMkTempFile(NULL, &sigtarget, &fd)) {
 	rc = RPMLOG_ERR;
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	goto exit;
