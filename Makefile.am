@@ -7,7 +7,8 @@ include $(top_srcdir)/rpm.am
 CLEANFILES =
 EXTRA_DIST = CHANGES ChangeLog CREDITS GROUPS INSTALL \
 	autodeps autogen.sh \
-	db db3/configure installplatform platform* 
+	db db3/configure installplatform platform*
+BUILT_SOURCES =
 
 SUBDIRS = po misc
 if WITH_INTERNAL_DB
@@ -374,12 +375,13 @@ EXTRA_DIST += doc/librpm/html
 if WITH_INTERNAL_DB
 db.h:	$(top_builddir)/db3/db.h
 	$(LN_S) $(top_builddir)/db3/db.h $@
-BUILT_SOURCES = db.h
+BUILT_SOURCES += db.h
 endif
 DISTCLEANFILES += db.h
 
 clean-local:
 	rm -rf doc/hacking/html
+	rm -rf include
 
 distclean-local:
 	rm -rf Doxytags
@@ -388,3 +390,18 @@ distclean-local:
 maintainer-clean-local:
 	rm -rf doc/librpm/html
 
+$(top_srcdir)/preinstall.am: Makefile.am
+	rm -f preinstall.am
+	@for f in $(HEADERS); do \
+	  b=`basename $$f`; \
+	  echo 'include/rpm/'$$b': '$$f include/rpm/$(dirstamp) >> $(top_srcdir)/preinstall.am;\
+	  echo '	$$(INSTALL_DATA) '$$f' include/rpm/'$$b >> $(top_srcdir)/preinstall.am; \
+	  echo 'BUILT_SOURCES += include/rpm/'$$b >> $(top_srcdir)/preinstall.am; \
+	  echo 'CLEANFILES += include/rpm/'$$b  >> $(top_srcdir)/preinstall.am; \
+	 done
+
+include/rpm/$(dirstamp):
+	@$(MKDIR_P) include/rpm
+	@: > include/rpm/$(dirstamp)
+
+include $(top_srcdir)/preinstall.am

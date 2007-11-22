@@ -1060,6 +1060,8 @@ AS_IF([test "$ac_cv_header_stdint_h" = "yes"],[
 AC_DEFINE([__RPM_USES_STDINT_H__],[1],[if rpm uses stdint.h])
 ])
 
+AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
+
 AC_CONFIG_HEADERS([rpmdb/rpmints.h])
 
 AC_CONFIG_FILES([Makefile
