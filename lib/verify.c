@@ -11,7 +11,7 @@
 #include <rpmfi.h>
 #include <rpmts.h>
 
-#include "legacy.h"	/* XXX domd5() */
+#include "rpmfileutil.h"
 #include "ugid.h" 	/* uidToUname(), gnameToGid */
 #include "debug.h"
 
@@ -113,7 +113,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	size_t fsize;
 
 	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
-	rc = domd5(fn, md5sum, 0, &fsize);
+	rc = rpmDoDigest(PGPHASHALGO_MD5, fn, 0, md5sum, &fsize);
 	sb.st_size = fsize;
 	if (rc)
 	    *res |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);

@@ -19,7 +19,7 @@
 #include <rpmte.h>
 #include <rpmts.h>
 
-#include "legacy.h"     /* XXX domd5 */
+#include <rpmfileutil.h>/* XXX domd5 */
 #include <rpmstring.h>
 #include <rpmmacro.h>	/* XXX rpmCleanPath */
 
@@ -523,7 +523,8 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	const unsigned char * omd5, * nmd5;
 	omd5 = rpmfiMD5(ofi);
 	if (diskWhat == REG) {
-	    if (domd5(fn, (unsigned char *)buffer, 0, NULL))
+	    if (rpmDoDigest(PGPHASHALGO_MD5, fn, 0, 
+		(unsigned char *)buffer, NULL))
 	        return FA_CREATE;	/* assume file has been removed */
 	    if (omd5 && !memcmp(omd5, buffer, 16))
 	        return FA_CREATE;	/* unmodified config file, replace. */
@@ -578,7 +579,7 @@ int rpmfiConfigConflict(const rpmfi fi)
     memset(buffer, 0, sizeof(buffer));
     if (newWhat == REG) {
 	const unsigned char * nmd5;
-	if (domd5(fn, (unsigned char *)buffer, 0, NULL))
+	if (rpmDoDigest(PGPHASHALGO_MD5, fn, 0, (unsigned char *)buffer, NULL))
 	    return 0;	/* assume file has been removed */
 	nmd5 = rpmfiMD5(fi);
 	if (nmd5 && !memcmp(nmd5, buffer, 16))

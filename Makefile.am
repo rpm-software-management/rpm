@@ -48,6 +48,7 @@ pkginclude_HEADERS += rpmio/rpmpgp.h
 pkginclude_HEADERS += rpmio/rpmsq.h
 pkginclude_HEADERS += rpmio/rpmstring.h
 pkginclude_HEADERS += rpmio/rpmsw.h
+pkginclude_HEADERS += rpmio/rpmfileutil.h
 
 pkginclude_HEADERS += rpmdb/header.h
 pkginclude_HEADERS += rpmdb/rpmdb.h

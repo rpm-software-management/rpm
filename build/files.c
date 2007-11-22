@@ -29,7 +29,8 @@
 
 #include "buildio.h"
 
-#include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
+#include <rpmfileutil.h>	/* rpmDoDigest() */
+#include "legacy.h"	/* XXX expandFileList, compressFileList */
 #include <rpmlog.h>
 #include "debug.h"
 
@@ -1195,7 +1196,8 @@ static void genCpioListAndHeader(FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) domd5(flp->diskURL, (unsigned char *)buf, 1, NULL);
+	    (void) rpmDoDigest(PGPHASHALGO_MD5, flp->diskURL, 1, 
+			       (unsigned char *)buf, NULL);
 	s = buf;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);

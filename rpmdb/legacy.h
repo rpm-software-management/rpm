@@ -15,17 +15,6 @@ extern "C" {
 #endif
 
 /**
- * Return MD5 sum and size of a file.
- * @param fn		file name
- * @retval digest	address of md5sum
- * @param asAscii	return md5sum as ascii string?
- * @retval *fsizep	file size pointer (or NULL)
- * @return		0 on success, 1 on error
- */
-int domd5(const char * fn, unsigned char * digest, int asAscii,
-		size_t *fsizep);
-
-/**
  * Convert absolute path tag to (dirname,basename,dirindex) tags.
  * @param h		header
  */

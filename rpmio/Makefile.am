@@ -15,7 +15,7 @@ librpmio_la_SOURCES = \
 	rpmhook.c rpmio.c rpmlog.c rpmlua.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c url.c ugid.c \
 	rpmio_internal.h rpmlua.h rpmhook.h ugid.h fts.h \
-	rpmstring.c 
+	rpmstring.c rpmfileutil.c
 
 librpmio_la_LDFLAGS = -release 4.4
 librpmio_la_LIBADD = \

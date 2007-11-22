@@ -27,9 +27,9 @@
 
 #include "cpio.h"
 #include "fprint.h"
-#include "legacy.h"	/* XXX domd5 */
+#include <rpmfileutil.h>
 #include <rpmstring.h>
-#include "misc.h" 	/* currentDirectory */
+#include "misc.h" 		/* currentDirectory */
 
 #include "debug.h"
 
@@ -574,7 +574,8 @@ assert(otherFi != NULL);
 	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	unsigned char md5sum[50];
 		const unsigned char * MD5 = rpmfiMD5(fi);
-		if (!domd5(fn, md5sum, 0, NULL) && memcmp(MD5, md5sum, 16)) {
+		if (!rpmDoDigest(PGPHASHALGO_MD5, fn, 0, md5sum, NULL) &&
+		    memcmp(MD5, md5sum, 16)) {
 		    fi->actions[i] = FA_BACKUP;
 		    break;
 		}
