@@ -1,0 +1,104 @@
+include/rpm/rpmints.h: rpmdb/rpmints.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmdb/rpmints.h include/rpm/rpmints.h
+BUILT_SOURCES += include/rpm/rpmints.h
+CLEANFILES += include/rpm/rpmints.h
+include/rpm/argv.h: rpmio/argv.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/argv.h include/rpm/argv.h
+BUILT_SOURCES += include/rpm/argv.h
+CLEANFILES += include/rpm/argv.h
+include/rpm/rpmio.h: rpmio/rpmio.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmio.h include/rpm/rpmio.h
+BUILT_SOURCES += include/rpm/rpmio.h
+CLEANFILES += include/rpm/rpmio.h
+include/rpm/rpmurl.h: rpmio/rpmurl.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmurl.h include/rpm/rpmurl.h
+BUILT_SOURCES += include/rpm/rpmurl.h
+CLEANFILES += include/rpm/rpmurl.h
+include/rpm/rpmmacro.h: rpmio/rpmmacro.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmmacro.h include/rpm/rpmmacro.h
+BUILT_SOURCES += include/rpm/rpmmacro.h
+CLEANFILES += include/rpm/rpmmacro.h
+include/rpm/rpmlog.h: rpmio/rpmlog.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmlog.h include/rpm/rpmlog.h
+BUILT_SOURCES += include/rpm/rpmlog.h
+CLEANFILES += include/rpm/rpmlog.h
+include/rpm/rpmmessages.h: rpmio/rpmmessages.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmmessages.h include/rpm/rpmmessages.h
+BUILT_SOURCES += include/rpm/rpmmessages.h
+CLEANFILES += include/rpm/rpmmessages.h
+include/rpm/rpmpgp.h: rpmio/rpmpgp.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmpgp.h include/rpm/rpmpgp.h
+BUILT_SOURCES += include/rpm/rpmpgp.h
+CLEANFILES += include/rpm/rpmpgp.h
+include/rpm/rpmsq.h: rpmio/rpmsq.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmsq.h include/rpm/rpmsq.h
+BUILT_SOURCES += include/rpm/rpmsq.h
+CLEANFILES += include/rpm/rpmsq.h
+include/rpm/rpmsw.h: rpmio/rpmsw.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmio/rpmsw.h include/rpm/rpmsw.h
+BUILT_SOURCES += include/rpm/rpmsw.h
+CLEANFILES += include/rpm/rpmsw.h
+include/rpm/header.h: rpmdb/header.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmdb/header.h include/rpm/header.h
+BUILT_SOURCES += include/rpm/header.h
+CLEANFILES += include/rpm/header.h
+include/rpm/rpmdb.h: rpmdb/rpmdb.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../rpmdb/rpmdb.h include/rpm/rpmdb.h
+BUILT_SOURCES += include/rpm/rpmdb.h
+CLEANFILES += include/rpm/rpmdb.h
+include/rpm/idtx.h: lib/idtx.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/idtx.h include/rpm/idtx.h
+BUILT_SOURCES += include/rpm/idtx.h
+CLEANFILES += include/rpm/idtx.h
+include/rpm/rpmcli.h: lib/rpmcli.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmcli.h include/rpm/rpmcli.h
+BUILT_SOURCES += include/rpm/rpmcli.h
+CLEANFILES += include/rpm/rpmcli.h
+include/rpm/rpmlib.h: lib/rpmlib.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmlib.h include/rpm/rpmlib.h
+BUILT_SOURCES += include/rpm/rpmlib.h
+CLEANFILES += include/rpm/rpmlib.h
+include/rpm/rpmal.h: lib/rpmal.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmal.h include/rpm/rpmal.h
+BUILT_SOURCES += include/rpm/rpmal.h
+CLEANFILES += include/rpm/rpmal.h
+include/rpm/rpmds.h: lib/rpmds.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmds.h include/rpm/rpmds.h
+BUILT_SOURCES += include/rpm/rpmds.h
+CLEANFILES += include/rpm/rpmds.h
+include/rpm/rpmfi.h: lib/rpmfi.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmfi.h include/rpm/rpmfi.h
+BUILT_SOURCES += include/rpm/rpmfi.h
+CLEANFILES += include/rpm/rpmfi.h
+include/rpm/rpmgi.h: lib/rpmgi.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmgi.h include/rpm/rpmgi.h
+BUILT_SOURCES += include/rpm/rpmgi.h
+CLEANFILES += include/rpm/rpmgi.h
+include/rpm/rpmps.h: lib/rpmps.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmps.h include/rpm/rpmps.h
+BUILT_SOURCES += include/rpm/rpmps.h
+CLEANFILES += include/rpm/rpmps.h
+include/rpm/rpmte.h: lib/rpmte.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmte.h include/rpm/rpmte.h
+BUILT_SOURCES += include/rpm/rpmte.h
+CLEANFILES += include/rpm/rpmte.h
+include/rpm/rpmts.h: lib/rpmts.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/rpmts.h include/rpm/rpmts.h
+BUILT_SOURCES += include/rpm/rpmts.h
+CLEANFILES += include/rpm/rpmts.h
+include/rpm/stringbuf.h: lib/stringbuf.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../lib/stringbuf.h include/rpm/stringbuf.h
+BUILT_SOURCES += include/rpm/stringbuf.h
+CLEANFILES += include/rpm/stringbuf.h
+include/rpm/rpmbuild.h: build/rpmbuild.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../build/rpmbuild.h include/rpm/rpmbuild.h
+BUILT_SOURCES += include/rpm/rpmbuild.h
+CLEANFILES += include/rpm/rpmbuild.h
+include/rpm/rpmfc.h: build/rpmfc.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../build/rpmfc.h include/rpm/rpmfc.h
+BUILT_SOURCES += include/rpm/rpmfc.h
+CLEANFILES += include/rpm/rpmfc.h
+include/rpm/rpmspec.h: build/rpmspec.h include/rpm/.dirstamp
+	$(INSTALL_DATA) ../build/rpmspec.h include/rpm/rpmspec.h
+BUILT_SOURCES += include/rpm/rpmspec.h
+CLEANFILES += include/rpm/rpmspec.h
