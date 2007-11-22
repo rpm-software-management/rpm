@@ -1,6 +1,6 @@
 # Makefile for rpm library.
 
-AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
 AM_CPPFLAGS += -I$(top_srcdir)/lib
 AM_CPPFLAGS += -I$(top_builddir)/rpmdb -I$(top_srcdir)/rpmdb
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio

@@ -3,7 +3,7 @@
 EXTRA_DIST = rpmdebug-py.c rpm/__init__.py
 
 if PYTHON
-AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
 AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += -I$(top_srcdir)/build
 AM_CPPFLAGS += -I$(top_srcdir)/lib
