@@ -20,7 +20,7 @@
 #include <rpmts.h>
 
 #include "legacy.h"     /* XXX domd5 */
-#include "misc.h"	/* XXX stripTrailingChar */
+#include <rpmstring.h>
 #include <rpmmacro.h>	/* XXX rpmCleanPath */
 
 #include "debug.h"

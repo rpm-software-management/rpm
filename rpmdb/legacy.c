@@ -21,7 +21,7 @@
 #include "rpmio_internal.h"	/* XXX fdInitDigest, fdFiniDigest */
 #include <rpmlib.h>
 #include <rpmmacro.h>
-#include "misc.h"	/* XXX stripTrailingChar */
+#include <rpmstring.h>
 #include "legacy.h"
 #include "debug.h"
 

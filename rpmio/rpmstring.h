@@ -10,6 +10,29 @@ extern "C" {
 #endif
 
 /**
+ * Split string into fields separated by a character.
+ * @param str		string
+ * @param length	length of string
+ * @param sep		separator character
+ * @return		(malloc'd) argv array
+ */
+char ** splitString(const char * str, int length, char sep);
+
+/**
+ * Free split string argv array.
+ * @param list		argv array
+ */
+void freeSplitString( char ** list);
+
+/**
+ * Remove occurences of trailing character from string.
+ * @param s		string
+ * @param c		character to strip
+ * @return 		string
+ */
+char * stripTrailingChar(char * s, char c);
+
+/**
  */
 typedef struct StringBufRec *StringBuf;
 

@@ -30,7 +30,6 @@
 #include "buildio.h"
 
 #include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
-#include "misc.h"	/* for splitString, freeSplitString */
 #include <rpmlog.h>
 #include "debug.h"
 

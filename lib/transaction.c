@@ -28,7 +28,8 @@
 #include "cpio.h"
 #include "fprint.h"
 #include "legacy.h"	/* XXX domd5 */
-#include "misc.h" /* XXX (free)splitString, currentDirectory */
+#include <rpmstring.h>
+#include "misc.h" 	/* currentDirectory */
 
 #include "debug.h"
 

@@ -47,49 +47,6 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-char ** splitString(const char * str, int length, char sep)
-{
-    const char * source;
-    char * s, * dest;
-    char ** list;
-    int i;
-    int fields;
-
-    s = xmalloc(length + 1);
-
-    fields = 1;
-    for (source = str, dest = s, i = 0; i < length; i++, source++, dest++) {
-	*dest = *source;
-	if (*dest == sep) fields++;
-    }
-
-    *dest = '\0';
-
-    list = xmalloc(sizeof(*list) * (fields + 1));
-
-    dest = s;
-    list[0] = dest;
-    i = 1;
-    while (i < fields) {
-	if (*dest == sep) {
-	    list[i++] = dest + 1;
-	    *dest = 0;
-	}
-	dest++;
-    }
-
-    list[i] = NULL;
-
-/* FIX: list[i] is NULL */
-    return list;
-}
-
-void freeSplitString(char ** list)
-{
-    list[0] = _free(list[0]);
-    list = _free(list);
-}
-
 int doputenv(const char *str)
 {
     char * a;

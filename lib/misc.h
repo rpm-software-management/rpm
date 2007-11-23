@@ -22,36 +22,6 @@ extern "C" {
 rpmRC rpmMkdirPath (const char * dpath, const char * dname);
 
 /**
- * Split string into fields separated by a character.
- * @param str		string
- * @param length	length of string
- * @param sep		separator character
- * @return		(malloc'd) argv array
- */
-char ** splitString(const char * str, int length, char sep);
-
-/**
- * Free split string argv array.
- * @param list		argv array
- */
-void freeSplitString( char ** list);
-
-/**
- * Remove occurences of trailing character from string.
- * @param s		string
- * @param c		character to strip
- * @return 		string
- */
-static inline
-char * stripTrailingChar(char * s, char c)
-{
-    char * t;
-    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
-	*t = '\0';
-    return s;
-}
-
-/**
  * Like the libc function, but malloc()'s the space needed.
  * @param name		variable name
  * @param value		variable value

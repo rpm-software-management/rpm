@@ -7,7 +7,6 @@
 
 #include <rpmbuild.h>
 #include <rpmlog.h>
-#include "misc.h"	/* XXX for splitString */
 #include "debug.h"
 
 /* These have to be global to make up for stupid compilers */

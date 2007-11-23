@@ -23,6 +23,57 @@ static inline int xisspace(int c)  {
     return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
+char * stripTrailingChar(char * s, char c)
+{
+    char * t;
+    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
+	*t = '\0';
+    return s;
+}
+
+char ** splitString(const char * str, int length, char sep)
+{
+    const char * source;
+    char * s, * dest;
+    char ** list;
+    int i;
+    int fields;
+
+    s = xmalloc(length + 1);
+
+    fields = 1;
+    for (source = str, dest = s, i = 0; i < length; i++, source++, dest++) {
+	*dest = *source;
+	if (*dest == sep) fields++;
+    }
+
+    *dest = '\0';
+
+    list = xmalloc(sizeof(*list) * (fields + 1));
+
+    dest = s;
+    list[0] = dest;
+    i = 1;
+    while (i < fields) {
+	if (*dest == sep) {
+	    list[i++] = dest + 1;
+	    *dest = 0;
+	}
+	dest++;
+    }
+
+    list[i] = NULL;
+
+/* FIX: list[i] is NULL */
+    return list;
+}
+
+void freeSplitString(char ** list)
+{
+    list[0] = _free(list[0]);
+    list = _free(list);
+}
+
 StringBuf newStringBuf(void)
 {
     StringBuf sb = xmalloc(sizeof(*sb));
