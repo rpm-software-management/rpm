@@ -50,3 +50,5 @@
  */
 /** \defgroup	rpmfileutil	File and Path Manipulation API.
  */
+/** \defgroup	rpmstring	String Manipulation API.
+ */
