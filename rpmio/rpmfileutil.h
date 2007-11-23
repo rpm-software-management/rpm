@@ -65,4 +65,27 @@ int	isCompressed	(const char * file,
  */
 char * rpmCleanPath	(char * path);
 
+/**
+ * Merge 3 args into path, any or all of which may be a url.
+ * The leading part of the first URL encountered is used
+ * for the result, other URL prefixes are discarded, permitting
+ * a primitive form of URL inheiritance.
+ * @param urlroot	root URL (often path to chroot, or NULL)
+ * @param urlmdir	directory URL (often a directory, or NULL)
+ * @param urlfile	file URL (often a file, or NULL)
+ * @return		expanded, merged, canonicalized path (malloc'ed)
+ */
+/* LCL: shrug */
+const char * rpmGenPath	(const char * urlroot,
+			const char * urlmdir,
+			const char * urlfile);
+
+/**
+ * Return (malloc'ed) expanded, canonicalized, file path.
+ * @param path		macro(s) to expand (NULL terminates list)
+ * @return		canonicalized path (malloc'ed)
+ */
+/* LCL: shrug */
+const char * rpmGetPath	(const char * path, ...);
+
 #endif /* _RPMFILEUTIL_H */

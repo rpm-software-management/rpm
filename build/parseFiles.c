@@ -7,6 +7,7 @@
 
 #include <rpmbuild.h>
 #include <rpmlog.h>
+#include <rpmfileutil.h>
 #include "debug.h"
 
 /* These have to be global scope to make up for *stupid* compilers */

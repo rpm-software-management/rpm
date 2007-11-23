@@ -7,6 +7,7 @@
 
 #include <rpmbuild.h>
 #include <rpmlog.h>
+#include <rpmfileutil.h>
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }

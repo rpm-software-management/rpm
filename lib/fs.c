@@ -4,7 +4,7 @@
 
 #include "system.h"
 #include <rpmlib.h>
-#include <rpmmacro.h>	/* XXX for rpmGetPath */
+#include <rpmfileutil.h>	/* for rpmGetPath */
 #include <rpmlog.h>
 #include "debug.h"
 

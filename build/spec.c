@@ -10,6 +10,7 @@
 #include <rpmfi.h>
 #include <rpmts.h>
 #include <rpmlog.h>
+#include <rpmfileutil.h>
 
 #include "debug.h"
 

@@ -8,11 +8,11 @@
 
 #include <rpmdb.h>
 #include <rpmds.h>
-
 #include <rpmts.h>
+#include <rpmlog.h>
+#include <rpmfileutil.h>
 
 #include "manifest.h"
-#include <rpmlog.h>
 #include "debug.h"
 
 int rpmcliPackagesTotal = 0;

@@ -16,6 +16,7 @@
 #include "rpmio_internal.h"	/* XXX for rpmioSlurp */
 #include <rpmlib.h>
 #include <rpmmacro.h>
+#include <rpmfileutil.h>
 #include <rpmstring.h>
 #include "rpmlua.h"
 

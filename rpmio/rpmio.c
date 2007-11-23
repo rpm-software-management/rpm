@@ -28,6 +28,7 @@ extern int h_errno;
 #include <argv.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
+#include <rpmfileutil.h>
 
 #include "debug.h"
 

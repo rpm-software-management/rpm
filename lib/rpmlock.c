@@ -3,6 +3,7 @@
 
 #include <rpmlib.h>
 #include <rpmmacro.h>
+#include <rpmfileutil.h>
 
 #include <rpmts.h>
 #include "rpmlock.h"
