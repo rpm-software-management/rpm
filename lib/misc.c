@@ -11,7 +11,7 @@ const char * RPMVERSION = VERSION;
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
 #include <rpmlib.h>
 #include <rpmlog.h>
-#include "misc.h"
+#include "lib/misc.h"
 #include "debug.h"
 
 rpmRC rpmMkdirPath (const char * dpath, const char * dname)

@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmurl.h>
-#include "digest.h"
+#include "rpmio/digest.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmfileutil.h>		/* rpmtsOpenDB() needs rpmGetPath */
@@ -16,12 +16,12 @@
 #include <rpmal.h>
 #include <rpmds.h>
 #include <rpmfi.h>
-#include "rpmlock.h"
+#include "lib/rpmlock.h"
 #include <rpmlog.h>
 
 #include <rpmte.h>
 
-#include "rpmts_internal.h"
+#include "lib/rpmts_internal.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */

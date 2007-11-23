@@ -7,15 +7,15 @@
 
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
-#include "fsm.h"
-#include "psm.h"
+#include "lib/fsm.h"
+#include "lib/psm.h"
 
 #include <rpmdb.h>
-#include "rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
+#include "rpmdb/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
 
 #include <rpmds.h>
 
-#include "rpmlock.h"
+#include "lib/rpmlock.h"
 
 #define	_RPMFI_INTERNAL		/* fi->replaced, fi->actions... */
 #include <rpmfi.h>
@@ -23,13 +23,13 @@
 #define	_RPMTE_INTERNAL		/* XXX te->h, te->fd, te->h */
 #include <rpmte.h>
 
-#include "rpmts_internal.h"
+#include "lib/rpmts_internal.h"
 
-#include "cpio.h"
-#include "fprint.h"
+#include "lib/cpio.h"
+#include "rpmdb/fprint.h"
 #include <rpmfileutil.h>
 #include <rpmstring.h>
-#include "misc.h" 		/* currentDirectory */
+#include "lib/misc.h" 		/* currentDirectory */
 
 #include "debug.h"
 

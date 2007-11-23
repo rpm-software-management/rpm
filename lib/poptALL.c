@@ -7,7 +7,7 @@
 const char *__progname;
 
 #include <rpmcli.h>
-#include "fts.h"
+#include "rpmio/fts.h"
 
 #include "debug.h"
 

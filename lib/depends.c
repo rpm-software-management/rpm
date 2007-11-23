@@ -9,7 +9,7 @@
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
 #include <rpmdb.h>
-#include "rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
+#include "rpmdb/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
 
 #include <rpmds.h>
 #include <rpmfi.h>
@@ -17,7 +17,7 @@
 #define	_RPMTE_INTERNAL		/* XXX tsortInfo_s */
 #include <rpmte.h>
 
-#include "rpmts_internal.h"
+#include "lib/rpmts_internal.h"
 
 #include "debug.h"
 

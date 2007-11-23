@@ -12,7 +12,7 @@
 #include <rpmlog.h>
 #include <rpmfileutil.h>
 
-#include "manifest.h"
+#include "lib/manifest.h"
 #include "debug.h"
 
 int rpmcliPackagesTotal = 0;

@@ -6,7 +6,7 @@
 #include "system.h"
 
 #include <rpmpgp.h>
-#include "rpmio_internal.h"	/* for fd*Digest() */
+#include "rpmio/rpmio_internal.h"	/* for fd*Digest() */
 #include <rpmcli.h>
 
 #include <rpmdb.h>
@@ -14,8 +14,8 @@
 #include <rpmts.h>
 
 #include <rpmlog.h>
-#include "rpmlead.h"
-#include "signature.h"
+#include "lib/rpmlead.h"
+#include "lib/signature.h"
 #include <rpmfileutil.h>	/* rpmMkTempFile() */
 #include "debug.h"
 

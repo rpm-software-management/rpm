@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include "digest.h"
+#include "rpmio/digest.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include <rpmdb.h>
@@ -13,11 +13,11 @@
 #include <rpmts.h>
 
 #include <rpmlog.h>
-#include "misc.h"	/* XXX for dosetenv() */
+#include "lib/misc.h"	/* XXX for dosetenv() */
 #include <rpmfileutil.h>
-#include "rpmlead.h"
-#include "signature.h"
-#include "header_internal.h"
+#include "lib/rpmlead.h"
+#include "lib/signature.h"
+#include "rpmdb/header_internal.h"
 #include "debug.h"
 
 #if !defined(__GLIBC__) && !defined(__APPLE__)

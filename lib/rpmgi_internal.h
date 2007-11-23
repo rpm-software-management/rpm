@@ -2,7 +2,7 @@
 #define _RPMGI_INTERNAL_H
 
 #include <rpmgi.h>
-#include "fts.h"
+#include "rpmio/fts.h"
 
 #ifdef __cplusplus
 extern "C" {

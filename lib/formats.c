@@ -3,14 +3,14 @@
  */
 
 #include "system.h"
-#include "digest.h"
+#include "rpmio/digest.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
 #include <rpmfi.h>
 
-#include "legacy.h"	/* XXX rpmfiBuildFNames() */
-#include "manifest.h"
+#include "rpmdb/legacy.h"	/* XXX rpmfiBuildFNames() */
+#include "lib/manifest.h"
 
 #include "debug.h"
 

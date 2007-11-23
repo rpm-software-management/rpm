@@ -7,8 +7,8 @@
 
 #include <rpmlib.h>
 
-#include "cpio.h"	/* XXX CPIO_FOO */
-#include "fsm.h"	/* XXX newFSM() */
+#include "lib/cpio.h"	/* XXX CPIO_FOO */
+#include "lib/fsm.h"	/* XXX newFSM() */
 
 #include <rpmds.h>
 

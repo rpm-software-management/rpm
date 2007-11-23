@@ -5,12 +5,12 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"	/* fdGet/SetCpioPos, fdInit/FiniDigest */
+#include "rpmio/rpmio_internal.h"	/* fdGet/SetCpioPos, fdInit/FiniDigest */
 #include <rpmlib.h>
 
-#include "cpio.h"
+#include "lib/cpio.h"
 
-#include "fsm.h"
+#include "lib/fsm.h"
 #define	fsmUNSAFE	fsmStage
 
 #include <rpmlog.h>
@@ -21,7 +21,7 @@
 #include <rpmts.h>
 #include <rpmsq.h>
 
-#include "ugid.h"		/* XXX unameToUid() and gnameToGid() */
+#include "rpmio/ugid.h"		/* XXX unameToUid() and gnameToGid() */
 
 #include "debug.h"
 

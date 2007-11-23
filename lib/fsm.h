@@ -6,7 +6,7 @@
  * File state machine to handle a payload within an rpm package.
  */
 
-#include "cpio.h"
+#include "lib/cpio.h"
 
 extern int _fsm_debug;
 

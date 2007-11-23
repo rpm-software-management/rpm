@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include "rpmio_internal.h"	/* XXX rpmioSlurp */
+#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmio.h>

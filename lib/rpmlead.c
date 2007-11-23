@@ -8,8 +8,8 @@
 
 #include <rpmlib.h>
 
-#include "signature.h"
-#include "rpmlead.h"
+#include "lib/signature.h"
+#include "lib/rpmlead.h"
 #include <rpmlog.h>
 #include "debug.h"
 

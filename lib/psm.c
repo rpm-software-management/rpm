@@ -8,11 +8,11 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>
-#include "rpmlua.h"
+#include "rpmio/rpmlua.h"
 
-#include "cpio.h"
-#include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
-#include "psm.h"
+#include "lib/cpio.h"
+#include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
+#include "lib/psm.h"
 
 #include <rpmds.h>
 
@@ -22,14 +22,14 @@
 #define	_RPMTE_INTERNAL		/* XXX te->fd */
 #include <rpmte.h>
 
-#include "rpmtsscore.h"
+#include "lib/rpmtsscore.h"
 #include <rpmts.h>
 
-#include "rpmlead.h"		/* writeLead proto */
-#include "signature.h"		/* signature constants */
-#include "legacy.h"		/* XXX rpmfiBuildFNames() */
+#include "lib/rpmlead.h"		/* writeLead proto */
+#include "lib/signature.h"		/* signature constants */
+#include "rpmdb/legacy.h"		/* XXX rpmfiBuildFNames() */
 #include <rpmfileutil.h>	/* rpmMkTempFile() */
-#include "misc.h"		/* XXX rpmMkdirPath, doputenv */
+#include "lib/misc.h"		/* XXX rpmMkdirPath, doputenv */
 #include <rpmdb.h>		/* XXX for db_chrootDone */
 #include <rpmlog.h>
 #include "debug.h"

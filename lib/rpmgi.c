@@ -6,12 +6,12 @@
 #include <rpmlib.h>
 #include <rpmte.h>		/* XXX rpmElementType */
 
-#include "rpmgi_internal.h"
+#include "lib/rpmgi_internal.h"
 
 #include <rpmdb.h>
 #include <rpmmacro.h>		/* XXX rpmExpand */
 #include <rpmfileutil.h>
-#include "manifest.h"
+#include "lib/manifest.h"
 #include <rpmlog.h>
 
 #include "debug.h"

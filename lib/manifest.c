@@ -8,7 +8,7 @@
 #include <rpmfileutil.h>
 
 #include <rpmstring.h>
-#include "manifest.h"
+#include "lib/manifest.h"
 #include "debug.h"
 
 

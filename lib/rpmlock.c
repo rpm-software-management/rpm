@@ -6,7 +6,7 @@
 #include <rpmfileutil.h>
 
 #include <rpmts.h>
-#include "rpmlock.h"
+#include "lib/rpmlock.h"
 
 #include "debug.h"
 

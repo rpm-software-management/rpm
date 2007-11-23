@@ -7,12 +7,12 @@
 
 #include <rpmcli.h>
 
-#include "psm.h"
+#include "lib/psm.h"
 #include <rpmfi.h>
 #include <rpmts.h>
 
 #include "rpmfileutil.h"
-#include "ugid.h" 	/* uidToUname(), gnameToGid */
+#include "rpmio/ugid.h" 	/* uidToUname(), gnameToGid */
 #include "debug.h"
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
