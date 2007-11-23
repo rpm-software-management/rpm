@@ -20,7 +20,7 @@
 #include <rpmlog.h>
 
 #ifdef	WITH_LUA
-#include "rpmlua.h"
+#include "rpmio/rpmlua.h"
 #endif
 
 #include <rpmmacro.h>

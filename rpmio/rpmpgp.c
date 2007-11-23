@@ -4,8 +4,8 @@
  */
 
 #include "system.h"
-#include "digest.h"
-#include "rpmio_internal.h"	/* XXX rpmioSlurp */
+#include "rpmio/digest.h"
+#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 
 #include <rpmstring.h>
 

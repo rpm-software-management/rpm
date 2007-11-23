@@ -10,9 +10,9 @@
 
 #include <rpmurl.h>
 #include <rpmstring.h>
-#include "rpmio_internal.h"
+#include "rpmio/rpmio_internal.h"
 
-#include "ugid.h"
+#include "rpmio/ugid.h"
 #include "debug.h"
 
 /* =============================================================== */

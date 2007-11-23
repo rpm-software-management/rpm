@@ -12,7 +12,7 @@
 
 #include <rpmpgp.h>
 #include <rpmsw.h>
-#include "digest.h"
+#include "rpmio/digest.h"
 
 /** \ingroup rpmio
  */

@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include "glob.h"
+#include "misc/glob.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

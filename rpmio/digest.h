@@ -1,7 +1,7 @@
 #ifndef _RPMDIGEST_H
 #define _RPMDIGEST_H
 
-#include "base64.h"
+#include "rpmio/base64.h"
 #include <rpmpgp.h>
 
 #include <nss.h>

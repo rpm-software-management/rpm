@@ -1,7 +1,7 @@
 #include "system.h"
                                                                                 
 #include <rpmpgp.h>
-#include "base64.h"
+#include "rpmio/base64.h"
 #include <popt.h>
 
 #include "debug.h"

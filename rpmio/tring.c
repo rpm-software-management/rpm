@@ -1,6 +1,6 @@
 #include "system.h"
-#include "digest.h"
-#include "rpmio_internal.h"	/* XX _*debug */
+#include "rpmio/digest.h"
+#include "rpmio/rpmio_internal.h"	/* XX _*debug */
 #include <popt.h>
 #include "debug.h"
 

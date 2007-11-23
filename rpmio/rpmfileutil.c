@@ -13,7 +13,7 @@
 
 #endif
 
-#include "rpmio_internal.h"
+#include "rpmio/rpmio_internal.h"
 #include <rpmfileutil.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>

@@ -1,7 +1,7 @@
 #include "system.h"
-#include "fts.h"
+#include "rpmio/fts.h"
 
-#include "rpmio_internal.h"
+#include "rpmio/rpmio_internal.h"
 #include <rpmmacro.h>
 #include <rpmmessages.h>
 #include <popt.h>

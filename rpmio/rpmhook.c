@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "rpmhook.h"
+#include "rpmio/rpmhook.h"
 
 #define RPMHOOK_TABLE_INITSIZE  256
 #define RPMHOOK_BUCKET_INITSIZE 5

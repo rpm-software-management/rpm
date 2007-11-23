@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include "ugid.h"
+#include "rpmio/ugid.h"
 #include "debug.h"
 
 /* unameToUid(), uidTouname() and the group variants are really poorly

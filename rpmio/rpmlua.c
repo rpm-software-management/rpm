@@ -5,7 +5,7 @@
 #include <rpmmacro.h>
 #include <rpmlog.h>
 #include <rpmurl.h>
-#include "rpmhook.h"
+#include "rpmio/rpmhook.h"
 
 #include <lua.h>
 #include <lualib.h>
@@ -17,7 +17,7 @@
 #include <assert.h>
 
 #define _RPMLUA_INTERNAL
-#include "rpmlua.h"
+#include "rpmio/rpmlua.h"
 
 #include "debug.h"
 
