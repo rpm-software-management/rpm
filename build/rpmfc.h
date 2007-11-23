@@ -5,7 +5,7 @@
 
 #include <rpmlib.h>	/* for rpmds, rpmSpec */
 #include <argv.h>	/* for ARGV_t */
-#include <stringbuf.h>	/* for StringBuf */
+#include <rpmstring.h>	/* for StringBuf */
 #include <rpmspec.h>	/* for Package */
 
 #ifdef __cplusplus

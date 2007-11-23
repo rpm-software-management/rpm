@@ -1,7 +1,7 @@
-#ifndef _STRINGBUF_H_
-#define _STRINGBUF_H_
+#ifndef _RPMSTRING_H_
+#define _RPMSTRING_H_
 
-/** \file lib/stringbuf.h
+/** \file rpmio/rpmstring.h
  *
  */
 
@@ -49,4 +49,4 @@ void appendStringBufAux(StringBuf sb, const char * s, int nl);
 }
 #endif
 
-#endif	/* _STRINGBUF_H_ */
+#endif	/* _RPMSTRING_H_ */

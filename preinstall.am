@@ -34,6 +34,10 @@ include/rpm/rpmsq.h: rpmio/rpmsq.h include/rpm/.dirstamp
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmsq.h include/rpm/rpmsq.h
 BUILT_SOURCES += include/rpm/rpmsq.h
 CLEANFILES += include/rpm/rpmsq.h
+include/rpm/rpmstring.h: rpmio/rpmstring.h include/rpm/.dirstamp
+	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmstring.h include/rpm/rpmstring.h
+BUILT_SOURCES += include/rpm/rpmstring.h
+CLEANFILES += include/rpm/rpmstring.h
 include/rpm/rpmsw.h: rpmio/rpmsw.h include/rpm/.dirstamp
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmsw.h include/rpm/rpmsw.h
 BUILT_SOURCES += include/rpm/rpmsw.h
@@ -86,10 +90,6 @@ include/rpm/rpmts.h: lib/rpmts.h include/rpm/.dirstamp
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmts.h include/rpm/rpmts.h
 BUILT_SOURCES += include/rpm/rpmts.h
 CLEANFILES += include/rpm/rpmts.h
-include/rpm/stringbuf.h: lib/stringbuf.h include/rpm/.dirstamp
-	$(INSTALL_DATA) $(top_srcdir)/lib/stringbuf.h include/rpm/stringbuf.h
-BUILT_SOURCES += include/rpm/stringbuf.h
-CLEANFILES += include/rpm/stringbuf.h
 include/rpm/rpmbuild.h: build/rpmbuild.h include/rpm/.dirstamp
 	$(INSTALL_DATA) $(top_srcdir)/build/rpmbuild.h include/rpm/rpmbuild.h
 BUILT_SOURCES += include/rpm/rpmbuild.h

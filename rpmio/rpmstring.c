@@ -1,10 +1,10 @@
 /**
- * \file lib/stringbuf.c
+ * \file rpmio/rpmstring.c
  */
 
 #include "system.h"
 
-#include <stringbuf.h>
+#include <rpmstring.h>
 #include "debug.h"
 
 #define BUF_CHUNK 1024

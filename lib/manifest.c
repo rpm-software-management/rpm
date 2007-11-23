@@ -7,7 +7,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 
-#include <stringbuf.h>
+#include <rpmstring.h>
 #include "manifest.h"
 #include "debug.h"
 
