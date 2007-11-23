@@ -49,58 +49,58 @@ typedef struct FDIO_s * FDIO_t;
  * \name RPMIO Interface.
  */
 
-/**
+/** \ingroup rpmio
  * strerror(3) clone.
  */
 const char * Fstrerror(FD_t fd);
 
-/**
+/** \ingroup rpmio
  * fread(3) clone.
  */
 ssize_t Fread(void * buf, size_t size, size_t nmemb, FD_t fd);
 
-/**
+/** \ingroup rpmio
  * fwrite(3) clone.
  */
 ssize_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd);
 
-/**
+/** \ingroup rpmio
  * fseek(3) clone.
  */
 int Fseek(FD_t fd, _libio_off_t offset, int whence);
 
-/**
+/** \ingroup rpmio
  * fclose(3) clone.
  */
 int Fclose( FD_t fd);
 
-/**
+/** \ingroup rpmio
  */
 FD_t	Fdopen(FD_t ofd, const char * fmode);
 
-/**
+/** \ingroup rpmio
  * fopen(3) clone.
  */
 FD_t	Fopen(const char * path,
 			const char * fmode);
 
 
-/**
+/** \ingroup rpmio
  * fflush(3) clone.
  */
 int Fflush(FD_t fd);
 
-/**
+/** \ingroup rpmio
  * ferror(3) clone.
  */
 int Ferror(FD_t fd);
 
-/**
+/** \ingroup rpmio
  * fileno(3) clone.
  */
 int Fileno(FD_t fd);
 
-/**
+/** \ingroup rpmio
  * fcntl(2) clone.
  */
 int Fcntl(FD_t fd, int op, void *lip);
@@ -204,11 +204,11 @@ int Closedir(DIR * dir);
  * \name RPMIO Utilities.
  */
 
-/**
+/** \ingroup rpmio
  */
 off_t	fdSize(FD_t fd);
 
-/**
+/** \ingroup rpmio
  */
 FD_t fdDup(int fdno);
 
@@ -217,23 +217,23 @@ FD_t fdDup(int fdno);
  */
 FILE * fdGetFILE(FD_t fd);
 
-/**
+/** \ingroup rpmio
  */
 extern FD_t fdLink (void * cookie, const char * msg);
 
-/**
+/** \ingroup rpmio
  */
 extern FD_t fdFree(FD_t fd, const char * msg);
 
-/**
+/** \ingroup rpmio
  */
 extern FD_t fdNew (const char * msg);
 
-/**
+/** \ingroup rpmio
  */
 int fdWritable(FD_t fd, int secs);
 
-/**
+/** \ingroup rpmio
  */
 int fdReadable(FD_t fd, int secs);
 
