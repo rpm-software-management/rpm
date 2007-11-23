@@ -52,17 +52,17 @@ typedef struct rpmts_s * rpmts;
  */
 typedef struct rpmSpec_s * rpmSpec;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmds
  * Dependency tag sets from a header, so that a header can be discarded early.
  */
 typedef struct rpmds_s * rpmds;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmfi
  * File info tag sets from a header, so that a header can be discarded early.
  */
 typedef struct rpmfi_s * rpmfi;
 
-/** \ingroup rpmtrans
+/** \ingroup rpmte
  * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
  */
 typedef struct rpmte_s * rpmte;
@@ -77,7 +77,7 @@ typedef struct rpmdb_s * rpmdb;
  */
 typedef struct _rpmdbMatchIterator * rpmdbMatchIterator;
 
-/** \ingroup rpmcli
+/** \ingroup rpmgi
  * Generalized iterator.
  */
 typedef struct rpmgi_s * rpmgi;
@@ -129,19 +129,21 @@ void headerMergeLegacySigs(Header h, const Header sigh);
  */
 Header headerRegenSigHeader(const Header h, int noArchiveSize);
 
-/**
+/** \ingroup rpmtag
  * Automatically generated table of tag name/value pairs.
  */
 extern const struct headerTagTableEntry_s * rpmTagTable;
 
-/**
+/** \ingroup rpmtag
  * Number of entries in rpmTagTable.
  */
 extern const int rpmTagTableSize;
 
+/** \ingroup rpmtag
+ */
 extern headerTagIndices rpmTags;
 
-/**
+/** \ingroup header
  * Table of query format extensions.
  * @note Chains to headerDefaultFormats[].
  */
@@ -436,7 +438,7 @@ typedef	enum rpmfileAttrs_e {
 
 #define	RPMFILE_ALL	~(RPMFILE_NONE)
 
-/**
+/** \ingroup rpmds
  * Dependency Attributes.
  */
 typedef	enum rpmsenseFlags_e {
@@ -729,7 +731,7 @@ typedef enum rpmFileTypes_e {
     SOCK	= 12	/*!< socket */
 } rpmFileTypes;
 
-/**
+/** \ingroup header
  * Perform simple sanity and range checks on header tag(s).
  * @param il		no. of tags in header
  * @param dl		no. of bytes in header data.
@@ -740,14 +742,14 @@ typedef enum rpmFileTypes_e {
  */
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate);
 
-/**
+/** \ingroup header
  * Check for supported payload format in header.
  * @param h		header to check
  * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
  */
 rpmRC headerCheckPayloadFormat(Header h);
 
-/** 
+/**  \ingroup header
  * Check header consistency, performing headerGetEntry() the hard way.
  *  
  * Sanity checks on the header are performed while looking for a
@@ -763,7 +765,7 @@ rpmRC headerCheckPayloadFormat(Header h);
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
 		const char ** msg);
 
-/** 
+/**  \ingroup header
  * Return checked and loaded header.
  * @param ts		transaction set
  * @param fd		file handle
@@ -774,7 +776,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp,
 		const char ** msg);
 
-/**
+/** \ingroup header
  * Return package header from file handle, verifying digests/signatures.
  * @param ts		transaction set
  * @param fd		file handle
@@ -785,7 +787,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp,
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, Header * hdrp);
 
-/**
+/** \ingroup rpmtrans
  * Install source package.
  * @param ts		transaction set
  * @param fd		file handle
