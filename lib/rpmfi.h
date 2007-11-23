@@ -140,7 +140,7 @@ int nrefs;		/*!< Reference count. */
 
 #endif	/* _RPMFI_INTERNAL */
 
-/**
+/** \ingroup rpmfi
  * Unreference a file info set instance.
  * @param fi		file info set
  * @param msg
@@ -160,7 +160,7 @@ rpmfi XrpmfiUnlink (rpmfi fi,
 		const char * msg, const char * fn, unsigned ln);
 #define	rpmfiUnlink(_fi, _msg) XrpmfiUnlink(_fi, _msg, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmfi
  * Reference a file info set instance.
  * @param fi		file info set
  * @param msg
@@ -179,21 +179,21 @@ rpmfi XrpmfiLink (rpmfi fi, const char * msg,
 		const char * fn, unsigned ln);
 #define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmfi
  * Return file count from file info set.
  * @param fi		file info set
  * @return		current file count
  */
 int rpmfiFC(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file index from file info set.
  * @param fi		file info set
  * @return		current file index
  */
 int rpmfiFX(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Set current file index in file info set.
  * @param fi		file info set
  * @param fx		new file index
@@ -201,21 +201,21 @@ int rpmfiFX(rpmfi fi);
  */
 int rpmfiSetFX(rpmfi fi, int fx);
 
-/**
+/** \ingroup rpmfi
  * Return directory count from file info set.
  * @param fi		file info set
  * @return		current directory count
  */
 int rpmfiDC(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current directory index from file info set.
  * @param fi		file info set
  * @return		current directory index
  */
 int rpmfiDX(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Set current directory index in file info set.
  * @param fi		file info set
  * @param dx		new directory index
@@ -223,119 +223,119 @@ int rpmfiDX(rpmfi fi);
  */
 int rpmfiSetDX(rpmfi fi, int dx);
 
-/**
+/** \ingroup rpmfi
  * Return current base name from file info set.
  * @param fi		file info set
  * @return		current base name, NULL on invalid
  */
 extern const char * rpmfiBN(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current directory name from file info set.
  * @param fi		file info set
  * @return		current directory, NULL on invalid
  */
 extern const char * rpmfiDN(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file name from file info set.
  * @param fi		file info set
  * @return		current file name
  */
 extern const char * rpmfiFN(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file flags from file info set.
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
 uint32_t rpmfiFFlags(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file verify flags from file info set.
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
 uint32_t rpmfiVFlags(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file mode from file info set.
  * @param fi		file info set
  * @return		current file mode, 0 on invalid
  */
 int16_t rpmfiFMode(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file state from file info set.
  * @param fi		file info set
  * @return		current file state, 0 on invalid
  */
 rpmfileState rpmfiFState(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file (binary) md5 digest from file info set.
  * @param fi		file info set
  * @return		current file md5 digest, NULL on invalid
  */
 extern const unsigned char * rpmfiMD5(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file linkto (i.e. symlink(2) target) from file info set.
  * @param fi		file info set
  * @return		current file linkto, NULL on invalid
  */
 extern const char * rpmfiFLink(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file size from file info set.
  * @param fi		file info set
  * @return		current file size, 0 on invalid
  */
 int32_t rpmfiFSize(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file rdev from file info set.
  * @param fi		file info set
  * @return		current file rdev, 0 on invalid
  */
 int16_t rpmfiFRdev(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file inode from file info set.
  * @param fi		file info set
  * @return		current file inode, 0 on invalid
  */
 int32_t rpmfiFInode(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return union of all file color bits from file info set.
  * @param fi		file info set
  * @return		current color
  */
 uint32_t rpmfiColor(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file color bits from file info set.
  * @param fi		file info set
  * @return		current file color
  */
 uint32_t rpmfiFColor(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file class from file info set.
  * @param fi		file info set
  * @return		current file class, 0 on invalid
  */
 extern const char * rpmfiFClass(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file security context from file info set.
  * @param fi		file info set
  * @return		current file context, 0 on invalid
  */
 extern const char * rpmfiFContext(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file depends dictionary from file info set.
  * @param fi		file info set
  * @retval *fddictp	file depends dictionary array (or NULL)
@@ -344,42 +344,42 @@ extern const char * rpmfiFContext(rpmfi fi);
 int32_t rpmfiFDepends(rpmfi fi,
 		const uint32_t ** fddictp);
 
-/**
+/** \ingroup rpmfi
  * Return (calculated) current file nlink count from file info set.
  * @param fi		file info set
  * @return		current file nlink count, 0 on invalid
  */
 int32_t rpmfiFNlink(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file modify time from file info set.
  * @param fi		file info set
  * @return		current file modify time, 0 on invalid
  */
 int32_t rpmfiFMtime(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file owner from file info set.
  * @param fi		file info set
  * @return		current file owner, NULL on invalid
  */
 extern const char * rpmfiFUser(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return current file group from file info set.
  * @param fi		file info set
  * @return		current file group, NULL on invalid
  */
 extern const char * rpmfiFGroup(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return next file iterator index.
  * @param fi		file info set
  * @return		file iterator index, -1 on termination
  */
 int rpmfiNext(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Initialize file iterator index.
  * @param fi		file info set
  * @param fx		file iterator index
@@ -387,14 +387,14 @@ int rpmfiNext(rpmfi fi);
  */
 rpmfi rpmfiInit(rpmfi fi, int fx);
 
-/**
+/** \ingroup rpmfi
  * Return next directory iterator index.
  * @param fi		file info set
  * @return		directory iterator index, -1 on termination
  */
 int rpmfiNextD(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Initialize directory iterator index.
  * @param fi		file info set
  * @param dx		directory iterator index
@@ -402,14 +402,14 @@ int rpmfiNextD(rpmfi fi);
  */
 rpmfi rpmfiInitD(rpmfi fi, int dx);
 
-/**
+/** \ingroup rpmfi
  * Destroy a file info set.
  * @param fi		file info set
  * @return		NULL always
  */
 rpmfi rpmfiFree(rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Create and load a file info set.
  * @deprecated Only scareMem = 0 will be permitted.
  * @param ts		transaction set (NULL skips path relocation)
@@ -420,7 +420,7 @@ rpmfi rpmfiFree(rpmfi fi);
  */
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem);
 
-/**
+/** \ingroup rpmfi
  * Retrieve file classes from header.
  *
  * This function is used to retrieve file classes from the header.
@@ -433,7 +433,7 @@ void rpmfiBuildFClasses(Header h,
 		const char *** fclassp, int * fcp);
 
 
-/**
+/** \ingroup rpmfi
  * Retrieve per-file dependencies from header.
  *
  * This function is used to retrieve per-file dependencies from the header.
@@ -446,14 +446,14 @@ void rpmfiBuildFClasses(Header h,
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		const char *** fdepsp, int * fcp);
 
-/**
+/** \ingroup rpmfi
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
  * @return		file type
  */
 rpmFileTypes rpmfiWhatis(uint16_t mode);
 
-/**
+/** \ingroup rpmfi
  * Return file info comparison.
  * @param afi		1st file info
  * @param bfi		2nd file info
@@ -461,7 +461,7 @@ rpmFileTypes rpmfiWhatis(uint16_t mode);
  */
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
 
-/**
+/** \ingroup rpmfi
  * Return file disposition.
  * @param ofi		old file info
  * @param nfi		new file info
@@ -470,14 +470,14 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
  */
 rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
 
-/**
+/** \ingroup rpmfi
  * Return whether file is conflicting config
  * @param fi		file info
  * @return		1 if config file and file on disk conflicts
  */
 int rpmfiConfigConflict(const rpmfi fi);
 
-/**
+/** \ingroup rpmfi
  * Return formatted string representation of package disposition.
  * @param fi		file info set
  * @return		formatted string
