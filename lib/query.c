@@ -19,9 +19,10 @@
 
 #include "manifest.h"
 #include <rpmlog.h>
+#include <rpmfileutil.h>	/* rpmCleanPath */
 
 #include "debug.h"
-#include "misc.h"	/* XXX for currentDirectory */
+#include "misc.h"		/* XXX for currentDirectory */
 
 
 /**

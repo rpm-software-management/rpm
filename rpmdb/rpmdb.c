@@ -20,6 +20,7 @@
 #include <rpmmacro.h>
 #include <rpmsq.h>
 #include <rpmstring.h>
+#include <rpmfileutil.h>
 
 #include <rpmlog.h>
 #include "rpmdb_internal.h"

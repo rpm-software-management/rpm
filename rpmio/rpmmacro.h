@@ -134,13 +134,6 @@ void	rpmFreeMacros	(rpmMacroContext mc);
 char * rpmExpand	(const char * arg, ...);
 
 /**
- * Canonicalize file path.
- * @param path		path to canonicalize (in-place)
- * @return		canonicalized path (malloc'ed)
- */
-char * rpmCleanPath	(char * path);
-
-/**
  * Return (malloc'ed) expanded, canonicalized, file path.
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)

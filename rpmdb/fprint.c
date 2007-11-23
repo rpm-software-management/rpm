@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include "rpmdb_internal.h"
-#include <rpmmacro.h>	/* XXX for rpmCleanPath */
+#include <rpmfileutil.h>	/* for rpmCleanPath */
 
 #include "fprint.h"
 #include "debug.h"

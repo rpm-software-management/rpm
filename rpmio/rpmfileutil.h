@@ -58,4 +58,11 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
 int	isCompressed	(const char * file,
 				rpmCompressedMagic * compressed);
 
+/**
+ * Canonicalize file path.
+ * @param path		path to canonicalize (in-place)
+ * @return		canonicalized path (malloc'ed)
+ */
+char * rpmCleanPath	(char * path);
+
 #endif /* _RPMFILEUTIL_H */
