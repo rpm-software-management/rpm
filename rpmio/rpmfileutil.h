@@ -31,4 +31,14 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
  */
 int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr);
 
+/**
+ * Insure that directories in path exist, creating as needed.
+ * @param path		directory path
+ * @param mode		directory mode (if created)
+ * @param uid		directory uid (if created), or -1 to skip
+ * @param gid		directory uid (if created), or -1 to skip
+ * @return		0 on success, errno (or -1) on error
+ */
+int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
+
 #endif /* _RPMFILEUTIL_H */
