@@ -9,19 +9,19 @@
 extern "C" {
 #endif
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  */
 typedef unsigned long int rpmtime_t;
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  */
 typedef struct rpmsw_s * rpmsw;
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  */
 typedef struct rpmop_s * rpmop;
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  */
 struct rpmsw_s {
     union {
@@ -31,7 +31,7 @@ struct rpmsw_s {
     } u;
 };
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  * Cumulative statistics for an operation.
  */
 struct rpmop_s {
@@ -41,25 +41,28 @@ struct rpmop_s {
     rpmtime_t		usecs;	/*!< Number of ticks. */
 };
 
-/** Return benchmark time stamp.
+/** \ingroup rpmsw
+ * Return benchmark time stamp.
  * @param *sw		time stamp
  * @return		0 on success
  */
 rpmsw rpmswNow(rpmsw sw);
 
-/** Return benchmark time stamp difference.
+/** \ingroup rpmsw
+ * Return benchmark time stamp difference.
  * @param *end		end time stamp
  * @param *begin	begin time stamp
  * @return		difference in micro-seconds
  */
 rpmtime_t rpmswDiff(rpmsw end, rpmsw begin);
 
-/** Return benchmark time stamp overhead.
+/** \ingroup rpmsw
+ * Return benchmark time stamp overhead.
  * @return		overhead in micro-seconds
  */
 rpmtime_t rpmswInit(void);
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  * Enter timed operation.
  * @param op			operation statistics
  * @param rc			-1 clears usec counter
@@ -67,7 +70,7 @@ rpmtime_t rpmswInit(void);
  */
 int rpmswEnter(rpmop op, ssize_t rc);
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  * Exit timed operation.
  * @param op			operation statistics
  * @param rc			per-operation data (e.g. bytes transferred)
@@ -75,7 +78,7 @@ int rpmswEnter(rpmop op, ssize_t rc);
  */
 rpmtime_t rpmswExit(rpmop op, ssize_t rc);
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  * Sum statistic counters.
  * @param to			result statistics
  * @param from			operation statistics
@@ -83,7 +86,7 @@ rpmtime_t rpmswExit(rpmop op, ssize_t rc);
  */
 rpmtime_t rpmswAdd(rpmop to, rpmop from);
 
-/** \ingroup rpmio
+/** \ingroup rpmsw
  * Subtract statistic counters.
  * @param to			result statistics
  * @param from			operation statistics

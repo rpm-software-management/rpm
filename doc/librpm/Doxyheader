@@ -24,6 +24,8 @@
  */
 /** \defgroup	rpmsq	Signal Queue API.
  */
+/** \defgroup	rpmsw	Statistics API.
+ */
 /** \defgroup	lead	LEAD.
  */
 /** \defgroup	signature	SIGNATURE.
