@@ -368,3 +368,56 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     return rc;
 }
 
+int isCompressed(const char * file, rpmCompressedMagic * compressed)
+{
+    FD_t fd;
+    ssize_t nb;
+    int rc = -1;
+    unsigned char magic[13];
+
+    *compressed = COMPRESSED_NOT;
+
+    fd = Fopen(file, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	/* XXX Fstrerror */
+	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
+	if (fd) (void) Fclose(fd);
+	return 1;
+    }
+    nb = Fread(magic, sizeof(magic[0]), sizeof(magic), fd);
+    if (nb < 0) {
+	rpmlog(RPMLOG_ERR, _("File %s: %s\n"), file, Fstrerror(fd));
+	rc = 1;
+    } else if (nb < sizeof(magic)) {
+	rpmlog(RPMLOG_ERR, _("File %s is smaller than %u bytes\n"),
+		file, (unsigned)sizeof(magic));
+	rc = 0;
+    }
+    (void) Fclose(fd);
+    if (rc >= 0)
+	return rc;
+
+    rc = 0;
+
+    if ((magic[0] == 'B') && (magic[1] == 'Z')) {
+	*compressed = COMPRESSED_BZIP2;
+    } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
+	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
+	*compressed = COMPRESSED_ZIP;
+    } else if ((magic[ 9] == 0x00) && (magic[10] == 0x00) &&
+         (magic[11] == 0x00) && (magic[12] == 0x00)) { 
+         /* lzma */
+         /* FIXME: lzma doesn't have a magic, 
+          * consider to additionally check the filename */
+        *compressed = COMPRESSED_LZMA;
+    } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
+	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
+	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */
+	((magic[0] == 0037) && (magic[1] == 0240)) ||	/* SCO lzh */
+	((magic[0] == 0037) && (magic[1] == 0235))	/* compress */
+	) {
+	*compressed = COMPRESSED_OTHER;
+    }
+
+    return rc;
+}

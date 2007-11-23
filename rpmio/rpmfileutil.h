@@ -3,6 +3,14 @@
 
 #include <rpmpgp.h>
 
+typedef enum rpmCompressedMagic_e {
+    COMPRESSED_NOT		= 0,	/*!< not compressed */
+    COMPRESSED_OTHER		= 1,	/*!< gzip can handle */
+    COMPRESSED_BZIP2		= 2,	/*!< bzip2 can handle */
+    COMPRESSED_ZIP		= 3,	/*!< unzip can handle */
+    COMPRESSED_LZMA		= 4	/*!< lzma can handle */
+} rpmCompressedMagic;
+
 /**
  * Calculate a file digest and size.
  * @param algo		digest algorithm (ignored for now, md5 used)
@@ -40,5 +48,14 @@ int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr);
  * @return		0 on success, errno (or -1) on error
  */
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
+
+/**
+ * Return type of compression used in file.
+ * @param file		name of file
+ * @retval compressed	address of compression type
+ * @return		0 on success, 1 on I/O error
+ */
+int	isCompressed	(const char * file,
+				rpmCompressedMagic * compressed);
 
 #endif /* _RPMFILEUTIL_H */

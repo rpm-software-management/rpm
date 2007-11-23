@@ -126,23 +126,6 @@ void	rpmInitMacros	(rpmMacroContext mc, const char * macrofiles);
  */
 void	rpmFreeMacros	(rpmMacroContext mc);
 
-typedef enum rpmCompressedMagic_e {
-    COMPRESSED_NOT		= 0,	/*!< not compressed */
-    COMPRESSED_OTHER		= 1,	/*!< gzip can handle */
-    COMPRESSED_BZIP2		= 2,	/*!< bzip2 can handle */
-    COMPRESSED_ZIP		= 3,	/*!< unzip can handle */
-    COMPRESSED_LZMA		= 4	/*!< lzma can handle */
-} rpmCompressedMagic;
-
-/**
- * Return type of compression used in file.
- * @param file		name of file
- * @retval compressed	address of compression type
- * @return		0 on success, 1 on I/O error
- */
-int	isCompressed	(const char * file,
-				rpmCompressedMagic * compressed);
-
 /**
  * Return (malloc'ed) concatenated macro expansion(s).
  * @param arg		macro(s) to expand (NULL terminates list)

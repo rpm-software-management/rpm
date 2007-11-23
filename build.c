@@ -10,6 +10,7 @@
 #include <rpmps.h>
 #include <rpmte.h>
 #include <rpmts.h>
+#include <rpmfileutil.h>
 
 #include "build.h"
 #include <rpmlog.h>
