@@ -7,7 +7,7 @@
 
 #include <rpmbuild.h>
 
-#include "legacy.h"	/* XXX _noDirTokens */
+#include "rpmdb/legacy.h"	/* XXX _noDirTokens */
 #include <rpmlog.h>
 #include "debug.h"
 

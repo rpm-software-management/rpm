@@ -5,24 +5,24 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
+#include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
 #include <rpmbuild.h>
 
 #include <rpmps.h>
 
-#include "cpio.h"
-#include "fsm.h"
-#include "psm.h"
+#include "lib/cpio.h"
+#include "lib/fsm.h"
+#include "lib/psm.h"
 
 #define	_RPMFI_INTERNAL		/* XXX fi->fsm */
 #include <rpmfi.h>
 #include <rpmts.h>
 
-#include "buildio.h"
+#include "build/buildio.h"
 
-#include "legacy.h"	/* XXX providePackageNVR */
-#include "signature.h"
-#include "rpmlead.h"
+#include "rpmdb/legacy.h"	/* XXX providePackageNVR */
+#include "lib/signature.h"
+#include "lib/rpmlead.h"
 #include <rpmfileutil.h>
 #include <rpmlog.h>
 #include "debug.h"

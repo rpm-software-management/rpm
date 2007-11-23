@@ -11,12 +11,12 @@
 #include <regex.h>
 
 #include <rpmpgp.h>
-#include "rpmio_internal.h"	/* XXX rpmioSlurp */
-#include "fts.h"
+#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
+#include "rpmio/fts.h"
 
 #include <rpmbuild.h>
 
-#include "cpio.h"
+#include "lib/cpio.h"
 
 #include <argv.h>
 #include <rpmfc.h>
@@ -27,10 +27,10 @@
 #define	_RPMTE_INTERNAL		/* XXX rpmte init */
 #include <rpmte.h>
 
-#include "buildio.h"
+#include "build/buildio.h"
 
 #include <rpmfileutil.h>	/* rpmDoDigest() */
-#include "legacy.h"	/* XXX expandFileList, compressFileList */
+#include "rpmdb/legacy.h"	/* XXX expandFileList, compressFileList */
 #include <rpmlog.h>
 #include "debug.h"
 

@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include "buildio.h"
+#include "build/buildio.h"
 #include <rpmds.h>
 #include <rpmfi.h>
 #include <rpmts.h>
