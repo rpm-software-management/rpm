@@ -23,11 +23,11 @@
 #include <rpmfileutil.h>
 
 #include <rpmlog.h>
-#include "rpmdb_internal.h"
+#include "rpmdb/rpmdb_internal.h"
 #include <rpmdb.h>
-#include "fprint.h"
-#include "legacy.h"
-#include "header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
+#include "rpmdb/fprint.h"
+#include "rpmdb/legacy.h"
+#include "rpmdb/header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 #include "debug.h"
 
 int _rpmdb_debug = 0;

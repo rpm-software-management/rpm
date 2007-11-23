@@ -4,10 +4,10 @@
 
 #include "system.h"
 
-#include "rpmdb_internal.h"
+#include "rpmdb/rpmdb_internal.h"
 #include <rpmfileutil.h>	/* for rpmCleanPath */
 
-#include "fprint.h"
+#include "rpmdb/fprint.h"
 #include "debug.h"
 
 fingerPrintCache fpCacheCreate(int sizeHint)

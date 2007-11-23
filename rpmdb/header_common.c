@@ -3,7 +3,7 @@
  */
 
 #include <header.h>
-#include "header_method.h"
+#include "rpmdb/header_method.h"
 
 /** \ingroup header
  * Header methods for rpm headers.

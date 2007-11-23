@@ -5,7 +5,7 @@
 
 #include "system.h"
 #include <rpmlib.h>
-#include "rpmhash.h"
+#include "rpmdb/rpmhash.h"
 #include "debug.h"
 
 typedef const void * voidptr;

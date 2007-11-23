@@ -31,7 +31,7 @@
 #include <rpmurl.h>     	/* XXX urlPath proto */
 #include <rpmfileutil.h>	/* rpmioMkpath */
 
-#include "rpmdb_internal.h"
+#include "rpmdb/rpmdb_internal.h"
 #include <rpmdb.h>
 
 #include <sqlite3.h>
