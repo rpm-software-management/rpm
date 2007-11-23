@@ -1,17 +1,17 @@
 #include "system.h"
 const char *__progname;
 
-#include "rpmcli.h"
+#include <rpmcli.h>
 
-#include "rpmdb.h"
-#include "rpmps.h"
+#include <rpmdb.h>
+#include <rpmps.h>
 
-#include "rpmte.h"
+#include <rpmte.h>
 
-#include "rpmts.h"
+#include <rpmts.h>
 
 #include "manifest.h"
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 static int noDeps = 1;

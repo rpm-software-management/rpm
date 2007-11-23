@@ -4,11 +4,11 @@
 
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "legacy.h"
 
-#include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
+#include <rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
 
 #include "header-py.h"
 #include "rpmds-py.h"

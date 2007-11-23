@@ -3,14 +3,14 @@
  * Routine(s) to handle an "rpmte"  transaction element.
  */
 #include "system.h"
-#include "rpmlib.h"
+#include <rpmlib.h>
 
-#include "rpmds.h"
-#include "rpmfi.h"
+#include <rpmds.h>
+#include <rpmfi.h>
 
 #define	_RPMTE_INTERNAL
-#include "rpmte.h"
-#include "rpmts.h"
+#include <rpmte.h>
+#include <rpmts.h>
 
 #include "debug.h"
 

@@ -12,16 +12,16 @@
 
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
 
-#include "rpmio.h"
-#include "rpmurl.h"
-#include "rpmmessages.h"
-#include "rpmlog.h"
+#include <rpmio.h>
+#include <rpmurl.h>
+#include <rpmmessages.h>
+#include <rpmlog.h>
 
 #ifdef	WITH_LUA
 #include "rpmlua.h"
 #endif
 
-#include "rpmmacro.h"
+#include <rpmmacro.h>
 
 #include "debug.h"
 

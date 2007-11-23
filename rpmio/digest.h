@@ -2,7 +2,7 @@
 #define _RPMDIGEST_H
 
 #include "base64.h"
-#include "rpmpgp.h"
+#include <rpmpgp.h>
 
 #include <nss.h>
 #include <sechash.h>

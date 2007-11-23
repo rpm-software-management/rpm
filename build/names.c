@@ -6,7 +6,7 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 #include "debug.h"
 
 typedef const char * ugstr_t;

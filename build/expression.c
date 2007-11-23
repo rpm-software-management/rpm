@@ -13,9 +13,9 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
-#include "rpmlib.h"
-#include "rpmlog.h"
+#include <rpmbuild.h>
+#include <rpmlib.h>
+#include <rpmlog.h>
 
 #include "debug.h"
 

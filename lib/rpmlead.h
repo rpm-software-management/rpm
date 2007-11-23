@@ -37,7 +37,7 @@ struct rpmlead {
 char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
 } ;
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 /** \ingroup lead
  * Write lead to file handle.

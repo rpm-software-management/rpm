@@ -1,10 +1,10 @@
 #include "system.h"
 const char *__progname;
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 #include "buildio.h"
 
-#include "header.h"
+#include <header.h>
 #include "rpmlead.h"
 #include "signature.h"
 

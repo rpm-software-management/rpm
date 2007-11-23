@@ -6,32 +6,32 @@
 #include "system.h"
 
 #include "rpmio_internal.h"	/* FDSTAT_*, fdsta_op */
-#include "rpmlib.h"
-#include "rpmmacro.h"
-#include "rpmurl.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>
+#include <rpmurl.h>
 #include "rpmlua.h"
 
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "psm.h"
 
-#include "rpmds.h"
+#include <rpmds.h>
 
 #define _RPMFI_INTERNAL		/* XXX replaced/states, fi->hge, fi->te... */
-#include "rpmfi.h"
+#include <rpmfi.h>
 
 #define	_RPMTE_INTERNAL		/* XXX te->fd */
-#include "rpmte.h"
+#include <rpmte.h>
 
 #include "rpmtsscore.h"
-#include "rpmts.h"
+#include <rpmts.h>
 
 #include "rpmlead.h"		/* writeLead proto */
 #include "signature.h"		/* signature constants */
 #include "legacy.h"		/* XXX rpmfiBuildFNames() */
 #include "misc.h"		/* XXX rpmMkdirPath, makeTempFile, doputenv */
-#include "rpmdb.h"		/* XXX for db_chrootDone */
-#include "rpmlog.h"
+#include <rpmdb.h>		/* XXX for db_chrootDone */
+#include <rpmlog.h>
 #include "debug.h"
 
 #define	_PSM_DEBUG	0

@@ -5,10 +5,10 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
-#include "rpmds.h"
-#include "rpmts.h"
-#include "rpmlog.h"
+#include <rpmbuild.h>
+#include <rpmds.h>
+#include <rpmts.h>
+#include <rpmlog.h>
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }

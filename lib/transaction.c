@@ -3,25 +3,25 @@
  */
 
 #include "system.h"
-#include "rpmlib.h"
+#include <rpmlib.h>
 
-#include "rpmmacro.h"	/* XXX for rpmExpand */
+#include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "fsm.h"
 #include "psm.h"
 
-#include "rpmdb.h"
+#include <rpmdb.h>
 #include "rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
 
-#include "rpmds.h"
+#include <rpmds.h>
 
 #include "rpmlock.h"
 
 #define	_RPMFI_INTERNAL		/* fi->replaced, fi->actions... */
-#include "rpmfi.h"
+#include <rpmfi.h>
 
 #define	_RPMTE_INTERNAL		/* XXX te->h, te->fd, te->h */
-#include "rpmte.h"
+#include <rpmte.h>
 
 #include "rpmts_internal.h"
 
@@ -32,7 +32,7 @@
 
 #include "debug.h"
 
-#include "idtx.h"
+#include <idtx.h>
 
 /**
  */

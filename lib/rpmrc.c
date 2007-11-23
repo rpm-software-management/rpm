@@ -14,11 +14,11 @@
 #endif
 
 #include "rpmio_internal.h"	/* XXX for rpmioSlurp */
-#include "rpmlib.h"
-#include "rpmmacro.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>
 #include "rpmlua.h"
 
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 static const char *defrcfiles = 

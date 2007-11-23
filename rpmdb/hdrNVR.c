@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include "rpmlib.h"
+#include <rpmlib.h>
 #include "debug.h"
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)

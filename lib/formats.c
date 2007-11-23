@@ -4,10 +4,10 @@
 
 #include "system.h"
 #include "digest.h"
-#include "rpmlib.h"
-#include "rpmmacro.h"	/* XXX for %_i18ndomains */
+#include <rpmlib.h>
+#include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
-#include "rpmfi.h"
+#include <rpmfi.h>
 
 #include "legacy.h"
 #include "manifest.h"

@@ -6,8 +6,8 @@
  * Structure(s) used for dependency tag sets.
  */
 
-#include "rpmlib.h"	/* for rpmds */
-#include "rpmps.h"
+#include <rpmlib.h>	/* for rpmds */
+#include <rpmps.h>
 
 #ifdef __cplusplus
 extern "C" {

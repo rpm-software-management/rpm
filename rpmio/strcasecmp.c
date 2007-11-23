@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include "rpmio.h"
+#include <rpmio.h>
 #include "debug.h"
 
 int xstrcasecmp(const char * s1, const char * s2)

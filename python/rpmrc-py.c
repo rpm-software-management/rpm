@@ -8,7 +8,7 @@
 
 #include "rpmdebug-py.c"
 #include "rpmrc-py.h"
-#include "rpmmacro.h"
+#include <rpmmacro.h>
 
 #include "debug.h"
 

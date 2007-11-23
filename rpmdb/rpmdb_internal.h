@@ -3,8 +3,8 @@
 
 #include <assert.h>
 
-#include "rpmsw.h"
-#include "rpmlib.h"
+#include <rpmsw.h>
+#include <rpmlib.h>
 #include <db.h>
 
 /**

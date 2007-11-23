@@ -1,7 +1,7 @@
 #ifndef H_RPMTS_PY
 #define H_RPMTS_PY
 
-#include "rpmts.h"
+#include <rpmts.h>
 
 /** \ingroup py_c
  * \file python/rpmts-py.h

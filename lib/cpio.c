@@ -9,12 +9,12 @@
 
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "cpio.h"
 #include "fsm.h"
 
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 

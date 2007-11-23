@@ -5,11 +5,11 @@
 
 #include "system.h"
 
-#include "rpmcli.h"
+#include <rpmcli.h>
 
 #include "psm.h"
-#include "rpmfi.h"
-#include "rpmts.h"
+#include <rpmfi.h>
+#include <rpmts.h>
 
 #include "legacy.h"	/* XXX domd5() */
 #include "ugid.h" 	/* uidToUname(), gnameToGid */

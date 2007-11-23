@@ -5,23 +5,23 @@
 
 #include "system.h"
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "cpio.h"	/* XXX CPIO_FOO */
 #include "fsm.h"	/* XXX newFSM() */
 
-#include "rpmds.h"
+#include <rpmds.h>
 
 #define	_RPMFI_INTERNAL
-#include "rpmfi.h"
+#include <rpmfi.h>
 
 #define	_RPMTE_INTERNAL	/* relocations */
-#include "rpmte.h"
-#include "rpmts.h"
+#include <rpmte.h>
+#include <rpmts.h>
 
 #include "legacy.h"     /* XXX domd5 */
 #include "misc.h"	/* XXX stripTrailingChar */
-#include "rpmmacro.h"	/* XXX rpmCleanPath */
+#include <rpmmacro.h>	/* XXX rpmCleanPath */
 
 #include "debug.h"
 

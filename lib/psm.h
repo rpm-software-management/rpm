@@ -7,7 +7,7 @@
  */
 
 #define _RPMSQ_INTERNAL 
-#include "rpmsq.h"
+#include <rpmsq.h>
 
 extern int _psm_debug;
 

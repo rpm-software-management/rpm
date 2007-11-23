@@ -2,13 +2,13 @@
 
 #include <signal.h>	/* getOutputFrom() */
 
-#include "rpmbuild.h"
-#include "argv.h"
-#include "rpmfc.h"
-#include "rpmlog.h"
+#include <rpmbuild.h>
+#include <argv.h>
+#include <rpmfc.h>
+#include <rpmlog.h>
 
-#include "rpmds.h"
-#include "rpmfi.h"
+#include <rpmds.h>
+#include <rpmfi.h>
 
 #if HAVE_GELF_H
 #include <gelf.h>

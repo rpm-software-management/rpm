@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include "stringbuf.h"
+#include <stringbuf.h>
 #include "debug.h"
 
 #define BUF_CHUNK 1024

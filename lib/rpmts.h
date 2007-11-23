@@ -6,9 +6,9 @@
  * Structures and prototypes used for an "rpmts" transaction set.
  */
 
-#include "rpmlib.h"	/* for rpmts */
-#include "rpmps.h"
-#include "rpmsw.h"
+#include <rpmlib.h>	/* for rpmts */
+#include <rpmps.h>
+#include <rpmsw.h>
 
 #ifdef __cplusplus
 extern "C" {

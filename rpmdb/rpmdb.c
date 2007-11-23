@@ -14,15 +14,15 @@
 
 #include <regex.h>
 
-#include "rpmurl.h"
-#include "rpmpgp.h"
-#include "rpmpgp.h"
-#include "rpmmacro.h"
-#include "rpmsq.h"
+#include <rpmurl.h>
+#include <rpmpgp.h>
+#include <rpmpgp.h>
+#include <rpmmacro.h>
+#include <rpmsq.h>
 
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "rpmdb_internal.h"
-#include "rpmdb.h"
+#include <rpmdb.h>
 #include "fprint.h"
 #include "legacy.h"
 #include "header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */

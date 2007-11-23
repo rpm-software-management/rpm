@@ -6,7 +6,7 @@
  *
  */
 
-#include "rpmsw.h"
+#include <rpmsw.h>
 
 #ifdef __cplusplus
 extern "C" {

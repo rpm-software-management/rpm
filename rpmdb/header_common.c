@@ -2,7 +2,7 @@
  * \file rpmdb/header_common.c
  */
 
-#include "header.h"
+#include <header.h>
 #include "header_method.h"
 
 /** \ingroup header

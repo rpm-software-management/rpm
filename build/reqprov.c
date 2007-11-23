@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 #include "debug.h"
 
 int addReqProv(rpmSpec spec, Header h, rpmTag tagN,

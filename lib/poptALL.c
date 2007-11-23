@@ -6,7 +6,7 @@
 #include "system.h"
 const char *__progname;
 
-#include "rpmcli.h"
+#include <rpmcli.h>
 #include "fts.h"
 
 #include "debug.h"

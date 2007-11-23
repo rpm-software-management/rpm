@@ -3,15 +3,15 @@
  */
 #include "system.h"
 
-#include "rpmlib.h"
-#include "rpmte.h"		/* XXX rpmElementType */
+#include <rpmlib.h>
+#include <rpmte.h>		/* XXX rpmElementType */
 
 #include "rpmgi_internal.h"
 
-#include "rpmdb.h"
-#include "rpmmacro.h"		/* XXX rpmExpand */
+#include <rpmdb.h>
+#include <rpmmacro.h>		/* XXX rpmExpand */
 #include "manifest.h"
-#include "rpmlog.h"
+#include <rpmlog.h>
 
 #include "debug.h"
 

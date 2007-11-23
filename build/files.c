@@ -10,28 +10,28 @@
 
 #include <regex.h>
 
-#include "rpmpgp.h"
+#include <rpmpgp.h>
 #include "rpmio_internal.h"	/* XXX rpmioSlurp */
 #include "fts.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 
 #include "cpio.h"
 
-#include "argv.h"
-#include "rpmfc.h"
+#include <argv.h>
+#include <rpmfc.h>
 
 #define	_RPMFI_INTERNAL		/* XXX pretty much all rpmfi internals... */
-#include "rpmfi.h"
+#include <rpmfi.h>
 
 #define	_RPMTE_INTERNAL		/* XXX rpmte init */
-#include "rpmte.h"
+#include <rpmte.h>
 
 #include "buildio.h"
 
 #include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
 #include "misc.h"	/* for splitString, freeSplitString */
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }

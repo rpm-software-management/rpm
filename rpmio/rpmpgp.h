@@ -12,7 +12,7 @@
 
 #include <string.h>
 
-#include "rpmio.h"	/* for pgpDig */
+#include <rpmio.h>	/* for pgpDig */
 
 #ifdef __cplusplus
 extern "C" {

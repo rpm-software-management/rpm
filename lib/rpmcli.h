@@ -5,11 +5,11 @@
  * \file lib/rpmcli.h
  */
 
-#include "rpmlib.h"
-#include "rpmurl.h"
-#include "rpmmacro.h"
-#include "argv.h"
-#include "idtx.h"
+#include <rpmlib.h>
+#include <rpmurl.h>
+#include <rpmmacro.h>
+#include <argv.h>
+#include <idtx.h>
 
 #ifdef __cplusplus
 extern "C" {

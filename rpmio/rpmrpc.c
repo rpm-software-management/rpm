@@ -8,7 +8,7 @@
 #include <pthread.h>
 #endif
 
-#include "rpmurl.h"
+#include <rpmurl.h>
 #include "rpmio_internal.h"
 
 #include "ugid.h"

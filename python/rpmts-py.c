@@ -4,10 +4,10 @@
 
 #include "system.h"
 
-#include "rpmlib.h"
-#include "rpmpgp.h"
-#include "rpmdb.h"
-#include "rpmbuild.h"
+#include <rpmlib.h>
+#include <rpmpgp.h>
+#include <rpmdb.h>
+#include <rpmbuild.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */

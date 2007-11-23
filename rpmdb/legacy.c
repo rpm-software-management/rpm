@@ -17,10 +17,10 @@
 
 #endif
 
-#include "rpmurl.h"
+#include <rpmurl.h>
 #include "rpmio_internal.h"	/* XXX fdInitDigest, fdFiniDigest */
-#include "rpmlib.h"
-#include "rpmmacro.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>
 #include "misc.h"	/* XXX stripTrailingChar */
 #include "legacy.h"
 #include "debug.h"

@@ -5,10 +5,10 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 
 #include "legacy.h"	/* XXX _noDirTokens */
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 struct rpmBuildArguments_s         rpmBTArgs;

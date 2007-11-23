@@ -4,8 +4,8 @@
 
 #include "system.h"
 
-#include "rpmlib.h"
-#include "rpmio.h"
+#include <rpmlib.h>
+#include <rpmio.h>
 #include "debug.h"
 
 struct headerTagIndices_s {

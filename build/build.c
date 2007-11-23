@@ -5,8 +5,8 @@
 
 #include "system.h"
 
-#include "rpmbuild.h"
-#include "rpmlog.h"
+#include <rpmbuild.h>
+#include <rpmlog.h>
 #include "misc.h" 	/* XXX for makeTempFile */
 
 #include "debug.h"

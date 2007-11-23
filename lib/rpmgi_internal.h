@@ -1,7 +1,7 @@
 #ifndef _RPMGI_INTERNAL_H
 #define _RPMGI_INTERNAL_H
 
-#include "rpmgi.h"
+#include <rpmgi.h>
 #include "fts.h"
 
 #ifdef __cplusplus

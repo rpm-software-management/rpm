@@ -8,14 +8,14 @@
 
 #include "digest.h"
 #include "rpmio_internal.h"	/* fd*Digest(), fd stats */
-#include "rpmlib.h"
+#include <rpmlib.h>
 
-#include "rpmts.h"
+#include <rpmts.h>
 
 #include "legacy.h"	/* XXX legacyRetrofit() */
 #include "rpmlead.h"
 
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "header_internal.h"	/* XXX headerCheck */
 #include "signature.h"
 #include "debug.h"

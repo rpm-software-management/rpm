@@ -6,10 +6,10 @@
 #include "system.h"
 
 #include "buildio.h"
-#include "rpmds.h"
-#include "rpmfi.h"
-#include "rpmts.h"
-#include "rpmlog.h"
+#include <rpmds.h>
+#include <rpmfi.h>
+#include <rpmts.h>
+#include <rpmlog.h>
 
 #include "debug.h"
 

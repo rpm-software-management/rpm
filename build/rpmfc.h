@@ -3,10 +3,10 @@
 
 #include <magic.h>
 
-#include "rpmlib.h"	/* for rpmds, rpmSpec */
-#include "argv.h"	/* for ARGV_t */
-#include "stringbuf.h"	/* for StringBuf */
-#include "rpmspec.h"	/* for Package */
+#include <rpmlib.h>	/* for rpmds, rpmSpec */
+#include <argv.h>	/* for ARGV_t */
+#include <stringbuf.h>	/* for StringBuf */
+#include <rpmspec.h>	/* for Package */
 
 #ifdef __cplusplus
 extern "C" {

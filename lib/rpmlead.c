@@ -6,11 +6,11 @@
 
 #include <netinet/in.h>
 
-#include "rpmlib.h"
+#include <rpmlib.h>
 
 #include "signature.h"
 #include "rpmlead.h"
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 static unsigned char lead_magic[] = {

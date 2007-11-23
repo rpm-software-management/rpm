@@ -1,7 +1,7 @@
 #ifndef H_RPMDB_PY
 #define H_RPMDB_PY
 
-#include "rpmdb.h"
+#include <rpmdb.h>
 
 /** \ingroup py_c
  * \file python/rpmdb-py.h

@@ -1,7 +1,7 @@
 #ifndef H_RPMFI_PY
 #define H_RPMFI_PY
 
-#include "rpmfi.h"
+#include <rpmfi.h>
 
 /** \ingroup py_c
  * \file python/rpmfi-py.h

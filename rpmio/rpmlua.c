@@ -1,10 +1,10 @@
 #include "system.h"
 
 #ifdef	WITH_LUA
-#include "rpmio.h"
-#include "rpmmacro.h"
-#include "rpmlog.h"
-#include "rpmurl.h"
+#include <rpmio.h>
+#include <rpmmacro.h>
+#include <rpmlog.h>
+#include <rpmurl.h>
 #include "rpmhook.h"
 
 #include <lua.h>

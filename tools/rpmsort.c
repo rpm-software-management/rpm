@@ -1,17 +1,17 @@
 #include "system.h"
 const char *__progname;
 
-#include "rpmlib.h"
-#include "rpmmacro.h"
-#include "rpmurl.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>
+#include <rpmurl.h>
 
-#include "rpmdb.h"
-#include "rpmps.h"
-#include "rpmte.h"
-#include "rpmts.h"
+#include <rpmdb.h>
+#include <rpmps.h>
+#include <rpmte.h>
+#include <rpmts.h>
 
 #include "manifest.h"
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 static int _depends_debug;

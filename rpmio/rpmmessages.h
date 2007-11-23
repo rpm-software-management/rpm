@@ -6,7 +6,7 @@
  * @todo Eliminate from API.
  */
 
-#include "rpmlog.h"
+#include <rpmlog.h>
 
 #ifdef __cplusplus
 extern "C" {

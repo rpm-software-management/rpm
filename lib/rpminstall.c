@@ -4,15 +4,15 @@
 
 #include "system.h"
 
-#include "rpmcli.h"
+#include <rpmcli.h>
 
-#include "rpmdb.h"
-#include "rpmds.h"
+#include <rpmdb.h>
+#include <rpmds.h>
 
-#include "rpmts.h"
+#include <rpmts.h>
 
 #include "manifest.h"
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 int rpmcliPackagesTotal = 0;

@@ -1,7 +1,7 @@
 #ifndef H_RPMAL_PY
 #define H_RPMAL_PY
 
-#include "rpmal.h"
+#include <rpmal.h>
 
 /** \ingroup py_c
  * \file python/rpmal-py.h

@@ -6,17 +6,17 @@
 #include "system.h"
 
 #include "rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
-#include "rpmbuild.h"
+#include <rpmbuild.h>
 
-#include "rpmps.h"
+#include <rpmps.h>
 
 #include "cpio.h"
 #include "fsm.h"
 #include "psm.h"
 
 #define	_RPMFI_INTERNAL		/* XXX fi->fsm */
-#include "rpmfi.h"
-#include "rpmts.h"
+#include <rpmfi.h>
+#include <rpmts.h>
 
 #include "buildio.h"
 
@@ -24,7 +24,7 @@
 #include "signature.h"
 #include "rpmlead.h"
 #include "misc.h"	/* XXX for makeTempFile */
-#include "rpmlog.h"
+#include <rpmlog.h>
 #include "debug.h"
 
 /**

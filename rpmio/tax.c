@@ -1,6 +1,6 @@
 #include "system.h"
                                                                                 
-#include "rpmpgp.h"
+#include <rpmpgp.h>
 #include "base64.h"
 #include <popt.h>
 

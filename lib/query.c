@@ -9,16 +9,16 @@
 # define PATH_MAX 255
 #endif
 
-#include "rpmcli.h"
+#include <rpmcli.h>
 
-#include "rpmdb.h"
-#include "rpmfi.h"
+#include <rpmdb.h>
+#include <rpmfi.h>
 
 #include "rpmgi_internal.h"
-#include "rpmts.h"
+#include <rpmts.h>
 
 #include "manifest.h"
-#include "rpmlog.h"
+#include <rpmlog.h>
 
 #include "debug.h"
 #include "misc.h"	/* XXX for currentDirectory */

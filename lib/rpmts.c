@@ -4,20 +4,20 @@
  */
 #include "system.h"
 
-#include "rpmurl.h"
+#include <rpmurl.h>
 #include "digest.h"
-#include "rpmlib.h"
-#include "rpmmacro.h"		/* XXX rpmtsOpenDB() needs rpmGetPath */
+#include <rpmlib.h>
+#include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
 
-#include "rpmdb.h"
+#include <rpmdb.h>
 
-#include "rpmal.h"
-#include "rpmds.h"
-#include "rpmfi.h"
+#include <rpmal.h>
+#include <rpmds.h>
+#include <rpmfi.h>
 #include "rpmlock.h"
-#include "rpmlog.h"
+#include <rpmlog.h>
 
-#include "rpmte.h"
+#include <rpmte.h>
 
 #include "rpmts_internal.h"
 
