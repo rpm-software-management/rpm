@@ -20,6 +20,8 @@
  */
 /** \defgroup	rpmmacro	Macro API.
  */
+/** \defgroup	rpmlog	Logging API.
+ */
 /** \defgroup	lead	LEAD.
  */
 /** \defgroup	signature	SIGNATURE.

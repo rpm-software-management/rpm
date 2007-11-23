@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-/**
+/** \ingroup rpmlog
  * RPM Log levels.
  * priorities/facilities are encoded into a single 32-bit quantity, where the
  * bottom 3 bits are the priority (0-7) and the top 28 bits are the facility
@@ -66,7 +66,7 @@ RPMCODE rpmprioritynames[] =
   };
 #endif
 
-/**
+/** \ingroup rpmlog
  * facility codes
  */
 typedef	enum rpmlogFac_e {
@@ -149,61 +149,61 @@ RPMCODE facilitynames[] =
 #define	RPMLOG_NOWAIT	0x10	/*!< don't wait for console forks: DEPRECATED */
 #define	RPMLOG_PERROR	0x20	/*!< log to stderr as well */
 
-/**
+/** \ingroup rpmlog
  * @todo Add argument(s), integrate with other types of callbacks.
  */
 typedef void (*rpmlogCallback) (void);
 
-/**
+/** \ingroup rpmlog
  */
 typedef struct rpmlogRec_s {
     int		code;
     const char * message;
 } * rpmlogRec;
 
-/**
+/** \ingroup rpmlog
  * Return number of rpmError() ressages.
  * @return		number of messages
  */
 int rpmlogGetNrecs(void)	;
 
-/**
+/** \ingroup rpmlog
  * Print all rpmError() messages.
  * @param f		file handle (NULL uses stderr)
  */
 void rpmlogPrint(FILE *f);
 
-/**
+/** \ingroup rpmlog
  * Close desriptor used to write to system logger.
  * @todo Implement.
  */
 void rpmlogClose (void);
 
-/**
+/** \ingroup rpmlog
  * Open connection to system logger.
  * @todo Implement.
  */
 void rpmlogOpen (const char * ident, int option, int facility);
 
-/**
+/** \ingroup rpmlog
  * Set the log mask level.
  * @param mask		log mask (0 is no operation)
  * @return		previous log mask
  */
 int rpmlogSetMask (int mask);
 
-/**
+/** \ingroup rpmlog
  * Generate a log message using FMT string and option arguments.
  */
 void rpmlog (int code, const char *fmt, ...);
 
-/**
+/** \ingroup rpmlog
  * Return text of last rpmError() message.
  * @return		text of last message
  */
 const char * rpmlogMessage(void);
 
-/**
+/** \ingroup rpmlog
  * Return error code from last rpmError() message.
  * @deprecated Perl-RPM needs, what's really needed is predictable, non-i18n
  *	encumbered, error text that can be retrieved through rpmlogMessage()
@@ -212,14 +212,14 @@ const char * rpmlogMessage(void);
  */
 int rpmlogCode(void);
 
-/**
+/** \ingroup rpmlog
  * Set rpmlog callback function.
  * @param cb		rpmlog callback function
  * @return		previous rpmlog callback function
  */
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
 
-/**
+/** \ingroup rpmlog
  * Set rpmlog file handle.
  * @param fp		rpmlog file handle (NULL uses stdout/stderr)
  * @return		previous rpmlog file handle
