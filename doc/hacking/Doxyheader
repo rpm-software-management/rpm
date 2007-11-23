@@ -18,6 +18,8 @@
  */
 /** \defgroup	rpmfi	File Info API.
  */
+/** \defgroup	rpmfc	File Classification API.
+ */
 /** \defgroup  rpmps   Problem Set API.
  */
 /** \defgroup	rpmgi	Generalized Iterator API.
