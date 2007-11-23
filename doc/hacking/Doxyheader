@@ -26,6 +26,8 @@
  */
 /** \defgroup	rpmlog	Logging API.
  */
+/** \defgroup	rpmsq	Signal Queue API.
+ */
 /** \defgroup	lead	LEAD.
  */
 /** \defgroup	signature	SIGNATURE.

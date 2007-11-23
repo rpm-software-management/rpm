@@ -12,15 +12,15 @@
 extern "C" {
 #endif
 
-/**
+/** \ingroup rpmsq
  */
 typedef struct rpmsig_s * rpmsig;
 
-/**
+/** \ingroup rpmsq
  */
 typedef struct rpmsqElem * rpmsq;
 
-/**
+/** \ingroup rpmsq
  * Default signal handler prototype.
  * @param signum	signal number
  * @param info		(siginfo_t) signal info
@@ -55,7 +55,7 @@ extern rpmsq rpmsqQueue;
 
 extern sigset_t rpmsqCaught;
 
-/**
+/** \ingroup rpmsq
  * Insert node into from queue.
  * @param elem		node to link
  * @param prev		previous node from queue
@@ -63,14 +63,14 @@ extern sigset_t rpmsqCaught;
  */
 int rpmsqInsert(void * elem, void * prev);
 
-/**
+/** \ingroup rpmsq
  * Remove node from queue.
  * @param elem		node to link
  * @return		0 on success
  */
 int rpmsqRemove(void * elem);
 
-/**
+/** \ingroup rpmsq
  * Default signal handler.
  * @param signum	signal number
  * @param info		(siginfo_t) signal info
@@ -78,7 +78,7 @@ int rpmsqRemove(void * elem);
  */
 void rpmsqAction(int signum, void * info, void * context);
 
-/**
+/** \ingroup rpmsq
  * Enable or disable a signal handler.
  * @param signum	signal to enable (or disable if negative)
  * @param handler	sa_sigaction handler (or NULL to use rpmsqHandler())
@@ -86,21 +86,21 @@ void rpmsqAction(int signum, void * info, void * context);
  */
 int rpmsqEnable(int signum, rpmsqAction_t handler);
 
-/**
+/** \ingroup rpmsq
  * Fork a child process.
  * @param sq		scriptlet queue element
  * @return		fork(2) pid
  */
 pid_t rpmsqFork(rpmsq sq);
 
-/**
+/** \ingroup rpmsq
  * Wait for child process to be reaped.
  * @param sq		scriptlet queue element
  * @return		reaped child pid
  */
 pid_t rpmsqWait(rpmsq sq);
 
-/**
+/** \ingroup rpmsq
  * Call a function in a thread.
  * @param start		function
  * @param arg		function argument
@@ -108,21 +108,21 @@ pid_t rpmsqWait(rpmsq sq);
  */
 void * rpmsqThread(void * (*start) (void * arg), void * arg);
 
-/**
+/** \ingroup rpmsq
  * Wait for thread to terminate.
  * @param thread	thread
  * @return		0 on success
  */
 int rpmsqJoin(void * thread);
 
-/**
+/** \ingroup rpmsq
  * Compare thread with current thread.
  * @param thread	thread
  * @return		0 if not equal
  */
 int rpmsqThreadEqual(void * thread);
 
-/**
+/** \ingroup rpmsq
  * Execute a command, returning its status.
  */
 int rpmsqExecve (const char ** argv);
