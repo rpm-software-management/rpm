@@ -15,7 +15,7 @@ const char *__progname;
 #include <rpmbuild.h>
 
 #include <rpmdb.h>
-#include "rpmdb_internal.h"	/* XXX for freeing dbiTags */
+#include "rpmdb/rpmdb_internal.h"	/* XXX for freeing dbiTags */
 #include <rpmps.h>
 #include <rpmts.h>
 
@@ -26,7 +26,7 @@ const char *__progname;
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
-#include "signature.h"
+#include "lib/signature.h"
 #endif
 
 #include "debug.h"
