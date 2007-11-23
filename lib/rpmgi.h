@@ -18,7 +18,7 @@ extern "C" {
  */
 extern int _rpmgi_debug;
 
-/**
+/** \ingroup rpmgi
  */
 typedef enum rpmgiFlags_e {
     RPMGI_NONE		= 0,
@@ -31,7 +31,7 @@ typedef enum rpmgiFlags_e {
 
 extern rpmgiFlags giFlags;
 
-/**
+/** \ingroup rpmgi
  * Unreference a generalized iterator instance.
  * @param gi		generalized iterator
  * @param msg
@@ -45,7 +45,7 @@ rpmgi XrpmgiUnlink (rpmgi gi,
 		const char * msg, const char * fn, unsigned ln);
 #define	rpmgiUnlink(_gi, _msg)	XrpmgiUnlink(_gi, _msg, __FILE__, __LINE__)
 
-/**
+/** \ingroup rpmgi
  * Reference a generalized iterator instance.
  * @param gi		generalized iterator
  * @param msg
@@ -58,13 +58,14 @@ rpmgi XrpmgiLink (rpmgi gi, const char * msg,
 		const char * fn, unsigned ln);
 #define	rpmgiLink(_gi, _msg)	XrpmgiLink(_gi, _msg, __FILE__, __LINE__)
 
-/** Destroy a generalized iterator.
+/** \ingroup rpmgi 
+ * Destroy a generalized iterator.
  * @param gi		generalized iterator
  * @return		NULL always
  */
 rpmgi rpmgiFree(rpmgi gi);
 
-/**
+/** \ingroup rpmgi
  * Return a generalized iterator.
  * @param ts		transaction set
  * @param tag		rpm tag
@@ -75,35 +76,35 @@ rpmgi rpmgiFree(rpmgi gi);
 rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp,
 		size_t keylen);
 
-/**
+/** \ingroup rpmgi
  * Perform next iteration step.
  * @param gi		generalized iterator
  * @returns		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
  */
 rpmRC rpmgiNext(rpmgi gi);
 
-/**
+/** \ingroup rpmgi
  * Return current header path.
  * @param gi		generalized iterator
  * @returns		header path
  */
 const char * rpmgiHdrPath(rpmgi gi);
 
-/**
+/** \ingroup rpmgi
  * Return current iteration header.
  * @param gi		generalized iterator
  * @returns		header
  */
 Header rpmgiHeader(rpmgi gi);
 
-/**
+/** \ingroup rpmgi
  * Return current iteration transaction set.
  * @param gi		generalized iterator
  * @returns		transaction set
  */
 rpmts rpmgiTs(rpmgi gi);
 
-/**
+/** \ingroup rpmgi
  * Load iterator args.
  * @param gi		generalized iterator
  * @param argv		arg list
