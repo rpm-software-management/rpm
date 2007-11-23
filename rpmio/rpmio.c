@@ -1687,6 +1687,15 @@ int Fcntl(FD_t fd, int op, void *lip)
     return fcntl(Fileno(fd), op, lip);
 }
 
+rpmop fdOp(FD_t fd, fdOpX opx)
+{
+    rpmop op = NULL;
+
+    if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
+        op = fd->stats->ops + opx;
+    return op;
+}
+
 int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (32 * BUFSIZ);

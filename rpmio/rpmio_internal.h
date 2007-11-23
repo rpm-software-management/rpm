@@ -23,18 +23,6 @@ typedef struct _FDSTACK_s {
 } FDSTACK_t;
 
 /** \ingroup rpmio
- * Identify per-desciptor I/O operation statistics.
- */
-typedef enum fdOpX_e {
-    FDSTAT_READ		= 0,	/*!< Read statistics index. */
-    FDSTAT_WRITE	= 1,	/*!< Write statistics index. */
-    FDSTAT_SEEK		= 2,	/*!< Seek statistics index. */
-    FDSTAT_CLOSE	= 3,	/*!< Close statistics index */
-    FDSTAT_DIGEST	= 4,	/*!< Digest statistics index. */
-    FDSTAT_MAX		= 5
-} fdOpX;
-
-/** \ingroup rpmio
  * Cumulative statistics for a descriptor.
  */
 typedef	struct {
@@ -342,23 +330,11 @@ void fdPop(FD_t fd)
 /** \ingroup rpmio
  */
 static inline
-rpmop fdstat_op(FD_t fd, fdOpX opx)
-{
-    rpmop op = NULL;
-
-    if (fd != NULL && fd->stats != NULL && opx >= 0 && opx < FDSTAT_MAX)
-        op = fd->stats->ops + opx;
-    return op;
-}
-
-/** \ingroup rpmio
- */
-static inline
 void fdstat_enter(FD_t fd, int opx)
 {
     if (fd == NULL) return;
     if (fd->stats != NULL)
-	(void) rpmswEnter(fdstat_op(fd, opx), 0);
+	(void) rpmswEnter(fdOp(fd, opx), 0);
 }
 
 /** \ingroup rpmio
@@ -379,7 +355,7 @@ void fdstat_exit(FD_t fd, int opx, ssize_t rc)
 	    break;
 	}
     if (fd->stats != NULL)
-	(void) rpmswExit(fdstat_op(fd, opx), rc);
+	(void) rpmswExit(fdOp(fd, opx), rc);
 }
 
 /** \ingroup rpmio

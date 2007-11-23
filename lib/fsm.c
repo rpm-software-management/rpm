@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"	/* fdGet/SetCpioPos, fdInit/FiniDigest... */
+#include "rpmio_internal.h"	/* fdGet/SetCpioPos, fdInit/FiniDigest */
 #include <rpmlib.h>
 
 #include "cpio.h"
@@ -2178,7 +2178,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
 	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-			fdstat_op(fsm->rfd, FDSTAT_DIGEST));
+			fdOp(fsm->rfd, FDSTAT_DIGEST));
 	    (void) Fclose(fsm->rfd);
 	    errno = saveerrno;
 	}
@@ -2208,7 +2208,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
 		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
 	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-			fdstat_op(fsm->wfd, FDSTAT_DIGEST));
+			fdOp(fsm->wfd, FDSTAT_DIGEST));
 	    (void) Fclose(fsm->wfd);
 	    errno = saveerrno;
 	}

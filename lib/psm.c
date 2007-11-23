@@ -5,7 +5,6 @@
 
 #include "system.h"
 
-#include "rpmio_internal.h"	/* FDSTAT_*, fdsta_op */
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>
@@ -1577,9 +1576,9 @@ assert(psm->mi == NULL);
 	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
-			fdstat_op(psm->cfd, FDSTAT_READ));
+			fdOp(psm->cfd, FDSTAT_READ));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
-			fdstat_op(psm->cfd, FDSTAT_DIGEST));
+			fdOp(psm->cfd, FDSTAT_DIGEST));
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1664,9 +1663,9 @@ assert(psm->mi == NULL);
 	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd,
 			NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
-			fdstat_op(psm->cfd, FDSTAT_WRITE));
+			fdOp(psm->cfd, FDSTAT_WRITE));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
-			fdstat_op(psm->cfd, FDSTAT_DIGEST));
+			fdOp(psm->cfd, FDSTAT_DIGEST));
 	    xx = fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */

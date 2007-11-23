@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <rpmsw.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -281,6 +283,23 @@ int ufdGetFile( FD_t sfd, FD_t tfd);
  * TODO: get this out of the API
  */
 int timedRead(FD_t fd, void * bufptr, int length);
+
+/** \ingroup rpmio
+ * Identify per-desciptor I/O operation statistics.
+ */
+typedef enum fdOpX_e {
+    FDSTAT_READ		= 0,	/*!< Read statistics index. */
+    FDSTAT_WRITE	= 1,	/*!< Write statistics index. */
+    FDSTAT_SEEK		= 2,	/*!< Seek statistics index. */
+    FDSTAT_CLOSE	= 3,	/*!< Close statistics index */
+    FDSTAT_DIGEST	= 4,	/*!< Digest statistics index. */
+    FDSTAT_MAX		= 5
+} fdOpX;
+
+/** \ingroup rpmio
+ *
+ */
+rpmop fdOp(FD_t fd, fdOpX opx);
 
 #ifdef __cplusplus
 }
