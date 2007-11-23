@@ -37,7 +37,7 @@ extern const char * macrofiles;
 #define	RMIL_OLDSPEC	-1
 #define	RMIL_GLOBAL	0
 
-/**
+/** \ingroup rpmmacro
  * Print macros to file stream.
  * @param mc		macro context (NULL uses global context).
  * @param fp		file stream (NULL uses stderr).
@@ -45,7 +45,7 @@ extern const char * macrofiles;
 void	rpmDumpMacroTable	(rpmMacroContext mc,
 					FILE * fp);
 
-/**
+/** \ingroup rpmmacro
  * Expand macro into buffer.
  * @deprecated Use rpmExpand().
  * @todo Eliminate from API.
@@ -59,7 +59,7 @@ int	expandMacros	(void * spec, rpmMacroContext mc,
 				char * sbuf,
 				size_t slen);
 
-/**
+/** \ingroup rpmmacro
  * Add macro to context.
  * @deprecated Use rpmDefineMacro().
  * @param mc		macro context (NULL uses global context).
@@ -72,14 +72,14 @@ void	addMacro	(rpmMacroContext mc, const char * n,
 				const char * o,
 				const char * b, int level);
 
-/**
+/** \ingroup rpmmacro
  * Delete macro from context.
  * @param mc		macro context (NULL uses global context).
  * @param n		macro name
  */
 void	delMacro	(rpmMacroContext mc, const char * n);
 
-/**
+/** \ingroup rpmmacro
  * Define macro in context.
  * @param mc		macro context (NULL uses global context).
  * @param macro		macro name, options, body
@@ -89,41 +89,41 @@ void	delMacro	(rpmMacroContext mc, const char * n);
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
 
-/**
+/** \ingroup rpmmacro
  * Load macros from specific context into global context.
  * @param mc		macro context (NULL does nothing).
  * @param level		macro recursion level (0 is entry API)
  */
 void	rpmLoadMacros	(rpmMacroContext mc, int level);
 
-/**
+/** \ingroup rpmmacro
  * Load macro context from a macro file.
  * @param mc		(unused)
  * @param fn		macro file name
  */
 int	rpmLoadMacroFile(rpmMacroContext mc, const char * fn);
 
-/**
+/** \ingroup rpmmacro
  * Initialize macro context from set of macrofile(s).
  * @param mc		macro context
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
 void	rpmInitMacros	(rpmMacroContext mc, const char * macrofiles);
 
-/**
+/** \ingroup rpmmacro
  * Destroy macro context.
  * @param mc		macro context (NULL uses global context).
  */
 void	rpmFreeMacros	(rpmMacroContext mc);
 
-/**
+/** \ingroup rpmmacro
  * Return (malloc'ed) concatenated macro expansion(s).
  * @param arg		macro(s) to expand (NULL terminates list)
  * @return		macro expansion (malloc'ed)
  */
 char * rpmExpand	(const char * arg, ...);
 
-/**
+/** \ingroup rpmmacro
  * Return macro expansion as a numeric value.
  * Boolean values ('Y' or 'y' returns 1, 'N' or 'n' returns 0)
  * are permitted as well. An undefined macro returns 0.

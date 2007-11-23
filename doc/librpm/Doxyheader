@@ -18,6 +18,8 @@
  */
 /** \defgroup	rpmgi	Generalized Iterator API.
  */
+/** \defgroup	rpmmacro	Macro API.
+ */
 /** \defgroup	lead	LEAD.
  */
 /** \defgroup	signature	SIGNATURE.
