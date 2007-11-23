@@ -10,6 +10,7 @@
 
 #include <rpmdb.h>
 #include <rpmmacro.h>		/* XXX rpmExpand */
+#include <rpmfileutil.h>
 #include "manifest.h"
 #include <rpmlog.h>
 

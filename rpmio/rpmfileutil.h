@@ -88,4 +88,14 @@ const char * rpmGenPath	(const char * urlroot,
 /* LCL: shrug */
 const char * rpmGetPath	(const char * path, ...);
 
+/**
+ * Return URL path(s) from a (URL prefixed) pattern glob.
+ * @param patterns	glob pattern
+ * @retval *argcPtr	no. of paths
+ * @retval *argvPtr	array of paths (malloc'd contiguous blob)
+ * @return		0 on success
+ */
+int rpmGlob(const char * patterns, int * argcPtr,
+		const char *** argvPtr);
+
 #endif /* _RPMFILEUTIL_H */

@@ -46,16 +46,6 @@ void	rpmDumpMacroTable	(rpmMacroContext mc,
 					FILE * fp);
 
 /**
- * Return URL path(s) from a (URL prefixed) pattern glob.
- * @param patterns	glob pattern
- * @retval *argcPtr	no. of paths
- * @retval *argvPtr	array of paths (malloc'd contiguous blob)
- * @return		0 on success
- */
-int rpmGlob(const char * patterns, int * argcPtr,
-		const char *** argvPtr);
-
-/**
  * Expand macro into buffer.
  * @deprecated Use rpmExpand().
  * @todo Eliminate from API.

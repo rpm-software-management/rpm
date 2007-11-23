@@ -4,7 +4,7 @@
 #include <rpmlib.h>
 #include <rpmdb.h>
 #include <rpmts.h>
-#include <rpmmacro.h>
+#include <rpmfileutil.h>
 #include <rpmlog.h>
 
 static int reverse = -1;

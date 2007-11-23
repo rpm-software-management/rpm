@@ -5,13 +5,13 @@ const char *__progname;
 
 #include <rpmdb.h>
 #include <rpmps.h>
-
 #include <rpmte.h>
-
 #include <rpmts.h>
 
-#include "manifest.h"
 #include <rpmlog.h>
+#include <rpmfileutil.h>
+
+#include "manifest.h"
 #include "debug.h"
 
 static int noDeps = 1;

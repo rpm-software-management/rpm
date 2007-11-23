@@ -589,3 +589,248 @@ rpmGetPath(const char *path, ...)
     return xstrdup(buf);	/* XXX xstrdup has side effects. */
 }
 
+/* =============================================================== */
+/* XXX dupe'd to avoid change in linkage conventions. */
+
+#define POPT_ERROR_NOARG        -10     /*!< missing argument */
+#define POPT_ERROR_BADQUOTE     -15     /*!< error in paramter quoting */
+#define POPT_ERROR_MALLOC       -21     /*!< memory allocation failed */
+
+#define POPT_ARGV_ARRAY_GROW_DELTA 5
+
+static int XpoptDupArgv(int argc, const char **argv,
+		int * argcPtr, const char *** argvPtr)
+{
+    size_t nb = (argc + 1) * sizeof(*argv);
+    const char ** argv2;
+    char * dst;
+    int i;
+
+    if (argc <= 0 || argv == NULL)	/* XXX can't happen */
+	return POPT_ERROR_NOARG;
+    for (i = 0; i < argc; i++) {
+	if (argv[i] == NULL)
+	    return POPT_ERROR_NOARG;
+	nb += strlen(argv[i]) + 1;
+    }
+	
+    dst = malloc(nb);
+    if (dst == NULL)			/* XXX can't happen */
+	return POPT_ERROR_MALLOC;
+    argv2 = (void *) dst;
+    dst += (argc + 1) * sizeof(*argv);
+
+    for (i = 0; i < argc; i++) {
+	argv2[i] = dst;
+	dst += strlen(strcpy(dst, argv[i])) + 1;
+    }
+    argv2[argc] = NULL;
+
+    if (argvPtr) {
+	*argvPtr = argv2;
+    } else {
+	free(argv2);
+	argv2 = NULL;
+    }
+    if (argcPtr)
+	*argcPtr = argc;
+    return 0;
+}
+static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+{
+    const char * src;
+    char quote = '\0';
+    int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
+    const char ** argv = malloc(sizeof(*argv) * argvAlloced);
+    int argc = 0;
+    int buflen = strlen(s) + 1;
+    char * buf = memset(alloca(buflen), 0, buflen);
+    int rc = POPT_ERROR_MALLOC;
+
+    if (argv == NULL) return rc;
+    argv[argc] = buf;
+
+    for (src = s; *src != '\0'; src++) {
+	if (quote == *src) {
+	    quote = '\0';
+	} else if (quote != '\0') {
+	    if (*src == '\\') {
+		src++;
+		if (!*src) {
+		    rc = POPT_ERROR_BADQUOTE;
+		    goto exit;
+		}
+		if (*src != quote) *buf++ = '\\';
+	    }
+	    *buf++ = *src;
+	} else if (isspace(*src)) {
+	    if (*argv[argc] != '\0') {
+		buf++, argc++;
+		if (argc == argvAlloced) {
+		    argvAlloced += POPT_ARGV_ARRAY_GROW_DELTA;
+		    argv = realloc(argv, sizeof(*argv) * argvAlloced);
+		    if (argv == NULL) goto exit;
+		}
+		argv[argc] = buf;
+	    }
+	} else switch (*src) {
+	  case '"':
+	  case '\'':
+	    quote = *src;
+	    break;
+	  case '\\':
+	    src++;
+	    if (!*src) {
+		rc = POPT_ERROR_BADQUOTE;
+		goto exit;
+	    }
+	  default:
+	    *buf++ = *src;
+	    break;
+	}
+    }
+
+    if (strlen(argv[argc])) {
+	argc++, buf++;
+    }
+
+    rc = XpoptDupArgv(argc, argv, argcPtr, argvPtr);
+
+exit:
+    if (argv) free(argv);
+    return rc;
+}
+/* =============================================================== */
+static int _debug = 0;
+
+int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
+{
+    int ac = 0;
+    const char ** av = NULL;
+    int argc = 0;
+    const char ** argv = NULL;
+    char * globRoot = NULL;
+#ifdef ENABLE_NLS
+    const char * old_collate = NULL;
+    const char * old_ctype = NULL;
+    const char * t;
+#endif
+	size_t maxb, nb;
+    int i, j;
+    int rc;
+
+    rc = XpoptParseArgvString(patterns, &ac, &av);
+    if (rc)
+	return rc;
+#ifdef ENABLE_NLS
+	t = setlocale(LC_COLLATE, NULL);
+	if (t)
+	    old_collate = xstrdup(t);
+	t = setlocale(LC_CTYPE, NULL);
+	if (t)
+	    old_ctype = xstrdup(t);
+	(void) setlocale(LC_COLLATE, "C");
+	(void) setlocale(LC_CTYPE, "C");
+#endif
+	
+    if (av != NULL)
+    for (j = 0; j < ac; j++) {
+	const char * globURL;
+	const char * path;
+	int ut = urlPath(av[j], &path);
+	int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
+	glob_t gl;
+
+	if (!local || (!Glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL)) {
+	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+	    argv[argc] = xstrdup(av[j]);
+if (_debug)
+fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
+	    argc++;
+	    continue;
+	}
+	
+	gl.gl_pathc = 0;
+	gl.gl_pathv = NULL;
+	rc = Glob(av[j], GLOB_TILDE, Glob_error, &gl);
+	if (rc)
+	    goto exit;
+
+	/* XXX Prepend the URL leader for globs that have stripped it off */
+	maxb = 0;
+	for (i = 0; i < gl.gl_pathc; i++) {
+	    if ((nb = strlen(&(gl.gl_pathv[i][0]))) > maxb)
+		maxb = nb;
+	}
+	
+	nb = ((ut == URL_IS_PATH) ? (path - av[j]) : 0);
+	maxb += nb;
+	maxb += 1;
+	globURL = globRoot = xmalloc(maxb);
+
+	switch (ut) {
+	case URL_IS_PATH:
+	case URL_IS_DASH:
+	    strncpy(globRoot, av[j], nb);
+	    break;
+	case URL_IS_HTTPS:
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
+	case URL_IS_HKP:
+	case URL_IS_UNKNOWN:
+	default:
+	    break;
+	}
+	globRoot += nb;
+	*globRoot = '\0';
+if (_debug)
+fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
+	
+	argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
+
+	if (argv != NULL)
+	for (i = 0; i < gl.gl_pathc; i++) {
+	    const char * globFile = &(gl.gl_pathv[i][0]);
+	    if (globRoot > globURL && globRoot[-1] == '/')
+		while (*globFile == '/') globFile++;
+	    strcpy(globRoot, globFile);
+if (_debug)
+fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
+	    argv[argc++] = xstrdup(globURL);
+	}
+	Globfree(&gl);
+	globURL = _free(globURL);
+    }
+
+    if (argv != NULL && argc > 0) {
+	argv[argc] = NULL;
+	if (argvPtr)
+	    *argvPtr = argv;
+	if (argcPtr)
+	    *argcPtr = argc;
+	rc = 0;
+    } else
+	rc = 1;
+
+
+exit:
+#ifdef ENABLE_NLS	
+    if (old_collate) {
+	(void) setlocale(LC_COLLATE, old_collate);
+	old_collate = _free(old_collate);
+    }
+    if (old_ctype) {
+	(void) setlocale(LC_CTYPE, old_ctype);
+	old_ctype = _free(old_ctype);
+    }
+#endif
+    av = _free(av);
+    if (rc || argvPtr == NULL) {
+	if (argv != NULL)
+	for (i = 0; i < argc; i++)
+	    argv[i] = _free(argv[i]);
+	argv = _free(argv);
+    }
+    return rc;
+}
+
