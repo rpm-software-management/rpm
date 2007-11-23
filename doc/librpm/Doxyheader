@@ -28,21 +28,11 @@
  */
 /** \defgroup	rpmsw	Statistics API.
  */
-/** \defgroup	lead	LEAD.
- */
 /** \defgroup	signature	SIGNATURE.
  */
 /** \defgroup	header	HEADER.
  */
-/** \defgroup	payload	PAYLOAD.
- */
 /** \defgroup	rpmdb	Database API.
- */
-/** \defgroup	dbi	DataBase Index Element API.
- */
-/** \defgroup	db3	Berkeley DB API.
- */
-/** \defgroup	rpmlua	Embedded Lua.
  */
 /** \defgroup	rpmrpc	RPMRPC.
  */
