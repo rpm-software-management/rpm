@@ -10,7 +10,7 @@ const char *__progname;
 #include <rpmte.h>
 #include <rpmts.h>
 
-#include "manifest.h"
+#include "lib/manifest.h"
 #include <rpmlog.h>
 #include "debug.h"
 

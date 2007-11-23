@@ -41,7 +41,7 @@
 
 #include <rpmio.h>
 #include <rpmpgp.h>
-#include "hashtab.h"
+#include "tools/hashtab.h"
 
 #define DW_TAG_partial_unit 0x3c
 

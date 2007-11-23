@@ -2,11 +2,11 @@
 const char *__progname;
 
 #include <rpmbuild.h>
-#include "buildio.h"
+#include "build/buildio.h"
 
 #include <header.h>
-#include "rpmlead.h"
-#include "signature.h"
+#include "lib/rpmlead.h"
+#include "lib/signature.h"
 
 #include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
 #include "debug.h"

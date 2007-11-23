@@ -11,7 +11,7 @@ const char *__progname;
 #include <rpmlog.h>
 #include <rpmfileutil.h>
 
-#include "manifest.h"
+#include "lib/manifest.h"
 #include "debug.h"
 
 static int noDeps = 1;

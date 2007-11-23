@@ -2,7 +2,7 @@
 const char *__progname;
 
 #include <rpmlib.h>
-#include "header_internal.h"
+#include "rpmdb/header_internal.h"
 #include "debug.h"
 
 int main(int argc, char *argv[])

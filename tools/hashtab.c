@@ -35,7 +35,7 @@ Boston, MA 02111-1307, USA.  */
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "hashtab.h"
+#include "tools/hashtab.h"
 
 /* This macro defines reserved value for empty table entry. */
 
