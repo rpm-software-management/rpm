@@ -52,3 +52,5 @@
  */
 /** \defgroup	rpmio	RPMIO.
  */
+/** \defgroup	rpmfileutil	File and Path Manipulation API.
+ */

@@ -1,8 +1,15 @@
 #ifndef _RPMFILEUTIL_H
 #define _RPMFILEUTIL_H
 
+/** \ingroup rpmfileutil rpmio
+ * \file rpmio/rpmfileutil.h
+ * File and path manipulation helper functions.
+ */
+
 #include <rpmpgp.h>
 
+/** \ingroup rpmfileutil
+ */
 typedef enum rpmCompressedMagic_e {
     COMPRESSED_NOT		= 0,	/*!< not compressed */
     COMPRESSED_OTHER		= 1,	/*!< gzip can handle */
@@ -11,7 +18,7 @@ typedef enum rpmCompressedMagic_e {
     COMPRESSED_LZMA		= 4	/*!< lzma can handle */
 } rpmCompressedMagic;
 
-/**
+/** \ingroup rpmfileutil
  * Calculate a file digest and size.
  * @param algo		digest algorithm (ignored for now, md5 used)
  * @param fn		file name
@@ -24,7 +31,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 		  unsigned char * digest, size_t * fsizep);
 
 
-/**
+/** \ingroup rpmfileutil
  * Return file handle for a temporaray file.
  * A unique temporaray file path will be generated using
  *	rpmGenPath(prefix, "%{_tmppath}/", "rpm-tmp.XXXXX")
@@ -39,7 +46,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
  */
 int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr);
 
-/**
+/** \ingroup rpmfileutil
  * Insure that directories in path exist, creating as needed.
  * @param path		directory path
  * @param mode		directory mode (if created)
@@ -49,7 +56,7 @@ int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr);
  */
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
 
-/**
+/** \ingroup rpmfileutil
  * Return type of compression used in file.
  * @param file		name of file
  * @retval compressed	address of compression type
@@ -58,14 +65,14 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
 int	isCompressed	(const char * file,
 				rpmCompressedMagic * compressed);
 
-/**
+/** \ingroup rpmfileutil
  * Canonicalize file path.
  * @param path		path to canonicalize (in-place)
  * @return		canonicalized path (malloc'ed)
  */
 char * rpmCleanPath	(char * path);
 
-/**
+/** \ingroup rpmfileutil
  * Merge 3 args into path, any or all of which may be a url.
  * The leading part of the first URL encountered is used
  * for the result, other URL prefixes are discarded, permitting
@@ -80,7 +87,7 @@ const char * rpmGenPath	(const char * urlroot,
 			const char * urlmdir,
 			const char * urlfile);
 
-/**
+/** \ingroup rpmfileutil
  * Return (malloc'ed) expanded, canonicalized, file path.
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
@@ -88,7 +95,7 @@ const char * rpmGenPath	(const char * urlroot,
 /* LCL: shrug */
 const char * rpmGetPath	(const char * path, ...);
 
-/**
+/** \ingroup rpmfileutil
  * Return URL path(s) from a (URL prefixed) pattern glob.
  * @param patterns	glob pattern
  * @retval *argcPtr	no. of paths
