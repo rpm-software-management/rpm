@@ -9,6 +9,7 @@
 #endif
 
 #include <rpmurl.h>
+#include <rpmstring.h>
 #include "rpmio_internal.h"
 
 #include "ugid.h"

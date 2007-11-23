@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmio.h>
+#include <rpmstring.h>
 #include "debug.h"
 
 struct headerTagIndices_s {

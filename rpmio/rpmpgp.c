@@ -6,6 +6,9 @@
 #include "system.h"
 #include "digest.h"
 #include "rpmio_internal.h"	/* XXX rpmioSlurp */
+
+#include <rpmstring.h>
+
 #include "debug.h"
 
 

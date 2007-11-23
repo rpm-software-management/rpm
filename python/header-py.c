@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmstring.h>
 
 #include "legacy.h"
 

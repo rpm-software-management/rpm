@@ -8,6 +8,7 @@
 #include "digest.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
+#include <rpmstring.h>
 
 #include <rpmdb.h>
 

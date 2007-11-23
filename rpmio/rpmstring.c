@@ -16,13 +16,6 @@ struct StringBufRec {
     int free;
 };
 
-/**
- * Locale insensitive isspace(3).
- */
-static inline int xisspace(int c)  {
-    return (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f' || c == '\v');
-}
-
 char * stripTrailingChar(char * s, char c)
 {
     char * t;

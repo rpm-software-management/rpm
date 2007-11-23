@@ -13,6 +13,7 @@
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
 
 #include <rpmio.h>
+#include <rpmstring.h>
 #include <rpmurl.h>
 #include <rpmmessages.h>
 #include <rpmlog.h>

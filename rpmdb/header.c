@@ -10,6 +10,7 @@
 
 #include "system.h"
 
+#include <rpmstring.h>
 #include "header_internal.h"
 
 #include "debug.h"

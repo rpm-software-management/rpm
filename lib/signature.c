@@ -8,6 +8,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include <rpmdb.h>
+#include <rpmstring.h>
 
 #include <rpmts.h>
 
