@@ -160,7 +160,7 @@ extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 #define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
 #define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
 
-/**
+/** \ingroup rpmtag
  * Tags identify data in package headers.
  * @note tags should not have value 0!
  */
@@ -659,7 +659,7 @@ typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
  */
 typedef int (*HRE_t) (Header h, int32_t tag);
 
-/**
+/** 
  * @todo Generalize filter mechanism.
  */
 typedef enum rpmprobFilterFlags_e {
@@ -886,21 +886,21 @@ int rpmCheckRpmlibProvides(const rpmds key);
 void rpmShowRpmlibProvides(FILE * fp);
 
 
-/**
+/** \ingroup rpmtag
  * Return tag name from value.
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
 const char * rpmTagGetName(int tag);
 
-/**
+/** \ingroup rpmtag
  * Return tag data type from value.
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
 int rpmTagGetType(int tag);
 
-/**
+/** \ingroup rpmtag
  * Return tag value from name.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found

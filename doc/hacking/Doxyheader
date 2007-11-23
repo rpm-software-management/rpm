@@ -36,7 +36,9 @@
  */
 /** \defgroup	signature	SIGNATURE.
  */
-/** \defgroup	header	HEADER.
+/** \defgroup	header	Header API.
+ */
+/** \defgroup   rpmtag  Header Tag API.
  */
 /** \defgroup	payload	PAYLOAD.
  */
