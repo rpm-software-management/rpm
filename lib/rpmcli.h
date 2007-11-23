@@ -35,7 +35,7 @@ extern const char * rpmcliRcfile;
 
 extern const char * rpmcliRootDir;
 
-/**
+/** \ingroup rpmcli
  * Initialize most everything needed by an rpm CLI executable context.
  * @param argc			no. of args
  * @param argv			arg array
@@ -45,13 +45,13 @@ extern const char * rpmcliRootDir;
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable);
 
-/**
+/** \ingroup rpmcli
  * Make sure that rpm configuration has been read.
  * @warning Options like --rcfile and --verbose must precede callers option.
  */
 void rpmcliConfigured(void);
 
-/**
+/** \ingroup rpmcli
  * Destroy most everything needed by an rpm CLI executable context.
  * @param optCon		popt context
  * @return			NULL always
