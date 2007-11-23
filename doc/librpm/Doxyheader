@@ -1,8 +1,8 @@
 /*! \mainpage librpm API Documentation.
  */
-/** \defgroup	rpmcli	RPMCLI.
+/** \defgroup	rpmcli	Command Line API.
  */
-/** \defgroup	rpmbuild	RPMBUILD.
+/** \defgroup	rpmbuild	Build API.
  */
 /** \defgroup	rpmrc	RPMRC.
  */
@@ -28,7 +28,7 @@
  */
 /** \defgroup	rpmsw	Statistics API.
  */
-/** \defgroup	signature	SIGNATURE.
+/** \defgroup	signature	Signature API.
  */
 /** \defgroup	header	Header API.
  */
@@ -36,9 +36,9 @@
  */
 /** \defgroup	rpmdb	Database API.
  */
-/** \defgroup	rpmrpc	RPMRPC.
+/** \defgroup	rpmrpc	RPM RPC API.
  */
-/** \defgroup	rpmio	RPMIO.
+/** \defgroup	rpmio	RPM IO API.
  */
 /** \defgroup	rpmfileutil	File and Path Manipulation API.
  */

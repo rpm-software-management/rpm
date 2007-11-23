@@ -4,9 +4,9 @@
  */
 /** \defgroup	py_c  	PYTHON-C Language Bindings.
  */
-/** \defgroup	rpmcli	RPMCLI.
+/** \defgroup	rpmcli	Command Line API.
  */
-/** \defgroup	rpmbuild	RPMBUILD.
+/** \defgroup	rpmbuild	Build API.
  */
 /** \defgroup	rpmrc	RPMRC.
  */
@@ -32,15 +32,15 @@
  */
 /** \defgroup	rpmsw	Statistics API.
  */
-/** \defgroup	lead	LEAD.
+/** \defgroup	lead	Lead API.
  */
-/** \defgroup	signature	SIGNATURE.
+/** \defgroup	signature	Signature API.
  */
 /** \defgroup	header	Header API.
  */
 /** \defgroup   rpmtag  Header Tag API.
  */
-/** \defgroup	payload	PAYLOAD.
+/** \defgroup	payload	Payload API.
  */
 /** \defgroup	rpmdb	Database API.
  */
@@ -50,9 +50,9 @@
  */
 /** \defgroup	rpmlua	Embedded Lua.
  */
-/** \defgroup	rpmrpc	RPMRPC.
+/** \defgroup	rpmrpc	RPM RPC API.
  */
-/** \defgroup	rpmio	RPMIO.
+/** \defgroup	rpmio	RPM IO API.
  */
 /** \defgroup	rpmfileutil	File and Path Manipulation API.
  */
