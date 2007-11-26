@@ -26,7 +26,7 @@ main (int argc, const char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     pgpDig dig;
-    const byte * pkt = NULL;
+    const uint8_t * pkt = NULL;
     size_t pktlen;
     const char ** args;
     const char * fn;

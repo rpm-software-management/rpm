@@ -41,9 +41,9 @@ static unsigned int keyids[] = {
 static int readKeys(const char * uri)
 {
     unsigned int * kip;
-    const byte * pkt;
+    const uint8_t * pkt;
     size_t pktlen;
-    byte keyid[8];
+    uint8_t keyid[8];
     char fn[BUFSIZ];
     pgpDig dig;
     int rc;
