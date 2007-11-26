@@ -917,12 +917,12 @@ int main()
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
 
-if echo "$build_os" | grep sco > /dev/null; then
+if echo "$host_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
 	AC_DEFINE(HAVE_STRUCT_MNTTAB, 1,
 	[Define as 1 if you have "struct mnttab" (only sco?)])
-elif echo "$build_os" | grep sunos > /dev/null; then
+elif echo "$host_os" | grep sunos > /dev/null; then
 	echo "hacking things up for sunos"
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
@@ -931,59 +931,59 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 fi
 
 #
-# get rid of the 4-th tuple, if config.guess returned "linux-gnu" for build_os
+# get rid of the 4-th tuple, if config.guess returned "linux-gnu" for host_os
 #
-build_os_gnu=-gnu
-if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
-	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
+host_os_gnu=-gnu
+if echo "$host_os" | grep '.*-gnulibc1' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnulibc1$//'`
 fi
-if echo "$build_os" | grep '.*-gnueabi' > /dev/null ; then
-	build_os=`echo "${build_os}" | sed 's/-gnueabi$//'`
-	build_os_gnu=-gnueabi
+if echo "$host_os" | grep '.*-gnueabi' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnueabi$//'`
+	host_os_gnu=-gnueabi
 fi
-if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
-	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
+if echo "$host_os" | grep '.*-gnu' > /dev/null ; then
+	host_os=`echo "${host_os}" | sed 's/-gnu$//'`
 fi
 
 changequote(<, >)
-build_os_exact="${build_os}"
-build_os_major=`echo "${build_os}" | sed 's/\..*$//'`
-build_os_noversion=`echo "${build_os}" | sed 's/[0-9]*\..*$//'`
+host_os_exact="${host_os}"
+host_os_major=`echo "${host_os}" | sed 's/\..*$//'`
+host_os_noversion=`echo "${host_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 
 rm -f ./find-provides
-if test -f ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.prov ; then
-	echo "using ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${build_os_exact}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_os_exact}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_os_exact}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${build_os_major}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_os_major}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_os_major}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${build_os_noversion}.prov ; then
-	echo "using ${srcdir}/autodeps/${build_os_noversion}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${build_os_noversion}.prov ./find-provides
+if test -f ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.prov ; then
+	echo "using ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.prov ./find-provides
+elif test -f ${srcdir}/autodeps/${host_os_exact}.prov ; then
+	echo "using ${srcdir}/autodeps/${host_os_exact}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${host_os_exact}.prov ./find-provides
+elif test -f ${srcdir}/autodeps/${host_os_major}.prov ; then
+	echo "using ${srcdir}/autodeps/${host_os_major}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${host_os_major}.prov ./find-provides
+elif test -f ${srcdir}/autodeps/${host_os_noversion}.prov ; then
+	echo "using ${srcdir}/autodeps/${host_os_noversion}.prov for automatic provides generation"
+    ln -s ${srcdir}/autodeps/${host_os_noversion}.prov ./find-provides
 else
-    echo "*** no default provides information is available for ${build_os_noversion}"
+    echo "*** no default provides information is available for ${host_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-provides
 fi
 
 rm -f ./find-requires
-if test -f ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.req ; then
-	echo "using ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${host_cpu}-${build_os_exact}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${build_os_exact}.req ; then
-	echo "using ${srcdir}/autodeps/${build_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_exact}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${build_os_major}.req ; then
-	echo "using ${srcdir}/autodeps/${build_os_major}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_major}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${build_os_noversion}.req ; then
-	echo "using ${srcdir}/autodeps/${build_os_noversion}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${build_os_noversion}.req ./find-requires
+if test -f ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.req ; then
+	echo "using ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.req ./find-requires
+elif test -f ${srcdir}/autodeps/${host_os_exact}.req ; then
+	echo "using ${srcdir}/autodeps/${host_os_exact}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${host_os_exact}.req ./find-requires
+elif test -f ${srcdir}/autodeps/${host_os_major}.req ; then
+	echo "using ${srcdir}/autodeps/${host_os_major}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${host_os_major}.req ./find-requires
+elif test -f ${srcdir}/autodeps/${host_os_noversion}.req ; then
+	echo "using ${srcdir}/autodeps/${host_os_noversion}.req for automatic requires generation"
+    ln -s ${srcdir}/autodeps/${host_os_noversion}.req ./find-requires
 else
-    echo "*** no default requires information is available for ${build_os_noversion}"
+    echo "*** no default requires information is available for ${host_os_noversion}"
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
@@ -1011,7 +1011,7 @@ mips*)		RPMCANONCOLOR=0; RPMCANONARCH=mips ;;
 m68k*)		RPMCANONCOLOR=0; RPMCANONARCH=m68k ;;
 *)		RPMCANONCOLOR=0; RPMCANONARCH=unknown ;;
 esac
-case "${build_os_noversion}" in
+case "${host_os_noversion}" in
 mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$build_vendor"
@@ -1026,8 +1026,8 @@ unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos)
 	test -f /etc/caos-release &&		RPMCANONVENDOR=caos
 	;;
 esac
-RPMCANONOS="$build_os_noversion"
-RPMCANONGNU="$build_os_gnu"
+RPMCANONOS="$host_os_noversion"
+RPMCANONGNU="$host_os_gnu"
 AC_SUBST(RPMCANONCOLOR)
 AC_SUBST(autorelocate_path)
 AC_SUBST(autorelocate_dcolor)
