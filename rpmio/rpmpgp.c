@@ -888,7 +888,7 @@ int pgpPrtComment(pgpTag tag, const uint8_t *h, unsigned int hlen)
 }
 
 int pgpPubkeyFingerprint(const uint8_t * pkt, unsigned int pktlen,
-		uint8_t * keyid)
+		pgpKeyID_t keyid)
 {
     const uint8_t *s = pkt;
     DIGEST_CTX ctx;
@@ -907,7 +907,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, unsigned int pktlen,
 	switch (v->pubkey_algo) {
 	case PGPPUBKEYALGO_RSA:
 	    s += (pgpMpiLen(s) - 8);
-	    memmove(keyid, s, 8);
+	    memmove(keyid, s, sizeof(keyid));
 	    rc = 0;
 	    break;
 	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
@@ -936,7 +936,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, unsigned int pktlen,
 	(void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 0);
 
 	s = SHA1 + 12;
-	memmove(keyid, s, 8);
+	memmove(keyid, s, sizeof(keyid));
 	rc = 0;
 
 	if (SHA1) free(SHA1);
@@ -945,7 +945,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, unsigned int pktlen,
     return rc;
 }
 
-int pgpExtractPubkeyFingerprint(const char * b64pkt, uint8_t * keyid)
+int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
 {
     const uint8_t * pkt;
     size_t pktlen;
@@ -954,7 +954,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, uint8_t * keyid)
        return -1;      /* on error */
     (void) pgpPubkeyFingerprint(pkt, pktlen, keyid);
     pkt = _free(pkt);
-    return 8;  /* no. of bytes of pubkey signid */
+    return sizeof(keyid);  /* no. of bytes of pubkey signid */
 }
 
 int pgpPrtPkt(const uint8_t *pkt, unsigned int pleft)

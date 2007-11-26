@@ -30,6 +30,8 @@ typedef struct pgpDig_s * pgpDig;
  */
 typedef struct pgpDigParams_s * pgpDigParams;
 
+typedef uint8_t pgpKeyID_t[8];
+
 /**
  */
 typedef const struct pgpValTbl_s {
@@ -110,7 +112,7 @@ extern struct pgpValTbl_s pgpTagTbl[];
  */
 typedef struct pgpPktPubkey_s {
     uint8_t version;	/*!< version number (generate 3, accept 2). */
-    uint8_t keyid[8];	/*!< key ID of the public key for session key. */
+    pgpKeyID_t keyid;	/*!< key ID of the public key for session key. */
     uint8_t algo;		/*!< public key algorithm used. */
 } pgpPktPubkey;
 
@@ -319,7 +321,7 @@ typedef struct pgpPktSigV3_s {
     uint8_t hashlen;	/*!< length of following hashed material. MUST be 5. */
     uint8_t sigtype;	/*!< signature type. */
     uint8_t time[4];	/*!< 4 byte creation time. */
-    uint8_t signid[8];	/*!< key ID of signer. */
+    pgpKeyID_t signid;	/*!< key ID of signer. */
     uint8_t pubkey_algo;	/*!< public key algorithm. */
     uint8_t hash_algo;	/*!< hash algorithm. */
     uint8_t signhash16[2];	/*!< left 16 bits of signed hash value. */
@@ -559,7 +561,7 @@ typedef struct pgpPktOnepass_s {
     uint8_t sigtype;	/*!< signature type. */
     uint8_t hash_algo;	/*!< hash algorithm. */
     uint8_t pubkey_algo;	/*!< public key algorithm. */
-    uint8_t signid[8];	/*!< key ID of signer. */
+    pgpKeyID_t signid;	/*!< key ID of signer. */
     uint8_t nested;
 } * pgpPktOnepass;
 
@@ -1169,20 +1171,20 @@ int pgpPrtComment(pgpTag tag, const uint8_t *h, unsigned int hlen);
  * @todo V3 non-RSA public keys not implemented.
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pktlen	OpenPGP packet length (no. of bytes)
- * @retval keyid	publick key fingerprint
+ * @retval keyid	public key fingerprint
  * @return		0 on sucess, else -1
  */
 int pgpPubkeyFingerprint(const uint8_t * pkt, unsigned int pktlen,
-		uint8_t * keyid);
+		pgpKeyID_t keyid);
 
 /**
 * Extract OpenPGP public key fingerprint from base64 encoded packet.
 * @todo V3 non-RSA public keys not implemented.
-* @param b64pkt       base64 encoded openpgp packet
-* @retval keyid[8]    public key fingerprint
-* @return             8 (no. of bytes) on success, < 0 on error
+* @param b64pkt       	base64 encoded openpgp packet
+* @retval keyid		public key fingerprint
+* @return             	8 (no. of bytes) on success, < 0 on error
 */
-int pgpExtractPubkeyFingerprint(const char * b64pkt, uint8_t * keyid);
+int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid);
 
 
 /**

@@ -104,7 +104,7 @@ struct rpmts_s {
 
     const unsigned char * pkpkt;/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
-    unsigned char pksignid[8];	/*!< Current pubkey fingerprint. */
+    pgpKeyID_t pksignid;	/*!< Current pubkey fingerprint. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 

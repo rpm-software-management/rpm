@@ -121,7 +121,7 @@ exit:
  * @retval signid	signer fingerprint
  * @return		0 on success
  */
-static int getSignid(Header sig, int sigtag, unsigned char * signid)
+static int getSignid(Header sig, int sigtag, pgpKeyID_t signid)
 {
     void * pkt = NULL;
     int32_t pkttyp = 0;
@@ -274,7 +274,7 @@ static int rpmReSign(rpmts ts,
 	    xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
 	} else		/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
-	    unsigned char oldsignid[8], newsignid[8];
+	    pgpKeyID_t oldsignid, newsignid;
 
 	    /* Grab the old signature fingerprint (if any) */
 	    memset(oldsignid, 0, sizeof(oldsignid));
