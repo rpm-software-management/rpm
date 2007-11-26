@@ -19,7 +19,7 @@ struct pgpDigParams_s {
     uint8_t tag;
 
     uint8_t version;		/*!< version number. */
-    uint8_t time[4];		/*!< time that the key was created. */
+    pgpTime_t time;		/*!< time that the key was created. */
     uint8_t pubkey_algo;		/*!< public key algorithm. */
 
     uint8_t hash_algo;

@@ -31,6 +31,7 @@ typedef struct pgpDig_s * pgpDig;
 typedef struct pgpDigParams_s * pgpDigParams;
 
 typedef uint8_t pgpKeyID_t[8];
+typedef uint8_t pgpTime_t[4];
 
 /**
  */
@@ -320,7 +321,7 @@ typedef struct pgpPktSigV3_s {
     uint8_t version;	/*!< version number (3). */
     uint8_t hashlen;	/*!< length of following hashed material. MUST be 5. */
     uint8_t sigtype;	/*!< signature type. */
-    uint8_t time[4];	/*!< 4 byte creation time. */
+    pgpTime_t time;	/*!< 4 byte creation time. */
     pgpKeyID_t signid;	/*!< key ID of signer. */
     uint8_t pubkey_algo;	/*!< public key algorithm. */
     uint8_t hash_algo;	/*!< hash algorithm. */
@@ -639,7 +640,7 @@ typedef struct pgpPktOnepass_s {
  */
 typedef struct pgpPktKeyV3_s {
     uint8_t version;	/*!< version number (3). */
-    uint8_t time[4];	/*!< time that the key was created. */
+    pgpTime_t time;	/*!< time that the key was created. */
     uint8_t valid[2];	/*!< time in days that this key is valid. */
     uint8_t pubkey_algo;	/*!< public key algorithm. */
 } * pgpPktKeyV3;
@@ -677,7 +678,7 @@ typedef struct pgpPktKeyV3_s {
  */
 typedef struct pgpPktKeyV4_s {
     uint8_t version;	/*!< version number (4). */
-    uint8_t time[4];	/*!< time that the key was created. */
+    pgpTime_t time;	/*!< time that the key was created. */
     uint8_t pubkey_algo;	/*!< public key algorithm. */
 } * pgpPktKeyV4;
 
