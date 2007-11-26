@@ -987,7 +987,7 @@ else
     ln -s ${srcdir}/autodeps/none ./find-requires
 fi
 
-dnl Determine the canonical arch-vendor-os for the build machine
+dnl Determine the canonical arch-vendor-os for the host machine
 autorelocate_path='%{nil}'
 autorelocate_dcolor='0'
 case "${host_cpu}" in
