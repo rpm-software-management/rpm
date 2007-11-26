@@ -395,7 +395,7 @@ $(top_srcdir)/preinstall.am: Makefile.am
 	rm -f $(top_srcdir)/preinstall.am
 	@for f in $(HEADERS); do \
 	  b=`basename $$f`; \
-	  echo 'include/rpm/'$$b': '$$f include/rpm/$(dirstamp) >> $(top_srcdir)/preinstall.am;\
+	  echo 'include/rpm/'$$b': '$$f' include/rpm/$$(dirstamp)' >> $(top_srcdir)/preinstall.am;\
 	  echo '	$$(INSTALL_DATA) $$(top_srcdir)/'$$f' include/rpm/'$$b >> $(top_srcdir)/preinstall.am; \
 	  echo 'BUILT_SOURCES += include/rpm/'$$b >> $(top_srcdir)/preinstall.am; \
 	  echo 'CLEANFILES += include/rpm/'$$b  >> $(top_srcdir)/preinstall.am; \
