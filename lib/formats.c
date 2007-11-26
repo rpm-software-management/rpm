@@ -352,7 +352,7 @@ static char * pgpsigFormat(int32_t type, const void * data,
     if (type != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	unsigned char * pkt = (uint8_t *) data;
+	uint8_t * pkt = (uint8_t *) data;
 	unsigned int pktlen = 0;
 	unsigned int v = *pkt;
 	pgpTag tag = 0;

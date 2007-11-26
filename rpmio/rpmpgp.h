@@ -971,10 +971,10 @@ typedef enum rpmDigestFlags_e {
  * @return		native-endian integer
  */
 static inline
-unsigned int pgpGrab(const uint8_t *s, int nbytes)
+unsigned int pgpGrab(const uint8_t *s, size_t nbytes)
 {
     unsigned int i = 0;
-    int nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
+    size_t nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
     while (nb--)
 	i = (i << 8) | *s++;
     return i;
