@@ -6,7 +6,6 @@ const char *__progname;
 
 #include <header.h>
 #include "lib/rpmlead.h"
-#include "lib/signature.h"
 
 #include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
 #include "debug.h"
