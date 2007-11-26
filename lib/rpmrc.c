@@ -698,7 +698,7 @@ static int doReadRC( FD_t fd, const char * urlfn)
 static int rpmPlatform(const char * platform)
 {
     char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
-    byte * b = NULL;
+    uint8_t * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
     char * p, * pe;

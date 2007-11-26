@@ -144,7 +144,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%d) hashctx %p digest %p\n", ctx, datap, le
     } else {
 	if (lenp) *lenp = (2*digestlen) + 1;
 	if (datap) {
-	    const byte * s = (const byte *) digest;
+	    const uint8_t * s = (const uint8_t *) digest;
 	    static const char hex[] = "0123456789abcdef";
 
 	    *datap = t = xmalloc((2*digestlen) + 1);

@@ -2530,7 +2530,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    for (i = 0; i < rpmcnt; i++) {
 		dbiIndexSet set;
 		int stringvalued;
-		byte bin[32];
+		uint8_t bin[32];
 
 		switch (dbi->dbi_rpmtag) {
 		case RPMTAG_FILEMD5S:
@@ -2570,7 +2570,7 @@ if (dbiByteSwapped(dbi) == 1)
 		    /* Convert from hex to binary. */
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
 			const char * s;
-			byte * t;
+			uint8_t * t;
 
 			s = rpmvals[i];
 			t = bin;
@@ -2923,8 +2923,8 @@ data->size = 0;
 	    for (i = 0; i < rpmcnt; i++) {
 		dbiIndexSet set;
 		int stringvalued;
-		byte bin[32];
-		byte * t;
+		uint8_t bin[32];
+		uint8_t * t;
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier

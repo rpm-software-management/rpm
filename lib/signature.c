@@ -307,7 +307,7 @@ exit:
 
 int rpmWriteSignature(FD_t fd, Header sigh)
 {
-    static byte buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    static uint8_t buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     int sigSize, pad;
     int rc;
 
@@ -346,7 +346,7 @@ Header rpmFreeSignature(Header sigh)
  * @return		0 on success, 1 on failure
  */
 static int makePGPSignature(const char * file, int32_t * sigTagp,
-		byte ** pktp, int32_t * pktlenp,
+		uint8_t ** pktp, int32_t * pktlenp,
 		const char * passPhrase)
 {
     char * sigfile = alloca(1024);
@@ -477,7 +477,7 @@ static int makePGPSignature(const char * file, int32_t * sigTagp,
  * @return		0 on success, 1 on failure
  */
 static int makeGPGSignature(const char * file, int32_t * sigTagp,
-		byte ** pktp, int32_t * pktlenp,
+		uint8_t ** pktp, int32_t * pktlenp,
 		const char * passPhrase)
 {
     char * sigfile = alloca(strlen(file)+sizeof(".sig"));
@@ -616,7 +616,7 @@ static int makeHDRSignature(Header sigh, const char * file, int32_t sigTag,
 {
     Header h = NULL;
     FD_t fd = NULL;
-    byte * pkt;
+    uint8_t * pkt;
     int32_t pktlen;
     const char * fn = NULL;
     const char * SHA1 = NULL;
@@ -717,7 +717,7 @@ int rpmAddSignature(Header sigh, const char * file, int32_t sigTag,
 		const char * passPhrase)
 {
     struct stat st;
-    byte * pkt;
+    uint8_t * pkt;
     int32_t pktlen;
     int ret = -1;	/* assume failure. */
 
@@ -966,7 +966,7 @@ verifyMD5Signature(const rpmts ts, char * t,
     int32_t siglen = rpmtsSiglen(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
-    byte * md5sum = NULL;
+    uint8_t * md5sum = NULL;
     size_t md5len = 0;
 
     *t = '\0';
@@ -1178,7 +1178,7 @@ verifyRSASignature(rpmts ts, char * t,
 #ifdef	NOTYET	/* XXX not for binary/text signatures as in packages. */
 	if (!(sigp->sigtype == PGPSIGTYPE_BINARY || sigp->sigtype == PGP_SIGTYPE_TEXT)) {
 	    int nb = dig->nbytes + sigp->hashlen;
-	    byte trailer[6];
+	    uint8_t trailer[6];
 	    nb = htonl(nb);
 	    trailer[0] = 0x4;
 	    trailer[1] = 0xff;
@@ -1278,7 +1278,7 @@ verifyDSASignature(rpmts ts, char * t,
 
 	if (sigp->version == 4) {
 	    int nb = sigp->hashlen;
-	    byte trailer[6];
+	    uint8_t trailer[6];
 	    nb = htonl(nb);
 	    trailer[0] = sigp->version;
 	    trailer[1] = 0xff;

@@ -1696,11 +1696,11 @@ rpmop fdOp(FD_t fd, fdOpX opx)
     return op;
 }
 
-int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
+int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (32 * BUFSIZ);
     ssize_t blen = 0;
-    byte * b = NULL;
+    uint8_t * b = NULL;
     ssize_t size;
     FD_t fd;
     int rc = 0;

@@ -14,20 +14,20 @@
  */
 struct pgpDigParams_s {
     const char * userid;
-    const byte * hash;
+    const uint8_t * hash;
     const char * params[4];
-    byte tag;
+    uint8_t tag;
 
-    byte version;		/*!< version number. */
-    byte time[4];		/*!< time that the key was created. */
-    byte pubkey_algo;		/*!< public key algorithm. */
+    uint8_t version;		/*!< version number. */
+    uint8_t time[4];		/*!< time that the key was created. */
+    uint8_t pubkey_algo;		/*!< public key algorithm. */
 
-    byte hash_algo;
-    byte sigtype;
-    byte hashlen;
-    byte signhash16[2];
-    byte signid[8];
-    byte saved;
+    uint8_t hash_algo;
+    uint8_t sigtype;
+    uint8_t hashlen;
+    uint8_t signhash16[2];
+    uint8_t signid[8];
+    uint8_t saved;
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
 

@@ -544,7 +544,7 @@ assert(dig->sha1ctx == NULL);
  * @return		0 on success
  */
 int rpmioSlurp(const char * fn,
-                byte ** bp, ssize_t * blenp);
+                uint8_t ** bp, ssize_t * blenp);
 
 #ifdef __cplusplus
 }
