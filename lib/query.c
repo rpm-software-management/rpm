@@ -776,7 +776,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 	qva->qva_queryFormat = rpmExpand("%{?_query_all_fmt}\n", NULL);
 	if (!(qva->qva_queryFormat != NULL && *qva->qva_queryFormat != '\0')) {
 	    qva->qva_queryFormat = _free(qva->qva_queryFormat);
-	    qva->qva_queryFormat = xstrdup("%{name}-%{version}-%{release}.%{arch}\n");
+	    qva->qva_queryFormat = xstrdup("%{name}-%|epoch?{%{epoch}:}|%{version}-%{release}.%{arch}\n");
 	}
     }
 
