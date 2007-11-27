@@ -274,6 +274,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		    {};
 		if (*se == ':') {
 		    /* XXX skip explicit epoch's (for now) */
+		    printf("XX got an epoch %s\n", s);
 		    *t++ = '-';
 		    s = se + 1;
 		} else {

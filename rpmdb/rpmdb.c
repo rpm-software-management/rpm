@@ -1281,12 +1281,13 @@ key->size = strlen(name);
 }
 
 /**
- * Attempt partial matches on name[-version[-release]] strings.
+ * Attempt partial matches on name[-[epoch:]version[-release]] strings.
  * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
  * @param data		search data/length/flags
  * @param name		package name
+ * @param epoch		package epoch (can be a pattern)
  * @param version	package version (can be a pattern)
  * @param release	package release (can be a pattern)
  * @retval matches	set of header instances that match
@@ -1295,6 +1296,7 @@ key->size = strlen(name);
 static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * data,
 		const char * name,
+		const char * epoch,
 		const char * version,
 		const char * release,
 		dbiIndexSet * matches)
@@ -1335,6 +1337,12 @@ key->size = strlen(name);
 			RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 
 	/* Set iterator selectors for version/release if available. */
+	if (epoch &&
+	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT, epoch))
+	{
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
 	if (version &&
 	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version))
 	{
@@ -1370,21 +1378,21 @@ exit:
 }
 
 /**
- * Lookup by name, name-version, and finally by name-version-release.
+ * Lookup by name, name-version, and finally by name-[epoch:]version-release.
  * Both version and release can be patterns.
  * @todo Name must be an exact match, as name is a db key.
  * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
  * @param data		search data/length/flags
- * @param arg		name[-version[-release]] string
+ * @param arg		name[-[epoch:]version[-release]] string
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
 static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		const char * arg, dbiIndexSet * matches)
 {
-    const char * release;
+    const char * release, * epoch, * version;
     char * localarg;
     char * s;
     char c;
@@ -1394,7 +1402,7 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
 
     /* did they give us just a name? */
-    rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
+    rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, NULL, matches);
     if (rc != RPMRC_NOTFOUND) return rc;
 
     /* FIX: double indirection */
@@ -1424,18 +1432,20 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     if (s == localarg) return RPMRC_NOTFOUND;
 
     *s = '\0';
-    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
+    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, NULL, s + 1, NULL, matches);
+
     if (rc != RPMRC_NOTFOUND) return rc;
 
     /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
     
-    /* how about name-version-release? */
+    /* how about name-[epoch:]version-release? */
 
     release = s + 1;
 
     c = '\0';
     brackets = 0;
+    epoch = version = NULL;
     for (; s > localarg; s--) {
 	switch (*s) {
 	case '[':
@@ -1446,15 +1456,26 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	    break;
 	}
 	c = *s;
-	if (!brackets && *s == '-')
+	if (!brackets && *s == ':') {
+	    epoch = s;
+    	    *s = '\0';
+	} else if (!brackets && *s == '-') {
 	    break;
+	}
     }
 
     if (s == localarg) return RPMRC_NOTFOUND;
 
+    if (epoch) {
+	version = epoch + 1;
+	epoch = s + 1;
+    } else {
+	version = s + 1;
+    }
     *s = '\0';
+
    	/* FIX: *matches may be NULL. */
-    return dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
+    return dbiFindMatches(dbi, dbcursor, key, data, localarg, epoch, version, release, matches);
 }
 
 /**
