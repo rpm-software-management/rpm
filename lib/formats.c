@@ -9,7 +9,6 @@
 
 #include <rpmfi.h>
 
-#include "lib/legacy.h"	/* XXX rpmfiBuildFNames() */
 #include "lib/manifest.h"
 
 #include "debug.h"

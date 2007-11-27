@@ -7,7 +7,7 @@
 #include <rpmlib.h>
 #include <rpmstring.h>
 
-#include "lib/legacy.h"
+#include "lib/legacy.h"	/* XXX expand/compressFilelist(), providePackageNVR() */
 
 #include <rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
 

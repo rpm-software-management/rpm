@@ -447,6 +447,26 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		const char *** fdepsp, int * fcp);
 
 /** \ingroup rpmfi
+ * Retrieve file names from header.
+ *
+ * The representation of file names in package headers changed in rpm-4.0.
+ * Originally, file names were stored as an array of absolute paths.
+ * In rpm-4.0, file names are stored as separate arrays of dirname's and
+ * basename's, * with a dirname index to associate the correct dirname
+ * with each basname.
+ *
+ * This function is used to retrieve file names independent of how the
+ * file names are represented in the package header.
+ * 
+ * @param h		header
+ * @param tagN		RPMTAG_BASENAMES | PMTAG_ORIGBASENAMES
+ * @retval *fnp		array of file names
+ * @retval *fcp		number of files
+ */
+void rpmfiBuildFNames(Header h, rpmTag tagN,
+		const char *** fnp, int * fcp);
+
+/** \ingroup rpmfi
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
  * @return		file type
