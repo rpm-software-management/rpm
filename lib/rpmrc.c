@@ -481,7 +481,7 @@ static void setDefaults(void)
 		"/usr/doc",		"%{_usr}/doc");
 
     addMacroDefault("_rpmfilename",
-	"%%{ARCH}/%%{NAME}-%%|EPOCH?{%%{EPOCH}:}|%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
+	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
 
     addMacroDefault("optflags",
 		"-O2",			NULL);

@@ -688,7 +688,7 @@ print (t)\
 #	binary packages.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_build_name_fmt	%%{ARCH}/%%{NAME}-%%|EPOCH?{%%{EPOCH}:}|%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+%_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	The default transaction color. This value is a set of bits to
 #	determine file and dependency affinity for this arch.
@@ -728,7 +728,7 @@ print (t)\
 #	erased packages.
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_repackage_name_fmt	%%{NAME}-%%|EPOCH?{%%{EPOCH}:}|%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+%_repackage_name_fmt	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
 #	The directory in which erased packages will be saved when using
 #	the --repackage option.
@@ -794,7 +794,7 @@ print (t)\
 # Default headerSprintf() output format string for rpm -qa
 #
 # XXX	Note: escaped %% for use in headerSprintf()
-%_query_all_fmt		%%{name}-%%|epoch?{%%{epoch}:}|%%{version}-%%{release}.%%{arch}
+%_query_all_fmt		%%{name}-%%{version}-%%{release}.%%{arch}
 
 #
 # Default path to the file used for transaction fcmtl lock.
