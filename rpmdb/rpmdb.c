@@ -26,7 +26,6 @@
 #include "rpmdb/rpmdb_internal.h"
 #include <rpmdb.h>
 #include "rpmdb/fprint.h"
-#include "rpmdb/legacy.h"
 #include "rpmdb/header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 #include "debug.h"
 

@@ -12,7 +12,7 @@
 
 #include <rpmts.h>
 
-#include "rpmdb/legacy.h"	/* XXX legacyRetrofit() */
+#include "lib/legacy.h"	/* XXX legacyRetrofit() */
 #include "lib/rpmlead.h"
 
 #include <rpmlog.h>

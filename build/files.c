@@ -30,7 +30,7 @@
 #include "build/buildio.h"
 
 #include <rpmfileutil.h>	/* rpmDoDigest() */
-#include "rpmdb/legacy.h"	/* XXX expandFileList, compressFileList */
+#include "lib/legacy.h"	/* XXX expandFileList, compressFileList */
 #include <rpmlog.h>
 #include "debug.h"
 

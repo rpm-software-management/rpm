@@ -20,7 +20,7 @@
 
 #include "build/buildio.h"
 
-#include "rpmdb/legacy.h"	/* XXX providePackageNVR */
+#include "lib/legacy.h"	/* XXX providePackageNVR */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include <rpmfileutil.h>

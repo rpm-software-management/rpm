@@ -7,7 +7,7 @@
 #include <rpmlib.h>
 #include <rpmstring.h>
 
-#include "legacy.h"
+#include "lib/legacy.h"
 
 #include <rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
 

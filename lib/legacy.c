@@ -7,7 +7,7 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmstring.h>
-#include "rpmdb/legacy.h"
+#include "lib/legacy.h"
 #include "debug.h"
 
 #define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))

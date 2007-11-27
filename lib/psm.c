@@ -27,7 +27,7 @@
 
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
-#include "rpmdb/legacy.h"		/* XXX rpmfiBuildFNames() */
+#include "lib/legacy.h"		/* XXX rpmfiBuildFNames() */
 #include <rpmfileutil.h>	/* rpmMkTempFile() */
 #include "lib/misc.h"		/* XXX rpmMkdirPath, doputenv */
 #include <rpmdb.h>		/* XXX for db_chrootDone */

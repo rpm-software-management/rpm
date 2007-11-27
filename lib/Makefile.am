@@ -24,7 +24,9 @@ librpm_la_SOURCES = \
 	rpminstall.c rpmtsscore.h rpmts_internal.h \
 	rpmlead.c rpmlead.h rpmlibprov.c rpmps.c rpmrc.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c signature.h transaction.c \
-	verify.c rpmlock.c rpmlock.h misc.h
+	verify.c rpmlock.c rpmlock.h misc.h \
+	legacy.c legacy.h
+
 librpm_la_LDFLAGS = -release 4.4
 
 librpm_la_LIBADD = \
