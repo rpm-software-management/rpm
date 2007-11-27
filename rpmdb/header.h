@@ -249,6 +249,8 @@ typedef enum rpmTagReturnType_e {
 #define	HEADER_SIGBASE		256
 #define	HEADER_TAGBASE		1000
 
+/* Return types for header data. Not yet... */
+#if 0
 /**
  */
 typedef union hRET_s {
@@ -273,6 +275,7 @@ typedef struct HE_s {
     } u;
     hCNT_t cnt;
 } * HE_t;
+#endif
 
 /** \ingroup header
  * Create new (empty) header instance.
