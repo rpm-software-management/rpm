@@ -8,11 +8,8 @@
 #include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
 #include <rpmbuild.h>
 
-#include <rpmps.h>
-
 #include "lib/cpio.h"
 #include "lib/fsm.h"
-#include "lib/psm.h"
 
 #define	_RPMFI_INTERNAL		/* XXX fi->fsm */
 #include <rpmfi.h>
