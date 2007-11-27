@@ -5,8 +5,6 @@ EXTRA_DIST = rpmdebug-py.c rpm/__init__.py
 if PYTHON
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
 AM_CPPFLAGS += -I$(top_srcdir)/python
-AM_CPPFLAGS += -I$(top_srcdir)/rpmdb	# XXX legacy.h 
-AM_CPPFLAGS += -I$(top_srcdir)/rpmio	# XXX fts.h 
 AM_CPPFLAGS += @WITH_LIBELF_INCLUDE@
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@

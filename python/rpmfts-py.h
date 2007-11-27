@@ -5,7 +5,7 @@
  * \file python/rpmfts-py.h
  */
 
-#include "fts.h"
+#include "rpmio/fts.h"
 
 typedef struct rpmftsObject_s {
     PyObject_HEAD
