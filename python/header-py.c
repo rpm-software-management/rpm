@@ -135,14 +135,6 @@
 struct hdrObject_s {
     PyObject_HEAD
     Header h;
-    char ** md5list;
-    char ** fileList;
-    char ** linkList;
-    int32_t * fileSizes;
-    int32_t * mtimes;
-    int32_t * uids, * gids;	/* XXX these tags are not used anymore */
-    unsigned short * rdevs;
-    unsigned short * modes;
 } ;
 
 /** \ingroup py_c
@@ -333,9 +325,6 @@ static struct PyMethodDef hdr_methods[] = {
 static void hdr_dealloc(hdrObject * s)
 {
     if (s->h) headerFree(s->h);
-    s->md5list = _free(s->md5list);
-    s->fileList = _free(s->fileList);
-    s->linkList = _free(s->linkList);
     PyObject_Del(s);
 }
 
@@ -647,9 +636,6 @@ hdrObject * hdr_Wrap(Header h)
 {
     hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
     hdr->h = headerLink(h);
-    hdr->fileList = hdr->linkList = hdr->md5list = NULL;
-    hdr->uids = hdr->gids = hdr->mtimes = hdr->fileSizes = NULL;
-    hdr->modes = hdr->rdevs = NULL;
     return hdr;
 }
 
@@ -811,10 +797,6 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	    PyErr_SetString(pyrpmError, "match tag mismatch");
 	    return 1;
 	}
-
-	hdr->md5list = _free(hdr->md5list);
-	hdr->fileList = _free(hdr->fileList);
-	hdr->linkList = _free(hdr->linkList);
 
 	for (hi = headerInitIterator(h);
 	    headerNextIterator(hi, &tag, &type, (void *) &p, &c);
