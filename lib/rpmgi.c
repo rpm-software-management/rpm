@@ -628,3 +628,7 @@ rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
     return rpmgiGlobArgv(gi, argv);
 }
 
+rpmgiFlags rpmgiGetFlags(rpmgi gi)
+{
+    return (gi != NULL ? gi->flags : RPMGI_NONE);
+}

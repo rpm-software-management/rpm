@@ -115,6 +115,8 @@ rpmts rpmgiTs(rpmgi gi);
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags);
 
+rpmgiFlags rpmgiGetFlags(rpmgi gi);
+
 #ifdef __cplusplus
 }
 #endif

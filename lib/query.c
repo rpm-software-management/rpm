@@ -14,12 +14,13 @@
 #include <rpmdb.h>
 #include <rpmfi.h>
 
-#include "lib/rpmgi_internal.h"
+#include <rpmgi.h>
 #include <rpmts.h>
 
 #include "lib/manifest.h"
 #include <rpmlog.h>
 #include <rpmfileutil.h>	/* rpmCleanPath */
+#include "rpmio/fts.h"		/* FTS_* flags */
 
 #include "debug.h"
 #include "lib/misc.h"		/* XXX for currentDirectory */
@@ -693,7 +694,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_PACKAGES, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
 
-	if (qva->qva_gi != NULL && (qva->qva_gi->flags & RPMGI_TSADD))	/* Load the ts with headers. */
+	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
 	    {};
 	if (rpmrc != RPMRC_NOTFOUND)
@@ -707,7 +708,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
 
-	if (qva->qva_gi != NULL && (qva->qva_gi->flags & RPMGI_TSADD))	/* Load the ts with headers. */
+	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
 	    {};
 	if (rpmrc != RPMRC_NOTFOUND)
@@ -721,7 +722,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_HDLIST, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
 
-	if (qva->qva_gi != NULL && (qva->qva_gi->flags & RPMGI_TSADD))	/* Load the ts with headers. */
+	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
 	    {};
 	if (rpmrc != RPMRC_NOTFOUND)
@@ -737,7 +738,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
 
-	if (qva->qva_gi != NULL && (qva->qva_gi->flags & RPMGI_TSADD))	/* Load the ts with headers. */
+	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
 	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
 	    {};
 	if (rpmrc != RPMRC_NOTFOUND)
