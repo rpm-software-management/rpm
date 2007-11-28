@@ -36,21 +36,7 @@ int headerNEVRA(Header h, const char **np,
     int type;
     int count;
 
-    if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*np = NULL;
-    }
-    if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*vp = NULL;
-    }
-    if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*rp = NULL;
-    }
+    headerNVR(h, np, vp, rp);
     if (ap) {
 	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, (void **) ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
