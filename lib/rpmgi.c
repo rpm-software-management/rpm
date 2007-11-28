@@ -6,7 +6,8 @@
 #include <rpmlib.h>
 #include <rpmte.h>		/* XXX rpmElementType */
 
-#include "lib/rpmgi_internal.h"
+#include <rpmgi.h>
+#include "rpmio/fts.h"
 
 #include <rpmdb.h>
 #include <rpmmacro.h>		/* XXX rpmExpand */
@@ -20,6 +21,36 @@
 int _rpmgi_debug = 0;
 
 rpmgiFlags giFlags = RPMGI_NONE;
+
+/** \ingroup rpmgi
+ */
+struct rpmgi_s {
+    rpmts ts;			/*!< Iterator transaction set. */
+    int tag;			/*!< Iterator type. */
+    const void * keyp;		/*!< Iterator key. */
+    size_t keylen;		/*!< Iterator key length. */
+
+    rpmgiFlags flags;		/*!< Iterator control bits. */
+    int active;			/*!< Iterator is active? */
+    int i;			/*!< Element index. */
+    const char * hdrPath;	/*!< Path to current iterator header. */
+    Header h;			/*!< Current iterator header. */
+
+    rpmtsi tsi;
+
+    rpmdbMatchIterator mi;
+
+    FD_t fd;
+
+    ARGV_t argv;
+    int argc;
+
+    int ftsOpts;
+    FTS * ftsp;
+    FTSENT * fts;
+
+    int nrefs;			/*!< Reference count. */
+};
 
 static int indent = 2;
 
