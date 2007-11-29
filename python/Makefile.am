@@ -35,7 +35,7 @@ _rpmmodule_la_SOURCES = rpmmodule.c system.h \
 	rpmfi-py.c rpmfi-py.h \
 	rpmmi-py.c rpmmi-py.h \
 	rpmps-py.c rpmps-py.h \
-	rpmrc-py.c rpmrc-py.h \
+	rpmmacro-py.c rpmmacro-py.h \
 	rpmte-py.c rpmte-py.h \
 	rpmts-py.c rpmts-py.h \
 	spec-py.c spec-py.h
