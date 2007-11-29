@@ -264,7 +264,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, (int) pkgNum);
 		continue;
 
 if (_rpmal_debug)
-fprintf(stderr, "--- die[%5ld] %p [%3d] %s\n", (die - al->dirs), die, die->dirNameLen, die->dirName);
+fprintf(stderr, "--- die[%5ld] %p [%3d] %s\n", (long)(die - al->dirs), die, die->dirNameLen, die->dirName);
 
 	    last = die->numFiles;
 	    fie = die->files + last - 1;
@@ -275,12 +275,12 @@ fprintf(stderr, "--- die[%5ld] %p [%3d] %s\n", (die - al->dirs), die, die->dirNa
 
 		if (i < die->numFiles) {
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%lx) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
+fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%lx) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, (long)((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
 
 		    memmove(fie, fie+1, (die->numFiles - i) * sizeof(*fie));
 		}
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%lx) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
+fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%lx) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, (long) sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
 		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
 
 	    }
@@ -295,13 +295,13 @@ fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%lx) %p [%3d] %s\n", die->files, die->n
 	    al->numDirs--;
 	    if ((die - al->dirs) < al->numDirs) {
 if (_rpmal_debug)
-fprintf(stderr, "    die[%5ld] memmove(%p,%p,0x%lx)\n", (die - al->dirs), die, die+1, ((al->numDirs - (die - al->dirs)) * sizeof(*die)));
+fprintf(stderr, "    die[%5ld] memmove(%p,%p,0x%lx)\n", (long) (die - al->dirs), die, die+1, (long) ((al->numDirs - (die - al->dirs)) * sizeof(*die)));
 
 		memmove(die, die+1, (al->numDirs - (die - al->dirs)) * sizeof(*die));
 	    }
 
 if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al->numDirs, sizeof(*die));
+fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al->numDirs, (long) sizeof(*die));
 	    memset(al->dirs + al->numDirs, 0, sizeof(*al->dirs)); /* overkill */
 	}
 

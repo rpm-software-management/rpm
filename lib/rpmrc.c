@@ -793,7 +793,7 @@ exit:
 /*
  * Generic CPUID function
  */
-static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx)
+static inline void cpuid(unsigned int op, unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx)
 {
     asm volatile (
 	"pushl	%%ebx		\n"

@@ -328,7 +328,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 
 	if (!res) {
 if (_rpmgi_debug  < 0)
-fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (av - gi->argv), *av, rpmTagGetName(tag), pat);
+fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (long) (av - gi->argv), *av, rpmTagGetName(tag), pat);
 	    res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
 	}
 	a = _free(a);
