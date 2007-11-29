@@ -6,8 +6,6 @@
 
 #include <rpmlib.h>
 
-#include "rpmdebug-py.c"
-
 #include "rpmps-py.h"
 
 #include "debug.h"
@@ -140,8 +138,6 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
     int ix, i;
 
     if (!PyInt_Check(key)) {
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_subscript(%p[%s],%p[%s])\n", s, lbl(s), key, lbl(key));
 	PyErr_SetString(PyExc_TypeError, "integer expected");
 	return NULL;
     }
