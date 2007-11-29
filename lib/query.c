@@ -20,7 +20,6 @@
 #include "lib/manifest.h"
 #include <rpmlog.h>
 #include <rpmfileutil.h>	/* rpmCleanPath */
-#include "rpmio/fts.h"		/* FTS_* flags */
 
 #include "debug.h"
 #include "lib/misc.h"		/* XXX for currentDirectory */
@@ -734,7 +733,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	break;
     case RPMQV_FTSWALK:
 	if (ftsOpts == 0)
-	    ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+	    ftsOpts = (RPMGI_COMFOLLOW | RPMGI_LOGICAL | RPMGI_NOSTAT);
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
 
