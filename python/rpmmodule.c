@@ -11,7 +11,6 @@
 #include "rpmal-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
-#include "rpmfts-py.h"
 #include "rpmfi-py.h"
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
@@ -242,7 +241,6 @@ void init_rpm(void)
     if (PyType_Ready(&rpmal_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfd_Type) < 0) return;
-    if (PyType_Ready(&rpmfts_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
@@ -290,9 +288,6 @@ void init_rpm(void)
     Py_INCREF(&rpmfd_Type);
     PyModule_AddObject(m, "fd", (PyObject *) &rpmfd_Type);
 
-    Py_INCREF(&rpmfts_Type);
-    PyModule_AddObject(m, "fts", (PyObject *) &rpmfts_Type);
-
     Py_INCREF(&rpmfi_Type);
     PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
 
@@ -315,7 +310,6 @@ void init_rpm(void)
     rpmal_Type.ob_type = &PyType_Type;
     rpmds_Type.ob_type = &PyType_Type;
     rpmfd_Type.ob_type = &PyType_Type;
-    rpmfts_Type.ob_type = &PyType_Type;
     rpmfi_Type.ob_type = &PyType_Type;
     rpmmi_Type.ob_type = &PyType_Type;
     rpmps_Type.ob_type = &PyType_Type;

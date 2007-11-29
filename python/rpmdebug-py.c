@@ -8,7 +8,6 @@ extern PyTypeObject PyFrame_Type;
 #include "rpmds-py.h"	/* XXX debug only */
 #include "rpmfd-py.h"	/* XXX debug only */
 #include "rpmfi-py.h"	/* XXX debug only */
-#include "rpmfts-py.h"	/* XXX debug only */
 #include "rpmmi-py.h"	/* XXX debug only */
 #include "rpmps-py.h"	/* XXX debug only */
 #include "rpmmacro-py.h"	/* XXX debug only */
