@@ -16,7 +16,6 @@
 #include <rpmstring.h>
 #include <rpmfileutil.h>
 #include <rpmurl.h>
-#include <rpmmessages.h>
 #include <rpmlog.h>
 
 #ifdef	WITH_LUA

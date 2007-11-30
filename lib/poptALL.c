@@ -8,6 +8,7 @@ const char *__progname;
 
 #include <rpmcli.h>
 #include <rpmgi.h>
+#include <rpmlog.h>
 
 #include "debug.h"
 

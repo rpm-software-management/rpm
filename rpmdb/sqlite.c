@@ -27,6 +27,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmlog.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>     	/* XXX urlPath proto */
 #include <rpmfileutil.h>	/* rpmioMkpath */

@@ -1,6 +1,7 @@
 #include "system.h"
 #include <rpmcli.h>
 #include <rpmts.h>
+#include <rpmlog.h>
 
 #include "debug.h"
 

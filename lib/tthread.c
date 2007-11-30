@@ -6,6 +6,7 @@
 #include <rpmts.h>
 #include <rpmsq.h>	/* XXX for _rpmsq_debug */
 #include <rpmio.h>
+#include <rpmlog.h>
 
 #include "debug.h"
 

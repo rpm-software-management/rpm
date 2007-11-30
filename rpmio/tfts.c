@@ -3,7 +3,7 @@
 
 #include "rpmio/rpmio_internal.h"
 #include <rpmmacro.h>
-#include <rpmmessages.h>
+#include <rpmlog.h>
 #include <popt.h>
 
 #include "debug.h"

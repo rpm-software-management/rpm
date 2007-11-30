@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 
 #include <rpmmacro.h>
-#include <rpmmessages.h>
+#include <rpmlog.h>
 #include <rpmurl.h>
 #include <rpmio.h>
 

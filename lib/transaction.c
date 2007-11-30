@@ -6,6 +6,7 @@
 #include <rpmlib.h>
 
 #include <rpmmacro.h>	/* XXX for rpmExpand */
+#include <rpmlog.h>
 
 #include "lib/fsm.h"
 #include "lib/psm.h"

@@ -7,6 +7,7 @@
 #include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
+#include <rpmlog.h>
 
 #include <rpmdb.h>
 #include "rpmdb/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */

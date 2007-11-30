@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmlog.h>
 
 #include "lib/cpio.h"	/* XXX CPIO_FOO */
 #include "lib/fsm.h"	/* XXX newFSM() */

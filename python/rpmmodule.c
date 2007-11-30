@@ -6,6 +6,7 @@
 
 #include <rpmdb.h>
 #include <rpmsq.h>
+#include <rpmlog.h>
 
 #include "header-py.h"
 #include "rpmal-py.h"

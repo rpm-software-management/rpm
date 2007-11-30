@@ -6,7 +6,6 @@
 #include <rpmte.h>
 
 #include <rpmmacro.h>
-#include <rpmmessages.h>
 #include "rpmio/fts.h"
 #include <popt.h>
 

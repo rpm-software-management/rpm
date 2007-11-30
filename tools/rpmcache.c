@@ -9,6 +9,7 @@ const char *__progname;
 #include "rpmio/fts.h"
 
 #include <rpmcli.h>
+#include <rpmlog.h>
 
 #include <rpmps.h>
 #include <rpmdb.h>
