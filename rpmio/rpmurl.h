@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-/**
+/** \ingroup rpmurl
  * Supported URL types.
  */
 typedef enum urltype_e {
@@ -24,7 +24,7 @@ typedef enum urltype_e {
 
 typedef struct urlinfo_s * urlinfo;
 
-/**
+/** \ingroup rpmurl
  * URL control structure.
  */
 struct urlinfo_s {
@@ -45,27 +45,27 @@ struct urlinfo_s {
 
 extern int _url_debug;		/*!< URL debugging? */
 
-/**
+/** \ingroup rpmurl
  * Create a URL info structure instance.
  * @return		new instance
  */
 urlinfo	urlNew(void);
 
-/**
+/** \ingroup rpmurl
  * Free a URL info structure instance.
  * @param u		URL control structure
  * @return		dereferenced instance (NULL if freed)
  */
 urlinfo	urlFree(urlinfo u);
 
-/**
+/** \ingroup rpmurl
  * Return type of URL.
  * @param url		url string
  * @return		type of url
  */
 urltype	urlIsURL(const char * url);
 
-/**
+/** \ingroup rpmurl
  * Return path component of URL.
  * @param url		url string
  * @retval pathp	pointer to path component of url
@@ -73,7 +73,7 @@ urltype	urlIsURL(const char * url);
  */
 urltype	urlPath(const char * url, const char ** pathp);
 
-/**
+/** \ingroup rpmurl
  * Parse URL string into a control structure.
  * @param url		url string
  * @retval uret		address of new control instance pointer
@@ -81,7 +81,7 @@ urltype	urlPath(const char * url, const char ** pathp);
  */
 int urlSplit(const char * url, urlinfo * uret);
 
-/**
+/** \ingroup rpmurl
  * Copy data from URL to local file.
  * @param url		url string of source
  * @param dest		file name of destination

@@ -1,7 +1,7 @@
 #ifndef _H_ARGV_
 #define	_H_ARGV_
 
-/** \ingroup rpmio
+/** \ingroup rpmargv
  * \file rpmio/argv.h
  */
 
@@ -19,7 +19,7 @@ struct ARGI_s {
 };
 typedef	struct ARGI_s * ARGI_t;
 
-/**
+/** \ingroup rpmargv
  * Print argv array elements.
  * @param msg		output message prefix (or NULL)
  * @param argv		argv array
@@ -27,49 +27,49 @@ typedef	struct ARGI_s * ARGI_t;
  */
 void argvPrint(const char * msg, ARGV_t argv, FILE * fp);
 
-/**
+/** \ingroup rpmargv
  * Destroy an argi array.
  * @param argi		argi array
  * @return		NULL always
  */
 ARGI_t argiFree(ARGI_t argi);
 
-/**
+/** \ingroup rpmargv
  * Destroy an argv array.
  * @param argv		argv array
  * @return		NULL always
  */
 ARGV_t argvFree(ARGV_t argv);
 
-/**
+/** \ingroup rpmargv
  * Return no. of elements in argi array.
  * @param argi		argi array
  * @return		no. of elements
  */
 int argiCount(const ARGI_t argi);
 
-/**
+/** \ingroup rpmargv
  * Return data from argi array.
  * @param argi		argi array
  * @return		argi array data address
  */
 ARGint_t argiData(const ARGI_t argi);
 
-/**
+/** \ingroup rpmargv
  * Return no. of elements in argv array.
  * @param argv		argv array
  * @return		no. of elements
  */
 int argvCount(const ARGV_t argv);
 
-/**
+/** \ingroup rpmargv
  * Return data from argv array.
  * @param argv		argv array
  * @return		argv array data address
  */
 ARGV_t argvData(const ARGV_t argv);
 
-/**
+/** \ingroup rpmargv
  * Compare argv arrays (qsort/bsearch).
  * @param a		1st instance address
  * @param b		2nd instance address
@@ -77,7 +77,7 @@ ARGV_t argvData(const ARGV_t argv);
  */
 int argvCmp(const void * a, const void * b);
 
-/**
+/** \ingroup rpmargv
  * Sort an argv array.
  * @param argv		argv array
  * @param compar	strcmp-like comparison function, or NULL for argvCmp()
@@ -85,7 +85,7 @@ int argvCmp(const void * a, const void * b);
  */
 int argvSort(ARGV_t argv, int (*compar)(const void *, const void *));
 
-/**
+/** \ingroup rpmargv
  * Find an element in an argv array.
  * @param argv		argv array
  * @param val		string to find
@@ -95,7 +95,7 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *));
 ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
 		int (*compar)(const void *, const void *));
 
-/**
+/** \ingroup rpmargv
  * Add an int to an argi array.
  * @retval *argip	argi array
  * @param ix		argi array index (or -1 to append)
@@ -104,7 +104,7 @@ ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
  */
 int argiAdd(ARGI_t * argip, int ix, int val);
 
-/**
+/** \ingroup rpmargv
  * Add a string to an argv array.
  * @retval *argvp	argv array
  * @param val		string arg to append
@@ -112,7 +112,7 @@ int argiAdd(ARGI_t * argip, int ix, int val);
  */
 int argvAdd(ARGV_t * argvp, ARGstr_t val);
 
-/**
+/** \ingroup rpmargv
  * Append one argv array to another.
  * @retval *argvp	argv array
  * @param av		argv array to append
@@ -120,7 +120,7 @@ int argvAdd(ARGV_t * argvp, ARGstr_t val);
  */
 int argvAppend(ARGV_t * argvp, const ARGV_t av);
 
-/**
+/** \ingroup rpmargv
  * Split a string into an argv array.
  * @retval *argvp	argv array
  * @param str		string arg to split
