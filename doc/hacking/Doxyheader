@@ -28,6 +28,8 @@
  */
 /** \defgroup	rpmlog	Logging API.
  */
+/** \defgroup	rpmpgp	OpenPGP API.
+ */
 /** \defgroup	rpmsq	Signal Queue API.
  */
 /** \defgroup	rpmsw	Statistics API.
