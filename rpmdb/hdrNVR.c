@@ -104,3 +104,8 @@ uint32_t headerGetColor(Header h)
     return hcolor;
 }
 
+int headerIsSource(Header h)
+{
+    return (!headerIsEntry(h, RPMTAG_SOURCERPM));
+}
+

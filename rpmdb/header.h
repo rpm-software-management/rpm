@@ -658,10 +658,8 @@ uint32_t headerGetColor(Header h);
  * @param h		header
  * @return		0 == binary, 1 == source
  */
-int headerIsSource(Header h)
-{
-    return (!headerIsEntry(h, RPMTAG_SOURCERPM));
-}
+int headerIsSource(Header h);
+
 #ifdef __cplusplus
 }
 #endif
