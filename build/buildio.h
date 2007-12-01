@@ -20,21 +20,18 @@ typedef struct cpioSourceArchive_s {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
     rpmfi	cpioList;
-    struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
 } * CSA_t;
 
 /**
  * Read rpm package components from file.
  * @param fileName	file name of package (or NULL to use stdin)
  * @retval specp	spec structure to carry package header (or NULL)
- * @retval lead		package lead
  * @retval sigs		package signature
  * @param csa
  * @return		0 on success
  */
 int readRPM(const char * fileName,
 		rpmSpec * specp,
-		struct rpmlead * lead,
 		Header * sigs,
 		CSA_t csa);
 
@@ -47,7 +44,6 @@ int readRPM(const char * fileName,
  * @retval *hdrp	header to write (final header is returned).
  * @retval *pkgidp	header+payload MD5 of package (NULL to disable).
  * @param fileName	file name of package
- * @param type		RPMLEAD_SOURCE/RPMLEAD_BINARY
  * @param csa
  * @param passPhrase
  * @retval cookie	generated cookie (i.e build host/time)
@@ -55,7 +51,6 @@ int readRPM(const char * fileName,
  */
 int writeRPM(Header * hdrp, unsigned char ** pkgidp,
 		const char * fileName,
-		int type,
 		CSA_t csa,
 		char * passPhrase,
 		const char ** cookie);

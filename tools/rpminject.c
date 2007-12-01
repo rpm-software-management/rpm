@@ -367,7 +367,6 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 static int
 rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
 {
-    struct rpmlead lead;	/* XXX FIXME: exorcize lead/arch/os */
     Header sigs;
     rpmSpec spec;
     struct cpioSourceArchive_s csabuf, *csa = &csabuf;
@@ -376,10 +375,9 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
     csa->cpioArchiveSize = 0;
     csa->cpioFdIn = fdNew("init (rewriteRPM)");
     csa->cpioList = NULL;
-    csa->lead = &lead;		/* XXX FIXME: exorcize lead/arch/os */
 
     /* Read rpm and (partially) recreate spec/pkg control structures */
-    if ((rc = readRPM(fni, &spec, &lead, &sigs, csa)) != 0)
+    if ((rc = readRPM(fni, &spec, &sigs, csa)) != 0)
 	return rc;
 
     /* Inject new strings into header tags */
@@ -387,11 +385,11 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
 	goto exit;
 
     /* Rewrite the rpm */
-    if (lead.type == RPMLEAD_SOURCE) {
-	rc = writeRPM(&spec->packages->header, NULL, fno, (int)lead.type,
+    if (headerIsSource(spec->packages->header)) {
+	rc = writeRPM(&spec->packages->header, NULL, fno, 
 		csa, spec->passPhrase, &(spec->cookie));
     } else {
-	rc = writeRPM(&spec->packages->header, NULL, fno, (int)lead.type,
+	rc = writeRPM(&spec->packages->header, NULL, fno,
 		csa, spec->passPhrase, NULL);
     }
 

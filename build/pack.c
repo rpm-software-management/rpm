@@ -263,7 +263,7 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
     return 0;
 }
 
-int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
+int readRPM(const char *fileName, rpmSpec *specp, 
 		Header *sigs, CSA_t csa)
 {
     FD_t fdi;
@@ -279,14 +279,6 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	if (fdi) (void) Fclose(fdi);
-	return RPMLOG_ERR;
-    }
-
-    /* Get copy of lead */
-    if ((rc = Fread(lead, sizeof(char), RPMLEAD_SIZE, fdi)) != RPMLEAD_SIZE) {
-	rpmlog(RPMLOG_ERR, _("readRPM: read %s: %s\n"),
-		(fileName ? fileName : "<stdin>"),
-		Fstrerror(fdi));
 	return RPMLOG_ERR;
     }
 
@@ -348,7 +340,7 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
 }
 
 int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
-		int type, CSA_t csa, char *passPhrase, const char **cookie)
+	     CSA_t csa, char *passPhrase, const char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -360,7 +352,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     char buf[BUFSIZ];
     Header h;
     Header sig = NULL;
-    int rc = 0;
+    int rc = 0, isSource;
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
@@ -370,18 +362,16 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	*pkgidp = NULL;
 
     /* Binary packages now have explicit Provides: name = version-release. */
-    if (type == RPMLEAD_BINARY)
+    isSource = headerIsSource(h);
+    if (isSource)
 	providePackageNVR(h);
 
     /* Save payload information */
-    switch(type) {
-    case RPMLEAD_SOURCE:
+    if (isSource)
 	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
-	break;
-    case RPMLEAD_BINARY:
+    else 
 	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
-	break;
-    }
+
     if (!(rpmio_flags && *rpmio_flags)) {
 	rpmio_flags = _free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
@@ -698,8 +688,7 @@ int packageBinaries(rpmSpec spec)
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
 	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
 
-	rc = writeRPM(&pkg->header, NULL, fn, RPMLEAD_BINARY,
-		    csa, spec->passPhrase, NULL);
+	rc = writeRPM(&pkg->header, NULL, fn, csa, spec->passPhrase, NULL);
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
@@ -739,7 +728,7 @@ int packageSources(rpmSpec spec)
 	csa->cpioList = rpmfiLink(spec->sourceCpioList, "packageSources");
 
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, RPMLEAD_SOURCE,
+	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, 
 		csa, spec->passPhrase, &(spec->cookie));
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
