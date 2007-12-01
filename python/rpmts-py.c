@@ -8,6 +8,7 @@
 #include <rpmpgp.h>
 #include <rpmdb.h>
 #include <rpmbuild.h>
+#include <idtx.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */

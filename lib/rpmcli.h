@@ -10,7 +10,6 @@
 #include <rpmmacro.h>
 #include <rpmcallback.h>
 #include <argv.h>
-#include <idtx.h>
 
 #ifdef __cplusplus
 extern "C" {

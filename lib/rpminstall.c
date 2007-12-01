@@ -11,6 +11,7 @@
 #include <rpmts.h>
 #include <rpmlog.h>
 #include <rpmfileutil.h>
+#include <idtx.h>
 
 #include "lib/manifest.h"
 #include "debug.h"
