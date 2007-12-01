@@ -653,6 +653,15 @@ char * headerGetNEVRA(Header h, const char ** np );
  */
 uint32_t headerGetColor(Header h);
 
+/** \ingroup header
+ * Check if header is a source or binary package header
+ * @param h		header
+ * @return		0 == binary, 1 == source
+ */
+int headerIsSource(Header h)
+{
+    return (!headerIsEntry(h, RPMTAG_SOURCERPM));
+}
 #ifdef __cplusplus
 }
 #endif
