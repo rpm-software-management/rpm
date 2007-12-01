@@ -84,7 +84,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     size_t nb;
     int xx;
 
-    p->NEVR = hGetNEVR(h, NULL);
+    p->NEVR = headerGetNEVR(h, NULL);
     p->name = xstrdup(p->NEVR);
     if ((p->release = strrchr(p->name, '-')) != NULL)
 	*p->release++ = '\0';

@@ -977,7 +977,7 @@ rpmRC headerCheckPayloadFormat(Header h) {
     if (payloadfmt && strncmp(payloadfmt, "cpio", strlen("cpio")) == 0) {
 	rc = RPMRC_OK;
     } else {
-        const char *nevra = hGetNEVRA(h, NULL);
+        const char *nevra = headerGetNEVRA(h, NULL);
         if (payloadfmt && strncmp(payloadfmt, "drpm", strlen("drpm")) == 0) {
             rpmlog(RPMLOG_ERR,
                      _("%s is a Delta RPM and cannot be directly installed\n"),

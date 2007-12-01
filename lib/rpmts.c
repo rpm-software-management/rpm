@@ -48,65 +48,6 @@ int _rpmts_debug = 0;
 
 int _rpmts_stats = 0;
 
-char * hGetNEVR(Header h, const char ** np)
-{
-    const char * n, * v, * r;
-    char * NVR, * t;
-
-    (void) headerNVR(h, &n, &v, &r);
-    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    if (np)
-	*np = n;
-    return NVR;
-}
-
-char * hGetNEVRA(Header h, const char ** np)
-{
-    const char * n, * v, * r, * a;
-    char * NVRA, * t;
-    int xx;
-
-    (void) headerNVR(h, &n, &v, &r);
-    xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
-    NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    t = stpcpy(t, ".");
-    t = stpcpy(t, a);
-    if (np)
-	*np = n;
-    return NVRA;
-}
-
-uint32_t hGetColor(Header h)
-{
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    uint32_t hcolor = 0;
-    uint32_t * fcolors;
-    int32_t ncolors;
-    int i;
-
-    fcolors = NULL;
-    ncolors = 0;
-    if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
-     && fcolors != NULL && ncolors > 0)
-    {
-	for (i = 0; i < ncolors; i++)
-	    hcolor |= fcolors[i];
-    }
-    hcolor &= 0x0f;
-
-    return hcolor;
-}
-
 rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
 {
 if (_rpmts_debug)

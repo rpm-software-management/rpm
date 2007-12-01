@@ -733,29 +733,6 @@ int rpmtsGetKeys(rpmts ts,
 		fnpyKey ** ep,
 		int * nep);
 
-/**
- * Return (malloc'd) header name-version-release string.
- * @param h		header
- * @retval np		name tag value
- * @return		name-version-release string
- */
-char * hGetNEVR(Header h, const char ** np );
-
-/**
- * Return (malloc'd) header name-version-release.arch string.
- * @param h		header
- * @retval np		name tag value
- * @return		name-version-release string
- */
-char * hGetNEVRA(Header h, const char ** np );
-
-/**
- * Return header color.
- * @param h		header
- * @return		header color
- */
-uint32_t hGetColor(Header h);
-
 #ifdef __cplusplus
 }
 #endif

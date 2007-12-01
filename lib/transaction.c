@@ -99,7 +99,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    altNEVR = hGetNEVRA(h, NULL);
+	    altNEVR = headerGetNEVRA(h, NULL);
 	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
 	    break;
 	}
@@ -628,7 +628,7 @@ static int ensureOlder(rpmts ts,
 
     if (rc == 0) {
 	rpmps ps = rpmtsProblems(ts);
-	const char * altNEVR = hGetNEVRA(h, NULL);
+	const char * altNEVR = headerGetNEVRA(h, NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVRA(p), rpmteKey(p),
 		NULL, NULL,

@@ -600,6 +600,29 @@ void * headerFreeData( const void * data, rpmTagType type)
     return NULL;
 }
 
+/** \ingroup header
+ * Return (malloc'd) header name-version-release string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+char * headerGetNEVR(Header h, const char ** np );
+
+/** \ingroup header
+ * Return (malloc'd) header name-version-release.arch string.
+ * @param h		header
+ * @retval np		name tag value
+ * @return		name-version-release string
+ */
+char * headerGetNEVRA(Header h, const char ** np );
+
+/** \ingroup header
+ * Return header color.
+ * @param h		header
+ * @return		header color
+ */
+uint32_t headerGetColor(Header h);
+
 #ifdef __cplusplus
 }
 #endif

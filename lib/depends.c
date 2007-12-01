@@ -133,7 +133,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
     os = NULL;
     xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
-    hcolor = hGetColor(h);
+    hcolor = headerGetColor(h);
     pkgKey = RPMAL_NOMATCH;
 
     /* Check for supported payload format if it's a package */
@@ -278,7 +278,7 @@ addheader:
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 
 	/* Ignore colored packages not in our rainbow. */
-	ohcolor = hGetColor(oh);
+	ohcolor = headerGetColor(oh);
 	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 	    continue;
 
@@ -323,7 +323,7 @@ addheader:
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
-	    ohcolor = hGetColor(oh);
+	    ohcolor = headerGetColor(oh);
 	    /* XXX provides *are* colored, effectively limiting Obsoletes:
 		to matching only colored Provides: based on pkg coloring. */
 	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
@@ -335,7 +335,7 @@ addheader:
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
-		const char * ohNEVRA = hGetNEVRA(oh, NULL);
+		const char * ohNEVRA = headerGetNEVRA(oh, NULL);
 #ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
 		if (rpmVersionCompare(h, oh))
 #endif
@@ -660,7 +660,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	rpmds requires, conflicts;
 	int rc;
 
-	pkgNEVRA = hGetNEVRA(h, NULL);
+	pkgNEVRA = headerGetNEVRA(h, NULL);
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
