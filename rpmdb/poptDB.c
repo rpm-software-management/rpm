@@ -21,11 +21,6 @@ struct poptOption rpmDatabasePoptTable[] = {
 	NULL},
  { "verifydb", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &rpmDBArgs.verify, 1,
 	N_("verify database files"), NULL},
- { "nodirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 1,
-	N_("generate headers compatible with (legacy) rpm[23] packaging"),
-	NULL},
- { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
-	N_("generate headers compatible with rpm4 packaging"), NULL},
 
    POPT_TABLEEND
 };
