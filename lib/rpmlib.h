@@ -82,36 +82,6 @@ typedef struct _rpmdbMatchIterator * rpmdbMatchIterator;
 typedef struct rpmgi_s * rpmgi;
 
 /** \ingroup header
- * Return name, version, release strings from header.
- * @param h		header
- * @retval *np		name pointer (or NULL)
- * @retval *vp		version pointer (or NULL)
- * @retval *rp		release pointer (or NULL)
- * @return		0 always
- */
-int headerNVR(Header h,
-		const char ** np,
-		const char ** vp,
-		const char ** rp);
-
-/** \ingroup header
- * Return name, epoch, version, release, arch strings from header.
- * @param h		header
- * @retval *np		name pointer (or NULL)
- * @retval *ep		epoch pointer (or NULL)
- * @retval *vp		version pointer (or NULL)
- * @retval *rp		release pointer (or NULL)
- * @retval *ap		arch pointer (or NULL)
- * @return		0 always
- */
-int headerNEVRA(Header h,
-		const char ** np,
-		const char ** ep,
-		const char ** vp,
-		const char ** rp,
-		const char ** ap);
-
-/** \ingroup header
  * Translate and merge legacy signature tags into header.
  * @todo Remove headerSort() through headerInitIterator() modifies sig.
  * @param h		header
