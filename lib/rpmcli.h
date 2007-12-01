@@ -8,6 +8,7 @@
 #include <rpmlib.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>
+#include <rpmcallback.h>
 #include <argv.h>
 #include <idtx.h>
 

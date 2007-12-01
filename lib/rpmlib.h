@@ -9,7 +9,6 @@
  */
 
 #include <rpmio.h>
-#include <rpmmessages.h>
 #include <header.h>
 #include <popt.h>
 

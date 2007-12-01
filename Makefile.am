@@ -43,7 +43,6 @@ pkginclude_HEADERS += rpmio/rpmio.h
 pkginclude_HEADERS += rpmio/rpmurl.h
 pkginclude_HEADERS += rpmio/rpmmacro.h
 pkginclude_HEADERS += rpmio/rpmlog.h
-pkginclude_HEADERS += rpmio/rpmmessages.h
 pkginclude_HEADERS += rpmio/rpmpgp.h
 pkginclude_HEADERS += rpmio/rpmsq.h
 pkginclude_HEADERS += rpmio/rpmstring.h
@@ -55,6 +54,7 @@ pkginclude_HEADERS += rpmdb/rpmdb.h
 nodist_pkginclude_HEADERS += rpmdb/rpmints.h
 
 pkginclude_HEADERS += lib/idtx.h
+pkginclude_HEADERS += lib/rpmcallback.h
 pkginclude_HEADERS += lib/rpmcli.h
 pkginclude_HEADERS += lib/rpmlib.h
 pkginclude_HEADERS += lib/rpmal.h

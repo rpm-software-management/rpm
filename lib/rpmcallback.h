@@ -1,16 +1,10 @@
-#ifndef H_RPMMESSAGES
-#define H_RPMMESSAGES
-
-/** \ingroup rpmio
- * \file rpmio/rpmmessages.h
- * @todo Eliminate from API.
- */
+#ifndef _RPMCALLBACK_H
+#define _RPMCALLBACK_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* LCL: ??? */
 typedef const void * fnpyKey;
 
 /**
@@ -53,4 +47,4 @@ typedef void * (*rpmCallbackFunction)
 }
 #endif
 
-#endif  /* H_RPMMESSAGES */
+#endif /* _RPMCALLBACK_H */

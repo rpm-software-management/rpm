@@ -7,7 +7,7 @@
  */
 
 #include <rpmlib.h>		/* for rpmds, rpmfi, uint32_t */
-#include <rpmmessages.h>	/* for fnpyKey */
+#include <rpmcallback.h>	/* for fnpyKey */
 
 #ifdef __cplusplus
 extern "C" {

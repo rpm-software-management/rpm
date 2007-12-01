@@ -22,10 +22,6 @@ include/rpm/rpmlog.h: rpmio/rpmlog.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmlog.h include/rpm/rpmlog.h
 BUILT_SOURCES += include/rpm/rpmlog.h
 CLEANFILES += include/rpm/rpmlog.h
-include/rpm/rpmmessages.h: rpmio/rpmmessages.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmmessages.h include/rpm/rpmmessages.h
-BUILT_SOURCES += include/rpm/rpmmessages.h
-CLEANFILES += include/rpm/rpmmessages.h
 include/rpm/rpmpgp.h: rpmio/rpmpgp.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmpgp.h include/rpm/rpmpgp.h
 BUILT_SOURCES += include/rpm/rpmpgp.h
@@ -58,6 +54,10 @@ include/rpm/idtx.h: lib/idtx.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/idtx.h include/rpm/idtx.h
 BUILT_SOURCES += include/rpm/idtx.h
 CLEANFILES += include/rpm/idtx.h
+include/rpm/rpmcallback.h: lib/rpmcallback.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/lib/rpmcallback.h include/rpm/rpmcallback.h
+BUILT_SOURCES += include/rpm/rpmcallback.h
+CLEANFILES += include/rpm/rpmcallback.h
 include/rpm/rpmcli.h: lib/rpmcli.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmcli.h include/rpm/rpmcli.h
 BUILT_SOURCES += include/rpm/rpmcli.h
