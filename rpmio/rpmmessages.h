@@ -49,11 +49,6 @@ typedef void * (*rpmCallbackFunction)
 		fnpyKey key,
 		rpmCallbackData data);
 
-/**
- */
-void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
-		int notifyCount);
-
 #ifdef __cplusplus
 }
 #endif

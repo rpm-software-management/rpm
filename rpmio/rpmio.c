@@ -24,7 +24,6 @@ extern int h_errno;
 #include "rpmio/rpmio_internal.h"
 
 #include "rpmio/ugid.h"
-#include <rpmmessages.h>
 #include <argv.h>
 #include <rpmlog.h>
 #include <rpmmacro.h>
@@ -548,32 +547,13 @@ const char * ftpStrerror(int errorNumber)
     }
 }
 
-static rpmCallbackFunction	urlNotify = NULL;
-
-static void *			urlNotifyData = NULL;
-
-static int			urlNotifyCount = -1;
-
-void urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount) {
-    urlNotify = notify;
-    urlNotifyData = notifyData;
-    urlNotifyCount = (notifyCount >= 0) ? notifyCount : 4096;
-}
-
 int ufdCopy(FD_t sfd, FD_t tfd)
 {
     char buf[BUFSIZ];
     int itemsRead;
     int itemsCopied = 0;
     int rc = 0;
-    int notifier = -1;
 
-    if (urlNotify) {
-	/* FIX: check rc */
-	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
-		0, 0, NULL, urlNotifyData);
-    }
-    
     while (1) {
 	rc = Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
 	if (rc < 0)
@@ -592,26 +572,11 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	}
 
 	itemsCopied += itemsRead;
-	if (urlNotify && urlNotifyCount > 0) {
-	    int n = itemsCopied/urlNotifyCount;
-	    if (n != notifier) {
-		/* FIX: check rc */
-		(void)(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
-			itemsCopied, 0, NULL, urlNotifyData);
-		notifier = n;
-	    }
-	}
     }
 
     DBGIO(sfd, (stderr, "++ copied %d bytes: %s\n", itemsCopied,
 	ftpStrerror(rc)));
 
-    if (urlNotify) {
-	/* FIX: check rc */
-	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
-		itemsCopied, itemsCopied, NULL, urlNotifyData);
-    }
-    
     return rc;
 }
 
