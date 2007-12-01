@@ -258,7 +258,7 @@ void legacyRetrofit(Header h)
      compressFilelist(h);
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-    if (!headerIsEntry(h, RPMTAG_SOURCERPM)) {
+    if (headerIsSource(h)) {
 	int32_t one = 1;
 	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	    (void) headerAddEntry(h, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,

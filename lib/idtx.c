@@ -146,7 +146,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
 	case RPMRC_OK:
-	    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+	    isSource = headerIsSource(h);
 	    if (isSource)
 		goto bottom;
 	    break;

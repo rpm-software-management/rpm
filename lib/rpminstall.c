@@ -455,7 +455,7 @@ if (fileURL[0] == '=') {
 	    break;
 	}
 
-	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
+	eiu->isSource = headerIsSource(eiu->h);
 
 	if (eiu->isSource) {
 	    rpmlog(RPMLOG_DEBUG, _("\tadded source package [%d]\n"),

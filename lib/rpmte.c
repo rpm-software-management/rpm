@@ -114,7 +114,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->os = NULL;
 	p->osScore = 0;
     }
-    p->isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    p->isSource = headerIsSource(h);
 
     nb = strlen(p->NEVR) + 1;
     if (p->isSource)

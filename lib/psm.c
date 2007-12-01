@@ -243,7 +243,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     rpmrc = RPMRC_OK;
 
-    isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
+    isSource = headerIsSource(h);
 
     if (!isSource) {
 	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
