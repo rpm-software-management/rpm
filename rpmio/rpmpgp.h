@@ -11,8 +11,8 @@
  */
 
 #include <string.h>
-
-#include <rpmio.h>	/* for pgpDig */
+#include <stdio.h>
+#include <rpmints.h>
 
 #ifdef __cplusplus
 extern "C" {
