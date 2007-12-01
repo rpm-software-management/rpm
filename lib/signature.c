@@ -108,11 +108,7 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
     struct stat st;
     int fdno = Fileno(fd);
 
-    /* HACK: workaround for davRead wiring. */
-    if (fdno == 123456789) {
-	st.st_size = 0;
-	st.st_size -= RPMLEAD_SIZE+siglen+pad+datalen;
-    } else if (fstat(fdno, &st) < 0)
+    if (fstat(fdno, &st) < 0)
 	return RPMRC_FAIL;
 
     rpmlog(RPMLOG_DEBUG,
