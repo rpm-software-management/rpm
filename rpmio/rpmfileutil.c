@@ -123,8 +123,8 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 {
     const char * path;
     urltype ut = urlPath(fn, &path);
-    unsigned char * md5sum = NULL;
-    size_t md5len;
+    unsigned char * dig = NULL;
+    size_t diglen;
     unsigned char buf[32*BUFSIZ];
     FD_t fd;
     size_t fsize = 0;
@@ -164,10 +164,10 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 #endif
 	}
 
-	ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	ctx = rpmDigestInit(algo, RPMDIGEST_NONE);
 	if (fsize)
 	    xx = rpmDigestUpdate(ctx, mapped, fsize);
-	xx = rpmDigestFinal(ctx, (void **)&md5sum, &md5len, asAscii);
+	xx = rpmDigestFinal(ctx, (void **)&dig, &diglen, asAscii);
 	if (fsize)
 	    xx = munmap(mapped, fsize);
 	xx = close(fdno);
@@ -190,11 +190,11 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 	    break;
 	}
 	
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+	fdInitDigest(fd, algo, 0);
 	fsize = 0;
 	while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    fsize += rc;
-	fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, asAscii);
+	fdFiniDigest(fd, algo, (void **)&dig, &diglen, asAscii);
 	if (Ferror(fd))
 	    rc = 1;
 
@@ -214,8 +214,8 @@ exit:
     if (fsizep)
 	*fsizep = fsize;
     if (!rc)
-	memcpy(digest, md5sum, md5len);
-    md5sum = _free(md5sum);
+	memcpy(digest, dig, diglen);
+    dig = _free(dig);
 
     return rc;
 }
