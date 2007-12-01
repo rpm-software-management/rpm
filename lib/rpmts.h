@@ -20,7 +20,7 @@ extern int _rpmts_debug;
 extern int _rpmts_stats;
 extern int _fps_debug;
 
-/**
+/** \ingroup rpmts
  * Bit(s) to control digest and signature verification.
  */
 typedef enum rpmVSFlags_e {
@@ -40,7 +40,7 @@ typedef enum rpmVSFlags_e {
     /* bit(s) 16-31 unused */
 } rpmVSFlags;
 
-/**
+/** \ingroup rpmts
  * Transaction Types
  */
 typedef enum rpmtsType_e {
@@ -73,7 +73,7 @@ typedef enum rpmtsType_e {
     RPMVSF_NODSA |		\
     RPMVSF_NORSA )
 
-/**
+/** \ingroup rpmts
  * Indices for timestamps.
  */
 typedef	enum rpmtsOpX_e {
@@ -238,7 +238,7 @@ int rpmtsVerifyDB(rpmts ts);
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen);
 
-/**
+/** \ingroup rpmts
  * Retrieve pubkey from rpm database.
  * @param ts		rpm transaction
  * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
@@ -270,7 +270,7 @@ int rpmtsCloseSDB(rpmts ts);
  */
 int rpmtsOpenSDB(rpmts ts, int dbmode);
 
-/**
+/** \ingroup rpmts
  * Attempt to solve a needed dependency using the solve database.
  * @param ts		transaction set
  * @param ds		dependency set
@@ -288,7 +288,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data);
  */
 int rpmtsAvailable(rpmts ts, const rpmds ds);
 
-/**
+/** \ingroup rpmts
  * Set dependency solver callback.
  * @param ts		transaction set
  * @param (*solve)	dependency solver callback
@@ -299,14 +299,14 @@ int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds ds, const void * data),
 		const void * solveData);
 
-/**
+/** \ingroup rpmts
  * Return the type of a transaction.
  * @param ts		transaction set
  * @return		0 it is not, 1 it is.
  */
 rpmtsType rpmtsGetType(rpmts ts);
 
-/**
+/** \ingroup rpmts
  * Set transaction type.   Allowed types are:
  *
  * 	RPMTRANS_TYPE_NORMAL
@@ -319,7 +319,7 @@ rpmtsType rpmtsGetType(rpmts ts);
  */
 void rpmtsSetType(rpmts ts, rpmtsType type);
 
-/**
+/** \ingroup rpmts
  * Print possible suggestions for current transaction set, assuming
  * solvedb exists etc.
  * @todo		The whole suggests handling needs rework, this
@@ -328,14 +328,14 @@ void rpmtsSetType(rpmts ts, rpmtsType type);
  */
 void rpmtsPrintSuggests(rpmts ts);
 
-/**
+/** \ingroup rpmts
  * Return current transaction set problems.
  * @param ts		transaction set
  * @return		current problem set (or NULL)
  */
 rpmps rpmtsProblems(rpmts ts);
 
-/**
+/** \ingroup rpmts
  * Clean current transaction problem set.
  * @param ts		transaction set
  */
@@ -565,7 +565,7 @@ void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
  */
 void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te);
 
-/**
+/** \ingroup rpmts
  * Perform transaction progress notify callback.
  * @param ts		transaction set
  * @param te		current transaction element
@@ -577,14 +577,14 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te);
 void * rpmtsNotify(rpmts ts, rpmte te,
                 rpmCallbackType what, unsigned long amount, unsigned long total);
 
-/**
+/** \ingroup rpmts
  * Return number of (ordered) transaction set elements.
  * @param ts		transaction set
  * @return		no. of transaction set elements
  */
 int rpmtsNElements(rpmts ts);
 
-/**
+/** \ingroup rpmts
  * Return (ordered) transaction set element.
  * @param ts		transaction set
  * @param ix		transaction element index
@@ -644,21 +644,21 @@ rpmte rpmtsRelocateElement(rpmts ts);
  */
 rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement);
 
-/**
+/** \ingroup rpmts
  * Retrieve color bits of transaction set.
  * @param ts		transaction set
  * @return		color bits
  */
 uint32_t rpmtsColor(rpmts ts);
 
-/**
+/** \ingroup rpmts
  * Retrieve prefered file color
  * @param ts		transaction set
  * @return		color bits
  */
 uint32_t rpmtsPrefColor(rpmts ts);
 
-/**
+/** \ingroup rpmts
  * Set color bits of transaction set.
  * @param ts		transaction set
  * @param color		new color bits
@@ -666,7 +666,7 @@ uint32_t rpmtsPrefColor(rpmts ts);
  */
 uint32_t rpmtsSetColor(rpmts ts, uint32_t color);
 
-/**
+/** \ingroup rpmts
  * Retrieve operation timestamp from a transaction set.
  * @param ts		transaction set
  * @param opx		operation timestamp index
