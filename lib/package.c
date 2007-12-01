@@ -677,7 +677,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     pgpDig dig;
     char buf[8*BUFSIZ];
     ssize_t count;
-    struct rpmlead * l = alloca(sizeof(*l));
+    rpmlead l = NULL;
     Header sigh = NULL;
     int32_t sigtag;
     int32_t sigtype;
@@ -693,33 +693,19 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     if (hdrp) *hdrp = NULL;
 
-    memset(l, 0, sizeof(*l));
-    rc = readLead(fd, l);
+    l = rpmLeadNew();
+
+    if ((rc = rpmLeadRead(fd, l)) == RPMRC_OK) {
+	rc = rpmLeadCheck(l, fn);
+    }
+    l = rpmLeadFree(l);
+
     if (rc != RPMRC_OK)
 	goto exit;
 
-    switch (l->major) {
-    case 1:
-	rpmlog(RPMLOG_ERR,
-	    _("packaging version 1 is not supported by this version of RPM\n"));
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-	break;
-    case 2:
-    case 3:
-    case 4:
-	break;
-    default:
-	rpmlog(RPMLOG_ERR, _("only packaging with major numbers <= 4 "
-		"is supported by this version of RPM\n"));
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-	break;
-    }
-
     /* Read the signature header. */
     msg = NULL;
-    rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
+    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
     switch (rc) {
     default:
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,

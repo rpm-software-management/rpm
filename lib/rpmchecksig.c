@@ -154,7 +154,7 @@ static int rpmReSign(rpmts ts,
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
-    struct rpmlead lead, *l = &lead;
+    rpmlead lead;
     int32_t sigtag;
     const char *rpm, *trpm;
     const char *sigtarget = NULL;
@@ -178,27 +178,19 @@ static int rpmReSign(rpmts ts,
 	if (manageFile(&fd, &rpm, O_RDONLY, 0))
 	    goto exit;
 
-	memset(l, 0, sizeof(*l));
-	rc = readLead(fd, l);
-	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, _("%s: not an rpm package\n"), rpm);
-	    goto exit;
+	lead = rpmLeadNew();
+
+	if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
+	    rc = rpmLeadCheck(lead, rpm);
 	}
-	switch (l->major) {
-	case 1:
-	    rpmlog(RPMLOG_ERR, _("%s: Can't sign v1 packaging\n"), rpm);
+
+	if (rc != RPMRC_OK) {
+	    lead = rpmLeadFree(lead);
 	    goto exit;
-	    break;
-	case 2:
-	    rpmlog(RPMLOG_ERR, _("%s: Can't re-sign v2 packaging\n"), rpm);
-	    goto exit;
-	    break;
-	default:
-	    break;
 	}
 
 	msg = NULL;
-	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
+	rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
 	switch (rc) {
 	default:
 	    rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), rpm,
@@ -338,8 +330,8 @@ static int rpmReSign(rpmts ts,
 	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
 	    goto exit;
 
-	l->signature_type = RPMSIGTYPE_HEADERSIG;
-	rc = writeLead(ofd, l);
+	rc = rpmLeadWrite(ofd, lead);
+	lead = rpmLeadFree(lead);
 	if (rc != RPMRC_OK) {
 	    rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
 		Fstrerror(ofd));
@@ -522,7 +514,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     int res2, res3;
-    struct rpmlead lead, *l = &lead;
     char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;
@@ -543,25 +534,20 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
     {
-	memset(l, 0, sizeof(*l));
-	rc = readLead(fd, l);
-	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, _("%s: not an rpm package\n"), fn);
+	rpmlead lead = rpmLeadNew();
+    	if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
+	    rc = rpmLeadCheck(lead, fn);
+    	}
+    	lead = rpmLeadFree(lead);
+
+    	if (rc != RPMRC_OK) {
 	    res++;
 	    goto exit;
-	}
-	switch (l->major) {
-	case 1:
-	    rpmlog(RPMLOG_ERR, _("%s: No signature available (v1.0 RPM)\n"), fn);
-	    res++;
-	    goto exit;
-	    break;
-	default:
-	    break;
 	}
 
+
 	msg = NULL;
-	rc = rpmReadSignature(fd, &sigh, l->signature_type, &msg);
+	rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
 	switch (rc) {
 	default:
 	    rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,

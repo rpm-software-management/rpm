@@ -283,7 +283,7 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
     }
 
     /* Get copy of lead */
-    if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
+    if ((rc = Fread(lead, sizeof(char), RPMLEAD_SIZE, fdi)) != RPMLEAD_SIZE) {
 	rpmlog(RPMLOG_ERR, _("readRPM: read %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
@@ -345,35 +345,6 @@ int readRPM(const char *fileName, rpmSpec *specp, struct rpmlead *lead,
 	(void) Fclose(fdi);
 
     return 0;
-}
-
-#ifdef	DYING
-static unsigned char header_magic[8] = {
-        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-#endif
-
-#define	RPMPKGVERSION_MIN	30004
-#define	RPMPKGVERSION_MAX	40003
-static int rpmpkg_version = -1;
-
-static int rpmLeadVersion(void)
-{
-    int rpmlead_version;
-
-    /* Intitialize packaging version from macro configuration. */
-    if (rpmpkg_version < 0) {
-	rpmpkg_version = rpmExpandNumeric("%{_package_version}");
-	if (rpmpkg_version < RPMPKGVERSION_MIN)
-	    rpmpkg_version = RPMPKGVERSION_MIN;
-	if (rpmpkg_version > RPMPKGVERSION_MAX)
-	    rpmpkg_version = RPMPKGVERSION_MAX;
-    }
-
-    rpmlead_version = rpmpkg_version / 10000;
-    if (_noDirTokens || (rpmlead_version < 3 || rpmlead_version > 4))
-	rpmlead_version = 3;
-    return rpmlead_version;
 }
 
 int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
@@ -526,35 +497,11 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 
     /* Write the lead section into the package. */
-    {	int archnum = -1;
-	int osnum = -1;
-	struct rpmlead lead;
-
-	if (Fileno(csa->cpioFdIn) < 0) {
-#ifndef	DYING
-	    rpmGetArchInfo(NULL, &archnum);
-	    rpmGetOsInfo(NULL, &osnum);
-#endif
-	} else if (csa->lead != NULL) {
-	    archnum = csa->lead->archnum;
-	    osnum = csa->lead->osnum;
-	}
-
-	memset(&lead, 0, sizeof(lead));
-	lead.major = rpmLeadVersion();
-	lead.minor = 0;
-	lead.type = type;
-	lead.archnum = archnum;
-	lead.osnum = osnum;
-	lead.signature_type = RPMSIGTYPE_HEADERSIG;
-
-	{   const char *name, *version, *release;
-	    (void) headerNVR(h, &name, &version, &release);
-	    sprintf(buf, "%s-%s-%s", name, version, release);
-	    strncpy(lead.name, buf, sizeof(lead.name));
-	}
-
-	if (writeLead(fd, &lead) != RPMRC_OK) {
+    {	
+	rpmlead lead = rpmLeadFromHeader(h);
+	int rc = rpmLeadWrite(fd, lead);
+	lead = rpmLeadFree(lead);
+	if (rc != RPMRC_OK) {
 	    rc = RPMLOG_ERR;
 	    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
 		 Fstrerror(fd));

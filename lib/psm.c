@@ -1487,34 +1487,17 @@ assert(psm->mi == NULL);
 	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
 
 	    /* Write the lead section into the package. */
-	    {	int archnum = -1;
-		int osnum = -1;
-		struct rpmlead lead;
-
-#ifndef	DYING
-		rpmGetArchInfo(NULL, &archnum);
-		rpmGetOsInfo(NULL, &osnum);
-#endif
-
-		memset(&lead, 0, sizeof(lead));
-		/* XXX Set package version conditioned on noDirTokens. */
-		lead.major = 3;
-		lead.minor = 0;
-		lead.type = RPMLEAD_BINARY;
-		lead.archnum = archnum;
-		lead.osnum = osnum;
-		lead.signature_type = RPMSIGTYPE_HEADERSIG;
-
-		strncpy(lead.name, rpmteNEVR(psm->te), sizeof(lead.name));
-
-		rc = writeLead(psm->fd, &lead);
+	    {
+		rpmlead lead = rpmLeadFromHeader(psm->oh);
+		rc = rpmLeadWrite(psm->fd, lead);
+		lead = rpmLeadFree(lead);
 		if (rc != RPMRC_OK) {
 		    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
 			 Fstrerror(psm->fd));
 		    break;
 		}
 	    }
-
+		
 	    /* Write the signature section into the package. */
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    {	Header sigh = headerRegenSigHeader(fi->h, noArchiveSize);

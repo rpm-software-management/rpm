@@ -19,25 +19,29 @@ extern "C" {
 
 #define RPMLEAD_SIZE 96         /*!< Don't rely on sizeof(struct) */
 
-/** \ingroup lead
- * The lead data structure.
- * The lead needs to be 8 byte aligned.
- * @deprecated The lead (except for signature_type) is legacy.
- * @todo Don't use any information from lead.
- */
-struct rpmlead {
-    unsigned char magic[4];
-    unsigned char major;
-    unsigned char minor;
-    short type;
-    short archnum;
-    char name[66];
-    short osnum;
-    short signature_type;	/*!< Signature header type (RPMSIG_HEADERSIG) */
-char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
-} ;
+typedef struct rpmlead_s * rpmlead;
 
 #include <rpmlib.h>
+
+/** \ingroup lead
+ * Initialize a lead structure
+ * @return		Pointer to empty lead structure
+ */
+rpmlead rpmLeadNew(void);
+
+/** \ingroup lead
+ * Initialize a lead structure from header
+ * param h		Header
+ * @return		Pointer to populated lead structure (malloced)
+ */
+rpmlead rpmLeadFromHeader(Header h);
+
+/** \ingroup lead
+ * Free a lead structure
+ * @param lead		Pointer to lead structure
+ * @return		NULL always
+ */
+rpmlead rpmLeadFree(rpmlead lead);
 
 /** \ingroup lead
  * Write lead to file handle.
@@ -45,7 +49,7 @@ char reserved[16];	/*!< Pad to 96 bytes -- 8 byte aligned! */
  * @param lead		package lead
  * @return		RPMRC_OK on success, RPMRC_FAIL on error
  */
-rpmRC writeLead(FD_t fd, const struct rpmlead *lead);
+rpmRC rpmLeadWrite(FD_t fd, rpmlead lead);
 
 /** \ingroup lead
  * Read lead from file handle.
@@ -53,7 +57,15 @@ rpmRC writeLead(FD_t fd, const struct rpmlead *lead);
  * @retval lead		package lead
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
-rpmRC readLead(FD_t fd, struct rpmlead *lead);
+rpmRC rpmLeadRead(FD_t fd, rpmlead lead);
+
+/** \ingroup lead
+ * Check lead for compatibility.
+ * @param lead		Pointer to lead handle
+ * @param fn		File name
+ * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
+ */
+rpmRC rpmLeadCheck(rpmlead lead, const char* fn);
 
 #ifdef __cplusplus
 }
