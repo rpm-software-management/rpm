@@ -8,6 +8,7 @@
 #include <rpmmacro.h>
 #include <rpmstring.h>
 #include <rpmfi.h>
+#include <rpmds.h>
 #include "lib/legacy.h"
 #include "debug.h"
 

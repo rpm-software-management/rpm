@@ -5,6 +5,7 @@
 #include "system.h"
 #include "rpmio/digest.h"
 #include <rpmlib.h>
+#include <rpmds.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
 
 #include <rpmfi.h>

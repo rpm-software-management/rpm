@@ -7,6 +7,7 @@
  */
 
 #include <rpmcli.h>
+#include <rpmds.h>
 
 /* and it shouldn't need these :-( */
 #include <rpmstring.h>

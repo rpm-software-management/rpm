@@ -21,6 +21,7 @@
 #include <rpmsq.h>
 #include <rpmstring.h>
 #include <rpmfileutil.h>
+#include <rpmds.h>			/* XXX isInstallPreReq macro only */
 
 #include <rpmlog.h>
 #include "rpmdb/rpmdb_internal.h"
