@@ -9,6 +9,7 @@
 #include <rpmurl.h>
 #include <rpmmacro.h>
 #include <rpmcallback.h>
+#include <rpmfi.h>
 #include <argv.h>
 
 #ifdef __cplusplus
