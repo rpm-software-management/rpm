@@ -31,6 +31,18 @@ typedef enum rpmFileTypes_e {
     SOCK	= 12	/*!< socket */
 } rpmFileTypes;
 
+/**
+ * File States (when installed).
+ */
+typedef enum rpmfileState_e {
+    RPMFILE_STATE_NORMAL 	= 0,
+    RPMFILE_STATE_REPLACED 	= 1,
+    RPMFILE_STATE_NOTINSTALLED	= 2,
+    RPMFILE_STATE_NETSHARED	= 3,
+    RPMFILE_STATE_WRONGCOLOR	= 4
+} rpmfileState;
+#define	RPMFILE_STATE_MISSING	-1	/* XXX used for unavailable data */
+
 #if defined(_RPMFI_INTERNAL)
 /**
  */
