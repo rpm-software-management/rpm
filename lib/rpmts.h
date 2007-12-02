@@ -22,6 +22,61 @@ extern int _rpmts_stats;
 extern int _fps_debug;
 
 /** \ingroup rpmts
+ * Bit(s) to control rpmtsRun() operation.
+ */
+typedef enum rpmtransFlags_e {
+    RPMTRANS_FLAG_NONE		= 0,
+    RPMTRANS_FLAG_TEST		= (1 <<  0),	/*!< from --test */
+    RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< don't process payload */
+    RPMTRANS_FLAG_NOSCRIPTS	= (1 <<  2),	/*!< from --noscripts */
+    RPMTRANS_FLAG_JUSTDB	= (1 <<  3),	/*!< from --justdb */
+    RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
+    RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
+    RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
+    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
+    RPMTRANS_FLAG_NOCONTEXTS	= (1 <<  8),	/*!< from --nocontexts */
+    RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
+    RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
+
+    RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),
+    RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
+    RPMTRANS_FLAG_COMMIT	= (1 << 13),
+    RPMTRANS_FLAG_UNDO		= (1 << 14),
+    RPMTRANS_FLAG_REVERSE	= (1 << 15),
+
+    RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
+    RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */
+    RPMTRANS_FLAG_NOPOST	= (1 << 18),	/*!< from --nopost */
+    RPMTRANS_FLAG_NOTRIGGERIN	= (1 << 19),	/*!< from --notriggerin */
+    RPMTRANS_FLAG_NOTRIGGERUN	= (1 << 20),	/*!< from --notriggerun */
+    RPMTRANS_FLAG_NOPREUN	= (1 << 21),	/*!< from --nopreun */
+    RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),	/*!< from --nopostun */
+    RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),	/*!< from --notriggerpostun */
+    RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
+    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
+
+    RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
+    RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
+    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
+    RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
+    RPMTRANS_FLAG_DEPLOOPS	= (1 << 31)	/*!< from --deploops */
+} rpmtransFlags;
+
+#define	_noTransScripts		\
+  ( RPMTRANS_FLAG_NOPRE |	\
+    RPMTRANS_FLAG_NOPOST |	\
+    RPMTRANS_FLAG_NOPREUN |	\
+    RPMTRANS_FLAG_NOPOSTUN	\
+  )
+
+#define	_noTransTriggers	\
+  ( RPMTRANS_FLAG_NOTRIGGERPREIN | \
+    RPMTRANS_FLAG_NOTRIGGERIN |	\
+    RPMTRANS_FLAG_NOTRIGGERUN |	\
+    RPMTRANS_FLAG_NOTRIGGERPOSTUN \
+  )
+
+/** \ingroup rpmts
  * Bit(s) to control digest and signature verification.
  */
 typedef enum rpmVSFlags_e {
