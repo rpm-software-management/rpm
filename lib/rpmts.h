@@ -10,6 +10,7 @@
 #include <rpmps.h>
 #include <rpmsw.h>
 #include <rpmpgp.h>
+#include <rpmfi.h>
 #include <rpmcallback.h>
 
 #ifdef __cplusplus

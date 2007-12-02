@@ -7,6 +7,7 @@
  */
 
 #include "lib/cpio.h"
+#include <rpmfi.h>
 
 extern int _fsm_debug;
 

@@ -628,27 +628,6 @@ typedef struct rpmRelocation_s {
  */
 int rpmVersionCompare(Header first, Header second);
 
-/**
- * File disposition(s) during package install/erase transaction.
- */
-typedef enum rpmFileAction_e {
-    FA_UNKNOWN = 0,	/*!< initial action for file ... */
-    FA_CREATE,		/*!< ... copy in from payload. */
-    FA_COPYIN,		/*!< ... copy in from payload. */
-    FA_COPYOUT,		/*!< ... copy out to payload. */
-    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
-    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
-    FA_SKIP, 		/*!< ... already replaced, don't remove. */
-    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
-    FA_ERASE,		/*!< ... to be removed. */
-    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
-    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
-    FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
-} rpmFileAction;
-
-#define XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
-
 /** \ingroup header
  * Perform simple sanity and range checks on header tag(s).
  * @param il		no. of tags in header
