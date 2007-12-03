@@ -1204,7 +1204,7 @@ static void genCpioListAndHeader(FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
-	    buf[Readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
+	    buf[readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
 	    if (fl->buildRootURL) {
 		const char * buildRoot;
 		(void) urlPath(fl->buildRootURL, &buildRoot);
@@ -1440,7 +1440,7 @@ static int addFile(FileList fl, const char * diskURL,
 	    statp->st_atime = now;
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
-	} else if (Lstat(diskURL, statp)) {
+	} else if (lstat(diskURL, statp)) {
 	    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskURL);
 	    fl->processingFailed = 1;
 	    return RPMLOG_ERR;
@@ -1701,7 +1701,7 @@ static int processBinaryFile(Package pkg, FileList fl,
     const char *diskURL = NULL;
     int rc = 0;
     
-    doGlob = Glob_pattern_p(fileURL, quote);
+    doGlob = glob_pattern_p(fileURL, quote);
 
     /* Check that file starts with leading "/" */
     {	const char * fileName;
@@ -1738,7 +1738,7 @@ static int processBinaryFile(Package pkg, FileList fl,
 	}
 
 	rc = rpmGlob(diskURL, &argc, &argv);
-	if (rc == 0 && argc >= 1 && !Glob_pattern_p(argv[0], quote)) {
+	if (rc == 0 && argc >= 1 && !glob_pattern_p(argv[0], quote)) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 		argv[i] = _free(argv[i]);
@@ -2191,7 +2191,7 @@ int processSourceFiles(rpmSpec spec)
 	flp->fileURL = xstrdup(diskPath);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
-	if (Stat(diskURL, &flp->fl_st)) {
+	if (stat(diskURL, &flp->fl_st)) {
 	    rpmlog(RPMLOG_ERR, _("Bad file: %s: %s\n"),
 		diskURL, strerror(errno));
 	    fl.processingFailed = 1;

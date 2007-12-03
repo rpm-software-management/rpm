@@ -291,7 +291,7 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : N
     case URL_IS_DASH:
     case URL_IS_UNKNOWN:
 	if ((rc = ufdGetFile(sfd, tfd))) {
-	    (void) Unlink(dest);
+	    (void) unlink(dest);
 	    /* XXX FIXME: sfd possibly closed by copyData */
 	    (void) Fclose(sfd) ;
 	}

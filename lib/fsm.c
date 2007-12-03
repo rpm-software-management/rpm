@@ -1919,10 +1919,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_UNLINK:
 	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
 	    struct stat stb;
-	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+	    if (lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
 		chmod(fsm->path, stb.st_mode & 0777);
 	}
-	rc = Unlink(fsm->path);
+	rc = unlink(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -1930,7 +1930,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
 	break;
     case FSM_RENAME:
-	rc = Rename(fsm->opath, fsm->path);
+	rc = rename(fsm->opath, fsm->path);
 #if defined(ETXTBSY)
 	if (rc && errno == ETXTBSY) {
 	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
@@ -1939,8 +1939,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	     * XXX HP-UX (and other os'es) don't permit rename to busy
 	     * XXX files.
 	     */
-	    rc = Rename(fsm->path, path);
-	    if (!rc) rc = Rename(fsm->opath, fsm->path);
+	    rc = rename(fsm->path, path);
+	    if (!rc) rc = rename(fsm->opath, fsm->path);
 	}
 #endif
 	if (_fsm_debug && (stage & FSM_SYSCALL))
@@ -1949,7 +1949,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
 	break;
     case FSM_MKDIR:
-	rc = Mkdir(fsm->path, (st->st_mode & 07777));
+	rc = mkdir(fsm->path, (st->st_mode & 07777));
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
 		fsm->path, (unsigned)(st->st_mode & 07777),
@@ -1957,7 +1957,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
 	break;
     case FSM_RMDIR:
-	rc = Rmdir(fsm->path);
+	rc = rmdir(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -2025,7 +2025,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
 	break;
     case FSM_LINK:
-	rc = Link(fsm->opath, fsm->path);
+	rc = link(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -2050,7 +2050,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
 	break;
     case FSM_LSTAT:
-	rc = Lstat(fsm->path, ost);
+	rc = lstat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -2060,7 +2060,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	break;
     case FSM_STAT:
-	rc = Stat(fsm->path, ost);
+	rc = stat(fsm->path, ost);
 	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
 		fsm->path, (rc < 0 ? strerror(errno) : ""));
@@ -2071,7 +2071,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_READLINK:
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-	rc = Readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
+	rc = readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
 		fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));

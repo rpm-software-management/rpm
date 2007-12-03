@@ -24,9 +24,9 @@ static void printDir(const char * path)
     int i;
 
 fprintf(stderr, "===== %s\n", path);
-    dir = Opendir(path);
+    dir = opendir(path);
     i = 0;
-    while ((dp = Readdir(dir)) != NULL) {
+    while ((dp = readdir(dir)) != NULL) {
 fprintf(stderr, "%5d (%x,%x) %x %x %s\n", i++,
 (unsigned) dp->d_ino,
 (unsigned) dp->d_off,
@@ -34,7 +34,7 @@ fprintf(stderr, "%5d (%x,%x) %x %x %s\n", i++,
 (unsigned) dp->d_type,
 dp->d_name);
     }
-    xx = Closedir(dir);
+    xx = closedir(dir);
 }
 
 static struct poptOption optionsTable[] = {

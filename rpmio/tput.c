@@ -66,7 +66,7 @@ fprintf(stderr, "===> Fclose rc %d\n", xx);
 static int unlinkFile(const char * path)
 {
 fprintf(stderr, "===== Unlink %s\n", path);
-    return Unlink(path);
+    return unlink(path);
 }
 
 static void doFile(const char * path)
@@ -86,7 +86,7 @@ fprintf(stderr, "===== %s\n", path);
     xx = writeFile(path);
 #if 0
     xx = readFile(path);
-    xx = Unlink(path);
+    xx = unlink(path);
 
     xx = unlink("/home/toad/tput.txt");
     xx = unlink("/var/ftp/tput.txt");

@@ -839,7 +839,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 
 static struct FDIO_s ufdio_s = {
   ufdRead, ufdWrite, ufdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
-  ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
+  ufdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t ufdio = &ufdio_s ;
 
@@ -1713,6 +1713,6 @@ exit:
 
 static struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
-  ufdOpen, NULL, fdGetFp, NULL,	Mkdir, Chdir, Rmdir, Rename, Unlink
+  ufdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fpio = &fpio_s ;

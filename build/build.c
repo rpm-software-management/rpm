@@ -22,13 +22,13 @@ static void doRmSource(rpmSpec spec)
     int rc;
     
 #if 0
-    rc = Unlink(spec->specFile);
+    rc = unlink(spec->specFile);
 #endif
 
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-	    rc = Unlink(fn);
+	    rc = unlink(fn);
 	    fn = _free(fn);
 	}
     }
@@ -37,7 +37,7 @@ static void doRmSource(rpmSpec spec)
 	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
-		rc = Unlink(fn);
+		rc = unlink(fn);
 		fn = _free(fn);
 	    }
 	}
@@ -227,7 +227,7 @@ fprintf(stderr, "*** addMacros\n");
 exit:
     if (scriptName) {
 	if (!rc)
-	    (void) Unlink(scriptName);
+	    (void) unlink(scriptName);
 	scriptName = _free(scriptName);
     }
     if (u != NULL) {
@@ -324,7 +324,7 @@ int buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 	doRmSource(spec);
 
     if (what & RPMBUILD_RMSPEC)
-	(void) Unlink(spec->specFile);
+	(void) unlink(spec->specFile);
 
 exit:
     if (rc && rpmlogGetNrecs() > 0) {

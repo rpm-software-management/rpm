@@ -338,7 +338,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 	savec = de[1];
 	de[1] = '\0';
 
-	rc = Stat(d, &st);
+	rc = stat(d, &st);
 	if (rc) {
 	    switch(errno) {
 	    default:
@@ -347,7 +347,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 	    case ENOENT:
 		break;
 	    }
-	    rc = Mkdir(d, mode);
+	    rc = mkdir(d, mode);
 	    if (rc)
 		return errno;
 	    created = 1;
@@ -741,7 +741,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
 	glob_t gl;
 
-	if (!local || (!Glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL)) {
+	if (!local || (!glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL)) {
 	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
 	    argv[argc] = xstrdup(av[j]);
 if (_debug)
@@ -752,7 +752,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	
 	gl.gl_pathc = 0;
 	gl.gl_pathv = NULL;
-	rc = Glob(av[j], GLOB_TILDE, Glob_error, &gl);
+	rc = glob(av[j], GLOB_TILDE, NULL, &gl);
 	if (rc)
 	    goto exit;
 
@@ -798,7 +798,7 @@ if (_debug)
 fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 	    argv[argc++] = xstrdup(globURL);
 	}
-	Globfree(&gl);
+	globfree(&gl);
 	globURL = _free(globURL);
     }
 

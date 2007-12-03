@@ -262,7 +262,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
     items[i] = newItem();
     items[i]->path = xstrdup(fts->fts_path);
     st = fts->fts_statp;
-    if (st == NULL && Stat(fts->fts_accpath, &sb) == 0)
+    if (st == NULL && stat(fts->fts_accpath, &sb) == 0)
 	st = &sb;
 
     if (st != NULL) {
@@ -447,7 +447,7 @@ static void initGlobs(rpmts ts, const char ** argv)
     buf[0] = '\0';
     if (argv != NULL && * argv != NULL) {
 	const char * arg;
-	int single = (Glob_pattern_p(argv[0], 0) && argv[1] == NULL);
+	int single = (glob_pattern_p(argv[0], 0) && argv[1] == NULL);
 	char * t;
 
 	t = buf;

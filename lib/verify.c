@@ -66,7 +66,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	break;
     }
 
-    if (fn == NULL || Lstat(fn, &sb) != 0) {
+    if (fn == NULL || lstat(fn, &sb) != 0) {
 	*res |= RPMVERIFY_LSTATFAIL;
 	return 1;
     }
@@ -129,7 +129,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	char linkto[1024+1];
 	int size = 0;
 
-	if ((size = Readlink(fn, linkto, sizeof(linkto)-1)) == -1)
+	if ((size = readlink(fn, linkto, sizeof(linkto)-1)) == -1)
 	    *res |= (RPMVERIFY_READLINKFAIL|RPMVERIFY_LINKTO);
 	else {
 	    const char * flink = rpmfiFLink(fi);

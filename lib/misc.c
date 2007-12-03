@@ -19,7 +19,7 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
     struct stat st;
     int rc;
 
-    if ((rc = Stat(dpath, &st)) < 0) {
+    if ((rc = stat(dpath, &st)) < 0) {
 	int ut = urlPath(dpath, NULL);
 	switch (ut) {
 	case URL_IS_PATH:
@@ -29,7 +29,7 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
-	    rc = Mkdir(dpath, 0755);
+	    rc = mkdir(dpath, 0755);
 	    break;
 	case URL_IS_DASH:
 	case URL_IS_HKP:
@@ -40,7 +40,7 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
 	    return RPMRC_FAIL;
 	}
     }
-    if ((rc = Access(dpath, W_OK))) {
+    if ((rc = access(dpath, W_OK))) {
 	rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"), dname, dpath);
 	return RPMRC_FAIL;
     }

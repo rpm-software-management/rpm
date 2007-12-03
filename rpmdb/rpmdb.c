@@ -3237,7 +3237,7 @@ static int rpmioFileExists(const char * urlfn)
     case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-	if (Stat(fn, &buf)) {
+	if (stat(fn, &buf)) {
 	    switch(errno) {
 	    case ENOENT:
 	    case EINVAL:
@@ -3474,7 +3474,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
 
     rpmlog(RPMLOG_DEBUG, _("creating directory %s\n"), newrootdbpath);
-    if (Mkdir(newrootdbpath, 0755)) {
+    if (mkdir(newrootdbpath, 0755)) {
 	rpmlog(RPMLOG_ERR, _("creating directory %s: %s\n"),
 	      newrootdbpath, strerror(errno));
 	rc = 1;
@@ -3595,7 +3595,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 exit:
     if (removedir && !(rc == 0 && nocleanup)) {
 	rpmlog(RPMLOG_DEBUG, _("removing directory %s\n"), newrootdbpath);
-	if (Rmdir(newrootdbpath))
+	if (rmdir(newrootdbpath))
 	    rpmlog(RPMLOG_ERR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }

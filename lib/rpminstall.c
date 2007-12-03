@@ -669,7 +669,7 @@ exit:
     for (i = 0; i < eiu->numPkgs; i++) {
 	if (eiu->pkgURL[i] == NULL) continue;
 	if (eiu->pkgState[i] == 1)
-	    (void) Unlink(eiu->pkgURL[i]);
+	    (void) unlink(eiu->pkgURL[i]);
 	eiu->pkgURL[i] = _free(eiu->pkgURL[i]);
     }
     eiu->pkgState = _free(eiu->pkgState);

@@ -136,11 +136,11 @@ Fts_open(char * const * argv, int options,
 		return (NULL);
 	memset(sp, 0, sizeof(*sp));
 	sp->fts_compar = (int (*) (const void *, const void *)) compar;
-	sp->fts_opendir = Opendir;
-	sp->fts_readdir = Readdir;
-	sp->fts_closedir = Closedir;
-	sp->fts_stat = Stat;
-	sp->fts_lstat = Lstat;
+	sp->fts_opendir = opendir;
+	sp->fts_readdir = readdir;
+	sp->fts_closedir = closedir;
+	sp->fts_stat = stat;
+	sp->fts_lstat = lstat;
 	sp->fts_options = options;
 
 	/* Logical walks turn on NOCHDIR; symbolic links are too hard. */

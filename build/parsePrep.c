@@ -34,7 +34,7 @@ static int checkOwners(const char * urlfn)
 {
     struct stat sb;
 
-    if (Lstat(urlfn, &sb)) {
+    if (lstat(urlfn, &sb)) {
 	rpmlog(RPMLOG_ERR, _("Bad source: %s: %s\n"),
 		urlfn, strerror(errno));
 	return RPMLOG_ERR;
@@ -187,7 +187,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
     if (sp->flags & RPMTAG_NOSOURCE && autofetchnosource) {
 	struct stat st;
 	int rc;
-	if (Lstat(urlfn, &st) != 0 && errno == ENOENT &&
+	if (lstat(urlfn, &st) != 0 && errno == ENOENT &&
 	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
 	    if ((rc = urlGetFile(sp->fullSource, urlfn)) != 0) {
 		rpmlog(RPMLOG_ERR,

@@ -226,7 +226,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
     if (specut != URL_IS_DASH) {
 	struct stat st;
-	if (Stat(specURL, &st) < 0) {
+	if (stat(specURL, &st) < 0) {
 	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %m\n"), specURL);
 	    rc = 1;
 	    goto exit;
@@ -277,7 +277,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     }
     
     if (ba->buildMode == 't')
-	(void) Unlink(specURL);
+	(void) unlink(specURL);
     rc = 0;
 
 exit:

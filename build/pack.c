@@ -443,7 +443,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     (void) Fclose(fd);
     fd = NULL;
-    (void) Unlink(fileName);
+    (void) unlink(fileName);
 
     if (rc)
 	goto exit;
@@ -581,14 +581,14 @@ exit:
 	fd = NULL;
     }
     if (sigtarget) {
-	(void) Unlink(sigtarget);
+	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
 
     if (rc == 0)
 	rpmlog(RPMLOG_NOTICE, _("Wrote: %s\n"), fileName);
     else
-	(void) Unlink(fileName);
+	(void) unlink(fileName);
 
     return rc;
 }
@@ -666,10 +666,10 @@ int packageBinaries(rpmSpec spec)
 		const char *dn;
 		*binDir = '\0';
 		dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
-		if (Stat(dn, &st) < 0) {
+		if (stat(dn, &st) < 0) {
 		    switch(errno) {
 		    case  ENOENT:
-			if (Mkdir(dn, 0755) == 0)
+			if (mkdir(dn, 0755) == 0)
 			    break;
 		    default:
 			rpmlog(RPMLOG_ERR,_("cannot create %s: %s\n"),

@@ -40,12 +40,12 @@ fprintf(stderr, "===== %s\n", path);
     gl.gl_pathc = 0;
     gl.gl_pathv = NULL;
     gl.gl_offs = 0;
-    rc = Glob(path, 0, Glob_error, &gl);
+    rc = glob(path, 0, NULL, &gl);
 fprintf(stderr, "*** Glob rc %d\n", rc);
     if (rc == 0)
     for (i = 0; i < gl.gl_pathc; i++)
 	fprintf(stderr, "%5d %s\n", i, gl.gl_pathv[i]);
-    Globfree(&gl);
+    globfree(&gl);
 }
 
 static struct poptOption optionsTable[] = {

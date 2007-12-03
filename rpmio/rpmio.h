@@ -8,8 +8,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <dirent.h>
-#include "misc/glob.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -104,101 +102,6 @@ int Fileno(FD_t fd);
  * fcntl(2) clone.
  */
 int Fcntl(FD_t fd, int op, void *lip);
-
-
-/** \ingroup rpmrpc
- * \name RPMRPC Interface.
- */
-
-/** \ingroup rpmrpc
- * mkdir(2) clone.
- */
-int Mkdir(const char * path, mode_t mode);
-
-/** \ingroup rpmrpc
- * chdir(2) clone.
- */
-int Chdir(const char * path);
-
-/** \ingroup rpmrpc
- * rmdir(2) clone.
- */
-int Rmdir(const char * path);
-
-/** \ingroup rpmrpc
- * rename(2) clone.
- */
-int Rename(const char * oldpath, const char * newpath);
-
-/** \ingroup rpmrpc
- * link(2) clone.
- */
-int Link(const char * oldpath, const char * newpath);
-
-/** \ingroup rpmrpc
- * unlink(2) clone.
- */
-int Unlink(const char * path);
-
-/** \ingroup rpmrpc
- * readlink(2) clone.
- */
-int Readlink(const char * path, char * buf, size_t bufsiz);
-
-/** \ingroup rpmrpc
- * stat(2) clone.
- */
-int Stat(const char * path, struct stat * st);
-
-/** \ingroup rpmrpc
- * lstat(2) clone.
- */
-int Lstat(const char * path, struct stat * st);
-
-/** \ingroup rpmrpc
- * access(2) clone.
- */
-int Access(const char * path, int amode);
-
-/** \ingroup rpmrpc
- * glob_pattern_p(3) clone.
- */
-int Glob_pattern_p (const char *pattern, int quote);
-
-/** \ingroup rpmrpc
- * glob_error(3) clone.
- */
-int Glob_error(const char * epath, int eerrno);
-
-/** \ingroup rpmrpc
- * glob(3) clone.
- */
-int Glob(const char * pattern, int flags,
-		int errfunc(const char * epath, int eerrno),
-		glob_t * pglob);
-
-/** \ingroup rpmrpc
- * globfree(3) clone.
- */
-void Globfree( glob_t * pglob);
-
-
-/** \ingroup rpmrpc
- * opendir(3) clone.
- */
-DIR * Opendir(const char * path);
-
-/** \ingroup rpmrpc
- * readdir(3) clone.
- */
-struct dirent * Readdir(DIR * dir);
-
-/** \ingroup rpmrpc
- * closedir(3) clone.
- */
-int Closedir(DIR * dir);
-
-
 
 /** \ingroup rpmio
  * \name RPMIO Utilities.
