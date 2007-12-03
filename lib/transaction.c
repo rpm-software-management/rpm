@@ -18,8 +18,7 @@
 
 #include "lib/rpmlock.h"
 
-#define	_RPMFI_INTERNAL		/* fi->replaced, fi->actions... */
-#include <rpmfi.h>
+#include "lib/rpmfi_internal.h"	/* fi->replaced, fi->actions... */
 
 #define	_RPMTE_INTERNAL		/* XXX te->h, te->fd, te->h */
 #include <rpmte.h>

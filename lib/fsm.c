@@ -15,8 +15,7 @@
 
 #include <rpmlog.h>
 
-#define	_RPMFI_INTERNAL		/* XXX fi->apath, fi->action... */
-#include <rpmfi.h>
+#include "lib/rpmfi_internal.h"	/* XXX fi->apath, fi->action... */
 #include <rpmte.h>
 #include <rpmts.h>
 #include <rpmsq.h>

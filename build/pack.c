@@ -11,8 +11,7 @@
 #include "lib/cpio.h"
 #include "lib/fsm.h"
 
-#define	_RPMFI_INTERNAL		/* XXX fi->fsm */
-#include <rpmfi.h>
+#include "lib/rpmfi_internal.h"	/* XXX fi->fsm */
 #include <rpmts.h>
 
 #include "build/buildio.h"

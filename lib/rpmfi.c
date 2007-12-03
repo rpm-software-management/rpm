@@ -13,8 +13,7 @@
 
 #include <rpmds.h>
 
-#define	_RPMFI_INTERNAL
-#include <rpmfi.h>
+#include "lib/rpmfi_internal.h"
 
 #define	_RPMTE_INTERNAL	/* relocations */
 #include <rpmte.h>
