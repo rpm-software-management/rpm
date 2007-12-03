@@ -67,6 +67,7 @@ rpmtsScore rpmtsGetScore(rpmts ts);
 /** \ingroup rpmts
  * Get rpmtsScoreEntry from rpmtsScore.
  * @param score   RPM Transaction Score.
+ * @param N   	  Score entry name.
  * @return	  rpmtsScoreEntry or NULL.
  */
 rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N);
