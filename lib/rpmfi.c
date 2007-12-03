@@ -15,8 +15,7 @@
 
 #include "lib/rpmfi_internal.h"
 
-#define	_RPMTE_INTERNAL	/* relocations */
-#include <rpmte.h>
+#include "lib/rpmte_internal.h"	/* relocations */
 #include <rpmts.h>
 
 #include <rpmfileutil.h>/* XXX domd5 */

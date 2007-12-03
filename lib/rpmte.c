@@ -8,8 +8,7 @@
 #include <rpmds.h>
 #include <rpmfi.h>
 
-#define	_RPMTE_INTERNAL
-#include <rpmte.h>
+#include "lib/rpmte_internal.h"
 #include <rpmts.h>
 
 #include "debug.h"

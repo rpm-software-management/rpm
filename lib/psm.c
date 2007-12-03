@@ -18,8 +18,7 @@
 
 #include "lib/rpmfi_internal.h" /* XXX replaced/states, fi->hge, fi->te... */
 
-#define	_RPMTE_INTERNAL		/* XXX te->fd */
-#include <rpmte.h>
+#include "lib/rpmte_internal.h"	/* XXX te->fd */
 
 #include "lib/rpmtsscore.h"
 #include <rpmts.h>

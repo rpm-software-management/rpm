@@ -20,8 +20,7 @@
 
 #include "lib/rpmfi_internal.h"	/* fi->replaced, fi->actions... */
 
-#define	_RPMTE_INTERNAL		/* XXX te->h, te->fd, te->h */
-#include <rpmte.h>
+#include "lib/rpmte_internal.h"	/* XXX te->h, te->fd, te->h */
 
 #include "lib/rpmts_internal.h"
 

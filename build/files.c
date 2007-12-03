@@ -22,10 +22,7 @@
 #include <rpmfc.h>
 
 #include "lib/rpmfi_internal.h"	/* XXX pretty much all rpmfi internals... */
-#include <rpmfi.h>
-
-#define	_RPMTE_INTERNAL		/* XXX rpmte init */
-#include <rpmte.h>
+#include "lib/rpmte_internal.h"	/* XXX rpmte init */
 
 #include "build/buildio.h"
 
