@@ -62,6 +62,7 @@ pkginclude_HEADERS += lib/rpmds.h
 pkginclude_HEADERS += lib/rpmfi.h
 pkginclude_HEADERS += lib/rpmgi.h
 pkginclude_HEADERS += lib/rpmps.h
+pkginclude_HEADERS += lib/rpmtag.h
 pkginclude_HEADERS += lib/rpmte.h
 pkginclude_HEADERS += lib/rpmts.h
 
