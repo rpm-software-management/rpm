@@ -38,8 +38,6 @@
  */
 /** \defgroup	rpmdb	Database API.
  */
-/** \defgroup	rpmrpc	RPM RPC API.
- */
 /** \defgroup	rpmio	RPM IO API.
  */
 /** \defgroup	rpmfileutil	File and Path Manipulation API.

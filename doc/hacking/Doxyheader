@@ -52,8 +52,6 @@
  */
 /** \defgroup	rpmlua	Embedded Lua.
  */
-/** \defgroup	rpmrpc	RPM RPC API.
- */
 /** \defgroup	rpmio	RPM IO API.
  */
 /** \defgroup	rpmfileutil	File and Path Manipulation API.
