@@ -75,7 +75,7 @@ typedef struct rpmdb_s * rpmdb;
 /** \ingroup rpmdb
  * Database iterator.
  */
-typedef struct _rpmdbMatchIterator * rpmdbMatchIterator;
+typedef struct rpmdbMatchIterator_s * rpmdbMatchIterator;
 
 /** \ingroup rpmgi
  * Generalized iterator.

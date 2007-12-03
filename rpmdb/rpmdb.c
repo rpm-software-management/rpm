@@ -587,7 +587,7 @@ typedef struct miRE_s {
     int			fnflags;	/*!< fnmatch(3) flags */
 } * miRE;
 
-struct _rpmdbMatchIterator {
+struct rpmdbMatchIterator_s {
     rpmdbMatchIterator	mi_next;
     const void *	mi_keyp;
     size_t		mi_keylen;
