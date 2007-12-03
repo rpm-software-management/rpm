@@ -2,7 +2,7 @@
 #define H_LEGACY
 
 /**
- * \file rpmdb/legacy.h
+ * \file lib/legacy.h
  *
  */
 

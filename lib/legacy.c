@@ -1,5 +1,5 @@
 /**
- * \file rpmdb/legacy.c
+ * \file lib/legacy.c
  */
 
 #include "system.h"
@@ -14,13 +14,6 @@
 
 #define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
-/**
- * Open a file descriptor to verify file MD5 and size.
- * @param path		file path
- * @retval pidp		prelink helper pid or 0
- * @retval fsizep	file size
- * @return		-1 on error, otherwise, an open file descriptor
- */ 
 int _noDirTokens = 0;
 
 static int dncmp(const void * a, const void * b)

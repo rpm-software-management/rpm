@@ -1,5 +1,5 @@
 /** \ingroup rpmio
- * \file lib/tufdio.c
+ * \file rpmio/tufdio.c
  */
 
 #include "system.h"
