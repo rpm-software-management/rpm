@@ -48,19 +48,19 @@ int _rpmts_debug = 0;
 
 int _rpmts_stats = 0;
 
-rpmts XrpmtsUnlink(rpmts ts, const char * msg, const char * fn, unsigned ln)
+rpmts rpmtsUnlink(rpmts ts, const char * msg)
 {
 if (_rpmts_debug)
-fprintf(stderr, "--> ts %p -- %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ts %p -- %d %s\n", ts, ts->nrefs, msg);
     ts->nrefs--;
     return NULL;
 }
 
-rpmts XrpmtsLink(rpmts ts, const char * msg, const char * fn, unsigned ln)
+rpmts rpmtsLink(rpmts ts, const char * msg)
 {
     ts->nrefs++;
 if (_rpmts_debug)
-fprintf(stderr, "--> ts %p ++ %d %s at %s:%u\n", ts, ts->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ts %p ++ %d %s\n", ts, ts->nrefs, msg);
     return ts;
 }
 
@@ -798,7 +798,7 @@ rpmps rpmtsProblems(rpmts ts)
     rpmps ps = NULL;
     if (ts) {
 	if (ts->probs)
-	    ps = rpmpsLink(ts->probs, NULL);
+	    ps = rpmpsLink(ts->probs, RPMDBG_M("rpmtsProblems"));
     }
     return ps;
 }
@@ -908,7 +908,7 @@ rpmts rpmtsFree(rpmts ts)
 	return NULL;
 
     if (ts->nrefs > 1)
-	return rpmtsUnlink(ts, "tsCreate");
+	return rpmtsUnlink(ts, RPMDBG_M("tsCreate"));
 
     rpmtsEmpty(ts);
 
@@ -924,7 +924,7 @@ rpmts rpmtsFree(rpmts ts)
     ts->dsi = _free(ts->dsi);
 
     if (ts->scriptFd != NULL) {
-	ts->scriptFd = fdFree(ts->scriptFd, "rpmtsFree");
+	ts->scriptFd = fdFree(ts->scriptFd, RPMDBG_M("rpmtsFree"));
 	ts->scriptFd = NULL;
     }
     ts->rootDir = _free(ts->rootDir);
@@ -944,7 +944,7 @@ rpmts rpmtsFree(rpmts ts)
     /* Free up the memory used by the rpmtsScore */
     ts->score = rpmtsScoreFree(ts->score);
 
-    (void) rpmtsUnlink(ts, "tsCreate");
+    (void) rpmtsUnlink(ts, RPMDBG_M("tsCreate"));
 
     ts = _free(ts);
 
@@ -1092,11 +1092,13 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 
     if (ts != NULL) {
 	if (ts->scriptFd != NULL) {
-	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
+	    ts->scriptFd = fdFree(ts->scriptFd, 
+				  RPMDBG_M("rpmtsSetScriptFd"));
 	    ts->scriptFd = NULL;
 	}
 	if (scriptFd != NULL)
-	    ts->scriptFd = fdLink((void *)scriptFd, "rpmtsSetScriptFd");
+	    ts->scriptFd = fdLink((void *)scriptFd, 
+				  RPMDBG_M("rpmtsSetScriptFd"));
     }
 }
 
@@ -1596,7 +1598,7 @@ rpmts rpmtsCreate(void)
 
     ts->nrefs = 0;
 
-    return rpmtsLink(ts, "tsCreate");
+    return rpmtsLink(ts, RPMDBG_M("tsCreate"));
 }
 
 /**********************

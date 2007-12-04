@@ -95,17 +95,6 @@ typedef enum rpmFileAction_e {
 rpmfi rpmfiUnlink (rpmfi fi,
 		const char * msg);
 
-/** @todo Remove debugging entry from the ABI.
- * @param fi		file info set
- * @param msg
- * @param fn
- * @param ln
- * @return		NULL always
- */
-rpmfi XrpmfiUnlink (rpmfi fi,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmfiUnlink(_fi, _msg) XrpmfiUnlink(_fi, _msg, __FILE__, __LINE__)
-
 /** \ingroup rpmfi
  * Reference a file info set instance.
  * @param fi		file info set
@@ -113,17 +102,6 @@ rpmfi XrpmfiUnlink (rpmfi fi,
  * @return		new file info set reference
  */
 rpmfi rpmfiLink (rpmfi fi, const char * msg);
-
-/** @todo Remove debugging entry from the ABI.
- * @param fi		file info set
- * @param msg
- * @param fn
- * @param ln
- * @return		NULL always
- */
-rpmfi XrpmfiLink (rpmfi fi, const char * msg,
-		const char * fn, unsigned ln);
-#define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmfi
  * Return file count from file info set.

@@ -288,7 +288,7 @@ addheader:
     }
     mi = rpmdbFreeIterator(mi);
 
-    obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
+    obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), RPMDBG_M("Obsoletes"));
     obsoletes = rpmdsInit(obsoletes);
     if (obsoletes != NULL)
     while (rpmdsNext(obsoletes) >= 0) {

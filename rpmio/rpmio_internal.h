@@ -93,19 +93,16 @@ typedef int (*fdio_close_function_t) (void *cookie);
 
 /**
  */
-typedef FD_t (*fdio_ref_function_t) ( void * cookie,
-		const char * msg);
+typedef FD_t (*fdio_ref_function_t) ( void * cookie, const char * msg);
 
 /**
  */
-typedef FD_t (*fdio_deref_function_t) ( FD_t fd,
-		const char * msg, const char * file, unsigned line);
+typedef FD_t (*fdio_deref_function_t) ( FD_t fd, const char * msg);
 
 
 /**
  */
-typedef FD_t (*fdio_new_function_t) (const char * msg,
-		const char * file, unsigned line);
+typedef FD_t (*fdio_new_function_t) (const char * msg);
 
 
 /**

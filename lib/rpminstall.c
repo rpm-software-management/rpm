@@ -100,13 +100,13 @@ void * rpmShowProgress(const void * arg,
 		fd = NULL;
 	    }
 	} else
-	    fd = fdLink(fd, "persist (showProgress)");
+	    fd = fdLink(fd, RPMDBG_M("persist (showProgress)"));
 	return (void *)fd;
 	break;
 
     case RPMCALLBACK_INST_CLOSE_FILE:
 	/* FIX: still necessary? */
-	fd = fdFree(fd, "persist (showProgress)");
+	fd = fdFree(fd, RPMDBG_M("persist (showProgress)"));
 	if (fd != NULL) {
 	    xx = Fclose(fd);
 	    fd = NULL;

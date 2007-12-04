@@ -73,10 +73,10 @@ static int closeCallback(FILE * f)
 	else
 	    fdhead = node->next;
 	node->note = _free (node->note);
-	node->fd = fdLink(node->fd, "closeCallback");
+	node->fd = fdLink(node->fd, RPMDBG_M("closeCallback"));
 	(void) Fclose (node->fd);
 	while (node->fd)
-	    node->fd = fdFree(node->fd, "closeCallback");
+	    node->fd = fdFree(node->fd, RPMDBG_M("closeCallback"));
 	node = _free (node);
     }
     return 0;
@@ -98,7 +98,7 @@ rpmfd_Fopen(PyObject * s, PyObject * args, PyObject * kwds)
     node = xmalloc (sizeof(FDlist));
 
     node->fd = Fopen(path, mode);
-    node->fd = fdLink(node->fd, "doFopen");
+    node->fd = fdLink(node->fd, RPMDBG_M("doFopen"));
     node->note = xstrdup (path);
 
     if (!node->fd) {

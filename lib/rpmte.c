@@ -46,7 +46,7 @@ static void delTE(rpmte p)
     p->fi = rpmfiFree(p->fi);
 
     if (p->fd != NULL)
-        p->fd = fdFree(p->fd, "delTE");
+        p->fd = fdFree(p->fd, RPMDBG_M("delTE"));
 
     p->os = _free(p->os);
     p->arch = _free(p->arch);
@@ -594,7 +594,7 @@ rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
     rpmtsi tsi = NULL;
 
     tsi = xcalloc(1, sizeof(*tsi));
-    tsi->ts = rpmtsLink(ts, "rpmtsi");
+    tsi->ts = rpmtsLink(ts, RPMDBG_M("rpmtsi"));
     tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;

@@ -255,7 +255,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
     te = t = buf;
     *te = '\0';
 
-    fi = rpmfiLink(fi, "verifyHeader");
+    fi = rpmfiLink(fi, RPMDBG_M("verifyHeader"));
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)	/* XXX lclint */
     while ((i = rpmfiNext(fi)) >= 0) {
@@ -338,7 +338,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    *t = '\0';
 	}
     }
-    fi = rpmfiUnlink(fi, "verifyHeader");
+    fi = rpmfiUnlink(fi, RPMDBG_M("verifyHeader"));
 	
     return ec;
 }

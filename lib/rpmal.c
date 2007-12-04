@@ -354,10 +354,10 @@ rpmalKey rpmalAdd(rpmal * alistp, rpmalKey pkgKey, fnpyKey key,
 if (_rpmal_debug)
 fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 
-    alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
-    alp->fi = rpmfiLink(fi, "Files (rpmalAdd)");
+    alp->provides = rpmdsLink(provides, RPMDBG_M("Provides (rpmalAdd)"));
+    alp->fi = rpmfiLink(fi, RPMDBG_M("Files (rpmalAdd)"));
 
-    fi = rpmfiLink(alp->fi, "Files index (rpmalAdd)");
+    fi = rpmfiLink(alp->fi, RPMDBG_M("Files index (rpmalAdd)"));
     fi = rpmfiInit(fi, 0);
     if (rpmfiFC(fi) > 0) {
 	dirInfo dieNeedle =
@@ -483,7 +483,7 @@ fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie
 	if (origNumDirs != al->numDirs)
 	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dieCompare);
     }
-    fi = rpmfiUnlink(fi, "Files index (rpmalAdd)");
+    fi = rpmfiUnlink(fi, RPMDBG_M("Files index (rpmalAdd)"));
 
     rpmalFreeIndex(al);
 

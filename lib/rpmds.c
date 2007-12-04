@@ -44,22 +44,22 @@ struct rpmds_s {
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
     int nrefs;			/*!< Reference count. */
 };
-rpmds XrpmdsUnlink(rpmds ds, const char * msg, const char * fn, unsigned ln)
+rpmds rpmdsUnlink(rpmds ds, const char * msg)
 {
     if (ds == NULL) return NULL;
 if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p -- %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ds %p -- %d %s\n", ds, ds->nrefs, msg);
     ds->nrefs--;
     return NULL;
 }
 
-rpmds XrpmdsLink(rpmds ds, const char * msg, const char * fn, unsigned ln)
+rpmds rpmdsLink(rpmds ds, const char * msg)
 {
     if (ds == NULL) return NULL;
     ds->nrefs++;
 
 if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p ++ %d %s at %s:%u\n", ds, ds->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ds %p ++ %d %s\n", ds, ds->nrefs, msg);
 
     return ds;
 }
@@ -192,7 +192,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
 exit:
     /* FIX: ds->Flags may be NULL */
-    ds = rpmdsLink(ds, (ds ? ds->Type : NULL));
+    ds = rpmdsLink(ds, (ds ? ds->Type : RPMDBG()));
 
     return ds;
 }
@@ -311,7 +311,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int32_t Flags)
     }
 
 exit:
-    return rpmdsLink(ds, (ds ? ds->Type : NULL));
+    return rpmdsLink(ds, (ds ? ds->Type : RPMDBG()));
 }
 
 rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int32_t Flags)

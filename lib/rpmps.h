@@ -143,11 +143,6 @@ extern const char * rpmProblemString(const rpmProblem prob);
 rpmps rpmpsUnlink (rpmps ps,
 		const char * msg);
 
-/** @todo Remove debugging entry from the ABI. */
-rpmps XrpmpsUnlink (rpmps ps,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmpsUnlink(_ps, _msg)	XrpmpsUnlink(_ps, _msg, __FILE__, __LINE__)
-
 /** \ingroup rpmps
  * Reference a problem set instance.
  * @param ps		transaction set
@@ -155,11 +150,6 @@ rpmps XrpmpsUnlink (rpmps ps,
  * @return		new transaction set reference
  */
 rpmps rpmpsLink (rpmps ps, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmps XrpmpsLink (rpmps ps,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmpsLink(_ps, _msg)	XrpmpsLink(_ps, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmps
  * Return number of problems in set.

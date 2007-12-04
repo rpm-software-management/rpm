@@ -109,11 +109,6 @@ extern "C" {
 rpmpsm rpmpsmUnlink (rpmpsm psm,
 		const char * msg);
 
-/** @todo Remove debugging entry from the ABI. */
-rpmpsm XrpmpsmUnlink (rpmpsm psm,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmpsmUnlink(_psm, _msg)	XrpmpsmUnlink(_psm, _msg, __FILE__, __LINE__)
-
 /**
  * Reference a package state machine instance.
  * @param psm		package state machine
@@ -121,11 +116,6 @@ rpmpsm XrpmpsmUnlink (rpmpsm psm,
  * @return		new package state machine reference
  */
 rpmpsm rpmpsmLink (rpmpsm psm, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmpsm XrpmpsmLink (rpmpsm psm, const char * msg,
-		const char * fn, unsigned ln);
-#define	rpmpsmLink(_psm, _msg)	XrpmpsmLink(_psm, _msg, __FILE__, __LINE__)
 
 /**
  * Destroy a package state machine.

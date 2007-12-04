@@ -96,14 +96,7 @@ typedef	enum rpmsenseFlags_e {
  * @param msg
  * @return		NULL always
  */
-rpmds rpmdsUnlink (rpmds ds,
-		const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmds XrpmdsUnlink (rpmds ds,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmdsUnlink(_ds, _msg)	XrpmdsUnlink(_ds, _msg, __FILE__, __LINE__)
-
+rpmds rpmdsUnlink (rpmds ds, const char * msg);
 /** \ingroup rpmds
  * Reference a dependency set instance.
  * @param ds		dependency set
@@ -111,11 +104,6 @@ rpmds XrpmdsUnlink (rpmds ds,
  * @return		new dependency set reference
  */
 rpmds rpmdsLink (rpmds ds, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmds XrpmdsLink (rpmds ds, const char * msg,
-		const char * fn, unsigned ln);
-#define	rpmdsLink(_ds, _msg)	XrpmdsLink(_ds, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmds
  * Destroy a dependency set.

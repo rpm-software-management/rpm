@@ -375,24 +375,24 @@ fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (long) (av -
     return rpmrc;
 }
 
-rpmgi XrpmgiUnlink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
+rpmgi rpmgiUnlink(rpmgi gi, const char * msg)
 {
     if (gi == NULL) return NULL;
 
 if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p -- %d %s at %s:%u\n", gi, gi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> gi %p -- %d: %s\n", gi, gi->nrefs, msg);
 
     gi->nrefs--;
     return NULL;
 }
 
-rpmgi XrpmgiLink(rpmgi gi, const char * msg, const char * fn, unsigned ln)
+rpmgi rpmgiLink(rpmgi gi, const char * msg)
 {
     if (gi == NULL) return NULL;
     gi->nrefs++;
 
 if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p ++ %d %s at %s:%u\n", gi, gi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> gi %p ++ %d: %s\n", gi, gi->nrefs, msg);
 
     return gi;
 }

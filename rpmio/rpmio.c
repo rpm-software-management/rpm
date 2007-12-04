@@ -149,7 +149,7 @@ FD_t fdDup(int fdno)
 
     if ((nfdno = dup(fdno)) < 0)
 	return NULL;
-    fd = fdNew("open (fdDup)");
+    fd = fdNew(RPMDBG_M("open (fdDup)"));
     fdSetFdno(fd, nfdno);
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
     return fd;
@@ -181,16 +181,7 @@ FILE * fdGetFILE(FD_t fd)
 
 /* =============================================================== */
 
-/**
- */
-FD_t fdLink (void * cookie, const char * msg)
-{
-    return fdio->_fdref(cookie, msg);
-}
-
-/**
- */
-static inline FD_t XfdLink(void * cookie, const char * msg)
+FD_t fdLink(void * cookie, const char * msg)
 {
     FD_t fd;
 if (cookie == NULL)
@@ -205,24 +196,15 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s  %s\n", fd, fd->nrefs, msg, fdbg(fd)))
 
 /**
  */
-FD_t fdFree(FD_t fd, const char * msg)
-{
-     return fdio->_fdderef(fd, msg, __FILE__, __LINE__);
-}
-
-/**
- */
-static inline
-FD_t XfdFree( FD_t fd, const char *msg,
-		const char *file, unsigned line)
+FD_t fdFree( FD_t fd, const char *msg)
 {
 	int i;
 
 if (fd == NULL)
-DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file, line));
+DBGREFS(0, (stderr, "--> fd  %p -- %d %s\n", fd, FDNREFS(fd), msg));
     FDSANE(fd);
     if (fd) {
-DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, file, line, fdbg(fd)));
+DBGREFS(fd, (stderr, "--> fd  %p -- %d %s %s\n", fd, fd->nrefs, msg, fdbg(fd)));
 	if (--fd->nrefs > 0)
 	    return fd;
 	fd->stats = _free(fd->stats);
@@ -241,15 +223,7 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 
 /**
  */
-FD_t fdNew (const char * msg)
-{
-    return fdio->_fdnew(msg, __FILE__, __LINE__);
-}
-
-/**
- */
-static inline
-FD_t XfdNew(const char * msg, const char * file, unsigned line)
+FD_t fdNew(const char * msg)
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
@@ -280,7 +254,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->fileSize = 0;
     fd->fd_cpioPos = 0;
 
-    return XfdLink(fd, msg);
+    return fdLink(fd, msg);
 }
 
 /**
@@ -383,7 +357,7 @@ static FD_t fdOpen(const char *path, int flags, mode_t mode)
 	(void) close(fdno);
 	return NULL;
     }
-    fd = fdNew("open (fdOpen)");
+    fd = fdNew(RPMDBG_M("open (fdOpen)"));
     fdSetFdno(fd, fdno);
     fd->flags = flags;
 DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
@@ -391,7 +365,7 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
 }
 
 static struct FDIO_s fdio_s = {
-  fdRead, fdWrite, fdSeek, fdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
   fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fdio = &fdio_s ;
@@ -838,7 +812,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 }
 
 static struct FDIO_s ufdio_s = {
-  ufdRead, ufdWrite, ufdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  ufdRead, ufdWrite, ufdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t ufdio = &ufdio_s ;
@@ -879,11 +853,11 @@ FD_t gzdOpen(const char * path, const char * fmode)
     gzFile gzfile;
     if ((gzfile = gzopen(path, fmode)) == NULL)
 	return NULL;
-    fd = fdNew("open (gzdOpen)");
+    fd = fdNew(RPMDBG_M("open (gzdOpen)"));
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
     
 DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
-    return fdLink(fd, "gzdOpen");
+    return fdLink(fd, RPMDBG_M("gzdOpen"));
 }
 
 static FD_t gzdFdopen(void * cookie, const char *fmode)
@@ -901,7 +875,7 @@ static FD_t gzdFdopen(void * cookie, const char *fmode)
 
     fdPush(fd, gzdio, gzfile, fdno);		/* Push gzdio onto stack */
 
-    return fdLink(fd, "gzdFdopen");
+    return fdLink(fd, RPMDBG_M("gzdFdopen"));
 }
 
 static int gzdFlush(FD_t fd)
@@ -1039,12 +1013,12 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
     if (rc == 0)
-	fd = fdFree(fd, "open (gzdClose)");
+	fd = fdFree(fd, RPMDBG_M("open (gzdClose)"));
     return rc;
 }
 
 static struct FDIO_s gzdio_s = {
-  gzdRead, gzdWrite, gzdSeek, gzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  gzdRead, gzdWrite, gzdSeek, gzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, gzdOpen, gzdFileno, gzdFlush,	NULL, NULL, NULL, NULL, NULL
 };
 FDIO_t gzdio = &gzdio_s ;
@@ -1091,9 +1065,9 @@ static FD_t bzdOpen(const char * path, const char * mode)
     BZFILE *bzfile;;
     if ((bzfile = bzopen(path, mode)) == NULL)
 	return NULL;
-    fd = fdNew("open (bzdOpen)");
+    fd = fdNew(RPMDBG_M("open (bzdOpen)"));
     fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
-    return fdLink(fd, "bzdOpen");
+    return fdLink(fd, RPMDBG_M("bzdOpen"));
 }
 
 static FD_t bzdFdopen(void * cookie, const char * fmode)
@@ -1111,7 +1085,7 @@ static FD_t bzdFdopen(void * cookie, const char * fmode)
 
     fdPush(fd, bzdio, bzfile, fdno);		/* Push bzdio onto stack */
 
-    return fdLink(fd, "bzdFdopen");
+    return fdLink(fd, RPMDBG_M("bzdFdopen"));
 }
 
 static int bzdFlush(FD_t fd)
@@ -1202,12 +1176,12 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
     if (rc == 0)
-	fd = fdFree(fd, "open (bzdClose)");
+	fd = fdFree(fd, RPMDBG_M("open (bzdClose)"));
     return rc;
 }
 
 static struct FDIO_s bzdio_s = {
-  bzdRead, bzdWrite, bzdSeek, bzdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  bzdRead, bzdWrite, bzdSeek, bzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush,	NULL, NULL, NULL, NULL, NULL
 };
 FDIO_t bzdio = &bzdio_s ;
@@ -1323,7 +1297,7 @@ int Fclose(FD_t fd)
     FDSANE(fd);
 DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 
-    fd = fdLink(fd, "Fclose");
+    fd = fdLink(fd, RPMDBG_M("Fclose"));
     while (fd->nfps >= 0) {
 	FDSTACK_t * fps = &fd->fps[fd->nfps];
 	
@@ -1336,7 +1310,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    if (fp)
 	    	rc = fclose(fp);
 	    if (fpno == -1) {
-	    	fd = fdFree(fd, "fopencookie (Fclose)");
+	    	fd = fdFree(fd, RPMDBG_M("fopencookie (Fclose)"));
 	    	fdPop(fd);
 	    }
 	} else {
@@ -1349,7 +1323,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    ec = rc;
 	fdPop(fd);
     }
-    fd = fdFree(fd, "Fclose");
+    fd = fdFree(fd, RPMDBG_M("Fclose"));
     return ec;
 }
 
@@ -1517,7 +1491,7 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 	    if (fdGetFp(fd) == NULL)
 		fdSetFp(fd, fp);
 	    fdPush(fd, fpio, fp, fileno(fp));	/* Push fpio onto stack */
-	    fd = fdLink(fd, "fopencookie");
+	    fd = fdLink(fd, RPMDBG_M("fopencookie"));
 	}
     }
 
@@ -1712,7 +1686,7 @@ exit:
 }
 
 static struct FDIO_s fpio_s = {
-  ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,
+  ufdRead, ufdWrite, fdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
 };
 FDIO_t fpio = &fpio_s ;

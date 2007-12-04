@@ -61,8 +61,8 @@ static int manageFile(FD_t *fdp,
 	}
 	if (fnp != NULL)
 	    *fnp = fn;
-	*fdp = fdLink(fd, "manageFile return");
-	fd = fdFree(fd, "manageFile return");
+	*fdp = fdLink(fd, RPMDBG_M("manageFile return"));
+	fd = fdFree(fd, RPMDBG_M("manageFile return"));
 	return 0;
     }
 

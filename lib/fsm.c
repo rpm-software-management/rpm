@@ -94,7 +94,7 @@ static void * mapFreeIterator(void * p)
     if (iter) {
 /* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
-	iter->fi = rpmfiUnlink(iter->fi, "mapIterator");
+	iter->fi = rpmfiUnlink(iter->fi, RPMDBG_M("mapFreeIterator"));
     }
     return _free(p);
 }
@@ -111,8 +111,8 @@ mapInitIterator(rpmts ts, rpmfi fi)
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts, "mapIterator");
-    iter->fi = rpmfiLink(fi, "mapIterator");
+    iter->ts = rpmtsLink(ts, RPMDBG_M("mapIterator"));
+    iter->fi = rpmfiLink(fi, RPMDBG_M("mapIterator"));
     iter->reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
@@ -476,7 +476,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     fsm->goal = goal;
     if (cfd != NULL) {
-	fsm->cfd = fdLink(cfd, "persist (fsm)");
+	fsm->cfd = fdLink(cfd, RPMDBG_M("persist (fsm)"));
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
@@ -525,7 +525,7 @@ int fsmTeardown(FSM_t fsm)
 
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
-	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
+	fsm->cfd = fdFree(fsm->cfd, RPMDBG_M("persist (fsm)"));
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;

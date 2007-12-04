@@ -211,11 +211,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet);
 rpmts rpmtsUnlink (rpmts ts,
 		const char * msg);
 
-/** @todo Remove debugging entry from the ABI. */
-rpmts XrpmtsUnlink (rpmts ts,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmtsUnlink(_ts, _msg)	XrpmtsUnlink(_ts, _msg, __FILE__, __LINE__)
-
 /** \ingroup rpmts
  * Reference a transaction set instance.
  * @param ts		transaction set
@@ -223,11 +218,6 @@ rpmts XrpmtsUnlink (rpmts ts,
  * @return		new transaction set reference
  */
 rpmts rpmtsLink (rpmts ts, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmts XrpmtsLink (rpmts ts,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmtsLink(_ts, _msg)	XrpmtsLink(_ts, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmts
  * Close the database used by the transaction.

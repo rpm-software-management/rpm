@@ -684,13 +684,14 @@ int packageBinaries(rpmSpec spec)
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	/* LCL: function typedefs */
-	csa->cpioFdIn = fdNew("init (packageBinaries)");
-	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
+	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageBinaries)"));
+	csa->cpioList = rpmfiLink(pkg->cpioList, RPMDBG_M("packageBinaries"));
 
 	rc = writeRPM(&pkg->header, NULL, fn, csa, spec->passPhrase, NULL);
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
-	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
+	csa->cpioFdIn = fdFree(csa->cpioFdIn, 
+			       RPMDBG_M("init (packageBinaries)"));
 	fn = _free(fn);
 	if (rc)
 	    return rc;
@@ -723,15 +724,17 @@ int packageSources(rpmSpec spec)
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	/* LCL: function typedefs */
-	csa->cpioFdIn = fdNew("init (packageSources)");
-	csa->cpioList = rpmfiLink(spec->sourceCpioList, "packageSources");
+	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageSources)"));
+	csa->cpioList = rpmfiLink(spec->sourceCpioList, 
+				  RPMDBG_M("packageSources"));
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, 
 		csa, spec->passPhrase, &(spec->cookie));
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
-	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
+	csa->cpioFdIn = fdFree(csa->cpioFdIn, 
+			       RPMDBG_M("init (packageSources)"));
 	fn = _free(fn);
     }
     return rc;

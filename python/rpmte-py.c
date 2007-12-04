@@ -210,7 +210,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 	return Py_None;
 #endif
     }
-    return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
+    return (PyObject *) rpmds_Wrap(rpmdsLink(ds, RPMDBG_M("rpmte_DS")));
 }
 
 static PyObject *
@@ -240,7 +240,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 	return Py_None;
 #endif
     }
-    return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, "rpmte_FI"));
+    return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, RPMDBG_M("rpmte_FI")));
 }
 
 /** \ingroup py_c

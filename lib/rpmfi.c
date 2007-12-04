@@ -27,21 +27,21 @@
 
 int _rpmfi_debug = 0;
 
-rpmfi XrpmfiUnlink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
+rpmfi rpmfiUnlink(rpmfi fi, const char * msg)
 {
     if (fi == NULL) return NULL;
 if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> fi %p -- %d %s\n", fi, fi->nrefs, msg);
     fi->nrefs--;
     return NULL;
 }
 
-rpmfi XrpmfiLink(rpmfi fi, const char * msg, const char * fn, unsigned ln)
+rpmfi rpmfiLink(rpmfi fi, const char * msg)
 {
     if (fi == NULL) return NULL;
     fi->nrefs++;
 if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
+fprintf(stderr, "--> fi %p ++ %d %s\n", fi, fi->nrefs, msg);
     return fi;
 }
 

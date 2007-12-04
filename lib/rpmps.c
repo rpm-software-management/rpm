@@ -39,21 +39,19 @@ struct rpmpsi_s {
 
 int _rpmps_debug = 0;
 
-rpmps XrpmpsUnlink(rpmps ps, const char * msg,
-		const char * fn, unsigned ln)
+rpmps rpmpsUnlink(rpmps ps, const char * msg)
 {
 if (_rpmps_debug > 0 && msg != NULL)
-fprintf(stderr, "--> ps %p -- %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ps %p -- %d %s\n", ps, ps->nrefs, msg);
     ps->nrefs--;
     return ps;
 }
 
-rpmps XrpmpsLink(rpmps ps, const char * msg,
-		const char * fn, unsigned ln)
+rpmps rpmpsLink(rpmps ps, const char * msg)
 {
     ps->nrefs++;
 if (_rpmps_debug > 0 && msg != NULL)
-fprintf(stderr, "--> ps %p ++ %d %s at %s:%u\n", ps, ps->nrefs, msg, fn, ln);
+fprintf(stderr, "--> ps %p ++ %d %s\n", ps, ps->nrefs, msg);
     return ps;
 }
 
@@ -70,7 +68,7 @@ rpmpsi rpmpsInitIterator(rpmps ps)
     rpmpsi psi = NULL;
     if (ps != NULL) {
 	psi = xcalloc(1, sizeof(*psi));
-	psi->ps = rpmpsLink(ps, "iter ref");
+	psi->ps = rpmpsLink(ps, RPMDBG_M("rpmpsInitIterator"));
 	psi->ix = -1;
     }
     return psi;
@@ -79,7 +77,7 @@ rpmpsi rpmpsInitIterator(rpmps ps)
 rpmpsi rpmpsFreeIterator(rpmpsi psi)
 {
     if (psi != NULL) {
-	rpmpsUnlink(psi->ps, "iter unref");
+	rpmpsUnlink(psi->ps, RPMDBG_M("rpmpsFreeIterator"));
 	free(psi);
 	psi = NULL;
     }
@@ -112,13 +110,13 @@ rpmProblem rpmpsGetProblem(rpmpsi psi)
 rpmps rpmpsCreate(void)
 {
     rpmps ps = xcalloc(1, sizeof(*ps));
-    return rpmpsLink(ps, "create");
+    return rpmpsLink(ps, RPMDBG_M("rpmpsCreate"));
 }
 
 rpmps rpmpsFree(rpmps ps)
 {
     if (ps == NULL) return NULL;
-    ps = rpmpsUnlink(ps, "dereference");
+    ps = rpmpsUnlink(ps, RPMDBG_M("rpmpsFree"));
     if (ps->nrefs > 0)
 	return NULL;
 	

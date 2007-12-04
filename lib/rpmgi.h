@@ -49,13 +49,7 @@ extern rpmgiFlags giFlags;
  * @param msg
  * @return		NULL always
  */
-rpmgi rpmgiUnlink (rpmgi gi,
-		const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmgi XrpmgiUnlink (rpmgi gi,
-		const char * msg, const char * fn, unsigned ln);
-#define	rpmgiUnlink(_gi, _msg)	XrpmgiUnlink(_gi, _msg, __FILE__, __LINE__)
+rpmgi rpmgiUnlink (rpmgi gi, const char * msg);
 
 /** \ingroup rpmgi
  * Reference a generalized iterator instance.
@@ -64,11 +58,6 @@ rpmgi XrpmgiUnlink (rpmgi gi,
  * @return		new generalized iterator reference
  */
 rpmgi rpmgiLink (rpmgi gi, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmgi XrpmgiLink (rpmgi gi, const char * msg,
-		const char * fn, unsigned ln);
-#define	rpmgiLink(_gi, _msg)	XrpmgiLink(_gi, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmgi 
  * Destroy a generalized iterator.

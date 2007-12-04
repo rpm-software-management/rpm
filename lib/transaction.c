@@ -2035,7 +2035,7 @@ assert(psm != NULL);
 			p->fi = fi;
 		    }
 		}
-		psm->fi = rpmfiLink(p->fi, NULL);
+		psm->fi = rpmfiLink(p->fi, RPMDBG_M("rpmtsRun"));
 
 /* FIX: psm->fi may be NULL */
 		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {

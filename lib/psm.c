@@ -224,9 +224,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     int i;
 
     memset(psm, 0, sizeof(*psm));
-    psm->ts = rpmtsLink(ts, "InstallSourcePackage");
+    psm->ts = rpmtsLink(ts, RPMDBG_M("InstallSourcePackage"));
 
-    rpmrc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
+    rpmrc = rpmReadPackageFile(ts, fd, RPMDBG_M("InstallSourcePackage"), &h);
     switch (rpmrc) {
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
@@ -269,13 +269,13 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     }
 
     rpmteSetHeader(fi->te, fi->h);
-    fi->te->fd = fdLink(fd, "installSourcePackage");
+    fi->te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
     hge = fi->hge;
     hfd = fi->hfd;
 
 (void) rpmInstallLoadMacros(fi, fi->h);
 
-    psm->fi = rpmfiLink(fi, NULL);
+    psm->fi = rpmfiLink(fi, RPMDBG_M("rpmInstallLoadMacros"));
     psm->te = fi->te;
 
     if (cookie) {
@@ -1142,34 +1142,33 @@ static const char * pkgStageString(pkgStage a)
     }
 }
 
-rpmpsm XrpmpsmUnlink(rpmpsm psm, const char * msg, const char * fn, unsigned ln)
+rpmpsm rpmpsmUnlink(rpmpsm psm, const char * msg)
 {
     if (psm == NULL) return NULL;
 if (_psm_debug && msg != NULL)
-fprintf(stderr, "--> psm %p -- %d %s at %s:%u\n", psm, psm->nrefs, msg, fn, ln);
+fprintf(stderr, "--> psm %p -- %d: %s\n", psm, psm->nrefs, msg);
     psm->nrefs--;
     return NULL;
 }
 
-rpmpsm XrpmpsmLink(rpmpsm psm, const char * msg, const char * fn, unsigned ln)
+rpmpsm rpmpsmLink(rpmpsm psm, const char * msg)
 {
     if (psm == NULL) return NULL;
     psm->nrefs++;
 
 if (_psm_debug && msg != NULL)
-fprintf(stderr, "--> psm %p ++ %d %s at %s:%u\n", psm, psm->nrefs, msg, fn, ln);
+fprintf(stderr, "--> psm %p ++ %d %s\n", psm, psm->nrefs, msg);
 
     return psm;
 }
 
 rpmpsm rpmpsmFree(rpmpsm psm)
 {
-    const char * msg = "rpmpsmFree";
     if (psm == NULL)
 	return NULL;
 
     if (psm->nrefs > 1)
-	return rpmpsmUnlink(psm, msg);
+	return rpmpsmUnlink(psm, RPMDBG_M("rpmpsmFree"));
 
     psm->fi = rpmfiFree(psm->fi);
 #ifdef	NOTYET
@@ -1179,7 +1178,7 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 #endif
     psm->ts = rpmtsFree(psm->ts);
 
-    (void) rpmpsmUnlink(psm, msg);
+    (void) rpmpsmUnlink(psm, RPMDBG_M("rpmpsmFree"));
 
     memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
     psm = _free(psm);
@@ -1189,18 +1188,17 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 
 rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 {
-    const char * msg = "rpmpsmNew";
     rpmpsm psm = xcalloc(1, sizeof(*psm));
 
-    if (ts)	psm->ts = rpmtsLink(ts, msg);
+    if (ts)	psm->ts = rpmtsLink(ts, RPMDBG_M("rpmpsmNew"));
 #ifdef	NOTYET
-    if (te)	psm->te = rpmteLink(te, msg);
+    if (te)	psm->te = rpmteLink(te, RPMDBG_M("rpmpsmNew"));
 #else
     if (te)	psm->te = te;
 #endif
-    if (fi)	psm->fi = rpmfiLink(fi, msg);
+    if (fi)	psm->fi = rpmfiLink(fi, RPMDBG_M("rpmpsmNew"));
 
-    return rpmpsmLink(psm, msg);
+    return rpmpsmLink(psm, RPMDBG_M("rpmpsmNew"));
 }
 
 static void * rpmpsmThread(void * arg)
