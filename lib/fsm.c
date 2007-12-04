@@ -2269,9 +2269,9 @@ const char * fileStageString(fileStage a) {
     case FSM_DESTROY:	return "destroy";
     case FSM_VERIFY:	return "verify";
 
-    case FSM_UNLINK:	return "Unlink";
-    case FSM_RENAME:	return "Rename";
-    case FSM_MKDIR:	return "Mkdir";
+    case FSM_UNLINK:	return "unlink";
+    case FSM_RENAME:	return "rename";
+    case FSM_MKDIR:	return "mkdir";
     case FSM_RMDIR:	return "rmdir";
     case FSM_LSETFCON:	return "lsetfcon";
     case FSM_CHOWN:	return "chown";
@@ -2279,12 +2279,12 @@ const char * fileStageString(fileStage a) {
     case FSM_CHMOD:	return "chmod";
     case FSM_UTIME:	return "utime";
     case FSM_SYMLINK:	return "symlink";
-    case FSM_LINK:	return "Link";
+    case FSM_LINK:	return "link";
     case FSM_MKFIFO:	return "mkfifo";
     case FSM_MKNOD:	return "mknod";
-    case FSM_LSTAT:	return "Lstat";
-    case FSM_STAT:	return "Stat";
-    case FSM_READLINK:	return "Readlink";
+    case FSM_LSTAT:	return "lstat";
+    case FSM_STAT:	return "stat";
+    case FSM_READLINK:	return "readlink";
     case FSM_CHROOT:	return "chroot";
 
     case FSM_NEXT:	return "next";
