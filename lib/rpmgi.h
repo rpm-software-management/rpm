@@ -46,6 +46,7 @@ struct rpmgi_s {
     rpmgiFlags flags;		/*!< Iterator control bits. */
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
+    int errors;			/*!< No. errors encountered on iteration */
 /*@null@*/
     const char * hdrPath;	/*!< Path to current iterator header. */
 /*@refcounted@*/ /*@null@*/
@@ -186,6 +187,14 @@ rpmRC rpmgiSetArgs(rpmgi gi, /*@null@*/ ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags)
 	/*@globals internalState @*/
 	/*@modifies gi, internalState @*/;
+
+/** \ingroup rpmgi
+ * Return number of errors (file not found etc) encountered during iteration
+ * @param gi           generalized iterator
+ * @return             number of errors
+ */
+int rpmgiNumErrors(rpmgi gi);
+
 
 #ifdef __cplusplus
 }
