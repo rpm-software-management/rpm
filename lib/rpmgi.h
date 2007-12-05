@@ -111,12 +111,25 @@ rpmts rpmgiTs(rpmgi gi);
  * @param argv		arg list
  * @param ftsOpts	fts(3) flags
  * @param flags		iterator flags
- * @returns		RPMRC_OK on success
+ * @return 		RPMRC_OK on success
  */
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv,
 		int ftsOpts, rpmgiFlags flags);
 
+
+/** \ingroup rpmgi
+ * Retrieve iterator flags
+ * @param gi		generalized iterator
+ * @return		iterator flags
+ */
 rpmgiFlags rpmgiGetFlags(rpmgi gi);
+
+/** \ingroup rpmgi
+ * Return number of errors (file not found etc) encountered during iteration
+ * @param gi		generalized iterator
+ * @return 		number of errors
+ */
+int rpmgiNumErrors(rpmgi gi);
 
 #ifdef __cplusplus
 }

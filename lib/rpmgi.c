@@ -33,6 +33,7 @@ struct rpmgi_s {
     rpmgiFlags flags;		/*!< Iterator control bits. */
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
+    int errors;
     const char * hdrPath;	/*!< Path to current iterator header. */
     Header h;			/*!< Current iterator header. */
 
@@ -157,7 +158,6 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 /**
  * Read next header from package, lazily expanding manifests as found.
  * @todo An empty file read as manifest truncates argv returning RPMRC_NOTFOUND.
- * @todo Errors, e.g. non-existent path in manifest, will terminate iteration.
  * @todo Chained manifests lose an arg someplace.
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
@@ -447,6 +447,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->flags = 0;
     gi->active = 0;
     gi->i = -1;
+    gi->errors = 0;
     gi->hdrPath = NULL;
     gi->h = NULL;
 
@@ -553,12 +554,22 @@ rpmRC rpmgiNext(rpmgi gi)
 	    goto enditer;
 	}
 	break;
-    case RPMDBI_ARGLIST:
+    case RPMDBI_ARGLIST: 
 	/* XXX gi->active initialize? */
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
-	/* Read next header, lazily expanding manifests as found. */
-	rpmrc = rpmgiLoadReadHeader(gi);
+
+	/* 
+ 	 * Read next header, lazily expanding manifests as found,
+ 	 * count + skip errors.
+ 	 */
+	rpmrc = RPMRC_NOTFOUND;	
+	while (gi->i < gi->argc) {
+	    if ((rpmrc = rpmgiLoadReadHeader(gi)) == RPMRC_OK) 
+		break;
+	    gi->errors++;
+	    gi->i++;
+        }
 
 	if (rpmrc != RPMRC_OK)	/* XXX check this */
 	    goto enditer;
@@ -662,4 +673,9 @@ rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
 rpmgiFlags rpmgiGetFlags(rpmgi gi)
 {
     return (gi != NULL ? gi->flags : RPMGI_NONE);
+}
+
+int rpmgiNumErrors(rpmgi gi)
+{
+    return (gi != NULL ? gi->errors : -1);
 }
