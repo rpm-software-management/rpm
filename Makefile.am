@@ -338,8 +338,8 @@ unsetgid:
 	    $(__CHMOD) g-s $(DESTDIR)$(rpmlibexecdir)/$$f ;\
 	done
 
-# Build hacking only on request
-if APIDOCS
+# Build hacking docs only on request
+if HACKINGDOCS
 if DOXYGEN
 doc/hacking.doxy: doc/hacking.doxy.in doc/hacking/Doxyheader Makefile.am
 	$(SED) \

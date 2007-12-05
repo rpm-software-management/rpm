@@ -767,17 +767,17 @@ AM_CONDITIONAL(PYTHON,[test "$WITH_PYTHON_SUBPACKAGE" = 1])
 
 AC_PATH_PROG(DOXYGEN, doxygen, no)
 dnl
-dnl Auto-detect whether doxygen generated API docs should be included.
+dnl Only build internal API + source hacking docs on request
 dnl
-AC_ARG_WITH(apidocs, [  --with-apidocs          build rpm API docs ],,[with_apidocs=auto])
+AC_ARG_WITH(hackingdocs, [  --with-hackingdocs		build rpm hacking docs ],,[with_hackingdocs=no])
 
-case "$with_apidocs" in
+case "$with_hackingdocs" in
 auto)
-  AS_IF([test "$DOXYGEN" = no],[with_apidocs=no],[with_apidocs=yes])
+  AS_IF([test "$DOXYGEN" = no],[with_hackingdocs=no],[with_hackingdocs=no])
   ;;
 yes)
   AS_IF([test "$DOXYGEN" = no],
-    [AC_MSG_ERROR([rpm API docs needs doxygen in PATH])])
+    [AC_MSG_ERROR([rpm hacking docs eeds doxygen in PATH])])
   ;;
 esac
 AC_CHECK_PROG(HAVE_DOT,[dot],[YES],[NO])
@@ -1052,7 +1052,7 @@ AC_CONFIG_SUBDIRS(db3)
 
 AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_external_db" = no])
 AM_CONDITIONAL([DOXYGEN],[test "$DOXYGEN" != no])
-AM_CONDITIONAL([APIDOCS],[test "$with_apidocs" == yes])
+AM_CONDITIONAL([HACKINGDOCS],[test "$with_hackingdocs" == yes])
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
