@@ -168,7 +168,7 @@ static int copyNextLine(rpmSpec spec, OFI_t *ofi, int strip)
 	 * error code for this. */
 	if (pc || bc || nc ) {
 	    spec->nextline = "";
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	spec->lbufPtr = spec->lbuf;
 
@@ -177,7 +177,7 @@ static int copyNextLine(rpmSpec spec, OFI_t *ofi, int strip)
 	    expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
 		rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
 			spec->lineNum, spec->lbuf);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	}
 	spec->nextline = spec->lbuf;
     }
@@ -222,7 +222,7 @@ retry:
 	    /* XXX Fstrerror */
 	    rpmlog(RPMLOG_ERR, _("Unable to open %s: %s\n"),
 		     ofi->fileName, Fstrerror(ofi->fd));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	spec->lineNum = ofi->lineNum = 0;
     }
@@ -234,7 +234,7 @@ retry:
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmlog(RPMLOG_ERR, _("Unclosed %%if\n"));
-	        return RPMLOG_ERR;
+	        return RPMRC_FAIL;
 	    }
 
 	    /* remove this file from the stack */
@@ -267,7 +267,7 @@ retry:
     
     /* Copy next file line into the spec line buffer */
     if ((rc = copyNextLine(spec, ofi, strip)) != 0) {
-	if (rc == RPMLOG_ERR)
+	if (rc == RPMRC_FAIL)
 	    goto retry;
 	return rc;
     }
@@ -305,7 +305,7 @@ retry:
 	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: parseExpressionBoolean returns %d\n"),
 			ofi->fileName, ofi->lineNum, match);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     } else if (! strncmp("%else", s, sizeof("%else")-1)) {
 	s += 5;
@@ -314,7 +314,7 @@ retry:
 	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: Got a %%else with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
@@ -326,7 +326,7 @@ retry:
 	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: Got a %%endif with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	rl = spec->readStack;
 	spec->readStack = spec->readStack->next;
@@ -339,7 +339,7 @@ retry:
 	fileName = s;
 	if (! xisspace(*fileName)) {
 	    rpmlog(RPMLOG_ERR, _("malformed %%include statement\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	SKIPSPACE(fileName);
 	endFileName = fileName;
@@ -348,7 +348,7 @@ retry:
 	SKIPSPACE(p);
 	if (*p != '\0') {
 	    rpmlog(RPMLOG_ERR, _("malformed %%include statement\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	*endFileName = '\0';
 
@@ -418,7 +418,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	if (!strcmp(buildRoot, "/")) {
             rpmlog(RPMLOG_ERR,
                      _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
-            return RPMLOG_ERR;
+            return RPMRC_FAIL;
         }
 	spec->gotBuildRootURL = 1;
 	spec->buildRootURL = xstrdup(buildRootURL);
@@ -443,8 +443,12 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     /* which handles the initial entry into a spec file.         */
     
    	/* LCL: parsePart is modified @*/
-    while (parsePart < PART_LAST && parsePart != PART_NONE) {
+    while (parsePart > PART_NONE) {
+	int goterror = 0;
 	switch (parsePart) {
+	default:
+	    goterror = 1;
+	    break;
 	case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);
 	    initialPackage = 0;
@@ -488,7 +492,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    break;
 	}
 
-	if (parsePart >= PART_LAST) {
+	if (goterror || parsePart >= PART_LAST) {
 	    spec = freeSpec(spec);
 	    return parsePart;
 	}
@@ -516,7 +520,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		{
 			spec->BACount = index;
 			spec = freeSpec(spec);
-			return RPMLOG_ERR;
+			return RPMRC_FAIL;
 		}
 		delMacro(NULL, "_target_cpu");
 		index++;
@@ -527,7 +531,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		rpmlog(RPMLOG_ERR,
 			_("No compatible architectures found for build\n"));
 		spec = freeSpec(spec);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	    }
 
 	    /*
@@ -565,7 +569,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
 			name);
 	    spec = freeSpec(spec);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	(void) headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
