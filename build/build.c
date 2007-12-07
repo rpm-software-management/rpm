@@ -67,8 +67,8 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 
     FD_t fd;
     FD_t xfd;
-    int child;
-    int status;
+    pid_t child;
+    pid_t status;
     int rc;
     
     switch (what) {
@@ -215,7 +215,7 @@ fprintf(stderr, "*** addMacros\n");
 	_exit(-1);
     }
 
-    rc = waitpid(child, &status, 0);
+    pid = waitpid(child, &status, 0);
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
