@@ -1941,11 +1941,11 @@ static int processPackageFiles(rpmSpec spec, Package pkg,
 	if (installSpecialDoc) {
 	    int _missing_doc_files_terminate_build =
 		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
-	    int rc;
+	    rpmRC rc;
 
 	    rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
-	    if (rc && _missing_doc_files_terminate_build)
-		fl.processingFailed = rc;
+	    if (rc != RPMRC_OK && _missing_doc_files_terminate_build)
+		fl.processingFailed = 1;
 	}
 
 	/* Reset for %doc */

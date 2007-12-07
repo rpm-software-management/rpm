@@ -28,9 +28,9 @@ typedef struct cpioSourceArchive_s {
  * @retval specp	spec structure to carry package header (or NULL)
  * @retval sigs		package signature
  * @param csa
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int readRPM(const char * fileName,
+rpmRC readRPM(const char * fileName,
 		rpmSpec * specp,
 		Header * sigs,
 		CSA_t csa);
@@ -47,9 +47,9 @@ int readRPM(const char * fileName,
  * @param csa
  * @param passPhrase
  * @retval cookie	generated cookie (i.e build host/time)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int writeRPM(Header * hdrp, unsigned char ** pkgidp,
+rpmRC writeRPM(Header * hdrp, unsigned char ** pkgidp,
 		const char * fileName,
 		CSA_t csa,
 		char * passPhrase,

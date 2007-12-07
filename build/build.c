@@ -47,7 +47,7 @@ static void doRmSource(rpmSpec spec)
 /*
  * @todo Single use by %%doc in files.c prevents static.
  */
-int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, int test)
+rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, int test)
 {
     const char * rootURL = spec->rootURL;
     const char * rootDir;
@@ -67,9 +67,10 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 
     FD_t fd;
     FD_t xfd;
+    pid_t pid;
     pid_t child;
-    pid_t status;
-    int rc;
+    int status;
+    rpmRC rc;
     
     switch (what) {
     case RPMBUILD_PREP:
@@ -124,13 +125,13 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 	name = "???";
 
     if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
-	rc = 0;
+	rc = RPMRC_OK;
 	goto exit;
     }
     
     if (rpmMkTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -140,7 +141,7 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
 	xfd = fd;
 
     if ((fp = fdGetFILE(xfd)) == NULL) {
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
     
@@ -168,7 +169,7 @@ int doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, i
     (void) Fclose(xfd);
 
     if (test) {
-	rc = 0;
+	rc = RPMRC_OK;
 	goto exit;
     }
     
@@ -176,7 +177,7 @@ if (_build_debug)
 fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
     if (buildDirURL && buildDirURL[0] != '/' &&
 	(urlSplit(buildDirURL, &u) != 0)) {
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
     if (u != NULL) {
@@ -220,13 +221,13 @@ fprintf(stderr, "*** addMacros\n");
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
 		 scriptName, name);
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
     } else
-	rc = 0;
+	rc = RPMRC_OK;
     
 exit:
     if (scriptName) {
-	if (!rc)
+	if (rc == RPMRC_OK)
 	    (void) unlink(scriptName);
 	scriptName = _free(scriptName);
     }
@@ -260,9 +261,9 @@ fprintf(stderr, "*** delMacros\n");
     return rc;
 }
 
-int buildSpec(rpmts ts, rpmSpec spec, int what, int test)
+rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 {
-    int rc = 0;
+    rpmRC rc = RPMRC_OK;
 
     if (!spec->recursing && spec->BACount) {
 	int x;
@@ -327,7 +328,7 @@ int buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 	(void) unlink(spec->specFile);
 
 exit:
-    if (rc && rpmlogGetNrecs() > 0) {
+    if (rc != RPMRC_OK && rpmlogGetNrecs() > 0) {
 	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
     }

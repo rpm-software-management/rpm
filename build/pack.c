@@ -43,14 +43,15 @@ static inline int genSourceRpmName(rpmSpec spec)
 /**
  * @todo Create transaction set *much* earlier.
  */
-static int cpio_doio(FD_t fdo, Header h, CSA_t csa,
+static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
 		const char * fmodeMacro)
 {
     rpmts ts = rpmtsCreate();
     rpmfi fi = csa->cpioList;
     const char *failedFile = NULL;
     FD_t cfd;
-    int rc, ec;
+    rpmRC rc = RPMRC_OK;
+    int xx;
 
     {	const char *fmode = rpmExpand(fmodeMacro, NULL);
 	if (!(fmode && fmode[0] == 'w'))
@@ -60,13 +61,15 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t csa,
 	fmode = _free(fmode);
     }
     if (cfd == NULL)
-	return 1;
+	return RPMRC_FAIL;
 
-    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
+    xx = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
+    if (xx)
+	rc = RPMRC_FAIL;
     (void) Fclose(cfd);
-    ec = fsmTeardown(fi->fsm);
-    if (!rc) rc = ec;
+    xx = fsmTeardown(fi->fsm);
+    if (rc == RPMRC_OK && xx) rc = RPMRC_FAIL;
 
     if (rc) {
 	if (failedFile)
@@ -75,7 +78,7 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t csa,
 	else
 	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"),
 		cpioStrerror(rc));
-      rc = 1;
+      rc = RPMRC_FAIL;
     }
 
     failedFile = _free(failedFile);
@@ -86,7 +89,7 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t csa,
 
 /**
  */
-static int cpio_copy(FD_t fdo, CSA_t csa)
+static rpmRC cpio_copy(FD_t fdo, CSA_t csa)
 {
     char buf[BUFSIZ];
     size_t nb;
@@ -95,16 +98,16 @@ static int cpio_copy(FD_t fdo, CSA_t csa)
 	if (Fwrite(buf, sizeof(buf[0]), nb, fdo) != nb) {
 	    rpmlog(RPMLOG_ERR, _("cpio_copy write failed: %s\n"),
 			Fstrerror(fdo));
-	    return 1;
+	    return RPMRC_FAIL;
 	}
 	csa->cpioArchiveSize += nb;
     }
     if (Ferror(csa->cpioFdIn)) {
 	rpmlog(RPMLOG_ERR, _("cpio_copy read failed: %s\n"),
 		Fstrerror(csa->cpioFdIn));
-	return 1;
+	return RPMRC_FAIL;
     }
-    return 0;
+    return RPMRC_OK;
 }
 
 /**
@@ -262,7 +265,7 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
     return 0;
 }
 
-int readRPM(const char *fileName, rpmSpec *specp, 
+rpmRC readRPM(const char *fileName, rpmSpec *specp, 
 		Header *sigs, CSA_t csa)
 {
     FD_t fdi;
@@ -278,14 +281,14 @@ int readRPM(const char *fileName, rpmSpec *specp,
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	if (fdi) (void) Fclose(fdi);
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* XXX FIXME: EPIPE on <stdin> */
     if (Fseek(fdi, 0, SEEK_SET) == -1) {
 	rpmlog(RPMLOG_ERR, _("%s: Fseek failed: %s\n"),
 			(fileName ? fileName : "<stdin>"), Fstrerror(fdi));
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Reallocate build data structures */
@@ -335,10 +338,10 @@ int readRPM(const char *fileName, rpmSpec *specp,
     else
 	(void) Fclose(fdi);
 
-    return 0;
+    return RPMRC_OK;
 }
 
-int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
+rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	     CSA_t csa, char *passPhrase, const char **cookie)
 {
     FD_t fd = NULL;
@@ -351,7 +354,8 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     char buf[BUFSIZ];
     Header h;
     Header sig = NULL;
-    int rc = 0, isSource;
+    int isSource, xx;
+    rpmRC rc = RPMRC_OK;
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
@@ -402,7 +406,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Reallocate the header into one contiguous region. */
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h == NULL) {	/* XXX can't happen */
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to create immutable header region.\n"));
 	goto exit;
     }
@@ -414,14 +418,14 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      * archive (after compression) can be added to the header.
      */
     if (rpmMkTempFile(NULL, &sigtarget, &fd)) {
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	goto exit;
     }
 
     fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
     if (headerWrite(fd, h, HEADER_MAGIC_YES)) {
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
 	(void) Fflush(fd);
@@ -431,21 +435,18 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
 	}
     }
     rpmio_flags = _free(rpmio_flags);
 
-    if (rc)
+    if (rc != RPMRC_OK)
 	goto exit;
 
     (void) Fclose(fd);
     fd = NULL;
     (void) unlink(fileName);
-
-    if (rc)
-	goto exit;
 
     /* Generate the signature */
     (void) fflush(stdout);
@@ -471,7 +472,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Reallocate the signature into one contiguous region. */
     sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
     if (sig == NULL) {	/* XXX can't happen */
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to reload signature header.\n"));
 	goto exit;
     }
@@ -479,7 +480,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Open the output file */
     fd = Fopen(fileName, "w.ufdio");
     if (fd == NULL || Ferror(fd)) {
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Could not open %s: %s\n"),
 		fileName, Fstrerror(fd));
 	goto exit;
@@ -488,10 +489,10 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Write the lead section into the package. */
     {	
 	rpmlead lead = rpmLeadFromHeader(h);
-	int rc = rpmLeadWrite(fd, lead);
+	rc = rpmLeadWrite(fd, lead);
 	lead = rpmLeadFree(lead);
 	if (rc != RPMRC_OK) {
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
 		 Fstrerror(fd));
 	    goto exit;
@@ -499,14 +500,15 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 
     /* Write the signature section into the package. */
-    rc = rpmWriteSignature(fd, sig);
-    if (rc)
+    if (rpmWriteSignature(fd, sig)) {
+	rc = RPMRC_FAIL;
 	goto exit;
+    }
 
     /* Append the header and archive */
     ifd = Fopen(sigtarget, "r.ufdio");
     if (ifd == NULL || Ferror(ifd)) {
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to open sigtarget %s: %s\n"),
 		sigtarget, Fstrerror(ifd));
 	goto exit;
@@ -517,7 +519,7 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     {	Header nh = headerRead(ifd, HEADER_MAGIC_YES);
 
 	if (nh == NULL) {
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to read header from %s: %s\n"),
 			sigtarget, Fstrerror(ifd));
 	    goto exit;
@@ -527,11 +529,11 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	(void) headerMergeLegacySigs(nh, sig);
 #endif
 
-	rc = headerWrite(fd, nh, HEADER_MAGIC_YES);
+	xx = headerWrite(fd, nh, HEADER_MAGIC_YES);
 	nh = headerFree(nh);
 
-	if (rc) {
-	    rc = RPMLOG_ERR;
+	if (xx) {
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to write header to %s: %s\n"),
 			fileName, Fstrerror(fd));
 	    goto exit;
@@ -541,19 +543,19 @@ int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Write the payload into the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
 	if (count == -1) {
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
 	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    goto exit;
 	}
     }
-    rc = 0;
+    rc = RPMRC_OK;
 
 exit:
     SHA1 = _free(SHA1);
@@ -584,7 +586,7 @@ exit:
 	sigtarget = _free(sigtarget);
     }
 
-    if (rc == 0)
+    if (rc == RPMRC_OK)
 	rpmlog(RPMLOG_NOTICE, _("Wrote: %s\n"), fileName);
     else
 	(void) unlink(fileName);

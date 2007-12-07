@@ -272,9 +272,9 @@ char * parseExpressionString(rpmSpec spec, const char * expr);
  * @param name		name of scriptlet section
  * @param sb		lines that compose script body
  * @param test		don't execute scripts or package if testing
- * @return		0 on success, RPMERR_SCRIPT on failure
+ * @return		RPMRC_OK on success
  */
-int doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
+rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
 		StringBuf sb, int test);
 
 /** \ingroup rpmbuild
@@ -382,9 +382,9 @@ int parseSpec(rpmts ts, const char * specFile,
  * @param spec		spec file control structure
  * @param what		bit(s) to enable stages of build
  * @param test		don't execute scripts or package if testing
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int buildSpec(rpmts ts, rpmSpec spec, int what, int test);
+rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test);
 
 /** \ingroup rpmbuild
  * Generate binary package(s).

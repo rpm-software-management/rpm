@@ -403,7 +403,7 @@ static int makePGPSignature(const char * file, int32_t * sigTagp,
 	}
 	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
-	_exit(RPMLOG_ERR);
+	_exit(EXIT_FAILURE);
     }
 
     delMacro(NULL, "__plaintext_filename");
