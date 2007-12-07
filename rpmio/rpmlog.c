@@ -10,6 +10,11 @@
 static int nrecs = 0;
 static rpmlogRec recs = NULL;
 
+struct rpmlogRec_s {
+    int		code;		/* unused */
+    const char * message;	/* log message string */
+};
+
 int rpmlogGetNrecs(void)
 {
     return nrecs;

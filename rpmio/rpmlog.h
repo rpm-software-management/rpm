@@ -156,10 +156,7 @@ typedef void (*rpmlogCallback) (void);
 
 /** \ingroup rpmlog
  */
-typedef struct rpmlogRec_s {
-    int		code;
-    const char * message;
-} * rpmlogRec;
+typedef struct rpmlogRec_s * rpmlogRec;
 
 /** \ingroup rpmlog
  * Return number of rpmError() ressages.
