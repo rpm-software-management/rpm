@@ -1699,6 +1699,8 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     int argc = 0;
     const char ** argv = NULL;
     char * globRoot = NULL;
+    const char *home = getenv("HOME");
+    int gflags = 0;
 #ifdef ENABLE_NLS
     const char * old_collate = NULL;
     const char * old_ctype = NULL;
@@ -1707,6 +1709,9 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	size_t maxb, nb;
     int i, j;
     int rc;
+
+    if (home != NULL && strlen(home) > 0) 
+	gflags |= GLOB_TILDE;
 
     rc = XpoptParseArgvString(patterns, &ac, &av);
     if (rc)
@@ -1742,7 +1747,7 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	
 	gl.gl_pathc = 0;
 	gl.gl_pathv = NULL;
-	rc = Glob(av[j], GLOB_TILDE, Glob_error, &gl);
+	rc = Glob(av[j], gflags, Glob_error, &gl);
 	if (rc)
 	    goto exit;
 
