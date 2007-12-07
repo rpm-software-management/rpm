@@ -159,6 +159,20 @@ RPMCODE facilitynames[] =
  */
 typedef struct rpmlogRec_s * rpmlogRec;
 
+/** \ingroup rpmlog
+ * Retrieve log message string from rpmlog record
+ * @param rec		rpmlog record
+ * @return		log message
+ */
+const char * rpmlogRecMessage(rpmlogRec rec);
+
+/** \ingroup rpmlog
+ * Retrieve log priority from rpmlog record
+ * @param rec		rpmlog record
+ * @return		log priority
+ */
+rpmlogLvl rpmlogRecPriority(rpmlogRec rec);
+
 typedef void * rpmlogCallbackData;
 
 /** \ingroup rpmlog

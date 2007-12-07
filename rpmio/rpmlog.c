@@ -36,6 +36,18 @@ const char * rpmlogMessage(void)
     return _("(no error)");
 }
 
+const char * rpmlogRecMessage(rpmlogRec rec)
+{
+    assert(rec != NULL);
+    return (rec->message);
+}
+
+rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
+{
+    assert(rec != NULL);
+    return (rec->pri);
+}
+
 void rpmlogPrint(FILE *f)
 {
     int i;
@@ -171,6 +183,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     int msgnb = BUFSIZ, nb;
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
+
     struct rpmlogRec_s rec;
 
     if ((mask & rpmlogMask) == 0)
