@@ -152,7 +152,7 @@ RPMCODE facilitynames[] =
 /* \ingroup rpmlog
  * Option flags for callback return value.
  */
-#define RPMLOG_CONT	0x01	/*!< perform default logging */	
+#define RPMLOG_DEFAULT	0x01	/*!< perform default logging */	
 #define RPMLOG_EXIT	0x02	/*!< exit after logging */
 
 /** \ingroup rpmlog
@@ -165,8 +165,9 @@ typedef void * rpmlogCallbackData;
   * @param rec		rpmlog record
   * @param data		private callback data
   * @return		flags to define further behavior:
-  * 			RPMLOG_CONT to continue to default logger,
-  * 			RPMLOG_EXIT to exit after processing
+  * 			RPMLOG_DEFAULT to perform default logging,
+  * 			RPMLOG_EXIT to exit after processing, 
+  * 			0 to return after callback
   */
 typedef int (*rpmlogCallback) (rpmlogRec rec, rpmlogCallbackData data);
 

@@ -169,7 +169,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 #endif
     char *msgbuf, *msg;
     int msgnb = BUFSIZ, nb;
-    int cbrc = RPMLOG_CONT;
+    int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
     struct rpmlogRec_s rec;
 
@@ -221,7 +221,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	needexit += cbrc & RPMLOG_EXIT;
     }
 
-    if (cbrc & RPMLOG_CONT) {
+    if (cbrc & RPMLOG_DEFAULT) {
 	cbrc = rpmlogDefault(&rec);
 	needexit += cbrc & RPMLOG_EXIT;
     }
