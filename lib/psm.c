@@ -425,6 +425,28 @@ static const char * tag2sln(int tag)
     return "%unknownscript";
 }
 
+static int triggertag(uint32_t sense) 
+{
+    int tag = 0;
+    switch (sense) {
+    case RPMSENSE_TRIGGERIN:
+	tag = RPMTAG_TRIGGERIN;
+	break;
+    case RPMSENSE_TRIGGERUN:
+	tag = RPMTAG_TRIGGERUN;
+	break;
+    case RPMSENSE_TRIGGERPOSTUN:
+	tag = RPMTAG_TRIGGERPOSTUN;
+	break;
+    case RPMSENSE_TRIGGERPREIN:
+	tag = RPMTAG_TRIGGERPREIN;
+	break;
+    default:
+	break;
+    }
+    return tag;
+}
+
 /**
  * Wait for child process to be reaped.
  * @param psm		package state machine data
@@ -452,11 +474,12 @@ static pid_t psmWait(rpmpsm psm)
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
+static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
 		   int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
 {
     const rpmts ts = psm->ts;
+    const char * sln = tag2sln(stag);
     int rootFd = -1;
     const char *n, *v, *r;
     rpmRC rc = RPMRC_OK;
@@ -536,7 +559,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  *
  * @param psm		package state machine data
  * @param h		header
- * @param sln		name of scriptlet section
+ * @param stag		scriptlet section tag
  * @param progArgc	no. of args from header
  * @param progArgv	args from header, progArgv[0] is the interpreter to use
  * @param script	scriptlet from header
@@ -545,7 +568,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
+static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 		int progArgc, const char ** progArgv,
 		const char * script, int arg1, int arg2)
 {
@@ -570,6 +593,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t out;
     rpmRC rc = RPMRC_OK;
     const char *n, *v, *r, *a;
+    const char *sln = tag2sln(stag);
 
     if (progArgv == NULL && script == NULL)
 	return rc;
@@ -582,8 +606,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 #ifdef WITH_LUA
 	rpmlog(RPMLOG_DEBUG,
 		_("%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a);
-	return runLuaScript(psm, h, sln, progArgc, progArgv,
+		psm->stepName, sln, n, v, r, a);
+	return runLuaScript(psm, h, stag, progArgc, progArgv,
 			    script, arg1, arg2);
 #else
 	return RPMRC_FAIL;
@@ -599,7 +623,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
 	    rpmlog(RPMLOG_DEBUG,
 		_("%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
+		psm->stepName, sln, n, v, r, a,
 		progArgv[0]);
 	    return rc;
 	}
@@ -607,7 +631,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     rpmlog(RPMLOG_DEBUG,
 		_("%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"),
-		psm->stepName, tag2sln(psm->scriptTag), n, v, r, a,
+		psm->stepName, sln, n, v, r, a,
 		(psm->unorderedSuccessor ? "a" : ""));
 
     if (!progArgv) {
@@ -898,7 +922,7 @@ static rpmRC runInstScript(rpmpsm psm)
     }
 
     if (fi->h != NULL)	/* XXX can't happen */
-    rc = runScript(psm, fi->h, tag2sln(psm->scriptTag), progArgc, argv,
+    rc = runScript(psm, fi->h, psm->scriptTag, progArgc, argv,
 		script, psm->scriptArg, -1);
 
 exit:
@@ -986,7 +1010,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		if (triggersAlreadyRun == NULL ||
 		    triggersAlreadyRun[index] == 0)
 		{
-		    rc = runScript(psm, triggeredH, "%trigger", 1,
+		    rc = runScript(psm, triggeredH, triggertag(psm->sense), 1,
 			    triggerProgs + index, triggerScripts[index],
 			    arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
