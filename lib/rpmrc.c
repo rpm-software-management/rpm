@@ -151,7 +151,7 @@ static struct rpmvarValue values[RPMVAR_NUM];
 static int defaultsInitialized = 0;
 
 /* prototypes */
-static int doReadRC( FD_t fd, const char * urlfn);
+static rpmRC doReadRC( FD_t fd, const char * urlfn);
 
 static void rpmSetVarArch(int var, const char * val,
 		const char * arch);
@@ -321,7 +321,7 @@ static void machFindEquivs(machCache cache, machEquivTable table,
     return;
 }
 
-static int addCanon(canonEntry * table, int * tableLen, char * line,
+static rpmRC addCanon(canonEntry * table, int * tableLen, char * line,
 		    const char * fn, int lineNum)
 {
     canonEntry t;
@@ -341,12 +341,12 @@ static int addCanon(canonEntry * table, int * tableLen, char * line,
     if (! (tname && tshort_name && s)) {
 	rpmlog(RPMLOG_ERR, _("Incomplete data line at %s:%d\n"),
 		fn, lineNum);
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
     if (strtok(NULL, " \t")) {
 	rpmlog(RPMLOG_ERR, _("Too many args in data line at %s:%d\n"),
 	      fn, lineNum);
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
    	/* LCL: s != NULL here. */
@@ -354,7 +354,7 @@ static int addCanon(canonEntry * table, int * tableLen, char * line,
     if ((*s1) || (s1 == s) || (tnum == ULONG_MAX)) {
 	rpmlog(RPMLOG_ERR, _("Bad arch/os number: %s (%s:%d)\n"), s,
 	      fn, lineNum);
-	return(RPMLOG_ERR);
+	return RPMRC_FAIL;
     }
 
     t[0].name = xstrdup(tname);
@@ -367,10 +367,10 @@ static int addCanon(canonEntry * table, int * tableLen, char * line,
     t[1].short_name = (tshort_name ? xstrdup(tshort_name) : xstrdup(""));
     t[1].num = tnum;
 
-    return 0;
+    return RPMRC_OK;
 }
 
-static int addDefault(defaultEntry * table, int * tableLen, char * line,
+static rpmRC addDefault(defaultEntry * table, int * tableLen, char * line,
 			const char * fn, int lineNum)
 {
     defaultEntry t;
@@ -385,18 +385,18 @@ static int addDefault(defaultEntry * table, int * tableLen, char * line,
     if (! (t->name && t->defName)) {
 	rpmlog(RPMLOG_ERR, _("Incomplete default line at %s:%d\n"),
 		 fn, lineNum);
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
     if (strtok(NULL, " \t")) {
 	rpmlog(RPMLOG_ERR, _("Too many args in default line at %s:%d\n"),
 	      fn, lineNum);
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     t->name = xstrdup(t->name);
     t->defName = (t->defName ? xstrdup(t->defName) : NULL);
 
-    return 0;
+    return RPMRC_OK;
 }
 
 static canonEntry lookupInCanonTable(const char * name,
@@ -499,7 +499,7 @@ static void setDefaults(void)
 }
 
 /* FIX: se usage inconsistent, W2DO? */
-static int doReadRC( FD_t fd, const char * urlfn)
+static rpmRC doReadRC( FD_t fd, const char * urlfn)
 {
     const char *s;
     char *se, *next;
@@ -512,7 +512,7 @@ static int doReadRC( FD_t fd, const char * urlfn)
     size_t nb = (size >= 0 ? size : (8*BUFSIZ - 2));
     if (nb == 0) {
 	(void) Fclose(fd);
-	return 0;
+	return RPMRC_OK;
     }
     next = alloca(nb + 2);
     next[0] = '\0';
@@ -520,9 +520,9 @@ static int doReadRC( FD_t fd, const char * urlfn)
     if (Ferror(fd) || (size > 0 && rc != nb)) {	/* XXX Feof(fd) */
 	rpmlog(RPMLOG_ERR, _("Failed to read %s: %s.\n"), urlfn,
 		 Fstrerror(fd));
-	rc = 1;
+	rc = RPMRC_FAIL;
     } else
-	rc = 0;
+	rc = RPMRC_OK;
     (void) Fclose(fd);
     if (rc) return rc;
     next[nb] = '\n';
@@ -557,7 +557,7 @@ static int doReadRC( FD_t fd, const char * urlfn)
 	if (*se != ':') {
 	    rpmlog(RPMLOG_ERR, _("missing ':' (found 0x%02x) at %s:%d\n"),
 		     (unsigned)(0xff & *se), urlfn, linenum);
-	    return 1;
+	    return RPMRC_FAIL;
 	}
 	*se++ = '\0';	/* terminate keyword or option, point to value */
 	while (*se && xisspace(*se)) se++;
@@ -574,7 +574,7 @@ static int doReadRC( FD_t fd, const char * urlfn)
 	    if (*se == '\0') {
 		rpmlog(RPMLOG_ERR, _("missing argument for %s at %s:%d\n"),
 		      option->name, urlfn, linenum);
-		return 1;
+		return RPMRC_FAIL;
 	    }
 
 	    switch (option->var) {
@@ -592,14 +592,14 @@ static int doReadRC( FD_t fd, const char * urlfn)
 		    rpmlog(RPMLOG_ERR, _("%s expansion failed at %s:%d \"%s\"\n"),
 			option->name, urlfn, linenum, s);
 		    fn = _free(fn);
-		    return 1;
+		    return RPMRC_FAIL;
 		}
 
 		fdinc = Fopen(fn, "r.fpio");
 		if (fdinc == NULL || Ferror(fdinc)) {
 		    rpmlog(RPMLOG_ERR, _("cannot open %s at %s:%d: %s\n"),
 			fn, urlfn, linenum, Fstrerror(fdinc));
-		    rc = 1;
+		    rc = RPMRC_FAIL;
 		} else {
 		    rc = doReadRC(fdinc, fn);
 		}
@@ -618,7 +618,7 @@ static int doReadRC( FD_t fd, const char * urlfn)
 		    rpmlog(RPMLOG_ERR,
 				_("missing architecture for %s at %s:%d\n"),
 			  	option->name, urlfn, linenum);
-		    return 1;
+		    return RPMRC_FAIL;
 		}
 		*se++ = '\0';
 		while (*se && xisspace(*se)) se++;
@@ -626,7 +626,7 @@ static int doReadRC( FD_t fd, const char * urlfn)
 		    rpmlog(RPMLOG_ERR,
 				_("missing argument for %s at %s:%d\n"),
 			  	option->name, urlfn, linenum);
-		    return 1;
+		    return RPMRC_FAIL;
 		}
 	    }
 	
@@ -689,13 +689,13 @@ static int doReadRC( FD_t fd, const char * urlfn)
 	}
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 
 /**
  */
-static int rpmPlatform(const char * platform)
+static rpmRC rpmPlatform(const char * platform)
 {
     char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
     uint8_t * b = NULL;
@@ -707,7 +707,7 @@ static int rpmPlatform(const char * platform)
     rc = rpmioSlurp(platform, &b, &blen);
 
     if (rc || b == NULL || blen <= 0) {
-	rc = -1;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -778,7 +778,7 @@ static int rpmPlatform(const char * platform)
 	
 	init_platform++;
     }
-    rc = (init_platform ? 0 : -1);
+    rc = (init_platform ? RPMRC_OK : RPMRC_FAIL);
 
 exit:
     b = _free(b);
@@ -1593,9 +1593,9 @@ void rpmFreeRpmrc(void)
 /** \ingroup rpmrc
  * Read rpmrc (and macro) configuration file(s).
  * @param rcfiles	colon separated files to read (NULL uses default)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int rpmReadRC(const char * rcfiles)
+static rpmRC rpmReadRC(const char * rcfiles)
 {
     char *myrcfiles, *r, *re;
     int rc;
@@ -1609,7 +1609,7 @@ static int rpmReadRC(const char * rcfiles)
 	rcfiles = defrcfiles;
 
     /* Read each file in rcfiles. */
-    rc = 0;
+    rc = RPMRC_OK;
     for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
 	char fn[4096];
 	FD_t fd;
@@ -1633,13 +1633,13 @@ static int rpmReadRC(const char * rcfiles)
 		if (rcfiles == defrcfiles && myrcfiles != r)
 		    continue;
 		rpmlog(RPMLOG_ERR, _("Cannot expand %s\n"), r);
-		rc = 1;
+		rc = RPMRC_FAIL;
 		break;
 	    }
 	    if (strlen(home) > (sizeof(fn) - strlen(r))) {
 		rpmlog(RPMLOG_ERR, _("Cannot read %s, HOME is too large.\n"),
 				r);
-		rc = 1;
+		rc = RPMRC_FAIL;
 		break;
 	    }
 	    strcpy(fn, home);
@@ -1656,7 +1656,7 @@ static int rpmReadRC(const char * rcfiles)
 		continue;
 	    rpmlog(RPMLOG_ERR, _("Unable to open %s for reading: %s.\n"),
 		 fn, Fstrerror(fd));
-	    rc = 1;
+	    rc = RPMRC_FAIL;
 	    break;
 	} else {
 	    rc = doReadRC(fd, fn);

@@ -514,7 +514,7 @@ static int makeGPGSignature(const char * file, int32_t * sigTagp,
 
 	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
-	_exit(RPMLOG_ERR);
+	_exit(EXIT_FAILURE);
     }
 
     delMacro(NULL, "__plaintext_filename");
@@ -840,11 +840,11 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	    }
 	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
 			strerror(errno));
-	    _exit(RPMLOG_ERR);
+	    _exit(EXIT_FAILURE);
 	}   break;
 	default: /* This case should have been screened out long ago. */
 	    rpmlog(RPMLOG_ERR, _("Invalid %%_signature spec in macro file\n"));
-	    _exit(RPMLOG_ERR);
+	    _exit(EXIT_FAILURE);
 	    break;
 	}
     }
