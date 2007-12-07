@@ -106,9 +106,9 @@ static char lengths[] =
  * Add %changelog section to header.
  * @param h		header
  * @param sb		changelog strings
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int addChangelog(Header h, StringBuf sb)
+static rpmRC addChangelog(Header h, StringBuf sb)
 {
     char *s;
     int i;
@@ -125,7 +125,7 @@ static int addChangelog(Header h, StringBuf sb)
 	if (*s != '*') {
 	    rpmlog(RPMLOG_ERR,
 			_("%%changelog entries must start with *\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	/* find end of line */
@@ -133,7 +133,7 @@ static int addChangelog(Header h, StringBuf sb)
 	while(*s && *s != '\n') s++;
 	if (! *s) {
 	    rpmlog(RPMLOG_ERR, _("incomplete %%changelog entry\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	*s = '\0';
 	text = s + 1;
@@ -148,12 +148,12 @@ static int addChangelog(Header h, StringBuf sb)
 	SKIPSPACE(date);
 	if (dateToTimet(date, &time)) {
 	    rpmlog(RPMLOG_ERR, _("bad date in %%changelog: %s\n"), date);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	if (lastTime && lastTime < time) {
 	    rpmlog(RPMLOG_ERR,
 		     _("%%changelog not in descending chronological order\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	lastTime = time;
 
@@ -161,7 +161,7 @@ static int addChangelog(Header h, StringBuf sb)
 	SKIPSPACE(s);
 	if (! *s) {
 	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	/* name */
@@ -172,14 +172,14 @@ static int addChangelog(Header h, StringBuf sb)
 	}
 	if (s == name) {
 	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	/* text */
 	SKIPSPACE(text);
 	if (! *text) {
 	    rpmlog(RPMLOG_ERR, _("no description in %%changelog\n"));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	    
 	/* find the next leading '*' (or eos) */
@@ -199,7 +199,7 @@ static int addChangelog(Header h, StringBuf sb)
 	s = next;
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 int parseChangelog(rpmSpec spec)

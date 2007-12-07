@@ -242,9 +242,9 @@ int parsePrep(rpmSpec spec);
  * @param tagN		tag, identifies type of dependency
  * @param index		(0 always)
  * @param tagflags	dependency flags already known from context
- * @return		0 on success, RPMERR_BADSPEC on failure
+ * @return		RPMRC_OK on success, RPMRC_FAIL on failure
  */
-int parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTag tagN,
+rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTag tagN,
 		int index, rpmsenseFlags tagflags);
 
 /** \ingroup rpmbuild
@@ -292,7 +292,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
  * @retval pkg		package control structure
  * @return		0 on success, 1 on failure
  */
-int lookupPackage(rpmSpec spec, const char * name, int flag,
+rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 		Package * pkg);
 
 /** \ingroup rpmbuild
@@ -396,16 +396,16 @@ rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test);
 /** \ingroup rpmbuild
  * Generate binary package(s).
  * @param spec		spec file control structure
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int packageBinaries(rpmSpec spec);
+rpmRC packageBinaries(rpmSpec spec);
 
 /** \ingroup rpmbuild
  * Generate source package.
  * @param spec		spec file control structure
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int packageSources(rpmSpec spec);
+rpmRC packageSources(rpmSpec spec);
 
 #ifdef __cplusplus
 }

@@ -32,7 +32,7 @@ const char * token;
 #define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
 
-int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
+rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
@@ -100,7 +100,7 @@ int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	re = r;
@@ -128,7 +128,7 @@ int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	    }
 
 	    switch(tagN) {
@@ -158,7 +158,7 @@ int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	    if (*v == '\0' || ve == v) {
 		rpmlog(RPMLOG_ERR, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	    }
 	    EVR = xmalloc((ve-v) + 1);
 	    strncpy(EVR, v, (ve-v));
@@ -174,5 +174,5 @@ int parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 
     }
 
-    return 0;
+    return RPMRC_OK;
 }

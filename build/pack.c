@@ -184,7 +184,7 @@ static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, int tag)
 
 /**
  */
-static int processScriptFiles(rpmSpec spec, Package pkg)
+static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 {
     struct TriggerFileEntry *p;
     
@@ -192,42 +192,42 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
 	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PreIn file: %s\n"), pkg->preInFile);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->preUnFile) {
 	if (addFileToTag(spec, pkg->preUnFile, pkg->header, RPMTAG_PREUN)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PreUn file: %s\n"), pkg->preUnFile);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->preTransFile) {
 	if (addFileToTag(spec, pkg->preTransFile, pkg->header, RPMTAG_PRETRANS)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PreIn file: %s\n"), pkg->preTransFile);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->postInFile) {
 	if (addFileToTag(spec, pkg->postInFile, pkg->header, RPMTAG_POSTIN)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PostIn file: %s\n"), pkg->postInFile);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->postUnFile) {
 	if (addFileToTag(spec, pkg->postUnFile, pkg->header, RPMTAG_POSTUN)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PostUn file: %s\n"), pkg->postUnFile);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->postTransFile) {
 	if (addFileToTag(spec, pkg->postTransFile, pkg->header, RPMTAG_POSTTRANS)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Could not open PostUn file: %s\n"), pkg->postTransFile);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
     if (pkg->verifyFile) {
@@ -235,7 +235,7 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
 			 RPMTAG_VERIFYSCRIPT)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Could not open VerifyScript file: %s\n"), pkg->verifyFile);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
 
@@ -251,7 +251,7 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
 		rpmlog(RPMLOG_ERR,
 			 _("Could not open Trigger script file: %s\n"),
 			 p->fileName);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	    }
 	} else {
 	    /* This is dumb.  When the header supports NULL string */
@@ -262,7 +262,7 @@ static int processScriptFiles(rpmSpec spec, Package pkg)
 	}
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 rpmRC readRPM(const char *fileName, rpmSpec *specp, 
@@ -319,12 +319,12 @@ rpmRC readRPM(const char *fileName, rpmSpec *specp,
     case RPMRC_NOTFOUND:
 	rpmlog(RPMLOG_ERR, _("readRPM: %s is not an RPM package\n"),
 		(fileName ? fileName : "<stdin>"));
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     case RPMRC_FAIL:
     default:
 	rpmlog(RPMLOG_ERR, _("readRPM: reading header from %s\n"),
 		(fileName ? fileName : "<stdin>"));
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
 	break;
     }
 
@@ -601,11 +601,11 @@ static int32_t copyTags[] = {
     0
 };
 
-int packageBinaries(rpmSpec spec)
+rpmRC packageBinaries(rpmSpec spec)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
-    int rc;
+    rpmRC rc;
     const char *errorString;
     Package pkg;
 
@@ -659,7 +659,7 @@ int packageBinaries(rpmSpec spec)
 		(void) headerNVR(pkg->header, &name, NULL, NULL);
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
 		     "filename for package %s: %s\n"), name, errorString);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 	    if ((binDir = strchr(binRpm, '/')) != NULL) {
@@ -695,18 +695,18 @@ int packageBinaries(rpmSpec spec)
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, 
 			       RPMDBG_M("init (packageBinaries)"));
 	fn = _free(fn);
-	if (rc)
+	if (rc != RPMRC_OK)
 	    return rc;
     }
     
-    return 0;
+    return RPMRC_OK;
 }
 
-int packageSources(rpmSpec spec)
+rpmRC packageSources(rpmSpec spec)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
-    int rc;
+    rpmRC rc;
 
     /* Add some cruft */
     (void) headerAddEntry(spec->sourceHeader, RPMTAG_RPMVERSION,

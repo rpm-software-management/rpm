@@ -127,7 +127,7 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	/* XXX this error message is probably not seen. */
 	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
-	_exit(RPMLOG_ERR);
+	_exit(EXIT_FAILURE);
     }
     if (child < 0) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
@@ -1112,7 +1112,7 @@ static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { NULL, 0 }
 };
 
-int rpmfcApply(rpmfc fc)
+rpmRC rpmfcApply(rpmfc fc)
 {
     rpmfcApplyTbl fcat;
     const char * s;
@@ -1212,7 +1212,7 @@ assert(dix >= 0);
     return 0;
 }
 
-int rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode)
+rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode)
 {
     ARGV_t fcav = NULL;
     ARGV_t dav;
@@ -1238,16 +1238,14 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode)
 
     ms = magic_open(msflags);
     if (ms == NULL) {
-	xx = RPMLOG_ERR;
-	rpmlog(xx, _("magic_open(0x%x) failed: %s\n"),
+	rpmlog(RPMLOG_ERR, _("magic_open(0x%x) failed: %s\n"),
 		msflags, strerror(errno));
 assert(ms != NULL);	/* XXX figger a proper return path. */
     }
 
     xx = magic_load(ms, NULL);
     if (xx == -1) {
-	xx = RPMLOG_ERR;
-	rpmlog(xx, _("magic_load failed: %s\n"), magic_error(ms));
+	rpmlog(RPMLOG_ERR, _("magic_load failed: %s\n"), magic_error(ms));
 assert(xx != -1);	/* XXX figger a proper return path. */
     }
 
@@ -1290,9 +1288,9 @@ assert(s != NULL);
 		ftype = magic_file(ms, s);
 
 	    if (ftype == NULL) {
-		xx = RPMLOG_ERR;
-		rpmlog(xx, _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
-			s, mode, magic_error(ms));
+		rpmlog(RPMLOG_ERR, 
+		       _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
+		       s, mode, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }
 	}
@@ -1495,7 +1493,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	s = _free(s);
 
 	if (sb_stdout == NULL) {
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    rpmlog(rc, _("Failed to find %s:\n"), dm->msg);
 	    break;
 	}
@@ -1515,7 +1513,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
     return rc;
 }
 
-int rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
+rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
     rpmfi fi = pkg->cpioList;
     rpmfc fc = NULL;

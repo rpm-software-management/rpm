@@ -115,24 +115,24 @@ rpmfc rpmfcNew(void);
  * @param fc		file classifier
  * @param argv		files to classify
  * @param fmode		files mode_t array (or NULL)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode);
+rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode);
 
 /** \ingroup rpmfc
  * Build file/package dependency dictionary and mappings.
  * @param fc		file classifier
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int rpmfcApply(rpmfc fc);
+rpmRC rpmfcApply(rpmfc fc);
 
 /** \ingroup rpmfc
  * Generate package dependencies.
  * @param spec		spec file control
  * @param pkg		package control
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
+rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
 
 /** \ingroup rpmfc
  * Retrieve file classification provides

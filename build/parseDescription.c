@@ -23,7 +23,7 @@ extern int noLang;
 
 int parseDescription(rpmSpec spec)
 {
-    int nextPart = RPMLOG_ERR;	/* assume error */
+    int nextPart = RPMRC_FAIL;	/* assume error */
     StringBuf sb;
     int flag = PART_SUBNAME;
     Package pkg;
@@ -39,7 +39,7 @@ int parseDescription(rpmSpec spec)
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%description: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
@@ -93,7 +93,7 @@ int parseDescription(rpmSpec spec)
 	nextPart = PART_NONE;
     } else {
 	if (rc) {
-	    nextPart = RPMLOG_ERR;
+	    nextPart = RPMRC_FAIL;
 	    goto exit;
 	}
 	while (! (nextPart = isPart(spec->line))) {
@@ -105,7 +105,7 @@ int parseDescription(rpmSpec spec)
 		break;
 	    }
 	    if (rc) {
-		nextPart = RPMLOG_ERR;
+		nextPart = RPMRC_FAIL;
 		goto exit;
 	    }
 	}

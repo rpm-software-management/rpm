@@ -59,7 +59,7 @@ struct Source * freeSources(struct Source * s)
     return NULL;
 }
 
-int lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
+rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 {
     const char *pname;
     const char *fullName;
@@ -69,7 +69,7 @@ int lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
     if (name == NULL) {
 	if (pkg)
 	    *pkg = spec->packages;
-	return 0;
+	return RPMRC_OK;
     }
 
     /* Construct package name */
@@ -95,7 +95,7 @@ int lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 
     if (pkg)
 	*pkg = p;
-    return ((p == NULL) ? 1 : 0);
+    return ((p == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
 Package newPackage(rpmSpec spec)
@@ -226,13 +226,13 @@ int parseNoSource(rpmSpec spec, const char * field, int tag)
 	if (parseNum(f, &num)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad number: %s\n"),
 		     spec->lineNum, f);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	if (! (p = findSource(spec, num, flag))) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad no%s number: %d\n"),
 		     spec->lineNum, name, num);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	p->flags |= RPMBUILD_ISNO;
@@ -291,7 +291,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, int tag)
 	    if (parseNum(buf, &num)) {
 		rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	    }
 	}
     }

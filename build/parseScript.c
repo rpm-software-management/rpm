@@ -167,7 +167,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	if (!p) {
 	    rpmlog(RPMLOG_ERR, _("line %d: triggers must have --: %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	*p = '\0';
@@ -177,7 +177,7 @@ int parseScript(rpmSpec spec, int parsePart)
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %s: %s\n"),
 		 spec->lineNum, partname, poptStrerror(rc));
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
     
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
@@ -189,14 +189,14 @@ int parseScript(rpmSpec spec, int parsePart)
 		    rpmlog(RPMLOG_ERR,
 			     _("line %d: internal script must end "
 			     "with \'>\': %s\n"), spec->lineNum, prog);
-		    rc = RPMLOG_ERR;
+		    rc = RPMRC_FAIL;
 		    goto exit;
 		}
 	    } else if (prog[0] != '/') {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: script program must begin "
 			 "with \'/\': %s\n"), spec->lineNum, prog);
-		rc = RPMLOG_ERR;
+		rc = RPMRC_FAIL;
 		goto exit;
 	    }
 	    break;
@@ -211,7 +211,7 @@ int parseScript(rpmSpec spec, int parsePart)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -222,7 +222,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	    rpmlog(RPMLOG_ERR, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     }
@@ -230,7 +230,7 @@ int parseScript(rpmSpec spec, int parsePart)
     if (lookupPackage(spec, name, flag, &pkg)) {
 	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -238,7 +238,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	if (headerIsEntry(pkg->header, progtag)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Second %s\n"),
 		     spec->lineNum, partname);
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     }
@@ -246,7 +246,7 @@ int parseScript(rpmSpec spec, int parsePart)
     if ((rc = poptParseArgvString(prog, &progArgc, &progArgv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %s: %s\n"),
 		 spec->lineNum, partname, poptStrerror(rc));
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -273,7 +273,7 @@ int parseScript(rpmSpec spec, int parsePart)
     if (!strcmp(progArgv[0], "<lua>")) {
 	rpmlua lua = NULL; /* Global state. */
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	(void) rpmlibNeedsFeature(pkg->header,
@@ -284,7 +284,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	rpmlog(RPMLOG_ERR,
 		 _("line %d: unsupported internal script: %s\n"),
 		 spec->lineNum, progArgv[0]);
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
 	goto exit;
     } else {
         (void) addReqProv(spec, pkg->header, RPMTAG_REQUIRENAME,

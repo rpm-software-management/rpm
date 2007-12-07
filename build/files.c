@@ -279,9 +279,9 @@ VFA_t verifyAttrs[] = {
  * Parse %verify and %defverify from file manifest.
  * @param buf		current spec file line
  * @param fl		package file tree walk data
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int parseForVerify(char * buf, FileList fl)
+static rpmRC parseForVerify(char * buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
@@ -297,7 +297,7 @@ static int parseForVerify(char * buf, FileList fl)
 	resultVerify = &(fl->defVerifyFlags);
 	specdFlags = &fl->defSpecdFlags;
     } else
-	return 0;
+	return RPMRC_OK;
 
     for (pe = p; (pe-p) < strlen(name); pe++)
 	*pe = ' ';
@@ -307,7 +307,7 @@ static int parseForVerify(char * buf, FileList fl)
     if (*pe != '(') {
 	rpmlog(RPMLOG_ERR, _("Missing '(' in %s %s\n"), name, pe);
 	fl->processingFailed = 1;
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Bracket %*verify args */
@@ -318,7 +318,7 @@ static int parseForVerify(char * buf, FileList fl)
     if (*pe == '\0') {
 	rpmlog(RPMLOG_ERR, _("Missing ')' in %s(%s\n"), name, p);
 	fl->processingFailed = 1;
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Localize. Erase parsed string */
@@ -356,14 +356,14 @@ static int parseForVerify(char * buf, FileList fl)
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
 
     *resultVerify = negated ? ~(verifyFlags) : verifyFlags;
     *specdFlags |= SPECD_VERIFY;
 
-    return 0;
+    return RPMRC_OK;
 }
 
 #define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
@@ -372,17 +372,17 @@ static int parseForVerify(char * buf, FileList fl)
  * Parse %dev from file manifest.
  * @param buf		current spec file line
  * @param fl		package file tree walk data
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int parseForDev(char * buf, FileList fl)
+static rpmRC parseForDev(char * buf, FileList fl)
 {
     const char * name;
     const char * errstr = NULL;
     char *p, *pe, *q;
-    int rc = RPMLOG_ERR;	/* assume error */
+    int rc = RPMRC_FAIL;	/* assume error */
 
     if ((p = strstr(buf, (name = "%dev"))) == NULL)
-	return 0;
+	return RPMRC_OK;
 
     for (pe = p; (pe-p) < strlen(name); pe++)
 	*pe = ' ';
@@ -454,7 +454,7 @@ static int parseForDev(char * buf, FileList fl)
 
     fl->noGlob = 1;
 
-    rc = 0;
+    rc = RPMRC_OK;
 
 exit:
     if (rc) {
@@ -496,7 +496,7 @@ static int parseForAttr(char * buf, FileList fl)
     if (*pe != '(') {
 	rpmlog(RPMLOG_ERR, _("Missing '(' in %s %s\n"), name, pe);
 	fl->processingFailed = 1;
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Bracket %*attr args */
@@ -512,7 +512,7 @@ static int parseForAttr(char * buf, FileList fl)
 	    rpmlog(RPMLOG_ERR,
 		     _("Non-white space follows %s(): %s\n"), name, q);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
 
@@ -550,7 +550,7 @@ static int parseForAttr(char * buf, FileList fl)
     if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group) || *p != '\0') {
 	rpmlog(RPMLOG_ERR, _("Bad syntax: %s(%s)\n"), name, q);
 	fl->processingFailed = 1;
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Do a quick test on the mode argument and adjust for "-" */
@@ -560,7 +560,7 @@ static int parseForAttr(char * buf, FileList fl)
 	if ((x == 0) || (ar->ar_fmode & ~MYALLPERMS)) {
 	    rpmlog(RPMLOG_ERR, _("Bad mode spec: %s(%s)\n"), name, q);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	ar->ar_fmode = ui;
     } else
@@ -572,7 +572,7 @@ static int parseForAttr(char * buf, FileList fl)
 	if ((x == 0) || (ar->ar_dmode & ~MYALLPERMS)) {
 	    rpmlog(RPMLOG_ERR, _("Bad dirmode spec: %s(%s)\n"), name, q);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	ar->ar_dmode = ui;
     } else
@@ -596,15 +596,15 @@ static int parseForAttr(char * buf, FileList fl)
  * Parse %config from file manifest.
  * @param buf		current spec file line
  * @param fl		package file tree walk data
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int parseForConfig(char * buf, FileList fl)
+static rpmRC parseForConfig(char * buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
 
     if ((p = strstr(buf, (name = "%config"))) == NULL)
-	return 0;
+	return RPMRC_OK;
 
     fl->currentFlags |= RPMFILE_CONFIG;
 
@@ -613,7 +613,7 @@ static int parseForConfig(char * buf, FileList fl)
 	*pe = ' ';
     SKIPSPACE(pe);
     if (*pe != '(')
-	return 0;
+	return RPMRC_OK;
 
     /* Bracket %config args */
     *pe++ = ' ';
@@ -623,7 +623,7 @@ static int parseForConfig(char * buf, FileList fl)
     if (*pe == '\0') {
 	rpmlog(RPMLOG_ERR, _("Missing ')' in %s(%s\n"), name, p);
 	fl->processingFailed = 1;
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Localize. Erase parsed string. */
@@ -648,11 +648,11 @@ static int parseForConfig(char * buf, FileList fl)
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 /**
@@ -666,7 +666,7 @@ static int langCmp(const void * ap, const void * bp)
  * Parse %lang from file manifest.
  * @param buf		current spec file line
  * @param fl		package file tree walk data
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
 static int parseForLang(char * buf, FileList fl)
 {
@@ -682,7 +682,7 @@ static int parseForLang(char * buf, FileList fl)
     if (*pe != '(') {
 	rpmlog(RPMLOG_ERR, _("Missing '(' in %s %s\n"), name, pe);
 	fl->processingFailed = 1;
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Bracket %lang args */
@@ -693,7 +693,7 @@ static int parseForLang(char * buf, FileList fl)
     if (*pe == '\0') {
 	rpmlog(RPMLOG_ERR, _("Missing ')' in %s(%s\n"), name, p);
 	fl->processingFailed = 1;
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
 
     /* Localize. Erase parsed string. */
@@ -721,7 +721,7 @@ static int parseForLang(char * buf, FileList fl)
 		_("Unusual locale length: \"%.*s\" in %%lang(%s)\n"),
 		(int)np, p, q);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	/* Check for duplicate locales */
@@ -732,7 +732,7 @@ static int parseForLang(char * buf, FileList fl)
 	    rpmlog(RPMLOG_ERR, _("Duplicate locale %.*s in %%lang(%s)\n"),
 		(int)np, p, q);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 
 	/* Add new locale */
@@ -750,7 +750,7 @@ static int parseForLang(char * buf, FileList fl)
     if (fl->currentLangs)
 	qsort(fl->currentLangs, fl->nLangs, sizeof(*fl->currentLangs), langCmp);
 
-    return 0;
+    return RPMRC_OK;
 }
 
 /**
@@ -825,9 +825,9 @@ VFA_t virtualFileAttributes[] = {
  * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @retval *fileName	file name
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
+static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 			  FileList fl, const char ** fileName)
 {
     char *s, *t;
@@ -836,7 +836,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
     specialDocBuf[0] = '\0';
     *fileName = NULL;
-    res = 0;
+    res = RPMRC_OK;
 
     t = buf;
     while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
@@ -846,7 +846,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    if (fl->docDirCount == MAXDOCDIR) {
 		rpmlog(RPMLOG_ERR, _("Hit limit for %%docdir\n"));
 		fl->processingFailed = 1;
-		res = 1;
+		res = RPMRC_FAIL;
 	    }
 	
 	    if (s != NULL)
@@ -854,7 +854,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
 		rpmlog(RPMLOG_ERR, _("Only one arg for %%docdir\n"));
 		fl->processingFailed = 1;
-		res = 1;
+		res = RPMRC_FAIL;
 	    }
 	    break;
 	}
@@ -886,7 +886,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    rpmlog(RPMLOG_ERR, _("Two files on one line: %s\n"),
 		*fileName);
 	    fl->processingFailed = 1;
-	    res = 1;
+	    res = RPMRC_FAIL;
 	}
 
 	if (*s != '/') {
@@ -903,7 +903,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		rpmlog(RPMLOG_ERR,
 		    _("File must begin with \"/\": %s\n"), s);
 		fl->processingFailed = 1;
-		res = 1;
+		res = RPMRC_FAIL;
 	    }
 	} else {
 	    *fileName = s;
@@ -916,7 +916,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		     _("Can't mix special %%doc with other forms: %s\n"),
 		     (*fileName ? *fileName : ""));
 	    fl->processingFailed = 1;
-	    res = 1;
+	    res = RPMRC_FAIL;
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
 	   {
@@ -933,7 +933,7 @@ static int parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		if (!fmt) {
 		    rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
 		    fl->processingFailed = 1;
-		    res = 1;
+		    res = RPMRC_FAIL;
 		}
 		ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
 		strcpy(buf, ddir);
@@ -1361,16 +1361,16 @@ static FileListRec freeFileList(FileListRec fileList,
 }
 
 /* forward ref */
-static int recurseDir(FileList fl, const char * diskURL);
+static rpmRC recurseDir(FileList fl, const char * diskURL);
 
 /**
  * Add a file to the package manifest.
  * @param fl		package file tree walk data
  * @param diskURL	path to file
  * @param statp		file stat (possibly NULL)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int addFile(FileList fl, const char * diskURL,
+static rpmRC addFile(FileList fl, const char * diskURL,
 		struct stat * statp)
 {
     const char *fileURL = diskURL;
@@ -1417,7 +1417,7 @@ static int addFile(FileList fl, const char * diskURL,
 	    rpmlog(RPMLOG_ERR, _("File doesn't match prefix (%s): %s\n"),
 		     fl->prefix, fileURL);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
 
@@ -1440,7 +1440,7 @@ static int addFile(FileList fl, const char * diskURL,
 	} else if (lstat(diskURL, statp)) {
 	    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskURL);
 	    fl->processingFailed = 1;
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
     }
 
@@ -1560,15 +1560,15 @@ static int addFile(FileList fl, const char * diskURL,
  * Add directory (and all of its files) to the package manifest.
  * @param fl		package file tree walk data
  * @param diskURL	path to file
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int recurseDir(FileList fl, const char * diskURL)
+static rpmRC recurseDir(FileList fl, const char * diskURL)
 {
     char * ftsSet[2];
     FTS * ftsp;
     FTSENT * fts;
     int myFtsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
-    int rc = RPMLOG_ERR;
+    int rc = RPMRC_FAIL;
 
     fl->inFtw = 1;  /* Flag to indicate file has buildRootURL prefixed */
     fl->isDir = 1;  /* Keep it from following myftw() again         */
@@ -1597,7 +1597,7 @@ static int recurseDir(FileList fl, const char * diskURL)
 	case FTS_INIT:		/* initialized only */
 	case FTS_W:		/* whiteout object */
 	default:
-	    rc = RPMLOG_ERR;
+	    rc = RPMRC_FAIL;
 	    break;
 	}
 	if (rc)
@@ -1617,9 +1617,9 @@ static int recurseDir(FileList fl, const char * diskURL)
  * @param fl		package file tree walk data
  * @param fileURL	path to file, relative is builddir, absolute buildroot.
  * @param tag		tag to add
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
+static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		rpmTag tag)
 {
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
@@ -1628,7 +1628,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     uint8_t * pkt = NULL;
     ssize_t pktlen = 0;
     int absolute = 0;
-    int rc = 1;
+    int rc = RPMRC_FAIL;
     int xx;
 
     (void) urlPath(fileURL, &fn);
@@ -1644,19 +1644,23 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		fn, tag);
 	goto exit;
 	break;
-    case RPMTAG_PUBKEYS:
-	if ((rc = pgpReadPkts(fn, (const uint8_t **)&pkt, (size_t *)&pktlen)) <= 0) {
+    case RPMTAG_PUBKEYS: {
+	if ((xx = pgpReadPkts(fn, (const uint8_t **)&pkt, (size_t *)&pktlen)) <= 0) {
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("%s: public key read failed.\n"), fn);
 	    goto exit;
 	}
-	if (rc != PGPARMOR_PUBKEY) {
+	if (xx != PGPARMOR_PUBKEY) {
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("%s: not an armored public key.\n"), fn);
 	    goto exit;
 	}
 	apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
 	break;
+    }
     case RPMTAG_POLICIES:
-	if ((rc = rpmioSlurp(fn, &pkt, &pktlen)) != 0) {
+	if ((xx = rpmioSlurp(fn, &pkt, &pktlen)) != 0) {
+	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("%s: *.te policy read failed.\n"), fn);
 	    goto exit;
 	}
@@ -1668,7 +1672,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     xx = headerAddOrAppendEntry(pkg->header, tag,
 		RPM_STRING_ARRAY_TYPE, &apkt, 1);
 
-    rc = 0;
+    rc = RPMRC_OK;
     if (absolute)
 	rc = addFile(fl, fn, NULL);
 
@@ -1678,7 +1682,7 @@ exit:
     fn = _free(fn);
     if (rc) {
 	fl->processingFailed = 1;
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
     }
     return rc;
 }
@@ -1688,15 +1692,15 @@ exit:
  * @param pkg
  * @param fl		package file tree walk data
  * @param fileURL
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-static int processBinaryFile(Package pkg, FileList fl,
+static rpmRC processBinaryFile(Package pkg, FileList fl,
 		const char * fileURL)
 {
     int quote = 1;	/* XXX permit quoted glob characters. */
     int doGlob;
     const char *diskURL = NULL;
-    int rc = 0;
+    int rc = RPMRC_OK;
     
     doGlob = glob_pattern_p(fileURL, quote);
 
@@ -1706,7 +1710,7 @@ static int processBinaryFile(Package pkg, FileList fl,
 	if (*fileName != '/') {
 	    rpmlog(RPMLOG_ERR, _("File needs leading \"/\": %s\n"),
 			fileName);
-	    rc = 1;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     }
@@ -1730,7 +1734,7 @@ static int processBinaryFile(Package pkg, FileList fl,
 	if (fl->noGlob) {
 	    rpmlog(RPMLOG_ERR, _("Glob not permitted: %s\n"),
 			diskURL);
-	    rc = 1;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 
@@ -1744,7 +1748,7 @@ static int processBinaryFile(Package pkg, FileList fl,
 	} else {
 	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"),
 			diskURL);
-	    rc = 1;
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     } else {
@@ -1755,14 +1759,14 @@ exit:
     diskURL = _free(diskURL);
     if (rc) {
 	fl->processingFailed = 1;
-	rc = RPMLOG_ERR;
+	rc = RPMRC_FAIL;
     }
     return rc;
 }
 
 /**
  */
-static int processPackageFiles(rpmSpec spec, Package pkg,
+static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 			       int installSpecialDoc, int test)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -1797,7 +1801,7 @@ static int processPackageFiles(rpmSpec spec, Package pkg,
 	    rpmlog(RPMLOG_ERR,
 		_("Could not open %%files file %s: %s\n"),
 		ffn, Fstrerror(fd));
-	    return RPMLOG_ERR;
+	    return RPMRC_FAIL;
 	}
 	ffn = _free(ffn);
 
@@ -1807,7 +1811,7 @@ static int processPackageFiles(rpmSpec spec, Package pkg,
 	    handleComments(buf);
 	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 		rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
-		return RPMLOG_ERR;
+		return RPMRC_FAIL;
 	    }
 	    appendStringBuf(pkg->fileList, buf);
 	}

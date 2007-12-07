@@ -32,7 +32,7 @@ int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
     if (*sbp != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
 		spec->lineNum, name);
-	return RPMLOG_ERR;
+	return RPMRC_FAIL;
     }
     
     *sbp = newStringBuf();
@@ -40,7 +40,7 @@ int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
     /* There are no options to %build, %install, %check, or %clean */
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
 	return PART_NONE;
-    if (rc)
+    if (rc != RPMRC_OK)
 	return rc;
     
     while (! (nextPart = isPart(spec->line))) {
