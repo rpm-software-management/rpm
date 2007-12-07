@@ -149,14 +149,26 @@ RPMCODE facilitynames[] =
 #define	RPMLOG_NOWAIT	0x10	/*!< don't wait for console forks: DEPRECATED */
 #define	RPMLOG_PERROR	0x20	/*!< log to stderr as well */
 
-/** \ingroup rpmlog
- * @todo Add argument(s), integrate with other types of callbacks.
+/* \ingroup rpmlog
+ * Option flags for callback return value.
  */
-typedef void (*rpmlogCallback) (void);
+#define RPMLOG_CONT	0x01	/*!< perform default logging */	
+#define RPMLOG_EXIT	0x02	/*!< exit after logging */
 
 /** \ingroup rpmlog
  */
 typedef struct rpmlogRec_s * rpmlogRec;
+
+typedef void * rpmlogCallbackData;
+
+/** \ingroup rpmlog
+  * @param rec		rpmlog record
+  * @param data		private callback data
+  * @return		flags to define further behavior:
+  * 			RPMLOG_CONT to continue to default logger,
+  * 			RPMLOG_EXIT to exit after processing
+  */
+typedef int (*rpmlogCallback) (rpmlogRec rec, rpmlogCallbackData data);
 
 /** \ingroup rpmlog
  * Return number of rpmError() ressages.
@@ -210,11 +222,19 @@ const char * rpmlogMessage(void);
 int rpmlogCode(void);
 
 /** \ingroup rpmlog
+ * Return translated prefix string (if any) given log level.
+ * @param pri		log priority
+ * @return		message prefix (or "" for none)
+ */
+const char * rpmlogLevelPrefix(rpmlogLvl pri);
+
+/** \ingroup rpmlog
  * Set rpmlog callback function.
  * @param cb		rpmlog callback function
+ * @param data		callback private (user) data
  * @return		previous rpmlog callback function
  */
-rpmlogCallback rpmlogSetCallback(rpmlogCallback cb);
+rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data);
 
 /** \ingroup rpmlog
  * Set rpmlog file handle.

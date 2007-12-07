@@ -12,6 +12,7 @@ static rpmlogRec recs = NULL;
 
 struct rpmlogRec_s {
     int		code;		/* unused */
+    rpmlogLvl	pri;		/* priority */ 
     const char * message;	/* log message string */
 };
 
@@ -83,15 +84,45 @@ int rpmlogSetMask (int mask)
 }
 
 static rpmlogCallback _rpmlogCallback = NULL;
+static rpmlogCallbackData _rpmlogCallbackData = NULL;
 
-rpmlogCallback rpmlogSetCallback(rpmlogCallback cb)
+rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
 {
     rpmlogCallback ocb = _rpmlogCallback;
     _rpmlogCallback = cb;
+    _rpmlogCallbackData = data;
     return ocb;
 }
 
 static FILE * _stdlog = NULL;
+
+static int rpmlogDefault(rpmlogRec rec)
+{
+    FILE *msgout = (_stdlog ? _stdlog : stderr);
+
+    switch (rec->pri) {
+    case RPMLOG_INFO:
+    case RPMLOG_NOTICE:
+        msgout = (_stdlog ? _stdlog : stdout);
+        break;
+    case RPMLOG_EMERG:
+    case RPMLOG_ALERT:
+    case RPMLOG_CRIT:
+    case RPMLOG_ERR:
+    case RPMLOG_WARNING:
+    case RPMLOG_DEBUG:
+    default:
+        break;
+    }
+
+    (void) fputs(rpmlogLevelPrefix(rec->pri), msgout);
+
+    (void) fputs(rec->message, msgout);
+    (void) fflush(msgout);
+
+    return (rec->pri <= RPMLOG_CRIT ? RPMLOG_EXIT : 0);
+}
+
 
 FILE * rpmlogSetFile(FILE * fp)
 {
@@ -100,7 +131,7 @@ FILE * rpmlogSetFile(FILE * fp)
     return ofp;
 }
 
-static char *rpmlogMsgPrefix[] = {
+static const char *rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */
     N_("fatal error: "),/*!< RPMLOG_CRIT */
@@ -110,6 +141,14 @@ static char *rpmlogMsgPrefix[] = {
     "",			/*!< RPMLOG_INFO */
     "D: ",		/*!< RPMLOG_DEBUG */
 };
+
+const char * rpmlogLevelPrefix(rpmlogLvl pri)
+{
+    const char * prefix = "";
+    if (rpmlogMsgPrefix[pri] && *rpmlogMsgPrefix[pri]) 
+	prefix = _(rpmlogMsgPrefix[pri]);
+    return prefix;
+}
 
 #if !defined(HAVE_VSNPRINTF)
 static inline int vsnprintf(char * buf, int nb,
@@ -130,7 +169,9 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 #endif
     char *msgbuf, *msg;
     int msgnb = BUFSIZ, nb;
-    FILE * msgout = (_stdlog ? _stdlog : stderr);
+    int cbrc = RPMLOG_CONT;
+    int needexit = 0;
+    struct rpmlogRec_s rec;
 
     if ((mask & rpmlogMask) == 0)
 	return;
@@ -155,6 +196,10 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     msgbuf[msgnb - 1] = '\0';
     msg = msgbuf;
 
+    rec.code = code;
+    rec.message = msg;
+    rec.pri = pri;
+
     /* Save copy of all messages at warning (or below == "more important"). */
     if (pri <= RPMLOG_WARNING) {
 
@@ -162,44 +207,27 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	    recs = xmalloc((nrecs+2) * sizeof(*recs));
 	else
 	    recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
-	recs[nrecs].code = code;
+	recs[nrecs].code = rec.code;
+	recs[nrecs].pri = rec.pri;
 	recs[nrecs].message = msg = xrealloc(msgbuf, strlen(msgbuf)+1);
 	msgbuf = NULL;		/* XXX don't free at exit. */
 	recs[nrecs+1].code = 0;
 	recs[nrecs+1].message = NULL;
 	++nrecs;
-
-	if (_rpmlogCallback) {
-	    /* FIX: useless callback */
-	    _rpmlogCallback();
-	    return;	/* XXX Preserve legacy rpmError behavior. */
-	}
     }
 
-    /* rpmMessage behavior */
-
-    switch (pri) {
-    case RPMLOG_INFO:
-    case RPMLOG_NOTICE:
-	msgout = (_stdlog ? _stdlog : stdout);
-	break;
-
-    case RPMLOG_EMERG:
-    case RPMLOG_ALERT:
-    case RPMLOG_CRIT:
-    case RPMLOG_ERR: /* XXX Legacy rpmError behavior used stdout w/o prefix. */
-    case RPMLOG_WARNING:
-    case RPMLOG_DEBUG:
-	break;
+    if (_rpmlogCallback) {
+	cbrc = _rpmlogCallback(&rec, _rpmlogCallbackData);
+	needexit += cbrc & RPMLOG_EXIT;
     }
 
-    if (rpmlogMsgPrefix[pri] && *rpmlogMsgPrefix[pri])
-	(void) fputs(_(rpmlogMsgPrefix[pri]), msgout);
-
-    (void) fputs(msg, msgout);
-    (void) fflush(msgout);
+    if (cbrc & RPMLOG_CONT) {
+	cbrc = rpmlogDefault(&rec);
+	needexit += cbrc & RPMLOG_EXIT;
+    }
+    
     msgbuf = _free(msgbuf);
-    if (pri <= RPMLOG_CRIT)
+    if (needexit)
 	exit(EXIT_FAILURE);
 }
 
