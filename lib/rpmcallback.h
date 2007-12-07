@@ -26,7 +26,8 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_REPACKAGE_START	= (1 << 11),
     RPMCALLBACK_REPACKAGE_STOP	= (1 << 12),
     RPMCALLBACK_UNPACK_ERROR	= (1 << 13),
-    RPMCALLBACK_CPIO_ERROR	= (1 << 14)
+    RPMCALLBACK_CPIO_ERROR	= (1 << 14),
+    RPMCALLBACK_SCRIPT_ERROR	= (1 << 15)
 } rpmCallbackType;
 
 /**

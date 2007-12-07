@@ -525,8 +525,11 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
     {
 	char buf[BUFSIZ];
 	xx = snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
-	if (rpmluaRunScript(lua, script, buf) == -1)
+	if (rpmluaRunScript(lua, script, buf) == -1) {
+	    void *ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				 stag, 1);
 	    rc = RPMRC_FAIL;
+	}
     }
 
     rpmluaDelVar(lua, "arg");
@@ -853,7 +856,10 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 
   /* XXX filter order dependent multilib "other" arch helper error. */
   if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
+    void *ptr = NULL;
     if (psm->sq.reaped < 0) {
+	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				 stag, WTERMSIG(psm->sq.child));
 	rpmlog(RPMLOG_ERR,
 		_("%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sln, n, v, r, a, psm->sq.child, psm->sq.reaped, strerror(errno));
@@ -861,10 +867,14 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
       if (WIFSIGNALED(psm->sq.status)) {
+	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				 stag, WTERMSIG(psm->sq.status));
         rpmlog(RPMLOG_ERR,
                  _("%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"),
                  sln, n, v, r, a, WTERMSIG(psm->sq.status));
       } else {
+	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				 stag, WEXITSTATUS(psm->sq.status));
 	rpmlog(RPMLOG_ERR,
 		_("%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"),
 		sln, n, v, r, a, WEXITSTATUS(psm->sq.status));
