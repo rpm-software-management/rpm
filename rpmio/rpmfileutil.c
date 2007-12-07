@@ -727,15 +727,16 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     rc = XpoptParseArgvString(patterns, &ac, &av);
     if (rc)
 	return rc;
+
 #ifdef ENABLE_NLS
-	t = setlocale(LC_COLLATE, NULL);
-	if (t)
-	    old_collate = xstrdup(t);
-	t = setlocale(LC_CTYPE, NULL);
-	if (t)
-	    old_ctype = xstrdup(t);
-	(void) setlocale(LC_COLLATE, "C");
-	(void) setlocale(LC_CTYPE, "C");
+    t = setlocale(LC_COLLATE, NULL);
+    if (t)
+    	old_collate = xstrdup(t);
+    t = setlocale(LC_CTYPE, NULL);
+    if (t)
+    	old_ctype = xstrdup(t);
+    (void) setlocale(LC_COLLATE, "C");
+    (void) setlocale(LC_CTYPE, "C");
 #endif
 	
     if (av != NULL)
