@@ -4,7 +4,7 @@
 
 #include "system.h"
 #include <stdarg.h>
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 #include "debug.h"
 
 static int nrecs = 0;

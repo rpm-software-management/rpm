@@ -4,9 +4,9 @@
 
 #include "system.h"
 
-#include <rpmdb.h>
-#include <rpmsq.h>
-#include <rpmlog.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmsq.h>
+#include <rpm/rpmlog.h>
 
 #include "header-py.h"
 #include "rpmal-py.h"

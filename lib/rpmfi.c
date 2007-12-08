@@ -5,22 +5,22 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmlog.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmlog.h>
 
 #include "lib/cpio.h"	/* XXX CPIO_FOO */
 #include "lib/fsm.h"	/* XXX newFSM() */
 
-#include <rpmds.h>
+#include <rpm/rpmds.h>
 
 #include "lib/rpmfi_internal.h"
 
 #include "lib/rpmte_internal.h"	/* relocations */
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 
-#include <rpmfileutil.h>/* XXX domd5 */
-#include <rpmstring.h>
-#include <rpmmacro.h>	/* XXX rpmCleanPath */
+#include <rpm/rpmfileutil.h>/* XXX domd5 */
+#include <rpm/rpmstring.h>
+#include <rpm/rpmmacro.h>	/* XXX rpmCleanPath */
 
 #include "debug.h"
 

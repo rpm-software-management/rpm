@@ -7,7 +7,7 @@
 #include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 
-#include <rpmstring.h>
+#include <rpm/rpmstring.h>
 
 #include "debug.h"
 

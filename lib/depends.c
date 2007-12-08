@@ -4,16 +4,16 @@
 
 #include "system.h"
 
-#include <rpmcli.h>		/* XXX rpmcliPackagesTotal */
+#include <rpm/rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
-#include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
-#include <rpmlog.h>
+#include <rpm/rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
+#include <rpm/rpmlog.h>
 
-#include <rpmdb.h>
+#include <rpm/rpmdb.h>
 #include "rpmdb/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
 
-#include <rpmds.h>
-#include <rpmfi.h>
+#include <rpm/rpmds.h>
+#include <rpm/rpmfi.h>
 
 #include "lib/rpmte_internal.h"		/* XXX tsortInfo_s */
 #include "lib/rpmts_internal.h"

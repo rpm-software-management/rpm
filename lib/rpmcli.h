@@ -5,13 +5,13 @@
  * \file lib/rpmcli.h
  */
 
-#include <rpmlib.h>
-#include <rpmurl.h>
-#include <rpmmacro.h>
-#include <rpmcallback.h>
-#include <rpmts.h>
-#include <rpmfi.h>
-#include <argv.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmurl.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmcallback.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmfi.h>
+#include <rpm/argv.h>
 
 #ifdef __cplusplus
 extern "C" {

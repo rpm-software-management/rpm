@@ -1,7 +1,7 @@
 #ifndef H_RPMTE_PY
 #define H_RPMTE_PY
 
-#include <rpmte.h>
+#include <rpm/rpmte.h>
 
 /** \ingroup py_c
  * \file python/rpmte-py.h

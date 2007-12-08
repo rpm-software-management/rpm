@@ -3,17 +3,17 @@
  */
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmte.h>		/* XXX rpmElementType */
+#include <rpm/rpmlib.h>
+#include <rpm/rpmte.h>		/* XXX rpmElementType */
 
-#include <rpmgi.h>
+#include <rpm/rpmgi.h>
 #include "rpmio/fts.h"
 
-#include <rpmdb.h>
-#include <rpmmacro.h>		/* XXX rpmExpand */
-#include <rpmfileutil.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmmacro.h>		/* XXX rpmExpand */
+#include <rpm/rpmfileutil.h>
 #include "lib/manifest.h"
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 
 #include "debug.h"
 

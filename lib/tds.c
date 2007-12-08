@@ -1,8 +1,8 @@
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
-#include <rpmds.h>
+#include <rpm/rpmds.h>
 
 #include "debug.h"
 

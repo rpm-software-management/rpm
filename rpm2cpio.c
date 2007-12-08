@@ -3,10 +3,10 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmlib.h>
-#include <rpmpgp.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmpgp.h>
 
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 
 #include "debug.h"
 

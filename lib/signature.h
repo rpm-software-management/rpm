@@ -6,7 +6,7 @@
  * Generate and verify signatures.
  */
 
-#include <header.h>
+#include <rpm/header.h>
 
 /** \ingroup signature
  * Signature types stored in rpm lead.

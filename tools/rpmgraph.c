@@ -1,16 +1,16 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmcli.h>
+#include <rpm/rpmcli.h>
 
-#include <rpmdb.h>
-#include <rpmps.h>
-#include <rpmte.h>
-#include <rpmts.h>
-#include <rpmds.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmps.h>
+#include <rpm/rpmte.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmds.h>
 
-#include <rpmlog.h>
-#include <rpmfileutil.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmfileutil.h>
 
 #include "lib/manifest.h"
 #include "debug.h"

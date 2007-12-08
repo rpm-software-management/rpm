@@ -5,30 +5,30 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmmacro.h>
-#include <rpmurl.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmurl.h>
 #include "rpmio/rpmlua.h"
 
 #include "lib/cpio.h"
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/psm.h"
 
-#include <rpmds.h>
+#include <rpm/rpmds.h>
 
 #include "lib/rpmfi_internal.h" /* XXX replaced/states, fi->hge, fi->te... */
 
 #include "lib/rpmte_internal.h"	/* XXX te->fd */
 
 #include "lib/rpmtsscore.h"
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
-#include <rpmfileutil.h>	/* rpmMkTempFile() */
+#include <rpm/rpmfileutil.h>	/* rpmMkTempFile() */
 #include "lib/misc.h"		/* XXX rpmMkdirPath, doputenv */
-#include <rpmdb.h>		/* XXX for db_chrootDone */
-#include <rpmlog.h>
+#include <rpm/rpmdb.h>		/* XXX for db_chrootDone */
+#include <rpm/rpmlog.h>
 #include "debug.h"
 
 #define	_PSM_DEBUG	0

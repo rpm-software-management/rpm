@@ -1,7 +1,7 @@
 #ifndef	_RPMTE_INTERNAL_H
 #define _RPMTE_INTERNAL_H
 
-#include <rpmte.h>
+#include <rpm/rpmte.h>
 
 /** \ingroup rpmte
  * Dependncy ordering information.

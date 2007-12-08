@@ -1,9 +1,9 @@
 #include "system.h"
 
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
-#include <rpmlib.h>
-#include <rpmmacro.h>
-#include <rpmio.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmio.h>
 
 #define	_ETC_RPM_PLATFORM	"/etc/rpm/platform"
 static const char * platform = _ETC_RPM_PLATFORM;

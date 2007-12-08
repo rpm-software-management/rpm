@@ -5,7 +5,7 @@
  * \file rpmdb/header_internal.h
  */
 
-#include <header.h>
+#include <rpm/header.h>
 #include "rpmdb/header_method.h"
 
 #include <netinet/in.h>

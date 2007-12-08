@@ -14,18 +14,18 @@
 
 #include <regex.h>
 
-#include <rpmurl.h>
-#include <rpmpgp.h>
-#include <rpmpgp.h>
-#include <rpmmacro.h>
-#include <rpmsq.h>
-#include <rpmstring.h>
-#include <rpmfileutil.h>
-#include <rpmds.h>			/* XXX isInstallPreReq macro only */
+#include <rpm/rpmurl.h>
+#include <rpm/rpmpgp.h>
+#include <rpm/rpmpgp.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmsq.h>
+#include <rpm/rpmstring.h>
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmds.h>			/* XXX isInstallPreReq macro only */
 
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 #include "rpmdb/rpmdb_internal.h"
-#include <rpmdb.h>
+#include <rpm/rpmdb.h>
 #include "rpmdb/fprint.h"
 #include "rpmdb/header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 #include "debug.h"

@@ -6,12 +6,12 @@
  * Structures and prototypes used for an "rpmts" transaction set.
  */
 
-#include <rpmlib.h>	/* for rpmts */
-#include <rpmps.h>
-#include <rpmsw.h>
-#include <rpmpgp.h>
-#include <rpmfi.h>
-#include <rpmcallback.h>
+#include <rpm/rpmlib.h>	/* for rpmts */
+#include <rpm/rpmps.h>
+#include <rpm/rpmsw.h>
+#include <rpm/rpmpgp.h>
+#include <rpm/rpmfi.h>
+#include <rpm/rpmcallback.h>
 
 #ifdef __cplusplus
 extern "C" {

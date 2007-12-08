@@ -6,8 +6,8 @@
  * File and path manipulation helper functions.
  */
 
-#include <rpmio.h>
-#include <rpmpgp.h>
+#include <rpm/rpmio.h>
+#include <rpm/rpmpgp.h>
 
 /** \ingroup rpmfileutil
  */

@@ -3,7 +3,7 @@
  */
 
 #include <stdio.h>
-#include <rpmio.h>
+#include <rpm/rpmio.h>
 #include "debug.h"
 
 int main (void)

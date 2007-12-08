@@ -1,7 +1,7 @@
 #ifndef RPMPYTHON_HEADER
 #define RPMPYTHON_HEADER
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
 /** \ingroup py_c
  * \file python/header-py.h

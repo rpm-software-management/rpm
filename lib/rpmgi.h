@@ -5,10 +5,10 @@
  * \file lib/rpmgi.h
  */
 
-#include <rpmlib.h>
-#include <rpmte.h>
-#include <rpmts.h>
-#include <argv.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmte.h>
+#include <rpm/rpmts.h>
+#include <rpm/argv.h>
 
 #ifdef __cplusplus
 extern "C" {

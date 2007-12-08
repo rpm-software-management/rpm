@@ -8,7 +8,7 @@
  * @todo Eliminate, merge into rpmlib.
  */
 
-#include <rpmbuild.h>
+#include <rpm/rpmbuild.h>
 
 #ifdef __cplusplus
 extern "C" {

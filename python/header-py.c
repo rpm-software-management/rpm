@@ -4,12 +4,12 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmstring.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/legacy.h"	/* XXX expand/compressFilelist(), providePackageNVR() */
 
-#include <rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
+#include <rpm/rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
 
 #include "header-py.h"
 #include "rpmds-py.h"

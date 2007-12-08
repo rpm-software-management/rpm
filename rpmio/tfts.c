@@ -2,8 +2,8 @@
 #include "rpmio/fts.h"
 
 #include "rpmio/rpmio_internal.h"
-#include <rpmmacro.h>
-#include <rpmlog.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
 #include <popt.h>
 
 #include "debug.h"

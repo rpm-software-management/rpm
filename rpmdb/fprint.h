@@ -7,7 +7,7 @@
  */
 
 #include "rpmdb/rpmhash.h"
-#include <header.h>
+#include <rpm/header.h>
 
 /**
  */

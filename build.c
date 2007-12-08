@@ -4,16 +4,16 @@
 
 #include "system.h"
 
-#include <rpmcli.h>
-#include <rpmbuild.h>
+#include <rpm/rpmcli.h>
+#include <rpm/rpmbuild.h>
 
-#include <rpmps.h>
-#include <rpmte.h>
-#include <rpmts.h>
-#include <rpmfileutil.h>
+#include <rpm/rpmps.h>
+#include <rpm/rpmte.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmfileutil.h>
 
 #include "build.h"
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 #include "debug.h"
 
 /**

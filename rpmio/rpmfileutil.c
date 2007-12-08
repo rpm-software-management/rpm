@@ -14,11 +14,11 @@
 #endif
 
 #include "rpmio/rpmio_internal.h"
-#include <rpmfileutil.h>
-#include <rpmurl.h>
-#include <rpmmacro.h>
-#include <rpmlog.h>
-#include <argv.h>
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmurl.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
+#include <rpm/argv.h>
 
 static int open_dso(const char * path, pid_t * pidp, size_t *fsizep)
 {

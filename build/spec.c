@@ -6,11 +6,11 @@
 #include "system.h"
 
 #include "build/buildio.h"
-#include <rpmds.h>
-#include <rpmfi.h>
-#include <rpmts.h>
-#include <rpmlog.h>
-#include <rpmfileutil.h>
+#include <rpm/rpmds.h>
+#include <rpm/rpmfi.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmfileutil.h>
 
 #include "debug.h"
 

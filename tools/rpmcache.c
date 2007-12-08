@@ -8,13 +8,13 @@ const char *__progname;
 #include <fnmatch.h>
 #include "rpmio/fts.h"
 
-#include <rpmcli.h>
-#include <rpmlog.h>
+#include <rpm/rpmcli.h>
+#include <rpm/rpmlog.h>
 
-#include <rpmps.h>
-#include <rpmdb.h>
-#include <rpmds.h>
-#include <rpmts.h>
+#include <rpm/rpmps.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmds.h>
+#include <rpm/rpmts.h>
 
 #include "lib/misc.h"	/* for rpmMkdirPath */
 

@@ -2,11 +2,11 @@
 
 #include <pthread.h>
 #include <assert.h>
-#include <rpmlib.h>
-#include <rpmts.h>
-#include <rpmsq.h>	/* XXX for _rpmsq_debug */
-#include <rpmio.h>
-#include <rpmlog.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmsq.h>	/* XXX for _rpmsq_debug */
+#include <rpm/rpmio.h>
+#include <rpm/rpmlog.h>
 
 #include "debug.h"
 

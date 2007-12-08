@@ -7,8 +7,8 @@
  */
 
 #define _RPMSQ_INTERNAL 
-#include <rpmsq.h>
-#include <rpmcallback.h>
+#include <rpm/rpmsq.h>
+#include <rpm/rpmcallback.h>
 
 extern int _psm_debug;
 

@@ -5,9 +5,9 @@
 
 #include "system.h"
 
-#include <rpmbuild.h>
+#include <rpm/rpmbuild.h>
 
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 #include "debug.h"
 
 struct rpmBuildArguments_s         rpmBTArgs;

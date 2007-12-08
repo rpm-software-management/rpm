@@ -3,18 +3,18 @@
  */
 
 #include "system.h"
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
-#include <rpmmacro.h>	/* XXX for rpmExpand */
-#include <rpmlog.h>
+#include <rpm/rpmmacro.h>	/* XXX for rpmExpand */
+#include <rpm/rpmlog.h>
 
 #include "lib/fsm.h"
 #include "lib/psm.h"
 
-#include <rpmdb.h>
+#include <rpm/rpmdb.h>
 #include "rpmdb/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
 
-#include <rpmds.h>
+#include <rpm/rpmds.h>
 
 #include "lib/rpmlock.h"
 
@@ -26,13 +26,13 @@
 
 #include "lib/cpio.h"
 #include "rpmdb/fprint.h"
-#include <rpmfileutil.h>
-#include <rpmstring.h>
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmstring.h>
 #include "lib/misc.h" 		/* currentDirectory */
 
 #include "debug.h"
 
-#include <idtx.h>
+#include <rpm/idtx.h>
 
 /**
  */

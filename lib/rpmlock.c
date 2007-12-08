@@ -1,12 +1,12 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmlog.h>
-#include <rpmmacro.h>
-#include <rpmfileutil.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmfileutil.h>
 
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 #include "lib/rpmlock.h"
 
 #include "debug.h"

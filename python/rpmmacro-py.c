@@ -7,7 +7,7 @@
 #include "structmember.h"
 
 #include "rpmmacro-py.h"
-#include <rpmmacro.h>
+#include <rpm/rpmmacro.h>
 
 #include "debug.h"
 

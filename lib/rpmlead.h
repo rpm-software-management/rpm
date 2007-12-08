@@ -21,7 +21,7 @@ extern "C" {
 
 typedef struct rpmlead_s * rpmlead;
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
 /** \ingroup lead
  * Initialize a lead structure

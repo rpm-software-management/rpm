@@ -1,7 +1,7 @@
 #ifndef RPMPYTHON_SPEC
 #define RPMPYTHON_SPEC
 
-#include <rpmbuild.h>
+#include <rpm/rpmbuild.h>
 
 /** \ingroup py_c
  * \file python/spec-py.h

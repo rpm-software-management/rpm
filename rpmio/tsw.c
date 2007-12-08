@@ -1,5 +1,5 @@
 #include "system.h"
-#include <rpmsw.h>
+#include <rpm/rpmsw.h>
 #include "debug.h"
 
 int

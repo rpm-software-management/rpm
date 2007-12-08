@@ -6,8 +6,8 @@
  *  The rpmSpec and Package data structures used during build.
  */
 
-#include <rpmstring.h>	/* StringBuf */
-#include <rpmcli.h>	/* for QVA_t */
+#include <rpm/rpmstring.h>	/* StringBuf */
+#include <rpm/rpmcli.h>	/* for QVA_t */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 #ifndef H_RPMPS_PY
 #define H_RPMPS_PY
 
-#include <rpmps.h>
+#include <rpm/rpmps.h>
 
 /** \ingroup py_c
  * \file python/rpmps-py.h

@@ -1,9 +1,9 @@
 #ifndef _RPMTS_INTERNAL_H
 #define _RPMTS_INTERNAL_H
 
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 #include "rpmdb/rpmhash.h"	/* XXX hashTable */
-#include <rpmal.h>	/* XXX availablePackage/relocateFileList ,*/
+#include <rpm/rpmal.h>	/* XXX availablePackage/relocateFileList ,*/
 #include "lib/rpmtsscore.h"	/* for rpmtsScore */
 
 extern int _cacheDependsRC;

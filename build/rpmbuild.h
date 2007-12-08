@@ -6,14 +6,14 @@
  *  This is the *only* module users of librpmbuild should need to include.
  */
 
-#include <rpmcli.h>
-#include <rpmds.h>
+#include <rpm/rpmcli.h>
+#include <rpm/rpmds.h>
 
 /* and it shouldn't need these :-( */
-#include <rpmstring.h>
+#include <rpm/rpmstring.h>
 
 /* but this will be needed */
-#include <rpmspec.h>
+#include <rpm/rpmspec.h>
 
 #ifdef __cplusplus
 extern "C" {

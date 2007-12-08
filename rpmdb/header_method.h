@@ -6,7 +6,7 @@
  * Header method prototypes
  */
 
-#include <header.h>
+#include <rpm/header.h>
 
 /** \ingroup header
  * Create new (empty) header instance.

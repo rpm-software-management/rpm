@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */
 #include "rpmds-py.h"

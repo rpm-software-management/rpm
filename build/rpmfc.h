@@ -8,10 +8,10 @@
 
 #include <magic.h>
 
-#include <rpmlib.h>	/* for rpmds, rpmSpec */
-#include <argv.h>	/* for ARGV_t */
-#include <rpmstring.h>	/* for StringBuf */
-#include <rpmspec.h>	/* for Package */
+#include <rpm/rpmlib.h>	/* for rpmds, rpmSpec */
+#include <rpm/argv.h>	/* for ARGV_t */
+#include <rpm/rpmstring.h>	/* for StringBuf */
+#include <rpm/rpmspec.h>	/* for Package */
 
 #ifdef __cplusplus
 extern "C" {

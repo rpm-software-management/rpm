@@ -6,9 +6,9 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmcli.h>
-#include <rpmgi.h>
-#include <rpmlog.h>
+#include <rpm/rpmcli.h>
+#include <rpm/rpmgi.h>
+#include <rpm/rpmlog.h>
 
 #include "debug.h"
 

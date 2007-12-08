@@ -4,14 +4,14 @@
 
 #include "system.h"
 
-#include <rpmcli.h>
+#include <rpm/rpmcli.h>
 
-#include <rpmdb.h>
-#include <rpmds.h>
-#include <rpmts.h>
-#include <rpmlog.h>
-#include <rpmfileutil.h>
-#include <idtx.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmds.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmfileutil.h>
+#include <rpm/idtx.h>
 
 #include "lib/manifest.h"
 #include "debug.h"

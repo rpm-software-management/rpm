@@ -1,6 +1,6 @@
 #include "system.h"
-#include <rpmlib.h>
-#include <rpmmacro.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmmacro.h>
 #include "debug.h"
 
 #define	_PROC_CPUINFO	"/proc/cpuinfo"

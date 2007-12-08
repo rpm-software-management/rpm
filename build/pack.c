@@ -6,21 +6,21 @@
 #include "system.h"
 
 #include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
-#include <rpmbuild.h>
+#include <rpm/rpmbuild.h>
 
 #include "lib/cpio.h"
 #include "lib/fsm.h"
 
 #include "lib/rpmfi_internal.h"	/* XXX fi->fsm */
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 
 #include "build/buildio.h"
 
 #include "lib/legacy.h"	/* XXX providePackageNVR */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
-#include <rpmfileutil.h>
-#include <rpmlog.h>
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmlog.h>
 #include "debug.h"
 
 /**

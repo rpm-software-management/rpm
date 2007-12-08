@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpmbuild.h>
+#include <rpm/rpmbuild.h>
 #include "debug.h"
 
 int parseNum(const char * line, int * res)

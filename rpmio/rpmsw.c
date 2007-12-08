@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include <rpmsw.h>
+#include <rpm/rpmsw.h>
 #include "debug.h"
 
 static rpmtime_t rpmsw_overhead = 0;

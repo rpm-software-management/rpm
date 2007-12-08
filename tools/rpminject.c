@@ -1,10 +1,10 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmbuild.h>
+#include <rpm/rpmbuild.h>
 #include "build/buildio.h"
 
-#include <header.h>
+#include <rpm/header.h>
 #include "lib/rpmlead.h"
 
 #include <err.h>	/* XXX !HAVE_ERR_H: get from misc */

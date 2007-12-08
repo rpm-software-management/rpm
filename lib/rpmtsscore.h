@@ -1,8 +1,8 @@
 #ifndef H_RPMTSSCORE
 #define H_RPMTSSCORE
 
-#include <rpmlib.h>
-#include <rpmte.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmte.h>
 
 /**********************
  * Transaction Scores *

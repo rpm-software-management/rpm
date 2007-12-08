@@ -4,11 +4,11 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmpgp.h>
-#include <rpmdb.h>
-#include <rpmbuild.h>
-#include <idtx.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmpgp.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmbuild.h>
+#include <rpm/idtx.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */

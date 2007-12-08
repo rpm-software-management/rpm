@@ -5,18 +5,18 @@
 
 #include "system.h"
 
-#include <rpmpgp.h>
+#include <rpm/rpmpgp.h>
 #include "rpmio/rpmio_internal.h"	/* for fd*Digest() */
-#include <rpmcli.h>
+#include <rpm/rpmcli.h>
 
-#include <rpmdb.h>
+#include <rpm/rpmdb.h>
 
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
-#include <rpmfileutil.h>	/* rpmMkTempFile() */
+#include <rpm/rpmfileutil.h>	/* rpmMkTempFile() */
 #include "debug.h"
 
 int _print_pkts = 0;

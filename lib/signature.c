@@ -5,16 +5,16 @@
 #include "system.h"
 
 #include "rpmio/digest.h"
-#include <rpmlib.h>
-#include <rpmmacro.h>	/* XXX for rpmGetPath() */
-#include <rpmdb.h>
-#include <rpmstring.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmmacro.h>	/* XXX for rpmGetPath() */
+#include <rpm/rpmdb.h>
+#include <rpm/rpmstring.h>
 
-#include <rpmts.h>
+#include <rpm/rpmts.h>
 
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 #include "lib/misc.h"	/* XXX for dosetenv() */
-#include <rpmfileutil.h>
+#include <rpm/rpmfileutil.h>
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "rpmdb/header_internal.h"

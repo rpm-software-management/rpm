@@ -7,11 +7,11 @@
 
 #include <assert.h>
 
-#include <rpmio.h>
-#include <rpmurl.h>
+#include <rpm/rpmio.h>
+#include <rpm/rpmurl.h>
 
-#include <rpmpgp.h>
-#include <rpmsw.h>
+#include <rpm/rpmpgp.h>
+#include <rpm/rpmsw.h>
 #include "rpmio/digest.h"
 
 /** \ingroup rpmio

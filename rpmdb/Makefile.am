@@ -2,7 +2,7 @@
 
 include $(top_srcdir)/rpm.am
 
-AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
+AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += @WITH_SQLITE3_INCLUDE@
@@ -39,8 +39,8 @@ endif
 
 tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmtag.h 
 	@echo '#include "system.h"' > $@
-	@echo '#include <header.h>' >> $@
-	@echo '#include <rpmtag.h>' >> $@
+	@echo '#include <rpm/header.h>' >> $@
+	@echo '#include <rpm/rpmtag.h>' >> $@
 	@echo '#include "debug.h"' >> $@
 	@echo '' >> $@
 	@echo 'static const struct headerTagTableEntry_s rpmTagTbl[] = {' >> $@

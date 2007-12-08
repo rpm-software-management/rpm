@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmio.h>	/* XXX fdGetFILE */
+#include <rpm/rpmio.h>	/* XXX fdGetFILE */
 
 #include "header-py.h"	/* XXX pyrpmError */
 #include "rpmfd-py.h"

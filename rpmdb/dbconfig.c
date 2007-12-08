@@ -4,10 +4,10 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmmacro.h>
-#include <rpmstring.h>
-#include <rpmlog.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmstring.h>
+#include <rpm/rpmlog.h>
 #include "rpmdb/rpmdb_internal.h"
 #include "debug.h"
 

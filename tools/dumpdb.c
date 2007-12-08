@@ -1,10 +1,10 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 #include "rpmdb/header_internal.h"
 
-#include <rpmdb.h>
+#include <rpm/rpmdb.h>
 
 #include "debug.h"
 

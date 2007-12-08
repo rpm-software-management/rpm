@@ -4,11 +4,11 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
-#include <rpmal.h>
-#include <rpmds.h>
-#include <rpmfi.h>
+#include <rpm/rpmal.h>
+#include <rpm/rpmds.h>
+#include <rpm/rpmfi.h>
 
 #include "debug.h"
 

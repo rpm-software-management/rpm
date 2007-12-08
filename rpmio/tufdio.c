@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmurl.h>
+#include <rpm/rpmurl.h>
 #include "rpmio/rpmio_internal.h"
 
 #include <stdarg.h>

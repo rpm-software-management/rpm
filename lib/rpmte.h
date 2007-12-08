@@ -6,7 +6,7 @@
  * Structures used for an "rpmte" transaction element.
  */
 
-#include <rpmal.h>
+#include <rpm/rpmal.h>
 
 #ifdef __cplusplus
 extern "C" {

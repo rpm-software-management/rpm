@@ -4,9 +4,9 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
-#include <rpmps.h>
+#include <rpm/rpmps.h>
 
 #include "debug.h"
 

@@ -6,8 +6,8 @@
  * Access RPM indices using Berkeley DB interface(s).
  */
 
-#include <rpmlib.h>
-#include <rpmsw.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmsw.h>
 
 #ifdef __cplusplus
 extern "C" {

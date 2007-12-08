@@ -12,7 +12,7 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <rpmints.h>
+#include <rpm/rpmints.h>
 
 #ifdef __cplusplus
 extern "C" {

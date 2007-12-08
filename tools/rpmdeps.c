@@ -1,10 +1,10 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmbuild.h>
-#include <argv.h>
-#include <rpmds.h>
-#include <rpmfc.h>
+#include <rpm/rpmbuild.h>
+#include <rpm/argv.h>
+#include <rpm/rpmds.h>
+#include <rpm/rpmfc.h>
 
 #include "debug.h"
 

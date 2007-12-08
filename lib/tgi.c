@@ -1,11 +1,11 @@
 #include "system.h"
 
-#include <rpmgi.h>
-#include <rpmcli.h>
+#include <rpm/rpmgi.h>
+#include <rpm/rpmcli.h>
 
-#include <rpmte.h>
+#include <rpm/rpmte.h>
 
-#include <rpmmacro.h>
+#include <rpm/rpmmacro.h>
 #include "rpmio/fts.h"
 #include <popt.h>
 

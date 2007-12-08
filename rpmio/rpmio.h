@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <rpmsw.h>
+#include <rpm/rpmsw.h>
 
 #ifdef __cplusplus
 extern "C" {

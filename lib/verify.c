@@ -5,14 +5,14 @@
 
 #include "system.h"
 
-#include <rpmcli.h>
-#include <rpmlog.h>
+#include <rpm/rpmcli.h>
+#include <rpm/rpmlog.h>
 
 #include "lib/psm.h"
-#include <rpmfi.h>
-#include <rpmts.h>
+#include <rpm/rpmfi.h>
+#include <rpm/rpmts.h>
 
-#include "rpmfileutil.h"
+#include <rpm/rpmfileutil.h>
 #include "rpmio/ugid.h" 	/* uidToUname(), gnameToGid */
 #include "debug.h"
 

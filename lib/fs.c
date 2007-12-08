@@ -3,9 +3,9 @@
  */
 
 #include "system.h"
-#include <rpmlib.h>
-#include <rpmfileutil.h>	/* for rpmGetPath */
-#include <rpmlog.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmfileutil.h>	/* for rpmGetPath */
+#include <rpm/rpmlog.h>
 #include "debug.h"
 
 

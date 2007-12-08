@@ -24,10 +24,10 @@ extern int h_errno;
 #include "rpmio/rpmio_internal.h"
 
 #include "rpmio/ugid.h"
-#include <argv.h>
-#include <rpmlog.h>
-#include <rpmmacro.h>
-#include <rpmfileutil.h>
+#include <rpm/argv.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmfileutil.h>
 
 #include "debug.h"
 

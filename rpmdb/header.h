@@ -79,8 +79,8 @@
 
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
-#include <rpmio.h>
-#include <rpmints.h>
+#include <rpm/rpmio.h>
+#include <rpm/rpmints.h>
 
 #ifdef __cplusplus
 extern "C" {

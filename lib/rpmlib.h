@@ -8,9 +8,9 @@
  *
  */
 
-#include <rpmio.h>
-#include <header.h>
-#include <rpmtag.h>
+#include <rpm/rpmio.h>
+#include <rpm/header.h>
+#include <rpm/rpmtag.h>
 #include <popt.h>
 
 #ifdef __cplusplus

@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmstring.h>
+#include <rpm/rpmstring.h>
 #include "debug.h"
 
 #define BUF_CHUNK 1024

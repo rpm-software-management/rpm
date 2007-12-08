@@ -1,7 +1,7 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 #include "rpmdb/header_internal.h"
 #include "debug.h"
 

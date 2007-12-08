@@ -7,10 +7,10 @@
 /* just to put a marker in librpm.a */
 const char * RPMVERSION = VERSION;
 
-#include <rpmurl.h>
-#include <rpmmacro.h>	/* XXX for rpmGetPath */
-#include <rpmlib.h>
-#include <rpmlog.h>
+#include <rpm/rpmurl.h>
+#include <rpm/rpmmacro.h>	/* XXX for rpmGetPath */
+#include <rpm/rpmlib.h>
+#include <rpm/rpmlog.h>
 #include "lib/misc.h"
 #include "debug.h"
 

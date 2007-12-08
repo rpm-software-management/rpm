@@ -39,8 +39,8 @@
 #include <gelf.h>
 #include <dwarf.h>
 
-#include <rpmio.h>
-#include <rpmpgp.h>
+#include <rpm/rpmio.h>
+#include <rpm/rpmpgp.h>
 #include "tools/hashtab.h"
 
 #define DW_TAG_partial_unit 0x3c

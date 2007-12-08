@@ -1,11 +1,11 @@
 #include "system.h"
 
-#include <idtx.h>
-#include <rpmlib.h>
-#include <rpmdb.h>
-#include <rpmts.h>
-#include <rpmfileutil.h>
-#include <rpmlog.h>
+#include <rpm/idtx.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmlog.h>
 
 static int reverse = -1;
 

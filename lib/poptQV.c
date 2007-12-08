@@ -5,8 +5,8 @@
 
 #include "system.h"
 
-#include <rpmcli.h>
-#include <rpmgi.h>	/* XXX for giFlags */
+#include <rpm/rpmcli.h>
+#include <rpm/rpmgi.h>	/* XXX for giFlags */
 
 #include "debug.h"
 

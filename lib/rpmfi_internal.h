@@ -1,7 +1,7 @@
 #ifndef _RPMFI_INTERNAL_H
 #define _RPMFI_INTERNAL_H
 
-#include <rpmfi.h>
+#include <rpm/rpmfi.h>
 
 /**
  */

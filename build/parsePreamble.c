@@ -5,9 +5,9 @@
 
 #include "system.h"
 
-#include <rpmbuild.h>
-#include <rpmlog.h>
-#include <rpmfileutil.h>
+#include <rpm/rpmbuild.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmfileutil.h>
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }

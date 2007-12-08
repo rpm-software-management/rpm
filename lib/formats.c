@@ -4,11 +4,11 @@
 
 #include "system.h"
 #include "rpmio/digest.h"
-#include <rpmlib.h>
-#include <rpmds.h>
-#include <rpmmacro.h>	/* XXX for %_i18ndomains */
+#include <rpm/rpmlib.h>
+#include <rpm/rpmds.h>
+#include <rpm/rpmmacro.h>	/* XXX for %_i18ndomains */
 
-#include <rpmfi.h>
+#include <rpm/rpmfi.h>
 
 #include "lib/manifest.h"
 

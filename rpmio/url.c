@@ -7,10 +7,10 @@
 #include <assert.h>
 #include <netinet/in.h>
 
-#include <rpmmacro.h>
-#include <rpmlog.h>
-#include <rpmurl.h>
-#include <rpmio.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmurl.h>
+#include <rpm/rpmio.h>
 
 #include "debug.h"
 

@@ -26,14 +26,14 @@
 
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmlog.h>
-#include <rpmmacro.h>
-#include <rpmurl.h>     	/* XXX urlPath proto */
-#include <rpmfileutil.h>	/* rpmioMkpath */
+#include <rpm/rpmlib.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmurl.h>     	/* XXX urlPath proto */
+#include <rpm/rpmfileutil.h>	/* rpmioMkpath */
 
 #include "rpmdb/rpmdb_internal.h"
-#include <rpmdb.h>
+#include <rpm/rpmdb.h>
 
 #include <sqlite3.h>
 

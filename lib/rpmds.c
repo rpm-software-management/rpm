@@ -3,11 +3,11 @@
  */
 #include "system.h"
 
-#include <rpmlib.h>
-#include <rpmstring.h>
-#include <rpmlog.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmstring.h>
+#include <rpm/rpmlog.h>
 
-#include <rpmds.h>
+#include <rpm/rpmds.h>
 
 #include "debug.h"
 

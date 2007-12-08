@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <argv.h>
+#include <rpm/argv.h>
 
 #include "debug.h"
 

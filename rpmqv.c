@@ -11,14 +11,14 @@ const char *__progname;
 #define	IAM_RPMK
 #endif
 
-#include <rpmcli.h>
-#include <rpmbuild.h>
-#include <rpmlog.h>
+#include <rpm/rpmcli.h>
+#include <rpm/rpmbuild.h>
+#include <rpm/rpmlog.h>
 
-#include <rpmdb.h>
+#include <rpm/rpmdb.h>
 #include "rpmdb/rpmdb_internal.h"	/* XXX for freeing dbiTags */
-#include <rpmps.h>
-#include <rpmts.h>
+#include <rpm/rpmps.h>
+#include <rpm/rpmts.h>
 
 #ifdef	IAM_RPMBT
 #include "build.h"

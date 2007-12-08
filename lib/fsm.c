@@ -6,19 +6,19 @@
 #include "system.h"
 
 #include "rpmio/rpmio_internal.h"	/* fdGet/SetCpioPos, fdInit/FiniDigest */
-#include <rpmlib.h>
+#include <rpm/rpmlib.h>
 
 #include "lib/cpio.h"
 
 #include "lib/fsm.h"
 #define	fsmUNSAFE	fsmStage
 
-#include <rpmlog.h>
+#include <rpm/rpmlog.h>
 
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath, fi->action... */
-#include <rpmte.h>
-#include <rpmts.h>
-#include <rpmsq.h>
+#include <rpm/rpmte.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmsq.h>
 
 #include "rpmio/ugid.h"		/* XXX unameToUid() and gnameToGid() */
 
