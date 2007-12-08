@@ -11,5 +11,5 @@ URL: http://rpm.org
 # Requires: 
 # Conflicts:
 Cflags: -I${includedir}/
-Libs: -L${libdir} -lrpmbuild -lrpm -lrpmdb -lrpmio -lrpmmisc
+Libs: -L${libdir} -lrpmbuild -lrpm -lrpmdb -lrpmio
 Libs.private: -lpopt -lmagic -lrt -lpthread @WITH_SELINUX_LIB@ @WITH_SQLITE3_LIB@ @WITH_DB_LIB@ @WITH_BZ2_LIB@ @WITH_ZLIB_LIB@ @WITH_NSS_LIB@
