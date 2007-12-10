@@ -891,6 +891,14 @@ fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
  */
 /*@null@*/
 static PyObject *
+rpmts_GetVSFlags(rpmtsObject * s)
+{
+    return Py_BuildValue("i", rpmtsVSFlags(s->ts));
+}
+
+/** \ingroup py_c
+ */
+static PyObject *
 rpmts_SetColor(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	/*@modifies s @*/
 {
@@ -1477,6 +1485,9 @@ static struct PyMethodDef rpmts_methods[] = {
     rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
     rpm._RPMVSF_NODIGESTS    if set, don't check digest(s)\n\
     rpm._RPMVSF_NOSIGNATURES if set, don't check signature(s)\n" },
+ {"getVSFlags",(PyCFunction) rpmts_GetVSFlags,	METH_NOARGS,
+"ts.getVSFlags() -> vsflags\n\
+- Retrieve current signature verification flags from transaction\n" },
  {"setColor",(PyCFunction) rpmts_SetColor,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
