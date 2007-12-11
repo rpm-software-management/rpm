@@ -366,7 +366,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 
     /* Binary packages now have explicit Provides: name = version-release. */
     isSource = headerIsSource(h);
-    if (isSource)
+    if (!isSource)
 	providePackageNVR(h);
 
     /* Save payload information */
