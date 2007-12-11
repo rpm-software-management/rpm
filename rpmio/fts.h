@@ -56,7 +56,7 @@
 #endif
 
 #if defined(__APPLE__)
-# define _D_EXACT_NAMLEN(d) ((d)->d_reclen)
+# define _D_EXACT_NAMLEN(d) (strlen((d)->d_name))
 #endif
 
 #endif
