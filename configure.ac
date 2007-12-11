@@ -1052,7 +1052,7 @@ AC_CONFIG_SUBDIRS(db3)
 
 AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_external_db" = no])
 AM_CONDITIONAL([DOXYGEN],[test "$DOXYGEN" != no])
-AM_CONDITIONAL([HACKINGDOCS],[test "$with_hackingdocs" == yes])
+AM_CONDITIONAL([HACKINGDOCS],[test "$with_hackingdocs" = yes])
 
 AC_PATH_PROG(AUTOM4TE,autom4te,:)
 
