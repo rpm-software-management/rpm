@@ -28,7 +28,7 @@ rpmconfig_SCRIPTS = \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh \
-	perl.prov perl.req pythondeps.sh osgideps.pl \
+	perl.prov perl.req perldeps.pl pythondeps.sh osgideps.pl \
 	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
