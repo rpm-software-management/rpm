@@ -103,7 +103,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @param datalen		length of header+payload
  * @return 			rpmRC return code
  */
-static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
+static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen)
 {
     struct stat st;
     int fdno = Fileno(fd);
@@ -112,7 +112,7 @@ static inline rpmRC printSize(FD_t fd, int siglen, int pad, int datalen)
 	return RPMRC_FAIL;
 
     rpmlog(RPMLOG_DEBUG,
-	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
+	_("Expected size: %12d = lead(%d)+sigs(%zd)+pad(%zd)+data(%zd)\n"),
 		RPMLEAD_SIZE+siglen+pad+datalen,
 		RPMLEAD_SIZE, siglen, pad, datalen);
     rpmlog(RPMLOG_DEBUG,
@@ -342,7 +342,7 @@ Header rpmFreeSignature(Header sigh)
  * @return		0 on success, 1 on failure
  */
 static int makePGPSignature(const char * file, int32_t * sigTagp,
-		uint8_t ** pktp, int32_t * pktlenp,
+		uint8_t ** pktp, size_t * pktlenp,
 		const char * passPhrase)
 {
     char * sigfile = alloca(1024);
@@ -927,7 +927,7 @@ verifySizeSignature(const rpmts ts, char * t)
     const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
-    int32_t size = 0x7fffffff;
+    size_t size = 0x7fffffff;
 
     *t = '\0';
     t = stpcpy(t, _("Header+Payload size: "));
@@ -943,7 +943,7 @@ verifySizeSignature(const rpmts ts, char * t)
     if (size != dig->nbytes) {
 	res = RPMRC_FAIL;
 	t = stpcpy(t, rpmSigString(res));
-	sprintf(t, " Expected(%d) != (%d)\n", (int)size, (int)dig->nbytes);
+	sprintf(t, " Expected(%zd) != (%zd)\n", size, dig->nbytes);
     } else {
 	res = RPMRC_OK;
 	t = stpcpy(t, rpmSigString(res));
@@ -960,7 +960,7 @@ verifyMD5Signature(const rpmts ts, char * t,
 		DIGEST_CTX md5ctx)
 {
     const void * sig = rpmtsSig(ts);
-    int32_t siglen = rpmtsSiglen(ts);
+    size_t siglen = rpmtsSiglen(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     uint8_t * md5sum = NULL;
@@ -1016,7 +1016,7 @@ verifySHA1Signature(const rpmts ts, char * t,
 {
     const void * sig = rpmtsSig(ts);
 #ifdef	NOTYET
-    int32_t siglen = rpmtsSiglen(ts);
+    size_t siglen = rpmtsSiglen(ts);
 #endif
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
@@ -1086,7 +1086,7 @@ verifyRSASignature(rpmts ts, char * t,
 {
     const void * sig = rpmtsSig(ts);
 #ifdef	NOTYET
-    int32_t siglen = rpmtsSiglen(ts);
+    size_t siglen = rpmtsSiglen(ts);
 #endif
     rpm_tag_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
@@ -1174,7 +1174,7 @@ verifyRSASignature(rpmts ts, char * t,
 
 #ifdef	NOTYET	/* XXX not for binary/text signatures as in packages. */
 	if (!(sigp->sigtype == PGPSIGTYPE_BINARY || sigp->sigtype == PGP_SIGTYPE_TEXT)) {
-	    int nb = dig->nbytes + sigp->hashlen;
+	    size_t nb = dig->nbytes + sigp->hashlen;
 	    uint8_t trailer[6];
 	    nb = htonl(nb);
 	    trailer[0] = 0x4;
@@ -1234,7 +1234,7 @@ verifyDSASignature(rpmts ts, char * t,
 {
     const void * sig = rpmtsSig(ts);
 #ifdef	NOTYET
-    int32_t siglen = rpmtsSiglen(ts);
+    size_t siglen = rpmtsSiglen(ts);
 #endif
     rpm_tag_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
@@ -1274,7 +1274,7 @@ verifyDSASignature(rpmts ts, char * t,
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
 	if (sigp->version == 4) {
-	    int nb = sigp->hashlen;
+	    size_t nb = sigp->hashlen;
 	    uint8_t trailer[6];
 	    nb = htonl(nb);
 	    trailer[0] = sigp->version;
@@ -1324,7 +1324,7 @@ rpmRC
 rpmVerifySignature(const rpmts ts, char * result)
 {
     const void * sig = rpmtsSig(ts);
-    int32_t siglen = rpmtsSiglen(ts);
+    size_t siglen = rpmtsSiglen(ts);
     rpm_tag_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;

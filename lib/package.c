@@ -319,8 +319,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     const void * sig = NULL;
     unsigned const char * b;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
-    int siglen = 0;
-    int blen;
+    size_t siglen = 0;
+    size_t blen;
     size_t nb;
     int32_t ril = 0;
     unsigned char * regionEnd = NULL;

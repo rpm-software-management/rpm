@@ -100,7 +100,7 @@ struct rpmts_s {
     rpm_tag_t  sigtag;		/*!< Current package signature tag. */
     rpm_tagtype_t  sigtype;	/*!< Current package signature data type. */
     const void * sig;		/*!< Current package signature. */
-    int32_t siglen;		/*!< Current package signature length. */
+    size_t siglen;		/*!< Current package signature length. */
 
     const unsigned char * pkpkt;/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */

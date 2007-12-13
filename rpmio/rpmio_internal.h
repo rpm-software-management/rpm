@@ -455,7 +455,7 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
  * Update digest(s) attached to fd.
  */
 static inline
-void fdUpdateDigests(FD_t fd, const unsigned char * buf, ssize_t buflen)
+void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
 {
     int i;
 

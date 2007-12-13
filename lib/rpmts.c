@@ -399,7 +399,7 @@ exit:
     return res;
 }
 
-rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktlen)
+rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
     static unsigned char zeros[] =
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -423,7 +423,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, ssize_t pktle
     char * t;
     int xx;
 
-    if (pkt == NULL || pktlen <= 0)
+    if (pkt == NULL || pktlen == 0)
 	return RPMRC_FAIL;
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
 	return RPMRC_FAIL;

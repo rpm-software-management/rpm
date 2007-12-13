@@ -201,7 +201,7 @@ static void pgpPrtStr(const char *pre, const char *s)
     fprintf(stderr, " %s", s);
 }
 
-static void pgpPrtHex(const char *pre, const uint8_t *p, unsigned int plen)
+static void pgpPrtHex(const char *pre, const uint8_t *p, size_t plen)
 {
     if (!_print) return;
     if (pre && *pre)
@@ -236,7 +236,7 @@ static int pgpMpiSet(const char * pre, int lbits,
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
-    unsigned int nbytes;
+    size_t nbytes;
     char *t = dest;
     unsigned int ix;
 
@@ -265,7 +265,7 @@ fprintf(stderr, "*** %s %s\n", pre, pgpHexStr(dest, nbytes));
  */
 static SECItem *pgpMpiItem(PRArenaPool *arena, SECItem *item, const uint8_t *p)
 {
-    unsigned int nbytes = pgpMpiLen(p)-2;
+    size_t nbytes = pgpMpiLen(p)-2;
 
     if (item == NULL) {
     	if ((item=SECITEM_AllocItem(arena, item, nbytes)) == NULL)
@@ -322,11 +322,10 @@ static SECKEYPublicKey *pgpNewDSAKey(void)
     return pgpNewPublicKey(dsaKey);
 }
 
-int pgpPrtSubType(const uint8_t *h, unsigned int hlen, pgpSigType sigtype)
+int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype)
 {
     const uint8_t *p = h;
-    unsigned plen;
-    int i;
+    size_t plen, i;
 
     while (hlen > 0) {
 	i = pgpLen(p, &plen);
@@ -431,10 +430,10 @@ static const char * pgpSigDSA[] = {
 #endif
 
 static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
-		const uint8_t *p, const uint8_t *h, unsigned int hlen)
+		const uint8_t *p, const uint8_t *h, size_t hlen)
 {
     const uint8_t * pend = h + hlen;
-    int i;
+    size_t i;
     SECItem dsaraw;
     unsigned char dsabuf[2*DSA_SUBPRIME_LEN];
 
@@ -501,11 +500,11 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     return 0;
 }
 
-int pgpPrtSig(pgpTag tag, const uint8_t *h, unsigned int hlen)
+int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen)
 {
     uint8_t version = h[0];
     uint8_t * p;
-    unsigned plen;
+    size_t plen;
     int rc;
 
     switch (version) {
@@ -652,9 +651,9 @@ static const char * pgpSecretELGAMAL[] = {
 #endif
 
 static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
-		const uint8_t *p, const uint8_t *h, unsigned int hlen)
+		const uint8_t *p, const uint8_t *h, size_t hlen)
 {
-    int i;
+    size_t i;
 
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
@@ -708,7 +707,7 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	    pgpPrtStr("", pgpPublicELGAMAL[i]);
 	} else {
 	    if (_print)
-		fprintf(stderr, "%7d", i);
+		fprintf(stderr, "%7zd", i);
 	}
 	pgpPrtStr("", pgpMpiStr(p));
 	pgpPrtNL();
@@ -718,9 +717,9 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 }
 
 static const uint8_t * pgpPrtSeckeyParams(uint8_t pubkey_algo,
-		const uint8_t *p, const uint8_t *h, unsigned int hlen)
+		const uint8_t *p, const uint8_t *h, size_t hlen)
 {
-    int i;
+    size_t i;
 
     switch (*p) {
     case 0:
@@ -788,11 +787,11 @@ static const uint8_t * pgpPrtSeckeyParams(uint8_t pubkey_algo,
     return p;
 }
 
-int pgpPrtKey(pgpTag tag, const uint8_t *h, unsigned int hlen)
+int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen)
 {
     uint8_t version = *h;
     const uint8_t * p;
-    unsigned plen;
+    size_t plen;
     time_t t;
     int rc;
 
@@ -847,7 +846,7 @@ int pgpPrtKey(pgpTag tag, const uint8_t *h, unsigned int hlen)
     return rc;
 }
 
-int pgpPrtUserID(pgpTag tag, const uint8_t *h, unsigned int hlen)
+int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen)
 {
     pgpPrtVal("", pgpTagTbl, tag);
     if (_print)
@@ -861,15 +860,15 @@ int pgpPrtUserID(pgpTag tag, const uint8_t *h, unsigned int hlen)
     return 0;
 }
 
-int pgpPrtComment(pgpTag tag, const uint8_t *h, unsigned int hlen)
+int pgpPrtComment(pgpTag tag, const uint8_t *h, size_t hlen)
 {
-    int i = hlen;
+    size_t i = hlen;
 
     pgpPrtVal("", pgpTagTbl, tag);
     if (_print)
 	fprintf(stderr, " ");
     while (i > 0) {
-	int j;
+	size_t j;
 	if (*h >= ' ' && *h <= 'z') {
 	    if (_print)
 		fprintf(stderr, "%s", (const char *)h);
@@ -887,7 +886,7 @@ int pgpPrtComment(pgpTag tag, const uint8_t *h, unsigned int hlen)
     return 0;
 }
 
-int pgpPubkeyFingerprint(const uint8_t * pkt, unsigned int pktlen,
+int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 		pgpKeyID_t keyid)
 {
     const uint8_t *s = pkt;
@@ -957,14 +956,14 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
     return sizeof(keyid);  /* no. of bytes of pubkey signid */
 }
 
-int pgpPrtPkt(const uint8_t *pkt, unsigned int pleft)
+int pgpPrtPkt(const uint8_t *pkt, size_t pleft)
 {
     unsigned int val = *pkt;
-    unsigned int pktlen;
+    size_t pktlen;
     pgpTag tag;
-    unsigned int plen;
+    size_t plen;
     const uint8_t *h;
-    unsigned int hlen = 0;
+    size_t hlen = 0;
     int rc = 0;
 
     /* XXX can't deal with these. */
@@ -1117,11 +1116,11 @@ pgpDig pgpFreeDig(pgpDig dig)
     return dig;
 }
 
-int pgpPrtPkts(const uint8_t * pkts, unsigned int pktlen, pgpDig dig, int printing)
+int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 {
     unsigned int val = *pkts;
     const uint8_t *p;
-    unsigned int pleft;
+    size_t pleft;
     int len;
 
     _print = printing;

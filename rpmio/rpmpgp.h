@@ -976,7 +976,7 @@ typedef enum rpmDigestFlags_e {
 static inline
 unsigned int pgpGrab(const uint8_t *s, size_t nbytes)
 {
-    unsigned int i = 0;
+    size_t i = 0;
     size_t nb = (nbytes <= sizeof(i) ? nbytes : sizeof(i));
     while (nb--)
 	i = (i << 8) | *s++;
@@ -990,7 +990,7 @@ unsigned int pgpGrab(const uint8_t *s, size_t nbytes)
  * @return		no. of bytes in length prefix
  */
 static inline
-int pgpLen(const uint8_t *s, unsigned int *lenp)
+size_t pgpLen(const uint8_t *s, size_t * lenp)
 {
     if (*s < 192) {
 	(*lenp) = *s++;
@@ -1021,7 +1021,7 @@ unsigned int pgpMpiBits(const uint8_t *p)
  * @return		no. of bytes
  */
 static inline
-unsigned int pgpMpiLen(const uint8_t *p)
+size_t pgpMpiLen(const uint8_t *p)
 {
     return (2 + ((pgpMpiBits(p)+7)>>3));
 }
@@ -1034,11 +1034,11 @@ unsigned int pgpMpiLen(const uint8_t *p)
  * @return		target buffer
  */
 static inline
-char * pgpHexCvt(char *t, const uint8_t *s, int nbytes)
+char * pgpHexCvt(char *t, const uint8_t *s, size_t nbytes)
 {
     static char hex[] = "0123456789abcdef";
     while (nbytes-- > 0) {
-	unsigned int i;
+	size_t i;
 	i = *s++;
 	*t++ = hex[ (i >> 4) & 0xf ];
 	*t++ = hex[ (i     ) & 0xf ];
@@ -1055,7 +1055,7 @@ char * pgpHexCvt(char *t, const uint8_t *s, int nbytes)
  * @return		hex formatted string
  */
 static inline
-char * pgpHexStr(const uint8_t *p, unsigned int plen)
+char * pgpHexStr(const uint8_t *p, size_t plen)
 {
     static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
@@ -1107,7 +1107,7 @@ static inline
 int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 {
     do {
-	int vlen = strlen(vs->str);
+	size_t vlen = strlen(vs->str);
 	if (vlen <= (se-s) && !strncmp(s, vs->str, vlen))
 	    break;
     } while ((++vs)->val != -1);
@@ -1129,7 +1129,7 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, uint8_t val);
  * @param sigtype	signature type
  * @return		0 on success
  */
-int pgpPrtSubType(const uint8_t *h, unsigned int hlen, pgpSigType sigtype);
+int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype);
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP signature packet.
@@ -1138,7 +1138,7 @@ int pgpPrtSubType(const uint8_t *h, unsigned int hlen, pgpSigType sigtype);
  * @param hlen		packet length (no. of bytes)
  * @return		0 on success
  */
-int pgpPrtSig(pgpTag tag, const uint8_t *h, unsigned int hlen);
+int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen);
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP key packet.
@@ -1147,7 +1147,7 @@ int pgpPrtSig(pgpTag tag, const uint8_t *h, unsigned int hlen);
  * @param hlen		packet length (no. of bytes)
  * @return		0 on success
  */
-int pgpPrtKey(pgpTag tag, const uint8_t *h, unsigned int hlen);
+int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen);
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP userid packet.
@@ -1156,7 +1156,7 @@ int pgpPrtKey(pgpTag tag, const uint8_t *h, unsigned int hlen);
  * @param hlen		packet length (no. of bytes)
  * @return		0 on success
  */
-int pgpPrtUserID(pgpTag tag, const uint8_t *h, unsigned int hlen);
+int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen);
 
 /** \ingroup rpmpgp
  * Print/parse an OpenPGP comment packet.
@@ -1165,7 +1165,7 @@ int pgpPrtUserID(pgpTag tag, const uint8_t *h, unsigned int hlen);
  * @param hlen		packet length (no. of bytes)
  * @return		0 on success
  */
-int pgpPrtComment(pgpTag tag, const uint8_t *h, unsigned int hlen);
+int pgpPrtComment(pgpTag tag, const uint8_t *h, size_t hlen);
 
 /** \ingroup rpmpgp
  * Calculate OpenPGP public key fingerprint.
@@ -1175,7 +1175,7 @@ int pgpPrtComment(pgpTag tag, const uint8_t *h, unsigned int hlen);
  * @retval keyid	public key fingerprint
  * @return		0 on sucess, else -1
  */
-int pgpPubkeyFingerprint(const uint8_t * pkt, unsigned int pktlen,
+int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 		pgpKeyID_t keyid);
 
 /** \ingroup rpmpgp
@@ -1194,7 +1194,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid);
  * @param pleft		no. bytes remaining
  * @return		-1 on error, otherwise this packet length
  */
-int pgpPrtPkt(const uint8_t *pkt, unsigned int pleft);
+int pgpPrtPkt(const uint8_t *pkt, size_t pleft);
 
 /** \ingroup rpmpgp
  * Print/parse a OpenPGP packet(s).
@@ -1204,7 +1204,7 @@ int pgpPrtPkt(const uint8_t *pkt, unsigned int pleft);
  * @param printing	should packets be printed?
  * @return		-1 on error, 0 on success
  */
-int pgpPrtPkts(const uint8_t *pkts, unsigned int pktlen, pgpDig dig, int printing);
+int pgpPrtPkts(const uint8_t *pkts, size_t pktlen, pgpDig dig, int printing);
 
 /** \ingroup rpmpgp
  * Parse armored OpenPGP packets from a file.
@@ -1312,7 +1312,7 @@ static inline
 unsigned int pgpCRC(const uint8_t *octets, size_t len)
 {
     unsigned int crc = CRC24_INIT;
-    int i;
+    size_t i;
 
     while (len--) {
 	crc ^= (*octets++) << 16;

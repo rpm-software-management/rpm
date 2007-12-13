@@ -299,7 +299,7 @@ static char * xmlFormat(rpm_tagtype_t type, const void * data,
     }
 
     if (s == NULL) {
-	int tlen = 32;
+	size_t tlen = 32;
 	t = memset(alloca(tlen+1), 0, tlen+1);
 	if (anint != 0)
 	    xx = snprintf(t, tlen, "%lu", anint);
@@ -353,11 +353,11 @@ static char * pgpsigFormat(rpm_tagtype_t type, const void * data,
 	val = xstrdup(_("(not a blob)"));
     } else {
 	uint8_t * pkt = (uint8_t *) data;
-	unsigned int pktlen = 0;
+	size_t pktlen = 0;
 	unsigned int v = *pkt;
 	pgpTag tag = 0;
-	unsigned int plen;
-	unsigned int hlen = 0;
+	size_t plen;
+	size_t hlen = 0;
 
 	if (v & 0x80) {
 	    if (v & 0x40) {

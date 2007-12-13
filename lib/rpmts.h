@@ -299,7 +299,7 @@ rpmRC rpmtsFindPubkey(rpmts ts);
  * @param pktlen        pgp pubkey length
  * @return              RPMRC_OK/RPMRC_FAIL
  */
-rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, ssize_t pktlen);
+rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 
 /** \ingroup rpmts
  * Close the database used by the transaction to solve dependencies.
