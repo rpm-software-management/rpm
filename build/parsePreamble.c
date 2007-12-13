@@ -58,7 +58,8 @@ static void addOrAppendListEntry(Header h, int32_t tag, char * line)
 
     xx = poptParseArgvString(line, &argc, &argv);
     if (argc)
-	xx = headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
+	xx = headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, 
+				    argv, (rpm_count_t) argc);
     argv = _free(argv);
 }
 

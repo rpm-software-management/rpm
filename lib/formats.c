@@ -637,7 +637,7 @@ static int triggercondsTag(Header h, rpmTagType * type,
 	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
 	    if (flags[j] & RPMSENSE_SENSEMASK) {
 		buf[0] = '%', buf[1] = '\0';
-		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf, 0, j);
+		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf, 0, 0);
 		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
 		flagsStr = _free(flagsStr);
 	    } else {

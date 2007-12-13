@@ -45,12 +45,12 @@ fprintf(stderr, "--> fi %p ++ %d %s\n", fi, fi->nrefs, msg);
     return fi;
 }
 
-int rpmfiFC(rpmfi fi)
+rpm_count_t rpmfiFC(rpmfi fi)
 {
     return (fi != NULL ? fi->fc : 0);
 }
 
-int rpmfiDC(rpmfi fi)
+rpm_count_t rpmfiDC(rpmfi fi)
 {
     return (fi != NULL ? fi->dc : 0);
 }
@@ -768,7 +768,7 @@ assert(p != NULL);
     /* Add relocation values to the header */
     if (numValid) {
 	const char ** actualRelocations;
-	int numActual;
+	rpm_count_t numActual;
 
 	actualRelocations = xmalloc(numValid * sizeof(*actualRelocations));
 	numActual = 0;

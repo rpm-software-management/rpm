@@ -1167,16 +1167,16 @@ const void * rpmtsSig(const rpmts ts)
     return sig;
 }
 
-int32_t rpmtsSiglen(const rpmts ts)
+size_t rpmtsSiglen(const rpmts ts)
 {
-    int32_t siglen = 0;
+    size_t siglen = 0;
     if (ts != NULL)
 	siglen = ts->siglen;
     return siglen;
 }
 
 int rpmtsSetSig(rpmts ts,
-		int32_t sigtag, int32_t sigtype, const void * sig, int32_t siglen)
+		int32_t sigtag, int32_t sigtype, const void * sig, size_t siglen)
 {
     if (ts != NULL) {
 	if (ts->sig && ts->sigtype)

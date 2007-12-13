@@ -486,7 +486,7 @@ verifyinfo_exit:
     dig->nbytes = 0;
 
     sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
-    (void) rpmtsSetSig(ts, info->tag, info->type, sig, info->count);
+    (void) rpmtsSetSig(ts, info->tag, info->type, sig, (size_t) info->count);
 
     switch (info->tag) {
     case RPMTAG_RSAHEADER:

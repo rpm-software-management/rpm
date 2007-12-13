@@ -1527,7 +1527,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     const char * N;
     const char * EVR;
     int genConfigDeps;
-    int c;
+    rpm_count_t c;
     int rc = 0;
     int xx;
 

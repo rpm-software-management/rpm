@@ -303,12 +303,12 @@ int parseScript(rpmSpec spec, int parsePart)
     } else {
 	if (progArgc == 1)
 	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE,
-			*progArgv, progArgc);
+			*progArgv, (rpm_count_t) progArgc);
 	else {
 	    (void) rpmlibNeedsFeature(pkg->header,
 			"ScriptletInterpreterArgs", "4.0.3-1");
 	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
-			progArgv, progArgc);
+			progArgv, (rpm_count_t) progArgc);
 	}
 
 	if (*p != '\0')

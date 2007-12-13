@@ -2071,7 +2071,7 @@ void initSourceHeader(rpmSpec spec)
     if (spec->BANames && spec->BACount > 0) {
 	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		       RPM_STRING_ARRAY_TYPE,
-		       spec->BANames, spec->BACount);
+		       spec->BANames, (rpm_count_t) spec->BACount);
     }
 }
 

@@ -102,7 +102,7 @@ exit:
 	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
 	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			dirNames, dirIndex + 1);
+			dirNames, (rpm_count_t) dirIndex + 1);
     }
 
     fileNames = hfd(fileNames, fnt);

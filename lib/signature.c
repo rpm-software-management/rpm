@@ -473,7 +473,7 @@ static int makePGPSignature(const char * file, int32_t * sigTagp,
  * @return		0 on success, 1 on failure
  */
 static int makeGPGSignature(const char * file, int32_t * sigTagp,
-		uint8_t ** pktp, int32_t * pktlenp,
+		uint8_t ** pktp, size_t * pktlenp,
 		const char * passPhrase)
 {
     char * sigfile = alloca(strlen(file)+sizeof(".sig"));
@@ -613,7 +613,7 @@ static int makeHDRSignature(Header sigh, const char * file, int32_t sigTag,
     Header h = NULL;
     FD_t fd = NULL;
     uint8_t * pkt;
-    int32_t pktlen;
+    rpm_count_t pktlen;
     const char * fn = NULL;
     const char * SHA1 = NULL;
     int ret = -1;	/* assume failure. */
@@ -715,7 +715,7 @@ int rpmAddSignature(Header sigh, const char * file, int32_t sigTag,
 {
     struct stat st;
     uint8_t * pkt;
-    int32_t pktlen;
+    rpm_count_t pktlen;
     int ret = -1;	/* assume failure. */
 
     switch (sigTag) {

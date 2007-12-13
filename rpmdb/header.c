@@ -1759,7 +1759,7 @@ int _headerAddI18NString(Header h, int32_t tag, const char * string,
     const char ** strArray;
     int length;
     int ghosts;
-    int i, langNum;
+    rpm_count_t i, langNum;
     char * buf;
 
     table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
@@ -1770,7 +1770,7 @@ int _headerAddI18NString(Header h, int32_t tag, const char * string,
 
     if (!table && !entry) {
 	const char * charArray[2];
-	int count = 0;
+	rpm_count_t count = 0;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
 	    charArray[count++] = "C";
 	} else {
@@ -2735,7 +2735,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	strarray = (const char **)data;
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, element);
+	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, 
+			   (rpm_count_t) element);
 
 	if (val) {
 	    need = strlen(val);
@@ -2781,7 +2782,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	}
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, element);
+	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, 
+			   (rpm_count_t) element);
 
 	if (val) {
 	    need = strlen(val);
@@ -2796,7 +2798,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_BIN_TYPE:
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tag->fmt)
-	    val = tag->fmt(RPM_BIN_TYPE, data, buf, tag->pad, count);
+	    val = tag->fmt(RPM_BIN_TYPE, data, buf, tag->pad, (rpm_count_t) count);
 
 	if (val) {
 	    need = strlen(val);

@@ -108,7 +108,7 @@ rpmfi rpmfiLink (rpmfi fi, const char * msg);
  * @param fi		file info set
  * @return		current file count
  */
-int rpmfiFC(rpmfi fi);
+rpm_count_t rpmfiFC(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file index from file info set.
@@ -130,7 +130,7 @@ int rpmfiSetFX(rpmfi fi, int fx);
  * @param fi		file info set
  * @return		current directory count
  */
-int rpmfiDC(rpmfi fi);
+rpm_count_t rpmfiDC(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current directory index from file info set.

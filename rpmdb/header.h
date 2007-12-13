@@ -143,7 +143,7 @@ enum headerSprintfExtensionType {
  */
 typedef char * (*headerTagFormatFunction)(int32_t type,
 				const void * data, char * formatPrefix,
-				int padding, int element);
+				int padding, rpm_count_t element);
 
 /** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.

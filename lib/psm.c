@@ -475,7 +475,7 @@ static pid_t psmWait(rpmpsm psm)
  * Run internal Lua script.
  */
 static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
-		   int progArgc, const char **progArgv,
+		   unsigned int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
 {
     const rpmts ts = psm->ts;
@@ -572,7 +572,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @return		0 on success
  */
 static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
-		int progArgc, const char ** progArgv,
+		unsigned int progArgc, const char ** progArgv,
 		const char * script, int arg1, int arg2)
 {
     const rpmts ts = psm->ts;
@@ -1701,7 +1701,7 @@ assert(psm->mi == NULL);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int32_t installTime = (int32_t) time(NULL);
-	    int fc = rpmfiFC(fi);
+	    rpm_count_t fc = rpmfiFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */
 	    if (fi->fstates != NULL && fc > 0)
