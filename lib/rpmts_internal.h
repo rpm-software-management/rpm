@@ -54,7 +54,7 @@ struct rpmts_s {
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 
-    int filesystemCount;	/*!< No. of mounted filesystems. */
+    unsigned int filesystemCount;	/*!< No. of mounted filesystems. */
     const char ** filesystems;	/*!< Mounted filesystem names. */
     rpmDiskSpaceInfo dsi;	/*!< Per filesystem disk/inode usage. */
 

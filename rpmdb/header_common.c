@@ -110,7 +110,7 @@ void * headerFreeTag(Header h,
 int headerGetEntry(Header h, int32_t tag,
 			hTYP_t type,
 			void ** p,
-			hCNT_t c)
+			rpm_count_t * c)
 {
     return (h2hv(h)->hdrget) (h, tag, type, p, c);
 }
@@ -118,24 +118,24 @@ int headerGetEntry(Header h, int32_t tag,
 int headerGetEntryMinMemory(Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p, 
-			hCNT_t c)
+			rpm_count_t * c)
 {
     return (h2hv(h)->hdrgetmin) (h, tag, type, p, c);
 }
 
-int headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, int32_t c)
+int headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c)
 {
     return (h2hv(h)->hdradd) (h, tag, type, p, c);
 }
 
 int headerAppendEntry(Header h, int32_t tag, int32_t type,
-		const void * p, int32_t c)
+		const void * p, rpm_count_t c)
 {
     return (h2hv(h)->hdrappend) (h, tag, type, p, c);
 }
 
 int headerAddOrAppendEntry(Header h, int32_t tag, int32_t type,
-		const void * p, int32_t c)
+		const void * p, rpm_count_t c)
 {
     return (h2hv(h)->hdraddorappend) (h, tag, type, p, c);
 }
@@ -147,7 +147,7 @@ int headerAddI18NString(Header h, int32_t tag, const char * string,
 }
 
 int headerModifyEntry(Header h, int32_t tag, int32_t type,
-			const void * p, int32_t c)
+			const void * p, rpm_count_t c)
 {
     return (h2hv(h)->hdrmodify) (h, tag, type, p, c);
 }
@@ -186,7 +186,7 @@ int headerNextIterator(HeaderIterator hi,
 		hTAG_t tag,
 		hTYP_t type,
 		hPTR_t * p,
-		hCNT_t c)
+		rpm_count_t * c)
 {
     return hdrVec->hdrnextiter(hi, tag, type, p, c);
 }

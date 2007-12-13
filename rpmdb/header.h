@@ -95,7 +95,8 @@ typedef const char *	errmsg_t;
 typedef int32_t *	hTAG_t;
 typedef int32_t *	hTYP_t;
 typedef const void *	hPTR_t;
-typedef int32_t *	hCNT_t;
+
+typedef uint32_t	rpm_count_t;
 
 /** \ingroup header
  */
@@ -158,7 +159,7 @@ typedef char * (*headerTagFormatFunction)(int32_t type,
 typedef int (*headerTagTagFunction) (Header h,
 		hTYP_t type,
 		hPTR_t * data,
-		hCNT_t count,
+		rpm_count_t * count,
 		int * freeData);
 
 /** \ingroup header
@@ -273,7 +274,7 @@ typedef struct HE_s {
 	hPTR_t * ptr;
 	hRET_t * ret;
     } u;
-    hCNT_t cnt;
+    rpm_count_t * cnt;
 } * HE_t;
 #endif
 
@@ -411,7 +412,7 @@ void * headerFreeTag(Header h, const void * data, rpmTagType type);
 int headerGetEntry(Header h, int32_t tag,
 			hTYP_t type,
 			void ** p,
-			hCNT_t c);
+			rpm_count_t * c);
 
 /** \ingroup header
  * Retrieve tag value using header internal array.
@@ -428,7 +429,7 @@ int headerGetEntry(Header h, int32_t tag,
 int headerGetEntryMinMemory(Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p, 
-			hCNT_t c);
+			rpm_count_t * c);
 
 /** \ingroup header
  * Add tag to header.
@@ -444,7 +445,7 @@ int headerGetEntryMinMemory(Header h, int32_t tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, int32_t c);
+int headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -461,7 +462,7 @@ int headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, int32_t 
  * @return		1 on success, 0 on failure
  */
 int headerAppendEntry(Header h, int32_t tag, int32_t type,
-		const void * p, int32_t c);
+		const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -474,7 +475,7 @@ int headerAppendEntry(Header h, int32_t tag, int32_t type,
  * @return		1 on success, 0 on failure
  */
 int headerAddOrAppendEntry(Header h, int32_t tag, int32_t type,
-		const void * p, int32_t c);
+		const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -510,7 +511,7 @@ int headerAddI18NString(Header h, int32_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 int headerModifyEntry(Header h, int32_t tag, int32_t type,
-			const void * p, int32_t c);
+			const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Delete tag in header.
@@ -574,7 +575,7 @@ int headerNextIterator(HeaderIterator hi,
 		hTAG_t tag,
 		hTYP_t type,
 		hPTR_t * p,
-		hCNT_t c);
+		rpm_count_t * c);
 
 
 

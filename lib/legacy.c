@@ -34,8 +34,8 @@ void compressFilelist(Header h)
     const char ** baseNames;
     uint32_t * dirIndexes;
     rpmTagType fnt;
-    int count;
-    int i, xx;
+    rpm_count_t count, i;
+    int xx;
     int dirIndex = -1;
 
     /*
@@ -115,7 +115,7 @@ void expandFilelist(Header h)
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
     const char ** fileNames = NULL;
-    int count = 0;
+    rpm_count_t count = 0;
     int xx;
 
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
@@ -149,8 +149,8 @@ void providePackageNVR(Header h)
     const char ** providesEVR = NULL;
     rpmTagType pnt, pvt;
     int32_t * provideFlags = NULL;
-    int providesCount;
-    int i, xx;
+    rpm_count_t providesCount, i;
+    int xx;
     int bingo = 1;
 
     /* Generate provides for this package name-version-release. */

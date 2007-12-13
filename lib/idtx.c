@@ -77,7 +77,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 #endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpmTagType type = RPM_NULL_TYPE;
-	int32_t count = 0;
+	rpm_count_t count = 0;
 	int32_t * tidp;
 
 	tidp = NULL;
@@ -126,7 +126,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
     if (xx == 0)
     for (i = 0; i < ac; i++) {
 	rpmTagType type;
-	int32_t count;
+	rpm_count_t count;
 	int isSource;
 
 	fd = Fopen(av[i], "r.ufdio");

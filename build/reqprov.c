@@ -20,7 +20,7 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
     rpmTag versiontag = 0;
     rpmTag flagtag = 0;
     rpmTag indextag = 0;
-    int len;
+    rpm_count_t len;
     rpmsenseFlags extra = RPMSENSE_ANY;
     int xx;
     

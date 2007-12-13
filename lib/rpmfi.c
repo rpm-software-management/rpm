@@ -630,13 +630,11 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int numRelocations;
     const char ** validRelocations;
     rpmTagType validType;
-    int numValid;
     const char ** baseNames;
     const char ** dirNames;
     uint32_t * dirIndexes;
     uint32_t * newDirIndexes;
-    int32_t fileCount;
-    int32_t dirCount;
+    rpm_count_t fileCount, dirCount, numValid;
     uint32_t mydColor = rpmExpandNumeric("%{?_autorelocate_dcolor}");
     uint32_t * fFlags = NULL;
     uint32_t * fColors = NULL;
@@ -1003,7 +1001,7 @@ dColors[j] |= fColors[i];
 
     /* Save original filenames in header and replace (relocated) filenames. */
     if (nrelocated) {
-	int c;
+	rpm_count_t c;
 	void * d;
 	rpmTagType t;
 
@@ -1392,8 +1390,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
 }
 
-void rpmfiBuildFClasses(Header h,
-	const char *** fclassp, int * fcp)
+void rpmfiBuildFClasses(Header h, const char *** fclassp, rpm_count_t * fcp)
 {
     int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
@@ -1445,7 +1442,7 @@ exit:
 }
 
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
-	const char *** fdepsp, int * fcp)
+	const char *** fdepsp, rpm_count_t * fcp)
 {
     int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
@@ -1540,14 +1537,14 @@ exit:
 }
 
 void rpmfiBuildFNames(Header h, rpmTag tagN,
-	const char *** fnp, int * fcp)
+	const char *** fnp, rpm_count_t * fcp)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** baseNames;
     const char ** dirNames;
     uint32_t * dirIndexes;
-    int count;
+    rpm_count_t count;
     const char ** fileNames;
     int size;
     rpmTag dirNameTag = 0;

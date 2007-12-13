@@ -488,7 +488,7 @@ static char * depflagsFormat(int32_t type, const void * data,
  * @return		0 on success
  */
 static int fsnamesTag( Header h, int32_t * type,
-		void ** data, int32_t * count,
+		void ** data, rpm_count_t * count,
 		int * freeData)
 {
     const char ** list;
@@ -514,7 +514,7 @@ static int fsnamesTag( Header h, int32_t * type,
  */
 static int instprefixTag(Header h, rpmTagType * type,
 		const void ** data,
-		int32_t * count,
+		rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -546,14 +546,14 @@ static int instprefixTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int fssizesTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
     int32_t * filesizes;
     uint32_t * usages;
-    int numFiles;
+    rpm_count_t numFiles;
 
     if (!hge(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles)) {
 	filesizes = NULL;
@@ -596,7 +596,7 @@ static int fssizesTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int triggercondsTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -604,11 +604,12 @@ static int triggercondsTag(Header h, rpmTagType * type,
     rpmTagType tnt, tvt, tst;
     int32_t * indices, * flags;
     char ** names, ** versions;
-    int numNames, numScripts;
+    rpm_count_t numNames, numScripts;
+    rpm_count_t i, j;
     char ** conds, ** s;
     char * item, * flagsStr;
     char * chptr;
-    int i, j, xx;
+    int xx;
     char buf[5];
 
     if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (void **) &names, &numNames)) {
@@ -668,7 +669,7 @@ static int triggercondsTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int triggertypeTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -677,8 +678,9 @@ static int triggertypeTag(Header h, rpmTagType * type,
     int32_t * indices, * flags;
     const char ** conds;
     const char ** s;
-    int i, j, xx;
-    int numScripts, numNames;
+    int xx;
+    rpm_count_t numScripts, numNames;
+    rpm_count_t i, j;
 
     if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, &numNames)) {
 	*freeData = 0;
@@ -725,7 +727,7 @@ static int triggertypeTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int filenamesTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -744,7 +746,7 @@ static int filenamesTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int fileclassTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -763,7 +765,7 @@ static int fileclassTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int fileprovideTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -782,7 +784,7 @@ static int fileprovideTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int filerequireTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     *type = RPM_STRING_ARRAY_TYPE;
@@ -811,7 +813,7 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @return		0 on success
  */
 static int i18nTag(Header h, int32_t tag, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -903,7 +905,7 @@ static int i18nTag(Header h, int32_t tag, rpmTagType * type,
  * @return		0 on success
  */
 static int summaryTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
@@ -919,7 +921,7 @@ static int summaryTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int descriptionTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
@@ -935,7 +937,7 @@ static int descriptionTag(Header h, rpmTagType * type,
  * @return		0 on success
  */
 static int groupTag(Header h, rpmTagType * type,
-		const void ** data, int32_t * count,
+		const void ** data, rpm_count_t * count,
 		int * freeData)
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);

@@ -565,7 +565,7 @@ exit:
     if (sig != NULL && pkgidp != NULL) {
 	int32_t tagType;
 	unsigned char * MD5 = NULL;
-	int32_t c;
+	rpm_count_t c;
 	int xx;
 	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, (void **)&MD5, &c);
 	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)

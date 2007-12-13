@@ -240,7 +240,7 @@ static void timeCheck(int tc, Header h)
     int * mtime;
     const char ** files;
     rpmTagType fnt;
-    int count, x;
+    rpm_count_t count, x;
     time_t currentTime = time(NULL);
 
     x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
@@ -2018,7 +2018,8 @@ exit:
 void initSourceHeader(rpmSpec spec)
 {
     HeaderIterator hi;
-    int32_t tag, type, count;
+    int32_t tag, type;
+    rpm_count_t count;
     const void * ptr;
 
     spec->sourceHeader = headerNew();

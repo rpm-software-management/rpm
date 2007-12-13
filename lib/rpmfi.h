@@ -354,7 +354,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem);
  * @retval *fcp		number of files
  */
 void rpmfiBuildFClasses(Header h,
-		const char *** fclassp, int * fcp);
+		const char *** fclassp, rpm_count_t * fcp);
 
 
 /** \ingroup rpmfi
@@ -368,7 +368,7 @@ void rpmfiBuildFClasses(Header h,
  * @retval *fcp		number of files
  */
 void rpmfiBuildFDeps(Header h, rpmTag tagN,
-		const char *** fdepsp, int * fcp);
+		const char *** fdepsp, rpm_count_t * fcp);
 
 /** \ingroup rpmfi
  * Retrieve file names from header.
@@ -388,7 +388,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
  * @retval *fcp		number of files
  */
 void rpmfiBuildFNames(Header h, rpmTag tagN,
-		const char *** fnp, int * fcp);
+		const char *** fnp, rpm_count_t * fcp);
 
 /** \ingroup rpmfi
  * Return file type from mode_t.

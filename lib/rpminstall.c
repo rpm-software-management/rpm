@@ -474,7 +474,7 @@ if (fileURL[0] == '=') {
 	if (eiu->relocations) {
 	    const char ** paths;
 	    int pft;
-	    int c;
+	    rpm_count_t c;
 
 	    if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,
 				       (void **) &paths, &c) && (c == 1))

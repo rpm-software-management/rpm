@@ -228,7 +228,7 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
 static void mungeFilelist(Header h)
 {
     const char ** fileNames = NULL;
-    int count = 0;
+    rpm_count_t count = 0;
 
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
@@ -357,12 +357,12 @@ long tagNumFromPyObject (PyObject *item)
  * @return             0 on success, 1 on bad magic, 2 on error
  */
 static int dressedHeaderGetEntry(Header h, int32_t tag, int32_t *type,
-	void **p, int32_t *c)
+	void **p, rpm_count_t *c)
 {
     switch (tag) {
     case RPMTAG_OLDFILENAMES:
     {	const char ** fl = NULL;
-	int count;
+	rpm_count_t count;
 	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fl, &count);
 	if (count > 0) {
 	    *p = fl;
@@ -407,7 +407,8 @@ static int dressedHeaderGetEntry(Header h, int32_t tag, int32_t *type,
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
-    int tagtype, type, count, i, tag = -1;
+    int tagtype, type, tag = -1;
+    rpm_count_t count, i;
     void * data;
     PyObject * o, * metao;
     char ** stringArray;
@@ -771,8 +772,8 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     int32_t * newMatch;
     int32_t * oldMatch;
     hdrObject * hdr;
-    int count = 0;
-    int type, c, tag;
+    rpm_count_t c, count = 0;
+    int type, tag;
     void * p;
 
     Py_BEGIN_ALLOW_THREADS

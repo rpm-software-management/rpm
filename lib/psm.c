@@ -178,7 +178,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * secStates;
 	int modified;
-	int count;
+	rpm_count_t count;
 
 	modified = 0;
 
@@ -582,7 +582,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     const char ** argv = NULL;
     int argc = 0;
     const char ** prefixes = NULL;
-    int numPrefixes;
+    rpm_count_t numPrefixes;
     rpmTagType ipt;
     const char * oldPrefix;
     int maxPrefixLength;
@@ -908,7 +908,7 @@ static rpmRC runInstScript(rpmpsm psm)
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     void ** progArgv;
-    int progArgc;
+    rpm_count_t progArgc;
     const char ** argv;
     rpmTagType ptt, stt;
     const char * script;
@@ -1095,10 +1095,9 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     const char ** triggerNames;
-    int numTriggers;
-    int32_t * triggerIndices;
+    rpm_count_t numTriggers, numTriggerIndices;
+    rpm_count_t * triggerIndices;
     rpmTagType tnt, tit;
-    int numTriggerIndices;
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
 
@@ -1477,7 +1476,8 @@ assert(psm->mi == NULL);
 
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
-		int32_t uht, uhc;
+		int32_t uht;
+		rpm_count_t uhc;
 
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
 		    psm->oh = headerCopyLoad(uh);
@@ -1486,7 +1486,8 @@ assert(psm->mi == NULL);
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMAGE, &uht, &uh, &uhc))
 		{
 		    HeaderIterator hi;
-		    int32_t tag, type, count;
+		    int32_t tag, type;
+		    rpm_count_t count;
 		    hPTR_t ptr;
 		    Header oh;
 

@@ -192,7 +192,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
     HFD_t hfd = headerFreeData;
     const char ** names;
     rpmTagType type;
-    int count;
+    rpm_count_t count;
 
     if (!hge(h, tag, &type, (void **)&names, &count))
 	return -1;
@@ -428,7 +428,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     rpmsenseFlags tagflags;
     rpmTagType type;
     int len;
-    int num;
+    rpm_count_t num;
     int rc;
     int xx;
     
@@ -566,16 +566,18 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	delMacro(NULL, "_docdir");
 	addMacro(NULL, "_docdir", NULL, field, RMIL_SPEC);
 	break;
-    case RPMTAG_EPOCH:
+    case RPMTAG_EPOCH: {
 	SINGLE_TOKEN_ONLY;
-	if (parseNum(field, &num)) {
+	int epoch;
+	if (parseNum(field, &epoch)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Epoch/Serial field must be a number: %s\n"),
 		     spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
-	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
+	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &epoch, 1);
 	break;
+    }
     case RPMTAG_AUTOREQPROV:
 	pkg->autoReq = parseYesNo(field);
 	pkg->autoProv = pkg->autoReq;

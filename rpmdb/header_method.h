@@ -162,7 +162,7 @@ typedef
 int (*HDRget) (Header h, int32_t tag,
 			hTYP_t type,
 			void ** p,
-			hCNT_t c);
+			rpm_count_t * c);
 
 /** \ingroup header
  * Retrieve tag value using header internal array.
@@ -180,7 +180,7 @@ typedef
 int (*HDRgetmin) (Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p,
-			hCNT_t c);
+			rpm_count_t * c);
 
 /** \ingroup header
  * Add tag to header.
@@ -197,7 +197,7 @@ int (*HDRgetmin) (Header h, int32_t tag,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRadd) (Header h, int32_t tag, int32_t type, const void * p, int32_t c);
+int (*HDRadd) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -214,7 +214,7 @@ int (*HDRadd) (Header h, int32_t tag, int32_t type, const void * p, int32_t c);
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRappend) (Header h, int32_t tag, int32_t type, const void * p, int32_t c);
+int (*HDRappend) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -227,7 +227,7 @@ int (*HDRappend) (Header h, int32_t tag, int32_t type, const void * p, int32_t c
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRaddorappend) (Header h, int32_t tag, int32_t type, const void * p, int32_t c);
+int (*HDRaddorappend) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -264,7 +264,7 @@ int (*HDRaddi18n) (Header h, int32_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRmodify) (Header h, int32_t tag, int32_t type, const void * p, int32_t c);
+int (*HDRmodify) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Delete tag in header.
@@ -334,7 +334,7 @@ int (*HDRnextiter) (HeaderIterator hi,
 		hTAG_t tag,
 		hTYP_t type,
 		hPTR_t * p,
-		hCNT_t c);
+		rpm_count_t * c);
 
 /** \ingroup header
  * Header method vectors.

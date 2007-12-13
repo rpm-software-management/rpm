@@ -125,7 +125,7 @@ static int getSignid(Header sig, int sigtag, pgpKeyID_t signid)
 {
     void * pkt = NULL;
     int32_t pkttyp = 0;
-    int32_t pktlen = 0;
+    rpm_count_t pktlen = 0;
     int rc = 1;
 
     if (headerGetEntry(sig, sigtag, &pkttyp, &pkt, &pktlen) && pkt != NULL) {
@@ -162,7 +162,8 @@ static int rpmReSign(rpmts ts,
     Header sigh = NULL;
     const char * msg;
     void * uh = NULL;
-    int32_t uht, uhc;
+    int32_t uht;
+    rpm_count_t uhc;
     int res = EXIT_FAILURE;
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
     rpmRC rc;
@@ -217,7 +218,8 @@ static int rpmReSign(rpmts ts,
 	/* Dump the immutable region (if present). */
 	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 	    HeaderIterator hi;
-	    int32_t tag, type, count;
+	    int32_t tag, type;
+	    rpm_count_t count;
 	    hPTR_t ptr;
 	    Header oh;
 	    Header nh;
@@ -475,7 +477,8 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    void * uh;
-	    int32_t uht, uhc;
+	    int32_t uht;
+	    rpm_count_t uhc;
 	
 	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
 	    ||   uh == NULL)
@@ -523,7 +526,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     const void * sig;
     pgpDig dig;
     pgpDigParams sigp;
-    int32_t siglen;
+    rpm_count_t siglen;
     Header sigh = NULL;
     HeaderIterator hi;
     const char * msg;

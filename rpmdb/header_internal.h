@@ -26,7 +26,7 @@ struct entryInfo_s {
     int32_t tag;			/*!< Tag identifier. */
     int32_t type;		/*!< Tag data type. */
     int32_t offset;		/*!< Offset into data segment (ondisk only). */
-    int32_t count;		/*!< Number of tag elements. */
+    rpm_count_t count;		/*!< Number of tag elements. */
 };
 
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
@@ -85,7 +85,7 @@ struct sprintfTag_s {
 typedef struct rpmec_s * rpmec;
 struct rpmec_s {
     int32_t type;
-    int32_t count;
+    rpm_count_t count;
     int avail;
     int freeit;
     const void * data;
@@ -150,7 +150,7 @@ char ** headerGetLangs(Header h);
 int headerGetRawEntry(Header h, int32_t tag,
 			hTYP_t type,
 			hPTR_t * p, 
-			hCNT_t c);
+			rpm_count_t * c);
 
 /** \ingroup header
  * Return header reference count.

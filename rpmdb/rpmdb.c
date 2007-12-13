@@ -1843,7 +1843,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
     } u;
     char numbuf[32];
     rpmTagType t;
-    int32_t c;
+    rpm_count_t c;
     miRE mire;
     static int32_t zero = 0;
     int ntags = 0;
@@ -2471,10 +2471,10 @@ memset(data, 0, sizeof(*data));
 	    const char *av[1];
 	    const char ** rpmvals = NULL;
 	    rpmTagType rpmtype = 0;
-	    int rpmcnt = 0;
+	    rpm_count_t rpmcnt = 0;
 	    int rpmtag;
 	    int xx;
-	    int i, j;
+	    rpm_count_t i, j;
 
 	    dbi = NULL;
 	    rpmtag = dbiTags[dbix];
@@ -2704,7 +2704,7 @@ DBT * data = alloca(sizeof(*data));
     sigset_t signalMask;
     const char ** baseNames;
     rpmTagType bnt;
-    int count = 0;
+    rpm_count_t count = 0;
     dbiIndex dbi;
     int dbix;
     union _dbswap mi_offset;
@@ -2824,7 +2824,7 @@ memset(data, 0, sizeof(*data));
 	    const char *av[1];
 	    const char **rpmvals = NULL;
 	    rpmTagType rpmtype = 0;
-	    int rpmcnt = 0;
+	    rpm_count_t rpmcnt = 0;
 	    int rpmtag;
 	    int32_t * requireFlags;
 	    rpmRC rpmrc;
@@ -2893,7 +2893,7 @@ data->size = 0;
 		break;
 	    }
 
-	    if (rpmcnt <= 0) {
+	    if (rpmcnt == 0) {
 		if (rpmtag != RPMTAG_GROUP)
 		    continue;
 

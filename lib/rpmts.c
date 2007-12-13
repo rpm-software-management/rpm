@@ -298,7 +298,8 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    const char ** pubkeys;
-	    int32_t pt, pc;
+	    int32_t pt;
+	    rpm_count_t pc;
 
 	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
 		continue;

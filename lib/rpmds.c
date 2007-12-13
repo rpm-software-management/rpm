@@ -130,7 +130,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     const char * Type;
     const char ** N;
     rpmTagType Nt;
-    int32_t Count;
+    rpm_count_t Count;
 
     if (tagN == RPMTAG_PROVIDENAME) {
 	Type = "Provides";

@@ -9,7 +9,7 @@
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
     int type;
-    int count;
+    rpm_count_t count;
 
     if (np) {
 	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
@@ -34,7 +34,7 @@ int headerNEVRA(Header h, const char **np,
 		const char **ap)
 {
     int type;
-    int count;
+    rpm_count_t count;
 
     headerNVR(h, np, vp, rp);
     if (ap) {
@@ -88,7 +88,7 @@ uint32_t headerGetColor(Header h)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     uint32_t hcolor = 0;
     uint32_t * fcolors;
-    int32_t ncolors;
+    rpm_count_t ncolors;
     int i;
 
     fcolors = NULL;

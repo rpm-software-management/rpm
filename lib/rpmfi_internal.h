@@ -61,19 +61,19 @@ struct rpmfi_s {
     const char ** fcontexts;	/*! FIle security contexts. */
 
     const char ** cdict;	/*!< File class dictionary (header) */
-    int32_t ncdict;		/*!< No. of class entries. */
+    rpm_count_t ncdict;		/*!< No. of class entries. */
     const uint32_t * fcdictx;	/*!< File class dictionary index (header) */
 
     const uint32_t * ddict;	/*!< File depends dictionary (header) */
-    int32_t nddict;		/*!< No. of depends entries. */
+    rpm_count_t nddict;		/*!< No. of depends entries. */
     const uint32_t * fddictx;	/*!< File depends dictionary start (header) */
     const uint32_t * fddictn;	/*!< File depends dictionary count (header) */
 
 /*?null?*/
     const uint32_t * vflags;	/*!< File verify flag(s) (from header) */
 
-    int32_t dc;			/*!< No. of directories. */
-    int32_t fc;			/*!< No. of files. */
+    rpm_count_t dc;		/*!< No. of directories. */
+    rpm_count_t fc;		/*!< No. of files. */
 
 /*=============================*/
     rpmte te;

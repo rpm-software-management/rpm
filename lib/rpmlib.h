@@ -207,7 +207,7 @@ typedef
 typedef int (*HGE_t) (Header h, rpmTag tag,
 			rpmTagType * type,
 			void ** p,
-			int32_t * c);
+			rpm_count_t * c);
 
 /**
  * Prototype for headerAddEntry() vector.
@@ -225,7 +225,7 @@ typedef int (*HGE_t) (Header h, rpmTag tag,
  * @return              1 on success, 0 on failure
  */
 typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
-			const void * p, int32_t c);
+			const void * p, rpm_count_t c);
 
 /**
  * Prototype for headerModifyEntry() vector.
@@ -239,7 +239,7 @@ typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
-			const void * p, int32_t c);
+			const void * p, rpm_count_t c);
 
 /**
  * Prototype for headerRemoveEntry() vector.
@@ -382,7 +382,7 @@ void rpmFreeFilesystems(void);
  * @return			0 on success, 1 on error
  */
 int rpmGetFilesystemList( const char *** listptr,
-		int * num);
+		unsigned int * num);
 
 /**
  * Determine per-file system usage for a list of files.
@@ -394,7 +394,7 @@ int rpmGetFilesystemList( const char *** listptr,
  * @return			0 on success, 1 on error
  */
 int rpmGetFilesystemUsage(const char ** fileList, int32_t * fssizes,
-		int numFiles, uint32_t ** usagesPtr,
+		unsigned int numFiles, uint32_t ** usagesPtr,
 		int flags);
 
 /* ==================================================================== */
