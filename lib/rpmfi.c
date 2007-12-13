@@ -629,7 +629,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     rpmRelocation * relocations = NULL;
     int numRelocations;
     const char ** validRelocations;
-    rpmTagType validType;
+    rpm_tagtype_t validType;
     const char ** baseNames;
     const char ** dirNames;
     uint32_t * dirIndexes;
@@ -1003,7 +1003,7 @@ dColors[j] |= fColors[i];
     if (nrelocated) {
 	rpm_count_t c;
 	void * d;
-	rpmTagType t;
+	rpm_tagtype_t t;
 
 	d = NULL;
 	xx = hge(h, RPMTAG_BASENAMES, &t, &d, &c);
@@ -1061,18 +1061,18 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->posttransprog = _free(fi->posttransprog);
 
     if (fi->fc > 0) {
-	fi->bnl = hfd(fi->bnl, -1);
-	fi->dnl = hfd(fi->dnl, -1);
+	fi->bnl = hfd(fi->bnl, RPM_FORCEFREE_TYPE);
+	fi->dnl = hfd(fi->dnl, RPM_FORCEFREE_TYPE);
 
-	fi->flinks = hfd(fi->flinks, -1);
-	fi->flangs = hfd(fi->flangs, -1);
-	fi->fmd5s = hfd(fi->fmd5s, -1);
+	fi->flinks = hfd(fi->flinks, RPM_FORCEFREE_TYPE);
+	fi->flangs = hfd(fi->flangs, RPM_FORCEFREE_TYPE);
+	fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
 	fi->md5s = _free(fi->md5s);
 
-	fi->cdict = hfd(fi->cdict, -1);
+	fi->cdict = hfd(fi->cdict, RPM_FORCEFREE_TYPE);
 
-	fi->fuser = hfd(fi->fuser, -1);
-	fi->fgroup = hfd(fi->fgroup, -1);
+	fi->fuser = hfd(fi->fuser, RPM_FORCEFREE_TYPE);
+	fi->fgroup = hfd(fi->fgroup, RPM_FORCEFREE_TYPE);
 
 	fi->fstates = _free(fi->fstates);
 
@@ -1101,10 +1101,10 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->apath = _free(fi->apath);
     fi->fmapflags = _free(fi->fmapflags);
 
-    fi->obnl = hfd(fi->obnl, -1);
-    fi->odnl = hfd(fi->odnl, -1);
+    fi->obnl = hfd(fi->obnl, RPM_FORCEFREE_TYPE);
+    fi->odnl = hfd(fi->odnl, RPM_FORCEFREE_TYPE);
 
-    fi->fcontexts = hfd(fi->fcontexts, -1);
+    fi->fcontexts = hfd(fi->fcontexts, RPM_FORCEFREE_TYPE);
 
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
@@ -1263,7 +1263,7 @@ if (fi->actions == NULL)
 	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
 		*t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
 	}
-	fi->fmd5s = hfd(fi->fmd5s, -1);
+	fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
@@ -1549,7 +1549,7 @@ void rpmfiBuildFNames(Header h, rpm_tag_t tagN,
     int size;
     rpm_tag_t dirNameTag = 0;
     rpm_tag_t dirIndexesTag = 0;
-    rpmTagType bnt, dnt;
+    rpm_tagtype_t bnt, dnt;
     char * t;
     int i, xx;
 

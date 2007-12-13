@@ -76,7 +76,7 @@ IDTX IDTXload(rpmts ts, rpm_tag_t tag)
     (void) rpmdbSetIteratorRE(mi, RPMTAG_NAME, RPMMIRE_DEFAULT, '!gpg-pubkey');
 #endif
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	rpmTagType type = RPM_NULL_TYPE;
+	rpm_tagtype_t type = RPM_NULL_TYPE;
 	rpm_count_t count = 0;
 	int32_t * tidp;
 
@@ -125,7 +125,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpm_tag_t tag)
 
     if (xx == 0)
     for (i = 0; i < ac; i++) {
-	rpmTagType type;
+	rpm_tagtype_t type;
 	rpm_count_t count;
 	int isSource;
 

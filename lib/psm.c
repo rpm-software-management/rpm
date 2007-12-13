@@ -102,7 +102,7 @@ const char ** argv;
 	int32_t * i32p;
     } body;
     char numbuf[32];
-    rpmTagType type;
+    rpm_tagtype_t type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	if (!hge(h, tagm->tag, &type, (void **) &body, NULL))
@@ -285,7 +285,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     }
 
     /* XXX FIXME: can't do endian neutral MD5 verification yet. */
-fi->fmd5s = hfd(fi->fmd5s, -1);
+fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
 
     /* XXX FIXME: don't do per-file mapping, force global flags. */
     fi->fmapflags = _free(fi->fmapflags);
@@ -338,7 +338,7 @@ fi->fmd5s = hfd(fi->fmd5s, -1);
 	int sourcelen = strlen(_sourcedir) + 2;
 	char * t;
 
-	fi->dnl = hfd(fi->dnl, -1);
+	fi->dnl = hfd(fi->dnl, RPM_FORCEFREE_TYPE);
 
 	fi->dc = 2;
 	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl)
@@ -583,7 +583,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
     int argc = 0;
     const char ** prefixes = NULL;
     rpm_count_t numPrefixes;
-    rpmTagType ipt;
+    rpm_tagtype_t ipt;
     const char * oldPrefix;
     int maxPrefixLength;
     int len;
@@ -910,7 +910,7 @@ static rpmRC runInstScript(rpmpsm psm)
     void ** progArgv;
     rpm_count_t progArgc;
     const char ** argv;
-    rpmTagType ptt, stt;
+    rpm_tagtype_t ptt, stt;
     const char * script;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -980,7 +980,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	rpmTagType tit, tst, tpt;
+	rpm_tagtype_t tit, tst, tpt;
 	const char * Name;
 	int32_t Flags = rpmdsFlags(trigger);
 
@@ -1097,7 +1097,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     const char ** triggerNames;
     rpm_count_t numTriggers, numTriggerIndices;
     rpm_count_t * triggerIndices;
-    rpmTagType tnt, tit;
+    rpm_tagtype_t tnt, tit;
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
 
@@ -1476,7 +1476,7 @@ assert(psm->mi == NULL);
 
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
-		int32_t uht;
+		rpm_tagtype_t uht;
 		rpm_count_t uhc;
 
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
@@ -1486,7 +1486,7 @@ assert(psm->mi == NULL);
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMAGE, &uht, &uh, &uhc))
 		{
 		    HeaderIterator hi;
-		    int32_t type;
+		    rpm_tagtype_t type;
 		    rpm_tag_t tag;
 		    rpm_count_t count;
 		    hPTR_t ptr;
@@ -1818,8 +1818,8 @@ assert(psm->mi == NULL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);
 
-	fi->fgroup = hfd(fi->fgroup, -1);
-	fi->fuser = hfd(fi->fuser, -1);
+	fi->fgroup = hfd(fi->fgroup, RPM_FORCEFREE_TYPE);
+	fi->fuser = hfd(fi->fuser, RPM_FORCEFREE_TYPE);
 	fi->apath = _free(fi->apath);
 	fi->fstates = _free(fi->fstates);
 	break;

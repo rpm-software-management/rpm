@@ -98,7 +98,7 @@ struct rpmts_s {
 
     const char * fn;		/*!< Current package fn. */
     rpm_tag_t  sigtag;		/*!< Current package signature tag. */
-    int32_t  sigtype;		/*!< Current package signature data type. */
+    rpm_tagtype_t  sigtype;	/*!< Current package signature data type. */
     const void * sig;		/*!< Current package signature. */
     int32_t siglen;		/*!< Current package signature length. */
 

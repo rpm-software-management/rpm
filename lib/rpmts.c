@@ -298,7 +298,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    const char ** pubkeys;
-	    int32_t pt;
+	    rpm_tagtype_t pt;
 	    rpm_count_t pc;
 
 	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
@@ -1151,9 +1151,9 @@ rpm_tag_t rpmtsSigtag(const rpmts ts)
     return sigtag;
 }
 
-int32_t rpmtsSigtype(const rpmts ts)
+rpm_tagtype_t rpmtsSigtype(const rpmts ts)
 {
-    int32_t sigtype = 0;
+    rpm_tagtype_t sigtype = 0;
     if (ts != NULL)
 	sigtype = ts->sigtype;
     return sigtype;
@@ -1175,7 +1175,7 @@ size_t rpmtsSiglen(const rpmts ts)
     return siglen;
 }
 
-int rpmtsSetSig(rpmts ts, rpm_tag_t sigtag, int32_t sigtype, 
+int rpmtsSetSig(rpmts ts, rpm_tag_t sigtag, rpm_tagtype_t sigtype, 
 		const void * sig, size_t siglen)
 {
     if (ts != NULL) {

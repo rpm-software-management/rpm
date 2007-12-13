@@ -290,7 +290,7 @@ const char * rpmTagGetName(rpm_tag_t tag);
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
-int rpmTagGetType(rpm_tag_t tag);
+rpm_tagtype_t rpmTagGetType(rpm_tag_t tag);
 
 /** \ingroup rpmtag
  * Return tag value from name.

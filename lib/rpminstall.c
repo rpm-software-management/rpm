@@ -473,7 +473,7 @@ if (fileURL[0] == '=') {
 
 	if (eiu->relocations) {
 	    const char ** paths;
-	    int pft;
+	    rpm_tagtype_t pft;
 	    rpm_count_t c;
 
 	    if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,

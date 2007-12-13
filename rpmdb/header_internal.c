@@ -11,7 +11,7 @@
 char ** headerGetLangs(Header h)
 {
     char **s, *e, **table;
-    int type;
+    rpm_tagtype_t type;
     rpm_count_t i, count;
 
     if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (const void **)&s, &count))

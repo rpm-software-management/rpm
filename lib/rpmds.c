@@ -36,7 +36,7 @@ struct rpmds_s {
     int32_t * Refs;		/*!< No. of file refs. */
     int32_t BT;			/*!< Package build time tie breaker. */
     rpm_tag_t tagN;		/*!< Header tag. */
-    rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
+    rpm_tagtype_t Nt, EVRt, Ft;	/*!< Tag data types. */
     int32_t Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */
@@ -123,13 +123,13 @@ rpmds rpmdsNew(Header h, rpm_tag_t tagN, int flags)
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpm_tag_t tagBT = RPMTAG_BUILDTIME;
-    rpmTagType BTt;
+    rpm_tagtype_t BTt;
     int32_t * BTp;
     rpm_tag_t tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
     const char ** N;
-    rpmTagType Nt;
+    rpm_tagtype_t Nt;
     rpm_count_t Count;
 
     if (tagN == RPMTAG_PROVIDENAME) {
@@ -298,9 +298,9 @@ rpmds rpmdsThis(Header h, rpm_tag_t tagN, int32_t Flags)
     ds->tagN = tagN;
     ds->Count = 1;
     ds->N = N;
-    ds->Nt = -1;	/* XXX to insure that hfd will free */
+    ds->Nt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
     ds->EVR = EVR;
-    ds->EVRt = -1;	/* XXX to insure that hfd will free */
+    ds->EVRt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
     ds->i = 0;
     {	char pre[2];
@@ -345,9 +345,9 @@ rpmds rpmdsSingle(rpm_tag_t tagN, const char * N, const char * EVR, int32_t Flag
     }
     ds->Count = 1;
     ds->N = xmalloc(sizeof(*ds->N));		ds->N[0] = N;
-    ds->Nt = -1;	/* XXX to insure that hfd will free */
+    ds->Nt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
     ds->EVR = xmalloc(sizeof(*ds->EVR));	ds->EVR[0] = EVR;
-    ds->EVRt = -1;	/* XXX to insure that hfd will free */
+    ds->EVRt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
     ds->i = 0;
     {	char t[2];

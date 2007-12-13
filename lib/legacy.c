@@ -33,7 +33,7 @@ void compressFilelist(Header h)
     const char ** dirNames;
     const char ** baseNames;
     uint32_t * dirIndexes;
-    rpmTagType fnt;
+    rpm_tagtype_t fnt;
     rpm_count_t count, i;
     int xx;
     int dirIndex = -1;
@@ -147,7 +147,7 @@ void providePackageNVR(Header h)
     int32_t pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
-    rpmTagType pnt, pvt;
+    rpm_tagtype_t pnt, pvt;
     int32_t * provideFlags = NULL;
     rpm_count_t providesCount, i;
     int xx;

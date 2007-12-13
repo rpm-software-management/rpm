@@ -124,7 +124,7 @@ exit:
 static int getSignid(Header sig, rpm_tag_t sigtag, pgpKeyID_t signid)
 {
     void * pkt = NULL;
-    int32_t pkttyp = 0;
+    rpm_tagtype_t pkttyp = 0;
     rpm_count_t pktlen = 0;
     int rc = 1;
 
@@ -162,7 +162,7 @@ static int rpmReSign(rpmts ts,
     Header sigh = NULL;
     const char * msg;
     void * uh = NULL;
-    int32_t uht;
+    rpm_tagtype_t uht;
     rpm_count_t uhc;
     int res = EXIT_FAILURE;
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
@@ -218,7 +218,7 @@ static int rpmReSign(rpmts ts,
 	/* Dump the immutable region (if present). */
 	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 	    HeaderIterator hi;
-	    int32_t type;
+	    rpm_tagtype_t type;
 	    rpm_tag_t tag;
 	    rpm_count_t count;
 	    hPTR_t ptr;
@@ -478,7 +478,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    void * uh;
-	    int32_t uht;
+	    rpm_tagtype_t uht;
 	    rpm_count_t uhc;
 	
 	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
@@ -523,7 +523,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
     rpm_tag_t sigtag;
-    int32_t sigtype;
+    rpm_tagtype_t sigtype;
     const void * sig;
     pgpDig dig;
     pgpDigParams sigp;

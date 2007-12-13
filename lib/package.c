@@ -87,7 +87,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     HFD_t hfd = (HFD_t) headerFreeData;
     HAE_t hae = (HAE_t) headerAddEntry;
     HeaderIterator hi;
-    int32_t type;
+    rpm_tagtype_t type;
     rpm_tag_t tag;
     rpm_count_t count;
     const void * ptr;
@@ -171,7 +171,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
     HeaderIterator hi;
     rpm_count_t count;
     rpm_tag_t tag, stag;
-    int32_t type;
+    rpm_tagtype_t type;
     const void * ptr;
     int xx;
 
@@ -684,7 +684,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmlead l = NULL;
     Header sigh = NULL;
     rpm_tag_t sigtag;
-    int32_t sigtype;
+    rpm_tagtype_t sigtype;
     const void * sig;
     rpm_count_t siglen;
     rpmtsOpX opx;
@@ -825,7 +825,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    goto exit;
 	}
     {	void * uh = NULL;
-	int32_t uht;
+	rpm_tagtype_t uht;
 	rpm_count_t uhc;
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
@@ -852,7 +852,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	}
     case RPMSIGTAG_SHA1:
     {	void * uh = NULL;
-	int32_t uht;
+	rpm_tagtype_t uht;
 	rpm_count_t uhc;
 
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))

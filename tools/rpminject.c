@@ -41,8 +41,8 @@ static const char * pr_injmode(injmode_t injmode)
 
 enum cvtaction {CA_OLD, CA_NEW, CA_OMIT, CA_ERR};
 
-static enum cvtaction convertAMD(enum cvtaction ca, int32_t type,
-	void ** nvalsp, int32_t *ncountp, cmd_t *newc)
+static enum cvtaction convertAMD(enum cvtaction ca, rpm_tagtype_t type,
+	void ** nvalsp, rpm_count_t *ncountp, cmd_t *newc)
 {
     int i;
 
@@ -118,8 +118,8 @@ static enum cvtaction convertAMD(enum cvtaction ca, int32_t type,
     return ca;
 }
 
-static enum cvtaction convertExistingAMD(int32_t tag, int32_t type,
-	hPTR_t valsp, int32_t *countp, void ** nvalsp, int32_t *ncountp,
+static enum cvtaction convertExistingAMD(rpm_tag_t tag, rpm_tagtype_t type,
+	hPTR_t valsp, rpm_count_t *countp, void ** nvalsp, rpm_count_t *ncountp,
 	cmd_t *cmds[], int ncmds)
 {
     cmd_t *newc = NULL;
@@ -192,7 +192,9 @@ static enum cvtaction convertExistingAMD(int32_t tag, int32_t type,
 static
 Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
 {
-    int32_t tag, type, count;
+    rpm_tag_t tag;
+    rpm_tagtype_t type;
+    rpm_count_t count;
     hPTR_t vals;
     HeaderIterator headerIter;
     Header res = headerNew();
@@ -202,7 +204,7 @@ Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
     while (headerNextIterator(headerIter, &tag, &type, &vals, &count)) {
 	enum cvtaction ca;
 	void *nvals;
-	int32_t ncount;
+	rpm_count_t ncount;
 
 	nvals = NULL;
 	ncount = 0;
@@ -296,7 +298,8 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 
 	rc = headerIsEntry(h, c->tagval);
 	if (!rc && !c->done && c->injmode != INJ_DELETE) {
-	    int32_t type, ncount;
+	    rpm_tagtype_t type;
+	    rpm_count_t ncount;
 	    void *nvals;
 	    enum cvtaction ca;
 

@@ -563,7 +563,7 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sig != NULL && pkgidp != NULL) {
-	int32_t tagType;
+	rpm_tagtype_t tagType;
 	unsigned char * MD5 = NULL;
 	rpm_count_t c;
 	int xx;

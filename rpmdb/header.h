@@ -92,10 +92,10 @@ typedef const char *	errmsg_t;
 
 /** \ingroup header
  */
-typedef int32_t *	hTYP_t;
 typedef const void *	hPTR_t;
 
 typedef int32_t 	rpm_tag_t;
+typedef uint32_t	rpm_tagtype_t;
 typedef uint32_t	rpm_count_t;
 
 /** \ingroup header
@@ -112,8 +112,8 @@ typedef struct headerIterator_s * HeaderIterator;
 typedef struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
     const char * name;		/*!< Tag name. */
-    int val;			/*!< Tag numeric value. */
-    int type;			/*!< Tag type. */
+    rpm_tag_t val;		/*!< Tag numeric value. */
+    rpm_tagtype_t type;		/*!< Tag type. */
 };
 
 /**
@@ -141,7 +141,7 @@ enum headerSprintfExtensionType {
  * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef char * (*headerTagFormatFunction)(int32_t type,
+typedef char * (*headerTagFormatFunction)(rpm_tagtype_t type,
 				const void * data, char * formatPrefix,
 				int padding, rpm_count_t element);
 
@@ -157,7 +157,7 @@ typedef char * (*headerTagFormatFunction)(int32_t type,
  * @return		0 on success
  */
 typedef int (*headerTagTagFunction) (Header h,
-		hTYP_t type,
+		rpm_tagtype_t * type,
 		hPTR_t * data,
 		rpm_count_t * count,
 		int * freeData);
@@ -207,6 +207,7 @@ typedef enum rpmTagType_e {
     RPM_I18NSTRING_TYPE		=  9,
     RPM_MASK_TYPE               =  0x0000ffff
 #define	RPM_MAX_TYPE		9
+#define RPM_FORCEFREE_TYPE	UINT32_MAX
 } rpmTagType;
 
 /** \ingroup header
@@ -269,7 +270,7 @@ typedef union hRET_s {
  */
 typedef struct HE_s {
     rpm_tag_t tag;
-    hTYP_t typ;
+    rpm_tagtype_t * typ;
     union {
 	hPTR_t * ptr;
 	hRET_t * ret;
@@ -394,7 +395,7 @@ int headerIsEntry(Header h, rpm_tag_t tag);
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
-void * headerFreeTag(Header h, const void * data, rpmTagType type);
+void * headerFreeTag(Header h, const void * data, rpm_tagtype_t type);
 
 /** \ingroup header
  * Retrieve tag value.
@@ -410,7 +411,7 @@ void * headerFreeTag(Header h, const void * data, rpmTagType type);
  * @return		1 on success, 0 on failure
  */
 int headerGetEntry(Header h, rpm_tag_t tag,
-			hTYP_t type,
+			rpm_tagtype_t * type,
 			void ** p,
 			rpm_count_t * c);
 
@@ -427,7 +428,7 @@ int headerGetEntry(Header h, rpm_tag_t tag,
  * @return		1 on success, 0 on failure
  */
 int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
-			hTYP_t type,
+			rpm_tagtype_t * type,
 			hPTR_t * p, 
 			rpm_count_t * c);
 
@@ -445,7 +446,7 @@ int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, rpm_tag_t tag, int32_t type, const void * p, rpm_count_t c);
+int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -461,7 +462,7 @@ int headerAddEntry(Header h, rpm_tag_t tag, int32_t type, const void * p, rpm_co
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAppendEntry(Header h, rpm_tag_t tag, int32_t type,
+int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 		const void * p, rpm_count_t c);
 
 /** \ingroup header
@@ -474,7 +475,7 @@ int headerAppendEntry(Header h, rpm_tag_t tag, int32_t type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, rpm_tag_t tag, int32_t type,
+int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 		const void * p, rpm_count_t c);
 
 /** \ingroup header
@@ -510,7 +511,7 @@ int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerModifyEntry(Header h, rpm_tag_t tag, int32_t type,
+int headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 			const void * p, rpm_count_t c);
 
 /** \ingroup header
@@ -573,7 +574,7 @@ HeaderIterator headerInitIterator(Header h);
  */
 int headerNextIterator(HeaderIterator hi,
 		rpm_tag_t * tag,
-		hTYP_t type,
+		rpm_tagtype_t * type,
 		hPTR_t * p,
 		rpm_count_t * c);
 
@@ -585,14 +586,14 @@ int headerNextIterator(HeaderIterator hi,
  * @todo Remove from API.
  *
  * @param data		address of data (or NULL)
- * @param type		type of data (or -1 to force free)
+ * @param type		type of data (or RPM_FORCEFREE_TYPE to force free)
  * @return		NULL always
  */
 static inline
-void * headerFreeData( const void * data, rpmTagType type)
+void * headerFreeData( const void * data, rpm_tagtype_t type)
 {
     if (data) {
-	if (type == -1 ||
+	if (type == RPM_FORCEFREE_TYPE ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)

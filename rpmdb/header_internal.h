@@ -24,7 +24,7 @@
 typedef struct entryInfo_s * entryInfo;
 struct entryInfo_s {
     rpm_tag_t tag;			/*!< Tag identifier. */
-    int32_t type;		/*!< Tag data type. */
+    rpm_tagtype_t type;		/*!< Tag data type. */
     int32_t offset;		/*!< Offset into data segment (ondisk only). */
     rpm_count_t count;		/*!< Number of tag elements. */
 };
@@ -84,7 +84,7 @@ struct sprintfTag_s {
  */
 typedef struct rpmec_s * rpmec;
 struct rpmec_s {
-    int32_t type;
+    rpm_tagtype_t type;
     rpm_count_t count;
     int avail;
     int freeit;
@@ -148,7 +148,7 @@ char ** headerGetLangs(Header h);
  * @return		1 on success, 0 on failure
  */
 int headerGetRawEntry(Header h, rpm_tag_t tag,
-			hTYP_t type,
+			rpm_tagtype_t * type,
 			hPTR_t * p, 
 			rpm_count_t * c);
 
