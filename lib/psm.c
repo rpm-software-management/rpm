@@ -76,7 +76,7 @@ int rpmVersionCompare(Header first, Header second)
  */
 static struct tagMacro {
 const char *	macroname; /*!< Macro name to define. */
-    rpmTag	tag;		/*!< Header tag to use for value. */
+    rpm_tag_t	tag;		/*!< Header tag to use for value. */
 } tagMacros[] = {
     { "name",		RPMTAG_NAME },
     { "version",	RPMTAG_VERSION },
@@ -407,7 +407,7 @@ static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
  * @param tag		scriptlet tag
  * @return		name of scriptlet
  */
-static const char * tag2sln(int tag)
+static const char * tag2sln(rpm_tag_t tag)
 {
     switch (tag) {
     case RPMTAG_PRETRANS:       return "%pretrans";
@@ -425,9 +425,9 @@ static const char * tag2sln(int tag)
     return "%unknownscript";
 }
 
-static int triggertag(uint32_t sense) 
+static rpm_tag_t triggertag(rpm_tag_t sense) 
 {
-    int tag = 0;
+    rpm_tag_t tag = 0;
     switch (sense) {
     case RPMSENSE_TRIGGERIN:
 	tag = RPMTAG_TRIGGERIN;
@@ -474,7 +474,7 @@ static pid_t psmWait(rpmpsm psm)
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
+static rpmRC runLuaScript(rpmpsm psm, Header h, rpm_tag_t stag,
 		   unsigned int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
 {
@@ -571,7 +571,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
+static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
 		unsigned int progArgc, const char ** progArgv,
 		const char * script, int arg1, int arg2)
 {
@@ -1486,7 +1486,8 @@ assert(psm->mi == NULL);
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMAGE, &uht, &uh, &uhc))
 		{
 		    HeaderIterator hi;
-		    int32_t tag, type;
+		    int32_t type;
+		    rpm_tag_t tag;
 		    rpm_count_t count;
 		    hPTR_t ptr;
 		    Header oh;

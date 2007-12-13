@@ -198,7 +198,7 @@ static inline struct Source *findSource(rpmSpec spec, int num, int flag)
     return NULL;
 }
 
-int parseNoSource(rpmSpec spec, const char * field, int tag)
+int parseNoSource(rpmSpec spec, const char * field, rpm_tag_t tag)
 {
     const char *f, *fe;
     const char *name;
@@ -242,7 +242,7 @@ int parseNoSource(rpmSpec spec, const char * field, int tag)
     return 0;
 }
 
-int addSource(rpmSpec spec, Package pkg, const char *field, int tag)
+int addSource(rpmSpec spec, Package pkg, const char *field, rpm_tag_t tag)
 {
     struct Source *p;
     int flag = 0;

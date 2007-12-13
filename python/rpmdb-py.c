@@ -109,7 +109,7 @@ rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
     PyObject *TagN = NULL;
     char *key = NULL;
     int len = 0;
-    int tag = RPMDBI_PACKAGES;
+    rpm_tag_t tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", "len", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Ozi", kwlist,

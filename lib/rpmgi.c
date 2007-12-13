@@ -26,7 +26,7 @@ rpmgiFlags giFlags = RPMGI_NONE;
  */
 struct rpmgi_s {
     rpmts ts;			/*!< Iterator transaction set. */
-    int tag;			/*!< Iterator type. */
+    rpm_tag_t tag;		/*!< Iterator type. */
     const void * keyp;		/*!< Iterator key. */
     size_t keylen;		/*!< Iterator key length. */
 
@@ -339,7 +339,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {
-	int tag = RPMTAG_NAME;
+	rpm_tag_t tag = RPMTAG_NAME;
 	const char * pat;
 	char * a, * ae;
 
@@ -350,7 +350,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	if ((ae = strchr(a, '=')) != NULL) {
 	    *ae++ = '\0';
 	    tag = rpmTagGetValue(a);
-	    if (tag < 0) {
+	    if (tag == RPMTAG_NOT_FOUND) {
 		rpmlog(RPMLOG_NOTICE, _("unknown tag: \"%s\"\n"), a);
 		res = 1;
 	    }
@@ -432,7 +432,7 @@ rpmgi rpmgiFree(rpmgi gi)
     return NULL;
 }
 
-rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, rpm_tag_t tag, const void * keyp, size_t keylen)
 {
     rpmgi gi = xcalloc(1, sizeof(*gi));
 

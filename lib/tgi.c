@@ -84,7 +84,7 @@ main(int argc, char *argv[])
     rpmts ts = NULL;
     rpmVSFlags vsflags;
     rpmgi gi = NULL;
-    int gitag = RPMDBI_PACKAGES;
+    rpm_tag_t gitag = RPMDBI_PACKAGES;
     const char ** av;
     int ac;
     int rc = 0;
@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 
     if (gitagstr != NULL) {
 	gitag = rpmTagGetValue(gitagstr);
-	if (gitag < 0) {
+	if (gitag == RPMTAG_NOT_FOUND) {
 	    fprintf(stderr, _("unknown --tag argument: %s\n"), gitagstr);
 	    exit(EXIT_FAILURE);
 	}

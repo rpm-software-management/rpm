@@ -300,7 +300,7 @@ static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
 static char * rpmfcFileDep(char * buf, int ix,
 		rpmds ds)
 {
-    int32_t tagN = rpmdsTagN(ds);
+    rpm_tag_t tagN = rpmdsTagN(ds);
     char deptype = 'X';
 
     buf[0] = '\0';
@@ -803,7 +803,8 @@ static int rpmfcELF(rpmfc fc)
     struct stat sb, * st = &sb;
     const char * soname = NULL;
     rpmds * depsp, ds;
-    int32_t tagN, dsContext;
+    rpm_tag_t tagN;
+    int32_t dsContext;
     char * t;
     int xx;
     int isElf64;
@@ -1345,9 +1346,9 @@ typedef struct DepMsg_s * DepMsg_t;
 struct DepMsg_s {
     const char * msg;
     const char * argv[4];
-    rpmTag ntag;
-    rpmTag vtag;
-    rpmTag ftag;
+    rpm_tag_t ntag;
+    rpm_tag_t vtag;
+    rpm_tag_t ftag;
     int mask;
     int xor;
 };
@@ -1457,7 +1458,8 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
-	int tag, tagflags;
+	rpm_tag_t tag;
+	int tagflags;
 	char * s;
 	int xx;
 

@@ -15,7 +15,7 @@
 
 /**
  */
-static rpmTag copyTagsDuringParse[] = {
+static rpm_tag_t copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -38,7 +38,7 @@ static rpmTag copyTagsDuringParse[] = {
 
 /**
  */
-static rpmTag requiredTags[] = {
+static rpm_tag_t requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -50,7 +50,7 @@ static rpmTag requiredTags[] = {
 
 /**
  */
-static void addOrAppendListEntry(Header h, int32_t tag, char * line)
+static void addOrAppendListEntry(Header h, rpm_tag_t tag, char * line)
 {
     int xx;
     int argc;
@@ -187,7 +187,7 @@ static inline char * findLastChar(char * s)
 
 /**
  */
-static int isMemberInEntry(Header h, const char *name, rpmTag tag)
+static int isMemberInEntry(Header h, const char *name, rpm_tag_t tag)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -249,7 +249,7 @@ static int checkForRequired(Header h, const char * NVR)
 	/* LCL: parse error here with modifies */
 {
     int res = RPMRC_OK;
-    rpmTag * p;
+    rpm_tag_t * p;
 
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
@@ -272,7 +272,7 @@ static int checkForRequired(Header h, const char * NVR)
 static int checkForDuplicates(Header h, const char * NVR)
 {
     int res = RPMRC_OK;
-    int lastTag, tag;
+    rpm_tag_t lastTag, tag;
     HeaderIterator hi;
     
     for (hi = headerInitIterator(h), lastTag = 0;
@@ -293,7 +293,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 /**
  */
 static struct optionalTag {
-    rpmTag	ot_tag;
+    rpm_tag_t	ot_tag;
     const char * ot_mac;
 } optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
@@ -377,7 +377,7 @@ exit:
     return rc;
 }
 
-spectag stashSt(rpmSpec spec, Header h, int tag, const char * lang)
+spectag stashSt(rpmSpec spec, Header h, rpm_tag_t tag, const char * lang)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     spectag t = NULL;
@@ -417,7 +417,7 @@ extern int noLang;
 
 /**
  */
-static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
+static int handlePreambleTag(rpmSpec spec, Package pkg, rpm_tag_t tag,
 		const char *macro, const char *lang)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -675,7 +675,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 /**
  */
 typedef struct PreambleRec_s {
-    rpmTag tag;
+    rpm_tag_t tag;
     int len;
     int multiLang;
     int obsolete;
@@ -742,7 +742,7 @@ static inline void initPreambleList(void)
 
 /**
  */
-static int findPreambleTag(rpmSpec spec,rpmTag * tag,
+static int findPreambleTag(rpmSpec spec,rpm_tag_t * tag,
 		const char ** macro, char * lang)
 {
     PreambleRec p;
@@ -846,7 +846,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    return rc;
 	while (! (nextPart = isPart(spec->line))) {
 	    const char * macro;
-	    rpmTag tag;
+	    rpm_tag_t tag;
 
 	    /* Skip blank lines */
 	    linep = spec->line;
@@ -891,7 +891,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
-			(int32_t *)copyTagsDuringParse);
+			(rpm_tag_t *)copyTagsDuringParse);
 
     if (checkForRequired(pkg->header, NVR))
 	return RPMRC_FAIL;

@@ -398,7 +398,7 @@ static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
     hdrObject * ho = NULL;
     PyObject * to = NULL;
     rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
-    int tagN = RPMTAG_BASENAMES;
+    rpm_tag_t tagN = RPMTAG_BASENAMES;
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
@@ -539,7 +539,7 @@ hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
     hdrObject * ho = (hdrObject *)s;
     PyObject * to = NULL;
     rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
-    rpmTag tagN = RPMTAG_BASENAMES;
+    rpm_tag_t tagN = RPMTAG_BASENAMES;
     int flags = 0;
     char * kwlist[] = {"tag", "flags", NULL};
 

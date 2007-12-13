@@ -179,7 +179,7 @@ static int isArch(const char * arch)
 }
 
 /* keyp might no be defined. */
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpm_tag_t rpmtag,
 			const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi;
@@ -601,7 +601,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
     Header h;
     size_t bhnamelen;
     time_t bhtime;
-    rpmTag rpmtag;
+    rpm_tag_t rpmtag;
     const char * keyp;
     size_t keylen;
     int rc = 1;	/* assume not found */
@@ -1143,9 +1143,9 @@ int32_t rpmtsSetTid(rpmts ts, int32_t tid)
     return otid;
 }
 
-int32_t rpmtsSigtag(const rpmts ts)
+rpm_tag_t rpmtsSigtag(const rpmts ts)
 {
-    int32_t sigtag = 0;
+    rpm_tag_t sigtag = 0;
     if (ts != NULL)
 	sigtag = ts->sigtag;
     return sigtag;
@@ -1175,8 +1175,8 @@ size_t rpmtsSiglen(const rpmts ts)
     return siglen;
 }
 
-int rpmtsSetSig(rpmts ts,
-		int32_t sigtag, int32_t sigtype, const void * sig, size_t siglen)
+int rpmtsSetSig(rpmts ts, rpm_tag_t sigtag, int32_t sigtype, 
+		const void * sig, size_t siglen)
 {
     if (ts != NULL) {
 	if (ts->sig && ts->sigtype)

@@ -275,6 +275,7 @@ typedef enum rpmTag_e {
 } rpmTag;
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
+#define RPMTAG_NOT_FOUND		-1
 
 
 /** \ingroup rpmtag
@@ -282,20 +283,20 @@ typedef enum rpmTag_e {
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
-const char * rpmTagGetName(int tag);
+const char * rpmTagGetName(rpm_tag_t tag);
 
 /** \ingroup rpmtag
  * Return tag data type from value.
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
-int rpmTagGetType(int tag);
+int rpmTagGetType(rpm_tag_t tag);
 
 /** \ingroup rpmtag
  * Return tag value from name.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found
  */
-int rpmTagGetValue(const char * tagstr);
+rpm_tag_t rpmTagGetValue(const char * tagstr);
 
 #endif /* _RPMTAG_H */

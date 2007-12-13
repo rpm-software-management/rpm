@@ -188,7 +188,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * TagN = NULL;
     rpmds ds;
-    rpmTag tag;
+    rpm_tag_t tag;
     char * kwlist[] = {"tag", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:DS", kwlist, &TagN))
@@ -218,7 +218,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * TagN = NULL;
     rpmfi fi;
-    rpmTag tag;
+    rpm_tag_t tag;
     char * kwlist[] = {"tag", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:FI", kwlist, &TagN))

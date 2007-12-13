@@ -497,8 +497,7 @@ main(int argc, char *argv[])
 		ncmds++;
 	    }
 	    c->tagval = rpmTagGetValue(optArg);
-	    if (!((c->tagval >= RPMTAG_NAME && c->tagval < RPMTAG_FIRSTFREE_TAG)
-	        || c->tagval >= RPMTAG_EXTERNAL_TAG))
+	    if (c->tagval == RPMTAG_NOT_FOUND)	
 		errx(EXIT_FAILURE, _("unknown rpm tag \"--tag %s\""), optArg);
 	    c->tag = xstrdup(optArg);
 	    break;

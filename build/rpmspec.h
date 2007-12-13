@@ -209,7 +209,7 @@ struct OpenFileInfo * newOpenFileInfo(void);
  * @param tag		tag
  * @param lang		locale
  */
-spectag stashSt(rpmSpec spec, Header h, int tag, const char * lang);
+spectag stashSt(rpmSpec spec, Header h, rpm_tag_t tag, const char * lang);
 
 /** \ingroup rpmbuild
  * addSource.
@@ -218,7 +218,7 @@ spectag stashSt(rpmSpec spec, Header h, int tag, const char * lang);
  * @param field		field to parse
  * @param tag		tag
  */
-int addSource(rpmSpec spec, Package pkg, const char * field, int tag);
+int addSource(rpmSpec spec, Package pkg, const char * field, rpm_tag_t tag);
 
 /** \ingroup rpmbuild
  * parseNoSource.
@@ -226,7 +226,7 @@ int addSource(rpmSpec spec, Package pkg, const char * field, int tag);
  * @param field		field to parse
  * @param tag		tag
  */
-int parseNoSource(rpmSpec spec, const char * field, int tag);
+int parseNoSource(rpmSpec spec, const char * field, rpm_tag_t tag);
 
 #ifdef __cplusplus
 }

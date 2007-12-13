@@ -346,7 +346,7 @@ fnpyKey rpmteKey(rpmte te);
  * @param tag		dependency tag
  * @return		dependency tag set
  */
-rpmds rpmteDS(rpmte te, rpmTag tag);
+rpmds rpmteDS(rpmte te, rpm_tag_t tag);
 
 /** \ingroup rpmte
  * Retrieve file info tag set from transaction element.
@@ -354,14 +354,14 @@ rpmds rpmteDS(rpmte te, rpmTag tag);
  * @param tag		file info tag (RPMTAG_BASENAMES)
  * @return		file info tag set
  */
-rpmfi rpmteFI(rpmte te, rpmTag tag);
+rpmfi rpmteFI(rpmte te, rpm_tag_t tag);
 
 /** \ingroup rpmte
  * Calculate transaction element dependency colors/refs from file info.
  * @param te		transaction element
  * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
  */
-void rpmteColorDS(rpmte te, rpmTag tag);
+void rpmteColorDS(rpmte te, rpm_tag_t tag);
 
 /** \ingroup rpmte
  * Return transaction element index.

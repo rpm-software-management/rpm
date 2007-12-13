@@ -121,7 +121,7 @@ exit:
  * @retval signid	signer fingerprint
  * @return		0 on success
  */
-static int getSignid(Header sig, int sigtag, pgpKeyID_t signid)
+static int getSignid(Header sig, rpm_tag_t sigtag, pgpKeyID_t signid)
 {
     void * pkt = NULL;
     int32_t pkttyp = 0;
@@ -155,7 +155,7 @@ static int rpmReSign(rpmts ts,
     FD_t fd = NULL;
     FD_t ofd = NULL;
     rpmlead lead;
-    int32_t sigtag;
+    rpm_tag_t sigtag;
     const char *rpm, *trpm;
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
@@ -218,7 +218,8 @@ static int rpmReSign(rpmts ts,
 	/* Dump the immutable region (if present). */
 	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 	    HeaderIterator hi;
-	    int32_t tag, type;
+	    int32_t type;
+	    rpm_tag_t tag;
 	    rpm_count_t count;
 	    hPTR_t ptr;
 	    Header oh;
@@ -521,7 +522,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
-    int32_t sigtag;
+    rpm_tag_t sigtag;
     int32_t sigtype;
     const void * sig;
     pgpDig dig;

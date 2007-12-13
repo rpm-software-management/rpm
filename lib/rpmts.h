@@ -281,7 +281,7 @@ int rpmtsVerifyDB(rpmts ts);
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpm_tag_t rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmts
@@ -520,7 +520,7 @@ int32_t rpmtsSetTid(rpmts ts, int32_t tid);
  * @param ts		transaction set
  * @return		signature tag
  */
-int32_t rpmtsSigtag(const rpmts ts);
+rpm_tag_t rpmtsSigtag(const rpmts ts);
 
 /** \ingroup rpmts
  * Get signature tag type.
@@ -553,7 +553,7 @@ size_t rpmtsSiglen(const rpmts ts);
  * @return		0 always
  */
 int rpmtsSetSig(rpmts ts,
-		int32_t sigtag, int32_t sigtype,
+		rpm_tag_t sigtag, int32_t sigtype,
 		const void * sig, size_t siglen);
 
 /** \ingroup rpmts

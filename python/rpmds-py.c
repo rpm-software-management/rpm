@@ -212,7 +212,7 @@ rpmds_iternext(rpmdsObject * s)
     if (rpmdsNext(s->ds) >= 0) {
 	const char * N = rpmdsN(s->ds);
 	const char * EVR = rpmdsEVR(s->ds);
-	int tagN = rpmdsTagN(s->ds);
+	rpm_tag_t tagN = rpmdsTagN(s->ds);
 	int Flags = rpmdsFlags(s->ds);
 
 	if (N != NULL) N = xstrdup(N);
@@ -451,7 +451,7 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
     PyObject * to = NULL;
-    int tagN = RPMTAG_REQUIRENAME;
+    rpm_tag_t tagN = RPMTAG_REQUIRENAME;
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
@@ -591,7 +591,7 @@ rpmdsObject *
 rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
-    int tagN = RPMTAG_PROVIDENAME;
+    rpm_tag_t tagN = RPMTAG_PROVIDENAME;
     const char * N;
     const char * EVR = NULL;
     int Flags = 0;
@@ -618,7 +618,7 @@ hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
     hdrObject * ho = (hdrObject *)s;
     PyObject * to = NULL;
-    rpmTag tagN = RPMTAG_REQUIRENAME;
+    rpm_tag_t tagN = RPMTAG_REQUIRENAME;
     int flags = 0;
     char * kwlist[] = {"to", "flags", NULL};
 
@@ -640,7 +640,7 @@ rpmdsObject *
 hdr_dsOfHeader(PyObject * s)
 {
     hdrObject * ho = (hdrObject *)s;
-    int tagN = RPMTAG_PROVIDENAME;
+    rpm_tag_t tagN = RPMTAG_PROVIDENAME;
     int Flags = RPMSENSE_EQUAL;
 
     return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );

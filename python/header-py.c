@@ -143,7 +143,8 @@ static PyObject * hdrKeyList(hdrObject * s)
 {
     PyObject * list, *o;
     HeaderIterator hi;
-    int tag, type;
+    rpm_tag_t tag;
+    int type;
 
     list = PyList_New(0);
 
@@ -330,7 +331,7 @@ static void hdr_dealloc(hdrObject * s)
 
 /** \ingroup py_c
  */
-long tagNumFromPyObject (PyObject *item)
+rpm_tag_t tagNumFromPyObject (PyObject *item)
 {
     char * str;
 
@@ -340,7 +341,7 @@ long tagNumFromPyObject (PyObject *item)
 	str = PyString_AsString(item);
 	return rpmTagGetValue(str);
     }
-    return -1;
+    return RPMTAG_NOT_FOUND;
 }
 
 /** \ingroup py_c
@@ -356,7 +357,7 @@ long tagNumFromPyObject (PyObject *item)
  * @retval c           address of number of values
  * @return             0 on success, 1 on bad magic, 2 on error
  */
-static int dressedHeaderGetEntry(Header h, int32_t tag, int32_t *type,
+static int dressedHeaderGetEntry(Header h, rpm_tag_t tag, int32_t *type,
 	void **p, rpm_count_t *c)
 {
     switch (tag) {
@@ -407,7 +408,8 @@ static int dressedHeaderGetEntry(Header h, int32_t tag, int32_t *type,
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
-    int tagtype, type, tag = -1;
+    int tagtype, type;
+    rpm_tag_t tag = RPMTAG_NOT_FOUND;
     rpm_count_t count, i;
     void * data;
     PyObject * o, * metao;
@@ -422,7 +424,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
         ext = PyCObject_AsVoidPtr(item);
     else
 	tag = tagNumFromPyObject (item);
-    if (tag == -1 && PyString_Check(item)) {
+    if (tag == RPMTAG_NOT_FOUND && PyString_Check(item)) {
 	/* if we still don't have the tag, go looking for the header
 	   extensions */
 	str = PyString_AsString(item);
@@ -439,7 +441,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     if (ext) {
         ext->u.tagFunction(s->h, &type, (const void **) &data, &count, &freeData);
     } else {
-        if (tag == -1) {
+        if (tag == RPMTAG_NOT_FOUND) {
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
             return NULL;
         }
@@ -773,7 +775,8 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     int32_t * oldMatch;
     hdrObject * hdr;
     rpm_count_t c, count = 0;
-    int type, tag;
+    rpm_tag_t tag;
+    int type;
     void * p;
 
     Py_BEGIN_ALLOW_THREADS

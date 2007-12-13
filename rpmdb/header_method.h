@@ -80,7 +80,7 @@ void * (*HDRunload) (Header h);
  * @return		on-disk header (with offsets)
  */
 typedef
-Header (*HDRreload) (Header h, int tag);
+Header (*HDRreload) (Header h, rpm_tag_t tag);
 
 /** \ingroup header
  * Duplicate a header.
@@ -132,7 +132,7 @@ int (*HDRwrite) (FD_t fd, Header h, enum hMagic magicp);
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRisentry) (Header h, int32_t tag);  
+int (*HDRisentry) (Header h, rpm_tag_t tag);  
 
 /** \ingroup header
  * Free data allocated when retrieved from header.
@@ -159,7 +159,7 @@ void * (*HDRfreetag) (Header h,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRget) (Header h, int32_t tag,
+int (*HDRget) (Header h, rpm_tag_t tag,
 			hTYP_t type,
 			void ** p,
 			rpm_count_t * c);
@@ -177,7 +177,7 @@ int (*HDRget) (Header h, int32_t tag,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRgetmin) (Header h, int32_t tag,
+int (*HDRgetmin) (Header h, rpm_tag_t tag,
 			hTYP_t type,
 			hPTR_t * p,
 			rpm_count_t * c);
@@ -197,7 +197,7 @@ int (*HDRgetmin) (Header h, int32_t tag,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRadd) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
+int (*HDRadd) (Header h, rpm_tag_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -214,7 +214,7 @@ int (*HDRadd) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t 
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRappend) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
+int (*HDRappend) (Header h, rpm_tag_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -227,7 +227,7 @@ int (*HDRappend) (Header h, int32_t tag, int32_t type, const void * p, rpm_count
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRaddorappend) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
+int (*HDRaddorappend) (Header h, rpm_tag_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -250,7 +250,7 @@ int (*HDRaddorappend) (Header h, int32_t tag, int32_t type, const void * p, rpm_
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRaddi18n) (Header h, int32_t tag, const char * string,
+int (*HDRaddi18n) (Header h, rpm_tag_t tag, const char * string,
                 const char * lang);
 
 /** \ingroup header
@@ -264,7 +264,7 @@ int (*HDRaddi18n) (Header h, int32_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRmodify) (Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c);
+int (*HDRmodify) (Header h, rpm_tag_t tag, int32_t type, const void * p, rpm_count_t c);
 
 /** \ingroup header
  * Delete tag in header.
@@ -276,7 +276,7 @@ int (*HDRmodify) (Header h, int32_t tag, int32_t type, const void * p, rpm_count
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 typedef
-int (*HDRremove) (Header h, int32_t tag);
+int (*HDRremove) (Header h, rpm_tag_t tag);
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -302,7 +302,7 @@ char * (*HDRsprintf) (Header h, const char * fmt,
  * @param tagstocopy	array of tags that are copied
  */
 typedef
-void (*HDRcopytags) (Header headerFrom, Header headerTo, hTAG_t tagstocopy);
+void (*HDRcopytags) (Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy);
 
 /** \ingroup header
  * Destroy header tag iterator.
@@ -331,7 +331,7 @@ HeaderIterator (*HDRinititer) (Header h);
  */
 typedef
 int (*HDRnextiter) (HeaderIterator hi,
-		hTAG_t tag,
+		rpm_tag_t * tag,
 		hTYP_t type,
 		hPTR_t * p,
 		rpm_count_t * c);

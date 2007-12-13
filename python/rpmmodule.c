@@ -349,6 +349,8 @@ void init_rpm(void)
     PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
     Py_DECREF(o);
 
+    REGISTER_ENUM(RPMTAG_NOT_FOUND);
+
     REGISTER_ENUM(RPMFILE_STATE_NORMAL);
     REGISTER_ENUM(RPMFILE_STATE_REPLACED);
     REGISTER_ENUM(RPMFILE_STATE_NOTINSTALLED);

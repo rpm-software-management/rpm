@@ -778,7 +778,7 @@ void * _headerUnload(Header h)
  * @return 		header entry
  */
 static
-indexEntry findEntry(Header h, int32_t tag, int32_t type)
+indexEntry findEntry(Header h, rpm_tag_t tag, int32_t type)
 {
     indexEntry entry, entry2, last;
     struct indexEntry_s key;
@@ -824,7 +824,7 @@ indexEntry findEntry(Header h, int32_t tag, int32_t type)
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
 static
-int _headerRemoveEntry(Header h, int32_t tag)
+int _headerRemoveEntry(Header h, rpm_tag_t tag)
 {
     indexEntry last = h->index + h->indexUsed;
     indexEntry entry, first;
@@ -1017,7 +1017,7 @@ errxit:
  * @return		on-disk header (with offsets)
  */
 static
-Header _headerReload(Header h, int tag)
+Header _headerReload(Header h, rpm_tag_t tag)
 {
     Header nh;
     size_t length;
@@ -1179,7 +1179,7 @@ exit:
  * @return		1 on success, 0 on failure
  */
 static
-int _headerIsEntry(Header h, int32_t tag)
+int _headerIsEntry(Header h, rpm_tag_t tag)
 {
    		/* FIX: h modified by sort. */
     return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
@@ -1430,8 +1430,8 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, int32_t tag,
-		hTAG_t type,
+static int intGetEntry(Header h, rpm_tag_t tag,
+		int32_t * type,
 		hPTR_t * p,
 		rpm_count_t * c,
 		int minMem)
@@ -1499,7 +1499,7 @@ static void * _headerFreeTag(Header h,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerGetEntry(Header h, int32_t tag,
+int _headerGetEntry(Header h, rpm_tag_t tag,
 			hTYP_t type,
 			void ** p,
 			rpm_count_t * c)
@@ -1520,7 +1520,7 @@ int _headerGetEntry(Header h, int32_t tag,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerGetEntryMinMemory(Header h, int32_t tag,
+int _headerGetEntryMinMemory(Header h, rpm_tag_t tag,
 			hTYP_t type,
 			hPTR_t * p,
 			rpm_count_t * c)
@@ -1528,7 +1528,7 @@ int _headerGetEntryMinMemory(Header h, int32_t tag,
     return intGetEntry(h, tag, type, p, c, 1);
 }
 
-int headerGetRawEntry(Header h, int32_t tag, int32_t * type, hPTR_t * p,
+int headerGetRawEntry(Header h, rpm_tag_t tag, int32_t * type, hPTR_t * p,
 		rpm_count_t * c)
 {
     indexEntry entry;
@@ -1618,7 +1618,7 @@ grabData(int32_t type, hPTR_t p, rpm_count_t c, int * lengthPtr)
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, rpm_count_t c)
+int _headerAddEntry(Header h, rpm_tag_t tag, int32_t type, const void * p, rpm_count_t c)
 {
     indexEntry entry;
     void * data;
@@ -1675,7 +1675,7 @@ int _headerAddEntry(Header h, int32_t tag, int32_t type, const void * p, rpm_cou
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAppendEntry(Header h, int32_t tag, int32_t type,
+int _headerAppendEntry(Header h, rpm_tag_t tag, int32_t type,
 		const void * p, rpm_count_t c)
 {
     indexEntry entry;
@@ -1723,7 +1723,7 @@ int _headerAppendEntry(Header h, int32_t tag, int32_t type,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAddOrAppendEntry(Header h, int32_t tag, int32_t type,
+int _headerAddOrAppendEntry(Header h, rpm_tag_t tag, int32_t type,
 		const void * p, rpm_count_t c)
 {
     return (findEntry(h, tag, type)
@@ -1752,7 +1752,7 @@ int _headerAddOrAppendEntry(Header h, int32_t tag, int32_t type,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAddI18NString(Header h, int32_t tag, const char * string,
+int _headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
 		const char * lang)
 {
     indexEntry table, entry;
@@ -1886,7 +1886,7 @@ int _headerAddI18NString(Header h, int32_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 static
-int _headerModifyEntry(Header h, int32_t tag, int32_t type,
+int _headerModifyEntry(Header h, rpm_tag_t tag, int32_t type,
 			const void * p, rpm_count_t c)
 {
     indexEntry entry;
@@ -2031,7 +2031,7 @@ HeaderIterator _headerInitIterator(Header h)
  */
 static
 int _headerNextIterator(HeaderIterator hi,
-		hTAG_t tag,
+		rpm_tag_t * tag,
 		hTYP_t type,
 		hPTR_t * p,
 		rpm_count_t * c)
@@ -2072,7 +2072,8 @@ Header _headerCopy(Header h)
 {
     Header nh = _headerNew();
     HeaderIterator hi;
-    int32_t tag, type;
+    int32_t type;
+    rpm_tag_t tag;
     rpm_count_t count;
     hPTR_t ptr;
    
@@ -2147,7 +2148,7 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 	if (hsa->hi == NULL) {
 	    hsa->i++;
 	} else {
-	    int32_t tagno;
+	    rpm_tag_t tagno;
 	    int32_t type;
 	    rpm_count_t count;
 
@@ -3276,9 +3277,9 @@ const struct headerSprintfExtension_s headerDefaultFormats[] = {
  * @param tagstocopy	array of tags that are copied
  */
 static
-void _headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
+void _headerCopyTags(Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy)
 {
-    int * p;
+    rpm_tag_t * p;
 
     if (headerFrom == headerTo)
 	return;

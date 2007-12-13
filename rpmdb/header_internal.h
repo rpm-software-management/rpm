@@ -23,7 +23,7 @@
  */
 typedef struct entryInfo_s * entryInfo;
 struct entryInfo_s {
-    int32_t tag;			/*!< Tag identifier. */
+    rpm_tag_t tag;			/*!< Tag identifier. */
     int32_t type;		/*!< Tag data type. */
     int32_t offset;		/*!< Offset into data segment (ondisk only). */
     rpm_count_t count;		/*!< Number of tag elements. */
@@ -71,7 +71,7 @@ struct sprintfTag_s {
     headerTagFormatFunction fmt;
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
-    int32_t tag;
+    rpm_tag_t tag;
     int justOne;
     int arrayCount;
     char * format;
@@ -147,7 +147,7 @@ char ** headerGetLangs(Header h);
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetRawEntry(Header h, int32_t tag,
+int headerGetRawEntry(Header h, rpm_tag_t tag,
 			hTYP_t type,
 			hPTR_t * p, 
 			rpm_count_t * c);

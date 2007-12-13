@@ -812,7 +812,7 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int i18nTag(Header h, int32_t tag, rpmTagType * type,
+static int i18nTag(Header h, rpm_tag_t tag, rpmTagType * type,
 		const void ** data, rpm_count_t * count,
 		int * freeData)
 {

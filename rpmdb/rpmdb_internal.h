@@ -54,7 +54,7 @@ struct _dbiVec {
  * @param rpmtag	rpm tag
  * @return		0 on success
  */
-    int (*open) (rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
+    int (*open) (rpmdb rpmdb, rpm_tag_t rpmtag, dbiIndex * dbip);
 
 /** \ingroup dbi
  * Close index database, and destroy database handle.
@@ -292,7 +292,7 @@ unsigned char * dbi_lk_conflicts;
     unsigned int dbi_q_extentsize;
 
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
-    rpmTag dbi_rpmtag;		/*!< rpm tag used for index */
+    rpm_tag_t dbi_rpmtag;	/*!< rpm tag used for index */
     int	dbi_jlen;		/*!< size of join key */
 
     DB * dbi_db;		/*!< Berkeley DB * handle */
@@ -358,7 +358,7 @@ extern "C" {
  * @param rpmtag	rpm tag
  * @return		index database handle
  */
-dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag);
+dbiIndex db3New(rpmdb rpmdb, rpm_tag_t rpmtag);
 
 /** \ingroup db3
  * Destroy index database handle instance.
@@ -382,7 +382,7 @@ extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
  * @param flags		(unused)
  * @return		index database handle
  */
-dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag,
+dbiIndex dbiOpen(rpmdb db, rpm_tag_t rpmtag,
 		unsigned int flags);
 
 /* FIX: vector annotations */
@@ -655,8 +655,8 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 /** \ingroup rpmdb
  * Tags for which rpmdb indices will be built.
  */
-extern int * dbiTags;
-extern int dbiTagsMax;
+extern rpm_tag_t * dbiTags;
+extern rpm_tag_t dbiTagsMax;
 
 #ifndef __APPLE__
 /**

@@ -64,7 +64,7 @@ IDTX IDTXsort(IDTX idtx)
     return idtx;
 }
 
-IDTX IDTXload(rpmts ts, rpmTag tag)
+IDTX IDTXload(rpmts ts, rpm_tag_t tag)
 {
     IDTX idtx = NULL;
     rpmdbMatchIterator mi;
@@ -107,7 +107,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
     return IDTXsort(idtx);
 }
 
-IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
+IDTX IDTXglob(rpmts ts, const char * globstr, rpm_tag_t tag)
 {
     IDTX idtx = NULL;
     HGE_t hge = (HGE_t) headerGetEntry;

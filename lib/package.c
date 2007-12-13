@@ -87,7 +87,8 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     HFD_t hfd = (HFD_t) headerFreeData;
     HAE_t hae = (HAE_t) headerAddEntry;
     HeaderIterator hi;
-    int32_t tag, type;
+    int32_t type;
+    rpm_tag_t tag;
     rpm_count_t count;
     const void * ptr;
     int xx;
@@ -169,7 +170,8 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
     Header sigh = rpmNewSignature();
     HeaderIterator hi;
     rpm_count_t count;
-    int32_t tag, stag, type;
+    rpm_tag_t tag, stag;
+    int32_t type;
     const void * ptr;
     int xx;
 
@@ -681,7 +683,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     ssize_t count;
     rpmlead l = NULL;
     Header sigh = NULL;
-    int32_t sigtag;
+    rpm_tag_t sigtag;
     int32_t sigtype;
     const void * sig;
     rpm_count_t siglen;

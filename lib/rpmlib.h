@@ -204,7 +204,7 @@ typedef
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-typedef int (*HGE_t) (Header h, rpmTag tag,
+typedef int (*HGE_t) (Header h, rpm_tag_t tag,
 			rpmTagType * type,
 			void ** p,
 			rpm_count_t * c);
@@ -224,7 +224,7 @@ typedef int (*HGE_t) (Header h, rpmTag tag,
  * @param c             number of values
  * @return              1 on success, 0 on failure
  */
-typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
+typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpmTagType type,
 			const void * p, rpm_count_t c);
 
 /**
@@ -238,7 +238,7 @@ typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
+typedef int (*HME_t) (Header h, rpm_tag_t tag, rpmTagType type,
 			const void * p, rpm_count_t c);
 
 /**
@@ -251,7 +251,7 @@ typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-typedef int (*HRE_t) (Header h, int32_t tag);
+typedef int (*HRE_t) (Header h, rpm_tag_t tag);
 
 /**
  * We pass these around as an array with a sentinel.

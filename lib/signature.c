@@ -218,7 +218,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
 	if (info->tag == htonl(RPMTAG_HEADERIMAGE)) {
-	    int32_t stag = htonl(RPMTAG_HEADERSIGNATURES);
+	    rpm_tag_t stag = htonl(RPMTAG_HEADERSIGNATURES);
 	    info->tag = stag;
 	    memcpy(dataEnd, &stag, sizeof(stag));
 	}
@@ -1088,7 +1088,7 @@ verifyRSASignature(rpmts ts, char * t,
 #ifdef	NOTYET
     int32_t siglen = rpmtsSiglen(ts);
 #endif
-    int32_t sigtag = rpmtsSigtag(ts);
+    rpm_tag_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     SECOidTag sigalg;
@@ -1236,7 +1236,7 @@ verifyDSASignature(rpmts ts, char * t,
 #ifdef	NOTYET
     int32_t siglen = rpmtsSiglen(ts);
 #endif
-    int32_t sigtag = rpmtsSigtag(ts);
+    rpm_tag_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     rpmRC res;
@@ -1325,7 +1325,7 @@ rpmVerifySignature(const rpmts ts, char * result)
 {
     const void * sig = rpmtsSig(ts);
     int32_t siglen = rpmtsSiglen(ts);
-    int32_t sigtag = rpmtsSigtag(ts);
+    rpm_tag_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
 
