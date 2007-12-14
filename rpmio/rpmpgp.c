@@ -946,7 +946,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 
 int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
 {
-    const uint8_t * pkt;
+    uint8_t * pkt;
     size_t pktlen;
 
     if (b64decode(b64pkt, (void **)&pkt, &pktlen))
@@ -1290,7 +1290,7 @@ exit:
 
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 {
-    const char * enc;
+    char * enc;
     char * t;
     size_t nt = 0;
     char * val;

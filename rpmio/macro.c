@@ -1635,7 +1635,7 @@ rpmExpand(const char *arg, ...)
 int
 rpmExpandNumeric(const char *arg)
 {
-    const char *val;
+    char *val;
     int rc;
 
     if (arg == NULL)
