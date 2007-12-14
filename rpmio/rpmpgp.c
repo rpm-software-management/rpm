@@ -251,7 +251,7 @@ static int pgpMpiSet(const char * pre, int lbits,
     ix = (nbits - mbits) >> 3;
 
 if (_debug)
-fprintf(stderr, "*** mbits %u nbits %u nbytes %u ix %u\n", mbits, nbits, nbytes, ix);
+fprintf(stderr, "*** mbits %u nbits %u nbytes %zu ix %u\n", mbits, nbits, nbytes, ix);
     if (ix > 0) memset(t, '\0', ix);
     memcpy(t+ix, p+2, nbytes-ix);
 if (_debug)
@@ -491,7 +491,7 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	    pgpPrtStr("", pgpSigDSA[i]);
 	} else {
 	    if (_print)
-		fprintf(stderr, "%7d", i);
+		fprintf(stderr, "%7zd", i);
 	}
 	pgpPrtStr("", pgpMpiStr(p));
 	pgpPrtNL();
@@ -576,7 +576,7 @@ fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 	    return 1;
 
 if (_debug && _print)
-fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
+fprintf(stderr, " unhash[%zu] -- %s\n", plen, pgpHexStr(p, plen));
 	(void) pgpPrtSubType(p, plen, v->sigtype);
 	p += plen;
 
@@ -805,7 +805,7 @@ int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen)
 	    fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
 	plen = pgpGrab(v->valid, sizeof(v->valid));
 	if (plen != 0)
-	    fprintf(stderr, " valid %u days", plen);
+	    fprintf(stderr, " valid %zu days", plen);
 	pgpPrtNL();
 
 	if (_digp && _digp->tag == tag) {

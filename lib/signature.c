@@ -268,14 +268,14 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     }
     sigh->flags |= HEADERFLAG_ALLOCATED;
 
-    {	int sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
-	int pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	int32_t * archSize = NULL;
+    {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
+	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
+	uint32_t * archSize = NULL;
 
 	/* Position at beginning of header. */
 	if (pad && (xx = timedRead(fd, (void *)block, pad)) != pad) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("sigh pad(%d): BAD, read %d bytes\n"), pad, xx);
+		_("sigh pad(%zd): BAD, read %zd bytes\n"), pad, xx);
 	    goto exit;
 	}
 
@@ -284,7 +284,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 	    rc = printSize(fd, sigSize, pad, *archSize);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
-			_("sigh sigSize(%d): BAD, fstat(2) failed\n"), sigSize);
+		       _("sigh sigSize(%zd): BAD, fstat(2) failed\n"), sigSize);
 	}
     }
 
