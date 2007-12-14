@@ -999,7 +999,7 @@ size_t pgpLen(const uint8_t *s, size_t * lenp)
 	(*lenp) = ((((unsigned)s[0]) - 192) << 8) + s[1] + 192;
 	return 2;
     } else {
-	(*lenp) = pgpGrab(s+1, 4);
+	(*lenp) = pgpGrab(s+1, (size_t) 4);
 	return 5;
     }
 }
@@ -1074,7 +1074,7 @@ const char * pgpMpiStr(const uint8_t *p)
 {
     static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
-    sprintf(t, "[%4u]: ", pgpGrab(p, 2));
+    sprintf(t, "[%4u]: ", pgpGrab(p, (size_t) 2));
     t += strlen(t);
     t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
     return prbuf;

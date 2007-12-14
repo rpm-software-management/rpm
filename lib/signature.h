@@ -65,7 +65,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @return		0 on success, -1 on failure
  */
 int rpmAddSignature(Header sigh, const char * file,
-		    int32_t sigTag, const char * passPhrase);
+		    rpm_tag_t sigTag, const char * passPhrase);
 
 /******************************************************************/
 

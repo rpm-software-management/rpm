@@ -342,7 +342,7 @@ Header rpmFreeSignature(Header sigh)
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makePGPSignature(const char * file, int32_t * sigTagp,
+static int makePGPSignature(const char * file, rpm_tag_t * sigTagp,
 		uint8_t ** pktp, size_t * pktlenp,
 		const char * passPhrase)
 {
@@ -473,7 +473,7 @@ static int makePGPSignature(const char * file, int32_t * sigTagp,
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makeGPGSignature(const char * file, int32_t * sigTagp,
+static int makeGPGSignature(const char * file, rpm_tag_t * sigTagp,
 		uint8_t ** pktp, size_t * pktlenp,
 		const char * passPhrase)
 {
@@ -608,13 +608,13 @@ static int makeGPGSignature(const char * file, int32_t * sigTagp,
  * @param passPhrase	private key pass phrase
  * @return		0 on success, -1 on failure
  */
-static int makeHDRSignature(Header sigh, const char * file, int32_t sigTag,
+static int makeHDRSignature(Header sigh, const char * file, rpm_tag_t sigTag,
 		const char * passPhrase)
 {
     Header h = NULL;
     FD_t fd = NULL;
     uint8_t * pkt;
-    rpm_count_t pktlen;
+    size_t pktlen;
     const char * fn = NULL;
     const char * SHA1 = NULL;
     int ret = -1;	/* assume failure. */
@@ -711,12 +711,12 @@ exit:
     return ret;
 }
 
-int rpmAddSignature(Header sigh, const char * file, int32_t sigTag,
+int rpmAddSignature(Header sigh, const char * file, rpm_tag_t sigTag,
 		const char * passPhrase)
 {
     struct stat st;
     uint8_t * pkt;
-    rpm_count_t pktlen;
+    size_t pktlen;
     int ret = -1;	/* assume failure. */
 
     switch (sigTag) {
@@ -764,7 +764,7 @@ int rpmAddSignature(Header sigh, const char * file, int32_t sigTag,
     return ret;
 }
 
-static int checkPassPhrase(const char * passPhrase, const int sigTag)
+static int checkPassPhrase(const char * passPhrase, const rpm_tag_t sigTag)
 {
     int passPhrasePipe[2];
     int pid, status;
@@ -861,7 +861,7 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
     return ((!WIFEXITED(status) || WEXITSTATUS(status)) ? 1 : 0);
 }
 
-char * rpmGetPassPhrase(const char * prompt, const int sigTag)
+char * rpmGetPassPhrase(const char * prompt, const rpm_tag_t sigTag)
 {
     char *pass = NULL;
     int aok = 0;
