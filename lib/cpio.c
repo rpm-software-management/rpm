@@ -122,7 +122,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     struct cpioCrcPhysicalHeader hdr;
     int nameSize;
     char * end;
-    dev_t major, minor;
+    unsigned int major, minor;
     int rc = 0;
 
     fsm->wrlen = PHYS_HDR_SIZE;
