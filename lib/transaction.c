@@ -656,12 +656,12 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     char ** netsharedPaths = NULL;
     const char ** languages;
     const char * dn, * bn;
-    int dnlen, bnlen, ix;
+    size_t dnlen, bnlen;
     const char * s;
     int * drc;
     char * dff;
     int dc;
-    int i, j;
+    int i, j, ix;
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
@@ -724,7 +724,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 * they do need to take package relocations into account).
 	 */
 	for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
-	    int len;
+	    size_t len;
 
 	    len = strlen(*nsp);
 	    if (dnlen >= len) {
@@ -1025,7 +1025,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
     IDTX rtids = NULL;
     IDT rpIDT;
     int nrids = 0;
-    int nb;			/* Number of bytes */
+    size_t nb;			/* Number of bytes */
     Header h = NULL;
     int rc   = RPMRC_NOTFOUND;	/* Assume we do not find it*/
     int xx;

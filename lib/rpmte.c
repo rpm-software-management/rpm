@@ -246,6 +246,7 @@ Header rpmteSetHeader(rpmte te, Header h)
 
 rpmElementType rpmteType(rpmte te)
 {
+    /* XXX returning negative for unsigned type */
     return (te != NULL ? te->type : -1);
 }
 

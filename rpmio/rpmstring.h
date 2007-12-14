@@ -90,7 +90,7 @@ int xstrncasecmp(const char *s1, const char * s2, size_t n)	;
  * @param sep		separator character
  * @return		(malloc'd) argv array
  */
-char ** splitString(const char * str, int length, char sep);
+char ** splitString(const char * str, size_t length, char sep);
 
 /** \ingroup rpmstring
  * Free split string argv array.

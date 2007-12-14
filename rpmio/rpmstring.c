@@ -24,7 +24,7 @@ char * stripTrailingChar(char * s, char c)
     return s;
 }
 
-char ** splitString(const char * str, int length, char sep)
+char ** splitString(const char * str, size_t length, char sep)
 {
     const char * source;
     char * s, * dest;

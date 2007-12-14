@@ -676,7 +676,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpm_tag_t tag,
  */
 typedef struct PreambleRec_s {
     rpm_tag_t tag;
-    int len;
+    size_t len;
     int multiLang;
     int obsolete;
     const char * token;

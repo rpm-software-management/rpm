@@ -718,8 +718,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   for (i = 0; i < t->nattr; ++i)
     {
       uint32_t form = t->attr[i].form;
-      uint32_t len = 0;
-      int base_len, dest_len;
+      size_t len = 0;
+      size_t base_len, dest_len;
       
 
       while (1)

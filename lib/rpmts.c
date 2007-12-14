@@ -1288,6 +1288,7 @@ int rpmtsInitDSI(const rpmts ts)
 	dsi->bavail = sfb.f_blocks - sfb.f_bfree;
 #endif
 	/* XXX Avoid FAT and other file systems that have not inodes. */
+	/* XXX assigning negative value to unsigned type */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
 	rpmlog(RPMLOG_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s\n"),

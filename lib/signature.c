@@ -270,12 +270,13 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 
     {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
+	ssize_t trc;
 	uint32_t * archSize = NULL;
 
 	/* Position at beginning of header. */
-	if (pad && (xx = timedRead(fd, (void *)block, pad)) != pad) {
+	if (pad && (trc = timedRead(fd, (void *)block, pad)) != pad) {
 	    (void) snprintf(buf, sizeof(buf),
-		_("sigh pad(%zd): BAD, read %zd bytes\n"), pad, xx);
+		_("sigh pad(%zd): BAD, read %zd bytes\n"), pad, trc);
 	    goto exit;
 	}
 

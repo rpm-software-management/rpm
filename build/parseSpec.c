@@ -19,7 +19,7 @@
  */
 static struct PartRec {
     int part;
-    int len;
+    size_t len;
     const char * token;
 } partList[] = {
     { PART_PREAMBLE,      0, "%package"},

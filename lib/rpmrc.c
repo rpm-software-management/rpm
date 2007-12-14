@@ -137,7 +137,7 @@ static struct rpmOption optionTable[] = {
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
 };
 
-static int optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
+static size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 
 #define OS	0
 #define ARCH	1
