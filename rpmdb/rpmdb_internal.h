@@ -489,7 +489,7 @@ int dbiPget(dbiIndex dbi, DBC * dbcursor,
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
     (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
     rc = (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, (ssize_t) data->size);
     return rc;
 }
 
@@ -508,9 +508,9 @@ int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 {
     int rc;
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, 0);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
     rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, data->size);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, (ssize_t) data->size);
     return rc;
 }
 

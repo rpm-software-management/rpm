@@ -331,7 +331,7 @@ void fdstat_enter(FD_t fd, int opx)
 {
     if (fd == NULL) return;
     if (fd->stats != NULL)
-	(void) rpmswEnter(fdOp(fd, opx), 0);
+	(void) rpmswEnter(fdOp(fd, opx), (ssize_t) 0);
 }
 
 /** \ingroup rpmio
@@ -447,7 +447,7 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 	fddig->hashalgo = hashalgo;
 	fdstat_enter(fd, FDSTAT_DIGEST);
 	fddig->hashctx = rpmDigestInit(hashalgo, flags);
-	fdstat_exit(fd, FDSTAT_DIGEST, 0);
+	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
     }
 }
 
@@ -466,7 +466,7 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
 	    continue;
 	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
-	fdstat_exit(fd, FDSTAT_DIGEST, buflen);
+	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) buflen);
     }
 }
 
@@ -490,7 +490,7 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	    continue;
 	fdstat_enter(fd, FDSTAT_DIGEST);
 	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
-	fdstat_exit(fd, FDSTAT_DIGEST, 0);
+	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
 	fddig->hashctx = NULL;
 	break;
     }
