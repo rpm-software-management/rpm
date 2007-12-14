@@ -32,7 +32,7 @@ struct rpmps_s {
 };
 
 struct rpmpsi_s {
-    size_t ix;
+    int ix;
     rpmps ps;
 };
 
@@ -301,7 +301,7 @@ const char * rpmProblemString(const rpmProblem prob)
     const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "?pkgNEVR?");
     const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "? ?altNEVR?");
     const char * str1 = (prob->str1 ? prob->str1 : N_("different"));
-    int nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
+    size_t nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
     char * buf = xmalloc(nb+1);
     int rc;
 
