@@ -288,7 +288,7 @@ dbiIndex db3New(rpmdb rpmdb, rpm_tag_t rpmtag)
 	for (o = dbOpts; o && *o; o = oe) {
 	    struct poptOption *opt;
 	    const char * tok;
-	    int argInfo;
+	    unsigned int argInfo;
 
 	    /* Skip leading white space. */
 	    while (*o && xisspace(*o))

@@ -14,10 +14,10 @@ typedef enum rpmluavType_e {
 
 struct rpmlua_s {
     lua_State *L;
-    int pushsize;
+    size_t pushsize;
     int storeprint;
-    int printbufsize;
-    int printbufused;
+    size_t printbufsize;
+    size_t printbufused;
     char *printbuf;
 };
 

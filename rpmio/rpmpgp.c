@@ -561,7 +561,7 @@ int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen)
 	    return 1;
 
 if (_debug && _print)
-fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
+fprintf(stderr, "   hash[%zu] -- %s\n", plen, pgpHexStr(p, plen));
 	if (_digp && _digp->pubkey_algo == 0) {
 	    _digp->hashlen = sizeof(*v) + plen;
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);

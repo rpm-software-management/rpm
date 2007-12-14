@@ -185,7 +185,7 @@ int ufdGetFile( FD_t sfd, FD_t tfd);
  * only S_ISREG() files are read, nothing to do with timed... 
  * TODO: get this out of the API
  */
-int timedRead(FD_t fd, void * bufptr, int length);
+ssize_t timedRead(FD_t fd, void * bufptr, size_t length);
 
 /** \ingroup rpmio
  * Identify per-desciptor I/O operation statistics.
