@@ -1742,7 +1742,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpm_tag_t tag,
     int rc = 0;
 
     if (defmode == (rpmMireMode)-1) {
-	const char *t = rpmExpand("%{?_query_selector_match}", NULL);
+	char *t = rpmExpand("%{?_query_selector_match}", NULL);
 
 	if (*t == '\0' || !strcmp(t, "default"))
 	    defmode = RPMMIRE_DEFAULT;
@@ -1911,7 +1911,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		break;
 	    case RPM_BIN_TYPE:
 		{
-		const char * str = bin2hex((const char*) u.ptr, c);
+		char * str = bin2hex((const char*) u.ptr, c);
 		rc = miregexec(mire, str);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;

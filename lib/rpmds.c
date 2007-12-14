@@ -779,8 +779,8 @@ void parseEVR(char * evr,
 
 int rpmdsCompare(const rpmds A, const rpmds B)
 {
-    const char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
-    const char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
+    char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
+    char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
     int result;

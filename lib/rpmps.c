@@ -399,7 +399,7 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
 
 void rpmpsPrint(FILE *fp, rpmps ps)
 {
-    const char * msg;
+    char * msg = NULL;
     rpmpsi psi = NULL;
     int i;
 

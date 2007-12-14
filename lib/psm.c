@@ -797,7 +797,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
 		xx = Fclose (scriptFd);
 	}
 
-	{   const char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
+	{   char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
 	    const char *path = SCRIPT_PATH;
 
 	    if (ipath && ipath[5] != '%')

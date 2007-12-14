@@ -333,7 +333,7 @@ addheader:
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
-		const char * ohNEVRA = headerGetNEVRA(oh, NULL);
+		char * ohNEVRA = headerGetNEVRA(oh, NULL);
 #ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
 		if (rpmVersionCompare(h, oh))
 #endif
@@ -654,7 +654,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
     (void) rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	const char * pkgNEVRA;
+	char * pkgNEVRA;
 	rpmds requires, conflicts;
 	int rc;
 

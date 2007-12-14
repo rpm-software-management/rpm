@@ -128,7 +128,7 @@ static void rpmcliAllArgCallback( poptContext con,
 	break;
     case 'E':
 	rpmcliConfigured();
-	{   const char *val = rpmExpand(arg, NULL);
+	{   char *val = rpmExpand(arg, NULL);
 	    fprintf(stdout, "%s\n", val);
 	    val = _free(val);
 	}

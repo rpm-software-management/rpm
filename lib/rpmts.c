@@ -265,7 +265,7 @@ rpmRC rpmtsFindPubkey(rpmts ts)
     pgpDigParams sigp = rpmtsSignature(ts);
     pgpDigParams pubp = rpmtsPubkey(ts);
     rpmRC res = RPMRC_NOKEY;
-    const char * pubkeysource = NULL;
+    char * pubkeysource = NULL;
     int xx;
 
     if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL)
@@ -325,7 +325,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 
     /* Try keyserver lookup. */
     if (ts->pkpkt == NULL) {
-	const char * fn = rpmExpand("%{_hkp_keyserver_query}",
+	char * fn = rpmExpand("%{_hkp_keyserver_query}",
 			pgpHexStr(sigp->signid, sizeof(sigp->signid)), NULL);
 
 	xx = 0;
@@ -411,13 +411,13 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     int32_t zero = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
-    const char * d = NULL;
-    const char * enc = NULL;
-    const char * n = NULL;
-    const char * u = NULL;
-    const char * v = NULL;
-    const char * r = NULL;
-    const char * evr = NULL;
+    char * d = NULL;
+    char * enc = NULL;
+    char * n = NULL;
+    char * u = NULL;
+    char * v = NULL;
+    char * r = NULL;
+    char * evr = NULL;
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     char * t;

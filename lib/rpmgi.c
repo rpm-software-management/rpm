@@ -90,7 +90,7 @@ static const char * ftsInfoStr(int fts_info)
  */
 static FD_t rpmgiOpen(const char * path, const char * fmode)
 {
-    const char * fn = rpmExpand(path, NULL);
+    char * fn = rpmExpand(path, NULL);
     FD_t fd = Fopen(fn, fmode);
 
     if (fd == NULL || Ferror(fd)) {
@@ -169,7 +169,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
     if (gi->argv != NULL && gi->argv[gi->i] != NULL)
     do {
-	const char * fn;	/* XXX gi->hdrPath? */
+	char * fn;	/* XXX gi->hdrPath? */
 
 	fn = gi->argv[gi->i];
 	if (!(gi->flags & RPMGI_NOHEADER)) {

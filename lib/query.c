@@ -600,7 +600,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    else
 		fn = xstrdup(arg);
 	} else if (*arg != '/') {
-	    const char *curDir = currentDirectory();
+	    char *curDir = currentDirectory();
 	    fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
 	    curDir = _free(curDir);
 	} else

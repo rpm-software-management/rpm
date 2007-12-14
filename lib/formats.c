@@ -185,7 +185,7 @@ static char * base64Format(rpm_tagtype_t type, const void * data,
     if (type != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	const char * enc;
+	char * enc;
 	char * t;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	size_t ns = element;
@@ -260,7 +260,7 @@ static char * xmlFormat(rpm_tagtype_t type, const void * data,
     const char * xtag = NULL;
     size_t nb;
     char * val;
-    const char * s = NULL;
+    char * s = NULL;
     char * t, * te;
     unsigned long anint = 0;
     int xx;

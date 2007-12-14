@@ -998,7 +998,7 @@ static void defaultMachine(const char ** arch,
 
     while (!gotDefaults) {
 	if (!rpmPlatform(platform)) {
-	    const char * s;
+	    char * s;
 	    s = rpmExpand("%{_host_cpu}", NULL);
 	    if (s) {
 		strncpy(un.machine, s, sizeof(un.machine));
@@ -1696,8 +1696,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
     rpmRebuildTargetVars(&target, NULL);
 
     /* Finally set target platform */
-    {	const char *cpu = rpmExpand("%{_target_cpu}", NULL);
-	const char *os = rpmExpand("%{_target_os}", NULL);
+    {	char *cpu = rpmExpand("%{_target_cpu}", NULL);
+	char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
 	cpu = _free(cpu);
 	os = _free(os);
