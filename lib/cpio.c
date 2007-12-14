@@ -98,10 +98,10 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     SET_NUM_FIELD(hdr->mtime, st->st_mtime, field);
     SET_NUM_FIELD(hdr->filesize, st->st_size, field);
 
-    dev = major((unsigned)st->st_dev); SET_NUM_FIELD(hdr->devMajor, dev, field);
-    dev = minor((unsigned)st->st_dev); SET_NUM_FIELD(hdr->devMinor, dev, field);
-    dev = major((unsigned)st->st_rdev); SET_NUM_FIELD(hdr->rdevMajor, dev, field);
-    dev = minor((unsigned)st->st_rdev); SET_NUM_FIELD(hdr->rdevMinor, dev, field);
+    dev = major(st->st_dev); SET_NUM_FIELD(hdr->devMajor, dev, field);
+    dev = minor(st->st_dev); SET_NUM_FIELD(hdr->devMinor, dev, field);
+    dev = major(st->st_rdev); SET_NUM_FIELD(hdr->rdevMajor, dev, field);
+    dev = minor(st->st_rdev); SET_NUM_FIELD(hdr->rdevMinor, dev, field);
 
     len = strlen(fsm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
     memcpy(hdr->checksum, "00000000", 8);
@@ -122,7 +122,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     struct cpioCrcPhysicalHeader hdr;
     int nameSize;
     char * end;
-    int major, minor;
+    dev_t major, minor;
     int rc = 0;
 
     fsm->wrlen = PHYS_HDR_SIZE;
@@ -178,7 +178,8 @@ const char * cpioStrerror(int rc)
 {
     static char msg[256];
     char *s;
-    int l, myerrno = errno;
+    int myerrno = errno;
+    size_t l;
 
     strcpy(msg, "cpio: ");
     switch (rc) {
