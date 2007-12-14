@@ -19,8 +19,8 @@ int     gnameToGid(const char * thisGname, gid_t * gid);
 /*
  * Call w/ -1 to flush the cache, returns NULL if the user can't be found.
  */
-char * uidToUname(uid_t uid);
-char * gidToGname(gid_t gid);
+const char * uidToUname(uid_t uid);
+const char * gidToGname(gid_t gid);
 
 #ifdef __cplusplus
 }

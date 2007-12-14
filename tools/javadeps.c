@@ -84,10 +84,10 @@ typedef struct {
 /*---------Global Variables, in all caps---------*/
 
 /*name of this program*/
-char *PROGRAM_NAME=0;
+const char *PROGRAM_NAME=0;
 
 /*name of the current class file*/
-char *FILE_NAME=0;
+const char *FILE_NAME=0;
 
 /*the name of the last class file seen*/
 char *CLASS_NAME=0;
@@ -139,10 +139,10 @@ int SIZE_PRINT_TABLE;
 
 void usage (void);
 void outofmemory(void);
-void die(char *format, ...);
+void die(const char *format, ...);
 size_t my_fread(void *ptr, size_t size, size_t nitems, FILE *stream);
 void check_range(short entryNum, short value, short poolSize);
-char *is_lower_equal (char *string, char *pattern);
+char *is_lower_equal (char *string, const char *pattern);
 int findJavaMagic (FILE *fileHandle);
 int my_strcmp (const void *a, const void *b);
 void print_table_flush(void);
@@ -292,7 +292,7 @@ void outofmemory(void) {
 }
 
 
-void die(char *format, ...) {
+void die(const char *format, ...) {
   /* Most errors are fatal.
      This function throws a fatal error and 
      accepts arguments like printf does*/
@@ -389,7 +389,7 @@ void check_range(short entryNum, short value, short poolSize) {
    prefix of my strings. */
 
 char 
-*is_lower_equal (char *string, char *pattern) 
+*is_lower_equal (char *string, const char *pattern) 
 {
   
   while ( (tolower(*string) == *pattern) && 
@@ -1157,7 +1157,7 @@ void processJavaFile (FILE *fileHandle) {
   CLASS_NAME=findClassName(fileHandle, &symbolTable);
   
   if(ARG_DEPSFORMAT) {
-    char *prefix_seperator = ": ";
+    const char *prefix_seperator = ": ";
 
     format_class_name = formatClassName(CLASS_NAME, '\0', 0);
 

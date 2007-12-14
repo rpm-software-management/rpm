@@ -41,11 +41,13 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
 static int dateToTimet(const char * datestr, time_t * secs)
 {
     struct tm time;
-    char * p, * pe, * q, ** idx;
+    const char ** idx;
+    char * p, * pe, * q;
+    
     char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
-static char * days[] =
+static const char * days[] =
 	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
-static char * months[] =
+static const char * months[] =
 	{ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
  	  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
 static char lengths[] =

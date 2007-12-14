@@ -73,7 +73,7 @@ int parseScript(rpmSpec spec, int parsePart)
     char *p;
     const char **progArgv = NULL;
     int progArgc;
-    char *partname = NULL;
+    const char *partname = NULL;
     rpm_tag_t reqtag = 0;
     rpm_tag_t tag = 0;
     int tagflags = 0;

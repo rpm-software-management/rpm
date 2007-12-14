@@ -725,7 +725,7 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     FD_t fd;
     int fileno;
     PyObject * list;
-    char * kwlist[] = {"fd", NULL};
+    const char * kwlist[] = {"fd", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fileno))
 	return NULL;
@@ -929,7 +929,8 @@ static int compare_values(const char *str1, const char *str2)
 
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
-    char *v1, *r1, *e1, *v2, *r2, *e2;
+    char *v1, *r1, *v2, *r2;
+    const char *e1, *e2;
     int rc;
 
     if (!PyArg_ParseTuple(args, "(zzz)(zzz)",

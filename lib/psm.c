@@ -400,7 +400,7 @@ exit:
     return rpmrc;
 }
 
-static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
+static const char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
 /**
  * Return scriptlet name from tag.

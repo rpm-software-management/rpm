@@ -109,7 +109,7 @@ static char * lastGname = NULL;
     return 0;
 }
 
-char * uidToUname(uid_t uid)
+const char * uidToUname(uid_t uid)
 {
     static uid_t lastUid = (uid_t) -1;
 static char * lastUname = NULL;
@@ -140,7 +140,7 @@ static char * lastUname = NULL;
     }
 }
 
-char * gidToGname(gid_t gid)
+const char * gidToGname(gid_t gid)
 {
     static gid_t lastGid = (gid_t) -1;
 static char * lastGname = NULL;

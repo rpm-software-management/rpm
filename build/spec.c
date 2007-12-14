@@ -246,7 +246,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpm_tag_t tag)
 {
     struct Source *p;
     int flag = 0;
-    char *name = NULL;
+    const char *name = NULL;
     char *nump;
     const char *fieldp = NULL;
     char buf[BUFSIZ];

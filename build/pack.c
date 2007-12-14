@@ -256,7 +256,7 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 	} else {
 	    /* This is dumb.  When the header supports NULL string */
 	    /* this will go away.                                  */
-	    char *bull = "";
+	    const char *bull = "";
 	    (void) headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
 				   RPM_STRING_ARRAY_TYPE, &bull, 1);
 	}

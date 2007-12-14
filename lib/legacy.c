@@ -178,7 +178,7 @@ void providePackageNVR(Header h)
      */
     if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
 	for (i = 0; i < providesCount; i++) {
-	    char * vdummy = "";
+	    const char * vdummy = "";
 	    int32_t fdummy = RPMSENSE_ANY;
 	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			&vdummy, 1);

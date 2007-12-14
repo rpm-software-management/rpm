@@ -36,7 +36,7 @@ void headerDump(Header h, FILE *f, int flags,
     indexEntry p;
     const struct headerTagTableEntry_s * tage;
     const char * tag;
-    char * type;
+    const char * type;
 
     /* First write out the length of the index (count of index entries) */
     fprintf(f, "Entry count: %d\n", h->indexUsed);

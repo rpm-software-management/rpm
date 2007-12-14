@@ -177,17 +177,18 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
 const char * cpioStrerror(int rc)
 {
     static char msg[256];
-    char *s;
+    const char *s;
     int myerrno = errno;
     size_t l;
 
     strcpy(msg, "cpio: ");
     switch (rc) {
-    default:
-	s = msg + strlen(msg);
-	sprintf(s, _("(error 0x%x)"), (unsigned)rc);
+    default: {
+	char *t = msg + strlen(msg);
+	sprintf(t, _("(error 0x%x)"), (unsigned)rc);
 	s = NULL;
 	break;
+    }
     case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
     case CPIOERR_BAD_HEADER:	s = _("Bad/unreadable  header");break;
 

@@ -920,7 +920,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
 	   {
-		static char *_docdir_fmt= 0;
+		static const char *_docdir_fmt = NULL;
 		static int oneshot = 0;
 		const char *ddir, *fmt, *errstr;
 		if (!oneshot) {
