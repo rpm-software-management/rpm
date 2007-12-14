@@ -545,7 +545,7 @@ printNewSpecfile(rpmSpec spec)
     Header h;
     speclines sl = spec->sl;
     spectags st = spec->st;
-    const char * msgstr = NULL;
+    char * msgstr = NULL;
     int i, j;
 
     if (sl == NULL || st == NULL)

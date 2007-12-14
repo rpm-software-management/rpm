@@ -536,7 +536,7 @@ main(int argc, char *argv[])
 {
     rpmts ts = NULL;
     poptContext optCon;
-    const char * s;
+    char * s;
     FTS * ftsp;
     FTSENT * fts;
     int ec = 1;

@@ -38,7 +38,7 @@ int rpmLookupSignatureType(int action)
     case RPMLOOKUPSIG_QUERY:
 	if (disabled)
 	    break;	/* Disabled */
-      { const char *name = rpmExpand("%{?_signature}", NULL);
+      { char *name = rpmExpand("%{?_signature}", NULL);
 	if (!(name && *name != '\0'))
 	    rc = 0;
 	else if (!xstrcasecmp(name, "none"))
@@ -869,7 +869,7 @@ char * rpmGetPassPhrase(const char * prompt, const rpm_tag_t sigTag)
     switch (sigTag) {
     case RPMSIGTAG_DSA:
     case RPMSIGTAG_GPG:
-      { const char *name = rpmExpand("%{?_gpg_name}", NULL);
+      { char *name = rpmExpand("%{?_gpg_name}", NULL);
 	aok = (name && *name != '\0');
 	name = _free(name);
       }
@@ -881,7 +881,7 @@ char * rpmGetPassPhrase(const char * prompt, const rpm_tag_t sigTag)
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5: 	/* XXX legacy */
     case RPMSIGTAG_PGP:
-      { const char *name = rpmExpand("%{?_pgp_name}", NULL);
+      { char *name = rpmExpand("%{?_pgp_name}", NULL);
 	aok = (name && *name != '\0');
 	name = _free(name);
       }

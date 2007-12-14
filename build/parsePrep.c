@@ -408,8 +408,7 @@ static int doSetupMacro(rpmSpec spec, char *line)
 	const char ** fm;
 
 	for (fm = fixmacs; *fm; fm++) {
-	    const char *fix;
-	    fix = rpmExpand(*fm, " .", NULL);
+	    char * fix = rpmExpand(*fm, " .", NULL);
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
 	    fix = _free(fix);

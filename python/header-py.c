@@ -725,7 +725,7 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     FD_t fd;
     int fileno;
     PyObject * list;
-    const char * kwlist[] = {"fd", NULL};
+    char * kwlist[] = {"fd", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fileno))
 	return NULL;

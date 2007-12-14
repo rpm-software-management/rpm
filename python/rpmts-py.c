@@ -543,7 +543,7 @@ rpmts_IDTXglob(rpmtsObject * s)
 {
     PyObject * result = NULL;
     rpm_tag_t tag = RPMTAG_REMOVETID;
-    const char * globstr;
+    char * globstr;
     IDTX idtx;
 
 if (_rpmts_debug)

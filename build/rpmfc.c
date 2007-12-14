@@ -229,7 +229,7 @@ top:
 int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 		int failnonzero)
 {
-    const char * s = NULL;
+    char * s = NULL;
     ARGV_t xav = NULL;
     ARGV_t pav = NULL;
     int pac = 0;
@@ -801,7 +801,7 @@ static int rpmfcELF(rpmfc fc)
     char buf[BUFSIZ];
     const char * s;
     struct stat sb, * st = &sb;
-    const char * soname = NULL;
+    char * soname = NULL;
     rpmds * depsp, ds;
     rpm_tag_t tagN;
     int32_t dsContext;

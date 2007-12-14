@@ -766,7 +766,7 @@ static int parseForRegexLang(const char * fileName, char ** lang)
     const char *s;
 
     if (! initialized) {
-	const char *patt = rpmExpand("%{?_langpatt}", NULL);
+	char *patt = rpmExpand("%{?_langpatt}", NULL);
 	int rc = 0;
 	if (!(patt && *patt != '\0'))
 	    rc = 1;
@@ -2250,7 +2250,7 @@ static int checkFiles(StringBuf fileList)
 {
     static const char * av_ckfile[] = { "%{?__check_files}", NULL };
     StringBuf sb_stdout = NULL;
-    const char * s;
+    char * s;
     int rc;
     
     s = rpmExpand(av_ckfile[0], NULL);

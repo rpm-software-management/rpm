@@ -84,7 +84,7 @@ static int handleInstInstalledFiles(const rpmts ts,
     uint32_t prefcolor = rpmtsPrefColor(ts);
     uint32_t otecolor, tecolor;
     uint32_t oFColor, FColor;
-    const char * altNEVR = NULL;
+    char * altNEVR = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
     rpmps ps;
@@ -626,7 +626,7 @@ static int ensureOlder(rpmts ts,
 
     if (rc == 0) {
 	rpmps ps = rpmtsProblems(ts);
-	const char * altNEVR = headerGetNEVRA(h, NULL);
+	char * altNEVR = headerGetNEVRA(h, NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVRA(p), rpmteKey(p),
 		NULL, NULL,
@@ -657,7 +657,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     const char ** languages;
     const char * dn, * bn;
     size_t dnlen, bnlen;
-    const char * s;
+    char * s;
     int * drc;
     char * dff;
     int dc;
@@ -666,7 +666,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
 
-    {	const char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
+    {	char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
 	if (tmpPath && *tmpPath != '%')
 	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
 	tmpPath = _free(tmpPath);
@@ -1375,7 +1375,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     ts->ignoreSet = ignoreSet;
-    {	const char * currDir = currentDirectory();
+    {	char * currDir = currentDirectory();
 	rpmtsSetCurrDir(ts, currDir);
 	currDir = _free(currDir);
     }

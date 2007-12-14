@@ -279,22 +279,22 @@ retry:
     if (!spec->readStack->reading && !strncmp("%if", s, sizeof("%if")-1)) {
 	match = 0;
     } else if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
-	const char *arch = rpmExpand("%{_target_cpu}", NULL);
+	char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 7;
 	match = matchTok(arch, s);
 	arch = _free(arch);
     } else if (! strncmp("%ifnarch", s, sizeof("%ifnarch")-1)) {
-	const char *arch = rpmExpand("%{_target_cpu}", NULL);
+	char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 8;
 	match = !matchTok(arch, s);
 	arch = _free(arch);
     } else if (! strncmp("%ifos", s, sizeof("%ifos")-1)) {
-	const char *os = rpmExpand("%{_target_os}", NULL);
+	char *os = rpmExpand("%{_target_os}", NULL);
 	s += 5;
 	match = matchTok(os, s);
 	os = _free(os);
     } else if (! strncmp("%ifnos", s, sizeof("%ifnos")-1)) {
-	const char *os = rpmExpand("%{_target_os}", NULL);
+	char *os = rpmExpand("%{_target_os}", NULL);
 	s += 6;
 	match = !matchTok(os, s);
 	os = _free(os);
@@ -558,9 +558,9 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 
     /* Check for description in each package and add arch and os */
   {
-    const char *platform = rpmExpand("%{_target_platform}", NULL);
-    const char *arch = rpmExpand("%{_target_cpu}", NULL);
-    const char *os = rpmExpand("%{_target_os}", NULL);
+    char *platform = rpmExpand("%{_target_platform}", NULL);
+    char *arch = rpmExpand("%{_target_cpu}", NULL);
+    char *os = rpmExpand("%{_target_os}", NULL);
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {

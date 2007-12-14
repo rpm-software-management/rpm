@@ -209,8 +209,8 @@ static int isMemberInEntry(Header h, const char *name, rpm_tag_t tag)
  */
 static int checkForValidArchitectures(rpmSpec spec)
 {
-    const char *arch = rpmExpand("%{_target_cpu}", NULL);
-    const char *os = rpmExpand("%{_target_os}", NULL);
+    char *arch = rpmExpand("%{_target_cpu}", NULL);
+    char *os = rpmExpand("%{_target_os}", NULL);
     
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUDEARCH) == 1) {
@@ -311,7 +311,7 @@ static void fillOutMainPackage(Header h)
 
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
 	if (!headerIsEntry(h, ot->ot_tag)) {
-	    const char *val = rpmExpand(ot->ot_mac, NULL);
+	    char *val = rpmExpand(ot->ot_mac, NULL);
 	    if (val && *val != '%')
 		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
 	    val = _free(val);

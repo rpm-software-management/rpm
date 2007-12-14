@@ -53,7 +53,7 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
     rpmRC rc = RPMRC_OK;
     int xx;
 
-    {	const char *fmode = rpmExpand(fmodeMacro, NULL);
+    {	char *fmode = rpmExpand(fmodeMacro, NULL);
 	if (!(fmode && fmode[0] == 'w'))
 	    fmode = xstrdup("w9.gzdio");
 	(void) Fflush(fdo);
@@ -348,7 +348,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     FD_t ifd = NULL;
     int32_t count, sigtag;
     const char * sigtarget = NULL;;
-    const char * rpmio_flags = NULL;
+    char * rpmio_flags = NULL;
     const char * SHA1 = NULL;
     char *s;
     char buf[BUFSIZ];
@@ -635,7 +635,7 @@ rpmRC packageBinaries(rpmSpec spec)
 
 	providePackageNVR(pkg->header);
 
-    {	const char * optflags = rpmExpand("%{optflags}", NULL);
+    {	char * optflags = rpmExpand("%{optflags}", NULL);
 	(void) headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
 			optflags, 1);
 	optflags = _free(optflags);
