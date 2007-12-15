@@ -27,7 +27,7 @@ int _rpmds_unspecified_epoch_noise = 0;
  */
 struct rpmds_s {
     const char * Type;		/*!< Tag name. */
-    const char * DNEVR;		/*!< Formatted dependency string. */
+    char * DNEVR;		/*!< Formatted dependency string. */
     Header h;			/*!< Header for dependency set (or NULL) */
     const char ** N;		/*!< Name. */
     const char ** EVR;		/*!< Epoch-Version-Release. */

@@ -34,7 +34,7 @@ struct rpmgi_s {
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
     int errors;
-    const char * hdrPath;	/*!< Path to current iterator header. */
+    char * hdrPath;		/*!< Path to current iterator header. */
     Header h;			/*!< Current iterator header. */
 
     rpmtsi tsi;
