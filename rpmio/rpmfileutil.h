@@ -69,7 +69,7 @@ int	isCompressed	(const char * file,
 /** \ingroup rpmfileutil
  * Canonicalize file path.
  * @param path		path to canonicalize (in-place)
- * @return		canonicalized path (malloc'ed)
+ * @return		pointer to path
  */
 char * rpmCleanPath	(char * path);
 
