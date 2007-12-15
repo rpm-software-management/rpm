@@ -259,8 +259,8 @@ static char * xmlFormat(rpm_tagtype_t type, const void * data,
 {
     const char * xtag = NULL;
     size_t nb;
-    char * val;
-    char * s = NULL;
+    char * val, * bs = NULL;
+    const char * s = NULL;
     char * t, * te;
     unsigned long anint = 0;
     int xx;
@@ -275,10 +275,11 @@ static char * xmlFormat(rpm_tagtype_t type, const void * data,
     {	
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	size_t ns = element;
-    	if ((s = b64encode(data, ns, 0)) == NULL) {
+    	if ((bs = b64encode(data, ns, 0)) == NULL) {
     		/* XXX proper error handling would be better. */
-    		s = xcalloc(1, padding + (ns / 3) * 4 + 1);
+    		bs = xcalloc(1, padding + (ns / 3) * 4 + 1);
     	}
+	s = bs;
 	xtag = "base64";
     }	break;
     case RPM_CHAR_TYPE:
@@ -323,7 +324,7 @@ static char * xmlFormat(rpm_tagtype_t type, const void * data,
 
     /* XXX s was malloc'd */
     if (!strcmp(xtag, "base64"))
-	s = _free(s);
+	free(bs);
 
     nb += padding;
     val = xmalloc(nb+1);
