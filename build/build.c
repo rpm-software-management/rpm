@@ -54,9 +54,9 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
     const char *scriptName = NULL;
     char * buildDirURL = rpmGenPath(rootURL, "%{_builddir}", "");
     const char * buildScript;
-    const char * buildCmd = NULL;
-    const char * buildTemplate = NULL;
-    const char * buildPost = NULL;
+    char * buildCmd = NULL;
+    char * buildTemplate = NULL;
+    char * buildPost = NULL;
     const char * mTemplate = NULL;
     const char * mCmd = NULL;
     const char * mPost = NULL;

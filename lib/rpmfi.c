@@ -1282,7 +1282,7 @@ if (fi->actions == NULL)
      && !headerIsSource(h)
      && !headerIsEntry(h, RPMTAG_ORIGBASENAMES))
     {
-	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
+	char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
 	const char * errstr;
 	char * newPath;
 	Header foo;

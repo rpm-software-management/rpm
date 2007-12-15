@@ -592,8 +592,8 @@ static int sugcmp(const void * a, const void * b)
 int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 {
     const char * errstr;
-    const char * str;
-    const char * qfmt;
+    char * str;
+    char * qfmt;
     rpmdbMatchIterator mi;
     Header bh;
     Header h;

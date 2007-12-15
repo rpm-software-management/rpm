@@ -1398,7 +1398,7 @@ assert(psm->mi == NULL);
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Open output package for writing. */
 	    {	char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
-		const char * pkgbn =
+		char * pkgbn =
 			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
 
 		bfmt = _free(bfmt);

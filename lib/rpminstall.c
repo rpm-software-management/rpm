@@ -252,7 +252,7 @@ int rpmInstall(rpmts ts,
     rpmps ps;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
-const char * fileURL = NULL;
+    const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
     rpmVSFlags vsflags, ovsflags, tvsflags;
