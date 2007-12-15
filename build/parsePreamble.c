@@ -50,7 +50,7 @@ static rpm_tag_t requiredTags[] = {
 
 /**
  */
-static void addOrAppendListEntry(Header h, rpm_tag_t tag, char * line)
+static void addOrAppendListEntry(Header h, rpm_tag_t tag, const char * line)
 {
     int xx;
     int argc;
@@ -68,7 +68,7 @@ static void addOrAppendListEntry(Header h, rpm_tag_t tag, char * line)
 
 /**
  */
-static int parseSimplePart(char *line,char **name,int *flag)
+static int parseSimplePart(const char *line, char **name, int *flag)
 {
     char *tok;
     char linebuf[BUFSIZ];

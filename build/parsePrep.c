@@ -277,7 +277,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
  */
-static int doSetupMacro(rpmSpec spec, char *line)
+static int doSetupMacro(rpmSpec spec, const char *line)
 {
     char buf[BUFSIZ];
     StringBuf before;
@@ -424,7 +424,7 @@ static int doSetupMacro(rpmSpec spec, char *line)
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
  */
-static rpmRC doPatchMacro(rpmSpec spec, char *line)
+static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 {
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E, opt_F;

@@ -281,7 +281,7 @@ VFA_t verifyAttrs[] = {
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForVerify(char * buf, FileList fl)
+static rpmRC parseForVerify(const char * buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
@@ -374,7 +374,7 @@ static rpmRC parseForVerify(char * buf, FileList fl)
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForDev(char * buf, FileList fl)
+static rpmRC parseForDev(const char * buf, FileList fl)
 {
     const char * name;
     const char * errstr = NULL;
@@ -470,7 +470,7 @@ exit:
  * @param fl		package file tree walk data
  * @return		0 on success
  */
-static int parseForAttr(char * buf, FileList fl)
+static int parseForAttr(const char * buf, FileList fl)
 {
     const char *name;
     char *p, *pe, *q;
@@ -598,7 +598,7 @@ static int parseForAttr(char * buf, FileList fl)
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForConfig(char * buf, FileList fl)
+static rpmRC parseForConfig(const char * buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
@@ -668,7 +668,7 @@ static int langCmp(const void * ap, const void * bp)
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-static int parseForLang(char * buf, FileList fl)
+static int parseForLang(const char * buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
