@@ -112,7 +112,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
 	FILE *fp;
-	const char * specDir;
+	char * specDir;
 	char * tmpSpecFile;
 	char * cmd, * s;
 	rpmCompressedMagic res = COMPRESSED_OTHER;

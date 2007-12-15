@@ -67,7 +67,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
     /* have one %_pgpbin and one %_pgp_path.                          */
 
     static pgpVersion saved_pgp_version = PGP_UNKNOWN;
-    const char *pgpbin = rpmGetPath("%{?_pgpbin}", NULL);
+    char *pgpbin = rpmGetPath("%{?_pgpbin}", NULL);
 
     if (saved_pgp_version == PGP_UNKNOWN) {
 	char *pgpvbin;

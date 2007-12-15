@@ -263,7 +263,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int32_t * fssizes,
     char * chptr;
     int maxLen;
     char * lastDir;
-    const char * sourceDir;
+    char * sourceDir;
     int lastfs = 0;
     int lastDev = -1;		/* I hope nobody uses -1 for a st_dev */
     struct stat sb;

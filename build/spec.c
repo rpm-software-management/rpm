@@ -319,7 +319,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpm_tag_t tag)
     spec->numSources++;
 
     if (tag != RPMTAG_ICON) {
-	const char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
+	char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 
 	sprintf(buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);

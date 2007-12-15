@@ -3417,12 +3417,12 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
 {
     rpmdb olddb;
-    const char * dbpath = NULL;
-    const char * rootdbpath = NULL;
+    char * dbpath = NULL;
+    char * rootdbpath = NULL;
     rpmdb newdb;
-    const char * newdbpath = NULL;
-    const char * newrootdbpath = NULL;
-    const char * tfn;
+    char * newdbpath = NULL;
+    char * newrootdbpath = NULL;
+    char * tfn;
     int nocleanup = 1;
     int failed = 0;
     int removedir = 0;

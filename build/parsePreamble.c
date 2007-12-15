@@ -323,7 +323,7 @@ static void fillOutMainPackage(Header h)
  */
 static rpmRC readIcon(Header h, const char * file)
 {
-    const char *fn = NULL;
+    char *fn = NULL;
     char *icon;
     FD_t fd;
     rpmRC rc = RPMRC_OK;

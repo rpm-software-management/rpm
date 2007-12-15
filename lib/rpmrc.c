@@ -568,7 +568,8 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 			 sizeof(optionTable[0]), optionCompare);
 
 	if (option) {	/* For configuration variables  ... */
-	    const char *arch, *val, *fn;
+	    const char *arch, *val;
+	    char *fn;
 
 	    arch = val = fn = NULL;
 	    if (*se == '\0') {
@@ -1687,7 +1688,7 @@ int rpmReadConfigFiles(const char * file, const char * target)
     if (rpmReadRC(file)) return -1;
 
     if (macrofiles != NULL) {
-	const char *mf = rpmGetPath(macrofiles, NULL);
+	char *mf = rpmGetPath(macrofiles, NULL);
 	rpmInitMacros(NULL, mf);
 	_free(mf);
     }

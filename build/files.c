@@ -922,7 +922,8 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	   {
 		static const char *_docdir_fmt = NULL;
 		static int oneshot = 0;
-		const char *ddir, *fmt, *errstr;
+		char *ddir, *fmt;
+	        errmsg_t errstr;
 		if (!oneshot) {
 		    _docdir_fmt = rpmExpand("%{?_docdir_fmt}", NULL);
 		    if (!_docdir_fmt || !*_docdir_fmt)
@@ -1782,7 +1783,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     pkg->cpioList = NULL;
 
     if (pkg->fileFile) {
-	const char *ffn;
+	char *ffn;
 	FILE * f;
 	FD_t fd;
 
@@ -2123,7 +2124,7 @@ int processSourceFiles(rpmSpec spec)
 	    }
 	}
 
-      {	const char * sfn;
+      {	char * sfn;
 	sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	appendLineStringBuf(sourceFiles, sfn);
@@ -2133,7 +2134,7 @@ int processSourceFiles(rpmSpec spec)
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
-	    const char * sfn;
+	    char * sfn;
 	    sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	    appendLineStringBuf(sourceFiles, sfn);

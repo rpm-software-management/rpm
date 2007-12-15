@@ -1353,7 +1353,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     if (!rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
-	const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
 	if (matchpathcon_init(fn) == -1) {
 	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
 	}

@@ -27,7 +27,7 @@ static void doRmSource(rpmSpec spec)
 
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
-	    const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
+	    char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	    rc = unlink(fn);
 	    fn = _free(fn);
 	}
@@ -36,7 +36,7 @@ static void doRmSource(rpmSpec spec)
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	for (p = pkg->icon; p != NULL; p = p->next) {
 	    if (! (p->flags & RPMBUILD_ISNO)) {
-		const char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
+		char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 		rc = unlink(fn);
 		fn = _free(fn);
 	    }

@@ -95,8 +95,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     ts->dbmode = dbmode;
     rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
     if (rc) {
-	const char * dn;
-	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
+	char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
 	rpmlog(RPMLOG_ERR,
 			_("cannot open Packages database in %s\n"), dn);
 	dn = _free(dn);
@@ -567,8 +566,7 @@ int rpmtsOpenSDB(rpmts ts, int dbmode)
 
     rc = rpmdbOpen(ts->rootDir, &ts->sdb, ts->sdbmode, 0644);
     if (rc) {
-	const char * dn;
-	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
+	char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
 	rpmlog(RPMLOG_WARNING,
 			_("cannot open Solve database in %s\n"), dn);
 	dn = _free(dn);

@@ -655,7 +655,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
     if ((a != NULL && a[0] == 'i' && a[1] != '\0' && a[2] == '8' && a[3] == '6')
      && strcmp(argv[0], "/sbin/ldconfig"))
     {
-	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
+	char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
 	const char * errstr;
 	char * newPath;
 	char * t;
@@ -1397,7 +1397,7 @@ assert(psm->mi == NULL);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Open output package for writing. */
-	    {	const char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
+	    {	char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
 		const char * pkgbn =
 			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
 

@@ -519,7 +519,7 @@ const char * xmdir = rpmGetPath(urlmdir, NULL);
 const char * mdir = xmdir;
 const char * xfile = rpmGetPath(urlfile, NULL);
 const char * file = xfile;
-    const char * result;
+    char * result;
     const char * url = NULL;
     int nurl = 0;
     int ut;

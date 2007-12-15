@@ -116,7 +116,7 @@ static StringBuf addFileToTagAux(rpmSpec spec,
 		const char * file, StringBuf sb)
 {
     char buf[BUFSIZ];
-    const char * fn = buf;
+    char * fn = buf;
     FILE * f;
     FD_t fd;
 
@@ -610,7 +610,7 @@ rpmRC packageBinaries(rpmSpec spec)
     Package pkg;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	const char *fn;
+	char *fn;
 
 	if (pkg->fileList == NULL)
 	    continue;
@@ -649,7 +649,7 @@ rpmRC packageBinaries(rpmSpec spec)
 		       spec->sourcePkgId, 16);
 	}
 	
-	{   const char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
+	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
 	    char *binRpm, *binDir;
 	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
 			       rpmHeaderFormats, &errorString);
@@ -664,7 +664,7 @@ rpmRC packageBinaries(rpmSpec spec)
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 	    if ((binDir = strchr(binRpm, '/')) != NULL) {
 		struct stat st;
-		const char *dn;
+		char *dn;
 		*binDir = '\0';
 		dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
 		if (stat(dn, &st) < 0) {
@@ -721,7 +721,7 @@ rpmRC packageSources(rpmSpec spec)
     spec->cookie = _free(spec->cookie);
     
     /* XXX this should be %_srpmdir */
-    {	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
+    {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;

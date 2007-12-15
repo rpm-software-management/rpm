@@ -121,7 +121,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     }
 
     if (compressed) {
-	const char *zipper = rpmGetPath(
+	char *zipper = rpmGetPath(
 	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
 	    NULL);
 
@@ -222,7 +222,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
     }
 
     if (compressed != COMPRESSED_NOT) {
-	const char *zipper;
+	char *zipper;
 	int needtar = 1;
 
 	switch (compressed) {

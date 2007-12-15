@@ -731,7 +731,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
 	if (db != NULL) {
-		const char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
+		char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
 
 		rc = db->verify(db, dbf, NULL, NULL, flags);
 		rc = cvtdberr(dbi, "db->verify", rc, _debug);
@@ -883,7 +883,7 @@ static int db3open(rpmdb rpmdb, rpm_tag_t rpmtag, dbiIndex * dbip)
 	    }
 
 	} else {	/* dbhome is writable, check for persistent dbenv. */
-	    const char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
+	    char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
 
 	    if (access(dbf, F_OK) == -1) {
 		/* ... non-existent (or unwritable) DBENV, will create ... */
@@ -909,7 +909,7 @@ static int db3open(rpmdb rpmdb, rpm_tag_t rpmtag, dbiIndex * dbip)
     if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
 	/* dbhome is writable, and DB->open flags may conflict. */
 	const char * dbfn = (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag));
-	const char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
+	char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
 
 	if (access(dbf, F_OK) == -1) {
 	    /* File does not exist, DB->open might create ... */
