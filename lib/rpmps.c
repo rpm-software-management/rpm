@@ -296,7 +296,7 @@ unsigned long rpmProblemGetLong(const rpmProblem p)
     return (p->ulong1);
 }
 
-const char * rpmProblemString(const rpmProblem prob)
+char * rpmProblemString(const rpmProblem prob)
 {
     const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "?pkgNEVR?");
     const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "? ?altNEVR?");

@@ -371,7 +371,9 @@ static int verifyDependencies(QVA_t qva, rpmts ts,
 	free(nevra);
 	while (rpmpsNextIterator(psi) >= 0) {
 	    rpmProblem p = rpmpsGetProblem(psi);
-	    rpmlog(RPMLOG_NOTICE, "\t%s\n", rpmProblemString(p));
+	    char * ps = rpmProblemString(p);
+	    rpmlog(RPMLOG_NOTICE, "\t%s\n", ps);
+	    free(ps);
 	    rc++;	
 	}
     }

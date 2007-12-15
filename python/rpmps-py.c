@@ -68,7 +68,9 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
 
     /* If more to do, return a problem set string. */
     if (rpmpsNextIterator(s->psi) >= 0) {
-	result = Py_BuildValue("s", rpmProblemString(rpmpsGetProblem(s->psi)));
+	char * ps = rpmProblemString(rpmpsGetProblem(s->psi));
+	result = Py_BuildValue("s", ps);
+	free(ps);
     } else {
 	s->psi = rpmpsFreeIterator(s->psi);
     }
@@ -148,7 +150,9 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
     psi = rpmpsInitIterator(s->ps);
     while ((i = rpmpsNextIterator(psi)) >= 0) {
 	if (i == ix) {
-	    result = Py_BuildValue("s", rpmProblemString(rpmpsGetProblem(psi)));
+	    char * ps = rpmProblemString(rpmpsGetProblem(psi));
+	    result = Py_BuildValue("s", ps);
+	    free(ps);
 	    break;
 	}
     }

@@ -1139,11 +1139,13 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     psi = rpmpsInitIterator(ps);
     while (rpmpsNextIterator(psi) >= 0) {
 	rpmProblem p = rpmpsGetProblem(psi);
-	PyObject * prob = Py_BuildValue("s(isN)", rpmProblemString(p),
+	char * ps = rpmProblemString(p);
+	PyObject * prob = Py_BuildValue("s(isN)", ps,
 			     rpmProblemGetType(p),
 			     rpmProblemGetStr(p),
 			     PyLong_FromLongLong(rpmProblemGetLong(p)));
 	PyList_Append(list, prob);
+	free(ps);
 	Py_DECREF(prob);
     }
 
