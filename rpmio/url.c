@@ -50,14 +50,14 @@ urlinfo urlNew()
 urlinfo urlFree(urlinfo u)
 {
     URLSANE(u);
-    u->url = _free(u->url);
-    u->scheme = _free((void *)u->scheme);
-    u->user = _free((void *)u->user);
-    u->password = _free((void *)u->password);
-    u->host = _free((void *)u->host);
-    u->portstr = _free((void *)u->portstr);
-    u->proxyu = _free((void *)u->proxyu);
-    u->proxyh = _free((void *)u->proxyh);
+    u->url = _constfree(u->url);
+    u->scheme = _constfree(u->scheme);
+    u->user = _constfree(u->user);
+    u->password = _constfree(u->password);
+    u->host = _constfree(u->host);
+    u->portstr = _constfree(u->portstr);
+    u->proxyu = _constfree(u->proxyu);
+    u->proxyh = _constfree(u->proxyh);
 
     u = _free(u);
     return NULL;
