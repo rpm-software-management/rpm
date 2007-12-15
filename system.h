@@ -234,17 +234,30 @@ typedef	char * security_context_t;
 #endif
 
 /**
- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * Wrapper to free(3), permit NULL, return NULL.
  * @param p             memory to free
  * @return              NULL always
  */
 static inline
-void * _free(const void * p)
+void * _free(void * p)
+{
+    if (p != NULL)      free(p);
+    return NULL;
+}
+
+/**
+ * Wrapper to free(3), permit NULL, return NULL. 
+ * For documenting cases where const is used to protect long-lived 
+ * non-const data that's supposed to be freed.
+ * @param p             memory to free
+ * @return              NULL always
+ */
+static inline
+void * _constfree(const void * p)
 {
     if (p != NULL)      free((void *)p);
     return NULL;
 }
-
 
 /* FIX: these are macros */
 /**
