@@ -316,7 +316,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     unsigned char * dataStart = (unsigned char *) (pe + il);
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
-    const void * sig = NULL;
+    void * sig = NULL;
     unsigned const char * b;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
     size_t siglen = 0;

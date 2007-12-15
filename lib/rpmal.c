@@ -586,7 +586,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
     uint32_t tscolor;
     uint32_t ficolor;
     int found = 0;
-    const char * dirName;
+    char * dirName;
     const char * baseName;
     dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));

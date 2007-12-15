@@ -213,7 +213,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmfi fi = NULL;
     char * _sourcedir = NULL;
     char * _specdir = NULL;
-    const char * specFile = NULL;
+    char * specFile = NULL;
     HGE_t hge;
     HFD_t hfd;
     Header h = NULL;
