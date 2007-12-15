@@ -510,7 +510,7 @@ char *rpmCleanPath(char * path)
 
 /* Merge 3 args into path, any or all of which may be a url. */
 
-const char * rpmGenPath(const char * urlroot, const char * urlmdir,
+char * rpmGenPath(const char * urlroot, const char * urlmdir,
 		const char *urlfile)
 {
 const char * xroot = rpmGetPath(urlroot, NULL);
@@ -561,8 +561,7 @@ const char * file = xfile;
 
 /* Return concatenated and expanded canonical path. */
 
-const char *
-rpmGetPath(const char *path, ...)
+char * rpmGetPath(const char *path, ...)
 {
     char buf[BUFSIZ];
     const char * s;

@@ -83,8 +83,7 @@ char * rpmCleanPath	(char * path);
  * @param urlfile	file URL (often a file, or NULL)
  * @return		expanded, merged, canonicalized path (malloc'ed)
  */
-/* LCL: shrug */
-const char * rpmGenPath	(const char * urlroot,
+char * rpmGenPath	(const char * urlroot,
 			const char * urlmdir,
 			const char * urlfile);
 
@@ -93,8 +92,7 @@ const char * rpmGenPath	(const char * urlroot,
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
-/* LCL: shrug */
-const char * rpmGetPath	(const char * path, ...);
+char * rpmGetPath (const char * path, ...);
 
 /** \ingroup rpmfileutil
  * Return URL path(s) from a (URL prefixed) pattern glob.
