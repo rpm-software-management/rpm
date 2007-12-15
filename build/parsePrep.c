@@ -353,7 +353,7 @@ static int doSetupMacro(rpmSpec spec, char *line)
     argv = _free(argv);
 
     /* cd to the build dir */
-    {	const char * buildDirURL = rpmGenPath(spec->rootURL, "%{_builddir}", "");
+    {	char * buildDirURL = rpmGenPath(spec->rootURL, "%{_builddir}", "");
 	const char *buildDir;
 
 	(void) urlPath(buildDirURL, &buildDir);

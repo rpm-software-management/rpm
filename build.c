@@ -94,7 +94,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
-    const char * buildRootURL = NULL;
+    char * buildRootURL = NULL;
     const char * specFile;
     const char * specURL;
     int specut;

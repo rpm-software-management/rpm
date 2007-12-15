@@ -1624,7 +1624,8 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 		rpm_tag_t tag)
 {
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
-    const char * fn = NULL;
+    const char * urlfn = NULL;
+    char * fn = NULL;
     const char * apkt = NULL;
     uint8_t * pkt = NULL;
     ssize_t pktlen = 0;
@@ -1632,12 +1633,12 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     int rc = RPMRC_FAIL;
     int xx;
 
-    (void) urlPath(fileURL, &fn);
-    if (*fn == '/') {
-	fn = rpmGenPath(fl->buildRootURL, NULL, fn);
+    (void) urlPath(fileURL, &urlfn);
+    if (*urlfn == '/') {
+	fn = rpmGenPath(fl->buildRootURL, NULL, urlfn);
 	absolute = 1;
     } else
-	fn = rpmGenPath(buildURL, NULL, fn);
+	fn = rpmGenPath(buildURL, NULL, urlfn);
 
     switch (tag) {
     default:
@@ -1700,7 +1701,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl,
 {
     int quote = 1;	/* XXX permit quoted glob characters. */
     int doGlob;
-    const char *diskURL = NULL;
+    char *diskURL = NULL;
     int rc = RPMRC_OK;
     
     doGlob = glob_pattern_p(fileURL, quote);

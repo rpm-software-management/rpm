@@ -501,7 +501,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpm_tag_t tag,
     case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
       {	const char * buildRoot = NULL;
-	const char * buildRootURL = spec->buildRootURL;
+	char * buildRootURL;
 
 	/*
 	 * Note: rpmGenPath should guarantee a "canonical" path. That means
@@ -510,7 +510,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpm_tag_t tag,
 	 *          //usr//bin/
 	 *          /.././../usr/../bin//./sh
 	 */
-	if (buildRootURL == NULL) {
+	if (spec->buildRootURL == NULL) {
 	    buildRootURL = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
 	    if (strcmp(buildRootURL, "/")) {
 		spec->buildRootURL = buildRootURL;

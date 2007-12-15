@@ -739,7 +739,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
 
     urlhelper = rpmExpand("%{?_urlhelper}", NULL);
 
-    dest = (char *) rpmGenPath(NULL, "%{_tmppath}/", "rpm-transfer.XXXXXX");
+    dest = rpmGenPath(NULL, "%{_tmppath}/", "rpm-transfer.XXXXXX");
     close(mkstemp(dest));
     sprintf(cmd, "%s %s %s\n", urlhelper, dest, url);
     urlhelper = _free(urlhelper);

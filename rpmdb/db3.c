@@ -319,7 +319,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	}
 	if (dbi->dbi_tmpdir) {
 	    const char * root;
-	    const char * tmpdir;
+	    char * tmpdir;
 
 	    root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
 	    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
@@ -633,7 +633,7 @@ assert(db != NULL);
 static int db3close(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
-    const char * urlfn = NULL;
+    char * urlfn = NULL;
     const char * root;
     const char * home;
     const char * dbhome;
@@ -715,7 +715,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
-	    const char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	    char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	    rc = dbenv->set_tmp_dir(dbenv, tmpdir);
 	    rc = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
 	    tmpdir = _free(tmpdir);
@@ -765,7 +765,7 @@ exit:
 static int db3open(rpmdb rpmdb, rpm_tag_t rpmtag, dbiIndex * dbip)
 {
     extern struct _dbiVec db3vec;
-    const char * urlfn = NULL;
+    char * urlfn = NULL;
     const char * root;
     const char * home;
     const char * dbhome;

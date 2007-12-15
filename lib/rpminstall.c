@@ -362,7 +362,7 @@ if (fileURL[0] == '=') {
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
-	{   const char *tfn;
+	{   char *tfn;
 
 	    if (rpmIsVerbose())
 		fprintf(stdout, _("Retrieving %s\n"), fileURL);

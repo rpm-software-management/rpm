@@ -770,12 +770,12 @@ static int sql_open(rpmdb rpmdb, rpm_tag_t rpmtag, dbiIndex * dbip)
 {
     extern struct _dbiVec sqlitevec;
    
-    const char * urlfn = NULL;
+    char * urlfn = NULL;
     const char * root;
     const char * home;
     const char * dbhome;
     const char * dbfile;  
-    const char * dbfname;
+    char * dbfname;
     const char * sql_errcode;
     dbiIndex dbi;
     SQL_DB * sqldb;

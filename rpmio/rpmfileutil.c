@@ -223,7 +223,7 @@ exit:
 int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 {
     const char * tpmacro = "%{?_tmppath:%{_tmppath}}%{!?_tmppath:" LOCALSTATEDIR "/tmp}";
-    const char * tempfn = NULL;
+    char * tempfn = NULL;
     const char * tfn = NULL;
     static int _initialized = 0;
     int temput;

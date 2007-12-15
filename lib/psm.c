@@ -211,8 +211,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 {
     int scareMem = 1;
     rpmfi fi = NULL;
-    const char * _sourcedir = NULL;
-    const char * _specdir = NULL;
+    char * _sourcedir = NULL;
+    char * _specdir = NULL;
     const char * specFile = NULL;
     HGE_t hge;
     HFD_t hfd;
