@@ -513,12 +513,12 @@ char *rpmCleanPath(char * path)
 char * rpmGenPath(const char * urlroot, const char * urlmdir,
 		const char *urlfile)
 {
-const char * xroot = rpmGetPath(urlroot, NULL);
-const char * root = xroot;
-const char * xmdir = rpmGetPath(urlmdir, NULL);
-const char * mdir = xmdir;
-const char * xfile = rpmGetPath(urlfile, NULL);
-const char * file = xfile;
+    char * xroot = rpmGetPath(urlroot, NULL);
+    const char * root = xroot;
+    char * xmdir = rpmGetPath(urlmdir, NULL);
+    const char * mdir = xmdir;
+    char * xfile = rpmGetPath(urlfile, NULL);
+    const char * file = xfile;
     char * result;
     const char * url = NULL;
     int nurl = 0;
@@ -712,8 +712,8 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
     const char *home = getenv("HOME");
     int gflags = 0;
 #ifdef ENABLE_NLS
-    const char * old_collate = NULL;
-    const char * old_ctype = NULL;
+    char * old_collate = NULL;
+    char * old_ctype = NULL;
     const char * t;
 #endif
 	size_t maxb, nb;
@@ -740,7 +740,7 @@ int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	
     if (av != NULL)
     for (j = 0; j < ac; j++) {
-	const char * globURL;
+	char * globURL;
 	const char * path;
 	int ut = urlPath(av[j], &path);
 	int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
