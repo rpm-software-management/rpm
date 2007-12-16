@@ -588,7 +588,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
     int maxPrefixLength;
     int len;
     char * prefixBuf = NULL;
-    const char * fn = NULL;
+    char * fn = NULL;
     int xx;
     int i;
     int freePrefixes = 0;

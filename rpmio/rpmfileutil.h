@@ -45,7 +45,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
  * @retval fdptr	temp file handle
  * @return		0 on success
  */
-int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr);
+int rpmMkTempFile(const char * prefix, char ** fnptr, FD_t * fdptr);
 
 /** \ingroup rpmfileutil
  * Insure that directories in path exist, creating as needed.

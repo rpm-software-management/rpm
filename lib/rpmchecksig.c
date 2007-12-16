@@ -144,7 +144,7 @@ static int rpmReSign(rpmts ts,
     rpmlead lead;
     rpm_tag_t sigtag;
     const char *rpm, *trpm;
-    const char *sigtarget = NULL;
+    char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
     char * msg;

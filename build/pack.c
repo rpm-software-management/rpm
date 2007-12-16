@@ -347,7 +347,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     FD_t fd = NULL;
     FD_t ifd = NULL;
     int32_t count, sigtag;
-    const char * sigtarget = NULL;;
+    char * sigtarget = NULL;;
     char * rpmio_flags = NULL;
     const char * SHA1 = NULL;
     char *s;

@@ -220,7 +220,7 @@ exit:
     return rc;
 }
 
-int rpmMkTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
+int rpmMkTempFile(const char * prefix, char ** fnptr, FD_t * fdptr)
 {
     const char * tpmacro = "%{?_tmppath:%{_tmppath}}%{!?_tmppath:" LOCALSTATEDIR "/tmp}";
     char * tempfn = NULL;

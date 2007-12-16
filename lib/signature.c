@@ -614,7 +614,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpm_tag_t sigTag,
     FD_t fd = NULL;
     uint8_t * pkt;
     size_t pktlen;
-    const char * fn = NULL;
+    char * fn = NULL;
     const char * SHA1 = NULL;
     int ret = -1;	/* assume failure. */
 
