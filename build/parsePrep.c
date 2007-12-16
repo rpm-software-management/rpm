@@ -62,7 +62,8 @@ static rpmRC checkOwners(const char * urlfn)
 static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz)
 {
-    const char *fn, *urlfn;
+    const char *fn;
+    char *urlfn;
     static char buf[BUFSIZ];
     char args[BUFSIZ], *t = args;
     struct Source *sp;
@@ -156,7 +157,8 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
  */
 static const char *doUntar(rpmSpec spec, int c, int quietly)
 {
-    const char *fn, *urlfn;
+    const char *fn;
+    char *urlfn;
     static char buf[BUFSIZ];
     char *taropts;
     char *t = NULL;
