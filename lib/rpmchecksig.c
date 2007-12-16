@@ -21,30 +21,31 @@
 
 int _print_pkts = 0;
 
-/**
- */
-static int manageFile(FD_t *fdp,
-		const char **fnp,
-		int flags, int rc)
+static int closeFile(FD_t *fdp)
 {
-    const char *fn;
-    FD_t fd;
-
-    if (fdp == NULL)	/* programmer error */
+    if (fdp == NULL || *fdp == NULL)
 	return 1;
 
     /* close and reset *fdp to NULL */
-    if (*fdp && (fnp == NULL || *fnp == NULL)) {
-	(void) Fclose(*fdp);
-	*fdp = NULL;
-	return 0;
-    }
+    (void) Fclose(*fdp);
+    *fdp = NULL;
+    return 0;
+}
+
+/**
+ */
+static int manageFile(FD_t *fdp, const char *fn, int flags)
+{
+    FD_t fd;
+
+    if (fdp == NULL || fn == NULL)	/* programmer error */
+	return 1;
 
     /* open a file and set *fdp */
-    if (*fdp == NULL && fnp != NULL && *fnp != NULL) {
-	fd = Fopen(*fnp, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
+    if (*fdp == NULL && fn != NULL) {
+	fd = Fopen(fn, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
 	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), *fnp,
+	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), fn,
 		Fstrerror(fd));
 	    return 1;
 	}
@@ -52,22 +53,8 @@ static int manageFile(FD_t *fdp,
 	return 0;
     }
 
-    /* open a temp file */
-    if (*fdp == NULL && (fnp == NULL || *fnp == NULL)) {
-	fn = NULL;
-	if (rpmMkTempFile(NULL, (fnp ? &fn : NULL), &fd)) {
-	    rpmlog(RPMLOG_ERR, _("rpmMkTempFile failed\n"));
-	    return 1;
-	}
-	if (fnp != NULL)
-	    *fnp = fn;
-	*fdp = fdLink(fd, RPMDBG_M("manageFile return"));
-	fd = fdFree(fd, RPMDBG_M("manageFile return"));
-	return 0;
-    }
-
     /* no operation */
-    if (*fdp != NULL && fnp != NULL && *fnp != NULL)
+    if (*fdp != NULL && fn != NULL)
 	return 0;
 
     /* XXX never reached */
@@ -77,40 +64,40 @@ static int manageFile(FD_t *fdp,
 /**
  * Copy header+payload, calculating digest(s) on the fly.
  */
-static int copyFile(FD_t *sfdp, const char **sfnp,
-		FD_t *tfdp, const char **tfnp)
+static int copyFile(FD_t *sfdp, const char *sfnp,
+		FD_t *tfdp, const char *tfnp)
 {
     unsigned char buf[BUFSIZ];
     ssize_t count;
     int rc = 1;
 
-    if (manageFile(sfdp, sfnp, O_RDONLY, 0))
+    if (manageFile(sfdp, sfnp, O_RDONLY))
 	goto exit;
-    if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC, 0))
+    if (manageFile(tfdp, tfnp, O_WRONLY|O_CREAT|O_TRUNC))
 	goto exit;
 
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
 	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp) != count) {
-	    rpmlog(RPMLOG_ERR, _("%s: Fwrite failed: %s\n"), *tfnp,
+	    rpmlog(RPMLOG_ERR, _("%s: Fwrite failed: %s\n"), tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;
 	}
     }
     if (count < 0) {
-	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
+	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), sfnp, Fstrerror(*sfdp));
 	goto exit;
     }
     if (Fflush(*tfdp) != 0) {
-	rpmlog(RPMLOG_ERR, _("%s: Fflush failed: %s\n"), *tfnp,
+	rpmlog(RPMLOG_ERR, _("%s: Fflush failed: %s\n"), tfnp,
 	    Fstrerror(*tfdp));
     }
 
     rc = 0;
 
 exit:
-    if (*sfdp)	(void) manageFile(sfdp, NULL, 0, rc);
-    if (*tfdp)	(void) manageFile(tfdp, NULL, 0, rc);
+    if (*sfdp)	(void) closeFile(sfdp);
+    if (*tfdp)	(void) closeFile(tfdp);
     return rc;
 }
 
@@ -176,7 +163,7 @@ static int rpmReSign(rpmts ts,
 
 	fprintf(stdout, "%s:\n", rpm);
 
-	if (manageFile(&fd, &rpm, O_RDONLY, 0))
+	if (manageFile(&fd, rpm, O_RDONLY))
 	    goto exit;
 
 	lead = rpmLeadNew();
@@ -208,9 +195,14 @@ static int rpmReSign(rpmts ts,
 	}
 	msg = _free(msg);
 
-	/* Write the header and archive to a temp file */
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (copyFile(&fd, &rpm, &ofd, &sigtarget))
+	if (rpmMkTempFile(NULL, &sigtarget, &ofd)) {
+	    rpmlog(RPMLOG_ERR, _("rpmMkTempFile failed\n"));
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+	/* Write the header and archive to a temp file */
+	if (copyFile(&fd, rpm, &ofd, sigtarget))
 	    goto exit;
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
@@ -330,7 +322,7 @@ static int rpmReSign(rpmts ts,
 #endif
 	trpm = tmprpm;
 
-	if (manageFile(&ofd, &trpm, O_WRONLY|O_CREAT|O_TRUNC, 0))
+	if (manageFile(&ofd, trpm, O_WRONLY|O_CREAT|O_TRUNC))
 	    goto exit;
 
 	rc = rpmLeadWrite(ofd, lead);
@@ -349,7 +341,7 @@ static int rpmReSign(rpmts ts,
 
 	/* Append the header and archive from the temp file */
 	/* ASSERT: fd == NULL && ofd != NULL */
-	if (copyFile(&fd, &sigtarget, &ofd, &trpm))
+	if (copyFile(&fd, sigtarget, &ofd, trpm))
 	    goto exit;
 	/* Both fd and ofd are now closed. */
 	/* ASSERT: fd == NULL && ofd == NULL */
@@ -367,8 +359,8 @@ static int rpmReSign(rpmts ts,
     res = 0;
 
 exit:
-    if (fd)	(void) manageFile(&fd, NULL, 0, res);
-    if (ofd)	(void) manageFile(&ofd, NULL, 0, res);
+    if (fd)	(void) closeFile(&fd);
+    if (ofd)	(void) closeFile(&ofd);
 
     sigh = rpmFreeSignature(sigh);
 
