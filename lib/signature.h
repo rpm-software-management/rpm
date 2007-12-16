@@ -45,8 +45,7 @@ Header rpmNewSignature(void);
  * @retval msg		failure msg
  * @return		rpmRC return code
  */
-rpmRC rpmReadSignature(FD_t fd, Header *sighp,
-		sigType sig_type, const char ** msg);
+rpmRC rpmReadSignature(FD_t fd, Header *sighp, sigType sig_type, char ** msg);
 
 /** \ingroup signature
  * Write signature header.

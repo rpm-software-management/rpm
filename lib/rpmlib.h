@@ -300,8 +300,7 @@ rpmRC headerCheckPayloadFormat(Header h);
  * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
-		const char ** msg);
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg);
 
 /**  \ingroup header
  * Return checked and loaded header.
@@ -311,8 +310,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc,
  * @retval *msg		verification error message (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp,
-		const char ** msg);
+rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg);
 
 /** \ingroup header
  * Return package header from file handle, verifying digests/signatures.

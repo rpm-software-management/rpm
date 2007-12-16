@@ -125,8 +125,7 @@ static unsigned char header_magic[8] = {
     0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
-rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
-		const char ** msg)
+rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 {
     char buf[BUFSIZ];
     int32_t block[4];

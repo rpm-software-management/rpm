@@ -303,7 +303,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
  * @retval *msg		signature verification msg
  * @return		RPMRC_OK/RPMRC_NOTFOUND/RPMRC_FAIL
  */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 {
     pgpDig dig;
     char buf[8*BUFSIZ];
@@ -593,7 +593,7 @@ verifyinfo_exit:
     return rc;
 }
 
-rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, const char ** msg)
+rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 {
     char buf[BUFSIZ];
     int32_t block[4];
@@ -690,7 +690,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmtsOpX opx;
     size_t nb;
     Header h = NULL;
-    const char * msg;
+    char * msg;
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;

@@ -754,7 +754,7 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * blob;
     PyObject * result = NULL;
-    const char * msg = NULL;
+    char * msg = NULL;
     const void * uh;
     int uc;
     rpmRC rpmrc;

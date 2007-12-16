@@ -225,7 +225,7 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
  * @return		0 always
  */
 int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg));
+	rpmRC (*hdrchk) (rpmts ts, const void * uh, size_t uc, char ** msg));
 
 /** \ingroup rpmdb
  * Return database iterator.
@@ -277,7 +277,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
  * @return		0 on success
  */
 int rpmdbAdd(rpmdb db, int iid, Header h, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg));
+	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
@@ -290,7 +290,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, rpmts ts,
  */
 int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg));
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
@@ -300,7 +300,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
  * @return		0 on success
  */
 int rpmdbRebuild(const char * prefix, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg));
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
 
 #ifdef __cplusplus
 }

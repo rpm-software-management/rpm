@@ -608,7 +608,7 @@ struct rpmdbMatchIterator_s {
     int			mi_nre;
     miRE		mi_re;
     rpmts		mi_ts;
-    rpmRC (*mi_hdrchk) (rpmts ts, const void * uh, size_t uc, const char ** msg);
+    rpmRC (*mi_hdrchk) (rpmts ts, const void * uh, size_t uc, char ** msg);
 
 };
 
@@ -1486,7 +1486,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_hdrchk && mi->mi_ts) {
-	    const char * msg = NULL;
+	    char * msg = NULL;
 	    int lvl;
 
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
@@ -1967,7 +1967,7 @@ int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
 }
 
 int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
-	rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+	rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
     int rc = 0;
     if (mi == NULL)
@@ -2112,7 +2112,7 @@ if (dbiByteSwapped(dbi) == 1)
 
 	/* If blob is unchecked, check blob import consistency now. */
 	if (rpmrc != RPMRC_OK) {
-	    const char * msg = NULL;
+	    char * msg = NULL;
 	    int lvl;
 
 	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
@@ -2413,7 +2413,7 @@ return mi;
 /* XXX psm.c */
 int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -2693,8 +2693,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 /* XXX install.c */
 int rpmdbAdd(rpmdb db, int iid, Header h,
-		rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+	     rpmts ts,
+	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
 DBC * dbcursor = NULL;
 DBT * key = alloca(sizeof(*key));
@@ -2856,7 +2856,7 @@ data->size = headerSizeof(h, HEADER_MAGIC_NO);
 
 		/* Check header digest/signature on blob export. */
 		if (hdrchk && ts) {
-		    const char * msg = NULL;
+		    char * msg = NULL;
 		    int lvl;
 
 		    rpmrc = (*hdrchk) (ts, data->data, data->size, &msg);
@@ -3414,7 +3414,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 }
 
 int rpmdbRebuild(const char * prefix, rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, const char ** msg))
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
     rpmdb olddb;
     char * dbpath = NULL;

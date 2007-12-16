@@ -160,7 +160,7 @@ static int rpmReSign(rpmts ts,
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sigh = NULL;
-    const char * msg;
+    char * msg;
     void * uh = NULL;
     rpm_tagtype_t uht;
     rpm_count_t uhc;
@@ -530,7 +530,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     rpm_count_t siglen;
     Header sigh = NULL;
     HeaderIterator hi;
-    const char * msg;
+    char * msg;
     int res = 0;
     int xx;
     rpmRC rc;
