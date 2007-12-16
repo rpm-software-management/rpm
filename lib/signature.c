@@ -615,7 +615,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpm_tag_t sigTag,
     uint8_t * pkt;
     size_t pktlen;
     char * fn = NULL;
-    const char * SHA1 = NULL;
+    char * SHA1 = NULL;
     int ret = -1;	/* assume failure. */
 
     switch (sigTag) {
@@ -1020,7 +1020,7 @@ verifySHA1Signature(const rpmts ts, char * t,
 #endif
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
-    const char * SHA1 = NULL;
+    char * SHA1 = NULL;
 
     *t = '\0';
     t = stpcpy(t, _("Header SHA1 digest: "));
