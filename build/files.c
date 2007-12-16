@@ -67,23 +67,23 @@ typedef struct FileListRec_s {
 #define	fl_size	fl_st.st_size
 #define	fl_mtime fl_st.st_mtime
 
-    const char *diskURL;	/* get file from here       */
-    const char *fileURL;	/* filename in cpio archive */
+    char *diskURL;		/* get file from here       */
+    char *fileURL;		/* filename in cpio archive */
     const char *uname;
     const char *gname;
     unsigned	flags;
     specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
     unsigned	verifyFlags;
-    const char *langs;		/* XXX locales separated with | */
+    char *langs;		/* XXX locales separated with | */
 } * FileListRec;
 
 /**
  */
 typedef struct AttrRec_s {
-    const char *ar_fmodestr;
-    const char *ar_dmodestr;
-    const char *ar_user;
-    const char *ar_group;
+    char *ar_fmodestr;
+    char *ar_dmodestr;
+    char *ar_user;
+    char *ar_group;
     mode_t	ar_fmode;
     mode_t	ar_dmode;
 } * AttrRec;
@@ -97,8 +97,8 @@ static StringBuf check_fileList = NULL;
  * Package file tree walk data.
  */
 typedef struct FileList_s {
-    const char * buildRootURL;
-    const char * prefix;
+    char * buildRootURL;
+    char * prefix;
 
     int fileCount;
     int totalFileSize;
@@ -122,11 +122,11 @@ typedef struct FileList_s {
     specdFlags defSpecdFlags;
     int defVerifyFlags;
     int nLangs;
-    const char ** currentLangs;
+    char ** currentLangs;
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
-    const char * docDirs[MAXDOCDIR];
+    char * docDirs[MAXDOCDIR];
     int docDirCount;
     
     FileListRec fileList;
