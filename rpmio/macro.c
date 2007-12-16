@@ -29,9 +29,9 @@
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
     struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
-    const char *name;   /*!< Macro name. */
-    const char *opts;   /*!< Macro parameters (a la getopt) */
-    const char *body;   /*!< Macro body. */
+    char *name;   	/*!< Macro name. */
+    char *opts;   	/*!< Macro parameters (a la getopt) */
+    char *body;   	/*!< Macro body. */
     int used;           /*!< No. of expansions. */
     int level;          /*!< Scoping level. */
 };
