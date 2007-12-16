@@ -42,13 +42,13 @@ const char * macrofiles =
 #endif
 
 static const char * platform = SYSCONFDIR "/rpm/platform";
-static const char ** platpat = NULL;
+static char ** platpat = NULL;
 static int nplatpat = 0;
 
-typedef const char * cptr_t;
+typedef char * cptr_t;
 
 typedef struct machCacheEntry_s {
-    const char * name;
+    char * name;
     int count;
     cptr_t * equivs;
     int visited;
@@ -60,7 +60,7 @@ typedef struct machCache_s {
 } * machCache;
 
 typedef struct machEquivInfo_s {
-    const char * name;
+    char * name;
     int score;
 } * machEquivInfo;
 
@@ -70,14 +70,14 @@ typedef struct machEquivTable_s {
 } * machEquivTable;
 
 struct rpmvarValue {
-    const char * value;
+    char * value;
     /* eventually, this arch will be replaced with a generic condition */
-    const char * arch;
+    char * arch;
 struct rpmvarValue * next;
 };
 
 struct rpmOption {
-    const char * name;
+    char * name;
     int var;
     int archSpecific;
 int required;
@@ -87,13 +87,13 @@ struct rpmOptionValue * value;
 };
 
 typedef struct defaultEntry_s {
-const char * name;
-const char * defName;
+    char * name;
+    char * defName;
 } * defaultEntry;
 
 typedef struct canonEntry_s {
-const char * name;
-const char * short_name;
+    char * name;
+    char * short_name;
     short num;
 } * canonEntry;
 
@@ -102,7 +102,7 @@ const char * short_name;
  * for giggles, 'key'_canon, 'key'_compat, and 'key'_canon will also work
  */
 typedef struct tableType_s {
-const char * const key;
+    char * const key;
     const int hasCanon;
     const int hasTranslate;
     struct machEquivTable_s equiv;
@@ -501,7 +501,7 @@ static void setDefaults(void)
 /* FIX: se usage inconsistent, W2DO? */
 static rpmRC doReadRC( FD_t fd, const char * urlfn)
 {
-    const char *s;
+    char *s;
     char *se, *next;
     int linenum = 0;
     struct rpmOption searchOption, * option;
