@@ -41,7 +41,7 @@ typedef struct FDlist_t FDlist;
 struct FDlist_t {
     FILE * f;
     FD_t fd;
-    const char * note;
+    char * note;
     FDlist * next;
 } ;
 
