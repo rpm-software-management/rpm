@@ -240,7 +240,7 @@ retry:
 	    /* remove this file from the stack */
 	    spec->fileStack = ofi->next;
 	    (void) Fclose(ofi->fd);
-	    ofi->fileName = _free(ofi->fileName);
+	    ofi->fileName = _constfree(ofi->fileName);
 	    ofi = _free(ofi);
 
 	    /* only on last file do we signal EOF to caller */
@@ -382,7 +382,7 @@ void closeSpec(rpmSpec spec)
 	ofi = spec->fileStack;
 	spec->fileStack = spec->fileStack->next;
 	if (ofi->fd) (void) Fclose(ofi->fd);
-	ofi->fileName = _free(ofi->fileName);
+	ofi->fileName = _constfree(ofi->fileName);
 	ofi = _free(ofi);
     }
 }
