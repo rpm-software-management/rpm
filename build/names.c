@@ -10,7 +10,7 @@
 #include <rpm/rpmlog.h>
 #include "debug.h"
 
-typedef const char * ugstr_t;
+typedef char * ugstr_t;
 
 static uid_t uids[1024];
 static ugstr_t unames[1024];
