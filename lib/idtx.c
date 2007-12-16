@@ -24,7 +24,7 @@ IDTX IDTXfree(IDTX idtx)
 	for (i = 0; i < idtx->nidt; i++) {
 	    IDT idt = idtx->idt + i;
 	    idt->h = headerFree(idt->h);
-	    idt->key = _free(idt->key);
+	    idt->key = _constfree(idt->key);
 	}
 	idtx->idt = _free(idtx->idt);
 	idtx = _free(idtx);
