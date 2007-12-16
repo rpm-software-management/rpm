@@ -102,7 +102,7 @@ struct rpmts_s {
     const void * sig;		/*!< Current package signature. */
     size_t siglen;		/*!< Current package signature length. */
 
-    const unsigned char * pkpkt;/*!< Current pubkey packet. */
+    uint8_t * pkpkt;/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */
     pgpKeyID_t pksignid;	/*!< Current pubkey fingerprint. */
 

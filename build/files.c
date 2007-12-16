@@ -1647,7 +1647,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	goto exit;
 	break;
     case RPMTAG_PUBKEYS: {
-	if ((xx = pgpReadPkts(fn, (const uint8_t **)&pkt, (size_t *)&pktlen)) <= 0) {
+	if ((xx = pgpReadPkts(fn, &pkt, (size_t *)&pktlen)) <= 0) {
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("%s: public key read failed.\n"), fn);
 	    goto exit;

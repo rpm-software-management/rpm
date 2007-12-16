@@ -1209,12 +1209,11 @@ int pgpPrtPkts(const uint8_t *pkts, size_t pktlen, pgpDig dig, int printing);
 /** \ingroup rpmpgp
  * Parse armored OpenPGP packets from a file.
  * @param fn		file name
- * @retval pkt		dearmored OpenPGP packet(s)
+ * @retval pkt		dearmored OpenPGP packet(s) (malloced)
  * @retval pktlen	dearmored OpenPGP packet(s) length in bytes
  * @return		type of armor found
  */
-pgpArmor pgpReadPkts(const char * fn,
-		const uint8_t ** pkt, size_t * pktlen);
+pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen);
 
 /** \ingroup rpmpgp
  * Wrap a OpenPGP packets in ascii armor for transport.
