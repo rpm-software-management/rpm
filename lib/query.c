@@ -773,11 +773,12 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 
     /* If --queryformat unspecified, then set default now. */
     if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL) {
-	qva->qva_queryFormat = rpmExpand("%{?_query_all_fmt}\n", NULL);
-	if (!(qva->qva_queryFormat != NULL && *qva->qva_queryFormat != '\0')) {
-	    qva->qva_queryFormat = _free(qva->qva_queryFormat);
-	    qva->qva_queryFormat = xstrdup("%{name}-%{version}-%{release}.%{arch}\n");
+	char * fmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
+	if (fmt == NULL || strlen(fmt) <= 1) {
+	    fmt = _free(fmt);
+	    fmt = xstrdup("%{name}-%{version}-%{release}.%{arch}\n");
 	}
+	qva->qva_queryFormat = fmt;
     }
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
