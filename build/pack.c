@@ -718,7 +718,7 @@ rpmRC packageSources(rpmSpec spec)
 
     (void) genSourceRpmName(spec);
 
-    spec->cookie = _free(spec->cookie);
+    spec->cookie = _constfree(spec->cookie);
     
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);

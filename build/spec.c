@@ -150,16 +150,16 @@ Package freePackage(Package pkg)
 {
     if (pkg == NULL) return NULL;
     
-    pkg->preInFile = _free(pkg->preInFile);
-    pkg->postInFile = _free(pkg->postInFile);
-    pkg->preUnFile = _free(pkg->preUnFile);
-    pkg->postUnFile = _free(pkg->postUnFile);
-    pkg->verifyFile = _free(pkg->verifyFile);
+    pkg->preInFile = _constfree(pkg->preInFile);
+    pkg->postInFile = _constfree(pkg->postInFile);
+    pkg->preUnFile = _constfree(pkg->preUnFile);
+    pkg->postUnFile = _constfree(pkg->postUnFile);
+    pkg->verifyFile = _constfree(pkg->verifyFile);
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
     pkg->fileList = freeStringBuf(pkg->fileList);
-    pkg->fileFile = _free(pkg->fileFile);
+    pkg->fileFile = _constfree(pkg->fileFile);
     if (pkg->cpioList) {
 	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;
@@ -381,8 +381,8 @@ static inline spectags freeSt(spectags st)
     if (st == NULL) return NULL;
     for (i = 0; i < st->st_ntags; i++) {
 	spectag t = st->st_t + i;
-	t->t_lang = _free(t->t_lang);
-	t->t_msgid = _free(t->t_msgid);
+	t->t_lang = _constfree(t->t_lang);
+	t->t_msgid = _constfree(t->t_msgid);
     }
     st->st_t = _free(st->st_t);
     return _free(st);
@@ -461,10 +461,10 @@ rpmSpec freeSpec(rpmSpec spec)
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
 
-    spec->buildRootURL = _free(spec->buildRootURL);
-    spec->buildSubdir = _free(spec->buildSubdir);
-    spec->rootURL = _free(spec->rootURL);
-    spec->specFile = _free(spec->specFile);
+    spec->buildRootURL = _constfree(spec->buildRootURL);
+    spec->buildSubdir = _constfree(spec->buildSubdir);
+    spec->rootURL = _constfree(spec->rootURL);
+    spec->specFile = _constfree(spec->specFile);
 
 #ifdef	DEAD
   { struct OpenFileInfo *ofi;
@@ -487,7 +487,7 @@ rpmSpec freeSpec(rpmSpec spec)
 	rl = _free(rl);
     }
     
-    spec->sourceRpmName = _free(spec->sourceRpmName);
+    spec->sourceRpmName = _constfree(spec->sourceRpmName);
     spec->sourcePkgId = _free(spec->sourcePkgId);
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
@@ -510,7 +510,7 @@ rpmSpec freeSpec(rpmSpec spec)
     spec->BANames = _free(spec->BANames);
 
     spec->passPhrase = _free(spec->passPhrase);
-    spec->cookie = _free(spec->cookie);
+    spec->cookie = _constfree(spec->cookie);
 
     spec->sources = freeSources(spec->sources);
     spec->packages = freePackages(spec->packages);
