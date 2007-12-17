@@ -74,7 +74,7 @@ typedef struct dirInfo_s *		dirInfo;
  * A directory to be installed/removed.
  */
 struct dirInfo_s {
-    const char * dirName;	/*!< Directory path (+ trailing '/'). */
+    char * dirName;		/*!< Directory path (+ trailing '/'). */
     int dirNameLen;		/*!< No. bytes in directory path. */
     fileIndexEntry files;	/*!< Array of files in directory. */
     int numFiles;		/*!< No. files in directory. */
@@ -255,6 +255,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, (int) pkgNum);
 
 	    (void) rpmfiSetDX(fi, dx);
 
+	    /* XXX: reference to within rpmfi, must not be freed  */
 	    dieNeedle->dirName = (char *) rpmfiDN(fi);
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
@@ -415,7 +416,8 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 		if (!strncmp(DN, DNPREFIX, sizeof(DNPREFIX)-1))
 		    DN += sizeof(DNPREFIX)-1;
 #endif
-		dieNeedle->dirName = DN;
+	        /* XXX: reference to within rpmfi, must not be freed */
+		dieNeedle->dirName = (char *) DN;
 	    }
 
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
