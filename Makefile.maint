@@ -1,2 +1,4 @@
+include Makefile
+
 ChangeLog: .hg
 	hg log --no-merge -v > ChangeLog
