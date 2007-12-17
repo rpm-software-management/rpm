@@ -1532,6 +1532,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     rpm_count_t c;
     int rc = 0;
     int xx;
+    int idx;
 
     /* Skip packages with no files. */
     if (ac <= 0)
@@ -1556,15 +1557,15 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     genConfigDeps = 0;
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
-    while ((c = rpmfiNext(fi)) >= 0) {
+    while ((idx = rpmfiNext(fi)) >= 0) {
 	rpmfileAttrs fileAttrs;
 
 	/* Does package have any %config files? */
 	fileAttrs = rpmfiFFlags(fi);
 	genConfigDeps |= (fileAttrs & RPMFILE_CONFIG);
 
-	av[c] = xstrdup(rpmfiFN(fi));
-	fmode[c] = rpmfiFMode(fi);
+	av[idx] = xstrdup(rpmfiFN(fi));
+	fmode[idx] = rpmfiFMode(fi);
     }
     av[ac] = NULL;
 
