@@ -2839,10 +2839,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		int element)
 {
     char * t, * te;
-    int i, j;
-    int numElements;
+    int i, j, found;
     rpm_tagtype_t type;
-    rpm_count_t count;
+    rpm_count_t count, numElements;
     sprintfToken spft;
     int condNumFormats;
     size_t need;
@@ -2890,7 +2889,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_ARRAY:
-	numElements = -1;
+	numElements = 0;
+	found = 0;
 	spft = token->u.array.format;
 	for (i = 0; i < token->u.array.numTokens; i++, spft++)
 	{
@@ -2906,6 +2906,8 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		if (!_headerGetEntry(hsa->h, spft->u.tag.tag, &type, NULL, &count))
 		    continue;
 	    } 
+
+	    found = 1;
 
 	    if (type == RPM_BIN_TYPE)
 		count = 1;	/* XXX count abused as no. of bytes. */
@@ -2925,7 +2927,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		numElements = count;
 	}
 
-	if (numElements == -1) {
+	if (! found) {
 	    need = sizeof("(none)") - 1;
 	    t = hsaReserve(hsa, need);
 	    te = stpcpy(t, "(none)");
