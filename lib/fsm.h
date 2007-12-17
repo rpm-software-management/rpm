@@ -91,17 +91,6 @@ typedef enum fileStage_e {
 typedef struct hardLink_s * hardLink_t;
 
 /** \ingroup payload
- * Iterator across package file info, forward on install, backward on erase.
- */
-struct fsmIterator_s {
-    rpmts ts;			/*!< transaction set. */
-    rpmfi fi;			/*!< transaction element file info. */
-    int reverse;		/*!< reversed traversal? */
-    int isave;			/*!< last returned iterator index. */
-    int i;			/*!< iterator index. */
-};
-
-/** \ingroup payload
  * File name and stat information.
  */
 struct fsm_s {

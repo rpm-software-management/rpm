@@ -48,6 +48,17 @@ struct hardLink_s {
     int createdPath;
 };
 
+/** \ingroup payload
+ * Iterator across package file info, forward on install, backward on erase.
+ */
+struct fsmIterator_s {
+    rpmts ts;			/*!< transaction set. */
+    rpmfi fi;			/*!< transaction element file info. */
+    int reverse;		/*!< reversed traversal? */
+    int isave;			/*!< last returned iterator index. */
+    int i;			/*!< iterator index. */
+};
+
 rpmts fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
     return (iter ? iter->ts : NULL);
