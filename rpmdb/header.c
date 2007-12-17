@@ -1148,7 +1148,7 @@ int _headerWrite(FD_t fd, Header h, enum hMagic magicp)
 {
     ssize_t nb;
     size_t length;
-    const void * uh;
+    void * uh;
 
     if (h == NULL)
 	return 1;
