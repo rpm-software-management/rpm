@@ -12,6 +12,8 @@
  *
  */
 
+#include "lib/fsm.h"
+
 /** \ingroup payload
  * @note CPIO_CHECK_ERRNO bit is set only if errno is valid.
  */
@@ -53,21 +55,6 @@ enum cpioErrorReturns {
 	CPIOERR_ENOTEMPTY	= (31			)
 };
 
-/** \ingroup payload
- */
-typedef enum cpioMapFlags_e {
-    CPIO_MAP_PATH	= (1 << 0),
-    CPIO_MAP_MODE	= (1 << 1),
-    CPIO_MAP_UID	= (1 << 2),
-    CPIO_MAP_GID	= (1 << 3),
-    CPIO_FOLLOW_SYMLINKS= (1 << 4), /*!< only for building. */
-    CPIO_MAP_ABSOLUTE	= (1 << 5),
-    CPIO_MAP_ADDDOT	= (1 << 6),
-    CPIO_ALL_HARDLINKS	= (1 << 7), /*!< fail if hardlinks are missing. */
-    CPIO_MAP_TYPE	= (1 << 8),  /*!< only for building. */
-    CPIO_SBIT_CHECK	= (1 << 9)
-} cpioMapFlags;
-
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
 #define CPIO_TRAILER	"TRAILER!!!"
@@ -93,10 +80,6 @@ struct cpioCrcPhysicalHeader {
 };
 
 #define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
-
-/* XXX circular includes avoidance... */
-typedef struct fsmIterator_s * FSMI_t;
-typedef struct fsm_s * FSM_t;
 
 #ifdef __cplusplus
 extern "C" {

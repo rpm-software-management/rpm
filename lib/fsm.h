@@ -6,7 +6,6 @@
  * File state machine to handle a payload within an rpm package.
  */
 
-#include "lib/cpio.h"
 #include <rpm/rpmfi.h>
 
 extern int _fsm_debug;
@@ -87,6 +86,24 @@ typedef enum fileStage_e {
 #undef	_fi
 #undef	_fs
 #undef	_fd
+
+/** \ingroup payload
+ */
+typedef enum cpioMapFlags_e {
+    CPIO_MAP_PATH	= (1 << 0),
+    CPIO_MAP_MODE	= (1 << 1),
+    CPIO_MAP_UID	= (1 << 2),
+    CPIO_MAP_GID	= (1 << 3),
+    CPIO_FOLLOW_SYMLINKS= (1 << 4), /*!< only for building. */
+    CPIO_MAP_ABSOLUTE	= (1 << 5),
+    CPIO_MAP_ADDDOT	= (1 << 6),
+    CPIO_ALL_HARDLINKS	= (1 << 7), /*!< fail if hardlinks are missing. */
+    CPIO_MAP_TYPE	= (1 << 8),  /*!< only for building. */
+    CPIO_SBIT_CHECK	= (1 << 9)
+} cpioMapFlags;
+
+typedef struct fsmIterator_s * FSMI_t;
+typedef struct fsm_s * FSM_t;
 
 typedef struct hardLink_s * hardLink_t;
 
