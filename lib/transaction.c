@@ -8,7 +8,6 @@
 #include <rpm/rpmmacro.h>	/* XXX for rpmExpand */
 #include <rpm/rpmlog.h>
 
-#include "lib/fsm.h"
 #include "lib/psm.h"
 
 #include <rpm/rpmdb.h>
