@@ -562,8 +562,8 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpm_tag_t stag,
 	char buf[BUFSIZ];
 	xx = snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
 	if (rpmluaRunScript(lua, script, buf) == -1) {
-	    void *ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
-				 stag, 1);
+	    void * ptr;
+	    ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, 1);
 	    rc = RPMRC_FAIL;
 	}
     }
@@ -1886,7 +1886,11 @@ assert(psm->mi == NULL);
 	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
-	psm->failedFile = _free(psm->failedFile);
+	/*
+	 * XXX: funny games with fsm internal state, see changesets
+	 * 7340:77828be0ce85 and 4062:02b0c237b675
+	 */
+	psm->failedFile = _constfree(psm->failedFile);
 
 	fi->fgroup = hfd(fi->fgroup, RPM_FORCEFREE_TYPE);
 	fi->fuser = hfd(fi->fuser, RPM_FORCEFREE_TYPE);
