@@ -80,18 +80,17 @@ rpmfi fsmGetFi(const FSM_t fsm)
  * @param st		file stat info
  * @param subdir	subdir to use (NULL disables)
  * @param suffix	suffix to use (NULL disables)
- * @retval		path to file
+ * @retval		path to file (malloced)
  */
-static
-const char * fsmFsPath(const FSM_t fsm,
+static char * fsmFsPath(const FSM_t fsm,
 		const struct stat * st,
 		const char * subdir,
 		const char * suffix)
 {
-    const char * s = NULL;
+    char * s = NULL;
 
     if (fsm) {
-	int nb;
+	size_t nb;
 	char * t;
 	nb = strlen(fsm->dirName) +
 	    (st && !S_ISDIR(st->st_mode) ? (subdir ? strlen(subdir) : 0) : 0) +
@@ -1806,7 +1805,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
 		rc = fsmNext(fsm, FSM_RENAME);
 		if (!rc && fsm->nsuffix) {
-		    const char * opath = fsmFsPath(fsm, st, NULL, NULL);
+		    char * opath = fsmFsPath(fsm, st, NULL, NULL);
 		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 				(opath ? opath : ""),
 				(fsm->path ? fsm->path : ""));
