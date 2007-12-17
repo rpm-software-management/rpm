@@ -220,15 +220,13 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts,
 	return rc;
 
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(psm->ts, scriptFd);
+	rpmtsSetScriptFd(rpmpsmGetTs(psm), scriptFd);
 
-    psm->stepName = "verify";
-    psm->scriptTag = RPMTAG_VERIFYSCRIPT;
-    psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
+    rc = rpmpsmScriptStage(psm, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG);
     rc = rpmpsmStage(psm, PSM_SCRIPT);
 
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(psm->ts, NULL);
+	rpmtsSetScriptFd(rpmpsmGetTs(psm), NULL);
 
     psm = rpmpsmFree(psm);
 

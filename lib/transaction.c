@@ -1527,9 +1527,7 @@ rpmlog(RPMLOG_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
 		}
 		psm = rpmpsmNew(ts, p, p->fi);
 assert(psm != NULL);
-		psm->scriptTag = RPMTAG_PRETRANS;
-		psm->progTag = RPMTAG_PRETRANSPROG;
-		xx = rpmpsmStage(psm, PSM_SCRIPT);
+		xx = rpmpsmScriptStage(psm, RPMTAG_PRETRANS, RPMTAG_PRETRANSPROG);
 		psm = rpmpsmFree(psm);
 
 		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
@@ -1914,16 +1912,15 @@ assert(psm != NULL);
     /* FIX: fi reload needs work */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmalKey pkgKey;
-	int gotfd;
+	int gotfd, async;
 
 	gotfd = 0;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
 	psm = rpmpsmNew(ts, p, fi);
-assert(psm != NULL);
-	psm->unorderedSuccessor =
-		(rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
+	async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
+	rpmpsmSetAsync(psm, async);
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
@@ -1990,7 +1987,7 @@ assert(psm != NULL);
 		 * XXX Sludge necessary to tranfer existing fstates/actions
 		 * XXX around a recreated file info set.
 		 */
-		psm->fi = rpmfiFree(psm->fi);
+		rpmpsmSetFI(psm, NULL);
 		{
 		    char * fstates = fi->fstates;
 		    rpmFileAction * actions = fi->actions;
@@ -2034,7 +2031,7 @@ assert(psm != NULL);
 			p->fi = fi;
 		    }
 		}
-		psm->fi = rpmfiLink(p->fi, RPMDBG_M("rpmtsRun"));
+		rpmpsmSetFI(psm, p->fi);
 
 /* FIX: psm->fi may be NULL */
 		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
@@ -2237,9 +2234,7 @@ assert(psm != NULL);
 		    p->fi->te = p;
 		psm = rpmpsmNew(ts, p, p->fi);
 assert(psm != NULL);
-		psm->scriptTag = RPMTAG_POSTTRANS;
-		psm->progTag = RPMTAG_POSTTRANSPROG;
-		xx = rpmpsmStage(psm, PSM_SCRIPT);
+		rpmpsmScriptStage(psm, RPMTAG_POSTTRANS, RPMTAG_POSTTRANSPROG);
 		psm = rpmpsmFree(psm);
 
 		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,

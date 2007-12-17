@@ -40,6 +40,42 @@ int _psm_threads = 0;
  */
 extern unsigned int myinstall_instance;
 
+/**
+ */
+struct rpmpsm_s {
+    struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
+
+    rpmts ts;			/*!< transaction set */
+    rpmte te;			/*!< current transaction element */
+    rpmfi fi;			/*!< transaction element file info */
+    FD_t cfd;			/*!< Payload file handle. */
+    FD_t fd;			/*!< Repackage file handle. */
+    Header oh;			/*!< Repackage header. */
+    rpmdbMatchIterator mi;
+    const char * stepName;
+    const char * rpmio_flags;
+    const char * failedFile;
+    const char * pkgURL;	/*!< Repackage URL. */
+    const char * pkgfn;		/*!< Repackage file name. */
+    int scriptTag;		/*!< Scriptlet data tag. */
+    int progTag;		/*!< Scriptlet interpreter tag. */
+    int npkgs_installed;	/*!< No. of installed instances. */
+    int scriptArg;		/*!< Scriptlet package arg. */
+    int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
+    int countCorrection;	/*!< 0 if installing, -1 if removing. */
+    int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
+    int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
+    rpmCallbackType what;	/*!< Callback type. */
+    unsigned long amount;	/*!< Callback amount. */
+    unsigned long total;	/*!< Callback total. */
+    rpmRC rc;
+    pkgStage goal;
+    pkgStage stage;		/*!< Current psm stage. */
+    pkgStage nstage;		/*!< Next psm stage. */
+
+    int nrefs;			/*!< Reference count. */
+};
+
 int rpmVersionCompare(Header first, Header second)
 {
     const char * one, * two;
@@ -1217,6 +1253,40 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     psm = _free(psm);
 
     return NULL;
+}
+
+void rpmpsmSetAsync(rpmpsm psm, int async)
+{
+    assert(psm != NULL);
+    psm->unorderedSuccessor = async;
+}
+
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpm_tag_t scriptTag, rpm_tag_t progTag)
+{
+    assert(psm != NULL);
+    psm->scriptTag = scriptTag;
+    psm->progTag = progTag;
+    if (scriptTag == RPMTAG_VERIFYSCRIPT) {
+	psm->stepName = "verify";
+    }
+    return rpmpsmStage(psm, PSM_SCRIPT);
+}
+
+rpmfi rpmpsmSetFI(rpmpsm psm, rpmfi fi)
+{
+    assert(psm != NULL);
+    if (psm->fi != NULL) {
+	psm->fi = rpmfiFree(psm->fi);
+    }
+    if (fi != NULL) {
+	psm->fi = rpmfiLink(fi, RPMDBG_M("rpmpsmSetFI"));
+    }
+    return psm->fi;
+}
+
+rpmts rpmpsmGetTs(rpmpsm psm)
+{
+    return (psm ? psm->ts : NULL);
 }
 
 rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)

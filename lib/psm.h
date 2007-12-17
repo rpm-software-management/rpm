@@ -60,42 +60,6 @@ typedef enum pkgStage_e {
 #undef	_fs
 #undef	_fd
 
-/**
- */
-struct rpmpsm_s {
-    struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
-
-    rpmts ts;			/*!< transaction set */
-    rpmte te;			/*!< current transaction element */
-    rpmfi fi;			/*!< transaction element file info */
-    FD_t cfd;			/*!< Payload file handle. */
-    FD_t fd;			/*!< Repackage file handle. */
-    Header oh;			/*!< Repackage header. */
-    rpmdbMatchIterator mi;
-    const char * stepName;
-    const char * rpmio_flags;
-    const char * failedFile;
-    const char * pkgURL;	/*!< Repackage URL. */
-    const char * pkgfn;		/*!< Repackage file name. */
-    int scriptTag;		/*!< Scriptlet data tag. */
-    int progTag;		/*!< Scriptlet interpreter tag. */
-    int npkgs_installed;	/*!< No. of installed instances. */
-    int scriptArg;		/*!< Scriptlet package arg. */
-    int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
-    int countCorrection;	/*!< 0 if installing, -1 if removing. */
-    int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
-    int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
-    rpmCallbackType what;	/*!< Callback type. */
-    unsigned long amount;	/*!< Callback amount. */
-    unsigned long total;	/*!< Callback total. */
-    rpmRC rc;
-    pkgStage goal;
-    pkgStage stage;		/*!< Current psm stage. */
-    pkgStage nstage;		/*!< Next psm stage. */
-
-    int nrefs;			/*!< Reference count. */
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -141,6 +105,30 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi);
  */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
+
+/**
+ * Run rpmpsmStage(PSM_SCRIPT) for scriptTag and progTag
+ * @param psm		package state machine data
+ * @param scriptTag	scriptlet tag to execute
+ * @param progTag	scriptlet prog tag to execute
+ * @return 		0 on success
+ */
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpm_tag_t scriptTag, rpm_tag_t progTag);
+
+/**
+ * @param psm		package state machine data
+ * @param fi		new file info pointer (or NULL to dealloc)
+ * @return		newly set rpmfi pointer
+ */
+rpmfi rpmpsmSetFI(rpmpsm psm, rpmfi fi);
+
+/**
+ * @param psm		package state machine data
+ * @return 		psm transaction set pointer
+ */
+rpmts rpmpsmGetTs(rpmpsm psm);
+
+void rpmpsmSetAsync(rpmpsm psm, int async);
 
 #ifdef __cplusplus
 }
