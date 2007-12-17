@@ -16,7 +16,7 @@ SUBDIRS += db3
 endif
 SUBDIRS += lua rpmio rpmdb lib build python scripts doc . tests
 
-DIST_SUBDIRS = po misc db3 lua rpmio rpmdb lib build python scripts doc tests
+DIST_SUBDIRS = po misc lua rpmio rpmdb lib build python scripts doc tests
 
 pkgconfigdir = $(libdir)/pkgconfig
 
