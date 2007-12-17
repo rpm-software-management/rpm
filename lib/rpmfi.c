@@ -1055,10 +1055,10 @@ if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     /* Free pre- and post-transaction script and interpreter strings. */
-    fi->pretrans = _free(fi->pretrans);
-    fi->pretransprog = _free(fi->pretransprog);
-    fi->posttrans = _free(fi->posttrans);
-    fi->posttransprog = _free(fi->posttransprog);
+    fi->pretrans = _constfree(fi->pretrans);
+    fi->pretransprog = _constfree(fi->pretransprog);
+    fi->posttrans = _constfree(fi->posttrans);
+    fi->posttransprog = _constfree(fi->posttransprog);
 
     if (fi->fc > 0) {
 	fi->bnl = hfd(fi->bnl, RPM_FORCEFREE_TYPE);
@@ -1077,20 +1077,20 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->fstates = _free(fi->fstates);
 
 	if (!fi->keep_header && fi->h == NULL) {
-	    fi->fmtimes = _free(fi->fmtimes);
+	    fi->fmtimes = _constfree(fi->fmtimes);
 	    fi->fmodes = _free(fi->fmodes);
-	    fi->fflags = _free(fi->fflags);
-	    fi->vflags = _free(fi->vflags);
-	    fi->fsizes = _free(fi->fsizes);
-	    fi->frdevs = _free(fi->frdevs);
-	    fi->finodes = _free(fi->finodes);
+	    fi->fflags = _constfree(fi->fflags);
+	    fi->vflags = _constfree(fi->vflags);
+	    fi->fsizes = _constfree(fi->fsizes);
+	    fi->frdevs = _constfree(fi->frdevs);
+	    fi->finodes = _constfree(fi->finodes);
 	    fi->dil = _free(fi->dil);
 
-	    fi->fcolors = _free(fi->fcolors);
-	    fi->fcdictx = _free(fi->fcdictx);
-	    fi->ddict = _free(fi->ddict);
-	    fi->fddictx = _free(fi->fddictx);
-	    fi->fddictn = _free(fi->fddictn);
+	    fi->fcolors = _constfree(fi->fcolors);
+	    fi->fcdictx = _constfree(fi->fcdictx);
+	    fi->ddict = _constfree(fi->ddict);
+	    fi->fddictx = _constfree(fi->fddictx);
+	    fi->fddictn = _constfree(fi->fddictn);
 
 	}
     }
