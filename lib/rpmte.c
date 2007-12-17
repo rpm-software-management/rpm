@@ -35,8 +35,8 @@ static void delTE(rpmte p)
 
     if (p->relocs) {
 	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-	    r->oldPath = _free(r->oldPath);
-	    r->newPath = _free(r->newPath);
+	    r->oldPath = _constfree(r->oldPath);
+	    r->newPath = _constfree(r->newPath);
 	}
 	p->relocs = _free(p->relocs);
     }
@@ -48,12 +48,12 @@ static void delTE(rpmte p)
     if (p->fd != NULL)
         p->fd = fdFree(p->fd, RPMDBG_M("delTE"));
 
-    p->os = _free(p->os);
-    p->arch = _free(p->arch);
+    p->os = _constfree(p->os);
+    p->arch = _constfree(p->arch);
     p->epoch = _free(p->epoch);
-    p->name = _free(p->name);
-    p->NEVR = _free(p->NEVR);
-    p->NEVRA = _free(p->NEVRA);
+    p->name = _constfree(p->name);
+    p->NEVR = _constfree(p->NEVR);
+    p->NEVRA = _constfree(p->NEVRA);
 
     p->h = headerFree(p->h);
 
