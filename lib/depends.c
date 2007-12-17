@@ -711,22 +711,12 @@ static int checkDependentConflicts(rpmts ts, const char * dep)
 }
 
 struct badDeps_s {
-    const char * pname;
+    char * pname;
     const char * qname;
 };
 
-#ifdef REFERENCE
-static struct badDeps_s {
-const char * pname;
-const char * qname;
-} badDeps[] = {
-    { NULL, NULL }
-};
-#else
 static int badDepsInitialized = 0;
-
 static struct badDeps_s * badDeps = NULL;
-#endif
 
 /**
  */
@@ -734,6 +724,7 @@ static void freeBadDeps(void)
 {
     if (badDeps) {
 	struct badDeps_s * bdp;
+	/* bdp->qname is a pointer to pname so doesn't need freeing */
 	for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++)
 	    bdp->pname = _free(bdp->pname);
 	badDeps = _free(badDeps);
