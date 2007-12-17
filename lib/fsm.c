@@ -34,6 +34,20 @@ int _fsm_threads = 0;
 /* XXX Failure to remove is not (yet) cause for failure. */
 int strict_erasures = 0;
 
+/** \ingroup payload
+ * Keeps track of the set of all hard links to a file in an archive.
+ */
+struct hardLink_s {
+    hardLink_t next;
+    const char ** nsuffix;
+    int * filex;
+    struct stat sb;
+    int nlink;
+    int linksLeft;
+    int linkIndex;
+    int createdPath;
+};
+
 rpmts fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
     return (iter ? iter->ts : NULL);
@@ -436,7 +450,7 @@ static int saveHardLink(FSM_t fsm)
  * @param li		set of hard links
  * @return		NULL always
  */
-static void * freeHardLink(struct hardLink_s * li)
+static void * freeHardLink(hardLink_t li)
 {
     if (li) {
 	li->nsuffix = _free(li->nsuffix);	/* XXX elements are shared */
@@ -1549,7 +1563,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    if (fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
 		break;
 	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
-		struct hardLink_s * li, * prev;
+		hardLink_t li, prev;
 
 if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = writeLinkedFile(fsm);

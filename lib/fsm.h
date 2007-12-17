@@ -88,19 +88,7 @@ typedef enum fileStage_e {
 #undef	_fs
 #undef	_fd
 
-/** \ingroup payload
- * Keeps track of the set of all hard links to a file in an archive.
- */
-struct hardLink_s {
-    struct hardLink_s * next;
-    const char ** nsuffix;
-    int * filex;
-    struct stat sb;
-    int nlink;
-    int linksLeft;
-    int linkIndex;
-    int createdPath;
-};
+typedef struct hardLink_s * hardLink_t;
 
 /** \ingroup payload
  * Iterator across package file info, forward on install, backward on erase.
@@ -134,8 +122,8 @@ struct fsm_s {
     size_t wrnb;		/*!< write: Number of bytes returned. */
     FSMI_t iter;		/*!< File iterator. */
     int ix;			/*!< Current file iterator index. */
-    struct hardLink_s * links;	/*!< Pending hard linked file(s). */
-    struct hardLink_s * li;	/*!< Current hard linked file(s). */
+    hardLink_t links;		/*!< Pending hard linked file(s). */
+    hardLink_t li;		/*!< Current hard linked file(s). */
     unsigned int * archiveSize;	/*!< Pointer to archive size. */
     const char ** failedFile;	/*!< First file name that failed. */
     const char * subdir;	/*!< Current file sub-directory. */
