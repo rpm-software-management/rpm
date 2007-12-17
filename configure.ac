@@ -1048,7 +1048,9 @@ AC_SUBST(RPMCONFIGDIR)
 
 AC_SUBST(OBJDUMP)
 
-AC_CONFIG_SUBDIRS(db3)
+if test "$with_external_db" = no; then
+    AC_CONFIG_SUBDIRS(db3)
+fi
 
 AM_CONDITIONAL([WITH_INTERNAL_DB],[test "$with_external_db" = no])
 AM_CONDITIONAL([DOXYGEN],[test "$DOXYGEN" != no])
