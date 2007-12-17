@@ -53,9 +53,9 @@ struct rpmpsm_s {
     Header oh;			/*!< Repackage header. */
     rpmdbMatchIterator mi;
     const char * stepName;
-    const char * rpmio_flags;
+    char * rpmio_flags;
     const char * failedFile;
-    const char * pkgURL;	/*!< Repackage URL. */
+    char * pkgURL;		/*!< Repackage URL. */
     const char * pkgfn;		/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
