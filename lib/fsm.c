@@ -232,7 +232,7 @@ typedef struct dnli_s {
  * @param a		directory name iterator
  * @retval		NULL always
  */
-static void * dnlFreeIterator(const void * a)
+static void * dnlFreeIterator(void * a)
 {
     if (a) {
 	DNLI_t dnli = (void *)a;
