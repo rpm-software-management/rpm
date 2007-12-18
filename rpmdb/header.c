@@ -3017,7 +3017,7 @@ rpmecFree(const headerSprintfExtension exts, rpmec ec)
     for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
     {
-	if (ec[i].freeit) ec[i].data = _free(ec[i].data);
+	if (ec[i].freeit) ec[i].data = _constfree(ec[i].data);
 	i++;
     }
 
