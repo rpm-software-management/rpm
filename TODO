@@ -1,3 +1,9 @@
+Work-in-progress
+----------------
+- fix the argv const-impedance all around
+- unleash the const monsters from rpmdb/header* and deal with 'em
+- audit the rest of the API for const sanity 
+
 4.5 and beyond
 --------------
 Janitorial work:
