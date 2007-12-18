@@ -10,7 +10,7 @@
 
 
 struct fsinfo {
-    const char * mntPoint;	/*!< path to mount point. */
+    char * mntPoint;		/*!< path to mount point. */
     dev_t dev;			/*!< devno for mount point. */
     int rdonly;			/*!< is mount point read only? */
 };
