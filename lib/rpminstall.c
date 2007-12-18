@@ -228,7 +228,7 @@ struct rpmEIU {
     FD_t fd;
     int numFailed;
     int numPkgs;
-    str_t * pkgURL;
+    char ** pkgURL;
     str_t * fnp;
     char * pkgState;
     int prevx;
@@ -238,7 +238,7 @@ struct rpmEIU {
     str_t * sourceURL;
     int isSource;
     int argc;
-    str_t * argv;
+    char ** argv;
     rpmRelocation * relocations;
     rpmRC rpmrc;
 };
@@ -252,7 +252,7 @@ int rpmInstall(rpmts ts,
     rpmps ps;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
-    const char * fileURL = NULL;
+    char * fileURL = NULL;
     int stopInstall = 0;
     char ** av = NULL;
     rpmVSFlags vsflags, ovsflags, tvsflags;
@@ -412,7 +412,7 @@ if (fileURL[0] == '=') {
     if (eiu->numFailed) goto exit;
 
     /* Continue processing file arguments, building transaction set. */
-    for (eiu->fnp = eiu->pkgURL+eiu->prevx;
+    for (eiu->fnp = (const char**) eiu->pkgURL+eiu->prevx;
 	 *eiu->fnp != NULL;
 	 eiu->fnp++, eiu->prevx++)
     {
