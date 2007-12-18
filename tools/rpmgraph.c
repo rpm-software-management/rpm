@@ -43,17 +43,17 @@ static int
 rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 {
     rpmps ps;
-    const char ** pkgURL = NULL;
+    char ** pkgURL = NULL;
     char * pkgState = NULL;
     const char ** fnp;
-    const char * fileURL = NULL;
+    char * fileURL = NULL;
     int numPkgs = 0;
     int numFailed = 0;
     int prevx = 0;
     int pkgx = 0;
-    const char ** argv = NULL;
+    char ** argv = NULL;
     int argc = 0;
-    const char ** av = NULL;
+    char ** av = NULL;
     int ac = 0;
     Header h;
     rpmRC rpmrc;
@@ -107,7 +107,7 @@ restart:
     fileURL = _free(fileURL);
 
     /* Continue processing file arguments, building transaction set. */
-    for (fnp = pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
+    for (fnp = (pkgURL+prevx); *fnp != NULL; fnp++, prevx++) {
 	const char * fileName;
 	FD_t fd;
 

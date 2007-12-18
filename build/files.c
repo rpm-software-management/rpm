@@ -1728,7 +1728,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl,
     diskURL = rpmGenPath(fl->buildRootURL, NULL, fileURL);
 
     if (doGlob) {
-	const char ** argv = NULL;
+	char ** argv = NULL;
 	int argc = 0;
 	int i;
 

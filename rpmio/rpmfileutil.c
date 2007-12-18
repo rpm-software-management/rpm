@@ -702,12 +702,12 @@ exit:
 /* =============================================================== */
 static int _debug = 0;
 
-int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
+int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr)
 {
     int ac = 0;
     const char ** av = NULL;
     int argc = 0;
-    const char ** argv = NULL;
+    char ** argv = NULL;
     char * globRoot = NULL;
     const char *home = getenv("HOME");
     int gflags = 0;

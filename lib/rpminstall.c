@@ -254,7 +254,7 @@ int rpmInstall(rpmts ts,
     rpmRelocation * relocations;
     const char * fileURL = NULL;
     int stopInstall = 0;
-    const char ** av = NULL;
+    char ** av = NULL;
     rpmVSFlags vsflags, ovsflags, tvsflags;
     int ac = 0;
     int rc;

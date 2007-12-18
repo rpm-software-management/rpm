@@ -65,7 +65,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     char * s = NULL;
     char * se;
     int ac = 0;
-    const char ** av = NULL;
+    char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     const char ** argv = (argvPtr ? *argvPtr : NULL);
     FILE * f = fdGetFILE(fd);

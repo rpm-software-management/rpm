@@ -101,7 +101,6 @@ char * rpmGetPath (const char * path, ...);
  * @retval *argvPtr	array of paths (malloc'd contiguous blob)
  * @return		0 on success
  */
-int rpmGlob(const char * patterns, int * argcPtr,
-		const char *** argvPtr);
+int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr);
 
 #endif /* _RPMFILEUTIL_H */

@@ -42,7 +42,7 @@ static int nbhglobs = 5;
 static int indent = 2;
 
 typedef struct Item_s {
-    const char * path;
+    char * path;
     int32_t size;
     int32_t mtime;
     rpmds this;
@@ -470,7 +470,7 @@ static void initGlobs(rpmts ts, const char ** argv)
     nbhglobs = 5;
     bhglobs = xcalloc(nbhglobs, sizeof(*bhglobs));
     for (i = 0; i < nbhglobs; i++) {
-	const char * pattern;
+	char * pattern;
 	const char * macro;
 
 	switch (i) {

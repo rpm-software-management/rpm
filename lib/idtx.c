@@ -114,7 +114,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpm_tag_t tag)
     Header h;
     int32_t * tidp;
     FD_t fd;
-    const char ** av = NULL;
+    char ** av = NULL;
     int ac = 0;
     rpmRC rpmrc;
     int xx;

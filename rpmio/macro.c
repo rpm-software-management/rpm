@@ -1546,7 +1546,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     mfiles = xstrdup(macrofiles);
     for (m = mfiles; m && *m != '\0'; m = me) {
-	const char ** av;
+	char ** av;
 	int ac;
 	int i;
 

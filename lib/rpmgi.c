@@ -310,7 +310,7 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_t argv)
 
     if (argv != NULL)
     while ((arg = *argv++) != NULL) {
-	ARGV_t av = NULL;
+	char ** av = NULL;
 
 	xx = rpmGlob(arg, &ac, &av);
 	xx = argvAppend(&gi->argv, av);
