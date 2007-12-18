@@ -59,7 +59,7 @@ char * rpmPermsString(int mode)
 }
 
 /**@todo Infinite loops through manifest files exist, operator error for now. */
-rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
+rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 {
     StringBuf sb = newStringBuf();
     char * s = NULL;
@@ -67,7 +67,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     int ac = 0;
     char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
-    const char ** argv = (argvPtr ? *argvPtr : NULL);
+    char ** argv = (argvPtr ? *argvPtr : NULL);
     FILE * f = fdGetFILE(fd);
     rpmRC rpmrc = RPMRC_OK;
     int i, j, next, npre;
@@ -134,7 +134,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     /* Copy old arg list, inserting manifest before argv[next]. */
     if (argv != NULL) {
 	int nac = npre + ac;
-	const char ** nav = xcalloc((nac + 1), sizeof(*nav));
+	char ** nav = xcalloc((nac + 1), sizeof(*nav));
 
 	for (i = 0, j = 0; i < next; i++) {
 	    if (argv[i] != NULL)

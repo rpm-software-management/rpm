@@ -25,7 +25,7 @@ char * rpmPermsString(int mode)
  * @retval argvPtr	args themselves
  * @return		RPMRC_OK on success
  */
-rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr);
+rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr);
 
 #ifdef __cplusplus
 }
