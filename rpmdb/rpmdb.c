@@ -815,9 +815,9 @@ int rpmdbClose(rpmdb db)
 	if (xx && rc == 0) rc = xx;
     	db->_dbi[dbix] = NULL;
     }
-    db->db_errpfx = _free(db->db_errpfx);
-    db->db_root = _free(db->db_root);
-    db->db_home = _free(db->db_home);
+    db->db_errpfx = _constfree(db->db_errpfx);
+    db->db_root = _constfree(db->db_root);
+    db->db_home = _constfree(db->db_home);
     db->db_bits = PBM_FREE(db->db_bits);
     db->_dbi = _free(db->_dbi);
 
@@ -906,8 +906,8 @@ rpmdb newRpmdb(const char * root,
     db->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
     if (!(db->db_home && db->db_home[0] != '%')) {
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
-	db->db_root = _free(db->db_root);
-	db->db_home = _free(db->db_home);
+	db->db_root = _constfree(db->db_root);
+	db->db_home = _constfree(db->db_home);
 	db = _free(db);
 	return NULL;
     }

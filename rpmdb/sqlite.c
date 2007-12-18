@@ -748,7 +748,7 @@ enterChroot(dbi);
 		dbi->dbi_subfile);
 
 	dbi->dbi_stats = _free(dbi->dbi_stats);
-	dbi->dbi_file = _free(dbi->dbi_file);
+	dbi->dbi_file = _constfree(dbi->dbi_file);
 	dbi->dbi_db = _free(dbi->dbi_db);
 
 leaveChroot(dbi);
