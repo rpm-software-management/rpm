@@ -85,8 +85,8 @@ struct rpmts_s {
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */
     int chrootDone;		/*!< Has chroot(2) been been done? */
-    const char * rootDir;	/*!< Path to top of install tree. */
-    const char * currDir;	/*!< Current working directory. */
+    char * rootDir;		/*!< Path to top of install tree. */
+    char * currDir;		/*!< Current working directory. */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
     int32_t tid;			/*!< Transaction id. */
