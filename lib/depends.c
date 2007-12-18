@@ -841,14 +841,14 @@ static inline const char * identifyDepend(int32_t f)
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
 /* FIX: hack modifies, but -type disables */
-static const char *
+static char *
 zapRelation(rpmte q, rpmte p,
 		rpmds requires,
 		int zap, int * nzaps, int msglvl)
 {
     tsortInfo tsi_prev;
     tsortInfo tsi;
-    const char *dp = NULL;
+    char *dp = NULL;
 
     for (tsi_prev = rpmteTSI(q), tsi = rpmteTSI(q)->tsi_next;
 	 tsi != NULL;
@@ -1339,7 +1339,7 @@ rescan:
 
 	    /* T13. Print predecessor chain from start of loop. */
 	    while ((p = q) != NULL && (q = rpmteTSI(p)->tsi_chain) != NULL) {
-		const char * dp;
+		char * dp;
 		char buf[4096];
 		int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
 			? RPMLOG_WARNING : RPMLOG_DEBUG;
