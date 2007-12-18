@@ -142,8 +142,7 @@ int (*HDRisentry) (Header h, rpm_tag_t tag);
  * @return		NULL always
  */
 typedef
-void * (*HDRfreetag) (Header h,
-		const void * data, rpm_tagtype_t type);
+void * (*HDRfreetag) (Header h, void * data, rpm_tagtype_t type);
 
 /** \ingroup header
  * Retrieve tag value.

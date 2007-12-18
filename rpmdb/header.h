@@ -395,7 +395,7 @@ int headerIsEntry(Header h, rpm_tag_t tag);
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
-void * headerFreeTag(Header h, const void * data, rpm_tagtype_t type);
+void * headerFreeTag(Header h, void * data, rpm_tagtype_t type);
 
 /** \ingroup header
  * Retrieve tag value.
@@ -590,14 +590,14 @@ int headerNextIterator(HeaderIterator hi,
  * @return		NULL always
  */
 static inline
-void * headerFreeData( const void * data, rpm_tagtype_t type)
+void * headerFreeData(const void * data, rpm_tagtype_t type)
 {
     if (data) {
 	if (type == RPM_FORCEFREE_TYPE ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)
-		free((void *)data);
+		free((void *)data); /* XXX _constfree() */
     }
     return NULL;
 }

@@ -101,8 +101,7 @@ int headerIsEntry(Header h, rpm_tag_t tag)
     return (h2hv(h)->hdrisentry) (h, tag);
 }
 
-void * headerFreeTag(Header h,
-		const void * data, rpm_tagtype_t type)
+void * headerFreeTag(Header h, void * data, rpm_tagtype_t type)
 {
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }

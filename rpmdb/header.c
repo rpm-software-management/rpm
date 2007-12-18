@@ -1473,7 +1473,7 @@ static int intGetEntry(Header h, rpm_tag_t tag,
  * @return		NULL always
  */
 static void * _headerFreeTag(Header h,
-		const void * data, rpm_tagtype_t type)
+		void * data, rpm_tagtype_t type)
 {
     if (data) {
 	if (type == -1 ||
