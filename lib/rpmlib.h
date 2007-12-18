@@ -332,8 +332,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
  * @return		rpmRC return code
  */
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
-			const char ** specFilePtr,
-			const char ** cookie);
+			char ** specFilePtr,
+			char ** cookie);
 
 /** \ingroup rpmtrans
  * Return copy of rpmlib internal provides.

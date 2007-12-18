@@ -636,7 +636,7 @@ int main(int argc, char *argv[])
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    const char * specFile = NULL;
+	    char * specFile = NULL;
 
 	    ba->cookie = NULL;
 	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);

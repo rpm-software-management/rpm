@@ -241,7 +241,7 @@ struct rpmQVKArguments_s {
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
     int qva_verbose;		/*!< (unused) */
-    const char * qva_queryFormat;/*!< Format for headerSprintf(). */
+    char * qva_queryFormat;	/*!< Format for headerSprintf(). */
     int sign;			/*!< Is a passphrase needed? */
     const char * passPhrase;	/*!< Pass phrase. */
     const char * qva_prefix;	/*!< Path to top of install tree. */
@@ -390,10 +390,10 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv);
 struct rpmBuildArguments_s {
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
     int buildAmount;		/*!< Bit(s) to control operation. */
-    const char * buildRootOverride; /*!< from --buildroot */
+    char * buildRootOverride; 	/*!< from --buildroot */
     char * targets;		/*!< Target platform(s), comma separated. */
     const char * passPhrase;	/*!< Pass phrase. */
-    const char * cookie;	/*!< NULL for binary, ??? for source, rpm's */
+    char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
     int force;			/*!< from --force */
     int noBuild;		/*!< from --nobuild */
     int noDeps;			/*!< from --nodeps */
@@ -483,8 +483,8 @@ void * rpmShowProgress(const void * arg,
  * @return		0 on success
  */
 int rpmInstallSource(rpmts ts, const char * arg,
-		const char ** specFilePtr,
-		const char ** cookie);
+		char ** specFilePtr,
+		char ** cookie);
 
 
 /** \ingroup rpmcli

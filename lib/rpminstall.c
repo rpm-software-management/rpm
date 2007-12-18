@@ -798,7 +798,7 @@ exit:
 }
 
 int rpmInstallSource(rpmts ts, const char * arg,
-		const char ** specFilePtr, const char ** cookie)
+		char ** specFilePtr, char ** cookie)
 {
     FD_t fd;
     int rc;

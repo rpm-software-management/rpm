@@ -243,7 +243,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 }
 
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
-		const char ** specFilePtr, const char ** cookie)
+		char ** specFilePtr, char ** cookie)
 {
     int scareMem = 1;
     rpmfi fi = NULL;
