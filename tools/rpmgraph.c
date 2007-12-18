@@ -107,7 +107,7 @@ restart:
     fileURL = _free(fileURL);
 
     /* Continue processing file arguments, building transaction set. */
-    for (fnp = (pkgURL+prevx); *fnp != NULL; fnp++, prevx++) {
+    for (fnp = (const char **) pkgURL+prevx; *fnp != NULL; fnp++, prevx++) {
 	const char * fileName;
 	FD_t fd;
 
