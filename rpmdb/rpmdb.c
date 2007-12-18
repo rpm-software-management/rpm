@@ -621,7 +621,7 @@ int rpmdbCheckTerminate(int terminate)
     sigset_t newMask, oldMask;
     static int terminating = 0;
 
-    if (terminating) return 1;
+    if (terminating) return 0;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
