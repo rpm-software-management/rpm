@@ -342,7 +342,7 @@ dbiIndex db3New(rpmdb rpmdb, rpm_tag_t rpmtag)
 		(void) poptSaveInt((int *)opt->arg, argInfo, (long)opt->val);
 	    	break;
 	    case POPT_ARG_STRING:
-	    {	const char ** t = opt->arg;
+	    {	char ** t = opt->arg;
 		if (t) {
 /* FIX: opt->arg annotation in popt.h */
 		    *t = _free(*t);
