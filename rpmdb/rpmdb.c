@@ -579,7 +579,7 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
 typedef struct miRE_s {
     rpm_tag_t		tag;		/*!< header tag */
     rpmMireMode		mode;		/*!< pattern match mode */
-    const char *	pattern;	/*!< pattern string */
+    char *		pattern;	/*!< pattern string */
     int			notmatch;	/*!< like "grep -v" */
     regex_t *		preg;		/*!< regex compiled pattern buffer */
     int			cflags;		/*!< regcomp(3) flags */
@@ -589,7 +589,7 @@ typedef struct miRE_s {
 
 struct rpmdbMatchIterator_s {
     rpmdbMatchIterator	mi_next;
-    const void *	mi_keyp;
+    void *		mi_keyp;
     size_t		mi_keylen;
     rpmdb		mi_db;
     rpm_tag_t		mi_rpmtag;
@@ -1733,7 +1733,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpm_tag_t tag,
 {
     static rpmMireMode defmode = (rpmMireMode)-1;
     miRE mire = NULL;
-    const char * allpat = NULL;
+    char * allpat = NULL;
     int notmatch = 0;
     regex_t * preg = NULL;
     int cflags = 0;
@@ -2287,7 +2287,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpm_tag_t rpmtag,
     DBT * data;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
-    const void * mi_keyp = NULL;
+    void * mi_keyp = NULL;
     int isLabel = 0;
 
     if (db == NULL)
