@@ -1626,7 +1626,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * urlfn = NULL;
     char * fn = NULL;
-    const char * apkt = NULL;
+    char * apkt = NULL;
     uint8_t * pkt = NULL;
     ssize_t pktlen = 0;
     int absolute = 0;
@@ -1666,7 +1666,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	    rpmlog(RPMLOG_ERR, _("%s: *.te policy read failed.\n"), fn);
 	    goto exit;
 	}
-	apkt = (const char *) pkt;	/* XXX unsigned char */
+	apkt = (char *) pkt;	/* XXX unsigned char */
 	pkt = NULL;
 	break;
     }
