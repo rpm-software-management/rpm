@@ -835,7 +835,7 @@ void rpmtsClean(rpmts ts)
     for (i = 0; i < ts->nsuggests; i++) {
 	const char * str = ts->suggests[i];
 	ts->suggests[i] = NULL;
-	_free(str);
+	_constfree(str);
     }
     ts->suggests = _free(ts->suggests);
     ts->nsuggests = 0;
