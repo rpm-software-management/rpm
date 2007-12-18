@@ -449,7 +449,7 @@ static int saveHardLink(FSM_t fsm)
 
     /* Save the non-skipped file name and map index. */
     fsm->li->linkIndex = j;
-    fsm->path = _free(fsm->path);
+    fsm->path = _constfree(fsm->path);
     fsm->ix = ix;
     rc = fsmNext(fsm, FSM_MAP);
     return rc;
@@ -478,7 +478,7 @@ FSM_t newFSM(void)
 FSM_t freeFSM(FSM_t fsm)
 {
     if (fsm) {
-	fsm->path = _free(fsm->path);
+	fsm->path = _constfree(fsm->path);
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
@@ -666,7 +666,7 @@ assert(rpmteType(fi->te) == TR_ADDED);
 
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    const struct stat * st = &fsm->sb;
-	    fsm->path = _free(fsm->path);
+	    fsm->path = _constfree(fsm->path);
 	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
 	}
@@ -959,7 +959,7 @@ static int writeLinkedFile(FSM_t fsm)
 	    *fsm->failedFile = xstrdup(fsm->path);
 	}
 
-	fsm->path = _free(fsm->path);
+	fsm->path = _constfree(fsm->path);
 	fsm->li->filex[i] = -1;
     }
 
@@ -998,7 +998,7 @@ static int fsmMakeLinks(FSM_t fsm)
 	if (fsm->li->createdPath == i) continue;
 
 	fsm->ix = fsm->li->filex[i];
-	fsm->path = _free(fsm->path);
+	fsm->path = _constfree(fsm->path);
 	rc = fsmNext(fsm, FSM_MAP);
 	if (XFA_SKIPPING(fsm->action)) continue;
 
@@ -1015,8 +1015,8 @@ static int fsmMakeLinks(FSM_t fsm)
 
 	fsm->li->linksLeft--;
     }
-    fsm->path = _free(fsm->path);
-    fsm->opath = _free(fsm->opath);
+    fsm->path = _constfree(fsm->path);
+    fsm->opath = _constfree(fsm->opath);
 
     fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
@@ -1054,7 +1054,7 @@ static int fsmCommitLinks(FSM_t fsm)
 	rc = fsmNext(fsm, FSM_MAP);
 	if (!XFA_SKIPPING(fsm->action))
 	    rc = fsmNext(fsm, FSM_COMMIT);
-	fsm->path = _free(fsm->path);
+	fsm->path = _constfree(fsm->path);
 	fsm->li->filex[i] = -1;
     }
 
@@ -1434,8 +1434,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 			fsm->goal != FSM_PKGCOMMIT) ? 0 : 1);
 #undef _tsmask
 	}
-	fsm->path = _free(fsm->path);
-	fsm->opath = _free(fsm->opath);
+	fsm->path = _constfree(fsm->path);
+	fsm->opath = _constfree(fsm->opath);
 	fsm->dnlx = _free(fsm->dnlx);
 
 	fsm->ldn = _free(fsm->ldn);
@@ -1465,7 +1465,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	break;
     case FSM_INIT:
-	fsm->path = _free(fsm->path);
+	fsm->path = _constfree(fsm->path);
 	fsm->postpone = 0;
 	fsm->diskchecked = fsm->exists = 0;
 	fsm->subdir = NULL;
@@ -1614,7 +1614,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			_("%s saved as %s\n"),
 				(fsm->opath ? fsm->opath : ""),
 				(fsm->path ? fsm->path : ""));
-		fsm->path = _free(fsm->path);
+		fsm->path = _constfree(fsm->path);
 		fsm->opath = opath;
 	    }
 
@@ -1721,8 +1721,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (fsm->goal == FSM_PKGERASE)
 		rc = fsmNext(fsm, FSM_COMMIT);
 	}
-	fsm->path = _free(fsm->path);
-	fsm->opath = _free(fsm->opath);
+	fsm->path = _constfree(fsm->path);
+	fsm->opath = _constfree(fsm->opath);
 	memset(st, 0, sizeof(*st));
 	memset(ost, 0, sizeof(*ost));
 	break;
@@ -1741,9 +1741,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 				(fsm->opath ? fsm->opath : ""),
 				(fsm->path ? fsm->path : ""));
 	    }
-	    fsm->path = _free(fsm->path);
+	    fsm->path = _constfree(fsm->path);
 	    fsm->path = path;
-	    fsm->opath = _free(fsm->opath);
+	    fsm->opath = _constfree(fsm->opath);
 	    fsm->opath = opath;
 	}
 
@@ -1811,7 +1811,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 				(fsm->path ? fsm->path : ""));
 		    opath = _free(opath);
 		}
-		fsm->opath = _free(fsm->opath);
+		fsm->opath = _constfree(fsm->opath);
 	    }
 	    /*
 	     * Set file security context (if not disabled).
@@ -1849,7 +1849,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	break;
     case FSM_DESTROY:
-	fsm->path = _free(fsm->path);
+	fsm->path = _constfree(fsm->path);
 
 	/* Check for hard links missing from payload. */
 	while ((fsm->li = fsm->links) != NULL) {
@@ -2112,7 +2112,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	rc = fsmUNSAFE(fsm, FSM_HREAD);
 	if (rc) break;
 	if (!strcmp(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
-	    fsm->path = _free(fsm->path);
+	    fsm->path = _constfree(fsm->path);
 	    rc = CPIOERR_HDR_TRAILER;
 	}
 	if (!rc)
