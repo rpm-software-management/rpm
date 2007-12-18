@@ -131,7 +131,7 @@ struct fsm_s {
     hardLink_t links;		/*!< Pending hard linked file(s). */
     hardLink_t li;		/*!< Current hard linked file(s). */
     unsigned int * archiveSize;	/*!< Pointer to archive size. */
-    const char ** failedFile;	/*!< First file name that failed. */
+    char ** failedFile;		/*!< First file name that failed. */
     const char * subdir;	/*!< Current file sub-directory. */
     char subbuf[64];	/* XXX eliminate */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
@@ -204,7 +204,7 @@ FSM_t freeFSM(FSM_t fsm);
  * @param fi		transaction element file info
  * @param cfd
  * @retval archiveSize	pointer to archive size
- * @retval failedFile	pointer to first file name that failed.
+ * @retval failedFile	pointer to first file name that failed (malloced)
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
@@ -212,7 +212,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		const rpmfi fi,
 		FD_t cfd,
 		unsigned int * archiveSize,
-		const char ** failedFile);
+		char ** failedFile);
 
 /**
  * Clean file state machine.

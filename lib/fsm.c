@@ -493,7 +493,7 @@ FSM_t freeFSM(FSM_t fsm)
 
 int fsmSetup(FSM_t fsm, fileStage goal,
 		const rpmts ts, const rpmfi fi, FD_t cfd,
-		unsigned int * archiveSize, const char ** failedFile)
+		unsigned int * archiveSize, char ** failedFile)
 {
     size_t pos = 0;
     int rc, ec = 0;
@@ -1844,7 +1844,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* Notify on success. */
 	if (!rc)		rc = fsmNext(fsm, FSM_NOTIFY);
 	else if (fsm->failedFile && *fsm->failedFile == NULL) {
-	    *fsm->failedFile = fsm->path;
+	    /* XXX ick, stripping const */
+	    *fsm->failedFile = (char *) fsm->path;
 	    fsm->path = NULL;
 	}
 	break;
@@ -1865,7 +1866,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    if (fsm->failedFile && *fsm->failedFile == NULL) {
 			fsm->ix = fsm->li->filex[i];
 			if (!fsmNext(fsm, FSM_MAP)) {
-			    *fsm->failedFile = fsm->path;
+	    		    /* 
+ 			     * XXX ick, stripping const. Out-of-sync
+ 			     * hardlinks handled as sub-state, see
+ 			     * changeset 4062:02b0c237b675
+			     */
+			    *fsm->failedFile = (char *) fsm->path;
 			    fsm->path = NULL;
 			}
 		    }

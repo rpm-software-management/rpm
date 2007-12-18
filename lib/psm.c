@@ -54,7 +54,7 @@ struct rpmpsm_s {
     rpmdbMatchIterator mi;
     const char * stepName;
     char * rpmio_flags;
-    const char * failedFile;
+    char * failedFile;
     char * pkgURL;		/*!< Repackage URL. */
     const char * pkgfn;		/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
@@ -1886,11 +1886,7 @@ assert(psm->mi == NULL);
 	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
-	/*
-	 * XXX: funny games with fsm internal state, see changesets
-	 * 7340:77828be0ce85 and 4062:02b0c237b675
-	 */
-	psm->failedFile = _constfree(psm->failedFile);
+	psm->failedFile = _free(psm->failedFile);
 
 	fi->fgroup = hfd(fi->fgroup, RPM_FORCEFREE_TYPE);
 	fi->fuser = hfd(fi->fuser, RPM_FORCEFREE_TYPE);
