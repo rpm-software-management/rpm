@@ -3126,7 +3126,7 @@ static char * octalFormat(rpm_tagtype_t type, hPTR_t data,
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
-	sprintf(val, formatPrefix, *((int32_t *) data));
+	sprintf(val, formatPrefix, *((const int32_t *) data));
     }
 
     return val;
@@ -3151,7 +3151,7 @@ static char * hexFormat(rpm_tagtype_t type, hPTR_t data,
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
-	sprintf(val, formatPrefix, *((int32_t *) data));
+	sprintf(val, formatPrefix, *((const int32_t *) data));
     }
 
     return val;
@@ -3175,7 +3175,7 @@ static char * realDateFormat(rpm_tagtype_t type, hPTR_t data,
 	strcat(formatPrefix, "s");
 
 	/* this is important if sizeof(int32_t) ! sizeof(time_t) */
-	{   time_t dateint = *((int32_t *) data);
+	{   time_t dateint = *((const int32_t *) data);
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
@@ -3236,7 +3236,7 @@ static char * shescapeFormat(rpm_tagtype_t type, hPTR_t data,
     if (type == RPM_INT32_TYPE) {
 	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
-	sprintf(result, formatPrefix, *((int32_t *) data));
+	sprintf(result, formatPrefix, *((const int32_t *) data));
     } else {
 	buf = alloca(strlen(data) + padding + 2);
 	strcat(formatPrefix, "s");

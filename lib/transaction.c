@@ -653,7 +653,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
-    const char ** languages;
+    char ** languages;
     const char * dn, * bn;
     size_t dnlen, bnlen;
     char * s;
@@ -675,7 +675,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (!(s && *s != '%'))
 	s = _free(s);
     if (s) {
-	languages = (const char **) splitString(s, strlen(s), ':');
+	languages = splitString(s, strlen(s), ':');
 	s = _free(s);
     } else
 	languages = NULL;
@@ -761,7 +761,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 * Skip i18n language specific files.
 	 */
 	if (languages != NULL && fi->flangs != NULL && *fi->flangs[i]) {
-	    const char **lang, *l, *le;
+	    const char *l, *le;
+	    char **lang;
 	    for (lang = languages; *lang != NULL; lang++) {
 		if (!strcmp(*lang, "all"))
 		    break;

@@ -31,8 +31,8 @@ struct headerTagIndices_s {
  */
 static int tagCmpName(const void * avp, const void * bvp)
 {
-    headerTagTableEntry a = *(headerTagTableEntry *) avp;
-    headerTagTableEntry b = *(headerTagTableEntry *) bvp;
+    headerTagTableEntry a = *(const headerTagTableEntry *) avp;
+    headerTagTableEntry b = *(const headerTagTableEntry *) bvp;
     return strcmp(a->name, b->name);
 }
 
@@ -44,8 +44,8 @@ static int tagCmpName(const void * avp, const void * bvp)
  */
 static int tagCmpValue(const void * avp, const void * bvp)
 {
-    headerTagTableEntry a = *(headerTagTableEntry *) avp;
-    headerTagTableEntry b = *(headerTagTableEntry *) bvp;
+    headerTagTableEntry a = *(const headerTagTableEntry *) avp;
+    headerTagTableEntry b = *(const headerTagTableEntry *) bvp;
     int ret = (a->val - b->val);
     /* Make sure that sort is stable, longest name first. */
     if (ret == 0)

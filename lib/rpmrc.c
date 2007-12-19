@@ -162,8 +162,8 @@ static void rpmRebuildTargetVars(const char **target, const char ** canontarget)
 
 static int optionCompare(const void * a, const void * b)
 {
-    return xstrcasecmp(((struct rpmOption *) a)->name,
-		      ((struct rpmOption *) b)->name);
+    return xstrcasecmp(((const struct rpmOption *) a)->name,
+		      ((const struct rpmOption *) b)->name);
 }
 
 static machCacheEntry
