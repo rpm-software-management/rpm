@@ -92,8 +92,8 @@ static int expandMacro(MacroBuf mb);
 static int
 compareMacroName(const void * ap, const void * bp)
 {
-    rpmMacroEntry ame = *((rpmMacroEntry *)ap);
-    rpmMacroEntry bme = *((rpmMacroEntry *)bp);
+    rpmMacroEntry ame = *((const rpmMacroEntry *)ap);
+    rpmMacroEntry bme = *((const rpmMacroEntry *)bp);
 
     if (ame == NULL && bme == NULL)
 	return 0;
@@ -783,7 +783,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     char aname[16];
     const char *opts, *o;
     int argc = 0;
-    const char **argv;
+    char **argv;
     int c;
 
     /* Copy macro name as argv[0], save beginning of args.  */
@@ -831,7 +831,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 #endif
 
     /* Build argv array */
-    argv = (const char **) alloca((argc + 1) * sizeof(*argv));
+    argv = alloca((argc + 1) * sizeof(*argv));
     be[-1] = ' '; /* assert((be - 1) == (b + strlen(b) == buf + strlen(buf))) */
     be[0] = '\0';
     b = buf;
@@ -868,7 +868,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 
     /* Define option macros. */
 /* FIX: argv[] can be NULL */
-    while((c = getopt(argc, (char **)argv, opts)) != -1)
+    while((c = getopt(argc, argv, opts)) != -1)
     {
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
