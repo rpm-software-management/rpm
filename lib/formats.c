@@ -66,7 +66,7 @@ static char * permsFormat(rpm_tagtype_t type, const void * data,
     } else {
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString(*((int32_t *) data));
+	buf = rpmPermsString(*((const int32_t *) data));
 	sprintf(val, formatPrefix, buf);
 	buf = _free(buf);
     }
@@ -88,7 +88,7 @@ static char * fflagsFormat(rpm_tagtype_t type, const void * data,
 {
     char * val;
     char buf[15];
-    int anint = *((int32_t *) data);
+    int anint = *((const int32_t *) data);
 
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
@@ -135,6 +135,7 @@ static char * armorFormat(rpm_tagtype_t type, const void * data,
 {
     const char * enc;
     const unsigned char * s;
+    unsigned char * bs;
     size_t ns;
     int atype;
 
@@ -148,8 +149,9 @@ static char * armorFormat(rpm_tagtype_t type, const void * data,
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	enc = data;
-	if (b64decode(enc, (void **)&s, &ns))
+	if (b64decode(enc, (void **)&bs, &ns))
 	    return xstrdup(_("(not base64)"));
+	s = bs;
 	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
 	break;
     case RPM_NULL_TYPE:
@@ -284,13 +286,13 @@ static char * xmlFormat(rpm_tagtype_t type, const void * data,
     }	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	anint = *((uint8_t *) data);
+	anint = *((const uint8_t *) data);
 	break;
     case RPM_INT16_TYPE:
-	anint = *((uint16_t *) data);
+	anint = *((const uint16_t *) data);
 	break;
     case RPM_INT32_TYPE:
-	anint = *((uint32_t *) data);
+	anint = *((const uint32_t *) data);
 	break;
     case RPM_NULL_TYPE:
     case RPM_STRING_ARRAY_TYPE:
@@ -353,7 +355,7 @@ static char * pgpsigFormat(rpm_tagtype_t type, const void * data,
     if (type != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	uint8_t * pkt = (uint8_t *) data;
+	const uint8_t * pkt = (const uint8_t *) data;
 	size_t pktlen = 0;
 	unsigned int v = *pkt;
 	pgpTag tag = 0;
@@ -461,7 +463,7 @@ static char * depflagsFormat(rpm_tagtype_t type, const void * data,
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	anint = *((int32_t *) data);
+	anint = *((const int32_t *) data);
 	buf[0] = '\0';
 
 	if (anint & RPMSENSE_LESS) 
