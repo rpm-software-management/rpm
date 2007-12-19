@@ -1,4 +1,7 @@
 include Makefile
 
+snapshot: ChangeLog
+	@$(MAKE) dist VERSION=$(VERSION).hg`hg identify -n`
+
 ChangeLog: .hg
-	hg log --no-merge -v > ChangeLog
+	@hg log --no-merge -v > ChangeLog
