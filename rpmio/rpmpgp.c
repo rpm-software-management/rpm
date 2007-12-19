@@ -1337,3 +1337,15 @@ int rpmInitCrypto(void) {
 
     return rc;
 }
+
+int rpmFreeCrypto(void) 
+{
+    int rc = 0;
+    if (_crypto_initialized) {
+	rc = (NSS_Shutdown() != SECSuccess);
+    	_crypto_initialized = 0;
+    }
+    return rc;
+}
+	
+	

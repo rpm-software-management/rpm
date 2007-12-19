@@ -1588,6 +1588,10 @@ void rpmFreeRpmrc(void)
     current[ARCH] = _free(current[ARCH]);
     defaultsInitialized = 0;
 /* FIX: platpat/current may be NULL */
+
+    /* XXX doesn't really belong here but... */
+    rpmFreeCrypto();
+
     return;
 }
 

@@ -1334,6 +1334,11 @@ unsigned int pgpCRC(const uint8_t *octets, size_t len)
 int rpmInitCrypto(void);
 
 /** \ingroup rpmpgp
+ * Shutdown cryptography
+ */
+int rpmFreeCrypto(void);
+
+/** \ingroup rpmpgp
  * Duplicate a digest context.
  * @param octx		existing digest context
  * @return		duplicated digest context
