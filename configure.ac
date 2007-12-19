@@ -524,7 +524,6 @@ AC_CHECK_HEADERS(libio.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 
 AC_CHECK_HEADERS(glob.h)
-AC_CHECK_HEADERS(locale.h)
 
 dnl statfs portability fiddles.
 dnl
