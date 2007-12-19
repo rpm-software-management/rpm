@@ -871,7 +871,7 @@ zapRelation(rpmte q, rpmte p,
 	/*
 	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
-	if (zap && !(Flags & RPMSENSE_PREREQ)) {
+	if (zap && !(isErasePreReq(Flags) || isInstallPreReq(Flags))) {
 	    rpmlog(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
 			(rpmteNEVRA(p) ?  rpmteNEVRA(p) : "???"), dp);
