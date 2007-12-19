@@ -81,7 +81,7 @@ IDTX IDTXload(rpmts ts, rpm_tag_t tag)
 	int32_t * tidp;
 
 	tidp = NULL;
-	if (!hge(h, tag, &type, (void **)&tidp, &count) || tidp == NULL)
+	if (!hge(h, tag, &type, (rpm_data_t *)&tidp, &count) || tidp == NULL)
 	    continue;
 
 	if (type == RPM_INT32_TYPE && (*tidp == 0 || *tidp == -1))
@@ -153,7 +153,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpm_tag_t tag)
 	}
 
 	tidp = NULL;
-	if (hge(h, tag, &type, (void **) &tidp, &count) && tidp != NULL) {
+	if (hge(h, tag, &type, (rpm_data_t *) &tidp, &count) && tidp != NULL) {
 
 	    idtx = IDTXgrow(idtx, 1);
 	    if (idtx == NULL || idtx->idt == NULL)

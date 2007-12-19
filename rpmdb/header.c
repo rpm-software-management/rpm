@@ -316,8 +316,8 @@ unsigned int _headerSizeof(Header h, enum hMagic magicp)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(rpm_tagtype_t type, hPTR_t p, rpm_count_t count, int onDisk,
-		hPTR_t pend)
+static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
+			 int onDisk, rpm_constdata_t pend)
 {
     const unsigned char * s = p;
     const unsigned char * se = pend;
@@ -839,7 +839,7 @@ int _headerRemoveEntry(Header h, rpm_tag_t tag)
 
     /* Free data for tags being removed. */
     for (first = entry; first < last; first++) {
-	void * data;
+	rpm_data_t data;
 	if (first->info.tag != tag)
 	    break;
 	data = first->data;
@@ -1198,7 +1198,7 @@ int _headerIsEntry(Header h, rpm_tag_t tag)
  */
 static int copyEntry(const indexEntry entry,
 		rpm_tagtype_t * type,
-		hPTR_t * p,
+		rpm_data_t * p,
 		rpm_count_t * c,
 		int minMem)
 {
@@ -1432,7 +1432,7 @@ headerFindI18NString(Header h, indexEntry entry)
  */
 static int intGetEntry(Header h, rpm_tag_t tag,
 		rpm_tagtype_t * type,
-		hPTR_t * p,
+		rpm_data_t * p,
 		rpm_count_t * c,
 		int minMem)
 {
@@ -1473,7 +1473,7 @@ static int intGetEntry(Header h, rpm_tag_t tag,
  * @return		NULL always
  */
 static void * _headerFreeTag(Header h,
-		void * data, rpm_tagtype_t type)
+		rpm_data_t data, rpm_tagtype_t type)
 {
     if (data) {
 	if (type == -1 ||
@@ -1501,10 +1501,10 @@ static void * _headerFreeTag(Header h,
 static
 int _headerGetEntry(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			void ** p,
+			rpm_data_t * p,
 			rpm_count_t * c)
 {
-    return intGetEntry(h, tag, type, (hPTR_t *)p, c, 0);
+    return intGetEntry(h, tag, type, p, c, 0);
 }
 
 /** \ingroup header
@@ -1522,13 +1522,13 @@ int _headerGetEntry(Header h, rpm_tag_t tag,
 static
 int _headerGetEntryMinMemory(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			hPTR_t * p,
+			rpm_data_t * p,
 			rpm_count_t * c)
 {
-    return intGetEntry(h, tag, type, p, c, 1);
+    return intGetEntry(h, tag, type, (rpm_data_t) p, c, 1);
 }
 
-int headerGetRawEntry(Header h, rpm_tag_t tag, rpm_tagtype_t * type, hPTR_t * p,
+int headerGetRawEntry(Header h, rpm_tag_t tag, rpm_tagtype_t * type, rpm_data_t * p,
 		rpm_count_t * c)
 {
     indexEntry entry;
@@ -1553,8 +1553,8 @@ int headerGetRawEntry(Header h, rpm_tag_t tag, rpm_tagtype_t * type, hPTR_t * p,
 
 /**
  */
-static void copyData(rpm_tagtype_t type, void * dstPtr, const void * srcPtr,
-		rpm_count_t cnt, int dataLength)
+static void copyData(rpm_tagtype_t type, rpm_data_t dstPtr, 
+		rpm_constdata_t srcPtr, rpm_count_t cnt, int dataLength)
 {
     switch (type) {
     case RPM_STRING_ARRAY_TYPE:
@@ -1587,9 +1587,9 @@ static void copyData(rpm_tagtype_t type, void * dstPtr, const void * srcPtr,
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
-grabData(rpm_tagtype_t type, hPTR_t p, rpm_count_t c, int * lengthPtr)
+grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
 {
-    void * data = NULL;
+    rpm_data_t data = NULL;
     int length;
 
     length = dataLength(type, p, c, 0, NULL);
@@ -1618,10 +1618,11 @@ grabData(rpm_tagtype_t type, hPTR_t p, rpm_count_t c, int * lengthPtr)
  * @return		1 on success, 0 on failure
  */
 static
-int _headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c)
+int _headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, 
+			rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
-    void * data;
+    rpm_data_t data;
     int length;
 
     /* Count must always be >= 1 for _headerAddEntry. */
@@ -1676,7 +1677,7 @@ int _headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p,
  */
 static
 int _headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-		const void * p, rpm_count_t c)
+		rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
     int length;
@@ -1724,7 +1725,7 @@ int _headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  */
 static
 int _headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-		const void * p, rpm_count_t c)
+		rpm_constdata_t p, rpm_count_t c)
 {
     return (findEntry(h, tag, type)
 	? _headerAppendEntry(h, tag, type, p, c)
@@ -1887,11 +1888,11 @@ int _headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
  */
 static
 int _headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-			const void * p, rpm_count_t c)
+			rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
-    void * oldData;
-    void * data;
+    rpm_data_t oldData;
+    rpm_data_t data;
     int length;
 
     /* First find the tag */
@@ -2033,7 +2034,7 @@ static
 int _headerNextIterator(HeaderIterator hi,
 		rpm_tag_t * tag,
 		rpm_tagtype_t * type,
-		hPTR_t * p,
+		rpm_data_t * p,
 		rpm_count_t * c)
 {
     Header h = hi->h;
@@ -2075,11 +2076,11 @@ Header _headerCopy(Header h)
     rpm_tagtype_t type;
     rpm_tag_t tag;
     rpm_count_t count;
-    hPTR_t ptr;
+    rpm_data_t ptr;
    
     for (hi = _headerInitIterator(h);
 	_headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData((void *)ptr, type))
+	ptr = headerFreeData(ptr, type))
     {
 	if (ptr) (void) _headerAddEntry(nh, tag, type, ptr, count);
     }
@@ -2648,7 +2649,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
  */
 static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 		rpm_tagtype_t * typeptr,
-		hPTR_t * data,
+		rpm_data_t * data,
 		rpm_count_t * countptr,
 		rpmec ec)
 {
@@ -2680,7 +2681,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char buf[20];
     rpm_tagtype_t type;
     rpm_count_t count;
-    hPTR_t data;
+    rpm_data_t data;
     unsigned int intVal;
     const char ** strarray;
     int datafree = 0;
@@ -2695,7 +2696,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    data = "(none)";
 	}
     } else {
-	if (!_headerGetEntry(hsa->h, tag->tag, &type, (void **)&data, &count)) {
+	if (!_headerGetEntry(hsa->h, tag->tag, &type, &data, &count)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
@@ -3116,7 +3117,7 @@ exit:
  * @param element	(unused)
  * @return		formatted string
  */
-static char * octalFormat(rpm_tagtype_t type, hPTR_t data, 
+static char * octalFormat(rpm_tagtype_t type, rpm_constdata_t data, 
 		char * formatPrefix, int padding,int element)
 {
     char * val;
@@ -3141,7 +3142,7 @@ static char * octalFormat(rpm_tagtype_t type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * hexFormat(rpm_tagtype_t type, hPTR_t data, 
+static char * hexFormat(rpm_tagtype_t type, rpm_constdata_t data, 
 		char * formatPrefix, int padding,int element)
 {
     char * val;
@@ -3159,7 +3160,7 @@ static char * hexFormat(rpm_tagtype_t type, hPTR_t data,
 
 /**
  */
-static char * realDateFormat(rpm_tagtype_t type, hPTR_t data, 
+static char * realDateFormat(rpm_tagtype_t type, rpm_constdata_t data, 
 		char * formatPrefix, int padding,int element,
 		const char * strftimeFormat)
 {
@@ -3196,7 +3197,7 @@ static char * realDateFormat(rpm_tagtype_t type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * dateFormat(rpm_tagtype_t type, hPTR_t data, 
+static char * dateFormat(rpm_tagtype_t type, rpm_constdata_t data, 
 		         char * formatPrefix, int padding, int element)
 {
     return realDateFormat(type, data, formatPrefix, padding, element,
@@ -3212,7 +3213,7 @@ static char * dateFormat(rpm_tagtype_t type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * dayFormat(rpm_tagtype_t type, hPTR_t data, 
+static char * dayFormat(rpm_tagtype_t type, rpm_constdata_t data, 
 		         char * formatPrefix, int padding, int element)
 {
     return realDateFormat(type, data, formatPrefix, padding, element, 
@@ -3228,7 +3229,7 @@ static char * dayFormat(rpm_tagtype_t type, hPTR_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * shescapeFormat(rpm_tagtype_t type, hPTR_t data, 
+static char * shescapeFormat(rpm_tagtype_t type, rpm_constdata_t data, 
 		char * formatPrefix, int padding,int element)
 {
     char * result, * dst, * src, * buf;
@@ -3287,15 +3288,15 @@ void _headerCopyTags(Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy)
 	return;
 
     for (p = tagstocopy; *p != 0; p++) {
-	char *s;
+	rpm_data_t s;
 	rpm_tagtype_t type;
 	rpm_count_t count;
 	if (_headerIsEntry(headerTo, *p))
 	    continue;
-	if (!_headerGetEntryMinMemory(headerFrom, *p, &type,
-				(hPTR_t *) &s, &count))
+	if (!_headerGetEntryMinMemory(headerFrom, *p, &type, &s, &count))
 	    continue;
 	(void) _headerAddEntry(headerTo, *p, type, s, count);
+	/* XXXX freeing up *any* data from headerGetEntryMinMemory ?! */
 	s = headerFreeData(s, type);
     }
 }

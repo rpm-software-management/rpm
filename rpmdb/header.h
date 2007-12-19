@@ -92,11 +92,13 @@ typedef const char *	errmsg_t;
 
 /** \ingroup header
  */
-typedef const void *	hPTR_t;
 
 typedef int32_t 	rpm_tag_t;
 typedef uint32_t	rpm_tagtype_t;
 typedef uint32_t	rpm_count_t;
+
+typedef void *         rpm_data_t;
+typedef const void *   rpm_constdata_t;
 
 /** \ingroup header
  */
@@ -142,7 +144,7 @@ enum headerSprintfExtensionType {
  * @return		formatted string
  */
 typedef char * (*headerTagFormatFunction)(rpm_tagtype_t type,
-				const void * data, char * formatPrefix,
+				rpm_constdata_t data, char * formatPrefix,
 				int padding, rpm_count_t element);
 
 /** \ingroup header
@@ -158,7 +160,7 @@ typedef char * (*headerTagFormatFunction)(rpm_tagtype_t type,
  */
 typedef int (*headerTagTagFunction) (Header h,
 		rpm_tagtype_t * type,
-		hPTR_t * data,
+		rpm_data_t * data,
 		rpm_count_t * count,
 		int * freeData);
 
@@ -395,7 +397,7 @@ int headerIsEntry(Header h, rpm_tag_t tag);
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
-void * headerFreeTag(Header h, void * data, rpm_tagtype_t type);
+void * headerFreeTag(Header h, rpm_data_t data, rpm_tagtype_t type);
 
 /** \ingroup header
  * Retrieve tag value.
@@ -412,7 +414,7 @@ void * headerFreeTag(Header h, void * data, rpm_tagtype_t type);
  */
 int headerGetEntry(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			void ** p,
+			rpm_data_t * p,
 			rpm_count_t * c);
 
 /** \ingroup header
@@ -429,7 +431,7 @@ int headerGetEntry(Header h, rpm_tag_t tag,
  */
 int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			hPTR_t * p, 
+			rpm_data_t * p, 
 			rpm_count_t * c);
 
 /** \ingroup header
@@ -446,7 +448,7 @@ int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c);
+int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -463,7 +465,7 @@ int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, 
  * @return		1 on success, 0 on failure
  */
 int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-		const void * p, rpm_count_t c);
+		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -476,7 +478,7 @@ int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * @return		1 on success, 0 on failure
  */
 int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-		const void * p, rpm_count_t c);
+		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -512,7 +514,7 @@ int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 int headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-			const void * p, rpm_count_t c);
+			rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Delete tag in header.
@@ -575,7 +577,7 @@ HeaderIterator headerInitIterator(Header h);
 int headerNextIterator(HeaderIterator hi,
 		rpm_tag_t * tag,
 		rpm_tagtype_t * type,
-		hPTR_t * p,
+		rpm_data_t * p,
 		rpm_count_t * c);
 
 
@@ -590,14 +592,14 @@ int headerNextIterator(HeaderIterator hi,
  * @return		NULL always
  */
 static inline
-void * headerFreeData(const void * data, rpm_tagtype_t type)
+void * headerFreeData(rpm_data_t data, rpm_tagtype_t type)
 {
     if (data) {
 	if (type == RPM_FORCEFREE_TYPE ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)
-		free((void *)data); /* XXX _constfree() */
+		free(data); /* XXX _constfree() */
     }
     return NULL;
 }

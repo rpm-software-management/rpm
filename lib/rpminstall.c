@@ -477,7 +477,7 @@ if (fileURL[0] == '=') {
 	    rpm_count_t c;
 
 	    if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,
-				       (void **) &paths, &c) && (c == 1))
+				       (rpm_data_t *) &paths, &c) && (c == 1))
 	    {
 		eiu->relocations->oldPath = xstrdup(paths[0]);
 		paths = headerFreeData(paths, pft);

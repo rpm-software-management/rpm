@@ -249,11 +249,11 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList);
     int fileCount;
     int xx;
 
-    if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &fileCount))
+    if (!hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &baseNames, &fileCount))
 	return;
 
-    xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, &dnt, (rpm_data_t *) &dirNames, NULL);
+    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &dirIndexes, NULL);
     fpLookupList(cache, dirNames, baseNames, dirIndexes, fileCount, fpList);
     dirNames = hfd(dirNames, dnt);
     baseNames = hfd(baseNames, bnt);

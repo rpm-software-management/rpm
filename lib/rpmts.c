@@ -300,7 +300,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	    rpm_tagtype_t pt;
 	    rpm_count_t pc;
 
-	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
+	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (rpm_data_t *)&pubkeys, &pc))
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
 	    ix = rpmdbGetIteratorFileNum(mi);
@@ -636,7 +636,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 	/* XXX Prefer the shortest name if given alternatives. */
 	hname = NULL;
 	hnamelen = 0;
-	if (headerGetEntry(h, RPMTAG_NAME, NULL, (void **)&hname, NULL)) {
+	if (headerGetEntry(h, RPMTAG_NAME, NULL, (rpm_data_t *)&hname, NULL)) {
 	    if (hname)
 		hnamelen = strlen(hname);
 	}
@@ -645,7 +645,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 
 	/* XXX Prefer the newest build if given alternatives. */
 	htime = 0;
-	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, (void **)&ip, NULL))
+	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, (rpm_data_t *)&ip, NULL))
 	    htime = (time_t)*ip;
 
 	if (htime <= bhtime)
@@ -1157,9 +1157,9 @@ rpm_tagtype_t rpmtsSigtype(const rpmts ts)
     return sigtype;
 }
 
-const void * rpmtsSig(const rpmts ts)
+rpm_constdata_t rpmtsSig(const rpmts ts)
 {
-    const void * sig = NULL;
+    rpm_constdata_t sig = NULL;
     if (ts != NULL)
 	sig = ts->sig;
     return sig;
@@ -1174,7 +1174,7 @@ size_t rpmtsSiglen(const rpmts ts)
 }
 
 int rpmtsSetSig(rpmts ts, rpm_tag_t sigtag, rpm_tagtype_t sigtype, 
-		const void * sig, size_t siglen)
+		rpm_data_t sig, size_t siglen)
 {
     if (ts != NULL) {
 	if (ts->sig && ts->sigtype)

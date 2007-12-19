@@ -280,7 +280,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	}
 
 	/* Print package component sizes. */
-	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(void **)&archSize, NULL)) {
+	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(rpm_data_t *)&archSize, NULL)) {
 	    rc = printSize(fd, sigSize, pad, *archSize);
 	    if (rc != RPMRC_OK)
 		(void) snprintf(buf, sizeof(buf),
@@ -924,7 +924,7 @@ static const char * rpmSigString(rpmRC res)
 static rpmRC
 verifySizeSignature(const rpmts ts, char * t)
 {
-    const void * sig = rpmtsSig(ts);
+    rpm_constdata_t sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     size_t size = 0x7fffffff;
@@ -959,7 +959,7 @@ static rpmRC
 verifyMD5Signature(const rpmts ts, char * t,
 		DIGEST_CTX md5ctx)
 {
-    const void * sig = rpmtsSig(ts);
+    rpm_constdata_t sig = rpmtsSig(ts);
     size_t siglen = rpmtsSiglen(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
@@ -1014,7 +1014,7 @@ static rpmRC
 verifySHA1Signature(const rpmts ts, char * t,
 		DIGEST_CTX sha1ctx)
 {
-    const void * sig = rpmtsSig(ts);
+    rpm_constdata_t sig = rpmtsSig(ts);
 #ifdef	NOTYET
     size_t siglen = rpmtsSiglen(ts);
 #endif
@@ -1084,7 +1084,7 @@ static rpmRC
 verifyRSASignature(rpmts ts, char * t,
 		DIGEST_CTX md5ctx)
 {
-    const void * sig = rpmtsSig(ts);
+    rpm_constdata_t sig = rpmtsSig(ts);
 #ifdef	NOTYET
     size_t siglen = rpmtsSiglen(ts);
 #endif
@@ -1232,7 +1232,7 @@ static rpmRC
 verifyDSASignature(rpmts ts, char * t,
 		DIGEST_CTX sha1ctx)
 {
-    const void * sig = rpmtsSig(ts);
+    rpm_constdata_t sig = rpmtsSig(ts);
 #ifdef	NOTYET
     size_t siglen = rpmtsSiglen(ts);
 #endif
@@ -1323,7 +1323,7 @@ exit:
 rpmRC
 rpmVerifySignature(const rpmts ts, char * result)
 {
-    const void * sig = rpmtsSig(ts);
+    rpm_constdata_t sig = rpmtsSig(ts);
     size_t siglen = rpmtsSiglen(ts);
     rpm_tag_t sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);

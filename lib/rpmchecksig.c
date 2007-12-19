@@ -110,7 +110,7 @@ exit:
  */
 static int getSignid(Header sig, rpm_tag_t sigtag, pgpKeyID_t signid)
 {
-    void * pkt = NULL;
+    rpm_data_t pkt = NULL;
     rpm_tagtype_t pkttyp = 0;
     rpm_count_t pktlen = 0;
     int rc = 1;
@@ -213,7 +213,7 @@ static int rpmReSign(rpmts ts,
 	    rpm_tagtype_t type;
 	    rpm_tag_t tag;
 	    rpm_count_t count;
-	    hPTR_t ptr;
+	    rpm_data_t ptr;
 	    Header oh;
 	    Header nh;
 
@@ -516,7 +516,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char untrustedKeys[7164], * u;
     rpm_tag_t sigtag;
     rpm_tagtype_t sigtype;
-    const void * sig;
+    rpm_data_t sig;
     pgpDig dig;
     pgpDigParams sigp;
     rpm_count_t siglen;
@@ -586,7 +586,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 	/* XXX RSA needs the hash_algo, so decode early. */
 	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
-	    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **)&sig, &siglen);
+	    xx = headerGetEntry(sigh, sigtag, &sigtype, (rpm_data_t *)&sig, &siglen);
 	    xx = pgpPrtPkts(sig, siglen, dig, 0);
 	    sig = headerFreeData(sig, sigtype);
 	    /* XXX assume same hash_algo in header-only and header+payload */

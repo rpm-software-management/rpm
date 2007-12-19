@@ -159,7 +159,7 @@ rpmds rpmdsNew(Header h, rpm_tag_t tagN, int flags)
     } else
 	goto exit;
 
-    if (hge(h, tagN, &Nt, (void **) &N, &Count)
+    if (hge(h, tagN, &Nt, (rpm_data_t *) &N, &Count)
      && N != NULL && Count > 0)
     {
 	int xx;
@@ -175,12 +175,12 @@ rpmds rpmdsNew(Header h, rpm_tag_t tagN, int flags)
 	ds->Count = Count;
 	ds->nopromote = _rpmds_nopromote;
 
-	xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
-	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
+	xx = hge(h, tagEVR, &ds->EVRt, (rpm_data_t *) &ds->EVR, NULL);
+	xx = hge(h, tagF, &ds->Ft, (rpm_data_t *) &ds->Flags, NULL);
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
-	xx = hge(h, tagBT, &BTt, (void **) &BTp, NULL);
+	xx = hge(h, tagBT, &BTt, (rpm_data_t *) &BTp, NULL);
 	ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
 	ds->Color = xcalloc(Count, sizeof(*ds->Color));
 	ds->Refs = xcalloc(Count, sizeof(*ds->Refs));
@@ -271,7 +271,7 @@ rpmds rpmdsThis(Header h, rpm_tag_t tagN, int32_t Flags)
 
     xx = headerNVR(h, &n, &v, &r);
     ep = NULL;
-    xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
+    xx = hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *)&ep, NULL);
 
     t = xmalloc(sizeof(*N) + strlen(n) + 1);
     N = (const char **) t;
@@ -964,7 +964,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     t = alloca(21 + strlen(v) + 1 + strlen(r) + 1);
     pkgEVR = t;
     *t = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+    if (hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epoch, NULL)) {
 	sprintf(t, "%d:", *epoch);
 	while (*t != '\0')
 	    t++;

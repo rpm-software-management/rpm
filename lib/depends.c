@@ -128,9 +128,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
      * FIXME: only catches previously added, older packages.
      */
     arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    xx = hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *)&arch, NULL);
     os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    xx = hge(h, RPMTAG_OS, NULL, (rpm_data_t *)&os, NULL);
     hcolor = headerGetColor(h);
     pkgKey = RPMAL_NOMATCH;
 

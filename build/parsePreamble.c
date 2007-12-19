@@ -195,7 +195,7 @@ static int isMemberInEntry(Header h, const char *name, rpm_tag_t tag)
     rpm_tagtype_t type;
     rpm_count_t count;
 
-    if (!hge(h, tag, &type, (void **)&names, &count))
+    if (!hge(h, tag, &type, (rpm_data_t *)&names, &count))
 	return -1;
     while (count--) {
 	if (!xstrcasecmp(names[count], name))
@@ -313,7 +313,7 @@ static void fillOutMainPackage(Header h)
 	if (!headerIsEntry(h, ot->ot_tag)) {
 	    char *val = rpmExpand(ot->ot_mac, NULL);
 	    if (val && *val != '%')
-		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, (void *)val, 1);
+		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, val, 1);
 	    val = _free(val);
 	}
     }
@@ -396,7 +396,7 @@ spectag stashSt(rpmSpec spec, Header h, rpm_tag_t tag, const char * lang)
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    char *n;
-	    if (hge(h, RPMTAG_NAME, NULL, (void **) &n, NULL)) {
+	    if (hge(h, RPMTAG_NAME, NULL, (rpm_data_t *) &n, NULL)) {
 		char buf[1024];
 		sprintf(buf, "%s(%s)", n, rpmTagGetName(tag));
 		t->t_msgid = xstrdup(buf);
@@ -542,7 +542,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpm_tag_t tag,
       }	break;
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
-	xx = hge(pkg->header, tag, &type, (void **)&array, &num);
+	xx = hge(pkg->header, tag, &type, (rpm_data_t *)&array, &num);
 	while (num--) {
 	    len = strlen(array[num]);
 	    if (array[num][len - 1] == '/' && len > 1) {

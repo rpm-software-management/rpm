@@ -42,7 +42,7 @@ struct entryInfo_s {
 typedef struct indexEntry_s * indexEntry;
 struct indexEntry_s {
     struct entryInfo_s info;	/*!< Description of tag data. */
-    void * data; 		/*!< Location of tag data. */
+    rpm_data_t data; 		/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */
 };
@@ -88,7 +88,7 @@ struct rpmec_s {
     rpm_count_t count;
     int avail;
     int freeit;
-    const void * data;
+    rpm_data_t data;
 };
 
 /** \ingroup header
@@ -149,7 +149,7 @@ char ** headerGetLangs(Header h);
  */
 int headerGetRawEntry(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			hPTR_t * p, 
+			rpm_data_t * p, 
 			rpm_count_t * c);
 
 /** \ingroup header

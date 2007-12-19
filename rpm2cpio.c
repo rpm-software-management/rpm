@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	char * t;
 
 	if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
-			    (void **) &payload_compressor, NULL))
+			    (rpm_data_t *) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
 	rpmio_flags = t = alloca(sizeof("r.gzdio"));
 	*t++ = 'r';

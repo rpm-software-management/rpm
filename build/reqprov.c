@@ -61,7 +61,7 @@ int addReqProv(rpmSpec spec, Header h, rpm_tag_t tagN,
 	EVR = "";
     
     /* Check for duplicate dependencies. */
-    if (hge(h, nametag, &dnt, (void **) &names, &len)) {
+    if (hge(h, nametag, &dnt, (rpm_data_t *) &names, &len)) {
 	const char ** versions = NULL;
 	rpm_tagtype_t dvt = RPM_STRING_ARRAY_TYPE;
 	int *flags = NULL;
@@ -69,11 +69,11 @@ int addReqProv(rpmSpec spec, Header h, rpm_tag_t tagN,
 	int duplicate = 0;
 
 	if (flagtag) {
-	    xx = hge(h, versiontag, &dvt, (void **) &versions, NULL);
-	    xx = hge(h, flagtag, NULL, (void **) &flags, NULL);
+	    xx = hge(h, versiontag, &dvt, (rpm_data_t *) &versions, NULL);
+	    xx = hge(h, flagtag, NULL, (rpm_data_t *) &flags, NULL);
 	}
 	if (indextag)
-	    xx = hge(h, indextag, NULL, (void **) &indexes, NULL);
+	    xx = hge(h, indextag, NULL, (rpm_data_t *) &indexes, NULL);
 
 	while (len > 0) {
 	    len--;

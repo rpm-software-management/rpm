@@ -188,7 +188,7 @@ void rpmFreeRpmrc(void);
  * @return		NULL always
  */
 typedef
-    void * (*HFD_t) (const void * data, rpm_tagtype_t type);
+    void * (*HFD_t) (rpm_data_t data, rpm_tagtype_t type);
 
 /**
  * Prototype for headerGetEntry() vector.
@@ -206,7 +206,7 @@ typedef
  */
 typedef int (*HGE_t) (Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			void ** p,
+			rpm_data_t * p,
 			rpm_count_t * c);
 
 /**
@@ -225,7 +225,7 @@ typedef int (*HGE_t) (Header h, rpm_tag_t tag,
  * @return              1 on success, 0 on failure
  */
 typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
-			const void * p, rpm_count_t c);
+			rpm_constdata_t p, rpm_count_t c);
 
 /**
  * Prototype for headerModifyEntry() vector.
@@ -239,7 +239,7 @@ typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * @return		1 on success, 0 on failure
  */
 typedef int (*HME_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
-			const void * p, rpm_count_t c);
+			rpm_constdata_t p, rpm_count_t c);
 
 /**
  * Prototype for headerRemoveEntry() vector.

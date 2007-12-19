@@ -12,17 +12,17 @@ int headerNVR(Header h, const char **np, const char **vp, const char **rp)
     rpm_count_t count;
 
     if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
+	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (rpm_data_t *) np, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*np = NULL;
     }
     if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count)
+	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (rpm_data_t *) vp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*vp = NULL;
     }
     if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count)
+	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (rpm_data_t *) rp, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*rp = NULL;
     }
@@ -38,7 +38,7 @@ int headerNEVRA(Header h, const char **np,
 
     headerNVR(h, np, vp, rp);
     if (ap) {
-	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, (void **) ap, &count)
+	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, (rpm_data_t *) ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*ap = NULL;
     }
@@ -69,7 +69,7 @@ char * headerGetNEVRA(Header h, const char ** np)
     int xx;
 
     (void) headerNVR(h, &n, &v, &r);
-    xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
+    xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
     NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
     t = stpcpy(t, n);
     t = stpcpy(t, "-");
@@ -93,7 +93,7 @@ uint32_t headerGetColor(Header h)
 
     fcolors = NULL;
     ncolors = 0;
-    if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
+    if (hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *)&fcolors, &ncolors)
      && fcolors != NULL && ncolors > 0)
     {
 	for (i = 0; i < ncolors; i++)

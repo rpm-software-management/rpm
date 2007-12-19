@@ -227,7 +227,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	return 1;
     }
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
+    xx = hge(h, RPMTAG_FILESTATES, NULL, (rpm_data_t *) &otherStates, NULL);
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
@@ -1098,7 +1098,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 	 * XXX:  Should Match NAC!
 	 */
     	rpmlog(RPMLOG_DEBUG, _("\tREMOVETID matched INSTALLTID.\n"));
-	if (headerGetEntry(rpIDT->h, RPMTAG_NAME, NULL, (void **) &rpname, NULL)) {
+	if (headerGetEntry(rpIDT->h, RPMTAG_NAME, NULL, (rpm_data_t *) &rpname, NULL)) {
     	    rpmlog(RPMLOG_DEBUG, _("\t\tName:  %s.\n"), rpname);
 	    if (!strcmp(name,rpname)) {
 		/* It matched we have a canidate */

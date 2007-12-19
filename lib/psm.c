@@ -83,9 +83,9 @@ int rpmVersionCompare(Header first, Header second)
     static int32_t zero = 0;
     int rc;
 
-    if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &epochOne, NULL))
+    if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epochOne, NULL))
 	epochOne = &zero;
-    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo, NULL))
+    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epochTwo, NULL))
 	epochTwo = &zero;
 
 	if (*epochOne < *epochTwo)
@@ -93,15 +93,15 @@ int rpmVersionCompare(Header first, Header second)
 	else if (*epochOne > *epochTwo)
 	    return 1;
 
-    rc = headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
-    rc = headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &two, NULL);
+    rc = headerGetEntry(first, RPMTAG_VERSION, NULL, (rpm_data_t *) &one, NULL);
+    rc = headerGetEntry(second, RPMTAG_VERSION, NULL, (rpm_data_t *) &two, NULL);
 
     rc = rpmvercmp(one, two);
     if (rc)
 	return rc;
 
-    rc = headerGetEntry(first, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
-    rc = headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &two, NULL);
+    rc = headerGetEntry(first, RPMTAG_RELEASE, NULL, (rpm_data_t *) &one, NULL);
+    rc = headerGetEntry(second, RPMTAG_RELEASE, NULL, (rpm_data_t *) &two, NULL);
 
     return rpmvercmp(one, two);
 }
@@ -141,7 +141,7 @@ const char ** argv;
     rpm_tagtype_t type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
-	if (!hge(h, tagm->tag, &type, (void **) &body, NULL))
+	if (!hge(h, tagm->tag, &type, (rpm_data_t *) &body, NULL))
 	    continue;
 	switch (type) {
 	case RPM_INT32_TYPE:
@@ -218,7 +218,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 
 	modified = 0;
 
-	if (!hge(h, RPMTAG_FILESTATES, NULL, (void **)&secStates, &count))
+	if (!hge(h, RPMTAG_FILESTATES, NULL, (rpm_data_t *)&secStates, &count))
 	    continue;
 	
 	prev = rpmdbGetIteratorOffset(mi);
@@ -316,7 +316,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     if (cookie) {
 	*cookie = NULL;
-	if (hge(fi->h, RPMTAG_COOKIE, NULL, (void **) cookie, NULL))
+	if (hge(fi->h, RPMTAG_COOKIE, NULL, (rpm_data_t *) cookie, NULL))
 	    *cookie = xstrdup(*cookie);
     }
 
@@ -639,7 +639,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
-    xx = hge(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
+    xx = hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
@@ -719,9 +719,9 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
     }
 #endif
 
-    if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &prefixes, &numPrefixes)) {
+    if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (rpm_data_t *) &prefixes, &numPrefixes)) {
 	freePrefixes = 1;
-    } else if (hge(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &oldPrefix, NULL)) {
+    } else if (hge(h, RPMTAG_INSTALLPREFIX, NULL, (rpm_data_t *) &oldPrefix, NULL)) {
 	prefixes = &oldPrefix;
 	numPrefixes = 1;
     } else {
@@ -943,11 +943,11 @@ static rpmRC runInstScript(rpmpsm psm)
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    void ** progArgv;
+    rpm_data_t * progArgv;
     rpm_count_t progArgc;
     const char ** argv;
     rpm_tagtype_t ptt, stt;
-    const char * script;
+    char * script;
     rpmRC rc = RPMRC_OK;
     int xx;
 
@@ -955,8 +955,8 @@ static rpmRC runInstScript(rpmpsm psm)
      * headerGetEntry() sets the data pointer to NULL if the entry does
      * not exist.
      */
-    xx = hge(fi->h, psm->scriptTag, &stt, (void **) &script, NULL);
-    xx = hge(fi->h, psm->progTag, &ptt, (void **) &progArgv, &progArgc);
+    xx = hge(fi->h, psm->scriptTag, &stt, (rpm_data_t *) &script, NULL);
+    xx = hge(fi->h, psm->progTag, &ptt, (rpm_data_t *) &progArgv, &progArgc);
     if (progArgv == NULL && script == NULL)
 	goto exit;
 
@@ -1035,11 +1035,11 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	    continue;
 
 	if (!(	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
-		       (void **) &triggerIndices, NULL) &&
+		       (rpm_data_t *) &triggerIndices, NULL) &&
 		hge(triggeredH, RPMTAG_TRIGGERSCRIPTS, &tst,
-		       (void **) &triggerScripts, NULL) &&
+		       (rpm_data_t *) &triggerScripts, NULL) &&
 		hge(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, &tpt,
-		       (void **) &triggerProgs, NULL))
+		       (rpm_data_t *) &triggerProgs, NULL))
 	    )
 	    continue;
 
@@ -1140,9 +1140,9 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     if (fi->h == NULL)	return rc;	/* XXX can't happen */
 
     if (!(	hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
-			(void **) &triggerNames, &numTriggers) &&
+			(rpm_data_t *) &triggerNames, &numTriggers) &&
 		hge(fi->h, RPMTAG_TRIGGERINDEX, &tit,
-			(void **) &triggerIndices, &numTriggerIndices))
+			(rpm_data_t *) &triggerIndices, &numTriggerIndices))
 	)
 	return rc;
 
@@ -1438,7 +1438,7 @@ assert(psm->mi == NULL);
 	     * need the leading / stripped.
 	     */
 	    {   const char * p;
-		xx = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
+		xx = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *) &p, NULL);
 		fi->striplen = (xx ? strlen(p) + 1 : 1);
 	    }
 	    fi->mapflags =
@@ -1451,10 +1451,10 @@ assert(psm->mi == NULL);
 	
 	    if (fi->fuser == NULL)
 		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
-				(void **) &fi->fuser, NULL);
+				(rpm_data_t *) &fi->fuser, NULL);
 	    if (fi->fgroup == NULL)
 		xx = hge(fi->h, RPMTAG_FILEGROUPNAME, NULL,
-				(void **) &fi->fgroup, NULL);
+				(rpm_data_t *) &fi->fgroup, NULL);
 	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
@@ -1559,7 +1559,7 @@ assert(psm->mi == NULL);
 		    rpm_tagtype_t type;
 		    rpm_tag_t tag;
 		    rpm_count_t count;
-		    hPTR_t ptr;
+		    rpm_data_t ptr;
 		    Header oh;
 
 		    /* Load the original header from the blob. */
@@ -1570,7 +1570,7 @@ assert(psm->mi == NULL);
 
 		    for (hi = headerInitIterator(oh);
 		        headerNextIterator(hi, &tag, &type, &ptr, &count);
-		        ptr = headerFreeData((void *)ptr, type))
+		        ptr = headerFreeData(ptr, type))
 		    {
 			if (tag == RPMTAG_ARCHIVESIZE)
 			    noArchiveSize = 1;
@@ -1985,7 +1985,7 @@ assert(psm->mi == NULL);
 	char * t;
 
 	if (!hge(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
-			    (void **) &payload_compressor, NULL))
+			    (rpm_data_t *) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
 	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
 	*t = '\0';

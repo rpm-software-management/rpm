@@ -151,7 +151,7 @@ static int addFileToTag(rpmSpec spec, const char * file, Header h, rpm_tag_t tag
     StringBuf sb = newStringBuf();
     char *s;
 
-    if (hge(h, tag, NULL, (void **)&s, NULL)) {
+    if (hge(h, tag, NULL, (rpm_data_t *)&s, NULL)) {
 	appendLineStringBuf(sb, s);
 	(void) headerRemoveEntry(h, tag);
     }
@@ -567,7 +567,7 @@ exit:
 	unsigned char * MD5 = NULL;
 	rpm_count_t c;
 	int xx;
-	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, (void **)&MD5, &c);
+	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, (rpm_data_t *)&MD5, &c);
 	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)
 	    *pkgidp = MD5;
     }

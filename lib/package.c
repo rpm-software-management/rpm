@@ -90,7 +90,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     rpm_tagtype_t type;
     rpm_tag_t tag;
     rpm_count_t count;
-    const void * ptr;
+    rpm_data_t ptr;
     int xx;
 
     for (hi = headerInitIterator(sigh);
@@ -172,7 +172,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
     rpm_count_t count;
     rpm_tag_t tag, stag;
     rpm_tagtype_t type;
-    const void * ptr;
+    rpm_data_t ptr;
     int xx;
 
     for (hi = headerInitIterator(h);
@@ -685,7 +685,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     Header sigh = NULL;
     rpm_tag_t sigtag;
     rpm_tagtype_t sigtype;
-    const void * sig;
+    rpm_data_t sig;
     rpm_count_t siglen;
     rpmtsOpX opx;
     size_t nb;
@@ -806,7 +806,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     /* Retrieve the tag parameters from the signature header. */
     sig = NULL;
-    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **) &sig, &siglen);
+    xx = headerGetEntry(sigh, sigtag, &sigtype, &sig, &siglen);
     if (sig == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
@@ -956,7 +956,7 @@ rpmRC headerCheckPayloadFormat(Header h) {
     const char *payloadfmt = NULL;
 
     xx = headerGetEntry(h, RPMTAG_PAYLOADFORMAT, NULL, 
-			(void **)&payloadfmt, NULL);
+			(rpm_data_t *)&payloadfmt, NULL);
     /* 
      * XXX Ugh, rpm 3.x packages don't have payload format tag. Instead
      * of blinly allowing, should check somehow (HDRID existence or... ?)

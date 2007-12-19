@@ -142,7 +142,7 @@ int (*HDRisentry) (Header h, rpm_tag_t tag);
  * @return		NULL always
  */
 typedef
-void * (*HDRfreetag) (Header h, void * data, rpm_tagtype_t type);
+void * (*HDRfreetag) (Header h, rpm_data_t data, rpm_tagtype_t type);
 
 /** \ingroup header
  * Retrieve tag value.
@@ -160,7 +160,7 @@ void * (*HDRfreetag) (Header h, void * data, rpm_tagtype_t type);
 typedef
 int (*HDRget) (Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			void ** p,
+			rpm_data_t * p,
 			rpm_count_t * c);
 
 /** \ingroup header
@@ -178,7 +178,7 @@ int (*HDRget) (Header h, rpm_tag_t tag,
 typedef
 int (*HDRgetmin) (Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			hPTR_t * p,
+			rpm_data_t * p,
 			rpm_count_t * c);
 
 /** \ingroup header
@@ -196,7 +196,8 @@ int (*HDRgetmin) (Header h, rpm_tag_t tag,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRadd) (Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c);
+int (*HDRadd) (Header h, rpm_tag_t tag, rpm_tagtype_t type, 
+		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -213,7 +214,8 @@ int (*HDRadd) (Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRappend) (Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c);
+int (*HDRappend) (Header h, rpm_tag_t tag, rpm_tagtype_t type, 
+		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -226,7 +228,8 @@ int (*HDRappend) (Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, r
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRaddorappend) (Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c);
+int (*HDRaddorappend) (Header h, rpm_tag_t tag, rpm_tagtype_t type, 
+			rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Add locale specific tag to header.
@@ -263,7 +266,8 @@ int (*HDRaddi18n) (Header h, rpm_tag_t tag, const char * string,
  * @return		1 on success, 0 on failure
  */
 typedef
-int (*HDRmodify) (Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c);
+int (*HDRmodify) (Header h, rpm_tag_t tag, rpm_tagtype_t type, 
+		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Delete tag in header.
@@ -332,7 +336,7 @@ typedef
 int (*HDRnextiter) (HeaderIterator hi,
 		rpm_tag_t * tag,
 		rpm_tagtype_t * type,
-		hPTR_t * p,
+		rpm_data_t * p,
 		rpm_count_t * c);
 
 /** \ingroup header

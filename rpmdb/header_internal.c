@@ -14,7 +14,7 @@ char ** headerGetLangs(Header h)
     rpm_tagtype_t type;
     rpm_count_t i, count;
 
-    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (const void **)&s, &count))
+    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (rpm_data_t)&s, &count))
 	return NULL;
 
     /* XXX xcalloc never returns NULL. */

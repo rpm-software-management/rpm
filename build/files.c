@@ -243,8 +243,8 @@ static void timeCheck(int tc, Header h)
     rpm_count_t count, x;
     time_t currentTime = time(NULL);
 
-    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
-    x = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
+    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (rpm_data_t *) &files, &count);
+    x = hge(h, RPMTAG_FILEMTIMES, NULL, (rpm_data_t *) &mtime, NULL);
     
     for (x = 0; x < count; x++) {
 	if ((currentTime - mtime[x]) > tc)
@@ -1826,7 +1826,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
     fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
 
-    if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (void **)&fl.prefix, NULL))
+    if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *)&fl.prefix, NULL))
 	fl.prefix = xstrdup(fl.prefix);
     else
 	fl.prefix = NULL;
@@ -2023,7 +2023,7 @@ void initSourceHeader(rpmSpec spec)
     rpm_tagtype_t type;
     rpm_tag_t tag;
     rpm_count_t count;
-    const void * ptr;
+    rpm_data_t ptr;
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */

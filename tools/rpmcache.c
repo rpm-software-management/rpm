@@ -127,7 +127,7 @@ static int ftsCacheUpdate(rpmts ts)
 	}
 
 	/* --- Check that identical package is not already cached. */
- 	if (!hge(ip->h, RPMTAG_SIGMD5, NULL, (void **) &md5, NULL)
+ 	if (!hge(ip->h, RPMTAG_SIGMD5, NULL, (rpm_data_t *) &md5, NULL)
 	 || md5 == NULL)
 	{
 	    rc = 1;
@@ -207,8 +207,8 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 	    goto exit;
     }
 
-    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (void **) &arch, NULL)
-     || !headerGetEntry(h, RPMTAG_OS, NULL, (void **) &os, NULL))
+    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &arch, NULL)
+     || !headerGetEntry(h, RPMTAG_OS, NULL, (rpm_data_t *) &os, NULL))
 	goto exit;
 
     /* Make sure arch and os match this platform. */

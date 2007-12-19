@@ -96,7 +96,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->db_instance = 0;
 
     arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, (void **)&arch, NULL);
+    xx = hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *)&arch, NULL);
     if (arch != NULL) {
 	p->arch = xstrdup(arch);
 	p->archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
@@ -105,7 +105,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->archScore = 0;
     }
     os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, (void **)&os, NULL);
+    xx = hge(h, RPMTAG_OS, NULL, (rpm_data_t *)&os, NULL);
     if (os != NULL) {
 	p->os = xstrdup(os);
 	p->osScore = rpmMachineScore(RPM_MACHTABLE_INSTOS, os);
@@ -130,7 +130,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	t = stpcpy( stpcpy( t, "."), p->arch);
 
     ep = NULL;
-    xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
+    xx = hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *)&ep, NULL);
     if (ep) {
 	p->epoch = xmalloc(20);
 	sprintf(p->epoch, "%d", *ep);
@@ -203,7 +203,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
     case TR_ADDED:
 	p->u.addedKey = pkgKey;
 	ep = NULL;
-	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, (void **)&ep, NULL);
+	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, (rpm_data_t *)&ep, NULL);
 	/* XXX 256 is only an estimate of signature header. */
 	if (ep != NULL)
 	    p->pkgFileSize += 96 + 256 + *ep;

@@ -101,14 +101,14 @@ int headerIsEntry(Header h, rpm_tag_t tag)
     return (h2hv(h)->hdrisentry) (h, tag);
 }
 
-void * headerFreeTag(Header h, void * data, rpm_tagtype_t type)
+void * headerFreeTag(Header h, rpm_data_t data, rpm_tagtype_t type)
 {
     return (h2hv(h)->hdrfreetag) (h, data, type);
 }
 
 int headerGetEntry(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			void ** p,
+			rpm_data_t * p,
 			rpm_count_t * c)
 {
     return (h2hv(h)->hdrget) (h, tag, type, p, c);
@@ -116,25 +116,26 @@ int headerGetEntry(Header h, rpm_tag_t tag,
 
 int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
-			hPTR_t * p, 
+			rpm_data_t * p, 
 			rpm_count_t * c)
 {
     return (h2hv(h)->hdrgetmin) (h, tag, type, p, c);
 }
 
-int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, const void * p, rpm_count_t c)
+int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, 
+			rpm_constdata_t p, rpm_count_t c)
 {
     return (h2hv(h)->hdradd) (h, tag, type, p, c);
 }
 
 int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-		const void * p, rpm_count_t c)
+		rpm_constdata_t p, rpm_count_t c)
 {
     return (h2hv(h)->hdrappend) (h, tag, type, p, c);
 }
 
 int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-		const void * p, rpm_count_t c)
+		rpm_constdata_t p, rpm_count_t c)
 {
     return (h2hv(h)->hdraddorappend) (h, tag, type, p, c);
 }
@@ -146,7 +147,7 @@ int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
 }
 
 int headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
-			const void * p, rpm_count_t c)
+			rpm_constdata_t p, rpm_count_t c)
 {
     return (h2hv(h)->hdrmodify) (h, tag, type, p, c);
 }
@@ -184,7 +185,7 @@ HeaderIterator headerInitIterator(Header h)
 int headerNextIterator(HeaderIterator hi,
 		rpm_tag_t * tag,
 		rpm_tagtype_t * type,
-		hPTR_t * p,
+		rpm_data_t * p,
 		rpm_count_t * c)
 {
     return hdrVec->hdrnextiter(hi, tag, type, p, c);

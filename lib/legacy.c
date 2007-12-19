@@ -49,7 +49,7 @@ void compressFilelist(Header h)
 	return;		/* Already converted. */
     }
 
-    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (rpm_data_t *) &fileNames, &count))
 	return;		/* no file list */
     if (fileNames == NULL || count <= 0)
 	return;
@@ -159,7 +159,7 @@ void providePackageNVR(Header h)
 	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
     *p = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+    if (hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epoch, NULL)) {
 	sprintf(p, "%d:", *epoch);
 	while (*p != '\0')
 	    p++;
@@ -170,13 +170,13 @@ void providePackageNVR(Header h)
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides at all are available, we can just add.
      */
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
+    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (rpm_data_t *) &provides, &providesCount))
 	goto exit;
 
     /*
      * Otherwise, fill in entries on legacy packages.
      */
-    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (void **) &providesEVR, NULL)) {
+    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (rpm_data_t *) &providesEVR, NULL)) {
 	for (i = 0; i < providesCount; i++) {
 	    const char * vdummy = "";
 	    int32_t fdummy = RPMSENSE_ANY;
@@ -188,7 +188,7 @@ void providePackageNVR(Header h)
 	goto exit;
     }
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (rpm_data_t *) &provideFlags, NULL);
 
    	/* LCL: providesEVR is not NULL */
     if (provides && providesEVR && provideFlags)
@@ -236,7 +236,7 @@ void legacyRetrofit(Header h)
      * careful. This fixup makes queries give the new values though,
      * which is quite handy.
      */
-    if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &prefix, NULL))
+    if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *) &prefix, NULL))
     {
 	const char * nprefix = stripTrailingChar(alloca_strdup(prefix), '/');
 	(void) headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,

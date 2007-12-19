@@ -650,7 +650,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int i, j, xx;
 
     if (!hge(origH, RPMTAG_PREFIXES, &validType,
-			(void **) &validRelocations, &numValid))
+			(rpm_data_t *) &validRelocations, &numValid))
 	numValid = 0;
 
 assert(p != NULL);
@@ -792,18 +792,18 @@ assert(p != NULL);
 
 	if (numActual)
 	    xx = hae(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
-		       (void **) actualRelocations, numActual);
+		       (rpm_data_t *) actualRelocations, numActual);
 
 	actualRelocations = _free(actualRelocations);
 	validRelocations = hfd(validRelocations, validType);
     }
 
-    xx = hge(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, &fileCount);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, &dirCount);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fColors, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fModes, NULL);
+    xx = hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &baseNames, &fileCount);
+    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &dirIndexes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &dirNames, &dirCount);
+    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (rpm_data_t *) &fFlags, NULL);
+    xx = hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *) &fColors, NULL);
+    xx = hge(h, RPMTAG_FILEMODES, NULL, (rpm_data_t *) &fModes, NULL);
 
     dColors = alloca(dirCount * sizeof(*dColors));
     memset(dColors, 0, dirCount * sizeof(*dColors));
@@ -1023,16 +1023,16 @@ dColors[j] |= fColors[i];
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc);
+	xx = hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &fi->bnl, &fi->fc);
 
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
+	xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &fi->dnl, &fi->dc);
 
 	xx = hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			  dirIndexes, fileCount);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &fi->dil, NULL);
     }
 
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
@@ -1142,7 +1142,7 @@ static inline unsigned char nibble(char c)
 
 /* XXX Ick, not SEF. */
 #define _fdupestring(_h, _tag, _data) \
-    if (hge((_h), (_tag), NULL, (void **) &(_data), NULL)) \
+    if (hge((_h), (_tag), NULL, (rpm_data_t *) &(_data), NULL)) \
 	_data = xstrdup(_data)
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpm_tag_t tagN, int scareMem)
@@ -1188,7 +1188,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpm_tag_t tagN, int scareMem)
 	fi->fsm = newFSM();
 
     /* 0 means unknown */
-    xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (void **) &uip, NULL);
+    xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (rpm_data_t *) &uip, NULL);
     fi->archivePos = 0;
     fi->archiveSize = (xx ? *uip : 0);
 
@@ -1198,31 +1198,31 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpm_tag_t tagN, int scareMem)
     _fdupestring(h, RPMTAG_POSTTRANS, fi->posttrans);
     _fdupestring(h, RPMTAG_POSTTRANSPROG, fi->posttransprog);
 
-    if (!hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
+    if (!hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &fi->bnl, &fi->fc)) {
 	fi->fc = 0;
 	fi->dc = 0;
 	goto exit;
     }
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
-    xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (void **) &fi->vflags, NULL);
-    xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &fi->dnl, &fi->dc);
+    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &fi->dil, NULL);
+    xx = hge(h, RPMTAG_FILEMODES, NULL, (rpm_data_t *) &fi->fmodes, NULL);
+    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (rpm_data_t *) &fi->fflags, NULL);
+    xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (rpm_data_t *) &fi->vflags, NULL);
+    xx = hge(h, RPMTAG_FILESIZES, NULL, (rpm_data_t *) &fi->fsizes, NULL);
 
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fi->fcolors, NULL);
+    xx = hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *) &fi->fcolors, NULL);
     fi->color = 0;
     if (fi->fcolors != NULL)
     for (i = 0; i < fi->fc; i++)
 	fi->color |= fi->fcolors[i];
-    xx = hge(h, RPMTAG_CLASSDICT, NULL, (void **) &fi->cdict, &fi->ncdict);
-    xx = hge(h, RPMTAG_FILECLASS, NULL, (void **) &fi->fcdictx, NULL);
+    xx = hge(h, RPMTAG_CLASSDICT, NULL, (rpm_data_t *) &fi->cdict, &fi->ncdict);
+    xx = hge(h, RPMTAG_FILECLASS, NULL, (rpm_data_t *) &fi->fcdictx, NULL);
 
-    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, (void **) &fi->ddict, &fi->nddict);
-    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, (void **) &fi->fddictx, NULL);
-    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (void **) &fi->fddictn, NULL);
+    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, (rpm_data_t *) &fi->ddict, &fi->nddict);
+    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, (rpm_data_t *) &fi->fddictx, NULL);
+    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (rpm_data_t *) &fi->fddictn, NULL);
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
+    xx = hge(h, RPMTAG_FILESTATES, NULL, (rpm_data_t *) &fi->fstates, NULL);
     if (xx == 0 || fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
     else
@@ -1240,11 +1240,11 @@ if (fi->actions == NULL)
     fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 
-    xx = hge(h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-    xx = hge(h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
+    xx = hge(h, RPMTAG_FILELINKTOS, NULL, (rpm_data_t *) &fi->flinks, NULL);
+    xx = hge(h, RPMTAG_FILELANGS, NULL, (rpm_data_t *) &fi->flangs, NULL);
 
     fi->fmd5s = NULL;
-    xx = hge(h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
+    xx = hge(h, RPMTAG_FILEMD5S, NULL, (rpm_data_t *) &fi->fmd5s, NULL);
 
     fi->md5s = NULL;
     if (fi->fmd5s) {
@@ -1267,14 +1267,14 @@ if (fi->actions == NULL)
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
-    xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
-    xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
-    xx = hge(h, RPMTAG_FILEINODES, NULL, (void **) &fi->finodes, NULL);
+    xx = hge(h, RPMTAG_FILEMTIMES, NULL, (rpm_data_t *) &fi->fmtimes, NULL);
+    xx = hge(h, RPMTAG_FILERDEVS, NULL, (rpm_data_t *) &fi->frdevs, NULL);
+    xx = hge(h, RPMTAG_FILEINODES, NULL, (rpm_data_t *) &fi->finodes, NULL);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-    xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
-    xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fi->fgroup, NULL);
+    xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (rpm_data_t *) &fi->fuser, NULL);
+    xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, (rpm_data_t *) &fi->fgroup, NULL);
 
     if (ts != NULL)
     if (fi != NULL)
@@ -1561,14 +1561,14 @@ void rpmfiBuildFNames(Header h, rpm_tag_t tagN,
 	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
     }
 
-    if (!hge(h, tagN, &bnt, (void **) &baseNames, &count)) {
+    if (!hge(h, tagN, &bnt, (rpm_data_t *) &baseNames, &count)) {
 	if (fnp) *fnp = NULL;
 	if (fcp) *fcp = 0;
 	return;		/* no file list */
     }
 
-    xx = hge(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
-    xx = hge(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
+    xx = hge(h, dirNameTag, &dnt, (rpm_data_t *) &dirNames, NULL);
+    xx = hge(h, dirIndexesTag, NULL, (rpm_data_t *) &dirIndexes, &count);
 
     size = sizeof(*fileNames) * count;
     for (i = 0; i < count; i++)

@@ -1184,9 +1184,9 @@ if (rc == 0)
 	    continue;
 	}
 
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+	xx = hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &baseNames, NULL);
+	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (rpm_data_t *) &dirNames, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &dirIndexes, NULL);
 
 	do {
 	    fingerPrint fp2;
@@ -1862,7 +1862,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
     for (i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
 
-	if (!hge(mi->mi_h, mire->tag, &t, (void **)&u, &c)) {
+	if (!hge(mi->mi_h, mire->tag, &t, (rpm_data_t *)&u, &c)) {
 	    if (mire->tag != RPMTAG_EPOCH) {
 		ntags++;
 		continue;
@@ -2511,7 +2511,7 @@ if (dbiByteSwapped(dbi) == 1)
 		break;
 	    }
 	
-	    if (!hge(h, rpmtag, &rpmtype, (void **) &rpmvals, &rpmcnt))
+	    if (!hge(h, rpmtag, &rpmtype, (rpm_data_t *) &rpmvals, &rpmcnt))
 		continue;
 
 	  dbi = dbiOpen(db, rpmtag, 0);
@@ -2740,7 +2740,7 @@ memset(data, 0, sizeof(*data));
      * being written to the package header database.
      */
 
-    xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count);
+    xx = hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &baseNames, &count);
 
     (void) blockSignals(db, &signalMask);
 
@@ -2885,11 +2885,11 @@ data->size = 0;
 		rpmcnt = count;
 		break;
 	    case RPMTAG_REQUIRENAME:
-		xx = hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
-		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **)&requireFlags, NULL);
+		xx = hge(h, rpmtag, &rpmtype, (rpm_data_t *)&rpmvals, &rpmcnt);
+		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (rpm_data_t *)&requireFlags, NULL);
 		break;
 	    default:
-		xx = hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
+		xx = hge(h, rpmtag, &rpmtype, (rpm_data_t *)&rpmvals, &rpmcnt);
 		break;
 	    }
 
@@ -3180,9 +3180,9 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	num = end - start;
 
 	/* Compute fingerprints for this installed header's matches */
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &fullBaseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fullDirIndexes, NULL);
+	xx = hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &fullBaseNames, NULL);
+	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (rpm_data_t *) &dirNames, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &fullDirIndexes, NULL);
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));

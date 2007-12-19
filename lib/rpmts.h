@@ -534,7 +534,7 @@ rpm_tagtype_t rpmtsSigtype(const rpmts ts);
  * @param ts		transaction set
  * @return		signature tag data
  */
-extern const void * rpmtsSig(const rpmts ts);
+rpm_constdata_t rpmtsSig(const rpmts ts);
 
 /** \ingroup rpmts
  * Get signature tag data length, i.e. no. of bytes of data.
@@ -554,7 +554,7 @@ size_t rpmtsSiglen(const rpmts ts);
  */
 int rpmtsSetSig(rpmts ts,
 		rpm_tag_t sigtag, rpm_tagtype_t sigtype,
-		const void * sig, size_t siglen);
+		rpm_data_t sig, size_t siglen);
 
 /** \ingroup rpmts
  * Get OpenPGP packet parameters, i.e. signature/pubkey constants.

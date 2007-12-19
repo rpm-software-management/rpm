@@ -411,7 +411,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     rpm_tagtype_t tagtype, type;
     rpm_tag_t tag = RPMTAG_NOT_FOUND;
     rpm_count_t count, i;
-    void * data;
+    rpm_data_t data;
     PyObject * o, * metao;
     char ** stringArray;
     int forceArray = 0;
@@ -439,7 +439,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
     /* Retrieve data from extension or header. */
     if (ext) {
-        ext->u.tagFunction(s->h, &type, (const void **) &data, &count, &freeData);
+        ext->u.tagFunction(s->h, &type, &data, &count, &freeData);
     } else {
         if (tag == RPMTAG_NOT_FOUND) {
             PyErr_SetString(PyExc_KeyError, "unknown header tag");
