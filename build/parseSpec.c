@@ -114,18 +114,21 @@ static void forceIncludeFile(rpmSpec spec, const char * fileName)
     spec->fileStack = ofi;
 }
 
-/**
- */
-static int copyNextLine(rpmSpec spec, OFI_t *ofi, int strip)
+static int restoreFirstChar(rpmSpec spec)
 {
-    char *last;
-    char ch;
-
     /* Restore 1st char in (possible) next line */
     if (spec->nextline != NULL && spec->nextpeekc != '\0') {
 	*spec->nextline = spec->nextpeekc;
 	spec->nextpeekc = '\0';
+	return 1;
     }
+    return 0;
+}
+
+static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
+{
+    char ch;
+
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
 	int pc = 0, bc = 0, nc = 0;
@@ -181,6 +184,13 @@ static int copyNextLine(rpmSpec spec, OFI_t *ofi, int strip)
 	}
 	spec->nextline = spec->lbuf;
     }
+    return 0;
+}
+
+static void copyNextLineFinish(rpmSpec spec, int strip)
+{
+    char *last;
+    char ch;
 
     /* Find next line in expanded line buffer */
     spec->line = last = spec->nextline;
@@ -202,18 +212,10 @@ static int copyNextLine(rpmSpec spec, OFI_t *ofi, int strip)
     
     if (strip & STRIP_TRAILINGSPACE)
 	*last = '\0';
-
-    return 0;
 }
 
-int readLine(rpmSpec spec, int strip)
+static int readLineFromOFI(rpmSpec spec, OFI_t *ofi)
 {
-    char  *s;
-    int match;
-    struct ReadLevelEntry *rl;
-    OFI_t *ofi = spec->fileStack;
-    int rc;
-
 retry:
     /* Make sure the current file is open */
     if (ofi->fd == NULL) {
@@ -264,13 +266,32 @@ retry:
 	    sl->sl_lines[sl->sl_nlines++] = xstrdup(ofi->readBuf);
 	}
     }
-    
-    /* Copy next file line into the spec line buffer */
-    if ((rc = copyNextLine(spec, ofi, strip)) != 0) {
+    return 0;
+}
+
+int readLine(rpmSpec spec, int strip)
+{
+    char  *s;
+    int match;
+    struct ReadLevelEntry *rl;
+    OFI_t *ofi = spec->fileStack;
+    int rc;
+
+    if (!restoreFirstChar(spec)) {
+    retry:
+      if ((rc = readLineFromOFI(spec, ofi)) != 0)
+        return rc;
+
+      /* Copy next file line into the spec line buffer */
+
+      if ((rc = copyNextLineFromOFI(spec, ofi)) != 0) {
 	if (rc == RPMRC_FAIL)
 	    goto retry;
 	return rc;
+      }
     }
+
+    copyNextLineFinish(spec, strip);
 
     s = spec->line;
     SKIPSPACE(s);
