@@ -6,7 +6,6 @@
 #include <rpm/rpmte.h>
 
 #include <rpm/rpmmacro.h>
-#include "rpmio/fts.h"
 #include <popt.h>
 
 #include "debug.h"
@@ -94,7 +93,7 @@ main(int argc, char *argv[])
         exit(EXIT_FAILURE);
 
     if (ftsOpts == 0)
-	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+	ftsOpts = (RPMGI_COMFOLLOW | RPMGI_LOGICAL | RPMGI_NOSTAT);
 
     if (gitagstr != NULL) {
 	gitag = rpmTagGetValue(gitagstr);
