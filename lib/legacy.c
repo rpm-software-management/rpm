@@ -54,9 +54,9 @@ void compressFilelist(Header h)
     if (fileNames == NULL || count <= 0)
 	return;
 
-    dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
-    baseNames = alloca(sizeof(*dirNames) * count);
-    dirIndexes = alloca(sizeof(*dirIndexes) * count);
+    dirNames = xmalloc(sizeof(*dirNames) * count);	/* worst case */
+    baseNames = xmalloc(sizeof(*dirNames) * count);
+    dirIndexes = xmalloc(sizeof(*dirIndexes) * count);
 
     if (fileNames[0][0] != '/') {
 	/* HACK. Source RPM, so just do things differently */
@@ -106,6 +106,9 @@ exit:
     }
 
     fileNames = hfd(fileNames, fnt);
+    free(dirNames);
+    free(baseNames);
+    free(dirIndexes);
 
     xx = hre(h, RPMTAG_OLDFILENAMES);
 }
