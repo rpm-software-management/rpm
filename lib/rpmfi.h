@@ -187,7 +187,7 @@ uint32_t rpmfiVFlags(rpmfi fi);
  * @param fi		file info set
  * @return		current file mode, 0 on invalid
  */
-int16_t rpmfiFMode(rpmfi fi);
+uint16_t rpmfiFMode(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file state from file info set.
@@ -215,21 +215,21 @@ extern const char * rpmfiFLink(rpmfi fi);
  * @param fi		file info set
  * @return		current file size, 0 on invalid
  */
-int32_t rpmfiFSize(rpmfi fi);
+uint32_t rpmfiFSize(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file rdev from file info set.
  * @param fi		file info set
  * @return		current file rdev, 0 on invalid
  */
-int16_t rpmfiFRdev(rpmfi fi);
+uint16_t rpmfiFRdev(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file inode from file info set.
  * @param fi		file info set
  * @return		current file inode, 0 on invalid
  */
-int32_t rpmfiFInode(rpmfi fi);
+uint32_t rpmfiFInode(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return union of all file color bits from file info set.
@@ -265,7 +265,7 @@ extern const char * rpmfiFContext(rpmfi fi);
  * @retval *fddictp	file depends dictionary array (or NULL)
  * @return		no. of file depends entries, 0 on invalid
  */
-int32_t rpmfiFDepends(rpmfi fi,
+uint32_t rpmfiFDepends(rpmfi fi,
 		const uint32_t ** fddictp);
 
 /** \ingroup rpmfi
@@ -273,14 +273,14 @@ int32_t rpmfiFDepends(rpmfi fi,
  * @param fi		file info set
  * @return		current file nlink count, 0 on invalid
  */
-int32_t rpmfiFNlink(rpmfi fi);
+uint32_t rpmfiFNlink(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file modify time from file info set.
  * @param fi		file info set
  * @return		current file modify time, 0 on invalid
  */
-int32_t rpmfiFMtime(rpmfi fi);
+uint32_t rpmfiFMtime(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file owner from file info set.

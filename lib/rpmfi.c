@@ -134,7 +134,7 @@ const char * rpmfiFN(rpmfi fi)
 
 uint32_t rpmfiFFlags(rpmfi fi)
 {
-    int32_t FFlags = 0;
+    uint32_t FFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fflags != NULL)
@@ -145,7 +145,7 @@ uint32_t rpmfiFFlags(rpmfi fi)
 
 uint32_t rpmfiVFlags(rpmfi fi)
 {
-    int32_t VFlags = 0;
+    uint32_t VFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->vflags != NULL)
@@ -154,9 +154,9 @@ uint32_t rpmfiVFlags(rpmfi fi)
     return VFlags;
 }
 
-int16_t rpmfiFMode(rpmfi fi)
+uint16_t rpmfiFMode(rpmfi fi)
 {
-    int16_t fmode = 0;
+    uint16_t fmode = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fmodes != NULL)
@@ -198,9 +198,9 @@ const char * rpmfiFLink(rpmfi fi)
     return flink;
 }
 
-int32_t rpmfiFSize(rpmfi fi)
+uint32_t rpmfiFSize(rpmfi fi)
 {
-    int32_t fsize = 0;
+    uint32_t fsize = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fsizes != NULL)
@@ -209,9 +209,9 @@ int32_t rpmfiFSize(rpmfi fi)
     return fsize;
 }
 
-int16_t rpmfiFRdev(rpmfi fi)
+uint16_t rpmfiFRdev(rpmfi fi)
 {
-    int16_t frdev = 0;
+    uint16_t frdev = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->frdevs != NULL)
@@ -220,9 +220,9 @@ int16_t rpmfiFRdev(rpmfi fi)
     return frdev;
 }
 
-int32_t rpmfiFInode(rpmfi fi)
+uint32_t rpmfiFInode(rpmfi fi)
 {
-    int32_t finode = 0;
+    uint32_t finode = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->finodes != NULL)
@@ -277,7 +277,7 @@ const char * rpmfiFContext(rpmfi fi)
     return fcontext;
 }
 
-int32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
+uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
 {
     int fddictx = -1;
     int fddictn = 0;
@@ -296,15 +296,15 @@ int32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
     return fddictn;
 }
 
-int32_t rpmfiFNlink(rpmfi fi)
+uint32_t rpmfiFNlink(rpmfi fi)
 {
-    int32_t nlink = 0;
+    uint32_t nlink = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
 	if (fi->finodes && fi->frdevs) {
-	    int32_t finode = fi->finodes[fi->i];
-	    int16_t frdev = fi->frdevs[fi->i];
+	    uint32_t finode = fi->finodes[fi->i];
+	    uint16_t frdev = fi->frdevs[fi->i];
 	    int j;
 
 	    for (j = 0; j < fi->fc; j++) {
@@ -316,9 +316,9 @@ int32_t rpmfiFNlink(rpmfi fi)
     return nlink;
 }
 
-int32_t rpmfiFMtime(rpmfi fi)
+uint32_t rpmfiFMtime(rpmfi fi)
 {
-    int32_t fmtime = 0;
+    uint32_t fmtime = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fmtimes != NULL)
