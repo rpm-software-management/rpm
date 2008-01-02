@@ -132,7 +132,7 @@ rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 
 DPRINTF((stderr, "*** Final(%p,%p,%p,%zd) hashctx %p digest %p\n", ctx, datap, lenp, asAscii, ctx->hashctx, digest));
 /* FIX: check rc */
-    HASH_End(ctx->hashctx, digest, &digestlen, digestlen);
+    HASH_End(ctx->hashctx, digest, (unsigned int *) &digestlen, digestlen);
 
     /* Return final digest. */
     if (!asAscii) {
