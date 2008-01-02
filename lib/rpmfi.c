@@ -646,7 +646,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     char * fn = NULL;
     int haveRelocatedFile = 0;
     int reldel = 0;
-    size_t len;
+    int len;
     int i, j, xx;
 
     if (!hge(origH, RPMTAG_PREFIXES, &validType,
@@ -822,7 +822,7 @@ assert(p != NULL);
 
     for (i = fileCount - 1; i >= 0; i--) {
 	rpmFileTypes ft;
-	size_t fnlen;
+	int fnlen;
 
 	len = reldel +
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
@@ -1156,7 +1156,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpm_tag_t tagN, int scareMem)
     uint32_t * uip;
     int dnlmax, bnlmax;
     unsigned char * t;
-    size_t len;
+    int len;
     int xx;
     int i;
 
