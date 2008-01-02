@@ -642,7 +642,7 @@ static int XpoptParseArgvString(const char * s, int * argcPtr, const char *** ar
     int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
     const char ** argv = malloc(sizeof(*argv) * argvAlloced);
     int argc = 0;
-    int buflen = strlen(s) + 1;
+    size_t buflen = strlen(s) + 1;
     char * buf = memset(alloca(buflen), 0, buflen);
     int rc = POPT_ERROR_MALLOC;
 
@@ -716,7 +716,7 @@ int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr)
     char * old_ctype = NULL;
     const char * t;
 #endif
-	size_t maxb, nb;
+    size_t maxb, nb;
     int i, j;
     int rc;
 

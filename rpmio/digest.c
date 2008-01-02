@@ -98,17 +98,17 @@ DPRINTF((stderr, "*** Init(%x) ctx %p hashctx %p\n", flags, ctx, ctx->hashctx));
 int
 rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {
-    unsigned int partlen;
+    size_t partlen;
     const unsigned char *ptr = data;
 
     if (ctx == NULL)
 	return -1;
 
-DPRINTF((stderr, "*** Update(%p,%p,%d) hashctx %p \"%s\"\n", ctx, data, len, ctx->hashctx, ((char *)data)));
+DPRINTF((stderr, "*** Update(%p,%p,%zd) hashctx %p \"%s\"\n", ctx, data, len, ctx->hashctx, ((char *)data)));
    partlen = ~(unsigned int)0xFF;
    while (len > 0) {
    	if (len < partlen) {
-   		partlen = (unsigned int)len;
+   		partlen = len;
    	}
 	HASH_Update(ctx->hashctx, ptr, partlen);
 	ptr += partlen;
@@ -122,15 +122,15 @@ rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 {
     unsigned char * digest;
     char * t;
-    int i;
-    unsigned int digestlen;
+    size_t i;
+    size_t digestlen;
 
     if (ctx == NULL)
 	return -1;
     digestlen = HASH_ResultLenContext(ctx->hashctx);
     digest = xmalloc(digestlen);
 
-DPRINTF((stderr, "*** Final(%p,%p,%p,%d) hashctx %p digest %p\n", ctx, datap, lenp, asAscii, ctx->hashctx, digest));
+DPRINTF((stderr, "*** Final(%p,%p,%p,%zd) hashctx %p digest %p\n", ctx, datap, lenp, asAscii, ctx->hashctx, digest));
 /* FIX: check rc */
     HASH_End(ctx->hashctx, digest, &digestlen, digestlen);
 
