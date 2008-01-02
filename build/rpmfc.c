@@ -1,6 +1,6 @@
 #include "system.h"
 
-#include <signal.h>	/* getOutputFrom() */
+#include <signal.h>
 
 #include <rpm/rpmbuild.h>
 #include <rpm/argv.h>
@@ -86,7 +86,7 @@ static int rpmfcExpandAppend(ARGV_t * argvp, const ARGV_t av)
  * @return		buffered stdout from script, NULL on error
  */     
 static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
-                        const char * writePtr, int writeBytesLeft,
+                        const char * writePtr, size_t writeBytesLeft,
                         int failNonZero)
 {
     pid_t child, reaped;
@@ -236,7 +236,7 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     int ec = -1;
     StringBuf sb = NULL;
     const char * buf_stdin = NULL;
-    int buf_stdin_len = 0;
+    size_t buf_stdin_len = 0;
     int xx;
 
     if (sb_stdoutp)

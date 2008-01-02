@@ -428,7 +428,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpm_tag_t tag,
     int multiToken = 0;
     rpmsenseFlags tagflags;
     rpm_tagtype_t type;
-    int len;
+    size_t len;
     rpm_count_t num;
     int rc;
     int xx;

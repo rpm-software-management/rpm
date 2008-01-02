@@ -99,7 +99,7 @@ static void buildArgCallback( poptContext con,
 	break;
     case POPT_TARGETPLATFORM:
 	if (rba->targets) {
-	    int len = strlen(rba->targets) + 1 + strlen(arg) + 1;
+	    size_t len = strlen(rba->targets) + 1 + strlen(arg) + 1;
 	    rba->targets = xrealloc(rba->targets, len);
 	    strcat(rba->targets, ",");
 	} else {

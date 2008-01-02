@@ -1039,9 +1039,9 @@ static void genCpioListAndHeader(FileList fl,
 		rpmfi * fip, Header h, int isSrc)
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
-    int apathlen = 0;
-    int dpathlen = 0;
-    int skipLen = 0;
+    size_t apathlen = 0;
+    size_t dpathlen = 0;
+    size_t skipLen = 0;
     size_t fnlen;
     FileListRec flp;
     char buf[BUFSIZ];
