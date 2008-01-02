@@ -370,8 +370,8 @@ fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
 
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
     if (i < fi->fc) {
-	int speclen = strlen(_specdir) + 2;
-	int sourcelen = strlen(_sourcedir) + 2;
+	size_t speclen = strlen(_specdir) + 2;
+	size_t sourcelen = strlen(_sourcedir) + 2;
 	char * t;
 
 	fi->dnl = hfd(fi->dnl, RPM_FORCEFREE_TYPE);
@@ -621,8 +621,8 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
     rpm_count_t numPrefixes;
     rpm_tagtype_t ipt;
     const char * oldPrefix;
-    int maxPrefixLength;
-    int len;
+    size_t maxPrefixLength;
+    size_t len;
     char * prefixBuf = NULL;
     char * fn = NULL;
     int xx;

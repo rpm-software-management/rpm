@@ -253,12 +253,12 @@ static int fpsCompare (const void * one, const void * two)
 {
     const struct fingerPrint_s * a = (const struct fingerPrint_s *)one;
     const struct fingerPrint_s * b = (const struct fingerPrint_s *)two;
-    int adnlen = strlen(a->entry->dirName);
-    int asnlen = (a->subDir ? strlen(a->subDir) : 0);
-    int abnlen = strlen(a->baseName);
-    int bdnlen = strlen(b->entry->dirName);
-    int bsnlen = (b->subDir ? strlen(b->subDir) : 0);
-    int bbnlen = strlen(b->baseName);
+    size_t adnlen = strlen(a->entry->dirName);
+    size_t asnlen = (a->subDir ? strlen(a->subDir) : 0);
+    size_t abnlen = strlen(a->baseName);
+    size_t bdnlen = strlen(b->entry->dirName);
+    size_t bsnlen = (b->subDir ? strlen(b->subDir) : 0);
+    size_t bbnlen = strlen(b->baseName);
     char * afn, * bfn, * t;
     int rc = 0;
 

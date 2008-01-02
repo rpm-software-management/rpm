@@ -286,7 +286,8 @@ void * dnlInitIterator(const FSM_t fsm,
 
 	/* Exclude parent directories that are explicitly included. */
 	for (i = 0; i < fi->fc; i++) {
-	    int dil, dnlen, bnlen;
+	    int dil;
+	    size_t dnlen, bnlen;
 
 	    if (!S_ISDIR(fi->fmodes[i]))
 		continue;
@@ -297,7 +298,7 @@ void * dnlInitIterator(const FSM_t fsm,
 
 	    for (j = 0; j < fi->dc; j++) {
 		const char * dnl;
-		int jlen;
+		size_t jlen;
 
 		if (!dnli->active[j] || j == dil)
 		    continue;
@@ -1081,7 +1082,7 @@ static int fsmRmdirs(FSM_t fsm)
     dn[0] = '\0';
     if (fsm->ldn != NULL && fsm->dnlx != NULL)
     while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
-	int dnlen = strlen(fsm->path);
+	size_t dnlen = strlen(fsm->path);
 	char * te;
 
 	dc = dnlIndex(dnli);
@@ -1136,7 +1137,7 @@ static int fsmMkdirs(FSM_t fsm)
     fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
     if (fsm->dnlx != NULL)
     while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
-	int dnlen = strlen(fsm->path);
+	size_t dnlen = strlen(fsm->path);
 	char * te;
 
 	dc = dnlIndex(dnli);

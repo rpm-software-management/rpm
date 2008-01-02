@@ -103,10 +103,10 @@ struct rpmfi_s {
     const char * posttransprog;
 
     char * fn;			/*!< File name buffer. */
-    int fnlen;			/*!< FIle name buffer length. */
+    size_t fnlen;		/*!< FIle name buffer length. */
 
-    int astriplen;
-    int striplen;
+    size_t astriplen;
+    size_t striplen;
     unsigned int archivePos;
     unsigned int archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */

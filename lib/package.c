@@ -601,7 +601,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     int32_t dl;
     int32_t * ei = NULL;
     size_t uc;
-    int32_t nb;
+    size_t nb;
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
@@ -644,7 +644,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     ei[1] = block[3];
     if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
 	(void) snprintf(buf, sizeof(buf),
-		_("hdr blob(%d): BAD, read returned %d\n"), nb, xx);
+		_("hdr blob(%zd): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
 

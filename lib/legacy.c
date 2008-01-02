@@ -73,7 +73,7 @@ void compressFilelist(Header h)
 	const char ** needle;
 	char savechar;
 	char * baseName;
-	int len;
+	size_t len;
 
 	if (fileNames[i] == NULL)	/* XXX can't happen */
 	    continue;
