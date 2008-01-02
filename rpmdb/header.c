@@ -1476,7 +1476,7 @@ static void * _headerFreeTag(Header h,
 		rpm_data_t data, rpm_tagtype_t type)
 {
     if (data) {
-	if (type == -1 ||
+	if (type == RPM_FORCEFREE_TYPE ||
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)
