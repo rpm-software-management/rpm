@@ -25,7 +25,7 @@
  * @return		formatted string
  */
 static char * triggertypeFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,
+		char * formatPrefix, size_t padding,
 		int element)
 {
     const int32_t * item = data;
@@ -56,7 +56,7 @@ static char * triggertypeFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * permsFormat(rpm_tagtype_t type, rpm_constdata_t data,
-		char * formatPrefix, int padding, int element)
+		char * formatPrefix, size_t padding, int element)
 {
     char * val;
     char * buf;
@@ -84,7 +84,7 @@ static char * permsFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * fflagsFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding, int element)
+		char * formatPrefix, size_t padding, int element)
 {
     char * val;
     char buf[15];
@@ -130,7 +130,7 @@ static char * fflagsFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * armorFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,
+		char * formatPrefix, size_t padding,
 		int element)
 {
     const char * enc;
@@ -180,7 +180,7 @@ static char * armorFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * base64Format(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding, int element)
+		char * formatPrefix, size_t padding, int element)
 {
     char * val;
 
@@ -256,7 +256,7 @@ static char * xmlstrcpy(char * t, const char * s)
  * @return		formatted string
  */
 static char * xmlFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,
+		char * formatPrefix, size_t padding,
 		int element)
 {
     const char * xtag = NULL;
@@ -347,7 +347,7 @@ static char * xmlFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * pgpsigFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,
+		char * formatPrefix, size_t padding,
 		int element)
 {
     char * val, * t;
@@ -454,7 +454,7 @@ static char * pgpsigFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * depflagsFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding, int element)
+		char * formatPrefix, size_t padding, int element)
 {
     char * val;
     char buf[10];

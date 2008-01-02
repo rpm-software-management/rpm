@@ -3048,7 +3048,7 @@ char * _headerSprintf(Header h, const char * fmt,
     sprintfTag tag;
     char * t, * te;
     int isxml;
-    int need;
+    size_t need;
  
     hsa->h = _headerLink(h);
     hsa->fmt = xstrdup(fmt);
@@ -3118,7 +3118,7 @@ exit:
  * @return		formatted string
  */
 static char * octalFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,int element)
+		char * formatPrefix, size_t padding,int element)
 {
     char * val;
 
@@ -3143,7 +3143,7 @@ static char * octalFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * hexFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,int element)
+		char * formatPrefix, size_t padding,int element)
 {
     char * val;
 
@@ -3161,7 +3161,7 @@ static char * hexFormat(rpm_tagtype_t type, rpm_constdata_t data,
 /**
  */
 static char * realDateFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,int element,
+		char * formatPrefix, size_t padding,int element,
 		const char * strftimeFormat)
 {
     char * val;
@@ -3198,7 +3198,7 @@ static char * realDateFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * dateFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		         char * formatPrefix, int padding, int element)
+		         char * formatPrefix, size_t padding, int element)
 {
     return realDateFormat(type, data, formatPrefix, padding, element,
 			_("%c"));
@@ -3214,7 +3214,7 @@ static char * dateFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * dayFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		         char * formatPrefix, int padding, int element)
+		         char * formatPrefix, size_t padding, int element)
 {
     return realDateFormat(type, data, formatPrefix, padding, element, 
 			  _("%a %b %d %Y"));
@@ -3230,7 +3230,7 @@ static char * dayFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @return		formatted string
  */
 static char * shescapeFormat(rpm_tagtype_t type, rpm_constdata_t data, 
-		char * formatPrefix, int padding,int element)
+		char * formatPrefix, size_t padding,int element)
 {
     char * result, * dst, * src, * buf;
 

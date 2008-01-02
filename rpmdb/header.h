@@ -145,7 +145,7 @@ enum headerSprintfExtensionType {
  */
 typedef char * (*headerTagFormatFunction)(rpm_tagtype_t type,
 				rpm_constdata_t data, char * formatPrefix,
-				int padding, rpm_count_t element);
+				size_t padding, rpm_count_t element);
 
 /** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.
