@@ -218,17 +218,6 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, uint8_t val)
 }
 
 /**
- */
-static
-const char * pgpMpiHex(const uint8_t *p)
-{
-    static char prbuf[2048];
-    char *t = prbuf;
-    t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
-    return prbuf;
-}
-
-/**
  * @return		0 on success
  */
 static int pgpMpiSet(const char * pre, int lbits,
