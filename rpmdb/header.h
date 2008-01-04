@@ -209,7 +209,7 @@ typedef enum rpmTagType_e {
     RPM_I18NSTRING_TYPE		=  9,
     RPM_MASK_TYPE               =  0x0000ffff
 #define	RPM_MAX_TYPE		9
-#define RPM_FORCEFREE_TYPE	UINT32_MAX
+#define RPM_FORCEFREE_TYPE	0xff
 } rpmTagType;
 
 /** \ingroup header
