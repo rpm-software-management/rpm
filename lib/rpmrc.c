@@ -1850,6 +1850,9 @@ static int rpmReadRC(/*@null@*/ const char * rcfiles)
 
 int rpmReadConfigFiles(const char * file, const char * target)
 {
+    mode_t mode = 0022;
+    /* Reset umask to its default umask(2) value. */
+    mode = umask(mode);
 
     /* Preset target macros */
     /*@-nullstate@*/	/* FIX: target can be NULL */
