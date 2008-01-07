@@ -2401,6 +2401,8 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		if (xisdigit(*start)) {
 		    i = strtoul(start, &start, 10);
 		    token->u.tag.pad += i;
+		    start = chptr;
+		    break;
 		} else {
 		    start++;
 		}
@@ -2415,7 +2417,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		start++;
 	    }
 
-	    next = start;
+	    dst = next = start;
 	    while (*next && *next != '}') next++;
 	    if (!*next) {
 		hsa->errmsg = _("missing } after %{");
