@@ -203,16 +203,17 @@ sub process_file {
 
       $module =~ s/\(\s*\)$//;
 
-      if ( $module =~ m/^[0-9._]+$/ ) {
+      if ( $module =~ m/^v?([0-9._]+)$/ ) {
       # if module is a number then both require and use interpret that
       # to mean that a particular version of perl is specified
 
-      if ($module =~ /5.00/) {
-        print "perl >= 0:$module\n";
+      my $ver=$1;
+      if ($ver =~ /5.00/) {
+        print "perl >= 0:$ver\n";
         next;
       }
       else {
-        print "perl >= 1:$module\n";
+        print "perl >= 1:$ver\n";
         next;
       }
 
