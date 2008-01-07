@@ -1124,7 +1124,7 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
 
 int32_t rpmtsGetTid(rpmts ts)
 {
-    int32_t tid = 0;
+    int32_t tid = -1;  /* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	tid = ts->tid;
     }
@@ -1133,7 +1133,7 @@ int32_t rpmtsGetTid(rpmts ts)
 
 int32_t rpmtsSetTid(rpmts ts, int32_t tid)
 {
-    int32_t otid = 0;
+    int32_t otid = -1; /* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	otid = ts->tid;
 	ts->tid = tid;
