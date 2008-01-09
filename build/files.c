@@ -1896,7 +1896,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 
 	/*@-branchstate@*/
 	rc = rpmGlob(diskURL, &argc, &argv);
-	if (rc == 0 && argc >= 1 && !Glob_pattern_p(argv[0], quote)) {
+	if (rc == 0 && argc >= 1) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 /*@-boundswrite@*/
