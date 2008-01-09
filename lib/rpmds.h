@@ -53,7 +53,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
     RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
     RPMSENSE_RPMLIB = ((1 << 24) | RPMSENSE_PREREQ), /*!< rpmlib(feature) dependency. */
-    RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< @todo Implement %triggerprein. */
+    RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
     RPMSENSE_PATCHES	= (1 << 27),
     RPMSENSE_CONFIG	= (1 << 28)
@@ -63,7 +63,7 @@ typedef	enum rpmsenseFlags_e {
                                          /* less, greater, equal.          */
 
 #define	RPMSENSE_TRIGGER	\
-	(RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
+	(RPMSENSE_TRIGGERPREIN | RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
 
 #define	_ALL_REQUIRES_MASK	(\
     RPMSENSE_INTERP | \

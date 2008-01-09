@@ -61,7 +61,7 @@ struct rpmpsm_s {
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
-    int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
+    int sense;			/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
@@ -1505,9 +1505,17 @@ assert(psm->mi == NULL);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->progTag = RPMTAG_PREINPROG;
+	    psm->sense = RPMSENSE_TRIGGERPREIN;
+	    psm->countCorrection = 0;   /* XXX is this correct?!? */
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERPREIN)) {
-		/* XXX FIXME: implement %triggerprein. */
+		/* Run triggers in other package(s) this package sets off. */
+		rc = rpmpsmNext(psm, PSM_TRIGGERS);
+		if (rc) break;
+
+		/* Run triggers in this package other package(s) set off. */
+		rc = rpmpsmNext(psm, PSM_IMMED_TRIGGERS);
+		if (rc) break;
 	    }
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
