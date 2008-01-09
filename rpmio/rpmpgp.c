@@ -870,60 +870,69 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 int pgpPubkeyFingerprint(const byte * pkt, /*@unused@*/ unsigned int pktlen,
 		byte * keyid)
 {
-    const byte *s = pkt;
+    unsigned int val = *pkt;
+    unsigned int plen, hlen;
+    pgpTag tag;
+    const uint8_t *se, *h;
     DIGEST_CTX ctx;
-    byte version;
     int rc = -1;	/* assume failure. */
 
-    if (pkt[0] != 0x99)
+    if (!(val & 0x80))
 	return rc;
-    version = pkt[3];
 
-    switch (version) {
+    if (val & 0x40) {
+	tag = (val & 0x3f);
+	plen = pgpLen(pkt+1, &hlen);
+    } else {
+	tag = (val >> 2) & 0xf;
+	plen = (1 << (val & 0x3));
+	hlen = pgpGrab(pkt+1, plen);
+    }
+    if (pktlen > 0 && 1 + plen + hlen > pktlen)
+	return rc;
+    
+    h = pkt + 1 + plen;
+
+    switch (h[0]) {
     case 3:
-      {	pgpPktKeyV3 v = (pgpPktKeyV3) (pkt + 3);
-
-	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
+      {	pgpPktKeyV3 v = (pgpPktKeyV3) (h);
+	se = (uint8_t *)(v + 1);
 	switch (v->pubkey_algo) {
 	case PGPPUBKEYALGO_RSA:
-	    s += (pgpMpiLen(s) - 8);
-/*@-boundswrite@*/
-	    memmove(keyid, s, 8);
-/*@=boundswrite@*/
+	    se += pgpMpiLen(se);
+	    memmove(keyid, (se-8), 8);
 	    rc = 0;
-	    /*@innerbreak@*/ break;
+	    break;
 	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
-	    /*@innerbreak@*/ break;
+	    break;
 	}
       }	break;
     case 4:
-      {	pgpPktKeyV4 v = (pgpPktKeyV4) (pkt + 3);
-	byte * SHA1 = NULL;
+      {	pgpPktKeyV4 v = (pgpPktKeyV4) (h);
+	uint8_t * d = NULL;
+	size_t dlen;
 	int i;
 
-	s += sizeof(pkt[0]) + sizeof(pkt[1]) + sizeof(pkt[2]) + sizeof(*v);
+	se = (uint8_t *)(v + 1);
 	switch (v->pubkey_algo) {
 	case PGPPUBKEYALGO_RSA:
 	    for (i = 0; i < 2; i++)
-		s += pgpMpiLen(s);
-	    /*@innerbreak@*/ break;
+		se += pgpMpiLen(se);
+	    break;
 	case PGPPUBKEYALGO_DSA:
 	    for (i = 0; i < 4; i++)
-		s += pgpMpiLen(s);
-	    /*@innerbreak@*/ break;
+		se += pgpMpiLen(se);
+	    break;
 	}
 
 	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(ctx, pkt, (s-pkt));
-	(void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 0);
+	(void) rpmDigestUpdate(ctx, pkt, (se-pkt));
+	(void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
 
-	s = SHA1 + 12;
-/*@-boundswrite@*/
-	memmove(keyid, s, 8);
-/*@=boundswrite@*/
+	memmove(keyid, (d + (dlen-8)), 8);
+	if (d) free(d);
 	rc = 0;
 
-	if (SHA1) free(SHA1);
       }	break;
     }
     return rc;
