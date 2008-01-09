@@ -103,4 +103,11 @@ char * rpmGetPath (const char * path, ...);
  */
 int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr);
 
+/**
+ * Escape isspace(3) characters in string.
+ * @param s             string
+ * @return              escaped string
+ */
+char * rpmEscapeSpaces(const char * s);
+
 #endif /* _RPMFILEUTIL_H */

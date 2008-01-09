@@ -840,3 +840,26 @@ exit:
     return rc;
 }
 
+char * rpmEscapeSpaces(const char * s)
+{
+    const char * se;
+    char * t;
+    char * te;
+    size_t nb = 0;
+
+    for (se = s; *se; se++) {
+	if (isspace(*se))
+	    nb++;
+	nb++;
+    }
+    nb++;
+
+    t = te = xmalloc(nb);
+    for (se = s; *se; se++) {
+	if (isspace(*se))
+	    *te++ = '\\';
+	*te++ = *se;
+    }
+    *te = '\0';
+    return t;
+}
