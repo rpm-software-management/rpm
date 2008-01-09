@@ -1741,7 +1741,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl,
 	}
 
 	rc = rpmGlob(diskURL, &argc, &argv);
-	if (rc == 0 && argc >= 1 && !glob_pattern_p(argv[0], quote)) {
+	if (rc == 0 && argc >= 1) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 		argv[i] = _free(argv[i]);
