@@ -9,6 +9,7 @@ const char *__progname;
 #include <rpm/rpmcli.h>
 #include <rpm/rpmgi.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "debug.h"
 
@@ -119,13 +120,23 @@ static void rpmcliAllArgCallback( poptContext con,
 	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
 	break;
     case 'D':
+    {   char *s, *t;
+	/* XXX Convert '-' in macro name to underscore, skip leading %. */
+	s = t = xstrdup(arg);
+	while (*t && !xisspace(*t)) {
+	    if (*t == '-') *t = '_';
+	    t++;
+	}
+	if (*t == '%') t++;
 	/* XXX Predefine macro if not initialized yet. */
 	if (rpmcliInitialized < 0)
-	    (void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
+	    (void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
 	rpmcliConfigured();
-	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
-	(void) rpmDefineMacro(rpmCLIMacroContext, arg, RMIL_CMDLINE);
+	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
+	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
+	s = _free(s);
 	break;
+    }
     case 'E':
 	rpmcliConfigured();
 	{   char *val = rpmExpand(arg, NULL);
