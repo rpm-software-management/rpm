@@ -58,9 +58,12 @@ if WITH_INTERNAL_DB
 libdb_la = $(top_builddir)/db3/libdb.la
 
 # XXX grrr, force noinst libdb.la for db3.
-$(libdb_la): $(top_builddir)/db3/libdb-4.6.la
+# there are more reliable ways to get the BDB version info, just a dirty
+# hack for now...
+BDBVER = $(shell grep ^LIBVERSION $(top_builddir)/db3/Makefile|cut -f2)
+$(libdb_la): $(top_builddir)/db3/libdb-$(BDBVER).la
 	sed -e"/^libdir=/s/^.*$$/libdir=''/" \
-	  < $(top_builddir)/db3/libdb-4.6.la > $(libdb_la)
+	  < $(top_builddir)/db3/libdb-$(BDBVER).la > $(libdb_la)
 CLEANFILES += $(libdb_la)
 
 rpmlibexec_PROGRAMS =
