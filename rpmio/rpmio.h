@@ -567,6 +567,13 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 	/*@modifies fileSystem, internalState @*/;
 
 /**
+ * Escape isspace(3) characters in string.
+ * @param s             string
+ * @return              escaped string
+ */
+char * rpmEscapeSpaces(const char * s);
+
+/**
  * FTP and HTTP error codes.
  */
 /*@-typeuse@*/

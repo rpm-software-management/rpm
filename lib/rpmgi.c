@@ -310,12 +310,14 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
 
     if (argv != NULL)
     while ((arg = *argv++) != NULL) {
+	char * t = rpmEscapeSpaces(arg);
 	ARGV_t av = NULL;
 
-	xx = rpmGlob(arg, &ac, &av);
+	xx = rpmGlob(t, &ac, &av);
 	xx = argvAppend(&gi->argv, av);
 	gi->argc += ac;
 	av = argvFree(av);
+	t = _free(t);
 	ac = 0;
     }
     return rpmrc;

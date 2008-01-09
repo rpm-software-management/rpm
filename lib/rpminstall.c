@@ -356,8 +356,11 @@ int rpmInstall(rpmts ts,
     /*@-temptrans@*/
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
     /*@=temptrans@*/
+	char * fn;
 	av = _free(av);	ac = 0;
-	rc = rpmGlob(*eiu->fnp, &ac, &av);
+	fn = rpmEscapeSpaces(*eiu->fnp);
+	rc = rpmGlob(fn, &ac, &av);
+	fn = _free(fn);
 	if (rc || ac == 0) {
 	    rpmError(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
 	    continue;
