@@ -604,7 +604,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	/*@fallthrough@*/
     case RPMQV_PATH:
     {   char * fn;
-	int myerrno = 0;
 
 	for (s = arg; *s != '\0'; s++)
 	    if (!(*s == '.' || *s == '/'))
@@ -613,10 +612,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];
 	    fn = realpath(arg, fnbuf);
-	    if (fn)
-		fn = xstrdup(fn);
-	    else
-		fn = xstrdup(arg);
+	    fn = xstrdup( (fn != NULL ? fn : arg) );
 	} else if (*arg != '/') {
 	    const char *curDir = currentDirectory();
 	    fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
@@ -626,19 +622,16 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	(void) rpmCleanPath(fn);
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
-	if (qva->qva_mi == NULL) {
-	    if (access(fn, F_OK) != 0)
-		myerrno = errno;
-	    else if (!provides_checked)
-		qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
-	}
+	if (qva->qva_mi == NULL && !provides_checked)
+	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
 
-	if (myerrno != 0) {
-	    rpmError(RPMERR_QUERY, _("file %s: %s\n"), fn, strerror(myerrno));
-	    res = 1;
-	} else if (qva->qva_mi == NULL) {
-	    rpmError(RPMERR_QUERYINFO,
-		_("file %s is not owned by any package\n"), fn);
+	if (qva->qva_mi == NULL) {
+	    struct stat sb;
+	    if (lstat(fn, &sb) != 0)
+		rpmlog(RPMLOG_ERR, _("file %s: %s\n"), fn, strerror(errno));
+	    else
+		rpmlog(RPMLOG_NOTICE,
+			_("file %s is not owned by any package\n"), fn);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
