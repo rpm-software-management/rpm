@@ -2,12 +2,14 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
+DISTCHECK_CONFIGURE_FLAGS = --with-external-db
+
 include $(top_srcdir)/rpm.am
 
 CLEANFILES =
 EXTRA_DIST = CHANGES ChangeLog CREDITS GROUPS INSTALL \
 	autodeps autogen.sh \
-	db db3/configure installplatform platform.in
+	db3/configure installplatform platform.in
 BUILT_SOURCES =
 
 SUBDIRS = po misc

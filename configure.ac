@@ -451,9 +451,12 @@ yes )
     AC_MSG_ERROR([missing required header db.h])
   ])
   ;;
-* ) # Fall back to internal db
-  # XXX for now we always have in-tree BDB available...
-  AC_DEFINE(HAVE_DB_H, 1, [Define if you have the <db3/db.h> header file])
+* ) # Fall back to internal db if available
+  if [ test -x db/dist/configure ]; then
+    AC_DEFINE(HAVE_DB_H, 1, [Define if you have the <db3/db.h> header file])
+  else
+    AC_MSG_ERROR([internal Berkeley DB directory not present, see INSTALL])
+  fi
   ;;
 esac
 
