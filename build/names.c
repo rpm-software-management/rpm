@@ -10,14 +10,16 @@
 #include <rpm/rpmlog.h>
 #include "debug.h"
 
+#define UGIDMAX 1024
+
 typedef char * ugstr_t;
 
-static uid_t uids[1024];
-static ugstr_t unames[1024];
+static uid_t uids[UGIDMAX];
+static ugstr_t unames[UGIDMAX];
 static int uid_used = 0;
 
-static gid_t gids[1024];
-static ugstr_t gnames[1024];
+static gid_t gids[UGIDMAX];
+static ugstr_t gnames[UGIDMAX];
 static int gid_used = 0;
     
 void freeNames(void)
@@ -41,7 +43,7 @@ const char *getUname(uid_t uid)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024)
+    if (x == UGIDMAX)
 	rpmlog(RPMLOG_CRIT, _("getUname: too many uid's\n"));
     
     if ((pw = getpwuid(uid)) == NULL)
@@ -63,7 +65,7 @@ const char *getUnameS(const char *uname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024)
+    if (x == UGIDMAX)
 	rpmlog(RPMLOG_CRIT, _("getUnameS: too many uid's\n"));
     
     if ((pw = getpwnam(uname)) == NULL) {
@@ -88,7 +90,7 @@ uid_t getUidS(const char *uname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024)
+    if (x == UGIDMAX)
 	rpmlog(RPMLOG_CRIT, _("getUidS: too many uid's\n"));
     
     if ((pw = getpwnam(uname)) == NULL) {
@@ -113,7 +115,7 @@ const char *getGname(gid_t gid)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024)
+    if (x == UGIDMAX)
 	rpmlog(RPMLOG_CRIT, _("getGname: too many gid's\n"));
     
     if ((gr = getgrgid(gid)) == NULL)
@@ -135,7 +137,7 @@ const char *getGnameS(const char *gname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024)
+    if (x == UGIDMAX)
 	rpmlog(RPMLOG_CRIT, _("getGnameS: too many gid's\n"));
     
     if ((gr = getgrnam(gname)) == NULL) {
@@ -160,7 +162,7 @@ gid_t getGidS(const char *gname)
     }
 
     /* XXX - This is the other hard coded limit */
-    if (x == 1024)
+    if (x == UGIDMAX)
 	rpmlog(RPMLOG_CRIT, _("getGidS: too many gid's\n"));
     
     if ((gr = getgrnam(gname)) == NULL) {
