@@ -1055,7 +1055,7 @@ char * pgpHexCvt(char *t, const uint8_t *s, size_t nbytes)
  * @return		hex formatted string
  */
 static inline
-char * pgpHexStr(const uint8_t *p, size_t plen)
+const char * pgpHexStr(const uint8_t *p, size_t plen)
 {
     static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
