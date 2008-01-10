@@ -130,10 +130,10 @@ static void rpmcliAllArgCallback( poptContext con,
 	if (*t == '%') t++;
 	/* XXX Predefine macro if not initialized yet. */
 	if (rpmcliInitialized < 0)
-	    (void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
+	    (void) rpmDefineMacro(NULL, s, RMIL_CMDLINE);
 	rpmcliConfigured();
-	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
-	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
+	(void) rpmDefineMacro(NULL, s, RMIL_CMDLINE);
+	(void) rpmDefineMacro(rpmCLIMacroContext, s, RMIL_CMDLINE);
 	s = _free(s);
 	break;
     }
