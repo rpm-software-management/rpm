@@ -128,21 +128,10 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 /**
  */
 /*@-boundswrite@*/
-static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
-	/*@globals rpmGlobalMacroContext, h_errno,
-		fileSystem @*/
-	/*@modifies spec->nextline, spec->nextpeekc, spec->lbuf, spec->line,
-		ofi->readPtr,
-		rpmGlobalMacroContext, fileSystem @*/
+static int copyNextLineFromOFI(Spec spec, OFI_t *ofi)
 {
-    char *last;
     char ch;
 
-    /* Restore 1st char in (possible) next line */
-    if (spec->nextline != NULL && spec->nextpeekc != '\0') {
-	*spec->nextline = spec->nextpeekc;
-	spec->nextpeekc = '\0';
-    }
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
 	int pc = 0, bc = 0, nc = 0;
@@ -205,6 +194,16 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	spec->nextline = spec->lbuf;
     }
 
+    return 0;
+}
+
+/**
+ */
+static void copyNextLineFinish(Spec spec, int strip)
+{
+    char *last;
+    char ch;
+
     /* Find next line in expanded line buffer */
     spec->line = last = spec->nextline;
     ch = ' ';
@@ -225,23 +224,11 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     
     if (strip & STRIP_TRAILINGSPACE)
 	*last = '\0';
-
-    return 0;
 }
 /*@=boundswrite@*/
 
-/*@-boundswrite@*/
-int readLine(Spec spec, int strip)
+static int readLineFromOFI(Spec spec, OFI_t *ofi)
 {
-#ifdef	DYING
-    const char *arch;
-    const char *os;
-#endif
-    char  *s;
-    int match;
-    struct ReadLevelEntry *rl;
-    OFI_t *ofi = spec->fileStack;
-    int rc;
 
 retry:
     /* Make sure the current file is open */
@@ -256,9 +243,8 @@ retry:
 	}
 	spec->lineNum = ofi->lineNum = 0;
     }
-    /*@=branchstate@*/
 
-    /* Make sure we have something in the read buffer */
+    /*@=branchstate@*/
     if (!(ofi->readPtr && *(ofi->readPtr))) {
 	/*@-type@*/ /* FIX: cast? */
 	FILE * f = fdGetFp(ofi->fd);
@@ -297,6 +283,21 @@ retry:
 	    sl->sl_lines[sl->sl_nlines++] = xstrdup(ofi->readBuf);
 	}
     }
+    return 0;
+}
+
+/*@-boundswrite@*/
+int readLine(Spec spec, int strip)
+{
+#ifdef	DYING
+    const char *arch;
+    const char *os;
+#endif
+    char  *s;
+    int match;
+    struct ReadLevelEntry *rl;
+    OFI_t *ofi = spec->fileStack;
+    int rc;
     
 #ifdef	DYING
     arch = NULL;
@@ -305,12 +306,26 @@ retry:
     rpmGetOsInfo(&os, NULL);
 #endif
 
-    /* Copy next file line into the spec line buffer */
-    if ((rc = copyNextLine(spec, ofi, strip)) != 0) {
+    /* Restore 1st char in (possible) next line */
+    if (spec->nextline != NULL && spec->nextpeekc != '\0') {
+	*spec->nextline = spec->nextpeekc;
+	spec->nextpeekc = '\0';
+    } else {
+    retry:
+      /* Make sure we have something in the read buffer */
+      if ((rc = readLineFromOFI(spec, ofi)) != 0) {
+          return rc;
+      }
+
+      if ((rc = copyNextLineFromOFI(spec, ofi)) != 0) {
 	if (rc == RPMERR_UNMATCHEDIF)
 	    goto retry;
 	return rc;
+      }
     }
+
+    /* Copy next file line into the spec line buffer */
+    copyNextLineFinish(spec, strip);
 
     s = spec->line;
     SKIPSPACE(s);
