@@ -1082,6 +1082,32 @@ static int is_pentium4()
     return 0;
 }
 
+static int is_geode()
+{
+    unsigned int eax, ebx, ecx, edx, family, model;
+    char vendor[16];
+    /* If you care about space, you can just check ebx, ecx and edx directly
+       instead of forming a string first and then doing a strcmp */
+    memset(vendor, 0, sizeof(vendor));
+    
+    cpuid(0, &eax, &ebx, &ecx, &edx);
+    memset(vendor, 0, sizeof(vendor));
+    *((unsigned int *)&vendor[0]) = ebx;
+    *((unsigned int *)&vendor[4]) = edx;
+    *((unsigned int *)&vendor[8]) = ecx;
+    if (strncmp(vendor, "AuthenticAMD", 12) != 0)  
+        return 0;
+    cpuid(1, &eax, &ebx, &ecx, &edx);
+    family = (eax >> 8) & 0x0f;
+    model = (eax >> 4) & 0x0f;
+    if (family == 5)
+	switch (model)
+	{
+            case 10: // Geode 
+                return 1;
+        }
+    return 0;
+}
 #endif
 
 #if defined(__linux__) && defined(__powerpc__)
@@ -1329,6 +1355,8 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 		strcpy(un.machine, "pentium4");
 	    else if (is_pentium3())
 		strcpy(un.machine, "pentium3");
+	    else if (is_geode())
+		strcpy(un.machine, "geode");
 	    else if (strchr("3456", un.machine[1]) && un.machine[1] != class)
 		un.machine[1] = class;
 	}
