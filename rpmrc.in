@@ -19,6 +19,7 @@ optflags: i686 -O2 -g -march=i686
 optflags: pentium3 -O2 -g -march=pentium3
 optflags: pentium4 -O2 -g -march=pentium4
 optflags: athlon -O2 -g -march=athlon
+optflags: geode -Os -g -m32 -march=geode
 optflags: ia64 -O2 -g
 optflags: x86_64 -O2 -g
 optflags: amd64 -O2 -g
@@ -80,6 +81,7 @@ optflags: s390x -O2 -g
 # Canonical arch names and numbers
 
 arch_canon:	athlon:	athlon	1
+arch_canon:	geode:	geode	1
 arch_canon:	pentium4:	pentium4	1
 arch_canon:	pentium3:	pentium3	1
 arch_canon:	i686:	i686	1
@@ -195,6 +197,7 @@ buildarchtranslate: osfmach3_i486: i386
 buildarchtranslate: osfmach3_i386: i386
 
 buildarchtranslate: athlon: i386
+buildarchtranslate: geode: i386
 buildarchtranslate: pentium4: i386
 buildarchtranslate: pentium3: i386
 buildarchtranslate: i686: i386
@@ -264,6 +267,7 @@ arch_compat: alphaev5: alpha
 arch_compat: alpha: axp noarch
 
 arch_compat: athlon: i686
+arch_compat: geode: i586
 arch_compat: pentium4: pentium3
 arch_compat: pentium3: i686
 arch_compat: i686: i586
@@ -368,6 +372,7 @@ os_compat: Darwin: MacOSX
 buildarch_compat: ia64: noarch
 
 buildarch_compat: athlon: i686
+buildarch_compat: geode: i586
 buildarch_compat: pentium4: pentium3
 buildarch_compat: pentium3: i686
 buildarch_compat: i686: i586

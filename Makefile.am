@@ -256,7 +256,8 @@ install-data-local:
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;\
+		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/geode ;;\
 	alpha*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
 		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
 	arm*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\

@@ -1203,7 +1203,7 @@ done \
 #   rpm can use regular expressions against target platforms in macro
 #   conditionals.
 #
-%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
+%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon geode
 
 #------------------------------------------------------------------------------
 # arch macro for all supported ARM processors
