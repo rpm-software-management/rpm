@@ -1000,19 +1000,19 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	switch(compressed) {
 	default:
 	case COMPRESSED_NOT:
-	    sprintf(be, "%%_cat %s", b);
+	    sprintf(be, "%%__cat %s", b);
 	    break;
 	case COMPRESSED_OTHER:
-	    sprintf(be, "%%_gzip -dc %s", b);
+	    sprintf(be, "%%__gzip -dc %s", b);
 	    break;
 	case COMPRESSED_BZIP2:
-	    sprintf(be, "%%_bzip2 %s", b);
+	    sprintf(be, "%%__bzip2 %s", b);
 	    break;
 	case COMPRESSED_ZIP:
-	    sprintf(be, "%%_unzip %s", b);
+	    sprintf(be, "%%__unzip %s", b);
 	    break;
         case COMPRESSED_LZMA:
-            sprintf(be, "%%_lzma -dc %s", b);
+            sprintf(be, "%%__lzma -dc %s", b);
             break;
 	}
 	b = be;
