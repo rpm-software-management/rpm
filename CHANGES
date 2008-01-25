@@ -48,6 +48,7 @@
 	- whitespace in dirnames fixes wrt rpmbuild (rhbz#220449)
 	- much improved find-debuginfo script
 	- debuginfo build-id integration 
+	- bandaid for reads timeouting on heavily loaded systems (mdvbz#???)
  
 4.4.2.1 -> 4.4.2.2:
 	- avoid .rpmnew if file in package hasn't changed (rhbz#194246)
