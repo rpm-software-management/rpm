@@ -342,7 +342,7 @@ FD_t XfdNew(const char * msg, const char * file, unsigned line)
     fd->fps[0].fdno = -1;
 
     fd->url = NULL;
-    fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
+    fd->rd_timeoutsecs = 60;	/* XXX default value used to be -1 */
     fd->contentLength = fd->bytesRemain = -1;
     fd->wr_chunked = 0;
     fd->syserrno = 0;
@@ -2325,7 +2325,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	fd = fdOpen(path, flags, mode);
 	if (fd) {
 	    fdSetIo(fd, ufdio);
-	    fd->rd_timeoutsecs = 1;
+	    fd->rd_timeoutsecs = 60;
 	    fd->contentLength = fd->bytesRemain = -1;
 	}
 	break;
