@@ -1,3 +1,54 @@
+4.4.2.2 -> 4.4.2.3-rc1:
+	- add support for lzma compressed sources
+	- remove questionable non-utf polish comment confusing doxygen
+	- clarify rpmtsCheck() documentation (rhbz#159638)
+	- clarify rpm manpage wrt rpmbuild binary vs package (rhbz#233232)
+	- add OSGi dependency extractor script
+	- rename norwegian translation no -> nb (rhbz#332271)
+	- find-lang POSIX-compliant find(1) usage + spelling fixes
+	- find-lang localized man page and qt translation support
+	- match *.omf, not *omf in find-lang
+	- debugedit fixes for DW_FORM_ref_addr and empty DW_AT_comp_dir
+	- don't mess up problem pkgNEVR in python ts.check() (rhbz#349091)
+	- use NEVRA, not NEVR everywhere for rpmProblems
+	- add Catalan translation (rhbz#350401)
+	- fix segfault in %{lua:...}'s rpm_print
+	- don't automatically print a newline in rpm_print
+	- fix free on invalid pointer on temp file failure (mdvbz#???)
+	- use dgettext() instead of just gettext() (mdvbz#???)
+	- align rpm -V output (mdvbz#31287)
+	- fix build without -O2 (mdvbz#???)
+	- make rpmbuild honor --quiet (mdvbz#???, rhbz#124300)
+	- fix rpm -K segfault on corrupted header (mdvbz#33735)
+	- fix download path in README
+	- fix query return codes (rhbz#244236)
+	- don't do tilde expansion if HOME is not set
+	- add python method for for retrieving (without setting) ts vsflags
+	- OS X Leopard portability fixes
+	- ordering fix (don't use RPMSENSE_PREREQ)
+	- fix multi-line macro expansion in last line of spec (mdvbz#27417)
+	- avoid compressFilelist() stack overflow in pathological cases
+	- handle "use vX.X.X" in perl dependency extraction (rhbz#140597)
+	- fix field-width specifiers when no space between (rhbz#323221)
+	- don't unlink non-temporary file in FSM_UNDO (rhbz#223931)
+	- print --usage to stderr instead of stdout (rhbz#164021)
+	- set a default 0022 umask value always (#83006)
+	- last 8 bytes of RSA modulus is keyid for V3 pubkeys (#205080)
+	- convert '-' to '_' within --define macro names (#124995)
+	- handle spaces in file path arguments correctly (#217258)
+	- avoid access(2) quirks querying symlinks, lstat(2) instead (#60288)
+	- permit files with glob characters in *.rpm packages (#147383)
+	- add support for triggerprein scriptlets
+	- add support for Geode CPU (rhbz#428979)
+	- missing space in russian translation (mdvbz#36974)
+	- print regular provides on build too (mdvbz#36672)
+	- bandaid for truncated error message in russian (mdvbz#31680)
+	- install secondary arch macros on x86_64 (rhbz#194123)
+	- don't mess up --target when reading rpmrc includes (rhbz#232429)
+	- whitespace in dirnames fixes wrt rpmbuild (rhbz#220449)
+	- much improved find-debuginfo script
+	- debuginfo build-id integration 
+ 
 4.4.2.1 -> 4.4.2.2:
 	- avoid .rpmnew if file in package hasn't changed (rhbz#194246)
 	- avoid .rpmnew/.rpmsave if files only differ by timestamp (rhbz#128622)
