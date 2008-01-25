@@ -301,7 +301,7 @@ char * rpmProblemString(const rpmProblem prob)
     const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "?pkgNEVR?");
     const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "? ?altNEVR?");
     const char * str1 = (prob->str1 ? prob->str1 : N_("different"));
-    size_t nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 100;
+    size_t nb =	strlen(pkgNEVR) + strlen(str1) + strlen(altNEVR) + 256;
     char * buf = xmalloc(nb+1);
     int rc;
 
