@@ -20,7 +20,7 @@ E_O_F
 
 RPM="./rpm --rcfile=$TEMPRC --macros=$MACROS"
 
-canonarch_sed='s_i.86_i386_;s_pentium[34]_i386_;s_athlon_i386_;s_geode_i386_;s_sparc[^-]*_sparc_;s_alpha[^-]*_alpha_;s_arm[^-]*_arm_;s_\(powerpc\|ppc\)[^-]*_ppc_'
+canonarch_sed='s_i.86_i386_;s_pentium[34]_i386_;s_athlon_i386_;s_sparc[^-]*_sparc_;s_alpha[^-]*_alpha_;s_arm[^-]*_arm_;s_\(powerpc\|ppc\)[^-]*_ppc_;s,\(ia32e\|amd64\),x86_64,'
 arch="`$RPM --eval '%{_arch}'|sed -e "$canonarch_sed"`"
 VENDOR="`$RPM --eval '%{_vendor}'`"
 OS="`$RPM --eval '%{_os}'`"
@@ -35,7 +35,7 @@ case "$arch" in
   sparc*) SUBSTS='s_sparc\(64\|64v\|v9v\|v9\)_sparc_ s_sparc64_sparcv9_;s_sparc\([^v]\|$\)_sparcv9\1_ s_sparcv9_sparc64_;s_sparc\([^6]\|$\)_sparc64\1_' ;;
   powerpc*|ppc*) SUBSTS='s_ppc64_ppc_ s_ppc\([^6ip]\|$\)_ppc64\1_ s_ppc\([^6ip]\|$\)_ppciseries_ s_ppc\([^6ip]\|$\)_ppcpseries_ s_ppc\([^6ip]\|$\)_ppc64iseries_ s_ppc\([^6ip]\|$\)_ppc64pseries_' ;;
   s390*) SUBSTS='s_s390x_s390_ s_s390\([^x]\|$\)_s390x\1_' ;;
-  x86_64|amd64|ia32e) SUBSTS='s,x86_64,x86_64, s,x86_64,ia32e, s,x86_64,amd64,' ;;
+  x86_64|amd64|ia32e) SUBSTS='s,x86_64,x86_64, s,x86_64,ia32e, s,x86_64,amd64, s,x86_64,i386, s,x86_64,i486, s,x86_64,i586, s,x86_64,i686, s,x86_64,pentium3, s,x86_64,pentium4, s,x86_64,athlon,' ;;
   *) SUBSTS=y___ ;;
 esac
 
@@ -102,9 +102,11 @@ for SUBST in $SUBSTS ; do
     ;;
   esac
 
+  CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
+
   cat $PLATFORM \
   | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
-	-e "s,@RPMRC_ARCH@,$ARCH," \
+	-e "s,$arch,$CANONARCH," \
 	-e "s,@RPMRC_GNU@,$RPMRC_GNU," \
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
