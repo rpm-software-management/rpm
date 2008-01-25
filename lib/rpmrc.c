@@ -586,7 +586,9 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 		while (*se && !xisspace(*se)) se++;
 		if (*se != '\0') *se++ = '\0';
 
+#if 0 /* XXX doesn't seem to do anything useful, only break things... */
 		rpmRebuildTargetVars(NULL, NULL);
+#endif
 
 		fn = rpmGetPath(s, NULL);
 		if (fn == NULL || *fn == '\0') {
