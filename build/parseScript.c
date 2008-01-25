@@ -149,6 +149,13 @@ int parseScript(Spec spec, int parsePart)
 	progtag = RPMTAG_VERIFYSCRIPTPROG;
 	partname = "%verifyscript";
 	break;
+      case PART_TRIGGERPREIN:
+	tag = RPMTAG_TRIGGERSCRIPTS;
+	tagflags = 0;
+	reqtag = RPMTAG_TRIGGERPREIN;
+	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	partname = "%triggerprein";
+	break;
       case PART_TRIGGERIN:
 	tag = RPMTAG_TRIGGERSCRIPTS;
 	tagflags = 0;

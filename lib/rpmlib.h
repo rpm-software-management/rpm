@@ -447,6 +447,7 @@ typedef enum rpmTag_e {
     RPMTAG_PRIORITY		= 1162, /* i   extension placeholder */
     RPMTAG_CVSID		= 1163, /* s */
 #define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
+    RPMTAG_TRIGGERPREIN		= 1171, /*!< internal */
 
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
@@ -537,7 +538,7 @@ typedef	enum rpmsenseFlags_e {
                                          /* less, greater, equal.          */
 
 #define	RPMSENSE_TRIGGER	\
-	(RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
+	(RPMSENSE_TRIGGERPREIN | RPMSENSE_TRIGGERIN | RPMSENSE_TRIGGERUN | RPMSENSE_TRIGGERPOSTUN)
 
 #define	_ALL_REQUIRES_MASK	(\
     RPMSENSE_INTERP | \

@@ -139,6 +139,10 @@ For reference, here's the order in which scripts are executed on a single
 package upgrade:
 
 \verbatim
+  all-%pretrans
+  ...
+  any-%triggerprein (%triggerprein from other packages set off by new install)
+  new-%triggerprein
   new-%pre	for new version of package being installed
   ...		(all new files are installed)
   new-%post	for new version of package being installed
@@ -155,5 +159,7 @@ package upgrade:
   old-%triggerpostun
   any-%triggerpostun (%triggerpostun from other packages set off by old un
 		install)
+  ...
+  all-%posttrans
 \endverbatim
 */

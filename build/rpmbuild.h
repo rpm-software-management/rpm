@@ -71,7 +71,8 @@ typedef enum rpmParseState_e {
     PART_VERIFYSCRIPT	= 18,	/*!< */
     PART_BUILDARCHITECTURES= 19,/*!< */
     PART_TRIGGERPOSTUN	= 20,	/*!< */
-    PART_LAST		= 21	/*!< */
+    PART_TRIGGERPREIN	= 21,	/*!< */
+    PART_LAST		= 22	/*!< */
 } rpmParseState;
 
 #define STRIP_NOTHING             0

@@ -91,7 +91,7 @@ struct rpmpsm_s {
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
-    int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
+    int sense;			/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */

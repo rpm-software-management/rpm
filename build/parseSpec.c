@@ -38,6 +38,7 @@ static struct PartRec {
     { PART_CHANGELOG,     0, "%changelog"},
     { PART_DESCRIPTION,   0, "%description"},
     { PART_TRIGGERPOSTUN, 0, "%triggerpostun"},
+    { PART_TRIGGERPREIN,  0, "%triggerprein"},
     { PART_TRIGGERUN,     0, "%triggerun"},
     { PART_TRIGGERIN,     0, "%triggerin"},
     { PART_TRIGGERIN,     0, "%trigger"},
@@ -539,6 +540,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_PRETRANS:
 	case PART_POSTTRANS:
 	case PART_VERIFYSCRIPT:
+	case PART_TRIGGERPREIN:
 	case PART_TRIGGERIN:
 	case PART_TRIGGERUN:
 	case PART_TRIGGERPOSTUN:
