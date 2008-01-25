@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-03 11:49+0300\n"
+"POT-Creation-Date: 2008-01-25 13:10+0200\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -16,49 +16,49 @@ msgstr ""
 msgid "Failed build dependencies:\n"
 msgstr "iþlem durdu, önce baðýmlý paketler kurulmalý:\n"
 
-#: build.c:71
+#: build.c:66
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "%s spec dosyasý açýlamadý: %s\n"
 
-#: build.c:155 build.c:167
+#: build.c:150 build.c:162
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar veriyolu açýlamadý: %m\n"
 
 #. Give up
-#: build.c:174
+#: build.c:169
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s paketinden spec dosyasý okunamadý\n"
 
-#: build.c:202
+#: build.c:197
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s %s olarak deðiþtirilemedi: %m\n"
 
-#: build.c:249
+#: build.c:244
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "%s durum bilgileri alýnamadý: %m\n"
 
-#: build.c:254
+#: build.c:249
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s bir normal bir dosya deðil.\n"
 
-#: build.c:263
+#: build.c:258
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s bir spec dosyasý gibi görünmüyor.\n"
 
 #. parse up the build operators
-#: build.c:334
+#: build.c:329
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Hedef platformlar derleniyor: %s\n"
 
-#: build.c:349
+#: build.c:344
 #, c-format
 msgid "Building for target %s\n"
 msgstr "%s için derleniyor\n"
@@ -78,171 +78,171 @@ msgstr "paketten baþlýk okunmasý sýrasýnda hata oluþtu\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "payload %s tekrar açýlamýyor\n"
 
-#: rpmqv.c:73
+#: rpmqv.c:75
 msgid "Query options (with -q or --query):"
 msgstr "Sorgulama seçenekleri (-q ya da --query ile)"
 
-#: rpmqv.c:76
+#: rpmqv.c:78
 msgid "Verify options (with -V or --verify):"
 msgstr "Denetleme seçenekleri (-V ya da --verify ile)"
 
-#: rpmqv.c:80
+#: rpmqv.c:82
 #, fuzzy
 msgid "Source options (with --query or --verify):"
 msgstr "Denetleme seçenekleri (-V ya da --verify ile)"
 
-#: rpmqv.c:84
+#: rpmqv.c:86
 msgid "File tree walk options (with --ftswalk):"
 msgstr ""
 
-#: rpmqv.c:90
+#: rpmqv.c:92
 msgid "Signature options:"
 msgstr "Ýmza seçenekleri:"
 
-#: rpmqv.c:96
+#: rpmqv.c:98
 msgid "Database options:"
 msgstr "Veritabaný seçenekleri:"
 
-#: rpmqv.c:102
+#: rpmqv.c:104
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "[ <specDosyasý> | <tarPaketi> | <kaynakPaketi> ] ile paketleme seçenekleri:"
 
-#: rpmqv.c:108
+#: rpmqv.c:110
 msgid "Install/Upgrade/Erase options:"
 msgstr "Kurma/Güncelleme/Kaldýrma seçenekleri:"
 
-#: rpmqv.c:113 tools/rpmcache.c:525 tools/rpmdeps.c:35 tools/rpmgraph.c:275
+#: rpmqv.c:117 tools/rpmcache.c:525 tools/rpmdeps.c:35 tools/rpmgraph.c:275
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Tüm rpm kipleri için ortak seçenekler:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:130 lib/poptI.c:42
+#: rpmqv.c:134 lib/poptI.c:42
 #, c-format
 msgid "%s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: rpmqv.c:138 lib/poptALL.c:128
+#: rpmqv.c:142 lib/poptALL.c:128
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM Sürüm %s\n"
 
-#: rpmqv.c:145
+#: rpmqv.c:149
 #, fuzzy, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright (C) 1998 - 2000 - Red Hat, Inc."
 
-#: rpmqv.c:146
+#: rpmqv.c:150
 #, fuzzy, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Bu program GNU GPL koþullarýna uygun olarak serbestçe daðýtýlabilir."
 
-#: rpmqv.c:304
+#: rpmqv.c:308
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "(%d) argümaný iþlenirken iç hata oluþtu :-(\n"
 
-#: rpmqv.c:342 rpmqv.c:348 rpmqv.c:354 rpmqv.c:391
+#: rpmqv.c:346 rpmqv.c:352 rpmqv.c:358 rpmqv.c:395
 msgid "only one major mode may be specified"
 msgstr "sadece bir ana kip belirtilebilir"
 
-#: rpmqv.c:370
+#: rpmqv.c:374
 msgid "one type of query/verify may be performed at a time"
 msgstr "bir anda sadece bir tarz sorgulama/denetleme yapýlabilir"
 
-#: rpmqv.c:374
+#: rpmqv.c:378
 msgid "unexpected query flags"
 msgstr "beklenmeyen sorgulama bayraklarý"
 
-#: rpmqv.c:377
+#: rpmqv.c:381
 msgid "unexpected query format"
 msgstr "beklenmeyen sorgulama biçemi"
 
-#: rpmqv.c:380
+#: rpmqv.c:384
 msgid "unexpected query source"
 msgstr "beklenmeyen sorgulama kaynaðý"
 
-#: rpmqv.c:423
+#: rpmqv.c:427
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "sadece  kaynak ve spec silme iþlemleri, kurma, güncelleme iþlemleri için "
 "zorlanabilir"
 
-#: rpmqv.c:425
+#: rpmqv.c:429
 msgid "files may only be relocated during package installation"
 msgstr ""
 "dosyalar sadece paket kurulumu sýrasýnda yeni yerlerine yerleþtirilebilir"
 
-#: rpmqv.c:428
+#: rpmqv.c:432
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:431
+#: rpmqv.c:435
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate ve --excludepath sadece yeni paket kurulumunda kullanýlabilir"
 
-#: rpmqv.c:434
+#: rpmqv.c:438
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix sadece yeni paketlerin kurulmasý sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:437
+#: rpmqv.c:441
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix ile belirtilenler '/' ile baþlamalý"
 
-#: rpmqv.c:440
+#: rpmqv.c:444
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:444
+#: rpmqv.c:448
 msgid "--percent may only be specified during package installation"
 msgstr "--percent sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:448
+#: rpmqv.c:452
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:452
+#: rpmqv.c:456
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:456
+#: rpmqv.c:460
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:460
+#: rpmqv.c:464
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs ve --includedocs bir arada kullanýlamaz"
 
-#: rpmqv.c:464
+#: rpmqv.c:468
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:468
+#: rpmqv.c:472
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:473
+#: rpmqv.c:477
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:477
+#: rpmqv.c:481
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:481
+#: rpmqv.c:485
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles sadece paket kurulumu sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:486
+#: rpmqv.c:490
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb sadece paket kurulumu ve kaldýrýlmasý sýrasýnda kullanýlabilir"
 
-#: rpmqv.c:491
+#: rpmqv.c:495
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -250,7 +250,7 @@ msgstr ""
 "betik iptal etme seçenekleri sadece paketin kurulmasý ve silinmesi sýrasýnda "
 "kullanýlabilir"
 
-#: rpmqv.c:496
+#: rpmqv.c:500
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -258,7 +258,7 @@ msgstr ""
 "tetikleme iptal seçenekleri sadece paketin kurulmasý ve silinmesi sýrasýnda "
 "kullanýlabilir"
 
-#: rpmqv.c:500
+#: rpmqv.c:504
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -266,7 +266,7 @@ msgstr ""
 "--nodeps sadece paket oluþturma, yeniden oluþturma, yeniden derleme, "
 "kurulum, kaldýrma ve denetleme iþlemlerinde kullanýlabilir"
 
-#: rpmqv.c:505
+#: rpmqv.c:509
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -274,7 +274,7 @@ msgstr ""
 "--test sadece paket kurulumu, kaldýrýlmasý ve oluþturulmasý iþlemlerinde "
 "kullanýlabilir"
 
-#: rpmqv.c:510
+#: rpmqv.c:514
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -282,83 +282,83 @@ msgstr ""
 "--root (-r) sadece kurulum, kaldýrma, sorgulama ve yeniden veritabaný "
 "oluþturma iþlemlerinde kullanýlabilir"
 
-#: rpmqv.c:522
+#: rpmqv.c:526
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) ile verilenler '/' ile baþlamalý"
 
-#: rpmqv.c:546
+#: rpmqv.c:553
 #, c-format
 msgid "no files to sign\n"
 msgstr "imzalanacak dosya yok\n"
 
-#: rpmqv.c:551
+#: rpmqv.c:558
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "%s dosyasý bulunamýyor\n"
 
-#: rpmqv.c:571
+#: rpmqv.c:578
 #, c-format
 msgid "pgp not found: "
 msgstr "pgp bulunamadý: "
 
-#: rpmqv.c:579
+#: rpmqv.c:586
 msgid "Enter pass phrase: "
 msgstr "Anahtar parolasýný girin: "
 
-#: rpmqv.c:581
+#: rpmqv.c:588
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Anahtar parolasý kontrolü baþarýsýz\n"
 
-#: rpmqv.c:585
+#: rpmqv.c:592
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Anahtar parolasý doðru.\n"
 
-#: rpmqv.c:590
+#: rpmqv.c:597
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Makro dosyasýndaki %%_signature spec geçersiz.\n"
 
-#: rpmqv.c:597
+#: rpmqv.c:604
 msgid "--sign may only be used during package building"
 msgstr "--sign sadece paket oluþturulurken kullanýlabilir"
 
-#: rpmqv.c:614
+#: rpmqv.c:621
 #, c-format
 msgid "exec failed\n"
 msgstr "icra baþarýsýz\n"
 
-#: rpmqv.c:650
+#: rpmqv.c:657
 msgid "no packages files given for rebuild"
 msgstr "yeniden oluþturmak için paket dosyalarý belirtilmemiþ"
 
-#: rpmqv.c:720
+#: rpmqv.c:727
 msgid "no spec files given for build"
 msgstr "oluþturma için gerekli spec dosyasý belirtilmemiþ"
 
-#: rpmqv.c:722
+#: rpmqv.c:729
 msgid "no tar files given for build"
 msgstr "oluþturma için gereken tar dosyalarý belirtilmemiþ"
 
-#: rpmqv.c:744
+#: rpmqv.c:751
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "yüklenecek paket(ler) belirtilmedi"
 
-#: rpmqv.c:784
+#: rpmqv.c:791
 msgid "no packages given for install"
 msgstr "yüklenecek paket(ler) belirtilmedi"
 
-#: rpmqv.c:801
+#: rpmqv.c:808
 msgid "no arguments given for query"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: rpmqv.c:816
+#: rpmqv.c:823
 msgid "no arguments given for verify"
 msgstr "denetleme için hiç argüman belirtilmedi"
 
-#: rpmqv.c:831
+#: rpmqv.c:838
 #, fuzzy
 msgid "no arguments given"
 msgstr "sorgulama için hiç argüman belirtilmedi"
@@ -579,7 +579,7 @@ msgstr "Dosya \"/\" ile içermeli: %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1908 lib/rpminstall.c:362
+#: build/files.c:1908 lib/rpminstall.c:365
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
@@ -759,7 +759,7 @@ msgstr "%s'den baþlýk okunamadý: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1645
+#: build/pack.c:645 lib/psm.c:1655
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "paket yazýlamadý: %s\n"
@@ -789,7 +789,7 @@ msgstr "%s'den payload okunamadý: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s'e payload yazýlamadý: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1921
+#: build/pack.c:738 lib/psm.c:1931
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Yazýldý: %s\n"
@@ -844,17 +844,17 @@ msgstr "%%changelog içinde açýklama yok\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "satýr %d: %%description ayrýþtýrýlýrken hata: %s \n"
 
-#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:222
+#: build/parseDescription.c:60 build/parseFiles.c:56 build/parseScript.c:229
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "satýr %d: %s seçeneði hatalý: %s\n"
 
-#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:236
+#: build/parseDescription.c:71 build/parseFiles.c:70 build/parseScript.c:243
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "satýr %d: Ýsim sayýsý fazla: %s\n"
 
-#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:245
+#: build/parseDescription.c:79 build/parseFiles.c:79 build/parseScript.c:252
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "satýr %d: Paket yok: %s\n"
@@ -940,7 +940,7 @@ msgstr "satýr %d: Etiket boþ: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:592 build/parseSpec.c:472
+#: build/parsePreamble.c:592 build/parseSpec.c:488
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
@@ -1019,61 +1019,61 @@ msgstr "%d kaynak kodu numarasý yok\n"
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Kaynak kodu olmayan %s sunucudan indirilemedi: %s\n"
 
-#: build/parsePrep.c:315
+#: build/parsePrep.c:319
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup çözümlenirken hata: %s\n"
 
-#: build/parsePrep.c:330
+#: build/parsePrep.c:334
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "satýr %d: %%setup argumaný hatalý: %s\n"
 
-#: build/parsePrep.c:348
+#: build/parsePrep.c:352
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "satýr %d: %%setup seçeneði %s hatalý: %s\n"
 
-#: build/parsePrep.c:490
+#: build/parsePrep.c:494
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "satýr %d: %%patch -b'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:499
+#: build/parsePrep.c:503
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "satýr %d: %%patch -z'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:516
+#: build/parsePrep.c:520
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -F: %s\n"
 msgstr "satýr %d: %%patch -p'nin argümaný hatalý: %s\n"
 
-#: build/parsePrep.c:528
+#: build/parsePrep.c:532
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:535
+#: build/parsePrep.c:539
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'nin argümaný hatalý: %s\n"
 
-#: build/parsePrep.c:542
+#: build/parsePrep.c:546
 msgid "Too many patches!\n"
 msgstr "Yamalar çok fazla!\n"
 
-#: build/parsePrep.c:546
+#: build/parsePrep.c:550
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "satýr %d: %%patch argüman hatasý: %s\n"
 
-#: build/parsePrep.c:582
+#: build/parsePrep.c:586
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "satýr %d: %%prep saniye\n"
 
-#: build/parseReqs.c:102
+#: build/parseReqs.c:106
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1081,87 +1081,87 @@ msgstr ""
 "satýr %d: Baðýmlýlýk kýsaltmalarý bir alfanümerik, '_' veya '/' ile "
 "baþlamalý: %s\n"
 
-#: build/parseReqs.c:130
+#: build/parseReqs.c:134
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "satýr %d: Sürüm içeren dosya adý uygun deðil: %s\n"
 
-#: build/parseReqs.c:161
+#: build/parseReqs.c:165
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "satýr %d: Sürüm gerekli: %s\n"
 
-#: build/parseScript.c:180
+#: build/parseScript.c:187
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
 msgstr "satýr %d: tetikleyiciler -- içermeli: %s\n"
 
-#: build/parseScript.c:190 build/parseScript.c:261
+#: build/parseScript.c:197 build/parseScript.c:268
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "satýr %d: %s çözümlenirken hata oluþtu: %s\n"
 
-#: build/parseScript.c:202
+#: build/parseScript.c:209
 #, fuzzy, c-format
 msgid "line %d: internal script must end with '>': %s\n"
 msgstr "satýr %d: betik programý '/' ile baþlamalý: %s\n"
 
-#: build/parseScript.c:209
+#: build/parseScript.c:216
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "satýr %d: betik programý '/' ile baþlamalý: %s\n"
 
-#: build/parseScript.c:253
+#: build/parseScript.c:260
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "satýr %d: %s saniye\n"
 
-#: build/parseScript.c:299
+#: build/parseScript.c:306
 #, fuzzy, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "satýr %d: %%description ayrýþtýrýlýrken hata: %s \n"
 
-#: build/parseSpec.c:201
+#: build/parseSpec.c:191
 #, c-format
 msgid "line %d: %s\n"
 msgstr "satýr %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:253
+#: build/parseSpec.c:241
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/parseSpec.c:269
+#: build/parseSpec.c:256
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if kapanmamýþ\n"
 
-#: build/parseSpec.c:346
+#: build/parseSpec.c:362
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean %d ile döner\n"
 
-#: build/parseSpec.c:355
+#: build/parseSpec.c:371
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%if'siz bir  %%else alýndý\n"
 
-#: build/parseSpec.c:367
+#: build/parseSpec.c:383
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%if'siz bir %%endif alýndý\n"
 
-#: build/parseSpec.c:381 build/parseSpec.c:390
+#: build/parseSpec.c:397 build/parseSpec.c:406
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "%%include deyimi bozuk\n"
 
-#: build/parseSpec.c:593
+#: build/parseSpec.c:610
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:654
+#: build/parseSpec.c:671
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1300,19 +1300,19 @@ msgstr "paket baðýmlýlýklarýný denetlemez"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "paket baþlýklarýný (eski) rpm[23] paketleme ile uyumlu üretir"
 
-#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:282 lib/poptQV.c:363
+#: build/poptBT.c:229 lib/poptALL.c:282 lib/poptI.c:282 lib/poptQV.c:363
 #: lib/poptQV.c:372 lib/poptQV.c:413
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "paket baðýmlýlýklarý doðrulanmaz"
 
-#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:284 lib/poptQV.c:366
+#: build/poptBT.c:231 lib/poptALL.c:284 lib/poptI.c:284 lib/poptQV.c:366
 #: lib/poptQV.c:374 lib/poptQV.c:416
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "paket mimarisi denetlenmez"
 
-#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:286 lib/poptQV.c:369
+#: build/poptBT.c:233 lib/poptALL.c:290 lib/poptI.c:286 lib/poptQV.c:369
 #: lib/poptQV.c:376 lib/poptQV.c:418
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1357,7 +1357,7 @@ msgstr ""
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: build/rpmfc.c:107 lib/psm.c:914
+#: build/rpmfc.c:107 lib/psm.c:915
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s ayrýlamadý: %s\n"
@@ -1557,7 +1557,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3529 rpmdb/header.c:3558 rpmdb/header.c:3582
+#: rpmdb/header.c:3531 rpmdb/header.c:3560 rpmdb/header.c:3584
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -1649,27 +1649,27 @@ msgstr "%s dizin %04o izinleriyle oluþturuldu.\n"
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1784 lib/fsm.c:1920
+#: lib/fsm.c:1784 lib/fsm.c:1922
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:1947
+#: lib/fsm.c:1949
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boþ deðil\n"
 
-#: lib/fsm.c:1953
+#: lib/fsm.c:1955
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi baþarýsýz: %s\n"
 
-#: lib/fsm.c:1968
+#: lib/fsm.c:1970
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s / %s bað kaldýrýlamadý: %s\n"
 
-#: lib/fsm.c:1990
+#: lib/fsm.c:1992
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"
@@ -1815,160 +1815,160 @@ msgstr "%s yüklenemedi\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:230
+#: lib/poptALL.c:239
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr ""
 
-#: lib/poptALL.c:232
+#: lib/poptALL.c:241
 msgid "FTS_LOGICAL: logical walk"
 msgstr ""
 
-#: lib/poptALL.c:234
+#: lib/poptALL.c:243
 #, fuzzy
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "%s dizini oluþturuluyor\n"
 
-#: lib/poptALL.c:236
+#: lib/poptALL.c:245
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr ""
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:247
 msgid "FTS_PHYSICAL: physical walk"
 msgstr ""
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:249
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr ""
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:251
 msgid "FTS_XDEV: don't cross devices"
 msgstr ""
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:253
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr ""
 
-#: lib/poptALL.c:260
+#: lib/poptALL.c:269
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:261 lib/poptALL.c:264
+#: lib/poptALL.c:270 lib/poptALL.c:273
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:272
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:275
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "<ifade>+ için makro açýlýmýný gösterir"
 
-#: lib/poptALL.c:267
+#: lib/poptALL.c:276
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
+#: lib/poptALL.c:278 lib/poptALL.c:297 lib/poptALL.c:301
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "öntanýmlý makro dosyasý yerine <dosya:...> okunur"
 
-#: lib/poptALL.c:270 lib/poptALL.c:289 lib/poptALL.c:293
+#: lib/poptALL.c:279 lib/poptALL.c:298 lib/poptALL.c:302
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:278 lib/poptALL.c:312
+#: lib/poptALL.c:287 lib/poptALL.c:321
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API kullanýmýný iptal eder"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:293
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "standart çýktýyý <KOMUT>'a gönderir"
 
-#: lib/poptALL.c:285
+#: lib/poptALL.c:294
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:296
+#: lib/poptALL.c:305
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "Üst düzey dizin olarak <dizin> kullanýlýr"
 
-#: lib/poptALL.c:297
+#: lib/poptALL.c:306
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:300
+#: lib/poptALL.c:309
 msgid "display known query tags"
 msgstr "tanýmlanmýþ sorgulama etiketlerini gösterir"
 
-#: lib/poptALL.c:302
+#: lib/poptALL.c:311
 msgid "display final rpmrc and macro configuration"
 msgstr "son rpmrc ve makro yapýlandýrmasýný gösterir"
 
-#: lib/poptALL.c:304
+#: lib/poptALL.c:313
 msgid "provide less detailed output"
 msgstr "daha az ayrýntýlý çýktý saðlar"
 
-#: lib/poptALL.c:306
+#: lib/poptALL.c:315
 msgid "provide more detailed output"
 msgstr "daha ayrýntýlý çýktý saðlar"
 
-#: lib/poptALL.c:308
+#: lib/poptALL.c:317
 msgid "print the version of rpm being used"
 msgstr "Kullanýlan RPM sürümünü verir"
 
-#: lib/poptALL.c:321
+#: lib/poptALL.c:330
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:323
+#: lib/poptALL.c:332
 #, fuzzy
 msgid "use threads for file state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:325
+#: lib/poptALL.c:334
 #, fuzzy
 msgid "debug FTP/HTTP data stream"
 msgstr "protokol veri akýþýnda hata kontrolu"
 
-#: lib/poptALL.c:327
+#: lib/poptALL.c:336
 msgid "debug argv collections"
 msgstr ""
 
-#: lib/poptALL.c:329
+#: lib/poptALL.c:338
 #, fuzzy
 msgid "debug WebDAV data stream"
 msgstr "protokol veri akýþýnda hata kontrolu"
 
-#: lib/poptALL.c:334
+#: lib/poptALL.c:343
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "(%d) argümaný iþlenirken iç hata oluþtu :-(\n"
 
-#: lib/poptALL.c:339
+#: lib/poptALL.c:348
 #, fuzzy
 msgid "debug package state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:341
+#: lib/poptALL.c:350
 #, fuzzy
 msgid "use threads for package state machine"
 msgstr "hata ayýklama dosyasý durum motoru"
 
-#: lib/poptALL.c:355
+#: lib/poptALL.c:364
 msgid "debug rpmio I/O"
 msgstr "rpmio G/Ç hata kontrolu"
 
-#: lib/poptALL.c:369
+#: lib/poptALL.c:378
 msgid "debug URL cache handling"
 msgstr "URL arabellek kullanýmý hata kontrolu"
 
 #. @-nullpass@
-#: lib/poptALL.c:439
+#: lib/poptALL.c:448
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2470,86 +2470,86 @@ msgstr "kaynak paketi gerekirken çalýþtýrýlabilir paketi bulundu\n"
 msgid "source package contains no .spec file\n"
 msgstr "kaynak paketi .spec dosyasý içermiyor\n"
 
-#: lib/psm.c:488
+#: lib/psm.c:489
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:647
+#: lib/psm.c:648
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s betiði çalýþtýrýlýyor (varsa)\n"
 
-#: lib/psm.c:664
+#: lib/psm.c:665
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:672
+#: lib/psm.c:673
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:879
+#: lib/psm.c:880
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:925
+#: lib/psm.c:926
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s: %s betiði baþarýsýz (%d), %s-%s-%s atlanýyor\n"
 
-#: lib/psm.c:932
+#: lib/psm.c:933
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, çýkýþta durum %d\n"
 
-#: lib/psm.c:936
+#: lib/psm.c:937
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, çýkýþta durum %d\n"
 
-#: lib/psm.c:1371
+#: lib/psm.c:1372
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s %d dosya içeriyor, test = %d\n"
 
-#: lib/psm.c:1548
+#: lib/psm.c:1558
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s betiði baþarýsýz (%d), %s-%s-%s atlanýyor\n"
 
-#: lib/psm.c:1657
+#: lib/psm.c:1667
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "%s'den baþlýk okunamadý: %s\n"
 
-#: lib/psm.c:1735
+#: lib/psm.c:1745
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "arþiv paketi açýlýrken baþarýsýz%s%s: %s\n"
 
-#: lib/psm.c:1736
+#: lib/psm.c:1746
 msgid " on file "
 msgstr " dosyada "
 
-#: lib/psm.c:1929
+#: lib/psm.c:1939
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/psm.c:1932
+#: lib/psm.c:1942
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s baþarýsýz\n"
 
-#: lib/psm.c:2120
+#: lib/psm.c:2130
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2153
+#: lib/psm.c:2163
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2632,32 +2632,32 @@ msgstr "%s gerektiren paket yok\n"
 msgid "no package provides %s\n"
 msgstr "%s saðlayan paket yok\n"
 
-#: lib/query.c:637
+#: lib/query.c:631
 #, c-format
 msgid "file %s: %s\n"
 msgstr "dosya %s: %s\n"
 
-#: lib/query.c:641
+#: lib/query.c:634
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "%s dosyasý, hiç bir pakete ait deðil\n"
 
-#: lib/query.c:666
+#: lib/query.c:659
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "geçersiz paket numarasý: %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:662
 #, c-format
 msgid "package record number: %u\n"
 msgstr "paket kayýt numarasý: %u\n"
 
-#: lib/query.c:674
+#: lib/query.c:667
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "%u. kayýt okunamadý\n"
 
-#: lib/query.c:690 lib/rpminstall.c:800
+#: lib/query.c:683 lib/rpminstall.c:804
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu deðil\n"
@@ -2832,26 +2832,26 @@ msgstr "%s %s'e konumlanýyor\n"
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizini %s de yeniden konumlanýyor\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:615 lib/rpminstall.c:1041 lib/rpmts.c:643
+#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:483
+#: lib/rpminstall.c:618 lib/rpminstall.c:1045 lib/rpmts.c:643
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/rpmgi.c:358
+#: lib/rpmgi.c:359
 #, fuzzy, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "bilinmeyen etiket"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:628 lib/rpminstall.c:659 lib/rpminstall.c:834
-#: lib/rpminstall.c:1267 lib/transaction.c:1031 tools/rpmgraph.c:196
+#: lib/rpmgi.c:640 lib/rpminstall.c:662 lib/rpminstall.c:838
+#: lib/rpminstall.c:1271 lib/transaction.c:1031 tools/rpmgraph.c:196
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "baðýmlýlýklarda hata; gerekli paketler:\n"
 
-#: lib/rpmgi.c:634 lib/rpminstall.c:666 tools/rpmgraph.c:202
+#: lib/rpmgi.c:646 lib/rpminstall.c:669 tools/rpmgraph.c:202
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -2882,104 +2882,104 @@ msgstr "Hazýrlanýyor..."
 msgid "Upgrading packages..."
 msgstr "paket günceller"
 
-#: lib/rpminstall.c:409
+#: lib/rpminstall.c:412
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "%s aranýyor: (%s kullanarak)...\n"
 
-#: lib/rpminstall.c:425
+#: lib/rpminstall.c:428
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s alýnýyor\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:438
+#: lib/rpminstall.c:441
 #, c-format
 msgid " ... as %s\n"
 msgstr "... %s olarak\n"
 
-#: lib/rpminstall.c:442
+#: lib/rpminstall.c:445
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s atlanýyor - aktarým baþarýsýz - %s\n"
 
-#: lib/rpminstall.c:499 lib/rpminstall.c:895 tools/rpmgraph.c:141
+#: lib/rpminstall.c:502 lib/rpminstall.c:899 tools/rpmgraph.c:141
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s yüklenemedi\n"
 
-#: lib/rpminstall.c:516
+#: lib/rpminstall.c:519
 #, fuzzy, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "<kaynak paketi>"
 
-#: lib/rpminstall.c:541
+#: lib/rpminstall.c:544
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "%s paketi yeniden konumlandýrýlamaz\n"
 
-#: lib/rpminstall.c:586
+#: lib/rpminstall.c:589
 #, fuzzy, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "icra edilebilir paketleri kuruluyor\n"
 
-#: lib/rpminstall.c:591
+#: lib/rpminstall.c:594
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "%s dosyasýndan okuma hatalý\n"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:600
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "%s dosyasý RPM'nin daha yeni bir sürümünü gerektiriyor\n"
 
-#: lib/rpminstall.c:630
+#: lib/rpminstall.c:633
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s tetikleyen paket yok\n"
 
-#: lib/rpminstall.c:645
+#: lib/rpminstall.c:648
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d kaynak ve %d icra edilebilir paketi bulundu\n"
 
-#: lib/rpminstall.c:696
+#: lib/rpminstall.c:699
 msgid "installing binary packages\n"
 msgstr "icra edilebilir paketleri kuruluyor\n"
 
-#: lib/rpminstall.c:720
+#: lib/rpminstall.c:724
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "%s dosyasý açýlamadý: %s\n"
 
-#: lib/rpminstall.c:809
+#: lib/rpminstall.c:813
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" birden fazla paketi tanýmlýyor\n"
 
-#: lib/rpminstall.c:879
+#: lib/rpminstall.c:883
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/rpminstall.c:885
+#: lib/rpminstall.c:889
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s kuruluyor\n"
 
-#: lib/rpminstall.c:1261 lib/transaction.c:1024
+#: lib/rpminstall.c:1265 lib/transaction.c:1024
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1292 lib/transaction.c:1075
+#: lib/rpminstall.c:1296 lib/transaction.c:1075
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1299 lib/transaction.c:1081
+#: lib/rpminstall.c:1303 lib/transaction.c:1081
 #, fuzzy, c-format
 msgid "\tRemoving %s:\n"
 msgstr "%s alýnýyor\n"
@@ -3161,52 +3161,52 @@ msgstr "%s okunamadý: %s.\n"
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "(0x%02x bulundu) %s:%d de ':' yok\n"
 
-#: lib/rpmrc.c:631 lib/rpmrc.c:705
+#: lib/rpmrc.c:631 lib/rpmrc.c:707
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s için %s:%d de argüman eksik\n"
 
-#: lib/rpmrc.c:648 lib/rpmrc.c:670
+#: lib/rpmrc.c:650 lib/rpmrc.c:672
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s geniþletmesi %s:%d \"%s\" de baþarýsýz \n"
 
-#: lib/rpmrc.c:657
+#: lib/rpmrc.c:659
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%s dosyasý açýlamýyor (%s:%d): %s\n"
 
-#: lib/rpmrc.c:697
+#: lib/rpmrc.c:699
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s için %s:%d'de eksik mimari\n"
 
-#: lib/rpmrc.c:764
+#: lib/rpmrc.c:766
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "seçenek '%s' (%s:%d) de hatalý\n"
 
-#: lib/rpmrc.c:1563
+#: lib/rpmrc.c:1593
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Bilinmeyen sistem: %s\n"
 
-#: lib/rpmrc.c:1564
+#: lib/rpmrc.c:1594
 #, fuzzy
 msgid "Please contact rpm-maint@lists.rpm.org\n"
 msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
 
-#: lib/rpmrc.c:1801
+#: lib/rpmrc.c:1831
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s geniþletilemiyor\n"
 
-#: lib/rpmrc.c:1806
+#: lib/rpmrc.c:1836
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s okunamýyor, EV çok büyük\n"
 
-#: lib/rpmrc.c:1823
+#: lib/rpmrc.c:1853
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s okuma eriþimi için açýlamadý: %s.\n"
@@ -3806,73 +3806,73 @@ msgstr "%s ya çok büyük ya da çok küçük 'integer' deðer içeriyor, atlandý\n"
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
-#: rpmdb/header.c:2749
+#: rpmdb/header.c:2751
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
-#: rpmdb/header.c:2765
+#: rpmdb/header.c:2767
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
-#: rpmdb/header.c:2777
+#: rpmdb/header.c:2779
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
-#: rpmdb/header.c:2786
+#: rpmdb/header.c:2788
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
-#: rpmdb/header.c:2813
+#: rpmdb/header.c:2815
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
-#: rpmdb/header.c:2826
+#: rpmdb/header.c:2828
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
-#: rpmdb/header.c:2839
+#: rpmdb/header.c:2841
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
-#: rpmdb/header.c:2903
+#: rpmdb/header.c:2905
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
-#: rpmdb/header.c:2910
+#: rpmdb/header.c:2912
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
-#: rpmdb/header.c:2922 rpmdb/header.c:2962
+#: rpmdb/header.c:2924 rpmdb/header.c:2964
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
-#: rpmdb/header.c:2930
+#: rpmdb/header.c:2932
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
-#: rpmdb/header.c:2948
+#: rpmdb/header.c:2950
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
-#: rpmdb/header.c:2970
+#: rpmdb/header.c:2972
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3071
+#: rpmdb/header.c:3073
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3301
+#: rpmdb/header.c:3303
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3620
+#: rpmdb/header.c:3622
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3636
+#: rpmdb/header.c:3638
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -4106,7 +4106,7 @@ msgstr "%3d>%*s(boþ)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(boþ)\n"
 
-#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1863
+#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1869
 msgid "Target buffer overflow\n"
 msgstr "Hedef tampon bellek taþtý\n"
 
@@ -4150,33 +4150,33 @@ msgstr "%%%s (%s) makrosu %d seviyenin altýnda kullanýlmadý\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneði %s(%s) de anlaþýlamadý\n"
 
-#: rpmio/macro.c:1239
+#: rpmio/macro.c:1240
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliði(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1312 rpmio/macro.c:1329
+#: rpmio/macro.c:1313 rpmio/macro.c:1330
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandýrýlmamýþ: %s\n"
 
-#: rpmio/macro.c:1370
+#: rpmio/macro.c:1371
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrýþtýrýlamayan makro tarafýndan bir %% izlendi\n"
 
-#: rpmio/macro.c:1527
+#: rpmio/macro.c:1528
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadý, atlanýyor\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2076 rpmio/macro.c:2082
+#: rpmio/macro.c:2082 rpmio/macro.c:2088
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyasý: %s\n"
 
-#: rpmio/macro.c:2085
+#: rpmio/macro.c:2091
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
@@ -4199,27 +4199,27 @@ msgstr "Sunucu G/Ç hatasý"
 msgid "Unknown Error"
 msgstr "(hata yok)"
 
-#: rpmio/rpmlua.c:478
+#: rpmio/rpmlua.c:479
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:496
+#: rpmio/rpmlua.c:497
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "- dizgelerde desteklenmez\n"
 
-#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#: rpmio/rpmlua.c:502 rpmio/rpmlua.c:521
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: Fwrite baþarýsýz: %s\n"
 
-#: rpmio/rpmlua.c:515
+#: rpmio/rpmlua.c:516
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "geçersiz paket numarasý: %s\n"
 
-#: rpmio/rpmlua.c:668
+#: rpmio/rpmlua.c:669
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek baþarýsýz: %s\n"
