@@ -6,6 +6,7 @@
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmfileutil.h>
 
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
@@ -1267,19 +1268,16 @@ assert(s != NULL);
 	case S_IFLNK:
 	case S_IFREG:
 	default:
-#define _suffix(_s, _x) \
-    (slen >= sizeof(_x) && !strcmp((_s)+slen-(sizeof(_x)-1), (_x)))
-
 	    /* XXX all files with extension ".pm" are perl modules for now. */
-	    if (_suffix(s, ".pm"))
+	    if (rpmFileHasSuffix(s, ".pm"))
 		ftype = "Perl5 module source text";
 
 	    /* XXX all files with extension ".la" are libtool for now. */
-	    else if (_suffix(s, ".la"))
+	    else if (rpmFileHasSuffix(s, ".la"))
 		ftype = "libtool library file";
 
 	    /* XXX all files with extension ".pc" are pkgconfig for now. */
-	    else if (_suffix(s, ".pc"))
+	    else if (rpmFileHasSuffix(s, ".pc"))
 		ftype = "pkgconfig file";
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
