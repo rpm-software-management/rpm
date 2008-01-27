@@ -368,7 +368,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     return rc;
 }
 
-int isCompressed(const char * file, rpmCompressedMagic * compressed)
+int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
 {
     FD_t fd;
     ssize_t nb;

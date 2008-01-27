@@ -100,7 +100,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	t = stpcpy(t, " -E");
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
+    if (!spec->force && (rpmFileIsCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
 	urlfn = _free(urlfn);
 	return NULL;
     }
@@ -202,7 +202,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 #endif
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
+    if (!spec->force && (rpmFileIsCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
 	urlfn = _free(urlfn);
 	return NULL;
     }

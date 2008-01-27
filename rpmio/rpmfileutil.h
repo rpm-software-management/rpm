@@ -58,15 +58,6 @@ int rpmMkTempFile(const char * prefix, char ** fnptr, FD_t * fdptr);
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
 
 /** \ingroup rpmfileutil
- * Return type of compression used in file.
- * @param file		name of file
- * @retval compressed	address of compression type
- * @return		0 on success, 1 on I/O error
- */
-int	isCompressed	(const char * file,
-				rpmCompressedMagic * compressed);
-
-/** \ingroup rpmfileutil
  * Canonicalize file path.
  * @param path		path to canonicalize (in-place)
  * @return		pointer to path
@@ -109,6 +100,14 @@ int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr);
  * @return              escaped string
  */
 char * rpmEscapeSpaces(const char * s);
+
+/** \ingroup rpmfileutil
+ * Return type of compression used in file.
+ * @param file		name of file
+ * @retval compressed	address of compression type
+ * @return		0 on success, 1 on I/O error
+ */
+int rpmFileIsCompressed (const char * file, rpmCompressedMagic * compressed);
 
 /** \ingroup rpmfileutil
  * Check if path (string) ends with given suffix

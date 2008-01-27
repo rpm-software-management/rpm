@@ -128,7 +128,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	(void) mktemp(tmpSpecFile);
 #endif
 
-	(void) isCompressed(arg, &res);
+	(void) rpmFileIsCompressed(arg, &res);
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
 	sprintf(cmd, "%s < '%s' | tar xOvf - Specfile 2>&1 > '%s'",
