@@ -103,14 +103,14 @@ char * rpmGetPath (const char * path, ...);
  */
 int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr);
 
-/**
+/** \ingroup rpmfileutil
  * Escape isspace(3) characters in string.
  * @param s             string
  * @return              escaped string
  */
 char * rpmEscapeSpaces(const char * s);
 
-/**
+/** \ingroup rpmfileutil
  * Check if path (string) ends with given suffix
  * @param path		(path) string
  * @param suffix	suffix string to check for
