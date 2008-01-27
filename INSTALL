@@ -5,6 +5,10 @@ The zlib library for compression support. You might also need/want
 the zip executable for java jar dependency analysis. All available from
     http://www.gzip.org/zlib/
 
+The libmagic (aka file) library for file type detection (used by rpmbuild). 
+The source for the file utility + library is available from
+    ftp://ftp.astron.com/pub/file/
+
 The NSS library for encryption. This is available from 
     http://www.mozilla.org/projects/security/pki/nss/
 
