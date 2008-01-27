@@ -110,4 +110,12 @@ int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr);
  */
 char * rpmEscapeSpaces(const char * s);
 
+/**
+ * Check if path (string) ends with given suffix
+ * @param path		(path) string
+ * @param suffix	suffix string to check for
+ * @return		1 if true, 0 otherwise
+ */
+int rpmFileHasSuffix(const char *path, const char *suffix);
+
 #endif /* _RPMFILEUTIL_H */
