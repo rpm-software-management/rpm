@@ -5,6 +5,9 @@
  * \file rpmio/rpmmacro.h
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
 /*! The structure used to store a macro. */
 typedef /*@abstract@*/ struct MacroEntry_s {
     struct MacroEntry_s *prev;/*!< Macro entry stack. */
