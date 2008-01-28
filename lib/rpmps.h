@@ -6,6 +6,7 @@
  * Structures and prototypes used for an "rpmps" problem set.
  */
 
+#include <stdio.h>
 #include <rpm/rpmcallback.h>	/* for fnpyKey */
 
 #ifdef __cplusplus

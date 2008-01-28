@@ -6,6 +6,8 @@
  * String manipulation helper functions
  */
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

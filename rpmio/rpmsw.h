@@ -5,6 +5,9 @@
  * \file rpmio/rpmsw.h
  */
 
+#include <unistd.h>
+#include <sys/time.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
