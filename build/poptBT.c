@@ -76,6 +76,8 @@ static void buildArgCallback( poptContext con,
     case POPT_TL:
     case POPT_TP:
     case POPT_TS:
+	if (opt->val == POPT_BS || opt->val == POPT_TS)
+	    rba->noDeps = 1;
 	if (rba->buildMode == '\0' && rba->buildChar == '\0') {
 	    rba->buildMode = (((unsigned)opt->val) >> 8) & 0xff;
 	    rba->buildChar = (opt->val     ) & 0xff;
