@@ -40,48 +40,6 @@ extern const char * rpmEVR;
 
 extern int rpmFLAGS;
 
-/** \ingroup rpmtrans
- * The RPM Transaction Set.
- * Transaction sets are inherently unordered! RPM may reorder transaction
- * sets to reduce errors. In general, installs/upgrades are done before
- * strict removals, and prerequisite ordering is done on installs/upgrades.
- */
-typedef struct rpmts_s * rpmts;
-
-/** \ingroup rpmbuild
- */
-typedef struct rpmSpec_s * rpmSpec;
-
-/** \ingroup rpmds
- * Dependency tag sets from a header, so that a header can be discarded early.
- */
-typedef struct rpmds_s * rpmds;
-
-/** \ingroup rpmfi
- * File info tag sets from a header, so that a header can be discarded early.
- */
-typedef struct rpmfi_s * rpmfi;
-
-/** \ingroup rpmte
- * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
- */
-typedef struct rpmte_s * rpmte;
-
-/** \ingroup rpmdb
- * Database of headers and tag value indices.
- */
-typedef struct rpmdb_s * rpmdb;
-
-/** \ingroup rpmdb
- * Database iterator.
- */
-typedef struct rpmdbMatchIterator_s * rpmdbMatchIterator;
-
-/** \ingroup rpmgi
- * Generalized iterator.
- */
-typedef struct rpmgi_s * rpmgi;
-
 /** \ingroup header
  * Translate and merge legacy signature tags into header.
  * @todo Remove headerSort() through headerInitIterator() modifies sig.
