@@ -6,6 +6,8 @@
  */
 /** \defgroup	rpmrc	RPMRC.
  */
+/** \defgroup	rpmtypes	RPM data types.
+ */
 /** \defgroup	rpmts	Transaction Set API.
  */
 /** \defgroup	rpmte	Transaction Element API.

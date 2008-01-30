@@ -3,6 +3,9 @@
 
 /** \ingroup rpmtypes
  * \file lib/rpmtypes.h
+ *
+ * Typedefs for RPM abstract data types.
+ * @todo Add documentation...
  */
 
 #include <rpm/rpmints.h>
