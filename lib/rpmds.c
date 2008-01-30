@@ -32,7 +32,7 @@ struct rpmds_s {
     Header h;			/*!< Header for dependency set (or NULL) */
     const char ** N;		/*!< Name. */
     const char ** EVR;		/*!< Epoch-Version-Release. */
-    int32_t * Flags;		/*!< Bit(s) identifying context/comparison. */
+    rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
     uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
     int32_t * Refs;		/*!< No. of file refs. */
     int32_t BT;			/*!< Package build time tie breaker. */
@@ -242,7 +242,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     return tbuf;
 }
 
-rpmds rpmdsThis(Header h, rpm_tag_t tagN, int32_t Flags)
+rpmds rpmdsThis(Header h, rpm_tag_t tagN, rpmsenseFlags Flags)
 {
     HGE_t hge = (HGE_t) headerGetEntryMinMemory;
     rpmds ds = NULL;
@@ -315,7 +315,7 @@ exit:
     return rpmdsLink(ds, (ds ? ds->Type : RPMDBG()));
 }
 
-rpmds rpmdsSingle(rpm_tag_t tagN, const char * N, const char * EVR, int32_t Flags)
+rpmds rpmdsSingle(rpm_tag_t tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -415,9 +415,9 @@ const char * rpmdsEVR(const rpmds ds)
     return EVR;
 }
 
-int32_t rpmdsFlags(const rpmds ds)
+rpmsenseFlags rpmdsFlags(const rpmds ds)
 {
-    int32_t Flags = 0;
+    rpmsenseFlags Flags = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Flags != NULL)
@@ -666,7 +666,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
     rpmds ds;
     const char ** N;
     const char ** EVR;
-    int32_t * Flags;
+    rpmsenseFlags * Flags;
     int j;
 int save;
 
@@ -948,7 +948,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     int32_t * epoch;
     const char * pkgEVR;
     char * t;
-    int32_t pkgFlags = RPMSENSE_EQUAL;
+    rpmsenseFlags pkgFlags = RPMSENSE_EQUAL;
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
 

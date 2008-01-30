@@ -27,7 +27,7 @@ static const char * avdbpath =
 #endif
 static int noDeps = 0;
 
-static inline const char * identifyDepend(int32_t f)
+static inline const char * identifyDepend(rpmsenseFlags f)
 {
     if (isLegacyPreReq(f))
 	return "PreReq:";

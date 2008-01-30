@@ -337,7 +337,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     rpmds * depsp, ds;
     const char * N;
     const char * EVR;
-    int32_t Flags, dsContext, tagN;
+    rpmsenseFlags Flags;
+    int32_t dsContext, tagN;
     ARGV_t pav;
     const char * s;
     int pac;
@@ -1123,7 +1124,7 @@ rpmRC rpmfcApply(rpmfc fc)
     rpmds ds;
     const char * N;
     const char * EVR;
-    int32_t Flags;
+    rpmsenseFlags Flags;
     unsigned char deptype;
     int nddict;
     int previx;
@@ -1401,7 +1402,7 @@ static void printDeps(Header h)
     rpmds ds = NULL;
     int flags = 0;	/* XXX !scareMem */
     const char * DNEVR;
-    int32_t Flags;
+    rpmsenseFlags Flags;
     int bingo = 0;
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
@@ -1458,7 +1459,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
 	rpm_tag_t tag;
-	int tagflags;
+	rpmsenseFlags tagflags;
 	char * s;
 	int xx;
 
@@ -1659,7 +1660,7 @@ assert(ac == c);
     if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
 	const char **names = xcalloc(c, sizeof(char *));	
 	const char **evrs = xcalloc(c, sizeof(char *));	
-	int32_t *flags = xcalloc(c, sizeof(int32_t *));	
+	rpmsenseFlags *flags = xcalloc(c, sizeof(rpmsenseFlags *));	
 	int i;
 	rpmds pi = rpmdsInit(fc->provides);
 	while ((i = rpmdsNext(pi)) >= 0) {
@@ -1693,7 +1694,7 @@ assert(flags != NULL);
     if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
 	const char **names = xcalloc(c, sizeof(char *));	
 	const char **evrs = xcalloc(c, sizeof(char *));	
-	int32_t *flags = xcalloc(c, sizeof(int32_t *));	
+	rpmsenseFlags *flags = xcalloc(c, sizeof(rpmsenseFlags *));	
 	int i;
 	rpmds ri = rpmdsInit(fc->requires);
 	while ((i = rpmdsNext(ri)) >= 0) {

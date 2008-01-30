@@ -15,7 +15,7 @@
 struct rpmlibProvides_s {
     const char * featureName;
     const char * featureEVR;
-    int featureFlags;
+    rpmsenseFlags featureFlags;
     const char * featureDescription;
 };
 
@@ -95,11 +95,11 @@ int rpmCheckRpmlibProvides(const rpmds key)
     return rc;
 }
 
-int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
+int rpmGetRpmlibProvides(const char *** provNames, rpmsenseFlags ** provFlags,
                          const char *** provVersions)
 {
     const char ** names, ** versions;
-    int * flags;
+    rpmsenseFlags * flags;
     int n = 0;
     
     while (rpmlibProvides[n].featureName != NULL)

@@ -147,11 +147,11 @@ void providePackageNVR(Header h)
     int32_t * epoch;
     const char *pEVR;
     char *p;
-    int32_t pFlags = RPMSENSE_EQUAL;
+    rpmsenseFlags pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
     rpm_tagtype_t pnt, pvt;
-    int32_t * provideFlags = NULL;
+    rpmsenseFlags * provideFlags = NULL;
     rpm_count_t providesCount, i;
     int xx;
     int bingo = 1;
@@ -182,7 +182,7 @@ void providePackageNVR(Header h)
     if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (rpm_data_t *) &providesEVR, NULL)) {
 	for (i = 0; i < providesCount; i++) {
 	    const char * vdummy = "";
-	    int32_t fdummy = RPMSENSE_ANY;
+	    rpmsenseFlags fdummy = RPMSENSE_ANY;
 	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			&vdummy, 1);
 	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,

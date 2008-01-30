@@ -809,7 +809,7 @@ static void markLoop(tsortInfo tsi, rpmte q)
     }
 }
 
-static inline const char * identifyDepend(int32_t f)
+static inline const char * identifyDepend(rpmsenseFlags f)
 {
     if (isLegacyPreReq(f))
 	return "PreReq:";
@@ -857,7 +857,7 @@ zapRelation(rpmte q, rpmte p,
 	/* XXX Note: the loop traverses "not found", break on "found". */
 	 tsi_prev = tsi, tsi = tsi->tsi_next)
     {
-	int32_t Flags;
+	rpmsenseFlags Flags;
 
 	if (tsi->tsi_suc != p)
 	    continue;
@@ -1039,7 +1039,7 @@ static void addQ(rpmte p,
 int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
-    int32_t Flags;
+    rpmsenseFlags Flags;
     uint32_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;

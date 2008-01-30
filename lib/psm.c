@@ -61,7 +61,7 @@ struct rpmpsm_s {
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
-    int sense;			/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
+    rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
@@ -461,9 +461,9 @@ static const char * tag2sln(rpm_tag_t tag)
     return "%unknownscript";
 }
 
-static rpm_tag_t triggertag(rpm_tag_t sense) 
+static rpm_tag_t triggertag(rpmsenseFlags sense) 
 {
-    rpm_tag_t tag = 0;
+    rpm_tag_t tag = RPMTAG_NOT_FOUND;
     switch (sense) {
     case RPMSENSE_TRIGGERIN:
 	tag = RPMTAG_TRIGGERIN;
@@ -1018,7 +1018,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     while ((i = rpmdsNext(trigger)) >= 0) {
 	rpm_tagtype_t tit, tst, tpt;
 	const char * Name;
-	int32_t Flags = rpmdsFlags(trigger);
+	rpmsenseFlags Flags = rpmdsFlags(trigger);
 
 	if ((Name = rpmdsN(trigger)) == NULL)
 	    continue;   /* XXX can't happen */

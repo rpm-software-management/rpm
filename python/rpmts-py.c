@@ -409,7 +409,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    const char * needsName;
 	    char * byName, * byVersion, * byRelease, *byArch;
 	    char * needsOP, * needsVersion;
-	    int needsFlags, sense;
+	    rpmsenseFlags needsFlags, sense;
 	    fnpyKey key;
 
 	    p = rpmpsGetProblem(psi);

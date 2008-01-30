@@ -407,7 +407,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     const char * group = "Public Keys";
     const char * license = "pubkey";
     const char * buildhost = "localhost";
-    int32_t pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
+    rpmsenseFlags pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
     int32_t zero = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;

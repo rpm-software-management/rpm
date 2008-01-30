@@ -600,7 +600,7 @@ assert(otherFi != NULL);
 static int ensureOlder(rpmts ts,
 		const rpmte p, const Header h)
 {
-    int32_t reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
+    rpmsenseFlags reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
     rpmds req;
     char * t;
