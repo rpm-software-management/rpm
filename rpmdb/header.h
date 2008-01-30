@@ -87,14 +87,6 @@ extern "C" {
 #endif
 
 /** \ingroup header
- */
-typedef struct headerToken_s * Header;
-
-/** \ingroup header
- */
-typedef struct headerIterator_s * HeaderIterator;
-
-/** \ingroup header
  * Associate tag names with numeric values.
  */
 typedef struct headerTagTableEntry_s * headerTagTableEntry;
