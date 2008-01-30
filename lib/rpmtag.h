@@ -1,6 +1,10 @@
 #ifndef _RPMTAG_H
 #define _RPMTAG_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmtag
  * Automatically generated table of tag name/value pairs.
  */
@@ -298,5 +302,9 @@ rpm_tagtype_t rpmTagGetType(rpm_tag_t tag);
  * @return		tag value, -1 on not found
  */
 rpm_tag_t rpmTagGetValue(const char * tagstr);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMTAG_H */
