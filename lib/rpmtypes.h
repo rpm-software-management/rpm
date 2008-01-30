@@ -38,6 +38,7 @@ typedef struct rpmgi_s * rpmgi;
 typedef struct rpmSpec_s * rpmSpec;
 
 typedef const void * fnpyKey;
+typedef struct rpmRelocation_s rpmRelocation;
 
 typedef struct _FD_s * FD_t;
 

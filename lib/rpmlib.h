@@ -201,14 +201,6 @@ typedef int (*HME_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
 typedef int (*HRE_t) (Header h, rpm_tag_t tag);
 
 /**
- * We pass these around as an array with a sentinel.
- */
-typedef struct rpmRelocation_s {
-    const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
-    const char * newPath;	/*!< NULL means to omit the file completely! */
-} rpmRelocation;
-
-/**
  * Compare headers to determine which header is "newer".
  * @param first		1st header
  * @param second	2nd header
