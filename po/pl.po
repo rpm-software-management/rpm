@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2007-12-18 13:27+0200\n"
-"PO-Revision-Date: 2007-08-29 13:48+0200\n"
+"PO-Revision-Date: 2007-12-19 01:12+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1352,9 +1352,9 @@ msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) nie powiodło się: %s\n"
 
 #: build/rpmfc.c:1249
-#, fuzzy, c-format
+#, c-format
 msgid "magic_load failed: %s\n"
-msgstr "magic_load(ms, \"%s\") nie powiodło się: %s\n"
+msgstr "magic_load nie powiodło się: %s\n"
 
 #: build/rpmfc.c:1293
 #, c-format
@@ -1748,44 +1748,37 @@ msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nieobsługiwany rozmiar (%s) w pakiecie %s\n"
 
 #: lib/poptALL.c:171
-#, fuzzy
 msgid "RPMGI_COMFOLLOW: follow command line symlinks"
-msgstr "FTS_COMFOLLOW: podążaj za dowiązaniami z wiersza poleceń"
+msgstr ""
+"RPMGI_COMFOLLOW: podążaj za dowiązaniami symbolicznymi z wiersza poleceń"
 
 #: lib/poptALL.c:173
-#, fuzzy
 msgid "RPMGI_LOGICAL: logical walk"
-msgstr "FTS_LOGICAL: przechodź logicznie"
+msgstr "RPMGI_LOGICAL: przechodź logicznie"
 
 #: lib/poptALL.c:175
-#, fuzzy
 msgid "RPMGI_NOCHDIR: don't change directories"
-msgstr "FTS_NOCHDIR: nie zmień katalogów"
+msgstr "RPMGI_NOCHDIR: nie zmień katalogów"
 
 #: lib/poptALL.c:177
-#, fuzzy
 msgid "RPMGI_NOSTAT: don't get stat info"
-msgstr "FTS_NOSTAT: nie uzyskaj informacji stat"
+msgstr "RPMGI_NOSTAT: nie uzyskaj informacji stat"
 
 #: lib/poptALL.c:179
-#, fuzzy
 msgid "RPMGI_PHYSICAL: physical walk"
-msgstr "FTS_PHYSICAL: przechodź fizycznie"
+msgstr "RPMGI_PHYSICAL: przechodź fizycznie"
 
 #: lib/poptALL.c:181
-#, fuzzy
 msgid "RPMGI_SEEDOT: return dot and dot-dot"
-msgstr "FTS_SEEDOT: zwracaj kropkę i kropkę-kropkę"
+msgstr "RPMGI_SEEDOT: zwracaj kropkę i kropkę-kropkę"
 
 #: lib/poptALL.c:183
-#, fuzzy
 msgid "RPMGI_XDEV: don't cross devices"
-msgstr "FTS_XDEV: nie przechodź między urządzeniami"
+msgstr "RPMGI_XDEV: nie przechodź między urządzeniami"
 
 #: lib/poptALL.c:185
-#, fuzzy
 msgid "RPMGI_WHITEOUT: return whiteout information"
-msgstr "FTS_WHITEOUT: zwróć informacje o whiteout"
+msgstr "RPMGI_WHITEOUT: zwróć informacje o whiteout"
 
 #: lib/poptALL.c:198
 msgid "predefine MACRO with value EXPR"
@@ -2566,9 +2559,8 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush nie powiodło się: %s\n"
 
 #: lib/rpmchecksig.c:200
-#, fuzzy
 msgid "rpmMkTempFile failed\n"
-msgstr "makeTempFile nie powiodło się\n"
+msgstr "rpmMkTempFile nie powiodło się\n"
 
 #: lib/rpmchecksig.c:299
 #, c-format
@@ -2835,14 +2827,14 @@ msgid "%s: not an rpm package\n"
 msgstr "%s: nie jest pakietem RPM\n"
 
 #: lib/rpmlead.c:103
-#, fuzzy, c-format
+#, c-format
 msgid "%s: illegal signature type\n"
-msgstr "%s: podpis jest niedostępny\n"
+msgstr "%s: typ podpisu jest niedozwolony\n"
 
 #: lib/rpmlead.c:107
 #, c-format
 msgid "%s: unsupported RPM package (version %d)\n"
-msgstr ""
+msgstr "%s: nieobsługiwany pakiet RPM (wersja %d)\n"
 
 #: lib/rpmlead.c:120
 #, c-format
@@ -3167,10 +3159,11 @@ msgid "\tFound entry at address:  %p\n"
 msgstr "\tZnaleziono wpis pod adresem:  %p\n"
 
 #: lib/signature.c:115
-#, fuzzy, c-format
+#, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%zd)+pad(%zd)+data(%zd)\n"
 msgstr ""
-"Oczekiwany rozmiar: %12d = nagłówek(%d)+podpisy(%d)+wyrównanie(%d)+dane(%d)\n"
+"Oczekiwany rozmiar: %12d = "
+"nagłówek(%d)+podpisy(%zd)+wyrównanie(%zd)+dane(%zd)\n"
 
 #: lib/signature.c:119
 #, c-format
@@ -3213,14 +3206,14 @@ msgid "sigh load: BAD\n"
 msgstr "sigh wczytanie: BŁĘDNE\n"
 
 #: lib/signature.c:278
-#, fuzzy, c-format
+#, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
-msgstr "sigh wyrównanie(%d): BŁĘDNE, odczytano %d bajtów\n"
+msgstr "sigh wyrównanie(%zd): BŁĘDNE, odczytano %zd bajtów\n"
 
 #: lib/signature.c:287
-#, fuzzy, c-format
+#, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
-msgstr "sigh rozmiar podpisu(%d): BŁĘDNY, fstat(2) nie powiodło się\n"
+msgstr "sigh rozmiar podpisu(%zd): BŁĘDNY, fstat(2) nie powiodło się\n"
 
 #: lib/signature.c:320
 #, c-format
@@ -4014,9 +4007,9 @@ msgid "Unknown or unexpected error"
 msgstr "Nieznany lub nieoczekiwany błąd"
 
 #: rpmio/rpmio.c:756
-#, fuzzy, c-format
+#, c-format
 msgid "URL helper failed: %s (%d)\n"
-msgstr "odczytanie nie powiodło się: %s (%d)\n"
+msgstr "Obsługa URL nie powiodła się: %s (%d)\n"
 
 #: rpmio/rpmlog.c:36
 msgid "(no error)"
@@ -4075,40 +4068,3 @@ msgstr "%s: operacja w pamięci podręcznej nie powiodła się: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
-
-#~ msgid "readRPM: read %s: %s\n"
-#~ msgstr "readRPM: odczytaj %s: %s\n"
-
-#~ msgid "Unable to write final header\n"
-#~ msgstr "Nie można zapisać ostatecznego nagłówka\n"
-
-#~ msgid "error creating temporary file %s\n"
-#~ msgstr "błąd podczas tworzenia pliku tymczasowego %s\n"
-
-#~ msgid "packaging version 1 is not supported by this version of RPM\n"
-#~ msgstr "pakiety w wersji 1 nie są obsługiwane przez tę wersję RPM-a\n"
-
-#~ msgid ""
-#~ "only packaging with major numbers <= 4 is supported by this version of "
-#~ "RPM\n"
-#~ msgstr ""
-#~ "tylko pakiety z numerem głównym <= 4 są obsługiwane przez tę wersję RPM-"
-#~ "a\n"
-
-#~ msgid "%s: Can't sign v1 packaging\n"
-#~ msgstr "%s: nie można podpisać pakietu v1\n"
-
-#~ msgid "%s: Can't re-sign v2 packaging\n"
-#~ msgstr "%s: nie można ponownie podpisać pakietu v2\n"
-
-#~ msgid "%s: No signature available (v1.0 RPM)\n"
-#~ msgstr "%s: podpis nie jest dostępny (RPM v1.0)\n"
-
-#~ msgid "File %s: %s\n"
-#~ msgstr "Plik %s: %s\n"
-
-#~ msgid "File %s is smaller than %u bytes\n"
-#~ msgstr "Plik %s jest mniejszy niż %u bajtów\n"
-
-#~ msgid "Unsatisfied dependencies for %s: "
-#~ msgstr "Niespełnione zależności dla %s: "
