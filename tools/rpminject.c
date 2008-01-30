@@ -1,13 +1,14 @@
 #include "system.h"
 const char *__progname;
 
+#include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
+
 #include <rpm/rpmbuild.h>
+#include <rpm/rpmtag.h>
+
+#include "lib/rpmlead.h"
 #include "build/buildio.h"
 
-#include <rpm/rpmtag.h>
-#include "lib/rpmlead.h"
-
-#include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
 #include "debug.h"
 
 typedef enum injmode_e { INJ_UNKNOWN, INJ_ADD, INJ_DELETE, INJ_MODIFY } injmode_t;

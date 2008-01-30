@@ -1,13 +1,14 @@
 #ifndef _RPMDIGEST_H
 #define _RPMDIGEST_H
 
-#include "rpmio/base64.h"
-#include <rpm/rpmpgp.h>
-
 #include <nss.h>
 #include <sechash.h>
 #include <keyhi.h>
 #include <cryptohi.h>
+
+#include <rpm/rpmpgp.h>
+#include "rpmio/base64.h"
+
 
 /** \ingroup rpmio
  * Values parsed from OpenPGP signature/pubkey packet(s).

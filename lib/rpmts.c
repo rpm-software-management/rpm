@@ -13,15 +13,13 @@
 #include <rpm/rpmstring.h>
 
 #include <rpm/rpmdb.h>
-
 #include <rpm/rpmal.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
-#include "lib/rpmlock.h"
 #include <rpm/rpmlog.h>
-
 #include <rpm/rpmte.h>
 
+#include "lib/rpmlock.h"
 #include "lib/rpmts_internal.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */

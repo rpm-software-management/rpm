@@ -21,13 +21,13 @@ extern int h_errno;
 #define	IPPORT_HTTP	80
 #endif
 
-#include "rpmio/rpmio_internal.h"
-
-#include "rpmio/ugid.h"
 #include <rpm/argv.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
+
+#include "rpmio/rpmio_internal.h"
+#include "rpmio/ugid.h"
 
 #include "debug.h"
 

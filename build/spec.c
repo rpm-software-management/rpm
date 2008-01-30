@@ -5,13 +5,14 @@
 
 #include "system.h"
 
-#include "build/buildio.h"
 #include <rpm/rpmtag.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
+
+#include "build/buildio.h"
 
 #include "debug.h"
 

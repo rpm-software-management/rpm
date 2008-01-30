@@ -1,11 +1,12 @@
 #include "system.h"
-#include "rpmio/fts.h"
 
-#include "rpmio/rpmio_internal.h"
-#include <rpm/rpmmacro.h>
-#include <rpm/rpmlog.h>
 #include <popt.h>
 
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
+
+#include "rpmio/fts.h"
+#include "rpmio/rpmio_internal.h"
 #include "debug.h"
 
 static int _fts_debug = 0;

@@ -1,6 +1,14 @@
 #include "system.h"
 
 #include <signal.h>
+#if HAVE_GELF_H
+#include <gelf.h>
+
+#if !defined(DT_GNU_HASH)
+#define	DT_GNU_HASH		0x6ffffef5
+#endif
+
+#endif
 
 #include <rpm/rpmtag.h>
 #include <rpm/rpmbuild.h>
@@ -11,15 +19,6 @@
 
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
-
-#if HAVE_GELF_H
-#include <gelf.h>
-
-#if !defined(DT_GNU_HASH)
-#define	DT_GNU_HASH		0x6ffffef5
-#endif
-
-#endif
 
 #include "debug.h"
 

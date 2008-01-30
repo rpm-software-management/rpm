@@ -13,9 +13,10 @@ const char *__progname;
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmds.h>
+#include <rpm/rpmlog.h>
 
 #include "lib/manifest.h"
-#include <rpm/rpmlog.h>
+
 #include "debug.h"
 
 static int _depends_debug;

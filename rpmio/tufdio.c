@@ -4,11 +4,12 @@
 
 #include "system.h"
 
+#include <stdarg.h>
+#include <err.h>
+
 #include <rpm/rpmurl.h>
 #include "rpmio/rpmio_internal.h"
 
-#include <stdarg.h>
-#include <err.h>
 #include "debug.h"
 
 extern int _url_debug;

@@ -6,9 +6,10 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
-
 #include <rpm/rpmstring.h>
+
 #include "lib/manifest.h"
+
 #include "debug.h"
 
 

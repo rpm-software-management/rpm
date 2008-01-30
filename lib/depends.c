@@ -10,13 +10,11 @@
 #include <rpm/rpmtag.h>
 #include <rpm/rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 #include <rpm/rpmlog.h>
-
 #include <rpm/rpmdb.h>
-#include "rpmdb/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
-
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 
+#include "rpmdb/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
 #include "lib/rpmte_internal.h"		/* XXX tsortInfo_s */
 #include "lib/rpmts_internal.h"
 

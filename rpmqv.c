@@ -17,9 +17,10 @@ const char *__progname;
 #include <rpm/rpmlog.h>
 
 #include <rpm/rpmdb.h>
-#include "rpmdb/rpmdb_internal.h"	/* XXX for freeing dbiTags */
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
+
+#include "rpmdb/rpmdb_internal.h"	/* XXX for freeing dbiTags */
 
 #ifdef	IAM_RPMBT
 #include "build.h"

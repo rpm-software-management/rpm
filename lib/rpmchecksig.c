@@ -7,17 +7,16 @@
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
 #include <rpm/rpmpgp.h>
-#include "rpmio/rpmio_internal.h"	/* for fd*Digest() */
 #include <rpm/rpmcli.h>
-
+#include <rpm/rpmfileutil.h>	/* rpmMkTempFile() */
 #include <rpm/rpmdb.h>
-
 #include <rpm/rpmts.h>
-
 #include <rpm/rpmlog.h>
+
+#include "rpmio/rpmio_internal.h"	/* for fd*Digest() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
-#include <rpm/rpmfileutil.h>	/* rpmMkTempFile() */
+
 #include "debug.h"
 
 int _print_pkts = 0;

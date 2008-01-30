@@ -13,9 +13,9 @@
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>
+#include <rpm/rpmlog.h>
 
 #include "build.h"
-#include <rpm/rpmlog.h>
 #include "debug.h"
 
 /**

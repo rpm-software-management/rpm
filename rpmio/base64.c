@@ -3,7 +3,9 @@
 
 #include <arpa/inet.h>
 #include <stdlib.h>
+
 #include "rpmio/base64.h"
+
 
 static char base64_encode_value(char value_in)
 {

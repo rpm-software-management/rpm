@@ -6,21 +6,21 @@
 
 #include <popt.h>
 
-#include "rpmio/digest.h"
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlib.h>		/* XXX RPMSIGTAG* & related */
 #include <rpm/rpmmacro.h>	/* XXX for rpmGetPath() */
 #include <rpm/rpmdb.h>
 #include <rpm/rpmstring.h>
-
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
 
-#include <rpm/rpmlog.h>
+#include "rpmio/digest.h"
 #include "lib/misc.h"	/* XXX for dosetenv() */
-#include <rpm/rpmfileutil.h>
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "rpmdb/header_internal.h"
+
 #include "debug.h"
 
 #if !defined(__GLIBC__) && !defined(__APPLE__)

@@ -8,9 +8,11 @@
 #include <rpm/rpmtag.h>
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
-#include "debug.h"
 
 #include "rpmio/rpmlua.h"
+
+#include "debug.h"
+
 
 /**
  */

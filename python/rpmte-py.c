@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-
 #include "header-py.h"	/* XXX tagNumFromPyObject */
 #include "rpmds-py.h"
 #include "rpmfi-py.h"

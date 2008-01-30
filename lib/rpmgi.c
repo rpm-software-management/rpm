@@ -7,18 +7,16 @@
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
 #include <rpm/rpmte.h>		/* XXX rpmElementType */
 #include <rpm/rpmts.h>
-
 #include <rpm/rpmgi.h>
-#include "rpmio/fts.h"
-
 #include <rpm/rpmdb.h>
 #include <rpm/rpmmacro.h>		/* XXX rpmExpand */
 #include <rpm/rpmfileutil.h>
-#include "lib/manifest.h"
 #include <rpm/rpmlog.h>
 
-#include "debug.h"
+#include "rpmio/fts.h"
+#include "lib/manifest.h"
 
+#include "debug.h"
 
 int _rpmgi_debug = 0;
 

@@ -3,7 +3,9 @@
  */
 
 #include "system.h"
+
 #include "rpmio/digest.h"
+
 #include "debug.h"
 
 #ifdef	SHA_DEBUG

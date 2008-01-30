@@ -5,10 +5,10 @@
  * \file rpmdb/header_internal.h
  */
 
+#include <netinet/in.h>
+
 #include <rpm/header.h>
 #include "rpmdb/header_method.h"
-
-#include <netinet/in.h>
 
 #define	INDEX_MALLOC_SIZE	8
 

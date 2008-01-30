@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpm/rpmtag.h>
+
 #include "rpmdb-py.h"
 #include "rpmmi-py.h"
 #include "header-py.h"

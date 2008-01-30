@@ -1,7 +1,7 @@
 #include "system.h"
+#include <popt.h>
 #include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"	/* XX _*debug */
-#include <popt.h>
 #include "debug.h"
 
 static int printing = 1;

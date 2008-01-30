@@ -17,12 +17,11 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
 
 #ifdef	WITH_LUA
 #include "rpmio/rpmlua.h"
 #endif
-
-#include <rpm/rpmmacro.h>
 
 #include "debug.h"
 

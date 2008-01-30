@@ -1,9 +1,9 @@
 #include "system.h"
 
-#include "rpmio/rpmio_internal.h"
+#include <popt.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
-#include <popt.h>
+#include "rpmio/rpmio_internal.h"
 
 #include "debug.h"
 

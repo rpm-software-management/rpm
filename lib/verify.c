@@ -8,13 +8,13 @@
 #include <rpm/rpmcli.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
-
-#include "lib/psm.h"
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>
-
 #include <rpm/rpmfileutil.h>
+
+#include "lib/psm.h"
 #include "rpmio/ugid.h" 	/* uidToUname(), gnameToGid */
+
 #include "debug.h"
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))

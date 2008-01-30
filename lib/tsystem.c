@@ -1,9 +1,9 @@
 #include "system.h"
 
 #include <pthread.h>
+#include <popt.h>
 
 #include <rpm/rpmsq.h>
-#include <popt.h>
 
 #include "debug.h"
 

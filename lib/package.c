@@ -6,18 +6,17 @@
 
 #include <netinet/in.h>
 
-#include "rpmio/digest.h"
-#include "rpmio/rpmio_internal.h"	/* fd*Digest(), fd stats */
-
 #include <rpm/rpmlib.h>			/* XXX RPMSIGTAG, other sig stuff */
 #include <rpm/rpmts.h>
+#include <rpm/rpmlog.h>
 
 #include "lib/legacy.h"	/* XXX legacyRetrofit() */
 #include "lib/rpmlead.h"
-
-#include <rpm/rpmlog.h>
-#include "rpmdb/header_internal.h"	/* XXX headerCheck */
 #include "lib/signature.h"
+#include "rpmio/digest.h"
+#include "rpmio/rpmio_internal.h"	/* fd*Digest(), fd stats */
+#include "rpmdb/header_internal.h"	/* XXX headerCheck */
+
 #include "debug.h"
 
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))

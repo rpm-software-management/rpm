@@ -1,13 +1,12 @@
 #include "system.h"
 
+#include <popt.h>
+
 #include <rpm/rpmtag.h>
 #include <rpm/rpmgi.h>
 #include <rpm/rpmcli.h>
-
 #include <rpm/rpmte.h>
-
 #include <rpm/rpmmacro.h>
-#include <popt.h>
 
 #include "debug.h"
 

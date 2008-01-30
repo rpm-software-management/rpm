@@ -10,25 +10,21 @@
 
 #include <regex.h>
 
-#include <rpm/rpmpgp.h>
-#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
-#include "rpmio/fts.h"
-
 #include <rpm/rpmbuild.h>
-
-#include "lib/cpio.h"
-
+#include <rpm/rpmpgp.h>
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>
+#include <rpm/rpmfileutil.h>	/* rpmDoDigest() */
+#include <rpm/rpmlog.h>
 
+#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
+#include "rpmio/fts.h"
+#include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX pretty much all rpmfi internals... */
 #include "lib/rpmte_internal.h"	/* XXX rpmte init */
-
+#include "lib/legacy.h"		/* XXX expandFileList, compressFileList */
 #include "build/buildio.h"
 
-#include <rpm/rpmfileutil.h>	/* rpmDoDigest() */
-#include "lib/legacy.h"	/* XXX expandFileList, compressFileList */
-#include <rpm/rpmlog.h>
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }

@@ -1,10 +1,11 @@
 #include "system.h"
 
-#include "rpmio/rpmio_internal.h"
-#include <rpm/rpmmacro.h>
-#include <rpm/rpmlog.h>
 #include <popt.h>
 
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
+
+#include "rpmio/rpmio_internal.h"
 #include "debug.h"
 
 static int _debug = 0;

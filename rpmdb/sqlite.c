@@ -26,16 +26,16 @@
 
 #include "system.h"
 
+#include <sqlite3.h>
+
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmurl.h>     	/* XXX urlPath proto */
 #include <rpm/rpmfileutil.h>	/* rpmioMkpath */
-
-#include "rpmdb/rpmdb_internal.h"
 #include <rpm/rpmdb.h>
 
-#include <sqlite3.h>
+#include "rpmdb/rpmdb_internal.h"
 
 #include "debug.h"
 

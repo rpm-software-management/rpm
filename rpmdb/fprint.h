@@ -6,8 +6,8 @@
  * Identify a file name path by a unique "finger print".
  */
 
-#include "rpmdb/rpmhash.h"
 #include <rpm/header.h>
+#include "rpmdb/rpmhash.h"
 
 /**
  */

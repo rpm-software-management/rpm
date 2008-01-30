@@ -23,10 +23,10 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmds.h>			/* XXX isInstallPreReq macro only */
-
 #include <rpm/rpmlog.h>
-#include "rpmdb/rpmdb_internal.h"
 #include <rpm/rpmdb.h>
+
+#include "rpmdb/rpmdb_internal.h"
 #include "rpmdb/fprint.h"
 #include "rpmdb/header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 #include "debug.h"

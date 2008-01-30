@@ -7,31 +7,24 @@
 #include <rpm/rpmlib.h>		/* rpmMachineScore, rpmReadPackageFile */
 #include <rpm/rpmmacro.h>	/* XXX for rpmExpand */
 #include <rpm/rpmlog.h>
-
-#include "lib/psm.h"
-
 #include <rpm/rpmdb.h>
-#include "rpmdb/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
-
 #include <rpm/rpmds.h>
-
-#include "lib/rpmlock.h"
-
-#include "lib/rpmfi_internal.h"	/* fi->replaced, fi->actions... */
-
-#include "lib/rpmte_internal.h"	/* XXX te->h, te->fd, te->h */
-
-#include "lib/rpmts_internal.h"
-
-#include "lib/cpio.h"
-#include "rpmdb/fprint.h"
+#include <rpm/idtx.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
+
+#include "rpmdb/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
+#include "rpmdb/fprint.h"
+#include "lib/psm.h"
+#include "lib/rpmlock.h"
+#include "lib/rpmfi_internal.h"	/* fi->replaced, fi->actions... */
+#include "lib/rpmte_internal.h"	/* XXX te->h, te->fd, te->h */
+#include "lib/rpmts_internal.h"
+#include "lib/cpio.h"
 #include "lib/misc.h" 		/* currentDirectory */
 
 #include "debug.h"
 
-#include <rpm/idtx.h>
 
 /**
  */

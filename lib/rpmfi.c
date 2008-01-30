@@ -6,20 +6,16 @@
 #include "system.h"
 
 #include <rpm/rpmlog.h>
-
-#include "lib/cpio.h"	/* XXX CPIO_FOO */
-#include "lib/fsm.h"	/* XXX newFSM() */
-
-#include <rpm/rpmds.h>
-
-#include "lib/rpmfi_internal.h"
-
-#include "lib/rpmte_internal.h"	/* relocations */
 #include <rpm/rpmts.h>
-
 #include <rpm/rpmfileutil.h>/* XXX domd5 */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>	/* XXX rpmCleanPath */
+#include <rpm/rpmds.h>
+
+#include "lib/rpmfi_internal.h"
+#include "lib/rpmte_internal.h"	/* relocations */
+#include "lib/cpio.h"	/* XXX CPIO_FOO */
+#include "lib/fsm.h"	/* XXX newFSM() */
 
 #include "debug.h"
 

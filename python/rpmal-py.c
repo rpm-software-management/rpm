@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-
 #include "rpmal-py.h"
 #include "rpmds-py.h"
 #include "rpmfi-py.h"

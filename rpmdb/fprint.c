@@ -4,9 +4,9 @@
 
 #include "system.h"
 
-#include "rpmdb/rpmdb_internal.h"
 #include <rpm/rpmfileutil.h>	/* for rpmCleanPath */
 
+#include "rpmdb/rpmdb_internal.h"
 #include "rpmdb/fprint.h"
 #include "debug.h"
 

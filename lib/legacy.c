@@ -9,7 +9,9 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmds.h>
+
 #include "lib/legacy.h"
+
 #include "debug.h"
 
 #define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))

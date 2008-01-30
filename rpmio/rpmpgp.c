@@ -4,10 +4,11 @@
  */
 
 #include "system.h"
-#include "rpmio/digest.h"
-#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 
 #include <rpm/rpmstring.h>
+
+#include "rpmio/digest.h"
+#include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 
 #include "debug.h"
 

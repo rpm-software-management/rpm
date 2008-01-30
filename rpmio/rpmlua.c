@@ -1,12 +1,6 @@
 #include "system.h"
 
 #ifdef	WITH_LUA
-#include <rpm/rpmio.h>
-#include <rpm/rpmmacro.h>
-#include <rpm/rpmlog.h>
-#include <rpm/rpmurl.h>
-#include "rpmio/rpmhook.h"
-
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
@@ -15,6 +9,12 @@
 
 #include <unistd.h>
 #include <assert.h>
+
+#include <rpm/rpmio.h>
+#include <rpm/rpmmacro.h>
+#include <rpm/rpmlog.h>
+#include <rpm/rpmurl.h>
+#include "rpmio/rpmhook.h"
 
 #define _RPMLUA_INTERNAL
 #include "rpmio/rpmlua.h"

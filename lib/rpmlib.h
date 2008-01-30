@@ -8,11 +8,12 @@
  *
  */
 
+#include <popt.h>
+
 #include <rpm/rpmio.h>
 #include <rpm/header.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmds.h>	/* XXX move rpmlib provides to rpmds instead */
-#include <popt.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -7,7 +7,6 @@
 #include <rpm/rpmlib.h>		/* rpmvercmp */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
-
 #include <rpm/rpmds.h>
 
 #include "debug.h"

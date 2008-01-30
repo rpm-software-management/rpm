@@ -6,7 +6,6 @@
 const char *__progname;
 
 #include <fnmatch.h>
-#include "rpmio/fts.h"
 
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlib.h>	/* RPM_MACHTABLE, rpmReadPackageFile */
@@ -18,6 +17,7 @@ const char *__progname;
 #include <rpm/rpmds.h>
 #include <rpm/rpmts.h>
 
+#include "rpmio/fts.h"
 #include "lib/misc.h"	/* for rpmMkdirPath */
 
 #include "debug.h"

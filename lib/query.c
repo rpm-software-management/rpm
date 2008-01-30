@@ -14,16 +14,15 @@
 #include <rpm/rpmtag.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmfi.h>
-
 #include <rpm/rpmgi.h>
 #include <rpm/rpmts.h>
-
-#include "lib/manifest.h"
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>	/* rpmCleanPath */
 
-#include "debug.h"
+#include "lib/manifest.h"
 #include "lib/misc.h"		/* XXX for currentDirectory */
+
+#include "debug.h"
 
 
 /**

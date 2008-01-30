@@ -1,8 +1,9 @@
 #include "system.h"
                                                                                 
+#include <popt.h>
+
 #include <rpm/rpmpgp.h>
 #include "rpmio/base64.h"
-#include <popt.h>
 
 #include "debug.h"
 

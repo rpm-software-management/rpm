@@ -4,10 +4,11 @@
 
 #include "system.h"
 
-#include "structmember.h"
+#include <structmember.h>
+
+#include <rpm/rpmmacro.h>
 
 #include "rpmmacro-py.h"
-#include <rpm/rpmmacro.h>
 
 #include "debug.h"
 

@@ -7,10 +7,12 @@
 #include <netinet/in.h>
 
 #include <rpm/rpmlib.h>		/* rpmGetOs/ArchInfo() */
+#include <rpm/rpmlog.h>
+
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include "lib/legacy.h"
-#include <rpm/rpmlog.h>
+
 #include "debug.h"
 
 static unsigned char lead_magic[] = {

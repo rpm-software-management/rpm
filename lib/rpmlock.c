@@ -4,8 +4,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
-
 #include <rpm/rpmts.h>
+
 #include "lib/rpmlock.h"
 
 #include "debug.h"

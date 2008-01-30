@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-
 #include "rpmps-py.h"
 
 #include "debug.h"

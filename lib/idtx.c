@@ -8,6 +8,8 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
+#include "debug.h"
+
 static int reverse = -1;
 
 /**
