@@ -14,6 +14,7 @@
 
 #include <regex.h>
 
+#include <rpm/rpmtag.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmpgp.h>

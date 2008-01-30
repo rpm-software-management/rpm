@@ -2,6 +2,7 @@
 
 #include <signal.h>
 
+#include <rpm/rpmtag.h>
 #include <rpm/rpmbuild.h>
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>

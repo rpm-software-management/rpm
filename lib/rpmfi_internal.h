@@ -1,6 +1,7 @@
 #ifndef _RPMFI_INTERNAL_H
 #define _RPMFI_INTERNAL_H
 
+#include <rpm/rpmtag.h>
 #include <rpm/rpmfi.h>
 #include "lib/fsm.h"		/* for FSM_t */
 

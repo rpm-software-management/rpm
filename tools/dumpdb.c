@@ -1,9 +1,10 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpm/rpmlib.h>
 #include "rpmdb/header_internal.h"
 
+#include <rpm/rpmtag.h>
+#include <rpm/rpmlib.h>		/* rpmReadConfigFiles */
 #include <rpm/rpmdb.h>
 
 #include "debug.h"

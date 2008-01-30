@@ -4,9 +4,10 @@
  */
 #include "system.h"
 
+#include <rpm/rpmtag.h>
+#include <rpm/rpmlib.h>			/* rpmReadPackage etc */
 #include <rpm/rpmurl.h>
 #include "rpmio/digest.h"
-#include <rpm/rpmlib.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>		/* rpmtsOpenDB() needs rpmGetPath */
 #include <rpm/rpmstring.h>

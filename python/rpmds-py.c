@@ -4,8 +4,9 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmlib.h>		/* rpmvercmp */
 
 #include "header-py.h"
 #include "rpmds-py.h"

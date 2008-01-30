@@ -4,8 +4,8 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
-
+#include <rpm/rpmtag.h>
+#include <rpm/rpmlib.h>		/* rpmGetRpmlibProvides() & co protos */
 #include <rpm/rpmds.h>
 
 #include "debug.h"

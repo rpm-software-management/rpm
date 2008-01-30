@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <rpm/rpmtag.h>
+#include <rpm/rpmlib.h>		/* RPM_MACHTABLE & related */
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmts.h>

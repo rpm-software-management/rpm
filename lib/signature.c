@@ -4,8 +4,11 @@
 
 #include "system.h"
 
+#include <popt.h>
+
 #include "rpmio/digest.h"
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtag.h>
+#include <rpm/rpmlib.h>		/* XXX RPMSIGTAG* & related */
 #include <rpm/rpmmacro.h>	/* XXX for rpmGetPath() */
 #include <rpm/rpmdb.h>
 #include <rpm/rpmstring.h>

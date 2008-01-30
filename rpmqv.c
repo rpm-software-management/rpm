@@ -12,6 +12,7 @@ const char *__progname;
 #endif
 
 #include <rpm/rpmcli.h>
+#include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
 

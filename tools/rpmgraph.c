@@ -2,7 +2,7 @@
 const char *__progname;
 
 #include <rpm/rpmcli.h>
-
+#include <rpm/rpmlib.h>		/* rpmReadPackageFile */
 #include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmte.h>

@@ -2,7 +2,7 @@
 
 #include <pthread.h>
 #include <assert.h>
-#include <rpm/rpmlib.h>
+#include <rpm/rpmlib.h>	/* rpmReadConfigFiles, rpmReadPackageFile */
 #include <rpm/rpmts.h>
 #include <rpm/rpmsq.h>	/* XXX for _rpmsq_debug */
 #include <rpm/rpmio.h>

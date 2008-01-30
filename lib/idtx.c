@@ -1,7 +1,8 @@
 #include "system.h"
 
 #include <rpm/idtx.h>
-#include <rpm/rpmlib.h>
+#include <rpm/rpmlib.h>		/* rpmReadPackageFile */
+#include <rpm/rpmtag.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>

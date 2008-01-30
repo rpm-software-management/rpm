@@ -3,7 +3,9 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmlib.h>		/* rpmReadPackageFile .. */
+#include <rpm/rpmtag.h>
+#include <rpm/rpmio.h>
 #include <rpm/rpmpgp.h>
 
 #include <rpm/rpmts.h>

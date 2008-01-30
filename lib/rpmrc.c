@@ -13,8 +13,8 @@
 #define __power_pc() 0
 #endif
 
+#include <rpm/rpmlib.h>			/* RPM_MACTABLE*, Rc-prototypes */
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
-#include <rpm/rpmlib.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>

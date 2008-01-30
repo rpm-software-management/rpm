@@ -1,10 +1,13 @@
 #include "system.h"
 const char *__progname;
 
-#include <rpm/rpmlib.h>
-#include <rpm/rpmmacro.h>
-#include <rpm/rpmurl.h>
+#include <popt.h>
 
+#include <rpm/rpmlib.h>		/* rpmReadConfigFiles */
+#include <rpm/rpmfileutil.h>
+#include <rpm/rpmurl.h>
+#include <rpm/rpmio.h>
+#include <rpm/rpmtag.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmte.h>

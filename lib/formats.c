@@ -4,7 +4,8 @@
 
 #include "system.h"
 #include "rpmio/digest.h"
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtag.h>
+#include <rpm/rpmlib.h>		/* rpmGetFilesystem*() */
 #include <rpm/rpmds.h>
 #include <rpm/rpmmacro.h>	/* XXX for %_i18ndomains */
 

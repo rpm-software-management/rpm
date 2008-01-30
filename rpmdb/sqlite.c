@@ -26,7 +26,7 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmurl.h>     	/* XXX urlPath proto */

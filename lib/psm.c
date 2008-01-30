@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmlib.h>		/* rpmvercmp and others */
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmurl.h>
 #include "rpmio/rpmlua.h"

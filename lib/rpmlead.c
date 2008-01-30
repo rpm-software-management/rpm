@@ -6,8 +6,7 @@
 
 #include <netinet/in.h>
 
-#include <rpm/rpmlib.h>
-
+#include <rpm/rpmlib.h>		/* rpmGetOs/ArchInfo() */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include "lib/legacy.h"

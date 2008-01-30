@@ -7,6 +7,7 @@
  */
 
 #include <string.h>
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {

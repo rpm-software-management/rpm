@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <rpm/rpmcli.h>
+#include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
 
 #include "lib/psm.h"

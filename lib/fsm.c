@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include "rpmio/rpmio_internal.h"	/* fdGet/SetCpioPos, fdInit/FiniDigest */
-#include <rpm/rpmlib.h>
 
 #include "lib/cpio.h"
 

@@ -5,7 +5,6 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
 #include <rpm/rpmlog.h>
 
 #include "lib/cpio.h"	/* XXX CPIO_FOO */

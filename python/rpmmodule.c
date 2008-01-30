@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <rpm/rpmlib.h>		/* rpmMachineScore, rpmReadConfigFiles */
+#include <rpm/rpmtag.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>

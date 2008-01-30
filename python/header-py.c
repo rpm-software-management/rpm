@@ -4,7 +4,8 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmlib.h>		/* rpmvercmp */
+#include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
 
 #include "lib/legacy.h"	/* XXX expand/compressFilelist(), providePackageNVR() */

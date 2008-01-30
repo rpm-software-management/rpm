@@ -8,8 +8,8 @@
 
 #include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"	/* fd*Digest(), fd stats */
-#include <rpm/rpmlib.h>
 
+#include <rpm/rpmlib.h>			/* XXX RPMSIGTAG, other sig stuff */
 #include <rpm/rpmts.h>
 
 #include "lib/legacy.h"	/* XXX legacyRetrofit() */

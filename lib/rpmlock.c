@@ -1,7 +1,6 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>

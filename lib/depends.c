@@ -6,6 +6,8 @@
 
 #include <rpm/rpmcli.h>		/* XXX rpmcliPackagesTotal */
 
+#include <rpm/rpmlib.h>			/* rpmVersionCompare, rpmlib provides */
+#include <rpm/rpmtag.h>
 #include <rpm/rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 #include <rpm/rpmlog.h>
 

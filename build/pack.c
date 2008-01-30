@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
 #include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
 #include <rpm/rpmbuild.h>
 

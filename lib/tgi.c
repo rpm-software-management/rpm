@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include <rpm/rpmtag.h>
 #include <rpm/rpmgi.h>
 #include <rpm/rpmcli.h>
 

@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include "build/buildio.h"
+#include <rpm/rpmtag.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>

@@ -4,7 +4,6 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
 
 #include <rpm/rpmal.h>
 #include <rpm/rpmds.h>

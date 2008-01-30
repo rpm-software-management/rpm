@@ -3,7 +3,7 @@
  */
 
 #include "system.h"
-#include <rpm/rpmlib.h>
+#include <rpm/rpmlib.h>		/* rpmGetFilesystem*() prototypes */
 #include <rpm/rpmfileutil.h>	/* for rpmGetPath */
 #include <rpm/rpmlog.h>
 #include "debug.h"

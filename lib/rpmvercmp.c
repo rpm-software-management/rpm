@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmlib.h>		/* rpmvercmp proto */
 #include <rpm/rpmstring.h>
 
 #include "debug.h"

@@ -3,8 +3,9 @@
  * Routine(s) to handle an "rpmte"  transaction element.
  */
 #include "system.h"
-#include <rpm/rpmlib.h>
 
+#include <rpm/rpmtag.h>
+#include <rpm/rpmlib.h>		/* RPM_MACHTABLE_* */
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 
