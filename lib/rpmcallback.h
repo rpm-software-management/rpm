@@ -1,6 +1,8 @@
 #ifndef _RPMCALLBACK_H
 #define _RPMCALLBACK_H
 
+#include <rpm/rpmtypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,10 +29,6 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_CPIO_ERROR	= (1 << 14),
     RPMCALLBACK_SCRIPT_ERROR	= (1 << 15)
 } rpmCallbackType;
-
-/**
- */
-typedef void * rpmCallbackData;
 
 /**
  */
