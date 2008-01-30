@@ -5,6 +5,7 @@
 
 #include <rpm/rpmlib.h>
 #include <rpm/rpmte.h>		/* XXX rpmElementType */
+#include <rpm/rpmts.h>
 
 #include <rpm/rpmgi.h>
 #include "rpmio/fts.h"

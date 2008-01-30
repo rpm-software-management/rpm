@@ -6,8 +6,6 @@
  */
 
 #include <rpm/rpmtypes.h>
-#include <rpm/rpmte.h>
-#include <rpm/rpmts.h>
 #include <rpm/argv.h>
 
 #ifdef __cplusplus
