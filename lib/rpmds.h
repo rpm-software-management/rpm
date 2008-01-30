@@ -6,7 +6,7 @@
  * Structure(s) used for dependency tag sets.
  */
 
-#include <rpm/rpmlib.h>	/* for rpmds */
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmps.h>
 
 #ifdef __cplusplus

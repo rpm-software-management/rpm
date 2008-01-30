@@ -1,7 +1,7 @@
 #ifndef H_RPMTSSCORE
 #define H_RPMTSSCORE
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmte.h>
 
 /**********************

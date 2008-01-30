@@ -6,7 +6,7 @@
  * Structure(s) used for file info tag sets.
  */
 
-#include <rpm/rpmlib.h>	/* for rpmfi */
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {

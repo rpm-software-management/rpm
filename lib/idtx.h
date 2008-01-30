@@ -1,7 +1,7 @@
 #ifndef H_RPMIDTX
 #define H_RPMIDTX
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {

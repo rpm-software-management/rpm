@@ -5,7 +5,7 @@
  * \file lib/rpmgi.h
  */
 
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
 #include <rpm/argv.h>

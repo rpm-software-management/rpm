@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include <rpm/rpmsw.h>
-#include <rpm/rpmlib.h>
+#include <rpm/rpmtypes.h>
 #include <db.h>
 
 /**

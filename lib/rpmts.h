@@ -6,7 +6,7 @@
  * Structures and prototypes used for an "rpmts" transaction set.
  */
 
-#include <rpm/rpmlib.h>	/* for rpmts */
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmsw.h>
 #include <rpm/rpmpgp.h>

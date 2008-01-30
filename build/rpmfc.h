@@ -8,7 +8,7 @@
 
 #include <magic.h>
 
-#include <rpm/rpmlib.h>	/* for rpmds, rpmSpec */
+#include <rpm/rpmtypes.h>
 #include <rpm/argv.h>	/* for ARGV_t */
 #include <rpm/rpmstring.h>	/* for StringBuf */
 #include <rpm/rpmspec.h>	/* for Package */

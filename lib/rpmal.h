@@ -6,8 +6,7 @@
  * Structures used for managing added/available package lists.
  */
 
-#include <rpm/rpmlib.h>		/* for rpmds, rpmfi, uint32_t */
-#include <rpm/rpmcallback.h>	/* for fnpyKey */
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
