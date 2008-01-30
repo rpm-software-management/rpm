@@ -569,18 +569,7 @@ int headerNextIterator(HeaderIterator hi,
  * @param type		type of data (or RPM_FORCEFREE_TYPE to force free)
  * @return		NULL always
  */
-static inline
-void * headerFreeData(rpm_data_t data, rpm_tagtype_t type)
-{
-    if (data) {
-	if (type == RPM_FORCEFREE_TYPE ||
-	    type == RPM_STRING_ARRAY_TYPE ||
-	    type == RPM_I18NSTRING_TYPE ||
-	    type == RPM_BIN_TYPE)
-		free(data); /* XXX _constfree() */
-    }
-    return NULL;
-}
+void * headerFreeData(rpm_data_t data, rpm_tagtype_t type);
 
 /** \ingroup header
  * Return name, version, release strings from header.

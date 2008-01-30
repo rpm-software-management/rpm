@@ -191,3 +191,14 @@ int headerNextIterator(HeaderIterator hi,
     return hdrVec->hdrnextiter(hi, tag, type, p, c);
 }
 
+void * headerFreeData(rpm_data_t data, rpm_tagtype_t type)
+{
+    if (data) {
+	if (type == RPM_FORCEFREE_TYPE ||
+	    type == RPM_STRING_ARRAY_TYPE ||
+	    type == RPM_I18NSTRING_TYPE ||
+	    type == RPM_BIN_TYPE)
+		free(data); /* XXX _constfree() */
+    }
+    return NULL;
+}
