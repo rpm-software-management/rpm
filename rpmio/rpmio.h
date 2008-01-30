@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmsw.h>
 
 #ifdef __cplusplus
@@ -33,10 +34,6 @@ typedef _libio_off_t *	_libio_pos_t;
 typedef off_t 		_libio_off_t;
 typedef off_t 		_libio_pos_t;
 #endif
-
-/** \ingroup rpmio
- */
-typedef	struct _FD_s * FD_t;
 
 /** \ingroup rpmio
  */

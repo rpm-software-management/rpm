@@ -39,6 +39,8 @@ typedef struct rpmSpec_s * rpmSpec;
 
 typedef const void * fnpyKey;
 
+typedef struct _FD_s * FD_t;
+
 /**
  * Package read return codes.
  */
