@@ -31,6 +31,8 @@ typedef struct rpmgi_s * rpmgi;
 
 typedef struct rpmSpec_s * rpmSpec;
 
+typedef const void * fnpyKey;
+
 #ifdef __cplusplus
 }
 #endif

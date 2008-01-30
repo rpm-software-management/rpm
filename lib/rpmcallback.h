@@ -5,8 +5,6 @@
 extern "C" {
 #endif
 
-typedef const void * fnpyKey;
-
 /**
  * Bit(s) to identify progress callbacks.
  */
