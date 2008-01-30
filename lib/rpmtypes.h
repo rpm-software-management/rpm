@@ -39,6 +39,17 @@ typedef struct rpmSpec_s * rpmSpec;
 
 typedef const void * fnpyKey;
 
+/**
+ * Package read return codes.
+ */
+typedef	enum rpmRC_e {
+    RPMRC_OK		= 0,	/*!< Generic success code */
+    RPMRC_NOTFOUND	= 1,	/*!< Generic not found code. */
+    RPMRC_FAIL		= 2,	/*!< Generic failure code. */
+    RPMRC_NOTTRUSTED	= 3,	/*!< Signature is OK, but key is not trusted. */
+    RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
+} rpmRC;
+
 #ifdef __cplusplus
 }
 #endif
