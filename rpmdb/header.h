@@ -88,20 +88,6 @@ extern "C" {
 
 /** \ingroup header
  */
-typedef const char *	errmsg_t;
-
-/** \ingroup header
- */
-
-typedef int32_t 	rpm_tag_t;
-typedef uint32_t	rpm_tagtype_t;
-typedef uint32_t	rpm_count_t;
-
-typedef void *         rpm_data_t;
-typedef const void *   rpm_constdata_t;
-
-/** \ingroup header
- */
 typedef struct headerToken_s * Header;
 
 /** \ingroup header
