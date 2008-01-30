@@ -3,6 +3,7 @@
  */
 
 #include <rpm/header.h>
+#include <rpm/rpmtag.h>
 #include "rpmdb/header_method.h"
 
 /** \ingroup header

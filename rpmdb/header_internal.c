@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <rpm/rpmtag.h>
 #include "rpmdb/header_internal.h"
 
 #include "debug.h"

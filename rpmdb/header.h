@@ -170,55 +170,6 @@ enum hMagic {
     HEADER_MAGIC_YES		= 1
 };
 
-/** \ingroup header
- * The basic types of data in tags from headers.
- */
-typedef enum rpmTagType_e {
-#define	RPM_MIN_TYPE		0
-    RPM_NULL_TYPE		=  0,
-    RPM_CHAR_TYPE		=  1,
-    RPM_INT8_TYPE		=  2,
-    RPM_INT16_TYPE		=  3,
-    RPM_INT32_TYPE		=  4,
-/*    RPM_INT64_TYPE	= 5,   ---- These aren't supported (yet) */
-    RPM_STRING_TYPE		=  6,
-    RPM_BIN_TYPE		=  7,
-    RPM_STRING_ARRAY_TYPE	=  8,
-    RPM_I18NSTRING_TYPE		=  9,
-    RPM_MASK_TYPE               =  0x0000ffff
-#define	RPM_MAX_TYPE		9
-#define RPM_FORCEFREE_TYPE	0xff
-} rpmTagType;
-
-/** \ingroup header
- * New rpm data types under consideration/development.
- * These data types may (or may not) be added to rpm at some point. In order
- * to avoid incompatibility with legacy versions of rpm, these data (sub-)types
- * are introduced into the header by overloading RPM_BIN_TYPE, with the binary
- * value of the tag a 16 byte image of what should/will be in the header index,
- * followed by per-tag private data.
- */
-typedef enum rpmSubTagType_e {
-    RPM_REGION_TYPE		= -10,
-    RPM_BIN_ARRAY_TYPE		= -11,
-  /*!<@todo Implement, kinda like RPM_STRING_ARRAY_TYPE for known (but variable)
-	length binary data. */
-    RPM_XREF_TYPE		= -12
-  /*!<@todo Implement, intent is to to carry a (???,tagNum,valNum) cross
-	reference to retrieve data from other tags. */
-} rpmSubTagType;
-
-/** \ingroup header
- *  * Identify how to return the header data type.
- *   */
-typedef enum rpmTagReturnType_e {
-    RPM_ANY_RETURN_TYPE         = 0,
-    RPM_SCALAR_RETURN_TYPE      = 0x00010000,
-    RPM_ARRAY_RETURN_TYPE       = 0x00020000,
-    RPM_MAPPING_RETURN_TYPE     = 0x00040000,
-    RPM_MASK_RETURN_TYPE        = 0xffff0000
-} rpmTagReturnType;
-
 /**
  * Header private tags.
  * @note General use tags should start at 1000 (RPM's tag space starts there).

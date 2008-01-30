@@ -10,6 +10,7 @@
 
 #include "system.h"
 
+#include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
 #include "rpmdb/header_internal.h"
 
