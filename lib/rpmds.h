@@ -6,6 +6,8 @@
  * Structure(s) used for dependency tag sets.
  */
 
+#include <time.h>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmps.h>
 
