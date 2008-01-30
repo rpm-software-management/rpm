@@ -27,6 +27,9 @@ typedef struct rpmfi_s * rpmfi;
 typedef struct rpmdb_s * rpmdb;
 typedef struct rpmdbMatchIterator_s * rpmdbMatchIterator;
 
+typedef struct rpmal_s * rpmal;
+typedef void * rpmalKey;
+
 typedef struct rpmgi_s * rpmgi;
 
 typedef struct rpmSpec_s * rpmSpec;

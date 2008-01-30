@@ -15,14 +15,6 @@ extern "C" {
 
 extern int _rpmal_debug;
 
-/**
- */
-typedef struct rpmal_s *		rpmal;
-
-/** \ingroup rpmtrans
- *  * An added/available package retrieval key.
- *   */
-typedef void * rpmalKey;
 #define RPMAL_NOMATCH   ((rpmalKey)-1L)
 
 /** \ingroup rpmtrans
