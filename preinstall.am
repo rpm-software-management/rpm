@@ -98,6 +98,10 @@ include/rpm/rpmts.h: lib/rpmts.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmts.h include/rpm/rpmts.h
 BUILT_SOURCES += include/rpm/rpmts.h
 CLEANFILES += include/rpm/rpmts.h
+include/rpm/rpmtypes.h: lib/rpmtypes.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/lib/rpmtypes.h include/rpm/rpmtypes.h
+BUILT_SOURCES += include/rpm/rpmtypes.h
+CLEANFILES += include/rpm/rpmtypes.h
 include/rpm/rpmbuild.h: build/rpmbuild.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/build/rpmbuild.h include/rpm/rpmbuild.h
 BUILT_SOURCES += include/rpm/rpmbuild.h

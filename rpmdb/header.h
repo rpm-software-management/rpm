@@ -80,7 +80,7 @@
 /* RPM - Copyright (C) 1995-2001 Red Hat Software */
 
 #include <rpm/rpmio.h>
-#include <rpm/rpmints.h>
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
