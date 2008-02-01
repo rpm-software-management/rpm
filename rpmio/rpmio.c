@@ -731,7 +731,7 @@ int ufdClose( void * cookie)
 static FD_t urlOpen(const char * url, int flags, mode_t mode)
 {
     FD_t fd = NULL;
-    char cmd[BUFSIZ];
+    char *cmd = NULL;
     char *dest = NULL;
     char *urlhelper = NULL;
     int rc;
@@ -741,6 +741,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
 
     dest = rpmGenPath(NULL, "%{_tmppath}/", "rpm-transfer.XXXXXX");
     close(mkstemp(dest));
+    cmd = xmalloc(strlen(urlhelper) + strlen(dest) + strlen(url) + 3);
     sprintf(cmd, "%s %s %s\n", urlhelper, dest, url);
     urlhelper = _free(urlhelper);
 
@@ -760,6 +761,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
 	unlink(dest);
     }
     dest = _free(dest);
+    cmd = _free(cmd);
 
     return fd;
 
