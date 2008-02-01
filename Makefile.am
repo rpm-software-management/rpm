@@ -212,18 +212,6 @@ EXTRA_DIST += rpmpopt.in
 
 usrsrcdir = $(prefix)/src
 
-pkgsrcdir = $(usrsrcdir)/packages
-pkgsrc_RPMSdir = $(pkgsrcdir)/RPMS
-pkgsrc_RPMS_DATA =
-pkgsrc_SRPMSdir = $(pkgsrcdir)/SRPMS
-pkgsrc_SRPMS_DATA =
-pkgsrc_SPECSdir = $(pkgsrcdir)/SPECS
-pkgsrc_SPECS_DATA =
-pkgsrc_SOURCESdir = $(pkgsrcdir)/SOURCES
-pkgsrc_SOURCES_DATA =
-pkgsrc_BUILDdir = $(pkgsrcdir)/BUILD
-pkgsrc_BUILD_DATA =
-
 rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
@@ -252,42 +240,7 @@ install-exec-hook:
 	done
 
 install-data-local:
-	@case "@host_cpu@" in \
-	*86)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/geode ;;\
-	alpha*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
-	arm*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4tl ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tejl ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/armv6l ;;\
-	sparc*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv8 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9v ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64v ;;\
-	ia64*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
-	s390*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
-	mipsel*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/mipsel ;;\
-	mips*)  $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/mips ;;\
-	powerpc*) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppciseries ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppcpseries ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64 ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64iseries ;\
-		$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc64pseries ;;\
-	*)	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/@host_cpu@ ;;\
-	esac
-	$(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
 	@case "@host_os@" in \
-	mint) $(MKDIR_P) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
 	solaris*|linux*|darwin*) \
 	   DESTDIR="$(DESTDIR)" pkglibdir="$(rpmconfigdir)" $(SHELL) $(top_srcdir)/installplatform rpmrc macros platform ;; \
 	esac

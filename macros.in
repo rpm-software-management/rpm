@@ -221,7 +221,7 @@ package or when debugging this package.\
 %_tmppath		%{_var}/tmp
 
 #	Path to top of build area.
-%_topdir		%{_usrsrc}/packages
+%_topdir		%(echo $HOME)/rpmbuild
 
 #	The path to the unzip executable (legacy, use %{__unzip} instead).
 %_unzipbin		%{__unzip}

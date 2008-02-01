@@ -473,7 +473,7 @@ static void setDefaults(void)
     addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
 
     addMacroDefault("_topdir",
-		"/usr/src/packages",	"%{_usrsrc}/packages");
+		"/usr/src/packages",		"%(echo $HOME)/rpmbuild");
     addMacroDefault("_tmppath",
 		LOCALSTATEDIR "/tmp",		"%{_var}/tmp");
     addMacroDefault("_dbpath",
