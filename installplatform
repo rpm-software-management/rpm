@@ -48,7 +48,7 @@ for SUBST in $SUBSTS ; do
 
   PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
 
-  [ -d $PPD ] || mkdir $PPD
+  [ -d $PPD ] || mkdir -p $PPD
 
   RPMRC_OPTFLAGS="`sed -n 's/^optflags: '$ARCH' //p' $RPMRC`"
   RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
@@ -105,7 +105,6 @@ for SUBST in $SUBSTS ; do
 
   CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
 
-  mkdir -p "${DESTDIR}/${platformdir}"
   cat $PLATFORM \
   | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
 	-e "s,$arch,$CANONARCH," \
