@@ -12,6 +12,8 @@
 
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
 
+#define MACROBUFSIZ (BUFSIZ * 2)
+
 #include <rpm/rpmio.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmfileutil.h>
@@ -479,7 +481,7 @@ expandU(MacroBuf mb, char * u, size_t ulen)
 static int
 doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 {
-    char pcmd[BUFSIZ];
+    char pcmd[MACROBUFSIZ];
     FILE *shf;
     int rc;
     int c;
@@ -524,7 +526,7 @@ static const char *
 doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 {
     const char *s = se;
-    char buf[BUFSIZ], *n = buf, *ne = n;
+    char buf[MACROBUFSIZ], *n = buf, *ne = n;
     char *o = NULL, *oe;
     char *b, *be;
     int c;
@@ -640,7 +642,7 @@ static const char *
 doUndefine(rpmMacroContext mc, const char * se)
 {
     const char *s = se;
-    char buf[BUFSIZ], *n = buf, *ne = n;
+    char buf[MACROBUFSIZ], *n = buf, *ne = n;
     int c;
 
     COPYNAME(ne, s, c);
@@ -781,7 +783,7 @@ static const char *
 grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
-    char buf[BUFSIZ], *b, *be;
+    char buf[MACROBUFSIZ], *b, *be;
     char aname[16];
     const char *opts, *o;
     int argc = 0;
@@ -925,7 +927,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 static void
 doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 {
-    char buf[BUFSIZ];
+    char buf[MACROBUFSIZ];
 
     if (msglen >= sizeof(buf)) {
 	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
@@ -953,7 +955,7 @@ static void
 doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 		const char * g, size_t gn)
 {
-    char buf[BUFSIZ], *b = NULL, *be;
+    char buf[MACROBUFSIZ], *b = NULL, *be;
     int c;
 
     buf[0] = '\0';
@@ -1508,7 +1510,7 @@ int
 rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 {
     FD_t fd = Fopen(fn, "r.fpio");
-    char buf[BUFSIZ];
+    char buf[MACROBUFSIZ];
     int rc = -1;
 
     if (fd == NULL || Ferror(fd)) {
@@ -1615,7 +1617,7 @@ rpmFreeMacros(rpmMacroContext mc)
 char * 
 rpmExpand(const char *arg, ...)
 {
-    char buf[BUFSIZ], *p, *pe;
+    char buf[MACROBUFSIZ], *p, *pe;
     const char *s;
     va_list ap;
 
