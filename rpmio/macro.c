@@ -202,8 +202,7 @@ findEntry(rpmMacroContext mc, const char * name, size_t namelen)
 	return NULL;
 
     if (namelen > 0) {
-	namebuf = alloca(namelen + 1);
-	memset(namebuf, 0, (namelen + 1));
+	namebuf = xcalloc(namelen + 1, sizeof(*namebuf));
 	strncpy(namebuf, name, namelen);
 	namebuf[namelen] = '\0';
 	name = namebuf;
@@ -214,6 +213,7 @@ findEntry(rpmMacroContext mc, const char * name, size_t namelen)
     key->name = (char *)name;
     ret = (rpmMacroEntry *) bsearch(&key, mc->macroTable, mc->firstFree,
 			sizeof(*(mc->macroTable)), compareMacroName);
+    _free(namebuf);
     /* XXX TODO: find 1st empty slot and return that */
     return ret;
 }
@@ -425,14 +425,16 @@ expandT(MacroBuf mb, const char * f, size_t flen)
     const char *s = mb->s;
     int rc;
 
-    sbuf = alloca(flen + 1);
-    memset(sbuf, 0, (flen + 1));
+    sbuf = xcalloc(flen + 1, sizeof(*sbuf));
 
     strncpy(sbuf, f, flen);
     sbuf[flen] = '\0';
     mb->s = sbuf;
     rc = expandMacro(mb);
     mb->s = s;
+
+    _free(sbuf);
+
     return rc;
 }
 
@@ -452,8 +454,7 @@ expandU(MacroBuf mb, char * u, size_t ulen)
     char *tbuf;
     int rc;
 
-    tbuf = alloca(ulen + 1);
-    memset(tbuf, 0, (ulen + 1));
+    tbuf = xcalloc(ulen + 1, sizeof(*tbuf));
 
     mb->s = u;
     mb->t = tbuf;
@@ -467,6 +468,8 @@ expandU(MacroBuf mb, char * u, size_t ulen)
     mb->s = s;
     mb->t = t;
     mb->nb = nb;
+
+    _free(tbuf);
 
     return rc;
 }
@@ -1400,16 +1403,15 @@ expandMacro(MacroBuf mb)
 int
 expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
 {
-    MacroBuf mb = alloca(sizeof(*mb));
+    MacroBuf mb = xcalloc(1, sizeof(*mb));
     char *tbuf;
-    int rc;
+    int rc = 0;
 
-    if (sbuf == NULL || slen == 0)
-	return 0;
+    if (sbuf == NULL || slen == 0) 
+	goto exit;
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
-    tbuf = alloca(slen + 1);
-    memset(tbuf, 0, (slen + 1));
+    tbuf = xcalloc(slen + 1, sizeof(*tbuf));
 
     mb->s = sbuf;
     mb->t = tbuf;
@@ -1429,6 +1431,9 @@ expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
     tbuf[slen] = '\0';	/* XXX just in case */
     strncpy(sbuf, tbuf, (slen - mb->nb + 1));
 
+exit:
+    _free(mb);
+    _free(tbuf);
     return rc;
 }
 
@@ -1476,12 +1481,12 @@ delMacro(rpmMacroContext mc, const char * n)
 int
 rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
 {
-    MacroBuf mb = alloca(sizeof(*mb));
+    MacroBuf mb = xcalloc(1, sizeof(*mb));
 
-    memset(mb, 0, sizeof(*mb));
     /* XXX just enough to get by */
     mb->mc = (mc ? mc : rpmGlobalMacroContext);
     (void) doDefine(mb, macro, level, 0);
+    _free(mb);
     return 0;
 }
 
