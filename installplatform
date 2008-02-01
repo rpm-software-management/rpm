@@ -2,6 +2,7 @@
 
 DESTDIR="${DESTDIR:-/}"
 pkglibdir="${pkglibdir:-/usr/lib/rpm}"
+platformdir="${pkglibdir}/platform"
 
 RPMRC="${1:-rpmrc}"
 MACROS="${2:-macros}"
@@ -45,7 +46,7 @@ for SUBST in $SUBSTS ; do
   TARGET=`echo $target | sed -e $SUBST`
   LIB=lib
 
-  PPD="${DESTDIR}/${pkglibdir}/${ARCH}-${OS}"
+  PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
 
   [ -d $PPD ] || mkdir $PPD
 
@@ -104,6 +105,7 @@ for SUBST in $SUBSTS ; do
 
   CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
 
+  mkdir -p "${DESTDIR}/${platformdir}"
   cat $PLATFORM \
   | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
 	-e "s,$arch,$CANONARCH," \
@@ -119,7 +121,7 @@ for SUBST in $SUBSTS ; do
 
 done
 
-{ cd ${DESTDIR}/${pkglibdir}
+{ cd ${DESTDIR}/${platformdir}
   [ -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
   mkdir -p noarch-${OS}
   sed -e "/^%_arch/s,${arch},noarch," ${arch}-${OS}/macros | grep -v '^%optflags' > noarch-${OS}/macros

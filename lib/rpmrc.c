@@ -33,7 +33,7 @@ static const char *defrcfiles =
 const char * macrofiles =
 #ifndef MACROFILES
       RPMCONFIGDIR "/macros"
-  ":" RPMCONFIGDIR "/%{_target}/macros"
+  ":" RPMCONFIGDIR "/platform/%{_target}/macros"
   ":" SYSCONFDIR "/rpm/macros.*"
   ":" SYSCONFDIR "/rpm/macros"
   ":" SYSCONFDIR "/rpm/%{_target}/macros"
