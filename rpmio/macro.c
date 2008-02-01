@@ -484,24 +484,22 @@ expandU(MacroBuf mb, char * u, size_t ulen)
 static int
 doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 {
-    char pcmd[MACROBUFSIZ];
+    size_t blen = MACROBUFSIZ + clen;
+    char *buf = xmalloc(blen);
     FILE *shf;
-    int rc;
+    int rc = 0;
     int c;
 
-    if (clen >= sizeof(pcmd)) {
-	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
-	return 1;
-    }
-
-    strncpy(pcmd, cmd, clen);
-    pcmd[clen] = '\0';
-    rc = expandU(mb, pcmd, sizeof(pcmd));
+    strncpy(buf, cmd, clen);
+    buf[clen] = '\0';
+    rc = expandU(mb, buf, blen);
     if (rc)
-	return rc;
+	goto exit;
 
-    if ((shf = popen(pcmd, "r")) == NULL)
-	return 1;
+    if ((shf = popen(buf, "r")) == NULL) {
+	rc = 1;
+	goto exit;
+    }
     while((c = fgetc(shf)) != EOF) {
 	if (mb->nb > 1) {
 	    SAVECHAR(mb, c);
@@ -514,7 +512,10 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	*(mb->t--) = '\0';
 	mb->nb++;
     }
-    return 0;
+
+exit:
+    _free(buf);
+    return rc;
 }
 
 /**
@@ -529,7 +530,9 @@ static const char *
 doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 {
     const char *s = se;
-    char buf[MACROBUFSIZ], *n = buf, *ne = n;
+    size_t blen = MACROBUFSIZ;
+    char *buf = xmalloc(blen);
+    char *n = buf, *ne = n;
     char *o = NULL, *oe;
     char *b, *be;
     int c;
@@ -617,21 +620,23 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
     /* Options must be terminated with ')' */
     if (o && oc != ')') {
 	rpmlog(RPMLOG_ERR, _("Macro %%%s has unterminated opts\n"), n);
-	return se;
+	goto exit;
     }
 
     if ((be - b) < 1) {
 	rpmlog(RPMLOG_ERR, _("Macro %%%s has empty body\n"), n);
-	return se;
+	goto exit;
     }
 
-    if (expandbody && expandU(mb, b, (&buf[sizeof(buf)] - b))) {
+    if (expandbody && expandU(mb, b, (&buf[blen] - b))) {
 	rpmlog(RPMLOG_ERR, _("Macro %%%s failed to expand\n"), n);
-	return se;
+	goto exit;
     }
 
     addMacro(mb->mc, n, o, b, (level - 1));
 
+exit:
+    _free(buf);
     return se;
 }
 
@@ -645,7 +650,8 @@ static const char *
 doUndefine(rpmMacroContext mc, const char * se)
 {
     const char *s = se;
-    char buf[MACROBUFSIZ], *n = buf, *ne = n;
+    char *buf = xmalloc(MACROBUFSIZ);
+    char *n = buf, *ne = n;
     int c;
 
     COPYNAME(ne, s, c);
@@ -659,11 +665,13 @@ doUndefine(rpmMacroContext mc, const char * se)
     if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%undefine)\n"), n);
-	return se;
+	goto exit;
     }
 
     delMacro(mc, n);
 
+exit:
+    _free(buf);
     return se;
 }
 
@@ -786,7 +794,9 @@ static const char *
 grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
-    char buf[MACROBUFSIZ], *b, *be;
+    size_t blen = MACROBUFSIZ;
+    char *buf = xmalloc(blen);
+    char *b, *be;
     char aname[16];
     const char *opts, *o;
     int argc = 0;
@@ -834,7 +844,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 
 #ifdef NOTYET
     /* XXX if macros can be passed as args ... */
-    expandU(mb, buf, sizeof(buf));
+    expandU(mb, buf, blen);
 #endif
 
     /* Build argv array */
@@ -880,7 +890,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
-	    return se;
+	    goto exit;
 	}
 	*be++ = '-';
 	*be++ = c;
@@ -917,6 +927,8 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     /* Add unexpanded args as macro. */
     addMacro(mb->mc, "*", NULL, b, mb->depth);
 
+exit:
+    _free(buf);
     return se;
 }
 
@@ -930,19 +942,17 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 static void
 doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 {
-    char buf[MACROBUFSIZ];
+    size_t blen = MACROBUFSIZ + msglen;
+    char *buf = xmalloc(blen);
 
-    if (msglen >= sizeof(buf)) {
-	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
-	msglen = sizeof(buf) - 1;
-    }
     strncpy(buf, msg, msglen);
     buf[msglen] = '\0';
-    (void) expandU(mb, buf, sizeof(buf));
+    (void) expandU(mb, buf, blen);
     if (waserror)
 	rpmlog(RPMLOG_ERR, "%s\n", buf);
     else
 	fprintf(stderr, "%s", buf);
+    _free(buf);
 }
 
 /**
@@ -958,18 +968,16 @@ static void
 doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 		const char * g, size_t gn)
 {
-    char buf[MACROBUFSIZ], *b = NULL, *be;
+    size_t blen = MACROBUFSIZ + fn + gn;
+    char *buf = xmalloc(blen);
+    char *b = NULL, *be;
     int c;
 
     buf[0] = '\0';
     if (g != NULL) {
-	if (gn >= sizeof(buf)) {
-	    rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
-	    gn = sizeof(buf) - 1;
-        }
 	strncpy(buf, g, gn);
 	buf[gn] = '\0';
-	(void) expandU(mb, buf, sizeof(buf));
+	(void) expandU(mb, buf, blen);
     }
     if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
@@ -1404,11 +1412,12 @@ int
 expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
 {
     MacroBuf mb = xcalloc(1, sizeof(*mb));
-    char *tbuf;
+    char *tbuf = NULL;
     int rc = 0;
 
     if (sbuf == NULL || slen == 0) 
 	goto exit;
+
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
     tbuf = xcalloc(slen + 1, sizeof(*tbuf));
@@ -1515,19 +1524,20 @@ int
 rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 {
     FD_t fd = Fopen(fn, "r.fpio");
-    char buf[MACROBUFSIZ];
+    size_t blen = MACROBUFSIZ;
+    char *buf = xmalloc(blen);
     int rc = -1;
 
     if (fd == NULL || Ferror(fd)) {
 	if (fd) (void) Fclose(fd);
-	return rc;
+	goto exit;
     }
 
     /* XXX Assume new fangled macro expansion */
     max_macro_depth = 16;
 
     buf[0] = '\0';
-    while(rdcl(buf, sizeof(buf), fd) != NULL) {
+    while(rdcl(buf, blen, fd) != NULL) {
 	char c, *n;
 
 	n = buf;
@@ -1539,6 +1549,9 @@ rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
     }
     rc = Fclose(fd);
+
+exit:
+    _free(buf);
     return rc;
 }
 
@@ -1622,13 +1635,18 @@ rpmFreeMacros(rpmMacroContext mc)
 char * 
 rpmExpand(const char *arg, ...)
 {
-    char buf[MACROBUFSIZ], *p, *pe;
+    size_t blen = MACROBUFSIZ;
+    char *buf = NULL;
+    char *p, *pe, *res;
     const char *s;
     va_list ap;
 
-    if (arg == NULL)
-	return xstrdup("");
+    if (arg == NULL) {
+	res = xstrdup("");
+	goto exit;
+    }
 
+    buf = xmalloc(blen);
     buf[0] = '\0';
     p = buf;
     pe = stpcpy(p, arg);
@@ -1637,8 +1655,12 @@ rpmExpand(const char *arg, ...)
     while ((s = va_arg(ap, const char *)) != NULL)
 	pe = stpcpy(pe, s);
     va_end(ap);
-    (void) expandMacros(NULL, NULL, buf, sizeof(buf));
-    return xstrdup(buf);
+    (void) expandMacros(NULL, NULL, buf, blen);
+    res = xstrdup(buf);
+
+exit:
+    _free(buf);
+    return res;
 }
 
 int
