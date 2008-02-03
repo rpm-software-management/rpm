@@ -1,31 +1,9 @@
 #ifndef _RPMTAG_H
 #define _RPMTAG_H
 
-#include <rpm/header.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/** \ingroup rpmtag
- * Automatically generated table of tag name/value pairs.
- */
-extern const struct headerTagTableEntry_s * rpmTagTable;
-
-/** \ingroup rpmtag
- * Number of entries in rpmTagTable.
- */
-extern const int rpmTagTableSize;
-
-/** \ingroup rpmtag
- */
-extern headerTagIndices rpmTags;
-
-/** \ingroup header
- * Table of query format extensions.
- * @note Chains to headerDefaultFormats[].
- */
-extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 
 /**
  * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
@@ -39,6 +17,18 @@ extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 #define	RPMDBI_HDLIST		6	/* (rpmgi) Header list. */
 #define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
 #define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
+
+/**
+ * Header private tags.
+ * @note General use tags should start at 1000 (RPM's tag space starts there).
+ */
+#define	HEADER_IMAGE		61
+#define	HEADER_SIGNATURES	62
+#define	HEADER_IMMUTABLE	63
+#define	HEADER_REGIONS		64
+#define HEADER_I18NTABLE	100
+#define	HEADER_SIGBASE		256
+#define	HEADER_TAGBASE		1000
 
 /** \ingroup rpmtag
  * Tags identify data in package headers.

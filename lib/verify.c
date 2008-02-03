@@ -6,7 +6,7 @@
 #include "system.h"
 
 #include <rpm/rpmcli.h>
-#include <rpm/rpmtag.h>
+#include <rpm/header.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>

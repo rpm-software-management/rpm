@@ -5,7 +5,7 @@
 
 #include "system.h"
 
-#include <rpm/rpmtag.h>
+#include <rpm/header.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>

@@ -162,6 +162,26 @@ struct headerSprintfExtension_s {
  */
 extern const struct headerSprintfExtension_s headerDefaultFormats[];
 
+/** \ingroup rpmtag
+ * Automatically generated table of tag name/value pairs.
+ */
+extern const struct headerTagTableEntry_s * rpmTagTable;
+
+/** \ingroup rpmtag
+ * Number of entries in rpmTagTable.
+ */
+extern const int rpmTagTableSize;
+
+/** \ingroup rpmtag
+ */
+extern headerTagIndices rpmTags;
+
+/** \ingroup header
+ * Table of query format extensions.
+ * @note Chains to headerDefaultFormats[].
+ */
+extern const struct headerSprintfExtension_s rpmHeaderFormats[];
+
 /** \ingroup header
  * Include calculation for 8 bytes of (magic, 0)?
  */
@@ -169,18 +189,6 @@ enum hMagic {
     HEADER_MAGIC_NO		= 0,
     HEADER_MAGIC_YES		= 1
 };
-
-/**
- * Header private tags.
- * @note General use tags should start at 1000 (RPM's tag space starts there).
- */
-#define	HEADER_IMAGE		61
-#define	HEADER_SIGNATURES	62
-#define	HEADER_IMMUTABLE	63
-#define	HEADER_REGIONS		64
-#define HEADER_I18NTABLE	100
-#define	HEADER_SIGBASE		256
-#define	HEADER_TAGBASE		1000
 
 /* Return types for header data. Not yet... */
 #if 0

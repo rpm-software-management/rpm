@@ -11,7 +11,7 @@
 
 #include <rpm/rpmcli.h>
 
-#include <rpm/rpmtag.h>
+#include <rpm/header.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmgi.h>

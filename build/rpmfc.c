@@ -10,7 +10,7 @@
 
 #endif
 
-#include <rpm/rpmtag.h>
+#include <rpm/header.h>
 #include <rpm/rpmbuild.h>
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>
