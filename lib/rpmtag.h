@@ -357,21 +357,21 @@ typedef enum rpmTagReturnType_e {
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
-const char * rpmTagGetName(rpm_tag_t tag);
+const char * rpmTagGetName(rpmTag tag);
 
 /** \ingroup rpmtag
  * Return tag data type from value.
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
-rpm_tagtype_t rpmTagGetType(rpm_tag_t tag);
+rpmTagType rpmTagGetType(rpmTag tag);
 
 /** \ingroup rpmtag
  * Return tag value from name.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found
  */
-rpm_tag_t rpmTagGetValue(const char * tagstr);
+rpmTag rpmTagGetValue(const char * tagstr);
 
 #ifdef __cplusplus
 }
