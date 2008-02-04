@@ -301,7 +301,7 @@ uint32_t rpmteSetColor(rpmte te, uint32_t color)
     return ocolor;
 }
 
-uint32_t rpmtePkgFileSize(rpmte te)
+rpm_off_t rpmtePkgFileSize(rpmte te)
 {
     return (te != NULL ? te->pkgFileSize : 0);
 }

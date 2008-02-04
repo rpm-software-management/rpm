@@ -489,9 +489,9 @@ FSM_t freeFSM(FSM_t fsm)
 
 int fsmSetup(FSM_t fsm, fileStage goal,
 		const rpmts ts, const rpmfi fi, FD_t cfd,
-		unsigned int * archiveSize, char ** failedFile)
+		rpm_off_t * archiveSize, char ** failedFile)
 {
-    size_t pos = 0;
+    rpm_off_t pos = 0;
     int rc, ec = 0;
 
     fsm->goal = goal;
@@ -741,7 +741,7 @@ int fsmMapAttrs(FSM_t fsm)
 static int expandRegular(FSM_t fsm)
 {
     const struct stat * st = &fsm->sb;
-    int left = st->st_size;
+    rpm_off_t left = st->st_size;
     int rc = 0;
 
     rc = fsmNext(fsm, FSM_WOPEN);
@@ -1683,7 +1683,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmts ts = fsmGetTs(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
 	    void * ptr;
-	    unsigned int archivePos = fdGetCpioPos(fsm->cfd);
+	    rpm_off_t archivePos = fdGetCpioPos(fsm->cfd);
 	    if (archivePos > fi->archivePos) {
 		fi->archivePos = archivePos;
 		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,

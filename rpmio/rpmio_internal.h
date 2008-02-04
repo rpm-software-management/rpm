@@ -66,8 +66,8 @@ struct _FD_s {
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
     unsigned int firstFree;	/* fadio: */
-    long int	fileSize;	/* fadio: */
-    long int	fd_cpioPos;	/* cpio: */
+    rpm_off_t	fileSize;	/* fadio: */
+    rpm_off_t	fd_cpioPos;	/* cpio: */
 };
 
 /** \ingroup rpmio

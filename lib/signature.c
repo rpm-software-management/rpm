@@ -106,7 +106,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @param datalen		length of header+payload
  * @return 			rpmRC return code
  */
-static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, size_t datalen)
+static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_off_t datalen)
 {
     struct stat st;
     int fdno = Fileno(fd);
@@ -273,7 +273,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	ssize_t trc;
-	uint32_t * archSize = NULL;
+	rpm_off_t * archSize = NULL;
 
 	/* Position at beginning of header. */
 	if (pad && (trc = timedRead(fd, (void *)block, pad)) != pad) {

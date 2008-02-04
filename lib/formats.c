@@ -555,8 +555,8 @@ static int fssizesTag(Header h, rpm_tagtype_t* type,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
-    int32_t * filesizes;
-    uint32_t * usages;
+    rpm_off_t * filesizes;
+    rpm_off_t * usages;
     rpm_count_t numFiles;
 
     if (!hge(h, RPMTAG_FILESIZES, NULL, (rpm_data_t *) &filesizes, &numFiles)) {

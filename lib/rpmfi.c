@@ -193,9 +193,9 @@ const char * rpmfiFLink(rpmfi fi)
     return flink;
 }
 
-uint32_t rpmfiFSize(rpmfi fi)
+rpm_off_t rpmfiFSize(rpmfi fi)
 {
-    uint32_t fsize = 0;
+    rpm_off_t fsize = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fsizes != NULL)

@@ -957,7 +957,7 @@ fprintf(stderr, "*** rpmts_GetKeys(%p) ts %p\n", s, s->ts);
  */
 static void *
 rpmtsCallback(const void * hd, const rpmCallbackType what,
-		         const unsigned long amount, const unsigned long total,
+		         const rpm_off_t amount, const rpm_off_t total,
 	                 const void * pkgKey, rpmCallbackData data)
 {
     Header h = (Header) hd;

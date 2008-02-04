@@ -55,7 +55,7 @@ struct rpmte_s {
     rpmfi fi;			/*!< File information. */
 
     uint32_t color;		/*!< Color bit(s) from package dependencies. */
-    uint32_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
+    rpm_off_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
 
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */

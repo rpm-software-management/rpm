@@ -17,7 +17,7 @@ extern "C" {
 /**
  */
 typedef struct cpioSourceArchive_s {
-    unsigned int cpioArchiveSize;
+    rpm_off_t	cpioArchiveSize;
     FD_t	cpioFdIn;
     rpmfi	cpioList;
 } * CSA_t;

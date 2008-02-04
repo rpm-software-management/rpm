@@ -603,7 +603,7 @@ int rpmtsInitDSI(const rpmts ts);
  * @param action	file disposition
  */
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		uint32_t fileSize, uint32_t prevSize, uint32_t fixupSize,
+		rpm_off_t fileSize, rpm_off_t prevSize, rpm_off_t fixupSize,
 		rpmFileAction action);
 
 /** \ingroup rpmts
@@ -623,7 +623,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te);
  * @return		callback dependent pointer
  */
 void * rpmtsNotify(rpmts ts, rpmte te,
-                rpmCallbackType what, unsigned long amount, unsigned long total);
+                rpmCallbackType what, rpm_off_t amount, rpm_off_t total);
 
 /** \ingroup rpmts
  * Return number of (ordered) transaction set elements.

@@ -29,7 +29,7 @@ int rpmcliProgressTotal = 0;
  * @param amount	current
  * @param total		final
  */
-static void printHash(const unsigned long amount, const unsigned long total)
+static void printHash(const rpm_off_t amount, const rpm_off_t total)
 {
     int hashesNeeded;
 
@@ -74,8 +74,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
 
 void * rpmShowProgress(const void * arg,
 			const rpmCallbackType what,
-			const unsigned long amount,
-			const unsigned long total,
+			const rpm_off_t amount,
+			const rpm_off_t total,
 			fnpyKey key,
 			void * data)
 {

@@ -62,8 +62,8 @@ struct rpmpsm_s {
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
     rpmCallbackType what;	/*!< Callback type. */
-    unsigned long amount;	/*!< Callback amount. */
-    unsigned long total;	/*!< Callback total. */
+    rpm_off_t amount;		/*!< Callback amount. */
+    rpm_off_t total;		/*!< Callback total. */
     rpmRC rc;
     pkgStage goal;
     pkgStage stage;		/*!< Current psm stage. */

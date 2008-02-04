@@ -29,7 +29,7 @@ typedef enum rpmCompressedMagic_e {
  * @return		0 on success, 1 on error
  */
 int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
-		  unsigned char * digest, size_t * fsizep);
+		  unsigned char * digest, rpm_off_t * fsizep);
 
 
 /** \ingroup rpmfileutil

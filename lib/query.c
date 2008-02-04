@@ -28,7 +28,7 @@
 /**
  */
 static void printFileInfo(char * te, const char * name,
-			  unsigned int size, unsigned short mode,
+			  rpm_off_t size, unsigned short mode,
 			  unsigned int mtime,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
@@ -185,7 +185,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
  	unsigned short frdev;
 	unsigned int fmtime;
 	rpmfileState fstate;
-	size_t fsize;
+	rpm_off_t fsize;
 	const char * fn;
 	char fmd5[32+1];
 	const char * fuser;

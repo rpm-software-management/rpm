@@ -470,8 +470,8 @@ extern int rpmcliProgressTotal;
  */
 void * rpmShowProgress(const void * arg,
 		const rpmCallbackType what,
-		const unsigned long amount,
-		const unsigned long total,
+		const rpm_off_t amount,
+		const rpm_off_t total,
 		fnpyKey key,
 		void * data);
 

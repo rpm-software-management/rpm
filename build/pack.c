@@ -463,7 +463,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	SHA1 = _free(SHA1);
     }
 
-    {	uint32_t payloadSize = csa->cpioArchiveSize;
+    {	rpm_off_t payloadSize = csa->cpioArchiveSize;
 	(void) headerAddEntry(sig, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
 			&payloadSize, 1);
     }

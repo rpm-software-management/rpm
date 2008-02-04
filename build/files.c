@@ -97,7 +97,7 @@ typedef struct FileList_s {
     char * prefix;
 
     int fileCount;
-    int totalFileSize;
+    rpm_off_t totalFileSize;
     int processingFailed;
 
     int passedSpecialDoc;
@@ -1125,8 +1125,8 @@ static void genCpioListAndHeader(FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileURL), 1);
 
-      if (sizeof(flp->fl_size) != sizeof(uint32_t)) {
-	uint32_t psize = (uint32_t)flp->fl_size;
+      if (sizeof(flp->fl_size) != sizeof(rpm_off_t)) {
+	rpm_off_t psize = (rpm_off_t)flp->fl_size;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
 			       &(psize), 1);
       } else {

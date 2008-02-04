@@ -43,7 +43,7 @@ struct rpmfi_s {
 /*?null?*/
     const uint32_t * fflags;	/*!< File flag(s) (from header) */
 /*?null?*/
-    const uint32_t * fsizes;	/*!< File size(s) (from header) */
+    const rpm_off_t * fsizes;	/*!< File size(s) (from header) */
 /*?null?*/
     const uint32_t * fmtimes;	/*!< File modification time(s) (from header) */
 /*?null?*/
@@ -108,8 +108,8 @@ struct rpmfi_s {
 
     size_t astriplen;
     size_t striplen;
-    unsigned int archivePos;
-    unsigned int archiveSize;
+    rpm_off_t archivePos;
+    rpm_off_t archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
     const char ** apath;
@@ -119,7 +119,7 @@ struct rpmfi_s {
     int keep_header;		/*!< Keep header? */
     uint32_t color;		/*!< Color bit(s) from file color union. */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
-    uint32_t * replacedSizes;	/*!< (TR_ADDED) */
+    rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     unsigned int record;	/*!< (TR_REMOVED) */
     int magic;
 #define	RPMFIMAGIC	0x09697923

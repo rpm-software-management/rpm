@@ -112,7 +112,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 
     if (flags & RPMVERIFY_MD5) {
 	unsigned char md5sum[16];
-	size_t fsize;
+	rpm_off_t fsize;
 
 	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
 	rc = rpmDoDigest(PGPHASHALGO_MD5, fn, 0, md5sum, &fsize);

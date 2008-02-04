@@ -223,7 +223,7 @@ extern const char * rpmfiFLink(rpmfi fi);
  * @param fi		file info set
  * @return		current file size, 0 on invalid
  */
-uint32_t rpmfiFSize(rpmfi fi);
+rpm_off_t rpmfiFSize(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file rdev from file info set.
