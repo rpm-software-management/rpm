@@ -2,7 +2,7 @@
 
 #include <popt.h>
 
-#include <rpm/rpmtag.h>
+#include <rpm/header.h>
 #include <rpm/rpmgi.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmte.h>

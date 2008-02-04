@@ -4,7 +4,7 @@ const char *__progname;
 #include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
 
 #include <rpm/rpmbuild.h>
-#include <rpm/rpmtag.h>
+#include <rpm/header.h>
 
 #include "lib/rpmlead.h"
 #include "build/buildio.h"

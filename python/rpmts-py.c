@@ -1020,7 +1020,7 @@ fprintf(stderr, "\tFclose(%p)\n", fd);
 	Fclose (fd);
     } else {
 if (_rpmts_debug)
-fprintf(stderr, "\t%ld:%ld key %p\n", amount, total, pkgKey);
+fprintf(stderr, "\t%d:%d key %p\n", amount, total, pkgKey);
     }
 
     Py_DECREF(result);

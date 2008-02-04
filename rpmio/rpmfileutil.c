@@ -130,7 +130,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
     size_t diglen;
     unsigned char buf[32*BUFSIZ];
     FD_t fd;
-    size_t fsize = 0;
+    rpm_off_t fsize = 0;
     pid_t pid = 0;
     int rc = 0;
     int fdno;
