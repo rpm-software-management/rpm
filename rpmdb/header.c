@@ -106,15 +106,12 @@ static size_t headerMaxbytes = (32*1024*1024);
  */
 #define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
 
-HV_t hdrVec;	/* forward reference */
-
 /** \ingroup header
  * Reference a header instance.
  * @param h		header
  * @return		referenced header instance
  */
-static
-Header _headerLink(Header h)
+Header headerLink(Header h)
 {
     if (h == NULL) return NULL;
 
@@ -130,8 +127,7 @@ fprintf(stderr, "--> h  %p ++ %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
  * @param h		header
  * @return		NULL always
  */
-static
-Header _headerUnlink(Header h)
+Header headerUnlink(Header h)
 {
     if (h == NULL) return NULL;
 if (_hdr_debug)
@@ -145,10 +141,9 @@ fprintf(stderr, "--> h  %p -- %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
  * @param h		header
  * @return		NULL always
  */
-static
-Header _headerFree(Header h)
+Header headerFree(Header h)
 {
-    (void) _headerUnlink(h);
+    (void) headerUnlink(h);
 
     if (h == NULL || h->nrefs > 0)
 	return NULL;	/* XXX return previous header? */
@@ -179,12 +174,10 @@ Header _headerFree(Header h)
  * Create new (empty) header instance.
  * @return		header
  */
-static
-Header _headerNew(void)
+Header headerNew(void)
 {
     Header h = xcalloc(1, sizeof(*h));
 
-    h->hv = *hdrVec;		/* structure assignment */
     h->blob = NULL;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
@@ -195,7 +188,7 @@ Header _headerNew(void)
 	: NULL);
 
     h->nrefs = 0;
-    return _headerLink(h);
+    return headerLink(h);
 }
 
 /**
@@ -210,8 +203,7 @@ static int indexCmp(const void * avp, const void * bvp)
  * Sort tags in header.
  * @param h		header
  */
-static
-void _headerSort(Header h)
+void headerSort(Header h)
 {
     if (!(h->flags & HEADERFLAG_SORTED)) {
 	qsort(h->index, h->indexUsed, sizeof(*h->index), indexCmp);
@@ -240,8 +232,7 @@ static int offsetCmp(const void * avp, const void * bvp)
  * Restore tags in header to original ordering.
  * @param h		header
  */
-static
-void _headerUnsort(Header h)
+void headerUnsort(Header h)
 {
     qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);
 }
@@ -252,8 +243,7 @@ void _headerUnsort(Header h)
  * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
-static
-unsigned int _headerSizeof(Header h, enum hMagic magicp)
+unsigned headerSizeof(Header h, enum hMagic magicp)
 {
     indexEntry entry;
     unsigned int size = 0;
@@ -263,7 +253,7 @@ unsigned int _headerSizeof(Header h, enum hMagic magicp)
     if (h == NULL)
 	return size;
 
-    _headerSort(h);
+    headerSort(h);
 
     switch (magicp) {
     case HEADER_MAGIC_YES:
@@ -503,7 +493,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 
     /* XXX
      * There are two hacks here:
-     *	1) tl is 16b (i.e. REGION_TAG_COUNT) short while doing _headerReload().
+     *	1) tl is 16b (i.e. REGION_TAG_COUNT) short while doing headerReload().
      *	2) the 8/98 rpm bug with inserting i18n tags needs to use tl, not dl.
      */
     if (tl+REGION_TAG_COUNT == dl)
@@ -537,7 +527,7 @@ static void * doHeaderUnload(Header h,
     int legacy = 0;
 
     /* Sort entries by (offset,tag). */
-    _headerUnsort(h);
+    headerUnsort(h);
 
     /* Compute (il,dl) for all tags, including those deleted in region. */
     pad = 0;
@@ -749,7 +739,7 @@ static void * doHeaderUnload(Header h,
 	*lengthPtr = len;
 
     h->flags &= ~HEADERFLAG_SORTED;
-    _headerSort(h);
+    headerSort(h);
 
     return (void *) ei;
 
@@ -763,8 +753,7 @@ errxit:
  * @param h		header (with pointers)
  * @return		on-disk header blob (i.e. with offsets)
  */
-static
-void * _headerUnload(Header h)
+void * headerUnload(Header h)
 {
     size_t length;
     void * uh = doHeaderUnload(h, &length);
@@ -785,7 +774,7 @@ indexEntry findEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type)
     struct indexEntry_s key;
 
     if (h == NULL) return NULL;
-    if (!(h->flags & HEADERFLAG_SORTED)) _headerSort(h);
+    if (!(h->flags & HEADERFLAG_SORTED)) headerSort(h);
 
     key.info.tag = tag;
 
@@ -824,8 +813,7 @@ indexEntry findEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type)
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-static
-int _headerRemoveEntry(Header h, rpm_tag_t tag)
+int headerRemoveEntry(Header h, rpm_tag_t tag)
 {
     indexEntry last = h->index + h->indexUsed;
     indexEntry entry, first;
@@ -867,8 +855,7 @@ int _headerRemoveEntry(Header h, rpm_tag_t tag)
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
-static
-Header _headerLoad(void * uh)
+Header headerLoad(void * uh)
 {
     int32_t * ei = (int32_t *) uh;
     int32_t il = ntohl(ei[0]);		/* index length */
@@ -894,14 +881,13 @@ Header _headerLoad(void * uh)
     dataEnd = dataStart + dl;
 
     h = xcalloc(1, sizeof(*h));
-    h->hv = *hdrVec;		/* structure assignment */
     h->blob = uh;
     h->indexAlloced = il + 1;
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags |= HEADERFLAG_SORTED;
     h->nrefs = 0;
-    h = _headerLink(h);
+    h = headerLink(h);
 
     entry = h->index;
     i = 0;
@@ -982,9 +968,9 @@ Header _headerLoad(void * uh)
 	    /* Dribble entries replace duplicate region entries. */
 	    h->indexUsed -= ne;
 	    for (j = 0; j < ne; j++, newEntry++) {
-		(void) _headerRemoveEntry(h, newEntry->info.tag);
+		(void) headerRemoveEntry(h, newEntry->info.tag);
 		if (newEntry->info.tag == HEADER_BASENAMES)
-		    (void) _headerRemoveEntry(h, HEADER_OLDFILENAMES);
+		    (void) headerRemoveEntry(h, HEADER_OLDFILENAMES);
 	    }
 
 	    /* If any duplicate entries were replaced, move new entries down. */
@@ -998,7 +984,7 @@ Header _headerLoad(void * uh)
     }
 
     h->flags &= ~HEADERFLAG_SORTED;
-    _headerSort(h);
+    headerSort(h);
 
     return h;
 
@@ -1017,17 +1003,16 @@ errxit:
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
-static
-Header _headerReload(Header h, rpm_tag_t tag)
+Header headerReload(Header h, rpm_tag_t tag)
 {
     Header nh;
     size_t length;
     void * uh = doHeaderUnload(h, &length);
 
-    h = _headerFree(h);
+    h = headerFree(h);
     if (uh == NULL)
 	return NULL;
-    nh = _headerLoad(uh);
+    nh = headerLoad(uh);
     if (nh == NULL) {
 	uh = _free(uh);
 	return NULL;
@@ -1047,8 +1032,7 @@ Header _headerReload(Header h, rpm_tag_t tag)
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
-static
-Header _headerCopyLoad(const void * uh)
+Header headerCopyLoad(const void * uh)
 {
     int32_t * ei = (int32_t *) uh;
     int32_t il = ntohl(ei[0]);		/* index length */
@@ -1061,7 +1045,7 @@ Header _headerCopyLoad(const void * uh)
     /* Sanity checks on header intro. */
     if (!(hdrchkTags(il) || hdrchkData(dl)) && pvlen < headerMaxbytes) {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
-	if ((h = _headerLoad(nuh)) != NULL)
+	if ((h = headerLoad(nuh)) != NULL)
 	    h->flags |= HEADERFLAG_ALLOCATED;
     }
     if (h == NULL)
@@ -1075,8 +1059,7 @@ Header _headerCopyLoad(const void * uh)
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
-static
-Header _headerRead(FD_t fd, enum hMagic magicp)
+Header headerRead(FD_t fd, enum hMagic magicp)
 {
     int32_t block[4];
     int32_t reserved;
@@ -1124,7 +1107,7 @@ Header _headerRead(FD_t fd, enum hMagic magicp)
     if (timedRead(fd, (char *)&ei[2], len) != len)
 	goto exit;
     
-    h = _headerLoad(ei);
+    h = headerLoad(ei);
 
 exit:
     if (h) {
@@ -1144,8 +1127,7 @@ exit:
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
-static
-int _headerWrite(FD_t fd, Header h, enum hMagic magicp)
+int headerWrite(FD_t fd, Header h, enum hMagic magicp)
 {
     ssize_t nb;
     size_t length;
@@ -1179,8 +1161,7 @@ exit:
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-static
-int _headerIsEntry(Header h, rpm_tag_t tag)
+int headerIsEntry(Header h, rpm_tag_t tag)
 {
    		/* FIX: h modified by sort. */
     return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
@@ -1473,8 +1454,7 @@ static int intGetEntry(Header h, rpm_tag_t tag,
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
-static void * _headerFreeTag(Header h,
-		rpm_data_t data, rpm_tagtype_t type)
+void * headerFreeTag(Header h, rpm_data_t data, rpm_tagtype_t type)
 {
     if (data) {
 	if (type == RPM_FORCEFREE_TYPE ||
@@ -1499,8 +1479,7 @@ static void * _headerFreeTag(Header h,
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-static
-int _headerGetEntry(Header h, rpm_tag_t tag,
+int headerGetEntry(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
 			rpm_data_t * p,
 			rpm_count_t * c)
@@ -1520,8 +1499,7 @@ int _headerGetEntry(Header h, rpm_tag_t tag,
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-static
-int _headerGetEntryMinMemory(Header h, rpm_tag_t tag,
+int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
 			rpm_tagtype_t * type,
 			rpm_data_t * p,
 			rpm_count_t * c)
@@ -1535,7 +1513,7 @@ int headerGetRawEntry(Header h, rpm_tag_t tag, rpm_tagtype_t * type, rpm_data_t 
     indexEntry entry;
     int rc;
 
-    if (p == NULL) return _headerIsEntry(h, tag);
+    if (p == NULL) return headerIsEntry(h, tag);
 
     /* First find the tag */
    		/* FIX: h modified by sort. */
@@ -1609,7 +1587,7 @@ grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
  * Duplicate tags are okay, but only defined for iteration (with the
  * exceptions noted below). While you are allowed to add i18n string
  * arrays through this function, you probably don't mean to. See
- * _headerAddI18NString() instead.
+ * headerAddI18NString() instead.
  *
  * @param h		header
  * @param tag		tag
@@ -1618,15 +1596,14 @@ grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-static
-int _headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, 
+int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, 
 			rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
     rpm_data_t data;
     int length;
 
-    /* Count must always be >= 1 for _headerAddEntry. */
+    /* Count must always be >= 1 for headerAddEntry. */
     if (c <= 0)
 	return 0;
 
@@ -1666,7 +1643,7 @@ int _headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * Append element to tag array in header.
  * Appends item p to entry w/ tag and type as passed. Won't work on
  * RPM_STRING_TYPE. Any pointers into header memory returned from
- * _headerGetEntryMinMemory() for this entry are invalid after this
+ * headerGetEntryMinMemory() for this entry are invalid after this
  * call has been made!
  *
  * @param h		header
@@ -1676,8 +1653,7 @@ int _headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-static
-int _headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
+int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 		rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
@@ -1724,13 +1700,12 @@ int _headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-static
-int _headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
+int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 		rpm_constdata_t p, rpm_count_t c)
 {
     return (findEntry(h, tag, type)
-	? _headerAppendEntry(h, tag, type, p, c)
-	: _headerAddEntry(h, tag, type, p, c));
+	? headerAppendEntry(h, tag, type, p, c)
+	: headerAddEntry(h, tag, type, p, c));
 }
 
 /** \ingroup header
@@ -1742,10 +1717,10 @@ int _headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  *	- If the tag occurs multiple times in entry, which tag is affected
  *	   by the operation is undefined.
  *	- If the tag is in the header w/ this language, the entry is
- *	   *replaced* (like _headerModifyEntry()).
+ *	   *replaced* (like headerModifyEntry()).
  * \endverbatim
  * This function is intended to just "do the right thing". If you need
- * more fine grained control use _headerAddEntry() and _headerModifyEntry().
+ * more fine grained control use headerAddEntry() and headerModifyEntry().
  *
  * @param h		header
  * @param tag		tag
@@ -1753,8 +1728,7 @@ int _headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
-static
-int _headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
+int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
 		const char * lang)
 {
     indexEntry table, entry;
@@ -1779,7 +1753,7 @@ int _headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
 	    charArray[count++] = "C";
 	    charArray[count++] = lang;
 	}
-	if (!_headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
+	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
 			&charArray, count))
 	    return 0;
 	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
@@ -1815,7 +1789,7 @@ int _headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
 	for (i = 0; i < langNum; i++)
 	    strArray[i] = "";
 	strArray[langNum] = string;
-	return _headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, strArray, 
+	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, strArray, 
 				langNum + 1);
     } else if (langNum >= entry->info.count) {
 	ghosts = langNum - entry->info.count;
@@ -1887,8 +1861,7 @@ int _headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-static
-int _headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
+int headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 			rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
@@ -1944,7 +1917,7 @@ static char escapedChar(const char ch)
 }
 
 /**
- * Destroy _headerSprintf format array.
+ * Destroy headerSprintf format array.
  * @param format	sprintf format array
  * @param num		number of elements
  * @return		NULL always
@@ -1995,11 +1968,10 @@ struct headerIterator_s {
  * @param hi		header tag iterator
  * @return		NULL always
  */
-static
-HeaderIterator _headerFreeIterator(HeaderIterator hi)
+HeaderIterator headerFreeIterator(HeaderIterator hi)
 {
     if (hi != NULL) {
-	hi->h = _headerFree(hi->h);
+	hi->h = headerFree(hi->h);
 	hi = _free(hi);
     }
     return hi;
@@ -2010,14 +1982,13 @@ HeaderIterator _headerFreeIterator(HeaderIterator hi)
  * @param h		header
  * @return		header tag iterator
  */
-static
-HeaderIterator _headerInitIterator(Header h)
+HeaderIterator headerInitIterator(Header h)
 {
     HeaderIterator hi = xmalloc(sizeof(*hi));
 
-    _headerSort(h);
+    headerSort(h);
 
-    hi->h = _headerLink(h);
+    hi->h = headerLink(h);
     hi->next_index = 0;
     return hi;
 }
@@ -2031,8 +2002,7 @@ HeaderIterator _headerInitIterator(Header h)
  * @retval *c		number of values
  * @return		1 on success, 0 on failure
  */
-static
-int _headerNextIterator(HeaderIterator hi,
+int headerNextIterator(HeaderIterator hi,
 		rpm_tag_t * tag,
 		rpm_tagtype_t * type,
 		rpm_data_t * p,
@@ -2069,25 +2039,24 @@ int _headerNextIterator(HeaderIterator hi,
  * @param h		header
  * @return		new header instance
  */
-static
-Header _headerCopy(Header h)
+Header headerCopy(Header h)
 {
-    Header nh = _headerNew();
+    Header nh = headerNew();
     HeaderIterator hi;
     rpm_tagtype_t type;
     rpm_tag_t tag;
     rpm_count_t count;
     rpm_data_t ptr;
    
-    for (hi = _headerInitIterator(h);
-	_headerNextIterator(hi, &tag, &type, &ptr, &count);
+    for (hi = headerInitIterator(h);
+	headerNextIterator(hi, &tag, &type, &ptr, &count);
 	ptr = headerFreeData(ptr, type))
     {
-	if (ptr) (void) _headerAddEntry(nh, tag, type, ptr, count);
+	if (ptr) (void) headerAddEntry(nh, tag, type, ptr, count);
     }
-    hi = _headerFreeIterator(hi);
+    hi = headerFreeIterator(hi);
 
-    return _headerReload(nh, HEADER_IMAGE);
+    return headerReload(nh, HEADER_IMAGE);
 }
 
 /**
@@ -2125,7 +2094,7 @@ static headerSprintfArgs hsaInit(headerSprintfArgs hsa)
     if (hsa != NULL) {
 	hsa->i = 0;
 	if (tag != NULL && tag->tag == -2)
-	    hsa->hi = _headerInitIterator(hsa->h);
+	    hsa->hi = headerInitIterator(hsa->h);
     }
     return hsa;
 }
@@ -2154,7 +2123,7 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 	    rpm_tagtype_t type;
 	    rpm_count_t count;
 
-	    if (!_headerNextIterator(hsa->hi, &tagno, &type, NULL, &count))
+	    if (!headerNextIterator(hsa->hi, &tagno, &type, NULL, &count))
 		fmt = NULL;
 	    tag->tag = tagno;
 	}
@@ -2171,7 +2140,7 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 static headerSprintfArgs hsaFini(headerSprintfArgs hsa)
 {
     if (hsa != NULL) {
-	hsa->hi = _headerFreeIterator(hsa->hi);
+	hsa->hi = headerFreeIterator(hsa->hi);
 	hsa->i = 0;
     }
     return hsa;
@@ -2699,7 +2668,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	    data = "(none)";
 	}
     } else {
-	if (!_headerGetEntry(hsa->h, tag->tag, &type, &data, &count)) {
+	if (!headerGetEntry(hsa->h, tag->tag, &type, &data, &count)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
@@ -2873,7 +2842,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_COND:
-	if (token->u.cond.tag.ext || _headerIsEntry(hsa->h, token->u.cond.tag.tag)) {
+	if (token->u.cond.tag.ext || headerIsEntry(hsa->h, token->u.cond.tag.tag)) {
 	    spft = token->u.cond.ifFormat;
 	    condNumFormats = token->u.cond.numIfTokens;
 	} else {
@@ -2907,7 +2876,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 				 hsa->ec + spft->u.tag.extNum))
 		     continue;
 	    } else {
-		if (!_headerGetEntry(hsa->h, spft->u.tag.tag, &type, NULL, &count))
+		if (!headerGetEntry(hsa->h, spft->u.tag.tag, &type, NULL, &count))
 		    continue;
 	    } 
 
@@ -3040,8 +3009,7 @@ rpmecFree(const headerSprintfExtension exts, rpmec ec)
  * @retval *errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
-static
-char * _headerSprintf(Header h, const char * fmt,
+char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,
 		     errmsg_t * errmsg)
@@ -3053,7 +3021,7 @@ char * _headerSprintf(Header h, const char * fmt,
     int isxml;
     size_t need;
  
-    hsa->h = _headerLink(h);
+    hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
     hsa->exts = (headerSprintfExtension) extensions;
     hsa->tags = (headerTagTableEntry) tbltags;
@@ -3106,7 +3074,7 @@ char * _headerSprintf(Header h, const char * fmt,
 exit:
     if (errmsg)
 	*errmsg = hsa->errmsg;
-    hsa->h = _headerFree(hsa->h);
+    hsa->h = headerFree(hsa->h);
     hsa->fmt = _free(hsa->fmt);
     return hsa->val;
 }
@@ -3282,8 +3250,7 @@ const struct headerSprintfExtension_s headerDefaultFormats[] = {
  * @param headerTo	destination header
  * @param tagstocopy	array of tags that are copied
  */
-static
-void _headerCopyTags(Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy)
+void headerCopyTags(Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy)
 {
     rpm_tag_t * p;
 
@@ -3294,48 +3261,24 @@ void _headerCopyTags(Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy)
 	rpm_data_t s;
 	rpm_tagtype_t type;
 	rpm_count_t count;
-	if (_headerIsEntry(headerTo, *p))
+	if (headerIsEntry(headerTo, *p))
 	    continue;
-	if (!_headerGetEntryMinMemory(headerFrom, *p, &type, &s, &count))
+	if (!headerGetEntryMinMemory(headerFrom, *p, &type, &s, &count))
 	    continue;
-	(void) _headerAddEntry(headerTo, *p, type, s, count);
+	(void) headerAddEntry(headerTo, *p, type, s, count);
 	/* XXXX freeing up *any* data from headerGetEntryMinMemory ?! */
 	s = headerFreeData(s, type);
     }
 }
 
-static struct HV_s hdrVec1 = {
-    _headerLink,
-    _headerUnlink,
-    _headerFree,
-    _headerNew,
-    _headerSort,
-    _headerUnsort,
-    _headerSizeof,
-    _headerUnload,
-    _headerReload,
-    _headerCopy,
-    _headerLoad,
-    _headerCopyLoad,
-    _headerRead,
-    _headerWrite,
-    _headerIsEntry,
-    _headerFreeTag,
-    _headerGetEntry,
-    _headerGetEntryMinMemory,
-    _headerAddEntry,
-    _headerAppendEntry,
-    _headerAddOrAppendEntry,
-    _headerAddI18NString,
-    _headerModifyEntry,
-    _headerRemoveEntry,
-    _headerSprintf,
-    _headerCopyTags,
-    _headerFreeIterator,
-    _headerInitIterator,
-    _headerNextIterator,
-    NULL, NULL,
-    1
-};
-
-HV_t hdrVec = &hdrVec1;
+void * headerFreeData(rpm_data_t data, rpm_tagtype_t type)
+{
+    if (data) {
+	if (type == RPM_FORCEFREE_TYPE ||
+	    type == RPM_STRING_ARRAY_TYPE ||
+	    type == RPM_I18NSTRING_TYPE ||
+	    type == RPM_BIN_TYPE)
+		free(data); /* XXX _constfree() */
+    }
+    return NULL;
+}

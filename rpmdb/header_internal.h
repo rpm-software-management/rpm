@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 
 #include <rpm/header.h>
-#include "rpmdb/header_method.h"
 
 #define	INDEX_MALLOC_SIZE	8
 
@@ -51,7 +50,6 @@ struct indexEntry_s {
  * The Header data structure.
  */
 struct headerToken_s {
-    struct HV_s hv;		/*!< Header public methods. */
     void * blob;		/*!< Header region blob. */
     indexEntry index;		/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
