@@ -175,9 +175,9 @@ gid_t getGidS(const char *gname)
     return gids[gid_used++];
 }
 
-int32_t * getBuildTime(void)
+rpm_time_t * getBuildTime(void)
 {
-    static int32_t buildTime[1];
+    static rpm_time_t buildTime[1];
 
     if (buildTime[0] == 0)
 	buildTime[0] = (int32_t) time(NULL);

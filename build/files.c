@@ -233,7 +233,7 @@ static void timeCheck(int tc, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int * mtime;
+    rpm_time_t * mtime;
     const char ** files;
     rpm_tagtype_t fnt;
     rpm_count_t count, x;
@@ -1137,8 +1137,8 @@ static void genCpioListAndHeader(FileList fl,
 			       &(flp->uname), 1);
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->gname), 1);
-      if (sizeof(flp->fl_mtime) != sizeof(uint32_t)) {
-	uint32_t mtime = (uint32_t)flp->fl_mtime;
+      if (sizeof(flp->fl_mtime) != sizeof(rpm_time_t)) {
+	rpm_time_t mtime = (rpm_time_t)flp->fl_mtime;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(mtime), 1);
       } else {

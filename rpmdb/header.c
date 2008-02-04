@@ -3178,8 +3178,8 @@ static char * realDateFormat(rpm_tagtype_t type, rpm_constdata_t data,
 	val = xmalloc(50 + padding);
 	strcat(formatPrefix, "s");
 
-	/* this is important if sizeof(int32_t) ! sizeof(time_t) */
-	{   time_t dateint = *((const int32_t *) data);
+	/* this is important if sizeof(rpm_time_t) ! sizeof(time_t) */
+	{   time_t dateint = *((const rpm_time_t *) data);
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';

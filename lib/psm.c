@@ -1775,7 +1775,7 @@ assert(psm->mi == NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    int32_t installTime = (int32_t) time(NULL);
+	    rpm_time_t installTime = (rpm_time_t) time(NULL);
 	    rpm_count_t fc = rpmfiFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */

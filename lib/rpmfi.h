@@ -288,7 +288,7 @@ uint32_t rpmfiFNlink(rpmfi fi);
  * @param fi		file info set
  * @return		current file modify time, 0 on invalid
  */
-uint32_t rpmfiFMtime(rpmfi fi);
+rpm_time_t rpmfiFMtime(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file owner from file info set.

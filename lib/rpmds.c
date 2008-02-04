@@ -34,7 +34,7 @@ struct rpmds_s {
     rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
     uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
     int32_t * Refs;		/*!< No. of file refs. */
-    int32_t BT;			/*!< Package build time tie breaker. */
+    time_t BT;			/*!< Package build time tie breaker. */
     rpm_tag_t tagN;		/*!< Header tag. */
     rpm_tagtype_t Nt, EVRt, Ft;	/*!< Tag data types. */
     int32_t Count;		/*!< No. of elements */
@@ -124,7 +124,7 @@ rpmds rpmdsNew(Header h, rpm_tag_t tagN, int flags)
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpm_tag_t tagBT = RPMTAG_BUILDTIME;
     rpm_tagtype_t BTt;
-    int32_t * BTp;
+    rpm_time_t * BTp;
     rpm_tag_t tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;

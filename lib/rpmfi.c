@@ -311,9 +311,9 @@ uint32_t rpmfiFNlink(rpmfi fi)
     return nlink;
 }
 
-uint32_t rpmfiFMtime(rpmfi fi)
+rpm_time_t rpmfiFMtime(rpmfi fi)
 {
-    uint32_t fmtime = 0;
+    rpm_time_t fmtime = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fmtimes != NULL)

@@ -45,8 +45,8 @@ static int indent = 2;
 
 typedef struct Item_s {
     char * path;
-    int32_t size;
-    int32_t mtime;
+    rpm_off_t size;
+    rpm_time_t mtime;
     rpmds this;
     Header h;
 } * Item;

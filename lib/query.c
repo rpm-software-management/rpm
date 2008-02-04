@@ -183,7 +183,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	rpmfileAttrs fflags;
 	unsigned short fmode;
  	unsigned short frdev;
-	unsigned int fmtime;
+	rpm_time_t fmtime;
 	rpmfileState fstate;
 	rpm_off_t fsize;
 	const char * fn;

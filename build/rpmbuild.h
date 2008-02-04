@@ -143,7 +143,7 @@ extern const char * buildHost(void)	;
  * Return build time stamp.
  * @return		build time stamp
  */
-extern int32_t * getBuildTime(void)	;
+extern rpm_time_t * getBuildTime(void)	;
 
 /** \ingroup rpmbuild
  * Read next line from spec file.
