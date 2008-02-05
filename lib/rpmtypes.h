@@ -34,6 +34,7 @@ typedef const void *	rpm_constdata_t;
 
 typedef uint32_t	rpm_color_t;
 typedef uint32_t	rpm_flag_t;
+typedef int32_t		rpm_tid_t;
 /** @} */
 
 /** \ingroup rpmtypes

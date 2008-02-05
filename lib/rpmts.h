@@ -507,7 +507,7 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone);
  * @param ts		transaction set
  * @return		transaction id
  */
-int32_t rpmtsGetTid(rpmts ts);
+rpm_tid_t rpmtsGetTid(rpmts ts);
 
 /** \ingroup rpmts
  * Set transaction id, i.e. transaction time stamp.
@@ -515,7 +515,7 @@ int32_t rpmtsGetTid(rpmts ts);
  * @param tid		new transaction id
  * @return		previous transaction id
  */
-int32_t rpmtsSetTid(rpmts ts, int32_t tid);
+rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid);
 
 /** \ingroup rpmts
  * Get signature tag.

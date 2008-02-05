@@ -90,7 +90,7 @@ struct rpmts_s {
     char * currDir;		/*!< Current working directory. */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     int delta;			/*!< Delta for reallocation. */
-    int32_t tid;			/*!< Transaction id. */
+    rpm_tid_t tid;		/*!< Transaction id. */
 
     rpm_color_t color;		/*!< Transaction color bits. */
     rpm_color_t prefcolor;	/*!< Preferred file color. */

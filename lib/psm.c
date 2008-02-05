@@ -1588,7 +1588,7 @@ assert(psm->mi == NULL);
 
 	    /* Add remove transaction id to header. */
 	    if (psm->oh != NULL)
-	    {	int32_t tid = rpmtsGetTid(ts);
+	    {	rpm_tid_t tid = rpmtsGetTid(ts);
 		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
 			RPM_INT32_TYPE, &tid, 1);
 	    }

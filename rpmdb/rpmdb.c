@@ -2450,7 +2450,7 @@ memset(data, 0, sizeof(*data));
 #ifdef	DYING
     /* Add remove transaction id to header. */
     if (rid != 0 && rid != -1) {
-	int32_t tid = rid;
+	rpm_tid_t tid = rid;
 	(void) headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
     }
 #endif
@@ -2730,7 +2730,7 @@ memset(data, 0, sizeof(*data));
     xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
 #endif
     if (iid != 0 && iid != -1) {
-	int32_t tid = iid;
+	rpm_tid_t tid = iid;
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
 	   xx = headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
     }

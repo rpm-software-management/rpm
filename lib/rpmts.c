@@ -497,7 +497,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
     /* XXX W2DO: tag value inheirited from parent? */
     xx = headerAddEntry(h, RPMTAG_BUILDHOST, RPM_STRING_TYPE, buildhost, 1);
-    {   int32_t tid = rpmtsGetTid(ts);
+    {   rpm_tid_t tid = rpmtsGetTid(ts);
 	xx = headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &tid, 1);
 	/* XXX W2DO: tag value inheirited from parent? */
 	xx = headerAddEntry(h, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &tid, 1);
@@ -1121,18 +1121,18 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
     return ochrootDone;
 }
 
-int32_t rpmtsGetTid(rpmts ts)
+rpm_tid_t rpmtsGetTid(rpmts ts)
 {
-    int32_t tid = -1;  /* XXX -1 is time(2) error return. */
+    rpm_tid_t tid = -1;  /* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	tid = ts->tid;
     }
     return tid;
 }
 
-int32_t rpmtsSetTid(rpmts ts, int32_t tid)
+rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid)
 {
-    int32_t otid = -1; /* XXX -1 is time(2) error return. */
+    rpm_tid_t otid = -1; /* XXX -1 is time(2) error return. */
     if (ts != NULL) {
 	otid = ts->tid;
 	ts->tid = tid;
@@ -1552,7 +1552,7 @@ rpmts rpmtsCreate(void)
     ts->dbmode = O_RDONLY;
 
     ts->scriptFd = NULL;
-    ts->tid = (int32_t) time(NULL);
+    ts->tid = (rpm_tid_t) time(NULL);
     ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");

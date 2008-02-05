@@ -886,7 +886,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     int    rc         = 0;
     int    numAdded   = 0;
     int    numRemoved = 0;
-    int32_t tid;
+    rpm_tid_t tid;
     rpmtsi tsi;
     rpmte  te;
     rpmps  ps;
@@ -1009,7 +1009,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 		Header *hdrp,
 		const char **fnp)
 {
-    int32_t tid;
+    rpm_tid_t tid;
     const char * name;
     const char * rpname = NULL;
     const char * _repackage_dir = NULL;
@@ -1375,7 +1375,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     (void) rpmtsSetChrootDone(ts, 0);
 
-    {	int32_t tid = (int32_t) time(NULL);
+    {	rpm_tid_t tid = (rpm_tid_t) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
 

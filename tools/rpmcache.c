@@ -107,7 +107,7 @@ static int ftsCachePrint(rpmts ts, FILE * fp)
 static int ftsCacheUpdate(rpmts ts)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    int32_t tid = rpmtsGetTid(ts);
+    rpm_tid_t tid = rpmtsGetTid(ts);
     rpmdbMatchIterator mi;
     unsigned char * md5;
     int rc = 0;
@@ -572,7 +572,7 @@ main(int argc, char *argv[])
 	vsflags |= RPMVSF_NOHDRCHK;
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    {   int32_t tid = (int32_t) time(NULL);
+    {   rpm_tid_t tid = (rpm_tid_t) time(NULL);
 	(void) rpmtsSetTid(ts, tid);
     }
 

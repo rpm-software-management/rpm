@@ -81,7 +81,7 @@ IDTX IDTXload(rpmts ts, rpm_tag_t tag)
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	rpm_tagtype_t type = RPM_NULL_TYPE;
 	rpm_count_t count = 0;
-	int32_t * tidp;
+	rpm_tid_t * tidp;
 
 	tidp = NULL;
 	if (!hge(h, tag, &type, (rpm_data_t *)&tidp, &count) || tidp == NULL)
@@ -115,7 +115,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpm_tag_t tag)
     IDTX idtx = NULL;
     HGE_t hge = (HGE_t) headerGetEntry;
     Header h;
-    int32_t * tidp;
+    rpm_tid_t * tidp;
     FD_t fd;
     char ** av = NULL;
     int ac = 0;

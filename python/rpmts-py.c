@@ -584,7 +584,7 @@ rpmts_Rollback(rpmtsObject * s, PyObject * args, PyObject * kwds)
     struct rpmInstallArguments_s * ia = alloca(sizeof(*ia));
     rpmtransFlags transFlags;
     const char ** av = NULL;
-    uint32_t rbtid;
+    rpm_tid_t rbtid;
     int rc;
     char * kwlist[] = {"transactionId", NULL};
 
