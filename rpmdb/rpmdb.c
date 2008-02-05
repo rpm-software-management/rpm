@@ -2827,7 +2827,7 @@ memset(data, 0, sizeof(*data));
 	    rpm_tagtype_t rpmtype = 0;
 	    rpm_count_t rpmcnt = 0;
 	    rpm_tag_t rpmtag;
-	    int32_t * requireFlags;
+	    rpm_flag_t * requireFlags;
 	    rpmRC rpmrc;
 	    int i, j;
 

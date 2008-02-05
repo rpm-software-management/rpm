@@ -581,7 +581,7 @@ char * headerGetNEVRA(Header h, const char ** np );
  * @param h		header
  * @return		header color
  */
-uint32_t headerGetColor(Header h);
+rpm_color_t headerGetColor(Header h);
 
 /** \ingroup header
  * Check if header is a source or binary package header
