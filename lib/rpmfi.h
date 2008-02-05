@@ -351,7 +351,7 @@ rpmfi rpmfiFree(rpmfi fi);
  * @param scareMem	Use pointers to refcounted header memory?
  * @return		new file info set
  */
-rpmfi rpmfiNew(const rpmts ts, Header h, rpm_tag_t tagN, int scareMem);
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem);
 
 /** \ingroup rpmfi
  * Retrieve file classes from header.
@@ -376,7 +376,7 @@ void rpmfiBuildFClasses(Header h,
  * @retval *fdepsp	array of file dependencies
  * @retval *fcp		number of files
  */
-void rpmfiBuildFDeps(Header h, rpm_tag_t tagN,
+void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		const char *** fdepsp, rpm_count_t * fcp);
 
 /** \ingroup rpmfi
@@ -396,7 +396,7 @@ void rpmfiBuildFDeps(Header h, rpm_tag_t tagN,
  * @retval *fnp		array of file names
  * @retval *fcp		number of files
  */
-void rpmfiBuildFNames(Header h, rpm_tag_t tagN,
+void rpmfiBuildFNames(Header h, rpmTag tagN,
 		const char *** fnp, rpm_count_t * fcp);
 
 /** \ingroup rpmfi

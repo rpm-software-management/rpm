@@ -283,7 +283,7 @@ int rpmtsVerifyDB(rpmts ts);
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpm_tag_t rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmts

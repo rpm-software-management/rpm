@@ -734,7 +734,7 @@ void * headerUnload(Header h)
  * @return 		header entry
  */
 static
-indexEntry findEntry(Header h, rpm_tag_t tag, rpmTagType type)
+indexEntry findEntry(Header h, rpmTag tag, rpmTagType type)
 {
     indexEntry entry, entry2, last;
     struct indexEntry_s key;
@@ -770,7 +770,7 @@ indexEntry findEntry(Header h, rpm_tag_t tag, rpmTagType type)
     return NULL;
 }
 
-int headerRemoveEntry(Header h, rpm_tag_t tag)
+int headerRemoveEntry(Header h, rpmTag tag)
 {
     indexEntry last = h->index + h->indexUsed;
     indexEntry entry, first;
@@ -948,7 +948,7 @@ errxit:
     return h;
 }
 
-Header headerReload(Header h, rpm_tag_t tag)
+Header headerReload(Header h, rpmTag tag)
 {
     Header nh;
     size_t length;
@@ -1088,7 +1088,7 @@ exit:
     return (nb == length ? 0 : 1);
 }
 
-int headerIsEntry(Header h, rpm_tag_t tag)
+int headerIsEntry(Header h, rpmTag tag)
 {
    		/* FIX: h modified by sort. */
     return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
@@ -1339,7 +1339,7 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, rpm_tag_t tag,
+static int intGetEntry(Header h, rpmTag tag,
 		rpmTagType * type,
 		rpm_data_t * p,
 		rpm_count_t * c,
@@ -1386,7 +1386,7 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type)
     return NULL;
 }
 
-int headerGetEntry(Header h, rpm_tag_t tag,
+int headerGetEntry(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p,
 			rpm_count_t * c)
@@ -1394,7 +1394,7 @@ int headerGetEntry(Header h, rpm_tag_t tag,
     return intGetEntry(h, tag, type, p, c, 0);
 }
 
-int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
+int headerGetEntryMinMemory(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p,
 			rpm_count_t * c)
@@ -1402,7 +1402,7 @@ int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
     return intGetEntry(h, tag, type, (rpm_data_t) p, c, 1);
 }
 
-int headerGetRawEntry(Header h, rpm_tag_t tag, rpmTagType * type, rpm_data_t * p,
+int headerGetRawEntry(Header h, rpmTag tag, rpmTagType * type, rpm_data_t * p,
 		rpm_count_t * c)
 {
     indexEntry entry;
@@ -1477,7 +1477,7 @@ grabData(rpmTagType type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
     return data;
 }
 
-int headerAddEntry(Header h, rpm_tag_t tag, rpmTagType type, 
+int headerAddEntry(Header h, rpmTag tag, rpmTagType type, 
 			rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
@@ -1520,7 +1520,7 @@ int headerAddEntry(Header h, rpm_tag_t tag, rpmTagType type,
     return 1;
 }
 
-int headerAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
+int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
@@ -1557,7 +1557,7 @@ int headerAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
     return 1;
 }
 
-int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
+int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		rpm_constdata_t p, rpm_count_t c)
 {
     return (findEntry(h, tag, type)
@@ -1565,7 +1565,7 @@ int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
 	: headerAddEntry(h, tag, type, p, c));
 }
 
-int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
+int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang)
 {
     indexEntry table, entry;
@@ -1688,7 +1688,7 @@ int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
     return 0;
 }
 
-int headerModifyEntry(Header h, rpm_tag_t tag, rpmTagType type,
+int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c)
 {
     indexEntry entry;
@@ -1811,7 +1811,7 @@ HeaderIterator headerInitIterator(Header h)
 }
 
 int headerNextIterator(HeaderIterator hi,
-		rpm_tag_t * tag,
+		rpmTag * tag,
 		rpmTagType * type,
 		rpm_data_t * p,
 		rpm_count_t * c)
@@ -1852,7 +1852,7 @@ Header headerCopy(Header h)
     Header nh = headerNew();
     HeaderIterator hi;
     rpmTagType type;
-    rpm_tag_t tag;
+    rpmTag tag;
     rpm_count_t count;
     rpm_data_t ptr;
    
@@ -1927,7 +1927,7 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 	if (hsa->hi == NULL) {
 	    hsa->i++;
 	} else {
-	    rpm_tag_t tagno;
+	    rpmTag tagno;
 	    rpmTagType type;
 	    rpm_count_t count;
 
@@ -3041,9 +3041,9 @@ const struct headerSprintfExtension_s headerDefaultFormats[] = {
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
 
-void headerCopyTags(Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy)
+void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
 {
-    rpm_tag_t * p;
+    rpmTag * p;
 
     if (headerFrom == headerTo)
 	return;

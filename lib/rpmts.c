@@ -177,7 +177,7 @@ static int isArch(const char * arch)
 }
 
 /* keyp might no be defined. */
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpm_tag_t rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi;
@@ -598,7 +598,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
     Header h;
     size_t bhnamelen;
     time_t bhtime;
-    rpm_tag_t rpmtag;
+    rpmTag rpmtag;
     const char * keyp;
     size_t keylen;
     int rc = 1;	/* assume not found */

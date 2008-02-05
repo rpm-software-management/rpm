@@ -108,7 +108,7 @@ int rpmVersionCompare(Header first, Header second)
  */
 static struct tagMacro {
 const char *	macroname; /*!< Macro name to define. */
-    rpm_tag_t	tag;		/*!< Header tag to use for value. */
+    rpmTag	tag;		/*!< Header tag to use for value. */
 } tagMacros[] = {
     { "name",		RPMTAG_NAME },
     { "version",	RPMTAG_VERSION },
@@ -439,9 +439,9 @@ static const char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6
  * @param tag		scriptlet tag
  * @return		name of scriptlet
  */
-static const char * tag2sln(rpm_tag_t tag)
+static const char * tag2sln(rpmTag tag)
 {
-    switch (tag) {
+    switch ((rpm_tag_t) tag) {
     case RPMTAG_PRETRANS:       return "%pretrans";
     case RPMTAG_TRIGGERPREIN:   return "%triggerprein";
     case RPMTAG_PREIN:          return "%pre";
@@ -453,13 +453,14 @@ static const char * tag2sln(rpm_tag_t tag)
     case RPMTAG_POSTTRANS:      return "%posttrans";
     case RPMTAG_TRIGGERPOSTUN:  return "%triggerpostun";
     case RPMTAG_VERIFYSCRIPT:   return "%verify";
+    default: break;
     }
     return "%unknownscript";
 }
 
-static rpm_tag_t triggertag(rpmsenseFlags sense) 
+static rpmTag triggertag(rpmsenseFlags sense) 
 {
-    rpm_tag_t tag = RPMTAG_NOT_FOUND;
+    rpmTag tag = RPMTAG_NOT_FOUND;
     switch (sense) {
     case RPMSENSE_TRIGGERIN:
 	tag = RPMTAG_TRIGGERIN;
@@ -506,7 +507,7 @@ static pid_t psmWait(rpmpsm psm)
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, rpm_tag_t stag,
+static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
 		   unsigned int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
 {
@@ -603,7 +604,7 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
+static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 		unsigned int progArgc, const char ** progArgv,
 		const char * script, int arg1, int arg2)
 {
@@ -1224,7 +1225,7 @@ void rpmpsmSetAsync(rpmpsm psm, int async)
     psm->unorderedSuccessor = async;
 }
 
-rpmRC rpmpsmScriptStage(rpmpsm psm, rpm_tag_t scriptTag, rpm_tag_t progTag)
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
 {
     assert(psm != NULL);
     psm->scriptTag = scriptTag;
@@ -1528,7 +1529,7 @@ assert(psm->mi == NULL);
 		{
 		    HeaderIterator hi;
 		    rpmTagType type;
-		    rpm_tag_t tag;
+		    rpmTag tag;
 		    rpm_count_t count;
 		    rpm_data_t ptr;
 		    Header oh;

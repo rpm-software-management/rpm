@@ -26,7 +26,7 @@ rpmgiFlags giFlags = RPMGI_NONE;
  */
 struct rpmgi_s {
     rpmts ts;			/*!< Iterator transaction set. */
-    rpm_tag_t tag;		/*!< Iterator type. */
+    rpmTag tag;		/*!< Iterator type. */
     const void * keyp;		/*!< Iterator key. */
     size_t keylen;		/*!< Iterator key length. */
 
@@ -341,7 +341,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 
     if (gi->argv != NULL)
     for (av = (const char **) gi->argv; *av != NULL; av++) {
-	rpm_tag_t tag = RPMTAG_NAME;
+	rpmTag tag = RPMTAG_NAME;
 	const char * pat;
 	char * a, * ae;
 
@@ -434,7 +434,7 @@ rpmgi rpmgiFree(rpmgi gi)
     return NULL;
 }
 
-rpmgi rpmgiNew(rpmts ts, rpm_tag_t tag, const void * keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
 {
     rpmgi gi = xcalloc(1, sizeof(*gi));
 

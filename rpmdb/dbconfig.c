@@ -264,7 +264,7 @@ dbiIndex db3Free(dbiIndex dbi)
 static const char *db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
 
-dbiIndex db3New(rpmdb rpmdb, rpm_tag_t rpmtag)
+dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
     char dbiTagMacro[128];

@@ -27,7 +27,7 @@ struct rpmfi_s {
 
     const char * Type;		/*!< Tag name. */
 
-    rpm_tag_t tagN;		/*!< Header tag. */
+    rpmTag tagN;		/*!< Header tag. */
     Header h;			/*!< Header for file info set (or NULL) */
 
 /*?null?*/

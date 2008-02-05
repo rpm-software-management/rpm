@@ -762,7 +762,7 @@ exit:
     return rc;
 }
 
-static int db3open(rpmdb rpmdb, rpm_tag_t rpmtag, dbiIndex * dbip)
+static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     extern struct _dbiVec db3vec;
     char * urlfn = NULL;

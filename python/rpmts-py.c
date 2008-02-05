@@ -499,7 +499,7 @@ static PyObject *
 rpmts_IDTXload(rpmtsObject * s)
 {
     PyObject * result = NULL;
-    rpm_tag_t tag = RPMTAG_INSTALLTID;
+    rpmTag tag = RPMTAG_INSTALLTID;
     IDTX idtx;
 
 if (_rpmts_debug)
@@ -539,7 +539,7 @@ static PyObject *
 rpmts_IDTXglob(rpmtsObject * s)
 {
     PyObject * result = NULL;
-    rpm_tag_t tag = RPMTAG_REMOVETID;
+    rpmTag tag = RPMTAG_REMOVETID;
     char * globstr;
     IDTX idtx;
 
@@ -1255,7 +1255,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 /* XXX lkey *must* be a 32 bit integer, int "works" on all known platforms. */
     int lkey = 0;
     int len = 0;
-    rpm_tag_t tag = RPMDBI_PACKAGES;
+    rpmTag tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", NULL};
 
 if (_rpmts_debug)

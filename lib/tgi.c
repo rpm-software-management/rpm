@@ -83,7 +83,7 @@ main(int argc, char *argv[])
     rpmts ts = NULL;
     rpmVSFlags vsflags;
     rpmgi gi = NULL;
-    rpm_tag_t gitag = RPMDBI_PACKAGES;
+    rpmTag gitag = RPMDBI_PACKAGES;
     const char ** av;
     int ac;
     int rc = 0;

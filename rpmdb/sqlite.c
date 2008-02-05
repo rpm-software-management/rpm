@@ -766,7 +766,7 @@ leaveChroot(dbi);
  * @param dbip
  * @return              0 on success
  */
-static int sql_open(rpmdb rpmdb, rpm_tag_t rpmtag, dbiIndex * dbip)
+static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     extern struct _dbiVec sqlitevec;
    

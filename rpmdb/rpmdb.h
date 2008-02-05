@@ -118,7 +118,7 @@ int rpmdbVerify(const char * prefix);
  * @param rpmtag	rpm tag
  * @return              0 on success
  */
-int rpmdbCloseDBI(rpmdb db, rpm_tag_t rpmtag);
+int rpmdbCloseDBI(rpmdb db, rpmTag rpmtag);
 
 /** \ingroup rpmdb
  * Close all database indices and free rpmdb.
@@ -197,7 +197,7 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi,
  * @param pattern	pattern to match
  * @return		0 on success
  */
-int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpm_tag_t tag,
+int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, const char * pattern);
 
 /** \ingroup rpmdb
@@ -235,7 +235,7 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpm_tag_t rpmtag,
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmdb

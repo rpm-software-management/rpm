@@ -211,7 +211,7 @@ static int rpmReSign(rpmts ts,
 	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
 	    HeaderIterator hi;
 	    rpmTagType type;
-	    rpm_tag_t tag;
+	    rpmTag tag;
 	    rpm_count_t count;
 	    rpm_data_t ptr;
 	    Header oh;
@@ -524,7 +524,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
-    rpmSigTag sigtag;
+    rpmTag sigtag;
     rpmTagType sigtype;
     rpm_data_t sig;
     pgpDig dig;

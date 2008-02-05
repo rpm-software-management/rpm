@@ -72,7 +72,7 @@ rpmgi rpmgiFree(rpmgi gi);
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		new iterator
  */
-rpmgi rpmgiNew(rpmts ts, rpm_tag_t tag, const void * keyp,
+rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp,
 		size_t keylen);
 
 /** \ingroup rpmgi

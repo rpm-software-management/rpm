@@ -113,7 +113,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
  * @param progTag	scriptlet prog tag to execute
  * @return 		0 on success
  */
-rpmRC rpmpsmScriptStage(rpmpsm psm, rpm_tag_t scriptTag, rpm_tag_t progTag);
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag);
 
 /**
  * @param psm		package state machine data

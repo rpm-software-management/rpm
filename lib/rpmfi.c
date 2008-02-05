@@ -1137,7 +1137,7 @@ static inline unsigned char nibble(char c)
     if (hge((_h), (_tag), NULL, (rpm_data_t *) &(_data), NULL)) \
 	_data = xstrdup(_data)
 
-rpmfi rpmfiNew(const rpmts ts, Header h, rpm_tag_t tagN, int scareMem)
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 {
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
@@ -1384,7 +1384,7 @@ exit:
     if (fcp) *fcp = ac;
 }
 
-void rpmfiBuildFDeps(Header h, rpm_tag_t tagN,
+void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	const char *** fdepsp, rpm_count_t * fcp)
 {
     int scareMem = 0;
@@ -1479,7 +1479,7 @@ exit:
     if (fcp) *fcp = ac;
 }
 
-void rpmfiBuildFNames(Header h, rpm_tag_t tagN,
+void rpmfiBuildFNames(Header h, rpmTag tagN,
 	const char *** fnp, rpm_count_t * fcp)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -1490,8 +1490,8 @@ void rpmfiBuildFNames(Header h, rpm_tag_t tagN,
     rpm_count_t count;
     const char ** fileNames;
     int size;
-    rpm_tag_t dirNameTag = 0;
-    rpm_tag_t dirIndexesTag = 0;
+    rpmTag dirNameTag = 0;
+    rpmTag dirIndexesTag = 0;
     rpmTagType bnt, dnt;
     char * t;
     int i, xx;

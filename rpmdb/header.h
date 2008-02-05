@@ -92,7 +92,7 @@ extern "C" {
 typedef struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
     const char * name;		/*!< Tag name. */
-    rpm_tag_t val;		/*!< Tag numeric value. */
+    rpmTag val;		/*!< Tag numeric value. */
     rpmTagType type;		/*!< Tag type. */
 };
 
@@ -208,7 +208,7 @@ typedef union hRET_s {
 /**
  */
 typedef struct HE_s {
-    rpm_tag_t tag;
+    rpmTag tag;
     rpmTagType * typ;
     union {
 	hPTR_t * ptr;
@@ -279,7 +279,7 @@ void * headerUnload(Header h);
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
-Header headerReload(Header h, int tag);
+Header headerReload(Header h, rpmTag tag);
 
 /** \ingroup header
  * Duplicate a header.
@@ -325,7 +325,7 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp);
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-int headerIsEntry(Header h, rpm_tag_t tag);
+int headerIsEntry(Header h, rpmTag tag);
 
 /** \ingroup header
  * Free data allocated when retrieved from header.
@@ -349,7 +349,7 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type);
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntry(Header h, rpm_tag_t tag,
+int headerGetEntry(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p,
 			rpm_count_t * c);
@@ -366,7 +366,7 @@ int headerGetEntry(Header h, rpm_tag_t tag,
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
+int headerGetEntryMinMemory(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p, 
 			rpm_count_t * c);
@@ -385,7 +385,7 @@ int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, rpm_tag_t tag, rpmTagType type, rpm_constdata_t p, rpm_count_t c);
+int headerAddEntry(Header h, rpmTag tag, rpmTagType type, rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -401,7 +401,7 @@ int headerAddEntry(Header h, rpm_tag_t tag, rpmTagType type, rpm_constdata_t p, 
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
+int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
@@ -414,7 +414,7 @@ int headerAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
+int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
 		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
@@ -437,7 +437,7 @@ int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
-int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
+int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang);
 
 /** \ingroup header
@@ -450,7 +450,7 @@ int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerModifyEntry(Header h, rpm_tag_t tag, rpmTagType type,
+int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
@@ -462,7 +462,7 @@ int headerModifyEntry(Header h, rpm_tag_t tag, rpmTagType type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-int headerRemoveEntry(Header h, rpm_tag_t tag);
+int headerRemoveEntry(Header h, rpmTag tag);
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -486,7 +486,7 @@ char * headerSprintf(Header h, const char * fmt,
  * @param headerTo	destination header
  * @param tagstocopy	array of tags that are copied
  */
-void headerCopyTags(Header headerFrom, Header headerTo, rpm_tag_t * tagstocopy);
+void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy);
 
 /** \ingroup header
  * Destroy header tag iterator.
@@ -512,7 +512,7 @@ HeaderIterator headerInitIterator(Header h);
  * @return		1 on success, 0 on failure
  */
 int headerNextIterator(HeaderIterator hi,
-		rpm_tag_t * tag,
+		rpmTag * tag,
 		rpmTagType * type,
 		rpm_data_t * p,
 		rpm_count_t * c);
@@ -616,7 +616,7 @@ typedef
  * @retval c		address of number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-typedef int (*HGE_t) (Header h, rpm_tag_t tag,
+typedef int (*HGE_t) (Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p,
 			rpm_count_t * c);
@@ -636,7 +636,7 @@ typedef int (*HGE_t) (Header h, rpm_tag_t tag,
  * @param c             number of values
  * @return              1 on success, 0 on failure
  */
-typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpmTagType type,
+typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c);
 
 /**
@@ -650,7 +650,7 @@ typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpmTagType type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-typedef int (*HME_t) (Header h, rpm_tag_t tag, rpmTagType type,
+typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c);
 
 /**
@@ -663,7 +663,7 @@ typedef int (*HME_t) (Header h, rpm_tag_t tag, rpmTagType type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-typedef int (*HRE_t) (Header h, rpm_tag_t tag);
+typedef int (*HRE_t) (Header h, rpmTag tag);
 
 #ifdef __cplusplus
 }

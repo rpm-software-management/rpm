@@ -35,7 +35,7 @@ struct rpmds_s {
     rpm_color_t * Color;	/*!< Bit(s) calculated from file color(s). */
     int32_t * Refs;		/*!< No. of file refs. */
     time_t BT;			/*!< Package build time tie breaker. */
-    rpm_tag_t tagN;		/*!< Header tag. */
+    rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int32_t Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
@@ -45,13 +45,13 @@ struct rpmds_s {
     int nrefs;			/*!< Reference count. */
 };
 
-static int dsType(rpm_tag_t tag, 
-		  const char ** Type, rpm_tag_t * tagEVR, rpm_tag_t * tagF)
+static int dsType(rpmTag tag, 
+		  const char ** Type, rpmTag * tagEVR, rpmTag * tagF)
 {
     int rc = 0;
     const char *t = NULL;
-    rpm_tag_t evr = RPMTAG_NOT_FOUND;
-    rpm_tag_t f = RPMTAG_NOT_FOUND;
+    rpmTag evr = RPMTAG_NOT_FOUND;
+    rpmTag f = RPMTAG_NOT_FOUND;
 
     if (tag == RPMTAG_PROVIDENAME) {
 	t = "Provides";
@@ -105,7 +105,7 @@ fprintf(stderr, "--> ds %p ++ %d %s\n", ds, ds->nrefs, msg);
 rpmds rpmdsFree(rpmds ds)
 {
     HFD_t hfd = headerFreeData;
-    rpm_tag_t tagEVR, tagF;
+    rpmTag tagEVR, tagF;
 
     if (ds == NULL)
 	return NULL;
@@ -136,15 +136,15 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     return NULL;
 }
 
-rpmds rpmdsNew(Header h, rpm_tag_t tagN, int flags)
+rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
-    rpm_tag_t tagBT = RPMTAG_BUILDTIME;
+    rpmTag tagBT = RPMTAG_BUILDTIME;
     rpmTagType BTt;
     rpm_time_t * BTp;
-    rpm_tag_t tagEVR, tagF;
+    rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
     const char ** N;
@@ -236,7 +236,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     return tbuf;
 }
 
-rpmds rpmdsThis(Header h, rpm_tag_t tagN, rpmsenseFlags Flags)
+rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
 {
     HGE_t hge = (HGE_t) headerGetEntryMinMemory;
     rpmds ds = NULL;
@@ -295,7 +295,7 @@ exit:
     return rpmdsLink(ds, (ds ? ds->Type : RPMDBG()));
 }
 
-rpmds rpmdsSingle(rpm_tag_t tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -392,9 +392,9 @@ rpmsenseFlags rpmdsFlags(const rpmds ds)
     return Flags;
 }
 
-rpm_tag_t rpmdsTagN(const rpmds ds)
+rpmTag rpmdsTagN(const rpmds ds)
 {
-    rpm_tag_t tagN = 0;
+    rpmTag tagN = 0;
 
     if (ds != NULL)
 	tagN = ds->tagN;

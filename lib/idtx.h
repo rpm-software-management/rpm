@@ -64,7 +64,7 @@ IDTX IDTXsort(IDTX idtx);
  * @param tag		rpm tag
  * @return 		id index
  */
-IDTX IDTXload(rpmts ts, rpm_tag_t tag);
+IDTX IDTXload(rpmts ts, rpmTag tag);
 
 /**
  * Load tag (instance,value) pairs from packages, and return sorted id index.
@@ -73,7 +73,7 @@ IDTX IDTXload(rpmts ts, rpm_tag_t tag);
  * @param tag		rpm tag
  * @return 		id index
  */
-IDTX IDTXglob(rpmts ts, const char * globstr, rpm_tag_t tag);
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag);
 
 #ifdef __cplusplus
 }   

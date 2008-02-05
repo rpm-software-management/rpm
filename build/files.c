@@ -1617,7 +1617,7 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
  * @return		RPMRC_OK on success
  */
 static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
-		rpm_tag_t tag)
+		rpmTag tag)
 {
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * urlfn = NULL;
@@ -2017,7 +2017,7 @@ void initSourceHeader(rpmSpec spec)
 {
     HeaderIterator hi;
     rpmTagType type;
-    rpm_tag_t tag;
+    rpmTag tag;
     rpm_count_t count;
     rpm_data_t ptr;
 

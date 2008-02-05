@@ -9,7 +9,7 @@
 #include <rpm/rpmbuild.h>
 #include "debug.h"
 
-int addReqProv(rpmSpec spec, Header h, rpm_tag_t tagN,
+int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		int index)
 {
@@ -17,10 +17,10 @@ int addReqProv(rpmSpec spec, Header h, rpm_tag_t tagN,
     HFD_t hfd = headerFreeData;
     const char ** names;
     rpmTagType dnt;
-    rpm_tag_t nametag = 0;
-    rpm_tag_t versiontag = 0;
-    rpm_tag_t flagtag = 0;
-    rpm_tag_t indextag = 0;
+    rpmTag nametag = 0;
+    rpmTag versiontag = 0;
+    rpmTag flagtag = 0;
+    rpmTag indextag = 0;
     rpm_count_t len;
     rpmsenseFlags extra = RPMSENSE_ANY;
     int xx;

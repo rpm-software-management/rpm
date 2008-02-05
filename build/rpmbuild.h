@@ -244,7 +244,7 @@ int parsePrep(rpmSpec spec);
  * @param tagflags	dependency flags already known from context
  * @return		RPMRC_OK on success, RPMRC_FAIL on failure
  */
-rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpm_tag_t tagN,
+rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char * field, rpmTag tagN,
 		int index, rpmsenseFlags tagflags);
 
 /** \ingroup rpmbuild
@@ -327,7 +327,7 @@ Package  freePackage(Package pkg);
  * @param index		(0 always)
  * @return		0 always
  */
-int addReqProv(rpmSpec spec, Header h, rpm_tag_t tagN,
+int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		int index);
 

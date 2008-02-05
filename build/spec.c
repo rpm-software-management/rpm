@@ -200,7 +200,7 @@ static inline struct Source *findSource(rpmSpec spec, int num, int flag)
     return NULL;
 }
 
-int parseNoSource(rpmSpec spec, const char * field, rpm_tag_t tag)
+int parseNoSource(rpmSpec spec, const char * field, rpmTag tag)
 {
     const char *f, *fe;
     const char *name;
@@ -244,7 +244,7 @@ int parseNoSource(rpmSpec spec, const char * field, rpm_tag_t tag)
     return 0;
 }
 
-int addSource(rpmSpec spec, Package pkg, const char *field, rpm_tag_t tag)
+int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
 {
     struct Source *p;
     int flag = 0;
@@ -255,7 +255,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpm_tag_t tag)
     int num = 0;
 
     buf[0] = '\0';
-    switch (tag) {
+    switch ((rpm_tag_t) tag) {
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
 	name = "source";

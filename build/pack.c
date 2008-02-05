@@ -144,7 +144,7 @@ static StringBuf addFileToTagAux(rpmSpec spec,
 
 /**
  */
-static int addFileToTag(rpmSpec spec, const char * file, Header h, rpm_tag_t tag)
+static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
@@ -166,7 +166,7 @@ static int addFileToTag(rpmSpec spec, const char * file, Header h, rpm_tag_t tag
 
 /**
  */
-static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpm_tag_t tag)
+static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTag tag)
 {
     StringBuf sb = newStringBuf();
     char *s;
@@ -593,7 +593,7 @@ exit:
     return rc;
 }
 
-static rpm_tag_t copyTags[] = {
+static rpmTag copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,

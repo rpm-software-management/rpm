@@ -471,7 +471,7 @@ fnpyKey rpmteKey(rpmte te)
     return (te != NULL ? te->key : NULL);
 }
 
-rpmds rpmteDS(rpmte te, rpm_tag_t tag)
+rpmds rpmteDS(rpmte te, rpmTag tag)
 {
     if (te == NULL)
 	return NULL;
@@ -494,7 +494,7 @@ rpmds rpmteDS(rpmte te, rpm_tag_t tag)
 	return NULL;
 }
 
-rpmfi rpmteFI(rpmte te, rpm_tag_t tag)
+rpmfi rpmteFI(rpmte te, rpmTag tag)
 {
     if (te == NULL)
 	return NULL;
@@ -505,7 +505,7 @@ rpmfi rpmteFI(rpmte te, rpm_tag_t tag)
 	return NULL;
 }
 
-void rpmteColorDS(rpmte te, rpm_tag_t tag)
+void rpmteColorDS(rpmte te, rpmTag tag)
 {
     rpmfi fi = rpmteFI(te, RPMTAG_BASENAMES);
     rpmds ds = rpmteDS(te, tag);

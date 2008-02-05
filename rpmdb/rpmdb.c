@@ -40,8 +40,8 @@ static int _db_filter_dups = 0;
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
 
-rpm_tag_t * dbiTags = NULL;
-rpm_tag_t dbiTagsMax = 0;
+rpmTag * dbiTags = NULL;
+rpmTag dbiTagsMax = 0;
 
 /* We use this to comunicate back to the the rpm transaction
  *  what their install instance was on a rpmdbAdd().
@@ -124,7 +124,7 @@ static int printable(const void * ptr, size_t len)
  * @param rpmtag	rpm header tag
  * @return		dbi index, -1 on error
  */
-static int dbiTagToDbix(rpm_tag_t rpmtag)
+static int dbiTagToDbix(rpmTag rpmtag)
 {
     int dbix;
 
@@ -145,7 +145,7 @@ static void dbiTagsInit(void)
 	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filemd5s:Depends:Pubkeys";
     char * dbiTagStr = NULL;
     char * o, * oe;
-    rpm_tag_t rpmtag;
+    rpmTag rpmtag;
 
     dbiTagStr = rpmExpand("%{?_dbi_tags}", NULL);
     if (!(dbiTagStr && *dbiTagStr)) {
@@ -211,7 +211,7 @@ static struct _dbiVec *mydbvecs[] = {
     DB1vec, DB1vec, DB2vec, DB3vec, SQLITEvec, NULL
 };
 
-dbiIndex dbiOpen(rpmdb db, rpm_tag_t rpmtag, unsigned int flags)
+dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 {
     int dbix;
     dbiIndex dbi = NULL;
@@ -578,7 +578,7 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
 }
 
 typedef struct miRE_s {
-    rpm_tag_t		tag;		/*!< header tag */
+    rpmTag		tag;		/*!< header tag */
     rpmMireMode		mode;		/*!< pattern match mode */
     char *		pattern;	/*!< pattern string */
     int			notmatch;	/*!< like "grep -v" */
@@ -593,7 +593,7 @@ struct rpmdbMatchIterator_s {
     void *		mi_keyp;
     size_t		mi_keylen;
     rpmdb		mi_db;
-    rpm_tag_t		mi_rpmtag;
+    rpmTag		mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
     DBT			mi_key;
@@ -705,7 +705,7 @@ static struct rpmdb_s dbTemplate = {
     _DB_MAJOR,	_DB_ERRPFX
 };
 
-static int isTemporaryDB(rpm_tag_t rpmtag) 
+static int isTemporaryDB(rpmTag rpmtag) 
 {
     int rc = 0;
     switch (rpmtag) {
@@ -769,7 +769,7 @@ int rpmdbOpenAll(rpmdb db)
     return rc;
 }
 
-int rpmdbCloseDBI(rpmdb db, rpm_tag_t rpmtag)
+int rpmdbCloseDBI(rpmdb db, rpmTag rpmtag)
 {
     int dbix;
     int rc = 0;
@@ -966,7 +966,7 @@ static int openDatabase(const char * prefix,
 	if (dbiTags != NULL)
 	for (dbix = 0; rc == 0 && dbix < dbiTagsMax; dbix++) {
 	    dbiIndex dbi;
-	    rpm_tag_t rpmtag;
+	    rpmTag rpmtag;
 
 	    /* Filter out temporary databases */
 	    if (isTemporaryDB((rpmtag = dbiTags[dbix])))
@@ -1641,7 +1641,7 @@ static int mireCmp(const void * a, const void * b)
  * @param pattern	pattern to duplicate
  * @return		duplicated pattern
  */
-static char * mireDup(rpm_tag_t tag, rpmMireMode *modep,
+static char * mireDup(rpmTag tag, rpmMireMode *modep,
 			const char * pattern)
 {
     const char * s;
@@ -1729,7 +1729,7 @@ static char * mireDup(rpm_tag_t tag, rpmMireMode *modep,
     return pat;
 }
 
-int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpm_tag_t tag,
+int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, const char * pattern)
 {
     static rpmMireMode defmode = (rpmMireMode)-1;
@@ -2280,7 +2280,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
     return 0;
 }
 
-rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpm_tag_t rpmtag,
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 		const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi;
@@ -2473,7 +2473,7 @@ memset(data, 0, sizeof(*data));
 	    const char ** rpmvals = NULL;
 	    rpmTagType rpmtype = 0;
 	    rpm_count_t rpmcnt = 0;
-	    rpm_tag_t rpmtag;
+	    rpmTag rpmtag;
 	    int xx;
 	    rpm_count_t i, j;
 
@@ -2484,7 +2484,7 @@ memset(data, 0, sizeof(*data));
 	    if (isTemporaryDB(rpmtag)) 
 		continue;
 
-	    switch (rpmtag) {
+	    switch ((rpm_tag_t) rpmtag) {
 	    case RPMDBI_PACKAGES:
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
@@ -2826,7 +2826,7 @@ memset(data, 0, sizeof(*data));
 	    const char **rpmvals = NULL;
 	    rpmTagType rpmtype = 0;
 	    rpm_count_t rpmcnt = 0;
-	    rpm_tag_t rpmtag;
+	    rpmTag rpmtag;
 	    rpm_flag_t * requireFlags;
 	    rpmRC rpmrc;
 	    int i, j;
@@ -3345,7 +3345,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	if (dbiTags != NULL)
 	for (i = 0; i < dbiTagsMax; i++) {
 	    const char * base;
-	    rpm_tag_t rpmtag;
+	    rpmTag rpmtag;
 
 	    /* Filter out temporary databases */
 	    if (isTemporaryDB((rpmtag = dbiTags[i])))

@@ -9,7 +9,7 @@ extern int _rpmds_debug;
 
 int main(int argc, char *argv[])
 {
-    rpm_tag_t tagN = RPMTAG_REQUIRENAME;
+    rpmTag tagN = RPMTAG_REQUIRENAME;
     rpmds ds = NULL;
     rpmds dsA;
     rpmds dsA1;

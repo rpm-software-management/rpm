@@ -119,7 +119,7 @@ static enum cvtaction convertAMD(enum cvtaction ca, rpmTagType type,
     return ca;
 }
 
-static enum cvtaction convertExistingAMD(rpm_tag_t tag, rpmTagType type,
+static enum cvtaction convertExistingAMD(rpmTag tag, rpmTagType type,
 	rpm_data_t valsp, rpm_count_t *countp, void ** nvalsp, rpm_count_t *ncountp,
 	cmd_t *cmds[], int ncmds)
 {
@@ -193,7 +193,7 @@ static enum cvtaction convertExistingAMD(rpm_tag_t tag, rpmTagType type,
 static
 Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
 {
-    rpm_tag_t tag;
+    rpmTag tag;
     rpmTagType type;
     rpm_count_t count;
     rpm_data_t vals;
