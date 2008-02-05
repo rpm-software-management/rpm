@@ -93,7 +93,7 @@ typedef struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
     const char * name;		/*!< Tag name. */
     rpm_tag_t val;		/*!< Tag numeric value. */
-    rpm_tagtype_t type;		/*!< Tag type. */
+    rpmTagType type;		/*!< Tag type. */
 };
 
 /**
@@ -121,7 +121,7 @@ enum headerSprintfExtensionType {
  * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef char * (*headerTagFormatFunction)(rpm_tagtype_t type,
+typedef char * (*headerTagFormatFunction)(rpmTagType type,
 				rpm_constdata_t data, char * formatPrefix,
 				size_t padding, rpm_count_t element);
 
@@ -137,7 +137,7 @@ typedef char * (*headerTagFormatFunction)(rpm_tagtype_t type,
  * @return		0 on success
  */
 typedef int (*headerTagTagFunction) (Header h,
-		rpm_tagtype_t * type,
+		rpmTagType * type,
 		rpm_data_t * data,
 		rpm_count_t * count,
 		int * freeData);
@@ -209,7 +209,7 @@ typedef union hRET_s {
  */
 typedef struct HE_s {
     rpm_tag_t tag;
-    rpm_tagtype_t * typ;
+    rpmTagType * typ;
     union {
 	hPTR_t * ptr;
 	hRET_t * ret;
@@ -334,7 +334,7 @@ int headerIsEntry(Header h, rpm_tag_t tag);
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
-void * headerFreeTag(Header h, rpm_data_t data, rpm_tagtype_t type);
+void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type);
 
 /** \ingroup header
  * Retrieve tag value.
@@ -350,7 +350,7 @@ void * headerFreeTag(Header h, rpm_data_t data, rpm_tagtype_t type);
  * @return		1 on success, 0 on failure
  */
 int headerGetEntry(Header h, rpm_tag_t tag,
-			rpm_tagtype_t * type,
+			rpmTagType * type,
 			rpm_data_t * p,
 			rpm_count_t * c);
 
@@ -367,7 +367,7 @@ int headerGetEntry(Header h, rpm_tag_t tag,
  * @return		1 on success, 0 on failure
  */
 int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
-			rpm_tagtype_t * type,
+			rpmTagType * type,
 			rpm_data_t * p, 
 			rpm_count_t * c);
 
@@ -385,7 +385,7 @@ int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c);
+int headerAddEntry(Header h, rpm_tag_t tag, rpmTagType type, rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -401,7 +401,7 @@ int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, rpm_constdata_t 
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
+int headerAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
 		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
@@ -414,7 +414,7 @@ int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
+int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpmTagType type,
 		rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
@@ -450,7 +450,7 @@ int headerAddI18NString(Header h, rpm_tag_t tag, const char * string,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
+int headerModifyEntry(Header h, rpm_tag_t tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c);
 
 /** \ingroup header
@@ -513,7 +513,7 @@ HeaderIterator headerInitIterator(Header h);
  */
 int headerNextIterator(HeaderIterator hi,
 		rpm_tag_t * tag,
-		rpm_tagtype_t * type,
+		rpmTagType * type,
 		rpm_data_t * p,
 		rpm_count_t * c);
 
@@ -528,7 +528,7 @@ int headerNextIterator(HeaderIterator hi,
  * @param type		type of data (or RPM_FORCEFREE_TYPE to force free)
  * @return		NULL always
  */
-void * headerFreeData(rpm_data_t data, rpm_tagtype_t type);
+void * headerFreeData(rpm_data_t data, rpmTagType type);
 
 /** \ingroup header
  * Return name, version, release strings from header.
@@ -600,7 +600,7 @@ int headerIsSource(Header h);
  * @return		NULL always
  */
 typedef
-    void * (*HFD_t) (rpm_data_t data, rpm_tagtype_t type);
+    void * (*HFD_t) (rpm_data_t data, rpmTagType type);
 
 /**
  * Prototype for headerGetEntry() vector.
@@ -617,7 +617,7 @@ typedef
  * @return		1 on success, 0 on failure
  */
 typedef int (*HGE_t) (Header h, rpm_tag_t tag,
-			rpm_tagtype_t * type,
+			rpmTagType * type,
 			rpm_data_t * p,
 			rpm_count_t * c);
 
@@ -636,7 +636,7 @@ typedef int (*HGE_t) (Header h, rpm_tag_t tag,
  * @param c             number of values
  * @return              1 on success, 0 on failure
  */
-typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
+typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c);
 
 /**
@@ -650,7 +650,7 @@ typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-typedef int (*HME_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
+typedef int (*HME_t) (Header h, rpm_tag_t tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c);
 
 /**

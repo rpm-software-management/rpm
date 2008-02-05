@@ -25,7 +25,7 @@
  * @param element	(unused)
  * @return		formatted string
  */
-static char * triggertypeFormat(rpm_tagtype_t type, rpm_constdata_t data, 
+static char * triggertypeFormat(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding,
 		int element)
 {
@@ -56,7 +56,7 @@ static char * triggertypeFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * permsFormat(rpm_tagtype_t type, rpm_constdata_t data,
+static char * permsFormat(rpmTagType type, rpm_constdata_t data,
 		char * formatPrefix, size_t padding, int element)
 {
     char * val;
@@ -84,7 +84,7 @@ static char * permsFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * fflagsFormat(rpm_tagtype_t type, rpm_constdata_t data, 
+static char * fflagsFormat(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding, int element)
 {
     char * val;
@@ -130,7 +130,7 @@ static char * fflagsFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @param element	no. bytes of binary data
  * @return		formatted string
  */
-static char * armorFormat(rpm_tagtype_t type, rpm_constdata_t data, 
+static char * armorFormat(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding,
 		int element)
 {
@@ -180,7 +180,7 @@ static char * armorFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @param element
  * @return		formatted string
  */
-static char * base64Format(rpm_tagtype_t type, rpm_constdata_t data, 
+static char * base64Format(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding, int element)
 {
     char * val;
@@ -256,7 +256,7 @@ static char * xmlstrcpy(char * t, const char * s)
  * @param element	(unused)
  * @return		formatted string
  */
-static char * xmlFormat(rpm_tagtype_t type, rpm_constdata_t data, 
+static char * xmlFormat(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding,
 		int element)
 {
@@ -347,7 +347,7 @@ static char * xmlFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * pgpsigFormat(rpm_tagtype_t type, rpm_constdata_t data, 
+static char * pgpsigFormat(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding,
 		int element)
 {
@@ -454,7 +454,7 @@ static char * pgpsigFormat(rpm_tagtype_t type, rpm_constdata_t data,
  * @param element	(unused)
  * @return		formatted string
  */
-static char * depflagsFormat(rpm_tagtype_t type, rpm_constdata_t data, 
+static char * depflagsFormat(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding, int element)
 {
     char * val;
@@ -516,14 +516,14 @@ static int fsnamesTag( Header h, int32_t * type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int instprefixTag(Header h, rpm_tagtype_t* type,
+static int instprefixTag(Header h, rpmTagType* type,
 		rpm_data_t * data,
 		rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    rpm_tagtype_t ipt;
+    rpmTagType ipt;
     char ** array;
 
     if (hge(h, RPMTAG_INSTALLPREFIX, type, (rpm_data_t *)data, count)) {
@@ -549,7 +549,7 @@ static int instprefixTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fssizesTag(Header h, rpm_tagtype_t* type,
+static int fssizesTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -599,13 +599,13 @@ static int fssizesTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int triggercondsTag(Header h, rpm_tagtype_t* type,
+static int triggercondsTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    rpm_tagtype_t tnt, tvt, tst;
+    rpmTagType tnt, tvt, tst;
     int32_t * indices;
     char ** names, ** versions;
     rpm_count_t numNames, numScripts;
@@ -673,13 +673,13 @@ static int triggercondsTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int triggertypeTag(Header h, rpm_tagtype_t* type,
+static int triggertypeTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    rpm_tagtype_t tst;
+    rpmTagType tst;
     int32_t * indices;
     const char ** conds;
     const char ** s;
@@ -732,7 +732,7 @@ static int triggertypeTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int filenamesTag(Header h, rpm_tagtype_t* type,
+static int filenamesTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -751,7 +751,7 @@ static int filenamesTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fileclassTag(Header h, rpm_tagtype_t* type,
+static int fileclassTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -770,7 +770,7 @@ static int fileclassTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int fileprovideTag(Header h, rpm_tagtype_t* type,
+static int fileprovideTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -789,7 +789,7 @@ static int fileprovideTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int filerequireTag(Header h, rpm_tagtype_t* type,
+static int filerequireTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -818,7 +818,7 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int i18nTag(Header h, rpm_tag_t tag, rpm_tagtype_t* type,
+static int i18nTag(Header h, rpm_tag_t tag, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -910,7 +910,7 @@ static int i18nTag(Header h, rpm_tag_t tag, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int summaryTag(Header h, rpm_tagtype_t* type,
+static int summaryTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -926,7 +926,7 @@ static int summaryTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int descriptionTag(Header h, rpm_tagtype_t* type,
+static int descriptionTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {
@@ -942,7 +942,7 @@ static int descriptionTag(Header h, rpm_tagtype_t* type,
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int groupTag(Header h, rpm_tagtype_t* type,
+static int groupTag(Header h, rpmTagType* type,
 		rpm_data_t * data, rpm_count_t * count,
 		int * freeData)
 {

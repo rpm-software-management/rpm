@@ -36,7 +36,7 @@ struct rpmds_s {
     int32_t * Refs;		/*!< No. of file refs. */
     time_t BT;			/*!< Package build time tie breaker. */
     rpm_tag_t tagN;		/*!< Header tag. */
-    rpm_tagtype_t Nt, EVRt, Ft;	/*!< Tag data types. */
+    rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int32_t Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */
@@ -142,13 +142,13 @@ rpmds rpmdsNew(Header h, rpm_tag_t tagN, int flags)
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpm_tag_t tagBT = RPMTAG_BUILDTIME;
-    rpm_tagtype_t BTt;
+    rpmTagType BTt;
     rpm_time_t * BTp;
     rpm_tag_t tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
     const char ** N;
-    rpm_tagtype_t Nt;
+    rpmTagType Nt;
     rpm_count_t Count;
 
     if (dsType(tagN, &Type, &tagEVR, &tagF))

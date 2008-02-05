@@ -529,7 +529,7 @@ rpm_tag_t rpmtsSigtag(const rpmts ts);
  * @param ts		transaction set
  * @return		signature tag type
  */
-rpm_tagtype_t rpmtsSigtype(const rpmts ts);
+rpmTagType rpmtsSigtype(const rpmts ts);
 
 /** \ingroup rpmts
  * Get signature tag data, i.e. from header.
@@ -555,7 +555,7 @@ size_t rpmtsSiglen(const rpmts ts);
  * @return		0 always
  */
 int rpmtsSetSig(rpmts ts,
-		rpm_tag_t sigtag, rpm_tagtype_t sigtype,
+		rpm_tag_t sigtag, rpmTagType sigtype,
 		rpm_data_t sig, size_t siglen);
 
 /** \ingroup rpmts

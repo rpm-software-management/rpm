@@ -639,7 +639,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpm_tag_t sigTag,
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    DIGEST_CTX ctx;
 	    void * uh;
-	    rpm_tagtype_t uht;
+	    rpmTagType uht;
 	    rpm_count_t uhc;
 	
 	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)

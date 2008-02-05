@@ -16,7 +16,7 @@ int addReqProv(rpmSpec spec, Header h, rpm_tag_t tagN,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** names;
-    rpm_tagtype_t dnt;
+    rpmTagType dnt;
     rpm_tag_t nametag = 0;
     rpm_tag_t versiontag = 0;
     rpm_tag_t flagtag = 0;
@@ -64,7 +64,7 @@ int addReqProv(rpmSpec spec, Header h, rpm_tag_t tagN,
     /* Check for duplicate dependencies. */
     if (hge(h, nametag, &dnt, (rpm_data_t *) &names, &len)) {
 	const char ** versions = NULL;
-	rpm_tagtype_t dvt = RPM_STRING_ARRAY_TYPE;
+	rpmTagType dvt = RPM_STRING_ARRAY_TYPE;
 	int *flags = NULL;
 	int *indexes = NULL;
 	int duplicate = 0;

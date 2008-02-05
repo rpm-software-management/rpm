@@ -627,7 +627,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     rpmRelocation * relocations = NULL;
     int numRelocations;
     const char ** validRelocations;
-    rpm_tagtype_t validType;
+    rpmTagType validType;
     const char ** baseNames;
     const char ** dirNames;
     uint32_t * dirIndexes;
@@ -995,7 +995,7 @@ dColors[j] |= fColors[i];
     if (nrelocated) {
 	rpm_count_t c;
 	void * d;
-	rpm_tagtype_t t;
+	rpmTagType t;
 
 	d = NULL;
 	xx = hge(h, RPMTAG_BASENAMES, &t, &d, &c);
@@ -1492,7 +1492,7 @@ void rpmfiBuildFNames(Header h, rpm_tag_t tagN,
     int size;
     rpm_tag_t dirNameTag = 0;
     rpm_tag_t dirIndexesTag = 0;
-    rpm_tagtype_t bnt, dnt;
+    rpmTagType bnt, dnt;
     char * t;
     int i, xx;
 

@@ -134,7 +134,7 @@ const char ** argv;
 	int32_t * i32p;
     } body;
     char numbuf[32];
-    rpm_tagtype_t type;
+    rpmTagType type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
 	if (!hge(h, tagm->tag, &type, (rpm_data_t *) &body, NULL))
@@ -615,7 +615,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpm_tag_t stag,
     int argc = 0;
     const char ** prefixes = NULL;
     rpm_count_t numPrefixes;
-    rpm_tagtype_t ipt;
+    rpmTagType ipt;
     const char * oldPrefix;
     size_t maxPrefixLength;
     size_t len;
@@ -909,7 +909,7 @@ static rpmRC runInstScript(rpmpsm psm)
     rpm_data_t * progArgv;
     rpm_count_t progArgc;
     const char ** argv;
-    rpm_tagtype_t ptt, stt;
+    rpmTagType ptt, stt;
     char * script;
     rpmRC rc = RPMRC_OK;
     int xx;
@@ -979,7 +979,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	rpm_tagtype_t tit, tst, tpt;
+	rpmTagType tit, tst, tpt;
 	const char * Name;
 	rpmsenseFlags Flags = rpmdsFlags(trigger);
 
@@ -1096,7 +1096,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     const char ** triggerNames;
     rpm_count_t numTriggers, numTriggerIndices;
     rpm_count_t * triggerIndices;
-    rpm_tagtype_t tnt, tit;
+    rpmTagType tnt, tit;
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
 
@@ -1517,7 +1517,7 @@ assert(psm->mi == NULL);
 
 	    /* Regenerate original header. */
 	    {	void * uh = NULL;
-		rpm_tagtype_t uht;
+		rpmTagType uht;
 		rpm_count_t uhc;
 
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
@@ -1527,7 +1527,7 @@ assert(psm->mi == NULL);
 		if (headerGetEntry(fi->h, RPMTAG_HEADERIMAGE, &uht, &uh, &uhc))
 		{
 		    HeaderIterator hi;
-		    rpm_tagtype_t type;
+		    rpmTagType type;
 		    rpm_tag_t tag;
 		    rpm_count_t count;
 		    rpm_data_t ptr;

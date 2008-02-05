@@ -144,7 +144,7 @@ static PyObject * hdrKeyList(hdrObject * s)
     PyObject * list, *o;
     HeaderIterator hi;
     rpm_tag_t tag;
-    rpm_tagtype_t type;
+    rpmTagType type;
 
     list = PyList_New(0);
 
@@ -162,6 +162,11 @@ static PyObject * hdrKeyList(hdrObject * s)
 	case RPM_STRING_TYPE:
 	    PyList_Append(list, o=PyInt_FromLong(tag));
 	    Py_DECREF(o);
+	    break;
+	case RPM_I18NSTRING_TYPE: /* hum.. ?`*/
+	case RPM_NULL_TYPE:
+	default:
+	    break;
 	}
     }
     headerFreeIterator(hi);
@@ -357,7 +362,7 @@ rpm_tag_t tagNumFromPyObject (PyObject *item)
  * @retval c           address of number of values
  * @return             0 on success, 1 on bad magic, 2 on error
  */
-static int dressedHeaderGetEntry(Header h, rpm_tag_t tag, rpm_tagtype_t *type,
+static int dressedHeaderGetEntry(Header h, rpm_tag_t tag, rpmTagType *type,
 	void **p, rpm_count_t *c)
 {
     switch (tag) {
@@ -408,7 +413,7 @@ static int dressedHeaderGetEntry(Header h, rpm_tag_t tag, rpm_tagtype_t *type,
  */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
-    rpm_tagtype_t tagtype, type;
+    rpmTagType tagtype, type;
     rpm_tag_t tag = RPMTAG_NOT_FOUND;
     rpm_count_t count, i;
     rpm_data_t data;
@@ -776,7 +781,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
     hdrObject * hdr;
     rpm_count_t c, count = 0;
     rpm_tag_t tag;
-    rpm_tagtype_t type;
+    rpmTagType type;
     void * p;
 
     Py_BEGIN_ALLOW_THREADS

@@ -235,7 +235,7 @@ static void timeCheck(int tc, Header h)
     HFD_t hfd = headerFreeData;
     rpm_time_t * mtime;
     const char ** files;
-    rpm_tagtype_t fnt;
+    rpmTagType fnt;
     rpm_count_t count, x;
     time_t currentTime = time(NULL);
 
@@ -2016,7 +2016,7 @@ exit:
 void initSourceHeader(rpmSpec spec)
 {
     HeaderIterator hi;
-    rpm_tagtype_t type;
+    rpmTagType type;
     rpm_tag_t tag;
     rpm_count_t count;
     rpm_data_t ptr;

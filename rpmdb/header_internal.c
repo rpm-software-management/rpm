@@ -12,7 +12,7 @@
 char ** headerGetLangs(Header h)
 {
     char **s, *e, **table;
-    rpm_tagtype_t type;
+    rpmTagType type;
     rpm_count_t i, count;
 
     if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (rpm_data_t)&s, &count))

@@ -193,7 +193,7 @@ static int isMemberInEntry(Header h, const char *name, rpm_tag_t tag)
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     const char ** names;
-    rpm_tagtype_t type;
+    rpmTagType type;
     rpm_count_t count;
 
     if (!hge(h, tag, &type, (rpm_data_t *)&names, &count))
@@ -428,7 +428,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpm_tag_t tag,
     char ** array;
     int multiToken = 0;
     rpmsenseFlags tagflags;
-    rpm_tagtype_t type;
+    rpmTagType type;
     size_t len;
     rpm_count_t num;
     int rc;

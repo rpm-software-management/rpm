@@ -11,7 +11,7 @@
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
-    rpm_tagtype_t type;
+    rpmTagType type;
     rpm_count_t count;
 
     if (np) {
@@ -36,7 +36,7 @@ int headerNEVRA(Header h, const char **np,
 		const char **ep, const char **vp, const char **rp,
 		const char **ap)
 {
-    rpm_tagtype_t type;
+    rpmTagType type;
     rpm_count_t count;
 
     headerNVR(h, np, vp, rp);
