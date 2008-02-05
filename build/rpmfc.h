@@ -29,40 +29,48 @@ enum FCOLOR_e {
     RPMFC_BLACK			= 0,
     RPMFC_ELF32			= (1 <<  0),
     RPMFC_ELF64			= (1 <<  1),
-#define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64)
+    RPMFC_ELFMIPSN32		= (1 <<  2),
+#define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64|RPMFC_ELFMIPSN32)
+	/* (1 << 3) leaks into package headers, reserved */
 
-    RPMFC_PKGCONFIG		= (1 <<  5),
-    RPMFC_LIBTOOL		= (1 <<  6),
-    RPMFC_MODULE		= (1 <<  7),
-    RPMFC_EXECUTABLE		= (1 <<  8),
-    RPMFC_SCRIPT		= (1 <<  9),
-    RPMFC_TEXT			= (1 << 10),
-    RPMFC_DATA			= (1 << 11),	/* XXX unused */
-    RPMFC_DOCUMENT		= (1 << 12),
+	/* bits 4-7 unused */
+    RPMFC_PKGCONFIG		= (1 <<  8),
+    RPMFC_LIBTOOL		= (1 <<  9),
+    RPMFC_BOURNE		= (1 << 10),
+    RPMFC_MONO			= (1 << 11),
+
+    RPMFC_SCRIPT		= (1 << 12),
     RPMFC_STATIC		= (1 << 13),
     RPMFC_NOTSTRIPPED		= (1 << 14),
-    RPMFC_COMPRESSED		= (1 << 15),
+	/* bit 15 unused */
 
+	/* bits 16-19 are enumerated, not bits */
     RPMFC_DIRECTORY		= (1 << 16),
-    RPMFC_SYMLINK		= (1 << 17),
-    RPMFC_DEVICE		= (1 << 18),
-    RPMFC_LIBRARY		= (1 << 19),
+    RPMFC_SYMLINK		= (2 << 16),
+    RPMFC_DEVICE		= (3 << 16),
+    RPMFC_LIBRARY		= (4 << 16),
+    RPMFC_FONT			= (5 << 16),
+    RPMFC_IMAGE			= (6 << 16),
+    RPMFC_MANPAGE		= (7 << 16),
+    RPMFC_TEXT			= (8 << 16),
+    RPMFC_DOCUMENT		= (9 << 16),
+
     RPMFC_ARCHIVE		= (1 << 20),
-    RPMFC_FONT			= (1 << 21),
-    RPMFC_IMAGE			= (1 << 22),
-    RPMFC_MANPAGE		= (1 << 23),
+    RPMFC_COMPRESSED		= (1 << 21),
+    RPMFC_MODULE		= (1 << 22),
+    RPMFC_EXECUTABLE		= (1 << 23),
 
     RPMFC_PERL			= (1 << 24),
     RPMFC_JAVA			= (1 << 25),
     RPMFC_PYTHON		= (1 << 26),
     RPMFC_PHP			= (1 << 27),
     RPMFC_TCL			= (1 << 28),
-    RPMFC_MONO                  = (1 << 6),
 
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),
     RPMFC_ERROR			= (1 << 31)
 };
+
 /** \ingroup rpmfc
  */
 typedef	enum FCOLOR_e FCOLOR_t;
