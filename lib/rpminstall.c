@@ -852,7 +852,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
     IDT ip;
     int niids = 0;
     int rc = 0;
-    int vsflags, ovsflags;
+    rpmVSFlags vsflags, ovsflags;
     int numAdded;
     int numRemoved;
     rpmps ps;
