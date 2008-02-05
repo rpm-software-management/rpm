@@ -5,7 +5,7 @@
  * \file lib/rpmtypes.h
  *
  * Typedefs for RPM abstract data types.
- * @todo Add documentation...
+ * @todo The grouping needs love to look sane...
  */
 
 #include <rpm/rpmints.h>
@@ -17,6 +17,14 @@ extern "C" {
 
 typedef const char *    errmsg_t;
 
+/** \ingroup rpmtypes
+ *
+ * RPM header and data retrieval types.
+ * @{
+ */
+typedef struct headerToken_s * Header;
+typedef struct headerIterator_s * HeaderIterator;
+
 typedef int32_t		rpm_tag_t;
 typedef uint32_t	rpm_tagtype_t;
 typedef uint32_t	rpm_count_t;
@@ -25,39 +33,50 @@ typedef void *		rpm_data_t;
 typedef const void *	rpm_constdata_t;
 
 typedef uint32_t	rpm_color_t;
+/** @} */
 
+/** \ingroup rpmtypes
+ *
+ * In-header hardcoded sizes for various POSIXy types
+ * @{
+ */
 typedef uint32_t	rpm_off_t;
 typedef uint32_t	rpm_time_t;
 typedef uint16_t	rpm_mode_t;
 typedef uint16_t	rpm_rdev_t;
 typedef uint32_t	rpm_dev_t;
 typedef uint32_t	rpm_ino_t;
+/** @} */
 
-typedef struct headerToken_s * Header;
-typedef struct headerIterator_s * HeaderIterator;
-
+/** \ingroup rpmtypes
+ * The main types involved in transaction manipulation 
+ * @{
+ */
 typedef struct rpmts_s * rpmts;
 typedef struct rpmte_s * rpmte;
 typedef struct rpmds_s * rpmds;
 typedef struct rpmfi_s * rpmfi;
 typedef struct rpmdb_s * rpmdb;
 typedef struct rpmdbMatchIterator_s * rpmdbMatchIterator;
-
 typedef struct rpmal_s * rpmal;
 typedef void * rpmalKey;
+typedef const void * fnpyKey;
+typedef void * rpmCallbackData;
+/** @} */
 
 typedef struct rpmgi_s * rpmgi;
 
 typedef struct rpmSpec_s * rpmSpec;
 
-typedef const void * fnpyKey;
-typedef void * rpmCallbackData;
-
 typedef struct rpmRelocation_s rpmRelocation;
 
+
+/** \ingroup rpmtypes 
+ * RPM IO file descriptor type
+ */
 typedef struct _FD_s * FD_t;
 
-/**
+/** \ingroup rpmtypes
  * Package read return codes.
  */
 typedef	enum rpmRC_e {
