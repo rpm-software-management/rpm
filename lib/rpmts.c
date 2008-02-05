@@ -1140,9 +1140,9 @@ rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid)
     return otid;
 }
 
-rpm_tag_t rpmtsSigtag(const rpmts ts)
+rpmSigTag rpmtsSigtag(const rpmts ts)
 {
-    rpm_tag_t sigtag = 0;
+    rpmSigTag sigtag = 0;
     if (ts != NULL)
 	sigtag = ts->sigtag;
     return sigtag;
@@ -1172,7 +1172,7 @@ size_t rpmtsSiglen(const rpmts ts)
     return siglen;
 }
 
-int rpmtsSetSig(rpmts ts, rpm_tag_t sigtag, rpmTagType sigtype, 
+int rpmtsSetSig(rpmts ts, rpmSigTag sigtag, rpmTagType sigtype, 
 		rpm_data_t sig, size_t siglen)
 {
     if (ts != NULL) {

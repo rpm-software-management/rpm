@@ -108,7 +108,7 @@ exit:
  * @retval signid	signer fingerprint
  * @return		0 on success
  */
-static int getSignid(Header sig, rpm_tag_t sigtag, pgpKeyID_t signid)
+static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
 {
     rpm_data_t pkt = NULL;
     rpmTagType pkttyp = 0;
@@ -142,7 +142,7 @@ static int rpmReSign(rpmts ts,
     FD_t fd = NULL;
     FD_t ofd = NULL;
     rpmlead lead;
-    rpm_tag_t sigtag;
+    rpmSigTag sigtag;
     const char *rpm, *trpm;
     char *sigtarget = NULL;
     char tmprpm[1024+1];
@@ -279,6 +279,16 @@ static int rpmReSign(rpmts ts,
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
 		xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
+		break;
+	    /* shut up gcc */
+	    case RPMSIGTAG_SHA1:
+	    case RPMSIGTAG_MD5:
+	    case RPMSIGTAG_LEMD5_1:
+	    case RPMSIGTAG_LEMD5_2:
+	    case RPMSIGTAG_BADSHA1_1:
+	    case RPMSIGTAG_BADSHA1_2:
+	    case RPMSIGTAG_PAYLOADSIZE:
+	    case RPMSIGTAG_SIZE:
 		break;
 	    }
 
@@ -514,7 +524,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
-    rpm_tag_t sigtag;
+    rpmSigTag sigtag;
     rpmTagType sigtype;
     rpm_data_t sig;
     pgpDig dig;

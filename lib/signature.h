@@ -64,7 +64,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @return		0 on success, -1 on failure
  */
 int rpmAddSignature(Header sigh, const char * file,
-		    rpm_tag_t sigTag, const char * passPhrase);
+		    rpmSigTag sigTag, const char * passPhrase);
 
 /******************************************************************/
 
@@ -88,8 +88,7 @@ int rpmLookupSignatureType(int action);
  * @param sigTag	signature type/tag
  * @return		pass phrase
  */
-char * rpmGetPassPhrase(const char * prompt,
-		const int sigTag);
+char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag);
 
 /** \ingroup signature
  * Return path to pgp executable of given type, or NULL when not found.

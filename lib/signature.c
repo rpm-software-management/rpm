@@ -220,7 +220,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
 	if (info->tag == htonl(RPMTAG_HEADERIMAGE)) {
-	    rpm_tag_t stag = htonl(RPMTAG_HEADERSIGNATURES);
+	    rpmSigTag stag = htonl(RPMTAG_HEADERSIGNATURES);
 	    info->tag = stag;
 	    memcpy(dataEnd, &stag, sizeof(stag));
 	}
@@ -344,7 +344,7 @@ Header rpmFreeSignature(Header sigh)
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makePGPSignature(const char * file, rpm_tag_t * sigTagp,
+static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
 		uint8_t ** pktp, size_t * pktlenp,
 		const char * passPhrase)
 {
@@ -474,7 +474,7 @@ static int makePGPSignature(const char * file, rpm_tag_t * sigTagp,
  * @param passPhrase	private key pass phrase
  * @return		0 on success, 1 on failure
  */
-static int makeGPGSignature(const char * file, rpm_tag_t * sigTagp,
+static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 		uint8_t ** pktp, size_t * pktlenp,
 		const char * passPhrase)
 {
@@ -593,6 +593,13 @@ static int makeGPGSignature(const char * file, rpm_tag_t * sigTagp,
 	if (sigp->pubkey_algo == PGPPUBKEYALGO_DSA)
 	    *sigTagp = RPMSIGTAG_DSA;
 	break;
+    /* shut up gcc */
+    case RPMSIGTAG_LEMD5_1:
+    case RPMSIGTAG_LEMD5_2:
+    case RPMSIGTAG_BADSHA1_1:
+    case RPMSIGTAG_BADSHA1_2:
+    case RPMSIGTAG_PAYLOADSIZE:
+	break;
     }
 
     dig = pgpFreeDig(dig);
@@ -608,7 +615,7 @@ static int makeGPGSignature(const char * file, rpm_tag_t * sigTagp,
  * @param passPhrase	private key pass phrase
  * @return		0 on success, -1 on failure
  */
-static int makeHDRSignature(Header sigh, const char * file, rpm_tag_t sigTag,
+static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		const char * passPhrase)
 {
     Header h = NULL;
@@ -698,6 +705,13 @@ static int makeHDRSignature(Header sigh, const char * file, rpm_tag_t sigTag,
 	    goto exit;
 	ret = 0;
 	break;
+    /* shut up gcc */
+    case RPMSIGTAG_LEMD5_1:
+    case RPMSIGTAG_LEMD5_2:
+    case RPMSIGTAG_BADSHA1_1:
+    case RPMSIGTAG_BADSHA1_2:
+    case RPMSIGTAG_PAYLOADSIZE:
+	break;
     }
 
 exit:
@@ -711,7 +725,7 @@ exit:
     return ret;
 }
 
-int rpmAddSignature(Header sigh, const char * file, rpm_tag_t sigTag,
+int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		const char * passPhrase)
 {
     struct stat st;
@@ -759,12 +773,19 @@ int rpmAddSignature(Header sigh, const char * file, rpm_tag_t sigTag,
     case RPMSIGTAG_SHA1:
 	ret = makeHDRSignature(sigh, file, sigTag, passPhrase);
 	break;
+    /* shut up gcc */
+    case RPMSIGTAG_LEMD5_1:
+    case RPMSIGTAG_LEMD5_2:
+    case RPMSIGTAG_BADSHA1_1:
+    case RPMSIGTAG_BADSHA1_2:
+    case RPMSIGTAG_PAYLOADSIZE:
+	break;
     }
 
     return ret;
 }
 
-static int checkPassPhrase(const char * passPhrase, const rpm_tag_t sigTag)
+static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
 {
     int passPhrasePipe[2];
     int pid, status;
@@ -861,7 +882,7 @@ static int checkPassPhrase(const char * passPhrase, const rpm_tag_t sigTag)
     return ((!WIFEXITED(status) || WEXITSTATUS(status)) ? 1 : 0);
 }
 
-char * rpmGetPassPhrase(const char * prompt, const rpm_tag_t sigTag)
+char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag)
 {
     char *pass = NULL;
     int aok = 0;
@@ -1089,7 +1110,7 @@ verifyRSASignature(rpmts ts, char * t,
 #ifdef	NOTYET
     size_t siglen = rpmtsSiglen(ts);
 #endif
-    rpm_tag_t sigtag = rpmtsSigtag(ts);
+    rpmSigTag sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     SECOidTag sigalg;
@@ -1237,7 +1258,7 @@ verifyDSASignature(rpmts ts, char * t,
 #ifdef	NOTYET
     size_t siglen = rpmtsSiglen(ts);
 #endif
-    rpm_tag_t sigtag = rpmtsSigtag(ts);
+    rpmSigTag sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     rpmRC res;
@@ -1326,7 +1347,7 @@ rpmVerifySignature(const rpmts ts, char * result)
 {
     rpm_constdata_t sig = rpmtsSig(ts);
     size_t siglen = rpmtsSiglen(ts);
-    rpm_tag_t sigtag = rpmtsSigtag(ts);
+    rpmSigTag sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
 
