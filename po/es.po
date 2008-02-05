@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-02-01 20:22+0200\n"
+"POT-Creation-Date: 2008-02-05 13:52+0200\n"
 "PO-Revision-Date: 2006-04-28 09:52+1000\n"
 "Last-Translator: Manuel Ospina <mospina@redhat.com>\n"
 "Language-Team: Spanish <en@li.org>\n"
@@ -755,7 +755,7 @@ msgstr "Incapaz de recargar cabecera de firma\n"
 msgid "Could not open %s: %s\n"
 msgstr "No se pudo abrir %s: %s\n"
 
-#: build/pack.c:495 lib/psm.c:1601
+#: build/pack.c:495 lib/psm.c:1568
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Incapaz de abrir paquete: %s\n"
@@ -1350,7 +1350,7 @@ msgstr ""
 msgid "Couldn't exec %s: %s\n"
 msgstr "No se pudo ejecutar %s: %s\n"
 
-#: build/rpmfc.c:134 lib/psm.c:882
+#: build/rpmfc.c:134 lib/psm.c:849
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "No se pudo bifurcar %s: %s\n"
@@ -1461,52 +1461,52 @@ msgstr "el fichero de archivo no está en cabecera"
 msgid " failed - "
 msgstr " fallido - "
 
-#: lib/depends.c:190
+#: lib/depends.c:193
 #, fuzzy, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "el paquete %s ya fue añadido, reemplazando con %s\n"
 
-#: lib/depends.c:207
+#: lib/depends.c:210
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "el paquete %s ya fue añadido, reemplazando con %s\n"
 
-#: lib/depends.c:341
+#: lib/depends.c:344
 #, c-format
 msgid "  Obsoletes: %s\t\terases %s\n"
 msgstr ""
 
-#: lib/depends.c:423
+#: lib/depends.c:426
 msgid "(cached)"
 msgstr "(en caché)"
 
-#: lib/depends.c:439
+#: lib/depends.c:446
 msgid "(rpmlib provides)"
 msgstr "(rpmlib proporciona)"
 
-#: lib/depends.c:467
+#: lib/depends.c:474
 msgid "(db files)"
 msgstr "(archivos db)"
 
-#: lib/depends.c:479
+#: lib/depends.c:486
 msgid "(db provides)"
 msgstr "(db proporciona)"
 
-#: lib/depends.c:771
+#: lib/depends.c:778
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorar relación de nombre de paquete [%d]\t%s -> %s\n"
 
-#: lib/depends.c:876
+#: lib/depends.c:883
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "removiendo %s \"%s\" de relaciones tsort.\n"
 
-#: lib/depends.c:1096
+#: lib/depends.c:1103
 msgid "========== recording tsort relations\n"
 msgstr "========== grabando relaciones tsort\n"
 
-#: lib/depends.c:1188
+#: lib/depends.c:1195
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1515,26 +1515,26 @@ msgstr ""
 "========== tsorting paquetes (orden, #predecesores, #sucesores, árbol, "
 "profundidad)\n"
 
-#: lib/depends.c:1279
+#: lib/depends.c:1286
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== sucesores únicamente (orden de presentación)\n"
 
-#: lib/depends.c:1352
+#: lib/depends.c:1359
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1387
+#: lib/depends.c:1394
 msgid "========== continuing tsort ...\n"
 msgstr "========== continuando tsort ...\n"
 
-#: lib/depends.c:1392
+#: lib/depends.c:1399
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "falló rpmtsOrder, permanecen %d elementos\n"
 
 #: lib/formats.c:36 lib/formats.c:66 lib/formats.c:95 lib/formats.c:465
-#: rpmdb/header.c:3129 rpmdb/header.c:3154 rpmdb/header.c:3173
+#: rpmdb/header.c:2894 rpmdb/header.c:2919 rpmdb/header.c:2938
 msgid "(not a number)"
 msgstr "(no es un número)"
 
@@ -2417,65 +2417,65 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:862
+#: lib/psm.c:829
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:896
+#: lib/psm.c:863
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s: scriptlet %s fallido (%d), omitiendo %s\n"
 
-#: lib/psm.c:905
+#: lib/psm.c:872
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "%s: scriptlet %s fallido (%d), omitiendo %s\n"
 
-#: lib/psm.c:911
+#: lib/psm.c:878
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "ejecución de scriptlet %s de %s-%s-%s falló, estado de salida %d\n"
 
-#: lib/psm.c:1337
+#: lib/psm.c:1304
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s tiene %d archivos, probar = %d\n"
 
-#: lib/psm.c:1521
+#: lib/psm.c:1488
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: scriptlet %s fallido (%d), omitiendo %s\n"
 
-#: lib/psm.c:1613
+#: lib/psm.c:1580
 msgid "Unable to reload signature header\n"
 msgstr "Incapaz de recargar cabecera de firma\n"
 
-#: lib/psm.c:1688
+#: lib/psm.c:1655
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "falló el desempaquetado de archivos %s%s: %s\n"
 
-#: lib/psm.c:1689
+#: lib/psm.c:1656
 msgid " on file "
 msgstr " en archivo"
 
-#: lib/psm.c:1870
+#: lib/psm.c:1837
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "falló %s en archivo %s: %s\n"
 
-#: lib/psm.c:1873
+#: lib/psm.c:1840
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "falló %s: %s\n"
 
-#: lib/psm.c:2050
+#: lib/psm.c:2017
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%p).\n"
 msgstr ""
 
-#: lib/psm.c:2083
+#: lib/psm.c:2050
 #, c-format
 msgid "Attempting to mark %s as erased in score board(%p).\n"
 msgstr ""
@@ -2586,11 +2586,11 @@ msgstr "el registro %u no pudo ser leído\n"
 msgid "package %s is not installed\n"
 msgstr "el paquete %s no está instalado\n"
 
-#: lib/rpmal.c:661
+#: lib/rpmal.c:655
 msgid "(added files)"
 msgstr "(archivos añadidos)"
 
-#: lib/rpmal.c:737
+#: lib/rpmal.c:731
 msgid "(added provide)"
 msgstr "(provisión añadida)"
 
@@ -2673,15 +2673,15 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:532 lib/rpmds.c:858
+#: lib/rpmds.c:499 lib/rpmds.c:882
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:532 lib/rpmds.c:858
+#: lib/rpmds.c:499 lib/rpmds.c:882
 msgid "YES"
 msgstr "SI"
 
-#: lib/rpmds.c:826
+#: lib/rpmds.c:850
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2691,46 +2691,94 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:857
+#: lib/rpmds.c:881
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/rpmds.c:879
+#: lib/rpmds.c:903
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "el paquete %s tiene %s no satisfechas: %s\n"
+
+#: lib/rpmds.c:1020
+msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
+msgstr "PreReq:, Provides:, y Obsoletes: dependencias soportan versiones."
+
+#: lib/rpmds.c:1023
+msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
+msgstr ""
+"nombres de archivos almacenados como (dirName,baseName,dirIndex) \"tuple\", "
+"no como ruta."
+
+#: lib/rpmds.c:1027
+#, fuzzy
+msgid "package payload can be compressed using bzip2."
+msgstr "la carga del paquete está comprimida usando bzip2."
+
+#: lib/rpmds.c:1031
+msgid "package payload file(s) have \"./\" prefix."
+msgstr "los archivos de carga del paquete tienen el prefijo  \"./\"."
+
+#: lib/rpmds.c:1034
+msgid "package name-version-release is not implicitly provided."
+msgstr ""
+"nombre-versión-lanzamiento del paquete no se proporciona implícitamente."
+
+#: lib/rpmds.c:1037
+msgid "header tags are always sorted after being loaded."
+msgstr ""
+"las etiquetas de cabecera son siempre ordenadas después de ser cargadas."
+
+#: lib/rpmds.c:1040
+msgid "the scriptlet interpreter can use arguments from header."
+msgstr "el intérprete de scriptlet puede utilizar argumentos de la cabecera."
+
+#: lib/rpmds.c:1043
+msgid "a hardlink file set may be installed without being complete."
+msgstr ""
+"un grupo de archivos de enlaces duros puede ser instalado aunque no se haya "
+"completado."
+
+#: lib/rpmds.c:1046
+msgid "package scriptlets may access the rpm database while installing."
+msgstr ""
+
+#: lib/rpmds.c:1050
+#, fuzzy
+msgid "internal support for lua scripts."
+msgstr "- no está soportado en cadenas\n"
 
 #: lib/rpmfi.c:486
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s omitido debido a bandera missingok\n"
 
-#: lib/rpmfi.c:754
+#: lib/rpmfi.c:753
 msgid "========== relocations\n"
 msgstr "========== realocación\n"
 
-#: lib/rpmfi.c:758
+#: lib/rpmfi.c:757
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d excluir %s\n"
 
-#: lib/rpmfi.c:761
+#: lib/rpmfi.c:760
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d realocar %s -> %s\n"
 
-#: lib/rpmfi.c:892
+#: lib/rpmfi.c:891
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "excluyendo %s %s\n"
 
-#: lib/rpmfi.c:902
+#: lib/rpmfi.c:901
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "realocando %s a %s\n"
 
-#: lib/rpmfi.c:993
+#: lib/rpmfi.c:987
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "realocando directorio %s a %s\n"
@@ -2893,54 +2941,6 @@ msgstr ""
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "falló la lectura: %s  (%d)\n"
-
-#: lib/rpmlibprov.c:25
-msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "PreReq:, Provides:, y Obsoletes: dependencias soportan versiones."
-
-#: lib/rpmlibprov.c:28
-msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"nombres de archivos almacenados como (dirName,baseName,dirIndex) \"tuple\", "
-"no como ruta."
-
-#: lib/rpmlibprov.c:32
-#, fuzzy
-msgid "package payload can be compressed using bzip2."
-msgstr "la carga del paquete está comprimida usando bzip2."
-
-#: lib/rpmlibprov.c:36
-msgid "package payload file(s) have \"./\" prefix."
-msgstr "los archivos de carga del paquete tienen el prefijo  \"./\"."
-
-#: lib/rpmlibprov.c:39
-msgid "package name-version-release is not implicitly provided."
-msgstr ""
-"nombre-versión-lanzamiento del paquete no se proporciona implícitamente."
-
-#: lib/rpmlibprov.c:42
-msgid "header tags are always sorted after being loaded."
-msgstr ""
-"las etiquetas de cabecera son siempre ordenadas después de ser cargadas."
-
-#: lib/rpmlibprov.c:45
-msgid "the scriptlet interpreter can use arguments from header."
-msgstr "el intérprete de scriptlet puede utilizar argumentos de la cabecera."
-
-#: lib/rpmlibprov.c:48
-msgid "a hardlink file set may be installed without being complete."
-msgstr ""
-"un grupo de archivos de enlaces duros puede ser instalado aunque no se haya "
-"completado."
-
-#: lib/rpmlibprov.c:51
-msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-
-#: lib/rpmlibprov.c:55
-#, fuzzy
-msgid "internal support for lua scripts."
-msgstr "- no está soportado en cadenas\n"
 
 #: lib/rpmlock.c:119 lib/rpmlock.c:126
 #, fuzzy, c-format
@@ -3632,76 +3632,76 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 "%s tiene un valor entero demasiado grande o demasiado pequeño, omitido\n"
 
-#: rpmdb/header.c:2394
+#: rpmdb/header.c:2171
 msgid "missing { after %"
 msgstr "falta { después de %"
 
-#: rpmdb/header.c:2424
+#: rpmdb/header.c:2201
 msgid "missing } after %{"
 msgstr "falta } después %{"
 
-#: rpmdb/header.c:2436
+#: rpmdb/header.c:2213
 msgid "empty tag format"
 msgstr "formato de etiqueta vacío"
 
-#: rpmdb/header.c:2446
+#: rpmdb/header.c:2223
 msgid "empty tag name"
 msgstr "nombre de etiqueta vacío"
 
-#: rpmdb/header.c:2455
+#: rpmdb/header.c:2232
 msgid "unknown tag"
 msgstr "etiqueta desconocida"
 
-#: rpmdb/header.c:2478
+#: rpmdb/header.c:2255
 msgid "] expected at end of array"
 msgstr "] esperado al final del arreglo"
 
-#: rpmdb/header.c:2491
+#: rpmdb/header.c:2268
 msgid "unexpected ]"
 msgstr "] inesperado"
 
-#: rpmdb/header.c:2502
+#: rpmdb/header.c:2279
 msgid "unexpected }"
 msgstr "} inesperado"
 
-#: rpmdb/header.c:2556
+#: rpmdb/header.c:2333
 msgid "? expected in expression"
 msgstr "se esperaba ? en la expresión"
 
-#: rpmdb/header.c:2563
+#: rpmdb/header.c:2340
 msgid "{ expected after ? in expression"
 msgstr "se esperaba { después de ? en la expresión"
 
-#: rpmdb/header.c:2575 rpmdb/header.c:2615
+#: rpmdb/header.c:2352 rpmdb/header.c:2392
 msgid "} expected in expression"
 msgstr "se esperaba } en la expresión"
 
-#: rpmdb/header.c:2583
+#: rpmdb/header.c:2360
 msgid ": expected following ? subexpression"
 msgstr "se esperaba : después de la subexpresión ?"
 
-#: rpmdb/header.c:2601
+#: rpmdb/header.c:2378
 msgid "{ expected after : in expression"
 msgstr "se esperaba { después de : en la expresión"
 
-#: rpmdb/header.c:2623
+#: rpmdb/header.c:2400
 msgid "| expected at end of expression"
 msgstr "se esperaba | al final de la expresión"
 
-#: rpmdb/header.c:2714
+#: rpmdb/header.c:2491
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:2923
+#: rpmdb/header.c:2700
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3207
+#: rpmdb/header.c:2972
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3223
+#: rpmdb/header.c:2988
 msgid "%a %b %d %Y"
 msgstr ""
 
