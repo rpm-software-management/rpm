@@ -44,6 +44,44 @@ struct rpmds_s {
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
     int nrefs;			/*!< Reference count. */
 };
+
+static int dsType(rpm_tag_t tag, 
+		  const char ** Type, rpm_tag_t * tagEVR, rpm_tag_t * tagF)
+{
+    int rc = 0;
+    const char *t = NULL;
+    rpm_tag_t evr = RPMTAG_NOT_FOUND;
+    rpm_tag_t f = RPMTAG_NOT_FOUND;
+
+    if (tag == RPMTAG_PROVIDENAME) {
+	t = "Provides";
+	evr = RPMTAG_PROVIDEVERSION;
+	f = RPMTAG_PROVIDEFLAGS;
+    } else if (tag == RPMTAG_REQUIRENAME) {
+	t = "Requires";
+	evr = RPMTAG_REQUIREVERSION;
+	f = RPMTAG_REQUIREFLAGS;
+    } else if (tag == RPMTAG_CONFLICTNAME) {
+	t = "Conflicts";
+	evr = RPMTAG_CONFLICTVERSION;
+	f = RPMTAG_CONFLICTFLAGS;
+    } else if (tag == RPMTAG_OBSOLETENAME) {
+	t = "Obsoletes";
+	evr = RPMTAG_OBSOLETEVERSION;
+	f = RPMTAG_OBSOLETEFLAGS;
+    } else if (tag == RPMTAG_TRIGGERNAME) {
+	t = "Trigger";
+	evr = RPMTAG_TRIGGERVERSION;
+	f = RPMTAG_TRIGGERFLAGS;
+    } else {
+	rc = 1;
+    } 
+    if (Type) *Type = t;
+    if (tagEVR) *tagEVR = evr;
+    if (tagF) *tagF = f;
+    return rc;
+}    
+
 rpmds rpmdsUnlink(rpmds ds, const char * msg)
 {
     if (ds == NULL) return NULL;
@@ -78,26 +116,7 @@ rpmds rpmdsFree(rpmds ds)
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
-    if (ds->tagN == RPMTAG_PROVIDENAME) {
-	tagEVR = RPMTAG_PROVIDEVERSION;
-	tagF = RPMTAG_PROVIDEFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_REQUIRENAME) {
-	tagEVR = RPMTAG_REQUIREVERSION;
-	tagF = RPMTAG_REQUIREFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_CONFLICTNAME) {
-	tagEVR = RPMTAG_CONFLICTVERSION;
-	tagF = RPMTAG_CONFLICTFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_OBSOLETENAME) {
-	tagEVR = RPMTAG_OBSOLETEVERSION;
-	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else
-    if (ds->tagN == RPMTAG_TRIGGERNAME) {
-	tagEVR = RPMTAG_TRIGGERVERSION;
-	tagF = RPMTAG_TRIGGERFLAGS;
-    } else
+    if (dsType(ds->tagN, NULL, &tagEVR, &tagF))
 	return NULL;
 
     if (ds->Count > 0) {
@@ -132,31 +151,7 @@ rpmds rpmdsNew(Header h, rpm_tag_t tagN, int flags)
     rpm_tagtype_t Nt;
     rpm_count_t Count;
 
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
-	tagEVR = RPMTAG_PROVIDEVERSION;
-	tagF = RPMTAG_PROVIDEFLAGS;
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
-	tagEVR = RPMTAG_REQUIREVERSION;
-	tagF = RPMTAG_REQUIREFLAGS;
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
-	tagEVR = RPMTAG_CONFLICTVERSION;
-	tagF = RPMTAG_CONFLICTFLAGS;
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
-	tagEVR = RPMTAG_OBSOLETEVERSION;
-	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Trigger";
-	tagEVR = RPMTAG_TRIGGERVERSION;
-	tagF = RPMTAG_TRIGGERFLAGS;
-    } else
+    if (dsType(tagN, &Type, &tagEVR, &tagF))
 	goto exit;
 
     if (hge(h, tagN, &Nt, (rpm_data_t *) &N, &Count)
@@ -252,21 +247,7 @@ rpmds rpmdsThis(Header h, rpm_tag_t tagN, rpmsenseFlags Flags)
     char * t;
     int xx;
 
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Trigger";
-    } else
+    if (dsType(tagN, &Type, NULL, NULL))
 	goto exit;
 
     xx = headerNVR(h, &n, &v, &r);
@@ -319,21 +300,7 @@ rpmds rpmdsSingle(rpm_tag_t tagN, const char * N, const char * EVR, rpmsenseFlag
     rpmds ds = NULL;
     const char * Type;
 
-    if (tagN == RPMTAG_PROVIDENAME) {
-	Type = "Provides";
-    } else
-    if (tagN == RPMTAG_REQUIRENAME) {
-	Type = "Requires";
-    } else
-    if (tagN == RPMTAG_CONFLICTNAME) {
-	Type = "Conflicts";
-    } else
-    if (tagN == RPMTAG_OBSOLETENAME) {
-	Type = "Obsoletes";
-    } else
-    if (tagN == RPMTAG_TRIGGERNAME) {
-	Type = "Trigger";
-    } else
+    if (dsType(tagN, &Type, NULL, NULL))
 	goto exit;
 
     ds = xcalloc(1, sizeof(*ds));
