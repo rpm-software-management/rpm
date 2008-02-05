@@ -230,7 +230,7 @@ rpm_off_t rpmfiFSize(rpmfi fi);
  * @param fi		file info set
  * @return		current file rdev, 0 on invalid
  */
-uint16_t rpmfiFRdev(rpmfi fi);
+rpm_rdev_t rpmfiFRdev(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file inode from file info set.

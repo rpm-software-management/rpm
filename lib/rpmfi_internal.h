@@ -49,7 +49,7 @@ struct rpmfi_s {
 /*?null?*/
           rpm_mode_t * fmodes;	/*!< File mode(s) (from header) */
 /*?null?*/
-    const uint16_t * frdevs;	/*!< File rdev(s) (from header) */
+    const rpm_rdev_t * frdevs;	/*!< File rdev(s) (from header) */
 /*?null?*/
     const uint32_t * finodes;	/*!< File inodes(s) (from header) */
 

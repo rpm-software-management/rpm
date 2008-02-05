@@ -1153,8 +1153,8 @@ static void genCpioListAndHeader(FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(flp->fl_mode), 1);
       }
-      if (sizeof(flp->fl_rdev) != sizeof(uint16_t)) {
-	uint16_t prdev = (uint16_t)flp->fl_rdev;
+      if (sizeof(flp->fl_rdev) != sizeof(rpm_rdev_t)) {
+	rpm_rdev_t prdev = (rpm_rdev_t)flp->fl_rdev;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(prdev), 1);
       } else {
