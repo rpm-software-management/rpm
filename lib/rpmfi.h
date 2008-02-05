@@ -237,7 +237,7 @@ rpm_rdev_t rpmfiFRdev(rpmfi fi);
  * @param fi		file info set
  * @return		current file inode, 0 on invalid
  */
-uint32_t rpmfiFInode(rpmfi fi);
+rpm_ino_t rpmfiFInode(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return union of all file color bits from file info set.

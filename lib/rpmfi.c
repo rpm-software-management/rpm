@@ -215,9 +215,9 @@ rpm_rdev_t rpmfiFRdev(rpmfi fi)
     return frdev;
 }
 
-uint32_t rpmfiFInode(rpmfi fi)
+rpm_ino_t rpmfiFInode(rpmfi fi)
 {
-    uint32_t finode = 0;
+    rpm_ino_t finode = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->finodes != NULL)
@@ -298,7 +298,7 @@ uint32_t rpmfiFNlink(rpmfi fi)
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
 	if (fi->finodes && fi->frdevs) {
-	    uint32_t finode = fi->finodes[fi->i];
+	    rpm_ino_t finode = fi->finodes[fi->i];
 	    rpm_rdev_t frdev = fi->frdevs[fi->i];
 	    int j;
 

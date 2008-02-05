@@ -51,7 +51,7 @@ struct rpmfi_s {
 /*?null?*/
     const rpm_rdev_t * frdevs;	/*!< File rdev(s) (from header) */
 /*?null?*/
-    const uint32_t * finodes;	/*!< File inodes(s) (from header) */
+    const rpm_ino_t * finodes;	/*!< File inodes(s) (from header) */
 
     const char ** fuser;	/*!< File owner(s) (from header) */
     const char ** fgroup;	/*!< File group(s) (from header) */

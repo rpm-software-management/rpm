@@ -1161,16 +1161,16 @@ static void genCpioListAndHeader(FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(flp->fl_rdev), 1);
       }
-      if (sizeof(flp->fl_dev) != sizeof(uint32_t)) {
-	uint32_t pdevice = (uint32_t)flp->fl_dev;
+      if (sizeof(flp->fl_dev) != sizeof(rpm_dev_t)) {
+	rpm_dev_t pdevice = (rpm_dev_t)flp->fl_dev;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(pdevice), 1);
       } else {
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(flp->fl_dev), 1);
       }
-      if (sizeof(flp->fl_ino) != sizeof(uint32_t)) {
-	uint32_t ino = (uint32_t)flp->fl_ino;
+      if (sizeof(flp->fl_ino) != sizeof(rpm_ino_t)) {
+	rpm_ino_t ino = (rpm_ino_t)flp->fl_ino;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 				&(ino), 1);
       } else {
