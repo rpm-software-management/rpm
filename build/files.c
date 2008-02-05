@@ -69,7 +69,7 @@ typedef struct FileListRec_s {
     const char *gname;
     unsigned	flags;
     specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
-    unsigned	verifyFlags;
+    rpmVerifyFlags verifyFlags;
     char *langs;		/* XXX locales separated with | */
 } * FileListRec;
 
@@ -110,13 +110,13 @@ typedef struct FileList_s {
     
     int isDir;
     int inFtw;
-    int currentFlags;
+    rpmfileAttrs currentFlags;
     specdFlags currentSpecdFlags;
-    int currentVerifyFlags;
+    rpmVerifyFlags currentVerifyFlags;
     struct AttrRec_s cur_ar;
     struct AttrRec_s def_ar;
     specdFlags defSpecdFlags;
-    int defVerifyFlags;
+    rpmVerifyFlags defVerifyFlags;
     int nLangs;
     char ** currentLangs;
 
@@ -281,9 +281,9 @@ static rpmRC parseForVerify(const char * buf, FileList fl)
 {
     char *p, *pe, *q;
     const char *name;
-    int *resultVerify;
+    rpmVerifyFlags *resultVerify;
     int negated;
-    int verifyFlags;
+    rpmVerifyFlags verifyFlags;
     specdFlags * specdFlags;
 
     if ((p = strstr(buf, (name = "%verify"))) != NULL) {

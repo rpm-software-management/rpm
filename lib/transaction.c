@@ -385,7 +385,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
-	int32_t FFlags;
+	rpmfileAttrs FFlags;
 	rpm_mode_t FMode;
 	const rpmfi * recs;
 	int numRecs;

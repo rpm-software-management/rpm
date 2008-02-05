@@ -127,9 +127,9 @@ const char * rpmfiFN(rpmfi fi)
     return FN;
 }
 
-uint32_t rpmfiFFlags(rpmfi fi)
+rpmfileAttrs rpmfiFFlags(rpmfi fi)
 {
-    uint32_t FFlags = 0;
+    rpmfileAttrs FFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fflags != NULL)
@@ -138,9 +138,9 @@ uint32_t rpmfiFFlags(rpmfi fi)
     return FFlags;
 }
 
-uint32_t rpmfiVFlags(rpmfi fi)
+rpmVerifyAttrs rpmfiVFlags(rpmfi fi)
 {
-    uint32_t VFlags = 0;
+    rpmVerifyAttrs VFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->vflags != NULL)
@@ -471,7 +471,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
     const char * fn = rpmfiFN(nfi);
-    int newFlags = rpmfiFFlags(nfi);
+    rpmfileAttrs newFlags = rpmfiFFlags(nfi);
     char buffer[1024];
     rpmFileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
@@ -555,7 +555,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 int rpmfiConfigConflict(const rpmfi fi)
 {
     const char * fn = rpmfiFN(fi);
-    int flags = rpmfiFFlags(fi);
+    rpmfileAttrs flags = rpmfiFFlags(fi);
     char buffer[1024];
     rpmFileTypes newWhat, diskWhat;
     struct stat sb;
@@ -633,7 +633,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     uint32_t * dirIndexes;
     uint32_t * newDirIndexes;
     rpm_count_t fileCount, dirCount, numValid;
-    uint32_t * fFlags = NULL;
+    rpm_flag_t * fFlags = NULL;
     rpm_color_t * fColors = NULL;
     rpm_color_t * dColors = NULL;
     rpm_mode_t * fModes = NULL;

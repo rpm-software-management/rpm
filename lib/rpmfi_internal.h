@@ -41,7 +41,7 @@ struct rpmfi_s {
 
           uint32_t * dil;	/*!< Directory indice(s) (from header) */
 /*?null?*/
-    const uint32_t * fflags;	/*!< File flag(s) (from header) */
+    const rpm_flag_t * fflags;	/*!< File flag(s) (from header) */
 /*?null?*/
     const rpm_off_t * fsizes;	/*!< File size(s) (from header) */
 /*?null?*/
@@ -72,7 +72,7 @@ struct rpmfi_s {
     const uint32_t * fddictn;	/*!< File depends dictionary count (header) */
 
 /*?null?*/
-    const uint32_t * vflags;	/*!< File verify flag(s) (from header) */
+    const rpm_flag_t * vflags;	/*!< File verify flag(s) (from header) */
 
     rpm_count_t dc;		/*!< No. of directories. */
     rpm_count_t fc;		/*!< No. of files. */
@@ -88,7 +88,7 @@ struct rpmfi_s {
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
     gid_t gid;			/*!< File gid (default). */
-    uint32_t flags;		/*!< File flags (default). */
+    rpmfileAttrs flags;		/*!< File flags (default). */
     rpmFileAction action;	/*!< File disposition (default). */
     rpmFileAction * actions;	/*!< File disposition(s). */
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */

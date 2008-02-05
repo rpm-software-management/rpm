@@ -7,6 +7,7 @@
  */
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmvf.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -181,14 +182,14 @@ extern const char * rpmfiFN(rpmfi fi);
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
-uint32_t rpmfiFFlags(rpmfi fi);
+rpmfileAttrs rpmfiFFlags(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file verify flags from file info set.
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
-uint32_t rpmfiVFlags(rpmfi fi);
+rpmVerifyAttrs rpmfiVFlags(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file mode from file info set.

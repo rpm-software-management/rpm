@@ -89,7 +89,7 @@ static char * fflagsFormat(rpm_tagtype_t type, rpm_constdata_t data,
 {
     char * val;
     char buf[15];
-    int anint = *((const int32_t *) data);
+    rpmfileAttrs anint = *((const rpm_flag_t *) data);
 
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
@@ -459,12 +459,12 @@ static char * depflagsFormat(rpm_tagtype_t type, rpm_constdata_t data,
 {
     char * val;
     char buf[10];
-    int anint;
+    rpmsenseFlags anint;
 
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	anint = *((const int32_t *) data);
+	anint = *((const rpm_flag_t *) data);
 	buf[0] = '\0';
 
 	if (anint & RPMSENSE_LESS) 
@@ -606,10 +606,11 @@ static int triggercondsTag(Header h, rpm_tagtype_t* type,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpm_tagtype_t tnt, tvt, tst;
-    int32_t * indices, * flags;
+    int32_t * indices;
     char ** names, ** versions;
     rpm_count_t numNames, numScripts;
     rpm_count_t i, j;
+    rpm_flag_t * flags;
     char ** conds, ** s;
     char * item, * flagsStr;
     char * chptr;
@@ -679,12 +680,13 @@ static int triggertypeTag(Header h, rpm_tagtype_t* type,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpm_tagtype_t tst;
-    int32_t * indices, * flags;
+    int32_t * indices;
     const char ** conds;
     const char ** s;
     int xx;
     rpm_count_t numScripts, numNames;
     rpm_count_t i, j;
+    rpm_flag_t * flags;
 
     if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (rpm_data_t *) &indices, &numNames)) {
 	*freeData = 0;
