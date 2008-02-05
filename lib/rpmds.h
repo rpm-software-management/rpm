@@ -250,7 +250,7 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote);
  * @param ds		dependency set
  * @return		current dependency color
  */
-uint32_t rpmdsColor(const rpmds ds);
+rpm_color_t rpmdsColor(const rpmds ds);
 
 /** \ingroup rpmds
  * Return current dependency color.
