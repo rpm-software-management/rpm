@@ -155,7 +155,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->relocs[i].oldPath = NULL;
 	p->relocs[i].newPath = NULL;
     }
-    p->autorelocatex = -1;
 
     p->key = key;
     p->fd = NULL;

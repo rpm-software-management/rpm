@@ -409,12 +409,6 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 
 	    {   DN = rpmfiDN(fi);
 
-#if defined(__ia64__)
-/* XXX Make sure that autorelocated file dependencies are satisfied. */
-#define	DNPREFIX	"/emul/ia32-linux"
-		if (!strncmp(DN, DNPREFIX, sizeof(DNPREFIX)-1))
-		    DN += sizeof(DNPREFIX)-1;
-#endif
 	        /* XXX: reference to within rpmfi, must not be freed */
 		dieNeedle->dirName = (char *) DN;
 	    }

@@ -633,7 +633,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     uint32_t * dirIndexes;
     uint32_t * newDirIndexes;
     rpm_count_t fileCount, dirCount, numValid;
-    uint32_t mydColor = rpmExpandNumeric("%{?_autorelocate_dcolor}");
     uint32_t * fFlags = NULL;
     uint32_t * fColors = NULL;
     uint32_t * dColors = NULL;
@@ -953,11 +952,6 @@ dColors[j] |= fColors[i];
     /* Finish off by relocating directories. */
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
-
-           /* XXX Don't autorelocate uncolored directories. */
-           if (j == p->autorelocatex
-            && (dColors[i] == 0 || !(dColors[i] & mydColor)))
-               continue;
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
 		continue;
@@ -1280,56 +1274,7 @@ if (fi->actions == NULL)
      && !headerIsSource(h)
      && !headerIsEntry(h, RPMTAG_ORIGBASENAMES))
     {
-	char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
-	const char * errstr;
-	char * newPath;
 	Header foo;
-
-	/* XXX error handling. */
-	newPath = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
-	fmt = _free(fmt);
-
-#if __ia64__
-	/* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
- 	if (newPath != NULL && *newPath != '\0'
-	 && strlen(newPath) >= (sizeof("/emul/i386")-1)
-	 && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
-	 && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
-	 && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
- 	{
-	    newPath[7] = 'a';
-	    newPath[8] = '3';
-	    newPath[9] = '2';
-	}
-#endif
- 
-	/* XXX Make sure autoreloc is not already specified. */
-	i = p->nrelocs;
-	if (newPath != NULL && *newPath != '\0' && p->relocs != NULL)
-	for (i = 0; i < p->nrelocs; i++) {
-/* XXX {old,new}Path might be NULL */
-	   if (strcmp(p->relocs[i].oldPath, "/"))
-		continue;
-	   if (strcmp(p->relocs[i].newPath, newPath))
-		continue;
-	   break;
-	}
-
-	/* XXX test for incompatible arch triggering autorelocation is dumb. */
-	if (newPath != NULL && *newPath != '\0' && i == p->nrelocs
-	 && p->archScore == 0)
-	{
-
-	    p->relocs =
-		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
-	    p->relocs[p->nrelocs].oldPath = xstrdup("/");
-	    p->relocs[p->nrelocs].newPath = xstrdup(newPath);
-	    p->autorelocatex = p->nrelocs;
-	    p->nrelocs++;
-	    p->relocs[p->nrelocs].oldPath = NULL;
-	    p->relocs[p->nrelocs].newPath = NULL;
-	}
-	newPath = _free(newPath);
 
 /* XXX DYING */
 if (fi->actions == NULL)

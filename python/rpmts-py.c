@@ -414,10 +414,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	    p = rpmpsGetProblem(psi);
 
-            /* XXX autorelocated i386 on ia64, fix system-config-packages! */
-	    if (rpmProblemGetType(p) == RPMPROB_BADRELOCATE)
-		continue;
-
 	    byName = strdup(rpmProblemGetPkgNEVR(p));
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';

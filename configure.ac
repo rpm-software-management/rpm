@@ -990,8 +990,6 @@ else
 fi
 
 dnl Determine the canonical arch-vendor-os for the host machine
-autorelocate_path='%{nil}'
-autorelocate_dcolor='0'
 case "${host_cpu}" in
 *86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
 ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
@@ -1000,9 +998,7 @@ x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;
 alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
 sparc64*)	RPMCANONCOLOR=3; RPMCANONARCH=sparc64 ;;
 sparc*)		RPMCANONCOLOR=3; RPMCANONARCH=sparc ;;
-ia64*)		RPMCANONCOLOR=2; RPMCANONARCH=ia64;
-		autorelocate_path='/emul/%%{ARCH}-%%{OS}'
-		autorelocate_dcolor='1' ;;
+ia64*)		RPMCANONCOLOR=2; RPMCANONARCH=ia64 ;;
 s390x*)		RPMCANONCOLOR=3; RPMCANONARCH=s390x ;;
 s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
 powerpc64*|ppc64*)	RPMCANONCOLOR=3; RPMCANONARCH=ppc64 ;;
@@ -1031,8 +1027,6 @@ esac
 RPMCANONOS="$host_os_noversion"
 RPMCANONGNU="$host_os_gnu"
 AC_SUBST(RPMCANONCOLOR)
-AC_SUBST(autorelocate_path)
-AC_SUBST(autorelocate_dcolor)
 AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)

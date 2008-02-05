@@ -60,7 +60,6 @@ struct rpmte_s {
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
-    int autorelocatex;		/*!< (TR_ADDED) Auto relocation entry index. */
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
     union {
