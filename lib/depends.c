@@ -40,6 +40,9 @@ const char *rpmEVR = VERSION;
 
 int rpmFLAGS = RPMSENSE_EQUAL;
 
+/* rpmlib provides */
+static rpmds rpmlibP = NULL;
+
 /**
  * Compare removed package instances (qsort/bsearch).
  * @param a		1st instance address
@@ -435,7 +438,11 @@ retry:
      * Check those dependencies now.
      */
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
-	if (rpmCheckRpmlibProvides(dep)) {
+	static int oneshot = -1;
+	if (oneshot) 
+	    oneshot = rpmdsRpmlib(&rpmlibP, NULL);
+	
+	if (rpmlibP != NULL && rpmdsSearch(rpmlibP, dep) >= 0) {
 	    rpmdsNotify(dep, _("(rpmlib provides)"), rc);
 	    goto exit;
 	}

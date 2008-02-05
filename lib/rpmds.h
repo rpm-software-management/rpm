@@ -315,6 +315,17 @@ int rpmdsFind(rpmds ds, const rpmds ods);
 int rpmdsMerge(rpmds * dsp, rpmds ods);
 
 /** \ingroup rpmds
+ * Search a sorted dependency set for an element that overlaps.
+ * A boolean result is saved (if allocated) and accessible through
+ * rpmdsResult(ods) afterwards.
+ * @param ds            dependency set to search
+ * @param ods           dependency set element to find.
+ * @return              dependency index (or -1 if not found)
+ **/
+int rpmdsSearch(rpmds ds, rpmds ods);
+
+
+/** \ingroup rpmds
  * Compare two versioned dependency ranges, looking for overlap.
  * @param A		1st dependency
  * @param B		2nd dependency
@@ -351,6 +362,14 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote);
  * @return		1 if dependency overlaps, 0 otherwise
  */
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
+
+/**
+ * Load rpmlib provides into a dependency set.
+ * @retval *dsp		(loaded) depedency set
+ * @param tblp		rpmlib provides table (NULL uses internal table)
+ * @return		0 on success
+ */
+int rpmdsRpmlib(rpmds * dsp, void * tblp);
 
 #ifdef __cplusplus
 }

@@ -1754,7 +1754,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
 int rpmShowRC(FILE * fp)
 {
     struct rpmOption *opt;
-    int i;
+    rpmds ds = NULL;
+    int i, xx;
     machEquivTable equivTable;
 
     /* the caller may set the build arch which should be printed here */
@@ -1802,7 +1803,14 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "\n");
 
     fprintf(fp, "Features supported by rpmlib:\n");
-    rpmShowRpmlibProvides(fp);
+    xx = rpmdsRpmlib(&ds, NULL);
+    ds = rpmdsInit(ds);
+    while (rpmdsNext(ds) >= 0) {
+        const char * DNEVR = rpmdsDNEVR(ds);
+        if (DNEVR != NULL)
+            fprintf(fp, "    %s\n", DNEVR+2);
+    }
+    ds = rpmdsFree(ds);
     fprintf(fp, "\n");
 
     rpmDumpMacroTable(NULL, fp);

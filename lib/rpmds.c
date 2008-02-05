@@ -701,6 +701,63 @@ ods->i = save;
     return 0;
 }
 
+
+int rpmdsSearch(rpmds ds, rpmds ods)
+{
+    int comparison;
+    int i, l, u;
+
+    if (ds == NULL || ods == NULL)
+	return -1;
+
+    /* Binary search to find the [l,u) subset that contains N */
+    i = -1;
+    l = 0;
+    u = ds->Count;
+    while (l < u) {
+	i = (l + u) / 2;
+
+	comparison = strcmp(ods->N[ods->i], ds->N[i]);
+
+	if (comparison < 0)
+	    u = i;
+	else if (comparison > 0)
+	    l = i + 1;
+	else {
+	    /* Set l to 1st member of set that contains N. */
+	    if (strcmp(ods->N[ods->i], ds->N[l]))
+		l = i;
+	    while (l > 0 && !strcmp(ods->N[ods->i], ds->N[l-1]))
+		l--;
+	    /* Set u to 1st member of set that does not contain N. */
+	    if (u >= ds->Count || strcmp(ods->N[ods->i], ds->N[u]))
+		u = i;
+	    while (++u < ds->Count) {
+		if (strcmp(ods->N[ods->i], ds->N[u]))
+		    /*@innerbreak@*/ break;
+	    }
+	    break;
+	}
+    }
+
+    /* Check each member of [l,u) subset for ranges overlap. */
+    i = -1;
+    if (l < u) {
+	int save = rpmdsSetIx(ds, l-1);
+	while ((l = rpmdsNext(ds)) >= 0 && (l < u)) {
+	    if ((i = rpmdsCompare(ods, ds)) != 0)
+		break;
+	}
+	/* Return element index that overlaps, or -1. */
+	if (i)
+	    i = rpmdsIx(ds);
+	else {
+	    (void) rpmdsSetIx(ds, save);
+	    i = -1;
+	}
+    }
+    return i;
+}
 /**
  * Split EVR into epoch, version, and release components.
  * @param evr		[epoch:]version[-release] string
@@ -947,3 +1004,70 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 
     return rc;
 }
+
+/**
+ */
+struct rpmlibProvides_s {
+    const char * featureName;
+    const char * featureEVR;
+    rpmsenseFlags featureFlags;
+    const char * featureDescription;
+};
+
+static struct rpmlibProvides_s rpmlibProvides[] = {
+    { "rpmlib(VersionedDependencies)",	"3.0.3-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("PreReq:, Provides:, and Obsoletes: dependencies support versions.") },
+    { "rpmlib(CompressedFileNames)",	"3.0.4-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path.")},
+#if HAVE_BZLIB_H
+    { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package payload can be compressed using bzip2.") },
+#endif
+    { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package payload file(s) have \"./\" prefix.") },
+    { "rpmlib(ExplicitPackageProvide)",	"4.0-1",
+	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
+    N_("package name-version-release is not implicitly provided.") },
+    { "rpmlib(HeaderLoadSortsTags)",    "4.0.1-1",
+	(                RPMSENSE_EQUAL),
+    N_("header tags are always sorted after being loaded.") },
+    { "rpmlib(ScriptletInterpreterArgs)",    "4.0.3-1",
+	(                RPMSENSE_EQUAL),
+    N_("the scriptlet interpreter can use arguments from header.") },
+    { "rpmlib(PartialHardlinkSets)",    "4.0.4-1",
+	(                RPMSENSE_EQUAL),
+    N_("a hardlink file set may be installed without being complete.") },
+    { "rpmlib(ConcurrentAccess)",    "4.1-1",
+	(                RPMSENSE_EQUAL),
+    N_("package scriptlets may access the rpm database while installing.") },
+#ifdef WITH_LUA
+    { "rpmlib(BuiltinLuaScripts)",    "4.2.2-1",
+	(                RPMSENSE_EQUAL),
+    N_("internal support for lua scripts.") },
+#endif
+    { NULL,				NULL, 0,	NULL }
+};
+
+
+int rpmdsRpmlib(rpmds * dsp, void * tblp)
+{
+    const struct rpmlibProvides_s * rltblp = tblp;
+    const struct rpmlibProvides_s * rlp;
+    int xx;
+
+    if (rltblp == NULL)
+	rltblp = rpmlibProvides;
+
+    for (rlp = rltblp; rlp->featureName != NULL; rlp++) {
+	rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
+			rlp->featureEVR, rlp->featureFlags);
+	xx = rpmdsMerge(dsp, ds);
+	ds = rpmdsFree(ds);
+    }
+    return 0;
+}
+

@@ -202,17 +202,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			char ** cookie);
 
 /** \ingroup rpmtrans
- * Return copy of rpmlib internal provides.
- * @retval provNames	address of array of rpmlib internal provide names
- * @retval provFlags	address of array of rpmlib internal provide flags
- * @retval provVersions	address of array of rpmlib internal provide versions
- * @return		no. of entries
- */
-int rpmGetRpmlibProvides(const char *** provNames,
-			rpmsenseFlags ** provFlags,
-			const char *** provVersions);
-
-/** \ingroup rpmtrans
  * Segmented string compare for version and/or release.
  *
  * @param a		1st string
@@ -220,19 +209,6 @@ int rpmGetRpmlibProvides(const char *** provNames,
  * @return		+1 if a is "newer", 0 if equal, -1 if b is "newer"
  */
 int rpmvercmp(const char * a, const char * b);
-
-/** \ingroup rpmtrans
- * Check dependency against internal rpmlib feature provides.
- * @param key		dependency
- * @return		1 if dependency overlaps, 0 otherwise
- */
-int rpmCheckRpmlibProvides(const rpmds key);
-
-/** \ingroup rpmcli
- * Display current rpmlib feature provides.
- * @param fp		output file handle
- */
-void rpmShowRpmlibProvides(FILE * fp);
 
 /**
  * Release storage used by file system usage cache.

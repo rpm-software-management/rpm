@@ -312,6 +312,33 @@ rpmds_Merge(rpmdsObject * s, PyObject * args, PyObject * kwds)
     o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
 }
+static PyObject *
+rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
+{
+    PyObject * to = NULL;
+    rpmdsObject * o;
+    char * kwlist[] = {"element", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Merge", kwlist, &to))
+        return NULL;
+
+    /* XXX ds type check needed. */
+    o = (rpmdsObject *)to;
+    return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
+}
+
+static PyObject *
+rpmds_Rpmlib(rpmdsObject * s)
+{
+    rpmds ds = NULL;
+    int xx;
+
+    /* XXX check return code, permit arg (NULL uses system default). */
+    xx = rpmdsRpmlib(&ds, NULL);
+
+    return (PyObject *) rpmds_Wrap( ds );
+}
+
 
 #ifdef	NOTYET
 static PyObject *
@@ -375,6 +402,12 @@ static struct PyMethodDef rpmds_methods[] = {
 	NULL},
  {"Merge",	(PyCFunction)rpmds_Merge,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
+ {"Search",     (PyCFunction)rpmds_Search,      METH_VARARGS|METH_KEYWORDS,
+"ds.Search(element) -> matching ds index (-1 on failure)\n\
+- Check that element dependency range overlaps some member of ds.\n\
+The current index in ds is positioned at overlapping member upon success.\n" },
+ {"Rpmlib",     (PyCFunction)rpmds_Rpmlib,      METH_NOARGS|METH_STATIC,
+	"ds.Rpmlib -> nds       - Return internal rpmlib dependency set.\n"},
 #ifdef	NOTYET
  {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
