@@ -23,7 +23,7 @@ struct availablePackage_s {
     rpmds provides;		/*!< Provides: dependencies. */
     rpmfi fi;			/*!< File info set. */
 
-    uint32_t tscolor;		/*!< Transaction color bits. */
+    rpm_color_t tscolor;	/*!< Transaction color bits. */
 
     fnpyKey key;		/*!< Associated file name/python object */
 
@@ -64,7 +64,7 @@ struct fileIndexEntry_s {
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
     rpmalNum pkgNum;		/*!< Containing package index. */
-    uint32_t ficolor;
+    rpm_color_t ficolor;
 };
 
 typedef struct dirInfo_s *		dirInfo;
@@ -88,7 +88,7 @@ struct rpmal_s {
     int delta;			/*!< Delta for pkg list reallocation. */
     int size;			/*!< No. of pkgs in list. */
     int alloced;		/*!< No. of pkgs allocated for list. */
-    uint32_t tscolor;		/*!< Transaction color. */
+    rpm_color_t tscolor;	/*!< Transaction color. */
     int numDirs;		/*!< No. of directories. */
     dirInfo dirs;		/*!< Set of directories. */
 };
@@ -321,7 +321,7 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al-
 }
 
 rpmalKey rpmalAdd(rpmal * alistp, rpmalKey pkgKey, fnpyKey key,
-		rpmds provides, rpmfi fi, uint32_t tscolor)
+		rpmds provides, rpmfi fi, rpm_color_t tscolor)
 {
     rpmalNum pkgNum;
     rpmal al;
@@ -505,9 +505,9 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void rpmalAddProvides(rpmal al, rpmalKey pkgKey, rpmds provides, uint32_t tscolor)
+void rpmalAddProvides(rpmal al, rpmalKey pkgKey, rpmds provides, rpm_color_t tscolor)
 {
-    uint32_t dscolor;
+    rpm_color_t dscolor;
     const char * Name;
     rpmalNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
@@ -578,8 +578,8 @@ void rpmalMakeIndex(rpmal al)
 fnpyKey *
 rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 {
-    uint32_t tscolor;
-    uint32_t ficolor;
+    rpm_color_t tscolor;
+    rpm_color_t ficolor;
     int found = 0;
     char * dirName;
     const char * baseName;

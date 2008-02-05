@@ -834,7 +834,7 @@ rpmts_GetVSFlags(rpmtsObject * s)
 static PyObject *
 rpmts_SetColor(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    uint32_t tscolor;
+    rpm_color_t tscolor;
     char * kwlist[] = {"color", NULL};
 
 if (_rpmts_debug)

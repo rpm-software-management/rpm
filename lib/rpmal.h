@@ -56,7 +56,7 @@ rpmalKey rpmalAdd(rpmal * alistp,
 		rpmalKey pkgKey,
 		fnpyKey key,
 		rpmds provides, rpmfi fi,
-		uint32_t tscolor);
+		rpm_color_t tscolor);
 
 /**
  * Add package provides to available list index.
@@ -67,7 +67,7 @@ rpmalKey rpmalAdd(rpmal * alistp,
  */
 void rpmalAddProvides(rpmal al,
 		rpmalKey pkgKey,
-		rpmds provides, uint32_t tscolor);
+		rpmds provides, rpm_color_t tscolor);
 
 /**
  * Generate index for available list.

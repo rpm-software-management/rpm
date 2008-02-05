@@ -285,14 +285,14 @@ int rpmteIsSource(rpmte te)
     return (te != NULL ? te->isSource : 0);
 }
 
-uint32_t rpmteColor(rpmte te)
+rpm_color_t rpmteColor(rpmte te)
 {
     return (te != NULL ? te->color : 0);
 }
 
-uint32_t rpmteSetColor(rpmte te, uint32_t color)
+rpm_color_t rpmteSetColor(rpmte te, rpm_color_t color)
 {
-    int ocolor = 0;
+    rpm_color_t ocolor = 0;
     if (te != NULL) {
 	ocolor = te->color;
 	te->color = color;
@@ -512,9 +512,9 @@ void rpmteColorDS(rpmte te, rpm_tag_t tag)
     char deptype = 'R';
     char mydt;
     const uint32_t * ddict;
-    int32_t * colors;
+    rpm_color_t * colors;
     int32_t * refs;
-    int32_t val;
+    rpm_color_t val;
     int Count;
     size_t nb;
     unsigned ix;

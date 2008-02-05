@@ -32,7 +32,7 @@ struct rpmds_s {
     const char ** N;		/*!< Name. */
     const char ** EVR;		/*!< Epoch-Version-Release. */
     rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
-    uint32_t * Color;		/*!< Bit(s) calculated from file color(s). */
+    rpm_color_t * Color;	/*!< Bit(s) calculated from file color(s). */
     int32_t * Refs;		/*!< No. of file refs. */
     time_t BT;			/*!< Package build time tie breaker. */
     rpm_tag_t tagN;		/*!< Header tag. */
@@ -439,9 +439,9 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
     return onopromote;
 }
 
-uint32_t rpmdsColor(const rpmds ds)
+rpm_color_t rpmdsColor(const rpmds ds)
 {
-    uint32_t Color = 0;
+    rpm_color_t Color = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Color != NULL)
@@ -450,9 +450,9 @@ uint32_t rpmdsColor(const rpmds ds)
     return Color;
 }
 
-uint32_t rpmdsSetColor(const rpmds ds, uint32_t color)
+rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color)
 {
-    uint32_t ocolor = 0;
+    rpm_color_t ocolor = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->Color != NULL) {

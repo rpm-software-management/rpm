@@ -58,7 +58,7 @@ struct rpmfi_s {
 
     char * fstates;		/*!< File state(s) (from header) */
 
-    const uint32_t * fcolors;	/*!< File color bits (header) */
+    const rpm_color_t * fcolors;/*!< File color bits (header) */
 
     const char ** fcontexts;	/*! FIle security contexts. */
 
@@ -117,7 +117,7 @@ struct rpmfi_s {
     int * fmapflags;
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
-    uint32_t color;		/*!< Color bit(s) from file color union. */
+    rpm_color_t color;		/*!< Color bit(s) from file color union. */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     unsigned int record;	/*!< (TR_REMOVED) */

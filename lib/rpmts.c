@@ -1462,14 +1462,14 @@ rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
     return orelocateElement;
 }
 
-uint32_t rpmtsColor(rpmts ts)
+rpm_color_t rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);
 }
 
-uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
+rpm_color_t rpmtsSetColor(rpmts ts, rpm_color_t color)
 {
-    uint32_t ocolor = 0;
+    rpm_color_t ocolor = 0;
     if (ts != NULL) {
 	ocolor = ts->color;
 	ts->color = color;
@@ -1477,7 +1477,7 @@ uint32_t rpmtsSetColor(rpmts ts, uint32_t color)
     return ocolor;
 }
 
-uint32_t rpmtsPrefColor(rpmts ts)
+rpm_color_t rpmtsPrefColor(rpmts ts)
 {
     return (ts != NULL ? ts->prefcolor : 0);
 }

@@ -134,7 +134,7 @@ extern int rpmteIsSource(rpmte te);
  * @param te		transaction element
  * @return		color bits
  */
-uint32_t rpmteColor(rpmte te);
+rpm_color_t rpmteColor(rpmte te);
 
 /** \ingroup rpmte
  * Set color bits of transaction element.
@@ -142,7 +142,7 @@ uint32_t rpmteColor(rpmte te);
  * @param color		new color bits
  * @return		previous color bits
  */
-uint32_t rpmteSetColor(rpmte te, uint32_t color);
+rpm_color_t rpmteSetColor(rpmte te, rpm_color_t color);
 
 /** \ingroup rpmte
  * Retrieve last instance installed to the database.

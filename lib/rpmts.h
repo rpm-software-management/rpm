@@ -697,14 +697,14 @@ rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement);
  * @param ts		transaction set
  * @return		color bits
  */
-uint32_t rpmtsColor(rpmts ts);
+rpm_color_t rpmtsColor(rpmts ts);
 
 /** \ingroup rpmts
  * Retrieve prefered file color
  * @param ts		transaction set
  * @return		color bits
  */
-uint32_t rpmtsPrefColor(rpmts ts);
+rpm_color_t rpmtsPrefColor(rpmts ts);
 
 /** \ingroup rpmts
  * Set color bits of transaction set.
@@ -712,7 +712,7 @@ uint32_t rpmtsPrefColor(rpmts ts);
  * @param color		new color bits
  * @return		previous color bits
  */
-uint32_t rpmtsSetColor(rpmts ts, uint32_t color);
+rpm_color_t rpmtsSetColor(rpmts ts, rpm_color_t color);
 
 /** \ingroup rpmts
  * Retrieve operation timestamp from a transaction set.

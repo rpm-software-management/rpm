@@ -226,9 +226,9 @@ uint32_t rpmfiFInode(rpmfi fi)
     return finode;
 }
 
-uint32_t rpmfiColor(rpmfi fi)
+rpm_color_t rpmfiColor(rpmfi fi)
 {
-    uint32_t color = 0;
+    rpm_color_t color = 0;
 
     if (fi != NULL)
 	/* XXX ignore all but lsnibble for now. */
@@ -236,9 +236,9 @@ uint32_t rpmfiColor(rpmfi fi)
     return color;
 }
 
-uint32_t rpmfiFColor(rpmfi fi)
+rpm_color_t rpmfiFColor(rpmfi fi)
 {
-    uint32_t fcolor = 0;
+    rpm_color_t fcolor = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fcolors != NULL)
@@ -634,8 +634,8 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     uint32_t * newDirIndexes;
     rpm_count_t fileCount, dirCount, numValid;
     uint32_t * fFlags = NULL;
-    uint32_t * fColors = NULL;
-    uint32_t * dColors = NULL;
+    rpm_color_t * fColors = NULL;
+    rpm_color_t * dColors = NULL;
     uint16_t * fModes = NULL;
     Header h;
     int nrelocated = 0;

@@ -24,6 +24,8 @@ typedef uint32_t	rpm_count_t;
 typedef void *		rpm_data_t;
 typedef const void *	rpm_constdata_t;
 
+typedef uint32_t	rpm_color_t;
+
 typedef uint32_t	rpm_off_t;
 typedef uint32_t	rpm_time_t;
 

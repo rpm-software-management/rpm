@@ -54,7 +54,7 @@ struct rpmte_s {
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
     rpmfi fi;			/*!< File information. */
 
-    uint32_t color;		/*!< Color bit(s) from package dependencies. */
+    rpm_color_t color;		/*!< Color bit(s) from package dependencies. */
     rpm_off_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
 
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */

@@ -92,8 +92,8 @@ struct rpmts_s {
     int delta;			/*!< Delta for reallocation. */
     int32_t tid;			/*!< Transaction id. */
 
-    uint32_t color;		/*!< Transaction color bits. */
-    uint32_t prefcolor;		/*!< Preferred file color. */
+    rpm_color_t color;		/*!< Transaction color bits. */
+    rpm_color_t prefcolor;	/*!< Preferred file color. */
 
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 

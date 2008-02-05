@@ -258,7 +258,7 @@ uint32_t rpmdsColor(const rpmds ds);
  * @param color		new dependency color
  * @return		previous dependency color
  */
-uint32_t rpmdsSetColor(const rpmds ds, uint32_t color);
+rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color);
 
 /** \ingroup rpmds
  * Return current dependency file refs.

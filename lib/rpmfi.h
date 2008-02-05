@@ -244,14 +244,14 @@ uint32_t rpmfiFInode(rpmfi fi);
  * @param fi		file info set
  * @return		current color
  */
-uint32_t rpmfiColor(rpmfi fi);
+rpm_color_t rpmfiColor(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file color bits from file info set.
  * @param fi		file info set
  * @return		current file color
  */
-uint32_t rpmfiFColor(rpmfi fi);
+rpm_color_t rpmfiFColor(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file class from file info set.

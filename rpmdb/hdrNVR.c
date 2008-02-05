@@ -86,11 +86,11 @@ char * headerGetNEVRA(Header h, const char ** np)
     return NVRA;
 }
 
-uint32_t headerGetColor(Header h)
+rpm_color_t headerGetColor(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    uint32_t hcolor = 0;
-    uint32_t * fcolors;
+    rpm_color_t hcolor = 0;
+    rpm_color_t * fcolors;
     rpm_count_t ncolors;
     int i;
 

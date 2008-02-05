@@ -72,10 +72,10 @@ static int handleInstInstalledFiles(const rpmts ts,
 		sharedFileInfo shared,
 		int sharedCount, int reportConflicts)
 {
-    uint32_t tscolor = rpmtsColor(ts);
-    uint32_t prefcolor = rpmtsPrefColor(ts);
-    uint32_t otecolor, tecolor;
-    uint32_t oFColor, FColor;
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpm_color_t prefcolor = rpmtsPrefColor(ts);
+    rpm_color_t otecolor, tecolor;
+    rpm_color_t oFColor, FColor;
     char * altNEVR = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
@@ -379,9 +379,9 @@ static void handleOverlappedFiles(const rpmts ts,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
-	uint32_t tscolor = rpmtsColor(ts);
-	uint32_t prefcolor = rpmtsPrefColor(ts);
-	uint32_t oFColor, FColor;
+	rpm_color_t tscolor = rpmtsColor(ts);
+	rpm_color_t prefcolor = rpmtsPrefColor(ts);
+	rpm_color_t oFColor, FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
@@ -641,8 +641,8 @@ static int ensureOlder(rpmts ts,
 /* FIX: fi->actions is modified. */
 static void skipFiles(const rpmts ts, rpmfi fi)
 {
-    uint32_t tscolor = rpmtsColor(ts);
-    uint32_t FColor;
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpm_color_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
@@ -1288,7 +1288,7 @@ cleanup:
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
-    uint32_t tscolor = rpmtsColor(ts);
+    rpm_color_t tscolor = rpmtsColor(ts);
     int i, j;
     int ourrc = 0;
     int totalFileCount = 0;

@@ -106,12 +106,12 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
-    uint32_t tscolor = rpmtsColor(ts);
-    uint32_t dscolor;
-    uint32_t hcolor;
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpm_color_t dscolor;
+    rpm_color_t hcolor;
+    rpm_color_t ohcolor;
     rpmdbMatchIterator mi;
     Header oh;
-    uint32_t ohcolor;
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
@@ -559,9 +559,9 @@ exit:
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 		rpmds requires, rpmds conflicts,
-		const char * depName, uint32_t tscolor, int adding)
+		const char * depName, rpm_color_t tscolor, int adding)
 {
-    uint32_t dscolor;
+    rpm_color_t dscolor;
     const char * Name;
     int rc;
     int ourrc = 0;
@@ -1003,7 +1003,7 @@ static int orderListIndexCmp(const void * one, const void * two)
 static void addQ(rpmte p,
 		rpmte * qp,
 		rpmte * rp,
-		uint32_t prefcolor)
+		rpm_color_t prefcolor)
 {
     rpmte q, qprev;
 
@@ -1045,7 +1045,7 @@ int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     rpmsenseFlags Flags;
-    uint32_t prefcolor = rpmtsPrefColor(ts);
+    rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -1479,7 +1479,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
-    uint32_t tscolor = rpmtsColor(ts);
+    rpm_color_t tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;

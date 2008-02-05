@@ -56,7 +56,7 @@ struct rpmfc_s {
  */
 struct rpmfcTokens_s {
     const char * token;
-    int colors;
+    rpm_color_t colors;
 };  
 
 /**
@@ -535,7 +535,7 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 int rpmfcColoring(const char * fmstr)
 {
     rpmfcToken fct;
-    int fcolor = RPMFC_BLACK;
+    rpm_color_t fcolor = RPMFC_BLACK;
 
     for (fct = rpmfcTokens; fct->token != NULL; fct++) {
 	if (strstr(fmstr, fct->token) == NULL)
@@ -549,7 +549,7 @@ int rpmfcColoring(const char * fmstr)
 
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 {
-    int fcolor;
+    rpm_color_t fcolor;
     int ndx;
     int cx;
     int dx;
@@ -1630,7 +1630,7 @@ assert(EVR != NULL);
     c = argiCount(fc->fcolor);
 assert(ac == c);
     if (p != NULL && c > 0) {
-	int32_t * fcolors = (int32_t *)p;
+	rpm_color_t * fcolors = (rpm_color_t *)p;
 	int i;
 
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
