@@ -149,9 +149,9 @@ uint32_t rpmfiVFlags(rpmfi fi)
     return VFlags;
 }
 
-uint16_t rpmfiFMode(rpmfi fi)
+rpm_mode_t rpmfiFMode(rpmfi fi)
 {
-    uint16_t fmode = 0;
+    rpm_mode_t fmode = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fmodes != NULL)
@@ -428,7 +428,7 @@ const char * ftstring (rpmFileTypes ft)
     }
 }
 
-rpmFileTypes rpmfiWhatis(uint16_t mode)
+rpmFileTypes rpmfiWhatis(rpm_mode_t mode)
 {
     if (S_ISDIR(mode))	return XDIR;
     if (S_ISCHR(mode))	return CDEV;
@@ -491,7 +491,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	}
     }
 
-    diskWhat = rpmfiWhatis((int16_t)sb.st_mode);
+    diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
     dbWhat = rpmfiWhatis(rpmfiFMode(ofi));
     newWhat = rpmfiWhatis(rpmfiFMode(nfi));
 
@@ -564,7 +564,7 @@ int rpmfiConfigConflict(const rpmfi fi)
 	return 0;
     }
 
-    diskWhat = rpmfiWhatis((int16_t)sb.st_mode);
+    diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
     newWhat = rpmfiWhatis(rpmfiFMode(fi));
 
     if (newWhat != LINK && newWhat != REG)
@@ -636,7 +636,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     uint32_t * fFlags = NULL;
     rpm_color_t * fColors = NULL;
     rpm_color_t * dColors = NULL;
-    uint16_t * fModes = NULL;
+    rpm_mode_t * fModes = NULL;
     Header h;
     int nrelocated = 0;
     int fileAlloced = 0;

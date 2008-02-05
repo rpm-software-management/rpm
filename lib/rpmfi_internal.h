@@ -47,7 +47,7 @@ struct rpmfi_s {
 /*?null?*/
     const rpm_time_t * fmtimes;	/*!< File modification time(s) (from header) */
 /*?null?*/
-          uint16_t * fmodes;	/*!< File mode(s) (from header) */
+          rpm_mode_t * fmodes;	/*!< File mode(s) (from header) */
 /*?null?*/
     const uint16_t * frdevs;	/*!< File rdev(s) (from header) */
 /*?null?*/

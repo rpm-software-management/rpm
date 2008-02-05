@@ -1145,8 +1145,8 @@ static void genCpioListAndHeader(FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(flp->fl_mtime), 1);
       }
-      if (sizeof(flp->fl_mode) != sizeof(uint16_t)) {
-	uint16_t pmode = (uint16_t)flp->fl_mode;
+      if (sizeof(flp->fl_mode) != sizeof(rpm_mode_t)) {
+	rpm_mode_t pmode = (rpm_mode_t)flp->fl_mode;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(pmode), 1);
       } else {

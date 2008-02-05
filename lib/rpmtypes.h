@@ -28,6 +28,7 @@ typedef uint32_t	rpm_color_t;
 
 typedef uint32_t	rpm_off_t;
 typedef uint32_t	rpm_time_t;
+typedef uint16_t	rpm_mode_t;
 
 typedef struct headerToken_s * Header;
 typedef struct headerIterator_s * HeaderIterator;

@@ -140,7 +140,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    continue;
 
 	if (!(fi->mapflags & CPIO_SBIT_CHECK)) {
-	    int16_t omode = rpmfiFMode(otherFi);
+	    rpm_mode_t omode = rpmfiFMode(otherFi);
 	    if (S_ISREG(omode) && (omode & 06000) != 0) {
 		fi->mapflags |= CPIO_SBIT_CHECK;
 	    }
@@ -386,7 +386,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
 	int32_t FFlags;
-	int16_t FMode;
+	rpm_mode_t FMode;
 	const rpmfi * recs;
 	int numRecs;
 
@@ -822,7 +822,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    const char * fdn, * fbn;
-	    int16_t fFMode;
+	    rpm_mode_t fFMode;
 
 	    if (XFA_SKIPPING(fi->actions[i]))
 		continue;
@@ -1740,7 +1740,7 @@ rpmlog(RPMLOG_DEBUG, _("computing file dispositions\n"));
 	if (rpmteType(p) == TR_REMOVED) {
 	    fi = rpmfiInit(fi, 0);
 	    while ((i = rpmfiNext(fi)) >= 0) {
-		int16_t mode;
+		rpm_mode_t mode;
 		if (XFA_SKIPPING(fi->actions[i]))
 		    continue;
 		(void) rpmfiSetFX(fi, i);

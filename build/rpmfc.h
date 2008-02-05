@@ -117,7 +117,7 @@ rpmfc rpmfcNew(void);
  * @param fmode		files mode_t array (or NULL)
  * @return		RPMRC_OK on success
  */
-rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, int16_t * fmode);
+rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode);
 
 /** \ingroup rpmfc
  * Build file/package dependency dictionary and mappings.

@@ -181,7 +181,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
 	rpmfileAttrs fflags;
-	unsigned short fmode;
+	rpm_mode_t fmode;
  	unsigned short frdev;
 	rpm_time_t fmtime;
 	rpmfileState fstate;

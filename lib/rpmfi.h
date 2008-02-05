@@ -195,7 +195,7 @@ uint32_t rpmfiVFlags(rpmfi fi);
  * @param fi		file info set
  * @return		current file mode, 0 on invalid
  */
-uint16_t rpmfiFMode(rpmfi fi);
+rpm_mode_t rpmfiFMode(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file state from file info set.
@@ -403,7 +403,7 @@ void rpmfiBuildFNames(Header h, rpm_tag_t tagN,
  * @param mode		file mode bits (from header)
  * @return		file type
  */
-rpmFileTypes rpmfiWhatis(uint16_t mode);
+rpmFileTypes rpmfiWhatis(rpm_mode_t mode);
 
 /** \ingroup rpmfi
  * Return file info comparison.

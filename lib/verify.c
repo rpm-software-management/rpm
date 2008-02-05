@@ -24,7 +24,7 @@ extern int _rpmds_unspecified_epoch_noise;
 int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
 {
-    unsigned short fmode = rpmfiFMode(fi);
+    rpm_mode_t fmode = rpmfiFMode(fi);
     rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
     const char * fn = rpmfiFN(fi);
@@ -146,14 +146,14 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     } 
 
     if (flags & RPMVERIFY_MODE) {
-	unsigned short metamode = fmode;
-	unsigned short filemode;
+	rpm_mode_t metamode = fmode;
+	rpm_mode_t filemode;
 
 	/*
-	 * Platforms (like AIX) where sizeof(unsigned short) != sizeof(mode_t)
-	 * need the (unsigned short) cast here. 
+	 * Platforms (like AIX) where sizeof(rpm_mode_t) != sizeof(mode_t)
+	 * need the (rpm_mode_t) cast here. 
 	 */
-	filemode = (unsigned short)sb.st_mode;
+	filemode = (rpm_mode_t)sb.st_mode;
 
 	/*
 	 * Comparing the type of %ghost files is meaningless, but perms are OK.
