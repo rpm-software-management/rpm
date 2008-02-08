@@ -10,7 +10,7 @@
 : ${GENDIFF_DIFF_ARGS:=-up}
 : ${GENDIFF_DIFF_CHANGELOG_ARGS:=-U0}
 
-find $1 \( -name "*$2" -o -name ".*$2" \) -print |
+find $1 \( -name "*$2" -o -name ".*$2" \) -print | sort
 while read f; do
     U="${GENDIFF_DIFF_ARGS}"
     [ "`basename $f`" = "ChangeLog$2" ] && U="${GENDIFF_DIFF_CHANGELOG_ARGS}"
