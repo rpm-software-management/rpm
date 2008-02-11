@@ -917,8 +917,8 @@ exit:
     /*@=noeffect@*/
 #endif
 
-    /* XXX don't overflow single byte exit status */
-    if (ec > 255) ec = 255;
+    /* XXX Avoid exit status overflow. Status 255 is special to xargs(1) */
+    if (ec > 254) ec = 254;
 
     /*@-globstate@*/
     return ec;
