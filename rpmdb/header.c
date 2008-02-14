@@ -1527,7 +1527,7 @@ static int copyEntry(const indexEntry entry,
  * @param td		header i18n table data, NUL terminated
  * @param l		start of locale	to match
  * @param le		end of locale to match
- * @return		1 on match, 0 on no match
+ * @return		1 on good match, 2 on weak match, 0 on no match
  */
 static int headerMatchLocale(const char *td, const char *l, const char *le)
 	/*@*/
@@ -1590,7 +1590,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
     for (fe = l; fe < le && *fe != '_'; fe++)
 	{};
     if (fe < le && !strncmp(td, l, (fe - l)))
-	return 1;
+	return 2;
 
     return 0;
 }
@@ -1623,7 +1623,7 @@ headerFindI18NString(Header h, indexEntry entry)
 /*@-boundsread@*/
     for (l = lang; *l != '\0'; l = le) {
 	const char *td;
-	char *ed;
+	char *ed, *ed_weak = NULL;
 	int langNum;
 
 	while (*l && *l == ':')			/* skip leading colons */
@@ -1638,10 +1638,12 @@ headerFindI18NString(Header h, indexEntry entry)
 	     langNum < entry->info.count;
 	     langNum++, td += strlen(td) + 1, ed += strlen(ed) + 1) {
 
-		if (headerMatchLocale(td, l, le))
-		    return ed;
+	           int match = headerMatchLocale(td, l, le);
+		   if (match == 1) return ed;
+		   else if (match == 2) ed_weak = ed;
 
 	}
+	if (ed_weak) return ed_weak;
     }
 /*@=boundsread@*/
 
