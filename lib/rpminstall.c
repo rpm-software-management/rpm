@@ -1006,7 +1006,7 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	tid = (time_t)thistid;
 	rpmlog(RPMLOG_NOTICE,
 		_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
-			numAdded, numRemoved, ctime(&tid), tid);
+			numAdded, numRemoved, ctime(&tid), thistid);
 
 	rc = rpmtsCheck(ts);
 	ps = rpmtsProblems(ts);

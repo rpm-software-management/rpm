@@ -976,7 +976,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
 	    /* Make sure the filename is still there.  XXX: Can't happen */
 	    key = rpmteKey(te);
 	    if(key) {
-		rpmlog(RPMLOG_NOTICE, _("\tRemoving %s:\n"), key);
+		rpmlog(RPMLOG_NOTICE, _("\tRemoving %s:\n"), (const char*)key);
 		(void) unlink(key); /* XXX: Should check for an error? */
 	    }
 	    break;
