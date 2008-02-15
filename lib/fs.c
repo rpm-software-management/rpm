@@ -197,11 +197,16 @@ static int getFilesystemList(void)
 #	endif
 
 	if (stat(mntdir, &sb)) {
-	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), mntdir,
+	    switch (errno) {
+	    case ESTALE:
+	    case EACCES:
+		continue;
+	    default:
+	        rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), mntdir,
 			strerror(errno));
-
-	    rpmFreeFilesystems();
-	    return 1;
+	        rpmFreeFilesystems();
+	        return 1;
+	    }
 	}
 
 	if ((numFilesystems + 2) == numAlloced) {
