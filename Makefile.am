@@ -265,37 +265,6 @@ uninstall-local:
 
 MAINTAINERCLEANFILES = ChangeLog
 
-.PHONY:	setperms
-setperms:
-	@for f in $(rpmbin_PROGRAMS) ; do\
-	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmbindir)/$$f ;\
-	    $(__CHMOD) g+s $(DESTDIR)$(rpmbindir)/$$f ;\
-	done
-	@for f in $(bin_PROGRAMS) ; do\
-	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(bindir)/$$f ;\
-	done
-	@for f in $(rpmlibexec_PROGRAMS) ; do\
-	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmlibexecdir)/$$f ;\
-	    $(__CHMOD) g+s $(DESTDIR)$(rpmlibexecdir)/$$f ;\
-	done
-	@for f in $(pkglib_SCRIPTS) ; do\
-	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
-	done
-	@$(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)
-	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmvardir)
-	-@$(__CHMOD) 0664 $(DESTDIR)$(rpmvardir)/[A-Z]*
-	-@$(__CHMOD) 0775 $(DESTDIR)$(rpmvardir)
-	-@$(__CHMOD) 0664 $(DESTDIR)$(rpmvardir)/__db.*
-
-.PHONY:	unsetgid
-unsetgid:
-	@for f in $(rpmbin_PROGRAMS) ; do\
-	    $(__CHMOD) g-s $(DESTDIR)$(rpmbindir)/$$f ;\
-	done
-	@for f in $(rpmlibexec_PROGRAMS) ; do\
-	    $(__CHMOD) g-s $(DESTDIR)$(rpmlibexecdir)/$$f ;\
-	done
-
 # Build hacking docs only on request
 if HACKINGDOCS
 if DOXYGEN
