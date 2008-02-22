@@ -15,18 +15,6 @@ extern "C" {
 
 extern int _rpmdb_debug;
 
-#ifdef	NOTYET
-/** \ingroup rpmdb
- * Database of headers and tag value indices.
- */
-typedef struct rpmdb_s * rpmdb;
-
-/** \ingroup rpmdb
- * Database iterator.
- */
-typedef struct _rpmdbMatchIterator * rpmdbMatchIterator;
-#endif
-
 /**
  * Tag value pattern match mode.
  */
