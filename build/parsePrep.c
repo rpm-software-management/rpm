@@ -164,7 +164,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
     const char *fn;
     char *urlfn;
     static char buf[BUFSIZ];
-    char *taropts;
+    char *tar, *taropts;
     char *t = NULL;
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
@@ -227,6 +227,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 	break;
     }
 
+    tar = rpmGetPath("%{__tar}", NULL);
     if (compressed != COMPRESSED_NOT) {
 	char *zipper;
 	int needtar = 1;
@@ -257,8 +258,13 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 	t = stpcpy(t, " '");
 	t = stpcpy(t, fn);
 	t = stpcpy(t, "'");
-	if (needtar)
-	    t = stpcpy( stpcpy( stpcpy(t, " | tar "), taropts), " -");
+	if (needtar) {
+	    t = stpcpy(t, " | ");
+	    t = stpcpy(t, tar);
+	    t = stpcpy(t, " ");
+	    t = stpcpy(t, taropts);
+	    t = stpcpy(t, " - ");
+	}
 	t = stpcpy(t,
 		"\n"
 		"STATUS=$?\n"
@@ -267,12 +273,15 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 		"fi");
     } else {
 	buf[0] = '\0';
-	t = stpcpy( stpcpy(buf, "tar "), taropts);
+	t = stpcpy(buf, tar);
+	t = stpcpy(t, " ");
+	t = stpcpy(t, taropts);
 	*t++ = ' ';
 	t = stpcpy(t, fn);
     }
 
     urlfn = _free(urlfn);
+    tar = _free(tar);
     return buf;
 }
 
