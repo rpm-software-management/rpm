@@ -126,7 +126,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     patcher = rpmGetPath("%{__patch}", NULL);
     if (compressed) {
 	char *zipper = rpmGetPath(
-	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
+	    (compressed == COMPRESSED_BZIP2 ? "%{__bzip2}" : "%{__gzip}"),
 	    NULL);
 
 	sprintf(buf,
@@ -234,16 +234,16 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 	switch (compressed) {
 	case COMPRESSED_NOT:	/* XXX can't happen */
 	case COMPRESSED_OTHER:
-	    t = "%{_gzipbin} -dc";
+	    t = "%{__gzip} -dc";
 	    break;
 	case COMPRESSED_BZIP2:
-	    t = "%{_bzip2bin} -dc";
+	    t = "%{__bzip2} -dc";
 	    break;
 	case COMPRESSED_ZIP:
 	    if (rpmIsVerbose() && !quietly)
-		t = "%{_unzipbin}";
+		t = "%{__unzip}";
 	    else
-		t = "%{_unzipbin} -qq";
+		t = "%{__unzip} -qq";
 	    needtar = 0;
 	    break;
 	case COMPRESSED_LZMA:
