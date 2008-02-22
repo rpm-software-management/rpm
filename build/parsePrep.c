@@ -68,6 +68,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     static char buf[BUFSIZ];
     char args[BUFSIZ], *t = args;
     struct Source *sp;
+    char *patcher;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
 
@@ -122,6 +123,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	break;
     }
 
+    patcher = rpmGetPath("%{__patch}", NULL);
     if (compressed) {
 	char *zipper = rpmGetPath(
 	    (compressed == COMPRESSED_BZIP2 ? "%{_bzip2bin}" : "%{_gzipbin}"),
@@ -129,22 +131,23 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"%s -d < '%s' | patch -p%d %s -s\n"
+		"%s -d < '%s' | %s -p%d %s -s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
 		c, (const char *) basename(fn),
-		zipper,
+		zipper, patcher,
 		fn, strip, args);
 	zipper = _free(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"patch -p%d %s -s < '%s'", c, (const char *) basename(fn),
-		strip, args, fn);
+		"%s -p%d %s -s < '%s'", c, (const char *) basename(fn),
+		patcher, strip, args, fn);
     }
 
+    patcher = _free(patcher);
     urlfn = _free(urlfn);
     return buf;
 }
