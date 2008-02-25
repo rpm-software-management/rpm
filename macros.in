@@ -1156,6 +1156,9 @@ done \
   %{-C:${_mydir}}%{!-C:.}/configure %{_target_platform} --prefix=%{_prefix} --exec-prefix=%{_exec_prefix} --bindir=%{_bindir} --sbindir=%{_sbindir} --sysconfdir=%{_sysconfdir} --datadir=%{_datadir} --includedir=%{_includedir} --libdir=%{_libdir} --libexecdir=%{_libexecdir} --localstatedir=%{_localstatedir} --sharedstatedir=%{_sharedstatedir} --mandir=%{_mandir} --infodir=%{_infodir} %* ; \
   %{-C:cd ${_mydir}; unset _mydir}
 
+%patches %{lua: for i, p in ipairs(patches) do print(p.." ") end}
+%sources %{lua: for i, s in ipairs(sources) do print(s.." ") end}
+
 #------------------------------------------------------------------------------
 # Useful perl macros (from Artur Frysiak <wiget@t17.ds.pwr.wroc.pl>)
 #

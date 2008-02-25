@@ -13,6 +13,7 @@
 #include <rpm/rpmfileutil.h>
 
 #include "build/buildio.h"
+#include "rpmio/rpmlua.h"
 
 #include "debug.h"
 
@@ -329,6 +330,19 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
 	sprintf(buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+#ifdef WITH_LUA
+	{
+	rpmlua lua = NULL; /* global state */
+	const char * what = (flag & RPMBUILD_ISPATCH) ? "patches" : "sources";
+	rpmluaPushTable(lua, what);
+	rpmluav var = rpmluavNew();
+	rpmluavSetListMode(var, 1);
+	rpmluavSetValue(var, RPMLUAV_STRING, body);
+	rpmluaSetVar(lua, var);
+	var = rpmluavFree(var);
+	rpmluaPop(lua);
+	}
+#endif
 	body = _free(body);
     }
     
@@ -445,6 +459,16 @@ rpmSpec newSpec(void)
 
     spec->macros = rpmGlobalMacroContext;
     
+#ifdef WITH_LUA
+    {
+    /* make sure patches and sources tables always exist */
+    rpmlua lua = NULL; /* global state */
+    rpmluaPushTable(lua, "patches");
+    rpmluaPushTable(lua, "sources");
+    rpmluaPop(lua);
+    rpmluaPop(lua);
+    }
+#endif
     return spec;
 }
 
@@ -513,6 +537,12 @@ rpmSpec freeSpec(rpmSpec spec)
 
     spec->passPhrase = _free(spec->passPhrase);
     spec->cookie = _constfree(spec->cookie);
+
+#ifdef WITH_LUA
+    rpmlua lua = NULL; /* global state */
+    rpmluaDelVar(lua, "patches");
+    rpmluaDelVar(lua, "sources");	
+#endif
 
     spec->sources = freeSources(spec->sources);
     spec->packages = freePackages(spec->packages);
