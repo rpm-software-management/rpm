@@ -42,6 +42,10 @@ include/rpm/rpmfileutil.h: rpmio/rpmfileutil.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmfileutil.h include/rpm/rpmfileutil.h
 BUILT_SOURCES += include/rpm/rpmfileutil.h
 CLEANFILES += include/rpm/rpmfileutil.h
+include/rpm/rpmutil.h: rpmio/rpmutil.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmutil.h include/rpm/rpmutil.h
+BUILT_SOURCES += include/rpm/rpmutil.h
+CLEANFILES += include/rpm/rpmutil.h
 include/rpm/header.h: rpmdb/header.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmdb/header.h include/rpm/header.h
 BUILT_SOURCES += include/rpm/header.h
