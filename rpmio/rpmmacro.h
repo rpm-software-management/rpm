@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stddef.h>
 
+#include <rpm/rpmutil.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -124,7 +126,7 @@ void	rpmFreeMacros	(rpmMacroContext mc);
  * @param arg		macro(s) to expand (NULL terminates list)
  * @return		macro expansion (malloc'ed)
  */
-char * rpmExpand	(const char * arg, ...);
+char * rpmExpand	(const char * arg, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmmacro
  * Return macro expansion as a numeric value.

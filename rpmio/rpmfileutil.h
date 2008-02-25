@@ -6,6 +6,7 @@
  * File and path manipulation helper functions.
  */
 
+#include <rpm/rpmutil.h>
 #include <rpm/rpmio.h>
 #include <rpm/rpmpgp.h>
 
@@ -83,7 +84,7 @@ char * rpmGenPath	(const char * urlroot,
  * @param path		macro(s) to expand (NULL terminates list)
  * @return		canonicalized path (malloc'ed)
  */
-char * rpmGetPath (const char * path, ...);
+char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmfileutil
  * Return URL path(s) from a (URL prefixed) pattern glob.

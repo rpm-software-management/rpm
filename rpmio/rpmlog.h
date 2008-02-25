@@ -10,6 +10,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include <rpm/rpmutil.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -220,7 +222,7 @@ int rpmlogSetMask (int mask);
 /** \ingroup rpmlog
  * Generate a log message using FMT string and option arguments.
  */
-void rpmlog (int code, const char *fmt, ...);
+void rpmlog (int code, const char *fmt, ...) RPM_GNUC_PRINTF(2, 3);
 
 /** \ingroup rpmlog
  * Return text of last rpmError() message.
