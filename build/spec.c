@@ -492,19 +492,7 @@ rpmSpec freeSpec(rpmSpec spec)
     spec->rootURL = _constfree(spec->rootURL);
     spec->specFile = _constfree(spec->specFile);
 
-#ifdef	DEAD
-  { struct OpenFileInfo *ofi;
-    while (spec->fileStack) {
-	ofi = spec->fileStack;
-	spec->fileStack = ofi->next;
-	ofi->next = NULL;
-	ofi->fileName = _free(ofi->fileName);
-	ofi = _free(ofi);
-    }
-  }
-#else
     closeSpec(spec);
-#endif
 
     while (spec->readStack) {
 	rl = spec->readStack;
