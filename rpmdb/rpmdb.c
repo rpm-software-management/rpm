@@ -802,7 +802,7 @@ int rpmdbClose(rpmdb db)
     if (db == NULL)
 	goto exit;
 
-    (void) rpmdbUnlink(db, "rpmdbClose");
+    (void) rpmdbUnlink(db, RPMDBG_M("rpmdbClose"));
 
     if (db->nrefs > 0)
 	goto exit;
@@ -918,7 +918,7 @@ rpmdb newRpmdb(const char * root,
     db->db_ndbi = dbiTagsMax;
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     db->nrefs = 0;
-    return rpmdbLink(db, "rpmdbCreate");
+    return rpmdbLink(db, RPMDBG_M("rpmdbCreate"));
 }
 
 static int openDatabase(const char * prefix,
@@ -1010,19 +1010,19 @@ exit:
     return rc;
 }
 
-rpmdb XrpmdbUnlink(rpmdb db, const char * msg, const char * fn, unsigned ln)
+rpmdb rpmdbUnlink(rpmdb db, const char * msg)
 {
 if (_rpmdb_debug)
-fprintf(stderr, "--> db %p -- %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
+fprintf(stderr, "--> db %p -- %d %s\n", db, db->nrefs, msg);
     db->nrefs--;
     return NULL;
 }
 
-rpmdb XrpmdbLink(rpmdb db, const char * msg, const char * fn, unsigned ln)
+rpmdb rpmdbLink(rpmdb db, const char * msg)
 {
     db->nrefs++;
 if (_rpmdb_debug)
-fprintf(stderr, "--> db %p ++ %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
+fprintf(stderr, "--> db %p ++ %d %s\n", db, db->nrefs, msg);
     return db;
 }
 
@@ -1560,7 +1560,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
-    mi->mi_db = rpmdbUnlink(mi->mi_db, "matchIterator");
+    mi->mi_db = rpmdbUnlink(mi->mi_db, RPMDBG_M("matchIterator"));
 
     mi = _free(mi);
 
@@ -2389,7 +2389,7 @@ assert(keylen == sizeof(k->ui));		/* xxx programmer error */
     mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
 
-    mi->mi_db = rpmdbLink(db, "matchIterator");
+    mi->mi_db = rpmdbLink(db, RPMDBG_M("matchIterator"));
     mi->mi_rpmtag = rpmtag;
 
     mi->mi_dbc = NULL;

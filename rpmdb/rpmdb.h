@@ -56,11 +56,6 @@ int rpmdbSetChrootDone(rpmdb db, int chrootDone);
  */
 rpmdb rpmdbUnlink (rpmdb db, const char * msg);
 
-/** @todo Remove debugging entry from the ABI. */
-rpmdb XrpmdbUnlink (rpmdb db, const char * msg,
-		const char * fn, unsigned ln);
-#define	rpmdbUnlink(_db, _msg)	XrpmdbUnlink(_db, _msg, __FILE__, __LINE__)
-
 /** \ingroup rpmdb
  * Reference a database instance.
  * @param db		rpm database
@@ -68,11 +63,6 @@ rpmdb XrpmdbUnlink (rpmdb db, const char * msg,
  * @return		new rpm database reference
  */
 rpmdb rpmdbLink (rpmdb db, const char * msg);
-
-/** @todo Remove debugging entry from the ABI. */
-rpmdb XrpmdbLink (rpmdb db, const char * msg,
-		const char * fn, unsigned ln);
-#define	rpmdbLink(_db, _msg)	XrpmdbLink(_db, _msg, __FILE__, __LINE__)
 
 /** \ingroup rpmdb
  * Open rpm database.
