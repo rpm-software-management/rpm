@@ -366,7 +366,7 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
 
 static struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
-  fdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
+  fdOpen, NULL, fdGetFp, NULL
 };
 FDIO_t fdio = &fdio_s ;
 
@@ -815,7 +815,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 
 static struct FDIO_s ufdio_s = {
   ufdRead, ufdWrite, ufdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
-  ufdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
+  ufdOpen, NULL, fdGetFp, NULL
 };
 FDIO_t ufdio = &ufdio_s ;
 
@@ -1021,7 +1021,7 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 static struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose, fdLink, fdFree, fdNew, fdFileno,
-  NULL, gzdOpen, gzdFileno, gzdFlush,	NULL, NULL, NULL, NULL, NULL
+  NULL, gzdOpen, gzdFileno, gzdFlush
 };
 FDIO_t gzdio = &gzdio_s ;
 
@@ -1184,7 +1184,7 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 static struct FDIO_s bzdio_s = {
   bzdRead, bzdWrite, bzdSeek, bzdClose, fdLink, fdFree, fdNew, fdFileno,
-  NULL, bzdOpen, bzdFileno, bzdFlush,	NULL, NULL, NULL, NULL, NULL
+  NULL, bzdOpen, bzdFileno, bzdFlush
 };
 FDIO_t bzdio = &bzdio_s ;
 
@@ -1689,6 +1689,6 @@ exit:
 
 static struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
-  ufdOpen, NULL, fdGetFp, NULL,	mkdir, chdir, rmdir, rename, unlink
+  ufdOpen, NULL, fdGetFp, NULL
 };
 FDIO_t fpio = &fpio_s ;

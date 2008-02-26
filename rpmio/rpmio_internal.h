@@ -126,44 +126,6 @@ typedef void * (*fdio_ffileno_function_t) (FD_t fd);
  */
 typedef int (*fdio_fflush_function_t) (FD_t fd);
 
-
-/** \ingroup rpmrpc
- * \name RPMRPC Vectors.
- */
-
-/**
- */
-typedef int (*fdio_mkdir_function_t) (const char * path, mode_t mode);
-
-/**
- */
-typedef int (*fdio_chdir_function_t) (const char * path);
-
-/**
- */
-typedef int (*fdio_rmdir_function_t) (const char * path);
-
-/**
- */
-typedef int (*fdio_rename_function_t) (const char * oldpath, const char * newpath);
-
-/**
- */
-typedef int (*fdio_unlink_function_t) (const char * path);
-
-/**
- */
-typedef int (*fdio_stat_function_t) (const char * path, struct stat * st);
-
-/**
- */
-typedef int (*fdio_lstat_function_t) (const char * path, struct stat * st);
-
-/**
- */
-typedef int (*fdio_access_function_t) (const char * path, int amode);
-
-
 /** \ingroup rpmio
  */
 struct FDIO_s {
@@ -181,12 +143,6 @@ struct FDIO_s {
   fdio_fopen_function_t		_fopen;
   fdio_ffileno_function_t	_ffileno;
   fdio_fflush_function_t	_fflush;
-
-  fdio_mkdir_function_t		_mkdir;
-  fdio_chdir_function_t		_chdir;
-  fdio_rmdir_function_t		_rmdir;
-  fdio_rename_function_t	_rename;
-  fdio_unlink_function_t	_unlink;
 };
 
 /**
