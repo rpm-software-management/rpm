@@ -69,13 +69,13 @@ typedef struct MacroBuf_s {
 
 
 #define	_MAX_MACRO_DEPTH	16
-int max_macro_depth = _MAX_MACRO_DEPTH;
+static int max_macro_depth = _MAX_MACRO_DEPTH;
 
 #define	_PRINT_MACRO_TRACE	0
-int print_macro_trace = _PRINT_MACRO_TRACE;
+static int print_macro_trace = _PRINT_MACRO_TRACE;
 
 #define	_PRINT_EXPAND_TRACE	0
-int print_expand_trace = _PRINT_EXPAND_TRACE;
+static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 #define	MACRO_CHUNK_SIZE	16
 
