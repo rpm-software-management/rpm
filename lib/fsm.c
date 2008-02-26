@@ -27,7 +27,7 @@ int _fsm_debug = _FSM_DEBUG;
 int _fsm_threads = 0;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
-int strict_erasures = 0;
+static int strict_erasures = 0;
 
 /** \ingroup payload
  * Keeps track of the set of all hard links to a file in an archive.
