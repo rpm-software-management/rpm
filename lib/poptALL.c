@@ -63,8 +63,6 @@ extern int _rpmts_debug;
 
 extern int _rpmts_stats;
 
-extern int noLibio;
-
 const char * rpmcliPipeOutput = NULL;
 
 const char * rpmcliRcfile = NULL;
@@ -72,8 +70,6 @@ const char * rpmcliRcfile = NULL;
 const char * rpmcliRootDir = "/";
 
 rpmQueryFlags rpmcliQueryFlags;
-
-extern int noLibio;
 
 extern int _rpmio_debug;
 
@@ -224,10 +220,6 @@ struct poptOption rpmcliAllPoptTable[] = {
         N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
- { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-	N_("disable use of libio(3) API"), NULL},
-#endif
  { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 
@@ -257,11 +249,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("provide more detailed output"), NULL},
  { "version", '\0', 0, NULL, POPT_SHOWVERSION,
 	N_("print the version of rpm being used"), NULL },
-
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
- { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
-       N_("disable use of libio(3) API"), NULL},
-#endif
 
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},

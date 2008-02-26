@@ -44,9 +44,9 @@ extern int h_errno;
 /**
  */
 #if _USE_LIBIO
-int noLibio = 0;
+static int noLibio = 0;
 #else
-int noLibio = 1;
+static int noLibio = 1;
 #endif
 
 #define TIMEOUT_SECS 60
@@ -92,7 +92,6 @@ static FDIO_t fpio;
 static FDIO_t ufdio;
 static FDIO_t gzdio;
 static FDIO_t bzdio;
-static FDIO_t fadio;
 
 /**
  */
