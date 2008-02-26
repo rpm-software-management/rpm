@@ -51,6 +51,49 @@ int noLibio = 1;
 
 #define TIMEOUT_SECS 60
 
+/** \ingroup rpmio
+ * \name RPMIO Vectors.
+ */
+typedef ssize_t (*fdio_read_function_t) (void *cookie, char *buf, size_t nbytes);
+typedef ssize_t (*fdio_write_function_t) (void *cookie, const char *buf, size_t nbytes);
+typedef int (*fdio_seek_function_t) (void *cookie, _libio_pos_t pos, int whence);
+typedef int (*fdio_close_function_t) (void *cookie);
+typedef FD_t (*fdio_ref_function_t) ( void * cookie, const char * msg);
+typedef FD_t (*fdio_deref_function_t) ( FD_t fd, const char * msg);
+typedef FD_t (*fdio_new_function_t) (const char * msg);
+typedef int (*fdio_fileno_function_t) (void * cookie);
+typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
+typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode);
+typedef void * (*fdio_ffileno_function_t) (FD_t fd);
+typedef int (*fdio_fflush_function_t) (FD_t fd);
+
+/** \ingroup rpmio
+ */
+struct FDIO_s {
+  fdio_read_function_t		read;
+  fdio_write_function_t		write;
+  fdio_seek_function_t		seek;
+  fdio_close_function_t		close;
+
+  fdio_ref_function_t		_fdref;
+  fdio_deref_function_t		_fdderef;
+  fdio_new_function_t		_fdnew;
+  fdio_fileno_function_t	_fileno;
+
+  fdio_open_function_t		_open;
+  fdio_fopen_function_t		_fopen;
+  fdio_ffileno_function_t	_ffileno;
+  fdio_fflush_function_t	_fflush;
+};
+
+/* forward refs */
+static FDIO_t fdio;
+static FDIO_t fpio;
+static FDIO_t ufdio;
+static FDIO_t gzdio;
+static FDIO_t bzdio;
+static FDIO_t fadio;
+
 /**
  */
 int _rpmio_debug = 0;
@@ -368,7 +411,7 @@ static struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
   fdOpen, NULL, fdGetFp, NULL
 };
-FDIO_t fdio = &fdio_s ;
+static FDIO_t fdio = &fdio_s ;
 
 int fdWritable(FD_t fd, int secs)
 {
@@ -817,7 +860,7 @@ static struct FDIO_s ufdio_s = {
   ufdRead, ufdWrite, ufdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL
 };
-FDIO_t ufdio = &ufdio_s ;
+static FDIO_t ufdio = &ufdio_s ;
 
 ssize_t timedRead(FD_t fd, void * bufptr, size_t length)
 {
@@ -1023,7 +1066,7 @@ static struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, gzdOpen, gzdFileno, gzdFlush
 };
-FDIO_t gzdio = &gzdio_s ;
+static FDIO_t gzdio = &gzdio_s ;
 
 #endif	/* HAVE_ZLIB_H */
 
@@ -1186,7 +1229,7 @@ static struct FDIO_s bzdio_s = {
   bzdRead, bzdWrite, bzdSeek, bzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush
 };
-FDIO_t bzdio = &bzdio_s ;
+static FDIO_t bzdio = &bzdio_s ;
 
 #endif	/* HAVE_BZLIB_H */
 
@@ -1691,4 +1734,4 @@ static struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL
 };
-FDIO_t fpio = &fpio_s ;
+static FDIO_t fpio = &fpio_s ;
