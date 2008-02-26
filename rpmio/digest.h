@@ -8,6 +8,7 @@
 
 #include <rpm/rpmpgp.h>
 #include "rpmio/base64.h"
+#include "rpmio/rpmio_internal.h"
 
 
 /** \ingroup rpmio

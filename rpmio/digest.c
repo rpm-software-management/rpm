@@ -166,3 +166,88 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%zd) hashctx %p digest %p\n", ctx, datap, l
     free(ctx);
     return 0;
 }
+
+void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
+{
+    FDDIGEST_t fddig = fd->digests + fd->ndigests;
+    if (fddig != (fd->digests + FDDIGEST_MAX)) {
+	fd->ndigests++;
+	fddig->hashalgo = hashalgo;
+	fdstat_enter(fd, FDSTAT_DIGEST);
+	fddig->hashctx = rpmDigestInit(hashalgo, flags);
+	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
+    }
+}
+
+void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
+{
+    int i;
+
+    if (buf != NULL && buflen > 0)
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	fdstat_enter(fd, FDSTAT_DIGEST);
+	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
+	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) buflen);
+    }
+}
+
+void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
+		void ** datap,
+		size_t * lenp,
+		int asAscii)
+{
+    int imax = -1;
+    int i;
+
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	if (i > imax) imax = i;
+	if (fddig->hashalgo != hashalgo)
+	    continue;
+	fdstat_enter(fd, FDSTAT_DIGEST);
+	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
+	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
+	fddig->hashctx = NULL;
+	break;
+    }
+    if (i < 0) {
+	if (datap) *datap = NULL;
+	if (lenp) *lenp = 0;
+    }
+
+    fd->ndigests = imax;
+    if (i < imax)
+	fd->ndigests++;		/* convert index to count */
+}
+
+
+void fdStealDigest(FD_t fd, pgpDig dig)
+{
+    int i;
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+        FDDIGEST_t fddig = fd->digests + i;
+        if (fddig->hashctx != NULL)
+        switch (fddig->hashalgo) {
+        case PGPHASHALGO_MD5:
+assert(dig->md5ctx == NULL);
+            dig->md5ctx = fddig->hashctx;
+            fddig->hashctx = NULL;
+            break;
+        case PGPHASHALGO_SHA1:
+        case PGPHASHALGO_SHA256:
+        case PGPHASHALGO_SHA384:
+        case PGPHASHALGO_SHA512:
+assert(dig->sha1ctx == NULL);
+            dig->sha1ctx = fddig->hashctx;
+            fddig->hashctx = NULL;
+            break;
+        default:
+            break;
+        }
+    }
+}

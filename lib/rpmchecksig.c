@@ -13,7 +13,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 
-#include "rpmio/rpmio_internal.h"	/* for fd*Digest() */
+#include "rpmio/digest.h"
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 
