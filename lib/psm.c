@@ -351,14 +351,14 @@ fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
     }
 
     _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-    rpmrc = rpmMkdirPath(_sourcedir, "sourcedir");
+    rpmrc = rpmMkdirPath(_sourcedir, "_sourcedir");
     if (rpmrc) {
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
     _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
-    rpmrc = rpmMkdirPath(_specdir, "specdir");
+    rpmrc = rpmMkdirPath(_specdir, "_specdir");
     if (rpmrc) {
 	rpmrc = RPMRC_FAIL;
 	goto exit;

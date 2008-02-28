@@ -554,7 +554,7 @@ main(int argc, char *argv[])
     if (!(s && *s))
 	rpmrc = RPMRC_FAIL;
     else
-	rpmrc = rpmMkdirPath(s, "cache_dbpath");
+	rpmrc = rpmMkdirPath(s, "_cache_dbpath");
     s = _free(s);
     if (rpmrc != RPMRC_OK) {
 	fprintf(stderr, _("%s: %%{_cache_dbpath} macro is mis-configured.\n"),
