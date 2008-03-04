@@ -77,6 +77,10 @@ optflags: hades -O2 -g -fomit-frame-pointer
 optflags: s390 -O2 -g
 optflags: s390x -O2 -g
 
+optflags: sh3 -O2 -g
+optflags: sh4 -O2 -g
+optflags: sh4a -O2 -g
+
 #############################################################
 # Canonical arch names and numbers
 
@@ -153,6 +157,9 @@ arch_canon:    ppc64pseries: ppc64pseries  16
 arch_canon:    ppc64iseries: ppc64iseries  16
 
 arch_canon:	sh: sh		17
+arch_canon:	sh3: sh3	17
+arch_canon:	sh4: sh4	17
+arch_canon:	sh4a: sh4a	17
 arch_canon:	xtensa: xtensa	18
 
 #############################################################
@@ -256,6 +263,10 @@ buildarchtranslate: x86_64: x86_64
 buildarchtranslate: amd64: x86_64
 buildarchtranslate: ia32e: x86_64
 
+buildarchtranslate: sh3: sh3
+buildarchtranslate: sh4: sh4
+buildarchtranslate: sh4a: sh4
+
 #############################################################
 # Architecture compatibility
 
@@ -339,6 +350,10 @@ arch_compat: ia64: noarch
 arch_compat: x86_64: amd64 athlon noarch
 arch_compat: amd64: x86_64 athlon noarch
 arch_compat: ia32e: x86_64 athlon noarch
+
+arch_compat: sh3: noarch
+arch_compat: sh4: noarch
+arch_compat: sh4a: sh4
 
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
@@ -443,6 +458,10 @@ buildarch_compat: ia64: noarch
 buildarch_compat: x86_64: noarch
 buildarch_compat: amd64: x86_64
 buildarch_compat: ia32e: x86_64
+
+buildarch_compat: sh3: noarch
+buildarch_compat: sh4: noarch
+buildarch_compat: sh4a: sh4
 
 # \endverbatim
 #*/
