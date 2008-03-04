@@ -2066,6 +2066,15 @@ rpmFreeMacros(MacroContext mc)
 }
 /*@=globstate@*/
 
+static int rpmFileHasSuffix(const char *path, const char *suffix)
+{
+    size_t plen = strlen(path);
+    size_t slen = strlen(suffix);
+    return (plen >= slen &&
+            strcmp(path+plen-slen, suffix) == 0);
+}
+
+
 /* =============================================================== */
 int isCompressed(const char * file, rpmCompressedMagic * compressed)
 {
@@ -2103,12 +2112,11 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
     } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
 	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
 	*compressed = COMPRESSED_ZIP;
-    } else if ((magic[ 9] == 0x00) && (magic[10] == 0x00) &&
-         (magic[11] == 0x00) && (magic[12] == 0x00)) { 
-         /* lzma */
-         /* FIXME: lzma doesn't have a magic, 
-          * consider to additionally check the filename */
-        *compressed = COMPRESSED_LZMA;
+    } else if ((magic[0] == 0xff) && (magic[1] == 0x4c) &&
+	       (magic[2] == 0x5a) && (magic[3] == 0x4d) &&
+	       (magic[4] == 0x41) && (magic[5] == 0x00)) {
+	/* new style lzma with magic */
+	*compressed = COMPRESSED_LZMA;
     } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
 	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
 	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */
@@ -2116,6 +2124,8 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 	((magic[0] == 0037) && (magic[1] == 0235))	/* compress */
 	) {
 	*compressed = COMPRESSED_OTHER;
+    } else if (rpmFileHasSuffix(file, ".lzma")) {
+	*compressed = COMPRESSED_LZMA;
     }
 
     return rc;
