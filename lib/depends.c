@@ -816,8 +816,6 @@ static void markLoop(tsortInfo tsi, rpmte q)
 
 static inline const char * identifyDepend(rpmsenseFlags f)
 {
-    if (isLegacyPreReq(f))
-	return "PreReq:";
     f = _notpre(f);
     if (f & RPMSENSE_SCRIPT_PRE)
 	return "Requires(pre):";
