@@ -952,8 +952,6 @@ static void markLoop(/*@special@*/ tsortInfo tsi, rpmte q)
 static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 	/*@*/
 {
-    if (isLegacyPreReq(f))
-	return "PreReq:";
     f = _notpre(f);
     if (f & RPMSENSE_SCRIPT_PRE)
 	return "Requires(pre):";
