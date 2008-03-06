@@ -37,7 +37,7 @@ typedef off_t 		_libio_pos_t;
 
 /** \ingroup rpmio
  */
-typedef struct FDIO_s * FDIO_t;
+typedef const struct FDIO_s * FDIO_t;
 
 
 /** \ingroup rpmio

@@ -87,11 +87,11 @@ struct FDIO_s {
 };
 
 /* forward refs */
-static FDIO_t fdio;
-static FDIO_t fpio;
-static FDIO_t ufdio;
-static FDIO_t gzdio;
-static FDIO_t bzdio;
+static const FDIO_t fdio;
+static const FDIO_t fpio;
+static const FDIO_t ufdio;
+static const FDIO_t gzdio;
+static const FDIO_t bzdio;
 
 /**
  */
@@ -406,11 +406,11 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
     return fd;
 }
 
-static struct FDIO_s fdio_s = {
+static const struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
   fdOpen, NULL, fdGetFp, NULL
 };
-static FDIO_t fdio = &fdio_s ;
+static const FDIO_t fdio = &fdio_s ;
 
 int fdWritable(FD_t fd, int secs)
 {
@@ -855,11 +855,11 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
     return fd;
 }
 
-static struct FDIO_s ufdio_s = {
+static const struct FDIO_s ufdio_s = {
   ufdRead, ufdWrite, ufdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL
 };
-static FDIO_t ufdio = &ufdio_s ;
+static const FDIO_t ufdio = &ufdio_s ;
 
 ssize_t timedRead(FD_t fd, void * bufptr, size_t length)
 {
@@ -1061,11 +1061,11 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     return rc;
 }
 
-static struct FDIO_s gzdio_s = {
+static const struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, gzdOpen, gzdFileno, gzdFlush
 };
-static FDIO_t gzdio = &gzdio_s ;
+static const FDIO_t gzdio = &gzdio_s ;
 
 #endif	/* HAVE_ZLIB_H */
 
@@ -1224,11 +1224,11 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     return rc;
 }
 
-static struct FDIO_s bzdio_s = {
+static const struct FDIO_s bzdio_s = {
   bzdRead, bzdWrite, bzdSeek, bzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush
 };
-static FDIO_t bzdio = &bzdio_s ;
+static const FDIO_t bzdio = &bzdio_s ;
 
 #endif	/* HAVE_BZLIB_H */
 
@@ -1681,7 +1681,7 @@ rpmop fdOp(FD_t fd, fdOpX opx)
 
 int rpmioSlurp(const char * fn, uint8_t ** bp, ssize_t * blenp)
 {
-    static ssize_t blenmax = (32 * BUFSIZ);
+    static const ssize_t blenmax = (32 * BUFSIZ);
     ssize_t blen = 0;
     uint8_t * b = NULL;
     ssize_t size;
@@ -1729,8 +1729,8 @@ exit:
     return rc;
 }
 
-static struct FDIO_s fpio_s = {
+static const struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL
 };
-static FDIO_t fpio = &fpio_s ;
+static const FDIO_t fpio = &fpio_s ;
