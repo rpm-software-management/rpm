@@ -418,9 +418,9 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
     /* Fix the owner, group, and permissions of the setup build tree */
-    {	static const char *fixmacs[] =
+    {	static const char * const fixmacs[] =
 		{ "%{_fixowner}", "%{_fixgroup}", "%{_fixperms}", NULL };
-	const char ** fm;
+	const char * const * fm;
 
 	for (fm = fixmacs; *fm; fm++) {
 	    char * fix = rpmExpand(*fm, " .", NULL);

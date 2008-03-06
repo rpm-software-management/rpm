@@ -251,15 +251,15 @@ static void timeCheck(int tc, Header h)
 
 /**
  */
-typedef struct VFA {
-const char * attribute;
+typedef const struct VFA {
+    const char const * attribute;
     int not;
     int	flag;
 } VFA_t;
 
 /**
  */
-VFA_t verifyAttrs[] = {
+VFA_t const verifyAttrs[] = {
     { "md5",	0,	RPMVERIFY_MD5 },
     { "size",	0,	RPMVERIFY_FILESIZE },
     { "link",	0,	RPMVERIFY_LINKTO },

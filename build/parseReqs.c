@@ -15,7 +15,7 @@
 static struct ReqComp {
 const char * token;
     rpmsenseFlags sense;
-} ReqComparisons[] = {
+} const ReqComparisons[] = {
     { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
     { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
     { "<", RPMSENSE_LESS},
@@ -124,7 +124,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 
 	/* Check for possible logical operator */
 	if (ve > v) {
-	  struct ReqComp *rc;
+	  const struct ReqComp *rc;
 	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
 	    if ((ve-v) != strlen(rc->token) || strncmp(v, rc->token, (ve-v)))
 		continue;

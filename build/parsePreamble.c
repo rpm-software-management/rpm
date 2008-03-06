@@ -16,7 +16,7 @@
 
 /**
  */
-static rpmTag copyTagsDuringParse[] = {
+static const rpmTag copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -39,7 +39,7 @@ static rpmTag copyTagsDuringParse[] = {
 
 /**
  */
-static rpmTag requiredTags[] = {
+static const rpmTag requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -250,7 +250,7 @@ static int checkForRequired(Header h, const char * NVR)
 	/* LCL: parse error here with modifies */
 {
     int res = RPMRC_OK;
-    rpmTag * p;
+    const rpmTag * p;
 
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
