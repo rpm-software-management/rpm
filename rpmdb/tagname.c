@@ -93,7 +93,7 @@ static struct headerTagIndices_s _rpmTags = {
     NULL, 0, tagCmpValue, _tagName, _tagType,
 };
 
-headerTagIndices rpmTags = &_rpmTags;
+headerTagIndices const rpmTags = &_rpmTags;
 
 static const char * _tagName(rpmTag tag)
 {

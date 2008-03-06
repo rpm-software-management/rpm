@@ -98,7 +98,7 @@ extern const struct headerSprintfExtension_s headerDefaultFormats[];
 /** \ingroup rpmtag
  * Automatically generated table of tag name/value pairs.
  */
-extern const struct headerTagTableEntry_s * rpmTagTable;
+extern const struct headerTagTableEntry_s * const rpmTagTable;
 
 /** \ingroup rpmtag
  * Number of entries in rpmTagTable.
@@ -107,7 +107,7 @@ extern const int rpmTagTableSize;
 
 /** \ingroup rpmtag
  */
-extern headerTagIndices rpmTags;
+extern headerTagIndices const rpmTags;
 
 /** \ingroup header
  * Table of query format extensions.

@@ -47,7 +47,7 @@ tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmtag.h
 	@echo '	{ NULL, 0, 0 }' >> $@
 	@echo '};' >> $@
 	@echo '' >> $@
-	@echo 'const struct headerTagTableEntry_s * rpmTagTable = rpmTagTbl;' >> $@
+	@echo 'const struct headerTagTableEntry_s * const rpmTagTable = rpmTagTbl;' >> $@
 	@echo '' >> $@
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
 BUILT_SOURCES = tagtbl.c
