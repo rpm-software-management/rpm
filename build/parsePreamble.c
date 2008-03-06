@@ -107,14 +107,14 @@ static inline int parseYesNo(const char * s)
 	    ? 0 : 1);
 }
 
-typedef struct tokenBits_s {
+typedef const struct tokenBits_s {
     const char * name;
     rpmsenseFlags bits;
 } * tokenBits;
 
 /**
  */
-static struct tokenBits_s installScriptBits[] = {
+static struct tokenBits_s const installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
     { "prereq",		RPMSENSE_PREREQ },
     { "preun",		RPMSENSE_SCRIPT_PREUN },
@@ -128,7 +128,7 @@ static struct tokenBits_s installScriptBits[] = {
 
 /**
  */
-static struct tokenBits_s buildScriptBits[] = {
+static const struct tokenBits_s const buildScriptBits[] = {
     { "prep",		RPMSENSE_SCRIPT_PREP },
     { "build",		RPMSENSE_SCRIPT_BUILD },
     { "install",	RPMSENSE_SCRIPT_INSTALL },
@@ -296,7 +296,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 static struct optionalTag {
     rpmTag	ot_tag;
     const char * ot_mac;
-} optionalTags[] = {
+} const optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
@@ -308,7 +308,7 @@ static struct optionalTag {
  */
 static void fillOutMainPackage(Header h)
 {
-    struct optionalTag *ot;
+    const struct optionalTag *ot;
 
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
 	if (!headerIsEntry(h, ot->ot_tag)) {
@@ -683,6 +683,7 @@ typedef struct PreambleRec_s {
     const char * token;
 } * PreambleRec;
 
+/* XXX FIXME: strlen for these is calculated at runtime, preventing const */
 static struct PreambleRec_s preambleList[] = {
     {RPMTAG_NAME,		0, 0, 0, "name"},
     {RPMTAG_VERSION,		0, 0, 0, "version"},

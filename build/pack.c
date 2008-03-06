@@ -593,7 +593,7 @@ exit:
     return rc;
 }
 
-static rpmTag copyTags[] = {
+static const rpmTag copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,

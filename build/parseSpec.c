@@ -17,8 +17,7 @@
 #define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
 
-/**
- */
+/* XXX FIXME: strlen for these is calculated at runtime, preventing const */
 static struct PartRec {
     int part;
     size_t len;
