@@ -77,7 +77,7 @@ typedef	enum FCOLOR_e FCOLOR_t;
 
 /** \ingroup rpmfc
  */
-typedef struct rpmfcTokens_s * rpmfcToken;
+typedef const struct rpmfcTokens_s * rpmfcToken;
 
 /** \ingroup rpmfc
  * Return helper output.

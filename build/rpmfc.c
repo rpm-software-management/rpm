@@ -438,7 +438,7 @@ assert(EVR != NULL);
 
 /**
  */
-static struct rpmfcTokens_s rpmfcTokens[] = {
+static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
 
   { " shared object",		RPMFC_LIBRARY },
@@ -1098,14 +1098,14 @@ exit:
 #endif
 }
 
-typedef struct rpmfcApplyTbl_s {
+typedef const struct rpmfcApplyTbl_s {
     int (*func) (rpmfc fc);
     int colormask;
 } * rpmfcApplyTbl;
 
 /**
  */
-static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
+static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PYTHON) },
