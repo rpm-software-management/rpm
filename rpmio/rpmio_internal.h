@@ -216,7 +216,7 @@ void fdstat_exit(FD_t fd, int opx, ssize_t rc)
 static inline
 void fdstat_print(FD_t fd, const char * msg, FILE * fp)
 {
-    static int usec_scale = (1000*1000);
+    static const int usec_scale = (1000*1000);
     int opx;
 
     if (fd == NULL || fd->stats == NULL) return;

@@ -66,9 +66,9 @@ urlinfo urlFree(urlinfo u)
 /**
  */
 static struct urlstring {
-    const char * leadin;
+    const char const * leadin;
     urltype	ret;
-} urlstrings[] = {
+} const urlstrings[] = {
     { "file://",	URL_IS_PATH },
     { "ftp://",		URL_IS_FTP },
     { "hkp://",		URL_IS_HKP },
@@ -80,7 +80,7 @@ static struct urlstring {
 
 urltype urlIsURL(const char * url)
 {
-    struct urlstring *us;
+    const struct urlstring *us;
 
     if (url && *url) {
 	for (us = urlstrings; us->leadin != NULL; us++) {

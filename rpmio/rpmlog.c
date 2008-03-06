@@ -143,7 +143,7 @@ FILE * rpmlogSetFile(FILE * fp)
     return ofp;
 }
 
-static const char *rpmlogMsgPrefix[] = {
+static const char * const rpmlogMsgPrefix[] = {
     N_("fatal error: "),/*!< RPMLOG_EMERG */
     N_("fatal error: "),/*!< RPMLOG_ALERT */
     N_("fatal error: "),/*!< RPMLOG_CRIT */
