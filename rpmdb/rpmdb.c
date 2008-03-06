@@ -207,7 +207,7 @@ extern struct _dbiVec sqlitevec;
 #define SQLITEvec	NULL
 #endif
 
-static struct _dbiVec *mydbvecs[] = {
+static struct _dbiVec * const mydbvecs[] = {
     DB1vec, DB1vec, DB2vec, DB3vec, SQLITEvec, NULL
 };
 
@@ -700,7 +700,7 @@ static int unblockSignals(rpmdb db, sigset_t * oldMask)
 #define _DB_MAJOR	-1
 #define	_DB_ERRPFX	"rpmdb"
 
-static struct rpmdb_s dbTemplate = {
+static struct rpmdb_s const dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
     _DB_MAJOR,	_DB_ERRPFX
 };

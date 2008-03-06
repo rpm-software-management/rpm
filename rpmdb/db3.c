@@ -764,7 +764,7 @@ exit:
 
 static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
-    extern struct _dbiVec db3vec;
+    extern const struct _dbiVec db3vec;
     char * urlfn = NULL;
     const char * root;
     const char * home;
@@ -1190,7 +1190,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
 /** \ingroup db3
  */
-struct _dbiVec db3vec = {
+const struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3associate, db3join,
     db3copen, db3cclose, db3cdup, db3cdel, db3cget, db3cpget, db3cput, db3ccount,

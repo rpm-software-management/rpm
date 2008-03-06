@@ -261,7 +261,7 @@ dbiIndex db3Free(dbiIndex dbi)
 }
 
 /** @todo Set a reasonable "last gasp" default db config. */
-static const char *db3_config_default =
+static const char * const db3_config_default =
     "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
 
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)

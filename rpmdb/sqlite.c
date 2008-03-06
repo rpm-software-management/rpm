@@ -90,7 +90,7 @@ union _dbswap {
     _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
   }
 
-static unsigned int endian = 0x11223344;
+static const unsigned int endian = 0x11223344;
 
 static char * sqlCwd = NULL;
 static int sqlInRoot = 0;
@@ -768,7 +768,7 @@ leaveChroot(dbi);
  */
 static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
-    extern struct _dbiVec sqlitevec;
+    extern const struct _dbiVec sqlitevec;
    
     char * urlfn = NULL;
     const char * root;
@@ -1373,7 +1373,7 @@ leaveChroot(dbi);
 /* cursor_open, cursor_close, cursor_dup, cursor_delete, cursor_get, */
 /* cursor_pget?, cursor_put, cursor_count */
 /* db_bytewapped, stat */
-struct _dbiVec sqlitevec = {
+const struct _dbiVec sqlitevec = {
     0, 0, 0, 
     sql_open, 
     sql_close,
