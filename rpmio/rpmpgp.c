@@ -404,12 +404,12 @@ int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype)
     return 0;
 }
 
-static const char * pgpSigRSA[] = {
+static const char * const pgpSigRSA[] = {
     " m**d =",
     NULL,
 };
 
-static const char * pgpSigDSA[] = {
+static const char * const pgpSigDSA[] = {
     "    r =",
     "    s =",
     NULL,
@@ -595,14 +595,14 @@ fprintf(stderr, " unhash[%zu] -- %s\n", plen, pgpHexStr(p, plen));
     return rc;
 }
 
-static const char * pgpPublicRSA[] = {
+static const char * const pgpPublicRSA[] = {
     "    n =",
     "    e =",
     NULL,
 };
 
 #ifdef NOTYET
-static const char * pgpSecretRSA[] = {
+static const char * const pgpSecretRSA[] = {
     "    d =",
     "    p =",
     "    q =",
@@ -611,7 +611,7 @@ static const char * pgpSecretRSA[] = {
 };
 #endif
 
-static const char * pgpPublicDSA[] = {
+static const char * const pgpPublicDSA[] = {
     "    p =",
     "    q =",
     "    g =",
@@ -620,13 +620,13 @@ static const char * pgpPublicDSA[] = {
 };
 
 #ifdef NOTYET
-static const char * pgpSecretDSA[] = {
+static const char * const pgpSecretDSA[] = {
     "    x =",
     NULL,
 };
 #endif
 
-static const char * pgpPublicELGAMAL[] = {
+static const char * const pgpPublicELGAMAL[] = {
     "    p =",
     "    g =",
     "    y =",
@@ -634,7 +634,7 @@ static const char * pgpPublicELGAMAL[] = {
 };
 
 #ifdef NOTYET
-static const char * pgpSecretELGAMAL[] = {
+static const char * const pgpSecretELGAMAL[] = {
     "    x =",
     NULL,
 };

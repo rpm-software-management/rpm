@@ -1036,7 +1036,7 @@ size_t pgpMpiLen(const uint8_t *p)
 static inline
 char * pgpHexCvt(char *t, const uint8_t *s, size_t nbytes)
 {
-    static char hex[] = "0123456789abcdef";
+    static char const hex[] = "0123456789abcdef";
     while (nbytes-- > 0) {
 	size_t i;
 	i = *s++;
