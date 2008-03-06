@@ -26,14 +26,14 @@ int _hdr_debug = 0;
 
 /** \ingroup header
  */
-static unsigned char header_magic[8] = {
+static unsigned char const header_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
 /** \ingroup header
  * Alignment needed for header data types.
  */
-static int typeAlign[16] =  {
+static const int typeAlign[16] =  {
     1,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
     1,	/*!< RPM_INT8_TYPE */
@@ -55,7 +55,7 @@ static int typeAlign[16] =  {
 /** \ingroup header
  * Size of header data types.
  */
-static int typeSizes[16] =  { 
+static const int typeSizes[16] =  { 
     0,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
     1,	/*!< RPM_INT8_TYPE */
@@ -77,7 +77,7 @@ static int typeSizes[16] =  {
 /** \ingroup header
  * Maximum no. of bytes permitted in a header.
  */
-static size_t headerMaxbytes = (32*1024*1024);
+static const size_t headerMaxbytes = (32*1024*1024);
 
 /**
  * Sanity check on no. of tags.

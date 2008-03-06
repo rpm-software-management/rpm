@@ -170,7 +170,7 @@ void headerDump(Header h, FILE *f, int flags,
 
 char * bin2hex(const char *data, size_t size)
 {
-    static char hex[] = "0123456789abcdef";
+    static char const hex[] = "0123456789abcdef";
     const char * s = data;
     char * t, * val;
     val = t = xmalloc(size * 2 + 1);
