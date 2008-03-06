@@ -419,7 +419,8 @@ char * headerSprintf(Header h, const char * fmt,
  * @param headerTo	destination header
  * @param tagstocopy	array of tags that are copied
  */
-void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy);
+void headerCopyTags(Header headerFrom, Header headerTo, 
+		    const rpmTag * tagstocopy);
 
 /** \ingroup header
  * Destroy header tag iterator.

@@ -3043,9 +3043,10 @@ const struct headerSprintfExtension_s headerDefaultFormats[] = {
     { HEADER_EXT_LAST, NULL, { NULL } }
 };
 
-void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
+void headerCopyTags(Header headerFrom, Header headerTo, 
+		    const rpmTag * tagstocopy)
 {
-    rpmTag * p;
+    const rpmTag * p;
 
     if (headerFrom == headerTo)
 	return;
