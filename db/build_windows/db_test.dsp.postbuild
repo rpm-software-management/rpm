@@ -1,5 +1,0 @@
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-PostBuild_Desc=Copy built executable files.
-PostBuild_Cmds=copy $(OUTDIR)\*.exe .	copy $(OUTDIR)\*.dll .
-# End Special Build Tool

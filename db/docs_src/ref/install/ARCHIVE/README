@@ -1,8 +1,0 @@
-Database files to use to test the magic files.
-__B == btree
-__H == hash
-	.BE == big-endian
-	.LE == little-endian
-		.185 == DB 1.85
-		.186 == DB 1.86
-		.2 == DB 2.X
