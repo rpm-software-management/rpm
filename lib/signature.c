@@ -124,7 +124,8 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_off_t data
     return RPMRC_OK;
 }
 
-static unsigned char header_magic[8] = {
+/* XXX sigh yet another duplicate.. */
+static unsigned char const header_magic[8] = {
     0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 

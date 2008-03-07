@@ -15,7 +15,7 @@
 
 #include "debug.h"
 
-static unsigned char lead_magic[] = {
+static unsigned char const lead_magic[] = {
     RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
 };
 

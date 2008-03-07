@@ -28,14 +28,15 @@ static unsigned int nkeyids = 0;
 static unsigned int nextkeyid  = 0;
 static unsigned int * keyids;
 
-static unsigned char header_magic[8] = {
+/* XXX FIXME: these are doubled here and header.c and .. */
+static unsigned char const header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
 /**
  * Alignment needs (and sizeof scalars types) for internal rpm data types.
  */
-static int typeAlign[16] =  {
+static int const typeAlign[16] =  {
     1,	/*!< RPM_NULL_TYPE */
     1,	/*!< RPM_CHAR_TYPE */
     1,	/*!< RPM_INT8_TYPE */
