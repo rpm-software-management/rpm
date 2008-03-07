@@ -5,7 +5,7 @@
 #include "system.h"
 
 /* just to put a marker in librpm.a */
-const char * RPMVERSION = VERSION;
+const char * const RPMVERSION = VERSION;
 
 #include <rpm/rpmurl.h>
 #include <rpm/rpmmacro.h>	/* XXX for rpmGetPath */

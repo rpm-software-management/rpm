@@ -23,13 +23,13 @@ extern struct rpmMacroContext_s * rpmGlobalMacroContext;
 
 extern struct rpmMacroContext_s * rpmCLIMacroContext;
 
-extern const char * RPMVERSION;
+extern const char * const RPMVERSION;
 
-extern const char * rpmNAME;
+extern const char * const rpmNAME;
 
-extern const char * rpmEVR;
+extern const char * const rpmEVR;
 
-extern int rpmFLAGS;
+extern const int rpmFLAGS;
 
 /** \ingroup header
  * Translate and merge legacy signature tags into header.

@@ -34,11 +34,11 @@ struct orderListIndex_s {
 
 static int _cacheDependsRC = 1;
 
-const char *rpmNAME = PACKAGE;
+const char * const rpmNAME = PACKAGE;
 
-const char *rpmEVR = VERSION;
+const char * const rpmEVR = VERSION;
 
-int rpmFLAGS = RPMSENSE_EQUAL;
+const int rpmFLAGS = RPMSENSE_EQUAL;
 
 /* rpmlib provides */
 static rpmds rpmlibP = NULL;
