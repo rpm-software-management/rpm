@@ -353,7 +353,7 @@ if (fileURL[0] == '=') {
 	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
 	}
 	ts->suggests = _free(ts->suggests);
-	rpmlog(RPMLOG_DEBUG, _("Adding goal: %s\n"), fileURL);
+	rpmlog(RPMLOG_DEBUG, "Adding goal: %s\n", fileURL);
 	eiu->pkgURL[eiu->pkgx] = fileURL;
 	fileURL = NULL;
 	eiu->pkgx++;
@@ -386,7 +386,7 @@ if (fileURL[0] == '=') {
 
 	    /* XXX undefined %{name}/%{version}/%{release} here */
 	    /* XXX %{_tmpdir} does not exist */
-	    rpmlog(RPMLOG_DEBUG, _(" ... as %s\n"), tfn);
+	    rpmlog(RPMLOG_DEBUG, " ... as %s\n", tfn);
 	    rc = urlGetFile(fileURL, tfn);
 	    if (rc < 0) {
 		rpmlog(RPMLOG_ERR,
@@ -464,7 +464,7 @@ if (fileURL[0] == '=') {
 	eiu->isSource = headerIsSource(eiu->h);
 
 	if (eiu->isSource) {
-	    rpmlog(RPMLOG_DEBUG, _("\tadded source package [%d]\n"),
+	    rpmlog(RPMLOG_DEBUG, "\tadded source package [%d]\n",
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
 				(eiu->numSRPMS + 2) * sizeof(*eiu->sourceURL));
@@ -531,7 +531,7 @@ if (fileURL[0] == '=') {
 
 	switch(rc) {
 	case 0:
-	    rpmlog(RPMLOG_DEBUG, _("\tadded binary package [%d]\n"),
+	    rpmlog(RPMLOG_DEBUG, "\tadded binary package [%d]\n",
 			eiu->numRPMS);
 	    break;
 	case 1:
@@ -589,7 +589,7 @@ maybe_manifest:
 	break;
     }
 
-    rpmlog(RPMLOG_DEBUG, _("found %d source and %d binary packages\n"),
+    rpmlog(RPMLOG_DEBUG, "found %d source and %d binary packages\n",
 		eiu->numSRPMS, eiu->numRPMS);
 
     if (eiu->numFailed) goto exit;
@@ -626,7 +626,7 @@ maybe_manifest:
 
 	rpmcliPackagesTotal += eiu->numSRPMS;
 
-	rpmlog(RPMLOG_DEBUG, _("installing binary packages\n"));
+	rpmlog(RPMLOG_DEBUG, "installing binary packages\n");
 
 	/* Drop added/available package indices and dependency sets. */
 	rpmtsClean(ts);

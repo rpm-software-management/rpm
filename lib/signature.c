@@ -115,11 +115,11 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_off_t data
 	return RPMRC_FAIL;
 
     rpmlog(RPMLOG_DEBUG,
-	_("Expected size: %12zd = lead(%d)+sigs(%zd)+pad(%zd)+data(%d)\n"),
+	"Expected size: %12zd = lead(%d)+sigs(%zd)+pad(%zd)+data(%d)\n",
 		RPMLEAD_SIZE+siglen+pad+datalen,
 		RPMLEAD_SIZE, siglen, pad, datalen);
     rpmlog(RPMLOG_DEBUG,
-	_("  Actual size: %12d\n"), (int)st.st_size);
+	"  Actual size: %12d\n", (int)st.st_size);
 
     return RPMRC_OK;
 }
@@ -321,7 +321,7 @@ int rpmWriteSignature(FD_t fd, Header sigh)
 	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
 	    rc = 1;
     }
-    rpmlog(RPMLOG_DEBUG, _("Signature: size(%d)+pad(%d)\n"), sigSize, pad);
+    rpmlog(RPMLOG_DEBUG, "Signature: size(%d)+pad(%d)\n", sigSize, pad);
     return rc;
 }
 
@@ -432,7 +432,7 @@ static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
     }
 
     *pktlenp = st.st_size;
-    rpmlog(RPMLOG_DEBUG, _("PGP sig size: %zd\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, "PGP sig size: %zd\n", *pktlenp);
     *pktp = xmalloc(*pktlenp);
 
     {	FD_t fd;
@@ -451,7 +451,7 @@ static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
 	}
     }
 
-    rpmlog(RPMLOG_DEBUG, _("Got %zd bytes of PGP sig\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, "Got %zd bytes of PGP sig\n", *pktlenp);
 
 #ifdef	NOTYET
     /* Parse the signature, change signature tag as appropriate. */
@@ -543,7 +543,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     }
 
     *pktlenp = st.st_size;
-    rpmlog(RPMLOG_DEBUG, _("GPG sig size: %zd\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, "GPG sig size: %zd\n", *pktlenp);
     *pktp = xmalloc(*pktlenp);
 
     {	FD_t fd;
@@ -562,7 +562,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	}
     }
 
-    rpmlog(RPMLOG_DEBUG, _("Got %zd bytes of GPG sig\n"), *pktlenp);
+    rpmlog(RPMLOG_DEBUG, "Got %zd bytes of GPG sig\n", *pktlenp);
 
     /* Parse the signature, change signature tag as appropriate. */
     dig = pgpNewDig();

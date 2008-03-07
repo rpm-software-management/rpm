@@ -240,7 +240,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
     default:
 	_dbapi = _dbapi_wanted;
 	if (_dbapi < 0 || _dbapi >= 5 || mydbvecs[_dbapi] == NULL) {
-            rpmlog(RPMLOG_DEBUG, "dbiOpen: _dbiapi failed\n");
+            rpmlog(RPMLOG_ERR, _("dbiOpen: dbapi %d not available\n"), _dbapi);
 	    return NULL;
 	}
 	errno = 0;
@@ -1603,7 +1603,7 @@ static int miregexec(miRE mire, const char * val)
 	    char msg[256];
 	    (void) regerror(rc, mire->preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
-	    rpmlog(RPMLOG_ERR, "%s: regexec failed: %s\n",
+	    rpmlog(RPMLOG_ERR, _("%s: regexec failed: %s\n"),
 			mire->pattern, msg);
 	    rc = -1;
 	}
@@ -1784,7 +1784,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	    char msg[256];
 	    (void) regerror(rc, preg, msg, sizeof(msg)-1);
 	    msg[sizeof(msg)-1] = '\0';
-	    rpmlog(RPMLOG_ERR, "%s: regcomp failed: %s\n", allpat, msg);
+	    rpmlog(RPMLOG_ERR, _("%s: regcomp failed: %s\n"), allpat, msg);
 	}
 	break;
     case RPMMIRE_GLOB:
@@ -2600,11 +2600,11 @@ if (dbiByteSwapped(dbi) == 1)
 		if (!printed) {
 		    if (rpmcnt == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
-				_("removing \"%s\" from %s index.\n"),
+				"removing \"%s\" from %s index.\n",
 				(char *)key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
-				_("removing %d entries from %s index.\n"),
+				"removing %d entries from %s index.\n",
 				rpmcnt, rpmTagGetName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
@@ -3012,11 +3012,11 @@ data->size = 0;
 		if (!printed) {
 		    if (rpmcnt == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
-				_("adding \"%s\" to %s index.\n"),
+				"adding \"%s\" to %s index.\n",
 				(char *)key->data, rpmTagGetName(dbi->dbi_rpmtag));
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
-				_("adding %d entries to %s index.\n"),
+				"adding %d entries to %s index.\n",
 				rpmcnt, rpmTagGetName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
@@ -3408,7 +3408,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	struct stat st;
 	if (!stat(mdb1, &st) && S_ISREG(st.st_mode) && !unlink(mdb1))
 	    rpmlog(RPMLOG_DEBUG,
-		_("removing %s after successful db3 rebuild.\n"), mdb1);
+		"removing %s after successful db3 rebuild.\n", mdb1);
     }
 #endif
     return rc;
@@ -3439,7 +3439,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     tfn = rpmGetPath("%{?_dbpath}", NULL);
     if (!(tfn && tfn[0] != '\0'))
     {
-	rpmlog(RPMLOG_DEBUG, _("no dbpath has been set"));
+	rpmlog(RPMLOG_ERR, _("no dbpath has been set"));
 	rc = 1;
 	goto exit;
     }
@@ -3465,7 +3465,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	newdbpath += strlen(prefix) - 1;
     tfn = _free(tfn);
 
-    rpmlog(RPMLOG_DEBUG, _("rebuilding database %s into %s\n"),
+    rpmlog(RPMLOG_DEBUG, "rebuilding database %s into %s\n",
 	rootdbpath, newrootdbpath);
 
     if (!access(newrootdbpath, F_OK)) {
@@ -3475,9 +3475,9 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     }
 
-    rpmlog(RPMLOG_DEBUG, _("creating directory %s\n"), newrootdbpath);
+    rpmlog(RPMLOG_DEBUG, "creating directory %s\n", newrootdbpath);
     if (mkdir(newrootdbpath, 0755)) {
-	rpmlog(RPMLOG_ERR, _("creating directory %s: %s\n"),
+	rpmlog(RPMLOG_ERR, _("failed to create directory %s: %s\n"),
 	      newrootdbpath, strerror(errno));
 	rc = 1;
 	goto exit;
@@ -3486,7 +3486,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     _rebuildinprogress = 0;
 
-    rpmlog(RPMLOG_DEBUG, _("opening old database with dbapi %d\n"),
+    rpmlog(RPMLOG_DEBUG, "opening old database with dbapi %d\n",
 		_dbapi);
     if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
@@ -3495,7 +3495,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     _dbapi = olddb->db_api;
     _rebuildinprogress = 1;
-    rpmlog(RPMLOG_DEBUG, _("opening new database with dbapi %d\n"),
+    rpmlog(RPMLOG_DEBUG, "opening new database with dbapi %d\n",
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
     if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
@@ -3596,7 +3596,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
 exit:
     if (removedir && !(rc == 0 && nocleanup)) {
-	rpmlog(RPMLOG_DEBUG, _("removing directory %s\n"), newrootdbpath);
+	rpmlog(RPMLOG_DEBUG, "removing directory %s\n", newrootdbpath);
 	if (rmdir(newrootdbpath))
 	    rpmlog(RPMLOG_ERR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));

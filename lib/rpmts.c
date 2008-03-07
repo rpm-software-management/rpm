@@ -701,7 +701,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 	    if (h != NULL &&
 	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
 	    {
-		rpmlog(RPMLOG_DEBUG, _("Adding: %s\n"), str);
+		rpmlog(RPMLOG_DEBUG, "Adding: %s\n", str);
 		rc = -1;
 		/* XXX str memory leak */
 		break;
@@ -713,7 +713,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
 	goto exit;
     }
 
-    rpmlog(RPMLOG_DEBUG, _("Suggesting: %s\n"), str);
+    rpmlog(RPMLOG_DEBUG, "Suggesting: %s\n", str);
     /* If suggestion is already present, don't bother. */
     if (ts->suggests != NULL && ts->nsuggests > 0) {
 	if (bsearch(&str, ts->suggests, ts->nsuggests,
@@ -1229,9 +1229,9 @@ int rpmtsInitDSI(const rpmts ts)
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
 	return 0;
 
-    rpmlog(RPMLOG_DEBUG, _("mounted filesystems:\n"));
+    rpmlog(RPMLOG_DEBUG, "mounted filesystems:\n");
     rpmlog(RPMLOG_DEBUG,
-	_("    i        dev    bsize       bavail       iavail mount point\n"));
+	"    i        dev    bsize       bavail       iavail mount point\n");
 
     rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
     if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
@@ -1288,7 +1288,7 @@ int rpmtsInitDSI(const rpmts ts)
 	/* XXX assigning negative value to unsigned type */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
-	rpmlog(RPMLOG_DEBUG, _("%5d 0x%08x %8u %12ld %12ld %s\n"),
+	rpmlog(RPMLOG_DEBUG, "%5d 0x%08x %8u %12ld %12ld %s\n",
 		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
 		(signed long) dsi->bavail, (signed long) dsi->iavail,
 		ts->filesystems[i]);
@@ -1616,12 +1616,12 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
     rpmRC      rc = RPMRC_OK; /* Assume success */
     rpmtsScoreEntry se;
 
-    rpmlog(RPMLOG_DEBUG, _("Creating transaction score board(%p, %p)\n"),
+    rpmlog(RPMLOG_DEBUG, "Creating transaction score board(%p, %p)\n",
 	runningTS, rollbackTS); 
 
     /* Allocate space for score board */
     score = xcalloc(1, sizeof(*score));
-    rpmlog(RPMLOG_DEBUG, _("\tScore board address:  %p\n"), score);
+    rpmlog(RPMLOG_DEBUG, "\tScore board address:  %p\n", score);
 
     /* 
      * Determine the maximum size needed for the entry list.
@@ -1631,7 +1631,7 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
      *      but for now it will work.
      */
     tranElements  = rpmtsNElements(runningTS);
-    rpmlog(RPMLOG_DEBUG, _("\tAllocating space for %d entries\n"), tranElements);
+    rpmlog(RPMLOG_DEBUG, "\tAllocating space for %d entries\n", tranElements);
     score->scores = xcalloc(tranElements, sizeof(score->scores));
 
     /* Initialize score entry count */
@@ -1658,10 +1658,10 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
 	/* If we did not find the entry then allocate space for it */
 	if (!found) {
 /* XXX p->fi->te undefined. */
-    	    rpmlog(RPMLOG_DEBUG, _("\tAdding entry for %s to score board.\n"),
+    	    rpmlog(RPMLOG_DEBUG, "\tAdding entry for %s to score board.\n",
 		rpmteN(p));
     	    se = xcalloc(1, sizeof(*(*(score->scores))));
-    	    rpmlog(RPMLOG_DEBUG, _("\t\tEntry address:  %p\n"), se);
+    	    rpmlog(RPMLOG_DEBUG, "\t\tEntry address:  %p\n", se);
 	    se->N         = xstrdup(rpmteN(p));
 	    se->te_types  = rpmteType(p); 
 	    se->installed = 0;
@@ -1672,7 +1672,7 @@ rpmRC rpmtsScoreInit(rpmts runningTS, rpmts rollbackTS)
 	    /* We found this one, so just add the element type to the one 
 	     * already there.
 	     */
-    	    rpmlog(RPMLOG_DEBUG, _("\tUpdating entry for %s in score board.\n"),
+    	    rpmlog(RPMLOG_DEBUG, "\tUpdating entry for %s in score board.\n",
 		rpmteN(p));
 	    score->scores[i]->te_types |= rpmteType(p);
 	}
@@ -1697,7 +1697,7 @@ rpmtsScore rpmtsScoreFree(rpmtsScore score)
     rpmtsScoreEntry se = NULL;
     int i;
 
-    rpmlog(RPMLOG_DEBUG, _("May free Score board(%p)\n"), score);
+    rpmlog(RPMLOG_DEBUG, "May free Score board(%p)\n", score);
 
     /* If score is not initialized, then just return.
      * This is likely the case if autorollbacks are not enabled.
@@ -1712,7 +1712,7 @@ rpmtsScore rpmtsScoreFree(rpmtsScore score)
      */
     if (score->nrefs > 0) return NULL;
 
-    rpmlog(RPMLOG_DEBUG, _("\tRefcount is zero...will free\n"));
+    rpmlog(RPMLOG_DEBUG, "\tRefcount is zero...will free\n");
     /* No more references, lets clean up  */
     /* First deallocate the score entries */
     for(i = 0; i < score->entries; i++) {
@@ -1760,13 +1760,13 @@ rpmtsScoreEntry rpmtsScoreGetEntry(rpmtsScore score, const char *N)
     rpmtsScoreEntry se;
     rpmtsScoreEntry ret = NULL; /* Assume we don't find it */
 
-    rpmlog(RPMLOG_DEBUG, _("Looking in score board(%p) for %s\n"), score, N);
+    rpmlog(RPMLOG_DEBUG, "Looking in score board(%p) for %s\n", score, N);
 
     /* Try to find the entry in the score list */
     for(i = 0; i < score->entries; i++) {
 	se = score->scores[i]; 
  	if (strcmp(N, se->N) == 0) {
-    	    rpmlog(RPMLOG_DEBUG, _("\tFound entry at address:  %p\n"), se);
+    	    rpmlog(RPMLOG_DEBUG, "\tFound entry at address:  %p\n", se);
 	    ret = se;
 	    break;
 	}

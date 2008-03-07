@@ -341,7 +341,7 @@ addheader:
 		if (rpmVersionCompare(h, oh))
 #endif
 		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
-		rpmlog(RPMLOG_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
+		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		ohNEVRA = _free(ohNEVRA);
 	    }
@@ -1098,7 +1098,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
 
     /* Record all relations. */
-    rpmlog(RPMLOG_DEBUG, _("========== recording tsort relations\n"));
+    rpmlog(RPMLOG_DEBUG, "========== recording tsort relations\n");
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
@@ -1190,7 +1190,7 @@ int rpmtsOrder(rpmts ts)
     ts->ntrees = treex;
 
     /* T4. Scan for zeroes. */
-    rpmlog(RPMLOG_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n"));
+    rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n");
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
@@ -1281,7 +1281,7 @@ rescan:
 	    _printed++;
 	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
 	    rpmlog(RPMLOG_DEBUG,
-		_("========== successors only (%d bytes)\n"), (int)tsbytes);
+		"========== successors only (%d bytes)\n", (int)tsbytes);
 
 	    /* Relink the queue in presentation order. */
 	    tsi = rpmteTSI(q);
@@ -1389,7 +1389,7 @@ rescan:
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
 	if (nzaps && nrescans-- > 0) {
-	    rpmlog(RPMLOG_DEBUG, _("========== continuing tsort ...\n"));
+	    rpmlog(RPMLOG_DEBUG, "========== continuing tsort ...\n");
 	    goto rescan;
 	}
 

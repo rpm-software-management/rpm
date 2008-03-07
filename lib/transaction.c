@@ -841,7 +841,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 		continue;
 	    if (strncmp(fbn, bn, bnlen))
 		continue;
-	    rpmlog(RPMLOG_DEBUG, _("excluding directory %s\n"), dn);
+	    rpmlog(RPMLOG_DEBUG, "excluding directory %s\n", dn);
 	    fi->actions[i] = FA_SKIPNSTATE;
 	    break;
 	}
@@ -1024,7 +1024,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
     int xx;
 
     rpmlog(RPMLOG_DEBUG,
-	_("Getting repackaged header from transaction element\n"));
+	"Getting repackaged header from transaction element\n");
 
     /* Set header pointer to null if its not already */
     if (hdrp)
@@ -1049,15 +1049,15 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
     xx = snprintf(rp, nb, "%s/%s%s.rpm", _repackage_dir, name, globStr);
 
     /* Get the index of possible repackaged packages */
-    rpmlog(RPMLOG_DEBUG, _("\tLooking for %s...\n"), rp);
+    rpmlog(RPMLOG_DEBUG, "\tLooking for %s...\n", rp);
     rtids = IDTXglob(ts, rp, RPMTAG_REMOVETID);
     rp = _free(rp);
     if (rtids != NULL) {
-    	rpmlog(RPMLOG_DEBUG, _("\tMatches found.\n"));
+    	rpmlog(RPMLOG_DEBUG, "\tMatches found.\n");
 	rpIDT = rtids->idt;
 	nrids = rtids->nidt;
     } else {
-    	rpmlog(RPMLOG_DEBUG, _("\tNo matches found.\n"));
+    	rpmlog(RPMLOG_DEBUG, "\tNo matches found.\n");
 	goto exit;
     }
 
@@ -1069,7 +1069,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 	 * get out of here...the repackaged package was not found.
 	 */
 	if (rpIDT == NULL) {
-    	    rpmlog(RPMLOG_DEBUG, _("\tRepackaged package not found!.\n"));
+    	    rpmlog(RPMLOG_DEBUG, "\tRepackaged package not found!.\n");
 	    break;
 	}
 
@@ -1090,9 +1090,9 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 	 * would be found.
 	 * XXX:  Should Match NAC!
 	 */
-    	rpmlog(RPMLOG_DEBUG, _("\tREMOVETID matched INSTALLTID.\n"));
+    	rpmlog(RPMLOG_DEBUG, "\tREMOVETID matched INSTALLTID.\n");
 	if (headerGetEntry(rpIDT->h, RPMTAG_NAME, NULL, (rpm_data_t *) &rpname, NULL)) {
-    	    rpmlog(RPMLOG_DEBUG, _("\t\tName:  %s.\n"), rpname);
+    	    rpmlog(RPMLOG_DEBUG, "\t\tName:  %s.\n", rpname);
 	    if (!strcmp(name,rpname)) {
 		/* It matched we have a canidate */
 		h  = headerLink(rpIDT->h);
@@ -1114,7 +1114,7 @@ static rpmRC getRepackageHeaderFromTE(rpmts ts, rpmte te,
 
 exit:
     if (rc != RPMRC_NOTFOUND && h != NULL && hdrp != NULL) {
-    	rpmlog(RPMLOG_DEBUG, _("\tRepackaged Package was %s...\n"), rp);
+    	rpmlog(RPMLOG_DEBUG, "\tRepackaged Package was %s...\n", rp);
 	if (hdrp != NULL)
 	    *hdrp = headerLink(h);
 	if (fnp != NULL)
@@ -1153,7 +1153,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
     {   rpmdbMatchIterator mi;
 
 	rpmlog(RPMLOG_DEBUG,
-	    _("Adding install element to auto-rollback transaction.\n"));
+	    "Adding install element to auto-rollback transaction.\n");
 
 	/* Get the header for this package from the database
 	 * First get the database instance (the key).
@@ -1185,9 +1185,9 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	case RPMRC_OK:
 	    /* Add the install element, as we had a repackaged package */
 	    rpmlog(RPMLOG_DEBUG,
-		_("\tAdded repackaged package header: %s.\n"), rpn);
+		"\tAdded repackaged package header: %s.\n", rpn);
 	    rpmlog(RPMLOG_DEBUG,
-		_("\tAdded from install element %s.\n"), rpmteNEVRA(te));
+		"\tAdded from install element %s.\n", rpmteNEVRA(te));
 	    rc = rpmtsAddInstallElement(rollbackTransaction, headerLink(rph),
 		(fnpyKey) rpn, 1, te->relocs);
 	    break;
@@ -1196,7 +1196,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	    /* Add the header as an erase element, we did not
 	     * have a repackaged package
 	     */
-	    rpmlog(RPMLOG_DEBUG, _("\tAdded erase element.\n"));
+	    rpmlog(RPMLOG_DEBUG, "\tAdded erase element.\n");
 	    rpmlog(RPMLOG_DEBUG,
 		_("\tAdded from install element %s.\n"), rpmteNEVRA(te));
 	    rc = rpmtsAddEraseElement(rollbackTransaction, h, db_instance);
@@ -1212,7 +1212,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 
    case TR_REMOVED:
 	rpmlog(RPMLOG_DEBUG,
-	    _("Add erase element to auto-rollback transaction.\n"));
+	    "Add erase element to auto-rollback transaction.\n");
 	/* See if this element has already been added.
  	 * If so we want to do nothing.  Compare N's for match.
 	 * XXX:  Really should compare NAC's.
@@ -1220,8 +1220,8 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	pi = rpmtsiInit(rollbackTransaction);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	    if (!strcmp(rpmteN(p), rpmteN(te))) {
-	    	rpmlog(RPMLOG_DEBUG, _("\tFound existing upgrade element.\n"));
-	    	rpmlog(RPMLOG_DEBUG, _("\tNot adding erase element for %s.\n"),
+	    	rpmlog(RPMLOG_DEBUG, "\tFound existing upgrade element.\n");
+	    	rpmlog(RPMLOG_DEBUG, "\tNot adding erase element for %s.\n",
 			rpmteN(te));
 		rc = RPMRC_OK;	
 		pi = rpmtsiFree(pi);
@@ -1238,9 +1238,9 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	case RPMRC_OK:
 	    /* Add the install element */
 	    rpmlog(RPMLOG_DEBUG,
-		_("\tAdded repackaged package %s.\n"), rpn);
+		"\tAdded repackaged package %s.\n", rpn);
 	    rpmlog(RPMLOG_DEBUG,
-		_("\tAdded from erase element %s.\n"), rpmteNEVRA(te));
+		"\tAdded from erase element %s.\n", rpmteNEVRA(te));
 	    rc = rpmtsAddInstallElement(rollbackTransaction, rph,
 		(fnpyKey) rpn, 1, te->relocs);
 	    if (rc != RPMRC_OK)
@@ -1251,7 +1251,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 	case RPMRC_NOTFOUND:
 	    /* Just did not have a repackaged package */
 	    rpmlog(RPMLOG_DEBUG,
-		_("\tNo repackaged package...nothing to do.\n"));
+		"\tNo repackaged package...nothing to do.\n");
 	    rc = RPMRC_OK;
 	    break;
 
@@ -1391,7 +1391,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * - count files.
      */
 
-rpmlog(RPMLOG_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
+    rpmlog(RPMLOG_DEBUG, "sanity checking %d elements\n", rpmtsNElements(ts));
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
     pi = rpmtsiInit(ts);
@@ -1477,7 +1477,7 @@ rpmlog(RPMLOG_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
      	  || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
-	rpmlog(RPMLOG_DEBUG, _("running pre-transaction scripts\n"));
+	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    if ((fi = rpmtsiFi(pi)) == NULL)
@@ -1542,7 +1542,7 @@ assert(psm != NULL);
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-rpmlog(RPMLOG_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
+    rpmlog(RPMLOG_DEBUG, "computing %d file fingerprints\n", totalFileCount);
 
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
@@ -1618,7 +1618,7 @@ rpmlog(RPMLOG_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-rpmlog(RPMLOG_DEBUG, _("computing file dispositions\n"));
+    rpmlog(RPMLOG_DEBUG, "computing file dispositions\n");
     ps = rpmtsProblems(ts);
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1807,7 +1807,7 @@ rpmlog(RPMLOG_DEBUG, _("computing file dispositions\n"));
 	rpmVSFlags vsflags;
 
 	rpmlog(RPMLOG_DEBUG,
-	    _("Creating auto-rollback transaction\n"));
+	    "Creating auto-rollback transaction\n");
 
 	rollbackTransaction = rpmtsCreate();
 
@@ -2183,7 +2183,7 @@ assert(psm != NULL);
 	rollbackTransaction = rpmtsFree(rollbackTransaction);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	rpmlog(RPMLOG_DEBUG, _("running post-transaction scripts\n"));
+	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	    int haspostscript;

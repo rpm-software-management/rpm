@@ -196,7 +196,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	if (*arg != '/') {
 	    if (!getcwd(buf, BUFSIZ)) {
-		rpmlog(RPMLOG_ERR, "getcwd failed: %m\n");
+		rpmlog(RPMLOG_ERR, _("getcwd failed: %m\n"));
 		return 1;
 	    }
 	    strcat(buf, "/");
@@ -217,7 +217,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (*specFile != '/') {
 	char *s = alloca(BUFSIZ);
 	if (!getcwd(s, BUFSIZ)) {
-	    rpmlog(RPMLOG_ERR, "getcwd failed: %m\n");
+	    rpmlog(RPMLOG_ERR, _("getcwd failed: %m\n"));
 	    rc = 1;
 	    goto exit;
 	}

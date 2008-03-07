@@ -321,9 +321,9 @@ void * dnlInitIterator(const FSM_t fsm,
 		if (j == 0) {
 		    j = 1;
 		    rpmlog(RPMLOG_DEBUG,
-	_("========== Directories not explicitly included in package:\n"));
+	"========== Directories not explicitly included in package:\n");
 		}
-		rpmlog(RPMLOG_DEBUG, _("%10d %s\n"), i, fi->dnl[i]);
+		rpmlog(RPMLOG_DEBUG, "%10d %s\n", i, fi->dnl[i]);
 	    }
 	    if (j)
 		rpmlog(RPMLOG_DEBUG, "==========\n");
@@ -1192,11 +1192,11 @@ static int fsmMkdirs(FSM_t fsm)
 
 		    if (fsm->fcontext == NULL)
 			rpmlog(RPMLOG_DEBUG,
-			    _("%s directory created with perms %04o, no context.\n"),
+			    "%s directory created with perms %04o, no context.\n",
 			    fsm->path, (unsigned)(st->st_mode & 07777));
 		    else
 			rpmlog(RPMLOG_DEBUG,
-			    _("%s directory created with perms %04o, context %s.\n"),
+			    "%s directory created with perms %04o, context %s.\n",
 			    fsm->path, (unsigned)(st->st_mode & 07777),
 			    fsm->fcontext);
 		    fsm->fcontext = NULL;

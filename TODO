@@ -17,7 +17,6 @@ Janitorial work:
 - use mkstemp() instead of mktemp() everywhere
 - refactor those 800+ line monster functions into something more digestable
 - review, update included README, INSTALL etc docs
-- uninternationalize RPMMESS_DEBUG strings to ease translator work
 - macroize hardcoded directories like docDirs 
 - get rid of static "1024 entries is enough for everybody" buffers
 

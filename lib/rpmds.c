@@ -878,8 +878,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
 exit:
     if (_noisy_range_comparison_debug_message)
-    rpmlog(RPMLOG_DEBUG, _("  %s    A %s\tB %s\n"),
-	(result ? _("YES") : _("NO ")), aDepend, bDepend);
+    rpmlog(RPMLOG_DEBUG, "  %s    A %s\tB %s\n",
+	(result ? "YES" : "NO "), aDepend, bDepend);
     aDepend = _free(aDepend);
     bDepend = _free(bDepend);
     return result;
@@ -900,7 +900,7 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
     if (EVR == NULL) EVR = "?EVR?";
     if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
 
-    rpmlog(RPMLOG_DEBUG, _("package %s has unsatisfied %s: %s\n"),
+    rpmlog(RPMLOG_DEBUG, "package %s has unsatisfied %s: %s\n",
 	    pkgNEVR, ds->Type, DNEVR+2);
 
     switch ((unsigned)DNEVR[0]) {
