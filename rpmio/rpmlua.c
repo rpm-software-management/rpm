@@ -21,14 +21,6 @@
 
 #include "debug.h"
 
-#if !defined(HAVE_VSNPRINTF)
-static inline int vsnprintf(char * buf, int nb,
-			    const char * fmt, va_list ap)
-{
-    return vsprintf(buf, fmt, ap);
-}
-#endif
-
 #define INITSTATE(_lua, lua) \
     rpmlua lua = _lua ? _lua : \
 	    (globalLuaState ? globalLuaState : \

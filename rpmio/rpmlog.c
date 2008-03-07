@@ -162,14 +162,6 @@ const char * rpmlogLevelPrefix(rpmlogLvl pri)
     return prefix;
 }
 
-#if !defined(HAVE_VSNPRINTF)
-static inline int vsnprintf(char * buf, int nb,
-	const char * fmt, va_list ap)
-{
-    return vsprintf(buf, fmt, ap);
-}
-#endif
-
 /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void vrpmlog (unsigned code, const char *fmt, va_list ap)

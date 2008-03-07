@@ -207,25 +207,6 @@ int rpmpsTrim(rpmps ps, rpmps filter)
     return gotProblems;
 }
 
-#if !defined(HAVE_VSNPRINTF)
-static inline int vsnprintf(char * buf, int nb,
-	const char * fmt, va_list ap)
-{
-    return vsprintf(buf, fmt, ap);
-}
-#endif
-#if !defined(HAVE_SNPRINTF)
-static inline int snprintf(char * buf, int nb, const char * fmt, ...)
-{
-    va_list ap;
-    int rc;
-    va_start(ap, fmt);
-    rc = vsnprintf(buf, nb, fmt, ap);
-    va_end(ap);
-    return rc;
-}
-#endif
-
 rpmProblem rpmProblemCreate(rpmProblemType type,
                             const char * pkgNEVR,
                             fnpyKey key,
