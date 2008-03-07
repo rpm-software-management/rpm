@@ -61,16 +61,6 @@ void foo(int i, ...) {
 ]])],[ac_cv_va_copy=yes],[ac_cv_va_copy=no])
 AC_MSG_RESULT([$ac_cv_va_copy])
 
-RPMUSER=rpm
-RPMUID=37
-RPMGROUP=rpm
-RPMGID=37
-export RPMUSER RPMUID RPMGROUP RPMGID
-AC_SUBST(RPMUSER)
-AC_SUBST(RPMUID)
-AC_SUBST(RPMGROUP)
-AC_SUBST(RPMGID)
-
 dnl
 dnl This now uses libtool. Put
 dnl	LDFLAGS_STATIC="-all"
