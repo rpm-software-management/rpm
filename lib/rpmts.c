@@ -321,43 +321,6 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	}
     }
 
-    /* Try keyserver lookup. */
-    if (ts->pkpkt == NULL) {
-	char * fn = rpmExpand("%{_hkp_keyserver_query}",
-			pgpHexStr(sigp->signid, sizeof(sigp->signid)), NULL);
-
-	xx = 0;
-	if (fn && *fn != '%') {
-	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
-	}
-	fn = _free(fn);
-	if (xx) {
-	    ts->pkpkt = _free(ts->pkpkt);
-	    ts->pkpktlen = 0;
-	} else {
-	    /* Save new pubkey in local ts keyring for delayed import. */
-	    pubkeysource = xstrdup("keyserver");
-	}
-    }
-
-#ifdef	NOTNOW
-    /* Try filename from macro lookup. */
-    if (ts->pkpkt == NULL) {
-	const char * fn = rpmExpand("%{_gpg_pubkey}", NULL);
-
-	xx = 0;
-	if (fn && *fn != '%')
-	    xx = (pgpReadPkts(fn,&ts->pkpkt,&ts->pkpktlen) != PGPARMOR_PUBKEY);
-	fn = _free(fn);
-	if (xx) {
-	    ts->pkpkt = _free(ts->pkpkt);
-	    ts->pkpktlen = 0;
-	} else {
-	    pubkeysource = xstrdup("macro");
-	}
-    }
-#endif
-
     /* Was a matching pubkey found? */
     if (ts->pkpkt == NULL || ts->pkpktlen == 0)
 	goto exit;

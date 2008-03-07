@@ -677,8 +677,8 @@ print (t)\
 
 # Horowitz Key Protocol server configuration
 #
-#_hkp_keyserver         hkp://pgp.mit.edu
-#_hkp_keyserver_query   %{_hkp_keyserver}/pks/lookup?op=get&search=0x
+%_hkp_keyserver         http://pgp.mit.edu
+%_hkp_keyserver_query   %{_hkp_keyserver}:11371/pks/lookup?op=get&search=0x
 
 #==============================================================================
 # ---- Transaction macros.
