@@ -200,7 +200,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fstate = rpmfiFState(fi);
 	fsize = rpmfiFSize(fi);
 	fn = rpmfiFN(fi);
-	{   static char hex[] = "0123456789abcdef";
+	{   static char const hex[] = "0123456789abcdef";
 	    unsigned const char * s = rpmfiMD5(fi);
 	    char * p = fmd5;
 	    int j;
@@ -331,7 +331,7 @@ void rpmDisplayQueryTags(FILE * fp)
 	if (t->name == NULL)
 	    continue;
 	if (rpmIsVerbose()) {
-	    static const char * tagtypes[] = {
+	    static const char * const tagtypes[] = {
 		"", "char", "int8", "int16", "int32", "int64",
 		"string", "blob", "argv", "i18nstring"
 	    };

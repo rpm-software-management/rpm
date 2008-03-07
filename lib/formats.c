@@ -804,9 +804,9 @@ static int filerequireTag(Header h, rpmTagType* type,
 #if defined(ENABLE_NLS)
 extern int _nl_msg_cat_cntr;	/* XXX GNU gettext voodoo */
 #endif
-static const char * language = "LANGUAGE";
+static const char * const language = "LANGUAGE";
 
-static const char * _macro_i18ndomains = "%{?_i18ndomains}";
+static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
 
 /**
  * Retrieve i18n text.

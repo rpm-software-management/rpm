@@ -24,7 +24,7 @@
 
 #include "debug.h"
 
-static const char *defrcfiles = 
+static const char * const defrcfiles = 
       RPMCONFIGDIR "/rpmrc" 
   ":" RPMCONFIGDIR "/" RPMCANONVENDOR "/rpmrc"
   ":" SYSCONFDIR "/rpmrc"
@@ -42,7 +42,7 @@ const char * macrofiles =
   MACROFILES;
 #endif
 
-static const char * platform = SYSCONFDIR "/rpm/platform";
+static const char * const platform = SYSCONFDIR "/rpm/platform";
 static char ** platpat = NULL;
 static int nplatpat = 0;
 
@@ -132,13 +132,13 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
 /* this *must* be kept in alphabetical order */
 /* The order of the flags is archSpecific, required, macroize, localize */
 
-static struct rpmOption optionTable[] = {
+static const struct rpmOption const optionTable[] = {
     { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
     { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	0, 1 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
 };
 
-static size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
+static const size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
 
 #define OS	0
 #define ARCH	1
@@ -447,7 +447,7 @@ static void setPathDefault(const char * macroname, const char * subdir)
     }
 }
 
-static const char * prescriptenviron = "\n\
+static const char * const prescriptenviron = "\n\
 RPM_SOURCE_DIR=\"%{_sourcedir}\"\n\
 RPM_BUILD_DIR=\"%{_builddir}\"\n\
 RPM_OPT_FLAGS=\"%{optflags}\"\n\
@@ -1753,7 +1753,7 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
 int rpmShowRC(FILE * fp)
 {
-    struct rpmOption *opt;
+    const struct rpmOption *opt;
     rpmds ds = NULL;
     int i, xx;
     machEquivTable equivTable;

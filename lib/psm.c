@@ -107,9 +107,9 @@ int rpmVersionCompare(Header first, Header second)
  * @todo Should other macros be added from header when installing a package?
  */
 static struct tagMacro {
-const char *	macroname; /*!< Macro name to define. */
-    rpmTag	tag;		/*!< Header tag to use for value. */
-} tagMacros[] = {
+    const char *macroname; 	/*!< Macro name to define. */
+    rpmTag tag;			/*!< Header tag to use for value. */
+} const tagMacros[] = {
     { "name",		RPMTAG_NAME },
     { "version",	RPMTAG_VERSION },
     { "release",	RPMTAG_RELEASE },
@@ -126,7 +126,7 @@ const char *	macroname; /*!< Macro name to define. */
 static int rpmInstallLoadMacros(rpmfi fi, Header h)
 {
     HGE_t hge = (HGE_t) fi->hge;
-    struct tagMacro * tagm;
+    const struct tagMacro * tagm;
     union {
 void * ptr;
 const char ** argv;

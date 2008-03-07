@@ -150,8 +150,8 @@ int rpmtsVerifyDB(rpmts ts)
 
 static int isArch(const char * arch)
 {
-    const char ** av;
-    static const char *arches[] = {
+    const char * const * av;
+    static const char * const arches[] = {
 	"i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e", "geode",
 	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
 	"sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8", "sparcv9", "sparcv9v",
@@ -869,7 +869,7 @@ void rpmtsEmpty(rpmts ts)
 
 static void rpmtsPrintStat(const char * name, struct rpmop_s * op)
 {
-    static unsigned int scale = (1000 * 1000);
+    static const unsigned int scale = (1000 * 1000);
     if (op != NULL && op->count > 0)
 	fprintf(stderr, "   %s %6d %6lu.%06lu MB %6lu.%06lu secs\n",
 		name, op->count,

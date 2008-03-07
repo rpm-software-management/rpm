@@ -53,9 +53,7 @@ struct rpmgi_s {
     int nrefs;			/*!< Reference count. */
 };
 
-static int indent = 2;
-
-static const char * ftsInfoStrings[] = {
+static const char * const ftsInfoStrings[] = {
     "UNKNOWN",
     "D",
     "DC",
@@ -213,6 +211,8 @@ static rpmRC rpmgiWalkPathFilter(rpmgi gi)
     FTSENT * fts = gi->fts;
     rpmRC rpmrc = RPMRC_NOTFOUND;
     const char * s;
+    static const int indent = 2;
+
 
 if (_rpmgi_debug < 0)
 rpmlog(RPMLOG_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),

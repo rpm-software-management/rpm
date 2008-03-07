@@ -1014,7 +1014,7 @@ struct rpmlibProvides_s {
     const char * featureDescription;
 };
 
-static struct rpmlibProvides_s rpmlibProvides[] = {
+static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(VersionedDependencies)",	"3.0.3-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("PreReq:, Provides:, and Obsoletes: dependencies support versions.") },

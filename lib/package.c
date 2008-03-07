@@ -23,7 +23,7 @@
 
 static int _print_pkts = 0;
 
-static unsigned int nkeyids_max = 256;
+static const unsigned int nkeyids_max = 256;
 static unsigned int nkeyids = 0;
 static unsigned int nextkeyid  = 0;
 static unsigned int * keyids;
