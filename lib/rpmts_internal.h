@@ -7,8 +7,6 @@
 #include "rpmdb/rpmhash.h"	/* XXX hashTable */
 #include "lib/rpmtsscore.h"	/* for rpmtsScore */
 
-extern int _cacheDependsRC;
-
 /** \ingroup rpmts
  */
 typedef	struct diskspaceInfo_s * rpmDiskSpaceInfo;

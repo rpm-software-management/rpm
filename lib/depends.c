@@ -32,7 +32,7 @@ struct orderListIndex_s {
     int orIndex;
 };
 
-int _cacheDependsRC = 1;
+static int _cacheDependsRC = 1;
 
 const char *rpmNAME = PACKAGE;
 
