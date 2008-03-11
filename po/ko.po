@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2362,7 +2362,7 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "올바르지 못한 형식: %s\n"
@@ -2612,7 +2612,7 @@ msgid "internal support for lua scripts."
 msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2755,75 +2755,75 @@ msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s(은)는 다른 아키텍쳐를 위한 패키지입니다"
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s(은)는 다른 운영체제를 위한 패키지입니다"
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s(와)과 %3$s의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
 "니다"
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 #, fuzzy
 msgid "(installed) "
 msgstr "설치되어 있지 않음  "
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -2944,12 +2944,12 @@ msgstr "%s %s에 '(' 가 없습니다\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s의 rpm 데이터베이스를 열 수 없습니다\n"
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3528,27 +3528,27 @@ msgstr "매크로 %%%.*s를 찾을 수 없습니다, 생략합니다\n"
 msgid "Target buffer overflow\n"
 msgstr "목표대상(Target) 버퍼 오버플로우\n"
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "'-' 는 문자열에서 사용할 수 없습니다\n"
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: Fwrite이 실패했습니다: %s\n"
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "부적합한 패키지 번호: %s\n"
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek이 실패했습니다: %s\n"

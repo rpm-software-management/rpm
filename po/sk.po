@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2422,7 +2422,7 @@ msgstr "nepodarilo sa otvori» %s: %s"
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo"
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "chyba formátu: %s\n"
@@ -2671,7 +2671,7 @@ msgid "internal support for lua scripts."
 msgstr "- nie je podporované pre re»azce"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
@@ -2814,71 +2814,71 @@ msgstr "nie je mo¾né získa» %s zámok pre databázu"
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr ""
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " je vy¾adované %s-%s-%s\n"
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 #, fuzzy
 msgid "(installed) "
 msgstr "nein¹talovaný "
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -2998,12 +2998,12 @@ msgstr "chýbajúce    %s\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3582,27 +3582,27 @@ msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 msgid "Target buffer overflow\n"
 msgstr "Preplnenie cieµovej vyrovnávacej pamäti"
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "- nie je podporované pre re»azce"
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"

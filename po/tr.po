@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2385,7 +2385,7 @@ msgstr "%s açýlamadý: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s baþarýsýz\n"
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "biçem yanlýþ: %s\n"
@@ -2635,7 +2635,7 @@ msgid "internal support for lua scripts."
 msgstr "- dizgelerde desteklenmez\n"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2778,71 +2778,71 @@ msgstr "%s kilit  %s/%s'den alýnamadý\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s farklý bir mimari için"
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s farklý bir iþletim sistemi için"
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s zaten kurulu"
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "%s dosya yolu %s paketinde yeniden konumlandýrýlamaz"
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%s dosyasý kalkýþýlan %s ve %s kurulumlarý arasýnda çeliþiyor"
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%s dosyasýnýn %s kurulumu %s kurulumundaki dosya ile çeliþiyor"
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s paketi zaten yüklü (%s sürümünden daha yeni)"
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "%s kurulumu %ld%cb gerektiriyor (%s dosya sisteminde)"
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "%s kurulumu %ld i-düðüm gerektiriyor (%s dosya sisteminde)"
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " %s-%s-%s için gerekli\n"
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 #, fuzzy
 msgid "(installed) "
 msgstr "yüklenmedi "
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " %s-%s-%s ile çeliþiyor\n"
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "anlaþýlamayan %d hatasý, %s paketi iþlenirken saptandý"
@@ -2962,12 +2962,12 @@ msgstr "%s içinde '(' yok: %s\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "geçersiz paket numarasý: %s\n"
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "%s dizininde rpm veritabaný açýlamýyor\n"
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3540,27 +3540,27 @@ msgstr "%%%.*s makrosu bulunamadý, atlanýyor\n"
 msgid "Target buffer overflow\n"
 msgstr "Hedef tampon bellek taþtý\n"
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "- dizgelerde desteklenmez\n"
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: Fwrite baþarýsýz: %s\n"
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "geçersiz paket numarasý: %s\n"
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek baþarýsýz: %s\n"

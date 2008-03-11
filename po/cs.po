@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2370,7 +2370,7 @@ msgstr "nemohu otevøít %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s selhalo\n"
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "nesprávný formát: %s\n"
@@ -2621,7 +2621,7 @@ msgid "internal support for lua scripts."
 msgstr "- není podporováno pro øetìzce\n"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2763,71 +2763,71 @@ msgstr "nemohu vytvoøit %s: %s\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "balíèek %s je pro jinou architekturu"
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "balíèek %s je pro jiný operaèní systém"
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "cesta %s v balíèku %s není pøemístitelná"
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "soubor %s zpùsobuje konflikt mezi instalovaným %s a %s"
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "soubor %s z instalace %s koliduje se souborem z balíèku %s"
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "balíèek %s (který je novìj¹í, ne¾ %s) je ji¾ nainstalován"
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld%cB na systému souborù %s"
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "instalace balíèku %s potøebuje %ld inodù na systému souborù %s"
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " je nutné pro %s-%s-%s\n"
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 #, fuzzy
 msgid "(installed) "
 msgstr "neinstalován  "
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " koliduje s %s-%s-%s\n"
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla pøi manipulaci s balíèkem %s"
@@ -2947,12 +2947,12 @@ msgstr "Chybí '(' v %s %s\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nemohu otevøít RPM databázi v %s\n"
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3527,27 +3527,27 @@ msgstr ""
 msgid "Target buffer overflow\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "- není podporováno pro øetìzce\n"
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "- není podporováno pro øetìzce\n"
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: Fwrite selhalo: %s\n"
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: Fseek selhal: %s\n"

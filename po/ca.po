@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: 2007-10-13 14:46+0200\n"
 "Last-Translator: Catalan <fedora@softcatala.net>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -2381,7 +2381,7 @@ msgstr "ha fallat %s al fitxer %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "ha fallat %s: %s\n"
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "format incorrecte: %s\n"
@@ -2636,7 +2636,7 @@ msgid "internal support for lua scripts."
 msgstr "es poden emprar scripts en lua."
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2775,73 +2775,73 @@ msgstr "crea un conjunt de transaccions"
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr "diferent"
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "el paquet %s és per a arquitectures %s"
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "el paquet %s és per a sistemes operatius %s"
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "el paquet %s ja s'ha instal·lat"
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "el camí %s del paquet %s no és reubicable"
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "el fitxer %s té un conflicte amb els intents d'instal·lació de %s i %s"
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "el fitxer %s de la instal·lació de %s té un conflicte amb un fitxer del "
 "paquet %s"
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "ja s'ha instal·lat el paquet %s, que és més nou que %s"
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "el paquet a instal·lar %s necessita %ld%cB al sistema de fitxers %s"
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "el paquet a instal·lar %s necessita %ld nodes-i al sistema de fitxers %s"
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "el paquet %s és requerit per %s%s"
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 msgid "(installed) "
 msgstr "(instalat) "
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s té conflictes amb %s%s"
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "error desconegut %d en manipular el paquet %s"
@@ -2961,12 +2961,12 @@ msgstr "falta '(' a l'etiqueta del paquet: %s\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "falta ')' a l'etiqueta del paquet: %s\n"
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "no puc obrir la base de dades Solve a %s\n"
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr "    Resolucions suggerides:\n"
 
@@ -3540,27 +3540,27 @@ msgstr "No s'ha trobat la macro %%%.*s, s'ignorarà\n"
 msgid "Target buffer overflow\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "La sintaxi antiga no és disponible: %s\n"
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "es poden emprar scripts en lua."
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: ha fallat l'Fwrite: %s\n"
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "número de paquet invàlid: %s\n"
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: ha fallat l'Fflush: %s\n"

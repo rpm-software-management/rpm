@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2293,7 +2293,7 @@ msgstr ""
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2536,7 +2536,7 @@ msgid "internal support for lua scripts."
 msgstr ""
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2675,70 +2675,70 @@ msgstr ""
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr ""
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr ""
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr ""
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr ""
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr ""
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 msgid "(installed) "
 msgstr ""
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr ""
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -2858,12 +2858,12 @@ msgstr ""
 msgid "missing ')' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3426,27 +3426,27 @@ msgstr ""
 msgid "Target buffer overflow\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr ""

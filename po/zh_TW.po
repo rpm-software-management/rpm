@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -2300,7 +2300,7 @@ msgstr "%s 失敗的於檔案 %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s 失敗：%s\n"
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "不正確的格式：%s\n"
@@ -2546,7 +2546,7 @@ msgid "internal support for lua scripts."
 msgstr "內部支援 lua 命令稿。"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2685,70 +2685,70 @@ msgstr "建立異動作業集"
 msgid "waiting for transaction lock on %s\n"
 msgstr "產生異動作業記錄板(%p, %p)\n"
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr "不同的"
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "套件 %s 是適用於 %s 架構的"
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "套件 %s 是適用於 %s 作業系統的"
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "套件 %s 已經安裝了"
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "在套件 %2$s 中的路徑 %1$s 無法重新部署"
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "在試圖安裝的 %s 和 %s 之間產生檔案 %s 的衝突"
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "從 %s 安裝的檔案 %s 與來自套件 %s 的檔案產生衝突"
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "套件 %s (較 %s 版本還新) 已經安裝了"
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "安裝套件 %s 時需要 %ld%cB 空間於檔案系統 %s 上"
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "安裝套件 %s 時需要 %ld 個節點於檔案系統 %s 上"
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s 被 %s%s 所需要"
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 msgid "(installed) "
 msgstr "(已安裝) "
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s 與 %s%s 衝突"
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明錯誤 %d 發生在處理套件 %s 的程序中"
@@ -2868,12 +2868,12 @@ msgstr "丟失的「(」存在於套件標籤中：%s\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "丟失的「)」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "無法開啟解析資料庫於 %s\n"
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr "    推薦解決方案：\n"
 
@@ -3438,27 +3438,27 @@ msgstr "找不到巨集 %%%.*s，跳過\n"
 msgid "Target buffer overflow\n"
 msgstr "目標緩衝區溢位\n"
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "不支援舊語法：%s\n"
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "不支援舊語法：%s\n"
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: Fwrite 失敗：%s\n"
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "不正確的套件編號：%s\n"
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-07 09:46+0200\n"
+"POT-Creation-Date: 2008-03-11 11:15+0200\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2373,7 +2373,7 @@ msgstr "%s falhou no ficheiro %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
-#: lib/query.c:115 lib/rpmts.c:672
+#: lib/query.c:115 lib/rpmts.c:635
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "formato incorrecto: %s\n"
@@ -2623,7 +2623,7 @@ msgid "internal support for lua scripts."
 msgstr "- não suportado em cadeias de caracteres\n"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:683 tools/rpmgraph.c:119
+#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2766,75 +2766,75 @@ msgstr "não consigo trancar o %s no %s/%s\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
-#: lib/rpmps.c:301
+#: lib/rpmps.c:282
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:309
+#: lib/rpmps.c:290
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "o pacote %s é para uma arquitectura diferente"
 
-#: lib/rpmps.c:314
+#: lib/rpmps.c:295
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "o pacote %s é para um sistema operativo diferente"
 
-#: lib/rpmps.c:319
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "o pacote %s já está instalado"
 
-#: lib/rpmps.c:324
+#: lib/rpmps.c:305
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "a directoria %s no pacote %s não pode ser mudada de sítio"
 
-#: lib/rpmps.c:329
+#: lib/rpmps.c:310
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "o ficheiro %s está em conflito com as tentativas de instalação do %s e %s"
 
-#: lib/rpmps.c:334
+#: lib/rpmps.c:315
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "o ficheiro %s da instalação do %s está em conflito com o ficheiro do pacote %"
 "s"
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:320
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "o pacote %s (que é mais recente que o %s) já está instalado"
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:325
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "a instalação do pacote %s precisa de %ld%cb no sistema de ficheiros %s"
 
-#: lib/rpmps.c:354
+#: lib/rpmps.c:335
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "a instalação do pacote %s precisa de %ld 'inodes' no sistema de ficheiros %s"
 
-#: lib/rpmps.c:358
+#: lib/rpmps.c:339
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " é necessário pelo %s-%s-%s\n"
 
-#: lib/rpmps.c:360 lib/rpmps.c:365
+#: lib/rpmps.c:341 lib/rpmps.c:346
 #, fuzzy
 msgid "(installed) "
 msgstr "não instalado "
 
-#: lib/rpmps.c:363
+#: lib/rpmps.c:344
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " está em conflito com o %s-%s-%s\n"
 
-#: lib/rpmps.c:369
+#: lib/rpmps.c:350
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "encontrado o erro desconhecido %d ao manipular o pacote %s"
@@ -2954,12 +2954,12 @@ msgstr "Falta um '(' em %s %s\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "número de pacote inválido: %s\n"
 
-#: lib/rpmts.c:570
+#: lib/rpmts.c:533
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "não consigo a base de dados do RPM em %s\n"
 
-#: lib/rpmts.c:781
+#: lib/rpmts.c:744
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
@@ -3533,27 +3533,27 @@ msgstr "A macro %%%.*s não foi encontrada, por isso foi ignorada\n"
 msgid "Target buffer overflow\n"
 msgstr "Sobrecarga do tampão de destino\n"
 
-#: rpmio/rpmlua.c:451
+#: rpmio/rpmlua.c:443
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "- não suportado em cadeias de caracteres\n"
 
-#: rpmio/rpmlua.c:467
+#: rpmio/rpmlua.c:459
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "- não suportado em cadeias de caracteres\n"
 
-#: rpmio/rpmlua.c:472 rpmio/rpmlua.c:491
+#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: O fwrite falhou: %s\n"
 
-#: rpmio/rpmlua.c:486
+#: rpmio/rpmlua.c:478
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "número de pacote inválido: %s\n"
 
-#: rpmio/rpmlua.c:621
+#: rpmio/rpmlua.c:613
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s: O Fseek falhou: %s\n"
