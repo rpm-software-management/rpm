@@ -3,15 +3,15 @@
 # Paweł Dziekoński <pdziekonski@mml.ch.pwr.wroc.pl>, 1999.
 # Jakub Bogusz <qboosh@pld-linux.org>, 2002-2003.
 # Arkadiusz Miskiewicz <arekm@pld-linux.org>, 2003.
-# Piotr Drąg <raven@pmail.pl>, 2007.
+# Piotr Drąg <piotrdrag@gmail.com>, 2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2008-03-07 09:46+0200\n"
-"PO-Revision-Date: 2007-12-19 01:12+0200\n"
-"Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
+"PO-Revision-Date: 2008-03-07 21:24+0200\n"
+"Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,9 +42,9 @@ msgid "Failed to rename %s to %s: %m\n"
 msgstr "Zmiana nazwy %s na %s nie powiodła się: %m\n"
 
 #: build.c:199 build.c:220
-#, fuzzy, c-format
+#, c-format
 msgid "getcwd failed: %m\n"
-msgstr "magic_load nie powiodło się: %s\n"
+msgstr "getcwd nie powiodło się: %m\n"
 
 #: build.c:232
 #, c-format
@@ -1643,9 +1643,9 @@ msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr dane: BŁĘDNE, liczba bajtów(%d) spoza zakresu\n"
 
 #: lib/package.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
-msgstr "hdr blob(%d): BŁĘDNY, read zwróciło %d\n"
+msgstr "hdr blob(%zd): BŁĘDNY, read zwróciło %d\n"
 
 #: lib/package.c:659
 #, c-format
@@ -1688,45 +1688,36 @@ msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nieobsługiwany rozmiar (%s) w pakiecie %s\n"
 
 #: lib/poptALL.c:180
-#, fuzzy
 msgid "follow command line symlinks"
-msgstr ""
-"RPMGI_COMFOLLOW: podążaj za dowiązaniami symbolicznymi z wiersza poleceń"
+msgstr "podążaj za dowiązaniami symbolicznymi z wiersza poleceń"
 
 #: lib/poptALL.c:182
-#, fuzzy
 msgid "logical walk"
-msgstr "RPMGI_LOGICAL: przechodź logicznie"
+msgstr "przechodź logicznie"
 
 #: lib/poptALL.c:184
-#, fuzzy
 msgid "don't change directories"
-msgstr "RPMGI_NOCHDIR: nie zmień katalogów"
+msgstr "nie zmień katalogów"
 
 #: lib/poptALL.c:186
-#, fuzzy
 msgid "don't get stat info"
-msgstr "RPMGI_NOSTAT: nie uzyskaj informacji stat"
+msgstr "nie uzyskaj informacji stat"
 
 #: lib/poptALL.c:188
-#, fuzzy
 msgid "physical walk"
-msgstr "RPMGI_PHYSICAL: przechodź fizycznie"
+msgstr "przechodź fizycznie"
 
 #: lib/poptALL.c:190
-#, fuzzy
 msgid "return dot and dot-dot"
-msgstr "RPMGI_SEEDOT: zwracaj kropkę i kropkę-kropkę"
+msgstr "zwracaj kropkę i kropkę-kropkę"
 
 #: lib/poptALL.c:192
-#, fuzzy
 msgid "don't cross devices"
-msgstr "RPMGI_XDEV: nie przechodź między urządzeniami"
+msgstr "nie przechodź między urządzeniami"
 
 #: lib/poptALL.c:194
-#, fuzzy
 msgid "return whiteout information"
-msgstr "RPMGI_WHITEOUT: zwróć informacje o whiteout"
+msgstr "zwróć informacje o whiteout"
 
 #: lib/poptALL.c:207
 msgid "predefine MACRO with value EXPR"
@@ -2425,9 +2416,9 @@ msgid "invalid package number: %s\n"
 msgstr "nieprawidłowy numer pakietu: %s\n"
 
 #: lib/query.c:649
-#, fuzzy, c-format
+#, c-format
 msgid "record %lu could not be read\n"
-msgstr "nie można odczytać rekordu %u\n"
+msgstr "nie można odczytać rekordu %lu\n"
 
 #: lib/query.c:665 lib/rpminstall.c:734
 #, c-format
@@ -3094,9 +3085,9 @@ msgid "missing   %c %s"
 msgstr "brak   %c %s"
 
 #: lib/verify.c:369
-#, fuzzy, c-format
+#, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "Niespełnione zależności:\n"
+msgstr "Niespełnione zależności %s:\n"
 
 #: misc/error.c:107
 msgid "Unknown system error"
@@ -3244,7 +3235,7 @@ msgstr "dbiTagsInit: nierozpoznana nazwa znacznika: \"%s\" zignorowana\n"
 #: rpmdb/rpmdb.c:243
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
-msgstr ""
+msgstr "dbiOpen: dbapi %d nie jest dostępne\n"
 
 #: rpmdb/rpmdb.c:253
 #, c-format
@@ -3276,14 +3267,14 @@ msgid "error(%d) storing record #%d into %s\n"
 msgstr "błąd(%d) podczas zapisywania rekordu #%d do %s\n"
 
 #: rpmdb/rpmdb.c:1606
-#, fuzzy, c-format
+#, c-format
 msgid "%s: regexec failed: %s\n"
-msgstr "%s: Fseek nie powiodło się: %s\n"
+msgstr "%s: regexec nie powiodło się: %s\n"
 
 #: rpmdb/rpmdb.c:1787
-#, fuzzy, c-format
+#, c-format
 msgid "%s: regcomp failed: %s\n"
-msgstr "%s: otwarcie nie powiodło się: %s\n"
+msgstr "%s: regcomp nie powiodło się: %s\n"
 
 #: rpmdb/rpmdb.c:2122
 msgid "rpmdbNextIterator: skipping"
@@ -3343,9 +3334,9 @@ msgid "temporary database %s already exists\n"
 msgstr "tymczasowa baza danych %s już istnieje\n"
 
 #: rpmdb/rpmdb.c:3480
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create directory %s: %s\n"
-msgstr "usunięcie katalogu %s nie powiodło się: %s\n"
+msgstr "utworzenie katalogu %s nie powiodło się: %s\n"
 
 #: rpmdb/rpmdb.c:3527
 #, c-format
@@ -3383,19 +3374,18 @@ msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Nie można zablokować bazy danych %s, ponawianie... (%d)\n"
 
 #: rpmdb/sqlite.c:684
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to initDB %s (%d)\n"
-msgstr "Nie można otworzyć %s: %s\n"
+msgstr "Nie można wykonać initDB %s (%d)\n"
 
 #: rpmdb/sqlite.c:857
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open database: %s\n"
-msgstr "Nie można otworzyć %s: %s\n"
+msgstr "Nie można otworzyć bazy danych: %s\n"
 
 #: rpmdb/sqlite.c:1222
-#, fuzzy
 msgid "Unable to determine DB endianess.\n"
-msgstr "Nie można otworzyć pliku tymczasowego.\n"
+msgstr "Nie można określić kolejności bajtów bazy danych.\n"
 
 #: rpmio/macro.c:182
 #, c-format
@@ -3615,325 +3605,3 @@ msgstr "%s: operacja w pamięci podręcznej nie powiodła się: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
-
-#~ msgid "\texecv(%s) pid %d\n"
-#~ msgstr "\texecv(%s) PID %d\n"
-
-#~ msgid "\twaitpid(%d) rc %d status %x\n"
-#~ msgstr "\twaitpid(%d) rc %d stan %x\n"
-
-#~ msgid "  Obsoletes: %s\t\terases %s\n"
-#~ msgstr "  Zastępuje: %s\t\terases %s\n"
-
-#~ msgid "========== recording tsort relations\n"
-#~ msgstr "========== zapisywanie relacji tsort\n"
-
-#~ msgid ""
-#~ "========== tsorting packages (order, #predecessors, #succesors, tree, "
-#~ "depth, breadth)\n"
-#~ msgstr ""
-#~ "========== tsortowanie pakietów (kolejność, #poprzedniki, #następniki, "
-#~ "drzewo, głębokość, szerokość)\n"
-
-#~ msgid "========== successors only (%d bytes)\n"
-#~ msgstr "========== tylko następniki (%d bajtów)\n"
-
-#~ msgid "========== continuing tsort ...\n"
-#~ msgstr "========== kontynuowanie tsort ...\n"
-
-#~ msgid "%5d 0x%04x %s %s\n"
-#~ msgstr "%5d 0x%04x %s %s\n"
-
-#~ msgid "========== Directories not explicitly included in package:\n"
-#~ msgstr "========== Katalogi nie włączone w bezpośredni sposób do pakietu:\n"
-
-#~ msgid "%10d %s\n"
-#~ msgstr "%10d %s\n"
-
-#~ msgid "%s directory created with perms %04o, no context.\n"
-#~ msgstr "Katalog %s utworzony z uprawnieniami %04o bez kontekstu.\n"
-
-#~ msgid "%s directory created with perms %04o, context %s.\n"
-#~ msgstr "Katalog %s utworzony z uprawnieniami %04o, kontekst %s.\n"
-
-#~ msgid "adding %d args from manifest.\n"
-#~ msgstr "dodawanie %d argumentów z manifestu.\n"
-
-#~ msgid "disable use of libio(3) API"
-#~ msgstr "wyłącz używanie API libio(3)"
-
-#~ msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
-#~ msgstr "%s: waitpid(%d) rc %d stan %x sekundy %u.%03u\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s) uruchamianie skryptu <lua>.\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s) pomijanie nadmiarowego \"%s\".\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s) %ssynchroniczne uruchomienie skryptu\n"
-
-#~ msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
-#~ msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) PID %d\n"
-
-#~ msgid "%s: %s has %d files, test = %d\n"
-#~ msgstr "%s: %s ma %d plików, test = %d\n"
-
-#~ msgid "Attempting to mark %s as installed in score board(%p).\n"
-#~ msgstr "Próba oznakowania %s jako zainstalowanego w tablicy punktów(%p).\n"
-
-#~ msgid "Attempting to mark %s as erased in score board(%p).\n"
-#~ msgstr "Próba oznakowania %s jako usuniętego w tablicy punktów(%p).\n"
-
-#~ msgid "package record number: %u\n"
-#~ msgstr "numer rekordu pakietu: %u\n"
-
-#~ msgid "  %s    A %s\tB %s\n"
-#~ msgstr "  %s    A %s\tB %s\n"
-
-#~ msgid "package %s has unsatisfied %s: %s\n"
-#~ msgstr "pakiet %s ma niespełnione %s: %s\n"
-
-#~ msgid "%s skipped due to missingok flag\n"
-#~ msgstr "%s pominięty z powodu flagi missingok\n"
-
-#~ msgid "========== relocations\n"
-#~ msgstr "========== przesunięcia\n"
-
-#~ msgid "%5d exclude  %s\n"
-#~ msgstr "%5d wyłączenie  %s\n"
-
-#~ msgid "%5d relocate %s -> %s\n"
-#~ msgstr "%5d przesunięcie %s -> %s\n"
-
-#~ msgid "excluding %s %s\n"
-#~ msgstr "wyłączanie %s %s\n"
-
-#~ msgid "relocating %s to %s\n"
-#~ msgstr "przesuwanie %s do %s\n"
-
-#~ msgid "relocating directory %s to %s\n"
-#~ msgstr "przesuwanie katalogu %s do %s\n"
-
-#~ msgid "Adding goal: %s\n"
-#~ msgstr "Dodawanie celu: %s\n"
-
-#~ msgid " ... as %s\n"
-#~ msgstr "... jako %s\n"
-
-#~ msgid "\tadded source package [%d]\n"
-#~ msgstr "\tdodano pakiet źródłowy [%d]\n"
-
-#~ msgid "\tadded binary package [%d]\n"
-#~ msgstr "\tdodano pakiet binarny [%d]\n"
-
-#~ msgid "found %d source and %d binary packages\n"
-#~ msgstr "znaleziono %d pakietów źródłowych i %d binarnych\n"
-
-#~ msgid "installing binary packages\n"
-#~ msgstr "instalowanie pakietów binarnych\n"
-
-#~ msgid "Adding: %s\n"
-#~ msgstr "Dodawane: %s\n"
-
-#~ msgid "Suggesting: %s\n"
-#~ msgstr "Sugerowane: %s\n"
-
-#~ msgid "mounted filesystems:\n"
-#~ msgstr "zamontowane systemy plików:\n"
-
-#~ msgid "    i        dev    bsize       bavail       iavail mount point\n"
-#~ msgstr ""
-#~ "    i        urządzenie    rozmiarbloku       dostępnychbloków       "
-#~ "dostępnychi-węzłów punkt montowania\n"
-
-#~ msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
-#~ msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
-
-#~ msgid "Creating transaction score board(%p, %p)\n"
-#~ msgstr "Tworzenie tablicy wyników transakcji(%p, %p)\n"
-
-#~ msgid "\tScore board address:  %p\n"
-#~ msgstr "\tAdres tablicy wyników:  %p\n"
-
-#~ msgid "\tAllocating space for %d entries\n"
-#~ msgstr "\tPrzydzielanie przestrzeni na %d wpisów\n"
-
-#~ msgid "\tAdding entry for %s to score board.\n"
-#~ msgstr "\tDodawanie wpisu dla %s do tablicy wyników.\n"
-
-#~ msgid "\t\tEntry address:  %p\n"
-#~ msgstr "\t\tAdres wpisu:  %p\n"
-
-#~ msgid "\tUpdating entry for %s in score board.\n"
-#~ msgstr "\tAktualizowanie wpisu dla %s w tablicy wyników.\n"
-
-#~ msgid "May free Score board(%p)\n"
-#~ msgstr "Można uwolnić tablicę wyników(%p)\n"
-
-#~ msgid "\tRefcount is zero...will free\n"
-#~ msgstr "\tLicznik odniesień wynosi zero... Zostanie uwolniona\n"
-
-#~ msgid "Looking in score board(%p) for %s\n"
-#~ msgstr "Wyszukiwanie w tablicy wyników(%p) %s\n"
-
-#~ msgid "\tFound entry at address:  %p\n"
-#~ msgstr "\tZnaleziono wpis pod adresem:  %p\n"
-
-#~ msgid "Expected size: %12d = lead(%d)+sigs(%zd)+pad(%zd)+data(%zd)\n"
-#~ msgstr ""
-#~ "Oczekiwany rozmiar: %12d = nagłówek(%d)+podpisy(%zd)+wyrównanie(%zd)+dane"
-#~ "(%zd)\n"
-
-#~ msgid "  Actual size: %12d\n"
-#~ msgstr "  Faktyczny rozmiar: %12d\n"
-
-#~ msgid "Signature: size(%d)+pad(%d)\n"
-#~ msgstr "Podpis: rozmiar(%d)+wyrównanie(%d)\n"
-
-#~ msgid "PGP sig size: %d\n"
-#~ msgstr "Rozmiar podpisu PGP: %d\n"
-
-#~ msgid "Got %d bytes of PGP sig\n"
-#~ msgstr "Otrzymano %d bajtów podpisu PGP\n"
-
-#~ msgid "GPG sig size: %d\n"
-#~ msgstr "Rozmiar podpisu GPG: %d\n"
-
-#~ msgid "Got %d bytes of GPG sig\n"
-#~ msgstr "Otrzymano %d bajtów podpisu GPG\n"
-
-#~ msgid "excluding directory %s\n"
-#~ msgstr "wyłączanie katalogu %s\n"
-
-#~ msgid "Getting repackaged header from transaction element\n"
-#~ msgstr "Otrzymywanie ponownie spakowanego nagłówka z elementu transakcji\n"
-
-#~ msgid "\tLooking for %s...\n"
-#~ msgstr "\tWyszukiwanie %s...\n"
-
-#~ msgid "\tMatches found.\n"
-#~ msgstr "\tZnaleziono pasujące.\n"
-
-#~ msgid "\tNo matches found.\n"
-#~ msgstr "\tNie znaleziono pasujących.\n"
-
-#~ msgid "\tRepackaged package not found!.\n"
-#~ msgstr "\tNie znaleziono ponownie spakowanego pakietu!.\n"
-
-#~ msgid "\tREMOVETID matched INSTALLTID.\n"
-#~ msgstr "\tREMOVETID pasuje do INSTALLTID.\n"
-
-#~ msgid "\t\tName:  %s.\n"
-#~ msgstr "\t\tNazwa:  %s.\n"
-
-#~ msgid "\tRepackaged Package was %s...\n"
-#~ msgstr "\tPonownie spakowany pakiet był %s...\n"
-
-#~ msgid "Adding install element to auto-rollback transaction.\n"
-#~ msgstr ""
-#~ "Dodawanie zainstalowanego elementu do transakcji automatycznego cofania "
-#~ "zmian.\n"
-
-#~ msgid "\tAdded repackaged package header: %s.\n"
-#~ msgstr "\tDodano ponownie spakowany nagłówek pakietu: %s.\n"
-
-#~ msgid "\tAdded erase element.\n"
-#~ msgstr "\tDodano usunięty element.\n"
-
-#~ msgid "Add erase element to auto-rollback transaction.\n"
-#~ msgstr "Dodaj usunięty element do automatycznego cofania zmian.\n"
-
-#~ msgid "\tFound existing upgrade element.\n"
-#~ msgstr "\tZnaleziono istniejący zaktualizowany element.\n"
-
-#~ msgid "\tNot adding erase element for %s.\n"
-#~ msgstr "\tUsunięty element nie zostanie dodany do %s.\n"
-
-#~ msgid "\tAdded repackaged package %s.\n"
-#~ msgstr "\tDodano ponownie spakowany pakiet %s.\n"
-
-#~ msgid "\tAdded from erase element %s.\n"
-#~ msgstr "\tDodano usunięty element %s.\n"
-
-#~ msgid "\tNo repackaged package...nothing to do.\n"
-#~ msgstr "\tBrak ponownie spakowanego pakietu... Nie ma nic do zrobienia.\n"
-
-#~ msgid "sanity checking %d elements\n"
-#~ msgstr "sprawdzanie poprawności %d elementów\n"
-
-#~ msgid "running pre-transaction scripts\n"
-#~ msgstr "uruchamianie skryptów przedtransakcyjnych\n"
-
-#~ msgid "computing %d file fingerprints\n"
-#~ msgstr "obliczanie %d odcisków plików\n"
-
-#~ msgid "computing file dispositions\n"
-#~ msgstr "obliczanie dyspozycji plików\n"
-
-#~ msgid "Creating auto-rollback transaction\n"
-#~ msgstr "Tworzenie transakcji automatycznego cofania zmian\n"
-
-#~ msgid "running post-transaction scripts\n"
-#~ msgstr "uruchamianie skryptów potransakcyjnych\n"
-
-#~ msgid "closed   db environment %s/%s\n"
-#~ msgstr "zamknięto   środowisko bazy danych %s/%s\n"
-
-#~ msgid "removed  db environment %s/%s\n"
-#~ msgstr "usunięto  środowisko bazy danych %s/%s\n"
-
-#~ msgid "opening  db environment %s/%s %s\n"
-#~ msgstr "otwieranie  środowiska bazy danych %s/%s %s\n"
-
-#~ msgid "closed   db index       %s/%s\n"
-#~ msgstr "zamknięto   indeks bazy danych       %s/%s\n"
-
-#~ msgid "verified db index       %s/%s\n"
-#~ msgstr "sprawdzono indeks bazy danych       %s/%s\n"
-
-#~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
-#~ msgstr "otwieranie  indeksu bazy danych       %s/%s %s tryb=0x%x\n"
-
-#~ msgid "locked   db index       %s/%s\n"
-#~ msgstr "zablokowano   indeks bzy danych       %s/%s\n"
-
-#~ msgid "removing \"%s\" from %s index.\n"
-#~ msgstr "usuwanie \"%s\" z indeksu %s.\n"
-
-#~ msgid "removing %d entries from %s index.\n"
-#~ msgstr "usuwanie %d wpisów z indeksu %s.\n"
-
-#~ msgid "adding \"%s\" to %s index.\n"
-#~ msgstr "dodawanie \"%s\" do indeksu %s.\n"
-
-#~ msgid "adding %d entries to %s index.\n"
-#~ msgstr "dodawanie %d wpisów do indeksu %s.\n"
-
-#~ msgid "removing %s after successful db3 rebuild.\n"
-#~ msgstr "usuwanie %s po udanym przebudowaniu db3.\n"
-
-#~ msgid "rebuilding database %s into %s\n"
-#~ msgstr "przebudowywanie bazy danych %s w %s\n"
-
-#~ msgid "creating directory %s\n"
-#~ msgstr "tworzenie katalogu %s\n"
-
-#~ msgid "creating directory %s: %s\n"
-#~ msgstr "tworzenie katalogu %s: %s\n"
-
-#~ msgid "opening old database with dbapi %d\n"
-#~ msgstr "otwieranie starej bazy danych za pomocą dbapi %d\n"
-
-#~ msgid "opening new database with dbapi %d\n"
-#~ msgstr "otwieranie nowej bazy danych za pomocą dbapi %d\n"
-
-#~ msgid "removing directory %s\n"
-#~ msgstr "usuwanie katalogu %s\n"
-
-#~ msgid "closed   sql db         %s\n"
-#~ msgstr "zamknięto   bazę danych SQL         %s\n"
-
-#~ msgid "opening  sql db         %s (%s) mode=0x%x\n"
-#~ msgstr "otwieranie  bazy danych SQL         %s (%s) tryb=0x%x\n"
