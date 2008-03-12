@@ -652,12 +652,6 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
  */
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 
-/** \ingroup rpmdb
- * Tags for which rpmdb indices will be built.
- */
-extern rpmTag * dbiTags;
-extern rpmTag dbiTagsMax;
-
 #ifndef __APPLE__
 /**
  *  * Mergesort, same arguments as qsort(2).

@@ -20,8 +20,6 @@ const char *__progname;
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
 
-#include "rpmdb/rpmdb_internal.h"	/* XXX for freeing dbiTags */
-
 #ifdef	IAM_RPMBT
 #include "build.h"
 #define GETOPT_REBUILD		1003
@@ -855,8 +853,6 @@ exit:
     /* keeps memory leak checkers quiet */
     rpmFreeFilesystems();
     rpmlogClose();
-    /* XXX FIXME: hide this in the api */
-    dbiTags = _free(dbiTags);
 
 #ifdef	IAM_RPMQV
     qva->qva_queryFormat = _free(qva->qva_queryFormat);
