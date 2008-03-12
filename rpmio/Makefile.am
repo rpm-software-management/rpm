@@ -27,6 +27,7 @@ librpmio_la_LIBADD = \
 	@WITH_BZ2_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@WITH_LIBELF_LIB@ \
+	@WITH_POPT_LIB@ \
 	-lpthread
 
 check_PROGRAMS =
