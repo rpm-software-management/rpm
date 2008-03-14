@@ -42,7 +42,7 @@ typedef enum rpmTag_e {
     RPMTAG_HEADERIMMUTABLE	= HEADER_IMMUTABLE,	/*!< Original image. */
     RPMTAG_HEADERREGIONS	= HEADER_REGIONS,	/*!< Regions. */
 
-    RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, /*!< I18N string locales. */
+    RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, 	/* s[] !< I18N string locales. */
 
 /* Retrofit (and uniqify) signature tags for use by rpmTagGetName() and rpmQuery. */
 /* the md5 sum was broken *twice* on big endian machines */
