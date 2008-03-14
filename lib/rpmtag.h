@@ -104,8 +104,7 @@ typedef enum rpmTag_e {
     RPMTAG_FILEGIDS		= 1032, /* i[] internal */
     RPMTAG_FILERDEVS		= 1033,	/* h[] */
     RPMTAG_FILEMTIMES		= 1034, /* i[] */
-    RPMTAG_FILEDIGESTS		= 1035,	/* s[] */
-#define RPMTAG_FILEMD5S	RPMTAG_FILEDIGESTS /* s[] */
+    RPMTAG_FILEMD5S		= 1035,	/* s[] */
     RPMTAG_FILELINKTOS		= 1036,	/* s[] */
     RPMTAG_FILEFLAGS		= 1037,	/* i[] */
     RPMTAG_ROOT			= 1038, /* internal - obsolete */
