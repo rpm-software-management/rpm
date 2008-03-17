@@ -712,11 +712,7 @@ int main(int argc, char *argv[])
 	if (ia->noDeps) ia->eraseInterfaceFlags |= UNINSTALL_NODEPS;
 
 	if (!poptPeekArg(optCon)) {
-	    if (ia->rbtid == 0)
-		argerror(_("no packages given for erase"));
-ia->transFlags |= RPMTRANS_FLAG_NOMD5;
-ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
-	    ec += rpmRollback(ts, ia, NULL);
+	    argerror(_("no packages given for erase"));
 	} else {
 	    ec += rpmErase(ts, ia, (const char **) poptGetArgs(optCon));
 	}
@@ -750,11 +746,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	}
 
 	if (!poptPeekArg(optCon)) {
-	    if (ia->rbtid == 0)
-		argerror(_("no packages given for install"));
-ia->transFlags |= RPMTRANS_FLAG_NOMD5;
-ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
-	    ec += rpmRollback(ts, ia, NULL);
+	    argerror(_("no packages given for install"));
 	} else {
 	    /* FIX: ia->relocations[0].newPath undefined */
 	    ec += rpmInstall(ts, ia, (const char **)poptGetArgs(optCon));

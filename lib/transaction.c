@@ -9,7 +9,6 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmds.h>
-#include <rpm/idtx.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
 

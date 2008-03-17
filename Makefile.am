@@ -56,7 +56,6 @@ pkginclude_HEADERS += rpmdb/header.h
 pkginclude_HEADERS += rpmdb/rpmdb.h
 nodist_pkginclude_HEADERS += rpmdb/rpmints.h
 
-pkginclude_HEADERS += lib/idtx.h
 pkginclude_HEADERS += lib/rpmcallback.h
 pkginclude_HEADERS += lib/rpmcli.h
 pkginclude_HEADERS += lib/rpmlib.h

@@ -422,7 +422,6 @@ struct rpmInstallArguments_s {
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;
     rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
-    rpm_tid_t rbtid;		/*!< from --rollback */
     int numRelocations;
     int noDeps;
     int incldocs;
@@ -450,16 +449,6 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
  */
 
 int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
-		const char ** argv);
-
-/** \ingroup rpmcli
- * Rollback transactions, erasing new, reinstalling old, package(s).
- * @param ts		transaction set
- * @param ia		mode flags and parameters
- * @param argv		array of arguments (NULL terminated)
- * @return		0 on success
- */
-int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia,
 		const char ** argv);
 
 /** \ingroup rpmcli

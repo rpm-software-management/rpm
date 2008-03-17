@@ -9,7 +9,6 @@
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmbuild.h>
-#include <rpm/idtx.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */
@@ -491,125 +490,6 @@ fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
 
     Py_INCREF(Py_None);
     return Py_None;
-}
-
-/** \ingroup py_c
- */
-static PyObject *
-rpmts_IDTXload(rpmtsObject * s)
-{
-    PyObject * result = NULL;
-    rpmTag tag = RPMTAG_INSTALLTID;
-    IDTX idtx;
-
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
-
-    Py_BEGIN_ALLOW_THREADS
-    idtx = IDTXload(s->ts, tag);
-    Py_END_ALLOW_THREADS
-
-    if (idtx == NULL || idtx->nidt <= 0) {
-	Py_INCREF(Py_None);
-	result = Py_None;
-    } else {
-	PyObject * tuple;
-	PyObject * ho;
-	IDT idt;
-	int i;
-
-	result = PyTuple_New(idtx->nidt);
-	for (i = 0; i < idtx->nidt; i++) {
-	    idt = idtx->idt + i;
-	    ho = (PyObject *) hdr_Wrap(idt->h);
-	    tuple = Py_BuildValue("(iOi)", idt->val.u32, ho, idt->instance);
-	    PyTuple_SET_ITEM(result,  i, tuple);
-	    Py_DECREF(ho);
-	}
-    }
-
-    idtx = IDTXfree(idtx);
-
-    return result;
-}
-
-/** \ingroup py_c
- */
-static PyObject *
-rpmts_IDTXglob(rpmtsObject * s)
-{
-    PyObject * result = NULL;
-    rpmTag tag = RPMTAG_REMOVETID;
-    char * globstr;
-    IDTX idtx;
-
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
-
-    Py_BEGIN_ALLOW_THREADS
-    globstr = rpmExpand("%{_repackage_dir}/*.rpm", NULL);
-    idtx = IDTXglob(s->ts, globstr, tag);
-    globstr = _free(globstr);
-    Py_END_ALLOW_THREADS
-
-    if (idtx == NULL || idtx->nidt <= 0) {
-	Py_INCREF(Py_None);
-	result = Py_None;
-    } else {
-	PyObject * tuple;
-	PyObject * ho;
-	IDT idt;
-	int i;
-
-	result = PyTuple_New(idtx->nidt);
-	for (i = 0; i < idtx->nidt; i++) {
-	    idt = idtx->idt + i;
-	    ho = (PyObject *) hdr_Wrap(idt->h);
-	    tuple = Py_BuildValue("(iOs)", idt->val.u32, ho, idt->key);
-	    PyTuple_SET_ITEM(result,  i, tuple);
-	    Py_DECREF(ho);
-	}
-    }
-
-    idtx = IDTXfree(idtx);
-
-    return result;
-}
-
-/** \ingroup py_c
- */
-static PyObject *
-rpmts_Rollback(rpmtsObject * s, PyObject * args, PyObject * kwds)
-{
-    struct rpmInstallArguments_s * ia = alloca(sizeof(*ia));
-    rpmtransFlags transFlags;
-    const char ** av = NULL;
-    rpm_tid_t rbtid;
-    int rc;
-    char * kwlist[] = {"transactionId", NULL};
-
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_Rollback(%p) ts %p\n", s, s->ts);
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Rollback", kwlist, &rbtid))
-    	return NULL;
-
-    Py_BEGIN_ALLOW_THREADS
-    memset(ia, 0, sizeof(*ia));
-    ia->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE|VERIFY_HDRCHK);
-    ia->transFlags |= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
-    ia->transFlags |= RPMTRANS_FLAG_NOMD5;
-    ia->installInterfaceFlags = (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL);
-    ia->rbtid = rbtid;
-    ia->relocations = NULL;
-    ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
-
-    transFlags = rpmtsSetFlags(s->ts, ia->transFlags);
-    rc = rpmRollback(s->ts, ia, av);
-    transFlags = rpmtsSetFlags(s->ts, transFlags);
-    Py_END_ALLOW_THREADS
-
-    return Py_BuildValue("i", rc);
 }
 
 /** \ingroup py_c
@@ -1327,14 +1207,6 @@ static struct PyMethodDef rpmts_methods[] = {
 - Run a transaction set, returning list of problems found.\n\
   Note: The callback may not be None.\n" },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_NOARGS,
-	NULL },
- {"IDTXload",	(PyCFunction) rpmts_IDTXload,	METH_NOARGS,
-"ts.IDTXload() -> ((tid,hdr,instance)+)\n\
-- Return list of installed packages reverse sorted by transaction id.\n" },
- {"IDTXglob",	(PyCFunction) rpmts_IDTXglob,	METH_NOARGS,
-"ts.IDTXglob() -> ((tid,hdr,instance)+)\n\
-- Return list of removed packages reverse sorted by transaction id.\n" },
- {"rollback",	(PyCFunction) rpmts_Rollback,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_NOARGS,
 "ts.openDB() -> None\n\

@@ -54,10 +54,6 @@ include/rpm/rpmdb.h: rpmdb/rpmdb.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmdb/rpmdb.h include/rpm/rpmdb.h
 BUILT_SOURCES += include/rpm/rpmdb.h
 CLEANFILES += include/rpm/rpmdb.h
-include/rpm/idtx.h: lib/idtx.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/lib/idtx.h include/rpm/idtx.h
-BUILT_SOURCES += include/rpm/idtx.h
-CLEANFILES += include/rpm/idtx.h
 include/rpm/rpmcallback.h: lib/rpmcallback.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmcallback.h include/rpm/rpmcallback.h
 BUILT_SOURCES += include/rpm/rpmcallback.h

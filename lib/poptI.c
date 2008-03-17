@@ -9,15 +9,12 @@
 
 #include "debug.h"
 
-extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
-
 struct rpmInstallArguments_s rpmIArgs = {
     0,			/* transFlags */
     0,			/* probFilter */
     0,			/* installInterfaceFlags */
     0,			/* eraseInterfaceFlags */
     0,			/* qva_flags */
-    0,			/* rbtid */
     0,			/* numRelocations */
     0,			/* noDeps */
     0,			/* incldocs */
@@ -28,7 +25,6 @@ struct rpmInstallArguments_s rpmIArgs = {
 
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022
-#define	POPT_ROLLBACK		-1023
 
 static void argerror(const char * desc)
 {
@@ -79,18 +75,6 @@ static void installArgCallback( poptContext con,
 	ia->relocations[ia->numRelocations].oldPath = oldPath;
 	ia->relocations[ia->numRelocations].newPath = newPath;
 	ia->numRelocations++;
-      }	break;
-
-    case POPT_ROLLBACK:
-      {	time_t tid;
-	if (arg == NULL)
-	    argerror(_("rollback takes a time/date stamp argument"));
-
-	tid = get_date(arg, NULL);
-
-	if (tid == (time_t)-1 || tid == (time_t)0)
-	    argerror(_("malformed rollback time/date stamp argument"));
-	ia->rbtid = tid;
       }	break;
 
     case RPMCLI_POPT_NODIGEST:
@@ -293,9 +277,6 @@ struct poptOption rpmInstallPoptTable[] = {
  { "replacepkgs", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_REPLACEPKG,
 	N_("reinstall if the package is already present"), NULL},
- { "rollback", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_ROLLBACK,
-	N_("deinstall new, reinstall old, package(s), back to <date>"),
-	N_("<date>") },
  { "test", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_TEST,
 	N_("don't install, but tell if it would work or not"), NULL},
  { "upgrade", 'U', POPT_BIT_SET,
