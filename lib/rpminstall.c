@@ -856,15 +856,12 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
     int numAdded;
     int numRemoved;
     rpmps ps;
-    int _unsafe_rollbacks = 0;
     rpmtransFlags transFlags = ia->transFlags;
 
     if (argv != NULL && *argv != NULL) {
 	rc = -1;
 	goto exit;
     }
-
-    _unsafe_rollbacks = rpmExpandNumeric("%{?_unsafe_rollbacks}");
 
     vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
     if (ia->qva_flags & VERIFY_DIGEST)
@@ -877,11 +874,6 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     (void) rpmtsSetFlags(ts, transFlags);
-
-    /*  Make the transaction a rollback transaction.  In a rollback
-     *  a best effort is what we want 
-     */
-    rpmtsSetType(ts, RPMTRANS_TYPE_ROLLBACK);
 
     itids = IDTXload(ts, RPMTAG_INSTALLTID);
     if (itids != NULL) {
@@ -936,10 +928,6 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 	if (thistid == 0 || thistid < ia->rbtid)
 	    break;
 
-	/* If we've reached the (configured) rollback goal, then we're done. */
-	if (_unsafe_rollbacks && thistid <= _unsafe_rollbacks)
-	    break;
-
 	rpmtsEmpty(ts);
 	(void) rpmtsSetFlags(ts, transFlags);
 
@@ -980,9 +968,6 @@ int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 		goto exit;
 
 	    numRemoved++;
-
-	    if (_unsafe_rollbacks)
-		rpmcliPackagesTotal++;
 
 	    if (!(ia->installInterfaceFlags & ifmask)) {
 		ia->installInterfaceFlags |= INSTALL_ERASE;

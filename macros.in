@@ -729,10 +729,6 @@ print (t)\
 #	If non-zero, all erasures will be automagically repackaged.
 %_repackage_all_erasures	0
 
-# If non-zero, a failed transaction will be automagically rolled 
-# back (sans, the failing transaction element).
-%_rollback_transaction_on_failure	0
-
 #	Verify digest/signature flags for various rpm modes:
 #	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
 #	0xc0c00 (_RPMVSF_NOSIGNATURES) --nosignature   if set, don't check signature(s)

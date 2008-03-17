@@ -5,7 +5,6 @@
 #include <rpm/rpmal.h>	/* XXX availablePackage/relocateFileList ,*/
 
 #include "rpmdb/rpmhash.h"	/* XXX hashTable */
-#include "lib/rpmtsscore.h"	/* for rpmtsScore */
 
 /** \ingroup rpmts
  */
@@ -36,7 +35,6 @@ struct diskspaceInfo_s {
  */
 struct rpmts_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
-    rpmtsType type;             /*!< default, rollback, autorollback */
 
     rpmdb sdb;			/*!< Solve database handle. */
     int sdbmode;		/*!< Solve database open mode. */
@@ -110,8 +108,6 @@ struct rpmts_s {
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
 
     rpmSpec spec;		/*!< Spec file control structure. */
-
-    rpmtsScore score;		/*!< Transaction Score (autorollback). */
 
     int nrefs;			/*!< Reference count. */
 };

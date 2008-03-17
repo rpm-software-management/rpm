@@ -98,15 +98,6 @@ typedef enum rpmVSFlags_e {
     /* bit(s) 16-31 unused */
 } rpmVSFlags;
 
-/** \ingroup rpmts
- * Transaction Types
- */
-typedef enum rpmtsType_e {
-	RPMTRANS_TYPE_NORMAL       = 0,
-	RPMTRANS_TYPE_ROLLBACK     = (1 << 0),
-	RPMTRANS_TYPE_AUTOROLLBACK = (1 << 1)
-} rpmtsType;
-
 #define	_RPMVSF_NODIGESTS	\
   ( RPMVSF_NOSHA1HEADER |	\
     RPMVSF_NOMD5HEADER |	\
@@ -346,26 +337,6 @@ int rpmtsAvailable(rpmts ts, const rpmds ds);
 int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds ds, const void * data),
 		const void * solveData);
-
-/** \ingroup rpmts
- * Return the type of a transaction.
- * @param ts		transaction set
- * @return		0 it is not, 1 it is.
- */
-rpmtsType rpmtsGetType(rpmts ts);
-
-/** \ingroup rpmts
- * Set transaction type.   Allowed types are:
- *
- * 	RPMTRANS_TYPE_NORMAL
- *	RPMTRANS_TYPE_ROLLBACK
- * 	RPMTRANS_TYPE_AUTOROLLBACK
- *
- * @param ts		transaction set
- * @param type		transaction type
- * @return		void
- */
-void rpmtsSetType(rpmts ts, rpmtsType type);
 
 /** \ingroup rpmts
  * Print possible suggestions for current transaction set, assuming
