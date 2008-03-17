@@ -13,6 +13,8 @@
 
 #endif
 
+#include <popt.h>
+
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmmacro.h>
