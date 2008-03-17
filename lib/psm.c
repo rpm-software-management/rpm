@@ -39,14 +39,10 @@ struct rpmpsm_s {
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
-    FD_t fd;			/*!< Repackage file handle. */
-    Header oh;			/*!< Repackage header. */
     rpmdbMatchIterator mi;
     const char * stepName;
     char * rpmio_flags;
     char * failedFile;
-    char * pkgURL;		/*!< Repackage URL. */
-    const char * pkgfn;		/*!< Repackage file name. */
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
@@ -1138,7 +1134,6 @@ static const char * pkgStageString(pkgStage a)
     case PSM_PKGINSTALL:	return "  install";
     case PSM_PKGERASE:		return "    erase";
     case PSM_PKGCOMMIT:		return "   commit";
-    case PSM_PKGSAVE:		return "repackage";
 
     case PSM_INIT:		return "init";
     case PSM_PRE:		return "pre";
@@ -1311,6 +1306,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	if (psm->goal == PSM_PKGINSTALL) {
+	    Header oh;
 	    int fc = rpmfiFC(fi);
 
 	    psm->scriptArg = psm->npkgs_installed + 1;
@@ -1330,9 +1326,9 @@ assert(psm->mi == NULL);
 			rpmteO(psm->te));
 	    }
 
-	    while ((psm->oh = rpmdbNextIterator(psm->mi)) != NULL) {
+	    while ((oh = rpmdbNextIterator(psm->mi)) != NULL) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
-		psm->oh = NULL;
+		oh = NULL;
 		break;
 	    }
 	    psm->mi = rpmdbFreeIterator(psm->mi);
@@ -1372,32 +1368,13 @@ assert(psm->mi == NULL);
 				(rpm_data_t *) &fi->fgroup, NULL);
 	    rc = RPMRC_OK;
 	}
-	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
+	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
 	
 	    /* Retrieve installed header. */
 	    rc = rpmpsmNext(psm, PSM_RPMDB_LOAD);
 	    if (rc == RPMRC_OK && psm->te)
 		rpmteSetHeader(psm->te, fi->h);
-	}
-	if (psm->goal == PSM_PKGSAVE) {
-	    /* Open output package for writing. */
-	    {	char * bfmt = rpmGetPath("%{_repackage_name_fmt}", NULL);
-		char * pkgbn =
-			headerSprintf(fi->h, bfmt, rpmTagTable, rpmHeaderFormats, NULL);
-
-		bfmt = _free(bfmt);
-		psm->pkgURL = rpmGenPath("%{?_repackage_root}",
-					 "%{?_repackage_dir}",
-					pkgbn);
-		pkgbn = _free(pkgbn);
-		(void) urlPath(psm->pkgURL, &psm->pkgfn);
-		psm->fd = Fopen(psm->pkgfn, "w.ufdio");
-		if (psm->fd == NULL || Ferror(psm->fd)) {
-		    rc = RPMRC_FAIL;
-		    break;
-		}
-	    }
 	}
 	break;
     case PSM_PRE:
@@ -1463,91 +1440,6 @@ assert(psm->mi == NULL);
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPREUN))
 		rc = rpmpsmNext(psm, PSM_SCRIPT);
-	}
-	if (psm->goal == PSM_PKGSAVE) {
-	    int noArchiveSize = 0;
-
-	    /* Regenerate original header. */
-	    {	void * uh = NULL;
-		rpmTagType uht;
-		rpm_count_t uhc;
-
-		if (headerGetEntry(fi->h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
-		    psm->oh = headerCopyLoad(uh);
-		    uh = hfd(uh, uht);
-		} else
-		if (headerGetEntry(fi->h, RPMTAG_HEADERIMAGE, &uht, &uh, &uhc))
-		{
-		    HeaderIterator hi;
-		    rpmTagType type;
-		    rpmTag tag;
-		    rpm_count_t count;
-		    rpm_data_t ptr;
-		    Header oh;
-
-		    /* Load the original header from the blob. */
-		    oh = headerCopyLoad(uh);
-
-		    /* XXX this is headerCopy w/o headerReload() */
-		    psm->oh = headerNew();
-
-		    for (hi = headerInitIterator(oh);
-		        headerNextIterator(hi, &tag, &type, &ptr, &count);
-		        ptr = headerFreeData(ptr, type))
-		    {
-			if (tag == RPMTAG_ARCHIVESIZE)
-			    noArchiveSize = 1;
-		        if (ptr) (void) headerAddEntry(psm->oh, tag, type, ptr, count);
-		    }
-		    hi = headerFreeIterator(hi);
-
-		    oh = headerFree(oh);
-		    uh = hfd(uh, uht);
-		} else
-		    break;	/* XXX shouldn't ever happen */
-	    }
-
-	    /* Retrieve type of payload compression. */
-	   	/* FIX: psm->oh may be NULL */
-	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
-
-	    /* Write the lead section into the package. */
-	    {
-		rpmlead lead = rpmLeadFromHeader(psm->oh);
-		rc = rpmLeadWrite(psm->fd, lead);
-		lead = rpmLeadFree(lead);
-		if (rc != RPMRC_OK) {
-		    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
-			 Fstrerror(psm->fd));
-		    break;
-		}
-	    }
-		
-	    /* Write the signature section into the package. */
-	    /* XXX rpm-4.1 and later has archive size in signature header. */
-	    {	Header sigh = headerRegenSigHeader(fi->h, noArchiveSize);
-		/* Reallocate the signature into one contiguous region. */
-		sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
-		if (sigh == NULL) {
-		    rpmlog(RPMLOG_ERR, _("Unable to reload signature header\n"));
-		    rc = RPMRC_FAIL;
-		    break;
-		}
-		rc = rpmWriteSignature(psm->fd, sigh);
-		sigh = rpmFreeSignature(sigh);
-		if (rc) break;
-	    }
-
-	    /* Add remove transaction id to header. */
-	    if (psm->oh != NULL)
-	    {	rpm_tid_t tid = rpmtsGetTid(ts);
-		xx = headerAddEntry(psm->oh, RPMTAG_REMOVETID,
-			RPM_INT32_TYPE, &tid, 1);
-	    }
-
-	    /* Write the metadata section into the package. */
-	    rc = headerWrite(psm->fd, psm->oh, HEADER_MAGIC_YES);
-	    if (rc) break;
 	}
 	break;
     case PSM_PROCESS:
@@ -1648,47 +1540,6 @@ assert(psm->mi == NULL);
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
 	}
-	if (psm->goal == PSM_PKGSAVE) {
-	    rpmFileAction * actions = fi->actions;
-	    rpmFileAction action = fi->action;
-
-	    fi->action = FA_COPYOUT;
-	    fi->actions = NULL;
-
-	    if (psm->fd == NULL) {	/* XXX can't happen */
-		rc = RPMRC_FAIL;
-		break;
-	    }
-	   	/* FIX: fdDup mey return NULL. */
-	    xx = Fflush(psm->fd);
-	    psm->cfd = Fdopen(fdDup(Fileno(psm->fd)), psm->rpmio_flags);
-	    if (psm->cfd == NULL) {	/* XXX can't happen */
-		rc = RPMRC_FAIL;
-		break;
-	    }
-
-	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd,
-			NULL, &psm->failedFile);
-	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_COMPRESS),
-			fdOp(psm->cfd, FDSTAT_WRITE));
-	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
-			fdOp(psm->cfd, FDSTAT_DIGEST));
-	    xx = fsmTeardown(fi->fsm);
-
-	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	    xx = Fclose(psm->cfd);
-	    psm->cfd = NULL;
-	    errno = saveerrno;
-
-	    /* XXX make sure progress is closed out */
-	    psm->what = RPMCALLBACK_INST_PROGRESS;
-	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
-	    psm->total = psm->amount;
-	    xx = rpmpsmNext(psm, PSM_NOTIFY);
-
-	    fi->action = action;
-	    fi->actions = actions;
-	}
 	break;
     case PSM_POST:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
@@ -1764,8 +1615,6 @@ assert(psm->mi == NULL);
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
 		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 	}
-	if (psm->goal == PSM_PKGSAVE) {
-	}
 
 	/* Restore root directory if changed. */
 	xx = rpmpsmNext(psm, PSM_CHROOT_OUT);
@@ -1775,13 +1624,6 @@ assert(psm->mi == NULL);
     case PSM_FINI:
 	/* Restore root directory if changed. */
 	xx = rpmpsmNext(psm, PSM_CHROOT_OUT);
-
-	if (psm->fd != NULL) {
-	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	    xx = Fclose(psm->fd);
-	    psm->fd = NULL;
-	    errno = saveerrno;
-	}
 
 	if (rc) {
 	    if (psm->failedFile)
@@ -1796,18 +1638,15 @@ assert(psm->mi == NULL);
 	    psm->what = RPMCALLBACK_CPIO_ERROR;
 	    psm->amount = 0;
 	    psm->total = 0;
-	    /* FIX: psm->fd may be NULL. */
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 	}
 
-	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
+	if (psm->goal == PSM_PKGERASE) {
 	    if (psm->te != NULL) 
 		rpmteSetHeader(psm->te, NULL);
 	    if (fi->h != NULL)
 		fi->h = headerFree(fi->h);
  	}
-	psm->oh = headerFree(psm->oh);
-	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);
 
@@ -1819,7 +1658,6 @@ assert(psm->mi == NULL);
 
     case PSM_PKGINSTALL:
     case PSM_PKGERASE:
-    case PSM_PKGSAVE:
 	psm->goal = stage;
 	psm->rc = RPMRC_OK;
 	psm->stepName = pkgStageString(stage);
@@ -1912,7 +1750,7 @@ assert(psm->mi == NULL);
 	    payload_compressor = "gzip";
 	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
 	*t = '\0';
-	t = stpcpy(t, ((psm->goal == PSM_PKGSAVE) ? "w9" : "r"));
+	t = stpcpy(t, "r");
 	if (!strcmp(payload_compressor, "gzip"))
 	    t = stpcpy(t, ".gzdio");
 	if (!strcmp(payload_compressor, "bzip2"))

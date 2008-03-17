@@ -1372,58 +1372,6 @@ assert(psm != NULL);
     }
 
     /* ===============================================
-     * Save removed files before erasing.
-     */
-    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	int progress;
-
-	progress = 0;
-	pi = rpmtsiInit(ts);
-	while ((p = rpmtsiNext(pi, 0)) != NULL) {
-
-	    if ((fi = rpmtsiFi(pi)) == NULL)
-		continue;	/* XXX can't happen */
-	    switch (rpmteType(p)) {
-	    case TR_ADDED:
-		break;
-	    case TR_REMOVED:
-		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_REPACKAGE))
-		    break;
-		if (!progress)
-		    NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_START,
-				7, numRemoved, NULL, ts->notifyData));
-
-		NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_PROGRESS, progress,
-			numRemoved, NULL, ts->notifyData));
-		progress++;
-
-		(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_REPACKAGE), 0);
-
-	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
-		fi->mapflags |= CPIO_MAP_ABSOLUTE;
-		fi->mapflags |= CPIO_MAP_ADDDOT;
-		fi->mapflags |= CPIO_ALL_HARDLINKS;
-		psm = rpmpsmNew(ts, p, fi);
-assert(psm != NULL);
-		xx = rpmpsmStage(psm, PSM_PKGSAVE);
-		psm = rpmpsmFree(psm);
-		fi->mapflags &= ~CPIO_MAP_ABSOLUTE;
-		fi->mapflags &= ~CPIO_MAP_ADDDOT;
-		fi->mapflags &= ~CPIO_ALL_HARDLINKS;
-
-		(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_REPACKAGE), 0);
-
-		break;
-	    }
-	}
-	pi = rpmtsiFree(pi);
-	if (progress) {
-	    NOTIFY(ts, (NULL, RPMCALLBACK_REPACKAGE_STOP, 7, numRemoved,
-			NULL, ts->notifyData));
-	}
-    }
-
-    /* ===============================================
      * Install and remove packages.
      */
     lastFailKey = (rpmalKey)-2;	/* erased packages have -1 */

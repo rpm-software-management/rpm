@@ -22,9 +22,9 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_UNINST_PROGRESS	= (1 <<  7),
     RPMCALLBACK_UNINST_START	= (1 <<  8),
     RPMCALLBACK_UNINST_STOP	= (1 <<  9),
-    RPMCALLBACK_REPACKAGE_PROGRESS = (1 << 10),
-    RPMCALLBACK_REPACKAGE_START	= (1 << 11),
-    RPMCALLBACK_REPACKAGE_STOP	= (1 << 12),
+    RPMCALLBACK_REPACKAGE_PROGRESS = (1 << 10),	/* obsolete, unused */
+    RPMCALLBACK_REPACKAGE_START	= (1 << 11),	/* obsolete, unused */
+    RPMCALLBACK_REPACKAGE_STOP	= (1 << 12),	/* obsolete, unused */
     RPMCALLBACK_UNPACK_ERROR	= (1 << 13),
     RPMCALLBACK_CPIO_ERROR	= (1 << 14),
     RPMCALLBACK_SCRIPT_ERROR	= (1 << 15)

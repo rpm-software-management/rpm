@@ -848,7 +848,6 @@ static void rpmtsPrintStats(rpmts ts)
     rpmtsPrintStat("check:       ", rpmtsOp(ts, RPMTS_OP_CHECK));
     rpmtsPrintStat("order:       ", rpmtsOp(ts, RPMTS_OP_ORDER));
     rpmtsPrintStat("fingerprint: ", rpmtsOp(ts, RPMTS_OP_FINGERPRINT));
-    rpmtsPrintStat("repackage:   ", rpmtsOp(ts, RPMTS_OP_REPACKAGE));
     rpmtsPrintStat("install:     ", rpmtsOp(ts, RPMTS_OP_INSTALL));
     rpmtsPrintStat("erase:       ", rpmtsOp(ts, RPMTS_OP_ERASE));
     rpmtsPrintStat("scriptlets:  ", rpmtsOp(ts, RPMTS_OP_SCRIPTLETS));

@@ -37,8 +37,8 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
     RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
     RPMTRANS_FLAG_NOCONTEXTS	= (1 <<  8),	/*!< from --nocontexts */
-    RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< from --dirstash */
-    RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< from --repackage */
+    RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< obsolete, unused */
+    RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< obsolete, unused */
 
     RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),
     RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
@@ -130,7 +130,6 @@ typedef	enum rpmtsOpX_e {
     RPMTS_OP_CHECK		=  1,
     RPMTS_OP_ORDER		=  2,
     RPMTS_OP_FINGERPRINT	=  3,
-    RPMTS_OP_REPACKAGE		=  4,
     RPMTS_OP_INSTALL		=  5,
     RPMTS_OP_ERASE		=  6,
     RPMTS_OP_SCRIPTLETS		=  7,

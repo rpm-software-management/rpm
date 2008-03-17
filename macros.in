@@ -713,22 +713,6 @@ print (t)\
 # XXX	Note: escaped %% for use in headerSprintf()
 #%_solve_name_fmt	%{?_solve_pkgsdir}%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
-#	The output binary package file name template used when repackaging
-#	erased packages.
-#
-# XXX	Note: escaped %% for use in headerSprintf()
-%_repackage_name_fmt	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
-
-#	The directory in which erased packages will be saved when using
-#	the --repackage option.
-%_repackage_dir		/var/spool/repackage
-
-#	A path (i.e. URL) prefix that is pre-pended to %{_repackage_dir}.
-%_repackage_root	%{nil}
-
-#	If non-zero, all erasures will be automagically repackaged.
-%_repackage_all_erasures	0
-
 #	Verify digest/signature flags for various rpm modes:
 #	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
 #	0xc0c00 (_RPMVSF_NOSIGNATURES) --nosignature   if set, don't check signature(s)

@@ -167,40 +167,6 @@ void * rpmShowProgress(const void * arg,
 	rpmcliProgressCurrent = 0;
 	break;
 
-    case RPMCALLBACK_REPACKAGE_START:
-	rpmcliHashesCurrent = 0;
-	rpmcliProgressTotal = total;
-	rpmcliProgressCurrent = 0;
-	if (!(flags & INSTALL_LABEL))
-	    break;
-	if (flags & INSTALL_HASH)
-	    fprintf(stdout, "%-28s\n", _("Repackaging..."));
-	else
-	    fprintf(stdout, "%s\n", _("Repackaging erased files..."));
-	(void) fflush(stdout);
-	break;
-
-    case RPMCALLBACK_REPACKAGE_PROGRESS:
-	if (amount && (flags & INSTALL_HASH))
-	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
-	break;
-
-    case RPMCALLBACK_REPACKAGE_STOP:
-	rpmcliProgressTotal = total;
-	rpmcliProgressCurrent = total;
-	if (flags & INSTALL_HASH)
-	    printHash(1, 1);	/* Fixes "preparing..." progress bar */
-	rpmcliProgressTotal = rpmcliPackagesTotal;
-	rpmcliProgressCurrent = 0;
-	if (!(flags & INSTALL_LABEL))
-	    break;
-	if (flags & INSTALL_HASH)
-	    fprintf(stdout, "%-28s\n", _("Upgrading..."));
-	else
-	    fprintf(stdout, "%s\n", _("Upgrading packages..."));
-	(void) fflush(stdout);
-	break;
-
     case RPMCALLBACK_UNINST_PROGRESS:
 	break;
     case RPMCALLBACK_UNINST_START:
@@ -264,9 +230,6 @@ int rpmInstall(rpmts ts,
     if (fileArgv == NULL) goto exit;
 
     rpmcliPackagesTotal = 0;
-
-    if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
-	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
@@ -707,9 +670,6 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
     if (ia->qva_flags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
-
-    if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
-	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
     /* XXX suggest mechanism only meaningful when installing */
     ia->transFlags |= RPMTRANS_FLAG_NOSUGGEST;

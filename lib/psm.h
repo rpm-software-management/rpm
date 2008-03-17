@@ -36,7 +36,6 @@ typedef enum pkgStage_e {
     PSM_PKGINSTALL	=  7,
     PSM_PKGERASE	=  8,
     PSM_PKGCOMMIT	= 10,
-    PSM_PKGSAVE		= 12,
 
     PSM_CREATE		= 17,
     PSM_NOTIFY		= 22,
