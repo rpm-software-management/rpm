@@ -40,10 +40,6 @@ check_PROGRAMS += tds
 tds_SOURCES = tds.c
 tds_LDADD = librpm.la	
  
-check_PROGRAMS += trb
-trb_SOURCES = trb.c
-trb_LDADD = librpm.la
- 
 check_PROGRAMS += tthread
 tthread_SOURCES = tthread.c
 tthread_LDADD = librpm.la @WITH_LIBELF_LIB@

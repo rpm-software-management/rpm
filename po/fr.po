@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-11 11:15+0200\n"
+"POT-Creation-Date: 2008-03-17 14:25+0200\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -88,61 +88,61 @@ msgstr "erreur dans la lecteur de l'entête du paquetage\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "Impossible de ré-ouvrir la charge utile: %s\n"
 
-#: rpmqv.c:78
+#: rpmqv.c:76
 msgid "Query options (with -q or --query):"
 msgstr "Options de requêtes (avec -q ou --query):"
 
-#: rpmqv.c:81
+#: rpmqv.c:79
 msgid "Verify options (with -V or --verify):"
 msgstr "Options de vérifications (avec -V ou --verify):"
 
-#: rpmqv.c:85
+#: rpmqv.c:83
 #, fuzzy
 msgid "Source options (with --query or --verify):"
 msgstr "Options de vérifications (avec -V ou --verify):"
 
-#: rpmqv.c:89
+#: rpmqv.c:87
 msgid "File tree walk options (with --ftswalk):"
 msgstr ""
 
-#: rpmqv.c:95
+#: rpmqv.c:93
 msgid "Signature options:"
 msgstr "Otions de signatures"
 
-#: rpmqv.c:101
+#: rpmqv.c:99
 msgid "Database options:"
 msgstr "Options de la base de données"
 
-#: rpmqv.c:107
+#: rpmqv.c:105
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "Options de construction avec [ <fichier_spec> | <tarball> | <paquetage "
 "source> ]:"
 
-#: rpmqv.c:113
+#: rpmqv.c:111
 msgid "Install/Upgrade/Erase options:"
 msgstr "Options d'installation/désinstallation/mise à jour:"
 
-#: rpmqv.c:120 tools/rpmcache.c:528 tools/rpmdeps.c:32 tools/rpmgraph.c:255
+#: rpmqv.c:118 tools/rpmcache.c:528 tools/rpmdeps.c:32 tools/rpmgraph.c:255
 msgid "Common options for all rpm modes and executables:"
 msgstr "Options communes a tous les modes et executables rpm:"
 
-#: rpmqv.c:135 lib/poptI.c:35
+#: rpmqv.c:133 lib/poptI.c:31
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:141 lib/poptALL.c:83
+#: rpmqv.c:139 lib/poptALL.c:83
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
-#: rpmqv.c:146
+#: rpmqv.c:144
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr ""
 
-#: rpmqv.c:147
+#: rpmqv.c:145
 #, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
@@ -150,112 +150,112 @@ msgstr ""
 "Ce programme peut être librement redistribué sous les termes de la licence "
 "GNU GPL\n"
 
-#: rpmqv.c:282
+#: rpmqv.c:280
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Erreur interne au traitement de l'argument (%d) :-(\n"
 
-#: rpmqv.c:320 rpmqv.c:326 rpmqv.c:332 rpmqv.c:369
+#: rpmqv.c:318 rpmqv.c:324 rpmqv.c:330 rpmqv.c:367
 msgid "only one major mode may be specified"
 msgstr "un seul mode majeur peut être specifié"
 
-#: rpmqv.c:348
+#: rpmqv.c:346
 msgid "one type of query/verify may be performed at a time"
 msgstr "un seul type de requête/vérification à la fois"
 
-#: rpmqv.c:352
+#: rpmqv.c:350
 msgid "unexpected query flags"
 msgstr "option de requête inattendue"
 
-#: rpmqv.c:355
+#: rpmqv.c:353
 msgid "unexpected query format"
 msgstr "format de requête inattendu"
 
-#: rpmqv.c:358
+#: rpmqv.c:356
 msgid "unexpected query source"
 msgstr "source de requête inattendue"
 
-#: rpmqv.c:401
+#: rpmqv.c:399
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "seuls l'installation, la mise à jour, rmsource et rmspec peuvent être forcés"
 
-#: rpmqv.c:403
+#: rpmqv.c:401
 msgid "files may only be relocated during package installation"
 msgstr "les fichiers ne peuvent être relogés qu'à l'installation"
 
-#: rpmqv.c:406
+#: rpmqv.c:404
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "impossible d'utiliser --prefix avec --relocate ou --excludepath"
 
-#: rpmqv.c:409
+#: rpmqv.c:407
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate et --excludepath ne peuvent être utilisés qu'à l'installation de "
 "nouveaux paquetages"
 
-#: rpmqv.c:412
+#: rpmqv.c:410
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 "--prefix ne peut être utilisé qu'à l'installation de nouveaux paquetages"
 
-#: rpmqv.c:415
+#: rpmqv.c:413
 msgid "arguments to --prefix must begin with a /"
 msgstr "les arguments de --prefix doivent commencer par un /"
 
-#: rpmqv.c:418
+#: rpmqv.c:416
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:422
+#: rpmqv.c:420
 msgid "--percent may only be specified during package installation"
 msgstr "--percent ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:426
+#: rpmqv.c:424
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:430
+#: rpmqv.c:428
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:434
+#: rpmqv.c:432
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:438
+#: rpmqv.c:436
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "utiliser --excludedocs _OU_ --includedocs (pas les 2)"
 
-#: rpmqv.c:442
+#: rpmqv.c:440
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:446
+#: rpmqv.c:444
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:451
+#: rpmqv.c:449
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:455
+#: rpmqv.c:453
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "--allmatches ne peut être utilisé qu'à la désinstallation de paquetages"
 
-#: rpmqv.c:459
+#: rpmqv.c:457
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles ne peut être utilisé qu'à l'installation de paquetages"
 
-#: rpmqv.c:464
+#: rpmqv.c:462
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb ne peut être utilisé qu'à l'installation/la désinstallation de "
 "paquetages"
 
-#: rpmqv.c:469
+#: rpmqv.c:467
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -263,7 +263,7 @@ msgstr ""
 "les options désactivant les scripts ne peuvent être utilisées qu'à la (dés)"
 "installation"
 
-#: rpmqv.c:474
+#: rpmqv.c:472
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -271,7 +271,7 @@ msgstr ""
 "les options desactivant les triggers ne peuvent être utilisées qu'à la (dés)"
 "installation"
 
-#: rpmqv.c:478
+#: rpmqv.c:476
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -279,14 +279,14 @@ msgstr ""
 "--nodeps ne peut être spécifié que pour la (re)construction, la "
 "recompilation, l'(dés)installation, et la vérification"
 
-#: rpmqv.c:483
+#: rpmqv.c:481
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test ne peut être spécifié que pour la (dés)installation et la construction"
 
-#: rpmqv.c:488
+#: rpmqv.c:486
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -294,82 +294,82 @@ msgstr ""
 "--root (-r) ne peut être utilisé que pour la (dés)installation, les requêtes "
 "et la reconstruction de la base de données"
 
-#: rpmqv.c:499
+#: rpmqv.c:497
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "les arguments ed --root (-r) doivent commencer par un /"
 
-#: rpmqv.c:525
+#: rpmqv.c:523
 #, c-format
 msgid "no files to sign\n"
 msgstr "aucun fichier à signer\n"
 
-#: rpmqv.c:530
+#: rpmqv.c:528
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "ne peut accéder au fichier %s\n"
 
-#: rpmqv.c:550
+#: rpmqv.c:548
 #, c-format
 msgid "pgp not found: "
 msgstr "pgp non trouvé: "
 
-#: rpmqv.c:558
+#: rpmqv.c:556
 msgid "Enter pass phrase: "
 msgstr "Entrez la phrase de passe: "
 
-#: rpmqv.c:560
+#: rpmqv.c:558
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Mauvaise phrase de passe\n"
 
-#: rpmqv.c:564
+#: rpmqv.c:562
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Phrase de passe bonne.\n"
 
-#: rpmqv.c:569
+#: rpmqv.c:567
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "%%_signature invalide and le fichier de macros.\n"
 
-#: rpmqv.c:576
+#: rpmqv.c:574
 msgid "--sign may only be used during package building"
 msgstr "--sign est réservé à la construction d'un paquetage"
 
-#: rpmqv.c:592
+#: rpmqv.c:590
 #, c-format
 msgid "exec failed\n"
 msgstr "echec de l'exec\n"
 
-#: rpmqv.c:628
+#: rpmqv.c:626
 msgid "no packages files given for rebuild"
 msgstr "aucun paquetage spécifié pour reconstruction"
 
-#: rpmqv.c:694
+#: rpmqv.c:692
 msgid "no spec files given for build"
 msgstr "aucun fichier spec spécifié pour construction"
 
-#: rpmqv.c:696
+#: rpmqv.c:694
 msgid "no tar files given for build"
 msgstr "aucun fichier tar spécifié pour construction"
 
-#: rpmqv.c:718
+#: rpmqv.c:715
 msgid "no packages given for erase"
 msgstr "n'a aucun paquetage à désinstaller"
 
-#: rpmqv.c:756
+#: rpmqv.c:749
 msgid "no packages given for install"
 msgstr "n'a aucun paquetage à installer"
 
-#: rpmqv.c:772
+#: rpmqv.c:762
 msgid "no arguments given for query"
 msgstr "aucun argument fourni à la requête"
 
-#: rpmqv.c:787
+#: rpmqv.c:777
 msgid "no arguments given for verify"
 msgstr "aucun argument fourni à la vérification"
 
-#: rpmqv.c:802
+#: rpmqv.c:792
 msgid "no arguments given"
 msgstr "aucun argument fourni"
 
@@ -586,7 +586,7 @@ msgstr "Le fichier non précédé d'un \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Substitution non permise: %s\n"
 
-#: build/files.c:1747 lib/rpminstall.c:310
+#: build/files.c:1747 lib/rpminstall.c:272
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fichier non trouvé par la substitution: %s\n"
@@ -755,7 +755,7 @@ msgstr "Impossible de recharger l'entête de la signature.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Impossible d'ouvrir %s: %s\n"
 
-#: build/pack.c:495 lib/psm.c:1569
+#: build/pack.c:495
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Impossible d'écrire le paquetage: %s\n"
@@ -1295,17 +1295,17 @@ msgstr "ne pas vérifier les dépendances de construction"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "générer un(des) entête(s) compatible(s) avec l'emballage rpm[23]"
 
-#: build/poptBT.c:214 lib/poptALL.c:220 lib/poptI.c:253 lib/poptQV.c:345
+#: build/poptBT.c:214 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:345
 #: lib/poptQV.c:354 lib/poptQV.c:393
 msgid "don't verify package digest(s)"
 msgstr "ne pas vérifier les sommes de hachage du paquetage"
 
-#: build/poptBT.c:216 lib/poptALL.c:222 lib/poptI.c:255 lib/poptQV.c:348
+#: build/poptBT.c:216 lib/poptALL.c:222 lib/poptI.c:236 lib/poptQV.c:348
 #: lib/poptQV.c:356 lib/poptQV.c:396
 msgid "don't verify database header(s) when retrieved"
 msgstr "ne pas vérifier l'entête de la base de données à la récupération"
 
-#: build/poptBT.c:218 lib/poptALL.c:224 lib/poptI.c:257 lib/poptQV.c:351
+#: build/poptBT.c:218 lib/poptALL.c:224 lib/poptI.c:238 lib/poptQV.c:351
 #: lib/poptQV.c:358 lib/poptQV.c:398
 msgid "don't verify package signature(s)"
 msgstr "ne pas vérifier la(les) signature(s) du paquetage"
@@ -1348,7 +1348,7 @@ msgstr "générer un entête compatible avec l'emballage rpm[23]"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Impossible d'exécuter %s: %s\n"
 
-#: build/rpmfc.c:134 lib/psm.c:850
+#: build/rpmfc.c:134 lib/psm.c:840
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Impossible d'ouvrir %s: %s\n"
@@ -1851,40 +1851,32 @@ msgstr "déboguer la manipulation de cache d'URL"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: table d'option mal configurée (%d)\n"
 
-#: lib/poptI.c:58
+#: lib/poptI.c:54
 msgid "exclude paths must begin with a /"
 msgstr "les chemins d'exclusions doivent commencer par un /"
 
-#: lib/poptI.c:70
+#: lib/poptI.c:66
 msgid "relocations must begin with a /"
 msgstr "les relogements doivent commencer par un /"
 
-#: lib/poptI.c:73
+#: lib/poptI.c:69
 msgid "relocations must contain a ="
 msgstr "les relogement doivent contenir un ="
 
-#: lib/poptI.c:76
+#: lib/poptI.c:72
 msgid "relocations must have a / following the ="
 msgstr "dans les relogements un / doit suivre le ="
 
-#: lib/poptI.c:87
-msgid "rollback takes a time/date stamp argument"
-msgstr "le roulement arrière prend comme argument une date"
-
-#: lib/poptI.c:92
-msgid "malformed rollback time/date stamp argument"
-msgstr "argument date du roulement arrière malformé"
-
-#: lib/poptI.c:143
+#: lib/poptI.c:127
 msgid "add suggested packages to transaction"
 msgstr "rajouter à la transaction les paquetages suggérés"
 
-#: lib/poptI.c:147
+#: lib/poptI.c:131
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installer tous les fichiers, meme si les configurations disent le contraire"
 
-#: lib/poptI.c:151
+#: lib/poptI.c:135
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1892,165 +1884,159 @@ msgstr ""
 "retirer tous les paquetages qui correspondent à <paquetage> (normalement on "
 "retourne une erreur si le <paquetage> correspond à plusieurs paquetages"
 
-#: lib/poptI.c:157 lib/poptI.c:237
+#: lib/poptI.c:141 lib/poptI.c:218
 msgid "do not execute package scriptlet(s)"
 msgstr "ne pas exécuter le(s) scriptlet(s) du paquetages"
 
-#: lib/poptI.c:161
+#: lib/poptI.c:145
 #, fuzzy
 msgid "relocate files in non-relocatable package"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:165
+#: lib/poptI.c:149
 msgid "print dependency loops as warning"
 msgstr ""
 
-#: lib/poptI.c:169
-msgid "save erased package files by renaming into sub-directory"
-msgstr ""
-"sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
-"répertoire"
-
-#: lib/poptI.c:172
+#: lib/poptI.c:153
 msgid "erase (uninstall) package"
 msgstr "désinstaller un paquetage"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:153
 msgid "<package>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:175 lib/poptI.c:215
+#: lib/poptI.c:156 lib/poptI.c:196
 msgid "do not install configuration files"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:178 lib/poptI.c:220
+#: lib/poptI.c:159 lib/poptI.c:201
 msgid "do not install documentation"
 msgstr "ne pas installer la documentation"
 
-#: lib/poptI.c:180
+#: lib/poptI.c:161
 msgid "skip files with leading component <path> "
 msgstr "sauter les fichiers commence par le <chemin> indiqué"
 
-#: lib/poptI.c:181
+#: lib/poptI.c:162
 msgid "<path>"
 msgstr "<chemin>"
 
-#: lib/poptI.c:185
+#: lib/poptI.c:166
 #, fuzzy
 msgid "detect file conflicts between packages"
 msgstr "reloger des fichiers d'un paquetage non relogeable"
 
-#: lib/poptI.c:187
+#: lib/poptI.c:168
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "raccourci pour --replacepkgs --replacefiles"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:172
 msgid "upgrade package(s) if already installed"
 msgstr "met à jour le(s) paquetage(s) déjà installé(s)"
 
-#: lib/poptI.c:192 lib/poptI.c:208 lib/poptI.c:304
+#: lib/poptI.c:173 lib/poptI.c:189 lib/poptI.c:279
 msgid "<packagefile>+"
 msgstr "<paquetage>+"
 
-#: lib/poptI.c:194
+#: lib/poptI.c:175
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "afficher des marqueurs au fur et à mesure que le paquetage s'installe (avec -"
 "v c'est bien(tm))"
 
-#: lib/poptI.c:197
+#: lib/poptI.c:178
 msgid "don't verify package architecture"
 msgstr "ne pas vérifier l'architecture du paquetage"
 
-#: lib/poptI.c:200
+#: lib/poptI.c:181
 msgid "don't verify package operating system"
 msgstr "ne pas vérifier le système d'exploitation du paquetage"
 
-#: lib/poptI.c:203
+#: lib/poptI.c:184
 msgid "don't check disk space before installing"
 msgstr "ne pas vérifier l'espace disque avant l'installation"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:186
 msgid "install documentation"
 msgstr "installer la documentation"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:189
 msgid "install package(s)"
 msgstr "installer le(s) paquetage(s)"
 
-#: lib/poptI.c:211
+#: lib/poptI.c:192
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "mettre à jour la base données, mais ne pas modifier le système de fichiers"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:198
 msgid "do not verify package dependencies"
 msgstr "ne pas vérifier les dépendances du paquetage"
 
-#: lib/poptI.c:223 lib/poptQV.c:289 lib/poptQV.c:292
+#: lib/poptI.c:204 lib/poptQV.c:289 lib/poptQV.c:292
 msgid "don't verify MD5 digest of files"
 msgstr "ne pas vérifier les sommes MD5 des fichiers"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:206
 #, fuzzy
 msgid "don't install file security contexts"
 msgstr "ne pas installer les fichiers de configuration"
 
-#: lib/poptI.c:229
+#: lib/poptI.c:210
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "ne pas ré-arranger l'ordre d'installation des paquetages pour satisfaire les "
 "dépendances"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:215
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "ne pas suggérer de résolution pour les dépendances manquantes"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:222
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%pre (s'il existe)"
 
-#: lib/poptI.c:244
+#: lib/poptI.c:225
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%post (s'il existe)"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:228
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%preun (s'il existe)"
 
-#: lib/poptI.c:250
+#: lib/poptI.c:231
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "ne pas exécuter le scriptlet %%postun (s'il existe)"
 
-#: lib/poptI.c:260
+#: lib/poptI.c:241
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "n'exécuter aucun scriptlet trigger activé par ce paquetage"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:244
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerprein"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:247
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "n'exécuter aucun scriplet %%triggerin"
 
-#: lib/poptI.c:269
+#: lib/poptI.c:250
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerun"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:253
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "n'exécuter aucun scriptlet %%triggerpostun"
 
-#: lib/poptI.c:276
+#: lib/poptI.c:257
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2058,54 +2044,39 @@ msgstr ""
 "mettre à jour avec un paquetage plus ancien (une m-à-j avec --force fait ça "
 "automatiquement"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:261
 msgid "print percentages as package installs"
 msgstr "afficher le pourcentage d'installation du paquetage"
 
-#: lib/poptI.c:282
+#: lib/poptI.c:263
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "reloge le paquetage vers <rep>, si relogeable"
 
-#: lib/poptI.c:283
+#: lib/poptI.c:264
 msgid "<dir>"
 msgstr "<rep>"
 
-#: lib/poptI.c:285
+#: lib/poptI.c:266
 msgid "relocate files from path <old> to <new>"
 msgstr "reloge les fichiers du <vieux> chemin vers <nouveau>"
 
-#: lib/poptI.c:286
+#: lib/poptI.c:267
 msgid "<old>=<new>"
 msgstr "<vieux>=<nouveau>"
 
-#: lib/poptI.c:289
-msgid "save erased package files by repackaging"
-msgstr ""
-"sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
-
-#: lib/poptI.c:292
+#: lib/poptI.c:270
 msgid "ignore file conflicts between packages"
 msgstr ""
 
-#: lib/poptI.c:295
+#: lib/poptI.c:273
 msgid "reinstall if the package is already present"
 msgstr "réinstalle si le paquetage est déjà installé"
 
-#: lib/poptI.c:297
-msgid "deinstall new, reinstall old, package(s), back to <date>"
-msgstr ""
-"désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme "
-"c'était le cas pour cette <date>"
-
-#: lib/poptI.c:298
-msgid "<date>"
-msgstr "<date>"
-
-#: lib/poptI.c:300
+#: lib/poptI.c:275
 msgid "don't install, but tell if it would work or not"
 msgstr "n'installe pas, mais dit si ça marcherait ou pas"
 
-#: lib/poptI.c:303
+#: lib/poptI.c:278
 msgid "upgrade package(s)"
 msgstr "mises à jour des paquetages"
 
@@ -2335,53 +2306,49 @@ msgstr "signer le(s) paquetage(s) (identique à --addsign)"
 msgid "generate signature"
 msgstr "génération de signature"
 
-#: lib/psm.c:279
+#: lib/psm.c:269
 msgid "source package expected, binary found\n"
 msgstr "paquetage source attendu, paquetage binaire trouvé\n"
 
-#: lib/psm.c:390
+#: lib/psm.c:380
 msgid "source package contains no .spec file\n"
 msgstr "le paquetage source ne contient pas de fichier .spec\n"
 
-#: lib/psm.c:864
+#: lib/psm.c:854
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s) échec du scriptlet, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:873
+#: lib/psm.c:863
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s) échec du scriplet, code de sortie %d\n"
 
-#: lib/psm.c:879
+#: lib/psm.c:869
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) échec du scriplet, code de sortie %d\n"
 
-#: lib/psm.c:1489
+#: lib/psm.c:1417
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: échec du scriptlet %s (%d), on saute %s\n"
 
-#: lib/psm.c:1581
-msgid "Unable to reload signature header\n"
-msgstr "Impossible de recharger l'entête de signature\n"
-
-#: lib/psm.c:1656
+#: lib/psm.c:1499
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "échec du déballage de l'archive %s%s: %s\n"
 
-#: lib/psm.c:1657
+#: lib/psm.c:1500
 msgid " on file "
 msgstr " dans fichier "
 
-#: lib/psm.c:1838
+#: lib/psm.c:1631
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "échec de %s sur le fichier %s: %s\n"
 
-#: lib/psm.c:1841
+#: lib/psm.c:1634
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "échec %s: %s\n"
@@ -2483,7 +2450,7 @@ msgstr "numéro de paquetage invalide: %s\n"
 msgid "record %lu could not be read\n"
 msgstr "impossible de lire l'article %u\n"
 
-#: lib/query.c:665 lib/rpminstall.c:734
+#: lib/query.c:665 lib/rpminstall.c:693
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "le paquetage %s n'est pas installé\n"
@@ -2643,8 +2610,8 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr "- non supporté sur des chaînes de caractères\n"
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:431
-#: lib/rpminstall.c:563 lib/rpmts.c:646 tools/rpmgraph.c:119
+#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:393
+#: lib/rpminstall.c:525 lib/rpmts.c:646 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2655,104 +2622,73 @@ msgstr "échec de l'ouverture de %s: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "tag inconnu: \"%s\"\n"
 
-#: lib/rpmgi.c:627 lib/rpminstall.c:606 lib/rpminstall.c:768
-#: lib/rpminstall.c:1014 lib/transaction.c:927 tools/rpmgraph.c:194
+#: lib/rpmgi.c:627 lib/rpminstall.c:568 lib/rpminstall.c:727
+#: tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr "Dépendances requises:\n"
 
-#: lib/rpminstall.c:158
+#: lib/rpminstall.c:157
 msgid "Preparing..."
 msgstr "Préparation...              "
 
-#: lib/rpminstall.c:160
+#: lib/rpminstall.c:159
 msgid "Preparing packages for installation..."
 msgstr "Préparation des paquetages pour l'installation..."
 
-#: lib/rpminstall.c:178
-msgid "Repackaging..."
-msgstr "Ré-emballage..."
-
-#: lib/rpminstall.c:180
-msgid "Repackaging erased files..."
-msgstr "Ré-emballage des fichiers effacés..."
-
-#: lib/rpminstall.c:199
-msgid "Upgrading..."
-msgstr "Mise à jour..."
-
-#: lib/rpminstall.c:201
-msgid "Upgrading packages..."
-msgstr "Mise à jour des paquetages..."
-
-#: lib/rpminstall.c:372
+#: lib/rpminstall.c:334
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Récupération de %s\n"
 
-#: lib/rpminstall.c:393
+#: lib/rpminstall.c:355
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s ignoré - échec du téléchargement - %s\n"
 
-#: lib/rpminstall.c:450 lib/rpminstall.c:829 tools/rpmgraph.c:139
+#: lib/rpminstall.c:412 lib/rpminstall.c:788 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ne peut être installé\n"
 
-#: lib/rpminstall.c:492
+#: lib/rpminstall.c:454
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "le paquetage %s n'est pas relogeable\n"
 
-#: lib/rpminstall.c:539
+#: lib/rpminstall.c:501
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "erreur en lisant %s\n"
 
-#: lib/rpminstall.c:545
+#: lib/rpminstall.c:507
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "le fichier %s demande une version plus récente de RPM\n"
 
-#: lib/rpminstall.c:577
+#: lib/rpminstall.c:539
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: n'est pas un paquetage rpm (ni une list de paquetages): %s\n"
 
-#: lib/rpminstall.c:654
+#: lib/rpminstall.c:616
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ne peut ouvrir le fichier %s: %s\n"
 
-#: lib/rpminstall.c:743
+#: lib/rpminstall.c:702
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" spécifie plusieurs paquetages\n"
 
-#: lib/rpminstall.c:813
+#: lib/rpminstall.c:772
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "impossible d'ouvrir %s: %s\n"
 
-#: lib/rpminstall.c:819
+#: lib/rpminstall.c:778
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installation de %s\n"
-
-#: lib/rpminstall.c:1008 lib/transaction.c:920
-#, c-format
-msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr ""
-"Roulement arrière des paquetages (+%d/-%d) jusqu'à %-24.24s (0x%08x):\n"
-
-#: lib/rpminstall.c:1039 lib/transaction.c:972
-msgid "Cleaning up repackaged packages:\n"
-msgstr ""
-
-#: lib/rpminstall.c:1046 lib/transaction.c:979
-#, fuzzy, c-format
-msgid "\tRemoving %s:\n"
-msgstr "Récupération de %s\n"
 
 #: lib/rpmlead.c:100
 #, c-format
@@ -3114,56 +3050,6 @@ msgstr "Somme MD5 erronée: NONSUPPORTE\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signature: INCONNUE (%d)\n"
 
-#: lib/transaction.c:918
-msgid "Transaction failed...rolling back\n"
-msgstr ""
-
-#: lib/transaction.c:938
-msgid "Could not order auto-rollback transaction!\n"
-msgstr ""
-
-#: lib/transaction.c:1165
-msgid "Could not get install element database instance!\n"
-msgstr ""
-
-#: lib/transaction.c:1178
-msgid "Could not get header for auto-rollback transaction!\n"
-msgstr ""
-
-#: lib/transaction.c:1201
-#, c-format
-msgid "\tAdded from install element %s.\n"
-msgstr ""
-
-#: lib/transaction.c:1208
-msgid "Could not get repackaged header for auto-rollback transaction!\n"
-msgstr ""
-
-#: lib/transaction.c:1248
-msgid "Could not add erase element to auto-rollback transaction.\n"
-msgstr ""
-
-#: lib/transaction.c:1260
-#, fuzzy
-msgid "Failure reading repackaged package!\n"
-msgstr "erreur dans la lecteur de l'entête du paquetage\n"
-
-#: lib/transaction.c:1957
-msgid "Add failed.  Could not read package header.\n"
-msgstr ""
-
-#: lib/transaction.c:2039
-msgid "Add failed in rpmpsmStage().\n"
-msgstr ""
-
-#: lib/transaction.c:2082
-msgid "Add failed.  Could not get file list.\n"
-msgstr ""
-
-#: lib/transaction.c:2128
-msgid "Erase failed failed in rpmpsmStage().\n"
-msgstr ""
-
 #: lib/verify.c:274
 #, fuzzy, c-format
 msgid "missing   %c %s"
@@ -3314,146 +3200,146 @@ msgstr ""
 msgid "verify database files"
 msgstr "vérifier les fichiers de la base de données"
 
-#: rpmdb/rpmdb.c:180
+#: rpmdb/rpmdb.c:186
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nom de tag non-reconnu: \"%s\" ignoré\n"
 
-#: rpmdb/rpmdb.c:243
+#: rpmdb/rpmdb.c:258
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:253
+#: rpmdb/rpmdb.c:268
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "ne peut ouvrir l'index %s en utilisant db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:273
+#: rpmdb/rpmdb.c:288
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "ne peut ouvrir l'index %s\n"
 
-#: rpmdb/rpmdb.c:909
+#: rpmdb/rpmdb.c:926
 msgid "no dbpath has been set\n"
 msgstr "aucun dbpath n'a été fourni\n"
 
-#: rpmdb/rpmdb.c:1146 rpmdb/rpmdb.c:1271 rpmdb/rpmdb.c:1321 rpmdb/rpmdb.c:2225
-#: rpmdb/rpmdb.c:2344 rpmdb/rpmdb.c:3039
+#: rpmdb/rpmdb.c:1159 rpmdb/rpmdb.c:1284 rpmdb/rpmdb.c:1334 rpmdb/rpmdb.c:2238
+#: rpmdb/rpmdb.c:2357 rpmdb/rpmdb.c:3043
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en attrapant les articles \"%s\" de l'index %s\n"
 
-#: rpmdb/rpmdb.c:1496
+#: rpmdb/rpmdb.c:1509
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: on saute"
 
-#: rpmdb/rpmdb.c:1506
+#: rpmdb/rpmdb.c:1519
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erreur(%d) en stockant l'article nº%d dans %s\n"
 
-#: rpmdb/rpmdb.c:1606
+#: rpmdb/rpmdb.c:1619
 #, fuzzy, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: échec de fseek: %s\n"
 
-#: rpmdb/rpmdb.c:1787
+#: rpmdb/rpmdb.c:1800
 #, fuzzy, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: échec de l'ouverture: %s\n"
 
-#: rpmdb/rpmdb.c:2122
+#: rpmdb/rpmdb.c:2135
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: on saute"
 
-#: rpmdb/rpmdb.c:2151
+#: rpmdb/rpmdb.c:2164
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: l'entête nº%u endommagé a été téléchargé -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:2445
+#: rpmdb/rpmdb.c:2458
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: impossible de lire l'entête à 0x%x\n"
 
-#: rpmdb/rpmdb.c:2503
+#: rpmdb/rpmdb.c:2516
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "erreur(%d) en affectant l'article de l'entête nº%d pour l'enlèvement de %s\n"
 
-#: rpmdb/rpmdb.c:2634
+#: rpmdb/rpmdb.c:2647
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erreur(%d) en affectant les articles \"%s\" de l'index %s\n"
 
-#: rpmdb/rpmdb.c:2653
+#: rpmdb/rpmdb.c:2666
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erreur(%d) en stockant l'article \"%s\" dans %s\n"
 
-#: rpmdb/rpmdb.c:2663
+#: rpmdb/rpmdb.c:2676
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erreur(%d) en enlevant l'article \"%s\" de %s\n"
 
-#: rpmdb/rpmdb.c:2810
+#: rpmdb/rpmdb.c:2817
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erreur(%d) en allouant une nouvelle instance de paquetage\n"
 
-#: rpmdb/rpmdb.c:2866
+#: rpmdb/rpmdb.c:2870
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: on saute"
 
-#: rpmdb/rpmdb.c:3055
+#: rpmdb/rpmdb.c:3059
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erreur(%d) en stockant l'article %s dans %s\n"
 
-#: rpmdb/rpmdb.c:3442
+#: rpmdb/rpmdb.c:3446
 msgid "no dbpath has been set"
 msgstr "aucun dbpath fourni"
 
-#: rpmdb/rpmdb.c:3472
+#: rpmdb/rpmdb.c:3476
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "la base de données temporarire %s existe déjà\n"
 
-#: rpmdb/rpmdb.c:3480
+#: rpmdb/rpmdb.c:3484
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "Ne peut détruire le répertoire %s: %s\n"
 
-#: rpmdb/rpmdb.c:3527
+#: rpmdb/rpmdb.c:3531
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "l'entête nº%u dans la base de données n'est pas bon -- ignoré.\n"
 
-#: rpmdb/rpmdb.c:3565
+#: rpmdb/rpmdb.c:3569
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "impossible d'ajouter l'article qui était au départ à %u\n"
 
-#: rpmdb/rpmdb.c:3579
+#: rpmdb/rpmdb.c:3583
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Ne peut reconstruire la base de données: la base originale reste telle "
 "qu'elle est\n"
 
-#: rpmdb/rpmdb.c:3587
+#: rpmdb/rpmdb.c:3591
 msgid "failed to replace old database with new database!\n"
 msgstr "Ne peut remplacer la vieille base de données par la nouvelle!\n"
 
-#: rpmdb/rpmdb.c:3589
+#: rpmdb/rpmdb.c:3593
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 "remplacer les fichiers dans %s avec les fichiers de %s pour faire une "
 "récupération"
 
-#: rpmdb/rpmdb.c:3601
+#: rpmdb/rpmdb.c:3605
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Ne peut détruire le répertoire %s: %s\n"
@@ -3698,6 +3584,56 @@ msgstr "%s: échec de l'opération sur le cache: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: échec de la lecture de la liste de paquetages: %s\n"
+
+#~ msgid "rollback takes a time/date stamp argument"
+#~ msgstr "le roulement arrière prend comme argument une date"
+
+#~ msgid "malformed rollback time/date stamp argument"
+#~ msgstr "argument date du roulement arrière malformé"
+
+#~ msgid "save erased package files by renaming into sub-directory"
+#~ msgstr ""
+#~ "sauver les fichiers du paquetage désinstallé en les renommant dans un "
+#~ "sous-répertoire"
+
+#~ msgid "save erased package files by repackaging"
+#~ msgstr ""
+#~ "sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
+
+#~ msgid "deinstall new, reinstall old, package(s), back to <date>"
+#~ msgstr ""
+#~ "désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme "
+#~ "c'était le cas pour cette <date>"
+
+#~ msgid "<date>"
+#~ msgstr "<date>"
+
+#~ msgid "Unable to reload signature header\n"
+#~ msgstr "Impossible de recharger l'entête de signature\n"
+
+#~ msgid "Repackaging..."
+#~ msgstr "Ré-emballage..."
+
+#~ msgid "Repackaging erased files..."
+#~ msgstr "Ré-emballage des fichiers effacés..."
+
+#~ msgid "Upgrading..."
+#~ msgstr "Mise à jour..."
+
+#~ msgid "Upgrading packages..."
+#~ msgstr "Mise à jour des paquetages..."
+
+#~ msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
+#~ msgstr ""
+#~ "Roulement arrière des paquetages (+%d/-%d) jusqu'à %-24.24s (0x%08x):\n"
+
+#, fuzzy
+#~ msgid "\tRemoving %s:\n"
+#~ msgstr "Récupération de %s\n"
+
+#, fuzzy
+#~ msgid "Failure reading repackaged package!\n"
+#~ msgstr "erreur dans la lecteur de l'entête du paquetage\n"
 
 #~ msgid "========== recording tsort relations\n"
 #~ msgstr "========== enregistrement des relations de Ttri\n"
