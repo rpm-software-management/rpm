@@ -48,7 +48,6 @@ manual/macros \
 manual/multiplebuilds \
 manual/queryformat \
 manual/relocatable \
-manual/rollbacks \
 manual/signatures \
 manual/spec \
 manual/triggers \

@@ -68,7 +68,7 @@ rpm \- RPM パッケージマネージャ
 
 .BR rpm " {" \-e|\-\-erase "} [" \-\-allmatches "] [" \-\-nodeps "] [" \-\-noscripts ]
 .br
-.RB "    [" \-\-notriggers "] [" \-\-repackage "] [" \-\-test ]
+.RB "    [" \-\-notriggers "] [" \-\-test ]
 .I PACKAGE_NAME ...
 .SS その他:
 .BR rpm " {" \-\-initdb|\-\-rebuilddb }
@@ -162,7 +162,6 @@ rpm \- RPM パッケージマネージャ
 .RB [ \-\-prefix " " "\fINEWPATH" ]
 .br
 .RB [ \-\-relocate " " "\fIOLDPATH" = "\fINEWPATH" ]
-.RB [ \-\-repackage ] 
 .br
 .RB [ \-\-replacefiles ] 
 .RB [ \-\-replacepkgs ]
@@ -436,17 +435,6 @@ rpm をインストールするコマンドの一般的な形式は:
 が再配置されなければならないのなら、
 このオプションを繰り返し指定することができる。
 .TP
-.B \-\-repackage
-ファイルを削除する前に再パッケージする。
-以前にインストールされていたパッケージは、マクロ
-.B %_repackage_name_fmt
-によって名付けられ、マクロ
-.B %_repackage_dir
-(デフォルトは
-.IR /var/spool/repackage ;
-訳注: /usr/lib/rpm/macros では /var/spool/repackage に設定されている)
-で指定されたディレクトリに作成される。
-.TP
 .B \-\-replacefiles
 既にインストールされた他のパッケージのファイルを置き換えてしまう場合でも、
 パッケージをインストールする。
@@ -463,7 +451,7 @@ rpm を削除するコマンドの一般的な形式は:
 .PP
 .BR rpm " {" \-e|\-\-erase "} [" \-\-allmatches "] [" \-\-nodeps "] [" \-\-noscripts ]
 .br
-.RB "    [" \-\-notriggers "] [" \-\-repackage "] [" \-\-test ]
+.RB "    [" \-\-notriggers "] [" \-\-test ]
 .I "PACKAGE_NAME ..."
 .PP
 以下のオプションが使用できる:
@@ -513,17 +501,6 @@ rpm を削除するコマンドの一般的な形式は:
 と
 .B %triggerpostun
 スクリプト(群)を実行しない。
-.TP
-.B \-\-repackage
-ファイルを削除する前に再パッケージする。
-以前にインストールされていたパッケージは、マクロ
-.B %_repackage_name_fmt
-によって名付けられ、マクロ
-.B %_repackage_dir
-(デフォルトは
-.IR /var/spool/repackage ;
-訳注: /usr/lib/rpm/macros では /var/spool/repackage に設定されている)
-で指定されたディレクトリに作成される。
 .TP
 .B \-\-test
 実際には何もアンインストールせず挙動だけを見せる。

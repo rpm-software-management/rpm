@@ -28,7 +28,7 @@ rpm \- Menedżer pakietów RPM
 \fBrpm\fR {\fB-F|--freshen\fR} [\fBopcje-instalacji\fR] \fB\fIPLIK_PAKIETU\fB\fR\fI ...\fR
 
 \fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
-    [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI\ ...\fR
+    [\fB--notriggers\fR] [\fB--test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI\ ...\fR
 
 .SS "RÓŻNE:"
 .PP
@@ -78,7 +78,7 @@ rpm \- Menedżer pakietów RPM
  [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINOWA_ŚCIEŻKA\fB\fR]
  [\fB--relocate \fISTARA_ŚCIEŻKA\fB=\fINOWA_ŚCIEŻKA\fB\fR]
- [\fB--repackage\fR] [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
+ [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
  [\fB--test\fR]
 
 .SH OPIS
@@ -310,13 +310,6 @@ na \fINOWĄ_ŚCIEŻKĘ\fR.
 Ta opcja może używana wiele razy, jeśli ma być zrelokowane kilka różnych
 \fISTARYCH_ŚCIEŻEK\fR.
 .TP
-\fB--repackage\fR
-Re-pakietuje pliki przed usunięciem. Poprzednio zainstalowany pakiet
-będzie nazwany zgodnie z makrem
-\fB%_repackage_name_fmt\fR
-i będzie utworzony w katalogu zapisanym w makrze
-\fB%_repackage_dir\fR (domyślną wartością jest \fI/var/spool/repackage\fR).
-.TP
 \fB--replacefiles\fR
 Instaluje pakiety nawet jeśli zastępują one pliki z innych, już
 zainstalowanych pakietów.
@@ -332,7 +325,7 @@ konflikty.
 Ogólną postacią komendy usuwania rpm-a jest
 .PP
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--test\fR] \fB\fINAZWA_PAKIETU\fB\fR\fI ...\fR
 
 .PP
 Można użyć następujących opcji:
@@ -374,13 +367,6 @@ Opcja \fB--notriggers\fR jest równoważna
 i wyłącza wykonywanie odpowiadających im skryptów
 \fB%triggerun\fR oraz
 \fB%triggerpostun\fR.
-.TP
-\fB--repackage\fR
-Re-pakietuje pliki przed usunięciem. Poprzednio zainstalowany pakiet
-będzie nazwany zgodnie z makrem
-\fB%_repackage_name_fmt\fR
-i będzie utworzony w katalogu zapisanym w makrze
-\fB%_repackage_dir\fR (domyślną wartością jest \fI/var/spool/repackage\fR).
 .TP
 \fB--test\fR
 Nie odinstalowuje niczego naprawdę, przechodzi tylko przez kolejne etapy.

@@ -43,7 +43,7 @@ rpm \- Менеджер пакетов RPM
 
 
 \fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
-    [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
+    [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
 
 .SS "РАЗНОЕ:"
 .PP
@@ -104,7 +104,7 @@ rpm \- Менеджер пакетов RPM
  [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
- [\fB--repackage\fR] [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
+ [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
  [\fB--test\fR]
 
 .SH "ОПИСАНИЕ"
@@ -340,14 +340,6 @@ rpm \- Менеджер пакетов RPM
 если требуется переместить несколько путей \fIOLDPATH\fR
 в пакете.
 .TP
-\fB--repackage\fR
-Переупаковать файлы перед удалением. Ранее установленный пакет
-будет назван в соответствии с макросом
-\fB%_repackage_name_fmt\fR
-и будет создан в каталоге, названном по значению макроса
-\fB%_repackage_dir\fR (значение по умолчанию - 
-\fI/var/spool/repackage\fR).
-.TP
 \fB--replacefiles\fR
 Установить пакеты, даже если они заменяют файлы от других
 установленных пакетов.
@@ -363,7 +355,7 @@ rpm \- Менеджер пакетов RPM
 Общая форма команды удаления rpm приведена ниже
 .PP
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 
 .PP
 Следующие опции могут быть также использованы:
@@ -408,14 +400,6 @@ rpm \- Менеджер пакетов RPM
 \fB%triggerun\fR и
 \fB%triggerpostun\fR 
 скриптлетов.
-.TP
-\fB--repackage\fR
-Переупаковать файлы перед удалением. Ранее установленный пакет 
-будет назван в соответствии с макросом
-\fB%_repackage_name_fmt\fR
-и будет создан в каталоге, названном по значению макроса
-\fB%_repackage_dir\fR (значение по умолчанию 
-- \fI/var/spool/repackage\fR).
 .TP
 \fB--test\fR
 Не удалять пакеты, просто выполнить проверку.

@@ -43,7 +43,7 @@ rpm \- RPM Package Manager
 
 
 \fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
-    [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
+    [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
 
 .SS "MISCELLANEOUS:"
 .PP
@@ -104,7 +104,7 @@ rpm \- RPM Package Manager
  [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
  [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
  [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
- [\fB--repackage\fR] [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
+ [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
  [\fB--test\fR]
 
 .SH "DESCRIPTION"
@@ -350,14 +350,6 @@ This option can be used repeatedly if several
 \fIOLDPATH\fR's in the package are to
 be relocated.
 .TP
-\fB--repackage\fR
-Re-package the files before erasing. The previously installed
-package will be named according to the macro
-\fB%_repackage_name_fmt\fR
-and will be created in the directory named by
-the macro \fB%_repackage_dir\fR (default value
-is \fI/var/spool/repackage\fR).
-.TP
 \fB--replacefiles\fR
 Install the packages even if they replace files from other,
 already installed, packages.
@@ -374,7 +366,7 @@ potential conflicts.
 The general form of an rpm erase command is 
 .PP
 
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
 
 .PP
 The following options may also be used:
@@ -420,14 +412,6 @@ and turns off execution of the corresponding
 \fB%triggerun\fR, and
 \fB%triggerpostun\fR
 scriptlet(s).
-.TP
-\fB--repackage\fR
-Re-package the files before erasing. The previously installed
-package will be named according to the macro
-\fB%_repackage_name_fmt\fR
-and will be created in the directory named by
-the macro \fB%_repackage_dir\fR (default value
-is \fI/var/spool/repackage\fR).
 .TP
 \fB--test\fR
 Don't really uninstall anything, just go through the motions.
