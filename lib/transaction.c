@@ -873,6 +873,100 @@ rpmfi rpmtsiFi(const rpmtsi tsi)
     return fi;
 }
 
+/*
+ * Run pre/post transaction scripts for transaction set
+ * param ts	Transaction set
+ * param stag	RPMTAG_PRETRANS or RPMTAG_POSTTRANS
+ * return	0 on success, -1 on error (invalid script tag)
+ */
+static int runTransScripts(rpmts ts, rpmTag stag) 
+{
+    rpmtsi pi; 
+    rpmte p;
+    rpmfi fi;
+    rpmpsm psm;
+    int xx;
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+    	const char * script = NULL, * scriptprog = NULL;
+    	rpmTag progtag = RPMTAG_NOT_FOUND;
+
+	if ((fi = rpmtsiFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
+	
+	switch (stag) {
+	case RPMTAG_PRETRANS:
+	    script = fi->pretrans;
+	    scriptprog = fi->pretransprog;
+	    progtag = RPMTAG_PRETRANSPROG;
+	    break;
+	case RPMTAG_POSTTRANS:
+	    script = fi->posttrans;
+	    scriptprog = fi->posttransprog;
+	    progtag = RPMTAG_POSTTRANSPROG;
+	    p->fi = rpmfiFree(p->fi);
+	    break;
+	default:
+	    /* programmer error, blow up */
+	    assert(progtag != RPMTAG_NOT_FOUND);
+	    break;
+	}
+	
+    	/* If no pre/post-transaction script, then don't bother. */
+	if (script == NULL)
+ 	    continue;
+
+    	p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
+		    rpmteKey(p), ts->notifyData);
+    	p->h = NULL;
+    	if (rpmteFd(p) != NULL) {
+	    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
+    	    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
+	    rpmRC rpmrc;
+	    ovsflags = rpmtsSetVSFlags(ts, vsflags);
+	    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
+		    rpmteNEVR(p), &p->h);
+	    vsflags = rpmtsSetVSFlags(ts, ovsflags);
+	    switch (rpmrc) {
+	    default:
+	        /* FIX: notify annotations */
+	        p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
+			    0, 0, rpmteKey(p), ts->notifyData);
+	        p->fd = NULL;
+	        break;
+	    case RPMRC_NOTTRUSTED:
+	    case RPMRC_NOKEY:
+	    case RPMRC_OK:
+	        break;
+	    }
+        }
+
+    	if (rpmteFd(p) != NULL) {
+ 	    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+	    if (fi != NULL) {	/* XXX can't happen */
+		if (stag == RPMTAG_PRETRANS) {
+		    fi->te = p;
+		    p->fi = fi;
+		} else {
+		    p->fi->te = p;
+		}
+	    }
+	    psm = rpmpsmNew(ts, p, p->fi);
+	    assert(psm != NULL);
+	    xx = rpmpsmScriptStage(psm, stag, progtag);
+	    psm = rpmpsmFree(psm);
+
+	    (void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
+			  rpmteKey(p), ts->notifyData);
+	    p->fd = NULL;
+	    p->h = headerFree(p->h);
+	}
+    }
+    pi = rpmtsiFree(pi);
+    return 0;
+}
+
 #define	NOTIFY(_ts, _al) if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
@@ -1053,59 +1147,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      	  || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
-	pi = rpmtsiInit(ts);
-	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	    if ((fi = rpmtsiFi(pi)) == NULL)
-		continue;	/* XXX can't happen */
-
-	    /* If no pre-transaction script, then don't bother. */
-	    if (fi->pretrans == NULL)
-		continue;
-
-	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-			    rpmteKey(p), ts->notifyData);
-	    p->h = NULL;
-	    if (rpmteFd(p) != NULL) {
-		rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-		rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-		rpmRC rpmrc;
-		ovsflags = rpmtsSetVSFlags(ts, vsflags);
-		rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-			    rpmteNEVR(p), &p->h);
-		vsflags = rpmtsSetVSFlags(ts, ovsflags);
-		switch (rpmrc) {
-		default:
-		    /* FIX: notify annotations */
-		    p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-				    0, 0,
-				    rpmteKey(p), ts->notifyData);
-		    p->fd = NULL;
-		    break;
-		case RPMRC_NOTTRUSTED:
-		case RPMRC_NOKEY:
-		case RPMRC_OK:
-		    break;
-		}
-	    }
-
-	    if (rpmteFd(p) != NULL) {
-		fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
-		if (fi != NULL) {	/* XXX can't happen */
-		    fi->te = p;
-		    p->fi = fi;
-		}
-		psm = rpmpsmNew(ts, p, p->fi);
-assert(psm != NULL);
-		xx = rpmpsmScriptStage(psm, RPMTAG_PRETRANS, RPMTAG_PRETRANSPROG);
-		psm = rpmpsmFree(psm);
-
-		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-				  rpmteKey(p), ts->notifyData);
-		p->fd = NULL;
-		p->h = headerFree(p->h);
-	    }
-	}
-	pi = rpmtsiFree(pi);
+	runTransScripts(ts, RPMTAG_PRETRANS);
     }
 
     /* ===============================================
@@ -1542,61 +1584,7 @@ assert(psm != NULL);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
-	pi = rpmtsiInit(ts);
-	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	    int haspostscript;
-
-	    if ((fi = rpmtsiFi(pi)) == NULL)
-		continue;	/* XXX can't happen */
-
-	    haspostscript = (fi->posttrans != NULL ? 1 : 0);
-	    p->fi = rpmfiFree(p->fi);
-
-	    /* If no post-transaction script, then don't bother. */
-	    if (!haspostscript)
-		continue;
-
-	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-			    rpmteKey(p), ts->notifyData);
-	    p->h = NULL;
-	    if (rpmteFd(p) != NULL) {
-		rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-		rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-		rpmRC rpmrc;
-		ovsflags = rpmtsSetVSFlags(ts, vsflags);
-		rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-			    rpmteNEVR(p), &p->h);
-		vsflags = rpmtsSetVSFlags(ts, ovsflags);
-		switch (rpmrc) {
-		default:
-		    p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-				    0, 0, rpmteKey(p), ts->notifyData);
-		    p->fd = NULL;
-		    break;
-		case RPMRC_NOTTRUSTED:
-		case RPMRC_NOKEY:
-		case RPMRC_OK:
-		    break;
-		}
-	    }
-
-	    if (rpmteFd(p) != NULL) {
-		p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
-		if (p->fi != NULL)	/* XXX can't happen */
-		    p->fi->te = p;
-		psm = rpmpsmNew(ts, p, p->fi);
-assert(psm != NULL);
-		rpmpsmScriptStage(psm, RPMTAG_POSTTRANS, RPMTAG_POSTTRANSPROG);
-		psm = rpmpsmFree(psm);
-
-		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-				  rpmteKey(p), ts->notifyData);
-		p->fd = NULL;
-		p->fi = rpmfiFree(p->fi);
-		p->h = headerFree(p->h);
-	    }
-	}
-	pi = rpmtsiFree(pi);
+	runTransScripts(ts, RPMTAG_POSTTRANS);
     }
 
     rpmtsFreeLock(lock);
