@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <stdarg.h>
+
 #include <rpm/rpmstring.h>
 #include "debug.h"
 
@@ -176,3 +178,32 @@ int rstrncasecmp(const char *s1, const char *s2, size_t n)
 
   return (int)(c1 - c2);
 }
+
+/* 
+ * Simple and stupid asprintf() clone.
+ * FIXME: write to work with non-C99 vsnprintf or check for one in configure.
+ */
+int rasprintf(char **strp, const char *fmt, ...)
+{
+    int n;
+    va_list ap;
+    char * p = NULL;
+  
+    if (strp == NULL) 
+	return -1;
+
+    va_start(ap, fmt);
+    n = vsnprintf(NULL, 0, fmt, ap);
+    va_end(ap);
+
+    if (n >= -1) {
+	size_t nb = n + 1;
+	p = xmalloc(nb);
+    	va_start(ap, fmt);
+        n = vsnprintf(p, nb + 1, fmt, ap);
+    	va_end(ap);
+    } 
+    *strp = p;
+    return n;
+}
+

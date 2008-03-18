@@ -8,6 +8,8 @@
 
 #include <stddef.h>
 
+#include <rpm/rpmutil.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -84,6 +86,11 @@ int rstrcasecmp(const char * s1, const char * s2)		;
  * Locale insensitive strncasecmp(3).
  */
 int rstrncasecmp(const char *s1, const char * s2, size_t n)	;
+
+/** \ingroup rpmstring
+ * asprintf() clone
+ */
+int rasprintf(char **strp, const char *fmt, ...) RPM_GNUC_PRINTF(2, 3);
 
 /** \ingroup rpmstring
  * Split string into fields separated by a character.
