@@ -200,7 +200,7 @@ int rasprintf(char **strp, const char *fmt, ...)
 	size_t nb = n + 1;
 	p = xmalloc(nb);
     	va_start(ap, fmt);
-        n = vsnprintf(p, nb + 1, fmt, ap);
+        n = vsnprintf(p, nb, fmt, ap);
     	va_end(ap);
     } 
     *strp = p;
