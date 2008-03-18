@@ -163,7 +163,7 @@ static void rpmRebuildTargetVars(const char **target, const char ** canontarget)
 
 static int optionCompare(const void * a, const void * b)
 {
-    return xstrcasecmp(((const struct rpmOption *) a)->name,
+    return rstrcasecmp(((const struct rpmOption *) a)->name,
 		      ((const struct rpmOption *) b)->name);
 }
 
@@ -187,7 +187,7 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     int delEntry = 0;
     int i;
 
-    while (*name && xisspace(*name)) name++;
+    while (*name && risspace(*name)) name++;
 
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
@@ -200,10 +200,10 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 	return 1;
     }
 
-    while (*chptr == ':' || xisspace(*chptr)) chptr--;
+    while (*chptr == ':' || risspace(*chptr)) chptr--;
     *(++chptr) = '\0';
     equivs = chptr + 1;
-    while (*equivs && xisspace(*equivs)) equivs++;
+    while (*equivs && risspace(*equivs)) equivs++;
     if (!*equivs) {
 	delEntry = 1;
     }
@@ -252,7 +252,7 @@ machEquivSearch(const machEquivTable table, const char * name)
     int i;
 
     for (i = 0; i < table->count; i++)
-	if (!xstrcasecmp(table->list[i].name, name))
+	if (!rstrcasecmp(table->list[i].name, name))
 	    return table->list + i;
 
     return NULL;
@@ -541,18 +541,18 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 	next = se;
 
 	/* Trim leading spaces */
-	while (*s && xisspace(*s)) s++;
+	while (*s && risspace(*s)) s++;
 
 	/* We used to allow comments to begin anywhere, but not anymore. */
 	if (*s == '#' || *s == '\0') continue;
 
 	/* Find end-of-keyword. */
 	se = (char *)s;
-	while (*se && !xisspace(*se) && *se != ':') se++;
+	while (*se && !risspace(*se) && *se != ':') se++;
 
-	if (xisspace(*se)) {
+	if (risspace(*se)) {
 	    *se++ = '\0';
-	    while (*se && xisspace(*se) && *se != ':') se++;
+	    while (*se && risspace(*se) && *se != ':') se++;
 	}
 
 	if (*se != ':') {
@@ -561,7 +561,7 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 	    return RPMRC_FAIL;
 	}
 	*se++ = '\0';	/* terminate keyword or option, point to value */
-	while (*se && xisspace(*se)) se++;
+	while (*se && risspace(*se)) se++;
 
 	/* Find keyword in table */
 	searchOption.name = s;
@@ -584,7 +584,7 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 	      {	FD_t fdinc;
 
 		s = se;
-		while (*se && !xisspace(*se)) se++;
+		while (*se && !risspace(*se)) se++;
 		if (*se != '\0') *se++ = '\0';
 
 #if 0 /* XXX doesn't seem to do anything useful, only break things... */
@@ -617,7 +617,7 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 
 	    if (option->archSpecific) {
 		arch = se;
-		while (*se && !xisspace(*se)) se++;
+		while (*se && !risspace(*se)) se++;
 		if (*se == '\0') {
 		    rpmlog(RPMLOG_ERR,
 				_("missing architecture for %s at %s:%d\n"),
@@ -625,7 +625,7 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 		    return RPMRC_FAIL;
 		}
 		*se++ = '\0';
-		while (*se && xisspace(*se)) se++;
+		while (*se && risspace(*se)) se++;
 		if (*se == '\0') {
 		    rpmlog(RPMLOG_ERR,
 				_("missing argument for %s at %s:%d\n"),
@@ -1071,7 +1071,7 @@ static void defaultMachine(const char ** arch,
 		for (fd = 0;
 		    (un.release[fd] != 0 && (fd < sizeof(un.release)));
 		    fd++) {
-		      if (!xisdigit(un.release[fd]) && (un.release[fd] != '.')) {
+		      if (!risdigit(un.release[fd]) && (un.release[fd] != '.')) {
 			un.release[fd] = 0;
 			break;
 		      }
@@ -1481,7 +1481,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	    if ((co = strrchr(c, '-')) == NULL) {
 		co = c;
 	    } else {
-		if (!xstrcasecmp(co, "-gnu"))
+		if (!rstrcasecmp(co, "-gnu"))
 		    *co = '\0';
 		if ((co = strrchr(c, '-')) == NULL)
 		    co = c;
@@ -1507,7 +1507,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	ca = (a) ? xstrdup(a) : NULL;
     }
     for (x = 0; ca[x] != '\0'; x++)
-	ca[x] = xtolower(ca[x]);
+	ca[x] = rtolower(ca[x]);
 
     if (co == NULL) {
 	const char *o = NULL;
@@ -1515,7 +1515,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	co = (o) ? xstrdup(o) : NULL;
     }
     for (x = 0; co[x] != '\0'; x++)
-	co[x] = xtolower(co[x]);
+	co[x] = rtolower(co[x]);
 
     /* XXX For now, set canonical target to arch-os */
     if (ct == NULL) {

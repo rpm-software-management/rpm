@@ -293,12 +293,12 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	    unsigned int argInfo;
 
 	    /* Skip leading white space. */
-	    while (*o && xisspace(*o))
+	    while (*o && risspace(*o))
 		o++;
 
 	    /* Find and terminate next key=value pair. Save next start point. */
 	    for (oe = o; oe && *oe; oe++) {
-		if (xisspace(*oe))
+		if (risspace(*oe))
 		    break;
 		if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
 		    break;
@@ -356,9 +356,9 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	    case POPT_ARG_LONG:
 	      {	long aLong = strtol(p, &pe, 0);
 		if (pe) {
-		    if (!xstrncasecmp(pe, "Mb", 2))
+		    if (!rstrncasecmp(pe, "Mb", 2))
 			aLong *= 1024 * 1024;
-		    else if (!xstrncasecmp(pe, "Kb", 2))
+		    else if (!rstrncasecmp(pe, "Kb", 2))
 			aLong *= 1024;
 		    else if (*pe != '\0') {
 			rpmlog(RPMLOG_ERR,

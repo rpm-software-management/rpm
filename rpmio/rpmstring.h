@@ -15,75 +15,75 @@ extern "C" {
 /** \ingroup rpmstring
  * Locale insensitive islower(3) 
  */
-static inline int xislower(int c)  {
+static inline int rislower(int c)  {
     return (c >= 'a' && c <= 'z');
 }
 
 /** \ingroup rpmstring
  * Locale insensitive isupper(3)
  */
-static inline int xisupper(int c)  {
+static inline int risupper(int c)  {
     return (c >= 'A' && c <= 'Z');
 }
 
 /** \ingroup rpmstring
  * Locale insensitive isalpha(3)
  */
-static inline int xisalpha(int c)  {
-    return (xislower(c) || xisupper(c));
+static inline int risalpha(int c)  {
+    return (rislower(c) || risupper(c));
 }
 
 /** \ingroup rpmstring
  * Locale insensitive isdigit(3)
  */
-static inline int xisdigit(int c)  {
+static inline int risdigit(int c)  {
     return (c >= '0' && c <= '9');
 }
 
 /** \ingroup rpmstring
  * Locale insensitive isalnum(3)
  */
-static inline int xisalnum(int c)  {
-    return (xisalpha(c) || xisdigit(c));
+static inline int risalnum(int c)  {
+    return (risalpha(c) || risdigit(c));
 }
 
 /** \ingroup rpmstring
  * Locale insensitive isblank(3)
  */
-static inline int xisblank(int c)  {
+static inline int risblank(int c)  {
     return (c == ' ' || c == '\t');
 }
 
 /** \ingroup rpmstring
  * Locale insensitive isspace(3)
  */
-static inline int xisspace(int c)  {
-    return (xisblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
+static inline int risspace(int c)  {
+    return (risblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
 
 /** \ingroup rpmstring
  * Locale insensitive tolower(3)
  */
-static inline int xtolower(int c)  {
-    return ((xisupper(c)) ? (c | ('a' - 'A')) : c);
+static inline int rtolower(int c)  {
+    return ((risupper(c)) ? (c | ('a' - 'A')) : c);
 }
 
 /** \ingroup rpmstring
  * Locale insensitive toupper(3)
  */
-static inline int xtoupper(int c)  {
-    return ((xislower(c)) ? (c & ~('a' - 'A')) : c);
+static inline int rtoupper(int c)  {
+    return ((rislower(c)) ? (c & ~('a' - 'A')) : c);
 }
 
 /** \ingroup rpmstring
  * Locale insensitive strcasecmp(3).
  */
-int xstrcasecmp(const char * s1, const char * s2)		;
+int rstrcasecmp(const char * s1, const char * s2)		;
 
 /** \ingroup rpmstring
  * Locale insensitive strncasecmp(3).
  */
-int xstrncasecmp(const char *s1, const char * s2, size_t n)	;
+int rstrncasecmp(const char *s1, const char * s2, size_t n)	;
 
 /** \ingroup rpmstring
  * Split string into fields separated by a character.

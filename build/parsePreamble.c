@@ -11,8 +11,8 @@
 #include <rpm/rpmfileutil.h>
 #include "debug.h"
 
-#define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
-#define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
+#define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
+#define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
 
 /**
  */
@@ -103,7 +103,7 @@ static int parseSimplePart(const char *line, char **name, int *flag)
 static inline int parseYesNo(const char * s)
 {
     return ((!s || (s[0] == 'n' || s[0] == 'N' || s[0] == '0') ||
-	!xstrcasecmp(s, "false") || !xstrcasecmp(s, "off"))
+	!rstrcasecmp(s, "false") || !rstrcasecmp(s, "off"))
 	    ? 0 : 1);
 }
 
@@ -148,9 +148,9 @@ static int parseBits(const char * s, const tokenBits tokbits,
 
     if (s) {
 	while (*s != '\0') {
-	    while ((c = *s) && xisspace(c)) s++;
+	    while ((c = *s) && risspace(c)) s++;
 	    se = s;
-	    while ((c = *se) && xisalpha(c)) se++;
+	    while ((c = *se) && risalpha(c)) se++;
 	    if (s == se)
 		break;
 	    for (tb = tokbits; tb->name; tb++) {
@@ -161,7 +161,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	    if (tb->name == NULL)
 		break;
 	    bits |= tb->bits;
-	    while ((c = *se) && xisspace(c)) se++;
+	    while ((c = *se) && risspace(c)) se++;
 	    if (c != ',')
 		break;
 	    s = ++se;
@@ -178,7 +178,7 @@ static inline char * findLastChar(char * s)
     char *res = s;
 
     while (*s != '\0') {
-	if (! xisspace(*s))
+	if (! risspace(*s))
 	    res = s;
 	s++;
     }
@@ -199,7 +199,7 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
     if (!hge(h, tag, &type, (rpm_data_t *)&names, &count))
 	return -1;
     while (count--) {
-	if (!xstrcasecmp(names[count], name))
+	if (!rstrcasecmp(names[count], name))
 	    break;
     }
     names = hfd(names, type);
@@ -754,7 +754,7 @@ static int findPreambleTag(rpmSpec spec,rpmTag * tag,
 	initPreambleList();
 
     for (p = preambleList; p->token != NULL; p++) {
-	if (!(p->token && !xstrncasecmp(spec->line, p->token, p->len)))
+	if (!(p->token && !rstrncasecmp(spec->line, p->token, p->len)))
 	    continue;
 	if (p->obsolete) {
 	    rpmlog(RPMLOG_ERR, _("Legacy syntax is unsupported: %s\n"),
@@ -786,7 +786,7 @@ static int findPreambleTag(rpmSpec spec,rpmTag * tag,
 	if (*s != '(') return 1;
 	s++;
 	SKIPSPACE(s);
-	while (!xisspace(*s) && *s != ')')
+	while (!risspace(*s) && *s != ')')
 	    *lang++ = *s++;
 	*lang = '\0';
 	SKIPSPACE(s);

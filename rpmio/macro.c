@@ -399,7 +399,7 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 
 #define	COPYNAME(_ne, _s, _c)	\
     {	SKIPBLANK(_s,_c);	\
-	while(((_c) = *(_s)) && (xisalnum(_c) || (_c) == '_')) \
+	while(((_c) = *(_s)) && (risalnum(_c) || (_c) == '_')) \
 		*(_ne)++ = *(_s)++; \
 	*(_ne) = '\0';		\
     }
@@ -611,7 +611,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
     se = s;
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
-    if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
+    if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%define)\n"), n);
 	return se;
@@ -662,7 +662,7 @@ doUndefine(rpmMacroContext mc, const char * se)
     se = s;
 
     /* Names must start with alphabetic or _ and be at least 3 chars */
-    if (!((c = *n) && (xisalpha(c) || c == '_') && (ne - n) > 2)) {
+    if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%undefine)\n"), n);
 	goto exit;
@@ -1032,7 +1032,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	}
 	b = be;
     } else if (STREQ("S", f, fn)) {
-	for (b = buf; (c = *b) && xisdigit(c);)
+	for (b = buf; (c = *b) && risdigit(c);)
 	    b++;
 	if (!c) {	/* digit index */
 	    b++;
@@ -1040,7 +1040,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	} else
 	    b = buf;
     } else if (STREQ("P", f, fn)) {
-	for (b = buf; (c = *b) && xisdigit(c);)
+	for (b = buf; (c = *b) && risdigit(c);)
 	    b++;
 	if (!c) {	/* digit index */
 	    b++;
@@ -1127,7 +1127,7 @@ expandMacro(MacroBuf mb)
 		f = se = s;
 		if (*se == '-')
 			se++;
-		while((c = *se) && (xisalnum(c) || c == '_'))
+		while((c = *se) && (risalnum(c) || c == '_'))
 			se++;
 		/* Recognize non-alnum macros too */
 		switch (*se) {

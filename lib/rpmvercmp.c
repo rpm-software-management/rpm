@@ -35,8 +35,8 @@ int rpmvercmp(const char * a, const char * b)
 
     /* loop through each version segment of str1 and str2 and compare them */
     while (*one && *two) {
-	while (*one && !xisalnum(*one)) one++;
-	while (*two && !xisalnum(*two)) two++;
+	while (*one && !risalnum(*one)) one++;
+	while (*two && !risalnum(*two)) two++;
 
 	/* If we ran to the end of either, we are finished with the loop */
 	if (!(*one && *two)) break;
@@ -47,13 +47,13 @@ int rpmvercmp(const char * a, const char * b)
 	/* grab first completely alpha or completely numeric segment */
 	/* leave one and two pointing to the start of the alpha or numeric */
 	/* segment and walk str1 and str2 to end of segment */
-	if (xisdigit(*str1)) {
-	    while (*str1 && xisdigit(*str1)) str1++;
-	    while (*str2 && xisdigit(*str2)) str2++;
+	if (risdigit(*str1)) {
+	    while (*str1 && risdigit(*str1)) str1++;
+	    while (*str2 && risdigit(*str2)) str2++;
 	    isnum = 1;
 	} else {
-	    while (*str1 && xisalpha(*str1)) str1++;
-	    while (*str2 && xisalpha(*str2)) str2++;
+	    while (*str1 && risalpha(*str1)) str1++;
+	    while (*str2 && risalpha(*str2)) str2++;
 	    isnum = 0;
 	}
 

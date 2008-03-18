@@ -14,8 +14,8 @@
 #include <rpm/rpmfileutil.h>
 #include "debug.h"
 
-#define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
-#define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
+#define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
+#define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
 
 /* XXX FIXME: strlen for these is calculated at runtime, preventing const */
 static struct PartRec {
@@ -64,10 +64,10 @@ rpmParseState isPart(const char *line)
     
     for (p = partList; p->token != NULL; p++) {
 	char c;
-	if (xstrncasecmp(line, p->token, p->len))
+	if (rstrncasecmp(line, p->token, p->len))
 	    continue;
 	c = *(line + p->len);
-	if (c == '\0' || xisspace(c))
+	if (c == '\0' || risspace(c))
 	    break;
     }
 
@@ -88,7 +88,7 @@ static int matchTok(const char *token, const char *line)
 	SKIPNONSPACE(be);
 	if (be == b)
 	    break;
-	if (toklen != (be-b) || xstrncasecmp(token, b, (be-b)))
+	if (toklen != (be-b) || rstrncasecmp(token, b, (be-b)))
 	    continue;
 	rc = 1;
 	break;
@@ -199,7 +199,7 @@ static void copyNextLineFinish(rpmSpec spec, int strip)
     ch = ' ';
     while (*spec->nextline && ch != '\n') {
 	ch = *spec->nextline++;
-	if (!xisspace(ch))
+	if (!risspace(ch))
 	    last = spec->nextline;
     }
 
@@ -360,7 +360,7 @@ int readLine(rpmSpec spec, int strip)
 
 	s += 8;
 	fileName = s;
-	if (! xisspace(*fileName)) {
+	if (! risspace(*fileName)) {
 	    rpmlog(RPMLOG_ERR, _("malformed %%include statement\n"));
 	    return RPMRC_FAIL;
 	}

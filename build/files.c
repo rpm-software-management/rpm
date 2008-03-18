@@ -27,9 +27,9 @@
 
 #include "debug.h"
 
-#define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
-#define	SKIPWHITE(_x)	{while(*(_x) && (xisspace(*_x) || *(_x) == ',')) (_x)++;}
-#define	SKIPNONWHITE(_x){while(*(_x) &&!(xisspace(*_x) || *(_x) == ',')) (_x)++;}
+#define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
+#define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
 #define MAXDOCDIR 1024
 
@@ -418,7 +418,7 @@ static rpmRC parseForDev(const char * buf, FileList fl)
 
     p = pe; SKIPWHITE(p);
     pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
-    for (pe = p; *pe && xisdigit(*pe); pe++)
+    for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
 	fl->devmajor = atoi(p);
@@ -434,7 +434,7 @@ static rpmRC parseForDev(const char * buf, FileList fl)
 
     p = pe; SKIPWHITE(p);
     pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
-    for (pe = p; *pe && xisdigit(*pe); pe++)
+    for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
 	fl->devminor = atoi(p);

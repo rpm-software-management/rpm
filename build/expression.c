@@ -181,7 +181,7 @@ static int rdToken(ParseState state)
   char *p = state->p;
 
   /* Skip whitespace before the next token. */
-  while (*p && xisspace(*p)) p++;
+  while (*p && risspace(*p)) p++;
 
   switch (*p) {
   case '\0':
@@ -256,11 +256,11 @@ static int rdToken(ParseState state)
     break;
 
   default:
-    if (xisdigit(*p)) {
+    if (risdigit(*p)) {
       char temp[EXPRBUFSIZ], *t = temp;
 
       temp[0] = '\0';
-      while (*p && xisdigit(*p))
+      while (*p && risdigit(*p))
 	*t++ = *p++;
       *t++ = '\0';
       p--;
@@ -268,11 +268,11 @@ static int rdToken(ParseState state)
       token = TOK_INTEGER;
       v = valueMakeInteger(atoi(temp));
 
-    } else if (xisalpha(*p)) {
+    } else if (risalpha(*p)) {
       char temp[EXPRBUFSIZ], *t = temp;
 
       temp[0] = '\0';
-      while (*p && (xisalnum(*p) || *p == '_'))
+      while (*p && (risalnum(*p) || *p == '_'))
 	*t++ = *p++;
       *t++ = '\0';
       p--;

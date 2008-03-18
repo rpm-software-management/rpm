@@ -209,7 +209,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		    return NULL;
 		}
 		/* Parse explicit epoch. */
-		for (se = s; *se && xisdigit(*se); se++)
+		for (se = s; *se && risdigit(*se); se++)
 		    {};
 		if (*se == ':') {
 		    /* XXX skip explicit epoch's (for now) */

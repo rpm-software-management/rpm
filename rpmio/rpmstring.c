@@ -98,7 +98,7 @@ void truncStringBuf(StringBuf sb)
 void stripTrailingBlanksStringBuf(StringBuf sb)
 {
     while (sb->free != sb->allocated) {
-	if (! xisspace(*(sb->tail - 1)))
+	if (! risspace(*(sb->tail - 1)))
 	    break;
 	sb->free++;
 	sb->tail--;
@@ -136,7 +136,7 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
     }
 }
 
-int xstrcasecmp(const char * s1, const char * s2)
+int rstrcasecmp(const char * s1, const char * s2)
 {
   const char * p1 = s1;
   const char * p2 = s2;
@@ -147,8 +147,8 @@ int xstrcasecmp(const char * s1, const char * s2)
 
   do
     {
-      c1 = xtolower (*p1++);
-      c2 = xtolower (*p2++);
+      c1 = rtolower (*p1++);
+      c2 = rtolower (*p2++);
       if (c1 == '\0')
         break;
     }
@@ -157,7 +157,7 @@ int xstrcasecmp(const char * s1, const char * s2)
   return (int)(c1 - c2);
 }
 
-int xstrncasecmp(const char *s1, const char *s2, size_t n)
+int rstrncasecmp(const char *s1, const char *s2, size_t n)
 {
   const char * p1 = s1;
   const char * p2 = s2;
@@ -168,8 +168,8 @@ int xstrncasecmp(const char *s1, const char *s2, size_t n)
 
   do
     {
-      c1 = xtolower (*p1++);
-      c2 = xtolower (*p2++);
+      c1 = rtolower (*p1++);
+      c2 = rtolower (*p2++);
       if (c1 == '\0' || c1 != c2)
 	break;
     } while (--n > 0);

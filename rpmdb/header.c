@@ -1996,7 +1996,7 @@ static const char * myTagName(headerTagTableEntry tbl, int val)
     t = name;
     *t++ = *s++;
     while (*s != '\0')
-	*t++ = xtolower(*s++);
+	*t++ = rtolower(*s++);
     *t = '\0';
     return name;
 }
@@ -2011,7 +2011,7 @@ static const char * myTagName(headerTagTableEntry tbl, int val)
 static int myTagValue(headerTagTableEntry tbl, const char * name)
 {
     for (; tbl->name != NULL; tbl++) {
-	if (!xstrcasecmp(tbl->name, name))
+	if (!rstrcasecmp(tbl->name, name))
 	    return tbl->val;
     }
     return 0;
@@ -2052,7 +2052,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
-	if (!xstrcasecmp(ext->name, name)) {
+	if (!rstrcasecmp(ext->name, name)) {
 	    stag->ext = ext->u.tagFunction;
 	    stag->extNum = ext - hsa->exts;
 	    goto bingo;
@@ -2178,7 +2178,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    *chptr++ = '\0';
 
 	    while (start < chptr) {
-		if (xisdigit(*start)) {
+		if (risdigit(*start)) {
 		    i = strtoul(start, &start, 10);
 		    token->u.tag.pad += i;
 		    start = chptr;

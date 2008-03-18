@@ -120,7 +120,7 @@ static void rpmcliAllArgCallback( poptContext con,
     {   char *s, *t;
 	/* XXX Convert '-' in macro name to underscore, skip leading %. */
 	s = t = xstrdup(arg);
-	while (*t && !xisspace(*t)) {
+	while (*t && !risspace(*t)) {
 	    if (*t == '-') *t = '_';
 	    t++;
 	}

@@ -166,7 +166,7 @@ static const char * _tagName(rpmTag tag)
 		if (t->name != NULL)
 		    strcpy(nameBuf, t->name + (sizeof("RPMTAG_")-1));
 		for (s = nameBuf+1; *s != '\0'; s++)
-		    *s = xtolower(*s);
+		    *s = rtolower(*s);
 		break;
 	    }
 	}
@@ -229,21 +229,21 @@ static rpmTag _tagValue(const char * tagstr)
     int comparison, i, l, u;
     int xx;
 
-    if (!xstrcasecmp(tagstr, "Packages"))
+    if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
-    if (!xstrcasecmp(tagstr, "Depends"))
+    if (!rstrcasecmp(tagstr, "Depends"))
 	return RPMDBI_DEPENDS;
-    if (!xstrcasecmp(tagstr, "Added"))
+    if (!rstrcasecmp(tagstr, "Added"))
 	return RPMDBI_ADDED;
-    if (!xstrcasecmp(tagstr, "Removed"))
+    if (!rstrcasecmp(tagstr, "Removed"))
 	return RPMDBI_REMOVED;
-    if (!xstrcasecmp(tagstr, "Available"))
+    if (!rstrcasecmp(tagstr, "Available"))
 	return RPMDBI_AVAILABLE;
-    if (!xstrcasecmp(tagstr, "Hdlist"))
+    if (!rstrcasecmp(tagstr, "Hdlist"))
 	return RPMDBI_HDLIST;
-    if (!xstrcasecmp(tagstr, "Arglist"))
+    if (!rstrcasecmp(tagstr, "Arglist"))
 	return RPMDBI_ARGLIST;
-    if (!xstrcasecmp(tagstr, "Ftswalk"))
+    if (!rstrcasecmp(tagstr, "Ftswalk"))
 	return RPMDBI_FTSWALK;
 
     if (_rpmTags.byName == NULL)
@@ -257,7 +257,7 @@ static rpmTag _tagValue(const char * tagstr)
 	i = (l + u) / 2;
 	t = _rpmTags.byName[i];
 	
-	comparison = xstrcasecmp(tagstr, t->name + (sizeof("RPMTAG_")-1));
+	comparison = rstrcasecmp(tagstr, t->name + (sizeof("RPMTAG_")-1));
 
 	if (comparison < 0)
 	    u = i;

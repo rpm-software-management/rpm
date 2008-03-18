@@ -44,13 +44,13 @@ int rpmLookupSignatureType(int action)
       { char *name = rpmExpand("%{?_signature}", NULL);
 	if (!(name && *name != '\0'))
 	    rc = 0;
-	else if (!xstrcasecmp(name, "none"))
+	else if (!rstrcasecmp(name, "none"))
 	    rc = 0;
-	else if (!xstrcasecmp(name, "pgp"))
+	else if (!rstrcasecmp(name, "pgp"))
 	    rc = RPMSIGTAG_PGP;
-	else if (!xstrcasecmp(name, "pgp5"))	/* XXX legacy */
+	else if (!rstrcasecmp(name, "pgp5"))	/* XXX legacy */
 	    rc = RPMSIGTAG_PGP;
-	else if (!xstrcasecmp(name, "gpg"))
+	else if (!rstrcasecmp(name, "gpg"))
 	    rc = RPMSIGTAG_GPG;
 	else
 	    rc = -1;	/* Invalid %_signature spec in macro file */

@@ -168,12 +168,12 @@ static void dbiTagsInit(void)
     dbiTags.tags[dbiTags.max++] = RPMDBI_PACKAGES;
 
     for (o = dbiTagStr; o && *o; o = oe) {
-	while (*o && xisspace(*o))
+	while (*o && risspace(*o))
 	    o++;
 	if (*o == '\0')
 	    break;
 	for (oe = o; oe && *oe; oe++) {
-	    if (xisspace(*oe))
+	    if (risspace(*oe))
 		break;
 	    if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
 		break;

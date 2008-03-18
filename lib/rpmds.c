@@ -777,7 +777,7 @@ void parseEVR(char * evr,
     char *s, *se;
 
     s = evr;
-    while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
+    while (*s && risdigit(*s)) s++;	/* s points to epoch terminator */
     se = strrchr(s, '-');		/* se points to version terminator */
 
     if (*s == ':') {

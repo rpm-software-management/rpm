@@ -10,8 +10,8 @@
 #include <rpm/rpmlog.h>
 #include "debug.h"
 
-#define SKIPSPACE(s) { while (*(s) && xisspace(*(s))) (s)++; }
-#define SKIPNONSPACE(s) { while (*(s) && !xisspace(*(s))) (s)++; }
+#define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
+#define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
 
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
@@ -170,7 +170,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 	/* name */
 	name = s;
 	while (*s != '\0') s++;
-	while (s > name && xisspace(*s)) {
+	while (s > name && risspace(*s)) {
 	    *s-- = '\0';
 	}
 	if (s == name) {
@@ -194,7 +194,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 	s--;
 
 	/* backup to end of description */
-	while ((s > text) && xisspace(*s)) {
+	while ((s > text) && risspace(*s)) {
 	    *s-- = '\0';
 	}
 	
