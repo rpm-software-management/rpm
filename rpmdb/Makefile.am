@@ -24,7 +24,7 @@ librpmdb_la_SOURCES += db3.c
 if SQLITE3
 librpmdb_la_SOURCES += sqlite.c
 endif
-librpmdb_la_LDFLAGS = -release 4.4
+librpmdb_la_LDFLAGS = -release 4.6
 librpmdb_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \

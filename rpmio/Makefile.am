@@ -18,7 +18,7 @@ librpmio_la_SOURCES = \
 	rpmio_internal.h rpmlua.h rpmhook.h ugid.h fts.h \
 	rpmstring.c rpmfileutil.c
 
-librpmio_la_LDFLAGS = -release 4.4
+librpmio_la_LDFLAGS = -release 4.6
 librpmio_la_LIBADD = \
 	../misc/libmisc.la \
 	@WITH_NSS_LIB@ \

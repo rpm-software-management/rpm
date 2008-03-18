@@ -26,7 +26,7 @@ librpm_la_SOURCES = \
 	verify.c rpmlock.c rpmlock.h misc.h \
 	legacy.c legacy.h
 
-librpm_la_LDFLAGS = -release 4.4
+librpm_la_LDFLAGS = -release 4.6
 
 librpm_la_LIBADD = \
 	$(top_builddir)/rpmdb/librpmdb.la \
