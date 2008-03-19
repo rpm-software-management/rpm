@@ -37,7 +37,7 @@ typedef uint8_t pgpTime_t[4];
  */
 typedef const struct pgpValTbl_s {
     int val;
-    const char const * str;
+    char const * const str;
 } * pgpValTbl;
  
 /** \ingroup rpmpgp
@@ -75,7 +75,7 @@ typedef enum pgpTag_e {
 
 /** \ingroup rpmpgp
  */
-extern const struct pgpValTbl_s const pgpTagTbl[];
+extern struct pgpValTbl_s const pgpTagTbl[];
 
 /** \ingroup rpmpgp
  * 5.1. Public-Key Encrypted Session Key Packets (Tag 1)
@@ -146,7 +146,7 @@ typedef enum pgpSigType_e {
 
 /** \ingroup rpmpgp
  */
-extern const struct pgpValTbl_s const pgpSigTypeTbl[];
+extern struct pgpValTbl_s const pgpSigTypeTbl[];
 
 /** \ingroup rpmpgp
  * 9.1. Public Key Algorithms
@@ -185,7 +185,7 @@ typedef enum pgpPubkeyAlgo_e {
 
 /** \ingroup rpmpgp
  */
-extern const struct pgpValTbl_s const pgpPubkeyTbl[];
+extern struct pgpValTbl_s const pgpPubkeyTbl[];
 
 /** \ingroup rpmpgp
  * 9.2. Symmetric Key Algorithms
@@ -229,7 +229,7 @@ typedef enum pgpSymkeyAlgo_e {
 /** \ingroup rpmpgp
  * Symmetric key (string, value) pairs.
  */
-extern const struct pgpValTbl_s const pgpSymkeyTbl[];
+extern struct pgpValTbl_s const pgpSymkeyTbl[];
 
 /** \ingroup rpmpgp
  * 9.3. Compression Algorithms
@@ -256,7 +256,7 @@ typedef enum pgpCompressAlgo_e {
 /** \ingroup rpmpgp
  * Compression (string, value) pairs.
  */
-extern const struct pgpValTbl_s const pgpCompressionTbl[];
+extern struct pgpValTbl_s const pgpCompressionTbl[];
 
 /** \ingroup rpmpgp
  * 9.4. Hash Algorithms
@@ -294,7 +294,7 @@ typedef enum pgpHashAlgo_e {
 /** \ingroup rpmpgp
  * Hash (string, value) pairs.
  */
-extern const struct pgpValTbl_s const pgpHashTbl[];
+extern struct pgpValTbl_s const pgpHashTbl[];
 
 /** \ingroup rpmpgp
  * 5.2.2. Version 3 Signature Packet Format
@@ -467,7 +467,7 @@ typedef enum pgpSubType_e {
 /** \ingroup rpmpgp
  * Subtype (string, value) pairs.
  */
-extern const struct pgpValTbl_s const pgpSubTypeTbl[];
+extern struct pgpValTbl_s const pgpSubTypeTbl[];
 
 /** \ingroup rpmpgp
  * 5.2. Signature Packet (Tag 2)
@@ -942,7 +942,7 @@ typedef enum pgpArmor_e {
 /** \ingroup rpmpgp
  * Armor (string, value) pairs.
  */
-extern const struct pgpValTbl_s const pgpArmorTbl[];
+extern struct pgpValTbl_s const pgpArmorTbl[];
 
 /** \ingroup rpmpgp
  */
@@ -957,7 +957,7 @@ typedef enum pgpArmorKey_e {
 /** \ingroup rpmpgp
  * Armor key (string, value) pairs.
  */
-extern const struct pgpValTbl_s const pgpArmorKeyTbl[];
+extern struct pgpValTbl_s const pgpArmorKeyTbl[];
 
 /** \ingroup rpmpgp
  * Bit(s) to control digest operation.

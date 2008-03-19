@@ -23,7 +23,7 @@ static pgpDig _dig = NULL;
 
 static pgpDigParams _digp = NULL;
 
-const struct pgpValTbl_s const pgpSigTypeTbl[] = {
+struct pgpValTbl_s const pgpSigTypeTbl[] = {
     { PGPSIGTYPE_BINARY,	"Binary document signature" },
     { PGPSIGTYPE_TEXT,		"Text document signature" },
     { PGPSIGTYPE_STANDALONE,	"Standalone signature" },
@@ -40,7 +40,7 @@ const struct pgpValTbl_s const pgpSigTypeTbl[] = {
     { -1,			"Unknown signature type" },
 };
 
-const struct pgpValTbl_s const pgpPubkeyTbl[] = {
+struct pgpValTbl_s const pgpPubkeyTbl[] = {
     { PGPPUBKEYALGO_RSA,	"RSA" },
     { PGPPUBKEYALGO_RSA_ENCRYPT,"RSA(Encrypt-Only)" },
     { PGPPUBKEYALGO_RSA_SIGN,	"RSA(Sign-Only)" },
@@ -53,7 +53,7 @@ const struct pgpValTbl_s const pgpPubkeyTbl[] = {
     { -1,			"Unknown public key algorithm" },
 };
 
-const struct pgpValTbl_s const pgpSymkeyTbl[] = {
+struct pgpValTbl_s const pgpSymkeyTbl[] = {
     { PGPSYMKEYALGO_PLAINTEXT,	"Plaintext" },
     { PGPSYMKEYALGO_IDEA,	"IDEA" },
     { PGPSYMKEYALGO_TRIPLE_DES,	"3DES" },
@@ -69,7 +69,7 @@ const struct pgpValTbl_s const pgpSymkeyTbl[] = {
     { -1,			"Unknown symmetric key algorithm" },
 };
 
-const struct pgpValTbl_s const pgpCompressionTbl[] = {
+struct pgpValTbl_s const pgpCompressionTbl[] = {
     { PGPCOMPRESSALGO_NONE,	"Uncompressed" },
     { PGPCOMPRESSALGO_ZIP,	"ZIP" },
     { PGPCOMPRESSALGO_ZLIB, 	"ZLIB" },
@@ -77,7 +77,7 @@ const struct pgpValTbl_s const pgpCompressionTbl[] = {
     { -1,			"Unknown compression algorithm" },
 };
 
-const struct pgpValTbl_s const pgpHashTbl[] = {
+struct pgpValTbl_s const pgpHashTbl[] = {
     { PGPHASHALGO_MD5,		"MD5" },
     { PGPHASHALGO_SHA1,		"SHA1" },
     { PGPHASHALGO_RIPEMD160,	"RIPEMD160" },
@@ -90,12 +90,12 @@ const struct pgpValTbl_s const pgpHashTbl[] = {
     { -1,			"Unknown hash algorithm" },
 };
 
-const struct pgpValTbl_s const pgpKeyServerPrefsTbl[] = {
+struct pgpValTbl_s const pgpKeyServerPrefsTbl[] = {
     { 0x80,			"No-modify" },
     { -1,			"Unknown key server preference" },
 };
 
-const struct pgpValTbl_s const pgpSubTypeTbl[] = {
+struct pgpValTbl_s const pgpSubTypeTbl[] = {
     { PGPSUBTYPE_SIG_CREATE_TIME,"signature creation time" },
     { PGPSUBTYPE_SIG_EXPIRE_TIME,"signature expiration time" },
     { PGPSUBTYPE_EXPORTABLE_CERT,"exportable certification" },
@@ -134,7 +134,7 @@ const struct pgpValTbl_s const pgpSubTypeTbl[] = {
     { -1,			"Unknown signature subkey type" },
 };
 
-const struct pgpValTbl_s const pgpTagTbl[] = {
+struct pgpValTbl_s const pgpTagTbl[] = {
     { PGPTAG_PUBLIC_SESSION_KEY,"Public-Key Encrypted Session Key" },
     { PGPTAG_SIGNATURE,		"Signature" },
     { PGPTAG_SYMMETRIC_SESSION_KEY,"Symmetric-Key Encrypted Session Key" },
@@ -160,7 +160,7 @@ const struct pgpValTbl_s const pgpTagTbl[] = {
     { -1,			"Unknown packet tag" },
 };
 
-const struct pgpValTbl_s const pgpArmorTbl[] = {
+struct pgpValTbl_s const pgpArmorTbl[] = {
     { PGPARMOR_MESSAGE,		"MESSAGE" },
     { PGPARMOR_PUBKEY,		"PUBLIC KEY BLOCK" },
     { PGPARMOR_SIGNATURE,	"SIGNATURE" },
@@ -171,7 +171,7 @@ const struct pgpValTbl_s const pgpArmorTbl[] = {
     { -1,			"Unknown armor block" }
 };
 
-const struct pgpValTbl_s const pgpArmorKeyTbl[] = {
+struct pgpValTbl_s const pgpArmorKeyTbl[] = {
     { PGPARMORKEY_VERSION,	"Version: " },
     { PGPARMORKEY_COMMENT,	"Comment: " },
     { PGPARMORKEY_MESSAGEID,	"MessageID: " },
