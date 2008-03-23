@@ -53,7 +53,7 @@ rpmRC writeRPM(Header * hdrp, unsigned char ** pkgidp,
 		const char * fileName,
 		CSA_t csa,
 		char * passPhrase,
-		const char ** cookie);
+		char ** cookie);
 
 #ifdef __cplusplus
 }

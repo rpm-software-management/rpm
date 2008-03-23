@@ -341,7 +341,7 @@ rpmRC readRPM(const char *fileName, rpmSpec *specp,
 }
 
 rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
-	     CSA_t csa, char *passPhrase, const char **cookie)
+	     CSA_t csa, char *passPhrase, char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -350,7 +350,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     char * rpmio_flags = NULL;
     char * SHA1 = NULL;
     char *s;
-    char buf[BUFSIZ];
+    char *buf = NULL;
     Header h;
     Header sig = NULL;
     int isSource, xx;
@@ -390,15 +390,15 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    /* Add prereq on rpm version that understands bzip2 payloads */
 	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
 	}
-	strcpy(buf, rpmio_flags);
+	buf = xstrdup(rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
 	(void) headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf+1, 1);
+	free(buf);
     }
 
     /* Create and add the cookie */
     if (cookie) {
-	sprintf(buf, "%s %d", buildHost(), (int) (*getBuildTime()));
-	*cookie = xstrdup(buf);
+	rasprintf(cookie, "%s %d", buildHost(), (int) (*getBuildTime()));
 	(void) headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }
     
@@ -540,20 +540,24 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
 	
     /* Write the payload into the package. */
-    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), ifd)) > 0) {
+    buf = xmalloc(BUFSIZ);
+    while ((count = Fread(buf, 1, BUFSIZ, ifd)) > 0) {
 	if (count == -1) {
+	    free(buf);
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
 		     sigtarget, Fstrerror(ifd));
 	    goto exit;
 	}
 	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
+	    free(buf);
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    goto exit;
 	}
     }
+    free(buf);
     rc = RPMRC_OK;
 
 exit:
