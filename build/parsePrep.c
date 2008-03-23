@@ -65,8 +65,10 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 {
     const char *fn;
     char *urlfn;
-    static char buf[BUFSIZ];
-    char args[BUFSIZ], *t = args;
+    char *buf = NULL;
+    char *arg_backup = NULL;
+    char *arg_fuzz = NULL;
+    char *args = NULL;
     struct Source *sp;
     char *patcher;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
@@ -84,28 +86,27 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 
     urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
-    *t = '\0';
-    if (db) {
-#if HAVE_OLDPATCH_21 == 0
-	t = stpcpy(t, "-b ");
-#endif
-	t = stpcpy( stpcpy(t, "--suffix "), db);
-    }
-    if (fuzz) {
-	t = stpcpy(t, " -F");
-	sprintf(t, "%d", fuzz);
-	t += strlen(t);
-    }
-    if (reverse)
-	t = stpcpy(t, " -R");
-    if (removeEmpties)
-	t = stpcpy(t, " -E");
-
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (rpmFileIsCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
 	urlfn = _free(urlfn);
 	return NULL;
     }
+
+    if (db) {
+	rasprintf(&arg_backup,
+#if HAVE_OLDPATCH_21 == 0
+		  "-b "
+#endif
+		  "--suffix %s", db);
+    } else arg_backup = xstrdup("");
+
+    if (fuzz) {
+	rasprintf(&arg_fuzz, " -F%d", fuzz);
+    } else arg_fuzz = xstrdup("");
+
+    rasprintf(&args, "%s%s%s%s", arg_backup, arg_fuzz, reverse ? " -R" : "", removeEmpties ? " -E" : "");
+    free(arg_fuzz);
+    free(arg_backup);
 
     fn = NULL;
     urltype = urlPath(urlfn, &fn);
@@ -119,6 +120,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	break;
     case URL_IS_DASH:
 	urlfn = _free(urlfn);
+	free(args);
 	return NULL;
 	break;
     }
@@ -129,7 +131,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	    (compressed == COMPRESSED_BZIP2 ? "%{__bzip2}" : "%{__gzip}"),
 	    NULL);
 
-	sprintf(buf,
+	rasprintf(&buf,
 		"echo \"Patch #%d (%s):\"\n"
 		"%s -d < '%s' | %s -p%d %s -s\n"
 		"STATUS=$?\n"
@@ -141,7 +143,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 		fn, strip, args);
 	zipper = _free(zipper);
     } else {
-	sprintf(buf,
+	rasprintf(&buf,
 		"echo \"Patch #%d (%s):\"\n"
 		"%s -p%d %s -s < '%s'", c, (const char *) basename(fn),
 		patcher, strip, args, fn);
@@ -294,7 +296,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
  */
 static int doSetupMacro(rpmSpec spec, const char *line)
 {
-    char buf[BUFSIZ];
+    char *buf = NULL;
     StringBuf before;
     StringBuf after;
     poptContext optCon;
@@ -359,8 +361,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     } else {
 	const char *name, *version;
 	(void) headerNVR(spec->packages->header, &name, &version, NULL);
-	sprintf(buf, "%s-%s", name, version);
-	spec->buildSubdir = xstrdup(buf);
+	rasprintf(&spec->buildSubdir, "%s-%s", name, version);
     }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     
@@ -372,22 +373,25 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	const char *buildDir;
 
 	(void) urlPath(buildDirURL, &buildDir);
-	sprintf(buf, "cd '%s'", buildDir);
+	rasprintf(&buf, "cd '%s'", buildDir);
 	appendLineStringBuf(spec->prep, buf);
+	free(buf);
 	buildDirURL = _free(buildDirURL);
     }
     
     /* delete any old sources */
     if (!leaveDirs) {
-	sprintf(buf, "rm -rf '%s'", spec->buildSubdir);
+	rasprintf(&buf, "rm -rf '%s'", spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
+	free(buf);
     }
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	sprintf(buf, RPM_MKDIR_P " %s\ncd '%s'",
+	rasprintf(&buf, RPM_MKDIR_P " %s\ncd '%s'",
 		spec->buildSubdir, spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
+	free(buf);
     }
 
     /* do the default action */
@@ -402,8 +406,9 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     before = freeStringBuf(before);
 
     if (!createDir) {
-	sprintf(buf, "cd '%s'", spec->buildSubdir);
+	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
 	appendLineStringBuf(spec->prep, buf);
+	free(buf);
     }
 
     if (createDir && !skipDefaultAction) {
@@ -444,7 +449,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     char *opt_b;
     int opt_P, opt_p, opt_R, opt_E, opt_F;
     char *s;
-    char buf[BUFSIZ], *bp;
+    char *buf = NULL, *bp;
     int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
 
@@ -455,9 +460,9 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 
     if (! strchr(" \t\n", line[6])) {
 	/* %patchN */
-	sprintf(buf, "%%patch -P %s", line + 6);
+	rasprintf(&buf, "%%patch -P %s", line + 6);
     } else {
-	strcpy(buf, line);
+	buf = xstrdup(line);
     }
     
    	/* FIX: strtok has state */
@@ -479,6 +484,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 		rpmlog(RPMLOG_ERR,
 			_("line %d: Need arg to %%patch -b: %s\n"),
 			spec->lineNum, spec->line);
+		free(buf);
 		return RPMRC_FAIL;
 	    }
 	} else if (!strcmp(s, "-z")) {
@@ -488,6 +494,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 		rpmlog(RPMLOG_ERR,
 			_("line %d: Need arg to %%patch -z: %s\n"),
 			spec->lineNum, spec->line);
+		free(buf);
 		return RPMRC_FAIL;
 	    }
 	} else if (!strncmp(s, "-F", strlen("-F"))) {
@@ -505,6 +512,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 		rpmlog(RPMLOG_ERR,
 			_("line %d: Bad arg to %%patch -F: %s\n"),
 			spec->lineNum, spec->line);
+		free(buf);
 		return RPMRC_FAIL;
 	    }
 	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
@@ -517,6 +525,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 		    rpmlog(RPMLOG_ERR,
 			     _("line %d: Need arg to %%patch -p: %s\n"),
 			     spec->lineNum, spec->line);
+		    free(buf);
 		    return RPMRC_FAIL;
 		}
 	    }
@@ -524,17 +533,20 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 		rpmlog(RPMLOG_ERR,
 			_("line %d: Bad arg to %%patch -p: %s\n"),
 			spec->lineNum, spec->line);
+		free(buf);
 		return RPMRC_FAIL;
 	    }
 	} else {
 	    /* Must be a patch num */
 	    if (patch_index == 1024) {
 		rpmlog(RPMLOG_ERR, _("Too many patches!\n"));
+		free(buf);
 		return RPMRC_FAIL;
 	    }
 	    if (parseNum(s, &(patch_nums[patch_index]))) {
 		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch: %s\n"),
 			 spec->lineNum, spec->line);
+		free(buf);
 		return RPMRC_FAIL;
 	    }
 	    patch_index++;
@@ -545,18 +557,25 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 
     if (! opt_P) {
 	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F);
-	if (s == NULL)
+	if (s == NULL) {
+	    free(buf);
 	    return RPMRC_FAIL;
+	}
 	appendLineStringBuf(spec->prep, s);
+	free(s);
     }
 
     for (x = 0; x < patch_index; x++) {
 	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F);
-	if (s == NULL)
+	if (s == NULL) {
+	    free(buf);
 	    return RPMRC_FAIL;
+	}
 	appendLineStringBuf(spec->prep, s);
+	free(s);
     }
-    
+
+    free(buf);
     return RPMRC_OK;
 }
 
