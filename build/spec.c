@@ -251,11 +251,10 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
     int flag = 0;
     const char *name = NULL;
     char *nump;
-    const char *fieldp = NULL;
-    char buf[BUFSIZ];
+    char *fieldp = NULL;
+    char *buf = NULL;
     int num = 0;
 
-    buf[0] = '\0';
     switch ((rpm_tag_t) tag) {
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
@@ -279,24 +278,28 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
 	/* are no spaces before it.                          */
 	/* This also now allows for spaces and tabs between  */
 	/* the number and the ':'                            */
+	char ch;
+	char *fieldp_backup = fieldp;
 
-	nump = buf;
 	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t')) {
-	    *nump++ = *fieldp++;
+	    fieldp++;
 	}
-	*nump = '\0';
+	ch = *fieldp;
+	*fieldp = '\0';
 
-	nump = buf;
+	nump = fieldp_backup;
 	SKIPSPACE(nump);
 	if (nump == NULL || *nump == '\0') {
 	    num = 0;
 	} else {
-	    if (parseNum(buf, &num)) {
+	    if (parseNum(fieldp_backup, &num)) {
 		rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
+		*fieldp = ch;
 		return RPMRC_FAIL;
 	    }
 	}
+	*fieldp = ch;
     }
 
     /* Create the entry and link it in */
@@ -324,12 +327,14 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
     if (tag != RPMTAG_ICON) {
 	char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 
-	sprintf(buf, "%s%d",
+	rasprintf(&buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, body, RMIL_SPEC);
-	sprintf(buf, "%sURL%d",
+	free(buf);
+	rasprintf(&buf, "%sURL%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);
 	addMacro(spec->macros, buf, NULL, p->fullSource, RMIL_SPEC);
+	free(buf);
 #ifdef WITH_LUA
 	{
 	rpmlua lua = NULL; /* global state */

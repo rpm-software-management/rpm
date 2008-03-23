@@ -715,9 +715,7 @@ char * parseExpressionString(rpmSpec spec, const char *expr)
 
   switch (v->type) {
   case VALUE_TYPE_INTEGER: {
-    char buf[128];
-    sprintf(buf, "%d", v->data.i);
-    result = xstrdup(buf);
+    rasprintf(&result, "%d", v->data.i);
   } break;
   case VALUE_TYPE_STRING:
     result = xstrdup(v->data.s);

@@ -28,12 +28,10 @@ static inline int genSourceRpmName(rpmSpec spec)
 {
     if (spec->sourceRpmName == NULL) {
 	const char *name, *version, *release;
-	char fileName[BUFSIZ];
 
 	(void) headerNVR(spec->packages->header, &name, &version, &release);
-	sprintf(fileName, "%s-%s-%s.%ssrc.rpm", name, version, release,
+	rasprintf(&spec->sourceRpmName, "%s-%s-%s.%ssrc.rpm", name, version, release,
 	    spec->noSource ? "no" : "");
-	spec->sourceRpmName = xstrdup(fileName);
     }
 
     return 0;
