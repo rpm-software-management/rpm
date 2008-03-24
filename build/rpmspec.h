@@ -92,10 +92,10 @@ char **sl_lines;
  * The structure used to store values parsed from a spec file.
  */
 struct rpmSpec_s {
-    const char * specFile;	/*!< Name of the spec file. */
-    const char * buildRootURL;
-    const char * buildSubdir;
-    const char * rootURL;
+    char * specFile;	/*!< Name of the spec file. */
+    char * buildRootURL;
+    char * buildSubdir;
+    char * rootURL;
 
     speclines sl;
     spectags st;
@@ -123,13 +123,13 @@ struct rpmSpec_s {
 
     char * passPhrase;
     int timeCheck;
-    const char * cookie;
+    char * cookie;
 
     struct Source * sources;
     int numSources;
     int noSource;
 
-    const char * sourceRpmName;
+    char * sourceRpmName;
     unsigned char * sourcePkgId;
     Header sourceHeader;
     rpmfi sourceCpioList;
@@ -158,19 +158,19 @@ struct Package_s {
     int autoReq;
     int autoProv;
 
-    const char * preInFile;	/*!< %pre scriptlet. */
-    const char * postInFile;	/*!< %post scriptlet. */
-    const char * preUnFile;	/*!< %preun scriptlet. */
-    const char * postUnFile;	/*!< %postun scriptlet. */
-    const char * preTransFile;	/*!< %pretrans scriptlet. */
-    const char * postTransFile;	/*!< %posttrans scriptlet. */
-    const char * verifyFile;	/*!< %verifyscript scriptlet. */
+    char * preInFile;	/*!< %pre scriptlet. */
+    char * postInFile;	/*!< %post scriptlet. */
+    char * preUnFile;	/*!< %preun scriptlet. */
+    char * postUnFile;	/*!< %postun scriptlet. */
+    char * preTransFile;	/*!< %pretrans scriptlet. */
+    char * postTransFile;	/*!< %posttrans scriptlet. */
+    char * verifyFile;	/*!< %verifyscript scriptlet. */
 
     StringBuf specialDoc;
 
     struct TriggerFileEntry * triggerFiles;
 
-    const char * fileFile;
+    char * fileFile;
     StringBuf fileList;		/* If NULL, package will not be written */
 
     Package next;

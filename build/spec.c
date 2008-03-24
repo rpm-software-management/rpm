@@ -153,16 +153,16 @@ Package freePackage(Package pkg)
 {
     if (pkg == NULL) return NULL;
     
-    pkg->preInFile = _constfree(pkg->preInFile);
-    pkg->postInFile = _constfree(pkg->postInFile);
-    pkg->preUnFile = _constfree(pkg->preUnFile);
-    pkg->postUnFile = _constfree(pkg->postUnFile);
-    pkg->verifyFile = _constfree(pkg->verifyFile);
+    pkg->preInFile = _free(pkg->preInFile);
+    pkg->postInFile = _free(pkg->postInFile);
+    pkg->preUnFile = _free(pkg->preUnFile);
+    pkg->postUnFile = _free(pkg->postUnFile);
+    pkg->verifyFile = _free(pkg->verifyFile);
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
     pkg->fileList = freeStringBuf(pkg->fileList);
-    pkg->fileFile = _constfree(pkg->fileFile);
+    pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList) {
 	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;
@@ -492,10 +492,10 @@ rpmSpec freeSpec(rpmSpec spec)
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
 
-    spec->buildRootURL = _constfree(spec->buildRootURL);
-    spec->buildSubdir = _constfree(spec->buildSubdir);
-    spec->rootURL = _constfree(spec->rootURL);
-    spec->specFile = _constfree(spec->specFile);
+    spec->buildRootURL = _free(spec->buildRootURL);
+    spec->buildSubdir = _free(spec->buildSubdir);
+    spec->rootURL = _free(spec->rootURL);
+    spec->specFile = _free(spec->specFile);
 
     closeSpec(spec);
 
@@ -506,7 +506,7 @@ rpmSpec freeSpec(rpmSpec spec)
 	rl = _free(rl);
     }
     
-    spec->sourceRpmName = _constfree(spec->sourceRpmName);
+    spec->sourceRpmName = _free(spec->sourceRpmName);
     spec->sourcePkgId = _free(spec->sourcePkgId);
     spec->sourceHeader = headerFree(spec->sourceHeader);
 
@@ -529,7 +529,7 @@ rpmSpec freeSpec(rpmSpec spec)
     spec->BANames = _free(spec->BANames);
 
     spec->passPhrase = _free(spec->passPhrase);
-    spec->cookie = _constfree(spec->cookie);
+    spec->cookie = _free(spec->cookie);
 
 #ifdef WITH_LUA
     rpmlua lua = NULL; /* global state */
