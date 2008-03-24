@@ -33,6 +33,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmurl.h>     	/* XXX urlPath proto */
 #include <rpm/rpmfileutil.h>	/* rpmioMkpath */
+#include <rpm/rpmstring.h>
 #include <rpm/rpmdb.h>
 
 #include "rpmdb/rpmdb_internal.h"
@@ -612,15 +613,16 @@ static int sql_initDB(dbiIndex dbi)
 {
     SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew(dbi->dbi_db);
-    char cmd[BUFSIZ];
+    char *cmd = NULL;
     int rc = 0;
 
     /* Check if the table exists... */
-    sprintf(cmd,
+    rasprintf(&cmd,
 	"SELECT name FROM 'sqlite_master' WHERE type='table' and name='%s';",
 		dbi->dbi_subfile);
     rc = sqlite3_get_table(sqldb->db, cmd,
 	&scp->av, &scp->nr, &scp->nc, (char **)&scp->pzErrmsg);
+    cmd = _free(cmd);
     if (rc)
 	goto exit;
 
@@ -656,27 +658,31 @@ static int sql_initDB(dbiIndex dbi)
 	}
 if (_debug)
 fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", rpmTagGetName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, rpmTagGetType(dbi->dbi_rpmtag), keytype);
-	sprintf(cmd, "CREATE TABLE '%s' (key %s, value %s)",
+	rasprintf(&cmd, "CREATE TABLE '%s' (key %s, value %s)",
 			dbi->dbi_subfile, keytype, valtype);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	cmd = _free(cmd);
 	if (rc)
 	    goto exit;
 
-	sprintf(cmd, "CREATE TABLE 'db_info' (endian TEXT)");
+	rasprintf(&cmd, "CREATE TABLE 'db_info' (endian TEXT)");
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	cmd = _free(cmd);
 	if (rc)
 	    goto exit;
 
-	sprintf(cmd, "INSERT INTO 'db_info' values('%d')", ((union _dbswap *)&endian)->uc[0]);
+	rasprintf(&cmd, "INSERT INTO 'db_info' values('%d')", ((union _dbswap *)&endian)->uc[0]);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	_free(cmd);
 	if (rc)
 	    goto exit;
     }
 
     if (dbi->dbi_no_fsync) {
 	int xx;
-        sprintf(cmd, "PRAGMA synchronous = OFF;");
+        rasprintf(&cmd, "PRAGMA synchronous = OFF;");
         xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+	cmd = _free(cmd);
     }
 
 exit:
