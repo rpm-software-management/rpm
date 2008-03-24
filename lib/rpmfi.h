@@ -91,8 +91,8 @@ typedef enum rpmFileAction_e {
  * We pass these around as an array with a sentinel.
  */
 struct rpmRelocation_s {
-    const char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
-    const char * newPath;	/*!< NULL means to omit the file completely! */
+    char * oldPath;	/*!< NULL here evals to RPMTAG_DEFAULTPREFIX, */
+    char * newPath;	/*!< NULL means to omit the file completely! */
 };
 
 /** \ingroup rpmfi

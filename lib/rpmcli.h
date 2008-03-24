@@ -426,7 +426,7 @@ struct rpmInstallArguments_s {
     int noDeps;
     int incldocs;
     rpmRelocation * relocations;
-    const char * prefix;
+    char * prefix;
     const char * rootdir;
 };
 

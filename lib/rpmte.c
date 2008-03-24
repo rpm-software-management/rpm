@@ -36,8 +36,8 @@ static void delTE(rpmte p)
 
     if (p->relocs) {
 	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-	    r->oldPath = _constfree(r->oldPath);
-	    r->newPath = _constfree(r->newPath);
+	    r->oldPath = _free(r->oldPath);
+	    r->newPath = _free(r->newPath);
 	}
 	p->relocs = _free(p->relocs);
     }

@@ -489,7 +489,7 @@ if (fileURL[0] == '=') {
 	/* XXX reference held by transaction set */
 	eiu->h = headerFree(eiu->h);
 	if (eiu->relocations)
-	    eiu->relocations->oldPath = _constfree(eiu->relocations->oldPath);
+	    eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
 	switch(rc) {
 	case 0:
