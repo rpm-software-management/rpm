@@ -115,17 +115,15 @@ static StringBuf addFileToTagAux(rpmSpec spec,
     char buf[BUFSIZ];
     char * fn = buf;
     FILE * f;
-    FD_t fd;
 
     fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
-    fd = Fopen(fn, "r.ufdio");
+    f = fopen(fn, "r");
     if (fn != buf) fn = _free(fn);
-    if (fd == NULL || Ferror(fd)) {
+    if (f == NULL || ferror(f)) {
 	sb = freeStringBuf(sb);
 	return NULL;
     }
-    if ((f = fdGetFILE(fd)) != NULL)
     while (fgets(buf, sizeof(buf), f)) {
 	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
@@ -135,7 +133,7 @@ static StringBuf addFileToTagAux(rpmSpec spec,
 	}
 	appendStringBuf(sb, buf);
     }
-    (void) Fclose(fd);
+    (void) fclose(f);
 
     return sb;
 }
