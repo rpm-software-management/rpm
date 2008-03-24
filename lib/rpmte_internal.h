@@ -26,14 +26,14 @@ struct rpmte_s {
     rpmElementType type;	/*!< Package disposition (installed/removed). */
 
     Header h;			/*!< Package header. */
-    const char * NEVR;		/*!< Package name-version-release. */
-    const char * NEVRA;		/*!< Package name-version-release.arch. */
-    const char * name;		/*!< Name: */
+    char * NEVR;		/*!< Package name-version-release. */
+    char * NEVRA;		/*!< Package name-version-release.arch. */
+    char * name;		/*!< Name: */
     char * epoch;
     char * version;		/*!< Version: */
     char * release;		/*!< Release: */
-    const char * arch;		/*!< Architecture hint. */
-    const char * os;		/*!< Operating system hint. */
+    char * arch;		/*!< Architecture hint. */
+    char * os;			/*!< Operating system hint. */
     int archScore;		/*!< (TR_ADDED) Arch score. */
     int osScore;		/*!< (TR_ADDED) Os score. */
     int isSource;		/*!< (TR_ADDED) source rpm? */

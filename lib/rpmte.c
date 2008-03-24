@@ -49,12 +49,12 @@ static void delTE(rpmte p)
     if (p->fd != NULL)
         p->fd = fdFree(p->fd, RPMDBG_M("delTE"));
 
-    p->os = _constfree(p->os);
-    p->arch = _constfree(p->arch);
+    p->os = _free(p->os);
+    p->arch = _free(p->arch);
     p->epoch = _free(p->epoch);
-    p->name = _constfree(p->name);
-    p->NEVR = _constfree(p->NEVR);
-    p->NEVRA = _constfree(p->NEVRA);
+    p->name = _free(p->name);
+    p->NEVR = _free(p->NEVR);
+    p->NEVRA = _free(p->NEVRA);
 
     p->h = headerFree(p->h);
 
