@@ -13,6 +13,7 @@
 #include <rpm/rpmfileutil.h>	/* rpmMkTempFile() */
 #include <rpm/rpmdb.h>		/* XXX for db_chrootDone */
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "rpmio/rpmlua.h"
 #include "lib/cpio.h"
@@ -546,13 +547,14 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
     rpmluaPop(lua);
 
     {
-	char buf[BUFSIZ];
-	xx = snprintf(buf, BUFSIZ, "%s(%s-%s-%s)", sln, n, v, r);
+	char *buf = NULL;
+	rasprintf(&buf, "%s(%s-%s-%s)", sln, n, v, r);
 	if (rpmluaRunScript(lua, script, buf) == -1) {
 	    void * ptr;
 	    ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, 1);
 	    rc = RPMRC_FAIL;
 	}
+	free(buf);
     }
 
     rpmluaDelVar(lua, "arg");
@@ -799,13 +801,15 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 
 	if (prefixes != NULL)
 	for (i = 0; i < numPrefixes; i++) {
-	    sprintf(prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
+	    rasprintf(&prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
 	    xx = doputenv(prefixBuf);
+	    prefixBuf = _free(prefixBuf);
 
 	    /* backwards compatibility */
 	    if (i == 0) {
-		sprintf(prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
+		rasprintf(&prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
 		xx = doputenv(prefixBuf);
+		prefixBuf = _free(prefixBuf);
 	    }
 	}
 
