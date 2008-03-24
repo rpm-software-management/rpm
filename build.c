@@ -53,18 +53,18 @@ static int isSpecFile(const char * specfile)
 {
     char buf[256];
     const char * s;
-    FD_t fd;
+    FILE * f;
     int count;
     int checking;
 
-    fd = Fopen(specfile, "r.ufdio");
-    if (fd == NULL || Ferror(fd)) {
+    f = fopen(specfile, "r");
+    if (f == NULL || ferror(f)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open spec file %s: %s\n"),
-		specfile, Fstrerror(fd));
+		specfile, strerror(errno));
 	return 0;
     }
-    count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd);
-    (void) Fclose(fd);
+    count = fread(buf, sizeof(buf[0]), sizeof(buf), f);
+    (void) fclose(f);
 
     checking = 1;
     for (s = buf; count--; s++) {
