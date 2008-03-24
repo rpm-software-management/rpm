@@ -133,12 +133,12 @@ hashTable htFree(hashTable ht)
 	    continue;
 	ht->buckets[i] = NULL;
 	if (ht->keySize > 0)
-	    b->key = _free(b->key);
+	    b->key = _constfree(b->key);
 	do {
 	    n = b->next;
 	    if (b->data) {
 		if (ht->freeData)
-		    *b->data = _free(*b->data);
+		    *b->data = _constfree(*b->data);
 		b->data = _free(b->data);
 	    }
 	    b = _free(b);
