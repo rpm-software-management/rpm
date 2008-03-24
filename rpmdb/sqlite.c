@@ -748,7 +748,7 @@ enterChroot(dbi);
 		dbi->dbi_subfile);
 
 	dbi->dbi_stats = _free(dbi->dbi_stats);
-	dbi->dbi_file = _constfree(dbi->dbi_file);
+	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_db = _free(dbi->dbi_db);
 
 leaveChroot(dbi);
@@ -771,8 +771,8 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     extern const struct _dbiVec sqlitevec;
    
     char * urlfn = NULL;
-    const char * root;
-    const char * home;
+    char * root;
+    char * home;
     const char * dbhome;
     const char * dbfile;  
     char * dbfname;

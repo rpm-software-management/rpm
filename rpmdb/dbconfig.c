@@ -246,14 +246,14 @@ struct poptOption rdbOptions[] = {
 dbiIndex db3Free(dbiIndex dbi)
 {
     if (dbi) {
-	dbi->dbi_root = _constfree(dbi->dbi_root);
-	dbi->dbi_home = _constfree(dbi->dbi_home);
-	dbi->dbi_file = _constfree(dbi->dbi_file);
-	dbi->dbi_subfile = _constfree(dbi->dbi_subfile);
-	dbi->dbi_tmpdir = _constfree(dbi->dbi_tmpdir);
+	dbi->dbi_root = _free(dbi->dbi_root);
+	dbi->dbi_home = _free(dbi->dbi_home);
+	dbi->dbi_file = _free(dbi->dbi_file);
+	dbi->dbi_subfile = _free(dbi->dbi_subfile);
+	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);
 	dbi->dbi_host = _free(dbi->dbi_host);
-	dbi->dbi_errpfx = _constfree(dbi->dbi_errpfx);
-	dbi->dbi_re_source = _constfree(dbi->dbi_re_source);
+	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
+	dbi->dbi_re_source = _free(dbi->dbi_re_source);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);
     }

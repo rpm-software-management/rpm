@@ -2800,7 +2800,7 @@ rpmecFree(const headerSprintfExtension exts, rpmec ec)
     for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
 	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
     {
-	if (ec[i].freeit) ec[i].data = _constfree(ec[i].data);
+	if (ec[i].freeit) ec[i].data = _free(ec[i].data);
 	i++;
     }
 
@@ -3072,7 +3072,7 @@ void * headerFreeData(rpm_data_t data, rpmTagType type)
 	    type == RPM_STRING_ARRAY_TYPE ||
 	    type == RPM_I18NSTRING_TYPE ||
 	    type == RPM_BIN_TYPE)
-		free(data); /* XXX _constfree() */
+		free(data); /* XXX _free() */
     }
     return NULL;
 }

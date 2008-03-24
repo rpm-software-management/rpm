@@ -207,11 +207,11 @@ struct _dbiVec {
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
-    const char * dbi_root;	/*!< chroot(2) component of path */
-    const char * dbi_home;	/*!< directory component of path */
-    const char * dbi_file;	/*!< file component of path */
-    const char * dbi_subfile;
-    const char * dbi_tmpdir;	/*!< temporary directory */
+    char * dbi_root;		/*!< chroot(2) component of path */
+    char * dbi_home;		/*!< directory component of path */
+    char * dbi_file;		/*!< file component of path */
+    char * dbi_subfile;
+    char * dbi_tmpdir;		/*!< temporary directory */
 
     int	dbi_ecflags;		/*!< db_env_create flags */
     int	dbi_cflags;		/*!< db_create flags */
@@ -245,7 +245,7 @@ struct _dbiIndex {
     /* XXX db-4.3.14 adds dbenv as 1st arg. */
     void (*db_errcall) (void * dbenv, const char *db_errpfx, char *buffer);
     FILE *	dbi_errfile;
-    const char * dbi_errpfx;
+    char * dbi_errpfx;
     int	dbi_verbose;
     int	dbi_region_init;
     int	dbi_tas_spins;
@@ -287,7 +287,7 @@ unsigned char * dbi_lk_conflicts;
     int	dbi_re_delim;
     unsigned int dbi_re_len;
     int	dbi_re_pad;
-    const char * dbi_re_source;
+    char * dbi_re_source;
 	/* queue access parameters */
     unsigned int dbi_q_extentsize;
 
@@ -307,13 +307,13 @@ unsigned char * dbi_lk_conflicts;
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
-    const char * db_root;/*!< path prefix */
-    const char * db_home;/*!< directory path */
+    char 	* db_root;/*!< path prefix */
+    char 	* db_home;/*!< directory path */
     int		db_flags;
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_api;		/*!< Berkeley API type */
-    const char * db_errpfx;
+    char 	* db_errpfx;
     int		db_remove_env;
     int		db_filter_dups;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
