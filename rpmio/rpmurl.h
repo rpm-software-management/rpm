@@ -28,14 +28,14 @@ typedef struct urlinfo_s * urlinfo;
  * URL control structure.
  */
 struct urlinfo_s {
-    const char * url;		/*!< copy of original url */
-    const char * scheme;	/*!< URI scheme. */
-    const char * user;		/*!< URI user. */
-    const char * password;	/*!< URI password. */
-    const char * host;		/*!< URI host. */
-    const char * portstr;	/*!< URI port string. */
-    const char * proxyu;	/*!< FTP: proxy user */
-    const char * proxyh;	/*!< FTP/HTTP: proxy host */
+    char * url;			/*!< copy of original url */
+    char * scheme;		/*!< URI scheme. */
+    char * user;		/*!< URI user. */
+    char * password;		/*!< URI password. */
+    char * host;		/*!< URI host. */
+    char * portstr;		/*!< URI port string. */
+    char * proxyu;		/*!< FTP: proxy user */
+    char * proxyh;		/*!< FTP/HTTP: proxy host */
     int proxyp;			/*!< FTP/HTTP: proxy port */
     int	port;			/*!< URI port. */
     int urltype;		/*!< URI type. */
