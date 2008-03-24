@@ -54,7 +54,7 @@ typedef struct ReadLevelEntry {
 /** \ingroup rpmbuild
  */
 typedef struct OpenFileInfo {
-const char * fileName;
+    char * fileName;
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
@@ -68,8 +68,8 @@ typedef struct spectag_s {
     int t_tag;
     int t_startx;
     int t_nlines;
-const char * t_lang;
-const char * t_msgid;
+    char * t_lang;
+    char * t_msgid;
 } * spectag;
 
 /** \ingroup rpmbuild

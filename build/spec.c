@@ -402,8 +402,8 @@ static inline spectags freeSt(spectags st)
     if (st == NULL) return NULL;
     for (i = 0; i < st->st_ntags; i++) {
 	spectag t = st->st_t + i;
-	t->t_lang = _constfree(t->t_lang);
-	t->t_msgid = _constfree(t->t_msgid);
+	t->t_lang = _free(t->t_lang);
+	t->t_msgid = _free(t->t_msgid);
     }
     st->st_t = _free(st->st_t);
     return _free(st);
