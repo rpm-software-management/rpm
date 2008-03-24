@@ -1048,14 +1048,14 @@ void pgpCleanDig(pgpDig dig)
 {
     if (dig != NULL) {
 	int i;
-	dig->signature.userid = _constfree(dig->signature.userid);
-	dig->pubkey.userid = _constfree(dig->pubkey.userid);
-	dig->signature.hash = _constfree(dig->signature.hash);
-	dig->pubkey.hash = _constfree(dig->pubkey.hash);
+	dig->signature.userid = _free(dig->signature.userid);
+	dig->pubkey.userid = _free(dig->pubkey.userid);
+	dig->signature.hash = _free(dig->signature.hash);
+	dig->pubkey.hash = _free(dig->pubkey.hash);
 	/* FIX: double indirection */
 	for (i = 0; i < 4; i++) {
-	    dig->signature.params[i] = _constfree(dig->signature.params[i]);
-	    dig->pubkey.params[i] = _constfree(dig->pubkey.params[i]);
+	    dig->signature.params[i] = _free(dig->signature.params[i]);
+	    dig->pubkey.params[i] = _free(dig->pubkey.params[i]);
 	}
 
 	memset(&dig->signature, 0, sizeof(dig->signature));

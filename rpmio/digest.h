@@ -15,9 +15,9 @@
  * Values parsed from OpenPGP signature/pubkey packet(s).
  */
 struct pgpDigParams_s {
-    const char * userid;
-    const uint8_t * hash;
-    const char * params[4];
+    char * userid;
+    uint8_t * hash;
+    char * params[4];
     uint8_t tag;
 
     uint8_t version;		/*!< version number. */
