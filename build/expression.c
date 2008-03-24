@@ -33,7 +33,7 @@
 typedef struct _value {
   enum { VALUE_TYPE_INTEGER, VALUE_TYPE_STRING } type;
   union {
-    const char *s;
+    char *s;
     int i;
   } data;
 } *Value;
@@ -52,7 +52,7 @@ static Value valueMakeInteger(int i)
 
 /**
  */
-static Value valueMakeString(const char *s)
+static Value valueMakeString(char *s)
 {
   Value v;
 
@@ -68,7 +68,7 @@ static void valueFree( Value v)
 {
   if (v) {
     if (v->type == VALUE_TYPE_STRING)
-	v->data.s = _constfree(v->data.s);
+	v->data.s = _free(v->data.s);
     v = _free(v);
   }
 }
