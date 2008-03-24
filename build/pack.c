@@ -113,27 +113,28 @@ static StringBuf addFileToTagAux(rpmSpec spec,
 		const char * file, StringBuf sb)
 {
     char buf[BUFSIZ];
-    char * fn = buf;
+    char * fn;
     FILE * f;
 
     fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
     f = fopen(fn, "r");
-    if (fn != buf) fn = _free(fn);
     if (f == NULL || ferror(f)) {
 	sb = freeStringBuf(sb);
-	return NULL;
+	goto exit;
     }
     while (fgets(buf, sizeof(buf), f)) {
-	/* XXX display fn in error msg */
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
+	    rpmlog(RPMLOG_ERR, _("%s: line: %s\n"), fn, buf);
 	    sb = freeStringBuf(sb);
 	    break;
 	}
 	appendStringBuf(sb, buf);
     }
     (void) fclose(f);
+
+exit:
+    free(fn);
 
     return sb;
 }
