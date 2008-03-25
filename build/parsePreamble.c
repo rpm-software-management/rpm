@@ -398,9 +398,7 @@ spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang)
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    char *n;
 	    if (hge(h, RPMTAG_NAME, NULL, (rpm_data_t *) &n, NULL)) {
-		char buf[1024];
-		sprintf(buf, "%s(%s)", n, rpmTagGetName(tag));
-		t->t_msgid = xstrdup(buf);
+		rasprintf(&t->t_msgid, "%s(%s)", n, rpmTagGetName(tag));
 	    }
 	}
     }
