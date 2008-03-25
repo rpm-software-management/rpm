@@ -65,35 +65,34 @@ static void addOrAppendListEntry(Header h, rpmTag tag, const char * line)
 }
 
 /* Parse a simple part line that only take -n <pkg> or <pkg> */
-/* <pkg> is return in name as a pointer into a static buffer */
+/* <pkg> is returned in name as a pointer into a dynamic buffer */
 
 /**
  */
 static int parseSimplePart(const char *line, char **name, int *flag)
 {
     char *tok;
-    char linebuf[BUFSIZ];
-    static char buf[BUFSIZ];
-
-    strcpy(linebuf, line);
+    char *linebuf = xstrdup(line);
 
     /* Throw away the first token (the %xxxx) */
     (void)strtok(linebuf, " \t\n");
-    
+    *name = NULL;
+
     if (!(tok = strtok(NULL, " \t\n"))) {
-	*name = NULL;
+	free(linebuf);
 	return 0;
     }
     
     if (!strcmp(tok, "-n")) {
-	if (!(tok = strtok(NULL, " \t\n")))
+	if (!(tok = strtok(NULL, " \t\n"))) {
+	    free(linebuf);
 	    return 1;
+	}
 	*flag = PART_NAME;
     } else {
 	*flag = PART_SUBNAME;
     }
-    strcpy(buf, tok);
-    *name = buf;
+    *name = xstrdup(tok);
 
     return (strtok(NULL, " \t\n")) ? 1 : 0;
 }
@@ -824,6 +823,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	if (!lookupPackage(spec, name, flag, NULL)) {
 	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"),
 			spec->line);
+	    free(name);
 	    return RPMRC_FAIL;
 	}
 	
@@ -834,6 +834,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    rasprintf(&NVR, "%s-%s", mainName, name);
 	} else
 	    NVR = xstrdup(name);
+	free(name);
 	xx = headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, NVR, 1);
     } else {
 	NVR = xstrdup("(main package)");
