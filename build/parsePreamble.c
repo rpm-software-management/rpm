@@ -808,10 +808,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     char *name, *linep;
     int flag = 0;
     Package pkg;
-    char NVR[BUFSIZ];
+    char *NVR = NULL;
     char lang[BUFSIZ];
-
-    strcpy(NVR, "(main package)");
 
     pkg = newPackage(spec);
 	
@@ -833,17 +831,21 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	if (flag == PART_SUBNAME) {
 	    const char * mainName;
 	    xx = headerNVR(spec->packages->header, &mainName, NULL, NULL);
-	    sprintf(NVR, "%s-%s", mainName, name);
+	    rasprintf(&NVR, "%s-%s", mainName, name);
 	} else
-	    strcpy(NVR, name);
+	    NVR = xstrdup(name);
 	xx = headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, NVR, 1);
+    } else {
+	NVR = xstrdup("(main package)");
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else {
-	if (rc)
+	if (rc) {
+	    free(NVR);
 	    return rc;
+	}
 	while (! (nextPart = isPart(spec->line))) {
 	    const char * macro;
 	    rpmTag tag;
@@ -855,20 +857,27 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 		if (findPreambleTag(spec, &tag, &macro, lang)) {
 		    rpmlog(RPMLOG_ERR, _("line %d: Unknown tag: %s\n"),
 				spec->lineNum, spec->line);
+		    free(NVR);
 		    return RPMRC_FAIL;
 		}
-		if (handlePreambleTag(spec, pkg, tag, macro, lang))
+		if (handlePreambleTag(spec, pkg, tag, macro, lang)) {
+		    free(NVR);
 		    return RPMRC_FAIL;
-		if (spec->BANames && !spec->recursing)
+		}
+		if (spec->BANames && !spec->recursing) {
+		    free(NVR);
 		    return PART_BUILDARCHITECTURES;
+		}
 	    }
 	    if ((rc =
 		 readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
 	    }
-	    if (rc)
+	    if (rc) {
+		free(NVR);
 		return rc;
+	    }
 	}
     }
 
@@ -876,25 +885,32 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     
     if (!spec->gotBuildRootURL && spec->buildRootURL) {
 	rpmlog(RPMLOG_ERR, _("Spec file can't use BuildRoot\n"));
+	free(NVR);
 	return RPMRC_FAIL;
     }
 
     /* XXX Skip valid arch check if not building binary package */
-    if (!spec->anyarch && checkForValidArchitectures(spec))
+    if (!spec->anyarch && checkForValidArchitectures(spec)) {
+	free(NVR);
 	return RPMRC_FAIL;
+    }
 
     if (pkg == spec->packages)
 	fillOutMainPackage(pkg->header);
 
-    if (checkForDuplicates(pkg->header, NVR))
+    if (checkForDuplicates(pkg->header, NVR)) {
+	free(NVR);
 	return RPMRC_FAIL;
+    }
 
     if (pkg != spec->packages)
 	headerCopyTags(spec->packages->header, pkg->header,
 			(rpmTag *)copyTagsDuringParse);
 
-    if (checkForRequired(pkg->header, NVR))
+    if (checkForRequired(pkg->header, NVR)) {
+	free(NVR);
 	return RPMRC_FAIL;
+    }
 
     return nextPart;
 }
