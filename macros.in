@@ -742,7 +742,7 @@ print (t)\
 %_vsflags_build		%{__vsflags}
 %_vsflags_erase		%{__vsflags}
 %_vsflags_install	%{__vsflags}
-%_vsflags_query		%{__vsflags}
+%_vsflags_query		0xf0f00
 %_vsflags_rebuilddb	%{__vsflags}
 %_vsflags_verify	%{__vsflags}
 
