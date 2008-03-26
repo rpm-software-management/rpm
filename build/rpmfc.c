@@ -329,7 +329,7 @@ static char * rpmfcFileDep(char * buf, int ix,
 static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 {
     const char * fn = fc->fn[fc->ix];
-    char buf[BUFSIZ];
+    char *buf = NULL;
     StringBuf sb_stdout = NULL;
     StringBuf sb_stdin;
     const char *av[2];
@@ -351,7 +351,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     case 'P':
 	if (fc->skipProv)
 	    return 0;
-	xx = snprintf(buf, sizeof(buf), "%%{?__%s_provides}", nsdep);
+	rasprintf(&buf, "%%{?__%s_provides}", nsdep);
 	depsp = &fc->provides;
 	dsContext = RPMSENSE_FIND_PROVIDES;
 	tagN = RPMTAG_PROVIDENAME;
@@ -359,13 +359,12 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     case 'R':
 	if (fc->skipReq)
 	    return 0;
-	xx = snprintf(buf, sizeof(buf), "%%{?__%s_requires}", nsdep);
+	rasprintf(&buf, "%%{?__%s_requires}", nsdep);
 	depsp = &fc->requires;
 	dsContext = RPMSENSE_FIND_REQUIRES;
 	tagN = RPMTAG_REQUIRENAME;
 	break;
     }
-    buf[sizeof(buf)-1] = '\0';
     av[0] = buf;
     av[1] = NULL;
 
@@ -432,6 +431,7 @@ assert(EVR != NULL);
 	pav = argvFree(pav);
     }
     sb_stdout = freeStringBuf(sb_stdout);
+    free(buf);
 
     return 0;
 }
@@ -1524,7 +1524,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     rpm_mode_t * fmode;
     int ac = rpmfiFC(fi);
     const void ** p;
-    char buf[BUFSIZ];
+    char *buf = NULL;
     const char * N;
     const char * EVR;
     int genConfigDeps;
@@ -1589,9 +1589,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 assert(N != NULL);
 	    EVR = rpmdsEVR(pkg->ds);
 assert(EVR != NULL);
-	    sprintf(buf, "config(%s)", N);
+	    rasprintf(&buf, "config(%s)", N);
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR,
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
+	    free(buf);
 	    xx = rpmdsMerge(&fc->provides, ds);
 	    ds = rpmdsFree(ds);
 	}
@@ -1611,9 +1612,10 @@ assert(EVR != NULL);
 assert(N != NULL);
 	    EVR = rpmdsEVR(pkg->ds);
 assert(EVR != NULL);
-	    sprintf(buf, "config(%s)", N);
+	    rasprintf(&buf, "config(%s)", N);
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR,
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
+	    free(buf);
 	    xx = rpmdsMerge(&fc->requires, ds);
 	    ds = rpmdsFree(ds);
 	}
@@ -1748,9 +1750,10 @@ assert(ac == c);
     printDeps(pkg->header);
 
 if (fc != NULL && _rpmfc_debug) {
-char msg[BUFSIZ];
-sprintf(msg, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+char *msg = NULL;
+rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 rpmfcPrint(msg, fc, NULL);
+free(msg);
 }
 
     /* Clean up. */
