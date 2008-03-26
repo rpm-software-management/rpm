@@ -431,7 +431,6 @@ assert(EVR != NULL);
 	pav = argvFree(pav);
     }
     sb_stdout = freeStringBuf(sb_stdout);
-    free(buf);
 
     return 0;
 }
