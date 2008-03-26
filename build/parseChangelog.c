@@ -16,21 +16,13 @@
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     rpm_time_t mytime = time;	/* XXX convert to header representation */
+    HAE_t hae = headerAddEntry;
     if (headerIsEntry(h, RPMTAG_CHANGELOGTIME)) {
-	(void) headerAppendEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-			  &mytime, 1);
-	(void) headerAppendEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
-			  &name, 1);
-	(void) headerAppendEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
-			 &text, 1);
-    } else {
-	(void) headerAddEntry(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE,
-		       &mytime, 1);
-	(void) headerAddEntry(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE,
-		       &name, 1);
-	(void) headerAddEntry(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE,
-		       &text, 1);
+	hae = headerAppendEntry;
     }
+    (void) hae(h, RPMTAG_CHANGELOGTIME, RPM_INT32_TYPE, &mytime, 1);
+    (void) hae(h, RPMTAG_CHANGELOGNAME, RPM_STRING_ARRAY_TYPE, &name, 1);
+    (void) hae(h, RPMTAG_CHANGELOGTEXT, RPM_STRING_ARRAY_TYPE, &text, 1);
 }
 
 /**
