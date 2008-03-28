@@ -1059,8 +1059,6 @@ assert(s != NULL);
         ds = rpmdsSingle(RPMTAG_REQUIRENAME, "rtld(GNU_HASH)", "", 
                          RPMSENSE_FIND_REQUIRES);
         rpmdsMerge(&fc->requires, ds);
-        buf[0] = '\0';
-        t = buf;
         rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
         ds = rpmdsFree(ds);
     }
