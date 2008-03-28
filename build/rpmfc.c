@@ -813,7 +813,7 @@ static int rpmfcELF(rpmfc fc)
     int fdno;
     int cnt2;
     int cnt;
-    char buf[BUFSIZ];
+    char *buf = NULL;
     const char * s;
     struct stat sb, * st = &sb;
     char * soname = NULL;
@@ -898,15 +898,12 @@ static int rpmfcELF(rpmfc fc)
 			 && !(filter_GLIBC_PRIVATE != 0
 				&& !strcmp(s, "GLIBC_PRIVATE")))
 			{
-			    buf[0] = '\0';
-			    t = buf;
-			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
-
+			    rasprintf(&buf, "%s(%s)%s", soname, s,
 #if !defined(__alpha__)
-			    if (isElf64)
-				t = stpcpy(t, "(64bit)");
+							isElf64 ? "(64bit)" : "");
+#else
+							"");
 #endif
-			    t++;
 
 			    /* Add to package provides. */
 			    ds = rpmdsSingle(RPMTAG_PROVIDES,
@@ -917,6 +914,7 @@ static int rpmfcELF(rpmfc fc)
 			    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 			    ds = rpmdsFree(ds);
+			    free(buf);
 			}
 			auxoffset += aux->vda_next;
 		    }
@@ -957,15 +955,12 @@ static int rpmfcELF(rpmfc fc)
 			 && !(filter_GLIBC_PRIVATE != 0
 				&& !strcmp(s, "GLIBC_PRIVATE")))
 			{
-			    buf[0] = '\0';
-			    t = buf;
-			    t = stpcpy( stpcpy( stpcpy( stpcpy(t, soname), "("), s), ")");
-
+			    rasprintf(&buf, "%s(%s)%s", soname, s,
 #if !defined(__alpha__)
-			    if (isElf64)
-				t = stpcpy(t, "(64bit)");
+							isElf64 ? "(64bit)" : "");
+#else
+							"");
 #endif
-			    t++;
 
 			    /* Add to package dependencies. */
 			    ds = rpmdsSingle(RPMTAG_REQUIRENAME,
@@ -975,6 +970,7 @@ static int rpmfcELF(rpmfc fc)
 			    /* Add to file dependencies. */
 			    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 			    ds = rpmdsFree(ds);
+			    free(buf);
 			}
 			auxoffset += aux->vna_next;
 		    }
@@ -1029,15 +1025,12 @@ assert(s != NULL);
 		    if (s == NULL)
 			continue;
 
-		    buf[0] = '\0';
-		    t = buf;
-		    t = stpcpy(t, s);
-
+		    rasprintf(&buf, "%s%s", s,
 #if !defined(__alpha__)
-		    if (isElf64)
-			t = stpcpy(t, "()(64bit)");
+					    isElf64 ? "()(64bit)" : "");
+#else
+					    "");
 #endif
-		    t++;
 
 		    /* Add to package dependencies. */
 		    ds = rpmdsSingle(tagN, buf, "", dsContext);
@@ -1047,6 +1040,7 @@ assert(s != NULL);
 		    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 		    ds = rpmdsFree(ds);
+		    free(buf);
 		}
 	    }
 	    break;
@@ -1075,16 +1069,13 @@ assert(s != NULL);
 	else
 	    s = fn;
 
-	buf[0] = '\0';
-	t = buf;
 /* LCL: s is not null. */
-	t = stpcpy(t, s);
-
+	rasprintf(&buf, "%s%s", s,
 #if !defined(__alpha__)
-	if (isElf64)
-	    t = stpcpy(t, "()(64bit)");
+				isElf64 ? "()(64bit)" : "");
+#else
+				"");
 #endif
-	t++;
 
 	/* Add to package dependencies. */
 	ds = rpmdsSingle(tagN, buf, "", dsContext);
@@ -1094,6 +1085,7 @@ assert(s != NULL);
 	rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 	ds = rpmdsFree(ds);
+	free(buf);
     }
 
 exit:
