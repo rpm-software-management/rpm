@@ -287,7 +287,7 @@ exit:
 
 /**
  */
-static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
+static int rpmfcSaveArg(ARGV_t * argvp, char * key)
 {
     int rc = 0;
 
@@ -298,13 +298,18 @@ static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
     return rc;
 }
 
-static char * rpmfcFileDep(char * buf, int ix,
-		rpmds ds)
+static char * rpmfcFileDep(int ix, rpmds ds)
 {
     rpmTag tagN = rpmdsTagN(ds);
-    char deptype = 'X';
+    char *buf = NULL;
+    char deptype;
 
-    buf[0] = '\0';
+    if (ds == NULL) {
+	return xstrdup("");
+    }
+
+    assert(tagN == RPMTAG_PROVIDENAME || tagN == RPMTAG_REQUIRENAME);
+
     switch ((rpm_tag_t) tagN) {
     case RPMTAG_PROVIDENAME:
 	deptype = 'P';
@@ -313,11 +318,19 @@ static char * rpmfcFileDep(char * buf, int ix,
 	deptype = 'R';
 	break;
     }
-    if (ds != NULL)
-	sprintf(buf, "%08d%c %s %s 0x%08x", ix, deptype,
+
+    rasprintf(&buf, "%08d%c %s %s 0x%08x", ix, deptype,
 		rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
+
     return buf;
-};
+}
+
+static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds)
+{
+	char *key = rpmfcFileDep(ix, ds);
+	rpmfcSaveArg(argvp, key);
+	free(key);
+}
 
 /**
  * Run per-interpreter dependency helper.
@@ -423,7 +436,7 @@ assert(EVR != NULL);
 	    xx = rpmdsMerge(depsp, ds);
 
 	    /* Add to file dependencies. */
-	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(buf, fc->ix, ds));
+	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 	    ds = rpmdsFree(ds);
 	}
@@ -431,6 +444,7 @@ assert(EVR != NULL);
 	pav = argvFree(pav);
     }
     sb_stdout = freeStringBuf(sb_stdout);
+    free(buf);
 
     return 0;
 }
@@ -724,7 +738,7 @@ static int rpmfcSCRIPT(rpmfc fc)
 	    xx = rpmdsMerge(&fc->requires, ds);
 
 	    /* Add to file requires. */
-	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(se, fc->ix, ds));
+	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 	    ds = rpmdsFree(ds);
 	}
@@ -900,8 +914,7 @@ static int rpmfcELF(rpmfc fc)
 			    xx = rpmdsMerge(&fc->provides, ds);
 
 			    /* Add to file dependencies. */
-			    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, ds));
+			    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 			    ds = rpmdsFree(ds);
 			}
@@ -960,8 +973,7 @@ static int rpmfcELF(rpmfc fc)
 			    xx = rpmdsMerge(&fc->requires, ds);
 
 			    /* Add to file dependencies. */
-			    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, ds));
+			    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 			    ds = rpmdsFree(ds);
 			}
 			auxoffset += aux->vna_next;
@@ -1032,8 +1044,7 @@ assert(s != NULL);
 		    xx = rpmdsMerge(depsp, ds);
 
 		    /* Add to file dependencies. */
-		    xx = rpmfcSaveArg(&fc->ddict,
-					rpmfcFileDep(t, fc->ix, ds));
+		    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 		    ds = rpmdsFree(ds);
 		}
@@ -1050,7 +1061,7 @@ assert(s != NULL);
         rpmdsMerge(&fc->requires, ds);
         buf[0] = '\0';
         t = buf;
-        rpmfcSaveArg(&fc->ddict, rpmfcFileDep(t, fc->ix, ds));
+        rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
         ds = rpmdsFree(ds);
     }
 
@@ -1082,7 +1093,7 @@ assert(s != NULL);
 	xx = rpmdsMerge(depsp, ds);
 
 	/* Add to file dependencies. */
-	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(t, fc->ix, ds));
+	rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
 
 	ds = rpmdsFree(ds);
     }
@@ -1308,7 +1319,7 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    xx = rpmfcSaveArg(&fc->cdict, se);
+	    xx = rpmfcSaveArg(&fc->cdict, xstrdup(se));
     }
 
     /* Build per-file class index array. */
