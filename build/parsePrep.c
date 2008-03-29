@@ -161,13 +161,12 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
  */
-static const char *doUntar(rpmSpec spec, int c, int quietly)
+static char *doUntar(rpmSpec spec, int c, int quietly)
 {
     const char *fn;
     char *urlfn;
-    static char buf[BUFSIZ];
+    char *buf = NULL;
     char *tar, *taropts;
-    char *t = NULL;
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
@@ -231,7 +230,7 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 
     tar = rpmGetPath("%{__tar}", NULL);
     if (compressed != COMPRESSED_NOT) {
-	char *zipper;
+	char *zipper, *t = NULL;
 	int needtar = 1;
 
 	switch (compressed) {
@@ -254,32 +253,22 @@ static const char *doUntar(rpmSpec spec, int c, int quietly)
 	    break;
 	}
 	zipper = rpmGetPath(t, NULL);
-	buf[0] = '\0';
-	t = stpcpy(buf, zipper);
-	zipper = _free(zipper);
-	t = stpcpy(t, " '");
-	t = stpcpy(t, fn);
-	t = stpcpy(t, "'");
 	if (needtar) {
-	    t = stpcpy(t, " | ");
-	    t = stpcpy(t, tar);
-	    t = stpcpy(t, " ");
-	    t = stpcpy(t, taropts);
-	    t = stpcpy(t, " - ");
-	}
-	t = stpcpy(t,
-		"\n"
+	    rasprintf(&buf, "%s '%s' | %s %s - \n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
-		"fi");
+		"fi", zipper, fn, tar, taropts);
+	} else {
+	    rasprintf(&buf, "%s '%s'\n"
+		"STATUS=$?\n"
+		"if [ $STATUS -ne 0 ]; then\n"
+		"  exit $STATUS\n"
+		"fi", zipper, fn);
+	}
+	zipper = _free(zipper);
     } else {
-	buf[0] = '\0';
-	t = stpcpy(buf, tar);
-	t = stpcpy(t, " ");
-	t = stpcpy(t, taropts);
-	*t++ = ' ';
-	t = stpcpy(t, fn);
+	rasprintf(&buf, "%s %s %s", tar, taropts, fn);
     }
 
     urlfn = _free(urlfn);
@@ -336,11 +325,12 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	    return RPMRC_FAIL;
 	}
 
-	{   const char *chptr = doUntar(spec, num, quietly);
+	{   char *chptr = doUntar(spec, num, quietly);
 	    if (chptr == NULL)
 		return RPMRC_FAIL;
 
 	    appendLineStringBuf((arg == 'a' ? after : before), chptr);
+	    free(chptr);
 	}
     }
 
@@ -396,10 +386,11 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* do the default action */
    if (!createDir && !skipDefaultAction) {
-	const char *chptr = doUntar(spec, 0, quietly);
+	char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
 	    return RPMRC_FAIL;
 	appendLineStringBuf(spec->prep, chptr);
+	free(chptr);
     }
 
     appendStringBuf(spec->prep, getStringBuf(before));
@@ -412,10 +403,11 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
 
     if (createDir && !skipDefaultAction) {
-	const char * chptr = doUntar(spec, 0, quietly);
+	char *chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
 	    return RPMRC_FAIL;
 	appendLineStringBuf(spec->prep, chptr);
+	free(chptr);
     }
     
     appendStringBuf(spec->prep, getStringBuf(after));
