@@ -287,7 +287,7 @@ exit:
 
 /**
  */
-static int rpmfcSaveArg(ARGV_t * argvp, char * key)
+static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
 {
     int rc = 0;
 
@@ -1309,7 +1309,7 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    xx = rpmfcSaveArg(&fc->cdict, xstrdup(se));
+	    xx = rpmfcSaveArg(&fc->cdict, se);
     }
 
     /* Build per-file class index array. */
