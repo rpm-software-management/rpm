@@ -675,20 +675,6 @@ exit:
     return se;
 }
 
-#ifdef	DYING
-static void
-dumpME(const char * msg, rpmMacroEntry me)
-{
-    if (msg)
-	fprintf(stderr, "%s", msg);
-    fprintf(stderr, "\tme %p", me);
-    if (me)
-	fprintf(stderr,"\tname %p(%s) prev %p",
-		me->name, me->name, me->prev);
-    fprintf(stderr, "\n");
-}
-#endif
-
 /**
  * Push new macro definition onto macro entry stack.
  * @param mep		address of macro entry slot
@@ -1562,9 +1548,6 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     if (macrofiles == NULL)
 	return;
-#ifdef	DYING
-    if (mc == NULL) mc = rpmGlobalMacroContext;
-#endif
 
     mfiles = xstrdup(macrofiles);
     for (m = mfiles; m && *m != '\0'; m = me) {
