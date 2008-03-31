@@ -252,14 +252,6 @@ struct poptOption rpmQueryPoptTable[] = {
  { "noghost", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_fflags, RPMFILE_GHOST,
         N_("skip %%ghost files"), NULL },
-#ifdef	NOTEVER		/* XXX there's hardly a need for these */
- { "nolicense", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_fflags, RPMFILE_LICENSE,
-        N_("skip %%license files"), NULL },
- { "noreadme", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_fflags, RPMFILE_README,
-        N_("skip %%readme files"), NULL },
-#endif
 
  { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
 	POPT_QUERYFORMAT, NULL, NULL },
@@ -284,13 +276,8 @@ struct poptOption rpmVerifyPoptTable[] = {
 
  /* Duplicate file verify flags from packages into command line options. */
 /** @todo Add --nomd5 alias to rpmpopt, eliminate. */
-#ifdef	DYING
  { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_MD5,
 	N_("don't verify MD5 digest of files"), NULL },
-#else
- { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
-	N_("don't verify MD5 digest of files"), NULL },
-#endif
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIZE,
         N_("don't verify size of files"), NULL },
@@ -317,46 +304,21 @@ struct poptOption rpmVerifyPoptTable[] = {
 	N_("don't verify file security contexts"), NULL },
  { "nofiles", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILES,
 	N_("don't verify files in package"), NULL},
-#ifdef	DYING
- { "nodeps", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DEPS,
-	N_("don't verify package dependencies"), NULL },
-#else
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("don't verify package dependencies"), NULL },
-#endif
 
-#ifdef	DYING
- { "noscript", '\0', POPT_BIT_SET,&rpmQVKArgs.qva_flags, VERIFY_SCRIPT,
-        N_("don't execute verify script(s)"), NULL },
- /* XXX legacy had a trailing s on --noscript */
- { "noscripts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_SCRIPT,
-        N_("don't execute verify script(s)"), NULL },
-#else
  { "noscript", '\0', 0, NULL, RPMCLI_POPT_NOSCRIPTS,
         N_("don't execute verify script(s)"), NULL },
  /* XXX legacy had a trailing s on --noscript */
  { "noscripts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOSCRIPTS,
         N_("don't execute verify script(s)"), NULL },
-#endif
 
-#ifdef	DYING
- { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
-        N_("don't verify package digest(s)"), NULL },
- { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_HDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
- { "nosignature", '\0', POPT_BIT_SET,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
-#else
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
         N_("don't verify package digest(s)"), NULL },
  { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
         N_("don't verify database header(s) when retrieved"), NULL },
  { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
-#endif
 
 /** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
  { "nogpg", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,

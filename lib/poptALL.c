@@ -261,10 +261,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("use threads for file state machine"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
 	NULL, NULL},
-#ifdef	DYING
- { "poptdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_popt_debug, -1,
-	N_("debug option/argument processing"), NULL},
-#endif
  { "prtpkts", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_print_pkts, -1,
 	NULL, NULL},
  { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
