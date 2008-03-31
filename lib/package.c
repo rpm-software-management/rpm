@@ -9,6 +9,7 @@
 #include <rpm/rpmlib.h>			/* XXX RPMSIGTAG, other sig stuff */
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/legacy.h"	/* XXX legacyRetrofit() */
 #include "lib/rpmlead.h"
@@ -595,7 +596,7 @@ verifyinfo_exit:
 
 rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 {
-    char buf[BUFSIZ];
+    char *buf = NULL;
     int32_t block[4];
     int32_t il;
     int32_t dl;
@@ -606,8 +607,6 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
 
-    buf[0] = '\0';
-
     if (hdrp)
 	*hdrp = NULL;
     if (msg)
@@ -615,25 +614,23 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
-	(void) snprintf(buf, sizeof(buf),
+	rasprintf(&buf, 
 		_("hdr size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {
-	(void) snprintf(buf, sizeof(buf), _("hdr magic: BAD\n"));
+	rasprintf(&buf, _("hdr magic: BAD\n"));
 	goto exit;
     }
     il = ntohl(block[2]);
     if (hdrchkTags(il)) {
-	(void) snprintf(buf, sizeof(buf),
-		_("hdr tags: BAD, no. of tags(%d) out of range\n"), il);
-
+	rasprintf(&buf, _("hdr tags: BAD, no. of tags(%d) out of range\n"), il);
 	goto exit;
     }
     dl = ntohl(block[3]);
     if (hdrchkData(dl)) {
-	(void) snprintf(buf, sizeof(buf),
-		_("hdr data: BAD, no. of bytes(%d) out of range\n"), dl);
+	rasprintf(&buf,
+		  _("hdr data: BAD, no. of bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
@@ -643,8 +640,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     ei[0] = block[2];
     ei[1] = block[3];
     if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
-	(void) snprintf(buf, sizeof(buf),
-		_("hdr blob(%zd): BAD, read returned %d\n"), nb, xx);
+	rasprintf(&buf, _("hdr blob(%zd): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
 
@@ -656,7 +652,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     /* OK, blob looks sane, load the header. */
     h = headerLoad(ei);
     if (h == NULL) {
-	(void) snprintf(buf, sizeof(buf), _("hdr load: BAD\n"));
+	rasprintf(&buf, _("hdr load: BAD\n"));
         goto exit;
     }
     h->flags |= HEADERFLAG_ALLOCATED;
@@ -668,9 +664,10 @@ exit:
     ei = _free(ei);
     h = headerFree(h);
 
-    if (msg != NULL && *msg == NULL && buf[0] != '\0') {
-	buf[sizeof(buf)-1] = '\0';
-	*msg = xstrdup(buf);
+    if (msg != NULL && *msg == NULL && buf != NULL) {
+	*msg = buf;
+    } else {
+	free(buf);
     }
 
     return rc;
