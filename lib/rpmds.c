@@ -82,6 +82,22 @@ static int dsType(rpmTag tag,
     return rc;
 }    
 
+/*
+ * Dupe a string into string array (of size 1) + contents stored in a single 
+ * allocation block similarly to how headerGetEntry returns data so it will 
+ * be freed by headerFreeData(). 
+ */
+static const char ** str2hge(const char *str)
+{
+    const char ** arr;
+    char *t = xmalloc(sizeof(*arr) + strlen(str) + 1);
+    arr = (const char **) t;
+    t += sizeof(*arr);
+    strcpy(t, str);
+    arr[0] = t;
+    return arr;
+}
+
 rpmds rpmdsUnlink(rpmds ds, const char * msg)
 {
     if (ds == NULL) return NULL;
@@ -311,12 +327,12 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
 	ds->BT = now;
     }
     ds->Count = 1;
-    ds->N = xmalloc(sizeof(*ds->N));
-    ds->N[0] = N;
+
+    ds->N = str2hge(N);
     ds->Nt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
-    ds->EVR = xmalloc(sizeof(*ds->EVR));
-    ds->EVR[0] = EVR;
+    ds->EVR = str2hge(EVR);
     ds->EVRt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
+
     ds->Flags = xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
     ds->i = 0;
