@@ -169,7 +169,10 @@ static int rpmReSign(rpmts ts,
 	lead = rpmLeadNew();
 
 	if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
-	    rc = rpmLeadCheck(lead, rpm);
+	    const char *lmsg = NULL;
+	    rc = rpmLeadCheck(lead, &lmsg);
+	    if (rc != RPMRC_OK) 
+		rpmlog(RPMLOG_ERR, "%s: %s\n", rpm, lmsg);
 	}
 
 	if (rc != RPMRC_OK) {
@@ -542,7 +545,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     {
 	rpmlead lead = rpmLeadNew();
     	if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
-	    rc = rpmLeadCheck(lead, fn);
+	    const char *lmsg = NULL;
+	    rc = rpmLeadCheck(lead, &lmsg);
+	    if (rc != RPMRC_OK) 
+		rpmlog(RPMLOG_ERR, "%s: %s\n", fn, lmsg);
     	}
     	lead = rpmLeadFree(lead);
 

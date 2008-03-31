@@ -61,10 +61,12 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead lead);
 /** \ingroup lead
  * Check lead for compatibility.
  * @param lead		Pointer to lead handle
- * @param fn		File name
- * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
+ * @retval fn		Pointer to error message, NULL on success
+ * @return		RPMRC_OK on success, 
+ * 			RPMRC_NOTFOUND if not an rpm,
+ * 			RPMRC_FAIL on invalid/incompatible rpm
  */
-rpmRC rpmLeadCheck(rpmlead lead, const char* fn);
+rpmRC rpmLeadCheck(rpmlead lead, const char **msg);
 
 #ifdef __cplusplus
 }

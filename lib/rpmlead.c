@@ -94,18 +94,18 @@ rpmRC rpmLeadWrite(FD_t fd, rpmlead lead)
     return RPMRC_OK;
 }
 
-rpmRC rpmLeadCheck(rpmlead lead, const char* fn)
+rpmRC rpmLeadCheck(rpmlead lead, const char **msg)
 {
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic))) {
-	rpmlog(RPMLOG_ERR, _("%s: not an rpm package\n"), fn);
+	if (msg) *msg = _("not an rpm package");
 	return RPMRC_NOTFOUND;
     }
     if (lead->signature_type != RPMSIGTYPE_HEADERSIG) {
-	rpmlog(RPMLOG_ERR, _("%s: illegal signature type\n"), fn);
+	if (msg) *msg = _("illegal signature type");
 	return RPMRC_FAIL;
     }
     if (lead->major < 3 || lead->major > 4) {
-	rpmlog(RPMLOG_ERR, _("%s: unsupported RPM package (version %d)\n"), fn, lead->major);
+	if (msg) *msg = _("unsupported RPM package version");
 	return RPMRC_FAIL;
     }
     return RPMRC_OK;

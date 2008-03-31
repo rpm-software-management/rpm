@@ -700,7 +700,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     l = rpmLeadNew();
 
     if ((rc = rpmLeadRead(fd, l)) == RPMRC_OK) {
-	rc = rpmLeadCheck(l, fn);
+	const char * err = NULL;
+	if ((rc = rpmLeadCheck(l, &err)) == RPMRC_FAIL) {
+	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, err);
+	}
     }
     l = rpmLeadFree(l);
 
