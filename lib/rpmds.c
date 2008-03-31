@@ -259,8 +259,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
     const char * Type;
     const char * n, * v, * r;
     int32_t * ep;
-    const char ** N, ** EVR;
-    char * t;
+    char *evr;
     int xx;
 
     if (dsType(tagN, &Type, NULL, NULL))
@@ -270,34 +269,23 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *)&ep, NULL);
 
-    t = xmalloc(sizeof(*N) + strlen(n) + 1);
-    N = (const char **) t;
-    t += sizeof(*N);
-    *t = '\0';
-    N[0] = t;
-    t = stpcpy(t, n);
-
-    t = xmalloc(sizeof(*EVR) +
-		(ep ? 20 : 0) + strlen(v) + strlen(r) + sizeof("-"));
-    EVR = (const char **) t;
-    t += sizeof(*EVR);
-    *t = '\0';
-    EVR[0] = t;
     if (ep) {
-	sprintf(t, "%d:", *ep);
-	t += strlen(t);
+	rasprintf(&evr, "%d:%s-%s", *ep, v, r);
+    } else {
+	rasprintf(&evr, "%s-%s", v, r);
     }
-    t = stpcpy( stpcpy( stpcpy( t, v), "-"), r);
 
     ds = xcalloc(1, sizeof(*ds));
     ds->h = NULL;
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
-    ds->N = N;
+    ds->N = str2hge(n);
     ds->Nt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
-    ds->EVR = EVR;
+    ds->EVR = str2hge(evr);
     ds->EVRt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
+    free(evr);
+
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
     ds->i = 0;
     {	char pre[2];
@@ -307,6 +295,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
 	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
     }
 
+   
 exit:
     return rpmdsLink(ds, (ds ? ds->Type : RPMDBG()));
 }
