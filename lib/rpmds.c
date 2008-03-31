@@ -311,11 +311,14 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
 	ds->BT = now;
     }
     ds->Count = 1;
-    ds->N = xmalloc(sizeof(*ds->N));		ds->N[0] = N;
+    ds->N = xmalloc(sizeof(*ds->N));
+    ds->N[0] = N;
     ds->Nt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
-    ds->EVR = xmalloc(sizeof(*ds->EVR));	ds->EVR[0] = EVR;
+    ds->EVR = xmalloc(sizeof(*ds->EVR));
+    ds->EVR[0] = EVR;
     ds->EVRt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
-    ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+    ds->Flags = xmalloc(sizeof(*ds->Flags));
+    ds->Flags[0] = Flags;
     ds->i = 0;
     {	char t[2];
 	t[0] = ds->Type[0];
@@ -634,7 +637,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
     const char ** EVR;
     rpmsenseFlags * Flags;
     int j;
-int save;
+    int save;
 
     if (dsp == NULL || ods == NULL)
 	return -1;
@@ -653,7 +656,7 @@ int save;
     /*
      * Add new entries.
      */
-save = ods->i;
+    save = ods->i;
     ods = rpmdsInit(ods);
     if (ods != NULL)
     while (rpmdsNext(ods) >= 0) {
@@ -688,7 +691,8 @@ assert(ods->Flags != NULL);
 	if (ds->u > 0)
 	    memcpy(Flags, ds->Flags, ds->u * sizeof(*Flags));
 	if (ds->u < ds->Count)
-	    memcpy(Flags + ds->u + 1, ds->Flags + ds->u, (ds->Count - ds->u) * sizeof(*Flags));
+	    memcpy(Flags + ds->u + 1, ds->Flags + ds->u, 
+		   (ds->Count - ds->u) * sizeof(*Flags));
 	Flags[ds->u] = ods->Flags[ods->i];
 	ds->Flags = _free(ds->Flags);
 	ds->Flags = Flags;
@@ -697,7 +701,7 @@ assert(ods->Flags != NULL);
 	ds->Count++;
 
     }
-ods->i = save;
+    ods->i = save;
     return 0;
 }
 
