@@ -131,7 +131,7 @@ static unsigned char const header_magic[8] = {
 
 rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 {
-    char buf[BUFSIZ];
+    char *buf = NULL;
     int32_t block[4];
     int32_t il;
     int32_t dl;
@@ -151,32 +151,29 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     if (sighp)
 	*sighp = NULL;
 
-    buf[0] = '\0';
-
     if (sig_type != RPMSIGTYPE_HEADERSIG)
 	goto exit;
 
     memset(block, 0, sizeof(block));
     if ((xx = timedRead(fd, (void *)block, sizeof(block))) != sizeof(block)) {
-	(void) snprintf(buf, sizeof(buf),
-		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
+	rasprintf(&buf, _("sigh size(%d): BAD, read returned %d\n"), 
+		  (int)sizeof(block), xx);
 	goto exit;
     }
     if (memcmp(block, header_magic, sizeof(header_magic))) {
-	(void) snprintf(buf, sizeof(buf),
-		_("sigh magic: BAD\n"));
+	rasprintf(&buf, _("sigh magic: BAD\n"));
 	goto exit;
     }
     il = ntohl(block[2]);
     if (il < 0 || il > 32) {
-	(void) snprintf(buf, sizeof(buf),
-		_("sigh tags: BAD, no. of tags(%d) out of range\n"), il);
+	rasprintf(&buf, 
+		  _("sigh tags: BAD, no. of tags(%d) out of range\n"), il);
 	goto exit;
     }
     dl = ntohl(block[3]);
     if (dl < 0 || dl > 8192) {
-	(void) snprintf(buf, sizeof(buf),
-		_("sigh data: BAD, no. of  bytes(%d) out of range\n"), dl);
+	rasprintf(&buf, 
+		  _("sigh data: BAD, no. of  bytes(%d) out of range\n"), dl);
 	goto exit;
     }
 
@@ -187,18 +184,17 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     pe = (entryInfo) &ei[2];
     dataStart = (unsigned char *) (pe + il);
     if ((xx = timedRead(fd, (void *)pe, nb)) != nb) {
-	(void) snprintf(buf, sizeof(buf),
-		_("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
+	rasprintf(&buf,
+		  _("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
 	goto exit;
     }
     
     /* Check (and convert) the 1st tag element. */
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
     if (xx != -1) {
-	(void) snprintf(buf, sizeof(buf),
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		0, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		  0, entry->info.tag, entry->info.type,
+		  entry->info.offset, entry->info.count);
 	goto exit;
     }
 
@@ -209,7 +205,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     {
 
 	if (entry->info.offset >= dl) {
-	    (void) snprintf(buf, sizeof(buf),
+	    rasprintf(&buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -233,7 +229,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	   && entry->info.type == RPM_BIN_TYPE
 	   && entry->info.count == REGION_TAG_COUNT))
 	{
-	    (void) snprintf(buf, sizeof(buf),
+	    rasprintf(&buf,
 		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -244,8 +240,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	/* Is the no. of tags in the region less than the total no. of tags? */
 	ril = entry->info.offset/sizeof(*pe);
 	if ((entry->info.offset % sizeof(*pe)) || ril > il) {
-	    (void) snprintf(buf, sizeof(buf),
-		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
+	    rasprintf(&buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	    goto exit;
 	}
     }
@@ -255,7 +250,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     for (i = 1; i < il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
 	if (xx != -1) {
-	    (void) snprintf(buf, sizeof(buf),
+	    rasprintf(&buf, 
 		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		i, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -266,7 +261,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     /* OK, blob looks sane, load the header. */
     sigh = headerLoad(ei);
     if (sigh == NULL) {
-	(void) snprintf(buf, sizeof(buf), _("sigh load: BAD\n"));
+	rasprintf(&buf, _("sigh load: BAD\n"));
 	goto exit;
     }
     sigh->flags |= HEADERFLAG_ALLOCATED;
@@ -278,17 +273,19 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 
 	/* Position at beginning of header. */
 	if (pad && (trc = timedRead(fd, (void *)block, pad)) != pad) {
-	    (void) snprintf(buf, sizeof(buf),
-		_("sigh pad(%zd): BAD, read %zd bytes\n"), pad, trc);
+	    rasprintf(&buf,
+		      _("sigh pad(%zd): BAD, read %zd bytes\n"), pad, trc);
 	    goto exit;
 	}
 
 	/* Print package component sizes. */
 	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(rpm_data_t *)&archSize, NULL)) {
 	    rc = printSize(fd, sigSize, pad, *archSize);
-	    if (rc != RPMRC_OK)
-		(void) snprintf(buf, sizeof(buf),
+	    if (rc != RPMRC_OK) {
+		rasprintf(&buf,
 		       _("sigh sigSize(%zd): BAD, fstat(2) failed\n"), sigSize);
+		goto exit;
+	    }
 	}
     }
 
@@ -298,8 +295,9 @@ exit:
     sigh = headerFree(sigh);
 
     if (msg != NULL) {
-	buf[sizeof(buf)-1] = '\0';
-	*msg = xstrdup(buf);
+	*msg = buf;
+    } else {
+	free(buf);
     }
 
     return rc;
