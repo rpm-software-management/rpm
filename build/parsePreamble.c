@@ -194,15 +194,18 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
     const char ** names;
     rpmTagType type;
     rpm_count_t count;
+    int found = 0;
 
     if (!hge(h, tag, &type, (rpm_data_t *)&names, &count))
 	return -1;
     while (count--) {
-	if (!rstrcasecmp(names[count], name))
+	if (!rstrcasecmp(names[count], name)) {
+	    found = 1;
 	    break;
+	}
     }
     names = hfd(names, type);
-    return (count >= 0 ? 1 : 0);
+    return found;
 }
 
 /**
