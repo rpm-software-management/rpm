@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-25 14:05+0200\n"
+"POT-Creation-Date: 2008-04-01 10:30+0300\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1528,44 +1528,44 @@ msgstr "nájdených %d balíkov\n"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1026
+#: lib/depends.c:1024
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1269
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1363
+#: lib/depends.c:1361
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1459
+#: lib/depends.c:1457
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1532
+#: lib/depends.c:1530
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1567
+#: lib/depends.c:1565
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1572
+#: lib/depends.c:1570
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3531 rpmdb/header.c:3560 rpmdb/header.c:3584
+#: rpmdb/header.c:3533 rpmdb/header.c:3562 rpmdb/header.c:3586
 msgid "(not a number)"
 msgstr "(nie je èíslo)"
 
@@ -1602,7 +1602,7 @@ msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 
-#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
+#: lib/fs.c:117 lib/fs.c:224 lib/fs.c:343
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "nepodarilo sa zisti» stav %s: %s"
@@ -1612,12 +1612,12 @@ msgstr "nepodarilo sa zisti» stav %s: %s"
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/fs.c:236
+#: lib/fs.c:241
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
-#: lib/fs.c:361
+#: lib/fs.c:366
 #, fuzzy, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "súbor %s sa nachádza na neznámom zariadení"
@@ -3838,77 +3838,77 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2721
 msgid "missing { after %"
 msgstr "chýbajúce { po %"
 
-#: rpmdb/header.c:2751
+#: rpmdb/header.c:2753
 msgid "missing } after %{"
 msgstr "chýbajúce } po %{"
 
-#: rpmdb/header.c:2767
+#: rpmdb/header.c:2769
 msgid "empty tag format"
 msgstr "prázdny tag formát"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2781
 msgid "empty tag name"
 msgstr "prázdne meno tagu"
 
-#: rpmdb/header.c:2788
+#: rpmdb/header.c:2790
 msgid "unknown tag"
 msgstr "neznámy tag"
 
-#: rpmdb/header.c:2815
+#: rpmdb/header.c:2817
 msgid "] expected at end of array"
 msgstr "] oèakávané na konci poµa"
 
-#: rpmdb/header.c:2828
+#: rpmdb/header.c:2830
 msgid "unexpected ]"
 msgstr "neoèakávané ]"
 
-#: rpmdb/header.c:2841
+#: rpmdb/header.c:2843
 msgid "unexpected }"
 msgstr "neoèakávané }"
 
-#: rpmdb/header.c:2905
+#: rpmdb/header.c:2907
 msgid "? expected in expression"
 msgstr "? oèakávané vo výraze"
 
-#: rpmdb/header.c:2912
+#: rpmdb/header.c:2914
 msgid "{ expected after ? in expression"
 msgstr "{ oèakávané po ? vo výraze"
 
-#: rpmdb/header.c:2924 rpmdb/header.c:2964
+#: rpmdb/header.c:2926 rpmdb/header.c:2966
 msgid "} expected in expression"
 msgstr "} oèakávané vo výraze"
 
-#: rpmdb/header.c:2932
+#: rpmdb/header.c:2934
 msgid ": expected following ? subexpression"
 msgstr ": oèakávané po ? podvýraze"
 
-#: rpmdb/header.c:2950
+#: rpmdb/header.c:2952
 msgid "{ expected after : in expression"
 msgstr "{ oèakávané po : vo výraze"
 
-#: rpmdb/header.c:2972
+#: rpmdb/header.c:2974
 msgid "| expected at end of expression"
 msgstr "| oèakávené na konci výrazu"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3073
+#: rpmdb/header.c:3075
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3303
+#: rpmdb/header.c:3305
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3622
+#: rpmdb/header.c:3624
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3638
+#: rpmdb/header.c:3640
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -4143,78 +4143,78 @@ msgstr "%3d>%*s(prázdne)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(prázdne)\n"
 
-#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1869
+#: rpmio/macro.c:608 rpmio/macro.c:1093 rpmio/macro.c:1126 rpmio/macro.c:1872
 #, fuzzy
 msgid "Target buffer overflow\n"
 msgstr "Preplnenie cieµovej vyrovnávacej pamäti"
 
-#: rpmio/macro.c:671 rpmio/macro.c:712
+#: rpmio/macro.c:674 rpmio/macro.c:715
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "Makro %%%s obsahuje neukonèené telo"
 
-#: rpmio/macro.c:734
+#: rpmio/macro.c:737
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Makro %%%s obsahuje chybný názov (%%define)"
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:743
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "Makro %%%s obsahuje neukonèené voµby"
 
-#: rpmio/macro.c:745
+#: rpmio/macro.c:748
 #, fuzzy, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "Makro %%%s obsahuje prázdne telo"
 
-#: rpmio/macro.c:751
+#: rpmio/macro.c:754
 #, fuzzy, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "Makro %%%s sa nepodarilo expandova»"
 
-#: rpmio/macro.c:786
+#: rpmio/macro.c:789
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Makro %%%s obsahuje chybný názov (%%undefine)"
 
-#: rpmio/macro.c:904
+#: rpmio/macro.c:907
 #, fuzzy, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nebolo pou¾ité pod úrovòou %d "
 
-#: rpmio/macro.c:1031
+#: rpmio/macro.c:1034
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Neznáma voµba %c v %s(%s)"
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1243
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Håbka rekurzie (%d) väè¹ia ako maximálna (%d)"
 
-#: rpmio/macro.c:1313 rpmio/macro.c:1330
+#: rpmio/macro.c:1316 rpmio/macro.c:1333
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Neukonèené %c: %s"
 
-#: rpmio/macro.c:1371
+#: rpmio/macro.c:1374
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1528
+#: rpmio/macro.c:1531
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "balík %%%.*s nebol nájdený, vynecháva sa"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2082 rpmio/macro.c:2088
+#: rpmio/macro.c:2094 rpmio/macro.c:2100
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "Súbor %s: %s"
 
-#: rpmio/macro.c:2091
+#: rpmio/macro.c:2103
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Súbor %s je men¹í ako %d bajtov"

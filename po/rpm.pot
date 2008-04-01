@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-25 14:05+0200\n"
+"POT-Creation-Date: 2008-04-01 10:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1471,44 +1471,44 @@ msgstr ""
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1026
+#: lib/depends.c:1024
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1269
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1363
+#: lib/depends.c:1361
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1459
+#: lib/depends.c:1457
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1532
+#: lib/depends.c:1530
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1567
+#: lib/depends.c:1565
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1572
+#: lib/depends.c:1570
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3531 rpmdb/header.c:3560 rpmdb/header.c:3584
+#: rpmdb/header.c:3533 rpmdb/header.c:3562 rpmdb/header.c:3586
 msgid "(not a number)"
 msgstr ""
 
@@ -1542,7 +1542,7 @@ msgstr ""
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
+#: lib/fs.c:117 lib/fs.c:224 lib/fs.c:343
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr ""
@@ -1552,12 +1552,12 @@ msgstr ""
 msgid "failed to open %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:236
+#: lib/fs.c:241
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr ""
 
-#: lib/fs.c:361
+#: lib/fs.c:366
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr ""
@@ -3680,77 +3680,77 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2721
 msgid "missing { after %"
 msgstr ""
 
-#: rpmdb/header.c:2751
+#: rpmdb/header.c:2753
 msgid "missing } after %{"
 msgstr ""
 
-#: rpmdb/header.c:2767
+#: rpmdb/header.c:2769
 msgid "empty tag format"
 msgstr ""
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2781
 msgid "empty tag name"
 msgstr ""
 
-#: rpmdb/header.c:2788
+#: rpmdb/header.c:2790
 msgid "unknown tag"
 msgstr ""
 
-#: rpmdb/header.c:2815
+#: rpmdb/header.c:2817
 msgid "] expected at end of array"
 msgstr ""
 
-#: rpmdb/header.c:2828
+#: rpmdb/header.c:2830
 msgid "unexpected ]"
 msgstr ""
 
-#: rpmdb/header.c:2841
+#: rpmdb/header.c:2843
 msgid "unexpected }"
 msgstr ""
 
-#: rpmdb/header.c:2905
+#: rpmdb/header.c:2907
 msgid "? expected in expression"
 msgstr ""
 
-#: rpmdb/header.c:2912
+#: rpmdb/header.c:2914
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: rpmdb/header.c:2924 rpmdb/header.c:2964
+#: rpmdb/header.c:2926 rpmdb/header.c:2966
 msgid "} expected in expression"
 msgstr ""
 
-#: rpmdb/header.c:2932
+#: rpmdb/header.c:2934
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: rpmdb/header.c:2950
+#: rpmdb/header.c:2952
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: rpmdb/header.c:2972
+#: rpmdb/header.c:2974
 msgid "| expected at end of expression"
 msgstr ""
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3073
+#: rpmdb/header.c:3075
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3303
+#: rpmdb/header.c:3305
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3622
+#: rpmdb/header.c:3624
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3638
+#: rpmdb/header.c:3640
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3981,77 +3981,77 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1869
+#: rpmio/macro.c:608 rpmio/macro.c:1093 rpmio/macro.c:1126 rpmio/macro.c:1872
 msgid "Target buffer overflow\n"
 msgstr ""
 
-#: rpmio/macro.c:671 rpmio/macro.c:712
+#: rpmio/macro.c:674 rpmio/macro.c:715
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:734
+#: rpmio/macro.c:737
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:743
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:745
+#: rpmio/macro.c:748
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:751
+#: rpmio/macro.c:754
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:786
+#: rpmio/macro.c:789
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:904
+#: rpmio/macro.c:907
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:1031
+#: rpmio/macro.c:1034
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1243
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1313 rpmio/macro.c:1330
+#: rpmio/macro.c:1316 rpmio/macro.c:1333
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1371
+#: rpmio/macro.c:1374
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1528
+#: rpmio/macro.c:1531
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2082 rpmio/macro.c:2088
+#: rpmio/macro.c:2094 rpmio/macro.c:2100
 #, c-format
 msgid "File %s: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:2091
+#: rpmio/macro.c:2103
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-25 14:05+0200\n"
+"POT-Creation-Date: 2008-04-01 10:30+0300\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1518,18 +1518,18 @@ msgstr "paket yok\n"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:1026
+#: lib/depends.c:1024
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1269
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1363
+#: lib/depends.c:1361
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
@@ -1537,27 +1537,27 @@ msgid ""
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1459
+#: lib/depends.c:1457
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1532
+#: lib/depends.c:1530
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1567
+#: lib/depends.c:1565
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1572
+#: lib/depends.c:1570
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3531 rpmdb/header.c:3560 rpmdb/header.c:3584
+#: rpmdb/header.c:3533 rpmdb/header.c:3562 rpmdb/header.c:3586
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -1594,7 +1594,7 @@ msgstr "mntctl() sonuçlanan hatalý boyut nedeniyle baþarýsýz: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() sonuçlanan hatalý baðlantý yerleri nedeniyle baþarýsýz: %s\n"
 
-#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
+#: lib/fs.c:117 lib/fs.c:224 lib/fs.c:343
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s baþarýsýz: %s\n"
@@ -1604,12 +1604,12 @@ msgstr "stat %s baþarýsýz: %s\n"
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: lib/fs.c:236
+#: lib/fs.c:241
 #, fuzzy, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "Dosya %4d: %07o %s.%s\t %s\n"
 
-#: lib/fs.c:361
+#: lib/fs.c:366
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "%s dosyasýnýn bulunduðu aygýt anlaþýlamadý\n"
@@ -3802,77 +3802,77 @@ msgstr "%s ya çok büyük ya da çok küçük 'long' deðer içeriyor, atlandý\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ya çok büyük ya da çok küçük 'integer' deðer içeriyor, atlandý\n"
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2721
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
-#: rpmdb/header.c:2751
+#: rpmdb/header.c:2753
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
-#: rpmdb/header.c:2767
+#: rpmdb/header.c:2769
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2781
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
-#: rpmdb/header.c:2788
+#: rpmdb/header.c:2790
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
-#: rpmdb/header.c:2815
+#: rpmdb/header.c:2817
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
-#: rpmdb/header.c:2828
+#: rpmdb/header.c:2830
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
-#: rpmdb/header.c:2841
+#: rpmdb/header.c:2843
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
-#: rpmdb/header.c:2905
+#: rpmdb/header.c:2907
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
-#: rpmdb/header.c:2912
+#: rpmdb/header.c:2914
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
-#: rpmdb/header.c:2924 rpmdb/header.c:2964
+#: rpmdb/header.c:2926 rpmdb/header.c:2966
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
-#: rpmdb/header.c:2932
+#: rpmdb/header.c:2934
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
-#: rpmdb/header.c:2950
+#: rpmdb/header.c:2952
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
-#: rpmdb/header.c:2972
+#: rpmdb/header.c:2974
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3073
+#: rpmdb/header.c:3075
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3303
+#: rpmdb/header.c:3305
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3622
+#: rpmdb/header.c:3624
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3638
+#: rpmdb/header.c:3640
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -4106,77 +4106,77 @@ msgstr "%3d>%*s(boþ)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(boþ)\n"
 
-#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1869
+#: rpmio/macro.c:608 rpmio/macro.c:1093 rpmio/macro.c:1126 rpmio/macro.c:1872
 msgid "Target buffer overflow\n"
 msgstr "Hedef tampon bellek taþtý\n"
 
-#: rpmio/macro.c:671 rpmio/macro.c:712
+#: rpmio/macro.c:674 rpmio/macro.c:715
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "%%%s makrosunun gövdesi sonlandýrýlmamýþ\n"
 
-#: rpmio/macro.c:734
+#: rpmio/macro.c:737
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "%%%s makrosunun ismi kuraldýþý (%%define)\n"
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:743
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "%%%s makrosunu seçenekleri sonlandýrýlmamýþ\n"
 
-#: rpmio/macro.c:745
+#: rpmio/macro.c:748
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "%%%s makrosu boþ\n"
 
-#: rpmio/macro.c:751
+#: rpmio/macro.c:754
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "%%%s makrosu geniþletmede baþarýsýz\n"
 
-#: rpmio/macro.c:786
+#: rpmio/macro.c:789
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "%%%s makrosunun ismi kuraldýþý (%%define)\n"
 
-#: rpmio/macro.c:904
+#: rpmio/macro.c:907
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "%%%s (%s) makrosu %d seviyenin altýnda kullanýlmadý\n"
 
-#: rpmio/macro.c:1031
+#: rpmio/macro.c:1034
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneði %s(%s) de anlaþýlamadý\n"
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1243
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliði(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1313 rpmio/macro.c:1330
+#: rpmio/macro.c:1316 rpmio/macro.c:1333
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandýrýlmamýþ: %s\n"
 
-#: rpmio/macro.c:1371
+#: rpmio/macro.c:1374
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrýþtýrýlamayan makro tarafýndan bir %% izlendi\n"
 
-#: rpmio/macro.c:1528
+#: rpmio/macro.c:1531
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadý, atlanýyor\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2082 rpmio/macro.c:2088
+#: rpmio/macro.c:2094 rpmio/macro.c:2100
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyasý: %s\n"
 
-#: rpmio/macro.c:2091
+#: rpmio/macro.c:2103
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"

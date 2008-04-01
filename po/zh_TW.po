@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-25 14:05+0200\n"
+"POT-Creation-Date: 2008-04-01 10:30+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1477,44 +1477,44 @@ msgstr "(資料庫套件)"
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "忽略套件名稱關聯 [%d]\t %s-> %s\n"
 
-#: lib/depends.c:1026
+#: lib/depends.c:1024
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "從樹狀排列關係移除 %s\"%s\"。\n"
 
 #. Record all relations.
-#: lib/depends.c:1271
+#: lib/depends.c:1269
 msgid "========== recording tsort relations\n"
 msgstr "========== 記錄樹狀排列關係\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1363
+#: lib/depends.c:1361
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr "========== 樹狀排列套件 (次序、#前行者、#後繼者、樹、深度、廣度)\n"
 
-#: lib/depends.c:1459
+#: lib/depends.c:1457
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== 只有後繼符號 (%d 位元組)\n"
 
-#: lib/depends.c:1532
+#: lib/depends.c:1530
 msgid "LOOP:\n"
 msgstr "迴圈：\n"
 
-#: lib/depends.c:1567
+#: lib/depends.c:1565
 msgid "========== continuing tsort ...\n"
 msgstr "========== 繼續樹狀排列…\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1572
+#: lib/depends.c:1570
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:520
-#: rpmdb/header.c:3531 rpmdb/header.c:3560 rpmdb/header.c:3584
+#: rpmdb/header.c:3533 rpmdb/header.c:3562 rpmdb/header.c:3586
 msgid "(not a number)"
 msgstr "(不是數字)"
 
@@ -1548,7 +1548,7 @@ msgstr "mntctl() 回傳大小失敗：%s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() 回傳掛載點失敗：%s\n"
 
-#: lib/fs.c:117 lib/fs.c:219 lib/fs.c:338
+#: lib/fs.c:117 lib/fs.c:224 lib/fs.c:343
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "無法檢驗狀態：%s：%s\n"
@@ -1558,12 +1558,12 @@ msgstr "無法檢驗狀態：%s：%s\n"
 msgid "failed to open %s: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: lib/fs.c:236
+#: lib/fs.c:241
 #, c-format
 msgid "%5d 0x%04x %s %s\n"
 msgstr "%5d 0x%04x %s %s\n"
 
-#: lib/fs.c:361
+#: lib/fs.c:366
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "檔案 %s 位於一個不明的裝置上\n"
@@ -3692,77 +3692,77 @@ msgstr "%s 有太大或太小的長整數值，略過\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s 有太大或太小的整數值，略過\n"
 
-#: rpmdb/header.c:2719
+#: rpmdb/header.c:2721
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: rpmdb/header.c:2751
+#: rpmdb/header.c:2753
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: rpmdb/header.c:2767
+#: rpmdb/header.c:2769
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2781
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: rpmdb/header.c:2788
+#: rpmdb/header.c:2790
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: rpmdb/header.c:2815
+#: rpmdb/header.c:2817
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: rpmdb/header.c:2828
+#: rpmdb/header.c:2830
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: rpmdb/header.c:2841
+#: rpmdb/header.c:2843
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: rpmdb/header.c:2905
+#: rpmdb/header.c:2907
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: rpmdb/header.c:2912
+#: rpmdb/header.c:2914
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: rpmdb/header.c:2924 rpmdb/header.c:2964
+#: rpmdb/header.c:2926 rpmdb/header.c:2966
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: rpmdb/header.c:2932
+#: rpmdb/header.c:2934
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: rpmdb/header.c:2950
+#: rpmdb/header.c:2952
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: rpmdb/header.c:2972
+#: rpmdb/header.c:2974
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3073
+#: rpmdb/header.c:3075
 msgid "(index out of range)"
 msgstr "(索引超出範圍)"
 
-#: rpmdb/header.c:3303
+#: rpmdb/header.c:3305
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
-#: rpmdb/header.c:3622
+#: rpmdb/header.c:3624
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3638
+#: rpmdb/header.c:3640
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
@@ -3993,77 +3993,77 @@ msgstr "%3d>%*s(清空)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(清空)\n"
 
-#: rpmio/macro.c:608 rpmio/macro.c:1090 rpmio/macro.c:1123 rpmio/macro.c:1869
+#: rpmio/macro.c:608 rpmio/macro.c:1093 rpmio/macro.c:1126 rpmio/macro.c:1872
 msgid "Target buffer overflow\n"
 msgstr "目標緩衝區溢位\n"
 
-#: rpmio/macro.c:671 rpmio/macro.c:712
+#: rpmio/macro.c:674 rpmio/macro.c:715
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "巨集 %%%s 具有未終結的主體\n"
 
-#: rpmio/macro.c:734
+#: rpmio/macro.c:737
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%define)\n"
 
-#: rpmio/macro.c:740
+#: rpmio/macro.c:743
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "巨集 %%%s 具有未終結的選項\n"
 
-#: rpmio/macro.c:745
+#: rpmio/macro.c:748
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "巨集 %%%s 具有清空的主體\n"
 
-#: rpmio/macro.c:751
+#: rpmio/macro.c:754
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "巨集 %%%s 展開時失敗\n"
 
-#: rpmio/macro.c:786
+#: rpmio/macro.c:789
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%undefine)\n"
 
-#: rpmio/macro.c:904
+#: rpmio/macro.c:907
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "巨集 %%%s (%s) 在等級 %d 之下未被使用\n"
 
-#: rpmio/macro.c:1031
+#: rpmio/macro.c:1034
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中有不明的選項 %1$c\n"
 
-#: rpmio/macro.c:1240
+#: rpmio/macro.c:1243
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "遞迴深度(%d)大於最大值(%d)\n"
 
-#: rpmio/macro.c:1313 rpmio/macro.c:1330
+#: rpmio/macro.c:1316 rpmio/macro.c:1333
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c: %s\n"
 
-#: rpmio/macro.c:1371
+#: rpmio/macro.c:1374
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#: rpmio/macro.c:1528
+#: rpmio/macro.c:1531
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "找不到巨集 %%%.*s，跳過\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2082 rpmio/macro.c:2088
+#: rpmio/macro.c:2094 rpmio/macro.c:2100
 #, c-format
 msgid "File %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: rpmio/macro.c:2091
+#: rpmio/macro.c:2103
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"
