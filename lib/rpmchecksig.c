@@ -759,15 +759,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 				offset = 9;
 			    }
 			    if (tempKey) {
-			      if (res3 == RPMRC_NOKEY) {
-				m = stpcpy(m, " PGP#");
-				m = stpncpy(m, tempKey + offset, 8);
-				*m = '\0';
-			      } else {
-			        u = stpcpy(u, " PGP#");
-				u = stpncpy(u, tempKey + offset, 8);
-				*u = '\0';
-			      }
+				char * kt = (res3 == RPMRC_NOKEY ? m : u);
+				kt = stpcpy(kt, " PGP#");
+				kt = stpncpy(kt, tempKey + offset, 8);
 			    }
 			}   break;
 			default:
