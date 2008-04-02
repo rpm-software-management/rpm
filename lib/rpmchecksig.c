@@ -727,10 +727,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    res3 = rpmVerifySignature(ts, result);
 
 	    if (res3) {
+		res2 = 1;
 		if (rpmIsVerbose()) {
 		    b = stpcpy(b, "    ");
 		    b = stpcpy(b, result);
-		    res2 = 1;
 		} else {
 		    char *tempKey;
 		    switch (sigtag) {
@@ -743,13 +743,11 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    case RPMSIGTAG_DSA:
 		    default:
 			b = stpcpy(b, sigtagname(sigtag, 1));
-			res2 = 1;
 			break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
 		    case RPMSIGTAG_PGP:
 			switch (res3) {
 			case RPMRC_NOKEY:
-			    res2 = 1;
 			case RPMRC_NOTTRUSTED:
 			{   int offset = 6;
 			    b = stpcpy(b, "(MD5) (PGP) ");
@@ -766,7 +764,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 			}   break;
 			default:
 			    b = stpcpy(b, "MD5 PGP ");
-			    res2 = 1;
 			    break;
 			}
 			break;
@@ -781,11 +778,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 				m = stpncpy(m, tempKey+6, 8);
 				*m = '\0';
 			    }
-			    res2 = 1;
 			    break;
 			default:
 			    b = stpcpy(b, "GPG ");
-			    res2 = 1;
 			    break;
 			}
 			break;
