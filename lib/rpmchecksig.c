@@ -817,35 +817,18 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 	res += res2;
 
-	if (res2) {
-	    if (rpmIsVerbose()) {
-		rpmlog(RPMLOG_NOTICE, "%s", buf);
-	    } else {
-		rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf,
-			_("NOT OK"),
-			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
-			missingKeys,
-			(missingKeys[0] != '\0') ? _(") ") : "",
-			(untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
-			untrustedKeys,
-			(untrustedKeys[0] != '\0') ? _(")") : "");
-
-	    }
+	if (rpmIsVerbose()) {
+	    rpmlog(RPMLOG_NOTICE, "%s", buf);
 	} else {
-	    if (rpmIsVerbose()) {
-		rpmlog(RPMLOG_NOTICE, "%s", buf);
-	    } else {
-		rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf,
-			_("OK"),
-			(missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
-			missingKeys,
-			(missingKeys[0] != '\0') ? _(") ") : "",
-			(untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
-			untrustedKeys,
-			(untrustedKeys[0] != '\0') ? _(")") : "");
-	    }
+	    const char *ok = (res2 ? _("NOT_OK") : _("OK"));
+	    rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf, ok,
+		   (missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
+		   missingKeys,
+		   (missingKeys[0] != '\0') ? _(") ") : "",
+		   (untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
+		   untrustedKeys,
+		   (untrustedKeys[0] != '\0') ? _(")") : "");
 	}
-
     }
 
 exit:
