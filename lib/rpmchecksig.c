@@ -519,6 +519,42 @@ exit:
     return rc;
 }
 
+static const char *sigtagname(rpmSigTag sigtag, int upper)
+{
+    const char *n = NULL;
+
+    switch (sigtag) {
+    case RPMSIGTAG_SIZE:
+	n = (upper ? "SIZE " : "size ");
+	break;
+    case RPMSIGTAG_SHA1:
+	n = (upper ? "SHA1 " : "sha1 ");
+	break;
+    case RPMSIGTAG_LEMD5_2:
+    case RPMSIGTAG_LEMD5_1:
+    case RPMSIGTAG_MD5:
+	n = (upper ? "MD5 " : "md5 ");
+	break;
+    case RPMSIGTAG_RSA:
+	n = (upper ? "RSA " : "rsa ");
+	break;
+    case RPMSIGTAG_PGP5:	/* XXX legacy */
+    case RPMSIGTAG_PGP:
+	n = (upper ? "(MD5) PGP " : "(md5) pgp ");
+	break;
+    case RPMSIGTAG_DSA:
+	n = (upper ? "(SHA1) DSA " : "(sha1) dsa ");
+	break;
+    case RPMSIGTAG_GPG:
+	n = (upper ? "GPG " : "gpg ");
+	break;
+    default:
+	n = (upper ? "?UnknownSigatureType?" : "???");
+	break;
+    }
+    return n;
+}
+
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
@@ -699,21 +735,14 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    char *tempKey;
 		    switch (sigtag) {
 		    case RPMSIGTAG_SIZE:
-			b = stpcpy(b, "SIZE ");
-			res2 = 1;
-			break;
 		    case RPMSIGTAG_SHA1:
-			b = stpcpy(b, "SHA1 ");
-			res2 = 1;
-			break;
 		    case RPMSIGTAG_LEMD5_2:
 		    case RPMSIGTAG_LEMD5_1:
 		    case RPMSIGTAG_MD5:
-			b = stpcpy(b, "MD5 ");
-			res2 = 1;
-			break;
 		    case RPMSIGTAG_RSA:
-			b = stpcpy(b, "RSA ");
+		    case RPMSIGTAG_DSA:
+		    default:
+			b = stpcpy(b, sigtagname(sigtag, 1));
 			res2 = 1;
 			break;
 		    case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -747,10 +776,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 			    break;
 			}
 			break;
-		    case RPMSIGTAG_DSA:
-			b = stpcpy(b, "(SHA1) DSA ");
-			res2 = 1;
-			break;
 		    case RPMSIGTAG_GPG:
 			/* Do not consider this a failure */
 			switch (res3) {
@@ -770,10 +795,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 			    break;
 			}
 			break;
-		    default:
-			b = stpcpy(b, "?UnknownSignatureType? ");
-			res2 = 1;
-			break;
 		    }
 		}
 	    } else {
@@ -781,35 +802,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    b = stpcpy(b, "    ");
 		    b = stpcpy(b, result);
 		} else {
-		    switch (sigtag) {
-		    case RPMSIGTAG_SIZE:
-			b = stpcpy(b, "size ");
-			break;
-		    case RPMSIGTAG_SHA1:
-			b = stpcpy(b, "sha1 ");
-			break;
-		    case RPMSIGTAG_LEMD5_2:
-		    case RPMSIGTAG_LEMD5_1:
-		    case RPMSIGTAG_MD5:
-			b = stpcpy(b, "md5 ");
-			break;
-		    case RPMSIGTAG_RSA:
-			b = stpcpy(b, "rsa ");
-			break;
-		    case RPMSIGTAG_PGP5:	/* XXX legacy */
-		    case RPMSIGTAG_PGP:
-			b = stpcpy(b, "(md5) pgp ");
-			break;
-		    case RPMSIGTAG_DSA:
-			b = stpcpy(b, "(sha1) dsa ");
-			break;
-		    case RPMSIGTAG_GPG:
-			b = stpcpy(b, "gpg ");
-			break;
-		    default:
-			b = stpcpy(b, "??? ");
-			break;
-		    }
+		    b = stpcpy(b, sigtagname(sigtag, 0));
 		}
 	    }
 	}
