@@ -558,7 +558,6 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
-    int res2, res3;
     char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;
@@ -574,7 +573,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char * msg;
     int res = 0;
     int xx;
-    rpmRC rc;
+    rpmRC rc, sigres;
+    int failed;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
@@ -661,7 +661,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    goto exit;
 	}
 
-	res2 = 0;
+	failed = 0;
 	b = buf;		*b = '\0';
 	m = missingKeys;	*m = '\0';
 	u = untrustedKeys;	*u = '\0';
@@ -724,85 +724,80 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		break;
 	    }
 
-	    res3 = rpmVerifySignature(ts, result);
+	    sigres = rpmVerifySignature(ts, result);
+	    if (sigres != RPMRC_OK) {
+		failed = 1;
+	    }
 
-	    if (res3) {
-		res2 = 1;
-		if (rpmIsVerbose()) {
-		    b = stpcpy(b, "    ");
-		    b = stpcpy(b, result);
-		} else {
-		    char *tempKey;
-		    switch (sigtag) {
-		    case RPMSIGTAG_SIZE:
-		    case RPMSIGTAG_SHA1:
-		    case RPMSIGTAG_LEMD5_2:
-		    case RPMSIGTAG_LEMD5_1:
-		    case RPMSIGTAG_MD5:
-		    case RPMSIGTAG_RSA:
-		    case RPMSIGTAG_DSA:
-		    default:
-			b = stpcpy(b, sigtagname(sigtag, 1));
-			break;
-		    case RPMSIGTAG_PGP5:	/* XXX legacy */
-		    case RPMSIGTAG_PGP:
-			switch (res3) {
-			case RPMRC_NOKEY:
-			case RPMRC_NOTTRUSTED:
-			{   int offset = 6;
-			    b = stpcpy(b, "(MD5) (PGP) ");
-			    tempKey = strstr(result, "ey ID");
-			    if (tempKey == NULL) {
-			        tempKey = strstr(result, "keyid:");
-				offset = 9;
-			    }
-			    if (tempKey) {
-				char * kt = (res3 == RPMRC_NOKEY ? m : u);
-				kt = stpcpy(kt, " PGP#");
-				kt = stpncpy(kt, tempKey + offset, 8);
-			    }
-			}   break;
-			default:
-			    b = stpcpy(b, "MD5 PGP ");
-			    break;
-			}
-			break;
-		    case RPMSIGTAG_GPG:
-			/* Do not consider this a failure */
-			switch (res3) {
-			case RPMRC_NOKEY:
-			    b = stpcpy(b, "(GPG) ");
-			    m = stpcpy(m, " GPG#");
-			    tempKey = strstr(result, "ey ID");
-			    if (tempKey) {
-				m = stpncpy(m, tempKey+6, 8);
-				*m = '\0';
-			    }
-			    break;
-			default:
-			    b = stpcpy(b, "GPG ");
-			    break;
-			}
-			break;
-		    }
-		}
+	    if (rpmIsVerbose()) {
+		b = stpcpy(b, "    ");
+		b = stpcpy(b, result);
+	    } else if (sigres == RPMRC_OK) {
+		b = stpcpy(b, sigtagname(sigtag, 0));
 	    } else {
-		if (rpmIsVerbose()) {
-		    b = stpcpy(b, "    ");
-		    b = stpcpy(b, result);
-		} else {
-		    b = stpcpy(b, sigtagname(sigtag, 0));
-		}
+		char *tempKey;
+		switch (sigtag) {
+		case RPMSIGTAG_SIZE:
+		case RPMSIGTAG_SHA1:
+		case RPMSIGTAG_LEMD5_2:
+		case RPMSIGTAG_LEMD5_1:
+		case RPMSIGTAG_MD5:
+		case RPMSIGTAG_RSA:
+		case RPMSIGTAG_DSA:
+		default:
+		    b = stpcpy(b, sigtagname(sigtag, 1));
+		    break;
+		case RPMSIGTAG_PGP5:	/* XXX legacy */
+		case RPMSIGTAG_PGP:
+		    switch (sigres) {
+		    case RPMRC_NOKEY:
+		    case RPMRC_NOTTRUSTED:
+		    {   int offset = 6;
+		    	b = stpcpy(b, "(MD5) (PGP) ");
+		    	tempKey = strstr(result, "ey ID");
+		    	if (tempKey == NULL) {
+			    tempKey = strstr(result, "keyid:");
+			    offset = 9;
+		    	}
+		    	if (tempKey) {
+			    char * kt = (sigres == RPMRC_NOKEY ? m : u);
+			    kt = stpcpy(kt, " PGP#");
+			    kt = stpncpy(kt, tempKey + offset, 8);
+		        }
+		    }   break;
+		    default:
+		    	b = stpcpy(b, "MD5 PGP ");
+		    	break;
+		    }
+		    break;
+	    	case RPMSIGTAG_GPG:
+		    /* Do not consider this a failure */
+		    switch (sigres) {
+		    case RPMRC_NOKEY:
+		    	b = stpcpy(b, "(GPG) ");
+		    	m = stpcpy(m, " GPG#");
+		    	tempKey = strstr(result, "ey ID");
+		    	if (tempKey) {
+			    m = stpncpy(m, tempKey+6, 8);
+			    *m = '\0';
+		    	}
+		    	break;
+		    default:
+		    	b = stpcpy(b, "GPG ");
+		    	break;
+		    }
+		    break;
+	    	}
 	    }
 	}
 	hi = headerFreeIterator(hi);
 
-	res += res2;
+	res += failed;
 
 	if (rpmIsVerbose()) {
 	    rpmlog(RPMLOG_NOTICE, "%s", buf);
 	} else {
-	    const char *ok = (res2 ? _("NOT_OK") : _("OK"));
+	    const char *ok = (failed ? _("NOT_OK") : _("OK"));
 	    rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf, ok,
 		   (missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
 		   missingKeys,
