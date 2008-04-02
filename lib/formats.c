@@ -834,21 +834,13 @@ static int i18nTag(Header h, rpmTag tag, rpmTagType* type,
     if (dstring && *dstring) {
 	char *domain, *de;
 	const char * langval;
-	const char * msgkey;
+	char * msgkey;
 	const char * msgid;
+	const char * n;
+	int xx;
 
-	{   const char * tn = rpmTagGetName(tag);
-	    const char * n;
-	    char * mk;
-	    size_t nb = sizeof("()");
-	    int xx;
-	    xx = headerNVR(h, &n, NULL, NULL);
-	    if (tn)	nb += strlen(tn);
-	    if (n)	nb += strlen(n);
-	    mk = alloca(nb);
-	    sprintf(mk, "%s(%s)", n, tn);
-	    msgkey = mk;
-	}
+	xx = headerNVR(h, &n, NULL, NULL);
+	rasprintf(&msgkey, "%s(%s)", n, rpmTagGetName(tag));
 
 	/* change to en_US for msgkey -> msgid resolution */
 	langval = getenv(language);
@@ -881,6 +873,7 @@ static int i18nTag(Header h, rpmTag tag, rpmTagType* type,
 	    *freeData = 1;
 	}
 	dstring = _free(dstring);
+	free(msgkey);
 	if (*data)
 	    return 0;
     }
