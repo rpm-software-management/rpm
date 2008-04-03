@@ -755,10 +755,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    {   int offset = 6;
 		    	b = stpcpy(b, "(MD5) (PGP) ");
 		    	tempKey = strstr(result, "ey ID");
-		    	if (tempKey == NULL) {
-			    tempKey = strstr(result, "keyid:");
-			    offset = 9;
-		    	}
 		    	if (tempKey) {
 			    char * kt = (sigres == RPMRC_NOKEY ? m : u);
 			    kt = stpcpy(kt, " PGP#");
