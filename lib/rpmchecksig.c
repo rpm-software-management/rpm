@@ -777,7 +777,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	if (rpmIsVerbose()) {
 	    rpmlog(RPMLOG_NOTICE, "%s", buf);
 	} else {
-	    const char *ok = (failed ? _("NOT_OK") : _("OK"));
+	    const char *ok = (failed ? _("NOT OK") : _("OK"));
 	    rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf, ok,
 		   missingKeys ? _(" (MISSING KEYS:") : "",
 		   missingKeys ? missingKeys : "",
