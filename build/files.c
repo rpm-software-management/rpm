@@ -756,7 +756,7 @@ static int parseForRegexLang(const char * fileName, char ** lang)
     static int initialized = 0;
     static int hasRegex = 0;
     static regex_t compiledPatt;
-    static char buf[BUFSIZ];
+    char *buf;
     int x;
     regmatch_t matches[2];
     const char *s;
@@ -782,12 +782,15 @@ static int parseForRegexLang(const char * fileName, char ** lang)
     /* Got match */
     s = fileName + matches[1].rm_eo - 1;
     x = matches[1].rm_eo - matches[1].rm_so;
+    buf = xmalloc(x+1);
     buf[x] = '\0';
-    while (x) {
-	buf[--x] = *s--;
-    }
+    memcpy(buf, s, x);
     if (lang)
 	*lang = buf;
+    else {
+	free(buf);
+	return 1;
+    }
     return 0;
 }
 
@@ -1377,7 +1380,6 @@ static rpmRC addFile(FileList fl, const char * diskURL,
     gid_t fileGid;
     const char *fileUname;
     const char *fileGname;
-    char *lang;
     
     /* Path may have prepended buildRootURL, so locate the original filename. */
     /*
@@ -1515,9 +1517,7 @@ static rpmRC addFile(FileList fl, const char * diskURL,
 			*ncl++ = *ocl;
 		*ncl = '\0';
 	    }
-	} else if (! parseForRegexLang(fileURL, &lang)) {
-	    flp->langs = xstrdup(lang);
-	} else {
+	} else if (parseForRegexLang(fileURL, &flp->langs)) {
 	    flp->langs = xstrdup("");
 	}
 
