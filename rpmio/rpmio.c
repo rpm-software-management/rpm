@@ -25,6 +25,7 @@ extern int h_errno;
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
+#include <rpm/rpmstring.h>
 
 #include "rpmio/rpmio_internal.h"
 #include "rpmio/ugid.h"

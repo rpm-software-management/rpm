@@ -302,7 +302,7 @@ static char * rpmfcFileDep(int ix, rpmds ds)
 {
     rpmTag tagN = rpmdsTagN(ds);
     char *buf = NULL;
-    char deptype;
+    char deptype = '?';
 
     if (ds == NULL) {
 	return xstrdup("");
@@ -820,7 +820,6 @@ static int rpmfcELF(rpmfc fc)
     rpmds * depsp, ds;
     rpmTag tagN;
     int32_t dsContext;
-    char * t;
     int xx;
     int isElf64;
     int isDSO;

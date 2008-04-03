@@ -570,7 +570,7 @@ static PyObject * hdr_getattro(PyObject * o, PyObject * n)
     PyObject * res;
     res = PyObject_GenericGetAttr(o, n);
     if (res == NULL)
-	res = hdr_subscript(o, n);
+	res = hdr_subscript((hdrObject *)o, n);
     return res;
 }
 
