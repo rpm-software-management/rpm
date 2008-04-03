@@ -559,7 +559,7 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
-    char buf[8192], * b;
+    char *buf = NULL, *b;
     char * missingKeys, *untrustedKeys;
     rpmTag sigtag;
     rpmTagType sigtype;
@@ -661,11 +661,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	}
 
 	failed = 0;
-	b = buf;		*b = '\0';
 	missingKeys = NULL;
 	untrustedKeys = NULL;
-	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
-	b += strlen(b);
+	rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
 	for (hi = headerInitIterator(sigh);
 	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
@@ -767,8 +765,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    }
 	    free(result);
 
-	    b = stpcpy(b, msg);
+	    rasprintf(&b, "%s%s", buf, msg);
+	    free(buf);
 	    free(msg);
+	    buf = b;
 	}
 	hi = headerFreeIterator(hi);
 
@@ -786,6 +786,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		   untrustedKeys ? untrustedKeys : "",
 		   untrustedKeys ? _(")") : "");
 	}
+        free(buf);
+        free(missingKeys);
+        free(untrustedKeys);
     }
 
 exit:
