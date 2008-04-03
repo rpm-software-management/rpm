@@ -251,10 +251,10 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes,
  *
  * @param ts		transaction set
  * @retval result	detailed text result of signature verification
+ * 			(malloc'd)
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(const rpmts ts,
-		char * result);
+rpmRC rpmVerifySignature(const rpmts ts, char ** result);
 
 /** \ingroup signature
  * Destroy signature header from package.

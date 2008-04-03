@@ -943,14 +943,17 @@ static const char * rpmSigString(rpmRC res)
 }
 
 static rpmRC
-verifySizeSignature(const rpmts ts, char * t)
+verifySizeSignature(const rpmts ts, char ** msg)
 {
     rpm_constdata_t sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     size_t size = 0x7fffffff;
+    char *t;
 
-    *t = '\0';
+    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
+    t = *msg;
+
     t = stpcpy(t, _("Header+Payload size: "));
 
     if (sig == NULL || dig == NULL || dig->nbytes == 0) {
@@ -977,7 +980,7 @@ exit:
 }
 
 static rpmRC
-verifyMD5Signature(const rpmts ts, char * t,
+verifyMD5Signature(const rpmts ts, char ** msg,
 		DIGEST_CTX md5ctx)
 {
     rpm_constdata_t sig = rpmtsSig(ts);
@@ -986,8 +989,11 @@ verifyMD5Signature(const rpmts ts, char * t,
     rpmRC res;
     uint8_t * md5sum = NULL;
     size_t md5len = 0;
+    char * t;
 
-    *t = '\0';
+    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
+    t = *msg;
+
     t = stpcpy(t, _("MD5 digest: "));
 
     if (md5ctx == NULL || sig == NULL || dig == NULL) {
@@ -1027,12 +1033,12 @@ exit:
 /**
  * Verify header immutable region SHA1 digest.
  * @param ts		transaction set
- * @retval t		verbose success/failure text
+ * @retval msg		rbose success/failure text
  * @param sha1ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHA1Signature(const rpmts ts, char * t,
+verifySHA1Signature(const rpmts ts, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
     rpm_constdata_t sig = rpmtsSig(ts);
@@ -1042,8 +1048,11 @@ verifySHA1Signature(const rpmts ts, char * t,
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     char * SHA1 = NULL;
+    char *t;
 
-    *t = '\0';
+    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
+    t = *msg;
+
     t = stpcpy(t, _("Header SHA1 digest: "));
 
     if (sha1ctx == NULL || sig == NULL || dig == NULL) {
@@ -1097,12 +1106,12 @@ static inline unsigned char nibble(char c)
 /**
  * Verify RSA signature.
  * @param ts		transaction set
- * @retval t		verbose success/failure text
+ * @retval msg		rbose success/failure text
  * @param md5ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSASignature(rpmts ts, char * t,
+verifyRSASignature(rpmts ts, char ** msg,
 		DIGEST_CTX md5ctx)
 {
     rpm_constdata_t sig = rpmtsSig(ts);
@@ -1116,8 +1125,11 @@ verifyRSASignature(rpmts ts, char * t,
     rpmRC res = RPMRC_OK;
     int xx;
     SECItem digest;
+    char *t;
 
-    *t = '\0';
+    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
+    t = *msg;
+
     if (dig != NULL && dig->hdrmd5ctx == md5ctx)
 	t = stpcpy(t, _("Header "));
     *t++ = 'V';
@@ -1250,7 +1262,7 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyDSASignature(rpmts ts, char * t,
+verifyDSASignature(rpmts ts, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
     rpm_constdata_t sig = rpmtsSig(ts);
@@ -1263,8 +1275,11 @@ verifyDSASignature(rpmts ts, char * t,
     rpmRC res;
     int xx;
     SECItem digest;
+    char *t;
 
-    *t = '\0';
+    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
+    t = *msg;
+
     if (dig != NULL && dig->hdrsha1ctx == sha1ctx)
 	t = stpcpy(t, _("Header "));
     *t++ = 'V';
@@ -1342,7 +1357,7 @@ exit:
 }
 
 rpmRC
-rpmVerifySignature(const rpmts ts, char * result)
+rpmVerifySignature(const rpmts ts, char ** result)
 {
     rpm_constdata_t sig = rpmtsSig(ts);
     size_t siglen = rpmtsSiglen(ts);
@@ -1350,8 +1365,10 @@ rpmVerifySignature(const rpmts ts, char * result)
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
 
+    assert(result != NULL);
+
     if (sig == NULL || siglen <= 0 || dig == NULL) {
-	sprintf(result, _("Verify signature: BAD PARAMETERS\n"));
+	rasprintf(result, _("Verify signature: BAD PARAMETERS\n"));
 	return RPMRC_NOTFOUND;
     }
 
@@ -1382,11 +1399,11 @@ rpmVerifySignature(const rpmts ts, char * result)
 	break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
-	sprintf(result, _("Broken MD5 digest: UNSUPPORTED\n"));
+	rasprintf(result, _("Broken MD5 digest: UNSUPPORTED\n"));
 	res = RPMRC_NOTFOUND;
 	break;
     default:
-	sprintf(result, _("Signature: UNKNOWN (%d)\n"), sigtag);
+	rasprintf(result, _("Signature: UNKNOWN (%d)\n"), sigtag);
 	res = RPMRC_NOTFOUND;
 	break;
     }

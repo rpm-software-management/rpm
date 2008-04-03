@@ -558,7 +558,6 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
-    char result[1024];
     char buf[8192], * b;
     char missingKeys[7164], * m;
     char untrustedKeys[7164], * u;
@@ -672,6 +671,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
 	    (void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen))
 	{
+    	    char *result = NULL;
 
 	    if (sig == NULL) /* XXX can't happen */
 		continue;
@@ -724,7 +724,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		break;
 	    }
 
-	    sigres = rpmVerifySignature(ts, result);
+	    sigres = rpmVerifySignature(ts, &result);
 	    if (sigres != RPMRC_OK) {
 		failed = 1;
 	    }
@@ -789,6 +789,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    break;
 	    	}
 	    }
+	    free(result);
 	}
 	hi = headerFreeIterator(hi);
 

@@ -307,7 +307,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 {
     pgpDig dig;
-    char buf[8*BUFSIZ];
+    char *buf = NULL;
     int32_t * ei = (int32_t *) uh;
     int32_t il = ntohl(ei[0]);
     int32_t dl = ntohl(ei[1]);
@@ -331,12 +331,10 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     static int hclvl;
 
     hclvl++;
-    buf[0] = '\0';
 
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
-	(void) snprintf(buf, sizeof(buf),
-		_("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
+	rasprintf(&buf, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
 		(int)uc, (int)il, (int)dl);
 	goto exit;
     }
@@ -344,8 +342,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     /* Check (and convert) the 1st tag element. */
     xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
     if (xx != -1) {
-	(void) snprintf(buf, sizeof(buf),
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		0, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
 	goto exit;
@@ -362,7 +359,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 
     /* Is the offset within the data area? */
     if (entry->info.offset >= dl) {
-	(void) snprintf(buf, sizeof(buf),
+	rasprintf(&buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -380,7 +377,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
        && entry->info.type == RPM_BIN_TYPE
        && entry->info.count == REGION_TAG_COUNT))
     {
-	(void) snprintf(buf, sizeof(buf),
+	rasprintf(&buf, 
 		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
 		entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -391,8 +388,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     /* Is the no. of tags in the region less than the total no. of tags? */
     ril = entry->info.offset/sizeof(*pe);
     if ((entry->info.offset % sizeof(*pe)) || ril > il) {
-	(void) snprintf(buf, sizeof(buf),
-		_("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
+	rasprintf(&buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	goto exit;
     }
 
@@ -400,7 +396,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     for (i = ril; i < il; i++) {
 	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
 	if (xx != -1) {
-	    (void) snprintf(buf, sizeof(buf),
+	    rasprintf(&buf,
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		i, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
@@ -419,7 +415,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	    }
 	    if (entry->info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
 	    {
-		(void) snprintf(buf, sizeof(buf), _("hdr SHA1: BAD, not hex\n"));
+		rasprintf(&buf, _("hdr SHA1: BAD, not hex\n"));
 		goto exit;
 	    }
 	    if (info->tag == 0) {
@@ -431,7 +427,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	    if (vsflags & RPMVSF_NORSAHEADER)
 		break;
 	    if (entry->info.type != RPM_BIN_TYPE) {
-		(void) snprintf(buf, sizeof(buf), _("hdr RSA: BAD, not binary\n"));
+		rasprintf(&buf, _("hdr RSA: BAD, not binary\n"));
 		goto exit;
 	    }
 	    *info = entry->info;	/* structure assignment */
@@ -441,7 +437,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		break;
 	    if (entry->info.type != RPM_BIN_TYPE) {
-		(void) snprintf(buf, sizeof(buf), _("hdr DSA: BAD, not binary\n"));
+		rasprintf(&buf, _("hdr DSA: BAD, not binary\n"));
 		goto exit;
 	    }
 	    *info = entry->info;	/* structure assignment */
@@ -456,8 +452,10 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 exit:
     /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
     if (rc != RPMRC_NOTFOUND) {
-	buf[sizeof(buf)-1] = '\0';
-	if (msg) *msg = xstrdup(buf);
+	if (msg) 
+	    *msg = buf;
+	else
+	    free(buf);
 	hclvl--;
 	return rc;
     }
@@ -467,17 +465,19 @@ exit:
 verifyinfo_exit:
 	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
 	if (xx != -1) {
-	    (void) snprintf(buf, sizeof(buf),
+	    rasprintf(&buf,
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		xx+1, entry->info.tag, entry->info.type,
 		entry->info.offset, entry->info.count);
 	    rc = RPMRC_FAIL;
 	} else {
-	    (void) snprintf(buf, sizeof(buf), "Header sanity check: OK\n");
+	    rasprintf(&buf, "Header sanity check: OK\n");
 	    rc = RPMRC_OK;
 	}
-	buf[sizeof(buf)-1] = '\0';
-	if (msg) *msg = xstrdup(buf);
+	if (msg) 
+	    *msg = buf;
+	else
+	    free(buf);
 	hclvl--;
 	return rc;
     }
@@ -579,11 +579,12 @@ verifyinfo_exit:
 	break;
     }
 
-    buf[0] = '\0';
-    rc = rpmVerifySignature(ts, buf);
+    rc = rpmVerifySignature(ts, &buf);
 
-    buf[sizeof(buf)-1] = '\0';
-    if (msg) *msg = xstrdup(buf);
+    if (msg) 
+	*msg = buf;
+    else
+	free(buf);
 
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1)
@@ -910,24 +911,23 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 /** @todo Implement disable/enable/warn/error/anal policy. */
 
-    buf[0] = '\0';
-    rc = rpmVerifySignature(ts, buf);
+    rc = rpmVerifySignature(ts, &msg);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
-	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, msg);
 	break;
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
     {	int lvl = (rpmtsStashKeyid(ts) ? RPMLOG_DEBUG : RPMLOG_WARNING);
-	rpmlog(lvl, "%s: %s", fn, buf);
+	rpmlog(lvl, "%s: %s", fn, msg);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
-	rpmlog(RPMLOG_WARNING, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_WARNING, "%s: %s", fn, msg);
 	break;
     default:
     case RPMRC_FAIL:		/* Signature does not verify. */
-	rpmlog(RPMLOG_ERR, "%s: %s", fn, buf);
+	rpmlog(RPMLOG_ERR, "%s: %s", fn, msg);
 	break;
     }
 
