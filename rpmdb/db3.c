@@ -12,7 +12,6 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <rpm/rpmtag.h>
 #include <rpm/rpmmacro.h>
-#include <rpm/rpmurl.h>		/* XXX urlPath proto */
 #include <rpm/rpmfileutil.h>	/* rpmioMkPath */
 #include <rpm/rpmlog.h>
 
@@ -633,10 +632,9 @@ assert(db != NULL);
 static int db3close(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
-    char * urlfn = NULL;
     const char * root;
     const char * home;
-    const char * dbhome;
+    char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
     DB * db = dbi->dbi_db;
@@ -653,12 +651,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	root = NULL;
     home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
 
-    /*
-     * Either the root or directory components may be a URL. Concatenate,
-     * convert the URL to a path, and add the name of the file.
-     */
-    urlfn = rpmGenPath(root, home, NULL);
-    (void) urlPath(urlfn, &dbhome);
+    dbhome = rpmGenPath(root, home, NULL);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
 	dbsubfile = NULL;
@@ -755,7 +748,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 exit:
     dbi->dbi_db = NULL;
 
-    urlfn = _free(urlfn);
+    free(dbhome);
 
     dbi = db3Free(dbi);
 
@@ -765,10 +758,9 @@ exit:
 static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     extern const struct _dbiVec db3vec;
-    char * urlfn = NULL;
     const char * root;
     const char * home;
-    const char * dbhome;
+    char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
     dbiIndex dbi = NULL;
@@ -799,12 +791,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	root = NULL;
     home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
 
-    /*
-     * Either the root or directory components may be a URL. Concatenate,
-     * convert the URL to a path, and add the name of the file.
-     */
-    urlfn = rpmGenPath(root, home, NULL);
-    (void) urlPath(urlfn, &dbhome);
+    dbhome = rpmGenPath(root, home, NULL);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
 	dbsubfile = NULL;
@@ -1183,7 +1170,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	(void) db3close(dbi, 0);
     }
 
-    urlfn = _free(urlfn);
+    free(dbhome);
 
     return rc;
 }

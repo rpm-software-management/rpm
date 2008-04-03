@@ -31,7 +31,6 @@
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
-#include <rpm/rpmurl.h>     	/* XXX urlPath proto */
 #include <rpm/rpmfileutil.h>	/* rpmioMkpath */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmdb.h>
@@ -776,10 +775,9 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     extern const struct _dbiVec sqlitevec;
    
-    char * urlfn = NULL;
     char * root;
     char * home;
-    const char * dbhome;
+    char * dbhome;
     const char * dbfile;  
     char * dbfname;
     const char * sql_errcode;
@@ -827,12 +825,7 @@ enterChroot(dbi);
 
     dbi->dbi_mode=O_RDWR;
        
-    /*
-     * Either the root or directory components may be a URL. Concatenate,
-     * convert the URL to a path, and add the name of the file.
-     */
-    urlfn = rpmGenPath(NULL, home, NULL);
-    (void) urlPath(urlfn, &dbhome);
+    dbhome = rpmGenPath(NULL, home, NULL);
 
     /* 
      * Create the /var/lib/rpm directory if it doesn't exist (root only).
@@ -875,7 +868,7 @@ enterChroot(dbi);
 	(void) sql_close(dbi, 0);
     }
  
-    urlfn = _free(urlfn);
+    free(dbhome);
     dbfname = _free(dbfname);
 
 leaveChroot(dbi);
