@@ -29,7 +29,7 @@ if test "$GCC" = yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC -D_REENTRANT -Wall -Wpointer-arith -Wmissing-prototypes -Wno-char-subscripts"
     # XXX disabled for now due to noise from NSPR headers
     # CFLAGS="$CFLAGS -Wstrict-prototypes"
-    cflags_to_try="-fno-strict-aliasing"
+    cflags_to_try="-fno-strict-aliasing -fstack-protector"
     AC_MSG_CHECKING([supported compiler flags])
     old_cflags=$CFLAGS
     echo
