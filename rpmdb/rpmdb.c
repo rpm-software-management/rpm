@@ -3224,42 +3224,6 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 }
 
-/**
- * Check if file esists using stat(2).
- * @param urlfn		file name (may be URL)
- * @return		1 if file exists, 0 if not
- */
-static int rpmioFileExists(const char * urlfn)
-{
-    const char *fn;
-    int urltype = urlPath(urlfn, &fn);
-    struct stat buf;
-
-    if (*fn == '\0') fn = "/";
-    switch (urltype) {
-    case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	if (stat(fn, &buf)) {
-	    switch(errno) {
-	    case ENOENT:
-	    case EINVAL:
-		return 0;
-	    }
-	}
-	break;
-    case URL_IS_DASH:
-    default:
-	return 0;
-	break;
-    }
-
-    return 1;
-}
-
 static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi)
 { 
@@ -3286,14 +3250,14 @@ static int rpmdbRemoveDatabase(const char * prefix,
 	    const char * base = rpmTagGetName(dbiTags.tags[i]);
 	    sprintf(filename, "%s/%s/%s", prefix, dbpath, base);
 	    (void)rpmCleanPath(filename);
-	    if (!rpmioFileExists(filename))
+	    if (access(filename, F_OK) != 0)
 		continue;
 	    xx = unlink(filename);
 	}
 	for (i = 0; i < 16; i++) {
 	    sprintf(filename, "%s/%s/__db.%03d", prefix, dbpath, i);
 	    (void)rpmCleanPath(filename);
-	    if (!rpmioFileExists(filename))
+	    if (access(filename, F_OK) != 0)
 		continue;
 	    xx = unlink(filename);
 	}
@@ -3358,7 +3322,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    base = rpmTagGetName(rpmtag);
 	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
 	    (void)rpmCleanPath(ofilename);
-	    if (!rpmioFileExists(ofilename))
+	    if (access(ofilename, F_OK) != 0)
 		continue;
 	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
 	    (void)rpmCleanPath(nfilename);
@@ -3386,11 +3350,11 @@ static int rpmdbMoveDatabase(const char * prefix,
 	for (i = 0; i < 16; i++) {
 	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
 	    (void)rpmCleanPath(ofilename);
-	    if (rpmioFileExists(ofilename))
+	    if (access(ofilename, F_OK) != 0)
 		xx = unlink(ofilename);
 	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
-	    if (rpmioFileExists(nfilename))
+	    if (access(nfilename, F_OK) != 0)
 		xx = unlink(nfilename);
 	}
 	break;
