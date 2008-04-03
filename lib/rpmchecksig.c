@@ -12,6 +12,7 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "rpmio/digest.h"
 #include "lib/rpmlead.h"
@@ -525,28 +526,28 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
 
     switch (sigtag) {
     case RPMSIGTAG_SIZE:
-	n = (upper ? "SIZE " : "size ");
+	n = (upper ? "SIZE" : "size");
 	break;
     case RPMSIGTAG_SHA1:
-	n = (upper ? "SHA1 " : "sha1 ");
+	n = (upper ? "SHA1" : "sha1");
 	break;
     case RPMSIGTAG_LEMD5_2:
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_MD5:
-	n = (upper ? "MD5 " : "md5 ");
+	n = (upper ? "MD5" : "md5");
 	break;
     case RPMSIGTAG_RSA:
-	n = (upper ? "RSA " : "rsa ");
+	n = (upper ? "RSA" : "rsa");
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	n = (upper ? "(MD5) PGP " : "(md5) pgp ");
+	n = (upper ? "(MD5) PGP" : "(md5) pgp");
 	break;
     case RPMSIGTAG_DSA:
-	n = (upper ? "(SHA1) DSA " : "(sha1) dsa ");
+	n = (upper ? "(SHA1) DSA" : "(sha1) dsa");
 	break;
     case RPMSIGTAG_GPG:
-	n = (upper ? "GPG " : "gpg ");
+	n = (upper ? "GPG" : "gpg");
 	break;
     default:
 	n = (upper ? "?UnknownSigatureType?" : "???");
@@ -559,8 +560,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     char buf[8192], * b;
-    char missingKeys[7164], * m;
-    char untrustedKeys[7164], * u;
+    char * missingKeys, *untrustedKeys;
     rpmTag sigtag;
     rpmTagType sigtype;
     rpm_data_t sig;
@@ -662,8 +662,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 	failed = 0;
 	b = buf;		*b = '\0';
-	m = missingKeys;	*m = '\0';
-	u = untrustedKeys;	*u = '\0';
+	missingKeys = NULL;
+	untrustedKeys = NULL;
 	sprintf(b, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 	b += strlen(b);
 
@@ -672,6 +672,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    (void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen))
 	{
     	    char *result = NULL;
+	    int havekey = 0;
 
 	    if (sig == NULL) /* XXX can't happen */
 		continue;
@@ -682,11 +683,12 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    pgpCleanDig(dig);
 
 	    switch (sigtag) {
-	    case RPMSIGTAG_RSA:
-	    case RPMSIGTAG_DSA:
 	    case RPMSIGTAG_GPG:
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
+		havekey = 1;
+	    case RPMSIGTAG_RSA:
+	    case RPMSIGTAG_DSA:
 		if (nosignatures)
 		     continue;
 		xx = pgpPrtPkts(sig, siglen, dig,
@@ -729,63 +731,44 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		failed = 1;
 	    }
 
+	    /* 
+ 	     * In verbose mode, just dump it all. Otherwise ok signatures
+ 	     * are dumped lowercase, bad sigs uppercase and for PGP/GPG
+ 	     * if misssing/untrusted key it's uppercase in parenthesis
+ 	     * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
+ 	     */
+	    msg = NULL;
 	    if (rpmIsVerbose()) {
-		b = stpcpy(b, "    ");
-		b = stpcpy(b, result);
-	    } else if (sigres == RPMRC_OK) {
-		b = stpcpy(b, sigtagname(sigtag, 0));
-	    } else {
-		char *tempKey;
-		switch (sigtag) {
-		case RPMSIGTAG_SIZE:
-		case RPMSIGTAG_SHA1:
-		case RPMSIGTAG_LEMD5_2:
-		case RPMSIGTAG_LEMD5_1:
-		case RPMSIGTAG_MD5:
-		case RPMSIGTAG_RSA:
-		case RPMSIGTAG_DSA:
-		default:
-		    b = stpcpy(b, sigtagname(sigtag, 1));
-		    break;
-		case RPMSIGTAG_PGP5:	/* XXX legacy */
-		case RPMSIGTAG_PGP:
-		    switch (sigres) {
-		    case RPMRC_NOKEY:
-		    case RPMRC_NOTTRUSTED:
-		    {   int offset = 6;
-		    	b = stpcpy(b, "(MD5) (PGP) ");
-		    	tempKey = strstr(result, "ey ID");
-		    	if (tempKey) {
-			    char * kt = (sigres == RPMRC_NOKEY ? m : u);
-			    kt = stpcpy(kt, " PGP#");
-			    kt = stpncpy(kt, tempKey + offset, 8);
-		        }
-		    }   break;
-		    default:
-		    	b = stpcpy(b, "MD5 PGP ");
-		    	break;
-		    }
-		    break;
-	    	case RPMSIGTAG_GPG:
-		    /* Do not consider this a failure */
-		    switch (sigres) {
-		    case RPMRC_NOKEY:
-		    	b = stpcpy(b, "(GPG) ");
-		    	m = stpcpy(m, " GPG#");
-		    	tempKey = strstr(result, "ey ID");
-		    	if (tempKey) {
-			    m = stpncpy(m, tempKey+6, 8);
-			    *m = '\0';
-		    	}
-		    	break;
-		    default:
-		    	b = stpcpy(b, "GPG ");
-		    	break;
-		    }
-		    break;
-	    	}
+		rasprintf(&msg, "    %s", result);
+	    } else { 
+		const char *signame;
+		char ** keyprob = NULL;
+ 		signame = sigtagname(sigtag, (sigres == RPMRC_OK ? 0 : 1));
+
+		/* 
+ 		 * Check for missing / untrusted keys in result. In theory
+ 		 * there could be several missing keys of which only
+ 		 * last is shown, in practise not.
+ 		 */
+		 if (havekey && 
+		     (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
+		     const char *tempKey = NULL;
+		     char *keyid = NULL;
+		     keyprob = (sigres == RPMRC_NOKEY ? 
+				&missingKeys : &untrustedKeys);
+		     if (*keyprob) free(*keyprob);
+		     tempKey = strstr(result, "ey ID");
+		     if (tempKey) 
+			keyid = strndup(tempKey + 6, 8);
+		     rasprintf(keyprob, "%s#%s", signame, keyid);
+		     free(keyid);
+		 }
+		 rasprintf(&msg, (keyprob ? "(%s) " : "%s "), signame);
 	    }
 	    free(result);
+
+	    b = stpcpy(b, msg);
+	    free(msg);
 	}
 	hi = headerFreeIterator(hi);
 
@@ -796,12 +779,12 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	} else {
 	    const char *ok = (failed ? _("NOT_OK") : _("OK"));
 	    rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf, ok,
-		   (missingKeys[0] != '\0') ? _(" (MISSING KEYS:") : "",
-		   missingKeys,
-		   (missingKeys[0] != '\0') ? _(") ") : "",
-		   (untrustedKeys[0] != '\0') ? _(" (UNTRUSTED KEYS:") : "",
-		   untrustedKeys,
-		   (untrustedKeys[0] != '\0') ? _(")") : "");
+		   missingKeys ? _(" (MISSING KEYS:") : "",
+		   missingKeys ? missingKeys : "",
+		   missingKeys ? _(") ") : "",
+		   untrustedKeys ? _(" (UNTRUSTED KEYS:") : "",
+		   untrustedKeys ? untrustedKeys : "",
+		   untrustedKeys ? _(")") : "");
 	}
     }
 
