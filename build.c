@@ -181,9 +181,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     const char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
     char * buildRootURL = NULL;
-    const char * specFile;
-    char * specURL = NULL;
-    int specut;
+    char * specFile = NULL;
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
 
@@ -197,8 +195,8 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (ba->buildMode == 't') {
     	char *srcdir = NULL, *dir;
 
-	specURL = getTarSpec(arg);
-	if (!specURL)
+	specFile = getTarSpec(arg);
+	if (!specFile)
 	    goto exit;
 
 	/* Make the directory of the tarball %_sourcedir for this run */
@@ -212,45 +210,38 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	addMacro(NULL, "_sourcedir", NULL, srcdir, RMIL_TARBALL);
 	free(dir);
     } else {
-	specURL = xstrdup(arg);
+	specFile = xstrdup(arg);
     }
 
-    specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {
-	char *s = alloca(BUFSIZ);
-	if (!getcwd(s, BUFSIZ)) {
-	    rpmlog(RPMLOG_ERR, _("getcwd failed: %m\n"));
-	    goto exit;
-	}
-	strcat(s, "/");
-	strcat(s, arg);
-	specURL = s;
+	char *cwd = rpmGetCwd();
+	char *s = NULL;
+	rasprintf(&s, "%s/%s\n", cwd, arg);
+	free(specFile);
+	specFile = s;
     }
 
-    if (specut != URL_IS_DASH) {
-	struct stat st;
-	if (stat(specURL, &st) < 0) {
-	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %m\n"), specURL);
-	    goto exit;
-	}
-	if (! S_ISREG(st.st_mode)) {
-	    rpmlog(RPMLOG_ERR, _("File %s is not a regular file.\n"),
-		specURL);
-	    goto exit;
-	}
+    struct stat st;
+    if (stat(specFile, &st) < 0) {
+	rpmlog(RPMLOG_ERR, _("failed to stat %s: %m\n"), specFile);
+	goto exit;
+    }
+    if (! S_ISREG(st.st_mode)) {
+	rpmlog(RPMLOG_ERR, _("File %s is not a regular file.\n"), specFile);
+	goto exit;
+    }
 
-	/* Try to verify that the file is actually a specfile */
-	if (!isSpecFile(specURL)) {
-	    rpmlog(RPMLOG_ERR,
-		_("File %s does not appear to be a specfile.\n"), specURL);
-	    goto exit;
-	}
+    /* Try to verify that the file is actually a specfile */
+    if (!isSpecFile(specFile)) {
+	rpmlog(RPMLOG_ERR,
+		_("File %s does not appear to be a specfile.\n"), specFile);
+	goto exit;
     }
     
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(ts, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
+    if (parseSpec(ts, specFile, ba->rootdir, buildRootURL, 0, passPhrase,
 		cookie, _anyarch(buildAmount), ba->force))
     {
 	goto exit;
@@ -273,11 +264,11 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     }
     
     if (ba->buildMode == 't')
-	(void) unlink(specURL);
+	(void) unlink(specFile);
     rc = 0;
 
 exit:
-    free(specURL);
+    free(specFile);
     freeSpec(spec);
     free(buildRootURL);
     return rc;
