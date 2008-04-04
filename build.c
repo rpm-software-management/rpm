@@ -120,13 +120,19 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	char * specDir;
 	char * tmpSpecFile;
 	char * cmd, * s;
+	const char **try;
+	int gotspec = 0;
+	char *tar;
 	rpmCompressedMagic res = COMPRESSED_OTHER;
 	static const char *zcmds[] =
 		{ "cat", "gunzip", "bunzip2", "cat" };
+	static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
-	tmpSpecFile = (char *) rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+	tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+ 	tar = rpmGetPath("%{__tar}", NULL);
+
 #if defined(HAVE_MKSTEMP)
 	(void) close(mkstemp(tmpSpecFile));
 #else
@@ -135,38 +141,31 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	(void) rpmFileIsCompressed(arg, &res);
 
-	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
-	sprintf(cmd, "%s < '%s' | tar xOvf - Specfile 2>&1 > '%s'",
-			zcmds[res & 0x3], arg, tmpSpecFile);
-	if (!(fp = popen(cmd, "r"))) {
-	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
-	    specDir = _free(specDir);
-	    tmpSpecFile = _free(tmpSpecFile);
-	    return 1;
-	}
-	if ((!fgets(buf, sizeof(buf) - 1, fp)) || !strchr(buf, '/')) {
-	    /* Try again */
-	    (void) pclose(fp);
+	for (try = tryspec; *try != NULL; try++) {
+	    rasprintf(&cmd, "%s < '%s' | %s xOvf - %s 2>&1 > '%s'",
+		 zcmds[res & 0x3], arg, tar, *try, tmpSpecFile);
 
-	    sprintf(cmd, "%s < '%s' | tar xOvf - --wildcards \\*.spec 2>&1 > '%s'",
-		    zcmds[res & 0x3], arg, tmpSpecFile);
 	    if (!(fp = popen(cmd, "r"))) {
 		rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
-		specDir = _free(specDir);
-		tmpSpecFile = _free(tmpSpecFile);
-		return 1;
+	    } else {
+		gotspec = fgets(buf, sizeof(buf) - 1, fp) && 
+		          isSpecFile(tmpSpecFile);
+		pclose(fp);
 	    }
-	    if (!fgets(buf, sizeof(buf) - 1, fp)) {
-		/* Give up */
-		rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"),
-			arg);
-		(void) unlink(tmpSpecFile);
-		specDir = _free(specDir);
-		tmpSpecFile = _free(tmpSpecFile);
-	    	return 1;
-	    }
+
+	    if (!gotspec) 
+		unlink(tmpSpecFile);
+	    free(cmd);
 	}
-	(void) pclose(fp);
+
+	free(tar);
+	if (!gotspec) {
+	    rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"), arg);
+	    free(specDir);
+	    free(tmpSpecFile);
+	    return 1;
+	}
+
 
 	cmd = s = buf;
 	while (*cmd != '\0') {
