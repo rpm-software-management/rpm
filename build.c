@@ -105,7 +105,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     int specut;
     char buf[BUFSIZ];
     rpmSpec spec = NULL;
-    int rc;
+    int rc = 1; /* assume failure */
 
 #ifndef	DYING
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
@@ -220,7 +220,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	char *s = alloca(BUFSIZ);
 	if (!getcwd(s, BUFSIZ)) {
 	    rpmlog(RPMLOG_ERR, _("getcwd failed: %m\n"));
-	    rc = 1;
 	    goto exit;
 	}
 	strcat(s, "/");
@@ -232,13 +231,11 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	struct stat st;
 	if (stat(specURL, &st) < 0) {
 	    rpmlog(RPMLOG_ERR, _("failed to stat %s: %m\n"), specURL);
-	    rc = 1;
 	    goto exit;
 	}
 	if (! S_ISREG(st.st_mode)) {
 	    rpmlog(RPMLOG_ERR, _("File %s is not a regular file.\n"),
 		specURL);
-	    rc = 1;
 	    goto exit;
 	}
 
@@ -246,7 +243,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	if (!isSpecFile(specURL)) {
 	    rpmlog(RPMLOG_ERR,
 		_("File %s does not appear to be a specfile.\n"), specURL);
-	    rc = 1;
 	    goto exit;
 	}
     }
@@ -257,12 +253,10 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (parseSpec(ts, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
 		cookie, _anyarch(buildAmount), ba->force))
     {
-	rc = 1;
 	goto exit;
     }
 #undef	_anyarch
     if ((spec = rpmtsSetSpec(ts, NULL)) == NULL) {
-	rc = 1;
 	goto exit;
     }
 
@@ -271,12 +265,10 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
     /* Check build prerequisites */
     if (!ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
-	rc = 1;
 	goto exit;
     }
 
     if (buildSpec(ts, spec, buildAmount, ba->noBuild)) {
-	rc = 1;
 	goto exit;
     }
     
