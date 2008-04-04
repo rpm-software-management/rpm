@@ -1612,15 +1612,14 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
  * Add a pubkey/policy/icon to a binary package.
  * @param pkg
  * @param fl		package file tree walk data
- * @param fileURL	path to file, relative is builddir, absolute buildroot.
+ * @param fileName	path to file, relative is builddir, absolute buildroot.
  * @param tag		tag to add
  * @return		RPMRC_OK on success
  */
-static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
-		rpmTag tag)
+static rpmRC processMetadataFile(Package pkg, FileList fl, 
+				 const char * fileName, rpmTag tag)
 {
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
-    const char * urlfn = NULL;
     char * fn = NULL;
     char * apkt = NULL;
     uint8_t * pkt = NULL;
@@ -1629,12 +1628,11 @@ static rpmRC processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     int rc = RPMRC_FAIL;
     int xx;
 
-    (void) urlPath(fileURL, &urlfn);
-    if (*urlfn == '/') {
-	fn = rpmGenPath(fl->buildRootURL, NULL, urlfn);
+    if (*fileName == '/') {
+	fn = rpmGenPath(fl->buildRootURL, NULL, fileName);
 	absolute = 1;
     } else
-	fn = rpmGenPath(buildURL, NULL, urlfn);
+	fn = rpmGenPath(buildURL, NULL, fileName);
 
     switch (tag) {
     default:
@@ -1689,28 +1687,23 @@ exit:
  * Add a file to a binary package.
  * @param pkg
  * @param fl		package file tree walk data
- * @param fileURL
+ * @param fileName	file to add
  * @return		RPMRC_OK on success
  */
-static rpmRC processBinaryFile(Package pkg, FileList fl,
-		const char * fileURL)
+static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 {
     int quote = 1;	/* XXX permit quoted glob characters. */
     int doGlob;
-    char *diskURL = NULL;
+    char *diskPath = NULL;
     int rc = RPMRC_OK;
     
-    doGlob = glob_pattern_p(fileURL, quote);
+    doGlob = glob_pattern_p(fileName, quote);
 
     /* Check that file starts with leading "/" */
-    {	const char * fileName;
-	(void) urlPath(fileURL, &fileName);
-	if (*fileName != '/') {
-	    rpmlog(RPMLOG_ERR, _("File needs leading \"/\": %s\n"),
-			fileName);
-	    rc = RPMRC_FAIL;
-	    goto exit;
-	}
+    if (*fileName != '/') {
+	rpmlog(RPMLOG_ERR, _("File needs leading \"/\": %s\n"), fileName);
+    	rc = RPMRC_FAIL;
+    	goto exit;
     }
     
     /* Copy file name or glob pattern removing multiple "/" chars. */
@@ -1721,7 +1714,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl,
      *		//usr//bin/
      *		/.././../usr/../bin//./sh
      */
-    diskURL = rpmGenPath(fl->buildRootURL, NULL, fileURL);
+    diskPath = rpmGenPath(fl->buildRootURL, NULL, fileName);
 
     if (doGlob) {
 	char ** argv = NULL;
@@ -1730,13 +1723,12 @@ static rpmRC processBinaryFile(Package pkg, FileList fl,
 
 	/* XXX for %dev marker in file manifest only */
 	if (fl->noGlob) {
-	    rpmlog(RPMLOG_ERR, _("Glob not permitted: %s\n"),
-			diskURL);
+	    rpmlog(RPMLOG_ERR, _("Glob not permitted: %s\n"), diskPath);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 
-	rc = rpmGlob(diskURL, &argc, &argv);
+	rc = rpmGlob(diskPath, &argc, &argv);
 	if (rc == 0 && argc >= 1) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
@@ -1744,17 +1736,16 @@ static rpmRC processBinaryFile(Package pkg, FileList fl,
 	    }
 	    argv = _free(argv);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"),
-			diskURL);
+	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), diskPath);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     } else {
-	rc = addFile(fl, diskURL, NULL);
+	rc = addFile(fl, diskPath, NULL);
     }
 
 exit:
-    diskURL = _free(diskURL);
+    free(diskPath);
     if (rc) {
 	fl->processingFailed = 1;
 	rc = RPMRC_FAIL;
