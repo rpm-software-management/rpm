@@ -766,3 +766,18 @@ int rpmFileHasSuffix(const char *path, const char *suffix)
     return (plen >= slen && 
 	    strcmp(path+plen-slen, suffix) == 0);
 }
+
+char * rpmGetCwd(void)
+{
+    int currDirLen = 0;
+    char * currDir = NULL;
+
+    do {
+	currDirLen += 128;
+	currDir = xrealloc(currDir, currDirLen);
+	memset(currDir, 0, currDirLen);
+    } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
+
+    return currDir;
+}
+

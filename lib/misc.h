@@ -38,12 +38,6 @@ int dosetenv(const char * name, const char * value, int overwrite);
  */
 int doputenv(const char * str);
 
-/**
- * Return (malloc'd) current working directory.
- * @return		current working directory (malloc'ed)
- */
-char * currentDirectory(void);
-
 #ifdef __cplusplus
 }
 #endif

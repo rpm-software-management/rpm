@@ -20,7 +20,6 @@
 #include "lib/rpmte_internal.h"	/* XXX te->h, te->fd, te->h */
 #include "lib/rpmts_internal.h"
 #include "lib/cpio.h"
-#include "lib/misc.h" 		/* currentDirectory */
 
 #include "debug.h"
 
@@ -1037,7 +1036,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
 
     ts->ignoreSet = ignoreSet;
-    {	char * currDir = currentDirectory();
+    {	char * currDir = rpmGetCwd();
 	rpmtsSetCurrDir(ts, currDir);
 	currDir = _free(currDir);
     }

@@ -20,7 +20,6 @@
 #include <rpm/rpmfileutil.h>	/* rpmCleanPath */
 
 #include "lib/manifest.h"
-#include "lib/misc.h"		/* XXX for currentDirectory */
 
 #include "debug.h"
 
@@ -596,7 +595,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    fn = realpath(arg, fnbuf);
 	    fn = xstrdup( (fn != NULL ? fn : arg) );
 	} else if (*arg != '/') {
-	    char *curDir = currentDirectory();
+	    char *curDir = rpmGetCwd();
 	    fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
 	    curDir = _free(curDir);
 	} else

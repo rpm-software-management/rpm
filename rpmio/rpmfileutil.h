@@ -118,4 +118,10 @@ int rpmFileIsCompressed (const char * file, rpmCompressedMagic * compressed);
  */
 int rpmFileHasSuffix(const char *path, const char *suffix);
 
+/** \ingroup rpmfileutil
+ * Like getcwd() but the result is malloced.
+ * @return              current working directory (malloc'ed)
+ */
+char * rpmGetCwd(void);
+
 #endif /* _RPMFILEUTIL_H */

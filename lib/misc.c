@@ -70,17 +70,3 @@ int dosetenv(const char * name, const char * value, int overwrite)
     return putenv(a);
 }
 
-char * currentDirectory(void)
-{
-    int currDirLen = 0;
-    char * currDir = NULL;
-
-    do {
-	currDirLen += 128;
-	currDir = xrealloc(currDir, currDirLen);
-	memset(currDir, 0, currDirLen);
-    } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
-
-    return currDir;
-}
-
