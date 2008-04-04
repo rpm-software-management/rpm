@@ -63,8 +63,7 @@ static rpmRC checkOwners(const char * urlfn)
 static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz)
 {
-    const char *fn;
-    char *urlfn;
+    char *fn;
     char *buf = NULL;
     char *arg_backup = NULL;
     char *arg_fuzz = NULL;
@@ -72,7 +71,6 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     struct Source *sp;
     char *patcher;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
-    int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
@@ -84,11 +82,11 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	return NULL;
     }
 
-    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (rpmFileIsCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	urlfn = _free(urlfn);
+    if (!spec->force && (rpmFileIsCompressed(fn, &compressed) || checkOwners(fn))) {
+	fn = _free(fn);
 	return NULL;
     }
 
@@ -107,23 +105,6 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     rasprintf(&args, "%s%s%s%s", arg_backup, arg_fuzz, reverse ? " -R" : "", removeEmpties ? " -E" : "");
     free(arg_fuzz);
     free(arg_backup);
-
-    fn = NULL;
-    urltype = urlPath(urlfn, &fn);
-    switch (urltype) {
-    case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	break;
-    case URL_IS_DASH:
-	urlfn = _free(urlfn);
-	free(args);
-	return NULL;
-	break;
-    }
 
     patcher = rpmGetPath("%{__patch}", NULL);
     if (compressed) {
@@ -150,7 +131,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     }
 
     patcher = _free(patcher);
-    urlfn = _free(urlfn);
+    fn = _free(fn);
     return buf;
 }
 
