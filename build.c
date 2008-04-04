@@ -142,7 +142,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	(void) rpmFileIsCompressed(arg, &res);
 
 	for (try = tryspec; *try != NULL; try++) {
-	    rasprintf(&cmd, "%s < '%s' | %s xOvf - %s 2>&1 > '%s'",
+	    rasprintf(&cmd, "%s < '%s' | %s xOvf - --wildcards %s 2>&1 > '%s'",
 		 zcmds[res & 0x3], arg, tar, *try, tmpSpecFile);
 
 	    if (!(fp = popen(cmd, "r"))) {
