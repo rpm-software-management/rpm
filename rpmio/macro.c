@@ -1176,7 +1176,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    sprintf(be, "%%_gzip -dc %s", b);
 	    break;
 	case COMPRESSED_BZIP2:
-	    sprintf(be, "%%_bzip2 %s", b);
+	    sprintf(be, "%%_bzip2 -dc %s", b);
 	    break;
 	case COMPRESSED_ZIP:
 	    sprintf(be, "%%_unzip %s", b);
