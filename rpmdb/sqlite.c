@@ -98,7 +98,6 @@ static int sqlInRoot = 0;
 static void enterChroot(dbiIndex dbi)
 {
     int xx;
-    char * currDir = NULL; 
 
     if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || sqlInRoot)
        /* Nothing to do, was not already in chroot */
@@ -107,17 +106,7 @@ static void enterChroot(dbiIndex dbi)
 if (_debug)
 fprintf(stderr, "sql:chroot(%s)\n", dbi->dbi_root);
 
-    {
-      int currDirLen = 0;
-
-      do {
-        currDirLen += 128;
-        currDir = xrealloc(currDir, currDirLen);
-        memset(currDir, 0, currDirLen);
-      } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
-    }
-
-    sqlCwd = currDir;
+    sqlCwd = rpmGetCwd();
     xx = chdir("/");
     xx = chroot(dbi->dbi_root);
 assert(xx == 0);
