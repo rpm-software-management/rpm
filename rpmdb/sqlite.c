@@ -405,12 +405,16 @@ assert(scp->ac <= scp->nalloc);
 	case SQLITE_BUSY:
 	    fprintf(stderr, "sqlite3_step: BUSY %d\n", rc);
 	    break;
-	case SQLITE_ERROR:
+	case SQLITE_ERROR: {
+	    char *cwd = rpmGetCwd();
 	    fprintf(stderr, "sqlite3_step: ERROR %d -- %s\n", rc, scp->cmd);
 	    fprintf(stderr, "              %s (%d)\n", 
 			sqlite3_errmsg(((SQL_DB*)dbi->dbi_db)->db), sqlite3_errcode(((SQL_DB*)dbi->dbi_db)->db));
-	    fprintf(stderr, "              cwd '%s'\n", getcwd(NULL,0));
+	    
+	    fprintf(stderr, "              cwd '%s'\n", cwd);
+	    free(cwd);
 	    loop = 0;
+	}
 	    break;
 	case SQLITE_MISUSE:
 	    fprintf(stderr, "sqlite3_step: MISUSE %d\n", rc);
