@@ -7,8 +7,6 @@
 /* just to put a marker in librpm.a */
 const char * const RPMVERSION = VERSION;
 
-#include <rpm/rpmurl.h>
-#include <rpm/rpmmacro.h>	/* XXX for rpmGetPath */
 #include <rpm/rpmlog.h>
 
 #include "lib/misc.h"
@@ -21,20 +19,8 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
     int rc;
 
     if ((rc = stat(dpath, &st)) < 0) {
-	int ut = urlPath(dpath, NULL);
-	switch (ut) {
-	case URL_IS_PATH:
-	case URL_IS_UNKNOWN:
-	    if (errno != ENOENT)
-		break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
+	if (errno == ENOENT) {
 	    rc = mkdir(dpath, 0755);
-	    break;
-	case URL_IS_DASH:
-	case URL_IS_HKP:
-	    break;
 	}
 	if (rc < 0) {
 	    rpmlog(RPMLOG_ERR, _("cannot create %%%s %s\n"), dname, dpath);
