@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <libgen.h>
+
 #include <rpm/rpmcli.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlib.h>		/* rpmrc, MACHTABLE .. */
@@ -92,6 +94,85 @@ static int isSpecFile(const char * specfile)
     return 1;
 }
 
+/* 
+ * Try to find a spec from a tarball pointed to by arg. 
+ * Return absolute path to spec name on success, otherwise NULL.
+ */
+static char * getTarSpec(const char *arg)
+{
+    char *specFile = NULL;
+    char *specDir;
+    char *specBase;
+    char *tmpSpecFile;
+    const char **try;
+    char *tar;
+    char tarbuf[BUFSIZ];
+    int gotspec = 0;
+    rpmCompressedMagic res = COMPRESSED_OTHER;
+
+    /* FIX: static zcmds heartburn */
+    static const char *zcmds[] = { "cat", "gunzip", "bunzip2", "cat" };
+    static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
+
+    specDir = rpmGetPath("%{_specdir}", NULL);
+    tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+    tar = rpmGetPath("%{__tar}", NULL);
+
+#if defined(HAVE_MKSTEMP)
+    (void) close(mkstemp(tmpSpecFile));
+#else
+    (void) mktemp(tmpSpecFile);
+#endif
+
+    (void) rpmFileIsCompressed(arg, &res);
+
+    for (try = tryspec; *try != NULL; try++) {
+	FILE *fp;
+	char *cmd;
+
+	rasprintf(&cmd, "%s < '%s' | %s xOvf - --wildcards %s 2>&1 > '%s'",
+	     zcmds[res & 0x3], arg, tar, *try, tmpSpecFile);
+
+	if (!(fp = popen(cmd, "r"))) {
+	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
+	} else {
+	    gotspec = fgets(tarbuf, sizeof(tarbuf) - 1, fp) && 
+			isSpecFile(tmpSpecFile);
+	    pclose(fp);
+	}
+
+	if (!gotspec) 
+	    unlink(tmpSpecFile);
+	free(cmd);
+    }
+
+    if (!gotspec) {
+    	rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"), arg);
+	goto exit;
+    }
+
+    specBase = basename(tarbuf);
+    /* remove trailing \n */
+    specBase[strlen(specBase)-1] = '\0';
+
+    rasprintf(&specFile, "%s/%s", specDir, specBase);
+    res = rename(tmpSpecFile, specFile);
+
+    if (res) {
+    	rpmlog(RPMLOG_ERR, _("Failed to rename %s to %s: %m\n"),
+		tmpSpecFile, specFile);
+    	free(specFile);
+	specFile = NULL;
+    }
+
+exit:
+    (void) unlink(tmpSpecFile);
+    free(tmpSpecFile);
+    free(specDir);
+    free(tar);
+    return specFile;
+}
+
 /**
  */
 static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
@@ -101,9 +182,8 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     int buildAmount = ba->buildAmount;
     char * buildRootURL = NULL;
     const char * specFile;
-    const char * specURL;
+    char * specURL = NULL;
     int specut;
-    char buf[BUFSIZ];
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
 
@@ -114,105 +194,25 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
 
-    /* FIX: static zcmds heartburn */
     if (ba->buildMode == 't') {
-	FILE *fp;
-	char * specDir;
-	char * tmpSpecFile;
-	char * cmd, * s;
-	const char **try;
-	int gotspec = 0;
-	char *tar;
-	rpmCompressedMagic res = COMPRESSED_OTHER;
-	static const char *zcmds[] =
-		{ "cat", "gunzip", "bunzip2", "cat" };
-	static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
+    	char *srcdir = NULL, *dir;
 
-	specDir = rpmGetPath("%{_specdir}", NULL);
+	specURL = getTarSpec(arg);
+	if (!specURL)
+	    goto exit;
 
-	tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
- 	tar = rpmGetPath("%{__tar}", NULL);
-
-#if defined(HAVE_MKSTEMP)
-	(void) close(mkstemp(tmpSpecFile));
-#else
-	(void) mktemp(tmpSpecFile);
-#endif
-
-	(void) rpmFileIsCompressed(arg, &res);
-
-	for (try = tryspec; *try != NULL; try++) {
-	    rasprintf(&cmd, "%s < '%s' | %s xOvf - --wildcards %s 2>&1 > '%s'",
-		 zcmds[res & 0x3], arg, tar, *try, tmpSpecFile);
-
-	    if (!(fp = popen(cmd, "r"))) {
-		rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
-	    } else {
-		gotspec = fgets(buf, sizeof(buf) - 1, fp) && 
-		          isSpecFile(tmpSpecFile);
-		pclose(fp);
-	    }
-
-	    if (!gotspec) 
-		unlink(tmpSpecFile);
-	    free(cmd);
-	}
-
-	free(tar);
-	if (!gotspec) {
-	    rpmlog(RPMLOG_ERR, _("Failed to read spec file from %s\n"), arg);
-	    free(specDir);
-	    free(tmpSpecFile);
-	    return 1;
-	}
-
-
-	cmd = s = buf;
-	while (*cmd != '\0') {
-	    if (*cmd == '/') s = cmd + 1;
-	    cmd++;
-	}
-
-	cmd = s;
-
-	/* remove trailing \n */
-	s = cmd + strlen(cmd) - 1;
-	*s = '\0';
-
-	specURL = s = alloca(strlen(specDir) + strlen(cmd) + 5);
-	sprintf(s, "%s/%s", specDir, cmd);
-	res = rename(tmpSpecFile, s);
-	specDir = _free(specDir);
-	
-	if (res) {
-	    rpmlog(RPMLOG_ERR, _("Failed to rename %s to %s: %m\n"),
-			tmpSpecFile, s);
-	    (void) unlink(tmpSpecFile);
-	    tmpSpecFile = _free(tmpSpecFile);
-	    return 1;
-	}
-	tmpSpecFile = _free(tmpSpecFile);
-
-	/* Make the directory which contains the tarball the source 
-	   directory for this run */
-
+	/* Make the directory of the tarball %_sourcedir for this run */
+	/* dirname() may modify contents so extra hoops needed. */
 	if (*arg != '/') {
-	    if (!getcwd(buf, BUFSIZ)) {
-		rpmlog(RPMLOG_ERR, _("getcwd failed: %m\n"));
-		return 1;
-	    }
-	    strcat(buf, "/");
-	    strcat(buf, arg);
-	} else 
-	    strcpy(buf, arg);
-
-	cmd = buf + strlen(buf) - 1;
-	while (*cmd != '/') cmd--;
-	*cmd = '\0';
-
-	addMacro(NULL, "_sourcedir", NULL, buf, RMIL_TARBALL);
+	    srcdir = dir = rpmGetCwd();
+	} else {
+	    dir = xstrdup(arg);
+	    srcdir = dirname(dir);
+	}
+	addMacro(NULL, "_sourcedir", NULL, srcdir, RMIL_TARBALL);
+	free(dir);
     } else {
-	specURL = arg;
+	specURL = xstrdup(arg);
     }
 
     specut = urlPath(specURL, &specFile);
@@ -277,8 +277,9 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     rc = 0;
 
 exit:
-    spec = freeSpec(spec);
-    buildRootURL = _free(buildRootURL);
+    free(specURL);
+    freeSpec(spec);
+    free(buildRootURL);
     return rc;
 }
 
