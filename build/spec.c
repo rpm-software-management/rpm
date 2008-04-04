@@ -580,36 +580,33 @@ printNewSpecfile(rpmSpec spec)
 	spectag t = st->st_t + i;
 	const char * tn = rpmTagGetName(t->t_tag);
 	const char * errstr;
-	char fmt[1024];
+	char *fmt;
 
-	fmt[0] = '\0';
 	if (t->t_msgid == NULL)
 	    h = spec->packages->header;
 	else {
 	    Package pkg;
 	    char *fe;
+	    char *buf = xstrdup(t->t_msgid);
 
-	    strcpy(fmt, t->t_msgid);
-	    for (fe = fmt; *fe && *fe != '('; fe++)
-		{} ;
-	    if (*fe == '(') *fe = '\0';
+	    fe = strchr(buf, '(');
 	    h = NULL;
 	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 		const char *pkgname;
 		h = pkg->header;
 		(void) headerNVR(h, &pkgname, NULL, NULL);
-		if (!strcmp(pkgname, fmt))
+		if (!strcmp(pkgname, buf))
 		    break;
 	    }
 	    if (pkg == NULL || h == NULL)
 		h = spec->packages->header;
+	    free(buf);
 	}
 
 	if (h == NULL)
 	    continue;
 
-	fmt[0] = '\0';
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
+	rasprintf(&fmt, "%{%s}", tn);
 	msgstr = _free(msgstr);
 
 	/* XXX this should use queryHeader(), but prints out tn as well. */
@@ -618,6 +615,7 @@ printNewSpecfile(rpmSpec spec)
 	    rpmlog(RPMLOG_ERR, _("can't query %s: %s\n"), tn, errstr);
 	    return;
 	}
+	free(fmt);
 
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
