@@ -136,9 +136,9 @@ static char * getTarSpec(const char *arg)
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
 	} else {
-	    gotspec = fgets(tarbuf, sizeof(tarbuf) - 1, fp) && 
-			isSpecFile(tmpSpecFile);
+	    char *fok = fgets(tarbuf, sizeof(tarbuf) - 1, fp);
 	    pclose(fp);
+	    gotspec = (fok != NULL) && isSpecFile(tmpSpecFile);
 	}
 
 	if (!gotspec) 
