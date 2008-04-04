@@ -144,13 +144,11 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
  */
 static char *doUntar(rpmSpec spec, int c, int quietly)
 {
-    const char *fn;
-    char *urlfn;
+    char *fn;
     char *buf = NULL;
     char *tar, *taropts;
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
-    int urltype;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISSOURCE) && (sp->num == c)) {
@@ -162,7 +160,7 @@ static char *doUntar(rpmSpec spec, int c, int quietly)
 	return NULL;
     }
 
-    urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
+    fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /* FIX: shrug */
     taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
@@ -175,9 +173,9 @@ static char *doUntar(rpmSpec spec, int c, int quietly)
     if (sp->flags & RPMTAG_NOSOURCE && autofetchnosource) {
 	struct stat st;
 	int rc;
-	if (lstat(urlfn, &st) != 0 && errno == ENOENT &&
+	if (lstat(fn, &st) != 0 && errno == ENOENT &&
 	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
-	    if ((rc = urlGetFile(sp->fullSource, urlfn)) != 0) {
+	    if ((rc = urlGetFile(sp->fullSource, fn)) != 0) {
 		rpmlog(RPMLOG_ERR,
 			_("Couldn't download nosource %s: %s\n"),
 			sp->fullSource, ftpStrerror(rc));
@@ -188,25 +186,9 @@ static char *doUntar(rpmSpec spec, int c, int quietly)
 #endif
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (rpmFileIsCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
-	urlfn = _free(urlfn);
+    if (!spec->force && (rpmFileIsCompressed(fn, &compressed) || checkOwners(fn))) {
+	fn = _free(fn);
 	return NULL;
-    }
-
-    fn = NULL;
-    urltype = urlPath(urlfn, &fn);
-    switch (urltype) {
-    case URL_IS_HTTPS:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_HKP:	/* XXX WRONG WRONG WRONG */
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	break;
-    case URL_IS_DASH:
-	urlfn = _free(urlfn);
-	return NULL;
-	break;
     }
 
     tar = rpmGetPath("%{__tar}", NULL);
@@ -252,7 +234,7 @@ static char *doUntar(rpmSpec spec, int c, int quietly)
 	rasprintf(&buf, "%s %s %s", tar, taropts, fn);
     }
 
-    urlfn = _free(urlfn);
+    fn = _free(fn);
     tar = _free(tar);
     return buf;
 }
