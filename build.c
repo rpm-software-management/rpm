@@ -66,6 +66,9 @@ static int isSpecFile(const char * specfile)
     count = fread(buf, sizeof(buf[0]), sizeof(buf), f);
     (void) fclose(f);
 
+    if (count == 0)
+	return 0;
+
     checking = 1;
     for (s = buf; count--; s++) {
 	switch (*s) {
