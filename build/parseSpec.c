@@ -412,8 +412,8 @@ void closeSpec(rpmSpec spec)
 
 extern int noLang;		/* XXX FIXME: pass as arg */
 
-int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
-		const char *buildRootURL, int recursing, const char *passPhrase,
+int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
+		const char *buildRoot, int recursing, const char *passPhrase,
 		const char *cookie, int anyarch, int force)
 {
     rpmParseState parsePart = PART_PREAMBLE;
@@ -434,17 +434,15 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     spec->specFile = rpmGetPath(specFile, NULL);
     spec->fileStack = newOpenFileInfo();
     spec->fileStack->fileName = xstrdup(spec->specFile);
-    if (buildRootURL) {
-	const char * buildRoot;
-	(void) urlPath(buildRootURL, &buildRoot);
+    if (buildRoot) {
 	if (*buildRoot == '\0') buildRoot = "/";
 	if (!strcmp(buildRoot, "/")) {
             rpmlog(RPMLOG_ERR,
-                     _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
+                     _("BuildRoot can not be \"/\": %s\n"), buildRoot);
             return RPMRC_FAIL;
         }
-	spec->gotBuildRootURL = 1;
-	spec->buildRootURL = xstrdup(buildRootURL);
+	spec->gotBuildRoot = 1;
+	spec->buildRoot = xstrdup(buildRoot);
 	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
@@ -452,8 +450,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
     spec->anyarch = anyarch;
     spec->force = force;
 
-    if (rootURL)
-	spec->rootURL = xstrdup(rootURL);
+    if (rootDir)
+	spec->rootDir = xstrdup(rootDir);
     if (passPhrase)
 	spec->passPhrase = xstrdup(passPhrase);
     if (cookie)
@@ -538,7 +536,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		    continue;
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 		spec->BASpecs[index] = NULL;
-		if (parseSpec(ts, specFile, spec->rootURL, buildRootURL, 1,
+		if (parseSpec(ts, specFile, spec->rootDir, buildRoot, 1,
 				  passPhrase, cookie, anyarch, force)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{

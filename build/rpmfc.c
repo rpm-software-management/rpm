@@ -1571,7 +1571,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
     fc->tracked = 0;
-    fc->brlen = (spec->buildRootURL ? strlen(spec->buildRootURL) : 0);
+    fc->brlen = (spec->buildRoot ? strlen(spec->buildRoot) : 0);
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {

@@ -501,8 +501,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	break;
     case RPMTAG_BUILDROOT:
 	SINGLE_TOKEN_ONLY;
-      {	const char * buildRoot = NULL;
-	char * buildRootURL;
+      {	char * buildRoot = NULL;
 
 	/*
 	 * Note: rpmGenPath should guarantee a "canonical" path. That means
@@ -511,35 +510,33 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	 *          //usr//bin/
 	 *          /.././../usr/../bin//./sh
 	 */
-	if (spec->buildRootURL == NULL) {
-	    buildRootURL = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
-	    if (strcmp(buildRootURL, "/")) {
-		spec->buildRootURL = buildRootURL;
+	if (spec->buildRoot == NULL) {
+	    buildRoot = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
+	    if (strcmp(buildRoot, "/")) {
+		spec->buildRoot = buildRoot;
 		macro = NULL;
 	    } else {
 		const char * specURL = field;
 
-		buildRootURL = _free(buildRootURL);
-		(void) urlPath(specURL, (const char **)&field);
+		buildRoot = _free(buildRoot);
 		if (*field == '\0') field = "/";
-		buildRootURL = rpmGenPath(spec->rootURL, field, NULL);
-		spec->buildRootURL = buildRootURL;
-		field = (char *) buildRootURL;
+		buildRoot = rpmGenPath(spec->rootDir, specURL, NULL);
+		spec->buildRoot = buildRoot;
+		field = (char *) buildRoot;
 	    }
-	    spec->gotBuildRootURL = 1;
+	    spec->gotBuildRoot = 1;
 	} else {
 	    macro = NULL;
 	}
-	buildRootURL = rpmGenPath(NULL, spec->buildRootURL, NULL);
-	(void) urlPath(buildRootURL, &buildRoot);
+	buildRoot = rpmGenPath(NULL, spec->buildRoot, NULL);
 	if (*buildRoot == '\0') buildRoot = "/";
 	if (!strcmp(buildRoot, "/")) {
 	    rpmlog(RPMLOG_ERR,
-		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRootURL);
-	    buildRootURL = _free(buildRootURL);
+		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRoot);
+	    free(buildRoot);
 	    return RPMRC_FAIL;
 	}
-	buildRootURL = _free(buildRootURL);
+	free(buildRoot);
       }	break;
     case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
@@ -887,7 +884,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 
     /* Do some final processing on the header */
     
-    if (!spec->gotBuildRootURL && spec->buildRootURL) {
+    if (!spec->gotBuildRoot && spec->buildRoot) {
 	rpmlog(RPMLOG_ERR, _("Spec file can't use BuildRoot\n"));
 	free(NVR);
 	return RPMRC_FAIL;

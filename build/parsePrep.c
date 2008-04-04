@@ -322,7 +322,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     argv = _free(argv);
 
     /* cd to the build dir */
-    {	char * buildDir = rpmGenPath(spec->rootURL, "%{_builddir}", "");
+    {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
 
 	rasprintf(&buf, "cd '%s'", buildDir);
 	appendLineStringBuf(spec->prep, buf);

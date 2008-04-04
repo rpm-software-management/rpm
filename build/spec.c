@@ -428,7 +428,7 @@ rpmSpec newSpec(void)
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
 
-    spec->rootURL = NULL;
+    spec->rootDir = NULL;
     spec->prep = NULL;
     spec->build = NULL;
     spec->install = NULL;
@@ -445,8 +445,8 @@ rpmSpec newSpec(void)
     spec->sourceHeader = NULL;
     spec->sourceCpioList = NULL;
     
-    spec->gotBuildRootURL = 0;
-    spec->buildRootURL = NULL;
+    spec->gotBuildRoot = 0;
+    spec->buildRoot = NULL;
     spec->buildSubdir = NULL;
 
     spec->passPhrase = NULL;
@@ -492,9 +492,9 @@ rpmSpec freeSpec(rpmSpec spec)
     spec->check = freeStringBuf(spec->check);
     spec->clean = freeStringBuf(spec->clean);
 
-    spec->buildRootURL = _free(spec->buildRootURL);
+    spec->buildRoot = _free(spec->buildRoot);
     spec->buildSubdir = _free(spec->buildSubdir);
-    spec->rootURL = _free(spec->rootURL);
+    spec->rootDir = _free(spec->rootDir);
     spec->specFile = _free(spec->specFile);
 
     closeSpec(spec);

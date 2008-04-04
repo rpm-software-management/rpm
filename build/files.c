@@ -93,7 +93,7 @@ static StringBuf check_fileList = NULL;
  * Package file tree walk data.
  */
 typedef struct FileList_s {
-    char * buildRootURL;
+    char * buildRoot;
     char * prefix;
 
     int fileCount;
@@ -1202,12 +1202,9 @@ static void genCpioListAndHeader(FileList fl,
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
 	    buf[readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
-	    if (fl->buildRootURL) {
-		const char * buildRoot;
-		(void) urlPath(fl->buildRootURL, &buildRoot);
-
-		if (buf[0] == '/' && strcmp(buildRoot, "/") &&
-		    !strncmp(buf, buildRoot, strlen(buildRoot))) {
+	    if (fl->buildRoot) {
+		if (buf[0] == '/' && strcmp(fl->buildRoot, "/") &&
+		    !strncmp(buf, fl->buildRoot, strlen(fl->buildRoot))) {
 		     rpmlog(RPMLOG_ERR,
 				_("Symlink points to BuildRoot: %s -> %s\n"),
 				flp->fileURL, buf);
@@ -1283,8 +1280,8 @@ static void genCpioListAndHeader(FileList fl,
     fi->actions = xcalloc(sizeof(*fi->actions), fi->fc);
     fi->fmapflags = xcalloc(sizeof(*fi->fmapflags), fi->fc);
     fi->astriplen = 0;
-    if (fl->buildRootURL)
-	fi->astriplen = strlen(fl->buildRootURL);
+    if (fl->buildRoot)
+	fi->astriplen = strlen(fl->buildRoot);
     fi->striplen = 0;
     fi->fuser = NULL;
     fi->fgroup = NULL;
@@ -1381,7 +1378,7 @@ static rpmRC addFile(FileList fl, const char * diskURL,
     const char *fileUname;
     const char *fileGname;
     
-    /* Path may have prepended buildRootURL, so locate the original filename. */
+    /* Path may have prepended buildRoot, so locate the original filename. */
     /*
      * XXX There are 3 types of entry into addFile:
      *
@@ -1394,8 +1391,8 @@ static rpmRC addFile(FileList fl, const char * diskURL,
      */
     {	const char *fileName;
 	(void) urlPath(fileURL, &fileName);
-	if (fl->buildRootURL && strcmp(fl->buildRootURL, "/"))
-	    fileURL += strlen(fl->buildRootURL);
+	if (fl->buildRoot && strcmp(fl->buildRoot, "/"))
+	    fileURL += strlen(fl->buildRoot);
     }
 
     /* XXX make sure '/' can be packaged also */
@@ -1444,7 +1441,7 @@ static rpmRC addFile(FileList fl, const char * diskURL,
     }
 
     if ((! fl->isDir) && S_ISDIR(statp->st_mode)) {
-/* FIX: fl->buildRootURL may be NULL */
+/* FIX: fl->buildRoot may be NULL */
 	return recurseDir(fl, diskURL);
     }
 
@@ -1567,7 +1564,7 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
     int myFtsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
     int rc = RPMRC_FAIL;
 
-    fl->inFtw = 1;  /* Flag to indicate file has buildRootURL prefixed */
+    fl->inFtw = 1;  /* Flag to indicate file has buildRoot prefixed */
     fl->isDir = 1;  /* Keep it from following myftw() again         */
 
     ftsSet[0] = (char *) diskURL;
@@ -1629,7 +1626,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
     int xx;
 
     if (*fileName == '/') {
-	fn = rpmGenPath(fl->buildRootURL, NULL, fileName);
+	fn = rpmGenPath(fl->buildRoot, NULL, fileName);
 	absolute = 1;
     } else
 	fn = rpmGenPath(buildURL, NULL, fileName);
@@ -1714,7 +1711,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
      *		//usr//bin/
      *		/.././../usr/../bin//./sh
      */
-    diskPath = rpmGenPath(fl->buildRootURL, NULL, fileName);
+    diskPath = rpmGenPath(fl->buildRoot, NULL, fileName);
 
     if (doGlob) {
 	char ** argv = NULL;
@@ -1810,8 +1807,8 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
 
-    /* XXX spec->buildRootURL == NULL, then xstrdup("") is returned */
-    fl.buildRootURL = rpmGenPath(spec->rootURL, spec->buildRootURL, NULL);
+    /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
+    fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
 
     if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *)&fl.prefix, NULL))
 	fl.prefix = xstrdup(fl.prefix);
@@ -1985,7 +1982,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	timeCheck(spec->timeCheck, pkg->header);
     
 exit:
-    fl.buildRootURL = _free(fl.buildRootURL);
+    fl.buildRoot = _free(fl.buildRoot);
     fl.prefix = _free(fl.prefix);
 
     freeAttrRec(&fl.cur_ar);
@@ -2146,7 +2143,7 @@ int processSourceFiles(rpmSpec spec)
     fl.fileListRecsUsed = 0;
     fl.totalFileSize = 0;
     fl.prefix = NULL;
-    fl.buildRootURL = NULL;
+    fl.buildRoot = NULL;
 
     s = getStringBuf(sourceFiles);
     files = splitString(s, strlen(s), '\n');

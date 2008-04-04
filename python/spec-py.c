@@ -55,8 +55,8 @@ static PyObject *
 spec_get_buildroot(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
-    if (spec != NULL && spec->buildRootURL) {
-        return Py_BuildValue("s", spec->buildRootURL);
+    if (spec != NULL && spec->buildRoot) {
+        return Py_BuildValue("s", spec->buildRoot);
     }
     else {
         return NULL;

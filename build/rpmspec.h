@@ -93,9 +93,9 @@ char **sl_lines;
  */
 struct rpmSpec_s {
     char * specFile;	/*!< Name of the spec file. */
-    char * buildRootURL;
+    char * buildRoot;
     char * buildSubdir;
-    char * rootURL;
+    char * rootDir;
 
     speclines sl;
     spectags st;
@@ -119,7 +119,7 @@ struct rpmSpec_s {
     int force;
     int anyarch;
 
-    int gotBuildRootURL;
+    int gotBuildRoot;
 
     char * passPhrase;
     int timeCheck;

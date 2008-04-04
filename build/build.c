@@ -49,7 +49,7 @@ static void doRmSource(rpmSpec spec)
  */
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, int test)
 {
-    const char * rootDir = spec->rootURL;
+    const char * rootDir = spec->rootDir;
     char *scriptName = NULL;
     char * buildDir = rpmGenPath(rootDir, "%{_builddir}", "");
     char * buildCmd = NULL;

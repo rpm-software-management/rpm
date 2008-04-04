@@ -366,8 +366,8 @@ int processSourceFiles(rpmSpec spec);
  * Parse spec file into spec control structure.
  * @param ts		transaction set (spec file control in ts->spec)
  * @param specFile
- * @param rootURL
- * @param buildRootURL
+ * @param rootDir
+ * @param buildRoot
  * @param recursing	parse is recursive?
  * @param passPhrase
  * @param cookie
@@ -376,8 +376,8 @@ int processSourceFiles(rpmSpec spec);
  * @return
  */
 int parseSpec(rpmts ts, const char * specFile,
-		const char * rootURL,
-		const char * buildRootURL,
+		const char * rootDir,
+		const char * buildRoot,
 		int recursing,
 		const char * passPhrase,
 		const char * cookie,
