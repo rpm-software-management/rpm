@@ -105,18 +105,12 @@ static char * getTarSpec(const char *arg)
     char *specBase;
     char *tmpSpecFile;
     const char **try;
-    char *tar;
     char tarbuf[BUFSIZ];
-    int gotspec = 0;
-    rpmCompressedMagic res = COMPRESSED_OTHER;
-
-    /* FIX: static zcmds heartburn */
-    static const char *zcmds[] = { "cat", "gunzip", "bunzip2", "cat" };
+    int gotspec = 0, res;
     static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
 
     specDir = rpmGetPath("%{_specdir}", NULL);
     tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
-    tar = rpmGetPath("%{__tar}", NULL);
 
 #if defined(HAVE_MKSTEMP)
     (void) close(mkstemp(tmpSpecFile));
@@ -124,14 +118,13 @@ static char * getTarSpec(const char *arg)
     (void) mktemp(tmpSpecFile);
 #endif
 
-    (void) rpmFileIsCompressed(arg, &res);
-
     for (try = tryspec; *try != NULL; try++) {
 	FILE *fp;
 	char *cmd;
 
-	rasprintf(&cmd, "%s < '%s' | %s xOvf - --wildcards %s 2>&1 > '%s'",
-	     zcmds[res & 0x3], arg, tar, *try, tmpSpecFile);
+	cmd = rpmExpand("%{uncompress: ", arg, "} | ",
+			"%{__tar} xOvf - --wildcards ", *try,
+			" 2>&1 > ", tmpSpecFile, NULL);
 
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
@@ -169,7 +162,6 @@ exit:
     (void) unlink(tmpSpecFile);
     free(tmpSpecFile);
     free(specDir);
-    free(tar);
     return specFile;
 }
 
