@@ -623,8 +623,8 @@ printNewSpecfile(rpmSpec spec)
 	    sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
 		continue;
-	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
-		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
+	    {   char *buf = NULL;
+		rasprintf(&buf, "%s: %s", tn, msgstr);
 		sl->sl_lines[t->t_startx] = buf;
 	    }
 	    break;
