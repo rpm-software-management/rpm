@@ -606,7 +606,7 @@ printNewSpecfile(rpmSpec spec)
 	if (h == NULL)
 	    continue;
 
-	rasprintf(&fmt, "%{%s}", tn);
+	rasprintf(&fmt, "%%{%s}", tn);
 	msgstr = _free(msgstr);
 
 	/* XXX this should use queryHeader(), but prints out tn as well. */
