@@ -61,14 +61,21 @@ ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {
 		ta = "SCALAR"
 	}
 	if ($2 == "=") {
-		printf("    { \"%s\", %s RPM_%s_TYPE + RPM_%s_RETURN_TYPE },\n", $1, $3, tt, ta)
+		tnarg = $1
 	} else {
-		printf("    { \"%s\", %s, RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", $2, $3, tt, ta)
+		tnarg = $2
+	}
+	tn = substr(tnarg, index(tnarg, "_") + 1)
+	sn = (substr(tn, 1, 1) tolower(substr(tn, 2)))
+	if ($2 == "=") {
+		printf("    { \"%s\", \"%s\", %s RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", tnarg, sn, $3, tt, ta)
+	} else {
+		printf("    { \"%s\", \"%s\", %s, RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", tnarg, sn, $3, tt, ta)
 	}
 }' < $1 | sort
 
 cat << EOF
-    { NULL, 0, 0 }
+    { NULL, NULL, 0, 0 }
 };
 
 const struct headerTagTableEntry_s * const rpmTagTable = rpmTagTbl;

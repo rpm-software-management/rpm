@@ -97,51 +97,49 @@ headerTagIndices const rpmTags = &_rpmTags;
 
 static const char * _tagName(rpmTag tag)
 {
-    static char nameBuf[128];	/* XXX yuk */
+    const char *name = "(unknown)";
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
     int xx;
-    char *s;
 
     if (_rpmTags.byValue == NULL)
 	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
 
     switch (tag) {
     case RPMDBI_PACKAGES:
-	strcpy(nameBuf, "Packages");
+	name = "Packages";
 	break;
     case RPMDBI_DEPENDS:
-	strcpy(nameBuf, "Depends");
+	name = "Depends";
 	break;
     case RPMDBI_ADDED:
-	strcpy(nameBuf, "Added");
+	name = "Added";
 	break;
     case RPMDBI_REMOVED:
-	strcpy(nameBuf, "Removed");
+	name = "Removed";
 	break;
     case RPMDBI_AVAILABLE:
-	strcpy(nameBuf, "Available");
+	name = "Available";
 	break;
     case RPMDBI_HDLIST:
-	strcpy(nameBuf, "Hdlist");
+	name = "Hdlist";
 	break;
     case RPMDBI_ARGLIST:
-	strcpy(nameBuf, "Arglist");
+	name = "Arglist";
 	break;
     case RPMDBI_FTSWALK:
-	strcpy(nameBuf, "Ftswalk");
+	name = "Ftswalk";
 	break;
 
     /* XXX make sure rpmdb indices are identically named. */
     case RPMTAG_CONFLICTS:
-	strcpy(nameBuf, "Conflictname");
+	name = "Conflictname";
 	break;
     case RPMTAG_HDRID:
-	strcpy(nameBuf, "Sha1header");
+	name = "Sha1header";
 	break;
 
     default:
-	strcpy(nameBuf, "(unknown)");
 	if (_rpmTags.byValue == NULL)
 	    break;
 	l = 0;
@@ -157,22 +155,19 @@ static const char * _tagName(rpmTag tag)
 	    else if (comparison > 0)
 		l = i + 1;
 	    else {
-		nameBuf[0] = nameBuf[1] = '\0';
 		/* Make sure that the bsearch retrieve is stable. */
 		while (i > 0 && tag == _rpmTags.byValue[i-1]->val) {
 		    i--;
 		}
 		t = _rpmTags.byValue[i];
 		if (t->name != NULL)
-		    strcpy(nameBuf, t->name + (sizeof("RPMTAG_")-1));
-		for (s = nameBuf+1; *s != '\0'; s++)
-		    *s = rtolower(*s);
+		    name = t->shortname;
 		break;
 	    }
 	}
 	break;
     }
-    return nameBuf;
+    return name;
 }
 
 static rpmTagType _tagType(rpmTag tag)

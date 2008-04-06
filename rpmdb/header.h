@@ -25,7 +25,8 @@ extern "C" {
 typedef struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
     const char * name;		/*!< Tag name. */
-    rpmTag val;		/*!< Tag numeric value. */
+    const char * shortname;	/*!< "Human readable" short name. */
+    rpmTag val;			/*!< Tag numeric value. */
     rpmTagType type;		/*!< Tag type. */
 };
 
