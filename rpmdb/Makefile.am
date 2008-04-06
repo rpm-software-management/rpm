@@ -11,6 +11,7 @@ AM_CPPFLAGS += @WITH_LIBELF_INCLUDE@
 check_PROGRAMS =
 EXTRA_PROGRAMS =
 CLEANFILES =
+EXTRA_DIST = gentagtbl.sh
 
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmdb.la
@@ -36,20 +37,8 @@ else
 librpmdb_la_LIBADD += @WITH_DB_LIB@
 endif
 
-tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmtag.h 
-	@echo '#include "system.h"' > $@
-	@echo '#include <rpm/header.h>' >> $@
-	@echo '#include <rpm/rpmtag.h>' >> $@
-	@echo '#include "debug.h"' >> $@
-	@echo '' >> $@
-	@echo 'static const struct headerTagTableEntry_s rpmTagTbl[] = {' >> $@
-	${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {tt = "NULL"; ta = "ANY"; if ($$5 == "c") {tt = "CHAR"; ta = "SCALAR"} if ($$5 == "c[]") {tt = "CHAR"; ta = "ARRAY"} if ($$5 == "h") {tt = "INT16"; ta = "SCALAR"} if ($$5 == "h[]") {tt = "INT16"; ta = "ARRAY"} if ($$5 == "i") {tt = "INT32"; ta = "SCALAR"} if ($$5 == "i[]") {tt = "INT32"; ta = "ARRAY"} if ($$5 == "l") {tt = "INT64"; ta = "SCALAR"} if ($$5 == "l[]") {tt = "INT64"; ta = "ARRAY"} if ($$5 == "s") {tt = "STRING"; ta = "SCALAR"} if ($$5 == "s[]") {tt = "STRING_ARRAY"; ta = "ARRAY"} if ($$5 == "s{}") {tt = "I18NSTRING"; ta = "SCALAR"} if ($$5 == "x") {tt = "BIN"; ta = "SCALAR"} if ($$2 == "=") { printf("\t{ \"%s\",	%s	RPM_%s_TYPE + RPM_%s_RETURN_TYPE },\n", $$1, $$3, tt, ta) } else { printf("\t{ \"%s\",	%s,	RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", $$2, $$3, tt, ta) } }' < ${top_srcdir}/lib/rpmtag.h | sort >> $@
-	@echo '	{ NULL, 0, 0 }' >> $@
-	@echo '};' >> $@
-	@echo '' >> $@
-	@echo 'const struct headerTagTableEntry_s * const rpmTagTable = rpmTagTbl;' >> $@
-	@echo '' >> $@
-	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
+tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmtag.h gentagtbl.sh
+	@AWK=${AWK} ${SHELL} gentagtbl.sh $(top_srcdir)/lib/rpmtag.h > $@
 BUILT_SOURCES = tagtbl.c
 
 if WITH_INTERNAL_DB
