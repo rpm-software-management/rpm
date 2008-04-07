@@ -990,15 +990,14 @@ verifyMD5Signature(const rpmts ts, char ** msg,
     uint8_t * md5sum = NULL;
     size_t md5len = 0;
     char * t, *md5;
+    const char *title = _("MD5 digest: ");
 
-    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
-    t = *msg;
-
-    t = stpcpy(t, _("MD5 digest: "));
+    assert(msg != NULL);
+    msg = NULL;
 
     if (md5ctx == NULL || sig == NULL || dig == NULL) {
 	res = RPMRC_NOKEY;
-	t = stpcpy(t, rpmSigString(res));
+	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
 
@@ -1008,22 +1007,18 @@ verifyMD5Signature(const rpmts ts, char ** msg,
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
+    md5 = pgpHexStr(md5sum, md5len);
     if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
-	char *hex = pgpHexStr(sig, siglen);
 	res = RPMRC_FAIL;
-	t = stpcpy(t, rpmSigString(res));
-	t = stpcpy(t, " Expected(");
-	t = stpcpy(t, hex);
-	t = stpcpy(t, ") != (");
+	char *hex = pgpHexStr(sig, siglen);
+	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
+		  rpmSigString(res), hex, md5);
+	free(hex);
     } else {
 	res = RPMRC_OK;
-	t = stpcpy(t, rpmSigString(res));
-	t = stpcpy(t, " (");
+	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), md5);
     }
-    md5 = pgpHexStr(md5sum, md5len);
-    t = stpcpy(t, md5);
     free(md5);
-    t = stpcpy(t, ")");
 
 exit:
     md5sum = _free(md5sum);
