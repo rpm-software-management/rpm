@@ -1027,27 +1027,6 @@ size_t pgpMpiLen(const uint8_t *p)
 }
 	
 /** \ingroup rpmpgp
- * Convert to hex.
- * @param t		target buffer (returned)
- * @param s		source bytes
- * @param nbytes	no. of bytes
- * @return		target buffer
- */
-static inline
-char * pgpHexCvt(char *t, const uint8_t *s, size_t nbytes)
-{
-    static char const hex[] = "0123456789abcdef";
-    while (nbytes-- > 0) {
-	size_t i;
-	i = *s++;
-	*t++ = hex[ (i >> 4) & 0xf ];
-	*t++ = hex[ (i     ) & 0xf ];
-    }
-    *t = '\0';
-    return t;
-}
-
-/** \ingroup rpmpgp
  * Return hex formatted representation of bytes.
  * @param p		bytes
  * @param plen		no. of bytes
