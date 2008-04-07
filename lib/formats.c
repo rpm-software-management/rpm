@@ -9,6 +9,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmmacro.h>	/* XXX for %_i18ndomains */
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstring.h>
 
 #include "rpmio/digest.h"
 #include "lib/manifest.h"
