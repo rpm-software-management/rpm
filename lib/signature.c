@@ -949,16 +949,17 @@ verifySizeSignature(const rpmts ts, char ** msg)
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     size_t size = 0x7fffffff;
+    const char * title = _("Header+Payload size:");
     char *t;
 
-    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
-    t = *msg;
+    assert(msg != NULL);
+    *msg = NULL;
 
     t = stpcpy(t, _("Header+Payload size: "));
 
     if (sig == NULL || dig == NULL || dig->nbytes == 0) {
 	res = RPMRC_NOKEY;
-	t = stpcpy(t, rpmSigString(res));
+	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
 
@@ -966,16 +967,14 @@ verifySizeSignature(const rpmts ts, char ** msg)
 
     if (size != dig->nbytes) {
 	res = RPMRC_FAIL;
-	t = stpcpy(t, rpmSigString(res));
-	sprintf(t, " Expected(%zd) != (%zd)\n", size, dig->nbytes);
+	rasprintf(msg, "%s %s Expected(%zd) != (%zd)\n", title,
+		  rpmSigString(res), size, dig->nbytes);
     } else {
 	res = RPMRC_OK;
-	t = stpcpy(t, rpmSigString(res));
-	sprintf(t, " (%d)", (int)dig->nbytes);
+	rasprintf(msg, "%s %s (%zd)\n", title, rpmSigString(res), dig->nbytes);
     }
 
 exit:
-    t = stpcpy(t, "\n");
     return res;
 }
 
