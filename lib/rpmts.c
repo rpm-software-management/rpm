@@ -403,11 +403,9 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
      || pubp->userid == NULL)
 	goto exit;
 
-    v = t = xmalloc(16+1);
-    t = stpcpy(t, pgpHexStr(pubp->signid, sizeof(pubp->signid)));
+    v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
 
-    r = t = xmalloc(8+1);
-    t = stpcpy(t, pgpHexStr(pubp->time, sizeof(pubp->time)));
+    t = pgpHexStr(pubp->time, sizeof(pubp->time));
 
     n = t = xmalloc(sizeof("gpg()")+8);
     t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");

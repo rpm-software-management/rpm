@@ -308,9 +308,11 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 		/* If same signer, skip resigning the package. */
 		if (!memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
 
+		    char *signid = pgpHexStr(newsignid+4, sizeof(newsignid)-4);
 		    rpmlog(RPMLOG_WARNING,
 			_("%s: was already signed by key ID %s, skipping\n"),
-			rpm, pgpHexStr(newsignid+4, sizeof(newsignid)-4));
+			rpm, signid);
+		    free(signid);
 
 		    /* Clean up intermediate target */
 		    xx = unlink(sigtarget);

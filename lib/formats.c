@@ -383,7 +383,7 @@ static char * pgpsigFormat(rpmTagType type, rpm_constdata_t data,
 	    pgpDig dig = pgpNewDig();
 	    pgpDigParams sigp = &dig->signature;
 	    size_t nb = 0;
-	    const char *tempstr;
+	    char *tempstr = NULL;
 
 	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
 
@@ -438,6 +438,7 @@ static char * pgpsigFormat(rpmTagType type, rpm_constdata_t data,
 	    if (t + strlen (tempstr) > val + nb)
 		goto again;
 	    t = stpcpy(t, tempstr);
+	    free(tempstr);
 
 	    dig = pgpFreeDig(dig);
 	}

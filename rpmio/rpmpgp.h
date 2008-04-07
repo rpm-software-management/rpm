@@ -1049,19 +1049,11 @@ char * pgpHexCvt(char *t, const uint8_t *s, size_t nbytes)
 
 /** \ingroup rpmpgp
  * Return hex formatted representation of bytes.
- * @todo Remove static buffer. 
  * @param p		bytes
  * @param plen		no. of bytes
- * @return		hex formatted string
+ * @return		hex formatted string (malloc'ed)
  */
-static inline
-const char * pgpHexStr(const uint8_t *p, size_t plen)
-{
-    static char prbuf[8*BUFSIZ];	/* XXX ick */
-    char *t = prbuf;
-    t = pgpHexCvt(t, p, plen);
-    return prbuf;
-}
+char * pgpHexStr(const uint8_t *p, size_t plen);
 
 /** \ingroup rpmpgp
  * Return hex formatted representation of a multiprecision integer.

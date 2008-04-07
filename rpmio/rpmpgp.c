@@ -204,10 +204,13 @@ static void pgpPrtStr(const char *pre, const char *s)
 
 static void pgpPrtHex(const char *pre, const uint8_t *p, size_t plen)
 {
+    char *hex = NULL;
     if (!_print) return;
     if (pre && *pre)
 	fprintf(stderr, "%s", pre);
-    fprintf(stderr, " %s", pgpHexStr(p, plen));
+    hex = pgpHexStr(p, plen);
+    fprintf(stderr, " %s", hex);
+    free(hex);
 }
 
 void pgpPrtVal(const char * pre, pgpValTbl vs, uint8_t val)
@@ -639,6 +642,13 @@ static const char * const pgpSecretELGAMAL[] = {
     NULL,
 };
 #endif
+
+char * pgpHexStr(const uint8_t *p, size_t plen)
+{
+    char *t = xmalloc(plen * 2 + 1);
+    pgpHexCvt(t, p, plen);
+    return t;
+}
 
 static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		const uint8_t *p, const uint8_t *h, size_t hlen)
