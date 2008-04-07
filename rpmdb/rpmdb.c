@@ -1910,7 +1910,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 		break;
 	    case RPM_BIN_TYPE:
 		{
-		char * str = bin2hex((const char*) u.ptr, c);
+		char * str = pgpHexStr((const unsigned char*) u.ptr, c);
 		rc = miregexec(mire, str);
 		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 		    anymatch++;

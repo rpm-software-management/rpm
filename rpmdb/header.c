@@ -12,6 +12,7 @@
 
 #include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmpgp.h>
 #include "rpmdb/header_internal.h"
 
 #include "debug.h"
@@ -2587,7 +2588,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    val = bin2hex(data, count);
+	    val = pgpHexStr(data, count);
 	    need = strlen(val) + tag->pad;
 	}
 	break;

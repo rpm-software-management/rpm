@@ -186,7 +186,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	rpmfileState fstate;
 	rpm_off_t fsize;
 	const char * fn;
-	char fmd5[32+1];
+	char *fmd5;
 	const char * fuser;
 	const char * fgroup;
 	const char * flink;
@@ -199,17 +199,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fstate = rpmfiFState(fi);
 	fsize = rpmfiFSize(fi);
 	fn = rpmfiFN(fi);
-	{   static char const hex[] = "0123456789abcdef";
-	    unsigned const char * s = rpmfiMD5(fi);
-	    char * p = fmd5;
-	    int j;
-	    for (j = 0; j < 16; j++) {
-		unsigned k = *s++;
-		*p++ = hex[ (k >> 4) & 0xf ];
-		*p++ = hex[ (k     ) & 0xf ];
-	    }
-	    *p = '\0';
-	}
+	fmd5 = pgpHexStr(rpmfiMD5(fi), rpmDigestLength(PGPHASHALGO_MD5));
 	fuser = rpmfiFUser(fi);
 	fgroup = rpmfiFGroup(fi);
 	flink = rpmfiFLink(fi);
@@ -308,6 +298,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 	}
 	flushBuffer(&t, &te, 0);
+	free(fmd5);
     }
 	    
     rc = 0;

@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpm/rpmtag.h>
+#include <rpm/rpmpgp.h>
 
 #include "header-py.h"
 #include "rpmfi-py.h"
@@ -194,19 +195,11 @@ rpmfi_iternext(rpmfiObject * s)
 	int VFlags = rpmfiVFlags(s->fi);
 	const char * FUser = rpmfiFUser(s->fi);
 	const char * FGroup = rpmfiFGroup(s->fi);
-	const unsigned char * MD5 = rpmfiMD5(s->fi), *s = MD5;
-	char FMD5[2*16+1], *t = FMD5;
-	static const char hex[] = "0123456789abcdef";
-	int gotMD5, i;
+	const unsigned char * MD5 = rpmfiMD5(s->fi);
+	char *FMD5 = NULL;
 
-	gotMD5 = 0;
-	if (s)
-	for (i = 0; i < 16; i++) {
-	    gotMD5 |= *s;
-	    *t++ = hex[ (*s >> 4) & 0xf ];
-	    *t++ = hex[ (*s++   ) & 0xf ];
-	}
-	*t = '\0';
+	if (MD5)
+	    FMD5 = pgpHexStr(MD5, rpmDigestLength(PGPHASHALGO_MD5));
 
 	result = PyTuple_New(13);
 	if (FN == NULL) {
@@ -233,7 +226,7 @@ rpmfi_iternext(rpmfiObject * s)
 	    PyTuple_SET_ITEM(result, 11, Py_None);
 	} else
 	    PyTuple_SET_ITEM(result, 11, Py_BuildValue("s", FGroup));
-	if (!gotMD5) {
+	if (!FMD5) {
 	    Py_INCREF(Py_None);
 	    PyTuple_SET_ITEM(result, 12, Py_None);
 	} else

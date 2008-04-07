@@ -171,13 +171,6 @@ void headerDump(Header h, FILE *f, int flags,
 		const struct headerTagTableEntry_s * tags);
 #define HEADER_DUMP_INLINE   1
 
-/** \ingroup header
- * Convert binary blob to printable hex string 
- * @param[in] data		binary data
- * @param[in] count		size of data in bytes
- */
-char * bin2hex(const char *data, size_t count);
-
 #ifdef __cplusplus
 }   
 #endif

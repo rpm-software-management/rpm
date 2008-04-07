@@ -123,8 +123,6 @@ int
 rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 {
     unsigned char * digest;
-    char * t;
-    size_t i;
     size_t digestlen;
 
     if (ctx == NULL)
@@ -147,14 +145,7 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%zd) hashctx %p digest %p\n", ctx, datap, l
 	if (lenp) *lenp = (2*digestlen) + 1;
 	if (datap) {
 	    const uint8_t * s = (const uint8_t *) digest;
-	    static const char const hex[] = "0123456789abcdef";
-
-	    *datap = t = xmalloc((2*digestlen) + 1);
-	    for (i = 0 ; i < digestlen; i++) {
-		*t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
-		*t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
-	    }
-	    *t = '\0';
+	    *datap = pgpHexStr(s, digestlen);
 	}
     }
     if (digest) {
