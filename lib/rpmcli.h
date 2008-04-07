@@ -266,7 +266,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h);
  * @param argv		query argument(s) (or NULL)
  * @return		0 on success, else no. of failures
  */
-int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv);
+int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv);
 
 /** \ingroup rpmcli
  * Display package information.
@@ -276,7 +276,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv);
  * @param argv		query argument(s) (or NULL)
  * @return		0 on success, else no. of failures
  */
-int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv);
+int rpmcliQuery(rpmts ts, QVA_t qva, ARGV_const_t argv);
 
 /** \ingroup rpmcli
  * Display results of package verify.
@@ -305,7 +305,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn);
  * @param argv		verify argument(s) (or NULL)
  * @return		0 on success, else no. of failures
  */
-int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv);
+int rpmcliVerify(rpmts ts, QVA_t qva, ARGV_const_t argv);
 
 /* ==================================================================== */
 /** \name RPMBT */
@@ -436,9 +436,10 @@ struct rpmInstallArguments_s {
  * @param ia		mode flags and parameters
  * @param fileArgv	array of package file names (NULL terminated)
  * @return		0 on success
+ *
+ * @todo		fileArgv is modified on errors, should be ARGV_const_t
  */
-int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
-		const char ** fileArgv);
+int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv);
 
 /** \ingroup rpmcli
  * Erase binary rpm package.
@@ -448,8 +449,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
  * @return		0 on success
  */
 
-int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
-		const char ** argv);
+int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv);
 
 /** \ingroup rpmcli
  */
@@ -506,7 +506,7 @@ extern struct poptOption rpmSignPoptTable[];
  * @param argv		array of arguments (NULL terminated)
  * @return		0 on success
  */
-int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv);
+int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv);
 
 #ifdef __cplusplus
 }

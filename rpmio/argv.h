@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 typedef char ** ARGV_t;
+typedef char * const *ARGV_const_t;
 
 typedef	int * ARGint_t;
 struct ARGI_s {
@@ -61,14 +62,14 @@ ARGint_t argiData(const ARGI_t argi);
  * @param argv		argv array
  * @return		no. of elements
  */
-int argvCount(const ARGV_t argv);
+int argvCount(ARGV_const_t argv);
 
 /** \ingroup rpmargv
  * Return data from argv array.
  * @param argv		argv array
  * @return		argv array data address
  */
-ARGV_t argvData(const ARGV_t argv);
+ARGV_t argvData(ARGV_t argv);
 
 /** \ingroup rpmargv
  * Compare argv arrays (qsort/bsearch).
@@ -93,7 +94,7 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *));
  * @param compar	strcmp-like comparison function, or NULL for argvCmp()
  * @return		found string (NULL on failure)
  */
-ARGV_t argvSearch(ARGV_t argv, const char *val,
+ARGV_t argvSearch(ARGV_const_t argv, const char *val,
 		int (*compar)(const void *, const void *));
 
 /** \ingroup rpmargv
@@ -119,7 +120,7 @@ int argvAdd(ARGV_t * argvp, const char *val);
  * @param av		argv array to append
  * @return		0 always
  */
-int argvAppend(ARGV_t * argvp, const ARGV_t av);
+int argvAppend(ARGV_t * argvp, ARGV_const_t av);
 
 /** \ingroup rpmargv
  * Split a string into an argv array.

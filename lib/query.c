@@ -675,7 +675,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     return res;
 }
 
-int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
+int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
     int ec = 0;
@@ -755,7 +755,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
     return ec;
 }
 
-int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
+int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
 {
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;

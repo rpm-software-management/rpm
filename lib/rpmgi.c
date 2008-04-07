@@ -287,7 +287,7 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
  * @param argv		arg list to be globbed (or NULL)
  * @returns		RPMRC_OK on success
  */
-static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_t argv)
+static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 {
     const char * arg;
     rpmRC rpmrc = RPMRC_OK;
@@ -340,7 +340,7 @@ if (_rpmgi_debug < 0)
 fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 
     if (gi->argv != NULL)
-    for (av = (const char **) gi->argv; *av != NULL; av++) {
+    for (av = gi->argv; *av != NULL; av++) {
 	rpmTag tag = RPMTAG_NAME;
 	const char * pat;
 	char * a, * ae;
@@ -665,7 +665,7 @@ rpmts rpmgiTs(rpmgi gi)
     return (gi != NULL ? gi->ts : NULL);
 }
 
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, int ftsOpts, rpmgiFlags flags)
 {
     gi->ftsOpts = ftsOpts;
     gi->flags = flags;

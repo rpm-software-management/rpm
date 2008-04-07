@@ -2246,7 +2246,7 @@ int processSourceFiles(rpmSpec spec)
  */
 static int checkFiles(StringBuf fileList)
 {
-    static const char * av_ckfile[] = { "%{?__check_files}", NULL };
+    static char * const av_ckfile[] = { "%{?__check_files}", NULL };
     StringBuf sb_stdout = NULL;
     char * s;
     int rc;

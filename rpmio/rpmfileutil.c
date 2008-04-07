@@ -104,9 +104,9 @@ static int open_dso(const char * path, pid_t * pidp, rpm_off_t *fsizep)
 	    xx = dup2(pipes[1], STDOUT_FILENO);
 	    xx = close(pipes[1]);
 	    if ((lib = argvSearch(av, "library", NULL)) != NULL) {
-		*lib = path;
+		*lib = (char *) path;
 		unsetenv("MALLOC_CHECK_");
-		xx = execve(av[0], (char *const *)av+1, environ);
+		xx = execve(av[0], av+1, environ);
 	    }
 	    _exit(127);
 	}

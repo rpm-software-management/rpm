@@ -61,7 +61,7 @@ struct rpmfcTokens_s {
 
 /**
  */
-static int rpmfcExpandAppend(ARGV_t * argvp, const ARGV_t av)
+static int rpmfcExpandAppend(ARGV_t * argvp, ARGV_const_t av)
 {
     ARGV_t argv = *argvp;
     int argc = argvCount(argv);
@@ -227,7 +227,7 @@ top:
     return readBuff;
 }
 
-int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 		int failnonzero)
 {
     char * s = NULL;
@@ -345,7 +345,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     char *buf = NULL;
     StringBuf sb_stdout = NULL;
     StringBuf sb_stdin;
-    const char *av[2];
+    char *av[2];
     rpmds * depsp, ds;
     const char * N;
     const char * EVR;
@@ -1343,7 +1343,7 @@ typedef struct DepMsg_s * DepMsg_t;
  */
 struct DepMsg_s {
     const char * msg;
-    const char * argv[4];
+    char * const argv[4];
     rpmTag ntag;
     rpmTag vtag;
     rpmTag ftag;

@@ -137,8 +137,7 @@ static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success
  */
-static int rpmReSign(rpmts ts,
-		QVA_t qva, const char ** argv)
+static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -398,9 +397,7 @@ exit:
  * @param argv		array of pubkey file names (NULL terminated)
  * @return		0 on success
  */
-static int rpmcliImportPubkeys(const rpmts ts,
-		QVA_t qva,
-		const char ** argv)
+static int rpmcliImportPubkeys(const rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     const char * fn;
     unsigned char * pkt = NULL;
@@ -797,7 +794,7 @@ exit:
     return res;
 }
 
-int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
+int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     const char * arg;
     int res = 0;

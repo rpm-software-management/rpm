@@ -187,21 +187,19 @@ void * rpmShowProgress(const void * arg,
     return rc;
 }	
 
-typedef const char * str_t;
-
 struct rpmEIU {
     Header h;
     FD_t fd;
     int numFailed;
     int numPkgs;
     char ** pkgURL;
-    str_t * fnp;
+    char ** fnp;
     char * pkgState;
     int prevx;
     int pkgx;
     int numRPMS;
     int numSRPMS;
-    str_t * sourceURL;
+    char ** sourceURL;
     int isSource;
     int argc;
     char ** argv;
@@ -210,9 +208,7 @@ struct rpmEIU {
 };
 
 /** @todo Generalize --freshen policies. */
-int rpmInstall(rpmts ts,
-		struct rpmInstallArguments_s * ia,
-		const char ** fileArgv)
+int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
     struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
     rpmps ps;
@@ -378,7 +374,7 @@ if (fileURL[0] == '=') {
     if (eiu->numFailed) goto exit;
 
     /* Continue processing file arguments, building transaction set. */
-    for (eiu->fnp = (const char**) eiu->pkgURL+eiu->prevx;
+    for (eiu->fnp = eiu->pkgURL+eiu->prevx;
 	 *eiu->fnp != NULL;
 	 eiu->fnp++, eiu->prevx++)
     {
@@ -649,11 +645,10 @@ exit:
     return eiu->numFailed;
 }
 
-int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
-		const char ** argv)
+int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 {
     int count;
-    const char ** arg;
+    char * const * arg;
     int numFailed = 0;
     int stopUninstall = 0;
     int numPackages = 0;

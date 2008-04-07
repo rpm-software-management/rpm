@@ -86,7 +86,7 @@ typedef const struct rpmfcTokens_s * rpmfcToken;
  * @retval *sb_stdoutp	helper output
  * @param failnonzero	IS non-zero helper exit status a failure?
  */
-int rpmfcExec(ARGV_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 		int failnonzero);
 
 /** \ingroup rpmfc

@@ -111,7 +111,7 @@ rpmts rpmgiTs(rpmgi gi);
  * @param flags		iterator flags
  * @return 		RPMRC_OK on success
  */
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv,
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv,
 		int ftsOpts, rpmgiFlags flags);
 
 

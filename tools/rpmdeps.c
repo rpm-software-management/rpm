@@ -62,7 +62,7 @@ char buf[BUFSIZ];
     if (optCon == NULL)
 	goto exit;
 
-    av = poptGetArgs(optCon);
+    av = (ARGV_t) poptGetArgs(optCon);
     ac = argvCount(av);
 
     if (ac == 0) {

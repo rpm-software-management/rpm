@@ -60,7 +60,7 @@ ARGint_t argiData(const ARGI_t argi)
     return vals;
 }
 
-int argvCount(const ARGV_t argv)
+int argvCount(ARGV_const_t argv)
 {
     int argc = 0;
     if (argv)
@@ -69,7 +69,7 @@ int argvCount(const ARGV_t argv)
     return argc;
 }
 
-ARGV_t argvData(const ARGV_t argv)
+ARGV_t argvData(ARGV_t argv)
 {
     return argv;
 }
@@ -89,7 +89,7 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *))
     return 0;
 }
 
-ARGV_t argvSearch(ARGV_t argv, const char *val,
+ARGV_t argvSearch(ARGV_const_t argv, const char *val,
 		int (*compar)(const void *, const void *))
 {
     if (argv == NULL)
@@ -135,7 +135,7 @@ int argvAdd(ARGV_t * argvp, const char *val)
     return 0;
 }
 
-int argvAppend(ARGV_t * argvp, const ARGV_t av)
+int argvAppend(ARGV_t * argvp, ARGV_const_t av)
 {
     ARGV_t argv = *argvp;
     int argc = argvCount(argv);

@@ -714,7 +714,7 @@ int main(int argc, char *argv[])
 	if (!poptPeekArg(optCon)) {
 	    argerror(_("no packages given for erase"));
 	} else {
-	    ec += rpmErase(ts, ia, (const char **) poptGetArgs(optCon));
+	    ec += rpmErase(ts, ia, (ARGV_const_t) poptGetArgs(optCon));
 	}
 	break;
 
@@ -749,7 +749,7 @@ int main(int argc, char *argv[])
 	    argerror(_("no packages given for install"));
 	} else {
 	    /* FIX: ia->relocations[0].newPath undefined */
-	    ec += rpmInstall(ts, ia, (const char **)poptGetArgs(optCon));
+	    ec += rpmInstall(ts, ia, (ARGV_t) poptGetArgs(optCon));
 	}
 	break;
 
@@ -762,7 +762,7 @@ int main(int argc, char *argv[])
 	    argerror(_("no arguments given for query"));
 
 	qva->qva_specQuery = rpmspecQuery;
-	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
+	ec = rpmcliQuery(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
 	qva->qva_specQuery = NULL;
 	break;
 
@@ -775,7 +775,7 @@ int main(int argc, char *argv[])
 	if (!poptPeekArg(optCon)
 	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
 	    argerror(_("no arguments given for verify"));
-	ec = rpmcliVerify(ts, qva, (const char **) poptGetArgs(optCon));
+	ec = rpmcliVerify(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
     }	break;
 #endif	/* IAM_RPMQV */
 
@@ -791,7 +791,7 @@ int main(int argc, char *argv[])
 	if (!poptPeekArg(optCon))
 	    argerror(_("no arguments given"));
 	ka->passPhrase = passPhrase;
-	ec = rpmcliSign(ts, ka, (const char **)poptGetArgs(optCon));
+	ec = rpmcliSign(ts, ka, (ARGV_const_t) poptGetArgs(optCon));
     	break;
 #endif	/* IAM_RPMK */
 	
