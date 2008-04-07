@@ -1066,9 +1066,9 @@ const char * pgpMpiStr(const uint8_t *p)
 {
     static char prbuf[8*BUFSIZ];	/* XXX ick */
     char *t = prbuf;
-    sprintf(t, "[%4u]: ", pgpGrab(p, (size_t) 2));
-    t += strlen(t);
-    t = pgpHexCvt(t, p+2, pgpMpiLen(p)-2);
+    char *hex = pgpHexStr(p+2, pgpMpiLen(p)-2);
+    sprintf(t, "[%4u]: %s", pgpGrab(p, (size_t) 2), hex);
+    free(hex);
     return prbuf;
 }
 

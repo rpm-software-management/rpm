@@ -1413,9 +1413,9 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
   /* Now format the build ID bits in hex to print out.  */
   {
     const uint8_t * id = (uint8_t *)build_id->d_buf + build_id_offset;
-    char hex[build_id_size * 2 + 1];
-    pgpHexCvt(hex, id, build_id_size);
+    char *hex = pgpHexStr(id, build_id_size);
     puts (hex);
+    free(hex);
   }
 }
 

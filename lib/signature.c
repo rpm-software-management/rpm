@@ -989,7 +989,7 @@ verifyMD5Signature(const rpmts ts, char ** msg,
     rpmRC res;
     uint8_t * md5sum = NULL;
     size_t md5len = 0;
-    char * t;
+    char * t, *md5;
 
     *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
     t = *msg;
@@ -1009,19 +1009,20 @@ verifyMD5Signature(const rpmts ts, char ** msg,
     rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
     if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
+	char *hex = pgpHexStr(sig, siglen);
 	res = RPMRC_FAIL;
 	t = stpcpy(t, rpmSigString(res));
 	t = stpcpy(t, " Expected(");
-	(void) pgpHexCvt(t, sig, siglen);
-	t += strlen(t);
+	t = stpcpy(t, hex);
 	t = stpcpy(t, ") != (");
     } else {
 	res = RPMRC_OK;
 	t = stpcpy(t, rpmSigString(res));
 	t = stpcpy(t, " (");
     }
-    (void) pgpHexCvt(t, md5sum, md5len);
-    t += strlen(t);
+    md5 = pgpHexStr(md5sum, md5len);
+    t = stpcpy(t, md5);
+    free(md5);
     t = stpcpy(t, ")");
 
 exit:
@@ -1246,9 +1247,10 @@ verifyRSASignature(rpmts ts, char ** msg,
 exit:
     t = stpcpy(t, rpmSigString(res));
     if (sigp != NULL) {
+	char * signid = pgpHexStr(sigp->signid+4, sizeof(sigp->signid)-4);
 	t = stpcpy(t, ", key ID ");
-	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
-	t += strlen(t);
+	t = stpcpy(t, signid);
+	free(signid);
     }
     t = stpcpy(t, "\n");
     return res;
@@ -1348,9 +1350,10 @@ verifyDSASignature(rpmts ts, char ** msg,
 exit:
     t = stpcpy(t, rpmSigString(res));
     if (sigp != NULL) {
+	char *signid = pgpHexStr(sigp->signid+4, sizeof(sigp->signid)-4);
 	t = stpcpy(t, ", key ID ");
-	(void) pgpHexCvt(t, sigp->signid+4, sizeof(sigp->signid)-4);
-	t += strlen(t);
+	t = stpcpy(t, signid);
+	free(signid);
     }
     t = stpcpy(t, "\n");
     return res;
