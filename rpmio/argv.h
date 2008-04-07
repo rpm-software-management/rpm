@@ -20,6 +20,7 @@ struct ARGI_s {
     ARGint_t vals;
 };
 typedef	struct ARGI_s * ARGI_t;
+typedef	struct ARGI_s const * const ARGI_const_t;
 
 /** \ingroup rpmargv
  * Print argv array elements.
@@ -48,14 +49,14 @@ ARGV_t argvFree(ARGV_t argv);
  * @param argi		argi array
  * @return		no. of elements
  */
-int argiCount(const ARGI_t argi);
+int argiCount(ARGI_const_t argi);
 
 /** \ingroup rpmargv
  * Return data from argi array.
  * @param argi		argi array
  * @return		argi array data address
  */
-ARGint_t argiData(const ARGI_t argi);
+ARGint_t argiData(ARGI_const_t argi);
 
 /** \ingroup rpmargv
  * Return no. of elements in argv array.

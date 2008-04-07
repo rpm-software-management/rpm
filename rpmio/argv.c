@@ -44,7 +44,7 @@ ARGV_t argvFree(ARGV_t argv)
     return NULL;
 }
 
-int argiCount(ARGI_t argi)
+int argiCount(ARGI_const_t argi)
 {
     int nvals = 0;
     if (argi)
@@ -52,7 +52,7 @@ int argiCount(ARGI_t argi)
     return nvals;
 }
 
-ARGint_t argiData(const ARGI_t argi)
+ARGint_t argiData(ARGI_const_t argi)
 {
     ARGint_t vals = NULL;
     if (argi && argi->nvals > 0)
