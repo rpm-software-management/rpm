@@ -648,7 +648,8 @@ static const char * const pgpSecretELGAMAL[] = {
 
 char * pgpHexStr(const uint8_t *p, size_t plen)
 {
-    char *t = xmalloc(plen * 2 + 1);
+    char *t, *str;
+    str = t = xmalloc(plen * 2 + 1);
     static char const hex[] = "0123456789abcdef";
     while (plen-- > 0) {
 	size_t i;
@@ -657,7 +658,7 @@ char * pgpHexStr(const uint8_t *p, size_t plen)
 	*t++ = hex[ (i     ) & 0xf ];
     }
     *t = '\0';
-    return t;
+    return str;
 }
 
 static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
