@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <rpm/rpmints.h>
+#include <rpm/rpmstring.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -1038,17 +1039,16 @@ char * pgpHexStr(const uint8_t *p, size_t plen);
  * Return hex formatted representation of a multiprecision integer.
  * @todo Remove static buffer. 
  * @param p		bytes
- * @return		hex formatted string
+ * @return		hex formatted string (malloc'ed)
  */
 static inline
-const char * pgpMpiStr(const uint8_t *p)
+char * pgpMpiStr(const uint8_t *p)
 {
-    static char prbuf[8*BUFSIZ];	/* XXX ick */
-    char *t = prbuf;
+    char *str = NULL;
     char *hex = pgpHexStr(p+2, pgpMpiLen(p)-2);
-    sprintf(t, "[%4u]: %s", pgpGrab(p, (size_t) 2), hex);
+    rasprintf(&str, "[%4u]: %s", pgpGrab(p, (size_t) 2), hex);
     free(hex);
-    return prbuf;
+    return str;
 }
 
 /** \ingroup rpmpgp

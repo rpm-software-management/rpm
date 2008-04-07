@@ -429,6 +429,7 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     size_t i;
     SECItem dsaraw;
     unsigned char dsabuf[2*DSA_SUBPRIME_LEN];
+    char *mpi;
 
     dsaraw.type = 0;
     dsaraw.data = dsabuf;
@@ -486,7 +487,9 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	    if (_print)
 		fprintf(stderr, "%7zd", i);
 	}
-	pgpPrtStr("", pgpMpiStr(p));
+	mpi = pgpMpiStr(p);
+	pgpPrtStr("", mpi);
+	free(mpi);
 	pgpPrtNL();
     }
 
@@ -663,6 +666,7 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
     size_t i;
 
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
+	char * mpi;
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 2) break;
 	    if (_dig) {
@@ -716,7 +720,9 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	    if (_print)
 		fprintf(stderr, "%7zd", i);
 	}
-	pgpPrtStr("", pgpMpiStr(p));
+	mpi = pgpMpiStr(p);
+	pgpPrtStr("", mpi);
+	free(mpi);
 	pgpPrtNL();
     }
 
@@ -767,6 +773,7 @@ static const uint8_t * pgpPrtSeckeyParams(uint8_t pubkey_algo,
 
 #ifdef	NOTYET	/* XXX encrypted MPI's need to be handled. */
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
+	char *mpi;
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (pgpSecretRSA[i] == NULL) break;
 	    pgpPrtStr("", pgpSecretRSA[i]);
@@ -780,7 +787,9 @@ static const uint8_t * pgpPrtSeckeyParams(uint8_t pubkey_algo,
 	    if (_print)
 		fprintf(stderr, "%7d", i);
 	}
-	pgpPrtStr("", pgpMpiStr(p));
+	mpi = pgpMpiStr(p);
+	pgpPrtStr("", mpi);
+	free(mpi);
 	pgpPrtNL();
     }
 #else
