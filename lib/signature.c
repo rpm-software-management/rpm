@@ -950,12 +950,9 @@ verifySizeSignature(const rpmts ts, char ** msg)
     rpmRC res;
     size_t size = 0x7fffffff;
     const char * title = _("Header+Payload size:");
-    char *t;
 
     assert(msg != NULL);
     *msg = NULL;
-
-    t = stpcpy(t, _("Header+Payload size: "));
 
     if (sig == NULL || dig == NULL || dig->nbytes == 0) {
 	res = RPMRC_NOKEY;
@@ -988,11 +985,11 @@ verifyMD5Signature(const rpmts ts, char ** msg,
     rpmRC res;
     uint8_t * md5sum = NULL;
     size_t md5len = 0;
-    char * t, *md5;
-    const char *title = _("MD5 digest: ");
+    char *md5;
+    const char *title = _("MD5 digest:");
 
     assert(msg != NULL);
-    msg = NULL;
+    *msg = NULL;
 
     if (md5ctx == NULL || sig == NULL || dig == NULL) {
 	res = RPMRC_NOKEY;
@@ -1015,13 +1012,12 @@ verifyMD5Signature(const rpmts ts, char ** msg,
 	free(hex);
     } else {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%s)", title, rpmSigString(res), md5);
+	rasprintf(msg, "%s %s (%s)\n", title, rpmSigString(res), md5);
     }
     free(md5);
 
 exit:
     md5sum = _free(md5sum);
-    t = stpcpy(t, "\n");
     return res;
 }
 
