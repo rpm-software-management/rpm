@@ -1034,7 +1034,7 @@ exit:
 /**
  * Verify header immutable region SHA1 digest.
  * @param ts		transaction set
- * @retval msg		rbose success/failure text
+ * @retval msg		verbose success/failure text
  * @param sha1ctx
  * @return 		RPMRC_OK on success
  */
@@ -1042,23 +1042,21 @@ static rpmRC
 verifySHA1Signature(const rpmts ts, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
-    rpm_constdata_t sig = rpmtsSig(ts);
+    const char *sig = rpmtsSig(ts);
 #ifdef	NOTYET
     size_t siglen = rpmtsSiglen(ts);
 #endif
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     char * SHA1 = NULL;
-    char *t;
+    const char *title = _("Header SHA1 digest:");
 
-    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
-    t = *msg;
-
-    t = stpcpy(t, _("Header SHA1 digest: "));
+    assert(msg != NULL);
+    *msg = NULL;
 
     if (sha1ctx == NULL || sig == NULL || dig == NULL) {
 	res = RPMRC_NOKEY;
-	t = stpcpy(t, rpmSigString(res));
+	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
 
@@ -1069,22 +1067,15 @@ verifySHA1Signature(const rpmts ts, char ** msg,
 
     if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
 	res = RPMRC_FAIL;
-	t = stpcpy(t, rpmSigString(res));
-	t = stpcpy(t, " Expected(");
-	t = stpcpy(t, sig);
-	t = stpcpy(t, ") != (");
+	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
+		  rpmSigString(res), sig, SHA1 ? SHA1 : "(nil)");
     } else {
 	res = RPMRC_OK;
-	t = stpcpy(t, rpmSigString(res));
-	t = stpcpy(t, " (");
+	rasprintf(msg, "%s %s (%s)\n", title, rpmSigString(res), SHA1);
     }
-    if (SHA1)
-	t = stpcpy(t, SHA1);
-    t = stpcpy(t, ")");
 
 exit:
     SHA1 = _free(SHA1);
-    t = stpcpy(t, "\n");
     return res;
 }
 
