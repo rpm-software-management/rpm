@@ -8,9 +8,9 @@
 
 #include "debug.h"
 
-void argvPrint(const char * msg, ARGV_t argv, FILE * fp)
+void argvPrint(const char * msg, ARGV_const_t argv, FILE * fp)
 {
-    ARGV_t av;
+    ARGV_const_t av;
 
     if (fp == NULL) fp = stderr;
 

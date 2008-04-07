@@ -28,7 +28,7 @@ typedef	struct ARGI_s const * const ARGI_const_t;
  * @param argv		argv array
  * @param fp		output file handle (NULL uses stderr)
  */
-void argvPrint(const char * msg, ARGV_t argv, FILE * fp);
+void argvPrint(const char * msg, ARGV_const_t argv, FILE * fp);
 
 /** \ingroup rpmargv
  * Destroy an argi array.
