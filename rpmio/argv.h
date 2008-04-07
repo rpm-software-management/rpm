@@ -11,7 +11,6 @@
 extern "C" {
 #endif
 
-typedef	const char * ARGstr_t;
 typedef char ** ARGV_t;
 
 typedef	int * ARGint_t;
@@ -94,7 +93,7 @@ int argvSort(ARGV_t argv, int (*compar)(const void *, const void *));
  * @param compar	strcmp-like comparison function, or NULL for argvCmp()
  * @return		found string (NULL on failure)
  */
-ARGV_t argvSearch(ARGV_t argv, ARGstr_t val,
+ARGV_t argvSearch(ARGV_t argv, const char *val,
 		int (*compar)(const void *, const void *));
 
 /** \ingroup rpmargv
@@ -112,7 +111,7 @@ int argiAdd(ARGI_t * argip, int ix, int val);
  * @param val		string arg to append
  * @return		0 always
  */
-int argvAdd(ARGV_t * argvp, ARGstr_t val);
+int argvAdd(ARGV_t * argvp, const char *val);
 
 /** \ingroup rpmargv
  * Append one argv array to another.
