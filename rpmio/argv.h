@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 typedef	const char * ARGstr_t;
-typedef ARGstr_t * ARGV_t;
+typedef char ** ARGV_t;
 
 typedef	int * ARGint_t;
 struct ARGI_s {
