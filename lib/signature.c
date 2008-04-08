@@ -1091,22 +1091,20 @@ verifyRSASignature(rpmts ts, char ** msg,
     rpmRC res = RPMRC_OK;
     int xx;
     SECItem digest;
-    char *t;
+    const char *hdr, *signame = _("Unknown");;
+    int sigver;
 
-    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
-    t = *msg;
+    assert(msg != NULL);
+    *msg = NULL;
 
-    if (dig != NULL && dig->hdrmd5ctx == md5ctx)
-	t = stpcpy(t, _("Header "));
-    *t++ = 'V';
-    switch (sigp->version) {
-    case 3:	*t++ = '3';	break;
-    case 4:	*t++ = '4';	break;
-    }
+    hdr = (dig != NULL && dig->hdrmd5ctx == md5ctx) ? _("Header ") : "";
+    sigver = sigp !=NULL ? sigp->version : 0;
 
     if (md5ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
 	res = RPMRC_NOKEY;
     }
+    if (sigp == NULL)
+	goto exit;
 
     /* Verify the desired signature match. */
     switch (sigp->pubkey_algo) {
@@ -1122,18 +1120,18 @@ verifyRSASignature(rpmts ts, char ** msg,
     /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
-	t = stpcpy(t, " RSA/MD5");
+	signame = "RSA/MD5";
 	sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA1:
-	t = stpcpy(t, " RSA/SHA1");
+	signame = "RSA/SHA1";
 	sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_RIPEMD160:
 	res = RPMRC_NOKEY;
 	break;
     case PGPHASHALGO_MD2:
-	t = stpcpy(t, " RSA/MD2");
+	signame = "RSA/MD2";
 	sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_TIGER192:
@@ -1143,15 +1141,15 @@ verifyRSASignature(rpmts ts, char ** msg,
 	res = RPMRC_NOKEY;
 	break;
     case PGPHASHALGO_SHA256:
-	t = stpcpy(t, " RSA/SHA256");
+	signame = "RSA/SHA256";
 	sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA384:
-	t = stpcpy(t, " RSA/SHA384");
+	signame = "RSA/SHA384";
 	sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA512:
-	t = stpcpy(t, " RSA/SHA512");
+	signame = "RSA/SHA512";
 	sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
 	break;
     default:
@@ -1160,7 +1158,6 @@ verifyRSASignature(rpmts ts, char ** msg,
 	break;
     }
 
-    t = stpcpy(t, _(" signature: "));
     if (res != RPMRC_OK) {
 	goto exit;
     }
@@ -1210,14 +1207,15 @@ verifyRSASignature(rpmts ts, char ** msg,
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 
 exit:
-    t = stpcpy(t, rpmSigString(res));
     if (sigp != NULL) {
-	char * signid = pgpHexStr(sigp->signid+4, sizeof(sigp->signid)-4);
-	t = stpcpy(t, ", key ID ");
-	t = stpcpy(t, signid);
+	char *signid = pgpHexStr(sigp->signid+4, sizeof(sigp->signid)-4);
+	rasprintf(msg, _("%sV%d %s signature: %s, key ID %s\n"),
+		  hdr, sigver, signame, rpmSigString(res), signid);
 	free(signid);
+    } else {
+	rasprintf(msg, _("%sV%d %s signature: %s\n"),
+		  hdr, sigver, signame, rpmSigString(res));
     }
-    t = stpcpy(t, "\n");
     return res;
 }
 
