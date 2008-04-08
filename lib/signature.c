@@ -1127,18 +1127,9 @@ verifyRSASignature(rpmts ts, char ** msg,
 	signame = "RSA/SHA1";
 	sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
 	break;
-    case PGPHASHALGO_RIPEMD160:
-	res = RPMRC_NOKEY;
-	break;
     case PGPHASHALGO_MD2:
 	signame = "RSA/MD2";
 	sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_TIGER192:
-	res = RPMRC_NOKEY;
-	break;
-    case PGPHASHALGO_HAVAL_5_160:
-	res = RPMRC_NOKEY;
 	break;
     case PGPHASHALGO_SHA256:
 	signame = "RSA/SHA256";
@@ -1152,6 +1143,10 @@ verifyRSASignature(rpmts ts, char ** msg,
 	signame = "RSA/SHA512";
 	sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
 	break;
+    /* fallthrough for unsupported / unknown types */
+    case PGPHASHALGO_TIGER192:
+    case PGPHASHALGO_HAVAL_5_160:
+    case PGPHASHALGO_RIPEMD160:
     default:
 	res = RPMRC_NOKEY;
 	sigalg = SEC_OID_UNKNOWN;
