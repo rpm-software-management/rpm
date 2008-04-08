@@ -1319,38 +1319,20 @@ exit:
 
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 {
-    char * enc;
-    char * t;
-    size_t nt = 0;
-    char * val;
+    char *buf = NULL, *val = NULL;
+    char *enc = b64encode(s, ns, -1);
+    char *crc = b64crc(s, ns);
+    const char *valstr = pgpValStr(pgpArmorTbl, atype);
 
-    enc = b64encode(s, ns, -1);
-    if (enc != NULL) {
-    	nt = strlen(enc);
+    if (crc != NULL && enc != NULL) {
+	rasprintf(&buf, "%s=%s", enc, crc);
     }
+    free(crc);
+    free(enc);
 
-    nt += 512;	/* XXX slop for armor and crc */
-
-    val = t = xmalloc(nt + 1);
-    *t = '\0';
-    t = stpcpy(t, "-----BEGIN PGP ");
-    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
-    t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), VERSION);
-    t = stpcpy(t, " (NSS-3)\n\n");
-
-    if (enc != NULL) {
-	t = stpcpy(t, enc);
-	enc = _free(enc);
-	if ((enc = b64crc(s, ns)) != NULL) {
-	    *t++ = '=';
-	    t = stpcpy(t, enc);
-	    enc = _free(enc);
-	}
-    }
-	
-    t = stpcpy(t, "-----END PGP ");
-    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
-    t = stpcpy(t, "-----\n");
+    rasprintf(&val, "-----BEGIN PGP %s-----\nVersion: rpm-" VERSION " (NSS-3)\n\n"
+		    "%s-----END PGP %s-----\n",
+		    valstr, buf != NULL ? buf : "", valstr);
 
     return val;
 }
