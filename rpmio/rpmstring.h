@@ -77,6 +77,22 @@ static inline int rtoupper(int c)  {
     return ((rislower(c)) ? (c & ~('a' - 'A')) : c);
 }
 
+/**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static inline unsigned char rnibble(char c)
+{
+    if (c >= '0' && c <= '9')
+	return (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (c - 'A') + 10;
+    if (c >= 'a' && c <= 'f')
+	return (c - 'a') + 10;
+    return 0;
+}
+
 /** \ingroup rpmstring
  * Locale insensitive strcasecmp(3).
  */

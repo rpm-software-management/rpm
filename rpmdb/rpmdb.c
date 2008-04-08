@@ -87,22 +87,6 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
     return *sp;
 }
 
-/**
- * Convert hex to binary nibble.
- * @param c		hex character
- * @return		binary nibble
- */
-static inline unsigned char nibble(char c)
-{
-    if (c >= '0' && c <= '9')
-	return (c - '0');
-    if (c >= 'A' && c <= 'F')
-	return (c - 'A') + 10;
-    if (c >= 'a' && c <= 'f')
-	return (c - 'a') + 10;
-    return 0;
-}
-
 #ifdef	DYING
 /**
  * Check key for printable characters.
@@ -2574,7 +2558,7 @@ if (dbiByteSwapped(dbi) == 1)
 			s = rpmvals[i];
 			t = bin;
 			for (j = 0; j < 16; j++, t++, s += 2)
-			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 			key->data = bin;
 			key->size = 16;
 			break;
@@ -2977,7 +2961,7 @@ data->size = 0;
 			s = rpmvals[i];
 			t = bin;
 			for (j = 0; j < 16; j++, t++, s += 2)
-			    *t = (nibble(s[0]) << 4) | nibble(s[1]);
+			    *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 			key->data = bin;
 			key->size = 16;
 			break;

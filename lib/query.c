@@ -390,22 +390,6 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
     return ec;
 }
 
-/**
- * Convert hex to binary nibble.
- * @param c            hex character
- * @return             binary nibble
- */
-static inline unsigned char nibble(char c)
-{
-    if (c >= '0' && c <= '9')
-	return (c - '0');
-    if (c >= 'A' && c <= 'F')
-	return (c - 'A') + 10;
-    if (c >= 'a' && c <= 'f')
-	return (c - 'a') + 10;
-    return 0;
-}
-
 /* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
@@ -473,7 +457,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 
 	MD5[0] = '\0';
         for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
-            *t = (nibble(s[0]) << 4) | nibble(s[1]);
+            *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 	
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {
@@ -514,7 +498,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 
 	MD5[0] = '\0';
         for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
-            *t = (nibble(s[0]) << 4) | nibble(s[1]);
+            *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEMD5S, MD5, sizeof(MD5));
 	if (qva->qva_mi == NULL) {

@@ -1111,22 +1111,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     return NULL;
 }
 
-/**
- * Convert hex to binary nibble.
- * @param c		hex character
- * @return		binary nibble
- */
-static inline unsigned char nibble(char c)
-{
-    if (c >= '0' && c <= '9')
-	return (c - '0');
-    if (c >= 'A' && c <= 'F')
-	return (c - 'A') + 10;
-    if (c >= 'a' && c <= 'f')
-	return (c - 'a') + 10;
-    return 0;
-}
-
 #define	_fdupe(_fi, _data)	\
     if ((_fi)->_data != NULL)	\
 	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
@@ -1253,7 +1237,7 @@ if (fi->actions == NULL)
 		continue;
 	    }
 	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
-		*t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
+		*t = (rnibble(fmd5[0]) << 4) | rnibble(fmd5[1]);
 	}
 	fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
     }
