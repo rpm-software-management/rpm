@@ -381,7 +381,6 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     char * evr = NULL;
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
-    char * t;
     int xx;
 
     if (pkt == NULL || pktlen == 0)
@@ -405,19 +404,9 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
 
-    t = pgpHexStr(pubp->time, sizeof(pubp->time));
-
-    n = t = xmalloc(sizeof("gpg()")+8);
-    t = stpcpy( stpcpy( stpcpy(t, "gpg("), v+8), ")");
-
-    /* FIX: pubp->userid may be NULL */
-    u = t = xmalloc(sizeof("gpg()")+strlen(pubp->userid));
-    t = stpcpy( stpcpy( stpcpy(t, "gpg("), pubp->userid), ")");
-
-    evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
-    t = stpcpy(t, (pubp->version == 4 ? "4:" : "3:"));
-    t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
-
+    rasprintf(&n, "gpg(%s)", v+8);
+    rasprintf(&u, "gpg(%s)", pubp->userid ? pubp->userid : "none");
+    rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
     /* Check for pre-existing header. */
 
     /* Build pubkey header. */
