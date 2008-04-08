@@ -1242,19 +1242,11 @@ verifyDSASignature(rpmts ts, char ** msg,
     rpmRC res;
     int xx;
     SECItem digest;
-    char *t;
+    const char *hdr;
+    int sigver;
 
-    *msg = xmalloc(BUFSIZ); /* XXX FIXME, calculate string size instead */
-    t = *msg;
-
-    if (dig != NULL && dig->hdrsha1ctx == sha1ctx)
-	t = stpcpy(t, _("Header "));
-    *t++ = 'V';
-    switch (sigp->version) {
-    case 3:    *t++ = '3';     break;
-    case 4:    *t++ = '4';     break;
-    }
-    t = stpcpy(t, _(" DSA signature: "));
+    hdr = (dig != NULL && dig->hdrsha1ctx == sha1ctx) ? _("Header ") : "";
+    sigver = sigp !=NULL ? sigp->version : 0;
 
     if (sha1ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
 	res = RPMRC_NOKEY;
@@ -1313,14 +1305,16 @@ verifyDSASignature(rpmts ts, char ** msg,
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 
 exit:
-    t = stpcpy(t, rpmSigString(res));
     if (sigp != NULL) {
 	char *signid = pgpHexStr(sigp->signid+4, sizeof(sigp->signid)-4);
-	t = stpcpy(t, ", key ID ");
-	t = stpcpy(t, signid);
+	rasprintf(msg, _("%sV%d DSA signature: %s, key ID %s\n"),
+		  hdr, sigver, rpmSigString(res), signid);
 	free(signid);
+    } else {
+	rasprintf(msg, _("%sV%d DSA signature: %s\n"),
+		  hdr, sigver, rpmSigString(res));
     }
-    t = stpcpy(t, "\n");
+
     return res;
 }
 
