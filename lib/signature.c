@@ -1245,6 +1245,9 @@ verifyDSASignature(rpmts ts, char ** msg,
     const char *hdr;
     int sigver;
 
+    assert(msg != NULL);
+    *msg = NULL;
+
     hdr = (dig != NULL && dig->hdrsha1ctx == sha1ctx) ? _("Header ") : "";
     sigver = sigp !=NULL ? sigp->version : 0;
 
@@ -1314,7 +1317,6 @@ exit:
 	rasprintf(msg, _("%sV%d DSA signature: %s\n"),
 		  hdr, sigver, rpmSigString(res));
     }
-
     return res;
 }
 
