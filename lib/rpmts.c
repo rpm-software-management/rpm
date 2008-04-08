@@ -403,6 +403,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 	goto exit;
 
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
+    r = pgpHexStr(pubp->time, sizeof(pubp->time));
 
     rasprintf(&n, "gpg(%s)", v+8);
     rasprintf(&u, "gpg(%s)", pubp->userid ? pubp->userid : "none");
