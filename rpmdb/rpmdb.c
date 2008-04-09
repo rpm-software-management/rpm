@@ -2669,8 +2669,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
     DBC * dbcursor = NULL;
-    DBT * key = alloca(sizeof(*key));
-    DBT * data = alloca(sizeof(*data));
+    DBT * key;
+    DBT * data;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
@@ -2688,8 +2688,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     if (db == NULL)
 	return 0;
 
-    memset(key, 0, sizeof(*key));
-    memset(data, 0, sizeof(*data));
+    key = xcalloc(1, sizeof(*key));
+    data = xcalloc(1, sizeof(*data));
 
 #ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
     xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
@@ -3046,6 +3046,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 exit:
     (void) unblockSignals(db, &signalMask);
+    free(key);
+    free(data);
 
     return ret;
 }
