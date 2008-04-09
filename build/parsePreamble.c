@@ -516,11 +516,11 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		spec->buildRoot = buildRoot;
 		macro = NULL;
 	    } else {
-		const char * specURL = field;
+		const char * specPath = field;
 
 		buildRoot = _free(buildRoot);
 		if (*field == '\0') field = "/";
-		buildRoot = rpmGenPath(spec->rootDir, specURL, NULL);
+		buildRoot = rpmGenPath(spec->rootDir, specPath, NULL);
 		spec->buildRoot = buildRoot;
 		field = (char *) buildRoot;
 	    }
