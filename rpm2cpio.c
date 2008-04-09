@@ -66,17 +66,14 @@ int main(int argc, char *argv[])
 
     /* Retrieve type of payload compression. */
     {	const char * payload_compressor = NULL;
-	char * t;
 
 	if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    (rpm_data_t *) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
-	rpmio_flags = t = alloca(sizeof("r.gzdio"));
-	*t++ = 'r';
 	if (!strcmp(payload_compressor, "gzip"))
-	    t = stpcpy(t, ".gzdio");
+	    rpmio_flags = "r.gzdio";
 	if (!strcmp(payload_compressor, "bzip2"))
-	    t = stpcpy(t, ".bzdio");
+	    rpmio_flags = "r.bzdio";
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
