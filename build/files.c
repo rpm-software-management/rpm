@@ -63,8 +63,8 @@ typedef struct FileListRec_s {
 #define	fl_size	fl_st.st_size
 #define	fl_mtime fl_st.st_mtime
 
-    char *diskURL;		/* get file from here       */
-    char *fileURL;		/* filename in cpio archive */
+    char *diskPath;		/* get file from here       */
+    char *cpioPath;		/* filename in cpio archive */
     const char *uname;
     const char *gname;
     unsigned	flags;
@@ -968,8 +968,8 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
  */
 static int compareFileListRecs(const void * ap, const void * bp)	
 {
-    const char *a = ((FileListRec)ap)->fileURL;
-    const char *b = ((FileListRec)bp)->fileURL;
+    const char *a = ((FileListRec)ap)->cpioPath;
+    const char *b = ((FileListRec)bp)->cpioPath;
     return strcmp(a, b);
 }
 
@@ -1062,7 +1062,7 @@ static void genCpioListAndHeader(FileList fl,
 
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
-	    !strcmp(flp->fileURL, flp[1].fileURL)) {
+	    !strcmp(flp->cpioPath, flp[1].cpioPath)) {
 
 	    /* Two entries for the same file found, merge the entries. */
 	    /* Note that an %exclude is a duplication of a file reference */
@@ -1072,7 +1072,7 @@ static void genCpioListAndHeader(FileList fl,
 
 	    if (!(flp[1].flags & RPMFILE_EXCLUDE))
 		rpmlog(RPMLOG_WARNING, _("File listed twice: %s\n"),
-			flp->fileURL);
+			flp->cpioPath);
    
 	    /* file mode */
 	    if (S_ISDIR(flp->fl_mode)) {
@@ -1115,10 +1115,10 @@ static void genCpioListAndHeader(FileList fl,
 	if (flp->flags & RPMFILE_EXCLUDE) continue;
 
 	/* Omit '/' and/or URL prefix, leave room for "./" prefix */
-	apathlen += (strlen(flp->fileURL) - skipLen + (_addDotSlash ? 3 : 1));
+	apathlen += (strlen(flp->cpioPath) - skipLen + (_addDotSlash ? 3 : 1));
 
 	/* Leave room for both dirname and basename NUL's */
-	dpathlen += (strlen(flp->diskURL) + 2);
+	dpathlen += (strlen(flp->diskPath) + 2);
 
 	/*
 	 * Make the header, the OLDFILENAMES will get converted to a 
@@ -1126,7 +1126,7 @@ static void genCpioListAndHeader(FileList fl,
 	 * disk.
 	 */
 	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			       &(flp->fileURL), 1);
+			       &(flp->cpioPath), 1);
 
       if (sizeof(flp->fl_size) != sizeof(rpm_off_t)) {
 	rpm_off_t psize = (rpm_off_t)flp->fl_size;
@@ -1193,7 +1193,7 @@ static void genCpioListAndHeader(FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) rpmDoDigest(PGPHASHALGO_MD5, flp->diskURL, 1, 
+	    (void) rpmDoDigest(PGPHASHALGO_MD5, flp->diskPath, 1, 
 			       (unsigned char *)buf, NULL);
 	s = buf;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
@@ -1201,13 +1201,13 @@ static void genCpioListAndHeader(FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
-	    buf[readlink(flp->diskURL, buf, BUFSIZ)] = '\0';
+	    buf[readlink(flp->diskPath, buf, BUFSIZ)] = '\0';
 	    if (fl->buildRoot) {
 		if (buf[0] == '/' && strcmp(fl->buildRoot, "/") &&
 		    !strncmp(buf, fl->buildRoot, strlen(fl->buildRoot))) {
 		     rpmlog(RPMLOG_ERR,
 				_("Symlink points to BuildRoot: %s -> %s\n"),
-				flp->fileURL, buf);
+				flp->cpioPath, buf);
 		    fl->processingFailed = 1;
 		}
 	    }
@@ -1223,7 +1223,7 @@ static void genCpioListAndHeader(FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
 			       &(flp->verifyFlags), 1);
 	
-	if (!isSrc && isDoc(fl, flp->fileURL))
+	if (!isSrc && isDoc(fl, flp->cpioPath))
 	    flp->flags |= RPMFILE_DOC;
 	/* XXX Should directories have %doc/%config attributes? (#14531) */
 	if (S_ISDIR(flp->fl_mode))
@@ -1293,7 +1293,7 @@ static void genCpioListAndHeader(FileList fl,
 
 	/* Skip (possible) duplicate file entries, use last entry info. */
 	while (((flp - fl->fileList) < (fl->fileListRecsUsed - 1)) &&
-		!strcmp(flp->fileURL, flp[1].fileURL))
+		!strcmp(flp->cpioPath, flp[1].cpioPath))
 	    flp++;
 
 	if (flp->flags & RPMFILE_EXCLUDE) {
@@ -1301,14 +1301,14 @@ static void genCpioListAndHeader(FileList fl,
 	    continue;
 	}
 
-	if ((fnlen = strlen(flp->diskURL) + 1) > fi->fnlen)
+	if ((fnlen = strlen(flp->diskPath) + 1) > fi->fnlen)
 	    fi->fnlen = fnlen;
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
 /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
-	d = stpcpy(d, flp->diskURL);
+	d = stpcpy(d, flp->diskPath);
 
 	/* Make room for the dirName NUL, find start of baseName. */
 	for (b = d; b > fi->dnl[fi->dil[i]] && *b != '/'; b--)
@@ -1322,7 +1322,7 @@ static void genCpioListAndHeader(FileList fl,
 	fi->apath[i] = a;
 	if (_addDotSlash)
 	    a = stpcpy(a, "./");
-	a = stpcpy(a, (flp->fileURL + skipLen));
+	a = stpcpy(a, (flp->cpioPath + skipLen));
 	a++;		/* skip apath NUL */
 
 	if (flp->flags & RPMFILE_GHOST) {
@@ -1349,8 +1349,8 @@ static FileListRec freeFileList(FileListRec fileList,
 			int count)
 {
     while (count--) {
-	fileList[count].diskURL = _free(fileList[count].diskURL);
-	fileList[count].fileURL = _free(fileList[count].fileURL);
+	fileList[count].diskPath = _free(fileList[count].diskPath);
+	fileList[count].cpioPath = _free(fileList[count].cpioPath);
 	fileList[count].langs = _free(fileList[count].langs);
     }
     fileList = _free(fileList);
@@ -1494,8 +1494,8 @@ static rpmRC addFile(FileList fl, const char * diskURL,
 	flp->fl_uid = fileUid;
 	flp->fl_gid = fileGid;
 
-	flp->fileURL = xstrdup(fileURL);
-	flp->diskURL = xstrdup(diskURL);
+	flp->cpioPath = xstrdup(fileURL);
+	flp->diskPath = xstrdup(diskURL);
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
@@ -2170,14 +2170,14 @@ int processSourceFiles(rpmSpec spec)
 
 	(void) urlPath(diskURL, &diskPath);
 
-	flp->diskURL = xstrdup(diskURL);
+	flp->diskPath = xstrdup(diskURL);
 	diskPath = strrchr(diskPath, '/');
 	if (diskPath)
 	    diskPath++;
 	else
 	    diskPath = diskURL;
 
-	flp->fileURL = xstrdup(diskPath);
+	flp->cpioPath = xstrdup(diskPath);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
 	if (stat(diskURL, &flp->fl_st)) {
