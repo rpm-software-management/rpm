@@ -87,23 +87,6 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
     return *sp;
 }
 
-#ifdef	DYING
-/**
- * Check key for printable characters.
- * @param ptr		key value pointer
- * @param len		key value length
- * @return		1 if only ASCII, 0 otherwise.
- */
-static int printable(const void * ptr, size_t len)	
-{
-    const char * s = ptr;
-    int i;
-    for (i = 0; i < len; i++, s++)
-	if (!(*s >= ' ' && *s <= '~')) return 0;
-    return 1;
-}
-#endif
-
 /**
  * Return dbi index used for rpm tag.
  * @param rpmtag	rpm header tag
@@ -2428,14 +2411,6 @@ memset(data, 0, sizeof(*data));
 	      "rpmdbRemove", hdrNum);
 	return 1;
     }
-
-#ifdef	DYING
-    /* Add remove transaction id to header. */
-    if (rid != 0 && rid != -1) {
-	rpm_tid_t tid = rid;
-	(void) headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
-    }
-#endif
 
     {	
 	char *nevra = headerGetNEVRA(h, NULL);
