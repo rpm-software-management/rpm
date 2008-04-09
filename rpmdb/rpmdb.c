@@ -208,7 +208,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	return NULL;
 
     /* Is this index already open ? */
-/* FIX: db->_dbi may be NULL */
+    /* FIX: db->_dbi may be NULL */
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 
@@ -518,7 +518,7 @@ static int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
     int num = set->count;
     int numCopied = 0;
 
-assert(set->count > 0);
+    assert(set->count > 0);
     if (nrecs > 1 && !sorted)
 	qsort(recs, nrecs, recsize, hdrNumCmp);
 
@@ -640,8 +640,9 @@ int rpmdbCheckTerminate(int terminate)
 int rpmdbCheckSignals(void)
 {
     if (rpmdbCheckTerminate(0)) {
-/* sigset_t is abstract type */
-	rpmlog(RPMLOG_DEBUG, "Exiting on signal(0x%lx) ...\n", *((unsigned long *)&rpmsqCaught));
+	/* sigset_t is abstract type */
+	rpmlog(RPMLOG_DEBUG, "Exiting on signal(0x%lx) ...\n", 
+		*((unsigned long *)&rpmsqCaught));
 	exit(EXIT_FAILURE);
     }
     return 0;
@@ -1101,9 +1102,10 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	dbcursor = NULL;
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
-key->data = (void *) baseName;
-key->size = strlen(baseName);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+	key->data = (void *) baseName;
+	key->size = strlen(baseName);
+	if (key->size == 0) 
+	    key->size++;	/* XXX "/" fixup. */
 
 	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 	if (rc > 0) {
@@ -1112,8 +1114,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		rc, (char*)key->data, rpmTagGetName(dbi->dbi_rpmtag));
 	}
 
-if (rc == 0)
-(void) dbt2set(dbi, data, &allMatches);
+	if (rc == 0)
+	    (void) dbt2set(dbi, data, &allMatches);
 
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
@@ -1192,9 +1194,9 @@ if (rc == 0)
 /* XXX python/upgrade.c, install.c, uninstall.c */
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
-DBC * dbcursor = NULL;
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
+    DBC * dbcursor = NULL;
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     dbiIndex dbi;
     int rc;
     int xx;
@@ -1202,15 +1204,15 @@ DBT * data = alloca(sizeof(*data));
     if (db == NULL)
 	return 0;
 
-memset(key, 0, sizeof(*key));
-memset(data, 0, sizeof(*data));
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
 
     dbi = dbiOpen(db, RPMTAG_NAME, 0);
     if (dbi == NULL)
 	return 0;
 
-key->data = (void *) name;
-key->size = strlen(name);
+    key->data = (void *) name;
+    key->size = strlen(name);
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
@@ -1269,8 +1271,8 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
     int rc;
     int i;
 
-key->data = (void *) name;
-key->size = strlen(name);
+    key->data = (void *) name;
+    key->size = strlen(name);
 
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 
@@ -1938,8 +1940,8 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
     int rc = 0;
     if (mi == NULL)
 	return 0;
-/* XXX forward linkage prevents rpmtsLink */
-mi->mi_ts = ts;
+    /* XXX forward linkage prevents rpmtsLink */
+    mi->mi_ts = ts;
     mi->mi_hdrchk = hdrchk;
     return rc;
 }
@@ -1984,16 +1986,16 @@ top:
     uhlen = 0;
 
     do {
-union _dbswap mi_offset;
+	union _dbswap mi_offset;
 
 	if (mi->mi_set) {
 	    if (!(mi->mi_setx < mi->mi_set->count))
 		return NULL;
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
-mi_offset.ui = mi->mi_offset;
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
+	    mi_offset.ui = mi->mi_offset;
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
 	    keyp = &mi_offset;
 	    keylen = sizeof(mi_offset.ui);
 	} else {
@@ -2022,8 +2024,8 @@ if (dbiByteSwapped(dbi) == 1)
 	     */
 	    if (keyp && mi->mi_setx && rc == 0) {
 		memcpy(&mi_offset, keyp, sizeof(mi_offset.ui));
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
+	    if (dbiByteSwapped(dbi) == 1)
+    		_DBSWAP(mi_offset);
 		mi->mi_offset = mi_offset.ui;
 	    }
 
@@ -2298,16 +2300,19 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	} else {
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
-key->data = (void *) keyp;
-key->size = keylen;
-if (key->data && key->size == 0) key->size = strlen((char *)key->data);
-if (key->data && key->size == 0) key->size++;	/* XXX "/" fixup. */
+	key->data = (void *) keyp;
+	key->size = keylen;
+	if (key->data && key->size == 0) 
+	    key->size = strlen((char *)key->data);
+	if (key->data && key->size == 0) 
+	    key->size++;	/* XXX "/" fixup. */
 
 	    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 	    if (rc > 0) {
 		rpmlog(RPMLOG_ERR,
 			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, (key->data ? (char *)key->data : "???"), rpmTagGetName(dbi->dbi_rpmtag));
+			rc, (key->data ? (char *)key->data : "???"), 
+			rpmTagGetName(dbi->dbi_rpmtag));
 	    }
 
 	    /* Join keys need to be native endian internally. */
@@ -2332,7 +2337,7 @@ if (key->data && key->size == 0) key->size++;	/* XXX "/" fixup. */
 	case RPMDBI_PACKAGES:
 	  { union _dbswap *k;
 
-assert(keylen == sizeof(k->ui));		/* xxx programmer error */
+	    assert(keylen == sizeof(k->ui));	/* xxx programmer error */
 	    k = xmalloc(sizeof(*k));
 	    memcpy(k, keyp, keylen);
 	    if (dbiByteSwapped(dbi) == 1)
@@ -2373,7 +2378,7 @@ assert(keylen == sizeof(k->ui));		/* xxx programmer error */
     mi->mi_ts = NULL;
     mi->mi_hdrchk = NULL;
 
-return mi;
+    return mi;
 }
 
 /* XXX psm.c */
@@ -2381,10 +2386,10 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmts ts,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
-DBC * dbcursor = NULL;
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
-union _dbswap mi_offset;
+    DBC * dbcursor = NULL;
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
+    union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     Header h;
@@ -2395,8 +2400,8 @@ union _dbswap mi_offset;
     if (db == NULL)
 	return 0;
 
-memset(key, 0, sizeof(*key));
-memset(data, 0, sizeof(*data));
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
 
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
@@ -2448,9 +2453,9 @@ memset(data, 0, sizeof(*data));
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 	      
-mi_offset.ui = hdrNum;
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
+		mi_offset.ui = hdrNum;
+		if (dbiByteSwapped(dbi) == 1)
+    		    _DBSWAP(mi_offset);
 		key->data = &mi_offset;
 		key->size = sizeof(mi_offset.ui);
 
@@ -2575,12 +2580,16 @@ if (dbiByteSwapped(dbi) == 1)
 		 * than to do things correctly.
 		 */
 
-/* XXX with duplicates, an accurate data value and DB_GET_BOTH is needed. */
-
+		/* 
+ 		 * XXX with duplicates, an accurate data value and 
+ 		 * DB_GET_BOTH is needed. 
+ 		 * */
 		set = NULL;
 
-if (key->size == 0) key->size = strlen((char *)key->data);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+		if (key->size == 0) 
+		    key->size = strlen((char *)key->data);
+		if (key->size == 0) 
+		    key->size++;	/* XXX "/" fixup. */
  
 		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 		if (rc == 0) {			/* success */
@@ -2655,9 +2664,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	     rpmts ts,
 	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
-DBC * dbcursor = NULL;
-DBT * key = alloca(sizeof(*key));
-DBT * data = alloca(sizeof(*data));
+    DBC * dbcursor = NULL;
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
@@ -2675,8 +2684,8 @@ DBT * data = alloca(sizeof(*data));
     if (db == NULL)
 	return 0;
 
-memset(key, 0, sizeof(*key));
-memset(data, 0, sizeof(*data));
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
 
 #ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
     xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
@@ -2796,13 +2805,13 @@ memset(data, 0, sizeof(*data));
 		    continue;
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
-mi_offset.ui = hdrNum;
-if (dbiByteSwapped(dbi) == 1)
-    _DBSWAP(mi_offset);
-key->data = (void *) &mi_offset;
-key->size = sizeof(mi_offset.ui);
-data->data = headerUnload(h);
-data->size = headerSizeof(h, HEADER_MAGIC_NO);
+		mi_offset.ui = hdrNum;
+		if (dbiByteSwapped(dbi) == 1)
+    		    _DBSWAP(mi_offset);
+		key->data = (void *) &mi_offset;
+		key->size = sizeof(mi_offset.ui);
+		data->data = headerUnload(h);
+		data->size = headerSizeof(h, HEADER_MAGIC_NO);
 
 		/* Check header digest/signature on blob export. */
 		if (hdrchk && ts) {
@@ -2821,8 +2830,8 @@ data->size = headerSizeof(h, HEADER_MAGIC_NO);
 		    xx = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 		    xx = dbiSync(dbi, 0);
 		}
-data->data = _free(data->data);
-data->size = 0;
+		data->data = _free(data->data);
+		data->size = 0;
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
@@ -2971,12 +2980,17 @@ data->size = 0;
 		    printed++;
 		}
 
-/* XXX with duplicates, an accurate data value and DB_GET_BOTH is needed. */
+		/* 
+ 		 * XXX with duplicates, an accurate data value and 
+ 		 * DB_GET_BOTH is needed. 
+ 		 */
 
 		set = NULL;
 
-if (key->size == 0) key->size = strlen((char *)key->data);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+		if (key->size == 0) 
+		    key->size = strlen((char *)key->data);
+		if (key->size == 0) 
+		    key->size++;	/* XXX "/" fixup. */
 
 		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 		if (rc == 0) {			/* success */
@@ -3061,8 +3075,8 @@ static int skipDir(const char * dn)
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
 		    int numItems)
 {
-DBT * key;
-DBT * data;
+    DBT * key;
+    DBT * data;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi;
@@ -3076,17 +3090,18 @@ DBT * data;
     if (mi == NULL)	/* XXX should  never happen */
 	return 1;
 
-key = &mi->mi_key;
-data = &mi->mi_data;
+    key = &mi->mi_key;
+    data = &mi->mi_data;
 
     /* Gather all installed headers with matching basename's. */
     for (i = 0; i < numItems; i++) {
 
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
 
-key->data = (void *) fpList[i].baseName;
-key->size = strlen((char *)key->data);
-if (key->size == 0) key->size++;	/* XXX "/" fixup. */
+	key->data = (void *) fpList[i].baseName;
+	key->size = strlen((char *)key->data);
+	if (key->size == 0) 
+	    key->size++;	/* XXX "/" fixup. */
 
 	if (skipDir(fpList[i].entry->dirName))
 	    continue;
