@@ -1358,7 +1358,7 @@ static FileListRec freeFileList(FileListRec fileList,
 }
 
 /* forward ref */
-static rpmRC recurseDir(FileList fl, const char * diskURL);
+static rpmRC recurseDir(FileList fl, const char * diskPath);
 
 /**
  * Add a file to the package manifest.
@@ -1553,10 +1553,10 @@ static rpmRC addFile(FileList fl, const char * diskURL,
 /**
  * Add directory (and all of its files) to the package manifest.
  * @param fl		package file tree walk data
- * @param diskURL	path to file
+ * @param diskPath	path to file
  * @return		RPMRC_OK on success
  */
-static rpmRC recurseDir(FileList fl, const char * diskURL)
+static rpmRC recurseDir(FileList fl, const char * diskPath)
 {
     char * ftsSet[2];
     FTS * ftsp;
@@ -1567,7 +1567,7 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
     fl->inFtw = 1;  /* Flag to indicate file has buildRoot prefixed */
     fl->isDir = 1;  /* Keep it from following myftw() again         */
 
-    ftsSet[0] = (char *) diskURL;
+    ftsSet[0] = (char *) diskPath;
     ftsSet[1] = NULL;
     ftsp = Fts_open(ftsSet, myFtsOpts, NULL);
     while ((fts = Fts_read(ftsp)) != NULL) {
@@ -1616,7 +1616,7 @@ static rpmRC recurseDir(FileList fl, const char * diskURL)
 static rpmRC processMetadataFile(Package pkg, FileList fl, 
 				 const char * fileName, rpmTag tag)
 {
-    const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
+    const char * buildDir = "%{_builddir}/%{?buildsubdir}/";
     char * fn = NULL;
     char * apkt = NULL;
     uint8_t * pkt = NULL;
@@ -1629,7 +1629,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	fn = rpmGenPath(fl->buildRoot, NULL, fileName);
 	absolute = 1;
     } else
-	fn = rpmGenPath(buildURL, NULL, fileName);
+	fn = rpmGenPath(buildDir, NULL, fileName);
 
     switch (tag) {
     default:
