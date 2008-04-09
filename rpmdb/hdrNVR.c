@@ -56,40 +56,35 @@ int headerNEVRA(Header h, const char **np,
 
 char * headerGetNEVR(Header h, const char ** np)
 {
-    const char * n, * v, * r;
-    char * NVR, * t;
+    const char * n;
+    char * evr, *nevr = NULL;
 
-    (void) headerNVR(h, &n, &v, &r);
-    NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
+    evr = headerGetEVR(h, &n);
+    rasprintf(&nevr, "%s-%s", n, evr);
+    free(evr);
     if (np)
 	*np = n;
-    return NVR;
+    return nevr;
 }
 
 char * headerGetNEVRA(Header h, const char ** np)
 {
-    const char * n, * v, * r, * a;
-    char * NVRA, * t;
-    int xx;
+    const char *n, *a;
+    char *nevr, *nevra = NULL;
 
-    (void) headerNVR(h, &n, &v, &r);
-    xx = headerGetEntry(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
-    NVRA = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + strlen(a) + sizeof("--."));
-    t = stpcpy(t, n);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, v);
-    t = stpcpy(t, "-");
-    t = stpcpy(t, r);
-    t = stpcpy(t, ".");
-    t = stpcpy(t, a);
+    nevr = headerGetNEVR(h, &n);
+    headerGetEntry(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
+    /* XXX gpg-pubkey packages have no arch, urgh... */
+    if (a) {
+    	rasprintf(&nevra, "%s.%s", nevr, a);
+	free(nevr);
+    } else {
+	nevra = nevr;
+    }
+
     if (np)
 	*np = n;
-    return NVRA;
+    return nevra;
 }
 
 char * headerGetEVR(Header h, const char ** np)
