@@ -254,26 +254,15 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 
 rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
 {
-    HGE_t hge = (HGE_t) headerGetEntryMinMemory;
     rpmds ds = NULL;
     const char * Type;
-    const char * n, * v, * r;
-    int32_t * ep;
+    const char * n;
     char *evr;
-    int xx;
 
     if (dsType(tagN, &Type, NULL, NULL))
 	goto exit;
 
-    xx = headerNVR(h, &n, &v, &r);
-    ep = NULL;
-    xx = hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *)&ep, NULL);
-
-    if (ep) {
-	rasprintf(&evr, "%d:%s-%s", *ep, v, r);
-    } else {
-	rasprintf(&evr, "%s-%s", v, r);
-    }
+    evr = headerGetEVR(h, &n);
 
     ds = xcalloc(1, sizeof(*ds));
     ds->h = NULL;
@@ -975,11 +964,8 @@ exit:
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char * pkgN, * v, * r;
-    int32_t * epoch;
-    const char * pkgEVR;
-    char * t;
+    const char * pkgN;
+    char * pkgEVR;
     rpmsenseFlags pkgFlags = RPMSENSE_EQUAL;
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
@@ -992,24 +978,14 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	return rc;
 
     /* Get package information from header */
-    (void) headerNVR(h, &pkgN, &v, &r);
-
-    t = alloca(21 + strlen(v) + 1 + strlen(r) + 1);
-    pkgEVR = t;
-    *t = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epoch, NULL)) {
-	sprintf(t, "%d:", *epoch);
-	while (*t != '\0')
-	    t++;
-    }
-    (void) stpcpy( stpcpy( stpcpy(t, v) , "-") , r);
-
+    pkgEVR = headerGetEVR(h, &pkgN);
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
 	if (nopromote)
 	    (void) rpmdsSetNoPromote(pkg, nopromote);
 	rc = rpmdsCompare(pkg, req);
 	pkg = rpmdsFree(pkg);
     }
+    free(pkgEVR);
 
     return rc;
 }

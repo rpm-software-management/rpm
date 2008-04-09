@@ -145,10 +145,8 @@ void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    const char *name, *version, *release;
-    int32_t * epoch;
-    const char *pEVR;
-    char *p;
+    const char *name;
+    char *pEVR;
     rpmsenseFlags pFlags = RPMSENSE_EQUAL;
     const char ** provides = NULL;
     const char ** providesEVR = NULL;
@@ -159,17 +157,9 @@ void providePackageNVR(Header h)
     int bingo = 1;
 
     /* Generate provides for this package name-version-release. */
-    xx = headerNVR(h, &name, &version, &release);
-    if (!(name && version && release))
+    pEVR = headerGetEVR(h, &name);
+    if (!(name && pEVR))
 	return;
-    pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
-    *p = '\0';
-    if (hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epoch, NULL)) {
-	sprintf(p, "%d:", *epoch);
-	while (*p != '\0')
-	    p++;
-    }
-    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
     /*
      * Rpm prior to 3.0.3 does not have versioned provides.
@@ -219,6 +209,7 @@ exit:
 	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 		&pEVR, 1);
     }
+    free(pEVR);
 }
 
 void legacyRetrofit(Header h)
