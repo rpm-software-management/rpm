@@ -1767,7 +1767,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	FILE * f;
 	FD_t fd;
 
-	/* XXX W2DO? */
+	/* XXX W2DO? urlPath might be useful here. */
 	if (*pkg->fileFile == '/') {
 	    ffn = rpmGetPath(pkg->fileFile, NULL);
 	} else {
@@ -2146,38 +2146,34 @@ int processSourceFiles(rpmSpec spec)
     /* The first source file is the spec file */
     x = 0;
     for (fp = files; *fp != NULL; fp++) {
-	const char * diskURL, *diskPath;
+	const char *diskPath;
 	FileListRec flp;
 
-	diskURL = *fp;
-	SKIPSPACE(diskURL);
-	if (! *diskURL)
+	diskPath = *fp;
+	SKIPSPACE(diskPath);
+	if (! *diskPath)
 	    continue;
 
 	flp = &fl.fileList[x];
 
 	flp->flags = isSpec ? RPMFILE_SPECFILE : 0;
 	/* files with leading ! are no source files */
-	if (*diskURL == '!') {
+	if (*diskPath == '!') {
 	    flp->flags |= RPMFILE_GHOST;
-	    diskURL++;
+	    diskPath++;
 	}
 
-	(void) urlPath(diskURL, &diskPath);
-
-	flp->diskPath = xstrdup(diskURL);
+	flp->diskPath = xstrdup(diskPath);
 	diskPath = strrchr(diskPath, '/');
 	if (diskPath)
 	    diskPath++;
-	else
-	    diskPath = diskURL;
 
 	flp->cpioPath = xstrdup(diskPath);
 	flp->verifyFlags = RPMVERIFY_ALL;
 
-	if (stat(diskURL, &flp->fl_st)) {
+	if (stat(diskPath, &flp->fl_st)) {
 	    rpmlog(RPMLOG_ERR, _("Bad file: %s: %s\n"),
-		diskURL, strerror(errno));
+		diskPath, strerror(errno));
 	    fl.processingFailed = 1;
 	}
 
@@ -2200,7 +2196,7 @@ int processSourceFiles(rpmSpec spec)
 	fl.totalFileSize += flp->fl_size;
 	
 	if (! (flp->uname && flp->gname)) {
-	    rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), diskURL);
+	    rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), diskPath);
 	    fl.processingFailed = 1;
 	}
 
