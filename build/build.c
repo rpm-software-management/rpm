@@ -49,11 +49,9 @@ static void doRmSource(rpmSpec spec)
  */
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, int test)
 {
-    const char * rootURL = spec->rootURL;
-    const char * rootDir;
+    const char * rootDir = spec->rootURL;
     char *scriptName = NULL;
-    char * buildDirURL = rpmGenPath(rootURL, "%{_builddir}", "");
-    const char * buildScript;
+    char * buildDir = rpmGenPath(rootDir, "%{_builddir}", "");
     char * buildCmd = NULL;
     char * buildTemplate = NULL;
     char * buildPost = NULL;
@@ -63,7 +61,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
     int argc = 0;
     const char **argv = NULL;
     FILE * fp = NULL;
-    urlinfo u = NULL;
 
     FD_t fd;
     FD_t xfd;
@@ -129,7 +126,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
 	goto exit;
     }
     
-    if (rpmMkTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
+    if (rpmMkTempFile(rootDir, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	rc = RPMRC_FAIL;
 	goto exit;
@@ -145,10 +142,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
 	goto exit;
     }
     
-    (void) urlPath(rootURL, &rootDir);
     if (*rootDir == '\0') rootDir = "/";
-
-    (void) urlPath(scriptName, &buildScript);
 
     buildTemplate = rpmExpand(mTemplate, NULL);
     buildPost = rpmExpand(mPost, NULL);
@@ -174,34 +168,13 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
     }
     
 if (_build_debug)
-fprintf(stderr, "*** rootURL %s buildDirURL %s\n", rootURL, buildDirURL);
-    if (buildDirURL && buildDirURL[0] != '/' &&
-	(urlSplit(buildDirURL, &u) != 0)) {
+fprintf(stderr, "*** rootDir %s buildDir %s\n", rootDir, buildDir);
+    if (buildDir && buildDir[0] != '/') {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    if (u != NULL) {
-	switch (u->urltype) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-if (_build_debug)
-fprintf(stderr, "*** addMacros\n");
-	    addMacro(spec->macros, "_remsh", NULL, "%{__remsh}", RMIL_SPEC);
-	    addMacro(spec->macros, "_remhost", NULL, u->host, RMIL_SPEC);
-	    if (strcmp(rootDir, "/"))
-		addMacro(spec->macros, "_remroot", NULL, rootDir, RMIL_SPEC);
-	    break;
-	case URL_IS_UNKNOWN:
-	case URL_IS_DASH:
-	case URL_IS_PATH:
-	case URL_IS_HKP:
-	default:
-	    break;
-	}
-    }
 
-    buildCmd = rpmExpand(mCmd, " ", buildScript, NULL);
+    buildCmd = rpmExpand(mCmd, " ", scriptName, NULL);
     (void) poptParseArgvString(buildCmd, &argc, &argv);
 
     rpmlog(RPMLOG_NOTICE, _("Executing(%s): %s\n"), name, buildCmd);
@@ -231,32 +204,11 @@ exit:
 	    (void) unlink(scriptName);
 	scriptName = _free(scriptName);
     }
-    if (u != NULL) {
-	switch (u->urltype) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-if (_build_debug)
-fprintf(stderr, "*** delMacros\n");
-	    delMacro(spec->macros, "_remsh");
-	    delMacro(spec->macros, "_remhost");
-	    if (strcmp(rootDir, "/"))
-		delMacro(spec->macros, "_remroot");
-	    break;
-	case URL_IS_UNKNOWN:
-	case URL_IS_DASH:
-	case URL_IS_PATH:
-	case URL_IS_HKP:
-	default:
-	    break;
-	}
-	u = urlFree(u);
-    }
     argv = _free(argv);
     buildCmd = _free(buildCmd);
     buildTemplate = _free(buildTemplate);
     buildPost = _free(buildPost);
-    buildDirURL = _free(buildDirURL);
+    buildDir = _free(buildDir);
 
     return rc;
 }
