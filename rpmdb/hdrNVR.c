@@ -90,18 +90,18 @@ char * headerGetNEVRA(Header h, const char ** np)
 char * headerGetEVR(Header h, const char ** np)
 {
     const char *n, *v, *r;
-    char *EVR;
+    char *evr = NULL;
     int32_t *e;
 
     (void) headerNEVRA(h, &n, &e, &v, &r, NULL);
     if (e) {
-	rasprintf(&EVR, "%d:%s-%s", *e, v, r);
+	rasprintf(&evr, "%d:%s-%s", *e, v, r);
     } else {
-	rasprintf(&EVR, "%s-%s", v, r);
+	rasprintf(&evr, "%s-%s", v, r);
     }
     if (np) 
 	*np = n;
-    return EVR;
+    return evr;
 }
 
 rpm_color_t headerGetColor(Header h)
