@@ -1363,14 +1363,14 @@ static rpmRC recurseDir(FileList fl, const char * diskPath);
 /**
  * Add a file to the package manifest.
  * @param fl		package file tree walk data
- * @param diskURL	path to file
+ * @param diskPath	path to file
  * @param statp		file stat (possibly NULL)
  * @return		RPMRC_OK on success
  */
-static rpmRC addFile(FileList fl, const char * diskURL,
+static rpmRC addFile(FileList fl, const char * diskPath,
 		struct stat * statp)
 {
-    const char *fileURL = diskURL;
+    const char *cpioPath = diskPath;
     struct stat statbuf;
     mode_t fileMode;
     uid_t fileUid;
@@ -1389,29 +1389,24 @@ static rpmRC addFile(FileList fl, const char * diskURL,
      *  myftw			path			stat
      *
      */
-    {	const char *fileName;
-	(void) urlPath(fileURL, &fileName);
-	if (fl->buildRoot && strcmp(fl->buildRoot, "/"))
-	    fileURL += strlen(fl->buildRoot);
-    }
+    if (fl->buildRoot && strcmp(fl->buildRoot, "/"))
+    	cpioPath += strlen(fl->buildRoot);
 
     /* XXX make sure '/' can be packaged also */
-    if (*fileURL == '\0')
-	fileURL = "/";
+    if (*cpioPath == '\0')
+	cpioPath = "/";
 
     /* If we are using a prefix, validate the file */
     if (!fl->inFtw && fl->prefix) {
-	const char *prefixTest;
 	const char *prefixPtr = fl->prefix;
 
-	(void) urlPath(fileURL, &prefixTest);
-	while (*prefixPtr && *prefixTest && (*prefixTest == *prefixPtr)) {
+	while (*prefixPtr && *cpioPath && (*cpioPath == *prefixPtr)) {
 	    prefixPtr++;
-	    prefixTest++;
+	    cpioPath++;
 	}
-	if (*prefixPtr || (*prefixTest && *prefixTest != '/')) {
+	if (*prefixPtr || (*cpioPath && *cpioPath != '/')) {
 	    rpmlog(RPMLOG_ERR, _("File doesn't match prefix (%s): %s\n"),
-		     fl->prefix, fileURL);
+		     fl->prefix, cpioPath);
 	    fl->processingFailed = 1;
 	    return RPMRC_FAIL;
 	}
@@ -1433,8 +1428,8 @@ static rpmRC addFile(FileList fl, const char * diskURL,
 	    statp->st_atime = now;
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
-	} else if (lstat(diskURL, statp)) {
-	    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskURL);
+	} else if (lstat(diskPath, statp)) {
+	    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskPath);
 	    fl->processingFailed = 1;
 	    return RPMRC_FAIL;
 	}
@@ -1442,7 +1437,7 @@ static rpmRC addFile(FileList fl, const char * diskURL,
 
     if ((! fl->isDir) && S_ISDIR(statp->st_mode)) {
 /* FIX: fl->buildRoot may be NULL */
-	return recurseDir(fl, diskURL);
+	return recurseDir(fl, diskPath);
     }
 
     fileMode = statp->st_mode;
@@ -1475,7 +1470,7 @@ static rpmRC addFile(FileList fl, const char * diskURL,
     
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
-	appendStringBuf(check_fileList, diskURL);
+	appendStringBuf(check_fileList, diskPath);
 	appendStringBuf(check_fileList, "\n");
     }
 
@@ -1494,8 +1489,8 @@ static rpmRC addFile(FileList fl, const char * diskURL,
 	flp->fl_uid = fileUid;
 	flp->fl_gid = fileGid;
 
-	flp->cpioPath = xstrdup(fileURL);
-	flp->diskPath = xstrdup(diskURL);
+	flp->cpioPath = xstrdup(cpioPath);
+	flp->diskPath = xstrdup(diskPath);
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
@@ -1514,7 +1509,7 @@ static rpmRC addFile(FileList fl, const char * diskURL,
 			*ncl++ = *ocl;
 		*ncl = '\0';
 	    }
-	} else if (parseForRegexLang(fileURL, &flp->langs)) {
+	} else if (parseForRegexLang(cpioPath, &flp->langs)) {
 	    flp->langs = xstrdup("");
 	}
 
@@ -1772,7 +1767,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	FILE * f;
 	FD_t fd;
 
-	/* XXX W2DO? urlPath might be useful here. */
+	/* XXX W2DO? */
 	if (*pkg->fileFile == '/') {
 	    ffn = rpmGetPath(pkg->fileFile, NULL);
 	} else {
