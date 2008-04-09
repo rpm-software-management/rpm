@@ -490,7 +490,7 @@ int headerNVR(Header h,
  */
 int headerNEVRA(Header h,
 		const char ** np,
-		const char ** ep,
+		int32_t ** ep,
 		const char ** vp,
 		const char ** rp,
 		const char ** ap);
