@@ -1195,21 +1195,21 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
     DBC * dbcursor = NULL;
-    DBT * key = alloca(sizeof(*key));
-    DBT * data = alloca(sizeof(*data));
+    DBT * key;
+    DBT * data;
     dbiIndex dbi;
-    int rc;
+    int rc = 0;
     int xx;
 
     if (db == NULL)
 	return 0;
 
-    memset(key, 0, sizeof(*key));
-    memset(data, 0, sizeof(*data));
+    key = xcalloc(1, sizeof(*key));
+    data = xcalloc(1, sizeof(*data));
 
     dbi = dbiOpen(db, RPMTAG_NAME, 0);
     if (dbi == NULL)
-	return 0;
+	goto exit;
 
     key->data = (void *) name;
     key->size = strlen(name);
@@ -1244,6 +1244,10 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
 #endif
+
+exit:
+    free(key);
+    free(data);
 
     return rc;
 }
