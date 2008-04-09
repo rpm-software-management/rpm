@@ -2437,9 +2437,10 @@ memset(data, 0, sizeof(*data));
     }
 #endif
 
-    {	const char *n, *v, *r;
-	(void) headerNVR(h, &n, &v, &r);
-	rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s-%s-%s\n", hdrNum, n, v, r);
+    {	
+	char *nevra = headerGetNEVRA(h, NULL);
+	rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, nevra);
+	free(nevra);
     }
 
     (void) blockSignals(db, &signalMask);
