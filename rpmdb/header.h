@@ -511,6 +511,14 @@ char * headerGetNEVR(Header h, const char ** np );
  */
 char * headerGetNEVRA(Header h, const char ** np );
 
+/* \ingroup header
+ * Return (malloc'd) header (epoch:)version-release string.
+ * @param h		header
+ * @retval np		name tag value (or NULL)
+ * @return             (epoch:)version-release string
+ */
+char * headerGetEVR(Header h, const char **np);
+
 /** \ingroup header
  * Return header color.
  * @param h		header

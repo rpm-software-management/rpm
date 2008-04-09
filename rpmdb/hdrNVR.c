@@ -6,6 +6,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/header.h>
+#include <rpm/rpmstring.h>
 
 #include "debug.h"
 
@@ -89,6 +90,23 @@ char * headerGetNEVRA(Header h, const char ** np)
     if (np)
 	*np = n;
     return NVRA;
+}
+
+char * headerGetEVR(Header h, const char ** np)
+{
+    const char *n, *v, *r;
+    char *EVR;
+    int32_t *e;
+
+    (void) headerNEVRA(h, &n, &e, &v, &r, NULL);
+    if (e) {
+	rasprintf(&EVR, "%d:%s-%s", *e, v, r);
+    } else {
+	rasprintf(&EVR, "%s-%s", v, r);
+    }
+    if (np) 
+	*np = n;
+    return EVR;
 }
 
 rpm_color_t headerGetColor(Header h)
