@@ -930,6 +930,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	rpmlog(RPMLOG_ERR, "%s: %s", fn, msg);
 	break;
     }
+    free(msg);
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
