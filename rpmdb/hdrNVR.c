@@ -69,14 +69,16 @@ char * headerGetNEVR(Header h, const char ** np)
 
 char * headerGetNEVRA(Header h, const char ** np)
 {
-    const char *n, *a;
+    const char *n = NULL, *a = NULL;
     char *nevr, *nevra = NULL;
 
     nevr = headerGetNEVR(h, &n);
     headerGetEntry(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
+
     /* XXX gpg-pubkey packages have no arch, urgh... */
     if (a) {
-    	rasprintf(&nevra, "%s.%s", nevr, a);
+	const char *arch = headerIsSource(h) ? "src" : a;
+    	rasprintf(&nevra, "%s.%s", nevr, arch);
 	free(nevr);
     } else {
 	nevra = nevr;
