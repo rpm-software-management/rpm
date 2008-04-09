@@ -53,6 +53,8 @@ static void delTE(rpmte p)
     p->arch = _free(p->arch);
     p->epoch = _free(p->epoch);
     p->name = _free(p->name);
+    p->version = _free(p->version);
+    p->release = _free(p->release);
     p->NEVR = _free(p->NEVR);
     p->NEVRA = _free(p->NEVRA);
 
@@ -78,34 +80,29 @@ static void addTE(rpmts ts, rpmte p, Header h,
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpmte savep;
-    int32_t * ep;
-    const char * arch, * os;
-    char * t;
-    size_t nb;
+    int32_t * ep = NULL;
+    char *epoch = NULL;
+    const char *name, *version, *release, *arch, *os;
     int xx;
 
-    p->NEVR = headerGetNEVR(h, NULL);
-    p->name = xstrdup(p->NEVR);
-    if ((p->release = strrchr(p->name, '-')) != NULL)
-	*p->release++ = '\0';
-    if ((p->version = strrchr(p->name, '-')) != NULL)
-	*p->version++ = '\0';
+    name = version = release = arch = os = NULL;
+    headerNEVRA(h, &name, &ep, &version, &release, &arch);
 
-    /* Set db_instance to 0 as it has not been installed
-     * necessarily yet.
-     */
-    p->db_instance = 0;
+    if (ep) rasprintf(&epoch, "%d", *ep);
 
-    arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *)&arch, NULL);
-    if (arch != NULL) {
+    p->name = xstrdup(name);
+    p->version = xstrdup(version);
+    p->release = xstrdup(release);
+    p->epoch = epoch;
+
+    if (arch) {
 	p->arch = xstrdup(arch);
 	p->archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
     } else {
 	p->arch = NULL;
 	p->archScore = 0;
     }
-    os = NULL;
+
     xx = hge(h, RPMTAG_OS, NULL, (rpm_data_t *)&os, NULL);
     if (os != NULL) {
 	p->os = xstrdup(os);
@@ -114,29 +111,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->os = NULL;
 	p->osScore = 0;
     }
+
     p->isSource = headerIsSource(h);
-
-    nb = strlen(p->NEVR) + 1;
-    if (p->isSource)
-	nb += sizeof("src");
-    else if (p->arch)
-	nb += strlen(p->arch) + 1;
-    t = xmalloc(nb);
-    p->NEVRA = t;
-    *t = '\0';
-    t = stpcpy(t, p->NEVR);
-    if (p->isSource)
-	t = stpcpy( t, ".src");
-    else if (p->arch)
-	t = stpcpy( stpcpy( t, "."), p->arch);
-
-    ep = NULL;
-    xx = hge(h, RPMTAG_EPOCH, NULL, (rpm_data_t *)&ep, NULL);
-    if (ep) {
-	p->epoch = xmalloc(20);
-	sprintf(p->epoch, "%d", *ep);
-    } else
-	p->epoch = NULL;
+    
+    p->NEVR = headerGetNEVR(h, NULL);
+    p->NEVRA = headerGetNEVRA(h, NULL);
 
     p->nrelocs = 0;
     p->relocs = NULL;
@@ -156,6 +135,10 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->relocs[i].newPath = NULL;
     }
 
+    /* Set db_instance to 0 as it has not been installed
+     * necessarily yet.
+     */
+    p->db_instance = 0;
     p->key = key;
     p->fd = NULL;
 
