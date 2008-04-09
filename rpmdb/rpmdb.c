@@ -2391,8 +2391,8 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
     DBC * dbcursor = NULL;
-    DBT * key = alloca(sizeof(*key));
-    DBT * data = alloca(sizeof(*data));
+    DBT * key;
+    DBT * data;
     union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -2404,8 +2404,8 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     if (db == NULL)
 	return 0;
 
-    memset(key, 0, sizeof(*key));
-    memset(data, 0, sizeof(*data));
+    key = xcalloc(1, sizeof(*key));
+    data = xcalloc(1, sizeof(*data));
 
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
@@ -2418,7 +2418,8 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     if (h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
 	      "rpmdbRemove", hdrNum);
-	return 1;
+	ret = 1;
+	goto exit;
     }
 
     {	
@@ -2660,7 +2661,12 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     h = headerFree(h);
 
     /* XXX return ret; */
-    return 0;
+    ret = 0;
+
+exit:
+    free(key);
+    free(data);
+    return ret;
 }
 
 /* XXX install.c */
