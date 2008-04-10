@@ -141,7 +141,7 @@ void expandFilelist(Header h)
  * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
  * Retrofit an explicit "Provides: name = epoch:version-release.
  */
-void providePackageNVR(Header h)
+static void providePackageNVR(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;

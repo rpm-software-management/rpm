@@ -27,13 +27,6 @@ void compressFilelist(Header h);
 void expandFilelist(Header h);
 
 /**
- * Retrofit a Provides: name = version-release dependency into legacy
- * package headers.
- * @param h		header
- */
-void providePackageNVR(Header h);
-
-/**
  * Do all necessary retrofits for a package header.
  * @param h		header
  */
