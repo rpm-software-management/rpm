@@ -163,8 +163,7 @@ main(int argc, char *argv[])
       h = headerRead(fd, HEADER_MAGIC_NO);
       if (!h)
 	continue;
-      compressFilelist(h);
-      providePackageNVR(h);
+      legacyRetrofit(h);
       headerNVR(h, &name, &version, &release);
       mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
       rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version);

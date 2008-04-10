@@ -9,7 +9,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
 
-#include "lib/legacy.h"	/* XXX expand/compressFilelist(), providePackageNVR() */
+#include "lib/legacy.h"	/* XXX expand/compressFilelist(), legacyRetrofit() */
 
 #include "header-py.h"
 #include "rpmds-py.h"
@@ -675,8 +675,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	}
 	return NULL;
     }
-    compressFilelist (h);
-    providePackageNVR (h);
+    legacyRetrofit(h);
 
     hdr = hdr_Wrap(h);
     h = headerFree(h);	/* XXX ref held by hdr */
@@ -703,8 +702,7 @@ PyObject * rpmReadHeaders (FD_t fd)
     Py_END_ALLOW_THREADS
 
     while (h) {
-	compressFilelist(h);
-	providePackageNVR(h);
+	legacyRetrofit(h);
 	hdr = hdr_Wrap(h);
 	if (PyList_Append(list, (PyObject *) hdr)) {
 	    Py_DECREF(list);
