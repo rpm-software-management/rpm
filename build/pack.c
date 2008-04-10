@@ -15,7 +15,6 @@
 #include "lib/cpio.h"
 #include "lib/fsm.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->fsm */
-#include "lib/legacy.h"	/* XXX providePackageNVR */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include "build/buildio.h"
@@ -596,6 +595,24 @@ static const rpmTag copyTags[] = {
     0
 };
 
+/*
+ * Add extra provides to package.
+ */
+static void addPackageProvides(Header h)
+{
+    HAE_t hae = headerAddOrAppendEntry;
+    const char *name = NULL;
+    char *evr;
+    rpmsenseFlags pflags = RPMSENSE_EQUAL;
+
+    /* <name> = <evr> provide */
+    evr = headerGetEVR(h, &name);
+    hae(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE, &name, 1);
+    hae(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE, &pflags, 1);
+    hae(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE, &evr, 1);
+    free(evr);
+}
+
 rpmRC packageBinaries(rpmSpec spec)
 {
     struct cpioSourceArchive_s csabuf;
@@ -628,7 +645,7 @@ rpmRC packageBinaries(rpmSpec spec)
 	(void) headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
 		       RPM_INT32_TYPE, getBuildTime(), 1);
 
-	providePackageNVR(pkg->header);
+	addPackageProvides(pkg->header);
 
     {	char * optflags = rpmExpand("%{optflags}", NULL);
 	(void) headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
