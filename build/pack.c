@@ -350,7 +350,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     char *buf = NULL;
     Header h;
     Header sig = NULL;
-    int isSource, xx;
+    int xx;
     rpmRC rc = RPMRC_OK;
 
     /* Transfer header reference form *hdrp to h. */
@@ -360,13 +360,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     if (pkgidp)
 	*pkgidp = NULL;
 
-    /* Binary packages now have explicit Provides: name = version-release. */
-    isSource = headerIsSource(h);
-    if (!isSource)
-	providePackageNVR(h);
-
     /* Save payload information */
-    if (isSource)
+    if (headerIsSource(h))
 	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
     else 
 	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
