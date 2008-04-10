@@ -2147,6 +2147,7 @@ int processSourceFiles(rpmSpec spec)
     x = 0;
     for (fp = files; *fp != NULL; fp++) {
 	const char *diskPath;
+	char *tmp;
 	FileListRec flp;
 
 	diskPath = *fp;
@@ -2163,13 +2164,11 @@ int processSourceFiles(rpmSpec spec)
 	    diskPath++;
 	}
 
+	tmp = xstrdup(diskPath); /* basename() might modify */
 	flp->diskPath = xstrdup(diskPath);
-	diskPath = strrchr(diskPath, '/');
-	if (diskPath)
-	    diskPath++;
-
-	flp->cpioPath = xstrdup(diskPath);
+	flp->cpioPath = xstrdup(basename(tmp));
 	flp->verifyFlags = RPMVERIFY_ALL;
+	free(tmp);
 
 	if (stat(diskPath, &flp->fl_st)) {
 	    rpmlog(RPMLOG_ERR, _("Bad file: %s: %s\n"),
