@@ -811,6 +811,10 @@ print (t)\
 %optflags		-O2
 
 #
+# ISA dependency marker, none for noarch and name-bitness for others
+%_isa			%{?__isa:(%{__isa})}%{!?__isa:%{nil}}
+
+#
 # Define per-arch and per-os defaults. Normally overridden by per-target macros.
 %__arch_install_post	%{nil}
 %__os_install_post	%{___build_post}

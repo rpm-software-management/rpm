@@ -10,6 +10,10 @@
 %_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
 %optflags		@RPMRC_OPTFLAGS@
 
+%__isa_name		@ISANAME@
+%__isa_bits		@ISABITS@
+%__isa			%{__isa_name}-%{__isa_bits}
+
 #==============================================================================
 # ---- configure macros.
 #

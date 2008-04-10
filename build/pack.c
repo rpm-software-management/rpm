@@ -601,15 +601,33 @@ static const rpmTag copyTags[] = {
 static void addPackageProvides(Header h)
 {
     HAE_t hae = headerAddOrAppendEntry;
-    const char *name = NULL;
-    char *evr;
+    HGE_t hge = headerGetEntry;
+    const char *name = NULL, *arch = NULL;
+    char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
+    int noarch = 0;
 
     /* <name> = <evr> provide */
     evr = headerGetEVR(h, &name);
     hae(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE, &name, 1);
     hae(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE, &pflags, 1);
     hae(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE, &evr, 1);
+
+    /*
+     * <name>(<isa>) = <evr> provide
+     * FIXME: noarch needs special casing for now as BuildArch: noarch doesn't
+     * cause reading in the noarch macros :-/ 
+     */
+    isaprov = rpmExpand(name, "%{?_isa}", NULL);
+    hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *)&arch, NULL);
+    noarch = (strcmp(arch, "noarch") == 0);
+    if (!noarch && strcmp(name, isaprov)) {
+	hae(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE, &isaprov, 1);
+	hae(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE, &pflags, 1);
+	hae(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE, &evr, 1);
+    }
+    free(isaprov);
+
     free(evr);
 }
 

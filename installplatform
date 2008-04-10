@@ -75,6 +75,45 @@ for SUBST in $SUBSTS ; do
     x86_64-linux|amd64-linux|ia32e-linux) LIB=lib64; MULTILIBNO=2 ;;
   esac
 
+  # XXX FIXME: incomplete and quite likely wrong too in places,
+  # consult various arch folks for correct names etc.
+  ISANAME=
+  ISABITS=
+  case "${ARCH}" in
+    sparc|sparcv8|sparcv9*) 
+	ISANAME=sparc
+	ISABITS=32
+	;;
+    sparc64|sparc64v) 
+	ISANAME=sparc
+	ISABITS=64
+	;;
+    s390)
+	ISANAME=s390
+	ISABITS=32
+	;;
+    s390x)
+	ISANAME=s390
+	ISABITS=64
+	;;
+    ppc)
+	ISANAME=ppc
+	ISABITS=32
+	;;
+    ppc64)
+	ISANAME=ppc
+	ISABITS=64
+	;;
+    i?86|pentium?|athlon|geode)
+	ISANAME=x86
+	ISABITS=32
+	;;
+    x86_64|amd64|ia32e)
+	ISANAME=x86
+	ISABITS=64
+	;;
+  esac
+
   if [ -n "$MULTILIBNO" ]; then
     MULTILIBSED='-e /^@MULTILIB/d -e s,@MULTILIBNO@,'$MULTILIBNO,
   else
@@ -114,6 +153,8 @@ for SUBST in $SUBSTS ; do
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
 	-e '/\${\w*:-/!s,\${,%{_,' \
+	-e "s,@ISANAME@,$ISANAME," \
+	-e "s,@ISABITS@,$ISABITS," \
 	$MULTILIBSED \
 	$VENDORSED \
   | grep -v '^@' \
@@ -124,7 +165,7 @@ done
 { cd ${DESTDIR}/${platformdir}
   [ -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
   mkdir -p noarch-${OS}
-  sed -e "/^%_arch/s,${arch},noarch," ${arch}-${OS}/macros | grep -v '^%optflags' > noarch-${OS}/macros
+  sed -e "/^%_arch/s,${arch},noarch," ${arch}-${OS}/macros | grep -v '^%optflags' | grep -v "^%__isa" > noarch-${OS}/macros
 #  [ -d ${VENDOR} ] || mkdir ${VENDOR}
 #  for i in brp-* find-lang.sh find-provides find-requires perl.prov perl.req
 #  do
