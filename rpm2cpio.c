@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
     fdo = fdDup(STDOUT_FILENO);
+    rpmReadConfigFiles(NULL, NULL);
 
     {	rpmts ts = rpmtsCreate();
 	rpmVSFlags vsflags = 0;
