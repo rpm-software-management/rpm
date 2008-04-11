@@ -301,28 +301,20 @@ restart:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
 	{   char *tfn;
+	    FD_t tfd;
 
 	    if (rpmIsVerbose())
 		fprintf(stdout, _("Retrieving %s\n"), fileURL);
 
-	    {	char tfnbuf[64];
-		const char * rootDir = rpmtsRootDir(ts);
-		if (!(rootDir && * rootDir))
-		    rootDir = "";
-		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
-#if defined(HAVE_MKSTEMP)
-		(void) close(mkstemp(tfnbuf));
-#else
-		(void) mktemp(tfnbuf);
-#endif
-		tfn = rpmGenPath(rootDir, "%{_tmppath}/", tfnbuf);
+	    tfd = rpmMkTemp(rpmtsRootDir(ts), &tfn);
+	    if (tfd && tfn) {
+		Fclose(tfd);
+	    	rc = urlGetFile(fileURL, tfn);
+	    } else {
+		rc = -1;
 	    }
 
-	    /* XXX undefined %{name}/%{version}/%{release} here */
-	    /* XXX %{_tmpdir} does not exist */
-	    rpmlog(RPMLOG_DEBUG, " ... as %s\n", tfn);
-	    rc = urlGetFile(fileURL, tfn);
-	    if (rc < 0) {
+	    if (rc != 0) {
 		rpmlog(RPMLOG_ERR,
 			_("skipping %s - transfer failed - %s\n"),
 			fileURL, ftpStrerror(rc));
