@@ -407,7 +407,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
      * Write the header+archive into a temp file so that the size of
      * archive (after compression) can be added to the header.
      */
-    if (rpmMkTempFile(NULL, &sigtarget, &fd)) {
+    fd = rpmMkTemp(NULL, &sigtarget);
+    if (fd == NULL || Ferror(fd)) {
 	rc = RPMRC_FAIL;
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	goto exit;

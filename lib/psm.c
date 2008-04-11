@@ -10,7 +10,7 @@
 #include <rpm/rpmurl.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmts.h>
-#include <rpm/rpmfileutil.h>	/* rpmMkTempFile() */
+#include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
 #include <rpm/rpmdb.h>		/* XXX for db_chrootDone */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
@@ -696,7 +696,8 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
 
-	if (rpmMkTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn, &fd)) {
+	fd = rpmMkTemp((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn);
+	if (fd == NULL || Ferror(fd)) {
 	    if (prefixes != NULL && freePrefixes) free(prefixes);
 	    return RPMRC_FAIL;
 	}

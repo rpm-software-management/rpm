@@ -225,15 +225,13 @@ exit:
     return rc;
 }
 
-int rpmMkTempFile(const char * prefix, char ** fnptr, FD_t * fdptr)
+FD_t rpmMkTemp(const char * prefix, char **fn)
 {
-    const char * tpmacro = "%{?_tmppath:%{_tmppath}}%{!?_tmppath:" LOCALSTATEDIR "/tmp}";
-    char * tempfn = NULL;
-    const char * tfn = NULL;
+    const char *tpmacro = "%{_tmppath}"; /* always set from rpmrc */
+    char *tempfn;
+    int sfd;
     static int _initialized = 0;
-    int temput;
-    FD_t fd = NULL;
-    int ran;
+    FD_t tfd = NULL;
 
     if (!prefix) prefix = "";
 
@@ -242,86 +240,31 @@ int rpmMkTempFile(const char * prefix, char ** fnptr, FD_t * fdptr)
 	_initialized = 1;
 	tempfn = rpmGenPath(prefix, tpmacro, NULL);
 	if (rpmioMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
-	    goto errxit;
+	    goto exit;
+	free(tempfn);
     }
 
-    /* XXX should probably use mkstemp here */
-    srand(time(NULL));
-    ran = rand() % 100000;
-
-    /* maybe this should use link/stat? */
-
-    do {
-	char tfnbuf[64];
-#ifndef	NOTYET
-	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
-	tempfn = _free(tempfn);
-	tempfn = rpmGenPath(prefix, tpmacro, tfnbuf);
-#else
-	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
-	tempfn = _free(tempfn);
-	tempfn = rpmGenPath(prefix, tpmacro, mktemp(tfnbuf));
-#endif
-
-	temput = urlPath(tempfn, &tfn);
-	if (*tfn == '\0') goto errxit;
-
-	switch (temput) {
-	case URL_IS_DASH:
-	case URL_IS_HKP:
-	    goto errxit;
-	    break;
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_FTP:
-	default:
-	    break;
-	}
-
-	fd = Fopen(tempfn, "w+x.ufdio");
-	/* XXX FIXME: errno may not be correct for ufdio */
-    } while ((fd == NULL || Ferror(fd)) && errno == EEXIST);
-
-    if (fd == NULL || Ferror(fd))
-	goto errxit;
-
-    switch(temput) {
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-      {	struct stat sb, sb2;
-	if (!stat(tfn, &sb) && S_ISLNK(sb.st_mode)) {
-	    rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
-	    goto errxit;
-	}
-
-	if (sb.st_nlink != 1) {
-	    rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
-	    goto errxit;
-	}
-
-	if (fstat(Fileno(fd), &sb2) == 0) {
-	    if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
-		rpmlog(RPMLOG_ERR, _("error creating temporary file %s\n"), tfn);
-		goto errxit;
-	    }
-	}
-      }	break;
-    default:
-	break;
+    tempfn = rpmGetPath(prefix, tpmacro, "/rpm-tmp.XXXXXX", NULL);
+    sfd = mkstemp(tempfn);
+    if (sfd < 0) {
+	rpmlog(RPMLOG_ERR, _("error creating temporary file: %m\n"));
+	goto exit;
     }
 
-    if (fnptr)
-	*fnptr = tempfn;
-    else 
-	tempfn = _free(tempfn);
-    *fdptr = fd;
+    tfd = fdDup(sfd);
+    close(sfd);
+    if (tfd == NULL || Ferror(tfd)) {
+	rpmlog(RPMLOG_ERR, _("error opening temporary file %s: %m\n"), tempfn);
+	goto exit;
+    }
 
-    return 0;
+exit:
+    if (tfd != NULL && fn)
+	*fn = tempfn;
+    else
+	free(tempfn);
 
-errxit:
-    tempfn = _free(tempfn);
-    if (fd != NULL) (void) Fclose(fd);
-    return 1;
+    return tfd;
 }
 
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)

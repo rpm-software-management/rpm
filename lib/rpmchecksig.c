@@ -8,7 +8,7 @@
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmcli.h>
-#include <rpm/rpmfileutil.h>	/* rpmMkTempFile() */
+#include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
 #include <rpm/rpmdb.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
@@ -199,8 +199,9 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	msg = _free(msg);
 
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	if (rpmMkTempFile(NULL, &sigtarget, &ofd)) {
-	    rpmlog(RPMLOG_ERR, _("rpmMkTempFile failed\n"));
+	ofd = rpmMkTemp(NULL, &sigtarget);
+	if (ofd == NULL || Ferror(ofd)) {
+	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}

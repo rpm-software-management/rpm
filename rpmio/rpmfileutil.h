@@ -32,21 +32,17 @@ typedef enum rpmCompressedMagic_e {
 int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 		  unsigned char * digest, rpm_off_t * fsizep);
 
-
 /** \ingroup rpmfileutil
  * Return file handle for a temporaray file.
- * A unique temporaray file path will be generated using
- *	rpmGenPath(prefix, "%{_tmppath}/", "rpm-tmp.XXXXX")
- * where "XXXXXX" is filled in using rand(3). The file is opened, and
- * the link count and (dev,ino) location are verified after opening.
+ * A unique temporaray file path will be created in
+ * [prefix/]%{_tmppath} directory.
  * The file name and the open file handle are returned.
  *
  * @param prefix	leading part of temp file path
  * @retval fnptr	temp file name (or NULL)
- * @retval fdptr	temp file handle
- * @return		0 on success
+ * @return fdptr	open file handle or NULL on error
  */
-int rpmMkTempFile(const char * prefix, char ** fnptr, FD_t * fdptr);
+FD_t rpmMkTemp(const char * prefix, char **fn);
 
 /** \ingroup rpmfileutil
  * Insure that directories in path exist, creating as needed.
