@@ -296,30 +296,6 @@ restart:
 	fileURL = eiu->argv[i];
 	eiu->argv[i] = NULL;
 
-#ifdef	NOTYET
-if (fileURL[0] == '=') {
-    rpmds this = rpmdsSingle(RPMTAG_REQUIRENAME, fileURL+1, NULL, 0);
-
-    xx = rpmtsSolve(ts, this, NULL);
-    if (ts->suggests && ts->nsuggests > 0) {
-	fileURL = _free(fileURL);
-	fileURL = ts->suggests[0];
-	ts->suggests[0] = NULL;
-	while (ts->nsuggests-- > 0) {
-	    if (ts->suggests[ts->nsuggests] == NULL)
-		continue;
-	    ts->suggests[ts->nsuggests] = _free(ts->suggests[ts->nsuggests]);
-	}
-	ts->suggests = _free(ts->suggests);
-	rpmlog(RPMLOG_DEBUG, "Adding goal: %s\n", fileURL);
-	eiu->pkgURL[eiu->pkgx] = fileURL;
-	fileURL = NULL;
-	eiu->pkgx++;
-    }
-    this = rpmdsFree(this);
-} else
-#endif
-
 	switch (urlIsURL(fileURL)) {
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
