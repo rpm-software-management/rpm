@@ -21,11 +21,9 @@ extern int h_errno;
 #define	IPPORT_HTTP	80
 #endif
 
-#include <rpm/argv.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
-#include <rpm/rpmstring.h>
 
 #include "rpmio/rpmio_internal.h"
 #include "rpmio/ugid.h"
@@ -771,44 +769,31 @@ int ufdClose( void * cookie)
  * - better error checking + reporting
  * - curl & friends don't know about hkp://, transform to http?
  */
+
 static FD_t urlOpen(const char * url, int flags, mode_t mode)
 {
-    FD_t fd = NULL;
-    char *cmd = NULL;
+    FD_t fd;
     char *dest = NULL;
-    char *urlhelper = NULL;
-    int rc;
-    pid_t pid, wait;
+    int rc = 1; /* assume failure */
 
-    urlhelper = rpmExpand("%{?_urlhelper}", NULL);
-
-    dest = rpmGenPath(NULL, "%{_tmppath}/", "rpm-transfer.XXXXXX");
-    close(mkstemp(dest));
-    rasprintf(&cmd, "%s %s %s\n", urlhelper, dest, url);
-    urlhelper = _free(urlhelper);
-
-    if ((pid = fork()) == 0) {
-        ARGV_t argv = NULL;
-        argvSplit(&argv, cmd, " ");
-        execvp(argv[0], (char *const *)argv);
-        exit(-1); /* error out if exec fails */
+    fd = rpmMkTemp(NULL, &dest);
+    if (fd == NULL) {
+	return NULL;
     }
-    wait = waitpid(pid, &rc, 0);
+    Fclose(fd);
 
-    if (!WIFEXITED(rc) || WEXITSTATUS(rc)) {
-        rpmlog(RPMLOG_ERR, _("URL helper failed: %s (%d)\n"),
-                 cmd, WEXITSTATUS(rc));
-    } else {
+    rc = urlGetFile(url, dest);
+    if (rc == 0) {
 	fd = fdOpen(dest, flags, mode);
 	unlink(dest);
+    } else {
+	fd = NULL;
     }
     dest = _free(dest);
-    cmd = _free(cmd);
 
     return fd;
 
 }
-
 static FD_t ufdOpen(const char * url, int flags, mode_t mode)
 {
     FD_t fd = NULL;

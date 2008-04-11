@@ -11,6 +11,8 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmio.h>
+#include <rpm/argv.h>
+#include <rpm/rpmstring.h>
 
 #include "debug.h"
 
@@ -244,69 +246,37 @@ int urlSplit(const char * url, urlinfo *uret)
     return 0;
 }
 
+
 int urlGetFile(const char * url, const char * dest)
 {
+    char *cmd = NULL;
+    const char *target = NULL;
+    char *urlhelper = NULL;
     int rc;
-    FD_t sfd = NULL;
-    FD_t tfd = NULL;
-    const char * sfuPath = NULL;
-    int urlType = urlPath(url, &sfuPath);
+    pid_t pid, wait;
 
-    if (*sfuPath == '\0')
-	return FTPERR_UNKNOWN;
-	
-    sfd = Fopen(url, "r.ufdio");
-    if (sfd == NULL || Ferror(sfd)) {
-	rpmlog(RPMLOG_ERR, _("failed to open %s: %s\n"), url, Fstrerror(sfd));
-	rc = FTPERR_UNKNOWN;
-	goto exit;
-    }
+    urlhelper = rpmExpand("%{?_urlhelper}", NULL);
 
     if (dest == NULL) {
-	if ((dest = strrchr(sfuPath, '/')) != NULL)
-	    dest++;
-	else
-	    dest = sfuPath;
+	urlPath(url, &target);
+    } else {
+	target = dest;
     }
 
-    if (dest == NULL)
-	return FTPERR_UNKNOWN;
+    /* XXX TODO: sanity checks like target == dest... */
 
-    tfd = Fopen(dest, "w.ufdio");
-if (_url_debug)
-fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, (tfd ? tfd : NULL), dest);
-    if (tfd == NULL || Ferror(tfd)) {
-	/* XXX Fstrerror */
-	rpmlog(RPMLOG_ERR, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
-	rc = FTPERR_UNKNOWN;
-	goto exit;
+    rasprintf(&cmd, "%s %s %s\n", urlhelper, target, url);
+    urlhelper = _free(urlhelper);
+
+    if ((pid = fork()) == 0) {
+        ARGV_t argv = NULL;
+        argvSplit(&argv, cmd, " ");
+        execvp(argv[0], argv);
+        exit(-1); /* error out if exec fails */
     }
-
-    switch (urlType) {
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_HKP:
-    case URL_IS_FTP:
-    case URL_IS_PATH:
-    case URL_IS_DASH:
-    case URL_IS_UNKNOWN:
-	if ((rc = ufdGetFile(sfd, tfd))) {
-	    (void) unlink(dest);
-	    /* XXX FIXME: sfd possibly closed by copyData */
-	    (void) Fclose(sfd) ;
-	}
-	sfd = NULL;	/* XXX Fclose(sfd) done by ufdGetFile */
-	break;
-    default:
-	rc = FTPERR_UNKNOWN;
-	break;
-    }
-
-exit:
-    if (tfd)
-	(void) Fclose(tfd);
-    if (sfd)
-	(void) Fclose(sfd);
+    wait = waitpid(pid, &rc, 0);
+    cmd = _free(cmd);
 
     return rc;
+
 }
