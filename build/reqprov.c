@@ -113,11 +113,16 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 
 int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
 {
-    char * reqname = alloca(sizeof("rpmlib()") + strlen(feature));
+    char *reqname = NULL;
+    int res;
 
-    (void) stpcpy( stpcpy( stpcpy(reqname, "rpmlib("), feature), ")");
+    rasprintf(&reqname, "rpmlib(%s)", feature);
 
     /* XXX 1st arg is unused */
-   return addReqProv(NULL, h, RPMTAG_REQUIRENAME, reqname, featureEVR,
-	RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
+    res = addReqProv(NULL, h, RPMTAG_REQUIRENAME, reqname, featureEVR,
+		     RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
+
+    free(reqname);
+
+    return res;
 }
