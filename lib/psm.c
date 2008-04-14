@@ -830,9 +830,8 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
   /* XXX filter order dependent multilib "other" arch helper error. */
   if (!(psm->sq.reaped >= 0 && !strcmp(*argvp[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
-    void *ptr = NULL;
     if (psm->sq.reaped < 0) {
-	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WTERMSIG(psm->sq.child));
 	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sname, psm->sq.child, psm->sq.reaped, strerror(errno));
@@ -840,12 +839,12 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
       if (WIFSIGNALED(psm->sq.status)) {
-	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+	(void)rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WTERMSIG(psm->sq.status));
         rpmlog(RPMLOG_ERR, _("%s scriptlet failed, signal %d\n"),
                  sname, WTERMSIG(psm->sq.status));
       } else {
-	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WEXITSTATUS(psm->sq.status));
 	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, exit status %d\n"),
 		sname, WEXITSTATUS(psm->sq.status));
