@@ -699,16 +699,10 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	}
 
 	if (arg1 >= 0) {
-	    char *av = NULL;
-	    rasprintf(&av, "%d", arg1);
-	    argvAdd(argvp, av);
-	    free(av);
+	    argvAddNum(argvp, arg1);
 	}
 	if (arg2 >= 0) {
-	    char *av = NULL;
-	    rasprintf(&av, "%d", arg2);
-	    argvAdd(argvp, av);
-	    free(av);
+	    argvAddNum(argvp, arg2);
 	}
     }
 
