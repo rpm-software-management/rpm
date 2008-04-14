@@ -494,7 +494,6 @@ static pid_t psmWait(rpmpsm psm)
     return psm->sq.reaped;
 }
 
-#ifdef WITH_LUA
 /**
  * Run internal Lua script.
  */
@@ -502,6 +501,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
 		   unsigned int progArgc, const char **progArgv,
 		   const char *script, int arg1, int arg2)
 {
+#ifdef WITH_LUA
     const rpmts ts = psm->ts;
     char *nevra, *sname = NULL;
     int rootFd = -1;
@@ -570,8 +570,10 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
     free(sname);
 
     return rc;
-}
+#else
+    return RPMRC_FAIL;
 #endif
+}
 
 /**
  */
@@ -628,12 +630,8 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     xx = hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
-#ifdef WITH_LUA
 	return runLuaScript(psm, h, stag, progArgc, progArgv,
 			    script, arg1, arg2);
-#else
-	return RPMRC_FAIL;
-#endif
     }
 
     psm->sq.reaper = 1;
