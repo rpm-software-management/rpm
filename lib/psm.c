@@ -43,7 +43,7 @@ struct rpmpsm_s {
     FD_t cfd;			/*!< Payload file handle. */
     rpmdbMatchIterator mi;
     const char * stepName;
-    char * rpmio_flags;
+    const char * rpmio_flags;
     char * failedFile;
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
@@ -1632,7 +1632,6 @@ assert(psm->mi == NULL);
 	    if (fi->h != NULL)
 		fi->h = headerFree(fi->h);
  	}
-	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);
 
 	fi->fgroup = hfd(fi->fgroup, RPM_FORCEFREE_TYPE);
@@ -1728,18 +1727,15 @@ assert(psm->mi == NULL);
 
     case PSM_RPMIO_FLAGS:
     {	const char * payload_compressor = NULL;
-	char * t;
 
 	if (!hge(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    (rpm_data_t *) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
-	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
-	*t = '\0';
-	t = stpcpy(t, "r");
 	if (!strcmp(payload_compressor, "gzip"))
-	    t = stpcpy(t, ".gzdio");
+	    psm->rpmio_flags = "r.gzdio";
 	if (!strcmp(payload_compressor, "bzip2"))
-	    t = stpcpy(t, ".bzdio");
+	    psm->rpmio_flags = "r.bzdio";
+
 	rc = RPMRC_OK;
     }	break;
 
