@@ -610,9 +610,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     rpm_count_t numPrefixes;
     rpmTagType ipt;
     const char * oldPrefix;
-    size_t maxPrefixLength;
-    size_t len;
-    char * prefixBuf = NULL;
     char * fn = NULL;
     int xx;
     int i;
@@ -683,14 +680,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     } else {
 	numPrefixes = 0;
     }
-
-    maxPrefixLength = 0;
-    if (prefixes != NULL)
-    for (i = 0; i < numPrefixes; i++) {
-	len = strlen(prefixes[i]);
-	if (len > maxPrefixLength) maxPrefixLength = len;
-    }
-    prefixBuf = alloca(maxPrefixLength + 50);
 
     if (script) {
 	const char * rootDir = rpmtsRootDir(ts);
@@ -802,6 +791,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 
 	if (prefixes != NULL)
 	for (i = 0; i < numPrefixes; i++) {
+    	    char * prefixBuf = NULL;
 	    rasprintf(&prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
 	    xx = doputenv(prefixBuf);
 	    prefixBuf = _free(prefixBuf);
