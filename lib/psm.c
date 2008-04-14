@@ -828,8 +828,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
     (void) psmWait(psm);
 
-  /* XXX filter order dependent multilib "other" arch helper error. */
-  if (!(psm->sq.reaped >= 0 && !strcmp(*argvp[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     if (psm->sq.reaped < 0) {
 	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WTERMSIG(psm->sq.child));
@@ -851,7 +849,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
       }
 	rc = RPMRC_FAIL;
     }
-  }
 
 exit:
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
