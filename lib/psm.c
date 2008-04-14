@@ -503,17 +503,20 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
 		   const char *script, int arg1, int arg2)
 {
     const rpmts ts = psm->ts;
-    const char * sln = tag2sln(stag);
+    char *nevra, *sname = NULL;
     int rootFd = -1;
-    const char *n, *v, *r;
     rpmRC rc = RPMRC_OK;
     int i;
     int xx;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
 
-    xx = headerNVR(h, &n, &v, &r);
+    nevra = headerGetNEVRA(h, NULL);
+    rasprintf(&sname, "%s(%s)", tag2sln(stag), nevra);
+    free(nevra);
 
+    rpmlog(RPMLOG_DEBUG, "%s: %s running <lua> scriptlet.\n",
+	   psm->stepName, sname);
     if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
 	xx = chdir("/");
@@ -547,14 +550,11 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
     rpmluaPop(lua);
 
     {
-	char *buf = NULL;
-	rasprintf(&buf, "%s(%s-%s-%s)", sln, n, v, r);
-	if (rpmluaRunScript(lua, script, buf) == -1) {
+	if (rpmluaRunScript(lua, script, sname) == -1) {
 	    void * ptr;
 	    ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, 1);
 	    rc = RPMRC_FAIL;
 	}
-	free(buf);
     }
 
     rpmluaDelVar(lua, "arg");
@@ -567,6 +567,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
 	    xx = chroot(".");
 	xx = rpmtsSetChrootDone(ts, 0);
     }
+    free(sname);
 
     return rc;
 }
@@ -628,9 +629,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 #ifdef WITH_LUA
-	rpmlog(RPMLOG_DEBUG,
-		"%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n",
-		psm->stepName, sln, n, v, r, a);
 	return runLuaScript(psm, h, stag, progArgc, progArgv,
 			    script, arg1, arg2);
 #else
