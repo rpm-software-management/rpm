@@ -123,6 +123,14 @@ int argiAdd(ARGI_t * argip, int ix, int val);
 int argvAdd(ARGV_t * argvp, const char *val);
 
 /** \ingroup rpmargv
+ * Add a number to an argv array (converting to a string).
+ * @retval *argvp	argv array
+ * @param val		numeric arg to append
+ * @return		0 always
+ */
+int argvAddNum(ARGV_t * argvp, int val);
+
+/** \ingroup rpmargv
  * Append one argv array to another.
  * @retval *argvp	argv array
  * @param av		argv array to append

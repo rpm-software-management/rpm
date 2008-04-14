@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <rpm/argv.h>
+#include <rpm/rpmstring.h>
 
 #include "debug.h"
 
@@ -139,6 +140,16 @@ int argvAdd(ARGV_t * argvp, const char *val)
     argv[argc++] = xstrdup(val);
     argv[argc  ] = NULL;
     return 0;
+}
+
+int argvAddNum(ARGV_t *argvp, int val)
+{
+    char *valstr = NULL;
+    int rc;
+    rasprintf(&valstr, "%d", val);
+    rc = argvAdd(argvp, valstr);
+    free(valstr);
+    return rc;
 }
 
 int argvAppend(ARGV_t * argvp, ARGV_const_t av)
