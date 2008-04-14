@@ -612,7 +612,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     const char * oldPrefix;
     char * fn = NULL;
     int xx;
-    int i;
     int freePrefixes = 0;
     FD_t scriptFd;
     FD_t out;
@@ -789,18 +788,18 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 	    ipath = _free(ipath);
 	}
 
-	if (prefixes != NULL)
-	for (i = 0; i < numPrefixes; i++) {
-    	    char * prefixBuf = NULL;
-	    rasprintf(&prefixBuf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
-	    xx = doputenv(prefixBuf);
-	    prefixBuf = _free(prefixBuf);
-
+	if (prefixes != NULL) {
+	    int i;
+    	    char *buf = NULL;
 	    /* backwards compatibility */
-	    if (i == 0) {
-		rasprintf(&prefixBuf, "RPM_INSTALL_PREFIX=%s", prefixes[i]);
-		xx = doputenv(prefixBuf);
-		prefixBuf = _free(prefixBuf);
+	    rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", prefixes[0]);
+	    xx = doputenv(buf);
+	    buf = _free(buf);
+
+	    for (i = 0; i < numPrefixes; i++) {
+	    	rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
+	    	xx = doputenv(buf);
+	    	buf = _free(buf);
 	    }
 	}
 
