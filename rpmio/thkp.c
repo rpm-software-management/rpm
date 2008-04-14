@@ -44,7 +44,7 @@ static int readKeys(const char * uri)
     const uint8_t * pkt;
     size_t pktlen;
     uint8_t keyid[8];
-    char fn[BUFSIZ];
+    char *fn = NULL;
     pgpDig dig;
     int rc;
     int ec = 0;
@@ -54,11 +54,12 @@ static int readKeys(const char * uri)
     for (kip = keyids; *kip; kip += 2) {
 	pgpArmor pa;
 
-	sprintf(fn, "%s/pks/lookup?op=get&search=0x%08x%08x", uri, kip[0], kip[1]);
+	rasprintf(&fn, "%s/pks/lookup?op=get&search=0x%08x%08x", uri, kip[0], kip[1]);
 fprintf(stderr, "======================= %s\n", fn);
 	pkt = NULL;
 	pktlen = 0;
 	pa = pgpReadPkts(fn, &pkt, &pktlen);
+	free(fn);
 	if (pa == PGPARMOR_ERROR || pa == PGPARMOR_NONE
          || pkt == NULL || pktlen <= 0)
         {
