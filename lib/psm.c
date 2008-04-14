@@ -617,22 +617,22 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     int xx;
     int freePrefixes = 0;
     FD_t scriptFd;
-    FD_t out;
+    FD_t out = NULL;
     rpmRC rc = RPMRC_OK;
-    const char *n, *v, *r, *a;
-    const char *sln = tag2sln(stag);
+    char *nevra, *sname = NULL; 
 
     if (progArgv == NULL && script == NULL)
 	return rc;
-
-    /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
-    xx = headerNVR(h, &n, &v, &r);
-    xx = hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
 
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 	return runLuaScript(psm, h, stag, progArgc, progArgv,
 			    script, arg1, arg2);
     }
+
+    /* XXX FIXME: except for %verifyscript, rpmteNEVR could be used. */
+    nevra = headerGetNEVRA(h, NULL);
+    rasprintf(&sname, "%s(%s)", tag2sln(stag), nevra);
+    free(nevra);
 
     psm->sq.reaper = 1;
 
@@ -641,18 +641,15 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
      */
     if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
  	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
-	    rpmlog(RPMLOG_DEBUG,
-		"%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n",
-		psm->stepName, sln, n, v, r, a,
-		progArgv[0]);
+	    rpmlog(RPMLOG_DEBUG, "%s: %s skipping redundant \"%s\".\n",
+		   psm->stepName, sname, progArgv[0]);
+	    free(sname);
 	    return rc;
 	}
     }
 
-    rpmlog(RPMLOG_DEBUG,
-		"%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n",
-		psm->stepName, sln, n, v, r, a,
-		(psm->unorderedSuccessor ? "a" : ""));
+    rpmlog(RPMLOG_DEBUG, "%s: %s %ssynchronous scriptlet start\n",
+	   psm->stepName, sname, (psm->unorderedSuccessor ? "a" : ""));
 
     if (!progArgv) {
 	argv = alloca(5 * sizeof(*argv));
@@ -682,8 +679,8 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 
 	fd = rpmMkTemp((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn);
 	if (fd == NULL || Ferror(fd)) {
-	    if (prefixes != NULL && freePrefixes) free(prefixes);
-	    return RPMRC_FAIL;
+	    rc = RPMRC_FAIL;
+	    goto exit;
 	}
 
 	if (rpmIsDebug() &&
@@ -735,7 +732,10 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     } else {
 	out = fdDup(STDOUT_FILENO);
     }
-    if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
+    if (out == NULL) { /* XXX can't happen */
+	rc = RPMRC_FAIL;	
+	goto exit;
+    }
 
     xx = rpmsqFork(&psm->sq);
     if (psm->sq.child == 0) {
@@ -807,9 +807,8 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 		xx = chroot(rootDir);
 	    }
 	    xx = chdir("/");
-	    rpmlog(RPMLOG_DEBUG, "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n",
-			psm->stepName, sln, n, v, r, a,
-			argv[0], (unsigned)getpid());
+	    rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
+			psm->stepName, sname, argv[0], (unsigned)getpid());
 
 	    /* XXX Don't mtrace into children. */
 	    unsetenv("MALLOC_CHECK_");
@@ -827,7 +826,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     }
 
     if (psm->sq.child == (pid_t)-1) {
-	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sln, strerror(errno));
+	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sname, strerror(errno));
 	rc = RPMRC_FAIL;
 	goto exit;
     }
@@ -840,24 +839,21 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     if (psm->sq.reaped < 0) {
 	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WTERMSIG(psm->sq.child));
-	rpmlog(RPMLOG_ERR,
-		_("%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sln, n, v, r, a, psm->sq.child, psm->sq.reaped, strerror(errno));
+	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
+		 sname, psm->sq.child, psm->sq.reaped, strerror(errno));
 	rc = RPMRC_FAIL;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
       if (WIFSIGNALED(psm->sq.status)) {
 	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WTERMSIG(psm->sq.status));
-        rpmlog(RPMLOG_ERR,
-                 _("%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"),
-                 sln, n, v, r, a, WTERMSIG(psm->sq.status));
+        rpmlog(RPMLOG_ERR, _("%s scriptlet failed, signal %d\n"),
+                 sname, WTERMSIG(psm->sq.status));
       } else {
 	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WEXITSTATUS(psm->sq.status));
-	rpmlog(RPMLOG_ERR,
-		_("%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"),
-		sln, n, v, r, a, WEXITSTATUS(psm->sq.status));
+	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, exit status %d\n"),
+		sname, WEXITSTATUS(psm->sq.status));
       }
 	rc = RPMRC_FAIL;
     }
@@ -866,13 +862,15 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 exit:
     if (freePrefixes) prefixes = hfd(prefixes, ipt);
 
-    xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
+    if (out)
+	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
     if (script) {
 	if (!rpmIsDebug())
 	    xx = unlink(fn);
 	fn = _free(fn);
     }
+    free(sname);
 
     return rc;
 }
