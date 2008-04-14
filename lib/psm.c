@@ -834,19 +834,18 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sname, psm->sq.child, psm->sq.reaped, strerror(errno));
 	rc = RPMRC_FAIL;
-    } else
-    if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
-      if (WIFSIGNALED(psm->sq.status)) {
-	(void)rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
-				 stag, WTERMSIG(psm->sq.status));
-        rpmlog(RPMLOG_ERR, _("%s scriptlet failed, signal %d\n"),
-                 sname, WTERMSIG(psm->sq.status));
-      } else {
-	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+    } else if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
+      	if (WIFSIGNALED(psm->sq.status)) {
+	    (void)rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
+				stag, WTERMSIG(psm->sq.status));
+	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, signal %d\n"),
+                   sname, WTERMSIG(psm->sq.status));
+	} else {
+	    (void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
 				 stag, WEXITSTATUS(psm->sq.status));
-	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, exit status %d\n"),
-		sname, WEXITSTATUS(psm->sq.status));
-      }
+	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, exit status %d\n"),
+		   sname, WEXITSTATUS(psm->sq.status));
+	}
 	rc = RPMRC_FAIL;
     }
 
