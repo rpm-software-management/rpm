@@ -23,6 +23,12 @@ void argvPrint(const char * msg, ARGV_const_t argv, FILE * fp)
 
 }
 
+ARGV_t argvNew(void)
+{
+    ARGV_t argv = xcalloc(1, sizeof(*argv));
+    return argv;
+}
+
 ARGI_t argiFree(ARGI_t argi)
 {
     if (argi) {

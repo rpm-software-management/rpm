@@ -37,6 +37,13 @@ void argvPrint(const char * msg, ARGV_const_t argv, FILE * fp);
  */
 ARGI_t argiFree(ARGI_t argi);
 
+
+/** \ingroup rpmargv
+ * Create an empty argv array.
+ * @return		pointer to empty argv
+ */
+ARGV_t argvNew(void);
+
 /** \ingroup rpmargv
  * Destroy an argv array.
  * @param argv		argv array
