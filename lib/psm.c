@@ -14,6 +14,7 @@
 #include <rpm/rpmdb.h>		/* XXX for db_chrootDone */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
+#include <rpm/argv.h>
 
 #include "rpmio/rpmlua.h"
 #include "lib/cpio.h"
@@ -497,8 +498,7 @@ static pid_t psmWait(rpmpsm psm)
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
-		   unsigned int progArgc, const char **progArgv,
+static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 		   const char *script, int arg1, int arg2)
 {
 #ifdef WITH_LUA
@@ -506,7 +506,6 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
     char *nevra, *sname = NULL;
     int rootFd = -1;
     rpmRC rc = RPMRC_OK;
-    int i;
     int xx;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
@@ -532,9 +531,10 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag,
     rpmluaPushTable(lua, "arg");
     var = rpmluavNew();
     rpmluavSetListMode(var, 1);
-    if (progArgv) {
-	for (i = 0; i < progArgc && progArgv[i]; i++) {
-	    rpmluavSetValue(var, RPMLUAV_STRING, progArgv[i]);
+    if (argv) {
+	char **p;
+	for (p = argv; *p; p++) {
+	    rpmluavSetValue(var, RPMLUAV_STRING, *p);
 	    rpmluaSetVar(lua, var);
 	}
     }
@@ -591,24 +591,22 @@ static const char * ldconfig_path = "/sbin/ldconfig";
  * @param psm		package state machine data
  * @param h		header
  * @param stag		scriptlet section tag
- * @param progArgc	no. of args from header
- * @param progArgv	args from header, progArgv[0] is the interpreter to use
+ * @param argvp		ARGV_t pointer to args from header, *argvp[0] is the 
+ * 			interpreter to use. Pointer as we might need to 
+ * 			modify via argvAdd()
  * @param script	scriptlet from header
  * @param arg1		no. instances of package installed after scriptlet exec
  *			(-1 is no arg)
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
-		unsigned int progArgc, const char ** progArgv,
+static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 		const char * script, int arg1, int arg2)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    const char ** argv = NULL;
-    int argc = 0;
     const char ** prefixes = NULL;
     rpm_count_t numPrefixes;
     rpmTagType ipt;
@@ -621,12 +619,12 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     rpmRC rc = RPMRC_OK;
     char *nevra, *sname = NULL; 
 
-    if (progArgv == NULL && script == NULL)
+    assert(argvp != NULL);
+    if (*argvp == NULL && script == NULL)
 	return rc;
 
-    if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
-	return runLuaScript(psm, h, stag, progArgc, progArgv,
-			    script, arg1, arg2);
+    if (*argvp && strcmp(*argvp[0], "<lua>") == 0) {
+	return runLuaScript(psm, h, stag, *argvp, script, arg1, arg2);
     }
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR could be used. */
@@ -639,10 +637,10 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     /*
      * If a successor node, and ldconfig was just run, don't bother.
      */
-    if (ldconfig_path && progArgv != NULL && psm->unorderedSuccessor) {
- 	if (ldconfig_done && !strcmp(progArgv[0], ldconfig_path)) {
+    if (ldconfig_path && *argvp != NULL && psm->unorderedSuccessor) {
+ 	if (ldconfig_done && !strcmp(*argvp[0], ldconfig_path)) {
 	    rpmlog(RPMLOG_DEBUG, "%s: %s skipping redundant \"%s\".\n",
-		   psm->stepName, sname, progArgv[0]);
+		   psm->stepName, sname, *argvp[0]);
 	    free(sname);
 	    return rc;
 	}
@@ -651,16 +649,11 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     rpmlog(RPMLOG_DEBUG, "%s: %s %ssynchronous scriptlet start\n",
 	   psm->stepName, sname, (psm->unorderedSuccessor ? "a" : ""));
 
-    if (!progArgv) {
-	argv = alloca(5 * sizeof(*argv));
-	argv[0] = "/bin/sh";
-	argc = 1;
+    if (argvCount(*argvp) == 0) {
+	argvAdd(argvp, "/bin/sh");
 	ldconfig_done = 0;
     } else {
-	argv = alloca((progArgc + 4) * sizeof(*argv));
-	memcpy(argv, progArgv, progArgc * sizeof(*argv));
-	argc = progArgc;
-	ldconfig_done = (ldconfig_path && !strcmp(argv[0], ldconfig_path)
+	ldconfig_done = (ldconfig_path && !strcmp(*argvp[0], ldconfig_path)
 		? 1 : 0);
     }
 
@@ -684,7 +677,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 	}
 
 	if (rpmIsDebug() &&
-	    (!strcmp(argv[0], "/bin/sh") || !strcmp(argv[0], "/bin/bash")))
+	    (!strcmp(*argvp[0], "/bin/sh") || !strcmp(*argvp[0], "/bin/bash")))
 	{
 	    static const char set_x[] = "set -x\n";
 	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
@@ -702,22 +695,22 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 	    {
 		sn += strlen(rootDir)-1;
 	    }
-	    argv[argc++] = sn;
+	    argvAdd(argvp, sn);
 	}
 
 	if (arg1 >= 0) {
-	    char *av = alloca(20);
-	    sprintf(av, "%d", arg1);
-	    argv[argc++] = av;
+	    char *av = NULL;
+	    rasprintf(&av, "%d", arg1);
+	    argvAdd(argvp, av);
+	    free(av);
 	}
 	if (arg2 >= 0) {
-	    char *av = alloca(20);
-	    sprintf(av, "%d", arg2);
-	    argv[argc++] = av;
+	    char *av = NULL;
+	    rasprintf(&av, "%d", arg2);
+	    argvAdd(argvp, av);
+	    free(av);
 	}
     }
-
-    argv[argc] = NULL;
 
     scriptFd = rpmtsScriptFd(ts);
     if (scriptFd != NULL) {
@@ -808,18 +801,18 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
 	    }
 	    xx = chdir("/");
 	    rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
-			psm->stepName, sname, argv[0], (unsigned)getpid());
+		   psm->stepName, sname, *argvp[0], (unsigned)getpid());
 
 	    /* XXX Don't mtrace into children. */
 	    unsetenv("MALLOC_CHECK_");
 
 	    /* Permit libselinux to do the scriptlet exec. */
 	    if (rpmtsSELinuxEnabled(ts) == 1) {	
-		xx = rpm_execcon(0, argv[0], (char ** const) argv, environ);
+		xx = rpm_execcon(0, *argvp[0], *argvp, environ);
 	    }
 
 	    if (xx == 0) {
-	    	xx = execv(argv[0], (char *const *)argv);
+	    	xx = execv(*argvp[0], *argvp);
 	    }
 	}
  	_exit(-1);
@@ -834,7 +827,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag,
     (void) psmWait(psm);
 
   /* XXX filter order dependent multilib "other" arch helper error. */
-  if (!(psm->sq.reaped >= 0 && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
+  if (!(psm->sq.reaped >= 0 && !strcmp(*argvp[0], "/usr/sbin/glibc_post_upgrade") && WEXITSTATUS(psm->sq.status) == 110)) {
     void *ptr = NULL;
     if (psm->sq.reaped < 0) {
 	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
@@ -887,12 +880,14 @@ static rpmRC runInstScript(rpmpsm psm)
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpm_data_t * progArgv;
     rpm_count_t progArgc;
-    const char ** argv;
+    ARGV_t argv;
     rpmTagType ptt, stt;
     char * script;
     rpmRC rc = RPMRC_OK;
     int xx;
 
+    if (fi->h == NULL)	/* XXX can't happen */
+	return RPMRC_FAIL;
     /*
      * headerGetEntry() sets the data pointer to NULL if the entry does
      * not exist.
@@ -902,16 +897,18 @@ static rpmRC runInstScript(rpmpsm psm)
     if (progArgv == NULL && script == NULL)
 	goto exit;
 
+    argv = argvNew();
     if (progArgv && ptt == RPM_STRING_TYPE) {
-	argv = alloca(sizeof(*argv));
-	*argv = (const char *) progArgv;
+	argvAdd(&argv, (char *)progArgv);
     } else {
-	argv = (const char **) progArgv;
+	int i;
+	for (i = 0; i < progArgc; i++) {
+	    argvAdd(&argv, (char *)progArgv[i]);
+	}
     }
-
-    if (fi->h != NULL)	/* XXX can't happen */
-    rc = runScript(psm, fi->h, psm->scriptTag, progArgc, argv,
-		script, psm->scriptArg, -1);
+    rc = runScript(psm, fi->h, psm->scriptTag, &argv,
+		   script, psm->scriptArg, -1);
+    argvFree(argv);
 
 exit:
     progArgv = hfd(progArgv, ptt);
@@ -998,11 +995,14 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		if (triggersAlreadyRun == NULL ||
 		    triggersAlreadyRun[index] == 0)
 		{
-		    rc = runScript(psm, triggeredH, triggertag(psm->sense), 1,
-			    triggerProgs + index, triggerScripts[index],
+		    ARGV_t argv = argvNew();
+		    argvAdd(&argv, *(triggerProgs + index));
+		    rc = runScript(psm, triggeredH, triggertag(psm->sense), 
+			    &argv, triggerScripts[index],
 			    arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
 			triggersAlreadyRun[index] = 1;
+		    argvFree(argv);
 		}
 	    }
 	}
