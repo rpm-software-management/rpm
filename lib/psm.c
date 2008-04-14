@@ -581,6 +581,95 @@ static int ldconfig_done = 0;
 
 static const char * ldconfig_path = "/sbin/ldconfig";
 
+static void doScriptExec(rpmts ts, ARGV_const_t argv, 
+			const char **prefixes, int numPrefixes, 
+			FD_t scriptFd, FD_t out)
+{
+    const char * rootDir;
+    int pipes[2];
+    int flag;
+    int fdno;
+    int xx;
+
+    pipes[0] = pipes[1] = 0;
+    /* make stdin inaccessible */
+    xx = pipe(pipes);
+    xx = close(pipes[1]);
+    xx = dup2(pipes[0], STDIN_FILENO);
+    xx = close(pipes[0]);
+
+    /* XXX Force FD_CLOEXEC on 1st 100 inherited fdno's. */
+    for (fdno = 3; fdno < 100; fdno++) {
+	flag = fcntl(fdno, F_GETFD);
+	if (flag == -1 || (flag & FD_CLOEXEC))
+	    continue;
+	xx = fcntl(fdno, F_SETFD, FD_CLOEXEC);
+	/* XXX W2DO? debug msg for inheirited fdno w/o FD_CLOEXEC */
+    }
+
+    if (scriptFd != NULL) {
+	int sfdno = Fileno(scriptFd);
+	int ofdno = Fileno(out);
+	if (sfdno != STDERR_FILENO)
+	    xx = dup2(sfdno, STDERR_FILENO);
+	if (ofdno != STDOUT_FILENO)
+	    xx = dup2(ofdno, STDOUT_FILENO);
+	/* make sure we don't close stdin/stderr/stdout by mistake! */
+	if (ofdno > STDERR_FILENO && ofdno != sfdno)
+	    xx = Fclose (out);
+	if (sfdno > STDERR_FILENO && ofdno != sfdno)
+	    xx = Fclose (scriptFd);
+    }
+
+    {   char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
+	const char *path = SCRIPT_PATH;
+
+	if (ipath && ipath[5] != '%')
+	    path = ipath;
+
+	xx = doputenv(path);
+	ipath = _free(ipath);
+    }
+
+    if (prefixes != NULL) {
+	int i;
+	char *buf = NULL;
+	/* backwards compatibility */
+	rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", prefixes[0]);
+	xx = doputenv(buf);
+	buf = _free(buf);
+
+	for (i = 0; i < numPrefixes; i++) {
+	    rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
+	    xx = doputenv(buf);
+	    buf = _free(buf);
+	}
+    }
+
+    rootDir = rpmtsRootDir(ts);
+    if (rootDir  != NULL) {	/* XXX can't happen */
+	if (!rpmtsChrootDone(ts) &&
+	    !(rootDir[0] == '/' && rootDir[1] == '\0'))
+	{
+	    xx = chroot(rootDir);
+	}
+	xx = chdir("/");
+
+	/* XXX Don't mtrace into children. */
+	unsetenv("MALLOC_CHECK_");
+
+	/* Permit libselinux to do the scriptlet exec. */
+	if (rpmtsSELinuxEnabled(ts) == 1) {	
+	    xx = rpm_execcon(0, argv[0], argv, environ);
+	}
+
+	if (xx == 0) {
+	    xx = execv(argv[0], argv);
+	}
+    }
+    _exit(-1);
+}
+
 /**
  * Run scriptlet with args.
  *
@@ -726,90 +815,9 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
     xx = rpmsqFork(&psm->sq);
     if (psm->sq.child == 0) {
-	const char * rootDir;
-	int pipes[2];
-	int flag;
-	int fdno;
-
-	pipes[0] = pipes[1] = 0;
-	/* make stdin inaccessible */
-	xx = pipe(pipes);
-	xx = close(pipes[1]);
-	xx = dup2(pipes[0], STDIN_FILENO);
-	xx = close(pipes[0]);
-
-	/* XXX Force FD_CLOEXEC on 1st 100 inherited fdno's. */
-	for (fdno = 3; fdno < 100; fdno++) {
-	    flag = fcntl(fdno, F_GETFD);
-	    if (flag == -1 || (flag & FD_CLOEXEC))
-		continue;
-	    xx = fcntl(fdno, F_SETFD, FD_CLOEXEC);
-	    /* XXX W2DO? debug msg for inheirited fdno w/o FD_CLOEXEC */
-	}
-
-	if (scriptFd != NULL) {
-	    int sfdno = Fileno(scriptFd);
-	    int ofdno = Fileno(out);
-	    if (sfdno != STDERR_FILENO)
-		xx = dup2(sfdno, STDERR_FILENO);
-	    if (ofdno != STDOUT_FILENO)
-		xx = dup2(ofdno, STDOUT_FILENO);
-	    /* make sure we don't close stdin/stderr/stdout by mistake! */
-	    if (ofdno > STDERR_FILENO && ofdno != sfdno)
-		xx = Fclose (out);
-	    if (sfdno > STDERR_FILENO && ofdno != sfdno)
-		xx = Fclose (scriptFd);
-	}
-
-	{   char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
-	    const char *path = SCRIPT_PATH;
-
-	    if (ipath && ipath[5] != '%')
-		path = ipath;
-
-	    xx = doputenv(path);
-	    ipath = _free(ipath);
-	}
-
-	if (prefixes != NULL) {
-	    int i;
-    	    char *buf = NULL;
-	    /* backwards compatibility */
-	    rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", prefixes[0]);
-	    xx = doputenv(buf);
-	    buf = _free(buf);
-
-	    for (i = 0; i < numPrefixes; i++) {
-	    	rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
-	    	xx = doputenv(buf);
-	    	buf = _free(buf);
-	    }
-	}
-
-	rootDir = rpmtsRootDir(ts);
-	if (rootDir  != NULL) {	/* XXX can't happen */
-	    if (!rpmtsChrootDone(ts) &&
-		!(rootDir[0] == '/' && rootDir[1] == '\0'))
-	    {
-		xx = chroot(rootDir);
-	    }
-	    xx = chdir("/");
-	    rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
-		   psm->stepName, sname, *argvp[0], (unsigned)getpid());
-
-	    /* XXX Don't mtrace into children. */
-	    unsetenv("MALLOC_CHECK_");
-
-	    /* Permit libselinux to do the scriptlet exec. */
-	    if (rpmtsSELinuxEnabled(ts) == 1) {	
-		xx = rpm_execcon(0, *argvp[0], *argvp, environ);
-	    }
-
-	    if (xx == 0) {
-	    	xx = execv(*argvp[0], *argvp);
-	    }
-	}
- 	_exit(-1);
+	rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
+	       psm->stepName, sname, *argvp[0], (unsigned)getpid());
+	doScriptExec(ts, *argvp, prefixes, numPrefixes, scriptFd, out);
     }
 
     if (psm->sq.child == (pid_t)-1) {
