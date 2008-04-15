@@ -207,3 +207,35 @@ int rasprintf(char **strp, const char *fmt, ...)
     return n;
 }
 
+/*
+ * Concatenate strings with dynamically (re)allocated
+ * memory what prevents static buffer overflows by design.
+ * *dest is reallocated to the size of strings to concatenate.
+ *
+ * Note:
+ * 1) char *buf = rstrcat(NULL,"string"); is the same like rstrcat(&buf,"string");
+ * 2) rstrcat(&buf,NULL) returns buf
+ * 3) rstrcat(NULL,NULL) returns NULL
+ * 4) *dest and src can overlap
+ */
+char *rstrcat(char **dest, const char *src)
+{
+    if ( src == NULL ) {
+	return dest != NULL ? *dest : NULL;
+    }
+
+    if ( dest == NULL ) {
+	return xstrdup(src);
+    }
+
+    {
+	size_t dest_size = *dest != NULL ? strlen(*dest) : 0;
+	size_t src_size = strlen(src);
+
+	*dest = xrealloc(*dest, dest_size+src_size+1);		/* include '\0' */
+	memmove(&(*dest)[dest_size], src, src_size+1);
+    }
+
+    return *dest;
+}
+

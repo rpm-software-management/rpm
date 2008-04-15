@@ -109,6 +109,14 @@ int rstrncasecmp(const char *s1, const char * s2, size_t n)	;
 int rasprintf(char **strp, const char *fmt, ...) RPM_GNUC_PRINTF(2, 3);
 
 /** \ingroup rpmstring
+ * Concatenate strings with dynamically (re)allocated memory.
+ * @param dest		pointer to destination string
+ * @param src		source string
+ * @return		realloc'd dest with src appended
+ */
+char *rstrcat(char **dest, const char *src);
+
+/** \ingroup rpmstring
  * Split string into fields separated by a character.
  * @param str		string
  * @param length	length of string
