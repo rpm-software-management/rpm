@@ -39,7 +39,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
  * The file name and the open file handle are returned.
  *
  * @param prefix	leading part of temp file path
- * @retval fnptr	temp file name (or NULL)
+ * @retval fn		temp file name (or NULL)
  * @return fdptr	open file handle or NULL on error
  */
 FD_t rpmMkTemp(const char * prefix, char **fn);
