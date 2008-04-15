@@ -371,16 +371,23 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
     s = strchr(rpmio_flags, '.');
     if (s) {
+	const char *compr = NULL;
 	(void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE, "cpio", 1);
-	if (s[1] == 'g' && s[2] == 'z')
-	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
-		"gzip", 1);
-	if (s[1] == 'b' && s[2] == 'z') {
-	    (void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
-		"bzip2", 1);
+	if (strcmp(s+1, "gzdio") == 0) {
+	    compr = "gzip";
+	} else if (strcmp(s+1, "bzdio") == 0) {
+	    compr = "bzip2";
 	    /* Add prereq on rpm version that understands bzip2 payloads */
 	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
+	} else {
+	    rpmlog(RPMLOG_ERR, _("Unknown payload compression: %s\n"),
+		   rpmio_flags);
+	    rc = RPMRC_FAIL;
+	    goto exit;
 	}
+
+	(void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
+		compr, 1);
 	buf = xstrdup(rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
 	(void) headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf+1, 1);
