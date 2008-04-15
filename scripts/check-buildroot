@@ -27,7 +27,7 @@ trap "rm -f $tmp" EXIT
 
 find "$RPM_BUILD_ROOT" \! \( \
     -name '*.pyo' -o -name '*.pyc' -o -name '*.elc' -o -name '.packlist' \
-    -o -name '*.jar.so.debug' \) -type f -print0 | \
+    \) -type f -print0 | \
     LANG=C xargs -0r grep -F "$RPM_BUILD_ROOT" >$tmp
 
 test -s "$tmp" && {
