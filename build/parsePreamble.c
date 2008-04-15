@@ -31,9 +31,7 @@ static const rpmTag copyTagsDuringParse[] = {
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
     RPMTAG_PREFIXES,
-    RPMTAG_RHNPLATFORM,
     RPMTAG_DISTTAG,
-    RPMTAG_CVSID,
     0
 };
 
@@ -465,9 +463,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
     case RPMTAG_URL:
-    case RPMTAG_RHNPLATFORM:
     case RPMTAG_DISTTAG:
-    case RPMTAG_CVSID:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
@@ -570,7 +566,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	int epoch;
 	if (parseNum(field, &epoch)) {
 	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Epoch/Serial field must be a number: %s\n"),
+		     _("line %d: Epoch field must be a number: %s\n"),
 		     spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
@@ -686,9 +682,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_VERSION,		0, 0, 0, "version"},
     {RPMTAG_RELEASE,		0, 0, 0, "release"},
     {RPMTAG_EPOCH,		0, 0, 0, "epoch"},
-    {RPMTAG_EPOCH,		0, 0, 1, "serial"},
     {RPMTAG_SUMMARY,		0, 1, 0, "summary"},
-    {RPMTAG_LICENSE,		0, 0, 1, "copyright"},
     {RPMTAG_LICENSE,		0, 0, 0, "license"},
     {RPMTAG_DISTRIBUTION,	0, 0, 0, "distribution"},
     {RPMTAG_DISTURL,		0, 0, 0, "disturl"},
@@ -722,10 +716,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_AUTOREQ,		0, 0, 0, "autoreq"},
     {RPMTAG_AUTOPROV,		0, 0, 0, "autoprov"},
     {RPMTAG_DOCDIR,		0, 0, 0, "docdir"},
-    {RPMTAG_RHNPLATFORM,	0, 0, 1, "rhnplatform"},
     {RPMTAG_DISTTAG,		0, 0, 0, "disttag"},
-    {RPMTAG_CVSID,		0, 0, 0, "cvsid"},
-    {RPMTAG_SVNID,		0, 0, 0, "svnid"},
    	/* LCL: can't add null annotation */
     {0, 0, 0, 0, 0}
 };
