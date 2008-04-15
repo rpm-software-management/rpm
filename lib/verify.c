@@ -247,12 +247,8 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
     /* FIX: union? */
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int ec = 0;		/* assume no problems */
-    char * t, * te;
-    char buf[BUFSIZ];
+    char *buf = NULL;
     int i;
-
-    te = t = buf;
-    *te = '\0';
 
     fi = rpmfiLink(fi, RPMDBG_M("verifyHeader"));
     fi = rpmfiInit(fi, 0);
@@ -271,7 +267,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
 	if (rc) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
-		sprintf(te, _("missing   %c %s"),
+		rasprintf(&buf, _("missing   %c %s"),
 			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
@@ -279,11 +275,12 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
-		te += strlen(te);
 		if ((verifyResult & RPMVERIFY_LSTATFAIL) != 0 &&
 		    errno != ENOENT) {
-		    sprintf(te, " (%s)", strerror(errno));
-		    te += strlen(te);
+		    char *app;
+		    rasprintf(&app, " (%s)", strerror(errno));
+		    rstrcat(&buf, app);
+		    free(app);
 		}
 		ec = rc;
 	    }
@@ -317,7 +314,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 #undef _verifylink
 #undef _verify
 
-	    sprintf(te, "%s%s%s%s%s%s%s%s  %c %s",
+	    rasprintf(&buf, "%s%s%s%s%s%s%s%s  %c %s",
 			size, mode, MD5, rdev, link, user, group, mtime,
 			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
@@ -326,15 +323,11 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
-	    te += strlen(te);
 	}
 
-	if (te > t) {
-	    *te++ = '\n';
-	    *te = '\0';
-	    rpmlog(RPMLOG_NOTICE, "%s", t);
-	    te = t = buf;
-	    *t = '\0';
+	if (buf) {
+	    rpmlog(RPMLOG_NOTICE, "%s\n", buf);
+	    buf = _free(buf);
 	}
     }
     fi = rpmfiUnlink(fi, RPMDBG_M("verifyHeader"));
