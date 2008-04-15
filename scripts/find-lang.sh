@@ -153,14 +153,14 @@ s:%lang(C) ::
 find $TOP_DIR -type d|sed '
 s:'"$TOP_DIR"'::
 '"$ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+/\)::
-'"$ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+$\):%lang(\2) \1:
+'"$ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+$\):%lang(\2) \1*:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
 find $TOP_DIR -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
-'"$NO_ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+/'"$NAME"'\.[a-z0-9].*\):%lang(\2) \1:
+'"$NO_ALL_NAME$MAN"'s:\(.*/man/\([^/_]\+\).*/man[a-z0-9]\+/'"$NAME"'\.[a-z0-9].*\):%lang(\2) \1*:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
