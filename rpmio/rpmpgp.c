@@ -1334,6 +1334,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 		    "%s-----END PGP %s-----\n",
 		    valstr, buf != NULL ? buf : "", valstr);
 
+    free(buf);
     return val;
 }
 
