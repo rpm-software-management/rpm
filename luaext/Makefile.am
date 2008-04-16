@@ -1,5 +1,10 @@
 noinst_LTLIBRARIES = libluaext.la
 
+EXTRA_DIST = \
+	local/modemuncher.c \
+	local/userconfig.c \
+	local/linit.lua
+
 AM_CPPFLAGS = -I$(top_builddir)
 AM_CPPFLAGS += -I$(srcdir)/include -I.
 
