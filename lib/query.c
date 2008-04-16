@@ -106,7 +106,7 @@ static void printFileInfo(const char * name,
  */
 static inline char * queryHeader(Header h, const char * qfmt)
 {
-    const char * errstr = "(unkown error)";
+    const char * errstr;
     char * str;
 
     str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
