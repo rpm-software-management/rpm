@@ -26,7 +26,7 @@
 
 /**
  */
-static void printFileInfo(char * te, const char * name,
+static void printFileInfo(const char * name,
 			  rpm_off_t size, unsigned short mode,
 			  unsigned int mtime,
 			  unsigned short rdev, unsigned int nlink,
@@ -97,7 +97,7 @@ static void printFileInfo(char * te, const char * name,
 	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
     }
 
-    sprintf(te, "%s %4d %-8s%-8s %10s %s %s", perms,
+    rpmlog(RPMLOG_NOTICE, "%s %4d %-8s%-8s %10s %s %s\n", perms,
 	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
     perms = _free(perms);
 }
@@ -115,52 +115,18 @@ static inline char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
-/**
- */
-static void flushBuffer(char ** tp, char ** tep, int nonewline)
-{
-    char *t, *te;
-
-    t = *tp;
-    te = *tep;
-    if (te > t) {
-	if (!nonewline) {
-	    *te++ = '\n';
-	    *te = '\0';
-	}
-	rpmlog(RPMLOG_NOTICE, "%s", t);
-	te = t;
-	*t = '\0';
-    }
-    *tp = t;
-    *tep = te;
-}
-
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     int scareMem = 0;
     rpmfi fi = NULL;
-    size_t tb = 2 * BUFSIZ;
-    size_t sb;
-    char * t, * te;
-    char * prefix = NULL;
     int rc = 0;		/* XXX FIXME: need real return code */
     int i;
-
-    te = t = xmalloc(tb);
-    *te = '\0';
 
     if (qva->qva_queryFormat != NULL) {
 	char * str = queryHeader(h, qva->qva_queryFormat);
 	if (str) {
-	    sb = strlen(str);
-	    if (sb) {
-		tb += sb;
-		te = t = xrealloc(t, tb);
-	    }
-	    te = stpcpy(te, str);
-	    str = _free(str);
-	    flushBuffer(&t, &te, 1);
+	    rpmlog(RPMLOG_NOTICE, "%s", str);
+	    free(str);
 	}
     }
 
@@ -169,7 +135,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     if (rpmfiFC(fi) <= 0) {
-	te = stpcpy(te, _("(contains no files)"));
+	rpmlog(RPMLOG_NOTICE, _("(contains no files)\n"));
 	goto exit;
     }
 
@@ -188,6 +154,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	const char * fgroup;
 	const char * flink;
 	int32_t fnlink;
+	char *buf = NULL;
 
 	fflags = rpmfiFFlags(fi);
 	fmode = rpmfiFMode(fi);
@@ -214,68 +181,57 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	if ((qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
 	    continue;
 
-	/* Insure space for header derived data */
-	sb = strlen(fn) + strlen(fmd5) + strlen(fuser) + strlen(fgroup) + strlen(flink);
-	if ((sb + BUFSIZ) > tb) {
-	    size_t tx = (te - t);
-	    tb += sb + BUFSIZ;
-	    t = xrealloc(t, tb);
-	    te = t + tx;
-	}
-
-	if (!rpmIsVerbose() && prefix)
-	    te = stpcpy(te, prefix);
-
 	if (qva->qva_flags & QUERY_FOR_STATE) {
 	    switch (fstate) {
 	    case RPMFILE_STATE_NORMAL:
-		te = stpcpy(te, _("normal        "));
+		rstrcat(&buf, _("normal        "));
 		break;
 	    case RPMFILE_STATE_REPLACED:
-		te = stpcpy(te, _("replaced      "));
+		rstrcat(&buf, _("replaced      "));
 		break;
 	    case RPMFILE_STATE_NOTINSTALLED:
-		te = stpcpy(te, _("not installed "));
+		rstrcat(&buf, _("not installed "));
 		break;
 	    case RPMFILE_STATE_NETSHARED:
-		te = stpcpy(te, _("net shared    "));
+		rstrcat(&buf, _("net shared    "));
 		break;
 	    case RPMFILE_STATE_WRONGCOLOR:
-		te = stpcpy(te, _("wrong color   "));
+		rstrcat(&buf, _("wrong color   "));
 		break;
 	    case RPMFILE_STATE_MISSING:
-		te = stpcpy(te, _("(no state)    "));
+		rstrcat(&buf, _("(no state)    "));
 		break;
 	    default:
-		sprintf(te, _("(unknown %3d) "), fstate);
-		te += strlen(te);
+		rasprintf(&buf, _("(unknown %3d) "), fstate);
 		break;
 	    }
 	}
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
-	    sprintf(te, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
-	    te += strlen(te);
+	    char *add;
+	    rasprintf(&add, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
+	    rstrcat(&buf, add);
+	    free(add);
 
 	    if (fuser && fgroup) {
-		sprintf(te, "%s %s", fuser, fgroup);
-		te += strlen(te);
+		rasprintf(&add, "%s %s", fuser, fgroup);
+		rstrcat(&buf, add);
+		free(add);
 	    } else {
 		rpmlog(RPMLOG_ERR,
 			_("package has not file owner/group lists\n"));
 	    }
 
-	    sprintf(te, " %s %s %u ", 
+	    rasprintf(&add, " %s %s %u %s",
 				 fflags & RPMFILE_CONFIG ? "1" : "0",
 				 fflags & RPMFILE_DOC ? "1" : "0",
-				 frdev);
-	    te += strlen(te);
-
-	    sprintf(te, "%s", (flink && *flink ? flink : "X"));
-	    te += strlen(te);
+				 frdev,
+				 (flink && *flink ? flink : "X"));
+	    rpmlog(RPMLOG_NOTICE, "%s%s\n", buf, add);
+	    free(add);
 	} else
 	if (!rpmIsVerbose()) {
-	    te = stpcpy(te, fn);
+	    rpmlog(RPMLOG_NOTICE, "%s%s\n", buf, fn);
 	}
 	else {
 
@@ -286,24 +242,21 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 
 	    if (fuser && fgroup) {
-		printFileInfo(te, fn, fsize, fmode, fmtime, frdev, fnlink,
+		rpmlog(RPMLOG_NOTICE, "%s", buf);
+		printFileInfo(fn, fsize, fmode, fmtime, frdev, fnlink,
 					fuser, fgroup, flink);
-		te += strlen(te);
 	    } else {
 		rpmlog(RPMLOG_ERR,
 			_("package has neither file owner or id lists\n"));
 	    }
 	}
-	flushBuffer(&t, &te, 0);
+	free(buf);
 	free(fmd5);
     }
-	    
+
     rc = 0;
 
 exit:
-    flushBuffer(&t, &te, 0);
-    t = _free(t);
-
     fi = rpmfiFree(fi);
     return rc;
 }
