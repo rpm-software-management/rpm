@@ -149,7 +149,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	rpmfileState fstate;
 	rpm_off_t fsize;
 	const char * fn;
-	char *fmd5;
 	const char * fuser;
 	const char * fgroup;
 	const char * flink;
@@ -163,7 +162,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fstate = rpmfiFState(fi);
 	fsize = rpmfiFSize(fi);
 	fn = rpmfiFN(fi);
-	fmd5 = pgpHexStr(rpmfiMD5(fi), rpmDigestLength(PGPHASHALGO_MD5));
 	fuser = rpmfiFUser(fi);
 	fgroup = rpmfiFGroup(fi);
 	flink = rpmfiFLink(fi);
@@ -208,10 +206,13 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	}
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
-	    char *add;
+	    char *add, *fmd5;
+	    fmd5 = pgpHexStr(rpmfiMD5(fi), rpmDigestLength(PGPHASHALGO_MD5));
+	
 	    rasprintf(&add, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
 	    rstrcat(&buf, add);
 	    free(add);
+	    free(fmd5);
 
 	    if (fuser && fgroup) {
 		rasprintf(&add, "%s %s", fuser, fgroup);
@@ -253,7 +254,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 	}
 	free(buf);
-	free(fmd5);
     }
 
     rc = 0;
