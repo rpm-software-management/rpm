@@ -137,7 +137,7 @@ static char * armorFormat(rpmTagType type, rpm_constdata_t data,
 {
     const char * enc;
     const unsigned char * s;
-    unsigned char * bs;
+    unsigned char * bs = NULL;
     char *val;
     size_t ns;
     int atype;
@@ -170,7 +170,9 @@ static char * armorFormat(rpmTagType type, rpm_constdata_t data,
 
     /* XXX this doesn't use padding directly, assumes enough slop in retval. */
     val = pgpArmorWrap(atype, s, ns);
-    free(bs);
+    if (atype == PGPARMOR_PUBKEY) {
+    	free(bs);
+    }
     return val;
 }
 
