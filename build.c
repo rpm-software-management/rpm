@@ -112,11 +112,7 @@ static char * getTarSpec(const char *arg)
     specDir = rpmGetPath("%{_specdir}", NULL);
     tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
 
-#if defined(HAVE_MKSTEMP)
     (void) close(mkstemp(tmpSpecFile));
-#else
-    (void) mktemp(tmpSpecFile);
-#endif
 
     for (try = tryspec; *try != NULL; try++) {
 	FILE *fp;
