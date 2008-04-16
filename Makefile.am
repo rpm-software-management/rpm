@@ -16,9 +16,12 @@ SUBDIRS = po misc
 if WITH_INTERNAL_DB
 SUBDIRS += db3
 endif
-SUBDIRS += lua rpmio rpmdb lib build python scripts doc . tests
+if WITH_LUAEXT
+SUBDIRS += luaext
+endif
+SUBDIRS += rpmio rpmdb lib build python scripts doc . tests
 
-DIST_SUBDIRS = po misc lua rpmio rpmdb lib build python scripts doc tests
+DIST_SUBDIRS = po misc luaext rpmio rpmdb lib build python scripts doc tests
 
 pkgconfigdir = $(libdir)/pkgconfig
 

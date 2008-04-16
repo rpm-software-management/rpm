@@ -803,12 +803,24 @@ WITH_LUA_LIB=
 WITH_LUA_INCLUDE=
 AC_ARG_WITH(lua, [  --with-lua              build with lua support ],,[with_lua=yes])
 AS_IF([test "$with_lua" = yes],[
+  AC_CHECK_HEADER([lua.h],[
+    AC_CHECK_LIB(lua,[luaL_openlibs],[with_lua=yes],[
+      AC_MSG_ERROR([--with-lua given, but liblua not found])
+    ], 
+    [-lm])
+  ],[
+      AC_MSG_ERROR([--with-lua given, but lua.h not found])
+  ])
+])
+
+AS_IF([test "$with_lua" = yes],[
   AC_DEFINE(WITH_LUA, 1, [Build with lua support?])
-  WITH_LUA_INCLUDE="-I\${top_srcdir}/lua/include -I\${top_srcdir}/lua/local"
-  WITH_LUA_LIB="\$(top_builddir)/lua/liblua.la"
+  WITH_LUA_INCLUDE="-I\${top_srcdir}/luaext"
+  WITH_LUA_LIB="-llua -lm \$(top_builddir)/luaext/libluaext.la"
 ])
 AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_INCLUDE)
+AM_CONDITIONAL(WITH_LUAEXT,[test "$with_lua" = yes])
 
 with_dmalloc=no
 AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
@@ -1060,7 +1072,7 @@ AC_CONFIG_FILES([Makefile
 	misc/Makefile 
 	doc/Makefile
 	python/Makefile
- 	lua/Makefile
+ 	luaext/Makefile
  	tests/Makefile
   ])
 AC_OUTPUT

@@ -46,7 +46,9 @@ rpmlua rpmluaNew()
 	{"io", luaopen_io},
 	{"string", luaopen_string},
 	{"debug", luaopen_debug},
+#if 0
 	{"loadlib", luaopen_loadlib},
+#endif
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
 	{"rpm", luaopen_rpm},

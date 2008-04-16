@@ -66,7 +66,7 @@ static int doselection(lua_State *L, int i, const char *const S[], Selector F, c
 	}
 	else
 	{
-		int j=luaL_findstring(luaL_checkstring(L, i), S);
+		int j=luaL_checkoption(L, i, NULL, S);
 		if (j==-1) luaL_argerror(L, i, "unknown selector");
 		return F(L, j, data);
 	}
