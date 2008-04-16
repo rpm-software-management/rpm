@@ -61,6 +61,12 @@ to configure. Note that the SQLite backend is not as tested as BDB.
 SQLite >= 3.x is required and is available from
     http://www.sqlite.org/
 
+For embedded Lua scripting support (recommended and enabled by default),
+you'll need Lua >= 5.1 library + development environment installed.
+Note that only the library is needed at runtime, RPM never calls external
+Lua interpreter for anything. Lua is available from 
+    http://www.lua.org
+
 If SELinux support is desired, it can be enabled with --with-selinux option
 to configure and libselinux development environment installed. SELinux
 is available from
