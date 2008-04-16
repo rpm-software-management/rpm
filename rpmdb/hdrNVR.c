@@ -12,6 +12,13 @@
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
+    return headerNEVRA(h, np, NULL, vp, rp, NULL);
+}
+
+int headerNEVRA(Header h, const char **np,
+		int32_t **ep, const char **vp, const char **rp,
+		const char **ap)
+{
     rpmTagType type;
     rpm_count_t count;
 
@@ -30,17 +37,6 @@ int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*rp = NULL;
     }
-    return 0;
-}
-
-int headerNEVRA(Header h, const char **np,
-		int32_t **ep, const char **vp, const char **rp,
-		const char **ap)
-{
-    rpmTagType type;
-    rpm_count_t count;
-
-    headerNVR(h, np, vp, rp);
     if (ap) {
 	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, (rpm_data_t *) ap, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
