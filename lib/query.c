@@ -231,7 +231,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    free(add);
 	} else
 	if (!rpmIsVerbose()) {
-	    rpmlog(RPMLOG_NOTICE, "%s%s\n", buf, fn);
+	    rpmlog(RPMLOG_NOTICE, "%s%s\n", buf ? buf : "", fn);
 	}
 	else {
 
@@ -242,7 +242,9 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    }
 
 	    if (fuser && fgroup) {
-		rpmlog(RPMLOG_NOTICE, "%s", buf);
+		if (buf) {
+		    rpmlog(RPMLOG_NOTICE, "%s", buf);
+		}
 		printFileInfo(fn, fsize, fmode, fmtime, frdev, fnlink,
 					fuser, fgroup, flink);
 	    } else {
