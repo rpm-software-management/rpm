@@ -102,19 +102,6 @@ static void printFileInfo(const char * name,
     perms = _free(perms);
 }
 
-/**
- */
-static inline char * queryHeader(Header h, const char * qfmt)
-{
-    const char * errstr;
-    char * str;
-
-    str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
-    if (str == NULL)
-	rpmlog(RPMLOG_ERR, _("incorrect format: %s\n"), errstr);
-    return str;
-}
-
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     int scareMem = 0;
@@ -123,10 +110,14 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     int i;
 
     if (qva->qva_queryFormat != NULL) {
-	char * str = queryHeader(h, qva->qva_queryFormat);
-	if (str) {
+	const char *errstr;
+	char *str = headerSprintf(h, qva->qva_queryFormat, rpmTagTable, rpmHeaderFormats, &errstr);
+
+	if ( str != NULL ) {
 	    rpmlog(RPMLOG_NOTICE, "%s", str);
 	    free(str);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("incorrect format: %s\n"), errstr);
 	}
     }
 
