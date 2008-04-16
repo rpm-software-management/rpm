@@ -37,29 +37,24 @@ static int rpm_print(lua_State *L);
 rpmlua rpmluaNew()
 {
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
-    lua_State *L = lua_open();
     struct stat st;
+    const luaL_reg *lib;
    
-    static const luaL_reg lualibs[] = {
-	{"base", luaopen_base},
-	{"table", luaopen_table},
-	{"io", luaopen_io},
-	{"string", luaopen_string},
-	{"debug", luaopen_debug},
-#if 0
-	{"loadlib", luaopen_loadlib},
-#endif
+    static const luaL_reg extlibs[] = {
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
 	{"rpm", luaopen_rpm},
 	{NULL, NULL},
     };
-   
-    const luaL_reg *lib = lualibs;
-
+    
+    lua_State *L = lua_open();
+    luaL_openlibs(L);
     lua->L = L;
-    for (; lib->name; lib++) {
-	(void) lib->func(L);
+
+    for (lib = extlibs; lib->name; lib++) {
+	lua_pushcfunction(L, lib->func);
+	lua_pushstring(L, lib->name);
+	lua_call(L, 1, 0);
 	lua_settop(L, 0);
     }
     lua_pushliteral(L, "LUA_PATH");
