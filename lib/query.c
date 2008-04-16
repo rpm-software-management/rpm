@@ -153,13 +153,10 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     if (qva->qva_queryFormat != NULL) {
 	char * str = queryHeader(h, qva->qva_queryFormat);
 	if (str) {
-	    size_t tx = (te - t);
-
 	    sb = strlen(str);
 	    if (sb) {
 		tb += sb;
-		t = xrealloc(t, tb);
-		te = t + tx;
+		te = t = xrealloc(t, tb);
 	    }
 	    te = stpcpy(te, str);
 	    str = _free(str);
