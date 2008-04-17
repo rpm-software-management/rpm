@@ -319,7 +319,7 @@ static rpmRC parseForVerify(const char * buf, FileList fl)
 
     /* Localize. Erase parsed string */
     q = alloca((pe-p) + 1);
-    rstrlcpy(q, p, pe-p);
+    rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
 
@@ -399,7 +399,7 @@ static rpmRC parseForDev(const char * buf, FileList fl)
 
     /* Localize. Erase parsed string */
     q = alloca((pe-p) + 1);
-    rstrlcpy(q, p, pe-p);
+    rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
 
@@ -512,7 +512,7 @@ static int parseForAttr(const char * buf, FileList fl)
 
     /* Localize. Erase parsed string */
     q = alloca((pe-p) + 1);
-    rstrlcpy(q, p, pe-p);
+    rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
 
@@ -621,7 +621,7 @@ static rpmRC parseForConfig(const char * buf, FileList fl)
 
     /* Localize. Erase parsed string. */
     q = alloca((pe-p) + 1);
-    rstrlcpy(q, p, pe-p);
+    rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
 
@@ -690,7 +690,7 @@ static int parseForLang(const char * buf, FileList fl)
 
     /* Localize. Erase parsed string. */
     q = alloca((pe-p) + 1);
-    rstrlcpy(q, p, pe-p);
+    rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
 
@@ -730,7 +730,7 @@ static int parseForLang(const char * buf, FileList fl)
 	fl->currentLangs = xrealloc(fl->currentLangs,
 				(fl->nLangs + 1) * sizeof(*fl->currentLangs));
 	newp = xmalloc( np+1 );
-	rstrlcpy(newp, p, np);
+	rstrlcpy(newp, p, np + 1);
 	fl->currentLangs[fl->nLangs++] = newp;
 	if (*pe == ',') pe++;	/* skip , if present */
     }
