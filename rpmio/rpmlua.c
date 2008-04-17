@@ -220,7 +220,7 @@ static int findkey(lua_State *L, int oper, const char *key, va_list va)
     char buf[BUFSIZ];
     const char *s, *e;
     int ret = 0;
-    (void) vsnprintf(buf, BUFSIZ, key, va);
+    (void) vsnprintf(buf, sizeof(buf), key, va);
     s = e = buf;
     lua_pushvalue(L, LUA_GLOBALSINDEX);
     for (;;) {
