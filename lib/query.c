@@ -50,11 +50,8 @@ static void printFileInfo(const char * name,
 	if (tm) nowtm = *tm;	/* structure assignment */
     }
 
-    strncpy(ownerfield, owner, sizeof(ownerfield));
-    ownerfield[sizeof(ownerfield)-1] = '\0';
-
-    strncpy(groupfield, group, sizeof(groupfield));
-    groupfield[sizeof(groupfield)-1] = '\0';
+    rstrlcpy(ownerfield, owner, sizeof(ownerfield));
+    rstrlcpy(groupfield, group, sizeof(groupfield));
 
     /* this is normally right */
     sprintf(sizefield, "%12u", size);
