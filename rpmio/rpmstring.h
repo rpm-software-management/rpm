@@ -122,7 +122,7 @@ char *rstrcat(char **dest, const char *src);
  * @param arg		NULL terminated list of strings to concatenate
  * @return		realloc'd dest with strings appended
  */
-char *rstrscat(char **dest, const char *arg, ...);
+char *rstrscat(char **dest, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmstring
  * Split string into fields separated by a character.
