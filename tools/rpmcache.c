@@ -443,24 +443,20 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmts ts)
  */
 static void initGlobs(rpmts ts, const char ** argv)
 {
-    char buf[BUFSIZ];
+    char *buf = NULL;
     int i;
 
-    buf[0] = '\0';
     if (argv != NULL && * argv != NULL) {
 	const char * arg;
 	int single = (glob_pattern_p(argv[0], 0) && argv[1] == NULL);
-	char * t;
 
-	t = buf;
-	if (!single)
-	    t = stpcpy(t, "@(");
-	while ((arg = *argv++) != NULL) {
-	    t = stpcpy(t, arg);
-	    *t++ = '|';
+	if (!single) {
+	    rstrcat(&buf, "@(");
 	}
-	t[-1] = (single ? '\0' : ')');
-	*t = '\0';
+	while ((arg = *argv++) != NULL) {
+	    rstrscat(&buf, arg, "|", NULL);
+	}
+	buf[strlen(buf)-1] = single ? '\0' : ')';
     }
 
     bhpath = rpmExpand("%{_bhpath}", NULL);
@@ -509,6 +505,7 @@ static void initGlobs(rpmts ts, const char ** argv)
 	    rpmlog(RPMLOG_DEBUG, "\t%d \"%s\"\n",
 		i, bhglobs[i].patterns[0]);
     }
+    free(buf);
 }
 
 static rpmVSFlags vsflags = 0;
