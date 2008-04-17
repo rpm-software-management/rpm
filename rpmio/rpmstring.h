@@ -137,21 +137,6 @@ char *rstrscat(char **dest, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
 size_t rstrlcpy(char *dest, const char *src, size_t n);
 
 /** \ingroup rpmstring
- * Split string into fields separated by a character.
- * @param str		string
- * @param length	length of string
- * @param sep		separator character
- * @return		(malloc'd) argv array
- */
-char ** splitString(const char * str, size_t length, char sep);
-
-/** \ingroup rpmstring
- * Free split string argv array.
- * @param list		argv array
- */
-void freeSplitString( char ** list);
-
-/** \ingroup rpmstring
  * Remove occurences of trailing character from string.
  * @param s		string
  * @param c		character to strip

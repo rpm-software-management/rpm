@@ -1746,7 +1746,8 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct FileList_s fl;
-    char *s, **files, **fp;
+    char *s, **fp;
+    ARGV_t files = NULL;
     const char *fileName;
     char buf[BUFSIZ];
     struct AttrRec_s arbuf;
@@ -1851,7 +1852,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     fl.fileListRecsUsed = 0;
 
     s = getStringBuf(pkg->fileList);
-    files = splitString(s, strlen(s), '\n');
+    argvSplit(&files, s, "\n");
 
     for (fp = files; *fp != NULL; fp++) {
 	s = *fp;
@@ -1955,7 +1956,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	specialDoc = _free(specialDoc);
     }
     
-    freeSplitString(files);
+    argvFree(files);
 
     if (fl.processingFailed)
 	goto exit;
@@ -2057,7 +2058,8 @@ int processSourceFiles(rpmSpec spec)
     StringBuf sourceFiles;
     int x, isSpec = 1;
     struct FileList_s fl;
-    char *s, **files, **fp;
+    char *s, **fp;
+    ARGV_t files = NULL;
     Package pkg;
     static char *_srcdefattr;
     static int oneshot;
@@ -2135,7 +2137,7 @@ int processSourceFiles(rpmSpec spec)
     fl.buildRoot = NULL;
 
     s = getStringBuf(sourceFiles);
-    files = splitString(s, strlen(s), '\n');
+    argvSplit(&files, s, "\n");
 
     /* The first source file is the spec file */
     x = 0;
@@ -2197,7 +2199,7 @@ int processSourceFiles(rpmSpec spec)
 	x++;
     }
     fl.fileListRecsUsed = x;
-    freeSplitString(files);
+    argvFree(files);
 
     if (! fl.processingFailed) {
 	if (spec->sourceHeader != NULL)

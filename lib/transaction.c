@@ -11,6 +11,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
+#include <rpm/argv.h>
 
 #include "rpmdb/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
 #include "rpmdb/fprint.h"
@@ -643,8 +644,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     rpm_color_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
-    char ** netsharedPaths = NULL;
-    char ** languages;
+    ARGV_t netsharedPaths = NULL;
+    ARGV_t languages = NULL;
     const char * dn, * bn;
     size_t dnlen, bnlen;
     char * s;
@@ -657,8 +658,9 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
 
     {	char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
-	if (tmpPath && *tmpPath != '%')
-	    netsharedPaths = splitString(tmpPath, strlen(tmpPath), ':');
+	if (tmpPath && *tmpPath != '%') {
+	    argvSplit(&netsharedPaths, tmpPath, ":");
+	}
 	tmpPath = _free(tmpPath);
     }
 
@@ -666,7 +668,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (!(s && *s != '%'))
 	s = _free(s);
     if (s) {
-	languages = splitString(s, strlen(s), ':');
+	argvSplit(&languages, s, ":");	
 	s = _free(s);
     } else
 	languages = NULL;
@@ -845,11 +847,11 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	}
     }
 
-    if (netsharedPaths) freeSplitString(netsharedPaths);
+    if (netsharedPaths) argvFree(netsharedPaths);
 #ifdef	DYING	/* XXX freeFi will deal with this later. */
     fi->flangs = _free(fi->flangs);
 #endif
-    if (languages) freeSplitString((char **)languages);
+    if (languages) argvFree(languages);
 }
 
 /**

@@ -536,7 +536,8 @@ int parsePrep(rpmSpec spec)
 {
     int nextPart, res, rc;
     StringBuf sb;
-    char **lines, **saveLines;
+    char **lines;
+    ARGV_t saveLines = NULL;
 
     if (spec->prep != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %%prep\n"), spec->lineNum);
@@ -566,7 +567,7 @@ int parsePrep(rpmSpec spec)
 	    return rc;
     }
 
-    saveLines = splitString(getStringBuf(sb), strlen(getStringBuf(sb)), '\n');
+    argvSplit(&saveLines, getStringBuf(sb), "\n");
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
 	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
@@ -577,13 +578,13 @@ int parsePrep(rpmSpec spec)
 	    appendLineStringBuf(spec->prep, *lines);
 	}
 	if (res && !spec->force) {
-	    freeSplitString(saveLines);
+	    argvFree(saveLines);
 	    sb = freeStringBuf(sb);
 	    return res;
 	}
     }
 
-    freeSplitString(saveLines);
+    argvFree(saveLines);
     sb = freeStringBuf(sb);
 
     return nextPart;
