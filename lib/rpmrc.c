@@ -1102,7 +1102,7 @@ static void defaultMachine(const char ** arch,
 	}
 	else if ((!strncmp(un.machine, "34", 2) ||
 		!strncmp(un.machine, "33", 2)) && \
-		strncmp(un.release, "4.0", 3))
+		!strncmp(un.release, "4.0", 3))
 	{
 	    /* we are on ncr-sysv4 */
 	    char * prelid = NULL;
