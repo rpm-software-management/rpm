@@ -1031,14 +1031,12 @@ static void defaultMachine(const char ** arch,
 	    char * s;
 	    s = rpmExpand("%{_host_cpu}", NULL);
 	    if (s) {
-		strncpy(un.machine, s, sizeof(un.machine));
-		un.machine[sizeof(un.machine)-1] = '\0';
+		rstrlcpy(un.machine, s, sizeof(un.machine));
 		s = _free(s);
 	    }
 	    s = rpmExpand("%{_host_os}", NULL);
 	    if (s) {
-		strncpy(un.sysname, s, sizeof(un.sysname));
-		un.sysname[sizeof(un.sysname)-1] = '\0';
+		rstrlcpy(un.sysname, s, sizeof(un.sysname));
 		s = _free(s);
 	    }
 	    gotDefaults = 1;
@@ -1104,7 +1102,7 @@ static void defaultMachine(const char ** arch,
 	}
 	else if ((!strncmp(un.machine, "34", 2) ||
 		!strncmp(un.machine, "33", 2)) && \
-		!strncmp(un.release, "4.0", 3))
+		strncmp(un.release, "4.0", 3))
 	{
 	    /* we are on ncr-sysv4 */
 	    char * prelid = NULL;
@@ -1257,13 +1255,13 @@ static void defaultMachine(const char ** arch,
 				   tables[RPM_MACHTABLE_INSTARCH].canons,
 				   tables[RPM_MACHTABLE_INSTARCH].canonsLength);
 	if (canon)
-	    strcpy(un.machine, canon->short_name);
+	    rstrlcpy(un.machine, canon->short_name, sizeof(un.machine));
 
 	canon = lookupInCanonTable(un.sysname,
 				   tables[RPM_MACHTABLE_INSTOS].canons,
 				   tables[RPM_MACHTABLE_INSTOS].canonsLength);
 	if (canon)
-	    strcpy(un.sysname, canon->short_name);
+	    rstrlcpy(un.sysname, canon->short_name, sizeof(un.sysname));
 	gotDefaults = 1;
 	break;
     }
