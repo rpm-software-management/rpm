@@ -8,6 +8,7 @@
 
 #include <rpm/rpmlib.h>		/* rpmGetOs/ArchInfo() */
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
