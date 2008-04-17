@@ -208,7 +208,7 @@ int rasprintf(char **strp, const char *fmt, ...)
 }
 
 /*
- * Concatenate strings with dynamically (re)allocated
+ * Concatenate two strings with dynamically (re)allocated
  * memory what prevents static buffer overflows by design.
  * *dest is reallocated to the size of strings to concatenate.
  *
@@ -237,5 +237,54 @@ char *rstrcat(char **dest, const char *src)
     }
 
     return *dest;
+}
+
+/*
+ * Concatenate strings with dynamically (re)allocated
+ * memory what prevents static buffer overflows by design.
+ * *dest is reallocated to the size of strings to concatenate.
+ * List of strings has to be NULL terminated.
+ *
+ * Note:
+ * 1) char *buf = rstrscat(NULL,"string",NULL); is the same like rstrscat(&buf,"string",NULL);
+ * 2) rstrscat(&buf,NULL) returns buf
+ * 3) rstrscat(NULL,NULL) returns NULL
+ * 4) *dest and argument strings can overlap
+ */
+char *rstrscat(char **dest, const char *arg, ...)
+{
+    va_list ap;
+    size_t arg_size, dst_size;
+    const char *s;
+    char *dst, *p;
+
+    dst = dest ? *dest : NULL;
+
+    if ( arg == NULL ) {
+        return dst;
+    }
+
+    va_start(ap, arg);
+    for (arg_size=0, s=arg; s; s = va_arg(ap, const char *))
+        arg_size += strlen(s);
+    va_end(ap);
+
+    dst_size = dst ? strlen(dst) : 0;
+    dst = realloc(dst, dst_size+arg_size+1);    /* include '\0' */
+    p = &dst[dst_size];
+
+    va_start(ap, arg);
+    for (s = arg; s; s = va_arg(ap, const char *)) {
+        size_t size = strlen(s);
+        memmove(p, s, size);
+        p += size;
+    }
+    *p = '\0';
+
+    if ( dest ) {
+        *dest = dst;
+    }
+
+    return dst;
 }
 
