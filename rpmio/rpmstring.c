@@ -288,3 +288,31 @@ char *rstrscat(char **dest, const char *arg, ...)
     return dst;
 }
 
+/*
+ * Adapted from OpenBSD, strlcpy() originally developed by
+ * Todd C. Miller <Todd.Miller@courtesan.com>
+ */
+size_t rstrlcpy(char *dest, const char *src, size_t n)
+{
+    char *d = dest;
+    const char *s = src;
+    size_t len = n;
+
+    /* Copy as many bytes as will fit */
+    if (len != 0) {
+	while (--len != 0) {
+	    if ((*d++ = *s++) == '\0')
+		break;
+	}
+    }
+
+    /* Not enough room in dst, add NUL and traverse rest of src */
+    if (len == 0) {
+	if (n != 0)
+	    *d = '\0'; /* NUL-terminate dst */
+	while (*s++)
+	    ;
+    }
+
+    return s - src - 1; /* count does not include NUL */
+}

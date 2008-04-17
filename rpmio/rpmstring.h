@@ -125,6 +125,18 @@ char *rstrcat(char **dest, const char *src);
 char *rstrscat(char **dest, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
 
 /** \ingroup rpmstring
+ * strlcpy() clone: 
+ * Copy src to string dest of size n. At most n-1 characters
+ * will be copied.  Always zero-terminates (unless n == 0).
+ * Length of src is returned; if retval >= n, truncation occurred.
+ * @param dest		destination buffer
+ * @param src		string to copy
+ * @param n		destination buffer size
+ * @return		length of src string
+ */
+size_t rstrlcpy(char *dest, const char *src, size_t n);
+
+/** \ingroup rpmstring
  * Split string into fields separated by a character.
  * @param str		string
  * @param length	length of string
