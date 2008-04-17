@@ -111,8 +111,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	re = r;
 	SKIPNONWHITE(re);
 	N = xmalloc((re-r) + 1);
-	strncpy(N, r, (re-r));
-	N[re-r] = '\0';
+	rstrlcpy(N, r, (re-r));
 
 	/* Parse EVR */
 	v = re;
@@ -166,8 +165,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 		return RPMRC_FAIL;
 	    }
 	    EVR = xmalloc((ve-v) + 1);
-	    strncpy(EVR, v, (ve-v));
-	    EVR[ve-v] = '\0';
+	    rstrlcpy(EVR, v, (ve-v));
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
