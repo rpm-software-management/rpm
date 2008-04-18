@@ -229,12 +229,11 @@ findEntry(rpmMacroContext mc, const char * name, size_t namelen)
  * @return		buffer, or NULL on end-of-file
  */
 static char *
-rdcl(char * buf, size_t size, FD_t fd)
+rdcl(char * buf, size_t size, FILE *f)
 {
     char *q = buf - 1;		/* initialize just before buffer. */
     size_t nb = 0;
     size_t nread = 0;
-    FILE * f = fdGetFILE(fd);
     int pc = 0, bc = 0;
     char *p = buf;
 
@@ -1477,13 +1476,13 @@ rpmLoadMacros(rpmMacroContext mc, int level)
 int
 rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 {
-    FD_t fd = Fopen(fn, "r.fpio");
+    FILE *fd = fopen(fn, "r");
     size_t blen = MACROBUFSIZ;
     char *buf = xmalloc(blen);
     int rc = -1;
 
-    if (fd == NULL || Ferror(fd)) {
-	if (fd) (void) Fclose(fd);
+    if (fd == NULL || ferror(fd)) {
+	if (fd) (void) fclose(fd);
 	goto exit;
     }
 
@@ -1502,7 +1501,7 @@ rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 	n++;	/* skip % */
 	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
     }
-    rc = Fclose(fd);
+    rc = fclose(fd);
 
 exit:
     _free(buf);
