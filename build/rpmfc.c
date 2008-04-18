@@ -116,8 +116,10 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	(void) close(toProg[0]);
 	(void) close(fromProg[1]);
 
-	if (dir) {
-	    (void) chdir(dir);
+	if (dir && chdir(dir)) {
+	    rpmlog(RPMLOG_ERR, _("Couldn't chdir to %s: %s\n"),
+		    dir, strerror(errno));
+	    _exit(EXIT_FAILURE);
 	}
 	
 	rpmlog(RPMLOG_DEBUG, "\texecv(%s) pid %d\n",
