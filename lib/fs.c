@@ -96,6 +96,7 @@ static int getFilesystemList(void)
 	fsn = xmalloc(fsnameLength + 1);
 	strncpy(fsn, (char *)vm + vm->vmt_data[VMT_STUB].vmt_off, 
 		fsnameLength);
+	fsn[fsnameLength] = '\0';
 
 	filesystems[i].mntPoint = fsnames[i] = fsn;
 	
