@@ -147,6 +147,14 @@ int argvAppend(ARGV_t * argvp, ARGV_const_t av);
  */
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps);
 
+/** \ingroup rpmargv
+ * Join an argv array into a string.
+ * @param *argv		argv array to join
+ * @param sep		seperator string to use
+ * @return		malloc'ed string
+ */
+char *argvJoin(ARGV_const_t argv, const char *sep);
+
 #ifdef __cplusplus
 }
 #endif
