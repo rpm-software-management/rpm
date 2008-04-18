@@ -20,6 +20,7 @@
 #include <rpm/rpmurl.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/argv.h>
 
 #ifdef	WITH_LUA
 #include "rpmio/rpmlua.h"
@@ -780,142 +781,108 @@ static const char *
 grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
-    size_t blen = MACROBUFSIZ;
-    char *buf = xmalloc(blen);
-    char *b, *be;
-    char aname[16];
-    const char *opts, *o;
+    const char *opts, *o, *ret;
+    char *args = NULL;
+    ARGV_t argv = NULL;
     int argc = 0;
-    char **argv;
     int c;
 
-    /* Copy macro name as argv[0], save beginning of args.  */
-    buf[0] = '\0';
-    b = be = stpcpy(buf, me->name);
-
-    addMacro(mb->mc, "0", NULL, buf, mb->depth);
+    /* Copy macro name as argv[0] */
+    argvAdd(&argv, me->name);
+    addMacro(mb->mc, "0", NULL, me->name, mb->depth);
     
-    argc = 1;	/* XXX count argv[0] */
-
-    /* Copy args into buf until lastc */
-    *be++ = ' ';
-    while ((c = *se++) != '\0' && (se-1) != lastc) {
-	if (!isblank(c)) {
-	    *be++ = c;
-	    continue;
-	}
-	/* c is blank */
-	if (be[-1] == ' ')
-	    continue;
-	/* a word has ended */
-	*be++ = ' ';
-	argc++;
-    }
-    if (c == '\0') se--;	/* one too far */
-    if (be[-1] != ' ')
-	argc++, be++;		/* last word has not trailing ' ' */
-    be[-1] = '\0';
-    if (*b == ' ') b++;		/* skip the leading ' ' */
-
-/*
- * The macro %* analoguous to the shell's $* means "Pass all non-macro
- * parameters." Consequently, there needs to be a macro that means "Pass all
- * (including macro parameters) options". This is useful for verifying
- * parameters during expansion and yet transparently passing all parameters
- * through for higher level processing (e.g. %description and/or %setup).
- * This is the (potential) justification for %{**} ...
- */
-    /* Add unexpanded args as macro */
-    addMacro(mb->mc, "**", NULL, b, mb->depth);
-
-#ifdef NOTYET
-    /* XXX if macros can be passed as args ... */
-    expandU(mb, buf, blen);
-#endif
-
-    /* Build argv array */
-    argv = alloca((argc + 1) * sizeof(*argv));
-    be[-1] = ' '; /* assert((be - 1) == (b + strlen(b) == buf + strlen(buf))) */
-    be[0] = '\0';
-    b = buf;
-    for (c = 0; c < argc; c++) {
-	argv[c] = b;
-	b = strchr(b, ' ');
-	*b++ = '\0';
-    }
-    /* assert(b == be);  */
-    argv[argc] = NULL;
-
-    /* Citation from glibc/posix/getopt.c:
-     *    Index in ARGV of the next element to be scanned.
-     *    This is used for communication to and from the caller
-     *    and for communication between successive calls to `getopt'.
-     *
-     *    On entry to `getopt', zero means this is the first call; initialize.
-     *
-     *    When `getopt' returns -1, this is the index of the first of the
-     *    non-option elements that the caller should itself scan.
-     *
-     *    Otherwise, `optind' communicates from one call to the next
-     *    how much of ARGV has been scanned so far.
+    /* 
+     * Make a copy of se up to lastc string that we can pass to argvSplit().
+     * Append the results to main argv, save return value. 
      */
-    /* 1003.2 says this must be 1 before any call.  */
+    {	ARGV_t av = NULL;
+	char *s = xcalloc((lastc-se)+1, sizeof(*s));
 
+	memmove(s, se, (lastc-se));
+	ret = se + strlen(s) + 1;
+	argvSplit(&av, s, " ");
+	argvAppend(&argv, av);
+
+	argvFree(av);
+	free(s);
+    }
+
+    /*
+     * The macro %* analoguous to the shell's $* means "Pass all non-macro
+     * parameters." Consequently, there needs to be a macro that means "Pass all
+     * (including macro parameters) options". This is useful for verifying
+     * parameters during expansion and yet transparently passing all parameters
+     * through for higher level processing (e.g. %description and/or %setup).
+     * This is the (potential) justification for %{**} ...
+    */
+    args = argvJoin(argv + 1, " ");
+    addMacro(mb->mc, "**", NULL, args, mb->depth);
+    free(args);
+
+    /*
+     * POSIX states optind must be 1 before any call but glibc uses 0
+     * to (re)initialize getopt structures, eww.
+     */
 #ifdef __GLIBC__
-    optind = 0;		/* XXX but posix != glibc */
+    optind = 0;
 #else
     optind = 1;
 #endif
 
     opts = me->opts;
+    argc = argvCount(argv);
 
     /* Define option macros. */
-/* FIX: argv[] can be NULL */
     while((c = getopt(argc, argv, opts)) != -1)
     {
+	char *name = NULL, *body = NULL;
 	if (c == '?' || (o = strchr(opts, c)) == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
 	    goto exit;
 	}
-	*be++ = '-';
-	*be++ = c;
-	if (o[1] == ':') {
-	    *be++ = ' ';
-	    be = stpcpy(be, optarg);
+	if (optarg) {
+	    rasprintf(&body, "-%c %s", c, optarg);
+	} else {
+	    rasprintf(&body, "-%c", c);
 	}
-	*be++ = '\0';
-	aname[0] = '-'; aname[1] = c; aname[2] = '\0';
-	addMacro(mb->mc, aname, NULL, b, mb->depth);
-	if (o[1] == ':') {
-	    aname[0] = '-'; aname[1] = c; aname[2] = '*'; aname[3] = '\0';
-	    addMacro(mb->mc, aname, NULL, optarg, mb->depth);
+	rasprintf(&name, "-%c", c);
+	addMacro(mb->mc, name, NULL, body, mb->depth);
+	free(name);
+
+	if (optarg) {
+	    rasprintf(&name, "-%c*", c);
+	    addMacro(mb->mc, name, NULL, optarg, mb->depth);
+	    free(name);
 	}
-	be = b; /* reuse the space */
+	free(body);
     }
 
-    /* Add arg count as macro. */
-    sprintf(aname, "%d", (argc - optind));
-    addMacro(mb->mc, "#", NULL, aname, mb->depth);
+    /* Add argument count (remaining non-option items) as macro. */
+    {	char *ac = NULL;
+    	rasprintf(&ac, "%d", (argc - optind));
+    	addMacro(mb->mc, "#", NULL, ac, mb->depth);
+	free(ac);
+    }
 
-    /* Add macro for each arg. Concatenate args for %*. */
-    if (be) {
-	*be = '\0';
+    /* Add macro for each argument */
+    if (argc - optind) {
 	for (c = optind; c < argc; c++) {
-	    sprintf(aname, "%d", (c - optind + 1));
-	    addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
-	    if (be != b) *be++ = ' '; /* Add space between args */
-/* FIX: argv[] can be NULL */
-	    be = stpcpy(be, argv[c]);
+	    char *name = NULL;
+	    rasprintf(&name, "%d", (c - optind + 1));
+	    addMacro(mb->mc, name, NULL, argv[c], mb->depth);
+	    free(name);
 	}
     }
 
-    /* Add unexpanded args as macro. */
-    addMacro(mb->mc, "*", NULL, b, mb->depth);
+    /* Add concatenated unexpanded arguments as yet another macro. */
+    args = argvJoin(argv + optind, " ");
+    addMacro(mb->mc, "*", NULL, args ? args : "", mb->depth);
+    free(args);
 
 exit:
-    _free(buf);
-    return se;
+    argvFree(argv);
+    return ret;
 }
 
 /**
