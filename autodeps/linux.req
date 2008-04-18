@@ -105,6 +105,7 @@ for f in $liblist $exelist ; do
 		print $2 ;
 	    }
 	}
+	(START==2) && /^[A-Za-z]/ { START=3; }
 	/^Version References:$/ { START=2; }
 	(START==2) && /required from/ {
 	    sub(/:/, "", $3);
@@ -113,7 +114,6 @@ for f in $liblist $exelist ; do
 	(START==2) && (LIBNAME!="") && ($4!="") && (($4~/^GLIBC_*/) || ($4~/^GCC_*/)) {
 	    print LIBNAME "(" $4 ")'$lib64'";
 	}
-	/^[A-Za-z]/ { START=3; }
     '
 done | sort -u
 
