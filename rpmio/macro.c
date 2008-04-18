@@ -1593,7 +1593,7 @@ rpmExpand(const char *arg, ...)
     va_list ap;
 
     if (arg == NULL) {
-	res = xstrdup("");
+	buf = xstrdup("");
 	goto exit;
     }
 
@@ -1607,10 +1607,9 @@ rpmExpand(const char *arg, ...)
 	pe = stpcpy(pe, s);
     va_end(ap);
     (void) expandMacros(NULL, NULL, buf, blen);
-    res = xstrdup(buf);
 
 exit:
-    _free(buf);
+    res = buf;
     return res;
 }
 
