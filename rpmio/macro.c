@@ -841,21 +841,22 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 			(char)c, me->name, opts);
 	    goto exit;
 	}
+
+	rasprintf(&name, "-%c", c);
 	if (optarg) {
 	    rasprintf(&body, "-%c %s", c, optarg);
 	} else {
 	    rasprintf(&body, "-%c", c);
 	}
-	rasprintf(&name, "-%c", c);
 	addMacro(mb->mc, name, NULL, body, mb->depth);
 	free(name);
+	free(body);
 
 	if (optarg) {
 	    rasprintf(&name, "-%c*", c);
 	    addMacro(mb->mc, name, NULL, optarg, mb->depth);
 	    free(name);
 	}
-	free(body);
     }
 
     /* Add argument count (remaining non-option items) as macro. */
