@@ -1518,8 +1518,8 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 
     mfiles = xstrdup(macrofiles);
     for (m = mfiles; m && *m != '\0'; m = me) {
-	char ** av;
-	int ac;
+	ARGV_t av = NULL;
+	int ac = 0;
 	int i;
 
 	for (me = m; (me = strchr(me, ':')) != NULL; me++) {
@@ -1534,8 +1534,6 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 	    me = m + strlen(m);
 
 	/* Glob expand the macro file path element, expanding ~ to $HOME. */
-	ac = 0;
-	av = NULL;
 	i = rpmGlob(m, &ac, &av);
         if (i != 0)
 	    continue;
@@ -1548,9 +1546,8 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 		continue;
 	    }
 	    (void) rpmLoadMacroFile(mc, av[i]);
-	    av[i] = _free(av[i]);
 	}
-	av = _free(av);
+	argvFree(av);
     }
     mfiles = _free(mfiles);
 
