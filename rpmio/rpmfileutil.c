@@ -512,29 +512,23 @@ char * rpmGenPath(const char * urlroot, const char * urlmdir,
 
 char * rpmGetPath(const char *path, ...)
 {
-    char buf[BUFSIZ];
-    const char * s;
-    char * t, * te;
     va_list ap;
+    char *dest = NULL, *res;
+    const char *s;
 
     if (path == NULL)
 	return xstrdup("");
 
-    buf[0] = '\0';
-    t = buf;
-    te = stpcpy(t, path);
-    *te = '\0';
-
     va_start(ap, path);
-    while ((s = va_arg(ap, const char *)) != NULL) {
-	te = stpcpy(te, s);
-	*te = '\0';
+    for (s = path; s; s = va_arg(ap, const char *)) {
+	rstrcat(&dest, s);
     }
     va_end(ap);
-    (void) expandMacros(NULL, NULL, buf, sizeof(buf));
 
-    (void) rpmCleanPath(buf);
-    return xstrdup(buf);	/* XXX xstrdup has side effects. */
+    res = rpmExpand(dest, NULL);
+    free(dest);
+
+    return rpmCleanPath(res);
 }
 
 /* =============================================================== */
