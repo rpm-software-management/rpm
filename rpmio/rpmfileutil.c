@@ -531,15 +531,12 @@ char * rpmGetPath(const char *path, ...)
     return rpmCleanPath(res);
 }
 
-/* =============================================================== */
-static int _debug = 0;
-
 int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr)
 {
     int ac = 0;
     const char ** av = NULL;
     int argc = 0;
-    char ** argv = NULL;
+    ARGV_t argv = NULL;
     char * globRoot = NULL;
     const char *home = getenv("HOME");
     int gflags = 0;
@@ -555,6 +552,7 @@ int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr)
     if (home != NULL && strlen(home) > 0) 
 	gflags |= GLOB_TILDE;
 
+    /* Can't use argvSplit() here, it doesn't handle whitespace etc escapes */
     rc = poptParseArgvString(patterns, &ac, &av);
     if (rc)
 	return rc;
@@ -579,11 +577,7 @@ int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr)
 	glob_t gl;
 
 	if (!local || (!glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL)) {
-	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
-	    argv[argc] = xstrdup(av[j]);
-if (_debug)
-fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
-	    argc++;
+	    argvAdd(&argv, av[j]);
 	    continue;
 	}
 	
@@ -621,27 +615,20 @@ fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
 	}
 	globRoot += nb;
 	*globRoot = '\0';
-if (_debug)
-fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
-	
-	argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
 
-	if (argv != NULL)
 	for (i = 0; i < gl.gl_pathc; i++) {
 	    const char * globFile = &(gl.gl_pathv[i][0]);
 	    if (globRoot > globURL && globRoot[-1] == '/')
 		while (*globFile == '/') globFile++;
 	    strcpy(globRoot, globFile);
-if (_debug)
-fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
-	    argv[argc++] = xstrdup(globURL);
+	    argvAdd(&argv, globURL);
 	}
 	globfree(&gl);
 	globURL = _free(globURL);
     }
 
-    if (argv != NULL && argc > 0) {
-	argv[argc] = NULL;
+    argc = argvCount(argv);
+    if (argc > 0) {
 	if (argvPtr)
 	    *argvPtr = argv;
 	if (argcPtr)
@@ -664,10 +651,7 @@ exit:
 #endif
     av = _free(av);
     if (rc || argvPtr == NULL) {
-	if (argv != NULL)
-	for (i = 0; i < argc; i++)
-	    argv[i] = _free(argv[i]);
-	argv = _free(argv);
+	argvFree(argv);
     }
     return rc;
 }
