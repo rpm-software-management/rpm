@@ -1511,45 +1511,32 @@ exit:
 void
 rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 {
-    char *mfiles, *m, *me;
+    ARGV_t pattern, globs = NULL;
 
     if (macrofiles == NULL)
 	return;
 
-    mfiles = xstrdup(macrofiles);
-    for (m = mfiles; m && *m != '\0'; m = me) {
-	ARGV_t av = NULL;
-	int ac = 0;
-	int i;
-
-	for (me = m; (me = strchr(me, ':')) != NULL; me++) {
-	    /* Skip over URI's. */
-	    if (!(me[1] == '/' && me[2] == '/'))
-		break;
-	}
-
-	if (me && *me == ':')
-	    *me++ = '\0';
-	else
-	    me = m + strlen(m);
-
+    argvSplit(&globs, macrofiles, ":");
+    for (pattern = globs; *pattern; pattern++) {
+	ARGV_t path, files = NULL;
+    
 	/* Glob expand the macro file path element, expanding ~ to $HOME. */
-	i = rpmGlob(m, &ac, &av);
-        if (i != 0)
+	if (rpmGlob(*pattern, NULL, &files) != 0) {
 	    continue;
+	}
 
 	/* Read macros from each file. */
-	for (i = 0; i < ac; i++) {
-	    if (rpmFileHasSuffix(av[i], ".rpmnew") || 
-		rpmFileHasSuffix(av[i], ".rpmsave") ||
-		rpmFileHasSuffix(av[i], ".rpmorig")) {
+	for (path = files; *path; path++) {
+	    if (rpmFileHasSuffix(*path, ".rpmnew") || 
+		rpmFileHasSuffix(*path, ".rpmsave") ||
+		rpmFileHasSuffix(*path, ".rpmorig")) {
 		continue;
 	    }
-	    (void) rpmLoadMacroFile(mc, av[i]);
+	    (void) rpmLoadMacroFile(mc, *path);
 	}
-	argvFree(av);
+	argvFree(files);
     }
-    mfiles = _free(mfiles);
+    argvFree(globs);
 
     /* Reload cmdline macros */
     rpmLoadMacros(rpmCLIMacroContext, RMIL_CMDLINE);
