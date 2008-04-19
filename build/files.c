@@ -1703,7 +1703,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     diskPath = rpmGenPath(fl->buildRoot, NULL, fileName);
 
     if (doGlob) {
-	char ** argv = NULL;
+	ARGV_t argv = NULL;
 	int argc = 0;
 	int i;
 
@@ -1718,9 +1718,8 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	if (rc == 0 && argc >= 1) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
-		argv[i] = _free(argv[i]);
 	    }
-	    argv = _free(argv);
+	    argvFree(argv);
 	} else {
 	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), diskPath);
 	    rc = RPMRC_FAIL;
