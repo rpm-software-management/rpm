@@ -31,8 +31,6 @@
 #define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
-#define MAXDOCDIR 1024
-
 /**
  */
 typedef enum specdFlags_e {
@@ -119,11 +117,7 @@ typedef struct FileList_s {
     rpmVerifyFlags defVerifyFlags;
     int nLangs;
     char ** currentLangs;
-
-    /* Hard coded limit of MAXDOCDIR docdirs.         */
-    /* If you break it you are doing something wrong. */
-    char * docDirs[MAXDOCDIR];
-    int docDirCount;
+    ARGV_t docDirs;
     
     FileListRec fileList;
     int fileListRecsAlloced;
@@ -836,18 +830,13 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	t = NULL;
 	if (!strcmp(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
-	    if (fl->docDirCount == MAXDOCDIR) {
-		rpmlog(RPMLOG_ERR, _("Hit limit for %%docdir\n"));
-		fl->processingFailed = 1;
-		res = RPMRC_FAIL;
-	    }
 	
-	    if (s != NULL)
-		fl->docDirs[fl->docDirCount++] = xstrdup(s);
 	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
 		rpmlog(RPMLOG_ERR, _("Only one arg for %%docdir\n"));
 		fl->processingFailed = 1;
 		res = RPMRC_FAIL;
+	    } else {
+		argvAdd(&(fl->docDirs), s);
 	    }
 	    break;
 	}
@@ -975,13 +964,13 @@ static int compareFileListRecs(const void * ap, const void * bp)
  */
 static int isDoc(FileList fl, const char * fileName)	
 {
-    int x = fl->docDirCount;
     size_t k, l;
+    ARGV_const_t dd;
 
     k = strlen(fileName);
-    while (x--) {
-	l = strlen(fl->docDirs[x]);
-	if (l < k && strncmp(fileName, fl->docDirs[x], l) == 0 && fileName[l] == '/')
+    for (dd = fl->docDirs; *dd; dd++) {
+	l = strlen(*dd);
+	if (l < k && strncmp(fileName, *dd, l) == 0 && fileName[l] == '/')
 	    return 1;
     }
     return 0;
@@ -1828,19 +1817,11 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     fl.currentSpecdFlags = 0;
     fl.defSpecdFlags = 0;
 
-    fl.docDirCount = 0;
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/doc");
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/man");
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/info");
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/X11R6/man");
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/doc");
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/man");
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/info");
-    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/gtk-doc/html");
-    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_docdir}", NULL);
-    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_mandir}", NULL);
-    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_infodir}", NULL);
-    fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_javadocdir}", NULL);
+    fl.docDirs = NULL;
+    {	char *docs = rpmGetPath("%{?__docdir_path}", NULL);
+	argvSplit(&fl.docDirs, docs, ":");
+	free(docs);
+    }
     
     fl.fileList = NULL;
     fl.fileListRecsAlloced = 0;
@@ -1981,8 +1962,7 @@ exit:
     }
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
-    while (fl.docDirCount--)
-	fl.docDirs[fl.docDirCount] = _free(fl.docDirs[fl.docDirCount]);
+    argvFree(fl.docDirs);
     return fl.processingFailed;
 }
 

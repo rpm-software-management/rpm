@@ -403,6 +403,9 @@ print (t)\
 # Path to selinux file context patterns.
 %__file_context_path /etc/selinux/%{__policy_tree}/contexts/files/file_contexts
 
+# Directories whose contents should be considered as documentation.
+%__docdir_path %{_datadir}/doc:%{_datadir}/man:%{_datadir}/info:%{_datadir}/gtk-doc/html:%{?_docdir}:%{?_mandir}:%{?_infodir}:%{?_javadocdir}:/usr/doc:/usr/man:/usr/info:/usr/X11R6/man
+
 #
 # Path to selinux file context patterns used to add
 # RPMTAG_FILECONTEXTS to packages when building.
