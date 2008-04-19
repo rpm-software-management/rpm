@@ -9,6 +9,7 @@
 #include <rpm/rpmutil.h>
 #include <rpm/rpmio.h>
 #include <rpm/rpmpgp.h>
+#include <rpm/argv.h>
 
 /** \ingroup rpmfileutil
  */
@@ -86,10 +87,10 @@ char * rpmGetPath (const char * path, ...) RPM_GNUC_NULL_TERMINATED;
  * Return URL path(s) from a (URL prefixed) pattern glob.
  * @param patterns	glob pattern
  * @retval *argcPtr	no. of paths
- * @retval *argvPtr	array of paths (malloc'd contiguous blob)
+ * @retval *argvPtr	ARGV_t array of paths
  * @return		0 on success
  */
-int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr);
+int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr);
 
 /** \ingroup rpmfileutil
  * Escape isspace(3) characters in string.

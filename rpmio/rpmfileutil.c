@@ -531,7 +531,7 @@ char * rpmGetPath(const char *path, ...)
     return rpmCleanPath(res);
 }
 
-int rpmGlob(const char * patterns, int * argcPtr, char *** argvPtr)
+int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 {
     int ac = 0;
     const char ** av = NULL;
