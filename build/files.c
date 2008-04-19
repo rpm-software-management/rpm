@@ -1758,8 +1758,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 
     if (pkg->fileFile) {
 	char *ffn;
-	FILE * f;
-	FD_t fd;
+	FILE *fd;
 
 	/* XXX W2DO? urlPath might be useful here. */
 	if (*pkg->fileFile == '/') {
@@ -1770,27 +1769,24 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 		(spec->buildSubdir ? spec->buildSubdir : "") ,
 		"/", pkg->fileFile, NULL);
 	}
-	fd = Fopen(ffn, "r.fpio");
+	fd = fopen(ffn, "r");
 
-	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR,
-		_("Could not open %%files file %s: %s\n"),
-		ffn, Fstrerror(fd));
+	if (fd == NULL || ferror(fd)) {
+	    rpmlog(RPMLOG_ERR, _("Could not open %%files file %s: %m\n"), ffn);
 	    return RPMRC_FAIL;
 	}
 	ffn = _free(ffn);
 
-	f = fdGetFILE(fd);
-	if (f != NULL)
-	while (fgets(buf, sizeof(buf), f)) {
+	while (fgets(buf, sizeof(buf), fd)) {
 	    handleComments(buf);
 	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 		rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
+		fclose(fd);
 		return RPMRC_FAIL;
 	    }
 	    appendStringBuf(pkg->fileList, buf);
 	}
-	(void) Fclose(fd);
+	(void) fclose(fd);
     }
     
     /* Init the file list structure */
