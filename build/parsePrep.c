@@ -393,6 +393,15 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
 /**
  * Parse %patch line.
+ * This supports too many crazy syntaxes:
+ * - %patch is equal to %patch0
+ * - %patchN is equal to %patch -P<N>
+ * - -P<N> -P<N+1>... can be used to apply several patch on a single line
+ * - Any trailing arguments are treated as patch numbers
+ * - Any combination of the above, except unless at least one -P is specified,
+ *   %patch is treated as %patch -P0 so that "%patch 1" is actually
+ *   equal to "%patch -P0 -P1".
+ *
  * @param spec		build info
  * @param line		current line from spec file
  * @return		RPMRC_OK on success
@@ -400,125 +409,93 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 {
     char *opt_b;
+    char *buf = NULL;
     int opt_P, opt_p, opt_R, opt_E, opt_F;
-    char *s;
-    char *buf = NULL, *bp;
-    int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
-    int patch_index, x;
+    int argc, c;
+    const char **argv = NULL;
+    ARGV_t patch, patchnums = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
+    
+    struct poptOption const patchOpts[] = {
+	{ NULL, 'P', POPT_ARG_INT, &opt_P, 'P', NULL, NULL },
+	{ NULL, 'p', POPT_ARG_INT, &opt_p, 'p', NULL, NULL },
+	{ NULL, 'R', POPT_ARG_NONE, &opt_R, 'R', NULL, NULL },
+	{ NULL, 'E', POPT_ARG_NONE, &opt_E, 'E', NULL, NULL },
+	{ NULL, 'b', POPT_ARG_STRING, &opt_b, 'b', NULL, NULL },
+	{ NULL, 'z', POPT_ARG_STRING, &opt_b, 'z', NULL, NULL },
+	{ NULL, 'F', POPT_ARG_INT, &opt_F, 'F', NULL, NULL },
+	{ NULL, 0, 0, NULL, 0, NULL, NULL }
+    };
+    poptContext optCon;
 
-    memset(patch_nums, 0, sizeof(patch_nums));
     opt_P = opt_p = opt_R = opt_E = opt_F = 0;
     opt_b = NULL;
-    patch_index = 0;
 
+    /* Convert %patchN to %patch -PN to simplify further processing */
     if (! strchr(" \t\n", line[6])) {
-	/* %patchN */
 	rasprintf(&buf, "%%patch -P %s", line + 6);
     } else {
 	buf = xstrdup(line);
     }
-    
-   	/* FIX: strtok has state */
-    for (bp = buf; (s = strtok(bp, " \t\n")) != NULL;) {
-	if (bp) {	/* remove 1st token (%patch) */
-	    bp = NULL;
-	    continue;
-	}
-	if (!strcmp(s, "-P")) {
-	    opt_P = 1;
-	} else if (!strcmp(s, "-R")) {
-	    opt_R = 1;
-	} else if (!strcmp(s, "-E")) {
-	    opt_E = 1;
-	} else if (!strcmp(s, "-b")) {
-	    /* orig suffix */
-	    opt_b = strtok(NULL, " \t\n");
-	    if (! opt_b) {
-		rpmlog(RPMLOG_ERR, _("line %d: Need arg to %%patch -b: %s\n"),
-			spec->lineNum, spec->line);
-		goto exit;
-	    }
-	} else if (!strcmp(s, "-z")) {
-	    /* orig suffix */
-	    opt_b = strtok(NULL, " \t\n");
-	    if (! opt_b) {
-		rpmlog(RPMLOG_ERR, _("line %d: Need arg to %%patch -z: %s\n"),
-			spec->lineNum, spec->line);
-		goto exit;
-	    }
-	} else if (!strncmp(s, "-F", strlen("-F"))) {
-	    /* fuzz factor */
-	    const char * fnum = NULL;
-	    char * end = NULL;
+    poptParseArgvString(buf, &argc, &argv);
+    free(buf);
 
-	    if (! strchr(" \t\n", s[2])) {
-		fnum = s + 2;
-	    } else {
-		fnum = strtok(NULL, " \t\n");
+    /* 
+     * Grab all -P<N> numbers for later processing. Stored as strings
+     * at this point so we only have to worry about conversion in one place.
+     */
+    optCon = poptGetContext(NULL, argc, argv, patchOpts, 0);
+    while ((c = poptGetNextOpt(optCon)) > 0) {
+	switch (c) {
+	case 'P': {
+	    char *arg = poptGetOptArg(optCon);
+	    if (arg) {
+	    	argvAdd(&patchnums, arg);
+	    	free(arg);
 	    }
-	    opt_F = (fnum ? strtol(fnum, &end, 10) : 0);
-	    if (! opt_F || *end) {
-		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch -F: %s\n"),
-			spec->lineNum, spec->line);
-		goto exit;
-	    }
-	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
-	    /* unfortunately, we must support -pX */
-	    if (! strchr(" \t\n", s[2])) {
-		s = s + 2;
-	    } else {
-		s = strtok(NULL, " \t\n");
-		if (s == NULL) {
-		    rpmlog(RPMLOG_ERR,
-			     _("line %d: Need arg to %%patch -p: %s\n"),
-			     spec->lineNum, spec->line);
-		    goto exit;
-		}
-	    }
-	    if (parseNum(s, &opt_p)) {
-		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch -p: %s\n"),
-			spec->lineNum, spec->line);
-		goto exit;
-	    }
-	} else {
-	    /* Must be a patch num */
-	    if (patch_index == 1024) {
-		rpmlog(RPMLOG_ERR, _("Too many patches!\n"));
-		goto exit;
-	    }
-	    if (parseNum(s, &(patch_nums[patch_index]))) {
-		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch: %s\n"),
-			 spec->lineNum, spec->line);
-		goto exit;
-	    }
-	    patch_index++;
+	    break;
+	}
+	default:
+	    break;
 	}
     }
 
-    /* All args processed */
+    if (c < -1) {
+	rpmlog(RPMLOG_ERR, _("%s: %s: %s\n"), poptStrerror(c), 
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), line);
+	goto exit;
+    }
 
-    if (! opt_P) {
-	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F);
+    /* %patch without -P<N> is treated as %patch0, urgh */
+    if (!opt_P) {
+	argvAdd(&patchnums, "0");
+    }
+    /* Any trailing arguments are treated as patch numbers */
+    argvAppend(&patchnums, (ARGV_const_t) poptGetArgs(optCon));
+
+    /* Convert to number, generate patch command and append to %prep script */
+    for (patch = patchnums; *patch; patch++) {
+	int pnum;
+	char *s;
+	if (parseNum(*patch, &pnum)) {
+	    rpmlog(RPMLOG_ERR, _("Invalid patch number %s: %s\n"),
+		     *patch, line);
+	    goto exit;
+	}
+	s = doPatch(spec, pnum, opt_p, opt_b, opt_R, opt_E, opt_F);
 	if (s == NULL) {
 	    goto exit;
 	}
 	appendLineStringBuf(spec->prep, s);
 	free(s);
     }
-
-    for (x = 0; x < patch_index; x++) {
-	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F);
-	if (s == NULL) {
-	    goto exit;
-	}
-	appendLineStringBuf(spec->prep, s);
-	free(s);
-    }
+	
     rc = RPMRC_OK;
 
 exit:
-    free(buf);
+    argvFree(patchnums);
+    free(argv);
+    poptFreeContext(optCon);
     return rc;
 }
 
