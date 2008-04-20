@@ -125,7 +125,7 @@ const char ** argv;
 	const char * str;
 	int32_t * i32p;
     } body;
-    char numbuf[32];
+    char *numbuf = NULL;
     rpmTagType type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
@@ -133,8 +133,9 @@ const char ** argv;
 	    continue;
 	switch (type) {
 	case RPM_INT32_TYPE:
-	    sprintf(numbuf, "%d", *body.i32p);
+	    rasprintf(&numbuf, "%d", *body.i32p);
 	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
+	    numbuf = _free(numbuf);
 	    break;
 	case RPM_STRING_TYPE:
 	    addMacro(NULL, tagm->macroname, NULL, body.str, -1);

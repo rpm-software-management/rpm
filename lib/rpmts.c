@@ -312,9 +312,7 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	mi = rpmdbFreeIterator(mi);
 
 	if (ix >= 0) {
-	    char hnum[32];
-	    sprintf(hnum, "h#%d", hx);
-	    pubkeysource = xstrdup(hnum);
+	    rasprintf(&pubkeysource, "h#%d", hx);
 	} else {
 	    ts->pkpkt = _free(ts->pkpkt);
 	    ts->pkpktlen = 0;
