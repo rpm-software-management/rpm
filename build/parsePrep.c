@@ -405,6 +405,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     char *buf = NULL, *bp;
     int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
     int patch_index, x;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     memset(patch_nums, 0, sizeof(patch_nums));
     opt_P = opt_p = opt_R = opt_E = opt_F = 0;
@@ -434,21 +435,17 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	    /* orig suffix */
 	    opt_b = strtok(NULL, " \t\n");
 	    if (! opt_b) {
-		rpmlog(RPMLOG_ERR,
-			_("line %d: Need arg to %%patch -b: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Need arg to %%patch -b: %s\n"),
 			spec->lineNum, spec->line);
-		free(buf);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	} else if (!strcmp(s, "-z")) {
 	    /* orig suffix */
 	    opt_b = strtok(NULL, " \t\n");
 	    if (! opt_b) {
-		rpmlog(RPMLOG_ERR,
-			_("line %d: Need arg to %%patch -z: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Need arg to %%patch -z: %s\n"),
 			spec->lineNum, spec->line);
-		free(buf);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	} else if (!strncmp(s, "-F", strlen("-F"))) {
 	    /* fuzz factor */
@@ -462,11 +459,9 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	    }
 	    opt_F = (fnum ? strtol(fnum, &end, 10) : 0);
 	    if (! opt_F || *end) {
-		rpmlog(RPMLOG_ERR,
-			_("line %d: Bad arg to %%patch -F: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch -F: %s\n"),
 			spec->lineNum, spec->line);
-		free(buf);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
 	    /* unfortunately, we must support -pX */
@@ -478,29 +473,24 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 		    rpmlog(RPMLOG_ERR,
 			     _("line %d: Need arg to %%patch -p: %s\n"),
 			     spec->lineNum, spec->line);
-		    free(buf);
-		    return RPMRC_FAIL;
+		    goto exit;
 		}
 	    }
 	    if (parseNum(s, &opt_p)) {
-		rpmlog(RPMLOG_ERR,
-			_("line %d: Bad arg to %%patch -p: %s\n"),
+		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch -p: %s\n"),
 			spec->lineNum, spec->line);
-		free(buf);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	} else {
 	    /* Must be a patch num */
 	    if (patch_index == 1024) {
 		rpmlog(RPMLOG_ERR, _("Too many patches!\n"));
-		free(buf);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	    if (parseNum(s, &(patch_nums[patch_index]))) {
 		rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%patch: %s\n"),
 			 spec->lineNum, spec->line);
-		free(buf);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	    patch_index++;
 	}
@@ -511,8 +501,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     if (! opt_P) {
 	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F);
 	if (s == NULL) {
-	    free(buf);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	appendLineStringBuf(spec->prep, s);
 	free(s);
@@ -521,15 +510,16 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     for (x = 0; x < patch_index; x++) {
 	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F);
 	if (s == NULL) {
-	    free(buf);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	appendLineStringBuf(spec->prep, s);
 	free(s);
     }
+    rc = RPMRC_OK;
 
+exit:
     free(buf);
-    return RPMRC_OK;
+    return rc;
 }
 
 int parsePrep(rpmSpec spec)
