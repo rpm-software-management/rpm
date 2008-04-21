@@ -456,7 +456,7 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
     gi->tsi = NULL;
     gi->mi = NULL;
     gi->fd = NULL;
-    gi->argv = xcalloc(1, sizeof(*gi->argv));
+    gi->argv = argvNew();
     gi->argc = 0;
     gi->ftsOpts = 0;
     gi->ftsp = NULL;
