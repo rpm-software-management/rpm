@@ -55,7 +55,7 @@ static rpmRC checkOwners(const char * urlfn)
  * @param strip		patch level (i.e. patch -p argument)
  * @param db		saved file suffix (i.e. patch --suffix argument)
  * @param reverse	include -R?
- * @param fuzz		include -F?
+ * @param fuzz		fuzz factor, fuzz<0 means no fuzz set
  * @param removeEmpties	include -E?
  * @return		expanded %patch macro (NULL on error)
  */
@@ -98,8 +98,8 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 		  "--suffix %s", db);
     } else arg_backup = xstrdup("");
 
-    if (fuzz) {
-	rasprintf(&arg_fuzz, " -F%d", fuzz);
+    if (fuzz >= 0) {
+	rasprintf(&arg_fuzz, " --fuzz=%d", fuzz);
     } else arg_fuzz = xstrdup("");
 
     rasprintf(&args, "%s%s%s%s", arg_backup, arg_fuzz, reverse ? " -R" : "", removeEmpties ? " -E" : "");
@@ -428,7 +428,8 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     };
     poptContext optCon;
 
-    opt_P = opt_p = opt_R = opt_E = opt_F = 0;
+    opt_P = opt_p = opt_R = opt_E = 0;
+    opt_F = -1;		/* fuzz<0 indicates no explicit -F x was set */
     opt_b = NULL;
 
     /* Convert %patchN to %patch -PN to simplify further processing */
