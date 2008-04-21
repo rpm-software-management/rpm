@@ -216,9 +216,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     rpmRelocation * relocations;
     char * fileURL = NULL;
     int stopInstall = 0;
-    char ** av = NULL;
     rpmVSFlags vsflags, ovsflags, tvsflags;
-    int ac = 0;
     int rc;
     int xx;
     int i;
@@ -259,8 +257,10 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     /* Build fully globbed list of arguments in argv[argc]. */
     for (eiu->fnp = fileArgv; *eiu->fnp != NULL; eiu->fnp++) {
+    	ARGV_t av = NULL;
+    	int ac = 0;
 	char * fn;
-	av = _free(av);	ac = 0;
+
 	fn = rpmEscapeSpaces(*eiu->fnp);
 	rc = rpmGlob(fn, &ac, &av);
 	fn = _free(fn);
@@ -269,12 +269,10 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 	    continue;
 	}
 
-	eiu->argv = xrealloc(eiu->argv, (eiu->argc+ac+1) * sizeof(*eiu->argv));
-	memcpy(eiu->argv+eiu->argc, av, ac * sizeof(*av));
+	argvAppend(&(eiu->argv), av);
+	argvFree(av);
 	eiu->argc += ac;
-	eiu->argv[eiu->argc] = NULL;
     }
-    av = _free(av);	ac = 0;
 
 restart:
     /* Allocate sufficient storage for next set of args. */
