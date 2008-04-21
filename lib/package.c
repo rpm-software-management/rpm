@@ -937,8 +937,9 @@ exit:
 	/* 
          * Convert legacy headers on the fly. Not having "new" style compressed
          * filenames is close enough estimate for legacy indication... 
+         * Source rpms are retrofitted for the silly RPMTAG_SOURCEPACKAGE tag.
          */
-	if (!headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	if (!headerIsEntry(h, RPMTAG_DIRNAMES) || headerIsSource(h)) {
 	    legacyRetrofit(h);
 	}
 	
