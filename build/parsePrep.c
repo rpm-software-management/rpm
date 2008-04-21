@@ -428,7 +428,8 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     };
     poptContext optCon;
 
-    opt_P = opt_p = opt_R = opt_E = 0;
+    opt_p = opt_R = opt_E = 0;
+    opt_P = -1;		/* no explicit -P <N> was found */
     opt_F = -1;		/* fuzz<0 indicates no explicit -F x was set */
     opt_b = NULL;
 
@@ -468,7 +469,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     }
 
     /* %patch without -P<N> is treated as %patch0, urgh */
-    if (!opt_P) {
+    if (opt_P < 0) {
 	argvAdd(&patchnums, "0");
     }
     /* Any trailing arguments are treated as patch numbers */
