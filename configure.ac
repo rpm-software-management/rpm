@@ -273,6 +273,14 @@ AC_CHECK_HEADERS([bzlib.h],[
 AC_SUBST(WITH_BZ2_LIB)
 
 #=================
+# Check for lzma library.
+
+AC_CHECK_HEADERS([lzma.h],[
+  AC_CHECK_LIB(lzma, lzma_auto_decoder, [WITH_LZMA_LIB=-llzma])
+])
+AC_SUBST(WITH_LZMA_LIB)
+
+#=================
 
 dnl
 dnl Check for features
