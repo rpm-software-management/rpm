@@ -3270,32 +3270,10 @@ static int rpmdbMoveDatabase(const char * prefix,
 		const char * newdbpath, int _newdbapi)
 {
     int i;
-    char * ofilename, * nfilename;
     struct stat st;
     int rc = 0;
     int xx;
  
-    i = strlen(olddbpath);
-    if (olddbpath[i - 1] != '/') {
-	ofilename = alloca(i + 2);
-	strcpy(ofilename, olddbpath);
-	ofilename[i] = '/';
-	ofilename[i + 1] = '\0';
-	olddbpath = ofilename;
-    }
-    
-    i = strlen(newdbpath);
-    if (newdbpath[i - 1] != '/') {
-	nfilename = alloca(i + 2);
-	strcpy(nfilename, newdbpath);
-	nfilename[i] = '/';
-	nfilename[i + 1] = '\0';
-	newdbpath = nfilename;
-    }
-    
-    ofilename = alloca(strlen(prefix) + strlen(olddbpath) + 40);
-    nfilename = alloca(strlen(prefix) + strlen(newdbpath) + 40);
-
     switch (_olddbapi) {
     case 4:
         /* Fall through */
@@ -3303,6 +3281,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	if (dbiTags.tags != NULL)
 	for (i = 0; i < dbiTags.max; i++) {
 	    const char * base;
+	    char *src, *dest;
 	    rpmTag rpmtag;
 
 	    /* Filter out temporary databases */
@@ -3310,33 +3289,35 @@ static int rpmdbMoveDatabase(const char * prefix,
 		continue;
 
 	    base = rpmTagGetName(rpmtag);
-	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
-	    (void)rpmCleanPath(ofilename);
-	    if (access(ofilename, F_OK) != 0)
-		continue;
-	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
-	    (void)rpmCleanPath(nfilename);
+	    src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
+	    dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
+
+	    if (access(src, F_OK) != 0)
+		goto cont;
 
 	    /*
-	     * Get uid/gid/mode/mtime. If old doesn't exist, use new.
-	     * XXX Yes, the variable names are backwards.
+	     * Restore uid/gid/mode/mtime if possible.
 	     */
-	    if (stat(nfilename, &st) < 0)
-		if (stat(ofilename, &st) < 0)
-		    continue;
+	    if (stat(dest, &st) < 0)
+		if (stat(src, &st) < 0)
+		    goto cont;
 
-	    if ((xx = rename(ofilename, nfilename)) != 0) {
+	    if ((xx = rename(src, dest)) != 0) {
 		rc = 1;
-		continue;
+		goto cont;
 	    }
-	    xx = chown(nfilename, st.st_uid, st.st_gid);
-	    xx = chmod(nfilename, (st.st_mode & 07777));
+	    xx = chown(dest, st.st_uid, st.st_gid);
+	    xx = chmod(dest, (st.st_mode & 07777));
 	    {	struct utimbuf stamp;
 		stamp.actime = st.st_atime;
 		stamp.modtime = st.st_mtime;
-		xx = utime(nfilename, &stamp);
+		xx = utime(dest, &stamp);
 	    }
+cont:
+	    free(src);
+	    free(dest);
 	}
+
 	cleanDbenv(prefix, olddbpath);
 	cleanDbenv(prefix, newdbpath);
 	break;
