@@ -25,6 +25,7 @@
 #include <rpm/rpmds.h>			/* XXX isInstallPreReq macro only */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmdb.h>
+#include <rpm/argv.h>
 
 #include "rpmdb/rpmdb_internal.h"
 #include "rpmdb/fprint.h"
@@ -3196,6 +3197,29 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
 }
 
+/*
+ * Remove DB4 environment (and lock), ie the equivalent of 
+ * rm -f <prefix>/<dbpath>/__db.???
+ * Environment files not existing is not an error, failure to unlink is,
+ * return zero on success.
+ * Only useful for BDB, dbapi 3 and 4.  
+ */
+static int cleanDbenv(const char *prefix, const char *dbpath)
+{
+    ARGV_t paths = NULL, p;
+    int rc = 0; 
+    char *pattern = rpmGetPath(prefix, "/", dbpath, "/__db.???", NULL);
+
+    if (rpmGlob(pattern, NULL, &paths) == 0) {
+	for (p = paths; *p; p++) {
+	    rc += unlink(*p);
+	}
+	argvFree(paths);
+    }
+    free(pattern);
+    return rc;
+}
+
 static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi)
 { 
@@ -3226,13 +3250,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 		continue;
 	    xx = unlink(filename);
 	}
-	for (i = 0; i < 16; i++) {
-	    sprintf(filename, "%s/%s/__db.%03d", prefix, dbpath, i);
-	    (void)rpmCleanPath(filename);
-	    if (access(filename, F_OK) != 0)
-		continue;
-	    xx = unlink(filename);
-	}
+	cleanDbenv(prefix, dbpath);
 	break;
     case 2:
     case 1:
@@ -3319,16 +3337,8 @@ static int rpmdbMoveDatabase(const char * prefix,
 		xx = utime(nfilename, &stamp);
 	    }
 	}
-	for (i = 0; i < 16; i++) {
-	    sprintf(ofilename, "%s/%s/__db.%03d", prefix, olddbpath, i);
-	    (void)rpmCleanPath(ofilename);
-	    if (access(ofilename, F_OK) != 0)
-		xx = unlink(ofilename);
-	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
-	    (void)rpmCleanPath(nfilename);
-	    if (access(nfilename, F_OK) != 0)
-		xx = unlink(nfilename);
-	}
+	cleanDbenv(prefix, olddbpath);
+	cleanDbenv(prefix, newdbpath);
 	break;
     case 2:
     case 1:
