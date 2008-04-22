@@ -23,4 +23,14 @@ dl=`expr 256 \* \( 256 \* \( 256 \* $6 + $7 \) + $8 \) + $9`
 hdrsize=`expr 8 + 16 \* $il + $dl`
 o=`expr $o + $hdrsize`
 
-dd if=$pkg ibs=$o skip=1 2>/dev/null | gunzip
+comp=`dd if="$pkg" ibs=$o skip=1 count=1 2>/dev/null \
+      | dd bs=3 count=1 2>/dev/null`
+
+gz="`echo . | awk '{ printf("%c%c", 0x1f, 0x8b); }'`"
+lzma="`echo . | awk '{ printf("%cLZ", 0xff); }'`"
+case "$comp" in
+    BZh)      dd if="$pkg" ibs=$o skip=1 2>/dev/null | bunzip2 ;;
+    "$gz"*)   dd if="$pkg" ibs=$o skip=1 2>/dev/null | gunzip ;;
+    "$lzma"*) dd if="$pkg" ibs=$o skip=1 2>/dev/null | unlzma ;;
+    *)        echo "Unrecognized rpm file: $pkg"; return 1 ;;
+esac
