@@ -75,6 +75,8 @@ int main(int argc, char *argv[])
 	    rpmio_flags = "r.gzdio";
 	if (!strcmp(payload_compressor, "bzip2"))
 	    rpmio_flags = "r.bzdio";
+	if (!strcmp(payload_compressor, "lzma"))
+	    rpmio_flags = "r.lzdio";
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */

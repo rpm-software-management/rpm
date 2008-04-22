@@ -1736,6 +1736,8 @@ assert(psm->mi == NULL);
 	    psm->rpmio_flags = "r.gzdio";
 	if (!strcmp(payload_compressor, "bzip2"))
 	    psm->rpmio_flags = "r.bzdio";
+	if (!strcmp(payload_compressor, "lzma"))
+	    psm->rpmio_flags = "r.lzdio";
 
 	rc = RPMRC_OK;
     }	break;
