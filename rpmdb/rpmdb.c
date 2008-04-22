@@ -3224,19 +3224,8 @@ static int rpmdbRemoveDatabase(const char * prefix,
 		const char * dbpath, int _dbapi)
 { 
     int i;
-    char * filename;
+    char *path;
     int xx;
-
-    i = strlen(dbpath);
-    if (dbpath[i - 1] != '/') {
-	filename = alloca(i);
-	strcpy(filename, dbpath);
-	filename[i] = '/';
-	filename[i + 1] = '\0';
-	dbpath = filename;
-    }
-    
-    filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
 
     switch (_dbapi) {
     case 4:
@@ -3244,11 +3233,10 @@ static int rpmdbRemoveDatabase(const char * prefix,
 	if (dbiTags.tags != NULL)
 	for (i = 0; i < dbiTags.max; i++) {
 	    const char * base = rpmTagGetName(dbiTags.tags[i]);
-	    sprintf(filename, "%s/%s/%s", prefix, dbpath, base);
-	    (void)rpmCleanPath(filename);
-	    if (access(filename, F_OK) != 0)
-		continue;
-	    xx = unlink(filename);
+	    path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
+	    if (access(path, F_OK) == 0)
+	    	xx = unlink(path);
+	    free(path);
 	}
 	cleanDbenv(prefix, dbpath);
 	break;
@@ -3258,9 +3246,9 @@ static int rpmdbRemoveDatabase(const char * prefix,
 	break;
     }
 
-    sprintf(filename, "%s/%s", prefix, dbpath);
-    (void)rpmCleanPath(filename);
-    xx = rmdir(filename);
+    path = rpmGetPath(prefix, "/", dbpath, NULL);
+    xx = rmdir(path);
+    free(path);
 
     return 0;
 }
