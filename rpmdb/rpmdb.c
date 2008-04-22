@@ -3271,7 +3271,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 {
     int i;
     char * ofilename, * nfilename;
-    struct stat * nst = alloca(sizeof(*nst));
+    struct stat st;
     int rc = 0;
     int xx;
  
@@ -3321,19 +3321,19 @@ static int rpmdbMoveDatabase(const char * prefix,
 	     * Get uid/gid/mode/mtime. If old doesn't exist, use new.
 	     * XXX Yes, the variable names are backwards.
 	     */
-	    if (stat(nfilename, nst) < 0)
-		if (stat(ofilename, nst) < 0)
+	    if (stat(nfilename, &st) < 0)
+		if (stat(ofilename, &st) < 0)
 		    continue;
 
 	    if ((xx = rename(ofilename, nfilename)) != 0) {
 		rc = 1;
 		continue;
 	    }
-	    xx = chown(nfilename, nst->st_uid, nst->st_gid);
-	    xx = chmod(nfilename, (nst->st_mode & 07777));
+	    xx = chown(nfilename, st.st_uid, st.st_gid);
+	    xx = chmod(nfilename, (st.st_mode & 07777));
 	    {	struct utimbuf stamp;
-		stamp.actime = nst->st_atime;
-		stamp.modtime = nst->st_mtime;
+		stamp.actime = st.st_atime;
+		stamp.modtime = st.st_mtime;
 		xx = utime(nfilename, &stamp);
 	    }
 	}
