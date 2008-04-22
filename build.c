@@ -152,6 +152,11 @@ static char * getTarSpec(const char *arg)
 		tmpSpecFile, specFile);
     	free(specFile);
 	specFile = NULL;
+    } else {
+    	/* mkstemp() can give unnecessarily strict permissions, fixup */
+	mode_t mask;
+	umask(mask = umask(0));
+	(void) chmod(specFile, 0666 & ~mask);
     }
 
 exit:
