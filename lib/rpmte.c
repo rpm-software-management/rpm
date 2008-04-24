@@ -434,6 +434,11 @@ int rpmteDBOffset(rpmte te)
     return (te != NULL ? te->u.removed.dboffset : 0);
 }
 
+const char * rpmteEVR(rpmte te)
+{
+    return (te != NULL ? te->NEVR + strlen(te->name) + 1 : NULL);
+}
+
 const char * rpmteNEVR(rpmte te)
 {
     return (te != NULL ? te->NEVR : NULL);

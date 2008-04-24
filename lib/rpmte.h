@@ -313,6 +313,13 @@ rpmalKey rpmteDependsOnKey(rpmte te);
 int rpmteDBOffset(rpmte te);
 
 /** \ingroup rpmte
+ * Retrieve [epoch:]version-release string from transaction element.
+ * @param te		transaction element
+ * @return		name-version-release string
+ */
+const char * rpmteEVR(rpmte te);
+
+/** \ingroup rpmte
  * Retrieve name-version-release string from transaction element.
  * @param te		transaction element
  * @return		name-version-release string

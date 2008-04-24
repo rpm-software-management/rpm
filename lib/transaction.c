@@ -593,16 +593,13 @@ static int ensureOlder(rpmts ts,
 		const rpmte p, const Header h)
 {
     rpmsenseFlags reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
-    const char * reqEVR;
     rpmds req;
     int rc;
 
     if (p == NULL || h == NULL)
 	return 1;
 
-    reqEVR = rpmteNEVR(p) + strlen(rpmteN(p)) + 1;
-
-    req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
+    req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), rpmteEVR(p), reqFlags);
     rc = rpmdsNVRMatchesDep(h, req, _rpmds_nopromote);
     req = rpmdsFree(req);
 
