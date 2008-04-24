@@ -160,7 +160,7 @@ static const char * _tagName(rpmTag tag)
 		    i--;
 		}
 		t = _rpmTags.byValue[i];
-		if (t->name != NULL)
+		if (t->shortname != NULL)
 		    name = t->shortname;
 		break;
 	    }
@@ -252,7 +252,7 @@ static rpmTag _tagValue(const char * tagstr)
 	i = (l + u) / 2;
 	t = _rpmTags.byName[i];
 	
-	comparison = rstrcasecmp(tagstr, t->name + (sizeof("RPMTAG_")-1));
+	comparison = rstrcasecmp(tagstr, t->shortname);
 
 	if (comparison < 0)
 	    u = i;
