@@ -385,33 +385,11 @@ int rpmtsiOc(rpmtsi tsi);
 rpmtsi rpmtsiFree(rpmtsi tsi);
 
 /** \ingroup rpmte
- * Destroy transaction element iterator.
- * @param tsi		transaction element iterator
- * @param fn
- * @param ln
- * @return		NULL always
- */
-rpmtsi XrpmtsiFree(rpmtsi tsi,
-		const char * fn, unsigned int ln);
-#define	rpmtsiFree(_tsi)	XrpmtsiFree(_tsi, __FILE__, __LINE__)
-
-/** \ingroup rpmte
  * Create transaction element iterator.
  * @param ts		transaction set
  * @return		transaction element iterator
  */
 rpmtsi rpmtsiInit(rpmts ts);
-
-/** \ingroup rpmte
- * Create transaction element iterator.
- * @param ts		transaction set
- * @param fn
- * @param ln
- * @return		transaction element iterator
- */
-rpmtsi XrpmtsiInit(rpmts ts,
-		const char * fn, unsigned int ln);
-#define	rpmtsiInit(_ts)		XrpmtsiInit(_ts, __FILE__, __LINE__)
 
 /** \ingroup rpmte
  * Return next transaction element of type.

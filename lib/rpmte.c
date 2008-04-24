@@ -566,19 +566,15 @@ int rpmtsiOc(rpmtsi tsi)
     return tsi->ocsave;
 }
 
-rpmtsi XrpmtsiFree(rpmtsi tsi,
-		const char * fn, unsigned int ln)
+rpmtsi rpmtsiFree(rpmtsi tsi)
 {
     /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
     if (tsi)
 	tsi->ts = rpmtsFree(tsi->ts);
-
-if (_rpmte_debug)
-fprintf(stderr, "*** tsi %p -- %s:%d\n", tsi, fn, ln);
     return _free(tsi);
 }
 
-rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
+rpmtsi rpmtsiInit(rpmts ts)
 {
     rpmtsi tsi = NULL;
 
@@ -587,8 +583,6 @@ rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
     tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
     tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
     tsi->ocsave = tsi->oc;
-if (_rpmte_debug)
-fprintf(stderr, "*** tsi %p ++ %s:%d\n", tsi, fn, ln);
     return tsi;
 }
 
