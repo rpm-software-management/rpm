@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-03-17 14:25+0200\n"
+"POT-Creation-Date: 2008-04-24 15:40+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -17,66 +17,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: build.c:38
+#: build.c:40
 msgid "Failed build dependencies:\n"
 msgstr "相依性組建失敗：\n"
 
-#: build.c:62
+#: build.c:64
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "無法開啟規格檔案 %s：%s\n"
 
-#: build.c:139 build.c:151
+#: build.c:126
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "無法開啟打包管道：%m\n"
 
-#: build.c:158
+#: build.c:139
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "無法從 %s 讀取規格檔案\n"
 
-#: build.c:186
+#: build.c:151
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "無法將 %s 更名為 %s：%m\n"
 
-#: build.c:199 build.c:220
-#, fuzzy, c-format
-msgid "getcwd failed: %m\n"
-msgstr "%s 移除目錄 %s 失敗：%s\n"
-
-#: build.c:232
+#: build.c:219
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "無法檢視 %s 的狀態：%m\n"
 
-#: build.c:237
+#: build.c:223
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s 不是一個正常的檔案。\n"
 
-#: build.c:246
+#: build.c:230
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s 似乎不是一個規格檔案。\n"
 
-#: build.c:316
+#: build.c:295
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "組建目標平台：%s\n"
 
-#: build.c:331
+#: build.c:310
 #, c-format
 msgid "Building for target %s\n"
 msgstr "組建目標 %s\n"
 
-#: rpm2cpio.c:57
+#: rpm2cpio.c:58
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引數不是一個 RPM 套件\n"
 
-#: rpm2cpio.c:62
+#: rpm2cpio.c:63
 #, c-format
 msgid "error reading header from package\n"
 msgstr "讀取套件的表頭資訊時發生錯誤\n"
@@ -118,7 +113,7 @@ msgstr "組建選項中使用 [ <規格檔> | <打包檔> | <原始碼套件> ]�
 msgid "Install/Upgrade/Erase options:"
 msgstr "安裝/更新/清除選項："
 
-#: rpmqv.c:118 tools/rpmcache.c:528 tools/rpmdeps.c:32 tools/rpmgraph.c:255
+#: rpmqv.c:118 tools/rpmcache.c:525 tools/rpmdeps.c:32 tools/rpmgraph.c:255
 msgid "Common options for all rpm modes and executables:"
 msgstr "用於所有 rpm 模式和可執行檔案的共同選項："
 
@@ -350,26 +345,26 @@ msgstr "沒有指定校驗引數"
 msgid "no arguments given"
 msgstr "沒有指定引數"
 
-#: build/build.c:133 build/pack.c:421
+#: build/build.c:131 build/pack.c:423
 msgid "Unable to open temp file.\n"
 msgstr "無法開啟暫時檔案。\n"
 
-#: build/build.c:207
+#: build/build.c:181
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "正在執行 (%s)：%s\n"
 
-#: build/build.c:213
+#: build/build.c:187
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "執行 %s 失敗 (%s)：%s\n"
 
-#: build/build.c:222
+#: build/build.c:196
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "來自 (%s) 錯誤的離開狀態 (%s)\n"
 
-#: build/build.c:332
+#: build/build.c:285
 msgid ""
 "\n"
 "\n"
@@ -428,172 +423,167 @@ msgstr "不支援將「&&」和「||」用於字串\n"
 msgid "syntax error in expression\n"
 msgstr "運算式中有語法錯誤\n"
 
-#: build/files.c:247
+#: build/files.c:241
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "時間檢查失敗：%s\n"
 
-#: build/files.c:304 build/files.c:493 build/files.c:679
+#: build/files.c:298 build/files.c:485 build/files.c:669
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "在 %s %s 中有缺失的「(」\n"
 
-#: build/files.c:315 build/files.c:620 build/files.c:690
+#: build/files.c:309 build/files.c:611 build/files.c:680
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "在 %s(%s 中有缺失的「)」\n"
 
-#: build/files.c:353 build/files.c:645
+#: build/files.c:346 build/files.c:635
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "無效的 %s 符記：%s\n"
 
-#: build/files.c:457
+#: build/files.c:449
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "在 %s %s 中有缺失的「%s」\n"
 
-#: build/files.c:509
+#: build/files.c:501
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "%s() 之後有非空白空格：%s\n"
 
-#: build/files.c:547
+#: build/files.c:538
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "不當的語法：%s(%s)\n"
 
-#: build/files.c:557
+#: build/files.c:548
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "不當的模式 spec：%s(%s)\n"
 
-#: build/files.c:569
+#: build/files.c:560
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "不當的 dirmode spec：%s(%s)\n"
 
-#: build/files.c:717
+#: build/files.c:706
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "不尋常的語區長度：\"%.*s\" 於 %%lang(%s) 之中\n"
 
-#: build/files.c:728
+#: build/files.c:717
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "重製語區 %.*s 於 %%lang(%s) 之中\n"
 
-#: build/files.c:843
-#, c-format
-msgid "Hit limit for %%docdir\n"
-msgstr "%%docdir 的數量上限\n"
-
-#: build/files.c:851
+#: build/files.c:835
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir 只能有一個引數\n"
 
-#: build/files.c:882
+#: build/files.c:868
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "兩個檔案在同一列中：%s\n"
 
-#: build/files.c:900
+#: build/files.c:886
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "檔案必須以「/」開頭：%s\n"
 
-#: build/files.c:912
+#: build/files.c:898
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "無法將特殊 %%doc 與其他形式混合：%s\n"
 
-#: build/files.c:931
+#: build/files.c:917
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/files.c:1071
+#: build/files.c:1057
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "曾列出兩次的檔案：%s\n"
 
-#: build/files.c:1209
+#: build/files.c:1192
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "到 BuildRoot 的符號連結：%s -> %s\n"
 
-#: build/files.c:1414
+#: build/files.c:1391
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "檔案與字首不匹配 (%s)：%s\n"
 
-#: build/files.c:1438
+#: build/files.c:1415
 #, c-format
 msgid "File not found: %s\n"
 msgstr "檔案找不到：%s\n"
 
-#: build/files.c:1641
+#: build/files.c:1614
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s：無法呼叫不明的標記 (%d)。\n"
 
-#: build/files.c:1648
+#: build/files.c:1621
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:1653 lib/rpmchecksig.c:437
+#: build/files.c:1626 lib/rpmchecksig.c:437
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
 
-#: build/files.c:1662
+#: build/files.c:1635
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te 策略讀取失敗。\n"
 
-#: build/files.c:1709
+#: build/files.c:1679
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "檔案需要以「/」開頭：%s\n"
 
-#: build/files.c:1733
+#: build/files.c:1701
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "不容許以萬用字元解析：%s\n"
 
-#: build/files.c:1747 lib/rpminstall.c:272
+#: build/files.c:1713 lib/rpminstall.c:268
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "以萬用字元解析找不到檔案：%s\n"
 
-#: build/files.c:1800
-#, c-format
-msgid "Could not open %%files file %s: %s\n"
+#: build/files.c:1764
+#, fuzzy, c-format
+msgid "Could not open %%files file %s: %m\n"
 msgstr "無法開啟 %%files 的檔案 %s: %s\n"
 
-#: build/files.c:1811 build/pack.c:134
+#: build/files.c:1772
 #, c-format
 msgid "line: %s\n"
 msgstr "列：%s\n"
 
-#: build/files.c:2196
+#: build/files.c:2145
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "損壞的檔案：%s：%s\n"
 
-#: build/files.c:2220 build/parsePrep.c:44
+#: build/files.c:2169 build/parsePrep.c:44
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "損壞的所有者/組別：%s\n"
 
-#: build/files.c:2261
+#: build/files.c:2210
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "正在檢查未被打包的檔案：%s\n"
 
-#: build/files.c:2276
+#: build/files.c:2225
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -602,7 +592,7 @@ msgstr ""
 "發現被安裝但未被打包的檔案：\n"
 "%s"
 
-#: build/files.c:2301
+#: build/files.c:2250
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "正在處理檔案：%s-%s-%s\n"
@@ -636,143 +626,153 @@ msgstr "getGidS：過多的 gid\n"
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "無法標準化主電腦名稱：%s\n"
 
-#: build/pack.c:75
+#: build/pack.c:72
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "建立檔案 %s 的保存失敗：%s\n"
 
-#: build/pack.c:78
+#: build/pack.c:75
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr "建立保存失敗：%s\n"
 
-#: build/pack.c:98
+#: build/pack.c:95
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy 寫作業失敗：%s\n"
 
-#: build/pack.c:105
+#: build/pack.c:102
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy 讀作業失敗：%s\n"
 
-#: build/pack.c:193 build/pack.c:207
+#: build/pack.c:127
+#, fuzzy, c-format
+msgid "%s: line: %s\n"
+msgstr "列：%s\n"
+
+#: build/pack.c:189 build/pack.c:203
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "無法開啟預先安裝命令稿：%s\n"
 
-#: build/pack.c:200
+#: build/pack.c:196
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "無法開啟預先清除命令稿：%s\n"
 
-#: build/pack.c:214
+#: build/pack.c:210
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "無法開啟安裝後命令稿：%s\n"
 
-#: build/pack.c:221 build/pack.c:228
+#: build/pack.c:217 build/pack.c:224
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "無法開啟清除後命令稿：%s\n"
 
-#: build/pack.c:236
+#: build/pack.c:232
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "無法開啟校驗命令稿檔案：%s\n"
 
-#: build/pack.c:251
+#: build/pack.c:247
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "無法開啟觸發執行命令稿檔案：%s\n"
 
-#: build/pack.c:279
+#: build/pack.c:275
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM：開啟 %s：%s\n"
 
-#: build/pack.c:288
+#: build/pack.c:284
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"
 
-#: build/pack.c:319
+#: build/pack.c:315
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM：%s 不是一個 RPM 套件。\n"
 
-#: build/pack.c:324
+#: build/pack.c:320
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM：正在讀取 %s 的檔案表頭\n"
 
-#: build/pack.c:409
+#: build/pack.c:386
+#, fuzzy, c-format
+msgid "Unknown payload compression: %s\n"
+msgstr "不明的圖示類型：%s\n"
+
+#: build/pack.c:410
 msgid "Unable to create immutable header region.\n"
 msgstr "無法建立不可變的表頭區域。\n"
 
-#: build/pack.c:428
+#: build/pack.c:430
 msgid "Unable to write temp header\n"
 msgstr "無法寫入臨時表頭\n"
 
-#: build/pack.c:438
+#: build/pack.c:440
 msgid "Bad CSA data\n"
 msgstr "損壞的 CSA 資料\n"
 
-#: build/pack.c:457
+#: build/pack.c:459
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "產生簽名：%d\n"
 
-#: build/pack.c:475
+#: build/pack.c:477
 msgid "Unable to reload signature header.\n"
 msgstr "無法重載簽名表頭。\n"
 
-#: build/pack.c:483
+#: build/pack.c:485
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/pack.c:495
+#: build/pack.c:497
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "無法寫入套件：%s\n"
 
-#: build/pack.c:511
+#: build/pack.c:513
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "無法開啟簽名目標 %s：%s\n"
 
-#: build/pack.c:522
+#: build/pack.c:524
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "無法讀取 %s 的表頭：%s\n"
 
-#: build/pack.c:536
+#: build/pack.c:538
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "無法寫入 %s 的表頭：%s\n"
 
-#: build/pack.c:546
+#: build/pack.c:550
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "無法從 %s 讀取酬載: %s\n"
 
-#: build/pack.c:552
+#: build/pack.c:557
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/pack.c:589
+#: build/pack.c:595
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "已寫入：%s\n"
 
-#: build/pack.c:659
+#: build/pack.c:701
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "無法產生套件 %s 的檔案名稱輸出：%s\n"
 
-#: build/pack.c:675
+#: build/pack.c:717
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "無法建立 %s：%s\n"
@@ -782,32 +782,32 @@ msgstr "無法建立 %s：%s\n"
 msgid "line %d: second %s\n"
 msgstr "列 %d：重複的 %s\n"
 
-#: build/parseChangelog.c:130
+#: build/parseChangelog.c:122
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr "%%changelog 條目必須以「*」符號開頭\n"
 
-#: build/parseChangelog.c:138
+#: build/parseChangelog.c:130
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr "不完整的 %%changelog 條目\n"
 
-#: build/parseChangelog.c:153
+#: build/parseChangelog.c:145
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr "%%changelog 中含有不正確的日期描述：%s\n"
 
-#: build/parseChangelog.c:158
+#: build/parseChangelog.c:150
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr "%%changelog 無法繼承年代順序的描述。\n"
 
-#: build/parseChangelog.c:166 build/parseChangelog.c:177
+#: build/parseChangelog.c:158 build/parseChangelog.c:169
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr "%%changelog 中漏失了名稱\n"
 
-#: build/parseChangelog.c:184
+#: build/parseChangelog.c:176
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr "%%changelog 中沒有更新說明\n"
@@ -892,82 +892,82 @@ msgstr "無法讀取圖示 %s：%s\n"
 msgid "Unknown icon type: %s\n"
 msgstr "不明的圖示類型：%s\n"
 
-#: build/parsePreamble.c:412
+#: build/parsePreamble.c:410
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "列 %d: 標記只需單一符記：%s\n"
 
-#: build/parsePreamble.c:442
+#: build/parsePreamble.c:440
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "列 %d: 異常的標記：%s\n"
 
-#: build/parsePreamble.c:450
+#: build/parsePreamble.c:448
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "列 %d: 清空標記：%s\n"
 
-#: build/parsePreamble.c:475 build/parsePreamble.c:482
+#: build/parsePreamble.c:471 build/parsePreamble.c:478
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "列 %d：在 %s 中出現違規字元「-」：%s\n"
 
-#: build/parsePreamble.c:538 build/parseSpec.c:443
+#: build/parsePreamble.c:531
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot 不能是「/」：%s\n"
 
-#: build/parsePreamble.c:551
+#: build/parsePreamble.c:544
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "列 %d：Prefixes 不能以「/」結尾：%s\n"
 
-#: build/parsePreamble.c:563
+#: build/parsePreamble.c:556
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "列 %d：Docdir 必須以「/」開頭：%s\n"
 
-#: build/parsePreamble.c:576
-#, c-format
-msgid "line %d: Epoch/Serial field must be a number: %s\n"
+#: build/parsePreamble.c:569
+#, fuzzy, c-format
+msgid "line %d: Epoch field must be a number: %s\n"
 msgstr "列 %d：Epoch/Serial 欄位的內容必須是一個數字：%s\n"
 
-#: build/parsePreamble.c:617 build/parsePreamble.c:628
+#: build/parsePreamble.c:610 build/parsePreamble.c:621
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "列 %d: 不當的 %s: 限定詞：%s\n"
 
-#: build/parsePreamble.c:654
+#: build/parsePreamble.c:647
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "列 %d：損壞的組建架構格式：%s\n"
 
-#: build/parsePreamble.c:663
+#: build/parsePreamble.c:656
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "內部錯誤：假造的標記 %d\n"
 
-#: build/parsePreamble.c:760
+#: build/parsePreamble.c:748
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "不支援舊語法：%s\n"
 
-#: build/parsePreamble.c:823
+#: build/parsePreamble.c:809
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不當的套件規格：%s\n"
 
-#: build/parsePreamble.c:829
+#: build/parsePreamble.c:815
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "套件已存在：%s\n"
 
-#: build/parsePreamble.c:858
+#: build/parsePreamble.c:850
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "列 %d：不明標記：%s\n"
 
-#: build/parsePreamble.c:880
+#: build/parsePreamble.c:879
 msgid "Spec file can't use BuildRoot\n"
 msgstr "規格檔案不能使用 BuildRoot\n"
 
@@ -981,66 +981,42 @@ msgstr "損壞的原始碼檔案：%s：%s\n"
 msgid "No patch number %d\n"
 msgstr "編號為 %d 的修補不存在\n"
 
-#: build/parsePrep.c:179
+#: build/parsePrep.c:159
 #, c-format
 msgid "No source number %d\n"
 msgstr "編號為 %d 的原始碼檔案不存在\n"
 
-#: build/parsePrep.c:200
+#: build/parsePrep.c:180
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "無法下載 nosource %s: %s\n"
 
-#: build/parsePrep.c:313
+#: build/parsePrep.c:267
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "解析 %%setup 時發生錯誤：%s\n"
 
-#: build/parsePrep.c:328
+#: build/parsePrep.c:282
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "列 %d：%%setup 中出現錯誤的引數：%s\n"
 
-#: build/parsePrep.c:346
+#: build/parsePrep.c:301
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "列 %d：%%setup 中出現錯誤的選項 %s：%s\n"
 
-#: build/parsePrep.c:480
-#, c-format
-msgid "line %d: Need arg to %%patch -b: %s\n"
-msgstr "列 %d：%%patch -b 需要引數：%s\n"
-
-#: build/parsePrep.c:489
-#, c-format
-msgid "line %d: Need arg to %%patch -z: %s\n"
-msgstr "列 %d：%%patch -z 需要引數：%s\n"
-
-#: build/parsePrep.c:506
+#: build/parsePrep.c:466
 #, fuzzy, c-format
-msgid "line %d: Bad arg to %%patch -F: %s\n"
-msgstr "列 %d：%%patch -p 的引數錯誤：%s\n"
+msgid "%s: %s: %s\n"
+msgstr "%s：%s\n"
 
-#: build/parsePrep.c:518
-#, c-format
-msgid "line %d: Need arg to %%patch -p: %s\n"
-msgstr "列 %d：%%patch -p 需要引數：%s\n"
+#: build/parsePrep.c:483
+#, fuzzy, c-format
+msgid "Invalid patch number %s: %s\n"
+msgstr "不正確的套件編號：%s\n"
 
-#: build/parsePrep.c:525
-#, c-format
-msgid "line %d: Bad arg to %%patch -p: %s\n"
-msgstr "列 %d：%%patch -p 的引數錯誤：%s\n"
-
-#: build/parsePrep.c:532
-msgid "Too many patches!\n"
-msgstr "修補過多！\n"
-
-#: build/parsePrep.c:536
-#, c-format
-msgid "line %d: Bad arg to %%patch: %s\n"
-msgstr "列 %d：%%patch 的引數錯誤：%s\n"
-
-#: build/parsePrep.c:570
+#: build/parsePrep.c:512
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "列 %d：重複的 %%prep\n"
@@ -1051,12 +1027,12 @@ msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr "列 %d：相依關係的表述必須以數字、「_」或「/」開頭：%s\n"
 
-#: build/parseReqs.c:134
+#: build/parseReqs.c:133
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "列 %d: 不容許標上版本的檔案名稱：%s\n"
 
-#: build/parseReqs.c:164
+#: build/parseReqs.c:163
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "列 %d：需要版本描述：%s\n"
@@ -1126,11 +1102,21 @@ msgstr "%s:%d：缺少與 %%endif 對應的 %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "異常的 %%include 宣告\n"
 
-#: build/parseSpec.c:556
+#: build/parseSpec.c:440
+#, fuzzy
+msgid "BuildRoot couldn't be empty\n"
+msgstr "BuildRoot 不能是「/」：%s\n"
+
+#: build/parseSpec.c:445
+#, fuzzy
+msgid "BuildRoot can not be \"/\"\n"
+msgstr "BuildRoot 不能是「/」：%s\n"
+
+#: build/parseSpec.c:558
 msgid "No compatible architectures found for build\n"
 msgstr "沒有可供組建的相容硬體架構\n"
 
-#: build/parseSpec.c:593
+#: build/parseSpec.c:595
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "套件沒有 %%description：%s\n"
@@ -1255,18 +1241,18 @@ msgstr "不校驗組建相依關係"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "產生相容於過去的 rpm2/rpm3 打包的表頭"
 
-#: build/poptBT.c:214 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:345
-#: lib/poptQV.c:354 lib/poptQV.c:393
+#: build/poptBT.c:214 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:317
+#: lib/poptQV.c:355
 msgid "don't verify package digest(s)"
 msgstr "不校驗套件摘要"
 
-#: build/poptBT.c:216 lib/poptALL.c:222 lib/poptI.c:236 lib/poptQV.c:348
-#: lib/poptQV.c:356 lib/poptQV.c:396
+#: build/poptBT.c:216 lib/poptALL.c:222 lib/poptI.c:236 lib/poptQV.c:319
+#: lib/poptQV.c:358
 msgid "don't verify database header(s) when retrieved"
 msgstr "取回時不驗證資料庫表頭"
 
-#: build/poptBT.c:218 lib/poptALL.c:224 lib/poptI.c:238 lib/poptQV.c:351
-#: lib/poptQV.c:358 lib/poptQV.c:398
+#: build/poptBT.c:218 lib/poptALL.c:224 lib/poptI.c:238 lib/poptQV.c:321
+#: lib/poptQV.c:360
 msgid "don't verify package signature(s)"
 msgstr "不校驗套件簽名"
 
@@ -1302,47 +1288,52 @@ msgstr "在規格檔目錄中查找 i18N 字串"
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "產生與(舊的) rpm[23] 包裝相容的表頭"
 
-#: build/rpmfc.c:129
+#: build/rpmfc.c:120
+#, fuzzy, c-format
+msgid "Couldn't chdir to %s: %s\n"
+msgstr "無法執行 %s: %s\n"
+
+#: build/rpmfc.c:131
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "無法執行 %s: %s\n"
 
-#: build/rpmfc.c:134 lib/psm.c:840
+#: build/rpmfc.c:136 lib/psm.c:825
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/rpmfc.c:220
+#: build/rpmfc.c:222
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s 失敗：%s\n"
 
-#: build/rpmfc.c:224
+#: build/rpmfc.c:226
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/rpmfc.c:1244
+#: build/rpmfc.c:1245
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: build/rpmfc.c:1251
+#: build/rpmfc.c:1252
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: build/rpmfc.c:1292
+#: build/rpmfc.c:1293
 #, c-format
 msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1492
+#: build/rpmfc.c:1493
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: build/rpmfc.c:1498 build/rpmfc.c:1507
+#: build/rpmfc.c:1499 build/rpmfc.c:1508
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "讀取 %s 失敗: %s。\n"
@@ -1357,17 +1348,17 @@ msgstr "列 %d：錯誤的編號：%s\n"
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "列 %d: 不當的 no%s 數字：%d\n"
 
-#: build/spec.c:295
+#: build/spec.c:296
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "列 %d: 不當的 %s 數字：%s\n"
 
-#: build/spec.c:613
+#: build/spec.c:614
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "無法查詢 %s：%s\n"
 
-#: build/spec.c:679
+#: build/spec.c:681
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "規格檔 %s 的查詢失敗，無法剖析\n"
@@ -1453,33 +1444,33 @@ msgstr "從樹狀排列關係移除 %s\"%s\"。\n"
 msgid "LOOP:\n"
 msgstr "迴圈：\n"
 
-#: lib/depends.c:1397
+#: lib/depends.c:1395
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder 失敗，剩下 %d 個元件\n"
 
-#: lib/formats.c:36 lib/formats.c:66 lib/formats.c:95 lib/formats.c:465
-#: rpmdb/header.c:2896 rpmdb/header.c:2921 rpmdb/header.c:2940
+#: lib/formats.c:37 lib/formats.c:67 lib/formats.c:96 lib/formats.c:472
+#: rpmdb/header.c:2897 rpmdb/header.c:2922 rpmdb/header.c:2941
 msgid "(not a number)"
 msgstr "(不是數字)"
 
-#: lib/formats.c:154
+#: lib/formats.c:156
 msgid "(not base64)"
 msgstr "(不是 base64)"
 
-#: lib/formats.c:165
+#: lib/formats.c:167
 msgid "(invalid type)"
 msgstr "(無效型態)"
 
-#: lib/formats.c:189 lib/formats.c:357
+#: lib/formats.c:195 lib/formats.c:363
 msgid "(not a blob)"
 msgstr "(不是 blob)"
 
-#: lib/formats.c:301
+#: lib/formats.c:307
 msgid "(invalid xml type)"
 msgstr "(無效 xml 型態)"
 
-#: lib/formats.c:380
+#: lib/formats.c:386
 msgid "(not an OpenPGP signature)"
 msgstr "(不是一個 OpenPGP 簽名)"
 
@@ -1493,17 +1484,17 @@ msgstr "mntctl() 回傳大小失敗：%s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() 回傳掛載點失敗：%s\n"
 
-#: lib/fs.c:108 lib/fs.c:205 lib/fs.c:317
+#: lib/fs.c:109 lib/fs.c:206 lib/fs.c:318
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "無法檢驗狀態：%s：%s\n"
 
-#: lib/fs.c:150 rpmio/url.c:260
+#: lib/fs.c:151
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: lib/fs.c:340
+#: lib/fs.c:341
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "檔案 %s 位於一個不明的裝置上\n"
@@ -1548,57 +1539,54 @@ msgstr "%s 刪除檔案 %s 失敗：%s\n"
 msgid "%s created as %s\n"
 msgstr "%s 如同 %s 而建立\n"
 
-#: lib/misc.c:40
+#: lib/misc.c:26
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "無法建立 %%%s %s\n"
 
-#: lib/misc.c:45
+#: lib/misc.c:31
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "無法寫入 %%%s %s\n"
 
-#: lib/package.c:338
+#: lib/package.c:337
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob 大小(%d):不當的， 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:347 lib/package.c:403 lib/package.c:470 lib/signature.c:199
+#: lib/package.c:345 lib/package.c:400 lib/package.c:469 lib/signature.c:195
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "標記[%d]:不當的，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/package.c:365 lib/signature.c:213
+#: lib/package.c:363 lib/signature.c:209
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "區域偏移：不當的，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/package.c:383 lib/signature.c:237
+#: lib/package.c:381 lib/signature.c:233
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "區域結尾：不當的，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/package.c:394 lib/signature.c:248
+#: lib/package.c:391 lib/signature.c:243
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "區域大小：不當的， ril(%d)> il(%d)\n"
 
-#: lib/package.c:421
-#, c-format
+#: lib/package.c:418
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: 不當的，不是十六進位\n"
 
-#: lib/package.c:433
-#, c-format
+#: lib/package.c:430
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "hdr RSA：不適當，不是二進位\n"
 
-#: lib/package.c:443
-#, c-format
+#: lib/package.c:440
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA：不當的，不是二進位\n"
 
-#: lib/package.c:499 lib/package.c:540
+#: lib/package.c:500 lib/package.c:541
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
@@ -1609,61 +1597,59 @@ msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr 大小(%d):不當的，讀取回傳 %d\n"
 
 #: lib/package.c:623
-#, c-format
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic：不當的\n"
 
-#: lib/package.c:629
+#: lib/package.c:628
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hdr 標記：不當的，號碼的標記(%d)發信匣的範圍\n"
 
-#: lib/package.c:636
+#: lib/package.c:634
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr 資料：不當的，號碼的位元組(%d)發信匣的範圍\n"
 
-#: lib/package.c:647
+#: lib/package.c:644
 #, fuzzy, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr "hdr blob(%d):不當的，讀取回傳 %d\n"
 
-#: lib/package.c:659
-#, c-format
+#: lib/package.c:656
 msgid "hdr load: BAD\n"
 msgstr "hdr 載入：不當的\n"
 
-#: lib/package.c:715 lib/rpmchecksig.c:184 lib/rpmchecksig.c:559
+#: lib/package.c:716 lib/rpmchecksig.c:187 lib/rpmchecksig.c:596
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s：rpmReadSignature 失敗：%s"
 
-#: lib/package.c:722 lib/rpmchecksig.c:191 lib/rpmchecksig.c:567
+#: lib/package.c:723 lib/rpmchecksig.c:194 lib/rpmchecksig.c:604
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s：未發現簽名\n"
 
-#: lib/package.c:787
+#: lib/package.c:788
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s:：headerRead 失敗：%s"
 
-#: lib/package.c:822 lib/package.c:848 lib/package.c:879 lib/rpmchecksig.c:655
+#: lib/package.c:823 lib/package.c:849 lib/package.c:880 lib/rpmchecksig.c:693
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:893 lib/rpmchecksig.c:88 lib/rpmchecksig.c:508
+#: lib/package.c:894 lib/rpmchecksig.c:89 lib/rpmchecksig.c:508
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread 失敗：%s\n"
 
-#: lib/package.c:981
+#: lib/package.c:983
 #, fuzzy, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s 無法安裝\n"
 
-#: lib/package.c:985
+#: lib/package.c:987
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -1772,27 +1758,23 @@ msgstr "對酬載檔案狀態機器除錯"
 msgid "use threads for file state machine"
 msgstr "使用執行緒做為檔案狀態機器"
 
-#: lib/poptALL.c:266
-msgid "debug option/argument processing"
-msgstr "對選項/引數處理除錯"
-
-#: lib/poptALL.c:271
+#: lib/poptALL.c:267
 msgid "debug package state machine"
 msgstr "對套件狀態機器除錯"
 
-#: lib/poptALL.c:273
+#: lib/poptALL.c:269
 msgid "use threads for package state machine"
 msgstr "使用執行緒用於套件狀態機"
 
-#: lib/poptALL.c:287
+#: lib/poptALL.c:283
 msgid "debug rpmio I/O"
 msgstr "對 rpmio I/O 除錯"
 
-#: lib/poptALL.c:299
+#: lib/poptALL.c:295
 msgid "debug URL cache handling"
 msgstr "對網址快取處理除錯"
 
-#: lib/poptALL.c:361
+#: lib/poptALL.c:357
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: 選項表格 misconfigured(%d)\n"
@@ -1912,7 +1894,7 @@ msgstr "僅更新資料庫，但不對檔案系統進行修改"
 msgid "do not verify package dependencies"
 msgstr "不偵測套件相依性"
 
-#: lib/poptI.c:204 lib/poptQV.c:289 lib/poptQV.c:292
+#: lib/poptI.c:204 lib/poptQV.c:280
 msgid "don't verify MD5 digest of files"
 msgstr "不校驗檔案的 MD5 碼值"
 
@@ -2131,244 +2113,235 @@ msgstr "列出套件內的檔案"
 msgid "skip %%ghost files"
 msgstr "略過 %%ghost 檔案"
 
-#: lib/poptQV.c:258
-#, c-format
-msgid "skip %%license files"
-msgstr "略過 %%license 檔案"
-
-#: lib/poptQV.c:261
-#, c-format
-msgid "skip %%readme files"
-msgstr "略過 %%readme 檔案"
-
-#: lib/poptQV.c:267
+#: lib/poptQV.c:259
 msgid "use the following query format"
 msgstr "使用以下的查詢格式"
 
-#: lib/poptQV.c:269
+#: lib/poptQV.c:261
 msgid "substitute i18n sections into spec file"
 msgstr "替代 i18n 區段進入規格檔案"
 
-#: lib/poptQV.c:271
+#: lib/poptQV.c:263
 msgid "display the states of the listed files"
 msgstr "顯示列出的每個檔案的狀態"
 
-#: lib/poptQV.c:296
+#: lib/poptQV.c:283
 msgid "don't verify size of files"
 msgstr "不校驗檔案大小"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:286
 msgid "don't verify symlink path of files"
 msgstr "不校驗檔案的連結路徑"
 
-#: lib/poptQV.c:302
+#: lib/poptQV.c:289
 msgid "don't verify owner of files"
 msgstr "不校驗檔案的擁有者"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:292
 msgid "don't verify group of files"
 msgstr "不校驗檔案的屬組"
 
-#: lib/poptQV.c:308
+#: lib/poptQV.c:295
 msgid "don't verify modification time of files"
 msgstr "不校驗檔案的修改時間"
 
-#: lib/poptQV.c:311 lib/poptQV.c:314
+#: lib/poptQV.c:298 lib/poptQV.c:301
 msgid "don't verify mode of files"
 msgstr "不校驗檔案的模式"
 
-#: lib/poptQV.c:317
+#: lib/poptQV.c:304
 msgid "don't verify file security contexts"
 msgstr "不校驗檔案的安全關聯"
 
-#: lib/poptQV.c:319
+#: lib/poptQV.c:306
 msgid "don't verify files in package"
 msgstr "不校驗套件內的檔案"
 
-#: lib/poptQV.c:322 lib/poptQV.c:325 tools/rpmgraph.c:251
+#: lib/poptQV.c:308 tools/rpmgraph.c:251
 msgid "don't verify package dependencies"
 msgstr "不校驗套件的相依關係"
 
-#: lib/poptQV.c:330 lib/poptQV.c:334 lib/poptQV.c:337 lib/poptQV.c:340
+#: lib/poptQV.c:311 lib/poptQV.c:314
 msgid "don't execute verify script(s)"
 msgstr "不執行校驗命令稿"
 
-#: lib/poptQV.c:364
+#: lib/poptQV.c:326
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "不校驗 GPG V3 DSA 簽名"
 
-#: lib/poptQV.c:367
+#: lib/poptQV.c:329
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "不校驗 PGP V3 RSA/MD5 簽名"
 
-#: lib/poptQV.c:380
+#: lib/poptQV.c:342
 msgid "sign package(s) (identical to --resign)"
 msgstr "對套件簽名 (與 --resign 含義相同)"
 
-#: lib/poptQV.c:382
+#: lib/poptQV.c:344
 msgid "verify package signature(s)"
 msgstr "校驗套件簽名"
 
-#: lib/poptQV.c:384
+#: lib/poptQV.c:346
 msgid "delete package signatures"
 msgstr "刪除套件簽名"
 
-#: lib/poptQV.c:386
+#: lib/poptQV.c:348
 msgid "import an armored public key"
 msgstr "匯入一個受保護的公鑰"
 
-#: lib/poptQV.c:388
+#: lib/poptQV.c:350
 msgid "sign package(s) (identical to --addsign)"
 msgstr "對套件簽名 (與 --addsign 含義相同)"
 
-#: lib/poptQV.c:390
+#: lib/poptQV.c:352
 msgid "generate signature"
 msgstr "產生簽名"
 
-#: lib/psm.c:269
+#: lib/psm.c:272
 msgid "source package expected, binary found\n"
 msgstr "需要一個原始碼套件，但這是一個二進位套件\n"
 
-#: lib/psm.c:380
+#: lib/psm.c:383
 msgid "source package contains no .spec file\n"
 msgstr "原始碼套件內沒有 .spec 檔案\n"
 
-#: lib/psm.c:854
-#, c-format
-msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
+#: lib/psm.c:835
+#, fuzzy, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:863
-#, c-format
-msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
+#: lib/psm.c:842
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
 msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
 
-#: lib/psm.c:869
-#, c-format
-msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
+#: lib/psm.c:847
+#, fuzzy, c-format
+msgid "%s scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
 
-#: lib/psm.c:1417
+#: lib/psm.c:1403
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s：%s 短命令稿執行失敗 (%d)，略過 %s\n"
 
-#: lib/psm.c:1499
+#: lib/psm.c:1485
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "解壓保存檔案失敗 %s%s：%s\n"
 
-#: lib/psm.c:1500
+#: lib/psm.c:1486
 msgid " on file "
 msgstr "  於檔案 "
 
-#: lib/psm.c:1631
+#: lib/psm.c:1617
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s 失敗的於檔案 %s: %s\n"
 
-#: lib/psm.c:1634
+#: lib/psm.c:1620
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s 失敗：%s\n"
 
-#: lib/query.c:115 lib/rpmts.c:635
+#: lib/query.c:117 lib/rpmts.c:621
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "不正確的格式：%s\n"
 
-#: lib/query.c:176
-msgid "(contains no files)"
+#: lib/query.c:126
+#, fuzzy
+msgid "(contains no files)\n"
 msgstr "(沒有包含檔案)"
 
-#: lib/query.c:246
+#: lib/query.c:173
 msgid "normal        "
 msgstr "正常        "
 
-#: lib/query.c:249
+#: lib/query.c:176
 msgid "replaced      "
 msgstr "被替換      "
 
-#: lib/query.c:252
+#: lib/query.c:179
 msgid "not installed "
 msgstr "未安裝 "
 
-#: lib/query.c:255
+#: lib/query.c:182
 msgid "net shared    "
 msgstr "網路共享    "
 
-#: lib/query.c:258
+#: lib/query.c:185
 msgid "wrong color   "
 msgstr "錯誤顏色   "
 
-#: lib/query.c:261
+#: lib/query.c:188
 msgid "(no state)    "
 msgstr "(無狀態)    "
 
-#: lib/query.c:264
+#: lib/query.c:191
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(不明的 %3d) "
 
-#: lib/query.c:279
+#: lib/query.c:211
 msgid "package has not file owner/group lists\n"
 msgstr "套件內沒有檔案擁有者/群組記錄\n"
 
-#: lib/query.c:308
+#: lib/query.c:241
 msgid "package has neither file owner or id lists\n"
 msgstr "套件內沒有檔案擁有者與 ID 記錄\n"
 
-#: lib/query.c:458
+#: lib/query.c:372
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "群組 %s 內還沒有任何套件\n"
 
-#: lib/query.c:467
+#: lib/query.c:381
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "沒有套件內建觸發器 %s\n"
 
-#: lib/query.c:480 lib/query.c:501 lib/query.c:521 lib/query.c:555
+#: lib/query.c:394 lib/query.c:415 lib/query.c:435 lib/query.c:469
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "異常的 %s：%s\n"
 
-#: lib/query.c:490 lib/query.c:507 lib/query.c:531 lib/query.c:560
+#: lib/query.c:404 lib/query.c:421 lib/query.c:445 lib/query.c:474
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "沒有套件匹配：%s：%s\n"
 
-#: lib/query.c:570
+#: lib/query.c:484
 #, c-format
 msgid "no package requires %s\n"
 msgstr "沒有套件需要 %s\n"
 
-#: lib/query.c:581
+#: lib/query.c:495
 #, c-format
 msgid "no package provides %s\n"
 msgstr "沒有套件提供 %s\n"
 
-#: lib/query.c:613
+#: lib/query.c:527
 #, c-format
 msgid "file %s: %s\n"
 msgstr "檔案 %s：%s\n"
 
-#: lib/query.c:616
+#: lib/query.c:530
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "檔案 %s 不屬於任何套件\n"
 
-#: lib/query.c:641
+#: lib/query.c:555
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "不正確的套件編號：%s\n"
 
-#: lib/query.c:649
+#: lib/query.c:563
 #, fuzzy, c-format
 msgid "record %lu could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:665 lib/rpminstall.c:693
+#: lib/query.c:579 lib/rpminstall.c:654
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -2381,37 +2354,37 @@ msgstr "(加入的檔案)"
 msgid "(added provide)"
 msgstr "(加入的提供物)"
 
-#: lib/rpmchecksig.c:48 lib/rpmchecksig.c:881
+#: lib/rpmchecksig.c:49 lib/rpmchecksig.c:826
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
 
-#: lib/rpmchecksig.c:82
+#: lib/rpmchecksig.c:83
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite 失敗：%s\n"
 
-#: lib/rpmchecksig.c:92
+#: lib/rpmchecksig.c:93
 #, fuzzy, c-format
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"
 
-#: lib/rpmchecksig.c:200
+#: lib/rpmchecksig.c:204
 #, fuzzy
-msgid "rpmMkTempFile failed\n"
+msgid "rpmMkTemp failed\n"
 msgstr "makeTempFile 失敗\n"
 
-#: lib/rpmchecksig.c:309
+#: lib/rpmchecksig.c:314
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: 已經由鍵值識別號 %s 所簽名, 跳過\n"
 
-#: lib/rpmchecksig.c:341
+#: lib/rpmchecksig.c:343
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s：writeLead 失敗：%s\n"
 
-#: lib/rpmchecksig.c:347
+#: lib/rpmchecksig.c:349
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s：rpmWriteSignature 失敗：%s\n"
@@ -2436,39 +2409,39 @@ msgstr "%s：headerRead 失敗\n"
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s：headerGetEntry 失敗\n"
 
-#: lib/rpmchecksig.c:819
+#: lib/rpmchecksig.c:776
 msgid "NOT OK"
 msgstr "不正確"
 
-#: lib/rpmchecksig.c:820 lib/rpmchecksig.c:834
-msgid " (MISSING KEYS:"
-msgstr " (丟失的密鑰："
-
-#: lib/rpmchecksig.c:822 lib/rpmchecksig.c:836
-msgid ") "
-msgstr ") "
-
-#: lib/rpmchecksig.c:823 lib/rpmchecksig.c:837
-msgid " (UNTRUSTED KEYS:"
-msgstr " (不信任的密鑰："
-
-#: lib/rpmchecksig.c:825 lib/rpmchecksig.c:839
-msgid ")"
-msgstr ")"
-
-#: lib/rpmchecksig.c:833
+#: lib/rpmchecksig.c:776
 msgid "OK"
 msgstr "正確"
 
-#: lib/rpmds.c:499
+#: lib/rpmchecksig.c:778
+msgid " (MISSING KEYS:"
+msgstr " (丟失的密鑰："
+
+#: lib/rpmchecksig.c:780
+msgid ") "
+msgstr ") "
+
+#: lib/rpmchecksig.c:781
+msgid " (UNTRUSTED KEYS:"
+msgstr " (不信任的密鑰："
+
+#: lib/rpmchecksig.c:783
+msgid ")"
+msgstr ")"
+
+#: lib/rpmds.c:496
 msgid "NO "
 msgstr "否 "
 
-#: lib/rpmds.c:499
+#: lib/rpmds.c:496
 msgid "YES"
 msgstr "是"
 
-#: lib/rpmds.c:850
+#: lib/rpmds.c:848
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2477,48 +2450,53 @@ msgstr ""
 "\"B\"相依性需要世代 (假設與 \"A\" 為相同世代)\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:1020
+#: lib/rpmds.c:1005
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:、Provides:、以及 Obsoletes: 相依支援版本。"
 
-#: lib/rpmds.c:1023
+#: lib/rpmds.c:1008
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "檔案名稱儲存為 (dirName、baseName、dirIndex) 字組，而非路徑。"
 
-#: lib/rpmds.c:1027
+#: lib/rpmds.c:1012
 msgid "package payload can be compressed using bzip2."
 msgstr "套件酬載可以使用 bzip2 壓縮。"
 
-#: lib/rpmds.c:1031
+#: lib/rpmds.c:1016
+#, fuzzy
+msgid "package payload can be compressed using lzma."
+msgstr "套件酬載可以使用 bzip2 壓縮。"
+
+#: lib/rpmds.c:1019
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "套件酬載檔案有\"./\"字首。"
 
-#: lib/rpmds.c:1034
+#: lib/rpmds.c:1022
 msgid "package name-version-release is not implicitly provided."
 msgstr "套件的名稱-版本-發行編號沒有被隱含指出。"
 
-#: lib/rpmds.c:1037
+#: lib/rpmds.c:1025
 msgid "header tags are always sorted after being loaded."
 msgstr "表頭標記總在載入之後自動排序。"
 
-#: lib/rpmds.c:1040
+#: lib/rpmds.c:1028
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "命令稿解譯器可以從表頭中呼叫引數。"
 
-#: lib/rpmds.c:1043
+#: lib/rpmds.c:1031
 msgid "a hardlink file set may be installed without being complete."
 msgstr "硬式鏈結檔案組合也許沒有被完整安裝。"
 
-#: lib/rpmds.c:1046
+#: lib/rpmds.c:1034
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "套件內建短命令稿在安裝程序中可以存取 rpm 資料庫。"
 
-#: lib/rpmds.c:1050
+#: lib/rpmds.c:1038
 msgid "internal support for lua scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:393
-#: lib/rpminstall.c:525 lib/rpmts.c:646 tools/rpmgraph.c:119
+#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:355
+#: lib/rpminstall.c:487 lib/rpmts.c:632 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2529,7 +2507,7 @@ msgstr "開啟 %s 失敗：%s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明的標記：「%s」\n"
 
-#: lib/rpmgi.c:627 lib/rpminstall.c:568 lib/rpminstall.c:727
+#: lib/rpmgi.c:627 lib/rpminstall.c:530 lib/rpminstall.c:688
 #: tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr "相依性偵測失敗：\n"
@@ -2542,155 +2520,154 @@ msgstr "正在準備…"
 msgid "Preparing packages for installation..."
 msgstr "正在準備要安裝的套件…"
 
-#: lib/rpminstall.c:334
+#: lib/rpminstall.c:305
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "取回中 %s\n"
 
-#: lib/rpminstall.c:355
+#: lib/rpminstall.c:317
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "略過 %s - 傳輸失敗 - %s\n"
 
-#: lib/rpminstall.c:412 lib/rpminstall.c:788 tools/rpmgraph.c:139
+#: lib/rpminstall.c:374 lib/rpminstall.c:749 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s 無法安裝\n"
 
-#: lib/rpminstall.c:454
+#: lib/rpminstall.c:416
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "套件 %s 不能重新部署\n"
 
-#: lib/rpminstall.c:501
+#: lib/rpminstall.c:463
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "讀取檔案 %s 時發生錯誤\n"
 
-#: lib/rpminstall.c:507
+#: lib/rpminstall.c:469
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "檔案 %s 需要更新版本的 RPM\n"
 
-#: lib/rpminstall.c:539
+#: lib/rpminstall.c:501
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: 不是 rpm 套件(或套件清單)：%s\n"
 
-#: lib/rpminstall.c:616
+#: lib/rpminstall.c:578
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "無法開啟檔案 %s：%s\n"
 
-#: lib/rpminstall.c:702
+#: lib/rpminstall.c:663
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "「%s」指定了多個套件\n"
 
-#: lib/rpminstall.c:772
+#: lib/rpminstall.c:733
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "無法開啟檔案 %s：%s\n"
 
-#: lib/rpminstall.c:778
+#: lib/rpminstall.c:739
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"
 
-#: lib/rpmlead.c:100
-#, c-format
-msgid "%s: not an rpm package\n"
+#: lib/rpmlead.c:101
+#, fuzzy
+msgid "not an rpm package"
 msgstr "%s：不是一個 rpm 套件\n"
 
-#: lib/rpmlead.c:104
-#, fuzzy, c-format
-msgid "%s: illegal signature type\n"
+#: lib/rpmlead.c:105
+#, fuzzy
+msgid "illegal signature type"
 msgstr "%s：未發現簽名\n"
 
-#: lib/rpmlead.c:108
-#, c-format
-msgid "%s: unsupported RPM package (version %d)\n"
+#: lib/rpmlead.c:109
+msgid "unsupported RPM package version"
 msgstr ""
 
-#: lib/rpmlead.c:121
+#: lib/rpmlead.c:122
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "讀取失敗：%s (%d)\n"
 
-#: lib/rpmlock.c:119 lib/rpmlock.c:126
+#: lib/rpmlock.c:120 lib/rpmlock.c:128
 #, fuzzy, c-format
-msgid "can't create transaction lock on %s\n"
+msgid "can't create transaction lock on %s (%s)\n"
 msgstr "建立異動作業集"
 
-#: lib/rpmlock.c:123
+#: lib/rpmlock.c:125
 #, fuzzy, c-format
 msgid "waiting for transaction lock on %s\n"
 msgstr "產生異動作業記錄板(%p, %p)\n"
 
-#: lib/rpmps.c:282
+#: lib/rpmps.c:283
 msgid "different"
 msgstr "不同的"
 
-#: lib/rpmps.c:290
+#: lib/rpmps.c:289
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "套件 %s 是適用於 %s 架構的"
 
-#: lib/rpmps.c:295
+#: lib/rpmps.c:294
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "套件 %s 是適用於 %s 作業系統的"
 
-#: lib/rpmps.c:300
+#: lib/rpmps.c:298
 #, c-format
 msgid "package %s is already installed"
 msgstr "套件 %s 已經安裝了"
 
-#: lib/rpmps.c:305
+#: lib/rpmps.c:302
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "在套件 %2$s 中的路徑 %1$s 無法重新部署"
 
-#: lib/rpmps.c:310
+#: lib/rpmps.c:307
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "在試圖安裝的 %s 和 %s 之間產生檔案 %s 的衝突"
 
-#: lib/rpmps.c:315
+#: lib/rpmps.c:312
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "從 %s 安裝的檔案 %s 與來自套件 %s 的檔案產生衝突"
 
-#: lib/rpmps.c:320
+#: lib/rpmps.c:317
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "套件 %s (較 %s 版本還新) 已經安裝了"
 
-#: lib/rpmps.c:325
+#: lib/rpmps.c:322
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "安裝套件 %s 時需要 %ld%cB 空間於檔案系統 %s 上"
 
-#: lib/rpmps.c:335
+#: lib/rpmps.c:332
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr "安裝套件 %s 時需要 %ld 個節點於檔案系統 %s 上"
 
-#: lib/rpmps.c:339
+#: lib/rpmps.c:336
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s 被 %s%s 所需要"
 
-#: lib/rpmps.c:341 lib/rpmps.c:346
+#: lib/rpmps.c:338 lib/rpmps.c:343
 msgid "(installed) "
 msgstr "(已安裝) "
 
-#: lib/rpmps.c:344
+#: lib/rpmps.c:341
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s 與 %s%s 衝突"
 
-#: lib/rpmps.c:350
+#: lib/rpmps.c:347
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明錯誤 %d 發生在處理套件 %s 的程序中"
@@ -2765,27 +2742,27 @@ msgstr "缺少 %s 架構於 %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "不當的選項 '%s' 於 %s:%d\n"
 
-#: lib/rpmrc.c:1446
+#: lib/rpmrc.c:1444
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明的系統：%s\n"
 
-#: lib/rpmrc.c:1447
+#: lib/rpmrc.c:1445
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1671
+#: lib/rpmrc.c:1669
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "無法展開 %s\n"
 
-#: lib/rpmrc.c:1676
+#: lib/rpmrc.c:1674
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "無法讀取 %s，HOME 過大。\n"
 
-#: lib/rpmrc.c:1693
+#: lib/rpmrc.c:1691
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "無法開啟 %s 以讀取：%s\n"
@@ -2810,84 +2787,82 @@ msgstr "丟失的「(」存在於套件標籤中：%s\n"
 msgid "missing ')' in package label: %s\n"
 msgstr "丟失的「)」存在於套件標籤中：%s\n"
 
-#: lib/rpmts.c:533
+#: lib/rpmts.c:519
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "無法開啟解析資料庫於 %s\n"
 
-#: lib/rpmts.c:744
+#: lib/rpmts.c:730
 msgid "    Suggested resolutions:\n"
 msgstr "    推薦解決方案：\n"
 
-#: lib/signature.c:162
+#: lib/signature.c:159
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sigh 大小(%d):不當，讀取回傳 %d\n"
 
-#: lib/signature.c:167
-#, c-format
+#: lib/signature.c:164
 msgid "sigh magic: BAD\n"
 msgstr "sigh magic：不當\n"
 
-#: lib/signature.c:173
+#: lib/signature.c:170
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr "sigh 標記：不當，號碼的標記(%d)發信匣的範圍\n"
 
-#: lib/signature.c:179
+#: lib/signature.c:176
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr "sigh 資料：不當，號碼的  位元組(%d)發信匣的範圍\n"
 
-#: lib/signature.c:191
+#: lib/signature.c:188
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "sigh 萬用字元解析(%d):不當，讀取回傳 %d\n"
 
-#: lib/signature.c:259
+#: lib/signature.c:254
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh 標記[%d]:不當，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/signature.c:269
-#, c-format
+#: lib/signature.c:264
 msgid "sigh load: BAD\n"
 msgstr "sigh 載入：不當\n"
 
-#: lib/signature.c:282
+#: lib/signature.c:277
 #, fuzzy, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "sigh 填充(%d):不當，讀取 %d 位元組\n"
 
-#: lib/signature.c:291
+#: lib/signature.c:286
 #, fuzzy, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%d):不當，fstat(2)失敗\n"
 
-#: lib/signature.c:407 lib/signature.c:517 lib/signature.c:832
+#: lib/signature.c:405 lib/signature.c:515 lib/signature.c:832
 #: lib/signature.c:865
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "無法執行 %s: %s\n"
 
-#: lib/signature.c:423
+#: lib/signature.c:421
 msgid "pgp failed\n"
 msgstr "pgp 失敗\n"
 
-#: lib/signature.c:430
+#: lib/signature.c:428
 msgid "pgp failed to write signature\n"
 msgstr "pgp 寫入簽名時失敗\n"
 
-#: lib/signature.c:449 lib/signature.c:560
+#: lib/signature.c:447 lib/signature.c:558
 msgid "unable to read the signature\n"
 msgstr "無法讀取簽名\n"
 
-#: lib/signature.c:534
+#: lib/signature.c:532
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "gpg 執行失敗 (%d)\n"
 
-#: lib/signature.c:541
+#: lib/signature.c:539
 msgid "gpg failed to write signature\n"
 msgstr "寫入簽名時 gpg 失敗\n"
 
@@ -2906,51 +2881,74 @@ msgstr "您必須在您的巨集檔案中設定 \"%%_gpg_name\"\n"
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "您必須在您的巨集檔案中設定 \"%%_pgp_name\"\n"
 
-#: lib/signature.c:956
-msgid "Header+Payload size: "
+#: lib/signature.c:954
+#, fuzzy
+msgid "Header+Payload size:"
 msgstr "表頭+酬載大小："
 
-#: lib/signature.c:993
-msgid "MD5 digest: "
+#: lib/signature.c:991
+#, fuzzy
+msgid "MD5 digest:"
 msgstr "MD 5 摘要："
 
-#: lib/signature.c:1049
-msgid "Header SHA1 digest: "
+#: lib/signature.c:1044
+#, fuzzy
+msgid "Header SHA1 digest:"
 msgstr "表頭 SHA1 摘要："
 
-#: lib/signature.c:1124 lib/signature.c:1271
+#: lib/signature.c:1096
+#, fuzzy
+msgid "Unknown"
+msgstr "不明的標記"
+
+#: lib/signature.c:1102 lib/signature.c:1246
 msgid "Header "
 msgstr "表頭 "
 
-#: lib/signature.c:1187
-msgid " signature: "
+#: lib/signature.c:1209
+#, c-format
+msgid "%sV%d %s signature: %s, key ID %s\n"
+msgstr ""
+
+#: lib/signature.c:1213
+#, fuzzy, c-format
+msgid "%sV%d %s signature: %s\n"
 msgstr " 簽名："
 
-#: lib/signature.c:1277
-msgid " DSA signature: "
+#: lib/signature.c:1309
+#, fuzzy, c-format
+msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr " DSA 簽名："
 
-#: lib/signature.c:1356
-#, c-format
+#: lib/signature.c:1313
+#, fuzzy, c-format
+msgid "%sV%d DSA signature: %s\n"
+msgstr " DSA 簽名："
+
+#: lib/signature.c:1331
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "驗證簽名：不當的參數\n"
 
-#: lib/signature.c:1387
-#, c-format
+#: lib/signature.c:1362
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "不完整的 MD 5 摘要：不支援\n"
 
-#: lib/signature.c:1391
+#: lib/signature.c:1366
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "簽名：不明 (%d)\n"
 
-#: lib/verify.c:274
+#: lib/transaction.c:1187 lib/verify.c:413
+#, fuzzy, c-format
+msgid "Unable to change root directory: %m\n"
+msgstr "移除目錄時失敗 %s: %s\n"
+
+#: lib/verify.c:251
 #, c-format
 msgid "missing   %c %s"
 msgstr "缺少      %c %s"
 
-#: lib/verify.c:369
+#: lib/verify.c:343
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "無法滿足 %s 的相依性："
@@ -2960,26 +2958,26 @@ msgstr "無法滿足 %s 的相依性："
 msgid "Unknown system error"
 msgstr "不明的系統：%s\n"
 
-#: rpmdb/db3.c:151
+#: rpmdb/db3.c:150
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "資料庫%d 錯誤(%d) 來自 %s: %s\n"
 
-#: rpmdb/db3.c:154
+#: rpmdb/db3.c:153
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "資料庫%d 錯誤(%d): %s\n"
 
-#: rpmdb/db3.c:1162
+#: rpmdb/db3.c:1149
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 鎖定於 %s/%s\n"
 
-#: rpmdb/db3.c:1164
+#: rpmdb/db3.c:1151
 msgid "exclusive"
 msgstr "互斥"
 
-#: rpmdb/db3.c:1164
+#: rpmdb/db3.c:1151
 msgid "shared"
 msgstr "共享"
 
@@ -3003,76 +3001,76 @@ msgstr "%s 有太大或太小的長整數值，略過\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s 有太大或太小的整數值，略過\n"
 
-#: rpmdb/header.c:2173
+#: rpmdb/header.c:2174
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: rpmdb/header.c:2203
+#: rpmdb/header.c:2204
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: rpmdb/header.c:2215
+#: rpmdb/header.c:2216
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: rpmdb/header.c:2225
+#: rpmdb/header.c:2226
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: rpmdb/header.c:2234
+#: rpmdb/header.c:2235
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: rpmdb/header.c:2257
+#: rpmdb/header.c:2258
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: rpmdb/header.c:2270
+#: rpmdb/header.c:2271
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: rpmdb/header.c:2281
+#: rpmdb/header.c:2282
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: rpmdb/header.c:2335
+#: rpmdb/header.c:2336
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: rpmdb/header.c:2342
+#: rpmdb/header.c:2343
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: rpmdb/header.c:2354 rpmdb/header.c:2394
+#: rpmdb/header.c:2355 rpmdb/header.c:2395
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: rpmdb/header.c:2362
+#: rpmdb/header.c:2363
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: rpmdb/header.c:2380
+#: rpmdb/header.c:2381
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: rpmdb/header.c:2402
+#: rpmdb/header.c:2403
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
-#: rpmdb/header.c:2493
+#: rpmdb/header.c:2494
 msgid "(index out of range)"
 msgstr "(索引超出範圍)"
 
-#: rpmdb/header.c:2702
+#: rpmdb/header.c:2703
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
-#: rpmdb/header.c:2974
+#: rpmdb/header.c:2975
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:2990
+#: rpmdb/header.c:2991
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
@@ -3093,166 +3091,166 @@ msgstr "從安裝的套件表頭重建資料庫的反相清單"
 msgid "verify database files"
 msgstr "驗證資料庫檔案"
 
-#: rpmdb/rpmdb.c:186
+#: rpmdb/rpmdb.c:154
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit：無法辨識的標記名稱：\"%s\"忽略\n"
 
-#: rpmdb/rpmdb.c:258
+#: rpmdb/rpmdb.c:226
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:268
+#: rpmdb/rpmdb.c:236
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "無法使用資料庫 %2$d- %3$s(%4$d) 開啟 %1$s 索引\n"
 
-#: rpmdb/rpmdb.c:288
+#: rpmdb/rpmdb.c:256
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "無法開啟 %s 索引\n"
 
-#: rpmdb/rpmdb.c:926
+#: rpmdb/rpmdb.c:880
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: rpmdb/rpmdb.c:1159 rpmdb/rpmdb.c:1284 rpmdb/rpmdb.c:1334 rpmdb/rpmdb.c:2238
-#: rpmdb/rpmdb.c:2357 rpmdb/rpmdb.c:3043
+#: rpmdb/rpmdb.c:1114 rpmdb/rpmdb.c:1239 rpmdb/rpmdb.c:1293 rpmdb/rpmdb.c:2197
+#: rpmdb/rpmdb.c:2318 rpmdb/rpmdb.c:3013
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:1509
+#: rpmdb/rpmdb.c:1468
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader：跳過"
 
-#: rpmdb/rpmdb.c:1519
+#: rpmdb/rpmdb.c:1478
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:1619
+#: rpmdb/rpmdb.c:1578
 #, fuzzy, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"
 
-#: rpmdb/rpmdb.c:1800
+#: rpmdb/rpmdb.c:1759
 #, fuzzy, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
 
-#: rpmdb/rpmdb.c:2135
+#: rpmdb/rpmdb.c:2094
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator：跳過"
 
-#: rpmdb/rpmdb.c:2164
+#: rpmdb/rpmdb.c:2123
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:2458
+#: rpmdb/rpmdb.c:2420
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"
 
-#: rpmdb/rpmdb.c:2516
+#: rpmdb/rpmdb.c:2472
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2647
+#: rpmdb/rpmdb.c:2607
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引設定 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2666
+#: rpmdb/rpmdb.c:2626
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "儲存記錄 \"%2$s\" 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2676
+#: rpmdb/rpmdb.c:2636
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "從 %3$s 移除記錄 \"%2$s\" 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:2817
+#: rpmdb/rpmdb.c:2782
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "配置新套件實體時產生錯誤(%d)\n"
 
-#: rpmdb/rpmdb.c:2870
+#: rpmdb/rpmdb.c:2835
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd：跳過"
 
-#: rpmdb/rpmdb.c:3059
+#: rpmdb/rpmdb.c:3029
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "儲存記錄 %2$s 於 %3$s 時產生錯誤(%1$d)\n"
 
-#: rpmdb/rpmdb.c:3446
+#: rpmdb/rpmdb.c:3352
 msgid "no dbpath has been set"
 msgstr "沒有 dbpath 已被設定"
 
-#: rpmdb/rpmdb.c:3476
+#: rpmdb/rpmdb.c:3377
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "臨時資料庫 %s 已經存在\n"
 
-#: rpmdb/rpmdb.c:3484
+#: rpmdb/rpmdb.c:3385
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: rpmdb/rpmdb.c:3531
+#: rpmdb/rpmdb.c:3432
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: rpmdb/rpmdb.c:3569
+#: rpmdb/rpmdb.c:3470
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本在 %u 的記錄\n"
 
-#: rpmdb/rpmdb.c:3583
+#: rpmdb/rpmdb.c:3484
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: rpmdb/rpmdb.c:3591
+#: rpmdb/rpmdb.c:3492
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
-#: rpmdb/rpmdb.c:3593
+#: rpmdb/rpmdb.c:3494
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "以 %2$s 的檔案取代 %1$s 中的檔案來回復"
 
-#: rpmdb/rpmdb.c:3605
+#: rpmdb/rpmdb.c:3506
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: rpmdb/sqlite.c:596
+#: rpmdb/sqlite.c:589
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: rpmdb/sqlite.c:684
+#: rpmdb/sqlite.c:682
 #, fuzzy, c-format
 msgid "Unable to initDB %s (%d)\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: rpmdb/sqlite.c:857
+#: rpmdb/sqlite.c:849
 #, fuzzy, c-format
 msgid "Unable to open database: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: rpmdb/sqlite.c:1222
+#: rpmdb/sqlite.c:1214
 #, fuzzy
 msgid "Unable to determine DB endianess.\n"
 msgstr "無法開啟暫時檔案。\n"
 
-#: rpmio/macro.c:182
+#: rpmio/macro.c:183
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== 作用中 %d 清空 %d\n"
@@ -3297,121 +3295,116 @@ msgstr "巨集 %%%s 展開時失敗\n"
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "巨集 %%%s 具有不合法的名稱 (%%undefine)\n"
 
-#: rpmio/macro.c:770
+#: rpmio/macro.c:756
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "巨集 %%%s (%s) 在等級 %d 之下未被使用\n"
 
-#: rpmio/macro.c:891
+#: rpmio/macro.c:839
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中有不明的選項 %1$c\n"
 
-#: rpmio/macro.c:1084
+#: rpmio/macro.c:1037
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "遞迴深度(%d)大於最大值(%d)\n"
 
-#: rpmio/macro.c:1153 rpmio/macro.c:1170
+#: rpmio/macro.c:1106 rpmio/macro.c:1123
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c: %s\n"
 
-#: rpmio/macro.c:1211
+#: rpmio/macro.c:1164
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
 
-#: rpmio/macro.c:1367
+#: rpmio/macro.c:1320
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "找不到巨集 %%%.*s，跳過\n"
 
-#: rpmio/macro.c:1438
+#: rpmio/macro.c:1391
 msgid "Target buffer overflow\n"
 msgstr "目標緩衝區溢位\n"
 
-#: rpmio/rpmlua.c:443
+#: rpmio/rpmlua.c:440
 #, fuzzy, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr "不支援舊語法：%s\n"
 
-#: rpmio/rpmlua.c:459
+#: rpmio/rpmlua.c:456
 #, fuzzy, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr "不支援舊語法：%s\n"
 
-#: rpmio/rpmlua.c:464 rpmio/rpmlua.c:483
+#: rpmio/rpmlua.c:461 rpmio/rpmlua.c:480
 #, fuzzy, c-format
 msgid "lua script failed: %s\n"
 msgstr "%s: Fwrite 失敗：%s\n"
 
-#: rpmio/rpmlua.c:478
+#: rpmio/rpmlua.c:475
 #, fuzzy, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr "不正確的套件編號：%s\n"
 
-#: rpmio/rpmlua.c:613
+#: rpmio/rpmlua.c:610
 #, fuzzy, c-format
 msgid "lua hook failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"
 
-#: rpmio/rpmio.c:515
+#: rpmio/rpmio.c:520
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:538
+#: rpmio/rpmio.c:543
 msgid "Bad server response"
 msgstr "不當的伺服器回應"
 
-#: rpmio/rpmio.c:540
+#: rpmio/rpmio.c:545
 msgid "Server I/O error"
 msgstr "伺服器 I/O 錯誤"
 
-#: rpmio/rpmio.c:542
+#: rpmio/rpmio.c:547
 msgid "Server timeout"
 msgstr "伺服器逾時"
 
-#: rpmio/rpmio.c:544
+#: rpmio/rpmio.c:549
 msgid "Unable to lookup server host address"
 msgstr "無法查找伺服器主機位址"
 
-#: rpmio/rpmio.c:546
+#: rpmio/rpmio.c:551
 msgid "Unable to lookup server host name"
 msgstr "無法查找伺服器主機名稱"
 
-#: rpmio/rpmio.c:548
+#: rpmio/rpmio.c:553
 msgid "Failed to connect to server"
 msgstr "連接到伺服器時失敗"
 
-#: rpmio/rpmio.c:550
+#: rpmio/rpmio.c:555
 msgid "Failed to establish data connection to server"
 msgstr "建立資料連接到伺服器時失敗"
 
-#: rpmio/rpmio.c:552
+#: rpmio/rpmio.c:557
 msgid "I/O error to local file"
 msgstr "到本機檔案的 I/O 錯誤"
 
-#: rpmio/rpmio.c:554
+#: rpmio/rpmio.c:559
 msgid "Error setting remote server to passive mode"
 msgstr "設定遠端伺服器為被動模式時發生錯誤"
 
-#: rpmio/rpmio.c:556
+#: rpmio/rpmio.c:561
 msgid "File not found on server"
 msgstr "在伺服器上找不到檔案"
 
-#: rpmio/rpmio.c:558
+#: rpmio/rpmio.c:563
 msgid "Abort in progress"
 msgstr "正在進行放棄"
 
-#: rpmio/rpmio.c:562
+#: rpmio/rpmio.c:567
 msgid "Unknown or unexpected error"
 msgstr "不明的或非預期錯誤"
-
-#: rpmio/rpmio.c:799
-#, fuzzy, c-format
-msgid "URL helper failed: %s (%d)\n"
-msgstr "讀取失敗：%s (%d)\n"
 
 #: rpmio/rpmlog.c:36
 msgid "(no error)"
@@ -3434,33 +3427,28 @@ msgstr "警告："
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "記憶體配置 (%u 位元組) 回傳空值。\n"
 
-#: rpmio/url.c:215
+#: rpmio/url.c:217
 msgid "url port must be a number\n"
 msgstr "網址連接埠必須是數字\n"
 
-#: rpmio/url.c:280
-#, c-format
-msgid "failed to create %s: %s\n"
-msgstr "建立 %s 時失敗: %s\n"
-
-#: tools/rpmcache.c:518 tools/rpmgraph.c:253
+#: tools/rpmcache.c:515 tools/rpmgraph.c:253
 msgid "don't verify header+payload signature"
 msgstr "不驗證表頭+酬載簽名"
 
-#: tools/rpmcache.c:521
+#: tools/rpmcache.c:518
 msgid "don't update cache database, only print package paths"
 msgstr "不更新快取資料庫，只有印出套件路徑"
 
-#: tools/rpmcache.c:524
+#: tools/rpmcache.c:521
 msgid "File tree walk options:"
 msgstr "檔案樹遍歷選項："
 
-#: tools/rpmcache.c:560
+#: tools/rpmcache.c:557
 #, c-format
 msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
 msgstr "%s: %%{_cache_dbpath } 巨集設定錯誤。\n"
 
-#: tools/rpmcache.c:600
+#: tools/rpmcache.c:597
 #, c-format
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: 快取作業失敗：ec %d。\n"
@@ -3469,6 +3457,51 @@ msgstr "%s: 快取作業失敗：ec %d。\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: 讀取清單失敗：%s\n"
+
+#, fuzzy
+#~ msgid "getcwd failed: %m\n"
+#~ msgstr "%s 移除目錄 %s 失敗：%s\n"
+
+#~ msgid "Hit limit for %%docdir\n"
+#~ msgstr "%%docdir 的數量上限\n"
+
+#~ msgid "line %d: Need arg to %%patch -b: %s\n"
+#~ msgstr "列 %d：%%patch -b 需要引數：%s\n"
+
+#~ msgid "line %d: Need arg to %%patch -z: %s\n"
+#~ msgstr "列 %d：%%patch -z 需要引數：%s\n"
+
+#, fuzzy
+#~ msgid "line %d: Bad arg to %%patch -F: %s\n"
+#~ msgstr "列 %d：%%patch -p 的引數錯誤：%s\n"
+
+#~ msgid "line %d: Need arg to %%patch -p: %s\n"
+#~ msgstr "列 %d：%%patch -p 需要引數：%s\n"
+
+#~ msgid "line %d: Bad arg to %%patch -p: %s\n"
+#~ msgstr "列 %d：%%patch -p 的引數錯誤：%s\n"
+
+#~ msgid "Too many patches!\n"
+#~ msgstr "修補過多！\n"
+
+#~ msgid "line %d: Bad arg to %%patch: %s\n"
+#~ msgstr "列 %d：%%patch 的引數錯誤：%s\n"
+
+#~ msgid "debug option/argument processing"
+#~ msgstr "對選項/引數處理除錯"
+
+#~ msgid "skip %%license files"
+#~ msgstr "略過 %%license 檔案"
+
+#~ msgid "skip %%readme files"
+#~ msgstr "略過 %%readme 檔案"
+
+#, fuzzy
+#~ msgid "URL helper failed: %s (%d)\n"
+#~ msgstr "讀取失敗：%s (%d)\n"
+
+#~ msgid "failed to create %s: %s\n"
+#~ msgstr "建立 %s 時失敗: %s\n"
 
 #~ msgid "rollback takes a time/date stamp argument"
 #~ msgstr "回捲需要時間/日期戳記引數"
