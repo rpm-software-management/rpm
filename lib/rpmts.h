@@ -412,7 +412,7 @@ int rpmtsUnorderedSuccessors(rpmts ts, int first);
  * @param ts		transaction set
  * @return		transaction rootDir
  */
-extern const char * rpmtsRootDir(rpmts ts);
+const char * rpmtsRootDir(rpmts ts);
 
 /** \ingroup rpmts
  * Set transaction rootDir, i.e. path to chroot(2).
@@ -427,7 +427,7 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir);
  * @param ts		transaction set
  * @return		transaction currDir
  */
-extern const char * rpmtsCurrDir(rpmts ts);
+const char * rpmtsCurrDir(rpmts ts);
 
 /** \ingroup rpmts
  * Set transaction currDir, i.e. current directory before chroot(2).

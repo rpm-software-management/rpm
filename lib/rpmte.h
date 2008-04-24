@@ -63,7 +63,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
  * @param te		transaction element
  * @return		header
  */
-extern Header rpmteHeader(rpmte te);
+Header rpmteHeader(rpmte te);
 
 /** \ingroup rpmte
  * Save header into transaction element.
@@ -71,7 +71,7 @@ extern Header rpmteHeader(rpmte te);
  * @param h		header
  * @return		NULL always
  */
-extern Header rpmteSetHeader(rpmte te, Header h);
+Header rpmteSetHeader(rpmte te, Header h);
 
 /** \ingroup rpmte
  * Retrieve type of transaction element.
@@ -85,49 +85,49 @@ rpmElementType rpmteType(rpmte te);
  * @param te		transaction element
  * @return		name string
  */
-extern const char * rpmteN(rpmte te);
+const char * rpmteN(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve epoch string of transaction element.
  * @param te		transaction element
  * @return		epoch string
  */
-extern const char * rpmteE(rpmte te);
+const char * rpmteE(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve version string of transaction element.
  * @param te		transaction element
  * @return		version string
  */
-extern const char * rpmteV(rpmte te);
+const char * rpmteV(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve release string of transaction element.
  * @param te		transaction element
  * @return		release string
  */
-extern const char * rpmteR(rpmte te);
+const char * rpmteR(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve arch string of transaction element.
  * @param te		transaction element
  * @return		arch string
  */
-extern const char * rpmteA(rpmte te);
+const char * rpmteA(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve os string of transaction element.
  * @param te		transaction element
  * @return		os string
  */
-extern const char * rpmteO(rpmte te);
+const char * rpmteO(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve isSource attribute of transaction element.
  * @param te		transaction element
  * @return		isSource attribute
  */
-extern int rpmteIsSource(rpmte te);
+int rpmteIsSource(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve color bits of transaction element.
@@ -324,14 +324,14 @@ const char * rpmteEVR(rpmte te);
  * @param te		transaction element
  * @return		name-version-release string
  */
-extern const char * rpmteNEVR(rpmte te);
+const char * rpmteNEVR(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve name-version-release.arch string from transaction element.
  * @param te		transaction element
  * @return		name-version-release.arch string
  */
-extern const char * rpmteNEVRA(rpmte te);
+const char * rpmteNEVRA(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve file handle from transaction element.

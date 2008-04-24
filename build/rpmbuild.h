@@ -91,7 +91,7 @@ void freeNames(void);
  * @param uid		user id
  * @return		cached user name
  */
-extern const char * getUname(uid_t uid);
+const char * getUname(uid_t uid);
 
 /** \ingroup rpmbuild
  * Return cached user name.
@@ -99,7 +99,7 @@ extern const char * getUname(uid_t uid);
  * @param uname		user name
  * @return		cached user name
  */
-extern const char * getUnameS(const char * uname);
+const char * getUnameS(const char * uname);
 
 /** \ingroup rpmbuild
  * Return cached user id.
@@ -115,7 +115,7 @@ uid_t getUidS(const char * uname);
  * @param gid		group id
  * @return		cached group name
  */
-extern const char * getGname(gid_t gid);
+const char * getGname(gid_t gid);
 
 /** \ingroup rpmbuild
  * Return cached group name.
@@ -123,7 +123,7 @@ extern const char * getGname(gid_t gid);
  * @param gname		group name
  * @return		cached group name
  */
-extern const char * getGnameS(const char * gname);
+const char * getGnameS(const char * gname);
 
 /** \ingroup rpmbuild
  * Return cached group id.
@@ -137,13 +137,13 @@ gid_t getGidS(const char * gname);
  * Return build hostname.
  * @return		build hostname
  */
-extern const char * buildHost(void)	;
+const char * buildHost(void)	;
 
 /** \ingroup rpmbuild
  * Return build time stamp.
  * @return		build time stamp
  */
-extern rpm_time_t * getBuildTime(void)	;
+rpm_time_t * getBuildTime(void)	;
 
 /** \ingroup rpmbuild
  * Read next line from spec file.

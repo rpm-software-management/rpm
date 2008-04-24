@@ -133,7 +133,7 @@ unsigned long rpmProblemGetLong(const rpmProblem prob);
  * @param prob		rpm problem
  * @return		formatted string (malloc'd)
  */
-extern char * rpmProblemString(const rpmProblem prob);
+char * rpmProblemString(const rpmProblem prob);
 
 /** \ingroup rpmps
  * Unreference a problem set instance.

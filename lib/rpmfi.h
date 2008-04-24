@@ -161,21 +161,21 @@ int rpmfiSetDX(rpmfi fi, int dx);
  * @param fi		file info set
  * @return		current base name, NULL on invalid
  */
-extern const char * rpmfiBN(rpmfi fi);
+const char * rpmfiBN(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current directory name from file info set.
  * @param fi		file info set
  * @return		current directory, NULL on invalid
  */
-extern const char * rpmfiDN(rpmfi fi);
+const char * rpmfiDN(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file name from file info set.
  * @param fi		file info set
  * @return		current file name
  */
-extern const char * rpmfiFN(rpmfi fi);
+const char * rpmfiFN(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file flags from file info set.
@@ -210,14 +210,14 @@ rpmfileState rpmfiFState(rpmfi fi);
  * @param fi		file info set
  * @return		current file md5 digest, NULL on invalid
  */
-extern const unsigned char * rpmfiMD5(rpmfi fi);
+const unsigned char * rpmfiMD5(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file linkto (i.e. symlink(2) target) from file info set.
  * @param fi		file info set
  * @return		current file linkto, NULL on invalid
  */
-extern const char * rpmfiFLink(rpmfi fi);
+const char * rpmfiFLink(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file size from file info set.
@@ -259,14 +259,14 @@ rpm_color_t rpmfiFColor(rpmfi fi);
  * @param fi		file info set
  * @return		current file class, 0 on invalid
  */
-extern const char * rpmfiFClass(rpmfi fi);
+const char * rpmfiFClass(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file security context from file info set.
  * @param fi		file info set
  * @return		current file context, 0 on invalid
  */
-extern const char * rpmfiFContext(rpmfi fi);
+const char * rpmfiFContext(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file depends dictionary from file info set.
@@ -296,14 +296,14 @@ rpm_time_t rpmfiFMtime(rpmfi fi);
  * @param fi		file info set
  * @return		current file owner, NULL on invalid
  */
-extern const char * rpmfiFUser(rpmfi fi);
+const char * rpmfiFUser(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file group from file info set.
  * @param fi		file info set
  * @return		current file group, NULL on invalid
  */
-extern const char * rpmfiFGroup(rpmfi fi);
+const char * rpmfiFGroup(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return next file iterator index.

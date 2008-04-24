@@ -373,7 +373,7 @@ dbiIndex db3Free( dbiIndex dbi);
  * @param print_dbenv_flags	format db env flags instead?
  * @return			formatted flags (static buffer)
  */
-extern const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
+const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 
 /** \ingroup dbi
  * Return handle for an index database.

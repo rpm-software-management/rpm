@@ -177,21 +177,21 @@ int rpmdsSetIx(rpmds ds, int ix);
  * @param ds		dependency set
  * @return		current dependency DNEVR, NULL on invalid
  */
-extern const char * rpmdsDNEVR(const rpmds ds);
+const char * rpmdsDNEVR(const rpmds ds);
 
 /** \ingroup rpmds
  * Return current dependency name.
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid
  */
-extern const char * rpmdsN(const rpmds ds);
+const char * rpmdsN(const rpmds ds);
 
 /** \ingroup rpmds
  * Return current dependency epoch-version-release.
  * @param ds		dependency set
  * @return		current dependency EVR, NULL on invalid
  */
-extern const char * rpmdsEVR(const rpmds ds);
+const char * rpmdsEVR(const rpmds ds);
 
 /** \ingroup rpmds
  * Return current dependency flags.

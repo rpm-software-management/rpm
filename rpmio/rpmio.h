@@ -119,15 +119,15 @@ FILE * fdGetFILE(FD_t fd);
 
 /** \ingroup rpmio
  */
-extern FD_t fdLink (void * cookie, const char * msg);
+FD_t fdLink (void * cookie, const char * msg);
 
 /** \ingroup rpmio
  */
-extern FD_t fdFree(FD_t fd, const char * msg);
+FD_t fdFree(FD_t fd, const char * msg);
 
 /** \ingroup rpmio
  */
-extern FD_t fdNew (const char * msg);
+FD_t fdNew (const char * msg);
 
 /** \ingroup rpmio
  */
