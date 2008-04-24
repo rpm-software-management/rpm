@@ -1195,7 +1195,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
 	    /* opening db before chroot not optimal, see rhbz#103852 c#3 */
 	    xx = rpmdbOpenAll(ts->rdb);
-	    xx = chroot(rootDir);
+	    if (chroot(rootDir) == -1) {
+		rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
+		return -1;
+	    }
 	}
 	(void) rpmtsSetChrootDone(ts, 1);
     }
