@@ -315,21 +315,21 @@ int rpmteDBOffset(rpmte te);
 /** \ingroup rpmte
  * Retrieve [epoch:]version-release string from transaction element.
  * @param te		transaction element
- * @return		name-version-release string
+ * @return		[epoch:]version-release string
  */
 const char * rpmteEVR(rpmte te);
 
 /** \ingroup rpmte
- * Retrieve name-version-release string from transaction element.
+ * Retrieve name-[epoch:]version-release string from transaction element.
  * @param te		transaction element
- * @return		name-version-release string
+ * @return		name-[epoch:]version-release string
  */
 const char * rpmteNEVR(rpmte te);
 
 /** \ingroup rpmte
- * Retrieve name-version-release.arch string from transaction element.
+ * Retrieve name-[epoch:]version-release.arch string from transaction element.
  * @param te		transaction element
- * @return		name-version-release.arch string
+ * @return		name-[epoch:]version-release.arch string
  */
 const char * rpmteNEVRA(rpmte te);
 
