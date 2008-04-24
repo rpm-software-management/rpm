@@ -1716,6 +1716,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
     if (rpmInitCrypto() < 0) {
 	return -1;
     }	
+    /* Force preloading of name service libraries in case we go chrooting */
+    (void) gethostbyname("localhost");
 
     /* Preset target macros */
    	/* FIX: target can be NULL */

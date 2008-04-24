@@ -1680,20 +1680,6 @@ assert(psm->mi == NULL);
 	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
 	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
 	{
-	    static int _pw_loaded = 0;
-	    static int _gr_loaded = 0;
-
-	    if (!_pw_loaded) {
-		(void)getpwnam("root");
-		endpwent();
-		_pw_loaded++;
-	    }
-	    if (!_gr_loaded) {
-		(void)getgrnam("root");
-		endgrent();
-		_gr_loaded++;
-	    }
-
 	    xx = chdir("/");
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
 		rc = chroot(rootDir);
