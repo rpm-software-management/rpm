@@ -595,21 +595,12 @@ static int ensureOlder(rpmts ts,
     rpmsenseFlags reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     const char * reqEVR;
     rpmds req;
-    char * t;
-    int nb;
     int rc;
 
     if (p == NULL || h == NULL)
 	return 1;
 
-    nb = strlen(rpmteNEVR(p)) + (rpmteE(p) != NULL ? strlen(rpmteE(p)) : 0) + 1;
-    t = alloca(nb);
-    *t = '\0';
-    reqEVR = t;
-    if (rpmteE(p) != NULL)	t = stpcpy( stpcpy(t, rpmteE(p)), ":");
-    if (rpmteV(p) != NULL)	t = stpcpy(t, rpmteV(p));
-    *t++ = '-';
-    if (rpmteR(p) != NULL)	t = stpcpy(t, rpmteR(p));
+    reqEVR = rpmteNEVR(p) + strlen(rpmteN(p)) + 1;
 
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
     rc = rpmdsNVRMatchesDep(h, req, _rpmds_nopromote);
