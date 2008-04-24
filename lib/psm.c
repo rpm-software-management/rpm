@@ -1256,10 +1256,6 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
     return rpmpsmStage(psm, psm->nstage);
 }
 
-/**
- * @todo Packages w/o files never get a callback, hence don't get displayed
- * on install with -v.
- */
 /* FIX: testing null annotation for fi->h */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {

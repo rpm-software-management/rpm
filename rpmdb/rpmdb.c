@@ -3203,6 +3203,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
  * Environment files not existing is not an error, failure to unlink is,
  * return zero on success.
  * Only useful for BDB, dbapi 3 and 4.  
+ * TODO/FIX: push this down to db3.c where it belongs
  */
 static int cleanDbenv(const char *prefix, const char *dbpath)
 {
