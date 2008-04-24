@@ -98,10 +98,10 @@ struct rpmfi_s {
 
     unsigned char * md5s;	/*!< File md5 sums in binary. */
 
-    const char * pretrans;
-    const char * pretransprog;
-    const char * posttrans;
-    const char * posttransprog;
+    char * pretrans;
+    char * pretransprog;
+    char * posttrans;
+    char * posttransprog;
 
     char * fn;			/*!< File name buffer. */
     size_t fnlen;		/*!< FIle name buffer length. */

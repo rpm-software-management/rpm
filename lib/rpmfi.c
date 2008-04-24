@@ -1047,10 +1047,10 @@ if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     /* Free pre- and post-transaction script and interpreter strings. */
-    fi->pretrans = _constfree(fi->pretrans);
-    fi->pretransprog = _constfree(fi->pretransprog);
-    fi->posttrans = _constfree(fi->posttrans);
-    fi->posttransprog = _constfree(fi->posttransprog);
+    fi->pretrans = _free(fi->pretrans);
+    fi->pretransprog = _free(fi->pretransprog);
+    fi->posttrans = _free(fi->posttrans);
+    fi->posttransprog = _free(fi->posttransprog);
 
     if (fi->fc > 0) {
 	fi->bnl = hfd(fi->bnl, RPM_FORCEFREE_TYPE);
