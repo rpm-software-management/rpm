@@ -10,6 +10,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>
+#include <rpm/rpmdb.h>
 #include <rpm/rpmfileutil.h>
 
 #include "lib/psm.h"
@@ -28,28 +29,8 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
     const char * fn = rpmfiFN(fi);
-    const char * rootDir = rpmtsRootDir(ts);
     struct stat sb;
     int rc;
-
-    /* Prepend the path to root (if specified). */
-    if (rootDir && *rootDir != '\0'
-     && !(rootDir[0] == '/' && rootDir[1] == '\0'))
-    {
-	int nb = strlen(fn) + strlen(rootDir) + 1;
-	char * tb = alloca(nb);
-	char * t;
-
-	t = tb;
-	*t = '\0';
-	t = stpcpy(t, rootDir);
-	while (t > tb && t[-1] == '/') {
-	    --t;
-	    *t = '\0';
-	}
-	t = stpcpy(t, fn);
-	fn = tb;
-    }
 
     *res = RPMVERIFY_NONE;
 
@@ -418,7 +399,24 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
 {
     rpmVSFlags vsflags, ovsflags;
-    int ec = 0;
+    int ec = 0, xx;
+    const char * rootDir = rpmtsRootDir(ts);
+
+    /* 
+     * Open the DB + indices explicitly before possible chroot,
+     * otherwises BDB is going to be unhappy...
+     */
+    rpmtsOpenDB(ts, O_RDONLY);
+    rpmdbOpenAll(rpmtsGetRdb(ts));
+    if (rootDir && strcmp(rootDir, "/") != 0) {
+	if (chroot(rootDir) == -1) {
+	    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
+	    ec = 1;
+	    goto exit;
+	} else {
+	    rpmtsSetChrootDone(ts, 1);
+	}
+    }
 
     if (qva->qva_showPackage == NULL)
         qva->qva_showPackage = showVerifyPackage;
@@ -441,6 +439,14 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
         qva->qva_showPackage = NULL;
 
     rpmtsEmpty(ts);
+
+    if (rpmtsChrootDone(ts)) {
+	/* only done if previous chroot succeeded, assume success */
+	xx = chroot(".");
+	rpmtsSetChrootDone(ts, 0);
+    }
+
+exit:
 
     return ec;
 }
