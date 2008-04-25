@@ -438,12 +438,9 @@ static void setPathDefault(const char * macroname, const char * subdir)
 {
 
     if (macroname != NULL) {
-#define	_TOPDIRMACRO	"%{_topdir}/"
-	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir));
-	strcpy(body, _TOPDIRMACRO);
-	strcat(body, subdir);
+	char *body = rpmGetPath("%{_topdir}/", subdir, NULL);
 	addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
-#undef _TOPDIRMACRO
+	free(body);
     }
 }
 
